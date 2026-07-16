@@ -8,14 +8,19 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.graphics.Point;
 import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -28,27 +33,40 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
 import org.chromium.chrome.browser.bookmarks.FakeBookmarkModel;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.page_image_service.ImageServiceBridgeJni;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
+import org.chromium.components.bookmarks.BookmarkType;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -76,7 +94,15 @@ public class BookmarkBarMediatorTest {
     @Mock private RecyclerView mItemsRecyclerView;
     @Mock private BookmarkBar mBookmarkBarView;
     @Mock private BookmarkManagerOpener mBookmarkManagerOpener;
+    @Mock private SnackbarManager mSnackbarManager;
+    @Mock private ModalDialogManager mModalDialogManager;
     @Mock private BookmarkBarItemsLayoutManager mLayoutManager;
+    @Mock private BookmarkBarPopupCoordinator mPopupCoordinator;
+    @Mock private Tab mTab;
+    @Mock private UserPrefsJni mUserPrefsJni;
+    @Mock private PrefService mPrefService;
+    @Mock private ImageServiceBridgeJni mImageServiceBridgeJni;
+    @Mock private FaviconHelperJni mFaviconHelperJni;
 
     private final SettableNonNullObservableSupplier<Boolean> mItemsOverflowSupplier =
             ObservableSuppliers.createNonNull(false);
@@ -87,6 +113,9 @@ public class BookmarkBarMediatorTest {
 
     @Before
     public void setUp() {
+        FaviconHelperJni.setInstanceForTesting(mFaviconHelperJni);
+        doReturn(1L).when(mFaviconHelperJni).init();
+        ImageServiceBridgeJni.setInstanceForTesting(mImageServiceBridgeJni);
         mProfileSupplier = ObservableSuppliers.createNonNull(mProfile);
         mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
 
@@ -95,24 +124,31 @@ public class BookmarkBarMediatorTest {
         Supplier<Pair<Integer, Integer>> controlsHeightSupplier = () -> new Pair<>(0, 0);
         when(mLayoutManager.getItemsOverflowSupplier()).thenReturn(mItemsOverflowSupplier);
 
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsJni);
+
         mMediator =
                 new BookmarkBarMediator(
                         mActivity,
                         mAllBookmarksButtonModel,
-                        controlsHeightSupplier,
                         mItemsModel,
                         mLayoutManager,
                         mPropertyModel,
                         mProfileSupplier,
-                        /* currentTabSupplier= */ () -> null,
+                        /* currentTabSupplier= */ () -> mTab,
                         mBookmarkOpener,
                         ObservableSuppliers.createNonNull(mBookmarkManagerOpener),
+                        () -> mSnackbarManager,
+                        () -> mModalDialogManager,
                         mItemsRecyclerView,
-                        mBookmarkBarView);
+                        mBookmarkBarView,
+                        mPopupCoordinator);
     }
 
     @After
     public void tearDown() throws Exception {
+        UserPrefsJni.setInstanceForTesting(null);
         mMediator.destroy();
         assertNull(mMediator.getFolderIconBitmapForTesting());
     }
@@ -328,13 +364,13 @@ public class BookmarkBarMediatorTest {
         View placeholderView = new View(mActivity);
 
         // Simulate ACTION_DOWN
-        MotionEvent downEvent = Mockito.mock(MotionEvent.class);
+        MotionEvent downEvent = mock(MotionEvent.class);
         when(downEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
         when(downEvent.getButtonState()).thenReturn(MotionEvent.BUTTON_TERTIARY);
         assertTrue(touchListener.onTouch(placeholderView, downEvent));
 
         // Simulate ACTION_BUTTON_RELEASE with BUTTON_TERTIARY
-        MotionEvent releaseEvent = Mockito.mock(MotionEvent.class);
+        MotionEvent releaseEvent = mock(MotionEvent.class);
         when(releaseEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_BUTTON_RELEASE);
         when(releaseEvent.getActionButton()).thenReturn(MotionEvent.BUTTON_TERTIARY);
         assertTrue(touchListener.onTouch(placeholderView, releaseEvent));
@@ -361,12 +397,299 @@ public class BookmarkBarMediatorTest {
         View placeholderView = new View(mActivity);
 
         // Simulate ACTION_DOWN with primary button (or touch).
-        MotionEvent downEvent = Mockito.mock(MotionEvent.class);
+        MotionEvent downEvent = mock(MotionEvent.class);
         when(downEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
         when(downEvent.getButtonState()).thenReturn(MotionEvent.BUTTON_PRIMARY);
 
         org.junit.Assert.assertFalse(
                 "ACTION_DOWN for primary click should not be consumed so tooltips can work",
                 touchListener.onTouch(placeholderView, downEvent));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
+    public void testEmptySpaceRightClick_FlagEnabled() {
+        ArgumentCaptor<BookmarkBar.RightClickCallback> captor =
+                ArgumentCaptor.forClass(BookmarkBar.RightClickCallback.class);
+        verify(mBookmarkBarView).setRightClickCallback(captor.capture());
+        BookmarkBar.RightClickCallback callback = captor.getValue();
+        assertNotNull(callback);
+
+        callback.onRightClick(100f, 200f);
+
+        verify(mPopupCoordinator)
+                .showPopup(any(), eq(mBookmarkBarView), eq(new Point(100, 200)), eq(false));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
+    public void testBookmarkItemRightClick_FlagEnabled() {
+        BookmarkId bookmarkId =
+                mBookmarkModel.addBookmark(
+                        mBookmarkModel.getDesktopFolderId(), 0, "Bookmark", JUnitTestGURLs.URL_1);
+        BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
+
+        mMediator.onBookmarkItemAdded(
+                BookmarkBarItemsProvider.ObservationId.LOCAL, bookmarkItem, 0);
+
+        ArgumentCaptor<ListItem> listItemCaptor = ArgumentCaptor.forClass(ListItem.class);
+        verify(mItemsModel).add(eq(0), listItemCaptor.capture());
+        PropertyModel itemModel = listItemCaptor.getValue().model;
+
+        ClickWithMetaStateCallback clickCallback =
+                itemModel.get(BookmarkBarButtonProperties.CLICK_CALLBACK);
+        assertNotNull(clickCallback);
+
+        View mockView = mock(View.class);
+        RecyclerView.ViewHolder viewHolder = new RecyclerView.ViewHolder(mockView) {};
+        when(mItemsRecyclerView.findViewHolderForAdapterPosition(0)).thenReturn(viewHolder);
+
+        clickCallback.onClickWithMeta(0, MotionEvent.BUTTON_SECONDARY);
+
+        verify(mPopupCoordinator).showPopup(any(), eq(mockView), any(), eq(false));
+    }
+
+    @Test
+    @SmallTest
+    public void testContextMenu_OpenInNewTab() {
+        BookmarkId id = new BookmarkId(1, BookmarkType.NORMAL);
+
+        mMediator.openInNewTab(id);
+
+        verify(mBookmarkOpener)
+                .openBookmarksInNewTabs(
+                        eq(List.of(id)), eq(false), eq(TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND));
+    }
+
+    @Test
+    @SmallTest
+    public void testContextMenu_OpenInNewWindow() {
+        BookmarkId id = new BookmarkId(1, BookmarkType.NORMAL);
+
+        mMediator.openInNewWindow(id);
+
+        verify(mBookmarkOpener).openBookmarksInNewWindow(eq(List.of(id)), eq(false));
+    }
+
+    @Test
+    @SmallTest
+    public void testContextMenu_OpenInIncognitoWindow() {
+        BookmarkId id = new BookmarkId(1, BookmarkType.NORMAL);
+
+        mMediator.openInIncognitoWindow(id);
+
+        verify(mBookmarkOpener).openBookmarksInNewWindow(eq(List.of(id)), eq(true));
+    }
+
+    @Test
+    @SmallTest
+    public void testContextMenu_OpenAll() {
+        BookmarkId id1 = new BookmarkId(1, BookmarkType.NORMAL);
+        BookmarkId id2 = new BookmarkId(2, BookmarkType.NORMAL);
+        List<BookmarkId> ids = List.of(id1, id2);
+
+        mMediator.openAll(ids);
+
+        verify(mBookmarkOpener)
+                .openBookmarksInNewTabs(
+                        eq(ids), eq(false), eq(TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND));
+    }
+
+    @Test
+    @SmallTest
+    public void testContextMenu_OpenAllInNewWindow() {
+        BookmarkId id1 = new BookmarkId(1, BookmarkType.NORMAL);
+        BookmarkId id2 = new BookmarkId(2, BookmarkType.NORMAL);
+        List<BookmarkId> ids = List.of(id1, id2);
+
+        mMediator.openAllInNewWindow(ids);
+
+        verify(mBookmarkOpener).openBookmarksInNewWindow(eq(ids), eq(false));
+    }
+
+    @Test
+    @SmallTest
+    public void testContextMenu_OpenAllInIncognitoWindow() {
+        BookmarkId id1 = new BookmarkId(1, BookmarkType.NORMAL);
+        BookmarkId id2 = new BookmarkId(2, BookmarkType.NORMAL);
+        List<BookmarkId> ids = List.of(id1, id2);
+
+        mMediator.openAllInIncognitoWindow(ids);
+
+        verify(mBookmarkOpener).openBookmarksInNewWindow(eq(ids), eq(true));
+    }
+
+    @Test
+    @SmallTest
+    public void testContextMenu_OpenAllInNewTabGroup_PropagatesTitle() {
+        BookmarkId id1 = new BookmarkId(1, BookmarkType.NORMAL);
+        BookmarkId id2 = new BookmarkId(2, BookmarkType.NORMAL);
+        List<BookmarkId> ids = List.of(id1, id2);
+        String title = "Test Group Title";
+
+        mMediator.openAllInNewTabGroup(ids, title);
+
+        verify(mBookmarkOpener).openBookmarksInNewTabGroup(eq(ids), eq(false), eq(title));
+    }
+
+    @Test
+    @SmallTest
+    public void testContextMenu_EditBookmark() {
+        BookmarkId id = new BookmarkId(1, BookmarkType.NORMAL);
+
+        mMediator.editBookmark(id);
+
+        verify(mBookmarkManagerOpener).startEditActivity(eq(mActivity), eq(mProfile), eq(id));
+    }
+
+    @Test
+    @SmallTest
+    public void testContextMenu_MoveBookmark() {
+        BookmarkId id = new BookmarkId(1, BookmarkType.NORMAL);
+
+        mMediator.moveBookmark(id);
+
+        verify(mBookmarkManagerOpener)
+                .startFolderPickerActivity(eq(mActivity), eq(mProfile), eq(id));
+    }
+
+    @Test
+    @SmallTest
+    public void testContextMenu_DeleteBookmark() {
+        BookmarkId bookmarkId =
+                mBookmarkModel.addBookmark(
+                        mBookmarkModel.getDesktopFolderId(),
+                        0,
+                        "Bookmark to Delete",
+                        JUnitTestGURLs.URL_1);
+
+        mMediator.deleteBookmark(bookmarkId);
+
+        ArgumentCaptor<Snackbar> snackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
+        verify(mSnackbarManager).showSnackbar(snackbarCaptor.capture());
+        Snackbar snackbar = snackbarCaptor.getValue();
+        assertNotNull(snackbar);
+    }
+
+    @Test
+    @SmallTest
+    public void testContextMenu_AddPage() {
+        BookmarkId parentId = mBookmarkModel.getDesktopFolderId();
+        doReturn("Test Title").when(mTab).getTitle();
+        doReturn(JUnitTestGURLs.URL_1).when(mTab).getUrl();
+
+        mMediator.addPage(parentId);
+
+        List<BookmarkId> children = mBookmarkModel.getChildIds(parentId);
+        assertEquals(1, children.size());
+        BookmarkId newBookmarkId = children.get(0);
+        BookmarkItem item = mBookmarkModel.getBookmarkById(newBookmarkId);
+        assertNotNull(item);
+        assertEquals("Test Title", item.getTitle());
+        assertEquals(JUnitTestGURLs.URL_1, item.getUrl());
+
+        verify(mBookmarkManagerOpener)
+                .startEditActivity(eq(mActivity), eq(mProfile), eq(newBookmarkId));
+    }
+
+    @Test
+    @SmallTest
+    public void testContextMenu_AddFolder() {
+        BookmarkId parentId = mBookmarkModel.getDesktopFolderId();
+
+        mMediator.addFolder(parentId);
+
+        verify(mModalDialogManager)
+                .showDialog(any(PropertyModel.class), eq(ModalDialogManager.ModalDialogType.APP));
+    }
+
+    @Test
+    @SmallTest
+    public void testContextMenu_OpenBookmarksManager() {
+        BookmarkId folderId = mBookmarkModel.getDesktopFolderId();
+
+        mMediator.openBookmarksManager(folderId);
+
+        verify(mBookmarkManagerOpener)
+                .showBookmarkManager(eq(mActivity), eq(mTab), eq(mProfile), eq(folderId));
+    }
+
+    @Test
+    @SmallTest
+    public void testContextMenu_ToggleBookmarksBar() {
+        ContextUtils.getAppSharedPreferences()
+                .edit()
+                .putBoolean(BookmarkBarConstants.BOOKMARK_BAR_SHOW_BOOKMARK_BAR, true)
+                .apply();
+
+        mMediator.toggleBookmarksBar();
+
+        verify(mPrefService).setBoolean(eq(Pref.SHOW_BOOKMARK_BAR), eq(false));
+    }
+
+    @Test
+    @SmallTest
+    public void testOnAllBookmarksButtonClick() {
+        ArgumentCaptor<ClickWithMetaStateCallback> clickCallbackCaptor =
+                ArgumentCaptor.forClass(ClickWithMetaStateCallback.class);
+        verify(mAllBookmarksButtonModel)
+                .set(eq(BookmarkBarButtonProperties.CLICK_CALLBACK), clickCallbackCaptor.capture());
+
+        ClickWithMetaStateCallback clickCallback = clickCallbackCaptor.getValue();
+        assertNotNull(clickCallback);
+
+        clickCallback.onClickWithMeta(0, 0);
+
+        verify(mBookmarkManagerOpener)
+                .showBookmarkManager(
+                        eq(mActivity),
+                        eq(mTab),
+                        eq(mProfile),
+                        eq(mBookmarkModel.getRootFolderId()));
+    }
+
+    @Test
+    @SmallTest
+    public void testOnOverflowButtonClick() {
+        ArgumentCaptor<Runnable> callbackCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mPropertyModel)
+                .set(
+                        eq(BookmarkBarProperties.OVERFLOW_BUTTON_CLICK_CALLBACK),
+                        callbackCaptor.capture());
+
+        Runnable callback = callbackCaptor.getValue();
+        assertNotNull(callback);
+
+        FrameLayout overflowButtonView = mock(FrameLayout.class);
+        when(mBookmarkBarView.getOverflowButton()).thenReturn(overflowButtonView);
+
+        callback.run();
+
+        verify(mPopupCoordinator)
+                .showFolderItemsPopup(eq(overflowButtonView), any(ModelList.class), eq(false));
+    }
+
+    @Test
+    @SmallTest
+    public void testOnProfileChange_ClearsState() {
+        BookmarkId bookmarkId =
+                mBookmarkModel.addBookmark(
+                        mBookmarkModel.getDesktopFolderId(),
+                        0,
+                        "Bookmark to Delete",
+                        JUnitTestGURLs.URL_1);
+
+        mMediator.deleteBookmark(bookmarkId);
+
+        Profile newProfile = mock(Profile.class);
+        when(newProfile.getOriginalProfile()).thenReturn(newProfile);
+        when(mUserPrefsJni.get(newProfile)).thenReturn(mPrefService);
+
+        mProfileSupplier.set(newProfile);
+        ShadowLooper.idleMainLooper();
+
+        assertNull(mBookmarkModel.getBookmarkById(bookmarkId));
     }
 }

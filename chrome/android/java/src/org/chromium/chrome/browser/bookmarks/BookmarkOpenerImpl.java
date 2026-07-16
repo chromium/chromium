@@ -157,6 +157,7 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
         Intent intent = createBasicOpenIntent(firstItem, incognito);
         intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
         intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, incognito);
+        intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, incognito);
         intent.putExtra(IntentHandler.EXTRA_ADDITIONAL_URLS, additionalUrls);
 
         Activity activity = ContextUtils.activityFromContext(mContext);

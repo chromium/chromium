@@ -60,12 +60,14 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.chrome.browser.ui.side_ui.ViewMarginAdjusterForSideUi;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.ViewResourceFrameLayout;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -141,15 +143,18 @@ public class BookmarkBarCoordinator
      * @param resourceManager The resource manager for providing resources to C++ layers.
      * @param browserControlsStateProvider The state provider for browser controls.
      * @param heightChangeCallback A callback to notify owner of bookmark bar height changes.
-     * @param profileSupplier The supplier for the currently active profile.
+     * @param profileSupplier Used to access the active user profile.
      * @param viewStub The stub used to inflate the bookmark bar.
      * @param currentTab The current tab if it exists.
      * @param bookmarkOpener Used to open bookmarks.
      * @param bookmarkManagerOpenerSupplier Used to open the bookmark manager.
      * @param topControlsStacker TopControlsStacker to manage the view's y-offset.
-     * @param currentTabSupplier Supplier of current tab to use for observers.
+     * @param currentTabSupplier Used to observe or retrieve the active tab.
      * @param topUiThemeColorProvider Provider for theme colors to match background color.
-     * @param sideUiStateProviderSupplier Provider for the {@link SideUiStateProvider}.
+     * @param sideUiStateProviderSupplier Used to access the {@link SideUiStateProvider}.
+     * @param tabObscuringHandler Handler for tab obscuring state.
+     * @param modalDialogManagerSupplier Used to display modal dialogs.
+     * @param snackbarManagerSupplier Used to display snackbar notifications.
      */
     public BookmarkBarCoordinator(
             Activity activity,
@@ -169,7 +174,9 @@ public class BookmarkBarCoordinator
             NullableObservableSupplier<Tab> currentTabSupplier,
             TopUiThemeColorProvider topUiThemeColorProvider,
             OneshotSupplier<SideUiStateProvider> sideUiStateProviderSupplier,
-            TabObscuringHandler tabObscuringHandler) {
+            TabObscuringHandler tabObscuringHandler,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<@Nullable SnackbarManager> snackbarManagerSupplier) {
         mContext = activity;
         mRequestUpdate = requestUpdate;
         mTabObscuringHandler = tabObscuringHandler;
@@ -250,6 +257,9 @@ public class BookmarkBarCoordinator
                                 mBrowserControlsStateProvider.getTopControlsHeight(),
                                 mBrowserControlsStateProvider.getBottomControlsHeight());
 
+        BookmarkBarPopupCoordinator popupCoordinator =
+                new BookmarkBarPopupCoordinator(activity, mView, controlsHeightSupplier);
+
         // Bind view/model for bookmark bar and instantiate mediator.
         final var model = new PropertyModel.Builder(BookmarkBarProperties.ALL_KEYS).build();
         mModel = model;
@@ -257,7 +267,6 @@ public class BookmarkBarCoordinator
                 new BookmarkBarMediator(
                         activity,
                         allBookmarksButtonModel,
-                        controlsHeightSupplier,
                         itemsModel,
                         mBookmarkBarItemsLayoutManager,
                         mModel,
@@ -265,8 +274,11 @@ public class BookmarkBarCoordinator
                         currentTabSupplier,
                         bookmarkOpener,
                         bookmarkManagerOpenerSupplier,
+                        snackbarManagerSupplier,
+                        modalDialogManagerSupplier,
                         mItemsContainer,
-                        mView);
+                        mView,
+                        popupCoordinator);
         PropertyModelChangeProcessor.create(model, mView, BookmarkBarViewBinder::bind);
 
         // All dimensions and offsets require the first layout pass to complete, so don't set here.

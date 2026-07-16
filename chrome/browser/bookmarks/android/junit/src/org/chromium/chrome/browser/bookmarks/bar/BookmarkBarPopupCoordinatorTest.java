@@ -37,7 +37,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.bookmarks.R;
 import org.chromium.ui.base.TestActivity;
@@ -75,9 +74,7 @@ public class BookmarkBarPopupCoordinatorTest {
                 new BookmarkBarPopupCoordinator(
                         mActivity,
                         mBookmarkBarView,
-                        ObservableSuppliers.createMonotonic(),
-                        () -> new Pair<>(0, 0), // controlsHeightSupplier
-                        /* currentTabSupplier= */ () -> null);
+                        () -> new Pair<>(0, 0)); // controlsHeightSupplier
     }
 
     @Test
@@ -210,7 +207,8 @@ public class BookmarkBarPopupCoordinatorTest {
                 });
 
         try {
-            mCoordinator.showFolderItemsPopup(mAnchorView, new ModelList());
+            mCoordinator.showFolderItemsPopup(
+                    mAnchorView, new ModelList(), /* isIncognito= */ false);
 
             verify(mMockPopupWindow).setBackgroundDrawable(mDrawableCaptor.capture());
 

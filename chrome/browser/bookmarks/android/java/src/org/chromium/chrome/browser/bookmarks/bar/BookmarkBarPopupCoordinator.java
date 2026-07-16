@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.GradientDrawable;
 import android.util.DisplayMetrics;
 import android.util.Pair;
 import android.view.Gravity;
@@ -20,14 +21,10 @@ import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.R;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.bookmarks.BookmarkItem;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
@@ -40,7 +37,6 @@ import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
 import org.chromium.ui.widget.ViewRectUpdater;
 
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /** Coordinates the display of all popup menus anchored to the Bookmarks Bar. */
@@ -48,11 +44,9 @@ import java.util.function.Supplier;
 public class BookmarkBarPopupCoordinator {
     private final Activity mActivity;
     private final View mBookmarkBarView;
-    private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final Supplier<Pair<Integer, Integer>> mControlsHeightSupplier;
     private final BrowserControlsRectProvider mBrowserControlsRectProvider;
 
-    private final BookmarkBarContextMenuMediator mContextMenuMediator;
     private @Nullable AnchoredPopupWindow mAnchoredPopupWindow;
     private @Nullable ModelList mActiveBookmarkItems;
     private ListObservable.@Nullable ListObserver<Void> mActiveSizeUpdaterObserver;
@@ -60,52 +54,11 @@ public class BookmarkBarPopupCoordinator {
     public BookmarkBarPopupCoordinator(
             Activity activity,
             View bookmarkBarView,
-            MonotonicObservableSupplier<Profile> profileSupplier,
-            Supplier<Pair<Integer, Integer>> controlsHeightSupplier,
-            Supplier<@Nullable Tab> currentTabSupplier) {
+            Supplier<Pair<Integer, Integer>> controlsHeightSupplier) {
         mActivity = activity;
         mBookmarkBarView = bookmarkBarView;
-        mProfileSupplier = profileSupplier;
         mControlsHeightSupplier = controlsHeightSupplier;
         mBrowserControlsRectProvider = new BrowserControlsRectProvider(activity);
-
-        mContextMenuMediator =
-                new BookmarkBarContextMenuMediator(
-                        activity, profileSupplier, currentTabSupplier, this::dismiss);
-    }
-
-    /** Shows the right-click context menu for a bookmark item. */
-    public void showBookmarkItemContextMenu(View anchorView, BookmarkItem item) {
-        runWithLoadedModel(
-                model -> {
-                    ModelList menuModel =
-                            mContextMenuMediator.buildContextMenuModelList(item, model);
-                    showPopup(menuModel, anchorView, null);
-                });
-    }
-
-    /** Shows the context menu for the Bookmarks Bar background. */
-    public void showBookmarkBarEmptySpaceContextMenu(View anchorView, Point offset) {
-        runWithLoadedModel(
-                model -> {
-                    ModelList menuModel =
-                            mContextMenuMediator.buildBookmarksBarEmptySpaceContextMenuModelList(
-                                    model);
-                    showPopup(menuModel, anchorView, offset);
-                });
-    }
-
-    /**
-     * Executes the given callback when the {@link BookmarkModel} has finished loading. If it is
-     * already loaded, the callback runs immediately. This is used to handle clicks that occur
-     * during startup or profile-switching transitions to prevent dropped clicks.
-     */
-    private void runWithLoadedModel(Consumer<BookmarkModel> callback) {
-        Profile profile = mProfileSupplier.get();
-        if (profile == null) return;
-
-        BookmarkModel model = BookmarkModel.getForProfile(profile);
-        model.finishLoadingBookmarkModel(() -> callback.accept(model));
     }
 
     /**
@@ -116,9 +69,11 @@ public class BookmarkBarPopupCoordinator {
      * @param folderMenuModel A {@link ModelList} containing the property models of the bookmark
      *     items to display. {@link BookmarkBarMediator} is expected to construct this model list
      *     and populate it with the direct children of the folder before invoking this method.
+     * @param isIncognito Whether the current profile session is incognito.
      */
-    public void showFolderItemsPopup(View anchorView, ModelList folderMenuModel) {
-        showPopup(folderMenuModel, anchorView, null);
+    public void showFolderItemsPopup(
+            View anchorView, ModelList folderMenuModel, boolean isIncognito) {
+        showPopup(folderMenuModel, anchorView, null, isIncognito);
     }
 
     /** Dismisses the active popup window. */
@@ -128,7 +83,8 @@ public class BookmarkBarPopupCoordinator {
         }
     }
 
-    private void showPopup(ModelList bookmarkItems, View anchorView, @Nullable Point offset) {
+    public void showPopup(
+            ModelList bookmarkItems, View anchorView, @Nullable Point offset, boolean isIncognito) {
         dismiss();
 
         BasicListMenu popupListMenu =
@@ -157,6 +113,13 @@ public class BookmarkBarPopupCoordinator {
         //    and fails to clip list item highlights to the rounded corners of the popup.
         View popupContentView = popupListMenu.getContentView();
         ListMenuUtils.clipContentViewOutline(popupContentView, R.attr.popupBgCornerRadius);
+        if (popupContentView.getBackground() instanceof GradientDrawable backgroundDrawable) {
+            int bgColor =
+                    isIncognito
+                            ? mActivity.getColor(R.color.dialog_bg_color_dark_baseline)
+                            : SemanticColorUtils.getMenuBgColor(mActivity);
+            backgroundDrawable.setColor(bgColor);
+        }
 
         // Set up empty view if the menu has no items.
         setupEmptyView(popupContentView);

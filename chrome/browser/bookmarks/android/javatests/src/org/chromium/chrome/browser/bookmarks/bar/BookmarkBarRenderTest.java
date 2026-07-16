@@ -46,10 +46,12 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.resources.ResourceFactory;
 import org.chromium.ui.resources.ResourceFactoryJni;
 import org.chromium.ui.resources.ResourceManager;
@@ -102,6 +104,8 @@ public class BookmarkBarRenderTest {
     // TODO(crbug.com/496407828): Add render tests for side panel logic
     @Mock private OneshotSupplierImpl<SideUiStateProvider> mSideUiStateProviderSupplier;
     @Mock private TabObscuringHandler mTabObscuringHandler;
+    @Mock private ModalDialogManager mModalDialogManager;
+    @Mock private SnackbarManager mSnackbarManager;
 
     private BookmarkBar mView;
 
@@ -145,7 +149,9 @@ public class BookmarkBarRenderTest {
                             ObservableSuppliers.alwaysNull(),
                             mTopUiThemeColorProvider,
                             mSideUiStateProviderSupplier,
-                            mTabObscuringHandler);
+                            mTabObscuringHandler,
+                            () -> mModalDialogManager,
+                            () -> mSnackbarManager);
 
                     assertNotNull(mView);
                     ChromeRenderTestRule.sanitize(mView);

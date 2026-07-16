@@ -15,6 +15,7 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Browser;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -150,5 +151,33 @@ public class BookmarkOpenerImplUnitTest {
                 startedIntent.getBooleanExtra(
                         IntentHandler.EXTRA_OPEN_ADDITIONAL_URLS_IN_TAB_GROUP, false));
         assertEquals(testTitle, startedIntent.getStringExtra(IntentHandler.EXTRA_TAB_GROUP_TITLE));
+    }
+
+    @Test
+    public void testOpenBookmarksInNewWindow() {
+        assertTrue(
+                mOpener.openBookmarksInNewWindow(
+                        Collections.singletonList(mBookmarkId), /* incognito= */ false));
+
+        Intent startedIntent = shadowOf(mActivity).getNextStartedActivity();
+        assertNotNull(startedIntent);
+        assertTrue(startedIntent.getBooleanExtra(Browser.EXTRA_CREATE_NEW_TAB, false));
+        assertFalse(
+                startedIntent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, true));
+        assertFalse(
+                startedIntent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true));
+
+        assertTrue(
+                mOpener.openBookmarksInNewWindow(
+                        Collections.singletonList(mBookmarkId), /* incognito= */ true));
+
+        startedIntent = shadowOf(mActivity).getNextStartedActivity();
+        assertNotNull(startedIntent);
+        assertTrue(startedIntent.getBooleanExtra(Browser.EXTRA_CREATE_NEW_TAB, false));
+        assertTrue(
+                startedIntent.getBooleanExtra(
+                        IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, false));
+        assertTrue(
+                startedIntent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false));
     }
 }

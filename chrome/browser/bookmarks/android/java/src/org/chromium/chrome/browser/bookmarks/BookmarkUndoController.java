@@ -42,14 +42,14 @@ public class BookmarkUndoController extends BookmarkModelObserver
     }
 
     /**
-     * Internal constructor which specifies an additional parameter.
+     * Constructor which specifies an additional parameter.
      *
      * @param context The {@link Context} in which snackbar is shown.
      * @param model The bookmark model.
      * @param snackbarManager SnackManager passed from activity.
      * @param destroyAfterFirstAction Destroy the controller after the first action.
      */
-    private BookmarkUndoController(
+    public BookmarkUndoController(
             Context context,
             BookmarkModel model,
             SnackbarManager snackbarManager,
