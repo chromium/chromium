@@ -857,6 +857,7 @@ IN_PROC_BROWSER_TEST_F(MiscellaneousElementBrowserTest, InvalidStyleMetrics) {
 IN_PROC_BROWSER_TEST_F(MiscellaneousElementBrowserTest,
                        CapabilityElementAttributesCountMetrics) {
   WebFeatureHistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   NavigateToURL("/permissions/capability_element_attributes.html");
 
   // Access all attributes of InPagePermissionMixin and verify they are counted.
@@ -885,4 +886,45 @@ IN_PROC_BROWSER_TEST_F(MiscellaneousElementBrowserTest,
       {blink::mojom::WebFeature::kCapabilityElementOnPromptDismiss, 1},
       {blink::mojom::WebFeature::kCapabilityElementOnValidationStatusChange, 1},
   });
+
+  // UKM metrics are recorded when the page is unloaded or on a new navigation.
+  browser()->tab_strip_model()->CloseAllTabs();
+  base::RunLoop().RunUntilIdle();
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::Blink_UseCounter::kEntryName);
+  std::vector<int64_t> ukm_features;
+  for (const ukm::mojom::UkmEntry* entry : entries) {
+    const auto* metric = ukm_recorder.GetEntryMetric(
+        entry, ukm::builders::Blink_UseCounter::kFeatureName);
+    if (metric) {
+      ukm_features.push_back(*metric);
+    }
+  }
+
+  EXPECT_THAT(ukm_features,
+              testing::Contains(static_cast<int64_t>(
+                  blink::mojom::WebFeature::kCapabilityElementIsValid)));
+  EXPECT_THAT(ukm_features,
+              testing::Contains(static_cast<int64_t>(
+                  blink::mojom::WebFeature::kCapabilityElementInvalidReason)));
+  EXPECT_THAT(ukm_features,
+              testing::Contains(static_cast<int64_t>(
+                  blink::mojom::WebFeature::
+                      kCapabilityElementInitialPermissionStatus)));
+  EXPECT_THAT(
+      ukm_features,
+      testing::Contains(static_cast<int64_t>(
+          blink::mojom::WebFeature::kCapabilityElementPermissionStatus)));
+  EXPECT_THAT(ukm_features,
+              testing::Contains(static_cast<int64_t>(
+                  blink::mojom::WebFeature::kCapabilityElementOnPromptAction)));
+  EXPECT_THAT(
+      ukm_features,
+      testing::Contains(static_cast<int64_t>(
+          blink::mojom::WebFeature::kCapabilityElementOnPromptDismiss)));
+  EXPECT_THAT(ukm_features,
+              testing::Contains(static_cast<int64_t>(
+                  blink::mojom::WebFeature::
+                      kCapabilityElementOnValidationStatusChange)));
 }
