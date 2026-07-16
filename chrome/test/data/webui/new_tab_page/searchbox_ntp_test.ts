@@ -1231,4 +1231,83 @@ suite('SearchboxTest', () => {
     assertFalse(openComposeboxCalled);
     assertEquals(1, testProxy.handler.getCallCount('onDriveUploadClicked'));
   });
+
+  test(
+      'openComposebox_ does not close menu when' +
+          'keepMenuOpenOnTabSelectForRealbox is enabled',
+      async () => {
+        loadTimeData.overrideValues({
+          keepMenuOpenOnTabSelectForRealbox: true,
+          contextManagementInComposeboxEnabled: true,
+        });
+        const realbox = await createAndAppendRealbox({
+          ntpRealboxNextEnabled: true,
+          keepMenuOpenOnTabSelectForRealbox: true,
+          contextManagementInComposeboxEnabled: true,
+        });
+        const context =
+            realbox.shadowRoot.querySelector<HTMLElement>('#context');
+        assertTrue(!!context);
+
+        let closeMenuCalled = false;
+        (context as unknown as {closeMenu: () => void}).closeMenu = () => {
+          closeMenuCalled = true;
+        };
+
+        await (realbox as unknown as {
+          openComposebox_: () => void,
+        }).openComposebox_();
+
+        assertFalse(closeMenuCalled);
+      });
+
+  test(
+      'openComposebox_ closes menu when' +
+          'keepMenuOpenOnTabSelectForRealbox is disabled',
+      async () => {
+        loadTimeData.overrideValues({});
+        const realbox = await createAndAppendRealbox({
+          ntpRealboxNextEnabled: true,
+          keepMenuOpenOnTabSelectForRealbox: false,
+        });
+        const context =
+            realbox.shadowRoot.querySelector<HTMLElement>('#context')!;
+        assertTrue(!!context);
+
+        let closeMenuCalled = false;
+        (context as unknown as {closeMenu: () => void}).closeMenu = () => {
+          closeMenuCalled = true;
+        };
+
+        await (realbox as unknown as {
+          openComposebox_: () => void,
+        }).openComposebox_();
+
+        assertTrue(closeMenuCalled);
+      });
+
+  test(
+      'openComposebox_ closes menu when' +
+          'contextManagementInComposeboxEnabled is disabled',
+      async () => {
+        const realbox = await createAndAppendRealbox({
+          ntpRealboxNextEnabled: true,
+          keepMenuOpenOnTabSelectForRealbox: true,
+          contextManagementInComposeboxEnabled: false,
+        });
+        const context =
+            realbox.shadowRoot.querySelector<HTMLElement>('#context');
+        assertTrue(!!context);
+
+        let closeMenuCalled = false;
+        (context as unknown as {closeMenu: () => void}).closeMenu = () => {
+          closeMenuCalled = true;
+        };
+
+        await (realbox as unknown as {
+          openComposebox_: () => void,
+        }).openComposebox_();
+
+        assertTrue(closeMenuCalled);
+      });
 });

@@ -202,6 +202,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
       hasUserInput_: {type: Boolean},
       ntpRealboxDynamicAiModeButtonEnabled_: {type: Boolean},
       contextManagementInComposeboxEnabled: {type: Boolean},
+      keepMenuOpenOnTabSelectForRealbox: {type: Boolean},
       smartTabSharingVisible: {type: Boolean},
       smartTabSharingActive: {type: Boolean},
     };
@@ -217,7 +218,6 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
   protected accessor showComposeButton_: boolean = false;
   accessor cyclingPlaceholders: boolean = false;
   accessor isDraggingFile: boolean = false;
-  accessor contextManagementInComposeboxEnabled: boolean = false;
   accessor contextMenuGlifAnimationState: GlifAnimationState =
       GlifAnimationState.INELIGIBLE;
   accessor animationState: GlowAnimationState = GlowAnimationState.NONE;
@@ -231,6 +231,12 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
       loadTimeData.getBoolean('searchboxCr23Theming');
   accessor searchboxSteadyStateShadow: boolean =
       loadTimeData.getBoolean('searchboxCr23SteadyStateShadow');
+  // `contextManagementInComposeboxEnabled` is also passed in from parent, but
+  // adding as a backup for tests.
+  accessor contextManagementInComposeboxEnabled: boolean =
+      getLoadTimeBoolean('contextManagementInComposeboxEnabled', false);
+  accessor keepMenuOpenOnTabSelectForRealbox: boolean =
+      getLoadTimeBoolean('keepMenuOpenOnTabSelectForRealbox', false);
   accessor placeholderText: string = '';
   accessor recentTabId_: number|null = null;
 
@@ -763,7 +769,10 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
           this.shadowRoot.querySelector<ContextualEntrypointAndMenuElement>(
               '#context');
       assert(context);
-      context.closeMenu();
+      if (!this.keepMenuOpenOnTabSelectForRealbox ||
+          !this.contextManagementInComposeboxEnabled) {
+        context.closeMenu();
+      }
     }
 
     if (mode !== ToolMode.kUnspecified) {
