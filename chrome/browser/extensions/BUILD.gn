@@ -2974,6 +2974,7 @@ source_set("browser_tests") {
         "//chrome/browser/ui/ash/shelf",
         "//chrome/browser/ui/ash/system_web_apps",
         "//chrome/browser/ui/login",
+        "//chrome/browser/ui/views/notifications",
         "//chrome/browser/ui/webui/ash/parent_access:test_support",
         "//chromeos/ash/components/chaps_util:test_support",
         "//chromeos/ash/components/dbus/audio",

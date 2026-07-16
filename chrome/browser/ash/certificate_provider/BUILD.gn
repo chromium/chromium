@@ -32,7 +32,9 @@ source_set("impl") {
   ]
   deps = [
     ":certificate_provider",
+    "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/ui/ash/login",
+    "//chrome/browser/ui/views/notifications",
     "//chrome/common/extensions",
     "//chrome/common/extensions/api",
     "//chromeos/ash/components/browser_context_helper",
@@ -43,10 +45,6 @@ source_set("impl") {
     "//ui/aura",
     "//ui/gfx",
     "//ui/views",
-
-    # Remove this dependency when the following headers get componentized:
-    # - c/b/ui/views/notifications/request_pin_view_chromeos.h
-    "//chrome/browser/ui",
   ]
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }

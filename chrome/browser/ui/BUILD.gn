@@ -2449,8 +2449,6 @@ static_library("ui") {
       "views/frame/picture_in_picture_browser_frame_view_ash.h",
       "views/frame/top_controls_slide_controller_chromeos.cc",
       "views/frame/top_controls_slide_controller_chromeos.h",
-      "views/notifications/request_pin_view_chromeos.cc",
-      "views/notifications/request_pin_view_chromeos.h",
       "views/platform_keys_certificate_selector_chromeos.cc",
       "views/platform_keys_certificate_selector_chromeos.h",
       "views/profiles/profile_indicator_icon.cc",
