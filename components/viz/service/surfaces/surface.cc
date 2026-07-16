@@ -534,13 +534,19 @@ void Surface::CommitFramesRecursively(const CommitPredicate& predicate) {
   }
 
   if (HasPendingFrame()) {
-    for (auto& range : pending_frame_data_->frame.metadata.referenced_surfaces)
+    const std::vector<SurfaceRange> referenced_surfaces =
+        pending_frame_data_->frame.metadata.referenced_surfaces;
+    for (auto& range : referenced_surfaces) {
       surface_manager_->CommitFramesInRangeRecursively(range, predicate);
+    }
   }
 
   if (HasActiveFrame()) {
-    for (auto& range : active_frame_data_->frame.metadata.referenced_surfaces)
+    const std::vector<SurfaceRange> referenced_surfaces =
+        active_frame_data_->frame.metadata.referenced_surfaces;
+    for (auto& range : referenced_surfaces) {
       surface_manager_->CommitFramesInRangeRecursively(range, predicate);
+    }
   }
 
   // If we freed up some space in queue send ack for the last frame if it's
