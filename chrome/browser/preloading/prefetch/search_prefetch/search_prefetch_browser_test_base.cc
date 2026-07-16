@@ -76,7 +76,7 @@ void SearchPrefetchBaseBrowserTest::SetUpOnMainThread() {
   host_resolver()->AddRule(kSuggestDomain, "127.0.0.1");
 
   TemplateURLService* model =
-      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
   ASSERT_TRUE(model);
   search_test_utils::WaitForTemplateURLServiceToLoad(model);
   ASSERT_TRUE(model->loaded());
@@ -117,7 +117,7 @@ GURL SearchPrefetchBaseBrowserTest::GetCanonicalSearchURL(
     const GURL& prefetch_url) {
   GURL canonical_search_url;
   EXPECT_TRUE(HasCanonicalPreloadingOmniboxSearchURL(
-      prefetch_url, browser()->profile(), &canonical_search_url));
+      prefetch_url, browser()->GetProfile(), &canonical_search_url));
   return canonical_search_url;
 }
 
@@ -137,7 +137,7 @@ std::tuple<GURL, GURL>
 SearchPrefetchBaseBrowserTest::GetSearchPrefetchAndNonPrefetch(
     const std::string& search_terms) {
   TemplateURLService* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
 
   TemplateURLRef::SearchTermsArgs search_terms_args =
       TemplateURLRef::SearchTermsArgs(base::ASCIIToUTF16(search_terms));
@@ -166,7 +166,7 @@ void SearchPrefetchBaseBrowserTest::WaitUntilStatusChangesTo(
     const GURL& canonical_search_url,
     std::optional<SearchPrefetchStatus> status) {
   auto* search_prefetch_service =
-      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+      SearchPrefetchServiceFactory::GetForProfile(browser()->GetProfile());
   while (search_prefetch_service->GetSearchPrefetchStatusForTesting(
              canonical_search_url) != status) {
     base::RunLoop run_loop;
@@ -177,7 +177,7 @@ void SearchPrefetchBaseBrowserTest::WaitUntilStatusChangesTo(
 GURL SearchPrefetchBaseBrowserTest::GetRealPrefetchUrlForTesting(
     const GURL& canonical_search_url) {
   auto* search_prefetch_service =
-      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+      SearchPrefetchServiceFactory::GetForProfile(browser()->GetProfile());
   return search_prefetch_service->GetRealPrefetchUrlForTesting(
       canonical_search_url);
 }
@@ -218,7 +218,7 @@ void SearchPrefetchBaseBrowserTest::ClearBrowsingCacheData(
 void SearchPrefetchBaseBrowserTest::SetDSEWithURL(const GURL& url,
                                                   bool dse_allows_prefetch) {
   TemplateURLService* model =
-      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
   TemplateURLData data;
   data.SetShortName(kSearchDomain16);
   data.SetKeyword(data.short_name());
@@ -238,7 +238,7 @@ void SearchPrefetchBaseBrowserTest::SetDSEWithURL(const GURL& url,
 // doesn't change DSE at all.
 void SearchPrefetchBaseBrowserTest::UpdateButChangeNothingInDSE() {
   TemplateURLService* model =
-      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
   TemplateURLData data;
   data.SetShortName(kSuggestDomain16);
   data.SetKeyword(data.short_name());

@@ -83,7 +83,8 @@ class PrivacySandboxSettingsBrowserTest
   }
 
   privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings() {
-    return PrivacySandboxSettingsFactory::GetForProfile(browser()->profile());
+    return PrivacySandboxSettingsFactory::GetForProfile(
+        browser()->GetProfile());
   }
 
   content::WebContents* web_contents() {

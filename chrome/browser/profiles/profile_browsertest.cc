@@ -652,10 +652,10 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
                        SimpleURLLoaderUsingMainContextDuringIncognitoTeardown) {
   ASSERT_TRUE(embedded_test_server()->Start());
   Browser* incognito_browser =
-      OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
+      OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
   RunURLLoaderActiveDuringIncognitoTeardownTest(
       embedded_test_server(), incognito_browser,
-      incognito_browser->profile()
+      incognito_browser->GetProfile()
           ->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess()
           .get());
@@ -670,8 +670,8 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
   // Create a mojo::Remote to ExtensionURLLoaderFactory for the incognito
   // profile.
   Browser* incognito_browser =
-      OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
-  Profile* incognito_profile = incognito_browser->profile();
+      OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
+  Profile* incognito_profile = incognito_browser->GetProfile();
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory;
   url_loader_factory.Bind(extensions::CreateExtensionNavigationURLLoaderFactory(
       incognito_profile, false /* is_web_view_request */));
@@ -864,7 +864,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, DestroyOnOTRProfileAmongMany) {
           Profile::OTRProfileID::CreateUniqueForTesting(), true),
   };
   Browser* incognito_browser =
-      OpenURLOffTheRecord(browser()->profile(), GURL(url::kAboutBlankURL));
+      OpenURLOffTheRecord(browser()->GetProfile(), GURL(url::kAboutBlankURL));
 
   ProfileDestructionWaiter waiter[3] = {
       ProfileDestructionWaiter(otr_profile[0]),
@@ -873,7 +873,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, DestroyOnOTRProfileAmongMany) {
   };
 
   scoped_refptr<base::SequencedTaskRunner> profile_task_runner =
-      incognito_browser->profile()->GetIOTaskRunner();
+      incognito_browser->GetProfile()->GetIOTaskRunner();
 
   // Request the destruction of one OTR profile:
   ProfileDestroyer::DestroyOTRProfileWhenAppropriate(otr_profile[1]);
@@ -1041,8 +1041,9 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, TestProfileTypes) {
   base::HistogramTester tester;
   Browser* guest_browser = CreateGuestBrowser();
 
-  EXPECT_EQ(profile_metrics::BrowserProfileType::kGuest,
-            profile_metrics::GetBrowserProfileType(guest_browser->profile()));
+  EXPECT_EQ(
+      profile_metrics::BrowserProfileType::kGuest,
+      profile_metrics::GetBrowserProfileType(guest_browser->GetProfile()));
 #endif
 }
 
@@ -1053,7 +1054,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, UnderOneMinute) {
   Browser* browser = CreateGuestBrowser();
   ui_test_utils::BrowserDestroyedObserver close_observer(browser);
 
-  chrome::CloseAllBrowsersWithProfile(browser->profile());
+  chrome::CloseAllBrowsersWithProfile(browser->GetProfile());
   close_observer.Wait();
   tester.ExpectUniqueSample("Profile.Guest.OTR.Lifetime", 0, 1);
 }
@@ -1063,9 +1064,9 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, OneHour) {
   Browser* browser = CreateGuestBrowser();
   ui_test_utils::BrowserDestroyedObserver close_observer(browser);
 
-  browser->profile()->SetCreationTimeForTesting(base::Time::Now() -
-                                                base::Seconds(60) * 60);
-  chrome::CloseAllBrowsersWithProfile(browser->profile());
+  browser->GetProfile()->SetCreationTimeForTesting(base::Time::Now() -
+                                                   base::Seconds(60) * 60);
+  chrome::CloseAllBrowsersWithProfile(browser->GetProfile());
   close_observer.Wait();
   tester.ExpectUniqueSample("Profile.Guest.OTR.Lifetime", 60, 1);
 }

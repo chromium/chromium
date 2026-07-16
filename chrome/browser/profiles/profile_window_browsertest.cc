@@ -119,7 +119,7 @@ class ProfileWindowBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest,
                        OffTheRecordCountWithNoIncognitoBrowsers) {
-  EXPECT_EQ(0u, ProfileBrowserCollection::GetForProfile(browser()->profile())
+  EXPECT_EQ(0u, ProfileBrowserCollection::GetForProfile(browser()->GetProfile())
                     ->GetOffTheRecordBrowserCount());
 }
 
@@ -133,7 +133,7 @@ class ProfileWindowCountBrowserTest : public ProfileWindowBrowserTest,
   int GetWindowCount() {
     return is_incognito()
                ? static_cast<int>(ProfileBrowserCollection::GetForProfile(
-                                      browser()->profile())
+                                      browser()->GetProfile())
                                       ->GetOffTheRecordBrowserCount())
                : static_cast<int>(GlobalBrowserCollection::GetInstance()
                                       ->GetGuestBrowserCount());
@@ -145,9 +145,9 @@ class ProfileWindowCountBrowserTest : public ProfileWindowBrowserTest,
     // this is the first browser instance.
     if (!profile_) {
       new_browser = is_incognito()
-                        ? CreateIncognitoBrowser(browser()->profile())
+                        ? CreateIncognitoBrowser(browser()->GetProfile())
                         : CreateGuestBrowser();
-      profile_ = new_browser->profile();
+      profile_ = new_browser->GetProfile();
     } else {
       new_browser = CreateIncognitoBrowser(profile_);
     }
@@ -216,31 +216,31 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, OpenGuestBrowser) {
 }
 
 IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestIsOffTheRecord) {
-  EXPECT_TRUE(CreateGuestBrowser()->profile()->IsOffTheRecord());
+  EXPECT_TRUE(CreateGuestBrowser()->GetProfile()->IsOffTheRecord());
 }
 
 IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestIgnoresHistory) {
   Browser* guest_browser = CreateGuestBrowser();
 
   ui_test_utils::WaitForHistoryToLoad(HistoryServiceFactory::GetForProfile(
-      guest_browser->profile(), ServiceAccessType::EXPLICIT_ACCESS));
+      guest_browser->GetProfile(), ServiceAccessType::EXPLICIT_ACCESS));
 
   GURL test_url = chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(FILE_PATH_LITERAL("title2.html")));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(guest_browser, test_url));
-  WaitForHistoryBackendToRun(guest_browser->profile());
+  WaitForHistoryBackendToRun(guest_browser->GetProfile());
 
   std::vector<GURL> urls =
-      ui_test_utils::HistoryEnumerator(guest_browser->profile()).urls();
+      ui_test_utils::HistoryEnumerator(guest_browser->GetProfile()).urls();
 
   ASSERT_EQ(0u, urls.size());
 }
 
 IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestClearsCookies) {
   Browser* guest_browser = CreateGuestBrowser();
-  Profile* guest_profile = guest_browser->profile();
+  Profile* guest_profile = guest_browser->GetProfile();
 
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/set-cookie?cookie1"));
@@ -263,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestClearsCookies) {
 
 IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestClearsFindInPageCache) {
   Browser* guest_browser = CreateGuestBrowser();
-  Profile* guest_profile = guest_browser->profile();
+  Profile* guest_profile = guest_browser->GetProfile();
 
   std::u16string fip_text = u"first guest session search text";
   FindBarStateFactory::GetForBrowserContext(guest_profile)
@@ -300,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestCannotSignin) {
   Browser* guest_browser = CreateGuestBrowser();
 
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(guest_browser->profile());
+      IdentityManagerFactory::GetForProfile(guest_browser->GetProfile());
 
   // Guest profiles can't sign in without a IdentityManager.
   ASSERT_FALSE(identity_manager);

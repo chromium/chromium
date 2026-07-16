@@ -150,7 +150,7 @@ class PrintPreviewDialogControllerBrowserTest : public printing::PrintPreviewBro
   }
 
   void SetAlwaysOpenPdfExternallyForTests() {
-    PluginPrefs::GetForProfile(browser()->profile())
+    PluginPrefs::GetForProfile(browser()->GetProfile())
         ->SetAlwaysOpenPdfExternallyForTests(true);
   }
 
@@ -185,7 +185,7 @@ class PrintPreviewDialogControllerBrowserTest : public printing::PrintPreviewBro
     browsers_.clear();
 
     for (Browser* browser : local_browsers) {
-      BrowserManagerServiceFactory::GetForProfile(browser->profile())
+      BrowserManagerServiceFactory::GetForProfile(browser->GetProfile())
           ->DeleteBrowser(browser);
     }
 
@@ -193,8 +193,8 @@ class PrintPreviewDialogControllerBrowserTest : public printing::PrintPreviewBro
   }
 
   WebContents* CreateTestTab() {
-    auto tab = WebContents::Create(
-        WebContents::CreateParams(browser()->profile()));
+    auto tab =
+        WebContents::Create(WebContents::CreateParams(browser()->GetProfile()));
     printing::PrintViewManager::CreateForWebContents(tab.get());
     WebContents* tab_ptr = tab.get();
     test_web_contents_.push_back(std::move(tab));
@@ -203,7 +203,7 @@ class PrintPreviewDialogControllerBrowserTest : public printing::PrintPreviewBro
 
  protected:
   Browser* CreateBrowser(std::unique_ptr<BrowserWindow> window) {
-    Browser::CreateParams params(browser()->profile(), true);
+    Browser::CreateParams params(browser()->GetProfile(), true);
     params.window = window.release();
     Browser* browser = Browser::Create(params);
     browsers_.push_back(browser);

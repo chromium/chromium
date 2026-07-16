@@ -213,7 +213,7 @@ class PrerenderOmniboxUIBrowserTest : public InProcessBrowserTest,
 
   predictors::AutocompleteActionPredictor* GetAutocompleteActionPredictor() {
     return predictors::AutocompleteActionPredictorFactory::GetForProfile(
-        browser()->profile());
+        browser()->GetProfile());
   }
 
   void WaitForAutocompleteActionPredictorInitialization() {

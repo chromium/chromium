@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_P(PromotionalTabsEnabledPolicyWhatsNewTest,
     // Only the NTP should show.
     EXPECT_EQ(tab_strip->count(), 1);
     if (url != chrome::ChromeUINewTabURLAsGURL()) {
-      EXPECT_PRED2(search::IsNTPOrRelatedURL, url, browser()->profile());
+      EXPECT_PRED2(search::IsNTPOrRelatedURL, url, browser()->GetProfile());
     }
   } else {
     EXPECT_EQ(tab_strip->count(), 2);
@@ -247,7 +247,7 @@ IN_PROC_BROWSER_TEST_P(PromotionalTabsEnabledPolicyWhatsNewInvalidTest,
   // What's New has already been shown or promotional tabs are disabled.
   EXPECT_EQ(tab_strip->count(), 1);
   if (url != chrome::ChromeUINewTabURLAsGURL()) {
-    EXPECT_PRED2(search::IsNTPOrRelatedURL, url, browser()->profile());
+    EXPECT_PRED2(search::IsNTPOrRelatedURL, url, browser()->GetProfile());
   }
 }
 

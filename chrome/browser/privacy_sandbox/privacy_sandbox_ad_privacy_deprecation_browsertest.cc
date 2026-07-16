@@ -47,11 +47,11 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdPrivacyDeprecationTest,
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxAdPrivacyDeprecationTest,
                        PrefsSetToFalse) {
-  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+  EXPECT_FALSE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kPrivacySandboxM1TopicsEnabled));
-  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+  EXPECT_FALSE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kPrivacySandboxM1FledgeEnabled));
-  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+  EXPECT_FALSE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kPrivacySandboxM1AdMeasurementEnabled));
 }
 
@@ -100,11 +100,11 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdPrivacyDeprecationDisabledTest,
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxAdPrivacyDeprecationDisabledTest,
                        PrefsNotSetToFalse) {
-  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+  EXPECT_TRUE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kPrivacySandboxM1TopicsEnabled));
-  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+  EXPECT_TRUE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kPrivacySandboxM1FledgeEnabled));
-  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+  EXPECT_TRUE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kPrivacySandboxM1AdMeasurementEnabled));
 }
 

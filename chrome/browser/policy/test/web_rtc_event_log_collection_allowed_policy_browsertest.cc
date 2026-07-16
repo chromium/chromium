@@ -57,7 +57,7 @@ class WebRtcEventLogCollectionAllowedPolicyTest
   }
 
   const PrefService::Preference* GetPreference() const {
-    auto* service = user_prefs::UserPrefs::Get(browser()->profile());
+    auto* service = user_prefs::UserPrefs::Get(browser()->GetProfile());
     return service->FindPreference(prefs::kWebRtcEventLogCollectionAllowed);
   }
 

@@ -44,7 +44,7 @@ class TranslatorAPIPolicyTest : public PolicyTest {
     mock_component_manager_ =
         std::make_unique<MockComponentManager>(GetTempDir());
     on_device_translation::ServiceControllerManagerFactory::GetInstance()
-        ->Get(browser()->profile())
+        ->Get(browser()->GetProfile())
         ->SetInstallerForTesting(&adapter_);
     // Install the mock TranslateKit component.
     mock_component_manager_->InstallMockTranslateKitComponent();

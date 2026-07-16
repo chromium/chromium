@@ -73,7 +73,7 @@ IN_PROC_BROWSER_TEST_P(PolicyTestWindowManagement, DefaultSetting) {
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
 
   HostContentSettingsMap* host_content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
   EXPECT_EQ(CONTENT_SETTING_ASK,
             host_content_settings_map->GetDefaultContentSetting(
                 ContentSettingsType::WINDOW_MANAGEMENT, nullptr));
@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_P(PolicyTestWindowManagement, AllowedForUrlsSettings) {
   UpdateProviderPolicy(policies);
 
   HostContentSettingsMap* host_content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
   EXPECT_EQ(CONTENT_SETTING_ASK,
             host_content_settings_map->GetDefaultContentSetting(
                 ContentSettingsType::WINDOW_MANAGEMENT, nullptr));
@@ -149,7 +149,7 @@ IN_PROC_BROWSER_TEST_P(PolicyTestWindowManagement, BlockedForUrlsSettings) {
   UpdateProviderPolicy(policies);
 
   HostContentSettingsMap* host_content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
   EXPECT_EQ(CONTENT_SETTING_ASK,
             host_content_settings_map->GetDefaultContentSetting(
                 ContentSettingsType::WINDOW_MANAGEMENT, nullptr));

@@ -207,7 +207,7 @@ IN_PROC_BROWSER_TEST_P(RestoreOnStartupPolicyTest, RunTest) {
       if (blocked_) {
         CheckURLIsBlockedInWebContents(web_contents, expected_urls_[i]);
       } else if (expected_urls_[i] == chrome::ChromeUINewTabURLAsGURL()) {
-        EXPECT_EQ(ntp_test_utils::GetFinalNtpUrl(browser()->profile()),
+        EXPECT_EQ(ntp_test_utils::GetFinalNtpUrl(browser()->GetProfile()),
                   web_contents->GetLastCommittedURL());
       } else {
         EXPECT_EQ(expected_urls_[i], web_contents->GetLastCommittedURL());
@@ -217,10 +217,11 @@ IN_PROC_BROWSER_TEST_P(RestoreOnStartupPolicyTest, RunTest) {
   // Policy urls should be opened on a new window if the startup policy is set
   // as kPrefValueLastAndURLs.
   if (!expected_urls_in_new_window_.empty()) {
-    ASSERT_EQ(2u, ProfileBrowserCollection::GetForProfile(browser()->profile())
-                      ->GetSize());
+    ASSERT_EQ(2u,
+              ProfileBrowserCollection::GetForProfile(browser()->GetProfile())
+                  ->GetSize());
     BrowserWindowInterface* const pref_urls_opened_browser =
-        ProfileBrowserCollection::GetForProfile(browser()->profile())
+        ProfileBrowserCollection::GetForProfile(browser()->GetProfile())
             ->GetLastActiveBrowser();
     ASSERT_TRUE(pref_urls_opened_browser);
     TabStripModel* model = pref_urls_opened_browser->GetTabStripModel();

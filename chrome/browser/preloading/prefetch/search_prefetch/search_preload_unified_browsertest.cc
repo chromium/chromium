@@ -454,7 +454,7 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
     // Prepare some context.
     AutocompleteInput input(
         base::ASCIIToUTF16(prerender_query), metrics::OmniboxEventProto::BLANK,
-        ChromeAutocompleteSchemeClassifier(browser()->profile()));
+        ChromeAutocompleteSchemeClassifier(browser()->GetProfile()));
     AutocompleteController* autocomplete_controller =
         location_bar->GetOmniboxController()->autocomplete_controller();
 

@@ -615,14 +615,14 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, PRE_AddMultipleProfiles) {
                             browser1_future.GetCallback());
   EXPECT_TRUE(browser1_future.Wait());
   EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
-  EXPECT_EQ(path_profile1, browser1_future.Get()->profile()->GetPath());
+  EXPECT_EQ(path_profile1, browser1_future.Get()->GetProfile()->GetPath());
   // Open a browser window for the second profile.
   base::test::TestFuture<Browser*> browser2_future;
   profiles::SwitchToProfile(path_profile2, false,
                             browser2_future.GetCallback());
   EXPECT_TRUE(browser2_future.Wait());
   EXPECT_EQ(2U, GlobalBrowserCollection::GetInstance()->GetSize());
-  EXPECT_EQ(path_profile2, browser2_future.Get()->profile()->GetPath());
+  EXPECT_EQ(path_profile2, browser2_future.Get()->GetProfile()->GetPath());
 }
 
 IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, AddMultipleProfiles) {
@@ -1143,7 +1143,7 @@ class ProfileManagerDestroyProfileBrowserTest
   void SetUpOnMainThread() override {
     ProfileManagerBrowserTestBase::SetUpOnMainThread();
     default_profile_keepalive_ = std::make_unique<ScopedProfileKeepAlive>(
-        browser()->profile(), ProfileKeepAliveOrigin::kBrowserWindow);
+        browser()->GetProfile(), ProfileKeepAliveOrigin::kBrowserWindow);
   }
 
   void TearDownOnMainThread() override {

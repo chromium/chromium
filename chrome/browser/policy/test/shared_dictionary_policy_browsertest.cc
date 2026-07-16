@@ -51,7 +51,7 @@ class SharedDictionaryPolicyTest : public PolicyTest {
     // refresh. So we are using an incognito mode browser for testing the
     // policy.
     Browser* incognito_browser =
-        OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
+        OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         incognito_browser,
         embedded_test_server()->GetURL("/shared_dictionary/blank.html")));

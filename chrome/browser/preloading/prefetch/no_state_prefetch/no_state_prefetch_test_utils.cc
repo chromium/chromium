@@ -447,7 +447,7 @@ content::WebContents* PrerenderInProcessBrowserTest::GetActiveWebContents()
 NoStatePrefetchManager*
 PrerenderInProcessBrowserTest::GetNoStatePrefetchManager() const {
   return NoStatePrefetchManagerFactory::GetForBrowserContext(
-      current_browser()->profile());
+      current_browser()->GetProfile());
 }
 
 TestNoStatePrefetchContents*

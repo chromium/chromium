@@ -219,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlocklistIncognito) {
   // the blocklist.
 
   Browser* incognito_browser =
-      OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
+      OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
 
   ASSERT_TRUE(embedded_test_server()->Start());
 

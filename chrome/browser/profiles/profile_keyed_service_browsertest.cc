@@ -579,7 +579,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
   // Some key services are created asynchronosly. Wait util they're ready.
 #else
   Browser* guest_browser = CreateGuestBrowser();
-  Profile* guest_otr_profile = guest_browser->profile();
+  Profile* guest_otr_profile = guest_browser->GetProfile();
 #endif  // BUILDFLAG(IS_CHROMEOS)
   content::RunAllTasksUntilIdle();
 
@@ -985,7 +985,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
 #else
   Browser* guest_browser = CreateGuestBrowser();
   Profile* guest_parent_profile =
-      guest_browser->profile()->GetOriginalProfile();
+      guest_browser->GetProfile()->GetOriginalProfile();
 #endif  // BUILDFLAG(IS_CHROMEOS)
   content::RunAllTasksUntilIdle();
 

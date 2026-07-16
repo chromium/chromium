@@ -48,15 +48,15 @@ class ProfileShortcutManagerBrowserTest : public InProcessBrowserTest {
       return nullptr;
     return g_browser_process->profile_manager()
         ->GetProfileAttributesStorage()
-        .GetProfileAttributesWithPath(browser()->profile()->GetPath());
+        .GetProfileAttributesWithPath(browser()->GetProfile()->GetPath());
   }
 
   std::string ReadProfileIcon() {
     base::ScopedAllowBlockingForTesting allow_blocking;
     std::string icon;
-    EXPECT_TRUE(base::ReadFileToString(
-        profiles::internal::GetProfileIconPath(browser()->profile()->GetPath()),
-        &icon));
+    EXPECT_TRUE(base::ReadFileToString(profiles::internal::GetProfileIconPath(
+                                           browser()->GetProfile()->GetPath()),
+                                       &icon));
     EXPECT_FALSE(icon.empty());
     return icon;
   }
@@ -65,7 +65,7 @@ class ProfileShortcutManagerBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(ProfileShortcutManagerBrowserTest,
                        PRE_UpdateProfileIconOnAvatarLoaded) {
   auto* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser()->profile());
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   ASSERT_TRUE(identity_manager);
   signin::MakePrimaryAccountAvailable(identity_manager, "foo@gmail.com",
                                       signin::ConsentLevel::kSignin);
@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(ProfileShortcutManagerBrowserTest,
   ASSERT_TRUE(entry->IsGAIAPictureLoaded());
   g_browser_process->profile_manager()
       ->profile_shortcut_manager()
-      ->CreateOrUpdateProfileIcon(browser()->profile()->GetPath());
+      ->CreateOrUpdateProfileIcon(browser()->GetProfile()->GetPath());
   content::RunAllTasksUntilIdle();
 
   std::string badged_icon_with_gaia_picture;
@@ -124,9 +124,9 @@ IN_PROC_BROWSER_TEST_F(ProfileShortcutManagerBrowserTest,
   base::ScopedAllowBlockingForTesting allow_blocking;
   g_browser_process->profile_manager()
       ->profile_shortcut_manager()
-      ->CreateOrUpdateProfileIcon(browser()->profile()->GetPath());
+      ->CreateOrUpdateProfileIcon(browser()->GetProfile()->GetPath());
   content::RunAllTasksUntilIdle();
-  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+  EXPECT_FALSE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kProfileIconWin11Format));
 }
 
@@ -137,9 +137,9 @@ IN_PROC_BROWSER_TEST_F(ProfileShortcutManagerBrowserTest,
   base::ScopedAllowBlockingForTesting allow_blocking;
   g_browser_process->profile_manager()
       ->profile_shortcut_manager()
-      ->CreateOrUpdateProfileIcon(browser()->profile()->GetPath());
+      ->CreateOrUpdateProfileIcon(browser()->GetProfile()->GetPath());
   content::RunAllTasksUntilIdle();
-  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+  EXPECT_TRUE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kProfileIconWin11Format));
 }
 
@@ -171,10 +171,10 @@ IN_PROC_BROWSER_TEST_F(ProfileIconUpgradeBrowserTest,
   // Force icon to be Win10 format.
   g_browser_process->profile_manager()
       ->profile_shortcut_manager()
-      ->CreateOrUpdateProfileIcon(browser()->profile()->GetPath());
+      ->CreateOrUpdateProfileIcon(browser()->GetProfile()->GetPath());
   content::RunAllTasksUntilIdle();
   LOG(INFO) << "finished running all tasks";
-  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+  EXPECT_FALSE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kProfileIconWin11Format));
 }
 
@@ -183,6 +183,6 @@ IN_PROC_BROWSER_TEST_F(ProfileIconUpgradeBrowserTest,
 IN_PROC_BROWSER_TEST_F(ProfileIconUpgradeBrowserTest, UpgradeWin10ToWin11Test) {
   // Loading the profile should trigger a migration of the profile icon, and
   // a corresponding set of the icon format pref.
-  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+  EXPECT_TRUE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kProfileIconWin11Format));
 }

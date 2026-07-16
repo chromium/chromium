@@ -212,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, Guest) {
                                              wait_for_set_last_active_observed);
 
   ASSERT_TRUE(guest_browser);
-  ASSERT_TRUE(guest_browser->profile()->IsGuestSession());
+  ASSERT_TRUE(guest_browser->GetProfile()->IsGuestSession());
   // This should not crash.
   EXPECT_FALSE(menu()->ShouldShowEditProfileLink());
 }

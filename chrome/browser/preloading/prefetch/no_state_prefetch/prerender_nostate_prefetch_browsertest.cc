@@ -428,7 +428,7 @@ class NoStatePrefetchBrowserTest
   // Clears the specified data using BrowsingDataRemover.
   void ClearBrowsingData(Browser* browser, uint64_t remove_mask) {
     content::BrowsingDataRemover* remover =
-        browser->profile()->GetBrowsingDataRemover();
+        browser->GetProfile()->GetBrowsingDataRemover();
     content::BrowsingDataRemoverCompletionObserver observer(remover);
     remover->RemoveAndReply(
         base::Time(), base::Time::Max(), remove_mask,
@@ -960,9 +960,9 @@ IN_PROC_BROWSER_TEST_P(NoStatePrefetchBrowserSplitCacheTest,
   GURL cross_domain_url =
       src_server()->GetURL(test_utils::kSecondaryDomain, "/echoall/cache");
 
-  EXPECT_TRUE(SetCookie(current_browser()->profile(), cross_domain_url,
+  EXPECT_TRUE(SetCookie(current_browser()->GetProfile(), cross_domain_url,
                         "cookie_A=A; SameSite=Strict;"));
-  EXPECT_TRUE(SetCookie(current_browser()->profile(), cross_domain_url,
+  EXPECT_TRUE(SetCookie(current_browser()->GetProfile(), cross_domain_url,
                         "cookie_B=B; SameSite=Lax;"));
 
   std::unique_ptr<TestPrerender> test_prerender =
@@ -1010,9 +1010,9 @@ IN_PROC_BROWSER_TEST_P(
   GURL cross_domain_url =
       src_server()->GetURL(test_utils::kSecondaryDomain, kEchoAllCachePath);
 
-  EXPECT_TRUE(SetCookie(current_browser()->profile(), cross_domain_url,
+  EXPECT_TRUE(SetCookie(current_browser()->GetProfile(), cross_domain_url,
                         "cookie_A=A; SameSite=Strict;"));
-  EXPECT_TRUE(SetCookie(current_browser()->profile(), cross_domain_url,
+  EXPECT_TRUE(SetCookie(current_browser()->GetProfile(), cross_domain_url,
                         "cookie_B=B; SameSite=Lax;"));
 
   std::unique_ptr<TestPrerender> test_prerender =
@@ -1060,9 +1060,9 @@ IN_PROC_BROWSER_TEST_P(NoStatePrefetchBrowserSplitCacheTest,
   UseHttpsSrcServer();
   GURL same_domain_url = src_server()->GetURL("/echoall/cache");
 
-  EXPECT_TRUE(SetCookie(current_browser()->profile(), same_domain_url,
+  EXPECT_TRUE(SetCookie(current_browser()->GetProfile(), same_domain_url,
                         "cookie_A=A; SameSite=Strict;"));
-  EXPECT_TRUE(SetCookie(current_browser()->profile(), same_domain_url,
+  EXPECT_TRUE(SetCookie(current_browser()->GetProfile(), same_domain_url,
                         "cookie_B=B; SameSite=Lax;"));
 
   std::unique_ptr<TestPrerender> test_prerender =
@@ -1070,7 +1070,7 @@ IN_PROC_BROWSER_TEST_P(NoStatePrefetchBrowserSplitCacheTest,
 
   // Modify the stored SameSite=Strict cookie so that we can tell whether the
   // prerendered response is used by the navigation below.
-  EXPECT_TRUE(SetCookie(current_browser()->profile(), same_domain_url,
+  EXPECT_TRUE(SetCookie(current_browser()->GetProfile(), same_domain_url,
                         "cookie_A=Modified; SameSite=Strict;"));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(current_browser(), same_domain_url));

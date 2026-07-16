@@ -169,13 +169,13 @@ class ProfileResetTest : public InProcessBrowserTest,
                          public ProfileResetterTestBase {
  protected:
   void SetUpOnMainThread() override {
-    resetter_ = std::make_unique<ProfileResetter>(browser()->profile());
+    resetter_ = std::make_unique<ProfileResetter>(browser()->GetProfile());
   }
 };
 
 
 IN_PROC_BROWSER_TEST_F(ProfileResetTest, ResetCookiesAndSiteData) {
-  RemoveCookieTester tester(browser()->profile());
+  RemoveCookieTester tester(browser()->GetProfile());
   tester.AddCookie(kCookieHostname, kCookieName, kCookieValue);
   net::CanonicalCookie cookie;
   ASSERT_TRUE(tester.GetCookie(kCookieHostname, &cookie));
@@ -212,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(
 
   ChromeFileSystemAccessPermissionContext* permission_context =
       FileSystemAccessPermissionContextFactory::GetForProfile(
-          browser()->profile());
+          browser()->GetProfile());
   const url::Origin origin = url::Origin::Create(url);
   ASSERT_TRUE(permission_context->OriginHasReadAccess(origin));
   ASSERT_TRUE(permission_context->OriginHasWriteAccess(origin));
@@ -231,7 +231,7 @@ class PinnedTabsResetTest : public InProcessBrowserTest,
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    resetter_ = std::make_unique<ProfileResetter>(browser()->profile());
+    resetter_ = std::make_unique<ProfileResetter>(browser()->GetProfile());
   }
 
   content::WebContents* AddTab(const GURL& url) {
@@ -328,7 +328,7 @@ class DnsConfigResetTest : public InProcessBrowserTest,
  protected:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    resetter_ = std::make_unique<ProfileResetter>(browser()->profile());
+    resetter_ = std::make_unique<ProfileResetter>(browser()->GetProfile());
   }
 };
 

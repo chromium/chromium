@@ -178,7 +178,7 @@ class SystemFeaturesPolicyTestBase : public MixinBasedInProcessBrowserTest {
   }
 
   void InstallSWAs() {
-    ash::SystemWebAppManager::GetForTest(browser()->profile())
+    ash::SystemWebAppManager::GetForTest(browser()->GetProfile())
         ->InstallSystemAppsForTesting();
   }
 
@@ -187,7 +187,7 @@ class SystemFeaturesPolicyTestBase : public MixinBasedInProcessBrowserTest {
         web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(app_url);
     web_app_info->scope = app_url.GetWithoutFilename();
     webapps::AppId installed_app_id = web_app::test::InstallWebApp(
-        browser()->profile(), std::move(web_app_info));
+        browser()->GetProfile(), std::move(web_app_info));
     EXPECT_EQ(app_id, installed_app_id);
   }
 

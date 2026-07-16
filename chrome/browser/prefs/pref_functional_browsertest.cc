@@ -55,7 +55,7 @@ class PrefsFunctionalTest : public InProcessBrowserTest {
       Browser* browser,
       int num_downloads) {
     DownloadManager* download_manager =
-        browser->profile()->GetDownloadManager();
+        browser->GetProfile()->GetDownloadManager();
 
     content::DownloadTestObserver* downloads_observer =
          new content::DownloadTestObserverTerminal(
@@ -69,8 +69,9 @@ class PrefsFunctionalTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestDownloadDirPref) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  base::FilePath new_download_dir =
-      DownloadPrefs(browser()->profile()).DownloadPath().AppendASCII("subdir");
+  base::FilePath new_download_dir = DownloadPrefs(browser()->GetProfile())
+                                        .DownloadPath()
+                                        .AppendASCII("subdir");
   base::FilePath downloaded_pkg =
       new_download_dir.AppendASCII("a_zip_file.zip");
 
@@ -129,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestImageContentSettings) {
 IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestJavascriptEnableDisable) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+  EXPECT_TRUE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kWebKitJavascriptEnabled));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/javaScriptTitle.html")));
@@ -157,14 +158,14 @@ class LegacyBookmarkBarPrefsTest : public PrefsFunctionalTest {
 // Verify restore for bookmark bar visibility.
 IN_PROC_BROWSER_TEST_F(LegacyBookmarkBarPrefsTest,
                        TestSessionRestoreShowBookmarkBar) {
-  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+  EXPECT_FALSE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       bookmarks::prefs::kShowBookmarkBar));
   browser()->profile()->GetPrefs()->SetBoolean(
       bookmarks::prefs::kShowBookmarkBar, true);
-  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+  EXPECT_TRUE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       bookmarks::prefs::kShowBookmarkBar));
 
-  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+  EXPECT_TRUE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       bookmarks::prefs::kShowBookmarkBar));
   EXPECT_EQ(BookmarkBar::SHOW,
             BookmarkBarController::From(browser())->bookmark_bar_state());
@@ -231,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, PRE_TestHomepageNewTabpagePrefs) {
 
 // Verify setting homepage preference to newtabpage across restarts. Part2
 IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestHomepageNewTabpagePrefs) {
-  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+  EXPECT_TRUE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kHomePageIsNewTabPage));
 }
 

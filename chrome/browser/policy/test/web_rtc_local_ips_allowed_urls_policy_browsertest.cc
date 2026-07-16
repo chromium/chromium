@@ -45,7 +45,7 @@ class WebRtcLocalIpsAllowedUrlsTest : public PolicyTest,
 
 IN_PROC_BROWSER_TEST_P(WebRtcLocalIpsAllowedUrlsTest, RunTest) {
   const PrefService::Preference* pref =
-      user_prefs::UserPrefs::Get(browser()->profile())
+      user_prefs::UserPrefs::Get(browser()->GetProfile())
           ->FindPreference(prefs::kWebRtcLocalIpsAllowedUrls);
   EXPECT_TRUE(pref->IsManaged());
   const base::ListValue& allowed_urls = pref->GetValue()->GetList();

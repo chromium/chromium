@@ -3297,13 +3297,13 @@ class ContentAnalysisPrintBrowserTestBase
   void SetUpOnMainThread() override {
     SystemAccessProcessPrintBrowserTestBase::SetUpOnMainThread();
     enterprise_connectors::test::SetAnalysisConnector(
-        browser()->profile()->GetPrefs(),
+        browser()->GetProfile()->GetPrefs(),
         enterprise_connectors::AnalysisConnector::PRINT, PolicyValue());
   }
 
   void TearDownOnMainThread() override {
     enterprise_connectors::test::ClearAnalysisConnector(
-        browser()->profile()->GetPrefs(),
+        browser()->GetProfile()->GetPrefs(),
         enterprise_connectors::AnalysisConnector::PRINT);
     SystemAccessProcessPrintBrowserTestBase::TearDownOnMainThread();
   }

@@ -72,7 +72,7 @@ class PolicyTestGoogle : public SafeSearchPolicyTest,
     if (!is_incognito())
       return browser();
     if (!incognito_browser_)
-      incognito_browser_ = CreateIncognitoBrowser(browser()->profile());
+      incognito_browser_ = CreateIncognitoBrowser(browser()->GetProfile());
     return incognito_browser_;
   }
 

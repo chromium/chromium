@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(StaticStorageQuotaFeatureDisabledTest, RegularSession) {
 IN_PROC_BROWSER_TEST_F(IncognitoStaticStorageQuotaEnabledTest,
                        IncognitoSession) {
   Browser* incognito_browser =
-      OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
+      OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
   NavigateToEmptyPage(incognito_browser);
   // Expect reported quota to be exactly 10 GiB in Incognito mode with the
   // kIncognitoStaticStorageQuota feature enabled.
@@ -132,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoStaticStorageQuotaEnabledTest,
 IN_PROC_BROWSER_TEST_F(IncognitoStaticStorageQuotaDisabledTest,
                        IncognitoSession) {
   Browser* incognito_browser =
-      OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
+      OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
   NavigateToEmptyPage(incognito_browser);
   // Expect quota in Incognito to be trimmed to 1 GiB, minimal value for the
   // static quota enabled.

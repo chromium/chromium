@@ -85,7 +85,7 @@ class PrivacySandboxSettingsTopicsInteractiveTest
 
   void BlockTopic(int topic_id) {
     auto* const privacy_sandbox_service =
-        PrivacySandboxServiceFactory::GetForProfile(browser()->profile());
+        PrivacySandboxServiceFactory::GetForProfile(browser()->GetProfile());
     privacy_sandbox_service->SetTopicAllowed(
         privacy_sandbox::CanonicalTopic(browsing_topics::Topic(topic_id),
                                         /*taxonomy_version=*/2),
@@ -93,13 +93,13 @@ class PrivacySandboxSettingsTopicsInteractiveTest
   }
 
   size_t GetBlockedTopicsSize() {
-    return PrivacySandboxServiceFactory::GetForProfile(browser()->profile())
+    return PrivacySandboxServiceFactory::GetForProfile(browser()->GetProfile())
         ->GetBlockedTopics()
         .size();
   }
 
   int GetBlockedTopicsFirstTopicId() {
-    return PrivacySandboxServiceFactory::GetForProfile(browser()->profile())
+    return PrivacySandboxServiceFactory::GetForProfile(browser()->GetProfile())
         ->GetBlockedTopics()[0]
         .topic_id()
         .value();

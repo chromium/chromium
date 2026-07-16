@@ -505,7 +505,7 @@ class LoadingPredictorBrowserTest : public InProcessBrowserTest {
     preconnecting_test_server_.StartAcceptingConnections();
 
     loading_predictor_ =
-        LoadingPredictorFactory::GetForProfile(browser()->profile());
+        LoadingPredictorFactory::GetForProfile(browser()->GetProfile());
     ASSERT_TRUE(loading_predictor_);
     preconnect_manager_observer_ =
         std::make_unique<TestPreconnectManagerObserver>(
@@ -1261,7 +1261,7 @@ class LCPPTimingPredictorTestBase : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_https_test_server().Start());
 
     loading_predictor_ =
-        LoadingPredictorFactory::GetForProfile(browser()->profile());
+        LoadingPredictorFactory::GetForProfile(browser()->GetProfile());
     ASSERT_TRUE(loading_predictor_);
     loading_predictor_->EnableLCPPTesting();
     PredictorInitializer initializer(
@@ -1442,7 +1442,7 @@ class LCPPAutoPreconnectTest : public InProcessBrowserTest,
     ASSERT_TRUE(embedded_https_test_server().Start());
 
     loading_predictor_ =
-        LoadingPredictorFactory::GetForProfile(browser()->profile());
+        LoadingPredictorFactory::GetForProfile(browser()->GetProfile());
     ASSERT_TRUE(loading_predictor_);
 
     PredictorInitializer initializer(
@@ -1646,7 +1646,7 @@ class LoadingPredictorNetworkIsolationKeyBrowserTest
         network::SimpleURLLoader::Create(std::move(request),
                                          TRAFFIC_ANNOTATION_FOR_TESTS);
     simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-        browser()->profile()->GetURLLoaderFactory().get(),
+        browser()->GetProfile()->GetURLLoaderFactory().get(),
         simple_loader_helper.GetCallback());
     simple_loader_helper.WaitForCallback();
     ASSERT_TRUE(simple_loader_helper.response_body());
@@ -1872,7 +1872,7 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorNetworkIsolationKeyBrowserTest,
         network::SimpleURLLoader::Create(std::move(request),
                                          TRAFFIC_ANNOTATION_FOR_TESTS);
     simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-        browser()->profile()->GetURLLoaderFactory().get(),
+        browser()->GetProfile()->GetURLLoaderFactory().get(),
         simple_loader_helper.GetCallback());
     simple_loader_helper.WaitForCallback();
     ASSERT_TRUE(simple_loader_helper.response_body());
@@ -2220,7 +2220,7 @@ class LoadingPredictorBrowserTestWithOptimizationGuide
       const std::vector<Subresource>& predicted_subresources) {
     auto* optimization_guide_keyed_service =
         OptimizationGuideKeyedServiceFactory::GetForProfile(
-            browser()->profile());
+            browser()->GetProfile());
     optimization_guide::proto::LoadingPredictorMetadata
         loading_predictor_metadata;
     for (const auto& subresource : predicted_subresources) {
@@ -2921,8 +2921,8 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorMultiplePageBrowserTest,
   GURL first_main = embedded_test_server()->GetURL("/title1.html");
   GURL prerender = embedded_test_server()->GetURL("/title2.html");
   GURL second_main = embedded_test_server()->GetURL("/title3.html");
-  auto* loading_predictor =
-      predictors::LoadingPredictorFactory::GetForProfile(browser()->profile());
+  auto* loading_predictor = predictors::LoadingPredictorFactory::GetForProfile(
+      browser()->GetProfile());
 
   // Start navigation in the primary main frame.
   auto first_main_observer = std::make_unique<content::TestNavigationManager>(
@@ -2963,8 +2963,8 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorMultiplePageBrowserTest,
                        PrerenderActivationNotObserved) {
   GURL main_url = embedded_test_server()->GetURL("/title1.html");
   GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
-  auto* loading_predictor =
-      predictors::LoadingPredictorFactory::GetForProfile(browser()->profile());
+  auto* loading_predictor = predictors::LoadingPredictorFactory::GetForProfile(
+      browser()->GetProfile());
 
   // Navigate primary main frame.
   GetWebContents()->GetController().LoadURL(
@@ -2993,8 +2993,8 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorMultiplePageBrowserTest,
                        MAYBE_BackForwardCacheNavigationNotObserved) {
   GURL url_1 = embedded_test_server()->GetURL("a.com", "/title1.html");
   GURL url_2 = embedded_test_server()->GetURL("b.com", "/title2.html");
-  auto* loading_predictor =
-      predictors::LoadingPredictorFactory::GetForProfile(browser()->profile());
+  auto* loading_predictor = predictors::LoadingPredictorFactory::GetForProfile(
+      browser()->GetProfile());
 
   // Navigate primary main frame twice.
   ASSERT_TRUE(content::NavigateToURL(GetWebContents(), url_1));

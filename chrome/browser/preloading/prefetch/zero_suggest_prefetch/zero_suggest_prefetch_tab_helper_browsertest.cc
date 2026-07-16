@@ -59,7 +59,7 @@ class ZeroSuggestPrefetchTabHelperBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
 
     TemplateURLService* template_url_service =
-        TemplateURLServiceFactory::GetForProfile(browser()->profile());
+        TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
     auto client_ = std::make_unique<MockAutocompleteProviderClient>();
     client_->set_template_url_service(template_url_service);
 
