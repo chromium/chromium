@@ -151,5 +151,27 @@ TEST_F(ONCMergerTest, MergeToAugmented) {
   EXPECT_TRUE(test_utils::Equals(&expected_augmented, &merged));
 }
 
+TEST_F(ONCMergerTest, MergeToAugmentedWireGuardPeers) {
+  base::DictValue policy =
+      test_utils::ReadTestDictionary("managed_wireguard.onc");
+  base::DictValue expected_augmented =
+      test_utils::ReadTestDictionary("augmented_merge_wireguard.json");
+  base::DictValue merged = MergeSettingsAndPoliciesToAugmented(
+      chromeos::onc::kNetworkConfigurationSignature, &policy, nullptr, nullptr,
+      nullptr, nullptr);
+  EXPECT_TRUE(test_utils::Equals(&expected_augmented, &merged));
+}
+
+TEST_F(ONCMergerTest, MergeToAugmentedCellularApnList) {
+  base::DictValue policy =
+      test_utils::ReadTestDictionary("managed_cellular_apnlist.onc");
+  base::DictValue expected_augmented =
+      test_utils::ReadTestDictionary("augmented_merge_cellular_apnlist.json");
+  base::DictValue merged = MergeSettingsAndPoliciesToAugmented(
+      chromeos::onc::kNetworkConfigurationSignature, nullptr, &policy, nullptr,
+      nullptr, nullptr);
+  EXPECT_TRUE(test_utils::Equals(&expected_augmented, &merged));
+}
+
 }  // namespace merger
 }  // namespace ash::onc

@@ -1,0 +1,19 @@
+{
+  "GUID": "{wg-guid}",
+  "Type": "VPN",
+  "Name": "Corp WireGuard",
+  "VPN": {
+    "Type": "WireGuard",
+    "WireGuard": {
+      "PrivateKey": "policy_private_key",
+      "Peers": [
+        {
+          "PublicKey": "peer_public_key",
+          "PresharedKey": "policy_preshared_key",
+          "Endpoint": "203.0.113.1:51820",
+          "AllowedIPs": "0.0.0.0/0"
+        }
+      ]
+    }
+  }
+}

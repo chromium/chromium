@@ -37,11 +37,23 @@ const char* const kPrivatePropertyPathsForSet[] = {
 };
 
 const char* const kPrivatePropertyPathsForGet[] = {
-    "Cellular.APN",  "Cellular.APNList", "Cellular.LastGoodAPN",
-    "Cellular.ESN",  "Cellular.ICCID",   "Cellular.IMEI",
-    "Cellular.IMSI", "Cellular.MDN",     "Cellular.MEID",
-    "Cellular.MIN",  "Ethernet.EAP",     "VPN.IPsec",
-    "VPN.L2TP",      "VPN.OpenVPN",      "WiFi.EAP",
+    "Cellular.APN",
+    "Cellular.APNList",
+    "Cellular.CustomAPNList",
+    "Cellular.LastGoodAPN",
+    "Cellular.ESN",
+    "Cellular.ICCID",
+    "Cellular.IMEI",
+    "Cellular.IMSI",
+    "Cellular.MDN",
+    "Cellular.MEID",
+    "Cellular.MIN",
+    "Ethernet.EAP",
+    "VPN.IPsec",
+    "VPN.L2TP",
+    "VPN.OpenVPN",
+    "VPN.WireGuard",
+    "WiFi.EAP",
     "WiMax.EAP",
 };
 

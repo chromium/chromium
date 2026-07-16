@@ -1,0 +1,29 @@
+{
+  "GUID": "{wg-guid}",
+  "Name": {
+    "Effective": "UserPolicy",
+    "UserPolicy": "Corp WireGuard"
+  },
+  "Type": "VPN",
+  "VPN": {
+    "Type": {
+      "Effective": "UserPolicy",
+      "UserPolicy": "WireGuard"
+    },
+    "WireGuard": {
+      "Peers": {
+        "Effective": "UserPolicy",
+        "UserPolicy": [ {
+          "AllowedIPs": "0.0.0.0/0",
+          "Endpoint": "203.0.113.1:51820",
+          "PresharedKey": "FAKE_CREDENTIAL_VPaJDV9x",
+          "PublicKey": "peer_public_key"
+        } ]
+      },
+      "PrivateKey": {
+        "Effective": "UserPolicy",
+        "UserPolicy": "FAKE_CREDENTIAL_VPaJDV9x"
+      }
+    }
+  }
+}

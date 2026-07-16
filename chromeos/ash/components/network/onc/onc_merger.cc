@@ -108,6 +108,44 @@ void SetIfNotSet(base::DictValue& dict, std::string_view key, ValueType value) {
   dict.Set(key, std::move(value));
 }
 
+// Returns a clone of |value| with any credential fields (per
+// FieldIsCredential) replaced by |kFakeCredential|, recursing into lists and
+// nested dictionaries according to |signature|. MergeDictionaries only
+// recurses into dictionary fields, so credentials inside lists of
+// dictionaries (e.g. WireGuard.Peers, Cellular.APNList) must be masked here
+// before the list is copied into the augmented result.
+base::Value CloneWithMaskedCredentials(
+    const chromeos::onc::OncValueSignature* signature,
+    const base::Value& value) {
+  if (!signature) {
+    return value.Clone();
+  }
+  if (value.is_list()) {
+    base::ListValue result;
+    for (const base::Value& entry : value.GetList()) {
+      result.Append(CloneWithMaskedCredentials(
+          signature->onc_array_entry_signature, entry));
+    }
+    return base::Value(std::move(result));
+  }
+  if (value.is_dict()) {
+    base::DictValue result;
+    for (auto item : value.GetDict()) {
+      if (chromeos::onc::FieldIsCredential(*signature, item.first)) {
+        result.Set(item.first, policy_util::kFakeCredential);
+        continue;
+      }
+      const chromeos::onc::OncFieldSignature* field =
+          chromeos::onc::GetFieldSignature(*signature, item.first);
+      result.Set(item.first,
+                 CloneWithMaskedCredentials(
+                     field ? field->value_signature : nullptr, item.second));
+    }
+    return base::Value(std::move(result));
+  }
+  return value.Clone();
+}
+
 // This is the base class for merging a list of Values in parallel. See
 // MergeDictionaries function.
 class MergeListOfDictionaries {
@@ -439,7 +477,8 @@ class MergeToAugmented : public MergeToEffective {
 
     if (values.active_setting) {
       augmented_value.Set(::onc::kAugmentationActiveSetting,
-                          values.active_setting->Clone());
+                          CloneWithMaskedCredentials(field->value_signature,
+                                                     *values.active_setting));
     }
 
     if (merge_result.effective_source) {
@@ -468,11 +507,13 @@ class MergeToAugmented : public MergeToEffective {
     } else {
       if (values.user_policy) {
         augmented_value.Set(::onc::kAugmentationUserPolicy,
-                            values.user_policy->Clone());
+                            CloneWithMaskedCredentials(field->value_signature,
+                                                       *values.user_policy));
       }
       if (values.device_policy) {
         augmented_value.Set(::onc::kAugmentationDevicePolicy,
-                            values.device_policy->Clone());
+                            CloneWithMaskedCredentials(field->value_signature,
+                                                       *values.device_policy));
       }
     }
     if (values.user_setting) {

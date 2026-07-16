@@ -397,6 +397,12 @@ mojom::ApnPropertiesPtr GetApnProperties(const base::DictValue& onc_apn,
   apn->localized_name = GetString(onc_apn, ::onc::cellular_apn::kLocalizedName);
   apn->name = GetString(onc_apn, ::onc::cellular_apn::kName);
   apn->password = GetString(onc_apn, ::onc::cellular_apn::kPassword);
+
+  // We are not able to depend on and include ash::policy_util::kFakeCredential
+  // so its value is hard coded below.
+  if (apn->password.has_value() && !apn->password->empty()) {
+    apn->password = "FAKE_CREDENTIAL_VPaJDV9x";
+  }
   apn->username = GetString(onc_apn, ::onc::cellular_apn::kUsername);
   apn->attach = GetString(onc_apn, ::onc::cellular_apn::kAttach);
 

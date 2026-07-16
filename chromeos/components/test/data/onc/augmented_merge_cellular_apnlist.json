@@ -1,0 +1,27 @@
+{
+  "Cellular": {
+    "APNList": {
+      "DevicePolicy": [ {
+        "AccessPointName": "corp.apn",
+        "Password": "FAKE_CREDENTIAL_VPaJDV9x",
+        "Username": "user"
+      } ],
+      "Effective": "DevicePolicy"
+    },
+    "CustomAPNList": {
+      "DevicePolicy": [ {
+        "AccessPointName": "custom.apn",
+        "Password": "FAKE_CREDENTIAL_VPaJDV9x",
+        "Username": "user"
+      } ],
+      "Effective": "DevicePolicy"
+    },
+    "ICCID": "test-iccid"
+  },
+  "GUID": "{cell-guid}",
+  "Name": {
+    "DevicePolicy": "Corp Cellular",
+    "Effective": "DevicePolicy"
+  },
+  "Type": "Cellular"
+}

@@ -104,7 +104,6 @@ constexpr char kCellularTestApnAttach2[] = "";
 constexpr char kCellularTestApn3[] = "TEST.APN3";
 constexpr char kCellularTestApnName3[] = "Test Apn 3";
 constexpr char kCellularTestApnUsername3[] = "Test User";
-constexpr char kCellularTestApnPassword3[] = "Test Pass";
 constexpr char kCellularTestApnAttach3[] = "attach";
 
 constexpr char kTestApnCellularGuid[] = "test_apn_cellular_guid";
@@ -2242,7 +2241,7 @@ TEST_F(CrosNetworkConfigTest, CustomAPN) {
   test_apn_data3.access_point_name = kCellularTestApn3;
   test_apn_data3.name = kCellularTestApnName3;
   test_apn_data3.username = kCellularTestApnUsername3;
-  test_apn_data3.password = kCellularTestApnPassword3;
+  test_apn_data3.password = policy_util::kFakeCredential;
   test_apn_data3.attach = kCellularTestApnAttach3;
   cellular_config->apn = test_apn_data3.AsMojoApn();
   config->type_config = mojom::NetworkTypeConfigProperties::NewCellular(
@@ -2285,12 +2284,14 @@ TEST_F(CrosNetworkConfigTest,
   test_apn1.access_point_name = kCellularTestApn1;
   test_apn1.name = kCellularTestApnName1;
   test_apn1.username = kCellularTestApnUsername1;
-  test_apn1.password = kCellularTestApnPassword1;
+  // The retrieved APN should have its password automatically masked.
+  test_apn1.password = policy_util::kFakeCredential;
   test_apn1.attach = kCellularTestApnAttach1;
   test_apn1.mojo_apn_types = {mojom::ApnType::kAttach};
   test_apn1.onc_apn_types = {::onc::cellular_apn::kApnTypeAttach};
   EXPECT_TRUE(CreateCustomApn(kCellularGuid, test_apn1.AsMojoApn()));
   ASSERT_TRUE(network_metadata_store()->GetCustomApnList(kCellularGuid));
+
   {
     std::vector<TestApnData*> expected_apns({&test_apn1});
     EXPECT_TRUE(
@@ -2326,7 +2327,7 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApnList) {
   test_apn1.access_point_name = kCellularTestApn1;
   test_apn1.name = kCellularTestApnName1;
   test_apn1.username = kCellularTestApnUsername1;
-  test_apn1.password = kCellularTestApnPassword1;
+  test_apn1.password = policy_util::kFakeCredential;
   test_apn1.attach = kCellularTestApnAttach1;
   test_apn1.mojo_apn_types = {mojom::ApnType::kAttach};
   test_apn1.onc_apn_types = {::onc::cellular_apn::kApnTypeAttach};
@@ -2357,7 +2358,7 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApnList) {
   test_apn2.access_point_name = kCellularTestApn1;
   test_apn2.name = kCellularTestApnName1;
   test_apn2.username = kCellularTestApnUsername1;
-  test_apn2.password = kCellularTestApnPassword1;
+  test_apn2.password = policy_util::kFakeCredential;
   test_apn2.attach = kCellularTestApnAttach1;
   test_apn2.mojo_apn_types = {mojom::ApnType::kDefault,
                               mojom::ApnType::kAttach};
@@ -2407,7 +2408,7 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApnList) {
   test_apn3.access_point_name = kCellularTestApn1;
   test_apn3.name = kCellularTestApnName1;
   test_apn3.username = kCellularTestApnUsername1;
-  test_apn3.password = kCellularTestApnPassword1;
+  test_apn3.password = policy_util::kFakeCredential;
   test_apn3.attach = kCellularTestApnAttach1;
   test_apn3.mojo_apn_types = {mojom::ApnType::kAttach};
   test_apn3.onc_apn_types = {::onc::cellular_apn::kApnTypeAttach};
@@ -2449,7 +2450,7 @@ TEST_F(CrosNetworkConfigTest, CreateExclusivelyEnabledCustomApnList) {
   test_apn1.access_point_name = kCellularTestApn1;
   test_apn1.name = kCellularTestApnName1;
   test_apn1.username = kCellularTestApnUsername1;
-  test_apn1.password = kCellularTestApnPassword1;
+  test_apn1.password = policy_util::kFakeCredential;
   test_apn1.attach = kCellularTestApnAttach1;
   test_apn1.mojo_apn_types = {mojom::ApnType::kAttach};
   test_apn1.onc_apn_types = {::onc::cellular_apn::kApnTypeAttach};
@@ -2482,7 +2483,7 @@ TEST_F(CrosNetworkConfigTest, CreateExclusivelyEnabledCustomApnList) {
   test_apn2.access_point_name = kCellularTestApn1;
   test_apn2.name = kCellularTestApnName1;
   test_apn2.username = kCellularTestApnUsername1;
-  test_apn2.password = kCellularTestApnPassword1;
+  test_apn2.password = policy_util::kFakeCredential;
   test_apn2.attach = kCellularTestApnAttach1;
   test_apn2.mojo_apn_types = {mojom::ApnType::kDefault,
                               mojom::ApnType::kAttach};
@@ -2534,7 +2535,7 @@ TEST_F(CrosNetworkConfigTest, CreateExclusivelyEnabledCustomApnList) {
   test_apn3.access_point_name = kCellularTestApn1;
   test_apn3.name = kCellularTestApnName1;
   test_apn3.username = kCellularTestApnUsername1;
-  test_apn3.password = kCellularTestApnPassword1;
+  test_apn3.password = policy_util::kFakeCredential;
   test_apn3.attach = kCellularTestApnAttach1;
   test_apn3.mojo_apn_types = {mojom::ApnType::kAttach};
   test_apn3.onc_apn_types = {::onc::cellular_apn::kApnTypeAttach};
@@ -2580,7 +2581,7 @@ TEST_F(CrosNetworkConfigTest, RemoveCustomApnList) {
   test_apn1.access_point_name = kCellularTestApn1;
   test_apn1.name = kCellularTestApnName1;
   test_apn1.username = kCellularTestApnUsername1;
-  test_apn1.password = kCellularTestApnPassword1;
+  test_apn1.password = policy_util::kFakeCredential;
   test_apn1.attach = kCellularTestApnAttach1;
   test_apn1.mojo_apn_types = {mojom::ApnType::kDefault};
   test_apn1.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault};
@@ -2614,7 +2615,7 @@ TEST_F(CrosNetworkConfigTest, RemoveCustomApnList) {
   test_apn2.access_point_name = kCellularTestApn2;
   test_apn2.name = kCellularTestApnName2;
   test_apn2.username = kCellularTestApnUsername2;
-  test_apn2.password = kCellularTestApnPassword2;
+  test_apn2.password = policy_util::kFakeCredential;
   test_apn2.attach = "attach";
   test_apn2.mojo_apn_types = {mojom::ApnType::kAttach};
   test_apn2.onc_apn_types = {::onc::cellular_apn::kApnTypeAttach};
@@ -2666,7 +2667,7 @@ TEST_F(CrosNetworkConfigTest, RemoveCustomApnList) {
   test_apn3.access_point_name = kCellularTestApn3;
   test_apn3.name = kCellularTestApnName3;
   test_apn3.username = kCellularTestApnUsername3;
-  test_apn3.password = kCellularTestApnPassword3;
+  test_apn3.password = policy_util::kFakeCredential;
   test_apn3.attach = "";
   test_apn3.mojo_apn_types = {mojom::ApnType::kDefault};
   test_apn3.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault};
@@ -2792,7 +2793,7 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_NoListSaved) {
   test_apn1.access_point_name = kCellularTestApn1;
   test_apn1.name = kCellularTestApnName1;
   test_apn1.username = kCellularTestApnUsername1;
-  test_apn1.password = kCellularTestApnPassword1;
+  test_apn1.password = policy_util::kFakeCredential;
   test_apn1.attach = kCellularTestApnAttach1;
   test_apn1.mojo_apn_types = {mojom::ApnType::kDefault};
   test_apn1.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault};
@@ -2834,7 +2835,7 @@ TEST_F(CrosNetworkConfigTest, ModifyCustomApnList) {
   test_apn1.access_point_name = kCellularTestApn1;
   test_apn1.name = kCellularTestApnName1;
   test_apn1.username = kCellularTestApnUsername1;
-  test_apn1.password = kCellularTestApnPassword1;
+  test_apn1.password = policy_util::kFakeCredential;
   test_apn1.attach = kCellularTestApnAttach1;
   test_apn1.mojo_apn_types = {mojom::ApnType::kDefault};
   test_apn1.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault};
@@ -2862,7 +2863,7 @@ TEST_F(CrosNetworkConfigTest, ModifyCustomApnList) {
   test_apn2.access_point_name = kCellularTestApn2;
   test_apn2.name = kCellularTestApnName2;
   test_apn2.username = kCellularTestApnUsername2;
-  test_apn2.password = kCellularTestApnPassword2;
+  test_apn2.password = policy_util::kFakeCredential;
   test_apn2.attach = "attach";
   test_apn2.mojo_apn_types = {mojom::ApnType::kAttach};
   test_apn2.onc_apn_types = {::onc::cellular_apn::kApnTypeAttach};
@@ -2885,7 +2886,7 @@ TEST_F(CrosNetworkConfigTest, ModifyCustomApnList) {
   test_apn3.access_point_name = kCellularTestApn3;
   test_apn3.name = kCellularTestApnName3;
   test_apn3.username = kCellularTestApnUsername3;
-  test_apn3.password = kCellularTestApnPassword3;
+  test_apn3.password = policy_util::kFakeCredential;
   test_apn3.attach = kCellularTestApnAttach1;
   test_apn3.mojo_apn_types = {mojom::ApnType::kAttach};
   test_apn3.onc_apn_types = {::onc::cellular_apn::kApnTypeAttach};
@@ -2935,7 +2936,7 @@ TEST_F(CrosNetworkConfigTest, ModifyCustomApnList) {
   test_apn4.access_point_name = "TEST.APN4";
   test_apn4.name = "Test Apn 4";
   test_apn4.username = kCellularTestApnUsername1;
-  test_apn4.password = kCellularTestApnPassword1;
+  test_apn4.password = policy_util::kFakeCredential;
   test_apn4.attach = "";
   test_apn4.mojo_apn_types = {mojom::ApnType::kDefault};
   test_apn4.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault};
@@ -2979,7 +2980,7 @@ TEST_F(CrosNetworkConfigTest, ModifyCustomApnList) {
   test_apn5.access_point_name = "TEST.APN5";
   test_apn5.name = "Test Apn 5";
   test_apn5.username = kCellularTestApnUsername1;
-  test_apn5.password = kCellularTestApnPassword1;
+  test_apn5.password = policy_util::kFakeCredential;
   test_apn5.attach = "attach";
   test_apn5.mojo_apn_types = {mojom::ApnType::kAttach};
   test_apn5.onc_apn_types = {::onc::cellular_apn::kApnTypeAttach};
@@ -3016,7 +3017,7 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_EmptyList) {
   test_apn1.access_point_name = kCellularTestApn1;
   test_apn1.name = kCellularTestApnName1;
   test_apn1.username = kCellularTestApnUsername1;
-  test_apn1.password = kCellularTestApnPassword1;
+  test_apn1.password = policy_util::kFakeCredential;
   test_apn1.attach = kCellularTestApnAttach1;
   test_apn1.mojo_ip_type = mojom::ApnIpType::kIpv4;
   test_apn1.onc_ip_type = ::onc::cellular_apn::kIpTypeIpv4;
@@ -3053,7 +3054,7 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_EmptyList) {
   test_apn2.access_point_name = kCellularTestApn2;
   test_apn2.name = kCellularTestApnName2;
   test_apn2.username = kCellularTestApnUsername2;
-  test_apn2.password = kCellularTestApnPassword2;
+  test_apn2.password = policy_util::kFakeCredential;
   test_apn2.attach = kCellularTestApnAttach2;
   test_apn2.mojo_ip_type = mojom::ApnIpType::kIpv4Ipv6;
   test_apn2.onc_ip_type = ::onc::cellular_apn::kIpTypeIpv4Ipv6;
@@ -3103,7 +3104,7 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_InvalidGuid) {
   test_apn1.access_point_name = kCellularTestApn1;
   test_apn1.name = kCellularTestApnName1;
   test_apn1.username = kCellularTestApnUsername1;
-  test_apn1.password = kCellularTestApnPassword1;
+  test_apn1.password = policy_util::kFakeCredential;
   test_apn1.attach = kCellularTestApnAttach1;
   test_apn1.mojo_apn_types = {mojom::ApnType::kDefault,
                               mojom::ApnType::kAttach};
@@ -3147,7 +3148,7 @@ TEST_F(CrosNetworkConfigTest, RemoveCustomApn) {
   test_apn1.access_point_name = kCellularTestApn1;
   test_apn1.name = kCellularTestApnName1;
   test_apn1.username = kCellularTestApnUsername1;
-  test_apn1.password = kCellularTestApnPassword1;
+  test_apn1.password = policy_util::kFakeCredential;
   test_apn1.attach = kCellularTestApnAttach1;
   test_apn1.mojo_apn_types = {mojom::ApnType::kDefault};
   test_apn1.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault};
@@ -3156,7 +3157,7 @@ TEST_F(CrosNetworkConfigTest, RemoveCustomApn) {
   test_apn2.access_point_name = kCellularTestApn2;
   test_apn2.name = kCellularTestApnName2;
   test_apn2.username = kCellularTestApnUsername2;
-  test_apn2.password = kCellularTestApnPassword2;
+  test_apn2.password = policy_util::kFakeCredential;
   test_apn2.attach = kCellularTestApnAttach2;
   test_apn2.mojo_apn_types = {mojom::ApnType::kDefault,
                               mojom::ApnType::kAttach};
@@ -3271,7 +3272,7 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_MaxAmountAllowed) {
   test_apn1.access_point_name = kCellularTestApn1;
   test_apn1.name = kCellularTestApnName1;
   test_apn1.username = kCellularTestApnUsername1;
-  test_apn1.password = kCellularTestApnPassword1;
+  test_apn1.password = policy_util::kFakeCredential;
   test_apn1.attach = kCellularTestApnAttach1;
   test_apn1.mojo_apn_types = {mojom::ApnType::kDefault, mojom::ApnType::kAttach,
                               mojom::ApnType::kTether};
@@ -3312,7 +3313,7 @@ TEST_F(CrosNetworkConfigTest, ModifyCustomApn) {
   test_apn1.access_point_name = kCellularTestApn1;
   test_apn1.name = kCellularTestApnName1;
   test_apn1.username = kCellularTestApnUsername1;
-  test_apn1.password = kCellularTestApnPassword1;
+  test_apn1.password = policy_util::kFakeCredential;
   test_apn1.attach = kCellularTestApnAttach1;
   test_apn1.mojo_apn_types = {mojom::ApnType::kDefault,
                               mojom::ApnType::kAttach};
@@ -3343,7 +3344,7 @@ TEST_F(CrosNetworkConfigTest, ModifyCustomApn) {
   test_apn2.access_point_name = kCellularTestApn2;
   test_apn2.name = kCellularTestApnName2;
   test_apn2.username = kCellularTestApnUsername2;
-  test_apn2.password = kCellularTestApnPassword2;
+  test_apn2.password = policy_util::kFakeCredential;
   test_apn2.attach = kCellularTestApnAttach2;
   test_apn2.mojo_apn_types = {mojom::ApnType::kDefault,
                               mojom::ApnType::kAttach};
@@ -3374,7 +3375,7 @@ TEST_F(CrosNetworkConfigTest, ModifyCustomApn) {
   test_apn3.access_point_name = kCellularTestApn3;
   test_apn3.name = kCellularTestApnName3;
   test_apn3.username = kCellularTestApnUsername3;
-  test_apn3.password = kCellularTestApnPassword3;
+  test_apn3.password = policy_util::kFakeCredential;
   test_apn3.attach = kCellularTestApnAttach3;
   test_apn3.mojo_apn_types = {mojom::ApnType::kAttach};
   test_apn3.onc_apn_types = {::onc::cellular_apn::kApnTypeAttach};
@@ -3532,7 +3533,7 @@ TEST_F(CrosNetworkConfigTest,
   test_apn1.access_point_name = kCellularTestApn1;
   test_apn1.name = kCellularTestApnName1;
   test_apn1.username = kCellularTestApnUsername1;
-  test_apn1.password = kCellularTestApnPassword1;
+  test_apn1.password = policy_util::kFakeCredential;
   test_apn1.mojo_apn_types = {mojom::ApnType::kDefault};
   test_apn1.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault};
   EXPECT_TRUE(CreateCustomApn(kCellularGuid, test_apn1.AsMojoApn()));
@@ -3574,7 +3575,7 @@ TEST_F(CrosNetworkConfigTest, ApnOperationsDisallowApnModification) {
   test_apn1.access_point_name = kCellularTestApn1;
   test_apn1.name = kCellularTestApnName1;
   test_apn1.username = kCellularTestApnUsername1;
-  test_apn1.password = kCellularTestApnPassword1;
+  test_apn1.password = policy_util::kFakeCredential;
   test_apn1.mojo_apn_types = {mojom::ApnType::kDefault};
   test_apn1.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault};
   EXPECT_TRUE(CreateCustomApn(kCellularGuid, test_apn1.AsMojoApn()));
@@ -3700,7 +3701,8 @@ TEST_F(CrosNetworkConfigTest, ConnectedAPN_ApnRevampEnabled) {
   EXPECT_EQ(kCellularTestApn1, connected_apn->access_point_name);
   EXPECT_EQ(kCellularTestApnName1, connected_apn->name);
   EXPECT_EQ(kCellularTestApnUsername1, connected_apn->username);
-  EXPECT_EQ(kCellularTestApnPassword1, connected_apn->password);
+  // Expect the masked password instead of the raw one
+  EXPECT_EQ(policy_util::kFakeCredential, connected_apn->password);
   EXPECT_EQ(kCellularTestApnAttach1, connected_apn->attach);
 }
 

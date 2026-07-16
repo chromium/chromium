@@ -1,0 +1,22 @@
+{
+  "GUID": "{cell-guid}",
+  "Type": "Cellular",
+  "Name": "Corp Cellular",
+  "Cellular": {
+    "ICCID": "test-iccid",
+    "APNList": [
+      {
+        "AccessPointName": "corp.apn",
+        "Username": "user",
+        "Password": "policy_apn_password"
+      }
+    ],
+    "CustomAPNList": [
+      {
+        "AccessPointName": "custom.apn",
+        "Username": "user",
+        "Password": "policy_custom_apn_password"
+      }
+    ]
+  }
+}
