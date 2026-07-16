@@ -204,13 +204,13 @@ void OmniboxPopupViewFullWebUI::OnTabChanged(content::WebContents* contents) {
     should_focus_popup = (state->model_state.focus_state != OMNIBOX_FOCUS_NONE);
 
     // The popup must be visible (`OmniboxPopupState::kFull`) if there is an
-    // active draft or if the omnibox should have focus.
-    target_popup_state =
-        ((state->model_state.user_input_in_progress &&
-          !state->model_state.user_text.empty() && should_focus_popup) ||
-         (!state->model_state.user_input_in_progress && should_focus_popup))
-            ? OmniboxPopupState::kFull
-            : OmniboxPopupState::kNone;
+    // active draft or if the omnibox should have visible focus.
+    const bool has_non_empty_draft =
+        state->model_state.user_input_in_progress &&
+        !state->model_state.user_text.empty();
+    target_popup_state = (has_non_empty_draft || should_focus_popup)
+                             ? OmniboxPopupState::kFull
+                             : OmniboxPopupState::kNone;
   } else {
     // No saved state, so revert to default and re-evaluate popup visibility
     // based on current focus.
