@@ -140,7 +140,7 @@ TEST_F(NavigationPolicyContainerBuilderTest,
 }
 
 // Verifies that SetCrossOriginOpenerPolicy sets the cross-origin-opener-policy
-// in the builder's delivered policies.
+// in the builder's final policies.
 TEST_F(NavigationPolicyContainerBuilderTest, SetCrossOriginOpenerPolicy) {
   NavigationPolicyContainerBuilder builder(nullptr, nullptr);
 
@@ -151,12 +151,18 @@ TEST_F(NavigationPolicyContainerBuilderTest, SetCrossOriginOpenerPolicy) {
   coop.reporting_endpoint = "A";
   coop.report_only_reporting_endpoint = "B";
 
+  MockNavigationHandle navigation_handle(GURL("https://foo.test"), nullptr);
+  builder.ComputePolicies(&navigation_handle, /*initiator_policies=*/nullptr,
+                          false, network::mojom::WebSandboxFlags::kNone,
+                          /*is_credentialless=*/false,
+                          /*is_secure_context_root=*/true);
+
   builder.SetCrossOriginOpenerPolicy(coop);
 
   PolicyContainerPolicies expected_policies;
   expected_policies.cross_origin_opener_policy = coop;
 
-  EXPECT_EQ(builder.DeliveredPoliciesForTesting(), expected_policies);
+  EXPECT_EQ(builder.FinalPolicies(), expected_policies);
 }
 
 // Verifies that SetDocumentIsolationPolicy sets the document-isolation-policy

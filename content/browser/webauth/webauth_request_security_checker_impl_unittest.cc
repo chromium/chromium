@@ -468,7 +468,7 @@ TEST_F(WebAuthRequestSecurityCheckerSingleFrameTest,
       GURL("https://example.com"));
   static_cast<RenderFrameHostImpl*>(frame)
       ->policy_container_host()
-      ->AddContentSecurityPolicies(std::move(policies));
+      ->AddContentSecurityPoliciesForTesting(std::move(policies));
 
   network::TestURLLoaderFactory test_url_loader_factory;
   auto shared_url_loader_factory =
@@ -542,7 +542,7 @@ TEST_F(WebAuthRequestSecurityCheckerSingleFrameTest,
       GURL("https://example.com"));
   static_cast<RenderFrameHostImpl*>(frame)
       ->policy_container_host()
-      ->AddContentSecurityPolicies(std::move(policies));
+      ->AddContentSecurityPoliciesForTesting(std::move(policies));
 
   scoped_refptr<WebAuthRequestSecurityCheckerImpl> checker =
       static_cast<RenderFrameHostImpl*>(frame)

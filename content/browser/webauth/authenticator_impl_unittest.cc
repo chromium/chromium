@@ -10624,7 +10624,7 @@ TEST_F(AuthenticatorImplTest, CrossDeviceFallbackUrl_BlockedByCSP) {
       network::mojom::ContentSecurityPolicySource::kHTTP, GURL(kTestOrigin1));
   static_cast<RenderFrameHostImpl*>(main_rfh())
       ->policy_container_host()
-      ->AddContentSecurityPolicies(std::move(policies));
+      ->AddContentSecurityPoliciesForTesting(std::move(policies));
 
   device::VirtualCtap2Device::Config config;
   virtual_device_factory_->SetCtap2Config(config);

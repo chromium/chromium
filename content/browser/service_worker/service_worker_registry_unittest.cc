@@ -812,7 +812,8 @@ TEST_F(ServiceWorkerRegistryTest, StoreFindUpdateDeleteRegistration) {
   coep_require_corp.value =
       network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
   auto policy_container_host = base::MakeRefCounted<PolicyContainerHost>();
-  policy_container_host->set_cross_origin_embedder_policy(coep_require_corp);
+  policy_container_host->set_cross_origin_embedder_policy_for_testing(
+      coep_require_corp);
   live_version->SetPolicyContainerHost(std::move(policy_container_host));
   live_registration->SetWaitingVersion(live_version);
   live_registration->set_last_update_check(kYesterday);

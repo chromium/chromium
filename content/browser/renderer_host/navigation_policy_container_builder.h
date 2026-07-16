@@ -82,7 +82,13 @@ class CONTENT_EXPORT NavigationPolicyContainerBuilder {
 
   // Sets the cross origin opener policy of the new document.
   //
-  // This must be called before `ComputePolicies()`.
+  // This should be called before `ComputePolicies()` to set the COOP delivered
+  // in the header response. For subframes, it should be called again after the
+  // policies have been computed, to potentially inherit COOP from the top-level
+  // frame if the subframe is same-origin with the top level frame. This
+  // requires knowing the origin of the document to commit, which in turns
+  // requires having computed the sandbox flags, which happens in
+  // `ComputePolicies()`.
   void SetCrossOriginOpenerPolicy(network::CrossOriginOpenerPolicy coop);
 
   // Sets the cross origin embedder policy of the new document.

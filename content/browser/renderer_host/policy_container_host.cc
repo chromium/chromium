@@ -263,22 +263,17 @@ PolicyContainerHost::PolicyContainerHost(PolicyContainerPolicies policies)
 
 PolicyContainerHost::~PolicyContainerHost() = default;
 
-void PolicyContainerHost::AssociateWithFrameToken(
-    const blink::LocalFrameToken& frame_token,
-    int process_id) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M152);
-  frame_token_ = frame_token;
-  process_id_ = process_id;
+void PolicyContainerHost::AddContentSecurityPoliciesForTesting(
+    std::vector<network::mojom::ContentSecurityPolicyPtr>
+        content_security_policies) {
+  AddContentSecurityPolicies(std::move(content_security_policies));
 }
 
 void PolicyContainerHost::SetReferrerPolicy(
     network::mojom::ReferrerPolicy referrer_policy) {
   policies_.referrer_policy = referrer_policy;
-  if (frame_token_) {
-    if (RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromFrameToken(
-            process_id_, frame_token_.value())) {
-      rfh->DidChangeReferrerPolicy(referrer_policy);
-    }
+  if (client_) {
+    client_->DidChangeReferrerPolicy(referrer_policy);
   }
 }
 
@@ -319,6 +314,11 @@ void PolicyContainerHost::Bind(
   scoped_refptr<PolicyContainerHost> copy = this;
   policy_container_host_receiver_.set_disconnect_handler(base::BindOnce(
       [](scoped_refptr<PolicyContainerHost>) {}, std::move(copy)));
+}
+
+void PolicyContainerHost::SetClient(Client* client) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+  client_ = client;
 }
 
 }  // namespace content

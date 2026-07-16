@@ -417,11 +417,12 @@ class KeepAliveURLLoaderServiceTestBase : public RenderViewHostTestHarness {
   void AddConnectSrcCSPToRFH(const std::string& allowed_url) {
     static_cast<RenderFrameHostImpl*>(main_rfh())
         ->policy_container_host()
-        ->AddContentSecurityPolicies(network::ParseContentSecurityPolicies(
-            "connect-src " + allowed_url,
-            network::mojom::ContentSecurityPolicyType::kEnforce,
-            network::mojom::ContentSecurityPolicySource::kMeta,
-            GURL(kTestRequestUrl)));
+        ->AddContentSecurityPoliciesForTesting(
+            network::ParseContentSecurityPolicies(
+                "connect-src " + allowed_url,
+                network::mojom::ContentSecurityPolicyType::kEnforce,
+                network::mojom::ContentSecurityPolicySource::kMeta,
+                GURL(kTestRequestUrl)));
   }
 
   network::TestURLLoaderFactory& network_url_loader_factory() {

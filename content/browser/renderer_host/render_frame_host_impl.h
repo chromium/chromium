@@ -351,7 +351,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       public LockManager<storage::BucketId>::Observer,
       public base::trace_event::TraceSessionObserver,
       public BucketContext,
-      public base::PassiveMemoryConsumer {
+      public base::PassiveMemoryConsumer,
+      public PolicyContainerHost::Client {
  public:
   using BeforeUnloadExecutionMode = NavigationHandle::BeforeUnloadExecutionMode;
   using JavaScriptDialogCallback =
@@ -3038,8 +3039,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // nullptr if `this` is not the main frame of an inner frame tree.
   RenderFrameProxyHost* GetProxyToOuterDelegate();
 
-  void DidChangeReferrerPolicy(network::mojom::ReferrerPolicy referrer_policy);
-
   float GetPageScaleFactor() const;
 
 #if BUILDFLAG(IS_ANDROID)
@@ -4304,6 +4303,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // |policy_container_host| must not be nullptr.
   void SetPolicyContainerHost(
       scoped_refptr<PolicyContainerHost> policy_container_host);
+
+  // PolicyContainerHost::Client:
+  void DidChangeReferrerPolicy(
+      network::mojom::ReferrerPolicy referrer_policy) final;
 
   // Initializes |local_network_access_request_policy_|. Constructor helper.
   void InitializeLocalNetworkAccessRequestPolicy();

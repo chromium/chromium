@@ -1912,8 +1912,9 @@ TEST_F(RenderFrameHostImplTest,
       "script-src https://default.com",
       network::mojom::ContentSecurityPolicyType::kEnforce,
       network::mojom::ContentSecurityPolicySource::kHTTP, kRegularSite);
-  main_test_rfh()->policy_container_host()->AddContentSecurityPolicies(
-      std::move(csp));
+  main_test_rfh()
+      ->policy_container_host()
+      ->AddContentSecurityPoliciesForTesting(std::move(csp));
 
   PolicyContainerPolicies initiator_policies =
       main_test_rfh()->policy_container_host()->policies().Clone();

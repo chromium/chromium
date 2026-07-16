@@ -86,7 +86,8 @@ void NavigationPolicyContainerBuilder::SetIsOriginPotentiallyTrustworthy(
 
 void NavigationPolicyContainerBuilder::SetCrossOriginIsolationEnabledByDIP() {
   DCHECK(HasComputedPolicies());
-  host_->SetCrossOriginIsolationEnabledByDIP();
+  host_->SetCrossOriginIsolationEnabledByDIP(
+      base::PassKey<NavigationPolicyContainerBuilder>());
 }
 
 void NavigationPolicyContainerBuilder::SetCrossOriginIsolationKeyOverride(
@@ -97,7 +98,8 @@ void NavigationPolicyContainerBuilder::SetCrossOriginIsolationKeyOverride(
   CHECK(!SiteIsolationPolicy::UseDedicatedProcessesForAllSites() &&
         !SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled() &&
         !ShouldUseDefaultSiteInstanceGroup());
-  host_->set_cross_origin_isolation_key_override(coi_key);
+  host_->set_cross_origin_isolation_key_override(
+      coi_key, base::PassKey<NavigationPolicyContainerBuilder>());
 }
 
 void NavigationPolicyContainerBuilder::AddContentSecurityPolicy(
@@ -123,9 +125,12 @@ void NavigationPolicyContainerBuilder::SetConnectionAllowlists(
 
 void NavigationPolicyContainerBuilder::SetCrossOriginOpenerPolicy(
     network::CrossOriginOpenerPolicy coop) {
-  DCHECK(!HasComputedPolicies());
-
-  delivered_policies_.cross_origin_opener_policy = coop;
+  if (HasComputedPolicies()) {
+    host_->set_cross_origin_opener_policy(
+        coop, base::PassKey<NavigationPolicyContainerBuilder>());
+  } else {
+    delivered_policies_.cross_origin_opener_policy = std::move(coop);
+  }
 }
 
 void NavigationPolicyContainerBuilder::SetCrossOriginEmbedderPolicy(
@@ -347,7 +352,8 @@ bool NavigationPolicyContainerBuilder::HasComputedPolicies() const {
 
 void NavigationPolicyContainerBuilder::SetAllowTopNavigationWithoutUserGesture(
     bool allow_top) {
-  host_->SetCanNavigateTopWithoutUserGesture(allow_top);
+  host_->SetCanNavigateTopWithoutUserGesture(
+      allow_top, base::PassKey<NavigationPolicyContainerBuilder>());
 }
 
 void NavigationPolicyContainerBuilder::SetFinalPolicies(
