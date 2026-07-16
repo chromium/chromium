@@ -6,11 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_MENU_ITEM_ELEMENT_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 
 namespace blink {
 
-class HTMLFieldSetElement;
 class HTMLMenuListElement;
 class HTMLMenuOwnerElement;
 
@@ -27,7 +27,10 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
 
   int index() const;
 
-  bool IsCheckable() const;
+  using Checkable = HTMLFieldSetElement::Checkable;
+  Checkable CheckableState() const;
+  bool IsCheckable() const { return CheckableState() != Checkable::None; }
+
   bool checked() const;
   // This only sets `this` to checked if `IsCheckable()` is true. The return
   // value is true if this is a checkable menu item *and* a containing menu list

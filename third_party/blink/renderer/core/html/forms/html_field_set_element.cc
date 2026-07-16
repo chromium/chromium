@@ -76,10 +76,10 @@ void HTMLFieldSetElement::ParseAttribute(
   if (name == html_names::kCheckableAttr) {
     // Uncheck all child menu items, if any exist, when `checkable` content
     // attribute is removed.
-    if (new_value.empty()) {
+    if (new_value.IsNull()) {
       UpdateMenuItemCheckableExclusivity(/*checked_menu_item=*/nullptr);
     } else if (EqualIgnoringAsciiCase(new_value, keywords::kSingle) &&
-               !old_value.empty()) {
+               !old_value.IsNull()) {
       HTMLMenuItemElement* first_checked_menu_item = nullptr;
       for (HTMLMenuItemElement& menu_item :
            Traversal<HTMLMenuItemElement>::DescendantsOf(*this)) {
@@ -244,12 +244,25 @@ bool HTMLFieldSetElement::IsDisabledFormControl() const {
   return false;
 }
 
+HTMLFieldSetElement::Checkable HTMLFieldSetElement::CheckableState() const {
+  const AtomicString& attr = FastGetAttribute(html_names::kCheckableAttr);
+  if (attr.IsNull()) {
+    // missing value default
+    return Checkable::None;
+  }
+  if (EqualIgnoringAsciiCase(attr, keywords::kSingle)) {
+    // "single"
+    return Checkable::Single;
+  }
+  // "multiple"; invalid value default; empty value default
+  return Checkable::Multiple;
+}
+
 void HTMLFieldSetElement::UpdateMenuItemCheckableExclusivity(
     HTMLMenuItemElement* checked_menu_item) {
   // If `checked_menu_item` is null, then uncheck *all* child menuitems.
   DCHECK(!checked_menu_item || checked_menu_item->checked());
-  DCHECK(!EqualIgnoringAsciiCase(FastGetAttribute(html_names::kCheckableAttr),
-                                 keywords::kMultiple));
+  DCHECK_NE(CheckableState(), Checkable::Multiple);
 
   for (HTMLMenuItemElement& menu_item :
        Traversal<HTMLMenuItemElement>::DescendantsOf(*this)) {

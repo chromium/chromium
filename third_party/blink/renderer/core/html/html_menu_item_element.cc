@@ -98,11 +98,12 @@ bool HTMLMenuItemElement::HasOwnerMenuList() const {
          IsA<HTMLMenuListElement>(*owning_menu_element_);
 }
 
-bool HTMLMenuItemElement::IsCheckable() const {
-  return HasOwnerMenuList() && nearest_ancestor_field_set_ &&
-         nearest_ancestor_field_set_->FastGetAttribute(
-             html_names::kCheckableAttr) &&
-         !GetInvokedSubmenu();
+HTMLMenuItemElement::Checkable HTMLMenuItemElement::CheckableState() const {
+  if (!HasOwnerMenuList() || !nearest_ancestor_field_set_ ||
+      GetInvokedSubmenu()) {
+    return Checkable::None;
+  }
+  return nearest_ancestor_field_set_->CheckableState();
 }
 
 bool HTMLMenuItemElement::checked() const {

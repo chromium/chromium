@@ -2546,20 +2546,15 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   }
 
   if (auto* menu_item = DynamicTo<HTMLMenuItemElement>(*GetNode())) {
-    if (menu_item->IsCheckable()) {
-      DCHECK(menu_item->NearestAncestorFieldSet())
-          << "IsCheckable implies that it has a NearestAncestorFieldSet";
-      // We have to look at the parent <fieldset>'s checkable attribute to see
-      // if this menu item behaves as a radio button or a checkbox.
-      const AtomicString& checkable_type =
-          menu_item->NearestAncestorFieldSet()->FastGetAttribute(
-              html_names::kCheckableAttr);
-      if (EqualIgnoringAsciiCase(checkable_type, keywords::kSingle)) {
+    switch (menu_item->CheckableState()) {
+      case HTMLFieldSetElement::Checkable::Single:
         return ax::mojom::blink::Role::kMenuItemRadio;
-      }
-      return ax::mojom::blink::Role::kMenuItemCheckBox;
+      case HTMLFieldSetElement::Checkable::Multiple:
+        return ax::mojom::blink::Role::kMenuItemCheckBox;
+      case HTMLFieldSetElement::Checkable::None:
+        return ax::mojom::blink::Role::kMenuItem;
     }
-    return ax::mojom::blink::Role::kMenuItem;
+    NOTREACHED();
   }
 
   if (IsA<HTMLMenuBarElement>(GetNode())) {

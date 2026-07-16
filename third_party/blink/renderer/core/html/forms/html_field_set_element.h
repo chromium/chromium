@@ -46,6 +46,10 @@ class CORE_EXPORT HTMLFieldSetElement final : public HTMLFormControlElement {
   HTMLCollection* elements();
 
   bool IsDisabledFormControl() const override;
+
+  enum class Checkable : uint8_t { None, Multiple, Single };
+  Checkable CheckableState() const;
+
   void UpdateMenuItemCheckableExclusivity(HTMLMenuItemElement*);
 
  protected:
