@@ -500,7 +500,7 @@ BASE_FEATURE(kServeJavaCachedZeroSuggest, ENABLED);
 BASE_FEATURE(kResetSuggestionsScroll, DISABLED);
 
 // If enabled, the UrlBar context menu will use ListMenu instead of MenuItem.
-BASE_FEATURE(kOmniboxListMenuContextMenu, DISABLED);
+BASE_FEATURE(kOmniboxListMenuContextMenu, ENABLED);
 
 namespace android {
 static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {

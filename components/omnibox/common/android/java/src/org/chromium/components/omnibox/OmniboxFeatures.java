@@ -199,7 +199,7 @@ public class OmniboxFeatures {
     public static final CachedFlag sOmniboxListMenuContextMenu =
             newFlag(
                     OmniboxFeatureList.OMNIBOX_LIST_MENU_CONTEXT_MENU,
-                    FeatureState.ENABLED_IN_TEST);
+                    FeatureState.ENABLED_IN_PROD);
 
     public static final IntCachedFeatureParam sGeolocationRequestTimeoutMinutes =
             newIntParam(
