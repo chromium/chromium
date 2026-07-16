@@ -310,6 +310,30 @@ bool g_is_in_native_menu_loop = false;
 
 }  // namespace
 
+class HWNDMessageHandler::ScopedWndProcDepth {
+ public:
+  explicit ScopedWndProcDepth(base::WeakPtr<HWNDMessageHandler> handler)
+      : handler_(std::move(handler)) {
+    if (handler_) {
+      ++handler_->in_wnd_proc_depth_;
+    }
+  }
+
+  ~ScopedWndProcDepth() {
+    if (!handler_) {
+      return;
+    }
+    if (--handler_->in_wnd_proc_depth_ == 0 && handler_->delete_pending_) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&HWNDMessageHandler::DeleteIfStackUnwound, handler_));
+    }
+  }
+
+ private:
+  base::WeakPtr<HWNDMessageHandler> handler_;
+};
+
 // A scoping class that prevents a window from being able to redraw in response
 // to invalidations that may occur within it for the lifetime of the object.
 //
@@ -528,11 +552,19 @@ void HWNDMessageHandler::DestroyHandler() {
   if (base::FeatureList::IsEnabled(
           views::features::kDeferHWNDMessageHandlerDestruction)) {
     delete_pending_ = true;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
-                                                                  this);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&HWNDMessageHandler::DeleteIfStackUnwound,
+                                  msg_handler_weak_factory_.GetWeakPtr()));
   } else {
     delete this;
   }
+}
+
+void HWNDMessageHandler::DeleteIfStackUnwound() {
+  if (in_wnd_proc_depth_ > 0) {
+    return;
+  }
+  delete this;
 }
 
 gfx::Rect HWNDMessageHandler::GetWindowBoundsInScreen() const {
@@ -1182,6 +1214,7 @@ HICON HWNDMessageHandler::GetSmallWindowIcon() const {
 LRESULT HWNDMessageHandler::OnWndProc(UINT message,
                                       WPARAM w_param,
                                       LPARAM l_param) {
+  ScopedWndProcDepth scoped_depth(msg_handler_weak_factory_.GetWeakPtr());
   if (delete_pending_) {
     return ::DefWindowProc(hwnd(), message, w_param, l_param);
   }
