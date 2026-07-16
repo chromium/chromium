@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.media;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.provider.Browser;
 import android.view.ViewGroup;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -19,10 +20,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
+import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
+import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.TestContentProvider;
@@ -106,5 +111,24 @@ public class MediaViewerUtilsTest {
                 "allowExternalAppHandlers = false will lead to 0 menu items in CCT. "
                         + "Menu button should be hidden.",
                 activity.findViewById(R.id.menu_button_wrapper));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.OPEN_DOWNLOAD_IN_NEW_TAB)
+    public void testOpenDownloadInNewTab() {
+        Uri uri = Uri.parse(TestContentProvider.createContentUrl("google.png"));
+        Intent intent =
+                MediaViewerUtils.getMediaViewerIntent(
+                        uri,
+                        uri,
+                        "image/png",
+                        /* allowExternalAppHandlers= */ false,
+                        /* allowShareAction= */ true,
+                        InstrumentationRegistry.getInstrumentation().getContext());
+        Assert.assertEquals(
+                ChromeLauncherActivity.class.getName(), intent.getComponent().getClassName());
+        Assert.assertTrue(intent.getBooleanExtra(Browser.EXTRA_CREATE_NEW_TAB, false));
+        Assert.assertFalse(intent.hasExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE));
     }
 }

@@ -37,6 +37,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.util.ColorUtils;
 
 import java.util.Locale;
@@ -69,6 +70,17 @@ public class MediaViewerUtils {
             boolean allowExternalAppHandlers,
             boolean allowShareAction,
             Context context) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.OPEN_DOWNLOAD_IN_NEW_TAB)) {
+            Intent intent = createViewIntentForUri(contentUri, mimeType, null, null);
+            intent.setClass(context, ChromeLauncherActivity.class);
+            intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
+            intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
+            // TODO(crbug.com/531944280): Choose the right window to open the new tab. The latest
+            // used activity window will be used by default.
+            IntentUtils.addTrustedIntentExtras(intent);
+            return intent;
+        }
+
         Bitmap closeIcon =
                 BitmapFactory.decodeResource(
                         context.getResources(), R.drawable.ic_arrow_back_white_24dp);
