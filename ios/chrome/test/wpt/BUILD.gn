@@ -71,6 +71,7 @@ copy("copy_clusterfuzz_scripts") {
 
 group("ios_chrome_clusterfuzz_asan_build") {
   testonly = true
+  write_runtime_deps = "${root_out_dir}/${target_name}.runtime_deps"
   deps = [
     ":all_tests",
     ":copy_clusterfuzz_scripts",
