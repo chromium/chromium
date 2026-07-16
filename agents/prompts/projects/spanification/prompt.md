@@ -72,6 +72,7 @@ ______________________________________________________________________
 1. **Read the File:** Get the content of the file provided in the prompt.
 
 2. **Identify -WUnsafe-buffer-usage opt-outs:**
+
    - If you find `UNSAFE_TODO(...)`: Remove the macro wrapper, leaving the code
      inside.
    - If you find `#pragma allow_unsafe_buffers`: Remove the entire
@@ -82,11 +83,11 @@ ______________________________________________________________________
    with a summary stating that no unsafe code was found. You need to build all
    the builders from step 6 to confirm this.
 
-4. **Analyze, Categorize, and Plan:**
-   Before modifying or writing any code, perform a formal analysis and planning
-   phase. Modern Chromium memory safety is not just about silencing warnings
-   mechanically; it is about designing robust, clean C++ code. Reviewers will
-   reject lazy pointer-to-span wrapping at call sites. Follow this plan:
+4. **Analyze, Categorize, and Plan:** Before modifying or writing any code,
+   perform a formal analysis and planning phase. Modern Chromium memory safety
+   is not just about silencing warnings mechanically; it is about designing
+   robust, clean C++ code. Reviewers will reject lazy pointer-to-span wrapping
+   at call sites. Follow this plan:
 
    - **A. Variable Context Categorization:** Trace variables to understand their
      lifecycle:
@@ -97,22 +98,24 @@ ______________________________________________________________________
      - *Local-Variable:* The unsafe pointer or raw array is restricted to a
        single function block.
      - *Method-Argument:* The raw pointer or size parameter is part of a
-       function/method signature. This requires a *Cascading Signature Migration*
-       (see step 4-D).
+       function/method signature. This requires a *Cascading Signature
+       Migration* (see step 4-D).
    - **B. Unsafe Pattern Cluster Classification:** Classify the warning into a
      specific cluster (`operator[]` on raw pointer, `Pointer-Arithmetic`,
      `Safe-Container-Construction`, or `Unsafe-Std-Function`) to choose the
      correct refactoring pattern.
-   - **C. Architectural Preferences:** Do NOT perform a mechanical pointer-to-span
-     wrapping (e.g., wrapping `ptr` in `base::span(ptr, size)`) if you can instead
-     improve the design:
-     - Prefer safe containers like `std::array` (relying on CTAD for array bounds
-       deduction, e.g. `std::array arr = { ... }`) or `std::vector`/`base::HeapArray`.
+   - **C. Architectural Preferences:** Do NOT perform a mechanical
+     pointer-to-span wrapping (e.g., wrapping `ptr` in `base::span(ptr, size)`)
+     if you can instead improve the design:
+     - Prefer safe containers like `std::array` (relying on CTAD for array
+       bounds deduction, e.g. `std::array arr = { ... }`) or
+       `std::vector`/`base::HeapArray`.
      - Trace to the source and refactor functions to return a safe container or
        `base::span` directly.
-     - Avoid double wrapping (do not construct a `base::span` from another span).
-   - **D. Cascading Signature Migration Planning:** If a method signature changes
-     to accept `base::span`:
+     - Avoid double wrapping (do not construct a `base::span` from another
+       span).
+   - **D. Cascading Signature Migration Planning:** If a method signature
+     changes to accept `base::span`:
      1. Update both the header (`.h`) and implementation (`.cc`) files.
      2. Use search tools (like `codebase_investigator`) to locate all call sites
         and recursively migrate them.
@@ -122,6 +125,7 @@ ______________________________________________________________________
 5. **Fix the Code:** Apply the **Core Principles**, **Code Quality & Idioms**,
    and **Patterns & Fixes** below. Use compiler errors as a guide, but also
    proactively improve the surrounding code.
+
    - **Your primary goal is a robust and high-quality fix. While you should
      avoid large-scale, unrelated rewrites, you are encouraged to perform small,
      local refactorings if they result in a cleaner, safer, and more idiomatic
@@ -131,8 +135,9 @@ ______________________________________________________________________
      `strcmp`, pointer arithmetic) and fix them as well.**
 
 6. **Verify the Fix:** Ensure your changes compile. It is highly recommended to
-   verify your changes on at least one local builder (typically Linux) to catch obvious
-   errors early.
+   verify your changes on at least one local builder (typically Linux) to catch
+   obvious errors early.
+
    - **Local Verification (Linux):** Build the object file or the full target:
      ```bash
      # Build the object file (fastest):
@@ -141,7 +146,8 @@ ______________________________________________________________________
      # Or build the whole target:
      autoninja -C out/linux-rel {target_name}
      ```
-     (Use `gn outputs out/linux-rel {path/to/file.cc}` to find the object file path).
+     (Use `gn outputs out/linux-rel {path/to/file.cc}` to find the object file
+     path).
    - **Test:** If you modified a test file, run:
      ```bash
      ./tools/autotest.py ./out/linux-rel {test_file_path}
@@ -149,6 +155,7 @@ ______________________________________________________________________
      If the test fails, you must fix the test code.
 
 7. **Format, Self-Review, and Finalize:**
+
    - Run `git cl format` to clean up your changes.
    - Run a self-review of your changes against the reviewer checklist:
      1. **Header Cleanliness & Legality:** Verify you strictly followed the
@@ -156,19 +163,26 @@ ______________________________________________________________________
         obsolete header imports (like `<string.h>` or `<cstring>`) if legacy
         functions were removed.
      2. **Wrap Check:** Verify you did not introduce redundant double-wrapping.
-     3. **Naming Style:** If you migrated method arguments, ensure variable names
-        are adjusted to modern C++ style (e.g. renaming `data_ptr` to `data`).
+     3. **Naming Style:** If you migrated method arguments, ensure variable
+        names are adjusted to modern C++ style (e.g. renaming `data_ptr` to
+        `data`).
      4. **SAFETY Comments Check:** Verify that any remaining `UNSAFE_BUFFERS()`
         blocks strictly comply with the `// SAFETY:` comment guidelines.
    - Generate the output files:
      1. **`gemini_out/summary.json`:**
         - On success: `{"status": "SUCCESS", "summary": "..."}`
-        - On compilation failure: `{"status": "COMPILE_FAILED", "summary": "..."}`
+        - On compilation failure:
+          `{"status": "COMPILE_FAILED", "summary": "..."}`
         - If fix is impossible: `{"status": "UNSAFE_TODO", "summary": "..."}`
-     2. **`gemini_out/commit_message.md`:** A commit message for the change (text
-        width <= 72 chars, header line <= 50 chars).
+     2. **`gemini_out/commit_message.md`:** A commit message for the change
+        (text width \<= 72 chars, header line \<= 50 chars). Ensure the
+        description is accurate: if the CL adds `UNSAFE_BUFFERS` (e.g. for C API
+        wrappers), do not claim it "removes UNSAFE_BUFFERS". Instead, state that
+        it "resolves UNSAFE_TODOs by converting to spans where possible, and
+        using UNSAFE_BUFFERS with safety comments at boundaries."
 
 8. **Final Step:** Verify both output files exist:
+
    - `gemini_out/summary.json`
    - `gemini_out/commit_message.md`
 
@@ -215,8 +229,13 @@ unsafe in the codebase.
 - **DON'T** add new `UNSAFE_TODO(...)` or `UNSAFE_BUFFERS(...)` markers. Your
   task is to eliminate them.
 - **DON'T** use raw pointer arithmetic (`+`, `++`, `ptr[i]`).
-- **DON'T** use `reinterpret_cast`. Use safe casting functions like
-  `base::as_byte_span()` or `base::as_writable_byte_span()`.
+- **DON'T** use `reinterpret_cast` except when strictly required. Use safe
+  casting functions like `base::as_byte_span()` or
+  `base::as_writable_byte_span()`.
+- **CRITICAL: Do not perform "fake spanification"** (e.g.,
+  `base::as_byte_span(foo).data()`) if the destination API only accepts raw
+  pointers and cannot be refactored. Keep the original `reinterpret_cast` in
+  these C-boundary cases.
 - **DON'T** change program logic. **When replacing functions like `sscanf`, be
   mindful of subtle parsing behavior and ensure your replacement preserves the
   original logic.**
@@ -480,9 +499,10 @@ ______________________________________________________________________
 
 #### **9. Safe POSIX Macro & Raw Array Wrapping**
 
-- **POSIX Network Macros:** Low-level POSIX macros (e.g., `IN6_IS_ADDR_LOOPBACK`,
-  `IN6_IS_ADDR_LINKLOCAL`) should not be wrapped in unsafe buffers. Instead,
-  instantiate a safe `net::IPAddress` object from raw address bytes.
+- **POSIX Network Macros:** Low-level POSIX macros (e.g.,
+  `IN6_IS_ADDR_LOOPBACK`, `IN6_IS_ADDR_LINKLOCAL`) should not be wrapped in
+  unsafe buffers. Instead, instantiate a safe `net::IPAddress` object from raw
+  address bytes.
 
   ```cpp
   // Before
