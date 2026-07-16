@@ -38,6 +38,7 @@
 #include "components/autofill/core/browser/integrators/at_memory/mock_at_memory_query_service.h"
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/payments/mock_iban_access_manager.h"
+#include "components/autofill/core/browser/payments/test/mock_multiple_request_payments_network_interface.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_test_helpers.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -206,7 +207,8 @@ class AtMemoryManagerTest : public Test,
 
  protected:
   test::AutofillUnitTestEnvironment autofill_test_environment_;
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   raw_ptr<MockAtMemoryQueryService> mock_query_service_ptr_ = nullptr;
   AutofillWebDataServiceTestHelper webdata_helper_{
       std::make_unique<EntityTable>()};
@@ -596,6 +598,9 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_AttributeSuccess) {
                          passport_attribute->GetCompleteRawInfo(),
                          FillingProduct::kAtMemory, _));
 
+  int64_t initial_use_count = passport.use_count();
+  task_environment_.FastForwardBy(base::Seconds(60));
+
   manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill, form_id,
                                       field_id, final_suggestions[0]);
 
@@ -603,6 +608,12 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_AttributeSuccess) {
                                       true, 1);
   histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionFilled",
                                       true, 1);
+
+  base::optional_ref<const EntityInstance> updated_entity =
+      autofill_client().GetEntityDataManager()->GetEntityInstance(
+          passport.guid());
+  ASSERT_TRUE(updated_entity.has_value());
+  EXPECT_EQ(updated_entity->use_count(), initial_use_count + 1);
 }
 
 // Tests that when filling a full entity (e.g. Passport Full), the manager
@@ -667,6 +678,9 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_EntitySuccess) {
                          mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
                          expected_primary_value, FillingProduct::kAtMemory, _));
 
+  int64_t initial_use_count = passport.use_count();
+  task_environment_.FastForwardBy(base::Seconds(60));
+
   manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill, form_id,
                                       field_id, final_suggestions[0]);
 
@@ -676,6 +690,12 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_EntitySuccess) {
                                       true, 1);
   histogram_tester.ExpectTotalCount(
       "Autofill.AtMemory.Funnel.TimeToFetchUnmasked", 1);
+
+  base::optional_ref<const EntityInstance> updated_entity =
+      autofill_client().GetEntityDataManager()->GetEntityInstance(
+          passport.guid());
+  ASSERT_TRUE(updated_entity.has_value());
+  EXPECT_EQ(updated_entity->use_count(), initial_use_count + 1);
 }
 
 // Tests that when fetching the unmasked entity instance fails, the manager
@@ -738,6 +758,76 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_FetchFailed) {
                                       false, 1);
   histogram_tester.ExpectTotalCount(
       "Autofill.AtMemory.Funnel.TimeToFetchUnmasked", 0);
+}
+
+// Tests that when filling a sensitive Credit Card, the manager fetches the
+// unmasked card from CreditCardAccessManager, fills it, and records card use.
+TEST_F(AtMemoryManagerTest, FillCreditCard_Success) {
+  base::HistogramTester histogram_tester;
+  CreditCard card = test::GetCreditCard();
+  card.set_guid(test::MakeGuid(1));
+  autofill_client()
+      .GetPersonalDataManager()
+      .payments_data_manager()
+      .AddCreditCard(card);
+
+  autofill_client()
+      .GetPaymentsAutofillClient()
+      ->set_multiple_request_payments_network_interface(
+          std::make_unique<
+              payments::MockMultipleRequestPaymentsNetworkInterface>(
+              autofill_client().GetURLLoaderFactory(),
+              *autofill_client().GetIdentityManager()));
+
+  const CreditCard* added_card = autofill_client()
+                                     .GetPersonalDataManager()
+                                     .payments_data_manager()
+                                     .GetCreditCardByGUID(test::MakeGuid(1));
+  ASSERT_TRUE(added_card);
+  size_t initial_use_count = added_card->usage_history().use_count();
+
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
+                         AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
+                         /*is_context_secure=*/true, update_callback_.Get(),
+                         ukm::kInvalidSourceId);
+
+  std::vector<Suggestion> final_suggestions;
+  {
+    MemorySearchResult entry(MemoryDataType::kCreditCardNumber, u"Card",
+                             u"some text");
+    entry.identifier = card.guid();
+    entry.sources = {MemoryEntrySource(MemoryEntrySourceType::kAutofill)};
+    MockQueryResultsAndExpectCallback(u"query",
+                                      MemorySearchStatus::kFinalResponseSuccess,
+                                      {entry}, final_suggestions);
+  }
+  manager().OnSearchSubmitted(u"query");
+  ASSERT_EQ(final_suggestions.size(), 1u);
+
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewField(mojom::ActionPersistence::kFill,
+                         mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
+                         card.number(), FillingProduct::kAtMemory, _));
+
+  task_environment_.FastForwardBy(base::Seconds(60));
+
+  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill, form_id,
+                                      field_id, final_suggestions[0]);
+
+  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
+                                      true, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionFilled",
+                                      true, 1);
+
+  const CreditCard* updated_card = autofill_client()
+                                       .GetPersonalDataManager()
+                                       .payments_data_manager()
+                                       .GetCreditCardByGUID(test::MakeGuid(1));
+  ASSERT_TRUE(updated_card);
+  EXPECT_EQ(updated_card->usage_history().use_count(), initial_use_count + 1);
 }
 
 // Tests that SPII entries and metadata are filtered out from the search
@@ -942,6 +1032,20 @@ TEST_F(AtMemoryManagerTest, KeepsSpiiInSecureContext) {
 TEST_F(AtMemoryManagerTest, FillNonSensitiveData_Success) {
   base::HistogramTester histogram_tester;
   auto [form_id, field_id] = SeeForm();
+
+  AutofillProfile profile = test::GetFullProfile();
+  profile.set_guid(test::MakeGuid(1));
+  autofill_client().GetPersonalDataManager().address_data_manager().AddProfile(
+      profile);
+
+  const AutofillProfile* added_profile =
+      autofill_client()
+          .GetPersonalDataManager()
+          .address_data_manager()
+          .GetProfileByGUID(test::MakeGuid(1));
+  ASSERT_TRUE(added_profile);
+  uint64_t initial_use_count = added_profile->usage_history().use_count();
+
   manager().OnPopupShown(form_id, field_id,
                          AutofillSuggestionTriggerSource::kAtMemory,
                          std::nullopt,
@@ -951,6 +1055,7 @@ TEST_F(AtMemoryManagerTest, FillNonSensitiveData_Success) {
   std::vector<Suggestion> final_suggestions;
   {
     MemorySearchResult entry(MemoryDataType::kNameFull, u"Name", u"John Doe");
+    entry.identifier = profile.guid();
     MockQueryResultsAndExpectCallback(u"query",
                                       MemorySearchStatus::kFinalResponseSuccess,
                                       {entry}, final_suggestions);
@@ -965,6 +1070,8 @@ TEST_F(AtMemoryManagerTest, FillNonSensitiveData_Success) {
                          mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
                          expected_value, FillingProduct::kAtMemory, _));
 
+  task_environment_.FastForwardBy(base::Seconds(60));
+
   manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill, form_id,
                                       field_id, final_suggestions[0]);
 
@@ -972,6 +1079,14 @@ TEST_F(AtMemoryManagerTest, FillNonSensitiveData_Success) {
                                       true, 1);
   histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionFilled",
                                       true, 1);
+
+  const AutofillProfile* updated_profile =
+      autofill_client()
+          .GetPersonalDataManager()
+          .address_data_manager()
+          .GetProfileByGUID(test::MakeGuid(1));
+  EXPECT_EQ(updated_profile->usage_history().use_count(),
+            initial_use_count + 1);
 }
 
 // Tests that funnel metrics are recorded correctly even if multiple are shown.
@@ -1452,6 +1567,122 @@ TEST_F(AtMemoryManagerTest, OnPopupShown_PassesSignaturesToMetricsRecorder) {
             form_structure->form_signature());
   EXPECT_EQ(test_api(*recorder).field_signature(),
             autofill_field->GetFieldSignature());
+}
+
+TEST_F(AtMemoryManagerTest, FillNonSensitiveCreditCard) {
+  base::HistogramTester histogram_tester;
+  CreditCard card = test::GetCreditCard();
+  card.set_guid(test::MakeGuid(1));
+  autofill_client()
+      .GetPersonalDataManager()
+      .payments_data_manager()
+      .AddCreditCard(card);
+
+  const CreditCard* added_card = autofill_client()
+                                     .GetPersonalDataManager()
+                                     .payments_data_manager()
+                                     .GetCreditCardByGUID(test::MakeGuid(1));
+  ASSERT_TRUE(added_card);
+  size_t initial_use_count = added_card->usage_history().use_count();
+
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
+                         AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
+                         /*is_context_secure=*/true, update_callback_.Get(),
+                         ukm::kInvalidSourceId);
+
+  std::vector<Suggestion> final_suggestions;
+  {
+    MemorySearchResult entry(MemoryDataType::kCreditCardNameOnCard, u"Name",
+                             card.GetRawInfo(CREDIT_CARD_NAME_FULL));
+    entry.identifier = card.guid();
+    entry.sources = {MemoryEntrySource(MemoryEntrySourceType::kAutofill)};
+    MockQueryResultsAndExpectCallback(u"query",
+                                      MemorySearchStatus::kFinalResponseSuccess,
+                                      {entry}, final_suggestions);
+  }
+  manager().OnSearchSubmitted(u"query");
+  ASSERT_EQ(final_suggestions.size(), 1u);
+
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewField(mojom::ActionPersistence::kFill,
+                         mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
+                         card.GetRawInfo(CREDIT_CARD_NAME_FULL),
+                         FillingProduct::kAtMemory, _));
+
+  task_environment_.FastForwardBy(base::Seconds(60));
+
+  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill, form_id,
+                                      field_id, final_suggestions[0]);
+
+  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
+                                      true, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionFilled",
+                                      true, 1);
+
+  const CreditCard* updated_card = autofill_client()
+                                       .GetPersonalDataManager()
+                                       .payments_data_manager()
+                                       .GetCreditCardByGUID(test::MakeGuid(1));
+  ASSERT_TRUE(updated_card);
+  EXPECT_EQ(updated_card->usage_history().use_count(), initial_use_count + 1);
+}
+
+TEST_F(AtMemoryManagerTest, FillNonSensitiveAutofillAi) {
+  base::HistogramTester histogram_tester;
+  EntityInstance passport = test::GetPassportEntityInstanceWithRandomGuid();
+  AddOrUpdateEntityInstance(passport);
+
+  base::optional_ref<const EntityInstance> added_passport =
+      autofill_client().GetEntityDataManager()->GetEntityInstance(
+          passport.guid());
+  ASSERT_TRUE(added_passport.has_value());
+  int64_t initial_use_count = added_passport->use_count();
+
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
+                         AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
+                         /*is_context_secure=*/true, update_callback_.Get(),
+                         ukm::kInvalidSourceId);
+
+  std::vector<Suggestion> final_suggestions;
+  {
+    MemorySearchResult entry(MemoryDataType::kPassportName, u"Passport Name",
+                             u"John Doe");
+    entry.identifier = passport.guid().value();
+    entry.sources = {MemoryEntrySource(MemoryEntrySourceType::kAutofill)};
+    MockQueryResultsAndExpectCallback(u"query",
+                                      MemorySearchStatus::kFinalResponseSuccess,
+                                      {entry}, final_suggestions);
+  }
+  manager().OnSearchSubmitted(u"query");
+  ASSERT_EQ(final_suggestions.size(), 1u);
+
+  std::u16string expected_value = u"John Doe";
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewField(mojom::ActionPersistence::kFill,
+                         mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
+                         expected_value, FillingProduct::kAtMemory, _));
+
+  task_environment_.FastForwardBy(base::Seconds(60));
+
+  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill, form_id,
+                                      field_id, final_suggestions[0]);
+
+  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
+                                      true, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionFilled",
+                                      true, 1);
+
+  base::optional_ref<const EntityInstance> updated_passport =
+      autofill_client().GetEntityDataManager()->GetEntityInstance(
+          passport.guid());
+  ASSERT_TRUE(updated_passport.has_value());
+  EXPECT_EQ(updated_passport->use_count(), initial_use_count + 1);
 }
 
 enum class SourceScenario { kNoSources, kAutofillOnly, kGmailOnly, kMixed };

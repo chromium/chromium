@@ -93,6 +93,20 @@ class AtMemoryManager {
       base::optional_ref<const AutofillSuggestionDelegate::SuggestionMetadata>
           metadata);
 
+  // Records the use of the address profile identified by the payload's
+  // identifier.
+  void RecordAddressProfileUse(
+      const Suggestion::AtMemoryPayload::Identifier& identifier);
+
+  // Records the use of the credit card identified by the payload's identifier.
+  void RecordCreditCardUse(
+      const Suggestion::AtMemoryPayload::Identifier& identifier);
+
+  // Records the use of the Autofill AI entity identified by the payload's
+  // identifier.
+  void RecordAutofillAiEntityUse(
+      const Suggestion::AtMemoryPayload::Identifier& identifier);
+
   // Returns true if a search is currently in progress.
   bool IsSearching() const;
 

@@ -105,23 +105,6 @@ Suggestion::AtMemoryPayload::Identifier GetPayloadIdentifier(
     case MemoryDataType::kDriversLicenseNumber:
     case MemoryDataType::kNationalIdCardNumber:
     case MemoryDataType::kKnownTravelerNumberNumber:
-    case MemoryDataType::kRedressNumberNumber: {
-      return EntityInstance::EntityId(std::get<std::string>(identifier));
-    }
-    case MemoryDataType::kCreditCardNumber:
-    case MemoryDataType::kCreditCardSecurityCode:
-    case MemoryDataType::kNameFull:
-    case MemoryDataType::kAddressFull:
-    case MemoryDataType::kAddressStreetAddress:
-    case MemoryDataType::kAddressCity:
-    case MemoryDataType::kAddressState:
-    case MemoryDataType::kAddressZip:
-    case MemoryDataType::kAddressCountry:
-    case MemoryDataType::kPhone:
-    case MemoryDataType::kEmail:
-    case MemoryDataType::kCompanyName: {
-      return std::get<std::string>(identifier);
-    }
     case MemoryDataType::kVehicle:
     case MemoryDataType::kVehicleMake:
     case MemoryDataType::kVehicleModel:
@@ -157,6 +140,7 @@ Suggestion::AtMemoryPayload::Identifier GetPayloadIdentifier(
     case MemoryDataType::kNationalIdCardIssueDate:
     case MemoryDataType::kNationalIdCardExpirationDate:
     case MemoryDataType::kRedressNumberName:
+    case MemoryDataType::kRedressNumberNumber:
     case MemoryDataType::kKnownTravelerNumberName:
     case MemoryDataType::kKnownTravelerNumberExpirationDate:
     case MemoryDataType::kDriversLicenseName:
@@ -170,9 +154,25 @@ Suggestion::AtMemoryPayload::Identifier GetPayloadIdentifier(
     case MemoryDataType::kOrderMerchantName:
     case MemoryDataType::kOrderMerchantDomain:
     case MemoryDataType::kOrderProductNames:
-    case MemoryDataType::kOrderGrandTotal:
+    case MemoryDataType::kOrderGrandTotal: {
+      return EntityInstance::EntityId(std::get<std::string>(identifier));
+    }
+    case MemoryDataType::kCreditCardNumber:
+    case MemoryDataType::kCreditCardSecurityCode:
     case MemoryDataType::kCreditCardExpirationDate:
     case MemoryDataType::kCreditCardNameOnCard:
+    case MemoryDataType::kNameFull:
+    case MemoryDataType::kAddressFull:
+    case MemoryDataType::kAddressStreetAddress:
+    case MemoryDataType::kAddressCity:
+    case MemoryDataType::kAddressState:
+    case MemoryDataType::kAddressZip:
+    case MemoryDataType::kAddressCountry:
+    case MemoryDataType::kPhone:
+    case MemoryDataType::kEmail:
+    case MemoryDataType::kCompanyName: {
+      return std::get<std::string>(identifier);
+    }
     case MemoryDataType::kCreditCardNickname:
     case MemoryDataType::kIbanNickname:
     case MemoryDataType::kUnknown:
@@ -716,6 +716,7 @@ void AtMemoryManager::FillSearchResult(
     case MemoryDataType::kPhone:
     case MemoryDataType::kEmail:
     case MemoryDataType::kCompanyName: {
+      RecordAddressProfileUse(payload.identifier);
       if (metrics) {
         metrics->MarkFilled();
       }
@@ -727,7 +728,20 @@ void AtMemoryManager::FillSearchResult(
       break;
     }
 
-    case MemoryDataType::kIbanNickname:
+    case MemoryDataType::kCreditCardExpirationDate:
+    case MemoryDataType::kCreditCardNameOnCard: {
+      RecordCreditCardUse(payload.identifier);
+      if (metrics) {
+        metrics->MarkFilled();
+      }
+      owner_->FillOrPreviewField(
+          mojom::ActionPersistence::kFill,
+          mojom::FieldActionType::kReplaceAtMemoryTrigger, form_id, field_id,
+          payload.value, FillingProduct::kAtMemory,
+          /*field_type_used=*/std::nullopt);
+      break;
+    }
+
     case MemoryDataType::kVehicle:
     case MemoryDataType::kVehicleMake:
     case MemoryDataType::kVehicleModel:
@@ -776,10 +790,21 @@ void AtMemoryManager::FillSearchResult(
     case MemoryDataType::kOrderMerchantName:
     case MemoryDataType::kOrderMerchantDomain:
     case MemoryDataType::kOrderProductNames:
-    case MemoryDataType::kOrderGrandTotal:
-    case MemoryDataType::kCreditCardExpirationDate:
-    case MemoryDataType::kCreditCardNameOnCard:
+    case MemoryDataType::kOrderGrandTotal: {
+      RecordAutofillAiEntityUse(payload.identifier);
+      if (metrics) {
+        metrics->MarkFilled();
+      }
+      owner_->FillOrPreviewField(
+          mojom::ActionPersistence::kFill,
+          mojom::FieldActionType::kReplaceAtMemoryTrigger, form_id, field_id,
+          payload.value, FillingProduct::kAtMemory,
+          /*field_type_used=*/std::nullopt);
+      break;
+    }
+
     case MemoryDataType::kCreditCardNickname:
+    case MemoryDataType::kIbanNickname:
     case MemoryDataType::kUnknown: {
       if (metrics) {
         metrics->MarkFilled();
@@ -790,6 +815,46 @@ void AtMemoryManager::FillSearchResult(
           payload.value, FillingProduct::kAtMemory,
           /*field_type_used=*/std::nullopt);
       break;
+    }
+  }
+}
+
+void AtMemoryManager::RecordAddressProfileUse(
+    const Suggestion::AtMemoryPayload::Identifier& identifier) {
+  const std::string* guid = std::get_if<std::string>(&identifier);
+  if (!guid || guid->empty()) {
+    return;
+  }
+
+  AddressDataManager& adm =
+      owner_->client().GetPersonalDataManager().address_data_manager();
+  if (const AutofillProfile* profile = adm.GetProfileByGUID(*guid)) {
+    adm.RecordUseOf(*profile);
+  }
+}
+
+void AtMemoryManager::RecordCreditCardUse(
+    const Suggestion::AtMemoryPayload::Identifier& identifier) {
+  const std::string* guid = std::get_if<std::string>(&identifier);
+  if (!guid || guid->empty()) {
+    return;
+  }
+
+  PaymentsDataManager& pdm =
+      owner_->client().GetPersonalDataManager().payments_data_manager();
+  if (const CreditCard* credit_card = pdm.GetCreditCardByGUID(*guid)) {
+    pdm.RecordUseOfCard(*credit_card);
+  }
+}
+
+void AtMemoryManager::RecordAutofillAiEntityUse(
+    const Suggestion::AtMemoryPayload::Identifier& identifier) {
+  if (EntityDataManager* edm = owner_->client().GetEntityDataManager()) {
+    if (const EntityInstance::EntityId* entity_id =
+            std::get_if<EntityInstance::EntityId>(&identifier)) {
+      if (!entity_id->value().empty()) {
+        edm->RecordEntityUsed(*entity_id, base::Time::Now());
+      }
     }
   }
 }
@@ -994,6 +1059,7 @@ void AtMemoryManager::FillIban(
              const FormGlobalId& form_id, const FieldGlobalId& field_id,
              const Suggestion& suggestion,
              std::unique_ptr<AtMemoryMetricsRecorder> metrics,
+             std::variant<Iban::Guid, Iban::InstrumentId> identifier,
              const std::u16string& unmasked_value) {
             if (!manager) {
               return;
@@ -1002,6 +1068,23 @@ void AtMemoryManager::FillIban(
               metrics->OnFetchPiiCompleted();
               metrics->MarkFilled();
             }
+            PaymentsDataManager& pdm = manager->owner_->client()
+                                           .GetPersonalDataManager()
+                                           .payments_data_manager();
+            if (const Iban* iban = std::visit(
+                    absl::Overload{
+                        [&pdm](const Iban::Guid& guid) {
+                          return pdm.GetIbanByGUID(guid.value());
+                        },
+                        [&pdm](const Iban::InstrumentId& instrument_id) {
+                          return pdm.GetIbanByInstrumentId(
+                              instrument_id.value());
+                        },
+                    },
+                    identifier)) {
+              Iban mutable_iban = *iban;
+              pdm.RecordUseOfIban(mutable_iban);
+            }
             manager->owner_->FillOrPreviewField(
                 mojom::ActionPersistence::kFill,
                 mojom::FieldActionType::kReplaceAtMemoryTrigger, form_id,
@@ -1009,7 +1092,7 @@ void AtMemoryManager::FillIban(
                 /*field_type_used=*/std::nullopt);
           },
           fill_weak_ptr_factory_.GetWeakPtr(), form_id, field_id, suggestion,
-          std::move(metrics)));
+          std::move(metrics), identifier));
 }
 
 void AtMemoryManager::FillCreditCard(
@@ -1051,6 +1134,10 @@ void AtMemoryManager::FillCreditCard(
               metrics->OnFetchPiiCompleted();
               metrics->MarkFilled();
             }
+            manager->owner_->client()
+                .GetPersonalDataManager()
+                .payments_data_manager()
+                .RecordUseOfCard(fetched_card);
             const Suggestion::AtMemoryPayload& payload =
                 suggestion.GetPayload<Suggestion::AtMemoryPayload>();
             std::u16string fill_value;
@@ -1179,6 +1266,10 @@ void AtMemoryManager::OnAutofillAiFetched(
   if (metrics) {
     metrics->OnFetchPiiCompleted();
     metrics->MarkFilled();
+  }
+
+  if (EntityDataManager* edm = owner_->client().GetEntityDataManager()) {
+    edm->RecordEntityUsed(fetched_entity.guid(), base::Time::Now());
   }
 
   owner_->FillOrPreviewField(
