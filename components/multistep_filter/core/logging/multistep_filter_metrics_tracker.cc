@@ -4,25 +4,82 @@
 
 #include "components/multistep_filter/core/logging/multistep_filter_metrics_tracker.h"
 
+#include "base/functional/function_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/multistep_filter/core/data_models/filter_navigation_metadata.h"
 #include "components/multistep_filter/core/data_models/suggestion_user_decision.h"
 #include "components/multistep_filter/core/logging/multistep_filter_metrics.h"
+#include "components/multistep_filter/core/prefs/multistep_filter_retention_prefs.h"
 
 namespace multistep_filter {
 
 namespace {
 
+// A struct containing the retention slices that should be logged for a given
+// snapshot.
+struct RetentionSlices {
+  bool first_impression = false;
+  bool accepted_last_time = false;
+  bool rejected_last_time = false;
+  bool accepted_at_least_once = false;
+  bool saw_cues_but_never_accepted = false;
+
+  // Calls the given callback for each retention slice that should be logged.
+  void ForEachActive(base::FunctionRef<void(std::string_view)> callback) const {
+    if (first_impression) {
+      callback(kRetentionSliceFirstImpression);
+    }
+    if (accepted_last_time) {
+      callback(kRetentionSliceAcceptedLastTime);
+    }
+    if (rejected_last_time) {
+      callback(kRetentionSliceRejectedLastTime);
+    }
+    if (accepted_at_least_once) {
+      callback(kRetentionSliceAcceptedAtLeastOnce);
+    }
+    if (saw_cues_but_never_accepted) {
+      callback(kRetentionSliceSawCuesButNeverAccepted);
+    }
+  }
+};
+
+RetentionSlices GetRetentionSlices(const RetentionStateSnapshot& snapshot) {
+  RetentionSlices slices;
+  if (snapshot.suggestion_impressions == 0) {
+    slices.first_impression = true;
+    return slices;
+  }
+  if (snapshot.is_last_suggestion_accepted) {
+    slices.accepted_last_time = true;
+  } else {
+    slices.rejected_last_time = true;
+  }
+  if (snapshot.suggestion_acceptances > 0) {
+    slices.accepted_at_least_once = true;
+  } else {
+    slices.saw_cues_but_never_accepted = true;
+  }
+  return slices;
+}
+
 void LogAcceptanceHistogram(std::string_view base_histogram,
                             std::string_view task_type,
-                            SuggestionUserDecision decision) {
+                            SuggestionUserDecision decision,
+                            const RetentionStateSnapshot& snapshot) {
   base::UmaHistogramEnumeration(std::string(base_histogram), decision);
   base::UmaHistogramEnumeration(
       base::StrCat(
           {base_histogram, kMultistepFilterByTaskHistogramPrefix, task_type}),
       decision);
+  GetRetentionSlices(snapshot).ForEachActive([&](std::string_view slice) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({base_histogram,
+                      kMultistepFilterByRetentionHistogramPrefix, slice}),
+        decision);
+  });
 }
 
 // Logs the overall technical filter application outcome after a user accepts
@@ -40,6 +97,7 @@ void LogAcceptanceHistogram(std::string_view base_histogram,
 // - There was a mismatch in the keys or values of the filters (e.g. a
 //   different brand or price range was applied than what was suggested).
 void LogApplicationOutcome(const UrlFilterSuggestion& suggestion,
+                           const RetentionStateSnapshot& retention_snapshot,
                            bool is_success) {
   MultistepFilterApplicationOutcome outcome =
       is_success ? MultistepFilterApplicationOutcome::kAllFiltersApplied
@@ -51,6 +109,16 @@ void LogApplicationOutcome(const UrlFilterSuggestion& suggestion,
                     kMultistepFilterByTaskHistogramPrefix,
                     suggestion.task_type}),
       outcome);
+
+  // Log by retention state:
+  GetRetentionSlices(retention_snapshot)
+      .ForEachActive([&](std::string_view slice) {
+        base::UmaHistogramEnumeration(
+            base::StrCat({kMultistepFilterApplicationOutcomeHistogram,
+                          kMultistepFilterByRetentionHistogramPrefix, slice}),
+            outcome);
+      });
+
   if (is_success) {
     size_t count = suggestion.attribute_ui_labels.size();
     base::UmaHistogramCounts100(
@@ -117,8 +185,12 @@ void MultistepFilterMetricsTracker::OnNavigationFinished(
     current_suggestion_application_session_ = SuggestionApplicationSession{
         .suggestion = metadata.applied_suggestion.value(),
         .is_error_page = metadata.is_error_page_navigation,
+        .retention_snapshot =
+            last_accepted_suggestion_retention_snapshot_.value_or(
+                RetentionStateSnapshot()),
     };
   }
+  last_accepted_suggestion_retention_snapshot_.reset();
 
   // If a UI session has been started but not concluded yet, the finishing
   // of the navigation indicates that the user ignored the UI.
@@ -128,11 +200,13 @@ void MultistepFilterMetricsTracker::OnNavigationFinished(
 }
 
 void MultistepFilterMetricsTracker::OnSuggestionShown(
-    const UrlFilterSuggestion& suggestion) {
+    const UrlFilterSuggestion& suggestion,
+    const RetentionStateSnapshot& retention_snapshot) {
   current_ui_session_ = SuggestionUiSession{
       .suggestion = suggestion,
       .user_decision = SuggestionUserDecision::kIgnored,
       .suggestion_shown_time = base::TimeTicks::Now(),
+      .retention_snapshot = retention_snapshot,
   };
   LogFacetsShown(suggestion.task_type, suggestion.attribute_ui_labels.size());
 }
@@ -148,6 +222,8 @@ void MultistepFilterMetricsTracker::OnSuggestionUserInteraction(
   switch (decision) {
     case SuggestionUserDecision::kAccepted:
       current_ui_session_->suggestion_accepted_time = base::TimeTicks::Now();
+      last_accepted_suggestion_retention_snapshot_ =
+          current_ui_session_->retention_snapshot;
       break;
     case SuggestionUserDecision::kDismissed:
     case SuggestionUserDecision::kSettingsOpened:
@@ -171,22 +247,25 @@ void MultistepFilterMetricsTracker::FlushSuggestionUiSession(
     SuggestionUserDecision final_decision) {
   CHECK(current_ui_session_.has_value());
   const std::string& task_type = current_ui_session_->suggestion.task_type;
+  const RetentionStateSnapshot& snapshot =
+      current_ui_session_->retention_snapshot;
+
   // If the reopened cue was shown, the initial cue was ignored.
   SuggestionUserDecision initial_decision =
       current_ui_session_->reopened_cue_shown ? SuggestionUserDecision::kIgnored
                                               : final_decision;
   LogAcceptanceHistogram(kMultistepFilterAcceptanceInitialCueHistogram,
-                         task_type, initial_decision);
+                         task_type, initial_decision, snapshot);
 
   // If the reopened cue was shown, log the final decision to the reopened cue
   // histogram.
   if (current_ui_session_->reopened_cue_shown) {
     LogAcceptanceHistogram(kMultistepFilterAcceptanceReopenedCueHistogram,
-                           task_type, final_decision);
+                           task_type, final_decision, snapshot);
   }
 
   LogAcceptanceHistogram(kMultistepFilterAcceptanceHistogram, task_type,
-                         final_decision);
+                         final_decision, snapshot);
 
   current_ui_session_ = std::nullopt;
 }
@@ -194,8 +273,10 @@ void MultistepFilterMetricsTracker::FlushSuggestionUiSession(
 void MultistepFilterMetricsTracker::FlushSuggestionApplicationSession(
     bool was_applied_successfully) {
   CHECK(current_suggestion_application_session_.has_value());
-  LogApplicationOutcome(current_suggestion_application_session_->suggestion,
-                        was_applied_successfully);
+  LogApplicationOutcome(
+      current_suggestion_application_session_->suggestion,
+      current_suggestion_application_session_->retention_snapshot,
+      was_applied_successfully);
   current_suggestion_application_session_ = std::nullopt;
 }
 

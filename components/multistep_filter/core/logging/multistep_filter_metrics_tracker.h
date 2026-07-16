@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "components/multistep_filter/core/data_models/suggestion_user_decision.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
+#include "components/multistep_filter/core/prefs/retention_state_snapshot.h"
 
 namespace multistep_filter {
 
@@ -33,7 +34,8 @@ class MultistepFilterMetricsTracker {
   // --- 2. SUGGESTION IMPRESSION LIFE-CYCLE ---
   // Triggered when the suggestion UI cue is shown to the user (initial bubble
   // or page action icon). Starts the impression tracking session.
-  void OnSuggestionShown(const UrlFilterSuggestion& suggestion);
+  void OnSuggestionShown(const UrlFilterSuggestion& suggestion,
+                         const RetentionStateSnapshot& retention_snapshot);
 
   // --- 2.1. SUGGESTION REOPEN ---
   // Triggered once if the user re-opens the cue from the Omnibox.
@@ -82,6 +84,7 @@ class MultistepFilterMetricsTracker {
     SuggestionUserDecision user_decision = SuggestionUserDecision::kIgnored;
     base::TimeTicks suggestion_shown_time;
     base::TimeTicks suggestion_accepted_time;
+    RetentionStateSnapshot retention_snapshot;
   };
 
   // The current UI session, if any.
@@ -101,10 +104,16 @@ class MultistepFilterMetricsTracker {
     // TODO(crbug.com/531717350): Populate and use this field to measure
     // suggestion application latency.
     base::TimeTicks suggestion_accepted_time;
+    RetentionStateSnapshot retention_snapshot;
   };
   // The current suggestion application session, if any.
   std::optional<SuggestionApplicationSession>
       current_suggestion_application_session_;
+  // The retention state snapshot of the last accepted suggestion. It is
+  // set when a suggestion is accepted, and cleared when the next navigation
+  // finishes (either consumed by the application session or discarded).
+  std::optional<RetentionStateSnapshot>
+      last_accepted_suggestion_retention_snapshot_;
 };
 
 }  // namespace multistep_filter

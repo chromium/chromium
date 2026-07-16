@@ -4,6 +4,10 @@
 
 #include "components/multistep_filter/core/logging/multistep_filter_metrics_tracker.h"
 
+#include <algorithm>
+
+#include "base/containers/span.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/multistep_filter/core/data_models/filter_annotation.h"
@@ -11,6 +15,7 @@
 #include "components/multistep_filter/core/data_models/filter_suggestion_candidate.h"
 #include "components/multistep_filter/core/data_models/suggestion_user_decision.h"
 #include "components/multistep_filter/core/logging/multistep_filter_metrics.h"
+#include "components/multistep_filter/core/prefs/retention_state_snapshot.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -38,6 +43,45 @@ UrlFilterSuggestion CreateSuggestion(std::string task_type) {
   return CreateSuggestionWithAttributes(std::move(task_type), {});
 }
 
+void VerifyAcceptanceRetentionHistograms(
+    const base::HistogramTester& histogram_tester,
+    base::span<const std::string_view> expected_slices,
+    SuggestionUserDecision expected_decision,
+    int expected_count = 1) {
+  for (const auto& slice : kAllRetentionSlices) {
+    std::string initial_name = base::StrCat(
+        {"MultistepFilter.Acceptance.InitialCue.ByRetention.", slice});
+    std::string overall_name =
+        base::StrCat({"MultistepFilter.Acceptance.ByRetention.", slice});
+    if (std::ranges::contains(expected_slices, slice)) {
+      histogram_tester.ExpectUniqueSample(initial_name, expected_decision,
+                                          expected_count);
+      histogram_tester.ExpectUniqueSample(overall_name, expected_decision,
+                                          expected_count);
+    } else {
+      histogram_tester.ExpectTotalCount(initial_name, 0);
+      histogram_tester.ExpectTotalCount(overall_name, 0);
+    }
+  }
+}
+
+void VerifyApplicationOutcomeRetentionHistograms(
+    const base::HistogramTester& histogram_tester,
+    base::span<const std::string_view> expected_slices,
+    MultistepFilterApplicationOutcome expected_outcome,
+    int expected_count = 1) {
+  for (const auto& slice : kAllRetentionSlices) {
+    std::string name = base::StrCat(
+        {"MultistepFilter.ApplicationOutcome.ByRetention.", slice});
+    if (std::ranges::contains(expected_slices, slice)) {
+      histogram_tester.ExpectUniqueSample(name, expected_outcome,
+                                          expected_count);
+    } else {
+      histogram_tester.ExpectTotalCount(name, 0);
+    }
+  }
+}
+
 // Verifies that destroying a tracker when no suggestion was shown records
 // no samples.
 TEST(MultistepFilterMetricsTrackerTest, NoSuggestionShownRecordsNoSamples) {
@@ -61,7 +105,7 @@ TEST(MultistepFilterMetricsTrackerTest,
   UrlFilterSuggestion suggestion = CreateSuggestion("SEARCH_ACCOMMODATIONS");
   {
     MultistepFilterMetricsTracker tracker;
-    tracker.OnSuggestionShown(suggestion);
+    tracker.OnSuggestionShown(suggestion, RetentionStateSnapshot());
   }
   histogram_tester.ExpectUniqueSample(
       kMultistepFilterAcceptanceInitialCueHistogram,
@@ -86,7 +130,7 @@ TEST(MultistepFilterMetricsTrackerTest,
   UrlFilterSuggestion suggestion = CreateSuggestion("SEARCH_ACCOMMODATIONS");
   {
     MultistepFilterMetricsTracker tracker;
-    tracker.OnSuggestionShown(suggestion);
+    tracker.OnSuggestionShown(suggestion, RetentionStateSnapshot());
     tracker.OnSuggestionUserInteraction(SuggestionUserDecision::kDismissed);
   }
   histogram_tester.ExpectUniqueSample(
@@ -106,7 +150,7 @@ TEST(MultistepFilterMetricsTrackerTest,
   UrlFilterSuggestion suggestion = CreateSuggestion("SEARCH_FLIGHTS");
   {
     MultistepFilterMetricsTracker tracker;
-    tracker.OnSuggestionShown(suggestion);
+    tracker.OnSuggestionShown(suggestion, RetentionStateSnapshot());
     tracker.OnSuggestionReopened();
     tracker.OnSuggestionUserInteraction(SuggestionUserDecision::kAccepted);
   }
@@ -132,7 +176,7 @@ TEST(MultistepFilterMetricsTrackerTest,
   UrlFilterSuggestion suggestion = CreateSuggestion("SEARCH_FLIGHTS");
   {
     MultistepFilterMetricsTracker tracker;
-    tracker.OnSuggestionShown(suggestion);
+    tracker.OnSuggestionShown(suggestion, RetentionStateSnapshot());
     tracker.OnSuggestionReopened();
     tracker.OnSuggestionReopened();
     tracker.OnSuggestionReopened();
@@ -157,7 +201,7 @@ TEST(MultistepFilterMetricsTrackerTest,
   UrlFilterSuggestion suggestion = CreateSuggestion("SEARCH_ACCOMMODATIONS");
   {
     MultistepFilterMetricsTracker tracker;
-    tracker.OnSuggestionShown(suggestion);
+    tracker.OnSuggestionShown(suggestion, RetentionStateSnapshot());
     tracker.OnSuggestionReopened();
   }
   histogram_tester.ExpectUniqueSample(
@@ -192,6 +236,9 @@ TEST(MultistepFilterMetricsTrackerTest,
           "MultistepFilter.ApplicationOutcome.ByTask.SEARCH_ACCOMMODATIONS"),
       BucketsAre(
           Bucket(MultistepFilterApplicationOutcome::kAllFiltersApplied, 1)));
+  VerifyApplicationOutcomeRetentionHistograms(
+      histogram_tester, {kRetentionSliceFirstImpression},
+      MultistepFilterApplicationOutcome::kAllFiltersApplied);
 }
 
 // Tests that failed suggestion application logs kNotAllFiltersApplied.
@@ -217,6 +264,9 @@ TEST(MultistepFilterMetricsTrackerTest,
           "MultistepFilter.ApplicationOutcome.ByTask.SEARCH_ACCOMMODATIONS"),
       BucketsAre(
           Bucket(MultistepFilterApplicationOutcome::kNotAllFiltersApplied, 1)));
+  VerifyApplicationOutcomeRetentionHistograms(
+      histogram_tester, {kRetentionSliceFirstImpression},
+      MultistepFilterApplicationOutcome::kNotAllFiltersApplied);
 }
 
 // Tests that calling annotation extraction finished without a session records
@@ -262,6 +312,9 @@ TEST(MultistepFilterMetricsTrackerTest,
           "MultistepFilter.ApplicationOutcome.ByTask.SEARCH_ACCOMMODATIONS"),
       BucketsAre(
           Bucket(MultistepFilterApplicationOutcome::kNotAllFiltersApplied, 1)));
+  VerifyApplicationOutcomeRetentionHistograms(
+      histogram_tester, {kRetentionSliceFirstImpression},
+      MultistepFilterApplicationOutcome::kNotAllFiltersApplied);
 }
 
 // Tests that showing a suggestion logs the number of facets shown.
@@ -271,7 +324,7 @@ TEST(MultistepFilterMetricsTrackerTest, FacetsShownLogged) {
       "SEARCH_ACCOMMODATIONS", {{"color", "blue"}, {"size", "large"}});
   {
     MultistepFilterMetricsTracker tracker;
-    tracker.OnSuggestionShown(suggestion);
+    tracker.OnSuggestionShown(suggestion, RetentionStateSnapshot());
   }
   histogram_tester.ExpectUniqueSample(
       kMultistepFilterNumberOfFacetsShownHistogram, 2, 1);
@@ -337,6 +390,203 @@ TEST(MultistepFilterMetricsTrackerTest,
       "MultistepFilter.ApplicationOutcome.ByTask.SEARCH_ACCOMMODATIONS.ByFacet."
       "size",
       false, 1);
+}
+
+TEST(MultistepFilterMetricsTrackerTest, RetentionSlicedAcceptanceLogged) {
+  UrlFilterSuggestion suggestion = CreateSuggestion("SEARCH_ACCOMMODATIONS");
+
+  // Scenario 1: First Impression.
+  {
+    base::HistogramTester histogram_tester;
+    MultistepFilterMetricsTracker tracker;
+    tracker.OnSuggestionShown(suggestion, RetentionStateSnapshot());
+    tracker.OnSuggestionUserInteraction(SuggestionUserDecision::kAccepted);
+
+    VerifyAcceptanceRetentionHistograms(histogram_tester,
+                                        {kRetentionSliceFirstImpression},
+                                        SuggestionUserDecision::kAccepted);
+  }
+
+  // Scenario 2: AcceptedLastTime + AcceptedAtLeastOnce.
+  {
+    RetentionStateSnapshot snapshot;
+    snapshot.suggestion_impressions = 1;
+    snapshot.suggestion_acceptances = 1;
+    snapshot.is_last_suggestion_accepted = true;
+
+    base::HistogramTester histogram_tester;
+    MultistepFilterMetricsTracker tracker;
+    tracker.OnSuggestionShown(suggestion, snapshot);
+    tracker.OnSuggestionUserInteraction(SuggestionUserDecision::kDismissed);
+
+    VerifyAcceptanceRetentionHistograms(
+        histogram_tester,
+        {kRetentionSliceAcceptedLastTime, kRetentionSliceAcceptedAtLeastOnce},
+        SuggestionUserDecision::kDismissed);
+  }
+
+  // Scenario 3: RejectedLastTime + SawCuesButNeverAccepted.
+  {
+    RetentionStateSnapshot snapshot;
+    snapshot.suggestion_impressions = 2;
+    snapshot.suggestion_acceptances = 0;
+    snapshot.is_last_suggestion_accepted = false;
+
+    base::HistogramTester histogram_tester;
+    MultistepFilterMetricsTracker tracker;
+    tracker.OnSuggestionShown(suggestion, snapshot);
+    tracker.OnSuggestionUserInteraction(SuggestionUserDecision::kDismissed);
+
+    VerifyAcceptanceRetentionHistograms(
+        histogram_tester,
+        {kRetentionSliceRejectedLastTime,
+         kRetentionSliceSawCuesButNeverAccepted},
+        SuggestionUserDecision::kDismissed);
+  }
+
+  // Scenario 4: RejectedLastTime + AcceptedAtLeastOnce.
+  {
+    RetentionStateSnapshot snapshot;
+    snapshot.suggestion_impressions = 2;
+    snapshot.suggestion_acceptances = 1;
+    snapshot.is_last_suggestion_accepted = false;
+
+    base::HistogramTester histogram_tester;
+    MultistepFilterMetricsTracker tracker;
+    tracker.OnSuggestionShown(suggestion, snapshot);
+    tracker.OnSuggestionUserInteraction(SuggestionUserDecision::kDismissed);
+
+    VerifyAcceptanceRetentionHistograms(
+        histogram_tester,
+        {kRetentionSliceRejectedLastTime, kRetentionSliceAcceptedAtLeastOnce},
+        SuggestionUserDecision::kDismissed);
+  }
+}
+
+TEST(MultistepFilterMetricsTrackerTest,
+     RetentionSlicedApplicationOutcomeLogged) {
+  UrlFilterSuggestion suggestion = CreateSuggestion("SEARCH_ACCOMMODATIONS");
+  FilterNavigationMetadata landing_metadata;
+  landing_metadata.applied_suggestion = suggestion;
+
+  // Scenario 1: First Impression.
+  {
+    base::HistogramTester histogram_tester;
+    MultistepFilterMetricsTracker tracker;
+    tracker.OnSuggestionShown(suggestion, RetentionStateSnapshot());
+    tracker.OnSuggestionUserInteraction(SuggestionUserDecision::kAccepted);
+    tracker.OnNavigationFinished(landing_metadata);
+    tracker.OnSuggestionApplicationAnnotationExtractionFinished(
+        /*was_applied_successfully=*/true);
+
+    VerifyApplicationOutcomeRetentionHistograms(
+        histogram_tester, {kRetentionSliceFirstImpression},
+        MultistepFilterApplicationOutcome::kAllFiltersApplied);
+  }
+
+  // Scenario 2: AcceptedLastTime + AcceptedAtLeastOnce.
+  {
+    RetentionStateSnapshot snapshot;
+    snapshot.suggestion_impressions = 1;
+    snapshot.suggestion_acceptances = 1;
+    snapshot.is_last_suggestion_accepted = true;
+
+    base::HistogramTester histogram_tester;
+    MultistepFilterMetricsTracker tracker;
+    tracker.OnSuggestionShown(suggestion, snapshot);
+    tracker.OnSuggestionUserInteraction(SuggestionUserDecision::kAccepted);
+    tracker.OnNavigationFinished(landing_metadata);
+    tracker.OnSuggestionApplicationAnnotationExtractionFinished(
+        /*was_applied_successfully=*/true);
+
+    VerifyApplicationOutcomeRetentionHistograms(
+        histogram_tester,
+        {kRetentionSliceAcceptedLastTime, kRetentionSliceAcceptedAtLeastOnce},
+        MultistepFilterApplicationOutcome::kAllFiltersApplied);
+  }
+
+  // Scenario 3: RejectedLastTime + SawCuesButNeverAccepted.
+  {
+    RetentionStateSnapshot snapshot;
+    snapshot.suggestion_impressions = 2;
+    snapshot.suggestion_acceptances = 0;
+    snapshot.is_last_suggestion_accepted = false;
+
+    base::HistogramTester histogram_tester;
+    MultistepFilterMetricsTracker tracker;
+    tracker.OnSuggestionShown(suggestion, snapshot);
+    tracker.OnSuggestionUserInteraction(SuggestionUserDecision::kAccepted);
+    tracker.OnNavigationFinished(landing_metadata);
+    tracker.OnSuggestionApplicationAnnotationExtractionFinished(
+        /*was_applied_successfully=*/false);
+
+    VerifyApplicationOutcomeRetentionHistograms(
+        histogram_tester,
+        {kRetentionSliceRejectedLastTime,
+         kRetentionSliceSawCuesButNeverAccepted},
+        MultistepFilterApplicationOutcome::kNotAllFiltersApplied);
+  }
+
+  // Scenario 4: RejectedLastTime + AcceptedAtLeastOnce.
+  {
+    RetentionStateSnapshot snapshot;
+    snapshot.suggestion_impressions = 2;
+    snapshot.suggestion_acceptances = 1;
+    snapshot.is_last_suggestion_accepted = false;
+
+    base::HistogramTester histogram_tester;
+    MultistepFilterMetricsTracker tracker;
+    tracker.OnSuggestionShown(suggestion, snapshot);
+    tracker.OnSuggestionUserInteraction(SuggestionUserDecision::kAccepted);
+    tracker.OnNavigationFinished(landing_metadata);
+    tracker.OnSuggestionApplicationAnnotationExtractionFinished(
+        /*was_applied_successfully=*/true);
+
+    VerifyApplicationOutcomeRetentionHistograms(
+        histogram_tester,
+        {kRetentionSliceRejectedLastTime, kRetentionSliceAcceptedAtLeastOnce},
+        MultistepFilterApplicationOutcome::kAllFiltersApplied);
+  }
+}
+
+TEST(MultistepFilterMetricsTrackerTest,
+     ApplicationRetentionSnapshotResetOnInterveningNavigation) {
+  base::HistogramTester histogram_tester;
+  MultistepFilterMetricsTracker tracker;
+
+  UrlFilterSuggestion suggestion = CreateSuggestion("task_type");
+
+  // 1. Suggestion shown with a non-default snapshot (AcceptedLastTime).
+  RetentionStateSnapshot snapshot;
+  snapshot.suggestion_impressions = 2;
+  snapshot.suggestion_acceptances = 1;
+  snapshot.is_last_suggestion_accepted = true;
+  tracker.OnSuggestionShown(suggestion, snapshot);
+
+  // 2. User accepts the suggestion. This caches the snapshot.
+  tracker.OnSuggestionUserInteraction(SuggestionUserDecision::kAccepted);
+
+  // 3. An intervening normal navigation occurs (not applying suggestion).
+  // This must reset the cached snapshot.
+  FilterNavigationMetadata normal_metadata;
+  normal_metadata.url = GURL("https://example.com/normal");
+  tracker.OnNavigationFinished(normal_metadata);
+
+  // 4. Later, a suggestion is applied.
+  FilterNavigationMetadata landing_metadata;
+  landing_metadata.url = GURL("https://example.com/landing");
+  landing_metadata.applied_suggestion = suggestion;
+  tracker.OnNavigationFinished(landing_metadata);
+
+  // 5. Extraction finishes.
+  tracker.OnSuggestionApplicationAnnotationExtractionFinished(
+      /*was_applied_successfully=*/true);
+
+  // 6. Verify that the outcome is logged under 'FirstImpression' (the fallback
+  // default snapshot) and NOT 'AcceptedLastTime'.
+  VerifyApplicationOutcomeRetentionHistograms(
+      histogram_tester, {kRetentionSliceFirstImpression},
+      MultistepFilterApplicationOutcome::kAllFiltersApplied);
 }
 
 }  // namespace
