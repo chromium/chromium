@@ -190,7 +190,8 @@ bool TransformPaintPropertyNode::CanMergeForStickyPosition(
     return true;
   }
   return constraint && other_constraint &&
-         constraint->CanMerge(*other_constraint);
+         constraint->CanMerge(*other_constraint) ==
+             cc::StickyPositionConstraint::CanMergeResult::kCanAlwaysMerge;
 }
 
 std::unique_ptr<JSONObject> TransformPaintPropertyNode::ToJSON() const {

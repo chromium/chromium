@@ -5,8 +5,94 @@
 #include "cc/trees/sticky_position_constraint.h"
 
 #include <algorithm>
+#include <limits>
+#include <optional>
+
+#include "ui/gfx/range/range_f.h"
 
 namespace cc {
+namespace {
+
+struct StickyTransitionPoints {
+  // The range of scroll position in which the box is sticky to the scroll
+  // port, for the constraints in each direction, assuming the constraints
+  // are applied independently in each direction.
+  // If the box is never sticky to the scroll port in a direction, the range is
+  // empty with the default value InvalidRange(), so that == can treat all empty
+  // ranges as equal.
+  gfx::RangeF left = gfx::RangeF::InvalidRange();
+  gfx::RangeF top = gfx::RangeF::InvalidRange();
+  gfx::RangeF right = gfx::RangeF::InvalidRange();
+  gfx::RangeF bottom = gfx::RangeF::InvalidRange();
+
+  bool operator==(const StickyTransitionPoints&) const = default;
+
+  void ClipByScrollRange(const gfx::RectF& range) {
+    gfx::RangeF range_x(range.x(), range.right());
+    left = left.Intersect(range_x);
+    right = right.Intersect(range_x);
+    gfx::RangeF range_y(range.y(), range.bottom());
+    top = top.Intersect(range_y);
+    bottom = bottom.Intersect(range_y);
+  }
+};
+
+StickyTransitionPoints GetStickyTransitionPoints(
+    const StickyPositionConstraint& constraint) {
+  // Shifting ancestors are not supported for the purpose of CanMerge().
+  DCHECK(!constraint.nearest_element_shifting_sticky_box);
+  DCHECK(!constraint.nearest_element_shifting_containing_block);
+
+  const auto& sticky_box_rect =
+      constraint.scroll_container_relative_sticky_box_rect;
+  const auto& containing_block_rect =
+      constraint.scroll_container_relative_containing_block_rect;
+
+  StickyTransitionPoints points;
+  if (constraint.is_anchored_left) {
+    float available_space =
+        containing_block_rect.right() - sticky_box_rect.right();
+    if (available_space > 0) {
+      points.left.set_start(sticky_box_rect.x() -
+                            constraint.constraint_box_rect.x() -
+                            constraint.left_offset);
+      points.left.set_end(points.left.start() + available_space);
+    }
+    // Otherwise the box is never sticky to the scroll port in this direction,
+    // so leave the range empty with the default value InvalidRange().
+  }
+  if (constraint.is_anchored_right) {
+    float available_space = containing_block_rect.x() - sticky_box_rect.x();
+    if (available_space < 0) {
+      points.right.set_end(sticky_box_rect.right() + constraint.right_offset -
+                           constraint.constraint_box_rect.right());
+      points.right.set_start(points.right.end() + available_space);
+    }
+  }
+  if (constraint.is_anchored_top) {
+    float available_space =
+        containing_block_rect.bottom() - sticky_box_rect.bottom();
+    if (available_space > 0) {
+      points.top.set_start(sticky_box_rect.y() -
+                           constraint.constraint_box_rect.y() -
+                           constraint.top_offset);
+      points.top.set_end(points.top.start() + available_space);
+    }
+  }
+  if (constraint.is_anchored_bottom) {
+    float available_space = containing_block_rect.y() - sticky_box_rect.y();
+    if (available_space < 0) {
+      points.bottom.set_end(sticky_box_rect.bottom() +
+                            constraint.bottom_offset -
+                            constraint.constraint_box_rect.bottom());
+      points.bottom.set_start(points.bottom.end() + available_space);
+    }
+  }
+
+  return points;
+}
+
+}  // namespace
 
 StickyPositionConstraint::StickyPositionConstraint() = default;
 StickyPositionConstraint::StickyPositionConstraint(
@@ -15,51 +101,48 @@ StickyPositionConstraint::StickyPositionConstraint(
 StickyPositionConstraint& StickyPositionConstraint::operator=(
     const StickyPositionConstraint& other) = default;
 
-bool StickyPositionConstraint::CanMerge(
-    const StickyPositionConstraint& other) const {
-  if (is_anchored_left != other.is_anchored_left ||
-      is_anchored_right != other.is_anchored_right ||
-      is_anchored_top != other.is_anchored_top ||
-      is_anchored_bottom != other.is_anchored_bottom ||
-      constraint_box_rect != other.constraint_box_rect ||
-      scroll_container_relative_containing_block_rect !=
-          other.scroll_container_relative_containing_block_rect ||
-      x_scroll_ancestor_element_id != other.x_scroll_ancestor_element_id ||
-      y_scroll_ancestor_element_id != other.y_scroll_ancestor_element_id ||
-      nearest_element_shifting_sticky_box !=
-          other.nearest_element_shifting_sticky_box ||
-      nearest_element_shifting_containing_block !=
-          other.nearest_element_shifting_containing_block) {
-    return false;
+StickyPositionConstraint::CanMergeResult StickyPositionConstraint::CanMerge(
+    const StickyPositionConstraint& other,
+    const std::optional<gfx::RectF>& scroll_range) const {
+  if (*this == other) {
+    return CanMergeResult::kCanAlwaysMerge;
   }
 
-  // The following conditions are slightly stricter than needed to simplify
-  // code. See TransformTree::StickyPositionOffset() for how these fields
-  // affect sticky position offset in different anchoring modes.
-  if (is_anchored_left || is_anchored_right) {
-    if (left_offset != other.left_offset ||
-        right_offset != other.right_offset ||
-        scroll_container_relative_sticky_box_rect.x() !=
-            other.scroll_container_relative_sticky_box_rect.x() ||
-        scroll_container_relative_sticky_box_rect.width() !=
-            other.scroll_container_relative_sticky_box_rect.width() ||
-        pixel_snap_offset.x() != other.pixel_snap_offset.x()) {
-      return false;
-    }
+  if (x_scroll_ancestor_element_id != other.x_scroll_ancestor_element_id ||
+      y_scroll_ancestor_element_id != other.y_scroll_ancestor_element_id) {
+    return CanMergeResult::kCannotMerge;
   }
-  if (is_anchored_top || is_anchored_bottom) {
-    if (top_offset != other.top_offset ||
-        bottom_offset != other.bottom_offset ||
-        scroll_container_relative_sticky_box_rect.y() !=
-            other.scroll_container_relative_sticky_box_rect.y() ||
-        scroll_container_relative_sticky_box_rect.height() !=
-            other.scroll_container_relative_sticky_box_rect.height() ||
-        pixel_snap_offset.y() != other.pixel_snap_offset.y()) {
-      return false;
+
+  // GetTransitionPoints() doesn't support shifting ancestors.
+  if (nearest_element_shifting_sticky_box ||
+      other.nearest_element_shifting_sticky_box ||
+      nearest_element_shifting_containing_block ||
+      other.nearest_element_shifting_containing_block) {
+    return CanMergeResult::kCannotMerge;
+  }
+
+  // If the transition points match exactly across the full domain, the
+  // constraints always produce the same StickyPositionOffset values and
+  // can always merge.
+  auto points1 = GetStickyTransitionPoints(*this);
+  auto points2 = GetStickyTransitionPoints(other);
+  if (points1 == points2) {
+    return CanMergeResult::kCanAlwaysMerge;
+  }
+
+  // If full transition points differ but a scroll range is provided, compare
+  // transition points clipped by the scroll range. If those match then
+  // the constraints produce StickyPositionOffset values with a constant
+  // difference within the scroll range and can be merged.
+  if (scroll_range) {
+    points1.ClipByScrollRange(*scroll_range);
+    points2.ClipByScrollRange(*scroll_range);
+    if (points1 == points2) {
+      return CanMergeResult::kCanMergeWithinScrollRange;
     }
   }
 
-  return true;
+  return CanMergeResult::kCannotMerge;
 }
 
 gfx::Vector2dF StickyPositionConstraint::StickyPositionOffset(
