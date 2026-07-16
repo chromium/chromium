@@ -19,11 +19,17 @@ function updateAnchorRect() {
     return;
   }
   const rect = container.getBoundingClientRect();
+
+  const left = Math.max(0, rect.left);
+  const right = Math.min(window.innerWidth, rect.right);
+  const top = Math.max(0, rect.top);
+  const bottom = Math.min(window.innerHeight, rect.bottom);
+
   handler.setAnchorRect({
-    x: Math.round(rect.left),
-    y: Math.round(rect.top),
-    width: Math.round(rect.width),
-    height: Math.round(rect.height),
+    x: Math.round(left),
+    y: Math.round(top),
+    width: Math.round(Math.max(0, right - left)),
+    height: Math.round(Math.max(0, bottom - top)),
   });
 }
 
