@@ -41,6 +41,11 @@ Decision EvaluateAllowSameOrigin(const url::Origin& source,
                                               : Decision::kNoDecision;
 }
 
+Decision EvaluateForbidIpAddress(const GURL& destination) {
+  return destination.HostIsIPAddress() ? Decision::kBlocked
+                                       : Decision::kNoDecision;
+}
+
 }  // namespace
 
 OriginGatingChecker::OriginGatingChecker(Delegate& delegate,
@@ -162,6 +167,14 @@ void OriginGatingChecker::RunNextPredicate(
                         weak_ptr_factory_.GetWeakPtr(), std::move(context),
                         remaining_predicates, DecisionAttribution(source_enum),
                         std::move(input), std::move(callback)));
+                break;
+              }
+              case DecisionSource::kForbidIpAddress: {
+                Decision decision = EvaluateForbidIpAddress(input.destination);
+                OnPredicateVerdict(std::move(context), remaining_predicates,
+                                   DecisionAttribution(source_enum),
+                                   std::move(input), std::move(callback),
+                                   decision);
                 break;
               }
               case DecisionSource::kNoVerdict:

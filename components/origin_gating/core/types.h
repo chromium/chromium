@@ -58,6 +58,8 @@ enum class DecisionSource {
   // delegate provides the embedder-specific logic via
   // `Delegate::EvaluateEnterprisePolicy`.
   kEnterprisePolicy,
+  // Predicate that blocks if the destination's host is an IP address.
+  kForbidIpAddress,
   // No decision was reached before the OriginGating framework ran out of
   // predicates to run.
   kNoVerdict,

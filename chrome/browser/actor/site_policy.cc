@@ -110,11 +110,6 @@ void MayActOnUrlInternal(const GURL& url,
     return;
   }
 
-  if (url.HostIsIPAddress()) {
-    decision_wrapper->Reject("IP address", MayActOnUrlBlockReason::kIpAddress);
-    return;
-  }
-
   std::move(resolve_no_verdict)
       .Run(url,
            base::BindOnce(

@@ -344,6 +344,7 @@ ExecutionEngine::GatingDecision MapGatingDecisionToEngineDecision(
         case origin_gating::DecisionSource::kNoVerdict:
           return ExecutionEngine::GatingDecision::kNeedsAsyncCheck;
         case origin_gating::DecisionSource::kEnterprisePolicy:
+        case origin_gating::DecisionSource::kForbidIpAddress:
           NOTREACHED();
       }
     case origin_gating::DecisionAttribution::Type::kCustomPredicate:
@@ -365,6 +366,8 @@ MayActOnUrlBlockResult MapGatingDecisionToBlockResult(
         case origin_gating::DecisionSource::kEnterprisePolicy:
           return {"Enterprise policy block",
                   MayActOnUrlBlockReason::kEnterprisePolicy};
+        case origin_gating::DecisionSource::kForbidIpAddress:
+          return {"IP address", MayActOnUrlBlockReason::kIpAddress};
         default:
           NOTREACHED() << "Unexpected decision source: "
                        << static_cast<int>(decision.attribution.Source());
@@ -475,6 +478,9 @@ ExecutionEngine::ExecutionEngine(
           *this,
           origin_gating::OriginGatingConfiguration(
               {
+                  {origin_gating::DecisionSource::kForbidIpAddress,
+                   {origin_gating::GateableEvent::kNavigationRequest,
+                    origin_gating::GateableEvent::kPageAction}},
                   {origin_gating::CustomPredicate(
                        base::BindRepeating(&EvaluateSafetyChecksDisabled),
                        kSafetyChecksDisabledPredicateName),

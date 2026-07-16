@@ -257,6 +257,48 @@ TEST_F(OriginGatingCheckerTest,
   EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
 }
 
+TEST_F(OriginGatingCheckerTest, BuiltInPredicate_ForbidIpAddress_Blocked) {
+  OriginGatingChecker checker(
+      delegate_, OriginGatingConfiguration({{DecisionSource::kForbidIpAddress,
+                                             GateableEventSet::All()}},
+                                           /*use_site_keyed_cache=*/false));
+
+  GURL source("https://example.com");
+  GURL destination("https://127.0.0.1/page");
+
+  EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(_, _, _, _, _))
+      .Times(0);
+  EXPECT_CALL(delegate_, OnNoVerdict(_, _, _, _, _, _)).Times(0);
+
+  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
+      checker, nullptr, source, destination);
+
+  EXPECT_FALSE(decision.is_allowed);
+  EXPECT_EQ(decision.attribution, DecisionSource::kForbidIpAddress);
+}
+
+TEST_F(OriginGatingCheckerTest,
+       BuiltInPredicate_ForbidIpAddress_NoDecision_FallsBack) {
+  OriginGatingChecker checker(
+      delegate_, OriginGatingConfiguration({{DecisionSource::kForbidIpAddress,
+                                             GateableEventSet::All()}},
+                                           /*use_site_keyed_cache=*/false));
+
+  GURL source("https://example.com");
+  GURL destination("https://foo.com");
+
+  SetUpDelegateExpectations(source, destination,
+                            /*requires_user_confirmation=*/false,
+                            /*is_allowed=*/true,
+                            /*did_prompt_user=*/false);
+
+  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
+      checker, nullptr, source, destination);
+
+  EXPECT_TRUE(decision.is_allowed);
+  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+}
+
 TEST_F(OriginGatingCheckerTest, BuiltInPredicate_EnterprisePolicy_Allowed) {
   OriginGatingChecker checker(
       delegate_, OriginGatingConfiguration({{DecisionSource::kEnterprisePolicy,
