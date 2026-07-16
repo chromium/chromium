@@ -5,14 +5,14 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/vertical_tab_rail_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@macro/vertical_tabs_rail_bg_color"
     android:clipToPadding="false"
-    android:orientation="vertical"
     android:paddingStart="@dimen/vertical_tabs_rail_horizontal_margin"
     android:paddingEnd="@dimen/vertical_tabs_rail_horizontal_margin">
 
@@ -20,6 +20,7 @@ found in the LICENSE file.
         android:id="@+id/desktop_window_spacer"
         android:layout_width="match_parent"
         android:layout_height="@dimen/toolbar_height_no_shadow"
+        app:layout_constraintTop_toTopOf="parent"
         android:visibility="gone" />
 
     <!-- Header Container -->
@@ -30,6 +31,7 @@ found in the LICENSE file.
         android:orientation="horizontal"
         android:layout_gravity="start"
         android:layout_marginVertical="@dimen/vertical_tabs_header_margin_vertical"
+        app:layout_constraintTop_toBottomOf="@id/desktop_window_spacer"
         android:paddingVertical="@dimen/vertical_tabs_header_padding_vertical">
         <ImageButton
             android:id="@+id/collapse_button"
@@ -74,15 +76,20 @@ found in the LICENSE file.
         android:id="@+id/pinned_tabs_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/vertical_tab_header_container"
         android:overScrollMode="never" />
 
     <!-- Tab List Recycler View -->
     <org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView
         android:id="@+id/tab_list_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintTop_toBottomOf="@id/pinned_tabs_recycler_view"
+        app:layout_constraintBottom_toTopOf="@id/new_tab_button"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintVertical_bias="0.0"
         android:layout_marginEnd="@dimen/vertical_tabs_scrollbar_margin_end"
-        android:layout_weight="1"
         android:clipToPadding="false"
         android:paddingEnd="@dimen/vertical_tabs_scrollbar_padding_end"
         android:scrollbarSize="@dimen/vertical_tabs_scrollbar_width"
@@ -95,10 +102,13 @@ found in the LICENSE file.
         android:id="@+id/new_tab_button"
         android:layout_width="match_parent"
         android:layout_height="@dimen/vertical_tabs_new_tab_button_height"
+        app:layout_constraintTop_toBottomOf="@id/tab_list_recycler_view"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.0"
         android:src="@drawable/ic_add_24dp"
         android:background="@drawable/vertical_tabs_new_tab_button_background"
         android:contentDescription="@string/accessibility_toolbar_btn_new_tab"
         android:layout_marginTop="@dimen/vertical_tabs_new_tab_button_margin_top"
         android:layout_marginBottom="@dimen/vertical_tabs_new_tab_button_margin_bottom"/>
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
