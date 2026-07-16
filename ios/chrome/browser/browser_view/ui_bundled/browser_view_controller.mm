@@ -264,10 +264,11 @@ bool IsFullscreenNextIAEnabled() {
   // Used to get the layout guide center.
   LayoutGuideCenter* _layoutGuideCenter;
 
-  // Leading constraint for the toolbars.
-  NSLayoutConstraint* _toolbarLeadingConstraint;
-  // Trailing constraint for the toolbars.
-  NSLayoutConstraint* _toolbarTrailingConstraint;
+  // Left and right constraints for the toolbars. Physical left/right anchors
+  // are used instead of leading/trailing because `AppBarPosition::kLeft` and
+  // `kRight` refer to physical screen edges that do not flip in RTL.
+  NSLayoutConstraint* _toolbarLeftConstraint;
+  NSLayoutConstraint* _toolbarRightConstraint;
 
   // Whether the Lens Overlay is currently active and visible for the browser
   // view.
@@ -1414,13 +1415,13 @@ bool IsFullscreenNextIAEnabled() {
       self.toolbarCoordinator.primaryToolbarViewController.view;
 
   UIView* view = self.view;
-  _toolbarLeadingConstraint =
-      [primaryView.leadingAnchor constraintEqualToAnchor:view.leadingAnchor];
-  _toolbarTrailingConstraint =
-      [primaryView.trailingAnchor constraintEqualToAnchor:view.trailingAnchor];
+  _toolbarLeftConstraint =
+      [primaryView.leftAnchor constraintEqualToAnchor:view.leftAnchor];
+  _toolbarRightConstraint =
+      [primaryView.rightAnchor constraintEqualToAnchor:view.rightAnchor];
   [NSLayoutConstraint activateConstraints:@[
-    _toolbarLeadingConstraint,
-    _toolbarTrailingConstraint,
+    _toolbarLeftConstraint,
+    _toolbarRightConstraint,
   ]];
   [self updateToolbarConstraints];
 
@@ -1438,8 +1439,10 @@ bool IsFullscreenNextIAEnabled() {
   self.primaryToolbarHeightConstraint.active = YES;
 }
 
-// Updates the toolbar leading and trailing constraints depending on the
-// position of the AppBar.
+// Updates the physical left and right constraints of the toolbar based on the
+// App Bar position. Since `kLeft` and `kRight` correspond to physical screen
+// boundaries regardless of layout direction, left and right offsets are
+// updated directly.
 - (void)updateToolbarConstraints {
   if (!IsFullscreenNextIAEnabled()) {
     return;
@@ -1447,16 +1450,16 @@ bool IsFullscreenNextIAEnabled() {
   AppBarPosition position = self.layoutState.appBarPosition;
   switch (position) {
     case AppBarPosition::kLeft:
-      _toolbarLeadingConstraint.constant = AppBarHeightLandscape();
-      _toolbarTrailingConstraint.constant = 0;
+      _toolbarLeftConstraint.constant = AppBarHeightLandscape();
+      _toolbarRightConstraint.constant = 0;
       break;
     case AppBarPosition::kRight:
-      _toolbarLeadingConstraint.constant = 0;
-      _toolbarTrailingConstraint.constant = -AppBarHeightLandscape();
+      _toolbarLeftConstraint.constant = 0;
+      _toolbarRightConstraint.constant = -AppBarHeightLandscape();
       break;
     default:
-      _toolbarLeadingConstraint.constant = 0;
-      _toolbarTrailingConstraint.constant = 0;
+      _toolbarLeftConstraint.constant = 0;
+      _toolbarRightConstraint.constant = 0;
       break;
   }
 }
