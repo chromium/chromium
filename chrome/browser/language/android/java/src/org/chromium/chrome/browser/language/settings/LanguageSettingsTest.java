@@ -35,6 +35,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Restriction;
@@ -59,6 +60,7 @@ import org.chromium.ui.listmenu.ListMenuButton;
     "disable-features=" + ChromeFeatureList.DETAILED_LANGUAGE_SETTINGS
 })
 @Restriction(DeviceFormFactor.PHONE)
+@Batch(Batch.PER_CLASS)
 public class LanguageSettingsTest {
     @Rule
     public final SettingsActivityTestRule<LanguageSettings> mSettingsActivityTestRule =
