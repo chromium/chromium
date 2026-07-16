@@ -74,11 +74,11 @@ public class SettingsNavigationHelperTest {
         verify(mMockLauncher)
                 .startSettings(
                         eq(mMockContext),
-                        eq(HomeOfTransactionsFragment.class),
+                        eq(AutofillAndPasswordsFragment.class),
                         mBundleCaptor.capture());
         assertEquals(
-                HomeOfTransactionsFragment.AutofillSettingsReferrer.SETTINGS_MENU,
-                mBundleCaptor.getValue().getInt(HomeOfTransactionsFragment.EXTRA_REFERRER));
+                AutofillAndPasswordsFragment.AutofillSettingsReferrer.SETTINGS_MENU,
+                mBundleCaptor.getValue().getInt(AutofillAndPasswordsFragment.EXTRA_REFERRER));
     }
 
     @Test

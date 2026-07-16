@@ -54,9 +54,11 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/** Home of Transactions fragment, the main entry point for all Autofill and Passwords settings. */
+/**
+ * Autofill and Passwords fragment, the main entry point for all Autofill and Passwords settings.
+ */
 @NullMarked
-public class HomeOfTransactionsFragment extends ChromeBaseSettingsFragment {
+public class AutofillAndPasswordsFragment extends ChromeBaseSettingsFragment {
 
     public static final String PREF_SIGNIN_PROMO = "autofill_and_passwords_signin_promo";
     public static final String PREF_PASSWORDS = "autofill_and_passwords_gpm";
@@ -71,7 +73,7 @@ public class HomeOfTransactionsFragment extends ChromeBaseSettingsFragment {
 
     public static final String EXTRA_REFERRER = "autofill_and_passwords_referrer";
 
-    // Represents different referrers when navigating to the Home of Transactions page.
+    // Represents different referrers when navigating to the Autofill and Passwords page.
     //
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
@@ -156,7 +158,7 @@ public class HomeOfTransactionsFragment extends ChromeBaseSettingsFragment {
         requireActivity()
                 .addMenuProvider(new AutofillHelpMenuProvider(this), this, Lifecycle.State.RESUMED);
 
-        SettingsUtils.addPreferencesFromResource(this, R.xml.home_of_transactions_preferences);
+        SettingsUtils.addPreferencesFromResource(this, R.xml.autofill_and_passwords_preferences);
 
         setupSignInPromo();
 
@@ -362,8 +364,8 @@ public class HomeOfTransactionsFragment extends ChromeBaseSettingsFragment {
 
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(
-                    HomeOfTransactionsFragment.class.getName(),
-                    R.xml.home_of_transactions_preferences) {
+                    AutofillAndPasswordsFragment.class.getName(),
+                    R.xml.autofill_and_passwords_preferences) {
 
                 @Override
                 public void updateDynamicPreferences(

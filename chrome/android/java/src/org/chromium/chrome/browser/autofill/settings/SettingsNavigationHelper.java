@@ -12,7 +12,7 @@ import org.jni_zero.CalledByNative;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.autofill.settings.HomeOfTransactionsFragment.AutofillSettingsReferrer;
+import org.chromium.chrome.browser.autofill.settings.AutofillAndPasswordsFragment.AutofillSettingsReferrer;
 import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -38,9 +38,10 @@ public class SettingsNavigationHelper {
         RecordUserAction.record("AutofillYourSavedInfoViewed");
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putInt(
-                HomeOfTransactionsFragment.EXTRA_REFERRER, AutofillSettingsReferrer.SETTINGS_MENU);
+                AutofillAndPasswordsFragment.EXTRA_REFERRER,
+                AutofillSettingsReferrer.SETTINGS_MENU);
         SettingsNavigationFactory.createSettingsNavigation()
-                .startSettings(context, HomeOfTransactionsFragment.class, fragmentArgs);
+                .startSettings(context, AutofillAndPasswordsFragment.class, fragmentArgs);
         return true;
     }
 

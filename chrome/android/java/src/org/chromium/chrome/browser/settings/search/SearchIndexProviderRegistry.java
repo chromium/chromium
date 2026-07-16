@@ -9,6 +9,7 @@ import org.chromium.chrome.browser.about_settings.AboutChromeSettings;
 import org.chromium.chrome.browser.about_settings.LegalInformationSettings;
 import org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment;
 import org.chromium.chrome.browser.autofill.settings.AndroidPaymentAppsFragment;
+import org.chromium.chrome.browser.autofill.settings.AutofillAndPasswordsFragment;
 import org.chromium.chrome.browser.autofill.settings.AutofillBuyNowPayLaterFragment;
 import org.chromium.chrome.browser.autofill.settings.AutofillCardBenefitsFragment;
 import org.chromium.chrome.browser.autofill.settings.AutofillIdentityDocsFragment;
@@ -17,7 +18,6 @@ import org.chromium.chrome.browser.autofill.settings.AutofillProfilesFragment;
 import org.chromium.chrome.browser.autofill.settings.AutofillShoppingFragment;
 import org.chromium.chrome.browser.autofill.settings.AutofillTravelFragment;
 import org.chromium.chrome.browser.autofill.settings.FinancialAccountsManagementFragment;
-import org.chromium.chrome.browser.autofill.settings.HomeOfTransactionsFragment;
 import org.chromium.chrome.browser.autofill.settings.NonCardPaymentMethodsManagementFragment;
 import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.autofill.settings.personal_context.AutofillPersonalContextFragment;
@@ -132,6 +132,7 @@ public final class SearchIndexProviderRegistry {
                     AccountManagementFragment.SEARCH_INDEX_DATA_PROVIDER,
                     AndroidPaymentAppsFragment.SEARCH_INDEX_DATA_PROVIDER,
                     AppearanceSettingsFragment.SEARCH_INDEX_DATA_PROVIDER,
+                    AutofillAndPasswordsFragment.SEARCH_INDEX_DATA_PROVIDER,
                     AutofillBuyNowPayLaterFragment.SEARCH_INDEX_DATA_PROVIDER,
                     AutofillCardBenefitsFragment.SEARCH_INDEX_DATA_PROVIDER,
                     AutofillIdentityDocsFragment.SEARCH_INDEX_DATA_PROVIDER,
@@ -140,7 +141,6 @@ public final class SearchIndexProviderRegistry {
                     AutofillProfilesFragment.SEARCH_INDEX_DATA_PROVIDER,
                     AutofillShoppingFragment.SEARCH_INDEX_DATA_PROVIDER,
                     AutofillTravelFragment.SEARCH_INDEX_DATA_PROVIDER,
-                    HomeOfTransactionsFragment.SEARCH_INDEX_DATA_PROVIDER,
                     ClearBrowsingDataFragment.SEARCH_INDEX_DATA_PROVIDER,
                     FinancialAccountsManagementFragment.SEARCH_INDEX_DATA_PROVIDER,
                     GoogleServicesSettings.SEARCH_INDEX_DATA_PROVIDER,

@@ -30,6 +30,7 @@ public interface SettingsNavigation {
         SettingsFragment.ALL_SITES,
         SettingsFragment.ANDROID_PAYMENT_APPS,
         SettingsFragment.APPEARANCE,
+        SettingsFragment.AUTOFILL_AND_PASSWORDS,
         SettingsFragment.AUTOFILL_BUY_NOW_PAY_LATER,
         SettingsFragment.AUTOFILL_CARD_BENEFITS,
         SettingsFragment.AUTOFILL_IDENTITY_DOCS,
@@ -50,7 +51,6 @@ public interface SettingsNavigation {
         SettingsFragment.GLIC_PERMISSIONS,
         SettingsFragment.GOOGLE_SERVICES,
         SettingsFragment.GROUPED_WEBSITES,
-        SettingsFragment.HOME_OF_TRANSACTIONS,
         SettingsFragment.HOMEPAGE,
         SettingsFragment.HTTPS_FIRST_MODE,
         SettingsFragment.IMAGE_DESCRIPTIONS,
@@ -106,6 +106,7 @@ public interface SettingsNavigation {
         int ALL_SITES = 5;
         int ANDROID_PAYMENT_APPS = 6;
         int APPEARANCE = 7;
+        int AUTOFILL_AND_PASSWORDS = 28;
         int AUTOFILL_BUY_NOW_PAY_LATER = 8;
         int AUTOFILL_CARD_BENEFITS = 9;
         int AUTOFILL_IDENTITY_DOCS = 10;
@@ -126,7 +127,6 @@ public interface SettingsNavigation {
         int GLIC_PERMISSIONS = 25;
         int GOOGLE_SERVICES = 26;
         int GROUPED_WEBSITES = 27;
-        int HOME_OF_TRANSACTIONS = 28;
         int HOMEPAGE = 29;
         int HTTPS_FIRST_MODE = 30;
         int IMAGE_DESCRIPTIONS = 31;

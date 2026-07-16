@@ -55,8 +55,8 @@ import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
-import org.chromium.chrome.browser.autofill.settings.HomeOfTransactionsFragment.AutofillSettingsReferrer;
-import org.chromium.chrome.browser.autofill.settings.HomeOfTransactionsFragment.YourSavedInfoDataCategory;
+import org.chromium.chrome.browser.autofill.settings.AutofillAndPasswordsFragment.AutofillSettingsReferrer;
+import org.chromium.chrome.browser.autofill.settings.AutofillAndPasswordsFragment.YourSavedInfoDataCategory;
 import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.autofill.settings.personal_context.AutofillPersonalContextFragment;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
@@ -89,17 +89,17 @@ import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.TestAccounts;
 
-/** Tests for {@link HomeOfTransactionsFragment}. */
+/** Tests for {@link AutofillAndPasswordsFragment}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class HomeOfTransactionsFragmentTest {
+public class AutofillAndPasswordsFragmentTest {
     @Rule(order = 0)
     public SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Rule(order = 1)
-    public SettingsActivityTestRule<HomeOfTransactionsFragment> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(HomeOfTransactionsFragment.class);
+    public SettingsActivityTestRule<AutofillAndPasswordsFragment> mSettingsActivityTestRule =
+            new SettingsActivityTestRule<>(AutofillAndPasswordsFragment.class);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -230,10 +230,10 @@ public class HomeOfTransactionsFragmentTest {
 
         mSettingsActivityTestRule.startSettingsActivity();
 
-        HomeOfTransactionsFragment fragment = mSettingsActivityTestRule.getFragment();
+        AutofillAndPasswordsFragment fragment = mSettingsActivityTestRule.getFragment();
         SigninPromoPreference preference =
                 (SigninPromoPreference)
-                        fragment.findPreference(HomeOfTransactionsFragment.PREF_SIGNIN_PROMO);
+                        fragment.findPreference(AutofillAndPasswordsFragment.PREF_SIGNIN_PROMO);
         assertFalse(preference.isSelectable());
     }
 
@@ -408,16 +408,17 @@ public class HomeOfTransactionsFragmentTest {
     public void testSearchIndexWhenAllEnabled() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    HomeOfTransactionsFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
-                            mSettingsActivityTestRule.getActivity(),
-                            mSearchIndexDataMock,
-                            mProfileMock);
+                    AutofillAndPasswordsFragment.SEARCH_INDEX_DATA_PROVIDER
+                            .updateDynamicPreferences(
+                                    mSettingsActivityTestRule.getActivity(),
+                                    mSearchIndexDataMock,
+                                    mProfileMock);
                 });
 
         verify(mSearchIndexDataMock, only())
                 .removeEntry(
-                        HomeOfTransactionsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
-                                HomeOfTransactionsFragment.PREF_SIGNIN_PROMO));
+                        AutofillAndPasswordsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
+                                AutofillAndPasswordsFragment.PREF_SIGNIN_PROMO));
     }
 
     @Test
@@ -426,49 +427,50 @@ public class HomeOfTransactionsFragmentTest {
     public void testSearchIndexEmptyWhenFeatureDisabled() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    HomeOfTransactionsFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
-                            mSettingsActivityTestRule.getActivity(),
-                            mSearchIndexDataMock,
-                            mProfileMock);
+                    AutofillAndPasswordsFragment.SEARCH_INDEX_DATA_PROVIDER
+                            .updateDynamicPreferences(
+                                    mSettingsActivityTestRule.getActivity(),
+                                    mSearchIndexDataMock,
+                                    mProfileMock);
                 });
 
         verify(mSearchIndexDataMock)
                 .removeEntry(
-                        HomeOfTransactionsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
-                                HomeOfTransactionsFragment.PREF_PASSWORDS));
+                        AutofillAndPasswordsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
+                                AutofillAndPasswordsFragment.PREF_PASSWORDS));
         verify(mSearchIndexDataMock)
                 .removeEntry(
-                        HomeOfTransactionsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
-                                HomeOfTransactionsFragment.PREF_AUTOFILL_PAYMENTS));
+                        AutofillAndPasswordsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
+                                AutofillAndPasswordsFragment.PREF_AUTOFILL_PAYMENTS));
         verify(mSearchIndexDataMock)
                 .removeEntry(
-                        HomeOfTransactionsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
-                                HomeOfTransactionsFragment.PREF_AUTOFILL_ADDRESSES));
+                        AutofillAndPasswordsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
+                                AutofillAndPasswordsFragment.PREF_AUTOFILL_ADDRESSES));
         verify(mSearchIndexDataMock)
                 .removeEntry(
-                        HomeOfTransactionsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
-                                HomeOfTransactionsFragment.PREF_AUTOFILL_SETTINGS));
+                        AutofillAndPasswordsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
+                                AutofillAndPasswordsFragment.PREF_AUTOFILL_SETTINGS));
         verify(mSearchIndexDataMock)
                 .removeEntry(
-                        HomeOfTransactionsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
-                                HomeOfTransactionsFragment.PREF_AUTOFILL_IDENTITY_DOCS));
+                        AutofillAndPasswordsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
+                                AutofillAndPasswordsFragment.PREF_AUTOFILL_IDENTITY_DOCS));
         verify(mSearchIndexDataMock)
                 .removeEntry(
-                        HomeOfTransactionsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
-                                HomeOfTransactionsFragment.PREF_AUTOFILL_IDENTITY_DOCS));
+                        AutofillAndPasswordsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
+                                AutofillAndPasswordsFragment.PREF_AUTOFILL_PERSONAL_CONTEXT));
         verify(mSearchIndexDataMock)
                 .removeEntry(
-                        HomeOfTransactionsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
-                                HomeOfTransactionsFragment.PREF_AUTOFILL_TRAVEL));
+                        AutofillAndPasswordsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
+                                AutofillAndPasswordsFragment.PREF_AUTOFILL_TRAVEL));
         verify(mSearchIndexDataMock)
                 .removeEntry(
-                        HomeOfTransactionsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
-                                HomeOfTransactionsFragment.PREF_AUTOFILL_SHOPPING));
+                        AutofillAndPasswordsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
+                                AutofillAndPasswordsFragment.PREF_AUTOFILL_SHOPPING));
 
         verify(mSearchIndexDataMock)
                 .removeEntry(
-                        HomeOfTransactionsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
-                                HomeOfTransactionsFragment.PREF_SIGNIN_PROMO));
+                        AutofillAndPasswordsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
+                                AutofillAndPasswordsFragment.PREF_SIGNIN_PROMO));
     }
 
     @Test
@@ -672,16 +674,17 @@ public class HomeOfTransactionsFragmentTest {
         when(mEntityDataManagerMock.isPersonalContextPreferenceVisible()).thenReturn(false);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    HomeOfTransactionsFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
-                            mSettingsActivityTestRule.getActivity(),
-                            mSearchIndexDataMock,
-                            mProfileMock);
+                    AutofillAndPasswordsFragment.SEARCH_INDEX_DATA_PROVIDER
+                            .updateDynamicPreferences(
+                                    mSettingsActivityTestRule.getActivity(),
+                                    mSearchIndexDataMock,
+                                    mProfileMock);
                 });
 
         verify(mSearchIndexDataMock)
                 .removeEntry(
-                        HomeOfTransactionsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
-                                HomeOfTransactionsFragment.PREF_AUTOFILL_PERSONAL_CONTEXT));
+                        AutofillAndPasswordsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
+                                AutofillAndPasswordsFragment.PREF_AUTOFILL_PERSONAL_CONTEXT));
     }
 
     private static void signInPromoDeclined(boolean value) {
