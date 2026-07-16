@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.AdvancedMockContext;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -25,6 +26,7 @@ import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 /** Tests "Usage and Crash reporting" settings screen. */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class PrivacyPreferencesManagerImplNativeTest {
 
     @Before
