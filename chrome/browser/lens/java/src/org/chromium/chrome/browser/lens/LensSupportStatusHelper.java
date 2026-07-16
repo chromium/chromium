@@ -10,6 +10,7 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gsa.GSAUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -18,6 +19,10 @@ import org.chromium.components.search_engines.TemplateUrlService;
 /** Helper class to determine the support status of Google Lens. */
 @NullMarked
 public class LensSupportStatusHelper {
+    public static final String LENS_OVERLAY_IMPL_TYPE = "implementation_type";
+    public static final String LENS_OVERLAY_IMPL_INTENT = "intent";
+    public static final String LENS_OVERLAY_IMPL_WEBUI = "webui";
+
     private static final String MIN_AGSA_VERSION_NAME_FOR_LENS_POSTCAPTURE = "10.65";
 
     /**
@@ -40,17 +45,32 @@ public class LensSupportStatusHelper {
             return LensMetrics.LensSupportStatus.NON_GOOGLE_SEARCH_ENGINE;
         }
 
-        String versionName = GSAUtils.getAgsaVersionName();
-        if (TextUtils.isEmpty(versionName)) {
-            return LensMetrics.LensSupportStatus.ACTIVITY_NOT_ACCESSIBLE;
-        }
-        if (GSAUtils.isAgsaVersionBelowMinimum(
-                versionName, MIN_AGSA_VERSION_NAME_FOR_LENS_POSTCAPTURE)) {
-            return LensMetrics.LensSupportStatus.OUT_OF_DATE;
+        boolean needToCheckAgsa = true;
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.LENS_OVERLAY_ANDROID)) {
+            String implType =
+                    ChromeFeatureList.getFieldTrialParamByFeature(
+                            ChromeFeatureList.LENS_OVERLAY_ANDROID, LENS_OVERLAY_IMPL_TYPE);
+            if (TextUtils.isEmpty(implType)) {
+                implType = LENS_OVERLAY_IMPL_INTENT;
+            }
+            if (!LENS_OVERLAY_IMPL_INTENT.equals(implType)) {
+                needToCheckAgsa = false;
+            }
         }
 
-        if (!GSAUtils.isValidAgsaPackage()) {
-            return LensMetrics.LensSupportStatus.INVALID_PACKAGE;
+        if (needToCheckAgsa) {
+            String versionName = GSAUtils.getAgsaVersionName();
+            if (TextUtils.isEmpty(versionName)) {
+                return LensMetrics.LensSupportStatus.ACTIVITY_NOT_ACCESSIBLE;
+            }
+            if (GSAUtils.isAgsaVersionBelowMinimum(
+                    versionName, MIN_AGSA_VERSION_NAME_FOR_LENS_POSTCAPTURE)) {
+                return LensMetrics.LensSupportStatus.OUT_OF_DATE;
+            }
+
+            if (!GSAUtils.isValidAgsaPackage()) {
+                return LensMetrics.LensSupportStatus.INVALID_PACKAGE;
+            }
         }
 
         return LensMetrics.LensSupportStatus.LENS_SEARCH_SUPPORTED;

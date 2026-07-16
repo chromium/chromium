@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensIdentityUtils;
 import org.chromium.chrome.browser.lens.LensIntentParams;
+import org.chromium.chrome.browser.lens.LensSupportStatusHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.embedder_support.view.ContentView;
@@ -57,9 +58,8 @@ import java.util.UUID;
 @NullMarked
 public class LensOverlayCoordinator implements UserData {
     private static final String TAG = "LensOverlay";
-    static final String LENS_OVERLAY_IMPL_INTENT = "intent";
-    static final String LENS_OVERLAY_IMPL_WEBUI = "webui";
-    static final String LENS_OVERLAY_IMPL_DEFAULT = LENS_OVERLAY_IMPL_INTENT;
+    static final String LENS_OVERLAY_IMPL_DEFAULT =
+            LensSupportStatusHelper.LENS_OVERLAY_IMPL_INTENT;
 
     private static final String LENS_OVERLAY_JS_BRIDGE_NAME = "lensOverlay";
 
@@ -69,8 +69,9 @@ public class LensOverlayCoordinator implements UserData {
     public static boolean isWebUiImplementationEnabled() {
         String implType =
                 ChromeFeatureList.getFieldTrialParamByFeature(
-                        ChromeFeatureList.LENS_OVERLAY_ANDROID, "implementation_type");
-        return LENS_OVERLAY_IMPL_WEBUI.equals(implType);
+                        ChromeFeatureList.LENS_OVERLAY_ANDROID,
+                        LensSupportStatusHelper.LENS_OVERLAY_IMPL_TYPE);
+        return LensSupportStatusHelper.LENS_OVERLAY_IMPL_WEBUI.equals(implType);
     }
 
     private static final String LENS_OVERLAY_DEFAULT_HTML =
@@ -173,7 +174,8 @@ public class LensOverlayCoordinator implements UserData {
         ThreadUtils.assertOnUiThread();
         String implType =
                 ChromeFeatureList.getFieldTrialParamByFeature(
-                        ChromeFeatureList.LENS_OVERLAY_ANDROID, "implementation_type");
+                        ChromeFeatureList.LENS_OVERLAY_ANDROID,
+                        LensSupportStatusHelper.LENS_OVERLAY_IMPL_TYPE);
 
         if (TextUtils.isEmpty(implType)) {
             implType = LENS_OVERLAY_IMPL_DEFAULT;
@@ -181,9 +183,9 @@ public class LensOverlayCoordinator implements UserData {
 
         boolean isRunning = false;
         Log.d(TAG, "Lens Overlay " + implType + " implementation started");
-        if (LENS_OVERLAY_IMPL_INTENT.equals(implType)) {
+        if (LensSupportStatusHelper.LENS_OVERLAY_IMPL_INTENT.equals(implType)) {
             isRunning = startIntentFlow(bitmap);
-        } else if (LENS_OVERLAY_IMPL_WEBUI.equals(implType)) {
+        } else if (LensSupportStatusHelper.LENS_OVERLAY_IMPL_WEBUI.equals(implType)) {
             isRunning = startWebUIFlow(bitmap);
         } else {
             Log.e(TAG, "Unrecognized implementation type: " + implType);

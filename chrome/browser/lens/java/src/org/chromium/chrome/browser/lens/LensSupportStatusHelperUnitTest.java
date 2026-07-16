@@ -19,6 +19,9 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gsa.GSAUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -28,6 +31,7 @@ import org.chromium.components.search_engines.TemplateUrlService;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @Batch(Batch.UNIT_TESTS)
+@DisableFeatures({ChromeFeatureList.LENS_OVERLAY_ANDROID})
 public class LensSupportStatusHelperUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -118,5 +122,55 @@ public class LensSupportStatusHelperUnitTest {
     @Test
     public void isLensSearchSupported_unsupported() {
         Assert.assertFalse(LensSupportStatusHelper.isLensSearchSupported(mProfile, true));
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.LENS_OVERLAY_ANDROID
+                    + ":"
+                    + LensSupportStatusHelper.LENS_OVERLAY_IMPL_TYPE
+                    + "/"
+                    + LensSupportStatusHelper.LENS_OVERLAY_IMPL_WEBUI)
+    public void getLensSupportStatus_webuiOverlay_skipGsaChecks() {
+        Mockito.when(mProfile.isOffTheRecord()).thenReturn(false);
+        Mockito.when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
+        // Even if AGSA is not present, it should be supported
+        GSAUtils.setAgsaPackageInfoForTesting(null);
+        Assert.assertEquals(
+                "Status should be LENS_SEARCH_SUPPORTED for WebUI implementation even without AGSA",
+                LensMetrics.LensSupportStatus.LENS_SEARCH_SUPPORTED,
+                (int) LensSupportStatusHelper.getLensSupportStatus(mProfile, false));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.LENS_OVERLAY_ANDROID)
+    public void getLensSupportStatus_defaultOverlay_doGsaChecks() {
+        Mockito.when(mProfile.isOffTheRecord()).thenReturn(false);
+        Mockito.when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
+        // AGSA is missing
+        GSAUtils.setAgsaPackageInfoForTesting(null);
+        Assert.assertEquals(
+                "Status should be ACTIVITY_NOT_ACCESSIBLE for default implementation (intent)"
+                        + " without AGSA",
+                LensMetrics.LensSupportStatus.ACTIVITY_NOT_ACCESSIBLE,
+                (int) LensSupportStatusHelper.getLensSupportStatus(mProfile, false));
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.LENS_OVERLAY_ANDROID
+                    + ":"
+                    + LensSupportStatusHelper.LENS_OVERLAY_IMPL_TYPE
+                    + "/"
+                    + LensSupportStatusHelper.LENS_OVERLAY_IMPL_INTENT)
+    public void getLensSupportStatus_intentOverlay_doGsaChecks() {
+        Mockito.when(mProfile.isOffTheRecord()).thenReturn(false);
+        Mockito.when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
+        // AGSA is missing
+        GSAUtils.setAgsaPackageInfoForTesting(null);
+        Assert.assertEquals(
+                "Status should be ACTIVITY_NOT_ACCESSIBLE for intent implementation without AGSA",
+                LensMetrics.LensSupportStatus.ACTIVITY_NOT_ACCESSIBLE,
+                (int) LensSupportStatusHelper.getLensSupportStatus(mProfile, false));
     }
 }
