@@ -51,6 +51,7 @@
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/omnibox/browser/omnibox_prefs.h"
 #import "components/omnibox/browser/zero_suggest_provider.h"
+#import "components/optimization_guide/core/feature_registry/feature_registration.h"
 #import "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #import "components/optimization_guide/core/optimization_guide_prefs.h"
 #import "components/password_manager/core/browser/password_manager.h"
@@ -901,6 +902,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Prefs for the Synced Set Up Feature.
   registry->RegisterIntegerPref(prefs::kSyncedSetUpImpressionCount, 0);
 
+  // Preference associated with the Gemini Settings policy state.
+  registry->RegisterIntegerPref(optimization_guide::prefs::kGeminiSettings, 0);
 
   // Deprecated 09/2025.
   registry->RegisterInt64Pref(kNtpShownBookmarksFolder, 0);
