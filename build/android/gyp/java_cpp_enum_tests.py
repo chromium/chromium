@@ -451,6 +451,14 @@ public @interface EnumName {
         kTestVal,
         kCodecMPEG2
       };
+
+      // GENERATED_JAVA_ENUM_PACKAGE: test.namespace
+      // GENERATED_JAVA_PREFIX_TO_STRIP: k
+      enum Typos {
+        kValue = 1,
+        kUnknownValue = 2,
+        kMaxValue = kUnknownValue,
+      };
     """.split('\n')
     definitions = HeaderParser(test_data).ParseDefinitions()
     definition = definitions[0]
@@ -482,6 +490,12 @@ public @interface EnumName {
     definition = definitions[4]
     self.assertEqual(
         collections.OrderedDict([('TEST_VAL', 0), ('CODEC_MPEG2', 1)]),
+        definition.entries)
+
+    definition = definitions[5]
+    self.assertEqual(
+        collections.OrderedDict([('VALUE', '1'), ('UNKNOWN_VALUE', '2'),
+                                 ('MAX_VALUE', 'UNKNOWN_VALUE')]),
         definition.entries)
 
   def testParseThrowsOnUnknownDirective(self):
