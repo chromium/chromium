@@ -42,7 +42,7 @@ class SharingSyncPreferenceTest : public testing::Test {
          kDeviceSenderIdAuthToken},
         /*chime_representative_target_id=*/std::string(),
         std::set<syncer::DeviceInfo::SharingFeature>{
-            syncer::DeviceInfo::SharingFeature::kClickToCallV2});
+            syncer::DeviceInfo::SharingFeature::kSharedClipboardV2});
   }
 
   void AddEnabledFeature(int feature) {

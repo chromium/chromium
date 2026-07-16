@@ -4597,7 +4597,6 @@ static_library("ui") {
       "//chrome/browser/preloading/new_tab_page_preload",
       "//chrome/browser/preloading/prerender",
       "//chrome/browser/profiles/keep_alive",
-      "//chrome/browser/sharing/click_to_call",
       "//chrome/browser/ui:sad_tab",
       "//chrome/browser/ui:sad_tab_impl",
       "//chrome/browser/ui/actions",

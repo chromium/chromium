@@ -1792,11 +1792,6 @@
     "expiry_milestone": 155
   },
   {
-    "name": "click-to-call",
-    "owners": [ "ellyjones@chromium.org" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "client-side-detection-server-model-for-scam-detection-android",
     "owners": [
       "xinghuilu@chromium.org",

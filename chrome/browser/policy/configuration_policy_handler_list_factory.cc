@@ -624,9 +624,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     side_search_prefs::kSideSearchEnabled,
     base::Value::Type::BOOLEAN },
 #endif // defined(TOOLKIT_VIEWS)
-  { key::kClickToCallEnabled,
-    prefs::kClickToCallEnabled,
-    base::Value::Type::BOOLEAN },
   { key::kCompressionDictionaryTransportEnabled,
     prefs::kCompressionDictionaryTransportEnabled,
     base::Value::Type::BOOLEAN },

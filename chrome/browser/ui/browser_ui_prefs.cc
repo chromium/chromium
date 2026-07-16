@@ -168,8 +168,6 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(policy::policy_prefs::kHideWebStoreIcon, false);
   registry->RegisterBooleanPref(prefs::kSharedClipboardEnabled, true);
 
-  registry->RegisterBooleanPref(prefs::kClickToCallEnabled, true);
-
 #if BUILDFLAG(IS_MAC)
   // This really belongs in platform code, but there's no good place to
   // initialize it between the time when the AppController is created

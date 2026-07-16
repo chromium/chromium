@@ -2338,8 +2338,6 @@ source_set("browser") {
     "//chrome/browser/share:impl",
     "//chrome/browser/sharing",
     "//chrome/browser/sharing:impl",
-    "//chrome/browser/sharing/click_to_call",
-    "//chrome/browser/sharing/click_to_call:impl",
     "//chrome/browser/sharing/optimization_guide",
     "//chrome/browser/sharing/shared_clipboard",
     "//chrome/browser/sharing/sms",

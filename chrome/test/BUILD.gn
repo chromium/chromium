@@ -5555,7 +5555,6 @@ test("unit_tests") {
     "//chrome/browser/share:unit_tests",
     "//chrome/browser/sharing",
     "//chrome/browser/sharing:unit_tests",
-    "//chrome/browser/sharing/click_to_call:unit_tests",
     "//chrome/browser/sharing/sms:unit_tests",
     "//chrome/browser/signin:unit_tests",
     "//chrome/browser/site_cookie_provider:unit_tests",
@@ -7938,7 +7937,6 @@ test("unit_tests") {
 
     deps += [
       "//chrome/browser/policy",
-      "//chrome/browser/sharing/click_to_call",
       "//chrome/browser/sharing/sms",
       "//components/enterprise:test_support",
     ]

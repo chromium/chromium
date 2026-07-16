@@ -206,9 +206,6 @@ IOSSharingDeviceRegistrationImpl::GetEnabledFeatures() const {
   return enabled_features;
 }
 
-bool IOSSharingDeviceRegistrationImpl::IsClickToCallSupported() const {
-  return false;
-}
 
 bool IOSSharingDeviceRegistrationImpl::IsSharedClipboardSupported() const {
   return false;

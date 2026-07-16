@@ -200,9 +200,7 @@ std::set<SharingFeature> SharingDeviceRegistrationImpl::GetEnabledFeatures()
   }
 
   std::set<SharingFeature> enabled_features;
-  if (IsClickToCallSupported()) {
-    enabled_features.insert(SharingFeature::kClickToCallV2);
-  }
+
   if (IsSharedClipboardSupported()) {
     enabled_features.insert(SharingFeature::kSharedClipboardV2);
   }
@@ -223,10 +221,6 @@ std::set<SharingFeature> SharingDeviceRegistrationImpl::GetEnabledFeatures()
   }
 
   return enabled_features;
-}
-
-bool SharingDeviceRegistrationImpl::IsClickToCallSupported() const {
-  return false;
 }
 
 bool SharingDeviceRegistrationImpl::IsSharedClipboardSupported() const {

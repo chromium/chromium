@@ -174,11 +174,6 @@ class SharingDeviceRegistrationImplTest : public testing::Test {
   std::set<syncer::DeviceInfo::SharingFeature> GetExpectedEnabledFeatures() {
     std::set<syncer::DeviceInfo::SharingFeature> features;
 
-    // IsClickToCallSupported() involves JNI call which is hard to test.
-    if (sharing_device_registration_.IsClickToCallSupported()) {
-      features.insert(syncer::DeviceInfo::SharingFeature::kClickToCallV2);
-    }
-
     // Shared clipboard should always be supported.
     features.insert(syncer::DeviceInfo::SharingFeature::kSharedClipboardV2);
 

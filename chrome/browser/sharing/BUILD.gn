@@ -42,7 +42,6 @@ source_set("impl") {
     "//chrome/browser/gcm",
     "//chrome/browser/glic",
     "//chrome/browser/optimization_guide",
-    "//chrome/browser/sharing/click_to_call",
     "//chrome/browser/sharing/glic_experimental_triggering",
     "//chrome/browser/sharing/one_time_tokens",
     "//chrome/browser/sharing/optimization_guide",

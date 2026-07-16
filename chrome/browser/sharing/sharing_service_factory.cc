@@ -15,7 +15,6 @@
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sharing/click_to_call/phone_number_regex.h"
 #include "chrome/browser/sharing/sharing_device_registration_impl.h"
 #include "chrome/browser/sharing/sharing_handler_registry_impl.h"
 #include "chrome/browser/sharing/sharing_message_bridge_factory.h"
@@ -116,8 +115,6 @@ SharingServiceFactory::BuildServiceInstanceForBrowserContext(
   if (!sync_service) {
     return nullptr;
   }
-
-  PrecompilePhoneNumberRegexesAsync();
 
   syncer::DeviceInfoSyncService* device_info_sync_service =
       DeviceInfoSyncServiceFactory::GetForProfile(profile);

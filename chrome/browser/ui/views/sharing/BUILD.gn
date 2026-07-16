@@ -79,7 +79,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/app/vector_icons",
     "//chrome/browser/sharing:impl",
-    "//chrome/browser/sharing/click_to_call",
     "//chrome/browser/sharing/sms",
     "//chrome/browser/ui/views/controls",
     "//chrome/test:test_support",

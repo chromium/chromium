@@ -127,8 +127,6 @@ class FakeSharingDeviceRegistration : public SharingDeviceRegistration {
     std::move(callback).Run(result_);
   }
 
-  bool IsClickToCallSupported() const override { return false; }
-
   bool IsSharedClipboardSupported() const override { return false; }
 
   bool IsSmsFetcherSupported() const override { return false; }
@@ -273,7 +271,7 @@ TEST_F(SharingServiceTest, GetDeviceCandidates_Empty) {
 
   std::vector<SharingTargetDeviceInfo> candidates =
       GetSharingService()->GetDeviceCandidates(
-          syncer::DeviceInfo::SharingFeature::kClickToCallV2);
+          syncer::DeviceInfo::SharingFeature::kSharedClipboardV2);
   EXPECT_TRUE(candidates.empty());
 }
 
@@ -290,7 +288,7 @@ TEST_F(SharingServiceTest, GetDeviceCandidates_Tracked) {
 
   std::vector<SharingTargetDeviceInfo> candidates =
       GetSharingService()->GetDeviceCandidates(
-          syncer::DeviceInfo::SharingFeature::kClickToCallV2);
+          syncer::DeviceInfo::SharingFeature::kSharedClipboardV2);
 
   ASSERT_EQ(1u, candidates.size());
 }

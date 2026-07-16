@@ -393,10 +393,6 @@ inline constexpr char
     kChildProcessSecurityPolicyRustChoiceRustAndCppWithProcessState[] =
         "Rust and C++ (with ProcessState)";
 
-inline constexpr char kClickToCallName[] = "Click-To-Call";
-inline constexpr char kClickToCallDescription[] =
-    "Enable the click-to-call feature.";
-
 inline constexpr char kConnectionAllowlistsName[] = "Connection Allowlists";
 inline constexpr char kConnectionAllowlistsDescription[] =
     "Enables a prototype implementation of `Connection-Allowlist` header "

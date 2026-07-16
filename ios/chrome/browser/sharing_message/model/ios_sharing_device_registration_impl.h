@@ -55,7 +55,6 @@ class IOSSharingDeviceRegistrationImpl : public SharingDeviceRegistration {
   // SharingDeviceRegistration:
   void RegisterDevice(RegistrationCallback callback) override;
   void UnregisterDevice(RegistrationCallback callback) override;
-  bool IsClickToCallSupported() const override;
   bool IsSharedClipboardSupported() const override;
   bool IsSmsFetcherSupported() const override;
   bool IsRemoteCopySupported() const override;

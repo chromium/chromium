@@ -59,9 +59,6 @@ class SharingDeviceRegistrationImpl : public SharingDeviceRegistration {
   // Un-registers device with sharing sync preferences.
   void UnregisterDevice(RegistrationCallback callback) override;
 
-  // Returns if device can handle receiving phone numbers for calling.
-  bool IsClickToCallSupported() const override;
-
   // Returns if device can handle receiving of shared clipboard contents.
   bool IsSharedClipboardSupported() const override;
 

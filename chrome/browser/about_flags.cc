@@ -9444,10 +9444,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kSeamlessRefreshRateSwitching)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    {"click-to-call", flag_descriptions::kClickToCallName,
-     flag_descriptions::kClickToCallDescription, kOsAll,
-     FEATURE_VALUE_TYPE(kClickToCall)},
-
     {"css-gamut-mapping", flag_descriptions::kCssGamutMappingName,
      flag_descriptions::kCssGamutMappingDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kBakedGamutMapping)},
