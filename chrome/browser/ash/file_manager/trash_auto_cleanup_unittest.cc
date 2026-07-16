@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/trash_io_task.h"
 #include "chrome/browser/ash/file_manager/trash_unittest_base.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -38,7 +39,8 @@ class TrashAutoCleanupTest : public file_manager::io_task::TrashBaseTest {
 
   void SetUp() override {
     file_manager::io_task::TrashBaseTest::SetUp();
-    trash_auto_cleanup_ = base::WrapUnique(new TrashAutoCleanup(profile()));
+    trash_auto_cleanup_ = base::WrapUnique(new TrashAutoCleanup(
+        TestingBrowserProcess::GetGlobal()->local_state(), profile()));
   }
 
   void TearDown() override {

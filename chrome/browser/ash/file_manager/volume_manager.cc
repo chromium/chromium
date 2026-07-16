@@ -367,7 +367,8 @@ void VolumeManager::Initialize() {
 
   // Start Trash autocleanup.
   if (!base::FeatureList::IsEnabled(ash::features::kFilesTrashAutoCleanup)) {
-    trash_auto_cleanup_ = trash::TrashAutoCleanup::Create(profile_);
+    trash_auto_cleanup_ =
+        trash::TrashAutoCleanup::Create(&local_state_.get(), profile_);
   }
 }
 

@@ -6,10 +6,13 @@
 #define CHROME_BROWSER_ASH_FILE_MANAGER_TRASH_AUTO_CLEANUP_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "chrome/browser/ash/file_manager/trash_info_validator.h"
 #include "chrome/browser/profiles/profile.h"
+
+class PrefService;
 
 namespace file_manager::trash {
 
@@ -47,12 +50,16 @@ class TrashAutoCleanup {
   TrashAutoCleanup(const TrashAutoCleanup&) = delete;
   TrashAutoCleanup& operator=(const TrashAutoCleanup&) = delete;
 
-  static std::unique_ptr<TrashAutoCleanup> Create(Profile* profile);
+  // `local_state` must be non-null and outlive the returned object.
+  static std::unique_ptr<TrashAutoCleanup> Create(
+      const PrefService* local_state,
+      Profile* profile);
 
  private:
   friend class TrashAutoCleanupTest;
 
-  explicit TrashAutoCleanup(Profile* profile);
+  // `local_state` must be non-null and outlive `this`.
+  TrashAutoCleanup(const PrefService* local_state, Profile* profile);
 
   void Init();
   void StartCleanup();
@@ -66,6 +73,7 @@ class TrashAutoCleanup {
   void SetCleanupDoneCallbackForTest(
       base::OnceCallback<void(AutoCleanupResult result)> cleanup_done_closure);
 
+  const raw_ref<const PrefService> local_state_;
   raw_ptr<Profile> profile_;
   std::unique_ptr<file_manager::trash::TrashInfoValidator> validator_ = nullptr;
   std::vector<base::FilePath> trash_info_directories_;

@@ -13,7 +13,6 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
-#include "chrome/browser/browser_process.h"
 
 namespace file_manager::trash {
 
@@ -98,7 +97,9 @@ bool DeleteOldTrashFilesOnBlockingThread(
 
 }  // namespace
 
-TrashAutoCleanup::TrashAutoCleanup(Profile* profile) : profile_(profile) {
+TrashAutoCleanup::TrashAutoCleanup(const PrefService* local_state,
+                                   Profile* profile)
+    : local_state_(CHECK_DEREF(local_state)), profile_(profile) {
   const TrashPathsMap trash_locations_ =
       file_manager::trash::GenerateEnabledTrashLocationsForProfile(profile_);
   for (const trash::TrashPathsMap::value_type& location : trash_locations_) {
@@ -110,17 +111,18 @@ TrashAutoCleanup::TrashAutoCleanup(Profile* profile) : profile_(profile) {
 
 TrashAutoCleanup::~TrashAutoCleanup() = default;
 
-std::unique_ptr<TrashAutoCleanup> TrashAutoCleanup::Create(Profile* profile) {
+std::unique_ptr<TrashAutoCleanup> TrashAutoCleanup::Create(
+    const PrefService* local_state,
+    Profile* profile) {
   // Only run the auto cleanup process for regular profiles on ChromeOS.
-  // TODO(crbug.com/404132053): Avoid using g_browser_process.
-  if (!file_manager::trash::IsTrashEnabledForProfile(
-          CHECK_DEREF(g_browser_process->local_state()), profile) ||
+  if (!file_manager::trash::IsTrashEnabledForProfile(CHECK_DEREF(local_state),
+                                                     profile) ||
       !profile || !profile->IsRegularProfile() ||
       !base::SysInfo::IsRunningOnChromeOS()) {
     return nullptr;
   }
 
-  auto instance = base::WrapUnique(new TrashAutoCleanup(profile));
+  auto instance = base::WrapUnique(new TrashAutoCleanup(local_state, profile));
   instance->Init();
   return instance;
 }
@@ -134,9 +136,8 @@ void TrashAutoCleanup::Init() {
 
 void TrashAutoCleanup::StartCleanup() {
   // "TrashEnabled" can be dynamically refreshed, make sure that it's enabled.
-  // TODO(crbug.com/404132053): Avoid using g_browser_process.
-  if (!file_manager::trash::IsTrashEnabledForProfile(
-          CHECK_DEREF(g_browser_process->local_state()), profile_)) {
+  if (!file_manager::trash::IsTrashEnabledForProfile(local_state_.get(),
+                                                     profile_)) {
     return;
   }
 
