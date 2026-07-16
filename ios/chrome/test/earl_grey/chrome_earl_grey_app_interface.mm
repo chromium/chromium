@@ -106,7 +106,6 @@
 #import "ios/testing/verify_custom_webkit.h"
 #import "ios/web/common/features.h"
 #import "ios/web/common/uikit_ui_util.h"
-#import "ios/web/js_messaging/web_view_js_utils.h"
 #import "ios/web/public/browser_state_utils.h"
 #import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/web_frame.h"
