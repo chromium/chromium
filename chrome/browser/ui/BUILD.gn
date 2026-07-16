@@ -3817,8 +3817,6 @@ static_library("ui") {
       "views/autofill/payments/manage_saved_iban_bubble_view.h",
       "views/autofill/payments/mandatory_reauth_confirmation_bubble_view.cc",
       "views/autofill/payments/mandatory_reauth_confirmation_bubble_view.h",
-      "views/autofill/payments/mandatory_reauth_icon_view.cc",
-      "views/autofill/payments/mandatory_reauth_icon_view.h",
       "views/autofill/payments/mandatory_reauth_opt_in_bubble_view.cc",
       "views/autofill/payments/mandatory_reauth_opt_in_bubble_view.h",
       "views/autofill/payments/offer_notification_bubble_views.cc",
@@ -4954,7 +4952,6 @@ static_library("ui") {
       # following headers get componentized:
       # c/b/ui/browser.h, view_ids.h
       # c/b/ui/views/autofill/payments/filled_card_information_icon_view.h
-      # c/b/ui/views/autofill/payments/mandatory_reauth_icon_view.h
       # c/b/ui/views/autofill/payments/save_payment_icon_view.h
       # c/b/ui/views/autofill/payments/virtual_card_enroll_icon_view.h
       "//chrome/browser/ui/views/page_action:impl",

@@ -355,12 +355,6 @@ BASE_FEATURE_PARAM(bool,
 );
 
 BASE_FEATURE_PARAM(bool,
-                   kPageActionsMigrationAutofillMandatoryReauth,
-                   &kPageActionsMigration,
-                   "mandatory_reauth",
-                   true);
-
-BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationVirtualCard,
                    &kPageActionsMigration,
                    "virtual_card",

@@ -14,8 +14,6 @@ const base::FeatureParam<bool>* GetPageActionsMigrationParam(
   switch (page_action) {
     case PageActionIconType::kIntentPicker:
       return &features::kPageActionsMigrationIntentPicker;
-    case PageActionIconType::kMandatoryReauth:
-      return &features::kPageActionsMigrationAutofillMandatoryReauth;
     case PageActionIconType::kVirtualCardEnroll:
       return &features::kPageActionsMigrationVirtualCard;
     case PageActionIconType::kFilledCardInformation:
@@ -66,6 +64,7 @@ bool IsPageActionMigrated(PageActionIconType page_action) {
     case PageActionIconType::kAiMode:
     case PageActionIconType::kReadingMode:
     case PageActionIconType::kAutofillPayment:
+    case PageActionIconType::kMandatoryReauth:
     case PageActionIconType::kPaymentsChurnedUsers:
     case PageActionIconType::kLensOverlayHomework:
     case PageActionIconType::kFakePageActionForDebug:

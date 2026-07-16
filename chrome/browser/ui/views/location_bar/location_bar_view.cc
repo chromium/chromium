@@ -502,7 +502,6 @@ void LocationBarView::Init() {
   params.types_enabled.push_back(PageActionIconType::kSaveIban);
   params.types_enabled.push_back(PageActionIconType::kFilledCardInformation);
   params.types_enabled.push_back(PageActionIconType::kVirtualCardEnroll);
-  params.types_enabled.push_back(PageActionIconType::kMandatoryReauth);
 
   if (browser_ && !is_popup_mode_) {
     params.types_enabled.push_back(PageActionIconType::kBookmarkStar);
