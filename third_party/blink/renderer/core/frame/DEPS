@@ -112,7 +112,6 @@ specific_include_rules = {
     "+base/run_loop.h",
     "+components/stylus_handwriting/win/features.h",
     "+components/viz/common/surfaces/parent_local_surface_id_allocator.h",
-    "+ui/events/types/scroll_input_type.h",
   ],
   "settings\\.h": [
     "+ui/base/pointer/pointer_device.h",

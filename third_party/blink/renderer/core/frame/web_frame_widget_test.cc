@@ -13,10 +13,8 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
-#include "cc/input/scroll_timing_info.h"
 #include "cc/layers/solid_color_layer.h"
 #include "cc/test/property_tree_test_utils.h"
-#include "cc/trees/compositor_commit_data.h"
 #include "cc/trees/scroll_source_type.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -44,15 +42,11 @@
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
-#include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/core/testing/fake_web_plugin.h"
 #include "third_party/blink/renderer/core/testing/scoped_fake_plugin_registry.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
-#include "third_party/blink/renderer/core/timing/performance_scroll_timing.h"
-#include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -62,7 +56,6 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "ui/base/mojom/window_show_state.mojom-blink.h"
 #include "ui/display/screen_info.h"
-#include "ui/events/types/scroll_input_type.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "components/stylus_handwriting/win/features.h"
@@ -418,104 +411,6 @@ TEST_F(WebFrameWidgetScrollContainerHitTest, PageScaleHalf) {
   //   50 + 0.5 * 0.5 * 150 = 87.5 < 100
   // we'll hit the wrong box.
   TestScrollContainerHitTest(gfx::PointF(50, 50), gfx::PointF(50, 150));
-}
-
-// Exercises WebFrameWidgetImpl::ProcessScrollTimingData, the entry point that
-// converts compositor-thread scroll timing records (delivered on
-// CompositorCommitData) into PerformanceScrollTiming entries on the main
-// thread for the Performance Scroll Timing API.
-class WebFrameWidgetScrollTimingSimTest : public WebFrameWidgetSimTest {
- public:
-  void SetUp() override {
-    WebFrameWidgetSimTest::SetUp();
-    WebView().Resize(gfx::Size(400, 400));
-
-    SimRequest request("https://example.com/test.html", "text/html");
-    LoadURL("https://example.com/test.html");
-    request.Complete(R"HTML(
-      <!DOCTYPE html>
-      <style>
-        #scroller { width: 100px; height: 100px; overflow: scroll; }
-        #space { width: 400px; height: 400px; }
-      </style>
-      <div id='scroller'><div id='space'></div></div>
-    )HTML");
-    WebView().MainFrameViewWidget()->UpdateAllLifecyclePhases(
-        DocumentUpdateReason::kTest);
-  }
-
-  WindowPerformance* GetPerformance() {
-    return DOMWindowPerformance::performance(*GetDocument().domWindow());
-  }
-
-  cc::ElementId ScrollerElementId() {
-    return GetDocument()
-        .getElementById(AtomicString("scroller"))
-        ->GetLayoutBox()
-        ->GetScrollableArea()
-        ->GetScrollElementId();
-  }
-
-  PerformanceEntryVector ScrollEntries() {
-    return GetPerformance()->getBufferedEntriesByType(
-        performance_entry_names::kScroll);
-  }
-
- private:
-  ScopedScrollPerformanceTimingForTest scroll_performance_timing_{true};
-};
-
-TEST_F(WebFrameWidgetScrollTimingSimTest, EmitsEntryForCompositorScroll) {
-  const base::TimeTicks start = base::TimeTicks::Now();
-
-  cc::CompositorCommitData commit_data;
-  cc::ScrollTimingInfo timing;
-  timing.element_id = ScrollerElementId();
-  timing.start_time = start;
-  timing.end_time = start + base::Milliseconds(50);
-  timing.input_type = ui::ScrollInputType::kWheel;
-  commit_data.scroll_timing_infos.push_back(timing);
-
-  WebView().MainFrameViewWidget()->UpdateCompositorScrollState(commit_data);
-
-  const auto entries = ScrollEntries();
-  ASSERT_EQ(1u, entries.size());
-  const auto* entry = static_cast<PerformanceScrollTiming*>(entries[0].Get());
-  EXPECT_EQ(AtomicString("wheel"), entry->scrollSource());
-  // The element id resolves to the scroller node and is exposable, so it is
-  // preserved as the entry's target.
-  EXPECT_EQ(GetDocument().getElementById(AtomicString("scroller")),
-            entry->target());
-}
-
-TEST_F(WebFrameWidgetScrollTimingSimTest,
-       EmitsEntryWithNullTargetForUnknownId) {
-  const base::TimeTicks start = base::TimeTicks::Now();
-
-  cc::CompositorCommitData commit_data;
-  cc::ScrollTimingInfo timing;
-  // An element id that does not correspond to any scrollable container, e.g. a
-  // scroller torn down before the commit reached the main thread.
-  timing.element_id = cc::ElementId(0xDEADBEEF);
-  timing.start_time = start;
-  timing.end_time = start + base::Milliseconds(50);
-  timing.input_type = ui::ScrollInputType::kTouchscreen;
-  commit_data.scroll_timing_infos.push_back(timing);
-
-  WebView().MainFrameViewWidget()->UpdateCompositorScrollState(commit_data);
-
-  const auto entries = ScrollEntries();
-  ASSERT_EQ(1u, entries.size());
-  const auto* entry = static_cast<PerformanceScrollTiming*>(entries[0].Get());
-  EXPECT_EQ(AtomicString("touch"), entry->scrollSource());
-  EXPECT_EQ(nullptr, entry->target());
-}
-
-TEST_F(WebFrameWidgetScrollTimingSimTest, NoEntryWithoutScrollTimingInfos) {
-  cc::CompositorCommitData commit_data;
-  WebView().MainFrameViewWidget()->UpdateCompositorScrollState(commit_data);
-
-  EXPECT_TRUE(ScrollEntries().empty());
 }
 
 class WebFrameWidgetImplRemoteFrameSimTest : public SimTest {

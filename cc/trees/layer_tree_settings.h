@@ -242,11 +242,6 @@ class CC_EXPORT LayerTreeSettings {
 
   // Whether the unbounded element API is enabled.
   bool enable_unbounded_element = false;
-
-  // Performance Scroll Timing API: enables compositor-thread scroll
-  // tracking. Mirrors the `ScrollPerformanceTiming` Blink runtime-enabled
-  // feature.
-  bool enable_scroll_performance_timing = false;
 };
 
 }  // namespace cc

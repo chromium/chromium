@@ -1502,8 +1502,6 @@ void WindowPerformance::AddScrollTiming(base::TimeTicks start_time,
                                         base::TimeTicks end_time,
                                         ui::ScrollInputType input_type,
                                         Node* target) {
-  // The only production caller already CHECKs the feature, so catch any
-  // unguarded caller early rather than silently no-op'ing.
   CHECK(RuntimeEnabledFeatures::ScrollPerformanceTimingEnabled(
       GetExecutionContext()));
   if (!DomWindow()) {
@@ -1517,8 +1515,6 @@ void WindowPerformance::AddScrollTiming(base::TimeTicks start_time,
 
   const DOMHighResTimeStamp start_dom_time =
       MonotonicTimeToDOMHighResTimeStamp(start_time);
-  // `cc::ScrollTimingController` guarantees both timestamps are non-null and
-  // `end_time >= start_time`.
   CHECK(!start_time.is_null());
   CHECK(!end_time.is_null());
   CHECK_GE(end_time, start_time);

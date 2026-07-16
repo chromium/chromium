@@ -1552,31 +1552,6 @@ void WebFrameWidgetImpl::UpdateCompositorScrollState(
   if (commit_data.scroll_end_data.done_containers.size()) {
     SendEndOfScrollEvents(commit_data);
   }
-
-  if (!commit_data.scroll_timing_infos.empty()) {
-    ProcessScrollTimingData(commit_data);
-  }
-}
-
-void WebFrameWidgetImpl::ProcessScrollTimingData(
-    const cc::CompositorCommitData& commit_data) {
-  LocalDOMWindow* dom_window = LocalRootImpl()->GetFrame()->DomWindow();
-  // Compositor only populates `scroll_timing_infos` when the feature is on.
-  CHECK(RuntimeEnabledFeatures::ScrollPerformanceTimingEnabled(dom_window));
-
-  WindowPerformance* performance =
-      DOMWindowPerformance::performance(*dom_window);
-
-  for (const auto& timing : commit_data.scroll_timing_infos) {
-    // `ScrollTimingController` only enqueues records after assigning both
-    // `end_time` and `input_type`, so dereferencing here is safe.
-    // `target` may be null if the scrollable container was disposed before the
-    // commit reaches us; `AddScrollTiming` tolerates a null target.
-    Node* target =
-        View()->FindNodeFromScrollableCompositorElementId(timing.element_id);
-    performance->AddScrollTiming(timing.start_time, *timing.end_time,
-                                 *timing.input_type, target);
-  }
 }
 
 void WebFrameWidgetImpl::UpdateAnimatedImageState(

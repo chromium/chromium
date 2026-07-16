@@ -1051,13 +1051,6 @@ class CORE_EXPORT WebFrameWidgetImpl
   void SendScrollSnapChangingEventIfNeeded(
       const cc::CompositorCommitData& commit_data);
 
-  // Performance Scroll Timing API: consumes the per-scroll timing
-  // records that the compositor thread populated on `commit_data` and
-  // forwards each one to the local frame's WindowPerformance for emission as
-  // a PerformanceScrollTiming entry. No-op when the runtime feature is
-  // disabled or when the frame is being torn down.
-  void ProcessScrollTimingData(const cc::CompositorCommitData& commit_data);
-
   void RecordManipulationTypeCounts(cc::ManipulationInfo info);
 
   enum DragAction { kDragEnter, kDragOver };
