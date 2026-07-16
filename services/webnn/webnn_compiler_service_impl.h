@@ -11,16 +11,11 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
+#include "services/webnn/public/cpp/ep_device_info.h"
 #include "services/webnn/public/mojom/webnn_compiler_context.mojom.h"
 #include "services/webnn/public/mojom/webnn_compiler_service.mojom.h"
 
-namespace base {
-class FilePath;
-}
-
 namespace webnn {
-
-struct EpDeviceInfo;
 
 // Maintains a set of WebNNCompilerContext instances. Runs in the WebNN Compiler
 // utility process.
@@ -42,8 +37,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNCompilerServiceImpl
   void CreateCompilerContext(
       mojom::CreateContextOptionsPtr context_options,
       const ContextProperties& context_properties,
-      const base::FilePath& ep_library_path,
-      const EpDeviceInfo& target_device,
       mojo::PendingRemote<mojom::WebNNModelLoader> model_loader,
       mojo::PendingReceiver<mojom::WebNNCompilerContext> receiver) override;
 
@@ -52,6 +45,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNCompilerServiceImpl
 
   // Called when the idle timer fires with no active compiler contexts.
   void OnIdleTimeout();
+
+  // The target EP device for this compiler service.
+  const EpDeviceInfo target_device_;
 
   mojo::UniqueReceiverSet<mojom::WebNNCompilerContext> compiler_contexts_;
 

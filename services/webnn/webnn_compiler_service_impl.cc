@@ -4,11 +4,12 @@
 
 #include "services/webnn/webnn_compiler_service_impl.h"
 
-#include "base/files/file_path.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "services/webnn/ort/compiler_context_impl_ort.h"
 #include "services/webnn/public/cpp/compiler_disconnect_reason.h"
 #include "services/webnn/public/cpp/ep_device_info.h"
+#include "services/webnn/webnn_switches.h"
 
 namespace webnn {
 
@@ -22,7 +23,14 @@ constexpr base::TimeDelta kIdleTimeout = base::Seconds(30);
 
 WebNNCompilerServiceImpl::WebNNCompilerServiceImpl(
     mojo::PendingReceiver<mojom::WebNNCompilerService> receiver)
-    : receiver_(this, std::move(receiver)) {
+    // The switch is already parsed and validated in PreSandboxInit() so it is
+    // guaranteed to be valid.
+    : target_device_(
+          EpDeviceInfo::FromSwitchValue(
+              base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+                  switches::kWebNNCompilerEpDeviceInfo))
+              .value()),
+      receiver_(this, std::move(receiver)) {
   compiler_contexts_.set_disconnect_handler(base::BindRepeating(
       &WebNNCompilerServiceImpl::OnCompilerContextDisconnected,
       base::Unretained(this)));
@@ -42,22 +50,17 @@ WebNNCompilerServiceImpl::~WebNNCompilerServiceImpl() = default;
 void WebNNCompilerServiceImpl::CreateCompilerContext(
     mojom::CreateContextOptionsPtr context_options,
     const ContextProperties& context_properties,
-    const base::FilePath& ep_library_path,
-    const EpDeviceInfo& target_device,
     mojo::PendingRemote<mojom::WebNNModelLoader> model_loader,
     mojo::PendingReceiver<mojom::WebNNCompilerContext> receiver) {
+  // A new context is being added — cancel any pending idle shutdown.
+  idle_timer_.Stop();
   // WebNNCompilerContext instances should be created based on the context
   // options. Currently the compiler service is only used by the ORT backend, so
   // here create CompilerContextImplOrt directly.
-  auto context = ort::CompilerContextImplOrt::Create(
-      ep_library_path, target_device, std::move(context_options),
-      context_properties, std::move(model_loader));
-  if (!context) {
-    return;
-  }
-  // A new context is being added — cancel any pending idle shutdown.
-  idle_timer_.Stop();
-  compiler_contexts_.Add(std::move(context), std::move(receiver));
+  compiler_contexts_.Add(std::make_unique<ort::CompilerContextImplOrt>(
+                             target_device_, std::move(context_options),
+                             context_properties, std::move(model_loader)),
+                         std::move(receiver));
 }
 
 void WebNNCompilerServiceImpl::OnCompilerContextDisconnected() {

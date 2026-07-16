@@ -99,6 +99,12 @@ class CONTENT_EXPORT ServiceProcessHost {
     // Specifies extra command line switches to append before launch.
     Options& WithExtraCommandLineSwitches(std::vector<std::string> switches);
 
+    // Specifies extra key/value command line switches to append before launch.
+    // Each pair is appended as "--<key>=<value>". Note that on Windows the key
+    // is lowercased, but the value is passed through as-is (case-preserving).
+    Options& WithExtraCommandLineSwitchKeyValues(
+        std::vector<std::pair<std::string, std::string>> switch_key_values);
+
     // Specifies a callback to be invoked with service process once it's
     // launched. Will be on UI thread.
     Options& WithProcessCallback(
@@ -144,6 +150,7 @@ class CONTENT_EXPORT ServiceProcessHost {
     std::optional<GURL> site;
     std::optional<int> child_flags;
     std::vector<std::string> extra_switches;
+    std::vector<std::pair<std::string, std::string>> extra_switch_key_values;
     base::OnceCallback<void(const base::Process&)> process_callback;
     base::WeakPtr<Observer> observer;
 #if BUILDFLAG(IS_WIN)

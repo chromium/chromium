@@ -60,7 +60,9 @@ void LaunchServiceProcess(mojo::GenericPendingReceiver receiver,
                     : base::UTF8ToUTF16(service_interface_name))
       .WithMetricsName(service_interface_name)
       .WithSandboxType(sandbox)
-      .WithExtraCommandLineSwitches(std::move(service_options.extra_switches));
+      .WithExtraCommandLineSwitches(std::move(service_options.extra_switches))
+      .WithExtraCommandLineSwitchKeyValues(
+          std::move(service_options.extra_switch_key_values));
 
   if (service_options.child_flags) {
     utility_options.WithChildFlags(*service_options.child_flags);

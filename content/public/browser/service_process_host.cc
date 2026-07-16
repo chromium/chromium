@@ -53,6 +53,13 @@ ServiceProcessHost::Options::WithExtraCommandLineSwitches(
   return *this;
 }
 
+ServiceProcessHost::Options&
+ServiceProcessHost::Options::WithExtraCommandLineSwitchKeyValues(
+    std::vector<std::pair<std::string, std::string>> switch_key_values) {
+  extra_switch_key_values = std::move(switch_key_values);
+  return *this;
+}
+
 ServiceProcessHost::Options& ServiceProcessHost::Options::WithProcessCallback(
     base::OnceCallback<void(const base::Process&)> callback) {
   process_callback = std::move(callback);

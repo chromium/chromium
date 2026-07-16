@@ -243,6 +243,7 @@ component("webnn_service") {
       "ort/scoped_ort_types.h",
       "ort/tensor_impl_ort.cc",
       "ort/tensor_impl_ort.h",
+      "ort/trivial_model.h",
       "webnn_compiler_service_impl.cc",
       "webnn_compiler_service_impl.h",
     ]

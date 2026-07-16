@@ -4,7 +4,11 @@
 
 #include "content/browser/webnn/webnn_compiler_process_host.h"
 
+#include <algorithm>
+#include <string>
 #include <string_view>
+#include <utility>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -13,16 +17,21 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_process_host.h"
+#include "content/public/browser/service_process_host_passkeys.h"
 #include "sandbox/policy/switches.h"
 #include "services/webnn/host/execution_provider_initializer.h"
 #include "services/webnn/public/cpp/compiler_disconnect_reason.h"
 #include "services/webnn/public/cpp/context_properties.h"
+#include "services/webnn/public/cpp/execution_providers_info.h"
+#include "services/webnn/public/cpp/webnn_device_util.h"
 #include "services/webnn/public/mojom/features.mojom-features.h"
 #include "services/webnn/public/mojom/webnn_compiler_context.mojom.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_model_loader.mojom.h"
+#include "services/webnn/webnn_switches.h"
 
 namespace content {
 
@@ -41,33 +50,61 @@ base::flat_map<webnn::EpDeviceInfo, int>& GetWebNNCompilerCrashCounts() {
   return *counts;
 }
 
-std::string_view WebnnDeviceTypeToString(webnn::mojom::Device device_type) {
-  switch (device_type) {
-    case webnn::mojom::Device::kCpu:
-      return "CPU";
-    case webnn::mojom::Device::kGpu:
-      return "GPU";
-    case webnn::mojom::Device::kNpu:
-      return "NPU";
+// Returns the paths of the workaround libraries that must be preloaded for
+// `target_device` before sandbox lockdown. The libraries live alongside the EP
+// library, whose directory is `ep_library_dir`.
+std::vector<base::FilePath> GetPreloadLibraryWorkaroundPaths(
+    const webnn::EpDeviceInfo& target_device,
+    const base::FilePath& ep_library_dir) {
+  auto ep_it = webnn::kKnownEPs.find(target_device.ep_name);
+  if (ep_it == webnn::kKnownEPs.end()) {
+    return {};
   }
-}
+  const auto& offline_support = ep_it->second.offline_compilation_support;
+  auto support_it =
+      std::ranges::find(offline_support, target_device.device_type,
+                        &webnn::OfflineCompilationSupport::device_type);
+  if (support_it == offline_support.end()) {
+    return {};
+  }
 
-// Formats a device for logging as "[<ep_name>, <DEVICE_TYPE>]".
-std::string EpDeviceToString(const webnn::EpDeviceInfo& device) {
-  return base::StrCat({"[", device.ep_name, ", ",
-                       WebnnDeviceTypeToString(device.device_type), "]"});
+  std::vector<base::FilePath> preload_library_paths;
+  preload_library_paths.reserve(
+      support_it->preload_libraries_workaround.size());
+  for (std::string_view preload_library :
+       support_it->preload_libraries_workaround) {
+    preload_library_paths.push_back(
+        ep_library_dir.AppendASCII(preload_library));
+  }
+  return preload_library_paths;
 }
 
 // Launches the WebNN Compiler utility process and returns its mojo remote.
-// `device_type` is the target device type for this process and included in the
-// process display name.
+// `ep_library_path` is the path to the EP library that will be loaded.
+// `target_device` is the EP device that the Compiler process will work on.
 mojo::Remote<webnn::mojom::WebNNCompilerService> LaunchCompilerProcess(
-    webnn::mojom::Device device_type) {
+    const base::FilePath& ep_library_path,
+    const webnn::EpDeviceInfo& target_device,
+    ServiceProcessHostPreloadLibraries::PassKey pass_key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   ServiceProcessHost::Options options;
   options.WithDisplayName(base::StrCat(
-      {"WebNN Compiler (", WebnnDeviceTypeToString(device_type), ")"}));
+      {"WebNN Compiler (", webnn::DeviceTypeToString(target_device.device_type),
+       ")"}));
+
+  // Pass the target EP library path and device info via the command line so the
+  // Compiler process can load the EP libraries and register the target EP in
+  // PreSandboxInit().
+  std::vector<std::pair<std::string, std::string>> extra_switch_key_values;
+  extra_switch_key_values.reserve(2);
+  extra_switch_key_values.emplace_back(
+      switches::kWebNNCompilerEpLibrary,
+      base::WideToUTF8(ep_library_path.value()));
+  extra_switch_key_values.emplace_back(switches::kWebNNCompilerEpDeviceInfo,
+                                       target_device.ToSwitchValue());
+  options.WithExtraCommandLineSwitchKeyValues(
+      std::move(extra_switch_key_values));
 
   // Only bypass MITIGATION_FORCE_MS_SIGNED_BINS when the browser was launched
   // with --allow-third-party-modules (for testing with non-MS-signed DLLs).
@@ -75,6 +112,19 @@ mojo::Remote<webnn::mojom::WebNNCompilerService> LaunchCompilerProcess(
           sandbox::policy::switches::kAllowThirdPartyModules)) {
     options.WithExtraCommandLineSwitches(
         {sandbox::policy::switches::kAllowThirdPartyModules});
+  }
+
+  // Preload the EP workaround libraries into the Compiler process before
+  // sandbox lockdown, which is required because some EPs load these libraries
+  // from a worker thread that runs under the lockdown token and would otherwise
+  // fail. See services/webnn/public/cpp/execution_providers_info.h for details.
+  // TODO(crbug.com/529544314): Remove once the EPs are fixed to load these
+  // libraries from the main thread before sandbox lockdown.
+  std::vector<base::FilePath> preload_libraries =
+      GetPreloadLibraryWorkaroundPaths(target_device,
+                                       ep_library_path.DirName());
+  if (!preload_libraries.empty()) {
+    options.WithPreloadedLibraries(std::move(preload_libraries), pass_key);
   }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -101,9 +151,10 @@ void WebNNCompilerProcessHost::RequestCompilerContext(
     mojo::PendingRemote<webnn::mojom::WebNNModelLoader> model_loader_remote) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  const auto crash_it = GetWebNNCompilerCrashCounts().find(target_device);
-  if ((crash_it != GetWebNNCompilerCrashCounts().end() &&
-       crash_it->second >= kMaxCompilerCrashCount) ||
+  auto it = GetWebNNCompilerCrashCounts().find(target_device);
+  const int crash_count =
+      it != GetWebNNCompilerCrashCounts().end() ? it->second : 0;
+  if (crash_count >= kMaxCompilerCrashCount ||
       !base::FeatureList::IsEnabled(
           webnn::mojom::features::kWebNNCompilerProcess) ||
       !base::FeatureList::IsEnabled(
@@ -111,13 +162,24 @@ void WebNNCompilerProcessHost::RequestCompilerContext(
     // Drop the pipe endpoints — peer endpoints will observe a disconnect.
     LOG(ERROR) << "[WebNN] RequestCompilerContext() failed: "
                   "WebNN Compiler process is disabled or has crashed too many "
-                  "times for device "
-               << EpDeviceToString(target_device);
+                  "times for ["
+               << target_device.ToSwitchValue() << "].";
     return;
   }
 
-  // Always call this function to update the EP info since EPs in `NotPresent`
-  // state may be added asynchronously after initialization.
+  // Create the context directly if the Compiler process for this device is
+  // already running.
+  auto& compiler_remote = webnn_compiler_remotes_[target_device];
+  if (compiler_remote.is_bound()) {
+    compiler_remote->CreateCompilerContext(
+        std::move(context_options), context_properties,
+        std::move(model_loader_remote), std::move(compiler_context_receiver));
+    return;
+  }
+
+  // Need to launch a new Compiler process. Resolve EPs first to get the
+  // library path. Always call this function to update the EP package info since
+  // EPs in `NotPresent` state may be added asynchronously after initialization.
   webnn::EnsureExecutionProvidersReady(base::BindOnce(
       &WebNNCompilerProcessHost::OnEpsResolvedForCompilerContext,
       weak_ptr_factory_.GetWeakPtr(), std::move(context_options),
@@ -140,24 +202,23 @@ void WebNNCompilerProcessHost::OnEpsResolvedForCompilerContext(
   if (ep_it == ep_package_info_map.end()) {
     // Drop the pipe endpoints — peer endpoints will observe a disconnect.
     LOG(ERROR) << "[WebNN] RequestCompilerContext() failed: "
-                  "EP package info not found for device "
-               << EpDeviceToString(target_device);
+                  "EP package info not found for ["
+               << target_device.ToSwitchValue() << "].";
     return;
   }
   const base::FilePath& ep_library_path = ep_it->second->library_path;
 
-  // Each EP device gets its own compiler process.
   auto& compiler_remote = webnn_compiler_remotes_[target_device];
-
-  // Launch a new Compiler process for this device if not already running.
   if (!compiler_remote.is_bound()) {
-    compiler_remote = LaunchCompilerProcess(target_device.device_type);
+    compiler_remote =
+        LaunchCompilerProcess(ep_library_path, target_device,
+                              ServiceProcessHostPreloadLibraries::GetPassKey());
     // Compiler process could not be launched — peer endpoints will observe a
     // disconnect.
     if (!compiler_remote.is_bound()) {
       LOG(ERROR) << "[WebNN] RequestCompilerContext() failed: "
-                    "WebNN Compiler process could not be launched for device "
-                 << EpDeviceToString(target_device);
+                    "WebNN Compiler process could not be launched for ["
+                 << target_device.ToSwitchValue() << "].";
       return;
     }
 
@@ -167,15 +228,11 @@ void WebNNCompilerProcessHost::OnEpsResolvedForCompilerContext(
   }
 
   // Tell the Compiler process to create a per-context compiler state.
-  // EP library path and target device information are forwarded via mojom so
-  // the Compiler process can initialize its ORT Environment with the correct EP
-  // device.
   // The CompilerContext receiver and ModelLoader remote are forwarded to the
   // Compiler process, completing the pipe connections.
   compiler_remote->CreateCompilerContext(
-      std::move(context_options), context_properties, ep_library_path,
-      target_device, std::move(model_loader_remote),
-      std::move(compiler_context_receiver));
+      std::move(context_options), context_properties,
+      std::move(model_loader_remote), std::move(compiler_context_receiver));
 }
 
 void WebNNCompilerProcessHost::OnDisconnected(
@@ -190,10 +247,10 @@ void WebNNCompilerProcessHost::OnDisconnected(
   // value as an unexpected crash.
   switch (reason) {
     case static_cast<uint32_t>(webnn::CompilerDisconnectReason::kIdleShutdown):
-      // The compiler process shut down gracefully after all compiler
+      // The Compiler process shut down gracefully after all compiler
       // contexts disconnected and the idle timeout elapsed. Not a crash.
-      DVLOG(1) << "[WebNN] Compiler process idle shutdown for: "
-               << EpDeviceToString(device_info) << " (" << description << ").";
+      DVLOG(1) << "[WebNN] Compiler process idle shutdown for ["
+               << device_info.ToSwitchValue() << "] (" << description << ").";
       return;
     default:
       break;
@@ -203,11 +260,11 @@ void WebNNCompilerProcessHost::OnDisconnected(
   int crash_count = ++GetWebNNCompilerCrashCounts()[device_info];
   base::UmaHistogramExactLinear(
       base::StrCat({"WebNN.CompilerProcess.CrashCount.", device_info.ep_name,
-                    ".", WebnnDeviceTypeToString(device_info.device_type)}),
+                    ".", webnn::DeviceTypeToString(device_info.device_type)}),
       crash_count, kMaxCompilerCrashCount + 1);
 
-  LOG(ERROR) << "[WebNN] Compiler process disconnected unexpectedly for "
-             << EpDeviceToString(device_info) << " (count: " << crash_count
+  LOG(ERROR) << "[WebNN] Compiler process disconnected unexpectedly for ["
+             << device_info.ToSwitchValue() << "] (count: " << crash_count
              << ").";
 }
 

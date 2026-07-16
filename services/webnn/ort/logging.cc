@@ -11,6 +11,8 @@
 #include "base/strings/cstring_view.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "services/webnn/ort/ort_data_type.h"
+#include "services/webnn/public/cpp/webnn_device_util.h"
 #include "services/webnn/webnn_switches.h"
 
 namespace webnn::ort {
@@ -65,18 +67,6 @@ std::string Uint32ToHexString(uint32_t value) {
 
 }  // namespace
 
-std::string_view OrtHardwareDeviceTypeToString(
-    OrtHardwareDeviceType device_type) {
-  switch (device_type) {
-    case OrtHardwareDeviceType_CPU:
-      return "CPU";
-    case OrtHardwareDeviceType_GPU:
-      return "GPU";
-    case OrtHardwareDeviceType_NPU:
-      return "NPU";
-  }
-}
-
 OrtLoggingLevel GetOrtLoggingLevel() {
   OrtLoggingLevel ort_logging_level = ORT_LOGGING_LEVEL_ERROR;
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -126,8 +116,8 @@ void LogEpDevices(const OrtApi* ort_api,
     base::StrAppend(
         &ep_device_info,
         {", OrtHardwareDevice: {type: ",
-         OrtHardwareDeviceTypeToString(
-             ort_api->HardwareDevice_Type(hardware_device)),
+         DeviceTypeToString(OrtToWebnnDeviceType(
+             ort_api->HardwareDevice_Type(hardware_device))),
          ", vendor: ",
          // SAFETY: ORT guarantees that `OrtHardwareDevice::vendor` is valid and
          // null-terminated.

@@ -222,6 +222,13 @@ UtilityProcessHost::Options::WithExtraCommandLineSwitches(
   return *this;
 }
 
+UtilityProcessHost::Options&
+UtilityProcessHost::Options::WithExtraCommandLineSwitchKeyValues(
+    std::vector<std::pair<std::string, std::string>> switch_key_values) {
+  extra_switch_key_values_ = std::move(switch_key_values);
+  return *this;
+}
+
 #if BUILDFLAG(IS_WIN)
 UtilityProcessHost::Options& UtilityProcessHost::Options::WithPreloadLibraries(
     const std::vector<base::FilePath>& preloads) {
@@ -512,6 +519,10 @@ bool UtilityProcessHost::StartProcess() {
 
   for (const auto& extra_switch : options_.extra_switches_) {
     cmd_line->AppendSwitch(extra_switch);
+  }
+
+  for (const auto& [key, value] : options_.extra_switch_key_values_) {
+    cmd_line->AppendSwitchASCII(key, value);
   }
 
 #if BUILDFLAG(IS_WIN)

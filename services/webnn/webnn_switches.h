@@ -85,6 +85,14 @@ inline constexpr char kWebNNOrtIgnoreEpBlocklist[] =
 // DmlExecutionProvider will be used.
 inline constexpr char kWebNNOrtIgnoreIhvEps[] = "webnn-ort-ignore-ihv-eps";
 
+// Disable ORT virtual devices in the Compiler process, requiring actual
+// hardware devices for compilation instead. This switch is for testing only.
+// Note that online compilation requires access to actual hardware which is
+// blocked by the compiler sandbox, so this switch is usually used together with
+// `--disable-webnn-compiler-sandbox`.
+inline constexpr char kWebNNOrtDisableVirtualDevices[] =
+    "webnn-ort-disable-virtual-devices";
+
 // Configure the graph optimization level of ONNX Runtime.
 // Usage: --webnn-ort-graph-optimization-level=DISABLE_ALL
 // Other levels could be "BASIC", "EXTENDED" and "ALL".
@@ -108,14 +116,27 @@ inline constexpr char kWebNNOrtEnableProfiling[] = "webnn-ort-enable-profiling";
 // Usage: --webnn-ort-disable-cpu-fallback
 inline constexpr char kWebNNOrtDisableCpuFallback[] =
     "webnn-ort-disable-cpu-fallback";
+
+// Used internally to pass the target EP library path from the browser process
+// to the WebNN Compiler utility process. The compiler process reads this switch
+// during PreSandboxInit() to load the EP libraries before sandbox lockdown.
+inline constexpr char kWebNNCompilerEpLibrary[] = "webnn-compiler-ep-library";
+
+// Used internally to pass the target EP device info from the browser process to
+// the WebNN Compiler utility process, alongside `kWebNNCompilerEpLibrary`. The
+// compiler process parses this switch during PreSandboxInit() to register the
+// correct EP device before sandbox lockdown. The value is produced by
+// webnn::EpDeviceInfo::ToSwitchValue().
+inline constexpr char kWebNNCompilerEpDeviceInfo[] =
+    "webnn-compiler-ep-device-info";
 #endif  // BUILDFLAG(IS_WIN)
 
-extern base::span<const char* const> GetWebNNSwitchesCopiedFromGpuProcessHost();
+base::span<const char* const> GetWebNNSwitchesCopiedFromGpuProcessHost();
 
 // Returns the list of WebNN switches forwarded from the browser process to
 // the renderer process. Only backends that actually run inside the renderer
 // should appear here.
-extern base::span<const char* const> GetWebNNSwitchesForRendererProcess();
+base::span<const char* const> GetWebNNSwitchesForRendererProcess();
 
 }  // namespace switches
 

@@ -12,8 +12,49 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/memory/raw_span.h"
 #include "base/strings/cstring_view.h"
+#include "services/webnn/public/mojom/webnn_device.mojom.h"
 
 namespace webnn {
+
+// Specifies if an execution provider supports offline compilation and the
+// related information needed for offline compilation.
+struct OfflineCompilationSupport {
+  // The supported device type.
+  mojom::Device device_type;
+  // Supported device IDs corresponding to the device type.
+  base::raw_span<const uint32_t> device_ids;
+  // Libraries that must be preloaded before sandbox lockdown. This list should
+  // only contain workarounds when compiling a graph has issues to load a
+  // particular library.
+  // TODO(crbug.com/529544314): Remove once EPs load all required libraries
+  // internally by compiling a trivial graph.
+  base::raw_span<const std::string_view> preload_libraries_workaround;
+};
+
+namespace internal {
+
+inline constexpr OfflineCompilationSupport kOpenVINOOfflineCompilation[] = {
+    {
+        .device_type = mojom::Device::kNpu,
+        .device_ids =
+            (const uint32_t[]){
+                0x643E,  // Lunarlake
+                0xB03E,  // Pantherlake
+                0xFD3E,  // Wildcatlake
+            },
+        .preload_libraries_workaround =
+            (const std::string_view[]){
+                // This library is loaded on a worker thread internally in the
+                // NPU compiler, which triggers an ERROR_ACCESS_DENIED error
+                // since the worker thread runs on a lockdown token. Preloading
+                // this library before sandbox lockdown is a workaround for this
+                // issue.
+                "openvino_intel_npu_compiler.dll",
+            },
+    },
+};
+
+}  // namespace internal
 
 inline constexpr std::string_view kCPUExecutionProvider =
     "CPUExecutionProvider";
@@ -85,6 +126,8 @@ struct EpInfo {
   // via this config entry. Empty value means the EP uses the default
   // `SetOptimizedModelFilePath` approach.
   base::cstring_view model_dump_config_key;
+  // The information of offline compilation support.
+  base::raw_span<const OfflineCompilationSupport> offline_compilation_support;
 };
 
 // The listed EPs must match the names of the histogram variants
@@ -186,6 +229,8 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<std::string_view,
             // Dump models via its own session config entry.
             .model_dump_config_key =
                 "ep.openvinoexecutionprovider.dump_subgraphs",
+            .offline_compilation_support =
+                internal::kOpenVINOOfflineCompilation,
         },
     },
     // Qualcomm

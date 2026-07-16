@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -117,6 +118,11 @@ class CONTENT_EXPORT UtilityProcessHost final
     // Provides extra switches to append to the process's command line.
     Options& WithExtraCommandLineSwitches(std::vector<std::string> switches);
 
+    // Provides extra key/value switches to append to the process's command
+    // line.
+    Options& WithExtraCommandLineSwitchKeyValues(
+        std::vector<std::pair<std::string, std::string>> switch_key_values);
+
 #if BUILDFLAG(IS_WIN)
     // Specifies libraries to preload before the sandbox is locked down. Paths
     // should be absolute.
@@ -178,6 +184,9 @@ class CONTENT_EXPORT UtilityProcessHost final
 
     // Extra command line switches to append.
     std::vector<std::string> extra_switches_;
+
+    // Extra key/value command line switches to append.
+    std::vector<std::pair<std::string, std::string>> extra_switch_key_values_;
 
 #if BUILDFLAG(IS_WIN)
     // Libraries to load before sandbox lockdown. Only used on Windows.

@@ -94,10 +94,13 @@ source_set("in_process_context_provider") {
 if (is_win) {
   component("win") {
     sources = [
+      "ep_device_info.cc",
       "ep_device_info.h",
       "execution_providers_info.h",
       "platform_functions_win.cc",
       "platform_functions_win.h",
+      "webnn_device_util.cc",
+      "webnn_device_util.h",
       "win_app_runtime_package_info.h",
     ]
 

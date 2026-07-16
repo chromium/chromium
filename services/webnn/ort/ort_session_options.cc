@@ -265,7 +265,7 @@ SessionOptions::Create(mojom::CreateContextOptionsPtr context_options,
 
   return base::MakeRefCounted<SessionOptions>(
       base::PassKey<SessionOptions>(), std::move(session_options),
-      std::move(env), selected_ep_devices.front(), std::move(context_options));
+      std::move(env), first_selected_device, std::move(context_options));
 }
 
 // static
@@ -273,32 +273,6 @@ scoped_refptr<SessionOptions> SessionOptions::Create(
     const EpDeviceInfo& target_device,
     scoped_refptr<Environment> env) {
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
-
-  // Ensure the specified EP device is registered in the environment.
-  const OrtEpDevice* target_ort_device = nullptr;
-  base::span<const OrtEpDevice* const> registered_devices =
-      env->GetRegisteredEpDevices();
-  for (const auto* registered_device : registered_devices) {
-    const OrtHardwareDevice* hardware_device =
-        ort_api->EpDevice_Device(registered_device);
-    std::string_view ep_name = ort_api->EpDevice_EpName(registered_device);
-    OrtHardwareDeviceType hardware_device_type =
-        ort_api->HardwareDevice_Type(hardware_device);
-    uint32_t device_id = ort_api->HardwareDevice_DeviceId(hardware_device);
-
-    if (target_device.ep_name == ep_name &&
-        WebnnToOrtDeviceType(target_device.device_type) ==
-            hardware_device_type &&
-        target_device.device_id == device_id) {
-      target_ort_device = registered_device;
-      break;
-    }
-  }
-  CHECK(target_ort_device) << "[WebNN] Target EP device not registered: "
-                           << target_device.ep_name
-                           << " with device type: " << target_device.device_type
-                           << " and ID: 0x" << std::hex
-                           << target_device.device_id;
 
   ScopedOrtSessionOptions session_options =
       CreateBaseSessionOptions(target_device.ep_name);
@@ -315,6 +289,12 @@ scoped_refptr<SessionOptions> SessionOptions::Create(
                                                   key.c_str(), value.c_str()));
     }
   }
+
+  // The target device was validated and registered during Environment
+  // initialization, so it must be present.
+  const OrtEpDevice* target_ort_device =
+      env->FindRegisteredEpDevice(target_device);
+  CHECK(target_ort_device);
 
   // Directly bind the target device to the session options, bypassing the
   // auto EP selection policy.

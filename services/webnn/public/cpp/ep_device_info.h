@@ -7,7 +7,9 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "services/webnn/public/mojom/webnn_device.mojom.h"
@@ -23,6 +25,14 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP_WIN) EpDeviceInfo {
 
   auto operator<=>(const EpDeviceInfo&) const = default;
   bool operator==(const EpDeviceInfo&) const = default;
+
+  // Serializes this info into a string. The format is
+  // "<ep_name>,<device_type>,<device_id>".
+  std::string ToSwitchValue() const;
+
+  // Parses a value produced by ToSwitchValue(). Returns std::nullopt if failed
+  // to parse.
+  static std::optional<EpDeviceInfo> FromSwitchValue(std::string_view value);
 };
 
 }  // namespace webnn
