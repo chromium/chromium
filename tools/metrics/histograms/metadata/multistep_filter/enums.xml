@@ -19,6 +19,38 @@ found in the LICENSE file.
 
 <!-- LINT.ThenChange(//components/multistep_filter/core/logging/multistep_filter_metrics.h:MultistepFilterApplicationOutcome) -->
 
+<!-- LINT.IfChange(MultistepFilterPostSuggestionApplicationFirstNavigation) -->
+
+<enum name="MultistepFilterPostSuggestionApplicationFirstNavigation">
+  <int value="0" label="kBackNavigationWithinSessionWindow">
+    Back navigation within session window
+  </int>
+  <int value="1" label="kBackNavigationAfterSessionWindow">
+    Back navigation after session window
+  </int>
+  <int value="2" label="kForwardOrOtherNavigation">
+    Forward or other navigation
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//components/multistep_filter/core/logging/multistep_filter_metrics.h:MultistepFilterPostSuggestionApplicationFirstNavigation) -->
+
+<!-- LINT.IfChange(MultistepFilterPostSuggestionApplicationTabClose) -->
+
+<enum name="MultistepFilterPostSuggestionApplicationTabClose">
+  <int value="0" label="kTabClosedWithinSessionWindow">
+    Tab closed within session window
+  </int>
+  <int value="1" label="kTabClosedWithFurtherNavigation">
+    Tab closed after further navigation
+  </int>
+  <int value="2" label="kTabClosedAfterSessionWindow">
+    Tab closed after session window
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//components/multistep_filter/core/logging/multistep_filter_metrics.h:MultistepFilterPostSuggestionApplicationTabClose) -->
+
 <!-- LINT.IfChange(SuggestionUserDecision) -->
 
 <enum name="SuggestionUserDecision">

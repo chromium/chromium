@@ -317,6 +317,46 @@ found in the LICENSE file.
   <token key="TaskType" variants="MultistepFilterTaskType"/>
 </histogram>
 
+<histogram name="MultistepFilter.PostSuggestionApplication.FirstNavigation"
+    enum="MultistepFilterPostSuggestionApplicationFirstNavigation"
+    expires_after="2026-12-15">
+  <owner>adigupt@google.com</owner>
+  <owner>chrome-multistep-filter-eng@google.com</owner>
+  <summary>
+    Records the user's first navigation behavior after a Multistep Filter
+    suggestion is successfully applied.
+
+    Categorizes the first navigation into: - Back navigation within the
+    post-acceptance session window (default 2 minutes). - Back navigation after
+    this window. - Any other navigation (e.g. forward, new URL).
+
+    This helps measure if the user immediately reverted the suggestion (went
+    back) which might indicate it was not useful. Recorded on the first
+    non-ignored navigation after the suggestion is applied.
+  </summary>
+</histogram>
+
+<histogram name="MultistepFilter.PostSuggestionApplication.TabClose"
+    enum="MultistepFilterPostSuggestionApplicationTabClose"
+    expires_after="2026-12-15">
+  <owner>adigupt@google.com</owner>
+  <owner>chrome-multistep-filter-eng@google.com</owner>
+  <summary>
+    Records the user's tab closure behavior after a Multistep Filter suggestion
+    is successfully applied.
+
+    Categorizes the tab closure into: - Tab closed within the post-acceptance
+    session window (default 2 minutes) without any further navigation. - Tab
+    closed after the session window, without any further navigation. - Tab
+    closed after performing further navigations.
+
+    This helps measure user engagement after applying a suggestion (e.g. did
+    they immediately close the tab because it was not what they wanted, or did
+    they stay/navigate further). Recorded when the tab is closed or when a new
+    suggestion application overrides the active session.
+  </summary>
+</histogram>
+
 <histogram name="MultistepFilter.SuggestionAge.Accepted" units="minutes"
     expires_after="2026-12-15">
   <owner>adigupt@google.com</owner>

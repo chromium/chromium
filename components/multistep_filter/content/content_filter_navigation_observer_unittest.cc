@@ -186,7 +186,7 @@ class ContentFilterNavigationObserverTest
 TEST_F(ContentFilterNavigationObserverTest, HttpsNavigation) {
   const GURL url("https://www.example.com");
   FilterNavigationMetadata captured_metadata;
-  EXPECT_CALL(mock_controller(), OnNavigationFinished(_))
+  EXPECT_CALL(mock_controller(), OnNavigationFinished)
       .WillOnce(testing::SaveArg<0>(&captured_metadata));
 
   NavigationTimeCapturer time_capturer(web_contents());
@@ -217,12 +217,12 @@ TEST_F(ContentFilterNavigationObserverTest, HttpsNavigation) {
 // correctly populate the `is_same_document_navigation` metadata flag.
 TEST_F(ContentFilterNavigationObserverTest, SameDocumentNavigation) {
   const GURL url("https://www.example.com");
-  EXPECT_CALL(mock_controller(), OnNavigationFinished(_));
+  EXPECT_CALL(mock_controller(), OnNavigationFinished);
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              url);
 
   FilterNavigationMetadata captured_metadata;
-  EXPECT_CALL(mock_controller(), OnNavigationFinished(_))
+  EXPECT_CALL(mock_controller(), OnNavigationFinished)
       .WillOnce(testing::SaveArg<0>(&captured_metadata));
   const GURL same_doc_url("https://www.example.com/#test");
   std::unique_ptr<content::NavigationSimulator> navigation =
@@ -231,6 +231,48 @@ TEST_F(ContentFilterNavigationObserverTest, SameDocumentNavigation) {
   navigation->CommitSameDocument();
   EXPECT_TRUE(captured_metadata.is_same_document_navigation);
   EXPECT_EQ(captured_metadata.url, same_doc_url);
+}
+
+// Tests that back navigations trigger OnNavigationFinished and correctly
+// populate the `is_back_navigation` metadata flag.
+TEST_F(ContentFilterNavigationObserverTest, BackNavigation) {
+  const GURL url1("https://www.example.com/1");
+  const GURL url2("https://www.example.com/2");
+  EXPECT_CALL(mock_controller(), OnNavigationFinished);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             url1);
+  EXPECT_CALL(mock_controller(), OnNavigationFinished);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             url2);
+  FilterNavigationMetadata captured_metadata;
+  EXPECT_CALL(mock_controller(), OnNavigationFinished)
+      .WillOnce(testing::SaveArg<0>(&captured_metadata));
+  content::NavigationSimulator::GoBack(web_contents());
+  EXPECT_TRUE(captured_metadata.is_back_navigation);
+  EXPECT_EQ(captured_metadata.url, url1);
+}
+
+// Tests that forward navigations trigger OnNavigationFinished and do NOT
+// populate the `is_back_navigation` metadata flag.
+TEST_F(ContentFilterNavigationObserverTest, ForwardNavigation) {
+  const GURL url1("https://www.example.com/1");
+  const GURL url2("https://www.example.com/2");
+  EXPECT_CALL(mock_controller(), OnNavigationFinished);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             url1);
+  EXPECT_CALL(mock_controller(), OnNavigationFinished);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             url2);
+  EXPECT_CALL(mock_controller(), OnNavigationFinished);
+  content::NavigationSimulator::GoBack(web_contents());
+
+  FilterNavigationMetadata captured_metadata;
+  EXPECT_CALL(mock_controller(), OnNavigationFinished(_))
+      .WillOnce(testing::SaveArg<0>(&captured_metadata));
+  content::NavigationSimulator::GoForward(web_contents());
+  testing::Mock::VerifyAndClearExpectations(&mock_controller());
+  EXPECT_FALSE(captured_metadata.is_back_navigation);
+  EXPECT_EQ(captured_metadata.url, url2);
 }
 
 // Tests that an uncommitted/aborted navigation does not trigger
@@ -247,7 +289,7 @@ TEST_F(ContentFilterNavigationObserverTest, UncommittedNavigation) {
 // Tests that subframe navigations are ignored.
 TEST_F(ContentFilterNavigationObserverTest, SubframeNavigation) {
   const GURL url("https://www.example.com");
-  EXPECT_CALL(mock_controller(), OnNavigationFinished(_));
+  EXPECT_CALL(mock_controller(), OnNavigationFinished);
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              url);
 
@@ -265,7 +307,7 @@ TEST_F(ContentFilterNavigationObserverTest, ErrorPage) {
   const GURL url("https://www.example.com");
 
   FilterNavigationMetadata captured_metadata;
-  EXPECT_CALL(mock_controller(), OnNavigationFinished(_))
+  EXPECT_CALL(mock_controller(), OnNavigationFinished)
       .WillOnce(testing::SaveArg<0>(&captured_metadata));
 
   std::unique_ptr<content::NavigationSimulator> navigation =
@@ -283,7 +325,7 @@ TEST_F(ContentFilterNavigationObserverTest, FilterInitiated) {
   const GURL url("https://www.example.com");
 
   FilterNavigationMetadata captured_metadata;
-  EXPECT_CALL(mock_controller(), OnNavigationFinished(_))
+  EXPECT_CALL(mock_controller(), OnNavigationFinished)
       .WillOnce(testing::SaveArg<0>(&captured_metadata));
 
   std::unique_ptr<content::NavigationSimulator> navigation =

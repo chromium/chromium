@@ -44,6 +44,27 @@ void TriggerInitialNavigation(MultistepFilterMetricsTracker& tracker) {
   tracker.OnNavigationFinished(CreateDefaultMetadata());
 }
 
+void SetupAcceptedAndLandedSession(MultistepFilterMetricsTracker& tracker,
+                                   const UrlFilterSuggestion& suggestion) {
+  TriggerInitialNavigation(tracker);
+  tracker.OnSuggestionShown(suggestion, RetentionStateSnapshot());
+  tracker.OnSuggestionUserInteraction(SuggestionUserDecision::kAccepted);
+
+  FilterNavigationMetadata landing_metadata = CreateDefaultMetadata();
+  landing_metadata.url = GURL("https://example.com/landing");
+  landing_metadata.prev_url = GURL("https://example.com/source");
+  landing_metadata.applied_suggestion = suggestion;
+  tracker.OnNavigationFinished(landing_metadata);
+}
+
+void SetupPostSuggestionApplicationSession(
+    MultistepFilterMetricsTracker& tracker,
+    const UrlFilterSuggestion& suggestion) {
+  SetupAcceptedAndLandedSession(tracker, suggestion);
+  tracker.OnSuggestionApplicationAnnotationExtractionFinished(
+      /*was_applied_successfully=*/true);
+}
+
 UrlFilterSuggestion CreateSuggestionWithAttributes(
     std::string task_type,
     std::vector<std::pair<std::string, std::string>> attrs) {
@@ -789,6 +810,277 @@ TEST_F(MultistepFilterMetricsTrackerTest,
   tracker.OnPreservedSuggestionCleared();
   histogram_tester.ExpectUniqueSample(kMultistepFilterAcceptanceHistogram,
                                       SuggestionUserDecision::kIgnored, 1);
+}
+
+// Tests that same page navigations do not flush the active UI session.
+TEST_F(MultistepFilterMetricsTrackerTest,
+       SamePageNavigationsDoNotFlushUiSession) {
+  base::HistogramTester histogram_tester;
+  UrlFilterSuggestion suggestion = CreateSuggestion("SEARCH_ACCOMMODATIONS");
+
+  {
+    MultistepFilterMetricsTracker tracker;
+    TriggerInitialNavigation(tracker);
+    tracker.OnSuggestionShown(suggestion, RetentionStateSnapshot());
+
+    FilterNavigationMetadata same_doc_metadata = CreateDefaultMetadata();
+    same_doc_metadata.url = GURL("https://example.com/landing#hash");
+    same_doc_metadata.prev_url = GURL("https://example.com/landing");
+    same_doc_metadata.is_same_document_navigation = true;
+    tracker.OnNavigationFinished(same_doc_metadata);
+
+    tracker.OnSuggestionUserInteraction(SuggestionUserDecision::kAccepted);
+  }
+
+  {
+    MultistepFilterMetricsTracker tracker;
+    TriggerInitialNavigation(tracker);
+    tracker.OnSuggestionShown(suggestion, RetentionStateSnapshot());
+
+    FilterNavigationMetadata reload_metadata = CreateDefaultMetadata();
+    reload_metadata.url = GURL("https://example.com");
+    reload_metadata.prev_url = GURL("https://example.com");
+    tracker.OnNavigationFinished(reload_metadata);
+
+    tracker.OnSuggestionUserInteraction(SuggestionUserDecision::kAccepted);
+  }
+
+  histogram_tester.ExpectUniqueSample(kMultistepFilterAcceptanceHistogram,
+                                      SuggestionUserDecision::kAccepted, 2);
+}
+
+// Tests that back navigations after the session window are logged correctly.
+TEST_F(MultistepFilterMetricsTrackerTest, PostAcceptanceNavigations) {
+  base::HistogramTester histogram_tester;
+  UrlFilterSuggestion suggestion = CreateSuggestion("SEARCH_ACCOMMODATIONS");
+
+  {
+    MultistepFilterMetricsTracker tracker;
+    SetupPostSuggestionApplicationSession(tracker, suggestion);
+    task_environment_.FastForwardBy(base::Minutes(3));
+    FilterNavigationMetadata metadata = CreateDefaultMetadata();
+    metadata.url = GURL("https://example.com/source");
+    metadata.prev_url = GURL("https://example.com/landing");
+    metadata.is_back_navigation = true;
+    metadata.navigation_start_time =
+        task_environment_.NowTicks() - base::Minutes(2) - base::Seconds(50);
+    tracker.OnNavigationFinished(metadata);
+  }
+
+  {
+    MultistepFilterMetricsTracker tracker;
+    SetupPostSuggestionApplicationSession(tracker, suggestion);
+    task_environment_.FastForwardBy(base::Minutes(3));
+    FilterNavigationMetadata metadata = CreateDefaultMetadata();
+    metadata.url = GURL("https://example.com/source");
+    metadata.prev_url = GURL("https://example.com/landing");
+    metadata.is_back_navigation = true;
+    tracker.OnNavigationFinished(metadata);
+  }
+
+  {
+    MultistepFilterMetricsTracker tracker;
+    SetupPostSuggestionApplicationSession(tracker, suggestion);
+    task_environment_.FastForwardBy(base::Seconds(10));
+    FilterNavigationMetadata metadata = CreateDefaultMetadata();
+    metadata.url = GURL("https://example.com/other");
+    metadata.prev_url = GURL("https://example.com/landing");
+    tracker.OnNavigationFinished(metadata);
+  }
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          kMultistepFilterPostSuggestionApplicationFirstNavigationHistogram),
+      BucketsAre(
+          Bucket(MultistepFilterPostSuggestionApplicationFirstNavigation::
+                     kBackNavigationWithinSessionWindow,
+                 1),
+          Bucket(MultistepFilterPostSuggestionApplicationFirstNavigation::
+                     kBackNavigationAfterSessionWindow,
+                 1),
+          Bucket(MultistepFilterPostSuggestionApplicationFirstNavigation::
+                     kForwardOrOtherNavigation,
+                 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          kMultistepFilterPostSuggestionApplicationTabCloseHistogram),
+      BucketsAre(Bucket(MultistepFilterPostSuggestionApplicationTabClose::
+                            kTabClosedWithFurtherNavigation,
+                        3)));
+}
+
+// Tests that tab closure is logged correctly.
+TEST_F(MultistepFilterMetricsTrackerTest, PostAcceptanceTabCloses) {
+  base::HistogramTester histogram_tester;
+  UrlFilterSuggestion suggestion = CreateSuggestion("SEARCH_ACCOMMODATIONS");
+
+  {
+    MultistepFilterMetricsTracker tracker;
+    SetupPostSuggestionApplicationSession(tracker, suggestion);
+    task_environment_.FastForwardBy(base::Seconds(10));
+  }
+
+  {
+    MultistepFilterMetricsTracker tracker;
+    SetupPostSuggestionApplicationSession(tracker, suggestion);
+    task_environment_.FastForwardBy(base::Minutes(3));
+  }
+
+  {
+    MultistepFilterMetricsTracker tracker;
+    SetupPostSuggestionApplicationSession(tracker, suggestion);
+    task_environment_.FastForwardBy(base::Seconds(10));
+    FilterNavigationMetadata metadata = CreateDefaultMetadata();
+    metadata.url = GURL("https://example.com/other");
+    metadata.prev_url = GURL("https://example.com/landing");
+    tracker.OnNavigationFinished(metadata);
+    task_environment_.FastForwardBy(base::Seconds(10));
+  }
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          kMultistepFilterPostSuggestionApplicationTabCloseHistogram),
+      BucketsAre(Bucket(MultistepFilterPostSuggestionApplicationTabClose::
+                            kTabClosedWithinSessionWindow,
+                        1),
+                 Bucket(MultistepFilterPostSuggestionApplicationTabClose::
+                            kTabClosedAfterSessionWindow,
+                        1),
+                 Bucket(MultistepFilterPostSuggestionApplicationTabClose::
+                            kTabClosedWithFurtherNavigation,
+                        1)));
+}
+
+// Tests that ignored navigations and failures do not flush the active
+// post-suggestion application session.
+TEST_F(MultistepFilterMetricsTrackerTest,
+       PostAcceptanceIgnoredNavigationsAndFailures) {
+  base::HistogramTester histogram_tester;
+  UrlFilterSuggestion suggestion = CreateSuggestion("SEARCH_ACCOMMODATIONS");
+
+  {
+    MultistepFilterMetricsTracker tracker;
+    SetupPostSuggestionApplicationSession(tracker, suggestion);
+
+    FilterNavigationMetadata same_doc_metadata = CreateDefaultMetadata();
+    same_doc_metadata.url = GURL("https://example.com/landing#hash");
+    same_doc_metadata.prev_url = GURL("https://example.com/landing");
+    same_doc_metadata.is_same_document_navigation = true;
+    tracker.OnNavigationFinished(same_doc_metadata);
+
+    task_environment_.FastForwardBy(base::Seconds(10));
+    FilterNavigationMetadata real_metadata = CreateDefaultMetadata();
+    real_metadata.url = GURL("https://example.com/source");
+    real_metadata.prev_url = GURL("https://example.com/landing#hash");
+    real_metadata.is_back_navigation = true;
+    tracker.OnNavigationFinished(real_metadata);
+  }
+
+  {
+    MultistepFilterMetricsTracker tracker;
+    SetupPostSuggestionApplicationSession(tracker, suggestion);
+
+    FilterNavigationMetadata reload_metadata = CreateDefaultMetadata();
+    reload_metadata.url = GURL("https://example.com/landing");
+    reload_metadata.prev_url = GURL("https://example.com/landing");
+    tracker.OnNavigationFinished(reload_metadata);
+  }
+
+  {
+    MultistepFilterMetricsTracker tracker;
+    SetupAcceptedAndLandedSession(tracker, suggestion);
+    tracker.OnSuggestionApplicationAnnotationExtractionFinished(
+        /*was_applied_successfully=*/false);
+
+    task_environment_.FastForwardBy(base::Seconds(10));
+    FilterNavigationMetadata back_metadata = CreateDefaultMetadata();
+    back_metadata.url = GURL("https://example.com/source");
+    back_metadata.prev_url = GURL("https://example.com/landing");
+    back_metadata.is_back_navigation = true;
+    tracker.OnNavigationFinished(back_metadata);
+  }
+
+  histogram_tester.ExpectUniqueSample(
+      kMultistepFilterPostSuggestionApplicationFirstNavigationHistogram,
+      MultistepFilterPostSuggestionApplicationFirstNavigation::
+          kBackNavigationWithinSessionWindow,
+      1);
+}
+
+// Tests that showing a suggestion while a post-application session is active
+// does not interfere with the post-application session.
+TEST_F(MultistepFilterMetricsTrackerTest,
+       SuggestionClearedDoesNotInterfereWithPostApplicationSession) {
+  base::HistogramTester histogram_tester;
+  UrlFilterSuggestion suggestion1 = CreateSuggestion("SEARCH_ACCOMMODATIONS");
+  UrlFilterSuggestion suggestion2 = CreateSuggestion("SEARCH_FLIGHTS");
+
+  MultistepFilterMetricsTracker tracker;
+  SetupPostSuggestionApplicationSession(tracker, suggestion1);
+
+  tracker.OnSuggestionShown(suggestion2, RetentionStateSnapshot());
+  tracker.OnSuggestionUserInteraction(SuggestionUserDecision::kIgnored);
+  task_environment_.FastForwardBy(base::Seconds(10));
+  FilterNavigationMetadata metadata = CreateDefaultMetadata();
+  metadata.url = GURL("https://example.com/source");
+  metadata.prev_url = GURL("https://example.com/landing");
+  metadata.is_back_navigation = true;
+  tracker.OnNavigationFinished(metadata);
+
+  histogram_tester.ExpectUniqueSample(
+      kMultistepFilterPostSuggestionApplicationFirstNavigationHistogram,
+      MultistepFilterPostSuggestionApplicationFirstNavigation::
+          kBackNavigationWithinSessionWindow,
+      1);
+}
+
+// Tests that a new suggestion application flushes the active
+// post-suggestion application session.
+TEST_F(MultistepFilterMetricsTrackerTest,
+       NewSuggestionApplicationFlushesActivePostSession) {
+  base::HistogramTester histogram_tester;
+  UrlFilterSuggestion suggestion1 = CreateSuggestion("SEARCH_ACCOMMODATIONS");
+  UrlFilterSuggestion suggestion2 = CreateSuggestion("SEARCH_FLIGHTS");
+
+  {
+    MultistepFilterMetricsTracker tracker;
+
+    SetupPostSuggestionApplicationSession(tracker, suggestion1);
+
+    tracker.OnSuggestionShown(suggestion2, RetentionStateSnapshot());
+    tracker.OnSuggestionUserInteraction(SuggestionUserDecision::kAccepted);
+
+    FilterNavigationMetadata landing_metadata2 = CreateDefaultMetadata();
+    landing_metadata2.url = GURL("https://example.com/landing2");
+    landing_metadata2.prev_url = GURL("https://example.com/landing");
+    landing_metadata2.applied_suggestion = suggestion2;
+    tracker.OnNavigationFinished(landing_metadata2);
+
+    histogram_tester.ExpectUniqueSample(
+        kMultistepFilterPostSuggestionApplicationFirstNavigationHistogram,
+        MultistepFilterPostSuggestionApplicationFirstNavigation::
+            kForwardOrOtherNavigation,
+        1);
+
+    tracker.OnSuggestionApplicationAnnotationExtractionFinished(
+        /*was_applied_successfully=*/true);
+
+    histogram_tester.ExpectUniqueSample(
+        kMultistepFilterPostSuggestionApplicationTabCloseHistogram,
+        MultistepFilterPostSuggestionApplicationTabClose::
+            kTabClosedWithFurtherNavigation,
+        1);
+  }
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          kMultistepFilterPostSuggestionApplicationTabCloseHistogram),
+      BucketsAre(Bucket(MultistepFilterPostSuggestionApplicationTabClose::
+                            kTabClosedWithinSessionWindow,
+                        1),
+                 Bucket(MultistepFilterPostSuggestionApplicationTabClose::
+                            kTabClosedWithFurtherNavigation,
+                        1)));
 }
 
 }  // namespace

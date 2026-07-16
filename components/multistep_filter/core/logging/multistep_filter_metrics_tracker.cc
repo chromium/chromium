@@ -213,6 +213,48 @@ void LogSuggestionAcceptanceLatencyAndAgeMetrics(
   }
 }
 
+MultistepFilterPostSuggestionApplicationFirstNavigation
+CalculatePostSuggestionApplicationFirstNavigationAction(
+    const MultistepFilterMetricsTracker::PostSuggestionApplicationSession&
+        session,
+    const FilterNavigationMetadata& metadata) {
+  if (metadata.is_back_navigation) {
+    // Use the navigation start time (when the user initiated the back action)
+    // rather than the current time (when the navigation finished) to measure
+    // the user's actual dwell time on the page, excluding loading latency.
+    base::TimeDelta time_since_landing =
+        metadata.navigation_start_time -
+        session.post_suggestion_window_start_time;
+    bool within_window = time_since_landing <
+                         kMultistepFilterPostApplicationSessionDuration.Get();
+    return within_window
+               ? MultistepFilterPostSuggestionApplicationFirstNavigation::
+                     kBackNavigationWithinSessionWindow
+               : MultistepFilterPostSuggestionApplicationFirstNavigation::
+                     kBackNavigationAfterSessionWindow;
+  }
+  return MultistepFilterPostSuggestionApplicationFirstNavigation::
+      kForwardOrOtherNavigation;
+}
+
+// Helper to determine if a navigation should be ignored for post-application
+// metrics.
+bool ShouldIgnoreNavigationForPostApplicationMetrics(
+    const FilterNavigationMetadata& metadata) {
+  // Ignore same-document navigations unless they are back navigations or have
+  // user gesture.
+  if (metadata.is_same_document_navigation && !metadata.is_back_navigation &&
+      !metadata.has_user_gesture) {
+    return true;
+  }
+  // Ignore same-url reloads.
+  if (metadata.url == metadata.prev_url &&
+      !metadata.is_same_document_navigation) {
+    return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 MultistepFilterMetricsTracker::MultistepFilterMetricsTracker() = default;
@@ -223,6 +265,9 @@ MultistepFilterMetricsTracker::~MultistepFilterMetricsTracker() {
   }
   if (current_suggestion_application_session_.has_value()) {
     FlushSuggestionApplicationSession(/*was_applied_successfully=*/false);
+  }
+  if (current_post_suggestion_application_session_.has_value()) {
+    FlushPostSuggestionApplicationSession();
   }
 }
 
@@ -238,6 +283,11 @@ void MultistepFilterMetricsTracker::OnNavigationFinished(
   // failed.
   if (current_suggestion_application_session_.has_value()) {
     FlushSuggestionApplicationSession(/*was_applied_successfully=*/false);
+  }
+
+  // If a post-acceptance session is active, track this navigation.
+  if (current_post_suggestion_application_session_.has_value()) {
+    TrackPostSuggestionApplicationNavigation(metadata);
   }
 
   // If this navigation is applying the suggestion, start the application
@@ -322,6 +372,17 @@ void MultistepFilterMetricsTracker::
   if (!current_suggestion_application_session_.has_value()) {
     return;
   }
+  if (was_applied_successfully &&
+      !current_suggestion_application_session_->is_error_page) {
+    if (current_post_suggestion_application_session_.has_value()) {
+      FlushPostSuggestionApplicationSession();
+    }
+    current_post_suggestion_application_session_ =
+        PostSuggestionApplicationSession{
+            .post_suggestion_window_start_time =
+                current_navigation_.navigation_finish_time,
+        };
+  }
   FlushSuggestionApplicationSession(was_applied_successfully);
 }
 
@@ -363,6 +424,47 @@ void MultistepFilterMetricsTracker::FlushSuggestionApplicationSession(
   LogApplicationOutcome(*current_suggestion_application_session_,
                         current_navigation_, is_success);
   current_suggestion_application_session_ = std::nullopt;
+}
+
+void MultistepFilterMetricsTracker::TrackPostSuggestionApplicationNavigation(
+    const FilterNavigationMetadata& metadata) {
+  CHECK(current_post_suggestion_application_session_.has_value());
+  if (ShouldIgnoreNavigationForPostApplicationMetrics(metadata) ||
+      current_post_suggestion_application_session_
+          ->has_logged_first_navigation) {
+    return;
+  }
+  base::UmaHistogramEnumeration(
+      kMultistepFilterPostSuggestionApplicationFirstNavigationHistogram,
+      CalculatePostSuggestionApplicationFirstNavigationAction(
+          *current_post_suggestion_application_session_, metadata));
+  current_post_suggestion_application_session_->has_logged_first_navigation =
+      true;
+}
+
+void MultistepFilterMetricsTracker::FlushPostSuggestionApplicationSession() {
+  CHECK(current_post_suggestion_application_session_.has_value());
+  MultistepFilterPostSuggestionApplicationTabClose close_action;
+
+  if (current_post_suggestion_application_session_
+          ->has_logged_first_navigation) {
+    close_action = MultistepFilterPostSuggestionApplicationTabClose::
+        kTabClosedWithFurtherNavigation;
+  } else {
+    base::TimeDelta time_since_suggestion_application_finish =
+        base::TimeTicks::Now() - current_post_suggestion_application_session_
+                                     ->post_suggestion_window_start_time;
+    bool within_window = time_since_suggestion_application_finish <
+                         kMultistepFilterPostApplicationSessionDuration.Get();
+    close_action = within_window
+                       ? MultistepFilterPostSuggestionApplicationTabClose::
+                             kTabClosedWithinSessionWindow
+                       : MultistepFilterPostSuggestionApplicationTabClose::
+                             kTabClosedAfterSessionWindow;
+  }
+  base::UmaHistogramEnumeration(
+      kMultistepFilterPostSuggestionApplicationTabCloseHistogram, close_action);
+  current_post_suggestion_application_session_ = std::nullopt;
 }
 
 }  // namespace multistep_filter

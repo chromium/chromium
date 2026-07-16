@@ -38,6 +38,13 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    &kMultistepFilter,
                    base::Minutes(2));
 
+// The duration after a suggestion is applied during which we track subsequent
+// user actions (like going back or closing the tab) for metrics.
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kMultistepFilterPostApplicationSessionDuration,
+                   &kMultistepFilter,
+                   base::Minutes(2));
+
 // Enables the Send Feedback button in the contextual cue three-dot menu.
 BASE_FEATURE(kMultistepFilterSendFeedback, base::FEATURE_DISABLED_BY_DEFAULT);
 

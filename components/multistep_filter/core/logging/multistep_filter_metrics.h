@@ -21,6 +21,28 @@ enum class MultistepFilterApplicationOutcome {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/multistep_filter/enums.xml:MultistepFilterApplicationOutcome)
 
+// LINT.IfChange(MultistepFilterPostSuggestionApplicationFirstNavigation)
+// Records navigation behavior after accepting a Multistep Filter suggestion,
+// distinguishing behavior within a session window.
+enum class MultistepFilterPostSuggestionApplicationFirstNavigation {
+  kBackNavigationWithinSessionWindow = 0,
+  kBackNavigationAfterSessionWindow = 1,
+  kForwardOrOtherNavigation = 2,
+  kMaxValue = kForwardOrOtherNavigation,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/multistep_filter/enums.xml:MultistepFilterPostSuggestionApplicationFirstNavigation)
+
+// LINT.IfChange(MultistepFilterPostSuggestionApplicationTabClose)
+// Records tab closure behavior after accepting a Multistep Filter suggestion,
+// distinguishing behavior within a session window.
+enum class MultistepFilterPostSuggestionApplicationTabClose {
+  kTabClosedWithinSessionWindow = 0,
+  kTabClosedWithFurtherNavigation = 1,
+  kTabClosedAfterSessionWindow = 2,
+  kMaxValue = kTabClosedAfterSessionWindow,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/multistep_filter/enums.xml:MultistepFilterPostSuggestionApplicationTabClose)
+
 // Suffix for histograms that are broken down by task type.
 inline constexpr char kMultistepFilterByTaskHistogramPrefix[] = ".ByTask.";
 
@@ -84,6 +106,12 @@ inline constexpr char
         "MultistepFilter.Time.NavigationToSuggestionAccepted";
 inline constexpr char kMultistepFilterTimeSuggestionShownToAcceptedHistogram[] =
     "MultistepFilter.Time.SuggestionShownToAccepted";
+inline constexpr char
+    kMultistepFilterPostSuggestionApplicationFirstNavigationHistogram[] =
+        "MultistepFilter.PostSuggestionApplication.FirstNavigation";
+inline constexpr char
+    kMultistepFilterPostSuggestionApplicationTabCloseHistogram[] =
+        "MultistepFilter.PostSuggestionApplication.TabClose";
 }  // namespace multistep_filter
 
 #endif  // COMPONENTS_MULTISTEP_FILTER_CORE_LOGGING_MULTISTEP_FILTER_METRICS_H_

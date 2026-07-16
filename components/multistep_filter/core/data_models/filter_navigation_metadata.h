@@ -30,6 +30,7 @@ struct FilterNavigationMetadata {
   bool was_filter_initiated_navigation = false;
   bool is_same_document_navigation = false;
   std::optional<UrlFilterSuggestion> applied_suggestion;
+  bool is_back_navigation = false;
 };
 
 }  // namespace multistep_filter

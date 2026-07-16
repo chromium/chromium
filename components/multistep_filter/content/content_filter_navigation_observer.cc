@@ -56,6 +56,8 @@ FilterNavigationMetadata CreateFilterNavigationMetadata(
   metadata.was_filter_initiated_navigation = (marker != nullptr);
   metadata.applied_suggestion = marker ? marker->suggestion() : std::nullopt;
   metadata.is_same_document_navigation = handle->IsSameDocument();
+  metadata.is_back_navigation =
+      handle->IsHistory() && handle->GetNavigationEntryOffset() < 0;
   return metadata;
 }
 

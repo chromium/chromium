@@ -61,6 +61,22 @@ class MultistepFilterMetricsTracker {
     RetentionStateSnapshot retention_snapshot;
   };
 
+  // Tracks the user's behavior after accepting a suggestion.
+  //
+  // A session starts when the navigation triggered by accepting a suggestion
+  // finishes (either successfully or with an error). It tracks subsequent
+  // navigations and tab closure to log post-application behavior within a
+  // session window.
+  struct PostSuggestionApplicationSession {
+    // The time when the navigation triggered by the accepted suggestion
+    // finished. This marks the start of the post-application session window.
+    base::TimeTicks post_suggestion_window_start_time;
+    // Whether the first navigation after the suggestion application has been
+    // logged. If true, any subsequent navigations within the session window
+    // will be ignored.
+    bool has_logged_first_navigation = false;
+  };
+
   MultistepFilterMetricsTracker();
   MultistepFilterMetricsTracker(const MultistepFilterMetricsTracker&) = delete;
   MultistepFilterMetricsTracker& operator=(
@@ -96,6 +112,9 @@ class MultistepFilterMetricsTracker {
   // `was_applied_successfully` is true if the navigation completed successfully
   // and the extracted annotations matched the filters the user decided to apply
   // before the navigation.
+  // If successful, this starts a post-application session to track behavior
+  // within a session window (controlled by
+  // `kMultistepFilterPostApplicationSessionDuration`).
   void OnSuggestionApplicationAnnotationExtractionFinished(
       bool was_applied_successfully);
 
@@ -107,6 +126,18 @@ class MultistepFilterMetricsTracker {
   // Internal helper to calculate and flush UMA for pending suggestion
   // application sessions.
   void FlushSuggestionApplicationSession(bool was_applied_successfully);
+
+  // Internal helper to track navigation after a suggestion was successfully
+  // applied. Only tracks the first non-ignored navigation within the session
+  // window (controlled by `kMultistepFilterPostApplicationSessionDuration`).
+  void TrackPostSuggestionApplicationNavigation(
+      const FilterNavigationMetadata& metadata);
+
+  // Internal helper to flush UMA for the post-suggestion application session
+  // (e.g. on tab close or when a new session starts). Only applicable for
+  // successful suggestion applications. The window duration is controlled by
+  // `kMultistepFilterPostApplicationSessionDuration`.
+  void FlushPostSuggestionApplicationSession();
 
   // The current navigation session.
   NavigationSession current_navigation_;
@@ -120,6 +151,12 @@ class MultistepFilterMetricsTracker {
   // finishes (either consumed by the application session or discarded).
   std::optional<RetentionStateSnapshot>
       last_accepted_suggestion_retention_snapshot_;
+  // The current post-suggestion application session, if any. This is only
+  // created for successful suggestion applications to track behavior within a
+  // session window (controlled by
+  // `kMultistepFilterPostApplicationSessionDuration`).
+  std::optional<PostSuggestionApplicationSession>
+      current_post_suggestion_application_session_;
 };
 
 }  // namespace multistep_filter
