@@ -71,6 +71,7 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_tracker.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
 #endif  // !BUILDFLAG(IS_CHROMEOS)
@@ -397,14 +398,21 @@ class ProfileMenuViewBase::AXMenuWidgetObserver : public views::WidgetObserver {
   ~AXMenuWidgetObserver() override = default;
 
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override {
+    views::ViewTracker tracker(owner_.get());
     if (active) {
       owner_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kMenuStart,
                                                  true);
+      if (!tracker.view()) {
+        return;
+      }
       owner_->NotifyAccessibilityEventDeprecated(
           ax::mojom::Event::kMenuPopupStart, true);
     } else {
       owner_->NotifyAccessibilityEventDeprecated(
           ax::mojom::Event::kMenuPopupEnd, true);
+      if (!tracker.view()) {
+        return;
+      }
       owner_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kMenuEnd,
                                                  true);
     }
