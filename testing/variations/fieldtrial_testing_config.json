@@ -24107,33 +24107,6 @@
             ]
         }
     ],
-    "TabGroupInteractionsDesktop2": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_NewTabsAddToActiveGroup",
-                    "enable_features": [
-                        "NewTabAddsToActiveGroup"
-                    ]
-                },
-                {
-                    "name": "Enabled_TabGroupMenuChanges",
-                    "enable_features": [
-                        "BookmarkTabGroupConversion",
-                        "CreateNewTabGroupAppMenuTopLevel",
-                        "ShowTabGroupsMacSystemMenu",
-                        "TabGroupMenuMoreEntryPoints"
-                    ]
-                }
-            ]
-        }
-    ],
     "TabGroupSuggestions": [
         {
             "platforms": [
