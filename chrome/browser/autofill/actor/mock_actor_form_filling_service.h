@@ -21,7 +21,7 @@ class MockActorFormFillingService : public ActorFormFillingService {
 
   MOCK_METHOD(void,
               GetSuggestions,
-              (const tabs::TabInterface& tab,
+              (AutofillClient& client,
                base::span<const FillRequest> fill_requests,
                GetSuggestionsCallback callback),
               (override));
@@ -29,23 +29,23 @@ class MockActorFormFillingService : public ActorFormFillingService {
   MOCK_METHOD(
       void,
       FillSuggestions,
-      (const tabs::TabInterface& tab,
+      (AutofillClient& client,
        base::span<const ActorFormFillingSelection> chosen_suggestions,
        base::OnceCallback<void(base::expected<void, ActorFormFillingError>)>),
       (override));
 
-  MOCK_METHOD(void, ScrollToForm, (const tabs::TabInterface&, int), (override));
+  MOCK_METHOD(void, ScrollToForm, (AutofillClient& client, int), (override));
   MOCK_METHOD(void,
               PreviewForm,
-              (const tabs::TabInterface&, int, ActorSuggestionId),
+              (AutofillClient& client, int, ActorSuggestionId),
               (override));
   MOCK_METHOD(void,
               ClearFormPreview,
-              (const tabs::TabInterface&, int),
+              (AutofillClient& client, int),
               (override));
   MOCK_METHOD(void,
               FillForm,
-              (const tabs::TabInterface&, int, ActorFormFillingSelection),
+              (AutofillClient& client, int, ActorFormFillingSelection),
               (override));
 };
 

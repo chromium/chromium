@@ -31,13 +31,9 @@
 #include "base/types/zip.h"
 #include "chrome/browser/autofill/actor/actor_filling_observer.h"
 #include "chrome/browser/autofill/actor/actor_key_metrics_recorder.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/autofill/autofill_client_provider.h"
-#include "chrome/browser/ui/autofill/autofill_client_provider_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "components/actor/core/aggregated_journal.h"
 #include "components/actor/core/journal_details_builder.h"
-#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
 #include "components/autofill/core/browser/filling/form_filler.h"
@@ -56,7 +52,6 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
-#include "components/tabs/public/tab_interface.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
@@ -414,37 +409,16 @@ std::optional<FieldGlobalId> GetSafeCreditCardNumberField(
   return {autofill_field_for_labels->global_id(), result};
 }
 
-// Retrieves the `AutofillManager` of the `tab`'s primary main frame.
+// Retrieves the `AutofillManager` of the primary main frame.
 [[nodiscard]] base::expected<std::reference_wrapper<BrowserAutofillManager>,
                              ActorFormFillingError>
-GetAutofillManager(const tabs::TabInterface& tab) {
+GetAutofillManager(AutofillClient& client) {
   using enum ActorFormFillingError;
-  if (!tab.GetContents()) {
-    return base::unexpected(kAutofillNotAvailable);
-  }
-
-  Profile* const profile =
-      Profile::FromBrowserContext(tab.GetContents()->GetBrowserContext());
-  if (!profile) {
-    return base::unexpected(kAutofillNotAvailable);
-  }
-  if (AutofillClientProviderFactory::GetForProfile(profile)
-          .uses_platform_autofill()) {
-    // This is currently only possible on Android platforms, but this check
-    // guards against this becoming applicable for Desktop platforms as well.
-    // It is a requirement for the cast to `BrowserAutofillManager` to be
-    // safe.
-    return base::unexpected(kAutofillNotAvailable);
-  }
-
-  ContentAutofillClient* const client =
-      ContentAutofillClient::FromWebContents(tab.GetContents());
-  if (!client) {
-    return base::unexpected(kAutofillNotAvailable);
-  }
-  if (AutofillManager* autofill_manager =
-          client->GetAutofillManagerForPrimaryMainFrame()) {
-    return static_cast<BrowserAutofillManager&>(*autofill_manager);
+  if (!client.UsesPlatformAutofill()) {
+    if (AutofillManager* autofill_manager =
+            client.GetAutofillManagerForPrimaryMainFrame()) {
+      return static_cast<BrowserAutofillManager&>(*autofill_manager);
+    }
   }
   return base::unexpected(kAutofillNotAvailable);
 }
@@ -499,7 +473,7 @@ ActorFormFillingServiceImpl::ActorFormFillingServiceImpl(
 ActorFormFillingServiceImpl::~ActorFormFillingServiceImpl() = default;
 
 void ActorFormFillingServiceImpl::GetSuggestions(
-    const tabs::TabInterface& tab,
+    AutofillClient& client,
     base::span<const FillRequest> fill_requests,
     GetSuggestionsCallback callback) {
   auto callback_with_metrics =
@@ -508,7 +482,7 @@ void ActorFormFillingServiceImpl::GetSuggestions(
 
   auto log_actor_error = [&](std::string_view error_message) {
     journal_->Log(
-        tab.GetContents()->GetLastCommittedURL(), task_id_,
+        client.GetLastCommittedPrimaryMainFrameURL(), task_id_,
         "ActorFormFillingServiceImpl::GetSuggestions",
         ::actor::JournalDetailsBuilder().AddError(error_message).Build());
   };
@@ -516,7 +490,7 @@ void ActorFormFillingServiceImpl::GetSuggestions(
   using enum ActorFormFillingError;
   base::expected<std::reference_wrapper<BrowserAutofillManager>,
                  ActorFormFillingError>
-      maybe_manager = GetAutofillManager(tab);
+      maybe_manager = GetAutofillManager(client);
   if (!maybe_manager.has_value()) {
     std::move(callback_with_metrics)
         .Run(base::unexpected(maybe_manager.error()));
@@ -611,8 +585,7 @@ void ActorFormFillingServiceImpl::GetSuggestions(
         return;
       }
     }
-    url::Origin origin =
-        tab.GetContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+    url::Origin origin = client.GetLastCommittedPrimaryMainFrameOrigin();
 
     for (const SubRequest& sub_request : sub_requests) {
       ActorSuggestions suggestion_data;
@@ -688,7 +661,7 @@ void ActorFormFillingServiceImpl::GetSuggestions(
 }
 
 void ActorFormFillingServiceImpl::FillSuggestions(
-    const tabs::TabInterface& tab,
+    AutofillClient& client,
     base::span<const ActorFormFillingSelection> chosen_suggestions,
     base::OnceCallback<void(base::expected<void, ActorFormFillingError>)>
         callback) {
@@ -722,11 +695,11 @@ void ActorFormFillingServiceImpl::FillSuggestions(
   CHECK_DEREF(filling_observer_).Activate(std::move(callback_with_metrics));
 }
 
-void ActorFormFillingServiceImpl::ScrollToForm(const tabs::TabInterface& tab,
+void ActorFormFillingServiceImpl::ScrollToForm(AutofillClient& client,
                                                int form_index) {
   base::expected<std::reference_wrapper<BrowserAutofillManager>,
                  ActorFormFillingError>
-      maybe_manager = GetAutofillManager(tab);
+      maybe_manager = GetAutofillManager(client);
   if (!maybe_manager.has_value()) {
     return;
   }
@@ -747,18 +720,18 @@ void ActorFormFillingServiceImpl::ScrollToForm(const tabs::TabInterface& tab,
       suggestion_trigger_field_id_[form_index]);
 }
 
-void ActorFormFillingServiceImpl::PreviewForm(const tabs::TabInterface& tab,
+void ActorFormFillingServiceImpl::PreviewForm(AutofillClient& client,
                                               int form_index,
                                               ActorSuggestionId suggestion_id) {
-  FillOrPreviewFormImpl(tab, suggestion_id, mojom::ActionPersistence::kPreview);
+  FillOrPreviewFormImpl(client, suggestion_id,
+                        mojom::ActionPersistence::kPreview);
 }
 
-void ActorFormFillingServiceImpl::ClearFormPreview(
-    const tabs::TabInterface& tab,
-    int form_index) {
+void ActorFormFillingServiceImpl::ClearFormPreview(AutofillClient& client,
+                                                   int form_index) {
   base::expected<std::reference_wrapper<BrowserAutofillManager>,
                  ActorFormFillingError>
-      maybe_manager = GetAutofillManager(tab);
+      maybe_manager = GetAutofillManager(client);
   if (!maybe_manager.has_value()) {
     return;
   }
@@ -767,11 +740,12 @@ void ActorFormFillingServiceImpl::ClearFormPreview(
 }
 
 void ActorFormFillingServiceImpl::FillForm(
-    const tabs::TabInterface& tab,
+    AutofillClient& client,
     int form_index,
     ActorFormFillingSelection selection) {
-  std::optional<ActorFormFillingError> potential_error = FillOrPreviewFormImpl(
-      tab, selection.selected_suggestion_id, mojom::ActionPersistence::kFill);
+  std::optional<ActorFormFillingError> potential_error =
+      FillOrPreviewFormImpl(client, selection.selected_suggestion_id,
+                            mojom::ActionPersistence::kFill);
   if (potential_error) {
     errors_per_session_.push_back(*potential_error);
   }
@@ -779,7 +753,7 @@ void ActorFormFillingServiceImpl::FillForm(
 
 std::optional<ActorFormFillingError>
 ActorFormFillingServiceImpl::FillOrPreviewFormImpl(
-    const tabs::TabInterface& tab,
+    AutofillClient& client,
     ActorSuggestionId suggestion_id,
     mojom::ActionPersistence action_persistence) {
   // TODO(crbug.com/448398227): Consider changing some of these early returns
@@ -791,7 +765,7 @@ ActorFormFillingServiceImpl::FillOrPreviewFormImpl(
         (action_persistence == mojom::ActionPersistence::kFill) ? "Fill"
                                                                 : "Preview";
     journal_->Log(
-        tab.GetContents()->GetLastCommittedURL(), task_id_,
+        client.GetLastCommittedPrimaryMainFrameURL(), task_id_,
         "ActorFormFillingServiceImpl::FillOrPreviewFormImpl",
         ::actor::JournalDetailsBuilder()
             .AddError(base::StrCat({action_str, " failed: ", error_message}))
@@ -800,7 +774,7 @@ ActorFormFillingServiceImpl::FillOrPreviewFormImpl(
 
   base::expected<std::reference_wrapper<BrowserAutofillManager>,
                  ActorFormFillingError>
-      maybe_manager = GetAutofillManager(tab);
+      maybe_manager = GetAutofillManager(client);
   if (!maybe_manager.has_value()) {
     log_actor_error("Autofill manager not available.");
     return ActorFormFillingError::kAutofillNotAvailable;
@@ -834,7 +808,7 @@ ActorFormFillingServiceImpl::FillOrPreviewFormImpl(
       filling_observer_->SetSkipReasonsCallback(base::BindRepeating(
           &ActorFormFillingServiceImpl::LogSkipReasonsToJournal,
           weak_ptr_factory_.GetWeakPtr(),
-          tab.GetContents()->GetLastCommittedURL()));
+          client.GetLastCommittedPrimaryMainFrameURL()));
     }
     filling_observer_->ObserveNewFilling(fill_data->field_ids);
   }

@@ -87,16 +87,16 @@ TEST_F(ActorKeyMetricsRecorderTest, FillingAssistanceMetrics_AddressFilled) {
                                       {.server_type = ADDRESS_HOME_CITY}}});
 
   GetSuggestionsFuture future;
-  service().GetSuggestions(tab(),
+  service().GetSuggestions(client(),
                            {AddressFillRequest({form.fields()[0].global_id()})},
                            future.GetCallback());
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
 
-  service().FillForm(tab(), /*form_index=*/0,
+  service().FillForm(client(), /*form_index=*/0,
                      ActorFormFillingSelection(requests[0].suggestions[0].id));
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
       fill_future.GetCallback());
   EXPECT_THAT(fill_future.Get(), HasValue());
 
@@ -115,7 +115,7 @@ TEST_F(ActorKeyMetricsRecorderTest, FillingAssistanceMetrics_AddressNotFilled) {
 
   // Trigger suggestions to ensure the manager is observed.
   GetSuggestionsFuture future;
-  service().GetSuggestions(tab(),
+  service().GetSuggestions(client(),
                            {AddressFillRequest({form.fields()[0].global_id()})},
                            future.GetCallback());
   EXPECT_THAT(future.Get(), HasValue());
@@ -140,15 +140,15 @@ TEST_F(ActorKeyMetricsRecorderTest, FillingAssistanceMetrics_CreditCardFilled) {
 
   GetSuggestionsFuture future;
   service().GetSuggestions(
-      tab(), {CreditCardFillRequest({form.fields()[0].global_id()})},
+      client(), {CreditCardFillRequest({form.fields()[0].global_id()})},
       future.GetCallback());
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
 
-  service().FillForm(tab(), /*form_index=*/0,
+  service().FillForm(client(), /*form_index=*/0,
                      ActorFormFillingSelection(requests[0].suggestions[0].id));
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
       fill_future.GetCallback());
   ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
   EXPECT_THAT(fill_future.Get(), HasValue());
@@ -166,18 +166,18 @@ TEST_F(ActorKeyMetricsRecorderTest, FillingCorrectnessMetrics_AddressCorrect) {
                                       {.server_type = ADDRESS_HOME_LINE1}}});
 
   GetSuggestionsFuture future;
-  service().GetSuggestions(tab(),
+  service().GetSuggestions(client(),
                            {AddressFillRequest({form.fields()[0].global_id()})},
                            future.GetCallback());
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
 
-  service().FillForm(tab(), /*form_index=*/0,
+  service().FillForm(client(), /*form_index=*/0,
                      ActorFormFillingSelection(requests[0].suggestions[0].id));
-  service().FillForm(tab(), /*form_index=*/0,
+  service().FillForm(client(), /*form_index=*/0,
                      ActorFormFillingSelection(requests[0].suggestions[0].id));
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
       fill_future.GetCallback());
   EXPECT_THAT(fill_future.Get(), HasValue());
 
@@ -202,16 +202,16 @@ TEST_F(ActorKeyMetricsRecorderTest,
                                       {.server_type = ADDRESS_HOME_LINE1}}});
 
   GetSuggestionsFuture future;
-  service().GetSuggestions(tab(),
+  service().GetSuggestions(client(),
                            {AddressFillRequest({form.fields()[0].global_id()})},
                            future.GetCallback());
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
 
-  service().FillForm(tab(), /*form_index=*/0,
+  service().FillForm(client(), /*form_index=*/0,
                      ActorFormFillingSelection(requests[0].suggestions[0].id));
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
       fill_future.GetCallback());
   EXPECT_THAT(fill_future.Get(), HasValue());
 
@@ -240,15 +240,15 @@ TEST_F(ActorKeyMetricsRecorderTest,
 
   GetSuggestionsFuture future;
   service().GetSuggestions(
-      tab(), {CreditCardFillRequest({form.fields()[0].global_id()})},
+      client(), {CreditCardFillRequest({form.fields()[0].global_id()})},
       future.GetCallback());
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
 
-  service().FillForm(tab(), /*form_index=*/0,
+  service().FillForm(client(), /*form_index=*/0,
                      ActorFormFillingSelection(requests[0].suggestions[0].id));
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
       fill_future.GetCallback());
   ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
   EXPECT_THAT(fill_future.Get(), HasValue());
@@ -277,15 +277,15 @@ TEST_F(ActorKeyMetricsRecorderTest,
 
   GetSuggestionsFuture future;
   service().GetSuggestions(
-      tab(), {CreditCardFillRequest({form.fields()[0].global_id()})},
+      client(), {CreditCardFillRequest({form.fields()[0].global_id()})},
       future.GetCallback());
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
 
-  service().FillForm(tab(), /*form_index=*/0,
+  service().FillForm(client(), /*form_index=*/0,
                      ActorFormFillingSelection(requests[0].suggestions[0].id));
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
       fill_future.GetCallback());
   ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
   EXPECT_THAT(fill_future.Get(), HasValue());
@@ -316,32 +316,32 @@ TEST_F(ActorKeyMetricsRecorderTest, FillingCorrectnessMetrics_MixedForm) {
 
   // Fill address.
   GetSuggestionsFuture addr_future;
-  service().GetSuggestions(tab(),
+  service().GetSuggestions(client(),
                            {AddressFillRequest({form.fields()[0].global_id()})},
                            addr_future.GetCallback());
   std::vector<ActorFormFillingRequest> addr_requests =
       addr_future.Take().value();
   service().FillForm(
-      tab(), /*form_index=*/0,
+      client(), /*form_index=*/0,
       ActorFormFillingSelection(addr_requests[0].suggestions[0].id));
   FillSuggestionsFuture addr_fill_future;
   service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(addr_requests[0].suggestions[0].id)},
+      client(), {ActorFormFillingSelection(addr_requests[0].suggestions[0].id)},
       addr_fill_future.GetCallback());
   EXPECT_THAT(addr_fill_future.Get(), HasValue());
 
   // Fill credit card.
   GetSuggestionsFuture cc_future;
   service().GetSuggestions(
-      tab(), {CreditCardFillRequest({form.fields()[2].global_id()})},
+      client(), {CreditCardFillRequest({form.fields()[2].global_id()})},
       cc_future.GetCallback());
   std::vector<ActorFormFillingRequest> cc_requests = cc_future.Take().value();
   service().FillForm(
-      tab(), /*form_index=*/0,
+      client(), /*form_index=*/0,
       ActorFormFillingSelection(cc_requests[0].suggestions[0].id));
   FillSuggestionsFuture cc_fill_future;
   service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(cc_requests[0].suggestions[0].id)},
+      client(), {ActorFormFillingSelection(cc_requests[0].suggestions[0].id)},
       cc_fill_future.GetCallback());
   ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
   EXPECT_THAT(cc_fill_future.Get(), HasValue());
@@ -378,16 +378,16 @@ TEST_F(ActorKeyMetricsRecorderTest, FillingCorrectnessMetrics_PartialFilling) {
       {.fields = {{.server_type = NAME_FULL}, {.server_type = UNKNOWN_TYPE}}});
 
   GetSuggestionsFuture future;
-  service().GetSuggestions(tab(),
+  service().GetSuggestions(client(),
                            {AddressFillRequest({form.fields()[0].global_id()})},
                            future.GetCallback());
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
 
-  service().FillForm(tab(), /*form_index=*/0,
+  service().FillForm(client(), /*form_index=*/0,
                      ActorFormFillingSelection(requests[0].suggestions[0].id));
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
       fill_future.GetCallback());
   EXPECT_THAT(fill_future.Get(), HasValue());
 
@@ -428,16 +428,16 @@ TEST_F(ActorKeyMetricsRecorderTest,
   FormData form = SeeForm(form_desc);
 
   GetSuggestionsFuture future;
-  service().GetSuggestions(tab(),
+  service().GetSuggestions(client(),
                            {AddressFillRequest({form.fields()[0].global_id()})},
                            future.GetCallback());
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
 
-  service().FillForm(tab(), /*form_index=*/0,
+  service().FillForm(client(), /*form_index=*/0,
                      ActorFormFillingSelection(requests[0].suggestions[0].id));
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
       fill_future.GetCallback());
   EXPECT_THAT(fill_future.Get(), HasValue());
 
@@ -472,7 +472,7 @@ TEST_F(ActorKeyMetricsRecorderTest,
                                       {.server_type = ADDRESS_HOME_CITY}}});
 
   GetSuggestionsFuture future;
-  service().GetSuggestions(tab(),
+  service().GetSuggestions(client(),
                            {AddressFillRequest({form.fields()[0].global_id()})},
                            future.GetCallback());
   EXPECT_THAT(future.Get(), HasValue());
@@ -496,7 +496,7 @@ TEST_F(ActorKeyMetricsRecorderTest,
   GetSuggestionsFuture future;
   // Trigger on a field that doesn't exist in any form to fail suggestion
   // generation.
-  service().GetSuggestions(tab(), {UnfindableFillRequest()},
+  service().GetSuggestions(client(), {UnfindableFillRequest()},
                            future.GetCallback());
   EXPECT_THAT(future.Get(), ErrorIs(ActorFormFillingError::kNoSuggestions));
 
@@ -517,7 +517,7 @@ TEST_F(ActorKeyMetricsRecorderTest, FillingReadinessMetrics_CreditCard) {
 
   GetSuggestionsFuture future;
   service().GetSuggestions(
-      tab(), {CreditCardFillRequest({form.fields()[0].global_id()})},
+      client(), {CreditCardFillRequest({form.fields()[0].global_id()})},
       future.GetCallback());
   EXPECT_THAT(future.Get(), HasValue());
 
@@ -534,16 +534,16 @@ TEST_F(ActorKeyMetricsRecorderTest, PerfectFilling_Address_Perfect) {
                                       {.server_type = ADDRESS_HOME_LINE1}}});
 
   GetSuggestionsFuture future;
-  service().GetSuggestions(tab(),
+  service().GetSuggestions(client(),
                            {AddressFillRequest({form.fields()[0].global_id()})},
                            future.GetCallback());
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
 
-  service().FillForm(tab(), /*form_index=*/0,
+  service().FillForm(client(), /*form_index=*/0,
                      ActorFormFillingSelection(requests[0].suggestions[0].id));
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
       fill_future.GetCallback());
   ASSERT_THAT(fill_future.Get(), HasValue());
 
@@ -567,16 +567,16 @@ TEST_F(ActorKeyMetricsRecorderTest, PerfectFilling_Address_Imperfect) {
                                       {.server_type = ADDRESS_HOME_LINE1}}});
 
   GetSuggestionsFuture future;
-  service().GetSuggestions(tab(),
+  service().GetSuggestions(client(),
                            {AddressFillRequest({form.fields()[0].global_id()})},
                            future.GetCallback());
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
 
-  service().FillForm(tab(), /*form_index=*/0,
+  service().FillForm(client(), /*form_index=*/0,
                      ActorFormFillingSelection(requests[0].suggestions[0].id));
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
       fill_future.GetCallback());
   ASSERT_THAT(fill_future.Get(), HasValue());
 
@@ -607,15 +607,15 @@ TEST_F(ActorKeyMetricsRecorderTest, PerfectFilling_CreditCard_Perfect) {
 
   GetSuggestionsFuture future;
   service().GetSuggestions(
-      tab(), {CreditCardFillRequest({form.fields()[0].global_id()})},
+      client(), {CreditCardFillRequest({form.fields()[0].global_id()})},
       future.GetCallback());
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
 
-  service().FillForm(tab(), /*form_index=*/0,
+  service().FillForm(client(), /*form_index=*/0,
                      ActorFormFillingSelection(requests[0].suggestions[0].id));
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
       fill_future.GetCallback());
   ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
   ASSERT_THAT(fill_future.Get(), HasValue());
@@ -643,15 +643,15 @@ TEST_F(ActorKeyMetricsRecorderTest, PerfectFilling_CreditCard_Imperfect) {
 
   GetSuggestionsFuture future;
   service().GetSuggestions(
-      tab(), {CreditCardFillRequest({form.fields()[0].global_id()})},
+      client(), {CreditCardFillRequest({form.fields()[0].global_id()})},
       future.GetCallback());
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
 
-  service().FillForm(tab(), /*form_index=*/0,
+  service().FillForm(client(), /*form_index=*/0,
                      ActorFormFillingSelection(requests[0].suggestions[0].id));
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
       fill_future.GetCallback());
   ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
   ASSERT_THAT(fill_future.Get(), HasValue());
@@ -681,32 +681,32 @@ TEST_F(ActorKeyMetricsRecorderTest, PerfectFilling_MixedForm_Perfect) {
 
   // Fill address.
   GetSuggestionsFuture addr_future;
-  service().GetSuggestions(tab(),
+  service().GetSuggestions(client(),
                            {AddressFillRequest({form.fields()[0].global_id()})},
                            addr_future.GetCallback());
   std::vector<ActorFormFillingRequest> addr_requests =
       addr_future.Take().value();
   service().FillForm(
-      tab(), /*form_index=*/0,
+      client(), /*form_index=*/0,
       ActorFormFillingSelection(addr_requests[0].suggestions[0].id));
   FillSuggestionsFuture addr_fill_future;
   service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(addr_requests[0].suggestions[0].id)},
+      client(), {ActorFormFillingSelection(addr_requests[0].suggestions[0].id)},
       addr_fill_future.GetCallback());
   ASSERT_THAT(addr_fill_future.Get(), HasValue());
 
   // Fill credit card.
   GetSuggestionsFuture cc_future;
   service().GetSuggestions(
-      tab(), {CreditCardFillRequest({form.fields()[1].global_id()})},
+      client(), {CreditCardFillRequest({form.fields()[1].global_id()})},
       cc_future.GetCallback());
   std::vector<ActorFormFillingRequest> cc_requests = cc_future.Take().value();
   service().FillForm(
-      tab(), /*form_index=*/0,
+      client(), /*form_index=*/0,
       ActorFormFillingSelection(cc_requests[0].suggestions[0].id));
   FillSuggestionsFuture cc_fill_future;
   service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(cc_requests[0].suggestions[0].id)},
+      client(), {ActorFormFillingSelection(cc_requests[0].suggestions[0].id)},
       cc_fill_future.GetCallback());
   ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
   ASSERT_THAT(cc_fill_future.Get(), HasValue());
@@ -736,32 +736,32 @@ TEST_F(ActorKeyMetricsRecorderTest, PerfectFilling_MixedForm_Imperfect) {
 
   // Fill address.
   GetSuggestionsFuture addr_future;
-  service().GetSuggestions(tab(),
+  service().GetSuggestions(client(),
                            {AddressFillRequest({form.fields()[0].global_id()})},
                            addr_future.GetCallback());
   std::vector<ActorFormFillingRequest> addr_requests =
       addr_future.Take().value();
   service().FillForm(
-      tab(), /*form_index=*/0,
+      client(), /*form_index=*/0,
       ActorFormFillingSelection(addr_requests[0].suggestions[0].id));
   FillSuggestionsFuture addr_fill_future;
   service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(addr_requests[0].suggestions[0].id)},
+      client(), {ActorFormFillingSelection(addr_requests[0].suggestions[0].id)},
       addr_fill_future.GetCallback());
   ASSERT_THAT(addr_fill_future.Get(), HasValue());
 
   // Fill credit card.
   GetSuggestionsFuture cc_future;
   service().GetSuggestions(
-      tab(), {CreditCardFillRequest({form.fields()[1].global_id()})},
+      client(), {CreditCardFillRequest({form.fields()[1].global_id()})},
       cc_future.GetCallback());
   std::vector<ActorFormFillingRequest> cc_requests = cc_future.Take().value();
   service().FillForm(
-      tab(), /*form_index=*/0,
+      client(), /*form_index=*/0,
       ActorFormFillingSelection(cc_requests[0].suggestions[0].id));
   FillSuggestionsFuture cc_fill_future;
   service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(cc_requests[0].suggestions[0].id)},
+      client(), {ActorFormFillingSelection(cc_requests[0].suggestions[0].id)},
       cc_fill_future.GetCallback());
   ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
   ASSERT_THAT(cc_fill_future.Get(), HasValue());
@@ -796,16 +796,16 @@ TEST_F(ActorKeyMetricsRecorderTest,
                                       {.server_type = UNKNOWN_TYPE}}});
 
   GetSuggestionsFuture future;
-  service().GetSuggestions(tab(),
+  service().GetSuggestions(client(),
                            {AddressFillRequest({form.fields()[0].global_id()})},
                            future.GetCallback());
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
 
-  service().FillForm(tab(), /*form_index=*/0,
+  service().FillForm(client(), /*form_index=*/0,
                      ActorFormFillingSelection(requests[0].suggestions[0].id));
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
       fill_future.GetCallback());
   ASSERT_THAT(fill_future.Get(), HasValue());
 
@@ -841,17 +841,17 @@ TEST_F(ActorKeyMetricsRecorderTest,
 
   // Fill ONLY the address via Actor.
   GetSuggestionsFuture addr_future;
-  service().GetSuggestions(tab(),
+  service().GetSuggestions(client(),
                            {AddressFillRequest({form.fields()[0].global_id()})},
                            addr_future.GetCallback());
   std::vector<ActorFormFillingRequest> addr_requests =
       addr_future.Take().value();
   service().FillForm(
-      tab(), /*form_index=*/0,
+      client(), /*form_index=*/0,
       ActorFormFillingSelection(addr_requests[0].suggestions[0].id));
   FillSuggestionsFuture addr_fill_future;
   service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(addr_requests[0].suggestions[0].id)},
+      client(), {ActorFormFillingSelection(addr_requests[0].suggestions[0].id)},
       addr_fill_future.GetCallback());
   ASSERT_THAT(addr_fill_future.Get(), HasValue());
 
@@ -887,16 +887,16 @@ TEST_F(ActorKeyMetricsRecorderTest,
                                       {.server_type = UNKNOWN_TYPE}}});
 
   GetSuggestionsFuture future;
-  service().GetSuggestions(tab(),
+  service().GetSuggestions(client(),
                            {AddressFillRequest({form.fields()[0].global_id()})},
                            future.GetCallback());
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
 
-  service().FillForm(tab(), /*form_index=*/0,
+  service().FillForm(client(), /*form_index=*/0,
                      ActorFormFillingSelection(requests[0].suggestions[0].id));
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
       fill_future.GetCallback());
   ASSERT_THAT(fill_future.Get(), HasValue());
 
@@ -925,16 +925,16 @@ TEST_F(ActorKeyMetricsRecorderTest,
                                       {.server_type = ADDRESS_HOME_LINE1}}});
 
   GetSuggestionsFuture future;
-  service().GetSuggestions(tab(),
+  service().GetSuggestions(client(),
                            {AddressFillRequest({form.fields()[0].global_id()})},
                            future.GetCallback());
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
 
-  service().FillForm(tab(), /*form_index=*/0,
+  service().FillForm(client(), /*form_index=*/0,
                      ActorFormFillingSelection(requests[0].suggestions[0].id));
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
       fill_future.GetCallback());
   ASSERT_THAT(fill_future.Get(), HasValue());
 
@@ -967,16 +967,16 @@ TEST_F(ActorKeyMetricsRecorderTest,
                                       {.server_type = ADDRESS_HOME_LINE1}}});
 
   GetSuggestionsFuture future;
-  service().GetSuggestions(tab(),
+  service().GetSuggestions(client(),
                            {AddressFillRequest({form.fields()[0].global_id()})},
                            future.GetCallback());
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
 
-  service().FillForm(tab(), /*form_index=*/0,
+  service().FillForm(client(), /*form_index=*/0,
                      ActorFormFillingSelection(requests[0].suggestions[0].id));
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
       fill_future.GetCallback());
   ASSERT_THAT(fill_future.Get(), HasValue());
 
@@ -1013,16 +1013,16 @@ TEST_F(ActorKeyMetricsRecorderTest,
       {.fields = {{.server_type = NAME_FULL}, {.server_type = UNKNOWN_TYPE}}});
 
   GetSuggestionsFuture future;
-  service().GetSuggestions(tab(),
+  service().GetSuggestions(client(),
                            {AddressFillRequest({form.fields()[0].global_id()})},
                            future.GetCallback());
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
 
-  service().FillForm(tab(), /*form_index=*/0,
+  service().FillForm(client(), /*form_index=*/0,
                      ActorFormFillingSelection(requests[0].suggestions[0].id));
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
-      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
       fill_future.GetCallback());
   ASSERT_THAT(fill_future.Get(), HasValue());
 

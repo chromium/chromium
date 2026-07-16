@@ -30,6 +30,7 @@
 #include "components/actor/core/actor_features.h"
 #include "components/actor/core/actor_switches.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "content/public/test/browser_test.h"
@@ -243,6 +244,10 @@ class AttemptFormFillingToolTest : public ActorToolsTest {
     return static_cast<MockExecutionEngine&>(execution_engine());
   }
 
+  autofill::AutofillClient& autofill_client() {
+    return *autofill::ContentAutofillClient::FromWebContents(web_contents());
+  }
+
   webui::mojom::SelectAutofillSuggestionsDialogResponsePtr
   MakeAutofillSuggestionsErrorResponse() {
     auto response =
@@ -369,7 +374,8 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, DialogEventsForwarding) {
   ASSERT_TRUE(captured_handler);
 
   // Expect that OnFormPresented calls ScrollToForm for the request.
-  EXPECT_CALL(mock_form_filling_service(), ScrollToForm(Ref(*active_tab()), 0));
+  EXPECT_CALL(mock_form_filling_service(),
+              ScrollToForm(Ref(autofill_client()), 0));
   EXPECT_TRUE(captured_handler->OnFormPresented(
       webui::mojom::AutofillSuggestionDialogOnFormPresentedParams::New(
           /*form_filling_request_index=*/0)));
@@ -385,7 +391,8 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, DialogEventsForwarding) {
       1);
 
   // Expect that OnFormPresented calls ScrollToForm for the request.
-  EXPECT_CALL(mock_form_filling_service(), ScrollToForm(Ref(*active_tab()), 1));
+  EXPECT_CALL(mock_form_filling_service(),
+              ScrollToForm(Ref(autofill_client()), 1));
   EXPECT_TRUE(captured_handler->OnFormPresented(
       webui::mojom::AutofillSuggestionDialogOnFormPresentedParams::New(
           /*form_filling_request_index=*/1)));
@@ -409,7 +416,7 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, DialogEventsForwarding) {
 
   // Expect that OnFormPreviewChanged (with response) calls PreviewForm
   EXPECT_CALL(mock_form_filling_service(),
-              PreviewForm(Ref(*active_tab()), 20, suggestion1.id));
+              PreviewForm(Ref(autofill_client()), 20, suggestion1.id));
   captured_handler->OnFormPreviewChanged(
       webui::mojom::AutofillSuggestionDialogOnFormPreviewChangedParams::New(
           /*form_filling_request_index=*/20,
@@ -418,7 +425,7 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, DialogEventsForwarding) {
 
   // Expect that OnFormPreviewChanged (null response) calls ClearFormPreview
   EXPECT_CALL(mock_form_filling_service(),
-              ClearFormPreview(Ref(*active_tab()), 30));
+              ClearFormPreview(Ref(autofill_client()), 30));
   captured_handler->OnFormPreviewChanged(
       webui::mojom::AutofillSuggestionDialogOnFormPreviewChangedParams::New(
           /*form_filling_request_index=*/30, /*response=*/nullptr));
@@ -426,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, DialogEventsForwarding) {
   // Expect that OnFormConfirmed calls FillForm for existing request and
   // suggestion.
   EXPECT_CALL(mock_form_filling_service(),
-              FillForm(Ref(*active_tab()), 0,
+              FillForm(Ref(autofill_client()), 0,
                        MakeActorFormFillingSelection(suggestion1.id)));
   EXPECT_TRUE(captured_handler->OnFormConfirmed(
       webui::mojom::AutofillSuggestionDialogOnFormConfirmedParams::New(
@@ -447,7 +454,7 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, DialogEventsForwarding) {
   // Expect that OnFormConfirmed calls FillForm for existing request and
   // suggestion.
   EXPECT_CALL(mock_form_filling_service(),
-              FillForm(Ref(*active_tab()), 1,
+              FillForm(Ref(autofill_client()), 1,
                        MakeActorFormFillingSelection(suggestion2.id)));
   EXPECT_TRUE(captured_handler->OnFormConfirmed(
       webui::mojom::AutofillSuggestionDialogOnFormConfirmedParams::New(
@@ -900,12 +907,14 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, ServiceSplitsRequests) {
       handler_future.Take();
   ASSERT_TRUE(captured_handler);
 
-  EXPECT_CALL(mock_form_filling_service(), ScrollToForm(Ref(*active_tab()), 0));
+  EXPECT_CALL(mock_form_filling_service(),
+              ScrollToForm(Ref(autofill_client()), 0));
   EXPECT_TRUE(captured_handler->OnFormPresented(
       webui::mojom::AutofillSuggestionDialogOnFormPresentedParams::New(
           /*form_filling_request_index=*/0)));
 
-  EXPECT_CALL(mock_form_filling_service(), ScrollToForm(Ref(*active_tab()), 1));
+  EXPECT_CALL(mock_form_filling_service(),
+              ScrollToForm(Ref(autofill_client()), 1));
   EXPECT_TRUE(captured_handler->OnFormPresented(
       webui::mojom::AutofillSuggestionDialogOnFormPresentedParams::New(
           /*form_filling_request_index=*/1)));
@@ -922,7 +931,7 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, ServiceSplitsRequests) {
       1);
 
   EXPECT_CALL(mock_form_filling_service(),
-              FillForm(Ref(*active_tab()), 0,
+              FillForm(Ref(autofill_client()), 0,
                        MakeActorFormFillingSelection(suggestion1.id)));
   EXPECT_TRUE(captured_handler->OnFormConfirmed(
       webui::mojom::AutofillSuggestionDialogOnFormConfirmedParams::New(
@@ -930,7 +939,7 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, ServiceSplitsRequests) {
           webui::mojom::FormFillingResponse::New(
               /*suggestion_id=*/"123"))));
   EXPECT_CALL(mock_form_filling_service(),
-              FillForm(Ref(*active_tab()), 1,
+              FillForm(Ref(autofill_client()), 1,
                        MakeActorFormFillingSelection(suggestion2.id)));
   EXPECT_TRUE(captured_handler->OnFormConfirmed(
       webui::mojom::AutofillSuggestionDialogOnFormConfirmedParams::New(
@@ -978,7 +987,7 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, SectionLabelIsPropagated) {
               Eq(section_label))),
           _))
       .WillOnce(
-          [&](const tabs::TabInterface&,
+          [&](autofill::AutofillClient&,
               base::span<const autofill::ActorFormFillingService::FillRequest>
                   requests,
               autofill::ActorFormFillingService::GetSuggestionsCallback

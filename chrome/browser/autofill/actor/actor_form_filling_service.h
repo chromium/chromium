@@ -14,11 +14,9 @@
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/autofill/core/common/unique_ids.h"
 
-namespace tabs {
-class TabInterface;
-}
-
 namespace autofill {
+
+class AutofillClient;
 
 // Interface for the actor tooling to communicate with Autofill functionality
 // for form filling.
@@ -68,7 +66,7 @@ class ActorFormFillingService {
   using GetSuggestionsCallback = base::OnceCallback<void(
       base::expected<std::vector<ActorFormFillingRequest>,
                      ActorFormFillingError>)>;
-  virtual void GetSuggestions(const tabs::TabInterface& tab,
+  virtual void GetSuggestions(AutofillClient& client,
                               base::span<const FillRequest> fill_requests,
                               GetSuggestionsCallback callback) = 0;
 
@@ -79,7 +77,7 @@ class ActorFormFillingService {
   // If successful, the callback will be invoked with a void value. If an error
   // occurs, the callback will be invoked with an ActorFormFillingError.
   virtual void FillSuggestions(
-      const tabs::TabInterface& tab,
+      AutofillClient& client,
       base::span<const ActorFormFillingSelection> chosen_suggestions,
       base::OnceCallback<void(base::expected<void, ActorFormFillingError>)>
           callback) = 0;
@@ -87,25 +85,24 @@ class ActorFormFillingService {
   // Scrolls the form into view.
   // `form_index` corresponds to the vector of ActorFormFillingRequests
   // retrieved by GetSuggestions().
-  virtual void ScrollToForm(const tabs::TabInterface& tab, int form_index) = 0;
+  virtual void ScrollToForm(AutofillClient& client, int form_index) = 0;
 
   // Previews the form with the suggestion whose ID is `suggestion_id`.
   // `form_index` corresponds to the vector of ActorFormFillingRequests
   // retrieved by GetSuggestions().
-  virtual void PreviewForm(const tabs::TabInterface& tab,
+  virtual void PreviewForm(AutofillClient& client,
                            int form_index,
                            ActorSuggestionId suggestion_id) = 0;
 
   // Clears the preview for the form.
   // `form_index` corresponds to the vector of ActorFormFillingRequests
   // retrieved by GetSuggestions().
-  virtual void ClearFormPreview(const tabs::TabInterface& tab,
-                                int form_index) = 0;
+  virtual void ClearFormPreview(AutofillClient& client, int form_index) = 0;
 
   // Fills the form with the given `selection` .
   // `form_index` corresponds to the vector of ActorFormFillingRequests
   // retrieved by GetSuggestions().
-  virtual void FillForm(const tabs::TabInterface& tab,
+  virtual void FillForm(AutofillClient& client,
                         int form_index,
                         ActorFormFillingSelection selection) = 0;
 };

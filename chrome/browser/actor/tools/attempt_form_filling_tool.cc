@@ -25,6 +25,7 @@
 #include "components/actor/core/actor_switches.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/render_frame_host.h"
@@ -32,27 +33,33 @@
 
 namespace actor {
 
+using autofill::ActorFormFillingError;
+using autofill::ActorFormFillingRequest;
+using autofill::ActorFormFillingSelection;
+using autofill::ActorSuggestionId;
+using autofill::AutofillClient;
+using autofill::ContentAutofillClient;
 using autofill::FieldGlobalId;
 
 namespace {
 
-mojom::ActionResultPtr FromServiceError(autofill::ActorFormFillingError error) {
+mojom::ActionResultPtr FromServiceError(ActorFormFillingError error) {
   switch (error) {
-    case autofill::ActorFormFillingError::kAutofillNotAvailable:
+    case ActorFormFillingError::kAutofillNotAvailable:
       return MakeResult(
           mojom::ActionResultCode::kFormFillingAutofillUnavailable,
           /*requires_page_stabilization=*/false, "Autofill is not available.");
-    case autofill::ActorFormFillingError::kNoSuggestions:
+    case ActorFormFillingError::kNoSuggestions:
       return MakeResult(
           mojom::ActionResultCode::kFormFillingNoSuggestionsAvailable,
           /*requires_page_stabilization=*/false,
           "No autofill suggestions available for the fields.");
-    case autofill::ActorFormFillingError::kNoForm:
+    case ActorFormFillingError::kNoForm:
       return MakeResult(
           mojom::ActionResultCode::kObservedTargetElementDestroyed,
           /*requires_page_stabilization=*/false,
           "The form was not found or has changed.");
-    case autofill::ActorFormFillingError::kOther:
+    case ActorFormFillingError::kOther:
       return MakeResult(
           mojom::ActionResultCode::kFormFillingUnknownAutofillError,
           /*requires_page_stabilization=*/false,
@@ -103,13 +110,13 @@ void AttemptFormFillingTool::Invoke(ToolCallback callback) {
 
   form_fill_metrics::RecordOnInvokeMetrics();
 
-  if (tabs::TabInterface* tab = GetTargetTab().Get()) {
+  if (AutofillClient* client = GetAutofillClient()) {
     journal().Log(
         JournalURL(), task_id(), "AttemptFormFillingTool::Invoke",
         JournalDetailsBuilder().Add("requests", tool_fill_requests_).Build());
 
     tool_delegate().GetActorFormFillingService().GetSuggestions(
-        *tab, service_fill_requests_,
+        *client, service_fill_requests_,
         base::BindOnce(&AttemptFormFillingTool::OnSuggestionsRetrieved,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
   }
@@ -135,7 +142,7 @@ mojom::ActionResultPtr AttemptFormFillingTool::TimeOfUseValidation(
   for (const auto& request : tool_fill_requests_) {
     std::vector<FieldGlobalId> field_ids;
     for (const auto& trigger_field : request.trigger_fields) {
-      autofill::FieldGlobalId current_field_id =
+      FieldGlobalId current_field_id =
           GetFieldIdFromPageTarget(last_observation, tab, trigger_field);
       if (!current_field_id) {
         return MakeResult(mojom::ActionResultCode::kFormFillingFieldNotFound,
@@ -196,8 +203,8 @@ void AttemptFormFillingTool::UpdateTaskBeforeInvoke(
 
 void AttemptFormFillingTool::OnSuggestionsRetrieved(
     ToolCallback invoke_callback,
-    base::expected<std::vector<autofill::ActorFormFillingRequest>,
-                   autofill::ActorFormFillingError> suggestions_result) {
+    base::expected<std::vector<ActorFormFillingRequest>, ActorFormFillingError>
+        suggestions_result) {
   const int suggestions_count =
       suggestions_result.has_value() ? suggestions_result.value().size() : 0;
   form_fill_metrics::RecordOnSuggestionsRetrievedMetrics(suggestions_count);
@@ -211,8 +218,7 @@ void AttemptFormFillingTool::OnSuggestionsRetrieved(
   // Update service_fill_requests_ to reflect the actual requests returned by
   // the service, which may have been split.
   service_fill_requests_.clear();
-  for (const autofill::ActorFormFillingRequest& request :
-       suggestions_result.value()) {
+  for (const ActorFormFillingRequest& request : suggestions_result.value()) {
     service_fill_requests_.emplace_back(request.requested_data,
                                         std::vector<FieldGlobalId>{});
   }
@@ -232,19 +238,18 @@ void AttemptFormFillingTool::OnSuggestionsRetrieved(
 
 void AttemptFormFillingTool::SimulateRequestToShowAutofillSuggestions(
     ToolCallback invoke_callback,
-    std::vector<autofill::ActorFormFillingRequest> requests) {
+    std::vector<ActorFormFillingRequest> requests) {
   // In the simulation of asking the user to pick suggestions, we just choose
   // the first suggestion for each form section.
   std::vector<webui::mojom::FormFillingResponsePtr> accepted_suggestions =
-      base::ToVector(
-          requests, [](const autofill::ActorFormFillingRequest& request) {
-            std::string chosen_suggestion_id;
-            if (!request.suggestions.empty()) {
-              chosen_suggestion_id =
-                  base::NumberToString(request.suggestions[0].id.value());
-            }
-            return webui::mojom::FormFillingResponse::New(chosen_suggestion_id);
-          });
+      base::ToVector(requests, [](const ActorFormFillingRequest& request) {
+        std::string chosen_suggestion_id;
+        if (!request.suggestions.empty()) {
+          chosen_suggestion_id =
+              base::NumberToString(request.suggestions[0].id.value());
+        }
+        return webui::mojom::FormFillingResponse::New(chosen_suggestion_id);
+      });
 
   auto dialog_response =
       webui::mojom::SelectAutofillSuggestionsDialogResponse::New();
@@ -272,7 +277,7 @@ void AttemptFormFillingTool::OnSuggestionsSelected(
                         "Dialog response contains no selected suggestions."));
     return;
   }
-  std::vector<autofill::ActorFormFillingSelection> selection_response;
+  std::vector<ActorFormFillingSelection> selection_response;
   for (const auto& response :
        dialog_response->result->get_selected_suggestions()) {
     uint32_t id = 0;
@@ -284,20 +289,19 @@ void AttemptFormFillingTool::OnSuggestionsSelected(
               "Invalid suggestion ID received."));
       return;
     }
-    autofill::ActorFormFillingSelection selection;
-    selection.selected_suggestion_id = autofill::ActorSuggestionId(id);
+    ActorFormFillingSelection selection;
+    selection.selected_suggestion_id = ActorSuggestionId(id);
     selection_response.push_back(std::move(selection));
   }
-  tabs::TabInterface* tab = GetTargetTab().Get();
-  if (!tab) {
+  AutofillClient* client = GetAutofillClient();
+  if (!client) {
     std::move(invoke_callback)
         .Run(MakeResult(mojom::ActionResultCode::kTabWentAway));
     return;
   }
   tool_delegate().GetActorFormFillingService().FillSuggestions(
-      *tab, std::move(selection_response),
-      base::BindOnce([](base::expected<void, autofill::ActorFormFillingError>
-                            result) {
+      *client, std::move(selection_response),
+      base::BindOnce([](base::expected<void, ActorFormFillingError> result) {
         return result.has_value() ? MakeOkResult()
                                   : FromServiceError(result.error());
       }).Then(std::move(invoke_callback)));
@@ -305,8 +309,8 @@ void AttemptFormFillingTool::OnSuggestionsSelected(
 
 bool AttemptFormFillingTool::OnFormPresented(
     webui::mojom::AutofillSuggestionDialogOnFormPresentedParamsPtr params) {
-  tabs::TabInterface* tab = GetTargetTab().Get();
-  if (!tab) {
+  AutofillClient* client = GetAutofillClient();
+  if (!client) {
     return true;
   }
   if (params->form_filling_request_index < 0) {
@@ -321,7 +325,7 @@ bool AttemptFormFillingTool::OnFormPresented(
   form_fill_metrics::RecordOnSuggestionPresentedMetrics(
       /*is_first=*/request_index == 0,
       service_fill_requests_[request_index].requested_data);
-  tool_delegate().GetActorFormFillingService().ScrollToForm(*tab,
+  tool_delegate().GetActorFormFillingService().ScrollToForm(*client,
                                                             request_index);
   return true;
 }
@@ -329,27 +333,26 @@ bool AttemptFormFillingTool::OnFormPresented(
 void AttemptFormFillingTool::OnFormPreviewChanged(
     webui::mojom::AutofillSuggestionDialogOnFormPreviewChangedParamsPtr
         params) {
-  tabs::TabInterface* tab = GetTargetTab().Get();
-  if (!tab) {
+  AutofillClient* client = GetAutofillClient();
+  if (!client) {
     return;
   }
   if (params->response) {
     uint32_t id = 0;
     if (base::StringToUint(params->response->selected_suggestion_id, &id)) {
       tool_delegate().GetActorFormFillingService().PreviewForm(
-          *tab, params->form_filling_request_index,
-          autofill::ActorSuggestionId(id));
+          *client, params->form_filling_request_index, ActorSuggestionId(id));
     }
   } else {
     tool_delegate().GetActorFormFillingService().ClearFormPreview(
-        *tab, params->form_filling_request_index);
+        *client, params->form_filling_request_index);
   }
 }
 
 bool AttemptFormFillingTool::OnFormConfirmed(
     webui::mojom::AutofillSuggestionDialogOnFormConfirmedParamsPtr params) {
-  tabs::TabInterface* tab = GetTargetTab().Get();
-  if (!tab) {
+  AutofillClient* client = GetAutofillClient();
+  if (!client) {
     return true;
   }
   if (params->form_filling_request_index < 0) {
@@ -368,11 +371,19 @@ bool AttemptFormFillingTool::OnFormConfirmed(
   form_fill_metrics::RecordOnSuggestionConfirmedMetrics(
       /*is_last=*/request_index == service_fill_requests_.size() - 1,
       service_fill_requests_[request_index].requested_data);
-  autofill::ActorFormFillingSelection selection;
-  selection.selected_suggestion_id = autofill::ActorSuggestionId(id);
+  ActorFormFillingSelection selection;
+  selection.selected_suggestion_id = ActorSuggestionId(id);
   tool_delegate().GetActorFormFillingService().FillForm(
-      *tab, params->form_filling_request_index, std::move(selection));
+      *client, params->form_filling_request_index, std::move(selection));
   return true;
+}
+
+AutofillClient* AttemptFormFillingTool::GetAutofillClient() {
+  tabs::TabInterface* tab = GetTargetTab().Get();
+  if (!tab || !tab->GetContents()) {
+    return nullptr;
+  }
+  return ContentAutofillClient::FromWebContents(tab->GetContents());
 }
 
 }  // namespace actor

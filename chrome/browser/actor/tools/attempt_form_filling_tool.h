@@ -21,6 +21,10 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/tabs/public/tab_interface.h"
 
+namespace autofill {
+class AutofillClient;
+}
+
 namespace actor {
 
 class AttemptFormFillingTool : public Tool,
@@ -75,6 +79,7 @@ class AttemptFormFillingTool : public Tool,
   void SimulateRequestToShowAutofillSuggestions(
       ToolCallback invoke_callback,
       std::vector<autofill::ActorFormFillingRequest> requests);
+  autofill::AutofillClient* GetAutofillClient();
   tabs::TabHandle tab_handle_;
   std::vector<AttemptFormFillingToolRequest::FormFillingRequest>
       tool_fill_requests_;
