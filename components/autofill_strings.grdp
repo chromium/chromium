@@ -828,6 +828,9 @@
   <message name="IDS_AUTOFILL_AT_MEMORY_GENERIC_ERROR" desc="Message shown when @memory search fails due to a generic or internal error." translateable="false">
     Something went wrong
   </message>
+  <message name="IDS_AUTOFILL_AT_MEMORY_SEARCH_AFFORDANCE_TITLE" desc="Title of the AtMemory search trigger affordance." translateable="false">
+    Try searching in Chrome Memory
+  </message>
   <message name="IDS_AUTOFILL_AT_MEMORY_SEARCH_AFFORDANCE_SUBTITLE" desc="Subtitle of the AtMemory search trigger affordance." translateable="false">
     Find and fill info with Gemini
   </message>

@@ -29,8 +29,10 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/webdata/common/web_data_results.h"
 #include "components/webdata/common/web_data_service_base.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 
@@ -188,9 +190,10 @@ void AutocompleteSuggestionGenerator::OnAutofillValuesReturned(
   if (at_memory_enabled_ &&
       base::FeatureList::IsEnabled(features::kShowAutocompleteAtMemoryButton)) {
     suggestions.emplace_back(SuggestionType::kSeparator);
-    // TODO(crbug.com/494131942): Localize the string.
-    suggestions.emplace_back(u"Try searching in Chrome Memory",
-                             SuggestionType::kAutocompleteAtMemoryButton);
+    suggestions.emplace_back(
+        l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_AT_MEMORY_SEARCH_AFFORDANCE_TITLE),
+        SuggestionType::kAutocompleteAtMemoryButton);
   }
   std::move(query_handler.on_suggestions_returned)
       .Run({SuggestionDataSource::kAutocomplete, std::move(suggestions)});
