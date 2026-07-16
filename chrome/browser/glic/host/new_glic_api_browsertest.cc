@@ -922,6 +922,62 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
 }
 
 #if defined(NOT_VETTED_ON_ANDROID)
+#define MAYBE_testTabSwitchDoesNotLogActivationMetric \
+  DISABLED_testTabSwitchDoesNotLogActivationMetric
+#else
+#define MAYBE_testTabSwitchDoesNotLogActivationMetric \
+  testTabSwitchDoesNotLogActivationMetric
+#endif
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
+                       MAYBE_testTabSwitchDoesNotLogActivationMetric) {
+  glic::GlicHistogramTester histogram_tester;
+  // Save first tab (already active and navigated in SetUpOnMainThread).
+  tabs::TabInterface* first_tab = GetTabListInterface()->GetActiveTab();
+
+  // Open Glic for the first tab.
+  ASSERT_OK(OpenGlicForActiveTab());
+  GlicInstanceImpl* tab0_instance = GetInstanceForTab(first_tab);
+  ASSERT_TRUE(tab0_instance);
+
+  ExecuteJsTest({.params = base::Value("first"), .instance = tab0_instance});
+
+  // Open a second tab and navigate it.
+  tabs::TabInterface* second_tab =
+      CreateAndActivateTab(GetTestUrl("page.html"));
+
+  // Open Glic for the second tab.
+  ASSERT_OK(OpenGlicForActiveTab());
+  GlicInstanceImpl* tab1_instance = GetInstanceForTab(second_tab);
+  ASSERT_TRUE(tab1_instance);
+
+  ExecuteJsTest({.params = base::Value("second"), .instance = tab1_instance});
+
+  auto* service = GlicKeyedServiceFactory::GetGlicKeyedService(GetProfile());
+  auto& coordinator = static_cast<GlicInstanceCoordinatorImpl&>(
+      service->instance_coordinator());
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return coordinator.GetInstances().size() == 1u; }));
+  ASSERT_EQ("A", GetOnlyGlicInstance()->conversation_id());
+
+  // Switch back to the first tab.
+  ActivateTab(first_tab);
+
+  // The original switch to tab 2 deactivated the first instance so this is
+  // expected to log once when we reactivate the first instance in tab 2.
+  histogram_tester.ExpectTotalCount("Glic.Instance.TimeSinceLastActive", 1);
+
+  // Switch back to the second tab.
+  ActivateTab(second_tab);
+
+  // active instance switching to the same instance in a new tab DOES NOT log
+  // the TimeSinceLastActive metric.
+  histogram_tester.ExpectTotalCount("Glic.Instance.TimeSinceLastActive", 1);
+
+  ContinueJsTest({.instance = GetOnlyGlicInstance()});
+}
+
+#if defined(NOT_VETTED_ON_ANDROID)
 #define MAYBE_testDetachPanelNoFloatyOrLiveMode \
   DISABLED_testDetachPanelNoFloatyOrLiveMode
 #else

@@ -1374,25 +1374,6 @@ class ApiTests extends ApiTestFixtureBase {
     }
   }
 
-  async testTabSwitchDoesNotLogActivationMetric() {
-    assertDefined(this.host.registerConversation);
-    assertDefined(this.host.switchConversation);
-    if (this.testParams === 'first') {
-      await this.host.registerConversation(
-          {conversationId: 'A', conversationTitle: 'Title A'});
-      this.advanceToNextStep();
-    } else if (this.testParams === 'second') {
-      // Return and then switch conversation to ensure that ExecuteJsTest
-      // completes before the instance is deleted. The instance is deleted
-      // during the `switchConversation` call.
-      sleep(100).then(() => {
-        assertDefined(this.host.switchConversation);
-        this.host.switchConversation(
-            {conversationId: 'A', conversationTitle: 'Title A'});
-      });
-    }
-  }
-
   async testDetachDoesNotLogActivationMetric() {
     assertDefined(this.host.registerConversation);
     assertDefined(this.host.detachPanel);
