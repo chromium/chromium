@@ -260,8 +260,9 @@ PathValidationResult ValidatePathAndResolveConflicts(
     const CreateReservationInfo& info,
     base::FilePath* target_path) {
   // Enforce that the suggested path does not escape the default download
-  // directory via symlink/junction traversal.
+  // directory via symlink/junction traversal on desktop platforms.
   bool path_escaped = false;
+#if !BUILDFLAG(IS_ANDROID)
   base::FilePath containment_dir = info.containment_directory.empty()
                                        ? info.default_download_path
                                        : info.containment_directory;
@@ -282,6 +283,7 @@ PathValidationResult ValidatePathAndResolveConflicts(
       }
     }
   }
+#endif
 
   // Check writability of the suggested path. If we can't write to it, use
   // |default_download_path| if it is not empty or |fallback_directory|.
