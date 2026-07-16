@@ -4,12 +4,16 @@
 
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_promo_view_controller.h"
 
+#import "base/test/metrics/histogram_tester.h"
+#import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_first_run_mutator.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_first_run_step.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -40,6 +44,7 @@ class GeminiPromoViewControllerTest : public PlatformTest {
     view_controller_ = [[GeminiPromoViewController alloc] init];
     mock_mutator_ = OCMProtocolMock(@protocol(GeminiPromoMutator));
     view_controller_.mutator = mock_mutator_;
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
   void TearDown() override {
@@ -56,6 +61,7 @@ class GeminiPromoViewControllerTest : public PlatformTest {
 
   GeminiPromoViewController* view_controller_;
   id mock_mutator_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
 // Tests that the view controller can be initialized successfully.
@@ -86,4 +92,27 @@ TEST_F(GeminiPromoViewControllerTest, HidesImageRemixRowWhenDisabled) {
       l10n_util::GetNSString(IDS_IOS_GEMINI_PROMO_REMIX_IMAGE_BOX_TITLE);
   UILabel* remixLabel = FindLabelWithText(view_controller_.view, remixTitle);
   EXPECT_EQ(nil, remixLabel);
+}
+
+// Tests that tapping the primary button records metrics.
+TEST_F(GeminiPromoViewControllerTest, PrimaryButtonRecordsMetrics) {
+  [view_controller_ didTapPrimaryButton];
+  histogram_tester_->ExpectUniqueSample(
+      kFirstRunPromoActionHistogram,
+      static_cast<int>(IOSGeminiFirstRunAction::kAccept), 1);
+}
+
+// Tests that tapping the secondary button records metrics.
+TEST_F(GeminiPromoViewControllerTest, SecondaryButtonRecordsMetrics) {
+  [view_controller_ didTapSecondaryButton];
+  histogram_tester_->ExpectUniqueSample(
+      kFirstRunPromoActionHistogram,
+      static_cast<int>(IOSGeminiFirstRunAction::kDismiss), 1);
+}
+
+// Tests that tapping the secondary button calls the mutator to close promo.
+TEST_F(GeminiPromoViewControllerTest, SecondaryButtonCallsMutator) {
+  OCMExpect([mock_mutator_ didCloseGeminiPromo]);
+  [view_controller_ didTapSecondaryButton];
+  EXPECT_OCMOCK_VERIFY(mock_mutator_);
 }
