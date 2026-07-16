@@ -197,7 +197,7 @@ if (use_blink) {
       "//base/test:test_support",
       "//mojo/core/embedder",
       "//mojo/core/test:test_support",
-      "//third_party/ipcz/src:ipcz_test_support_chromium",
+      "//third_party/ipcz/src:ipcz_test_support",
       "//third_party/ipcz/src:test_buildflags",
     ]
   }
@@ -237,7 +237,7 @@ if (use_blink) {
       "//mojo/core:driver_for_ipcz_tests",
       "//mojo/core/test:test_support",
       "//testing/gtest",
-      "//third_party/ipcz/src:ipcz_tests_sources_chromium",
+      "//third_party/ipcz/src:tests_sources",
     ]
 
     if (is_mac) {

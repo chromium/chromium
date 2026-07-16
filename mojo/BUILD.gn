@@ -37,7 +37,7 @@ group("tests") {
     ":mojo_perftests",
     ":mojo_unittests",
     "//mojo/public/tools:mojo_python_unittests",
-    "//third_party/ipcz/src:ipcz_tests",
+    "//third_party/ipcz/src:tests_sources",
   ]
 
   if (!is_ios) {

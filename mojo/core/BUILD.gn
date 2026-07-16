@@ -97,7 +97,7 @@ source_set("impl_for_embedder") {
     "//mojo/public/cpp/bindings:mojo_buildflags",
     "//mojo/public/cpp/platform",
     "//third_party/abseil-cpp:absl",
-    "//third_party/ipcz/src:ipcz_chromium",
+    "//third_party/ipcz/src:ipcz",
   ]
 
   if (mojo_support_legacy_core) {
@@ -210,7 +210,7 @@ source_set("driver_for_ipcz_tests") {
     ":embedder_internal",
     "//base",
     "//base/test:test_support",
-    "//third_party/ipcz/src:ipcz_test_support_chromium",
+    "//third_party/ipcz/src:ipcz_test_support",
   ]
 }
 
@@ -251,7 +251,7 @@ source_set("test_sources") {
     "//mojo/public/cpp/system",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/ipcz/src:ipcz_chromium",
+    "//third_party/ipcz/src:ipcz",
   ]
 
   if (mojo_support_legacy_core) {

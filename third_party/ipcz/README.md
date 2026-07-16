@@ -1,7 +1,7 @@
 # ipcz
 
 ## Overview
-ipcz is a fully cross-platform C library for interprocess communication (IPC)
+ipcz is a fully cross-platform library for interprocess communication (IPC)
 intended to address two generic problems: *routing* and *data transfer*.
 
 ### Routing
@@ -110,88 +110,26 @@ transactions, falling back onto system I/O only for signaling and less frequent
 edge cases. To facilitate this behavior, every pair of interconnected nodes has
 a private shared memory pool managed by ipcz.
 
-## Setup
-To set up a new local repository, first install
-[depot\_tools](https://commondatastorage.googleapis.com/chrome-infra-docs/flat/depot_tools/docs/html/depot_tools_tutorial.html#_setting_up)
-and make sure it's in your `PATH`.
-
-Then from within the repository root:
-
-```
-cp .gclient-default .gclient
-gclient sync
-```
-
-When updating a local copy of the repository, it's a good idea to rerun
-`gclient sync` to ensure that all external dependencies are up-to-date.
-
-## Build
-ipcz uses GN for builds. This is provided by the `depot_tools` installation.
-
-To create a new build configuration, first create a directory for it. For
-example on Linux or macOS:
-
-```
-mkdir -p out/Debug
-```
-
-Then run `gn args` to create and edit the build configuration:
-
-```
-gn args out/Debug
-```
-
-For a typical debug build the contents may be as simple as:
-
-```
-is_debug = true
-```
-
-Now targets can be built:
-
-```
-ninja -C out/Debug ipcz_tests
-
-# Hope they all pass!
-./ipcz_tests
-```
-
 ## Usage
-ipcz may be statically linked into a project, or it may be consumed as a shared
-library. A shared library can be built with the `ipcz_shared` target.
 
-The library is meant to be consumed exclusively through the C ABI defined in
-[`include/ipcz/ipcz.h`](include/ipcz/ipcz.h). Applications populate an `IpczAPI`
-structure by calling `IpczGetAPI()`, the library's only exported symbol. From
-there they can create and connect nodes and establish portals for higher-level
-communication.
-
-Applications must provide each node with an implementation of the `IpczDriver`
-function table to perform a variety of straightforward, platform- and
+Applications (specifically Mojo Core) must provide each node with an implementation
+of the `IpczDriver` interface to perform a variety of straightforward, platform- and
 environment-specific tasks such as establishing a basic I/O transport,
 generating random numbers, and allocating shared memory regions.
 See [reference drivers](src/reference_drivers) for examples.
 
-## In Chromium
-This directory in the Chromium tree *is* the source of truth for ipcz. It is not
-a mirror of an external repository, so there is no separate maintenance of local
-modifications or other versioning considerations.
+This directory in the Chromium tree is the source of truth for ipcz. It is integrated
+directly into Mojo Core (`//mojo/core`) and is not intended to be used as a standalone
+or embeddable library outside of Chromium.
 
-The decision to place ipcz sources in `//third_party/ipcz` was made in light of
-some unique characteristics:
+Consequently, ipcz is implemented using Chromium's `//base` library.
 
-- No dependencies on //base or other Chromium directories are allowed, with the
-  exception of a very small number of carefully chosen APIs allowed when
-  integrating with Chromium builds.
-
-- The library is structured and maintained to be useful as a standalone
-  dependency, without needing any other contents of the Chromium tree or its
-  large set of dependencies.
-
-- Certain style and dependency violations are made in service of the above two
-  points; for example, ipcz depends on parts of Abseil disallowed in the rest of
-  upstream Chromium, and ipcz internally uses relative include paths rather than
-  paths rooted in Chromium's top-level directory.
+In the past ipcz allowed other applications to link against it as a library with
+stable C interfaces, which was called 'standalone' mode. In order to support
+standalone mode, `//base` was not allowed as a dependency. The standalone mode
+is no longer supported by ipcz. In particular, currently using `//base` is
+allowed, but a few of its polyfills are still referenced in code (like
+`safe_math.h`) until they are factored out.
 
 ## Design
 Some extensive coverage of ipcz design details can be found

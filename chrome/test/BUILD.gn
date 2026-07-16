@@ -3695,7 +3695,7 @@ if (!is_android) {
         "//components/system_media_controls",
         "//content/test:test_support",
         "//mojo/core/embedder",
-        "//third_party/ipcz/src:ipcz_chromium",
+        "//third_party/ipcz/src:ipcz",
         "//third_party/ocmock",
         "//ui/accelerated_widget_mac",
       ]

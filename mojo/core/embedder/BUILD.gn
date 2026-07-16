@@ -25,7 +25,7 @@ component("embedder") {
     "//mojo:buildflags",
     "//mojo/core:embedder_internal",
     "//mojo/public/cpp/platform",
-    "//third_party/ipcz/src:ipcz_chromium",
+    "//third_party/ipcz/src:ipcz",
   ]
 
   deps = [

@@ -14,138 +14,36 @@ buildflag_header("test_buildflags") {
   flags = [ "ENABLE_IPCZ_MULTIPROCESS_TESTS=$enable_multiprocess_tests" ]
 }
 
-shared_library("ipcz_shared") {
-  output_name = "ipcz"
-  sources = [
-    "api.cc",
-    "api.h",
-  ]
-  deps = [
-    ":ipcz_sources_standalone",
-    "//third_party/abseil-cpp:absl",
-  ]
-  public_deps = [ ":ipcz_header" ]
-  defines = [
-    "IPCZ_SHARED_LIBRARY",
-    "IPCZ_STANDALONE",
-  ]
-  public_configs = [ ":ipcz_include_dir" ]
-  configs += [ ":ipcz_include_src_dir" ]
-}
-
 source_set("ipcz_header") {
   visibility = [ ":*" ]
   public = [ "../include/ipcz/ipcz.h" ]
   public_configs = [ ":ipcz_include_dir" ]
 }
 
-# This template emits two source_set targets for a target "foo": one named
-# "foo_standalone" for use in standalone ipcz library builds with no Chromium
-# dependencies; and one named "foo_chromium" for integration into the Chromium
-# build, with dependencies on //base.
-#
-# ipcz_source_set targets can express dependencies on each other with the
-# ipcz_deps and ipcz_public_deps variables, which automatically expand to the
-# same variant as the dependent source_set. Apart from this the targets are
-# roughly equivalent to a plain source_set.
-template("ipcz_source_set") {
-  source_set("${target_name}_standalone") {
-    forward_variables_from(invoker,
-                           [
-                             "visibility",
-                             "public",
-                             "sources",
-                             "deps",
-                             "public_deps",
-                             "public_configs",
-                             "testonly",
-                           ])
-
-    if (defined(invoker.configs)) {
-      configs += invoker.configs
-    }
-
-    if (!defined(public_deps)) {
-      public_deps = []
-    }
-    public_deps += [ "${ipcz_src_root}/standalone" ]
-    if (defined(invoker.ipcz_public_deps)) {
-      foreach(dep, invoker.ipcz_public_deps) {
-        public_deps += [ "${dep}_standalone" ]
-      }
-    }
-
-    if (defined(invoker.ipcz_deps)) {
-      if (!defined(deps)) {
-        deps = []
-      }
-      foreach(dep, invoker.ipcz_deps) {
-        deps += [ "${dep}_standalone" ]
-      }
-    }
-
-    defines = [ "IPCZ_STANDALONE" ]
-  }
-
-  # We can only emit the Chromium variant if we're in the Chromium build.
-  if (!build_ipcz_standalone) {
-    source_set("${target_name}_chromium") {
-      forward_variables_from(invoker,
-                             [
-                               "visibility",
-                               "public",
-                               "sources",
-                               "deps",
-                               "public_deps",
-                               "public_configs",
-                               "testonly",
-                             ])
-
-      if (defined(invoker.configs)) {
-        configs += invoker.configs
-      }
-
-      if (!defined(public_deps)) {
-        public_deps = []
-      }
-      public_deps += [ "//base" ]
-      if (defined(invoker.ipcz_public_deps)) {
-        foreach(dep, invoker.ipcz_public_deps) {
-          public_deps += [ "${dep}_chromium" ]
-        }
-      }
-
-      if (defined(invoker.ipcz_deps)) {
-        if (!defined(deps)) {
-          deps = []
-        }
-        foreach(dep, invoker.ipcz_deps) {
-          deps += [ "${dep}_chromium" ]
-        }
-      }
-
-      # ChromeOS profiling data indicates that ipcz consumes 1.5% of Chrome's
-      # cycles on that platform; per go/cr-os, it shouldn't be optimized for
-      # size on that platform.
-      if (target_name == "ipcz" && is_chromeos) {
-        configs -= [ "//build/config/compiler:default_optimization" ]
-        configs += [ "//build/config/compiler:optimize_speed" ]
-      }
-    }
-  }
-}
-
-ipcz_source_set("ipcz") {
+source_set("ipcz") {
   public = [ "api.h" ]
   sources = [ "api.cc" ]
-  deps = [ "//third_party/abseil-cpp:absl" ]
-  ipcz_deps = [ ":ipcz_sources" ]
-  public_deps = [ ":ipcz_header" ]
+  deps = [
+    ":ipcz_sources",
+    "//third_party/abseil-cpp:absl",
+  ]
+  public_deps = [
+    ":ipcz_header",
+    "//base",
+  ]
   public_configs = [ ":ipcz_include_dir" ]
-  configs = [ ":ipcz_include_src_dir" ]
+  configs += [ ":ipcz_include_src_dir" ]
+
+  # ChromeOS profiling data indicates that ipcz consumes 1.5% of Chrome's
+  # cycles on that platform; per go/cr-os, it shouldn't be optimized for
+  # size on that platform.
+  if (is_chromeos) {
+    configs -= [ "//build/config/compiler:default_optimization" ]
+    configs += [ "//build/config/compiler:optimize_speed" ]
+  }
 }
 
-ipcz_source_set("reference_drivers") {
+source_set("reference_drivers") {
   testonly = true
 
   public = [
@@ -182,31 +80,32 @@ ipcz_source_set("reference_drivers") {
     ]
   }
 
-  ipcz_deps = [
+  deps = [
     ":impl",
     ":util",
   ]
-  public_deps = [ ":ipcz_header" ]
-  public_configs = [ ":ipcz_include_src_dir" ]
-
-  deps = []
-  if (is_fuchsia) {
-    public_deps += [ "//third_party/fuchsia-sdk/sdk/pkg/zx" ]
-  }
-
   if (is_android) {
     deps += [ "//base/android/linker:ashmem" ]
   }
+
+  public_deps = [
+    ":ipcz_header",
+    "//base",
+  ]
+  public_configs = [ ":ipcz_include_src_dir" ]
+
+  if (is_fuchsia) {
+    public_deps += [ "//third_party/fuchsia-sdk/sdk/pkg/zx" ]
+  }
 }
 
-ipcz_source_set("util") {
+source_set("util") {
   visibility = [ ":*" ]
 
   public = [
     "util/log.h",
     "util/multi_mutex_lock.h",
     "util/ref_counted.h",
-    "util/stack_trace.h",
     "util/strong_alias.h",
     "util/unique_ptr_comparator.h",
     "util/unsafe_buffers.h",
@@ -214,11 +113,14 @@ ipcz_source_set("util") {
 
   sources = [ "util/ref_counted.cc" ]
 
-  deps = [ "//third_party/abseil-cpp:absl" ]
-  configs = [ ":ipcz_include_src_dir" ]
+  deps = [
+    "//base",
+    "//third_party/abseil-cpp:absl",
+  ]
+  configs += [ ":ipcz_include_src_dir" ]
 }
 
-ipcz_source_set("impl") {
+source_set("impl") {
   visibility = [ ":*" ]
   public = [
     "ipcz/api_context.h",
@@ -304,20 +206,21 @@ ipcz_source_set("impl") {
   ]
   public_deps = [
     ":ipcz_header",
+    ":util",
+    "//base",
     "//third_party/abseil-cpp:absl",
   ]
-  ipcz_public_deps = [ ":util" ]
   public_configs = [ ":ipcz_include_dir" ]
-  configs = [ ":ipcz_include_src_dir" ]
+  configs += [ ":ipcz_include_src_dir" ]
 }
 
-ipcz_source_set("ipcz_sources") {
-  ipcz_public_deps = [
+source_set("ipcz_sources") {
+  public_deps = [
     ":impl",
+    ":ipcz_header",
     ":util",
+    "//base",
   ]
-
-  public_deps = [ ":ipcz_header" ]
   public_configs = [ ":ipcz_include_dir" ]
 }
 
@@ -332,7 +235,7 @@ config("ipcz_include_src_dir") {
   ]
 }
 
-ipcz_source_set("ipcz_test_support") {
+source_set("ipcz_test_support") {
   testonly = true
   public = [
     "test/mock_driver.h",
@@ -355,24 +258,27 @@ ipcz_source_set("ipcz_test_support") {
   }
 
   deps = [
+    ":impl",
+    ":ipcz",
+    ":reference_drivers",
+    ":util",
+    "//base",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",
   ]
   public_deps = [ ":test_buildflags" ]
-  ipcz_public_deps = [
-    ":impl",
-    ":ipcz",
-    ":reference_drivers",
-    ":util",
+  public_configs = [
+    ":ipcz_include_dir",
+    ":ipcz_include_src_dir",
   ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
-  configs = [ "//build/config/compiler:no_exit_time_destructors" ]
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
-ipcz_source_set("ipcz_tests_sources") {
+source_set("tests_sources") {
   testonly = true
 
   sources = [
@@ -405,7 +311,6 @@ ipcz_source_set("ipcz_tests_sources") {
     "trap_test.cc",
     "util/ref_counted_test.cc",
     "util/safe_math_test.cc",
-    "util/stack_trace_test.cc",
     "util/unique_ptr_comparator_test.cc",
   ]
 
@@ -418,39 +323,21 @@ ipcz_source_set("ipcz_tests_sources") {
   }
 
   deps = [
+    ":impl",
+    ":ipcz",
+    ":ipcz_test_support",
+    ":reference_drivers",
+    ":util",
+    "//base",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",
   ]
-  ipcz_deps = [
-    ":impl",
-    ":ipcz",
-    ":util",
-  ]
-  ipcz_public_deps = [
-    ":ipcz_test_support",
-    ":reference_drivers",
-  ]
 
-  configs = [ ":ipcz_include_src_dir" ]
-}
-
-# In Chromium builds, ipcz tests are built into the //ipc:ipc_tests test suite
-# by linking ":ipcz_test_sources_chromium" directly into that target. The
-# standalone ipcz_tests executable is still defined in Chromium builds though so
-# that it gets compile coverage from Chromium infrastructure.
-test("ipcz_tests") {
-  sources = [ "test/run_all_tests.cc" ]
-  deps = [
-    ":ipcz_tests_sources_standalone",
-    ":test_buildflags",
-    "${ipcz_src_root}/standalone",
-    "//testing/gtest",
-  ]
   configs += [ ":ipcz_include_src_dir" ]
 }
 
-ipcz_source_set("fuzzer_sources") {
+source_set("fuzzer_sources") {
   testonly = true
   sources = [
     "fuzzer/driver.cc",
@@ -460,12 +347,13 @@ ipcz_source_set("fuzzer_sources") {
     "fuzzer/ipcz_fuzzer_testcase.cc",
     "fuzzer/ipcz_fuzzer_testcase.h",
   ]
-  ipcz_deps = [
+  deps = [
     ":ipcz",
     ":reference_drivers",
     ":util",
+    "//base",
+    "//third_party/abseil-cpp:absl",
   ]
-  deps = [ "//third_party/abseil-cpp:absl" ]
   public_configs = [
     ":ipcz_include_dir",
     ":ipcz_include_src_dir",
@@ -474,11 +362,12 @@ ipcz_source_set("fuzzer_sources") {
 
 fuzzer_test("ipcz_fuzzer") {
   sources = [ "fuzzer/ipcz_fuzzer.cc" ]
-  deps = [ ":fuzzer_sources_standalone" ]
-  defines = [ "IPCZ_STANDALONE" ]
-}
-
-group("all") {
-  testonly = true
-  deps = [ ":ipcz_tests" ]
+  deps = [
+    ":fuzzer_sources",
+    "//third_party/abseil-cpp:absl",
+  ]
+  include_dirs = [
+    "../include",
+    ".",
+  ]
 }
