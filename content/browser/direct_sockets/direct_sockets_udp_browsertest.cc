@@ -38,10 +38,6 @@
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "base/mac/mac_util.h"
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/dbus/permission_broker/fake_permission_broker_client.h"  // nogncheck
 #include "content/browser/direct_sockets/firewall_hole_delegate.h"
@@ -406,13 +402,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBoundUdpBrowserTest, LeaveGroupAfterClose) {
               ::testing::StartsWith("leaveGroupAfterClose failed:"));
 }
 
-// TODO(crbug.com/443716695): Fails on mac-rel bots.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_JoinGroupSSM DISABLED_JoinGroupSSM
-#else
-#define MAYBE_JoinGroupSSM JoinGroupSSM
-#endif
-IN_PROC_BROWSER_TEST_F(DirectSocketsBoundUdpBrowserTest, MAYBE_JoinGroupSSM) {
+IN_PROC_BROWSER_TEST_F(DirectSocketsBoundUdpBrowserTest, JoinGroupSSM) {
   auto sources = DeriveSsmSourceAddresses(1);
   if (sources.empty()) {
     GTEST_SKIP() << "No IPv4 interface found";
@@ -425,7 +415,11 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBoundUdpBrowserTest, MAYBE_JoinGroupSSM) {
                                 sources[0])));
 }
 
-// TODO(crbug.com/443716695): Fails on mac-rel bots.
+// TODO(crbug.com/443716695): Joining the same SSM group a second time with a
+// different source-specific membership fails with "NetworkError: Network Error"
+// on the macOS 15 bots (mac15-x64-rel-tests) while passing on macOS 26. This
+// gap caused the first reland (crrev.com/c/8027359) to be reverted; keep the
+// test disabled on mac until the macOS 15 membership path is understood.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_JoinGroupSSMSameGroupDifferentSources \
   DISABLED_JoinGroupSSMSameGroupDifferentSources
@@ -448,14 +442,8 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBoundUdpBrowserTest,
                        sources[0], sources[1])));
 }
 
-// TODO(crbug.com/443716695): Fails on mac-rel bots.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_LeaveGroupSSMMustMatchSource DISABLED_LeaveGroupSSMMustMatchSource
-#else
-#define MAYBE_LeaveGroupSSMMustMatchSource LeaveGroupSSMMustMatchSource
-#endif
 IN_PROC_BROWSER_TEST_F(DirectSocketsBoundUdpBrowserTest,
-                       MAYBE_LeaveGroupSSMMustMatchSource) {
+                       LeaveGroupSSMMustMatchSource) {
   auto sources = DeriveSsmSourceAddresses(2);
   if (sources.empty()) {
     GTEST_SKIP() << "No IPv4 interface found";
@@ -469,14 +457,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBoundUdpBrowserTest,
                                 sources[0], sources[1])));
 }
 
-// TODO(crbug.com/443716695): Fails on mac-rel bots.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_CannotMixASMAndSSM DISABLED_CannotMixASMAndSSM
-#else
-#define MAYBE_CannotMixASMAndSSM CannotMixASMAndSSM
-#endif
-IN_PROC_BROWSER_TEST_F(DirectSocketsBoundUdpBrowserTest,
-                       MAYBE_CannotMixASMAndSSM) {
+IN_PROC_BROWSER_TEST_F(DirectSocketsBoundUdpBrowserTest, CannotMixASMAndSSM) {
   auto sources = DeriveSsmSourceAddresses(1);
   if (sources.empty()) {
     GTEST_SKIP() << "No IPv4 interface found";
@@ -514,7 +495,10 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBoundUdpBrowserTest,
                    "joinGroupSSMInvalidSource({ localAddress: '0.0.0.0' })"));
 }
 
-// TODO(crbug.com/443716695): Fails on mac-rel bots.
+// TODO(crbug.com/443716695): The multicast loopback exchange fails on mac-rel
+// bots with ERR_CONNECTION_RESET on the sender socket. The macOS kernel
+// loopback path is fine (verified on macOS 26.5.1); the failure is specific to
+// the bot environment.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_MulticastExchangeUdp DISABLED_MulticastExchangeUdp
 #else
@@ -526,7 +510,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBoundUdpBrowserTest,
               testing::HasSubstr("succeeded"));
 }
 
-// TODO(crbug.com/443716695): Fails on mac-rel bots.
+// TODO(crbug.com/443716695): Fails on mac-rel bots; see MulticastExchangeUdp.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_MulticastExchangeUdpMultipleReceivers \
   DISABLED_MulticastExchangeUdpMultipleReceivers
