@@ -16,9 +16,11 @@
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/child_process_id.h"
+#include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace content {
@@ -159,6 +161,16 @@ void FileChooserImpl::OpenFileChooser(blink::mojom::FileChooserParamsPtr params,
     std::move(callback).Run(nullptr);
     return;
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  WebContents* web_contents =
+      WebContents::FromRenderFrameHost(render_frame_host());
+  if (!GetContentClient()->browser()->ShouldAllowSystemUiPopups(
+          web_contents)) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+#endif
   callback_ = std::move(callback);
   auto listener = base::MakeRefCounted<FileSelectListenerImpl>(this);
   listener_impl_ = listener.get();

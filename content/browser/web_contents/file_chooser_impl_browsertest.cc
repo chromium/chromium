@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/test/test_future.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -15,6 +16,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
@@ -306,5 +308,30 @@ IN_PROC_BROWSER_TEST_F(FileChooserImplBrowserTest,
   // Verify renderer STILL doesn't have access.
   EXPECT_FALSE(policy->CanReadFile(rfh->GetProcess()->GetID(), test_file));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+class DisallowSystemUiPopupsContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  bool ShouldAllowSystemUiPopups(WebContents* web_contents) override {
+    return false;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(FileChooserImplBrowserTest, DisallowSystemUiPopups) {
+  DisallowSystemUiPopupsContentBrowserClient test_client;
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+
+  auto* rfh = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  auto chooser_and_remote = FileChooserImpl::CreateForTesting(rfh);
+  auto* chooser = chooser_and_remote.first;
+
+  base::test::TestFuture<blink::mojom::FileChooserResultPtr> future;
+  chooser->OpenFileChooser(blink::mojom::FileChooserParams::New(),
+                           future.GetCallback());
+  EXPECT_TRUE(future.Get().is_null());
+}
+#endif
 
 }  // namespace content
