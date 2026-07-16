@@ -7735,18 +7735,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.EnableTVSmoothing" enum="Boolean"
-    expires_after="2026-08-01">
-  <owner>alexmitra@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Logs whether we think the current device is a TV. This histogram is intended
-    to improve our TV detection over time by looking at the devices in each
-    bucket. This histogram is logged once when setting up WebView's graphics
-    context.
-  </summary>
-</histogram>
-
 <histogram name="Android.WebView.GetCacheQuotaSizeTime" units="ms"
     expires_after="2026-06-01">
   <owner>abhijithnair@chromium.org</owner>

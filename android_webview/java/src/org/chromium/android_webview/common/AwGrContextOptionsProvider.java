@@ -4,8 +4,6 @@
 
 package org.chromium.android_webview.common;
 
-import static org.chromium.base.metrics.RecordHistogram.recordBooleanHistogram;
-
 import android.content.pm.PackageManager;
 
 import org.jni_zero.CalledByNative;
@@ -17,17 +15,12 @@ import org.chromium.base.ContextUtils;
  * hold any state or be instantiated.
  */
 class AwGrContextOptionsProvider {
-    private static final String HISTOGRAM_NAME = "Android.WebView.EnableTVSmoothing";
 
     /** Returns true if the device supports leanback, the feature used by TV devices. */
     @CalledByNative
     private static boolean shouldEnableTvSmoothing() {
         PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
-        boolean isTv = pm.hasSystemFeature(PackageManager.FEATURE_LEANBACK);
-        // Record whether we enabled smoothing so that we can check which devices are seeing
-        // smoothing and refine isTv over time.
-        recordBooleanHistogram(HISTOGRAM_NAME, isTv);
-        return isTv;
+        return pm.hasSystemFeature(PackageManager.FEATURE_LEANBACK);
     }
 
     private AwGrContextOptionsProvider() {}
