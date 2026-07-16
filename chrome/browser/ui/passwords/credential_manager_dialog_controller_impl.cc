@@ -25,6 +25,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/service/sync_service.h"
+#include "components/url_formatter/elide_url.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -238,4 +239,30 @@ void CredentialManagerDialogControllerImpl::OnBiometricReauthCompleted(
   }
   ResetDialog();
   delegate_->ChooseCredential(password_form, credential_type);
+}
+
+PasswordCombinedSelectorController::DisplayType
+CredentialManagerDialogControllerImpl::GetDisplayType() const {
+  return DisplayType::kCredentialManager;
+}
+
+bool CredentialManagerDialogControllerImpl::ShouldShowTopIllustration() const {
+  return false;
+}
+
+std::u16string CredentialManagerDialogControllerImpl::GetTitle() const {
+  return l10n_util::GetStringFUTF16(
+      IDS_WEBAUTHN_SIGN_IN_TO_WEBSITE_DIALOG_TITLE,
+      url_formatter::FormatOriginForSecurityDisplay(
+          GetOrigin(),
+          url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+}
+
+std::u16string CredentialManagerDialogControllerImpl::GetSubtitle() const {
+  return std::u16string();
+}
+
+std::u16string CredentialManagerDialogControllerImpl::GetOkButtonLabel() const {
+  return l10n_util::GetStringUTF16(
+      IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_SIGN_IN);
 }

@@ -451,9 +451,8 @@ PasswordCombinedSelectorView::PasswordCombinedSelectorView(
     : controller_(controller), web_contents_(web_contents) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |
              static_cast<int>(ui::mojom::DialogButton::kCancel));
-  SetButtonLabel(
-      ui::mojom::DialogButton::kOk,
-      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_SIGN_IN));
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
+                 controller_->GetOkButtonLabel());
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   SetModalType(ui::mojom::ModalType::kChild);
@@ -481,11 +480,7 @@ void PasswordCombinedSelectorView::ControllerGone() {
 }
 
 std::u16string PasswordCombinedSelectorView::GetWindowTitle() const {
-  return l10n_util::GetStringFUTF16(
-      IDS_WEBAUTHN_SIGN_IN_TO_WEBSITE_DIALOG_TITLE,
-      url_formatter::FormatOriginForSecurityDisplay(
-          controller_->GetOrigin(),
-          url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+  return controller_->GetTitle();
 }
 
 bool PasswordCombinedSelectorView::ShouldShowCloseButton() const {
@@ -527,7 +522,24 @@ bool PasswordCombinedSelectorView::ShouldAllowKeyEventsDuringInputProtection()
 
 void PasswordCombinedSelectorView::InitWindow() {
   auto main_view = std::make_unique<PasswordCombinedSelectorViewWrapper>();
-  main_view->SetLayoutManager(std::make_unique<views::FillLayout>());
+
+  std::u16string subtitle = controller_->GetSubtitle();
+  if (subtitle.empty()) {
+    main_view->SetLayoutManager(std::make_unique<views::FillLayout>());
+  } else {
+    main_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+        /*between_child_spacing=*/views::LayoutProvider::Get()
+            ->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
+
+    auto* subtitle_label =
+        main_view->AddChildView(std::make_unique<views::Label>(
+            subtitle, views::style::CONTEXT_LABEL, views::style::STYLE_BODY_4));
+    subtitle_label->SetEnabledColor(ui::kColorLabelForegroundSecondary);
+    subtitle_label->SetMultiLine(true);
+    subtitle_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  }
+
   auto list_view = std::make_unique<PasswordCombinedSelectorListView>(
       controller_.get(), web_contents_, this);
   list_view_ = main_view->AddChildView(std::move(list_view));
@@ -557,4 +569,11 @@ void PasswordCombinedSelectorView::OnRadioButtonChecked(int index) {
   auto* list_view_ptr =
       static_cast<PasswordCombinedSelectorListView*>(list_view_);
   list_view_ptr->SetSelectedView(list_view_ptr->GetRowView(index));
+}
+
+void PasswordCombinedSelectorView::OnWidgetInitialized() {
+  views::DialogDelegate::OnWidgetInitialized();
+  if (controller_->ShouldShowTopIllustration()) {
+    // TODO(crbug.com/532482932): Load remote actor illustration once DEPS roll lands.
+  }
 }

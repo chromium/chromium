@@ -56,6 +56,13 @@ class CredentialManagerDialogControllerImpl
   void OnAutoSigninTurnOff() override;
   void OnCloseDialog() override;
 
+  // PasswordCombinedSelectorController:
+  DisplayType GetDisplayType() const override;
+  bool ShouldShowTopIllustration() const override;
+  std::u16string GetTitle() const override;
+  std::u16string GetSubtitle() const override;
+  std::u16string GetOkButtonLabel() const override;
+
  private:
   // Release |current_dialog_| and close the open dialog.
   void ResetDialog();

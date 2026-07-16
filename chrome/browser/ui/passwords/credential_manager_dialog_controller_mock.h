@@ -36,6 +36,12 @@ class CredentialManagerDialogControllerMock
   MOCK_METHOD(void, OnAutoSigninOK, (), (override));
   MOCK_METHOD(void, OnAutoSigninTurnOff, (), (override));
   MOCK_METHOD(void, OnCloseDialog, (), (override));
+
+  MOCK_METHOD(DisplayType, GetDisplayType, (), (const, override));
+  MOCK_METHOD(bool, ShouldShowTopIllustration, (), (const, override));
+  MOCK_METHOD(std::u16string, GetTitle, (), (const, override));
+  MOCK_METHOD(std::u16string, GetSubtitle, (), (const, override));
+  MOCK_METHOD(std::u16string, GetOkButtonLabel, (), (const, override));
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_CREDENTIAL_MANAGER_DIALOG_CONTROLLER_MOCK_H_

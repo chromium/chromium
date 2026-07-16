@@ -64,6 +64,13 @@ class CredentialManagerDialogController : public PasswordCombinedSelectorControl
   // Called when the dialog was closed.
   void OnCloseDialog() override = 0;
 
+  // PasswordCombinedSelectorController:
+  DisplayType GetDisplayType() const override = 0;
+  bool ShouldShowTopIllustration() const override = 0;
+  std::u16string GetTitle() const override = 0;
+  std::u16string GetSubtitle() const override = 0;
+  std::u16string GetOkButtonLabel() const override = 0;
+
  protected:
   ~CredentialManagerDialogController() override = default;
 };

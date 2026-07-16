@@ -146,6 +146,15 @@ TEST_F(CredentialManagerDialogControllerTest, ShowAccountChooserAndSignIn) {
   controller().OnSignInClicked();
 }
 
+TEST_F(CredentialManagerDialogControllerTest, PasswordCombinedSelectorControllerOverrides) {
+  EXPECT_EQ(controller().GetDisplayType(),
+            PasswordCombinedSelectorController::DisplayType::kCredentialManager);
+  EXPECT_FALSE(controller().ShouldShowTopIllustration());
+  EXPECT_FALSE(controller().GetTitle().empty());
+  EXPECT_TRUE(controller().GetSubtitle().empty());
+  EXPECT_FALSE(controller().GetOkButtonLabel().empty());
+}
+
 TEST_F(CredentialManagerDialogControllerTest, AccountChooserClosed) {
   auto prompt = std::make_unique<StrictMock<MockPasswordPrompt>>();
   auto* prompt_ptr = prompt.get();
