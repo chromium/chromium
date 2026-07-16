@@ -218,9 +218,7 @@ V8RenderingContext* CanvasRenderingContext2D::AsV8RenderingContext() {
   return MakeGarbageCollected<V8RenderingContext>(this);
 }
 
-CanvasRenderingContext2D::~CanvasRenderingContext2D() {
-  FlushForImageListener::Get()->RemoveObserver(this);
-}
+CanvasRenderingContext2D::~CanvasRenderingContext2D() = default;
 
 void CanvasRenderingContext2D::ResetInternal() {
   if (IsHibernating()) {
@@ -1182,6 +1180,7 @@ CanvasHibernationHandler* CanvasRenderingContext2D::GetHibernationHandler()
 }
 
 void CanvasRenderingContext2D::Dispose() {
+  FlushForImageListener::Get()->RemoveObserver(this);
   hibernation_handler_ = nullptr;
   shared_image_provider_ = nullptr;
   bitmap_provider_ = nullptr;

@@ -102,9 +102,8 @@ CanvasRenderingContext* OffscreenCanvasRenderingContext2D::Factory::Create(
   return rendering_context;
 }
 
-OffscreenCanvasRenderingContext2D::~OffscreenCanvasRenderingContext2D() {
-  FlushForImageListener::Get()->RemoveObserver(this);
-}
+OffscreenCanvasRenderingContext2D::~OffscreenCanvasRenderingContext2D() =
+    default;
 
 OffscreenCanvasRenderingContext2D::OffscreenCanvasRenderingContext2D(
     OffscreenCanvas* canvas,
@@ -496,6 +495,7 @@ sk_sp<PaintFilter> OffscreenCanvasRenderingContext2D::StateGetFilter() {
 }
 
 void OffscreenCanvasRenderingContext2D::Dispose() {
+  FlushForImageListener::Get()->RemoveObserver(this);
   shared_image_provider_.reset();
   bitmap_provider_.reset();
   CanvasRenderingContext::Dispose();
