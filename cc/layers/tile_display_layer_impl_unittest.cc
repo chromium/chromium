@@ -9,6 +9,8 @@
 #include "base/check_deref.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/test/scoped_feature_list.h"
+#include "cc/base/features.h"
 #include "cc/debug/debug_colors.h"
 #include "cc/layers/append_quads_context.h"
 #include "cc/layers/append_quads_data.h"
@@ -730,6 +732,88 @@ TEST_F(TileDisplayLayerImplTest, AppendsQuadsFromIdealResolutionTiling) {
   // Verify that the quad is from the low-res tiling.
   EXPECT_EQ(render_pass->quad_list.size(), 1u);
   EXPECT_EQ(render_pass->quad_list.front()->resource_id, low_res_resource_id);
+}
+
+// TileDisplayLayerImpl is only instantiated when trees-in-viz is enabled, so
+// run this test with the feature enabled to mirror production.
+class TileDisplayLayerImplWithTreesInVizTest : public TileDisplayLayerImplTest {
+ public:
+  TileDisplayLayerImplWithTreesInVizTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kTreesInViz);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verifies that an external page scale factor (e.g. a cross-origin iframe
+// scaled by its embedder) is applied to the ideal contents scale, so the
+// coverage iterator selects the high-resolution tiling even when the layer's
+// own geometry transform is identity.
+TEST_F(TileDisplayLayerImplWithTreesInVizTest,
+       AppendsQuadsFromHighResTilingWhenScaledByExternalPageScaleFactor) {
+  constexpr gfx::Size kLayerBounds(1300, 1900);
+  constexpr gfx::Rect kLayerRect(kLayerBounds);
+  constexpr float kOpacity = 1.0;
+
+  auto layer = std::make_unique<TileDisplayLayerImpl>(
+      CHECK_DEREF(host_impl()->active_tree()), /*id=*/42);
+  auto* raw_layer = layer.get();
+  host_impl()->active_tree()->AddLayer(std::move(layer));
+
+  raw_layer->SetBounds(kLayerBounds);
+  raw_layer->SetRecordedBounds(kLayerRect);
+  raw_layer->draw_properties().visible_layer_rect = kLayerRect;
+  raw_layer->draw_properties().opacity = kOpacity;
+
+  // Create a low-resolution (1.0) and a high-resolution (2.0) tiling, both with
+  // content available, so that the drawn tiling is determined by the ideal
+  // contents scale rather than by tile availability.
+  auto& low_res_tiling = raw_layer->GetOrCreateTilingFromScaleKey(1.0);
+  low_res_tiling.SetTileSize(kLayerBounds);
+  low_res_tiling.SetTilingRect(kLayerRect);
+  auto& high_res_tiling = raw_layer->GetOrCreateTilingFromScaleKey(2.0);
+  high_res_tiling.SetTileSize(kLayerBounds);
+  high_res_tiling.SetTilingRect(kLayerRect);
+
+  auto low_res_resource_id = host_impl()->resource_provider()->ImportResource(
+      viz::TransferableResource::Make(
+          gpu::ClientSharedImage::CreateForTesting(),
+          viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
+      base::DoNothing());
+  TileDisplayLayerImpl::TileContents low_res_contents =
+      TileDisplayLayerTileResource(low_res_resource_id, kLayerBounds);
+  low_res_tiling.SetTileContents(TileIndex{0, 0}, low_res_contents,
+                                 /*update_damage=*/true);
+
+  auto high_res_resource_id = host_impl()->resource_provider()->ImportResource(
+      viz::TransferableResource::Make(
+          gpu::ClientSharedImage::CreateForTesting(),
+          viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
+      base::DoNothing());
+  TileDisplayLayerImpl::TileContents high_res_contents =
+      TileDisplayLayerTileResource(high_res_resource_id, kLayerBounds);
+  high_res_tiling.SetTileContents(TileIndex{0, 0}, high_res_contents,
+                                  /*update_damage=*/true);
+
+  // The layer's own transform is identity, so its geometry ideal contents scale
+  // is 1.0. An external page scale factor of 2.0 must raise the ideal contents
+  // scale to 2.0.
+  host_impl()->active_tree()->SetExternalPageScaleFactor(2.0f);
+
+  SetupRootProperties(host_impl()->active_tree()->root_layer());
+
+  auto render_pass = viz::CompositorRenderPass::Create();
+  AppendQuadsData data;
+  raw_layer->AppendQuads(AppendQuadsContext{DRAW_MODE_SOFTWARE, {}, false},
+                         render_pass.get(), &data);
+
+  // The high-resolution tiling must be chosen because the external page scale
+  // factor raised the ideal contents scale to 2.0. Without applying the
+  // external page scale factor, the ideal would stay 1.0 and the blurry
+  // low-resolution tiling would be drawn instead.
+  EXPECT_EQ(render_pass->quad_list.size(), 1u);
+  EXPECT_EQ(render_pass->quad_list.front()->resource_id, high_res_resource_id);
 }
 
 // Verifies that RemoveTiling correctly removes a tiling.

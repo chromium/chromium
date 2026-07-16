@@ -247,7 +247,15 @@ std::vector<float> TileDisplayLayerImpl::GetSafeToDeleteTilings() {
 
 float TileDisplayLayerImpl::GetIdealContentsScaleKey() const {
   const auto ideal_scale = GetIdealContentsScale();
-  return std::max(ideal_scale.x(), ideal_scale.y());
+  float ideal_scale_key = std::max(ideal_scale.x(), ideal_scale.y());
+
+  // external_page_scale_factor (e.g. an OOPIF scaled by its embedder) affects
+  // raster/ideal scale but not geometry, so it is not part of
+  // GetIdealContentsScale(). Apply it here to mirror
+  // PictureLayerImpl::UpdateIdealScales(); otherwise the coverage iterator
+  // would select a lower-resolution tiling, producing blurry content.
+  ideal_scale_key *= layer_tree_impl()->external_page_scale_factor();
+  return ideal_scale_key;
 }
 
 bool TileDisplayLayerImpl::ValidateTilingSetForContentsResourceId() const {
