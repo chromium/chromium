@@ -14,10 +14,54 @@
 
   The "layout_width" should be set programmatically, so it's 0dp here.
 -->
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/side_panel_container"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="0dp"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="@drawable/side_panel_container_bg"
     android:foreground="@drawable/side_panel_container_stroke"
-    android:clipToOutline="true" />
+    android:clipToOutline="true">
+
+    <!-- Header -->
+    <LinearLayout
+        android:id="@+id/side_panel_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="14dp"
+        android:gravity="center_vertical">
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/side_panel_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAppearance=
+                "@style/TextAppearance.TextLargeThick.Primary" />
+
+        <!-- Close button -->
+        <ImageButton
+            android:id="@+id/side_panel_close_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/close"
+            android:src="@drawable/material_ic_close_24dp"
+            android:tint="@macro/default_icon_color" />
+
+    </LinearLayout>
+
+    <!-- Content Area
+         We use a FrameLayout here instead of a ViewStub because during
+         content replacement (e.g. startReplacingPanelContent), we temporarily
+         add the new content view before removing the old one. A FrameLayout
+         allows these two views to overlap (Z-stack) while the new one loads,
+         avoiding a blank flash. -->
+    <FrameLayout
+        android:id="@+id/side_panel_content_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+</LinearLayout>

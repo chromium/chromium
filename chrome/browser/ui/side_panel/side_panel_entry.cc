@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 
+#include <string>
+
 #include "base/functional/callback_helpers.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -11,7 +13,11 @@
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_metrics.h"
 
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::u16string, kSidePanelTitleKey)
+#else
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kShouldShowTitleInSidePanelHeaderKey, true)
+#endif
 
 SidePanelEntry::SidePanelEntry(
     Key key,

@@ -41,11 +41,13 @@ SidePanelTabScopedDevFeature::SidePanelTabScopedDevFeature(
     SidePanelRegistry* registry)
     : tab_(tab), registry_(registry) {
   if (registry_) {
-    registry_->Register(std::make_unique<SidePanelEntry>(
+    auto entry = std::make_unique<SidePanelEntry>(
         SidePanelType::kToolbar,
         SidePanelEntry::Key(SidePanelEntry::Id::kSidePanelDev),
         base::BindRepeating(&CreateSidePanelDevView, tab_),
-        base::BindRepeating([]() { return 0; })));
+        base::BindRepeating([]() { return 0; }));
+    entry->SetProperty(kSidePanelTitleKey, std::u16string(u"Developer Panel"));
+    registry_->Register(std::move(entry));
   }
 }
 

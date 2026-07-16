@@ -43,4 +43,7 @@ public interface SidePanelCoordinatorAndroid extends ChromeAndroidTaskFeature {
      * @see org.chromium.chrome.browser.ui.side_ui.SideUiContainer#onWillAutoRestore()
      */
     void onWillAutoRestore();
+
+    /** Requests to close the side panel. */
+    void close();
 }

@@ -14,7 +14,8 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
-import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
@@ -45,7 +46,7 @@ final class SidePanelContainerCoordinatorImpl
     private static final @AnchorSide int SIDE_PANEL_DEFAULT_ANCHOR_SIDE = AnchorSide.RIGHT;
 
     private final Activity mParentActivity;
-    private final FrameLayout mContainerView;
+    private final LinearLayout mContainerView;
     private final SideUiCoordinator mSideUiCoordinator;
 
     /** JNI bridge to read/write C++ side panel states. */
@@ -97,7 +98,7 @@ final class SidePanelContainerCoordinatorImpl
         mParentActivity = parentActivity;
         mSideUiCoordinator = sideUiCoordinator;
         mContainerView =
-                (FrameLayout)
+                (LinearLayout)
                         LayoutInflater.from(mParentActivity)
                                 .inflate(R.layout.side_panel_container, /* root= */ null);
     }
@@ -134,8 +135,10 @@ final class SidePanelContainerCoordinatorImpl
         // TODO(crbug.com/513302000): assert the side panel is currently closed.
 
         mCurrentContent = content;
-        mContainerView.removeAllViews();
-        mContainerView.addView(content.mView);
+        ViewGroup contentContainer = getContentContainer();
+        contentContainer.removeAllViews();
+        configureHeader(content);
+        contentContainer.addView(content.mView);
 
         assert !mIsPreparingForAutoClose;
         if (!mIsPreparingForAutoRestore) {
@@ -172,10 +175,12 @@ final class SidePanelContainerCoordinatorImpl
         }
 
         assert mCurrentContent != null : "no content to replace";
-        View oldView = mCurrentContent.mView;
+        View oldContentView = mCurrentContent.mView;
         mCurrentContent = newContent;
 
-        mContainerView.addView(newContent.mView, /* index= */ 0);
+        configureHeader(newContent);
+        ViewGroup contentContainer = getContentContainer();
+        contentContainer.addView(newContent.mView, /* index= */ 0);
 
         // We use a custom Runnable class with a `mRan` flag because ThinWebView's runOnNextFrame()
         // does not support cancellation.
@@ -201,14 +206,14 @@ final class SidePanelContainerCoordinatorImpl
                         // Immediately set mRan to true to prevent re-entrancy.
                         mRan = true;
 
-                        mContainerView.removeView(oldView);
+                        contentContainer.removeView(oldContentView);
                         if (mSidePanelCoordinatorAndroid != null) {
                             mSidePanelCoordinatorAndroid.onPanelContentReplaced();
                         }
 
                         notifyAccessibilityStateChanged(
                                 AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_TITLE,
-                                newContent.mAccessibilityTitle,
+                                newContent.mTitle,
                                 /* requestFocus= */ true);
 
                         // If the work is for the current runnable, clear the runnable.
@@ -265,7 +270,7 @@ final class SidePanelContainerCoordinatorImpl
         //
         // (1) memory leaks, and
         // (2) a crash when the content View is added to another container instance.
-        mContainerView.removeAllViews();
+        getContentContainer().removeAllViews();
         mCurrentContent = null;
     }
 
@@ -360,7 +365,7 @@ final class SidePanelContainerCoordinatorImpl
 
         // Remove the content if setting the width the 0 (i.e. hiding the panel).
         if (width == 0) {
-            mContainerView.removeAllViews();
+            getContentContainer().removeAllViews();
             mCurrentContent = null;
         }
 
@@ -373,8 +378,7 @@ final class SidePanelContainerCoordinatorImpl
         if (oldWidth == 0 && newWidth > 0 && mSidePanelCoordinatorAndroid != null) {
             mSidePanelCoordinatorAndroid.onPanelOpened();
 
-            CharSequence paneTitle =
-                    mCurrentContent != null ? mCurrentContent.mAccessibilityTitle : null;
+            CharSequence paneTitle = mCurrentContent != null ? mCurrentContent.mTitle : null;
             notifyAccessibilityStateChanged(
                     AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_APPEARED,
                     paneTitle,
@@ -502,5 +506,34 @@ final class SidePanelContainerCoordinatorImpl
             }
         }
         return null;
+    }
+
+    private void onCloseButtonClicked() {
+        if (mSidePanelPureJavaDevFeature != null) {
+            mSidePanelPureJavaDevFeature.toggle();
+        } else if (mSidePanelCoordinatorAndroid != null) {
+            mSidePanelCoordinatorAndroid.close();
+        }
+    }
+
+    private void configureHeader(SidePanelContent content) {
+        int vis;
+        if (!content.mShowHeader) {
+            vis = View.GONE;
+        } else {
+            vis = View.VISIBLE;
+            assert content.mTitle != null;
+            TextView titleView = mContainerView.findViewById(R.id.side_panel_title);
+            titleView.setText(content.mTitle);
+            mContainerView
+                    .findViewById(R.id.side_panel_close_button)
+                    .setOnClickListener(v -> onCloseButtonClicked());
+        }
+        View headerView = mContainerView.findViewById(R.id.side_panel_header);
+        headerView.setVisibility(vis);
+    }
+
+    private ViewGroup getContentContainer() {
+        return (ViewGroup) mContainerView.findViewById(R.id.side_panel_content_container);
     }
 }

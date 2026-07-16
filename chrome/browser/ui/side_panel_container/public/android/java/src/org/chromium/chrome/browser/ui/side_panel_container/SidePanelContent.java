@@ -20,15 +20,19 @@ public final class SidePanelContent {
      */
     public final View mView;
 
-    /** Optional explicit accessibility title for the side panel. */
-    public final @Nullable String mAccessibilityTitle;
+    /** The title of the side panel content, to be shown in the header. */
+    public final @Nullable String mTitle;
+
+    /** Whether to render a header (with title and close button). */
+    public final boolean mShowHeader;
 
     public SidePanelContent(View view) {
-        this(view, null);
+        this(view, /* title= */ null, /* showHeader= */ false);
     }
 
-    public SidePanelContent(View view, @Nullable String accessibilityTitle) {
+    public SidePanelContent(View view, @Nullable String title, boolean showHeader) {
         mView = view;
-        mAccessibilityTitle = accessibilityTitle;
+        mTitle = title;
+        mShowHeader = showHeader;
     }
 }

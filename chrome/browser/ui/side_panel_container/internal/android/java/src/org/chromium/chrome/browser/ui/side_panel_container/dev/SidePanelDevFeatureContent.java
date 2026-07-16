@@ -35,7 +35,9 @@ final class SidePanelDevFeatureContent {
     SidePanelDevFeatureContent(ThinWebView thinWebView, WebContents webContents) {
         mThinWebView = thinWebView;
         mWebContents = webContents;
-        mSidePanelContent = new SidePanelContent(mThinWebView.getView());
+        mSidePanelContent =
+                new SidePanelContent(
+                        mThinWebView.getView(), "Developer Panel", /* showHeader= */ true);
     }
 
     /** Destroys all objects in this data class and sets their references to {@code null}. */

@@ -10,7 +10,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import android.view.View;
-import android.widget.FrameLayout;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.core.view.ViewCompat;
 import androidx.test.filters.MediumTest;
@@ -97,11 +98,17 @@ public class SidePanelContainerCoordinatorIntegrationTest {
 
         // Act.
         showPanel(mResponsivePageStation.getTab());
-        FrameLayout containerView = waitForContainerViewOpen(coordinator);
+        ViewGroup containerView = waitForContainerViewOpen(coordinator);
 
         // Assert.
-        assertEquals(1, containerView.getChildCount());
-        assertNotNull(containerView.getChildAt(0));
+        ViewGroup contentContainer = containerView.findViewById(R.id.side_panel_content_container);
+        assertNotNull(contentContainer);
+        assertEquals(1, contentContainer.getChildCount());
+        assertNotNull(contentContainer.getChildAt(0));
+
+        TextView titleView = containerView.findViewById(R.id.side_panel_title);
+        assertNotNull(titleView);
+        assertEquals("Developer Panel", titleView.getText().toString());
     }
 
     @Test
@@ -111,17 +118,19 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         var coordinator = getSidePanelContainerCoordinator();
         var tab1 = mResponsivePageStation.getTab();
         showPanel(tab1);
-        FrameLayout containerView = waitForContainerViewOpen(coordinator);
-        assertEquals(1, containerView.getChildCount());
-        View contentView1 = containerView.getChildAt(0);
+        ViewGroup containerView = waitForContainerViewOpen(coordinator);
+        ViewGroup contentContainer = containerView.findViewById(R.id.side_panel_content_container);
+        assertNotNull(contentContainer);
+        assertEquals(1, contentContainer.getChildCount());
+        View contentView1 = contentContainer.getChildAt(0);
 
         // Arrange: Show the side panel for a new tab.
         var newTabPageStation = mResponsivePageStation.openNewTabFast();
         var tab2 = newTabPageStation.getTab();
         showPanel(tab2);
         waitForContainerViewOpen(coordinator);
-        assertEquals(1, containerView.getChildCount());
-        View contentView2 = containerView.getChildAt(0);
+        assertEquals(1, contentContainer.getChildCount());
+        View contentView2 = contentContainer.getChildAt(0);
         assertNotEquals(contentView1, contentView2);
 
         // Act: Switch back to the first tab.
@@ -129,8 +138,8 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         waitForContainerViewOpen(coordinator);
 
         // Assert.
-        assertEquals(1, containerView.getChildCount());
-        assertEquals(contentView1, containerView.getChildAt(0));
+        assertEquals(1, contentContainer.getChildCount());
+        assertEquals(contentView1, contentContainer.getChildAt(0));
     }
 
     @Test
@@ -142,12 +151,12 @@ public class SidePanelContainerCoordinatorIntegrationTest {
 
         // Act.
         showPanel(tab1);
-        FrameLayout containerView = waitForContainerViewOpen(coordinator);
+        ViewGroup containerView = waitForContainerViewOpen(coordinator);
 
         // Assert.
-        // We verify that the default dev feature sets a null title correctly.
+        // We verify that the default dev feature sets the title correctly.
         CriteriaHelper.pollUiThread(
-                () -> ViewCompat.getAccessibilityPaneTitle(containerView) == null,
+                () -> "Developer Panel".equals(ViewCompat.getAccessibilityPaneTitle(containerView)),
                 "Accessibility pane title was not set correctly on open.");
     }
 
@@ -158,7 +167,7 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         var coordinator = getSidePanelContainerCoordinator();
         var tab1 = mResponsivePageStation.getTab();
         showPanel(tab1);
-        FrameLayout containerView = waitForContainerViewOpen(coordinator);
+        ViewGroup containerView = waitForContainerViewOpen(coordinator);
 
         // Arrange: Show the side panel for a new tab.
         var newTabPageStation = mResponsivePageStation.openNewTabFast();
@@ -174,10 +183,9 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         mResponsivePageStation = newTabPageStation.selectTabFast(tab1, WebPageStation::newBuilder);
         waitForContainerViewOpen(coordinator);
 
-        // Assert: The accessibility title matches the native testing feature's title (which is
-        // null).
+        // Assert: The accessibility title matches the native testing feature's title.
         CriteriaHelper.pollUiThread(
-                () -> ViewCompat.getAccessibilityPaneTitle(containerView) == null,
+                () -> "Developer Panel".equals(ViewCompat.getAccessibilityPaneTitle(containerView)),
                 "Accessibility pane title was not updated correctly on replace.");
     }
 
@@ -188,7 +196,7 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         var coordinator = getSidePanelContainerCoordinator();
         var tab1 = mResponsivePageStation.getTab();
         showPanel(tab1);
-        FrameLayout containerView = waitForContainerViewOpen(coordinator);
+        ViewGroup containerView = waitForContainerViewOpen(coordinator);
 
         // Force set a title on the view so we can test that close clears it
         ThreadUtils.runOnUiThreadBlocking(
@@ -213,7 +221,7 @@ public class SidePanelContainerCoordinatorIntegrationTest {
 
         // Act.
         showPanel(mResponsivePageStation.getTab());
-        FrameLayout containerView = waitForContainerViewOpen(coordinator);
+        ViewGroup containerView = waitForContainerViewOpen(coordinator);
 
         // Assert.
         mRenderTestRule.render(containerView, "side_panel_container");
@@ -226,14 +234,16 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         var coordinator = getSidePanelContainerCoordinator();
         var tab = mResponsivePageStation.getTab();
         showPanel(tab);
-        FrameLayout containerView = waitForContainerViewOpen(coordinator);
+        ViewGroup containerView = waitForContainerViewOpen(coordinator);
 
         // Act.
         closePanel(tab);
         waitForContainerViewClose(coordinator);
 
         // Assert.
-        assertEquals(0, containerView.getChildCount());
+        ViewGroup contentContainer = containerView.findViewById(R.id.side_panel_content_container);
+        assertNotNull(contentContainer);
+        assertEquals(0, contentContainer.getChildCount());
     }
 
     @Test
@@ -382,15 +392,15 @@ public class SidePanelContainerCoordinatorIntegrationTest {
      *
      * @return The View as returned by {@link SidePanelContainerCoordinatorImpl#getView()}.
      */
-    private static FrameLayout waitForContainerViewOpen(
+    private static ViewGroup waitForContainerViewOpen(
             SidePanelContainerCoordinatorImpl coordinator) {
         View containerView = ThreadUtils.runOnUiThreadBlocking(coordinator::getView);
-        assertTrue(containerView instanceof FrameLayout);
+        assertTrue(containerView instanceof ViewGroup);
 
         CriteriaHelper.pollUiThread(
                 () -> containerView.getWidth() > 0,
                 "The container View should have been attached and laid out.");
-        return (FrameLayout) containerView;
+        return (ViewGroup) containerView;
     }
 
     /** Waits for the View of {@link SidePanelContainerCoordinator} to be detached. */

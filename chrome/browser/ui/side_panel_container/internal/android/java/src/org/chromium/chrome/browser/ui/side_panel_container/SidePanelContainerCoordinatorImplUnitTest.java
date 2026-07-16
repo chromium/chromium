@@ -41,6 +41,7 @@ public class SidePanelContainerCoordinatorImplUnitTest {
     @Before
     public void setUp() {
         mTestActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mTestActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
     }
 
     @Test

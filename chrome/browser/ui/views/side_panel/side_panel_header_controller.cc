@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/side_panel/side_panel_metrics.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_helper.h"
@@ -304,13 +305,8 @@ ui::ImageModel SidePanelHeaderController::GetIconImage() {
 
 std::u16string_view SidePanelHeaderController::GetTitleText() {
   CHECK(side_panel_entry_);
-  return side_panel_entry_->GetProperty(kShouldShowTitleInSidePanelHeaderKey)
-             ? SidePanelHelper::GetActionItem(&*browser_,
-                                              side_panel_entry_->key())
-                   ->GetText()
-             : std::u16string_view();
+  return SidePanelUtil::GetTitleText(side_panel_entry_.get(), &*browser_);
 }
-
 void SidePanelHeaderController::UpdatePinState() {
   if (!side_panel_entry_) {
     return;

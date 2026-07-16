@@ -86,6 +86,10 @@ android_resources("java_resources") {
     "android/java/res/values/colors.xml",
     "android/java/res/values/dimens.xml",
   ]
+  deps = [
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/theme/android:java_resources",
+  ]
 }
 
 android_library("javatests") {
@@ -111,8 +115,8 @@ android_library("javatests") {
     "//content/public/android:content_full_java",
     "//net/android:net_java_test_support",
     "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/androidx:androidx_window_window_java",
     "//third_party/junit",
@@ -120,7 +124,6 @@ android_library("javatests") {
     "//ui/android:ui_no_recycler_view_java",
   ]
   data = [ "//chrome/browser/ui/side_panel_container/test/data/" ]
-  resources_package = "org.chromium.chrome.browser.ui.side_panel_container"
 }
 
 robolectric_library("junit") {

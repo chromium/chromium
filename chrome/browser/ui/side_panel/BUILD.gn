@@ -20,8 +20,6 @@ source_set("side_panel") {
     "side_panel_native_view.h",
     "side_panel_prefs.cc",
     "side_panel_prefs.h",
-    "side_panel_util.cc",
-    "side_panel_util.h",
   ]
 
   public_deps = [
@@ -67,6 +65,8 @@ source_set("side_panel_views_dependent") {
     "side_panel_ui.h",
     "side_panel_ui_base.cc",
     "side_panel_ui_base.h",
+    "side_panel_util.cc",
+    "side_panel_util.h",
   ]
   deps = [
     ":side_panel",

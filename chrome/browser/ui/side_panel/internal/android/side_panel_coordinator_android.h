@@ -7,8 +7,6 @@
 
 #include <jni.h>
 
-#include "base/android/jni_weak_ref.h"
-#include "base/android/scoped_java_ref.h"
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
@@ -16,6 +14,7 @@
 #include "chrome/browser/ui/side_panel/internal/android/side_panel_tab_list_observer_android.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui_base.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
@@ -40,7 +39,7 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
 
   SidePanelCoordinatorAndroid(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>& java_coordinator,
+      const jni_zero::JavaRef<jobject>& java_coordinator,
       BrowserWindowInterface* browser);
 
   ~SidePanelCoordinatorAndroid() override;
@@ -51,14 +50,15 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
 
   // Implements Java `SidePanelCoordinatorAndroid.Natives`. These methods are
   // called from Java via JNI, see `SidePanelCoordinatorAndroidImpl.java`.
-  void Init(JNIEnv* env);
-  void Destroy(JNIEnv* env);
-  bool HasContentToShow(JNIEnv* env);
-  void OnPanelClosed(JNIEnv* env);
-  void OnPanelOpened(JNIEnv* env);
-  void OnPanelContentReplaced(JNIEnv* env);
-  void OnWillAutoClose(JNIEnv* env);
-  void OnWillAutoRestore(JNIEnv* env);
+  void Init();
+  void Destroy();
+  void ClosePanel();
+  bool HasContentToShow();
+  void OnPanelClosed();
+  void OnPanelOpened();
+  void OnPanelContentReplaced();
+  void OnWillAutoClose();
+  void OnWillAutoRestore();
 
   // Implements `SidePanelUI`:
   void ShowFrom(SidePanelEntryKey entry_key,
@@ -110,7 +110,7 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   UniqueKey GetCurrentKeyNonNull() const;
   SidePanelEntry* GetEntryForCurrentKeyNonNull() const;
 
-  base::android::ScopedJavaLocalRef<jobject> java_coordinator() const;
+  jni_zero::ScopedJavaLocalRef<jobject> java_coordinator() const;
 
   // Starts opening the side panel.
   // This should only be called when the side panel isn't currently shown.
@@ -175,7 +175,7 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
 
   // A weak reference to the Java `SidePanelCoordinatorAndroid`, which is
   // the sole owner of the C++ `SidePanelCoordinatorAndroid`.
-  JavaObjectWeakGlobalRef java_coordinator_;
+  jni_zero::ScopedJavaGlobalWeakRef java_coordinator_;
 
   // Whether there is insufficient space to show the side panel.
   bool has_insufficient_space_ = false;

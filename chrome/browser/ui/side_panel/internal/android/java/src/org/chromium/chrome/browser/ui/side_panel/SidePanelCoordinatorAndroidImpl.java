@@ -13,6 +13,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.CalledByNativeForTesting;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -102,6 +103,14 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
     }
 
     @Override
+    public void close() {
+        log(TAG, "close");
+        if (mNativeSidePanelCoordinatorAndroid != 0) {
+            SidePanelCoordinatorAndroidImplJni.get().closePanel(mNativeSidePanelCoordinatorAndroid);
+        }
+    }
+
+    @Override
     public void onWillAutoClose() {
         log(TAG, "onWillAutoClose");
         if (mNativeSidePanelCoordinatorAndroid != 0) {
@@ -158,14 +167,16 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
     @CalledByNative
     private void startOpeningPanel(
             View sidePanelNativeView,
+            @JniType("std::u16string_view") String title,
+            boolean shouldShowHeader,
             int x,
             int y,
             int width,
             int height,
             boolean suppressAnimations) {
-        log(TAG, "startOpeningPanel", sidePanelNativeView, x, y, width, height);
+        log(TAG, "startOpeningPanel", sidePanelNativeView, title, x, y, width, height);
         mSidePanelContainerCoordinator.startOpeningPanel(
-                new SidePanelContent(sidePanelNativeView),
+                new SidePanelContent(sidePanelNativeView, title, shouldShowHeader),
                 createRectFromCoordinates(x, y, width, height),
                 suppressAnimations || mDisableAnimationsForTesting);
     }
@@ -178,10 +189,13 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
     }
 
     @CalledByNative
-    private void startReplacingPanelContent(View sidePanelNativeView) {
-        log(TAG, "startReplacingPanelContent", sidePanelNativeView);
+    private void startReplacingPanelContent(
+            View sidePanelNativeView,
+            @JniType("std::u16string_view") @Nullable String title,
+            boolean shouldShowHeader) {
+        log(TAG, "startReplacingPanelContent", sidePanelNativeView, title);
         mSidePanelContainerCoordinator.startReplacingPanelContent(
-                new SidePanelContent(sidePanelNativeView));
+                new SidePanelContent(sidePanelNativeView, title, shouldShowHeader));
     }
 
     @CalledByNative
@@ -227,6 +241,14 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
          *     SidePanelCoordinatorAndroid}.
          */
         void destroy(long nativeSidePanelCoordinatorAndroid);
+
+        /**
+         * Closes the panel.
+         *
+         * @param nativeSidePanelCoordinatorAndroid The address of the native {@code
+         *     SidePanelCoordinatorAndroid}.
+         */
+        void closePanel(long nativeSidePanelCoordinatorAndroid);
 
         /**
          * Notifies the underlying native object that the panel has been closed.
