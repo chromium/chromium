@@ -13,8 +13,31 @@ OmniboxEverywhereController::OmniboxEverywhereController()
 
 OmniboxEverywhereController::~OmniboxEverywhereController() = default;
 
-void OmniboxEverywhereController::OnInvoke(InvocationSource source) {
-  ui_manager_->Show();
+void OmniboxEverywhereController::OnInvoke(InvocationSource source,
+                                           Profile* profile) {
+  switch (source) {
+    case InvocationSource::kGlobalHotkey:
+      if (IsVisible() && ui_manager_->profile() == profile) {
+        Close();
+      } else {
+        ui_manager_->ShowForProfile(profile);
+      }
+      break;
+  }
+}
+
+void OmniboxEverywhereController::Close() {
+  ui_manager_->Close();
+}
+
+bool OmniboxEverywhereController::IsVisible() const {
+  return ui_manager_->IsVisible();
+}
+
+void OmniboxEverywhereController::ShutdownForProfile(Profile* profile) {
+  if (profile == ui_manager_->profile()) {
+    ui_manager_->Shutdown();
+  }
 }
 
 }  // namespace omnibox_everywhere

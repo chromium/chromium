@@ -29,18 +29,3 @@ TEST_F(OmniboxEverywhereServiceTest, GetForProfile) {
   ASSERT_TRUE(service);
   EXPECT_FALSE(service->IsPopupVisible());
 }
-
-TEST_F(OmniboxEverywhereServiceTest, FileChooserStateTracking) {
-  TestingProfile profile;
-  OmniboxEverywhereService* service =
-      OmniboxEverywhereServiceFactory::GetForProfile(&profile);
-  ASSERT_TRUE(service);
-
-  EXPECT_FALSE(service->is_file_chooser_open_for_testing());
-
-  service->OnFileChooserOpened();
-  EXPECT_TRUE(service->is_file_chooser_open_for_testing());
-
-  service->OnFileChooserClosed();
-  EXPECT_FALSE(service->is_file_chooser_open_for_testing());
-}

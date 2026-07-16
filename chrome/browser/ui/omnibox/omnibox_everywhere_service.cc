@@ -5,14 +5,12 @@
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/feature_list.h"
-#include "base/functional/bind.h"
-#include "base/logging.h"
-#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/file_select_helper.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -21,39 +19,14 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
-#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_ui_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
-#include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
-#include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_omnibox_client.h"
-#include "chrome/browser/ui/webui/omnibox_everywhere/omnibox_everywhere_ui.h"
-#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
-#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
-#include "chrome/browser/ui/webui/webui_embedding_context.h"
-#include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/generated_resources.h"
-#include "components/omnibox/common/omnibox_features.h"
-#include "content/public/browser/render_widget_host_view.h"
-#include "ui/base/accelerators/accelerator.h"
-#include "ui/display/display.h"
-#include "ui/display/screen.h"
-#include "ui/events/event_constants.h"
-#include "ui/events/keycodes/keyboard_codes.h"
-#include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/size.h"
-#include "ui/views/controls/webview/webview.h"
-#include "ui/views/layout/fill_layout.h"
-#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_MAC)
-bool IsAppActiveOnMac();
-void HideAppOnMac();
-void OrderOmniboxEverywhereFrontOnMac(views::Widget* widget);
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_mac_utils.h"
 #endif
-
-namespace {
-
-}  // namespace
 
 OmniboxEverywhereService::OmniboxEverywhereService(Profile* profile)
     : profile_(profile) {
@@ -74,47 +47,34 @@ void OmniboxEverywhereService::Shutdown() {
   if (ui::GlobalAcceleratorListener::GetInstance()) {
     ui::GlobalAcceleratorListener::GetInstance()->UnregisterAccelerators(this);
   }
-  widget_observation_.Reset();
-  if (widget_) {
-    widget_->CloseNow();
-    widget_.reset();
+  auto* controller =
+      g_browser_process->GetFeatures()->omnibox_everywhere_controller();
+  if (controller) {
+    controller->ShutdownForProfile(profile_);
   }
-  contents_wrapper_.reset();
 }
 
 void OmniboxEverywhereService::TogglePopup() {
-  if (IsPopupVisible()) {
-    HidePopup();
-  } else {
-    CreateAndShowWidget();
+  auto* controller =
+      g_browser_process->GetFeatures()->omnibox_everywhere_controller();
+  if (controller) {
+    controller->OnInvoke(omnibox_everywhere::InvocationSource::kGlobalHotkey,
+                         profile_);
   }
 }
 
 void OmniboxEverywhereService::HidePopup() {
-  if (widget_) {
-    widget_observation_.Reset();
-    widget_->Hide();
-#if BUILDFLAG(IS_MAC)
-    if (!is_navigating_ && !was_active_before_popup_) {
-      HideAppOnMac();
-    }
-#endif
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(
-                       [](base::WeakPtr<OmniboxEverywhereService> service) {
-                         if (service && service->widget_) {
-                           service->widget_observation_.Reset();
-                           service->widget_->CloseNow();
-                           service->widget_.reset();
-                           service->contents_wrapper_.reset();
-                         }
-                       },
-                       weak_factory_.GetWeakPtr()));
+  auto* controller =
+      g_browser_process->GetFeatures()->omnibox_everywhere_controller();
+  if (controller) {
+    controller->Close();
   }
 }
 
 bool OmniboxEverywhereService::IsPopupVisible() const {
-  return widget_ && widget_->IsVisible();
+  auto* controller =
+      g_browser_process->GetFeatures()->omnibox_everywhere_controller();
+  return controller && controller->IsVisible();
 }
 
 void OmniboxEverywhereService::OnKeyPressed(
@@ -147,7 +107,7 @@ void OmniboxEverywhereService::OnKeyPressed(
       return;
     }
 #if BUILDFLAG(IS_MAC)
-    service->SetWasActiveBeforePopup(IsAppActiveOnMac());
+    service->SetWasActiveBeforePopup(omnibox_everywhere::IsAppActiveOnMac());
 #else
     service->SetWasActiveBeforePopup(true);
 #endif
@@ -160,168 +120,20 @@ void OmniboxEverywhereService::ExecuteCommand(
     const std::string& accelerator_group_id,
     const std::string& command_id) {}
 
-void OmniboxEverywhereService::CreateAndShowWidget() {
-  if (!contents_wrapper_) {
-    contents_wrapper_ =
-        std::make_unique<WebUIContentsWrapperT<OmniboxEverywhereUI>>(
-            GURL(chrome::kChromeUIOmniboxEverywhereURL), profile_,
-            IDS_TASK_MANAGER_OMNIBOX);
-
-    OmniboxPopupWebContentsHelper::CreateForWebContents(
-        contents_wrapper_->web_contents());
-
-    contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
-  }
-
-  if (!widget_) {
-    widget_ = std::make_unique<views::Widget>();
-    views::Widget::InitParams params(
-        views::Widget::InitParams::CLIENT_OWNS_WIDGET,
-        views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-    params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-    params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
-
-    gfx::Rect screen_bounds =
-        display::Screen::Get()->GetPrimaryDisplay().bounds();
-    gfx::Size popup_size(864, 632);
-
-    params.bounds = gfx::Rect(
-        screen_bounds.x() + (screen_bounds.width() - popup_size.width()) / 2,
-        screen_bounds.y() + (screen_bounds.height() - popup_size.height()) / 2,
-        popup_size.width(), popup_size.height());
-
-    widget_->Init(std::move(params));
-
-    auto web_view = std::make_unique<views::WebView>(profile_);
-    web_view->SetWebContents(contents_wrapper_->web_contents());
-    web_view->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
-    if (auto* rwhv =
-            contents_wrapper_->web_contents()->GetRenderWidgetHostView()) {
-      rwhv->SetBackgroundColor(SK_ColorTRANSPARENT);
-    }
-    widget_->SetContentsView(std::move(web_view));
-
-    widget_observation_.Observe(widget_.get());
-  }
-
-  widget_->Show();
-#if BUILDFLAG(IS_MAC)
-  OrderOmniboxEverywhereFrontOnMac(widget_.get());
-#else
-  widget_->Activate();
-#endif
-
-  if (widget_->GetContentsView()) {
-    widget_->GetContentsView()->RequestFocus();
-  }
-  if (contents_wrapper_->web_contents()) {
-    contents_wrapper_->web_contents()->Focus();
-    if (auto* rwhv =
-            contents_wrapper_->web_contents()->GetRenderWidgetHostView()) {
-      rwhv->EnableAutoResize(gfx::Size(800, 50), gfx::Size(800, 800));
-    }
+void OmniboxEverywhereService::SetIsNavigating(bool is_navigating) {
+  auto* controller =
+      g_browser_process->GetFeatures()->omnibox_everywhere_controller();
+  if (controller && controller->ui_manager()) {
+    controller->ui_manager()->SetIsNavigating(is_navigating);
   }
 }
 
-void OmniboxEverywhereService::OnWidgetActivationChanged(views::Widget* widget,
-                                                         bool active) {
-  if (!active && !is_file_chooser_open_) {
-    HidePopup();
+void OmniboxEverywhereService::SetWasActiveBeforePopup(bool was_active) {
+  auto* controller =
+      g_browser_process->GetFeatures()->omnibox_everywhere_controller();
+  if (controller && controller->ui_manager()) {
+    controller->ui_manager()->SetWasActiveBeforePopup(was_active);
   }
-}
-
-void OmniboxEverywhereService::OnWidgetDestroying(views::Widget* widget) {
-  widget_observation_.Reset();
-  views::Widget* raw_widget = widget_.release();
-  if (raw_widget) {
-    base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
-                                                               raw_widget);
-  }
-  contents_wrapper_.reset();
-}
-
-void OmniboxEverywhereService::CloseUI() {
-  HidePopup();
-}
-
-void OmniboxEverywhereService::ShowUI() {
-  if (widget_) {
-    widget_->Show();
-#if BUILDFLAG(IS_MAC)
-    OrderOmniboxEverywhereFrontOnMac(widget_.get());
-#else
-    widget_->Activate();
-#endif
-    if (widget_->GetContentsView()) {
-      widget_->GetContentsView()->RequestFocus();
-    }
-    if (contents_wrapper_->web_contents()) {
-      contents_wrapper_->web_contents()->Focus();
-    }
-  }
-}
-
-void OmniboxEverywhereService::ResizeDueToAutoResize(
-    content::WebContents* source,
-    const gfx::Size& new_size) {
-  if (widget_) {
-    gfx::Rect bounds = widget_->GetWindowBoundsInScreen();
-    bounds.set_height(std::max(new_size.height() + 96, 56));
-    widget_->SetBounds(bounds);
-  }
-}
-
-class OmniboxEverywhereFileSelectListener : public content::FileSelectListener {
- public:
-  OmniboxEverywhereFileSelectListener(
-      base::WeakPtr<OmniboxEverywhereService> service,
-      scoped_refptr<content::FileSelectListener> listener)
-      : service_(service), listener_(std::move(listener)) {
-    if (service_) {
-      service_->OnFileChooserOpened();
-    }
-  }
-
-  void FileSelected(std::vector<blink::mojom::FileChooserFileInfoPtr> files,
-                    const base::FilePath& base_dir,
-                    blink::mojom::FileChooserParams::Mode mode) override {
-    if (service_) {
-      service_->OnFileChooserClosed();
-    }
-    listener_->FileSelected(std::move(files), base_dir, mode);
-  }
-
-  void FileSelectionCanceled() override {
-    if (service_) {
-      service_->OnFileChooserClosed();
-    }
-    listener_->FileSelectionCanceled();
-  }
-
- private:
-  ~OmniboxEverywhereFileSelectListener() override = default;
-
-  base::WeakPtr<OmniboxEverywhereService> service_;
-  scoped_refptr<content::FileSelectListener> listener_;
-};
-
-void OmniboxEverywhereService::OnFileChooserOpened() {
-  is_file_chooser_open_ = true;
-}
-
-void OmniboxEverywhereService::OnFileChooserClosed() {
-  is_file_chooser_open_ = false;
-}
-
-void OmniboxEverywhereService::RunFileChooser(
-    content::RenderFrameHost* render_frame_host,
-    scoped_refptr<content::FileSelectListener> listener,
-    const blink::mojom::FileChooserParams& params) {
-  auto wrapped_listener =
-      base::MakeRefCounted<OmniboxEverywhereFileSelectListener>(
-          GetWeakPtr(), std::move(listener));
-  FileSelectHelper::RunFileChooser(render_frame_host,
-                                   std::move(wrapped_listener), params);
 }
 
 void OmniboxEverywhereService::OpenUrl(const GURL& url,

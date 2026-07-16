@@ -7,6 +7,8 @@
 
 #include <memory>
 
+class Profile;
+
 namespace omnibox_everywhere {
 
 class OmniboxEverywhereUIManager;
@@ -28,9 +30,21 @@ class OmniboxEverywhereController {
   ~OmniboxEverywhereController();
 
   // Called when the Omnibox Everywhere is invoked via one of the entry points.
-  void OnInvoke(InvocationSource source);
+  void OnInvoke(InvocationSource source, Profile* profile);
 
   OmniboxEverywhereUIManager* ui_manager() { return ui_manager_.get(); }
+  const OmniboxEverywhereUIManager* ui_manager() const {
+    return ui_manager_.get();
+  }
+
+  // Closes the Omnibox Everywhere widget if it is open.
+  void Close();
+
+  // Returns true if the Omnibox Everywhere widget is visible.
+  bool IsVisible() const;
+
+  // Called during profile teardown to synchronously close the widget.
+  void ShutdownForProfile(Profile* profile);
 
  private:
   std::unique_ptr<OmniboxEverywhereUIManager> ui_manager_;

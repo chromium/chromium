@@ -4,38 +4,183 @@
 
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_ui_manager.h"
 
+#include <algorithm>
+
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/file_select_helper.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_widget_delegate.h"
+#include "chrome/browser/ui/webui/omnibox_everywhere/omnibox_everywhere_ui.h"
+#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
+#include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
+#include "content/public/browser/file_select_listener.h"
+#include "content/public/browser/render_widget_host_view.h"
+#include "ui/display/screen.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/views/background.h"
+#include "ui/views/controls/webview/webview.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_mac_utils.h"
+#endif
 
 namespace omnibox_everywhere {
 
-OmniboxEverywhereUIManager::OmniboxEverywhereUIManager() = default;
+namespace {
+
+class OmniboxEverywhereFileSelectListener : public content::FileSelectListener {
+ public:
+  OmniboxEverywhereFileSelectListener(
+      base::WeakPtr<OmniboxEverywhereUIManager> ui_manager,
+      scoped_refptr<content::FileSelectListener> listener)
+      : ui_manager_(ui_manager), listener_(std::move(listener)) {
+    if (ui_manager_) {
+      ui_manager_->OnFileChooserOpened();
+    }
+  }
+
+  void FileSelected(std::vector<blink::mojom::FileChooserFileInfoPtr> files,
+                    const base::FilePath& base_dir,
+                    blink::mojom::FileChooserParams::Mode mode) override {
+    if (!selection_handled_) {
+      selection_handled_ = true;
+      if (ui_manager_) {
+        ui_manager_->OnFileChooserClosed();
+      }
+    }
+    listener_->FileSelected(std::move(files), base_dir, mode);
+  }
+
+  void FileSelectionCanceled() override {
+    if (!selection_handled_) {
+      selection_handled_ = true;
+      if (ui_manager_) {
+        ui_manager_->OnFileChooserClosed();
+      }
+    }
+    listener_->FileSelectionCanceled();
+  }
+
+ protected:
+  ~OmniboxEverywhereFileSelectListener() override {
+    if (!selection_handled_ && ui_manager_) {
+      ui_manager_->OnFileChooserClosed();
+    }
+  }
+
+ private:
+  base::WeakPtr<OmniboxEverywhereUIManager> ui_manager_;
+  scoped_refptr<content::FileSelectListener> listener_;
+  bool selection_handled_ = false;
+};
+
+}  // namespace
+
+OmniboxEverywhereUIManager::OmniboxEverywhereUIManager(
+    ContentsWrapperFactory contents_wrapper_factory)
+    : contents_wrapper_factory_(std::move(contents_wrapper_factory)) {}
 
 OmniboxEverywhereUIManager::~OmniboxEverywhereUIManager() = default;
 
-void OmniboxEverywhereUIManager::Show(gfx::NativeWindow context) {
+void OmniboxEverywhereUIManager::ShowForProfile(Profile* profile,
+                                                gfx::NativeWindow context) {
+  if (widget_ && profile_ == profile && widget_->IsVisible()) {
+    widget_->Activate();
+    if (widget_->GetContentsView()) {
+      widget_->GetContentsView()->RequestFocus();
+    }
+    if (contents_wrapper_ && contents_wrapper_->web_contents()) {
+      contents_wrapper_->web_contents()->Focus();
+    }
+    return;
+  }
+
+  if (widget_) {
+    // If a different profile (or a hidden/closing widget) is present, clean up
+    // first.
+    CleanUpWidget();
+  }
+
+  profile_ = profile;
+#if BUILDFLAG(IS_MAC)
+  was_active_before_popup_ = IsAppActiveOnMac();
+#else
+  was_active_before_popup_ = true;
+#endif
+  is_navigating_ = false;
+
+  if (!contents_wrapper_) {
+    contents_wrapper_ = CreateContentsWrapper(profile_);
+
+    if (contents_wrapper_->web_contents()) {
+      OmniboxPopupWebContentsHelper::CreateForWebContents(
+          contents_wrapper_->web_contents());
+    }
+
+    contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
+  }
   if (!widget_) {
     widget_ = std::make_unique<views::Widget>();
     views::Widget::InitParams params(
         views::Widget::InitParams::CLIENT_OWNS_WIDGET,
         views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-    params.shadow_type = views::Widget::InitParams::ShadowType::kDefault;
+    params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
+    params.activatable = views::Widget::InitParams::Activatable::kYes;
     widget_delegate_ = std::make_unique<OmniboxEverywhereWidgetDelegate>();
     params.delegate = widget_delegate_.get();
+    params.z_order = ui::ZOrderLevel::kFloatingUIElement;
     if (context) {
       params.context = context;
     }
+
+    gfx::Rect screen_bounds =
+        display::Screen::Get()->GetPrimaryDisplay().bounds();
+    gfx::Size popup_size(864, 632);
+    params.bounds = gfx::Rect(
+        screen_bounds.x() + (screen_bounds.width() - popup_size.width()) / 2,
+        screen_bounds.y() + (screen_bounds.height() - popup_size.height()) / 2,
+        popup_size.width(), popup_size.height());
 
     widget_->Init(std::move(params));
     widget_->MakeCloseSynchronous(base::BindOnce(
         &OmniboxEverywhereUIManager::OnWidgetClosed, base::Unretained(this)));
     widget_observation_.Observe(widget_.get());
+
+    auto web_view = std::make_unique<views::WebView>(profile_);
+    web_view->SetWebContents(contents_wrapper_->web_contents());
+    web_view->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
+    if (contents_wrapper_->web_contents()) {
+      if (auto* rwhv =
+              contents_wrapper_->web_contents()->GetRenderWidgetHostView()) {
+        rwhv->SetBackgroundColor(SK_ColorTRANSPARENT);
+      }
+    }
+    widget_->SetContentsView(std::move(web_view));
   }
 
   widget_->Show();
+#if BUILDFLAG(IS_MAC)
+  OrderOmniboxEverywhereFrontOnMac(widget_.get());
+#else
   widget_->Activate();
+#endif
+
+  if (widget_->GetContentsView()) {
+    widget_->GetContentsView()->RequestFocus();
+  }
+  if (contents_wrapper_->web_contents()) {
+    contents_wrapper_->web_contents()->Focus();
+    if (auto* rwhv =
+            contents_wrapper_->web_contents()->GetRenderWidgetHostView()) {
+      rwhv->EnableAutoResize(gfx::Size(800, 50), gfx::Size(800, 800));
+    }
+  }
 }
 
 void OmniboxEverywhereUIManager::Close() {
@@ -46,20 +191,42 @@ void OmniboxEverywhereUIManager::Close() {
 
 void OmniboxEverywhereUIManager::CleanUpWidget() {
   if (widget_) {
+#if BUILDFLAG(IS_MAC)
+    if (!is_navigating_ && !was_active_before_popup_) {
+      HideAppOnMac();
+    }
+#endif
     widget_observation_.Reset();
-    // Release both the widget and the delegate to be destroyed asynchronously
-    // in the correct order.
-    auto widget = std::move(widget_);
-    auto delegate = std::move(widget_delegate_);
+    if (auto* contents_view = widget_->GetContentsView()) {
+      if (auto* web_view = views::AsViewClass<views::WebView>(contents_view)) {
+        web_view->SetWebContents(nullptr);
+      }
+    }
+    widget_.reset();
+    widget_delegate_.reset();
+  }
+  contents_wrapper_.reset();
+  is_file_chooser_open_ = false;
+  is_navigating_ = false;
+  was_active_before_popup_ = false;
+}
+
+void OmniboxEverywhereUIManager::Shutdown() {
+  CleanUpWidget();
+  profile_ = nullptr;
+}
+
+bool OmniboxEverywhereUIManager::IsVisible() const {
+  return widget_ && widget_->IsVisible();
+}
+
+void OmniboxEverywhereUIManager::OnWidgetActivationChanged(
+    views::Widget* widget,
+    bool active) {
+  if (!active && !is_file_chooser_open_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](std::unique_ptr<views::Widget> widget,
-               std::unique_ptr<OmniboxEverywhereWidgetDelegate> delegate) {
-              widget.reset();
-              delegate.reset();
-            },
-            std::move(widget), std::move(delegate)));
+        FROM_HERE, base::BindOnce(&OmniboxEverywhereUIManager::Close,
+                                  weak_factory_.GetWeakPtr()));
   }
 }
 
@@ -70,6 +237,66 @@ void OmniboxEverywhereUIManager::OnWidgetDestroying(views::Widget* widget) {
 void OmniboxEverywhereUIManager::OnWidgetClosed(
     views::Widget::ClosedReason reason) {
   CleanUpWidget();
+}
+
+void OmniboxEverywhereUIManager::CloseUI() {
+  Close();
+}
+
+void OmniboxEverywhereUIManager::ShowUI() {
+  if (widget_) {
+    widget_->Show();
+#if BUILDFLAG(IS_MAC)
+    OrderOmniboxEverywhereFrontOnMac(widget_.get());
+#else
+    widget_->Activate();
+#endif
+    if (widget_->GetContentsView()) {
+      widget_->GetContentsView()->RequestFocus();
+    }
+    if (contents_wrapper_->web_contents()) {
+      contents_wrapper_->web_contents()->Focus();
+    }
+  }
+}
+
+void OmniboxEverywhereUIManager::ResizeDueToAutoResize(
+    content::WebContents* source,
+    const gfx::Size& new_size) {
+  if (widget_) {
+    gfx::Rect bounds = widget_->GetWindowBoundsInScreen();
+    bounds.set_height(std::max(new_size.height() + 96, 56));
+    widget_->SetBounds(bounds);
+  }
+}
+
+void OmniboxEverywhereUIManager::OnFileChooserOpened() {
+  is_file_chooser_open_ = true;
+}
+
+void OmniboxEverywhereUIManager::OnFileChooserClosed() {
+  is_file_chooser_open_ = false;
+}
+
+void OmniboxEverywhereUIManager::RunFileChooser(
+    content::RenderFrameHost* render_frame_host,
+    scoped_refptr<content::FileSelectListener> listener,
+    const blink::mojom::FileChooserParams& params) {
+  auto wrapped_listener =
+      base::MakeRefCounted<OmniboxEverywhereFileSelectListener>(
+          weak_factory_.GetWeakPtr(), std::move(listener));
+  FileSelectHelper::RunFileChooser(render_frame_host,
+                                   std::move(wrapped_listener), params);
+}
+
+std::unique_ptr<WebUIContentsWrapper>
+OmniboxEverywhereUIManager::CreateContentsWrapper(Profile* profile) {
+  if (contents_wrapper_factory_) {
+    return contents_wrapper_factory_.Run(profile);
+  }
+  return std::make_unique<WebUIContentsWrapperT<OmniboxEverywhereUI>>(
+      GURL(chrome::kChromeUIOmniboxEverywhereURL), profile,
+      IDS_TASK_MANAGER_OMNIBOX);
 }
 
 }  // namespace omnibox_everywhere

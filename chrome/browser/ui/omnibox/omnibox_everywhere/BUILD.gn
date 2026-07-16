@@ -15,18 +15,32 @@ source_set("omnibox_everywhere") {
     "omnibox_everywhere_widget_delegate.cc",
     "omnibox_everywhere_widget_delegate.h",
   ]
-  public = [ "omnibox_everywhere_controller.h" ]
+  public = [
+    "omnibox_everywhere_controller.h",
+    "omnibox_everywhere_ui_manager.h",
+  ]
   friend = [
     ":interactive_ui_tests",
     ":unit_tests",
   ]
   public_deps = [ "//base" ]
   deps = [
+    "//chrome/browser:file_select_helper",
     "//chrome/browser/ui/omnibox",
+    "//chrome/browser/ui/webui/omnibox_everywhere",
+    "//chrome/browser/ui/webui/omnibox_popup",
     "//components/omnibox/common:features",
     "//ui/gfx",
     "//ui/views",
+    "//ui/views/controls/webview",
   ]
+  if (is_mac) {
+    sources += [
+      "omnibox_everywhere_mac_utils.h",
+      "omnibox_everywhere_mac_utils.mm",
+    ]
+    public += [ "omnibox_everywhere_mac_utils.h" ]
+  }
 }
 
 source_set("unit_tests") {

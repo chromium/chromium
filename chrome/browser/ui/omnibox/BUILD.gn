@@ -140,14 +140,11 @@ source_set("impl") {
       "omnibox_popup_view.cc",
       "omnibox_tab_helper.cc",
     ]
-    if (is_mac) {
-      sources += [ "omnibox_everywhere_service_mac.mm" ]
-      frameworks = [ "Cocoa.framework" ]
-    }
     deps += [
       "//chrome/app:command_ids",
       "//chrome/app/vector_icons",
       "//chrome/browser:browser_process",
+      "//chrome/browser:global_features",
       "//chrome/browser:intranet_redirect_detector",
       "//chrome/browser:primitives",
       "//chrome/browser/extensions/api/omnibox",
@@ -170,6 +167,7 @@ source_set("impl") {
       "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/navigator",
       "//chrome/browser/ui/omnibox",
+      "//chrome/browser/ui/omnibox/omnibox_everywhere",
       "//chrome/browser/ui/search",
       "//chrome/browser/ui/search_engines",
       "//chrome/browser/ui/tabs:tab_strip",
