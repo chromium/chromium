@@ -5707,7 +5707,7 @@
       // Reference Target allows IDREF attributes to refer inside Shadow DOM.
       // crbug.com/346835896
       name: "ShadowRootReferenceTarget",
-      status: "experimental",
+      status: "stable",
       origin_trial_feature_name: "ShadowRootReferenceTarget"
     },
     {
