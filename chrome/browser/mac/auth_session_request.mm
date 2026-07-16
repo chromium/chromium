@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/mac/auth_session_request.h"
 
 #import <AuthenticationServices/AuthenticationServices.h>
@@ -203,7 +198,7 @@ void AuthSessionRequest::CancelAuthSession(
 
 // static
 std::optional<std::string> AuthSessionRequest::CanonicalizeScheme(
-    std::string scheme) {
+    std::string_view scheme) {
   url::RawCanonOutputT<char> canon_output;
   url::Component component;
   bool result = url::CanonicalizeScheme(scheme, &canon_output, &component);
@@ -211,7 +206,7 @@ std::optional<std::string> AuthSessionRequest::CanonicalizeScheme(
     return std::nullopt;
   }
 
-  return std::string(canon_output.data() + component.begin, component.len);
+  return std::string(component.AsViewOn(canon_output.view()));
 }
 
 void AuthSessionRequest::CreateAndAddNavigationThrottle(

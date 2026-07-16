@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -36,7 +37,7 @@ class AuthSessionRequest
   static void CancelAuthSession(ASWebAuthenticationSessionRequest* request);
 
   // Canonicalizes a scheme string. Returns nullopt if it is invalid.
-  static std::optional<std::string> CanonicalizeScheme(std::string scheme);
+  static std::optional<std::string> CanonicalizeScheme(std::string_view scheme);
 
   // Create a throttle for the ongoing authentication session.
   void CreateAndAddNavigationThrottle(
