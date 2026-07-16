@@ -177,12 +177,18 @@ public class AtMemoryBottomSheetMediatorTest {
 
     @Test
     public void testFlyoutVisible() {
+        AutofillSuggestion childSuggestion =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Hilton Check-in")
+                        .setSubLabel("May 16")
+                        .build();
         AutofillSuggestion suggestion =
                 new AutofillSuggestion.Builder()
                         .setIconId(R.drawable.flight)
                         .setLabel("KLM204")
                         .setSubLabel("Flight ⋅ 15 May ⋅ SEA - MUC")
                         .setSuggestionType(SuggestionType.AT_MEMORY_SEARCH_RESULT)
+                        .setChildren(List.of(childSuggestion))
                         .build();
         List<AutofillSuggestion> suggestions = List.of(suggestion);
         mMediator.show(suggestions);

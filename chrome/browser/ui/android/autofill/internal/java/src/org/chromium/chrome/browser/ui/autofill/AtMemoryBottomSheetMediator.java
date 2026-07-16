@@ -262,7 +262,7 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
                 .with(SuggestionItemProperties.DETAILS, suggestion.getSublabel())
                 .with(
                         SuggestionItemProperties.IS_FLYOUT_VISIBLE,
-                        suggestion.getSuggestionType() == SuggestionType.AT_MEMORY_SEARCH_RESULT)
+                        !suggestion.getChildren().isEmpty())
                 .with(
                         SuggestionItemProperties.APPLY_DEACTIVATED_STYLE,
                         suggestion.applyDeactivatedStyle())
