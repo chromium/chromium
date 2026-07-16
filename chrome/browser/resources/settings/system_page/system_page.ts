@@ -339,6 +339,4 @@ declare global {
   }
 }
 
-export type SystemPageElement = SettingsSystemPageElement;
-
 customElements.define(SettingsSystemPageElement.is, SettingsSystemPageElement);

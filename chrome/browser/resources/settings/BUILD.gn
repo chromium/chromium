@@ -65,7 +65,6 @@ build_webui("build") {
     "ai_page/history_search_page.ts",
     "ai_page/offer_writing_help_page.ts",
     "ai_page/skills_page.ts",
-    "appearance_page/appearance_page.ts",
     "autofill_page/address_edit_dialog.ts",
     "autofill_page/address_remove_confirmation_dialog.ts",
     "autofill_page/autofill_ai_add_or_edit_dialog.ts",
@@ -277,7 +276,6 @@ build_webui("build") {
       "people_page/import_data_dialog.ts",
       "people_page/manage_profile.ts",
       "relaunch_confirmation_dialog.ts",
-      "system_page/system_page.ts",
     ]
   } else {
     web_component_files += [
@@ -320,6 +318,8 @@ build_webui("build") {
     "appearance_page/appearance_browser_proxy.ts",
     "appearance_page/appearance_fonts_page.html.ts",
     "appearance_page/appearance_fonts_page.ts",
+    "appearance_page/appearance_page.html.ts",
+    "appearance_page/appearance_page.ts",
     "appearance_page/appearance_page_index.html.ts",
     "appearance_page/appearance_page_index.ts",
     "appearance_page/home_url_input.html.ts",
@@ -413,6 +413,8 @@ build_webui("build") {
       "languages_page/languages_util.ts",
       "people_page/import_data_browser_proxy.ts",
       "people_page/manage_profile_browser_proxy.ts",
+      "system_page/system_page.html.ts",
+      "system_page/system_page.ts",
       "system_page/system_page_browser_proxy.ts",
     ]
     if (is_chrome_branded) {

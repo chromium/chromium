@@ -732,7 +732,5 @@ declare global {
   }
 }
 
-export type AppearancePageElement = SettingsAppearancePageElement;
-
 customElements.define(
     SettingsAppearancePageElement.is, SettingsAppearancePageElement);
