@@ -527,6 +527,32 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithDefaultTabContextDisabled,
   ExecuteJsTest();
 }
 
+#if defined(NOT_VETTED_ON_ANDROID)
+#define MAYBE_testCanAttachPanelDetachedTabClosed \
+  DISABLED_testCanAttachPanelDetachedTabClosed
+#else
+#define MAYBE_testCanAttachPanelDetachedTabClosed \
+  testCanAttachPanelDetachedTabClosed
+#endif
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithDefaultTabContextDisabled,
+                       MAYBE_testCanAttachPanelDetachedTabClosed) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  // Save first tab.
+  tabs::TabInterface* first_tab = GetTabListInterface()->GetActiveTab();
+
+  // Runs the JS test until the first `advanceToNextStep()`.
+  ExecuteJsTest();
+
+  // The JS test is now paused.
+  // Add a new tab to keep the browser alive before closing the active tab.
+  CreateAndActivateTab(
+      embedded_test_server()->GetURL("/glic/browser_tests/test.html"));
+  first_tab->Close();
+
+  // Continue the JS test to verify canAttachPanel becomes false.
+  ContinueJsTest();
+}
+
 class NewGlicApiTestForNoWebUiLoader : public NewGlicApiTest {
  public:
   NewGlicApiTestForNoWebUiLoader() {

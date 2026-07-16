@@ -188,26 +188,6 @@ class ApiTests extends ApiTestFixtureBase {
     await observeSequence(this.host.canAttachPanel()).waitForValue(true);
   }
 
-  async testCanAttachPanelDetachedTabClosed() {
-    assertDefined(this.host.getPanelState);
-    assertDefined(this.host.detachPanel);
-    assertDefined(this.host.canAttachPanel);
-
-    const panelStates = observeSequence(this.host.getPanelState());
-    await panelStates.waitFor(state => state.kind === PanelStateKind.ATTACHED);
-
-    this.host.detachPanel();
-    await panelStates.waitFor(state => state.kind === PanelStateKind.DETACHED);
-
-    const canAttachSeq = observeSequence(this.host.canAttachPanel());
-    await canAttachSeq.waitForValue(true);
-
-    // Wait for C++ to close the tab.
-    await this.advanceToNextStep();
-
-    await canAttachSeq.waitForValue(false);
-  }
-
   async testAttachPanel() {
     assertDefined(this.host.getPanelState);
     assertDefined(this.host.detachPanel);
