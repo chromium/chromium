@@ -42,7 +42,7 @@ public class NtpBackgroundDataManager {
      */
     public void saveRemoteSyncDataToSharedPreference(NtpBackgroundDataGroup backgroundDataGroup) {
         for (NtpBackgroundDataBase data : backgroundDataGroup) {
-            if (data.getPlatformType() <= PlatformType.ANDROID_LOCAL) continue;
+            if (data.getPlatformType() <= PlatformType.ANDROID) continue;
             saveRemoteSyncDataToSharedPreference(data);
         }
     }
@@ -97,7 +97,7 @@ public class NtpBackgroundDataManager {
     public void saveUserSelectedBackgroundTypeToSharedPreference(
             NtpBackgroundDataBase backgroundData) {
         try {
-            @PlatformType int platformTypeToSave = PlatformType.ANDROID_LOCAL;
+            @PlatformType int platformTypeToSave = PlatformType.ANDROID;
             NtpBackgroundDataGroup currentGroup =
                     getBackgroundDataGroupFromSharedPreference(platformTypeToSave);
 
@@ -113,7 +113,7 @@ public class NtpBackgroundDataManager {
             // local selection history. This allows to cache only the latest chosen background type
             // from any remote platform.
             int platformTypeOfNewData = backgroundData.getPlatformType();
-            if (platformTypeOfNewData != PlatformType.ANDROID_LOCAL) {
+            if (platformTypeOfNewData != PlatformType.ANDROID) {
                 currentGroup.removeIf(item -> item.getPlatformType() == platformTypeOfNewData);
             }
 
@@ -156,7 +156,7 @@ public class NtpBackgroundDataManager {
      */
     public NtpBackgroundDataGroup[] getBackgroundDataListFromSharedPreference() {
         NtpBackgroundDataGroup[] dataList = new NtpBackgroundDataGroup[PlatformType.MAX_COUNT];
-        for (int i = PlatformType.ANDROID_LOCAL; i < PlatformType.MAX_COUNT; i++) {
+        for (int i = PlatformType.ANDROID; i < PlatformType.MAX_COUNT; i++) {
             dataList[i] = getBackgroundDataGroupFromSharedPreference(i);
         }
         return dataList;
@@ -234,7 +234,7 @@ public class NtpBackgroundDataManager {
     /** Resets the shared preferences used by this manager for testing purposes. */
     public void resetSharedPreferenceForTesting() {
         SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
-        for (int i = PlatformType.ANDROID_LOCAL; i < PlatformType.MAX_COUNT; i++) {
+        for (int i = PlatformType.ANDROID; i < PlatformType.MAX_COUNT; i++) {
             sharedPreferencesManager.removeKey(getSharedPreferenceKey(i));
         }
     }

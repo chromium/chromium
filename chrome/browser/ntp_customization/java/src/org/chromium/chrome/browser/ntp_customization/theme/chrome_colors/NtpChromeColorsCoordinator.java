@@ -191,12 +191,11 @@ public class NtpChromeColorsCoordinator implements ThemeBottomSheetObserver {
         NtpBackgroundDataBase backgroundData;
         if (ntpThemeColorInfo instanceof NtpThemeColorFromHexInfo colorFromHexInfo) {
             backgroundData =
-                    new NtpBackgroundDataCustomizedColor(
-                            PlatformType.ANDROID_LOCAL, colorFromHexInfo);
+                    new NtpBackgroundDataCustomizedColor(PlatformType.ANDROID, colorFromHexInfo);
         } else {
             backgroundData =
                     new NtpBackgroundDataColor(
-                            PlatformType.ANDROID_LOCAL, mIsDailyRefreshEnabled, ntpThemeColorInfo);
+                            PlatformType.ANDROID, mIsDailyRefreshEnabled, ntpThemeColorInfo);
         }
 
         NtpCustomizationConfigManager.getInstance()

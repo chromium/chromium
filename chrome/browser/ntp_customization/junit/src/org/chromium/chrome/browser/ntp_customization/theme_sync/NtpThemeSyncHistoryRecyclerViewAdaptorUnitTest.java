@@ -77,7 +77,7 @@ public class NtpThemeSyncHistoryRecyclerViewAdaptorUnitTest {
         mDataList.add(mData1);
         mDataList.add(mData2);
 
-        when(mData1.getPlatformType()).thenReturn(PlatformType.ANDROID_LOCAL);
+        when(mData1.getPlatformType()).thenReturn(PlatformType.ANDROID);
         when(mData1.getImageDrawable()).thenReturn(mDrawable);
         when(mData2.getPlatformType()).thenReturn(PlatformType.DESKTOP);
         when(mData2.getImageDrawable()).thenReturn(mDrawable);

@@ -44,7 +44,7 @@ public class NtpBackgroundDataGroupUnitTest {
 
     @Test
     public void testToJsonAndFromJson() throws JSONException {
-        @PlatformType int platformType = PlatformType.ANDROID_LOCAL;
+        @PlatformType int platformType = PlatformType.ANDROID;
         List<NtpBackgroundDataBase> dataList = new ArrayList<>();
 
         // Add a NtpBackgroundDataColor.

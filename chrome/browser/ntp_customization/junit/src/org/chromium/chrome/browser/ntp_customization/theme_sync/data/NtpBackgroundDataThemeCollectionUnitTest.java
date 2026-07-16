@@ -52,7 +52,7 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                         /* isDailyRefreshEnabled= */ false);
         NtpBackgroundDataThemeCollection data1 =
                 new NtpBackgroundDataThemeCollection(
-                        PlatformType.ANDROID_LOCAL,
+                        PlatformType.ANDROID,
                         info1,
                         /* backgroundImageInfo= */ null,
                         /* bitmap= */ null,
@@ -60,7 +60,7 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                         /* fileIdHash= */ null);
         NtpBackgroundDataThemeCollection data2 =
                 new NtpBackgroundDataThemeCollection(
-                        PlatformType.ANDROID_LOCAL,
+                        PlatformType.ANDROID,
                         info2,
                         /* backgroundImageInfo= */ null,
                         /* bitmap= */ null,
@@ -68,7 +68,7 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                         /* fileIdHash= */ null);
         NtpBackgroundDataThemeCollection data3 =
                 new NtpBackgroundDataThemeCollection(
-                        PlatformType.ANDROID_LOCAL,
+                        PlatformType.ANDROID,
                         info1,
                         /* backgroundImageInfo= */ null,
                         /* bitmap= */ null,
@@ -100,7 +100,7 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                         /* isDailyRefreshEnabled= */ false);
         NtpBackgroundDataThemeCollection data =
                 new NtpBackgroundDataThemeCollection(
-                        PlatformType.ANDROID_LOCAL,
+                        PlatformType.ANDROID,
                         info,
                         /* backgroundImageInfo= */ null,
                         /* bitmap= */ null,
@@ -123,7 +123,7 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                         /* isDailyRefreshEnabled= */ false);
         NtpBackgroundDataThemeCollection data =
                 new NtpBackgroundDataThemeCollection(
-                        PlatformType.ANDROID_LOCAL,
+                        PlatformType.ANDROID,
                         info,
                         /* backgroundImageInfo= */ null,
                         bitmap,
@@ -135,7 +135,7 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
 
     @Test
     public void testNullBackgroundImageInfo() throws JSONException {
-        @PlatformType int platformType = PlatformType.ANDROID_LOCAL;
+        @PlatformType int platformType = PlatformType.ANDROID;
         @NtpBackgroundType int backgroundType = NtpBackgroundType.THEME_COLLECTION;
         @ColorInt Integer primaryColor = Color.BLUE;
         GURL url = JUnitTestGURLs.URL_1;
@@ -161,7 +161,7 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
     }
 
     private void testToJsonAndFromJsonImpl(@Nullable String fileIdHash) throws JSONException {
-        @PlatformType int platformType = PlatformType.ANDROID_LOCAL;
+        @PlatformType int platformType = PlatformType.ANDROID;
         @NtpBackgroundType int backgroundType = NtpBackgroundType.THEME_COLLECTION;
         @ColorInt Integer primaryColor = Color.BLUE;
         GURL url = JUnitTestGURLs.URL_1;

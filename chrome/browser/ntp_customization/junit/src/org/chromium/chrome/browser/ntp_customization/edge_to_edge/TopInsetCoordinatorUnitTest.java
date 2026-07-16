@@ -309,7 +309,7 @@ public class TopInsetCoordinatorUnitTest {
     public void testOnBackgroundColorChanged_fromInitialization() {
         NtpBackgroundDataCustomizedColor dataColor =
                 new NtpBackgroundDataCustomizedColor(
-                        NtpBackgroundDataBase.PlatformType.ANDROID_LOCAL,
+                        NtpBackgroundDataBase.PlatformType.ANDROID,
                         new NtpThemeColorFromHexInfo(
                                 mContext, Color.RED, NtpThemeColorInfo.COLOR_NOT_SET));
 

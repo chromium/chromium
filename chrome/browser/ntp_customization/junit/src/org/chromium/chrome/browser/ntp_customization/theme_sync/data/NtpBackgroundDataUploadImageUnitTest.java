@@ -62,32 +62,20 @@ public class NtpBackgroundDataUploadImageUnitTest {
         BackgroundImageInfo info2 = new BackgroundImageInfo(new Matrix(), new Matrix(), null, null);
         NtpBackgroundDataUploadImage data1 =
                 new NtpBackgroundDataUploadImage(
-                        PlatformType.ANDROID_LOCAL,
-                        info1,
-                        /* bitmap= */ null,
-                        Color.RED,
-                        FILE_ID_HASH_1);
+                        PlatformType.ANDROID, info1, /* bitmap= */ null, Color.RED, FILE_ID_HASH_1);
         NtpBackgroundDataUploadImage data2 =
                 new NtpBackgroundDataUploadImage(
-                        PlatformType.ANDROID_LOCAL,
-                        info2,
-                        /* bitmap= */ null,
-                        Color.RED,
-                        FILE_ID_HASH_1);
+                        PlatformType.ANDROID, info2, /* bitmap= */ null, Color.RED, FILE_ID_HASH_1);
         NtpBackgroundDataUploadImage data3 =
                 new NtpBackgroundDataUploadImage(
-                        PlatformType.ANDROID_LOCAL,
+                        PlatformType.ANDROID,
                         info1,
                         /* bitmap= */ null,
                         Color.BLUE,
                         FILE_ID_HASH_1);
         NtpBackgroundDataUploadImage data4 =
                 new NtpBackgroundDataUploadImage(
-                        PlatformType.ANDROID_LOCAL,
-                        info1,
-                        /* bitmap= */ null,
-                        Color.RED,
-                        FILE_ID_HASH_2);
+                        PlatformType.ANDROID, info1, /* bitmap= */ null, Color.RED, FILE_ID_HASH_2);
 
         assertEquals(data1, data2);
         assertNotEquals(data1, data3);
@@ -106,7 +94,7 @@ public class NtpBackgroundDataUploadImageUnitTest {
         String filePath =
                 NtpCustomizationUtils.createUploadImageFileInDirForTesting(TEST_FILE_ID_HASH)
                         .getAbsolutePath();
-        @PlatformType int platformType = PlatformType.ANDROID_LOCAL;
+        @PlatformType int platformType = PlatformType.ANDROID;
         @ColorInt Integer primaryColor = Color.BLUE;
 
         NtpBackgroundDataUploadImage data =
@@ -139,7 +127,7 @@ public class NtpBackgroundDataUploadImageUnitTest {
         BackgroundImageInfo info = new BackgroundImageInfo(new Matrix(), new Matrix(), null, null);
         NtpBackgroundDataUploadImage data =
                 new NtpBackgroundDataUploadImage(
-                        PlatformType.ANDROID_LOCAL,
+                        PlatformType.ANDROID,
                         info,
                         mBitmap,
                         /* primaryColor= */ null,
@@ -148,7 +136,7 @@ public class NtpBackgroundDataUploadImageUnitTest {
 
         NtpBackgroundDataUploadImage dataWithoutBitmap =
                 new NtpBackgroundDataUploadImage(
-                        PlatformType.ANDROID_LOCAL,
+                        PlatformType.ANDROID,
                         info,
                         /* bitmap= */ null,
                         /* primaryColor= */ null,
@@ -161,7 +149,7 @@ public class NtpBackgroundDataUploadImageUnitTest {
         BackgroundImageInfo info = new BackgroundImageInfo(new Matrix(), new Matrix(), null, null);
         NtpBackgroundDataUploadImage data =
                 new NtpBackgroundDataUploadImage(
-                        PlatformType.ANDROID_LOCAL,
+                        PlatformType.ANDROID,
                         info,
                         mBitmap,
                         /* primaryColor= */ null,
@@ -177,7 +165,7 @@ public class NtpBackgroundDataUploadImageUnitTest {
         // The currentData has a bitmap.
         NtpBackgroundDataUploadImage currentData =
                 new NtpBackgroundDataUploadImage(
-                        PlatformType.ANDROID_LOCAL,
+                        PlatformType.ANDROID,
                         info,
                         mBitmap,
                         /* primaryColor= */ null,
@@ -187,7 +175,7 @@ public class NtpBackgroundDataUploadImageUnitTest {
         // The testData does not have a bitmap, but is equal to currentData (same path).
         NtpBackgroundDataUploadImage testData =
                 new NtpBackgroundDataUploadImage(
-                        PlatformType.ANDROID_LOCAL,
+                        PlatformType.ANDROID,
                         info,
                         /* bitmap= */ null,
                         /* primaryColor= */ null,

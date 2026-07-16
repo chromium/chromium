@@ -144,7 +144,7 @@ public class NtpCustomizationConfigManagerUnitTest {
                 NtpThemeColorUtils.createNtpThemeColorInfo(mContext, colorInfoId);
         NtpBackgroundDataColor backgroundData =
                 new NtpBackgroundDataColor(
-                        PlatformType.ANDROID_LOCAL,
+                        PlatformType.ANDROID,
                         /* isChromeColorDailyRefreshEnabled= */ false,
                         colorInfo);
 
@@ -166,7 +166,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         NtpThemeColorFromHexInfo colorFromHexInfo =
                 new NtpThemeColorFromHexInfo(mContext, backgroundColor, primaryColor);
         NtpBackgroundDataCustomizedColor backgroundData =
-                new NtpBackgroundDataCustomizedColor(PlatformType.ANDROID_LOCAL, colorFromHexInfo);
+                new NtpBackgroundDataCustomizedColor(PlatformType.ANDROID, colorFromHexInfo);
 
         mNtpCustomizationConfigManager.onBackgroundDataChanged(mContext, backgroundData);
 
@@ -191,7 +191,7 @@ public class NtpCustomizationConfigManagerUnitTest {
                 NtpThemeColorUtils.createNtpThemeColorInfo(mContext, colorInfoId);
         NtpBackgroundDataColor dataColor =
                 new NtpBackgroundDataColor(
-                        PlatformType.ANDROID_LOCAL,
+                        PlatformType.ANDROID,
                         /* isChromeColorDailyRefreshEnabled= */ false,
                         colorInfo);
 
@@ -216,7 +216,7 @@ public class NtpCustomizationConfigManagerUnitTest {
                         mContext, NtpThemeColorInfo.NtpThemeColorId.DEFAULT);
         NtpBackgroundDataColor defaultDataColor =
                 new NtpBackgroundDataColor(
-                        PlatformType.ANDROID_LOCAL,
+                        PlatformType.ANDROID,
                         /* isChromeColorDailyRefreshEnabled= */ false,
                         defaultColorInfo);
 
@@ -235,7 +235,7 @@ public class NtpCustomizationConfigManagerUnitTest {
 
         NtpBackgroundDataUploadImage uploadImageData =
                 new NtpBackgroundDataUploadImage(
-                        PlatformType.ANDROID_LOCAL,
+                        PlatformType.ANDROID,
                         mBackgroundImageInfo,
                         mBitmap,
                         /* primaryColor= */ null,
@@ -297,7 +297,7 @@ public class NtpCustomizationConfigManagerUnitTest {
     private void testOnUploadedImageSelectedImpl(@Nullable @ColorInt Integer primaryColor) {
         NtpBackgroundDataUploadImage uploadImageData =
                 new NtpBackgroundDataUploadImage(
-                        PlatformType.ANDROID_LOCAL,
+                        PlatformType.ANDROID,
                         mBackgroundImageInfo,
                         mBitmap,
                         primaryColor,
@@ -392,7 +392,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         NtpThemeColorFromHexInfo colorFromHexInfo =
                 new NtpThemeColorFromHexInfo(mContext, backgroundColor, primaryColor);
         NtpBackgroundDataCustomizedColor backgroundData =
-                new NtpBackgroundDataCustomizedColor(PlatformType.ANDROID_LOCAL, colorFromHexInfo);
+                new NtpBackgroundDataCustomizedColor(PlatformType.ANDROID, colorFromHexInfo);
         mNtpCustomizationConfigManager.onBackgroundDataChanged(mContext, backgroundData);
         mNtpCustomizationConfigManager.setIsInitializedForTesting(true);
 
@@ -495,7 +495,7 @@ public class NtpCustomizationConfigManagerUnitTest {
                 NtpThemeColorUtils.createNtpThemeColorInfo(mContext, colorInfoId);
         NtpBackgroundDataColor backgroundDataColor =
                 new NtpBackgroundDataColor(
-                        PlatformType.ANDROID_LOCAL,
+                        PlatformType.ANDROID,
                         /* isChromeColorDailyRefreshEnabled= */ false,
                         colorInfo);
 
@@ -553,7 +553,7 @@ public class NtpCustomizationConfigManagerUnitTest {
 
         // Test case for choosing a new customized color.
         NtpBackgroundDataCustomizedColor backgroundData =
-                new NtpBackgroundDataCustomizedColor(PlatformType.ANDROID_LOCAL, colorFromHexInfo);
+                new NtpBackgroundDataCustomizedColor(PlatformType.ANDROID, colorFromHexInfo);
         mNtpCustomizationConfigManager.onBackgroundDataChanged(mContext, backgroundData);
         assertEquals(
                 backgroundColor,
@@ -584,7 +584,7 @@ public class NtpCustomizationConfigManagerUnitTest {
 
         NtpBackgroundDataColor backgroundData =
                 new NtpBackgroundDataColor(
-                        PlatformType.ANDROID_LOCAL,
+                        PlatformType.ANDROID,
                         /* isChromeColorDailyRefreshEnabled= */ false,
                         colorInfo);
         mNtpCustomizationConfigManager.onBackgroundDataChanged(mContext, backgroundData);
@@ -596,7 +596,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(true);
         NtpBackgroundDataColor backgroundData2 =
                 new NtpBackgroundDataColor(
-                        PlatformType.ANDROID_LOCAL,
+                        PlatformType.ANDROID,
                         /* isChromeColorDailyRefreshEnabled= */ true,
                         colorInfo);
         mNtpCustomizationConfigManager.onBackgroundDataChanged(mContext, backgroundData2);
@@ -617,7 +617,7 @@ public class NtpCustomizationConfigManagerUnitTest {
 
         NtpBackgroundDataUploadImage uploadImageData =
                 new NtpBackgroundDataUploadImage(
-                        PlatformType.ANDROID_LOCAL,
+                        PlatformType.ANDROID,
                         mBackgroundImageInfo,
                         mBitmap,
                         /* primaryColor= */ null,
@@ -693,7 +693,7 @@ public class NtpCustomizationConfigManagerUnitTest {
                         /* isDailyRefreshEnabled= */ false);
         NtpBackgroundDataThemeCollection backgroundData =
                 new NtpBackgroundDataThemeCollection(
-                        PlatformType.ANDROID_LOCAL,
+                        PlatformType.ANDROID,
                         customBackgroundInfo,
                         mBackgroundImageInfo,
                         mBitmap,
@@ -736,7 +736,7 @@ public class NtpCustomizationConfigManagerUnitTest {
                         /* isDailyRefreshEnabled= */ false);
         NtpBackgroundDataThemeCollection backgroundData =
                 new NtpBackgroundDataThemeCollection(
-                        PlatformType.ANDROID_LOCAL,
+                        PlatformType.ANDROID,
                         customBackgroundInfo,
                         mBackgroundImageInfo,
                         mBitmap,
@@ -755,7 +755,7 @@ public class NtpCustomizationConfigManagerUnitTest {
                         /* isDailyRefreshEnabled= */ true);
         backgroundData =
                 new NtpBackgroundDataThemeCollection(
-                        PlatformType.ANDROID_LOCAL,
+                        PlatformType.ANDROID,
                         customBackgroundInfo,
                         mBackgroundImageInfo,
                         mBitmap,
@@ -793,7 +793,7 @@ public class NtpCustomizationConfigManagerUnitTest {
                         /* isDailyRefreshEnabled= */ false);
         NtpBackgroundDataThemeCollection backgroundData =
                 new NtpBackgroundDataThemeCollection(
-                        PlatformType.ANDROID_LOCAL,
+                        PlatformType.ANDROID,
                         customBackgroundInfo,
                         mBackgroundImageInfo,
                         mBitmap,
@@ -861,7 +861,7 @@ public class NtpCustomizationConfigManagerUnitTest {
                         /* isDailyRefreshEnabled= */ false);
         NtpBackgroundDataThemeCollection backgroundData =
                 new NtpBackgroundDataThemeCollection(
-                        PlatformType.ANDROID_LOCAL,
+                        PlatformType.ANDROID,
                         customBackgroundInfo,
                         mBackgroundImageInfo,
                         mBitmap,

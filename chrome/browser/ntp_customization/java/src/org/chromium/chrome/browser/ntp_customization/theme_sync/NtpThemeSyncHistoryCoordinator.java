@@ -74,7 +74,7 @@ public class NtpThemeSyncHistoryCoordinator {
 
         mDefaultNtpBackgroundData =
                 new NtpBackgroundDataColor(
-                        context, PlatformType.ANDROID_LOCAL, NtpThemeColorId.DEFAULT, false);
+                        context, PlatformType.ANDROID, NtpThemeColorId.DEFAULT, false);
         mDataShowingList = new ArrayList<>();
     }
 
@@ -110,12 +110,12 @@ public class NtpThemeSyncHistoryCoordinator {
                     mNtpBackgroundDataManager.getBackgroundDataListFromSharedPreference();
         } else {
             // Only updates the local history data.
-            mNtpBackgroundDataGroups[PlatformType.ANDROID_LOCAL] =
+            mNtpBackgroundDataGroups[PlatformType.ANDROID] =
                     mNtpBackgroundDataManager.getBackgroundDataGroupFromSharedPreference(
-                            PlatformType.ANDROID_LOCAL);
+                            PlatformType.ANDROID);
         }
 
-        NtpBackgroundDataGroup localGroup = mNtpBackgroundDataGroups[PlatformType.ANDROID_LOCAL];
+        NtpBackgroundDataGroup localGroup = mNtpBackgroundDataGroups[PlatformType.ANDROID];
         assumeNonNull(localGroup);
         if (currentNtpBackgroundData == null) {
             // Sets the index to the default theme if there isn't any NTP theme set before.
@@ -134,7 +134,7 @@ public class NtpThemeSyncHistoryCoordinator {
         }
 
         // Adds sync data from remote platforms.
-        for (int i = PlatformType.ANDROID_REMOTE; i < PlatformType.MAX_COUNT; i++) {
+        for (int i = PlatformType.ANDROID + 1; i < PlatformType.MAX_COUNT; i++) {
             NtpBackgroundDataGroup remoteDataGroup = mNtpBackgroundDataGroups[i];
             if (remoteDataGroup == null || remoteDataGroup.isEmpty()) continue;
 

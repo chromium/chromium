@@ -16,6 +16,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,6 +45,7 @@ import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThem
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase.PlatformType;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataColor;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataCustomizedColor;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -141,7 +143,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         NtpBackgroundDataColor localColor =
                 new NtpBackgroundDataColor(
                         mContext,
-                        PlatformType.ANDROID_LOCAL,
+                        PlatformType.ANDROID,
                         NtpThemeColorId.NTP_COLORS_BLUE,
                         /* isChromeColorDailyRefreshEnabled= */ false);
         mNtpBackgroundDataManager.saveUserSelectedBackgroundTypeToSharedPreference(localColor);
@@ -171,7 +173,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         NtpBackgroundDataColor localColor =
                 new NtpBackgroundDataColor(
                         mContext,
-                        PlatformType.ANDROID_LOCAL,
+                        PlatformType.ANDROID,
                         NtpThemeColorId.NTP_COLORS_BLUE,
                         /* isChromeColorDailyRefreshEnabled= */ false);
         mNtpBackgroundDataManager.saveUserSelectedBackgroundTypeToSharedPreference(localColor);
@@ -195,7 +197,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         NtpBackgroundDataColor localColor =
                 new NtpBackgroundDataColor(
                         mContext,
-                        PlatformType.ANDROID_LOCAL,
+                        PlatformType.ANDROID,
                         NtpThemeColorId.NTP_COLORS_BLUE,
                         /* isChromeColorDailyRefreshEnabled= */ false);
 
@@ -216,30 +218,37 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
     @Test
     public void testPrepareToShow_WithLocalAndRemoteHistory() {
         // Save local history.
-        NtpBackgroundDataColor localColor =
-                new NtpBackgroundDataColor(
+        NtpBackgroundDataCustomizedColor localColor =
+                new NtpBackgroundDataCustomizedColor(
                         mContext,
-                        PlatformType.ANDROID_LOCAL,
-                        NtpThemeColorId.NTP_COLORS_BLUE,
-                        /* isChromeColorDailyRefreshEnabled= */ false);
+                        PlatformType.ANDROID,
+                        /* primaryColorLight= */ Color.BLUE,
+                        /* primaryColorDark= */ Color.BLUE,
+                        /* ntpBackgroundColorLight= */ Color.WHITE,
+                        /* ntpBackgroundColorDark= */ Color.BLACK);
+
         mNtpBackgroundDataManager.saveUserSelectedBackgroundTypeToSharedPreference(localColor);
 
         // Save remote history (different from local).
-        NtpBackgroundDataColor remoteColor =
-                new NtpBackgroundDataColor(
+        NtpBackgroundDataCustomizedColor remoteColor =
+                new NtpBackgroundDataCustomizedColor(
                         mContext,
-                        PlatformType.ANDROID_REMOTE,
-                        NtpThemeColorId.NTP_COLORS_AQUA,
-                        /* isChromeColorDailyRefreshEnabled= */ false);
+                        PlatformType.IOS,
+                        /* primaryColorLight= */ Color.CYAN,
+                        /* primaryColorDark= */ Color.CYAN,
+                        /* ntpBackgroundColorLight= */ Color.WHITE,
+                        /* ntpBackgroundColorDark= */ Color.BLACK);
         mNtpBackgroundDataManager.saveRemoteSyncDataToSharedPreference(remoteColor);
 
         // Save another remote history which is duplicate of local.
-        NtpBackgroundDataColor remoteDuplicateColor =
-                new NtpBackgroundDataColor(
+        NtpBackgroundDataCustomizedColor remoteDuplicateColor =
+                new NtpBackgroundDataCustomizedColor(
                         mContext,
-                        PlatformType.ANDROID_REMOTE,
-                        NtpThemeColorId.NTP_COLORS_BLUE,
-                        /* isChromeColorDailyRefreshEnabled= */ false);
+                        PlatformType.IOS,
+                        /* primaryColorLight= */ Color.BLUE,
+                        /* primaryColorDark= */ Color.BLUE,
+                        /* ntpBackgroundColorLight= */ Color.WHITE,
+                        /* ntpBackgroundColorDark= */ Color.BLACK);
         mNtpBackgroundDataManager.saveRemoteSyncDataToSharedPreference(remoteDuplicateColor);
 
         when(mNtpCustomizationConfigManager.getNtpBackgroundData()).thenReturn(localColor);
@@ -247,17 +256,14 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         mCoordinator.prepareToShow();
 
         List<NtpBackgroundDataBase> dataList = mCoordinator.getDataShowingListForTesting();
-        // Should contain: Default (local), Local history (blue), Remote history (blue).
+        // Should contain: Default (local), Local history (blue), Remote history (blue customized
+        // color).
         assertEquals(3, dataList.size());
         assertEquals(
                 NtpThemeColorId.DEFAULT,
                 ((NtpBackgroundDataColor) dataList.get(0)).getThemeColorId());
-        assertEquals(
-                NtpThemeColorId.NTP_COLORS_BLUE,
-                ((NtpBackgroundDataColor) dataList.get(1)).getThemeColorId());
-        assertEquals(
-                NtpThemeColorId.NTP_COLORS_BLUE,
-                ((NtpBackgroundDataColor) dataList.get(2)).getThemeColorId());
+        assertEquals(localColor, dataList.get(1));
+        assertEquals(remoteDuplicateColor, dataList.get(2));
 
         // Highlighted index should be 1 (local history)
         assertEquals(
@@ -267,12 +273,14 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
     @Test
     public void testOnItemClicked() {
         // Setup data: Default and one remote history (no local history)
-        NtpBackgroundDataColor remoteColor =
-                new NtpBackgroundDataColor(
+        NtpBackgroundDataCustomizedColor remoteColor =
+                new NtpBackgroundDataCustomizedColor(
                         mContext,
-                        PlatformType.ANDROID_REMOTE,
-                        NtpThemeColorId.NTP_COLORS_BLUE,
-                        /* isChromeColorDailyRefreshEnabled= */ false);
+                        PlatformType.IOS,
+                        /* primaryColorLight= */ Color.BLUE,
+                        /* primaryColorDark= */ Color.BLUE,
+                        /* ntpBackgroundColorLight= */ Color.WHITE,
+                        /* ntpBackgroundColorDark= */ Color.BLACK);
         mNtpBackgroundDataManager.saveRemoteSyncDataToSharedPreference(remoteColor);
 
         mCoordinator.prepareToShow();
@@ -284,7 +292,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         int position = 1;
         boolean isFromClick = true;
         // Click the remote history item (index 1)
-        adapter.setSelectedPosition(position, isFromClick);
+        adapter.setSelectedPosition(position, /* isFromClick= */ true);
 
         // Verify config manager is notified.
         verify(mNtpCustomizationConfigManager)
@@ -294,7 +302,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
 
         // Click it again, should not trigger changes since it's already selected.
         clearInvocations(mNtpCustomizationConfigManager);
-        adapter.setSelectedPosition(position, isFromClick);
+        adapter.setSelectedPosition(position, /* isFromClick= */ true);
 
         // Verify delegate isn't notified.
         verify(mNtpCustomizationConfigManager, never()).onBackgroundDataChanged(any(), any());
@@ -306,7 +314,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         NtpBackgroundDataColor localColor =
                 new NtpBackgroundDataColor(
                         mContext,
-                        PlatformType.ANDROID_LOCAL,
+                        PlatformType.ANDROID,
                         NtpThemeColorId.NTP_COLORS_BLUE,
                         /* isChromeColorDailyRefreshEnabled= */ false);
         mNtpBackgroundDataManager.saveUserSelectedBackgroundTypeToSharedPreference(localColor);
@@ -339,21 +347,23 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
 
     @Test
     public void testPrepareToShow_SubsequentCallUpdatesOnlyLocalHistory() {
-        // 1. Initial Setup: one local (BLUE), one remote (AQUA).
+        // 1. Initial Setup: one local (BLUE), one remote (CYAN).
         NtpBackgroundDataColor localColor1 =
                 new NtpBackgroundDataColor(
                         mContext,
-                        PlatformType.ANDROID_LOCAL,
+                        PlatformType.ANDROID,
                         NtpThemeColorId.NTP_COLORS_BLUE,
                         /* isChromeColorDailyRefreshEnabled= */ false);
         mNtpBackgroundDataManager.saveUserSelectedBackgroundTypeToSharedPreference(localColor1);
 
-        NtpBackgroundDataColor remoteColor1 =
-                new NtpBackgroundDataColor(
+        NtpBackgroundDataCustomizedColor remoteColor1 =
+                new NtpBackgroundDataCustomizedColor(
                         mContext,
-                        PlatformType.ANDROID_REMOTE,
-                        NtpThemeColorId.NTP_COLORS_AQUA,
-                        /* isChromeColorDailyRefreshEnabled= */ false);
+                        PlatformType.IOS,
+                        /* primaryColorLight= */ Color.CYAN,
+                        /* primaryColorDark= */ Color.CYAN,
+                        /* ntpBackgroundColorLight= */ Color.WHITE,
+                        /* ntpBackgroundColorDark= */ Color.BLACK);
         mNtpBackgroundDataManager.saveRemoteSyncDataToSharedPreference(remoteColor1);
 
         when(mNtpCustomizationConfigManager.getNtpBackgroundData()).thenReturn(localColor1);
@@ -362,7 +372,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         mCoordinator.prepareToShow();
 
         List<NtpBackgroundDataBase> dataList = mCoordinator.getDataShowingListForTesting();
-        // Should contain: Default, localColor1 (blue), remoteColor1 (aqua).
+        // Should contain: Default, localColor1 (blue), remoteColor1 (cyan).
         assertEquals(3, dataList.size());
         assertEquals(
                 NtpThemeColorId.DEFAULT,
@@ -370,9 +380,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         assertEquals(
                 NtpThemeColorId.NTP_COLORS_BLUE,
                 ((NtpBackgroundDataColor) dataList.get(1)).getThemeColorId());
-        assertEquals(
-                NtpThemeColorId.NTP_COLORS_AQUA,
-                ((NtpBackgroundDataColor) dataList.get(2)).getThemeColorId());
+        assertEquals(remoteColor1, dataList.get(2));
         assertEquals(
                 1, (int) mPropertyModel.get(NtpThemeSyncHistoryProperties.HIGHLIGHTED_ITEM_INDEX));
 
@@ -380,17 +388,19 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         NtpBackgroundDataColor localColor2 =
                 new NtpBackgroundDataColor(
                         mContext,
-                        PlatformType.ANDROID_LOCAL,
+                        PlatformType.ANDROID,
                         NtpThemeColorId.NTP_COLORS_VIRIDIAN,
                         /* isChromeColorDailyRefreshEnabled= */ false);
         mNtpBackgroundDataManager.saveUserSelectedBackgroundTypeToSharedPreference(localColor2);
 
-        NtpBackgroundDataColor remoteColor2 =
-                new NtpBackgroundDataColor(
+        NtpBackgroundDataCustomizedColor remoteColor2 =
+                new NtpBackgroundDataCustomizedColor(
                         mContext,
-                        PlatformType.ANDROID_REMOTE,
-                        NtpThemeColorId.NTP_COLORS_GREEN,
-                        /* isChromeColorDailyRefreshEnabled= */ false);
+                        PlatformType.IOS,
+                        /* primaryColorLight= */ Color.GREEN,
+                        /* primaryColorDark= */ Color.GREEN,
+                        /* ntpBackgroundColorLight= */ Color.WHITE,
+                        /* ntpBackgroundColorDark= */ Color.BLACK);
         mNtpBackgroundDataManager.saveRemoteSyncDataToSharedPreference(remoteColor2);
 
         when(mNtpCustomizationConfigManager.getNtpBackgroundData()).thenReturn(localColor2);
@@ -399,8 +409,8 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         mCoordinator.prepareToShow();
 
         dataList = mCoordinator.getDataShowingListForTesting();
-        // Should contain: Default, localColor2 (viridian), localColor1 (blue), remoteColor1 (aqua)
-        // remoteColor2 (green) should NOT be here because remote history is not reloaded.
+        // Should contain: Default, localColor2 (viridian), localColor1 (blue), remoteColor1 (cyan).
+        // remoteColor2 should NOT be here because remote history is not reloaded.
         assertEquals(4, dataList.size());
         assertEquals(
                 NtpThemeColorId.DEFAULT,
@@ -411,9 +421,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         assertEquals(
                 NtpThemeColorId.NTP_COLORS_BLUE,
                 ((NtpBackgroundDataColor) dataList.get(2)).getThemeColorId());
-        assertEquals(
-                NtpThemeColorId.NTP_COLORS_AQUA,
-                ((NtpBackgroundDataColor) dataList.get(3)).getThemeColorId());
+        assertEquals(remoteColor1, dataList.get(3));
 
         // Highlighted index should be 1 (localColor2, the new first local history item).
         assertEquals(

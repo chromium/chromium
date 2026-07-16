@@ -150,7 +150,7 @@ public class NtpCustomizationConfigManager {
                     NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference();
             mNtpBackgroundData =
                     new NtpBackgroundDataUploadImage(
-                            PlatformType.ANDROID_LOCAL,
+                            PlatformType.ANDROID,
                             imageInfo,
                             /* bitmap= */ null,
                             primaryColor,
@@ -179,7 +179,7 @@ public class NtpCustomizationConfigManager {
                     ntpThemeDailyRefreshManager.getNtpCustomBackgroundInfoForThemeCollection();
             mNtpBackgroundData =
                     new NtpBackgroundDataThemeCollection(
-                            PlatformType.ANDROID_LOCAL,
+                            PlatformType.ANDROID,
                             assumeNonNull(mCustomBackgroundInfo),
                             imageInfo,
                             /* bitmap= */ null,
@@ -226,7 +226,7 @@ public class NtpCustomizationConfigManager {
             mNtpBackgroundData =
                     new NtpBackgroundDataColor(
                             context,
-                            PlatformType.ANDROID_LOCAL,
+                            PlatformType.ANDROID,
                             colorId,
                             NtpCustomizationUtils
                                     .getIsChromeColorDailyRefreshEnabledFromSharedPreference());
@@ -245,7 +245,7 @@ public class NtpCustomizationConfigManager {
                     NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference();
             mNtpBackgroundData =
                     new NtpBackgroundDataCustomizedColor(
-                            PlatformType.ANDROID_LOCAL,
+                            PlatformType.ANDROID,
                             new NtpThemeColorFromHexInfo(context, backgroundColor, primaryColor));
             notifyBackgroundColorChanged(
                     context, /* fromInitialization= */ true, NtpBackgroundType.DEFAULT);

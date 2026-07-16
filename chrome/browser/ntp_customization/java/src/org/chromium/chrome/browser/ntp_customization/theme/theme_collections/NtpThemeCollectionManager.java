@@ -184,7 +184,7 @@ public class NtpThemeCollectionManager {
                     }
                     NtpBackgroundDataThemeCollection backgroundData =
                             new NtpBackgroundDataThemeCollection(
-                                    PlatformType.ANDROID_LOCAL,
+                                    PlatformType.ANDROID,
                                     info,
                                     backgroundImageInfo,
                                     bitmap,

@@ -1332,7 +1332,7 @@ public class NtpCustomizationUtilsUnitTest {
         Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
         NtpBackgroundDataUploadImage uploadImageData =
                 new NtpBackgroundDataUploadImage(
-                        PlatformType.ANDROID_LOCAL,
+                        PlatformType.ANDROID,
                         /* backgroundImageInfo= */ null,
                         bitmap,
                         /* primaryColor= */ null,
@@ -1348,7 +1348,7 @@ public class NtpCustomizationUtilsUnitTest {
         Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
         NtpBackgroundDataThemeCollection themeCollectionData =
                 new NtpBackgroundDataThemeCollection(
-                        PlatformType.ANDROID_LOCAL,
+                        PlatformType.ANDROID,
                         /* customBackgroundInfo= */ null,
                         /* backgroundImageInfo= */ null,
                         bitmap,

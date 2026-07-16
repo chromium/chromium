@@ -36,8 +36,7 @@ public abstract class NtpBackgroundDataBase {
 
     @IntDef({
         PlatformType.UNKNOWN,
-        PlatformType.ANDROID_REMOTE,
-        PlatformType.ANDROID_LOCAL,
+        PlatformType.ANDROID,
         PlatformType.IOS,
         PlatformType.DESKTOP,
         PlatformType.ANDROID_DESKTOP,
@@ -46,12 +45,11 @@ public abstract class NtpBackgroundDataBase {
     @Retention(RetentionPolicy.SOURCE)
     public @interface PlatformType {
         int UNKNOWN = 0;
-        int ANDROID_LOCAL = 1;
-        int ANDROID_REMOTE = 2;
-        int IOS = 3;
-        int DESKTOP = 4;
-        int ANDROID_DESKTOP = 5;
-        int MAX_COUNT = 6;
+        int ANDROID = 1;
+        int IOS = 2;
+        int DESKTOP = 3;
+        int ANDROID_DESKTOP = 4;
+        int MAX_COUNT = 5;
     }
 
     private final @PlatformType int mPlatformType;

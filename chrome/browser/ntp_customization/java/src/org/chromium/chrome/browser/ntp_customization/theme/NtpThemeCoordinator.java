@@ -163,7 +163,7 @@ public class NtpThemeCoordinator {
                     NtpCustomizationUtils.getDefaultBackgroundImageInfo(mContext, bitmap);
             NtpBackgroundDataUploadImage uploadImageData =
                     new NtpBackgroundDataUploadImage(
-                            PlatformType.ANDROID_LOCAL,
+                            PlatformType.ANDROID,
                             info,
                             bitmap,
                             /* primaryColor= */ null,

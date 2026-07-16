@@ -107,7 +107,7 @@ public class NtpBackgroundDataManagerUnitTest {
     public void testSaveRemoteSyncDataListToSharedPreference() {
         @PlatformType int platformType1 = PlatformType.IOS;
         @PlatformType int platformType2 = PlatformType.DESKTOP;
-        @PlatformType int platformType3 = PlatformType.ANDROID_LOCAL;
+        @PlatformType int platformType3 = PlatformType.ANDROID;
         NtpBackgroundDataColor data1 =
                 new NtpBackgroundDataColor(
                         mContext,
@@ -151,7 +151,7 @@ public class NtpBackgroundDataManagerUnitTest {
 
     @Test
     public void testSaveUserSelectedBackgroundTypeToSharedPreference() {
-        @PlatformType int localPlatform = PlatformType.ANDROID_LOCAL;
+        @PlatformType int localPlatform = PlatformType.ANDROID;
         NtpBackgroundDataColor localData1 =
                 new NtpBackgroundDataColor(
                         mContext,
@@ -227,7 +227,7 @@ public class NtpBackgroundDataManagerUnitTest {
 
     @Test
     public void testSaveUserSelectedBackgroundTypeToSharedPreference_Duplicate() {
-        @PlatformType int localPlatform = PlatformType.ANDROID_LOCAL;
+        @PlatformType int localPlatform = PlatformType.ANDROID;
         NtpBackgroundDataColor localData1 =
                 new NtpBackgroundDataColor(
                         mContext,
@@ -260,7 +260,7 @@ public class NtpBackgroundDataManagerUnitTest {
 
     @Test
     public void testSaveUserSelectedBackgroundType_EvictsUploadImage() {
-        @PlatformType int localPlatform = PlatformType.ANDROID_LOCAL;
+        @PlatformType int localPlatform = PlatformType.ANDROID;
         Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
         String fileHash = "evictedFileHash";
 
@@ -311,6 +311,6 @@ public class NtpBackgroundDataManagerUnitTest {
 
     @Test
     public void testGetJsonArrayFromSharedPreferenceImpl_Empty() {
-        assertNull(mManager.getJsonArrayFromSharedPreferenceImpl(PlatformType.ANDROID_LOCAL));
+        assertNull(mManager.getJsonArrayFromSharedPreferenceImpl(PlatformType.ANDROID));
     }
 }

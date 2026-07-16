@@ -758,7 +758,7 @@ public class UploadImagePreviewCoordinatorUnitTest {
                         mPortraitMatrix, mLandscapeMatrix, PORTRAIT_POINT, LANDSCAPE_POINT);
         NtpBackgroundDataUploadImage currentUploadImage =
                 new NtpBackgroundDataUploadImage(
-                        PlatformType.ANDROID_LOCAL,
+                        PlatformType.ANDROID,
                         info,
                         mBitmap,
                         /* primaryColor= */ null,

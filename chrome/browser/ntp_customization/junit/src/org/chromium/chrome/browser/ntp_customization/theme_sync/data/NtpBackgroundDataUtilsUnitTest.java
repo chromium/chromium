@@ -78,7 +78,7 @@ public class NtpBackgroundDataUtilsUnitTest {
 
         // NtpBackgroundDataCustomizedColor case.
         JSONObject customColorJson = new JSONObject();
-        customColorJson.put(NtpBackgroundDataBase.PLATFORM_TYPE_KEY, PlatformType.ANDROID_LOCAL);
+        customColorJson.put(NtpBackgroundDataBase.PLATFORM_TYPE_KEY, PlatformType.ANDROID);
         customColorJson.put(
                 NtpBackgroundDataBase.BACKGROUND_TYPE_KEY, NtpBackgroundType.COLOR_FROM_HEX);
         customColorJson.put(

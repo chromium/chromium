@@ -200,10 +200,8 @@ public class NtpThemeSyncHistoryRecyclerViewAdaptor
 
             ImageView badgeView = itemView.findViewById(R.id.platform_badge);
             @PlatformType int platformType = backgroundData.getPlatformType();
-            if (platformType != PlatformType.ANDROID_LOCAL) {
-                boolean isMobile =
-                        platformType == PlatformType.ANDROID_REMOTE
-                                || platformType == PlatformType.IOS;
+            if (platformType != PlatformType.ANDROID) {
+                boolean isMobile = platformType == PlatformType.IOS;
                 if (isMobile) {
                     badgeView.setBackgroundResource(R.drawable.mobile_badge);
                 } else {

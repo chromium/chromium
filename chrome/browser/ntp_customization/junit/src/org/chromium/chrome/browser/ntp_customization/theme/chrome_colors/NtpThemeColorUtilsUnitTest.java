@@ -266,7 +266,7 @@ public class NtpThemeColorUtilsUnitTest {
                         mContext, NtpThemeColorId.NTP_COLORS_BLUE);
         NtpBackgroundDataColor dataColor =
                 new NtpBackgroundDataColor(
-                        NtpBackgroundDataBase.PlatformType.ANDROID_LOCAL,
+                        NtpBackgroundDataBase.PlatformType.ANDROID,
                         /* isChromeColorDailyRefreshEnabled= */ false,
                         blueInfo);
         int expectedColor =
@@ -286,7 +286,7 @@ public class NtpThemeColorUtilsUnitTest {
                         mContext, backgroundColor, NtpThemeColorInfo.COLOR_NOT_SET);
         NtpBackgroundDataCustomizedColor dataCustomizedColor =
                 new NtpBackgroundDataCustomizedColor(
-                        NtpBackgroundDataBase.PlatformType.ANDROID_LOCAL, customInfo);
+                        NtpBackgroundDataBase.PlatformType.ANDROID, customInfo);
         assertEquals(
                 backgroundColor,
                 NtpThemeColorUtils.getBackgroundColorFromNtpBackgroundData(

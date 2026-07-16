@@ -186,7 +186,7 @@ public class LogoCoordinatorUnitTest {
                 NtpThemeColorUtils.createNtpThemeColorInfo(mContext, colorInfoId);
         NtpBackgroundDataColor dataColor =
                 new NtpBackgroundDataColor(
-                        NtpBackgroundDataBase.PlatformType.ANDROID_LOCAL,
+                        NtpBackgroundDataBase.PlatformType.ANDROID,
                         /* isChromeColorDailyRefreshEnabled= */ false,
                         colorInfo);
         @ColorInt
@@ -226,7 +226,7 @@ public class LogoCoordinatorUnitTest {
         colorInfo = NtpThemeColorUtils.createNtpThemeColorInfo(mContext, colorInfoId);
         dataColor =
                 new NtpBackgroundDataColor(
-                        NtpBackgroundDataBase.PlatformType.ANDROID_LOCAL,
+                        NtpBackgroundDataBase.PlatformType.ANDROID,
                         /* isChromeColorDailyRefreshEnabled= */ false,
                         colorInfo);
         backgroundColor =

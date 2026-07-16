@@ -241,7 +241,7 @@ public class StatusBarColorControllerUnitTest {
                 ChromeSemanticColorUtils.getHomeSurfaceBackgroundColor(mActivity);
         NtpBackgroundDataColor dataColor =
                 new NtpBackgroundDataColor(
-                        NtpBackgroundDataBase.PlatformType.ANDROID_LOCAL,
+                        NtpBackgroundDataBase.PlatformType.ANDROID,
                         /* isChromeColorDailyRefreshEnabled= */ false,
                         NtpThemeColorUtils.createNtpThemeColorInfo(
                                 mActivity, NtpThemeColorId.NTP_COLORS_AQUA));
