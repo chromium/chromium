@@ -63,6 +63,7 @@
 #include "chrome/browser/ui/lens/lens_searchbox_controller.h"
 #include "chrome/browser/ui/lens/lens_session_metrics_logger.h"
 #include "chrome/browser/ui/lens/page_content_type_conversions.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
@@ -1376,13 +1377,21 @@ bool LensOverlayController::ShouldCloseSidePanel() {
   return true;
 }
 
+bool LensOverlayController::CoBrowsePanelWithLensOverlayEnabled() const {
+  return omnibox::kAskGCoBrowseWithVisualSelection.Get() &&
+         invocation_source_ ==
+             lens::LensOverlayInvocationSource::kOmniboxPageAction;
+}
+
 bool LensOverlayController::ShouldShowPreselectionBubble() {
-  return !pending_region_ && !IsResultsSidePanelShowing();
+  return !pending_region_ && (!IsResultsSidePanelShowing() ||
+                              CoBrowsePanelWithLensOverlayEnabled());
 }
 
 void LensOverlayController::ShowPreselectionBubble() {
-  // Don't show the preselection bubble if the overlay is not being shown.
-  if (IsResultsSidePanelShowing()) {
+  // Don't show the preselection bubble if the results panel is showing
+  // (unless we are in the CoBrowse visual selection flow).
+  if (IsResultsSidePanelShowing() && !CoBrowsePanelWithLensOverlayEnabled()) {
     return;
   }
   OverlayBaseController::ShowPreselectionBubble();
@@ -1520,15 +1529,18 @@ void LensOverlayController::NotifyTabWillEnterBackground() {
 
 OverlayBaseController::PreselectionUIConfig
 LensOverlayController::GetPreselectionBubbleConfig() {
-  return {
-      .message_string_id = IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE_SIMPLIFIED,
-      .bubble_background_color = kColorLensOverlayToastBackground,
+  int message_string_id =
+      CoBrowsePanelWithLensOverlayEnabled()
+          ? IDS_LENS_OVERLAY_COBROWSE_INITIAL_TOAST_LABEL
+          : IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE_SIMPLIFIED;
+  return {.message_string_id = message_string_id,
+          .bubble_background_color = kColorLensOverlayToastBackground,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      .icon = &vector_icons::kGoogleLensMonochromeLogoIcon
+          .icon = &vector_icons::kGoogleLensMonochromeLogoIcon
 #else
-      .icon = &(features::IsRoundedIconsEnabled()
-                    ? vector_icons::kSearchIcon
-                    : vector_icons::kSearchChromeRefreshOldIcon)
+          .icon = &(features::IsRoundedIconsEnabled()
+                        ? vector_icons::kSearchIcon
+                        : vector_icons::kSearchChromeRefreshOldIcon)
 #endif
   };
 }
