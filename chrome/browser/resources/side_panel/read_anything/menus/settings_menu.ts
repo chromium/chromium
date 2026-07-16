@@ -94,14 +94,18 @@ const MENU_ITEM_DATA: Record<SettingsOption, SettingsItem> = {
   },
   [SettingsOption.LINKS]: {
     id: SettingsOption.LINKS,
-    icon: 'read-anything:links-enabled',
+    icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'read-anything:link' :
+        'read-anything:links-enabled-old',
     title: 'linksLabel',
     itemType: SettingsItemType.TOGGLE,
     showSeparator: true,
   },
   [SettingsOption.LINE_SPACING]: {
     id: SettingsOption.LINE_SPACING,
-    icon: 'read-anything:line-spacing',
+    icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'read-anything:format-line-spacing' :
+        'read-anything:line-spacing-old',
     title: 'lineSpacingTitle',
     itemType: SettingsItemType.MENU,
   },
@@ -115,25 +119,33 @@ const MENU_ITEM_DATA: Record<SettingsOption, SettingsItem> = {
   },
   [SettingsOption.LINE_FOCUS]: {
     id: SettingsOption.LINE_FOCUS,
-    icon: 'read-anything:line-focus',
+    icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'read-anything:wb-incandescent' :
+        'read-anything:line-focus-old',
     title: 'lineFocusLabel',
     itemType: SettingsItemType.MENU,
   },
   [SettingsOption.PINNED_TO_TOOLBAR]: {
     id: SettingsOption.PINNED_TO_TOOLBAR,
-    icon: 'read-anything:pin',
+    icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'read-anything:keep' :
+        'read-anything:pin-old',
     title: 'pinLabel',
     itemType: SettingsItemType.TOGGLE,
   },
   [SettingsOption.PRESENTATION]: {
     id: SettingsOption.PRESENTATION,
-    icon: 'read-anything:view',
+    icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'read-anything:fullscreen' :
+        'read-anything:view-old',
     title: 'viewLabel',
     itemType: SettingsItemType.MENU,
   },
   [SettingsOption.TEXT]: {
     id: SettingsOption.TEXT,
-    icon: 'read-anything:font',
+    icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'read-anything:font-download' :
+        'read-anything:font-old',
     title: 'textSettingsTitle',
     itemType: SettingsItemType.MENU,
   },
@@ -145,7 +157,9 @@ const MENU_ITEM_DATA: Record<SettingsOption, SettingsItem> = {
   },
   [SettingsOption.VOICE_SELECTION]: {
     id: SettingsOption.VOICE_SELECTION,
-    icon: 'read-anything:voice-selection',
+    icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'read-anything:voice-selection' :
+        'read-anything:voice-selection-old',
     title: 'voiceSelectionLabel',
     itemType: SettingsItemType.MENU,
   },

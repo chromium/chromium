@@ -79,7 +79,9 @@ export function getHtml(this: ReadAnythingToolbarElement) {
         aria-label="$i18n{voiceSelectionLabel}"
         title="$i18n{voiceSelectionLabel}"
         aria-haspopup="menu"
-        iron-icon="read-anything:voice-selection"
+        iron-icon="${this.webuiRoundedIconsEnabled_
+            ? 'read-anything:voice-selection'
+            : 'read-anything:voice-selection-old'}"
         @click="${this.onVoiceSelectionMenuClick_}">
     </cr-icon-button>
 
@@ -127,7 +129,9 @@ export function getHtml(this: ReadAnythingToolbarElement) {
         class="toolbar-button"
         title="$i18n{settingsLabel}"
         aria-haspopup="menu"
-        iron-icon="read-anything:settings"
+        iron-icon="${this.webuiRoundedIconsEnabled_
+            ? 'read-anything:settings'
+            : 'read-anything:settings-old'}"
         @click="${this.onMoreOptionsClick_}">
     </cr-icon-button>
     ${this.isImmersiveMode ? html`

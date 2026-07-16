@@ -52,17 +52,17 @@ export class LineSpacingMenuElement extends LineSpacingMenuElementBase
   protected accessor options_: Array<MenuStateItem<number>> = [
     {
       title: loadTimeData.getString('lineSpacingStandardTitle'),
-      icon: 'read-anything:line-spacing-standard',
+      icon: 'read-anything:line-spacing-standard-custom',
       data: chrome.readingMode.standardLineSpacing,
     },
     {
       title: loadTimeData.getString('lineSpacingLooseTitle'),
-      icon: 'read-anything:line-spacing-loose',
+      icon: 'read-anything:line-spacing-loose-custom',
       data: chrome.readingMode.looseLineSpacing,
     },
     {
       title: loadTimeData.getString('lineSpacingVeryLooseTitle'),
-      icon: 'read-anything:line-spacing-very-loose',
+      icon: 'read-anything:line-spacing-very-loose-custom',
       data: chrome.readingMode.veryLooseLineSpacing,
     },
   ];

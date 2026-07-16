@@ -99,14 +99,20 @@ interface ToggleButton {
 export const moreOptionsClass = '.more-options-icon';
 
 // Link toggle button constants.
-export const LINKS_ENABLED_ICON = 'read-anything:links-enabled';
-export const LINKS_DISABLED_ICON = 'read-anything:links-disabled';
+export const LINKS_ENABLED_ICON =
+    loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+    'read-anything:link' :
+    'read-anything:links-enabled-old';
+export const LINKS_DISABLED_ICON =
+    loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+    'read-anything:link-off' :
+    'read-anything:links-disabled-old';
 export const LINK_TOGGLE_BUTTON_ID = 'link-toggle-button';
 
 // Images toggle button constants.
 export const IMAGES_ENABLED_ICON =
     loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-    'read-anything:images-enabled' :
+    'read-anything:image' :
     'read-anything:images-enabled-old';
 export const IMAGES_DISABLED_ICON =
     loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
@@ -414,7 +420,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     const fontSizeElement = {
       id: 'font-size',
       icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'read-anything:font-size' :
+          'read-anything:format-size' :
           'read-anything:font-size-old',
       ariaLabel: loadTimeData.getString('fontSizeTitle'),
       openMenu: (target: HTMLElement) =>
@@ -431,7 +437,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         {
           id: 'font',
           icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-              'read-anything:font' :
+              'read-anything:font-download' :
               'read-anything:font-old',
           ariaLabel: loadTimeData.getString('fontNameTitle'),
           openMenu: (target: HTMLElement) => this.$.fontMenu.open(target),
@@ -439,14 +445,16 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         {
           id: 'color',
           icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-              'read-anything:color' :
+              'read-anything:palette' :
               'read-anything:color-old',
           ariaLabel: loadTimeData.getString('themeTitle'),
           openMenu: (target: HTMLElement) => this.$.colorMenu.open(target),
         },
         {
           id: 'line-spacing',
-          icon: 'read-anything:line-spacing',
+          icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+              'read-anything:format-line-spacing' :
+              'read-anything:line-spacing-old',
           ariaLabel: loadTimeData.getString('lineSpacingTitle'),
           openMenu: (target: HTMLElement) =>
               this.$.lineSpacingMenu.open(target),
@@ -454,7 +462,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         {
           id: 'letter-spacing',
           icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-              'read-anything:letter-spacing' :
+              'read-anything:format-letter-spacing-2' :
               'read-anything:letter-spacing-old',
           ariaLabel: loadTimeData.getString('letterSpacingTitle'),
           openMenu: (target: HTMLElement) =>
@@ -464,7 +472,9 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     if (chrome.readingMode.isLineFocusEnabled) {
       this.textStyleOptions_.push({
         id: 'line-focus',
-        icon: 'read-anything:line-focus',
+        icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'read-anything:wb-incandescent' :
+            'read-anything:line-focus-old',
         ariaLabel: loadTimeData.getString('lineFocusLabel'),
         openMenu: (target: HTMLElement) => this.$.lineFocusMenu.open(target),
       });
