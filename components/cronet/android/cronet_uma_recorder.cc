@@ -16,6 +16,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/task/thread_pool.h"
@@ -36,22 +37,41 @@ void CronetUmaCallback(std::string_view histogram_name,
   CronetUmaRecorder::GetInstance().AddSample(name_hash, sample);
 }
 
-std::optional<absl::flat_hash_set<uint64_t>> ParseAllowlist(
+struct SampledMetric final {
+  uint64_t hash;
+  double sampling_rate;
+};
+
+SampledMetric ParseAllowlistToken(std::string_view token) {
+  const auto token_parts = base::SplitStringOnce(token, ':');
+  uint64_t hash;
+  CHECK(base::StringToUint64(
+      token_parts.has_value() ? token_parts->first : token, &hash))
+      << "Failed to parse name hash: " << token;
+
+  double rate = 1.0;
+  if (token_parts.has_value()) {
+    CHECK(base::StringToDouble(token_parts->second, &rate) && rate >= 0.0 &&
+          rate <= 1.0)
+        << "Failed to parse filter rate (0.0-1.0): " << token;
+  }
+  return {.hash = hash, .sampling_rate = rate};
+}
+
+std::optional<absl::flat_hash_map<uint64_t, double>> ParseAllowlistWithRate(
     const std::string& allowlist) {
   if (allowlist == "*") {
     return std::nullopt;
   }
 
-  absl::flat_hash_set<uint64_t> allowed_hashes;
+  absl::flat_hash_map<uint64_t, double> allowed_hashes_with_rate;
   const std::vector<std::string_view> tokens = base::SplitStringPiece(
       allowlist, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   for (const auto& token : tokens) {
-    uint64_t parsed_hash;
-    CHECK(base::StringToUint64(token, &parsed_hash))
-        << "Failed to parse name hash in UMA allowlist: " << token;
-    allowed_hashes.insert(parsed_hash);
+    const auto metric = ParseAllowlistToken(token);
+    allowed_hashes_with_rate.insert({metric.hash, metric.sampling_rate});
   }
-  return allowed_hashes;
+  return allowed_hashes_with_rate;
 }
 }  // namespace
 
@@ -85,13 +105,24 @@ CronetUmaRecorder& CronetUmaRecorder::GetInstance() {
 
 CronetUmaRecorder::CronetUmaRecorder(base::PassKey<CronetUmaRecorder>,
                                      const std::string& allowlist)
-    : allowed_name_hashes_(ParseAllowlist(allowlist)) {}
+    : allowed_name_hashes_with_rate_(ParseAllowlistWithRate(allowlist)) {}
 
 CronetUmaRecorder::~CronetUmaRecorder() = default;
 
 bool CronetUmaRecorder::IsHashAllowed(uint64_t name_hash) const {
-  return !allowed_name_hashes_.has_value() ||
-         allowed_name_hashes_->contains(name_hash);
+  if (!allowed_name_hashes_with_rate_.has_value()) {
+    return true;
+  }
+  auto it = allowed_name_hashes_with_rate_->find(name_hash);
+  if (it == allowed_name_hashes_with_rate_->end()) {
+    return false;
+  }
+  // We use base::ShouldRecordSubsampledMetric for filtering because it is
+  // extremely fast. It uses a thread-local InsecureRandomGenerator (backed by
+  // XorShift128+), which takes ~2ns per call to generate a random number,
+  // compared to ~800ns for cryptographically secure generators like
+  // base::RandDouble().
+  return base::ShouldRecordSubsampledMetric(it->second);
 }
 
 void CronetUmaRecorder::AddSample(uint64_t name_hash, int32_t value) {

@@ -16,7 +16,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace cronet {
 
@@ -31,10 +31,13 @@ class CronetUmaRecorder final {
   // The `allowlist` parameter specifies which UMA histograms are allowed to be
   // recorded. Format options:
   // 1. "*" : Allows all histograms (disables filtering).
-  // 2. "hash1,hash2,..." : A comma-separated list of decimal uint64_t name
-  // hashes.
-  //    Only histograms whose name hashes match the list will be recorded.
-  //    Example: "2937041049411630354,8946698020320526722"
+  // 2. "hash1:rate1,hash2:rate2,..." : A comma-separated list of decimal
+  // uint64_t name hashes, optionally followed by a colon and a double
+  // filtering rate between 0.0 and 1.0.
+  // Only histograms whose name hashes match the list will be recorded,
+  // sampled at the specified rate. In the absence of a rate, 1.0 (100%) is
+  // assumed.
+  // Example: "2937041049411630354:0.5,8946698020320526722"
   static void InitializeWithAllowlist(const std::string& allowlist);
 
   // Must be called after Initialize.
@@ -59,8 +62,10 @@ class CronetUmaRecorder final {
   // Checks if a name hash is allowed to be reported based on the allowlist.
   bool IsHashAllowed(uint64_t name_hash) const;
 
-  // UMA filter allowlist. If nullopt, all hashes are allowed.
-  const std::optional<absl::flat_hash_set<uint64_t>> allowed_name_hashes_;
+  // UMA filter allowlist mapping name hashes to filtering rates (in
+  // [0.0, 1.0]). If nullopt, all hashes are allowed with rate 1.0.
+  const std::optional<absl::flat_hash_map<uint64_t, double>>
+      allowed_name_hashes_with_rate_;
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_ =
       base::ThreadPool::CreateSequencedTaskRunner(
