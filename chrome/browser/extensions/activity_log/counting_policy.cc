@@ -150,23 +150,36 @@ constexpr char kPolicySetupCreateIndex[] =
 
 // SQL statements to clean old, unused entries out of the string and URL id
 // tables.
+//
+// These use UNION ALL rather than UNION on purpose. The result of the compound
+// SELECT is only used as the right-hand side of a NOT IN test, which does not
+// require the list to be de-duplicated. UNION would force SQLite to build an
+// intermediate structure that de-duplicates every value read from the (large)
+// main table before the membership test. Because Chrome compiles SQLite with
+// SQLITE_TEMP_STORE=3, that structure lives entirely in memory and cannot spill
+// to disk, so its size grows with the number of rows in the main table and can
+// exhaust memory (OOM). UNION ALL streams the values straight into the
+// membership index, whose size is bounded by the number of distinct interned
+// ids, keeping peak memory (and CPU spent sorting) roughly constant regardless
+// of the main table size. The IS NOT NULL guards ensure the list contains no
+// NULLs, so NOT IN semantics are unchanged.
 constexpr char kStringTableCleanup[] =
     "DELETE FROM string_ids WHERE id NOT IN\n"
     "(SELECT extension_id_x FROM activitylog_compressed\n"
     "    WHERE extension_id_x IS NOT NULL\n"
-    " UNION SELECT api_name_x FROM activitylog_compressed\n"
+    " UNION ALL SELECT api_name_x FROM activitylog_compressed\n"
     "    WHERE api_name_x IS NOT NULL\n"
-    " UNION SELECT args_x FROM activitylog_compressed\n"
+    " UNION ALL SELECT args_x FROM activitylog_compressed\n"
     "    WHERE args_x IS NOT NULL\n"
-    " UNION SELECT page_title_x FROM activitylog_compressed\n"
+    " UNION ALL SELECT page_title_x FROM activitylog_compressed\n"
     "    WHERE page_title_x IS NOT NULL\n"
-    " UNION SELECT other_x FROM activitylog_compressed\n"
+    " UNION ALL SELECT other_x FROM activitylog_compressed\n"
     "    WHERE other_x IS NOT NULL)";
 constexpr char kUrlTableCleanup[] =
     "DELETE FROM url_ids WHERE id NOT IN\n"
     "(SELECT page_url_x FROM activitylog_compressed\n"
     "    WHERE page_url_x IS NOT NULL\n"
-    " UNION SELECT arg_url_x FROM activitylog_compressed\n"
+    " UNION ALL SELECT arg_url_x FROM activitylog_compressed\n"
     "    WHERE arg_url_x IS NOT NULL)";
 
 }  // namespace
