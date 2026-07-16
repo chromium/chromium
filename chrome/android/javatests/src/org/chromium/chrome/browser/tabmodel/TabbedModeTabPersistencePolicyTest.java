@@ -140,9 +140,9 @@ public class TabbedModeTabPersistencePolicyTest {
         when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
 
+        when(mArchivedTabModelSelector.isTabStateInitialized()).thenReturn(true);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    when(mArchivedTabModelSelector.isTabStateInitialized()).thenReturn(true);
                     TabWindowManagerSingleton.getInstance()
                             .setArchivedTabModelSelector(mArchivedTabModelSelector);
                 });
