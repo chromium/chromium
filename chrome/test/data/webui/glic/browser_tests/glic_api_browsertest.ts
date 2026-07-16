@@ -1593,38 +1593,6 @@ class ApiTests extends ApiTestFixtureBase {
         {conversationId: '', conversationTitle: 'Empty Conversation'});
   }
 
-  async testSwitchConversationWithEmptyId() {
-    assertDefined(this.host.registerConversation);
-    assertDefined(this.host.switchConversation);
-
-    if (this.testParams === 'initiateSwitch') {
-      // Register an initial conversation with a valid ID.
-      await this.host.registerConversation(
-          {conversationId: 'initial_id', conversationTitle: 'Initial Title'});
-
-      // Attempt to switch to a conversation with an empty ID.
-      // Wrap in a sleep to allow the current test's ExecuteJsTest() to complete
-      // before the instance is potentially deleted during switchConversation.
-      sleep(100).then(() => {
-        assertDefined(this.host.switchConversation);
-        this.host.switchConversation({
-          conversationId: '',
-          conversationTitle: 'Empty Switched Title',
-          clientData: 'test_client_data_from_ts',
-        });
-      });
-    } else if (this.testParams === 'verifyNewInstance') {
-      const openData = this.client.panelOpenData.getCurrentValue();
-      assertDefined(openData);
-      assertEquals(undefined, openData.conversationId);
-      assertEquals('', openData.conversationInfo?.conversationId);
-      assertEquals(
-          'Empty Switched Title', openData.conversationInfo?.conversationTitle);
-      assertEquals(
-          'test_client_data_from_ts', openData.conversationInfo?.clientData);
-    }
-  }
-
   async testPanelWillOpenBeforeClientReady() {
     const openData = await observeSequence(this.client.panelOpenData).next();
     assertEquals('test_conversation_id', openData.conversationId);

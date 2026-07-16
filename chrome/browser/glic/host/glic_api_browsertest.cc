@@ -1018,34 +1018,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
   ContinueJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testSwitchConversationWithEmptyId) {
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents,
-                           /*conversation_id=*/std::nullopt));
-
-  ExecuteJsTest({.params = base::Value("initiateSwitch")});
-
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return histogram_tester->GetBucketCount(
-               "Glic.Interaction.SwitchConversationTarget",
-               GlicSwitchConversationTarget::kStartNewConversation) == 1;
-  }));
-
-  // Verify that the active instance now has no conversation ID (std::nullopt)
-  // because it switched to a new conversation with an empty ID.
-  ASSERT_FALSE(GetGlicInstanceImpl()->conversation_id());
-
-  // Verify that GetConversationInfo() returns the info for the new
-  // conversation.
-  mojom::ConversationInfoPtr retrieved_info =
-      GetGlicInstanceImpl()->GetConversationInfo();
-  EXPECT_EQ("", retrieved_info->conversation_id);
-  EXPECT_EQ("Empty Switched Title", retrieved_info->conversation_title);
-  EXPECT_EQ("test_client_data_from_ts", retrieved_info->client_data);
-
-  // Verify that client data was received by the new client.
-  ExecuteJsTest({.params = base::Value("verifyNewInstance")});
-}
-
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testTabSwitchDoesNotLogActivationMetric) {
   // Open Glic in the first tab. This is the first activation.
   RunTestSequence(InstrumentTab(kFirstTab),

@@ -886,6 +886,42 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, MAYBE_testThereCanOnlyBeOneFloaty) {
 }
 
 #if defined(NOT_VETTED_ON_ANDROID)
+#define MAYBE_testSwitchConversationWithEmptyId \
+  DISABLED_testSwitchConversationWithEmptyId
+#else
+#define MAYBE_testSwitchConversationWithEmptyId \
+  testSwitchConversationWithEmptyId
+#endif
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
+                       MAYBE_testSwitchConversationWithEmptyId) {
+  glic::GlicHistogramTester histogram_tester;
+  ASSERT_OK(OpenGlicForActiveTab());
+
+  ExecuteJsTest({.params = base::Value("initiateSwitch")});
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetBucketCount(
+               "Glic.Interaction.SwitchConversationTarget",
+               GlicSwitchConversationTarget::kStartNewConversation) == 1;
+  }));
+
+  // Verify that the active instance now has no conversation ID (std::nullopt)
+  // because it switched to a new conversation with an empty ID.
+  ASSERT_FALSE(GetOnlyGlicInstance()->conversation_id());
+
+  // Verify that GetConversationInfo() returns the info for the new
+  // conversation.
+  mojom::ConversationInfoPtr retrieved_info =
+      GetOnlyGlicInstance()->GetConversationInfo();
+  EXPECT_EQ("", retrieved_info->conversation_id);
+  EXPECT_EQ("Empty Switched Title", retrieved_info->conversation_title);
+  EXPECT_EQ("test_client_data_from_ts", retrieved_info->client_data);
+
+  // Verify that client data was received by the new client.
+  ExecuteJsTest({.params = base::Value("verifyNewInstance")});
+}
+
+#if defined(NOT_VETTED_ON_ANDROID)
 #define MAYBE_testDetachPanelNoFloatyOrLiveMode \
   DISABLED_testDetachPanelNoFloatyOrLiveMode
 #else
