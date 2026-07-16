@@ -339,22 +339,23 @@ void VariationsSeedProcessor::CreateTrialsFromSeed(
       FilterAndValidateStudies(seed, client_state, layers);
 
   for (const ProcessedStudy& study : filtered_studies) {
-    CreateTrialFromStudy(study, entropy_providers, layers, feature_list);
+    CreateTrialFromStudyImpl(study, entropy_providers, layers, feature_list);
   }
 }
 
-scoped_refptr<base::FieldTrial>
-VariationsSeedProcessor::CreateTrialFromStudyForTesting(
+scoped_refptr<base::FieldTrial> VariationsSeedProcessor::CreateTrialFromStudy(
+    base::PassKey<VariationsService>,
     const ProcessedStudy& processed_study,
     const EntropyProviders& entropy_providers,
     const VariationsLayers& layers,
     base::FeatureList* feature_list,
     bool simulated) {
-  return CreateTrialFromStudy(processed_study, entropy_providers, layers,
-                              feature_list, simulated);
+  return CreateTrialFromStudyImpl(processed_study, entropy_providers, layers,
+                                  feature_list, simulated);
 }
 
-scoped_refptr<base::FieldTrial> VariationsSeedProcessor::CreateTrialFromStudy(
+scoped_refptr<base::FieldTrial>
+VariationsSeedProcessor::CreateTrialFromStudyImpl(
     const ProcessedStudy& processed_study,
     const EntropyProviders& entropy_providers,
     const VariationsLayers& layers,

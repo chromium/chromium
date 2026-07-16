@@ -255,4 +255,49 @@ TEST_F(RuntimeFieldTrialOverridesTest, ApplyFailsWhenTrialNameAlreadyExists) {
   overrides->RemoveObserver(&observer);
 }
 
+TEST_F(RuntimeFieldTrialOverridesTest, GetRuntimeOverride) {
+  auto* overrides = RuntimeFieldTrialOverrides::GetInstance();
+  auto pass_key = variations::VariationsService::CreatePassKeyForTesting();
+
+  // Initially, looking up a trial should return std::nullopt.
+  EXPECT_FALSE(overrides->GetRuntimeOverride("Trial").has_value());
+
+  // Apply override.
+  FieldTrial* trial =
+      FieldTrialList::CreateFieldTrial("OriginalTrial", "OriginalGroup");
+  EXPECT_TRUE(overrides->ApplyRuntimeOverride(pass_key, "Trial", "Group",
+                                              /*overridden_trial=*/trial));
+
+  // It should now return the override info.
+  auto override_info = overrides->GetRuntimeOverride("Trial");
+  ASSERT_TRUE(override_info.has_value());
+  EXPECT_EQ(override_info->trial_name, "Trial");
+  EXPECT_EQ(override_info->group_name, "Group");
+  EXPECT_EQ(override_info->overridden_trial, trial);
+
+  // Looking up a different trial name should still return std::nullopt.
+  EXPECT_FALSE(overrides->GetRuntimeOverride("OtherTrial").has_value());
+}
+
+TEST_F(RuntimeFieldTrialOverridesTest, IsFieldTrialOverridden) {
+  auto* overrides = RuntimeFieldTrialOverrides::GetInstance();
+  auto pass_key = variations::VariationsService::CreatePassKeyForTesting();
+
+  FieldTrial* trial1 = FieldTrialList::CreateFieldTrial("Trial1", "Group1");
+  FieldTrial* trial2 = FieldTrialList::CreateFieldTrial("Trial2", "Group2");
+
+  // Initially, neither trial is overridden.
+  EXPECT_FALSE(overrides->IsFieldTrialOverridden(*trial1));
+  EXPECT_FALSE(overrides->IsFieldTrialOverridden(*trial2));
+
+  // Apply override for trial1.
+  EXPECT_TRUE(overrides->ApplyRuntimeOverride(pass_key, "OverrideTrial1",
+                                              "Group1",
+                                              /*overridden_trial=*/trial1));
+
+  // trial1 should be overridden, trial2 should not.
+  EXPECT_TRUE(overrides->IsFieldTrialOverridden(*trial1));
+  EXPECT_FALSE(overrides->IsFieldTrialOverridden(*trial2));
+}
+
 }  // namespace base

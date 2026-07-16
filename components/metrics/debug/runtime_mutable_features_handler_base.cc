@@ -11,6 +11,7 @@
 #include "base/feature_list_internal.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/runtime_field_trial_overrides.h"
 #include "base/strings/strcat.h"
 #include "components/variations/service/variations_service.h"
 
@@ -57,7 +58,11 @@ void RuntimeMutableFeaturesHandlerBase::HandleFetchRuntimeMutableFeatures(
     if (!feature_state.field_trial_name.empty()) {
       // The feature is being controlled by a runtime-mutable field trial.
       trial_name = feature_state.field_trial_name;
-      group_name = feature_state.group_name;
+      auto runtime_override_info =
+          base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+              feature_state.field_trial_name);
+      CHECK(runtime_override_info.has_value());
+      group_name = runtime_override_info->group_name;
       runtime_override = true;
     } else {
       // The feature is not being controlled by a runtime-mutable field trial.

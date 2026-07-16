@@ -523,6 +523,7 @@ FeatureList::GetRuntimeMutableFeatureState(
 }
 
 bool FeatureList::UpdateRuntimeMutableFeatureState(
+    base::PassKey<variations::VariationsService>,
     std::string_view field_trial_name,
     std::string_view group_name,
     std::string_view feature_name,
@@ -567,7 +568,6 @@ bool FeatureList::UpdateRuntimeMutableFeatureState(
   runtime_override_entry.override_state = override_state;
   // TODO: http://crbug.com/482450776 - Update field trial activations.
   runtime_override_entry.field_trial_name = std::string(field_trial_name);
-  runtime_override_entry.group_name = std::string(group_name);
 
   // Notify the callback.
   if (!runtime_override_entry.callback.is_null()) {
@@ -578,6 +578,34 @@ bool FeatureList::UpdateRuntimeMutableFeatureState(
 
   LogRuntimeMutabilityResult(feature_name, RuntimeMutabilityResult::kSuccess);
   return true;
+}
+
+bool FeatureList::HasRuntimeMutabilityEnabledByFeatureName(
+    std::string_view feature_name) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(initialized_);
+  DCHECK(IsValidFeatureOrFieldTrialName(feature_name)) << feature_name;
+
+  return runtime_mutable_overrides_.contains(feature_name);
+}
+
+std::string_view
+FeatureList::GetAssociatedRuntimeFieldTrialOverrideByFeatureName(
+    std::string_view feature_name) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(initialized_);
+  DCHECK(IsValidFeatureOrFieldTrialName(feature_name)) << feature_name;
+  DCHECK(HasRuntimeMutabilityEnabledByFeatureName(feature_name));
+
+  auto it = runtime_mutable_overrides_.find(feature_name);
+  if (it == runtime_mutable_overrides_.end()) {
+    // This should not happen since this function should only be called for
+    // runtime-mutable-enabled features (as determined by a DCHECK above).
+    return "";
+  }
+  // If the feature is not currently runtime overridden, this will be an empty
+  // string.
+  return it->second.field_trial_name;
 }
 
 bool FeatureList::IsFeatureOverridden(std::string_view feature_name) const {

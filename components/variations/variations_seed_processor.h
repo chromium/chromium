@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
+#include "base/types/pass_key.h"
 #include "components/variations/entropy_provider.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/proto/variations_seed.pb.h"
@@ -20,6 +21,8 @@ class FeatureList;
 }
 
 namespace variations {
+
+class VariationsService;
 
 namespace internal {
 // The trial group selected when a study specifies a feature that is already
@@ -66,7 +69,9 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedProcessor {
                             const VariationsLayers& layers,
                             base::FeatureList* feature_list);
 
-  scoped_refptr<base::FieldTrial> CreateTrialFromStudyForTesting(
+  // See private CreateTrialFromStudyImpl() below.
+  scoped_refptr<base::FieldTrial> CreateTrialFromStudy(
+      base::PassKey<VariationsService>,
       const ProcessedStudy& processed_study,
       const EntropyProviders& entropy_providers,
       const VariationsLayers& layers,
@@ -74,6 +79,8 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedProcessor {
       bool simulated = false);
 
  private:
+  template <typename Environment>
+  friend class VariationsSeedProcessorTest;
   friend void CreateTrialFromStudyFuzzer(const Study& study);
 
   // Check if the |study| is only associated with platform Android/iOS and
@@ -93,7 +100,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedProcessor {
   // registered, the caller will have the only pointer to the returned trial
   // and hence have full ownership (as opposed to when `simulated` is false,
   // where the trial is registered with FieldTrialList and ownership is shared).
-  scoped_refptr<base::FieldTrial> CreateTrialFromStudy(
+  scoped_refptr<base::FieldTrial> CreateTrialFromStudyImpl(
       const ProcessedStudy& processed_study,
       const EntropyProviders& entropy_providers,
       const VariationsLayers& layers,

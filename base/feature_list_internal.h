@@ -83,10 +83,9 @@ struct BASE_EXPORT RuntimeMutableFeatureState {
   // feature is not runtime overridden.
   FeatureList::OverrideState override_state = FeatureList::OVERRIDE_USE_DEFAULT;
 
-  // The name and group of the field trial that has, at runtime, superseded
-  // the feature's startup-initialized state.
+  // The name of the runtime field trial override that has, at runtime,
+  // superseded the feature's startup-initialized state.
   std::string field_trial_name;
-  std::string group_name;
 };
 
 }  // namespace base::internal

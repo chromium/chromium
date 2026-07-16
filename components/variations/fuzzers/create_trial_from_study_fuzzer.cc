@@ -38,8 +38,8 @@ void CreateTrialFromStudyFuzzer(const Study& study) {
   if (processed_study.Init(&study)) {
     StickyActivationManager sticky_activation_manager(/*local_state=*/nullptr);
     VariationsSeedProcessor(sticky_activation_manager)
-        .CreateTrialFromStudy(processed_study, entropy_providers, layers,
-                              &feature_list);
+        .CreateTrialFromStudyImpl(processed_study, entropy_providers, layers,
+                                  &feature_list);
   }
 }
 

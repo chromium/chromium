@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "base/version_info/channel.h"
 #include "build/build_config.h"
 #include "components/variations/client_filterable_state.h"
@@ -38,6 +39,7 @@ class MetricsStateManager;
 namespace variations {
 
 class EntropyProviders;
+class VariationsService;
 
 // The source from which variations were applied.
 enum class VariationsSourceType {
@@ -245,6 +247,12 @@ class VariationsFieldTrialCreator {
 
   // Returns the source of variations applied in this session.
   VariationsSource variations_source() const { return variations_source_; }
+
+  // Returns the sticky activation manager.
+  StickyActivationManager& sticky_activation_manager(
+      base::PassKey<VariationsService>) {
+    return sticky_activation_manager_;
+  }
 
  protected:
   // Get the platform we're running on, respecting OverrideVariationsPlatform().

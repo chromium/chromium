@@ -103,6 +103,33 @@ enum class VerifySignatureResult {
   kMaxValue = kValidSignature,
 };
 
+// The result of attempting to apply runtime mutable experiment from a new seed.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(VariationsApplyRuntimeMutableChangesResult)
+enum class ApplyRuntimeMutableChangesResult {
+  // Reserve the default/uninitialized value. This should not be used.
+  kUnknown = 0,
+  kSuccess = 1,
+  kSimulatedGroupIsNull = 2,
+  kSimulatedGroupNotFound = 3,
+  kNotStrictKillswitch = 4,
+  kNotStartsActive = 5,
+  kNotPermanentConsistency = 6,
+  kAlreadyApplied = 7,
+  kNonRuntimeMutableFeature = 8,
+  kFeatureOverriddenFromCommandLine = 9,
+  kFeaturesNotControlledBySameTrial = 10,
+  kControllingTrialHasOtherFeatures = 11,
+  kTrialNameCollision = 12,
+  kControllingTrialNotFound = 13,
+  kUpdateFeatureStateFailed = 14,
+  kApplyRuntimeFieldTrialOverrideFailed = 15,
+  kValidationFailed = 16,
+  kMaxValue = kValidationFailed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/variations/enums.xml:VariationsApplyRuntimeMutableChangesResult)
+
 // Describes instance manipulations applied to data.
 struct InstanceManipulations {
   const bool gzip_compressed;

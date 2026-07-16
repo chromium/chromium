@@ -17,6 +17,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/runtime_field_trial_overrides.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -24,6 +25,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
@@ -83,6 +85,9 @@ const char kBase64SeedData[] =
 const char kBase64SeedSignature[] =
     "MEQCIDD1IVxjzWYncun+9IGzqYjZvqxxujQEayJULTlbTGA/AiAr0oVmEgVUQZBYq5VLOSvy"
     "96JkMYgzTkHPwbv7K/CmgA==";
+
+const char kApplyRuntimeMutableChangesResultMetric[] =
+    "Variations.ApplyRuntimeMutableChanges.Result";
 
 // TODO(crbug.com/40742801): Remove when fake VariationsServiceClient created.
 class TestVariationsServiceClient : public VariationsServiceClient {
@@ -177,8 +182,14 @@ class TestVariationsService : public VariationsService {
   const std::string& stored_geo_level() const { return stored_geo_level_; }
   bool delta_compressed_seed() const { return delta_compressed_seed_; }
   bool gzip_compressed_seed() const { return gzip_compressed_seed_; }
+  bool runtime_simulation_called() const { return runtime_simulation_called_; }
 
   bool CallMaybeRetryOverHTTP() { return CallMaybeRetryOverHTTPForTesting(); }
+  void SimulateAndApplyRuntimeMutableChanges(
+      const VariationsSeed& seed) override {
+    runtime_simulation_called_ = true;
+    VariationsService::SimulateAndApplyRuntimeMutableChanges(seed);
+  }
 
   const std::string& GetLatestSerialNumber() override {
     return latest_serial_number_;
@@ -241,6 +252,7 @@ class TestVariationsService : public VariationsService {
   std::string stored_geo_level_;
   bool delta_compressed_seed_ = false;
   bool gzip_compressed_seed_ = false;
+  bool runtime_simulation_called_ = false;
 };
 
 class TestVariationsServiceObserver : public VariationsService::Observer {
@@ -327,6 +339,14 @@ void AddOKResponseWithIM(
 
 }  // namespace
 
+BASE_FEATURE(kTestRegularFeature, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_RUNTIME_MUTABLE_FEATURE(kTestRuntimeFeatureA,
+                             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_RUNTIME_MUTABLE_FEATURE(kTestRuntimeFeatureB,
+                             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_RUNTIME_MUTABLE_FEATURE(kTestRuntimeFeatureC,
+                             base::FEATURE_ENABLED_BY_DEFAULT);
+
 class VariationsServiceTest : public ::testing::Test {
  public:
   VariationsServiceTest(const VariationsServiceTest&) = delete;
@@ -339,6 +359,13 @@ class VariationsServiceTest : public ::testing::Test {
             new metrics::TestEnabledStateProvider(false, false)) {
     metrics::MetricsStateManager::RegisterPrefs(prefs_.registry());
     VariationsService::RegisterPrefs(prefs_.registry());
+  }
+
+  void TearDown() override {
+    base::FeatureList::ClearFeatureCachedValueForTesting(kTestRuntimeFeatureA);
+    base::FeatureList::ClearFeatureCachedValueForTesting(kTestRuntimeFeatureB);
+    base::FeatureList::ClearFeatureCachedValueForTesting(kTestRuntimeFeatureC);
+    base::RuntimeFieldTrialOverrides::GetInstance()->ResetForTesting();
   }
 
   metrics::MetricsStateManager* GetMetricsStateManager(
@@ -1105,6 +1132,1110 @@ TEST_F(VariationsServiceTest, VariationsServiceStartsRequestOnNetworkChange) {
   const int final_request_count = service.request_count();
   // The request will be made once Chrome gets online.
   EXPECT_EQ(initial_request_count + 1, final_request_count);
+}
+
+VariationsSeed CreateTestRuntimeMutableSeed(
+    const std::string& study_name,
+    const std::string& experiment_name,
+    const std::vector<std::string>& enable_features,
+    const std::vector<std::string>& disable_features,
+    const std::string& default_experiment_name = "",
+    int probability_weight = 100) {
+  VariationsSeed seed;
+  Study* study = seed.add_study();
+  study->set_name(study_name);
+  study->set_default_experiment_name(default_experiment_name.empty()
+                                         ? experiment_name
+                                         : default_experiment_name);
+  study->set_runtime_mutable(true);
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
+  study->set_consistency(Study::PERMANENT);
+  Study_Experiment* experiment = study->add_experiment();
+  experiment->set_name(experiment_name);
+  experiment->set_probability_weight(probability_weight);
+
+  Study_Experiment_FeatureAssociation* feature_association =
+      experiment->mutable_feature_association();
+  for (const std::string& feature : enable_features) {
+    feature_association->add_enable_feature(feature);
+  }
+  for (const std::string& feature : disable_features) {
+    feature_association->add_disable_feature(feature);
+  }
+
+  return seed;
+}
+
+// Verifies that SimulateAndApplyRuntimeMutableChanges is called when a seed is
+// stored successfully.
+TEST_F(VariationsServiceTest,
+       SimulateAndApplyRuntimeMutableChanges_CalledOnSeedStore) {
+  VariationsService::EnableFetchForTesting();
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kVariationsRuntimeMutability);
+
+  // A successful seed store should trigger a runtime mutation simulation.
+  {
+    TestVariationsService service(
+        std::make_unique<web_resource::TestRequestAllowedNotifier>(
+            &prefs_, network_tracker_),
+        &prefs_, GetMetricsStateManager(), true);
+
+    EXPECT_FALSE(service.seed_stored());
+    EXPECT_FALSE(service.runtime_simulation_called());
+
+    service.test_url_loader_factory()->AddResponse(
+        service.interception_url().spec(), SerializeSeed(CreateTestSeed()));
+    service.set_intercepts_fetch(false);
+    service.DoActualFetch();
+
+    EXPECT_TRUE(service.seed_stored());
+    EXPECT_TRUE(service.runtime_simulation_called());
+  }
+
+  // But not a failed store.
+  {
+    TestVariationsService service(
+        std::make_unique<web_resource::TestRequestAllowedNotifier>(
+            &prefs_, network_tracker_),
+        &prefs_, GetMetricsStateManager(), true);
+
+    EXPECT_FALSE(service.seed_stored());
+    EXPECT_FALSE(service.runtime_simulation_called());
+
+    service.set_seed_stores_succeed(false);
+    service.test_url_loader_factory()->AddResponse(
+        service.interception_url().spec(), SerializeSeed(CreateTestSeed()));
+    service.set_intercepts_fetch(false);
+    service.DoActualFetch();
+
+    EXPECT_FALSE(service.runtime_simulation_called());
+  }
+}
+
+// Verifies that simulation is not applied to non-runtime mutable configs.
+TEST_F(VariationsServiceTest,
+       ApplyRuntimeMutableChanges_NonRuntimeMutableConfig) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureA,
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  {
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "MyStudy", "Group1", {},
+        {kTestRuntimeFeatureA.name, kTestRegularFeature.name});
+    seed.mutable_study(0)->set_runtime_mutable(false);
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectTotalCount(kApplyRuntimeMutableChangesResultMetric,
+                                      0);
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
+                     ->GetRuntimeOverride("MyStudy")
+                     .has_value());
+  }
+}
+
+// Verifies that null simulation results are not applied.
+TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_NotNull) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureA,
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  {
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "MyStudy", "Group1", {}, {kTestRuntimeFeatureA.name},
+        /*default_experiment_name=*/"", /*probability_weight=*/0);
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kSimulatedGroupIsNull, 1);
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
+                     ->GetRuntimeOverride("MyStudy")
+                     .has_value());
+  }
+}
+
+// Verifies that only killswitches can be applied.
+TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_StrictKillswitch) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureA,
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureB,
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  {
+    // Case 1: Only specifies features to enable.
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "MyStudy", "Group1", {kTestRuntimeFeatureA.name}, {});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kNotStrictKillswitch, 1);
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
+                     ->GetRuntimeOverride("MyStudy")
+                     .has_value());
+  }
+
+  {
+    // Case 2: Specifies a mix of features to enable and disable.
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "MyStudy", "Group1", {kTestRuntimeFeatureA.name},
+        {kTestRuntimeFeatureB.name});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kNotStrictKillswitch, 1);
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+    EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
+                     ->GetRuntimeOverride("MyStudy")
+                     .has_value());
+  }
+
+  {
+    // Case 3: Specifies no features.
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed =
+        CreateTestRuntimeMutableSeed("MyStudy", "Group1", {}, {});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kNotStrictKillswitch, 1);
+    EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
+                     ->GetRuntimeOverride("MyStudy")
+                     .has_value());
+  }
+
+  {
+    // Case 4: Specifies a feature to disable. This should work.
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "MyStudy", "Group1", {}, {kTestRuntimeFeatureA.name});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kSuccess, 1);
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    auto override =
+        base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+            "MyStudy");
+    ASSERT_TRUE(override.has_value());
+    EXPECT_EQ(override->group_name, "Group1");
+    // This is not overriding any specific trial since the feature was simply
+    // ENABLED_BY_DEFAULT and not controlled by any field trial.
+    EXPECT_FALSE(override->overridden_trial);
+  }
+}
+
+// Verifies that only starts_active killswitches can be applied.
+TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_NotStartsActive) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureA,
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  {
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "MyStudy", "Group1", {}, {kTestRuntimeFeatureA.name});
+    seed.mutable_study(0)->set_activation_type(Study::ACTIVATE_ON_QUERY);
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kNotStartsActive, 1);
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
+                     ->GetRuntimeOverride("MyStudy")
+                     .has_value());
+  }
+}
+
+// Verifies that only session consistency studies cannot be applied.
+TEST_F(VariationsServiceTest,
+       ApplyRuntimeMutableChanges_NotPermanentConsistency) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureA,
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  {
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "MyStudy", "Group1", {}, {kTestRuntimeFeatureA.name});
+    seed.mutable_study(0)->set_consistency(Study::SESSION);
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kNotPermanentConsistency, 1);
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
+                     ->GetRuntimeOverride("MyStudy")
+                     .has_value());
+  }
+}
+
+// Verifies the following scenario:
+// - Initially, kTestRuntimeFeatureA is disabled by Killswitch/Disabled50.
+// - A killswitch config "Killswitch/Disabled50" is received to killswitch the
+//   feature -- it should not apply because that config was already applied.
+// - A killswitch config "Killswitch/Disabled100" is received to killswitch the
+//   feature -- it should apply successfully.
+// - A killswitch config "Killswitch/Disabled100" is received to killswitch the
+//   feature -- it should not apply because that config was already applied.
+// - A killswitch config "Killswitch/Disabled50" is received to killswitch the
+//   feature -- it should apply successfully (despite the original trial being
+//   also "Killswitch/Disabled50").
+TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_AlreadyApplied) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureA,
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  base::FieldTrial* trial =
+      base::FieldTrialList::CreateFieldTrial("Killswitch", "Disabled50");
+  feature_list->RegisterFieldTrialOverride(
+      kTestRuntimeFeatureA.name, base::FeatureList::OVERRIDE_DISABLE_FEATURE,
+      trial);
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  {
+    // Try applying Killswitch/Disabled50 -- should not apply because it was
+    // already applied.
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "Killswitch", "Disabled50", {}, {kTestRuntimeFeatureA.name});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kAlreadyApplied, 1);
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
+                     ->GetRuntimeOverride("Killswitch")
+                     .has_value());
+  }
+
+  {
+    // Try applying Killswitch/Disabled100 -- should apply successfully (even
+    // though the feature is already disabled).
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "Killswitch", "Disabled100", {}, {kTestRuntimeFeatureA.name});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kSuccess, 1);
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    auto override =
+        base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+            "Killswitch");
+    ASSERT_TRUE(override.has_value());
+    EXPECT_EQ(override->group_name, "Disabled100");
+    EXPECT_EQ(override->overridden_trial, trial);
+  }
+
+  {
+    // Try applying Killswitch/Disabled100 again -- should not apply because it
+    // was already applied.
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "Killswitch", "Disabled100", {}, {kTestRuntimeFeatureA.name});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kAlreadyApplied, 1);
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    // Override should be unchanged.
+    auto override =
+        base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+            "Killswitch");
+    ASSERT_TRUE(override.has_value());
+    EXPECT_EQ(override->group_name, "Disabled100");
+    EXPECT_EQ(override->overridden_trial, trial);
+  }
+
+  {
+    // Try applying Killswitch/Disabled50 -- should apply successfully (even
+    // though the feature is already disabled). Note also that the original
+    // trial was also Killswitch/Disabled50, but it was overridden, so it is not
+    // considered "currently applied" anymore.
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "Killswitch", "Disabled50", {}, {kTestRuntimeFeatureA.name});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kSuccess, 1);
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    auto override =
+        base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+            "Killswitch");
+    ASSERT_TRUE(override.has_value());
+    EXPECT_EQ(override->group_name, "Disabled50");
+    EXPECT_EQ(override->overridden_trial, trial);
+  }
+}
+
+// Verifies that non-runtime mutable features should not work.
+TEST_F(VariationsServiceTest,
+       ApplyRuntimeMutableChanges_NonRuntimeMutableFeature) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureA,
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureB,
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  {
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "MyStudy", "Group1", {},
+        {kTestRuntimeFeatureA.name, kTestRegularFeature.name});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kNonRuntimeMutableFeature, 1);
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRegularFeature));
+    EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
+                     ->GetRuntimeOverride("MyStudy")
+                     .has_value());
+  }
+}
+
+// Verifies that if a feature was overridden by a command line flag, runtime
+// mutable configs won't be applied.
+TEST_F(VariationsServiceTest,
+       ApplyRuntimeMutableChanges_FeatureOverriddenFromCommandLine) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureA,
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureB,
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  feature_list->InitFromCommandLine(kTestRuntimeFeatureB.name, "");
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  {
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "MyStudy", "Group1", {},
+        {kTestRuntimeFeatureA.name, kTestRuntimeFeatureB.name});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kFeatureOverriddenFromCommandLine, 1);
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+    EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
+                     ->GetRuntimeOverride("MyStudy")
+                     .has_value());
+  }
+}
+
+// Verifies the following scenario:
+// 1. kTestRuntimeFeatureA is enabled by Trial1, kTestRuntimeFeatureB is enabled
+//    by Trial2.
+// 2. A killswitch config is received to killswitch both features -- it should
+//    not apply because they are controlled by different trials.
+// 3. A killswitch config is received to killswitch only kTestRuntimeFeatureA --
+//    it should apply successfully.
+// 4. A killswitch config is received to killswitch both features -- it should
+//    not apply because they are controlled by different trials.
+// 5. A killswitch config is received to killswitch only kTestRuntimeFeatureB --
+//    it should apply successfully.
+// 6. A killswitch config is received to killswitch both features -- it should
+//    not apply because they are controlled by different trials.
+TEST_F(VariationsServiceTest,
+       ApplyRuntimeMutableChanges_FeaturesControlledByDifferentTrials) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureA,
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureB,
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  base::FieldTrial* trial1 =
+      base::FieldTrialList::CreateFieldTrial("Trial1", "Group1");
+  base::FieldTrial* trial2 =
+      base::FieldTrialList::CreateFieldTrial("Trial2", "Group1");
+  feature_list->RegisterFieldTrialOverride(
+      kTestRuntimeFeatureA.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
+      trial1);
+  feature_list->RegisterFieldTrialOverride(
+      kTestRuntimeFeatureB.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
+      trial2);
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  {
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "KillswitchAAndB", "Disabled", {},
+        {kTestRuntimeFeatureA.name, kTestRuntimeFeatureB.name});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kFeaturesNotControlledBySameTrial, 1);
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+    EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
+                     ->GetRuntimeOverride("KillswitchAAndB")
+                     .has_value());
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "KillswitchA", "Disabled", {}, {kTestRuntimeFeatureA.name});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kSuccess, 1);
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+    auto override =
+        base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+            "KillswitchA");
+    ASSERT_TRUE(override.has_value());
+    EXPECT_EQ(override->group_name, "Disabled");
+    EXPECT_EQ(override->overridden_trial, trial1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "KillswitchAAndB", "Disabled", {},
+        {kTestRuntimeFeatureA.name, kTestRuntimeFeatureB.name});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kFeaturesNotControlledBySameTrial, 1);
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+    EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
+                     ->GetRuntimeOverride("KillswitchAAndB")
+                     .has_value());
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "KillswitchB", "Disabled", {}, {kTestRuntimeFeatureB.name});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kSuccess, 1);
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+    auto override =
+        base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+            "KillswitchB");
+    ASSERT_TRUE(override.has_value());
+    EXPECT_EQ(override->group_name, "Disabled");
+    EXPECT_EQ(override->overridden_trial, trial2);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "KillswitchAAndB", "Disabled", {},
+        {kTestRuntimeFeatureA.name, kTestRuntimeFeatureB.name});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kFeaturesNotControlledBySameTrial, 1);
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+    EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
+                     ->GetRuntimeOverride("KillswitchAAndB")
+                     .has_value());
+  }
+}
+
+// Verifies the following scenario:
+// 1. kTestRuntimeFeatureA is enabled by Trial1, kTestRuntimeFeatureB is not
+//    enabled by any trial (but it is ENABLED_BY_DEFAULT).
+// 2. A killswitch config is received to killswitch both features -- it should
+//    not apply because they are controlled by different trials.
+// 3. A killswitch config is received to killswitch only kTestRuntimeFeatureA --
+//    it should apply successfully.
+// 4. A killswitch config is received to killswitch both features -- it should
+//    not apply because they are controlled by different trials.
+TEST_F(VariationsServiceTest,
+       ApplyRuntimeMutableChanges_OneFeatureControlledByTrial) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureA,
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureB,
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  base::FieldTrial* trial =
+      base::FieldTrialList::CreateFieldTrial("Trial1", "Group1");
+  feature_list->RegisterFieldTrialOverride(
+      kTestRuntimeFeatureA.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
+      trial);
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  {
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "KillswitchAAndB", "Disabled", {},
+        {kTestRuntimeFeatureA.name, kTestRuntimeFeatureB.name});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kFeaturesNotControlledBySameTrial, 1);
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+    EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
+                     ->GetRuntimeOverride("KillswitchAAndB")
+                     .has_value());
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "KillswitchA", "Disabled", {}, {kTestRuntimeFeatureA.name});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kSuccess, 1);
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+    auto override =
+        base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+            "KillswitchA");
+    ASSERT_TRUE(override.has_value());
+    EXPECT_EQ(override->group_name, "Disabled");
+    EXPECT_EQ(override->overridden_trial, trial);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "KillswitchAAndB", "Disabled", {},
+        {kTestRuntimeFeatureA.name, kTestRuntimeFeatureB.name});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kFeaturesNotControlledBySameTrial, 1);
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+    EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
+                     ->GetRuntimeOverride("KillswitchAAndB")
+                     .has_value());
+  }
+}
+
+// Verifies that if a killswitch config killswitches FeatureA, but the trial
+// controlling FeatureA also controls other features, then the killswitch is not
+// applied.
+TEST_F(VariationsServiceTest,
+       ApplyRuntimeMutableChanges_ControllingTrialHasOtherFeatures) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureA,
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureB,
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  base::FieldTrial* trial =
+      base::FieldTrialList::CreateFieldTrial("Trial1", "Group1");
+  feature_list->RegisterFieldTrialOverride(
+      kTestRuntimeFeatureA.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
+      trial);
+  feature_list->RegisterFieldTrialOverride(
+      kTestRuntimeFeatureB.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
+      trial);
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  {
+    // Killswitch only A -- should not apply since the trial for A ("Trial1")
+    // also controls B.
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "KillswitchA", "Disabled", {}, {kTestRuntimeFeatureA.name});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kControllingTrialHasOtherFeatures, 1);
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+    EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
+                     ->GetRuntimeOverride("KillswitchA")
+                     .has_value());
+  }
+
+  {
+    // Killswitch both A and B -- should apply.
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "KillswitchAAndB", "Disabled", {},
+        {kTestRuntimeFeatureB.name, kTestRuntimeFeatureA.name});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kSuccess, 1);
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+    auto override =
+        base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+            "KillswitchAAndB");
+    ASSERT_TRUE(override.has_value());
+    EXPECT_EQ(override->group_name, "Disabled");
+    EXPECT_EQ(override->overridden_trial, trial);
+  }
+
+  {
+    // Try kill switching only A again -- should not apply since the override
+    // trial for A ("KillswitchAAndB") also controls B.
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "KillswitchA", "Disable", {}, {kTestRuntimeFeatureA.name});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kControllingTrialHasOtherFeatures, 1);
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+    EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
+                     ->GetRuntimeOverride("KillswitchA")
+                     .has_value());
+    // Previous override is still active.
+    auto override =
+        base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+            "KillswitchAAndB");
+    ASSERT_TRUE(override.has_value());
+    EXPECT_EQ(override->group_name, "Disabled");
+    EXPECT_EQ(override->overridden_trial, trial);
+  }
+}
+
+// Verifies that checking associated features for a controlling trial does not
+// crash when FeatureList overrides contains features with null field trials
+// (e.g., features overridden from command line or via extra feature overrides).
+// This was a previously buggy behaviour.
+TEST_F(VariationsServiceTest,
+       ApplyRuntimeMutableChanges_NullFieldTrialInOverrides) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  // Register an extra feature override without an associated FieldTrial
+  // (`field_trial` pointer inside `overrides_` will be null).
+  feature_list->RegisterExtraFeatureOverrides(
+      {{kTestRegularFeature, base::FeatureList::OVERRIDE_DISABLE_FEATURE}});
+  // Enable runtime mutability for `kTestRuntimeFeatureA` controlled by
+  // "Trial1".
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureA,
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  base::FieldTrial* trial =
+      base::FieldTrialList::CreateFieldTrial("Trial1", "Group1");
+  feature_list->RegisterFieldTrialOverride(
+      kTestRuntimeFeatureA.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
+      trial);
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  {
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "KillswitchA", "Disabled", {}, {kTestRuntimeFeatureA.name});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kSuccess, 1);
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    auto override_info =
+        base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+            "KillswitchA");
+    ASSERT_TRUE(override_info.has_value());
+    EXPECT_EQ(override_info->group_name, "Disabled");
+    EXPECT_EQ(override_info->overridden_trial, trial);
+  }
+}
+
+// Verifies that if a killswitch config disables features that are all not
+// associated with any trial, then the killswitch can be applied. However, from
+// then on, only configs that disable the same set of features will be applied.
+TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_FeaturesWithNoTrials) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureA,
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureB,
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureC,
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  {
+    // Killswitch A and B -- should apply since they are both not controlled by
+    // any trial.
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "KillswitchAAndB", "Disabled50", {},
+        {kTestRuntimeFeatureA.name, kTestRuntimeFeatureB.name});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kSuccess, 1);
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureC));
+    auto override =
+        base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+            "KillswitchAAndB");
+    ASSERT_TRUE(override.has_value());
+    EXPECT_EQ(override->group_name, "Disabled50");
+    EXPECT_EQ(override->overridden_trial, nullptr);
+  }
+
+  {
+    // Killswitch A, B, and C. Had this been the first killswitch config
+    // received, it would have been applied. But since the previous config
+    // (killswitch A and B) was already applied, this killswitch is rejected
+    // as not all features are controlled by the same trial (A and B are
+    // controlled by KillswitchAAndB, but C is not).
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "KillswitchABC", "Disabled", {},
+        {kTestRuntimeFeatureA.name, kTestRuntimeFeatureB.name,
+         kTestRuntimeFeatureC.name});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kFeaturesNotControlledBySameTrial, 1);
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureC));
+    EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
+                     ->GetRuntimeOverride("KillswitchABC")
+                     .has_value());
+    // Previous override is still active.
+    auto override =
+        base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+            "KillswitchAAndB");
+    ASSERT_TRUE(override.has_value());
+    EXPECT_EQ(override->group_name, "Disabled50");
+    EXPECT_EQ(override->overridden_trial, nullptr);
+  }
+
+  {
+    // Killswitch only A. Again, had this been the first killswitch config
+    // received, it would have been applied. But since the previous config
+    // (killswitch A and B) was already applied, this killswitch is rejected
+    // as the controlling override trial (KillswitchAAndB) also controls
+    // FeatureB.
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "KillswitchA", "DisableA", {}, {kTestRuntimeFeatureA.name});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kControllingTrialHasOtherFeatures, 1);
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureC));
+    EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
+                     ->GetRuntimeOverride("KillswitchA")
+                     .has_value());
+    // Previous override is still active.
+    auto override =
+        base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+            "KillswitchAAndB");
+    ASSERT_TRUE(override.has_value());
+    EXPECT_EQ(override->group_name, "Disabled50");
+    EXPECT_EQ(override->overridden_trial, nullptr);
+  }
+
+  {
+    // A new killswitch config is received that only disables features A and B.
+    // This should be applied successfully as it's the same set of features.
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "KillswitchAAndB", "Disabled100", {},
+        {kTestRuntimeFeatureA.name, kTestRuntimeFeatureB.name});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kSuccess, 1);
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureC));
+    auto override =
+        base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+            "KillswitchAAndB");
+    ASSERT_TRUE(override.has_value());
+    EXPECT_EQ(override->group_name, "Disabled100");
+    EXPECT_EQ(override->overridden_trial, nullptr);
+  }
+}
+
+// Verifies that a killswitch config that would result in a trial name collision
+// (either with an existing FieldTrial or a runtime mutable trial) is not
+// applied. However, if that colliding trial is about to be overridden by the
+// killswitch, then the killswitch can be applied.
+TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_TrialNameCollision) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureA,
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureB,
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  base::FieldTrial* trial1 =
+      base::FieldTrialList::CreateFieldTrial("Trial1", "Group1");
+  feature_list->RegisterFieldTrialOverride(
+      kTestRuntimeFeatureA.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
+      trial1);
+  base::FieldTrial* trial2 =
+      base::FieldTrialList::CreateFieldTrial("Trial2", "Group2");
+  feature_list->RegisterFieldTrialOverride(
+      kTestRuntimeFeatureB.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
+      trial2);
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  {
+    // Killswitch FeatureA with a runtime override name "Trial2". This should
+    // fail since there already exists a separate "Trial2" (which controls
+    // FeatureB).
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "Trial2", "Group3", {}, {kTestRuntimeFeatureA.name});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kTrialNameCollision, 1);
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+    EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
+                     ->GetRuntimeOverride("Trial2")
+                     .has_value());
+  }
+
+  {
+    // Killswitch FeatureA with a runtime override name "Trial1". Although there
+    // already exists a "Trial1" (which controls FeatureA), the killswitch is
+    // still applied as it is overriding that exact trial and hence does not
+    // introduce a name collision.
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "Trial1", "Group3", {}, {kTestRuntimeFeatureA.name});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kSuccess, 1);
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+    auto override =
+        base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+            "Trial1");
+    ASSERT_TRUE(override.has_value());
+    EXPECT_EQ(override->group_name, "Group3");
+    EXPECT_EQ(override->overridden_trial, trial1);
+  }
+
+  {
+    // Killswitch FeatureA with a runtime override name "Killswitch". This
+    // should apply as there are no trials at all with the name "Killswitch".
+    // It should also replace the "Trial1" override.
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "Killswitch", "Disabled50", {}, {kTestRuntimeFeatureA.name});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kSuccess, 1);
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+    EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
+                     ->GetRuntimeOverride("Trial1")
+                     .has_value());
+    auto override =
+        base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+            "Killswitch");
+    ASSERT_TRUE(override.has_value());
+    EXPECT_EQ(override->group_name, "Disabled50");
+    EXPECT_EQ(override->overridden_trial, trial1);
+  }
+
+  {
+    // Killswitch FeatureB with a runtime override name "Killswitch". This
+    // should not apply as there already exists a runtime override with the
+    // name "Killswitch" (which controls FeatureA).
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "Killswitch", "DisableB", {}, {kTestRuntimeFeatureB.name});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kTrialNameCollision, 1);
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+    // The previously existing override should be unchanged.
+    auto override =
+        base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+            "Killswitch");
+    ASSERT_TRUE(override.has_value());
+    EXPECT_EQ(override->group_name, "Disabled50");
+    EXPECT_EQ(override->overridden_trial, trial1);
+  }
+
+  {
+    // Killswitch FeatureA with a runtime override name "Killswitch". Although
+    // there already exists a "Killswitch" (which controls FeatureA), the
+    // killswitch is still applied as it is overriding that exact override and
+    // hence does not introduce a name collision.
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "Killswitch", "Disabled100", {}, {kTestRuntimeFeatureA.name});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kSuccess, 1);
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+    auto override =
+        base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+            "Killswitch");
+    ASSERT_TRUE(override.has_value());
+    EXPECT_EQ(override->group_name, "Disabled100");
+    EXPECT_EQ(override->overridden_trial, trial1);
+  }
+
+  {
+    // Finally, killswitch FeatureA with a runtime override name "Trial1", which
+    // is the original name of the trial that disabled FeatureA. For the same
+    // reasons as earlier, this should be applied successfully. It should also
+    // replace the "Killswitch" override.
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "Trial1", "Disabled", {}, {kTestRuntimeFeatureA.name});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kSuccess, 1);
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+    EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
+                     ->GetRuntimeOverride("Killswitch")
+                     .has_value());
+    auto override =
+        base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+            "Trial1");
+    ASSERT_TRUE(override.has_value());
+    EXPECT_EQ(override->group_name, "Disabled");
+    EXPECT_EQ(override->overridden_trial, trial1);
+  }
 }
 
 // TODO(isherman): Add an integration test for saving and loading a safe seed,

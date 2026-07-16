@@ -32,6 +32,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/pass_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -46,6 +47,15 @@ class RuntimeMutableFeaturesHandlerBase {
   static PassKey CreatePassKeyForTesting() { return PassKey(); }
 };
 }  // namespace metrics
+
+namespace variations {
+class VariationsService {
+ public:
+  static base::PassKey<VariationsService> CreatePassKeyForTesting() {
+    return base::PassKey<VariationsService>();
+  }
+};
+}  // namespace variations
 
 namespace base {
 
@@ -1443,7 +1453,8 @@ TEST_F(FeatureListTest, RuntimeMutability_CommandLineOverridePrecedence) {
   // Updating the state dynamically should have no effect on command line
   // overridden features.
   raw_list_ptr->UpdateRuntimeMutableFeatureState(
-      "TrialX", "GroupX", kRuntimeMutableFeature.name,
+      variations::VariationsService::CreatePassKeyForTesting(), "TrialX",
+      "GroupX", kRuntimeMutableFeature.name,
       FeatureList::OVERRIDE_DISABLE_FEATURE);
 
   // Verify that the state is unchanged and the callback is not invoked.
@@ -1478,7 +1489,8 @@ TEST_F(FeatureListTest, RuntimeMutability_UpdateRuntimeMutableFeatureState) {
 
   // Now update the state to disabled (the only supported scenario for V0)
   FeatureList::GetInstance()->UpdateRuntimeMutableFeatureState(
-      "TrialA", "GroupA", kRuntimeMutableFeature.name,
+      variations::VariationsService::CreatePassKeyForTesting(), "TrialA",
+      "GroupA", kRuntimeMutableFeature.name,
       FeatureList::OVERRIDE_DISABLE_FEATURE);
 
   EXPECT_EQ(1, callback_calls);
@@ -1493,7 +1505,8 @@ TEST_F(FeatureListTest, RuntimeMutability_UpdateRuntimeMutableFeatureState) {
 
   // Attempting to re-enable it should have no effect.
   FeatureList::GetInstance()->UpdateRuntimeMutableFeatureState(
-      "TrialB", "GroupB", kRuntimeMutableFeature.name,
+      variations::VariationsService::CreatePassKeyForTesting(), "TrialB",
+      "GroupB", kRuntimeMutableFeature.name,
       FeatureList::OVERRIDE_ENABLE_FEATURE);
 
   // The initial enabling of runtime mutability is logged as a success.
@@ -1655,7 +1668,8 @@ TEST_F(FeatureListTest, RuntimeMutability_FeatureParamBypassCache) {
 
   // Update parameters/configuration.
   base::FeatureList::GetInstance()->UpdateRuntimeMutableFeatureState(
-      kTrialName, kGroupName, kRuntimeMutableFeature.name,
+      variations::VariationsService::CreatePassKeyForTesting(), kTrialName,
+      kGroupName, kRuntimeMutableFeature.name,
       FeatureList::OVERRIDE_DISABLE_FEATURE);
 
   // The runtime overridden state (disabled) and default param value should be
@@ -1694,11 +1708,11 @@ TEST_F(FeatureListTest, RuntimeMutability_GetRuntimeMutableFeatureState) {
   EXPECT_EQ(&kRuntimeMutableFeature, &it->second.feature.get());
   EXPECT_EQ(FeatureList::OVERRIDE_USE_DEFAULT, it->second.override_state);
   EXPECT_TRUE(it->second.field_trial_name.empty());
-  EXPECT_TRUE(it->second.group_name.empty());
 
   // Now update the state.
   FeatureList::GetInstance()->UpdateRuntimeMutableFeatureState(
-      "TrialA", "GroupA", kRuntimeMutableFeature.name,
+      variations::VariationsService::CreatePassKeyForTesting(), "TrialA",
+      "GroupA", kRuntimeMutableFeature.name,
       FeatureList::OVERRIDE_DISABLE_FEATURE);
 
   // Verify that the map reflects the updated state.
@@ -1708,7 +1722,6 @@ TEST_F(FeatureListTest, RuntimeMutability_GetRuntimeMutableFeatureState) {
   ASSERT_NE(it, states2.end());
   EXPECT_EQ(FeatureList::OVERRIDE_DISABLE_FEATURE, it->second.override_state);
   EXPECT_EQ("TrialA", it->second.field_trial_name);
-  EXPECT_EQ("GroupA", it->second.group_name);
 }
 
 TEST_F(FeatureListTest, RuntimeMutability_GetOverrideStateWithoutActivation) {

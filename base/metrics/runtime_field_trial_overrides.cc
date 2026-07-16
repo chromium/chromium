@@ -78,6 +78,28 @@ RuntimeFieldTrialOverrides::GetRuntimeOverrides() const {
   return overrides_;
 }
 
+std::optional<RuntimeFieldTrialOverrides::RuntimeOverrideInfo>
+RuntimeFieldTrialOverrides::GetRuntimeOverride(
+    std::string_view trial_name) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto it = overrides_.find(trial_name);
+  if (it == overrides_.end()) {
+    return std::nullopt;
+  }
+  return it->second;
+}
+
+bool RuntimeFieldTrialOverrides::IsFieldTrialOverridden(
+    const FieldTrial& trial) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (const auto& [trial_name, override_info] : overrides_) {
+    if (override_info.overridden_trial == &trial) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void RuntimeFieldTrialOverrides::AddObserver(Observer* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.AddObserver(observer);

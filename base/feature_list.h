@@ -29,6 +29,10 @@
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 
+namespace variations {
+class VariationsService;
+}  // namespace variations
+
 namespace metrics {
 class RuntimeMutableFeaturesHandlerBase;
 }
@@ -269,13 +273,23 @@ class BASE_EXPORT FeatureList {
   //
   // Returns true if the feature state was updated successfully, false
   // otherwise.
-  //
-  // TODO: http://crbug.com/482451383 - Add a base::PassKey to this method to
-  // ensure it is only called by the variations framework.
-  bool UpdateRuntimeMutableFeatureState(std::string_view field_trial_name,
-                                        std::string_view group_name,
-                                        std::string_view feature_name,
-                                        OverrideState override_state);
+  bool UpdateRuntimeMutableFeatureState(
+      base::PassKey<variations::VariationsService>,
+      std::string_view field_trial_name,
+      std::string_view group_name,
+      std::string_view feature_name,
+      OverrideState override_state);
+
+  // Returns whether the feature with the given `feature_name` has runtime
+  // mutability enabled.
+  bool HasRuntimeMutabilityEnabledByFeatureName(
+      std::string_view feature_name) const;
+
+  // Returns the name of the runtime FieldTrial override associated with the
+  // given runtime-mutability-enabled `feature_name`. Returns an empty string
+  // if there is currently no override.
+  std::string_view GetAssociatedRuntimeFieldTrialOverrideByFeatureName(
+      std::string_view feature_name) const;
 
   // Adds extra overrides (not associated with a field trial). Should be called
   // before SetInstance().
@@ -314,7 +328,9 @@ class BASE_EXPORT FeatureList {
                                       std::string* disable_overrides) const;
 
   // Returns the field trial associated with the given feature |name|. Used for
-  // getting the FieldTrial without requiring a struct Feature.
+  // getting the FieldTrial without requiring a struct Feature. For
+  // runtime mutable features, this does not return the override trial, but
+  // rather the "original" trial associated with the feature.
   base::FieldTrial* GetAssociatedFieldTrialByFeatureName(
       std::string_view name) const;
 
@@ -493,6 +509,11 @@ class BASE_EXPORT FeatureList {
 
   // Allow Accessor to access GetOverrideStateByFeatureName().
   friend class Accessor;
+  // Allow VariationsService to access `runtime_mutable_overrides_` and
+  // `overrides_` so that it can find all features associated with a trial.
+  // TODO(crbug.com/482450632): Remove this once we maintain a map of trials to
+  // associated features.
+  friend class variations::VariationsService;
 
   struct OverrideEntry {
     // The overridden enable (on/off) state of the feature.

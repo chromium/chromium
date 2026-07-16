@@ -5,6 +5,7 @@
 #ifndef BASE_METRICS_RUNTIME_FIELD_TRIAL_OVERRIDES_H_
 #define BASE_METRICS_RUNTIME_FIELD_TRIAL_OVERRIDES_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -107,6 +108,15 @@ class BASE_EXPORT RuntimeFieldTrialOverrides {
   // Returns all applied runtime overrides. The returned map should not be
   // accessed other than on the main sequence.
   const flat_map<std::string, RuntimeOverrideInfo>& GetRuntimeOverrides() const;
+
+  // Returns the registered runtime trial override with name `trial_name`, if
+  // any.
+  std::optional<RuntimeOverrideInfo> GetRuntimeOverride(
+      std::string_view trial_name) const;
+
+  // Returns true if the given `trial` is currently being overridden by a
+  // runtime FieldTrial override.
+  bool IsFieldTrialOverridden(const FieldTrial& trial) const;
 
   // Adds/removes an observer to be notified when a runtime override is
   // applied. Observers are not notified of existing overrides when they are

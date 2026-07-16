@@ -74,6 +74,69 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Stable"/>
 </enum>
 
+<!-- LINT.IfChange(VariationsApplyRuntimeMutableChangesResult) -->
+
+<enum name="VariationsApplyRuntimeMutableChangesResult">
+  <int value="0" label="Unknown">Reserved value. This should not be used.</int>
+  <int value="1" label="Success">
+    A runtime-update was successfully applied.
+  </int>
+  <int value="2" label="Simulated Group Is Null">
+    The simulated trial is null, e.g. if the study had no randomized experiments
+    at all.
+  </int>
+  <int value="3" label="Simulated Group Not Found">
+    The selected group does not exist in the given seed (e.g., if the group was
+    forced from the command line).
+  </int>
+  <int value="4" label="Not Strict Killswitch">
+    The experiment is not a strict killswitch (e.g., it enables features or does
+    not disable any).
+  </int>
+  <int value="5" label="Not starts_active">
+    The study is not activated on startup (starts_active).
+  </int>
+  <int value="6" label="Not permanent consistency">
+    The study does not have permanent consistency.
+  </int>
+  <int value="7" label="Already Applied">
+    The runtime mutable experiment has already been applied.
+  </int>
+  <int value="8" label="Non-Runtime Mutable Feature">
+    The experiment references a feature that does not have runtime mutability
+    enabled.
+  </int>
+  <int value="9" label="Feature Overridden From Command Line">
+    The experiment references a feature that is overridden from the command
+    line.
+  </int>
+  <int value="10" label="Features Not Controlled By Same Trial">
+    The features specified are currently controlled by different trials.
+  </int>
+  <int value="11" label="Controlling Trial Has Other Features">
+    The trial currently controlling the features specified also specifies other
+    features not in the runtime mutable experiment.
+  </int>
+  <int value="12" label="Trial Name Collision">
+    A trial or runtime override with the same name already exists, and is not
+    being replaced.
+  </int>
+  <int value="13" label="Controlling Trial Not Found">
+    The controlling trial could not be found.
+  </int>
+  <int value="14" label="Update Feature State Failed">
+    Updating the feature state failed.
+  </int>
+  <int value="15" label="Apply Runtime FieldTrial Override Failed">
+    Applying the FieldTrial runtime override failed.
+  </int>
+  <int value="16" label="Validation Failed">
+    Validation of the applied state failed.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//components/variations/metrics.h:VariationsApplyRuntimeMutableChangesResult) -->
+
 <enum name="VariationsDeltaCompression">
   <int value="0"
       label="Delta compression flag set and received delta compressed data."/>

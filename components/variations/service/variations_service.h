@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/feature.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -20,6 +21,8 @@
 #include "base/types/pass_key.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/entropy_provider.h"
+#include "components/variations/metrics.h"
+#include "components/variations/processed_study.h"
 #include "components/variations/service/safe_seed_manager.h"
 #include "components/variations/service/variations_field_trial_creator.h"
 #include "components/variations/service/variations_service_client.h"
@@ -63,6 +66,10 @@ namespace variations {
 #if BUILDFLAG(IS_CHROMEOS)
 class DeviceVariationsRestrictionByPolicyApplicator;
 #endif
+
+// When enabled, runtime mutable field trials from the periodically fetched
+// seeds will be applied to the current session.
+BASE_DECLARE_FEATURE(kVariationsRuntimeMutability);
 
 // Used to (a) set up field trials based on stored variations seed data and (b)
 // fetch new seed data from the variations server.
@@ -354,6 +361,12 @@ class VariationsService
   // date and client fetch time.
   void RecordSuccessfulFetchSeedNotModified(base::Time response_date);
 
+  // Performs a simulation of the given `seed` to find any runtime mutable
+  // changes that need to be applied to the current session, and apply them.
+  // Virtual and protected for testing.
+  virtual void SimulateAndApplyRuntimeMutableChanges(
+      const VariationsSeed& seed);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest, Observer);
   FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest, SeedStoredWhenOKStatus);
@@ -403,6 +416,12 @@ class VariationsService
   // and logs the simulation results as histograms.
   void PerformSimulationWithVersion(const VariationsSeed& seed,
                                     const base::Version& version);
+
+  // Applies the runtime mutable changes of the `trial`'s selected group to the
+  // current session.
+  ApplyRuntimeMutableChangesResult ApplyRuntimeMutableChanges(
+      base::FieldTrial* simulated_trial,
+      const ProcessedStudy& processed_study);
 
   // Encrypts a string using the encrypted_messages component, input is passed
   // in as |plaintext|, outputs a serialized EncryptedMessage protobuf as

@@ -10,23 +10,28 @@
 #include <algorithm>
 #include <optional>
 #include <string_view>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
+#include "base/feature_list_internal.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/runtime_field_trial_overrides.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/pass_key.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "base/version_info/version_info.h"
@@ -42,10 +47,13 @@
 #include "components/prefs/pref_service.h"
 #include "components/variations/field_trial_internals_utils.h"
 #include "components/variations/pref_names.h"
+#include "components/variations/proto/study.pb.h"
 #include "components/variations/proto/variations_seed.pb.h"
 #include "components/variations/seed_response.h"
 #include "components/variations/sticky_activation_manager.h"
+#include "components/variations/study_filtering.h"
 #include "components/variations/variations_safe_seed_store_local_state.h"
+#include "components/variations/variations_seed_processor.h"
 #include "components/variations/variations_seed_simulator.h"
 #include "components/variations/variations_switches.h"
 #include "components/variations/variations_url_constants.h"
@@ -260,7 +268,33 @@ std::unique_ptr<SeedResponse> MaybeImportFirstRunSeed(
   return nullptr;
 }
 
+// Checks if the given runtime mutable `study`/`experiment` has already been
+// applied.
+// NOTE: This is just checking if the names match. If, say, the study's
+// variation IDs were updated without updating the group name, this would
+// return that the study/experiment has already been applied.
+bool RuntimeMutableExperimentAlreadyApplied(
+    const Study& study,
+    const Study::Experiment& experiment) {
+  auto* runtime_field_trial_overrides =
+      base::RuntimeFieldTrialOverrides::GetInstance();
+  auto runtime_override_info =
+      runtime_field_trial_overrides->GetRuntimeOverride(study.name());
+  base::FieldTrial* existing_trial = base::FieldTrialList::Find(study.name());
+  return
+      // Check if the override has been applied.
+      (runtime_override_info.has_value() &&
+       runtime_override_info->group_name == experiment.name()) ||
+      // It's possible it wasn't applied as a runtime override but simply as
+      // a regular FieldTrial at startup.
+      (existing_trial &&
+       existing_trial->GetGroupNameWithoutActivation() == experiment.name() &&
+       !runtime_field_trial_overrides->IsFieldTrialOverridden(*existing_trial));
+}
+
 }  // namespace
+
+BASE_FEATURE(kVariationsRuntimeMutability, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS)
 // This is a utility which syncs the policy-managed value of
@@ -750,9 +784,56 @@ void VariationsService::OnSeedStoreResult(bool is_delta_compressed,
     // seed.
     RecordSuccessfulFetchNewSeed();
 
-    // Now, do simulation to determine if there are any kill-switches that were
-    // activated by this seed.
+    // Do a simulation to determine if there are any kill-switches that would be
+    // activated by this seed on the next session.
     PerformSimulationWithVersion(seed, client_->GetVersionForSimulation());
+
+    // Do a simulation to determine and apply any runtime mutable changes to the
+    // the current session.
+    // TODO(crbug.com/482450632): See if there is logic that can be consolidated
+    // between this and `PerformSimulationWithVersion()` above (which is used
+    // for badging killswitches).
+    if (base::FeatureList::IsEnabled(kVariationsRuntimeMutability)) {
+      SimulateAndApplyRuntimeMutableChanges(seed);
+    }
+  }
+}
+
+void VariationsService::SimulateAndApplyRuntimeMutableChanges(
+    const VariationsSeed& seed) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // TODO(crbug.com/482450632): Consider doing the heavy work in the
+  // background.
+
+  const base::Version& current_version = version_info::GetVersion();
+  if (!current_version.IsValid()) {
+    return;
+  }
+
+  std::unique_ptr<ClientFilterableState> client_state =
+      field_trial_creator_.GetClientFilterableStateForVersion(current_version);
+  VariationsLayers layers(seed, *entropy_providers_);
+  auto filtered_studies = FilterAndValidateStudies(seed, *client_state, layers);
+
+  for (const ProcessedStudy& study : filtered_studies) {
+    // Only consider studies that are explicitly declared as runtime mutable, as
+    // it is an opt-in functionality.
+    if (!study.study()->runtime_mutable()) {
+      continue;
+    }
+
+    // Simulate group assignment for the study, and apply it if necessary.
+    scoped_refptr<base::FieldTrial> simulated_trial =
+        VariationsSeedProcessor(field_trial_creator_.sticky_activation_manager(
+                                    base::PassKey<VariationsService>()))
+            .CreateTrialFromStudy(
+                base::PassKey<VariationsService>(), study, *entropy_providers_,
+                layers, base::FeatureList::GetInstance(), /*simulated=*/true);
+    ApplyRuntimeMutableChangesResult result =
+        ApplyRuntimeMutableChanges(simulated_trial.get(), study);
+    base::UmaHistogramEnumeration(
+        "Variations.ApplyRuntimeMutableChanges.Result", result);
   }
 }
 
@@ -975,6 +1056,274 @@ void VariationsService::PerformSimulationWithVersion(
   auto result = SimulateSeedStudies(seed, *client_state, *entropy_providers_);
 
   NotifyObservers(result);
+}
+
+ApplyRuntimeMutableChangesResult VariationsService::ApplyRuntimeMutableChanges(
+    base::FieldTrial* simulated_trial,
+    const ProcessedStudy& processed_study) {
+  using enum ApplyRuntimeMutableChangesResult;
+
+  if (!simulated_trial) {
+    // The simulated trial may be null, e.g. if the study had no randomized
+    // experiments at all.
+    return kSimulatedGroupIsNull;
+  }
+
+  // The selected group may not actually exist in the given seed (e.g. if the
+  // group was forced by the command line).
+  const std::string& group_name =
+      simulated_trial->GetGroupNameWithoutActivation();
+  int experiment_index = processed_study.GetExperimentIndexByName(group_name);
+  if (experiment_index == -1) {
+    return kSimulatedGroupNotFound;
+  }
+
+  const Study& study = *processed_study.study();
+  const Study::Experiment& experiment = study.experiment(experiment_index);
+
+  // For now, only allow killswitches.
+  if (experiment.feature_association().enable_feature_size() > 0 ||
+      experiment.feature_association().disable_feature_size() == 0) {
+    return kNotStrictKillswitch;
+  }
+
+  // For now, only allow ACTIVATE_ON_STARTUP studies.
+  if (study.activation_type() != Study::ACTIVATE_ON_STARTUP) {
+    return kNotStartsActive;
+  }
+
+  // Only allow permanent consistency. Otherwise, the user may get constantly
+  // bounced between different groups every time a new seed is fetched.
+  if (study.consistency() != Study::PERMANENT) {
+    return kNotPermanentConsistency;
+  }
+
+  // If the runtime mutable experiment has already been applied, don't need to
+  // apply it again.
+  if (RuntimeMutableExperimentAlreadyApplied(study, experiment)) {
+    return kAlreadyApplied;
+  }
+
+  // At this point, the runtime mutable experiment is eligible to be applied.
+  // However, we need to ensure this can be done safely.
+  auto* feature_list = base::FeatureList::GetInstance();
+
+  // First, ensure that all features referenced have runtime mutability enabled
+  // and are eligible (not overridden from command line).
+  base::flat_set<std::string> feature_names(
+      experiment.feature_association().disable_feature().begin(),
+      experiment.feature_association().disable_feature().end());
+  for (const std::string& feature_name : feature_names) {
+    if (!feature_list->HasRuntimeMutabilityEnabledByFeatureName(feature_name)) {
+      return kNonRuntimeMutableFeature;
+    }
+    if (feature_list->IsFeatureOverriddenFromCommandLine(feature_name)) {
+      return kFeatureOverriddenFromCommandLine;
+    }
+  }
+
+  // Second, ensure that all the features are currently being controlled by the
+  // same trial (or none of them are controlled by a trial). E.g. if the
+  // experiment killswitches FeatureA and FeatureB, but currently FeatureA is
+  // associated with Trial1 while FeatureB is associated with Trial2, then it is
+  // not valid.
+  // TODO(crbug.com/482450632): Technically the outlined scenario is safe and
+  // could be supported as it results in a valid state that is fully contained
+  // in the killswitch seed. But for now, prevent these cases for simplicity.
+  using ControllingTrialInfo =
+      std::tuple</*trial_name=*/std::string, /*is_runtime_override=*/bool>;
+  base::flat_set<ControllingTrialInfo> controlling_trial_infos;
+  for (const std::string& feature_name : feature_names) {
+    // Get the trial that is currently controlling the feature. If the feature
+    // is not being controlled by any trial, this will be an empty string.
+    std::string controlling_trial_name;
+    bool is_runtime_override;
+
+    // Check if the feature is being controlled by a runtime FieldTrial
+    // override.
+    controlling_trial_name =
+        feature_list->GetAssociatedRuntimeFieldTrialOverrideByFeatureName(
+            feature_name);
+    if (!controlling_trial_name.empty()) {
+      is_runtime_override = true;
+    } else {
+      // Otherwise, find the associated FieldTrial for the feature (if any).
+      is_runtime_override = false;
+      base::FieldTrial* trial =
+          feature_list->GetAssociatedFieldTrialByFeatureName(feature_name);
+      if (trial) {
+        controlling_trial_name = trial->trial_name();
+      }
+    }
+
+    controlling_trial_infos.insert(
+        std::make_tuple(controlling_trial_name, is_runtime_override));
+  }
+  if (controlling_trial_infos.size() != 1) {
+    return kFeaturesNotControlledBySameTrial;
+  }
+
+  // Third, the trial that controls the features (if any) does not specify any
+  // additional features. E.g. if the trial enables both FeatureA and FeatureB,
+  // but the new runtime mutable experiment only killswitches FeatureA, this
+  // would create an invalid state that does not exist in any individual seed
+  // (FeatureA disabled, FeatureB enabled).
+  const ControllingTrialInfo& controlling_trial_info =
+      *controlling_trial_infos.begin();
+  const std::string& controlling_trial_name =
+      std::get<0>(controlling_trial_info);
+  bool controlling_trial_is_runtime_override =
+      std::get<1>(controlling_trial_info);
+  // It's possible that no trial is currently controlling the features. E.g.,
+  // say FeatureA and FeatureB are both ENABLED_BY_DEFAULT and are not
+  // controlled by any trial. If a runtime mutable killswitch is deployed to
+  // killswitch both features, then `controlling_trial_name` will be empty,
+  // which is valid. However, if a future runtime mutable killswitch is deployed
+  // again (e.g. going from killswitch at 50% to 100%), `controlling_trial_name`
+  // will not be empty anymore, and will only apply if the new killswitch
+  // specifies the same set of features as the original killswitch.
+  if (!controlling_trial_name.empty()) {
+    base::flat_set<std::string> associated_features;
+    // TODO(crbug.com/482450632): Implement this more efficiently by maintaining
+    // a map of trials to associated features.
+    if (controlling_trial_is_runtime_override) {
+      // Hacky DCHECK required to access `runtime_mutable_overrides_` for now...
+      DCHECK_CALLED_ON_VALID_SEQUENCE(feature_list->sequence_checker_);
+      for (const auto& [feature_name, runtime_override_info] :
+           feature_list->runtime_mutable_overrides_) {
+        if (runtime_override_info.field_trial_name == controlling_trial_name) {
+          associated_features.insert(feature_name);
+        }
+      }
+    } else {
+      for (const auto& [feature_name, override_info] :
+           feature_list->overrides_) {
+        if (override_info.field_trial &&
+            override_info.field_trial->trial_name() == controlling_trial_name) {
+          associated_features.insert(feature_name);
+        }
+      }
+    }
+
+    if (feature_names != associated_features) {
+      return kControllingTrialHasOtherFeatures;
+    }
+  }
+
+  // Fourth, ensure there is not already a trial with the same name as the
+  // runtime mutable experiment we are about to apply (i.e. name collision). The
+  // only exception where this is allowed is if this runtime mutable experiment
+  // will override that existing trial. (Otherwise, metrics logs would report
+  // the same trial multiple times (with different groups), but these are
+  // expected to be unique). For example:
+  //  * MyTrial/Enabled -> MyTrial/Killswitch50Pct -> MyTrial/Killswitch100Pct,
+  //    both killswitch applications should be allowed. In both cases, there
+  //    already exists a trial (or runtime trial override), but it is being
+  //    overridden by the killswitch, so there is no collision.
+  //  * Similarly, MyTrial/Enabled -> MyTrialKillswitch/Disabled50 ->
+  //    MyTrial/Disabled100 would be allowed (the trial name changed in the
+  //    middle, but reverted back to the original name after) since it does not
+  //    result in a name collision.
+  //  * However, MyTrial/Enabled -> Killswitch/Disabled50 would not be allowed
+  //    if there was already an unrelated trial (or runtime trial override)
+  //    named "Killswitch".
+  //
+  // First step is to find the trial that this will be overriding (if any), and
+  // any previous overrides that this is replacing (if any).
+  auto* runtime_field_trial_overrides =
+      base::RuntimeFieldTrialOverrides::GetInstance();
+  const base::FieldTrial* trial_to_override;
+  std::string previous_override_to_replace;
+  if (controlling_trial_is_runtime_override) {
+    DCHECK(!controlling_trial_name.empty());
+    const auto& runtime_override_info =
+        runtime_field_trial_overrides->GetRuntimeOverride(
+            controlling_trial_name);
+    if (!runtime_override_info.has_value()) {
+      // This should never happen.
+      return kControllingTrialNotFound;
+    }
+    trial_to_override = runtime_override_info->overridden_trial.get();
+    previous_override_to_replace = runtime_override_info->trial_name;
+    DCHECK_EQ(previous_override_to_replace, controlling_trial_name);
+  } else if (!controlling_trial_name.empty()) {
+    trial_to_override = base::FieldTrialList::Find(controlling_trial_name);
+    if (!trial_to_override) {
+      // This should never happen.
+      return kControllingTrialNotFound;
+    }
+  } else {
+    trial_to_override = nullptr;
+  }
+  // If there exists a trial with this runtime mutable trial's name, but we're
+  // not overriding it, then we have a collision.
+  if (base::FieldTrialList::Find(study.name())) {
+    if (!trial_to_override || trial_to_override->trial_name() != study.name()) {
+      return kTrialNameCollision;
+    }
+  }
+  // If there exists a runtime override with this runtime mutable experiment's
+  // name, but we're not replacing it, then we have a collision.
+  if (runtime_field_trial_overrides->GetRuntimeOverride(study.name()) &&
+      previous_override_to_replace != study.name()) {
+    return kTrialNameCollision;
+  }
+
+  // Apply the runtime mutable experiment! Note that we apply the runtime
+  // FieldTrial override first, then update the features' runtime state. Because
+  // histograms can be emitted from any threads, it's technically possible (but
+  // very unlikely) that there's a race where a histogram is emitted after the
+  // trial was overridden, but before the features' state was updated. By doing
+  // the mutation in this order, in those extreme edge cases, we ensure we
+  // pollute the runtime mutable study (rather than the original study). This
+  // should be OK because we currently only support killswitches, and those are
+  // not meant to be analyzed as they generally don't have a control group.
+  // (We could try creating logs in between the steps to try and really properly
+  // associate the histograms with the actual trials they were associated with,
+  // but the race condition would still exist regardless).
+  bool trial_override_result =
+      runtime_field_trial_overrides->ApplyRuntimeOverride(
+          base::PassKey<VariationsService>(), study.name(), group_name,
+          trial_to_override, previous_override_to_replace);
+  DCHECK(trial_override_result);
+  if (!trial_override_result) {
+    // This should never happen.
+    return kApplyRuntimeFieldTrialOverrideFailed;
+  }
+  for (const auto& feature_name : feature_names) {
+    bool result = feature_list->UpdateRuntimeMutableFeatureState(
+        base::PassKey<VariationsService>(), study.name(), group_name,
+        feature_name, base::FeatureList::OVERRIDE_DISABLE_FEATURE);
+    DCHECK(result);
+    if (!result) {
+      // This should never happen, but if it does, we're in a bad state
+      // where only a subset features may have been runtime overridden.
+      return kUpdateFeatureStateFailed;
+    }
+  }
+  // TODO(crbug.com/482450632): Clean up overridden trial's variation IDs, and
+  // register any new ones from the new trial.
+
+  // As a sanity check, do some validation to ensure that the state is valid.
+  // All the features' runtime state should be updated to reflect the new
+  // override.
+  for (const std::string& feature_name : feature_names) {
+    if (feature_list->GetAssociatedRuntimeFieldTrialOverrideByFeatureName(
+            feature_name) != study.name()) {
+      return kValidationFailed;
+    }
+  }
+  // The runtime override info should match our parameters.
+  auto runtime_override_info =
+      runtime_field_trial_overrides->GetRuntimeOverride(study.name());
+  if (!runtime_override_info.has_value() ||
+      runtime_override_info->trial_name != study.name() ||
+      runtime_override_info->group_name != group_name ||
+      runtime_override_info->overridden_trial.get() != trial_to_override) {
+    return kValidationFailed;
+  }
+
+  return kSuccess;
 }
 
 bool VariationsService::CallMaybeRetryOverHTTPForTesting() {

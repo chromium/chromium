@@ -65,6 +65,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Variations.ApplyRuntimeMutableChanges.Result"
+    enum="VariationsApplyRuntimeMutableChangesResult"
+    expires_after="2027-06-11">
+  <owner>lucnguyen@google.com</owner>
+  <owner>rogerm@google.com</owner>
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The result of attempting to apply a runtime mutable study from a new
+    variations seed. Recorded for each runtime mutable study in the seed
+    whenever a new seed is successfully stored.
+  </summary>
+</histogram>
+
 <histogram name="Variations.AppSeedFreshness" units="minutes"
     expires_after="2026-12-13">
   <owner>ntfschr@chromium.org</owner>
