@@ -385,15 +385,15 @@ void PdfAccessibilityTreeBuilderStructure::WalkStructureTree(
 
 std::optional<chrome_pdf::UnassociatedTextRunRange>
 PdfAccessibilityTreeBuilderStructure::FindUnassociatedTextRunRangeAtIndex(
-    size_t range_start) {
-  auto ranges = structure_tree_root_->unassociated_text_run_ranges_for_page;
+    size_t range_start) const {
+  const auto& ranges =
+      structure_tree_root_->unassociated_text_run_ranges_for_page;
   if (ranges.empty()) {
     return std::nullopt;
   }
 
   auto range = std::ranges::lower_bound(
       ranges, range_start, {}, &chrome_pdf::UnassociatedTextRunRange::start);
-
   if (range != ranges.end() && range->start == range_start) {
     return *range;
   }

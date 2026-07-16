@@ -88,7 +88,7 @@ class PdfAccessibilityTreeBuilderStructure {
   // used to interleave unassociated text ranges with text ranges associated
   // with structure tree content.
   std::optional<chrome_pdf::UnassociatedTextRunRange>
-  FindUnassociatedTextRunRangeAtIndex(size_t range_start);
+  FindUnassociatedTextRunRangeAtIndex(size_t range_start) const;
 
   raw_ref<PdfAccessibilityTreeBuilder> builder_;
   const raw_ptr<const chrome_pdf::AccessibilityStructureElement>
