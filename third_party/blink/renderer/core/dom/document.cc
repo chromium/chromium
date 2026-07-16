@@ -10068,7 +10068,7 @@ Document::PendingJavascriptUrl::PendingJavascriptUrl(
     const DOMWrapperWorld* world)
     : url(input_url), world(world) {
   async_task_context.Schedule(context, "javascriptURL",
-                              probe::AsyncTaskContext::ScanForAds::kTrue);
+                              probe::AsyncTaskContext::StackOptions::kScan);
 }
 
 Document::PendingJavascriptUrl::~PendingJavascriptUrl() = default;

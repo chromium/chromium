@@ -72,6 +72,7 @@ BASE_FEATURE(kFastMemoryCacheWithDevTools, base::FEATURE_ENABLED_BY_DEFAULT);
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/ad_tracker/ad_tracker.h"
+#include "third_party/blink/renderer/core/ad_tracker/script_initiation_monitor.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
@@ -1408,32 +1409,43 @@ void FrameFetchContext::Trace(Visitor* visitor) const {
   BaseFetchContext::Trace(visitor);
 }
 
-std::optional<AdProvenance> FrameFetchContext::CalculateIfAdSubresource(
+ResourceAnnotations FrameFetchContext::CalculateResourceAnnotations(
     const ResourceRequestHead& resource_request,
     base::optional_ref<const KURL> alias_url,
     ResourceType type,
     const FetchInitiatorInfo& initiator_info,
-    bool scan_stack_for_ads) {
+    bool scan_javascript_stack) {
   // Mark the resource as an Ad if the BaseFetchContext thinks it's an ad.
-  // `scan_stack_for_ads` is only used by the `AdTracker` and is used later in
-  // this function, `BaseFetchContext::CalculateIfAdSubresource` doesn't need
-  // it.
-  std::optional<AdProvenance> known_ad_provenance =
-      BaseFetchContext::CalculateIfAdSubresource(resource_request, alias_url,
-                                                 type, initiator_info,
-                                                 /*scan_stack_for_ads=*/false);
-  if (GetResourceFetcherProperties().IsDetached() ||
-      !GetFrame()->GetAdTracker()) {
-    return known_ad_provenance;
+  ResourceAnnotations annotations =
+      BaseFetchContext::CalculateResourceAnnotations(
+          resource_request, alias_url, type, initiator_info,
+          /*scan_javascript_stack=*/false);
+  if (GetResourceFetcherProperties().IsDetached()) {
+    return annotations;
   }
 
-  // The AdTracker needs to know about the request as well, and may also mark it
-  // as an ad.
+  // Let any script trackers know that this resource is being requested.
+  if (ScriptInitiationMonitor* monitor =
+          GetFrame()->GetScriptInitiationMonitor()) {
+    monitor->PrepareRequest(
+        document_loader_, resource_request,
+        alias_url.has_value() ? std::optional<KURL>(*alias_url) : std::nullopt,
+        type, initiator_info, annotations.ad_provenance, scan_javascript_stack);
+  }
+
+  if (!GetFrame()->GetAdTracker()) {
+    return annotations;
+  }
+
+  // The AdTracker expects CalculateIfAdSubresource to be called immediately
+  // after GetScriptInitiationMonitor as it returns a cached value.
   const KURL& url =
       alias_url.has_value() ? alias_url.value() : resource_request.Url();
-  return GetFrame()->GetAdTracker()->CalculateIfAdSubresource(
-      document_->domWindow(), url, type, initiator_info,
-      std::move(known_ad_provenance), scan_stack_for_ads);
+  annotations.ad_provenance =
+      GetFrame()->GetAdTracker()->CalculateIfAdSubresource(
+          document_->domWindow(), url, type, initiator_info,
+          std::move(annotations.ad_provenance), scan_javascript_stack);
+  return annotations;
 }
 
 void FrameFetchContext::DidObserveLoadingBehavior(

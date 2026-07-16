@@ -195,9 +195,11 @@ void UpgradeResourceRequestForLoader(
   resource_request_context.RecordTrace();
 
   if (std::optional<AdProvenance> ad_provenance =
-          context.CalculateIfAdSubresource(
-              resource_request, /*alias_url=*/std::nullopt, resource_type,
-              options.initiator_info, /*scan_stack_for_ads=*/false)) {
+          context
+              .CalculateResourceAnnotations(
+                  resource_request, /*alias_url=*/std::nullopt, resource_type,
+                  options.initiator_info, /*scan_javascript_stack=*/false)
+              .ad_provenance) {
     resource_request.SetIsAdResource(std::move(*ad_provenance));
   }
 
@@ -303,9 +305,11 @@ PrepareResourceRequestForCacheAccess(
                          resource_request.GetRedirectInfo());
 
   if (std::optional<AdProvenance> ad_provenance =
-          context.CalculateIfAdSubresource(
-              resource_request, /*alias_url=*/std::nullopt, resource_type,
-              options.initiator_info, /*scan_stack_for_ads=*/true)) {
+          context
+              .CalculateResourceAnnotations(
+                  resource_request, /*alias_url=*/std::nullopt, resource_type,
+                  options.initiator_info, /*scan_javascript_stack=*/true)
+              .ad_provenance) {
     resource_request.SetIsAdResource(std::move(*ad_provenance));
   }
   if (blocked_reason) {

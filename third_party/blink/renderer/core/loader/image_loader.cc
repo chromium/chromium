@@ -116,7 +116,7 @@ class ImageLoader::Task {
       : loader_(loader), update_behavior_(update_behavior) {
     ExecutionContext* context = loader_->GetElement()->GetExecutionContext();
     async_task_context_.Schedule(context, "Image",
-                                 probe::AsyncTaskContext::ScanForAds::kTrue);
+                                 probe::AsyncTaskContext::StackOptions::kScan);
     world_ = context->GetCurrentWorld();
   }
 

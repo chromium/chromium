@@ -67,8 +67,9 @@ AsyncTask::AsyncTask(ExecutionContext* context,
                                    : nullptr),
       task_context_(task_context),
       recurring_(step),
-      ad_tracker_(enabled ? AdTracker::FromExecutionContext(context)
-                          : nullptr) {
+      script_initiation_monitor_(
+          enabled ? ScriptInitiationMonitor::FromExecutionContext(context)
+                  : nullptr) {
   // TODO(crbug.com/1275875): Verify that `task_context` was scheduled, but
   // not yet canceled. Currently we don't have enough confidence that such
   // a CHECK wouldn't break blink.
@@ -78,8 +79,9 @@ AsyncTask::AsyncTask(ExecutionContext* context,
   if (debugger_)
     debugger_->AsyncTaskStarted(task_context->Id());
 
-  if (ad_tracker_)
-    ad_tracker_->DidStartAsyncTask(task_context);
+  if (script_initiation_monitor_) {
+    script_initiation_monitor_->DidStartAsyncTask(task_context);
+  }
 }
 
 AsyncTask::~AsyncTask() {
@@ -89,8 +91,9 @@ AsyncTask::~AsyncTask() {
       debugger_->AsyncTaskCanceled(task_context_->Id());
   }
 
-  if (ad_tracker_)
-    ad_tracker_->DidFinishAsyncTask(task_context_);
+  if (script_initiation_monitor_) {
+    script_initiation_monitor_->DidFinishAsyncTask(task_context_);
+  }
 
   TRACE_EVENT_END("blink");  // "AsyncTask Run"
 }

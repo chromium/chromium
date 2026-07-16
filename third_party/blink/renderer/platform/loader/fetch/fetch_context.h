@@ -227,15 +227,15 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
   // Determine if the request is on behalf of an advertisement. If so, return
   // the associated `AdProvenance`. Checks `resource_request.Url()` unless
   // `alias_url` is non-null, in which case it checks the latter.
-  // `scan_stack_for_ads` should be true once per request, and should be called
-  // while the v8 stack that triggered this request is still available.
-  virtual std::optional<AdProvenance> CalculateIfAdSubresource(
+  // `scan_javascript_stack` should be true once per request, and should be
+  // called while the v8 stack that triggered this request is still available.
+  virtual ResourceAnnotations CalculateResourceAnnotations(
       const ResourceRequestHead& resource_request,
       base::optional_ref<const KURL> alias_url,
       ResourceType type,
       const FetchInitiatorInfo& initiator_info,
-      bool scan_stack_for_ads) {
-    return std::nullopt;
+      bool scan_javascript_stack) {
+    return {};
   }
 
   // Returns a wrapper of ResourceLoadInfoNotifier to notify loading stats.

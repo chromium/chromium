@@ -85,7 +85,7 @@ class CORE_EXPORT DOMTimer final : public GarbageCollected<DOMTimer>,
            ScheduledAction*,
            base::TimeDelta timeout,
            bool single_shot,
-           probe::AsyncTaskContext::ScanForAds scan_for_ads);
+           probe::AsyncTaskContext::StackOptions stack_options);
   ~DOMTimer() override;
 
   // ExecutionContextLifecycleObserver

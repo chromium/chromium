@@ -144,7 +144,8 @@ class FixedSubresourceFilterWebFrameClient
 
 class TestAdTracker : public AdTracker {
  public:
-  explicit TestAdTracker(LocalFrame* frame) : AdTracker(frame) {}
+  explicit TestAdTracker(LocalFrame* frame, ScriptInitiationMonitor* monitor)
+      : AdTracker(frame, monitor) {}
   ~TestAdTracker() override {}
 
   bool RequestWithUrlTaggedAsAd(const String& url) const {
@@ -202,11 +203,11 @@ class TestAdTracker : public AdTracker {
       ResourceType resource_type,
       const FetchInitiatorInfo& initiator_info,
       std::optional<AdProvenance> known_ad_provenance,
-      bool scan_stack_for_ads) override {
+      bool scan_javascript_stack) override {
     std::optional<AdProvenance> observed_ad_provenance =
         AdTracker::CalculateIfAdSubresource(
             execution_context, request_url, resource_type, initiator_info,
-            std::move(known_ad_provenance), scan_stack_for_ads);
+            std::move(known_ad_provenance), scan_javascript_stack);
 
     String resource_url = request_url.GetString();
     is_ad_.insert(resource_url, observed_ad_provenance.has_value());
@@ -272,7 +273,9 @@ class AdTrackerSimTest : public SimTest {
         "https://example.com/test.html", "text/html");
 
     LoadURL("https://example.com/test.html");
-    ad_tracker_ = MakeGarbageCollected<TestAdTracker>(GetDocument().GetFrame());
+    ad_tracker_ = MakeGarbageCollected<TestAdTracker>(
+        GetDocument().GetFrame(),
+        GetDocument().GetFrame()->GetOrCreateScriptInitiationMonitor());
     ad_tracker_->SetSimTest();
     GetDocument().GetFrame()->SetAdTrackerForTesting(ad_tracker_);
   }
@@ -509,7 +512,9 @@ TEST_F(AdTrackerSimTest, DISABLED_InlineAdScriptRunningInNonAdContext) {
 TEST_F(AdTrackerSimTest, ImageLoadedWhileExecutingAdScriptAsyncEnabled) {
   // Reset the AdTracker so that it gets the latest base::Feature value on
   // construction.
-  ad_tracker_ = MakeGarbageCollected<TestAdTracker>(GetDocument().GetFrame());
+  ad_tracker_ = MakeGarbageCollected<TestAdTracker>(
+      GetDocument().GetFrame(),
+      GetDocument().GetFrame()->GetOrCreateScriptInitiationMonitor());
   GetDocument().GetFrame()->SetAdTrackerForTesting(ad_tracker_);
 
   const char kAdUrl[] = "https://example.com/ad_script.js";
@@ -4161,6 +4166,42 @@ TEST_F(AdTrackerSimTest, AdScriptAncestry_AttributeScript) {
       IsKnownAdScript(GetDocument().GetExecutionContext(), ad_script_url));
 }
 
+TEST_F(AdTrackerSimTest, AdEventHandlerTriggeredByNonAdScript) {
+  SimRequest ad_script_resource("https://example.com/ad_script.js",
+                                "application/javascript");
+  SimRequest vanilla_script_resource("https://example.com/script.js",
+                                     "application/javascript");
+  SimRequest image_resource("https://example.com/foo.png", "image/png");
+
+  main_resource_->Complete(R"HTML(
+    <body>
+    <script src="https://example.com/ad_script.js"></script>
+    <script src="https://example.com/script.js"></script>
+    </body>
+  )HTML");
+
+  // Ad script sets an inline event handler on a dynamically created element.
+  ad_script_resource.Complete(R"JS(
+    let btn = document.createElement("button");
+    btn.id = "target";
+    btn.setAttribute("onclick", "let img = document.createElement('img'); img.src = 'foo.png';");
+    document.body.appendChild(btn);
+  )JS");
+
+  // Non-ad script triggers the event handler synchronously.
+  vanilla_script_resource.Complete(R"JS(
+    document.getElementById('target').click();
+  )JS");
+
+  base::RunLoop().RunUntilIdle();
+
+  image_resource.Complete("data");
+
+  // Verify that the subsequent image request is correctly tagged as an ad.
+  EXPECT_TRUE(
+      ad_tracker_->RequestWithUrlTaggedAsAd("https://example.com/foo.png"));
+}
+
 // Tests that an event handler added via document.write by an ad script is
 // correctly attributed.
 TEST_F(AdTrackerSimTest, AdScriptAncestry_DocumentWriteAttributeScript) {
@@ -4357,9 +4398,15 @@ TEST(AdTrackerTest, AdScriptAncestry_ScriptIdFromDifferentTracker) {
   auto page_holder_b = std::make_unique<DummyPageHolder>();
 
   AdTracker* ad_tracker_a = MakeGarbageCollected<AdTracker>(
-      &page_holder_a->GetFrame().LocalFrameRoot());
+      &page_holder_a->GetFrame().LocalFrameRoot(),
+      page_holder_a->GetFrame()
+          .LocalFrameRoot()
+          .GetOrCreateScriptInitiationMonitor());
   AdTracker* ad_tracker_b = MakeGarbageCollected<AdTracker>(
-      &page_holder_b->GetFrame().LocalFrameRoot());
+      &page_holder_b->GetFrame().LocalFrameRoot(),
+      page_holder_b->GetFrame()
+          .LocalFrameRoot()
+          .GetOrCreateScriptInitiationMonitor());
 
   V8ScriptId script_id_a(1001);
   v8::Isolate* isolate = v8::Isolate::GetCurrent();

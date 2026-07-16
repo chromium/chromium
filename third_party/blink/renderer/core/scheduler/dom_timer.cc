@@ -179,7 +179,7 @@ int DOMTimer::setTimeout(ScriptState* script_state,
                                                        handler, arguments);
   return MakeGarbageCollected<DOMTimer>(
              context, action, base::Milliseconds(timeout), true,
-             probe::AsyncTaskContext::ScanForAds::kFalse)
+             probe::AsyncTaskContext::StackOptions::kDoNotScan)
       ->timeout_id_;
 }
 
@@ -217,7 +217,7 @@ int DOMTimer::setTimeout(ScriptState* script_state,
       MakeGarbageCollected<ScheduledAction>(script_state, context, handler);
   return MakeGarbageCollected<DOMTimer>(
              context, action, base::Milliseconds(timeout), true,
-             probe::AsyncTaskContext::ScanForAds::kTrue)
+             probe::AsyncTaskContext::StackOptions::kScan)
       ->timeout_id_;
 }
 
@@ -233,7 +233,7 @@ int DOMTimer::setInterval(ScriptState* script_state,
                                                        handler, arguments);
   return MakeGarbageCollected<DOMTimer>(
              context, action, base::Milliseconds(timeout), false,
-             probe::AsyncTaskContext::ScanForAds::kFalse)
+             probe::AsyncTaskContext::StackOptions::kDoNotScan)
       ->timeout_id_;
 }
 
@@ -266,7 +266,7 @@ int DOMTimer::setInterval(ScriptState* script_state,
       MakeGarbageCollected<ScheduledAction>(script_state, context, handler);
   return MakeGarbageCollected<DOMTimer>(
              context, action, base::Milliseconds(timeout), false,
-             probe::AsyncTaskContext::ScanForAds::kTrue)
+             probe::AsyncTaskContext::StackOptions::kScan)
       ->timeout_id_;
 }
 
@@ -293,7 +293,7 @@ DOMTimer::DOMTimer(ExecutionContext& context,
                    ScheduledAction* action,
                    base::TimeDelta timeout,
                    bool single_shot,
-                   probe::AsyncTaskContext::ScanForAds scan_for_ads)
+                   probe::AsyncTaskContext::StackOptions stack_options)
     : ExecutionContextLifecycleObserver(&context),
       TimerBase(nullptr),
       timeout_id_(DOMTimerCoordinator::From(context).Install(this)),
@@ -354,7 +354,7 @@ DOMTimer::DOMTimer(ExecutionContext& context,
       "TimerInstall", inspector_timer_install_event::Data, &context,
       timeout_id_, timeout, single_shot);
   const char* name = single_shot ? "setTimeout" : "setInterval";
-  async_task_context_.Schedule(&context, name, scan_for_ads);
+  async_task_context_.Schedule(&context, name, stack_options);
   probe::BreakableLocation(&context, name);
 }
 

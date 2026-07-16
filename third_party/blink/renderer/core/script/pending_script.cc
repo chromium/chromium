@@ -79,7 +79,7 @@ PendingScript::PendingScript(ScriptElementBase* element,
           element->GetDocument().IsInDocumentWrite()),
       task_state_(task_state) {
   async_task_context_.Schedule(original_execution_context_, "PendingScript",
-                               probe::AsyncTaskContext::ScanForAds::kTrue);
+                               probe::AsyncTaskContext::StackOptions::kScan);
 }
 
 PendingScript::~PendingScript() {}

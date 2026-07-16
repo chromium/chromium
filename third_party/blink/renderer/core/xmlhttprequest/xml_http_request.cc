@@ -1018,7 +1018,7 @@ void XMLHttpRequest::CreateRequest(scoped_refptr<EncodedFormData> http_body,
       task_state_ = CaptureCurrentTaskState(&execution_context);
     }
     async_task_context_.Schedule(&execution_context, "XMLHttpRequest.send",
-                                 probe::AsyncTaskContext::ScanForAds::kTrue);
+                                 probe::AsyncTaskContext::StackOptions::kScan);
     DispatchProgressEvent(event_type_names::kLoadstart, 0, 0);
     // Event handler could have invalidated this send operation,
     // (re)setting the send flag and/or initiating another send

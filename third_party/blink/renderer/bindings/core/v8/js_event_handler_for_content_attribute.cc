@@ -7,11 +7,12 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
-#include "third_party/blink/renderer/core/ad_tracker/ad_tracker.h"
+#include "third_party/blink/renderer/core/ad_tracker/script_initiation_monitor.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/events/error_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 
 namespace blink {
@@ -29,16 +30,9 @@ JSEventHandlerForContentAttribute* JSEventHandlerForContentAttribute::Create(
   auto* handler = MakeGarbageCollected<JSEventHandlerForContentAttribute>(
       context, name, value, type);
 
-  if (AdTracker* ad_tracker = AdTracker::FromExecutionContext(context)) {
-    AdTracker::AdScriptAncestry ancestry;
-    if (ad_tracker->IsAdScriptInStack(AdTracker::StackType::kTopOnly,
-                                      AdTracker::MonkeyPatchableApi::kNone,
-                                      &ancestry)) {
-      handler->SetAdRelated(!ancestry.ancestry_chain.empty()
-                                ? std::make_optional(ancestry.ancestry_chain[0])
-                                : std::nullopt);
-    }
-  }
+  handler->async_task_context()->Schedule(
+      context, "JSEventHandlerForContentAttribute",
+      probe::AsyncTaskContext::StackOptions::kScan);
 
   return handler;
 }
@@ -83,6 +77,9 @@ v8::Local<v8::Value> JSEventHandlerForContentAttribute::GetCompiledHandler(
       event_target.GetExecutionContext();
   if (!execution_context_of_event_target)
     return v8::Null(GetIsolate());
+
+  probe::AsyncTask async_task(execution_context_of_event_target,
+                              async_task_context());
 
   v8::Local<v8::Context> v8_context_of_event_target =
       ToV8Context(execution_context_of_event_target, GetWorld());
@@ -245,13 +242,10 @@ v8::Local<v8::Value> JSEventHandlerForContentAttribute::GetCompiledHandler(
       return v8::Null(isolate);
   }
 
-  if (is_ad_related_) {
-    if (AdTracker* ad_tracker = AdTracker::FromExecutionContext(
-            execution_context_of_event_target)) {
-      ad_tracker->RegisterAdScript(v8_context_of_event_target,
-                                   V8ScriptId(compiled_function->ScriptId()),
-                                   parent_ad_script_);
-    }
+  if (auto* monitor = ScriptInitiationMonitor::FromExecutionContext(
+          execution_context_of_event_target)) {
+    monitor->DidRegisterDynamicScript(
+        v8_context_of_event_target, V8ScriptId(compiled_function->ScriptId()));
   }
 
   // Step 12. Set eventHandler's value to the result of creating a Web IDL

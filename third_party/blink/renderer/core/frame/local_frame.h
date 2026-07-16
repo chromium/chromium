@@ -120,6 +120,7 @@ class SharedURLLoaderFactory;
 namespace blink {
 
 class AdTracker;
+class ScriptInitiationMonitor;
 class AssociatedInterfaceProvider;
 class AuditsIssue;
 class BackgroundColorPaintImageGenerator;
@@ -540,6 +541,8 @@ class CORE_EXPORT LocalFrame final
   }
   IdlenessDetector* GetIdlenessDetector() { return idleness_detector_.Get(); }
   AdTracker* GetAdTracker() { return ad_tracker_.Get(); }
+  ScriptInitiationMonitor* GetScriptInitiationMonitor() const;
+  ScriptInitiationMonitor* GetOrCreateScriptInitiationMonitor();
   void SetAdTrackerForTesting(AdTracker* ad_tracker);
   LCPScriptObserver* GetScriptObserver() { return script_observer_.Get(); }
 
@@ -1114,6 +1117,7 @@ class CORE_EXPORT LocalFrame final
   Member<PerformanceMonitor> performance_monitor_;
 
   Member<AdTracker> ad_tracker_;
+  Member<ScriptInitiationMonitor> script_initiation_monitor_;
   Member<IdlenessDetector> idleness_detector_;
   base::OnceClosureList network_idle_callbacks_;
   Member<InspectorIssueReporter> inspector_issue_reporter_;
