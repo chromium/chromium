@@ -40,6 +40,7 @@ class TestFileSuggestKeyedService : public ash::FileSuggestKeyedService {
   explicit TestFileSuggestKeyedService(Profile* profile,
                                        const base::FilePath& proto_path)
       : FileSuggestKeyedService(
+            TestingBrowserProcess::GetGlobal()->local_state(),
             profile,
             ash::PersistentProto<RemovedResultsProto>(proto_path,
                                                       base::TimeDelta())) {}

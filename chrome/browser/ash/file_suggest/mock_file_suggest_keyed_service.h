@@ -19,6 +19,8 @@ namespace base {
 class FilePath;
 }  // namespace base
 
+class PrefService;
+
 namespace ash {
 
 // A mock file suggestion service. Simply returns the cached suggestions without
@@ -30,6 +32,7 @@ class MockFileSuggestKeyedService : public FileSuggestKeyedService {
       content::BrowserContext* context);
 
   MockFileSuggestKeyedService(
+      PrefService* local_state,
       Profile* profile,
       PersistentProto<app_list::RemovedResultsProto> proto);
   MockFileSuggestKeyedService(const MockFileSuggestKeyedService&) = delete;

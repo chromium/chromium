@@ -21,6 +21,7 @@ using SuggestResults = std::vector<FileSuggestData>;
 }  // namespace
 
 FileSuggestKeyedService::FileSuggestKeyedService(
+    PrefService* local_state,
     Profile* profile,
     PersistentProto<app_list::RemovedResultsProto> proto)
     : profile_(profile), proto_(std::move(proto)) {
@@ -41,9 +42,10 @@ FileSuggestKeyedService::FileSuggestKeyedService(
 
   local_file_suggestion_provider_ =
       std::make_unique<LocalFileSuggestionProvider>(
-          profile, base::BindRepeating(
-                       &FileSuggestKeyedService::OnSuggestionProviderUpdated,
-                       weak_factory_.GetWeakPtr()));
+          local_state, profile,
+          base::BindRepeating(
+              &FileSuggestKeyedService::OnSuggestionProviderUpdated,
+              weak_factory_.GetWeakPtr()));
 }
 
 FileSuggestKeyedService::~FileSuggestKeyedService() = default;

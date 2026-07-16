@@ -85,9 +85,10 @@ class LocalFileSuggestionProviderTest : public testing::Test {
     profile_ = testing_profile_manager_->CreateTestingProfile(
         "primary_profile@test", {});
     provider_ = std::make_unique<LocalFileSuggestionProvider>(
-        profile_, base::BindRepeating(
-                      &LocalFileSuggestionProviderTest::OnSuggestionsUpdated,
-                      base::Unretained(this)));
+        TestingBrowserProcess::GetGlobal()->local_state(), profile_,
+        base::BindRepeating(
+            &LocalFileSuggestionProviderTest::OnSuggestionsUpdated,
+            base::Unretained(this)));
     UpdateResults();
     WaitForProviderToBeInitialized();
   }

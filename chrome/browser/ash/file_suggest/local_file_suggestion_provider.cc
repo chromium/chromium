@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_util.h"
 #include "chrome/browser/ash/file_suggest/file_suggestion_provider.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace ash {
@@ -78,9 +77,11 @@ ValidateFiles(const std::vector<std::pair<std::string, float>>& ranker_results,
 }  // anonymous namespace
 
 LocalFileSuggestionProvider::LocalFileSuggestionProvider(
+    PrefService* local_state,
     Profile* profile,
     base::RepeatingCallback<void(FileSuggestionType)> notify_update_callback)
     : FileSuggestionProvider(notify_update_callback),
+      local_state_(CHECK_DEREF(local_state)),
       profile_(profile),
       max_last_modified_time_(GetMaxFileSuggestionRecency()) {
   DCHECK(profile_);
@@ -150,13 +151,12 @@ void LocalFileSuggestionProvider::GetSuggestFileData(
 
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(
-          &ValidateFiles, files_ranker_->GetAll(), max_last_modified_time_,
-          // TODO(crbug.com/404131915): Avoid using g_browser_process.
-          (file_manager::trash::IsTrashEnabledForProfile(
-               CHECK_DEREF(g_browser_process->local_state()), profile_)
-               ? trash_paths_
-               : std::vector<base::FilePath>())),
+      base::BindOnce(&ValidateFiles, files_ranker_->GetAll(),
+                     max_last_modified_time_,
+                     (file_manager::trash::IsTrashEnabledForProfile(
+                          local_state_.get(), profile_)
+                          ? trash_paths_
+                          : std::vector<base::FilePath>())),
       base::BindOnce(&LocalFileSuggestionProvider::OnValidationComplete,
                      weak_factory_.GetWeakPtr()));
 }

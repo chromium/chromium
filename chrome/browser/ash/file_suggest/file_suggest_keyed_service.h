@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/file_suggest/file_suggest_util.h"
 #include "components/keyed_service/core/keyed_service.h"
 
+class PrefService;
 class Profile;
 
 namespace app_list {
@@ -42,9 +43,10 @@ class FileSuggestKeyedService : public KeyedService {
     virtual void OnFileSuggestionUpdated(FileSuggestionType type) {}
   };
 
-  FileSuggestKeyedService(
-      Profile* profile,
-      PersistentProto<app_list::RemovedResultsProto> proto);
+  // `local_state` must be non-null and must outlive `this`.
+  FileSuggestKeyedService(PrefService* local_state,
+                          Profile* profile,
+                          PersistentProto<app_list::RemovedResultsProto> proto);
   FileSuggestKeyedService(const FileSuggestKeyedService&) = delete;
   FileSuggestKeyedService& operator=(const FileSuggestKeyedService&) = delete;
   ~FileSuggestKeyedService() override;

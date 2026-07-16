@@ -8,6 +8,7 @@
 #include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/file_manager/file_tasks_notifier_factory.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace ash {
@@ -51,7 +52,8 @@ FileSuggestKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
       app_list::RankerStateDirectory(profile).AppendASCII("removed_results.pb"),
       /*write_delay=*/base::TimeDelta());
 
-  return std::make_unique<FileSuggestKeyedService>(profile, std::move(proto));
+  return std::make_unique<FileSuggestKeyedService>(
+      g_browser_process->local_state(), profile, std::move(proto));
 }
 
 }  // namespace ash

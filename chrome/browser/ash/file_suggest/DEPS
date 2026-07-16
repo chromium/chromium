@@ -28,7 +28,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "local_file_suggestion_provider\\.cc": [
+  "file_suggest_keyed_service_factory\\.cc": [
+    "+chrome/browser/browser_process.h",
+  ],
+  "mock_file_suggest_keyed_service\\.cc": [
     "+chrome/browser/browser_process.h",
   ],
 }
