@@ -47,6 +47,7 @@ class SplitTabView : public views::View, public views::LayoutDelegate {
   // LayoutDelegate:
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
+  gfx::Size GetMinimumSize() const override;
 
   std::optional<BrowserRootView::DropIndex> GetLinkDropIndex(
       const gfx::Point& loc_in_view);
@@ -64,6 +65,11 @@ class SplitTabView : public views::View, public views::LayoutDelegate {
   void OnDataChanged();
   void UpdateBorder();
   void UpdateHovered(bool hovered);
+
+  views::ProposedLayout CalculateHorizontalLayout(
+      const views::SizeBounds& size_bounds) const;
+  views::ProposedLayout CalculateVerticalLayout(
+      const views::SizeBounds& size_bounds) const;
 
   void OnCollapseStateChanged(tabs::VerticalTabStripCollapseState state);
 

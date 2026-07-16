@@ -116,65 +116,23 @@ void SplitTabView::OnPaint(gfx::Canvas* canvas) {
 
 views::ProposedLayout SplitTabView::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
-  views::ProposedLayout layouts;
-  int width = 0;
-  int height = 0;
-
-  const std::vector<views::View*> children =
-      collection_node_ ? collection_node_->GetDirectChildren()
-                       : std::vector<views::View*>();
-  if (children.size() != 2) {
-    layouts.host_size = gfx::Size(0, 0);
-    return layouts;
+  if (collection_node_ &&
+      collection_node_->orientation() == TabStripOrientation::kHorizontal) {
+    return CalculateHorizontalLayout(size_bounds);
   }
+  return CalculateVerticalLayout(size_bounds);
+}
 
-  const int border_thickness =
-      pinned_
-          ? GetLayoutConstant(LayoutConstant::kVerticalTabPinnedBorderThickness)
-          : 0;
-
-  // Layout children in order. Children will have their preferred height and
-  // fill available width. If unbounded or uncollapsed and both children fit on
-  // one row they will share it, otherwise they will be stacked vertically.
-  if (!size_bounds.width().is_bounded() ||
-      (!collapsed_ &&
-       size_bounds.width().value() >=
-           static_cast<int>(
-               GetLayoutConstant(LayoutConstant::kVerticalTabMinWidth) *
-               children.size()))) {
-    int x = 0;
-    for (auto* child : children) {
-      gfx::Rect bounds = gfx::Rect(child->GetPreferredSize());
-      bounds.set_x(x);
-      // Fill available width if bounded.
-      if (size_bounds.width().is_bounded()) {
-        bounds.set_width(
-            x == 0 ? (std::floor(size_bounds.width().value() +
-                                 2 * border_thickness - kSplitViewGap) /
-                      2)
-                   : size_bounds.width().value() - x);
-      }
-      x += bounds.width() - 2 * border_thickness + (x == 0 ? kSplitViewGap : 0);
-      height = std::max(height, bounds.height());
-      layouts.child_layouts.emplace_back(child, child->GetVisible(), bounds);
+gfx::Size SplitTabView::GetMinimumSize() const {
+  if (collection_node_ &&
+      collection_node_->orientation() == TabStripOrientation::kHorizontal) {
+    int min_width = 0;
+    for (views::View* child : children()) {
+      min_width += child->GetMinimumSize().width();
     }
-    width = x;
-  } else {
-    int y = 0;
-    for (auto* child : children) {
-      gfx::Rect bounds = gfx::Rect(child->GetPreferredSize());
-      bounds.set_y(y);
-      bounds.set_width(size_bounds.width().value());
-      bounds.set_height(bounds.height());
-      y +=
-          bounds.height() - 2 * border_thickness + (y == 0 ? kSplitViewGap : 0);
-      layouts.child_layouts.emplace_back(child, child->GetVisible(), bounds);
-    }
-    width = size_bounds.width().value();
-    height = y + 2 * border_thickness;
+    return gfx::Size(min_width, GetLayoutConstant(LayoutConstant::kTabHeight));
   }
-  layouts.host_size = gfx::Size(width, height);
-  return layouts;
+  return views::View::GetMinimumSize();
 }
 
 std::optional<BrowserRootView::DropIndex> SplitTabView::GetLinkDropIndex(
@@ -276,6 +234,110 @@ void SplitTabView::UpdateHovered(bool hovered) {
   }
 
   SchedulePaint();
+}
+
+views::ProposedLayout SplitTabView::CalculateHorizontalLayout(
+    const views::SizeBounds& size_bounds) const {
+  views::ProposedLayout layouts;
+  const std::vector<views::View*> children =
+      collection_node_ ? collection_node_->GetDirectChildren()
+                       : std::vector<views::View*>();
+  if (children.size() != 2) {
+    layouts.host_size = gfx::Size(0, 0);
+    return layouts;
+  }
+
+  const int height = size_bounds.height().value_or(
+      GetLayoutConstant(LayoutConstant::kTabHeight));
+
+  // Layout children horizontally side-by-side in order.
+  int x = 0;
+  for (size_t i = 0; i < children.size(); ++i) {
+    views::View* child = children[i];
+    gfx::Rect bounds = gfx::Rect(child->GetPreferredSize());
+    bounds.set_x(x);
+    bounds.set_height(height);
+
+    // Fill available width evenly if bounded.
+    if (size_bounds.width().is_bounded()) {
+      bounds.set_width(i == 0 ? std::floor(size_bounds.width().value() / 2)
+                              : size_bounds.width().value() - x);
+    }
+    x += bounds.width();
+    layouts.child_layouts.emplace_back(child, child->GetVisible(), bounds);
+  }
+
+  layouts.host_size = gfx::Size(x, height);
+  return layouts;
+}
+
+views::ProposedLayout SplitTabView::CalculateVerticalLayout(
+    const views::SizeBounds& size_bounds) const {
+  views::ProposedLayout layouts;
+  int width = 0;
+  int height = 0;
+
+  const std::vector<views::View*> children =
+      collection_node_ ? collection_node_->GetDirectChildren()
+                       : std::vector<views::View*>();
+  if (children.size() != 2) {
+    layouts.host_size = gfx::Size(0, 0);
+    return layouts;
+  }
+
+  const int border_thickness =
+      pinned_
+          ? GetLayoutConstant(LayoutConstant::kVerticalTabPinnedBorderThickness)
+          : 0;
+
+  // Layout children in order. Children will have their preferred height and
+  // fill available width. If unbounded or uncollapsed and both children fit on
+  // one row they will share it, otherwise they will be stacked vertically.
+  if (!size_bounds.width().is_bounded() ||
+      (!collapsed_ &&
+       size_bounds.width().value() >=
+           static_cast<int>(
+               GetLayoutConstant(LayoutConstant::kVerticalTabMinWidth) *
+               children.size()))) {
+    int x = 0;
+    for (auto* child : children) {
+      bool is_first_child = x == 0;
+      gfx::Rect bounds = gfx::Rect(child->GetPreferredSize());
+      bounds.set_x(x);
+      // Fill available width if bounded.
+      if (size_bounds.width().is_bounded()) {
+        // Split available space between the two children. Once this calculation
+        // is done for the first child, the second fills the remaining space.
+        bounds.set_width(
+            is_first_child ? (std::floor(size_bounds.width().value() +
+                                         2 * border_thickness - kSplitViewGap) /
+                              2)
+                           : size_bounds.width().value() - x);
+      }
+      // Advance x position by child width, accounting for any border and gap.
+      x += bounds.width() - 2 * border_thickness +
+           (is_first_child ? kSplitViewGap : 0);
+      height = std::max(height, bounds.height());
+      layouts.child_layouts.emplace_back(child, child->GetVisible(), bounds);
+    }
+    width = x;
+  } else {
+    int y = 0;
+    for (auto* child : children) {
+      gfx::Rect bounds = gfx::Rect(child->GetPreferredSize());
+      bounds.set_y(y);
+      bounds.set_width(size_bounds.width().value());
+      bounds.set_height(bounds.height());
+      // Advance y position by child height, accounting for any border and gap.
+      y +=
+          bounds.height() - 2 * border_thickness + (y == 0 ? kSplitViewGap : 0);
+      layouts.child_layouts.emplace_back(child, child->GetVisible(), bounds);
+    }
+    width = size_bounds.width().value();
+    height = y + 2 * border_thickness;
+  }
+  layouts.host_size = gfx::Size(width, height);
+  return layouts;
 }
 
 void SplitTabView::OnCollapseStateChanged(
