@@ -861,6 +861,11 @@ class SigninViewControllerSignInBanner
     mock_bluetooth_adapter_ = base::MakeRefCounted<AsyncMockBluetoothAdapter>();
     ON_CALL(*mock_bluetooth_adapter_, IsPresent())
         .WillByDefault(testing::Return(true));
+    ON_CALL(*mock_bluetooth_adapter_, IsPowered())
+        .WillByDefault(testing::Return(true));
+    ON_CALL(*mock_bluetooth_adapter_, GetOsPermissionStatus())
+        .WillByDefault(testing::Return(
+            device::BluetoothAdapter::PermissionStatus::kAllowed));
     device::BluetoothAdapterFactory::SetAdapterForTesting(
         mock_bluetooth_adapter_);
     // Other parts of Chrome may keep a reference to the bluetooth adapter.

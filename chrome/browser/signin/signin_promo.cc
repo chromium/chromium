@@ -143,8 +143,12 @@ void IsHybridTransportSupportedForQrCodeSignin(
   device::BluetoothAdapterFactory::Get()->GetAdapter(base::BindOnce(
       [](base::OnceCallback<void(bool)> callback,
          scoped_refptr<device::BluetoothAdapter> adapter) {
-        bool is_present = adapter && adapter->IsPresent();
-        std::move(callback).Run(is_present);
+        bool can_show =
+            adapter && adapter->IsPresent() &&
+            adapter->GetOsPermissionStatus() ==
+                device::BluetoothAdapter::PermissionStatus::kAllowed &&
+            adapter->IsPowered();
+        std::move(callback).Run(can_show);
       },
       std::move(callback)));
 }
