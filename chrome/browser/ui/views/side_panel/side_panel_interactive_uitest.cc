@@ -15,9 +15,11 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/features.h"
@@ -47,6 +49,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/actions/actions.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
@@ -336,19 +339,33 @@ class PinnedSidePanelInteractiveTest : public InteractiveFeaturePromoTest {
   }
 
   auto OpenReadingModeSidePanel() {
-    return Steps(Do(([&]() {
-                   chrome::ExecuteCommand(browser(),
-                                          IDC_SHOW_READING_MODE_SIDE_PANEL);
-                 })),
-                 WaitForShow(kSidePanelElementId));
+    return Steps(
+        Do(([&]() {
+          chrome::ExecuteCommandWithContext(
+              browser(), IDC_SHOW_READING_MODE_SIDE_PANEL,
+              actions::ActionInvocationContext::Builder()
+                  .SetProperty(
+                      kSidePanelOpenTriggerKey,
+                      static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
+                          SidePanelOpenTrigger::kToolbarButton))
+                  .Build());
+        })),
+        WaitForShow(kSidePanelElementId));
   }
 
   auto OpenCustomizeChromeSidePanel() {
-    return Steps(Do(([&]() {
-                   chrome::ExecuteCommand(browser(),
-                                          IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL);
-                 })),
-                 WaitForShow(kSidePanelElementId));
+    return Steps(
+        Do(([&]() {
+          chrome::ExecuteCommandWithContext(
+              browser(), IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL,
+              actions::ActionInvocationContext::Builder()
+                  .SetProperty(
+                      kSidePanelOpenTriggerKey,
+                      static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
+                          SidePanelOpenTrigger::kToolbarButton))
+                  .Build());
+        })),
+        WaitForShow(kSidePanelElementId));
   }
 
   auto CheckPinnedToolbarActionsContainerChildInkDropState(int child_index,
@@ -392,7 +409,14 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
       browser()->browser_window_features()->side_panel_ui();
   side_panel_ui->SetNoDelaysForTesting(true);
 
-  chrome::ExecuteCommand(browser(), IDC_SHOW_READING_MODE_SIDE_PANEL);
+  chrome::ExecuteCommandWithContext(
+      browser(), IDC_SHOW_READING_MODE_SIDE_PANEL,
+      actions::ActionInvocationContext::Builder()
+          .SetProperty(
+              kSidePanelOpenTriggerKey,
+              static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
+                  SidePanelOpenTrigger::kToolbarButton))
+          .Build());
 
   EXPECT_TRUE(side_panel_ui->IsSidePanelEntryShowing(
       SidePanelEntryKey(SidePanelEntryId::kReadAnything)));
@@ -438,7 +462,14 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
           [](SidePanelEntryScope&) { return std::make_unique<views::View>(); }),
       /*default_content_width_callback=*/base::NullCallback()));
 
-  chrome::ExecuteCommand(browser(), IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL);
+  chrome::ExecuteCommandWithContext(
+      browser(), IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
+      actions::ActionInvocationContext::Builder()
+          .SetProperty(
+              kSidePanelOpenTriggerKey,
+              static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
+                  SidePanelOpenTrigger::kAppMenu))
+          .Build());
 
   EXPECT_TRUE(browser()->GetFeatures().side_panel_ui()->IsSidePanelEntryShowing(
       SidePanelEntryKey(SidePanelEntryId::kHistoryClusters)));

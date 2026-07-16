@@ -16,6 +16,8 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/common/webui_url_constants.h"
@@ -34,6 +36,7 @@
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/dns/mock_host_resolver.h"
+#include "ui/actions/actions.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/widget/widget_deletion_observer.h"
 
@@ -929,7 +932,14 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
   EXPECT_TRUE(coordinator->IsPanelOpenForContextualTask());
 
   // Show Customize Chrome side panel.
-  chrome::ExecuteCommand(browser(), IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL);
+  chrome::ExecuteCommandWithContext(
+      browser(), IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL,
+      actions::ActionInvocationContext::Builder()
+          .SetProperty(
+              kSidePanelOpenTriggerKey,
+              static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
+                  SidePanelOpenTrigger::kToolbarButton))
+          .Build());
 
   // Verify the panel is closed.
   EXPECT_FALSE(coordinator->IsPanelOpenForContextualTask());

@@ -16,6 +16,8 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
@@ -33,6 +35,7 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/install_verifier.h"
 #include "extensions/test/test_extension_dir.h"
+#include "ui/actions/actions.h"
 #include "ui/base/interaction/element_identifier.h"
 
 namespace {
@@ -82,12 +85,19 @@ class FooterInteractiveTestBase
 
   InteractiveTestApi::MultiStep OpenCustomizeChromeSidePanel(
       const ui::ElementIdentifier& contents_id) {
-    return Steps(Do(base::BindLambdaForTesting([=, this]() {
-                   chrome::ExecuteCommand(browser(),
-                                          IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL);
-                 })),
-                 InstrumentNonTabWebView(
-                     contents_id, kCustomizeChromeSidePanelWebViewElementId));
+    return Steps(
+        Do(base::BindLambdaForTesting([=, this]() {
+          chrome::ExecuteCommandWithContext(
+              browser(), IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL,
+              actions::ActionInvocationContext::Builder()
+                  .SetProperty(
+                      kSidePanelOpenTriggerKey,
+                      static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
+                          SidePanelOpenTrigger::kToolbarButton))
+                  .Build());
+        })),
+        InstrumentNonTabWebView(contents_id,
+                                kCustomizeChromeSidePanelWebViewElementId));
   }
 
   InteractiveTestApi::MultiStep OpenSidePanel(
