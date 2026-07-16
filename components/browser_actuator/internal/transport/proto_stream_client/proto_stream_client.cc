@@ -1,0 +1,271 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/browser_actuator/internal/transport/proto_stream_client/proto_stream_client.h"
+
+#include <string>
+#include <utility>
+
+#include "base/auto_reset.h"
+#include "base/functional/bind.h"
+#include "base/notreached.h"
+#include "components/browser_actuator/internal/transport/stream_connection_delegate.h"
+#include "net/http/http_response_headers.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
+
+namespace browser_actuator {
+
+ProtoStreamClient::ProtoStreamClient(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    GURL endpoint,
+    std::unique_ptr<StreamConnectionDelegate> delegate,
+    StreamFramerFactory framer_factory,
+    net::NetworkTrafficAnnotationTag traffic_annotation)
+    : url_loader_factory_(std::move(url_loader_factory)),
+      endpoint_(std::move(endpoint)),
+      delegate_(std::move(delegate)),
+      framer_factory_(std::move(framer_factory)),
+      traffic_annotation_(traffic_annotation) {
+  CHECK(delegate_);
+  CHECK(framer_factory_);
+}
+
+ProtoStreamClient::~ProtoStreamClient() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void ProtoStreamClient::Connect() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!calling_delegate_);
+  if (teardown_deferred_) {
+    // Disconnect() followed by Connect() from the same notification: a
+    // restart. The deferred teardown still runs at the notification
+    // boundary; a fresh connection starts right after it.
+    connect_after_teardown_ = true;
+    return;
+  }
+  if (preparing_request_ || loader_) {
+    return;
+  }
+  StartRequest();
+}
+
+void ProtoStreamClient::Disconnect() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!calling_delegate_);
+  if (notifying_observers_) {
+    // Called from inside an observer notification. Tearing down here
+    // would notify observers from within a notification and hand the
+    // disconnect state change to the remaining observers before the
+    // in-flight message. Defer to the notification boundary instead.
+    teardown_deferred_ = true;
+    // A Disconnect() after a queued restart cancels the restart.
+    connect_after_teardown_ = false;
+    return;
+  }
+  TearDown();
+}
+
+bool ProtoStreamClient::IsConnected() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return connected_;
+}
+
+void ProtoStreamClient::AddObserver(Observer* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  observers_.AddObserver(observer);
+}
+
+void ProtoStreamClient::RemoveObserver(Observer* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  observers_.RemoveObserver(observer);
+}
+
+void ProtoStreamClient::StartRequest() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!loader_);
+  CHECK(!connected_);
+
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->url = endpoint_;
+  request->method = "GET";
+  // OnePlatform selects the binary framing from the Accept header (in
+  // combination with alt=proto in the URL, which the embedder provides).
+  request->headers.SetHeader("Accept", "application/x-protobuf");
+  request->headers.SetHeader("Cache-Control", "no-cache");
+  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+
+  // The delegate may prepare the request asynchronously (e.g. minting an
+  // OAuth token); the weak pointer cancels the attempt if the client is
+  // torn down in the meantime.
+  preparing_request_ = true;
+  base::AutoReset<bool> calling(&calling_delegate_, true);
+  delegate_->PrepareRequest(
+      std::move(request), base::BindOnce(&ProtoStreamClient::OnRequestPrepared,
+                                         weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ProtoStreamClient::OnRequestPrepared(
+    std::unique_ptr<network::ResourceRequest> request) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  preparing_request_ = false;
+
+  if (!request) {
+    // The delegate aborted the attempt (e.g. no token available). The
+    // client stays disconnected until Connect() is called again.
+    return;
+  }
+
+  loader_ =
+      network::SimpleURLLoader::Create(std::move(request), traffic_annotation_);
+  // base::Unretained is safe: `this` owns and outlives `loader_`, and
+  // SimpleURLLoader never invokes callbacks during its own destruction.
+  loader_->SetOnResponseStartedCallback(base::BindOnce(
+      &ProtoStreamClient::OnResponseStarted, base::Unretained(this)));
+  loader_->DownloadAsStream(url_loader_factory_.get(), this);
+}
+
+void ProtoStreamClient::OnResponseStarted(
+    const GURL& final_url,
+    const network::mojom::URLResponseHead& response_head) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const int response_code =
+      response_head.headers ? response_head.headers->response_code() : 0;
+  if (response_code != 200 ||
+      response_head.mime_type != "application/x-protobuf") {
+    // The endpoint rejected the attempt, or is not a proto stream endpoint
+    // at all; fail permanently.
+    TearDown();
+    return;
+  }
+
+  framer_ = framer_factory_.Run();
+  {
+    base::AutoReset<bool> calling(&calling_delegate_, true);
+    delegate_->OnConnectionEstablished();
+  }
+  SetConnected(true);
+  RunDeferredTeardown();
+}
+
+void ProtoStreamClient::OnDataReceived(std::string_view chunk,
+                                       base::OnceClosure resume) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(framer_);
+
+  // Hand the untrusted bytes to the framer; C++ never interprets them.
+  StreamFramer::FeedResult result = framer_->Feed(chunk);
+
+  for (const std::string& message : result.messages) {
+    {
+      base::AutoReset<bool> calling(&calling_delegate_, true);
+      delegate_->OnMessageDispatched(message);
+    }
+    {
+      base::AutoReset<bool> notifying(&notifying_observers_, true);
+      for (Observer& observer : observers_) {
+        observer.OnStreamMessage(message);
+      }
+    }
+    // An observer may have called Disconnect(). The in-flight message
+    // still reached every observer (ahead of the disconnect state
+    // change); the remaining messages of this batch belong to a stream
+    // the client no longer owns.
+    if (RunDeferredTeardown()) {
+      return;
+    }
+  }
+
+  if (result.status.has_value()) {
+    // The RPC completed; the server will close the connection.
+    {
+      base::AutoReset<bool> notifying(&notifying_observers_, true);
+      for (Observer& observer : observers_) {
+        observer.OnStreamStatus(*result.status);
+      }
+    }
+    if (RunDeferredTeardown()) {
+      return;
+    }
+  }
+
+  if (result.failed) {
+    // The framer rejected the stream: it is malformed or hostile. Fail
+    // permanently rather than keep talking to a broken server.
+    TearDown();
+    return;
+  }
+
+  std::move(resume).Run();
+}
+
+void ProtoStreamClient::OnComplete(bool success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // The stream is over, cleanly or not. Automatic reconnection with
+  // backoff and resume is not implemented yet, so any end of the stream
+  // returns the client to the disconnected state until Connect() is
+  // called again.
+  loader_.reset();
+  framer_.reset();
+  SetConnected(false);
+  // An observer may have called Disconnect() from the state-change
+  // notification; without this a deferred teardown would dangle into
+  // the next connection attempt. Callers of SetConnected() outside
+  // TearDown() must always follow up like this and let the result drive
+  // their control flow (e.g. not scheduling a reconnect).
+  RunDeferredTeardown();
+}
+
+void ProtoStreamClient::OnRetry(base::OnceClosure start) {
+  // SimpleURLLoader-level retries are never enabled; reconnection policy
+  // belongs to this client so that resume semantics can apply.
+  NOTREACHED();
+}
+
+void ProtoStreamClient::TearDown() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  preparing_request_ = false;
+  loader_.reset();
+  framer_.reset();
+  SetConnected(false);
+  // A Disconnect() arriving during the state-change notification above
+  // has nothing further to tear down, and a full stop cancels any queued
+  // restart.
+  teardown_deferred_ = false;
+  connect_after_teardown_ = false;
+}
+
+bool ProtoStreamClient::RunDeferredTeardown() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!teardown_deferred_) {
+    return false;
+  }
+  const bool restart = connect_after_teardown_;
+  TearDown();  // Clears both deferral flags.
+  if (restart) {
+    // Connect() rather than StartRequest(): a restart gets the same
+    // fresh-start state a regular Connect() gets.
+    Connect();
+  }
+  return true;
+}
+
+void ProtoStreamClient::SetConnected(bool connected) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (connected_ == connected) {
+    return;
+  }
+  connected_ = connected;
+  base::AutoReset<bool> notifying(&notifying_observers_, true);
+  for (Observer& observer : observers_) {
+    observer.OnStreamConnectionStateChange(connected);
+  }
+}
+
+}  // namespace browser_actuator

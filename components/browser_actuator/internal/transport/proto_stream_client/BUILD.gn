@@ -4,6 +4,28 @@
 
 import("//build/rust/rust_static_library.gni")
 
+# C++ transport client for OnePlatform `alt=proto` server-streaming RPCs:
+# owns the network connection and fans complete (still serialized)
+# messages out to observers. Framing of the untrusted stream bytes is
+# behind the injected StreamFramer factory, so this target does not link
+# any Rust; embedders bind :rust_stream_framer into the factory.
+source_set("proto_stream_client") {
+  sources = [
+    "proto_stream_client.cc",
+    "proto_stream_client.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/browser_actuator/internal/transport",
+    "//net",
+    "//services/network/public/cpp",
+    "//url",
+  ]
+
+  deps = [ "//services/network/public/mojom" ]
+}
+
 # StreamFramer implementation backed by the Rust StreamBody parser: the
 # only production C++ that touches the cxx-generated bridge, so FFI types
 # such as rust::Box do not leak into client code.
@@ -61,15 +83,27 @@ rust_static_library("stream_body_bridge") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "rust_stream_framer_unittest.cc" ]
+  sources = [
+    "proto_stream_client_unittest.cc",
+    "rust_stream_framer_unittest.cc",
+  ]
 
   deps = [
+    ":proto_stream_client",
     ":rust_stream_framer",
     "//base",
+    "//base/test:test_support",
     "//components/browser_actuator/internal/transport",
+    "//components/browser_actuator/internal/transport/test_support",
+    "//net",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/fuzztest",
+    "//url",
   ]
 
   visibility = [ "//components/browser_actuator/internal:unit_tests" ]

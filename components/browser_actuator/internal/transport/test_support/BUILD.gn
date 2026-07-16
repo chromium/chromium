@@ -12,6 +12,8 @@ source_set("test_support") {
     "mock_stream_connection_delegate.h",
     "mock_stream_framer.cc",
     "mock_stream_framer.h",
+    "wait_for.cc",
+    "wait_for.h",
   ]
 
   public_deps = [
