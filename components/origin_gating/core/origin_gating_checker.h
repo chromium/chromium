@@ -151,6 +151,18 @@ class OriginGatingChecker {
                          GatingDecisionCallback callback,
                          Delegate::NoVerdictResult result);
 
+  // Runs the given FunctionRef if the `input.requires_user_confirmation` field
+  // is non-nullopt; otherwise queries the delegate and resumes via
+  // `RunNextPredicate`
+  void RunActionOrGetUserConfirmationInfo(
+      std::unique_ptr<GatingDecisionContext> context,
+      base::span<const PredicateConfiguration> pending_predicates,
+      DelegateInputs input,
+      GatingDecisionCallback callback,
+      base::FunctionRef<void(std::unique_ptr<GatingDecisionContext> context,
+                             DelegateInputs input,
+                             GatingDecisionCallback callback)> action);
+
   // Predicate that returns `kAllowed` if `destination` is in the cache with
   // user confirmation; `kNoDecision` otherwise.
   Decision IsCachedWithUserConfirmation(const url::Origin& origin) const
