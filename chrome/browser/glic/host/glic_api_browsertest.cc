@@ -939,32 +939,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithDaisyChain,
   ContinueJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testMultiplePanelsDetachedAndFloating) {
-  // Open two tabs, select the first, open glic.
-  RunTestSequence(InstrumentTab(kFirstTab),
-                  NavigateWebContents(kFirstTab, page_url()));
-
-  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
-  browser()->tab_strip_model()->ActivateTabAt(0);
-  ASSERT_EQ(0, browser()->tab_strip_model()->active_index());
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
-
-  // Execute test on the first tab instance.
-  ExecuteJsTest({.params = base::Value("first")});
-
-  // Select the second tab, open glic, and execute the test on the second
-  // instance.
-  TrackGlicInstanceWithTabIndex(1);
-  browser()->tab_strip_model()->ActivateTabAt(1);
-  RunTestSequence(InstrumentTab(kSecondTab),
-                  OpenGlic(GlicInstrumentMode::kHostAndContents));
-  ExecuteJsTest({.params = base::Value("second")});
-
-  // Continue on the first tab.
-  TrackGlicInstanceWithTabIndex(0);
-  ContinueJsTest();
-}
-
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testThereCanOnlyBeOneFloaty) {
   // Open two tabs, select the first, open Floaty glic.
   RunTestSequence(InstrumentTab(kFirstTab),

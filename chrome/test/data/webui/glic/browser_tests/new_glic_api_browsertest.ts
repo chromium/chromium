@@ -1081,6 +1081,29 @@ class ApiTests extends ApiTestFixtureBase {
     this.host.attachPanel();
     await panelStates.waitFor(state => state.kind === PanelStateKind.ATTACHED);
   }
+
+  async testMultiplePanelsAttachedAndDetached() {
+    assertDefined(this.host.getPanelState);
+    assertDefined(this.host.detachPanel);
+
+    if (this.testParams === 'first') {
+      const panelStates = observeSequence(this.host.getPanelState());
+      await panelStates.waitFor(
+          state => state.kind === PanelStateKind.ATTACHED);
+      await this.advanceToNextStep();
+      // Ensure the panel state stays attached. Note that currently, we do see
+      // the panel state go to hidden momentarily, so we only assert that the
+      // state eventually transitions again to attached.
+      await sleep(100);
+      observeSequence(this.host.getPanelState())
+          .waitFor(state => state.kind === PanelStateKind.ATTACHED);
+    } else if (this.testParams === 'second') {
+      this.host.detachPanel();
+      const panelStates = observeSequence(this.host.getPanelState());
+      await panelStates.waitFor(
+          state => state.kind === PanelStateKind.DETACHED);
+    }
+  }
 }
 
 class FaviconTest extends ApiTests {

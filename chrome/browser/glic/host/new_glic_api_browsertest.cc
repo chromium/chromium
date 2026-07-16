@@ -801,6 +801,46 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, MAYBE_testDetachPanel) {
 }
 
 #if defined(NOT_VETTED_ON_ANDROID)
+#define MAYBE_testMultiplePanelsAttachedAndDetached \
+  DISABLED_testMultiplePanelsAttachedAndDetached
+#else
+#define MAYBE_testMultiplePanelsAttachedAndDetached \
+  testMultiplePanelsAttachedAndDetached
+#endif
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
+                       MAYBE_testMultiplePanelsAttachedAndDetached) {
+  // Save first tab (already active and navigated in SetUpOnMainThread).
+  tabs::TabInterface* first_tab = GetTabListInterface()->GetActiveTab();
+
+  // Create a second tab.
+  tabs::TabInterface* second_tab = CreateAndActivateTab(
+      embedded_test_server()->GetURL("/glic/browser_tests/test.html"));
+
+  // Go back to the first tab.
+  ActivateTab(first_tab);
+
+  // Open Glic for the first tab.
+  ASSERT_OK(OpenGlicForActiveTab());
+  GlicInstanceImpl* tab0_instance = GetInstanceForTab(first_tab);
+  ASSERT_TRUE(tab0_instance);
+
+  // Execute test on the first tab instance.
+  ExecuteJsTest({.params = base::Value("first"), .instance = tab0_instance});
+
+  // Select the second tab and open glic.
+  ActivateTab(second_tab);
+  ASSERT_OK(OpenGlicForActiveTab());
+  GlicInstanceImpl* tab1_instance = GetInstanceForTab(second_tab);
+  ASSERT_TRUE(tab1_instance);
+
+  // Execute test on the second instance.
+  ExecuteJsTest({.params = base::Value("second"), .instance = tab1_instance});
+
+  // Continue on the first tab.
+  ContinueJsTest({.instance = tab0_instance});
+}
+
+#if defined(NOT_VETTED_ON_ANDROID)
 #define MAYBE_testDetachPanelNoFloatyOrLiveMode \
   DISABLED_testDetachPanelNoFloatyOrLiveMode
 #else
