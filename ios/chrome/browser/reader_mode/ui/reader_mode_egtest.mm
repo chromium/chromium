@@ -511,6 +511,12 @@ std::unique_ptr<net::test_server::HttpResponse> HandleReaderModeTestRequests(
 
   // Open Reader Mode UI.
   [self openReaderModeWithBadgeEntrypoint];
+  // TODO(crbug.com/530841942): On iOS 27, tests frequently fail without this
+  // wait before navigating forward after session restoration.
+  if (@available(iOS 27, *)) {
+    base::test::ios::SpinRunLoopWithMaxDelay(
+        base::test::ios::kWaitForActionTimeout);
+  }
   [self assertReaderModePageIsVisible];
 
   // Check that the chip is a button with the expected accessibility label.
