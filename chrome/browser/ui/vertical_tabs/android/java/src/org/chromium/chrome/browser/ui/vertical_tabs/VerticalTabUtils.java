@@ -16,7 +16,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 @NullMarked
 public class VerticalTabUtils {
     /** The width of the vertical tabs SideUiContainer in dp. */
-    public static final int SIDE_UI_CONTAINER_WIDTH_DP = 206;
+    public static final int SIDE_UI_CONTAINER_WIDTH_DP = 240;
 
     /** The width of the collapsed vertical tabs SideUiContainer in dp. */
     public static final int SIDE_UI_CONTAINER_COLLAPSED_WIDTH_DP = 74;
