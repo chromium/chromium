@@ -5,11 +5,16 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TAB_SHARING_TAB_SHARING_TEST_UTILS_H_
 #define CHROME_BROWSER_UI_VIEWS_TAB_SHARING_TAB_SHARING_TEST_UTILS_H_
 
-#include "chrome/browser/ui/views/tab_sharing/tab_sharing_infobar.h"
+#include <optional>
+#include <string>
+
+namespace views {
+class View;
+}
 
 // Calls `GetText()` on the passed in `button_or_label` which must be of type
 // `MdTextButton` or `Label`.
-std::optional<std::u16string_view> GetButtonOrLabelText(
+std::optional<std::u16string_view> GetTabSharingButtonOrLabelText(
     const views::View& button_or_label);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TAB_SHARING_TAB_SHARING_TEST_UTILS_H_

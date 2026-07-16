@@ -95,7 +95,7 @@ std::u16string GetInfoText(const TabSharingStatusMessageView& info_view) {
   std::u16string text;
   for (views::View* view : info_view.children()) {
     if (std::optional<std::u16string_view> button_or_label_text =
-            GetButtonOrLabelText(*view)) {
+            GetTabSharingButtonOrLabelText(*view)) {
       text += *button_or_label_text;
     }
   }

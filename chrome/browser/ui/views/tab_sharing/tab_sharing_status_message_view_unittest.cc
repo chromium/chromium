@@ -20,7 +20,8 @@ std::vector<std::string> GetChildTexts(
     const TabSharingStatusMessageView& info_view) {
   std::vector<std::string> texts;
   for (const views::View* view : info_view.children()) {
-    if (std::optional<std::u16string_view> text = GetButtonOrLabelText(*view)) {
+    if (std::optional<std::u16string_view> text =
+            GetTabSharingButtonOrLabelText(*view)) {
       texts.emplace_back(base::UTF16ToUTF8(*text));
     }
   }
