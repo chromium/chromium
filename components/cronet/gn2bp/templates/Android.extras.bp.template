@@ -161,6 +161,7 @@ android_library {
 java_defaults {
     name: "${GN2BP_MODULE_PREFIX}java_framework_defaults",
     sdk_version: "module_current",
+    java_version: "25",
     libs: [
         "framework-annotations-lib",
         "framework-connectivity-pre-jarjar-without-cronet",

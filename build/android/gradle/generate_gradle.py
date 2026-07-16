@@ -41,7 +41,9 @@ _DEFAULT_ANDROID_GRADLE_PLUGIN_VERSION = '9.2.0'
 _DEFAULT_KOTLIN_GRADLE_PLUGIN_VERSION = '2.2.10'
 _DEFAULT_GRADLE_WRAPPER_VERSION = '9.1.0'
 # Keep consistent with javac_cmd in //build/android/gyp/turbine.py.
+# LINT.IfChange
 _DEFAULT_JAVA_VERSION = '25'
+# LINT.ThenChange(//depot/chromium/components/cronet/gn2bp/templates/Android.extras.bp.template)
 
 _DEPOT_TOOLS_PATH = os.path.join(host_paths.DIR_SOURCE_ROOT, 'third_party',
                                  'depot_tools')
