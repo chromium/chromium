@@ -190,6 +190,8 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'UnnecessaryTestMethodPrefix',
     # Too many suggestions where it's not actually necessary.
     'CanIgnoreReturnValueSuggester',
+    # Too many errors (https://issuetracker.google.com/516651197).
+    'ReferenceEquality',
 
     # These are all for Javadoc, which we don't really care about.
     'InvalidBlockTag',
