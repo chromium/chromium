@@ -1398,6 +1398,7 @@ void CaptionBubble::SetBackgroundColor() {
   }
 
   views::BubbleDialogDelegateView::SetBackgroundColor(background_color);
+  SetBackground(views::CreateSolidBackground(background_color));
   GetWidget()->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark);
 }
 
