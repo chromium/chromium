@@ -185,22 +185,25 @@ IpczResult IPCZ_API GenerateRandomBytes(size_t num_bytes,
 
 }  // namespace
 
-const IpczDriver kSingleProcessReferenceDriverBase = {
-    sizeof(kSingleProcessReferenceDriverBase),
-    Close,
-    Serialize,
-    Deserialize,
-    nullptr,
-    nullptr,
-    nullptr,
-    nullptr,
-    ReportBadTransportActivity,
-    AllocateSharedMemory,
-    GetSharedMemoryInfo,
-    DuplicateSharedMemory,
-    MapSharedMemory,
-    GenerateRandomBytes,
-};
+const IpczDriver& GetSingleProcessReferenceDriverBase() {
+  static const IpczDriver driver = {
+      sizeof(driver),
+      Close,
+      Serialize,
+      Deserialize,
+      nullptr,
+      nullptr,
+      nullptr,
+      nullptr,
+      ReportBadTransportActivity,
+      AllocateSharedMemory,
+      GetSharedMemoryInfo,
+      DuplicateSharedMemory,
+      MapSharedMemory,
+      GenerateRandomBytes,
+  };
+  return driver;
+}
 
 void SetBadTransportActivityCallback(BadTransportActivityCallback callback) {
   GetBadTransportActivityCallback() = std::move(callback);

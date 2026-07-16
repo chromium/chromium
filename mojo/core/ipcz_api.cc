@@ -57,8 +57,8 @@ bool InitializeIpczNodeForProcess(const IpczNodeOptions& options) {
       .enabled_features = enabled_features.data(),
       .num_enabled_features = enabled_features.size(),
   };
-  IpczResult result = GetIpczAPI().CreateNode(&ipcz_driver::kDriver, flags,
-                                              &create_options, &g_node);
+  IpczResult result = GetIpczAPI().CreateNode(&ipcz_driver::GetIpczDriver(),
+                                              flags, &create_options, &g_node);
   return result == IPCZ_RESULT_OK;
 }
 

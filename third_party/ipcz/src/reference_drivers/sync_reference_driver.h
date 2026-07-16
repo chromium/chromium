@@ -13,7 +13,7 @@ namespace ipcz::reference_drivers {
 // on one transport directly calls into the activity handler of its peer, so all
 // node operations and therefore all ipcz operations complete synchronously from
 // end to end.
-extern const IpczDriver kSyncReferenceDriver;
+const IpczDriver& GetSyncReferenceDriver();
 
 }  // namespace ipcz::reference_drivers
 

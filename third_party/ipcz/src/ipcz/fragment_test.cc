@@ -19,7 +19,9 @@
 namespace ipcz {
 namespace {
 
-const IpczDriver& kTestDriver = reference_drivers::kSyncReferenceDriver;
+const IpczDriver& GetTestDriver() {
+  return reference_drivers::GetSyncReferenceDriver();
+}
 
 using FragmentTest = testing::Test;
 
@@ -57,7 +59,7 @@ TEST_F(FragmentTest, PendingFromDescriptor) {
 
 TEST_F(FragmentTest, NullMappedFromDescriptor) {
   constexpr size_t kDataSize = 32;
-  DriverMemory memory(kTestDriver, kDataSize);
+  DriverMemory memory(GetTestDriver(), kDataSize);
   auto mapping = memory.Map();
 
   Fragment f =
@@ -67,7 +69,7 @@ TEST_F(FragmentTest, NullMappedFromDescriptor) {
 
 TEST_F(FragmentTest, InvalidMappedFromDescriptor) {
   constexpr size_t kDataSize = 32;
-  DriverMemory memory(kTestDriver, kDataSize);
+  DriverMemory memory(GetTestDriver(), kDataSize);
   auto mapping = memory.Map();
 
   Fragment f;
@@ -88,7 +90,7 @@ TEST_F(FragmentTest, InvalidMappedFromDescriptor) {
 
 TEST_F(FragmentTest, ValidMappedFromDescriptor) {
   const char kData[] = "0123456789abcdef";
-  DriverMemory memory(kTestDriver, std::size(kData));
+  DriverMemory memory(GetTestDriver(), std::size(kData));
   auto mapping = memory.Map();
   IPCZ_UNSAFE_TODO(memcpy(mapping.bytes().data(), kData, std::size(kData)));
 

@@ -55,7 +55,7 @@ class Transmission {
  private:
   void Reset() {
     for (auto handle : handles_) {
-      kDriver.Close(handle, IPCZ_NO_FLAGS, nullptr);
+      GetFuzzerDriver().Close(handle, IPCZ_NO_FLAGS, nullptr);
     }
     data_.clear();
     handles_.clear();

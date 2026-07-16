@@ -22,23 +22,25 @@
 namespace ipcz {
 namespace {
 
-const IpczDriver& kDriver = reference_drivers::kSyncReferenceDriver;
+const IpczDriver& GetDriver() {
+  return reference_drivers::GetSyncReferenceDriver();
+}
 
 std::pair<Ref<NodeLink>, Ref<NodeLink>> LinkNodesWithoutActivation(
     Ref<Node> broker,
     Ref<Node> non_broker) {
   IpczDriverHandle handle0, handle1;
   EXPECT_EQ(IPCZ_RESULT_OK,
-            kDriver.CreateTransports(IPCZ_INVALID_DRIVER_HANDLE,
-                                     IPCZ_INVALID_DRIVER_HANDLE, IPCZ_NO_FLAGS,
-                                     nullptr, &handle0, &handle1));
+            GetDriver().CreateTransports(
+                IPCZ_INVALID_DRIVER_HANDLE, IPCZ_INVALID_DRIVER_HANDLE,
+                IPCZ_NO_FLAGS, nullptr, &handle0, &handle1));
 
   auto transport0 =
-      MakeRefCounted<DriverTransport>(DriverObject(kDriver, handle0));
+      MakeRefCounted<DriverTransport>(DriverObject(GetDriver(), handle0));
   auto transport1 =
-      MakeRefCounted<DriverTransport>(DriverObject(kDriver, handle1));
+      MakeRefCounted<DriverTransport>(DriverObject(GetDriver(), handle1));
 
-  DriverMemoryWithMapping buffer = NodeLinkMemory::AllocateMemory(kDriver);
+  DriverMemoryWithMapping buffer = NodeLinkMemory::AllocateMemory(GetDriver());
   ABSL_ASSERT(buffer.mapping.is_valid());
 
   const NodeName non_broker_name = broker->GenerateRandomName();
@@ -82,8 +84,8 @@ std::pair<Ref<Router>, Ref<Router>> AttachRouters(Ref<NodeLink> link0,
 using NodeLinkTest = testing::Test;
 
 TEST_F(NodeLinkTest, BasicTransmission) {
-  Ref<Node> node0 = MakeRefCounted<Node>(Node::Type::kBroker, kDriver);
-  Ref<Node> node1 = MakeRefCounted<Node>(Node::Type::kNormal, kDriver);
+  Ref<Node> node0 = MakeRefCounted<Node>(Node::Type::kBroker, GetDriver());
+  Ref<Node> node1 = MakeRefCounted<Node>(Node::Type::kNormal, GetDriver());
 
   auto [link0, link1] = LinkNodes(node0, node1);
   auto [router0, router1] = AttachRouters(link0, link1);
@@ -105,8 +107,8 @@ absl::Span<const uint8_t> MessageSpan() {
 }
 
 TEST_F(NodeLinkTest, BasicTransmissionWithMessage) {
-  Ref<Node> node0 = MakeRefCounted<Node>(Node::Type::kBroker, kDriver);
-  Ref<Node> node1 = MakeRefCounted<Node>(Node::Type::kNormal, kDriver);
+  Ref<Node> node0 = MakeRefCounted<Node>(Node::Type::kBroker, GetDriver());
+  Ref<Node> node1 = MakeRefCounted<Node>(Node::Type::kNormal, GetDriver());
 
   auto [link0, link1] = LinkNodes(node0, node1);
   auto [router0, router1] = AttachRouters(link0, link1);
@@ -137,8 +139,8 @@ TEST_F(NodeLinkTest, BasicTransmissionWithMessage) {
 }
 
 TEST_F(NodeLinkTest, AcceptEarlyParcel) {
-  Ref<Node> node0 = MakeRefCounted<Node>(Node::Type::kBroker, kDriver);
-  Ref<Node> node1 = MakeRefCounted<Node>(Node::Type::kNormal, kDriver);
+  Ref<Node> node0 = MakeRefCounted<Node>(Node::Type::kBroker, GetDriver());
+  Ref<Node> node1 = MakeRefCounted<Node>(Node::Type::kNormal, GetDriver());
   auto [link0, link1] = LinkNodes(node0, node1);
 
   // Set up the central link, but delay attaching the Router on the receiving
@@ -187,8 +189,8 @@ TEST_F(NodeLinkTest, AcceptEarlyParcel) {
 }
 
 TEST_F(NodeLinkTest, RejectParcelForClosedRouter) {
-  Ref<Node> node0 = MakeRefCounted<Node>(Node::Type::kBroker, kDriver);
-  Ref<Node> node1 = MakeRefCounted<Node>(Node::Type::kNormal, kDriver);
+  Ref<Node> node0 = MakeRefCounted<Node>(Node::Type::kBroker, GetDriver());
+  Ref<Node> node1 = MakeRefCounted<Node>(Node::Type::kNormal, GetDriver());
 
   // Link nodes and avoid activating link1 to let the incoming message wait
   // until transport activation.
@@ -226,11 +228,11 @@ TEST_F(NodeLinkTest, AvailableFeatures) {
       .enabled_features = kEnabledFeatures,
       .num_enabled_features = std::size(kEnabledFeatures),
   };
-  Ref<Node> node0 = MakeRefCounted<Node>(Node::Type::kBroker, kDriver,
+  Ref<Node> node0 = MakeRefCounted<Node>(Node::Type::kBroker, GetDriver(),
                                          &options_with_features);
-  Ref<Node> node1 = MakeRefCounted<Node>(Node::Type::kNormal, kDriver,
+  Ref<Node> node1 = MakeRefCounted<Node>(Node::Type::kNormal, GetDriver(),
                                          &options_with_features);
-  Ref<Node> node2 = MakeRefCounted<Node>(Node::Type::kNormal, kDriver);
+  Ref<Node> node2 = MakeRefCounted<Node>(Node::Type::kNormal, GetDriver());
 
   auto [link01, link10] = LinkNodes(node0, node1);
   auto [link02, link20] = LinkNodes(node0, node2);
@@ -258,8 +260,8 @@ TEST_F(NodeLinkTest, AvailableFeatures) {
 // because the router would attempt to set the sequence length limits on its
 // decaying links more than once. Regression test for crbug.com/486341715.
 TEST_F(NodeLinkTest, StopProxyingRedundant) {
-  Ref<Node> node0 = MakeRefCounted<Node>(Node::Type::kBroker, kDriver);
-  Ref<Node> node1 = MakeRefCounted<Node>(Node::Type::kNormal, kDriver);
+  Ref<Node> node0 = MakeRefCounted<Node>(Node::Type::kBroker, GetDriver());
+  Ref<Node> node1 = MakeRefCounted<Node>(Node::Type::kNormal, GetDriver());
 
   auto [link0, link1] = LinkNodes(node0, node1);
   auto [router0, router1] = AttachRouters(link0, link1);
@@ -280,8 +282,8 @@ TEST_F(NodeLinkTest, StopProxyingRedundant) {
 }
 
 TEST_F(NodeLinkTest, NotifyProxyWillStopRedundant) {
-  Ref<Node> node0 = MakeRefCounted<Node>(Node::Type::kBroker, kDriver);
-  Ref<Node> node1 = MakeRefCounted<Node>(Node::Type::kNormal, kDriver);
+  Ref<Node> node0 = MakeRefCounted<Node>(Node::Type::kBroker, GetDriver());
+  Ref<Node> node1 = MakeRefCounted<Node>(Node::Type::kNormal, GetDriver());
 
   auto [link0, link1] = LinkNodes(node0, node1);
   auto [router0, router1] = AttachRouters(link0, link1);

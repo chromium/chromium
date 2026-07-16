@@ -35,7 +35,7 @@ TEST_F(DriverMemoryTest, Invalid) {
 TEST_F(DriverMemoryTest, AcquireFromObject) {
   constexpr IpczDriverHandle kHandle = 1234;
   constexpr size_t kSize = 64;
-  DriverObject object(test::kMockDriver, kHandle);
+  DriverObject object(test::GetMockDriver(), kHandle);
 
   // Constructing a new DriverMemory over a generic DriverObject must query the
   // underlying object for its size.
@@ -68,7 +68,7 @@ TEST_F(DriverMemoryTest, Allocate) {
       })
       .RetiresOnSaturation();
 
-  DriverMemory memory(test::kMockDriver, kSize);
+  DriverMemory memory(test::GetMockDriver(), kSize);
   EXPECT_EQ(kHandle, memory.driver_object().handle());
   EXPECT_EQ(kSize, memory.size());
 
@@ -88,7 +88,7 @@ TEST_F(DriverMemoryTest, Clone) {
       })
       .RetiresOnSaturation();
 
-  DriverMemory memory(test::kMockDriver, kSize);
+  DriverMemory memory(test::GetMockDriver(), kSize);
 
   EXPECT_CALL(driver(), DuplicateSharedMemory(kHandle, _, _, _))
       .WillOnce([&](IpczDriverHandle memory, uint32_t, const void*,
@@ -130,7 +130,7 @@ TEST_F(DriverMemoryTest, Map) {
       })
       .RetiresOnSaturation();
 
-  DriverMemory memory(test::kMockDriver, kSize);
+  DriverMemory memory(test::GetMockDriver(), kSize);
 
   EXPECT_CALL(driver(), MapSharedMemory(kHandle, _, _, _, _))
       .WillOnce([&](IpczDriverHandle memory, uint32_t, const void*,

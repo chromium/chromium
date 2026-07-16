@@ -19,7 +19,9 @@
 namespace ipcz {
 namespace {
 
-const IpczDriver& kTestDriver = reference_drivers::kSyncReferenceDriver;
+const IpczDriver& GetTestDriver() {
+  return reference_drivers::GetSyncReferenceDriver();
+}
 
 using RefCountedFragmentTest = testing::Test;
 
@@ -165,8 +167,9 @@ TEST_F(RefCountedFragmentTest, Move) {
 }
 
 TEST_F(RefCountedFragmentTest, Free) {
-  auto node = MakeRefCounted<Node>(Node::Type::kNormal, kTestDriver);
-  DriverMemoryWithMapping buffer = NodeLinkMemory::AllocateMemory(kTestDriver);
+  auto node = MakeRefCounted<Node>(Node::Type::kNormal, GetTestDriver());
+  DriverMemoryWithMapping buffer =
+      NodeLinkMemory::AllocateMemory(GetTestDriver());
   auto memory = NodeLinkMemory::Create(std::move(node), LinkSide::kA,
                                        Features{}, std::move(buffer.mapping));
 

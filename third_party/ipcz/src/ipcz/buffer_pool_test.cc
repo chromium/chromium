@@ -27,7 +27,7 @@ class BufferPoolTest : public testing::Test {
  private:
   const Ref<Node> node_{
       MakeRefCounted<Node>(Node::Type::kBroker,
-                           reference_drivers::kSyncReferenceDriver)};
+                           reference_drivers::GetSyncReferenceDriver())};
 };
 
 TEST_F(BufferPoolTest, AddBlockBuffer) {

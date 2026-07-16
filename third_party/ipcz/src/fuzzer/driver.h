@@ -12,7 +12,7 @@ namespace ipcz::fuzzer {
 // The ipcz driver used for fuzzing. This driver hooks into a global Fuzzer
 // instance which a fuzzer can use to manually drive internode communication and
 // inject fuzz data.
-extern const IpczDriver kDriver;
+const IpczDriver& GetFuzzerDriver();
 
 }  // namespace ipcz::fuzzer
 

@@ -16,7 +16,7 @@ namespace ipcz::reference_drivers {
 namespace {
 
 TEST(MultiprocessReferenceDriverTest, SendDeactivated) {
-  const IpczDriver& driver = kMultiprocessReferenceDriver;
+  const IpczDriver& driver = GetMultiprocessReferenceDriver();
   IpczDriverHandle a, b;
   EXPECT_EQ(IPCZ_RESULT_OK,
             driver.CreateTransports(IPCZ_INVALID_DRIVER_HANDLE,

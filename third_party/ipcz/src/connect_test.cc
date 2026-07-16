@@ -186,8 +186,8 @@ MULTINODE_TEST(ConnectTest, NonBrokerToNonBroker) {
   // Client nodes launching other client nodes doesn't work for Chromium's
   // custom test driver on Android. Limit this test to the reference test
   // drivers there.
-  if (&GetDriver() != &reference_drivers::kSyncReferenceDriver &&
-      &GetDriver() != &reference_drivers::kAsyncReferenceDriver) {
+  if (&GetDriver() != &reference_drivers::GetSyncReferenceDriver() &&
+      &GetDriver() != &reference_drivers::GetAsyncReferenceDriver()) {
     return;
   }
 #endif
@@ -280,8 +280,8 @@ MULTINODE_TEST(ConnectTest, FailedNonBrokerReferral) {
   // Client nodes launching other client nodes doesn't work for Chromium's
   // custom test driver on Android. Limit this test to the reference test
   // drivers there.
-  if (&GetDriver() != &reference_drivers::kSyncReferenceDriver &&
-      &GetDriver() != &reference_drivers::kAsyncReferenceDriver) {
+  if (&GetDriver() != &reference_drivers::GetSyncReferenceDriver() &&
+      &GetDriver() != &reference_drivers::GetAsyncReferenceDriver()) {
     return;
   }
 #endif
@@ -345,8 +345,8 @@ MULTINODE_TEST(ConnectTest, MultiBrokerIntroductions) {
   // Client nodes launching other client nodes doesn't work reliably for
   // Chromium's multiprocess test driver on Android. Limit this test to a few
   // reference drivers there.
-  if (&GetDriver() != &reference_drivers::kSyncReferenceDriver &&
-      &GetDriver() != &reference_drivers::kAsyncReferenceDriver) {
+  if (&GetDriver() != &reference_drivers::GetSyncReferenceDriver() &&
+      &GetDriver() != &reference_drivers::GetAsyncReferenceDriver()) {
     return;
   }
 #endif

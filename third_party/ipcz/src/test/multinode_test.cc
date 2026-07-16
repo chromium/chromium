@@ -152,7 +152,7 @@ class InProcessTestDriverBase : public TestDriver {
 class SyncTestDriver : public InProcessTestDriverBase {
  public:
   const IpczDriver& GetIpczDriver() const override {
-    return reference_drivers::kSyncReferenceDriver;
+    return reference_drivers::GetSyncReferenceDriver();
   }
 
   const char* GetName() const override { return internal::kSyncTestDriverName; }
@@ -185,9 +185,9 @@ class AsyncTestDriver : public InProcessTestDriverBase {
   const IpczDriver& GetIpczDriver() const override {
     if (mode_ == kForceBrokering ||
         mode_ == kForceBrokeringAndDelegateAllocation) {
-      return reference_drivers::kAsyncReferenceDriverWithForcedBrokering;
+      return reference_drivers::GetAsyncReferenceDriverWithForcedBrokering();
     }
-    return reference_drivers::kAsyncReferenceDriver;
+    return reference_drivers::GetAsyncReferenceDriver();
   }
 
   const char* GetName() const override { return name_; }
@@ -267,7 +267,7 @@ class ChildProcessTestNodeController : public TestNode::TestNodeController {
 class MultiprocessTestDriver : public TestDriver {
  public:
   const IpczDriver& GetIpczDriver() const override {
-    return reference_drivers::kMultiprocessReferenceDriver;
+    return reference_drivers::GetMultiprocessReferenceDriver();
   }
 
   const char* GetName() const override {

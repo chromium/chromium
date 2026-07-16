@@ -37,9 +37,9 @@ class DriverTransportTest : public testing::Test {
       IpczDriverHandle transport0,
       IpczDriverHandle transport1) {
     return {MakeRefCounted<DriverTransport>(
-                DriverObject(test::kMockDriver, transport0)),
+                DriverObject(test::GetMockDriver(), transport0)),
             MakeRefCounted<DriverTransport>(
-                DriverObject(test::kMockDriver, transport1))};
+                DriverObject(test::GetMockDriver(), transport1))};
   }
 
  private:
@@ -175,8 +175,8 @@ TEST_F(DriverTransportTest, SerializationFailure) {
 
   constexpr IpczDriverHandle kFakeObject = 12345678;
   test::msg::MessageWithDriverObject message;
-  message.v0()->object =
-      message.AppendDriverObject(DriverObject(test::kMockDriver, kFakeObject));
+  message.v0()->object = message.AppendDriverObject(
+      DriverObject(test::GetMockDriver(), kFakeObject));
 
   EXPECT_CALL(driver(), Serialize(kFakeObject, kTransport0, _, _, _, _, _, _))
       .WillRepeatedly([&](IpczDriverHandle, IpczDriverHandle, uint32_t,

@@ -21,7 +21,9 @@
 namespace ipcz {
 namespace {
 
-const IpczDriver& kTestDriver = reference_drivers::kSyncReferenceDriver;
+const IpczDriver& GetTestDriver() {
+  return reference_drivers::GetSyncReferenceDriver();
+}
 
 constexpr NodeName kNodeAName(0, 1);
 constexpr NodeName kNodeBName(1, 2);
@@ -47,9 +49,9 @@ class NodeTest : public testing::Test {
 
  private:
   void ConnectBrokerToNode(Ref<Node> node, const NodeName& name) {
-    auto transports = DriverTransport::CreatePair(kTestDriver);
+    auto transports = DriverTransport::CreatePair(GetTestDriver());
     DriverMemoryWithMapping buffer =
-        NodeLinkMemory::AllocateMemory(kTestDriver);
+        NodeLinkMemory::AllocateMemory(GetTestDriver());
     const NodeName broker_name = broker_->GetAssignedName();
     auto broker_link = NodeLink::CreateInactive(
         broker_, LinkSide::kA, broker_name, name, Node::Type::kNormal, 0,
@@ -68,11 +70,11 @@ class NodeTest : public testing::Test {
   }
 
   const Ref<Node> broker_{
-      MakeRefCounted<Node>(Node::Type::kBroker, kTestDriver)};
+      MakeRefCounted<Node>(Node::Type::kBroker, GetTestDriver())};
   const Ref<Node> node_a_{
-      MakeRefCounted<Node>(Node::Type::kNormal, kTestDriver)};
+      MakeRefCounted<Node>(Node::Type::kNormal, GetTestDriver())};
   const Ref<Node> node_b_{
-      MakeRefCounted<Node>(Node::Type::kNormal, kTestDriver)};
+      MakeRefCounted<Node>(Node::Type::kNormal, GetTestDriver())};
 };
 
 TEST_F(NodeTest, EstablishExistingLinks) {
@@ -181,7 +183,7 @@ TEST_F(NodeTest, EstablishLinkFailureWithoutBrokerLink) {
   // A node with no broker link can't be introduced to anyone.
   bool failed = false;
   const Ref<Node> node_c =
-      MakeRefCounted<Node>(Node::Type::kNormal, kTestDriver);
+      MakeRefCounted<Node>(Node::Type::kNormal, GetTestDriver());
   EXPECT_TRUE(broker().GetLink(kNodeAName));
   node_c->EstablishLink(kNodeAName, [&](NodeLink* link) {
     EXPECT_FALSE(link);

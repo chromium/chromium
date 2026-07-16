@@ -396,22 +396,25 @@ IpczResult IPCZ_API GenerateRandomBytes(size_t num_bytes,
 
 }  // namespace
 
-const IpczDriver kMultiprocessReferenceDriver = {
-    sizeof(kMultiprocessReferenceDriver),
-    Close,
-    Serialize,
-    Deserialize,
-    CreateTransports,
-    ActivateTransport,
-    DeactivateTransport,
-    Transmit,
-    ReportBadTransportActivity,
-    AllocateSharedMemory,
-    GetSharedMemoryInfo,
-    DuplicateSharedMemory,
-    MapSharedMemory,
-    GenerateRandomBytes,
-};
+const IpczDriver& GetMultiprocessReferenceDriver() {
+  static const IpczDriver driver = {
+      sizeof(driver),
+      Close,
+      Serialize,
+      Deserialize,
+      CreateTransports,
+      ActivateTransport,
+      DeactivateTransport,
+      Transmit,
+      ReportBadTransportActivity,
+      AllocateSharedMemory,
+      GetSharedMemoryInfo,
+      DuplicateSharedMemory,
+      MapSharedMemory,
+      GenerateRandomBytes,
+  };
+  return driver;
+}
 
 IpczDriverHandle CreateMultiprocessTransport(Ref<SocketTransport> transport) {
   return Object::ReleaseAsHandle(

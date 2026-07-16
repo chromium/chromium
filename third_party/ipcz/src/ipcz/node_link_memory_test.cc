@@ -24,7 +24,9 @@
 namespace ipcz {
 namespace {
 
-const IpczDriver& kTestDriver = reference_drivers::kSyncReferenceDriver;
+const IpczDriver& GetTestDriver() {
+  return reference_drivers::GetSyncReferenceDriver();
+}
 
 constexpr NodeName kTestNonBrokerName(2, 3);
 constexpr NodeName kOtherTestNonBrokerName(3, 5);
@@ -42,9 +44,9 @@ class NodeLinkMemoryTest : public testing::Test {
       Ref<Node> non_broker,
       const NodeName& non_broker_name) {
     std::pair<Ref<NodeLink>, Ref<NodeLink>> links;
-    auto transports = DriverTransport::CreatePair(kTestDriver);
+    auto transports = DriverTransport::CreatePair(GetTestDriver());
     DriverMemoryWithMapping buffer =
-        NodeLinkMemory::AllocateMemory(kTestDriver);
+        NodeLinkMemory::AllocateMemory(GetTestDriver());
     links.first = NodeLink::CreateInactive(
         broker, LinkSide::kA, broker->GetAssignedName(), non_broker_name,
         Node::Type::kNormal, 0, Features{}, transports.first,
@@ -65,7 +67,7 @@ class NodeLinkMemoryTest : public testing::Test {
 
   static void AddBlocksToMemory(NodeLinkMemory& memory, size_t block_size) {
     constexpr size_t kNumBlocks = 32;
-    auto mapping = DriverMemory(kTestDriver, block_size * kNumBlocks).Map();
+    auto mapping = DriverMemory(GetTestDriver(), block_size * kNumBlocks).Map();
 
     BlockAllocator allocator(mapping.bytes(),
                              static_cast<uint32_t>(block_size));
@@ -89,9 +91,9 @@ class NodeLinkMemoryTest : public testing::Test {
 
  private:
   const Ref<Node> node_a_{
-      MakeRefCounted<Node>(Node::Type::kBroker, kTestDriver)};
+      MakeRefCounted<Node>(Node::Type::kBroker, GetTestDriver())};
   const Ref<Node> node_b_{
-      MakeRefCounted<Node>(Node::Type::kNormal, kTestDriver)};
+      MakeRefCounted<Node>(Node::Type::kNormal, GetTestDriver())};
   Ref<NodeLink> link_a_;
   Ref<NodeLink> link_b_;
 };
@@ -275,7 +277,7 @@ TEST_F(NodeLinkMemoryTest, ParcelDataAllocation) {
       .memory_flags = IPCZ_MEMORY_FIXED_PARCEL_CAPACITY,
   };
   const Ref<Node> node_c{
-      MakeRefCounted<Node>(Node::Type::kNormal, kTestDriver, &options)};
+      MakeRefCounted<Node>(Node::Type::kNormal, GetTestDriver(), &options)};
   auto links = ConnectNodes(node_a(), node_c, kOtherTestNonBrokerName);
 
   // We use a small enough size that this is guaranteed to allocate within

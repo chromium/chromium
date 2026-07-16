@@ -15,12 +15,12 @@ namespace ipcz::reference_drivers {
 // with a simple task queue. Transmission from a transport posts a task to its
 // peer's queue. The resulting non-determinism effectively simulates a typical
 // production driver, without the complexity of a multiprocess environment.
-extern const IpczDriver kAsyncReferenceDriver;
+const IpczDriver& GetAsyncReferenceDriver();
 
-// Mostly the same as kAsyncReferenceDriver, but rejects direct transmission of
-// driver handles between non-broker nodes. This forces ipcz to relay such
+// Mostly the same as GetAsyncReferenceDriver(), but rejects direct transmission
+// of driver handles between non-broker nodes. This forces ipcz to relay such
 // messages through the broker.
-extern const IpczDriver kAsyncReferenceDriverWithForcedBrokering;
+const IpczDriver& GetAsyncReferenceDriverWithForcedBrokering();
 
 // Creates a new pair of async transport endpoints, one for a broker and one
 // for a non-broker.

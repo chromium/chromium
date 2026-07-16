@@ -201,7 +201,7 @@ const IpczAPI& GetIpczAPIForMojo() {
 }
 
 const IpczDriver& GetIpczDriverForMojo() {
-  return ipcz_driver::kDriver;
+  return ipcz_driver::GetIpczDriver();
 }
 
 IpczDriverHandle CreateIpczTransportFromEndpoint(

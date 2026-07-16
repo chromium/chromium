@@ -371,21 +371,24 @@ IpczResult IPCZ_API Transmit(IpczDriverHandle transport,
 
 }  // namespace
 
-const IpczDriver kSyncReferenceDriver = {
-    sizeof(kSyncReferenceDriver),
-    kSingleProcessReferenceDriverBase.Close,
-    kSingleProcessReferenceDriverBase.Serialize,
-    kSingleProcessReferenceDriverBase.Deserialize,
-    CreateTransports,
-    ActivateTransport,
-    DeactivateTransport,
-    Transmit,
-    kSingleProcessReferenceDriverBase.ReportBadTransportActivity,
-    kSingleProcessReferenceDriverBase.AllocateSharedMemory,
-    kSingleProcessReferenceDriverBase.GetSharedMemoryInfo,
-    kSingleProcessReferenceDriverBase.DuplicateSharedMemory,
-    kSingleProcessReferenceDriverBase.MapSharedMemory,
-    kSingleProcessReferenceDriverBase.GenerateRandomBytes,
-};
+const IpczDriver& GetSyncReferenceDriver() {
+  static const IpczDriver driver = {
+      sizeof(driver),
+      GetSingleProcessReferenceDriverBase().Close,
+      GetSingleProcessReferenceDriverBase().Serialize,
+      GetSingleProcessReferenceDriverBase().Deserialize,
+      CreateTransports,
+      ActivateTransport,
+      DeactivateTransport,
+      Transmit,
+      GetSingleProcessReferenceDriverBase().ReportBadTransportActivity,
+      GetSingleProcessReferenceDriverBase().AllocateSharedMemory,
+      GetSingleProcessReferenceDriverBase().GetSharedMemoryInfo,
+      GetSingleProcessReferenceDriverBase().DuplicateSharedMemory,
+      GetSingleProcessReferenceDriverBase().MapSharedMemory,
+      GetSingleProcessReferenceDriverBase().GenerateRandomBytes,
+  };
+  return driver;
+}
 
 }  // namespace ipcz::reference_drivers

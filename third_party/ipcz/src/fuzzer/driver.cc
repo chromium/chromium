@@ -137,21 +137,24 @@ IpczResult IPCZ_API IpczFuzzerGenerateRandomBytes(size_t num_bytes,
 
 namespace ipcz::fuzzer {
 
-const IpczDriver kDriver = {
-    sizeof(kDriver),
-    IpczFuzzerClose,
-    IpczFuzzerSerialize,
-    IpczFuzzerDeserialize,
-    IpczFuzzerCreateTransports,
-    IpczFuzzerActivateTransport,
-    IpczFuzzerDeactivateTransport,
-    IpczFuzzerTransmit,
-    IpczFuzzerReportBadTransportActivity,
-    IpczFuzzerAllocateSharedMemory,
-    IpczFuzzerGetSharedMemoryInfo,
-    IpczFuzzerDuplicateSharedMemory,
-    IpczFuzzerMapSharedMemory,
-    IpczFuzzerGenerateRandomBytes,
-};
+const IpczDriver& GetFuzzerDriver() {
+  static const IpczDriver driver = {
+      sizeof(driver),
+      IpczFuzzerClose,
+      IpczFuzzerSerialize,
+      IpczFuzzerDeserialize,
+      IpczFuzzerCreateTransports,
+      IpczFuzzerActivateTransport,
+      IpczFuzzerDeactivateTransport,
+      IpczFuzzerTransmit,
+      IpczFuzzerReportBadTransportActivity,
+      IpczFuzzerAllocateSharedMemory,
+      IpczFuzzerGetSharedMemoryInfo,
+      IpczFuzzerDuplicateSharedMemory,
+      IpczFuzzerMapSharedMemory,
+      IpczFuzzerGenerateRandomBytes,
+  };
+  return driver;
+}
 
 }  // namespace ipcz::fuzzer

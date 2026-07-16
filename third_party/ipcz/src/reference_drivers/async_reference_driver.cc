@@ -257,7 +257,7 @@ IpczResult IPCZ_API SerializeWithForcedBrokering(IpczDriverHandle handle,
     return IPCZ_RESULT_PERMISSION_DENIED;
   }
 
-  return kSingleProcessReferenceDriverBase.Serialize(
+  return GetSingleProcessReferenceDriverBase().Serialize(
       handle, transport, flags, options, data, num_bytes, handles, num_handles);
 }
 
@@ -265,39 +265,45 @@ IpczResult IPCZ_API SerializeWithForcedBrokering(IpczDriverHandle handle,
 
 // Note that this driver inherits most of its implementation from the baseline
 // single-process driver. Only transport operation is overridden here.
-const IpczDriver kAsyncReferenceDriver = {
-    sizeof(kAsyncReferenceDriver),
-    kSingleProcessReferenceDriverBase.Close,
-    kSingleProcessReferenceDriverBase.Serialize,
-    kSingleProcessReferenceDriverBase.Deserialize,
-    CreateTransports,
-    ActivateTransport,
-    DeactivateTransport,
-    Transmit,
-    kSingleProcessReferenceDriverBase.ReportBadTransportActivity,
-    kSingleProcessReferenceDriverBase.AllocateSharedMemory,
-    kSingleProcessReferenceDriverBase.GetSharedMemoryInfo,
-    kSingleProcessReferenceDriverBase.DuplicateSharedMemory,
-    kSingleProcessReferenceDriverBase.MapSharedMemory,
-    kSingleProcessReferenceDriverBase.GenerateRandomBytes,
-};
+const IpczDriver& GetAsyncReferenceDriver() {
+  static const IpczDriver driver = {
+      sizeof(driver),
+      GetSingleProcessReferenceDriverBase().Close,
+      GetSingleProcessReferenceDriverBase().Serialize,
+      GetSingleProcessReferenceDriverBase().Deserialize,
+      CreateTransports,
+      ActivateTransport,
+      DeactivateTransport,
+      Transmit,
+      GetSingleProcessReferenceDriverBase().ReportBadTransportActivity,
+      GetSingleProcessReferenceDriverBase().AllocateSharedMemory,
+      GetSingleProcessReferenceDriverBase().GetSharedMemoryInfo,
+      GetSingleProcessReferenceDriverBase().DuplicateSharedMemory,
+      GetSingleProcessReferenceDriverBase().MapSharedMemory,
+      GetSingleProcessReferenceDriverBase().GenerateRandomBytes,
+  };
+  return driver;
+}
 
-const IpczDriver kAsyncReferenceDriverWithForcedBrokering = {
-    sizeof(kAsyncReferenceDriverWithForcedBrokering),
-    kSingleProcessReferenceDriverBase.Close,
-    SerializeWithForcedBrokering,
-    kSingleProcessReferenceDriverBase.Deserialize,
-    CreateTransports,
-    ActivateTransport,
-    DeactivateTransport,
-    Transmit,
-    kSingleProcessReferenceDriverBase.ReportBadTransportActivity,
-    kSingleProcessReferenceDriverBase.AllocateSharedMemory,
-    kSingleProcessReferenceDriverBase.GetSharedMemoryInfo,
-    kSingleProcessReferenceDriverBase.DuplicateSharedMemory,
-    kSingleProcessReferenceDriverBase.MapSharedMemory,
-    kSingleProcessReferenceDriverBase.GenerateRandomBytes,
-};
+const IpczDriver& GetAsyncReferenceDriverWithForcedBrokering() {
+  static const IpczDriver driver = {
+      sizeof(driver),
+      GetSingleProcessReferenceDriverBase().Close,
+      SerializeWithForcedBrokering,
+      GetSingleProcessReferenceDriverBase().Deserialize,
+      CreateTransports,
+      ActivateTransport,
+      DeactivateTransport,
+      Transmit,
+      GetSingleProcessReferenceDriverBase().ReportBadTransportActivity,
+      GetSingleProcessReferenceDriverBase().AllocateSharedMemory,
+      GetSingleProcessReferenceDriverBase().GetSharedMemoryInfo,
+      GetSingleProcessReferenceDriverBase().DuplicateSharedMemory,
+      GetSingleProcessReferenceDriverBase().MapSharedMemory,
+      GetSingleProcessReferenceDriverBase().GenerateRandomBytes,
+  };
+  return driver;
+}
 
 AsyncTransportPair CreateAsyncTransportPair() {
   AsyncTransport::Pair transports = AsyncTransport::CreatePair(

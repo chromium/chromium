@@ -148,21 +148,24 @@ MockDriver::~MockDriver() {
   ptr = nullptr;
 }
 
-const IpczDriver kMockDriver = {
-    sizeof(kMockDriver),
-    Close,
-    Serialize,
-    Deserialize,
-    CreateTransports,
-    ActivateTransport,
-    DeactivateTransport,
-    Transmit,
-    ReportBadTransportActivity,
-    AllocateSharedMemory,
-    GetSharedMemoryInfo,
-    DuplicateSharedMemory,
-    MapSharedMemory,
-    GenerateRandomBytes,
-};
+const IpczDriver& GetMockDriver() {
+  static const IpczDriver driver = {
+      sizeof(driver),
+      Close,
+      Serialize,
+      Deserialize,
+      CreateTransports,
+      ActivateTransport,
+      DeactivateTransport,
+      Transmit,
+      ReportBadTransportActivity,
+      AllocateSharedMemory,
+      GetSharedMemoryInfo,
+      DuplicateSharedMemory,
+      MapSharedMemory,
+      GenerateRandomBytes,
+  };
+  return driver;
+}
 
 }  // namespace ipcz::test

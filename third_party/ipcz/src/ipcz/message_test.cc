@@ -125,9 +125,9 @@ class MessageTest : public testing::Test {
  private:
   ::testing::StrictMock<test::MockDriver> driver_;
   const Ref<Node> node_{
-      MakeRefCounted<Node>(Node::Type::kNormal, test::kMockDriver)};
+      MakeRefCounted<Node>(Node::Type::kNormal, test::GetMockDriver())};
   const Ref<DriverTransport> transport_{MakeRefCounted<DriverTransport>(
-      DriverObject(test::kMockDriver, kTransportHandle))};
+      DriverObject(test::GetMockDriver(), kTransportHandle))};
   std::queue<ReceivedMessage> received_messages_;
   bool reject_driver_objects_ = false;
 };
@@ -206,7 +206,7 @@ TEST_F(MessageTest, DriverObject) {
 
   test::msg::MessageWithDriverObject in;
   in.v0()->object =
-      in.AppendDriverObject(DriverObject(test::kMockDriver, kObjectHandle));
+      in.AppendDriverObject(DriverObject(test::GetMockDriver(), kObjectHandle));
 
   transport().Transmit(in);
 
@@ -223,8 +223,8 @@ TEST_F(MessageTest, DriverObjectArray) {
                                                  0x42425555};
   DriverObject in_objects[std::size(kObjectHandles)];
   for (size_t i = 0; i < std::size(kObjectHandles); ++i) {
-    IPCZ_UNSAFE_TODO(in_objects[i]) =
-        DriverObject(test::kMockDriver, IPCZ_UNSAFE_TODO(kObjectHandles[i]));
+    IPCZ_UNSAFE_TODO(in_objects[i]) = DriverObject(
+        test::GetMockDriver(), IPCZ_UNSAFE_TODO(kObjectHandles[i]));
   }
 
   test::msg::MessageWithDriverObjectArray in;
@@ -307,7 +307,7 @@ TEST_F(MessageTest, MalformedDriverObject) {
   constexpr IpczDriverHandle kObjectHandle = 0x12345678;
   test::msg::MessageWithDriverObject in;
   in.v0()->object =
-      in.AppendDriverObject(DriverObject(test::kMockDriver, kObjectHandle));
+      in.AppendDriverObject(DriverObject(test::GetMockDriver(), kObjectHandle));
 
   // Force driver object deserialization to fail. This must result in failure of
   // overall message deserialization.
@@ -328,8 +328,8 @@ TEST_F(MessageTest, DriverObjectClaimedTwice) {
                                                  0x42425555};
   DriverObject in_objects[std::size(kObjectHandles)];
   for (size_t i = 0; i < std::size(kObjectHandles); ++i) {
-    IPCZ_UNSAFE_TODO(in_objects[i]) =
-        DriverObject(test::kMockDriver, IPCZ_UNSAFE_TODO(kObjectHandles[i]));
+    IPCZ_UNSAFE_TODO(in_objects[i]) = DriverObject(
+        test::GetMockDriver(), IPCZ_UNSAFE_TODO(kObjectHandles[i]));
   }
 
   test::msg::MessageWithDriverArrayAndExtraObject in;
@@ -361,12 +361,12 @@ TEST_F(MessageTest, UnclaimedDriverObjects) {
   constexpr IpczDriverHandle kObjectHandle2 = 0xabcdef90;
   constexpr IpczDriverHandle kObjectHandle3 = 0x5a5a5a5a;
   test::msg::MessageWithDriverObject in;
-  in.v0()->object =
-      in.AppendDriverObject(DriverObject(test::kMockDriver, kObjectHandle1));
+  in.v0()->object = in.AppendDriverObject(
+      DriverObject(test::GetMockDriver(), kObjectHandle1));
 
   // Append two more objects with no references to them in the message.
-  in.AppendDriverObject(DriverObject(test::kMockDriver, kObjectHandle2));
-  in.AppendDriverObject(DriverObject(test::kMockDriver, kObjectHandle3));
+  in.AppendDriverObject(DriverObject(test::GetMockDriver(), kObjectHandle2));
+  in.AppendDriverObject(DriverObject(test::GetMockDriver(), kObjectHandle3));
 
   transport().Transmit(in);
 

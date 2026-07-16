@@ -13,7 +13,7 @@ namespace ipcz::reference_drivers {
 
 // A partial IpczDriver providing implementation common to both the sync and
 // and async single-process drivers.
-extern const IpczDriver kSingleProcessReferenceDriverBase;
+const IpczDriver& GetSingleProcessReferenceDriverBase();
 
 // Installs a hook to be invoked any time ReportBadTransportActivity() is called
 // on any single-process reference driver. If called with null, any previously

@@ -43,14 +43,14 @@ TEST_F(DriverObjectTest, Invalid) {
 
 TEST_F(DriverObjectTest, Move) {
   constexpr IpczDriverHandle kHandle = 42;
-  DriverObject object(test::kMockDriver, kHandle);
+  DriverObject object(test::GetMockDriver(), kHandle);
 
-  EXPECT_EQ(&test::kMockDriver, object.driver());
+  EXPECT_EQ(&test::GetMockDriver(), object.driver());
   EXPECT_TRUE(object.is_valid());
   EXPECT_EQ(kHandle, object.handle());
 
   DriverObject other = std::move(object);
-  EXPECT_EQ(&test::kMockDriver, other.driver());
+  EXPECT_EQ(&test::GetMockDriver(), other.driver());
   EXPECT_TRUE(other.is_valid());
   EXPECT_EQ(kHandle, other.handle());
   EXPECT_FALSE(object.is_valid());
@@ -71,13 +71,15 @@ TEST_F(DriverObjectTest, Reset) {
   EXPECT_CALL(driver(), Close(kHandle, _, _))
       .WillOnce(Return(IPCZ_RESULT_OK))
       .RetiresOnSaturation();
-  { DriverObject object(test::kMockDriver, kHandle); }
+  {
+    DriverObject object(test::GetMockDriver(), kHandle);
+  }
 
   EXPECT_CALL(driver(), Close(kHandle, _, _))
       .WillOnce(Return(IPCZ_RESULT_OK))
       .RetiresOnSaturation();
   {
-    DriverObject object(test::kMockDriver, kHandle);
+    DriverObject object(test::GetMockDriver(), kHandle);
     object.reset();
   }
 }
@@ -85,7 +87,7 @@ TEST_F(DriverObjectTest, Reset) {
 TEST_F(DriverObjectTest, SerializableObject) {
   constexpr IpczDriverHandle kHandle = 5;
 
-  DriverObject object(test::kMockDriver, kHandle);
+  DriverObject object(test::GetMockDriver(), kHandle);
 
   EXPECT_CALL(driver(), Serialize(kHandle, _, _, _, _, _, _, _))
       .WillOnce(Return(IPCZ_RESULT_ABORTED))
@@ -103,7 +105,7 @@ TEST_F(DriverObjectTest, SerializableObject) {
 TEST_F(DriverObjectTest, UnserializableObject) {
   constexpr IpczDriverHandle kHandle = 5;
 
-  DriverObject object(test::kMockDriver, kHandle);
+  DriverObject object(test::GetMockDriver(), kHandle);
 
   EXPECT_CALL(driver(), Serialize(kHandle, _, _, _, _, _, _, _))
       .WillOnce(Return(IPCZ_RESULT_INVALID_ARGUMENT));
@@ -117,8 +119,8 @@ TEST_F(DriverObjectTest, CanTransmit) {
   constexpr IpczDriverHandle kHandle = 5;
 
   auto transport = MakeRefCounted<DriverTransport>(
-      DriverObject(test::kMockDriver, kTransport));
-  DriverObject object(test::kMockDriver, kHandle);
+      DriverObject(test::GetMockDriver(), kTransport));
+  DriverObject object(test::GetMockDriver(), kHandle);
 
   EXPECT_CALL(driver(), Serialize(kHandle, kTransport, _, _, _, _, _, _))
       .WillOnce(Return(IPCZ_RESULT_RESOURCE_EXHAUSTED));
@@ -135,8 +137,8 @@ TEST_F(DriverObjectTest, CannotTransmit) {
   constexpr IpczDriverHandle kHandle = 5;
 
   auto transport = MakeRefCounted<DriverTransport>(
-      DriverObject(test::kMockDriver, kTransport));
-  DriverObject object(test::kMockDriver, kHandle);
+      DriverObject(test::GetMockDriver(), kTransport));
+  DriverObject object(test::GetMockDriver(), kHandle);
 
   EXPECT_CALL(driver(), Serialize(kHandle, kTransport, _, _, _, _, _, _))
       .WillOnce(Return(IPCZ_RESULT_PERMISSION_DENIED));
@@ -153,8 +155,8 @@ TEST_F(DriverObjectTest, GetSerializedDimensions) {
   constexpr IpczDriverHandle kTransport = 42;
 
   auto transport = MakeRefCounted<DriverTransport>(
-      DriverObject(test::kMockDriver, kTransport));
-  DriverObject object(test::kMockDriver, kHandle);
+      DriverObject(test::GetMockDriver(), kTransport));
+  DriverObject object(test::GetMockDriver(), kHandle);
 
   constexpr size_t kNumBytes = 3;
   constexpr size_t kNumHandles = 7;

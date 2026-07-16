@@ -23,7 +23,8 @@ class TrapTest : public test::Test {
   }
 
  private:
-  const IpczHandle node_{CreateNode(reference_drivers::kSyncReferenceDriver)};
+  const IpczHandle node_{
+      CreateNode(reference_drivers::GetSyncReferenceDriver())};
 };
 
 TEST_F(TrapTest, RemoveOnClose) {
@@ -307,14 +308,14 @@ TEST_F(TrapTest, MultipleTraps) {
 }
 
 TEST_F(TrapTest, SyncTransportWithinAPICall) {
-  const auto& kDriver = reference_drivers::kSyncReferenceDriver;
-  const IpczHandle node_a = CreateNode(kDriver, IPCZ_CREATE_NODE_AS_BROKER);
-  const IpczHandle node_b = CreateNode(kDriver);
+  const IpczDriver& driver = reference_drivers::GetSyncReferenceDriver();
+  const IpczHandle node_a = CreateNode(driver, IPCZ_CREATE_NODE_AS_BROKER);
+  const IpczHandle node_b = CreateNode(driver);
 
   IpczDriverHandle t0, t1;
-  kDriver.CreateTransports(IPCZ_INVALID_DRIVER_HANDLE,
-                           IPCZ_INVALID_DRIVER_HANDLE, IPCZ_NO_FLAGS, nullptr,
-                           &t0, &t1);
+  driver.CreateTransports(IPCZ_INVALID_DRIVER_HANDLE,
+                          IPCZ_INVALID_DRIVER_HANDLE, IPCZ_NO_FLAGS, nullptr,
+                          &t0, &t1);
 
   IpczHandle a, b;
   ipcz().ConnectNode(node_a, t0, 1, IPCZ_NO_FLAGS, nullptr, &a);

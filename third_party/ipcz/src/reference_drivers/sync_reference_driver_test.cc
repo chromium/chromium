@@ -80,7 +80,7 @@ class TransportReceiver
 };
 
 TEST(SyncReferenceDriverTest, CreateTransports) {
-  const IpczDriver& driver = kSyncReferenceDriver;
+  const IpczDriver& driver = GetSyncReferenceDriver();
   IpczDriverHandle a, b;
   EXPECT_EQ(IPCZ_RESULT_OK,
             driver.CreateTransports(IPCZ_INVALID_DRIVER_HANDLE,
@@ -91,7 +91,7 @@ TEST(SyncReferenceDriverTest, CreateTransports) {
 }
 
 TEST(SyncReferenceDriverTest, TransmitBeforeActive) {
-  const IpczDriver& driver = kSyncReferenceDriver;
+  const IpczDriver& driver = GetSyncReferenceDriver();
   IpczDriverHandle a, b;
   EXPECT_EQ(IPCZ_RESULT_OK,
             driver.CreateTransports(IPCZ_INVALID_DRIVER_HANDLE,
@@ -125,7 +125,7 @@ TEST(SyncReferenceDriverTest, TransmitBeforeActive) {
 }
 
 TEST(SyncReferenceDriverTest, TransmitWhileActive) {
-  const IpczDriver& driver = kSyncReferenceDriver;
+  const IpczDriver& driver = GetSyncReferenceDriver();
   IpczDriverHandle a, b;
   EXPECT_EQ(IPCZ_RESULT_OK,
             driver.CreateTransports(IPCZ_INVALID_DRIVER_HANDLE,
@@ -158,7 +158,7 @@ TEST(SyncReferenceDriverTest, TransmitWhileActive) {
 }
 
 TEST(SyncReferenceDriverTest, Deactivate) {
-  const IpczDriver& driver = kSyncReferenceDriver;
+  const IpczDriver& driver = GetSyncReferenceDriver();
   IpczDriverHandle a, b;
   EXPECT_EQ(IPCZ_RESULT_OK,
             driver.CreateTransports(IPCZ_INVALID_DRIVER_HANDLE,
@@ -182,7 +182,7 @@ TEST(SyncReferenceDriverTest, Deactivate) {
 }
 
 TEST(SyncReferenceDriverTest, TransmitAfterDeactivated) {
-  const IpczDriver& driver = kSyncReferenceDriver;
+  const IpczDriver& driver = GetSyncReferenceDriver();
   IpczDriverHandle a, b;
   EXPECT_EQ(IPCZ_RESULT_OK,
             driver.CreateTransports(IPCZ_INVALID_DRIVER_HANDLE,
@@ -220,7 +220,7 @@ TEST(SyncReferenceDriverTest, TransmitAfterDeactivated) {
 }
 
 TEST(SyncReferenceDriverTest, NotifyError) {
-  const IpczDriver& driver = kSyncReferenceDriver;
+  const IpczDriver& driver = GetSyncReferenceDriver();
   IpczDriverHandle a, b;
   EXPECT_EQ(IPCZ_RESULT_OK,
             driver.CreateTransports(IPCZ_INVALID_DRIVER_HANDLE,
@@ -258,7 +258,7 @@ TEST(SyncReferenceDriverTest, NotifyError) {
 }
 
 TEST(SyncReferenceDriverTest, SharedMemory) {
-  const IpczDriver& driver = kSyncReferenceDriver;
+  const IpczDriver& driver = GetSyncReferenceDriver();
 
   const size_t kSize = 64;
   IpczDriverHandle memory;
@@ -300,7 +300,7 @@ TEST(SyncReferenceDriverTest, SharedMemory) {
 }
 
 TEST(SyncReferenceDriverTest, TransmitHandles) {
-  const IpczDriver& driver = kSyncReferenceDriver;
+  const IpczDriver& driver = GetSyncReferenceDriver();
   IpczDriverHandle a, b;
   EXPECT_EQ(IPCZ_RESULT_OK,
             driver.CreateTransports(IPCZ_INVALID_DRIVER_HANDLE,

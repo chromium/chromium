@@ -16,7 +16,7 @@ namespace mojo::core::ipcz_driver {
 //
 // The driver also supports boxing of platform handles and shared memory regions
 // to simplify the transition of the Mojo bindings implementation to ipcz.
-MOJO_SYSTEM_IMPL_EXPORT extern const IpczDriver kDriver;
+MOJO_SYSTEM_IMPL_EXPORT const IpczDriver& GetIpczDriver();
 
 }  // namespace mojo::core::ipcz_driver
 

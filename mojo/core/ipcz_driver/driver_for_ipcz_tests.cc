@@ -162,7 +162,9 @@ class MojoIpczTestDriver : public ipcz::test::TestDriver {
   };
   explicit MojoIpczTestDriver(Mode mode) : mode_(mode) {}
 
-  const IpczDriver& GetIpczDriver() const override { return kDriver; }
+  const IpczDriver& GetIpczDriver() const override {
+    return ::mojo::core::ipcz_driver::GetIpczDriver();
+  }
 
   const char* GetName() const override {
     if (mode_ == kInProcess) {

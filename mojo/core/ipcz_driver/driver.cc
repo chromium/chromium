@@ -309,21 +309,24 @@ IpczResult IPCZ_API GenerateRandomBytes(size_t num_bytes,
 
 }  // namespace
 
-const IpczDriver kDriver = {
-    sizeof(kDriver),
-    Close,
-    Serialize,
-    Deserialize,
-    CreateTransports,
-    ActivateTransport,
-    DeactivateTransport,
-    Transmit,
-    ReportBadTransportActivity,
-    AllocateSharedMemory,
-    GetSharedMemoryInfo,
-    DuplicateSharedMemory,
-    MapSharedMemory,
-    GenerateRandomBytes,
-};
+const IpczDriver& GetIpczDriver() {
+  static const IpczDriver driver = {
+      sizeof(driver),
+      Close,
+      Serialize,
+      Deserialize,
+      CreateTransports,
+      ActivateTransport,
+      DeactivateTransport,
+      Transmit,
+      ReportBadTransportActivity,
+      AllocateSharedMemory,
+      GetSharedMemoryInfo,
+      DuplicateSharedMemory,
+      MapSharedMemory,
+      GenerateRandomBytes,
+  };
+  return driver;
+}
 
 }  // namespace mojo::core::ipcz_driver

@@ -14,7 +14,7 @@ namespace ipcz::reference_drivers {
 // A basic reference driver which supports multiprocess operation. This is also
 // suitable for single-process usage, but unlike kSingleProcessReferenceDriver
 // all transmissions through this driver are asynchronous.
-extern const IpczDriver kMultiprocessReferenceDriver;
+const IpczDriver& GetMultiprocessReferenceDriver();
 
 // Creates a new multiprocess-capable driver transport from a SocketTransport
 // endpoint and returns an IpczDriverHandle to reference it.

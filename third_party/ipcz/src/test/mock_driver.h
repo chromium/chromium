@@ -12,7 +12,7 @@ namespace ipcz::test {
 
 // A mock implementation of the IpczDriver API which tests can use to precisely
 // introspect driver API invocations made by ipcz. At most one instance of this
-// class may exist at a time, and the kMockDriver driver declared below can only
+// class may exist at a time, and the GetMockDriver() declared below can only
 // be used while such an instance exists.
 class MockDriver {
  public:
@@ -94,7 +94,7 @@ class MockDriver {
 // An ipcz driver which forwards its API invocations to the only currently
 // existing instance of the MockDriver class above. It is an error to elicit
 // driver calls from ipcz while no MockDriver instance exists.
-extern const IpczDriver kMockDriver;
+const IpczDriver& GetMockDriver();
 
 }  // namespace ipcz::test
 

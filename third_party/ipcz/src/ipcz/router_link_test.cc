@@ -33,7 +33,9 @@ enum class RouterLinkTestMode {
   kRemote,
 };
 
-const IpczDriver& kTestDriver = reference_drivers::kSyncReferenceDriver;
+const IpczDriver& GetDriver() {
+  return reference_drivers::GetSyncReferenceDriver();
+}
 
 constexpr NodeName kTestBrokerName(1, 2);
 constexpr NodeName kTestNonBrokerName(2, 3);
@@ -48,9 +50,9 @@ constexpr NodeName kTestPeer2Name(4, 5);
 class TestNodePair {
  public:
   TestNodePair() {
-    auto transports = DriverTransport::CreatePair(kTestDriver);
+    auto transports = DriverTransport::CreatePair(GetDriver());
     DriverMemoryWithMapping buffer =
-        NodeLinkMemory::AllocateMemory(kTestDriver);
+        NodeLinkMemory::AllocateMemory(GetDriver());
     node_link_a_ = NodeLink::CreateInactive(
         node_a_, LinkSide::kA, kTestBrokerName, kTestNonBrokerName,
         Node::Type::kNormal, 0, Features{}, transports.first,
@@ -116,9 +118,9 @@ class TestNodePair {
 
  private:
   const Ref<Node> node_a_{
-      MakeRefCounted<Node>(Node::Type::kBroker, kTestDriver)};
+      MakeRefCounted<Node>(Node::Type::kBroker, GetDriver())};
   const Ref<Node> node_b_{
-      MakeRefCounted<Node>(Node::Type::kNormal, kTestDriver)};
+      MakeRefCounted<Node>(Node::Type::kNormal, GetDriver())};
   Ref<NodeLink> node_link_a_;
   Ref<NodeLink> node_link_b_;
 };

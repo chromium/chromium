@@ -21,29 +21,31 @@
 namespace ipcz {
 namespace {
 
-const IpczDriver& kDriver = reference_drivers::kSyncReferenceDriver;
+const IpczDriver& GetDriver() {
+  return reference_drivers::GetSyncReferenceDriver();
+}
 
 class NodeConnectorTest : public test::Test {
  protected:
   Ref<Node> CreateBrokerNode(const IpczCreateNodeOptions* options = nullptr) {
-    return MakeRefCounted<Node>(Node::Type::kBroker, kDriver, options);
+    return MakeRefCounted<Node>(Node::Type::kBroker, GetDriver(), options);
   }
 
   Ref<Node> CreateNonBrokerNode(
       const IpczCreateNodeOptions* options = nullptr) {
-    return MakeRefCounted<Node>(Node::Type::kNormal, kDriver, options);
+    return MakeRefCounted<Node>(Node::Type::kNormal, GetDriver(), options);
   }
 
   DriverTransport::Pair CreateTransports() {
     IpczDriverHandle handle0, handle1;
     EXPECT_EQ(IPCZ_RESULT_OK,
-              kDriver.CreateTransports(
+              GetDriver().CreateTransports(
                   IPCZ_INVALID_DRIVER_HANDLE, IPCZ_INVALID_DRIVER_HANDLE,
                   IPCZ_NO_FLAGS, nullptr, &handle0, &handle1));
     auto transport0 =
-        MakeRefCounted<DriverTransport>(DriverObject(kDriver, handle0));
+        MakeRefCounted<DriverTransport>(DriverObject(GetDriver(), handle0));
     auto transport1 =
-        MakeRefCounted<DriverTransport>(DriverObject(kDriver, handle1));
+        MakeRefCounted<DriverTransport>(DriverObject(GetDriver(), handle1));
     return {transport0, transport1};
   }
 };
@@ -182,7 +184,7 @@ TEST_F(NodeConnectorTest, BrokerRejectInvalidMessage) {
     EXPECT_FALSE(rejected);
     msg::ConnectFromBrokerToNonBroker message;
     message.v0()->buffer = message.AppendDriverObject(
-        DriverMemory(kDriver, 64).TakeDriverObject());
+        DriverMemory(GetDriver(), 64).TakeDriverObject());
     non_broker_transport->Transmit(message);
     EXPECT_TRUE(rejected);
   }
