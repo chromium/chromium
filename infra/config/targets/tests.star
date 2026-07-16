@@ -1967,6 +1967,30 @@ targets.tests.isolated_script_test(
     binary = "chrome_ai_wpt_tests",
 )
 
+targets.tests.isolated_script_test(
+    name = "chrome_ai_wpt_tests_manifest_gpu_high_tier",
+    args = [
+        "--manifest-test-config=../../components/optimization_guide/internal/testing/configs/manifest_test_config_gpu_high_tier.json",
+    ],
+    binary = "chrome_ai_wpt_tests",
+)
+
+targets.tests.isolated_script_test(
+    name = "chrome_ai_wpt_tests_manifest_gpu_low_tier",
+    args = [
+        "--manifest-test-config=../../components/optimization_guide/internal/testing/configs/manifest_test_config_gpu_low_tier.json",
+    ],
+    binary = "chrome_ai_wpt_tests",
+)
+
+targets.tests.isolated_script_test(
+    name = "chrome_ai_wpt_tests_manifest_cpu",
+    args = [
+        "--manifest-test-config=../../components/optimization_guide/internal/testing/configs/manifest_test_config_cpu.json",
+    ],
+    binary = "chrome_ai_wpt_tests",
+)
+
 targets.tests.gtest_test(
     name = "oobe_only_browser_tests",
     args = [

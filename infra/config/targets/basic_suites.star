@@ -1515,6 +1515,9 @@ targets.legacy_basic_suite(
         "chrome_ai_wpt_tests_cpu": _CHROME_AI_WPT_TEST_CONFIG,
         "chrome_ai_wpt_tests_litert_cpu": _CHROME_AI_WPT_TEST_CONFIG,
         "chrome_ai_wpt_tests_litert_gpu": _CHROME_AI_WPT_TEST_CONFIG,
+        "chrome_ai_wpt_tests_manifest_gpu_high_tier": _CHROME_AI_WPT_TEST_CONFIG,
+        "chrome_ai_wpt_tests_manifest_gpu_low_tier": _CHROME_AI_WPT_TEST_CONFIG,
+        "chrome_ai_wpt_tests_manifest_cpu": _CHROME_AI_WPT_TEST_CONFIG,
     },
 )
 

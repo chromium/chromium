@@ -8,6 +8,10 @@
 # expectations instead of the typical TestExpectations file, in order to test
 # Built-In AI APIs in Branded Chrome builds with side-loaded models & configs.
 
+# These tests fail a 'downloadable' availability precondition, per sideloading.
+# NOTE: They unexpectedly pass on retry; perhaps due to crbug.com/429183223.
+crbug.com/390246212 external/wpt/ai/language_detection/detector.https.window.html [ Skip ]
+
 # These tests fail flakily with `Unhandled rejection with value: object "Error: element click intercepted error"`.
 crbug.com/517535239 external/wpt/ai/language_detection/detector-iframe.https.html [ Failure Pass ]
 crbug.com/517535239 external/wpt/ai/language-model/language-model-iframe.tentative.https.html [ Failure Pass ]
