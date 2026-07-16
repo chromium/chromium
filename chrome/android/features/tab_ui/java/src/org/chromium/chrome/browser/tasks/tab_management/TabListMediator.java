@@ -288,6 +288,9 @@ public class TabListMediator implements TabListNotificationHandler {
 
         /** Returns whether the layout supports message card items. */
         boolean supportsMessageCards();
+
+        /** Returns a supplier for the rail collapsed state, if applicable. */
+        @Nullable NonNullObservableSupplier<Boolean> getIsRailCollapsedSupplier();
     }
 
     /** Interface for toggling whether item animations will run on the recycler view. */
@@ -397,13 +400,15 @@ public class TabListMediator implements TabListNotificationHandler {
     private final TabGridItemTouchHelperCallback mTabGridItemTouchHelperCallback;
     private final @Nullable UndoBarExplicitTrigger mUndoBarExplicitTrigger;
     private final @Nullable SnackbarManager mSnackbarManager;
+    private final @Nullable NonNullObservableSupplier<Boolean> mIsRailCollapsedSupplier;
+    private final @Nullable Callback<Boolean> mIsRailCollapsedObserver;
     private final int mAllowedSelectionCount;
     private final boolean mIsSingleContextMode;
+    private final @TabListLayoutType int mLayoutType;
+    private final boolean mSupportsMessageCards;
 
     private int mNextTabId = Tab.INVALID_TAB_ID;
     private int mLastSelectedTabListModelIndex = TabList.INVALID_TAB_INDEX;
-    private final @TabListLayoutType int mLayoutType;
-    private final boolean mSupportsMessageCards;
     private @TabComponentId int mComponentId;
     private @TabActionState int mTabActionState;
     private @Nullable Profile mOriginalProfile;
@@ -1383,6 +1388,14 @@ public class TabListMediator implements TabListNotificationHandler {
                         TabUiMetricsHelper.getComponentNameForMetrics(componentId),
                         mLayoutType,
                         onDragStateChangedListener);
+
+        mIsRailCollapsedSupplier = tabListConfigDelegate.getIsRailCollapsedSupplier();
+        if (mIsRailCollapsedSupplier != null) {
+            mIsRailCollapsedObserver = this::onRailCollapsedChanged;
+            mIsRailCollapsedSupplier.addSyncObserver(mIsRailCollapsedObserver);
+        } else {
+            mIsRailCollapsedObserver = null;
+        }
     }
 
     TabModel getCurrentTabModelChecked() {
@@ -2019,6 +2032,10 @@ public class TabListMediator implements TabListNotificationHandler {
         if (mComponentCallbacks != null) {
             mActivity.unregisterComponentCallbacks(mComponentCallbacks);
         }
+
+        if (mIsRailCollapsedSupplier != null && mIsRailCollapsedObserver != null) {
+            mIsRailCollapsedSupplier.removeObserver(mIsRailCollapsedObserver);
+        }
     }
 
     void setTabActionState(@TabActionState int tabActionState) {
@@ -2280,6 +2297,10 @@ public class TabListMediator implements TabListNotificationHandler {
         boolean isTabGroup = isTabInTabGroup(tab) && mLayoutType != TabListLayoutType.FLAT;
         if (isTabGroup) {
             tabInfo.set(TabProperties.IS_COLLAPSED, true);
+        }
+
+        if (mIsRailCollapsedSupplier != null) {
+            tabInfo.set(TabProperties.IS_RAIL_COLLAPSED, mIsRailCollapsedSupplier.get());
         }
 
         @UiType int tabUiType = mMode == TabListMode.BOTTOM_STRIP ? UiType.STRIP : UiType.TAB;
@@ -3745,6 +3766,14 @@ public class TabListMediator implements TabListNotificationHandler {
                 return res.getString(R.string.accessibility_tab_group_picture_in_picture);
             default:
                 return "";
+        }
+    }
+
+    private void onRailCollapsedChanged(boolean isCollapsed) {
+        for (ListItem item : mModelList) {
+            if (TabProperties.isTabOrTabGroup(item.model)) {
+                item.model.set(TabProperties.IS_RAIL_COLLAPSED, isCollapsed);
+            }
         }
     }
 

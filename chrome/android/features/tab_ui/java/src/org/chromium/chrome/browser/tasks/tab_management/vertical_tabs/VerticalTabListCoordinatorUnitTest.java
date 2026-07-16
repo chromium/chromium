@@ -1042,4 +1042,17 @@ public class VerticalTabListCoordinatorUnitTest {
                         .get(VerticalTabListProperties.IS_COLLAPSED));
         assertEquals(4, mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount());
     }
+
+    @Test
+    @SmallTest
+    public void testSetCollapsed_updatesRailCollapsedSupplier() {
+        createCoordinator();
+        assertFalse(mCoordinator.getIsRailCollapsedSupplierForTesting().get());
+
+        mCoordinator.setCollapsed(true);
+        assertTrue(mCoordinator.getIsRailCollapsedSupplierForTesting().get());
+
+        mCoordinator.setCollapsed(false);
+        assertFalse(mCoordinator.getIsRailCollapsedSupplierForTesting().get());
+    }
 }

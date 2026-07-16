@@ -26,6 +26,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator;
@@ -78,8 +80,6 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragAndDropDelegateImpl;
-import org.chromium.ui.modelutil.ListObservable;
-import org.chromium.ui.modelutil.ListObservable.ListObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -121,6 +121,7 @@ public class VerticalTabListCoordinator {
     private final VerticalTabGroupSpineDecoration mSpineDecoration;
     private final TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
     private final NonNullObservableSupplier<Boolean> mVerticalTabsActiveSupplier;
+    private final SettableNonNullObservableSupplier<Boolean> mIsRailCollapsedSupplier;
     private final Callback<Boolean> mActiveObserver = this::setActive;
     private final PropertyModel mContainerModel;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
@@ -131,7 +132,6 @@ public class VerticalTabListCoordinator {
     private @Nullable TabContextMenuCoordinator mTabContextMenuCoordinator;
     private @Nullable TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
     private @Nullable RailCollapseListener mRailCollapseListener;
-    private @Nullable ListObserver<Void> mModelListObserver;
     private boolean mIsActive;
 
     /** Listener for collapse state changes. */
@@ -206,6 +206,7 @@ public class VerticalTabListCoordinator {
             @Nullable BooleanSupplier canActivateTabLayoutToggleMenuSupplier) {
         mCanActivateTabLayoutToggleMenuSupplier = canActivateTabLayoutToggleMenuSupplier;
         mVerticalTabsActiveSupplier = verticalTabsActiveSupplier;
+        mIsRailCollapsedSupplier = ObservableSuppliers.createNonNull(false);
         mModelList = new TabListModel();
         SimpleRecyclerViewAdapter adapter =
                 new SimpleRecyclerViewAdapter(mModelList) {
@@ -389,6 +390,12 @@ public class VerticalTabListCoordinator {
                     public boolean supportsMessageCards() {
                         return false;
                     }
+
+                    @Override
+                    public @Nullable NonNullObservableSupplier<Boolean>
+                            getIsRailCollapsedSupplier() {
+                        return mIsRailCollapsedSupplier;
+                    }
                 };
 
         mContainerModel =
@@ -487,30 +494,6 @@ public class VerticalTabListCoordinator {
                         return false;
                     }
                 });
-
-        // TODO(b/527641177): Find a better way to propagate IS_COLLAPSED to tab items. Maybe
-        // passing a supplier to TabListMediator constructor.
-        mModelListObserver =
-                new ListObservable.ListObserver<>() {
-                    @Override
-                    public void onItemRangeInserted(ListObservable source, int index, int count) {
-                        boolean isCollapsed =
-                                mContainerModel.get(VerticalTabListProperties.IS_COLLAPSED);
-                        updateRailCollapsedStateForRange(
-                                (TabListModel) source, index, count, isCollapsed);
-                    }
-
-                    @Override
-                    public void onItemRangeChanged(
-                            ListObservable source, int index, int count, @Nullable Void payload) {
-                        boolean isCollapsed =
-                                mContainerModel.get(VerticalTabListProperties.IS_COLLAPSED);
-                        updateRailCollapsedStateForRange(
-                                (TabListModel) source, index, count, isCollapsed);
-                    }
-                };
-        mPinnedTabsModelList.addObserver(mModelListObserver);
-        mModelList.addObserver(mModelListObserver);
 
         // TODO(crbug.com/509226293): Create a lightweight touch helper for pinned tabs if needed.
         // Setup drag-and-drop reordering. Reuses the vertical tab touch helper since pinned tabs
@@ -614,11 +597,6 @@ public class VerticalTabListCoordinator {
             mTabSwitcherDragHandler.destroy();
         }
 
-        if (mModelListObserver != null) {
-            mModelList.removeObserver(mModelListObserver);
-            mPinnedTabsModelList.removeObserver(mModelListObserver);
-            mModelListObserver = null;
-        }
         mRailCollapseListener = null;
     }
 
@@ -659,9 +637,7 @@ public class VerticalTabListCoordinator {
     void setCollapsed(boolean collapsed) {
         mContainerModel.set(VerticalTabListProperties.IS_COLLAPSED, collapsed);
         mPinnedLayoutManager.setSpanCount(collapsed ? 1 : getSpanCount());
-        updateRailCollapsedStateForRange(mModelList, 0, mModelList.size(), collapsed);
-        updateRailCollapsedStateForRange(
-                mPinnedTabsModelList, 0, mPinnedTabsModelList.size(), collapsed);
+        mIsRailCollapsedSupplier.set(collapsed);
     }
 
     private void setActive(boolean isActive) {
@@ -770,18 +746,6 @@ public class VerticalTabListCoordinator {
             mRailCollapseListener.onRailCollapseRequested(newCollapsedState);
         } else {
             setCollapsed(newCollapsedState);
-        }
-    }
-
-    private void updateRailCollapsedStateForRange(
-            TabListModel modelList, int startIndex, int count, boolean isCollapsed) {
-        assert startIndex >= 0;
-        assert startIndex + count <= modelList.size();
-        for (int i = startIndex; i < startIndex + count; i++) {
-            PropertyModel model = modelList.get(i).model;
-            if (TabProperties.isTabOrTabGroup(model)) {
-                model.set(TabProperties.IS_RAIL_COLLAPSED, isCollapsed);
-            }
         }
     }
 
@@ -1153,5 +1117,9 @@ public class VerticalTabListCoordinator {
         gridCardView.layout(0, 0, width, height);
 
         return gridCardView;
+    }
+
+    NonNullObservableSupplier<Boolean> getIsRailCollapsedSupplierForTesting() {
+        return mIsRailCollapsedSupplier;
     }
 }

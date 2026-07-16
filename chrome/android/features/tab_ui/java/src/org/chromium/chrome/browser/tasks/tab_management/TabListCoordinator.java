@@ -338,6 +338,12 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                     public boolean supportsMessageCards() {
                         return mMode == TabListMode.GRID;
                     }
+
+                    @Override
+                    public @Nullable NonNullObservableSupplier<Boolean>
+                            getIsRailCollapsedSupplier() {
+                        return null;
+                    }
                 };
 
         mMediator =
