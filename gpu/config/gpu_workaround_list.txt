@@ -108,6 +108,7 @@ msaa_is_slow
 msaa_is_slow_2
 multisample_renderbuffer_resize_emulation
 no_downscaled_overlay_promotion
+pack_large_row_length_separately_pack_buffer
 pack_parameters_workaround_with_pack_buffer
 prefer_draw_to_copy
 r8_egl_images_broken

@@ -5,6 +5,7 @@
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #include <GLES2/gl2extchromium.h>
+#include <GLES3/gl3.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -25,6 +26,7 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
+#include "gpu/config/gpu_test_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -339,6 +341,78 @@ TEST_F(GLReadbackTest, MAYBE_ReadPixelsFloat) {
 
   glDeleteBuffers(1, &vertex_buffer);
   glDeleteProgram(program);
+}
+
+TEST_F(GLReadbackTest, PackLargeRowLengthSeparatelyPackBuffer) {
+  // Test fails on these configurations due to underlying driver or ANGLE
+  // implementation bugs.
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86_FAMILY)
+  return;
+#else
+#if BUILDFLAG(IS_MAC)
+  if (GPUTestBotConfig::CurrentConfigMatches("Intel") ||
+      GPUTestBotConfig::CurrentConfigMatches("AMD")) {
+    return;
+  }
+#endif
+
+  GLManager::Options options;
+  options.context_type = CONTEXT_TYPE_OPENGLES3;
+  GpuDriverBugWorkarounds workarounds;
+  workarounds.pack_large_row_length_separately_pack_buffer = true;
+  gl_.Destroy();
+  gl_.InitializeWithWorkarounds(options, workarounds);
+
+  if (!gl_.IsInitialized()) {
+    return;
+  }
+
+  const uint8_t kExpectedColor[4] = {65, 128, 192, 255};
+  constexpr GLint kLargeRowLength = 0x7fffffc;
+  constexpr GLsizeiptr kByteOffsetToVerify = 0x1ffffff0;
+  constexpr GLsizeiptr kBufferSize = kByteOffsetToVerify + 256;
+
+  GLuint pbo = 0;
+  glGenBuffers(1, &pbo);
+  glBindBuffer(GL_PIXEL_PACK_BUFFER, pbo);
+  glBufferData(GL_PIXEL_PACK_BUFFER, kBufferSize, nullptr, GL_STREAM_READ);
+  if (glGetError() == GL_OUT_OF_MEMORY) {
+    glDeleteBuffers(1, &pbo);
+    return;
+  }
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+
+  glClearColor(kExpectedColor[0] / 255.0f, kExpectedColor[1] / 255.0f,
+               kExpectedColor[2] / 255.0f, kExpectedColor[3] / 255.0f);
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  glPixelStorei(GL_PACK_ROW_LENGTH, kLargeRowLength);
+  glPixelStorei(GL_PACK_ALIGNMENT, 4);
+  glReadPixels(0, 0, 1, 2, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+
+  uint8_t actualColorRow0[4] = {0};
+  uint8_t actualColorRow1[4] = {0};
+
+  glGetBufferSubDataCHROMIUM(GL_PIXEL_PACK_BUFFER, 0, sizeof(actualColorRow0),
+                             actualColorRow0);
+  glGetBufferSubDataCHROMIUM(GL_PIXEL_PACK_BUFFER, kByteOffsetToVerify,
+                             sizeof(actualColorRow1), actualColorRow1);
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+
+  glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+  glDeleteBuffers(1, &pbo);
+
+  EXPECT_EQ(kExpectedColor[0], actualColorRow0[0]);
+  EXPECT_EQ(kExpectedColor[1], actualColorRow0[1]);
+  EXPECT_EQ(kExpectedColor[2], actualColorRow0[2]);
+  EXPECT_EQ(kExpectedColor[3], actualColorRow0[3]);
+
+  EXPECT_EQ(kExpectedColor[0], actualColorRow1[0]);
+  EXPECT_EQ(kExpectedColor[1], actualColorRow1[1]);
+  EXPECT_EQ(kExpectedColor[2], actualColorRow1[2]);
+  EXPECT_EQ(kExpectedColor[3], actualColorRow1[3]);
+#endif
 }
 
 }  // namespace gpu

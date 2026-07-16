@@ -3831,6 +3831,15 @@
       "features": [
         "reset_base_level_for_astc_sub_image"
       ]
+    },
+    {
+      "id": 484,
+      "cr_bugs": [529867799],
+      "description": "Pack large row length separately when packing into a pixel pack buffer to work around Mali driver bug.",
+      "gl_vendor": "ARM.*",
+      "features": [
+        "pack_large_row_length_separately_pack_buffer"
+      ]
     }
   ]
 }
