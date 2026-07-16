@@ -782,7 +782,7 @@ TEST_F(AutofillAiPermissionUtilsTest,
   EXPECT_FALSE(MayPerformAutofillAiAction(
       client(), AutofillAiAction::kTypeSupportsAmbientAutofillData,
       EntityType(kPassport)));
-  EXPECT_TRUE(MayPerformAutofillAiAction(
+  EXPECT_FALSE(MayPerformAutofillAiAction(
       client(), AutofillAiAction::kShowAmbientAutofillInSettings));
 }
 

@@ -414,12 +414,24 @@ base::flat_set<int32_t> GetAutofillAmbientAutofillEligibleTiers() {
     case AutofillAiAction::kCrowdsourcingVote:
     case AutofillAiAction::kEditAndDeleteEntityInstanceInSettings:
     case AutofillAiAction::kUseCachedServerClassificationModelResults:
-    case AutofillAiAction::kShowAmbientAutofillInSettings:
       return is_allowed_by_opt_in_or_default;
     case AutofillAiAction::kFilling:
     case AutofillAiAction::kImport:
       return EntityTypeIsEnabledInSettings(*prefs, *entity_type) &&
              is_allowed_by_opt_in_or_default;
+    case AutofillAiAction::kShowAmbientAutofillInSettings:
+      if (!IsGeminiSettingsAllowedByEnterprisePolicy(*prefs, debug_message)) {
+        return false;
+      }
+      return is_allowed_by_opt_in_or_default;
+    case AutofillAiAction::kAmbientAutofill:
+      if (!personal_context_pref_enabled) {
+        return false;
+      }
+      if (!IsGeminiSettingsAllowedByEnterprisePolicy(*prefs, debug_message)) {
+        return false;
+      }
+      return is_allowed_by_opt_in_or_default;
     case AutofillAiAction::kTypeSupportsAmbientAutofillData: {
       if (!IsGeminiSettingsAllowedByEnterprisePolicy(*prefs, debug_message)) {
         return false;
@@ -446,14 +458,6 @@ base::flat_set<int32_t> GetAutofillAmbientAutofillEligibleTiers() {
       return EntityTypeIsEnabledInSettings(*prefs, *entity_type) &&
              is_allowed_by_opt_in_or_default;
     }
-    case AutofillAiAction::kAmbientAutofill:
-      if (!personal_context_pref_enabled) {
-        return false;
-      }
-      if (!IsGeminiSettingsAllowedByEnterprisePolicy(*prefs, debug_message)) {
-        return false;
-      }
-      return is_allowed_by_opt_in_or_default;
     case AutofillAiAction::kImportToWallet:
       if (!EntityTypeIsEnabledInSettings(*prefs, *entity_type)) {
         return false;
