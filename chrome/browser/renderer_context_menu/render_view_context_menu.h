@@ -405,7 +405,6 @@ class RenderViewContextMenu
   void ExecProtocolHandler(int event_flags, int handler_index);
   void ExecOpenLinkInProfile(int profile_index);
   void ExecInspectElement();
-  void ExecInspectElementWithGemini();
   void ExecInspectBackgroundPage();
   void ExecSaveLinkAs();
   void ExecSaveAs();

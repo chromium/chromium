@@ -53,44 +53,6 @@
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-namespace {
-
-// Returns a list of extra switch-dependent feature overrides to be applied
-// during FeatureList initialization. Combines the overrides defined at the
-// content layer with additional chrome layer overrides. The overrides
-// specified in this list each cause a feature's state to be overridden based on
-// the presence of a command line switch.
-std::vector<base::FeatureList::FeatureOverrideInfo>
-GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
-  std::vector<base::FeatureList::FeatureOverrideInfo> overrides =
-      content::GetSwitchDependentFeatureOverrides(command_line);
-
-  // Describes a switch-dependent override. See also content layer overrides.
-  struct SwitchDependentFeatureOverrideInfo {
-    // Switch that the override depends upon. The override will be registered if
-    // this switch is present.
-    const char* switch_name;
-    // Feature to override.
-    const std::reference_wrapper<const base::Feature> feature;
-    // State to override the feature with.
-    base::FeatureList::OverrideState override_state;
-  } chrome_layer_override_info[] = {
-      // Override for --devtools-greendev-ui.
-      {switches::kEnableDevToolsGreenDevUi,
-       std::cref(features::kDevToolsGreenDevUi),
-       base::FeatureList::OVERRIDE_ENABLE_FEATURE},
-  };
-
-  for (const auto& info : chrome_layer_override_info) {
-    if (command_line.HasSwitch(info.switch_name)) {
-      overrides.emplace_back(info.feature, info.override_state);
-    }
-  }
-  return overrides;
-}
-
-}  // namespace
-
 // static
 ChromeFeatureListCreator* ChromeFeatureListCreator::GetInstance() {
   static base::NoDestructor<ChromeFeatureListCreator> instance;
@@ -274,7 +236,7 @@ void ChromeFeatureListCreator::SetUpFieldTrials() {
       metrics_services_manager_->GetVariationsService();
   variations_service->SetUpFieldTrials(
       variation_ids,
-      GetSwitchDependentFeatureOverrides(
+      content::GetSwitchDependentFeatureOverrides(
           *base::CommandLine::ForCurrentProcess()),
       std::move(feature_list), browser_field_trials_.get());
   variations::InitCrashKeys();

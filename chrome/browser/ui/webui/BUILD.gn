@@ -300,8 +300,6 @@ source_set("webui") {
   sources = [
     "constrained_web_dialog_ui.cc",
     "constrained_web_dialog_ui.h",
-    "devtools/greendev_floaty_ui.cc",
-    "devtools/greendev_floaty_ui.h",
   ]
 
   sources += get_target_outputs(":webui_hosts")

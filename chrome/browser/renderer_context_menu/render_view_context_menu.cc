@@ -51,7 +51,6 @@
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/features.h"
-#include "chrome/browser/devtools/views/devtools_floaty.h"
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_stats.h"
@@ -631,7 +630,7 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW, 156},
        {IDC_CONTENT_CONTEXT_GLICSHAREIMAGE, 157},
        {IDC_CONTENT_CONTEXT_ARCHIVE_GLIC, 158},
-       {IDC_CONTENT_CONTEXT_INSPECTELEMENT_WITH_GEMINI, 159},
+       // Removed: {IDC_CONTENT_CONTEXT_INSPECTELEMENT_WITH_GEMINI, 159},
        {IDC_CONTENT_CONTEXT_INSPECTELEMENT_WITH_DEVTOOLS, 160},
        {IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY, 161},
        {IDC_CONTENT_CONTEXT_GLIC, 162},
@@ -1808,20 +1807,8 @@ void RenderViewContextMenu::AppendDeveloperItems() {
     }
   }
 
-  if (base::FeatureList::IsEnabled(features::kDevToolsGreenDevUi)) {
-    inspect_submenu_model_.AddItemWithStringId(
-        IDC_CONTENT_CONTEXT_INSPECTELEMENT_WITH_GEMINI,
-        IDS_CONTENT_CONTEXT_INSPECTELEMENT_WITH_GEMINI);
-    inspect_submenu_model_.AddItemWithStringId(
-        IDC_CONTENT_CONTEXT_INSPECTELEMENT_WITH_DEVTOOLS,
-        IDS_CONTENT_CONTEXT_INSPECTELEMENT_WITH_DEVTOOLS);
-    menu_model_.AddSubMenuWithStringId(IDC_CONTENT_CONTEXT_INSPECTELEMENT,
-                                       IDS_CONTENT_CONTEXT_INSPECTELEMENT,
-                                       &inspect_submenu_model_);
-  } else {
-    menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_INSPECTELEMENT,
-                                    IDS_CONTENT_CONTEXT_INSPECTELEMENT);
-  }
+  menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_INSPECTELEMENT,
+                                  IDS_CONTENT_CONTEXT_INSPECTELEMENT);
 }
 
 void RenderViewContextMenu::AppendDevtoolsForUnpackedExtensions() {
@@ -3340,7 +3327,6 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
 
     case IDC_CONTENT_CONTEXT_INSPECTELEMENT:
     case IDC_CONTENT_CONTEXT_INSPECTBACKGROUNDPAGE:
-    case IDC_CONTENT_CONTEXT_INSPECTELEMENT_WITH_GEMINI:
     case IDC_CONTENT_CONTEXT_INSPECTELEMENT_WITH_DEVTOOLS:
     case IDC_CONTENT_CONTEXT_RELOAD_PACKAGED_APP:
     case IDC_CONTENT_CONTEXT_RESTART_PACKAGED_APP:
@@ -3986,10 +3972,6 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
     case IDC_CONTENT_CONTEXT_INSPECTBACKGROUNDPAGE:
       ExecInspectBackgroundPage();
-      break;
-
-    case IDC_CONTENT_CONTEXT_INSPECTELEMENT_WITH_GEMINI:
-      ExecInspectElementWithGemini();
       break;
 
     case IDC_CONTENT_CONTEXT_INSPECTELEMENT_WITH_DEVTOOLS:
@@ -4854,16 +4836,6 @@ void RenderViewContextMenu::ExecInspectBackgroundPage() {
 
   extensions::devtools_util::InspectBackgroundPage(
       platform_app, GetProfile(), DevToolsOpenedByAction::kContextMenuInspect);
-}
-
-void RenderViewContextMenu::ExecInspectElementWithGemini() {
-  LOG(ERROR) << "ExecInspectElementWithGemini called at " << params_.x << ", "
-             << params_.y;
-  // TOOD(crbug.com/466071312): Send the actual node id.
-  DevToolsFloaty::Show(Profile::FromBrowserContext(browser_context_),
-                       render_process_id_, render_frame_id_,
-                       gfx::Point(params_.x, params_.y),
-                       /* *backend_node_id*/ 1);
 }
 
 void RenderViewContextMenu::CheckSupervisedUserURLFilterAndSaveLinkAs() {

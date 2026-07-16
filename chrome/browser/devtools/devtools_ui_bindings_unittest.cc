@@ -961,10 +961,6 @@ TEST_F(DevToolsUIBindingsHostConfigTest, GetHostConfigWithFeatures) {
   base::DictValue initial_config =
       DevToolsUIBindings::GetHostConfigDictionary(profile_.get());
 
-  const base::DictValue* initial_green_dev =
-      initial_config.FindDict("devToolsGreenDevUi");
-  ASSERT_FALSE(initial_green_dev);
-
   const base::DictValue* initial_protocol_monitor =
       initial_config.FindDict("devToolsProtocolMonitor");
   ASSERT_TRUE(initial_protocol_monitor);
@@ -983,17 +979,13 @@ TEST_F(DevToolsUIBindingsHostConfigTest, GetHostConfigWithFeatures) {
   // Enable features.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {::features::kDevToolsGreenDevUi, ::features::kDevToolsProtocolMonitor,
-       ::features::kDevToolsFreestyler, ::features::kDevToolsAiV2Architecture},
+      {::features::kDevToolsProtocolMonitor, ::features::kDevToolsFreestyler,
+       ::features::kDevToolsAiV2Architecture},
       {});
 
   // Verify state of features after enabling them.
   base::DictValue result =
       DevToolsUIBindings::GetHostConfigDictionary(profile_.get());
-
-  const base::DictValue* green_dev = result.FindDict("devToolsGreenDevUi");
-  ASSERT_TRUE(green_dev);
-  EXPECT_TRUE(green_dev->FindBool("enabled").value_or(false));
 
   const base::DictValue* protocol_monitor =
       result.FindDict("devToolsProtocolMonitor");
