@@ -14,7 +14,6 @@ import '../settings_shared.css.js';
 
 import type {AxAnnotationsBrowserProxy} from '/shared/settings/a11y_page/ax_annotations_browser_proxy.js';
 import {AxAnnotationsBrowserProxyImpl, ScreenAiInstallStatus} from '/shared/settings/a11y_page/ax_annotations_browser_proxy.js';
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
@@ -25,7 +24,7 @@ import {loadTimeData} from '../i18n_setup.js';
 import {getTemplate} from './ax_annotations_section.html.js';
 
 const SettingsAxAnnotationsSectionBaseElement =
-    PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
+    WebUiListenerMixin(I18nMixin(PolymerElement));
 
 export class SettingsAxAnnotationsSectionElement extends
     SettingsAxAnnotationsSectionBaseElement {

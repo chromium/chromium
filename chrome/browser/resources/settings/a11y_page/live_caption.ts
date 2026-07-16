@@ -21,7 +21,8 @@ import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CaptionsBrowserProxy, LiveCaptionLanguage, LiveCaptionLanguageList} from '/shared/settings/a11y_page/captions_browser_proxy.js';
 import {CaptionsBrowserProxyImpl} from '/shared/settings/a11y_page/captions_browser_proxy.js';
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -50,11 +51,12 @@ import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bund
 
 // <if expr="is_chromeos">
 const SettingsLiveCaptionElementBase =
-    WebUiListenerMixin(PrefsMixin(PolymerElement));
+    WebUiListenerMixin(PrefServiceObserverMixin(PolymerElement));
 // </if>
 // <if expr="not is_chromeos">
-const SettingsLiveCaptionElementBase = WebUiListenerMixin(
-    ListPropertyUpdateMixin(PrefsMixin(I18nMixin(PolymerElement))));
+const SettingsLiveCaptionElementBase =
+    WebUiListenerMixin(ListPropertyUpdateMixin(
+        PrefServiceObserverMixin(I18nMixin(PolymerElement))));
 
 export interface SettingsLiveCaptionElement {
   $: {
@@ -74,6 +76,11 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
 
   static get properties() {
     return {
+      isLiveCaptionEnabled_: {
+        type: Boolean,
+        value: false,
+      },
+
       /**
        * The subtitle to display under the Live Caption heading. Generally, this
        * is a generic subtitle describing the feature. While the SODA model is
@@ -92,6 +99,8 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
       },
 
       // <if expr="not is_chromeos">
+      liveCaptionLanguagePref_: Object,
+
       enableLiveTranslate_: {
         type: Boolean,
         value: function() {
@@ -119,7 +128,10 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
     };
   }
 
+  declare private isLiveCaptionEnabled_: boolean;
   // <if expr="not is_chromeos">
+  declare private liveCaptionLanguagePref_:
+      chrome.settingsPrivate.PrefObject<string>|undefined;
   declare private enableLiveTranslate_: boolean;
   declare private installedLanguagePacks_: LiveCaptionLanguageList;
   declare private availableLanguagePacks_: LiveCaptionLanguageList;
@@ -130,6 +142,20 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
       CaptionsBrowserProxyImpl.getInstance();
   declare private enableLiveCaptionSubtitle_: string;
   declare private enableLiveCaptionMultiLanguage_: boolean;
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    this.addPrefObserver<boolean>(
+        'accessibility.captions.live_caption_enabled', pref => {
+          this.isLiveCaptionEnabled_ = pref.value;
+        });
+    // <if expr="not is_chromeos">
+    this.mirrorPref(
+        'accessibility.captions.live_caption_language',
+        'liveCaptionLanguagePref_');
+    // </if>
+  }
 
   override ready() {
     super.ready();
@@ -186,9 +212,7 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
 
     // <if expr="not is_chromeos">
     if (this.installedLanguagePacks_.length === 0) {
-      this.installLanguagePacks_(
-          [this.getPref<string>('accessibility.captions.live_caption_language')
-               .value]);
+      this.installLanguagePacks_([this.liveCaptionLanguagePref_!.value]);
     }
     // </if>
   }
@@ -220,18 +244,16 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
   }
 
   private isDefaultLanguage_(languageCode: string): boolean {
-    if (this.prefs === undefined) {
+    if (this.liveCaptionLanguagePref_ === undefined) {
       return false;
     }
 
-    return languageCode ===
-        this.getPref<string>('accessibility.captions.live_caption_language')
-            .value;
+    return languageCode === this.liveCaptionLanguagePref_.value;
   }
 
   private onMakeDefaultClick_() {
     this.$.menu.get().close();
-    this.setPrefValue(
+    PrefService.getInstance().setPrefValue(
         'accessibility.captions.live_caption_language',
         this.detailLanguage_!.code);
   }
@@ -247,15 +269,15 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
     this.browserProxy_.removeLanguagePack(this.detailLanguage_.code);
 
     if (this.installedLanguagePacks_.length === 0) {
-      this.setPrefValue('accessibility.captions.live_caption_enabled', false);
+      PrefService.getInstance().setPrefValue(
+          'accessibility.captions.live_caption_enabled', false);
       return;
     }
 
     if (!this.installedLanguagePacks_.some(
-            languagePack => languagePack.code ===
-                this.getPref('accessibility.captions.live_caption_language')
-                    .value)) {
-      this.setPrefValue(
+            languagePack =>
+                languagePack.code === this.liveCaptionLanguagePref_!.value)) {
+      PrefService.getInstance().setPrefValue(
           'accessibility.captions.live_caption_language',
           this.installedLanguagePacks_[0].code);
     }

@@ -10,22 +10,22 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {SettingsAxAnnotationsSectionElement} from 'chrome://settings/lazy_load.js';
 import { assertFalse, assertTrue, assertEquals } from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 // </if>
 // clang-format on
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {AccessibilityBrowserProxy, SettingsA11yPageElement} from 'chrome://settings/lazy_load.js';
 import {AccessibilityBrowserProxyImpl, ToastAlertLevel} from 'chrome://settings/lazy_load.js';
-import type {SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData} from 'chrome://settings/settings.js';
-import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
+import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {getFakeLanguagePrefs} from './fake_language_settings_private.js';
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
 
 class TestAccessibilityBrowserProxy extends TestBrowserProxy implements
@@ -52,11 +52,77 @@ class TestAccessibilityBrowserProxy extends TestBrowserProxy implements
   }
 }
 
+function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
+  return [
+    ...getFakeLanguagePrefs(),
+    {
+      key: 'settings.a11y.focus_highlight',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'settings.a11y.caretbrowsing.enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'settings.a11y.enable_accessibility_image_labels',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'settings.a11y.enable_ax_tree_fixing',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'settings.a11y.enable_main_node_annotations',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'settings.a11y.overscroll_history_navigation',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'settings.toast.alert_level',
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: ToastAlertLevel.ALL,
+    },
+    {
+      key: 'accessibility.captions.live_caption_enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'accessibility.captions.live_caption_mask_offensive_words',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'accessibility.captions.live_caption_language',
+      type: chrome.settingsPrivate.PrefType.STRING,
+      value: 'en-US',
+    },
+    {
+      key: 'accessibility.captions.live_translate_enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'accessibility.captions.live_translate_target_language',
+      type: chrome.settingsPrivate.PrefType.STRING,
+      value: 'en',
+    },
+  ];
+}
+
 suite('A11yPage', () => {
   let a11yPage: SettingsA11yPageElement;
-  let settingsPrefs: SettingsPrefsElement;
   let browserProxy: TestAccessibilityBrowserProxy;
   let metrics: MetricsTracker;
+  let prefService: PrefService;
 
   setup(async function() {
     loadTimeData.overrideValues({
@@ -66,30 +132,33 @@ suite('A11yPage', () => {
 
     metrics = fakeMetricsPrivate();
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    settingsPrefs = document.createElement('settings-prefs');
-    const settingsPrivate = new FakeSettingsPrivate(getFakeLanguagePrefs());
-    settingsPrefs.initialize(settingsPrivate);
-    document.body.appendChild(settingsPrefs);
 
+    const initialPrefs = getInitialPrefs();
+    const prefsBrowserProxy = new TestPrefsBrowserProxy(initialPrefs);
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
+
+    const settingsPrefs = document.createElement('settings-prefs');
+    settingsPrefs.initialize(prefsBrowserProxy.fakeApi);
+    document.body.appendChild(settingsPrefs);
     await CrSettingsPrefs.initialized;
-    // Set up test browser proxy.
-    browserProxy = new TestAccessibilityBrowserProxy();
-    AccessibilityBrowserProxyImpl.setInstance(browserProxy);
 
     // Set up languages helper.
     const settingsLanguages = document.createElement('settings-languages');
     settingsLanguages.prefs = settingsPrefs.prefs!;
     fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
     document.body.appendChild(settingsLanguages);
+    await settingsLanguages.whenReady();
+
+    // Set up test browser proxy.
+    browserProxy = new TestAccessibilityBrowserProxy();
+    AccessibilityBrowserProxyImpl.setInstance(browserProxy);
 
     a11yPage = document.createElement('settings-a11y-page');
-    a11yPage.prefs = settingsPrefs.prefs!;
-    fakeDataBind(settingsPrefs, a11yPage, 'prefs');
-
     document.body.appendChild(a11yPage);
     flush();
-
-    return settingsLanguages.whenReady();
   });
 
   test('ax tree fixing toggle and pref', async () => {
@@ -104,13 +173,16 @@ suite('A11yPage', () => {
     // The AX Tree Fixing pref is off by default, so the button should be
     // toggled off.
     assertFalse(
-        a11yPage.getPref<boolean>('settings.a11y.enable_ax_tree_fixing').value);
+        prefService.getPref<boolean>('settings.a11y.enable_ax_tree_fixing')
+            .value);
     assertFalse(toggle.checked);
 
     toggle.click();
+    await microtasksFinished();
     await flushTasks();
     assertTrue(
-        a11yPage.getPref<boolean>('settings.a11y.enable_ax_tree_fixing').value);
+        prefService.getPref<boolean>('settings.a11y.enable_ax_tree_fixing')
+            .value);
     assertTrue(toggle.checked);
   });
 
@@ -140,22 +212,24 @@ suite('A11yPage', () => {
     assertTrue(isVisible(axAnnotationsSection));
   });
 
-  test('toast toggle mapping from enum', () => {
+  test('toast toggle mapping from enum', async () => {
     const toastToggle =
         a11yPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
             '#toastToggle');
     assertTrue(!!toastToggle);
 
     toastToggle.click();
+    await microtasksFinished();
     assertEquals(
         ToastAlertLevel.ACTIONABLE,
-        a11yPage.getPref('settings.toast.alert_level').value);
+        prefService.getPref('settings.toast.alert_level').value);
     assertFalse(toastToggle.checked);
 
     toastToggle.click();
+    await microtasksFinished();
     assertEquals(
         ToastAlertLevel.ALL,
-        a11yPage.getPref('settings.toast.alert_level').value);
+        prefService.getPref('settings.toast.alert_level').value);
     assertTrue(toastToggle.checked);
 
     // Logged metrics for both pref changes.

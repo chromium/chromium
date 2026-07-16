@@ -11,7 +11,7 @@
 
 <if expr="is_macosx or is_win">
         <template is="dom-if" if="[[enableLiveCaption_]]">
-          <settings-live-caption prefs="{{prefs}}"></settings-live-caption>
+          <settings-live-caption></settings-live-caption>
         </template>
         <cr-link-row id="captions"
             class="hr"
@@ -35,13 +35,13 @@
 <if expr="not is_chromeos">
         <settings-toggle-button
             class="hr"
-            pref="{{prefs.settings.a11y.focus_highlight}}"
+            pref-key="settings.a11y.focus_highlight"
             on-setting-boolean-control-change="onFocusHighlightChange_"
             label="$i18n{focusHighlightLabel}">
         </settings-toggle-button>
         <settings-toggle-button
             class="hr"
-            pref="{{prefs.settings.a11y.caretbrowsing.enabled}}"
+            pref-key="settings.a11y.caretbrowsing.enabled"
             on-change="onA11yCaretBrowsingChange_"
             label="$i18n{caretBrowsingTitle}"
             sub-label="$i18n{caretBrowsingSubtitle}">
@@ -50,7 +50,7 @@
         <settings-toggle-button
             class="hr"
             hidden$="[[!hasScreenReader_]]"
-            pref="{{prefs.settings.a11y.enable_accessibility_image_labels}}"
+            pref-key="settings.a11y.enable_accessibility_image_labels"
             on-change="onA11yImageLabelsChange_"
             label="$i18n{accessibleImageLabelsTitle}"
             sub-label="$i18n{accessibleImageLabelsSubtitle}">
@@ -58,7 +58,7 @@
         <template is="dom-if" if="[[showAxTreeFixingSection_]]">
           <settings-toggle-button id="axTreeFixing"
               class="hr"
-              pref="{{prefs.settings.a11y.enable_ax_tree_fixing}}"
+              pref-key="settings.a11y.enable_ax_tree_fixing"
               label="$i18n{axTreeFixingTitle}"
               sub-label="$i18n{axTreeFixingSubtitle}">
           </settings-toggle-button>
@@ -66,15 +66,14 @@
 <if expr="is_win or is_linux or is_macosx">
         <template is="dom-if" if="[[showAxAnnotationsSection_]]">
           <settings-ax-annotations-section
-              id="AxAnnotationsSection"
-              prefs="{{prefs}}">
+              id="AxAnnotationsSection">
           </settings-ax-annotations-section>
         </template>
 </if>
 <if expr="is_win or is_linux">
         <settings-toggle-button
             class="hr"
-            pref="{{prefs.settings.a11y.overscroll_history_navigation}}"
+            pref-key="settings.a11y.overscroll_history_navigation"
             on-change="onOverscrollHistoryNavigationChange_"
             label="$i18n{overscrollHistoryNavigationTitle}"
             sub-label="$i18n{overscrollHistoryNavigationSubtitle}">
@@ -92,9 +91,9 @@
 </if>
 <if expr="not is_chromeos">
         <settings-toggle-button class="hr" id="toastToggle"
-          pref="{{prefs.settings.toast.alert_level}}"
-          numeric-unchecked-values="[[numericUncheckedToastAlertValues_]]"
-          numeric-checked-value="[[toastAlertLevelEnum_.ALL]]"
+            pref-key="settings.toast.alert_level"
+            numeric-unchecked-values="[[numericUncheckedToastAlertValues_]]"
+            numeric-checked-value="[[toastAlertLevelEnum_.ALL]]"
             on-change="onToastAlertLevelChange_" label="$i18n{toastAlertLevelTitle}"
             sub-label="$i18n{toastAlertLevelDescription}">
         </settings-toggle-button>

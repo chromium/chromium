@@ -23,7 +23,7 @@ import './live_caption.js';
 import {CaptionsBrowserProxyImpl} from '/shared/settings/a11y_page/captions_browser_proxy.js';
 // </if>
 // clang-format on
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -51,8 +51,8 @@ export enum ToastAlertLevel {
   COUNT = 1,
 }
 
-const SettingsA11yPageElementBase = SettingsViewMixin(
-    PrefsMixin(WebUiListenerMixin(BaseMixin(PolymerElement))));
+const SettingsA11yPageElementBase =
+    SettingsViewMixin(WebUiListenerMixin(BaseMixin(PolymerElement)));
 
 export interface SettingsA11yPageElement {
   $: {
@@ -230,7 +230,9 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   private onToastAlertLevelChange_() {
     chrome.metricsPrivate.recordEnumerationValue(
         'Toast.FrequencyPrefChanged',
-        this.getPref<number>('settings.toast.alert_level').value,
+        PrefService.getInstance()
+            .getPref<number>('settings.toast.alert_level')
+            .value,
         ToastAlertLevel.COUNT);
   }
   // </if>

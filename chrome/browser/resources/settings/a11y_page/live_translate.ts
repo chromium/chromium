@@ -18,7 +18,7 @@ import '../settings_shared.css.js';
 
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 
 import type {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
@@ -29,7 +29,7 @@ import {isTranslateBaseLanguage} from '../languages_page/languages_util.js';
 import {getTemplate} from './live_translate.html.js';
 
 const SettingsLiveTranslateElementBase =
-    WebUiListenerMixin(PrefsMixin(PolymerElement));
+    WebUiListenerMixin(PrefServiceObserverMixin(PolymerElement));
 
 export interface SettingsLiveTranslateElement {
   $: {
@@ -49,6 +49,11 @@ export class SettingsLiveTranslateElement extends
 
   static get properties() {
     return {
+      isLiveTranslateEnabled_: {
+        type: Boolean,
+        value: false,
+      },
+
       enableLiveTranslateSubtitle_: {
         type: String,
         value: loadTimeData.getString('captionsEnableLiveTranslateSubtitle'),
@@ -66,12 +71,19 @@ export class SettingsLiveTranslateElement extends
     };
   }
 
+  declare private isLiveTranslateEnabled_: boolean;
   declare private enableLiveTranslateSubtitle_: string;
   declare private languageOptions_: DropdownMenuOptionList;
   declare private translatableLanguages_: DropdownMenuOptionList;
 
   override connectedCallback() {
     super.connectedCallback();
+
+    this.addPrefObserver<boolean>(
+        'accessibility.captions.live_translate_enabled', pref => {
+          this.isLiveTranslateEnabled_ = pref.value;
+        });
+
     const languageHelper = getLanguageHelperInstance();
     languageHelper.whenReady().then(() => {
       this.translatableLanguages_ =

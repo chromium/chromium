@@ -7,16 +7,32 @@ import 'chrome://settings/lazy_load.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsLiveTranslateElement} from 'chrome://settings/lazy_load.js';
 import {CaptionsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs, loadTimeData} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestCaptionsBrowserProxy} from './test_captions_browser_proxy.js';
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
+function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
+  return [
+    {
+      key: 'accessibility.captions.live_translate_enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'accessibility.captions.live_translate_target_language',
+      type: chrome.settingsPrivate.PrefType.STRING,
+      value: 'en',
+    },
+  ];
+}
 
 suite('LiveTranslateSection', function() {
   let liveTranslateSection: SettingsLiveTranslateElement;
   let browserProxy: TestCaptionsBrowserProxy;
+  let prefService: PrefService;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
@@ -26,25 +42,28 @@ suite('LiveTranslateSection', function() {
   });
 
   setup(async () => {
-    const settingsPrefs = document.createElement('settings-prefs');
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    const prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
+
+    const settingsPrefs = document.createElement('settings-prefs');
+    document.body.appendChild(settingsPrefs);
+    await CrSettingsPrefs.initialized;
 
     const settingsLanguages = document.createElement('settings-languages');
     settingsLanguages.prefs = settingsPrefs.prefs!;
     fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
     document.body.appendChild(settingsLanguages);
 
-    document.body.appendChild(settingsPrefs);
-    await CrSettingsPrefs.initialized;
-
     // Set up test browser proxy.
     browserProxy = new TestCaptionsBrowserProxy();
     CaptionsBrowserProxyImpl.setInstance(browserProxy);
 
     liveTranslateSection = document.createElement('settings-live-translate');
-    liveTranslateSection.prefs = settingsPrefs.prefs!;
-    fakeDataBind(settingsPrefs, liveTranslateSection, 'prefs');
-    fakeDataBind(settingsLanguages, liveTranslateSection, 'language-helper');
     document.body.appendChild(liveTranslateSection);
 
     flush();
@@ -60,7 +79,7 @@ suite('LiveTranslateSection', function() {
     // Clicking on the toggle switches it to true.
     settingsToggle.click();
     let newToggleValue =
-        liveTranslateSection
+        prefService
             .getPref<boolean>('accessibility.captions.live_translate_enabled')
             .value;
     assertTrue(newToggleValue);
@@ -68,14 +87,14 @@ suite('LiveTranslateSection', function() {
     // Clicking on the toggle switches it to false.
     settingsToggle.click();
     newToggleValue =
-        liveTranslateSection
+        prefService
             .getPref<boolean>('accessibility.captions.live_translate_enabled')
             .value;
     assertFalse(newToggleValue);
   });
 
   test('aria label for the target language dropdown menu', function() {
-    liveTranslateSection.setPrefValue(
+    prefService.setPrefValue(
         'accessibility.captions.live_translate_enabled', true);
     flush();
 

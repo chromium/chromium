@@ -23,7 +23,7 @@
 </style>
 <settings-subpage page-title="$i18n{captionsTitle}" route-path$="[[routePath]]">
 <template is="dom-if" if="[[enableLiveCaption_]]">
-  <settings-live-caption prefs="{{prefs}}"></settings-live-caption>
+  <settings-live-caption></settings-live-caption>
 </template>
 <div class="cr-row">
   <h2 class="start">$i18n{captionsPreferencesTitle}</h2>
@@ -33,18 +33,16 @@
 </div>
 <div class="preview-box">
   <span style="
-      font-size:[[prefs.accessibility.captions.text_size.value]];
-      font-family:[[getFontFamily_(
-          prefs.accessibility.captions.text_font.value)]];
+      font-size:[[textSizePref_.value]];
+      font-family:[[getFontFamily_(textFontPref_.value)]];
       background-color: [[computeBackgroundColor_(
-          prefs.accessibility.captions.background_opacity.value,
-          prefs.accessibility.captions.background_color.value)]];
+          backgroundOpacityPref_.value,
+          backgroundColorPref_.value)]];
       color: [[computeTextColor_(
-          prefs.accessibility.captions.text_opacity.value,
-          prefs.accessibility.captions.text_color.value)]];
-      text-shadow: [[prefs.accessibility.captions.text_shadow.value]];
-      padding: [[computePadding_(
-          prefs.accessibility.captions.text_size.value)]]">
+          textOpacityPref_.value,
+          textColorPref_.value)]];
+      text-shadow: [[textShadowPref_.value]];
+      padding: [[computePadding_(textSizePref_.value)]]">
     $i18n{quickBrownFox}
   </span>
 </div>

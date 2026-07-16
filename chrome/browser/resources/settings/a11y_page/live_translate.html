@@ -27,14 +27,13 @@
 </style>
 <div class="cr-row cr-row-with-template">
   <settings-toggle-button id="liveTranslateToggleButton"
-      pref="{{prefs.accessibility.captions.live_translate_enabled}}"
+      pref-key="accessibility.captions.live_translate_enabled"
       on-change="onLiveTranslateEnabledChange_"
       label="$i18n{captionsEnableLiveTranslateTitle}"
       sub-label="$i18n{captionsEnableLiveTranslateSubtitle}">
   </settings-toggle-button>
 </div>
-<cr-collapse
-    opened="[[prefs.accessibility.captions.live_translate_enabled.value]]">
+<cr-collapse opened="[[isLiveTranslateEnabled_]]">
   <div class="cr-row continuation subsection-group">
     <div class="start cr-padded-text" aria-hidden="true">
         $i18n{captionsLiveTranslateTargetLanguage}

@@ -7,17 +7,54 @@ import 'chrome://settings/lazy_load.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsAddLanguagesDialogElement, SettingsLiveCaptionElement} from 'chrome://settings/lazy_load.js';
 import {CaptionsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs, loadTimeData} from 'chrome://settings/settings.js';
+import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertStringContains, assertStringExcludes, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+import {getFakeLanguagePrefs} from './fake_language_settings_private.js';
 import {TestCaptionsBrowserProxy} from './test_captions_browser_proxy.js';
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
+
+function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
+  return [
+    ...getFakeLanguagePrefs(),
+    {
+      key: 'accessibility.captions.live_caption_enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'accessibility.captions.live_caption_mask_offensive_words',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'accessibility.captions.live_caption_language',
+      type: chrome.settingsPrivate.PrefType.STRING,
+      value: 'en-US',
+    },
+    {
+      key: 'accessibility.captions.live_translate_enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'accessibility.captions.live_translate_target_language',
+      type: chrome.settingsPrivate.PrefType.STRING,
+      value: 'en',
+    },
+  ];
+}
 
 suite('LiveCaptionSection', function() {
   let liveCaptionSection: SettingsLiveCaptionElement;
+  let settingsPrefs: SettingsPrefsElement;
   let browserProxy: TestCaptionsBrowserProxy;
   let dialog: SettingsAddLanguagesDialogElement|null = null;
+  let prefService: PrefService;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
@@ -27,30 +64,31 @@ suite('LiveCaptionSection', function() {
   });
 
   setup(async () => {
-    const settingsPrefs = document.createElement('settings-prefs');
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    const initialPrefs = getInitialPrefs();
+    const prefsBrowserProxy = new TestPrefsBrowserProxy(initialPrefs);
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
+
+    settingsPrefs = document.createElement('settings-prefs');
+    const settingsPrivate = new FakeSettingsPrivate(initialPrefs);
+    settingsPrefs.initialize(settingsPrivate);
+    document.body.appendChild(settingsPrefs);
+    await CrSettingsPrefs.initialized;
 
     const settingsLanguages = document.createElement('settings-languages');
     settingsLanguages.prefs = settingsPrefs.prefs!;
     fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
     document.body.appendChild(settingsLanguages);
 
-    document.body.appendChild(settingsPrefs);
-    await CrSettingsPrefs.initialized;
-
     // Set up test browser proxy.
     browserProxy = new TestCaptionsBrowserProxy();
     CaptionsBrowserProxyImpl.setInstance(browserProxy);
 
     liveCaptionSection = document.createElement('settings-live-caption');
-    liveCaptionSection.prefs = settingsPrefs.prefs!;
-    fakeDataBind(settingsPrefs, liveCaptionSection, 'prefs');
-
-    // Reset default language before every test to prevent state from leaking
-    // from one test into another.
-    liveCaptionSection.setPrefValue(
-        'accessibility.captions.live_caption_language', 'en-US');
-
     document.body.appendChild(liveCaptionSection);
 
     flush();
@@ -66,7 +104,7 @@ suite('LiveCaptionSection', function() {
     // Clicking on the toggle switches it to true.
     settingsToggle.click();
     let newToggleValue =
-        liveCaptionSection
+        prefService
             .getPref<boolean>('accessibility.captions.live_caption_enabled')
             .value;
     assertTrue(newToggleValue);
@@ -74,20 +112,30 @@ suite('LiveCaptionSection', function() {
     // Clicking on the toggle switches it to false.
     settingsToggle.click();
     newToggleValue =
-        liveCaptionSection
+        prefService
             .getPref<boolean>('accessibility.captions.live_caption_enabled')
             .value;
     assertFalse(newToggleValue);
   });
 
   test('add languages and confirm', async function() {
+    // Need to make the section visible first, for the innerText calls below to
+    // behave correctly.
+    const settingsToggle =
+        liveCaptionSection.shadowRoot!.querySelector<HTMLElement>(
+            '#liveCaptionToggleButton');
+    assertTrue(!!settingsToggle);
+    settingsToggle.click();
+    await microtasksFinished();
+
     const addLanguagesButton =
         liveCaptionSection.shadowRoot!.querySelector<HTMLElement>(
             '#addLanguage');
-    const whenDialogOpen = eventToPromise('cr-dialog-open', liveCaptionSection);
     assertTrue(!!addLanguagesButton);
-    addLanguagesButton.click();
+    assertTrue(isVisible(addLanguagesButton));
 
+    const whenDialogOpen = eventToPromise('cr-dialog-open', liveCaptionSection);
+    addLanguagesButton.click();
     await whenDialogOpen;
 
     dialog = liveCaptionSection.shadowRoot!.querySelector(

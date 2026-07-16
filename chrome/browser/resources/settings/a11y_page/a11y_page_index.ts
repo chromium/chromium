@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
-import '/shared/settings/prefs/prefs.js';
 import './a11y_page.js';
 import '../settings_shared.css.js';
 // <if expr="is_linux">
@@ -44,8 +43,6 @@ export class SettingsA11yPageIndexElement extends
 
   static get properties() {
     return {
-      prefs: Object,
-
       routes_: {
         type: Object,
         value: () => routes,
@@ -53,7 +50,6 @@ export class SettingsA11yPageIndexElement extends
     };
   }
 
-  declare prefs: Record<string, unknown>;
   declare private routes_: SettingsRoutes;
 
   override currentRouteChanged(newRoute: Route, oldRoute?: Route) {

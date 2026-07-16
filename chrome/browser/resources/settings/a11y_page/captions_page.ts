@@ -17,7 +17,7 @@ import './live_caption.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {FontsData} from '/shared/settings/appearance_page/fonts_browser_proxy.js';
 import {FontsBrowserProxyImpl} from '/shared/settings/appearance_page/fonts_browser_proxy.js';
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 
 import type {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
@@ -27,7 +27,7 @@ import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 import {getTemplate} from './captions_page.html.js';
 
 const SettingsCaptionsElementBase =
-    SettingsViewMixin(PrefsMixin(PolymerElement));
+    SettingsViewMixin(PrefServiceObserverMixin(PolymerElement));
 
 export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
   static get is() {
@@ -200,6 +200,14 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
           return loadTimeData.getBoolean('enableLiveCaption');
         },
       },
+
+      backgroundColorPref_: Object,
+      backgroundOpacityPref_: Object,
+      textColorPref_: Object,
+      textFontPref_: Object,
+      textOpacityPref_: Object,
+      textShadowPref_: Object,
+      textSizePref_: Object,
     };
   }
 
@@ -210,6 +218,34 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
   declare private readonly textShadowOptions_: DropdownMenuOptionList;
   declare private readonly textSizeOptions_: DropdownMenuOptionList;
   declare private enableLiveCaption_: boolean;
+
+  declare private backgroundColorPref_:
+      chrome.settingsPrivate.PrefObject<string>|undefined;
+  declare private backgroundOpacityPref_:
+      chrome.settingsPrivate.PrefObject<number>|undefined;
+  declare private textColorPref_: chrome.settingsPrivate.PrefObject<string>|
+      undefined;
+  declare private textFontPref_: chrome.settingsPrivate.PrefObject<string>|
+      undefined;
+  declare private textOpacityPref_: chrome.settingsPrivate.PrefObject<number>|
+      undefined;
+  declare private textShadowPref_: chrome.settingsPrivate.PrefObject<string>|
+      undefined;
+  declare private textSizePref_: chrome.settingsPrivate.PrefObject<string>|
+      undefined;
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.mirrorPrefs({
+      'accessibility.captions.background_color': 'backgroundColorPref_',
+      'accessibility.captions.background_opacity': 'backgroundOpacityPref_',
+      'accessibility.captions.text_color': 'textColorPref_',
+      'accessibility.captions.text_font': 'textFontPref_',
+      'accessibility.captions.text_opacity': 'textOpacityPref_',
+      'accessibility.captions.text_shadow': 'textShadowPref_',
+      'accessibility.captions.text_size': 'textSizePref_',
+    });
+  }
 
   override ready() {
     super.ready();
@@ -243,8 +279,7 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
    * @return the font family as a CSS property value.
    */
   private getFontFamily_(): string {
-    const fontFamily =
-        this.getPref<string>('accessibility.captions.text_font').value;
+    const fontFamily = this.textFontPref_?.value;
 
     // Return the preference value or the default font family for
     // video::-webkit-media-text-track-container defined in mediaControls.css.
@@ -255,9 +290,8 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
    * @return the background color as a RGBA string.
    */
   private computeBackgroundColor_(): string {
-    const backgroundColor = this.formatRgaString_(
-        'accessibility.captions.background_color',
-        'accessibility.captions.background_opacity');
+    const backgroundColor = this.formatRgbaString_(
+        this.backgroundColorPref_?.value, this.backgroundOpacityPref_?.value);
 
     // Return the preference value or the default background color for
     // video::cue defined in mediaControls.css.
@@ -268,9 +302,8 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
    * @return the text color as a RGBA string.
    */
   private computeTextColor_(): string {
-    const textColor = this.formatRgaString_(
-        'accessibility.captions.text_color',
-        'accessibility.captions.text_opacity');
+    const textColor = this.formatRgbaString_(
+        this.textColorPref_?.value, this.textOpacityPref_?.value);
 
     // Return the preference value or the default text color for
     // video::-webkit-media-text-track-container defined in mediaControls.css.
@@ -279,22 +312,16 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
 
   /**
    * Formats the color as an RGBA string.
-   * @param colorPreference The name of the preference containing the RGB values
-   *     as a comma-separated string.
-   * @param opacityPreference The name of the preference containing the opacity
-   *     value as a percentage.
+   * @param color The RGB values as a comma-separated string.
+   * @param opacity The opacity value as a percentage.
    * @return The formatted RGBA string.
    */
-  private formatRgaString_(colorPreference: string, opacityPreference: string):
-      string {
-    const color = this.getPref(colorPreference).value;
-
-    if (!color) {
+  private formatRgbaString_(color?: string, opacity?: number): string {
+    if (!color || opacity === undefined) {
       return '';
     }
 
-    return 'rgba(' + color + ',' +
-        this.getPref<number>(opacityPreference).value / 100.0 + ')';
+    return 'rgba(' + color + ',' + opacity / 100.0 + ')';
   }
 
   /**

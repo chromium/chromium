@@ -8,14 +8,25 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsAxAnnotationsSectionElement, SettingsToggleButtonElement} from 'chrome://settings/lazy_load.js';
 import {ScreenAiInstallStatus} from 'chrome://settings/lazy_load.js';
-import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData} from 'chrome://settings/settings.js';
+import {loadTimeData, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
+
+function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
+  return [
+    {
+      key: 'settings.a11y.enable_main_node_annotations',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+  ];
+}
+
 suite('SettingsAxAnnotationsSectionTest', () => {
   let testElement: SettingsAxAnnotationsSectionElement;
-  let settingsPrefs: SettingsPrefsElement;
+  let prefService: PrefService;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
@@ -25,12 +36,14 @@ suite('SettingsAxAnnotationsSectionTest', () => {
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testElement = document.createElement('settings-ax-annotations-section');
-    settingsPrefs = document.createElement('settings-prefs');
-    document.body.appendChild(settingsPrefs);
-    await CrSettingsPrefs.initialized;
 
-    testElement.prefs = settingsPrefs.prefs!;
+    const prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
+
+    testElement = document.createElement('settings-ax-annotations-section');
     document.body.appendChild(testElement);
     flush();
   });
@@ -50,7 +63,7 @@ suite('SettingsAxAnnotationsSectionTest', () => {
     // The main node annotations pref is off by default, so the button should be
     // toggled off.
     assertFalse(
-        testElement
+        prefService
             .getPref<boolean>('settings.a11y.enable_main_node_annotations')
             .value,
         'main node annotations pref should be off by default');
@@ -59,7 +72,7 @@ suite('SettingsAxAnnotationsSectionTest', () => {
     toggle.click();
     await flushTasks();
     assertTrue(
-        testElement
+        prefService
             .getPref<boolean>('settings.a11y.enable_main_node_annotations')
             .value,
         'main node annotations pref should be on');
