@@ -29,7 +29,7 @@ export function getHtml(this: SettingsDownloadsPageElement) {
         label="$i18n{changeDownloadLocation}"
         aria-labelledby="locationLabel defaultDownloadPath"
         @click="${this.onChangeDownloadsPathClick_}"
-        .pref="${this.downloadDefaultDirectoryPref_}"
+        pref-key="download.default_directory"
         end-justified>
     </controlled-button>
   </div>
