@@ -25,7 +25,7 @@ BASE_FEATURE_PARAM(std::string,
 
 // Controls whether session IDs should be attached to Upsert API calls for new
 // private passes.
-BASE_FEATURE(kWalletApiPrivatePassesConsent, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWalletApiPrivatePassesConsent, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether to enable walletable pass detection on web pages.
 BASE_FEATURE(kWalletablePassDetection, base::FEATURE_DISABLED_BY_DEFAULT);
