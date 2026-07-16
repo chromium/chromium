@@ -934,6 +934,7 @@ coverage_builder(
                 "mac_toolchain",
             ],
             build_config = builder_config.build_config.DEBUG,
+            target_arch = builder_config.target_arch.ARM,
             target_bits = 64,
             target_platform = builder_config.target_platform.IOS,
         ),
