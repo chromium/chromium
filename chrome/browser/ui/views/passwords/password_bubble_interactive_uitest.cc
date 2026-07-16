@@ -558,32 +558,35 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest, DontCloseOnLostFocus) {
   EXPECT_TRUE(IsBubbleShowing());
 }
 
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_TwoTabsWithBubbleSwitch DISABLED_TwoTabsWithBubbleSwitch
-#else
-#define MAYBE_TwoTabsWithBubbleSwitch TwoTabsWithBubbleSwitch
-#endif
 IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
-                       MAYBE_TwoTabsWithBubbleSwitch) {
-  // Set up the first tab with the bubble.
-  SetupPendingPassword();
-  EXPECT_TRUE(IsBubbleShowing());
-  // Set up the second tab and bring the bubble again.
-  ASSERT_TRUE(AddTabAtIndex(1, embedded_test_server()->GetURL("/empty.html"),
-                            ui::PAGE_TRANSITION_TYPED));
-  TabStripModel* tab_model = browser()->tab_strip_model();
-  tab_model->ActivateTabAt(
-      1, TabStripUserGestureDetails(
-             TabStripUserGestureDetails::GestureType::kOther));
-  EXPECT_FALSE(IsBubbleShowing());
-  EXPECT_EQ(1, tab_model->active_index());
-  SetupPendingPassword();
-  EXPECT_TRUE(IsBubbleShowing());
-  // Back to the first tab.
-  tab_model->ActivateTabAt(
-      0, TabStripUserGestureDetails(
-             TabStripUserGestureDetails::GestureType::kOther));
-  EXPECT_FALSE(IsBubbleShowing());
+                       TwoTabsWithBubbleSwitch) {
+  RunTestSequence(
+      // 1. Show bubble on tab 0.
+      Do([this]() { SetupPendingPassword(); }),
+      WaitForShow(PasswordSaveUpdateView::kPasswordBubbleElementId),
+      // 2. Add and switch to tab 1.
+      Do([this]() {
+        ASSERT_TRUE(AddTabAtIndex(
+            1, embedded_test_server()->GetURL("/empty.html"),
+            ui::PAGE_TRANSITION_TYPED));
+        browser()->tab_strip_model()->ActivateTabAt(
+            1, TabStripUserGestureDetails(
+                   TabStripUserGestureDetails::GestureType::kOther));
+      }),
+      // 3. Wait for the bubble to hide due to the tab switch.
+      WaitForHide(PasswordSaveUpdateView::kPasswordBubbleElementId),
+      Check([this]() { return browser()->tab_strip_model()->active_index() == 1; }),
+      // 4. Show bubble on tab 1.
+      Do([this]() { SetupPendingPassword(); }),
+      WaitForShow(PasswordSaveUpdateView::kPasswordBubbleElementId),
+      // 5. Switch back to tab 0.
+      Do([this]() {
+        browser()->tab_strip_model()->ActivateTabAt(
+            0, TabStripUserGestureDetails(
+                   TabStripUserGestureDetails::GestureType::kOther));
+      }),
+      // 6. Wait for the bubble to hide again.
+      WaitForHide(PasswordSaveUpdateView::kPasswordBubbleElementId));
 }
 
 IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
@@ -688,30 +691,19 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest, LeakPromptHidesBubble) {
 
 // This is a regression test for crbug.com/40228526
 // TODO(crbug.com/330095872): Flaky on Mac
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_SaveUiDismissalReason DISABLED_SaveUiDismissalReason
-#else
-#define MAYBE_SaveUiDismissalReason SaveUiDismissalReason
-#endif
-IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
-                       MAYBE_SaveUiDismissalReason) {
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest, SaveUiDismissalReason) {
   base::HistogramTester histogram_tester;
 
-  SetupPendingPassword();
-  ASSERT_TRUE(IsBubbleShowing());
-  PasswordBubbleViewBase::manage_password_bubble()->AcceptDialog();
-  content::RunAllPendingInMessageLoop();
-
+  RunTestSequence(
+      Do([this]() { SetupPendingPassword(); }),
+      WaitForShow(PasswordSaveUpdateView::kPasswordBubbleElementId),
+      Do([]() { PasswordBubbleViewBase::manage_password_bubble()->AcceptDialog(); }),
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Bubble is still showing because of the Sign in Promo showing after saving
-  // the password.
-  ASSERT_TRUE(IsBubbleShowing());
-  // Close it without any action.
-  PasswordBubbleViewBase::manage_password_bubble()->CloseCurrentBubble();
-
+      Do([]() { content::RunAllPendingInMessageLoop(); }),
+      Check([]() { return IsBubbleShowing(); }),
+      Do([]() { PasswordBubbleViewBase::CloseCurrentBubble(); }),
 #endif
-
-  ASSERT_FALSE(IsBubbleShowing());
+      WaitForHide(PasswordSaveUpdateView::kPasswordBubbleElementId));
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.SaveUIDismissalReason",
@@ -1349,35 +1341,31 @@ IN_PROC_BROWSER_TEST_P(
                  /*screenshot_name=*/std::string(), /*baseline_cl=*/"5189779"));
 }
 
-// TODO(crbug.com/470163229): Disabled due to flakiness.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ClosesBubbleOnNavigationToPasswordDetailsSubpage \
-  DISABLED_ClosesBubbleOnNavigationToPasswordDetailsSubpage
-#else
-#define MAYBE_ClosesBubbleOnNavigationToPasswordDetailsSubpage \
-  ClosesBubbleOnNavigationToPasswordDetailsSubpage
-#endif
 IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
-                       MAYBE_ClosesBubbleOnNavigationToPasswordDetailsSubpage) {
+                       ClosesBubbleOnNavigationToPasswordDetailsSubpage) {
   base::HistogramTester histogram_tester;
 
-  SetupManagingPasswords();
-  EXPECT_FALSE(IsBubbleShowing());
-  ExecuteManagePasswordsCommand();
-  ASSERT_TRUE(IsBubbleShowing());
-
-  static_cast<ManagePasswordsView*>(
-      PasswordBubbleViewBase::manage_password_bubble())
-      ->DisplayDetailsOfPasswordForTesting(*test_form());
-
-  // RunScheduledLayout() is needed due to widget auto-resize.
-  views::test::RunScheduledLayout(
-      PasswordBubbleViewBase::manage_password_bubble()->GetWidget());
-
-  ClickOnView(PasswordBubbleViewBase::manage_password_bubble()->GetViewByID(
-      static_cast<int>(
-          password_manager::ManagePasswordsViewIDs::kManagePasswordButton)));
-  EXPECT_FALSE(IsBubbleShowing());
+  RunTestSequence(
+      Do([this]() { SetupManagingPasswords(); }),
+      Check([]() { return !IsBubbleShowing(); }),
+      Do([this]() { ExecuteManagePasswordsCommand(); }),
+      WaitForShow(ManagePasswordsView::kTopView),
+      // Transition to details subpage
+      Do([this]() {
+        static_cast<ManagePasswordsView*>(
+            PasswordBubbleViewBase::manage_password_bubble())
+            ->DisplayDetailsOfPasswordForTesting(*test_form());
+        views::test::RunScheduledLayout(
+            PasswordBubbleViewBase::manage_password_bubble()->GetWidget());
+      }),
+      // Click the manage passwords button
+      Do([]() {
+        ClickOnView(PasswordBubbleViewBase::manage_password_bubble()->GetViewByID(
+            static_cast<int>(
+                password_manager::ManagePasswordsViewIDs::kManagePasswordButton)));
+      }),
+      // Wait for the bubble to hide on navigation
+      WaitForHide(ManagePasswordsView::kTopView));
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordManagementBubble.UserAction",
