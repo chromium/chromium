@@ -6,8 +6,6 @@
 
 #include <memory>
 
-#include "base/android/jni_android.h"
-#include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ui/side_panel/android/side_panel_native_view_android.h"
@@ -16,14 +14,17 @@
 #include "chrome/browser/ui/side_panel/side_panel_native_view.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
-#include "chrome/browser/ui/side_panel_container/internal/jni_headers/SidePanelTabScopedDevFeatureImpl_jni.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
+
+// Must come after headers that provide symbols used by @JniType.
+#include "chrome/browser/ui/side_panel_container/internal/jni_headers/SidePanelTabScopedDevFeatureImpl_jni.h"
 
 namespace {
 SidePanelNativeView CreateSidePanelDevView(tabs::TabInterface* tab,
                                            SidePanelEntryScope& scope) {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   TabAndroid* tab_android = static_cast<TabAndroid*>(tab);
   if (!tab_android) {
     return nullptr;
@@ -31,8 +32,7 @@ SidePanelNativeView CreateSidePanelDevView(tabs::TabInterface* tab,
 
   auto view = Java_SidePanelTabScopedDevFeatureImpl_createTabScopedView(
       env, tab_android->GetJavaObject());
-  return std::make_unique<SidePanelNativeViewAndroid>(
-      base::android::ScopedJavaGlobalRef<jobject>(env, view));
+  return std::make_unique<SidePanelNativeViewAndroid>(view);
 }
 }  // namespace
 

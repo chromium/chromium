@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/side_panel/android/side_panel_native_view_android.h"
 
 SidePanelNativeViewAndroid::SidePanelNativeViewAndroid(
-    base::android::ScopedJavaGlobalRef<jobject> view)
-    : view_(std::move(view)) {}
+    const jni_zero::JavaRef<jobject>& view)
+    : view_(view) {}
 
 SidePanelNativeViewAndroid::~SidePanelNativeViewAndroid() = default;

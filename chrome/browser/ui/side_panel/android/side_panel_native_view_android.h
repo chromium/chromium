@@ -5,20 +5,18 @@
 #ifndef CHROME_BROWSER_UI_SIDE_PANEL_ANDROID_SIDE_PANEL_NATIVE_VIEW_ANDROID_H_
 #define CHROME_BROWSER_UI_SIDE_PANEL_ANDROID_SIDE_PANEL_NATIVE_VIEW_ANDROID_H_
 
-#include "base/android/scoped_java_ref.h"
 #include "third_party/jni_zero/jni_zero.h"
 #include "ui/base/class_property.h"
 
 class SidePanelNativeViewAndroid : public ui::PropertyHandler {
  public:
-  explicit SidePanelNativeViewAndroid(
-      base::android::ScopedJavaGlobalRef<jobject> view);
+  explicit SidePanelNativeViewAndroid(const jni_zero::JavaRef<jobject>& view);
   ~SidePanelNativeViewAndroid() override;
 
-  base::android::ScopedJavaGlobalRef<jobject> view() const { return view_; }
+  const jni_zero::JavaRef<jobject>& view() const { return view_; }
 
  private:
-  base::android::ScopedJavaGlobalRef<jobject> view_;
+  jni_zero::ScopedJavaGlobalRef<jobject> view_;
 };
 
 #endif  // CHROME_BROWSER_UI_SIDE_PANEL_ANDROID_SIDE_PANEL_NATIVE_VIEW_ANDROID_H_

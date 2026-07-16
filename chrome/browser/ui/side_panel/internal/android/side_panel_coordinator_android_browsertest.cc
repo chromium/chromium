@@ -25,18 +25,21 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
 #include "chrome/browser/ui/side_panel/side_panel_util.h"
-#include "chrome/browser/ui/side_panel/test/android/browser_test_support_jni/SidePanelCoordinatorAndroidBrowserTestSupport_jni.h"
 #include "chrome/browser/ui/side_panel/test/android/side_panel_android_browser_test_base.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 #include "ui/base/base_window.h"
 
+// Must come after headers that provide symbols used by @JniType.
+#include "chrome/browser/ui/side_panel/test/android/browser_test_support_jni/SidePanelCoordinatorAndroidBrowserTestSupport_jni.h"
+
 namespace {
-using base::android::AttachCurrentThread;
-using base::android::ScopedJavaGlobalRef;
-using base::android::ScopedJavaLocalRef;
+using jni_zero::AttachCurrentThread;
+using jni_zero::ScopedJavaGlobalRef;
+using jni_zero::ScopedJavaLocalRef;
 
 class TestSidePanelEntryObserver final : public SidePanelEntryObserver {
  public:
@@ -121,8 +124,8 @@ std::unique_ptr<SidePanelEntry> CreateSidePanelEntry(
             ScopedJavaLocalRef<jobject> java_view =
                 Java_SidePanelCoordinatorAndroidBrowserTestSupport_createTestView(
                     AttachCurrentThread(), window_android->GetJavaObject());
-            auto native_view = std::make_unique<SidePanelNativeViewAndroid>(
-                ScopedJavaGlobalRef<jobject>(java_view));
+            auto native_view =
+                std::make_unique<SidePanelNativeViewAndroid>(java_view);
 
             if (on_view_created) {
               on_view_created.Run(native_view.get());
