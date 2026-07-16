@@ -3248,7 +3248,8 @@ void RewriteFunctionParamAndReturnType(const MatchFinder::MatchResult& result) {
     }
     const std::string& redecl_key =
         NodeKey(redecl, source_manager, parm_or_return_id);
-    if (GetProject()->IsExcludedFromProject(*redecl)) {
+    if (GetProject()->IsExcludedFromProject(*redecl) ||
+        redecl->getBeginLoc().isMacroID()) {
       // A declaration in third party codebase is found, so we do not want to
       // rewrite the parameter/return type in a third party function. This one-
       // way edge prevents making a flow from a source to a sink, hence the
@@ -3277,7 +3278,8 @@ void RewriteFunctionParamAndReturnType(const MatchFinder::MatchResult& result) {
     for (auto* overridden_method_decl : method_decl->overridden_methods()) {
       const std::string& overridden_method_key =
           NodeKey(overridden_method_decl, source_manager, parm_or_return_id);
-      if (GetProject()->IsExcludedFromProject(*overridden_method_decl)) {
+      if (GetProject()->IsExcludedFromProject(*overridden_method_decl) ||
+          overridden_method_decl->getBeginLoc().isMacroID()) {
         // A declaration in third party codebase is found, so we do not want to
         // rewrite the parameter/return type in a third party function. This
         // one-way edge prevents making a flow from a source to a sink, hence
