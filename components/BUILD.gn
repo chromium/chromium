@@ -900,6 +900,7 @@ test("components_unittests") {
       "//components/safe_browsing/core/browser:safe_browsing_hats_delegate_unittest",
       "//components/safe_browsing/core/browser:safe_browsing_metrics_collector_unittest",
       "//components/safe_browsing/core/browser:safe_browsing_url_checker_unittest",
+      "//components/safe_browsing/core/browser:suspicious_site_warning_allowlist_unittest",
       "//components/safe_browsing/core/browser:token_fetcher_unit_tests",
       "//components/safe_browsing/core/browser/hashprefix_realtime:unit_tests",
       "//components/safe_browsing/core/browser/password_protection:unit_tests",

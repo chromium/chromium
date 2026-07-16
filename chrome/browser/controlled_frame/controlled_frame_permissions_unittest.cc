@@ -202,6 +202,7 @@ TEST_F(ControlledFramePermissionsTest, Verify) {
       case ContentSettingsType::SUSPICIOUS_NOTIFICATION_SHOW_ORIGINAL:
       case ContentSettingsType::SUB_APPS_WITHOUT_PROMPTS:
       case ContentSettingsType::INLINE_CUE_MENU:
+      case ContentSettingsType::SUSPICIOUS_SITE_WARNING_DATA:
         break;
 
       default:

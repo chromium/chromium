@@ -203,6 +203,10 @@ void RemoveSiteSettingsData(const base::Time& delete_begin,
       ContentSettingsType::ON_DEVICE_SPEECH_RECOGNITION_LANGUAGES_DOWNLOADED,
       delete_begin, delete_end,
       HostContentSettingsMap::PatternSourcePredicate());
+
+  host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
+      ContentSettingsType::SUSPICIOUS_SITE_WARNING_DATA, delete_begin,
+      delete_end, HostContentSettingsMap::PatternSourcePredicate());
 }
 
 void RemoveFederatedSiteSettingsData(

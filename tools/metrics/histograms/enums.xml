@@ -2497,9 +2497,10 @@ Called by update_net_error_codes.py.-->
   <int value="144" label="Local network access - Loopback"/>
   <int value="145" label="Add Sub Apps without prompts"/>
   <int value="146" label="Inline cue menu"/>
+  <int value="147" label="Suspicious site warning data"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/content_settings/core/browser/content_settings_uma_util.cc:kHistogramValue) -->
+<!-- LINT.ThenChange(//components/content_settings/core/common/content_settings_uma_constants.h:kContentSettingsTypeToHistogramValue) -->
 
 <!-- LINT.IfChange(ContextMenuOptionAndroid) -->
 

@@ -490,5 +490,8 @@ enum ContentSettingsType {
 
   // Controls the display of the inline cue menu in a website.
   INLINE_CUE_MENU,
+
+  // Stores allowlist decisions for Suspicious Site Warnings.
+  SUSPICIOUS_SITE_WARNING_DATA,
 };
-// LINT.ThenChange(//components/content_settings/core/browser/content_settings_uma_util.cc:kHistogramValue)
+// LINT.ThenChange(//components/content_settings/core/common/content_settings_uma_constants.h:kContentSettingsTypeToHistogramValue)
