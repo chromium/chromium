@@ -11,11 +11,14 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/result.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
@@ -105,7 +108,16 @@ void SearchPromotionManager::RecordDefaultBrowserState(
 }
 
 void SearchPromotionManager::OnPromoAccepted() {
+  // Prevent duplicate acceptance handling if triggered multiple times (e.g.
+  // accidental double clicks).
+  if (was_accepted_) {
+    return;
+  }
   was_accepted_ = true;
+  if (auto* tracker = feature_engagement::TrackerFactory::GetForBrowserContext(
+          &profile_.get())) {
+    tracker->NotifyEvent(feature_engagement::events::kSearchPromotionAccepted);
+  }
   if (arm_ == feature_engagement::kSearchPromotionArmA) {
     PerformArmA();
   } else if (arm_ == feature_engagement::kSearchPromotionArmB) {

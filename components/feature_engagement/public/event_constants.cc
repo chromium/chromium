@@ -51,6 +51,10 @@ const char kGlicOnboardingCompleted[] = "glic_onboarding_completed";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 
+#if BUILDFLAG(IS_WIN)
+const char kSearchPromotionAccepted[] = "search_promotion_accepted";
+#endif  // BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(IS_IOS)
 const char kChromeOpened[] = "chrome_opened";
 const char kChromeActiveSessionDay[] = "chrome_active_session_day";

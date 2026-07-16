@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
@@ -23,7 +24,10 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/user_education/mock_browser_user_education_interface.h"
+#include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/test/mock_tracker.h"
+#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/result.h"
@@ -65,6 +69,12 @@ std::unique_ptr<KeyedService> BuildMockSegmentationPlatformService(
     content::BrowserContext* context) {
   return std::make_unique<testing::NiceMock<
       segmentation_platform::MockSegmentationPlatformService>>();
+}
+
+std::unique_ptr<KeyedService> BuildMockTracker(
+    content::BrowserContext* context) {
+  return std::make_unique<
+      testing::NiceMock<feature_engagement::test::MockTracker>>();
 }
 
 }  // namespace
@@ -434,4 +444,34 @@ TEST_F(SearchPromotionManagerTest,
   // 4, since we mocked "Firefox" in SetUp).
   histogram_tester.ExpectBucketCount(
       "Search.SearchPromotion.DefaultBrowserType.Accepted.ArmA", 4, 1);
+}
+
+TEST_F(SearchPromotionManagerTest,
+       OnPromoAcceptedNotifiesFeatureEngagementTracker) {
+  InitSearchPromotionFeature();
+
+  auto* mock_tracker = static_cast<feature_engagement::test::MockTracker*>(
+      feature_engagement::TrackerFactory::GetInstance()
+          ->SetTestingFactoryAndUse(profile(),
+                                    base::BindRepeating(&BuildMockTracker)));
+
+  EXPECT_CALL(*mock_tracker,
+              NotifyEvent(feature_engagement::events::kSearchPromotionAccepted))
+      .Times(1);
+
+  SearchPromotionManager* manager = RecreateSearchPromotionManager();
+  manager->OnPromoAccepted();
+  // Subsequent calls should be ignored due to idempotency guard.
+  manager->OnPromoAccepted();
+}
+
+TEST_F(SearchPromotionManagerTest, OnPromoAcceptedWithNullTrackerDoesNotCrash) {
+  InitSearchPromotionFeature();
+
+  // Explicitly ensure TrackerFactory returns nullptr for profile.
+  feature_engagement::TrackerFactory::GetInstance()->SetTestingFactory(
+      profile(), BrowserContextKeyedServiceFactory::TestingFactory());
+
+  SearchPromotionManager* manager = RecreateSearchPromotionManager();
+  manager->OnPromoAccepted();
 }
