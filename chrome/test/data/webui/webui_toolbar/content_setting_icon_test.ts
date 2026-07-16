@@ -30,7 +30,9 @@ suite('ContentSettingIcon', function() {
   });
 
   test('ARIA label', () => {
-    assertEquals('Accessible Name', icon.$.button.getAttribute('aria-label'));
+    const innerButton = icon.$.chip.$.button;
+    assertTrue(!!innerButton);
+    assertEquals('Accessible Name', innerButton.getAttribute('aria-label'));
   });
 
   test('Animation', async () => {

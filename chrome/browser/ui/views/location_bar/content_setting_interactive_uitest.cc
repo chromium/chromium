@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewContentSettingsInteractiveTest,
                   base::StringPrintf(R"(
         () => {
           const icon = %s;
-          const button = icon.shadowRoot.querySelector('cr-icon-button');
+          const button = icon.$.chip.$.button;
           button.click();
         }
       )",

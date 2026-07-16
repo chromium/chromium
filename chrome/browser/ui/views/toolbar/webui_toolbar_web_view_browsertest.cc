@@ -6399,13 +6399,13 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewContentSettingsBrowserTest,
   EXPECT_EQ(expected_tooltip,
             content::EvalJs(web_ui_contents, base::StringPrintf(
                                                  R"(
-    %s.shadowRoot.querySelector('cr-icon-button').title
+    %s.shadowRoot.querySelector('toolbar-chip-button').tooltip
   )",
                                                  GetContentSettingIcon(type))));
   EXPECT_EQ(expected_tooltip,
             content::EvalJs(web_ui_contents, base::StringPrintf(
                                                  R"(
-    %s.shadowRoot.querySelector('cr-icon-button').getAttribute('aria-label')
+    %s.shadowRoot.querySelector('toolbar-chip-button').ariaLabel
   )",
                                                  GetContentSettingIcon(type))));
 }

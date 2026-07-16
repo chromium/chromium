@@ -129,15 +129,15 @@ suite('LocationBar', function() {
     await microtasksFinished();
 
     const contentSettingsIcons =
-        locationBar.shadowRoot.querySelector('content-settings-icons');
+        locationBar.shadowRoot?.querySelector('content-settings-icons');
     assertTrue(!!contentSettingsIcons);
 
     const contentSettingIcon =
-        contentSettingsIcons.shadowRoot.querySelector('content-setting-icon');
+        contentSettingsIcons.shadowRoot?.querySelector('content-setting-icon');
     assertTrue(!!contentSettingIcon);
 
     const iconButton =
-        contentSettingIcon.shadowRoot.querySelector('cr-icon-button');
+        contentSettingIcon.shadowRoot?.querySelector('toolbar-chip-button');
     assertTrue(!!iconButton);
 
     // Hovering the container should NOT trigger the hovered state.

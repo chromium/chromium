@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import './toolbar_chip_button.js';
 
-import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assertNotReachedCase} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
@@ -15,10 +14,11 @@ import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 import {getCss} from './content_setting_icon.css.js';
 import {getHtml} from './content_setting_icon.html.js';
+import type {ToolbarChipButtonElement} from './toolbar_chip_button.js';
 
 export interface ContentSettingIconElement {
   $: {
-    button: CrIconButtonElement,
+    chip: ToolbarChipButtonElement,
     label: HTMLElement,
   };
 }
@@ -71,60 +71,89 @@ export class ContentSettingIconElement extends CrLitElement {
     this.animating = false;
   }
 
-  protected getIconClass_(): string {
+  protected getIconUrl_(): string {
     const iconType = this.state.type;
     const blocked = this.state.isBlocked;
+    let iconName = '';
 
     switch (iconType) {
       case ContentSettingImageType.kCookies:
-        return blocked ? 'icon-database-off' : 'icon-database';
+        iconName = blocked ? 'database_off' : 'database';
+        break;
       case ContentSettingImageType.kImages:
-        return blocked ? 'icon-photo-off' : 'icon-photo';
+        iconName =
+            blocked ? 'photo_off_chrome_refresh' : 'photo_chrome_refresh';
+        break;
       case ContentSettingImageType.kJavaScript:
-        return blocked ? 'icon-code-off' : 'icon-code';
+        iconName = blocked ? 'code_off_chrome_refresh' : 'code_chrome_refresh';
+        break;
       case ContentSettingImageType.kMixedScript:
-        return blocked ? 'icon-not-secure-warning-off' :
-                         'icon-not-secure-warning';
+        iconName = blocked ? 'not_secure_warning_off_chrome_refresh' :
+                             'not_secure_warning_chrome_refresh';
+        break;
       case ContentSettingImageType.kSound:
-        return blocked ? 'icon-volume-off' : 'icon-volume-up';
+        iconName =
+            blocked ? 'volume_off_chrome_refresh' : 'volume_up_chrome_refresh';
+        break;
       case ContentSettingImageType.kAds:
-        return blocked ? 'icon-ads-off' : 'icon-ads';
+        iconName = blocked ? 'ads_off_chrome_refresh' : 'ads_chrome_refresh';
+        break;
       case ContentSettingImageType.kGeolocation:
-        return blocked ? 'icon-location-off' : 'icon-location';
+        iconName = blocked ? 'location_off_chrome_refresh' :
+                             'location_on_chrome_refresh';
+        break;
       case ContentSettingImageType.kProtocolHandlers:
-        return blocked ? 'icon-protocol-handler-off' : 'icon-protocol-handler';
+        iconName = blocked ? 'protocol_handler_off_chrome_refresh' :
+                             'protocol_handler_chrome_refresh';
+        break;
       case ContentSettingImageType.kMidiSysex:
-        return blocked ? 'icon-midi-off' : 'icon-midi';
+        iconName = blocked ? 'midi_off_chrome_refresh' : 'midi_chrome_refresh';
+        break;
       case ContentSettingImageType.kAutomaticDownloads:
-        return blocked ? 'icon-file-download-off' : 'icon-file-download';
+        iconName = blocked ? 'file_download_off_chrome_refresh' :
+                             'file_download_chrome_refresh';
+        break;
       case ContentSettingImageType.kClipboardReadWrite:
-        return blocked ? 'icon-content-paste-off' : 'icon-content-paste';
+        iconName = blocked ? 'content_paste_off' : 'content_paste';
+        break;
       case ContentSettingImageType.kMediaStream:
-        return blocked ? 'icon-videocam-off' : 'icon-videocam';
+        iconName =
+            blocked ? 'videocam_off_chrome_refresh' : 'videocam_chrome_refresh';
+        break;
       case ContentSettingImageType.kNotifications:
-        return blocked ? 'icon-notifications-off' : 'icon-notifications';
+        iconName = blocked ? 'notifications_off_chrome_refresh' :
+                             'notifications_chrome_refresh';
+        break;
       case ContentSettingImageType.kSensors:
-        return blocked ? 'icon-sensors-off' : 'icon-sensors';
+        iconName =
+            blocked ? 'sensors_off_chrome_refresh' : 'sensors_chrome_refresh';
+        break;
       case ContentSettingImageType.kStorageAccess:
-        return blocked ? 'icon-storage-access-off' : 'icon-storage-access';
+        iconName = blocked ? 'storage_access_off' : 'storage_access';
+        break;
       case ContentSettingImageType.kPopups:
-        return blocked ? 'icon-iframe-off' : 'icon-iframe';
+        iconName = blocked ? 'iframe_off' : 'iframe';
+        break;
       case ContentSettingImageType.kFramebust:
-        return blocked ? 'icon-framebust-off' : 'icon-framebust';
+        iconName = blocked ? 'open_in_new_off_chrome_refresh' :
+                             'open_in_new_chrome_refresh';
+        break;
       // <if expr="is_chromeos">
       case ContentSettingImageType.kSmartCard:
         // Indicator shows only when at least one connection is active, hence no
         // need for the off icon.
-        return 'icon-smart-card-reader';
+        iconName = 'smart_card_reader';
+        break;
       // </if>
       // <if expr="is_win">
       case ContentSettingImageType.kProtectedMediaIdentifier:
-        return blocked ? 'icon-sync-saved-locally-off' :
-                         'icon-sync-saved-locally';
+        iconName = blocked ? 'sync_saved_locally_off' : 'sync_saved_locally';
+        break;
       // </if>
       default:
         assertNotReachedCase(iconType);
     }
+    return `url('rhs_icons/${iconName}.svg')`;
   }
 
   protected getAriaLabel_(): string {
