@@ -109,6 +109,7 @@ public class SideSlideLayout extends ViewGroup {
 
     private @Nullable AnimationSet mHidingAnimation;
     private int mAnimationViewWidth;
+    private @Nullable Animation mActiveAnimation;
 
     private boolean mIsForward;
     private @CloseTarget int mCloseIndicator;
@@ -122,6 +123,9 @@ public class SideSlideLayout extends ViewGroup {
             new EmptyAnimationListener() {
                 @Override
                 public void onAnimationEnd(Animation animation) {
+                    if (animation != mActiveAnimation) {
+                        return;
+                    }
                     mArrowView.setFaded(false, false);
                     mArrowView.setVisibility(View.INVISIBLE);
                     if (!mNavigating) reset();
@@ -219,6 +223,7 @@ public class SideSlideLayout extends ViewGroup {
         }
         mArrowView.setAnimationListener(listener);
         mArrowView.clearAnimation();
+        mActiveAnimation = mHidingAnimation;
         mArrowView.startAnimation(mHidingAnimation);
     }
 
@@ -279,10 +284,12 @@ public class SideSlideLayout extends ViewGroup {
     public boolean start() {
         if (!isEnabled() || mNavigating || mListener == null) return false;
 
+        mActiveAnimation = null;
+        mArrowView.clearAnimation();
+
         // Stop animation triggered by previous slide.
         if (mAnimateToStartPosition.hasStarted()) {
             mAnimateToStartPosition.setAnimationListener(null);
-            mArrowView.clearAnimation();
             mAnimateToStartPosition.cancel();
             mAnimateToStartPosition.reset();
         }
@@ -380,6 +387,9 @@ public class SideSlideLayout extends ViewGroup {
                 new EmptyAnimationListener() {
                     @Override
                     public void onAnimationEnd(Animation animation) {
+                        if (animation != mActiveAnimation) {
+                            return;
+                        }
                         reset();
                     }
                 });
@@ -434,6 +444,7 @@ public class SideSlideLayout extends ViewGroup {
         mAnimateToStartPosition.setDuration(ANIMATE_TO_START_DURATION_MS);
         mAnimateToStartPosition.setInterpolator(mDecelerateInterpolator);
         mArrowView.clearAnimation();
+        mActiveAnimation = mAnimateToStartPosition;
         mArrowView.startAnimation(mAnimateToStartPosition);
         if (activated) {
             GestureNavMetrics.recordHistogram("GestureNavigation.Cancelled2", mIsForward);

@@ -10,6 +10,7 @@ import android.graphics.PorterDuff.Mode;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -82,6 +83,7 @@ public class NavigationBubble extends LinearLayout {
     private TextView mText;
     private ImageView mIcon;
     private @Nullable AnimationListener mListener;
+    private @Nullable Animation mCurrentAnimation;
 
     // True if arrow bubble is faded out.
     private boolean mArrowFaded;
@@ -161,18 +163,27 @@ public class NavigationBubble extends LinearLayout {
     }
 
     @Override
+    public void startAnimation(Animation animation) {
+        mCurrentAnimation = animation;
+        super.startAnimation(animation);
+    }
+
+    @Override
     public void onAnimationStart() {
         super.onAnimationStart();
         if (mListener != null) {
-            mListener.onAnimationStart(getAnimation());
+            mListener.onAnimationStart(
+                    mCurrentAnimation != null ? mCurrentAnimation : getAnimation());
         }
     }
 
     @Override
     public void onAnimationEnd() {
         super.onAnimationEnd();
+        Animation anim = mCurrentAnimation;
+        mCurrentAnimation = null;
         if (mListener != null) {
-            mListener.onAnimationEnd(getAnimation());
+            mListener.onAnimationEnd(anim != null ? anim : getAnimation());
         }
     }
 
