@@ -215,11 +215,9 @@ public class MinidumpUploadServiceImpl extends SplitCompatIntentService.Impl {
                 } else {
                     Log.d(
                             TAG,
-                            "Giving up on trying to upload "
-                                    + minidumpFileName
-                                    + "after "
-                                    + tries
-                                    + " number of tries.");
+                            "Giving up on trying to upload %s after %d number of tries.",
+                            minidumpFileName,
+                            tries);
                 }
             } else {
                 Log.w(TAG, "Failed to rename minidump " + minidumpFileName);

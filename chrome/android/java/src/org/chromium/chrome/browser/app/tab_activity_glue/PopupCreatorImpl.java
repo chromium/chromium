@@ -203,17 +203,14 @@ public class PopupCreatorImpl implements PopupCreator {
         final Rect targetWindowBoundsPx = new Rect(realWindowBoundsPx);
         Log.v(
                 TAG,
-                "adjustWindowBounds: current viewport size = ("
-                        + realViewportWidthDp
-                        + " x "
-                        + realViewportHeightDp
-                        + ") [dp]");
-        Log.v(TAG, "adjustWindowBounds: top-level window bounds = " + realWindowBoundsPx + " [px]");
+                "adjustWindowBounds: current viewport size = (%d x %d) [dp]",
+                realViewportWidthDp,
+                realViewportHeightDp);
+        Log.v(TAG, "adjustWindowBounds: top-level window bounds = %s [px]", realWindowBoundsPx);
         Log.v(
                 TAG,
-                "adjustWindowBounds: requested WindowFeatures = "
-                        + requestedWindowFeaturesDp
-                        + " [dp]");
+                "adjustWindowBounds: requested WindowFeatures = %s [dp]",
+                requestedWindowFeaturesDp);
 
         if (requestedWindowFeaturesDp.width != null && requestedWindowFeaturesDp.height != null) {
             final WindowAndroid windowAndroid = activity.getWindowAndroid();
@@ -266,11 +263,11 @@ public class PopupCreatorImpl implements PopupCreator {
                         Math.abs(heightDiffDp));
             }
 
-            Log.v(TAG, "adjustWindowBounds: widthDiffDp = " + widthDiffDp + " dp");
-            Log.v(TAG, "adjustWindowBounds: widthDiffPx = " + widthDiffPx + " px");
-            Log.v(TAG, "adjustWindowBounds: heightDiffDp = " + heightDiffDp + " dp");
-            Log.v(TAG, "adjustWindowBounds: heightDiffPx = " + heightDiffPx + " px");
-            Log.v(TAG, "adjustWindowBounds: display.getDipScale() = " + display.getDipScale());
+            Log.v(TAG, "adjustWindowBounds: widthDiffDp = %d dp", widthDiffDp);
+            Log.v(TAG, "adjustWindowBounds: widthDiffPx = %d px", widthDiffPx);
+            Log.v(TAG, "adjustWindowBounds: heightDiffDp = %d dp", heightDiffDp);
+            Log.v(TAG, "adjustWindowBounds: heightDiffPx = %d px", heightDiffPx);
+            Log.v(TAG, "adjustWindowBounds: display.getDipScale() = %s", display.getDipScale());
 
             final InsetObserver insetObserver = windowAndroid.getInsetObserver();
             Insets windowInsetsOnSourceDisplay = Insets.NONE;
@@ -282,19 +279,16 @@ public class PopupCreatorImpl implements PopupCreator {
             }
             Log.v(
                     TAG,
-                    "adjustWindowBounds: current window insets = "
-                            + windowInsetsOnSourceDisplay
-                            + " [px]");
+                    "adjustWindowBounds: current window insets = %s [px]",
+                    windowInsetsOnSourceDisplay);
             Log.v(
                     TAG,
-                    "adjustWindowBounds: getTopControlsHeight from activity's BCM = "
-                            + activity.getBrowserControlsManager().getTopControlsHeight()
-                            + " px");
+                    "adjustWindowBounds: getTopControlsHeight from activity's BCM = %d px",
+                    activity.getBrowserControlsManager().getTopControlsHeight());
             Log.v(
                     TAG,
-                    "adjustWindowBounds: getTopControlsHairlineHeight from activity's BCM = "
-                            + activity.getBrowserControlsManager().getTopControlsHairlineHeight()
-                            + " px");
+                    "adjustWindowBounds: getTopControlsHairlineHeight from activity's BCM = %d px",
+                    activity.getBrowserControlsManager().getTopControlsHairlineHeight());
         }
 
         if (realWindowBoundsPx.equals(targetWindowBoundsPx)) {
@@ -303,10 +297,10 @@ public class PopupCreatorImpl implements PopupCreator {
         }
         Log.v(
                 TAG,
-                "adjustWindowBounds: repositioning required -- current bounds = "
-                        + realWindowBoundsPx
-                        + ", target bounds = "
-                        + targetWindowBoundsPx);
+                "adjustWindowBounds: repositioning required -- current bounds = %s, target bounds ="
+                        + " %s",
+                realWindowBoundsPx,
+                targetWindowBoundsPx);
 
         final AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
         if (delegate == null) {
@@ -377,9 +371,8 @@ public class PopupCreatorImpl implements PopupCreator {
         }
         Log.v(
                 TAG,
-                "getPopupInsetsForecast: windowInsetsOnSourceDisplay = "
-                        + windowInsetsOnSourceDisplay
-                        + " [px]");
+                "getPopupInsetsForecast: windowInsetsOnSourceDisplay = %s [px]",
+                windowInsetsOnSourceDisplay);
 
         final float densityFactor =
                 targetDisplay.getDipScale() / sourceWindow.getDisplay().getDipScale();
@@ -397,9 +390,8 @@ public class PopupCreatorImpl implements PopupCreator {
                                         * densityFactor));
         Log.v(
                 TAG,
-                "getPopupInsetsForecast: forecastedWindowInsetsOnTargetDisplay = "
-                        + forecastedWindowInsetsOnTargetDisplay
-                        + " [px]");
+                "getPopupInsetsForecast: forecastedWindowInsetsOnTargetDisplay = %s [px]",
+                forecastedWindowInsetsOnTargetDisplay);
 
         final int totalTopControlsHeightPx =
                 predictBrowserTopControlsTotalHeightBelowTopInsetPx(
@@ -409,7 +401,7 @@ public class PopupCreatorImpl implements PopupCreator {
                 Insets.add(
                         forecastedWindowInsetsOnTargetDisplay,
                         Insets.of(0, 0, 0, totalTopControlsHeightPx));
-        Log.v(TAG, "getPopupInsetsForecast: totalInsets = " + totalInsets + " [px]");
+        Log.v(TAG, "getPopupInsetsForecast: totalInsets = %s [px]", totalInsets);
         final Insets invertedTotalInsets = Insets.subtract(Insets.NONE, totalInsets);
         return invertedTotalInsets;
     }

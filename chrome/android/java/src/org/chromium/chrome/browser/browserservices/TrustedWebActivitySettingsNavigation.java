@@ -27,7 +27,7 @@ import java.util.Collection;
  */
 @NullMarked
 public class TrustedWebActivitySettingsNavigation {
-    private static final String TAG = "TwaSettingsNavigation";
+    private static final String TAG = "TwaSettingsNav";
 
     /**
      * Launches site-settings for a Trusted Web Activity app with a given package name. If the app
@@ -40,7 +40,7 @@ public class TrustedWebActivitySettingsNavigation {
         Collection<String> origins =
                 InstalledWebappDataRegister.getOriginsForRegisteredPackage(packageName);
         if (domains.isEmpty() || origins.isEmpty()) {
-            Log.d(TAG, "Package " + packageName + " is not associated with any origins");
+            Log.d(TAG, "Package %s is not associated with any origins", packageName);
             return;
         }
         launch(context, origins, domains);
@@ -52,7 +52,7 @@ public class TrustedWebActivitySettingsNavigation {
         // Handle the case when settings are selected but Chrome was not running.
         ChromeWebApkHost.init();
         if (!WebApkValidator.canWebApkHandleUrl(context, packageName, webApkUrl, 0)) {
-            Log.d(TAG, "WebApk " + packageName + " can't handle url " + webApkUrl);
+            Log.d(TAG, "WebApk %s can't handle url %s", packageName, webApkUrl);
             return;
         }
 

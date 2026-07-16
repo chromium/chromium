@@ -435,14 +435,9 @@ public class WebauthnTestUtils {
                         .stream()
                         .map(s -> s.replaceAll(":", ""))
                         .collect(Collectors.joining("\'"));
-        InstrumentationRegistry.getInstrumentation()
-                .getUiAutomation()
-                .executeShellCommand(String.format(FIDO_OVERRIDE_COMMAND, fingerprints));
-        Log.d(
-                TAG,
-                "Executing command: '"
-                        + String.format(WebauthnTestUtils.FIDO_OVERRIDE_COMMAND, fingerprints)
-                        + "'");
+        String command = String.format(FIDO_OVERRIDE_COMMAND, fingerprints);
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(command);
+        Log.d(TAG, "Executing command: '%s'", command);
     }
 
     private WebauthnTestUtils() {}

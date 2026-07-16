@@ -146,7 +146,7 @@ class DownloadTestHelper {
     private static File getDownloadedPath(String fileName) {
         File downloadedFile = new File(DOWNLOAD_DIRECTORY, fileName);
         if (!downloadedFile.exists()) {
-            Log.d(TAG, "The file " + fileName + " does not exist");
+            Log.d(TAG, "The file %s does not exist", fileName);
         }
         return downloadedFile;
     }

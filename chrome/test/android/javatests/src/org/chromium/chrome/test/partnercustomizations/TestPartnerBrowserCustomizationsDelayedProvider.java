@@ -22,11 +22,6 @@ public class TestPartnerBrowserCustomizationsDelayedProvider
     private static String sUriPathToDelay;
     private static CountDownLatch sLatch;
 
-    public TestPartnerBrowserCustomizationsDelayedProvider() {
-        super();
-        mTag = TestPartnerBrowserCustomizationsDelayedProvider.class.getSimpleName();
-    }
-
     public static void unblockQuery() {
         sLatch.countDown();
     }

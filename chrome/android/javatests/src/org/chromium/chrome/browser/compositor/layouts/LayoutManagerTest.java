@@ -679,28 +679,28 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                             new LayoutStateProvider.LayoutStateObserver() {
                                 @Override
                                 public void onStartedShowing(int layoutType) {
-                                    Log.d(TAG, "Started to show: " + layoutType);
+                                    Log.d(TAG, "Started to show: %d", layoutType);
                                     startedShowingCallback.layoutType = layoutType;
                                     startedShowingCallback.notifyCalled();
                                 }
 
                                 @Override
                                 public void onFinishedShowing(int layoutType) {
-                                    Log.d(TAG, "Finished showing: " + layoutType);
+                                    Log.d(TAG, "Finished showing: %d", layoutType);
                                     finishedShowingCallback.layoutType = layoutType;
                                     finishedShowingCallback.notifyCalled();
                                 }
 
                                 @Override
                                 public void onStartedHiding(int layoutType) {
-                                    Log.d(TAG, "Started to hide: " + layoutType);
+                                    Log.d(TAG, "Started to hide: %d", layoutType);
                                     startedHidingCallback.layoutType = layoutType;
                                     startedHidingCallback.notifyCalled();
                                 }
 
                                 @Override
                                 public void onFinishedHiding(int layoutType) {
-                                    Log.d(TAG, "Finished hiding: " + layoutType);
+                                    Log.d(TAG, "Finished hiding: %d", layoutType);
                                     finishedHidingCallback.layoutType = layoutType;
                                     finishedHidingCallback.notifyCalled();
                                 }

@@ -384,6 +384,6 @@ public abstract class LaunchCauseMetrics
                 launchCause = "HOME_SCREEN_SHORTCUT";
                 break;
         }
-        Log.d(TAG, "Launch Cause: " + launchCause);
+        Log.d(TAG, "Launch Cause: %s", launchCause);
     }
 }

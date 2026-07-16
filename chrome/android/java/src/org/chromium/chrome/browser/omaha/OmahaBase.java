@@ -235,7 +235,7 @@ public class OmahaBase {
         //                    case a scheduling error occurs.
         if (nextTimestamp != Long.MAX_VALUE && nextTimestamp >= 0) {
             long currentTimestamp = mDelegate.getScheduler().getCurrentTime();
-            Log.d(TAG, "Attempting to schedule next job for: " + new Date(nextTimestamp));
+            Log.d(TAG, "Attempting to schedule next job for: %s", new Date(nextTimestamp));
             mDelegate.scheduleService(currentTimestamp, nextTimestamp);
         }
 
@@ -362,8 +362,8 @@ public class OmahaBase {
             mTimestampForNextPostAttempt = scheduler.calculateNextTimestamp();
             Log.d(
                     TAG,
-                    "Request to Server Successful. Timestamp for next request:"
-                            + mTimestampForNextPostAttempt);
+                    "Request to Server Successful. Timestamp for next request: %d",
+                    mTimestampForNextPostAttempt);
         } else {
             // Set the alarm to try again later.  Failures are incremented after setting the timer
             // to allow the first failure to incur the minimum base delay between POSTs.
