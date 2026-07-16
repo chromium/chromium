@@ -16,6 +16,8 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
@@ -353,8 +355,11 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
       for (const base::Value& locale : *supported_locales) {
         const std::string* current_locale = locale.GetIfString();
         if (current_locale && l10n_util::IsValidLocaleSyntax(*current_locale)) {
+          std::optional<base::i18n::LanguageTag> current_tag =
+              base::i18n::LanguageTagConverter::GetInstance().FromString(
+                  *current_locale);
           std::string normalized_locale =
-              l10n_util::NormalizeLocale(*current_locale);
+              current_tag ? current_tag->ToLegacyICUFormat() : "";
           if (std::ranges::contains(browser_locales, normalized_locale)) {
             locale_supported = true;
             break;

@@ -64,8 +64,8 @@ namespace {
 
 // Returns the current locale and fallbacks for it (in this order).
 std::vector<std::string> GetFallbackLocales() {
-  std::vector<std::string> locales = l10n_util::GetParentLocales(
-      l10n_util::NormalizeLocale(g_browser_process->GetApplicationLocale()));
+  std::vector<std::string> locales =
+      l10n_util::GetParentLocales(g_browser_process->GetApplicationLocale());
   // We use an empty locale as fallback.
   locales.push_back(std::string());
   return locales;

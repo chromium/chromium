@@ -64,11 +64,19 @@
 namespace l10n_util {
 namespace {
 
+using ::base::i18n::GetKnownLanguageTag;
 using ::base::i18n::LanguageTag;
 using ::base::i18n::LanguageTagConverter;
 using ::base::i18n::LanguageTagMatcher;
 using ::ui_l10n::GetAcceptLanguageMatcher;
 using ::ui_l10n::GetAcceptLanguageTags;
+
+std::string NormalizeLocaleWithLanguageTag(std::string_view locale) {
+  return LanguageTagConverter::GetInstance()
+      .FromString(locale)
+      .value_or(GetKnownLanguageTag("und"))
+      .ToLegacyICUFormat();
+}
 
 // Returns true if `locale_name` has an alias in the ICU data file.
 bool IsDuplicateName(std::string_view locale_name) {
@@ -499,14 +507,8 @@ std::u16string GetDisplayNameForCountry(std::string_view country_code,
                                  display_locale, false);
 }
 
-std::string NormalizeLocale(std::string_view locale) {
-  std::string normalized_locale(locale);
-  std::ranges::replace(normalized_locale, '-', '_');
-  return normalized_locale;
-}
-
 std::vector<std::string> GetParentLocales(std::string_view current_locale) {
-  std::string locale = NormalizeLocale(current_locale);
+  std::string locale = NormalizeLocaleWithLanguageTag(current_locale);
 
   const int kNameCapacity = 256;
   char parent[kNameCapacity];
@@ -531,7 +533,8 @@ bool IsValidLocaleSyntax(std::string_view locale) {
   // We don't validate that part much, just check that there's at least one
   // equals sign in a plausible place. Normalize the prefix so that hyphens
   // are changed to underscores.
-  std::string prefix = NormalizeLocale(locale);
+  std::string prefix(locale);
+  std::ranges::replace(prefix, '-', '_');
   const size_t split_point = locale.find("@");
   if (split_point != std::string::npos) {
     const std::string_view keywords = locale.substr(split_point + 1);

@@ -9,6 +9,8 @@
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/path_service.h"
@@ -232,12 +234,15 @@ void AppShimMainDelegate::InitializeLocale() {
       break;
     }
   }
-  std::string locale = l10n_util::NormalizeLocale(
-      l10n_util::GetApplicationLocale(preferred_localization));
+  base::i18n::LanguageTag locale_tag =
+      base::i18n::LanguageTagConverter::GetInstance()
+          .FromString(l10n_util::GetApplicationLocale(preferred_localization))
+          .value_or(base::i18n::GetKnownLanguageTag("und"));
 
   // Load localized strings and mouse cursor images.
   ui::ResourceBundle::InitSharedInstanceWithLocale(
-      locale, nullptr, ui::ResourceBundle::LOAD_COMMON_RESOURCES);
+      locale_tag.ToLegacyICUFormat(), nullptr,
+      ui::ResourceBundle::LOAD_COMMON_RESOURCES);
 }
 
 content::ContentClient* AppShimMainDelegate::CreateContentClient() {

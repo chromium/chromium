@@ -11,6 +11,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/logging.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -174,11 +176,12 @@ bool UpdateAppShortcutsSubdirLocalizedName(
         base::SysUTF16ToNSString(localized_name)
   };
 
-  std::string locale = l10n_util::NormalizeLocale(
-      l10n_util::GetApplicationLocale(std::string()));
-
-  NSURL* strings_url =
-      base::apple::FilePathToNSURL(localized.Append(locale + ".strings"));
+  base::i18n::LanguageTag locale_tag =
+      base::i18n::LanguageTagConverter::GetInstance()
+          .FromString(l10n_util::GetApplicationLocale(std::string()))
+          .value_or(base::i18n::GetKnownLanguageTag("und"));
+  NSURL* strings_url = base::apple::FilePathToNSURL(
+      localized.Append(locale_tag.ToLegacyICUFormat() + ".strings"));
   [strings_dict writeToURL:strings_url error:nil];
 
   content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(

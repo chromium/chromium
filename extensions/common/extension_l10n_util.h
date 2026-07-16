@@ -7,12 +7,14 @@
 #ifndef EXTENSIONS_COMMON_EXTENSION_L10N_UTIL_H_
 #define EXTENSIONS_COMMON_EXTENSION_L10N_UTIL_H_
 
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/i18n/language_tag.h"
 #include "base/values.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
@@ -162,12 +164,14 @@ class ScopedLocaleForTest {
   ~ScopedLocaleForTest();
 
  private:
-  std::string_view process_locale_;    // The process locale at ctor time.
-  std::string_view preferred_locale_;  // The preferred locale at ctor time.
+  std::optional<base::i18n::LanguageTag>
+      process_locale_;  // The process locale at ctor time.
+  std::optional<base::i18n::LanguageTag>
+      preferred_locale_;  // The preferred locale at ctor time.
 };
 
 // Returns a locale like "en-CA".
-const std::string& GetPreferredLocaleForTest();
+std::string GetPreferredLocaleForTest();
 
 }  // namespace extension_l10n_util
 
