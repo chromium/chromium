@@ -6676,6 +6676,19 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="FillingProduct" variants="Autofill.FillingProduct"/>
 </histogram>
 
+<histogram name="Autofill.PopupUpdateIgnored.ProductMismatch" units="count"
+    expires_after="M159">
+  <owner>ireneuszszulc@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Recorded when an Autofill popup update is ignored because the main filling
+    product of the new suggestions differs from the active popup's product. The
+    value is a compound integer: (old_product &lt;&lt; 8) | new_product, where
+    old_product and new_product are values of the Autofill.FillingProduct enum.
+    This metric is temporary and should be removed after M159.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.ProfileDeleted.ImplicitAccountNameEmail"
     enum="Boolean" expires_after="2026-12-06">
   <owner>sygiet@google.com</owner>

@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 #include "base/command_line.h"
@@ -4005,6 +4006,27 @@ TEST_F(AutofillExternalDelegateTest, UpdateSuggestions) {
   external_delegate().AttemptToDisplayAutofillSuggestionsForTest(
       suggestions2, AutofillSuggestionTriggerSource::kUnspecified,
       std::nullopt);
+}
+
+// Tests that calling `AttemptToDisplayAutofillSuggestions` with empty
+// `trigger_field` and different filling product doesn't hide the popup.
+TEST_F(AutofillExternalDelegateTest, UpdateSuggestions_ProductChanged) {
+  base::HistogramTester histogram_tester;
+  IssueOnQuery();
+  EXPECT_CALL(autofill_client(), ShowAutofillSuggestions).Times(1);
+  EXPECT_CALL(autofill_client(), HideSuggestions).Times(0);
+
+  OnSuggestionsReturned(
+      queried_field(),
+      {Suggestion(u"Address suggestion", SuggestionType::kAddressEntry)});
+  external_delegate().AttemptToDisplayAutofillSuggestionsForTest(
+      {Suggestion(u"Autofill AI suggestion", SuggestionType::kFillAutofillAi)},
+      AutofillSuggestionTriggerSource::kUnspecified, std::nullopt);
+
+  int expected_sample = (std::to_underlying(FillingProduct::kAddress) << 8) |
+                        std::to_underlying(FillingProduct::kAutofillAi);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.PopupUpdateIgnored.ProductMismatch", expected_sample, 1);
 }
 
 // TODO(crbug.com/41483208): Add test case where 'Show cards from your Google

@@ -454,6 +454,8 @@ void AutofillExternalDelegate::AttemptToDisplayAutofillSuggestions(
 
   PossiblyRemoveAutofillWarnings(suggestions);
 
+  const FillingProduct old_product = GetMainFillingProduct();
+
   // If anything else is added to modify the values after inserting the data
   // list, AutofillPopupControllerImpl::UpdateDataListValues will need to be
   // updated to match.
@@ -465,6 +467,7 @@ void AutofillExternalDelegate::AttemptToDisplayAutofillSuggestions(
   trigger_source_ = trigger_source;
 
   shown_suggestion_types_ = base::ToVector(suggestions, &Suggestion::type);
+  const FillingProduct new_product = GetMainFillingProduct();
 
   if (suggestions.empty() && !IsAtMemoryTriggerSource(trigger_source)) {
     OnAutofillAvailabilityEvent(
@@ -481,9 +484,15 @@ void AutofillExternalDelegate::AttemptToDisplayAutofillSuggestions(
 
   // Send to display.
   if (is_update) {
-    manager_->client().UpdateAutofillSuggestions(
-        suggestions, GetMainFillingProduct(), trigger_source_,
-        ignore_focus_loss);
+    if (old_product == new_product) {
+      manager_->client().UpdateAutofillSuggestions(
+          suggestions, new_product, trigger_source_, ignore_focus_loss);
+    } else {
+      int sample = (std::to_underlying(old_product) << 8) |
+                   std::to_underlying(new_product);
+      base::UmaHistogramSparse("Autofill.PopupUpdateIgnored.ProductMismatch",
+                               sample);
+    }
     return;
   }
 
