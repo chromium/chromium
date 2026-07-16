@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_availability.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_feature_availability.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -575,9 +576,6 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
 
   // Launch the Gemini experience with an image attached.
   UIMenuElement* geminiElement = nil;
-  GeminiService* geminiService =
-      GeminiServiceFactory::GetForProfile(self.browser->GetProfile());
-  GeminiTabHelper* geminiTabHelper = GeminiTabHelper::FromWebState(webState);
   // To show the Gemini element, we check three distinct layers of availability:
   // - Feature-level (`IsFeatureAvailable`): Handles fine-grained or regulatory
   //   restrictions for specific features like ImageRemix, even when Gemini is
@@ -588,11 +586,9 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   //   eligibility such as enterprise policies, workspace restrictions, and
   //   login state.
   BOOL canShowGeminiElement =
-      gemini::IsFeatureAvailable(gemini::Feature::kImageRemix,
-                                 self.browser->GetProfile()) &&
-      geminiTabHelper && geminiTabHelper->IsGeminiAvailableForWebState() &&
-      geminiTabHelper->IsContextualEntryPointAllowed() && geminiService &&
-      geminiService->IsProfileEligibleForGemini();
+      gemini::IsGeminiAvailable(gemini::EntryPoint::ImageContextMenu,
+                                self.browser->GetProfile(), webState)
+          .enabled;
   BOOL geminiAboveSearch = IsGeminiImageRemixToolShowAboveSearchImageEnabled();
   BOOL geminiBelowSearch = IsGeminiImageRemixToolShowBelowSearchImageEnabled();
 

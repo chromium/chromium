@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_availability.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/lens_overlay/public/lens_overlay_availability.h"
@@ -359,9 +360,9 @@ const CGFloat kIconPointSize = 16.0;
   }
 
   if (IsDirectBWGEntryPoint()) {
-    GeminiTabHelper* tabHelper = GeminiTabHelper::FromWebState(webState);
-    return tabHelper && tabHelper->IsGeminiAvailableForWebState() &&
-           geminiService->IsProfileEligibleForGemini();
+    return gemini::IsGeminiAvailable(gemini::EntryPoint::AIHub, profile,
+                                     webState)
+        .enabled;
   }
 
   return geminiService->IsProfileEligibleForGemini();
@@ -375,13 +376,8 @@ const CGFloat kIconPointSize = 16.0;
   }
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(webState->GetBrowserState());
-  GeminiService* geminiService = GeminiServiceFactory::GetForProfile(profile);
-  if (!geminiService) {
-    return NO;
-  }
-  GeminiTabHelper* tabHelper = GeminiTabHelper::FromWebState(webState);
-  return tabHelper && tabHelper->IsGeminiAvailableForWebState() &&
-         geminiService->IsProfileEligibleForGemini();
+  return gemini::IsGeminiAvailable(gemini::EntryPoint::AIHub, profile, webState)
+      .enabled;
 }
 
 /// Updates the placeholder.

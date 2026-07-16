@@ -12,13 +12,15 @@
 
 class AuthenticationService;
 class GeminiService;
+class ProfileIOS;
 @class NSMutableDictionary;
 @class NSUserDefaults;
 
 class GeminiCapabilitiesManagerImpl : public GeminiCapabilitiesManager,
                                       public GeminiService::Observer {
  public:
-  GeminiCapabilitiesManagerImpl(AuthenticationService* authentication_service,
+  GeminiCapabilitiesManagerImpl(ProfileIOS* profile,
+                                AuthenticationService* authentication_service,
                                 GeminiService* gemini_service);
   ~GeminiCapabilitiesManagerImpl() override;
 
@@ -39,6 +41,8 @@ class GeminiCapabilitiesManagerImpl : public GeminiCapabilitiesManager,
   void UpdateUserEligibility(NSMutableDictionary* capabilities,
                              bool user_eligible,
                              bool has_primary_identity);
+  // Profile associated with this manager.
+  raw_ptr<ProfileIOS> profile_;
 
   // AuthenticationService used to retrieve primary identity.
   raw_ptr<AuthenticationService> authentication_service_;

@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_availability.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_consumer.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_content_entry_point.h"
@@ -172,22 +173,22 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
     return [[PageActionMenuContentEntryPoint alloc] initWithEnabled:YES];
   }
 
-  std::optional<gemini::IneligibilityReasons> result =
-      _geminiService->GeminiIneligibilityForProfile();
-
-  if (result.has_value()) {
-    if (result.value().chrome_enterprise) {
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(_webState->GetBrowserState());
+  gemini::GeminiAvailabilityResult availability =
+      gemini::IsGeminiAvailable(gemini::EntryPoint::AIHub, profile, _webState);
+  if (!availability.enabled) {
+    if (availability.ineligibility_reasons.has_value() &&
+        availability.ineligibility_reasons->chrome_enterprise) {
       return [[PageActionMenuContentEntryPoint alloc]
           initWithEnabled:NO
                footerItem:[ContentEntryPointUnavailabilityItem
                               geminiEnterprise]];
     }
-
     return [[PageActionMenuContentEntryPoint alloc] initWithEnabled:NO];
   }
 
-  return [[PageActionMenuContentEntryPoint alloc]
-      initWithEnabled:_geminiTabHelper->IsGeminiAvailableForWebState()];
+  return [[PageActionMenuContentEntryPoint alloc] initWithEnabled:YES];
 }
 
 - (PageActionMenuContentEntryPoint*)lensEntryPointForTraitCollection:
@@ -753,15 +754,18 @@ std::string GetTargetLanguageCode(ChromeIOSTranslateClient* translate_client) {
     return NO;
   }
 
-  std::optional<gemini::IneligibilityReasons> result =
-      _geminiService->GeminiIneligibilityForProfile();
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(_webState->GetBrowserState());
+  gemini::GeminiAvailabilityResult availability =
+      gemini::IsGeminiAvailable(gemini::EntryPoint::AIHub, profile, _webState);
 
-  if (!result.has_value()) {
+  if (!availability.ineligibility_reasons.has_value()) {
     return NO;
   }
 
-  return !result.value().chrome_enterprise &&
-         !result.value().account_capability && result.value().workspace;
+  return !availability.ineligibility_reasons->chrome_enterprise &&
+         !availability.ineligibility_reasons->account_capability &&
+         availability.ineligibility_reasons->workspace;
 }
 
 @end

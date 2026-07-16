@@ -14,7 +14,7 @@ namespace {
 std::unique_ptr<KeyedService> BuildGeminiCapabilitiesManager(
     ProfileIOS* profile) {
   return std::make_unique<GeminiCapabilitiesManagerImpl>(
-      AuthenticationServiceFactory::GetForProfile(profile),
+      profile, AuthenticationServiceFactory::GetForProfile(profile),
       GeminiServiceFactory::GetForProfile(profile));
 }
 

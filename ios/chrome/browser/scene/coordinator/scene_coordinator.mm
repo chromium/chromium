@@ -62,6 +62,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_availability.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_entry_flow_result.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -2462,14 +2463,11 @@ inline LayoutStateScenePassKey PassKey() {
   if (!_regularBrowser) {
     return;
   }
-  GeminiService* geminiService =
-      GeminiServiceFactory::GetForProfile(self.profile);
   web::WebState* activeWebState =
       _regularBrowser->GetWebStateList()->GetActiveWebState();
-  GeminiTabHelper* geminiTabHelper =
-      activeWebState ? GeminiTabHelper::FromWebState(activeWebState) : nullptr;
-  if (geminiTabHelper && geminiTabHelper->IsGeminiAvailableForWebState() &&
-      geminiService && geminiService->IsProfileEligibleForGemini()) {
+  if (gemini::IsGeminiAvailable(gemini::EntryPoint::Promo, self.profile,
+                                activeWebState)
+          .enabled) {
     [self startGeminiFlowWithStartupState:
               [[GeminiStartupState alloc]
                   initWithEntryPoint:gemini::EntryPoint::Promo]];
@@ -2586,8 +2584,9 @@ inline LayoutStateScenePassKey PassKey() {
     return;
   }
 
-  bool eligibleSite = geminiTabHelper->IsGeminiAvailableForWebState() &&
-                      geminiService->IsProfileEligibleForGemini();
+  bool eligibleSite = gemini::IsGeminiAvailable(gemini::EntryPoint::Unknown,
+                                                self.profile, activeWebState)
+                          .enabled;
   if (!eligibleSite) {
     // Reset presented sources before hiding the floaty due to an ineligible
     // site.

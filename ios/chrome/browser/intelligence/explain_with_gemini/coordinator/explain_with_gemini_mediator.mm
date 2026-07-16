@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_availability.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -58,13 +59,9 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
 - (BOOL)canPerformExplainWithGeminiInWebState:(web::WebState*)webState {
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(webState->GetBrowserState());
-  raw_ptr<GeminiService> geminiService =
-      GeminiServiceFactory::GetForProfile(profile);
-  GeminiTabHelper* geminiTabHelper = GeminiTabHelper::FromWebState(webState);
   const BOOL geminiAvailable =
-      geminiService && geminiService->IsProfileEligibleForGemini() &&
-      geminiTabHelper && geminiTabHelper->IsGeminiAvailableForWebState() &&
-      geminiTabHelper->IsContextualEntryPointAllowed();
+      gemini::IsGeminiAvailable(gemini::EntryPoint::EditMenu, profile, webState)
+          .enabled;
   if (!geminiAvailable) {
     return NO;
   }

@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_availability.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -110,9 +111,11 @@ typedef NS_ENUM(NSInteger, IneligibilitySnackbarType) {
   [self stopAccountMenu];
 
   // Re-check eligibility after the account switch.
-  GeminiService* geminiService =
-      GeminiServiceFactory::GetForProfile(self.browser->GetProfile());
-  if (geminiService && geminiService->IsProfileEligibleForGemini()) {
+  web::WebState* activeWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  gemini::GeminiAvailabilityResult availability = gemini::IsGeminiAvailable(
+      _startupState.entryPoint, self.browser->GetProfile(), activeWebState);
+  if (!availability.ineligibility_reasons.has_value()) {
     [self startGeminiIfPageEligible];
     return;
   }
@@ -184,11 +187,13 @@ typedef NS_ENUM(NSInteger, IneligibilitySnackbarType) {
   // Trigger the workspace policy check if it hasn't started yet.
   geminiService->CheckGeminiEnterpriseEligibilityIfNeeded();
 
-  std::optional<gemini::IneligibilityReasons> result =
-      geminiService->GeminiIneligibilityForProfile();
+  web::WebState* activeWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  gemini::GeminiAvailabilityResult availability = gemini::IsGeminiAvailable(
+      _startupState.entryPoint, self.browser->GetProfile(), activeWebState);
 
   // Eligible — check page availability.
-  if (!result.has_value()) {
+  if (!availability.ineligibility_reasons.has_value()) {
     [self startGeminiIfPageEligible];
     return;
   }
@@ -197,14 +202,14 @@ typedef NS_ENUM(NSInteger, IneligibilitySnackbarType) {
   [self showSnackbarForIneligibilityType:kIneligibilitySnackbarTypeAccount];
 
   // Enterprise policy restriction.
-  if (result.value().chrome_enterprise) {
+  if (availability.ineligibility_reasons->chrome_enterprise) {
     [self finishWithResult:kGeminiEntryFlowResultAccountIneligibleByEnterprise];
     return;
   }
 
   // Gemini policy restriction (workspace) — present account menu
   // for switching accounts.
-  if (result.value().workspace) {
+  if (availability.ineligibility_reasons->workspace) {
     [self presentAccountMenu];
     return;
   }
@@ -244,8 +249,9 @@ typedef NS_ENUM(NSInteger, IneligibilitySnackbarType) {
     return;
   }
 
-  GeminiTabHelper* tabHelper = GeminiTabHelper::FromWebState(activeWebState);
-  if (!tabHelper || !tabHelper->IsGeminiAvailableForWebState()) {
+  if (!gemini::IsGeminiAvailable(_startupState.entryPoint,
+                                 self.browser->GetProfile(), activeWebState)
+           .enabled) {
     [self showSnackbarForIneligibilityType:kIneligibilitySnackbarTypePage];
     [self finishWithResult:kGeminiEntryFlowResultPageIneligible];
     return;

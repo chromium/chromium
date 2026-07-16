@@ -18,7 +18,7 @@ include_rules = [
   "+ios/chrome/browser/intelligence/bwg/model/gemini_service.h",
   "+ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h",
   "+ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h",
-  "+ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h",
+  "+ios/chrome/browser/intelligence/bwg/utils",
   "+ios/chrome/browser/intelligence/features/features.h",
   "+ios/chrome/browser/intents/model/intents_donation_helper.h",
   "+ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h",

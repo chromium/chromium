@@ -793,6 +793,8 @@ TEST_P(ToolbarMediatorTest, TestAssistantButtonVisible_PageActionMenuEnabled) {
   scoped_feature_list.InitWithFeatures({kPageActionMenu}, {});
 
   SetLocationEligible(true);
+  browser_->GetWebStateList()->InsertWebState(
+      CreateWebState(), WebStateList::InsertionParams::AtIndex(0).Activate());
   SignInAndSetCapability(true);
 
   OCMExpect([consumer_ setAssistantButtonVisible:YES enabled:NO]);
@@ -811,6 +813,8 @@ TEST_P(ToolbarMediatorTest, TestAssistantButtonNotVisible_EEACountryGated) {
   TestingApplicationContext::GetGlobal()->GetApplicationLocaleStorage()->Set(
       "en-US");
 
+  browser_->GetWebStateList()->InsertWebState(
+      CreateWebState(), WebStateList::InsertionParams::AtIndex(0).Activate());
   SignInAndSetCapability(true);
 
   OCMExpect([consumer_ setAssistantButtonVisible:NO enabled:NO]);
@@ -829,6 +833,8 @@ TEST_P(ToolbarMediatorTest, TestAssistantButtonNotVisible_JapanCountryGated) {
   TestingApplicationContext::GetGlobal()->GetApplicationLocaleStorage()->Set(
       "en-US");
 
+  browser_->GetWebStateList()->InsertWebState(
+      CreateWebState(), WebStateList::InsertionParams::AtIndex(0).Activate());
   SignInAndSetCapability(true);
 
   OCMExpect([consumer_ setAssistantButtonVisible:NO enabled:NO]);

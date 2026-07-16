@@ -4,14 +4,18 @@
 
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_capabilities_manager_impl.h"
 
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_availability.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 
 GeminiCapabilitiesManagerImpl::GeminiCapabilitiesManagerImpl(
+    ProfileIOS* profile,
     AuthenticationService* authentication_service,
     GeminiService* gemini_service)
-    : authentication_service_(authentication_service),
+    : profile_(profile),
+      authentication_service_(authentication_service),
       gemini_service_(gemini_service) {
   if (gemini_service_) {
     gemini_service_observation_.Observe(gemini_service_);
@@ -105,7 +109,13 @@ void GeminiCapabilitiesManagerImpl::UpdateUserEligibility(
     NSMutableDictionary* capabilities,
     bool user_eligible,
     bool has_primary_identity) {
-  bool eligible = has_primary_identity && user_eligible;
+  bool eligible = false;
+  if (has_primary_identity && profile_) {
+    eligible =
+        gemini::IsGeminiAvailable(
+            gemini::EntryPoint::AppSwitcherAISummarization, profile_, nullptr)
+            .enabled;
+  }
 
   capabilities[app_group::kChromeUserIsEligibleForGeminiCapability] =
       @(eligible);

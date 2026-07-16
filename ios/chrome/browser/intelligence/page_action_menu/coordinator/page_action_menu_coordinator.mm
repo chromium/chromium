@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_availability.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_entry_flow_result.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -362,12 +363,13 @@ constexpr NSTimeInterval kEligibilityPollTimeout = 5.0;
     (AccountMenuCoordinator*)coordinator {
   [self stopAccountMenu];
 
-  raw_ptr<GeminiService> geminiService =
-      GeminiServiceFactory::GetForProfile(self.profile);
-
+  web::WebState* activeWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
   // Re-check eligibility after the account menu closes.
   if ([_mediator isUserSignedIn] &&
-      geminiService->IsProfileEligibleForGemini()) {
+      gemini::IsGeminiAvailable(gemini::EntryPoint::AIHub, self.profile,
+                                activeWebState)
+          .enabled) {
     [self startGeminiSession];
     return;
   }
