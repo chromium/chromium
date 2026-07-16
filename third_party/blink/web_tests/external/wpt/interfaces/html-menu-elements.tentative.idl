@@ -23,3 +23,7 @@ interface HTMLMenuItemElement : HTMLElement {
   [CEReactions] attribute boolean checked;
   [CEReactions, Reflect] attribute boolean defaultChecked;
 };
+
+partial interface HTMLFieldSetElement {
+  [CEReactions, Reflect] attribute DOMString? checkable;
+};

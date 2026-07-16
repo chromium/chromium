@@ -4144,6 +4144,7 @@ interface HTMLFencedFrameElement : HTMLElement
     setter width
 interface HTMLFieldSetElement : HTMLElement
     attribute @@toStringTag
+    getter checkable
     getter disabled
     getter elements
     getter form
@@ -4156,6 +4157,7 @@ interface HTMLFieldSetElement : HTMLElement
     method constructor
     method reportValidity
     method setCustomValidity
+    setter checkable
     setter disabled
     setter name
 interface HTMLFontElement : HTMLElement

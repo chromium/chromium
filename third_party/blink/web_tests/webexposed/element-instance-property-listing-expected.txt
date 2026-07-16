@@ -659,6 +659,7 @@ html element fencedframe
     property width
 html element fieldset
     property checkValidity
+    property checkable
     property disabled
     property elements
     property form

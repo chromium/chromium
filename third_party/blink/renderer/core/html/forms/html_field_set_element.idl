@@ -38,4 +38,6 @@
     boolean checkValidity();
     boolean reportValidity();
     void setCustomValidity(DOMString error);
+
+    [RuntimeEnabled=MenuElements, CEReactions, Reflect, ReflectOnly=("single","multiple"), ReflectEmpty="multiple", ReflectInvalid="multiple"] attribute DOMString? checkable;
 };
