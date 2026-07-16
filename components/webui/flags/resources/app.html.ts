@@ -30,7 +30,9 @@ export function getHtml(this: AppElement) {
 <if expr="not is_ios">
       <label for="import-file-input">
         <cr-icon-button id="experiment-import"
-            iron-icon="flags:file-upload"
+            iron-icon="${this.webuiRoundedIconsEnabled_
+                ? 'flags:upload'
+                : 'flags:file-upload-old'}"
             aria-label="Import"
             ?hidden="${!this.isImportExportEnabled_}">
         </cr-icon-button>

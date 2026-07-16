@@ -166,7 +166,8 @@ export class FlagsAppElement extends CrLitElement {
       selectedTabIndex_: {type: Number},
       // <if expr="not is_ios">
       isImportExportEnabled_: {type: Boolean},
-      // </if>
+      // </if>,
+      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -199,6 +200,8 @@ export class FlagsAppElement extends CrLitElement {
   protected accessor searching: boolean = false;
   protected accessor needsRestart: boolean = false;
   protected accessor importError: string = '';
+  protected accessor webuiRoundedIconsEnabled_: boolean =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   private announceStatusDelayMs: number = 100;
   private featuresResolver: PromiseResolver<void> = new PromiseResolver();
