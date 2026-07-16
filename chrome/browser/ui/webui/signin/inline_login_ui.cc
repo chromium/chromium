@@ -18,6 +18,7 @@
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -28,6 +29,7 @@
 #include "chrome/grit/inline_login_resources.h"
 #include "chrome/grit/inline_login_resources_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/content_switches.h"
@@ -284,6 +286,7 @@ InlineLoginUI::InlineLoginUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
   // from chrome://chrome-signin/gaia_auth_host/ can work.
   Profile* profile = Profile::FromWebUI(web_ui);
   CreateAndAddWebUIDataSource(profile);
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 
 #if BUILDFLAG(IS_CHROMEOS)
   web_ui->AddMessageHandler(

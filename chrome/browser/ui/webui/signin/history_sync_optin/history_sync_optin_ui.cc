@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/webui/signin/history_sync_optin/history_sync_optin.mojom.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin/history_sync_optin_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/signin_history_sync_optin_resources.h"
@@ -23,6 +24,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/features.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -81,6 +83,8 @@ HistorySyncOptinUI::HistorySyncOptinUI(content::WebUI* web_ui)
   // Set up the chrome://history-sync-optin source.
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile_, chrome::kChromeUIHistorySyncOptinHost);
+  content::URLDataSource::Add(profile_,
+                              std::make_unique<ThemeSource>(profile_));
 
   const bool is_in_search_engine_choice_region =
       CHECK_DEREF(regional_capabilities::RegionalCapabilitiesServiceFactory::

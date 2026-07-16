@@ -8,11 +8,13 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/ui/webui/signin/dice_web_signin_intercept_handler.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/signin_resources.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -66,8 +68,10 @@ CreateSampleBubbleParameters() {
 
 DiceWebSigninInterceptUI::DiceWebSigninInterceptUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
+  Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      Profile::FromWebUI(web_ui), chrome::kChromeUIDiceWebSigninInterceptHost);
+      profile, chrome::kChromeUIDiceWebSigninInterceptHost);
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
   source->SetDefaultResource(
       IDR_SIGNIN_DICE_WEB_SIGNIN_INTERCEPT_DICE_WEB_SIGNIN_INTERCEPT_HTML);
 
