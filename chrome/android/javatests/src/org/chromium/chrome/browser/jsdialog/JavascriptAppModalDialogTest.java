@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags.Add;
 import org.chromium.base.test.util.Criteria;
@@ -52,8 +53,8 @@ import java.util.concurrent.TimeoutException;
 
 /** Test suite for displaying and functioning of app modal JavaScript onbeforeunload dialogs. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-// TODO(crbug.com/344665752): Failing when batched, batch this again.
 @Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class JavascriptAppModalDialogTest {
     public static final String JAVASCRIPT_DIALOG_BATCH_NAME = "javascript_dialog";
 
