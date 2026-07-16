@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -23,6 +24,7 @@ import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 /** This test tests the logic for writing the restore histogram at two different levels */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DoNotBatch(reason = "AI automated batching attempt was unsuccessful.")
 public class RestoreHistogramTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
