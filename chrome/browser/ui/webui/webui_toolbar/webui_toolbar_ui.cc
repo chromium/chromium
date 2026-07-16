@@ -46,6 +46,7 @@
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -71,6 +72,9 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIWebUIToolbarHost);
+
+  Profile* profile = Profile::FromWebUI(web_ui);
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 
   static constexpr webui::LocalizedString kStrings[] = {
       // go/keep-sorted start
@@ -112,9 +116,7 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
   source->AddBoolean(
       "enableAvatarButton",
       features::IsWebUIAvatarButtonEnabled() &&
-          AvatarToolbarButtonInterface::CanShowForProfile(
-              Profile::FromBrowserContext(
-                  web_ui->GetWebContents()->GetBrowserContext())));
+          AvatarToolbarButtonInterface::CanShowForProfile(profile));
   source->AddBoolean("enableExtensionsContainer",
                      features::IsWebUIExtensionsContainerEnabled());
   source->AddBoolean(

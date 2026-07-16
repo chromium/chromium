@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/history/browsing_history_handler.h"
 #include "chrome/browser/ui/webui/history_clusters/history_clusters_handler.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/side_panel_history_resources.h"
@@ -74,6 +75,7 @@ HistorySidePanelUI::HistorySidePanelUI(content::WebUI* web_ui)
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 
   source->AddBoolean(
       "enableHistoryEmbeddings",

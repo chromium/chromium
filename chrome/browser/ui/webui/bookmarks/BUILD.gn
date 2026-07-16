@@ -30,6 +30,7 @@ if (!is_android) {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/webui:favicon_source",
       "//chrome/browser/ui/webui:plural_string_handler",
+      "//chrome/browser/ui/webui:theme_source",
       "//chrome/browser/ui/webui/page_not_available_for_guest",
       "//chrome/common",
       "//components/bookmarks/browser",

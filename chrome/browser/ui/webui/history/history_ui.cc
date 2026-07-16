@@ -47,6 +47,7 @@
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/page_not_available_for_guest/page_not_available_for_guest_ui.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/history_resources.h"
@@ -261,6 +262,8 @@ HistoryUI::HistoryUI(content::WebUI* web_ui)
   content::WebUIDataSource* data_source =
       CreateAndAddHistoryUIHTMLSource(profile);
   ManagedUIHandler::Initialize(web_ui, data_source);
+
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 
   pref_change_registrar_.Init(profile->GetPrefs());
   pref_change_registrar_.Add(history_clusters::prefs::kVisible,

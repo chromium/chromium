@@ -58,6 +58,7 @@ source_set("impl") {
     "//chrome/browser/ui/views/interaction",
     "//chrome/browser/ui/webui:favicon_source",
     "//chrome/browser/ui/webui:plural_string_handler",
+    "//chrome/browser/ui/webui:theme_source",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/bookmarks",
     "//chrome/browser/ui/webui/commerce",

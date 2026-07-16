@@ -48,6 +48,7 @@ if (!is_android) {
       "//chrome/browser/ui/dialogs",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts/api:toasts",
+      "//chrome/browser/ui/webui:theme_source",
       "//chrome/common",
       "//chrome/common:constants",
       "//components/prefs",

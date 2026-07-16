@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/history/foreign_session_handler.h"
 #include "chrome/browser/ui/webui/side_panel/tabs_from_other_devices/synced_screenshot_data_source.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/side_panel_shared_resources.h"
@@ -86,6 +87,7 @@ TabsFromOtherDevicesSidePanelUI::TabsFromOtherDevicesSidePanelUI(
 
   content::URLDataSource::Add(profile,
                               std::make_unique<SyncedScreenshotDataSource>());
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 }
 
 TabsFromOtherDevicesSidePanelUI::~TabsFromOtherDevicesSidePanelUI() = default;

@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_utils.h"
 #include "chrome/browser/ui/webui/certificate_manager/client_cert_sources.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/certificate_manager_resources.h"
@@ -18,6 +19,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/webui_util.h"
@@ -176,6 +178,7 @@ CertificateManagerUI::CertificateManagerUI(content::WebUI* web_ui)
       IDR_CERTIFICATE_MANAGER_CERTIFICATE_MANAGER_DIALOG_HTML);
   AddCertificateManagerV2Strings(source);
   source->AddString("crsLearnMoreUrl", kCRSLearnMoreLink);
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 #if BUILDFLAG(IS_CHROMEOS)
   ClientCertManagementAccessControls client_cert_policy(profile);
   source->AddBoolean("clientCertImportAllowed",

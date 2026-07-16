@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/webui/feedback/report_unsafe_site/report_unsafe_site_handler.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -24,6 +25,7 @@
 #include "chrome/grit/key_value_pair_viewer_shared_resources_map.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/webui_util.h"
@@ -110,7 +112,9 @@ void CreateAndAddFeedbackHTMLSource(Profile* profile) {
 }
 
 FeedbackUI::FeedbackUI(content::WebUI* web_ui) : MojoWebDialogUI(web_ui) {
-  CreateAndAddFeedbackHTMLSource(Profile::FromWebUI(web_ui));
+  Profile* profile = Profile::FromWebUI(web_ui);
+  CreateAndAddFeedbackHTMLSource(profile);
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 }
 
 FeedbackUI::~FeedbackUI() = default;

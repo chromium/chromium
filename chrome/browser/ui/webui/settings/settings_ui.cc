@@ -92,6 +92,7 @@
 #include "chrome/browser/ui/webui/settings/settings_startup_pages_handler.h"
 #include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/settings/site_settings_handler.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -489,6 +490,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                    profile, chrome::FaviconUrlFormat::kFavicon2));
   content::URLDataSource::Add(profile,
                               std::make_unique<SanitizedImageSource>(profile));
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 
   // Privacy Sandbox
   PrivacySandboxService* privacy_sandbox_service =

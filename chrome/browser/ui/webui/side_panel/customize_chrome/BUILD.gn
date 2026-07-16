@@ -102,6 +102,7 @@ if (!is_android) {
       "//chrome/browser/ui/select_file_policy",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/webui:theme_handler",
+      "//chrome/browser/ui/webui:theme_source",
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/cr_components/customize_color_scheme_mode",
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",

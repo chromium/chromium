@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/page_not_available_for_guest/page_not_available_for_guest_ui.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/bookmarks_resources.h"
 #include "chrome/grit/bookmarks_resources_map.h"
@@ -186,6 +187,7 @@ BookmarksUI::BookmarksUI(content::WebUI* web_ui)
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 
   auto plural_string_handler = std::make_unique<PluralStringHandler>();
   plural_string_handler->AddLocalizedString(

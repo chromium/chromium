@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_page_handler.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -77,6 +78,7 @@ ReadingListUI::ReadingListUI(content::WebUI* web_ui)
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
   webui::SetupWebUIDataSource(source, kSidePanelReadingListResources,
                               IDR_SIDE_PANEL_READING_LIST_READING_LIST_HTML);
   source->AddResourcePaths(kSidePanelSharedResources);

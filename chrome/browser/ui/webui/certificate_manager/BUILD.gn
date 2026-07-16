@@ -35,6 +35,7 @@ if (chrome_root_store_cert_management_ui) {
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/select_file_policy",
       "//chrome/browser/ui/webui:plural_string_handler",
+      "//chrome/browser/ui/webui:theme_source",
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/certificate_viewer",
       "//chrome/common",

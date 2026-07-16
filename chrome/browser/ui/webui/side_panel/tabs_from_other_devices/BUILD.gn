@@ -33,6 +33,7 @@ source_set("impl") {
     "//chrome/browser/sync",
     "//chrome/browser/ui/views/side_panel",
     "//chrome/browser/ui/webui:favicon_source",
+    "//chrome/browser/ui/webui:theme_source",
     "//chrome/browser/ui/webui/cr_components/history",
     "//chrome/browser/ui/webui/history",
     "//chrome/common",
