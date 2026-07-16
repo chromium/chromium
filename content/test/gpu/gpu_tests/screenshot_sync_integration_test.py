@@ -20,6 +20,9 @@ from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
 from gpu_tests.util import screenshot_utils
 
+ASAN_SCREENSHOT_MULTIPLIER = 3
+
+
 class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   """Tests that screenshots are properly synchronized with the frame on
   which they were requested.
@@ -96,6 +99,12 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # conditions.
     self.tab.action_runner.Navigate(url)
 
+  def _GetScreenshotTimeout(self):
+    timeout = 10
+    if self._is_asan:
+      timeout *= ASAN_SCREENSHOT_MULTIPLIER
+    return timeout
+
   def _CheckColorMatchAtLocation(self, expectedRGB: rgba_color.RgbaColor,
                                  screenshot: ct.Screenshot, x: int,
                                  y: int) -> None:
@@ -122,7 +131,7 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                            red=canvasRGB.r,
                            green=canvasRGB.g,
                            blue=canvasRGB.b)
-    screenshot = tab.Screenshot(10)
+    screenshot = tab.Screenshot(self._GetScreenshotTimeout())
 
     effective_dpr = screenshot_utils.GetEffectiveDpr(tab)
     # Avoid checking along antialiased boundary due to limited Adreno 3xx
