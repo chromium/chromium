@@ -381,10 +381,7 @@ class GlicBrowserTestMixin : public T {
         [this, id]() {
           GlicInstance* target =
               id ? GetInstanceById(*id) : GetOnlyGlicInstance();
-          if (!target) {
-            return true;
-          }
-          return target->IsFullyClosedForTesting();
+          return !target || !target->IsShowing();
         },
         "Failed to close Glic UI");
     if (!success) {

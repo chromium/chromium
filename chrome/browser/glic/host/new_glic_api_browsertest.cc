@@ -896,6 +896,8 @@ IN_PROC_BROWSER_TEST_P(
   ExecuteJsTest();
 }
 
+// TODO(crbug.com/533085229): Re-enable on Android once close flakiness is fixed.
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithContextualCueing,
                        testNoZssWarmingStateMachine) {
   tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
@@ -983,6 +985,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithContextualCueing,
 
   ExecuteJsTest();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithContextualCueing,
                        testGetZeroStateSuggestionsApi) {
