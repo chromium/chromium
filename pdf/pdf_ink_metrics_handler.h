@@ -8,13 +8,12 @@
 #include "pdf/buildflags.h"
 #include "pdf/pdf_ink_brush.h"
 #include "third_party/ink/src/ink/strokes/input/stroke_input.h"
-#include "third_party/skia/include/core/SkColor.h"
 
 static_assert(BUILDFLAG(ENABLE_PDF_INK2), "ENABLE_PDF_INK2 not set to true");
 
 namespace chrome_pdf {
 
-enum class TextTypeface;
+struct InkTextBoxAttributes;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -173,8 +172,7 @@ void RecordPdfLoadedWithInkTextAnnotations(
 void RecordPdfLoadedWithV2InkAnnotations(
     PDFLoadedWithV2InkAnnotations loaded_with_annotations);
 
-void ReportTextAnnotationColor(SkColor color);
-void ReportTextAnnotationTypeface(TextTypeface typeface);
+void ReportTextAnnotationMetrics(const InkTextBoxAttributes& attributes);
 
 }  // namespace chrome_pdf
 

@@ -187,8 +187,8 @@ bool IsValidTypeface(std::optional<int> typeface) {
 
 bool IsValidAlignment(std::optional<int> alignment) {
   return alignment.has_value() &&
-         alignment.value() >= static_cast<int>(TextAlignment::kFirst) &&
-         alignment.value() <= static_cast<int>(TextAlignment::kLast);
+         alignment.value() >= static_cast<int>(TextAlignment::kMinValue) &&
+         alignment.value() <= static_cast<int>(TextAlignment::kMaxValue);
 }
 
 bool IsValidOrientation(std::optional<int> orientation) {

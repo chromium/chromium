@@ -1707,8 +1707,7 @@ void PdfInkModule::HandleFinishTextAnnotationMessage(
       attributes);
 
   if (modify_undo_redo_model) {
-    ReportTextAnnotationColor(attributes.color);
-    ReportTextAnnotationTypeface(attributes.typeface);
+    ReportTextAnnotationMetrics(attributes);
     CHECK(undo_redo_model_.Add(new_id));
     CHECK(undo_redo_model_.Finish());
   }

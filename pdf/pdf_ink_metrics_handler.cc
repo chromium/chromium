@@ -6,12 +6,14 @@
 
 #include <optional>
 
+#include "base/check_op.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "pdf/pdf_ink_brush.h"
 #include "pdf/pdf_ink_conversions.h"
 #include "pdf/pdf_ink_text.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace chrome_pdf {
 
@@ -220,14 +222,28 @@ void RecordPdfLoadedWithV2InkAnnotations(
                                 loaded_with_annotations);
 }
 
-void ReportTextAnnotationColor(SkColor color) {
-  auto it = kTextAnnotationColors.find(color);
-  CHECK(it != kTextAnnotationColors.end());
-  base::UmaHistogramEnumeration("PDF.Ink2TextAnnotationColor", it->second);
-}
+void ReportTextAnnotationMetrics(const InkTextBoxAttributes& attributes) {
+  auto color_it = kTextAnnotationColors.find(attributes.color);
+  CHECK(color_it != kTextAnnotationColors.end());
+  base::UmaHistogramEnumeration("PDF.Ink2TextAnnotationColor",
+                                color_it->second);
 
-void ReportTextAnnotationTypeface(TextTypeface typeface) {
-  base::UmaHistogramEnumeration("PDF.Ink2TextAnnotationTypeface", typeface);
+  base::UmaHistogramEnumeration("PDF.Ink2TextAnnotationTypeface",
+                                attributes.typeface);
+
+  base::UmaHistogramEnumeration("PDF.Ink2TextAnnotationAlignment",
+                                attributes.alignment);
+
+  base::UmaHistogramBoolean("PDF.Ink2TextAnnotationBold", attributes.is_bold);
+  base::UmaHistogramBoolean("PDF.Ink2TextAnnotationItalic",
+                            attributes.is_italic);
+
+  CHECK_EQ(attributes.css_font_size, std::trunc(attributes.css_font_size));
+  int size = static_cast<int>(attributes.css_font_size);
+  CHECK_EQ(size, attributes.css_font_size);
+  CHECK_GE(size, 1);
+  CHECK_LE(size, 100);
+  base::UmaHistogramExactLinear("PDF.Ink2TextAnnotationSize", size, 101);
 }
 
 }  // namespace chrome_pdf
