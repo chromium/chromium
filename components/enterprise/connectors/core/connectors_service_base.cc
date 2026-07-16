@@ -6,10 +6,12 @@
 
 #include "base/feature_list.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/version_info/version_info.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/ukm/scheme_constants.h"
@@ -327,6 +329,28 @@ bool ConnectorsServiceBase::IsURLExemptFromAnalysis(
 ConnectorsManagerBase*
 ConnectorsServiceBase::ConnectorsManagerBaseForTesting() {
   return connectors_manager_base_.get();
+}
+
+std::string ConnectorsServiceBase::GetRealTimeUrlCheckIdentifier() const {
+  auto dm_token = GetDmToken(kEnterpriseRealTimeUrlCheckScope);
+  if (!dm_token) {
+    return std::string();
+  }
+
+  if (IsProfileAffiliated()) {
+    std::string device_id = GetDeviceClientId();
+    std::string email = GetProfileEmail();
+    if (!email.empty()) {
+      return base::StrCat({device_id, "\n", email});
+    }
+    return device_id;
+  }
+
+  if (dm_token->scope == policy::POLICY_SCOPE_MACHINE) {
+    return GetDeviceClientId();
+  }
+
+  return GetProfileEmail();
 }
 
 }  // namespace enterprise_connectors

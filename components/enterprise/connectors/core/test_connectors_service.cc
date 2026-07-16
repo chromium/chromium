@@ -95,6 +95,18 @@ std::unique_ptr<ClientMetadata> TestConnectorsService::BuildClientMetadata(
   return nullptr;
 }
 
+bool TestConnectorsService::IsProfileAffiliated() const {
+  return false;
+}
+
+std::string TestConnectorsService::GetProfileEmail() const {
+  return std::string();
+}
+
+std::string TestConnectorsService::GetDeviceClientId() const {
+  return std::string();
+}
+
 bool TestConnectorsService::ConnectorsEnabled() const {
   return connectors_enabled_;
 }

@@ -15,7 +15,9 @@
 #import "components/enterprise/connectors/core/features.h"
 #import "components/enterprise/connectors/core/reporting_test_utils.h"
 #import "components/policy/core/common/cloud/cloud_external_data_manager.h"
+#import "components/policy/core/common/cloud/cloud_policy_client.h"
 #import "components/policy/core/common/cloud/cloud_policy_constants.h"
+#import "components/policy/core/common/cloud/cloud_policy_service.h"
 #import "components/policy/core/common/cloud/cloud_policy_util.h"
 #import "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #import "components/policy/core/common/cloud/machine_level_user_cloud_policy_store.h"
@@ -482,6 +484,173 @@ TEST_F(ConnectorsServiceTest, ExemptURL_BlobAndFilesystem) {
     auto settings = service.GetAnalysisSettings(GURL(url), connector());
     ASSERT_FALSE(settings.has_value());
   }
+}
+
+// Tests that `GetRealTimeUrlCheckIdentifier` returns an empty string when no DM
+// token is present.
+TEST_F(ConnectorsServiceTest, GetRealTimeUrlCheckIdentifier_NoDMToken) {
+  profile()->GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
+                                    policy::POLICY_SCOPE_USER);
+  auto* manager = profile()->GetUserCloudPolicyManager();
+  manager->core()->store()->set_policy_data_for_testing(nullptr);
+
+  auto service = ConnectorsService(profile());
+  EXPECT_EQ(service.GetRealTimeUrlCheckIdentifier(), std::string());
+}
+
+// Tests that `GetRealTimeUrlCheckIdentifier` returns both device ID and user
+// email (formatted as "{device_id}\n{email}") when the profile is affiliated
+// with the browser and a primary account is available.
+TEST_F(ConnectorsServiceTest,
+       GetRealTimeUrlCheckIdentifier_Affiliated_WithEmail) {
+  profile()->GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
+                                    policy::POLICY_SCOPE_USER);
+
+  // Set user affiliation ID
+  auto* manager = profile()->GetUserCloudPolicyManager();
+  auto policy_data = std::make_unique<enterprise_management::PolicyData>();
+  policy_data->set_request_token(kTestProfileDmToken);
+  policy_data->add_user_affiliation_ids("affiliation-id");
+  manager->core()->store()->set_policy_data_for_testing(std::move(policy_data));
+
+  // Set browser affiliation ID
+  auto* machine_manager = GetApplicationContext()
+                              ->GetBrowserPolicyConnector()
+                              ->machine_level_user_cloud_policy_manager();
+  auto machine_policy_data =
+      std::make_unique<enterprise_management::PolicyData>();
+  machine_policy_data->set_managed_by(kTestMachineDomain);
+  machine_policy_data->add_device_affiliation_ids("affiliation-id");
+  machine_manager->store()->set_policy_data_for_testing(
+      std::move(machine_policy_data));
+
+  auto client = std::make_unique<policy::CloudPolicyClient>(
+      /*service=*/nullptr, /*url_loader_factory=*/nullptr,
+      policy::CloudPolicyClient::DeviceDMTokenCallback());
+  client->SetupRegistration(kTestBrowserDmToken, kTestClientId,
+                            {"affiliation-id"});
+  machine_manager->core()->ConnectForTesting(
+      /*service=*/nullptr, std::move(client));
+
+  MakePrimaryAccountAvailable(kTestProfileEmail);
+  auto service = ConnectorsService(profile());
+  std::string expected_identifier =
+      std::string(kTestClientId) + "\n" + kTestProfileEmail;
+  EXPECT_EQ(service.GetRealTimeUrlCheckIdentifier(), expected_identifier);
+}
+
+// Tests that `GetRealTimeUrlCheckIdentifier` returns only the device ID when
+// the profile is affiliated but no user email is available (unsigned-in state).
+TEST_F(ConnectorsServiceTest,
+       GetRealTimeUrlCheckIdentifier_Affiliated_NoEmail) {
+  profile()->GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
+                                    policy::POLICY_SCOPE_USER);
+
+  // Set user affiliation ID
+  auto* manager = profile()->GetUserCloudPolicyManager();
+  auto policy_data = std::make_unique<enterprise_management::PolicyData>();
+  policy_data->set_request_token(kTestProfileDmToken);
+  policy_data->add_user_affiliation_ids("affiliation-id");
+  manager->core()->store()->set_policy_data_for_testing(std::move(policy_data));
+
+  // Set browser affiliation ID
+  auto* machine_manager = GetApplicationContext()
+                              ->GetBrowserPolicyConnector()
+                              ->machine_level_user_cloud_policy_manager();
+  auto machine_policy_data =
+      std::make_unique<enterprise_management::PolicyData>();
+  machine_policy_data->set_managed_by(kTestMachineDomain);
+  machine_policy_data->add_device_affiliation_ids("affiliation-id");
+  machine_manager->store()->set_policy_data_for_testing(
+      std::move(machine_policy_data));
+
+  auto client = std::make_unique<policy::CloudPolicyClient>(
+      /*service=*/nullptr, /*url_loader_factory=*/nullptr,
+      policy::CloudPolicyClient::DeviceDMTokenCallback());
+  client->SetupRegistration(kTestBrowserDmToken, kTestClientId,
+                            {"affiliation-id"});
+  machine_manager->core()->ConnectForTesting(
+      /*service=*/nullptr, std::move(client));
+
+  auto service = ConnectorsService(profile());
+  EXPECT_EQ(service.GetRealTimeUrlCheckIdentifier(), kTestClientId);
+}
+
+// Tests that `GetRealTimeUrlCheckIdentifier` returns only the device ID when
+// the profile is unaffiliated and the real-time URL check scope is set to
+// MACHINE.
+TEST_F(ConnectorsServiceTest,
+       GetRealTimeUrlCheckIdentifier_NotAffiliated_MachineScope) {
+  profile()->GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
+                                    policy::POLICY_SCOPE_MACHINE);
+
+  // Set user affiliation ID
+  auto* manager = profile()->GetUserCloudPolicyManager();
+  auto policy_data = std::make_unique<enterprise_management::PolicyData>();
+  policy_data->set_request_token(kTestProfileDmToken);
+  policy_data->add_user_affiliation_ids("user-affiliation-id");
+  manager->core()->store()->set_policy_data_for_testing(std::move(policy_data));
+
+  // Set browser affiliation ID (different, so unaffiliated)
+  auto* machine_manager = GetApplicationContext()
+                              ->GetBrowserPolicyConnector()
+                              ->machine_level_user_cloud_policy_manager();
+  auto machine_policy_data =
+      std::make_unique<enterprise_management::PolicyData>();
+  machine_policy_data->set_managed_by(kTestMachineDomain);
+  machine_policy_data->add_device_affiliation_ids("device-affiliation-id");
+  machine_manager->store()->set_policy_data_for_testing(
+      std::move(machine_policy_data));
+
+  auto client = std::make_unique<policy::CloudPolicyClient>(
+      /*service=*/nullptr, /*url_loader_factory=*/nullptr,
+      policy::CloudPolicyClient::DeviceDMTokenCallback());
+  client->SetupRegistration(kTestBrowserDmToken, kTestClientId,
+                            {"device-affiliation-id"});
+  machine_manager->core()->ConnectForTesting(
+      /*service=*/nullptr, std::move(client));
+
+  MakePrimaryAccountAvailable(kTestProfileEmail);
+  auto service = ConnectorsService(profile());
+  EXPECT_EQ(service.GetRealTimeUrlCheckIdentifier(), kTestClientId);
+}
+
+// Tests that `GetRealTimeUrlCheckIdentifier` returns only the user email when
+// the profile is unaffiliated and the real-time URL check scope is set to USER.
+TEST_F(ConnectorsServiceTest,
+       GetRealTimeUrlCheckIdentifier_NotAffiliated_UserScope) {
+  profile()->GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
+                                    policy::POLICY_SCOPE_USER);
+
+  // Set user affiliation ID
+  auto* manager = profile()->GetUserCloudPolicyManager();
+  auto policy_data = std::make_unique<enterprise_management::PolicyData>();
+  policy_data->set_request_token(kTestProfileDmToken);
+  policy_data->add_user_affiliation_ids("user-affiliation-id");
+  manager->core()->store()->set_policy_data_for_testing(std::move(policy_data));
+
+  // Set browser affiliation ID (different, so unaffiliated)
+  auto* machine_manager = GetApplicationContext()
+                              ->GetBrowserPolicyConnector()
+                              ->machine_level_user_cloud_policy_manager();
+  auto machine_policy_data =
+      std::make_unique<enterprise_management::PolicyData>();
+  machine_policy_data->set_managed_by(kTestMachineDomain);
+  machine_policy_data->add_device_affiliation_ids("device-affiliation-id");
+  machine_manager->store()->set_policy_data_for_testing(
+      std::move(machine_policy_data));
+
+  auto client = std::make_unique<policy::CloudPolicyClient>(
+      /*service=*/nullptr, /*url_loader_factory=*/nullptr,
+      policy::CloudPolicyClient::DeviceDMTokenCallback());
+  client->SetupRegistration(kTestBrowserDmToken, kTestClientId,
+                            {"device-affiliation-id"});
+  machine_manager->core()->ConnectForTesting(
+      /*service=*/nullptr, std::move(client));
+
+  MakePrimaryAccountAvailable(kTestProfileEmail);
+  auto service = ConnectorsService(profile());
+  EXPECT_EQ(service.GetRealTimeUrlCheckIdentifier(), kTestProfileEmail);
 }
 
 }  // namespace enterprise_connectors

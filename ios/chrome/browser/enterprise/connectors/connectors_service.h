@@ -52,6 +52,10 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
   const PrefService* GetPrefs() const override;
   policy::CloudPolicyManager* GetManagedUserCloudPolicyManager() const override;
 
+  bool IsProfileAffiliated() const override;
+  std::string GetProfileEmail() const override;
+  std::string GetDeviceClientId() const override;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ConnectorsServiceTest, GetPrefs);
   FRIEND_TEST_ALL_PREFIXES(ConnectorsServiceTest, GetProfileDmToken);

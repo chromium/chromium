@@ -45,11 +45,6 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
       AnalysisConnector connector);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  // Returns the profile email if real-time URL check is set for the profile,
-  // the device ID if it is set for the device, or an empty string if it is
-  // unset.
-  std::string GetRealTimeUrlCheckIdentifier() const;
-
   // Returns the CBCM domain or profile domain that enables connector policies.
   // If both set Connector policies, the CBCM domain is returned as it has
   // precedence.
@@ -74,6 +69,9 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
   policy::CloudPolicyManager* GetManagedUserCloudPolicyManager() const override;
   bool IsURLExemptFromAnalysis(const GURL& url,
                                AnalysisConnector connector) override;
+  bool IsProfileAffiliated() const override;
+  std::string GetProfileEmail() const override;
+  std::string GetDeviceClientId() const override;
 
   // Returns the policy::PolicyScope stored in the given |scope_pref|.
   policy::PolicyScope GetPolicyScope(const char* scope_pref) const override;

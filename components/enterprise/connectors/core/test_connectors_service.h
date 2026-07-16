@@ -36,6 +36,10 @@ class TestConnectorsService : public ConnectorsServiceBase {
   // Returns a nullptr.
   std::unique_ptr<ClientMetadata> BuildClientMetadata(bool is_cloud) override;
 
+  bool IsProfileAffiliated() const override;
+  std::string GetProfileEmail() const override;
+  std::string GetDeviceClientId() const override;
+
   // returns true if the connectors is enabled.
   bool ConnectorsEnabled() const override;
 

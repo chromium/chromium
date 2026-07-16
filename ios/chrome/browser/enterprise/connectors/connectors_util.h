@@ -59,6 +59,12 @@ bool IsDownloadConnectorEnabled(ConnectorsServiceBase* service);
 // the connector is enabled.
 bool IsBulkDataEntryConnectorEnabled(ConnectorsServiceBase* service);
 
+// Returns true if the profile and browser are managed by the same customer
+// (affiliated). This is determined by comparing affiliation IDs obtained in the
+// policy fetching response. If either policies has no affiliation IDs, this
+// function returns false.
+bool IsProfileAffilicated(ProfileIOS* profile);
+
 }  // namespace enterprise_connectors
 
 #endif  // IOS_CHROME_BROWSER_ENTERPRISE_CONNECTORS_CONNECTORS_UTIL_H_

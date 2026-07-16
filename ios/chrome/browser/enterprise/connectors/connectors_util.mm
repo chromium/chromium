@@ -176,10 +176,7 @@ bool IncludeDeviceInfo(ProfileIOS* profile, bool per_profile) {
 
   // A managed device can share its info with the profile if they are
   // affiliated.
-  return policy::IsAffiliated(GetUserAffiliationIds(profile),
-                              GetApplicationContext()
-                                  ->GetBrowserPolicyConnector()
-                                  ->GetDeviceAffiliationIds());
+  return IsProfileAffilicated(profile);
 }
 
 bool IsDownloadConnectorEnabled(ConnectorsServiceBase* service) {
@@ -192,6 +189,13 @@ bool IsBulkDataEntryConnectorEnabled(ConnectorsServiceBase* service) {
   CHECK(service);
   return base::FeatureList::IsEnabled(kEnableBulkDataEntryConnectorIOS) &&
          service->IsConnectorEnabled(AnalysisConnector::BULK_DATA_ENTRY);
+}
+
+bool IsProfileAffilicated(ProfileIOS* profile) {
+  return policy::IsAffiliated(GetUserAffiliationIds(profile),
+                              GetApplicationContext()
+                                  ->GetBrowserPolicyConnector()
+                                  ->GetDeviceAffiliationIds());
 }
 
 }  // namespace enterprise_connectors

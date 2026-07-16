@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
 namespace enterprise_connectors {
 
@@ -145,6 +146,19 @@ std::unique_ptr<ClientMetadata> ConnectorsService::GetBasicClientMetadata() {
   // Managed Guest Session on ChromeOS
   metadata->set_is_chrome_os_managed_guest_session(false);
   return metadata;
+}
+
+bool ConnectorsService::IsProfileAffiliated() const {
+  return IsProfileAffilicated(profile_);
+}
+
+std::string ConnectorsService::GetProfileEmail() const {
+  return ::enterprise_connectors::GetProfileEmail(
+      IdentityManagerFactory::GetForProfile(profile_));
+}
+
+std::string ConnectorsService::GetDeviceClientId() const {
+  return policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
 }
 
 }  // namespace enterprise_connectors
