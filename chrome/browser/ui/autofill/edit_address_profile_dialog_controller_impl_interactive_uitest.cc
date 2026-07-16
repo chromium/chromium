@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
+#include "chrome/browser/ui/views/autofill/address_editor_view.h"
 #include "chrome/browser/ui/views/autofill/edit_address_profile_view.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
@@ -28,30 +29,38 @@ class EditAddressProfileDialogControllerImplTest
         /*enabled_features=*/
         {features::kAutofillSupportSplitZipCode},
         /*disabled_features=*/{});
-    local_profile_ = std::make_unique<AutofillProfile>(
-        AutofillProfile::RecordType::kLocalOrSyncable,
-        AddressCountryCode("US"));
-    local_profile_->SetRawInfoWithVerificationStatus(
+    local_profile_ =
+        CreateTestProfile(AutofillProfile::RecordType::kLocalOrSyncable);
+    account_profile_ = CreateTestProfile(AutofillProfile::RecordType::kAccount);
+  }
+
+  static std::unique_ptr<AutofillProfile> CreateTestProfile(
+      AutofillProfile::RecordType record_type) {
+    auto profile = std::make_unique<AutofillProfile>(record_type,
+                                                     AddressCountryCode("US"));
+    profile->SetRawInfoWithVerificationStatus(
         NAME_FULL, u"Mona J. Liza", VerificationStatus::kUserVerified);
-    test::SetProfileInfo(
-        local_profile_.get(),
-        test::SetProfileInfoOptionsBuilder()
-            .with_email("email@example.com")
-            .with_company("Company Inc.")
-            .with_address1("33 Narrow Street")
-            .with_address2("Apt 42")
-            .with_city("Playa Vista")
-            .with_state("LA")
-            .with_zipcode("12345")
-            .with_country("US")
-            .with_phone("13105551234")
-            .with_status(VerificationStatus::kUserVerified)
-            .Build(),
-        /*finalize=*/true);
-    local_profile_->set_language_code("en");
+    test::SetProfileInfo(profile.get(),
+                         test::SetProfileInfoOptionsBuilder()
+                             .with_email("email@example.com")
+                             .with_company("Company Inc.")
+                             .with_address1("33 Narrow Street")
+                             .with_address2("Apt 42")
+                             .with_city("Playa Vista")
+                             .with_state("LA")
+                             .with_zipcode("12345")
+                             .with_country("US")
+                             .with_phone("13105551234")
+                             .with_status(VerificationStatus::kUserVerified)
+                             .Build(),
+                         /*finalize=*/true);
+    profile->set_language_code("en");
+    return profile;
   }
 
   AutofillProfile local_profile() { return *local_profile_; }
+
+  AutofillProfile account_profile() { return *account_profile_; }
 
   content::WebContents* web_contents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
@@ -96,7 +105,7 @@ class EditAddressProfileDialogControllerImplTest
       ASSERT_THAT(controller, ::testing::NotNull());
       controller->OfferEdit(
           profile, /*title_override=*/u"", footer_message,
-          /*is_editing_existing_address*/ original_profile != nullptr,
+          /*is_editing_existing_address=*/original_profile != nullptr,
           is_migration_to_account,
           base::BindOnce(
               &EditAddressProfileDialogControllerImplTest::OnUserDecision,
@@ -111,6 +120,7 @@ class EditAddressProfileDialogControllerImplTest
   // prompt.
   AutofillClient::AddressPromptUserDecision user_decision_;
   std::unique_ptr<AutofillProfile> local_profile_;
+  std::unique_ptr<AutofillProfile> account_profile_;
   std::optional<AutofillProfile> edited_profile_;
 };
 
@@ -129,6 +139,105 @@ IN_PROC_BROWSER_TEST_F(EditAddressProfileDialogControllerImplTest,
       EnsureClosedWithDecisionAndProfile(
           AutofillClient::AddressPromptUserDecision::kEditAccepted,
           local_profile()));
+}
+
+// Tests that editing an account profile enforces strict field validation (e.g.,
+// clearing a required field like ZIP code disables the OK button and prevents
+// accepting the dialog).
+IN_PROC_BROWSER_TEST_F(EditAddressProfileDialogControllerImplTest,
+                       AccountProfileStrictValidation) {
+  AutofillProfile profile = account_profile();
+  RunTestSequence(
+      ShowEditor(profile, /*original_profile=*/nullptr, u"",
+                 /*is_migration_to_account=*/false),
+      InAnyContext(
+          WaitForShow(EditAddressProfileView::kTopViewId),
+          CheckViewProperty(views::DialogClientView::kOkButtonElementId,
+                            &views::View::GetEnabled, true),
+          WithView(EditAddressProfileView::kTopViewId,
+                   [](views::View* view) {
+                     auto* profile_view =
+                         static_cast<EditAddressProfileView*>(view);
+                     AddressEditorView* editor_view =
+                         profile_view->GetAddressEditorViewForTesting();
+                     editor_view->SetTextInputFieldValueForTesting(
+                         ADDRESS_HOME_ZIP, u"");
+                     EXPECT_FALSE(editor_view->ValidateAllFields());
+                     EXPECT_FALSE(profile_view->Accept());
+                   }),
+          CheckViewProperty(views::DialogClientView::kOkButtonElementId,
+                            &views::View::GetEnabled, false),
+          PressButton(views::DialogClientView::kCancelButtonElementId),
+          WaitForHide(EditAddressProfileView::kTopViewId)),
+      EnsureClosedWithDecisionAndProfile(
+          AutofillClient::AddressPromptUserDecision::kEditDeclined,
+          std::nullopt));
+}
+
+// Tests that editing a local profile during account migration enforces strict
+// field validation, disabling the OK button when invalid data is entered.
+IN_PROC_BROWSER_TEST_F(EditAddressProfileDialogControllerImplTest,
+                       LocalProfileMigratingToAccountValidation) {
+  AutofillProfile profile = local_profile();
+  RunTestSequence(
+      ShowEditor(profile, /*original_profile=*/nullptr, u"",
+                 /*is_migration_to_account=*/true),
+      InAnyContext(
+          WaitForShow(EditAddressProfileView::kTopViewId),
+          CheckViewProperty(views::DialogClientView::kOkButtonElementId,
+                            &views::View::GetEnabled, true),
+          WithView(EditAddressProfileView::kTopViewId,
+                   [](views::View* view) {
+                     auto* profile_view =
+                         static_cast<EditAddressProfileView*>(view);
+                     AddressEditorView* editor_view =
+                         profile_view->GetAddressEditorViewForTesting();
+                     editor_view->SetTextInputFieldValueForTesting(
+                         ADDRESS_HOME_ZIP, u"");
+                     EXPECT_FALSE(editor_view->ValidateAllFields());
+                     EXPECT_FALSE(profile_view->Accept());
+                   }),
+          CheckViewProperty(views::DialogClientView::kOkButtonElementId,
+                            &views::View::GetEnabled, false),
+          PressButton(views::DialogClientView::kCancelButtonElementId),
+          WaitForHide(EditAddressProfileView::kTopViewId)),
+      EnsureClosedWithDecisionAndProfile(
+          AutofillClient::AddressPromptUserDecision::kEditDeclined,
+          std::nullopt));
+}
+
+// Tests that editing a standard local profile (not migrating to an account)
+// bypasses strict field validation, allowing invalid fields to be saved.
+IN_PROC_BROWSER_TEST_F(EditAddressProfileDialogControllerImplTest,
+                       LocalProfileNoMigrationValidationBypass) {
+  AutofillProfile profile = local_profile();
+  AutofillProfile expected_profile = profile;
+  expected_profile.SetRawInfo(ADDRESS_HOME_ZIP, u"");
+
+  RunTestSequence(
+      ShowEditor(profile, /*original_profile=*/nullptr, u"",
+                 /*is_migration_to_account=*/false),
+      InAnyContext(
+          WaitForShow(EditAddressProfileView::kTopViewId),
+          CheckViewProperty(views::DialogClientView::kOkButtonElementId,
+                            &views::View::GetEnabled, true),
+          WithView(EditAddressProfileView::kTopViewId,
+                   [](views::View* view) {
+                     auto* profile_view =
+                         static_cast<EditAddressProfileView*>(view);
+                     AddressEditorView* editor_view =
+                         profile_view->GetAddressEditorViewForTesting();
+                     editor_view->SetTextInputFieldValueForTesting(
+                         ADDRESS_HOME_ZIP, u"");
+                     EXPECT_TRUE(editor_view->ValidateAllFields());
+                   }),
+          CheckViewProperty(views::DialogClientView::kOkButtonElementId,
+                            &views::View::GetEnabled, true),
+          PressButton(views::DialogClientView::kOkButtonElementId),
+          WaitForHide(EditAddressProfileView::kTopViewId)),
+      EnsureClosedWithDecisionAndProfile(
+          AutofillClient::AddressPromptUserDecision::kEditAccepted,
+          expected_profile));
 }
 
 }  // namespace
