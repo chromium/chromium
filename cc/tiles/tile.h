@@ -225,11 +225,6 @@ class CC_EXPORT Tile {
 
   Id id_;
 
-  // List of Rect-Transform pairs, representing unoccluded parts of the
-  // tile, to support raster culling. See Bug: 1071932
-  std::vector<std::pair<const gfx::Rect, const gfx::AxisTransform2d>>
-      raster_rects_;
-
   // The rect bounding the changes in this Tile vs the previous tile it
   // replaced.
   gfx::Rect invalidated_content_rect_;

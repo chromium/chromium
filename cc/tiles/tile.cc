@@ -35,9 +35,7 @@ Tile::Tile(TileManager* tile_manager,
       tiling_i_index_(info.tiling_i_index),
       tiling_j_index_(info.tiling_j_index),
       can_use_lcd_text_(info.can_use_lcd_text),
-      id_(tile_manager->GetUniqueTileId()) {
-  raster_rects_.emplace_back(info.content_rect, info.raster_transform);
-}
+      id_(tile_manager->GetUniqueTileId()) {}
 
 Tile::~Tile() {
   TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("cc.debug"), "cc::Tile:deleted",
