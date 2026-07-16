@@ -43,15 +43,18 @@ class PixAccountLinkingManager : public NativeAccountLinkingHandler {
   // Sets the internal UI state and triggers dismissal.
   virtual void DismissPrompt();
 
- private:
-  friend class PixAccountLinkingManagerTestApi;
-
+ protected:
   // NativeAccountLinkingHandler:
   std::string_view GetHistogramSuffix() const override;
   base::DictValue GetPayloadForGetDetailsForCreatePaymentInstrument() override;
   void DoOnClientTokenReceived(
       const std::vector<uint8_t>& client_token) override;
+  void DoOnGetDetailsForCreatePaymentInstrumentResponse(
+      bool is_eligible) override;
   void DoOnAccountLinkingResult(AccountLinkingResult result) override;
+
+ private:
+  friend class PixAccountLinkingManagerTestApi;
 
   void Reset();
 
@@ -69,14 +72,6 @@ class PixAccountLinkingManager : public NativeAccountLinkingHandler {
 
   // Called by the view to communicate UI events.
   void OnUiScreenEvent(UiEvent ui_event_type);
-
-  // Callback for when the payments request to check Pix account linking
-  // eligibility is completed.
-  void OnGetDetailsForCreatePaymentInstrumentResponseReceived(
-      base::TimeTicks start_time,
-      autofill::payments::PaymentsAutofillClient::PaymentsRpcResult result,
-      bool is_eligible_for_pix_account_linking,
-      const std::vector<uint8_t>& action_token);
 
   // Stores the client token received from FetchClientToken().
   std::vector<uint8_t> client_token_;

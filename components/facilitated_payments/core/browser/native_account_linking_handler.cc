@@ -82,6 +82,7 @@ void NativeAccountLinkingHandler::InitiateAccountLinkingNetworkCall(
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()),
       client_->GetPaymentsDataManager()->app_locale());
 }
+
 void NativeAccountLinkingHandler::InvokeInstrumentManager(
     CoreAccountInfo primary_account,
     const std::vector<uint8_t>& action_token) {
@@ -142,6 +143,7 @@ void NativeAccountLinkingHandler::
     }
     OnAccountLinkingResult(AccountLinkingResult{});
   }
+  DoOnGetDetailsForCreatePaymentInstrumentResponse(result && is_eligible);
 }
 
 void NativeAccountLinkingHandler::OnAccepted() {

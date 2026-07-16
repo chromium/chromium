@@ -39,13 +39,8 @@ class PixAccountLinkingManagerTestApi {
   void DoOnAccountLinkingResult(AccountLinkingResult result) {
     manager_->DoOnAccountLinkingResult(result);
   }
-  void OnGetDetailsForCreatePaymentInstrumentResponseReceived(
-      base::TimeTicks start_time,
-      autofill::payments::PaymentsAutofillClient::PaymentsRpcResult result,
-      bool is_eligible_for_pix_account_linking,
-      const std::vector<uint8_t>& action_token) {
-    manager_->OnGetDetailsForCreatePaymentInstrumentResponseReceived(
-        start_time, result, is_eligible_for_pix_account_linking, action_token);
+  void DoOnGetDetailsForCreatePaymentInstrumentResponse(bool is_eligible) {
+    manager_->DoOnGetDetailsForCreatePaymentInstrumentResponse(is_eligible);
   }
   void Reset() { manager_->Reset(); }
 

@@ -45,6 +45,7 @@ PixAccountLinkingManager::GetPayloadForGetDetailsForCreatePaymentInstrument() {
 void PixAccountLinkingManager::DoOnClientTokenReceived(
     const std::vector<uint8_t>& client_token) {
   client_token_ = client_token;
+  InitiateAccountLinkingNetworkCall(client_token);
 }
 
 void PixAccountLinkingManager::DoOnAccountLinkingResult(
@@ -76,22 +77,6 @@ void PixAccountLinkingManager::MaybeShowPixAccountLinkingPrompt(
     }
   }
 
-  WalletEligibilityForPixAccountLinking wallet_eligibility =
-      client()->GetDeviceDelegate()->IsPixAccountLinkingSupported();
-  switch (wallet_eligibility) {
-    case WalletEligibilityForPixAccountLinking::kWalletNotInstalled:
-      LogAccountLinkingFlowExitedReason(
-          kPixFopSuffix, AccountLinkingFlowExitedReason::kWalletNotInstalled);
-      return;
-    case WalletEligibilityForPixAccountLinking::kWalletVersionNotSupported:
-      LogAccountLinkingFlowExitedReason(
-          kPixFopSuffix,
-          AccountLinkingFlowExitedReason::kWalletVersionNotSupported);
-      return;
-    case WalletEligibilityForPixAccountLinking::kEligible:
-      break;
-  }
-
   if (!client()
            ->GetPaymentsDataManager()
            ->IsFacilitatedPaymentsPixAccountLinkingUserPrefEnabled()) {
@@ -107,28 +92,10 @@ void PixAccountLinkingManager::MaybeShowPixAccountLinkingPrompt(
     return;
   }
 
-  // Make a request to payments backend to check if user is eligible for Pix
-  // account linking.
-  auto billing_customer_id = autofill::payments::GetBillingCustomerId(
-      CHECK_DEREF(client()->GetPaymentsDataManager()));
-  if (billing_customer_id == 0) {
-    // If the user is not a payments customer and has copied a Pix code, we
-    // automatically assume that they are eligible for account linking.
-    is_eligible_for_pix_account_linking_ = true;
-  } else {
-    // The user is an existing payments customer. Make a backend call to check
-    // eligibility for Pix account linking.
-    client()
-        ->GetFacilitatedPaymentsNetworkInterface()
-        ->GetDetailsForCreatePaymentInstrument(
-            billing_customer_id,
-            /*client_token=*/std::vector<uint8_t>{},
-            base::BindOnce(
-                &PixAccountLinkingManager::
-                    OnGetDetailsForCreatePaymentInstrumentResponseReceived,
-                weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()),
-            client()->GetPaymentsDataManager()->app_locale());
-  }
+  // Asynchronously fetch the GMSCore client token, which will automatically
+  // initiate the GetDetailsForCreatePaymentInstrument network call to check
+  // eligibility and retrieve the action token.
+  FetchClientToken();
   // TODO(crbug.com/417330610): Move this to after the user comes back to Chrome
   // and GetDetailsForCreatePaymentInstrument is completed.
   client()->GetDeviceDelegate()->SetOnReturnToChromeCallbackAndObserveAppState(
@@ -270,21 +237,9 @@ void PixAccountLinkingManager::OnUiScreenEvent(UiEvent ui_event_type) {
   }
 }
 
-void PixAccountLinkingManager::
-    OnGetDetailsForCreatePaymentInstrumentResponseReceived(
-        base::TimeTicks start_time,
-        autofill::payments::PaymentsAutofillClient::PaymentsRpcResult result,
-        bool is_eligible_for_pix_account_linking,
-        const std::vector<uint8_t>& /*action_token*/) {
-  // `action_token` is unused here because web-based Pix account linking does
-  // not require it. The native account linking flow is coordinated by
-  // `NativeAccountLinkingHandler`, which caches the token in its own callback
-  // `OnGetDetailsForCreatePaymentInstrumentResponseReceived` and uses it to
-  // invoke the native instrument manager.
-  LogAccountLinkingGetDetailsForCreatePaymentInstrumentResultAndLatency(
-      kPixFopSuffix, is_eligible_for_pix_account_linking,
-      base::TimeTicks::Now() - start_time);
-  is_eligible_for_pix_account_linking_ = is_eligible_for_pix_account_linking;
+void PixAccountLinkingManager::DoOnGetDetailsForCreatePaymentInstrumentResponse(
+    bool is_eligible) {
+  is_eligible_for_pix_account_linking_ = is_eligible;
 }
 
 PixAccountLinkingStrikeDatabase*

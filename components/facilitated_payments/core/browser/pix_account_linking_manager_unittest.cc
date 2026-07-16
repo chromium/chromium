@@ -18,6 +18,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/facilitated_payments/core/browser/device_delegate.h"
 #include "components/facilitated_payments/core/browser/mock_device_delegate.h"
+#include "components/facilitated_payments/core/browser/mock_facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/mock_facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/network_api/mock_facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/browser/pix_account_linking_manager_test_api.h"
@@ -41,7 +42,16 @@ class PixAccountLinkingManagerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   PixAccountLinkingManagerTest() {
-    manager_ = std::make_unique<PixAccountLinkingManager>(&client_);
+    api_client_ = std::make_unique<MockFacilitatedPaymentsApiClient>();
+    api_client_ptr_ = api_client_.get();
+    manager_ = std::make_unique<PixAccountLinkingManager>(
+        &client_,
+        base::BindRepeating(&PixAccountLinkingManagerTest::CreateApiClient,
+                            base::Unretained(this)));
+  }
+
+  std::unique_ptr<FacilitatedPaymentsApiClient> CreateApiClient() {
+    return std::move(api_client_);
   }
 
   void SetUp() override {
@@ -69,9 +79,11 @@ class PixAccountLinkingManagerTest : public testing::Test {
     // Success path setup. The Pix account linking user pref is default enabled.
     ON_CALL(client_, GetLastCommittedOrigin)
         .WillByDefault(testing::ReturnRef(kPixPaymentPageOrigin));
-    ON_CALL(*device_delegate(), IsPixAccountLinkingSupported)
+    ON_CALL(*api_client_ptr_, GetClientToken(testing::_))
         .WillByDefault(
-            testing::Return(WalletEligibilityForPixAccountLinking::kEligible));
+            [](base::OnceCallback<void(std::vector<uint8_t>)> callback) {
+              std::move(callback).Run(std::vector<uint8_t>{1, 2, 3});
+            });
     ON_CALL(client(), IsWebContentsVisibleOrOccluded)
         .WillByDefault(testing::Return(true));
     // Simulate the payments server returns that the user is eligible for Pix
@@ -114,6 +126,9 @@ class PixAccountLinkingManagerTest : public testing::Test {
   MockFacilitatedPaymentsNetworkInterface* payments_network_interface() {
     return payments_network_interface_.get();
   }
+
+  std::unique_ptr<MockFacilitatedPaymentsApiClient> api_client_;
+  raw_ptr<MockFacilitatedPaymentsApiClient> api_client_ptr_ = nullptr;
 
   std::unique_ptr<PrefService> pref_service_;
   std::unique_ptr<autofill::TestPaymentsDataManager> payments_data_manager_;
@@ -165,11 +180,12 @@ TEST_F(PixAccountLinkingManagerTest, CustomDelayShowsPrompt) {
   task_environment_.FastForwardBy(base::Seconds(4));
 }
 
-TEST_F(PixAccountLinkingManagerTest,
-       PixAccountLinkingNotSupported_PromptNotShown) {
-  ON_CALL(*device_delegate(), IsPixAccountLinkingSupported)
-      .WillByDefault(testing::Return(
-          WalletEligibilityForPixAccountLinking::kWalletNotInstalled));
+TEST_F(PixAccountLinkingManagerTest, ClientTokenNotAvailable_PromptNotShown) {
+  ON_CALL(*api_client_ptr_, GetClientToken(testing::_))
+      .WillByDefault(
+          [](base::OnceCallback<void(std::vector<uint8_t>)> callback) {
+            std::move(callback).Run(std::vector<uint8_t>{});
+          });
 
   EXPECT_CALL(client(), ShowPixAccountLinkingPrompt).Times(0);
 
@@ -189,15 +205,22 @@ TEST_F(PixAccountLinkingManagerTest,
 }
 
 TEST_F(PixAccountLinkingManagerTest,
-       NoPaymentsProfile_ServerEligibilityNotChecked_PromptShown) {
+       NoPaymentsProfile_ServerEligibilityChecked_PromptShown) {
   payments_data_manager_->ClearPaymentsCustomerData();
 
-  // Backend call for GetDetailsForPaymentInstrument should not be called if
-  // user is not a payments customer. But, the prompt should still be shown.
+  // In native orchestration, GetDetailsForCreatePaymentInstrument is called
+  // even if billing_customer_id == 0.
   EXPECT_CALL(*payments_network_interface(),
-              GetDetailsForCreatePaymentInstrument(testing::_, testing::_,
-                                                   testing::_, testing::_))
-      .Times(0);
+              GetDetailsForCreatePaymentInstrument(0, testing::_, testing::_,
+                                                   testing::_))
+      .WillOnce([](long, const std::vector<uint8_t>&, auto callback,
+                   const std::string&) {
+        std::move(callback).Run(autofill::payments::PaymentsAutofillClient::
+                                    PaymentsRpcResult::kSuccess,
+                                /*is_eligible=*/true, std::vector<uint8_t>{});
+        return base::StrongAlias<autofill::payments::RequestIdTag,
+                                 std::string>();
+      });
   EXPECT_CALL(client(), ShowPixAccountLinkingPrompt(0, testing::_, testing::_));
 
   manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
@@ -437,25 +460,9 @@ class PixAccountLinkingManagerParameterizedTest
       public testing::WithParamInterface<bool> {};
 
 TEST_P(PixAccountLinkingManagerParameterizedTest,
-       GetDetailsForCreatePaymentInstrument_ResultAndLatencyLogged) {
-  base::HistogramTester histogram_tester;
-
-  test_api().OnGetDetailsForCreatePaymentInstrumentResponseReceived(
-      base::TimeTicks::Now() - base::Seconds(2),
-      autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
-      /*is_eligible_for_pix_account_linking=*/GetParam(),
-      /*action_token=*/std::vector<uint8_t>{});
-
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.AccountLinking."
-      "GetDetailsForCreatePaymentInstrument.Result",
-      /*sample=*/GetParam(),
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.AccountLinking."
-      "GetDetailsForCreatePaymentInstrument.Latency",
-      /*sample=*/2000,
-      /*expected_bucket_count=*/1);
+       GetDetailsForCreatePaymentInstrumentResponse_UpdatesEligibility) {
+  test_api().DoOnGetDetailsForCreatePaymentInstrumentResponse(
+      /*is_eligible=*/GetParam());
 }
 
 INSTANTIATE_TEST_SUITE_P(PixAccountLinkingManagerTestSuite,
@@ -483,32 +490,21 @@ TEST_F(PixAccountLinkingManagerTest, PromptDeclined_ExitedReasonLogged) {
       /*expected_count=*/0);
 }
 
-TEST_F(PixAccountLinkingManagerTest, WalletNotInstalled_ExitedReasonLogged) {
-  base::HistogramTester histogram_tester;
-  ON_CALL(*device_delegate(), IsPixAccountLinkingSupported)
-      .WillByDefault(testing::Return(
-          WalletEligibilityForPixAccountLinking::kWalletNotInstalled));
-
-  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
-
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
-      /*sample=*/AccountLinkingFlowExitedReason::kWalletNotInstalled,
-      /*expected_bucket_count=*/1);
-}
-
 TEST_F(PixAccountLinkingManagerTest,
-       WalletVersionNotSupported_ExitedReasonLogged) {
+       ClientTokenNotAvailable_ExitedReasonLogged) {
   base::HistogramTester histogram_tester;
-  ON_CALL(*device_delegate(), IsPixAccountLinkingSupported)
-      .WillByDefault(testing::Return(
-          WalletEligibilityForPixAccountLinking::kWalletVersionNotSupported));
+  EXPECT_CALL(*device_delegate(), SetOnReturnToChromeCallbackAndObserveAppState)
+      .WillOnce(testing::Return());
+  EXPECT_CALL(*api_client_ptr_, GetClientToken(testing::_))
+      .WillOnce([](base::OnceCallback<void(std::vector<uint8_t>)> callback) {
+        std::move(callback).Run(std::vector<uint8_t>{});
+      });
 
   manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
-      /*sample=*/AccountLinkingFlowExitedReason::kWalletVersionNotSupported,
+      /*sample=*/AccountLinkingFlowExitedReason::kClientTokenNotAvailable,
       /*expected_bucket_count=*/1);
 }
 
@@ -561,7 +557,9 @@ TEST_F(PixAccountLinkingManagerTest,
 TEST_F(PixAccountLinkingManagerTest,
        ServerEligibilityCheckReturnsIneligible_ExitedReasonLogged) {
   base::HistogramTester histogram_tester;
-  // Simulate that the payments server hasn't yet returned eligibility.
+  EXPECT_CALL(*device_delegate(), SetOnReturnToChromeCallbackAndObserveAppState)
+      .WillOnce(testing::Return());
+  // Simulate that the payments server returned ineligible.
   EXPECT_CALL(*payments_network_interface(),
               GetDetailsForCreatePaymentInstrument(testing::_, testing::_,
                                                    testing::_, testing::_))
@@ -578,7 +576,37 @@ TEST_F(PixAccountLinkingManagerTest,
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
-      /*sample=*/AccountLinkingFlowExitedReason::kServerSideIneligible,
+      /*sample=*/AccountLinkingFlowExitedReason::kNotEligiblePerPaymentsBackend,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(PixAccountLinkingManagerTest,
+       ServerEligibilityCheckReturnsEligible_PromptShown) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*payments_network_interface(),
+              GetDetailsForCreatePaymentInstrument(testing::_, testing::_,
+                                                   testing::_, testing::_))
+      .WillOnce([](long, const std::vector<uint8_t>&, auto callback,
+                   const std::string&) {
+        std::move(callback).Run(
+            autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
+                kSuccess,
+            /*is_eligible=*/true,
+            /*action_token=*/
+            std::vector<uint8_t>{'a', 'c', 't', 'i', 'o', 'n'});
+        return base::StrongAlias<autofill::payments::RequestIdTag,
+                                 std::string>();
+      });
+
+  EXPECT_CALL(client(), ShowPixAccountLinkingPrompt);
+
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
+  task_environment_.FastForwardBy(kShowPromptDelay);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.AccountLinking."
+      "GetDetailsForCreatePaymentInstrument.Result",
+      /*sample=*/true,
       /*expected_bucket_count=*/1);
 }
 

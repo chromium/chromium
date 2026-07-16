@@ -39,15 +39,6 @@ class NativeAccountLinkingHandler {
   // Starts fetching the client token from GMSCore.
   void FetchClientToken();
 
-  // Non-virtual callback invoked when the client token is received.
-  // Handles latency/validity checks and calls DoOnClientTokenReceived.
-  void OnClientTokenReceived(base::TimeTicks start_time,
-                             std::vector<uint8_t> client_token);
-
-  // Non-virtual helper to handle standard linking completion logic. Calls the
-  // DoOnAccountLinkingResult virtual method.
-  void OnAccountLinkingResult(AccountLinkingResult result);
-
   // Called when the user accepts the account linking prompt.
   void OnAccepted();
 
@@ -59,6 +50,11 @@ class NativeAccountLinkingHandler {
   virtual void DoOnClientTokenReceived(
       const std::vector<uint8_t>& client_token) = 0;
 
+  // Virtual hook to handle subclass-specific logic when GDCPI response is
+  // received.
+  virtual void DoOnGetDetailsForCreatePaymentInstrumentResponse(
+      bool is_eligible) {}
+
   // Virtual hook to handle subclass-specific UI updates on completion.
   virtual void DoOnAccountLinkingResult(AccountLinkingResult result) = 0;
 
@@ -68,11 +64,6 @@ class NativeAccountLinkingHandler {
 
   // Virtual hook to get the FOP-specific prefix/suffix for histogram names.
   virtual std::string_view GetHistogramSuffix() const = 0;
-
-  FacilitatedPaymentsClient* client() { return &*client_; }
-
-  // Instantiates/retrieves the FacilitatedPaymentsApiClient.
-  FacilitatedPaymentsApiClient* GetApiClient();
 
   // Initiates the GDCPI network call to check eligibility and/or retrieve
   // the action token using the client token.
@@ -86,11 +77,25 @@ class NativeAccountLinkingHandler {
   // Dismisses the prompt UI.
   void DismissPrompt();
 
+  // Non-virtual helper to handle standard linking completion logic. Calls the
+  // DoOnAccountLinkingResult virtual method.
+  void OnAccountLinkingResult(AccountLinkingResult result);
+
+  FacilitatedPaymentsClient* client() { return &*client_; }
+
+  // Instantiates/retrieves the FacilitatedPaymentsApiClient.
+  FacilitatedPaymentsApiClient* GetApiClient();
+
   // Track if the prompt UI is showing. Subclasses are responsible for updating
   // this state when they show the prompt.
   bool is_prompt_showing_ = false;
 
  private:
+  // Callback invoked when the client token is received.
+  // Handles latency/validity checks and calls DoOnClientTokenReceived.
+  void OnClientTokenReceived(base::TimeTicks start_time,
+                             std::vector<uint8_t> client_token);
+
   // Callback for when the network request completes.
   void OnGetDetailsForCreatePaymentInstrumentResponseReceived(
       base::TimeTicks start_time,
