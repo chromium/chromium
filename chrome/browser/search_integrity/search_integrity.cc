@@ -24,6 +24,7 @@
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"  // nogncheck
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_integrity/search_integrity_allowlist.h"
+#include "chrome/browser/search_integrity/search_integrity_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/grit/browser_resources.h"
 #include "components/prefs/pref_service.h"
@@ -47,8 +48,6 @@ static constexpr auto kStopList = base::MakeFixedFlatSet<std::u16string_view>(
 // word.
 bool IsNameMatch(std::u16string_view candidate_name,
                  std::u16string_view default_name) {
-  constexpr size_t kMinWordLength = 3;
-
   auto get_words = [](std::u16string_view text) {
     std::vector<std::u16string> words;
     for (auto piece : base::SplitStringPiece(text, base::kWhitespaceUTF16,
@@ -109,7 +108,7 @@ bool IsObfuscatedUrl(const std::string& url_str) {
       percent_count++;
     }
   }
-  return percent_count >= 3;
+  return percent_count >= kObfuscatedUrlPercentThreshold;
 }
 
 }  // namespace
@@ -136,7 +135,7 @@ void SearchIntegrity::CheckSearchEngines() {
             // Construct the path to the bloom filter file, which is stored in
             // the user's profile directory.
             base::FilePath bloom_filter_path =
-                profile_path.Append(FILE_PATH_LITERAL("engine_allowlist.bf"));
+                profile_path.AppendASCII(kSearchEngineAllowlistFileName);
 
             // Load or build the bloom filter data.
             return SearchEngineAllowlist::LoadBloomFilterData(

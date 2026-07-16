@@ -10,6 +10,7 @@ source_set("search_integrity") {
     "search_integrity.h",
     "search_integrity_allowlist.cc",
     "search_integrity_allowlist.h",
+    "search_integrity_constants.h",
     "search_integrity_factory.cc",
     "search_integrity_factory.h",
   ]

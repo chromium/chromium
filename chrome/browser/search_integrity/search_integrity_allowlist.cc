@@ -15,18 +15,13 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "chrome/browser/search_integrity/search_integrity_constants.h"
 #include "components/optimization_guide/core/filters/bloom_filter.h"
 #include "url/gurl.h"
 
 namespace search_integrity {
 
 namespace {
-
-// The number of hash functions and bits for the bloom filter. These values are
-// chosen based on the expected number of search engine entries (~200)
-// and a desired false-positive rate of ~1%.
-constexpr int kNumHashFunctions = 10;
-constexpr int kNumBits = 2875;
 
 std::string NormalizeUrlHelper(const std::string& url) {
   std::string normalized_url = url;
