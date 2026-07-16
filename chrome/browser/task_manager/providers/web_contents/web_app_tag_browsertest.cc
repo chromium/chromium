@@ -41,9 +41,9 @@ class WebAppTagWebAppTest : public web_app::WebAppBrowserTestBase {
     return browser;
   }
 
-  const std::vector<raw_ptr<WebContentsTag, VectorExperimental>>& tracked_tags()
+  const std::vector<raw_ptr<WebContentsTag, VectorExperimental>> tracked_tags()
       const {
-    return WebContentsTagsManager::GetInstance()->tracked_tags();
+    return ui_test_utils::GetAllTrackedTags(/*exclude_web_ui=*/true);
   }
 
   void NavigateToUrlAndWait(Browser* browser, const GURL& url) {
@@ -82,9 +82,9 @@ IN_PROC_BROWSER_TEST_F(WebAppTagWebAppTest, WebAppTaskCreatedForTab) {
 
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(2U, task_manager.tasks().size());
+  EXPECT_EQ(2U, task_manager.NonToolTasks().size());
 
-  EXPECT_THAT(task_manager.tasks(),
+  EXPECT_THAT(task_manager.NonToolTasks(),
               Contains(Pointee(Property(&Task::title, u"App: Google"))));
 }
 
@@ -111,9 +111,9 @@ IN_PROC_BROWSER_TEST_F(WebAppTagWebAppTest, WebAppTaskCreatedForStandalone) {
 
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(2U, task_manager.tasks().size());
+  EXPECT_EQ(2U, task_manager.NonToolTasks().size());
 
-  EXPECT_THAT(task_manager.tasks(),
+  EXPECT_THAT(task_manager.NonToolTasks(),
               Contains(Pointee(Property(&Task::title, u"App: Google"))));
 }
 
@@ -140,9 +140,9 @@ IN_PROC_BROWSER_TEST_F(WebAppTagWebAppTest, TabNavigatedAwayNotWebAppTask) {
 
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(2U, task_manager.tasks().size());
+  EXPECT_EQ(2U, task_manager.NonToolTasks().size());
 
-  EXPECT_THAT(task_manager.tasks(),
+  EXPECT_THAT(task_manager.NonToolTasks(),
               Contains(Pointee(Property(&Task::title, u"App: Google"))));
 
   const GURL not_app_url =
@@ -152,16 +152,16 @@ IN_PROC_BROWSER_TEST_F(WebAppTagWebAppTest, TabNavigatedAwayNotWebAppTask) {
 
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_THAT(task_manager.tasks(),
+  EXPECT_THAT(task_manager.NonToolTasks(),
               Contains(Pointee(Property(&Task::title, u"Tab: Google"))));
 }
 
 class WebAppTagIsolatedWebAppTest
     : public web_app::IsolatedWebAppBrowserTestHarness {
  protected:
-  const std::vector<raw_ptr<WebContentsTag, VectorExperimental>>& tracked_tags()
+  const std::vector<raw_ptr<WebContentsTag, VectorExperimental>> tracked_tags()
       const {
-    return WebContentsTagsManager::GetInstance()->tracked_tags();
+    return ui_test_utils::GetAllTrackedTags(/*exclude_web_ui=*/true);
   }
 
   void NavigateToUrlAndWait(Browser* browser, const GURL& url) {
@@ -206,10 +206,10 @@ IN_PROC_BROWSER_TEST_F(WebAppTagIsolatedWebAppTest, IsolatedWebAppTaskCreated) {
 
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(2U, task_manager.tasks().size());
+  EXPECT_EQ(2U, task_manager.NonToolTasks().size());
 
   EXPECT_THAT(
-      task_manager.tasks(),
+      task_manager.NonToolTasks(),
       Contains(Pointee(Property(&Task::title, u"App: IWA Document Title"))));
 }
 
@@ -245,10 +245,10 @@ IN_PROC_BROWSER_TEST_F(WebAppTagIsolatedWebAppTest,
 
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(2U, task_manager.tasks().size());
+  EXPECT_EQ(2U, task_manager.NonToolTasks().size());
 
   EXPECT_THAT(
-      task_manager.tasks(),
+      task_manager.NonToolTasks(),
       Contains(Pointee(Property(&Task::title, u"App: IWA Document Title"))));
 
   GURL iwa_url =
@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTagIsolatedWebAppTest,
 
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_THAT(task_manager.tasks(),
+  EXPECT_THAT(task_manager.NonToolTasks(),
               Contains(Pointee(Property(&Task::title, u"App: IWA Name"))));
 }
 
