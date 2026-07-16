@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -33,8 +34,8 @@ import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.DOMUtils;
@@ -46,14 +47,15 @@ import java.util.concurrent.TimeoutException;
 /** Tests for the SmartClipProvider. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class SmartClipProviderTest implements Handler.Callback {
     // This is a key for meta-data in the package manifest. It should NOT
     // change, as OEMs will use it when they look for the SmartClipProvider
     // interface.
 
     @Rule
-    public FreshCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     private static final String MOUNTAIN = "Mountain";
 
@@ -120,7 +122,7 @@ public class SmartClipProviderTest implements Handler.Callback {
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startOnUrl(DATA_URL);
+        mActivityTestRule.startOnWebPage(DATA_URL);
         mActivity = mActivityTestRule.getActivity();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
