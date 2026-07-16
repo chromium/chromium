@@ -77,10 +77,7 @@ BASE_FEATURE(kProductSpecificationsMqlsLogging,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFormsClassificationsMqlsLogging,
-             BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) ||
-                     BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-                 ? base::FEATURE_ENABLED_BY_DEFAULT
-                 : base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPasswordChangeSubmissionMqlsLogging,
              base::FEATURE_ENABLED_BY_DEFAULT);
