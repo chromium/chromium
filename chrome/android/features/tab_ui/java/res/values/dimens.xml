@@ -197,6 +197,7 @@ found in the LICENSE file.
     <dimen name="pinned_tabs_strip_row_coverage_height">85dp</dimen>
     <!-- Height of the pinned tab strip 40dp item height + 2 * 16dp margin. -->
     <dimen name="pinned_tab_strip_height">72dp</dimen>
+    <dimen name="pinned_tab_strip_gap">4dp</dimen>
 
     <!-- Dimens for vertical tabs -->
     <dimen name="vertical_tabs_rail_horizontal_margin">12dp</dimen>

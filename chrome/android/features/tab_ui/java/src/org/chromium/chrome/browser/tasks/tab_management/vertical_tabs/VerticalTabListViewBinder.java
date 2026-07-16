@@ -83,14 +83,19 @@ public class VerticalTabListViewBinder {
         headerContainer.setGravity(isCollapsed ? Gravity.CENTER_HORIZONTAL : Gravity.NO_GRAVITY);
 
         Resources res = view.getResources();
-        int gap = res.getDimensionPixelSize(R.dimen.vertical_tabs_header_button_gap);
-        int collapseMarginEnd =
-                res.getDimensionPixelSize(R.dimen.vertical_tabs_header_button_collapsed_margin_end);
         var collapseParams = (ViewGroup.MarginLayoutParams) collapseButton.getLayoutParams();
-        collapseParams.setMarginEnd(isCollapsed ? 0 : collapseMarginEnd);
-        collapseParams.bottomMargin = isCollapsed ? gap : 0;
+        collapseParams.setMarginEnd(
+                isCollapsed
+                        ? 0
+                        : res.getDimensionPixelSize(
+                                R.dimen.vertical_tabs_header_button_collapsed_margin_end));
+        collapseParams.bottomMargin =
+                isCollapsed
+                        ? res.getDimensionPixelOffset(R.dimen.vertical_tabs_header_padding_vertical)
+                        : 0;
         collapseButton.setLayoutParams(collapseParams);
 
+        int gap = res.getDimensionPixelSize(R.dimen.vertical_tabs_header_button_gap);
         View gridButton = view.findViewById(R.id.grid_button);
         assert gridButton != null;
         var gridParams = (ViewGroup.MarginLayoutParams) gridButton.getLayoutParams();
@@ -112,5 +117,18 @@ public class VerticalTabListViewBinder {
         View spacer = view.findViewById(R.id.header_spacer);
         assert spacer != null;
         spacer.setVisibility(isCollapsed ? View.GONE : View.VISIBLE);
+
+        View newTabButton = view.findViewById(R.id.new_tab_button);
+        assert newTabButton != null;
+        var newTabParams = (ViewGroup.LayoutParams) newTabButton.getLayoutParams();
+        newTabParams.width =
+                isCollapsed
+                        ? res.getDimensionPixelSize(R.dimen.vertical_tabs_header_button_size)
+                        : ViewGroup.LayoutParams.MATCH_PARENT;
+        newTabParams.height =
+                isCollapsed
+                        ? res.getDimensionPixelSize(R.dimen.vertical_tabs_header_button_size)
+                        : res.getDimensionPixelSize(R.dimen.vertical_tabs_new_tab_button_height);
+        newTabButton.setLayoutParams(newTabParams);
     }
 }
