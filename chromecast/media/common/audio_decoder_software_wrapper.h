@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chromecast/media/api/cast_audio_decoder.h"
 #include "chromecast/public/media/media_pipeline_backend.h"
 
@@ -68,6 +69,8 @@ class AudioDecoderSoftwareWrapper
   AudioConfig output_config_;
   scoped_refptr<DecoderBufferBase> pending_pushed_buffer_;
   bool decoder_error_;
+
+  base::WeakPtrFactory<AudioDecoderSoftwareWrapper> weak_factory_{this};
 };
 
 }  // namespace media
