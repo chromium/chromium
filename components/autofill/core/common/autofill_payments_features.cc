@@ -295,6 +295,12 @@ BASE_FEATURE(kAutofillEnableWalletBranding, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillEnableWalletBrandingV2,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, PaymentsFormDataImporter prefers FormFieldData::user_input() over
+// FormFieldData::value() for import to avoid silently importing obfuscated
+// values.
+// TODO(crbug.com/526738761): Clean up after launch.
+BASE_FEATURE(kAutofillFixCvcImport, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, Payments Autofill Buy Now Pay Later (BNPL) will use each
 // corresponding issuer's blocklist instead of allowlist to check for website
 // eligibility.

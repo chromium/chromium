@@ -3530,6 +3530,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="FormEventWithMetadata" variants="Autofill.FormEventWithMetadata"/>
 </histogram>
 
+<histogram name="Autofill.CreditCardImportCandidateHasNumericCvc"
+    enum="Boolean" expires_after="2026-12-30">
+  <owner>schwering@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records whether a credit card import candidate's CVC consists only of
+    digits. This is recorded when a credit card import candidate has a non-empty
+    CVC and saving that candidate is offered to the user. It is recorded on all
+    platforms. One cause for non-digit CVCs is obfuscation.
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.CreditCardInfoBar.{AutofillCreditCardInfoBarSaveType}{SaveType}"
     enum="AutofillCreditCardInfoBar" expires_after="2027-04-30">

@@ -15,6 +15,7 @@
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "build/buildflag.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -102,9 +103,13 @@ PaymentsFormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
   auto extract_if_credit_card_field = [&result,
                                        app_locale](const AutofillField& field) {
     std::u16string value = [&field] {
-      if (field.Type().GetCreditCardType() == FieldType::CREDIT_CARD_NUMBER) {
-        // Credit card numbers are sometimes obfuscated on form submission.
-        // Therefore, we give preference to the user input over the field value.
+      if (field.Type().GetCreditCardType() == FieldType::CREDIT_CARD_NUMBER ||
+          (field.Type().GetCreditCardType() ==
+               FieldType::CREDIT_CARD_VERIFICATION_CODE &&
+           base::FeatureList::IsEnabled(features::kAutofillFixCvcImport))) {
+        // Credit card numbers and CVCs are sometimes obfuscated on form
+        // submission. Therefore, we give preference to the user input over the
+        // field value.
         std::u16string user_input = field.user_input();
         base::TrimWhitespace(user_input, base::TRIM_ALL);
         if (!user_input.empty()) {
@@ -357,6 +362,14 @@ bool PaymentsFormDataImporter::ProcessExtractedCreditCard(
   if (credit_card_save_manager_->ProceedWithSavingIfApplicable(
           submitted_form, *extracted_credit_card, credit_card_import_type_,
           is_credit_card_upstream_enabled, ukm_source_id)) {
+    if (!extracted_credit_card->cvc().empty()) {
+      // TODO(crbug.com/526738761): Clean up after launch of
+      // kAutofillFixCvcImport.
+      base::UmaHistogramBoolean(
+          "Autofill.CreditCardImportCandidateHasNumericCvc",
+          std::ranges::all_of(extracted_credit_card->cvc(),
+                              &base::IsAsciiDigit<char16_t>));
+    }
     return true;
   }
 
