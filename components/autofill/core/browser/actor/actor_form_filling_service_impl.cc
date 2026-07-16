@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/autofill/actor/actor_form_filling_service_impl.h"
+#include "components/autofill/core/browser/actor/actor_form_filling_service_impl.h"
 
 #include <algorithm>
 #include <functional>
@@ -29,11 +29,10 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/zip.h"
-#include "chrome/browser/autofill/actor/actor_filling_observer.h"
-#include "chrome/browser/autofill/actor/actor_key_metrics_recorder.h"
-#include "chrome/common/chrome_features.h"
 #include "components/actor/core/aggregated_journal.h"
 #include "components/actor/core/journal_details_builder.h"
+#include "components/autofill/core/browser/actor/actor_filling_observer.h"
+#include "components/autofill/core/browser/actor/actor_key_metrics_recorder.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
 #include "components/autofill/core/browser/filling/form_filler.h"
@@ -414,11 +413,14 @@ std::optional<FieldGlobalId> GetSafeCreditCardNumberField(
                              ActorFormFillingError>
 GetAutofillManager(AutofillClient& client) {
   using enum ActorFormFillingError;
-  if (!client.UsesPlatformAutofill()) {
-    if (AutofillManager* autofill_manager =
-            client.GetAutofillManagerForPrimaryMainFrame()) {
-      return static_cast<BrowserAutofillManager&>(*autofill_manager);
-    }
+  if (client.UsesPlatformAutofill()) {
+    // In case of Platform Autofill on Android, the AutofillManager cannot
+    // be casted to a BrowserAutofillManager.
+    return base::unexpected(kAutofillNotAvailable);
+  }
+  if (AutofillManager* autofill_manager =
+          client.GetAutofillManagerForPrimaryMainFrame()) {
+    return static_cast<BrowserAutofillManager&>(*autofill_manager);
   }
   return base::unexpected(kAutofillNotAvailable);
 }
@@ -535,7 +537,7 @@ void ActorFormFillingServiceImpl::GetSuggestions(
       case kWorkAddress:
       case kContactInformation: {
         if (!base::FeatureList::IsEnabled(
-                ::features::kActorFormFillingServiceEnableAddress)) {
+                autofill::features::kActorFormFillingServiceEnableAddress)) {
           LOG_AF(log_manager) << LoggingScope::kAutofillActor
                               << "Actor is disabled for address autofill.";
           log_actor_error("Actor is disabled for address autofill.");
@@ -565,7 +567,7 @@ void ActorFormFillingServiceImpl::GetSuggestions(
       }
       case kCreditCard: {
         if (!base::FeatureList::IsEnabled(
-                ::features::kActorFormFillingServiceEnableCreditCard)) {
+                autofill::features::kActorFormFillingServiceEnableCreditCard)) {
           LOG_AF(log_manager) << LoggingScope::kAutofillActor
                               << "Actor is disabled for credit card autofill.";
           log_actor_error("Actor is disabled for credit card autofill.");

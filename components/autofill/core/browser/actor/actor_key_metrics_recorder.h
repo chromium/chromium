@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_AUTOFILL_ACTOR_ACTOR_KEY_METRICS_RECORDER_H_
-#define CHROME_BROWSER_AUTOFILL_ACTOR_ACTOR_KEY_METRICS_RECORDER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_ACTOR_ACTOR_KEY_METRICS_RECORDER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_ACTOR_ACTOR_KEY_METRICS_RECORDER_H_
 
 #include <optional>
 
@@ -86,7 +86,7 @@ class ActorKeyMetricsRecorder : public AutofillManager::Observer {
   void RecordFillingAssistance(const FormStructure& form,
                                FillingProduct product);
   void RecordFillingCorrectness(const FormStructure& form,
-                              const ProductState& state,
+                                const ProductState& state,
                                 FillingProduct product);
   void RecordFillingReadiness(const FormStructure& form,
                               const ProductState& state,
@@ -118,4 +118,4 @@ class ActorKeyMetricsRecorder : public AutofillManager::Observer {
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_AUTOFILL_ACTOR_ACTOR_KEY_METRICS_RECORDER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_ACTOR_ACTOR_KEY_METRICS_RECORDER_H_

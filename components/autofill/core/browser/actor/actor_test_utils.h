@@ -2,37 +2,39 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_AUTOFILL_ACTOR_ACTOR_TEST_UTILS_H_
-#define CHROME_BROWSER_AUTOFILL_ACTOR_ACTOR_TEST_UTILS_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_ACTOR_ACTOR_TEST_UTILS_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_ACTOR_ACTOR_TEST_UTILS_H_
 
 #include <string>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/task_environment.h"
 #include "base/types/expected.h"
-#include "chrome/browser/autofill/actor/actor_form_filling_service_impl.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/actor/core/aggregated_journal.h"
-#include "components/autofill/content/browser/test_autofill_client_injector.h"
-#include "components/autofill/content/browser/test_autofill_driver_injector.h"
-#include "components/autofill/content/browser/test_content_autofill_client.h"
-#include "components/autofill/content/browser/test_content_autofill_driver.h"
+#include "components/autofill/core/browser/actor/actor_form_filling_service_impl.h"
+#include "components/autofill/core/browser/actor/actor_key_metrics_recorder.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
-#include "components/tabs/public/mock_tab_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
 
-class TestActorContentAutofillDriver : public TestContentAutofillDriver {
+// A test Autofill driver subclass that supports mock expectations on form
+// actions. Used for verifying renderer-side fill actions triggered by the
+// Autofill Actor service.
+class TestActorAutofillDriver : public TestAutofillDriver {
  public:
-  TestActorContentAutofillDriver(content::RenderFrameHost* rfh,
-                                 ContentAutofillDriverFactory* factory);
-  ~TestActorContentAutofillDriver() override;
+  explicit TestActorAutofillDriver(TestAutofillClient* client);
+  ~TestActorAutofillDriver() override;
 
   MOCK_METHOD(void, RendererShouldClearPreviewedForm, (), (override));
   MOCK_METHOD(void, ScrollFieldIntoView, (FieldGlobalId), (override));
@@ -61,6 +63,8 @@ class TestActorContentAutofillDriver : public TestContentAutofillDriver {
       const Section& section_for_clear_form_on_ios);
 };
 
+// A test credit card access manager that allows tests to intercept and
+// manually complete credit card fetching operations.
 class TestCreditCardAccessManager : public CreditCardAccessManager {
  public:
   explicit TestCreditCardAccessManager(BrowserAutofillManager* manager);
@@ -77,6 +81,9 @@ class TestCreditCardAccessManager : public CreditCardAccessManager {
   OnCreditCardFetchedCallback callback_;
 };
 
+// A test BrowserAutofillManager subclass that instantiates and manages the
+// TestCreditCardAccessManager, and tracks the last field ID that triggered form
+// filling or preview.
 class TestBrowserAutofillManagerWithTestCCAM
     : public TestBrowserAutofillManager {
  public:
@@ -99,14 +106,14 @@ class TestBrowserAutofillManagerWithTestCCAM
   FieldGlobalId last_trigger_field_id_;
 };
 
-class TestActorChromeAutofillClient : public TestContentAutofillClient {
+// A test Autofill client subclass that manages the ActorKeyMetricsRecorder and
+// resolves the primary main frame's AutofillManager.
+class TestActorAutofillClient : public TestAutofillClient {
  public:
-  explicit TestActorChromeAutofillClient(content::WebContents* web_contents);
-  ~TestActorChromeAutofillClient() override;
+  TestActorAutofillClient();
+  ~TestActorAutofillClient() override;
 
-  std::unique_ptr<AutofillManager> CreateManager(
-      base::PassKey<ContentAutofillDriver> pass_key,
-      ContentAutofillDriver& driver) override;
+  AutofillManager* GetAutofillManagerForPrimaryMainFrame() override;
 
   ActorKeyMetricsRecorder* GetActorKeyMetricsRecorder() override;
 
@@ -114,12 +121,22 @@ class TestActorChromeAutofillClient : public TestContentAutofillClient {
   std::unique_ptr<ActorKeyMetricsRecorder> recorder_;
 };
 
-class ActorTestBase : public ChromeRenderViewHostTestHarness {
+// Base test fixture for core Autofill Actor component unit tests. Manages the
+// lifetime of core-only test Autofill client, driver, and manager instances
+// without content or Blink dependencies.
+class ActorTestBase : public testing::Test,
+                      public WithTestAutofillClientDriverManager<
+                          TestActorAutofillClient,
+                          TestActorAutofillDriver,
+                          TestBrowserAutofillManagerWithTestCCAM> {
  public:
   ActorTestBase();
   ~ActorTestBase() override;
 
   void SetUp() override;
+  void TearDown() override;
+
+  base::test::TaskEnvironment* task_environment() { return &task_environment_; }
 
   FormData SeeForm(test::FormDescription form_description);
 
@@ -129,22 +146,20 @@ class ActorTestBase : public ChromeRenderViewHostTestHarness {
   }
 
  protected:
-  TestActorChromeAutofillClient& client();
+  TestActorAutofillClient& client() { return autofill_client(); }
   TestCreditCardAccessManager& credit_card_access_manager();
   PaymentsDataManager& payments_data_manager();
-  TestActorContentAutofillDriver& driver();
-  TestBrowserAutofillManagerWithTestCCAM& manager();
+  TestActorAutofillDriver& driver() { return autofill_driver(); }
+  TestBrowserAutofillManagerWithTestCCAM& manager() {
+    return autofill_manager();
+  }
   ActorFormFillingServiceImpl& service() { return *service_; }
-  tabs::TabInterface& tab() { return mock_tab; }
   ::actor::AggregatedJournal& journal() { return journal_; }
 
  private:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
-  tabs::MockTabInterface mock_tab;
-  TestAutofillClientInjector<TestActorChromeAutofillClient>
-      autofill_client_injector_;
-  TestAutofillDriverInjector<TestActorContentAutofillDriver>
-      autofill_driver_injector_;
   ::actor::AggregatedJournal journal_;
   std::unique_ptr<ActorFormFillingServiceImpl> service_;
   absl::flat_hash_map<FieldGlobalId, std::u16string> last_filled_values_;
@@ -152,4 +167,4 @@ class ActorTestBase : public ChromeRenderViewHostTestHarness {
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_AUTOFILL_ACTOR_ACTOR_TEST_UTILS_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_ACTOR_ACTOR_TEST_UTILS_H_

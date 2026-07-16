@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_AUTOFILL_ACTOR_MOCK_ACTOR_FORM_FILLING_SERVICE_H_
-#define CHROME_BROWSER_AUTOFILL_ACTOR_MOCK_ACTOR_FORM_FILLING_SERVICE_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_ACTOR_MOCK_ACTOR_FORM_FILLING_SERVICE_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_ACTOR_MOCK_ACTOR_FORM_FILLING_SERVICE_H_
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
-#include "chrome/browser/autofill/actor/actor_form_filling_service.h"
+#include "components/autofill/core/browser/actor/actor_form_filling_service.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -51,4 +51,4 @@ class MockActorFormFillingService : public ActorFormFillingService {
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_AUTOFILL_ACTOR_MOCK_ACTOR_FORM_FILLING_SERVICE_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_ACTOR_MOCK_ACTOR_FORM_FILLING_SERVICE_H_

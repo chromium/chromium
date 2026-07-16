@@ -23,7 +23,6 @@
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
-#include "chrome/browser/autofill/actor/mock_actor_form_filling_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/chrome_features.h"
@@ -31,6 +30,8 @@
 #include "components/actor/core/actor_switches.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/core/browser/actor/mock_actor_form_filling_service.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "content/public/test/browser_test.h"
@@ -281,7 +282,7 @@ class AttemptFormFillingToolTest : public ActorToolsTest {
  private:
   autofill::MockActorFormFillingService mock_form_filling_service_;
   base::test::ScopedFeatureList scoped_feature_list_{
-      features::kGlicActorAutofill};
+      autofill::features::kGlicActorAutofill};
   ScopedExecutionEngineFactory mock_execution_engine_factory_{
       base::BindRepeating(AttemptFormFillingToolTest::CreateExecutionEngine)};
   base::WeakPtrFactory<AttemptFormFillingToolTest> weak_ptr_factory_{this};

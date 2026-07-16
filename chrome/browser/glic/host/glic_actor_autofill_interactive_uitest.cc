@@ -6,6 +6,7 @@
 #include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
 #include "chrome/common/chrome_features.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "content/public/test/browser_test.h"
 
@@ -18,7 +19,8 @@ namespace apc = ::optimization_guide::proto;
 class GlicActorAutofillDisabledUiTest : public GlicActorUiTest {
  public:
   GlicActorAutofillDisabledUiTest() {
-    scoped_feature_list_.InitAndDisableFeature(features::kGlicActorAutofill);
+    scoped_feature_list_.InitAndDisableFeature(
+        autofill::features::kGlicActorAutofill);
   }
   ~GlicActorAutofillDisabledUiTest() override = default;
 

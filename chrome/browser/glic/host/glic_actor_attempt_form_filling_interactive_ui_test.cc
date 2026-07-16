@@ -14,13 +14,14 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
-#include "chrome/browser/autofill/actor/mock_actor_form_filling_service.h"
 #include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/common/chrome_features.h"
 #include "components/actor/core/actor_features.h"
+#include "components/autofill/core/browser/actor/mock_actor_form_filling_service.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/tabs/public/tab_interface.h"
@@ -184,7 +185,7 @@ class GlicActorAttemptFormFillingUiTest : public GlicActorUiTest {
  public:
   GlicActorAttemptFormFillingUiTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kGlicActorAutofill,
+        {autofill::features::kGlicActorAutofill,
          features::kGlicActorAutofillSectionLabel},
         {});
   }

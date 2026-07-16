@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_AUTOFILL_ACTOR_ACTOR_FORM_SECTION_SPLITTER_H_
-#define CHROME_BROWSER_AUTOFILL_ACTOR_ACTOR_FORM_SECTION_SPLITTER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_ACTOR_ACTOR_FORM_SECTION_SPLITTER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_ACTOR_ACTOR_FORM_SECTION_SPLITTER_H_
 
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
@@ -92,10 +92,9 @@ enum class ShouldSplitOutContactInfoResult {
 // Splitting occurs if the form contains a phone number or email field that
 // comes before any address-related field. The occurrence and position of name
 // fields does not matter here.
-bool ShouldSplitOutContactInfo(
-    base::span<const FieldGlobalId> trigger_fields,
-    const AutofillManager& autofill_manager,
-    LogManager* log_manager);
+bool ShouldSplitOutContactInfo(base::span<const FieldGlobalId> trigger_fields,
+                               const AutofillManager& autofill_manager,
+                               LogManager* log_manager);
 
 // Metrics enum for tracking the outcome of
 // RetargetTriggerFieldForSplittingIfNeeded. These values are persisted to logs.
@@ -134,4 +133,4 @@ base::flat_set<FieldGlobalId> GetBlockedFieldsForSplit(
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_AUTOFILL_ACTOR_ACTOR_FORM_SECTION_SPLITTER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_ACTOR_ACTOR_FORM_SECTION_SPLITTER_H_

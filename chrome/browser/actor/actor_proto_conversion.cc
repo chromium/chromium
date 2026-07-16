@@ -56,6 +56,7 @@
 #include "components/actor/core/journal_details_builder.h"
 #include "components/actor/core/shared_types.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -568,7 +569,7 @@ std::unique_ptr<ToolRequest> CreateAttemptLoginRequest(
 
 std::unique_ptr<ToolRequest> CreateAttemptFormFillingRequest(
     const AttemptFormFillingAction& action) {
-  if (!base::FeatureList::IsEnabled(features::kGlicActorAutofill)) {
+  if (!base::FeatureList::IsEnabled(autofill::features::kGlicActorAutofill)) {
     return nullptr;
   }
 

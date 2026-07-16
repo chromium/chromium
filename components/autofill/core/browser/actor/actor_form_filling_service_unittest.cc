@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/autofill/actor/actor_form_filling_service.h"
+#include "components/autofill/core/browser/actor/actor_form_filling_service.h"
 
 #include <string_view>
 #include <vector>
@@ -15,11 +15,12 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
-#include "chrome/browser/autofill/actor/actor_filling_observer.h"
-#include "chrome/browser/autofill/actor/actor_form_filling_service_impl.h"
-#include "chrome/browser/autofill/actor/actor_form_filling_service_impl_test_api.h"
-#include "chrome/browser/autofill/actor/actor_test_utils.h"
+#include "build/build_config.h"
 #include "components/actor/core/aggregated_journal.h"
+#include "components/autofill/core/browser/actor/actor_filling_observer.h"
+#include "components/autofill/core/browser/actor/actor_form_filling_service_impl.h"
+#include "components/autofill/core/browser/actor/actor_form_filling_service_impl_test_api.h"
+#include "components/autofill/core/browser/actor/actor_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
@@ -85,6 +86,7 @@ gfx::Image CreateTestImage(int width, int height) {
                Optional(Property(&gfx::Image::IsEmpty, false)));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 [[nodiscard]] Matcher<ActorSuggestion> ActorSuggestionIconEquals(
     gfx::Image expected_image) {
   return Field(&ActorSuggestion::icon,
@@ -93,6 +95,7 @@ gfx::Image CreateTestImage(int width, int height) {
                                                    actual_image.AsBitmap());
                })));
 }
+#endif
 
 [[nodiscard]] Matcher<ActorFormFillingRequest> IsActorFormFillingRequest(
     ActorFormFillingRequest::RequestedData requested_data) {
@@ -277,7 +280,7 @@ TEST_F(ActorFormFillingServiceTest, SimpleAddressForm) {
 // request.
 TEST_F(ActorFormFillingServiceTest, SpecificOriginAddressForm) {
   const GURL url("https://example.test");
-  NavigateAndCommit(url);
+  client().set_last_committed_primary_main_frame_url(url);
 
   FormData form = SeeForm({.fields = {{.server_type = NAME_FULL},
                                       {.server_type = ADDRESS_HOME_LINE1}}});
@@ -731,11 +734,20 @@ TEST_F(ActorFormFillingServiceTest, CreditCardFormWithCardArtIcon) {
       client(), {CreditCardFillRequest({form.fields()[0].global_id()})},
       future.GetCallback());
 
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, card art is not fetched as a gfx::Image in C++. Instead, the
+  // suggestion receives a fallback network icon (Visa).
+  EXPECT_THAT(
+      future.Get(),
+      ValueIs(ElementsAre(Field(&ActorFormFillingRequest::suggestions,
+                                Each(ActorSuggestionHasNonEmptyIcon())))));
+#else
   // Verify that the suggestion's icon matches the test image pixel by pixel.
   EXPECT_THAT(future.Get(),
               ValueIs(ElementsAre(Field(
                   &ActorFormFillingRequest::suggestions,
                   Each(ActorSuggestionIconEquals(std::move(test_image)))))));
+#endif
 }
 
 // Tests that filling a credit card after fetching it from the server works.

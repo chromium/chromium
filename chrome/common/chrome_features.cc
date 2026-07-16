@@ -1022,35 +1022,17 @@ const base::FeatureParam<int> kGlicCompositeViewHeight{
 
 BASE_FEATURE(kGlicArchiveConversation, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGlicActorAutofill, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// The amount of time to wait for a fill to happen if no credit card fetch is
-// ongoing.
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kGlicActorAutofillFillingTimeout,
-                   &kGlicActorAutofill,
-                   "glic-actor-autofill-filling-timeout",
-                   base::Seconds(2));
-
-// The maximum amount of time to wait for a fill to happen (including credit
-// card fetches)
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kGlicActorAutofillMaximumTimeout,
-                   &kGlicActorAutofill,
-                   "glic-actor-autofill-maximum-timeout",
-                   base::Minutes(1));
-
 // Whether to enable OneTimePassword filling in Glic.
 // TODO(b/500683394): Clean up after launch.
 BASE_FEATURE(kGlicActorAutofillOneTimePassword,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Whether to click a field before filling it in Glic actor autofill.
-// This feature is also gated by |kGlicActorAutofill|.
+// This feature is also gated by |autofill::features::kGlicActorAutofill|.
 BASE_FEATURE(kGlicActorAutofillPreClick, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Whether to enable the section label in Glic actor autofill.
-// This feature is also gated by |kGlicActorAutofill|.
+// This feature is also gated by |autofill::features::kGlicActorAutofill|.
 BASE_FEATURE(kGlicActorAutofillSectionLabel, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicGuestUrlPresets, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1061,11 +1043,6 @@ BASE_FEATURE(kGlicContextualCueBubble, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicClientZoomControl, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kActorFormFillingServiceEnableAddress,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kActorFormFillingServiceEnableCreditCard,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the `google-chrome://` URI scheme.
 BASE_FEATURE(kGoogleChromeScheme, base::FEATURE_DISABLED_BY_DEFAULT);

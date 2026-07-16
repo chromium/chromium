@@ -27,6 +27,11 @@ namespace autofill::features {
 // All features in alphabetical order.
 
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kActorFormFillingServiceEnableAddress);
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kActorFormFillingServiceEnableCreditCard);
+
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAcceptDomMutationAfterAutofillSubmission);
 COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillAcrossIframesIos);
 COMPONENT_EXPORT(AUTOFILL)
@@ -346,6 +351,12 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillUseStructuralSignatureInsteadOfSecondary);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kFieldClassificationModelCaching);
+COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kGlicActorAutofill);
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kGlicActorAutofillFillingTimeout);
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kGlicActorAutofillMaximumTimeout);
+
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kManageContactInfoPerceptionSurvey);
 COMPONENT_EXPORT(AUTOFILL)

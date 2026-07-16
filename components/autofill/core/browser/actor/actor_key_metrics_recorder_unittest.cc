@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/autofill/actor/actor_key_metrics_recorder.h"
+#include "components/autofill/core/browser/actor/actor_key_metrics_recorder.h"
 
 #include <vector>
 
@@ -12,9 +12,9 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
-#include "chrome/browser/autofill/actor/actor_form_filling_service.h"
-#include "chrome/browser/autofill/actor/actor_form_filling_service_impl.h"
-#include "chrome/browser/autofill/actor/actor_test_utils.h"
+#include "components/autofill/core/browser/actor/actor_form_filling_service.h"
+#include "components/autofill/core/browser/actor/actor_form_filling_service_impl.h"
+#include "components/autofill/core/browser/actor/actor_test_utils.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"

@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/autofill/actor/actor_form_section_splitter.h"
+#include "components/autofill/core/browser/actor/actor_form_section_splitter.h"
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/autofill/content/browser/test_autofill_client_injector.h"
-#include "components/autofill/content/browser/test_autofill_driver_injector.h"
-#include "components/autofill/content/browser/test_autofill_manager_injector.h"
-#include "components/autofill/content/browser/test_content_autofill_client.h"
-#include "components/autofill/content/browser/test_content_autofill_driver.h"
+#include "base/test/task_environment.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -27,14 +25,18 @@ namespace {
 using ::testing::IsEmpty;
 using ::testing::UnorderedElementsAre;
 
-class ActorFormSectionSplitterTest : public ChromeRenderViewHostTestHarness {
+class ActorFormSectionSplitterTest
+    : public testing::Test,
+      public WithTestAutofillClientDriverManager<> {
  public:
   ActorFormSectionSplitterTest() = default;
 
   void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
-    NavigateAndCommit(GURL("about:blank"));
+    InitAutofillClient();
+    CreateAutofillDriver();
   }
+
+  void TearDown() override { DestroyAutofillClient(); }
 
   FormData SeeForm(test::FormDescription form_description) {
     FormData form = test::GetFormData(form_description);
@@ -44,24 +46,15 @@ class ActorFormSectionSplitterTest : public ChromeRenderViewHostTestHarness {
   }
 
  protected:
-  TestContentAutofillClient& client() {
-    return *autofill_client_injector_[web_contents()];
-  }
-  TestBrowserAutofillManager& manager() {
-    return *autofill_manager_injector_[web_contents()];
-  }
+  TestAutofillClient& client() { return autofill_client(); }
+  TestBrowserAutofillManager& manager() { return autofill_manager(); }
   LogManager* log_manager() { return client().GetCurrentLogManager(); }
 
   base::test::ScopedFeatureList feature_list_;
 
  private:
+  base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
-  TestAutofillClientInjector<TestContentAutofillClient>
-      autofill_client_injector_;
-  TestAutofillDriverInjector<TestContentAutofillDriver>
-      autofill_driver_injector_;
-  TestAutofillManagerInjector<TestBrowserAutofillManager>
-      autofill_manager_injector_;
 };
 
 // Tests that ShouldSplitOutContactInfo returns false on a splittable case if

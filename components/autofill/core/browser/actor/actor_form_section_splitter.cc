@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/autofill/actor/actor_form_section_splitter.h"
+#include "components/autofill/core/browser/actor/actor_form_section_splitter.h"
 
 #include <memory>
 #include <vector>
@@ -215,10 +215,9 @@ SplitFormSectionFieldsResult SplitFormSectionFields(
 
 }  // namespace
 
-bool ShouldSplitOutContactInfo(
-    base::span<const FieldGlobalId> trigger_fields,
-    const AutofillManager& autofill_manager,
-    LogManager* log_manager) {
+bool ShouldSplitOutContactInfo(base::span<const FieldGlobalId> trigger_fields,
+                               const AutofillManager& autofill_manager,
+                               LogManager* log_manager) {
   // TODO(crbug.com/491031514): Consider moving metric record to
   // ActorFormFillingServiceImpl, in order to ensure it is only recorded once
   // per FormFillingRequest.

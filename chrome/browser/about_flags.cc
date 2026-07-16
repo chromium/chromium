@@ -10749,7 +10749,7 @@ const FeatureEntry kFeatureEntries[] = {
          features::kGlicExperimentalTriggeringSuppressDoneNotification)},
     {"glic-actor-autofill", flag_descriptions::kGlicActorAutofillName,
      flag_descriptions::kGlicActorAutofillDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kGlicActorAutofill)},
+     FEATURE_VALUE_TYPE(autofill::features::kGlicActorAutofill)},
     {"glic-actor-autofill-section-label",
      flag_descriptions::kGlicActorAutofillSectionLabelName,
      flag_descriptions::kGlicActorAutofillSectionLabelDescription, kOsDesktop,

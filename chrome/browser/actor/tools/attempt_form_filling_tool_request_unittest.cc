@@ -15,6 +15,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/actor/core/shared_types.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/tabs/public/tab_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -40,7 +41,7 @@ class AttemptFormFillingToolRequestTest
  public:
   AttemptFormFillingToolRequestTest() {
     feature_list_.InitWithFeatureStates({
-        {features::kGlicActorAutofill, true},
+        {autofill::features::kGlicActorAutofill, true},
         {features::kGlicActorAutofillSectionLabel,
          GetParam().is_section_label_enabled},
     });

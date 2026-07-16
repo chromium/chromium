@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/autofill/actor/actor_key_metrics_recorder.h"
+#include "components/autofill/core/browser/actor/actor_key_metrics_recorder.h"
 
 #include <string>
 #include <string_view>
@@ -30,8 +30,7 @@ bool IsFieldOfProduct(const AutofillField& field, FillingProduct product) {
   return filling_products.contains(product);
 }
 
-} // namespace
-
+}  // namespace
 
 ActorKeyMetricsRecorder::ProductState::ProductState() = default;
 ActorKeyMetricsRecorder::ProductState::ProductState(ProductState&&) = default;
@@ -148,19 +147,17 @@ void ActorKeyMetricsRecorder::RecordKeyMetrics(AutofillManager& manager,
   RecordEditedAutofilledFieldAtSubmission(form);
 }
 
-void ActorKeyMetricsRecorder::RecordFillingAssistance(
-    const FormStructure& form,
-    FillingProduct product) {
+void ActorKeyMetricsRecorder::RecordFillingAssistance(const FormStructure& form,
+                                                      FillingProduct product) {
   base::UmaHistogramBoolean(
       base::StrCat({"Autofill.Actor.KeyMetrics.FillingAssistance.",
                     FillingProductToString(product)}),
       HasFilledFieldOfProduct(form, product));
 }
 
-void ActorKeyMetricsRecorder::RecordFillingReadiness(
-    const FormStructure& form,
-    const ProductState& state,
-    FillingProduct product) {
+void ActorKeyMetricsRecorder::RecordFillingReadiness(const FormStructure& form,
+                                                     const ProductState& state,
+                                                     FillingProduct product) {
   base::UmaHistogramBoolean(
       base::StrCat({"Autofill.Actor.KeyMetrics.FillingReadiness.",
                     FillingProductToString(product)}),
@@ -215,10 +212,9 @@ void ActorKeyMetricsRecorder::RecordPerfectFillingMetric(
         return !field->all_modifiers().empty();
       });
 
-  base::UmaHistogramBoolean(
-      base::StrCat(
-          {"Autofill.Actor.PerfectFilling.", FillingProductToString(product)}),
-      perfect_filling);
+  base::UmaHistogramBoolean(base::StrCat({"Autofill.Actor.PerfectFilling.",
+                                          FillingProductToString(product)}),
+                            perfect_filling);
 }
 
 void ActorKeyMetricsRecorder::RecordEditedAutofilledFieldAtSubmission(
@@ -244,7 +240,8 @@ bool ActorKeyMetricsRecorder::HasFilledFieldOfProduct(
     const FormStructure& form,
     FillingProduct product) const {
   return std::ranges::any_of(
-      form, [this, &form, product](const std::unique_ptr<AutofillField>& field) {
+      form,
+      [this, &form, product](const std::unique_ptr<AutofillField>& field) {
         return IsFieldOfProduct(*field, product) &&
                WasFieldFilledByActor(form, field->global_id(), product);
       });

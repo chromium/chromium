@@ -505,11 +505,11 @@ source_set("browser_tests") {
     ]
     deps += [
       "//chrome/browser/autofill",
-      "//chrome/browser/autofill/actor:test_support",
       "//chrome/browser/download:test_support",
       "//chrome/browser/glic",
       "//chrome/browser/ui/views:file_system_access_test_support",
       "//components/autofill/core/browser:test_support",
+      "//components/autofill/core/browser/actor:test_support",
     ]
   }
 }

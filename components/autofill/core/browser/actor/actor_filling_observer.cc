@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/autofill/actor/actor_filling_observer.h"
+#include "components/autofill/core/browser/actor/actor_filling_observer.h"
 
 #include <optional>
 #include <utility>
@@ -12,11 +12,11 @@
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
-#include "chrome/common/chrome_features.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
@@ -35,12 +35,12 @@ ActorFillingObserver::~ActorFillingObserver() {
 
 // static
 base::TimeDelta ActorFillingObserver::GetFillingTimeout() {
-  return ::features::kGlicActorAutofillFillingTimeout.Get();
+  return autofill::features::kGlicActorAutofillFillingTimeout.Get();
 }
 
 // static
 base::TimeDelta ActorFillingObserver::GetMaximumTimeout() {
-  return ::features::kGlicActorAutofillMaximumTimeout.Get();
+  return autofill::features::kGlicActorAutofillMaximumTimeout.Get();
 }
 
 std::optional<bool> ActorFillingObserver::IsCreditCardFetchOngoing() const {

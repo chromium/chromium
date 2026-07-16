@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_AUTOFILL_ACTOR_ACTOR_FORM_FILLING_SERVICE_IMPL_H_
-#define CHROME_BROWSER_AUTOFILL_ACTOR_ACTOR_FORM_FILLING_SERVICE_IMPL_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_ACTOR_ACTOR_FORM_FILLING_SERVICE_IMPL_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_ACTOR_ACTOR_FORM_FILLING_SERVICE_IMPL_H_
 
 #include <stdint.h>
 
@@ -15,11 +15,11 @@
 #include "base/containers/span.h"
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/autofill/actor/actor_filling_observer.h"
-#include "chrome/browser/autofill/actor/actor_form_filling_service.h"
-#include "chrome/browser/autofill/actor/actor_form_section_splitter.h"
-#include "chrome/browser/autofill/actor/actor_key_metrics_recorder.h"
 #include "components/actor/core/task_id.h"
+#include "components/autofill/core/browser/actor/actor_filling_observer.h"
+#include "components/autofill/core/browser/actor/actor_form_filling_service.h"
+#include "components/autofill/core/browser/actor/actor_form_section_splitter.h"
+#include "components/autofill/core/browser/actor/actor_key_metrics_recorder.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 class GURL;
@@ -142,4 +142,4 @@ class ActorFormFillingServiceImpl : public ActorFormFillingService {
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_AUTOFILL_ACTOR_ACTOR_FORM_FILLING_SERVICE_IMPL_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_ACTOR_ACTOR_FORM_FILLING_SERVICE_IMPL_H_
