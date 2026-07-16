@@ -9,6 +9,7 @@ group("chromium_providers") {
     "//ios/chrome/browser/providers/additional_features:chromium_additional_features",
     "//ios/chrome/browser/providers/app_distribution:chromium_app_distribution",
     "//ios/chrome/browser/providers/app_store_bundle:chromium_app_store_bundle",
+    "//ios/chrome/browser/providers/app_switcher:chromium_app_switcher",
     "//ios/chrome/browser/providers/app_utils:chromium_app_utils",
     "//ios/chrome/browser/providers/application_mode_fetcher:chromium_application_mode_fetcher",
     "//ios/chrome/browser/providers/backend_promo:chromium_backend_promo",
