@@ -5,9 +5,8 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<!-- LINT.IfChange -->
-<layer-list
-    xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="?attr/popupBg"/>
-</layer-list>
-<!-- LINT.ThenChange(//components/browser_ui/widget/android/java/res/values/dimens.xml) -->
+<nine-patch
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:src="?attr/popupBg"
+    android:tint="@macro/menu_bg_color"
+    android:tintMode="multiply" />
