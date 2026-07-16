@@ -346,10 +346,8 @@ void NavigationApi::SetEntriesForRestore(
   // Avoid a dangling navigate event when restoring.
   // This prevents the successful cross-document navigation that exited this
   // page from remaining as an ongoing event that would be "aborted".
-  if (RuntimeEnabledFeatures::NavigateEventClearOnRestoreEnabled()) {
-    ongoing_navigate_event_ = nullptr;
-    ongoing_api_method_tracker_ = nullptr;
-  }
+  ongoing_navigate_event_ = nullptr;
+  ongoing_api_method_tracker_ = nullptr;
 
   HeapVector<Member<NavigationHistoryEntry>> new_entries;
   new_entries.reserve(

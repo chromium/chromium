@@ -4198,14 +4198,6 @@
       status: "stable",
     },
     {
-      name: "NavigateEventAddHandlerOnPrecommit",
-      status: "stable",
-    },
-    {
-      name: "NavigateEventClearOnRestore",
-      status: "stable",
-    },
-    {
       name: "NavigateEventDeferCrossDocumentCommit",
       status: "experimental",
     },

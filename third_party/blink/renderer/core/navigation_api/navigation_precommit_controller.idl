@@ -6,5 +6,5 @@
 [Exposed=Window]
 interface NavigationPrecommitController {
   [RaisesException] undefined redirect(USVString url, optional NavigationNavigateOptions options = {});
-  [RaisesException, RuntimeEnabled=NavigateEventAddHandlerOnPrecommit] undefined addHandler(NavigationInterceptHandler handler);
+  [RaisesException] undefined addHandler(NavigationInterceptHandler handler);
 };
