@@ -12,6 +12,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -220,15 +221,34 @@ void ModuleWatcher::EnumerateAlreadyLoadedModules(
     return;
   }
 
-  // Walk the module list.
+  // Walk the module list, collecting events to dispatch in a single task
+  // instead of posting one task per module.
+  // A typical process has on the order of a couple hundred loaded modules at
+  // startup; this is used to reserve capacity up front and avoid repeated
+  // reallocation as events are collected below. It is only an estimate, not a
+  // hard limit, so a larger real count is still handled correctly.
+  constexpr size_t kEstimatedModuleCount = 256;
+  std::vector<ModuleEvent> events;
+  events.reserve(kEstimatedModuleCount);
   MODULEENTRY32 module = {sizeof(module)};
   for (BOOL result = ::Module32First(snap.get(), &module); result != FALSE;
        result = ::Module32Next(snap.get(), &module)) {
-    ModuleEvent event(ModuleEventType::kModuleAlreadyLoaded,
-                      base::FilePath(module.szExePath), module.modBaseAddr,
-                      module.modBaseSize);
-    task_runner->PostTask(FROM_HERE, base::BindOnce(callback, event));
+    events.emplace_back(ModuleEventType::kModuleAlreadyLoaded,
+                        base::FilePath(module.szExePath), module.modBaseAddr,
+                        module.modBaseSize);
   }
+  if (events.empty()) {
+    return;
+  }
+  task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](OnModuleEventCallback callback, std::vector<ModuleEvent> events) {
+            for (const auto& event : events) {
+              callback.Run(event);
+            }
+          },
+          std::move(callback), std::move(events)));
 }
 
 // static
