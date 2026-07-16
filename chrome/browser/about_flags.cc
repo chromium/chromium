@@ -3785,27 +3785,6 @@ const FeatureEntry::FeatureVariation kLensOverlayEduActionChipVariations[] = {
     {"force trigger all pages", kLensOverlayEduActionChipAllPages, nullptr},
 };
 
-const FeatureEntry::FeatureParam kLensOverlayEntrypointLabelAlt1[] = {
-    {"id", "1"},
-};
-
-const FeatureEntry::FeatureParam kLensOverlayEntrypointLabelAlt2[] = {
-    {"id", "2"},
-};
-
-const FeatureEntry::FeatureParam kLensOverlayEntrypointLabelAlt3[] = {
-    {"id", "3"},
-};
-
-const FeatureEntry::FeatureVariation
-    kLensOverlayEntrypointLabelAltVariations[] = {
-        {"Ask Google about this page", kLensOverlayEntrypointLabelAlt1,
-         nullptr},
-        {"Ask Google Lens about this page", kLensOverlayEntrypointLabelAlt2,
-         nullptr},
-        {"Search this page with Google Lens", kLensOverlayEntrypointLabelAlt3,
-         nullptr},
-};
 
 const FeatureEntry::FeatureParam kEnableNtpBrowserPromosVariationSimple[] = {
     {"promo-type", "simple"}};
@@ -11705,13 +11684,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kLensOverlayEduActionChipVariations,
                                     "LensOverlayEduActionChip")},
 
-    {"enable-lens-overlay-entrypoint-label-alt",
-     flag_descriptions::kLensOverlayEntrypointLabelAltName,
-     flag_descriptions::kLensOverlayEntrypointLabelAltDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         lens::features::kLensOverlayEntrypointLabelAlt,
-         kLensOverlayEntrypointLabelAltVariations,
-         "LensOverlayEntrypointLabelAltVariations")},
 #endif
 
     {"safety-hub-disruptive-notification-revocation",

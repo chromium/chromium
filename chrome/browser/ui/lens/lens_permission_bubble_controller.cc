@@ -178,9 +178,8 @@ LensPermissionBubbleController::CreateLensPermissionDialogModel(
 
   return ui::DialogModel::Builder()
       .SetInternalName(kLensPermissionDialogName)
-      .SetTitle(
-          l10n_util::GetStringUTF16(lens::GetLensOverlayEntrypointLabelAltIds(
-              IDS_LENS_PERMISSION_BUBBLE_DIALOG_TITLE)))
+      .SetTitle(l10n_util::GetStringUTF16(
+          lens::GetLensOverlayEntrypointLabelAltIds()))
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       .SetIcon(ui::ImageModel::FromImageSkia(
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(

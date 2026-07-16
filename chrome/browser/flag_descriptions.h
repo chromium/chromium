@@ -3040,10 +3040,6 @@ inline constexpr char kLensOverlayEduActionChipDescription[] =
     "Enables Lens Overlay EDU action chip. Intended for testing the chip "
     "itself, not its triggering criteria.";
 
-inline constexpr char kLensOverlayEntrypointLabelAltName[] =
-    "Lens overlay entrypoint label";
-inline constexpr char kLensOverlayEntrypointLabelAltDescription[] =
-    "Replaces the string used for the Lens overlay entrypoint label.";
 
 inline constexpr char kLensOverlayForceEmptyCsbQueryName[] =
     "Lens overlay force empty CSB query";

@@ -2254,9 +2254,7 @@ void RenderViewContextMenu::AppendSearchWebForImageItems() {
       return;
     }
     menu_model_.AddItemWithStringIdAndIcon(
-        search_for_image_idc,
-        lens::GetLensOverlayImageEntrypointLabelAltIds(
-            IDS_CONTENT_CONTEXT_LENS_OVERLAY),
+        search_for_image_idc, IDS_LENS_OVERLAY_IMAGE_ENTRYPOINT_LABEL_ALT3,
         icon);
   } else {
     menu_model_.AddItemWithIcon(
@@ -2388,9 +2386,7 @@ void RenderViewContextMenu::AppendVideoItems() {
       if (entry_point_controller->AreVisible()) {
         target_model->AddItemWithStringIdAndIcon(
             search_for_video_frame_idc,
-            lens::GetLensOverlayVideoEntrypointLabelAltIds(
-                IDS_CONTENT_CONTEXT_LENS_OVERLAY),
-            icon);
+            IDS_LENS_OVERLAY_VIDEO_ENTRYPOINT_LABEL_ALT3, icon);
         item_added = true;
       }
     } else {
@@ -3170,9 +3166,7 @@ void RenderViewContextMenu::AppendRegionSearchItem() {
     }
     menu_model_.AddItemWithStringIdAndIcon(
         IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH,
-        lens::GetLensOverlayEntrypointLabelAltIds(
-            IDS_CONTENT_CONTEXT_LENS_OVERLAY),
-        icon);
+        lens::GetLensOverlayEntrypointLabelAltIds(), icon);
     const int command_index =
         menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH)
             .value();

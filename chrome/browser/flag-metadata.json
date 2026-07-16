@@ -3877,11 +3877,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "enable-lens-overlay-entrypoint-label-alt",
-    "owners": [ "nguyenbryan@google.com", "lens-chrome@google.com" ],
-    "expiry_milestone": 145
-  },
-  {
     "name": "enable-lens-overlay-force-empty-csb-query",
     "owners": [ "nguyenbryan@google.com", "lens-chrome@google.com" ],
     "expiry_milestone": 160

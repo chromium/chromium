@@ -2341,7 +2341,7 @@ void AppMenuModel::Build() {
 #endif
     AddItemWithStringIdAndVectorIcon(
         this, IDC_CONTENT_CONTEXT_LENS_OVERLAY,
-        lens::GetLensOverlayEntrypointLabelAltIds(IDS_SHOW_LENS_OVERLAY), icon);
+        lens::GetLensOverlayEntrypointLabelAltIds(), icon);
     const int lens_command_index =
         GetIndexOfCommandId(IDC_CONTENT_CONTEXT_LENS_OVERLAY).value();
     SetElementIdentifierAt(lens_command_index, kShowLensOverlay);

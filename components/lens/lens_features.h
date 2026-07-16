@@ -134,10 +134,6 @@ BASE_DECLARE_FEATURE(kLensSearchAimM3UseAimEligibility);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensSearchReinvocationAffordance);
 
-// Enables overriding the Lens overlay entrypoint label with an alternate
-// string.
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kLensOverlayEntrypointLabelAlt);
 
 // Enables making the text selection context menu option a Lens overlay
 // entrypoint.
@@ -290,10 +286,6 @@ extern const base::FeatureParam<bool> kLensOverlayEnableOpenInNewTab;
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<bool> kLensOverlayEduActionChipDisabledByGlic;
 
-// Value representing the string to use to override the Lens overlay entrypoint
-// label.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern const base::FeatureParam<int> kLensOverlayEntrypointLabelAltId;
 
 // Whether the Lens overlay text selection context menu entrypoint should
 // issue contextual queries. If false, contextualization will be suppressed for
