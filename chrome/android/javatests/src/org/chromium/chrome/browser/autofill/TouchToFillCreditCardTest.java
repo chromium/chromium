@@ -35,8 +35,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.PasswordManagerTestUtilsBridge;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -59,8 +59,8 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
 public class TouchToFillCreditCardTest {
     @Rule
-    public FreshCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
@@ -100,7 +100,7 @@ public class TouchToFillCreditCardTest {
         EmbeddedTestServerRule embeddedTestServerRule =
                 mActivityTestRule.getEmbeddedTestServerRule();
         embeddedTestServerRule.setServerUsesHttps(true);
-        mActivityTestRule.startOnTestServerUrl(FORM_URL);
+        mActivityTestRule.startOnWebPage(embeddedTestServerRule.getServer().getURL(FORM_URL));
         PasswordManagerTestUtilsBridge.disableServerPredictions();
         new AutofillTestHelper().setCreditCard(VISA);
 
