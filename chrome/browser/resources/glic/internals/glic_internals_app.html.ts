@@ -223,6 +223,11 @@ export function getHtml(this: GlicInternalsAppElement) {
                   @change="${this.onInvokeWaitForPanelOpenChange_}">
               Wait for Panel Open
             </label>
+            <label style="flex: 1;">
+              <input type="checkbox" .checked="${this.invokeFocusOnShow_}"
+                  @change="${this.onInvokeFocusOnShowChange_}">
+              Focus Panel on Show
+            </label>
           </div>
           <div style="display: flex; gap: 16px; align-items: center;">
             ${this.invokeAutoSubmit_ ? html`

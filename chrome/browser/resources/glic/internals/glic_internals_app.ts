@@ -38,6 +38,7 @@ export class GlicInternalsAppElement extends CrLitElement {
       invokeFeatureMode_: {type: Number},
       invokeInvocationSource_: {type: Number},
       invokeWaitForPanelOpen_: {type: Boolean},
+      invokeFocusOnShow_: {type: Boolean},
       invokeLogs_: {type: Array},
       invokeSurfaceType_: {type: String},
       invokeZssOverride_: {type: Boolean},
@@ -66,6 +67,7 @@ export class GlicInternalsAppElement extends CrLitElement {
   protected accessor invokeInvocationSource_: InvocationSource =
       InvocationSource.kOsButton;
   protected accessor invokeWaitForPanelOpen_: boolean = false;
+  protected accessor invokeFocusOnShow_: boolean = true;
   protected accessor invokeLogs_: string[] = [];
   protected accessor invokeSurfaceType_: string = 'default';
   protected accessor invokeZssOverride_: boolean = false;
@@ -294,6 +296,9 @@ export class GlicInternalsAppElement extends CrLitElement {
   protected onInvokeWaitForPanelOpenChange_(e: Event) {
     this.invokeWaitForPanelOpen_ = (e.target as HTMLInputElement).checked;
   }
+  protected onInvokeFocusOnShowChange_(e: Event) {
+    this.invokeFocusOnShow_ = (e.target as HTMLInputElement).checked;
+  }
 
   protected onInvokeConversationTypeChange_(e: Event) {
     this.invokeConversationType_ = (e.target as HTMLSelectElement).value;
@@ -380,6 +385,7 @@ export class GlicInternalsAppElement extends CrLitElement {
       autoSubmit: this.invokeAutoSubmit_,
       freOverride: this.invokeFreOverride_,
       waitForPanelOpen: this.invokeWaitForPanelOpen_,
+      focusOnShow: this.invokeFocusOnShow_,
       freCompletionWaitMode: this.invokeFreCompletionWaitMode_,
       surface: surface,
       actuationTarget: this.invokeActuationTarget_,
@@ -429,6 +435,9 @@ export class GlicInternalsAppElement extends CrLitElement {
         return undefined;
       }
       if (key === 'waitForPanelOpen' && value === false) {
+        return undefined;
+      }
+      if (key === 'focusOnShow' && value === true) {
         return undefined;
       }
 

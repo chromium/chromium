@@ -749,6 +749,9 @@ void GlicInternalsPageHandler::TriggerInvokeFromInternalsAction(
   options.timeout = mojo_options->timeout;
   options.fre_override = mojo_options->fre_override;
   options.wait_for_panel_open = mojo_options->wait_for_panel_open;
+  if (mojo_options->focus_on_show.has_value()) {
+    options.focus_on_show = mojo_options->focus_on_show.value();
+  }
   switch (mojo_options->fre_completion_wait_mode) {
     case mojom::FreCompletionWaitMode::kDefault:
       options.fre_completion_wait_mode = FreCompletionWaitMode::kDefault;
