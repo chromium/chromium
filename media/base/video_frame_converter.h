@@ -34,6 +34,15 @@ class MEDIA_EXPORT VideoFrameConverter {
   //   * PIXEL_FORMAT_I444A
   //   * PIXEL_FORMAT_NV12
   //   * PIXEL_FORMAT_NV12A
+  //   * PIXEL_FORMAT_YUV420P10
+  //   * PIXEL_FORMAT_YUV422P10
+  //   * PIXEL_FORMAT_YUV444P10
+  //   * PIXEL_FORMAT_YUV420P12
+  //   * PIXEL_FORMAT_YUV422P12
+  //   * PIXEL_FORMAT_YUV444P12
+  //   * PIXEL_FORMAT_YUV420AP10
+  //   * PIXEL_FORMAT_YUV422AP10
+  //   * PIXEL_FORMAT_YUV444AP10
   //
   // Output formats:
   //   * PIXEL_FORMAT_I420
@@ -74,6 +83,8 @@ class MEDIA_EXPORT VideoFrameConverter {
                                      VideoFrame& dest_frame);
   EncoderStatus ConvertAndScaleNV12x(const VideoFrame* src_frame,
                                      VideoFrame& dest_frame);
+  EncoderStatus ConvertAndScaleHBD(const VideoFrame* src_frame,
+                                   VideoFrame& dest_frame);
 
   // NOTE: This class is currently thread safe without locking, take care when
   // adding any shared class state.

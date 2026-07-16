@@ -77,6 +77,17 @@ EncoderStatus VideoFrameConverter::ConvertAndScale(const VideoFrame& src_frame,
     case PIXEL_FORMAT_NV12A:
       return ConvertAndScaleNV12x(&src_frame, dest_frame);
 
+    case PIXEL_FORMAT_YUV420P10:
+    case PIXEL_FORMAT_YUV422P10:
+    case PIXEL_FORMAT_YUV444P10:
+    case PIXEL_FORMAT_YUV420P12:
+    case PIXEL_FORMAT_YUV422P12:
+    case PIXEL_FORMAT_YUV444P12:
+    case PIXEL_FORMAT_YUV420AP10:
+    case PIXEL_FORMAT_YUV422AP10:
+    case PIXEL_FORMAT_YUV444AP10:
+      return ConvertAndScaleHBD(&src_frame, dest_frame);
+
     default:
       return EncoderStatus(EncoderStatus::Codes::kUnsupportedFrameFormat)
           .WithData("src", src_frame.AsHumanReadableString())
@@ -326,6 +337,79 @@ EncoderStatus VideoFrameConverter::ConvertAndScaleNV12x(
           .WithData("src", src_frame->AsHumanReadableString())
           .WithData("dst", dest_frame.AsHumanReadableString());
   }
+}
+
+EncoderStatus VideoFrameConverter::ConvertAndScaleHBD(
+    const VideoFrame* src_frame,
+    VideoFrame& dest_frame) {
+  dest_frame.set_color_space(src_frame->ColorSpace());
+
+  VideoPixelFormat target_hbd_format = PIXEL_FORMAT_UNKNOWN;
+  bool is_12bit = src_frame->format() == PIXEL_FORMAT_YUV420P12 ||
+                  src_frame->format() == PIXEL_FORMAT_YUV422P12 ||
+                  src_frame->format() == PIXEL_FORMAT_YUV444P12;
+  bool has_alpha = !IsOpaque(src_frame->format());
+
+  // Map the 8-bit destination format to a matching 16-bit high bit depth layout
+  // (matching subsampling and alpha channel) for processing.
+  switch (dest_frame.format()) {
+    case PIXEL_FORMAT_I420:
+    case PIXEL_FORMAT_I420A:
+    case PIXEL_FORMAT_NV12:
+    case PIXEL_FORMAT_NV12A:
+      target_hbd_format = has_alpha ? PIXEL_FORMAT_YUV420AP10
+                                    : (is_12bit ? PIXEL_FORMAT_YUV420P12
+                                                : PIXEL_FORMAT_YUV420P10);
+      break;
+    case PIXEL_FORMAT_I422:
+    case PIXEL_FORMAT_I422A:
+      target_hbd_format = has_alpha ? PIXEL_FORMAT_YUV422AP10
+                                    : (is_12bit ? PIXEL_FORMAT_YUV422P12
+                                                : PIXEL_FORMAT_YUV422P10);
+      break;
+    case PIXEL_FORMAT_I444:
+    case PIXEL_FORMAT_I444A:
+      target_hbd_format = has_alpha ? PIXEL_FORMAT_YUV444AP10
+                                    : (is_12bit ? PIXEL_FORMAT_YUV444P12
+                                                : PIXEL_FORMAT_YUV444P10);
+      break;
+    default:
+      return EncoderStatus(EncoderStatus::Codes::kUnsupportedFrameFormat)
+          .WithData("src", src_frame->AsHumanReadableString())
+          .WithData("dst", dest_frame.AsHumanReadableString());
+  }
+
+  // Perform spatial scaling and chroma subsampling conversion in 16-bit space.
+  scoped_refptr<VideoFrame> scaled_hbd_frame;
+  if (src_frame->format() != target_hbd_format ||
+      src_frame->visible_rect().size() != dest_frame.visible_rect().size()) {
+    scaled_hbd_frame =
+        CreateTempFrame(target_hbd_format, dest_frame.coded_size(),
+                        dest_frame.visible_rect(), dest_frame.natural_size());
+    if (!scaled_hbd_frame) {
+      return EncoderStatus::Codes::kScalingError;
+    }
+    internals::I4xxxScale_16(*src_frame, *scaled_hbd_frame);
+    src_frame = scaled_hbd_frame.get();
+  }
+
+  // NV12/NV12A output requires down-converting to 8-bit first. We wrap
+  // `dest_frame` in an I420x frame so that Y and A planes are down-converted
+  // directly into `dest_frame`, avoiding extra allocations and copies.
+  if (dest_frame.format() == PIXEL_FORMAT_NV12 ||
+      dest_frame.format() == PIXEL_FORMAT_NV12A) {
+    auto tmp_frame = WrapNV12xFrameInI420xFrame(dest_frame);
+    if (!tmp_frame) {
+      return EncoderStatus::Codes::kScalingError;
+    }
+    internals::Convert16To8Plane(*src_frame, *tmp_frame);
+    internals::MergeUV(*tmp_frame, dest_frame);
+    return OkStatus();
+  }
+
+  // Down-convert each plane from 16-bit to matching 8-bit destination layout.
+  internals::Convert16To8Plane(*src_frame, dest_frame);
+  return OkStatus();
 }
 
 }  // namespace media

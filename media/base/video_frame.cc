@@ -197,16 +197,70 @@ static std::optional<VideoFrameLayout> GetDefaultLayout(
   std::vector<ColorPlaneLayout> planes;
 
   switch (format) {
-    case PIXEL_FORMAT_I420: {
+    case PIXEL_FORMAT_I420:
+    case PIXEL_FORMAT_I420A:
+    case PIXEL_FORMAT_YUV420P10:
+    case PIXEL_FORMAT_YUV420P12:
+    case PIXEL_FORMAT_YUV420AP10: {
+      int sample_bytes =
+          VideoFrame::BytesPerElement(format, VideoFrame::Plane::kY);
+      int y_stride = coded_size.width() * sample_bytes;
+      int y_size = y_stride * coded_size.height();
       int uv_width = (coded_size.width() + 1) / 2;
       int uv_height = (coded_size.height() + 1) / 2;
-      int uv_stride = uv_width;
+      int uv_stride = uv_width * sample_bytes;
       int uv_size = uv_stride * uv_height;
       planes = std::vector<ColorPlaneLayout>{
-          ColorPlaneLayout(coded_size.width(), 0, coded_size.GetArea()),
-          ColorPlaneLayout(uv_stride, coded_size.GetArea(), uv_size),
-          ColorPlaneLayout(uv_stride, coded_size.GetArea() + uv_size, uv_size),
+          ColorPlaneLayout(y_stride, 0, y_size),
+          ColorPlaneLayout(uv_stride, y_size, uv_size),
+          ColorPlaneLayout(uv_stride, y_size + uv_size, uv_size),
       };
+      if (format == PIXEL_FORMAT_I420A || format == PIXEL_FORMAT_YUV420AP10) {
+        planes.emplace_back(y_stride, y_size + uv_size * 2, y_size);
+      }
+      break;
+    }
+
+    case PIXEL_FORMAT_I422:
+    case PIXEL_FORMAT_I422A:
+    case PIXEL_FORMAT_YUV422P10:
+    case PIXEL_FORMAT_YUV422P12:
+    case PIXEL_FORMAT_YUV422AP10: {
+      int sample_bytes =
+          VideoFrame::BytesPerElement(format, VideoFrame::Plane::kY);
+      int y_stride = coded_size.width() * sample_bytes;
+      int y_size = y_stride * coded_size.height();
+      int uv_width = (coded_size.width() + 1) / 2;
+      int uv_stride = uv_width * sample_bytes;
+      int uv_size = uv_stride * coded_size.height();
+      planes = std::vector<ColorPlaneLayout>{
+          ColorPlaneLayout(y_stride, 0, y_size),
+          ColorPlaneLayout(uv_stride, y_size, uv_size),
+          ColorPlaneLayout(uv_stride, y_size + uv_size, uv_size),
+      };
+      if (format == PIXEL_FORMAT_I422A || format == PIXEL_FORMAT_YUV422AP10) {
+        planes.emplace_back(y_stride, y_size + uv_size * 2, y_size);
+      }
+      break;
+    }
+
+    case PIXEL_FORMAT_I444:
+    case PIXEL_FORMAT_I444A:
+    case PIXEL_FORMAT_YUV444P10:
+    case PIXEL_FORMAT_YUV444P12:
+    case PIXEL_FORMAT_YUV444AP10: {
+      int sample_bytes =
+          VideoFrame::BytesPerElement(format, VideoFrame::Plane::kY);
+      int stride = coded_size.width() * sample_bytes;
+      int plane_size = stride * coded_size.height();
+      planes = std::vector<ColorPlaneLayout>{
+          ColorPlaneLayout(stride, 0, plane_size),
+          ColorPlaneLayout(stride, plane_size, plane_size),
+          ColorPlaneLayout(stride, plane_size * 2, plane_size),
+      };
+      if (format == PIXEL_FORMAT_I444A || format == PIXEL_FORMAT_YUV444AP10) {
+        planes.emplace_back(stride, plane_size * 3, plane_size);
+      }
       break;
     }
 

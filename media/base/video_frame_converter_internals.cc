@@ -176,6 +176,83 @@ void I4xxxScale(const VideoFrame& src_frame, VideoFrame& dest_frame) {
   }
 }
 
+void I4xxxScale_16(const VideoFrame& src_frame, VideoFrame& dest_frame) {
+  DCHECK(src_frame.format() == PIXEL_FORMAT_YUV420P10 ||
+         src_frame.format() == PIXEL_FORMAT_YUV422P10 ||
+         src_frame.format() == PIXEL_FORMAT_YUV444P10 ||
+         src_frame.format() == PIXEL_FORMAT_YUV420P12 ||
+         src_frame.format() == PIXEL_FORMAT_YUV422P12 ||
+         src_frame.format() == PIXEL_FORMAT_YUV444P12 ||
+         src_frame.format() == PIXEL_FORMAT_YUV420AP10 ||
+         src_frame.format() == PIXEL_FORMAT_YUV422AP10 ||
+         src_frame.format() == PIXEL_FORMAT_YUV444AP10);
+  DCHECK(dest_frame.format() == PIXEL_FORMAT_YUV420P10 ||
+         dest_frame.format() == PIXEL_FORMAT_YUV422P10 ||
+         dest_frame.format() == PIXEL_FORMAT_YUV444P10 ||
+         dest_frame.format() == PIXEL_FORMAT_YUV420P12 ||
+         dest_frame.format() == PIXEL_FORMAT_YUV422P12 ||
+         dest_frame.format() == PIXEL_FORMAT_YUV444P12 ||
+         dest_frame.format() == PIXEL_FORMAT_YUV420AP10 ||
+         dest_frame.format() == PIXEL_FORMAT_YUV422AP10 ||
+         dest_frame.format() == PIXEL_FORMAT_YUV444AP10);
+
+  const auto kDefaultFiltering =
+      src_frame.visible_rect() == dest_frame.visible_rect()
+          ? libyuv::kFilterNone
+          : libyuv::kFilterBox;
+
+  for (size_t i = 0; i < VideoFrame::NumPlanes(dest_frame.format()); ++i) {
+    const uint16_t* src_ptr =
+        reinterpret_cast<const uint16_t*>(src_frame.visible_data(i));
+    int src_stride = src_frame.stride(i) / sizeof(uint16_t);
+    uint16_t* dst_ptr =
+        reinterpret_cast<uint16_t*>(dest_frame.GetWritableVisibleData(i));
+    int dst_stride = dest_frame.stride(i) / sizeof(uint16_t);
+
+    libyuv::ScalePlane_16(src_ptr, src_stride, src_frame.GetVisibleColumns(i),
+                          src_frame.GetVisibleRows(i), dst_ptr, dst_stride,
+                          dest_frame.GetVisibleColumns(i),
+                          dest_frame.GetVisibleRows(i), kDefaultFiltering);
+  }
+}
+
+void Convert16To8Plane(const VideoFrame& src_frame, VideoFrame& dest_frame) {
+  DCHECK(src_frame.format() == PIXEL_FORMAT_YUV420P10 ||
+         src_frame.format() == PIXEL_FORMAT_YUV422P10 ||
+         src_frame.format() == PIXEL_FORMAT_YUV444P10 ||
+         src_frame.format() == PIXEL_FORMAT_YUV420P12 ||
+         src_frame.format() == PIXEL_FORMAT_YUV422P12 ||
+         src_frame.format() == PIXEL_FORMAT_YUV444P12 ||
+         src_frame.format() == PIXEL_FORMAT_YUV420AP10 ||
+         src_frame.format() == PIXEL_FORMAT_YUV422AP10 ||
+         src_frame.format() == PIXEL_FORMAT_YUV444AP10);
+  DCHECK(dest_frame.format() == PIXEL_FORMAT_I420 ||
+         dest_frame.format() == PIXEL_FORMAT_I420A ||
+         dest_frame.format() == PIXEL_FORMAT_I422 ||
+         dest_frame.format() == PIXEL_FORMAT_I422A ||
+         dest_frame.format() == PIXEL_FORMAT_I444 ||
+         dest_frame.format() == PIXEL_FORMAT_I444A);
+  DCHECK_EQ(src_frame.visible_rect().size(), dest_frame.visible_rect().size());
+
+  int scale = (src_frame.format() == PIXEL_FORMAT_YUV420P12 ||
+               src_frame.format() == PIXEL_FORMAT_YUV422P12 ||
+               src_frame.format() == PIXEL_FORMAT_YUV444P12)
+                  ? 4096    // 12 bits -> 8 bits
+                  : 16384;  // 10 bits -> 8 bits
+
+  for (size_t i = 0; i < VideoFrame::NumPlanes(dest_frame.format()); ++i) {
+    const uint16_t* src_ptr =
+        reinterpret_cast<const uint16_t*>(src_frame.visible_data(i));
+    int src_stride = src_frame.stride(i) / sizeof(uint16_t);
+    uint8_t* dst_ptr = dest_frame.GetWritableVisibleData(i);
+    int dst_stride = dest_frame.stride(i);
+
+    libyuv::Convert16To8Plane(src_ptr, src_stride, dst_ptr, dst_stride, scale,
+                              src_frame.GetVisibleColumns(i),
+                              src_frame.GetVisibleRows(i));
+  }
+}
+
 bool I420xToNV12x(const VideoFrame& src_frame, VideoFrame& dest_frame) {
   DCHECK(src_frame.format() == PIXEL_FORMAT_I420 ||
          src_frame.format() == PIXEL_FORMAT_I420A);

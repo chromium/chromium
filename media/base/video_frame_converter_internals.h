@@ -36,6 +36,10 @@ bool ABGRToARGB(const VideoFrame& src_frame, VideoFrame& dst_frame);
 // Also converts between I420, I422, I444 and vice versa.
 void I4xxxScale(const VideoFrame& src_frame, VideoFrame& dst_frame);
 
+void I4xxxScale_16(const VideoFrame& src_frame, VideoFrame& dst_frame);
+
+void Convert16To8Plane(const VideoFrame& src_frame, VideoFrame& dst_frame);
+
 // Scaling not supported.
 bool I420xToNV12x(const VideoFrame& src_frame, VideoFrame& dst_frame);
 

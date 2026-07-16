@@ -87,6 +87,15 @@ bool IsConversionSupported(VideoPixelFormat src, VideoPixelFormat dest) {
     case PIXEL_FORMAT_XRGB:
     case PIXEL_FORMAT_ABGR:
     case PIXEL_FORMAT_ARGB:
+    case PIXEL_FORMAT_YUV420P10:
+    case PIXEL_FORMAT_YUV422P10:
+    case PIXEL_FORMAT_YUV444P10:
+    case PIXEL_FORMAT_YUV420P12:
+    case PIXEL_FORMAT_YUV422P12:
+    case PIXEL_FORMAT_YUV444P12:
+    case PIXEL_FORMAT_YUV420AP10:
+    case PIXEL_FORMAT_YUV422AP10:
+    case PIXEL_FORMAT_YUV444AP10:
       break;
 
     default:
@@ -214,10 +223,11 @@ TEST_P(VideoFrameConverterTest, ConvertAndScale) {
 
   // Ensure memory pool is functioning correctly by running conversions which
   // use scratch space twice.
-  if (converter_.get_pool_size_for_testing() > 0) {
-    EXPECT_EQ(converter_.get_pool_size_for_testing(), 1u);
+  size_t expected_pool_size = converter_.get_pool_size_for_testing();
+  if (expected_pool_size > 0) {
+    EXPECT_EQ(converter_.get_pool_size_for_testing(), expected_pool_size);
     ASSERT_TRUE(converter_.ConvertAndScale(*src_frame, *dest_frame).is_ok());
-    EXPECT_EQ(converter_.get_pool_size_for_testing(), 1u);
+    EXPECT_EQ(converter_.get_pool_size_for_testing(), expected_pool_size);
   }
 }
 
@@ -249,7 +259,16 @@ INSTANTIATE_TEST_SUITE_P(
                                      PIXEL_FORMAT_I444,
                                      PIXEL_FORMAT_I444A,
                                      PIXEL_FORMAT_NV12,
-                                     PIXEL_FORMAT_NV12A),
+                                     PIXEL_FORMAT_NV12A,
+                                     PIXEL_FORMAT_YUV420P10,
+                                     PIXEL_FORMAT_YUV422P10,
+                                     PIXEL_FORMAT_YUV444P10,
+                                     PIXEL_FORMAT_YUV420P12,
+                                     PIXEL_FORMAT_YUV422P12,
+                                     PIXEL_FORMAT_YUV444P12,
+                                     PIXEL_FORMAT_YUV420AP10,
+                                     PIXEL_FORMAT_YUV422AP10,
+                                     PIXEL_FORMAT_YUV444AP10),
                      testing::Values(PIXEL_FORMAT_XBGR,
                                      PIXEL_FORMAT_XRGB,
                                      PIXEL_FORMAT_ABGR,
