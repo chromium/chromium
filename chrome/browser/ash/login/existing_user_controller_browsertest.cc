@@ -33,6 +33,7 @@
 #include "chrome/browser/ash/login/screens/user_selection_screen.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
+#include "chrome/browser/ash/login/test/auth_ui_utils.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -841,11 +842,8 @@ class ExistingUserControllerAuthFailureTest : public OobeBaseTest {
                                        true /*check_if_submittable*/);
   }
 
-  // Waits for auth error message to be shown in login UI.
-  void WaitForAuthErrorMessage() {
-    base::RunLoop().RunUntilIdle();
-    EXPECT_TRUE(LoginScreenTestApi::IsAuthErrorBubbleShown());
-  }
+  // Waits for the auth error bubble to be shown in the login UI.
+  void WaitForAuthErrorMessage() { test::AuthErrorBubbleWaiter()->Wait(); }
 
  protected:
   FakeGaiaMixin fake_gaia_{&mixin_host_};
