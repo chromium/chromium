@@ -214,6 +214,8 @@ blink_core_sources_dom = [
   "node_list.h",
   "node_lists_node_data.cc",
   "node_lists_node_data.h",
+  "node_range.cc",
+  "node_range.h",
   "node_rare_data.cc",
   "node_rare_data.h",
   "node_rare_data_field.h",

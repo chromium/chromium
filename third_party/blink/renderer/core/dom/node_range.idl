@@ -1,0 +1,16 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Proposed in https://github.com/whatwg/dom/pull/1470.
+// Gated by the OpaqueRange flag: when off, NodeRange.prototype is empty and
+// Range/StaticRange resolve container access through the legacy slots on
+// AbstractRange (see abstract_range.idl, gated on LegacyAbstractRange).
+
+[
+    Exposed=Window,
+    RuntimeEnabled=OpaqueRange
+] interface NodeRange : AbstractRange {
+    [RuntimeEnabled=OpaqueRange] readonly attribute Node startContainer;
+    [RuntimeEnabled=OpaqueRange] readonly attribute Node endContainer;
+};

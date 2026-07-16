@@ -5,6 +5,6 @@
 // https://w3c.github.io/staticrange/#interface-staticrange
 
 [Exposed=Window]
-interface StaticRange : AbstractRange {
+interface StaticRange : NodeRange {
   [RaisesException] constructor(StaticRangeInit init);
 };

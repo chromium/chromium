@@ -635,6 +635,14 @@ void ResolveInvalidConfigurations() {
           network::features::kCSPScriptSrcHashesInV1)) {
     WebRuntimeFeatures::EnableCSPHashesV1(false);
   }
+
+  // LegacyAbstractRange (containers on AbstractRange.prototype) is the
+  // strict inverse of the global OpaqueRange runtime flag. Resolve this after
+  // command-line overrides so the two prototype shapes never coexist. Remove
+  // once OpaqueRange ships to stable.
+  // crbug.com/421421332
+  WebRuntimeFeatures::EnableFeatureFromString(
+      "LegacyAbstractRange", !WebRuntimeFeatures::IsOpaqueRangeEnabled());
 }
 
 }  // namespace

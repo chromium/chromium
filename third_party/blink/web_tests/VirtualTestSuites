@@ -2289,6 +2289,27 @@
     ],
     "expires": "never"
   },
+  "Tests the legacy AbstractRange shape with OpaqueRange disabled. Remove when",
+  "the OpaqueRange flag is removed. crbug.com/421421332",
+  {
+    "prefix": "opaque-range-disabled",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "fast/dom/range-prototype-chain-opaque-range-disabled.html"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--disable-blink-features=OpaqueRange"
+    ],
+    "owners": [
+      "stephanie.zhang@microsoft.com"
+    ],
+    "expires": "Jul 1, 2027"
+  },
   "The origin trials suite tests that OT-controlled features are exposed to",
   "the web as expected, so should not expire.",
   {

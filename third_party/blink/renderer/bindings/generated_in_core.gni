@@ -1402,6 +1402,8 @@ generated_interface_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_node_iterator.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_node_list.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_node_list.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_node_range.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_node_range.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_not_restored_reasons.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_not_restored_reasons.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_not_restored_reason_details.cc",

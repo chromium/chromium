@@ -191,6 +191,7 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/dom/node_filter.idl",
   "//third_party/blink/renderer/core/dom/node_iterator.idl",
   "//third_party/blink/renderer/core/dom/node_list.idl",
+  "//third_party/blink/renderer/core/dom/node_range.idl",
   "//third_party/blink/renderer/core/dom/non_document_type_child_node.idl",
   "//third_party/blink/renderer/core/dom/non_element_parent_node.idl",
   "//third_party/blink/renderer/core/dom/observable.idl",

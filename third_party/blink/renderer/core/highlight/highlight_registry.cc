@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_highlights_from_point_options.h"
 #include "third_party/blink/renderer/core/dom/abstract_range.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/node_range.h"
 #include "third_party/blink/renderer/core/dom/opaque_range.h"
 #include "third_party/blink/renderer/core/dom/static_range.h"
 #include "third_party/blink/renderer/core/dom/text.h"
@@ -60,7 +61,9 @@ std::optional<EphemeralRange> ResolveEphemeralRange(
       return EphemeralRange(inner_range);
     }
   }
-  return EphemeralRange(abstract_range);
+  auto* node_range = DynamicTo<NodeRange>(abstract_range);
+  CHECK(node_range);
+  return EphemeralRange(node_range);
 }
 
 }  // namespace
@@ -116,10 +119,12 @@ bool HighlightRegistry::IsAbstractRangePaintable(AbstractRange* abstract_range,
     }
   }
 
-  if (!abstract_range->startContainer() ||
-      !abstract_range->startContainer()->isConnected() ||
-      !abstract_range->endContainer() ||
-      !abstract_range->endContainer()->isConnected()) {
+  auto* node_range = DynamicTo<NodeRange>(abstract_range);
+  CHECK(node_range);
+  if (!node_range->startContainer() ||
+      !node_range->startContainer()->isConnected() ||
+      !node_range->endContainer() ||
+      !node_range->endContainer()->isConnected()) {
     return false;
   }
 
@@ -559,18 +564,16 @@ HeapVector<Member<HighlightHitResult>> HighlightRegistry::highlightsFromPoint(
       // the hit is on a node inside that shadow tree. Only consider ranges
       // within the same tree scope as the hit node. OpaqueRanges are internal
       // to a text control and always share the hit node's effective scope.
-      const bool is_opaque_range = RuntimeEnabledFeatures::OpaqueRangeEnabled(
-                                       document->GetExecutionContext()) &&
-                                   abstract_range->IsOpaqueRange();
-      if (!is_opaque_range &&
-          abstract_range->startContainer()->GetTreeScope() !=
-              hit_node->GetTreeScope()) {
-        continue;
-      }
-
       if (!IsAbstractRangePaintable(abstract_range, document)) {
         continue;
       }
+
+      auto* node_range = DynamicTo<NodeRange>(abstract_range.Get());
+      if (node_range && node_range->startContainer()->GetTreeScope() !=
+                            hit_node->GetTreeScope()) {
+        continue;
+      }
+
       std::optional<EphemeralRange> ephemeral_range =
           ResolveEphemeralRange(abstract_range.Get(), document);
       if (!ephemeral_range) {

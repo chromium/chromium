@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/abstract_range.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/node_range.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 
@@ -61,8 +62,7 @@ EphemeralRangeTemplate<Strategy>::EphemeralRangeTemplate(
     : EphemeralRangeTemplate(position, position) {}
 
 template <typename Strategy>
-EphemeralRangeTemplate<Strategy>::EphemeralRangeTemplate(
-    const AbstractRange* range)
+EphemeralRangeTemplate<Strategy>::EphemeralRangeTemplate(const NodeRange* range)
     : EphemeralRangeTemplate(PositionTemplate<Strategy>(range->startContainer(),
                                                         range->startOffset()),
                              PositionTemplate<Strategy>(range->endContainer(),

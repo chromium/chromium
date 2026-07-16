@@ -3839,6 +3839,17 @@
       }
     },
     {
+      // Keeps the legacy container attributes (startContainer/endContainer)
+      // on AbstractRange. These attributes move to a new NodeRange interface
+      // between AbstractRange and Range/StaticRange. This is forced to the
+      // inverse of the global OpaqueRange runtime flag in
+      // content/child/runtime_features.cc. Remove when the OpaqueRange flag is
+      // removed. crbug.com/421421332
+      name: "LegacyAbstractRange",
+      base_feature: "none",
+      status: "stable",
+    },
+    {
       // Makes light dismiss for popovers and dialogs use the click event
       // instead of pointerdown and pointerup in order to fix light dismiss
       // bugs for touch inputs.
@@ -4377,7 +4388,7 @@
       // for encapsulated content within <textarea> and <input> elements.
       // crbug.com/421421332
       name: "OpaqueRange",
-      origin_trial_feature_name: "OpaqueRange",
+      public: true,
       status: "experimental",
     },
     {

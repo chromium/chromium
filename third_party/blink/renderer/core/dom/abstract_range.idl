@@ -3,17 +3,18 @@
 // found in the LICENSE file.
 
 // https://dom.spec.whatwg.org/#interface-abstractrange
-// Note: This interface diverges from the spec to support OpaqueRange
-// (crbug.com/421421332), which when the OpaqueRange feature flag is
-// enabled, returns null for startContainer/endContainer to hide internal
-// DOM structure.
+//
+// Per https://github.com/whatwg/dom/pull/1470 the container attributes move
+// from AbstractRange to a new NodeRange interface. The legacy shape (containers
+// on AbstractRange) is kept behind LegacyAbstractRange, the inverse of
+// OpaqueRange.
 
 [
     Exposed=Window
 ] interface AbstractRange {
-    readonly attribute Node? startContainer;
+    [RuntimeEnabled=LegacyAbstractRange] readonly attribute Node startContainer;
+    [RuntimeEnabled=LegacyAbstractRange] readonly attribute Node endContainer;
     readonly attribute unsigned long startOffset;
-    readonly attribute Node? endContainer;
     readonly attribute unsigned long endOffset;
     readonly attribute boolean collapsed;
 };

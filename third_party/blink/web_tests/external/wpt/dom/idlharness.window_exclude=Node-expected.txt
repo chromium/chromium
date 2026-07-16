@@ -1,5 +1,17 @@
 This is a testharness.js-based test.
-Found 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 36 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] AbstractRange interface: attribute startContainer
+  assert_true: The prototype object must have a property "startContainer" expected true got false
+[FAIL] AbstractRange interface: attribute endContainer
+  assert_true: The prototype object must have a property "endContainer" expected true got false
+[FAIL] StaticRange interface: existence and properties of interface object
+  assert_equals: prototype of StaticRange is not AbstractRange expected function "function AbstractRange() { [native code] }" but got function "function NodeRange() { [native code] }"
+[FAIL] StaticRange interface: existence and properties of interface prototype object
+  assert_equals: prototype of StaticRange.prototype is not AbstractRange.prototype expected object "[object AbstractRange]" but got object "[object NodeRange]"
+[FAIL] Range interface: existence and properties of interface object
+  assert_equals: prototype of Range is not AbstractRange expected function "function AbstractRange() { [native code] }" but got function "function NodeRange() { [native code] }"
+[FAIL] Range interface: existence and properties of interface prototype object
+  assert_equals: prototype of Range.prototype is not AbstractRange.prototype expected object "[object AbstractRange]" but got object "[object NodeRange]"
 [FAIL] XSLTProcessor interface: existence and properties of interface object
   assert_own_property: self does not have own property "XSLTProcessor" expected property "XSLTProcessor" missing
 [FAIL] XSLTProcessor interface object length
@@ -61,3 +73,4 @@ Found 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] XSLTProcessor interface: new XSLTProcessor() must inherit property "reset()" with the proper type
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: XSLTProcessor is not defined"
 Harness: the test ran to completion.
+

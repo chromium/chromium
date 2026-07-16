@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+test(() => {
+  // OpaqueRange disables global NodeRange exposure, but the bindings still use
+  // a hidden NodeRange constructor as the parent of both Range and StaticRange.
+  for (const subclass of [Range, StaticRange]) {
+    const parent = Object.getPrototypeOf(subclass);
+    assert_equals(parent.name, 'NodeRange',
+        `${subclass.name}.__proto__ should be the hidden NodeRange constructor`);
+    assert_equals(Object.getPrototypeOf(parent), AbstractRange,
+        `${subclass.name} should inherit from AbstractRange via NodeRange`);
+  }
+
+  // NodeRange must not be reachable, either as a window property or as a global
+  // binding.
+  assert_false('NodeRange' in window,
+      'NodeRange should not be exposed on window when OpaqueRange is disabled');
+  assert_throws_js(ReferenceError, () => NodeRange,
+      'NodeRange should not be reachable as a global binding');
+}, 'Range and StaticRange use a hidden NodeRange parent when OpaqueRange is ' +
+   'disabled');
+</script>

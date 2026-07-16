@@ -73,8 +73,6 @@ TEST_F(OpaqueRangeTest, InitialStateValidation) {
   auto* textarea =
       To<HTMLTextAreaElement>(GetDocument().body()->firstElementChild());
   OpaqueRange* range = OpaqueRange::Create(GetDocument(), textarea, 0, 0);
-  EXPECT_EQ(range->startContainer(), nullptr);
-  EXPECT_EQ(range->endContainer(), nullptr);
 
   EXPECT_EQ(range->startOffset(), 0u);
   EXPECT_EQ(range->endOffset(), 0u);

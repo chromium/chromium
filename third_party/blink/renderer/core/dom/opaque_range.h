@@ -15,7 +15,6 @@ namespace blink {
 class Document;
 class DOMRect;
 class DOMRectList;
-class Node;
 class Range;
 class TextControlElement;
 
@@ -42,15 +41,11 @@ class CORE_EXPORT OpaqueRange final : public AbstractRange {
   void Trace(Visitor* visitor) const override;
 
   // AbstractRange implementation:
-  // Containers return null to hide internal DOM structure.
-  Node* startContainer() const override { return nullptr; }
-  Node* endContainer() const override { return nullptr; }
-
   // Offsets are UTF-16 code unit indices into the element's text content.
   unsigned startOffset() const override;
   unsigned endOffset() const override;
-
   bool collapsed() const override;
+
   bool IsStaticRange() const override { return false; }
   bool IsOpaqueRange() const override { return true; }
   Document& OwnerDocument() const override;

@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_STATIC_RANGE_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/abstract_range.h"
+#include "third_party/blink/renderer/core/dom/node_range.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -18,7 +18,7 @@ class Document;
 class ExceptionState;
 class StaticRangeInit;
 
-class CORE_EXPORT StaticRange final : public AbstractRange {
+class CORE_EXPORT StaticRange final : public NodeRange {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
