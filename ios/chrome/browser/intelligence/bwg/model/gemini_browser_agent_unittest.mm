@@ -56,13 +56,13 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/find_in_page/find_in_page_java_script_feature.h"
-#import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
@@ -101,10 +101,9 @@ class GeminiBrowserAgentTest : public PlatformTest {
         profile_manager_.AddProfileWithBuilder(std::move(profile_builder));
     mock_tracker_ = static_cast<feature_engagement::test::MockTracker*>(
         feature_engagement::TrackerFactory::GetForProfile(profile_));
-    web::JavaScriptFeatureManager::FromBrowserState(profile_)
-        ->ConfigureFeatures(
-            {web::FindInPageJavaScriptFeature::GetInstance(),
-             PageContextExtractorJavaScriptFeature::GetInstance()});
+    web::test::OverrideJavaScriptFeatures(
+        profile_, {web::FindInPageJavaScriptFeature::GetInstance(),
+                   PageContextExtractorJavaScriptFeature::GetInstance()});
     SceneState* scene_state = [[SceneState alloc] initWithAppState:nil];
     browser_ = std::make_unique<TestBrowser>(profile_, scene_state);
     GeminiBrowserAgent::CreateForBrowser(browser_.get());
