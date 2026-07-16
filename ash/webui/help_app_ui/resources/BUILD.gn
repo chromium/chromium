@@ -25,6 +25,7 @@ copy("copy_for_tsc") {
     "$root_gen_dir/ash/webui/help_app_ui/help_app_ui.mojom-webui.ts",
     "$root_gen_dir/ash/webui/help_app_ui/search/search.mojom-webui.ts",
     "$root_gen_dir/ash/webui/system_apps/public/js/message_pipe.js",
+    "$root_gen_dir/ash/webui/system_apps/public/js/sandboxed_load_time_data.js",
     "$root_gen_dir/chromeos/ash/components/local_search_service/public/mojom/index.mojom-webui.ts",
     "$root_gen_dir/chromeos/ash/components/local_search_service/public/mojom/types.mojom-webui.ts",
     "browser_proxy.ts",
@@ -61,11 +62,6 @@ webui_ts_library("build_ts") {
                         target_gen_dir) ]
 }
 
-copy("stage_static") {
-  sources = [ "//ash/webui/system_apps/public/js/sandboxed_load_time_data.js" ]
-  outputs = [ stage_folder + "/{{source_file_part}}" ]
-}
-
 system_apps_dir =
     rebase_path("$root_gen_dir/ash/webui/system_apps/public/js", root_build_dir)
 
@@ -82,10 +78,7 @@ optimize_webui("browser_proxy_rollup") {
     "chrome://resources/mojo/url/mojom/url.mojom-webui.js",
   ]
   input = rebase_path(stage_folder, root_build_dir)
-  deps = [
-    ":build_ts",
-    ":stage_static",
-  ]
+  deps = [ ":build_ts" ]
   external_paths = [ "//system_apps/|$system_apps_dir" ]
 }
 
@@ -94,10 +87,7 @@ optimize_webui("receiver_rollup") {
   host = "chrome-untrusted://help-app"
   js_module_in_files = [ "receiver.js" ]
   input = rebase_path(stage_folder, root_build_dir)
-  deps = [
-    ":build_ts",
-    ":stage_static",
-  ]
+  deps = [ ":build_ts" ]
   external_paths = [ "//system_apps/|$system_apps_dir" ]
 }
 

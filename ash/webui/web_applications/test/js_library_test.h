@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "chrome/test/base/ash/mojo_web_ui_browser_test.h"
+#include "chrome/test/base/web_ui_mocha_browser_test.h"
 
 namespace content {
 class WebUIControllerFactory;
@@ -16,7 +16,7 @@ class WebUIControllerFactory;
 // Base test class used to test JS libraries for System Apps. It setups
 // chrome://system-app-test and chrome-untrusted://system-app-test URLs and
 // loads files from ash/webui/system_apps/public/js/.
-class JsLibraryTest : public MojoWebUIBrowserTest {
+class JsLibraryTest : public WebUIMochaBrowserTest {
  public:
   JsLibraryTest();
   ~JsLibraryTest() override;

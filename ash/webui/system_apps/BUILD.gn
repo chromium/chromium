@@ -4,12 +4,7 @@
 
 assert(is_chromeos)
 
-group("closure_compile") {
-  testonly = true
-  deps = [ "public/js:closure_compile" ]
-}
-
 group("browser_tests") {
   testonly = true
-  deps = [ "public/js:browser_tests_js" ]
+  deps = [ "public/js:browser_test_support" ]
 }

@@ -25,24 +25,8 @@ namespace {
 
 #if BUILDFLAG(ENABLE_CROS_MEDIA_APP) && BUILDFLAG(ENABLE_CROS_PROJECTOR_APP)
 
-static content::EvalJsResult EvalJsInMainFrame(content::WebContents* web_ui,
-                                               const std::string& script) {
-  // Clients of this helper all run in the same isolated world.
-  constexpr int kWorldId = 1;
-  return EvalJs(web_ui->GetPrimaryMainFrame(), script,
-                content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, kWorldId);
-}
-
-// File containing the test utility library
-constexpr base::FilePath::CharType kTestLibraryPath[] =
-    FILE_PATH_LITERAL("ash/webui/system_apps/public/js/dom_testing_helpers.js");
-
 void PrepareAnnotatorForTest(content::WebContents* web_contents) {
   EXPECT_TRUE(WaitForLoadStop(web_contents));
-  EXPECT_EQ(base::Value(),
-            EvalJsInMainFrame(web_contents,
-                              SandboxedWebUiAppTestBase::LoadJsTestLibrary(
-                                  base::FilePath(kTestLibraryPath))));
 }
 #endif  // BUILDFLAG(ENABLE_CROS_MEDIA_APP) &&
         // BUILDFLAG(ENABLE_CROS_PROJECTOR_APP)
@@ -52,6 +36,13 @@ void PrepareAnnotatorForTest(content::WebContents* web_contents) {
 class ProjectorAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch("projector-extended-features-disabled");
+  }
+
+  void SetUpOnMainThread() override {
+    SandboxedWebUiAppTestBase::ConfigureDefaultTestRequestHandler(
+        base::FilePath(FILE_PATH_LITERAL("ash/webui/system_apps/public/js")),
+        {"dom_testing_helpers.js"});
+    SystemWebAppIntegrationTest::SetUpOnMainThread();
   }
 };
 
@@ -100,6 +91,7 @@ IN_PROC_BROWSER_TEST_P(ProjectorAppIntegrationTest,
   // engine elements can be async.
   constexpr char kCheckInkLoaded[] = R"(
       (async function checkInkLoaded() {
+        const {getNode} = await import('./dom_testing_helpers.js');
         const inkCanvas = await getNode('canvas',
           ['projector-ink-canvas-wrapper']);
         return !!inkCanvas &&
@@ -109,9 +101,8 @@ IN_PROC_BROWSER_TEST_P(ProjectorAppIntegrationTest,
           inkCanvas.getAttribute('width') !== '0';
       })();
     )";
-  EXPECT_EQ(
-      true,
-      EvalJsInMainFrame(annotator_embedder, kCheckInkLoaded).ExtractBool());
+  EXPECT_EQ(true,
+            content::EvalJs(annotator_embedder, kCheckInkLoaded).ExtractBool());
 }
 #endif  // BUILDFLAG(ENABLE_CROS_MEDIA_APP) &&
         // BUILDFLAG(ENABLE_CROS_PROJECTOR_APP)

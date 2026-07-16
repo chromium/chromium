@@ -16,10 +16,6 @@
 
 namespace {
 
-// File containing the test utility library, shared with integration tests.
-constexpr base::FilePath::CharType kTestLibraryPath[] =
-    FILE_PATH_LITERAL("ash/webui/system_apps/public/js/dom_testing_helpers.js");
-
 // Test cases that run in the guest (untrusted) context.
 constexpr char kGuestTestCases[] = "media_app_guest_ui_browsertest.js";
 
@@ -34,7 +30,7 @@ constexpr base::FilePath::CharType kTestFileLocation[] =
 // handler.
 constexpr const char* kTestFiles[] = {
     kGuestTestCases,  kTestHarness, "guest_query_receiver.js",
-    "test_worker.js", "driver.js",
+    "test_worker.js", "driver.js",  "dom_testing_helpers.js",
 };
 
 }  // namespace
@@ -42,7 +38,7 @@ constexpr const char* kTestFiles[] = {
 MediaAppUiBrowserTest::MediaAppUiBrowserTest()
     : SandboxedWebUiAppTestBase(ash::kChromeUIMediaAppURL,
                                 ash::kChromeUIMediaAppGuestURL,
-                                {base::FilePath(kTestLibraryPath)},
+                                {},
                                 kGuestTestCases,
                                 kTestHarness) {
   ConfigureDefaultTestRequestHandler(
@@ -51,20 +47,6 @@ MediaAppUiBrowserTest::MediaAppUiBrowserTest()
 }
 
 MediaAppUiBrowserTest::~MediaAppUiBrowserTest() = default;
-
-// static
-std::string MediaAppUiBrowserTest::AppJsTestLibrary() {
-  return SandboxedWebUiAppTestBase::LoadJsTestLibrary(
-      base::FilePath(kTestLibraryPath));
-}
-
-// static
-void MediaAppUiBrowserTest::PrepareAppForTest(content::WebContents* web_ui) {
-  EXPECT_TRUE(WaitForLoadStop(web_ui));
-  EXPECT_EQ(base::Value(),
-            MediaAppUiBrowserTest::EvalJsInAppFrame(
-                web_ui, MediaAppUiBrowserTest::AppJsTestLibrary()));
-}
 
 IN_PROC_BROWSER_TEST_F(MediaAppUiBrowserTest, GuestCanLoad) {
   RunCurrentTest();

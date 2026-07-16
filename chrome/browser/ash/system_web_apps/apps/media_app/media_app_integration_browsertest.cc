@@ -169,6 +169,9 @@ class MediaAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
   }
 
   void SetUpOnMainThread() override {
+    SandboxedWebUiAppTestBase::ConfigureDefaultTestRequestHandler(
+        base::FilePath(FILE_PATH_LITERAL("ash/webui/system_apps/public/js")),
+        {"dom_testing_helpers.js"});
     SystemWebAppIntegrationTest::SetUpOnMainThread();
     WaitForTestSystemAppInstall();
   }
@@ -326,10 +329,7 @@ content::WebContents* PrepareActiveBrowserForTest(
   WaitForBrowserCount(expected_browser_count);
   BrowserWindowInterface* app_browser =
       GlobalBrowserCollection::GetInstance()->GetActiveBrowser();
-  content::WebContents* web_ui =
-      app_browser->GetTabStripModel()->GetActiveWebContents();
-  MediaAppUiBrowserTest::PrepareAppForTest(web_ui);
-  return web_ui;
+  return app_browser->GetTabStripModel()->GetActiveWebContents();
 }
 
 // Waits for a promise that resolves with the audio track title, once a <div>
@@ -337,6 +337,7 @@ content::WebContents* PrepareActiveBrowserForTest(
 content::EvalJsResult WaitForAudioTrackTitle(content::WebContents* web_ui) {
   constexpr char kScript[] = R"(
       (async function waitForAudioTrackTitle() {
+        const {waitForNode} = await import('./dom_testing_helpers.js');
         return (await waitForNode('div.title:not(:empty)')).innerText;
       })();
   )";
@@ -350,6 +351,7 @@ content::EvalJsResult WaitForImageAlt(content::WebContents* web_ui,
                                       const std::string& alt) {
   constexpr char kScript[] = R"(
       (async function waitForImageAlt() {
+        const {waitForNode} = await import('./dom_testing_helpers.js');
         const img = await waitForNode('img[alt="$1"]');
         return `$${img.naturalWidth}x$${img.naturalHeight}`;
       })();
@@ -375,6 +377,7 @@ std::string ExtractStringInGlobalScope(content::WebContents* web_ui,
 content::EvalJsResult WaitForNavigable(content::WebContents* web_ui) {
   constexpr char kScript[] = R"(
       (async function waitForNavigable() {
+        const {waitForNode} = await import('./dom_testing_helpers.js');
         await waitForNode(':not([panelopen])[filetraversalenabled]');
       })();
   )";
@@ -407,7 +410,6 @@ content::WebContents* MediaAppIntegrationTest::LaunchWithOneTestFile(
 
 content::WebContents* MediaAppIntegrationTest::LaunchWithNoFiles() {
   content::WebContents* web_ui = LaunchApp(MediaAppLaunchParams());
-  MediaAppUiBrowserTest::PrepareAppForTest(web_ui);
   return web_ui;
 }
 
@@ -447,7 +449,6 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchWithFile) {
   content::WebContents* app = DirectlyLaunchWithFile(TestFile(kFilePng800x600));
   BrowserWindowInterface* first_browser =
       GlobalBrowserCollection::GetInstance()->GetActiveBrowser();
-  MediaAppUiBrowserTest::PrepareAppForTest(app);
 
   EXPECT_EQ("800x600", WaitForImageAlt(app, kFilePng800x600));
   ExpectProductSurveyData({.open_image = "1"});
@@ -456,7 +457,6 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchWithFile) {
   app = DirectlyLaunchWithFile(TestFile(kFileJpeg640x480));
   BrowserWindowInterface* second_browser =
       GlobalBrowserCollection::GetInstance()->GetActiveBrowser();
-  MediaAppUiBrowserTest::PrepareAppForTest(app);
 
   EXPECT_EQ("640x480", WaitForImageAlt(app, kFileJpeg640x480));
   EXPECT_NE(first_browser, second_browser);
@@ -591,6 +591,7 @@ constexpr char kCropAndRotateButtonSelector[] = "#icon-button-2723030533";
 void clickAppBarButton(content::WebContents* app, const std::string& selector) {
   constexpr char kClickButton[] = R"(
       (async function clickAppBarButton() {
+        const {getNode} = await import('./dom_testing_helpers.js');
         const button =
             await getNode('$1', ['backlight-app-bar', 'backlight-app']);
         button.click();
@@ -605,6 +606,7 @@ void clickAppBarButton(content::WebContents* app, const std::string& selector) {
 bool isAppBarButtonOn(content::WebContents* app, const std::string& selector) {
   constexpr char kIsButtonOn[] = R"(
     (async function isAppBarButtonOn() {
+      const {getNode} = await import('./dom_testing_helpers.js');
       const button =
           await getNode('$1', ['backlight-app-bar', 'backlight-app']);
       return button.hasAttribute('selected');
@@ -638,7 +640,6 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
                        MAYBE_LoadsInkForImageAnnotation) {
   content::WebContents* app =
       DirectlyLaunchWithFile(TestFile(kFileJpeg640x480));
-  MediaAppUiBrowserTest::PrepareAppForTest(app);
 
   EXPECT_EQ("640x480", WaitForImageAlt(app, kFileJpeg640x480));
 
@@ -650,6 +651,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
   // Note: The loading of ink engine elements can be async.
   constexpr char kCheckInkLoaded[] = R"(
     (async function checkInkLoaded() {
+      const {waitForNode} = await import('./dom_testing_helpers.js');
       const inkEngineCanvas = await waitForNode(
           'canvas.ink-engine[width]', ['backlight-image-handler']);
       return !!inkEngineCanvas &&
@@ -670,12 +672,12 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MAYBE_InformationPanel) {
   content::WebContents* app =
       DirectlyLaunchWithFile(TestFile(kFileJpeg640x480));
-  MediaAppUiBrowserTest::PrepareAppForTest(app);
   EXPECT_EQ("640x480", WaitForImageAlt(app, kFileJpeg640x480));
 
   // Expect info panel to not be open on first load.
   constexpr char kHasInfoPanelOpen[] = R"(
     (async function hasInfoPanelOpen() {
+      const {getNode} = await import('./dom_testing_helpers.js');
       const metadataPanel = await getNode(
           'backlight-metadata-panel', ['backlight-image-handler']);
       return !!metadataPanel;
@@ -697,6 +699,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MAYBE_InformationPanel) {
   clickAppBarButton(app, kInfoButtonSelector);
   constexpr char kWaitForImageHandlerUpdate[] = R"(
     (async function waitForImageHandlerUpdate() {
+      const {getNode, childListUpdate} =
+          await import('./dom_testing_helpers.js');
       const imageHandler = await getNode('backlight-image-handler');
       await childListUpdate(imageHandler.shadowRoot);
     })();
@@ -724,6 +728,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
 
   constexpr char kHasSaveDiscardButtons[] = R"(
     (async function hasSaveDiscardButtons() {
+      const {getNode} = await import('./dom_testing_helpers.js');
       const discardButton = await getNode('#DiscardEdits',
           ['backlight-app-bar', 'backlight-app']);
       const saveButton = await getNode('backlight-split-button[label="Save"]',
@@ -740,6 +745,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
   clickAppBarButton(app, kCropAndRotateButtonSelector);
   constexpr char kRotateImage[] = R"(
     (async function rotateImage() {
+      const {waitForNode, getNode} = await import('./dom_testing_helpers.js');
       await waitForNode('backlight-crop-panel', ['backlight-image-handler']);
       const rotateAntiClockwiseButton = await getNode('#icon-button-427243323',
           ['backlight-crop-panel', 'backlight-image-handler']);
@@ -758,6 +764,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
   // Save the changes, then wait for the save to go through.
   constexpr char kClickSaveButton[] = R"(
     (async function clickSaveButton() {
+      const {getNode} = await import('./dom_testing_helpers.js');
       const saveButton = await getNode('ea-button[label="Save"]',
           ['backlight-split-button[label="Save"]', 'backlight-app-bar',
           'backlight-app']);
@@ -1086,7 +1093,6 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppAllProfilesTest,
       GlobalBrowserCollection::GetInstance()->GetActiveBrowser();
   content::WebContents* web_ui =
       app_browser->GetTabStripModel()->GetActiveWebContents();
-  MediaAppUiBrowserTest::PrepareAppForTest(web_ui);
 
   EXPECT_EQ(open_result, platform_util::OPEN_SUCCEEDED);
 
@@ -1159,7 +1165,6 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
       GlobalBrowserCollection::GetInstance()->GetActiveBrowser();
   content::WebContents* audio_web_ui =
       audio_app_browser->GetTabStripModel()->GetActiveWebContents();
-  MediaAppUiBrowserTest::PrepareAppForTest(audio_web_ui);
 
   // Launch with the image file.
   EXPECT_EQ(folder.Open(TestFile(kFileJpeg640x480)),
@@ -1169,7 +1174,6 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
       GlobalBrowserCollection::GetInstance()->GetActiveBrowser();
   content::WebContents* image_web_ui =
       image_app_browser->GetTabStripModel()->GetActiveWebContents();
-  MediaAppUiBrowserTest::PrepareAppForTest(image_web_ui);
 
   EXPECT_NE(image_app_browser, audio_app_browser);
   EXPECT_TRUE(ash::IsBrowserForSystemWebApp(
@@ -1202,6 +1206,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, Autoplay) {
 
   constexpr char kWaitForPlayedLength[] = R"(
       (async function waitForPlayedLength() {
+        const {waitForNode} = await import('./dom_testing_helpers.js');
         const audioElement = await waitForNode('audio[src^="blob:"]');
         console.log(`<audio> has played.length=${audioElement.played.length}.`);
         if (audioElement.played.length > 0) {

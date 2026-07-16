@@ -45,6 +45,9 @@ class MediaAppOcrIntegrationTest : public ash::SystemWebAppIntegrationTest {
   MediaAppOcrIntegrationTest() = default;
 
   void SetUpOnMainThread() override {
+    SandboxedWebUiAppTestBase::ConfigureDefaultTestRequestHandler(
+        base::FilePath(FILE_PATH_LITERAL("ash/webui/system_apps/public/js")),
+        {"dom_testing_helpers.js"});
     SystemWebAppIntegrationTest::SetUpOnMainThread();
     WaitForTestSystemAppInstall();
   }
@@ -85,6 +88,7 @@ base::FilePath TestFile(const std::string& ascii_name) {
 void WaitForFirstFileLoadInActiveWindow(const std::string& filename) {
   constexpr char kWaitForAppIdleScript[] = R"(
       (async function waitForFileLoad() {
+        const {waitForNode} = await import('./dom_testing_helpers.js');
         await waitForNode('.app-bar-filename[filename="$1"]',
                           ['backlight-app-bar', 'backlight-app']);
         await waitForNode('backlight-app:not([busy])');
@@ -96,7 +100,6 @@ void WaitForFirstFileLoadInActiveWindow(const std::string& filename) {
       GlobalBrowserCollection::GetInstance()->GetActiveBrowser();
   content::WebContents* web_ui =
       app_browser->GetTabStripModel()->GetActiveWebContents();
-  MediaAppUiBrowserTest::PrepareAppForTest(web_ui);
 
   EXPECT_EQ("loaded",
             MediaAppUiBrowserTest::EvalJsInAppFrame(

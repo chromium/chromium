@@ -4,6 +4,7 @@
 
 /// <reference path="media_app.d.ts" />
 
+import {waitForNode} from './dom_testing_helpers.js';
 import type {FileSnapshot, LastLoadedFilesResponse, TestMessageQueryData, TestMessageResponseData, TestMessageRunTestCase} from './driver_api.js';
 import type {ReceivedFileList} from './receiver.js';
 import {TEST_ONLY} from './receiver.js';
@@ -15,20 +16,13 @@ interface GenericErrorResponse {
 }
 
 const {
+  assertCast,
   RenameResult,
   DELEGATE,
   parentMessagePipe,
   loadFiles,
   setLoadFiles,
 } = TEST_ONLY;
-
-/**
- * TODO(b/314827247): Remove this when imports are converted to TypeScript. This
- * is needed because the generated .d.ts doesn't capture non-nullability.
- */
-function assertCast<A extends object>(arg?: A|null): A {
-  return TEST_ONLY.assertCast(arg)!;
-}
 
 /**
  * The last file list loaded into the guest, updated via a spy on loadFiles().
