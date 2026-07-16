@@ -148,6 +148,8 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   // The returned value represents the timestamp of the write, such that any
   // progress marker greater or equal to this timestamp must have processed the
   // changes. See GetProgressMarkerTimestamp() below.
+  // TODO(crbug.com/448316539): Migrate to FullUpdate mode and remove this
+  // method.
   base::Time SetWalletData(
       const std::vector<sync_pb::SyncEntity>& wallet_entities);
 
@@ -158,18 +160,11 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   // The returned value represents the timestamp of the write, such that any
   // progress marker greater or equal to this timestamp must have processed the
   // changes. See GetProgressMarkerTimestamp() below.
+  // TODO(crbug.com/448316539): Migrate to FullUpdate mode and remove this
+  // method.
   base::Time SetOfferData(
       const std::vector<sync_pb::SyncEntity>& offer_entities);
 
-  // Sets the Google Wallet valuable data to be served in following GetUpdates
-  // requests (any further GetUpdates response will be empty, indicating no
-  // change, if the client already has received `valuable_entities`).
-  //
-  // The returned value represents the timestamp of the write, such that any
-  // progress marker greater or equal to this timestamp must have processed the
-  // changes. See GetProgressMarkerTimestamp() below.
-  base::Time SetValuableData(
-      const std::vector<sync_pb::SyncEntity>& valuable_entities);
 
   // Allows the caller to know the timestamp corresponding to
   // `progress_marker` as annotated by the FakeServer during the GetUpdates
@@ -250,6 +245,13 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   // server has returned the GC directive, this automatically gets reset, so
   // future GetUpdates requests will be treated normally again.
   void SetRejectOldProgressMarkerForType(syncer::DataType data_type);
+
+  using UpdateMode = syncer::LoopbackServer::UpdateMode;
+
+  // Configures the update mode for `data_type`. When set to
+  // `UpdateMode::kFull`, the server will respond with a full update and a GC
+  // directive whenever there are new or updated entities for `data_type`.
+  void SetUpdateMode(syncer::DataType data_type, UpdateMode update_mode);
 
   // If called, all subsequent GetUpdatesResponses won't contain
   // encryption_keys.
@@ -411,10 +413,6 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   // The LoopbackServer does not know how to handle offer data properly, so
   // the FakeServer handles those itself.
   std::vector<sync_pb::SyncEntity> offer_entities_;
-
-  // The LoopbackServer does not know how to handle valuable data properly, so
-  // the FakeServer handles those itself.
-  std::vector<sync_pb::SyncEntity> valuable_entities_;
 
   // Collaborations the user is a member of, used for all shared types.
   std::set<syncer::CollaborationId> collaborations_;

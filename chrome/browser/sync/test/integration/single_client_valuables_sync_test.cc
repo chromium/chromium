@@ -13,6 +13,8 @@
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
+#include "chrome/browser/sync/test/integration/wallet_helper.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager_test_utils.h"
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager_test_utils.h"
@@ -39,6 +41,7 @@ using autofill::ValuablesDataManagerFactory;
 using autofill::test::CreateLoyaltyCard;
 using autofill::test::CreateLoyaltyCard2;
 using sync_datatype_helper::test;
+using testing::Contains;
 using testing::ElementsAre;
 using testing::UnorderedElementsAre;
 
@@ -171,6 +174,46 @@ class SingleClientValuableSyncTestBase : public SyncTest {
   }
 
  protected:
+  void InjectValuableEntityIncrementally(const LoyaltyCard& loyalty_card) {
+    sync_pb::SyncEntity sync_entity = LoyaltyCardToSyncEntity(loyalty_card);
+    GetFakeServer()->InjectEntity(
+        syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
+            /*non_unique_name=*/sync_entity.name(),
+            /*client_tag=*/sync_entity.id_string(), sync_entity.specifics(),
+            /*creation_time=*/sync_entity.ctime(),
+            /*last_modified_time=*/sync_entity.mtime()));
+  }
+
+  void InjectValuableEntityIncrementally(
+      const EntityInstance& entity_instance) {
+    sync_pb::SyncEntity sync_entity =
+        EntityInstanceToSyncEntity(entity_instance);
+    GetFakeServer()->InjectEntity(
+        syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
+            /*non_unique_name=*/sync_entity.name(),
+            /*client_tag=*/sync_entity.id_string(), sync_entity.specifics(),
+            /*creation_time=*/sync_entity.ctime(),
+            /*last_modified_time=*/sync_entity.mtime()));
+  }
+
+  void SetAutofillValuable(const LoyaltyCard& loyalty_card) {
+    GetFakeServer()->DeleteAllEntitiesForDataType(syncer::AUTOFILL_VALUABLE);
+    InjectValuableEntityIncrementally(loyalty_card);
+  }
+
+  void SetAutofillValuable(const EntityInstance& entity_instance) {
+    GetFakeServer()->DeleteAllEntitiesForDataType(syncer::AUTOFILL_VALUABLE);
+    InjectValuableEntityIncrementally(entity_instance);
+  }
+
+  void SetAutofillValuable(
+      const std::vector<EntityInstance>& entity_instances) {
+    GetFakeServer()->DeleteAllEntitiesForDataType(syncer::AUTOFILL_VALUABLE);
+    for (const EntityInstance& entity : entity_instances) {
+      InjectValuableEntityIncrementally(entity);
+    }
+  }
+
   void EnterSyncPausedStateForPrimaryAccount() {
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
       GetClient(0)->EnterSignInPendingStateForPrimaryAccount();
@@ -218,7 +261,7 @@ class SingleClientValuablesSyncTest
 // Valuables data should get loaded on initial sync.
 IN_PROC_BROWSER_TEST_P(SingleClientValuablesSyncTest, InitialSync) {
   const LoyaltyCard loyalty_card = CreateLoyaltyCard();
-  GetFakeServer()->SetValuableData({LoyaltyCardToSyncEntity(loyalty_card)});
+  SetAutofillValuable(loyalty_card);
   ASSERT_TRUE(SetupSync());
   ValuablesDataManager* vdm = GetValuablesDataManager(0);
   ASSERT_NE(nullptr, vdm);
@@ -232,7 +275,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientValuablesSyncTest, InitialSync) {
 // Valuables data should get cleared from the database when the user signs out.
 IN_PROC_BROWSER_TEST_P(SingleClientValuablesSyncTest, ClearOnSignOut) {
   const LoyaltyCard loyalty_card = CreateLoyaltyCard();
-  GetFakeServer()->SetValuableData({LoyaltyCardToSyncEntity(loyalty_card)});
+  SetAutofillValuable(loyalty_card);
   ASSERT_TRUE(SetupSync());
   ValuablesDataManager* vdm = GetValuablesDataManager(0);
   ASSERT_NE(nullptr, vdm);
@@ -251,7 +294,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientValuablesSyncTest, ClearOnSignOut) {
 // sync paused state (e.g. persistent auth error).
 IN_PROC_BROWSER_TEST_P(SingleClientValuablesSyncTest, ClearOnSyncPaused) {
   const LoyaltyCard loyalty_card = CreateLoyaltyCard();
-  GetFakeServer()->SetValuableData({LoyaltyCardToSyncEntity(loyalty_card)});
+  SetAutofillValuable(loyalty_card);
   ASSERT_TRUE(SetupSync());
   ValuablesDataManager* vdm = GetValuablesDataManager(0);
   ASSERT_NE(nullptr, vdm);
@@ -274,16 +317,16 @@ IN_PROC_BROWSER_TEST_P(SingleClientValuablesSyncTest, ClearOnSyncPaused) {
 IN_PROC_BROWSER_TEST_P(SingleClientValuablesSyncTest,
                        NewSyncDataShouldReplaceExistingData) {
   const LoyaltyCard loyalty_card = CreateLoyaltyCard();
-  GetFakeServer()->SetValuableData({LoyaltyCardToSyncEntity(loyalty_card)});
+  SetAutofillValuable(loyalty_card);
   ASSERT_TRUE(SetupSync());
   ValuablesDataManager* vdm = GetValuablesDataManager(0);
   ASSERT_NE(nullptr, vdm);
   EXPECT_THAT(vdm->GetLoyaltyCards(), ElementsAre(loyalty_card));
 
   ValuablesDataChangedWaiter waiter(vdm);
-  // Put some completely new data in the sync server.
+  // Put some completely new data in the sync server and trigger full update.
   const LoyaltyCard loyalty_card2 = CreateLoyaltyCard2();
-  GetFakeServer()->SetValuableData({LoyaltyCardToSyncEntity(loyalty_card2)});
+  SetAutofillValuable(loyalty_card2);
   waiter.Wait();
   EXPECT_THAT(vdm->GetLoyaltyCards(), ElementsAre(loyalty_card2));
 }
@@ -291,7 +334,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientValuablesSyncTest,
 IN_PROC_BROWSER_TEST_P(SingleClientValuablesSyncTest,
                        ClearOnDisablePaymentsSync) {
   const LoyaltyCard loyalty_card = CreateLoyaltyCard();
-  GetFakeServer()->SetValuableData({LoyaltyCardToSyncEntity(loyalty_card)});
+  SetAutofillValuable(loyalty_card);
   ASSERT_TRUE(SetupSync());
   ValuablesDataManager* vdm = GetValuablesDataManager(0);
   ASSERT_NE(nullptr, vdm);
@@ -308,7 +351,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientValuablesSyncTest,
 IN_PROC_BROWSER_TEST_P(SingleClientValuablesSyncTest,
                        ClearOnDisableWalletAutofill) {
   const LoyaltyCard loyalty_card = CreateLoyaltyCard();
-  GetFakeServer()->SetValuableData({LoyaltyCardToSyncEntity(loyalty_card)});
+  SetAutofillValuable(loyalty_card);
   ASSERT_TRUE(SetupSync());
   ValuablesDataManager* vdm = GetValuablesDataManager(0);
   ASSERT_NE(nullptr, vdm);
@@ -321,6 +364,46 @@ IN_PROC_BROWSER_TEST_P(SingleClientValuablesSyncTest,
 
   WaitForNumberOfLoyaltyCards(0, vdm);
   EXPECT_THAT(vdm->GetLoyaltyCards(), testing::IsEmpty());
+}
+
+IN_PROC_BROWSER_TEST_P(SingleClientValuablesSyncTest,
+                       AlternatingFullAndIncrementalUpdates) {
+  const LoyaltyCard loyalty_card1 = CreateLoyaltyCard();
+  const LoyaltyCard loyalty_card2 = CreateLoyaltyCard2();
+
+  // Initial Full Update: setup server data with loyalty_card1.
+  SetAutofillValuable(loyalty_card1);
+  ASSERT_TRUE(SetupSync());
+  ValuablesDataManager* vdm = GetValuablesDataManager(0);
+  ASSERT_NE(nullptr, vdm);
+  EXPECT_THAT(vdm->GetLoyaltyCards(), ElementsAre(loyalty_card1));
+
+  // Incremental Update #1: switch to incremental mode and inject loyalty_card2.
+  GetFakeServer()->SetUpdateMode(
+      syncer::AUTOFILL_VALUABLE,
+      fake_server::FakeServer::UpdateMode::kIncremental);
+  InjectValuableEntityIncrementally(loyalty_card2);
+  WaitForNumberOfLoyaltyCards(2, vdm);
+  EXPECT_THAT(vdm->GetLoyaltyCards(),
+              UnorderedElementsAre(loyalty_card1, loyalty_card2));
+
+  // Full Update #2: replace server data with loyalty_card2 and switch to full
+  // update mode.
+  SetAutofillValuable(loyalty_card2);
+  GetFakeServer()->SetUpdateMode(syncer::AUTOFILL_VALUABLE,
+                                 fake_server::FakeServer::UpdateMode::kFull);
+  WaitForNumberOfLoyaltyCards(1, vdm);
+  EXPECT_THAT(vdm->GetLoyaltyCards(), ElementsAre(loyalty_card2));
+
+  // Incremental Update #2: switch back to incremental mode and inject
+  // loyalty_card1.
+  GetFakeServer()->SetUpdateMode(
+      syncer::AUTOFILL_VALUABLE,
+      fake_server::FakeServer::UpdateMode::kIncremental);
+  InjectValuableEntityIncrementally(loyalty_card1);
+  WaitForNumberOfLoyaltyCards(2, vdm);
+  EXPECT_THAT(vdm->GetLoyaltyCards(),
+              UnorderedElementsAre(loyalty_card1, loyalty_card2));
 }
 
 INSTANTIATE_TEST_SUITE_P(,
@@ -367,8 +450,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientEntityValuablesSyncTest, InitialSync) {
   const EntityInstance vehicle = GetServerVehicleEntityInstanceWithRandomGuid();
   const EntityInstance flight =
       GetFlightReservationEntityInstanceWithRandomGuid();
-  GetFakeServer()->SetValuableData({EntityInstanceToSyncEntity(vehicle),
-                                    EntityInstanceToSyncEntity(flight)});
+  SetAutofillValuable({vehicle, flight});
   ASSERT_TRUE(SetupSync());
   EntityDataManager* edm = GetEntityDataManager(0);
   ASSERT_NE(nullptr, edm);
@@ -385,8 +467,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientEntityValuablesSyncTest, ClearOnSignOut) {
   const EntityInstance vehicle = GetServerVehicleEntityInstanceWithRandomGuid();
   const EntityInstance flight =
       GetFlightReservationEntityInstanceWithRandomGuid();
-  GetFakeServer()->SetValuableData({EntityInstanceToSyncEntity(vehicle),
-                                    EntityInstanceToSyncEntity(flight)});
+  SetAutofillValuable({vehicle, flight});
   ASSERT_TRUE(SetupSync());
   EntityDataManager* edm = GetEntityDataManager(0);
   ASSERT_NE(nullptr, edm);
@@ -406,8 +487,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientEntityValuablesSyncTest, ClearOnSyncPaused) {
   const EntityInstance vehicle = GetServerVehicleEntityInstanceWithRandomGuid();
   const EntityInstance flight =
       GetFlightReservationEntityInstanceWithRandomGuid();
-  GetFakeServer()->SetValuableData({EntityInstanceToSyncEntity(vehicle),
-                                    EntityInstanceToSyncEntity(flight)});
+  SetAutofillValuable({vehicle, flight});
   ASSERT_TRUE(SetupSync());
   EntityDataManager* edm = GetEntityDataManager(0);
   ASSERT_NE(nullptr, edm);
@@ -432,21 +512,22 @@ IN_PROC_BROWSER_TEST_P(SingleClientEntityValuablesSyncTest,
   const EntityInstance vehicle = GetServerVehicleEntityInstanceWithRandomGuid();
   const EntityInstance flight =
       GetFlightReservationEntityInstanceWithRandomGuid();
-  GetFakeServer()->SetValuableData({EntityInstanceToSyncEntity(vehicle),
-                                    EntityInstanceToSyncEntity(flight)});
+  SetAutofillValuable({vehicle, flight});
   ASSERT_TRUE(SetupSync());
   EntityDataManager* edm = GetEntityDataManager(0);
   ASSERT_NE(nullptr, edm);
   EXPECT_THAT(edm->GetEntityInstances(), UnorderedElementsAre(vehicle, flight));
 
-  // Put some completely new data in the sync server.
+  // Put some completely new data in the sync server and trigger full update.
   const EntityInstance vehicle2 =
       GetServerVehicleEntityInstanceWithRandomGuid();
   const EntityInstance flight2 =
       GetFlightReservationEntityInstanceWithRandomGuid();
-  GetFakeServer()->SetValuableData({EntityInstanceToSyncEntity(vehicle2),
-                                    EntityInstanceToSyncEntity(flight2)});
-  EntityDataChangedWaiter(edm).Wait();
+  {
+    EntityDataChangedWaiter waiter(edm);
+    SetAutofillValuable({vehicle2, flight2});
+    std::move(waiter).Wait();
+  }
   EXPECT_THAT(edm->GetEntityInstances(),
               UnorderedElementsAre(vehicle2, flight2));
 }
@@ -458,8 +539,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientEntityValuablesSyncTest,
   const EntityInstance vehicle = GetServerVehicleEntityInstanceWithRandomGuid();
   const EntityInstance flight =
       GetFlightReservationEntityInstanceWithRandomGuid();
-  GetFakeServer()->SetValuableData({EntityInstanceToSyncEntity(vehicle),
-                                    EntityInstanceToSyncEntity(flight)});
+  SetAutofillValuable({vehicle, flight});
   ASSERT_TRUE(SetupSync());
   EntityDataManager* edm = GetEntityDataManager(0);
   ASSERT_NE(nullptr, edm);
@@ -539,8 +619,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientEntityValuablesSyncTest,
                        SimultaneousLocalAndRemoteChangeNoCommonEntity) {
   const EntityInstance initial_vehicle =
       GetServerVehicleEntityInstanceWithRandomGuid();
-  GetFakeServer()->SetValuableData(
-      {EntityInstanceToSyncEntity(initial_vehicle)});
+  SetAutofillValuable(initial_vehicle);
   ASSERT_TRUE(SetupSync());
   EntityDataManager* edm = GetEntityDataManager(0);
   ASSERT_NE(nullptr, edm);
@@ -555,8 +634,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientEntityValuablesSyncTest,
 
   // This will trigger a sync update to the client. It overrides the
   // `initial_vehicle`.
-  GetFakeServer()->SetValuableData({EntityInstanceToSyncEntity(vehicle2),
-                                    EntityInstanceToSyncEntity(flight2)});
+  SetAutofillValuable({vehicle2, flight2});
 
   // Make a local change simultaneous with the server change.
   const EntityInstance vehicle3 = GetServerVehicleEntityInstance();
@@ -566,7 +644,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientEntityValuablesSyncTest,
   // Update vehicle
   edm->AddOrUpdateEntityInstance(updated_vehicle3);
   EXPECT_TRUE(FakeServerSpecificsChecker(
-                  UnorderedElementsAre(base::test::EqualsProto(
+                  Contains(base::test::EqualsProto(
                       AsAutofillValuableSpecifics(updated_vehicle3))))
                   .Wait());
 
@@ -580,8 +658,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientEntityValuablesSyncTest,
 IN_PROC_BROWSER_TEST_P(SingleClientEntityValuablesSyncTest,
                        SimultaneousLocalAndRemoteChangeCommonEntityNoConflict) {
   const EntityInstance server_vehicle = GetServerVehicleEntityInstance();
-  GetFakeServer()->SetValuableData(
-      {EntityInstanceToSyncEntity(server_vehicle)});
+  SetAutofillValuable(server_vehicle);
   ASSERT_TRUE(SetupSync());
   EntityDataManager* edm = GetEntityDataManager(0);
   ASSERT_NE(nullptr, edm);
@@ -592,17 +669,15 @@ IN_PROC_BROWSER_TEST_P(SingleClientEntityValuablesSyncTest,
   const EntityInstance flight =
       GetFlightReservationEntityInstanceWithRandomGuid();
 
-  // This will trigger a sync update to the client. It overrides the
-  // `server_vehicle`.
-  GetFakeServer()->SetValuableData({EntityInstanceToSyncEntity(server_vehicle),
-                                    EntityInstanceToSyncEntity(flight)});
+  // This will trigger a sync update to the client.
+  SetAutofillValuable({server_vehicle, flight});
 
   // Make a local change simultaneous with the server change. Update vehicle.
   const EntityInstance updated_server_vehicle =
       GetServerVehicleEntityInstance({.model = u"Q2"});
   edm->AddOrUpdateEntityInstance(updated_server_vehicle);
   EXPECT_TRUE(FakeServerSpecificsChecker(
-                  UnorderedElementsAre(base::test::EqualsProto(
+                  Contains(base::test::EqualsProto(
                       AsAutofillValuableSpecifics(updated_server_vehicle))))
                   .Wait());
 
@@ -617,8 +692,7 @@ IN_PROC_BROWSER_TEST_P(
     SingleClientEntityValuablesSyncTest,
     SimultaneousLocalAndRemoteChangeCommonEntityWithConflict) {
   const EntityInstance server_vehicle = GetServerVehicleEntityInstance();
-  GetFakeServer()->SetValuableData(
-      {EntityInstanceToSyncEntity(server_vehicle)});
+  SetAutofillValuable(server_vehicle);
   ASSERT_TRUE(SetupSync());
   EntityDataManager* edm = GetEntityDataManager(0);
   ASSERT_NE(nullptr, edm);
@@ -633,9 +707,7 @@ IN_PROC_BROWSER_TEST_P(
       GetServerVehicleEntityInstance({.model = u"A3"});
   // This will trigger a sync update to the client. It overrides the
   // `server_vehicle`.
-  GetFakeServer()->SetValuableData(
-      {EntityInstanceToSyncEntity(updated_server_vehicle),
-       EntityInstanceToSyncEntity(flight)});
+  SetAutofillValuable({updated_server_vehicle, flight});
 
   // Make a local change simultaneous with the server change. Update vehicle.
   const EntityInstance updated_local_vehicle =
@@ -671,11 +743,51 @@ IN_PROC_BROWSER_TEST_P(SingleClientEntityValuablesSyncTest,
       GetFlightReservationEntityInstanceWithRandomGuid();
 
   // This will trigger a sync update to the client.
-  GetFakeServer()->SetValuableData({EntityInstanceToSyncEntity(server_vehicle),
-                                    EntityInstanceToSyncEntity(server_flight)});
+  SetAutofillValuable({server_vehicle, server_flight});
   WaitForNumberOfEntityInstancesCards(2, edm);
   EXPECT_THAT(edm->GetEntityInstances(),
               UnorderedElementsAre(server_vehicle, server_flight));
+}
+
+IN_PROC_BROWSER_TEST_P(SingleClientEntityValuablesSyncTest,
+                       AlternatingFullAndIncrementalUpdates) {
+  const EntityInstance vehicle = GetServerVehicleEntityInstanceWithRandomGuid();
+  const EntityInstance flight =
+      GetFlightReservationEntityInstanceWithRandomGuid();
+  const EntityInstance vehicle2 =
+      GetServerVehicleEntityInstanceWithRandomGuid();
+
+  // Initial Full Update: setup server data with vehicle.
+  SetAutofillValuable(vehicle);
+  ASSERT_TRUE(SetupSync());
+  EntityDataManager* edm = GetEntityDataManager(0);
+  ASSERT_NE(nullptr, edm);
+  EXPECT_THAT(edm->GetEntityInstances(), UnorderedElementsAre(vehicle));
+
+  // Incremental Update #1: switch to incremental mode and inject flight.
+  GetFakeServer()->SetUpdateMode(
+      syncer::AUTOFILL_VALUABLE,
+      fake_server::FakeServer::UpdateMode::kIncremental);
+  InjectValuableEntityIncrementally(flight);
+  WaitForNumberOfEntityInstancesCards(2, edm);
+  EXPECT_THAT(edm->GetEntityInstances(), UnorderedElementsAre(vehicle, flight));
+
+  // Full Update #2: replace server data with vehicle2 and switch to full update
+  // mode.
+  SetAutofillValuable(vehicle2);
+  GetFakeServer()->SetUpdateMode(syncer::AUTOFILL_VALUABLE,
+                                 fake_server::FakeServer::UpdateMode::kFull);
+  WaitForNumberOfEntityInstancesCards(1, edm);
+  EXPECT_THAT(edm->GetEntityInstances(), UnorderedElementsAre(vehicle2));
+
+  // Incremental Update #2: switch back to incremental mode and inject flight.
+  GetFakeServer()->SetUpdateMode(
+      syncer::AUTOFILL_VALUABLE,
+      fake_server::FakeServer::UpdateMode::kIncremental);
+  InjectValuableEntityIncrementally(flight);
+  WaitForNumberOfEntityInstancesCards(2, edm);
+  EXPECT_THAT(edm->GetEntityInstances(),
+              UnorderedElementsAre(vehicle2, flight));
 }
 
 INSTANTIATE_TEST_SUITE_P(,

@@ -53,6 +53,8 @@ FakeServer::FakeServer(const base::FilePath& loopback_server_dir)
       loopback_server_dir.AppendASCII("profile.pb"));
   loopback_server_->set_observer_for_tests(this);
 
+  SetUpdateMode(syncer::AUTOFILL_VALUABLE, UpdateMode::kFull);
+
   LoadFakeStateFromDisk();
 }
 
@@ -110,8 +112,7 @@ RemoveFullUpdateTypeProgressMarkerIfExists(
     DataType data_type,
     sync_pb::ClientToServerMessage* message) {
   DCHECK(data_type == syncer::AUTOFILL_WALLET_DATA ||
-         data_type == syncer::AUTOFILL_WALLET_OFFER ||
-         data_type == syncer::AUTOFILL_VALUABLE);
+         data_type == syncer::AUTOFILL_WALLET_OFFER);
   google::protobuf::RepeatedPtrField<sync_pb::DataTypeProgressMarker>*
       progress_markers =
           message->mutable_get_updates()->mutable_from_progress_marker();
@@ -166,8 +167,7 @@ void VerifyNoProgressMarkerExistsInResponseForFullUpdateType(
     // Verified there is no progress marker for the full sync type we cared
     // about.
     DCHECK(type != syncer::AUTOFILL_WALLET_DATA &&
-           type != syncer::AUTOFILL_WALLET_OFFER &&
-           type != syncer::AUTOFILL_VALUABLE);
+           type != syncer::AUTOFILL_WALLET_OFFER);
   }
 }
 
@@ -383,9 +383,6 @@ net::HttpStatusCode FakeServer::HandleParsedCommand(
   std::unique_ptr<sync_pb::DataTypeProgressMarker> offer_marker =
       RemoveFullUpdateTypeProgressMarkerIfExists(syncer::AUTOFILL_WALLET_OFFER,
                                                  &message_for_loopback_server);
-  std::unique_ptr<sync_pb::DataTypeProgressMarker> valuable_marker =
-      RemoveFullUpdateTypeProgressMarkerIfExists(syncer::AUTOFILL_VALUABLE,
-                                                 &message_for_loopback_server);
 
   // If any of the data type progress markers are (simulated to be) too old,
   // drop them from the message to the loopback server, so it'll respond with a
@@ -418,11 +415,6 @@ net::HttpStatusCode FakeServer::HandleParsedCommand(
 
     if (offer_marker != nullptr) {
       PopulateFullUpdateTypeResults(offer_entities_, *offer_marker,
-                                    response->mutable_get_updates());
-    }
-
-    if (valuable_marker != nullptr) {
-      PopulateFullUpdateTypeResults(valuable_entities_, *valuable_marker,
                                     response->mutable_get_updates());
     }
 
@@ -539,10 +531,9 @@ void FakeServer::TriggerKeystoreKeyRotation() {
 void FakeServer::InjectEntity(std::unique_ptr<LoopbackServerEntity> entity) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(entity->GetDataType() != syncer::AUTOFILL_WALLET_DATA &&
-         entity->GetDataType() != syncer::AUTOFILL_WALLET_OFFER &&
-         entity->GetDataType() != syncer::AUTOFILL_VALUABLE)
-      << "Wallet/Offer/Valuable data must be injected via "
-         "SetWalletData()/SetOfferData()/SetValuableData().";
+         entity->GetDataType() != syncer::AUTOFILL_WALLET_OFFER)
+      << "Wallet/Offer data must be injected via "
+         "SetWalletData()/SetOfferData().";
 
   const DataType data_type = entity->GetDataType();
 
@@ -612,34 +603,6 @@ base::Time FakeServer::SetOfferData(
   return now;
 }
 
-base::Time FakeServer::SetValuableData(
-    const std::vector<sync_pb::SyncEntity>& valuable_entities) {
-  CHECK(!valuable_entities.empty());
-  DataType data_type =
-      GetDataTypeFromSpecifics(valuable_entities[0].specifics());
-  CHECK_EQ(data_type, syncer::AUTOFILL_VALUABLE);
-
-  OnWillCommit();
-  valuable_entities_ = valuable_entities;
-
-  const base::Time now = base::Time::Now();
-  const int64_t version = (now - base::Time::UnixEpoch()).InMilliseconds();
-
-  for (sync_pb::SyncEntity& entity : valuable_entities_) {
-    CHECK(!entity.has_client_tag_hash())
-        << "The sync server doesn not provide a client tag for valuable "
-           "entries.";
-    CHECK(!entity.id_string().empty()) << "server id required!";
-
-    // The version is overridden during serving of the entities, but is useful
-    // here to influence the entities' hash.
-    entity.set_version(version);
-  }
-
-  OnCommit(/*committed_data_types=*/{syncer::AUTOFILL_VALUABLE});
-
-  return now;
-}
 
 // static
 base::Time FakeServer::GetProgressMarkerTimestamp(
@@ -778,6 +741,10 @@ bool FakeServer::EnableAlternatingTriggeredErrors() {
 
 void FakeServer::SetRejectOldProgressMarkerForType(syncer::DataType data_type) {
   old_progress_marker_types_.Put(data_type);
+}
+
+void FakeServer::SetUpdateMode(DataType data_type, UpdateMode update_mode) {
+  loopback_server_->SetUpdateMode(data_type, update_mode);
 }
 
 void FakeServer::DisallowSendingEncryptionKeys() {

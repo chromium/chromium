@@ -66,6 +66,16 @@ class LoopbackServer : public base::ImportantFileWriter::DataSerializer {
   // Enables strong consistency model (i.e. server detects conflicts).
   void EnableStrongConsistencyWithConflictDetectionModel();
 
+  enum class UpdateMode {
+    kIncremental,
+    kFull,
+  };
+
+  // Configures the update mode for `data_type`. When set to
+  // `UpdateMode::kFull`, the server will respond with a full update and a GC
+  // directive whenever there are new or updated entities for `data_type`.
+  void SetUpdateMode(DataType data_type, UpdateMode update_mode);
+
   // Sets a maximum batch size for GetUpdates requests.
   void SetMaxGetUpdatesBatchSize(int batch_size) {
     max_get_updates_batch_size_ = batch_size;
@@ -260,6 +270,7 @@ class LoopbackServer : public base::ImportantFileWriter::DataSerializer {
   int64_t store_birthday_ = 0;
 
   DataTypeSet throttled_types_;
+  DataTypeSet full_update_types_;
 
   std::optional<sync_pb::ChipBag> bag_of_chips_;
 

@@ -162,6 +162,12 @@ class UpdateSieve {
     return !datatypes_to_migrate->empty();
   }
 
+  // Configures the set of data types for which a full update (all non-deleted
+  // entities plus a GC directive) should be returned in this request cycle.
+  void SetForceFullUpdateTypes(DataTypeSet types) {
+    force_full_update_types_ = types;
+  }
+
   // Sets the progress markers in `get_updates_response` based on the highest
   // version between request progress markers and response entities.
   void SetProgressMarkers(
@@ -171,6 +177,9 @@ class UpdateSieve {
           get_updates_response->add_new_progress_marker();
       new_marker->set_data_type_id(GetSpecificsFieldNumberFromDataType(type));
       new_marker->set_token(response_version.ToString());
+      if (force_full_update_types_.Has(type)) {
+        new_marker->mutable_gc_directive()->set_version_watermark(0);
+      }
     }
   }
 
@@ -183,6 +192,9 @@ class UpdateSieve {
       return false;
     }
     DCHECK_NE(0U, response_version_map_.count(type));
+    if (force_full_update_types_.Has(type)) {
+      return !entity.IsDeleted();
+    }
     // If this is the initial download for the data type (i.e. there was no
     // progress token), then don't return tombstones.
     if (it->second.is_empty() && entity.IsDeleted()) {
@@ -201,6 +213,11 @@ class UpdateSieve {
 
  private:
   using DataTypeToVersionMap = std::map<DataType, ProgressMarkerToken>;
+
+  // Data types for which a full update response (all non-deleted entities and a
+  // GC directive) is forced for the current request because at least one entity
+  // has a newer version on the server than the client's progress marker.
+  DataTypeSet force_full_update_types_;
 
   static UpdateSieve::DataTypeToVersionMap MessageToVersionMap(
       const sync_pb::GetUpdatesMessage& get_updates_message,
@@ -511,6 +528,20 @@ bool LoopbackServer::HandleGetUpdatesRequest(
     DCHECK(!datatypes_to_migrate->empty());
     return false;
   }
+
+  // For data types configured as full update types, check if there is at least
+  // one entity with a newer version on the server (using the initial
+  // incremental version check in `sieve->ClientWantsItem`). If so, mark the
+  // type to force a full update (returning all non-deleted entities and a GC
+  // directive).
+  syncer::DataTypeSet full_update_types_with_new_updates;
+  for (const auto& [id, entity] : entities_) {
+    DataType type = entity->GetDataType();
+    if (full_update_types_.Has(type) && sieve->ClientWantsItem(*entity)) {
+      full_update_types_with_new_updates.Put(type);
+    }
+  }
+  sieve->SetForceFullUpdateTypes(full_update_types_with_new_updates);
 
   std::vector<const LoopbackServerEntity*> wanted_entities;
   for (const auto& [id, entity] : entities_) {
@@ -1071,6 +1102,15 @@ void LoopbackServer::PopulateGcDirectiveMigrationResponse(
     }
   }
   response->set_changes_remaining(1);
+}
+
+void LoopbackServer::SetUpdateMode(DataType data_type, UpdateMode update_mode) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (update_mode == UpdateMode::kFull) {
+    full_update_types_.Put(data_type);
+  } else {
+    full_update_types_.Remove(data_type);
+  }
 }
 
 }  // namespace syncer
