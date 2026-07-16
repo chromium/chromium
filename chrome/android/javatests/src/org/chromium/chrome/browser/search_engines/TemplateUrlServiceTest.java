@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -45,6 +46,7 @@ import java.util.stream.Collectors;
 
 /** Tests for Chrome on Android's usage of the TemplateUrlService API. */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@DoNotBatch(reason = "AI automated batching attempt was unsuccessful.")
 public class TemplateUrlServiceTest {
     private static final String QUERY_PARAMETER = "q";
     private static final String QUERY_VALUE = "cat";
