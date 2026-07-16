@@ -10,4 +10,8 @@ const char kCastWebUIForceUpdateHost[] = "force_update";
 const char kCastWebUIHomeHost[] = "home";
 const char kCastWebUIResourceHost[] = "cast_resources";
 
+bool IsKnownCastWebUiHost(std::string_view host) {
+  return host == kCastWebUIForceUpdateHost || host == kCastWebUIHomeHost;
+}
+
 }  // namespace chromecast

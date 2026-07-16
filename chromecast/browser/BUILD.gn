@@ -565,6 +565,7 @@ cast_source_set("unittests") {
     "devtools/cast_devtools_manager_delegate_unittest.cc",
     "lru_renderer_cache_test.cc",
     "migration/migration_utils_test.cc",
+    "webui/cast_webui_controller_factory_unittest.cc",
   ]
 
   deps = [
