@@ -60,6 +60,11 @@ enum class DecisionSource {
   kEnterprisePolicy,
   // Predicate that blocks if the destination's host is an IP address.
   kForbidIpAddress,
+  // Predicate that blocks if the destination's scheme is not https.
+  kRequireHttps,
+  // Predicate that blocks if the destination's scheme is neither https nor
+  // http.
+  kRequireHttpsOrHttp,
   // No decision was reached before the OriginGating framework ran out of
   // predicates to run.
   kNoVerdict,

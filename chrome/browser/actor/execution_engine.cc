@@ -52,6 +52,7 @@
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
 #include "chrome/browser/lookalikes/lookalike_url_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
@@ -345,6 +346,8 @@ ExecutionEngine::GatingDecision MapGatingDecisionToEngineDecision(
           return ExecutionEngine::GatingDecision::kNeedsAsyncCheck;
         case origin_gating::DecisionSource::kEnterprisePolicy:
         case origin_gating::DecisionSource::kForbidIpAddress:
+        case origin_gating::DecisionSource::kRequireHttps:
+        case origin_gating::DecisionSource::kRequireHttpsOrHttp:
           NOTREACHED();
       }
     case origin_gating::DecisionAttribution::Type::kCustomPredicate:
@@ -359,7 +362,8 @@ ExecutionEngine::GatingDecision MapGatingDecisionToEngineDecision(
 }
 
 MayActOnUrlBlockResult MapGatingDecisionToBlockResult(
-    const origin_gating::GatingDecision& decision) {
+    const origin_gating::GatingDecision& decision,
+    const GURL& url) {
   switch (decision.attribution.type()) {
     case origin_gating::DecisionAttribution::Type::kDecisionSource:
       switch (decision.attribution.Source()) {
@@ -368,6 +372,12 @@ MayActOnUrlBlockResult MapGatingDecisionToBlockResult(
                   MayActOnUrlBlockReason::kEnterprisePolicy};
         case origin_gating::DecisionSource::kForbidIpAddress:
           return {"IP address", MayActOnUrlBlockReason::kIpAddress};
+        case origin_gating::DecisionSource::kRequireHttps:
+        case origin_gating::DecisionSource::kRequireHttpsOrHttp:
+          return {"Wrong scheme",
+                  ProfileIOData::IsHandledURL(url)
+                      ? MayActOnUrlBlockReason::kWrongScheme
+                      : MayActOnUrlBlockReason::kExternalProtocol};
         default:
           NOTREACHED() << "Unexpected decision source: "
                        << static_cast<int>(decision.attribution.Source());
@@ -478,6 +488,14 @@ ExecutionEngine::ExecutionEngine(
           *this,
           origin_gating::OriginGatingConfiguration(
               {
+                  // Allow insecure HTTP for navigation requests, as in
+                  // practice sites may have HTTP links that will get upgraded.
+                  // Rejecting HTTP URLs before this can happen would be too
+                  // serious of an impediment.
+                  {origin_gating::DecisionSource::kRequireHttpsOrHttp,
+                   {origin_gating::GateableEvent::kNavigationRequest}},
+                  {origin_gating::DecisionSource::kRequireHttps,
+                   {origin_gating::GateableEvent::kPageAction}},
                   {origin_gating::DecisionSource::kForbidIpAddress,
                    {origin_gating::GateableEvent::kNavigationRequest,
                     origin_gating::GateableEvent::kPageAction}},
@@ -839,7 +857,7 @@ void ExecutionEngine::ShouldAllowNavigationDestination(
       /*context=*/nullptr, origin_gating::GateableEvent::kNavigationRequest,
       /*source=*/GURL(), url,
       base::BindOnce(&ExecutionEngine::OnShouldAllowUrlDecision, GetWeakPtr(),
-                     std::move(result_callback)));
+                     std::move(result_callback), url));
 }
 
 void ExecutionEngine::ShouldAllowPageAction(
@@ -849,11 +867,13 @@ void ExecutionEngine::ShouldAllowPageAction(
       /*context=*/nullptr, origin_gating::GateableEvent::kPageAction,
       /*source=*/GURL(), url,
       base::BindOnce(&ExecutionEngine::OnShouldAllowUrlDecision,
-                     GetActionSequenceWeakPtr(), std::move(result_callback)));
+                     GetActionSequenceWeakPtr(), std::move(result_callback),
+                     url));
 }
 
 void ExecutionEngine::OnShouldAllowUrlDecision(
     NoVerdictResultCallback result_callback,
+    const GURL& url,
     std::unique_ptr<origin_gating::GatingDecisionContext> context,
     origin_gating::GatingDecision decision) {
   if (decision.is_allowed) {
@@ -861,7 +881,8 @@ void ExecutionEngine::OnShouldAllowUrlDecision(
     return;
   }
 
-  MayActOnUrlBlockResult block_info = MapGatingDecisionToBlockResult(decision);
+  MayActOnUrlBlockResult block_info =
+      MapGatingDecisionToBlockResult(decision, url);
   std::move(result_callback).Run(base::unexpected(block_info));
 }
 
@@ -1552,7 +1573,7 @@ void ExecutionEngine::IsAcceptableNavigationDestination(
     const GURL& url,
     DecisionCallbackWithReason callback) {
   actor::MayActOnUrl(
-      url, /*allow_insecure_http=*/true, *journal_, task_->id(),
+      url, *journal_, task_->id(),
       base::BindOnce(&ExecutionEngine::ShouldAllowNavigationDestination,
                      GetWeakPtr()),
       std::move(callback));

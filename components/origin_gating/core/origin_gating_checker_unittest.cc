@@ -299,6 +299,115 @@ TEST_F(OriginGatingCheckerTest,
   EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
 }
 
+TEST_F(OriginGatingCheckerTest, BuiltInPredicate_RequireHttps_HttpsFallsBack) {
+  OriginGatingChecker checker(
+      delegate_, OriginGatingConfiguration(
+                     {{DecisionSource::kRequireHttps, GateableEventSet::All()}},
+                     /*use_site_keyed_cache=*/false));
+
+  GURL source("https://example.com");
+  GURL destination("https://foo.com");
+
+  SetUpDelegateExpectations(source, destination,
+                            /*requires_user_confirmation=*/false,
+                            /*is_allowed=*/true,
+                            /*did_prompt_user=*/false);
+
+  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
+      checker, nullptr, source, destination);
+
+  EXPECT_TRUE(decision.is_allowed);
+  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+}
+
+TEST_F(OriginGatingCheckerTest, BuiltInPredicate_RequireHttps_HttpBlocked) {
+  OriginGatingChecker checker(
+      delegate_, OriginGatingConfiguration(
+                     {{DecisionSource::kRequireHttps, GateableEventSet::All()}},
+                     /*use_site_keyed_cache=*/false));
+
+  GURL source("https://example.com");
+  GURL destination("http://foo.com");
+
+  EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(_, _, _, _, _))
+      .Times(0);
+  EXPECT_CALL(delegate_, OnNoVerdict(_, _, _, _, _, _)).Times(0);
+
+  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
+      checker, nullptr, source, destination);
+
+  EXPECT_FALSE(decision.is_allowed);
+  EXPECT_EQ(decision.attribution, DecisionSource::kRequireHttps);
+}
+
+TEST_F(OriginGatingCheckerTest,
+       BuiltInPredicate_RequireHttpsOrHttp_HttpsFallsBack) {
+  OriginGatingChecker checker(
+      delegate_,
+      OriginGatingConfiguration(
+          {{DecisionSource::kRequireHttpsOrHttp, GateableEventSet::All()}},
+          /*use_site_keyed_cache=*/false));
+
+  GURL source("https://example.com");
+  GURL destination("https://foo.com");
+
+  SetUpDelegateExpectations(source, destination,
+                            /*requires_user_confirmation=*/false,
+                            /*is_allowed=*/true,
+                            /*did_prompt_user=*/false);
+
+  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
+      checker, nullptr, source, destination);
+
+  EXPECT_TRUE(decision.is_allowed);
+  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+}
+
+TEST_F(OriginGatingCheckerTest,
+       BuiltInPredicate_RequireHttpsOrHttp_HttpFallsBack) {
+  OriginGatingChecker checker(
+      delegate_,
+      OriginGatingConfiguration(
+          {{DecisionSource::kRequireHttpsOrHttp, GateableEventSet::All()}},
+          /*use_site_keyed_cache=*/false));
+
+  GURL source("https://example.com");
+  GURL destination("http://foo.com");
+
+  SetUpDelegateExpectations(source, destination,
+                            /*requires_user_confirmation=*/false,
+                            /*is_allowed=*/true,
+                            /*did_prompt_user=*/false);
+
+  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
+      checker, nullptr, source, destination);
+
+  EXPECT_TRUE(decision.is_allowed);
+  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+}
+
+TEST_F(OriginGatingCheckerTest,
+       BuiltInPredicate_RequireHttpsOrHttp_NonWebSchemeBlocked) {
+  OriginGatingChecker checker(
+      delegate_,
+      OriginGatingConfiguration(
+          {{DecisionSource::kRequireHttpsOrHttp, GateableEventSet::All()}},
+          /*use_site_keyed_cache=*/false));
+
+  GURL source("https://example.com");
+  GURL destination("file:///tmp/file");
+
+  EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(_, _, _, _, _))
+      .Times(0);
+  EXPECT_CALL(delegate_, OnNoVerdict(_, _, _, _, _, _)).Times(0);
+
+  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
+      checker, nullptr, source, destination);
+
+  EXPECT_FALSE(decision.is_allowed);
+  EXPECT_EQ(decision.attribution, DecisionSource::kRequireHttpsOrHttp);
+}
+
 TEST_F(OriginGatingCheckerTest, BuiltInPredicate_EnterprisePolicy_Allowed) {
   OriginGatingChecker checker(
       delegate_, OriginGatingConfiguration({{DecisionSource::kEnterprisePolicy,

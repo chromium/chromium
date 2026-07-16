@@ -15,7 +15,6 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_io_data.h"
 #include "components/actor/core/actor_features.h"
 #include "components/actor/core/actor_util.h"
 #include "components/actor/core/aggregated_journal.h"
@@ -30,7 +29,6 @@
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
-#include "url/url_constants.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
@@ -90,7 +88,6 @@ bool ShouldContinueFromOptimizationGuideDecision(
 }
 
 void MayActOnUrlInternal(const GURL& url,
-                         bool allow_insecure_http,
                          NoVerdictContinuation resolve_no_verdict,
                          std::unique_ptr<DecisionWrapper> decision_wrapper) {
   CHECK(resolve_no_verdict);
@@ -98,15 +95,6 @@ void MayActOnUrlInternal(const GURL& url,
   if ((net::IsLocalhost(url) && url.SchemeIsHTTPOrHTTPS()) ||
       url.IsAboutBlank()) {
     decision_wrapper->Accept();
-    return;
-  }
-
-  if (!(url.SchemeIs(url::kHttpsScheme) ||
-        (allow_insecure_http && url.SchemeIs(url::kHttpScheme)))) {
-    decision_wrapper->Reject("Wrong scheme",
-                             ProfileIOData::IsHandledURL(url)
-                                 ? MayActOnUrlBlockReason::kWrongScheme
-                                 : MayActOnUrlBlockReason::kExternalProtocol);
     return;
   }
 
@@ -170,13 +158,11 @@ void MayActOnTab(const tabs::TabInterface& tab,
   }
 #endif
 
-  MayActOnUrlInternal(url, /*allow_insecure_http=*/false,
-                      std::move(resolve_no_verdict),
+  MayActOnUrlInternal(url, std::move(resolve_no_verdict),
                       std::move(decision_wrapper));
 }
 
 void MayActOnUrl(const GURL& url,
-                 bool allow_insecure_http,
                  AggregatedJournal& journal,
                  TaskId task_id,
                  NoVerdictContinuation resolve_no_verdict,
@@ -184,7 +170,7 @@ void MayActOnUrl(const GURL& url,
   std::unique_ptr<DecisionWrapper> decision_wrapper =
       std::make_unique<DecisionWrapper>(journal, url, task_id, "MayActOnUrl",
                                         std::move(callback));
-  MayActOnUrlInternal(url, allow_insecure_http, std::move(resolve_no_verdict),
+  MayActOnUrlInternal(url, std::move(resolve_no_verdict),
                       std::move(decision_wrapper));
 }
 

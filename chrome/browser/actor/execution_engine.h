@@ -424,6 +424,7 @@ class ExecutionEngine : public ToolDelegate,
                              NoVerdictResultCallback result_callback);
   void OnShouldAllowUrlDecision(
       NoVerdictResultCallback result_callback,
+      const GURL& url,
       std::unique_ptr<origin_gating::GatingDecisionContext> context,
       origin_gating::GatingDecision decision);
 

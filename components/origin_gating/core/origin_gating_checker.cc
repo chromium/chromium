@@ -17,7 +17,9 @@
 #include "components/origin_gating/core/origin_gating_cache.h"
 #include "components/origin_gating/core/types.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "url/gurl.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 namespace origin_gating {
 
@@ -44,6 +46,16 @@ Decision EvaluateAllowSameOrigin(const url::Origin& source,
 Decision EvaluateForbidIpAddress(const GURL& destination) {
   return destination.HostIsIPAddress() ? Decision::kBlocked
                                        : Decision::kNoDecision;
+}
+
+Decision EvaluateRequireHttps(const GURL& destination) {
+  return destination.SchemeIs(url::kHttpsScheme) ? Decision::kNoDecision
+                                                 : Decision::kBlocked;
+}
+
+Decision EvaluateRequireHttpsOrHttp(const GURL& destination) {
+  return destination.SchemeIsHTTPOrHTTPS() ? Decision::kNoDecision
+                                           : Decision::kBlocked;
 }
 
 }  // namespace
@@ -171,6 +183,23 @@ void OriginGatingChecker::RunNextPredicate(
               }
               case DecisionSource::kForbidIpAddress: {
                 Decision decision = EvaluateForbidIpAddress(input.destination);
+                OnPredicateVerdict(std::move(context), remaining_predicates,
+                                   DecisionAttribution(source_enum),
+                                   std::move(input), std::move(callback),
+                                   decision);
+                break;
+              }
+              case DecisionSource::kRequireHttps: {
+                Decision decision = EvaluateRequireHttps(input.destination);
+                OnPredicateVerdict(std::move(context), remaining_predicates,
+                                   DecisionAttribution(source_enum),
+                                   std::move(input), std::move(callback),
+                                   decision);
+                break;
+              }
+              case DecisionSource::kRequireHttpsOrHttp: {
+                Decision decision =
+                    EvaluateRequireHttpsOrHttp(input.destination);
                 OnPredicateVerdict(std::move(context), remaining_predicates,
                                    DecisionAttribution(source_enum),
                                    std::move(input), std::move(callback),
