@@ -42,7 +42,6 @@
 #include "extensions/common/manifest_handlers/default_locale_handler.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/strings/grit/extensions_strings.h"
-#include "net/base/filename_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -452,7 +451,7 @@ bool CheckForWindowsReservedFilenames(const base::FilePath& extension_dir,
   for (base::FilePath current = traversal.Next(); !current.empty();
        current = traversal.Next()) {
     base::FilePath::StringType filename = current.BaseName().value();
-    bool is_reserved_filename = net::IsReservedNameOnWindows(filename);
+    bool is_reserved_filename = base::IsReservedNameOnWindows(filename);
     if (is_reserved_filename) {
       *error =
           base::StrCat({u"Cannot load extension with file or directory name ",

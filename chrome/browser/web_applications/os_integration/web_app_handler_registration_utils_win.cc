@@ -32,7 +32,6 @@
 #include "chrome/installer/util/shell_util.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_thread.h"
-#include "net/base/filename_util.h"
 
 namespace web_app {
 
@@ -211,7 +210,7 @@ base::FilePath GetAppSpecificLauncherFilename(const std::wstring& app_name) {
   // Windows' logic for checking reserved filenames views characters after '.'
   // as file extensions, and only the pre-file-extension portion is checked for
   // legitimacy (e.g. "nul_" is allowed, but "nul.a_" is not).
-  if (net::IsReservedNameOnWindows(sanitized_app_name))
+  if (base::IsReservedNameOnWindows(sanitized_app_name))
     sanitized_app_name.insert(0, 1, FILE_PATH_LITERAL('_'));
 
   // Add .exe extension.

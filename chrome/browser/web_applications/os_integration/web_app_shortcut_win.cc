@@ -47,7 +47,6 @@
 #include "chrome/installer/util/util_constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/obsolete/md5.h"
-#include "net/base/filename_util.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/win/shell.h"
 #include "ui/gfx/image/image.h"
@@ -718,7 +717,7 @@ base::FilePath GetSanitizedFileName(const std::u16string& name) {
   // Also remove '%' to avoid ShellExecute expansion issues if the filename
   // is used in registry commands.
   base::ReplaceChars(file_name, L"%", L" ", &file_name);
-  if (net::IsReservedNameOnWindows(file_name)) {
+  if (base::IsReservedNameOnWindows(file_name)) {
     file_name.insert(0, 1, FILE_PATH_LITERAL('_'));
   }
   return base::FilePath(file_name);

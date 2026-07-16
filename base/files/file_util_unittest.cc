@@ -9,6 +9,7 @@
 #include <stdio.h>
 
 #include <algorithm>
+#include <array>
 #include <fstream>
 #include <initializer_list>
 #include <memory>
@@ -5327,7 +5328,9 @@ TEST(ScopedFD, ScopedFDDoesClose) {
   ASSERT_EQ(0, pipe(fds));
   const int write_end = fds[1];
   ScopedFD read_end_closer(fds[0]);
-  { ScopedFD write_end_closer(fds[1]); }
+  {
+    ScopedFD write_end_closer(fds[1]);
+  }
   // This is the only thread. This file descriptor should no longer be valid.
   int ret = close(write_end);
   EXPECT_EQ(-1, ret);
@@ -5550,6 +5553,36 @@ TEST_F(FileUtilTest, CreatingFileWithSameNameAfterDelete) {
   // `first_file`.
   ASSERT_EQ(second_file.GetLength(), 0);
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+TEST_F(FileUtilTest, IsReservedNameOnWindows) {
+  static constexpr auto kAllowedBasenames =
+      std::to_array<const base::FilePath::CharType*>({
+          FILE_PATH_LITERAL("a"),
+          FILE_PATH_LITERAL("a.txt"),
+          FILE_PATH_LITERAL("a b.txt"),
+          FILE_PATH_LITERAL("a-b.txt"),
+          FILE_PATH_LITERAL("My Computer"),
+      });
+
+  static constexpr auto kDisallowedBasenames =
+      std::to_array<const base::FilePath::CharType*>({
+          FILE_PATH_LITERAL("con"),
+          FILE_PATH_LITERAL("con.zip"),
+          FILE_PATH_LITERAL("NUL"),
+          FILE_PATH_LITERAL("NUL.zip"),
+          FILE_PATH_LITERAL("desktop.ini"),
+      });
+
+  for (const base::FilePath::CharType* basename : kAllowedBasenames) {
+    EXPECT_FALSE(IsReservedNameOnWindows(basename)) << basename;
+  }
+
+  for (const base::FilePath::CharType* basename : kDisallowedBasenames) {
+    EXPECT_TRUE(IsReservedNameOnWindows(basename)) << basename;
+  }
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace
 

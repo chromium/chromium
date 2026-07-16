@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/i18n/file_util_icu.h"
 #include "net/base/filename_util_internal.h"
 
@@ -28,7 +29,7 @@ bool IsSafePortablePathComponent(const base::FilePath& component) {
          base::i18n::IsFilenameLegal(component16) &&
          !IsShellIntegratedExtension(extension) &&
          (sanitized == component.value()) &&
-         !IsReservedNameOnWindows(component.value());
+         !base::IsReservedNameOnWindows(component.value());
 }
 
 bool IsSafePortableRelativePath(const base::FilePath& path) {

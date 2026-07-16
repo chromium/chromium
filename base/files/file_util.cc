@@ -5,8 +5,12 @@
 #include "base/files/file_util.h"
 
 #include <algorithm>
+#include <array>
 #include <string_view>
 
+#include "base/containers/fixed_flat_set.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 
@@ -530,5 +534,41 @@ FilePath GetUniquePathWithSuffixFormat(const FilePath& path,
   }
   return FilePath();
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+bool IsReservedNameOnWindows(const base::FilePath::StringType& filename) {
+  // This list is taken from the MSDN article "Naming a file"
+  // http://msdn2.microsoft.com/en-us/library/aa365247(VS.85).aspx
+  // `clock$` is also included because GetSaveFileName seems to consider it as a
+  // reserved name too.
+  static constexpr auto kKnownDevices = std::to_array(
+      {"con",  "prn",  "aux",  "nul",  "com1", "com2", "com3",  "com4",
+       "com5", "com6", "com7", "com8", "com9", "lpt1", "lpt2",  "lpt3",
+       "lpt4", "lpt5", "lpt6", "lpt7", "lpt8", "lpt9", "clock$"});
+  static constexpr auto kMagicNames = base::MakeFixedFlatSet<std::string_view>({
+      // These file names are used by the "Customize folder" feature of the
+      // shell.
+      "desktop.ini",
+      "thumbs.db",
+  });
+
+#if BUILDFLAG(IS_WIN)
+  std::string filename_lower = base::ToLowerASCII(base::WideToUTF8(filename));
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+  std::string filename_lower = base::ToLowerASCII(filename);
+#endif
+
+  return std::ranges::any_of(kKnownDevices,
+                             [&filename_lower](std::string_view device) {
+                               if (filename_lower == device) {
+                                 return true;
+                               }
+                               auto parts =
+                                   SplitStringOnce(filename_lower, '.');
+                               return parts && parts->first == device;
+                             }) ||
+         kMagicNames.contains(filename_lower);
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace base

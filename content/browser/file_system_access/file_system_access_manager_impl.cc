@@ -2363,7 +2363,7 @@ bool FileSystemAccessManagerImpl::IsSafePathComponent(
     return false;
   }
 
-  if (net::IsReservedNameOnWindows(component.value())) {
+  if (base::IsReservedNameOnWindows(component.value())) {
     return false;
   }
 

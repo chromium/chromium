@@ -7,6 +7,7 @@
 #include <set>
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
@@ -168,7 +169,7 @@ void GenerateSafeFileName(const std::string& mime_type,
   // Prepend "_" to the file name if it's a reserved name
   base::FilePath::StringType leaf_name = file_path->BaseName().value();
   DCHECK(!leaf_name.empty());
-  if (IsReservedNameOnWindows(leaf_name)) {
+  if (base::IsReservedNameOnWindows(leaf_name)) {
     leaf_name = base::FilePath::StringType(FILE_PATH_LITERAL("_")) + leaf_name;
     *file_path = file_path->DirName();
     if (file_path->value() == base::FilePath::kCurrentDirectory) {
@@ -178,45 +179,6 @@ void GenerateSafeFileName(const std::string& mime_type,
     }
   }
 #endif
-}
-
-bool IsReservedNameOnWindows(const base::FilePath::StringType& filename) {
-  // This list is taken from the MSDN article "Naming a file"
-  // http://msdn2.microsoft.com/en-us/library/aa365247(VS.85).aspx
-  // I also added clock$ because GetSaveFileName seems to consider it as a
-  // reserved name too.
-  static const char* const known_devices[] = {
-      "con",  "prn",  "aux",  "nul",  "com1", "com2", "com3",  "com4",
-      "com5", "com6", "com7", "com8", "com9", "lpt1", "lpt2",  "lpt3",
-      "lpt4", "lpt5", "lpt6", "lpt7", "lpt8", "lpt9", "clock$"};
-#if BUILDFLAG(IS_WIN)
-  std::string filename_lower = base::ToLowerASCII(base::WideToUTF8(filename));
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-  std::string filename_lower = base::ToLowerASCII(filename);
-#endif
-
-  for (const char* const device : known_devices) {
-    // Check for an exact match, or a "DEVICE." prefix.
-    size_t len = strlen(device);
-    if (filename_lower.starts_with(device) &&
-        (filename_lower.size() == len || filename_lower[len] == '.')) {
-      return true;
-    }
-  }
-
-  static const char* const magic_names[] = {
-      // These file names are used by the "Customize folder" feature of the
-      // shell.
-      "desktop.ini",
-      "thumbs.db",
-  };
-
-  for (const char* const magic_name : magic_names) {
-    if (filename_lower == magic_name)
-      return true;
-  }
-
-  return false;
 }
 
 }  // namespace net
