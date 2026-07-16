@@ -713,6 +713,29 @@ void ActorKeyedService::OnDownloadCreated(content::DownloadManager* manager,
 }
 
 #if BUILDFLAG(IS_ANDROID)
+void ActorKeyedService::AddObserver(BackgroundActuationObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ActorKeyedService::RemoveObserver(BackgroundActuationObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void ActorKeyedService::NotifyBackgroundTabReady(
+    tabs::TabInterface* tab,
+    const std::string& context_id) {
+  for (auto& observer : observers_) {
+    observer.OnBackgroundTabPrepared(tab, context_id);
+  }
+}
+
+void ActorKeyedService::NotifyBackgroundSetupFailed(
+    const std::string& context_id) {
+  for (auto& observer : observers_) {
+    observer.OnBackgroundSetupFailed(context_id);
+  }
+}
+
 base::CallbackListSubscription
 ActorKeyedService::AddForegroundServiceStartedCallback(
     EnsureForegroundServiceStartedCallback callback) {

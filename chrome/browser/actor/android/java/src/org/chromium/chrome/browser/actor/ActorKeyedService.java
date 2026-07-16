@@ -11,6 +11,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tab.Tab;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -120,6 +121,27 @@ public class ActorKeyedService {
         ActorForegroundServiceController.get().startService(contextId);
     }
 
+    /**
+     * Called when a background tab is ready for actuation.
+     *
+     * @param tab The prepared tab.
+     * @param contextId The context ID associated with the request.
+     */
+    public void setPreparedBackgroundTab(Tab tab, String contextId) {
+        if (mNativePtr == 0) return;
+        ActorKeyedServiceJni.get().setPreparedBackgroundTab(mNativePtr, tab, contextId);
+    }
+
+    /**
+     * Called when background setup fails.
+     *
+     * @param contextId The context ID associated with the request.
+     */
+    public void notifyBackgroundSetupFailed(String contextId) {
+        if (mNativePtr == 0) return;
+        ActorKeyedServiceJni.get().notifyBackgroundSetupFailed(mNativePtr, contextId);
+    }
+
     @CalledByNative
     private void clearNativePtr() {
         mNativePtr = 0;
@@ -141,5 +163,10 @@ public class ActorKeyedService {
         ActorTask getTask(long nativeActorKeyedServiceAndroid, int taskId);
 
         void stopTask(long nativeActorKeyedServiceAndroid, int taskId, int stopReason);
+
+        void setPreparedBackgroundTab(
+                long nativeActorKeyedServiceAndroid, Tab tab, String contextId);
+
+        void notifyBackgroundSetupFailed(long nativeActorKeyedServiceAndroid, String contextId);
     }
 }

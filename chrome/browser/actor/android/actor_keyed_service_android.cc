@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/android/actor_task_android.h"
+#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -28,6 +29,19 @@ namespace actor {
 namespace {
 const char kActorKeyedServiceBridgeKey[] = "actor_keyed_service_bridge";
 }  // namespace
+
+ActorKeyedServiceAndroid* ActorKeyedServiceAndroid::Get(
+    ActorKeyedService* service) {
+  ActorKeyedServiceAndroid* bridge = static_cast<ActorKeyedServiceAndroid*>(
+      service->GetUserData(kActorKeyedServiceBridgeKey));
+  if (!bridge) {
+    service->SetUserData(kActorKeyedServiceBridgeKey,
+                         std::make_unique<ActorKeyedServiceAndroid>(service));
+    bridge = static_cast<ActorKeyedServiceAndroid*>(
+        service->GetUserData(kActorKeyedServiceBridgeKey));
+  }
+  return bridge;
+}
 
 ScopedJavaLocalRef<jobject> JNI_ActorKeyedServiceFactory_GetForProfile(
     JNIEnv* env,
@@ -115,6 +129,26 @@ void ActorKeyedServiceAndroid::StopTask(JNIEnv* env,
                                         int32_t stop_reason) {
   service_->StopTask(TaskId(task_id),
                      static_cast<ActorTask::StoppedReason>(stop_reason));
+}
+
+void ActorKeyedServiceAndroid::SetPreparedBackgroundTab(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& j_tab,
+    const base::android::JavaRef<jstring>& j_context_id) {
+  TabAndroid* tab = TabAndroid::GetNativeTab(env, j_tab);
+  std::string context_id =
+      base::android::ConvertJavaStringToUTF8(env, j_context_id);
+
+  service_->NotifyBackgroundTabReady(tab, context_id);
+}
+
+void ActorKeyedServiceAndroid::NotifyBackgroundSetupFailed(
+    JNIEnv* env,
+    const base::android::JavaRef<jstring>& j_context_id) {
+  std::string context_id =
+      base::android::ConvertJavaStringToUTF8(env, j_context_id);
+
+  service_->NotifyBackgroundSetupFailed(context_id);
 }
 
 void ActorKeyedServiceAndroid::OnTaskStateChanged(ActorTask& task) {

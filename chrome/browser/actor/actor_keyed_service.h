@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
 #include "base/types/expected.h"
@@ -182,6 +183,19 @@ class ActorKeyedService : public KeyedService,
   void OnProfileInitializationComplete(Profile* profile) override;
 
 #if BUILDFLAG(IS_ANDROID)
+  class BackgroundActuationObserver : public base::CheckedObserver {
+   public:
+    virtual void OnBackgroundTabPrepared(tabs::TabInterface* tab,
+                                         const std::string& context_id) = 0;
+    virtual void OnBackgroundSetupFailed(const std::string& context_id) = 0;
+  };
+
+  void AddObserver(BackgroundActuationObserver* observer);
+  void RemoveObserver(BackgroundActuationObserver* observer);
+  void NotifyBackgroundTabReady(tabs::TabInterface* tab,
+                                const std::string& context_id);
+  void NotifyBackgroundSetupFailed(const std::string& context_id);
+
   using EnsureForegroundServiceStartedCallback =
       base::RepeatingCallback<void(const std::string&)>;
   base::CallbackListSubscription AddForegroundServiceStartedCallback(
@@ -234,6 +248,7 @@ class ActorKeyedService : public KeyedService,
 #if BUILDFLAG(IS_ANDROID)
   base::RepeatingCallbackList<void(const std::string&)>
       ensure_foreground_service_started_callbacks_;
+  base::ObserverList<BackgroundActuationObserver> observers_;
 #endif
 
   // Owns this.
