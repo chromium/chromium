@@ -422,11 +422,12 @@ def bind_callback_local_vars(code_node, cg_context):
                 "DOMWindow* ${blink_receiver} = "
                 "${class_name}::ToWrappableUnsafe(${isolate},${v8_receiver});")
         else:
-            # ToWrappableUnsafe will always return non-null, so we can use
-            # UnsafeTo via a reference to avoid the nullptr check as well.
+            # In the V8 sandbox attacker model, we can get any DOMWindow because
+            # LocalDOMWindow and RemoteDOMWindow share the same tag, therefore
+            # we need to check at runtime the returned type.
             text = (
-                "LocalDOMWindow* ${blink_receiver} = &UnsafeTo<LocalDOMWindow>("
-                "*${class_name}::ToWrappableUnsafe(${isolate},${v8_receiver}));"
+                "LocalDOMWindow* ${blink_receiver} = To<LocalDOMWindow>("
+                "${class_name}::ToWrappableUnsafe(${isolate},${v8_receiver}));"
             )
     else:
         pattern = (
