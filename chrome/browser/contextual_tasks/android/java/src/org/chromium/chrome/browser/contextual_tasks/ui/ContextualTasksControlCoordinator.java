@@ -27,6 +27,7 @@ public class ContextualTasksControlCoordinator implements PeekViewManager {
     private final TabBottomSheetManager mTabBottomSheetManager;
     private final PropertyModel mModel;
     private final ContextualTasksControlMediator mMediator;
+
     private long mNativeContextualTasksControlCoordinator;
 
     private static final String EMPTY_TASK_ID = "";
@@ -39,7 +40,7 @@ public class ContextualTasksControlCoordinator implements PeekViewManager {
      * Constructs the coordinator.
      *
      * @param tabBottomSheetManager The {@link TabBottomSheetManager} to use.
-     * @param profile The {@link Profile} to use.
+     * @param profile The non-otr profile to use.
      */
     public ContextualTasksControlCoordinator(
             TabBottomSheetManager tabBottomSheetManager, Profile profile) {
@@ -69,10 +70,9 @@ public class ContextualTasksControlCoordinator implements PeekViewManager {
 
         mMediator = new ContextualTasksControlMediator(mModel);
 
-        if (mNativeContextualTasksControlCoordinator == 0) {
-            mNativeContextualTasksControlCoordinator =
-                    ContextualTasksControlCoordinatorJni.get().init(this, profile);
-        }
+        assert !profile.isOffTheRecord();
+        mNativeContextualTasksControlCoordinator =
+                ContextualTasksControlCoordinatorJni.get().init(this, profile);
     }
 
     /**

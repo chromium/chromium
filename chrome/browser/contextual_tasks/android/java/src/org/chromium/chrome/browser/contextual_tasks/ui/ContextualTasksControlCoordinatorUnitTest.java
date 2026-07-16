@@ -35,7 +35,6 @@ public class ContextualTasksControlCoordinatorUnitTest {
     @Mock private TabBottomSheetManager mTabBottomSheetManager;
     @Mock private Profile mProfile;
     @Mock private ContextualTasksControlCoordinator.Natives mJniMock;
-
     private ContextualTasksControlCoordinator mCoordinator;
     private PropertyModel mModel;
 
@@ -53,6 +52,7 @@ public class ContextualTasksControlCoordinatorUnitTest {
     @Test
     public void testInitialization() {
         assertNotNull(mModel);
+        assertEquals("", mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
         assertNotNull(mModel.get(TabBottomSheetPeekProperties.ON_ACTION_BUTTON_CLICKED));
         assertNotNull(mModel.get(TabBottomSheetPeekProperties.ON_CLOSE_CLICKED));
         assertNotNull(mModel.get(TabBottomSheetPeekProperties.ON_PEEK_VIEW_CLICKED));
