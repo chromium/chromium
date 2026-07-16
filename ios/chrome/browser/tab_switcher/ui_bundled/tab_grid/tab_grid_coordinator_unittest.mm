@@ -40,25 +40,10 @@
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/test/block_cleanup_test.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
-
-@interface StubSceneState : SceneState
-
-// Window for the associated scene, if any.
-// This is redeclared relative to FakeScene.window, except this is now readwrite
-// and backed by an instance variable.
-@property(nonatomic, strong, readwrite) UIWindow* window;
-
-@end
-
-@implementation StubSceneState {
-}
-
-@synthesize window = _window;
-
-@end
 
 @interface TestTabGridCoordinatorDelegate
     : NSObject <TabGridCoordinatorDelegate>
@@ -99,18 +84,6 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
  public:
   void SetUp() override {
     BlockCleanupTest::SetUp();
-    scene_state_ = [[StubSceneState alloc] initWithAppState:nil];
-
-    for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
-      UIWindowScene* windowScene =
-          base::apple::ObjCCastStrict<UIWindowScene>(scene);
-      UIWindow* window = [windowScene.windows firstObject];
-      if (window) {
-        scene_state_.window = window;
-        break;
-      }
-    }
-
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IOSChromeTabRestoreServiceFactory::GetInstance(),
@@ -127,6 +100,9 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
     profile_ = std::move(builder).Build();
+
+    scene_state_ = [[SceneState alloc] init];
+    scene_state_.scene = scoped_window_.GetScene();
 
     bookmarks::test::WaitForBookmarkModelToLoad(
         ios::BookmarkModelFactory::GetForProfile(profile_.get()));
@@ -173,10 +149,6 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
                      incognitoBrowser:incognito_browser_.get()];
     coordinator_.animationsDisabledForTesting = YES;
 
-    // TabGridCoordinator will make its view controller the root, so stash the
-    // original root view controller before starting `coordinator_`.
-    original_root_view_controller_ = [GetAnyKeyWindow() rootViewController];
-
     delegate_ = [[TestTabGridCoordinatorDelegate alloc] init];
     coordinator_.delegate = delegate_;
 
@@ -201,10 +173,6 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
   }
 
   void TearDown() override {
-    if (original_root_view_controller_) {
-      GetAnyKeyWindow().rootViewController = original_root_view_controller_;
-      original_root_view_controller_ = nil;
-    }
     [coordinator_ stop];
   }
 
@@ -221,8 +189,11 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
   // Incognito browser for the coordinator.
   std::unique_ptr<Browser> incognito_browser_;
 
-  // Scene state emulated in this test.
-  StubSceneState* scene_state_;
+  // The scoped Window that will be used for the test.
+  ScopedKeyWindow scoped_window_;
+
+  // SceneState used in the test.
+  SceneState* scene_state_;
 
   // The TabGridCoordinator that is under test.  The test fixture sets
   // this VC as the root VC for the window.
@@ -230,10 +201,6 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
 
   // Delegate for the coordinator's TabSwitcher interface.
   TestTabGridCoordinatorDelegate* delegate_;
-
-  // The key window's original root view controller, which must be restored at
-  // the end of the test.
-  UIViewController* original_root_view_controller_;
 
   // The following view controllers are created by the test fixture and are
   // available for use in tests.
