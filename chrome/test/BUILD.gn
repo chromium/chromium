@@ -7629,20 +7629,6 @@ test("unit_tests") {
 
   if (safe_browsing_mode > 0) {
     sources += [
-      "../browser/safe_browsing/chrome_password_protection_service_unittest.cc",
-      "../browser/safe_browsing/chrome_ui_manager_delegate_unittest.cc",
-      "../browser/safe_browsing/chrome_user_population_helper_unittest.cc",
-      "../browser/safe_browsing/client_side_detection_host_unittest.cc",
-      "../browser/safe_browsing/download_protection/download_item_metadata_unittest.cc",
-      "../browser/safe_browsing/download_protection/download_protection_service_unittest.cc",
-      "../browser/safe_browsing/download_protection/download_protection_unittest_util.cc",
-      "../browser/safe_browsing/download_protection/download_protection_unittest_util.h",
-      "../browser/safe_browsing/download_protection/download_protection_util_unittest.cc",
-      "../browser/safe_browsing/download_protection/download_request_maker_unittest.cc",
-      "../browser/safe_browsing/download_protection/file_analyzer_unittest.cc",
-      "../browser/safe_browsing/download_protection/file_system_access_metadata_unittest.cc",
-      "../browser/safe_browsing/notification_content_detection/notification_content_detection_util_unittest.cc",
-      "../browser/safe_browsing/threat_details_unittest.cc",
       "../common/safe_browsing/binary_feature_extractor_unittest.cc",
       "../common/safe_browsing/download_type_util_unittest.cc",
     ]
@@ -7665,15 +7651,6 @@ test("unit_tests") {
 
     if (is_android) {
       deps += [ "//components/safe_browsing/core/browser:referring_app_info" ]
-    }
-
-    if (enterprise_cloud_content_analysis) {
-      sources += [
-        "../browser/safe_browsing/chrome_enterprise_url_lookup_service_factory_unittest.cc",
-        "../browser/safe_browsing/chrome_enterprise_url_lookup_service_unittest.cc",
-      ]
-
-      deps += [ "//components/safe_browsing/core/browser/realtime:enterprise_url_lookup_service" ]
     }
   }
 

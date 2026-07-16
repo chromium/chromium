@@ -727,6 +727,11 @@ source_set("metrics_collector") {
 
 source_set("unit_tests") {
   testonly = true
+
+  # Some of these tests declare file-scope objects with non-trivial destructors
+  # (e.g. client_side_detection_host_unittest.cc).
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
   sources = [
     "advanced_protection_status_manager_factory_unittest.cc",
     "advanced_protection_status_manager_unittest.cc",
@@ -752,13 +757,75 @@ source_set("unit_tests") {
   ]
 
   if (safe_browsing_mode != 0) {
-    sources += [ "gemini_antiscam_protection/gemini_antiscam_protection_service_unittest.cc" ]
+    sources += [
+      "chrome_password_protection_service_unittest.cc",
+      "chrome_ui_manager_delegate_unittest.cc",
+      "chrome_user_population_helper_unittest.cc",
+      "client_side_detection_host_unittest.cc",
+      "download_protection/download_item_metadata_unittest.cc",
+      "download_protection/download_protection_service_unittest.cc",
+      "download_protection/download_protection_unittest_util.cc",
+      "download_protection/download_protection_unittest_util.h",
+      "download_protection/download_protection_util_unittest.cc",
+      "download_protection/download_request_maker_unittest.cc",
+      "download_protection/file_analyzer_unittest.cc",
+      "download_protection/file_system_access_metadata_unittest.cc",
+      "gemini_antiscam_protection/gemini_antiscam_protection_service_unittest.cc",
+      "notification_content_detection/notification_content_detection_util_unittest.cc",
+      "threat_details_unittest.cc",
+    ]
     deps += [
+      "//chrome/browser/enterprise/connectors/test:test_support",
       "//chrome/browser/history",
       "//chrome/browser/optimization_guide",
       "//chrome/browser/optimization_guide:test_support",
+      "//chrome/browser/password_manager/factories",
+      "//chrome/browser/policy:test_support",
+      "//chrome/browser/safe_browsing:verdict_cache_manager_factory",
+      "//chrome/browser/sync",
+      "//chrome/common/safe_browsing:archive_analyzer_results",
+      "//chrome/common/safe_browsing:binary_feature_extractor",
+      "//chrome/common/safe_browsing:mock_binary_feature_extractor",
+      "//components/autofill/content/browser:test_support",
+      "//components/enterprise/connectors/core:test_support",
+      "//components/enterprise/obfuscation/core:enterprise_obfuscation",
+      "//components/file_access:test_support",
+      "//components/optimization_guide/core:model_execution_test_support",
+      "//components/safe_browsing/content/browser",
+      "//components/safe_browsing/content/browser:client_side_detection_images_cache",
+      "//components/safe_browsing/content/browser:client_side_detection_service",
+      "//components/safe_browsing/content/browser:credit_card_form_event",
+      "//components/safe_browsing/content/browser:safe_browsing_blocking_page",
+      "//components/safe_browsing/content/browser:safe_browsing_service",
+      "//components/safe_browsing/content/browser/notification_content_detection",
+      "//components/safe_browsing/content/browser/password_protection",
+      "//components/safe_browsing/content/browser/web_ui",
+      "//components/safe_browsing/content/common:file_type_policies",
+      "//components/safe_browsing/content/common:file_type_policies_test_support",
+      "//components/safe_browsing/content/common:interfaces",
+      "//components/safe_browsing/core/browser:client_side_detection_service_base",
+      "//components/safe_browsing/core/browser:intelligent_scan_delegate",
+      "//components/safe_browsing/core/browser:referring_app_info",
+      "//components/safe_browsing/core/browser:token_fetcher",
+      "//components/safe_browsing/core/browser:token_fetcher_testing_helper",
+      "//components/safe_browsing/core/browser:verdict_cache_manager",
+      "//components/safe_browsing/core/browser/sync",
       "//components/safe_browsing/core/common/proto:csd_proto",
+      "//components/ukm:test_support",
+      "//third_party/zlib/google:zip",
     ]
+
+    if (is_android) {
+      deps += [ "//chrome/browser/password_manager/android:unit_tests" ]
+    }
+
+    if (enterprise_cloud_content_analysis) {
+      sources += [
+        "chrome_enterprise_url_lookup_service_factory_unittest.cc",
+        "chrome_enterprise_url_lookup_service_unittest.cc",
+      ]
+      deps += [ "//components/safe_browsing/core/browser/realtime:enterprise_url_lookup_service" ]
+    }
   }
 
   if (safe_browsing_mode == 1) {
