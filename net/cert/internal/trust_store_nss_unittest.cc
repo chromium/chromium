@@ -23,6 +23,7 @@
 #include "net/cert/scoped_nss_types.h"
 #include "net/cert/x509_util.h"
 #include "net/cert/x509_util_nss.h"
+#include "net/test/cert_builder.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -745,6 +746,31 @@ TEST_F(TrustStoreNSSTestWithoutSlotFilter, TrustedCA) {
       bssl::CertificateTrust::ForUnspecified()));
 
   EXPECT_TRUE(HasTrust({newroot_}, ExpectedTrustForAnchor()));
+}
+
+// Trust for a cert shouldn't apply to a different cert even if most parts of
+// the cert are the same.
+TEST_F(TrustStoreNSSTestWithoutSlotFilter, TrustedCertWithDifferentKey) {
+  auto [leaf_builder, root_builder] = CertBuilder::CreateSimpleChain2();
+
+  auto trusted_root = bssl::ParsedCertificate::Create(
+      root_builder->DupCertBuffer(),
+      x509_util::DefaultParseCertificateOptions(), nullptr);
+  ASSERT_TRUE(trusted_root);
+  AddCertToNSSSlotWithTrust(trusted_root.get(), test_nssdb_.slot(),
+                            bssl::CertificateTrustType::TRUSTED_ANCHOR);
+
+  // Regenerate the private key of the cert builder to create a similar cert
+  // where the only difference is the SPKI (and the self-signature).
+  root_builder->GenerateECKey();
+  auto imposter_root = bssl::ParsedCertificate::Create(
+      root_builder->DupCertBuffer(),
+      x509_util::DefaultParseCertificateOptions(), nullptr);
+  ASSERT_TRUE(imposter_root);
+
+  EXPECT_TRUE(HasTrust({trusted_root}, ExpectedTrustForAnchor()));
+  EXPECT_TRUE(
+      HasTrust({imposter_root}, bssl::CertificateTrust::ForUnspecified()));
 }
 
 // Distrust a single self-signed CA certificate.
