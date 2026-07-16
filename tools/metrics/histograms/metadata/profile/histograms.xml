@@ -917,8 +917,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfilePicker.FirstRun.OrganizationAvailableTiming" units="ms"
-    expires_after="2026-08-02">
-  <owner>dgn@chromium.org</owner>
+    expires_after="2026-12-14">
+  <owner>ernn@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records the time between the first run of Chrome on Desktop is loaded and
