@@ -138,7 +138,9 @@ export class SearchAnimatedGlowElement extends CrLitElement {
   };
 
   private getAngleFromEvent_(e: DragEvent): number {
-    const rect = this.getBoundingClientRect();
+    const backgroundEl = this.shadowRoot.querySelector('.background');
+    const rect = backgroundEl ? backgroundEl.getBoundingClientRect() :
+                                this.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
     const scaleX = 4;
