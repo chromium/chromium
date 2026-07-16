@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/viz/service/viz_service_export.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/service/shared_image_interface_in_process_base.h"
 
 namespace gpu {
@@ -26,9 +27,10 @@ class SkiaOutputSurfaceImplOnGpu;
 class VIZ_SERVICE_EXPORT SkiaOutputSurfaceSharedImageInterface
     : public gpu::SharedImageInterfaceInProcessBase {
  public:
-  explicit SkiaOutputSurfaceSharedImageInterface(
+  SkiaOutputSurfaceSharedImageInterface(
       SkiaOutputSurfaceImpl& output_surface,
-      SkiaOutputSurfaceImplOnGpu& output_surface_on_gpu);
+      SkiaOutputSurfaceImplOnGpu& output_surface_on_gpu,
+      gpu::SharedImageCapabilities shared_image_capabilities);
 
   // Call from destructor of `output_surface_` to break reference cycle.
   // This will also break the reference to `output_surface_on_gpu_`. This can

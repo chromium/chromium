@@ -20,11 +20,18 @@ namespace viz {
 
 SkiaOutputSurfaceSharedImageInterface::SkiaOutputSurfaceSharedImageInterface(
     SkiaOutputSurfaceImpl& output_surface,
-    SkiaOutputSurfaceImplOnGpu& output_surface_on_gpu)
+    SkiaOutputSurfaceImplOnGpu& output_surface_on_gpu,
+    gpu::SharedImageCapabilities shared_image_capabilities)
     : gpu::SharedImageInterfaceInProcessBase(
           gpu::CommandBufferNamespace::VIZ_SKIA_OUTPUT_SURFACE,
           output_surface_on_gpu.command_buffer_id(),
-          /*verify_creation_sync_token=*/true),
+          /*verify_creation_sync_token=*/true,
+          // We must eagerly provide the capabilities because
+          // `SkiaOutputSurfaceImpl` batches tasks and only executes them on
+          // `FlushGpuTasks`. `SharedImageInterfaceInProcessBase` schedules a
+          // task to create the capabilities and waits on it, but we never flush
+          // the task queue, causing a deadlock.
+          std::move(shared_image_capabilities)),
       output_surface_(&output_surface),
       output_surface_on_gpu_(&output_surface_on_gpu),
       host_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}

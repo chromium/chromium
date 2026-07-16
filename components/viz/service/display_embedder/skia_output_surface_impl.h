@@ -219,8 +219,12 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
  private:
   friend class SkiaOutputSurfaceSharedImageInterface;
 
+  struct InitializeOnGpuThreadResult;
   bool Initialize();
-  void InitializeOnGpuThread(bool* result);
+  // Sets `out_result` to null on failure.
+  void InitializeOnGpuThread(
+      std::optional<InitializeOnGpuThreadResult>* out_result);
+
   GrSurfaceCharacterization CreateGrSurfaceCharacterizationRenderPass(
       const gfx::Size& surface_size,
       SkColorType color_type,
