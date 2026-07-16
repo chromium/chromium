@@ -85,10 +85,9 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
         mTabListCoordinator.setCollapseListener(mCollapseListener);
     }
 
-    public void setVisible(boolean show) {
+    public void setVisible(boolean show, boolean suppressAnimations) {
         mManualVisible = show;
-        mSideUiCoordinator.updateUi(
-                new UiUpdateRequest(getSideUiId(), /* suppressAnimations= */ false));
+        mSideUiCoordinator.updateUi(new UiUpdateRequest(getSideUiId(), suppressAnimations));
     }
 
     public void destroy() {

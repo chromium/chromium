@@ -134,10 +134,10 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testHasContentToShow() {
-        mCoordinator.setVisible(true);
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
         assertTrue(mCoordinator.hasContentToShow());
 
-        mCoordinator.setVisible(false);
+        mCoordinator.setVisible(/* show= */ false, /* suppressAnimations= */ false);
         assertFalse(mCoordinator.hasContentToShow());
     }
 

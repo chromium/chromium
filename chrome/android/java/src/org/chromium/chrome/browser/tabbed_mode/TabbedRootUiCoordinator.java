@@ -2334,7 +2334,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         if (!success) return;
 
                         boolean active = VerticalTabUtils.isVerticalTabsEnabled(mActivity);
-                        assumeNonNull(mVerticalTabsSideUiCoordinator).setVisible(active);
+                        assumeNonNull(mVerticalTabsSideUiCoordinator)
+                                .setVisible(active, /* suppressAnimations= */ false);
                     });
         }
 
@@ -2349,7 +2350,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                             .getTabStripTransitionCoordinator();
                             assumeNonNull(transitionCoord).suppressTabStrip(true);
                         } else {
-                            assumeNonNull(mVerticalTabsSideUiCoordinator).setVisible(false);
+                            assumeNonNull(mVerticalTabsSideUiCoordinator)
+                                    .setVisible(/* show= */ false, /* suppressAnimations= */ false);
                         }
                     }
                 };
@@ -2357,7 +2359,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 .registerOnSharedPreferenceChangeListener(mVerticalTabsPreferenceListener);
 
         if (useVerticalLayoutOnLaunch) {
-            assumeNonNull(mVerticalTabsSideUiCoordinator).setVisible(true);
+            assumeNonNull(mVerticalTabsSideUiCoordinator)
+                    .setVisible(/* show= */ true, /* suppressAnimations= */ true);
         }
 
         // Set up vertical tabs + pinned Glic visibility interaction.
