@@ -16,7 +16,8 @@ found in the LICENSE file.
     app:secondaryTextAppearance="@style/TextAppearance.TextSmall"
     app:chipStartPadding="@dimen/at_memory_flyout_default_margin"
     app:chipEndPadding="@dimen/at_memory_flyout_default_margin"
-    app:chipTopPadding="6dp"
-    app:chipBottomPadding="6dp"
+    app:primaryTextStartPadding="0dp"
+    app:chipTopPadding="8dp"
+    app:chipBottomPadding="8dp"
     app:verticalInset="0dp"
     style="@style/SuggestionChip" />
