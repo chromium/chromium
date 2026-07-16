@@ -81,7 +81,6 @@ build_webui("build") {
     "back_forward_button.ts",
     "battery_saver_button.html.ts",
     "battery_saver_button.ts",
-    "battery_saver_button_icons.html.ts",
     "browser_proxy.ts",
     "content_setting_icon.html.ts",
     "content_setting_icon.ts",

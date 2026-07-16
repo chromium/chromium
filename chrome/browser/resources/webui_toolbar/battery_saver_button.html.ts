@@ -9,7 +9,7 @@ import type {BatterySaverButtonElement} from './battery_saver_button.js';
 export function getHtml(this: BatterySaverButtonElement) {
   return html`
     <cr-icon-button id="button"
-        iron-icon="battery-saver-button:battery-plus"
+        iron-icon="webui-toolbar:battery_saver_refresh_custom"
         aria-label="${this.getLabel_()}"
         title="${this.getTooltip_()}"
         @click="${this.onClick_}">
