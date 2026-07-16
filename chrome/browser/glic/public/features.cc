@@ -215,4 +215,13 @@ BASE_FEATURE(kGlicHotkeyLocalScope,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
+
+BASE_FEATURE(kGlicPasteEligibilityCheck,
+             "GlicPasteEligibilityCheck",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGlicWebPasteEligibilityCheck,
+             "GlicWebPasteEligibilityCheck",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features

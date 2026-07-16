@@ -682,6 +682,20 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:OptInFlow) -->
 
+<enum name="GlicPasteFailedEligibilityReason">
+  <int value="0" label="PageContextIneligible"/>
+  <int value="1" label="PageContextInvalidated"/>
+  <int value="2" label="CrossProfile"/>
+</enum>
+
+<enum name="GlicPasteFormat">
+  <int value="0" label="PlainText"/>
+  <int value="1" label="Html"/>
+  <int value="2" label="Bitmap"/>
+  <int value="3" label="Filenames"/>
+  <int value="4" label="Other"/>
+</enum>
+
 <!-- LINT.IfChange(GlicPinTrigger) -->
 
 <enum name="GlicPinTrigger">

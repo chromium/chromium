@@ -573,6 +573,8 @@ export enum HostCapability {
   IMG_WEB_DRAG_DROP = 12,
   // Indicates that the host does not show the WebUi preloader.
   NO_WEB_UI_LOADER = 13,
+  // Indicates that the host enforces paste eligibility checks.
+  ENFORCES_PASTE_ELIGIBILITY = 14,
 }
 
 // Lists capabilities that the glic web client may support.

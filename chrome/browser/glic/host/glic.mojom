@@ -2226,8 +2226,7 @@ interface ExperimentalTriggeringUpdatesHandler {
 interface ExperimentalTriggeringClient {
   // Requests the web client to upload a screenshot of the target tab's
   // web contents to remote storage.
-  UploadEncryptedScreenshot(Screenshot screenshot)
-      => (string? file_token);
+  UploadEncryptedScreenshot(Screenshot screenshot) => (string? file_token);
 
   // Register a handler to observe Glic updates.
   GetExperimentalTriggeringUpdates(
@@ -2707,6 +2706,8 @@ enum HostCapability {
   kImgWebDragDrop = 12,
   // Indicates that the host does not show the WebUi preloader.
   kNoWebUiLoader = 13,
+  // Indicates that the host enforces paste eligibility checks.
+  kEnforcesPasteEligibility = 14,
 };
 
 // @generate glic_api

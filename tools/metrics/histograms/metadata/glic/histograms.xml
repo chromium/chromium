@@ -2268,6 +2268,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Paste.AttemptedFormat.{CopySource}"
+    enum="GlicPasteFormat" expires_after="2027-01-01">
+  <owner>birnie@google.com</owner>
+  <owner>chrome-glic@google.com</owner>
+  <summary>
+    Records the format of the clipboard data when a user attempts to paste into
+    the Glic UI. Recorded unconditionally upon every paste attempt into Glic.
+  </summary>
+  <token key="CopySource">
+    <variant name="OS" summary="Copied from the OS or an external application"/>
+    <variant name="Web" summary="Copied from a WebContents within Chrome"/>
+  </token>
+</histogram>
+
+<histogram name="Glic.Paste.FailedEligibilityReason.{CopySource}"
+    enum="GlicPasteFailedEligibilityReason" expires_after="2027-01-01">
+  <owner>birnie@google.com</owner>
+  <owner>chrome-glic@google.com</owner>
+  <summary>
+    Records the reason a paste attempt was blocked by the Glic host's clipboard
+    eligibility checks. Only logged when a paste is actively denied (e.g.
+    because it originated from a restricted page).
+  </summary>
+  <token key="CopySource">
+    <variant name="OS" summary="Copied from the OS or an external application"/>
+    <variant name="Web" summary="Copied from a WebContents within Chrome"/>
+  </token>
+</histogram>
+
 <histogram name="Glic.PositionOnChrome.{Event}" enum="ChromeRelativePosition"
     expires_after="2026-07-26">
   <owner>andreaxg@google.com</owner>
