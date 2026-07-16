@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
 
 #include <windows.h>
@@ -27,6 +22,7 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
@@ -380,7 +376,7 @@ StdParentHandles::~StdParentHandles() = default;
 // ScopedStartupInfo //////////////////////////////////////////////////////////
 
 ScopedStartupInfo::ScopedStartupInfo() {
-  memset(&info_, 0, sizeof(info_));
+  UNSAFE_TODO(memset(&info_, 0, sizeof(info_)));
   info_.hStdInput = INVALID_HANDLE_VALUE;
   info_.hStdOutput = INVALID_HANDLE_VALUE;
   info_.hStdError = INVALID_HANDLE_VALUE;
@@ -481,7 +477,7 @@ HRESULT WaitForProcess(base::win::ScopedHandle::Handle process_handle,
             LOGFN(ERROR) << "ReadFile(" << index << ") hr=" << putHR(hr);
         } else {
           LOGFN(VERBOSE) << "ReadFile(" << index << ") length=" << length;
-          buffer[length] = 0;
+          UNSAFE_TODO(buffer[length]) = 0;
         }
         break;
       }
@@ -511,7 +507,7 @@ HRESULT WaitForProcess(base::win::ScopedHandle::Handle process_handle,
       LOGFN(VERBOSE) << "Stop waiting for output buffer";
       break;
     } else {
-      strcat_s(output_buffer, buffer_size, buffer);
+      UNSAFE_TODO(strcat_s(output_buffer, buffer_size, buffer));
     }
   }
 
@@ -795,7 +791,8 @@ HRESULT GetEntryPointArgumentForRunDll(HINSTANCE dll_handle,
   // The unittest exe does not expose entrypoints, so return S_FALSE as a hint
   // that this will not work.  The command line is built anyway though so
   // tests of the command line construction can be written.
-  return wcsicmp(wcsrchr(path_to_dll.value().c_str(), L'.'), L".dll") == 0
+  return UNSAFE_TODO(
+             wcsicmp(wcsrchr(path_to_dll.value().c_str(), L'.'), L".dll") == 0)
              ? S_OK
              : S_FALSE;
 }
@@ -1254,8 +1251,8 @@ void GetOsVersion(std::string* version) {
 
   if (SUCCEEDED(hr1) && SUCCEEDED(hr2) && SUCCEEDED(hr3)) {
     char version_buffer[kVersionStringSize];
-    snprintf(version_buffer, kVersionStringSize, "%lu.%lu.%ls", major, minor,
-             build);
+    UNSAFE_TODO(snprintf(version_buffer, kVersionStringSize, "%lu.%lu.%ls",
+                         major, minor, build));
     *version = version_buffer;
     return;
   }

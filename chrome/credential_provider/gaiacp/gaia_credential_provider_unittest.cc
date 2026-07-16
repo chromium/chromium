@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/credential_provider/gaiacp/gaia_credential_provider.h"
 
 #include <credentialprovider.h>
@@ -15,6 +10,7 @@
 #include <memory>
 #include <tuple>
 
+#include "base/compiler_specific.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/win/atl.h"
@@ -436,14 +432,22 @@ TEST_P(GcpCredentialProviderSetSerializationTest, CheckAutoLogon) {
   std::wstring local_domain = OSUserManager::GetLocalDomain();
   std::wstring serialization_username = second_username;
   std::wstring serialization_password = L"password";
-  std::vector<wchar_t> dummy_domain(
-      local_domain.c_str(), local_domain.c_str() + local_domain.size() + 1);
-  std::vector<wchar_t> dummy_username(
-      serialization_username.c_str(),
-      serialization_username.c_str() + serialization_username.size() + 1);
-  std::vector<wchar_t> dummy_password(
-      serialization_password.c_str(),
-      serialization_password.c_str() + serialization_password.size() + 1);
+  std::vector<wchar_t> dummy_domain;
+  dummy_domain.reserve(local_domain.size() + 1);
+  dummy_domain.assign(local_domain.begin(), local_domain.end());
+  dummy_domain.push_back(L'\0');
+
+  std::vector<wchar_t> dummy_username;
+  dummy_username.reserve(serialization_username.size() + 1);
+  dummy_username.assign(serialization_username.begin(),
+                        serialization_username.end());
+  dummy_username.push_back(L'\0');
+
+  std::vector<wchar_t> dummy_password;
+  dummy_password.reserve(serialization_password.size() + 1);
+  dummy_password.assign(serialization_password.begin(),
+                        serialization_password.end());
+  dummy_password.push_back(L'\0');
   ASSERT_EQ(S_OK, BuildCredPackAuthenticationBuffer(
                       &dummy_domain[0], &dummy_username[0], &dummy_password[0],
                       cpus, &cpcs));

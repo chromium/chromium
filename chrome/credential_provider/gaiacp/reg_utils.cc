@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/strings/strcat.h"
 #include "base/strings/strcat_win.h"
 #include "base/strings/string_number_conversions_win.h"
@@ -227,7 +223,7 @@ HRESULT GetMachineRegString(const std::wstring& key_name,
     return HRESULT_FROM_WIN32(sts);
   }
 
-  value[local_length] = 0;
+  UNSAFE_TODO(value[local_length]) = 0;
   *length = local_length;
   return S_OK;
 }
@@ -366,8 +362,8 @@ HRESULT GetUserProperty(const std::wstring& sid,
                         const std::wstring& name,
                         DWORD* value) {
   wchar_t key_name[128];
-  swprintf_s(key_name, std::size(key_name), L"%s\\%s", kGcpUsersRootKeyName,
-             sid.c_str());
+  UNSAFE_TODO(swprintf_s(key_name, std::size(key_name), L"%s\\%s",
+                         kGcpUsersRootKeyName, sid.c_str()));
   return GetMachineRegDWORD(key_name, name, value);
 }
 
@@ -376,8 +372,8 @@ HRESULT GetUserProperty(const std::wstring& sid,
                         wchar_t* value,
                         ULONG* length) {
   wchar_t key_name[128];
-  swprintf_s(key_name, std::size(key_name), L"%s\\%s", kGcpUsersRootKeyName,
-             sid.c_str());
+  UNSAFE_TODO(swprintf_s(key_name, std::size(key_name), L"%s\\%s",
+                         kGcpUsersRootKeyName, sid.c_str()));
   return GetMachineRegString(key_name, name, value, length);
 }
 
@@ -385,8 +381,8 @@ HRESULT SetUserProperty(const std::wstring& sid,
                         const std::wstring& name,
                         DWORD value) {
   wchar_t key_name[128];
-  swprintf_s(key_name, std::size(key_name), L"%s\\%s", kGcpUsersRootKeyName,
-             sid.c_str());
+  UNSAFE_TODO(swprintf_s(key_name, std::size(key_name), L"%s\\%s",
+                         kGcpUsersRootKeyName, sid.c_str()));
   return SetMachineRegDWORD(key_name, name, value);
 }
 
@@ -394,8 +390,8 @@ HRESULT SetUserProperty(const std::wstring& sid,
                         const std::wstring& name,
                         const std::wstring& value) {
   wchar_t key_name[128];
-  swprintf_s(key_name, std::size(key_name), L"%s\\%s", kGcpUsersRootKeyName,
-             sid.c_str());
+  UNSAFE_TODO(swprintf_s(key_name, std::size(key_name), L"%s\\%s",
+                         kGcpUsersRootKeyName, sid.c_str()));
   return SetMachineRegString(key_name, name, value);
 }
 
@@ -454,7 +450,7 @@ HRESULT GetSidFromKey(const wchar_t* key,
       if (result_found)
         return HRESULT_FROM_WIN32(ERROR_USER_EXISTS);
 
-      wcsncpy_s(sid, length, user_sid, wcslen(user_sid));
+      UNSAFE_TODO(wcsncpy_s(sid, length, user_sid, wcslen(user_sid)));
       result_found = true;
     }
   }
@@ -483,8 +479,8 @@ HRESULT GetSidFromDomainAccountInfo(const std::wstring& domain,
                               sid1, length)) &&
       SUCCEEDED(GetSidFromKey(base::UTF8ToWide(kKeyUsername).c_str(), username,
                               sid2, length)) &&
-      wcsicmp(sid1, sid2) == 0) {
-    wcscpy_s(sid, length, sid1);
+      UNSAFE_TODO(wcsicmp(sid1, sid2) == 0)) {
+    UNSAFE_TODO(wcscpy_s(sid, length, sid1));
     return S_OK;
   } else {
     return E_FAIL;
@@ -498,7 +494,7 @@ HRESULT GetIdFromSid(const wchar_t* sid, std::wstring* id) {
   for (; iter.Valid(); ++iter) {
     const wchar_t* user_sid = iter.Name();
 
-    if (wcscmp(sid, user_sid) == 0) {
+    if (UNSAFE_TODO(wcscmp(sid, user_sid) == 0)) {
       wchar_t user_id[256];
       ULONG user_length = std::size(user_id);
       HRESULT hr = GetUserProperty(user_sid, kUserId, user_id, &user_length);

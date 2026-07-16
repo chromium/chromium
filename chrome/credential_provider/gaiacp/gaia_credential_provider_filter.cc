@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/credential_provider/gaiacp/gaia_credential_provider_filter.h"
 
 #include <string>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "build/branding_buildflags.h"
 #include "chrome/credential_provider/gaiacp/associated_user_validator.h"
 #include "chrome/credential_provider/gaiacp/auth_utils.h"
@@ -61,9 +58,16 @@ HRESULT CGaiaCredentialProviderFilter::Filter(
   // we don't revoke any access to normal credential providers.
   if (!ChromeAvailabilityChecker::Get()->HasSupportedChromeVersion()) {
     // Filter out the GaiaCredentialProvider in this case.
+    // SAFETY: Windows passes providers_clsids and providers_allow with size
+    // providers_count.
+    auto clsids_span =
+        UNSAFE_BUFFERS(base::span(providers_clsids, providers_count));
+    auto allow_span =
+        UNSAFE_BUFFERS(base::span(providers_allow, providers_count));
     for (DWORD i = 0; i < providers_count; ++i) {
-      if (providers_clsids[i] == CLSID_GaiaCredentialProvider)
-        providers_allow[i] = FALSE;
+      if (clsids_span[i] == CLSID_GaiaCredentialProvider) {
+        allow_span[i] = FALSE;
+      }
     }
 
     // Delete the startup sentinel file since if Chrome is not installed/usable
@@ -123,8 +127,8 @@ HRESULT CGaiaCredentialProviderFilter::UpdateRemoteCredential(
     return E_NOTIMPL;
 
   pcpcs_out->rgbSerialization = serialization_buffer;
-  memcpy(pcpcs_out->rgbSerialization, pcpcs_in->rgbSerialization,
-         pcpcs_in->cbSerialization);
+  UNSAFE_TODO(memcpy(pcpcs_out->rgbSerialization, pcpcs_in->rgbSerialization,
+                     pcpcs_in->cbSerialization));
   pcpcs_out->cbSerialization = pcpcs_in->cbSerialization;
   pcpcs_out->clsidCredentialProvider = CLSID_GaiaCredentialProvider;
   pcpcs_out->ulAuthenticationPackage = pcpcs_in->ulAuthenticationPackage;

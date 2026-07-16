@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/credential_provider/gaiacp/os_user_manager.h"
 
 #include <windows.h>
@@ -22,6 +17,7 @@
 #include <iomanip>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/scoped_native_library.h"
@@ -46,7 +42,7 @@ HRESULT GetDomainControllerServerForDomain(const wchar_t* domain,
   DCHECK(domain);
   std::wstring local_domain = OSUserManager::GetLocalDomain();
   // If the domain is the local domain, then there is no domain controller.
-  if (wcsicmp(local_domain.c_str(), domain) == 0) {
+  if (UNSAFE_TODO(wcsicmp(local_domain.c_str(), domain) == 0)) {
     return S_OK;
   }
 
@@ -148,9 +144,9 @@ HRESULT OSUserManager::GenerateRandomPassword(wchar_t* password, int length) {
         return hr;
       }
 
-      unsigned char c =
-          kValidPasswordChars[r % (std::size(kValidPasswordChars) - 1)];
-      *p++ = c;
+      unsigned char c = UNSAFE_TODO(
+          kValidPasswordChars[r % (std::size(kValidPasswordChars) - 1)]);
+      UNSAFE_TODO(*p++ = c);
       ++cur_length;
       --remaining_length;
 
@@ -344,7 +340,8 @@ HRESULT OSUserManager::CreateNewUser(const wchar_t* base_username,
   LOGFN(VERBOSE) << "Creating a new user: " << base_username;
 
   wchar_t new_username[kWindowsUsernameBufferLength];
-  errno_t err = wcscpy_s(new_username, std::size(new_username), base_username);
+  errno_t err = UNSAFE_TODO(
+      wcscpy_s(new_username, std::size(new_username), base_username));
   if (err != 0) {
     LOGFN(ERROR) << "wcscpy_s errno=" << err;
     return E_FAIL;
@@ -374,8 +371,8 @@ HRESULT OSUserManager::CreateNewUser(const wchar_t* base_username,
       LOGFN(VERBOSE) << "Username '" << new_username
                      << "' already exists. Trying '" << next_username << "'";
 
-      err = wcscpy_s(new_username, std::size(new_username),
-                     next_username.c_str());
+      err = UNSAFE_TODO(wcscpy_s(new_username, std::size(new_username),
+                                 next_username.c_str()));
       if (err != 0) {
         LOGFN(ERROR) << "wcscpy_s errno=" << err;
         return E_FAIL;
@@ -648,7 +645,7 @@ HRESULT OSUserManager::GetUserSID(const wchar_t* domain,
 
   // Check that the domain of the user found with LookupAccountName matches what
   // is requested.
-  if (wcsicmp(domain, user_domain_buffer) != 0) {
+  if (UNSAFE_TODO(wcsicmp(domain, user_domain_buffer) != 0)) {
     LOGFN(ERROR) << "Domain mismatch " << domain << " " << user_domain_buffer;
 
     return HRESULT_FROM_WIN32(ERROR_NONE_MAPPED);
@@ -691,7 +688,7 @@ HRESULT OSUserManager::FindUserBySID(const wchar_t* sid,
   if (domain_size) {
     if (domain_size <= domain_length)
       return HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER);
-    wcscpy_s(domain, domain_size, local_domain_buffer);
+    UNSAFE_TODO(wcscpy_s(domain, domain_size, local_domain_buffer));
   }
 
   std::wstring username_str = (username == nullptr) ? L"" : username;
@@ -798,7 +795,7 @@ HRESULT OSUserManager::ModifyUserAccessWithLogonHours(const wchar_t* domain,
                                                       const wchar_t* username,
                                                       bool allow) {
   BYTE buffer[21] = {0x0};
-  memset(buffer, allow ? 0xff : 0x0, sizeof(buffer));
+  UNSAFE_TODO(memset(buffer, allow ? 0xff : 0x0, sizeof(buffer)));
   USER_INFO_1020 user_info{UNITS_PER_WEEK, buffer};
 
   NET_API_STATUS nsts = ::NetUserSetInfo(

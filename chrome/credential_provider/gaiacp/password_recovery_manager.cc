@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/credential_provider/gaiacp/password_recovery_manager.h"
 
 #include <windows.h>
@@ -19,6 +14,7 @@
 #include <string_view>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -103,8 +99,8 @@ bool PadSecret(const std::string& secret, std::string* out) {
   size_t padded_length = (secret.size() + kMinPaddedPasswordLength - 1) &
                          ~(kMinPaddedPasswordLength - 1);
   std::string padded_secret(padded_length, kPaddingChar);
-  std::memcpy(&padded_secret[padded_length - secret.size()], secret.data(),
-              secret.size());
+  UNSAFE_TODO(std::memcpy(&padded_secret[padded_length - secret.size()],
+                          secret.data(), secret.size()));
 
   auto pwd_padding_dict =
       base::DictValue()
