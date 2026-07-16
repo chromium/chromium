@@ -960,6 +960,11 @@ std::vector<std::string> AwBrowserContext::GetCrossOriginIsolatedAllowList(
   return cross_origin_allow_list_matcher_->Serialize();
 }
 
+bool AwBrowserContext::AllowCrossOriginIsolatedApis(
+    const url::Origin& origin) const {
+  return cross_origin_allow_list_matcher_->Matches(origin);
+}
+
 }  // namespace android_webview
 
 DEFINE_JNI(AwBrowserContext)

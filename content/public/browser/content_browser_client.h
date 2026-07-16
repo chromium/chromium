@@ -3416,6 +3416,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // cross-origin isolation will be applied instead, which applies web-visible
   // restrictions but does not give access to cross-origin isolated APIs.
   virtual bool OriginSupportsConcreteCrossOriginIsolation(
+      content::BrowserContext* browser_context,
       const url::Origin& origin);
 };
 

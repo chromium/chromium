@@ -271,6 +271,11 @@ class AwBrowserContext : public content::BrowserContext,
       const std::vector<std::string>& origin_patterns);
   std::vector<std::string> GetCrossOriginIsolatedAllowList(JNIEnv* env);
 
+  // Returns if an origin is allowed to use APIs that require
+  // CrossOriginIsolated. Checks if the origin matches any rule set by
+  // AwBrowserContext#SetCrossOriginIsolatedAllowList()
+  bool AllowCrossOriginIsolatedApis(const url::Origin& origin) const;
+
  private:
   friend class AwBrowserContextIoThreadHandle;
   friend class AwBrowserContextTest;

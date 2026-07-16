@@ -11943,7 +11943,7 @@ NavigationRequest::ComputeCrossOriginIsolationKey() {
 
   blink::mojom::CrossOriginIsolationMode coi_mode =
       GetContentClient()->browser()->OriginSupportsConcreteCrossOriginIsolation(
-          origin)
+          GetNavigationController()->GetBrowserContext(), origin)
           ? blink::mojom::CrossOriginIsolationMode::kConcrete
           : blink::mojom::CrossOriginIsolationMode::kLogical;
   return AgentClusterKey::CrossOriginIsolationKey(

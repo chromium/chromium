@@ -1468,8 +1468,11 @@ bool AwContentBrowserClient::ShouldAnimateBackForwardTransitions() {
 }
 
 bool AwContentBrowserClient::OriginSupportsConcreteCrossOriginIsolation(
+    content::BrowserContext* browser_context,
     const url::Origin& origin) {
-  return false;
+  AwBrowserContext* aw_context =
+      static_cast<AwBrowserContext*>(browser_context);
+  return aw_context->AllowCrossOriginIsolatedApis(origin);
 }
 
 bool AwContentBrowserClient::IsAndroidAdvancedProtectionEnabled() {

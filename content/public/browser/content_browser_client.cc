@@ -2075,6 +2075,7 @@ void ContentBrowserClient::UpdateCorsExemptHeaderForPrefetch(
     network::mojom::NetworkContextParams* params) {}
 
 bool ContentBrowserClient::OriginSupportsConcreteCrossOriginIsolation(
+    content::BrowserContext* browser_context,
     const url::Origin& origin) {
   return true;
 }

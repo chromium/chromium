@@ -619,6 +619,7 @@ class DocumentIsolationPolicyWithLogicalCOIBrowserTest
         const url::Origin& concrete_coi_origin)
         : concrete_coi_origin_(concrete_coi_origin) {}
     bool OriginSupportsConcreteCrossOriginIsolation(
+        content::BrowserContext* browser_context,
         const url::Origin& origin) override {
       return origin.IsSameOriginWith(concrete_coi_origin_);
     }

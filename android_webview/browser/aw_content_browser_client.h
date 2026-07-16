@@ -313,6 +313,7 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
 
   bool ShouldAnimateBackForwardTransitions() override;
   bool OriginSupportsConcreteCrossOriginIsolation(
+      content::BrowserContext* browser_context,
       const url::Origin& origin) override;
 
   bool IsAndroidAdvancedProtectionEnabled() override;
