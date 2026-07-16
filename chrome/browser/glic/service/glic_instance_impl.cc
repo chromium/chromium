@@ -194,11 +194,14 @@ void GlicInstanceImpl::MaybeDaisyChainToTab(tabs::TabInterface* source_tab,
         show_options.invocation_source =
             mojom::InvocationSource::kDaisyChainOnFollowLink;
         break;
+      case DaisyChainSource::kAutoOpenPdf:
+        show_options.invocation_source =
+            mojom::InvocationSource::kAutoOpenedForPdf;
+        break;
       case DaisyChainSource::kUnknown:
       case DaisyChainSource::kActorAddTab:
       case DaisyChainSource::kNewTab:
       case DaisyChainSource::kWebHandoff:
-      case DaisyChainSource::kAutoOpenPdf:
       case DaisyChainSource::kLastActiveInstance:
         break;
     }

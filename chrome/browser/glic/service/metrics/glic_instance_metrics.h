@@ -277,6 +277,7 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   void RecordResponseLatencyByAttachedTabCount(base::TimeDelta latency);
 
   void RecordSkillsInvokeFunnelStep(SkillsInvokeFunnel invoke_funnel);
+  void RecordAndResetAutoOpenPdfMetric();
 
   base::flat_map<GlicInstanceEvent, int> event_counts_;
   EmbedderType current_ui_mode_ = EmbedderType::kUnknown;
@@ -308,6 +309,9 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   base::TimeTicks creation_time_;
   base::TimeTicks floaty_open_time_;
   std::map<tabs::TabHandle, base::TimeTicks> side_panel_open_times_;
+  std::vector<tabs::TabHandle> tabs_with_side_panel_;
+  ukm::SourceId auto_open_pdf_source_id_ = ukm::kInvalidSourceId;
+  base::TimeTicks auto_open_pdf_start_time_;
 
   std::unique_ptr<GlicStateTracker> activity_tracker_;
   std::unique_ptr<GlicStateTracker> visibility_tracker_;

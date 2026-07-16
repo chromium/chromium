@@ -8,7 +8,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 #include "chrome/browser/glic/service/metrics/glic_metrics_session_manager.h"
@@ -16,12 +18,18 @@
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace glic {
+
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabElementId);
 
 // Use 45 ms for testing.
 base::TimeDelta INACTIVITY_TIMEOUT_MS = base::Milliseconds(45);
@@ -154,6 +162,124 @@ IN_PROC_BROWSER_TEST_F(GlicFreMetricsTest, FreShownAndDismissed) {
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Onboarding.OptInAccept"),
             0);
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Fre.Dismissed"), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceMetricsTest,
+                       AutoOpenForPdfRecordsUkmOnClose) {
+  ukm::TestAutoSetUkmRecorder ukm_tester;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+  ukm::SourceId active_tab_source_id = browser()
+                                           ->tab_strip_model()
+                                           ->GetActiveWebContents()
+                                           ->GetPrimaryMainFrame()
+                                           ->GetPageUkmSourceId();
+
+  RunTestSequence(
+      Do([this] {
+        instance_coordinator().Toggle(
+            browser(), false, mojom::InvocationSource::kAutoOpenedForPdf);
+      }),
+      WaitForAndInstrumentGlic(GlicInstrumentMode::kHostAndContents),
+      Wait(START_TIMER_MS + base::Milliseconds(10)), CloseGlic(),
+      WaitForHide(kGlicHostElementId));
+
+  auto entries = ukm_tester.GetEntriesByName(
+      ukm::builders::Glic_AutoOpen_Closed::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_TRUE(ukm_tester.EntryHasMetric(
+      entries[0], ukm::builders::Glic_AutoOpen_Closed::kSessionDurationMsName));
+  EXPECT_EQ(entries[0]->source_id, active_tab_source_id);
+}
+
+class GlicInstanceMetricsTestWithDaisyChaining
+    : public GlicInstanceMetricsTest {
+ public:
+  GlicInstanceMetricsTestWithDaisyChaining() {
+    daisy_chain_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlicDefaultToLastActiveConversation},
+        /*disabled_features=*/{features::kGlicDaisyChainNewTabs});
+  }
+
+ private:
+  base::test::ScopedFeatureList daisy_chain_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceMetricsTestWithDaisyChaining,
+                       AutoOpenForPdfDaisyChainIgnoresTabSwitch) {
+  ukm::TestAutoSetUkmRecorder ukm_tester;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+  ukm::SourceId first_tab_source_id = browser()
+                                          ->tab_strip_model()
+                                          ->GetActiveWebContents()
+                                          ->GetPrimaryMainFrame()
+                                          ->GetPageUkmSourceId();
+
+  RunTestSequence(
+      // Open PDF side panel on Tab 1
+      Do([this] {
+        instance_coordinator().Toggle(
+            browser(), false, mojom::InvocationSource::kAutoOpenedForPdf);
+      }),
+      WaitForAndInstrumentGlic(GlicInstrumentMode::kHostAndContents),
+      Wait(START_TIMER_MS + base::Milliseconds(10)),
+      StopObservingState(glic::test::internal::kDelayState),
+      // Open Tab 2 and switch to it
+      AddInstrumentedTab(kSecondTabElementId,
+                         embedded_test_server()->GetURL("/title2.html")),
+      // Verify no UKM logged on tab switch
+      Do([&ukm_tester] {
+        EXPECT_TRUE(ukm_tester
+                        .GetEntriesByName(
+                            ukm::builders::Glic_AutoOpen_Closed::kEntryName)
+                        .empty());
+      }),
+      // Daisy chain to Tab 2
+      Do([this] {
+        auto* tab1 = browser()->tab_strip_model()->GetTabAtIndex(0);
+        auto* tab2 = browser()->tab_strip_model()->GetTabAtIndex(1);
+        auto* instance = GetGlicInstanceImpl();
+        ASSERT_TRUE(instance);
+        instance->MaybeDaisyChainToTab(tab1, tab2,
+                                       DaisyChainSource::kAutoOpenPdf);
+      }),
+      WaitForShow(kGlicViewElementId),
+      Wait(START_TIMER_MS + base::Milliseconds(10)),
+      StopObservingState(glic::test::internal::kDelayState),
+      // Explicitly close Glic side panel on Tab 2
+      Do([this] {
+        auto* tab2 = browser()->tab_strip_model()->GetActiveTab();
+        if (auto* coordinator = GlicSidePanelCoordinator::GetForTab(tab2)) {
+          coordinator->Close();
+        }
+      }),
+      WaitForHide(kGlicViewElementId),
+      // Verify no UKM logged yet because Tab 1 still has its side panel open
+      Do([&ukm_tester] {
+        EXPECT_TRUE(ukm_tester
+                        .GetEntriesByName(
+                            ukm::builders::Glic_AutoOpen_Closed::kEntryName)
+                        .empty());
+      }),
+      // Switch back to Tab 1
+      Do([this] { browser()->tab_strip_model()->ActivateTabAt(0); }),
+      WaitForShow(kGlicViewElementId),
+      // Explicitly close Glic side panel on Tab 1
+      Do([this] {
+        auto* tab1 = browser()->tab_strip_model()->GetActiveTab();
+        if (auto* coordinator = GlicSidePanelCoordinator::GetForTab(tab1)) {
+          coordinator->Close();
+        }
+      }),
+      WaitForHide(kGlicViewElementId));
+
+  auto entries = ukm_tester.GetEntriesByName(
+      ukm::builders::Glic_AutoOpen_Closed::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_TRUE(ukm_tester.EntryHasMetric(
+      entries[0], ukm::builders::Glic_AutoOpen_Closed::kSessionDurationMsName));
+  EXPECT_EQ(entries[0]->source_id, first_tab_source_id);
 }
 
 }  // namespace glic

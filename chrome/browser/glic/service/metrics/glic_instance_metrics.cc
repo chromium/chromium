@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 
+#include <algorithm>
 #include <cmath>
 #include <memory>
 #include <string>
@@ -38,6 +39,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -420,6 +422,10 @@ void GlicInstanceMetrics::OnShowInSidePanel(tabs::TabInterface* tab) {
     return;
   }
   side_panel_open_times_[tab->GetHandle()] = base::TimeTicks::Now();
+  if (std::ranges::find(tabs_with_side_panel_, tab->GetHandle()) ==
+      tabs_with_side_panel_.end()) {
+    tabs_with_side_panel_.push_back(tab->GetHandle());
+  }
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Show.SidePanel"));
   LogEvent(GlicInstanceEvent::kSidePanelShown);
   LogEvent(GlicInstanceEvent::kShown);
@@ -432,6 +438,15 @@ void GlicInstanceMetrics::OnShowInSidePanel(tabs::TabInterface* tab) {
                mojom::InvocationSource::kAutoOpenedForPdf) {
       helper->SetIsDaisyChained(DaisyChainSource::kAutoOpenPdf);
     }
+  }
+
+  if (last_invocation_source_ == mojom::InvocationSource::kAutoOpenedForPdf &&
+      auto_open_pdf_source_id_ == ukm::kInvalidSourceId) {
+    if (tab->GetContents() && tab->GetContents()->GetPrimaryMainFrame()) {
+      auto_open_pdf_source_id_ =
+          tab->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    }
+    auto_open_pdf_start_time_ = base::TimeTicks::Now();
   }
 }
 
@@ -518,6 +533,15 @@ void GlicInstanceMetrics::OnSidePanelClosed(
                       GetInvocationSourceString(source),
                       ".SidePanelFirstOpenDuration"}),
         duration, base::Milliseconds(1), base::Hours(1), 50);
+  }
+
+  if (reason != CloseReason::kTabSwitched) {
+    std::erase(tabs_with_side_panel_, tab->GetHandle());
+    if (tabs_with_side_panel_.empty() &&
+        initial_invocation_source_ ==
+            mojom::InvocationSource::kAutoOpenedForPdf) {
+      RecordAndResetAutoOpenPdfMetric();
+    }
   }
   side_panel_open_times_.erase(it);
 }
@@ -1321,6 +1345,23 @@ void GlicInstanceMetrics::RecordSkillsWebClientEvent(
     case mojom::SkillsWebClientEvent::kUnknown:
       break;
   }
+}
+
+void GlicInstanceMetrics::RecordAndResetAutoOpenPdfMetric() {
+  if (auto_open_pdf_source_id_ == ukm::kInvalidSourceId) {
+    return;
+  }
+  base::TimeDelta auto_open_duration;
+  if (!auto_open_pdf_start_time_.is_null()) {
+    auto_open_duration = base::TimeTicks::Now() - auto_open_pdf_start_time_;
+  }
+  int64_t bucketed_duration_ms = ukm::GetExponentialBucketMinForUserTiming(
+      auto_open_duration.InMilliseconds());
+  ukm::builders::Glic_AutoOpen_Closed(auto_open_pdf_source_id_)
+      .SetSessionDurationMs(bucketed_duration_ms)
+      .Record(ukm::UkmRecorder::Get());
+  auto_open_pdf_source_id_ = ukm::kInvalidSourceId;
+  auto_open_pdf_start_time_ = base::TimeTicks();
 }
 
 }  // namespace glic
