@@ -43,10 +43,6 @@ suite('SearchboxInputTest', () => {
     assertIconMaskImageUrl(input.$.icon, 'search.svg');
   });
 
-  //============================================================================
-  // Test Cut/Copy
-  //============================================================================
-
   test('Copying or cutting empty input fails', async () => {
     input = await createInput();
     input.inputElement.value = '';
@@ -128,10 +124,6 @@ suite('SearchboxInputTest', () => {
     assertEquals('', input.inputElement.value);
   });
 
-  //============================================================================
-  // Test Tabbing and Clicking
-  //============================================================================
-
   test('Tabbing or clicking fires event', async () => {
     input = await createInput();
     input.inputElement.value = 'hello';
@@ -164,10 +156,6 @@ suite('SearchboxInputTest', () => {
     assertEquals(2, eventCount);
   });
 
-  //============================================================================
-  // Test Set Input Text
-  //============================================================================
-
   test('input text appears on page call from browser', async () => {
     input = await createInput();
     assertEquals(input.inputElement.value, '');
@@ -183,10 +171,6 @@ suite('SearchboxInputTest', () => {
     assertEquals(input.inputElement.value, 'Hello');
     assertEquals(0, textUpdatedEventCount);
   });
-
-  //============================================================================
-  // Test File Paste
-  //============================================================================
 
   test('Pasting file fires event', async () => {
     input = await createInput({allowFilePaste: true});
@@ -213,10 +197,6 @@ suite('SearchboxInputTest', () => {
     assertEquals(1, (eventFiles as unknown as FileList).length);
     assertEquals('test.png', (eventFiles as unknown as FileList)[0]!.name);
   });
-
-  //============================================================================
-  // Test Inline Autocompletion
-  //============================================================================
 
   test('Typing over inline autocompletion', async () => {
     loadTimeData.overrideValues({
@@ -247,5 +227,21 @@ suite('SearchboxInputTest', () => {
     // The selection should now highlight 'o'.
     assertEquals(4, input.inputElement.selectionStart);
     assertEquals(5, input.inputElement.selectionEnd);
+  });
+
+  test('allows empty string placeholder without fallback', async () => {
+    // Set `placeholderText` to empty string.
+    input = await createInput({placeholderText: ''});
+    assertEquals('', input.inputElement.placeholder);
+
+    // Update `placeholderText` dynamically.
+    input.placeholderText = 'Updated Search';
+    await input.updateComplete;
+    assertEquals('Updated Search', input.inputElement.placeholder);
+
+    // Reset `placeholderText` to empty string'', to suppress it again.
+    input.placeholderText = '';
+    await input.updateComplete;
+    assertEquals('', input.inputElement.placeholder);
   });
 });

@@ -66,11 +66,6 @@ export class OmniboxPopupSearchboxElement extends
 
   static override get properties() {
     return {
-      placeholderText: {
-        type: String,
-        reflect: true,
-        notify: true,
-      },
       searchboxChromeRefreshTheming: {
         type: Boolean,
         reflect: true,
@@ -109,7 +104,6 @@ export class OmniboxPopupSearchboxElement extends
     };
   }
 
-  accessor placeholderText: string = '';
   accessor searchboxChromeRefreshTheming: boolean =
       loadTimeData.getBoolean('searchboxCr23Theming');
   accessor searchboxSteadyStateShadow: boolean =
@@ -456,6 +450,7 @@ export class OmniboxPopupSearchboxElement extends
     this.fullUrl_ = state.fullUrl;
     this.lastQueriedInput = state.text;
     this.permanentDisplayText_ = state.permanentDisplayText;
+    this.isComposing_ = false;
 
     // Clear any stale results and close the dropdown on a hard state reset.
     // Clear results here since focusout event may not fire.
@@ -563,12 +558,6 @@ export class OmniboxPopupSearchboxElement extends
     }
   }
 
-  protected computePlaceholderText_(): string {
-    if (this.placeholderText) {
-      return this.placeholderText;
-    }
-    return this.i18n('searchBoxHint');
-  }
 
   protected onSearchboxInputTextUpdated_(
       e: CustomEvent<{value: string, isComposing: boolean}>) {

@@ -15,7 +15,7 @@ export function getHtml(this: OmniboxPopupSearchboxElement) {
           ?dropdown-is-visible="${this.dropdownIsVisible}"
           input-aria-live="${this.inputAriaLive}"
           ?multi-line-enabled="${this.multiLineEnabled}"
-          placeholder-text="${this.computePlaceholderText_()}"
+          placeholder-text=""
           searchbox-aria-description="${this.searchboxAriaDescription}"
           searchbox-icon="${this.searchboxIcon_}"
           .selectedMatch="${this.selectedMatch}"

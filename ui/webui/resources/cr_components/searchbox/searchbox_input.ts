@@ -77,7 +77,7 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
   accessor dropdownIsVisible: boolean = false;
   accessor inputAriaLive: string = '';
   accessor multiLineEnabled: boolean = false;
-  accessor placeholderText: string = '';
+  accessor placeholderText: string|undefined = undefined;
   accessor searchboxAriaDescription: string = '';
   accessor searchboxIcon: string = '';
   accessor selectedMatch: AutocompleteMatch|null = null;
@@ -348,7 +348,7 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
   }
 
   protected computePlaceholderText_(): string {
-    return this.placeholderText || this.i18n('searchBoxHint');
+    return this.placeholderText ?? this.i18n('searchBoxHint');
   }
 }
 
