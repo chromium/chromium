@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/autofill/payments/manage_saved_iban_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/payments/save_iban_bubble_view.h"
-#include "chrome/browser/ui/views/autofill/payments/save_payment_icon_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -86,22 +85,13 @@ constexpr char kResponsePaymentsFailure[] =
 
 class IbanBubbleViewFullFormBrowserTest
     : public SyncTest,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>>,
+      public testing::WithParamInterface<std::tuple<bool, bool>>,
       public IbanSaveManager::ObserverForTest,
       public IbanBubbleControllerImpl::ObserverForTest {
  protected:
   IbanBubbleViewFullFormBrowserTest() : SyncTest(SINGLE_CLIENT) {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {};
     std::vector<base::test::FeatureRef> disabled_features = {};
-
-    const bool is_page_action_migration_enabled = std::get<0>(GetParam());
-    enabled_features.push_back({
-        ::features::kPageActionsMigration,
-        {{
-            ::features::kPageActionsMigrationSavePayments.name,
-            is_page_action_migration_enabled ? "true" : "false",
-        }},
-    });
 
     if (IsWalletBrandingEnabled()) {
       enabled_features.push_back({features::kAutofillEnableWalletBranding, {}});
@@ -118,8 +108,6 @@ class IbanBubbleViewFullFormBrowserTest
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
-
-    CHECK_EQ(IsPageActionMigrationEnabled(), is_page_action_migration_enabled);
   }
 
  public:
@@ -393,16 +381,10 @@ class IbanBubbleViewFullFormBrowserTest
   IconLabelBubbleView* GetSaveIbanIconView() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(GetBrowser(0));
-    IconLabelBubbleView* icon;
-    if (IsPageActionMigrationEnabled()) {
-      auto* provider = browser_view->toolbar_button_provider();
-      icon = page_actions::GetIconLabelBubbleViewForTesting(
-          provider->GetPageActionViewInterface(kActionShowPaymentsBubbleOrPage),
-          kActionShowPaymentsBubbleOrPage);
-    } else {
-      icon = browser_view->toolbar_button_provider()->GetPageActionIconView(
-          PageActionIconType::kSaveIban);
-    }
+    auto* provider = browser_view->toolbar_button_provider();
+    IconLabelBubbleView* icon = page_actions::GetIconLabelBubbleViewForTesting(
+        provider->GetPageActionViewInterface(kActionShowPaymentsBubbleOrPage),
+        kActionShowPaymentsBubbleOrPage);
     CHECK(browser_view->GetLocationBarView()->Contains(icon));
     return icon;
   }
@@ -470,9 +452,9 @@ class IbanBubbleViewFullFormBrowserTest
     return IsPageActionMigrated(PageActionIconType::kSaveIban);
   }
 
-  bool IsWalletBrandingEnabled() { return std::get<1>(GetParam()); }
+  bool IsWalletBrandingEnabled() { return std::get<0>(GetParam()); }
 
-  bool IsWalletBrandingV2Enabled() { return std::get<2>(GetParam()); }
+  bool IsWalletBrandingV2Enabled() { return std::get<1>(GetParam()); }
 
   [[nodiscard]] testing::AssertionResult WaitForObservedEvent() {
     return event_waiter_->Wait();
@@ -1032,29 +1014,27 @@ IN_PROC_BROWSER_TEST_P(IbanBubbleViewSyncTransportFullFormBrowserTest,
 INSTANTIATE_TEST_SUITE_P(
     ,
     IbanBubbleViewFullFormBrowserTest,
-    testing::Combine(testing::Bool(), testing::Bool(), testing::Bool()),
+    testing::Combine(testing::Bool(), testing::Bool()),
     [](const ::testing::TestParamInfo<
-        IbanBubbleViewSyncTransportFullFormBrowserTest::ParamType>& info) {
-      return base::StrCat(
-          {std::get<0>(info.param) ? "NewPage_" : "OriginalPage_",
-           std::get<1>(info.param) ? "WalletBrandingEnabled_"
-                                   : "WalletBrandingDisabled_",
-           std::get<2>(info.param) ? "WalletBrandingEnabledV2_"
-                                   : "WalletBrandingDisabledV2_"});
+        IbanBubbleViewFullFormBrowserTest::ParamType>& info) {
+      return base::StrCat({std::get<0>(info.param) ? "WalletBrandingEnabled_"
+                                                   : "WalletBrandingDisabled_",
+                           std::get<1>(info.param)
+                               ? "WalletBrandingEnabledV2_"
+                               : "WalletBrandingDisabledV2_"});
     });
 
 INSTANTIATE_TEST_SUITE_P(
     ,
     IbanBubbleViewSyncTransportFullFormBrowserTest,
-    testing::Combine(testing::Bool(), testing::Bool(), testing::Bool()),
+    testing::Combine(testing::Bool(), testing::Bool()),
     [](const ::testing::TestParamInfo<
         IbanBubbleViewSyncTransportFullFormBrowserTest::ParamType>& info) {
-      return base::StrCat(
-          {std::get<0>(info.param) ? "NewPage_" : "OriginalPage_",
-           std::get<1>(info.param) ? "WalletBrandingEnabled_"
-                                   : "WalletBrandingDisabled_",
-           std::get<2>(info.param) ? "WalletBrandingEnabledV2_"
-                                   : "WalletBrandingDisabledV2_"});
+      return base::StrCat({std::get<0>(info.param) ? "WalletBrandingEnabled_"
+                                                   : "WalletBrandingDisabled_",
+                           std::get<1>(info.param)
+                               ? "WalletBrandingEnabledV2_"
+                               : "WalletBrandingDisabledV2_"});
     });
 
 }  // namespace

@@ -367,11 +367,6 @@ BASE_FEATURE_PARAM(bool,
                    true);
 
 BASE_FEATURE_PARAM(bool,
-                   kPageActionsMigrationSavePayments,
-                   &kPageActionsMigration,
-                   "save_payments",
-                   true);
-BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationBookmarkStar,
                    &kPageActionsMigration,
                    "bookmark_star",

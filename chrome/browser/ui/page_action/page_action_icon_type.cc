@@ -18,9 +18,6 @@ const base::FeatureParam<bool>* GetPageActionsMigrationParam(
       return &features::kPageActionsMigrationVirtualCard;
     case PageActionIconType::kFilledCardInformation:
       return &features::kPageActionsMigrationFilledCardInformation;
-    case PageActionIconType::kSaveIban:
-    case PageActionIconType::kSaveCard:
-      return &features::kPageActionsMigrationSavePayments;
     case PageActionIconType::kBookmarkStar:
       return &features::kPageActionsMigrationBookmarkStar;
     default:
@@ -62,6 +59,8 @@ bool IsPageActionMigrated(PageActionIconType page_action) {
     case PageActionIconType::kWebAuthnAmbientSignin:
     case PageActionIconType::kFileSystemAccess:
     case PageActionIconType::kAiMode:
+    case PageActionIconType::kSaveIban:
+    case PageActionIconType::kSaveCard:
     case PageActionIconType::kReadingMode:
     case PageActionIconType::kAutofillPayment:
     case PageActionIconType::kMandatoryReauth:

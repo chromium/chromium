@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_bubble_views.h"
-#include "chrome/browser/ui/views/autofill/payments/save_payment_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/save_payment_method_and_virtual_card_enroll_confirmation_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_enroll_icon_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -33,19 +32,11 @@ namespace autofill {
 
 class SaveCardConfirmationBubbleViewsInteractiveUiTest
     : public InProcessBrowserTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   SaveCardConfirmationBubbleViewsInteractiveUiTest() {
-    const bool is_page_action_migration_enabled = std::get<0>(GetParam());
     std::vector<base::test::FeatureRefAndParams> enabled_features = {};
     std::vector<base::test::FeatureRef> disabled_features = {};
-
-    enabled_features.push_back(
-        {::features::kPageActionsMigration,
-         {
-             {::features::kPageActionsMigrationSavePayments.name,
-              is_page_action_migration_enabled ? "true" : "false"},
-         }});
     if (IsWalletBrandingEnabled()) {
       enabled_features.push_back({features::kAutofillEnableWalletBranding, {}});
     } else {
@@ -60,8 +51,6 @@ class SaveCardConfirmationBubbleViewsInteractiveUiTest
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
-
-    CHECK_EQ(IsPageActionMigrationEnabled(), is_page_action_migration_enabled);
   }
   ~SaveCardConfirmationBubbleViewsInteractiveUiTest() override = default;
   SaveCardConfirmationBubbleViewsInteractiveUiTest(
@@ -128,8 +117,8 @@ class SaveCardConfirmationBubbleViewsInteractiveUiTest
     return IsPageActionMigrated(PageActionIconType::kSaveCard);
   }
 
-  bool IsWalletBrandingEnabled() { return std::get<1>(GetParam()); }
-  bool IsWalletBrandingV2Enabled() { return std::get<2>(GetParam()); }
+  bool IsWalletBrandingEnabled() { return std::get<0>(GetParam()); }
+  bool IsWalletBrandingV2Enabled() { return std::get<1>(GetParam()); }
 
  private:
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
@@ -321,13 +310,12 @@ IN_PROC_BROWSER_TEST_P(SaveCardConfirmationBubbleViewsInteractiveUiTest,
 INSTANTIATE_TEST_SUITE_P(
     ,
     SaveCardConfirmationBubbleViewsInteractiveUiTest,
-    testing::Combine(testing::Bool(), testing::Bool(), testing::Bool()),
+    testing::Combine(testing::Bool(), testing::Bool()),
     [](const ::testing::TestParamInfo<
         SaveCardConfirmationBubbleViewsInteractiveUiTest::ParamType>& info) {
       return base::StrCat({
-          std::get<0>(info.param) ? "NewPageAction" : "OldPageAction",
-          std::get<1>(info.param) ? "BrandingFlagOn" : "BrandingFlagOff",
-          std::get<2>(info.param) ? "BrandingV2FlagOn" : "BrandingV2FlagOff",
+          std::get<0>(info.param) ? "BrandingFlagOn" : "BrandingFlagOff",
+          std::get<1>(info.param) ? "BrandingV2FlagOn" : "BrandingV2FlagOff",
       });
     });
 

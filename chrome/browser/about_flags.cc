@@ -1219,7 +1219,6 @@ const FeatureEntry::FeatureParam kPageActionsMigrationParams[] = {
     {"file_system_access", "true"},
     {"filled_card_information", "true"},
     {"intent_picker", "true"},
-    {"save_payments", "true"},
     {"sharing_hub", "true"},
     {"virtual_card", "true"},
 };
