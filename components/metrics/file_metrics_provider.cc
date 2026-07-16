@@ -694,6 +694,7 @@ size_t FileMetricsProvider::MergeHistogramDeltasFromSource(SourceInfo* source) {
       source->allocator.get());
 
   const bool read_only = kSourceOptions[source->type].is_read_only;
+  source->allocator->UpdateTrackingHistograms();
   size_t histogram_count = 0;
   while (true) {
     std::unique_ptr<base::HistogramBase> histogram = histogram_iter.GetNext();
@@ -725,6 +726,7 @@ int FileMetricsProvider::RecordHistogramSnapshotsFromSource(
 
   base::PersistentHistogramAllocator::Iterator histogram_iter(
       source->allocator.get());
+  source->allocator->UpdateTrackingHistograms();
 
   int histogram_count = 0;
   while (true) {

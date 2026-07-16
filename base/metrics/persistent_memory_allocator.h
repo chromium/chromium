@@ -31,7 +31,6 @@ class FileMetricsProvider;
 
 namespace base {
 
-class HistogramBase;
 class MemoryMappedFile;
 
 // Simple allocator for pieces of a memory block that may be persistent
@@ -804,8 +803,8 @@ class BASE_EXPORT PersistentMemoryAllocator {
   // Local version of "corrupted" flag.
   mutable std::atomic<bool> corrupt_ = false;
 
-  // Histogram recording used space.
-  raw_ptr<HistogramBase> used_histogram_ = nullptr;
+  // Flag to prevent infinite recursion during histogram tracking updates.
+  std::atomic<bool> updating_histograms_{false};
 
   // TODO(crbug.com/40064026): Remove these. They are used to investigate
   // unexpected failures and code paths.

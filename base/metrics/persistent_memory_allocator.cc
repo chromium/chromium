@@ -19,6 +19,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
+#include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/sparse_histogram.h"
@@ -493,14 +494,8 @@ std::string_view PersistentMemoryAllocator::Name() const {
 
 void PersistentMemoryAllocator::CreateTrackingHistograms(
     std::string_view name) {
-  if (name.empty() || access_mode_ == kReadOnly) {
-    return;
-  }
-
-  DCHECK(!used_histogram_);
-  used_histogram_ = LinearHistogram::FactoryGet(
-      base::StrCat({"UMA.PersistentAllocator.", name, ".UsedPct"}), 1, 101, 21,
-      HistogramBase::kUmaTargetedHistogramFlag);
+  // Obsolete. The UsedPct is now logged directly to the local
+  // StatisticsRecorder when UpdateTrackingHistograms() is called.
 }
 
 void PersistentMemoryAllocator::Flush(bool sync) {
@@ -1013,14 +1008,25 @@ const volatile void* PersistentMemoryAllocator::GetBlockData(
 }
 
 void PersistentMemoryAllocator::UpdateTrackingHistograms() {
-  DCHECK_NE(access_mode_, kReadOnly);
-  if (used_histogram_) {
-    MemoryInfo meminfo;
-    GetMemoryInfo(&meminfo);
-    HistogramBase::Sample32 used_percent = static_cast<HistogramBase::Sample32>(
-        ((meminfo.total - meminfo.free) * 100ULL / meminfo.total));
-    used_histogram_->Add(used_percent);
+  if (Name().empty()) {
+    return;
   }
+  // Prevent infinite recursion if the memory allocation triggered by
+  // creating the tracking histogram calls back into UpdateTrackingHistograms.
+  if (updating_histograms_.exchange(true, std::memory_order_relaxed)) {
+    return;
+  }
+  MemoryInfo meminfo;
+  GetMemoryInfo(&meminfo);
+  HistogramBase::Sample32 used_percent = static_cast<HistogramBase::Sample32>(
+      ((meminfo.total - meminfo.free) * 100ULL / meminfo.total));
+  HistogramBase* histogram = LinearHistogram::FactoryGet(
+      StrCat({"UMA.PersistentAllocator.", Name(), ".UsedPct"}), 1, 101, 21,
+      HistogramBase::kUmaTargetedHistogramFlag);
+  if (histogram) {
+    histogram->Add(used_percent);
+  }
+  updating_histograms_.store(false, std::memory_order_relaxed);
 }
 
 void PersistentMemoryAllocator::DumpWithoutCrashing(
