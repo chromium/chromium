@@ -17,7 +17,7 @@ ci.builder(
         short_name = "lnx",
     ),
     contact_team_email = "dlf@google.com",
-    execution_timeout = 3 * time.hour,
+    execution_timeout = 6 * time.hour,
     properties = {
         "toolchain": "CLANG",
     },
