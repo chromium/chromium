@@ -30,6 +30,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
+#include "third_party/blink/public/web/web_plugin_script_forbidden_scope.h"
 #include "third_party/blink/public/web/web_serialized_script_value.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/public/web/web_widget.h"
@@ -93,7 +94,7 @@ blink::WebURL PdfViewWebPluginClient::CompleteURL(
 }
 
 void PdfViewWebPluginClient::PostMessage(base::DictValue message) {
-  if (!HasFrame()) {
+  if (!HasFrame() || blink::WebPluginScriptForbiddenScope::IsForbidden()) {
     return;
   }
 
