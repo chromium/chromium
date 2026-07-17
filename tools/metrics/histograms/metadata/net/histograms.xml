@@ -3843,6 +3843,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.HttpCache.LogicalInvalidation.LoadedFilterCount"
+    units="filters" expires_after="2027-05-26">
+  <owner>deepakr@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The number of logical HTTP cache invalidation filters successfully loaded
+    from persistent disk storage at startup. Recorded once at NetworkContext
+    startup when initializing the LogicalInvalidationStore.
+  </summary>
+</histogram>
+
+<histogram name="Net.HttpCache.LogicalInvalidation.LoadResult"
+    enum="LogicalInvalidationStoreLoadResult" expires_after="2027-05-26">
+  <owner>deepakr@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    Records the result of loading the disk persistence file for logical HTTP
+    cache invalidation filters (e.g. success, file not found, or corrupt).
+    Recorded once at NetworkContext startup when initializing the
+    LogicalInvalidationStore.
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpCache.LogicalInvalidation.MatchResult"
     enum="NetHttpCacheLogicalInvalidationMatchResult"
     expires_after="2027-05-26">
@@ -3853,6 +3876,29 @@ chromium-metrics-reviews@google.com.
     filters (e.g. filter matched resulting in a cache miss, or filter did not
     match). Recorded on the hot path in HttpCache::IsInvalidated only when
     active invalidation filters are present in memory.
+  </summary>
+</histogram>
+
+<histogram name="Net.HttpCache.LogicalInvalidation.PersistenceLoadDuration"
+    units="ms" expires_after="2027-05-26">
+  <owner>deepakr@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The time taken to asynchronously load and deserialize logical HTTP cache
+    invalidation filters from persistent disk storage via background thread.
+    Recorded once at NetworkContext startup when initializing the
+    LogicalInvalidationStore.
+  </summary>
+</histogram>
+
+<histogram name="Net.HttpCache.LogicalInvalidation.PersistenceWriteDuration"
+    units="ms" expires_after="2027-05-26">
+  <owner>deepakr@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The time taken to serialize and atomically write the active logical HTTP
+    cache invalidation filters to persistent disk storage. Recorded every time
+    LogicalInvalidationStore saves filters to disk.
   </summary>
 </histogram>
 

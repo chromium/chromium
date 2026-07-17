@@ -1070,6 +1070,16 @@ historical analysis. -->
   <int value="5" label="CryptoConnectFailedAsync"/>
 </enum>
 
+<!-- LINT.IfChange(LogicalInvalidationStoreLoadResult) -->
+
+<enum name="LogicalInvalidationStoreLoadResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="File Not Found"/>
+  <int value="2" label="Corrupt"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/network/logical_invalidation_store.h:LoadResult) -->
+
 <!-- LINT.IfChange(LookupOutcome) -->
 
 <enum name="LookupOutcome">
