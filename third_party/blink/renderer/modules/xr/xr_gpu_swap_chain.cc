@@ -182,7 +182,7 @@ GPUTexture* XRGPUMailboxSwapChain::ProduceTexture() {
 void XRGPUMailboxSwapChain::OnFrameEnd() {
   GPUTexture* texture = ResetCurrentTexture();
   if (texture) {
-    texture->DissociateMailbox();
+    sync_token_ = texture->DissociateMailbox();
   }
 }
 

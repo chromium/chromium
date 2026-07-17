@@ -358,11 +358,13 @@ uint32_t GPUTexture::usage() const {
   return static_cast<uint32_t>(GetHandle().GetUsage());
 }
 
-void GPUTexture::DissociateMailbox() {
+gpu::SyncToken GPUTexture::DissociateMailbox() {
+  gpu::SyncToken sync_token;
   if (mailbox_texture_) {
-    mailbox_texture_->Dissociate();
+    sync_token = mailbox_texture_->Dissociate();
     mailbox_texture_ = nullptr;
   }
+  return sync_token;
 }
 
 scoped_refptr<WebGPUMailboxTexture> GPUTexture::GetMailboxTexture() {

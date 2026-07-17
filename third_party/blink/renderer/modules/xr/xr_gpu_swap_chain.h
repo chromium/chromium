@@ -24,6 +24,8 @@ class XRGPUSwapChain : public XRSwapChain<GPUTexture> {
   GPUDevice* device() { return device_.Get(); }
   virtual const wgpu::TextureDescriptor& descriptor() const = 0;
 
+  virtual gpu::SyncToken GetSyncToken() const { return gpu::SyncToken(); }
+
   void Trace(Visitor* visitor) const override;
 
  protected:
@@ -65,9 +67,12 @@ class XRGPUMailboxSwapChain final : public XRGPUSwapChain {
     return descriptor_;
   }
 
+  gpu::SyncToken GetSyncToken() const override { return sync_token_; }
+
  private:
   wgpu::TextureDescriptor descriptor_;
   wgpu::DawnTextureInternalUsageDescriptor texture_internal_usage_;
+  gpu::SyncToken sync_token_;
 };
 
 }  // namespace blink

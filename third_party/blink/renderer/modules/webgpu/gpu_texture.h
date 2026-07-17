@@ -86,7 +86,7 @@ class GPUTexture : public DawnObject<wgpu::Texture> {
   wgpu::TextureUsage Usage() { return usage_; }
   bool IsDestroyed() { return destroyed_; }
 
-  void DissociateMailbox();
+  gpu::SyncToken DissociateMailbox();
 
   // Returns a shared pointer to the mailbox texture. The mailbox texture
   // remains associated to the GPUTexture.
