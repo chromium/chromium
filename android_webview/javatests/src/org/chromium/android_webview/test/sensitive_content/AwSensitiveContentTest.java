@@ -4,18 +4,17 @@
 package org.chromium.android_webview.test.sensitive_content;
 
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
-import static org.chromium.base.test.util.CriteriaHelper.pollUiThreadNested;
 
 import android.os.Build;
 import android.view.View;
 
 import androidx.test.InstrumentationRegistry;
-import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -24,6 +23,7 @@ import org.chromium.android_webview.test.AwActivityTestRule;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.android_webview.test.AwTestContainerView;
 import org.chromium.android_webview.test.TestAwContentsClient;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -44,7 +44,7 @@ public class AwSensitiveContentTest {
     public static final String NOT_SENSITIVE_FILE =
             "/android_webview/test/data/autofill/form_with_datalist.html";
 
-    @ClassRule public static AwActivityTestRule sActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
     private EmbeddedTestServer mTestServer;
     private TestAwContentsClient mTestAwContentsClient;
@@ -58,8 +58,15 @@ public class AwSensitiveContentTest {
                         InstrumentationRegistry.getInstrumentation().getContext());
         mTestAwContentsClient = new TestAwContentsClient();
         mTestContainerView =
-                sActivityTestRule.createAwTestContainerViewOnMainSync(mTestAwContentsClient);
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mTestAwContentsClient);
         mAwContents = mTestContainerView.getAwContents();
+    }
+
+    @After
+    public void tearDown() {
+        if (mTestServer != null) {
+            mTestServer.stopAndDestroyServer();
+        }
     }
 
     @Test
@@ -70,13 +77,13 @@ public class AwSensitiveContentTest {
                 View.CONTENT_SENSITIVITY_AUTO,
                 mTestContainerView.getContentSensitivity());
 
-        sActivityTestRule.loadUrlAsync(mAwContents, mTestServer.getURL(SENSITIVE_FILE));
+        mActivityTestRule.loadUrlAsync(mAwContents, mTestServer.getURL(SENSITIVE_FILE));
         pollUiThread(
                 () ->
                         mTestContainerView.getContentSensitivity()
                                 == View.CONTENT_SENSITIVITY_SENSITIVE);
 
-        sActivityTestRule.loadUrlAsync(mAwContents, mTestServer.getURL(NOT_SENSITIVE_FILE));
+        mActivityTestRule.loadUrlAsync(mAwContents, mTestServer.getURL(NOT_SENSITIVE_FILE));
         pollUiThread(
                 () ->
                         mTestContainerView.getContentSensitivity()
@@ -85,33 +92,39 @@ public class AwSensitiveContentTest {
 
     @Test
     @MediumTest
-    @UiThreadTest
     public void testSwapViewAndroidDelegate() {
-        sActivityTestRule.loadUrlAsync(mAwContents, mTestServer.getURL(SENSITIVE_FILE));
-        pollUiThreadNested(
+        mActivityTestRule.loadUrlAsync(mAwContents, mTestServer.getURL(SENSITIVE_FILE));
+        pollUiThread(
                 () ->
                         mTestContainerView.getContentSensitivity()
                                 == View.CONTENT_SENSITIVITY_SENSITIVE);
 
         WebContents webContents = mAwContents.getWebContents();
-        ContentView newContainerView =
-                ContentView.createContentView(sActivityTestRule.getActivity(), webContents);
-        ViewAndroidDelegate newViewAndroidDelegate =
-                ViewAndroidDelegate.createBasicDelegate(newContainerView);
-        Assert.assertEquals(
-                "Initially, the content view does not have sensitive content",
-                View.CONTENT_SENSITIVITY_AUTO,
-                newContainerView.getContentSensitivity());
+        ContentView[] newContainerViewHolder = new ContentView[1];
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ContentView newContainerView =
+                            ContentView.createContentView(
+                                    mActivityTestRule.getActivity(), webContents);
+                    newContainerViewHolder[0] = newContainerView;
+                    ViewAndroidDelegate newViewAndroidDelegate =
+                            ViewAndroidDelegate.createBasicDelegate(newContainerView);
+                    Assert.assertEquals(
+                            "Initially, the content view does not have sensitive content",
+                            View.CONTENT_SENSITIVITY_AUTO,
+                            newContainerView.getContentSensitivity());
 
-        webContents.setDelegates(
-                "",
-                newViewAndroidDelegate,
-                newContainerView,
-                null,
-                WebContents.createDefaultInternalsHolder());
-        pollUiThreadNested(
+                    webContents.setDelegates(
+                            "",
+                            newViewAndroidDelegate,
+                            newContainerView,
+                            null,
+                            WebContents.createDefaultInternalsHolder());
+                });
+
+        pollUiThread(
                 () ->
-                        newContainerView.getContentSensitivity()
+                        newContainerViewHolder[0].getContentSensitivity()
                                 == View.CONTENT_SENSITIVITY_SENSITIVE);
     }
 }
