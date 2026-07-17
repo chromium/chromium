@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "content/common/content_export.h"
 #include "content/common/render_widget_host_ns_view.mojom.h"
 #include "content/public/browser/render_widget_host.h"
@@ -66,6 +67,14 @@ class PopupMenuHelper : public RenderWidgetHostObserver {
 
   RenderWidgetHostViewMac* GetRootRenderWidgetHostView() const;
 
+  // Returns true if the menu, as positioned at |bounds_in_screen|, would
+  // overlap a permission prompt that is currently showing.
+  bool IntersectsPermissionPrompt(const gfx::Rect& bounds_in_screen) const;
+
+  // Periodically called while the menu is open to ensure it does not occlude a
+  // permission prompt that appeared after the menu was opened.
+  void CheckPermissionPromptOcclusion();
+
   raw_ptr<Delegate> delegate_;  // Weak. Owns |this|.
 
   base::ScopedObservation<RenderWidgetHost, RenderWidgetHostObserver>
@@ -74,6 +83,10 @@ class PopupMenuHelper : public RenderWidgetHostObserver {
   mojo::Remote<blink::mojom::PopupMenuClient> popup_client_;
 
   bool popup_was_hidden_ = false;
+
+  // Screen bounds of the anchor element while the menu is open.
+  gfx::Rect anchor_bounds_in_screen;
+  base::RepeatingTimer occlusion_check_timer_;
 
   mojo::Remote<remote_cocoa::mojom::PopupMenuRunner> remote_runner_;
 

@@ -22,6 +22,10 @@ namespace {
 
 bool g_allow_showing_popup_menus = true;
 
+// Interval at which to re-evaluate whether the open menu overlaps a
+// permission prompt that may have appeared after the menu was opened.
+constexpr base::TimeDelta kOcclusionCheckInterval = base::Milliseconds(100);
+
 }  // namespace
 
 PopupMenuHelper::PopupMenuHelper(
@@ -61,21 +65,25 @@ void PopupMenuHelper::ShowPopupMenu(
 
   // Convert element_bounds to be in screen.
   gfx::Rect client_area = web_contents->GetContainerBounds();
-  gfx::Rect bounds_in_screen = bounds + client_area.OffsetFromOrigin();
+  anchor_bounds_in_screen = bounds + client_area.OffsetFromOrigin();
 
   // The new popup menu would overlap the permission prompt, which could lead to
   // users making decisions based on incorrect information. We should close the
   // popup if it intersects with the permission prompt.
-  auto permission_exclusion_area_bounds =
-      PermissionControllerImpl::FromBrowserContext(
-          web_contents->GetBrowserContext())
-          ->GetExclusionAreaBoundsInScreen(web_contents);
-  if (permission_exclusion_area_bounds &&
-      permission_exclusion_area_bounds->Intersects(bounds_in_screen)) {
+  if (IntersectsPermissionPrompt(anchor_bounds_in_screen)) {
     popup_client_->DidCancel();
     delegate_->OnMenuClosed();  // May delete |this|.
     return;
   }
+
+  // The native menu runs a nested run loop in which application tasks are
+  // pumped, so a permission prompt may appear after the menu has opened.
+  // Re-evaluate periodically and dismiss the menu if it would overlap. The
+  // timer must be started before DisplayPopupMenu(), which may run the nested
+  // loop synchronously. See https://crbug.com/514069975
+  occlusion_check_timer_.Start(
+      FROM_HERE, kOcclusionCheckInterval, this,
+      &PopupMenuHelper::CheckPermissionPromptOcclusion);
 
   remote_runner_.reset();
   rwhvm->GetNSView()->DisplayPopupMenu(
@@ -87,11 +95,41 @@ void PopupMenuHelper::ShowPopupMenu(
 }
 
 void PopupMenuHelper::Hide() {
+  occlusion_check_timer_.Stop();
   if (remote_runner_) {
     remote_runner_->Hide();
   }
   popup_was_hidden_ = true;
   popup_client_.reset();
+}
+
+bool PopupMenuHelper::IntersectsPermissionPrompt(
+    const gfx::Rect& bounds_in_screen) const {
+  if (!render_frame_host_) {
+    return false;
+  }
+  RenderWidgetHostViewMac* rwhvm = GetRootRenderWidgetHostView();
+  if (!rwhvm) {
+    return false;
+  }
+  auto* web_contents = rwhvm->GetWebContents();
+  auto permission_exclusion_area_bounds =
+      PermissionControllerImpl::FromBrowserContext(
+          web_contents->GetBrowserContext())
+          ->GetExclusionAreaBoundsInScreen(web_contents);
+  return permission_exclusion_area_bounds &&
+         permission_exclusion_area_bounds->Intersects(bounds_in_screen);
+}
+
+void PopupMenuHelper::CheckPermissionPromptOcclusion() {
+  if (popup_was_hidden_ ||
+      !IntersectsPermissionPrompt(anchor_bounds_in_screen)) {
+    return;
+  }
+  if (popup_client_) {
+    popup_client_->DidCancel();
+  }
+  Hide();
 }
 
 RenderWidgetHostViewMac* PopupMenuHelper::GetRootRenderWidgetHostView() const {
@@ -114,6 +152,8 @@ void PopupMenuHelper::RenderWidgetHostDestroyed(RenderWidgetHost* widget_host) {
 }
 
 void PopupMenuHelper::PopupMenuClosed(std::optional<uint32_t> selected_item) {
+  occlusion_check_timer_.Stop();
+
   // The RenderFrameHost may be deleted while running the menu, or it may have
   // requested the close. Don't notify in these cases.
   if (popup_client_ && !popup_was_hidden_) {

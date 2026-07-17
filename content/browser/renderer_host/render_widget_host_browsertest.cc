@@ -772,8 +772,10 @@ class ShowPopupMenuInterceptor
       public blink::mojom::PopupMenuClient {
  public:
   explicit ShowPopupMenuInterceptor(RenderFrameHostImpl* render_frame_host,
-                                    const gfx::Rect& overriden_bounds)
+                                    const gfx::Rect& overriden_bounds,
+                                    base::OnceClosure task_in_nested_loop = {})
       : overriden_bounds_(overriden_bounds),
+        task_in_nested_loop_(std::move(task_in_nested_loop)),
         swapped_impl_(
             render_frame_host->local_frame_host_receiver_for_testing(),
             this) {}
@@ -795,10 +797,18 @@ class ShowPopupMenuInterceptor
       bool right_aligned,
       bool allow_multiple_selection) override {
     CHECK(GetForwardingInterface());
+    // If supplied, post a task that will run inside the menu's nested event
+    // loop after the menu is opened by the synchronous call below.
+    if (task_in_nested_loop_) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(task_in_nested_loop_));
+    }
     GetForwardingInterface()->ShowPopupMenu(
         receiver_.BindNewPipeAndPassRemote(), overriden_bounds_, font_size,
         selected_item, std::move(menu_items), right_aligned,
         allow_multiple_selection);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop_.QuitClosure());
   }
 
   void DidAcceptIndices(const std::vector<int32_t>& indices) override {
@@ -808,7 +818,6 @@ class ShowPopupMenuInterceptor
   void DidCancel() override {
     is_cancelled_ = true;
     receiver_.reset();
-    run_loop_.Quit();
   }
 
   bool is_cancelled() const { return is_cancelled_; }
@@ -817,6 +826,7 @@ class ShowPopupMenuInterceptor
   base::RunLoop run_loop_;
   bool is_cancelled_{false};
   gfx::Rect overriden_bounds_;
+  base::OnceClosure task_in_nested_loop_;
   mojo::test::ScopedSwapImplForTesting<blink::mojom::LocalFrameHost>
       swapped_impl_;
   mojo::Receiver<blink::mojom::PopupMenuClient> receiver_{this};
@@ -870,6 +880,50 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostSitePerProcessTest,
                                show_popup_interceptor.last_routing_id()));
 #endif  // BUILDFLAG(IS_MAC)
 }
+
+#if BUILDFLAG(IS_MAC)
+// Variant of the above where no permission prompt is showing when the popup
+// opens, but one appears while the native menu's nested run loop is active.
+// The browser should detect the new prompt and dismiss the open popup.
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostSitePerProcessTest,
+                       BrowserClosesOpenPopupWhenPermissionPromptAppears) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/site_isolation/page-with-select.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(shell()->web_contents());
+
+  auto* contents = static_cast<WebContentsImpl*>(web_contents());
+  FrameTreeNode* root = contents->GetPrimaryFrameTree().root();
+  RenderFrameHostImpl* root_frame_host = root->current_frame_host();
+
+  auto* permission_controller = static_cast<PermissionControllerImpl*>(
+      root_frame_host->GetBrowserContext()->GetPermissionController());
+
+  gfx::Rect permission_exclusion_area_bounds(100, 100, 100, 100);
+  // Simulate a permission prompt being shown only after the popup has opened
+  // and entered its nested run loop.
+  ShowPopupMenuInterceptor show_popup_menu_interceptor(
+      root_frame_host,
+      permission_exclusion_area_bounds -
+          contents->GetContainerBounds().OffsetFromOrigin(),
+      base::BindLambdaForTesting([&]() {
+        permission_controller->set_exclusion_area_bounds_for_tests(
+            permission_exclusion_area_bounds);
+      }));
+
+  input::NativeWebKeyboardEvent event(
+      blink::WebKeyboardEvent::Type::kChar, blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  event.text[0] = ' ';
+  EXPECT_TRUE(ExecJs(root_frame_host, "focusSelectMenu();"));
+  root_frame_host->GetRenderWidgetHost()->ForwardKeyboardEvent(event);
+
+  show_popup_menu_interceptor.Wait();
+  EXPECT_TRUE(show_popup_menu_interceptor.is_cancelled());
+
+  permission_controller->set_exclusion_area_bounds_for_tests(std::nullopt);
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
