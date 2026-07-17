@@ -46,7 +46,6 @@ class DevicePermissionEntry : public base::RefCounted<DevicePermissionEntry> {
 
   explicit DevicePermissionEntry(const device::mojom::UsbDeviceInfo& device);
 
-  explicit DevicePermissionEntry(const device::mojom::HidDeviceInfo& device);
   DevicePermissionEntry(Type type,
                         uint16_t vendor_id,
                         uint16_t product_id,
@@ -164,8 +163,6 @@ class DevicePermissionsManager : public KeyedService {
 
   void AllowUsbDevice(const ExtensionId& extension_id,
                       const device::mojom::UsbDeviceInfo& device_info);
-  void AllowHidDevice(const ExtensionId& extension_id,
-                      const device::mojom::HidDeviceInfo& device);
 
   // Updates the "last used" timestamp on the given device entry and writes it
   // out to ExtensionPrefs.
