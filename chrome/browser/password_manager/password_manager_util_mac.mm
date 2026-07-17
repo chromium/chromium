@@ -27,23 +27,14 @@ NSString* UserAuthenticationRightName() {
 }
 
 bool EnsureAuthorizationRightExists() {
-  NSString* right_name = UserAuthenticationRightName();
-  // If the authorization right already exists and is valid, there is nothing to
-  // do.
-  base::apple::ScopedCFTypeRef<CFDictionaryRef> right_definition;
-  if (AuthorizationRightGet(right_name.UTF8String,
-                            right_definition.InitializeInto()) ==
-          errAuthorizationSuccess &&
-      right_definition) {
-    CFStringRef rule = base::apple::GetValueFromDictionary<CFStringRef>(
-        right_definition.get(), CFSTR("rule"));
-    if (rule &&
-        CFEqual(rule, CFSTR(kAuthorizationRuleAuthenticateAsSessionUser))) {
-      return true;
-    }
+  NSString* rightName = UserAuthenticationRightName();
+  // If the authorization right already exists there is nothing to do.
+  if (AuthorizationRightGet(rightName.UTF8String, nullptr) ==
+      errAuthorizationSuccess) {
+    return true;
   }
 
-  // The authorization right does not exist or is invalid, so create it.
+  // The authorization right does not exist so create it.
   base::mac::ScopedAuthorizationRef authorization =
       base::mac::CreateAuthorization();
   if (!authorization) {
@@ -53,7 +44,7 @@ bool EnsureAuthorizationRightExists() {
   // Create a right which requires that the user authenticate as the session
   // owner. The prompt must be specified each time the right is requested.
   OSStatus status =
-      AuthorizationRightSet(authorization, right_name.UTF8String,
+      AuthorizationRightSet(authorization, rightName.UTF8String,
                             CFSTR(kAuthorizationRuleAuthenticateAsSessionUser),
                             nullptr, nullptr, nullptr);
   if (status != errAuthorizationSuccess) {
