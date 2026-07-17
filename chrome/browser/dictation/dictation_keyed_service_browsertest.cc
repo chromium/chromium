@@ -16,11 +16,13 @@
 #include "chrome/browser/dictation/stream_provider.h"
 #include "chrome/browser/dictation/target.h"
 #include "chrome/browser/dictation/test_util.h"
+#include "chrome/browser/glic/test_support/non_interactive_glic_test.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/dictation/onboarding_dialog_controller.h"
 #include "chrome/common/extensions/api/dictation_private.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "content/public/browser/global_dom_node_id.h"
@@ -484,6 +486,82 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
   }
 
   EXPECT_EDITABLE_TEXT_EQ("#text_id", "Hello World");
+}
+
+// TODO(b/533465625): Ideally we could also make this a child of
+// DictationBrowserTestBase so we get all the helpers.
+class DictationGlicBrowserTest : public glic::NonInteractiveGlicTest {
+ public:
+  DictationGlicBrowserTest()
+      : scoped_feature_list_(CreateEnablingFeatureList()) {}
+  ~DictationGlicBrowserTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    glic::NonInteractiveGlicTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(
+        extensions::switches::kAllowlistedExtensionID,
+        std::string(kDictationTestExtensionId));
+  }
+
+  void SetUpOnMainThread() override {
+    glic::NonInteractiveGlicTest::SetUpOnMainThread();
+    GetProfile()->GetPrefs()->SetBoolean(
+        prefs::kPrefDictationOnboardingCompleted, true);
+    LoadTestExtensionInManualMode(GetProfile());
+  }
+
+  DictationKeyedService& dictation_service() {
+    return *DictationKeyedService::Get(GetProfile());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Ensure basic stream setup, state changes, and end work correctly for streams
+// started for a Glic guest.
+IN_PROC_BROWSER_TEST_F(DictationGlicBrowserTest, BasicStreamFunctions) {
+  RunTestSequence(OpenGlic(), CheckGlicInstanceIsShowing());
+
+  content::RenderFrameHost* glic_rfh = FindGlicGuestMainFrame();
+  ASSERT_TRUE(glic_rfh);
+
+  // Start a session using the Glic guest document rather than the normal tab
+  // document.
+  content::GlobalDOMNodeId target_id(glic_rfh->GetWeakDocumentPtr(),
+                                     blink::DOMNodeIdType(123));
+
+  tabs::TabInterface* tab = chrome_test_utils::GetActiveTab(this);
+  CHECK(tab);
+  dictation_service().StartSession(*tab, target_id,
+                                   DictationSessionEntryPoint::kContextMenu);
+
+  SessionController* controller = dictation_service().session_controller();
+  ASSERT_NE(controller, nullptr);
+
+  ListenerStreamProvider* provider = static_cast<ListenerStreamProvider*>(
+      controller->attached_stream_provider());
+  ASSERT_NE(provider, nullptr);
+
+  ExtensionWaitForStreamStart(GetProfile(), provider->stream_id_for_testing());
+
+  ExtensionSendStreamStateUpdate(GetProfile(),
+                                 provider->stream_id_for_testing(),
+                                 ExtensionStreamState::kTranscribing);
+  EXPECT_EQ(provider->GetState(), StreamProvider::StreamState::kTranscribing);
+
+  ExtensionSendTranscriptUpdate(GetProfile(), provider->stream_id_for_testing(),
+                                ExtensionTranscriptionType::kPartial, "Hello");
+  EXPECT_EQ(provider->GetLatestTranscriptionForTesting(), "Hello");
+
+  controller->UiRequestEndActiveStream();
+  ExtensionSendStreamStateUpdate(GetProfile(),
+                                 provider->stream_id_for_testing(),
+                                 ExtensionStreamState::kComplete);
+  EXPECT_EQ(controller->GetState(), SessionState::kInactive);
+
+  dictation_service().EndSession();
+  RunTestSequence(CloseGlic());
 }
 
 }  // namespace
