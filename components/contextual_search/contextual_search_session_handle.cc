@@ -523,16 +523,16 @@ ContextualSearchSessionHandle::CreateClientToAimRequest(
       const auto* file_info =
           context_controller->GetFileInfo(token_to_validate);
       // If the tab is closed, or the URL is no longer being tracked after
-      // navigation.
+      // navigation (no recontextualization).
       if (file_info && !tab_validator->IsTabValidAndPointingToUrl(*file_info)) {
         deleted_tabs.push_back(session_id);
       }
     }
   }
 
-  // Remove fully navigated tabs that are no longer tracked since there is no
-  // recontextualization. Also remove closed tabs. Notify server of any of
-  // these tracking removals.
+  // Remove fully navigated tabs that are no longer tracked since there was no
+  // recontextualization to track them. Also remove closed tabs. Notify server
+  // of any of these tracking removals.
   for (const auto& session_id : deleted_tabs) {
     auto it = submitted_tabs_.find(session_id);
     if (it != submitted_tabs_.end()) {
@@ -565,28 +565,20 @@ ContextualSearchSessionHandle::CreateClientToAimRequest(
       }
 
       if (!tab_still_open) {
-        std::vector<base::UnguessableToken> tokens_to_remove;
-        for (const auto& token : uploaded_context_tokens_) {
-          if (IsTabToken(token)) {
-            const auto* file_info = context_controller->GetFileInfo(token);
-            if (file_info && file_info->tab_session_id == session_id) {
-              tokens_to_remove.push_back(token);
-            }
-          }
-        }
-        for (const auto& token : submitted_context_tokens_) {
-          if (IsTabToken(token)) {
-            const auto* file_info = context_controller->GetFileInfo(token);
-            if (file_info && file_info->tab_session_id == session_id) {
-              tokens_to_remove.push_back(token);
-            }
-          }
-        }
-        for (const auto& token : tokens_to_remove) {
-          std::erase(uploaded_context_tokens_, token);
-          std::erase(submitted_context_tokens_, token);
-        }
+        // If closed, remove all tab tokens associated with this tab session id.
+        // `isTabToken()` is not needed here to verify contexts are a tab
+        // because successfully matching session id's with a valid `session_id`
+        // means that the context must be a tab.
+        std::erase_if(uploaded_context_tokens_, [&](const auto& token) {
+          const auto* file_info = context_controller->GetFileInfo(token);
+          return file_info && file_info->tab_session_id == session_id;
+        });
+        std::erase_if(submitted_context_tokens_, [&](const auto& token) {
+          const auto* file_info = context_controller->GetFileInfo(token);
+          return file_info && file_info->tab_session_id == session_id;
+        });
       } else {
+        // Remove only the expired token that navigation made irrelevant.
         std::erase(uploaded_context_tokens_, it->second.first);
         std::erase(submitted_context_tokens_, it->second.first);
       }
