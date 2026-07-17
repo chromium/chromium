@@ -34,6 +34,8 @@ import java.lang.annotation.RetentionPolicy;
     MobileFreProgress.HISTORY_SYNC_DISMISSED,
     MobileFreProgress.DEFAULT_BROWSER_PROMO_ACCEPTED,
     MobileFreProgress.DEFAULT_BROWSER_PROMO_REJECTED,
+    MobileFreProgress.SAFETY_PROMO_SHOWN,
+    MobileFreProgress.SAFETY_PROMO_START_BROWSING_CLICKED,
     MobileFreProgress.MAX,
 })
 @Retention(RetentionPolicy.SOURCE)
@@ -84,6 +86,12 @@ public @interface MobileFreProgress {
     /** The user rejected the default browser promo. */
     int DEFAULT_BROWSER_PROMO_REJECTED = 17;
 
-    int MAX = 18;
+    /** The safety promo was shown to the user. */
+    int SAFETY_PROMO_SHOWN = 18;
+
+    /** The user clicked the start browsing button on the safety promo. */
+    int SAFETY_PROMO_START_BROWSING_CLICKED = 19;
+
+    int MAX = 20;
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/mobile/enums.xml:MobileFreProgress)

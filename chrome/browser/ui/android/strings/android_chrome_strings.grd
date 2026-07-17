@@ -3575,6 +3575,15 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_FRE_ACTIVITY_LABEL" desc="Label for first run dialog in Android Recents.">
         Chrome First Run Experience
       </message>
+      <message name="IDS_SAFETY_FRE_PROMO_TITLE" desc="Headline text on the Safety Promo screen of the First Run Experience.">
+        A safer, more powerful browser for you
+      </message>
+      <message name="IDS_SAFETY_FRE_PROMO_DESCRIPTION" desc="Description text on the Safety Promo screen of the First Run Experience.">
+        Chrome’s AI-powered security helps protect you against online threats, giving you confidence as you browse
+      </message>
+      <message name="IDS_SAFETY_FRE_PROMO_START_BROWSING_BUTTON" desc="Text on the button to start browsing from the Safety Promo screen of the First Run Experience.">
+        Start browsing
+      </message>
       <message name="IDS_LIGHTWEIGHT_FRE_ASSOCIATED_APP_TOS" desc="Message explaining that use of Chrome is governed by Chrome's terms of service.">
         <ph name="APP_NAME">%1$s<ex>Google Maps</ex></ph> will open in Chrome. By continuing, you agree to the <ph name="BEGIN_LINK1">&lt;LINK1&gt;</ph>Google Terms of Service<ph name="END_LINK1">&lt;/LINK1&gt;</ph>, and the <ph name="BEGIN_LINK2">&lt;LINK2&gt;</ph>Google Chrome and ChromeOS Additional Terms of Service<ph name="END_LINK2">&lt;/LINK2&gt;</ph>.
       </message>

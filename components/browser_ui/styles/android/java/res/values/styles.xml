@@ -197,6 +197,10 @@ found in the LICENSE file.
     </style>
 
     <!-- Primary text styles -->
+    <style name="TextAppearance.HeadlineLargeThick.Primary">
+        <item name="android:textColor">@color/default_text_color_list</item>
+    </style>
+
     <style name="TextAppearance.Headline.Primary">
         <item name="android:textColor">@color/default_text_color_list</item>
     </style>

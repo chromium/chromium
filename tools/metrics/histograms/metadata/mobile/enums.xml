@@ -397,6 +397,9 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Default browser promo shown"/>
   <int value="16" label="The user accepted the default browser promo"/>
   <int value="17" label="The user rejected the default browser promo"/>
+  <int value="18" label="Safety promo shown"/>
+  <int value="19"
+      label="The user clicked the start browsing button on safety promo"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/first_run/android/java/src/org/chromium/chrome/browser/firstrun/MobileFreProgress.java:MobileFreProgress) -->

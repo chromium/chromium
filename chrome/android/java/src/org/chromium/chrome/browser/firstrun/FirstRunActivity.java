@@ -378,6 +378,13 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
             mFreProgressStates.add(MobileFreProgress.DEFAULT_BROWSER_PROMO_SHOWN);
         }
 
+        if (ChromeFeatureList.sSafetyFrePromo.isEnabled()
+                && ChromeFeatureList.sSafetyFrePromoArm.getValue()
+                        == FirstRunUtils.SafetyFrePromoArm.ANIMATED_ILLUSTRATION) {
+            mPages.add(new FirstRunPage<>(SafetyPromoFirstRunFragment.class, () -> true));
+            mFreProgressStates.add(MobileFreProgress.SAFETY_PROMO_SHOWN);
+        }
+
         if (mPagerAdapter != null) {
             mPagerAdapter.notifyDataSetChanged();
         }

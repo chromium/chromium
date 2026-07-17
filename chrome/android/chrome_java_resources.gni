@@ -575,6 +575,7 @@ chrome_java_resources = [
   "java/res/layout/recent_tabs_group_separator_visible.xml",
   "java/res/layout/recent_tabs_list_item.xml",
   "java/res/layout/recent_tabs_page.xml",
+  "java/res/layout/safety_promo_fre_illustration_portrait_view.xml",
   "java/res/layout/search_activity.xml",
   "java/res/layout/search_widget_template.xml",
   "java/res/layout/send_tab_to_self_device_picker_footer.xml",
