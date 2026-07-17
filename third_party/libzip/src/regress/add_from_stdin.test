@@ -1,5 +1,7 @@
 # add stdin to zip
-stdin This is a test, and it seems to have been successful.
-args -- teststdin.zip add_file teststring.txt /dev/stdin 0 -1
+arguments -- teststdin.zip add_file teststring.txt /dev/stdin 0 -1
 return 0
-file-new teststdin.zip teststdin.zip
+file teststdin.zip {} teststdin.zip
+stdin
+This is a test, and it seems to have been successful.
+end-of-inline-data

@@ -1,0 +1,6 @@
+header_cd="\x50\x4b\x01\x02"
+header_local_file_header="\x50\x4b\x03\x04"
+header_eocd="\x50\x4b\x05\x06"
+header_zip64_eocd="\x50\x4b\x06\x06"
+header_zip64_eocd_locator="\x50\x4b\x06\x07"
+header_data_descriptor="\x50\x4b\x07\x08"

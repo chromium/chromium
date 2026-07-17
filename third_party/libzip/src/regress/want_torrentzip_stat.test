@@ -1,0 +1,32 @@
+# check that wanting to convert a file to torrentzip changes stat information
+return 0
+arguments testfile.zzip stat 0 set_archive_flag want-torrentzip 1 stat 0 unchange_all stat 0
+file testfile.zzip testfile.zip
+stdout
+name: 'testfile.txt'
+index: '0'
+size: '0'
+compressed size: '0'
+mtime: 'Fri Jul 15 2005 16:37:14'
+crc: '0'
+compression method: '0'
+encryption method: '0'
+
+name: 'testfile.txt'
+index: '0'
+size: '0'
+mtime: 'Tue Dec 24 1996 23:32:00'
+crc: '0'
+compression method: '8'
+encryption method: '0'
+
+name: 'testfile.txt'
+index: '0'
+size: '0'
+compressed size: '0'
+mtime: 'Fri Jul 15 2005 16:37:14'
+crc: '0'
+compression method: '0'
+encryption method: '0'
+
+end-of-inline-data

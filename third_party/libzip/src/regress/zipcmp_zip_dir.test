@@ -1,0 +1,17 @@
+# compare zip with directory
+features HAVE_FTS_H
+program zipcmp
+mkdir a
+mkdir a/dir-with-file
+mkdir a/empty-dir-in-dir
+arguments zipcmp_zip_dir.zip  a
+file zipcmp_zip_dir.zip zipcmp_zip_dir.zip
+return 1
+stdout
+--- zipcmp_zip_dir.zip
++++ a
+- directory '00-empty-dir/'
+- file 'dir-with-file/a', size 1, crc e8b7be43, mtime 1610623116
++ directory 'empty-dir-in-dir/'
+- directory 'empty-dir/'
+end-of-inline-data

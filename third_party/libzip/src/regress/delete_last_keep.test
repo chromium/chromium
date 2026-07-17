@@ -1,0 +1,4 @@
+# delete last entry in zip archive
+return 0
+arguments testfile.zzip  set_archive_flag create-or-keep-file-for-empty-archive 1  delete 0
+file testfile.zzip testfile.zip testempty.zip

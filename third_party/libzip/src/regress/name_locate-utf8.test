@@ -1,0 +1,16 @@
+description tests for various encoding flags for zip_name_locate
+arguments -i test.zip dummy
+stdin
+name_locate æÆôöòûùÿÖÜ¢£¥₧ƒá 0  name_locate æÆôöòûùÿÖÜ¢£¥₧ƒá 4  name_locate æÆôöòûùÿÖÜ¢£¥₧ƒá 8  name_locate æÆôöòûùÿÖÜ¢£¥₧ƒá r  name_locate æÆôöòûùÿÖÜ¢£¥₧ƒá s
+end-of-inline-data
+return 0
+file test.zip test-cp437.zip
+stdout
+name 'æÆôöòûùÿÖÜ¢£¥₧ƒá' using flags '0' found at index 9
+name 'æÆôöòûùÿÖÜ¢£¥₧ƒá' using flags '8' found at index 9
+name 'æÆôöòûùÿÖÜ¢£¥₧ƒá' using flags 's' found at index 9
+end-of-inline-data
+stderr
+can't find entry with name 'æÆôöòûùÿÖÜ¢£¥₧ƒá' using flags '4'
+can't find entry with name 'æÆôöòûùÿÖÜ¢£¥₧ƒá' using flags 'r'
+end-of-inline-data

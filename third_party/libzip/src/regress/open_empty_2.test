@@ -1,7 +1,11 @@
 # zip_open: 0 size file is recognized as empty zip
 program tryopen
-file testfile.txt testfile.txt testfile.txt
-args testfile.txt
+file testfile.txt testfile.txt
+arguments testfile.txt
 return 1
-stdout opening 'testfile.txt' returned error 19
-stderr 1 errors
+stdout
+opening 'testfile.txt' returned error 19
+end-of-inline-data
+stderr
+1 errors
+end-of-inline-data

@@ -1,9 +1,9 @@
 /*
   zip_source_file_stdio.c -- read-only stdio file source implementation
-  Copyright (C) 2020 Dieter Baron and Thomas Klausner
+  Copyright (C) 2020-2025 Dieter Baron and Thomas Klausner
 
   This file is part of libzip, a library to manipulate ZIP archives.
-  The authors can be contacted at <libzip@nih.at>
+  The authors can be contacted at <info@libzip.org>
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions
@@ -39,7 +39,6 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/stat.h>
 
 #ifdef _WIN32
 #ifndef S_IWUSR
@@ -66,79 +65,75 @@ static zip_source_file_operations_t ops_stdio_read = {
 /* clang-format on */
 
 
-ZIP_EXTERN zip_source_t *
-zip_source_filep(zip_t *za, FILE *file, zip_uint64_t start, zip_int64_t len) {
+ZIP_EXTERN zip_source_t *zip_source_filep(zip_t *za, FILE *file, zip_uint64_t start, zip_int64_t len) {
     if (za == NULL) {
-	return NULL;
+        return NULL;
     }
 
     return zip_source_filep_create(file, start, len, &za->error);
 }
 
 
-ZIP_EXTERN zip_source_t *
-zip_source_filep_create(FILE *file, zip_uint64_t start, zip_int64_t length, zip_error_t *error) {
-    if (file == NULL || length < -1) {
-	zip_error_set(error, ZIP_ER_INVAL, 0);
-	return NULL;
+ZIP_EXTERN zip_source_t *zip_source_filep_create(FILE *file, zip_uint64_t start, zip_int64_t length, zip_error_t *error) {
+    if (file == NULL || length < ZIP_LENGTH_UNCHECKED) {
+        zip_error_set(error, ZIP_ER_INVAL, 0);
+        return NULL;
     }
 
     return zip_source_file_common_new(NULL, file, start, length, NULL, &ops_stdio_read, NULL, error);
 }
 
 
-void
-_zip_stdio_op_close(zip_source_file_context_t *ctx) {
+void _zip_stdio_op_close(zip_source_file_context_t *ctx) {
     fclose((FILE *)ctx->f);
 }
 
 
-zip_int64_t
-_zip_stdio_op_read(zip_source_file_context_t *ctx, void *buf, zip_uint64_t len) {
+zip_int64_t _zip_stdio_op_read(zip_source_file_context_t *ctx, void *buf, zip_uint64_t len) {
     size_t i;
+#if SIZE_MAX < ZIP_UINT64_MAX
     if (len > SIZE_MAX) {
-	len = SIZE_MAX;
+        len = SIZE_MAX;
     }
+#endif
 
     if ((i = fread(buf, 1, (size_t)len, ctx->f)) == 0) {
-	if (ferror((FILE *)ctx->f)) {
-	    zip_error_set(&ctx->error, ZIP_ER_READ, errno);
-	    return -1;
-	}
+        if (ferror((FILE *)ctx->f)) {
+            zip_error_set(&ctx->error, ZIP_ER_READ, errno);
+            return -1;
+        }
     }
 
     return (zip_int64_t)i;
 }
 
 
-bool
-_zip_stdio_op_seek(zip_source_file_context_t *ctx, void *f, zip_int64_t offset, int whence) {
+bool _zip_stdio_op_seek(zip_source_file_context_t *ctx, void *f, zip_int64_t offset, int whence) {
 #if ZIP_FSEEK_MAX > ZIP_INT64_MAX
     if (offset > ZIP_FSEEK_MAX || offset < ZIP_FSEEK_MIN) {
-	zip_error_set(&ctx->error, ZIP_ER_SEEK, EOVERFLOW);
-	return false;
+        zip_error_set(&ctx->error, ZIP_ER_SEEK, EOVERFLOW);
+        return false;
     }
 #endif
 
-    if (fseeko((FILE *)f, (off_t)offset, whence) < 0) {
-	zip_error_set(&ctx->error, ZIP_ER_SEEK, errno);
-	return false;
+    if (zip_os_fseek((FILE *)f, (zip_off_t)offset, whence) < 0) {
+        zip_error_set(&ctx->error, ZIP_ER_SEEK, errno);
+        return false;
     }
     return true;
 }
 
 
-bool
-_zip_stdio_op_stat(zip_source_file_context_t *ctx, zip_source_file_stat_t *st) {
-    struct stat sb;
+bool _zip_stdio_op_stat(zip_source_file_context_t *ctx, zip_source_file_stat_t *st) {
+    zip_os_stat_t sb;
 
     int ret;
 
     if (ctx->fname) {
-	ret = stat(ctx->fname, &sb);
+        ret = zip_os_stat(ctx->fname, &sb);
     }
     else {
-	ret = fstat(fileno((FILE *)ctx->f), &sb);
+        ret = zip_os_fstat(fileno((FILE *)ctx->f), &sb);
     }
 
     if (ret < 0) {
@@ -146,8 +141,8 @@ _zip_stdio_op_stat(zip_source_file_context_t *ctx, zip_source_file_stat_t *st) {
             st->exists = false;
             return true;
         }
-	zip_error_set(&ctx->error, ZIP_ER_READ, errno);
-	return false;
+        zip_error_set(&ctx->error, ZIP_ER_READ, errno);
+        return false;
     }
 
     st->size = (zip_uint64_t)sb.st_size;
@@ -166,43 +161,12 @@ _zip_stdio_op_stat(zip_source_file_context_t *ctx, zip_source_file_stat_t *st) {
 }
 
 
-zip_int64_t
-_zip_stdio_op_tell(zip_source_file_context_t *ctx, void *f) {
-    off_t offset = ftello((FILE *)f);
+zip_int64_t _zip_stdio_op_tell(zip_source_file_context_t *ctx, void *f) {
+    zip_off_t offset = zip_os_ftell((FILE *)f);
 
     if (offset < 0) {
-	zip_error_set(&ctx->error, ZIP_ER_SEEK, errno);
+        zip_error_set(&ctx->error, ZIP_ER_SEEK, errno);
     }
 
     return offset;
-}
-
-
-/*
- * fopen replacement that sets the close-on-exec flag
- * some implementations support an fopen 'e' flag for that,
- * but e.g. macOS doesn't.
- */
-FILE *
-_zip_fopen_close_on_exec(const char *name, bool writeable) {
-    int fd;
-    int flags;
-    FILE *fp;
-
-    flags = O_CLOEXEC;
-    if (writeable) {
-	flags |= O_RDWR;
-    }
-    else {
-	flags |= O_RDONLY;
-    }
-
-    /* mode argument needed on Windows */
-    if ((fd = open(name, flags, 0666)) < 0) {
-	return NULL;
-    }
-    if ((fp = fdopen(fd, writeable ? "r+b" : "rb")) == NULL) {
-	return NULL;
-    }
-    return fp;
 }

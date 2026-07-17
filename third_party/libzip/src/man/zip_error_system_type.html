@@ -5,7 +5,7 @@
    Copyright (C) 2014-2017 Dieter Baron and Thomas Klausner
   
    This file is part of libzip, a library to manipulate ZIP archives.
-   The authors can be contacted at <libzip@nih.at>
+   The authors can be contacted at <info@libzip.org>
   
    Redistribution and use in source and binary forms, with or without
    modification, are permitted provided that the following conditions
@@ -34,6 +34,7 @@
    -->
 <head>
   <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <link rel="stylesheet" href="../nih-man.css" type="text/css" media="all"/>
   <title>ZIP_ERROR_SYSTEM_TYPE(3)</title>
 </head>
@@ -48,16 +49,17 @@
 <div class="manual-text">
 <section class="Sh">
 <h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
-<code class="Nm">zip_error_system_type</code> &#x2014;
-<div class="Nd">return type of system error</div>
+<p class="Pp"><code class="Nm">zip_error_system_type</code> &#x2014;
+    <span class="Nd">return type of system error</span></p>
 </section>
 <section class="Sh">
 <h1 class="Sh" id="LIBRARY"><a class="permalink" href="#LIBRARY">LIBRARY</a></h1>
-libzip (-lzip)
+<p class="Pp">libzip (-lzip)</p>
 </section>
 <section class="Sh">
 <h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
-<code class="In">#include &lt;<a class="In">zip.h</a>&gt;</code>
+<p class="Pp"><code class="In">#include
+  &lt;<a class="In">zip.h</a>&gt;</code></p>
 <p class="Pp"><var class="Ft">int</var>
   <br/>
   <code class="Fn">zip_error_system_type</code>(<var class="Fa" style="white-space: nowrap;">const
@@ -65,16 +67,18 @@ libzip (-lzip)
 </section>
 <section class="Sh">
 <h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
-The <code class="Fn">zip_error_system_type</code>() function returns the type of
-  the system specific part for the zip_error <var class="Ar">ze</var>.
-  Currently, the following system types are defined:
+<p class="Pp">The
+    <a class="permalink" href="#zip_error_system_type"><code class="Fn" id="zip_error_system_type">zip_error_system_type</code></a>()
+    function returns the type of the system specific part for the zip_error
+    <var class="Ar">ze</var>. Currently, the following system types are
+  defined:</p>
 <dl class="Bl-tag">
-  <dt><a class="permalink" href="#ZIP_ET_NONE"><code class="Dv" id="ZIP_ET_NONE">ZIP_ET_NONE</code></a></dt>
+  <dt id="ZIP_ET_NONE"><a class="permalink" href="#ZIP_ET_NONE"><code class="Dv">ZIP_ET_NONE</code></a></dt>
   <dd>System specific part of <var class="Ar">ze</var> is unused.</dd>
-  <dt><a class="permalink" href="#ZIP_ET_SYS"><code class="Dv" id="ZIP_ET_SYS">ZIP_ET_SYS</code></a></dt>
+  <dt id="ZIP_ET_SYS"><a class="permalink" href="#ZIP_ET_SYS"><code class="Dv">ZIP_ET_SYS</code></a></dt>
   <dd>System specific part of <var class="Ar">ze</var> is an
       <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/errno.html">errno(2)</a>.</dd>
-  <dt><a class="permalink" href="#ZIP_ET_ZLIB"><code class="Dv" id="ZIP_ET_ZLIB">ZIP_ET_ZLIB</code></a></dt>
+  <dt id="ZIP_ET_ZLIB"><a class="permalink" href="#ZIP_ET_ZLIB"><code class="Dv">ZIP_ET_ZLIB</code></a></dt>
   <dd>System specific part of <var class="Ar">ze</var> is a
       <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/zlib.html">zlib(3)</a> error.</dd>
 </dl>
@@ -82,19 +86,20 @@ The <code class="Fn">zip_error_system_type</code>() function returns the type of
 <section class="Sh">
 <h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
   ALSO</a></h1>
-<a class="Xr" href="libzip.html">libzip(3)</a>,
-  <a class="Xr" href="zip_error_code_system.html">zip_error_code_system(3)</a>
+<p class="Pp"><a class="Xr" href="libzip.html">libzip(3)</a>,
+    <a class="Xr" href="zip_error_code_system.html">zip_error_code_system(3)</a></p>
 </section>
 <section class="Sh">
 <h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
-<code class="Fn">zip_error_system_type</code>() was added in libzip 1.0.
+<p class="Pp"><code class="Fn">zip_error_system_type</code>() was added in
+    libzip 1.0.</p>
 </section>
 <section class="Sh">
 <h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
-<span class="An">Dieter Baron</span>
-  &lt;<a class="Mt" href="mailto:dillo@nih.at">dillo@nih.at</a>&gt; and
-  <span class="An">Thomas Klausner</span>
-  &lt;<a class="Mt" href="mailto:tk@giga.or.at">tk@giga.or.at</a>&gt;
+<p class="Pp"><span class="An">Dieter Baron</span>
+    &lt;<a class="Mt" href="mailto:dillo@nih.at">dillo@nih.at</a>&gt; and
+    <span class="An">Thomas Klausner</span>
+    &lt;<a class="Mt" href="mailto:wiz@gatalith.at">wiz@gatalith.at</a>&gt;</p>
 </section>
 </div>
 <table class="foot">

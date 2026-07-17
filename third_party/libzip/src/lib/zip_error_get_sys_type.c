@@ -1,9 +1,9 @@
 /*
   zip_error_get_sys_type.c -- return type of system error code
-  Copyright (C) 1999-2019 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2025 Dieter Baron and Thomas Klausner
 
   This file is part of libzip, a library to manipulate ZIP archives.
-  The authors can be contacted at <libzip@nih.at>
+  The authors can be contacted at <info@libzip.org>
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions
@@ -31,14 +31,16 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+/* LCOV_EXCL_START */
 #define _ZIP_COMPILING_DEPRECATED
 #include "zipint.h"
 
 
-ZIP_EXTERN int
-zip_error_get_sys_type(int ze) {
-    if (ze < 0 || ze >= _zip_nerr_str)
-	return 0;
+ZIP_EXTERN int zip_error_get_sys_type(int ze) {
+    if (ze < 0 || ze >= _zip_err_str_count) {
+        return 0;
+    }
 
-    return _zip_err_type[ze];
+    return _zip_err_str[ze].type;
 }
+/* LCOV_EXCL_STOP */

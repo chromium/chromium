@@ -34,24 +34,24 @@ typedef uint32_t zip_uint32_t;
 typedef int64_t zip_int64_t;
 typedef uint64_t zip_uint64_t;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 typedef int mode_t;
 #endif
 
-#define ZIP_INT8_MIN (-ZIP_INT8_MAX - 1)
-#define ZIP_INT8_MAX 0x7f
-#define ZIP_UINT8_MAX 0xff
+#define ZIP_INT8_MIN	 (-ZIP_INT8_MAX-1)
+#define ZIP_INT8_MAX	 0x7f
+#define ZIP_UINT8_MAX	 0xff
 
-#define ZIP_INT16_MIN (-ZIP_INT16_MAX - 1)
-#define ZIP_INT16_MAX 0x7fff
-#define ZIP_UINT16_MAX 0xffff
+#define ZIP_INT16_MIN	 (-ZIP_INT16_MAX-1)
+#define ZIP_INT16_MAX	 0x7fff
+#define ZIP_UINT16_MAX	 0xffff
 
-#define ZIP_INT32_MIN (-ZIP_INT32_MAX - 1L)
-#define ZIP_INT32_MAX 0x7fffffffL
-#define ZIP_UINT32_MAX 0xffffffffLU
+#define ZIP_INT32_MIN	 (-ZIP_INT32_MAX-1L)
+#define ZIP_INT32_MAX	 0x7fffffffL
+#define ZIP_UINT32_MAX	 0xffffffffLU
 
-#define ZIP_INT64_MIN (-ZIP_INT64_MAX - 1LL)
-#define ZIP_INT64_MAX 0x7fffffffffffffffLL
-#define ZIP_UINT64_MAX 0xffffffffffffffffULL
+#define ZIP_INT64_MIN	 (-ZIP_INT64_MAX-1LL)
+#define ZIP_INT64_MAX	 0x7fffffffffffffffLL
+#define ZIP_UINT64_MAX	 0xffffffffffffffffULL
 
 #endif /* zipconf.h */

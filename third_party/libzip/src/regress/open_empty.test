@@ -1,6 +1,8 @@
 # zip_open: file contains no entry, but is valid
 program tryopen
-file testempty.zip testempty.zip testempty.zip
-args testempty.zip
+file testempty.zip testempty.zip
+arguments testempty.zip
 return 0
-stdout opening 'testempty.zip' succeeded, 0 entries
+stdout
+opening 'testempty.zip' succeeded, 0 entries
+end-of-inline-data

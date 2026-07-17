@@ -1,9 +1,9 @@
 .\" Automatically generated from an mdoc input file.  Do not edit.
 .\" zip_file_add.mdoc -- add files to zip archive
-.\" Copyright (C) 2004-2019 Dieter Baron and Thomas Klausner
+.\" Copyright (C) 2004-2021 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP archives.
-.\" The authors can be contacted at <libzip@nih.at>
+.\" The authors can be contacted at <info@libzip.org>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -30,7 +30,7 @@
 .\" OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 .\" IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .\"
-.TH "ZIP_FILE_ADD" "3" "December 18, 2017" "NiH" "Library Functions Manual"
+.TH "ZIP_FILE_ADD" "3" "March 18, 2024" "NiH" "Library Functions Manual"
 .nh
 .if n .ad l
 .SH "NAME"
@@ -88,6 +88,7 @@ only.
 Guess encoding of
 \fIname\fR
 (default).
+(Only CP-437 and UTF-8 are recognized.)
 .TP 22n
 \fRZIP_FL_ENC_UTF_8\fR
 Interpret
@@ -103,7 +104,7 @@ as code page 437 (CP-437).
 The data is obtained from the
 \fIsource\fR
 argument, see
-zip_source(3).
+zip_source(5).
 .PD
 .PP
 \fINOTE\fR:
@@ -115,6 +116,17 @@ after it was used successfully in a
 or
 \fBzip_file_replace\fR
 call.
+.PP
+Please also note that when using
+\fBzip_replace\fR,
+the target file's extra field information will be deleted since this
+usually is dependent on the file contents.
+If you want to keep them, query them beforehand with
+zip_file_extra_field_get(3)
+and restore them after
+\fBzip_replace\fR
+with
+zip_file_extra_field_set(3).
 .SH "RETURN VALUES"
 Upon successful completion,
 \fBzip_file_add\fR()
@@ -128,7 +140,7 @@ is set to indicate the error.
 .nf
 .RS 6n
 zip_source_t *s;
-const char *buf="teststring";
+const char buf[]="teststring";
 
 if ((s=zip_source_buffer(archive, buf, sizeof(buf), 0)) == NULL ||
     zip_file_add(archive, name, s, ZIP_FL_ENC_UTF_8) < 0) {
@@ -170,7 +182,7 @@ Required memory could not be allocated.
 Archive was opened in read-only mode.
 .SH "SEE ALSO"
 libzip(3),
-zip_source(3)
+zip_source(5)
 .SH "HISTORY"
 \fBzip_file_add\fR()
 and
@@ -179,4 +191,4 @@ were added in libzip 0.11.
 .SH "AUTHORS"
 Dieter Baron <\fIdillo@nih.at\fR>
 and
-Thomas Klausner <\fItk@giga.or.at\fR>
+Thomas Klausner <\fIwiz@gatalith.at\fR>

@@ -1,6 +1,8 @@
 # unsuccessful fseek test because data is compressed
 program fseek
-args test.zip 0 2
+arguments test.zip 0 2
 return 1
-file test.zip testdeflated.zip testdeflated.zip
-stderr zip_fseek failed: Operation not supported
+file test.zip testdeflated.zip
+stderr
+zip_fseek failed: Operation not supported
+end-of-inline-data

@@ -1,5 +1,7 @@
 # zip_open: count entries for archive with >65k entries
-args manyfiles.zip get_num_entries 0
+arguments manyfiles.zip get_num_entries 0
 return 0
-file manyfiles.zip manyfiles.zip manyfiles.zip
-stdout 70000 entries in archive
+file manyfiles.zip manyfiles.zip
+stdout
+70000 entries in archive
+end-of-inline-data

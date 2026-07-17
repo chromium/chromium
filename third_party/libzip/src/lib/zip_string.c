@@ -1,9 +1,9 @@
 /*
   zip_string.c -- string handling (with encoding)
-  Copyright (C) 2012-2019 Dieter Baron and Thomas Klausner
+  Copyright (C) 2012-2025 Dieter Baron and Thomas Klausner
 
   This file is part of libzip, a library to manipulate ZIP archives.
-  The authors can be contacted at <libzip@nih.at>
+  The authors can be contacted at <info@libzip.org>
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions
@@ -32,32 +32,33 @@
 */
 
 
+#include "zipint.h"
+
 #include <stdlib.h>
 #include <string.h>
 #include <zlib.h>
 
-#include "zipint.h"
-
-zip_uint32_t
-_zip_string_crc32(const zip_string_t *s) {
+zip_uint32_t _zip_string_crc32(const zip_string_t *s) {
     zip_uint32_t crc;
 
     crc = (zip_uint32_t)crc32(0L, Z_NULL, 0);
 
-    if (s != NULL)
-	crc = (zip_uint32_t)crc32(crc, s->raw, s->length);
+    if (s != NULL) {
+        crc = (zip_uint32_t)crc32(crc, s->raw, s->length);
+    }
 
     return crc;
 }
 
 
-int
-_zip_string_equal(const zip_string_t *a, const zip_string_t *b) {
-    if (a == NULL || b == NULL)
-	return a == b;
+int _zip_string_equal(const zip_string_t *a, const zip_string_t *b) {
+    if (a == NULL || b == NULL) {
+        return a == b;
+    }
 
-    if (a->length != b->length)
-	return 0;
+    if (a->length != b->length) {
+        return 0;
+    }
 
     /* TODO: encoding */
 
@@ -65,10 +66,10 @@ _zip_string_equal(const zip_string_t *a, const zip_string_t *b) {
 }
 
 
-void
-_zip_string_free(zip_string_t *s) {
-    if (s == NULL)
-	return;
+void _zip_string_free(zip_string_t *s) {
+    if (s == NULL) {
+        return;
+    }
 
     free(s->raw);
     free(s->converted);
@@ -76,81 +77,100 @@ _zip_string_free(zip_string_t *s) {
 }
 
 
-const zip_uint8_t *
-_zip_string_get(zip_string_t *string, zip_uint32_t *lenp, zip_flags_t flags, zip_error_t *error) {
+const zip_uint8_t *_zip_string_get(zip_string_t *string, zip_uint32_t *lenp, zip_flags_t flags, zip_error_t *error) {
     static const zip_uint8_t empty[1] = "";
 
     if (string == NULL) {
-	if (lenp)
-	    *lenp = 0;
-	return empty;
+        if (lenp) {
+            *lenp = 0;
+        }
+        return empty;
     }
 
     if ((flags & ZIP_FL_ENC_RAW) == 0) {
-	/* start guessing */
-	if (string->encoding == ZIP_ENCODING_UNKNOWN)
-	    _zip_guess_encoding(string, ZIP_ENCODING_UNKNOWN);
+        /* start guessing */
+        if (string->encoding == ZIP_ENCODING_UNKNOWN) {
+            /* guess encoding, sets string->encoding */
+            (void)_zip_guess_encoding(string, ZIP_ENCODING_UNKNOWN);
+        }
 
-	if (((flags & ZIP_FL_ENC_STRICT) && string->encoding != ZIP_ENCODING_ASCII && string->encoding != ZIP_ENCODING_UTF8_KNOWN) || (string->encoding == ZIP_ENCODING_CP437)) {
-	    if (string->converted == NULL) {
-		if ((string->converted = _zip_cp437_to_utf8(string->raw, string->length, &string->converted_length, error)) == NULL)
-		    return NULL;
-	    }
-	    if (lenp)
-		*lenp = string->converted_length;
-	    return string->converted;
-	}
+        if (((flags & ZIP_FL_ENC_STRICT) && string->encoding != ZIP_ENCODING_ASCII && string->encoding != ZIP_ENCODING_UTF8_KNOWN) || (string->encoding == ZIP_ENCODING_CP437)) {
+            if (string->converted == NULL) {
+                if ((string->converted = _zip_cp437_to_utf8(string->raw, string->length, &string->converted_length, error)) == NULL) {
+                    return NULL;
+                }
+            }
+            if (lenp) {
+                *lenp = string->converted_length;
+            }
+            return string->converted;
+        }
     }
 
-    if (lenp)
-	*lenp = string->length;
+    if (lenp) {
+        *lenp = string->length;
+    }
     return string->raw;
 }
 
+bool _zip_string_is_ascii(const zip_string_t *string) {
+    if (string->encoding != ZIP_ENCODING_ASCII) {
+        zip_uint16_t i;
 
-zip_uint16_t
-_zip_string_length(const zip_string_t *s) {
-    if (s == NULL)
-	return 0;
+        for (i = 0; i < string->length; i++) {
+            if (string->raw[i] & 0x80) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+
+zip_uint16_t _zip_string_length(const zip_string_t *s) {
+    if (s == NULL) {
+        return 0;
+    }
 
     return s->length;
 }
 
 
-zip_string_t *
-_zip_string_new(const zip_uint8_t *raw, zip_uint16_t length, zip_flags_t flags, zip_error_t *error) {
+zip_string_t *_zip_string_new(const zip_uint8_t *raw, zip_uint16_t length, zip_flags_t flags, zip_error_t *error) {
     zip_string_t *s;
     zip_encoding_type_t expected_encoding;
 
-    if (length == 0)
-	return NULL;
+    if (length == 0) {
+        return NULL;
+    }
 
     switch (flags & ZIP_FL_ENCODING_ALL) {
     case ZIP_FL_ENC_GUESS:
-	expected_encoding = ZIP_ENCODING_UNKNOWN;
-	break;
+        expected_encoding = ZIP_ENCODING_UNKNOWN;
+        break;
     case ZIP_FL_ENC_UTF_8:
-	expected_encoding = ZIP_ENCODING_UTF8_KNOWN;
-	break;
+        expected_encoding = ZIP_ENCODING_UTF8_KNOWN;
+        break;
     case ZIP_FL_ENC_CP437:
-	expected_encoding = ZIP_ENCODING_CP437;
-	break;
+        expected_encoding = ZIP_ENCODING_CP437;
+        break;
     default:
-	zip_error_set(error, ZIP_ER_INVAL, 0);
-	return NULL;
+        zip_error_set(error, ZIP_ER_INVAL, 0);
+        return NULL;
     }
 
     if ((s = (zip_string_t *)malloc(sizeof(*s))) == NULL) {
-	zip_error_set(error, ZIP_ER_MEMORY, 0);
-	return NULL;
+        zip_error_set(error, ZIP_ER_MEMORY, 0);
+        return NULL;
     }
 
     if ((s->raw = (zip_uint8_t *)malloc((size_t)length + 1)) == NULL) {
-	free(s);
-	return NULL;
+        free(s);
+        return NULL;
     }
 
-    memcpy(s->raw, raw, length);
+    (void)memcpy_s(s->raw, length + 1, raw, length);
     s->raw[length] = '\0';
     s->length = length;
     s->encoding = ZIP_ENCODING_UNKNOWN;
@@ -158,21 +178,21 @@ _zip_string_new(const zip_uint8_t *raw, zip_uint16_t length, zip_flags_t flags, 
     s->converted_length = 0;
 
     if (expected_encoding != ZIP_ENCODING_UNKNOWN) {
-	if (_zip_guess_encoding(s, expected_encoding) == ZIP_ENCODING_ERROR) {
-	    _zip_string_free(s);
-	    zip_error_set(error, ZIP_ER_INVAL, 0);
-	    return NULL;
-	}
+        if (_zip_guess_encoding(s, expected_encoding) == ZIP_ENCODING_ERROR) {
+            _zip_string_free(s);
+            zip_error_set(error, ZIP_ER_INVAL, 0);
+            return NULL;
+        }
     }
 
     return s;
 }
 
 
-int
-_zip_string_write(zip_t *za, const zip_string_t *s) {
-    if (s == NULL)
-	return 0;
+int _zip_string_write(zip_t *za, const zip_string_t *s) {
+    if (s == NULL) {
+        return 0;
+    }
 
     return _zip_write(za, s->raw, s->length);
 }

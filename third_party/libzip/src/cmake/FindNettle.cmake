@@ -1,6 +1,6 @@
 # Copyright (C) 2020 Dieter Baron and Thomas Klausner
 #
-# The authors can be contacted at <libzip@nih.at>
+# The authors can be contacted at <info@libzip.org>
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -82,10 +82,12 @@ find_library(Nettle_LIBRARY
   PATHS ${PC_Nettle_LIBRARY_DIRS}
 )
 
-# Extract version information from the header file
 if(Nettle_INCLUDE_DIR)
-  # This file only exists in nettle>=3.0
-  if(EXISTS ${Nettle_INCLUDE_DIR}/nettle/version.h)
+  if(PC_Nettle_VERSION)
+    set(Nettle_VERSION ${PC_Nettle_VERSION})
+  elseif(EXISTS ${Nettle_INCLUDE_DIR}/nettle/version.h)
+    # Extract version information from the header file
+    # This file only exists in nettle>=3.0
     file(STRINGS ${Nettle_INCLUDE_DIR}/nettle/version.h _ver_major_line
          REGEX "^#define NETTLE_VERSION_MAJOR  *[0-9]+"
          LIMIT_COUNT 1)
@@ -100,11 +102,7 @@ if(Nettle_INCLUDE_DIR)
     unset(_ver_major_line)
     unset(_ver_minor_line)
   else()
-    if(PC_Nettle_VERSION)
-      set(Nettle_VERSION ${PC_Nettle_VERSION})
-    else()
-      set(Nettle_VERSION "1.0")
-    endif()
+    set(Nettle_VERSION "1.0")
   endif()
 endif()
 

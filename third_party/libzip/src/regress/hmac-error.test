@@ -1,0 +1,10 @@
+description test file that has an HMAC error
+return 1
+arguments hmac-error.zip  set_password 1234  cat 0
+file hmac-error.zip hmac-error.zip
+stdout
+The quick brown fox jumps over t quazy dog
+end-of-inline-data
+stderr
+can't read file at index '0': CRC error
+end-of-inline-data

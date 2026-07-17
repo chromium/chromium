@@ -2,7 +2,7 @@
 .\" Copyright (C) 2012-2017 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP files.
-.\" The authors can be contacted at <libzip@nih.at>
+.\" The authors can be contacted at <info@libzip.org>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -29,7 +29,7 @@
 .\" OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 .\" IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .\"
-.Dd December 18, 2017
+.Dd April 28, 2026
 .Dt ZIP_FILE_EXTRA_FIELD_SET 3
 .Os
 .Sh NAME
@@ -86,10 +86,14 @@ is set to indicate the error.
 .Fn zip_file_extra_field_set
 fails if:
 .Bl -tag -width Er
-.It Bq Er ZIP_ER_INVAL
+.It Bq Er ZIP_ER_EF_TOO_LARGE
 The extra field size is too large (ID and length need 4 bytes; the
 maximum length of all extra fields for one file combined is 65536
 bytes).
+.It Bq Er ZIP_ER_INVAL
+.Ar flags
+does not specify local or central or the extra field is internal
+to libzip.
 This error also occurs if
 .Ar extra_field_index
 is too large.
@@ -112,4 +116,4 @@ was added in libzip 0.11.
 .An -nosplit
 .An Dieter Baron Aq Mt dillo@nih.at
 and
-.An Thomas Klausner Aq Mt tk@giga.or.at
+.An Thomas Klausner Aq Mt wiz@gatalith.at

@@ -1,9 +1,9 @@
 .\" Automatically generated from an mdoc input file.  Do not edit.
 .\" zip_fdopen.mdoc -- open zip archive using existing file descriptor
-.\" Copyright (C) 2009-2019 Dieter Baron and Thomas Klausner
+.\" Copyright (C) 2009-2021 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP archives.
-.\" The authors can be contacted at <libzip@nih.at>
+.\" The authors can be contacted at <info@libzip.org>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -30,7 +30,7 @@
 .\" OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 .\" IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .\"
-.TH "ZIP_FDOPEN" "3" "December 18, 2017" "NiH" "Library Functions Manual"
+.TH "ZIP_FDOPEN" "3" "September 23, 2022" "NiH" "Library Functions Manual"
 .nh
 .if n .ad l
 .SH "NAME"
@@ -135,6 +135,10 @@ The file specified by
 could not be prepared for use by
 libzip(3).
 .TP 19n
+[\fRZIP_ER_OPNOTSUPP\fR]
+.br
+This functionality has been disabled at compile time.
+.TP 19n
 [\fRZIP_ER_READ\fR]
 A read error occurred; see
 \fIerrno\fR
@@ -155,4 +159,4 @@ was added in libzip 1.0.
 .SH "AUTHORS"
 Dieter Baron <\fIdillo@nih.at\fR>
 and
-Thomas Klausner <\fItk@giga.or.at\fR>
+Thomas Klausner <\fIwiz@gatalith.at\fR>

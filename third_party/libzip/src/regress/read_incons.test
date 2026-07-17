@@ -1,0 +1,9 @@
+arguments -c test.zip cat 0
+return 1
+file test.zip incons-trailing-garbage.zip
+stdout
+test
+end-of-inline-data
+stderr
+can't read file at index '0': Zip archive inconsistent: garbage at end of compressed data
+end-of-inline-data

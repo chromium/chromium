@@ -1,9 +1,9 @@
 /*
   zip_source_get_file_attributes.c -- get attributes for file from source
-  Copyright (C) 2020 Dieter Baron and Thomas Klausner
+  Copyright (C) 2020-2024 Dieter Baron and Thomas Klausner
 
   This file is part of libzip, a library to manipulate ZIP archives.
-  The authors can be contacted at <libzip@nih.at>
+  The authors can be contacted at <info@libzip.org>
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions
@@ -33,71 +33,73 @@
 
 #include "zipint.h"
 
-ZIP_EXTERN void
-zip_file_attributes_init(zip_file_attributes_t *attributes) {
+ZIP_EXTERN void zip_file_attributes_init(zip_file_attributes_t *attributes) {
     attributes->valid = 0;
     attributes->version = 1;
 }
 
-int
-zip_source_get_file_attributes(zip_source_t *src, zip_file_attributes_t *attributes) {
+int zip_source_get_file_attributes(zip_source_t *src, zip_file_attributes_t *attributes) {
     if (src->source_closed) {
-	return -1;
+        return -1;
     }
     if (attributes == NULL) {
-	zip_error_set(&src->error, ZIP_ER_INVAL, 0);
-	return -1;
+        zip_error_set(&src->error, ZIP_ER_INVAL, 0);
+        return -1;
     }
 
     zip_file_attributes_init(attributes);
 
     if (src->supports & ZIP_SOURCE_MAKE_COMMAND_BITMASK(ZIP_SOURCE_GET_FILE_ATTRIBUTES)) {
-	if (_zip_source_call(src, attributes, sizeof(*attributes), ZIP_SOURCE_GET_FILE_ATTRIBUTES) < 0) {
-	    return -1;
-	}
+        if (_zip_source_call(src, attributes, sizeof(*attributes), ZIP_SOURCE_GET_FILE_ATTRIBUTES) < 0) {
+            return -1;
+        }
     }
 
     if (ZIP_SOURCE_IS_LAYERED(src)) {
-	zip_file_attributes_t lower_attributes;
+        zip_file_attributes_t lower_attributes;
 
-	if (zip_source_get_file_attributes(src->src, &lower_attributes) < 0) {
-	    _zip_error_set_from_source(&src->error, src->src);
-	    return -1;
-	}
+        zip_file_attributes_init(&lower_attributes);
 
-	if ((lower_attributes.valid & ZIP_FILE_ATTRIBUTES_HOST_SYSTEM) && (attributes->valid & ZIP_FILE_ATTRIBUTES_HOST_SYSTEM) == 0) {
-	    attributes->host_system = lower_attributes.host_system;
-	    attributes->valid |= ZIP_FILE_ATTRIBUTES_HOST_SYSTEM;
-	}
-	if ((lower_attributes.valid & ZIP_FILE_ATTRIBUTES_ASCII) && (attributes->valid & ZIP_FILE_ATTRIBUTES_ASCII) == 0) {
-	    attributes->ascii = lower_attributes.ascii;
-	    attributes->valid |= ZIP_FILE_ATTRIBUTES_ASCII;
-	}
-	if ((lower_attributes.valid & ZIP_FILE_ATTRIBUTES_VERSION_NEEDED)) {
-	    if (attributes->valid & ZIP_FILE_ATTRIBUTES_VERSION_NEEDED) {
-		attributes->version_needed = ZIP_MAX(lower_attributes.version_needed, attributes->version_needed);
-	    }
-	    else {
-		attributes->version_needed = lower_attributes.version_needed;
-		attributes->valid |= ZIP_FILE_ATTRIBUTES_VERSION_NEEDED;
-	    }
-	}
-	if ((lower_attributes.valid & ZIP_FILE_ATTRIBUTES_EXTERNAL_FILE_ATTRIBUTES) && (attributes->valid & ZIP_FILE_ATTRIBUTES_EXTERNAL_FILE_ATTRIBUTES) == 0) {
-	    attributes->external_file_attributes = lower_attributes.external_file_attributes;
-	    attributes->valid |= ZIP_FILE_ATTRIBUTES_EXTERNAL_FILE_ATTRIBUTES;
-	}
-	if ((lower_attributes.valid & ZIP_FILE_ATTRIBUTES_GENERAL_PURPOSE_BIT_FLAGS)) {
-	    if (attributes->valid & ZIP_FILE_ATTRIBUTES_GENERAL_PURPOSE_BIT_FLAGS) {
-		attributes->general_purpose_bit_flags &= ~lower_attributes.general_purpose_bit_mask;
-		attributes->general_purpose_bit_flags |= lower_attributes.general_purpose_bit_flags & lower_attributes.general_purpose_bit_mask;
-		attributes->general_purpose_bit_mask |= lower_attributes.general_purpose_bit_mask;
-	    }
-	    else {
-		attributes->valid |= ZIP_FILE_ATTRIBUTES_GENERAL_PURPOSE_BIT_FLAGS;
-		attributes->general_purpose_bit_flags = lower_attributes.general_purpose_bit_flags;
-		attributes->general_purpose_bit_mask = lower_attributes.general_purpose_bit_mask;
-	    }
-	}
+        if (zip_source_get_file_attributes(src->src, &lower_attributes) < 0) {
+            zip_error_set_from_source(&src->error, src->src);
+            return -1;
+        }
+
+        if ((lower_attributes.valid & ZIP_FILE_ATTRIBUTES_HOST_SYSTEM) && (attributes->valid & ZIP_FILE_ATTRIBUTES_HOST_SYSTEM) == 0) {
+            attributes->host_system = lower_attributes.host_system;
+            attributes->valid |= ZIP_FILE_ATTRIBUTES_HOST_SYSTEM;
+        }
+        if ((lower_attributes.valid & ZIP_FILE_ATTRIBUTES_ASCII) && (attributes->valid & ZIP_FILE_ATTRIBUTES_ASCII) == 0) {
+            attributes->ascii = lower_attributes.ascii;
+            attributes->valid |= ZIP_FILE_ATTRIBUTES_ASCII;
+        }
+        if ((lower_attributes.valid & ZIP_FILE_ATTRIBUTES_VERSION_NEEDED)) {
+            if (attributes->valid & ZIP_FILE_ATTRIBUTES_VERSION_NEEDED) {
+                attributes->version_needed = ZIP_MAX(lower_attributes.version_needed, attributes->version_needed);
+            }
+            else {
+                attributes->version_needed = lower_attributes.version_needed;
+                attributes->valid |= ZIP_FILE_ATTRIBUTES_VERSION_NEEDED;
+            }
+        }
+        if ((lower_attributes.valid & ZIP_FILE_ATTRIBUTES_EXTERNAL_FILE_ATTRIBUTES) && (attributes->valid & ZIP_FILE_ATTRIBUTES_EXTERNAL_FILE_ATTRIBUTES) == 0) {
+            attributes->external_file_attributes = lower_attributes.external_file_attributes;
+            attributes->valid |= ZIP_FILE_ATTRIBUTES_EXTERNAL_FILE_ATTRIBUTES;
+        }
+        if ((lower_attributes.valid & ZIP_FILE_ATTRIBUTES_GENERAL_PURPOSE_BIT_FLAGS)) {
+            if (attributes->valid & ZIP_FILE_ATTRIBUTES_GENERAL_PURPOSE_BIT_FLAGS) {
+                /* only take from lower level what is not defined at current level */
+                lower_attributes.general_purpose_bit_mask &= ~attributes->general_purpose_bit_mask;
+
+                attributes->general_purpose_bit_flags |= lower_attributes.general_purpose_bit_flags & lower_attributes.general_purpose_bit_mask;
+                attributes->general_purpose_bit_mask |= lower_attributes.general_purpose_bit_mask;
+            }
+            else {
+                attributes->valid |= ZIP_FILE_ATTRIBUTES_GENERAL_PURPOSE_BIT_FLAGS;
+                attributes->general_purpose_bit_flags = lower_attributes.general_purpose_bit_flags;
+                attributes->general_purpose_bit_mask = lower_attributes.general_purpose_bit_mask;
+            }
+        }
     }
 
     return 0;

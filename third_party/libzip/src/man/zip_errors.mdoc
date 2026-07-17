@@ -1,8 +1,8 @@
 .\" zip_errors.mdoc -- list of all libzip error codes
-.\" Copyright (C) 1999-2019 Dieter Baron and Thomas Klausner
+.\" Copyright (C) 1999-2024 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP archives.
-.\" The authors can be contacted at <libzip@nih.at>
+.\" The authors can be contacted at <info@libzip.org>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -30,9 +30,9 @@
 .\" IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .\"
 .\"   This file was generated automatically by ./make_zip_errors.sh
-.\"   from ./../lib/zip.h; make changes there.
+.\"   from ../lib/zip.h; make changes there.
 .\"
-.Dd December 18, 2017
+.Dd March 15, 2024
 .Dt ZIP_ERRORS 3
 .Os
 .Sh NAME
@@ -44,7 +44,9 @@ libzip (-lzip)
 .In zip.h
 .Sh DESCRIPTION
 The following error codes are used by libzip:
-.Bl -tag -width XZIP_ER_COMPRESSED_DATAX
+.Bl -tag -width XZIPXERXCOMPNOTSUPPXX
+.It Bq Er ZIP_ER_CANCELLED
+Operation cancelled.
 .It Bq Er ZIP_ER_CHANGED
 Entry has been changed.
 .It Bq Er ZIP_ER_CLOSE
@@ -55,6 +57,8 @@ Compression method not supported.
 Compressed data invalid.
 .It Bq Er ZIP_ER_CRC
 CRC error.
+.It Bq Er ZIP_ER_DATA_LENGTH
+Unexpected length of data.
 .It Bq Er ZIP_ER_DELETED
 Entry has been deleted.
 .It Bq Er ZIP_ER_ENCRNOTSUPP
@@ -79,6 +83,8 @@ Multi-disk zip archives not supported.
 No such file.
 .It Bq Er ZIP_ER_NOPASSWD
 No password provided.
+.It Bq Er ZIP_ER_NOT_ALLOWED
+Not allowed in torrentzip.
 .It Bq Er ZIP_ER_NOZIP
 Not a zip archive.
 .It Bq Er ZIP_ER_OK
@@ -101,6 +107,8 @@ Seek error.
 Tell error.
 .It Bq Er ZIP_ER_TMPOPEN
 Failure to create temporary file.
+.It Bq Er ZIP_ER_TRUNCATED_ZIP
+Possibly truncated or corrupted zip archive.
 .It Bq Er ZIP_ER_WRITE
 Write error.
 .It Bq Er ZIP_ER_WRONGPASSWD
@@ -114,4 +122,4 @@ Zlib error.
 .An -nosplit
 .An Dieter Baron Aq Mt dillo@nih.at
 and
-.An Thomas Klausner Aq Mt tk@giga.or.at
+.An Thomas Klausner Aq Mt wiz@gatalith.at

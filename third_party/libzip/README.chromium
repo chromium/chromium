@@ -19,10 +19,9 @@ and encryption of Winzip AES and legacy PKware encrypted files is supported.
 
 Modifications:
 - Add static file config.h that is generated normally by the build system (patches/0001-add-built-config.h.patch)
-- Add static file zipconfig.h that is generated normally by the build system (patches/0001-add-built-zip_err_str.c.patch)
-- Add static file zip_err_str.c that is generated normally by the build system (patches/0001-add-built-zipconf.h.patch)
-- Modify config.h and zipconfig.h to handle multi-platform build (patches/0001-patch-configs.patch)
-- Replaces uses of sprintf with snprintf (patches/0001-Replace-usage-of-sprintf-with-snprintf.patch)
+- Add static file zipconf.h that is generated normally by the build system (patches/0002-add-built-zipconf.h.patch)
+- Add static file zip_err_str.c that is generated normally by the build system (patches/0003-add-built-zip_err_str.c.patch)
+- Modify config.h and zipconf.h to handle multi-platform build (patches/0004-patch-configs.patch)
 
 Update Process:
 1) Clone the libzip github repo at the desired commit into src/

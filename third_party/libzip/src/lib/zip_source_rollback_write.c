@@ -1,9 +1,9 @@
 /*
   zip_source_rollback_write.c -- discard changes
-  Copyright (C) 2014-2019 Dieter Baron and Thomas Klausner
+  Copyright (C) 2014-2024 Dieter Baron and Thomas Klausner
 
   This file is part of libzip, a library to manipulate ZIP archives.
-  The authors can be contacted at <libzip@nih.at>
+  The authors can be contacted at <info@libzip.org>
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions
@@ -35,10 +35,13 @@
 #include "zipint.h"
 
 
-ZIP_EXTERN void
-zip_source_rollback_write(zip_source_t *src) {
+ZIP_EXTERN void zip_source_rollback_write(zip_source_t *src) {
+    if (ZIP_SOURCE_IS_LAYERED(src)) {
+        return;
+    }
+
     if (src->write_state != ZIP_SOURCE_WRITE_OPEN && src->write_state != ZIP_SOURCE_WRITE_FAILED) {
-	return;
+        return;
     }
 
     _zip_source_call(src, NULL, 0, ZIP_SOURCE_ROLLBACK_WRITE);

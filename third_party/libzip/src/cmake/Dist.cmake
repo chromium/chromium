@@ -1,6 +1,6 @@
 # Copyright (C) 2020 Dieter Baron and Thomas Klausner
 #
-# The authors can be contacted at <libzip@nih.at>
+# The authors can be contacted at <info@libzip.org>
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -55,14 +55,14 @@ function(Dist ARCHIVE_NAME)
   if(NOT TARGET dist AND NOT TARGET distcheck)
     add_custom_target(dist
       COMMAND git config tar.tar.xz.command "xz -c"
-      COMMAND git archive --prefix=${ARCHIVE_NAME}/ -o ${ARCHIVE_NAME}.tar.gz HEAD
-      COMMAND git archive --prefix=${ARCHIVE_NAME}/ -o ${ARCHIVE_NAME}.tar.xz HEAD
+      COMMAND git archive --prefix=${ARCHIVE_NAME}/ -o ${CMAKE_BINARY_DIR}/${ARCHIVE_NAME}.tar.gz HEAD
+      COMMAND git archive --prefix=${ARCHIVE_NAME}/ -o ${CMAKE_BINARY_DIR}/${ARCHIVE_NAME}.tar.xz HEAD
       WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
       )
     add_custom_target(distcheck
       COMMAND chmod -R u+w ${ARCHIVE_NAME} ${ARCHIVE_NAME}-build ${ARCHIVE_NAME}-dest 2>/dev/null || true
       COMMAND rm -rf ${ARCHIVE_NAME} ${ARCHIVE_NAME}-build ${ARCHIVE_NAME}-dest
-      COMMAND ${CMAKE_COMMAND} -E tar xf ${ARCHIVE_NAME}.tar.gz
+      COMMAND ${CMAKE_COMMAND} -E tar xf ${CMAKE_BINARY_DIR}/${ARCHIVE_NAME}.tar.gz
       COMMAND chmod -R u-w ${ARCHIVE_NAME}
       COMMAND mkdir ${ARCHIVE_NAME}-build
       COMMAND mkdir ${ARCHIVE_NAME}-dest

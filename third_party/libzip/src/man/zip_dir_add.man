@@ -3,7 +3,7 @@
 .\" Copyright (C) 2006-2020 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP archives.
-.\" The authors can be contacted at <libzip@nih.at>
+.\" The authors can be contacted at <info@libzip.org>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -30,7 +30,7 @@
 .\" OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 .\" IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .\"
-.TH "ZIP_DIR_ADD" "3" "April 25, 2020" "NiH" "Library Functions Manual"
+.TH "ZIP_DIR_ADD" "3" "September 20, 2020" "NiH" "Library Functions Manual"
 .nh
 .if n .ad l
 .SH "NAME"
@@ -68,6 +68,7 @@ argument can be any of:
 Guess encoding of
 \fIname\fR
 (default).
+(Only CP-437 and UTF-8 are recognized.)
 .TP 22n
 \fRZIP_FL_ENC_UTF_8\fR
 Interpret
@@ -112,4 +113,4 @@ was added in libzip 0.11.
 .SH "AUTHORS"
 Dieter Baron <\fIdillo@nih.at\fR>
 and
-Thomas Klausner <\fItk@giga.or.at\fR>
+Thomas Klausner <\fIwiz@gatalith.at\fR>

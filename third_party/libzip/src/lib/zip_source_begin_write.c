@@ -1,9 +1,9 @@
 /*
   zip_source_begin_write.c -- start a new file for writing
-  Copyright (C) 2014-2019 Dieter Baron and Thomas Klausner
+  Copyright (C) 2014-2024 Dieter Baron and Thomas Klausner
 
   This file is part of libzip, a library to manipulate ZIP archives.
-  The authors can be contacted at <libzip@nih.at>
+  The authors can be contacted at <info@libzip.org>
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions
@@ -35,15 +35,19 @@
 #include "zipint.h"
 
 
-ZIP_EXTERN int
-zip_source_begin_write(zip_source_t *src) {
+ZIP_EXTERN int zip_source_begin_write(zip_source_t *src) {
+    if (ZIP_SOURCE_IS_LAYERED(src)) {
+        zip_error_set(&src->error, ZIP_ER_OPNOTSUPP, 0);
+        return -1;
+    }
+
     if (ZIP_SOURCE_IS_OPEN_WRITING(src)) {
-	zip_error_set(&src->error, ZIP_ER_INVAL, 0);
-	return -1;
+        zip_error_set(&src->error, ZIP_ER_INVAL, 0);
+        return -1;
     }
 
     if (_zip_source_call(src, NULL, 0, ZIP_SOURCE_BEGIN_WRITE) < 0) {
-	return -1;
+        return -1;
     }
 
     src->write_state = ZIP_SOURCE_WRITE_OPEN;

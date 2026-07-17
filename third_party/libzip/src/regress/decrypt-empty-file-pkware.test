@@ -1,0 +1,6 @@
+# test decryption support, extract empty file using correct password
+return 0
+arguments empty-pkware.zzip  set_password 1  cat 0
+file empty-pkware.zzip empty-pkware.zip
+stdout
+end-of-inline-data

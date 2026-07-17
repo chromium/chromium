@@ -1,0 +1,8 @@
+# change method from bzip2 to deflated
+features HAVE_LIBBZ2
+return 1
+arguments test.zip  set_file_compression 0 deflate 0
+file test.zip testbzip2broken.zip
+stderr
+can't close zip archive 'test.zip': Compressed data invalid
+end-of-inline-data

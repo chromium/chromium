@@ -1,9 +1,9 @@
 .\" Automatically generated from an mdoc input file.  Do not edit.
 .\" zip_source_rollback_write.mdoc -- undo changes to zip source
-.\" Copyright (C) 2014-2017 Dieter Baron and Thomas Klausner
+.\" Copyright (C) 2014-2022 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP archives.
-.\" The authors can be contacted at <libzip@nih.at>
+.\" The authors can be contacted at <info@libzip.org>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -30,7 +30,7 @@
 .\" OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 .\" IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .\"
-.TH "ZIP_SOURCE_ROLLBACK_WRITE" "3" "December 18, 2017" "NiH" "Library Functions Manual"
+.TH "ZIP_SOURCE_ROLLBACK_WRITE" "3" "November 3, 2021" "NiH" "Library Functions Manual"
 .nh
 .if n .ad l
 .SH "NAME"
@@ -56,14 +56,9 @@ restoring the data before
 zip_source_begin_write(3)
 was called.
 Usually this removes temporary files or frees buffers.
-.SH "RETURN VALUES"
-Upon successful completion 0 is returned.
-Otherwise, \-1 is returned and the error information in
-\fIsource\fR
-is set to indicate the error.
 .SH "SEE ALSO"
 libzip(3),
-zip_source(3),
+zip_source(5),
 zip_source_begin_write(3),
 zip_source_commit_write(3),
 zip_source_seek_write(3),
@@ -75,4 +70,4 @@ was added in libzip 1.0.
 .SH "AUTHORS"
 Dieter Baron <\fIdillo@nih.at\fR>
 and
-Thomas Klausner <\fItk@giga.or.at\fR>
+Thomas Klausner <\fIwiz@gatalith.at\fR>

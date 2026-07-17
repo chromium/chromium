@@ -1,0 +1,13 @@
+description tests for various encoding flags for zip_name_locate
+arguments -x test.zip  name_locate "9192939495969798999A9B9C9D9E9FA0" 0  name_locate "9192939495969798999A9B9C9D9E9FA0" 4  name_locate "9192939495969798999A9B9C9D9E9FA0" 8  name_locate "9192939495969798999A9B9C9D9E9FA0" r  name_locate "9192939495969798999A9B9C9D9E9FA0" s
+return 0
+file test.zip test-cp437.zip
+stdout
+name '9192939495969798999A9B9C9D9E9FA0' using flags '0' found at index 9
+name '9192939495969798999A9B9C9D9E9FA0' using flags '4' found at index 9
+name '9192939495969798999A9B9C9D9E9FA0' using flags 'r' found at index 9
+name '9192939495969798999A9B9C9D9E9FA0' using flags 's' found at index 9
+end-of-inline-data
+stderr
+can't find entry with name '9192939495969798999A9B9C9D9E9FA0' using flags '8'
+end-of-inline-data

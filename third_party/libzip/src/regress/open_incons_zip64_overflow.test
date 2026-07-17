@@ -1,0 +1,13 @@
+# zip_open with ZIP_CHECKCONS: a Zip64 entry whose 64-bit compressed size
+# overflows the offset+comp_size sum in _zip_checkcons() must be rejected,
+# not silently accepted because the sum wrapped around.
+program tryopen
+arguments -s -c test.zip
+file test.zip incons-zip64-checkcons-overflow.zip
+return 1
+stdout
+opening 'test.zip' returned error Possibly truncated or corrupted zip archive
+end-of-inline-data
+stderr
+1 errors
+end-of-inline-data

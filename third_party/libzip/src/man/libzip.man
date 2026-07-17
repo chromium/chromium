@@ -1,9 +1,9 @@
 .\" Automatically generated from an mdoc input file.  Do not edit.
 .\" libzip.mdoc -- general overview of available functions
-.\" Copyright (C) 2005-2020 Dieter Baron and Thomas Klausner
+.\" Copyright (C) 2005-2024 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP archives.
-.\" The authors can be contacted at <libzip@nih.at>
+.\" The authors can be contacted at <info@libzip.org>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -30,7 +30,7 @@
 .\" OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 .\" IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .\"
-.TH "LIBZIP" "3" "April 17, 2020" "NiH" "Library Functions Manual"
+.TH "LIBZIP" "3" "September 16, 2025" "NiH" "Library Functions Manual"
 .nh
 .if n .ad l
 .SH "NAME"
@@ -50,6 +50,9 @@ were:
 .PD 0
 .TP 4n
 \fB\(bu\fR
+Maintain a stable API without breaking backwards compatibility.
+.TP 4n
+\fB\(bu\fR
 Do not create corrupt files, even in case of errors.
 .TP 4n
 \fB\(bu\fR
@@ -63,24 +66,120 @@ For this reason, when modifying zip archives,
 \fBlibzip\fR
 writes to a temporary file and replaces the original
 zip archive atomically.
+.SH "GENERAL NOTES"
+When adding files to an archive, the file data is only read when the
+new archive is written.
+Therefore all files added must remain valid until the archive is
+closed with
+zip_close(3)
+or
+zip_discard(3).
 .PP
-Below there are two sections listing functions: one for how to read
-from zip archives and one for how to create/modify them.
+Unless explicitly documented, functions should not be passed
+\fRNULL\fR
+pointers as arguments.
+.SH "DATA TYPES"
+These data types correspond to central concepts in
+\fBlibzip\fR.
+Most of them are private, meaning you can't allocate them or access their members directly.
+This allows extending the structures in the future without breaking compatibility.
+.SS "\fIzip_t\fR"
+This type represents an opened archive.
+See
+zip(5).
+.SS "\fIzip_file_t\fR"
+This type represents a file from an archive that has been opened for reading.
+See
+zip_file(5).
+.SS "\fIzip_source_t\fR"
+This type represents a source (or destination) of data.
+It is used in
+\fBlibzip\fR
+for providing data when adding or replacing files, accessing data from a file inside an archive, and the data for the archive as a whole.
+See
+zip_source(5).
+.SS "\fIzip_error_t\fR"
+This type represents information about an error.
+Its type can be checked against pre-defined constants and it can be converted to a human readable string.
+See
+zip_error(5).
+.SH "FILE NAMES"
+.SS "Encoding"
+Names of files in the host file system are expected in UTF-8 encoding.
+On Windows, variants for ASCII and UTF-16 are also available.
+.PP
+Names of files inside archives are by default expected in UTF-8 encoding.
+Other encodings can be requested by using the flags
+\fRZIP_FL_ENC_CP437\fR
+and
+\fRZIP_FL_ENC_RAW\fR.
+.PP
+For details see the relevant man pages.
+.SS "Directory Separator"
+The zip format requires the use of forward slash
+(\(oq/\(cq)
+as directory separator.
+Since backslash
+(\(oq\e\(cq)
+can be part of a valid file name on Unix systems,
+\fBlibzip\fR
+does not automatically convert them, even on Windows.
+It is the responsibility of the programmer to ensure that all
+directory separators are passed as forward slashes to
+\fBlibzip\fR.
+.SH "THREAD SAFETY"
+In general, different
+\fIzip_t\fR
+objects are independent of each other and can be used by parallel-running
+threads without locking.
+.PP
+If you want to use one
+\fIzip_t\fR
+object from multiple threads, you have to synchronize access to it yourself.
+.PP
+Alternatively, if you only want to read from an archive, you can open the
+archive multiple times to create a separate
+\fIzip_t\fR
+object for each thread; to avoid making changes by mistake, use the flag
+\fRZIP_RDONLY\fR
+when opening the archive.
+.PP
+If you use an archive as a source for
+zip_file_add(3)
+or
+zip_file_replace(3),
+access to the target archive must be synchronized with access to the
+source archive as well.
 .SH "READING ZIP ARCHIVES"
-.SS "open archive"
+.SS "Open Archive"
 .TP 4n
 \fB\(bu\fR
 zip_open(3)
 .PD 0
 .TP 4n
 \fB\(bu\fR
+zip_open_from_source(3)
+.TP 4n
+\fB\(bu\fR
 zip_fdopen(3)
 .PD
-.SS "find files"
+.SS "Get Archive Attributes"
+.TP 4n
+\fB\(bu\fR
+zip_get_archive_comment(3)
+.PD 0
+.TP 4n
+\fB\(bu\fR
+zip_get_archive_flag(3)
+.TP 4n
+\fB\(bu\fR
+zip_get_num_entries(3)
+.PD
+.SS "Find Files"
 .TP 4n
 \fB\(bu\fR
 zip_name_locate(3)
-.SS "read files"
+.SS "Read Files"
 .TP 4n
 \fB\(bu\fR
 zip_fopen(3)
@@ -99,31 +198,27 @@ zip_fopen_index_encrypted(3)
 zip_fread(3)
 .TP 4n
 \fB\(bu\fR
+zip_file_is_seekable(3)
+.TP 4n
+\fB\(bu\fR
 zip_fseek(3)
 (uncompressed files only)
 .TP 4n
 \fB\(bu\fR
 zip_ftell(3)
-(uncompressed files only)
 .TP 4n
 \fB\(bu\fR
 zip_fclose(3)
 .PD
-.SS "close archive"
+.SS "Close Archive"
 .TP 4n
 \fB\(bu\fR
 zip_close(3)
-.SS "miscellaneous"
+.SS "Get File Attributes"
 .TP 4n
 \fB\(bu\fR
 zip_stat(3)
 .PD 0
-.TP 4n
-\fB\(bu\fR
-zip_compression_method_supported(3)
-.TP 4n
-\fB\(bu\fR
-zip_encryption_method_supported(3)
 .TP 4n
 \fB\(bu\fR
 zip_file_get_comment(3)
@@ -132,26 +227,26 @@ zip_file_get_comment(3)
 zip_file_get_external_attributes(3)
 .TP 4n
 \fB\(bu\fR
-zip_get_archive_comment(3)
-.TP 4n
-\fB\(bu\fR
-zip_get_archive_flag(3)
-.TP 4n
-\fB\(bu\fR
 zip_get_name(3)
+.PD
+.SS "Miscellaneous"
 .TP 4n
 \fB\(bu\fR
-zip_get_num_entries(3)
+zip_compression_method_supported(3)
+.PD 0
+.TP 4n
+\fB\(bu\fR
+zip_encryption_method_supported(3)
 .TP 4n
 \fB\(bu\fR
 zip_set_default_password(3)
 .PD
 .SH "CREATING/MODIFYING ZIP ARCHIVES"
-.SS "create/open archive"
+.SS "Create/Open Archive"
 .TP 4n
 \fB\(bu\fR
 zip_open(3)
-.SS "add/change files and directories"
+.SS "Add/Change Files and Directories"
 .TP 4n
 \fB\(bu\fR
 zip_dir_add(3)
@@ -191,23 +286,17 @@ zip_source_file(3)
 zip_source_filep(3)
 .TP 4n
 \fB\(bu\fR
-zip_source_free(3)
-.TP 4n
-\fB\(bu\fR
-zip_source_function(3)
-.TP 4n
-\fB\(bu\fR
 zip_source_zip(3)
 .PD
-.SS "rename files"
+.SS "Rename Files"
 .TP 4n
 \fB\(bu\fR
 zip_rename(3)
-.SS "delete files"
+.SS "Delete Files"
 .TP 4n
 \fB\(bu\fR
 zip_delete(3)
-.SS "revert changes"
+.SS "Revert Changes"
 .TP 4n
 \fB\(bu\fR
 zip_unchange(3)
@@ -219,20 +308,20 @@ zip_unchange_all(3)
 \fB\(bu\fR
 zip_unchange_archive(3)
 .PD
-.SS "read/modify extra fields"
-.TP 4n
-\fB\(bu\fR
-zip_file_extra_field_by_id(3)
-.PD 0
+.SS "Read/Modify Extra Fields"
 .TP 4n
 \fB\(bu\fR
 zip_file_extra_field_delete(3)
+.PD 0
 .TP 4n
 \fB\(bu\fR
 zip_file_extra_field_delete_by_id(3)
 .TP 4n
 \fB\(bu\fR
 zip_file_extra_field_get(3)
+.TP 4n
+\fB\(bu\fR
+zip_file_extra_field_get_by_id(3)
 .TP 4n
 \fB\(bu\fR
 zip_file_extra_field_set(3)
@@ -243,7 +332,7 @@ zip_file_extra_fields_count(3)
 \fB\(bu\fR
 zip_file_extra_fields_count_by_id(3)
 .PD
-.SS "close archive (writing)"
+.SS "Close Archive (Writing)"
 .TP 4n
 \fB\(bu\fR
 zip_close(3)
@@ -252,7 +341,7 @@ zip_close(3)
 \fB\(bu\fR
 zip_discard(3)
 .PD
-.SS "miscellaneous (writing)"
+.SS "Miscellaneous (Writing)"
 .TP 4n
 \fB\(bu\fR
 zip_file_attributes_init(3)
@@ -260,6 +349,9 @@ zip_file_attributes_init(3)
 .TP 4n
 \fB\(bu\fR
 zip_libzip_version(3)
+.TP 4n
+\fB\(bu\fR
+zip_register_cancel_callback_with_state(3)
 .TP 4n
 \fB\(bu\fR
 zip_register_progress_callback_with_state(3)
@@ -271,7 +363,54 @@ zip_set_archive_comment(3)
 zip_set_archive_flag(3)
 .TP 4n
 \fB\(bu\fR
-zip_source(3)
+zip_source(5)
+.PD
+.SH "SOURCES"
+.SS "Create Source"
+.TP 4n
+\fB\(bu\fR
+zip_source_buffer(3)
+.PD 0
+.TP 4n
+\fB\(bu\fR
+zip_source_file(3)
+.TP 4n
+\fB\(bu\fR
+zip_source_filep(3)
+.TP 4n
+\fB\(bu\fR
+zip_source_function(3)
+.TP 4n
+\fB\(bu\fR
+zip_source_layered(3)
+.TP 4n
+\fB\(bu\fR
+zip_source_zip(3)
+.PD
+.SS "Using Source"
+.TP 4n
+\fB\(bu\fR
+zip_file_add(3)
+.PD 0
+.TP 4n
+\fB\(bu\fR
+zip_file_replace(3)
+.TP 4n
+\fB\(bu\fR
+zip_open_from_source(3)
+.PD
+.SS "Implementing Source"
+.TP 4n
+\fB\(bu\fR
+zip_source_pass_to_lower_layer(3)
+.SS "Source Life Cycle"
+.TP 4n
+\fB\(bu\fR
+zip_source_free(3)
+.PD 0
+.TP 4n
+\fB\(bu\fR
+zip_source_keep(3)
 .PD
 .SH "ERROR HANDLING"
 .TP 4n
@@ -286,10 +425,19 @@ zip_strerror(3)
 zip_file_strerror(3)
 .TP 4n
 \fB\(bu\fR
+zip_file_get_error(3)
+.TP 4n
+\fB\(bu\fR
 zip_get_error(3)
 .TP 4n
 \fB\(bu\fR
 zip_error_init_with_code(3)
+.TP 4n
+\fB\(bu\fR
+zip_error_set(3)
+.TP 4n
+\fB\(bu\fR
+zip_error_set_from_source(3)
 .TP 4n
 \fB\(bu\fR
 zip_error_system_type(3)
@@ -300,4 +448,4 @@ zip_errors(3)
 .SH "AUTHORS"
 Dieter Baron <\fIdillo@nih.at\fR>
 and
-Thomas Klausner <\fItk@giga.or.at\fR>
+Thomas Klausner <\fIwiz@gatalith.at\fR>

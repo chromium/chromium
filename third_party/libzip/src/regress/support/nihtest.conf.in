@@ -1,0 +1,16 @@
+[settings]
+features-files = @PROJECT_BINARY_DIR@/config.h
+test-input-directories = @CMAKE_CURRENT_SOURCE_DIR@
+    @CMAKE_CURRENT_SOURCE_DIR@/data
+program-directories = @PROJECT_BINARY_DIR@/regress
+    @PROJECT_BINARY_DIR@/regress/Release
+    @PROJECT_BINARY_DIR@/regress/Debug
+    @PROJECT_BINARY_DIR@/src
+    @PROJECT_BINARY_DIR@/src/Release
+    @PROJECT_BINARY_DIR@/src/Debug
+default-program = ziptool_regress
+default-stderr-replace = "^([A-Z]:)?[^ :]*: " ""
+
+[comparators]
+zip.zip = zipcmp -pv
+nzip.zip = files_differ

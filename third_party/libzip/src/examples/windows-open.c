@@ -1,9 +1,9 @@
 /*
   windows-open.c -- open zip archive using Windows UTF-16/Unicode file name
-  Copyright (C) 2015-2019 Dieter Baron and Thomas Klausner
+  Copyright (C) 2015-2022 Dieter Baron and Thomas Klausner
 
   This file is part of libzip, a library to manipulate ZIP archives.
-  The authors can be contacted at <libzip@nih.at>
+  The authors can be contacted at <info@libzip.org>
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions
@@ -33,8 +33,7 @@
 
 #include <zip.h>
 
-zip_t *
-windows_open(const wchar_t *name, int flags) {
+zip_t *windows_open(const wchar_t *name, int flags) {
     zip_source_t *src;
     zip_t *za;
     zip_error_t error;
@@ -42,17 +41,17 @@ windows_open(const wchar_t *name, int flags) {
     zip_error_init(&error);
     /* create source from buffer */
     if ((src = zip_source_win32w_create(name, 0, -1, &error)) == NULL) {
-	fprintf(stderr, "can't create source: %s\n", zip_error_strerror(&error));
-	zip_error_fini(&error);
-	return NULL;
+        fprintf(stderr, "can't create source: %s\n", zip_error_strerror(&error));
+        zip_error_fini(&error);
+        return NULL;
     }
 
     /* open zip archive from source */
     if ((za = zip_open_from_source(src, flags, &error)) == NULL) {
-	fprintf(stderr, "can't open zip from source: %s\n", zip_error_strerror(&error));
-	zip_source_free(src);
-	zip_error_fini(&error);
-	return NULL;
+        fprintf(stderr, "can't open zip from source: %s\n", zip_error_strerror(&error));
+        zip_source_free(src);
+        zip_error_fini(&error);
+        return NULL;
     }
     zip_error_fini(&error);
 

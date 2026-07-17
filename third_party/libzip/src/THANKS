@@ -3,102 +3,195 @@ and some other general information gathered from their sources.
 
 Thanks to these people for suggestions, testing, and bug reports:
 
+ag2s20150909
 Agostino Sarubbo
-Alexander Galanin <al@galanin.nnov.ru>
-Alexandr Shadchin <alexandr.shadchin@gmail.com>
-Alexey Bykov <gnfalex@rambler.ru>
-Andreas Falkenhahn <andreas@falkenhahn.com>
-Andrew Brampton <brampton@gmail.com>
-Andrew Molyneux <andrew@molyneuxfamily.co.uk>
-Ankur Kothari <ankz.kothari@gmail.com>
-Antonin Décimo <antonin.decimo@gmail.com>
-BALATON Zoltan <balaton@eik.bme.hu>
-Benjamin Gilbert <bgilbert@backtick.net>
-Beuc <beuc@beuc.net>
-Boaz Stolk <bstolk@aweta.nl>
-Bogdan <bogiebog@gmail.com>
-Brian 'geeknik' Carpenter <geeknik@protonmail.ch>
-Carl Mastrangelo <notcarl@google.com>
+Alb3e3
+Alberto Spin
+Alexander Galanin
+Alexandr Shadchin
+Alexey Bykov
+András Soós
+Andreas Deininger
+Andreas Falkenhahn
+Andrew Brampton
+Andrew Lacambra
+Andrew Molyneux
+Ankur Kothari
+Antonin Décimo
+Arseniy Terekhin
+Azamat H. Hackimov
+BALATON Zoltan
+Benjamin Gilbert
+Beuc
+Boaz Stolk
+Bob Friesenhahn
+Bogdan
+Brian 'geeknik' Carpenter
+BruceFan
+Carl Mastrangelo
+Carlo Bramini
 Cédric Tabin
 celan69
-Chris Nehren <cnehren+libzip@pobox.com>
-Coverity <info@coverity.com>
-Dane Springmeyer <dane.springmeyer@gmail.com>
-David Demelier <demelier.david@gmail.com>
+chaoticgd
+Charlie Li
+ChrisAm1224
+Chris Mayo
+Chris Nehren
+Christoph Cullmann
+Christoph M. Becker
+Corentin Schreiber
+Coverity
+cryi
+ctenter-scs
+Dane Springmeyer
+Daniel Russel
+Ларионов Даниил
+David Carlier
+David Demelier
+Dean Ellis
 Declan Moran
-Del Merritt <del@alum.mit.edu>
-Dmytro Rybachenko <atmoliton@gmail.com>
+Del Merritt
+Deng XingJing
+Devin Davila
+Dexter.k
+Dmytro Rybachenko
+Dylan T.
+Eelco Dolstra
 Elvis Angelaccio
-Erwin Haid <erwin.haid@gmx.de>
+Erin Melucci
+Erwin Haid
 Eun-cheol Joo
-Florian Delizy <florian.delizy@gmail.com>
-François Simon <AT.GFI.Francois.SIMON@sesam-vitale.fr>
-Frederik Ramm <frederik@remote.org>
-gk7huki <gk7huki@gmail.com>
-Hanno Böck <hanno@hboeck.de>
+Fabrice Fontaine
+Filip Niksic
+Florian Delizy
+Force Charlie
+François Simon
+Frederik Ramm
+Gabriela Gutierrez
+Gerard ODonnell
+Giovanni
+gk7huki
+Hanno Böck
+Harrison Green
 HeeMyung
 Heiko Becker
-Heiko Hund <heiko@ist.eigentlich.net>
+Heiko Hund
+Herman Semenoff
+hongjunwang
 Ilya Voronin
 Info-ZIP group
-Jan Weiß <jan@geheimwerk.de>
-Jay Freeman (saurik) <saurik@saurik.com>
-Joachim Reichel <joachim.reichel@gmx.de>
-João Custódio <joao_custodio@symantec.com>
-Joel Ebrahimi <joel.ebrahimi@gmail.com>
-Jono Spiro <jono.spiro@gmail.com>
-Julien Schueller <schueller@phimeca.com>
-kensington <kensington@gentoo.org>
-Keith Jones <keith@keithjjones.com>
-Kohei Yoshida <kohei.yoshida@gmail.com>
-Leith Bade <leith@mapbox.com>
-Lubomir I. Ivanov <neolit123@gmail.com>
+Ivan Kolesnikov
+Jan Weiß
+Jay Freeman (saurik)
+jloqfjgk@github
+jmestwa-coder
+Joachim Reichel
+João Custódio
+Joel Ebrahimi
+Jono Spiro
+Julien Matthey
+Julien Schueller
+Justin Cohen
+Kai Pastor
+Kate Raggett
+kensington
+Kei Takahashi
+Keith Jones
+Khaled Mardam-Bey
+kodareef5
+Kohei Yoshida
+Krzesimir Nowak
+Leith Bade
+Lubomir I. Ivanov
+Lucas Bustamante
+Ludovic LANGE
+M. Reiningħaus
 Maël Nison
-Martin Buchholz <martinrb@google.com>
-Martin Herkt <lachs0r@srsfckn.biz>
-Martin Szulecki <m.szulecki@libimobiledevice.org>
+Manuel Massing
+Marcin Kowalczyk
+Mark A. Tsuchida
+Martin Buchholz
+Martin Herkt
+Martin Szulecki
+Mathieu Pujol
+metsw24-max
 Michael Balzer
-Michael Beck <mm.beck@gmx.net>
-Michał Janiszewski <janisozaur+libzip@gmail.com>
-Michal Vyskocil <mvyskocil@suse.cz>
-Mikhail Gusarov <dottedmag@dottedmag.net>.
+Michael Beck
+Michael Heimpold
+Michał Janiszewski
+Michal Vyskocil
+Mikhail Gusarov.
 Miklos Vajna
 Morris Hafner
-Oliver Kaiser <under.northern.sky@googlemail.com>
-Oliver Kuckertz <oliver.kuckertz@mologie.de>
+Muhammad Arslan Kabeer
+Mykyta Mudryi
+nieder
+Oliver Kaiser
+Oliver Kuckertz
 OSS-Fuzz Team
-Pascal Terjan <pterjan@gmail.com>
-Patrick Spendrin <ps_ml@gmx.de>
-Paul Harris <harris.pc@gmail.com>
-Paul Sheppard <shepsoft@googlemail.com>
-Pavel Raiskup <praiskup@redhat.com>
-Pierre Joye <pierre.php@gmail.com>
-Pierre-Louis Cabelguen <plcabelguen@googlemail.com>
-Randy <randy408@protonmail.com>
-Remi Collet <remi@fedoraproject.org>
+Ørjan Malde
+Pascal Terjan
+Patrick Spendrin
+Paul Harris
+Paul Sheppard
+Pavel Raiskup
+Petr Sumbera
+Pierre Joye
+Pierre Wendling
+Pierre-Louis Cabelguen
+PW Hu
+Rafał Mikrut
+ralfjunker
+Randy
+Remi Collet
+rezso
 Richard Schütz
-Rick Carback <carback1@umbc.edu>
-Rikard Falkeborn <rikard.falkeborn@gmail.com>
-Robert Norris <rw_norris@hotmail.com>
-Roberto Tirabassi <rtirabassi@3di.it>
-Roland Ortloff <Ortloff.R@gmx.de>
-Rosen Penev <rosenp@gmail.com>
-Sebastian Kemper <sebastian_ml@gmx.net>
-Sebastian Schmitt <sebastian.schmitt@auvesy.de>
-Sergei Ozerov <ru.programmist@gmail.com>
-Simon Talbot <simont@nse.co.uk>
-Stephen Bryant <steve@bawue.de>
-Tabata Shintaro <tabata.shintaro@gmail.com>
-Tarmo Pikaro <tapika@yahoo.com>
+Rick Carback
+Rikard Falkeborn
+Robert Norris
+Roberto Tirabassi
+robhz786
+Roland Ortloff
+rootvector2
+Rosen Penev
+Rudi Heitbaum
+Ryan Burns
+Sam James
+Sam Sappenfield
+Sandro Mani
+SC404
+scribam
+Sebastian Kemper
+Sebastian Schmitt
+Sergei Ozerov
+Seung Min Shin (신승민)
+shenlebantongying
+Shimi
+Simon Talbot
+SpaceIm
+Stephen Bryant
+sxkan
+Tabata Shintaro
+takase1121
+Tarmo Pikaro
+Taylor C. Richberger
 TC
-Tim Lunn <Tim@feathertop.org>
-Timo Warns <warns@pre-sense.de>
-Tom Callaway <tcallawa@redhat.com>
-Tomas Hoger <thoger@redhat.com>
-Tomáš Malý <malytomas@ucpu.cz>
-Torsten Paul <Torsten.Paul@gmx.de>
-Transporter <ogre.transporter@gmail.com>
-Vassili Courzakis <vcoxvco@googlemail.com>
+Thomas Debesse
+Tim Lunn
+Timo Warns
+Timofey
+Tom Callaway
+Tomas Hoger
+Tomáš Malý
+Torsten Paul
+Transporter
+Vassili Courzakis
+Vinpasso
+Vitaly Murashev
+Vladislav Kachegov
 William Lee
-Wojciech Michalski <wmichalski@quay.pl>
-Wolfgang Glunz <Wolfgang.Glunz@gmx.de>
+William Ouwehand
+Wojciech Michalski
+Wolfgang Glunz
+XananasX7
+Yufan You

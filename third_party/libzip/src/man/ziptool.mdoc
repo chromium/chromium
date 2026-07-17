@@ -1,8 +1,8 @@
 .\" ziptool.mdoc -- modify zip archives in multiple ways
-.\" Copyright (C) 2016-2017 Dieter Baron and Thomas Klausner
+.\" Copyright (C) 2016-2022 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP archives.
-.\" The authors can be contacted at <libzip@nih.at>
+.\" The authors can be contacted at <info@libzip.org>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -29,7 +29,7 @@
 .\" OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 .\" IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .\"
-.Dd December 18, 2017
+.Dd January 23, 2023
 .Dt ZIPTOOL 1
 .Os
 .Sh NAME
@@ -166,6 +166,9 @@ using
 .Ar flags .
 .It Cm get_archive_comment
 Print archive comment.
+.It Cm get_archive_flag Ar flag
+Print state of archive flag
+.Ar flag .
 .It Cm get_extra Ar index extra_index flags
 Print extra field
 .Ar extra_index
@@ -207,6 +210,11 @@ with the string
 .It Cm set_archive_comment Ar comment
 Set archive comment to
 .Ar comment .
+.It Cm get_archive_flag Ar flag Ar value
+Set archive flag
+.Ar flag
+to
+.Ar value .
 .It Cm set_extra Ar index extra_id extra_index flags value
 Set extra field number
 .Ar extra_index
@@ -258,8 +266,15 @@ Print information about archive entry
 .El
 .Ss Flags
 Some commands take flag arguments.
+Each character in the argument sets the corresponding flag.
+Use 0 or the empty string for no flags.
+.Pp
 Supported flags are:
 .Bl -tag -width MMM -compact -offset indent
+.It Ar 4
+.Dv ZIP_FL_ENC_CP437
+.It Ar 8
+.Dv ZIP_FL_ENC_UTF_8
 .It Ar C
 .Dv ZIP_FL_NOCASE
 .It Ar c
@@ -268,8 +283,27 @@ Supported flags are:
 .Dv ZIP_FL_NODIR
 .It Ar l
 .Dv ZIP_FL_LOCAL
+.It Ar r
+.Dv ZIP_FL_ENC_RAW
+.It Ar s
+.Dv ZIP_FL_ENC_STRICT
 .It Ar u
 .Dv ZIP_FL_UNCHANGED
+.El
+.Ss Archive flags
+.Cm get_archive_flag
+and
+.Cm set_archive_flag
+work on the following flags:
+.Bl -bullet -compact -offset indent
+.It
+.Dv create-or-keep-empty-file-for-archive
+.It
+.Dv is-torrentzip
+.It
+.Dv rdonly
+.It
+.Dv want-torrentzip
 .El
 .Ss Compression Methods
 Some commands take compression method arguments.
@@ -327,4 +361,4 @@ was added in libzip 1.1.
 .An -nosplit
 .An Dieter Baron Aq Mt dillo@nih.at
 and
-.An Thomas Klausner Aq Mt tk@giga.or.at
+.An Thomas Klausner Aq Mt wiz@gatalith.at

@@ -1,8 +1,8 @@
 .\" zip_source_close.mdoc -- close zip source (open for reading)
-.\" Copyright (C) 2014-2017 Dieter Baron and Thomas Klausner
+.\" Copyright (C) 2014-2021 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP archives.
-.\" The authors can be contacted at <libzip@nih.at>
+.\" The authors can be contacted at <info@libzip.org>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -34,7 +34,7 @@
 .Os
 .Sh NAME
 .Nm zip_source_close
-.Nd open zip_source (which was open for reading)
+.Nd close zip_source (which was open for reading)
 .Sh LIBRARY
 libzip (-lzip)
 .Sh SYNOPSIS
@@ -54,7 +54,7 @@ Otherwise, \-1 is returned and the error information in
 is set to indicate the error.
 .Sh SEE ALSO
 .Xr libzip 3 ,
-.Xr zip_source 3 ,
+.Xr zip_source 5 ,
 .Xr zip_source_free 3 ,
 .Xr zip_source_open 3
 .Sh HISTORY
@@ -64,4 +64,4 @@ was added in libzip 1.0.
 .An -nosplit
 .An Dieter Baron Aq Mt dillo@nih.at
 and
-.An Thomas Klausner Aq Mt tk@giga.or.at
+.An Thomas Klausner Aq Mt wiz@gatalith.at

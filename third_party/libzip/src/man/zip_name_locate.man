@@ -1,9 +1,9 @@
 .\" Automatically generated from an mdoc input file.  Do not edit.
 .\" zip_name_locate.mdoc -- get index of file by name
-.\" Copyright (C) 2003-2017 Dieter Baron and Thomas Klausner
+.\" Copyright (C) 2003-2022 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP archives.
-.\" The authors can be contacted at <libzip@nih.at>
+.\" The authors can be contacted at <info@libzip.org>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -30,7 +30,7 @@
 .\" OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 .\" IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .\"
-.TH "ZIP_NAME_LOCATE" "3" "December 18, 2017" "NiH" "Library Functions Manual"
+.TH "ZIP_NAME_LOCATE" "3" "March 15, 2022" "NiH" "Library Functions Manual"
 .nh
 .if n .ad l
 .SH "NAME"
@@ -57,40 +57,65 @@ in
 If
 \fIarchive\fR
 does not contain a file with that name, \-1 is returned.
+.PP
+If neither
+\fRZIP_FL_ENC_RAW\fR
+nor
+\fRZIP_FL_ENC_STRICT\fR
+are specified, guess the encoding of the name in the ZIP archive and convert it
+to UTF-8, if necessary, before comparing.
+.PP
+If neither
+\fRZIP_FL_ENC_CP437\fR
+nor
+\fRZIP_FL_ENC_UTF_8\fR
+are specified, guess the encoding of
+\fIfname\fR.
+.PP
+Only CP-437 and UTF-8 are recognized.
+.PP
 The
 \fIflags\fR
 are specified by
 \fIor\fR'ing
 the following values, or 0 for none of them.
 .RS 6n
-.TP 15n
+.TP 19n
 \fRZIP_FL_NOCASE\fR
 Ignore case distinctions.
 (Will only work well if the file names are ASCII.)
 With this flag,
 \fBzip_name_locate\fR()
 will be slow for archives with many files.
-.TP 15n
+.TP 19n
 \fRZIP_FL_NODIR\fR
 Ignore directory part of file name in archive.
 With this flag,
 \fBzip_name_locate\fR()
 will be slow for archives with many files.
-.TP 15n
-\fRZIP_FL_ENC_RAW\fR
-.br
-Compare against the unmodified names as it is in the ZIP archive.
-.TP 15n
+.TP 19n
 \fRZIP_FL_ENC_GUESS\fR
-(Default.)
-Guess the encoding of the name in the ZIP archive and convert it
-to UTF-8, if necessary, before comparing.
-.TP 15n
+This flag has no effect (its value is 0); it can be used to explicitly denote the absence of encoding flags.
+.TP 19n
+\fRZIP_FL_ENC_RAW\fR
+Compare
+\fIfname\fR
+against the unmodified names as they are in the ZIP archive, without converting them to UTF-8.
+.TP 19n
 \fRZIP_FL_ENC_STRICT\fR
 Follow the ZIP specification and expect CP-437 encoded names in
 the ZIP archive (except if they are explicitly marked as UTF-8).
-Convert it to UTF-8 before comparing.
+Convert them to UTF-8 before comparing.
+.TP 19n
+\fRZIP_FL_ENC_CP437\fR
+\fIfname\fR
+is encoded as CP-437.
+.TP 19n
+\fRZIP_FL_ENC_UTF_8\fR
+\fIfname\fR
+is encoded as UTF-8.
 .RE
+.PP
 \fINote\fR:
 ASCII is a subset of both CP-437 and UTF-8.
 .SH "RETURN VALUES"
@@ -133,4 +158,4 @@ to
 .SH "AUTHORS"
 Dieter Baron <\fIdillo@nih.at\fR>
 and
-Thomas Klausner <\fItk@giga.or.at\fR>
+Thomas Klausner <\fIwiz@gatalith.at\fR>

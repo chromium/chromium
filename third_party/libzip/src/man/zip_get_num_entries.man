@@ -3,7 +3,7 @@
 .\" Copyright (C) 2011-2017 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP archives.
-.\" The authors can be contacted at <libzip@nih.at>
+.\" The authors can be contacted at <info@libzip.org>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -30,12 +30,12 @@
 .\" OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 .\" IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .\"
-.TH "ZIP_GET_NUM_ENTRIES" "3" "December 18, 2017" "NiH" "Library Functions Manual"
+.TH "ZIP_GET_NUM_ENTRIES" "3" "August 19, 2022" "NiH" "Library Functions Manual"
 .nh
 .if n .ad l
 .SH "NAME"
 \fBzip_get_num_entries\fR
-\- get number of files in archive
+\- get number of entries in archive
 .SH "LIBRARY"
 libzip (-lzip)
 .SH "SYNOPSIS"
@@ -50,16 +50,22 @@ libzip (-lzip)
 .SH "DESCRIPTION"
 The
 \fBzip_get_num_entries\fR()
-function returns the number of files in
+function returns the number of entries in
 \fIarchive\fR.
+Entries are all files that are present in the original archive or that
+were added while the archive is open.
+This includes deleted files, since
+indices are not renumbered until the archive is closed.
+(This allows one to refer to deleted files, e. g. to undelete them.)
+.PP
 If
 \fIflags\fR
 is set to
 \fRZIP_FL_UNCHANGED\fR,
-the original number of entries is returned.
+the original number of files is returned.
 .SH "RETURN VALUES"
 \fBzip_get_num_entries\fR()
-returns the number of files in the zip archive,
+returns the number of entries in the zip archive,
 or \-1 if
 \fIarchive\fR
 is
@@ -84,4 +90,4 @@ to
 .SH "AUTHORS"
 Dieter Baron <\fIdillo@nih.at\fR>
 and
-Thomas Klausner <\fItk@giga.or.at\fR>
+Thomas Klausner <\fIwiz@gatalith.at\fR>

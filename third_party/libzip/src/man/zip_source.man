@@ -1,9 +1,9 @@
 .\" Automatically generated from an mdoc input file.  Do not edit.
 .\" zip_source.mdoc -- description of zip data source
-.\" Copyright (C) 2014-2019 Dieter Baron and Thomas Klausner
+.\" Copyright (C) 2014-2021 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP archives.
-.\" The authors can be contacted at <libzip@nih.at>
+.\" The authors can be contacted at <info@libzip.org>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -30,7 +30,7 @@
 .\" OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 .\" IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .\"
-.TH "ZIP_SOURCE" "3" "December 18, 2017" "NiH" "Library Functions Manual"
+.TH "ZIP_SOURCE" "5" "July 31, 2025" "NiH" "File Formats Manual"
 .nh
 .if n .ad l
 .SH "NAME"
@@ -41,36 +41,59 @@ libzip (-lzip)
 .SH "SYNOPSIS"
 \fB#include <zip.h>\fR
 .sp
-\fIzip_source_t *zs\fR;
+\fIzip_source_t *source\fR;
 .SH "DESCRIPTION"
 A
-\fIstruct zip_source\fR
-is a data source used by
+\fIzip_source_t\fR
+represents a data source (or destination when used for writing).
 libzip(3)
-for adding or replacing file contents for a file in a zip archive.
+uses it for adding or replacing file contents for a file in a zip archive.
 If the source supports seeking, it can also be used to open zip archives from.
-It is created by calling one of
-zip_source_buffer(3),
-zip_source_buffer_create(3),
-zip_source_file(3),
+.PP
+Data can come from a file on disk
+(zip_source_file(3),
 zip_source_file_create(3),
 zip_source_filep(3),
-zip_source_filep_create(3),
-zip_source_function(3),
-zip_source_function_create(3),
 or
-zip_source_zip(3).
+zip_source_filep_create(3)),
+memory
+(zip_source_buffer(3),
+zip_source_buffer_create(3),
+zip_source_buffer_fragment(3),
+or
+zip_source_buffer_fragment_create(3)),
+a file inside an archive
+(zip_source_zip(3)),
+or provided via a callback function
+(zip_source_function(3)
+or
+zip_source_function_create(3)).
+zip_source_window_create(3)
+can be used restrict access to a part of the contained data.
+.PP
+It can also be used as a filter to process the data provided by an underlying
+\fIzip_source_t\fR
+(e.g., to compress it or compute a checksum), created with
+zip_source_layered(3)
+or
+zip_source_layered_create(3)).
+.PP
+Sources are freed with
+zip_source_free(3).
+.PP
+Sources must support reading, and can optionally support seeking and
+writing.
+.PP
 \fIzip_source_t\fR
 is reference counted, and created with a reference count of 1.
 zip_open_from_source(3),
 zip_file_add(3),
 and
 zip_file_replace(3)
-will decrement the reference count of the
-\fIzip_source_t\fR
-when they are done using it, so
+will take ownership of the passed source (decrement the reference count when they are done using it), so
 zip_source_free(3)
 only needs to be called when these functions return an error.
+The underlying data (file or buffer) must remain valid until the archive is closed.
 Use
 zip_source_keep(3)
 to increase the reference count, for example if you need the source after
@@ -82,8 +105,10 @@ zip_source_file(3),
 zip_source_filep(3),
 zip_source_free(3),
 zip_source_function(3),
+zip_source_keep(3),
+zip_source_window_create(3),
 zip_source_zip(3)
 .SH "AUTHORS"
 Dieter Baron <\fIdillo@nih.at\fR>
 and
-Thomas Klausner <\fItk@giga.or.at\fR>
+Thomas Klausner <\fIwiz@gatalith.at\fR>

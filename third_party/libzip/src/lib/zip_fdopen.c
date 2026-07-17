@@ -1,9 +1,9 @@
 /*
   zip_fdopen.c -- open read-only archive from file descriptor
-  Copyright (C) 2009-2019 Dieter Baron and Thomas Klausner
+  Copyright (C) 2009-2024 Dieter Baron and Thomas Klausner
 
   This file is part of libzip, a library to manipulate ZIP archives.
-  The authors can be contacted at <libzip@nih.at>
+  The authors can be contacted at <info@libzip.org>
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions
@@ -38,8 +38,7 @@
 #endif
 
 
-ZIP_EXTERN zip_t *
-zip_fdopen(int fd_orig, int _flags, int *zep) {
+ZIP_EXTERN zip_t *zip_fdopen(int fd_orig, int _flags, int *zep) {
     int fd;
     FILE *fp;
     zip_t *za;
@@ -47,40 +46,45 @@ zip_fdopen(int fd_orig, int _flags, int *zep) {
     struct zip_error error;
 
     if (_flags < 0 || (_flags & ~(ZIP_CHECKCONS | ZIP_RDONLY))) {
-	_zip_set_open_error(zep, NULL, ZIP_ER_INVAL);
-	return NULL;
+        _zip_set_open_error(zep, NULL, ZIP_ER_INVAL);
+        return NULL;
     }
 
+#ifndef ENABLE_FDOPEN
+    _zip_set_open_error(zep, NULL, ZIP_ER_OPNOTSUPP);
+    return NULL;
+#else
     /* We dup() here to avoid messing with the passed in fd.
        We could not restore it to the original state in case of error. */
 
     if ((fd = dup(fd_orig)) < 0) {
-	_zip_set_open_error(zep, NULL, ZIP_ER_OPEN);
-	return NULL;
+        _zip_set_open_error(zep, NULL, ZIP_ER_OPEN);
+        return NULL;
     }
 
     if ((fp = fdopen(fd, "rb")) == NULL) {
-	close(fd);
-	_zip_set_open_error(zep, NULL, ZIP_ER_OPEN);
-	return NULL;
+        close(fd);
+        _zip_set_open_error(zep, NULL, ZIP_ER_OPEN);
+        return NULL;
     }
 
     zip_error_init(&error);
     if ((src = zip_source_filep_create(fp, 0, -1, &error)) == NULL) {
-	fclose(fp);
-	_zip_set_open_error(zep, &error, 0);
-	zip_error_fini(&error);
-	return NULL;
+        fclose(fp);
+        _zip_set_open_error(zep, &error, 0);
+        zip_error_fini(&error);
+        return NULL;
     }
 
     if ((za = zip_open_from_source(src, _flags, &error)) == NULL) {
-	zip_source_free(src);
-	_zip_set_open_error(zep, &error, 0);
-	zip_error_fini(&error);
-	return NULL;
+        zip_source_free(src);
+        _zip_set_open_error(zep, &error, 0);
+        zip_error_fini(&error);
+        return NULL;
     }
 
     zip_error_fini(&error);
     close(fd_orig);
     return za;
+#endif
 }

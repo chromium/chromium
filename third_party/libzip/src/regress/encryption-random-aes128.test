@@ -1,0 +1,5 @@
+features HAVE_CRYPTO
+description encrypt file with entropy, check it is not the same as non-entropy encryption
+return 0
+arguments encrypt.nzip  set_file_encryption 1 AES-128 no-entropy
+file encrypt.nzip encrypt-none.zip encrypt-aes128-noentropy.zip

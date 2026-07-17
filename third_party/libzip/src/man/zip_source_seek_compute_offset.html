@@ -5,7 +5,7 @@
    Copyright (C) 2014-2017 Dieter Baron and Thomas Klausner
   
    This file is part of libzip, a library to manipulate ZIP archives.
-   The authors can be contacted at <libzip@nih.at>
+   The authors can be contacted at <info@libzip.org>
   
    Redistribution and use in source and binary forms, with or without
    modification, are permitted provided that the following conditions
@@ -34,6 +34,7 @@
    -->
 <head>
   <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <link rel="stylesheet" href="../nih-man.css" type="text/css" media="all"/>
   <title>ZIP_SOURCE_SEEK_COMPUTE_OFFSET(3)</title>
 </head>
@@ -48,16 +49,17 @@
 <div class="manual-text">
 <section class="Sh">
 <h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
-<code class="Nm">zip_source_seek_compute_offset</code> &#x2014;
-<div class="Nd">validate arguments and compute offset</div>
+<p class="Pp"><code class="Nm">zip_source_seek_compute_offset</code> &#x2014;
+    <span class="Nd">validate arguments and compute offset</span></p>
 </section>
 <section class="Sh">
 <h1 class="Sh" id="LIBRARY"><a class="permalink" href="#LIBRARY">LIBRARY</a></h1>
-libzip (-lzip)
+<p class="Pp">libzip (-lzip)</p>
 </section>
 <section class="Sh">
 <h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
-<code class="In">#include &lt;<a class="In">zip.h</a>&gt;</code>
+<p class="Pp"><code class="In">#include
+  &lt;<a class="In">zip.h</a>&gt;</code></p>
 <p class="Pp"><var class="Ft">zip_int64_t</var>
   <br/>
   <code class="Fn">zip_source_seek_compute_offset</code>(<var class="Fa" style="white-space: nowrap;">zip_uint64_t
@@ -68,25 +70,27 @@ libzip (-lzip)
 </section>
 <section class="Sh">
 <h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
-Use this function to compute the offset for a
-  <code class="Dv">ZIP_SOURCE_SEEK</code> or
-  <code class="Dv">ZIP_SOURCE_SEEK_WRITE</code> command.
-  <var class="Ar">data</var> and <var class="Ar">data_length</var> are the
-  arguments to the source callback, <var class="Ar">offset</var> is the current
-  offset and <var class="Ar">length</var> is the length of the source data or,
-  for <code class="Dv">ZIP_SOURCE_SEEK_WRITE</code>, the amount of data written.
+<p class="Pp">Use this function to compute the offset for a
+    <code class="Dv">ZIP_SOURCE_SEEK</code> or
+    <code class="Dv">ZIP_SOURCE_SEEK_WRITE</code> command.
+    <var class="Ar">data</var> and <var class="Ar">data_length</var> are the
+    arguments to the source callback, <var class="Ar">offset</var> is the
+    current offset and <var class="Ar">length</var> is the length of the source
+    data or, for <code class="Dv">ZIP_SOURCE_SEEK_WRITE</code>, the amount of
+    data written.</p>
 </section>
 <section class="Sh">
 <h1 class="Sh" id="RETURN_VALUES"><a class="permalink" href="#RETURN_VALUES">RETURN
   VALUES</a></h1>
-On success, it returns the new offset, on error it returns -1 and sets
-  <var class="Ar">error</var>.
+<p class="Pp">On success, it returns the new offset, on error it returns -1 and
+    sets <var class="Ar">error</var>.</p>
 </section>
 <section class="Sh">
 <h1 class="Sh" id="ERRORS"><a class="permalink" href="#ERRORS">ERRORS</a></h1>
-<code class="Fn">zip_source_seek_compute_offset</code>() fails if:
+<p class="Pp"><code class="Fn">zip_source_seek_compute_offset</code>() fails
+  if:</p>
 <dl class="Bl-tag">
-  <dt>[<a class="permalink" href="#ZIP_ER_INVAL"><code class="Er" id="ZIP_ER_INVAL">ZIP_ER_INVAL</code></a>]</dt>
+  <dt id="ZIP_ER_INVAL">[<a class="permalink" href="#ZIP_ER_INVAL"><code class="Er">ZIP_ER_INVAL</code></a>]</dt>
   <dd>One of the arguments is invalid or the seek would place the offset outside
       the data.</dd>
 </dl>
@@ -94,19 +98,19 @@ On success, it returns the new offset, on error it returns -1 and sets
 <section class="Sh">
 <h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
   ALSO</a></h1>
-<a class="Xr" href="zip_source_function.html">zip_source_function(3)</a>
+<p class="Pp"><a class="Xr" href="zip_source_function.html">zip_source_function(3)</a></p>
 </section>
 <section class="Sh">
 <h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
-<code class="Fn">zip_source_seek_compute_offset</code>() was added in libzip
-  1.0.
+<p class="Pp"><code class="Fn">zip_source_seek_compute_offset</code>() was added
+    in libzip 1.0.</p>
 </section>
 <section class="Sh">
 <h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
-<span class="An">Dieter Baron</span>
-  &lt;<a class="Mt" href="mailto:dillo@nih.at">dillo@nih.at</a>&gt; and
-  <span class="An">Thomas Klausner</span>
-  &lt;<a class="Mt" href="mailto:tk@giga.or.at">tk@giga.or.at</a>&gt;
+<p class="Pp"><span class="An">Dieter Baron</span>
+    &lt;<a class="Mt" href="mailto:dillo@nih.at">dillo@nih.at</a>&gt; and
+    <span class="An">Thomas Klausner</span>
+    &lt;<a class="Mt" href="mailto:wiz@gatalith.at">wiz@gatalith.at</a>&gt;</p>
 </section>
 </div>
 <table class="foot">

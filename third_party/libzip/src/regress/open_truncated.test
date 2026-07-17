@@ -1,0 +1,11 @@
+# zip_open: try opening an incomplete zip archive
+program tryopen
+arguments test.zzip
+return 1
+file test.zzip testfile-truncated.zip
+stdout
+opening 'test.zzip' returned error 35
+end-of-inline-data
+stderr
+1 errors
+end-of-inline-data

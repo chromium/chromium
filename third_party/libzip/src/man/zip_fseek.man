@@ -1,9 +1,9 @@
 .\" Automatically generated from an mdoc input file.  Do not edit.
 .\" zip_fseek.mdoc -- seek in file
-.\" Copyright (C) 2016-2017 Dieter Baron and Thomas Klausner
+.\" Copyright (C) 2016-2022 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP archives.
-.\" The authors can be contacted at <libzip@nih.at>
+.\" The authors can be contacted at <info@libzip.org>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -30,11 +30,12 @@
 .\" OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 .\" IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .\"
-.TH "ZIP_FSEEK" "3" "December 18, 2017" "NiH" "Library Functions Manual"
+.TH "ZIP_FSEEK" "3" "September 11, 2024" "NiH" "Library Functions Manual"
 .nh
 .if n .ad l
 .SH "NAME"
-\fBzip_fseek\fR
+\fBzip_fseek\fR,
+\fBzip_file_is_seekable\fR
 \- seek in file
 .SH "LIBRARY"
 libzip (-lzip)
@@ -47,6 +48,13 @@ libzip (-lzip)
 .HP 4n
 \fBzip_fseek\fR(\fIzip_file_t\ *file\fR, \fIzip_int64_t\ offset\fR, \fIint\ whence\fR);
 .PD
+.PP
+\fIint\fR
+.br
+.PD 0
+.HP 4n
+\fBzip_file_is_seekable\fR(\fIzip_file_t\ *file\fR);
+.PD
 .SH "DESCRIPTION"
 The
 \fBzip_fseek\fR()
@@ -58,23 +66,34 @@ just like
 fseek(3).
 .PP
 \fBzip_fseek\fR
-only works on uncompressed (stored) data.
-When called on compressed data it will return an error.
+only works on uncompressed (stored), unencrypted data.
+When called on compressed or encrypted data it will return an error.
+.PP
+The
+\fBzip_file_is_seekable\fR()
+function returns 1 if a file is seekable.
 .SH "RETURN VALUES"
 If successful,
-\fBzip_fseek\fR
+\fBzip_fseek\fR()
 returns 0.
 Otherwise, \-1 is returned.
+.PP
+\fBzip_file_is_seekable\fR()
+returns 1 if a file is seekable and 0 if not.
+On an invalid argument, it returns \-1.
 .SH "SEE ALSO"
 libzip(3),
 zip_fclose(3),
+zip_file_get_error(3),
 zip_fopen(3),
 zip_fread(3),
 zip_ftell(3)
 .SH "HISTORY"
 \fBzip_fseek\fR()
 was added in libzip 1.2.0.
+\fBzip_file_is_seekable\fR()
+was added in libzip 1.9.0.
 .SH "AUTHORS"
 Dieter Baron <\fIdillo@nih.at\fR>
 and
-Thomas Klausner <\fItk@giga.or.at\fR>
+Thomas Klausner <\fIwiz@gatalith.at\fR>

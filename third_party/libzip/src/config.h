@@ -26,7 +26,7 @@
 /* #undef HAVE_CRYPTO */
 /* #undef HAVE_FICLONERANGE */
 #define HAVE_FILENO
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 #define HAVE_FSEEKO
 #define HAVE_FTELLO
 #endif
@@ -35,7 +35,7 @@
 /* #undef HAVE_LIBBZ2 */
 /* #undef HAVE_LIBLZMA */
 /* #undef HAVE_LOCALTIME_R */
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 #define HAVE_LOCALTIME_R
 #endif
 /* #undef HAVE_MBEDTLS */
@@ -44,18 +44,23 @@
 /* #undef HAVE_OPENSSL */
 /* #undef HAVE_SETMODE */
 #define HAVE_SNPRINTF
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 #define HAVE_STRCASECMP
 #endif
 #define HAVE_STRDUP
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define HAVE_STRICMP
+#define HAVE_MEMCPY_S
+#define HAVE__SNWPRINTF_S
+#define HAVE_SNPRINTF_S
+#define HAVE_STRNCPY_S
+#define HAVE_STRERROR_S
 #endif
 #define HAVE_STRTOLL
 #define HAVE_STRTOULL
 /* #undef HAVE_STRUCT_TM_TM_ZONE */
 #define HAVE_STDBOOL_H
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 #define HAVE_STRINGS_H
 #define HAVE_UNISTD_H
 #endif

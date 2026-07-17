@@ -1,0 +1,4 @@
+# convert file to torrentzip
+return 0
+arguments testfile.zzip set_archive_flag want-torrentzip 1
+file testfile.zzip testfile.zip testfile-torrentzip.zip

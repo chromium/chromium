@@ -1,9 +1,9 @@
 /*
   zip_crypto_gnutls.h -- definitions for GnuTLS wrapper.
-  Copyright (C) 2018-2019 Dieter Baron and Thomas Klausner
+  Copyright (C) 2018-2024 Dieter Baron and Thomas Klausner
 
   This file is part of libzip, a library to manipulate ZIP archives.
-  The authors can be contacted at <libzip@nih.at>
+  The authors can be contacted at <info@libzip.org>
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions
@@ -44,37 +44,25 @@
 #include <gnutls/crypto.h>
 
 typedef struct {
-  union {
-    struct aes128_ctx ctx_128;
-    struct aes192_ctx ctx_192;
-    struct aes256_ctx ctx_256;
-  } ctx;
-  zip_uint16_t key_size;
+    union {
+        struct aes128_ctx ctx_128;
+        struct aes192_ctx ctx_192;
+        struct aes256_ctx ctx_256;
+    } ctx;
+    zip_uint16_t key_size;
 } _zip_crypto_aes_t;
 
 #define _zip_crypto_hmac_t gnutls_hmac_hd_t
 
-void _zip_crypto_aes_free(_zip_crypto_aes_t* aes);
-bool _zip_crypto_aes_encrypt_block(_zip_crypto_aes_t* aes,
-                                   const zip_uint8_t* in,
-                                   zip_uint8_t* out);
-_zip_crypto_aes_t* _zip_crypto_aes_new(const zip_uint8_t* key,
-                                       zip_uint16_t key_size,
-                                       zip_error_t* error);
+void _zip_crypto_aes_free(_zip_crypto_aes_t *aes);
+bool _zip_crypto_aes_encrypt_block(_zip_crypto_aes_t *aes, const zip_uint8_t *in, zip_uint8_t *out);
+_zip_crypto_aes_t *_zip_crypto_aes_new(const zip_uint8_t *key, zip_uint16_t key_size, zip_error_t *error);
 
-#define _zip_crypto_hmac(hmac, data, length) \
-  (gnutls_hmac(*(hmac), (data), (length)) == 0)
-void _zip_crypto_hmac_free(_zip_crypto_hmac_t* hmac);
-_zip_crypto_hmac_t* _zip_crypto_hmac_new(const zip_uint8_t* secret,
-                                         zip_uint64_t secret_length,
-                                         zip_error_t* error);
-#define _zip_crypto_hmac_output(hmac, data) \
-  (gnutls_hmac_output(*(hmac), (data)), true)
+#define _zip_crypto_hmac(hmac, data, length) (gnutls_hmac(*(hmac), (data), (length)) == 0)
+void _zip_crypto_hmac_free(_zip_crypto_hmac_t *hmac);
+_zip_crypto_hmac_t *_zip_crypto_hmac_new(const zip_uint8_t *secret, zip_uint64_t secret_length, zip_error_t *error);
+#define _zip_crypto_hmac_output(hmac, data) (gnutls_hmac_output(*(hmac), (data)), true)
 
-#define _zip_crypto_pbkdf2(key, key_length, salt, salt_length, iterations,    \
-                           output, output_length)                             \
-  (pbkdf2_hmac_sha1((key_length), (key), (iterations), (salt_length), (salt), \
-                    (output_length), (output)),                               \
-   true)
+#define _zip_crypto_pbkdf2(key, key_length, salt, salt_length, iterations, output, output_length) (pbkdf2_hmac_sha1((key_length), (key), (iterations), (salt_length), (salt), (output_length), (output)), true)
 
 #endif /*  HAD_ZIP_CRYPTO_GNUTLS_H */

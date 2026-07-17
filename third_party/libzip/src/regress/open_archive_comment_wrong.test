@@ -1,0 +1,10 @@
+# zip_open: file with wrong archive comment length, no consistency check: opens fine
+program tryopen
+arguments incons-archive-comment-longer.zip incons-archive-comment-shorter.zip
+return 0
+file incons-archive-comment-longer.zip incons-archive-comment-longer.zip
+file incons-archive-comment-shorter.zip incons-archive-comment-shorter.zip
+stdout
+opening 'incons-archive-comment-longer.zip' succeeded, 1 entries
+opening 'incons-archive-comment-shorter.zip' succeeded, 1 entries
+end-of-inline-data

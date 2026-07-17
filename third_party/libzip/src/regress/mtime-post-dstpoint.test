@@ -1,0 +1,5 @@
+description change method from stored to deflated, for a file one hour after DST change
+environment-set TZ America/New_York
+return 0
+arguments test.zzip  set_file_compression 0 deflate 0
+file test.zzip mtime-post-dstpoint.zip mtime-post-dstpoint-deflated.zip

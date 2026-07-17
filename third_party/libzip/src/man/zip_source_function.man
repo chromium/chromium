@@ -1,9 +1,9 @@
 .\" Automatically generated from an mdoc input file.  Do not edit.
 .\" zip_source_function.mdoc -- create data source from function
-.\" Copyright (C) 2004-2019 Dieter Baron and Thomas Klausner
+.\" Copyright (C) 2004-2022 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP archives.
-.\" The authors can be contacted at <libzip@nih.at>
+.\" The authors can be contacted at <info@libzip.org>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -30,7 +30,7 @@
 .\" OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 .\" IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .\"
-.TH "ZIP_SOURCE_FUNCTION" "3" "April 17, 2020" "NiH" "Library Functions Manual"
+.TH "ZIP_SOURCE_FUNCTION" "3" "January 5, 2023" "NiH" "Library Functions Manual"
 .nh
 .if n .ad l
 .SH "NAME"
@@ -60,7 +60,7 @@ The functions
 \fBzip_source_function\fR()
 and
 \fBzip_source_function_create\fR()
-creates a zip source from the user-provided function
+create a zip source from the user-provided function
 \fIfn\fR,
 which must be of the following type:
 .PP
@@ -99,6 +99,12 @@ Must support
 \fRZIP_SOURCE_STAT\fR,
 and
 \fRZIP_SOURCE_ERROR\fR.
+.sp
+If your source uses any allocated memory (including
+\fIuserdata\fR)
+it should also implement
+\fRZIP_SOURCE_FREE\fR
+to avoid memory leaks.
 .TP 24n
 seekable read source
 Same as previous, but from a source allowing reading from arbitrary
@@ -120,6 +126,13 @@ Must additionally support
 \fRZIP_SOURCE_TELL_WRITE\fR,
 and
 \fRZIP_SOURCE_REMOVE\fR.
+.sp
+On top of the above, supporting the pseudo-command
+\fRZIP_SOURCE_SUPPORTS_REOPEN\fR
+allows calling
+\fBzip_source_open\fR()
+again after calling
+\fBzip_source_close\fR().
 .SS "\fRZIP_SOURCE_ACCEPT_EMPTY\fR"
 Return 1 if an empty source should be accepted as a valid zip archive.
 This is the default if this command is not supported by a source.
@@ -180,7 +193,7 @@ zip_file_attributes_init(3).
 ASCII mode
 If a file is a plaintext file in ASCII.
 Can be used by extraction tools to automatically convert line endings
-(part of the interal file attributes).
+(part of the internal file attributes).
 Member
 \fIascii\fR,
 flag
@@ -316,6 +329,9 @@ ftell(3).
 .SS "\fRZIP_SOURCE_WRITE\fR"
 Write data to the source.
 Return number of bytes written.
+.SS "\fRZIP_SOURCE_SUPPORTS_REOPEN\fR"
+This command is never actually invoked, support for it signals the
+ability to handle multiple open/read/close cycles.
 .SS "Return Values"
 Commands should return \-1 on error.
 \fRZIP_SOURCE_ERROR\fR
@@ -400,7 +416,7 @@ libzip(3),
 zip_file_add(3),
 zip_file_attributes_init(3),
 zip_file_replace(3),
-zip_source(3),
+zip_source(5),
 zip_stat_init(3)
 .SH "HISTORY"
 \fBzip_source_function\fR()
@@ -410,4 +426,4 @@ were added in libzip 1.0.
 .SH "AUTHORS"
 Dieter Baron <\fIdillo@nih.at\fR>
 and
-Thomas Klausner <\fItk@giga.or.at\fR>
+Thomas Klausner <\fIwiz@gatalith.at\fR>

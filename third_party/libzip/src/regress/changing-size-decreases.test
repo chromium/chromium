@@ -1,0 +1,12 @@
+description size of input file decreases between add and close
+arguments test.zip add_file new muchlonger 0 0 extract_as 0 muchlonger
+return 1
+file test.zip changing-size.zip changing-size.zip
+file muchlonger <inline> <inline>
+muchlonger
+end-of-inline-data
+short
+end-of-inline-data
+stderr
+can't close zip archive 'test.zip': Unexpected length of data
+end-of-inline-data

@@ -1,5 +1,7 @@
 # delete last entry in zip archive
 return 1
-args testfile.zzip delete 5
-file testfile.zzip testfile.zip testfile.zip
-stderr can't delete file at index '5': Invalid argument
+arguments testfile.zzip delete 5
+file testfile.zzip testfile.zip
+stderr
+can't delete file at index '5': Invalid argument
+end-of-inline-data

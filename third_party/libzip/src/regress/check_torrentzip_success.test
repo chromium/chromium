@@ -1,0 +1,7 @@
+# check if file is torrentzip, succeeds
+return 0
+arguments testfile.zzip get_archive_flag is-torrentzip
+file testfile.zzip testfile-torrentzip.zip
+stdout
+1
+end-of-inline-data

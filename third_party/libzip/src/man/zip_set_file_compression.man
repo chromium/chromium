@@ -1,9 +1,9 @@
 .\" Automatically generated from an mdoc input file.  Do not edit.
 .\" zip_set_file_compression.mdoc -- set compression method and its flags
-.\" Copyright (C) 2012-2019 Dieter Baron and Thomas Klausner
+.\" Copyright (C) 2012-2021 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP files.
-.\" The authors can be contacted at <libzip@nih.at>
+.\" The authors can be contacted at <info@libzip.org>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -30,7 +30,7 @@
 .\" OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 .\" IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .\"
-.TH "ZIP_SET_FILE_COMPRESSION" "3" "April 2, 2020" "NiH" "Library Functions Manual"
+.TH "ZIP_SET_FILE_COMPRESSION" "3" "February 2, 2023" "NiH" "Library Functions Manual"
 .nh
 .if n .ad l
 .SH "NAME"
@@ -83,6 +83,16 @@ algorithm.
 Deflate the file with the
 zlib(3)
 algorithm and default options.
+.TP 19n
+\fRZIP_CM_XZ\fR
+Use the
+xz(1)
+algorithm for compression
+.TP 19n
+\fRZIP_CM_ZSTD\fR
+Use the
+zstd(1)
+algorithm for compression
 .PP
 \fINOTE\fR:
 Only the deflate and store methods can be assumed to be universally
@@ -90,10 +100,24 @@ supported.
 .PP
 The
 \fIcomp_flags\fR
-argument defines the compression level, 1 being fastest compression
-and 9 highest.
-Allowed values are 0 (which uses the default compression for the
-algorithm) and 1-9, other values are undefined.
+argument defines the compression level.
+This value is dependent on the compression algorithm.
+In general, lower numbers mean faster de/compression and higher
+numbers mean slower de/compression.
+For
+\fRZIP_CM_BZIP\fR,
+\fRZIP_CM_DEFLATE\fR,
+and
+\fRZIP_CM_XZ\fR
+1 is the fastest compression and 9 the best, 0 chooses the default.
+For
+\fRZIP_CM_ZSTD\fR
+possible values are
+ZSTD_minCLevel(3)
+to
+ZSTD_maxCLevel(3); negative values must be cast to
+\fIzip_uint32_t\fR.
+.PP
 Further compression method specific flags might be added over time.
 .PP
 The current compression method for a file in a zip archive can be
@@ -129,4 +153,4 @@ was added in libzip 0.11.
 .SH "AUTHORS"
 Dieter Baron <\fIdillo@nih.at\fR>
 and
-Thomas Klausner <\fItk@giga.or.at\fR>
+Thomas Klausner <\fIwiz@gatalith.at\fR>

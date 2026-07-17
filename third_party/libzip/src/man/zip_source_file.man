@@ -1,9 +1,9 @@
 .\" Automatically generated from an mdoc input file.  Do not edit.
 .\" zip_source_file.mdoc -- create data source from a file
-.\" Copyright (C) 2004-2019 Dieter Baron and Thomas Klausner
+.\" Copyright (C) 2004-2021 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP archives.
-.\" The authors can be contacted at <libzip@nih.at>
+.\" The authors can be contacted at <info@libzip.org>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -30,7 +30,7 @@
 .\" OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 .\" IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .\"
-.TH "ZIP_SOURCE_FILE" "3" "December 18, 2017" "NiH" "Library Functions Manual"
+.TH "ZIP_SOURCE_FILE" "3" "June 30, 2023" "NiH" "Library Functions Manual"
 .nh
 .if n .ad l
 .SH "NAME"
@@ -68,11 +68,39 @@ and read
 bytes from offset
 \fIstart\fR
 from it.
-If
-\fIlen\fR
-is 0 or \-1, the whole file (starting from
-\fIstart\fR)
-is used.
+.PP
+When passing
+\fRZIP_LENGTH_TO_END\fR
+(or \-1, which is deprecated) as
+\fIlen\fR,
+\fBzip_source_file\fR
+determines the file size when it is called and uses that as the
+expected file size.
+If the file size grows between creating and reading from the source,
+the additional data is ignored.
+If the file shrinks,
+\fBlibzip\fR
+treats it as an error
+(\fRZIP_ER_DATA_LENGTH\fR).
+.PP
+When passing
+\fRZIP_LENGTH_UNCHECKED\fR
+as
+\fIlen\fR,
+\fBzip_source_file\fR
+assumes the file's size is unknown.
+Reading from the source returns as much data as is there at that time
+(usually when calling
+zip_close(3)).
+.PP
+\fBlibzip\fR
+can do various optimizations if the size of a source is known when
+it's created, so
+\fRZIP_LENGTH_TO_END\fR
+is preferable.
+If you deal with files that are likely to change while you are
+processing them, you can use the less efficient
+\fRZIP_LENGTH_UNCHECKED\fR.
 .PP
 If the file supports seek, the source can be used to open a zip archive from.
 .PP
@@ -113,13 +141,18 @@ failed.
 libzip(3),
 zip_file_add(3),
 zip_file_replace(3),
-zip_source(3)
+zip_source(5)
 .SH "HISTORY"
 \fBzip_source_file\fR()
 and
 \fBzip_source_file_create\fR()
 were added in libzip 1.0.
+.PP
+\fRZIP_LENGTH_TO_END\fR
+and
+\fRZIP_LENGTH_UNCHECKED\fR
+were added in libzip 1.10.1.
 .SH "AUTHORS"
 Dieter Baron <\fIdillo@nih.at\fR>
 and
-Thomas Klausner <\fItk@giga.or.at\fR>
+Thomas Klausner <\fIwiz@gatalith.at\fR>

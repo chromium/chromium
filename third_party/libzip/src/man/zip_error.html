@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+   zip_error.mdoc -- description of zip_error_t
+   Copyright (C) 2025 Dieter Baron and Thomas Klausner
+  
+   This file is part of libzip, a library to manipulate ZIP archives.
+   The authors can be contacted at <info@libzip.org>
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in
+      the documentation and/or other materials provided with the
+      distribution.
+   3. The names of the authors may not be used to endorse or promote
+      products derived from this software without specific prior
+      written permission.
+  
+   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
+   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY
+   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+   GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+   IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+   OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="../nih-man.css" type="text/css" media="all"/>
+  <title>ZIP_ERROR(5)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">ZIP_ERROR(5)</td>
+    <td class="head-vol">File Formats Manual</td>
+    <td class="head-rtitle">ZIP_ERROR(5)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<p class="Pp"><code class="Nm">zip_error</code> &#x2014; <span class="Nd">error
+    information</span></p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="LIBRARY"><a class="permalink" href="#LIBRARY">LIBRARY</a></h1>
+<p class="Pp">libzip (-lzip)</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<p class="Pp"><code class="In">#include
+  &lt;<a class="In">zip.h</a>&gt;</code></p>
+<p class="Pp"><var class="Vt">zip_error_t error</var>;</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<p class="Pp">A <code class="Nm">zip_error</code> represents information about
+    an error. It is usually allocated directly on the stack or as member of
+    another structure, not via a pointer.</p>
+<p class="Pp">It is initialized with
+    <a class="Xr" href="zip_error_init.html">zip_error_init(3)</a> or
+    <a class="Xr" href="zip_error_init_with_code.html">zip_error_init_with_code(3)</a>.</p>
+<p class="Pp">The type of error can be accessed with
+    <a class="Xr" href="zip_error_code_zip.html">zip_error_code_zip(3)</a> and
+    <a class="Xr" href="zip_error_code_system.html">zip_error_code_system(3)</a>.
+    It can be converted to a human readable string with
+    <a class="Xr" href="zip_error_strerror.html">zip_error_strerror(3)</a>.</p>
+<p class="Pp">After use, it should be cleaned up with
+    <a class="Xr" href="zip_error_fini.html">zip_error_fini(3)</a>.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<p class="Pp"><a class="Xr" href="zip_error_code_system.html">zip_error_code_system(3)</a>,
+    <a class="Xr" href="zip_error_code_zip.html">zip_error_code_zip(3)</a>,
+    <a class="Xr" href="zip_error_fini.html">zip_error_fini(3)</a>,
+    <a class="Xr" href="zip_error_init.html">zip_error_init(3)</a>,
+    <a class="Xr" href="zip_error_init_with_code.html">zip_error_init_with_code(3)</a>,
+    <a class="Xr" href="zip_error_strerror.html">zip_error_strerror(3)</a></p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+<p class="Pp"><span class="An">Dieter Baron</span>
+    &lt;<a class="Mt" href="mailto:dillo@nih.at">dillo@nih.at</a>&gt; and
+    <span class="An">Thomas Klausner</span>
+    &lt;<a class="Mt" href="mailto:wiz@gatalith.at">wiz@gatalith.at</a>&gt;</p>
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">May 5, 2025</td>
+    <td class="foot-os">NiH</td>
+  </tr>
+</table>
+</body>
+</html>

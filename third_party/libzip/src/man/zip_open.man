@@ -1,9 +1,9 @@
 .\" Automatically generated from an mdoc input file.  Do not edit.
 .\" zip_open.mdoc -- open zip archive
-.\" Copyright (C) 2003-2019 Dieter Baron and Thomas Klausner
+.\" Copyright (C) 2003-2022 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP archives.
-.\" The authors can be contacted at <libzip@nih.at>
+.\" The authors can be contacted at <info@libzip.org>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -30,7 +30,7 @@
 .\" OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 .\" IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .\"
-.TH "ZIP_OPEN" "3" "December 18, 2017" "NiH" "Library Functions Manual"
+.TH "ZIP_OPEN" "3" "September 16, 2025" "NiH" "Library Functions Manual"
 .nh
 .if n .ad l
 .SH "NAME"
@@ -122,6 +122,39 @@ to indicate the error, while
 sets
 \fIze\fR
 to indicate the error.
+.SH "CAVEATS"
+Opening the same archive multiple times can lead to problems: When a modified archive is closed, the underlying file is rewritten and thus invalidates all other
+\fIzip_t\fR
+objects for that archive, which will fail in unpredictable ways.
+Also, writing may fail on some platforms if the file is in use by another
+\fIzip_t\fR
+object.
+.PP
+Thus, it is only valid to open the same archive multiple times as long as you make changes to at most one
+\fIzip_t\fR
+object and close that last.
+Using the flag
+\fRZIP_RDONLY\fR
+helps enforce that.
+.SH "EXAMPLES"
+Here's an example of how you could report errors during
+\fBzip_open\fR:
+.nf
+.sp
+.RS 0n
+    zip_t *za;
+    int err;
+
+    if ((za = zip_open(name, 0, &err)) == NULL) {
+        zip_error_t error;
+        zip_error_init_with_code(&error, err);
+        fprintf(stderr, "%s: cannot open zip archive '%s': %s\en",
+	        progname, name, zip_error_strerror(&error));
+        zip_error_fini(&error);
+        return -1;
+    }
+.RE
+.fi
 .SH "ERRORS"
 The archive specified by
 \fIpath\fR
@@ -176,11 +209,21 @@ for details.
 The file specified by
 \fIpath\fR
 does not allow seeks.
+.PD 0
+.PP
+For newly created archives,
+\fBzip_open\fR()
+does not try to create the file; this is done when calling
+zip_close(3)
+and any errors, like missing write permissions, will
+be reported then.
+.PD
 .SH "SEE ALSO"
 libzip(3),
 zip_close(3),
 zip_error_strerror(3),
-zip_fdopen(3)
+zip_fdopen(3),
+zip_source(5)
 .SH "HISTORY"
 \fBzip_open\fR()
 and
@@ -189,4 +232,4 @@ were added in libzip 1.0.
 .SH "AUTHORS"
 Dieter Baron <\fIdillo@nih.at\fR>
 and
-Thomas Klausner <\fItk@giga.or.at\fR>
+Thomas Klausner <\fIwiz@gatalith.at\fR>

@@ -1,7 +1,11 @@
 # zip_open: file is part of a multi-disk zip archive
 program tryopen
-args test.piz
+arguments test.piz
 return 1
-file test.piz multidisk.zip multidisk.zip
-stdout opening 'test.piz' returned error 1
-stderr 1 errors
+file test.piz multidisk.zip
+stdout
+opening 'test.piz' returned error 1
+end-of-inline-data
+stderr
+1 errors
+end-of-inline-data

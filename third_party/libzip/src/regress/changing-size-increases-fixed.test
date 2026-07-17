@@ -1,0 +1,8 @@
+description size of input file increases between add and close
+arguments test.zip add_file new short 0 6 extract_as 1 short
+file test.zip changing-size.zip changing-size-muchlo.zip
+file short <inline> <inline>
+short
+end-of-inline-data
+muchlonger
+end-of-inline-data

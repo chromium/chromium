@@ -1,7 +1,11 @@
 # zip_open: file shall be created but already exists
 program tryopen
-args -e test.zip
+arguments -e test.zip
 return 1
-file test.zip test.zip test.zip
-stdout opening 'test.zip' returned error 10
-stderr 1 errors
+file test.zip test.zip
+stdout
+opening 'test.zip' returned error 10
+end-of-inline-data
+stderr
+1 errors
+end-of-inline-data

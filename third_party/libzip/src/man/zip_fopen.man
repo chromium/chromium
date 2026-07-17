@@ -3,7 +3,7 @@
 .\" Copyright (C) 2003-2017 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP archives.
-.\" The authors can be contacted at <libzip@nih.at>
+.\" The authors can be contacted at <info@libzip.org>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -79,7 +79,7 @@ Otherwise the data is uncompressed by
 .TP 19n
 \fRZIP_FL_UNCHANGED\fR
 Read the original data from the zip archive, ignoring any changes made
-to the file.
+to the file; this is not supported by all data sources.
 .RE
 .PP
 The
@@ -105,7 +105,8 @@ is set to indicate the error.
 .SH "ERRORS"
 .TP 19n
 [\fRZIP_ER_CHANGED\fR]
-The file data has been changed.
+The file data has been changed and the data source does
+not support rereading data.
 .TP 19n
 [\fRZIP_ER_COMPNOTSUPP\fR]
 The compression method used is not supported.
@@ -163,4 +164,4 @@ were added in libzip 1.0.
 .SH "AUTHORS"
 Dieter Baron <\fIdillo@nih.at\fR>
 and
-Thomas Klausner <\fItk@giga.or.at\fR>
+Thomas Klausner <\fIwiz@gatalith.at\fR>

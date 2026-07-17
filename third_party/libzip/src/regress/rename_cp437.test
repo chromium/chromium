@@ -1,4 +1,4 @@
 # rename file to CP437 name in zip archive (fails)
 return 0
-args testfile.zip rename 0 ‚ƒ„…†‡ˆ‰Š‹Œ
+arguments -x testfile.zip rename 0 "8182838485868788898A8B8C8D8E8F90"
 file testfile.zip testfile.zip testfile-cp437.zip

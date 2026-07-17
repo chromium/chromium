@@ -2,7 +2,7 @@
 .\" Copyright (C) 2008-2017 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP archives.
-.\" The authors can be contacted at <libzip@nih.at>
+.\" The authors can be contacted at <info@libzip.org>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -29,7 +29,7 @@
 .\" OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 .\" IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .\"
-.Dd December 18, 2017
+.Dd July 19, 2023
 .Dt ZIP_SET_ARCHIVE_FLAG 3
 .Os
 .Sh NAME
@@ -51,7 +51,19 @@ for the archive
 to the value
 .Ar value .
 .Pp
-Currently there are no supported flags.
+Supported flags are:
+.Bl -tag -width XZIPXAFLXRDONLYXXX
+.It Dv ZIP_AFL_CREATE_OR_KEEP_FILE_FOR_EMPTY_ARCHIVE
+If this flag is cleared, the archive file will be removed if the archive is empty.
+If it is set, an empty archive will be created, which is not recommended by the zip specification.
+.It Dv ZIP_AFL_RDONLY
+If this flag is set, no modification to the archive are allowed.
+This flag can only be cleared if it was manually set with
+.Nm ,
+not if the archive was opened read-only.
+.It Dv ZIP_AFL_WANT_TORRENTZIP
+If this flag is set, the archive will be written in torrentzip format.
+.El
 .Sh RETURN VALUES
 Upon successful completion 0 is returned, and \-1 if an error
 occurred.
@@ -67,8 +79,12 @@ was changed from
 .Vt int
 to
 .Vt zip_flags_t .
+.Dv ZIP_AFL_CREATE_OR_KEEP_FILE_FOR_EMPTY_ARCHIVE
+and
+.Dv ZIP_AFL_WANT_TORRENTZIP
+were added in libzip 1.10.0.
 .Sh AUTHORS
 .An -nosplit
 .An Dieter Baron Aq Mt dillo@nih.at
 and
-.An Thomas Klausner Aq Mt tk@giga.or.at
+.An Thomas Klausner Aq Mt wiz@gatalith.at

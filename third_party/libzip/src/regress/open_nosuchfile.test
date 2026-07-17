@@ -1,6 +1,10 @@
 # zip_open: file doesn't exist
 program tryopen
-args nosuchfile
+arguments nosuchfile
 return 1
-stdout opening 'nosuchfile' returned error 9
-stderr 1 errors
+stdout
+opening 'nosuchfile' returned error 9
+end-of-inline-data
+stderr
+1 errors
+end-of-inline-data

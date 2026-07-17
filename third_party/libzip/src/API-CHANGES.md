@@ -1,21 +1,37 @@
-# libzip API changes
+# libzip API Changes
 
-This file describes changes in the libzip API and how to adapt your
-code for them.
+While we take great care to maintain backwards compatibility,
+sometimes changes to the API are necessary. This file describes
+these changes and how to adapt your code for them.
 
 You can define `ZIP_DISABLE_DEPRECATED` before including `<zip.h>` to hide
 prototypes for deprecated functions, to find out about functions that
 might be removed at some point.
 
-## Changed in libzip-1.0
+## Changes in libzip 1.10.0 (2023)
 
-### new type `zip_error_t`
+### Deprecated `zip_source_zip` and `zip_source_zip_create`
 
-Error information is stored in the newly public type `zip_error_t`. Use
+These functions were replaced with `zip_source_zip_file` and
+`zip_source_zip_file_create`. The implicit handling of the flag
+`ZIP_FL_COMPRESSED` was removed, the flag can now be specified
+explicitly.
+
+If you want to get the compressed data for the whole file, use 
+
+```C
+zip_source_zip_file(za, source_archive, source_index, ZIP_FL_COMPRESSED, 0, -1, NULL)
+```
+
+## Changes in libzip 1.0 (2015)
+
+### New Type `zip_error_t`
+
+Error information is stored in the new public type `zip_error_t`. Use
 this to access information about an error, instead of the deprecated
-functions that operated on two ints.
+functions that operated on two `int`s.
 
-deprecated functions:
+Deprecated functions:
 - `zip_error_get_sys_type()`
 - `zip_error_get()`
 - `zip_error_to_str()`
@@ -36,7 +52,7 @@ if ((za = zip_open(archive, flags, &err)) == NULL) {
 }
 ```
 
-### more typedefs
+### More Typedefs
 
 The following typedefs have been added for better readability:
 
@@ -47,17 +63,17 @@ typedef struct zip_source zip_source_t;
 typedef struct zip_stat zip_stat_t;
 ```
 
-This means you can use "`zip_t`" instead of "`struct zip`", etc.
+This means you can use `zip_t` instead of `struct zip`, etc.
 
 
-### torrentzip support removed
+### torrentzip Support Removed
 
-torrentzip depends on a particular zlib version which is by now quite
-old.
+Support for torrentzip has been removed. It has been restored in version 1.10.0.
 
-## Changed in libzip-0.11
 
-### new type `zip_flags_t`
+## Changes in libzip 0.11 (2013)
+
+### New Type `zip_flags_t`
 
 The functions which have flags now use the `zip_flags_t` type for this.
 All old flags fit; you need only to adapt code if you were saving flags in a
@@ -77,31 +93,31 @@ This affects:
 - `zip_stat()`
 - `zip_stat_index()`
 
-#### `ZIP_FL_*`, `ZIP_AFL_*`, `ZIP_STAT_*` are now unsigned constants
+#### `ZIP_FL_*`, `ZIP_AFL_*`, `ZIP_STAT_*` Are Now Unsigned Constants
 
-To match the new `zip_flags_t` type.
+To match the new `zip_flags_t` type, these constants are now explicitly unsigned.
 
-#### `zip_add()`, `zip_add_dir()`
+#### Deprecated `zip_add()`, `zip_add_dir()`
 
 These functions were replaced with `zip_file_add()` and `zip_dir_add()`, respectively,
 to add a flags argument.
 
-#### `zip_rename()`, `zip_replace()`
+#### Deprecated `zip_rename()`, `zip_replace()`
 
 These functions were replaced with `zip_file_rename()` and `zip_file_replace()`,
 respectively, to add a flags argument.
 
-#### `zip_get_file_comment()`
+#### Deprecated `zip_get_file_comment()`
 
 This function was replaced with `zip_file_get_comment()`; one argument was promoted from
 `int` to `zip_uint32_t`, the other is now a `zip_flags_t`.
 
-#### `zip_set_file_comment()`
+#### Deprecated `zip_set_file_comment()`
 
 This function was replaced with `zip_file_set_comment()`; an argument was promoted from
 `int` to `zip_uint16_t`, and a `zip_flags_t` argument was added.
 
-### integer type size changes
+### Integer Type Size Changes
 
 Some argument and return values were not the right size or sign.
 
@@ -118,7 +134,7 @@ The return type is now signed, to allow signaling errors.
 
 The last argument changed from `int` to `zip_uint16_t`.
 
-### extra field handling rewritten
+### Extra Field Handling Rewritten
 
 The `zip_get_file_extra()` and `zip_set_file_extra()` functions were removed.
 They only worked on the whole extra field set.
@@ -135,7 +151,7 @@ using the functions:
 
 Please read the corresponding man pages for details.
 
-### new functions
+### New Functions
 
 #### `zip_discard()`
 
@@ -147,11 +163,11 @@ scheduled changes.
 The new `zip_set_file_compression()` function allows setting compression
 levels for files.
 
-### argument changes
+### Argument Changes
 
-#### file names
+#### File Names
 
-File names arguments are now allowed to be `NULL` to have an empty file name.
+File name arguments are now allowed to be `NULL` to have an empty file name.
 This mostly affects `zip_file_add()`, `zip_dir_add()`, and `zip_file_rename()`.
 
 For `zip_get_name()`, `zip_file_get_comment()`, and `zip_get_archive_comment()`, if

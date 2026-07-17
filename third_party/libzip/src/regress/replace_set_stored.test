@@ -1,0 +1,4 @@
+# replace file, set compression method to ZIP_CM_STORE (like it was before)
+return 0
+arguments -n test.zip  replace_file_contents 0 aaaaaaaa  set_file_compression 0 store 0
+file test.zip aaaaaaaa-stored.zip

@@ -1,9 +1,9 @@
 .\" Automatically generated from an mdoc input file.  Do not edit.
 .\" zip_file_set_comment.mdoc -- set comment for file in zip
-.\" Copyright (C) 2006-2017 Dieter Baron and Thomas Klausner
+.\" Copyright (C) 2006-2021 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP files.
-.\" The authors can be contacted at <libzip@nih.at>
+.\" The authors can be contacted at <info@libzip.org>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -30,7 +30,7 @@
 .\" OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 .\" IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .\"
-.TH "ZIP_FILE_SET_COMMENT" "3" "December 18, 2017" "NiH" "Library Functions Manual"
+.TH "ZIP_FILE_SET_COMMENT" "3" "September 22, 2020" "NiH" "Library Functions Manual"
 .nh
 .if n .ad l
 .SH "NAME"
@@ -71,6 +71,7 @@ argument can be any of:
 Guess encoding of
 \fIcomment\fR
 (default).
+(Only CP-437 and UTF-8 are recognized.)
 .TP 22n
 \fRZIP_FL_ENC_UTF_8\fR
 Interpret
@@ -119,4 +120,4 @@ was added in libzip 0.11.
 .SH "AUTHORS"
 Dieter Baron <\fIdillo@nih.at\fR>
 and
-Thomas Klausner <\fItk@giga.or.at\fR>
+Thomas Klausner <\fIwiz@gatalith.at\fR>

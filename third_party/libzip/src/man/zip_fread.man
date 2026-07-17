@@ -1,9 +1,9 @@
 .\" Automatically generated from an mdoc input file.  Do not edit.
 .\" zip_fread.mdoc -- read from file
-.\" Copyright (C) 2003-2017 Dieter Baron and Thomas Klausner
+.\" Copyright (C) 2003-2022 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP archives.
-.\" The authors can be contacted at <libzip@nih.at>
+.\" The authors can be contacted at <info@libzip.org>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -30,7 +30,7 @@
 .\" OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 .\" IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .\"
-.TH "ZIP_FREAD" "3" "December 18, 2017" "NiH" "Library Functions Manual"
+.TH "ZIP_FREAD" "3" "September 11, 2024" "NiH" "Library Functions Manual"
 .nh
 .if n .ad l
 .SH "NAME"
@@ -50,18 +50,25 @@ libzip (-lzip)
 .SH "DESCRIPTION"
 The
 \fBzip_fread\fR()
-function reads at most
+function reads up to
 \fInbytes\fR
 bytes from
 \fIfile\fR
 into
-\fIbuf\fR.
+\fIbuf\fR
+from the current position in the file (see
+zip_fseek(3)).
+After reading, the current position is updated by the number of bytes read.
 .SH "RETURN VALUES"
 If successful, the number of bytes actually read is returned.
-Otherwise, \-1 is returned.
+When
+\fBzip_fread\fR()
+is called after reaching the end of the file, 0 is returned.
+In case of error, \-1 is returned.
 .SH "SEE ALSO"
 libzip(3),
 zip_fclose(3),
+zip_file_get_error(3),
 zip_fopen(3),
 zip_fseek(3)
 .SH "HISTORY"
@@ -80,4 +87,4 @@ to
 .SH "AUTHORS"
 Dieter Baron <\fIdillo@nih.at\fR>
 and
-Thomas Klausner <\fItk@giga.or.at\fR>
+Thomas Klausner <\fIwiz@gatalith.at\fR>

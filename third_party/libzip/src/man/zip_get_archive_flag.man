@@ -3,7 +3,7 @@
 .\" Copyright (C) 2008-2017 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP files.
-.\" The authors can be contacted at <libzip@nih.at>
+.\" The authors can be contacted at <info@libzip.org>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -30,7 +30,7 @@
 .\" OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 .\" IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .\"
-.TH "ZIP_GET_ARCHIVE_FLAG" "3" "December 18, 2017" "NiH" "Library Functions Manual"
+.TH "ZIP_GET_ARCHIVE_FLAG" "3" "January 23, 2023" "NiH" "Library Functions Manual"
 .nh
 .if n .ad l
 .SH "NAME"
@@ -64,8 +64,22 @@ the original unchanged flags are tested.
 .PP
 Supported flags are:
 .TP 20n
+\fRZIP_AFL_CREATE_OR_KEEP_FILE_FOR_EMPTY_ARCHIVE\fR
+If this flag is cleared, the archive file will be removed if the archive is empty.
+If it is set, an empty archive will be created, which is not recommended by the zip specification.
+This flag is always cleared unless explicitly set by the user with
+zip_set_archive_flag(3).
+.TP 20n
+\fRZIP_AFL_IS_TORRENTZIP\fR
+The archive is in torrentzip format.
+.TP 20n
 \fRZIP_AFL_RDONLY\fR
 The archive is read-only.
+.TP 20n
+\fRZIP_AFL_WANT_TORRENTZIP\fR
+If the flag is set, the archive will be written in torrentzip format.
+This flag is always cleared unless explicitly set by the user with
+zip_set_archive_flag(3).
 .SH "RETURN VALUES"
 \fBzip_get_archive_flag\fR()
 returns 1 if
@@ -92,7 +106,12 @@ was changed from
 \fIint\fR
 to
 \fIzip_flags_t\fR.
+\fRZIP_AFL_CREATE_OR_KEEP_FILE_FOR_EMPTY_ARCHIVE\fR,
+\fRZIP_AFL_IS_TORRENTZIP\fR,
+and
+\fRZIP_AFL_WANT_TORRENTZIP\fR
+were added in libzip 1.10.0.
 .SH "AUTHORS"
 Dieter Baron <\fIdillo@nih.at\fR>
 and
-Thomas Klausner <\fItk@giga.or.at\fR>
+Thomas Klausner <\fIwiz@gatalith.at\fR>

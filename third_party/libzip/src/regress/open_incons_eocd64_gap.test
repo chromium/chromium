@@ -1,0 +1,11 @@
+# zip_open with ZIP_CHECKCONS rejects archive with gap between Zip64 EOCD locator and EOCD64 record
+program tryopen
+arguments -s -c test.zip
+file test.zip incons-eocd64-gap.zip
+return 1
+stdout
+opening 'test.zip' returned error Zip archive inconsistent: EOCD64 overlaps EOCD, or there is space between them
+end-of-inline-data
+stderr
+1 errors
+end-of-inline-data

@@ -1,9 +1,9 @@
 /*
   zip_crypto_openssl.h -- definitions for OpenSSL wrapper.
-  Copyright (C) 2018-2019 Dieter Baron and Thomas Klausner
+  Copyright (C) 2018-2024 Dieter Baron and Thomas Klausner
 
   This file is part of libzip, a library to manipulate ZIP archives.
-  The authors can be contacted at <libzip@nih.at>
+  The authors can be contacted at <info@libzip.org>
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions
@@ -36,31 +36,38 @@
 
 #define HAVE_SECURE_RANDOM
 
-#include <openssl/aes.h>
+#include <openssl/evp.h>
 #include <openssl/hmac.h>
 
-#define _zip_crypto_aes_t AES_KEY
+#if OPENSSL_VERSION_NUMBER < 0x1010000fL || (defined(LIBRESSL_VERSION_NUMBER) && LIBRESSL_VERSION_NUMBER < 0x02070000fL)
+#define USE_OPENSSL_1_0_API
+#elif OPENSSL_VERSION_NUMBER < 0x3000000fL
+#define USE_OPENSSL_1_1_API
+#else
+#define USE_OPENSSL_3_API
+#endif
+
+#define _zip_crypto_aes_t EVP_CIPHER_CTX
+#ifdef USE_OPENSSL_3_API
+struct _zip_crypto_hmac_t {
+    EVP_MAC *mac;
+    EVP_MAC_CTX *ctx;
+};
+typedef struct _zip_crypto_hmac_t _zip_crypto_hmac_t;
+#define _zip_crypto_hmac(hmac, data, length) (EVP_MAC_update((hmac->ctx), (data), (length)) == 1)
+#else
 #define _zip_crypto_hmac_t HMAC_CTX
+#define _zip_crypto_hmac(hmac, data, length) (HMAC_Update((hmac), (data), (length)) == 1)
+#endif
 
-void _zip_crypto_aes_free(_zip_crypto_aes_t* aes);
-#define _zip_crypto_aes_encrypt_block(aes, in, out) \
-  (AES_encrypt((in), (out), (aes)), true)
-_zip_crypto_aes_t* _zip_crypto_aes_new(const zip_uint8_t* key,
-                                       zip_uint16_t key_size,
-                                       zip_error_t* error);
+void _zip_crypto_aes_free(_zip_crypto_aes_t *aes);
+bool _zip_crypto_aes_encrypt_block(_zip_crypto_aes_t *aes, const zip_uint8_t *in, zip_uint8_t *out);
+_zip_crypto_aes_t *_zip_crypto_aes_new(const zip_uint8_t *key, zip_uint16_t key_size, zip_error_t *error);
 
-#define _zip_crypto_hmac(hmac, data, length) \
-  (HMAC_Update((hmac), (data), (length)) == 1)
-void _zip_crypto_hmac_free(_zip_crypto_hmac_t* hmac);
-_zip_crypto_hmac_t* _zip_crypto_hmac_new(const zip_uint8_t* secret,
-                                         zip_uint64_t secret_length,
-                                         zip_error_t* error);
-bool _zip_crypto_hmac_output(_zip_crypto_hmac_t* hmac, zip_uint8_t* data);
+void _zip_crypto_hmac_free(_zip_crypto_hmac_t *hmac);
+_zip_crypto_hmac_t *_zip_crypto_hmac_new(const zip_uint8_t *secret, zip_uint64_t secret_length, zip_error_t *error);
+bool _zip_crypto_hmac_output(_zip_crypto_hmac_t *hmac, zip_uint8_t *data);
 
-#define _zip_crypto_pbkdf2(key, key_length, salt, salt_length, iterations, \
-                           output, output_length)                          \
-  (PKCS5_PBKDF2_HMAC_SHA1((const char*)(key), (key_length), (salt),        \
-                          (salt_length), (iterations), (output_length),    \
-                          (output)))
+#define _zip_crypto_pbkdf2(key, key_length, salt, salt_length, iterations, output, output_length) (PKCS5_PBKDF2_HMAC_SHA1((const char *)(key), (key_length), (salt), (salt_length), (iterations), (output_length), (output)))
 
 #endif /*  HAD_ZIP_CRYPTO_OPENSSL_H */

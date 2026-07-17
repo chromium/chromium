@@ -1,8 +1,8 @@
 .\" libzip.mdoc -- general overview of available functions
-.\" Copyright (C) 2005-2020 Dieter Baron and Thomas Klausner
+.\" Copyright (C) 2005-2024 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP archives.
-.\" The authors can be contacted at <libzip@nih.at>
+.\" The authors can be contacted at <info@libzip.org>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -29,7 +29,7 @@
 .\" OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 .\" IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .\"
-.Dd April 17, 2020
+.Dd September 16, 2025
 .Dt LIBZIP 3
 .Os
 .Sh NAME
@@ -48,6 +48,8 @@ The main design criteria for
 were:
 .Bl -bullet -compact
 .It
+Maintain a stable API without breaking backwards compatibility.
+.It
 Do not create corrupt files, even in case of errors.
 .It
 Do not delete data.
@@ -59,23 +61,115 @@ For this reason, when modifying zip archives,
 .Nm
 writes to a temporary file and replaces the original
 zip archive atomically.
+.Sh GENERAL NOTES
+When adding files to an archive, the file data is only read when the
+new archive is written.
+Therefore all files added must remain valid until the archive is
+closed with
+.Xr zip_close 3
+or
+.Xr zip_discard 3 .
 .Pp
-Below there are two sections listing functions: one for how to read
-from zip archives and one for how to create/modify them.
+Unless explicitly documented, functions should not be passed
+.Dv NULL
+pointers as arguments.
+.Sh DATA TYPES
+These data types correspond to central concepts in
+.Nm .
+Most of them are private, meaning you can't allocate them or access their members directly.
+This allows extending the structures in the future without breaking compatibility.
+.Ss Vt zip_t
+This type represents an opened archive.
+See
+.Xr zip 5 .
+.Ss Vt zip_file_t
+This type represents a file from an archive that has been opened for reading.
+See
+.Xr zip_file 5 .
+.Ss Vt zip_source_t
+This type represents a source (or destination) of data.
+It is used in
+.Nm
+for providing data when adding or replacing files, accessing data from a file inside an archive, and the data for the archive as a whole.
+See
+.Xr zip_source 5 .
+.Ss Vt zip_error_t
+This type represents information about an error.
+Its type can be checked against pre-defined constants and it can be converted to a human readable string.
+See
+.Xr zip_error 5 .
+.Sh FILE NAMES
+.Ss Encoding
+Names of files in the host file system are expected in UTF-8 encoding.
+On Windows, variants for ASCII and UTF-16 are also available.
+.Pp
+Names of files inside archives are by default expected in UTF-8 encoding.
+Other encodings can be requested by using the flags
+.Dv ZIP_FL_ENC_CP437
+and
+.Dv ZIP_FL_ENC_RAW .
+.Pp
+For details see the relevant man pages.
+.Ss Directory Separator
+The zip format requires the use of forward slash
+.Pq Sq /
+as directory separator.
+Since backslash
+.Pq Sq \e
+can be part of a valid file name on Unix systems,
+.Nm
+does not automatically convert them, even on Windows.
+It is the responsibility of the programmer to ensure that all
+directory separators are passed as forward slashes to
+.Nm .
+.Sh THREAD SAFETY
+In general, different
+.Vt zip_t
+objects are independent of each other and can be used by parallel-running
+threads without locking.
+.Pp
+If you want to use one
+.Vt zip_t
+object from multiple threads, you have to synchronize access to it yourself.
+.Pp
+Alternatively, if you only want to read from an archive, you can open the
+archive multiple times to create a separate
+.Vt zip_t
+object for each thread; to avoid making changes by mistake, use the flag
+.Dv ZIP_RDONLY
+when opening the archive.
+.Pp
+If you use an archive as a source for
+.Xr zip_file_add 3
+or
+.Xr zip_file_replace 3 ,
+access to the target archive must be synchronized with access to the
+source archive as well.
 .Sh READING ZIP ARCHIVES
-.Ss open archive
+.Ss Open Archive
 .Bl -bullet -compact
 .It
 .Xr zip_open 3
 .It
+.Xr zip_open_from_source 3
+.It
 .Xr zip_fdopen 3
 .El
-.Ss find files
+.Ss Get Archive Attributes
+.Bl -bullet -compact
+.It
+.Xr zip_get_archive_comment 3
+.It
+.Xr zip_get_archive_flag 3
+.It
+.Xr zip_get_num_entries 3
+.El
+.Ss Find Files
 .Bl -bullet -compact
 .It
 .Xr zip_name_locate 3
 .El
-.Ss read files
+.Ss Read Files
 .Bl -bullet -compact
 .It
 .Xr zip_fopen 3
@@ -88,49 +182,47 @@ from zip archives and one for how to create/modify them.
 .It
 .Xr zip_fread 3
 .It
+.Xr zip_file_is_seekable 3
+.It
 .Xr zip_fseek 3
 (uncompressed files only)
 .It
 .Xr zip_ftell 3
-(uncompressed files only)
 .It
 .Xr zip_fclose 3
 .El
-.Ss close archive
+.Ss Close Archive
 .Bl -bullet -compact
 .It
 .Xr zip_close 3
 .El
-.Ss miscellaneous
+.Ss Get File Attributes
 .Bl -bullet -compact
 .It
 .Xr zip_stat 3
-.It
-.Xr zip_compression_method_supported 3
-.It
-.Xr zip_encryption_method_supported 3
 .It
 .Xr zip_file_get_comment 3
 .It
 .Xr zip_file_get_external_attributes 3
 .It
-.Xr zip_get_archive_comment 3
-.It
-.Xr zip_get_archive_flag 3
-.It
 .Xr zip_get_name 3
+.El
+.Ss Miscellaneous
+.Bl -bullet -compact
 .It
-.Xr zip_get_num_entries 3
+.Xr zip_compression_method_supported 3
+.It
+.Xr zip_encryption_method_supported 3
 .It
 .Xr zip_set_default_password 3
 .El
 .Sh CREATING/MODIFYING ZIP ARCHIVES
-.Ss create/open archive
+.Ss Create/Open Archive
 .Bl -bullet -compact
 .It
 .Xr zip_open 3
 .El
-.Ss add/change files and directories
+.Ss Add/Change Files and Directories
 .Bl -bullet -compact
 .It
 .Xr zip_dir_add 3
@@ -157,23 +249,19 @@ from zip archives and one for how to create/modify them.
 .It
 .Xr zip_source_filep 3
 .It
-.Xr zip_source_free 3
-.It
-.Xr zip_source_function 3
-.It
 .Xr zip_source_zip 3
 .El
-.Ss rename files
+.Ss Rename Files
 .Bl -bullet -compact
 .It
 .Xr zip_rename 3
 .El
-.Ss delete files
+.Ss Delete Files
 .Bl -bullet -compact
 .It
 .Xr zip_delete 3
 .El
-.Ss revert changes
+.Ss Revert Changes
 .Bl -bullet -compact
 .It
 .Xr zip_unchange 3
@@ -182,10 +270,8 @@ from zip archives and one for how to create/modify them.
 .It
 .Xr zip_unchange_archive 3
 .El
-.Ss read/modify extra fields
+.Ss Read/Modify Extra Fields
 .Bl -bullet -compact
-.It
-.Xr zip_file_extra_field_by_id 3
 .It
 .Xr zip_file_extra_field_delete 3
 .It
@@ -193,25 +279,29 @@ from zip archives and one for how to create/modify them.
 .It
 .Xr zip_file_extra_field_get 3
 .It
+.Xr zip_file_extra_field_get_by_id 3
+.It
 .Xr zip_file_extra_field_set 3
 .It
 .Xr zip_file_extra_fields_count 3
 .It
 .Xr zip_file_extra_fields_count_by_id 3
 .El
-.Ss close archive (writing)
+.Ss Close Archive (Writing)
 .Bl -bullet -compact
 .It
 .Xr zip_close 3
 .It
 .Xr zip_discard 3
 .El
-.Ss miscellaneous (writing)
+.Ss Miscellaneous (Writing)
 .Bl -bullet -compact
 .It
 .Xr zip_file_attributes_init 3
 .It
 .Xr zip_libzip_version 3
+.It
+.Xr zip_register_cancel_callback_with_state 3
 .It
 .Xr zip_register_progress_callback_with_state 3
 .It
@@ -219,7 +309,44 @@ from zip archives and one for how to create/modify them.
 .It
 .Xr zip_set_archive_flag 3
 .It
-.Xr zip_source 3
+.Xr zip_source 5
+.El
+.Sh SOURCES
+.Ss Create Source
+.Bl -bullet -compact
+.It
+.Xr zip_source_buffer 3
+.It
+.Xr zip_source_file 3
+.It
+.Xr zip_source_filep 3
+.It
+.Xr zip_source_function 3
+.It
+.Xr zip_source_layered 3
+.It
+.Xr zip_source_zip 3
+.El
+.Ss Using Source
+.Bl -bullet -compact
+.It
+.Xr zip_file_add 3
+.It
+.Xr zip_file_replace 3
+.It
+.Xr zip_open_from_source 3
+.El
+.Ss Implementing Source
+.Bl -bullet -compact
+.It
+.Xr zip_source_pass_to_lower_layer 3
+.El
+.Ss Source Life Cycle
+.Bl -bullet -compact
+.It
+.Xr zip_source_free 3
+.It
+.Xr zip_source_keep 3
 .El
 .Sh ERROR HANDLING
 .Bl -bullet -compact
@@ -230,9 +357,15 @@ from zip archives and one for how to create/modify them.
 .It
 .Xr zip_file_strerror 3
 .It
+.Xr zip_file_get_error 3
+.It
 .Xr zip_get_error 3
 .It
 .Xr zip_error_init_with_code 3
+.It
+.Xr zip_error_set 3
+.It
+.Xr zip_error_set_from_source 3
 .It
 .Xr zip_error_system_type 3
 .It
@@ -242,4 +375,4 @@ from zip archives and one for how to create/modify them.
 .An -nosplit
 .An Dieter Baron Aq Mt dillo@nih.at
 and
-.An Thomas Klausner Aq Mt tk@giga.or.at
+.An Thomas Klausner Aq Mt wiz@gatalith.at

@@ -1,13 +1,15 @@
 # print UTF-8 file names
-args -r test-utf8.zip stat 0
+arguments -r test-utf8.zip stat 0
 return 0
-file test-utf8.zip test-utf8.zip test-utf8.zip
-stdout name: 'ÄÖÜäöüßćçĉéèêëē'
-stdout index: '0'
-stdout size: '0'
-stdout compressed size: '0'
-stdout mtime: 'Sat Feb 18 2012 00:15:08'
-stdout crc: '0'
-stdout compression method: '0'
-stdout encryption method: '0'
-stdout 
+file test-utf8.zip test-utf8.zip
+stdout
+name: 'ÄÖÜäöüßćçĉéèêëē'
+index: '0'
+size: '0'
+compressed size: '0'
+mtime: 'Sat Feb 18 2012 00:15:08'
+crc: '0'
+compression method: '0'
+encryption method: '0'
+
+end-of-inline-data

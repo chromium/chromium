@@ -1,4 +1,0 @@
-default-program ziptool_regress
-source-directory @srcdir@
-top-build-directory @top_builddir@
-file-compare zip zip ../src/zipcmp -pv

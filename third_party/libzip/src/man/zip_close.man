@@ -1,9 +1,9 @@
 .\" Automatically generated from an mdoc input file.  Do not edit.
 .\" zip_close.mdoc -- close zip archive
-.\" Copyright (C) 2003-2019 Dieter Baron and Thomas Klausner
+.\" Copyright (C) 2003-2022 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP archives.
-.\" The authors can be contacted at <libzip@nih.at>
+.\" The authors can be contacted at <info@libzip.org>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -30,7 +30,7 @@
 .\" OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 .\" IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .\"
-.TH "ZIP_CLOSE" "3" "September 17, 2019" "NiH" "Library Functions Manual"
+.TH "ZIP_CLOSE" "3" "January 23, 2023" "NiH" "Library Functions Manual"
 .nh
 .if n .ad l
 .SH "NAME"
@@ -56,7 +56,9 @@ to disk.
 If
 \fIarchive\fR
 contains no files, the file is completely removed (no empty archive is
-written).
+written), unless the archive flag
+\fRZIP_AFL_CREATE_OR_KEEP_FILE_FOR_EMPTY_ARCHIVE\fR
+is set.
 If successful,
 \fIarchive\fR
 is freed.
@@ -66,6 +68,13 @@ is left unchanged and must still be freed.
 .PP
 To close and free a zip archive without saving changes, use
 zip_discard(3).
+.PP
+Progress updates for GUIs can be implemented using
+zip_register_progress_callback_with_state(3).
+Cancelling the write of an archive during
+\fBzip_close\fR
+can be implemented using
+zip_register_cancel_callback_with_state(3).
 .SH "RETURN VALUES"
 Upon successful completion 0 is returned.
 Otherwise, \-1 is returned and the error code in
@@ -123,7 +132,9 @@ zip_discard(3),
 zip_fdopen(3),
 zip_get_error(3),
 zip_open(3),
+zip_register_cancel_callback_with_state(3),
 zip_register_progress_callback_with_state(3),
+zip_set_archive_flag(3),
 zip_strerror(3)
 .SH "HISTORY"
 \fBzip_close\fR()
@@ -131,4 +142,12 @@ was added in libzip 0.6.
 .SH "AUTHORS"
 Dieter Baron <\fIdillo@nih.at\fR>
 and
-Thomas Klausner <\fItk@giga.or.at\fR>
+Thomas Klausner <\fIwiz@gatalith.at\fR>
+.SH "CAVEATS"
+Please note that all indices,
+zip_stat(3)
+information and other data about the archive is invalid after
+\fBzip_close\fR.
+When you open the same file again, it will be a completely new
+\fIzip_t\fR
+structure.

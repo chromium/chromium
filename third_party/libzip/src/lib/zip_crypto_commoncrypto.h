@@ -1,9 +1,9 @@
 /*
   zip_crypto_commoncrypto.h -- definitions for CommonCrypto wrapper.
-  Copyright (C) 2018 Dieter Baron and Thomas Klausner
+  Copyright (C) 2018-2024 Dieter Baron and Thomas Klausner
 
   This file is part of libzip, a library to manipulate ZIP archives.
-  The authors can be contacted at <libzip@nih.at>
+  The authors can be contacted at <info@libzip.org>
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions
@@ -39,26 +39,15 @@
 #define _zip_crypto_aes_t struct _CCCryptor
 #define _zip_crypto_hmac_t CCHmacContext
 
-void _zip_crypto_aes_free(_zip_crypto_aes_t* aes);
-bool _zip_crypto_aes_encrypt_block(_zip_crypto_aes_t* aes,
-                                   const zip_uint8_t* in,
-                                   zip_uint8_t* out);
-_zip_crypto_aes_t* _zip_crypto_aes_new(const zip_uint8_t* key,
-                                       zip_uint16_t key_size,
-                                       zip_error_t* error);
+void _zip_crypto_aes_free(_zip_crypto_aes_t *aes);
+bool _zip_crypto_aes_encrypt_block(_zip_crypto_aes_t *aes, const zip_uint8_t *in, zip_uint8_t *out);
+_zip_crypto_aes_t *_zip_crypto_aes_new(const zip_uint8_t *key, zip_uint16_t key_size, zip_error_t *error);
 
-#define _zip_crypto_hmac(hmac, data, length) \
-  (CCHmacUpdate((hmac), (data), (length)), true)
-void _zip_crypto_hmac_free(_zip_crypto_hmac_t* hmac);
-_zip_crypto_hmac_t* _zip_crypto_hmac_new(const zip_uint8_t* secret,
-                                         zip_uint64_t secret_length,
-                                         zip_error_t* error);
+#define _zip_crypto_hmac(hmac, data, length) (CCHmacUpdate((hmac), (data), (length)), true)
+void _zip_crypto_hmac_free(_zip_crypto_hmac_t *hmac);
+_zip_crypto_hmac_t *_zip_crypto_hmac_new(const zip_uint8_t *secret, zip_uint64_t secret_length, zip_error_t *error);
 #define _zip_crypto_hmac_output(hmac, data) (CCHmacFinal((hmac), (data)), true)
 
-#define _zip_crypto_pbkdf2(key, key_length, salt, salt_length, iterations,   \
-                           output, output_length)                            \
-  (CCKeyDerivationPBKDF(kCCPBKDF2, (const char*)(key), (key_length), (salt), \
-                        (salt_length), kCCPRFHmacAlgSHA1, (iterations),      \
-                        (output), (output_length)) == kCCSuccess)
+#define _zip_crypto_pbkdf2(key, key_length, salt, salt_length, iterations, output, output_length) (CCKeyDerivationPBKDF(kCCPBKDF2, (const char *)(key), (key_length), (salt), (salt_length), kCCPRFHmacAlgSHA1, (iterations), (output), (output_length)) == kCCSuccess)
 
 #endif /* HAD_ZIP_CRYPTO_COMMONCRYPTO_H */

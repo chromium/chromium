@@ -1,9 +1,9 @@
 /*
  zip_file_set_mtime.c -- set modification time of entry.
- Copyright (C) 2014-2020 Dieter Baron and Thomas Klausner
+ Copyright (C) 2014-2024 Dieter Baron and Thomas Klausner
 
  This file is part of libzip, a library to manipulate ZIP archives.
- The authors can be contacted at <libzip@nih.at>
+ The authors can be contacted at <info@libzip.org>
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions
@@ -33,36 +33,61 @@
 
 #include "zipint.h"
 
-ZIP_EXTERN int
-zip_file_set_dostime(zip_t *za, zip_uint64_t idx, zip_uint16_t dtime, zip_uint16_t ddate, zip_flags_t flags) {
-    time_t mtime;
-    mtime = _zip_d2u_time(dtime, ddate);
-    return zip_file_set_mtime(za, idx, mtime, flags);
-}
-
-ZIP_EXTERN int
-zip_file_set_mtime(zip_t *za, zip_uint64_t idx, time_t mtime, zip_flags_t flags) {
+static int zip_file_set_time(zip_t *za, zip_uint64_t idx, zip_uint16_t dtime, zip_uint16_t ddate, zip_flags_t flags, time_t *mtime) {
     zip_entry_t *e;
 
-    if (_zip_get_dirent(za, idx, 0, NULL) == NULL)
-	return -1;
+    if (_zip_get_dirent(za, idx, 0, NULL) == NULL) {
+        return -1;
+    }
 
     if (ZIP_IS_RDONLY(za)) {
-	zip_error_set(&za->error, ZIP_ER_RDONLY, 0);
-	return -1;
+        zip_error_set(&za->error, ZIP_ER_RDONLY, 0);
+        return -1;
+    }
+    if (ZIP_WANT_TORRENTZIP(za)) {
+        zip_error_set(&za->error, ZIP_ER_NOT_ALLOWED, 0);
+        return -1;
     }
 
     e = za->entry + idx;
 
-    if (e->changes == NULL) {
-	if ((e->changes = _zip_dirent_clone(e->orig)) == NULL) {
-	    zip_error_set(&za->error, ZIP_ER_MEMORY, 0);
-	    return -1;
-	}
+    if (e->orig != NULL && e->orig->encryption_method == ZIP_EM_TRAD_PKWARE && !ZIP_ENTRY_CHANGED(e, ZIP_DIRENT_ENCRYPTION_METHOD) && !ZIP_ENTRY_DATA_CHANGED(e)) {
+        zip_error_set(&za->error, ZIP_ER_OPNOTSUPP, 0);
+        return -1;
     }
 
-    e->changes->last_mod = mtime;
+    if (e->changes == NULL) {
+        if ((e->changes = _zip_dirent_clone(e->orig)) == NULL) {
+            zip_error_set(&za->error, ZIP_ER_MEMORY, 0);
+            return -1;
+        }
+    }
+
+    e->changes->last_mod.time = dtime;
+    e->changes->last_mod.date = ddate;
+    if (mtime != NULL) {
+        e->changes->last_mod_mtime = *mtime;
+        e->changes->last_mod_mtime_valid = true;
+    }
+    else {
+        e->changes->last_mod_mtime_valid = false;
+    }
     e->changes->changed |= ZIP_DIRENT_LAST_MOD;
 
     return 0;
+}
+
+ZIP_EXTERN int zip_file_set_dostime(zip_t *za, zip_uint64_t idx, zip_uint16_t dtime, zip_uint16_t ddate, zip_flags_t flags) {
+    return zip_file_set_time(za, idx, dtime, ddate, flags, NULL);
+}
+
+
+ZIP_EXTERN int zip_file_set_mtime(zip_t *za, zip_uint64_t idx, time_t mtime, zip_flags_t flags) {
+    zip_dostime_t dostime;
+
+    if (_zip_u2d_time(mtime, &dostime, &za->error) < 0) {
+        return -1;
+    }
+
+    return zip_file_set_time(za, idx, dostime.time, dostime.date, flags, &mtime);
 }

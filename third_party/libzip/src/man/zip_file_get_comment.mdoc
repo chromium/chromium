@@ -1,8 +1,8 @@
 .\" zip_file_get_comment.mdoc -- get comment for file in zip
-.\" Copyright (C) 2006-2017 Dieter Baron and Thomas Klausner
+.\" Copyright (C) 2006-2021 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP files.
-.\" The authors can be contacted at <libzip@nih.at>
+.\" The authors can be contacted at <info@libzip.org>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -29,7 +29,7 @@
 .\" OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 .\" IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .\"
-.Dd December 18, 2017
+.Dd September 22, 2020
 .Dt ZIP_FILE_GET_COMMENT 3
 .Os
 .Sh NAME
@@ -77,6 +77,7 @@ Return the unmodified comment as it is in the ZIP archive.
 (Default.)
 Guess the encoding of the comment in the ZIP archive and convert it
 to UTF-8, if necessary.
+(Only CP-437 and UTF-8 are recognized.)
 .It Dv ZIP_FL_ENC_STRICT
 Follow the ZIP specification for file names and extend it to file
 comments, expecting them to be encoded in CP-437 in the ZIP archive
@@ -115,4 +116,4 @@ was added in libzip 0.11.
 .An -nosplit
 .An Dieter Baron Aq Mt dillo@nih.at
 and
-.An Thomas Klausner Aq Mt tk@giga.or.at
+.An Thomas Klausner Aq Mt wiz@gatalith.at

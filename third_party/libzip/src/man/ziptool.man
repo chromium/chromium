@@ -1,9 +1,9 @@
 .\" Automatically generated from an mdoc input file.  Do not edit.
 .\" ziptool.mdoc -- modify zip archives in multiple ways
-.\" Copyright (C) 2016-2017 Dieter Baron and Thomas Klausner
+.\" Copyright (C) 2016-2022 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP archives.
-.\" The authors can be contacted at <libzip@nih.at>
+.\" The authors can be contacted at <info@libzip.org>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -30,7 +30,7 @@
 .\" OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 .\" IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .\"
-.TH "ZIPTOOL" "1" "December 18, 2017" "NiH" "General Commands Manual"
+.TH "ZIPTOOL" "1" "January 23, 2023" "NiH" "General Commands Manual"
 .nh
 .if n .ad l
 .SH "NAME"
@@ -187,6 +187,10 @@ using
 \fBget_archive_comment\fR
 Print archive comment.
 .TP 12n
+\fBget_archive_flag\fR \fIflag\fR
+Print state of archive flag
+\fIflag\fR.
+.TP 12n
 \fBget_extra\fR \fIindex extra_index flags\fR
 Print extra field
 \fIextra_index\fR
@@ -235,6 +239,12 @@ with the string
 \fBset_archive_comment\fR \fIcomment\fR
 Set archive comment to
 \fIcomment\fR.
+.TP 12n
+\fBget_archive_flag\fR \fIflag\fR \fIvalue\fR
+Set archive flag
+\fIflag\fR
+to
+\fIvalue\fR.
 .TP 12n
 \fBset_extra\fR \fIindex extra_id extra_index flags value\fR
 Set extra field number
@@ -293,9 +303,18 @@ Print information about archive entry
 \fIindex\fR.
 .SS "Flags"
 Some commands take flag arguments.
+Each character in the argument sets the corresponding flag.
+Use 0 or the empty string for no flags.
+.PP
 Supported flags are:
 .RS 6n
 .PD 0
+.TP 5n
+\fI4\fR
+\fRZIP_FL_ENC_CP437\fR
+.TP 5n
+\fI8\fR
+\fRZIP_FL_ENC_UTF_8\fR
 .TP 5n
 \fIC\fR
 \fRZIP_FL_NOCASE\fR
@@ -309,8 +328,35 @@ Supported flags are:
 \fIl\fR
 \fRZIP_FL_LOCAL\fR
 .TP 5n
+\fIr\fR
+\fRZIP_FL_ENC_RAW\fR
+.TP 5n
+\fIs\fR
+\fRZIP_FL_ENC_STRICT\fR
+.TP 5n
 \fIu\fR
 \fRZIP_FL_UNCHANGED\fR
+.RE
+.PD
+.SS "Archive flags"
+\fBget_archive_flag\fR
+and
+\fBset_archive_flag\fR
+work on the following flags:
+.RS 6n
+.PD 0
+.TP 4n
+\fB\(bu\fR
+\fRcreate-or-keep-empty-file-for-archive\fR
+.TP 4n
+\fB\(bu\fR
+\fRis-torrentzip\fR
+.TP 4n
+\fB\(bu\fR
+\fRrdonly\fR
+.TP 4n
+\fB\(bu\fR
+\fRwant-torrentzip\fR
 .RE
 .PD
 .SS "Compression Methods"
@@ -386,4 +432,4 @@ was added in libzip 1.1.
 .SH "AUTHORS"
 Dieter Baron <\fIdillo@nih.at\fR>
 and
-Thomas Klausner <\fItk@giga.or.at\fR>
+Thomas Klausner <\fIwiz@gatalith.at\fR>
