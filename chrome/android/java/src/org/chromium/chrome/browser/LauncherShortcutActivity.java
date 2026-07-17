@@ -211,7 +211,6 @@ public class LauncherShortcutActivity extends Activity {
                     buildLauncherShortcut(
                             DYNAMIC_OPEN_NEW_INCOGNITO_TAB_ID,
                             LauncherShortcutActivity.ACTION_OPEN_NEW_INCOGNITO_TAB,
-                            R.string.accessibility_incognito_tab,
                             R.string.menu_new_incognito_tab,
                             R.drawable.shortcut_incognito,
                             nextRank++));
@@ -221,14 +220,12 @@ public class LauncherShortcutActivity extends Activity {
                             DYNAMIC_OPEN_NEW_WINDOW_ID,
                             LauncherShortcutActivity.ACTION_OPEN_NEW_WINDOW,
                             R.string.menu_new_window,
-                            R.string.menu_new_window,
                             R.drawable.shortcut_newwindow,
                             nextRank++));
             shortcuts.add(
                     buildLauncherShortcut(
                             DYNAMIC_OPEN_NEW_INCOGNITO_TAB_ID,
                             LauncherShortcutActivity.ACTION_OPEN_NEW_INCOGNITO_WINDOW,
-                            R.string.menu_incognito_window,
                             R.string.menu_new_incognito_window,
                             R.drawable.shortcut_incognito,
                             nextRank++));
@@ -237,23 +234,16 @@ public class LauncherShortcutActivity extends Activity {
     }
 
     private static ShortcutInfo buildLauncherShortcut(
-            String shortcutId,
-            String action,
-            int shortLabelResId,
-            int longLabelResId,
-            int iconResId,
-            int rank) {
+            String shortcutId, String action, int labelResId, int iconResId, int rank) {
         Context context = ContextUtils.getApplicationContext();
         Intent intent = new Intent(action);
         intent.setPackage(context.getPackageName());
         intent.setClass(context, LauncherShortcutActivity.class);
 
         return new ShortcutInfo.Builder(context, shortcutId)
-                .setShortLabel(context.getString(shortLabelResId))
+                .setShortLabel(context.getString(labelResId))
                 .setLongLabel(
-                        sLabelForTesting != null
-                                ? sLabelForTesting
-                                : context.getString(longLabelResId))
+                        sLabelForTesting != null ? sLabelForTesting : context.getString(labelResId))
                 .setIcon(Icon.createWithResource(context, iconResId))
                 .setRank(rank)
                 .setIntent(intent)

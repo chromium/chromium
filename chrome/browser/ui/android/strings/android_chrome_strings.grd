@@ -4249,9 +4249,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_NEW_INCOGNITO_WINDOW" desc="Menu item for opening a new incognito window. [CHAR_LIMIT=27]">
         New Incognito window
       </message>
-      <message name="IDS_MENU_INCOGNITO_WINDOW" desc="Short label of menu item for opening a new incognito window. [CHAR_LIMIT=27]">
-        Incognito window
-      </message>
+
       <message name="IDS_MENU_MOVE_TO_OTHER_WINDOW" desc="Menu item for moving the current tab into the other window. [CHAR_LIMIT=27]">
         Move to other window
       </message>
@@ -4297,9 +4295,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_NEW_INCOGNITO_TAB" desc="Menu item for opening a new Incognito tab that facilitates pseudononymous browsing. [CHAR_LIMIT=27]" meaning="Android menu">
         New Incognito tab
       </message>
-      <message name="IDS_ACCESSIBILITY_INCOGNITO_TAB" desc="Content description for tabs that are in Incognito mode">
-        Incognito Tab
-      </message>
+
       <message name="IDS_MENU_NEW_TAB_GROUP" desc="Menu item for opening a new tab group. [CHAR_LIMIT=27]">
         New tab group
       </message>
