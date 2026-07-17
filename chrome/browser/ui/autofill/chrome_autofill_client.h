@@ -255,6 +255,10 @@ class ChromeAutofillClient : public ContentAutofillClient {
   // on Android.
   AutofillSnackbarControllerImpl* GetAutofillSnackbarController() final;
 
+  bool ShowAmbientAutoFillNotice(
+      base::WeakPtr<TouchToFillAutofillDelegate> delegate) override;
+  void HideAmbientAutoFillNotice() override;
+
   void ShowAtMemoryBottomSheet(
       base::span<const Suggestion> suggestions,
       base::WeakPtr<AutofillSuggestionDelegate> delegate) final;

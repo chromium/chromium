@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/autofill/core/browser/integrators/password_manager/password_manager_delegate.h"
+#include "components/autofill/core/browser/integrators/touch_to_fill/touch_to_fill_autofill_delegate.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/studies/autofill_ablation_study.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
@@ -262,6 +263,13 @@ bool AutofillClient::IsAndroidLargeFormFactor() const {
 void AutofillClient::ShowAtMemoryBottomSheet(
     base::span<const Suggestion> suggestions,
     base::WeakPtr<AutofillSuggestionDelegate> delegate) {}
+
+bool AutofillClient::ShowAmbientAutoFillNotice(
+    base::WeakPtr<TouchToFillAutofillDelegate> delegate) {
+  return false;
+}
+
+void AutofillClient::HideAmbientAutoFillNotice() {}
 
 AutofillSnackbarControllerImpl*
 AutofillClient::GetAutofillSnackbarController() {

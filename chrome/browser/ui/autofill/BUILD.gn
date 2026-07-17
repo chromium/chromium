@@ -268,6 +268,7 @@ source_set("impl") {
       "//chrome/browser/autofill/android:jni_headers",
       "//chrome/browser/keyboard_accessory/android",
       "//chrome/browser/keyboard_accessory/android:impl",
+      "//chrome/browser/touch_to_fill/autofill/android",
       "//chrome/browser/touch_to_fill/autofill/android:public",
       "//chrome/browser/ui/android/autofill",
       "//components/android_autofill/browser:android",

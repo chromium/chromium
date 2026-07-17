@@ -1572,6 +1572,12 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
     return;
   }
 
+  if (TryToShowTouchToFillSuggestions(form, field, autofill_field, suggestions,
+                                      trigger_source)) {
+    std::move(callback).Run(/*show_suggestions=*/false, std::move(suggestions));
+    return;
+  }
+
   AutofillAiManager* ai_manager = client().GetAutofillAiManager();
   if (form_structure && autofill_field && ai_manager &&
       !context.do_not_generate_autofill_suggestions &&
@@ -1586,12 +1592,6 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
              client().ShowAutofillFieldIphForFeature(
                  field, AutofillClient::IphFeature::kAutofillAi)) {
     std::move(callback).Run(/*show_suggestions=*/false, /*suggestions=*/{});
-    return;
-  }
-
-  if (TryToShowTouchToFillSuggestions(form, field, autofill_field, suggestions,
-                                      trigger_source)) {
-    std::move(callback).Run(/*show_suggestions=*/false, std::move(suggestions));
     return;
   }
 

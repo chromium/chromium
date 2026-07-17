@@ -575,6 +575,25 @@ class TestAutofillClientTemplate : public T {
   bool is_personal_context_ambient_autofill_notice_acknowledged() const {
     return is_personal_context_ambient_autofill_notice_acknowledged_;
   }
+#if BUILDFLAG(IS_ANDROID)
+  bool ShowAmbientAutoFillNotice(
+      base::WeakPtr<TouchToFillAutofillDelegate> delegate) override {
+    show_ambient_autofill_notice_called_ = true;
+    return show_ambient_autofill_notice_result_;
+  }
+  bool show_ambient_autofill_notice_called() const {
+    return show_ambient_autofill_notice_called_;
+  }
+  void set_show_ambient_autofill_notice_result(bool result) {
+    show_ambient_autofill_notice_result_ = result;
+  }
+  void HideAmbientAutoFillNotice() override {
+    hide_ambient_autofill_notice_called_ = true;
+  }
+  bool hide_ambient_autofill_notice_called() const {
+    return hide_ambient_autofill_notice_called_;
+  }
+#endif
 
   bool ShouldShowPersonalContextAtMemoryNotice() const override {
     return should_show_personal_context_at_memory_notice_;
@@ -937,6 +956,9 @@ class TestAutofillClientTemplate : public T {
 
   bool should_show_personal_context_ambient_autofill_notice_ = false;
   bool is_personal_context_ambient_autofill_notice_acknowledged_ = false;
+  bool show_ambient_autofill_notice_called_ = false;
+  bool show_ambient_autofill_notice_result_ = false;
+  bool hide_ambient_autofill_notice_called_ = false;
   bool should_show_personal_context_at_memory_notice_ = false;
   bool is_personal_context_at_memory_notice_acknowledged_ = false;
 

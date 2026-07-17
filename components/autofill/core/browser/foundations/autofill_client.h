@@ -151,6 +151,7 @@ struct Suggestion;
 enum class SuggestionHidingReason;
 enum class SuggestionType;
 class SingleFieldFillRouter;
+class TouchToFillAutofillDelegate;
 class ValuablesDataManager;
 class AutofillAiPersonalContextAccessManager;
 class VotesUploader;
@@ -757,6 +758,14 @@ class AutofillClient {
       base::span<const Suggestion> suggestions,
       base::WeakPtr<AutofillSuggestionDelegate> delegate);
   virtual void HideAtMemoryBottomSheet() {}
+
+  // Shows the Personal Context ambient autofill notice. Returns whether the
+  // notice was successfully shown.
+  virtual bool ShowAmbientAutoFillNotice(
+      base::WeakPtr<TouchToFillAutofillDelegate> delegate);
+
+  // Hides the Personal Context ambient autofill notice.
+  virtual void HideAmbientAutoFillNotice();
 
   // The AutofillSnackbarController is used to show a snackbar notification
   // on Android.
