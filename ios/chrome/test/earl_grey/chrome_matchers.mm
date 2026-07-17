@@ -783,10 +783,6 @@ id<GREYMatcher> TabGridDoneButton() {
   return [ChromeMatchersAppInterface tabGridDoneButton];
 }
 
-id<GREYMatcher> TabGridUndoCloseAllButton() {
-  return [ChromeMatchersAppInterface tabGridUndoCloseAllButton];
-}
-
 id<GREYMatcher> TabGridSelectShowHistoryCell() {
   return [ChromeMatchersAppInterface tabGridSelectShowHistoryCell];
 }

@@ -594,9 +594,6 @@
 // Returns the GREYMatcher for the button that closes the tab grid.
 + (id<GREYMatcher>)tabGridDoneButton;
 
-// Returns the GREYMatcher for the button that reverts the close all tabs action
-// in the tab grid.
-+ (id<GREYMatcher>)tabGridUndoCloseAllButton;
 
 // Returns the GREYMatcher for the cell that opens History in Recent Tabs.
 + (id<GREYMatcher>)tabGridSelectShowHistoryCell;

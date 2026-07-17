@@ -110,9 +110,6 @@ BASE_DECLARE_FEATURE(kRemoveExcessNTPs);
 // Feature flag / Kill Switch for TCRex.
 BASE_DECLARE_FEATURE(kTCRexKillSwitch);
 
-// When enabled, an overflow menu will replace the edit menu on the GTS.
-BASE_DECLARE_FEATURE(kTabSwitcherOverflowMenu);
-
 // Feature to enable force showing the Contextual Panel entrypoint.
 BASE_DECLARE_FEATURE(kContextualPanelForceShowEntrypoint);
 

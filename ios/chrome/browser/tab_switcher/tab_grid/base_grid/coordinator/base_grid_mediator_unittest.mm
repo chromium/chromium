@@ -524,7 +524,6 @@ TEST_P(BaseGridMediatorTest, TestToolbarsNormalModeWithWebstates) {
   EXPECT_TRUE(fake_toolbars_mediator_.configuration.searchButton);
   EXPECT_TRUE(fake_toolbars_mediator_.configuration.selectTabsButton);
 
-  EXPECT_FALSE(fake_toolbars_mediator_.configuration.undoButton);
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.deselectAllButton);
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.selectAllButton);
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.addToButton);
@@ -547,7 +546,6 @@ TEST_P(BaseGridMediatorTest, TestToolbarsSelectionModeWithoutSelection) {
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.newTabButton);
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.searchButton);
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.selectTabsButton);
-  EXPECT_FALSE(fake_toolbars_mediator_.configuration.undoButton);
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.deselectAllButton);
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.addToButton);
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.closeSelectedTabsButton);
@@ -577,7 +575,6 @@ TEST_P(BaseGridMediatorTest, TestToolbarsSelectionModeWithSelection) {
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.newTabButton);
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.searchButton);
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.selectTabsButton);
-  EXPECT_FALSE(fake_toolbars_mediator_.configuration.undoButton);
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.deselectAllButton);
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.cancelSearchButton);
 }
@@ -635,7 +632,6 @@ TEST_P(BaseGridMediatorTest, NTPSelectedWithoutGroup) {
   EXPECT_FALSE(configuration.newTabButton);
   EXPECT_FALSE(configuration.searchButton);
   EXPECT_FALSE(configuration.selectTabsButton);
-  EXPECT_FALSE(configuration.undoButton);
   EXPECT_FALSE(configuration.deselectAllButton);
   EXPECT_FALSE(configuration.cancelSearchButton);
 
@@ -692,7 +688,6 @@ TEST_P(BaseGridMediatorTest, SelectedTabWithGroup) {
   EXPECT_FALSE(configuration.newTabButton);
   EXPECT_FALSE(configuration.searchButton);
   EXPECT_FALSE(configuration.selectTabsButton);
-  EXPECT_FALSE(configuration.undoButton);
   EXPECT_FALSE(configuration.deselectAllButton);
   EXPECT_FALSE(configuration.cancelSearchButton);
 
@@ -739,7 +734,6 @@ TEST_P(BaseGridMediatorTest, CloseAllThenAddWebState) {
       fake_toolbars_mediator_.configuration;
   EXPECT_TRUE(configuration.newTabButton);
   EXPECT_TRUE(configuration.searchButton);
-  EXPECT_FALSE(configuration.undoButton);
 
   EXPECT_FALSE(configuration.selectAllButton);
   EXPECT_FALSE(configuration.doneButton);
@@ -764,7 +758,6 @@ TEST_P(BaseGridMediatorTest, CloseAllThenAddWebState) {
   EXPECT_TRUE(configuration.searchButton);
   EXPECT_TRUE(configuration.selectTabsButton);
 
-  EXPECT_FALSE(configuration.undoButton);
   EXPECT_FALSE(configuration.deselectAllButton);
   EXPECT_FALSE(configuration.selectAllButton);
   EXPECT_FALSE(configuration.addToButton);
@@ -805,7 +798,6 @@ TEST_P(BaseGridMediatorTest, SelectedTabAndGroupWithGroup) {
   EXPECT_FALSE(configuration.newTabButton);
   EXPECT_FALSE(configuration.searchButton);
   EXPECT_FALSE(configuration.selectTabsButton);
-  EXPECT_FALSE(configuration.undoButton);
   EXPECT_FALSE(configuration.deselectAllButton);
   EXPECT_FALSE(configuration.cancelSearchButton);
 

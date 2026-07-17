@@ -28,8 +28,6 @@ NSString* const kTabGridCancelButtonIdentifier =
     @"TabGridCancelButtonIdentifier";
 NSString* const kTabGridSearchButtonIdentifier =
     @"TabGridSearchButtonIdentifier";
-NSString* const kTabGridUndoCloseAllButtonIdentifier =
-    @"TabGridUndoCloseAllButtonIdentifier";
 NSString* const kTabGridIncognitoTabsEmptyStateIdentifier =
     @"TabGridIncognitoTabsEmptyStateIdentifier";
 NSString* const kTabGridRegularTabsEmptyStateIdentifier =

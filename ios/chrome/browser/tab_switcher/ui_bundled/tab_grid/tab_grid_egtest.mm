@@ -541,11 +541,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   // Ensure only incognito tabs were closed
   [ChromeEarlGrey waitForMainTabCount:2];
   [ChromeEarlGrey waitForIncognitoTabCount:0];
-
-  // Ensure undo button is not visible.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::TabGridUndoCloseAllButton()]
-      assertWithMatcher:grey_nil()];
 }
 
 // Tests opening an incognito tabs after closing all incognito tabs with Chrome

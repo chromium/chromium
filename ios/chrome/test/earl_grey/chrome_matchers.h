@@ -628,9 +628,6 @@ id<GREYMatcher> TabGroupActivityLabelOnGridCellAtIndex(unsigned int index);
 // Returns a matcher for the button that closes the tab grid.
 id<GREYMatcher> TabGridDoneButton();
 
-// Returns a matcher for the button that reverts the close all tabs action
-// in the tab grid.
-id<GREYMatcher> TabGridUndoCloseAllButton();
 
 // Returns a matcher for the cell that opens History in Recent Tabs.
 id<GREYMatcher> TabGridSelectShowHistoryCell();

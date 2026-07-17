@@ -22,7 +22,6 @@
 // but not enabled (grayed out).
 @property(nonatomic) BOOL closeAllButton;
 @property(nonatomic) BOOL selectTabsButton;
-@property(nonatomic) BOOL undoButton;
 @property(nonatomic) BOOL overflowMenuButton;
 @property(nonatomic) BOOL closeOtherTabsButton;
 

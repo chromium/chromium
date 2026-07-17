@@ -327,7 +327,6 @@ TEST_F(TabGroupsPanelMediatorTest, DisabledByPolicy_DisabledToolbarsConfig) {
   EXPECT_FALSE(toolbars_mutator.configuration.newTabButton);
   EXPECT_FALSE(toolbars_mutator.configuration.searchButton);
   EXPECT_FALSE(toolbars_mutator.configuration.selectTabsButton);
-  EXPECT_FALSE(toolbars_mutator.configuration.undoButton);
   EXPECT_FALSE(toolbars_mutator.configuration.deselectAllButton);
   EXPECT_FALSE(toolbars_mutator.configuration.cancelSearchButton);
 }
@@ -372,7 +371,6 @@ TEST_F(TabGroupsPanelMediatorTest,
   EXPECT_TRUE(toolbars_mutator.configuration.newTabButton);
   EXPECT_FALSE(toolbars_mutator.configuration.searchButton);
   EXPECT_FALSE(toolbars_mutator.configuration.selectTabsButton);
-  EXPECT_FALSE(toolbars_mutator.configuration.undoButton);
   EXPECT_FALSE(toolbars_mutator.configuration.deselectAllButton);
   EXPECT_FALSE(toolbars_mutator.configuration.cancelSearchButton);
 }
@@ -423,7 +421,6 @@ TEST_F(TabGroupsPanelMediatorTest,
   EXPECT_TRUE(toolbars_mutator.configuration.newTabButton);
   EXPECT_FALSE(toolbars_mutator.configuration.searchButton);
   EXPECT_FALSE(toolbars_mutator.configuration.selectTabsButton);
-  EXPECT_FALSE(toolbars_mutator.configuration.undoButton);
   EXPECT_FALSE(toolbars_mutator.configuration.deselectAllButton);
   EXPECT_FALSE(toolbars_mutator.configuration.cancelSearchButton);
 }

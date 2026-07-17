@@ -545,7 +545,6 @@ CGFloat HorizontalMargin() {
 
 // Configures and returns the overflow menu.
 - (UIMenu*)createOverflowMenu {
-  UIMenu* menu = nil;
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
 
   ActionFactory* actionFactory = [[ActionFactory alloc]
@@ -563,41 +562,40 @@ CGFloat HorizontalMargin() {
                   }]];
   }
 
-    // Only display the Close All Tabs button if there are open tabs or groups.
-    if (_closeAllActionEnabled) {
-      UIButton* currentOverflowMenuButton = _overflowMenuButton;
-      [menuElements addObject:[actionFactory actionToCloseAllTabsWithBlock:^{
-                      TabGridTopToolbar* strongSelf = weakSelf;
-                      if (!strongSelf) {
-                        return;
-                      }
-                      [strongSelf.buttonsDelegate
-                          closeAllButtonTapped:currentOverflowMenuButton];
-                    }]];
-    }
+  // Only display the Close All Tabs button if there are open tabs or groups.
+  if (_closeAllActionEnabled) {
+    UIButton* currentOverflowMenuButton = _overflowMenuButton;
+    [menuElements addObject:[actionFactory actionToCloseAllTabsWithBlock:^{
+                    TabGridTopToolbar* strongSelf = weakSelf;
+                    if (!strongSelf) {
+                      return;
+                    }
+                    [strongSelf.buttonsDelegate
+                        closeAllButtonTapped:currentOverflowMenuButton];
+                  }]];
+  }
 
-    if (_closeOtherTabsEnabled) {
-      UIAction* closeOtherTabsAction =
-          [actionFactory actionToCloseAllOtherTabsWithBlock:^{
-            [weakSelf.buttonsDelegate closeOtherTabsButtonTapped:nil];
-          }];
-      UIMenu* closeOtherMenu = [UIMenu menuWithTitle:@""
-                                               image:nil
-                                          identifier:nil
-                                             options:UIMenuOptionsDisplayInline
-                                            children:@[ closeOtherTabsAction ]];
-      [menuElements addObject:closeOtherMenu];
-    }
+  if (_closeOtherTabsEnabled) {
+    UIAction* closeOtherTabsAction =
+        [actionFactory actionToCloseAllOtherTabsWithBlock:^{
+          [weakSelf.buttonsDelegate closeOtherTabsButtonTapped:nil];
+        }];
+    UIMenu* closeOtherMenu = [UIMenu menuWithTitle:@""
+                                             image:nil
+                                        identifier:nil
+                                           options:UIMenuOptionsDisplayInline
+                                          children:@[ closeOtherTabsAction ]];
+    [menuElements addObject:closeOtherMenu];
+  }
 
-    if (_page == TabGridPageRegularTabs) {
-      [menuElements
-          addObject:[actionFactory actionToDeleteBrowsingDataWithBlock:^{
-            [weakSelf.buttonsDelegate deleteBrowsingDataButtonTapped:nil];
-          }]];
-    }
+  if (_page == TabGridPageRegularTabs) {
+    [menuElements
+        addObject:[actionFactory actionToDeleteBrowsingDataWithBlock:^{
+          [weakSelf.buttonsDelegate deleteBrowsingDataButtonTapped:nil];
+        }]];
+  }
 
-    menu = [UIMenu menuWithChildren:menuElements];
-  return menu;
+  return [UIMenu menuWithChildren:menuElements];
 }
 
 // Adds the different views to the view hierarchy and setup their constraints.

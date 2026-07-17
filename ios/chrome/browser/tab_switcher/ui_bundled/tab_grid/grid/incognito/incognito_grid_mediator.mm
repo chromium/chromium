@@ -101,11 +101,7 @@
 #pragma mark - TabGridToolbarsGridDelegate
 
 - (void)closeAllButtonTapped:(id)sender {
-  if (base::FeatureList::IsEnabled(kTabSwitcherOverflowMenu)) {
-    [self.incognitoDelegate showCloseAllConfirmationFromSourceView:sender];
-    return;
-  }
-  [self closeAllItems];
+  [self.incognitoDelegate showCloseAllConfirmationFromSourceView:sender];
 }
 
 - (void)closeOtherTabsButtonTapped:(id)sender {

@@ -64,7 +64,6 @@ using chrome_test_util::TabGridOverflowMenuCloseAllButton;
 using chrome_test_util::TabGridOverflowMenuSelectTabsButton;
 using chrome_test_util::TabGridSearchBar;
 using chrome_test_util::TabGridSearchTabsButton;
-using chrome_test_util::TabGridUndoCloseAllButton;
 using chrome_test_util::TabGroupCreationView;
 using chrome_test_util::TabGroupOverflowMenuButton;
 using chrome_test_util::TabGroupSnackBar;

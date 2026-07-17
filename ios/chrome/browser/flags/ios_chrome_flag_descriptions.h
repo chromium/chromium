@@ -1952,12 +1952,6 @@ inline constexpr char kTabResumptionDescription[] =
     "When enabled, offer users with a quick shortcut to resume the last synced "
     "tab from another device.";
 
-inline constexpr char kTabSwitcherOverflowMenuName[] =
-    "Enable the Tab Switcher overflow menu";
-inline constexpr char kTabSwitcherOverflowMenuDescription[] =
-    "When enabled, the Tab Switcher edit button and edit menu will be replaced "
-    "by a three dot button and overflow menu.";
-
 inline constexpr char kTaiyakiAllSurfacesName[] = "Taiyaki (all surfaces)";
 inline constexpr char kTaiyakiAllSurfacesDescription[] =
     "Enables Taiyaki for all surfaces (including post-FRE).";

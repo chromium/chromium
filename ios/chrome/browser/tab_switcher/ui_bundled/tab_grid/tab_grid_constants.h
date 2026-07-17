@@ -25,7 +25,6 @@ extern NSString* const kTabGridTabGroupsPageButtonIdentifier;
 extern NSString* const kTabGridDoneButtonIdentifier;
 extern NSString* const kTabGridSearchButtonIdentifier;
 extern NSString* const kTabGridCancelButtonIdentifier;
-extern NSString* const kTabGridUndoCloseAllButtonIdentifier;
 extern NSString* const kTabGridIncognitoTabsEmptyStateIdentifier;
 extern NSString* const kTabGridRegularTabsEmptyStateIdentifier;
 extern NSString* const kTabGridScrollViewIdentifier;
