@@ -6,6 +6,7 @@
 #define COMPONENTS_WEBAUTHN_IOS_PASSKEY_TAB_HELPER_H_
 
 #import <optional>
+#import <string_view>
 #import <variant>
 
 #import "base/memory/weak_ptr.h"
@@ -257,7 +258,8 @@ class PasskeyTabHelper : public web::WebStateObserver,
 
   // Utility function to reject a passkey request.
   void RejectPasskeyRequest(web::WebFrame* web_frame,
-                            const std::string& request_id);
+                            const std::string& request_id,
+                            WebAuthnError error);
 
   // Utility function to defer the passkey request back to the renderer.
   void DeferToRenderer(web::WebFrame* web_frame,

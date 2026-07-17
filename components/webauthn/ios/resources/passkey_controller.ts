@@ -1184,12 +1184,11 @@ function deferToRenderer(requestId: string, requestType: number): void {
 }
 
 // Function called from C++ to reject a passkey request.
-function rejectPasskeyRequest(requestId: string): void {
-  const reason =
-      new DOMException('The operation is not allowed.', 'NotAllowedError');
+function rejectPasskeyRequest(
+    requestId: string, errorName: string, errorMessage: string): void {
+  const reason = new DOMException(errorMessage, errorName);
   DeferredPublicKeyCredentialPromise.reject(requestId, reason);
 }
-
 
 // Resolves the credential promise with the provided response.
 function resolveCredentialPromise(

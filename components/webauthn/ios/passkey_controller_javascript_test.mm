@@ -6,6 +6,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/webauthn/ios/features.h"
 #import "components/webauthn/ios/passkey_java_script_feature.h"
+#import "components/webauthn/ios/passkey_types.h"
 #import "ios/web/public/test/javascript_test.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
@@ -364,10 +365,11 @@ TEST_F(PasskeyControllerJavaScriptTest,
   ASSERT_TRUE(requestId != nil);
 
   // Reject the request to simulate finishing it.
-  NSString* rejectJs =
-      [NSString stringWithFormat:@"__gCrWeb.getRegisteredApi('passkey')."
-                                 @"getFunction('rejectPasskeyRequest')('%@')",
-                                 requestId];
+  NSString* rejectJs = [NSString
+      stringWithFormat:@"__gCrWeb.getRegisteredApi('passkey')."
+                       @"getFunction('rejectPasskeyRequest')('%@', '%s', '%s')",
+                       requestId, kNotAllowedErrorName,
+                       kNotAllowedErrorMessage];
   web::test::ExecuteJavaScriptInWebView(web_view(), rejectJs);
 
   message_handler().lastReceivedMessage = nil;
@@ -436,11 +438,11 @@ TEST_F(PasskeyControllerJavaScriptTest,
   NSString* requestId = body[@"requestId"];
   ASSERT_TRUE(requestId != nil);
 
-  // Reject the request to simulate failure.
-  NSString* rejectJs =
-      [NSString stringWithFormat:@"__gCrWeb.getRegisteredApi('passkey')."
-                                 @"getFunction('rejectPasskeyRequest')('%@')",
-                                 requestId];
+  NSString* rejectJs = [NSString
+      stringWithFormat:@"__gCrWeb.getRegisteredApi('passkey')."
+                       @"getFunction('rejectPasskeyRequest')('%@', '%s', '%s')",
+                       requestId, kNotAllowedErrorName,
+                       kNotAllowedErrorMessage];
   web::test::ExecuteJavaScriptInWebView(web_view(), rejectJs);
 
   message_handler().lastReceivedMessage = nil;

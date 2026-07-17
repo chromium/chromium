@@ -142,6 +142,7 @@ source_set("js_tests") {
     ":features",
     ":ios",
     ":passkey_controller_js",
+    ":passkey_types",
     "//ios/web/public/test:javascript_test",
     "//ios/web/public/test:util",
     "//net:test_support",

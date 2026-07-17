@@ -7,6 +7,7 @@
 #import "base/base64.h"
 #import "base/rand_util.h"
 #import "base/strings/string_number_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/run_until.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
@@ -937,6 +938,57 @@ TEST_F(PasskeyTabHelperTest, StartPasskeyCreationFromCrossOriginIframe) {
   EXPECT_NE(last_call.find(u"resolveAttestationRequest"), std::u16string::npos);
   EXPECT_NE(last_call.find(u"\\\"crossOrigin\\\":true"), std::u16string::npos);
   EXPECT_NE(last_call.find(u"\\\"topOrigin\\\":\\\"https://example.com\\\""),
+            std::u16string::npos);
+}
+
+// Tests that when a passkey creation request is initiated and the passkey model
+// already contains a passkey in the exclude list, an InvalidStateError is
+// returned to the website.
+TEST_F(PasskeyTabHelperTest, StartPasskeyCreationWithExcludedCredential) {
+  SetUpWebFramesManagerAndWebFrame(GURL(kOriginURL));
+  SetUpIOSPasswordManagerDriver();
+
+  // Add passkey with kCredentialId to the passkey model.
+  sync_pb::WebauthnCredentialSpecifics passkey = GetTestPasskey(kCredentialId);
+  passkey_model_->AddNewPasskeyForTesting(std::move(passkey));
+
+  web::FakeWebFramesManager* frames_manager =
+      static_cast<web::FakeWebFramesManager*>(
+          fake_web_state_.GetWebFramesManager(
+              PasskeyJavaScriptFeature::GetInstance()
+                  ->GetSupportedContentWorld()));
+  web::FakeWebFrame* frame = static_cast<web::FakeWebFrame*>(
+      frames_manager->GetFrameWithId(web::kMainFakeFrameId));
+
+  // Build registration params with kCredentialId in the exclude credentials
+  // list.
+  std::vector<device::PublicKeyCredentialDescriptor> exclude_credentials;
+  exclude_credentials.push_back(
+      {device::CredentialType::kPublicKey, AsByteVector(kCredentialId)});
+  RegistrationRequestParams params = BuildRegistrationRequestParams(
+      exclude_credentials, device::UserVerificationRequirement::kPreferred,
+      kFakeRequestId, web::kMainFakeFrameId);
+
+  // Handle creation request.
+  passkey_tab_helper()->HandleCreateRequestedEvent(std::move(params));
+  EXPECT_TRUE(client_->DidShowCreationBottomSheet());
+
+  // Trigger start of creation.
+  passkey_tab_helper()->StartPasskeyCreation(kFakeRequestId,
+                                             /*did_complete_uv=*/false);
+
+  // Verify that keys were NOT fetched.
+  EXPECT_FALSE(client_->DidFetchKeys());
+
+  // Verify that rejectPasskeyRequest was called on the frame with the correct
+  // error parameters.
+  std::u16string last_call = frame->GetLastJavaScriptCall();
+  EXPECT_NE(last_call.find(u"rejectPasskeyRequest"), std::u16string::npos);
+  EXPECT_NE(last_call.find(
+                base::UTF8ToUTF16(std::string_view(kInvalidStateErrorName))),
+            std::u16string::npos);
+  EXPECT_NE(last_call.find(base::UTF8ToUTF16(
+                std::string_view(kCredentialExcludedErrorMessage))),
             std::u16string::npos);
 }
 

@@ -543,11 +543,6 @@ void PasskeyTabHelper::HandleRegistration(RegistrationRequestParams params) {
   IOSPasskeyClient::RequestInfo request_info = params.RequestInfo();
   PasskeyRequestParams::RequestType request_type = params.Type();
 
-  if (HasExcludedPasskey(params)) {
-    DeferToRenderer(std::move(request_info), request_type);
-    return;
-  }
-
   // This check is performed after the Incognito interstitial (if applicable)
   // has been shown and the user has chosen to proceed. This is intentional
   // as we only want to enforce these policies when we are ready to proceed
@@ -751,6 +746,12 @@ void PasskeyTabHelper::StartPasskeyCreation(std::string request_id,
     return;
   }
 
+  if (HasExcludedPasskey(params)) {
+    RejectPasskeyRequest(web_frame, request_id,
+                         WebAuthnError::kInvalidStateError);
+    return;
+  }
+
   PasskeyTabHelper::FrameHierarchy frame_hierarchy =
       GetFrameHierarchy(web_frame);
 
@@ -809,13 +810,14 @@ void PasskeyTabHelper::RejectPendingRequest(const std::string& request_id) {
     return;
   }
 
-  RejectPasskeyRequest(web_frame, request_id);
+  RejectPasskeyRequest(web_frame, request_id, WebAuthnError::kNotAllowedError);
 }
 
 void PasskeyTabHelper::RejectPasskeyRequest(web::WebFrame* web_frame,
-                                            const std::string& request_id) {
-  PasskeyJavaScriptFeature::GetInstance()->RejectPasskeyRequest(web_frame,
-                                                                request_id);
+                                            const std::string& request_id,
+                                            WebAuthnError error) {
+  PasskeyJavaScriptFeature::GetInstance()->RejectPasskeyRequest(
+      web_frame, request_id, error);
 }
 
 void PasskeyTabHelper::DeferToRenderer(
@@ -1104,7 +1106,8 @@ void PasskeyTabHelper::OnInterstitialDecision(RegistrationRequestParams params,
   if (!proceed) {
     web::WebFrame* web_frame = GetWebFrame(params.FrameId());
     if (web_frame) {
-      RejectPasskeyRequest(web_frame, params.RequestId());
+      RejectPasskeyRequest(web_frame, params.RequestId(),
+                           WebAuthnError::kNotAllowedError);
     }
     return;
   }
@@ -1121,7 +1124,8 @@ void PasskeyTabHelper::OnConditionalCreateInterstitialDecision(
   if (!proceed) {
     web::WebFrame* web_frame = GetWebFrame(it->second.FrameId());
     if (web_frame) {
-      RejectPasskeyRequest(web_frame, it->second.RequestId());
+      RejectPasskeyRequest(web_frame, it->second.RequestId(),
+                           WebAuthnError::kNotAllowedError);
     }
     registration_requests_.erase(it);
     return;

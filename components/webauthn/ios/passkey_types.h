@@ -14,6 +14,28 @@
 // Type definitions generally useful for passkey requests.
 namespace webauthn {
 
+// WebAuthn spec error types returned to the relying party.
+enum class WebAuthnError {
+  kNotAllowedError,
+  kInvalidStateError,
+};
+
+// "The authenticator used in the ceremony recognized an entry in
+// excludeCredentials after the user consented to registering a credential."
+// See: https://www.w3.org/TR/webauthn-3/#sctn-create-request-exceptions
+inline constexpr char kInvalidStateErrorName[] = "InvalidStateError";
+inline constexpr char kCredentialExcludedErrorMessage[] =
+    "The user attempted to register an authenticator that contains one of the "
+    "credentials already registered with the relying party.";
+
+// "A catch-all error covering a wide range of possible reasons, including
+// common ones like the user canceling out of the ceremony. Some of these causes
+// are documented throughout this spec, while others are client-specific."
+// See: https://www.w3.org/TR/webauthn-3/#sctn-create-request-exceptions
+inline constexpr char kNotAllowedErrorName[] = "NotAllowedError";
+inline constexpr char kNotAllowedErrorMessage[] =
+    "The operation is not allowed.";
+
 // Represents the code of an error returned when the user dismisses the GPM Pin
 // flow by clicking the "Cancel" button.
 // TODO(crbug.com/530911220): Define an enum and parse it in keychain provider.

@@ -137,6 +137,26 @@ WebAuthenticationIOSContentAreaEvent ToWebAuthenticationIOSContentAreaEvent(
   }
 }
 
+// Returns the string representation of a WebAuthnError's name.
+std::string_view WebAuthnErrorToName(WebAuthnError error) {
+  switch (error) {
+    case WebAuthnError::kNotAllowedError:
+      return kNotAllowedErrorName;
+    case WebAuthnError::kInvalidStateError:
+      return kInvalidStateErrorName;
+  }
+}
+
+// Returns the string representation of a WebAuthnError's description.
+std::string_view WebAuthnErrorToMessage(WebAuthnError error) {
+  switch (error) {
+    case WebAuthnError::kNotAllowedError:
+      return kNotAllowedErrorMessage;
+    case WebAuthnError::kInvalidStateError:
+      return kCredentialExcludedErrorMessage;
+  }
+}
+
 }  // namespace
 
 PasskeyJavaScriptFeature::AttestationData::AttestationData(
@@ -193,11 +213,14 @@ PasskeyJavaScriptFeature::PasskeyJavaScriptFeature()
 
 PasskeyJavaScriptFeature::~PasskeyJavaScriptFeature() = default;
 
-void PasskeyJavaScriptFeature::RejectPasskeyRequest(
-    web::WebFrame* web_frame,
-    std::string_view request_id) {
+void PasskeyJavaScriptFeature::RejectPasskeyRequest(web::WebFrame* web_frame,
+                                                    std::string_view request_id,
+                                                    WebAuthnError error) {
   CallJavaScriptFunction(web_frame, "passkey.rejectPasskeyRequest",
-                         base::ListValue().Append(request_id));
+                         base::ListValue()
+                             .Append(request_id)
+                             .Append(WebAuthnErrorToName(error))
+                             .Append(WebAuthnErrorToMessage(error)));
 }
 
 void PasskeyJavaScriptFeature::DeferToRenderer(
