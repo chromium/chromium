@@ -23,6 +23,9 @@ BASE_DECLARE_FEATURE(kMemoryBanks);
 // The maximum number of entries to keep in Memory Banks storage.
 BASE_DECLARE_FEATURE_PARAM(size_t, kMaxMemoryBankEntries);
 
+// The maximum number of tab groups stored in the in-memory tab group store.
+BASE_DECLARE_FEATURE_PARAM(int, kMaxTabGroups);
+
 }  // namespace context_hub::features
 
 #endif  // CHROME_BROWSER_CONTEXT_HUB_FEATURES_H_

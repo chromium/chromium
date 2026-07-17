@@ -24,4 +24,10 @@ BASE_FEATURE_PARAM(size_t,
                    "max_memory_bank_entries",
                    100);
 
+BASE_FEATURE_PARAM(int,
+                   kMaxTabGroups,
+                   &kContextHub,
+                   "max_tab_groups",
+                   50);
+
 }  // namespace context_hub::features

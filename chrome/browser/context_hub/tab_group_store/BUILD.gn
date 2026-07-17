@@ -1,0 +1,39 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("tab_group_store") {
+  sources = [
+    "tab_group_entry.h",
+    "tab_group_store.h",
+  ]
+
+  public_deps = [
+    "//base",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "in_memory_tab_group_store.cc",
+    "in_memory_tab_group_store.h",
+  ]
+
+  public_deps = [
+    ":tab_group_store",
+    "//base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "in_memory_tab_group_store_unittest.cc" ]
+
+  deps = [
+    ":impl",
+    ":tab_group_store",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}
