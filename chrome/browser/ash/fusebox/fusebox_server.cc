@@ -1109,7 +1109,19 @@ void Server::Read2(const Read2RequestProto& request_proto,
     response_proto.set_posix_error_code(ENOENT);
     std::move(callback).Run(response_proto);
     return;
+  } else if (int64_t length =
+                 request_proto.has_length() ? request_proto.length() : 0;
+             (length < 0) ||
+             // The protobuf-over-D-Bus protocol speaks an int64_t length but,
+             // for historical reasons, Chrome's storage::FileStreamReader::Read
+             // API only speaks an int length.
+             (length > INT_MAX)) {
+    Read2ResponseProto response_proto;
+    response_proto.set_posix_error_code(EINVAL);
+    std::move(callback).Run(response_proto);
+    return;
   }
+
   if (!iter->second.readable_) {
     Read2ResponseProto response_proto;
     response_proto.set_posix_error_code(EACCES);

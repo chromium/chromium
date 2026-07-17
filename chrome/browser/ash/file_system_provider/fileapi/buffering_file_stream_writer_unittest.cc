@@ -195,6 +195,27 @@ TEST_F(FileSystemProviderBufferingFileStreamWriterTest, Write) {
   }
 }
 
+TEST_F(FileSystemProviderBufferingFileStreamWriterTest, Write_NegativeLength) {
+  std::vector<std::string> inner_write_log;
+  std::vector<int> inner_flush_log;
+  BufferingFileStreamWriter writer(
+      std::unique_ptr<storage::FileStreamWriter>(new FakeFileStreamWriter(
+          &inner_write_log, &inner_flush_log, nullptr, net::ERR_FAILED)),
+      kIntermediateBufferLength);
+
+  {
+    std::vector<int> write_log;
+    const int result = writer.Write(short_text_buffer_.get(), -123456,
+                                    base::BindOnce(&LogValue<int>, &write_log));
+    base::RunLoop().RunUntilIdle();
+
+    EXPECT_EQ(net::ERR_INVALID_ARGUMENT, result);
+    EXPECT_EQ(0u, write_log.size());
+    EXPECT_EQ(0u, inner_write_log.size());
+    EXPECT_EQ(0u, inner_flush_log.size());
+  }
+}
+
 TEST_F(FileSystemProviderBufferingFileStreamWriterTest, Write_WithError) {
   std::vector<std::string> inner_write_log;
   std::vector<int> inner_flush_log;

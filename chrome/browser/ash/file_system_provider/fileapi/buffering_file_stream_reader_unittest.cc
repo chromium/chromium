@@ -323,6 +323,24 @@ TEST_F(FileSystemProviderBufferingFileStreamReaderTest,
   EXPECT_EQ(read_bytes, read_log[0]);
 }
 
+TEST_F(FileSystemProviderBufferingFileStreamReaderTest, Read_NegativeLength) {
+  std::vector<int> inner_read_log;
+  BufferingFileStreamReader reader(
+      std::unique_ptr<storage::FileStreamReader>(
+          new FakeFileStreamReader(&inner_read_log, net::ERR_ACCESS_DENIED)),
+      kPreloadingBufferLength, kFileSize);
+
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kChunkSize);
+  std::vector<int> read_log;
+  const int result = reader.Read(buffer.get(), -123456,
+                                 base::BindOnce(&LogValue<int>, &read_log));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(net::ERR_INVALID_ARGUMENT, result);
+  ASSERT_EQ(0u, inner_read_log.size());
+  ASSERT_EQ(0u, read_log.size());
+}
+
 TEST_F(FileSystemProviderBufferingFileStreamReaderTest, Read_WithError) {
   std::vector<int> inner_read_log;
   BufferingFileStreamReader reader(

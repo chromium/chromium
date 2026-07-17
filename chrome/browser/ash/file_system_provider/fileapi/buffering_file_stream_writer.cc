@@ -31,6 +31,10 @@ BufferingFileStreamWriter::~BufferingFileStreamWriter() {
 int BufferingFileStreamWriter::Write(net::IOBuffer* buffer,
                                      int buffer_length,
                                      net::CompletionOnceCallback callback) {
+  if (!buffer || (buffer_length < 0)) {
+    return net::ERR_INVALID_ARGUMENT;
+  }
+
   // If |buffer_length| is larger than the intermediate buffer, then call the
   // inner file stream writer directly. Note, that the intermediate buffer
   // (used for buffering) must be flushed first.
@@ -91,6 +95,8 @@ void BufferingFileStreamWriter::CopyToIntermediateBuffer(
     scoped_refptr<net::IOBuffer> buffer,
     int buffer_offset,
     int buffer_length) {
+  DCHECK_LE(0, buffer_length);
+  DCHECK_LE(static_cast<size_t>(buffer_length), buffer->span().size());
   DCHECK_GE(intermediate_buffer_length_, buffer_length + buffered_bytes_);
   UNSAFE_TODO(memcpy(intermediate_buffer_->data() + buffered_bytes_,
                      buffer->data() + buffer_offset, buffer_length));
