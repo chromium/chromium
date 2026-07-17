@@ -165,7 +165,9 @@ chrome_internal_verifier(
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
     builder = "chromeos-betty-chrome-gtest",
     cq_settings = try_.cq_settings(
-        experiment_percentage = 100,
+        equivalent_builder = "{}:try/chromeos-betty-chrome-gtest-and-cqtast".format(settings.chrome_project),
+        equivalent_builder_percentage = 100,
+        equivalent_builder_whitelist = "google/chromeos-pa@google.com",
         on_default_cq = True,
     ),
     owner_whitelist = ["googlers", "project-chromium-robot-committers"],
