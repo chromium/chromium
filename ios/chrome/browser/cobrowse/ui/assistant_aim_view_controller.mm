@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_mutator.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_zero_state_view_controller.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_view_controller.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -87,6 +88,8 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
   [super viewDidLayoutSubviews];
   [_inputViewController.view layoutIfNeeded];
   _fadeGradient.frame = _inputViewFade.bounds;
+  // `updateInputPlateOverlap` early returns if `IsChromeNextIaEnabled()` is
+  // true.
   [self updateInputPlateOverlap];
 }
 
@@ -245,9 +248,18 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
 }
 
 - (void)setupInputPlateConstraints {
-  _inputPlateBottomMargin = [_inputViewController.view.bottomAnchor
-      constraintEqualToAnchor:self.view.bottomAnchor
-                     constant:-kInputPlateMargin];
+  if (IsChromeNextIaEnabled()) {
+    // `usesBottomSafeArea = NO` ensures the inactive layout guide rests at the
+    // absolute bottom of `self.view`, preventing double safe-area padding.
+    self.view.keyboardLayoutGuide.usesBottomSafeArea = NO;
+    _inputPlateBottomMargin = [_inputViewController.view.bottomAnchor
+        constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor
+                       constant:-kInputPlateMargin];
+  } else {
+    _inputPlateBottomMargin = [_inputViewController.view.bottomAnchor
+        constraintEqualToAnchor:self.view.bottomAnchor
+                       constant:-kInputPlateMargin];
+  }
 
   [NSLayoutConstraint activateConstraints:@[
     _inputPlateBottomMargin,
@@ -260,6 +272,9 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
   ]];
 
   if (_inputViewFade) {
+    NSLayoutYAxisAnchor* fadeBottomAnchor =
+        IsChromeNextIaEnabled() ? self.view.keyboardLayoutGuide.topAnchor
+                                : self.view.bottomAnchor;
     [NSLayoutConstraint activateConstraints:@[
       [_inputViewFade.topAnchor
           constraintEqualToAnchor:_inputViewController.view.topAnchor],
@@ -267,21 +282,11 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
           constraintEqualToAnchor:self.view.leadingAnchor],
       [_inputViewFade.trailingAnchor
           constraintEqualToAnchor:self.view.trailingAnchor],
-      [_inputViewFade.bottomAnchor
-          constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor],
+      [_inputViewFade.bottomAnchor constraintEqualToAnchor:fadeBottomAnchor],
     ]];
   }
 
-  // TODO(crbug.com/493187015): Investigate why `keyboardLayoutGuide` cannot be
-  // used here. When the keyboard is hidden, `keyboardLayoutGuide.topAnchor`
-  // currently pushes the container downwards below its intended position. We
-  // manually observe keyboard frames and update constraints as a workaround.
   NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
-
-  [defaultCenter addObserver:self
-                    selector:@selector(keyboardWillChangeFrame:)
-                        name:UIKeyboardWillChangeFrameNotification
-                      object:nil];
 
   [defaultCenter addObserver:self
                     selector:@selector(keyboardWillShow:)
@@ -297,6 +302,16 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
                     selector:@selector(textViewDidBeginEditing:)
                         name:UITextViewTextDidBeginEditingNotification
                       object:nil];
+
+  if (!IsChromeNextIaEnabled()) {
+    // In the non-ChromeNext flow, we do not use the system keyboard layout
+    // guide, so we must manually observe keyboard frame changes to adjust
+    // the input plate's bottom margin.
+    [defaultCenter addObserver:self
+                      selector:@selector(keyboardWillChangeFrame:)
+                          name:UIKeyboardWillChangeFrameNotification
+                        object:nil];
+  }
 }
 
 #pragma mark - AssistantAIMConsumer
@@ -548,9 +563,11 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
     return;
   }
 
-  // If the software keyboard is showing, `keyboardWillShow:` handles the
-  // synced animation. We only fallback if the hardware keyboard is used.
-  if (CGRectGetHeight(_keyboardFrameInWindow) == 0) {
+  // If the software keyboard is showing in fallback mode, `keyboardWillShow:`
+  // handles the synced animation. We only fallback if the hardware keyboard is
+  // used in the non-ChromeNext flow.
+  if (!IsChromeNextIaEnabled() &&
+      CGRectGetHeight(_keyboardFrameInWindow) == 0) {
     [self keyboardWillShow:notification];
   }
 }
@@ -564,7 +581,7 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
 
 // Adjusts the input plate's bottom margin to account for the keyboard's frame.
 - (void)keyboardWillChangeFrame:(NSNotification*)notification {
-  if (!self.isViewLoaded || !self.view.window) {
+  if (IsChromeNextIaEnabled() || !self.isViewLoaded || !self.view.window) {
     return;
   }
   NSDictionary* userInfo = notification.userInfo;
@@ -587,8 +604,11 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
                    completion:nil];
 }
 
-// Updates the input plate's bottom margin to account for the keyboard's frame.
+// Updates the input plate's bottom margin in the non-ChromeNext fallback flow.
 - (void)updateInputPlateOverlap {
+  if (IsChromeNextIaEnabled()) {
+    return;
+  }
   if (CGRectIsEmpty(_keyboardFrameInWindow)) {
     _inputPlateBottomMargin.constant = -kInputPlateMargin;
     return;
