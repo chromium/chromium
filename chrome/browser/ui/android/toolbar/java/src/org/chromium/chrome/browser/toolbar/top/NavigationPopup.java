@@ -231,10 +231,10 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
         }
 
         // Set clipToOutline to true to contain the mouse hover effect inside the
-        // popup's outline. Also set the background of the list view to menu_bg_shape
+        // popup's outline. Also set the background of the list view to popup_bg_shape
         // to make its shape the same as the popup.
         assumeNonNull(mPopup.getListView());
-        mPopup.getListView().setBackgroundResource(R.drawable.menu_bg_shape);
+        mPopup.getListView().setBackgroundResource(R.drawable.popup_bg_shape);
         mPopup.getListView().setClipToOutline(true);
     }
 

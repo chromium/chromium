@@ -8,7 +8,7 @@ found in the LICENSE file.
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/menu_bg_shadow">
+    android:background="@drawable/popup_bg_shadow">
 
     <LinearLayout
         android:id="@+id/app_menu_content_container"
@@ -16,7 +16,7 @@ found in the LICENSE file.
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:clipToOutline="true"
-        android:background="@drawable/menu_bg_shape">
+        android:background="@drawable/popup_bg_shape">
 
         <org.chromium.components.browser_ui.widget.list_view.TouchTrackingListView
             android:id="@+id/app_menu_list"
