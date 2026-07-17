@@ -1015,6 +1015,18 @@ bool CanPopulateFindBarFromSelection(content::WebContents* web_contents) {
   return verdict.level() != data_controls::Rule::Level::kBlock;
 }
 
+bool PrepopulateFindBarTextAllowed(
+    const content::ClipboardEndpoint& source,
+    const content::ClipboardEndpoint& destination) {
+  if (!destination.browser_context()) {
+    return false;
+  }
+
+  auto verdict = GetPasteVerdict(source, destination);
+  return verdict.level() != data_controls::Rule::Level::kBlock &&
+         verdict.level() != data_controls::Rule::Level::kWarn;
+}
+
 bool IsDragAllowedByPolicy(const content::ClipboardEndpoint& source,
                            const content::DropData& drop_data) {
   if (SkipDataControlOrContentAnalysisChecks(source)) {

@@ -1088,4 +1088,31 @@ TEST_F(DataProtectionClipboardDistilledURLTest, CopyTextToClipboard_Block) {
                 IDS_ENTERPRISE_DATA_CONTROLS_COPY_PREVENTION_WARNING_MESSAGE));
 }
 
+TEST_F(DataProtectionClipboardTest, PrepopulateFindBarTextAllowed) {
+#if BUILDFLAG(IS_ANDROID)
+  EnableDataControls();
+#endif
+
+  data_controls::SetDataControls(profile_->GetPrefs(), {R"({
+                    "sources": {
+                      "urls": ["source.com"]
+                    },
+                    "destinations": {
+                      "urls": ["blocked.com"]
+                    },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "BLOCK"}
+                    ]
+                  })"});
+
+  content::ClipboardEndpoint source = CopyEndpoint(GURL("https://source.com"));
+  content::ClipboardEndpoint destination_allowed =
+      CopyEndpoint(GURL("https://allowed.com"));
+  content::ClipboardEndpoint destination_blocked =
+      CopyEndpoint(GURL("https://blocked.com"));
+
+  EXPECT_TRUE(PrepopulateFindBarTextAllowed(source, destination_allowed));
+  EXPECT_FALSE(PrepopulateFindBarTextAllowed(source, destination_blocked));
+}
+
 }  // namespace enterprise_data_protection

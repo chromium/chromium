@@ -86,6 +86,8 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
+#include "chrome/browser/ui/find_bar/find_bar_state.h"
+#include "chrome/browser/ui/find_bar/find_bar_state_factory.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "chrome/browser/webid/federated_identity_permission_context.h"
 #include "chrome/common/chrome_constants.h"
@@ -180,11 +182,14 @@
 #include "content/public/browser/origin_trials_controller_delegate.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/tracing_delegate.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
 #include "content/public/test/mock_download_manager.h"
 #include "content/public/test/test_utils.h"
+#include "content/public/test/test_web_contents_factory.h"
+#include "content/public/test/web_contents_tester.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/features.h"
 #include "net/base/isolation_info.h"
@@ -1828,6 +1833,37 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearCriticalActionsHistory) {
                                                get_future.GetCallback());
     EXPECT_FALSE(get_future.Get().has_value());
   }
+}
+
+TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearFindBarLastSearchText) {
+  FindBarState* find_bar_state =
+      FindBarStateFactory::GetForBrowserContext(GetProfile());
+  find_bar_state->SetLastSearchText(u"search text", nullptr);
+  EXPECT_EQ(u"search text", find_bar_state->GetSearchPrepopulateText(nullptr));
+
+  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
+                                constants::DATA_TYPE_HISTORY, false);
+
+  EXPECT_EQ(u"", find_bar_state->GetSearchPrepopulateText(nullptr));
+}
+
+TEST_F(ChromeBrowsingDataRemoverDelegateTest,
+       ClearFindBarLastSearchTextForWebContents) {
+  FindBarState* find_bar_state =
+      FindBarStateFactory::GetForBrowserContext(GetProfile());
+
+  content::TestWebContentsFactory factory;
+  content::WebContents* web_contents = factory.CreateWebContents(GetProfile());
+  content::WebContentsTester::For(web_contents)
+      ->NavigateAndCommit(GURL("https://example.com"));
+  find_bar_state->SetLastSearchText(u"other search text", web_contents);
+  EXPECT_EQ(u"other search text",
+            find_bar_state->GetSearchPrepopulateText(web_contents));
+
+  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
+                                constants::DATA_TYPE_HISTORY, false);
+
+  EXPECT_EQ(u"", find_bar_state->GetSearchPrepopulateText(web_contents));
 }
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveHistoryForLastHour) {

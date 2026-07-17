@@ -54,7 +54,7 @@ void FindTabHelper::StartFinding(std::u16string search_string,
 
   // Keep track of what the last search was across the tabs.
   if (delegate_)
-    delegate_->SetLastSearchText(search_string);
+    delegate_->SetLastSearchText(search_string, &GetWebContents());
 
   if (search_string.empty()) {
     StopFinding(find_in_page::SelectionAction::kClear);
@@ -139,7 +139,8 @@ std::u16string FindTabHelper::GetInitialSearchText() {
     return previous_find_text_;
 
   // Then defer to the delegate.
-  return delegate_ ? delegate_->GetSearchPrepopulateText() : std::u16string();
+  return delegate_ ? delegate_->GetSearchPrepopulateText(&GetWebContents())
+                   : std::u16string();
 }
 
 #if BUILDFLAG(IS_ANDROID)

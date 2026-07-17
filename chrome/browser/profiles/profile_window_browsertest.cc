@@ -267,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestClearsFindInPageCache) {
 
   std::u16string fip_text = u"first guest session search text";
   FindBarStateFactory::GetForBrowserContext(guest_profile)
-      ->SetLastSearchText(fip_text);
+      ->SetLastSearchText(fip_text, nullptr);
 
   // Open a second guest window and close one. This should not affect the find
   // in page cache as the guest session hasn't been ended.
@@ -276,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestClearsFindInPageCache) {
       chrome::startup::IsFirstRun::kNo, true /*always_create*/);
   CloseBrowserSynchronously(guest_browser);
   EXPECT_EQ(fip_text, FindBarStateFactory::GetForBrowserContext(guest_profile)
-                          ->GetSearchPrepopulateText());
+                          ->GetSearchPrepopulateText(nullptr));
 
   // Close the remaining guest browser window.
   BrowserWindowInterface* found_guest_browser =
@@ -293,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestClearsFindInPageCache) {
 
   EXPECT_EQ(std::u16string(),
             FindBarStateFactory::GetForBrowserContext(guest_profile)
-                ->GetSearchPrepopulateText());
+                ->GetSearchPrepopulateText(nullptr));
 }
 
 IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestCannotSignin) {

@@ -6,11 +6,14 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/find_bar/find_bar_state.h"
 #include "chrome/browser/ui/find_bar/find_bar_state_factory.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/enterprise/data_controls/core/browser/features.h"
+#include "components/enterprise/data_controls/core/browser/test_utils.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/web_contents_tester.h"
@@ -31,7 +34,7 @@ namespace {
 std::u16string FindPrepopulateText(WebContents* contents) {
   return FindBarStateFactory::GetForBrowserContext(
              contents->GetBrowserContext())
-      ->GetSearchPrepopulateText();
+      ->GetSearchPrepopulateText(contents);
 }
 
 }  // end namespace
@@ -97,4 +100,60 @@ TEST_F(FindBackendTest, InternalState) {
   EXPECT_EQ(search_term3, find_tab_helper->find_text());
   EXPECT_EQ(search_term3, FindPrepopulateText(contents2.get()));
   EXPECT_EQ(search_term2, find_tab_helper2->find_text());
+}
+
+TEST_F(FindBackendTest, PolicyRestrictions) {
+#if BUILDFLAG(IS_ANDROID)
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      data_controls::kEnableClipboardDataControlsAndroid);
+#endif
+
+  data_controls::SetDataControls(profile()->GetPrefs(), {R"({
+                    "name": "block_google_to_bing",
+                    "rule_id": "1234",
+                    "sources": {
+                      "urls": ["google.com"]
+                    },
+                    "destinations": {
+                      "urls": ["bing.com"]
+                    },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "BLOCK"}
+                    ]
+                  })"});
+
+  // Set up the source WebContents (google.com)
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://google.com"));
+
+  // Set up allowed destination WebContents (yahoo.com)
+  std::unique_ptr<WebContents> contents_yahoo(
+      WebContentsTester::CreateTestWebContents(profile(), nullptr));
+  FindBarState::ConfigureWebContents(contents_yahoo.get());
+  content::WebContentsTester::For(contents_yahoo.get())
+      ->NavigateAndCommit(GURL("https://yahoo.com"));
+
+  // Set up blocked destination WebContents (bing.com)
+  std::unique_ptr<WebContents> contents_bing(
+      WebContentsTester::CreateTestWebContents(profile(), nullptr));
+  FindBarState::ConfigureWebContents(contents_bing.get());
+  content::WebContentsTester::For(contents_bing.get())
+      ->NavigateAndCommit(GURL("https://bing.com"));
+
+  // Search in Google WebContents
+  find_in_page::FindTabHelper* find_tab_helper =
+      find_in_page::FindTabHelper::FromWebContents(web_contents());
+  find_tab_helper->StartFinding(u"sensitive", true /* forward_direction */,
+                                false /* case_sensitive */,
+                                true /* find_match */);
+
+  // Check prepopulating in Google itself is allowed.
+  EXPECT_EQ(u"sensitive", FindPrepopulateText(web_contents()));
+
+  // Check prepopulating in Yahoo (allowed destination) is allowed.
+  EXPECT_EQ(u"sensitive", FindPrepopulateText(contents_yahoo.get()));
+
+  // Check prepopulating in Bing (blocked destination) is blocked.
+  EXPECT_EQ(std::u16string(), FindPrepopulateText(contents_bing.get()));
 }

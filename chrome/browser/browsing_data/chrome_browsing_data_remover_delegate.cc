@@ -563,7 +563,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         delete_begin_, delete_end_);
 
     FindBarStateFactory::GetForBrowserContext(profile_)->SetLastSearchText(
-        std::u16string());
+        std::u16string(), /*web_contents=*/nullptr);
 
 #if BUILDFLAG(IS_ANDROID)
     if (auto* share_history = sharing::ShareHistory::Get(profile_))

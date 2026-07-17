@@ -18,6 +18,7 @@ source_set("find_bar") {
     "//chrome/browser/profiles:profile",
     "//components/find_in_page",
     "//components/keyed_service/core",
+    "//ui/base/data_transfer_policy",
   ]
 
   if (!is_android) {
@@ -35,7 +36,11 @@ source_set("impl") {
     "find_bar_state.cc",
     "find_bar_state_factory.cc",
   ]
-  deps = [ ":find_bar" ]
+  deps = [
+    ":find_bar",
+    "//chrome/browser/enterprise",
+    "//content/public/browser",
+  ]
 
   if (!is_android) {
     sources += [
@@ -61,6 +66,7 @@ source_set("unit_tests") {
   deps = [
     ":find_bar",
     "//chrome/test:test_support",
+    "//components/enterprise/data_controls/core/browser:test_support",
   ]
 }
 

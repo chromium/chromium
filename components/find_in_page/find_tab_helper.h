@@ -26,11 +26,13 @@ class FindTabHelper : public content::WebContentsUserData<FindTabHelper> {
   class Delegate {
    public:
     // Informs the delegate when the user searches.
-    virtual void SetLastSearchText(const std::u16string& text) = 0;
+    virtual void SetLastSearchText(const std::u16string& text,
+                                   content::WebContents* web_contents) = 0;
 
     // Gets the text to prepopulate into the search field for new searches. May
     // return an empty string.
-    virtual std::u16string GetSearchPrepopulateText() = 0;
+    virtual std::u16string GetSearchPrepopulateText(
+        content::WebContents* web_contents) = 0;
 
    protected:
     virtual ~Delegate() = default;

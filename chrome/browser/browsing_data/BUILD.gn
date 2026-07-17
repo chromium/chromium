@@ -279,6 +279,7 @@ source_set("unit_tests") {
     "//chrome/browser/subresource_filter",
     "//chrome/browser/sync",
     "//chrome/browser/trusted_vault",
+    "//chrome/browser/ui/find_bar",
     "//chrome/browser/webdata_services",
     "//chrome/browser/webid",
     "//chrome/test:test_support",
