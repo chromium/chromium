@@ -262,7 +262,7 @@ public class EventForwarderTest {
         validateDragDropEvent(
                 new String[] {"text/plain"},
                 new ClipData.Item[] {new ClipData.Item("text content")},
-                new String[][] {},
+                /* expectedFilenames= */ new String[][] {},
                 /* expectedText= */ "text content",
                 /* expectedHtml= */ null,
                 /* expectedUrl= */ null);
@@ -289,10 +289,12 @@ public class EventForwarderTest {
         validateDragDropEvent(
                 new String[] {"image/jpeg", "text/plain"},
                 new ClipData.Item[] {
-                    new ClipData.Item(Uri.parse("image.jpg")),
-                    new ClipData.Item(Uri.parse("hello.txt"))
+                    new ClipData.Item(Uri.parse("/foo/image.jpg")),
+                    new ClipData.Item(Uri.parse("/foo/hello.txt"))
                 },
-                /* expectedFilenames= */ new String[][] {{"image.jpg", ""}, {"hello.txt", ""}},
+                /* expectedFilenames= */ new String[][] {
+                    {"/foo/image.jpg", ""}, {"/foo/hello.txt", ""}
+                },
                 /* expectedText= */ null,
                 /* expectedHtml= */ null,
                 /* expectedUrl= */ null);

@@ -5,6 +5,8 @@
 package org.chromium.base;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 
@@ -43,20 +45,16 @@ public class PathUtilsTest {
     }
 
     @Test
-    public void testIsPathUnderAppDirFalse() {
+    public void testIsPathUnderAppDir() {
         Context context = ApplicationProvider.getApplicationContext();
-        String dataPath = "/data_path/a/b/c";
+        File dataDir = context.getDataDir();
+        File externalDir = ContextUtils.getApplicationContext().getExternalFilesDir(null);
 
-        assertEquals(false, PathUtils.isPathUnderAppDir(dataPath, context));
-    }
-
-    @Test
-    public void testIsPathUnderAppDirTrue() {
-        Context context = ApplicationProvider.getApplicationContext();
-        String dataSuffix = "data_suffix";
-        String expectedDataDir = context.getDir(dataSuffix, Context.MODE_PRIVATE).getPath();
-
-        assertEquals(true, PathUtils.isPathUnderAppDir(expectedDataDir, context));
+        assertFalse(PathUtils.isPathUnderAppDir("/data_path/a/b/c", context));
+        assertTrue(PathUtils.isPathUnderAppDir(dataDir.toString(), context));
+        assertTrue(PathUtils.isPathUnderAppDir(externalDir.toString(), context));
+        assertTrue(PathUtils.isPathUnderAppDir(new File(dataDir, "child").toString(), context));
+        assertTrue(PathUtils.isPathUnderAppDir(new File(dataDir, "bad\u0000").toString(), context));
     }
 
     @Test
