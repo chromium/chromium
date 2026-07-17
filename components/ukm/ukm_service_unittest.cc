@@ -237,8 +237,6 @@ class UkmServiceTest : public testing::Test {
       : task_runner_(new base::TestSimpleTaskRunner),
         task_runner_current_default_handle_(task_runner_) {
     UkmService::RegisterPrefs(prefs_.registry());
-    metrics::MetricsReportingChoiceService::RegisterPrefs(prefs_.registry());
-    metrics::MetricsReportingChoiceService::ClearCachedFeatureStateForTesting();
     ClearPrefs();
   }
 
@@ -249,8 +247,6 @@ class UkmServiceTest : public testing::Test {
     prefs_.ClearPref(prefs::kUkmClientId);
     prefs_.ClearPref(prefs::kUkmSessionId);
     prefs_.ClearPref(prefs::kUkmUnsentLogStore);
-    prefs_.ClearPref(metrics::prefs::kMetricsReportingMigrationDone);
-    prefs_.ClearPref(metrics::prefs::kMetricsConsentRestructureFeatureState);
   }
 
   int GetPersistedLogCount() { return ukm::GetPersistedLogCount(prefs_); }
@@ -286,8 +282,6 @@ class UkmReduceAddEntryIpcTest : public testing::Test {
  public:
   UkmReduceAddEntryIpcTest() {
     UkmService::RegisterPrefs(prefs_.registry());
-    metrics::MetricsReportingChoiceService::RegisterPrefs(prefs_.registry());
-    metrics::MetricsReportingChoiceService::ClearCachedFeatureStateForTesting();
     ClearPrefs();
     scoped_feature_list_.InitAndEnableFeature(ukm::kUkmReduceAddEntryIPC);
   }
@@ -299,8 +293,6 @@ class UkmReduceAddEntryIpcTest : public testing::Test {
     prefs_.ClearPref(prefs::kUkmClientId);
     prefs_.ClearPref(prefs::kUkmSessionId);
     prefs_.ClearPref(prefs::kUkmUnsentLogStore);
-    prefs_.ClearPref(metrics::prefs::kMetricsReportingMigrationDone);
-    prefs_.ClearPref(metrics::prefs::kMetricsConsentRestructureFeatureState);
   }
 
  protected:
@@ -1065,10 +1057,9 @@ TEST_F(UkmServiceTest, SystemProfileTest) {
 
 TEST_F(UkmServiceTest, RecordingEnabledWithoutConsentRestructure) {
   // 1. Consent restructure is NOT enabled.
-  prefs_.SetBoolean(metrics::prefs::kMetricsConsentRestructureFeatureState,
-                    false);
-  prefs_.SetBoolean(metrics::prefs::kMetricsReportingMigrationDone, false);
-  metrics::MetricsReportingChoiceService::ClearCachedFeatureStateForTesting();
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      metrics::features::kRestructureMetricsConsentSettings);
 
   UkmService service(&prefs_, &client_,
                      std::make_unique<MockDemographicMetricsProvider>());
@@ -1083,10 +1074,9 @@ TEST_F(UkmServiceTest, RecordingEnabledWithoutConsentRestructure) {
 
 TEST_F(UkmServiceTest, RecordingEnabledWithConsentRestructure) {
   // 2. Consent restructure is enabled.
-  prefs_.SetBoolean(metrics::prefs::kMetricsConsentRestructureFeatureState,
-                    true);
-  prefs_.SetBoolean(metrics::prefs::kMetricsReportingMigrationDone, true);
-  metrics::MetricsReportingChoiceService::ClearCachedFeatureStateForTesting();
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      metrics::features::kRestructureMetricsConsentSettings);
 
   UkmService service(&prefs_, &client_,
                      std::make_unique<MockDemographicMetricsProvider>());
@@ -2186,8 +2176,6 @@ class UkmServiceTestWithIndependentAppKM
       : task_runner_(new base::TestSimpleTaskRunner),
         task_runner_current_default_handle_(task_runner_) {
     UkmService::RegisterPrefs(prefs_.registry());
-    metrics::MetricsReportingChoiceService::RegisterPrefs(prefs_.registry());
-    metrics::MetricsReportingChoiceService::ClearCachedFeatureStateForTesting();
 
     prefs_.ClearPref(prefs::kUkmClientId);
     prefs_.ClearPref(prefs::kUkmSessionId);
@@ -2280,8 +2268,6 @@ class UkmServiceTestWithIndependentAppKMFullConsent
       : task_runner_(new base::TestSimpleTaskRunner),
         task_runner_current_default_handle_(task_runner_) {
     UkmService::RegisterPrefs(prefs_.registry());
-    metrics::MetricsReportingChoiceService::RegisterPrefs(prefs_.registry());
-    metrics::MetricsReportingChoiceService::ClearCachedFeatureStateForTesting();
 
     prefs_.ClearPref(prefs::kUkmClientId);
     prefs_.ClearPref(prefs::kUkmSessionId);

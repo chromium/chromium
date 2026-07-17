@@ -38,8 +38,6 @@ SearchEngineChoiceServiceTestBase::SearchEngineChoiceServiceTestBase::
   local_state_.registry()->RegisterInt64Pref(
       prefs::kDefaultSearchProviderGuestModePrepopulatedId, 0);
   metrics::ClonedInstallDetector::RegisterPrefs(local_state_.registry());
-  metrics::MetricsReportingChoiceService::RegisterPrefs(
-      local_state_.registry());
 
   // Override the country checks to simulate being in Belgium.
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(

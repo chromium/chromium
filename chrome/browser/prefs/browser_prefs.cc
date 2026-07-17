@@ -1012,6 +1012,12 @@ inline constexpr char kObsoleteManagementPlatformLastLogTime[] =
 inline constexpr char kObsoleteManagementProfileLastLogTime[] =
     "management.profile.last_log_time";
 
+// Deprecated 07/2026.
+constexpr char kMetricsReportingMigrationDone[] =
+    "user_experience_metrics.consent_migration_done";
+constexpr char kMetricsConsentRestructureFeatureState[] =
+    "user_experience_metrics.consent_restructure_feature_state";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1114,6 +1120,8 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   registry->RegisterBooleanPref(kProxyOverrideRulesAffiliation, true);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  registry->RegisterBooleanPref(kMetricsReportingMigrationDone, false);
+  registry->RegisterBooleanPref(kMetricsConsentRestructureFeatureState, false);
 
   // Deprecated 07/2026.
   registry->RegisterTimePref(kObsoleteManagementPlatformLastLogTime,
@@ -1431,7 +1439,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   language::UlpLanguageCodeLocator::RegisterLocalStatePrefs(registry);
   memory::EnterpriseMemoryLimitPrefObserver::RegisterPrefs(registry);
   metrics::RegisterDemographicsLocalStatePrefs(registry);
-  metrics::MetricsReportingChoiceService::RegisterPrefs(registry);
   metrics::TabStatsTracker::RegisterPrefs(registry);
   network_time::NetworkTimeTracker::RegisterPrefs(registry);
   omnibox::RegisterLocalStatePrefs(registry);
@@ -2406,6 +2413,8 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // Added 07/2026.
   local_state->ClearPref(kProxyOverrideRulesAffiliation);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  local_state->ClearPref(kMetricsReportingMigrationDone);
+  local_state->ClearPref(kMetricsConsentRestructureFeatureState);
 
   // Added 07/2026.
   local_state->ClearPref(kObsoleteManagementPlatformLastLogTime);

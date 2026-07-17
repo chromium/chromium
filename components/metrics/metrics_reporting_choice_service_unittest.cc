@@ -18,17 +18,13 @@ namespace metrics {
 class MetricsReportingChoiceServiceTest : public testing::Test {
  protected:
   MetricsReportingChoiceServiceTest() {
-    MetricsReportingChoiceService::RegisterPrefs(prefs_.registry());
-    // Register the legacy pref as well, as it's not registered by
-    // MetricsReportingChoiceService::RegisterPrefs but used in fallback.
+    // Register the legacy pref, as it's not registered by
+    // MetricsReportingChoiceService but used in fallback.
     prefs_.registry()->RegisterBooleanPref(prefs::kMetricsReportingEnabled,
                                            false);
-    MetricsReportingChoiceService::ClearCachedFeatureStateForTesting();
   }
 
-  void TearDown() override {
-    MetricsReportingChoiceService::ClearCachedFeatureStateForTesting();
-  }
+  void TearDown() override {}
 
   TestingPrefServiceSimple prefs_;
   base::test::ScopedFeatureList feature_list_;
@@ -45,46 +41,25 @@ TEST_F(MetricsReportingChoiceServiceTest, IsBasicMetricsReportingEnabled) {
       MetricsReportingChoiceService::IsBasicMetricsReportingEnabled(&prefs_));
 }
 
-TEST_F(MetricsReportingChoiceServiceTest,
-       FeatureStateTakesPreviousSessionValue_EnabledToDisabled) {
-  feature_list_.InitAndDisableFeature(
-      features::kRestructureMetricsConsentSettings);
-  prefs_.SetBoolean(prefs::kMetricsConsentRestructureFeatureState, true);
-
-  // Called before InitSyntheticFieldTrial, so it should read the previous
-  // session's state from the pref.
-  EXPECT_TRUE(
-      MetricsReportingChoiceService::IsMetricsConsentRestructureFeatureEnabled(
-          &prefs_));
-
-  MetricsReportingChoiceService::InitSyntheticFieldTrial(&prefs_, &registry_);
-
-  // State should remain true for the rest of the session despite feature being
-  // disabled.
-  EXPECT_TRUE(
-      MetricsReportingChoiceService::IsMetricsConsentRestructureFeatureEnabled(
-          &prefs_));
-}
-
-TEST_F(MetricsReportingChoiceServiceTest,
-       FeatureStateTakesPreviousSessionValue_DisabledToEnabled) {
-  feature_list_.InitAndEnableFeature(
-      features::kRestructureMetricsConsentSettings);
-  prefs_.SetBoolean(prefs::kMetricsConsentRestructureFeatureState, false);
-
-  // Called before InitSyntheticFieldTrial, so it should read the previous
-  // session's state from the pref.
-  EXPECT_FALSE(
-      MetricsReportingChoiceService::IsMetricsConsentRestructureFeatureEnabled(
-          &prefs_));
-
-  MetricsReportingChoiceService::InitSyntheticFieldTrial(&prefs_, &registry_);
-
-  // State should remain false for the rest of the session despite feature being
-  // enabled.
-  EXPECT_FALSE(
-      MetricsReportingChoiceService::IsMetricsConsentRestructureFeatureEnabled(
-          &prefs_));
+TEST_F(MetricsReportingChoiceServiceTest, FeatureState) {
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(
+        features::kRestructureMetricsConsentSettings);
+    EXPECT_TRUE(MetricsReportingChoiceService::
+                    IsMetricsConsentRestructureFeatureEnabled());
+    EXPECT_TRUE(
+        MetricsReportingChoiceService::ShouldUseMetricsConsentRestructure());
+  }
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        features::kRestructureMetricsConsentSettings);
+    EXPECT_FALSE(MetricsReportingChoiceService::
+                     IsMetricsConsentRestructureFeatureEnabled());
+    EXPECT_FALSE(
+        MetricsReportingChoiceService::ShouldUseMetricsConsentRestructure());
+  }
 }
 
 TEST_F(MetricsReportingChoiceServiceTest, IsMetricsReportingDisabledByPolicy) {

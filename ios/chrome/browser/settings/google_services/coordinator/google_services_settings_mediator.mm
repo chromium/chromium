@@ -307,7 +307,7 @@ bool GetStatusForSigninPolicy() {
 
     // TODO(b/483043192): Add UI for new Metrics Consent settings.
     if (!metrics::MetricsReportingChoiceService::
-            ShouldUseMetricsConsentRestructure(self.localPrefService)) {
+            ShouldUseMetricsConsentRestructure()) {
       constexpr int textID =
           IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_CHROME_TEXT;
       constexpr int detailID =

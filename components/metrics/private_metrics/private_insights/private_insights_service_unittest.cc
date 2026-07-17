@@ -140,7 +140,6 @@ TEST_F(PrivateInsightsServiceTest,
 TEST_F(PrivateInsightsServiceTest, MetricsChoiceCoupling) {
 
   TestingPrefServiceSimple local_state;
-  metrics::MetricsReportingChoiceService::RegisterPrefs(local_state.registry());
   local_state.registry()->RegisterBooleanPref(
       metrics::prefs::kMetricsReportingEnabled, false);
 
@@ -183,8 +182,6 @@ TEST_F(PrivateInsightsServiceTest, MetricsChoiceRespectedOnStartup) {
   // Verify choice is respected when disabled on startup.
   {
     TestingPrefServiceSimple local_state;
-    metrics::MetricsReportingChoiceService::RegisterPrefs(
-        local_state.registry());
     local_state.registry()->RegisterBooleanPref(
         metrics::prefs::kMetricsReportingEnabled, false);
 
@@ -199,8 +196,6 @@ TEST_F(PrivateInsightsServiceTest, MetricsChoiceRespectedOnStartup) {
   // Verify choice is respected when enabled on startup.
   {
     TestingPrefServiceSimple local_state;
-    metrics::MetricsReportingChoiceService::RegisterPrefs(
-        local_state.registry());
     local_state.registry()->RegisterBooleanPref(
         metrics::prefs::kMetricsReportingEnabled, true);
 

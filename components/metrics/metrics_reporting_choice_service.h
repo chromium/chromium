@@ -4,12 +4,7 @@
 
 #ifndef COMPONENTS_METRICS_METRICS_REPORTING_CHOICE_SERVICE_H_
 #define COMPONENTS_METRICS_METRICS_REPORTING_CHOICE_SERVICE_H_
-class PrefRegistrySimple;
 class PrefService;
-
-namespace variations {
-class SyntheticTrialRegistry;
-}
 
 namespace metrics {
 
@@ -19,32 +14,14 @@ class MetricsReportingChoiceService {
  public:
   MetricsReportingChoiceService() = delete;
 
-  // Registers local state prefs used by this class.
-  static void RegisterPrefs(PrefRegistrySimple* registry);
-
-  // Initializes the synthetic field trial for the metrics consent restructure
-  // feature and caches the current feature state to local state for the next
-  // session.
-  static void InitSyntheticFieldTrial(
-      PrefService* local_state,
-      variations::SyntheticTrialRegistry* synthetic_trial_registry);
-
   // Returns true if basic metrics reporting is enabled.
   static bool IsBasicMetricsReportingEnabled(const PrefService* local_state);
 
   // Returns true if the metrics consent restructure feature is enabled.
-  static bool IsMetricsConsentRestructureFeatureEnabled(
-      const PrefService* local_state);
+  static bool IsMetricsConsentRestructureFeatureEnabled();
 
-  // Returns true if the metrics consent restructure should be used. This is
-  // different from IsMetricsConsentRestructureFeatureEnabled() in that it also
-  // checks if the migration has been completed (kMetricsReportingMigrationDone
-  // is true).
-  static bool ShouldUseMetricsConsentRestructure(
-      const PrefService* local_state);
-
-  // Clears the static cached feature state. Used only for testing.
-  static void ClearCachedFeatureStateForTesting();
+  // Returns true if the metrics consent restructure should be used.
+  static bool ShouldUseMetricsConsentRestructure();
 
   // Returns true if metrics reporting is disabled by policy.
   static bool IsMetricsReportingDisabledByPolicy(

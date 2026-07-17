@@ -311,10 +311,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                                                profile->GetPrefs()->GetBoolean(
                                                    prefs::kSigninAllowed));
 
-  html_source->AddBoolean(
-      "shouldUseMetricsConsentRestructure",
-      metrics::MetricsReportingChoiceService::
-          ShouldUseMetricsConsentRestructure(g_browser_process->local_state()));
+  html_source->AddBoolean("shouldUseMetricsConsentRestructure",
+                          metrics::MetricsReportingChoiceService::
+                              ShouldUseMetricsConsentRestructure());
 
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()

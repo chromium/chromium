@@ -1040,10 +1040,6 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
       g_browser_process->local_state());
   about_flags::RecordUMAStatistics(&flags_storage, "Launch.FlagsAtStartup");
 
-  metrics::MetricsReportingChoiceService::InitSyntheticFieldTrial(
-      g_browser_process->local_state(),
-      g_browser_process->metrics_service()->GetSyntheticTrialRegistry());
-
   // Log once here at browser start rather than at each renderer launch.
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial("ClangPGO",
 #if BUILDFLAG(CLANG_PGO_OPTIMIZED)

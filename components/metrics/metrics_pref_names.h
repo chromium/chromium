@@ -137,15 +137,6 @@ inline constexpr char kMetricsReportingEnabled[] =
 // recently (local machine time, stored as a 64-bit time_t value).
 inline constexpr char kMetricsReportingEnabledTimestamp[] =
     "user_experience_metrics.client_id_timestamp";
-// Boolean pref indicating if the user has been migrated from the old metrics
-// consent state to the new three-level metrics reporting consent state.
-inline constexpr char kMetricsReportingMigrationDone[] =
-    "user_experience_metrics.consent_migration_done";
-// Boolean pref indicating the cached state of the
-// kRestructureMetricsConsentSettings feature. Caching is needed to keep the
-// flag immutable throughout the current session.
-inline constexpr char kMetricsConsentRestructureFeatureState[] =
-    "user_experience_metrics.consent_restructure_feature_state";
 // The metrics client session ID.
 inline constexpr char kMetricsSessionID[] =
     "user_experience_metrics.session_id";

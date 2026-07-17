@@ -58,9 +58,6 @@ class ChromeAndroidMetricsProviderTest
         task_runner_(base::MakeRefCounted<base::TestSimpleTaskRunner>()) {
     ChromeAndroidMetricsProvider::RegisterPrefs(pref_service_.registry());
     ukm::UkmService::RegisterPrefs(pref_service_.registry());
-    metrics::MetricsReportingChoiceService::RegisterPrefs(
-        pref_service_.registry());
-    metrics::MetricsReportingChoiceService::ClearCachedFeatureStateForTesting();
   }
   ~ChromeAndroidMetricsProviderTest() override {
     // In case the test played with the activity type, restore it to what it

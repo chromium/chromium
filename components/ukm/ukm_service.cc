@@ -250,7 +250,7 @@ UkmService::UkmService(PrefService* pref_service,
 
   SetShouldUseMetricsConsentRestructure(
       metrics::MetricsReportingChoiceService::
-          ShouldUseMetricsConsentRestructure(pref_service));
+          ShouldUseMetricsConsentRestructure());
 
   bool create_logs_event_observer;
 #ifdef NDEBUG

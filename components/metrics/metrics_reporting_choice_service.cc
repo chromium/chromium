@@ -12,71 +12,19 @@
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/variations/synthetic_trial_registry.h"
 
 namespace metrics {
 
-namespace {
-// Cached state of the metrics consent restructure feature for the current
-// session. This is set only once and remains immutable for the session.
-std::optional<bool> g_session_feature_state;
-}  // namespace
-
 // static
-void MetricsReportingChoiceService::RegisterPrefs(
-    PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kMetricsReportingMigrationDone, false);
-  registry->RegisterBooleanPref(prefs::kMetricsConsentRestructureFeatureState,
-                                false);
-}
-
-// static
-void MetricsReportingChoiceService::InitSyntheticFieldTrial(
-    PrefService* local_state,
-    variations::SyntheticTrialRegistry* synthetic_trial_registry) {
-  CHECK(local_state);
-  const bool feature_enabled = base::FeatureList::IsEnabled(
+bool MetricsReportingChoiceService::
+    IsMetricsConsentRestructureFeatureEnabled() {
+  return base::FeatureList::IsEnabled(
       features::kRestructureMetricsConsentSettings);
-  local_state->SetBoolean(prefs::kMetricsConsentRestructureFeatureState,
-                          feature_enabled);
-  // Register the synthetic field trial so we can evaluate the impact of the
-  // feature using UMA data.
-  CHECK(synthetic_trial_registry);
-  const bool session_state =
-      IsMetricsConsentRestructureFeatureEnabled(local_state);
-  synthetic_trial_registry->RegisterSyntheticFieldTrial(
-      variations::SyntheticTrialGroup(
-          "RestructureMetricsConsent", session_state ? "Enabled" : "Disabled",
-          variations::SyntheticTrialAnnotationMode::kCurrentLog));
 }
 
 // static
-bool MetricsReportingChoiceService::IsMetricsConsentRestructureFeatureEnabled(
-    const PrefService* local_state) {
-  CHECK(local_state);
-  // Note: Since FeatureList is always initialized after this code is run for
-  // the first time, g_session_feature_state will always resolve the Finch flag
-  // state from the previous session. The benefit of doing this is that the
-  // kRestructureMetricsConsentSettings always stays resolvable and immutable
-  // throughout a single session.
-  if (!g_session_feature_state.has_value()) {
-    g_session_feature_state =
-        local_state->GetBoolean(prefs::kMetricsConsentRestructureFeatureState);
-  }
-  return g_session_feature_state.value();
-}
-
-// static
-void MetricsReportingChoiceService::ClearCachedFeatureStateForTesting() {
-  g_session_feature_state.reset();
-}
-
-// static
-bool MetricsReportingChoiceService::ShouldUseMetricsConsentRestructure(
-    const PrefService* local_state) {
-  CHECK(local_state);
-  return IsMetricsConsentRestructureFeatureEnabled(local_state) &&
-         local_state->GetBoolean(prefs::kMetricsReportingMigrationDone);
+bool MetricsReportingChoiceService::ShouldUseMetricsConsentRestructure() {
+  return IsMetricsConsentRestructureFeatureEnabled();
 }
 
 // static

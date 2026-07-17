@@ -51,8 +51,7 @@ class NavigationBlockerDecider
 
 + (BOOL)shouldUseMetricsConsentRestructure {
   return metrics::MetricsReportingChoiceService::
-      ShouldUseMetricsConsentRestructure(
-          GetApplicationContext()->GetLocalState());
+      ShouldUseMetricsConsentRestructure();
 }
 
 @end

@@ -666,10 +666,9 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean("showSecureDnsSetting", true);
   html_source->AddBoolean("showSecureDnsOsSettingLink", false);
-  html_source->AddBoolean(
-      "shouldUseMetricsConsentRestructure",
-      metrics::MetricsReportingChoiceService::
-          ShouldUseMetricsConsentRestructure(g_browser_process->local_state()));
+  html_source->AddBoolean("shouldUseMetricsConsentRestructure",
+                          metrics::MetricsReportingChoiceService::
+                              ShouldUseMetricsConsentRestructure());
 
   ::settings::AddSecureDnsStrings(html_source);
   AddChromeOsSecureDnsStrings(html_source);

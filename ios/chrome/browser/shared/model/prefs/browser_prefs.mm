@@ -240,6 +240,12 @@ inline constexpr char kObsoleteManagementPlatformLastLogTime[] =
 inline constexpr char kObsoleteManagementProfileLastLogTime[] =
     "management.profile.last_log_time";
 
+// Deprecated 07/2026.
+constexpr char kMetricsReportingMigrationDone[] =
+    "user_experience_metrics.consent_migration_done";
+constexpr char kMetricsConsentRestructureFeatureState[] =
+    "user_experience_metrics.consent_restructure_feature_state";
+
 // Renames a boolean pref within a PrefService.
 void RenameBooleanPref(std::string_view target_pref_name,
                        std::string_view source_pref_name,
@@ -276,7 +282,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   signin::IdentityManager::RegisterLocalStatePrefs(registry);
   IOSChromeMetricsServiceClient::RegisterPrefs(registry);
   metrics::RegisterDemographicsLocalStatePrefs(registry);
-  metrics::MetricsReportingChoiceService::RegisterPrefs(registry);
   network_time::NetworkTimeTracker::RegisterPrefs(registry);
   omnibox::RegisterLocalStatePrefs(registry);
   policy::BrowserPolicyConnector::RegisterPrefs(registry);
@@ -499,6 +504,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   // Deprecated 07/2026.
   registry->RegisterIntegerPref(kObsoleteMetricsReportingLevel, 0);
+  registry->RegisterBooleanPref(kMetricsReportingMigrationDone, false);
+  registry->RegisterBooleanPref(kMetricsConsentRestructureFeatureState, false);
   registry->RegisterTimePref(kObsoleteManagementPlatformLastLogTime,
                              base::Time());
 }
@@ -1010,6 +1017,8 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
 
   // Added 07/2026.
   prefs->ClearPref(kObsoleteMetricsReportingLevel);
+  prefs->ClearPref(kMetricsReportingMigrationDone);
+  prefs->ClearPref(kMetricsConsentRestructureFeatureState);
 
   // Added 07/2026.
   prefs->ClearPref(kObsoleteManagementPlatformLastLogTime);
