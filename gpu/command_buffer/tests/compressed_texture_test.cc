@@ -278,20 +278,6 @@ TEST_F(CompressedTextureTestES3, ASTCCompressedSubImageWithBaseLevel) {
     return;
   }
 
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/529932631): Skip on Adreno GPUs for the moment
-  // because of apparent driver bugs causing GL_INVALID_OPERATION
-  // during the glCompressedTexSubImage2D calls. Working around this
-  // bug by making the texture levels a multiple of the ASTC block
-  // size causes this test to no longer reproduce the Imagination
-  // driver bug it was intended to catch.
-  std::string renderer =
-      reinterpret_cast<const char*>(glGetString(GL_RENDERER));
-  if (renderer.find("Adreno") != std::string::npos) {
-    return;
-  }
-#endif
-
   // Use shaders that match the proof-of-concept.
   // They don't use vertex attributes, but gl_VertexID to generate a quad.
   const char* kVS =
@@ -319,14 +305,46 @@ TEST_F(CompressedTextureTestES3, ASTCCompressedSubImageWithBaseLevel) {
   GLint tex_location = glGetUniformLocation(program, "t");
   ASSERT_NE(tex_location, -1);
   glUniform1i(tex_location, 0);
-  GLTestHelper::CheckGLError("Setup program", __LINE__);
+  ASSERT_TRUE(GLTestHelper::CheckGLError("Setup program", __LINE__));
+
+  // Void-extent blocks for ASTC.
+  // Format: 0xFC, 0xFD, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, R_lo, R_hi, G_lo,
+  // G_hi, B_lo, B_hi, A_lo, A_hi Red: (255, 0, 0, 255) -> R=0xFFFF, G=0x0000,
+  // B=0x0000, A=0xFFFF
+  constexpr uint8_t kBlockRed[16] = {0xFC, 0xFD, 0xFF, 0xFF, 0xFF, 0xFF,
+                                     0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00,
+                                     0x00, 0x00, 0xFF, 0xFF};
+  // Green: (0, 255, 0, 255) -> R=0x0000, G=0xFFFF, B=0x0000, A=0xFFFF
+  constexpr uint8_t kBlockGreen[16] = {0xFC, 0xFD, 0xFF, 0xFF, 0xFF, 0xFF,
+                                       0xFF, 0xFF, 0x00, 0x00, 0xFF, 0xFF,
+                                       0x00, 0x00, 0xFF, 0xFF};
 
   // 8x5 ASTC format.
+  // Using 8x160 with 5 levels results in level 4 being 1x10 and level 3 being
+  // 1x20. These levels have a width (1) smaller than the ASTC block width (8),
+  // which triggers PowerVR driver's TwiddleSmallTexture128bpp path. To satisfy
+  // ASTC sizing requirements on Qualcomm/Adreno drivers (where partial
+  // sub-image updates on non-block-aligned levels are rejected with
+  // GL_INVALID_OPERATION), glCompressedTexSubImage2D must update the entire
+  // level dimensions (width = level_width, height = level_height).
   GLenum format = GL_COMPRESSED_RGBA_ASTC_8x5_KHR;
   constexpr GLsizei kWidth = 8;
   constexpr GLsizei kHeight = 160;
   constexpr GLsizei kLevels = 5;
-  std::vector<uint8_t> data(16, 0);
+
+  // Level 4: 1x10 pixels (1x2 blocks = 32 bytes).
+  std::vector<uint8_t> data_red;
+  data_red.reserve(32);
+  data_red.insert(data_red.end(), std::begin(kBlockRed), std::end(kBlockRed));
+  data_red.insert(data_red.end(), std::begin(kBlockRed), std::end(kBlockRed));
+
+  // Level 3: 1x20 pixels (1x4 blocks = 64 bytes).
+  std::vector<uint8_t> data_green;
+  data_green.reserve(64);
+  for (int i = 0; i < 4; ++i) {
+    data_green.insert(data_green.end(), std::begin(kBlockGreen),
+                      std::end(kBlockGreen));
+  }
 
   // Loop multiple times to increase chances of hitting OOB write/crash if
   // workaround fails. Keep textures alive to groom the heap.
@@ -338,29 +356,50 @@ TEST_F(CompressedTextureTestES3, ASTCCompressedSubImageWithBaseLevel) {
     glBindTexture(GL_TEXTURE_2D, textures[i]);
 
     glTexStorage2DEXT(GL_TEXTURE_2D, kLevels, format, kWidth, kHeight);
-    GLTestHelper::CheckGLError("glTexStorage2D", __LINE__);
+    ASSERT_TRUE(GLTestHelper::CheckGLError("glTexStorage2D", __LINE__));
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                    GL_LINEAR_MIPMAP_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 4);
-    GLTestHelper::CheckGLError("glTexParameteri", __LINE__);
+    ASSERT_TRUE(
+        GLTestHelper::CheckGLError("glTexParameteri base level 4", __LINE__));
 
-    // Draw using the program that samples the texture.
+    // Upload Red to level 4 (full level: 1x10 pixels = 32 bytes).
+    glCompressedTexSubImage2D(GL_TEXTURE_2D, 4, 0, 0, 1, 10, format,
+                              static_cast<GLsizei>(data_red.size()),
+                              data_red.data());
+    ASSERT_TRUE(GLTestHelper::CheckGLError("glCompressedTexSubImage2D level 4",
+                                           __LINE__));
+
+    // Upload Green to level 3 (full level: 1x20 pixels = 64 bytes).
+    glCompressedTexSubImage2D(GL_TEXTURE_2D, 3, 0, 0, 1, 20, format,
+                              static_cast<GLsizei>(data_green.size()),
+                              data_green.data());
+    ASSERT_TRUE(GLTestHelper::CheckGLError("glCompressedTexSubImage2D level 3",
+                                           __LINE__));
+
+    // Draw. Since BASE_LEVEL is 4, it should sample from level 4 (Red).
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     glFinish();
-    GLTestHelper::CheckGLError("Draw", __LINE__);
+    ASSERT_TRUE(GLTestHelper::CheckGLError("Draw level 4", __LINE__));
 
-    // Perform sub-image update to level 3.
-    // 1x5 pixels is 1 block for 8x5 ASTC, which is 16 bytes.
-    glCompressedTexSubImage2D(GL_TEXTURE_2D, 3, 0, 0, 1, 5, format,
-                              static_cast<GLsizei>(data.size()), data.data());
-    GLTestHelper::CheckGLError("glCompressedTexSubImage2D level 3", __LINE__);
+    uint8_t expected_red[4] = {255, 0, 0, 255};
+    EXPECT_TRUE(
+        GLTestHelper::CheckPixels(0, 0, 1, 1, 1, expected_red, nullptr));
 
-    // Also try level 4 (which is the base level)
-    glCompressedTexSubImage2D(GL_TEXTURE_2D, 4, 0, 0, 1, 5, format,
-                              static_cast<GLsizei>(data.size()), data.data());
-    GLTestHelper::CheckGLError("glCompressedTexSubImage2D level 4", __LINE__);
+    // Change BASE_LEVEL to 3.
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 3);
+    ASSERT_TRUE(
+        GLTestHelper::CheckGLError("glTexParameteri base level 3", __LINE__));
+
+    // Draw again. Now it should sample from level 3 (Green).
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glFinish();
+    ASSERT_TRUE(GLTestHelper::CheckGLError("Draw level 3", __LINE__));
+
+    uint8_t expected_green[4] = {0, 255, 0, 255};
+    EXPECT_TRUE(
+        GLTestHelper::CheckPixels(0, 0, 1, 1, 1, expected_green, nullptr));
   }
 
   glDeleteTextures(kIterations, textures.data());
