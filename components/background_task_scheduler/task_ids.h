@@ -136,10 +136,6 @@ enum class TaskIds {
   // team_email: android-webview-dev@chromium.org
   // owner: ntfschr@chromium.org, torne@chromium.org
   WEBVIEW_COMPONENT_UPDATE_JOB_ID = 110,
-  // component: Internals>AttributionReporting
-  // team_email: privacy-sandbox-dev@chromium.org
-  // owner: csharrison@chromium.org
-  ATTRIBUTION_PROVIDER_FLUSH_JOB_ID = 111,
   // component: UI>Settings>Privacy
   // team_email: chrome-privacy-controls@google.com
   // owner: zalmashni@google.com, rubindl@chromium.org
