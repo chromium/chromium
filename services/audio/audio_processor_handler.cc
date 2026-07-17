@@ -12,12 +12,40 @@
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_switches.h"
+#include "media/webrtc/ml_model_handle.h"
 #include "media/webrtc/voice_isolation/voice_isolation.h"
 #include "services/audio/ml_model_manager.h"
 #include "services/audio/processing_audio_fifo.h"
 #include "services/audio/voice_isolation_handler.h"
 
 namespace audio {
+namespace {
+
+scoped_refptr<media::MlModelHandle> GetAndLogResidualEchoEstimationModel(
+    MlModelManager* ml_model_manager,
+    bool echo_cancellation) {
+  scoped_refptr<media::MlModelHandle> model;
+  if (ml_model_manager) {
+    model =
+        ml_model_manager->GetModel(mojom::MlModelType::kResidualEchoEstimation);
+  }
+
+  // Only log model availability when ML echo estimation is enabled and echo
+  // cancellation is requested, in order to avoid diluting the metric.
+  // We log it here, in the audio service, because lower layers are also used
+  // from render processes where this feature is not available.
+  if (media::IsAudioProcessMlModelUsageEnabled() &&
+      base::FeatureList::IsEnabled(
+          media::kWebRtcAudioNeuralResidualEchoEstimation) &&
+      echo_cancellation) {
+    base::UmaHistogramBoolean(
+        "Media.Audio.Capture.NeuralResidualEchoEstimationModelAvailable",
+        model != nullptr);
+  }
+  return model;
+}
+
+}  // namespace
 
 AudioProcessorHandler::AudioProcessorHandler(
     const media::AudioProcessingSettings& settings,
@@ -32,10 +60,6 @@ AudioProcessorHandler::AudioProcessorHandler(
     raw_ptr<MlModelManager> ml_model_manager,
     std::unique_ptr<VoiceIsolationHandler> voice_isolation_handler)
     : voice_isolation_handler_(std::move(voice_isolation_handler)),
-      residual_echo_estimation_model_handle_(
-          ml_model_manager ? ml_model_manager->GetModel(
-                                 mojom::MlModelType::kResidualEchoEstimation)
-                           : nullptr),
       audio_processor_(media::AudioProcessor::Create(
           // Unretained is safe because this class owns audio_processor_, so it
           // will be destroyed first.
@@ -45,9 +69,8 @@ AudioProcessorHandler::AudioProcessorHandler(
           settings,
           input_format,
           output_format,
-          residual_echo_estimation_model_handle_
-              ? residual_echo_estimation_model_handle_->Get()
-              : nullptr)),
+          GetAndLogResidualEchoEstimationModel(ml_model_manager,
+                                               settings.echo_cancellation))),
       deliver_processed_audio_callback_(
           std::move(deliver_processed_audio_callback)),
       reference_stream_error_callback_(
@@ -60,17 +83,6 @@ AudioProcessorHandler::AudioProcessorHandler(
         (voice_isolation_handler_ == nullptr));
   if (aecdump_recording_manager_) {
     aecdump_recording_manager->RegisterAecdumpSource(this);
-  }
-  if (media::IsAudioProcessMlModelUsageEnabled() &&
-      settings.echo_cancellation) {
-    // Only log model availability when model management is enabled and echo
-    // cancellation is requested, in order to avoid diluting the metric.
-    // We log it here, in the audio service, because lower layers are also
-    // used from render processes where this feature is not available.
-    bool is_model_available = residual_echo_estimation_model_handle_ != nullptr;
-    base::UmaHistogramBoolean(
-        "Media.Audio.Capture.NeuralResidualEchoEstimationModelAvailable",
-        is_model_available);
   }
 
   // We need to offload work to another thread for heavy processing, ex: echo

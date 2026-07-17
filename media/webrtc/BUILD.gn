@@ -20,6 +20,7 @@ component("webrtc") {
     "constants.h",
     "helpers.cc",
     "helpers.h",
+    "ml_model_handle.h",
     "webrtc_features.cc",
     "webrtc_features.h",
   ]

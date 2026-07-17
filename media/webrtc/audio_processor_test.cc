@@ -35,6 +35,7 @@
 #include "media/base/audio_sample_types.h"
 #include "media/base/media_switches.h"
 #include "media/webrtc/constants.h"
+#include "media/webrtc/ml_model_handle.h"
 #include "media/webrtc/webrtc_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/webrtc/api/make_ref_counted.h"
@@ -519,9 +520,10 @@ class AudioProcessorPlayoutTest : public AudioProcessorTest {
                          LogCallbackForTesting(),
                          params_,
                          params_,
+                         /*neural_residual_echo_estimator_model=*/nullptr,
                          mock_webrtc_apm_,
                          /*needs_playout_reference=*/true,
-                         /*added_aec_delay*/ base::TimeDelta()) {}
+                         /*added_aec_delay=*/base::TimeDelta()) {}
 
   webrtc::scoped_refptr<webrtc::test::MockAudioProcessing> mock_webrtc_apm_;
   AudioProcessor audio_processor_;

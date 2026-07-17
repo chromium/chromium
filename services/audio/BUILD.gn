@@ -205,6 +205,7 @@ source_set("tests") {
     "//services/audio/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/flatbuffers",
     "//third_party/tflite",
   ]
 

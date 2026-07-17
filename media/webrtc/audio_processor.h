@@ -22,6 +22,7 @@
 #include "media/base/audio_processing.h"
 #include "media/base/audio_push_fifo.h"
 #include "media/webrtc/audio_delay_stats_reporter.h"
+#include "media/webrtc/ml_model_handle.h"
 #include "media/webrtc/webrtc_features.h"
 #include "third_party/webrtc/api/task_queue/task_queue_base.h"
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
@@ -86,8 +87,7 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
       const AudioProcessingSettings& settings,
       const media::AudioParameters& input_format,
       const media::AudioParameters& output_format,
-      raw_ptr<const tflite::FlatBufferModel>
-          neural_residual_echo_estimator_model);
+      scoped_refptr<media::MlModelHandle> neural_residual_echo_estimator_model);
 
   // See Create() for details.
   AudioProcessor(
@@ -95,6 +95,7 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
       LogCallback log_callback,
       const media::AudioParameters& input_format,
       const media::AudioParameters& output_format,
+      scoped_refptr<media::MlModelHandle> neural_residual_echo_estimator_model,
       webrtc::scoped_refptr<webrtc::AudioProcessing> webrtc_audio_processing,
       bool needs_playout_reference,
       base::TimeDelta added_aec_delay);
@@ -207,6 +208,10 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
       VALID_CONTEXT_REQUIRED(owning_sequence_);
 
   SEQUENCE_CHECKER(owning_sequence_);
+
+  // ML model used for echo estimation.
+  // If not null, must outlive |webrtc_audio_processing_|.
+  const scoped_refptr<media::MlModelHandle> residual_echo_estimation_model_;
 
   // The WebRTC audio processing module (APM). Performs the bulk of the audio
   // processing and resampling algorithms.

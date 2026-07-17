@@ -35,6 +35,7 @@
 #include "media/base/media_switches.h"
 #include "media/webrtc/constants.h"
 #include "media/webrtc/helpers.h"
+#include "media/webrtc/ml_model_handle.h"
 #include "media/webrtc/webrtc_features.h"
 #include "third_party/tflite/src/tensorflow/lite/model_builder.h"
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
@@ -243,8 +244,7 @@ std::unique_ptr<AudioProcessor> AudioProcessor::Create(
     const AudioProcessingSettings& settings,
     const media::AudioParameters& input_format,
     const media::AudioParameters& output_format,
-    raw_ptr<const tflite::FlatBufferModel>
-        neural_residual_echo_estimator_model) {
+    scoped_refptr<media::MlModelHandle> neural_residual_echo_estimator_model) {
   log_callback.Run(base::StringPrintf(
       "AudioProcessor::Create({multi_channel_capture_processing=%s, "
       "neural_residual_echo_estimator_present=%s})",
@@ -253,11 +253,15 @@ std::unique_ptr<AudioProcessor> AudioProcessor::Create(
 
   auto [webrtc_audio_processing, added_aec_delay] =
       media::CreateWebRtcAudioProcessingModule(
-          settings, neural_residual_echo_estimator_model);
+          settings, neural_residual_echo_estimator_model
+                        ? &neural_residual_echo_estimator_model->Get()
+                        : nullptr);
 
   return std::make_unique<AudioProcessor>(
       std::move(deliver_processed_audio_callback), std::move(log_callback),
-      input_format, output_format, std::move(webrtc_audio_processing),
+      input_format, output_format,
+      std::move(neural_residual_echo_estimator_model),
+      std::move(webrtc_audio_processing),
       ApmNeedsPlayoutReference(webrtc_audio_processing.get()), added_aec_delay);
 }
 
@@ -266,10 +270,13 @@ AudioProcessor::AudioProcessor(
     LogCallback log_callback,
     const media::AudioParameters& input_format,
     const media::AudioParameters& output_format,
+    scoped_refptr<media::MlModelHandle> neural_residual_echo_estimator_model,
     webrtc::scoped_refptr<webrtc::AudioProcessing> webrtc_audio_processing,
     bool needs_playout_reference,
     base::TimeDelta added_aec_delay)
-    : webrtc_audio_processing_(webrtc_audio_processing),
+    : residual_echo_estimation_model_(
+          std::move(neural_residual_echo_estimator_model)),
+      webrtc_audio_processing_(webrtc_audio_processing),
       needs_playout_reference_(needs_playout_reference),
       log_callback_(std::move(log_callback)),
       added_aec_delay_(added_aec_delay),

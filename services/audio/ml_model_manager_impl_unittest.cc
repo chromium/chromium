@@ -11,6 +11,7 @@
 #include "base/path_service.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
+#include "media/webrtc/ml_model_handle.h"
 #include "services/audio/ml_model_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/tflite/src/tensorflow/lite/model_builder.h"
@@ -86,11 +87,10 @@ TEST_P(MlModelManagerImplTest, SetGetReturnsModel) {
   ASSERT_TRUE(RunUntilTasksFinishOrTimeOut());
 
   // Happy base case: Setting a model returns that model.
-  std::unique_ptr<MlModelHandle> model_handle =
-      ml_model_manager_->GetModel(model_type());
-  const tflite::FlatBufferModel* model = model_handle->Get();
-  EXPECT_NE(model, nullptr);
-  EXPECT_EQ(model->GetModel()->description()->str(), "model.tflite");
+  auto model_handle = ml_model_manager_->GetModel(model_type());
+  ASSERT_TRUE(model_handle);
+  const tflite::FlatBufferModel& model = model_handle->Get();
+  EXPECT_EQ(model.GetModel()->description()->str(), "model.tflite");
 }
 
 TEST_P(MlModelManagerImplTest, SetGetGetReturnsSameModel) {
@@ -99,15 +99,13 @@ TEST_P(MlModelManagerImplTest, SetGetGetReturnsSameModel) {
   ml_model_manager_->SetModel(model_type(), std::move(model_file));
   ASSERT_TRUE(RunUntilTasksFinishOrTimeOut());
 
-  std::unique_ptr<MlModelHandle> model_handle1 =
-      ml_model_manager_->GetModel(model_type());
+  auto model_handle1 = ml_model_manager_->GetModel(model_type());
 
   // Calling Get again returns the same model.
-  std::unique_ptr<MlModelHandle> model_handle2 =
-      ml_model_manager_->GetModel(model_type());
-  const tflite::FlatBufferModel* model = model_handle2->Get();
-  EXPECT_NE(model, nullptr);
-  EXPECT_EQ(model->GetModel()->description()->str(), "model.tflite");
+  auto model_handle2 = ml_model_manager_->GetModel(model_type());
+  ASSERT_TRUE(model_handle2);
+  const tflite::FlatBufferModel& model = model_handle2->Get();
+  EXPECT_EQ(model.GetModel()->description()->str(), "model.tflite");
 }
 
 TEST_P(MlModelManagerImplTest, SetSetGetReturnsSecondModel) {
@@ -121,11 +119,10 @@ TEST_P(MlModelManagerImplTest, SetSetGetReturnsSecondModel) {
   ASSERT_TRUE(RunUntilTasksFinishOrTimeOut());
 
   // The second model replaces the first model.
-  std::unique_ptr<MlModelHandle> model_handle =
-      ml_model_manager_->GetModel(model_type());
-  const tflite::FlatBufferModel* model = model_handle->Get();
-  EXPECT_NE(model, nullptr);
-  EXPECT_EQ(model->GetModel()->description()->str(), "model2.tflite");
+  auto model_handle = ml_model_manager_->GetModel(model_type());
+  ASSERT_TRUE(model_handle);
+  const tflite::FlatBufferModel& model = model_handle->Get();
+  EXPECT_EQ(model.GetModel()->description()->str(), "model2.tflite");
 }
 
 TEST_P(MlModelManagerImplTest, SetGetSetGetReturnsSecondModel) {
@@ -137,21 +134,19 @@ TEST_P(MlModelManagerImplTest, SetGetSetGetReturnsSecondModel) {
   ml_model_manager_->SetModel(model_type(), std::move(model_file1));
   ASSERT_TRUE(RunUntilTasksFinishOrTimeOut());
 
-  std::unique_ptr<MlModelHandle> model_handle1 =
-      ml_model_manager_->GetModel(model_type());
-  const tflite::FlatBufferModel* model1 = model_handle1->Get();
-  EXPECT_NE(model1, nullptr);
-  EXPECT_EQ(model1->GetModel()->description()->str(), "model1.tflite");
+  auto model_handle1 = ml_model_manager_->GetModel(model_type());
+  ASSERT_TRUE(model_handle1);
+  const tflite::FlatBufferModel& model1 = model_handle1->Get();
+  EXPECT_EQ(model1.GetModel()->description()->str(), "model1.tflite");
 
   ml_model_manager_->SetModel(model_type(), std::move(model_file2));
   ASSERT_TRUE(RunUntilTasksFinishOrTimeOut());
 
   // The second model is served to new clients.
-  std::unique_ptr<MlModelHandle> model_handle2 =
-      ml_model_manager_->GetModel(model_type());
-  const tflite::FlatBufferModel* model2 = model_handle2->Get();
-  EXPECT_NE(model2, nullptr);
-  EXPECT_EQ(model2->GetModel()->description()->str(), "model2.tflite");
+  auto model_handle2 = ml_model_manager_->GetModel(model_type());
+  ASSERT_TRUE(model_handle2);
+  const tflite::FlatBufferModel& model2 = model_handle2->Get();
+  EXPECT_EQ(model2.GetModel()->description()->str(), "model2.tflite");
 }
 
 TEST_P(MlModelManagerImplTest, StopSetGetReturnsModel) {
@@ -166,11 +161,10 @@ TEST_P(MlModelManagerImplTest, StopSetGetReturnsModel) {
   ASSERT_TRUE(RunUntilTasksFinishOrTimeOut());
 
   // Model is loaded, since stop was called before a model was served.
-  std::unique_ptr<MlModelHandle> model_handle =
-      ml_model_manager_->GetModel(model_type());
-  const tflite::FlatBufferModel* model = model_handle->Get();
-  EXPECT_NE(model, nullptr);
-  EXPECT_EQ(model->GetModel()->description()->str(), "model.tflite");
+  auto model_handle = ml_model_manager_->GetModel(model_type());
+  ASSERT_TRUE(model_handle);
+  const tflite::FlatBufferModel& model = model_handle->Get();
+  EXPECT_EQ(model.GetModel()->description()->str(), "model.tflite");
 }
 
 TEST_P(MlModelManagerImplTest, SetGetStopGetReturnsNull) {
@@ -180,10 +174,10 @@ TEST_P(MlModelManagerImplTest, SetGetStopGetReturnsNull) {
   ml_model_manager_->SetModel(model_type(), std::move(model_file));
   ASSERT_TRUE(RunUntilTasksFinishOrTimeOut());
 
-  std::unique_ptr<MlModelHandle> model_handle =
-      ml_model_manager_->GetModel(model_type());
-  const tflite::FlatBufferModel* model = model_handle->Get();
-  EXPECT_NE(model->GetModel(), nullptr);
+  auto model_handle = ml_model_manager_->GetModel(model_type());
+  ASSERT_TRUE(model_handle);
+  const tflite::FlatBufferModel& model = model_handle->Get();
+  EXPECT_NE(model.GetModel(), nullptr);
 
   ml_model_manager_->StopServingModel(model_type());
   ASSERT_TRUE(RunUntilTasksFinishOrTimeOut());
@@ -191,9 +185,9 @@ TEST_P(MlModelManagerImplTest, SetGetStopGetReturnsNull) {
   // No models served after Stop.
   EXPECT_EQ(ml_model_manager_->GetModel(model_type()), nullptr);
 
-  // The old pointer should still be served. We cannot directly check this, but
-  // the test should at least not crash when we use the pointer here.
-  EXPECT_EQ(model->GetModel()->description()->str(), "model.tflite");
+  // The old reference should still be valid. We cannot directly check this, but
+  // the test should at least not crash when we use the reference here.
+  EXPECT_EQ(model.GetModel()->description()->str(), "model.tflite");
 }
 
 TEST_P(MlModelManagerImplTest, SetGetStopSetGetReturnsSecondModel) {
@@ -211,11 +205,10 @@ TEST_P(MlModelManagerImplTest, SetGetStopSetGetReturnsSecondModel) {
   ASSERT_TRUE(RunUntilTasksFinishOrTimeOut());
 
   // The second model, set after the stop signal, is served.
-  std::unique_ptr<MlModelHandle> model_handle =
-      ml_model_manager_->GetModel(model_type());
-  const tflite::FlatBufferModel* model = model_handle->Get();
-  EXPECT_NE(model, nullptr);
-  EXPECT_EQ(model->GetModel()->description()->str(), "model2.tflite");
+  auto model_handle = ml_model_manager_->GetModel(model_type());
+  ASSERT_TRUE(model_handle);
+  const tflite::FlatBufferModel& model = model_handle->Get();
+  EXPECT_EQ(model.GetModel()->description()->str(), "model2.tflite");
 }
 
 TEST_P(MlModelManagerImplTest, SetGetWithInvalidModelReturnsNull) {

@@ -9,3 +9,9 @@ include_rules = [
    "+third_party/tflite",
    "+ui/base",
 ]
+
+specific_include_rules = {
+  ".*unittest\\..*": [
+    "+third_party/flatbuffers",
+  ],
+}

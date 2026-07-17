@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "media/audio/aecdump_recording_manager.h"
 #include "media/base/audio_glitch_info.h"
@@ -24,7 +25,6 @@ class AudioParameters;
 }  // namespace media
 
 namespace audio {
-class MlModelHandle;
 class MlModelManager;
 class ProcessingAudioFifo;
 class VoiceIsolationHandler;
@@ -196,9 +196,6 @@ class AudioProcessorHandler final : public ReferenceOutput::Listener,
   SEQUENCE_CHECKER(owning_sequence_);
 
   std::unique_ptr<VoiceIsolationHandler> voice_isolation_handler_;
-
-  // Lifetime management handle for ML models. Must outlive audio_processor_.
-  const std::unique_ptr<MlModelHandle> residual_echo_estimation_model_handle_;
 
   // The audio processor is accessed on all threads (OS capture thread, OS
   // playout thread, owning sequence) and created / destroyed on the owning

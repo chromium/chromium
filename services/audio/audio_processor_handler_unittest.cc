@@ -15,12 +15,15 @@
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
+#include "media/webrtc/ml_model_handle.h"
 #include "media/webrtc/voice_isolation/voice_isolation.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/audio/ml_model_manager.h"
 #include "services/audio/voice_isolation_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
+#include "third_party/tflite/src/tensorflow/lite/model_builder.h"
 
 using ::testing::_;
 using ::testing::Eq;
@@ -62,25 +65,38 @@ namespace {
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 
-class FakeMlModelHandle : public MlModelHandle {
+class FakeMlModelHandle : public media::MlModelHandle {
  public:
-  FakeMlModelHandle() = default;
-  ~FakeMlModelHandle() override = default;
+  FakeMlModelHandle() {
+    // Construct a FlatBuffer holding a valid, empty model.
+    flatbuffers::FlatBufferBuilder buffer_builder(1024);
+    tflite::ModelBuilder model_builder(buffer_builder);
+    tflite::FinishModelBuffer(buffer_builder, model_builder.Finish());
 
-  const tflite::FlatBufferModel* Get() override {
-    // Return a dummy non-null pointer so that model verification passes.
-    return reinterpret_cast<const tflite::FlatBufferModel*>(0x1234);
+    // Initialize a buffer-backed FlatBufferModel from the FlatBuffer.
+    auto span = buffer_builder.GetBufferSpan();
+    buffer_ = std::vector<uint8_t>(span.begin(), span.end());
+    model_ = tflite::FlatBufferModel::VerifyAndBuildFromBuffer(
+        reinterpret_cast<char*>(buffer_.data()), buffer_.size());
+    CHECK(model_);
   }
+
+  const tflite::FlatBufferModel& Get() override { return *model_; }
+
+ private:
+  ~FakeMlModelHandle() override = default;
+  std::vector<uint8_t> buffer_;
+  std::unique_ptr<tflite::FlatBufferModel> model_;
 };
 
 class MockMlModelManager : public MlModelManager {
  public:
   MockMlModelManager() {
     ON_CALL(*this, GetModel(testing::_)).WillByDefault([](mojom::MlModelType) {
-      return std::make_unique<FakeMlModelHandle>();
+      return base::MakeRefCounted<FakeMlModelHandle>();
     });
   }
-  MOCK_METHOD(std::unique_ptr<MlModelHandle>,
+  MOCK_METHOD(scoped_refptr<media::MlModelHandle>,
               GetModel,
               (mojom::MlModelType model_type),
               (override));

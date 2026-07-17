@@ -9,11 +9,15 @@
 #include <optional>
 
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "media/base/audio_glitch_info.h"
 
-namespace audio {
+namespace media {
 class MlModelHandle;
+}  // namespace media
+
+namespace audio {
 class MlModelManager;
 }  // namespace audio
 
@@ -57,11 +61,11 @@ class VoiceIsolationHandler {
 
  private:
   explicit VoiceIsolationHandler(
-      std::unique_ptr<MlModelHandle> model_handle,
+      scoped_refptr<media::MlModelHandle> model_handle,
       const media::AudioParameters& output_params,
       DeliverProcessedAudioCallback deliver_processed_audio_callback);
 
-  const std::unique_ptr<MlModelHandle> model_handle_;
+  const scoped_refptr<media::MlModelHandle> model_handle_;
   const std::unique_ptr<media::VoiceIsolation> voice_isolation_;
   const DeliverProcessedAudioCallback deliver_processed_audio_callback_;
   std::unique_ptr<media::AudioBus> output_bus_;
