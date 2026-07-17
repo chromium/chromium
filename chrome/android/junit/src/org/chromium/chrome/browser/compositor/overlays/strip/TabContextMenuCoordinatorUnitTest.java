@@ -2624,6 +2624,43 @@ public class TabContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Context Menu")
+    public void testCloseOtherTabs_mouseClick() {
+        mTabModel.addTab(
+                mTab1, -1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                mTab2, -1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                mTabOutsideOfGroup,
+                -1,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+
+        long downMotionTime = SystemClock.uptimeMillis();
+        FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
+        listViewTouchTracker.setLastSingleTapUpInfo(
+                MotionEventTestUtils.createMouseMotionInfo(
+                        downMotionTime,
+                        /* eventTime= */ downMotionTime + 50,
+                        MotionEvent.ACTION_UP));
+
+        mOnItemClickedCallback.onClick(
+                R.id.close_other_tabs_menu_id,
+                new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)),
+                /* collaborationId= */ null,
+                listViewTouchTracker);
+
+        verify(mTabRemover)
+                .closeTabs(
+                        TabClosureParams.closeTabs(List.of(mTab2, mTabOutsideOfGroup))
+                                .allowUndo(false)
+                                .hideTabGroups(true)
+                                .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP)
+                                .build(),
+                        /* allowDialog= */ true);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
     public void testCloseOtherTabs_multipleTabs_hidden() {
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
@@ -2696,6 +2733,43 @@ public class TabContextMenuCoordinatorUnitTest {
         verify(mTabRemover)
                 .closeTabs(
                         TabClosureParams.closeTabs(List.of(mTab2, mTabOutsideOfGroup))
+                                .hideTabGroups(true)
+                                .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP)
+                                .build(),
+                        /* allowDialog= */ true);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testCloseTabsToTheRight_mouseClick() {
+        mTabModel.addTab(
+                mTab1, -1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                mTab2, -1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                mTabOutsideOfGroup,
+                -1,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+
+        long downMotionTime = SystemClock.uptimeMillis();
+        FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
+        listViewTouchTracker.setLastSingleTapUpInfo(
+                MotionEventTestUtils.createMouseMotionInfo(
+                        downMotionTime,
+                        /* eventTime= */ downMotionTime + 50,
+                        MotionEvent.ACTION_UP));
+
+        mOnItemClickedCallback.onClick(
+                R.id.close_tabs_to_the_right_menu_id,
+                new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)),
+                /* collaborationId= */ null,
+                listViewTouchTracker);
+
+        verify(mTabRemover)
+                .closeTabs(
+                        TabClosureParams.closeTabs(List.of(mTab2, mTabOutsideOfGroup))
+                                .allowUndo(false)
                                 .hideTabGroups(true)
                                 .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP)
                                 .build(),

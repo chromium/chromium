@@ -343,9 +343,11 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                     || menuId == R.id.close_all_incognito_tabs_menu_id) {
                 closeAllTabsItemCallback(tabModel, tabClosingSource);
             } else if (menuId == R.id.close_other_tabs_menu_id) {
-                closeOtherTabsItemCallback(tabModel, tabIds, tabClosingSource);
+                closeOtherTabsItemCallback(
+                        tabModel, tabIds, listViewTouchTracker, tabClosingSource);
             } else if (menuId == R.id.close_tabs_to_the_right_menu_id) {
-                closeTabsToTheRightItemCallback(tabModel, tabIds, tabClosingSource);
+                closeTabsToTheRightItemCallback(
+                        tabModel, tabIds, listViewTouchTracker, tabClosingSource);
             } else if (menuId == R.id.new_tab_to_the_right_menu_id) {
                 newTabToTheRightItemCallback(tabModel, anchorInfo);
             } else if (menuId == R.id.add_tab_to_reading_list_menu_id) {
@@ -458,16 +460,21 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
     }
 
     private static void closeOtherTabsItemCallback(
-            TabModel tabModel, List<Integer> tabIds, @TabClosingSource int tabClosingSource) {
+            TabModel tabModel,
+            List<Integer> tabIds,
+            @Nullable ListViewTouchTracker listViewTouchTracker,
+            @TabClosingSource int tabClosingSource) {
         List<Tab> otherTabs = new ArrayList<>();
         for (Tab tab : tabModel) {
             if (!tabIds.contains(tab.getId())) {
                 otherTabs.add(tab);
             }
         }
+        boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(listViewTouchTracker);
         tabModel.getTabRemover()
                 .closeTabs(
                         TabClosureParams.closeTabs(otherTabs)
+                                .allowUndo(allowUndo)
                                 .hideTabGroups(true)
                                 .tabClosingSource(tabClosingSource)
                                 .build(),
@@ -475,7 +482,10 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
     }
 
     private static void closeTabsToTheRightItemCallback(
-            TabModel tabModel, List<Integer> tabIds, @TabClosingSource int tabClosingSource) {
+            TabModel tabModel,
+            List<Integer> tabIds,
+            @Nullable ListViewTouchTracker listViewTouchTracker,
+            @TabClosingSource int tabClosingSource) {
         List<Tab> otherTabs = new ArrayList<>();
         boolean foundPivot = false;
         for (Tab tab : tabModel) {
@@ -488,9 +498,11 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                 otherTabs.add(tab);
             }
         }
+        boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(listViewTouchTracker);
         tabModel.getTabRemover()
                 .closeTabs(
                         TabClosureParams.closeTabs(otherTabs)
+                                .allowUndo(allowUndo)
                                 .hideTabGroups(true)
                                 .tabClosingSource(tabClosingSource)
                                 .build(),
