@@ -450,6 +450,8 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver,
 
   base::MemoryConsumerRegistration memory_consumer_registration_;
 
+  bool is_starting_prerendering_ = false;
+
   base::ObserverList<Observer> observers_;
 
   // Decrements the reuse count for the initiator's process.

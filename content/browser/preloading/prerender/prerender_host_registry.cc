@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/auto_reset.h"
 #include "base/byte_size.h"
 #include "base/check.h"
 #include "base/check_op.h"
@@ -923,6 +924,11 @@ PrerenderHostId PrerenderHostRegistry::CreateAndStartHostForNewTab(
 
 PrerenderHostId PrerenderHostRegistry::StartPrerendering(
     PrerenderHostId prerender_host_id) {
+  if (is_starting_prerendering_) {
+    return PrerenderHostId();
+  }
+  base::AutoReset<bool> auto_reset(&is_starting_prerendering_, true);
+
   // TODO(crbug.com/40260412): Don't start prerendering if the current
   // memory pressure level is critical, and then retry prerendering when the
   // memory pressure level goes down.
