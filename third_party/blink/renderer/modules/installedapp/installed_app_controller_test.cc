@@ -73,10 +73,9 @@ class InstalledAppControllerTest : public testing::Test {
 };
 
 TEST_F(InstalledAppControllerTest, DestroyContextBeforeCallback) {
-  auto* controller = InstalledAppController::From(*GetFrame().DomWindow());
-  auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolver<IDLSequence<RelatedApplication>>>(GetScriptState());
-  controller->GetInstalledRelatedApps(resolver);
+  InstalledAppController::getInstalledRelatedApps(
+      GetScriptState(), *GetFrame().DomWindow()->navigator(),
+      ASSERT_NO_EXCEPTION);
 
   ExecutionContext::From(GetScriptState())->NotifyContextDestroyed();
 

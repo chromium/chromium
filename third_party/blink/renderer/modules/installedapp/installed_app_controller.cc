@@ -13,6 +13,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/modules/manifest/manifest_manager.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -20,20 +21,43 @@ namespace blink {
 
 InstalledAppController::~InstalledAppController() = default;
 
-void InstalledAppController::GetInstalledRelatedApps(
-    ScriptPromiseResolver<IDLSequence<RelatedApplication>>* resolver) {
-  // When detached, the fetch logic is no longer valid.
-  if (!GetSupplementable()->GetFrame()) {
-    // Resolving a promise is a no-op with a detached frame.
-    return;
+// static
+ScriptPromise<IDLSequence<RelatedApplication>>
+InstalledAppController::getInstalledRelatedApps(
+    ScriptState* script_state,
+    Navigator& navigator,
+    ExceptionState& exception_state) {
+  // [SecureContext] from the IDL ensures this.
+  CHECK(ExecutionContext::From(script_state)->IsSecureContext());
+
+  if (!navigator.DomWindow()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "The object is no longer associated to a document.");
+    return EmptyPromise();
   }
+
+  if (!navigator.DomWindow()->GetFrame()->IsOutermostMainFrame()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "getInstalledRelatedApps() is only supported in "
+        "top-level browsing contexts.");
+    return EmptyPromise();
+  }
+
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolver<IDLSequence<RelatedApplication>>>(
+      script_state, exception_state.GetContext());
+
+  auto* app_controller = From(*navigator.DomWindow());
 
   // Get the list of related applications from the manifest.
   // Upon returning, filter the result list to those apps that are installed.
-  ManifestManager::From(*GetSupplementable())
+  ManifestManager::From(*navigator.DomWindow())
       ->RequestManifest(
           BindOnce(&InstalledAppController::OnGetManifestForRelatedApps,
-                   WrapPersistent(this), WrapPersistent(resolver)));
+                   WrapPersistent(app_controller), WrapPersistent(resolver)));
+  return resolver->Promise();
 }
 
 InstalledAppController* InstalledAppController::From(LocalDOMWindow& window) {
