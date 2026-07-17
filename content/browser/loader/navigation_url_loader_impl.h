@@ -407,9 +407,6 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
     State state() const { return state_; }
 
     blink::ThrottlingURLLoader* url_loader() const { return url_loader_.get(); }
-    mojo::PendingRemote<network::mojom::URLLoader>* response_url_loader() {
-      return &response_url_loader_;
-    }
 
     // Cancel the current loading, if any.
     // Any associated pending operations should be cancelled.
@@ -511,16 +508,6 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
     // See also the comment at `State` above for details.
     std::unique_ptr<blink::ThrottlingURLLoader> url_loader_;
     mojo::Receiver<network::mojom::URLLoaderClient> response_loader_receiver_;
-
-    // URLLoader instance for response loaders, i.e loaders created for handling
-    // responses received from the network URLLoader.
-    //
-    // NOTE: This looks like coupled with
-    // `LoaderHolder::response_loader_receiver_` but actually isn't, because
-    // `response_url_loader_` is never touched during
-    // `MaybeCreateLoaderForResponse()` (at least within Chromium codesearch).
-    // For now this is kept here as-is but probably can be removed.
-    mojo::PendingRemote<network::mojom::URLLoader> response_url_loader_;
 
     std::optional<network::HttpRequestHeadersUpdateParams>
         headers_update_params_;

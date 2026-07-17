@@ -696,7 +696,6 @@ bool HttpsUpgradesInterceptor::MaybeCreateLoaderForResponse(
     const network::ResourceRequest& request,
     network::mojom::URLResponseHeadPtr* response_head,
     mojo::ScopedDataPipeConsumerHandle* response_body,
-    mojo::PendingRemote<network::mojom::URLLoader>* loader,
     mojo::PendingReceiver<network::mojom::URLLoaderClient>* client_receiver,
     blink::ThrottlingURLLoader* url_loader) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

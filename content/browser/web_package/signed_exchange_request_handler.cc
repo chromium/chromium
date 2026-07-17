@@ -81,7 +81,6 @@ bool SignedExchangeRequestHandler::MaybeCreateLoaderForResponse(
     const network::ResourceRequest& request,
     network::mojom::URLResponseHeadPtr* response_head,
     mojo::ScopedDataPipeConsumerHandle* response_body,
-    mojo::PendingRemote<network::mojom::URLLoader>* loader,
     mojo::PendingReceiver<network::mojom::URLLoaderClient>* client_receiver,
     blink::ThrottlingURLLoader* url_loader,
     bool* skip_other_interceptors) {

@@ -171,12 +171,11 @@ class NavigationLoaderInterceptorBrowserContainer
       const network::ResourceRequest& request,
       network::mojom::URLResponseHeadPtr* response_head,
       mojo::ScopedDataPipeConsumerHandle* response_body,
-      mojo::PendingRemote<network::mojom::URLLoader>* loader,
       mojo::PendingReceiver<network::mojom::URLLoaderClient>* client_receiver,
       blink::ThrottlingURLLoader* url_loader,
       bool* skip_other_interceptors) override {
     return browser_interceptor_->MaybeCreateLoaderForResponse(
-        status, request, response_head, response_body, loader, client_receiver,
+        status, request, response_head, response_body, client_receiver,
         url_loader);
   }
 
@@ -1104,11 +1103,10 @@ NavigationURLLoaderImpl::LoaderHolder::Unbind() {
     // TODO(https://crbug.com/40251638): Clean up this behavior if needed.
     return url_loader_->Unbind();
   } else {
-    // TODO(https://crbug.com/434182226): Turn this to `CHECK()`.
     DUMP_WILL_BE_CHECK_EQ(state_, State::kLoadingViaReceiver);
     state_ = State::kUnbound;
     return network::mojom::URLLoaderClientEndpoints::New(
-        std::move(response_url_loader_), response_loader_receiver_.Unbind());
+        mojo::NullRemote(), response_loader_receiver_.Unbind());
   }
 }
 
@@ -1933,8 +1931,8 @@ bool NavigationURLLoaderImpl::MaybeCreateLoaderForResponse(
 
     if (interceptor->MaybeCreateLoaderForResponse(
             status, resource_request(), response, &response_body_,
-            loader_holder_.response_url_loader(), &response_client_receiver,
-            loader_holder_.url_loader(), &skip_other_interceptors)) {
+            &response_client_receiver, loader_holder_.url_loader(),
+            &skip_other_interceptors)) {
       loader_holder_.BindReceiver(
           std::move(response_client_receiver),
           GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
