@@ -542,11 +542,22 @@ source_set("unit_tests") {
   }
 
   if (is_android) {
-    sources += [ "signin_ui_delegate_impl_android_unittest.cc" ]
+    sources += [
+      "android/cross_device_signin_flow_navigation_throttle_unittest.cc",
+      "android/signin_manager_android_unittest.cc",
+      "signin_ui_delegate_impl_android_unittest.cc",
+    ]
     deps += [
+      "//chrome/browser/bookmarks",
       "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/offline_pages",
+      "//chrome/browser/password_manager/factories",
+      "//chrome/browser/reading_list",
       "//chrome/browser/ui/android/tab_model:test_support",
       "//components/contextual_tasks/public:feature_list",
+      "//components/reading_list/core",
+      "//components/reading_list/core:test_support",
+      "//services/tracing/public/cpp/background_tracing",
     ]
   }
 
