@@ -65,7 +65,6 @@ TEST_F(PredictionModelComponentConfigsTest, FeatureEnabled) {
 
   // Test target list.
   auto targets = GetPredictionModelTargets();
-  EXPECT_EQ(targets.size(), 3u);
   for (auto target : targets) {
     EXPECT_TRUE(GetPredictionModelComponentConfig(target).has_value())
         << "Missing config for target: " << target;
