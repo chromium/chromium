@@ -554,6 +554,14 @@ crbug.com/510186413 [ linux ] Pixel_PaintWorkletTransform [ RetryOnFailure ]
 crbug.com/510186413 [ mac ] Pixel_PaintWorkletTransform [ RetryOnFailure ]
 crbug.com/510186413 [ win ] Pixel_PaintWorkletTransform [ RetryOnFailure ]
 
+# Flakily loses DevTools websocket connection during browser startup.
+crbug.com/536089774 [ android android-pixel-10 android-webview-instrumentation ] Pixel_Video_AV1 [ RetryOnFailure ]
+crbug.com/536089774 [ android android-pixel-10 android-webview-instrumentation ] Pixel_Video_BackdropFilter [ RetryOnFailure ]
+crbug.com/536089774 [ android android-pixel-10 android-webview-instrumentation ] Pixel_Video_HEVC [ RetryOnFailure ]
+crbug.com/536089774 [ android android-pixel-10 android-webview-instrumentation ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ RetryOnFailure ]
+crbug.com/536089774 [ android android-pixel-10 android-webview-instrumentation ] Pixel_Video_MP4_FourColors_Rot_180 [ RetryOnFailure ]
+crbug.com/536089774 [ android android-pixel-10 android-webview-instrumentation ] Pixel_ViewTransitionsCapture [ RetryOnFailure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
