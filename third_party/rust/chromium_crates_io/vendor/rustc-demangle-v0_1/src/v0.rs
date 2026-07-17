@@ -900,6 +900,14 @@ impl<'a, 'b, 's> Printer<'a, 'b, 's> {
     }
 
     fn print_type(&mut self) -> fmt::Result {
+        // The splat feature is unstable and its mangling is subject to change
+        // FIXME(splat):
+        // - for efficiency we might want to use a letter that can't occur in any type, rather than
+        //   taking an unused letter
+        // - splat isn't implemented for legacy mangling
+        if self.eat(b'w') {
+            self.print("#[splat] ")?;
+        }
         let tag = parse!(self, next);
 
         if let Some(ty) = basic_type(tag) {
@@ -1364,6 +1372,30 @@ mod tests {
         t_nohash_type!("WmRm1_m9_", "u32 is 1..=9");
         t_nohash_type!("WmORm1_m2_Rm5_m6_E", "u32 is 1..=2 | 5..=6");
         assert!(::v0::demangle("_RMC0WmORm1_m2_Rm5_m6_").is_err());
+    }
+
+    #[test]
+    fn demangle_splat() {
+        t_nohash!(
+            "_RNvMNtCs5CcWRJzwAYz_4core6optionINtB2_6OptionFwTlEEuE6unwrapCsiksvdpJ6Jnj_14splat_mangling",
+            "<core::option::Option<fn(#[splat] (i32,))>>::unwrap"
+        );
+        t_nohash!(
+            "_RMNvCsiksvdpJ6Jnj_14splat_mangling4mainINtB0_4TypeFwThmEEuE",
+            "<splat_mangling::main::Type<fn(#[splat] (u8, u32))>>"
+        );
+        t_nohash!(
+            "_RMs0_NvCsiksvdpJ6Jnj_14splat_mangling4mainINtB3_4TypeFwTThmEEEuE",
+            "<splat_mangling::main::Type<fn(#[splat] ((u8, u32),))>>"
+        );
+        t_nohash!(
+            "_RMs2_NvCsiksvdpJ6Jnj_14splat_mangling4mainINtB3_4TypePFwTmaEEuE",
+            "<splat_mangling::main::Type<*const fn(#[splat] (u32, i8))>>"
+        );
+        t_nohash!(
+            "_RMs4_NvCsiksvdpJ6Jnj_14splat_mangling4mainINtB3_4TypeFwTmaEdEuE",
+            "<splat_mangling::main::Type<fn(#[splat] (u32, i8), f64)>>"
+        );
     }
 
     #[test]
