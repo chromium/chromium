@@ -89,6 +89,7 @@ class AutofillAiManager
       UpdateSuggestionsCallback update_suggestions_callback);
   virtual void OnFormSeen(const FormStructure& form);
   virtual void OnFormInteracted(const FormStructure& form,
+                                const AutofillField& field,
                                 ukm::SourceId ukm_source_id);
   virtual void OnDidFillSuggestion(
       const EntityInstance& entity,
@@ -237,6 +238,12 @@ class AutofillAiManager
                                     FieldGlobalId field_id,
                                     UpdateSuggestionsCallback callback);
 
+  // Returns the EntityType for which Autofill AI could potentially offer an
+  // import prompt (based on the field type), if any.
+  std::optional<EntityType> GetSupportedEntityTypeForField(
+      const FormStructure& form,
+      const AutofillField& field) const;
+
   // A raw reference to the client, which owns `this` and therefore outlives
   // it.
   const raw_ref<AutofillClient> client_;
@@ -269,6 +276,11 @@ class AutofillAiManager
   // Tracks the UKM source ID for which the first interaction timing metric was
   // last logged, ensuring it is logged at most once per page.
   ukm::SourceId last_logged_ukm_source_id_for_interaction_ =
+      ukm::kInvalidSourceId;
+
+  // Tracks the UKM source ID for which the prefetch cache readiness metric was
+  // last logged, ensuring it is logged at most once per page.
+  ukm::SourceId last_logged_ukm_source_id_for_cache_readiness_ =
       ukm::kInvalidSourceId;
 
   // Callback to update the shown suggestions.

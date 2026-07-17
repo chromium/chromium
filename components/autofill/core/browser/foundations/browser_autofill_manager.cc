@@ -1208,7 +1208,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     AutofillMetrics::LogParsedFormUntilInteractionTiming(
         base::TimeTicks::Now() - form_structure->form_parsed_timestamp());
     if (AutofillAiManager* ai_manager = client().GetAutofillAiManager()) {
-      ai_manager->OnFormInteracted(*form_structure,
+      ai_manager->OnFormInteracted(*form_structure, *autofill_field,
                                    driver().GetPageUkmSourceId());
     }
     if (autofill_metrics::FormEventLoggerBase* logger =

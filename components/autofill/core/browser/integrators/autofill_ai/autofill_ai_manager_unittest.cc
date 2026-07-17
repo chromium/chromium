@@ -36,6 +36,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager_test_api.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/network/autofill_ai/autofill_ai_personal_context_access_manager.h"
 #include "components/autofill/core/browser/network/autofill_ai/mock_autofill_ai_personal_context_access_manager.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
@@ -46,6 +47,7 @@
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
@@ -2304,19 +2306,22 @@ TEST_F(AutofillAiManagerTest, LoadedServerPredictionsToFirstInteractionTiming) {
       ukm::ConvertToSourceId(2, ukm::SourceIdType::NAVIGATION_ID);
 
   // First interaction on page 1 logs the metric.
-  manager().OnFormInteracted(form_structure, ukm_source_id_1);
+  manager().OnFormInteracted(form_structure, *form_structure.field(0),
+                             ukm_source_id_1);
   histogram_tester.ExpectTotalCount(
       "Autofill.Ai.TimingInterval.LoadedServerPredictionsToFirstInteraction",
       1);
 
   // Second interaction on page 1 DOES NOT log.
-  manager().OnFormInteracted(form_structure, ukm_source_id_1);
+  manager().OnFormInteracted(form_structure, *form_structure.field(0),
+                             ukm_source_id_1);
   histogram_tester.ExpectTotalCount(
       "Autofill.Ai.TimingInterval.LoadedServerPredictionsToFirstInteraction",
       1);
 
   // Interaction on page 2 LOGS again.
-  manager().OnFormInteracted(form_structure, ukm_source_id_2);
+  manager().OnFormInteracted(form_structure, *form_structure.field(0),
+                             ukm_source_id_2);
   histogram_tester.ExpectTotalCount(
       "Autofill.Ai.TimingInterval.LoadedServerPredictionsToFirstInteraction",
       2);
@@ -2340,10 +2345,56 @@ TEST_F(AutofillAiManagerTest,
   ukm::SourceId ukm_source_id_1 =
       ukm::ConvertToSourceId(1, ukm::SourceIdType::NAVIGATION_ID);
 
-  manager().OnFormInteracted(form_structure, ukm_source_id_1);
+  manager().OnFormInteracted(form_structure, *form_structure.field(0),
+                             ukm_source_id_1);
   histogram_tester.ExpectTotalCount(
       "Autofill.Ai.TimingInterval.LoadedServerPredictionsToFirstInteraction",
       0);
+}
+
+// Tests that the Autofill AI personal context cache readiness on first
+// interaction is logged at most once per page (deduplicated by UKM source ID).
+TEST_F(AutofillAiManagerTest,
+       PersonalContextCacheReadinessOnFirstInteraction_Deduplication) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillAmbientAutofill,
+      {{"ambient_autofill_eligible_tiers", "1"}});
+  autofill_client().GetPrefs()->SetInteger(
+      subscription_eligibility::prefs::kAiSubscriptionTier, 1);
+  autofill_client().GetPrefs()->SetBoolean(
+      prefs::kAutofillAiIdentityEntitiesEnabled, true);
+
+  test::FormDescription form_description = {
+      .fields = {{.role = PASSPORT_NUMBER}}};
+  FormData form = test::GetFormData(form_description);
+  FormStructure form_structure = FormStructure(form);
+  AddPredictionsToFormStructure(form_structure, {{PASSPORT_NUMBER}});
+
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(pcontext_manager(), GetPrefetchStatusByEntityType(
+                                      EntityType(EntityTypeName::kPassport)))
+      .WillRepeatedly(Return(
+          AutofillAiPersonalContextAccessManager::RequestStatus::kSuccess));
+  EXPECT_CALL(pcontext_manager(),
+              ServerHasDataAvailable(EntityType(EntityTypeName::kPassport)))
+      .WillRepeatedly(Return(true));
+
+  ukm::SourceId ukm_source_id =
+      ukm::ConvertToSourceId(1, ukm::SourceIdType::NAVIGATION_ID);
+
+  // First interaction on page logs.
+  manager().OnFormInteracted(form_structure, *form_structure.field(0),
+                             ukm_source_id);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.PersonalContext.Cache.ReadinessOnFirstInteraction",
+      PersonalContextCacheReadinessOnFirstInteraction::kResolvedWithData, 1);
+
+  // Second interaction on same page DOES NOT log.
+  manager().OnFormInteracted(form_structure, *form_structure.field(0),
+                             ukm_source_id);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Ai.PersonalContext.Cache.ReadinessOnFirstInteraction", 1);
 }
 
 // Tests that the update callback is run with new suggestions when prefetch
@@ -2461,6 +2512,101 @@ TEST_F(AutofillAiManagerTest,
 
   manager().OnPrefetchContextComplete(pcontext_manager(), std::nullopt);
 }
+
+struct PersonalContextCacheReadinessTestCase {
+  AutofillAiPersonalContextAccessManager::RequestStatus prefetch_status;
+  bool server_has_spii_data;
+  bool has_entity_data;
+  PersonalContextCacheReadinessOnFirstInteraction expected_readiness;
+};
+
+class AutofillAiManagerCacheReadinessTest
+    : public AutofillAiManagerTest,
+      public ::testing::WithParamInterface<
+          PersonalContextCacheReadinessTestCase> {};
+
+TEST_P(AutofillAiManagerCacheReadinessTest,
+       PersonalContextCacheReadinessOnFirstInteraction) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillAmbientAutofill,
+      {{"ambient_autofill_eligible_tiers", "1"}});
+  autofill_client().GetPrefs()->SetInteger(
+      subscription_eligibility::prefs::kAiSubscriptionTier, 1);
+  autofill_client().GetPrefs()->SetBoolean(
+      prefs::kAutofillAiIdentityEntitiesEnabled, true);
+
+  const PersonalContextCacheReadinessTestCase& test_case = GetParam();
+
+  test::FormDescription form_description = {
+      .fields = {{.role = PASSPORT_NUMBER}}};
+  FormData form = test::GetFormData(form_description);
+  FormStructure form_structure = FormStructure(form);
+  AddPredictionsToFormStructure(form_structure, {{PASSPORT_NUMBER}});
+
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(pcontext_manager(), GetPrefetchStatusByEntityType(
+                                      EntityType(EntityTypeName::kPassport)))
+      .WillRepeatedly(Return(test_case.prefetch_status));
+  EXPECT_CALL(pcontext_manager(),
+              ServerHasDataAvailable(EntityType(EntityTypeName::kPassport)))
+      .WillRepeatedly(Return(test_case.server_has_spii_data));
+
+  if (test_case.has_entity_data) {
+    AddOrUpdateEntityInstance(GetPassportEntityInstance());
+  } else {
+    std::vector<EntityInstance::EntityId> guids_to_remove;
+    for (const auto& entity : GetEntityInstances()) {
+      if (entity.type() == EntityType(EntityTypeName::kPassport)) {
+        guids_to_remove.push_back(entity.guid());
+      }
+    }
+    for (const auto& guid : guids_to_remove) {
+      RemoveEntityInstance(guid);
+    }
+  }
+
+  ukm::SourceId ukm_source_id =
+      ukm::ConvertToSourceId(1, ukm::SourceIdType::NAVIGATION_ID);
+
+  manager().OnFormInteracted(form_structure, *form_structure.field(0),
+                             ukm_source_id);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.PersonalContext.Cache.ReadinessOnFirstInteraction",
+      test_case.expected_readiness, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AutofillAiManagerTest,
+    AutofillAiManagerCacheReadinessTest,
+    ::testing::Values(
+        PersonalContextCacheReadinessTestCase{
+            AutofillAiPersonalContextAccessManager::RequestStatus::kNotStarted,
+            false, false,
+            PersonalContextCacheReadinessOnFirstInteraction::kNotStarted},
+        PersonalContextCacheReadinessTestCase{
+            AutofillAiPersonalContextAccessManager::RequestStatus::kPending,
+            false, false,
+            PersonalContextCacheReadinessOnFirstInteraction::kPendingInFlight},
+        PersonalContextCacheReadinessTestCase{
+            AutofillAiPersonalContextAccessManager::RequestStatus::kFailure,
+            false, false,
+            PersonalContextCacheReadinessOnFirstInteraction::kFailed},
+        PersonalContextCacheReadinessTestCase{
+            AutofillAiPersonalContextAccessManager::RequestStatus::kSuccess,
+            false, false,
+            PersonalContextCacheReadinessOnFirstInteraction::kResolvedEmpty},
+        PersonalContextCacheReadinessTestCase{
+            AutofillAiPersonalContextAccessManager::RequestStatus::kSuccess,
+            true, false,
+            PersonalContextCacheReadinessOnFirstInteraction::kResolvedWithData},
+        PersonalContextCacheReadinessTestCase{
+            AutofillAiPersonalContextAccessManager::RequestStatus::kSuccess,
+            false, true,
+            PersonalContextCacheReadinessOnFirstInteraction::
+                kResolvedWithData}));
 
 }  // namespace
 }  // namespace autofill

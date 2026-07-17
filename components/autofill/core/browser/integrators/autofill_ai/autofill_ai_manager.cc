@@ -211,6 +211,47 @@ void PrefetchAmbientAutofillContext(AutofillClient& client,
   }
 }
 
+// Returns the readiness state of the prefetch cache for `entity_type` when the
+// user first interacts with an Ambient Autofill supported field of that type.
+PersonalContextCacheReadinessOnFirstInteraction GetCacheReadinessState(
+    const AutofillAiPersonalContextAccessManager& access_manager,
+    const EntityDataManager* entity_data_manager,
+    EntityType entity_type) {
+  using RequestStatus = AutofillAiPersonalContextAccessManager::RequestStatus;
+  RequestStatus status =
+      access_manager.GetPrefetchStatusByEntityType(entity_type);
+  switch (status) {
+    case RequestStatus::kNotStarted:
+      // Prefetch was not initiated (ineligible or type unsupported).
+      return PersonalContextCacheReadinessOnFirstInteraction::kNotStarted;
+    case RequestStatus::kPending:
+      // Prefetch request is in-flight when the user interacts.
+      return PersonalContextCacheReadinessOnFirstInteraction::kPendingInFlight;
+    case RequestStatus::kFailure:
+      // Prefetch failed.
+      return PersonalContextCacheReadinessOnFirstInteraction::kFailed;
+    case RequestStatus::kSuccess: {
+      // Prefetch succeeded. We check if the cache contains either sensitive
+      // (SPII) or non-sensitive entity data.
+      const bool has_spii_signal =
+          access_manager.ServerHasDataAvailable(entity_type);
+      const bool has_entity_data =
+          entity_data_manager &&
+          std::ranges::any_of(entity_data_manager->GetEntityInstances(),
+                              [&](const EntityInstance& entity) {
+                                return entity.type() == entity_type;
+                              });
+      return (has_spii_signal || has_entity_data)
+                 ? PersonalContextCacheReadinessOnFirstInteraction::
+                       kResolvedWithData
+                 : PersonalContextCacheReadinessOnFirstInteraction::
+                       kResolvedEmpty;
+    }
+  }
+
+  NOTREACHED();
+}
+
 }  // namespace
 
 AutofillAiManager::EntityImportPromptCandidate::EntityImportPromptCandidate(
@@ -318,24 +359,59 @@ void AutofillAiManager::OnFormSeen(const FormStructure& form) {
 }
 
 void AutofillAiManager::OnFormInteracted(const FormStructure& form,
+                                         const AutofillField& field,
                                          ukm::SourceId ukm_source_id) {
-  if (last_logged_ukm_source_id_for_interaction_ == ukm_source_id ||
-      form.server_predictions_received_timestamp().is_null()) {
-    return;
-  }
-  const DenseSet<EntityType> relevant_entities =
-      GetRelevantEntityTypesForFields(form.fields());
-  if (relevant_entities.empty()) {
-    return;
+  if (last_logged_ukm_source_id_for_interaction_ != ukm_source_id &&
+      !form.server_predictions_received_timestamp().is_null()) {
+    const DenseSet<EntityType> relevant_entities =
+        GetRelevantEntityTypesForFields(form.fields());
+    if (!relevant_entities.empty()) {
+      base::TimeDelta duration =
+          base::TimeTicks::Now() - form.server_predictions_received_timestamp();
+      base::UmaHistogramLongTimes(
+          "Autofill.Ai.TimingInterval."
+          "LoadedServerPredictionsToFirstInteraction",
+          duration);
+      last_logged_ukm_source_id_for_interaction_ = ukm_source_id;
+    }
   }
 
-  base::TimeDelta duration =
-      base::TimeTicks::Now() - form.server_predictions_received_timestamp();
-  base::UmaHistogramLongTimes(
-      "Autofill.Ai.TimingInterval."
-      "LoadedServerPredictionsToFirstInteraction",
-      duration);
-  last_logged_ukm_source_id_for_interaction_ = ukm_source_id;
+  if (last_logged_ukm_source_id_for_cache_readiness_ != ukm_source_id) {
+    if (std::optional<EntityType> supported_type =
+            GetSupportedEntityTypeForField(form, field)) {
+      AutofillAiPersonalContextAccessManager* access_manager =
+          client_->GetAutofillAiPersonalContextAccessManager();
+      if (access_manager) {
+        LogPersonalContextCacheReadinessOnFirstInteraction(
+            GetCacheReadinessState(*access_manager,
+                                   client_->GetEntityDataManager(),
+                                   *supported_type));
+        last_logged_ukm_source_id_for_cache_readiness_ = ukm_source_id;
+      }
+    }
+  }
+}
+
+std::optional<EntityType> AutofillAiManager::GetSupportedEntityTypeForField(
+    const FormStructure& form,
+    const AutofillField& field) const {
+  if (field.Type().GetAutofillAiTypes().empty()) {
+    return std::nullopt;
+  }
+  for (const auto& [entity_type, fields_with_type] :
+       RationalizeAndDetermineAttributeTypes(form.fields(), field.section())) {
+    if (std::ranges::any_of(fields_with_type,
+                            [&](const AutofillFieldWithAttributeType& f) {
+                              return f.field->global_id() == field.global_id();
+                            })) {
+      if (MayPerformAutofillAiAction(
+              *client_, AutofillAiAction::kTypeSupportsAmbientAutofillData,
+              entity_type)) {
+        return entity_type;
+      }
+    }
+  }
+  return std::nullopt;
 }
 
 void AutofillAiManager::OnDidFillSuggestion(
