@@ -55,6 +55,7 @@ source_set("impl") {
     "//base",
     "//chrome/browser/component_updater",
     "//chrome/browser/extensions",
+    "//chrome/browser/glic",
     "//chrome/browser/page_content_annotations:fetcher",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
