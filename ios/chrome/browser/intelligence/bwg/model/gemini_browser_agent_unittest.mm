@@ -1317,7 +1317,7 @@ TEST_F(GeminiBrowserAgentTest, TestPersistSelectedTabsOnUnMinimize) {
       ios::provider::GeminiPageContextAttachmentState::kAttached;
   SetRawAttachedTab(active_id, active_context);
 
-  gemini_browser_agent_->OnTabPickerSelectionChanged({active_id, other_id});
+  gemini_browser_agent_->OnTabPickerSelectionChanged({active_id, other_id}, {});
   EXPECT_EQ(GetRawAttachedTabs().size(), 2u);
   // GetSelectedWebStateIDs() may return size 1 in downstream unit tests if
   // GCRGemini provider is uninitialized/nil, so we assert on raw selected IDs.
@@ -1369,7 +1369,7 @@ TEST_F(GeminiBrowserAgentTest, TestDetachInvalidTabId) {
       ios::provider::GeminiPageContextAttachmentState::kAttached;
   SetRawAttachedTab(active_id, active_context);
 
-  gemini_browser_agent_->OnTabPickerSelectionChanged({active_id});
+  gemini_browser_agent_->OnTabPickerSelectionChanged({active_id}, {});
   size_t initial_size = GetRawAttachedTabs().size();
 
   DetachTabWithID(@"invalid_id");
@@ -1414,7 +1414,7 @@ TEST_F(GeminiBrowserAgentTest, TestDetachActiveTab) {
       ios::provider::GeminiPageContextAttachmentState::kAttached;
   SetRawAttachedTab(active_id, mock_context);
 
-  gemini_browser_agent_->OnTabPickerSelectionChanged({active_id});
+  gemini_browser_agent_->OnTabPickerSelectionChanged({active_id}, {});
 
   // Verify it starts as attached.
   auto tabs = GetRawAttachedTabs();
@@ -1455,7 +1455,7 @@ TEST_F(GeminiBrowserAgentTest, TestDetachSharedTab) {
       ios::provider::GeminiPageContextAttachmentState::kAttached;
   SetRawAttachedTab(active_id, active_context);
 
-  gemini_browser_agent_->OnTabPickerSelectionChanged({active_id, other_id});
+  gemini_browser_agent_->OnTabPickerSelectionChanged({active_id, other_id}, {});
 
   auto tabs = GetRawAttachedTabs();
   ASSERT_EQ(2u, tabs.size());

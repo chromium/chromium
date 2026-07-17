@@ -135,15 +135,16 @@ class GeminiTabHelper : public web::WebStateObserver,
 
   // Requests the latest page context. Resolves immediately if the page is
   // restricted to surface-level metadata, or asynchronously if deep extraction
-  // is required.
+  // is required. `is_background_tab` indicates whether to bypass eligibility
+  // checks related to this tab's visibility, NextIA or Gemini Live.
   void GeneratePageContext(
-      base::RepeatingCallback<void(GeminiPageContext*)> callback);
+      base::RepeatingCallback<void(GeminiPageContext*)> callback,
+      bool is_background_tab = false);
 
   // Returns the partial PageContext for the current WebState, including URL,
-  // Title, and Favicon. `forced` indicates whether to bypass
-  // eligibility checks related to this tab's visibility, NextIA or Gemini Live
-  // (useful for generating context for tabs other than the active one).
-  GeminiPageContext* GetPartialPageContext(bool forced = false);
+  // Title, and Favicon. `is_background_tab` indicates whether to bypass
+  // eligibility checks related to this tab's visibility, NextIA or Gemini Live.
+  GeminiPageContext* GetPartialPageContext(bool is_background_tab = false);
 
   // Returns true if a show floaty trigger should be blocked resulting in an
   // early return and the floaty remaining hidden. Used when the floaty is
@@ -229,7 +230,9 @@ class GeminiTabHelper : public web::WebStateObserver,
   void CleanupSessionFromPrefs();
 
   // Whether Gemini can extract the current web state's page context.
-  bool CanExtractPageContextForGemini();
+  // `is_background_tab` indicates whether to bypass eligibility checks related
+  // to this tab's visibility, NextIA or Gemini Live.
+  bool CanExtractPageContextForGemini(bool is_background_tab = false);
 
   // TODO(crbug.com/516531773): Find solution for repetitive helper methods.
   // Whether Gemini Live mode is currently active.

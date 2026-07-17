@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper_observer.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_view_state_change_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
+#import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_activation_level.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
@@ -139,7 +140,8 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   void DismissFloaty();
 
   // Called when the tab picker selection changes.
-  void OnTabPickerSelectionChanged(std::set<web::WebStateID> selected_tabs);
+  void OnTabPickerSelectionChanged(std::set<web::WebStateID> selected_tabs,
+                                   std::set<web::WebStateID> cached_tabs);
 
   // Hide Gemini floaty with `animated` flag. When in a hidden state, the floaty
   // view is dismissed but still persists in memory and needs to be properly
@@ -341,6 +343,15 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
 
   // Handles an generated page context by updating the floaty.
   void OnPageContextGenerated(GeminiPageContext* gemini_page_context);
+
+  // Called when cached APC has been retrieved for a list of shared tabs.
+  void OnCachedAPCRetrievedForSharedTabs(
+      PersistTabContextBrowserAgent::PageContextMap contexts_map);
+
+  // Called when full page context for a shared tab becomes available.
+  void OnFullPageContextAvailableForSharedTab(
+      web::WebStateID web_state_id,
+      GeminiPageContext* full_page_context);
 
   // Called for the fullscreen update animation.
   void FullscreenProgressUpdatedForAnimation();
