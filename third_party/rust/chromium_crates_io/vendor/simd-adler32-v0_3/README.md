@@ -104,6 +104,18 @@ comparison are [adler](https://crates.io/crates/adler) and
 | 100k/adler32            | 41.130 us       | 2.2643 GiB/s       |
 | 100k/adler              | 83.776 us       | 534.69 MiB/s       |
 
+> MacBook Pro 14" - Apple M3 Pro CPU @ 4.05GHz
+
+| name                    | avg. time       | avg. thrpt         |
+| ----------------------- | --------------- | ------------------ |
+| **10k/simd-adler32**    | **251.10 ns**   | **37.090 GiB/s**   |
+| 10k/adler32             | 2.7478 µs       | 3.3894 GiB/s       |
+| 10k/adler2              | 1.5198 µs       | 6.1280 GiB/s       |
+| ----------------------- | --------------- | ------------------ |
+| **100k/simd-adler32**   | **2.5154 µs**   | **37.024 GiB/s**   |
+| 100k/adler32            | 27.961 µs       | 3.3308 GiB/s       |
+| 100k/adler2             | 15.705 µs       | 5.9300 GiB/s       |
+
 ## Safety
 
 This crate contains a significant amount of `unsafe` code due to the requirement of `unsafe`

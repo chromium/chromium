@@ -12,7 +12,7 @@
 [package]
 edition = "2018"
 name = "simd-adler32"
-version = "0.3.9"
+version = "0.3.10"
 authors = ["Marvin Countryman <me@maar.vin>"]
 build = false
 exclude = ["bench"]
@@ -50,8 +50,8 @@ std = []
 name = "simd_adler32"
 path = "src/lib.rs"
 
-[dev-dependencies.adler]
-version = "1.0.2"
+[dev-dependencies.adler2]
+version = "2.0.1"
 
 [dev-dependencies.adler32]
 version = "1.2.0"

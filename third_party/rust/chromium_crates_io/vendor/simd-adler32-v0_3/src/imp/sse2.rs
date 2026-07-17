@@ -231,7 +231,7 @@ mod tests {
     if let Some(update) = super::get_imp() {
       let (a, b) = update(1, 0, data);
       let left = u32::from(b) << 16 | u32::from(a);
-      let right = adler::adler32_slice(data);
+      let right = adler2::adler32_slice(data);
 
       assert_eq!(left, right, "len({})", data.len());
     }

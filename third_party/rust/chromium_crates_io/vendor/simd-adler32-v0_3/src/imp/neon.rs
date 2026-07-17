@@ -1,16 +1,16 @@
 use super::Adler32Imp;
 
-#[cfg(target_feature = "neon")]
+#[cfg(all(target_feature = "neon", any(target_arch = "aarch64", feature = "nightly")))]
 pub fn get_imp() -> Option<Adler32Imp> {
   Some(imp::update)
 }
 
-#[cfg(not(target_feature = "neon"))]
+#[cfg(not(all(target_feature = "neon", any(target_arch = "aarch64", feature = "nightly"))))]
 pub fn get_imp() -> Option<Adler32Imp> {
   None
 }
 
-#[cfg(target_feature = "neon")]
+#[cfg(all(target_feature = "neon", any(target_arch = "aarch64", feature = "nightly")))]
 mod imp {
   const MOD: u32 = 65521;
   const NMAX: usize = 5552;
@@ -193,7 +193,7 @@ mod tests {
     if let Some(update) = super::get_imp() {
       let (a, b) = update(1, 0, data);
       let left = u32::from(b) << 16 | u32::from(a);
-      let right = adler::adler32_slice(data);
+      let right = adler2::adler32_slice(data);
 
       assert_eq!(left, right, "len({})", data.len());
     }

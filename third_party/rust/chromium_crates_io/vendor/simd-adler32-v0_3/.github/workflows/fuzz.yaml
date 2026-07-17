@@ -17,6 +17,9 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         target: [avx2, sse2, ssse3]
+        include:
+          - os: ubuntu-24.04-arm
+            target: neon
 
     steps:
       - uses: actions/checkout@v2

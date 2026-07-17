@@ -2,7 +2,6 @@ name: build
 
 on:
   push:
-    branches-ignore: [main]
   pull_request:
     branches: [main]
 
@@ -47,10 +46,15 @@ jobs:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
             toolchain: stable
-          - os: macos-latest
+          - os: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
+            toolchain: stable
+          - os: macos-26-intel
             target: x86_64-apple-darwin
             toolchain: stable
-            # TODO: also aarch64 / M1
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            toolchain: stable
           - os: windows-latest
             target: x86_64-pc-windows-gnu
             toolchain: stable
@@ -61,6 +65,12 @@ jobs:
           - os: ubuntu-latest
             deps: sudo apt-get update ; sudo apt install gcc-multilib
             target: i686-unknown-linux-gnu
+            toolchain: nightly
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            toolchain: nightly
+          - os: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
             toolchain: nightly
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
@@ -115,13 +125,13 @@ jobs:
             target: arm-unknown-linux-gnueabi
             toolchain: stable
           - os: ubuntu-latest
-            target: aarch64-unknown-linux-gnu
-            toolchain: stable
-          - os: ubuntu-latest
             target: arm-unknown-linux-gnueabi
             toolchain: nightly
           - os: ubuntu-latest
-            target: aarch64-unknown-linux-gnu
+            target: thumbv7neon-unknown-linux-gnueabihf
+            toolchain: stable
+          - os: ubuntu-latest
+            target: thumbv7neon-unknown-linux-gnueabihf
             toolchain: nightly
 
     steps:
