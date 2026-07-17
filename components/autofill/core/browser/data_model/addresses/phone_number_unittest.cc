@@ -247,7 +247,7 @@ TEST(PhoneNumberTest, InferCountryCallingCode) {
             phone.GetInfo(PHONE_HOME_CITY_AND_NUMBER, kLocale));
 }
 
-// Test that cached phone numbers are correctly invalidated and updated.
+// Tests that cached phone numbers are correctly invalidated and updated.
 TEST(PhoneNumberTest, UpdateCachedPhoneNumber) {
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
@@ -267,8 +267,10 @@ TEST(PhoneNumberTest, UpdateCachedPhoneNumber) {
 
   // Now try parsing using the correct locale.  Note that the profile's country
   // code should override the app locale, which is still set to "US".
-  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"GB");
   phone.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"07023456789");
+  // Set profile country after phone number to ensure the change of the profile
+  // country triggers the cache invalidation.
+  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"GB");
   EXPECT_EQ(u"70", phone.GetInfo(PHONE_HOME_CITY_CODE, "US"));
 }
 
