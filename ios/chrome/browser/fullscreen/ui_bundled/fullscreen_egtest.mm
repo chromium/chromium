@@ -300,6 +300,7 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
   GURL URL = self.testServer->GetURL("/tallpage");
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGreyUI waitForToolbarVisible:YES];
+  [ChromeEarlGrey waitForPageToFinishLoading];
   // Simulate a user scroll down.
   HideToolbarUsingUI();
   [ChromeEarlGreyUI waitForToolbarVisible:NO];
@@ -320,6 +321,7 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
   GURL URL = self.testServer->GetURL("/origin");
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGrey waitForWebStateContainingText:"Tall page"];
+  [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Hide the toolbar.
   HideToolbarUsingUI();
@@ -356,6 +358,7 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGrey waitForWebStateContainingText:"link1"];
   [ChromeEarlGrey waitForMainTabCount:1];
+  [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Hide the toolbar.
   HideToolbarUsingUI();
@@ -369,6 +372,7 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
   [ChromeEarlGrey waitForMainTabCount:2];
 
   [ChromeEarlGrey waitForWebStateVisibleURL:destinationURL];
+  [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Hide the toolbar.
   HideToolbarUsingUI();
@@ -401,6 +405,7 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
   [ChromeEarlGrey loadURL:originURL];
 
   [ChromeEarlGrey waitForWebStateContainingText:"link1"];
+  [ChromeEarlGrey waitForPageToFinishLoading];
   // Dismiss the toolbar.
   HideToolbarUsingUI();
   [ChromeEarlGreyUI waitForToolbarVisible:NO];
@@ -408,6 +413,7 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
   // Navigate to the other page.
   [ChromeEarlGrey tapWebStateElementWithID:@"link1"];
   [ChromeEarlGrey waitForWebStateContainingText:"link2"];
+  [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Make sure toolbar is shown since a new load has started.
   [ChromeEarlGreyUI waitForToolbarVisible:YES];
@@ -435,6 +441,7 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
 
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGrey waitForWebStateContainingText:"link"];
+  [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Dismiss the toolbar.
   HideToolbarUsingUI();
@@ -483,6 +490,7 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
 
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGreyUI waitForToolbarVisible:YES];
+  [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Scroll and check that toolbar is collapsed.
   HideToolbarUsingUI();
