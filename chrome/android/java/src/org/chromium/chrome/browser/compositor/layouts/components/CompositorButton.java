@@ -96,6 +96,7 @@ public class CompositorButton extends StripLayoutView {
      * @param parentView The parent view this button is embedded in.
      * @param width The button width.
      * @param height The button height.
+     * @param tooltipHandler The handler for tooltips.
      * @param clickHandler The action to be performed on click.
      * @param keyboardFocusHandler The action to be performed on keyboard focus.
      * @param clickSlopDp The click slop for the button, in dp.
@@ -116,6 +117,7 @@ public class CompositorButton extends StripLayoutView {
         super(
                 incognito,
                 clickHandler,
+                /* longClickHandler= */ null,
                 keyboardFocusHandler,
                 /* accessibilityFocusHandler= */ null,
                 context);

@@ -172,6 +172,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                         mIsIncognito,
                         () -> mTabModelSelector,
                         mSideUiStateProviderSupplier,
+                        () -> 100f,
                         () -> {},
                         (isFocused, view) -> {},
                         mGlicClickHandler,
@@ -639,9 +640,8 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
 
         boolean handled =
                 viaSecondaryClick
-                        ? mCoordinator.click(
-                                0L, x, y, MotionEvent.BUTTON_SECONDARY, 0, /* tabWidthDp= */ 100f)
-                        : mCoordinator.onLongPress(x, y, /* tabWidthDp= */ 100f);
+                        ? mCoordinator.click(0L, x, y, MotionEvent.BUTTON_SECONDARY, 0)
+                        : mCoordinator.onLongPress(x, y);
         assertTrue("Context menu trigger should be handled.", handled);
         assertFalse(
                 "Glic button should not be pressed after context menu is shown.",
@@ -657,7 +657,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         // 1. Test click routing on Glic Button coordinates
         float glicX = mGlicButton.getDrawX() + mGlicButton.getWidth() / 2;
         float glicY = mGlicButton.getDrawY() + mGlicButton.getHeight() / 2;
-        boolean glicHandled = mCoordinator.click(0L, glicX, glicY, 0, 0, /* tabWidthDp= */ 100f);
+        boolean glicHandled = mCoordinator.click(0L, glicX, glicY, 0, 0);
         assertTrue("Click on Glic coordinates should be handled.", glicHandled);
         verify(mGlicClickHandler, Mockito.times(1))
                 .onClick(
@@ -667,7 +667,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         // 2. Test click routing on Glic Actor Button coordinates
         float actorX = mGlicActorButton.getDrawX() + mGlicActorButton.getWidth() / 2;
         float actorY = mGlicActorButton.getDrawY() + mGlicActorButton.getHeight() / 2;
-        boolean actorHandled = mCoordinator.click(0L, actorX, actorY, 0, 0, /* tabWidthDp= */ 100f);
+        boolean actorHandled = mCoordinator.click(0L, actorX, actorY, 0, 0);
         assertTrue("Click on Glic Actor coordinates should be handled.", actorHandled);
     }
 

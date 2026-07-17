@@ -61,6 +61,7 @@ public class TabStripIphControllerUnitTest {
     @Mock private Tracker mTracker;
     @Mock private View mContainerView;
     @Mock private StripLayoutView.StripLayoutViewOnClickHandler mClickHandler;
+    @Mock private StripLayoutView.StripLayoutViewOnLongClickHandler mLongClickHandler;
     @Mock private StripLayoutView.StripLayoutViewOnKeyboardFocusHandler mKeyboardFocusHandler;
     @Mock private TabLoadTrackerCallback mLoadTrackerCallback;
     @Mock private LayoutUpdateHost mUpdateHost;
@@ -90,6 +91,8 @@ public class TabStripIphControllerUnitTest {
                 new StripLayoutGroupTitle(
                         mContext,
                         mStripLayoutGroupTitleDelegate,
+                        mClickHandler,
+                        mLongClickHandler,
                         mKeyboardFocusHandler,
                         /* accessibilityFocusHandler= */ null,
                         /* incognito= */ false,
@@ -99,6 +102,7 @@ public class TabStripIphControllerUnitTest {
                         mContext,
                         TAB_ID,
                         mClickHandler,
+                        mLongClickHandler,
                         mKeyboardFocusHandler,
                         /* accessibilityFocusHandler= */ null,
                         mLoadTrackerCallback,

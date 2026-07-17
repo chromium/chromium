@@ -263,6 +263,7 @@ public class StripLayoutTab extends StripLayoutView {
      * @param context An Android context for accessing system resources.
      * @param id The id of the {@link Tab} to visually represent.
      * @param clickHandler Handles clicks on this {@link StripLayoutTab}.
+     * @param longClickHandler Handles long clicks on this {@link StripLayoutTab}.
      * @param keyboardFocusHandler Handles keyboard focus gain/loss on this {@link StripLayoutTab}.
      * @param accessibilityFocusHandler Handles accessibility focus on this {@link StripLayoutTab}.
      * @param loadTrackerCallback The {@link TabLoadTrackerCallback} to be notified of loading state
@@ -276,6 +277,7 @@ public class StripLayoutTab extends StripLayoutView {
             Context context,
             int id,
             StripLayoutViewOnClickHandler clickHandler,
+            @Nullable StripLayoutViewOnLongClickHandler longClickHandler,
             StripLayoutViewOnKeyboardFocusHandler keyboardFocusHandler,
             StripLayoutViewOnAccessibilityFocusHandler accessibilityFocusHandler,
             TabLoadTrackerCallback loadTrackerCallback,
@@ -283,7 +285,13 @@ public class StripLayoutTab extends StripLayoutView {
             boolean incognito,
             boolean isPinned,
             @MediaState int mediaState) {
-        super(incognito, clickHandler, keyboardFocusHandler, accessibilityFocusHandler, context);
+        super(
+                incognito,
+                clickHandler,
+                longClickHandler,
+                keyboardFocusHandler,
+                accessibilityFocusHandler,
+                context);
         mTabId = id;
         mMediaState = mediaState;
         mIsPinned = isPinned;
@@ -304,6 +312,7 @@ public class StripLayoutTab extends StripLayoutView {
                         R.drawable.tab_close_button_bg,
                         /* clickSlopDp= */ 0f,
                         /* hasLongClickAction= */ true);
+        mCloseButton.setOnLongClickHandler(longClickHandler);
 
         @ColorRes
         int iconTintRes =

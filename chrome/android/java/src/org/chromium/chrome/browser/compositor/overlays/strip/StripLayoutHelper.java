@@ -75,6 +75,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTit
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnAccessibilityFocusHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnKeyboardFocusHandler;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnLongClickHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripTabModelActionListener.ActionType;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator.AnchorInfo;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
@@ -171,6 +172,7 @@ public class StripLayoutHelper
                 StripLayoutViewOnClickHandler,
                 StripLayoutViewOnKeyboardFocusHandler,
                 StripLayoutViewOnAccessibilityFocusHandler,
+                StripLayoutViewOnLongClickHandler,
                 StripUpdateDelegate,
                 AnimationHost,
                 TabListNotificationHandler {
@@ -3288,6 +3290,11 @@ public class StripLayoutHelper
         clearMultiSelection(/* clearAnchor= */ true, /* notifyObservers= */ true);
     }
 
+    @Override
+    public void onLongClick(StripLayoutView view) {
+        showContextMenu(view);
+    }
+
     private void handleTabSearchClick() {
         mLeadingButtonDelegate.onTabSearchClicked();
     }
@@ -4358,6 +4365,8 @@ public class StripLayoutHelper
                 new StripLayoutGroupTitle(
                         mContext,
                         /* delegate= */ this,
+                        /* clickHandler= */ this,
+                        /* longClickHandler= */ this,
                         /* keyboardFocusHandler= */ this,
                         /* accessibilityFocusHandler= */ this,
                         mIncognito,
@@ -4611,6 +4620,7 @@ public class StripLayoutHelper
                         mContext,
                         Tab.INVALID_TAB_ID,
                         /* clickHandler= */ this,
+                        /* longClickHandler= */ this,
                         /* keyboardFocusHandler= */ this,
                         /* accessibilityFocusHandler= */ this,
                         mTabLoadTrackerHost,
@@ -4639,6 +4649,7 @@ public class StripLayoutHelper
                         mContext,
                         id,
                         /* clickHandler= */ this,
+                        /* longClickHandler= */ this,
                         /* keyboardFocusHandler= */ this,
                         /* accessibilityFocusHandler= */ this,
                         mTabLoadTrackerHost,

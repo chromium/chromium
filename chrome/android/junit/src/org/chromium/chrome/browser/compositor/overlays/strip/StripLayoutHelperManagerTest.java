@@ -1313,6 +1313,7 @@ public class StripLayoutHelperManagerTest {
                         null,
                         null,
                         null,
+                        null,
                         callback,
                         mUpdateHost,
                         false,

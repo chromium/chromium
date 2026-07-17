@@ -76,11 +76,9 @@ public interface VirtualView {
         return true;
     }
 
-    /**
-     * @return Whether there is a long click action associated with this virtual view.
-     */
+    /** Returns whether there is a long click action associated with this virtual view. */
     default boolean hasLongClickAction() {
-        return true;
+        return false;
     }
 
     /**
@@ -93,6 +91,11 @@ public interface VirtualView {
      * @param modifiers State of all Meta/Modifier keys that are pressed.
      */
     void handleClick(long time, int motionEventButtonState, int modifiers);
+
+    /** Returns whether the long click action was handled. */
+    default boolean handleLongClick() {
+        return false;
+    }
 
     /** Notifies the view that it has received accessibility focus. */
     void onAccessibilityFocused();

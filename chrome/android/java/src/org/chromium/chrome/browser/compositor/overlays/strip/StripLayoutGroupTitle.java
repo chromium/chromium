@@ -39,7 +39,7 @@ import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 public class StripLayoutGroupTitle extends StripLayoutView {
 
     /** Delegate for additional group title functionality. */
-    public interface StripLayoutGroupTitleDelegate extends StripLayoutViewOnClickHandler {
+    public interface StripLayoutGroupTitleDelegate {
         /**
          * Releases the resources associated with this group indicator.
          *
@@ -126,19 +126,31 @@ public class StripLayoutGroupTitle extends StripLayoutView {
      * Create a {@link StripLayoutGroupTitle} that represents the TabGroup for the {@code
      * tabGroupId}.
      *
+     * @param context An Android context for fetching resources.
      * @param delegate The delegate for additional strip group title functionality.
+     * @param clickHandler Handles click events on this view.
+     * @param longClickHandler Handles long click events on this view.
      * @param keyboardFocusHandler Handles keyboard focus gain/loss on this view.
+     * @param accessibilityFocusHandler Handles accessibility focus gain/loss on this view.
      * @param incognito Whether or not this tab group is Incognito.
      * @param tabGroupId The tab group ID for the tab group.
      */
     public StripLayoutGroupTitle(
             Context context,
             StripLayoutGroupTitleDelegate delegate,
+            StripLayoutViewOnClickHandler clickHandler,
+            @Nullable StripLayoutViewOnLongClickHandler longClickHandler,
             StripLayoutViewOnKeyboardFocusHandler keyboardFocusHandler,
             StripLayoutViewOnAccessibilityFocusHandler accessibilityFocusHandler,
             boolean incognito,
             @Nullable Token tabGroupId) {
-        super(incognito, delegate, keyboardFocusHandler, accessibilityFocusHandler, context);
+        super(
+                incognito,
+                clickHandler,
+                longClickHandler,
+                keyboardFocusHandler,
+                accessibilityFocusHandler,
+                context);
         assert tabGroupId != null : "Tried to create a group title for an invalid group.";
         mDelegate = delegate;
         mTabGroupId = tabGroupId;

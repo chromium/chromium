@@ -128,6 +128,7 @@ public class StripLayoutTrailingButtonsCoordinator {
     private boolean mIsIncognito;
     private final Supplier<@Nullable TabModelSelector> mTabModelSelectorSupplier;
     private final OneshotSupplier<SideUiStateProvider> mSideUiStateProviderSupplier;
+    private final Supplier<Float> mTabWidthSupplier;
     private final BooleanSupplier mGlicIphShowingSupplier;
     private final StripLayoutTrailingButtonsObserver mObserver;
     private @Nullable SideUiStateProvider mSideUiStateProvider;
@@ -292,6 +293,7 @@ public class StripLayoutTrailingButtonsCoordinator {
      * @param isIncognito Whether the current tab model is incognito.
      * @param tabModelSelectorSupplier Supplier for the {@link TabModelSelector}.
      * @param sideUiStateProviderSupplier Supplier for the {@link SideUiStateProvider}.
+     * @param tabWidthSupplier Supplier for the unpinned tab width in DP.
      * @param modelSelectorClickHandler The click handler {@link Runnable} for the model selector
      *     button.
      * @param modelSelectorKeyboardFocusHandler The {@link StripLayoutViewOnKeyboardFocusHandler}
@@ -316,6 +318,7 @@ public class StripLayoutTrailingButtonsCoordinator {
             boolean isIncognito,
             Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier,
             OneshotSupplier<SideUiStateProvider> sideUiStateProviderSupplier,
+            Supplier<Float> tabWidthSupplier,
             Runnable modelSelectorClickHandler,
             StripLayoutViewOnKeyboardFocusHandler modelSelectorKeyboardFocusHandler,
             GlicButtonDelegate glicClickHandler,
@@ -330,6 +333,7 @@ public class StripLayoutTrailingButtonsCoordinator {
         mIsIncognito = isIncognito;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mSideUiStateProviderSupplier = sideUiStateProviderSupplier;
+        mTabWidthSupplier = tabWidthSupplier;
         mModelSelectorButtonClickHandler = modelSelectorClickHandler;
         mModelSelectorButtonKeyboardFocusHandler = modelSelectorKeyboardFocusHandler;
         mGlicClickHandler = glicClickHandler;
@@ -423,6 +427,19 @@ public class StripLayoutTrailingButtonsCoordinator {
                             /* clickSlopDp= */ 0.f,
                             /* hasLongClickAction= */ true,
                             mGlicDismissNudgeButton);
+
+            mGlicButton.setOnLongClickHandler(
+                    view -> {
+                        Activity activity = mWindowAndroid.getActivity().get();
+                        if (activity != null) {
+                            showMenu(activity);
+                            // Clear the pressed state so a click isn't triggered in addition to the
+                            // long press.
+                            if (mGlicButton != null) {
+                                mGlicButton.setPressed(false);
+                            }
+                        }
+                    });
 
             mGlicButtonContextMenuCoordinator = new GlicButtonContextMenuCoordinator(mContext);
 
@@ -725,9 +742,8 @@ public class StripLayoutTrailingButtonsCoordinator {
      * Shows the trailing button context menu.
      *
      * @param activity The current {@link Activity}.
-     * @param tabWidthDp The current tab width in DP.
      */
-    public void showMenu(Activity activity, float tabWidthDp) {
+    public void showMenu(Activity activity) {
         if (mGlicButtonContextMenuCoordinator == null || mProfile == null || mGlicButton == null) {
             return;
         }
@@ -743,7 +759,7 @@ public class StripLayoutTrailingButtonsCoordinator {
                 anchorRectProvider);
 
         mGlicButtonContextMenuCoordinator.showMenu(
-                anchorRectProvider, activity, mProfile, tabWidthDp);
+                anchorRectProvider, activity, mProfile, mTabWidthSupplier.get());
     }
 
     private void updateButtonTints(boolean incognito) {
@@ -1572,20 +1588,16 @@ public class StripLayoutTrailingButtonsCoordinator {
      *
      * @param x The x coordinate of the event.
      * @param y The y coordinate of the event.
-     * @param tabWidthDp The current tab width in DP.
      * @return True if the event was handled and hit a trailing button.
      */
-    public boolean onLongPress(float x, float y, float tabWidthDp) {
+    public boolean onLongPress(float x, float y) {
         Activity activity = mWindowAndroid.getActivity().get();
         if (activity == null) return false;
         if (mModelSelectorButton != null && mModelSelectorButton.click(x, y, 0)) {
             return true;
         }
         if (mGlicButton != null && mGlicButton.checkClickedOrHovered(x, y)) {
-            showMenu(activity, tabWidthDp);
-            // Clear the pressed state so a click isn't triggered in addition to the long press.
-            mGlicButton.setPressed(false);
-            return true;
+            return mGlicButton.handleLongClick();
         } else if (mGlicActorButton != null && mGlicActorButton.checkClickedOrHovered(x, y)) {
             return true;
         }
@@ -1690,11 +1702,9 @@ public class StripLayoutTrailingButtonsCoordinator {
      * @param y The y coordinate of the click event.
      * @param buttons State of all buttons that are pressed.
      * @param modifiers State of all modifiers.
-     * @param tabWidthDp The current tab width in DP.
      * @return Whether the event was handled.
      */
-    public boolean click(
-            long time, float x, float y, int buttons, int modifiers, float tabWidthDp) {
+    public boolean click(long time, float x, float y, int buttons, int modifiers) {
         if (mModelSelectorButton != null && mModelSelectorButton.checkClickedOrHovered(x, y)) {
             if (mModelSelectorButton.click(x, y, buttons)) {
                 mModelSelectorButton.handleClick(time, buttons, modifiers);
@@ -1705,7 +1715,7 @@ public class StripLayoutTrailingButtonsCoordinator {
             if (MotionEventUtils.isSecondaryClick(buttons)) {
                 Activity activity = mWindowAndroid.getActivity().get();
                 if (activity != null) {
-                    showMenu(activity, tabWidthDp);
+                    showMenu(activity);
                     return true;
                 }
             } else if (mGlicButton.click(x, y, buttons)) {

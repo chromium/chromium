@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTrailingButtonsCoordinator;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnKeyboardFocusHandler;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnLongClickHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.MediaState;
@@ -69,6 +70,7 @@ public class TabStripSceneLayerTest {
     @Mock private SceneLayer mSceneLayer;
     @Mock private TooltipHandler mTooltipHandler;
     @Mock private StripLayoutViewOnClickHandler mOnClickHandler;
+    @Mock private StripLayoutViewOnLongClickHandler mOnLongClickHandler;
     @Mock private StripLayoutViewOnKeyboardFocusHandler mKeyboardFocusHandler;
     @Mock private TabLoadTrackerCallback mTabLoadTrackerCallback;
     @Mock private LayoutUpdateHost mLayoutUpdateHost;
@@ -174,6 +176,7 @@ public class TabStripSceneLayerTest {
                                 mContext,
                                 1,
                                 mOnClickHandler,
+                                mOnLongClickHandler,
                                 mKeyboardFocusHandler,
                                 /* accessibilityFocusHandler= */ null,
                                 mTabLoadTrackerCallback,
