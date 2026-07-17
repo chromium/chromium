@@ -8,12 +8,23 @@
 #import "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
+#import "components/prefs/ios/pref_observer_bridge.h"
+#import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/autofill_settings_consumer.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
+
+@interface AutofillSettingsMediator () <PrefObserverDelegate> {
+  // Registrar for pref changes notifications.
+  PrefChangeRegistrar _prefChangeRegistrar;
+  // Pref observer to track changes to prefs.
+  std::optional<PrefObserverBridge> _prefObserverBridge;
+}
+
+@end
 
 @implementation AutofillSettingsMediator {
   raw_ptr<PrefService> _prefs;
@@ -32,6 +43,13 @@
     _identityManager = identityManager;
     _reauthenticationModule = reauthModule;
     _shouldShowWalletPromo = shouldShowWalletPromo;
+
+    _prefChangeRegistrar.Init(_prefs);
+    _prefObserverBridge.emplace(self);
+    // Register to observe any changes on Pref-backed values displayed by the
+    // screen.
+    _prefObserverBridge->ObserveChangesForPreference(
+        autofill::prefs::kAutofillAiOptInStatus, &_prefChangeRegistrar);
   }
   return self;
 }
@@ -43,8 +61,7 @@
   _consumer = consumer;
 
   if (_consumer && _prefs && _identityManager) {
-    BOOL enhancedAutofillEnabled =
-        autofill::GetAutofillAiOptInStatus(_prefs, _identityManager);
+    BOOL enhancedAutofillEnabled = [self isEnhancedAutofillEnabled];
     BOOL canAttemptReauth = [_reauthenticationModule canAttemptReauth];
     [_consumer setAutofillAIAllowedByPolicy:
                    autofill::IsAutofillAiAllowedByEnterprisePolicy(_prefs)];
@@ -61,6 +78,11 @@
 }
 
 - (void)disconnect {
+  // Remove pref changes registrations.
+  _prefChangeRegistrar.RemoveAll();
+  // Remove observer bridges.
+  _prefObserverBridge.reset();
+
   _prefs = nullptr;
   _identityManager = nullptr;
   _reauthenticationModule = nil;
@@ -101,7 +123,19 @@
                                }];
 }
 
+#pragma mark - PrefObserverDelegate
+
+- (void)onPreferenceChanged:(const std::string&)preferenceName {
+  if (preferenceName == autofill::prefs::kAutofillAiOptInStatus) {
+    [_consumer setEnhancedAutofillEnabled:[self isEnhancedAutofillEnabled]];
+  }
+}
+
 #pragma mark - Private
+
+- (BOOL)isEnhancedAutofillEnabled {
+  return autofill::GetAutofillAiOptInStatus(_prefs, _identityManager);
+}
 
 - (void)onReauthCompletedWithTargetState:(BOOL)targetOn
                                   result:(ReauthenticationResult)result {

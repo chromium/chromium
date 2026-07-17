@@ -338,7 +338,7 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
 
     _prefChangeRegistrar.Init(_browser->GetProfile()->GetPrefs());
     _prefObserverBridge.emplace(self);
-    // Register to observe any changes on Perf backed values displayed by the
+    // Register to observe any changes on Pref-backed values displayed by the
     // screen.
     if (!IsYourSavedInfoSettingsPageIosEnabled()) {
       _prefObserverBridge->ObserveChangesForPreference(

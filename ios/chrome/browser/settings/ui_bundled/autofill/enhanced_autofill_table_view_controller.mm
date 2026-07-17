@@ -9,6 +9,10 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
+#import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/core/common/autofill_prefs.h"
+#import "components/prefs/ios/pref_observer_bridge.h"
+#import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/autofill_ai_util.h"
@@ -42,11 +46,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 }  // namespace
 
-@interface EnhancedAutofillTableViewController () {
+@interface EnhancedAutofillTableViewController () <PrefObserverDelegate> {
   raw_ptr<Browser> _browser;
 
   // Whether Settings have been dismissed.
   BOOL _settingsAreDismissed;
+
+  // Registrar for pref changes notifications.
+  PrefChangeRegistrar _prefChangeRegistrar;
+  // Pref observer to track changes to prefs.
+  std::optional<PrefObserverBridge> _prefObserverBridge;
 }
 
 @end
@@ -58,7 +67,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
+    self.title = l10n_util::GetNSString(IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE);
     _browser = browser;
+    _prefChangeRegistrar.Init(_browser->GetProfile()->GetPrefs());
+    _prefObserverBridge.emplace(self);
+    // Register to observe any changes on Pref-backed values displayed by the
+    // screen.
+    _prefObserverBridge->ObserveChangesForPreference(
+        autofill::prefs::kAutofillAiOptInStatus, &_prefChangeRegistrar);
   }
   return self;
 }
@@ -199,7 +215,27 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - SettingsControllerProtocol
 
 - (void)settingsWillBeDismissed {
+  // Remove pref changes registrations.
+  _prefChangeRegistrar.RemoveAll();
+  // Remove observer bridges.
+  _prefObserverBridge.reset();
+
+  _browser = nullptr;
   _settingsAreDismissed = YES;
+}
+
+#pragma mark - PrefObserverDelegate
+
+- (void)onPreferenceChanged:(const std::string&)preferenceName {
+  // If the model hasn't been created yet, no need to update anything.
+  if (!self.tableViewModel) {
+    return;
+  }
+
+  if (preferenceName == autofill::prefs::kAutofillAiOptInStatus) {
+    [self setSwitchItemOn:[self isEnhancedAutofillEnabled]
+                 itemType:ItemTypeEnhancedAutofillSwitch];
+  }
 }
 
 @end
