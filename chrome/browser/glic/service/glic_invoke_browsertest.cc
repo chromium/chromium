@@ -17,6 +17,7 @@
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/service/glic_invoke_handler.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_helper_metrics.h"
+#include "chrome/browser/glic/service/metrics/glic_invoke_metrics.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_histogram_tester.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
@@ -78,6 +79,7 @@ class GlicInvokeBrowserTest : public GlicBrowserTestMixin<PlatformBrowserTest> {
 };
 
 IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, InvokeWithInvalidTab) {
+  GlicHistogramTester histogram_tester;
   base::test::TestFuture<GlicInvokeError> error_future;
   GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
   options.target.surface = tabs::TabHandle::Null();
@@ -86,6 +88,12 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, InvokeWithInvalidTab) {
   coordinator().Invoke(std::move(options));
 
   EXPECT_EQ(error_future.Get(), GlicInvokeError::kInvalidTab);
+  histogram_tester.ExpectUniqueSample("Glic.Invoke.InvocationSource",
+                                      mojom::InvocationSource::kOsButton, 1);
+  histogram_tester.ExpectUniqueSample("Glic.InvokeResult",
+                                      GlicInvokeError::kInvalidTab, 1);
+  histogram_tester.ExpectUniqueSample("Glic.InvokeResult.OsButton",
+                                      GlicInvokeError::kInvalidTab, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
@@ -100,6 +108,7 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
   ASSERT_FALSE(handle.Get());
 
   // 3. Try to invoke Glic targeting the destroyed tab.
+  GlicHistogramTester histogram_tester;
   base::test::TestFuture<GlicInvokeError> error_future;
   GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
   options.target.surface = handle;
@@ -110,6 +119,12 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
   // 4. It should fail with GlicInvokeError::kTabClosed because the handle is
   // invalid now.
   EXPECT_EQ(error_future.Get(), GlicInvokeError::kTabClosed);
+  histogram_tester.ExpectUniqueSample("Glic.Invoke.InvocationSource",
+                                      mojom::InvocationSource::kOsButton, 1);
+  histogram_tester.ExpectUniqueSample("Glic.InvokeResult",
+                                      GlicInvokeError::kTabClosed, 1);
+  histogram_tester.ExpectUniqueSample("Glic.InvokeResult.OsButton",
+                                      GlicInvokeError::kTabClosed, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, InvokeWithEmptyConversationId) {

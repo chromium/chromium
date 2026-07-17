@@ -19,6 +19,8 @@ enum class GlicInvokeResult {
   kMaxValue = kErrorMaxValue
 };
 
+void RecordInvokeSource(mojom::InvocationSource source);
+
 void RecordInvokeSuccess(mojom::InvocationSource source);
 
 void RecordInvokeError(mojom::InvocationSource source, GlicInvokeError result);

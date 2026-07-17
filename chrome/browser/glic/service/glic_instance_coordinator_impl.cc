@@ -497,6 +497,8 @@ base::WeakPtr<GlicInstance> GlicInstanceCoordinatorImpl::InvokeInternal(
     std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey,
     GlicInvokeOptions options,
     GlicInvokeWithAutoSubmitOptions auto_submit_options) {
+  RecordInvokeSource(options.GetInvocationSource());
+
   if (!GlicEnabling::IsEnabledForProfile(profile_)) {
     RecordInvokeError(options.GetInvocationSource(),
                       GlicInvokeError::kProfileNotEnabled);
@@ -511,6 +513,8 @@ base::WeakPtr<GlicInstance> GlicInstanceCoordinatorImpl::InvokeInternal(
   if (const auto* tab_handle =
           std::get_if<tabs::TabHandle>(&options.target.surface)) {
     if (tab_handle->raw_value() == tabs::TabHandle::NullValue) {
+      RecordInvokeError(options.GetInvocationSource(),
+                        GlicInvokeError::kInvalidTab);
       if (options.on_error) {
         std::move(options.on_error).Run(GlicInvokeError::kInvalidTab);
       }
@@ -528,6 +532,8 @@ base::WeakPtr<GlicInstance> GlicInstanceCoordinatorImpl::InvokeInternal(
             std::get_if<GlicInvokeHandler::TabSurface>(&resolved_target)) {
       tab = tab_surface->tab;
       if (!tab || !GlicInstanceHelper::From(tab)) {
+        RecordInvokeError(options.GetInvocationSource(),
+                          GlicInvokeError::kTabClosed);
         if (options.on_error) {
           std::move(options.on_error).Run(GlicInvokeError::kTabClosed);
         }
@@ -563,6 +569,8 @@ base::WeakPtr<GlicInstance> GlicInstanceCoordinatorImpl::InvokeInternal(
       absl::Overload{
           [&](const ConversationId& conv_id) {
             if (conv_id.conversation_id.empty()) {
+              RecordInvokeError(options.GetInvocationSource(),
+                                GlicInvokeError::kInvalidConversationId);
               if (options.on_error) {
                 std::move(options.on_error)
                     .Run(GlicInvokeError::kInvalidConversationId);
@@ -577,9 +585,13 @@ base::WeakPtr<GlicInstance> GlicInstanceCoordinatorImpl::InvokeInternal(
           [&](NewConversation) { return CreateGlicInstance(); },
           [&](const InstanceId& id) {
             GlicInstanceImpl* target_instance = GetInstanceImplFor(id);
-            if (!target_instance && options.on_error) {
-              std::move(options.on_error)
-                  .Run(GlicInvokeError::kInstanceNotFound);
+            if (!target_instance) {
+              RecordInvokeError(options.GetInvocationSource(),
+                                GlicInvokeError::kInstanceNotFound);
+              if (options.on_error) {
+                std::move(options.on_error)
+                    .Run(GlicInvokeError::kInstanceNotFound);
+              }
             }
             return target_instance;
           },
@@ -615,6 +627,8 @@ base::WeakPtr<GlicInstance> GlicInstanceCoordinatorImpl::InvokeInternal(
   }
 
   if (invoke_handlers_.contains(instance)) {
+    RecordInvokeError(options.GetInvocationSource(),
+                      GlicInvokeError::kInvokeInProgress);
     if (options.on_error) {
       std::move(options.on_error).Run(GlicInvokeError::kInvokeInProgress);
     }

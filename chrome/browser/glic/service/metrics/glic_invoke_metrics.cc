@@ -12,22 +12,28 @@ namespace glic {
 
 namespace {
 
-constexpr char kHistogramName[] = "Glic.InvokeResult";
+constexpr char kInvokeResultHistogramName[] = "Glic.InvokeResult";
+constexpr char kInvokeSourceHistogramName[] = "Glic.Invoke.InvocationSource";
 
 }  // namespace
 
+void RecordInvokeSource(mojom::InvocationSource source) {
+  base::UmaHistogramEnumeration(kInvokeSourceHistogramName, source);
+}
+
 void RecordInvokeSuccess(mojom::InvocationSource source) {
-  base::UmaHistogramEnumeration(kHistogramName, GlicInvokeResult::kSuccess);
+  base::UmaHistogramEnumeration(kInvokeResultHistogramName,
+                                GlicInvokeResult::kSuccess);
   base::UmaHistogramEnumeration(
-      base::StringPrintf("%s.%s", kHistogramName,
+      base::StringPrintf("%s.%s", kInvokeResultHistogramName,
                          GetInvocationSourceString(source)),
       GlicInvokeResult::kSuccess);
 }
 
 void RecordInvokeError(mojom::InvocationSource source, GlicInvokeError result) {
-  base::UmaHistogramEnumeration(kHistogramName, result);
+  base::UmaHistogramEnumeration(kInvokeResultHistogramName, result);
   base::UmaHistogramEnumeration(
-      base::StringPrintf("%s.%s", kHistogramName,
+      base::StringPrintf("%s.%s", kInvokeResultHistogramName,
                          GetInvocationSourceString(source)),
       result);
 }

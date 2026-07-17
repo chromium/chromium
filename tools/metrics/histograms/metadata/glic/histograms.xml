@@ -1823,6 +1823,16 @@ chromium-metrics-reviews@google.com.
   <token key="Visibility" variants="Visibility"/>
 </histogram>
 
+<histogram name="Glic.Invoke.InvocationSource" enum="GlicInvocationSource"
+    expires_after="2027-06-01">
+  <owner>vollick@chromium.org</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Records the invocation source when a Glic invocation begins. Recorded each
+    time GlicInstanceCoordinatorImpl::InvokeInternal is called.
+  </summary>
+</histogram>
+
 <histogram name="Glic.InvokeResult" enum="GlicInvokeResult"
     expires_after="2027-06-01">
   <owner>vollick@chromium.org</owner>
