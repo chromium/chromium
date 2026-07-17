@@ -26,6 +26,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -2020,6 +2021,57 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored({NotRestoredReason::kIgnoreEventAndEvict}, {}, {}, {},
                     {reason}, FROM_HERE);
+}
+
+// LocalMainFrameHost::SetWindowRect arriving for a document that has entered
+// the back/forward cache must not move or resize the window, which is now
+// displaying a different primary main frame. See https://crbug.com/502232151.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       SetWindowRectIgnoredForCachedFrame) {
+  // A WebContentsDelegate that records SetContentsBounds() calls.
+  class BoundsTrackingDelegate : public WebContentsDelegate {
+   public:
+    void SetContentsBounds(WebContents* source,
+                           const gfx::Rect& bounds) override {
+      ++set_contents_bounds_call_count_;
+    }
+    int set_contents_bounds_call_count() const {
+      return set_contents_bounds_call_count_;
+    }
+
+   private:
+    int set_contents_bounds_call_count_ = 0;
+  };
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  // 2) Navigate to B. A is stored in the back/forward cache.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  ASSERT_TRUE(rfh_a->IsInBackForwardCache());
+
+  BoundsTrackingDelegate tracking_delegate;
+  WebContentsDelegate* old_delegate = web_contents()->GetDelegate();
+  web_contents()->SetDelegate(&tracking_delegate);
+
+  // 3) Simulate the cached renderer sending SetWindowRect. The request must be
+  // dropped without forwarding new bounds to the WebContentsDelegate.
+  bool callback_ran = false;
+  rfh_a->SetWindowRect(
+      gfx::Rect(10, 10, 300, 200),
+      base::BindLambdaForTesting([&] { callback_ran = true; }));
+  EXPECT_TRUE(callback_ran);
+  EXPECT_EQ(0, tracking_delegate.set_contents_bounds_call_count());
+
+  // The page must be evicted from the back/forward cache.
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+
+  web_contents()->SetDelegate(old_delegate);
 }
 
 // Test scenarios where the "BackForwardCache" content flag is enabled but

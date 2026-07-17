@@ -7841,15 +7841,22 @@ void RenderFrameHostImpl::SetWindowRect(const gfx::Rect& bounds,
         "SetWindowRect called during prerendering.");
     return;
   }
-  // Throw out SetWindowRects that are not from the outermost document.
-  if (GetParentOrOuterDocument()) {
-    local_main_frame_host_receiver_.ReportBadMessage(
-        "SetWindowRect called from child frame.");
+
+  // Always ack the renderer so it can clear its pending window rect, even on
+  // the early-return paths below.
+  base::ScopedClosureRunner ack(std::move(callback));
+
+  // An inactive document (e.g. one that has entered the back/forward cache)
+  // must not move or resize the window, which now hosts a different primary
+  // main frame. We use ValidateOutermostMainFrameWindowChange to evict the
+  // page from BFCache if this happens, to prevent the renderer from getting
+  // out of sync with the browser's window bounds if the page is later
+  // restored. See https://crbug.com/502232151.
+  if (!ValidateOutermostMainFrameWindowChange("SetWindowRect")) {
     return;
   }
 
   delegate_->SetWindowRect(bounds);
-  std::move(callback).Run();
 }
 
 void RenderFrameHostImpl::MoveWindowTo(const gfx::Point& origin,
