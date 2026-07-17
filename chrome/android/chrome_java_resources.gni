@@ -48,6 +48,8 @@ chrome_java_resources = [
   "java/res/color/tab_strip_msb_bg_tint_list.xml",
   "java/res/color/tab_strip_ntb_bg_incognito_tint_list.xml",
   "java/res/color/tab_strip_ntb_bg_tint_list.xml",
+  "java/res/color/tab_strip_tsb_bg_incognito_tint_list.xml",
+  "java/res/color/tab_strip_tsb_bg_tint_list.xml",
   "java/res/color/tile_bg_color_list.xml",
   "java/res/color/widget_bg.xml",
   "java/res/color/widget_button_bg.xml",

@@ -22,7 +22,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PointF;
@@ -123,7 +122,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetC
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinatorFactory;
 import org.chromium.chrome.browser.tasks.tab_management.TabListNotificationHandler;
 import org.chromium.chrome.browser.tasks.tab_management.TabShareUtils;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
@@ -954,13 +952,12 @@ public class StripLayoutHelper
         // Set an off-color background for the tab search button to distinguish it in the strip.
         // Note that if this is not set, it will match the color of the background around it.
         button.setBackgroundAlwaysVisible(true);
-        @ColorInt
-        int bgTint =
+        @ColorRes
+        int bgTintRes =
                 incognito
-                        ? context.getColor(R.color.white_alpha_20)
-                        : TabUiThemeProvider.getFaviconBackgroundColor(
-                                context, /* isIncognito= */ false);
-        button.setBackgroundTint(ColorStateList.valueOf(bgTint));
+                        ? R.color.tab_strip_tsb_bg_incognito_tint_list
+                        : R.color.tab_strip_tsb_bg_tint_list;
+        button.setBackgroundTint(context.getColorStateList(bgTintRes));
 
         button.setTint(ChromeColors.getPrimaryIconTint(context, incognito).getDefaultColor());
         button.setDrawY(BUTTON_BACKGROUND_Y_OFFSET_DP);

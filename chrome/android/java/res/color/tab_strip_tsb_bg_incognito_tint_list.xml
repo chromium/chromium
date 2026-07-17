@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:state_hovered="true"
+        android:color="@color/tab_strip_button_bg_incognito_hover_tint" />
+    <item android:state_pressed="true" app:state_peripheral_pressed="true"
+        android:color="@color/tab_strip_button_bg_incognito_peripheral_pressed_tint" />
+    <item android:state_pressed="true"
+        android:color="@color/tab_strip_bg_incognito_pressed_tint" />
+
+    <item android:color="@color/white_alpha_20" />
+</selector>

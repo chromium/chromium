@@ -1762,12 +1762,54 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         TintedCompositorButton button = mStripLayoutHelper.getTabSearchButton();
-        button.setHovered(true);
-        assertTrue("Tab Search button should be hovered", button.isHovered());
 
+        // Verify tab search button hover highlight default tint.
+        button.setHovered(true);
+        int defaultHoverBackgroundTint = mActivity.getColor(R.color.tab_strip_button_bg_hover_tint);
+        assertEquals(
+                "Tab Search button hover highlight default tint is not as expected",
+                defaultHoverBackgroundTint,
+                button.getBackgroundTint());
+
+        // Verify tab search button hover highlight pressed tint.
         button.setHovered(false);
         button.setPressed(true, true);
-        assertTrue("Tab Search button should be pressed", button.isPressed());
+        int pressedHoverBackgroundTint =
+                mActivity.getColor(R.color.tab_strip_button_bg_peripheral_pressed_tint);
+        assertEquals(
+                "Tab Search button hover highlight pressed tint is not as expected",
+                pressedHoverBackgroundTint,
+                button.getBackgroundTint());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_SEARCH_FOR_AL)
+    public void testTabSearchButtonHoverHighlightProperties_Incognito() {
+        initializeTest(false, /* incognito= */ true, 0, 1);
+        mStripLayoutHelper.onSizeChanged(
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        TintedCompositorButton button = mStripLayoutHelper.getTabSearchButton();
+
+        // Verify tab search button incognito hover highlight default tint.
+        button.setHovered(true);
+        int defaultHoverBackgroundIncognitoTint =
+                mActivity.getColor(R.color.tab_strip_button_bg_incognito_hover_tint);
+        assertEquals(
+                "Tab Search button hover highlight default tint is not as expected",
+                defaultHoverBackgroundIncognitoTint,
+                button.getBackgroundTint());
+
+        // Verify tab search button incognito hover highlight pressed tint.
+        button.setHovered(false);
+        button.setPressed(true, true);
+        int hoverBackgroundPressedIncognitoColor =
+                mActivity.getColor(R.color.tab_strip_button_bg_incognito_peripheral_pressed_tint);
+        assertEquals(
+                "Tab Search button hover highlight pressed tint is not as expected",
+                hoverBackgroundPressedIncognitoColor,
+                button.getBackgroundTint());
     }
 
     @Test
