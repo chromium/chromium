@@ -90,6 +90,9 @@ class COMPONENT_EXPORT(UI_BASE_X) XCursorLoader {
 };
 
 COMPONENT_EXPORT(UI_BASE_X)
+bool IsValidCursorThemeNameForTesting(const std::string& theme);
+
+COMPONENT_EXPORT(UI_BASE_X)
 std::vector<XCursorLoader::Image> ParseCursorFile(
     scoped_refptr<base::RefCountedMemory> file,
     uint32_t preferred_size);
