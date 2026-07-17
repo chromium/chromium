@@ -140,11 +140,6 @@ InterestGroupManager* TestStoragePartition::GetInterestGroupManager() {
   return nullptr;
 }
 
-PrivateAggregationDataModel*
-TestStoragePartition::GetPrivateAggregationDataModel() {
-  return nullptr;
-}
-
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 CdmStorageDataModel* TestStoragePartition::GetCdmStorageDataModel() {
   return nullptr;

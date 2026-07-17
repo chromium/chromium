@@ -80,7 +80,6 @@ class HostZoomLevelContext;
 class HostZoomMap;
 class InterestGroupManager;
 class PlatformNotificationContext;
-class PrivateAggregationDataModel;
 class ServiceWorkerContext;
 class SharedWorkerService;
 class StoragePartitionConfig;
@@ -163,7 +162,6 @@ class CONTENT_EXPORT StoragePartition {
   virtual PlatformNotificationContext* GetPlatformNotificationContext() = 0;
   virtual InterestGroupManager* GetInterestGroupManager() = 0;
   virtual BrowsingTopicsSiteDataManager* GetBrowsingTopicsSiteDataManager() = 0;
-  virtual PrivateAggregationDataModel* GetPrivateAggregationDataModel() = 0;
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   virtual CdmStorageDataModel* GetCdmStorageDataModel() = 0;
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)

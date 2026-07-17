@@ -54,7 +54,6 @@
 #include "components/unexportable_keys/features.h"
 #include "content/public/browser/dom_storage_context.h"
 #include "content/public/browser/network_service_instance.h"
-#include "content/public/browser/private_aggregation_data_model.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "content/public/common/content_features.h"
@@ -402,7 +401,6 @@ class BrowsingDataModelBrowserTest
         {features::kIsolatedWebAppDevMode, {}},
         {network::features::kSharedStorageAPI, {}},
         {network::features::kInterestGroupStorage, {}},
-        {blink::features::kPrivateAggregationApi, {}},
         {blink::features::kAdInterestGroupAPI, {}},
         {blink::features::kFledge, {}},
         {blink::features::kFencedFrames, {}},

@@ -23,7 +23,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/dom_storage_context.h"
-#include "content/public/browser/private_aggregation_data_model.h"
 #include "content/public/browser/session_storage_usage_info.h"
 #include "content/public/browser/shared_worker_service.h"
 #include "content/public/browser/storage_partition.h"
@@ -40,7 +39,6 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
@@ -136,14 +134,6 @@ BrowsingDataModel::DataOwner GetDataOwner::GetOwningOriginOrHost<
     const content::InterestGroupManager::InterestGroupDataKey& data_key) const {
   CHECK_EQ(BrowsingDataModel::StorageType::kInterestGroup, storage_type_);
   return GetOwnerBasedOnScheme(data_key.owner);
-}
-
-template <>
-BrowsingDataModel::DataOwner GetDataOwner::GetOwningOriginOrHost<
-    content::PrivateAggregationDataModel::DataKey>(
-    const content::PrivateAggregationDataModel::DataKey& data_key) const {
-  CHECK_EQ(BrowsingDataModel::StorageType::kPrivateAggregation, storage_type_);
-  return GetOwnerBasedOnScheme(data_key.reporting_origin());
 }
 
 template <>
@@ -304,15 +294,6 @@ void StorageRemoverHelper::Visitor::operator()<
 
 template <>
 void StorageRemoverHelper::Visitor::operator()<
-    content::PrivateAggregationDataModel::DataKey>(
-    const content::PrivateAggregationDataModel::DataKey& data_key) {
-  CHECK(types.Has(BrowsingDataModel::StorageType::kPrivateAggregation));
-  helper->storage_partition_->GetPrivateAggregationDataModel()
-      ->RemovePendingDataKey(data_key, helper->GetCompleteCallback());
-}
-
-template <>
-void StorageRemoverHelper::Visitor::operator()<
     net::SharedDictionaryIsolationKey>(
     const net::SharedDictionaryIsolationKey& isolation_key) {
   if (types.Has(BrowsingDataModel::StorageType::kSharedDictionary)) {
@@ -440,19 +421,6 @@ void OnInterestGroupsLoaded(
   std::move(loaded_callback).Run();
 }
 
-void OnPrivateAggregationLoaded(
-    BrowsingDataModel* model,
-    base::OnceClosure loaded_callback,
-    std::set<content::PrivateAggregationDataModel::DataKey>
-        private_aggregation) {
-  for (const auto& data_key : private_aggregation) {
-    model->AddBrowsingData(data_key,
-                           BrowsingDataModel::StorageType::kPrivateAggregation,
-                           kSmallAmountOfDataInBytes);
-  }
-  std::move(loaded_callback).Run();
-}
-
 void OnQuotaStorageLoaded(
     BrowsingDataModel* model,
     base::OnceClosure loaded_callback,
@@ -546,7 +514,6 @@ std::optional<net::SchemefulSite> GetThirdPartyPartitioningSite(
       absl::Overload{
           [&](const url::Origin&) {},
           [&](const content::InterestGroupManager::InterestGroupDataKey) {},
-          [&](const content::PrivateAggregationDataModel::DataKey) {},
           [&](const blink::StorageKey& storage_key) {
             if (storage_key.IsThirdPartyContext()) {
               top_level_site = storage_key.top_level_site();
@@ -618,10 +585,6 @@ const url::Origin BrowsingDataModel::GetOriginForDataKey(
           [](const url::Origin& origin) { return origin; },
           [](const content::InterestGroupManager::InterestGroupDataKey
                  interest_group_key) { return interest_group_key.owner; },
-          [](const content::PrivateAggregationDataModel::DataKey
-                 private_aggregation_key) {
-            return private_aggregation_key.reporting_origin();
-          },
           [](const blink::StorageKey& storage_key) {
             return storage_key.origin();
           },
@@ -892,7 +855,6 @@ bool BrowsingDataModel::IsStorageTypeCookieLike(
   switch (storage_type) {
     case BrowsingDataModel::StorageType::kTrustTokens:
     case BrowsingDataModel::StorageType::kInterestGroup:
-    case BrowsingDataModel::StorageType::kPrivateAggregation:
     case BrowsingDataModel::StorageType::kSharedDictionary:
       return false;
     case BrowsingDataModel::StorageType::kSharedStorage:
@@ -933,8 +895,6 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
       network::features::kCompressionDictionaryTransport);
   bool is_interest_group_enabled =
       base::FeatureList::IsEnabled(network::features::kInterestGroupStorage);
-  bool is_private_aggregation_enabled =
-      base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi);
 
   base::RepeatingClosure completion =
       base::BindRepeating([](const base::OnceClosure&) {},
@@ -974,12 +934,6 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
       manager->GetAllInterestGroupDataKeys(
           base::BindOnce(&OnInterestGroupsLoaded, this, completion));
     }
-  }
-
-  // Private Aggregation
-  if (is_private_aggregation_enabled) {
-    storage_partition_->GetPrivateAggregationDataModel()->GetAllDataKeys(
-        base::BindOnce(&OnPrivateAggregationLoaded, this, completion));
   }
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)

@@ -88,8 +88,6 @@
 #include "content/browser/notifications/platform_notification_context_impl.h"
 #include "content/browser/payments/payment_app_context_impl.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
-#include "content/browser/private_aggregation/private_aggregation_manager.h"
-#include "content/browser/private_aggregation/private_aggregation_manager_impl.h"
 #include "content/browser/push_messaging/push_messaging_context.h"
 #include "content/browser/quota/quota_context.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -116,7 +114,6 @@
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_result.h"
-#include "content/public/browser/private_aggregation_data_model.h"
 #include "content/public/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/session_storage_usage_info.h"
@@ -892,7 +889,6 @@ class StoragePartitionImpl::DataDeletionHelper {
       network::mojom::CookieManager* cookie_manager,
       InterestGroupManagerImpl* interest_group_manager,
       AggregationService* aggregation_service,
-      PrivateAggregationManagerImpl* private_aggregation_manager,
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
       CdmStorageManager* cdm_storage_manager,
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -920,7 +916,7 @@ class StoragePartitionImpl::DataDeletionHelper {
     kAggregationService = 9,
     kSharedStorage = 10,
     kGpuCache = 11,
-    kPrivateAggregation = 12,
+    kPrivateAggregation = 12,  // Deprecated.
     kInterestGroups = 13,
     kCdmStorage = 14,
     kDeviceBoundSessions = 15,
@@ -1509,12 +1505,6 @@ void StoragePartitionImpl::Initialize(
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
 
-  if (base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi)) {
-    private_aggregation_manager_ =
-        std::make_unique<PrivateAggregationManagerImpl>(is_in_memory(), path,
-                                                        this);
-  }
-
   if (base::FeatureList::IsEnabled(
           blink::features::kDeclarativePerformanceObserver)) {
     declarative_performance_observer_store_ =
@@ -1868,18 +1858,6 @@ StoragePartitionImpl::GetProtoDatabaseProviderForTesting() {
   return proto_database_provider_.get();
 }
 
-
-PrivateAggregationManager*
-StoragePartitionImpl::GetPrivateAggregationManager() {
-  DCHECK(initialized_);
-  return private_aggregation_manager_.get();
-}
-
-PrivateAggregationDataModel*
-StoragePartitionImpl::GetPrivateAggregationDataModel() {
-  DCHECK(initialized_);
-  return private_aggregation_manager_.get();
-}
 
 void StoragePartitionImpl::DeleteStaleSessionData() {
   GetDOMStorageContext()->StartScavengingUnusedSessionStorage();
@@ -2792,7 +2770,6 @@ void StoragePartitionImpl::ClearDataImpl(
       quota_manager_.get(), special_storage_policy_.get(),
       filesystem_context_.get(), GetCookieManagerForBrowserProcess(),
       interest_group_manager_.get(), aggregation_service_.get(),
-      private_aggregation_manager_.get(),
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
       cdm_storage_manager_.get(),
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -2895,7 +2872,6 @@ void StoragePartitionImpl::DataDeletionHelper::ClearData(
     network::mojom::CookieManager* cookie_manager,
     InterestGroupManagerImpl* interest_group_manager,
     AggregationService* aggregation_service,
-    PrivateAggregationManagerImpl* private_aggregation_manager,
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
     CdmStorageManager* cdm_storage_manager,
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -3108,18 +3084,6 @@ void StoragePartitionImpl::DataDeletionHelper::ClearData(
         mojo::WrapCallbackWithDefaultInvokeIfNotRun(
             CreateTaskCompletionClosure(TracingDataType::kAggregationService)));
   }
-
-  if (private_aggregation_manager &&
-      (remove_mask_ & REMOVE_DATA_MASK_PRIVATE_AGGREGATION_INTERNAL)) {
-    private_aggregation_manager->ClearBudgetData(
-        begin, end, generic_filter,
-
-        // Wrapping the callback ensures that the callback is still run in the
-        // case that the storage partition is deleted before the task is posted.
-        mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-            CreateTaskCompletionClosure(TracingDataType::kPrivateAggregation)));
-  }
-
 
   if (remove_mask_ & REMOVE_DATA_MASK_DEVICE_BOUND_SESSIONS &&
       device_bound_session_manager) {
@@ -3447,13 +3411,6 @@ void StoragePartitionImpl::OverrideAggregationServiceForTesting(
     std::unique_ptr<AggregationService> aggregation_service) {
   DCHECK(initialized_);
   aggregation_service_ = std::move(aggregation_service);
-}
-
-void StoragePartitionImpl::OverridePrivateAggregationManagerForTesting(
-    std::unique_ptr<PrivateAggregationManagerImpl>
-        private_aggregation_manager) {
-  DCHECK(initialized_);
-  private_aggregation_manager_ = std::move(private_aggregation_manager);
 }
 
 void StoragePartitionImpl::OverrideDeviceBoundSessionManagerForTesting(

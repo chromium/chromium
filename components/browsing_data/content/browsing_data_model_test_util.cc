@@ -48,17 +48,6 @@ std::string DataKeyDebugStringVisitor::operator()<
 }
 
 template <>
-std::string DataKeyDebugStringVisitor::operator()<
-    content::PrivateAggregationDataModel::DataKey>(
-    const content::PrivateAggregationDataModel::DataKey&
-        private_aggregation_data_key) {
-  std::stringstream debug_string;
-  debug_string << "PrivateAggregationDataKey: ";
-  debug_string << private_aggregation_data_key.reporting_origin();
-  return debug_string.str();
-}
-
-template <>
 std::string
 DataKeyDebugStringVisitor::operator()<net::SharedDictionaryIsolationKey>(
     const net::SharedDictionaryIsolationKey& shared_dictionary_isolation_key) {

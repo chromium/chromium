@@ -109,9 +109,6 @@ class GeneratedCodeCacheContext;
 class HostZoomLevelContext;
 class InterestGroupManagerImpl;
 class PaymentAppContextImpl;
-class PrivateAggregationDataModel;
-class PrivateAggregationManager;
-class PrivateAggregationManagerImpl;
 class PushMessagingContext;
 class QuotaContext;
 class ReconnectableURLLoaderFactoryForIOThreadWrapper;
@@ -156,9 +153,6 @@ class CONTENT_EXPORT StoragePartitionImpl
       std::unique_ptr<SharedWorkerServiceImpl> shared_worker_service);
   void OverrideAggregationServiceForTesting(
       std::unique_ptr<AggregationService> aggregation_service);
-  void OverridePrivateAggregationManagerForTesting(
-      std::unique_ptr<PrivateAggregationManagerImpl>
-          private_aggregation_manager);
   void OverrideDeviceBoundSessionManagerForTesting(
       std::unique_ptr<network::mojom::DeviceBoundSessionManager>
           device_bound_session_manager);
@@ -209,8 +203,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   InterestGroupManager* GetInterestGroupManager() override;
   BrowsingTopicsSiteDataManager* GetBrowsingTopicsSiteDataManager() override;
   leveldb_proto::ProtoDatabaseProvider* GetProtoDatabaseProvider() override;
-  // Use outside content.
-  PrivateAggregationDataModel* GetPrivateAggregationDataModel() override;
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   CdmStorageDataModel* GetCdmStorageDataModel() override;
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -285,8 +277,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   const std::string& GetPartitionDomain() const;
   AggregationService* GetAggregationService();
   FontAccessManager* GetFontAccessManager();
-
-  PrivateAggregationManager* GetPrivateAggregationManager();
 
   // blink::mojom::DomStorage interface.
   void OpenLocalStorage(
@@ -826,8 +816,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   mojo::Remote<network::mojom::DeviceBoundSessionManager>
       device_bound_session_manager_;
 
-
-  std::unique_ptr<PrivateAggregationManagerImpl> private_aggregation_manager_;
 
   // ReceiverSet for DomStorage, using the
   // ChildProcessSecurityPolicyImpl::Handle as the binding context type. The
