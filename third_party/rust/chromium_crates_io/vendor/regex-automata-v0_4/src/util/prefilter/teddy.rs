@@ -81,6 +81,10 @@ impl Teddy {
 }
 
 impl PrefilterI for Teddy {
+    fn name(&self) -> &'static str {
+        "teddy"
+    }
+
     fn find(&self, haystack: &[u8], span: Span) -> Option<Span> {
         #[cfg(not(feature = "perf-literal-multisubstring"))]
         {

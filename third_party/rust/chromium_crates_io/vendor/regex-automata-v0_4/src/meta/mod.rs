@@ -54,8 +54,10 @@ mod error;
 #[cfg(any(feature = "dfa-build", feature = "hybrid"))]
 mod limited;
 mod literal;
+mod prefix;
 mod regex;
 mod reverse_inner;
+mod reverse_suffix;
 #[cfg(any(feature = "dfa-build", feature = "hybrid"))]
 mod stopat;
 mod strategy;

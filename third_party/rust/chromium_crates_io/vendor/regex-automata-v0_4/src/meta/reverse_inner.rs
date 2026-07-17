@@ -34,85 +34,168 @@ those and a concatenation of the Hir expressions seen up to that point.
 
 use alloc::vec::Vec;
 
-use regex_syntax::hir::{self, literal, Hir, HirKind};
+use regex_syntax::hir::{
+    self,
+    literal::{self, Literal},
+    Hir, HirKind,
+};
 
-use crate::{util::prefilter::Prefilter, MatchKind};
+use crate::{meta::prefix, util::prefilter::Prefilter, MatchKind};
 
-/// Attempts to extract an "inner" prefilter from the given HIR expressions. If
-/// one was found, then a concatenation of the HIR expressions that precede it
-/// is returned.
+/// Returns true when it's impossible for an earlier match to be detected after
+/// a literal candidate (corresponding to anything in `literals`) has
+/// been found.
 ///
-/// The idea here is that the prefilter returned can be used to find candidate
-/// matches. And then the HIR returned can be used to build a reverse regex
-/// matcher, which will find the start of the candidate match. Finally, the
-/// match still has to be confirmed with a normal anchored forward scan to find
-/// the end position of the match.
+/// Specifically, that there is no earlier match than what a reverse scan of
+/// `concat_prefix` after a match of `literals` reports.
+///
+/// Since this requires a single `Hir`, this implies the reverse inner optimization
+/// only works with a single regex.
+pub(super) fn has_no_earlier_match(
+    concat_prefix: &Hir,
+    literals: &[Literal],
+) -> bool {
+    // let literals = prefix::LiteralSet::many(literals);
+    if literals.is_empty() || literals.iter().any(|lit| lit.is_empty()) {
+        debug!(
+            "reverse inner is not early return safe because \
+                 no non-empty inner literals were found"
+        );
+        return false;
+    }
+    // With one literal, an occurrence crossing the prefix boundary must
+    // overlap another occurrence of that same literal. Such an overlap
+    // requires the prefix to consume every distinct byte in the literal.
+    // This reasoning does not apply when one extracted literal can cross
+    // the boundary into a different extracted literal.
+    if literals.len() == 1 {
+        let prefix_may_contain = prefix::hir_can_contain_literal(
+            concat_prefix,
+            literals[0].as_bytes(),
+        );
+        debug!(
+            "reverse inner prefix can contain inner literals? \
+             {prefix_may_contain}"
+        );
+        if !prefix_may_contain {
+            return true;
+        }
+    }
+
+    let fixed_length = prefix::hir_has_fixed_length(concat_prefix);
+    debug!("reverse inner has fixed length prefix? {fixed_length}");
+    if fixed_length {
+        return true;
+    }
+
+    let class_separator =
+        prefix::has_disjoint_class_separator(concat_prefix, &literals);
+    debug!("reverse inner has disjoint class separator? {class_separator}");
+    if class_separator {
+        return true;
+    }
+
+    // We couldn't prove that the reverse inner optimization
+    // was safe, so bail out.
+    false
+}
+
+/// This attempts to extract an "inner" prefilter from the given HIR
+/// expressions. If one was found, then a concatenation of the HIR expressions
+/// that precede it is returned.
+///
+/// The idea here is that the prefilter returned can be used to find
+/// candidate matches. And then the HIR returned can be used to build a
+/// reverse regex matcher, which will find the start of the candidate
+/// match. Finally, the match still has to be confirmed with a normal
+/// anchored forward scan to find the end position of the match.
 ///
 /// Note that this assumes leftmost-first match semantics, so callers must
 /// not call this otherwise.
-pub(crate) fn extract(hirs: &[&Hir]) -> Option<(Hir, Prefilter)> {
-    if hirs.len() != 1 {
-        debug!(
-            "skipping reverse inner optimization since it only \
-		 	 supports 1 pattern, {} were given",
-            hirs.len(),
-        );
-        return None;
-    }
-    let mut concat = match top_concat(hirs[0]) {
-        Some(concat) => concat,
-        None => {
+#[derive(Debug)]
+pub(crate) struct InnerPrefilter {
+    pub(crate) prefix: Hir,
+    /// The prefilter generated from `literals`.
+    pub(crate) pre: Prefilter,
+    /// The actual literals extracted and used to build `pre`.
+    ///
+    /// These are used by the meta strategy to prove that the inner prefilter
+    /// can return after the first confirmed candidate. If that proof fails, we
+    /// could try extracting a different set of literals. But we don't
+    /// currently do that.
+    pub(crate) literals: Vec<Literal>,
+}
+
+impl InnerPrefilter {
+    pub(crate) fn new(hirs: &[&Hir]) -> Option<InnerPrefilter> {
+        if hirs.len() != 1 {
             debug!(
-                "skipping reverse inner optimization because a top-level \
-		 	     concatenation could not found",
+                "skipping reverse inner optimization since it only \
+                 supports 1 pattern, {} were given",
+                hirs.len(),
             );
             return None;
         }
-    };
-    // We skip the first HIR because if it did have a prefix prefilter in it,
-    // we probably wouldn't be here looking for an inner prefilter.
-    for i in 1..concat.len() {
-        let hir = &concat[i];
-        let pre = match prefilter(hir) {
-            None => continue,
-            Some(pre) => pre,
-        };
-        // Even if we got a prefilter, if it isn't consider "fast," then we
-        // probably don't want to bother with it. Namely, since the reverse
-        // inner optimization requires some overhead, it likely only makes
-        // sense if the prefilter scan itself is (believed) to be much faster
-        // than the regex engine.
-        if !pre.is_fast() {
-            debug!(
-                "skipping extracted inner prefilter because \
-				 it probably isn't fast"
-            );
-            continue;
-        }
-        let concat_suffix = Hir::concat(concat.split_off(i));
-        let concat_prefix = Hir::concat(concat);
-        // Look for a prefilter again. Why? Because above we only looked for
-        // a prefilter on the individual 'hir', but we might be able to find
-        // something better and more discriminatory by looking at the entire
-        // suffix. We don't do this above to avoid making this loop worst case
-        // quadratic in the length of 'concat'.
-        let pre2 = match prefilter(&concat_suffix) {
-            None => pre,
-            Some(pre2) => {
-                if pre2.is_fast() {
-                    pre2
-                } else {
-                    pre
-                }
+        let mut concat = match top_concat(hirs[0]) {
+            Some(concat) => concat,
+            None => {
+                debug!(
+                    "skipping reverse inner optimization because a top-level \
+                     concatenation could not found",
+                );
+                return None;
             }
         };
-        return Some((concat_prefix, pre2));
+        // We skip the first HIR because if it did have a prefix prefilter in
+        // it, we probably wouldn't be here looking for an inner prefilter.
+        for i in 1..concat.len() {
+            let hir = &concat[i];
+            let (pre, lits) = match prefilter_with_literals(hir) {
+                None => continue,
+                Some(pre) => pre,
+            };
+            // Even if we got a prefilter, if it isn't consider "fast," then
+            // we probably don't want to bother with it. Namely, since the
+            // reverse inner optimization requires some overhead, it likely
+            // only makes sense if the prefilter scan itself is (believed) to
+            // be much faster than the regex engine.
+            if !pre.is_fast() {
+                debug!(
+                    "skipping extracted inner prefilter because \
+                     it probably isn't fast"
+                );
+                continue;
+            }
+            let concat_suffix = Hir::concat(concat.split_off(i));
+            let concat_prefix = Hir::concat(concat);
+            // Look for a prefilter again. Why? Because above we only looked
+            // for a prefilter on the individual 'hir', but we might be able
+            // to find something better and more discriminatory by looking at
+            // the entire suffix. We don't do this above to avoid making this
+            // loop worst case quadratic in the length of 'concat'.
+            let (preinner, inner_literals) =
+                match prefilter_with_literals(&concat_suffix) {
+                    None => (pre, lits),
+                    Some((pre2, lits2)) => {
+                        if pre2.is_fast() {
+                            (pre2, lits2)
+                        } else {
+                            (pre, lits)
+                        }
+                    }
+                };
+            return Some(InnerPrefilter {
+                prefix: concat_prefix,
+                pre: preinner,
+                literals: inner_literals,
+            });
+        }
+        debug!(
+            "skipping reverse inner optimization because a top-level \
+             sub-expression with a fast prefilter could not be found"
+        );
+        None
     }
-    debug!(
-        "skipping reverse inner optimization because a top-level \
-	     sub-expression with a fast prefilter could not be found"
-    );
-    None
 }
 
 /// Attempt to extract a prefilter from an HIR expression.
@@ -124,7 +207,7 @@ pub(crate) fn extract(hirs: &[&Hir]) -> Option<(Hir, Prefilter)> {
 ///
 /// Note that this assumes leftmost-first match semantics, so callers must
 /// not call this otherwise.
-fn prefilter(hir: &Hir) -> Option<Prefilter> {
+fn prefilter_with_literals(hir: &Hir) -> Option<(Prefilter, Vec<Literal>)> {
     let mut extractor = literal::Extractor::new();
     extractor.kind(literal::ExtractKind::Prefix);
     let mut prefixes = extractor.extract(hir);
@@ -148,9 +231,9 @@ fn prefilter(hir: &Hir) -> Option<Prefilter> {
         prefixes.len(),
         prefixes
     );
-    prefixes
-        .literals()
-        .and_then(|lits| Prefilter::new(MatchKind::LeftmostFirst, lits))
+    let lits = prefixes.literals()?;
+    let pre = Prefilter::new(MatchKind::LeftmostFirst, lits)?;
+    Some((pre, lits.to_vec()))
 }
 
 /// Looks for a "top level" HirKind::Concat item in the given HIR. This will

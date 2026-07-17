@@ -3,7 +3,7 @@ use core::{
     panic::{RefUnwindSafe, UnwindSafe},
 };
 
-use alloc::sync::Arc;
+use alloc::{borrow::Cow, format, sync::Arc};
 
 use regex_syntax::hir::{literal, Hir};
 
@@ -11,7 +11,7 @@ use crate::{
     meta::{
         error::{BuildError, RetryError, RetryFailError, RetryQuadraticError},
         regex::{Cache, RegexInfo},
-        reverse_inner, wrappers,
+        reverse_inner, reverse_suffix, wrappers,
     },
     nfa::thompson::{self, WhichCaptures, NFA},
     util::{
@@ -40,6 +40,9 @@ use crate::{
 pub(super) trait Strategy:
     Debug + Send + Sync + RefUnwindSafe + UnwindSafe + 'static
 {
+    #[allow(dead_code)]
+    fn name(&self) -> Cow<'static, str>;
+
     fn group_info(&self) -> &GroupInfo;
 
     fn create_cache(&self) -> Cache;
@@ -117,6 +120,7 @@ pub(super) fn new(
                 "found that the regex can be broken down to a literal \
                  search, avoiding the regex engine entirely",
             );
+            debug!("using {} strategy", pre.name());
             return Ok(pre);
         }
         // This now attempts another short-circuit of the regex engine: if we
@@ -136,6 +140,7 @@ pub(super) fn new(
                 "found plain alternation of literals, \
                  avoiding regex engine entirely and using Aho-Corasick"
             );
+            debug!("using {} strategy", pre.name());
             return Ok(pre);
         }
         prefixes.literals().and_then(|strings| {
@@ -163,25 +168,25 @@ pub(super) fn new(
     core = match ReverseAnchored::new(core) {
         Err(core) => core,
         Ok(ra) => {
-            debug!("using reverse anchored strategy");
+            debug!("using {} strategy", ra.name());
             return Ok(Arc::new(ra));
         }
     };
     core = match ReverseSuffix::new(core, hirs) {
         Err(core) => core,
         Ok(rs) => {
-            debug!("using reverse suffix strategy");
+            debug!("using {} strategy", rs.name());
             return Ok(Arc::new(rs));
         }
     };
     core = match ReverseInner::new(core, hirs) {
         Err(core) => core,
         Ok(ri) => {
-            debug!("using reverse inner strategy");
+            debug!("using {} strategy", ri.name());
             return Ok(Arc::new(ri));
         }
     };
-    debug!("using core strategy");
+    debug!("using {} strategy", core.name());
     Ok(Arc::new(core))
 }
 
@@ -353,6 +358,10 @@ impl Pre<()> {
 // strategy when len(patterns)==1 if the number of literals is large. In that
 // case, literal extraction gives up and will return an infinite set.)
 impl<P: PrefilterI> Strategy for Pre<P> {
+    fn name(&self) -> Cow<'static, str> {
+        Cow::Owned(format!("prefilter {}", self.pre.name()))
+    }
+
     #[cfg_attr(feature = "perf-inline", inline(always))]
     fn group_info(&self) -> &GroupInfo {
         &self.group_info
@@ -460,12 +469,7 @@ impl Core {
     ) -> Result<Core, BuildError> {
         let mut lookm = LookMatcher::new();
         lookm.set_line_terminator(info.config().get_line_terminator());
-        let thompson_config = thompson::Config::new()
-            .utf8(info.config().get_utf8_empty())
-            .nfa_size_limit(info.config().get_nfa_size_limit())
-            .shrink(false)
-            .which_captures(info.config().get_which_captures())
-            .look_matcher(lookm);
+        let thompson_config = info.config().to_thompson_config();
         let nfa = thompson::Compiler::new()
             .configure(thompson_config.clone())
             .build_many_from_hir(hirs)
@@ -512,7 +516,6 @@ impl Core {
                     // the lazy DFA ignores capturing groups in all cases.
                     .configure(
                         thompson_config
-                            .clone()
                             .which_captures(WhichCaptures::None)
                             .reverse(true),
                     )
@@ -664,6 +667,10 @@ impl Core {
 }
 
 impl Strategy for Core {
+    fn name(&self) -> Cow<'static, str> {
+        Cow::Borrowed("core")
+    }
+
     #[cfg_attr(feature = "perf-inline", inline(always))]
     fn group_info(&self) -> &GroupInfo {
         self.nfa.group_info()
@@ -843,7 +850,7 @@ impl Strategy for Core {
         // match bounds and not the entire haystack.
         trace!(
             "match found at {}..{} in capture search, \
-		  	 using another engine to find captures",
+             using another engine to find captures",
             m.start(),
             m.end(),
         );
@@ -910,7 +917,7 @@ impl ReverseAnchored {
         if !core.info.is_always_anchored_end() {
             debug!(
                 "skipping reverse anchored optimization because \
-				 the regex is not always anchored at the end"
+                 the regex is not always anchored at the end"
             );
             return Err(core);
         }
@@ -925,7 +932,7 @@ impl ReverseAnchored {
         if core.info.is_always_anchored_start() {
             debug!(
                 "skipping reverse anchored optimization because \
-				 the regex is also anchored at the start"
+                 the regex is also anchored at the start"
             );
             return Err(core);
         }
@@ -935,7 +942,7 @@ impl ReverseAnchored {
         if !core.hybrid.is_some() && !core.dfa.is_some() {
             debug!(
                 "skipping reverse anchored optimization because \
-				 we don't have a lazy DFA or a full DFA"
+                 we don't have a lazy DFA or a full DFA"
             );
             return Err(core);
         }
@@ -979,6 +986,10 @@ impl ReverseAnchored {
 // Thus, in this impl, we can actually assume that the end position in 'input'
 // is equivalent to the length of the haystack.
 impl Strategy for ReverseAnchored {
+    fn name(&self) -> Cow<'static, str> {
+        Cow::Borrowed("reverse anchored")
+    }
+
     #[cfg_attr(feature = "perf-inline", inline(always))]
     fn group_info(&self) -> &GroupInfo {
         self.core.group_info()
@@ -1127,6 +1138,16 @@ impl ReverseSuffix {
             );
             return Err(core);
         }
+        // Also like the reverse inner optimization, a reverse suffix encodes
+        // leftmost-first match semantics.
+        if core.info.config().get_match_kind() != MatchKind::LeftmostFirst {
+            debug!(
+                "skipping reverse suffix optimization because \
+                 match kind is {:?} but this only supports leftmost-first",
+                core.info.config().get_match_kind(),
+            );
+            return Err(core);
+        }
         // Like the reverse inner optimization, we don't do this for regexes
         // that are always anchored. It could lead to scanning too much, but
         // could say "no match" much more quickly than running the regex
@@ -1145,7 +1166,7 @@ impl ReverseSuffix {
         if core.info.is_always_anchored_start() {
             debug!(
                 "skipping reverse suffix optimization because \
-				 the regex is always anchored at the start",
+                 the regex is always anchored at the start",
             );
             return Err(core);
         }
@@ -1155,14 +1176,14 @@ impl ReverseSuffix {
         if !core.hybrid.is_some() && !core.dfa.is_some() {
             debug!(
                 "skipping reverse suffix optimization because \
-				 we don't have a lazy DFA or a full DFA"
+                 we don't have a lazy DFA or a full DFA"
             );
             return Err(core);
         }
         if core.pre.as_ref().map_or(false, |p| p.is_fast()) {
             debug!(
                 "skipping reverse suffix optimization because \
-				 we already have a prefilter that we think is fast"
+                 we already have a prefilter that we think is fast"
             );
             return Err(core);
         }
@@ -1199,8 +1220,16 @@ impl ReverseSuffix {
         if !pre.is_fast() {
             debug!(
                 "skipping reverse suffix optimization because \
-				 while we have a suffix prefilter, it is not \
-				 believed to be 'fast'"
+                 while we have a suffix prefilter, it is not \
+                 believed to be 'fast'"
+            );
+            return Err(core);
+        }
+        if !reverse_suffix::has_no_earlier_match(hirs, &lcs) {
+            debug!(
+                "skipping reverse suffix optimization because \
+                 an earlier suffix match could be a complete match \
+                 inside of a larger match"
             );
             return Err(core);
         }
@@ -1217,7 +1246,7 @@ impl ReverseSuffix {
         let mut min_start = 0;
         loop {
             let litmatch = match self.pre.find(input.haystack(), span) {
-                None => return Ok(None),
+                None => break,
                 Some(span) => span,
             };
             trace!("reverse suffix scan found suffix match at {litmatch:?}");
@@ -1225,17 +1254,16 @@ impl ReverseSuffix {
                 .clone()
                 .anchored(Anchored::Yes)
                 .span(input.start()..litmatch.end);
-            match self
-                .try_search_half_rev_limited(cache, &revinput, min_start)?
+            if let Some(hm) =
+                self.try_search_half_rev_limited(cache, &revinput, min_start)?
             {
-                None => {
-                    if span.start >= span.end {
-                        break;
-                    }
-                    span.start = litmatch.start.checked_add(1).unwrap();
-                }
-                Some(hm) => return Ok(Some(hm)),
+                return Ok(Some(hm));
             }
+
+            if span.start >= span.end {
+                break;
+            }
+            span.start = litmatch.start.checked_add(1).unwrap();
             min_start = litmatch.end;
         }
         Ok(None)
@@ -1294,6 +1322,10 @@ impl ReverseSuffix {
 }
 
 impl Strategy for ReverseSuffix {
+    fn name(&self) -> Cow<'static, str> {
+        Cow::Borrowed("reverse suffix")
+    }
+
     #[cfg_attr(feature = "perf-inline", inline(always))]
     fn group_info(&self) -> &GroupInfo {
         self.core.group_info()
@@ -1347,7 +1379,7 @@ impl Strategy for ReverseSuffix {
                     Ok(None) => {
                         unreachable!(
                             "suffix match plus reverse match implies \
-						     there must be a match",
+                             there must be a match",
                         )
                     }
                     Ok(Some(hm_end)) => Some(Match::new(
@@ -1404,7 +1436,7 @@ impl Strategy for ReverseSuffix {
                     Ok(None) => {
                         unreachable!(
                             "suffix match plus reverse match implies \
-						     there must be a match",
+                             there must be a match",
                         )
                     }
                     Ok(Some(hm_end)) => Some(hm_end),
@@ -1458,7 +1490,7 @@ impl Strategy for ReverseSuffix {
             Err(RetryError::Fail(_err)) => {
                 trace!(
                     "reverse suffix reverse fast captures search failed: \
-                        {_err}"
+                     {_err}"
                 );
                 return self.core.search_slots_nofail(cache, input, slots);
             }
@@ -1467,7 +1499,7 @@ impl Strategy for ReverseSuffix {
         };
         trace!(
             "match found at {}..{} in capture search, \
-		  	 using another engine to find captures",
+             using another engine to find captures",
             hm_start.offset(),
             input.end(),
         );
@@ -1515,7 +1547,7 @@ impl ReverseInner {
         if core.info.config().get_match_kind() != MatchKind::LeftmostFirst {
             debug!(
                 "skipping reverse inner optimization because \
-				 match kind is {:?} but this only supports leftmost-first",
+                 match kind is {:?} but this only supports leftmost-first",
                 core.info.config().get_match_kind(),
             );
             return Err(core);
@@ -1538,7 +1570,7 @@ impl ReverseInner {
         if core.info.is_always_anchored_start() {
             debug!(
                 "skipping reverse inner optimization because \
-				 the regex is always anchored at the start",
+                 the regex is always anchored at the start",
             );
             return Err(core);
         }
@@ -1548,14 +1580,14 @@ impl ReverseInner {
         if !core.hybrid.is_some() && !core.dfa.is_some() {
             debug!(
                 "skipping reverse inner optimization because \
-				 we don't have a lazy DFA or a full DFA"
+                 we don't have a lazy DFA or a full DFA"
             );
             return Err(core);
         }
         if core.pre.as_ref().map_or(false, |p| p.is_fast()) {
             debug!(
                 "skipping reverse inner optimization because \
-				 we already have a prefilter that we think is fast"
+                 we already have a prefilter that we think is fast"
             );
             return Err(core);
         } else if core.pre.is_some() {
@@ -1565,31 +1597,38 @@ impl ReverseInner {
                  use reverse inner prefilter"
             );
         }
-        let (concat_prefix, preinner) = match reverse_inner::extract(hirs) {
-            Some(x) => x,
-            // N.B. the 'extract' function emits debug messages explaining
+        let prefilter = match reverse_inner::InnerPrefilter::new(hirs) {
+            Some(prefilter) => prefilter,
+            // N.B. the 'new' function emits debug messages explaining
             // why we bailed out here.
             None => return Err(core),
         };
+        if !reverse_inner::has_no_earlier_match(
+            &prefilter.prefix,
+            &prefilter.literals,
+        ) {
+            debug!(
+                "skipping reverse inner optimization because an inner \
+                 literal match could be confirmed before an earlier match"
+            );
+            return Err(core);
+        }
         debug!("building reverse NFA for prefix before inner literal");
-        let mut lookm = LookMatcher::new();
-        lookm.set_line_terminator(core.info.config().get_line_terminator());
-        let thompson_config = thompson::Config::new()
+        let thompson_config = core
+            .info
+            .config()
+            .to_thompson_config()
             .reverse(true)
-            .utf8(core.info.config().get_utf8_empty())
-            .nfa_size_limit(core.info.config().get_nfa_size_limit())
-            .shrink(false)
-            .which_captures(WhichCaptures::None)
-            .look_matcher(lookm);
+            .which_captures(WhichCaptures::None);
         let result = thompson::Compiler::new()
             .configure(thompson_config)
-            .build_from_hir(&concat_prefix);
+            .build_from_hir(&prefilter.prefix);
         let nfarev = match result {
             Ok(nfarev) => nfarev,
             Err(_err) => {
                 debug!(
                     "skipping reverse inner optimization because the \
-					 reverse NFA failed to build: {}",
+                     reverse NFA failed to build: {}",
                     _err,
                 );
                 return Err(core);
@@ -1606,13 +1645,13 @@ impl ReverseInner {
         } else if dfa.is_some() {
             debug!(
                 "skipping lazy DFA for reverse inner optimization \
-				 because we have a full DFA"
+                 because we have a full DFA"
             );
             wrappers::ReverseHybrid::none()
         } else {
             wrappers::ReverseHybrid::new(&core.info, &nfarev)
         };
-        Ok(ReverseInner { core, preinner, nfarev, hybrid, dfa })
+        Ok(ReverseInner { core, preinner: prefilter.pre, nfarev, hybrid, dfa })
     }
 
     #[cfg_attr(feature = "perf-inline", inline(always))]
@@ -1626,14 +1665,14 @@ impl ReverseInner {
         let mut min_pre_start = 0;
         loop {
             let litmatch = match self.preinner.find(input.haystack(), span) {
-                None => return Ok(None),
+                None => break,
                 Some(span) => span,
             };
             if litmatch.start < min_pre_start {
                 trace!(
                     "found inner prefilter match at {litmatch:?}, which starts \
-					 before the end of the last forward scan at {min_pre_start}, \
-					 quitting to avoid quadratic behavior",
+                     before the end of the last forward scan at {min_pre_start}, \
+                     quitting to avoid quadratic behavior",
                 );
                 return Err(RetryError::Quadratic(RetryQuadraticError::new()));
             }
@@ -1648,37 +1687,33 @@ impl ReverseInner {
             // reverse scan goes past the minimum start point. That is, the
             // literal search might not, but the reverse regex search for the
             // prefix might!
-            match self.try_search_half_rev_limited(
+            if let Some(hm_start) = self.try_search_half_rev_limited(
                 cache,
                 &revinput,
                 min_match_start,
             )? {
-                None => {
-                    if span.start >= span.end {
-                        break;
+                let fwdinput = input
+                    .clone()
+                    .anchored(Anchored::Pattern(hm_start.pattern()))
+                    .span(hm_start.offset()..input.end());
+                match self.try_search_half_fwd_stopat(cache, &fwdinput)? {
+                    Err(stopat) => {
+                        min_pre_start = stopat;
+                        span.start = litmatch.start.checked_add(1).unwrap();
                     }
-                    span.start = litmatch.start.checked_add(1).unwrap();
-                }
-                Some(hm_start) => {
-                    let fwdinput = input
-                        .clone()
-                        .anchored(Anchored::Pattern(hm_start.pattern()))
-                        .span(hm_start.offset()..input.end());
-                    match self.try_search_half_fwd_stopat(cache, &fwdinput)? {
-                        Err(stopat) => {
-                            min_pre_start = stopat;
-                            span.start =
-                                litmatch.start.checked_add(1).unwrap();
-                        }
-                        Ok(hm_end) => {
-                            return Ok(Some(Match::new(
-                                hm_start.pattern(),
-                                hm_start.offset()..hm_end.offset(),
-                            )))
-                        }
+                    Ok(hm_end) => {
+                        return Ok(Some(Match::new(
+                            hm_start.pattern(),
+                            hm_start.offset()..hm_end.offset(),
+                        )));
                     }
                 }
             }
+
+            if span.start >= span.end {
+                break;
+            }
+            span.start = litmatch.start.checked_add(1).unwrap();
             min_match_start = litmatch.end;
         }
         Ok(None)
@@ -1741,6 +1776,10 @@ impl ReverseInner {
 }
 
 impl Strategy for ReverseInner {
+    fn name(&self) -> Cow<'static, str> {
+        Cow::Borrowed("reverse inner")
+    }
+
     #[cfg_attr(feature = "perf-inline", inline(always))]
     fn group_info(&self) -> &GroupInfo {
         self.core.group_info()
@@ -1860,7 +1899,7 @@ impl Strategy for ReverseInner {
         };
         trace!(
             "match found at {}..{} in capture search, \
-		  	 using another engine to find captures",
+             using another engine to find captures",
             m.start(),
             m.end(),
         );
@@ -1901,5 +1940,449 @@ fn copy_match_to_slots(m: Match, slots: &mut [Option<NonMaxUsize>]) {
     }
     if let Some(slot) = slots.get_mut(slot_end) {
         *slot = NonMaxUsize::new(m.end());
+    }
+}
+
+// We only test which strategy we get when all literal features are enabled.
+// Other cases are less substantially less interesting.
+//
+// We also don't test this on miri since it takes forever.
+//
+// We also require `unicode-perl` since some regexes use `\w`, `\d` and `\s`.
+#[cfg(all(
+    feature = "perf-literal-substring",
+    feature = "perf-literal-multisubstring",
+    feature = "unicode-perl",
+    not(miri),
+))]
+#[cfg(test)]
+mod tests {
+    use alloc::{format, string::String, vec::Vec};
+
+    use crate::{meta::regex::Config, util::syntax};
+
+    use super::*;
+
+    fn teddy_probably_available() -> bool {
+        cfg!(any(target_arch = "x86_64", target_arch = "aarch64"))
+    }
+
+    #[track_caller]
+    fn strategy_with(patterns: &[&str], config: Config) -> Arc<dyn Strategy> {
+        let hirs = syntax::parse_many(patterns).unwrap();
+        let hirs: Vec<&Hir> = hirs.iter().collect();
+        let info = RegexInfo::new(config, &hirs);
+        new(&info, &hirs).unwrap()
+    }
+
+    #[track_caller]
+    fn assert_strategy(name: &'static str, patterns: &[&str]) {
+        assert_strategy_with(name, patterns, Config::new());
+    }
+
+    #[track_caller]
+    fn assert_strategy_with(
+        name: &'static str,
+        patterns: &[&str],
+        config: Config,
+    ) {
+        let strategy = strategy_with(patterns, config);
+        assert_eq!(name, strategy.name().as_ref());
+    }
+
+    fn literal_alternation(count: usize) -> String {
+        let mut pattern = String::new();
+        for i in 0..count {
+            if i > 0 {
+                pattern.push('|');
+            }
+            pattern.push_str(&format!("needle{i:05}"));
+        }
+        pattern
+    }
+
+    #[test]
+    fn pre_from_prefixes_accepts_exact_literal() {
+        assert_strategy("prefilter memchr", &["a"]);
+        assert_strategy("prefilter memchr2", &["a|b"]);
+        assert_strategy("prefilter memchr3", &["a|b|c"]);
+        assert_strategy("prefilter memmem", &["Sherlock"]);
+        if teddy_probably_available() {
+            assert_strategy(
+                "prefilter teddy",
+                &["Samwise|Gandalf|Holmes|Watson"],
+            );
+        }
+    }
+
+    #[test]
+    fn pre_from_prefixes_rejects_inexact_literal() {
+        assert_strategy("core", &["a+"]);
+    }
+
+    #[test]
+    fn pre_from_prefixes_rejects_empty_literal() {
+        assert_strategy("core", &[""]);
+    }
+
+    #[test]
+    fn pre_from_prefixes_rejects_multiple_patterns() {
+        assert_strategy("core", &["a", "b"]);
+        assert_strategy("core", &["a|b", "c|d"]);
+    }
+
+    #[test]
+    fn pre_from_prefixes_rejects_captures() {
+        assert_strategy("core", &["(a)"]);
+        // ... but not when it's a non-capture.
+        assert_strategy("prefilter memchr", &["(?:a)"]);
+        // ... or when there is a capture, but it's optimized out.
+        assert_strategy("prefilter memchr", &["(){0}a"]);
+    }
+
+    #[test]
+    fn pre_from_prefixes_rejects_look_around() {
+        assert_strategy("core", &[r"a\b"]);
+    }
+
+    #[test]
+    fn pre_from_prefixes_rejects_non_leftmost_first() {
+        assert_strategy_with(
+            "core",
+            &["a"],
+            Config::new().match_kind(MatchKind::All),
+        );
+    }
+
+    #[test]
+    fn pre_from_alternation_literals_accepts_large_alternation() {
+        let pattern = literal_alternation(3_000);
+        assert_strategy("prefilter aho-corasick", &[&pattern]);
+    }
+
+    #[test]
+    fn pre_from_alternation_literals_rejects_small_alternation() {
+        let pattern = literal_alternation(2_999);
+        assert_strategy("core", &[&pattern]);
+    }
+
+    #[test]
+    fn pre_from_alternation_literals_rejects_captures() {
+        let pattern = format!("({})", literal_alternation(3_000));
+        assert_strategy("core", &[&pattern]);
+    }
+
+    #[test]
+    fn pre_from_alternation_literals_rejects_look_around() {
+        let pattern = format!(r"(?:{})\b", literal_alternation(3_000));
+        assert_strategy("core", &[&pattern]);
+    }
+
+    #[test]
+    fn pre_from_alternation_literals_rejects_non_leftmost_first() {
+        let pattern = literal_alternation(3_000);
+        assert_strategy_with(
+            "core",
+            &[&pattern],
+            Config::new().match_kind(MatchKind::All),
+        );
+    }
+
+    #[test]
+    fn pre_from_alternation_literals_rejects_multiple_patterns() {
+        let pattern1 = literal_alternation(3_000);
+        let pattern2 = literal_alternation(3_000);
+        assert_strategy("core", &[&pattern1, &pattern2]);
+    }
+
+    #[test]
+    fn core_selected_when_no_special_strategy_applies() {
+        assert_strategy("core", &["[a-z]+"]);
+    }
+
+    #[test]
+    fn core_selected_when_auto_prefilter_is_disabled() {
+        assert_strategy_with(
+            "core",
+            &[r"\w+Holmes"],
+            Config::new().auto_prefilter(false),
+        );
+    }
+
+    #[test]
+    fn core_selected_when_reverse_engines_are_disabled() {
+        assert_strategy_with(
+            "core",
+            &[r"\w+Holmes"],
+            Config::new().dfa(false).hybrid(false),
+        );
+    }
+
+    #[test]
+    fn reverse_anchored_accepts_end_anchored() {
+        assert_strategy("reverse anchored", &[r"\w+Holmes$"]);
+    }
+
+    #[test]
+    fn reverse_anchored_accepts_multiple_end_anchored_patterns() {
+        assert_strategy("reverse anchored", &[r"\w+Holmes$", r"\w+Watson$"]);
+    }
+
+    #[test]
+    fn reverse_anchored_accepts_hybrid_without_full_dfa() {
+        assert_strategy_with(
+            "reverse anchored",
+            &[r"\w+Holmes$"],
+            Config::new().dfa(false),
+        );
+    }
+
+    #[test]
+    fn reverse_anchored_rejects_start_and_end_anchored() {
+        assert_strategy("core", &[r"^\w+Holmes$"]);
+    }
+
+    #[test]
+    fn reverse_anchored_rejects_without_reverse_engine() {
+        assert_strategy_with(
+            "core",
+            &[r"\w+Holmes$"],
+            Config::new().dfa(false).hybrid(false),
+        );
+    }
+
+    #[test]
+    fn reverse_suffix_accepts_prefix_without_internal_suffix() {
+        assert_strategy("reverse suffix", &[r"\d+XYZ"]);
+        assert_strategy("reverse suffix", &[r"[a-q][^u-z]{13}x"]);
+    }
+
+    #[test]
+    fn reverse_suffix_rejects_internal_suffix_with_word_boundary() {
+        assert_strategy("core", &[r"\b\w+nn\b"]);
+    }
+
+    #[test]
+    fn reverse_suffix_accepts_disjoint_class_separator() {
+        assert_strategy("reverse suffix", &[r"\w+\s+Holmes"]);
+        assert_strategy("reverse suffix", &[r"\w+\d*\s+Holmes"]);
+        assert_strategy("reverse suffix", &[r"(?:\w+|[.-]+)+\s+Holmes"]);
+        assert_strategy("reverse suffix", &[r"\b\w+\s+Holmes"]);
+        assert_strategy("reverse suffix", &[r"\w+\sHolmes"]);
+        assert_strategy("reverse suffix", &[r"[a-z]+[0-9]+Holmes"]);
+        assert_strategy("reverse suffix", &[r"(\w+)(\s+)Holmes"]);
+        assert_strategy("reverse suffix", &[r"(?-u:[A-Za-z]+[0-9]+Holmes)"]);
+    }
+
+    #[test]
+    fn reverse_suffix_class_separator_is_conservative() {
+        assert_strategy("core", &[r"\w+\w+Holmes"]);
+        assert_strategy("core", &[r"\w+\s*Holmes"]);
+        assert_strategy("core", &[r"[a-z]+[0-9a]+xyz"]);
+        assert_strategy("core", &[r"[a-z]+[0-9]+a1"]);
+        assert_strategy("core", &[r"(?:.abc)?[a]+[b]+c"]);
+    }
+
+    #[test]
+    fn reverse_suffix_rejects_safe_nfa_overlap() {
+        assert_strategy("reverse inner", &[r"(a|aa)b"]);
+    }
+
+    #[test]
+    fn reverse_suffix_accepts_fixed_length_prefix() {
+        assert_strategy("reverse suffix", &[r"[A-Z][0-9]XYZ"]);
+    }
+
+    #[test]
+    fn reverse_suffix_rejects_multiple_patterns_with_common_suffix() {
+        assert_strategy("core", &[r"\d+XYZ", r"\w+XYZ"]);
+    }
+
+    #[test]
+    fn reverse_suffix_rejects_auto_prefilter_disabled() {
+        assert_strategy_with(
+            "core",
+            &[r"\d+XYZ"],
+            Config::new().auto_prefilter(false),
+        );
+    }
+
+    #[test]
+    fn reverse_suffix_rejects_non_leftmost_first() {
+        assert_strategy_with(
+            "core",
+            &[r"\d+XYZ"],
+            Config::new().match_kind(MatchKind::All),
+        );
+    }
+
+    #[test]
+    fn reverse_suffix_rejects_anchored_start() {
+        assert_strategy("core", &[r"^\d+XYZ"]);
+    }
+
+    #[test]
+    fn reverse_suffix_rejects_variable_length_prefix() {
+        assert_strategy("core", &[r"(?:[A-Za-z]ab)?b"]);
+    }
+
+    #[test]
+    fn reverse_suffix_rejects_without_reverse_engine() {
+        assert_strategy_with(
+            "core",
+            &[r"\d+XYZ"],
+            Config::new().dfa(false).hybrid(false),
+        );
+    }
+
+    #[test]
+    fn reverse_suffix_rejects_existing_fast_prefilter() {
+        assert_strategy("core", &[r"abc\w+XYZ"]);
+    }
+
+    #[test]
+    fn reverse_suffix_rejects_no_literal_suffix() {
+        assert_strategy("core", &[r"[a-z]+"]);
+    }
+
+    #[test]
+    fn reverse_suffix_rejects_multiple_patterns_without_common_suffix() {
+        assert_strategy("core", &[r"\d+XYZ", r"\w+ABC"]);
+    }
+
+    #[test]
+    fn reverse_suffix_rejects_multiple_patterns_when_first_looks_safe() {
+        assert_strategy("core", &[r"\d+b", r".bb|b"]);
+        assert_strategy("core", &[r"\d+b", r"ab"]);
+    }
+
+    #[test]
+    fn reverse_suffix_rejects_unsafe_overlap() {
+        assert_strategy("core", &[r".abb|b"]);
+        assert_strategy("core", &[r".bb|b"]);
+    }
+
+    #[test]
+    fn reverse_suffix_rejects_fully_absorbed_literal() {
+        assert_strategy("core", &[r"(?:[a-wyz]{3}|[a-wyz]).b"]);
+    }
+
+    #[test]
+    fn reverse_suffix_rejects_disjoint_trailing_component() {
+        assert_strategy("core", &[r"(?:[ac-z]{2}b[ac-z])?[ac-z]b"]);
+    }
+
+    #[test]
+    fn reverse_suffix_rejects_internal_candidate_before_absorber() {
+        assert_strategy("core", &[r"(?:[a-z]cb|c)[a-z]*b"]);
+    }
+
+    #[test]
+    fn reverse_inner_accepts_disjoint_inner_literal() {
+        assert_strategy("reverse inner", &[r"\w+@\w+"]);
+        assert_strategy(
+            "reverse inner",
+            &[r"(?P<email>[.\pL]+@(?P<domain>[.\pL]+))"],
+        );
+    }
+
+    #[test]
+    fn reverse_inner_accepts_fixed_length_prefix() {
+        assert_strategy("reverse inner", &[r"[A-Z][0-9]@(foo|bar)"]);
+    }
+
+    #[test]
+    fn reverse_inner_accepts_disjoint_class_separator() {
+        assert_strategy("reverse inner", &[r"\w+\s+Holmes\s+\w+"]);
+        assert_strategy("reverse inner", &[r"\w+\d*\s+Holmes\s+\w+"]);
+        assert_strategy("reverse inner", &[r"\b\w+\s+Holmes\s+\w+"]);
+        if teddy_probably_available() {
+            assert_strategy(
+                "reverse inner",
+                &[r"\w+\s+(?:Holmes|Watson)\s+\w+"],
+            );
+        }
+    }
+
+    #[test]
+    fn reverse_inner_accepts_leading_disjoint_class_separator() {
+        assert_strategy("reverse inner", &[r"\s[A-Za-z]{0,12}ing\s"]);
+        assert_strategy("reverse inner", &[r"\s[A-Za-z]*ing\s"]);
+        assert_strategy("reverse inner", &[r"\b\s[A-Za-z]{0,12}ing\s"]);
+        assert_strategy("reverse inner", &[r"(\s)([A-Za-z]{0,12})ing\s"]);
+    }
+
+    #[test]
+    fn reverse_inner_leading_class_separator_is_conservative() {
+        assert_strategy("core", &[r"\s[\sA-Za-z]{0,12}ing\s"]);
+        assert_strategy("core", &[r"\s*[A-Za-z]{0,12}ing\s"]);
+    }
+
+    #[test]
+    fn reverse_inner_rejects_auto_prefilter_disabled() {
+        assert_strategy_with(
+            "core",
+            &[r"\w+@\w+"],
+            Config::new().auto_prefilter(false),
+        );
+    }
+
+    #[test]
+    fn reverse_inner_rejects_non_leftmost_first() {
+        assert_strategy_with(
+            "core",
+            &[r"\w+@\w+"],
+            Config::new().match_kind(MatchKind::All),
+        );
+    }
+
+    #[test]
+    fn reverse_inner_rejects_anchored_start() {
+        assert_strategy("core", &[r"^\w+@\w+"]);
+    }
+
+    #[test]
+    fn reverse_inner_rejects_without_reverse_engine() {
+        assert_strategy_with(
+            "core",
+            &[r"\w+@\w+"],
+            Config::new().dfa(false).hybrid(false),
+        );
+    }
+
+    #[test]
+    fn reverse_inner_rejects_existing_fast_prefilter() {
+        assert_strategy("core", &[r"abc\w+@\w+"]);
+    }
+
+    #[test]
+    fn reverse_inner_rejects_multiple_patterns() {
+        assert_strategy("core", &[r"\w+@\w+", r"\w+#\w+"]);
+    }
+
+    #[test]
+    fn reverse_inner_rejects_no_top_level_concat() {
+        assert_strategy("core", &[r"\w+"]);
+    }
+
+    #[test]
+    fn reverse_inner_rejects_unsafe_overlap() {
+        assert_strategy("core", &[r"a.*@\w+"]);
+    }
+
+    #[test]
+    fn reverse_inner_rejects_literal_crossing_prefix_boundary() {
+        assert_strategy("core", &[r"(?:[ac-z]{3}|[ac-z])(?:aba|baa)"]);
+    }
+
+    #[test]
+    fn reverse_inner_rejects_internal_separator_alignment() {
+        assert_strategy("core", &[r"(?:.abc)?[a]+[b]+c.*"]);
+    }
+
+    #[test]
+    fn rebar_benchmarks() {
+        assert_strategy("reverse suffix", &[r"[a-z]shing"]);
+        assert_strategy("reverse suffix", &[r"[a-q][^u-z]{23}x"]);
     }
 }

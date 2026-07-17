@@ -1570,8 +1570,6 @@ mod is_word_char {
     feature = "unicode-perl",
 ))]
 mod is_word_char {
-    use regex_syntax::try_is_word_character;
-
     use crate::util::utf8;
 
     pub(super) fn check() -> Result<(), super::UnicodeWordBoundaryError> {
@@ -1585,11 +1583,7 @@ mod is_word_char {
     ) -> Result<bool, super::UnicodeWordBoundaryError> {
         Ok(match utf8::decode(&haystack[at..]) {
             None | Some(Err(_)) => false,
-            Some(Ok(ch)) => try_is_word_character(ch).expect(
-                "since unicode-word-boundary, syntax and unicode-perl \
-                 are all enabled, it is expected that \
-                 try_is_word_character succeeds",
-            ),
+            Some(Ok(ch)) => is_word_character(ch),
         })
     }
 
@@ -1600,12 +1594,17 @@ mod is_word_char {
     ) -> Result<bool, super::UnicodeWordBoundaryError> {
         Ok(match utf8::decode_last(&haystack[..at]) {
             None | Some(Err(_)) => false,
-            Some(Ok(ch)) => try_is_word_character(ch).expect(
-                "since unicode-word-boundary, syntax and unicode-perl \
-                 are all enabled, it is expected that \
-                 try_is_word_character succeeds",
-            ),
+            Some(Ok(ch)) => is_word_character(ch),
         })
+    }
+
+    #[cfg_attr(feature = "perf-inline", inline(always))]
+    fn is_word_character(ch: char) -> bool {
+        regex_syntax::try_is_word_character(ch).expect(
+            "since unicode-word-boundary, syntax and unicode-perl \
+             are all enabled, it is expected that \
+             try_is_word_character succeeds",
+        )
     }
 }
 

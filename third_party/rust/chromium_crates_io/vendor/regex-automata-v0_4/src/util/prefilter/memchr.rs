@@ -29,6 +29,10 @@ impl Memchr {
 }
 
 impl PrefilterI for Memchr {
+    fn name(&self) -> &'static str {
+        "memchr"
+    }
+
     fn find(&self, haystack: &[u8], span: Span) -> Option<Span> {
         #[cfg(not(feature = "perf-literal-substring"))]
         {
@@ -90,6 +94,10 @@ impl Memchr2 {
 }
 
 impl PrefilterI for Memchr2 {
+    fn name(&self) -> &'static str {
+        "memchr2"
+    }
+
     fn find(&self, haystack: &[u8], span: Span) -> Option<Span> {
         #[cfg(not(feature = "perf-literal-substring"))]
         {
@@ -152,6 +160,10 @@ impl Memchr3 {
 }
 
 impl PrefilterI for Memchr3 {
+    fn name(&self) -> &'static str {
+        "memchr3"
+    }
+
     fn find(&self, haystack: &[u8], span: Span) -> Option<Span> {
         #[cfg(not(feature = "perf-literal-substring"))]
         {

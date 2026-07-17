@@ -80,6 +80,10 @@ impl AhoCorasick {
 }
 
 impl PrefilterI for AhoCorasick {
+    fn name(&self) -> &'static str {
+        "aho-corasick"
+    }
+
     fn find(&self, haystack: &[u8], span: Span) -> Option<Span> {
         #[cfg(not(feature = "perf-literal-multisubstring"))]
         {

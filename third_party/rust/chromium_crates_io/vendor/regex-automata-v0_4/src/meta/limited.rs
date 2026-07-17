@@ -79,7 +79,7 @@ pub(crate) fn dfa_try_search_half_rev(
         if at < min_start {
             trace!(
                 "reached position {at} which is before the previous literal \
-				 match, quitting to avoid quadratic behavior",
+                 match, quitting to avoid quadratic behavior",
             );
             return Err(RetryError::Quadratic(RetryQuadraticError::new()));
         }
@@ -160,7 +160,7 @@ pub(crate) fn hybrid_try_search_half_rev(
         if at < min_start {
             trace!(
                 "reached position {at} which is before the previous literal \
-				 match, quitting to avoid quadratic behavior",
+                 match, quitting to avoid quadratic behavior",
             );
             return Err(RetryError::Quadratic(RetryQuadraticError::new()));
         }

@@ -33,6 +33,10 @@ impl Memmem {
 }
 
 impl PrefilterI for Memmem {
+    fn name(&self) -> &'static str {
+        "memmem"
+    }
+
     fn find(&self, haystack: &[u8], span: Span) -> Option<Span> {
         #[cfg(not(all(feature = "std", feature = "perf-literal-substring")))]
         {

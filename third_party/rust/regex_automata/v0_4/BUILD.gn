@@ -39,8 +39,10 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4/src/meta/limited.rs",
     "//third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4/src/meta/literal.rs",
     "//third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4/src/meta/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4/src/meta/prefix.rs",
     "//third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4/src/meta/regex.rs",
     "//third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4/src/meta/reverse_inner.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4/src/meta/reverse_suffix.rs",
     "//third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4/src/meta/stopat.rs",
     "//third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4/src/meta/strategy.rs",
     "//third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4/src/meta/wrappers.rs",
@@ -95,7 +97,7 @@ cargo_crate("lib") {
   cargo_pkg_description =
       "Automata construction and matching using regular expressions."
   cargo_pkg_repository = "https://github.com/rust-lang/regex"
-  cargo_pkg_version = "0.4.14"
+  cargo_pkg_version = "0.4.16"
 
   allow_unsafe = true
 

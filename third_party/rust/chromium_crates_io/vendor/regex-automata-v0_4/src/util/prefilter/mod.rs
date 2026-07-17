@@ -474,6 +474,9 @@ impl Prefilter {
 pub(crate) trait PrefilterI:
     Debug + Send + Sync + RefUnwindSafe + UnwindSafe + 'static
 {
+    /// Return the name of this prefilter.
+    fn name(&self) -> &'static str;
+
     /// Run this prefilter on `haystack[span.start..end]` and return a matching
     /// span if one exists.
     ///
@@ -499,6 +502,10 @@ pub(crate) trait PrefilterI:
 
 #[cfg(feature = "alloc")]
 impl<P: PrefilterI + ?Sized> PrefilterI for Arc<P> {
+    fn name(&self) -> &'static str {
+        (**self).name()
+    }
+
     #[cfg_attr(feature = "perf-inline", inline(always))]
     fn find(&self, haystack: &[u8], span: Span) -> Option<Span> {
         (**self).find(haystack, span)

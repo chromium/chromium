@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.65"
 name = "regex-automata"
-version = "0.4.14"
+version = "0.4.16"
 authors = [
     "The Rust Project Developers",
     "Andrew Gallant <jamslam@gmail.com>",
@@ -31,6 +31,7 @@ include = [
     "testdata/**.toml",
     "tests/**/*.rs",
     "bench/**/*.rs",
+    "benches/**/*.rs",
     "LICENSE-UNICODE",
     "!/tests/fuzz/mod.rs",
 ]

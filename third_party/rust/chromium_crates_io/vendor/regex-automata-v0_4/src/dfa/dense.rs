@@ -4177,6 +4177,11 @@ impl<T: AsRef<[u32]>> StartTable<T> {
                     "found invalid starting state ID",
                 ));
             }
+            if dfa.special.is_match_state(id) {
+                return Err(DeserializeError::generic(
+                    "start states cannot be match states",
+                ));
+            }
         }
         Ok(())
     }
@@ -5254,6 +5259,23 @@ mod tests {
             pattern_ids: vec![],
             pattern_len: 1,
         };
+        let (buf, _) = dfa.to_bytes_native_endian();
+        DFA::from_bytes(&buf).unwrap_err();
+    }
+
+    // A starting state can never be a match state, since all matches are
+    // delayed by one byte. The search routines rely on this and assert it,
+    // so `from_bytes` must reject a serialized DFA whose start table points
+    // at a match state. The sparse DFA already rejected this; the dense DFA
+    // did not, so searching with such a DFA tripped the assertion in
+    // `dfa::search::init_fwd`.
+    #[test]
+    fn regression_start_state_not_match() {
+        let mut dfa = DFA::new("abc").unwrap();
+        let min_match = dfa.special.min_match;
+        for id in dfa.st.table_mut() {
+            *id = min_match;
+        }
         let (buf, _) = dfa.to_bytes_native_endian();
         DFA::from_bytes(&buf).unwrap_err();
     }

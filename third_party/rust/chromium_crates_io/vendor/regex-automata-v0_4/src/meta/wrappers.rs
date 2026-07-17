@@ -1253,7 +1253,7 @@ impl ReverseDFAEngine {
                          which exceeds the heuristic limit of {}",
                         nfarev.states().len(),
                         state_limit,
-					);
+                    );
                     return None;
                 }
             }

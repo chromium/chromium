@@ -2042,7 +2042,7 @@ impl<T: AsRef<[u8]>> StartTable<T> {
         for (id, _, _) in self.iter() {
             if !seen.contains(&id) {
                 return Err(DeserializeError::generic(
-                    "found invalid start state ID",
+                    "found invalid starting state ID",
                 ));
             }
             if sp.is_match_state(id) {
@@ -2651,5 +2651,23 @@ mod tests {
         let expected = MatchError::quit(0xCE, 3);
         let got = dfa.try_search_rev(&input);
         assert_eq!(Err(expected), got);
+    }
+
+    // A starting state can never be a match state, since all matches are
+    // delayed by one byte. The sparse DFA already rejects a serialized DFA
+    // whose start table points at a match state, but only the dense check
+    // had a regression test. See the test of the same name in
+    // src/dfa/dense.rs.
+    #[test]
+    fn regression_start_state_not_match() {
+        use crate::util::primitives::StateID;
+
+        let mut dfa = DFA::new("abc").unwrap().to_sparse().unwrap();
+        let min_match = dfa.special.min_match.as_u32().to_ne_bytes();
+        for entry in dfa.st.table.chunks_mut(StateID::SIZE) {
+            entry.copy_from_slice(&min_match);
+        }
+        let buf = dfa.to_bytes_native_endian();
+        crate::dfa::sparse::DFA::from_bytes(&buf).unwrap_err();
     }
 }
