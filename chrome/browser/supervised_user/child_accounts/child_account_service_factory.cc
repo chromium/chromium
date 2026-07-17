@@ -12,7 +12,6 @@
 #include "chrome/browser/supervised_user/child_accounts/list_family_members_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/browser/child_account_service.h"
 #include "components/supervised_user/core/common/features.h"
@@ -35,7 +34,6 @@ ChildAccountServiceFactory::ChildAccountServiceFactory()
           "ChildAccountService",
           supervised_user::BuildProfileSelectionsForRegularAndGuest()) {
   DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(SyncServiceFactory::GetInstance());
   // Required to consume changes indicated by this service.
   DependsOn(supervised_user::SupervisedUserServiceFactory::GetInstance());
   DependsOn(ListFamilyMembersServiceFactory::GetInstance());
