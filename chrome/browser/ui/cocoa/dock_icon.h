@@ -16,7 +16,7 @@
 // Like all UI, it must only be messaged from the UI thread.
 @interface DockIcon : NSObject
 
-+ (DockIcon*)sharedDockIcon;
+@property (class, strong, readonly) DockIcon* sharedDockIcon;
 
 // Updates the icon. Use the setters below to set the details first.
 - (void)updateIcon;
