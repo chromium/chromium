@@ -73,6 +73,10 @@ class GlicInstanceCoordinator {
       const std::string& conversation_id) = 0;
   virtual GlicInstance* GetInstanceForTab(
       const tabs::TabInterface* tab) const = 0;
+  virtual GlicInstance* GetInstanceForTabGroup(
+      tab_groups::TabGroupId group_id) const = 0;
+  virtual GlicInstance* ShowInstanceForTabGroup(
+      tab_groups::TabGroupId group_id) = 0;
   virtual GlicSharingManagerInternal& active_instance_sharing_manager() = 0;
   virtual GlicInstance* GetInstanceWithGlicWebContents(
       content::WebContents* glic_web_contents) const = 0;

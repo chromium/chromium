@@ -87,6 +87,12 @@ void GlicTabObserverAndroid::StartObservingTab(TabAndroid* tab) {
     observed_tabs_.AddObservation(tab);
   }
 
+  if (!tab_group_subscriptions_.contains(tab)) {
+    tab_group_subscriptions_[tab] = tab->RegisterGroupChanged(
+        base::BindRepeating(&GlicTabObserverAndroid::OnTabGroupChanged,
+                            base::Unretained(this)));
+  }
+
   content::WebContents* web_contents = tab->web_contents();
   // `web_contents` may be null if a tab has been frozen in the
   // background. It can also be null temporarily during reparenting.
@@ -110,6 +116,7 @@ void GlicTabObserverAndroid::StopObservingTab(TabAndroid* tab) {
   if (!tab) {
     return;
   }
+  tab_group_subscriptions_.erase(tab);
   tab_observers_.erase(tab);
   if (observed_tabs_.IsObservingSource(tab)) {
     observed_tabs_.RemoveObservation(tab);
@@ -267,4 +274,14 @@ void GlicTabObserverAndroid::ResetLastActiveTab(TabModel* tab_model) {
 
   last_active_tab_map_[tab_model] =
       TabAndroid::FromWebContents(active_web_contents);
+}
+
+void GlicTabObserverAndroid::OnTabGroupChanged(
+    tabs::TabInterface* tab,
+    std::optional<tab_groups::TabGroupId> new_group) {
+  if (new_group.has_value()) {
+    callback_.Run(TabGroupingChangedEvent{tab, /*is_added=*/true});
+  } else {
+    callback_.Run(TabGroupingChangedEvent{tab, /*is_added=*/false});
+  }
 }

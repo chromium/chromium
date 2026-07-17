@@ -35,6 +35,7 @@
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
@@ -148,7 +149,14 @@ class GlicInstanceImpl : public GlicInstance,
   void Hibernate();
   void Shutdown();
   void CloseInstanceAndShutdown();
-
+  std::optional<tab_groups::TabGroupId> GetTabGroup() const {
+    return tab_group_id_;
+  }
+  void SetTabGroup(tab_groups::TabGroupId group_id) {
+    tab_group_id_ = group_id;
+  }
+  void ShowGlicTabInGroup(tab_groups::TabGroupId group_id);
+  void OnTabGroupingChanged(tabs::TabInterface* tab, bool is_added);
   void BindTabWithoutShowing(tabs::TabInterface* tab,
                              GlicPinTrigger pin_trigger,
                              bool pin_on_bind);
@@ -367,7 +375,7 @@ class GlicInstanceImpl : public GlicInstance,
   void OnGlicTabActivatedAsync(base::WeakPtr<tabs::TabInterface> tab);
   void OnGlicTabWillDetach(tabs::TabInterface* tab,
                            tabs::TabInterface::DetachReason reason);
-  void OnGlicTabClosedAsync();
+  void OnGlicTabClosedAsync(tabs::TabInterface::Handle tab_handle);
   bool ShouldDoAutomaticActivation() const;
   void OnZeroStateSuggestionsFetched(
       mojom::ZeroStateSuggestionsPtr suggestions,
@@ -415,6 +423,7 @@ class GlicInstanceImpl : public GlicInstance,
 
   // Updates the floating panel can attach state.
   void UpdateFloatingPanelCanAttach();
+  void UnbindTabGroup();
 
   using ConversationInfoChangedCallbackList =
       base::RepeatingCallbackList<void(const mojom::ConversationInfo&)>;
@@ -485,6 +494,7 @@ class GlicInstanceImpl : public GlicInstance,
   // True if we should suppress showing the panel when a tab is added to a task.
   bool suppress_show_on_tab_added_to_task_ = false;
 
+  std::optional<tab_groups::TabGroupId> tab_group_id_;
   bool is_contents_in_tab_ = false;
 
   base::WeakPtrFactory<GlicInstanceImpl> weak_ptr_factory_{this};

@@ -60,6 +60,8 @@ class GlicTabObserverAndroid : public GlicTabObserver,
   class TabContentObserver;
 
   void OnTabChanged(TabAndroid* tab);
+  void OnTabGroupChanged(tabs::TabInterface* tab,
+                         std::optional<tab_groups::TabGroupId> new_group);
   void StartObservingTab(TabAndroid* tab);
   void StopObservingTab(TabAndroid* tab);
 
@@ -85,6 +87,9 @@ class GlicTabObserverAndroid : public GlicTabObserver,
 
   absl::flat_hash_map<TabAndroid*, std::unique_ptr<TabContentObserver>>
       tab_observers_;
+
+  absl::flat_hash_map<TabAndroid*, base::CallbackListSubscription>
+      tab_group_subscriptions_;
 };
 
 #endif  // CHROME_BROWSER_GLIC_COMMON_GLIC_TAB_OBSERVER_ANDROID_H_

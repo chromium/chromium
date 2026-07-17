@@ -54,8 +54,16 @@ struct TabActivationEvent {
   raw_ptr<tabs::TabInterface> old_active_tab = nullptr;
 };
 
-using GlicTabEvent =
-    std::variant<TabCreationEvent, TabMutationEvent, TabActivationEvent>;
+// Event fired when a tab is added to or removed from a tab group.
+struct TabGroupingChangedEvent {
+  raw_ptr<tabs::TabInterface> tab = nullptr;
+  bool is_added = false;
+};
+
+using GlicTabEvent = std::variant<TabCreationEvent,
+                                  TabMutationEvent,
+                                  TabActivationEvent,
+                                  TabGroupingChangedEvent>;
 
 // Observes tab events across all windows for a specific profile.
 class GlicTabObserver {

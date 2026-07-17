@@ -267,6 +267,16 @@ GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceImplForTab(
   return nullptr;
 }
 
+GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceImplForTabGroup(
+    tab_groups::TabGroupId group_id) const {
+  for (const auto& [id, instance] : instances_) {
+    if (instance->GetTabGroup() == group_id) {
+      return instance.get();
+    }
+  }
+  return nullptr;
+}
+
 std::vector<GlicInstanceImpl*> GlicInstanceCoordinatorImpl::GetInstances() {
   std::vector<GlicInstanceImpl*> instances;
   for (auto& entry : instances_) {
@@ -364,6 +374,29 @@ GlicInstanceCoordinatorImpl::ActivateTabWithConversation(
 GlicInstance* GlicInstanceCoordinatorImpl::GetInstanceForTab(
     const tabs::TabInterface* tab) const {
   return GetInstanceImplForTab(tab);
+}
+
+GlicInstance* GlicInstanceCoordinatorImpl::GetInstanceForTabGroup(
+    tab_groups::TabGroupId group_id) const {
+  return GetInstanceImplForTabGroup(group_id);
+}
+
+GlicInstance* GlicInstanceCoordinatorImpl::ShowInstanceForTabGroup(
+    tab_groups::TabGroupId group_id) {
+  GlicInstanceImpl* existing_instance = GetInstanceImplForTabGroup(group_id);
+
+  if (existing_instance) {
+    if (tabs::TabInterface* glic_tab = existing_instance->GetGlicTab()) {
+      existing_instance->Show(ShowOptions::ForTab(*glic_tab));
+      return existing_instance;
+    }
+    existing_instance->ShowGlicTabInGroup(group_id);
+    return existing_instance;
+  }
+
+  GlicInstanceImpl* instance = CreateGlicInstance();
+  instance->ShowGlicTabInGroup(group_id);
+  return instance;
 }
 
 GlicInstance* GlicInstanceCoordinatorImpl::GetInstanceWithGlicWebContents(
@@ -657,7 +690,6 @@ void GlicInstanceCoordinatorImpl::CloseAndShutdownInstanceWithFrame(
   for (auto& [id, instance] : instances_) {
     if (instance &&
         instance->host().IsWebContentPresentAndMatches(render_frame_host)) {
-      instance->host().Close();
       instance->host().Shutdown();
     }
   }
@@ -1173,7 +1205,7 @@ GlicInstanceCoordinatorImpl::GetSortedRecentInstances(
 void GlicInstanceCoordinatorImpl::UnbindTabFromAnyInstance(
     tabs::TabInterface* tab) {
   if (auto* instance = GetInstanceImplForTab(tab)) {
-    instance->UnbindEmbedder(SidePanelEmbedderKey(tab));
+    instance->UnbindTab(tab);
   }
 }
 
@@ -1215,6 +1247,21 @@ void GlicInstanceCoordinatorImpl::OnWillCreateFloaty() {
 }
 
 void GlicInstanceCoordinatorImpl::OnTabEvent(const GlicTabEvent& event) {
+  if (auto* grouped_event = std::get_if<TabGroupingChangedEvent>(&event)) {
+    if (grouped_event->is_added) {
+      if (auto group_id = grouped_event->tab->GetGroup()) {
+        if (auto* instance = GetInstanceImplForTabGroup(group_id.value())) {
+          instance->OnTabGroupingChanged(grouped_event->tab, /*is_added=*/true);
+        }
+      }
+    } else {
+      for (const auto& [id, instance] : instances_) {
+        instance->OnTabGroupingChanged(grouped_event->tab, /*is_added=*/false);
+      }
+    }
+    return;
+  }
+
   auto* creation_event = std::get_if<TabCreationEvent>(&event);
   if (!creation_event) {
     return;

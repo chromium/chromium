@@ -47,7 +47,8 @@ enum class GlicPinTrigger {
   kActuation,
   kWebClientUnknown,
   kContextualCue,
-  kMaxValue = kContextualCue
+  kTabGroupIntegration,
+  kMaxValue = kTabGroupIntegration
 };
 
 enum class GlicUnpinTrigger {
@@ -61,7 +62,8 @@ enum class GlicUnpinTrigger {
   kChip,
   kActuation,
   kWebClientUnknown,
-  kMaxValue = kWebClientUnknown
+  kTabGroupIntegration,
+  kMaxValue = kTabGroupIntegration
 };
 
 struct GlicPinEvent {

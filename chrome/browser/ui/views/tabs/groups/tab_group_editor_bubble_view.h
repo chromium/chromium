@@ -65,6 +65,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
   static constexpr int TAB_GROUP_HEADER_CXMENU_CONVERT_TO_BOOKMARK = 11;
   static constexpr int TAB_GROUP_HEADER_CXMENU_FOCUS_GROUP = 12;
   static constexpr int TAB_GROUP_HEADER_CXMENU_HOME = 13;
+  static constexpr int TAB_GROUP_HEADER_CXMENU_ASK_GEMINI = 14;
 
   friend class TabGroupEditorBubbleInteractiveUiTest;
 
@@ -123,6 +124,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
   std::unique_ptr<ColorPickerView> BuildColorPicker();
   std::unique_ptr<views::LabelButton> BuildNewTabInGroupButton();
   std::unique_ptr<views::LabelButton> BuildHomeButton();
+  std::unique_ptr<views::LabelButton> BuildAskGeminiButton();
   std::unique_ptr<views::LabelButton> BuildUngroupButton();
   std::unique_ptr<views::LabelButton> BuildCloseGroupButton();
   std::unique_ptr<views::LabelButton> BuildConvertToBookmarkButton();
@@ -137,6 +139,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
 
   void NewTabInGroupPressed();
   void HomePressed();
+  void AskGeminiPressed();
   void UngroupPressed();
   void ShareOrManagePressed();
   void CloseGroupPressed();

@@ -141,3 +141,18 @@ TabCreationType GlicTabObserverImpl::DetermineTabCreationType(
 
   return TabCreationType::kUnknown;
 }
+
+void GlicTabObserverImpl::TabGroupedStateChanged(
+    TabStripModel* tab_strip_model,
+    std::optional<tab_groups::TabGroupId> old_group,
+    std::optional<tab_groups::TabGroupId> new_group,
+    tabs::TabInterface* tab,
+    int index) {
+  if (old_group != new_group) {
+    if (new_group.has_value()) {
+      callback_.Run(TabGroupingChangedEvent{tab, /*is_added=*/true});
+    } else {
+      callback_.Run(TabGroupingChangedEvent{tab, /*is_added=*/false});
+    }
+  }
+}

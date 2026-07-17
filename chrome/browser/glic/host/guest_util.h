@@ -25,6 +25,10 @@ struct ClipboardMetadata;
 
 class Profile;
 
+namespace tabs {
+class TabInterface;
+}
+
 namespace glic {
 
 BASE_DECLARE_FEATURE(kGlicGuestUrlMultiInstanceParam);
@@ -48,6 +52,9 @@ GURL MaybeAddMultiInstanceParameter(const GURL& guest_url);
 
 // Returns true if `web_contents` contains the Glic WebUI application.
 bool IsGlicWebUI(const content::WebContents* web_contents);
+
+// Returns true if `tab` is owned by Glic.
+bool IsGlicOwnedTab(tabs::TabInterface* tab);
 
 // Returns true if `web_contents` is the Glic guest WebContents.
 bool IsGlicGuest(content::WebContents* web_contents);

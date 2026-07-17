@@ -35,6 +35,7 @@
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/host/glic_skills_manager_impl.h"
 #include "chrome/browser/glic/host/glic_ui.h"
+#include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
@@ -44,6 +45,7 @@
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/glic/service/glic_tab_contents_swapper.h"
+#include "chrome/browser/glic/service/glic_tab_group_utils.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
@@ -267,9 +269,11 @@ GlicInstanceImpl::EmbedderEntry& GlicInstanceImpl::EmbedderEntry::operator=(
     EmbedderEntry&&) = default;
 
 GlicInstanceImpl::GlicInstanceImpl(
-    Profile* profile, InstanceId instance_id,
+    Profile* profile,
+    InstanceId instance_id,
     base::WeakPtr<InstanceCoordinatorDelegate> coordinator_delegate,
-    GlicMetrics* metrics, ContextualCueingService* contextual_cueing_service)
+    GlicMetrics* metrics,
+    ContextualCueingService* contextual_cueing_service)
     : profile_(profile),
       service_(GlicKeyedService::Get(profile)),
       coordinator_delegate_(coordinator_delegate),
@@ -278,10 +282,13 @@ GlicInstanceImpl::GlicInstanceImpl(
       sharing_manager_coordinator_(profile, this, metrics),
       instance_metrics_(ProfileMetricsServiceFactory::GetForProfile(profile),
                         &sharing_manager_coordinator_.GetActiveSharingManager(),
-                        GetSaasUsageReportingController(profile), profile),
+                        GetSaasUsageReportingController(profile),
+                        profile),
       zero_state_suggestions_manager_(
           std::make_unique<GlicZeroStateSuggestionsManager>(
-              &GetSharingManagerInternal(), this, contextual_cueing_service)),
+              &GetSharingManagerInternal(),
+              this,
+              contextual_cueing_service)),
       last_activation_timestamp_(base::Time::Now()),
       last_deactivation_timestamp_(base::TimeTicks::Now()) {
   VLOG(1) << "Glic [InstanceImpl] Constructor, id=" << id_.value();
@@ -369,7 +376,6 @@ void GlicInstanceImpl::ReclaimWebContents(
   host_.ReclaimWebContents(std::move(web_contents));
   is_contents_in_tab_ = false;
 }
-
 bool GlicInstanceImpl::IsShowing() const {
   if (HasActiveEmbedder()) {
     return true;
@@ -1189,8 +1195,8 @@ GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedderForTab(
         helper->SetBoundInstance(nullptr);
       }
       tabs::TabInterface* old_tab = std::exchange(tab_opts.tab, nullptr);
-      tabs::TabInterface* new_tab = ::glic::SwapPlaceholderToGlic(
-          old_tab, std::move(real_contents), /*tab_group_id=*/std::nullopt);
+      tabs::TabInterface* new_tab = glic::SwapPlaceholderToGlic(
+          old_tab, std::move(real_contents), tab_group_id_);
       if (new_tab) {
         tab = new_tab;
         tab_opts.tab = new_tab;
@@ -1442,12 +1448,20 @@ void GlicInstanceImpl::OnGlicTabWillDetach(
   // Unbind the embedder asynchronously to avoid re-entrancy during tab
   // deletion.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&GlicInstanceImpl::OnGlicTabClosedAsync,
-                                weak_ptr_factory_.GetWeakPtr()));
+      FROM_HERE,
+      base::BindOnce(&GlicInstanceImpl::OnGlicTabClosedAsync,
+                     weak_ptr_factory_.GetWeakPtr(), tab->GetHandle()));
 }
 
-void GlicInstanceImpl::OnGlicTabClosedAsync() {
-  UnbindEmbedder(TabEmbedderKey{});
+void GlicInstanceImpl::OnGlicTabClosedAsync(
+    tabs::TabInterface::Handle tab_handle) {
+  // Only unbind the tab if the tab currently bound to the instance is still
+  // the one that was closed. This avoids race conditions where a new tab is
+  // bound before this asynchronous task runs. We verify using a unique handle
+  // to avoid heap memory address reuse collisions.
+  if (GetGlicTab() && GetGlicTab()->GetHandle() == tab_handle) {
+    UnbindEmbedder(TabEmbedderKey{});
+  }
 }
 
 void GlicInstanceImpl::SwitchConversation(
@@ -1578,6 +1592,67 @@ GlicInstanceImpl::EmbedderEntry& GlicInstanceImpl::BindTab(
   return new_entry;
 }
 
+void GlicInstanceImpl::ShowGlicTabInGroup(tab_groups::TabGroupId group_id) {
+  tab_group_id_ = group_id;
+
+  BrowserWindowInterface* window = FindBrowserWithTabGroup(profile_, group_id);
+  if (!window) {
+    return;
+  }
+  TabListInterface* tab_list = TabListInterface::From(window);
+  if (!tab_list) {
+    return;
+  }
+
+  std::vector<tabs::TabInterface*> group_tabs =
+      GetTabsInTabGroup(window, group_id);
+  if (group_tabs.empty()) {
+    return;
+  }
+
+  for (tabs::TabInterface* tab : group_tabs) {
+    BindTabWithoutShowing(tab, GlicPinTrigger::kTabGroupIntegration,
+                          /*pin_on_bind=*/true);
+  }
+
+  EnsureHostContentsCreated();
+  std::unique_ptr<content::WebContents> real_contents =
+      host_.ReleaseWebContents();
+  CHECK(real_contents);
+  int start_index = tab_list->GetIndexOfTab(group_tabs[0]->GetHandle());
+  if (start_index != -1) {
+    tabs::TabInterface* new_tab =
+        tab_list->InsertWebContentsAt(start_index, std::move(real_contents),
+                                      /*should_pin=*/false, group_id);
+    is_contents_in_tab_ = true;
+    Show(ShowOptions::ForTab(*new_tab));
+  }
+}
+
+void GlicInstanceImpl::OnTabGroupingChanged(tabs::TabInterface* tab,
+                                            bool is_added) {
+  if (!tab_group_id_.has_value()) {
+    return;
+  }
+
+  if (IsGlicOwnedTab(tab)) {
+    return;
+  }
+
+  if (is_added) {
+    if (tab->GetGroup() == tab_group_id_.value()) {
+      Show(ShowOptions::ForSidePanel(*tab,
+                                     GlicPinTrigger::kTabGroupIntegration));
+    }
+  } else {
+    EmbedderKey key = SidePanelEmbedderKey(tab);
+    if (GetEmbedderEntry(key)) {
+      GetSharingManagerInternal().UnpinTabs(
+          {tab->GetHandle()}, GlicUnpinTrigger::kTabGroupIntegration);
+      UnbindEmbedder(key);
+    }
+  }
+}
 void GlicInstanceImpl::BindTabWithoutShowing(tabs::TabInterface* tab,
                                              GlicPinTrigger pin_trigger,
                                              bool pin_on_bind) {
@@ -2029,7 +2104,34 @@ void GlicInstanceImpl::ExecuteRemoveInstance() {
 
 bool GlicInstanceImpl::CanBeRemoved() {
   return embedders_.empty() &&
-         GetSharingManagerInternal().GetNumPinnedTabs() == 0;
+         GetSharingManagerInternal().GetNumPinnedTabs() == 0 &&
+         !tab_group_id_.has_value();
+}
+
+void GlicInstanceImpl::UnbindTabGroup() {
+  if (!tab_group_id_.has_value()) {
+    return;
+  }
+
+  std::vector<tabs::TabInterface*> bound_tabs = GetBoundTabs();
+  std::vector<tabs::TabHandle> handles;
+  for (tabs::TabInterface* t : bound_tabs) {
+    if (!IsGlicOwnedTab(t)) {
+      handles.push_back(t->GetHandle());
+    }
+  }
+  if (!handles.empty()) {
+    GetSharingManagerInternal().UnpinTabs(
+        handles, GlicUnpinTrigger::kTabGroupIntegration);
+  }
+
+  for (tabs::TabInterface* t : bound_tabs) {
+    if (!IsGlicOwnedTab(t)) {
+      UnbindEmbedder(SidePanelEmbedderKey(t));
+    }
+  }
+
+  tab_group_id_ = std::nullopt;
 }
 
 tabs::TabInterface* GlicInstanceImpl::GetGlicTab() const {

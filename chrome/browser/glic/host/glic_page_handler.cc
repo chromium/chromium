@@ -622,7 +622,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     host().SetWebClient(this);
     // If chrome://glic is opened in a tab for testing, send a synthetic open
     // signal.
-    if (page_handler_->webui_contents() != host().webui_contents()) {
+    if (!base::FeatureList::IsEnabled(features::kGlicTabGroups) &&
+        page_handler_->webui_contents() != host().webui_contents()) {
       mojom::PanelOpeningDataPtr panel_opening_data =
           mojom::PanelOpeningData::New();
       panel_opening_data->panel_state =
