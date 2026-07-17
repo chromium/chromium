@@ -77,12 +77,22 @@ public class WebAddressParser {
             t = m.group(MATCH_GROUP_HOST);
             if (t != null) mHost = t;
             t = m.group(MATCH_GROUP_PORT);
-            if (t != null && t.length() > 0) {
+            if (t != null) {
                 // The ':' character is not returned by the regex.
-                try {
-                    mPort = Integer.parseInt(t);
-                } catch (NumberFormatException ex) {
-                    throw new URISyntaxException(address, "Bad port");
+                if (t.length() == 0) {
+                    // PORT matched a bare ':' with no digits. If no scheme was
+                    // recognised, the ':' may have been a scheme delimiter and
+                    // mHost may not actually be the host, so reject the input
+                    // rather than risk emitting a URL with the wrong host.
+                    if (mScheme.isEmpty()) {
+                        throw new URISyntaxException(address, "Bad port");
+                    }
+                } else {
+                    try {
+                        mPort = Integer.parseInt(t);
+                    } catch (NumberFormatException ex) {
+                        throw new URISyntaxException(address, "Bad port");
+                    }
                 }
             }
             t = m.group(MATCH_GROUP_PATH);
