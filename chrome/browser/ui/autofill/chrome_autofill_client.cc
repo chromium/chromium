@@ -1643,8 +1643,19 @@ void ChromeAutofillClient::ShowAutofillAiPreFetchFailureNotification() {
 
 void ChromeAutofillClient::ShowAutofillAiPrivateInferenceNotice() {
 #if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/530174611): Record the timestamp when the notice was shown.
+  base::OnceClosure action_callback = base::BindOnce(
+      [](base::WeakPtr<AutofillClient> client) {
+        if (client && client->GetPrefs()) {
+          client->GetPrefs()->SetTime(
+              prefs::kAutofillAiPrivateInferenceNoticeAcknowledgedTimestamp,
+              base::Time::Now());
+        }
+      },
+      GetWeakPtr());
   GetAutofillMessageController()->Show(
-      AutofillMessageModel::CreateForPrivateInferenceNotice(web_contents()));
+      AutofillMessageModel::CreateForPrivateInferenceNotice(
+          web_contents(), std::move(action_callback)));
 #else
   NOTREACHED();
 #endif  // BUILDFLAG(IS_ANDROID)

@@ -107,7 +107,8 @@ AutofillMessageModel::CreateForPersonalContextFetchingFailure() {
 
 std::unique_ptr<AutofillMessageModel>
 AutofillMessageModel::CreateForPrivateInferenceNotice(
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents,
+    base::OnceClosure action_callback) {
   std::unique_ptr<messages::MessageWrapper> message =
       std::make_unique<messages::MessageWrapper>(
           messages::MessageIdentifier::PRIVATE_INFERENCE_NOTICE);
@@ -121,13 +122,12 @@ AutofillMessageModel::CreateForPrivateInferenceNotice(
       IDR_ANDROID_AUTOFILL_ID_CHROME_PRODUCT));
   message->SetSecondaryIconResourceId(
       ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SETTINGS));
-  // TODO(crbug.com/530174611): Record user consent when the positive button is
-  // clicked.
   message->SetSecondaryActionCallback(
       base::BindRepeating(&ShowAutofillSettings, web_contents));
 
   return base::WrapUnique(new AutofillMessageModel(
-      std::move(message), Type::kPrivateInferenceNotice));
+      std::move(message), Type::kPrivateInferenceNotice,
+      std::move(action_callback), base::DoNothing()));
 }
 
 std::string_view AutofillMessageModel::TypeToString(Type message_type) {

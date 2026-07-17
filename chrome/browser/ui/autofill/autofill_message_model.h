@@ -66,7 +66,8 @@ class AutofillMessageModel {
   static std::unique_ptr<AutofillMessageModel>
   CreateForPersonalContextFetchingFailure();
   static std::unique_ptr<AutofillMessageModel> CreateForPrivateInferenceNotice(
-      content::WebContents* web_contents);
+      content::WebContents* web_contents,
+      base::OnceClosure action_callback);
 
   // Converts a message model type to a string for debugging and metrics.
   static std::string_view TypeToString(Type message_type);
