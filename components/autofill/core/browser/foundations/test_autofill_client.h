@@ -525,6 +525,9 @@ class TestAutofillClientTemplate : public T {
 
   std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator(
       std::string histogram) const override {
+    if (device_authenticator_) {
+      return std::move(device_authenticator_);
+    }
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_CHROMEOS)
     return std::make_unique<device_reauth::MockDeviceAuthenticator>();
@@ -754,6 +757,11 @@ class TestAutofillClientTemplate : public T {
     supports_device_reauth_ = supports_device_reauth;
   }
 
+  void set_device_authenticator(
+      std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator) {
+    device_authenticator_ = std::move(authenticator);
+  }
+
   void set_crowdsourcing_manager(
       std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager) {
     crowdsourcing_manager_ = std::move(crowdsourcing_manager);
@@ -921,6 +929,9 @@ class TestAutofillClientTemplate : public T {
   bool is_credit_card_upload_enabled_ = true;
 
   bool supports_device_reauth_ = true;
+
+  mutable std::unique_ptr<device_reauth::DeviceAuthenticator>
+      device_authenticator_;
 
   bool is_tab_in_actor_mode_ = false;
 

@@ -23,15 +23,17 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_data_type.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_data_type_util.h"
 #include "components/autofill/core/browser/at_memory/autofill_data_provider.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/device_reauth/device_authenticator.h"
 #include "components/personal_context/core/personal_context_debug_features.h"
 #include "components/personal_context/core/personal_context_service.h"
 #include "components/personal_context/proto/context_memory_service.pb.h"
 #include "components/personal_context/proto/features/at_memory.pb.h"
-#include "components/personal_context/proto/features/common_data.pb.h"
 #include "net/base/network_change_notifier.h"
 #include "url/gurl.h"
 
@@ -625,6 +627,148 @@ void QueryPersonalContextDebug(
           std::move(update_callback)));
 }
 
+// Extracts the unmasked PII value from `entity` based on the requested
+// `data_type`.
+std::optional<std::u16string> GetUnmaskedPiiFromEntity(
+    const personal_context::proto::Entity& entity,
+    MemoryDataType data_type) {
+  switch (data_type) {
+    case MemoryDataType::kPassportNumber:
+    case MemoryDataType::kPassportFull:
+      if (entity.has_passport()) {
+        return base::UTF8ToUTF16(entity.passport().number());
+      }
+      break;
+    case MemoryDataType::kDriversLicenseNumber:
+    case MemoryDataType::kDriversLicenseFull:
+      if (entity.has_drivers_license()) {
+        return base::UTF8ToUTF16(entity.drivers_license().number());
+      }
+      break;
+    case MemoryDataType::kNationalIdCardNumber:
+    case MemoryDataType::kNationalIdCardFull:
+      if (entity.has_national_id()) {
+        return base::UTF8ToUTF16(entity.national_id().number());
+      }
+      break;
+    case MemoryDataType::kKnownTravelerNumberNumber:
+    case MemoryDataType::kKnownTravelerNumberFull:
+      if (entity.has_known_traveler_number()) {
+        return base::UTF8ToUTF16(entity.known_traveler_number().number());
+      }
+      break;
+    case MemoryDataType::kUnknown:
+    case MemoryDataType::kNameFull:
+    case MemoryDataType::kAddressFull:
+    case MemoryDataType::kAddressStreetAddress:
+    case MemoryDataType::kAddressCity:
+    case MemoryDataType::kAddressState:
+    case MemoryDataType::kAddressZip:
+    case MemoryDataType::kAddressCountry:
+    case MemoryDataType::kPhone:
+    case MemoryDataType::kEmail:
+    case MemoryDataType::kCompanyName:
+    case MemoryDataType::kIban:
+    case MemoryDataType::kIbanNickname:
+    case MemoryDataType::kVehicle:
+    case MemoryDataType::kVehicleMake:
+    case MemoryDataType::kVehicleModel:
+    case MemoryDataType::kVehicleYear:
+    case MemoryDataType::kVehicleOwner:
+    case MemoryDataType::kVehiclePlateNumber:
+    case MemoryDataType::kVehiclePlateState:
+    case MemoryDataType::kVehicleVin:
+    case MemoryDataType::kPassportName:
+    case MemoryDataType::kPassportCountry:
+    case MemoryDataType::kPassportIssueDate:
+    case MemoryDataType::kPassportExpirationDate:
+    case MemoryDataType::kFlightReservationFull:
+    case MemoryDataType::kFlightReservationFlightNumber:
+    case MemoryDataType::kFlightReservationTicketNumber:
+    case MemoryDataType::kFlightReservationConfirmationCode:
+    case MemoryDataType::kFlightReservationPassengerName:
+    case MemoryDataType::kFlightReservationDepartureAirport:
+    case MemoryDataType::kFlightReservationArrivalAirport:
+    case MemoryDataType::kFlightReservationDepartureDate:
+    case MemoryDataType::kFlightReservationArrivalDate:
+    case MemoryDataType::kShipmentFull:
+    case MemoryDataType::kShipmentTrackingNumber:
+    case MemoryDataType::kShipmentAssociatedOrderId:
+    case MemoryDataType::kShipmentDeliveryAddress:
+    case MemoryDataType::kShipmentDeliveryZipCode:
+    case MemoryDataType::kShipmentCarrierName:
+    case MemoryDataType::kShipmentCarrierDomain:
+    case MemoryDataType::kShipmentEstimatedDeliveryDate:
+    case MemoryDataType::kShipmentShippedDate:
+    case MemoryDataType::kNationalIdCardName:
+    case MemoryDataType::kNationalIdCardCountry:
+    case MemoryDataType::kNationalIdCardIssueDate:
+    case MemoryDataType::kNationalIdCardExpirationDate:
+    case MemoryDataType::kRedressNumberFull:
+    case MemoryDataType::kRedressNumberName:
+    case MemoryDataType::kRedressNumberNumber:
+    case MemoryDataType::kKnownTravelerNumberName:
+    case MemoryDataType::kKnownTravelerNumberExpirationDate:
+    case MemoryDataType::kDriversLicenseName:
+    case MemoryDataType::kDriversLicenseState:
+    case MemoryDataType::kDriversLicenseIssueDate:
+    case MemoryDataType::kDriversLicenseExpirationDate:
+    case MemoryDataType::kOrderFull:
+    case MemoryDataType::kOrderId:
+    case MemoryDataType::kOrderAccount:
+    case MemoryDataType::kOrderDate:
+    case MemoryDataType::kOrderMerchantName:
+    case MemoryDataType::kOrderMerchantDomain:
+    case MemoryDataType::kOrderProductNames:
+    case MemoryDataType::kOrderGrandTotal:
+    case MemoryDataType::kCreditCardNumber:
+    case MemoryDataType::kCreditCardExpirationDate:
+    case MemoryDataType::kCreditCardSecurityCode:
+    case MemoryDataType::kCreditCardNameOnCard:
+    case MemoryDataType::kCreditCardNickname:
+      return std::nullopt;
+  }
+  return std::nullopt;
+}
+
+// Runs the callback asynchronously on the current sequenced task runner.
+// Used to ensure consistently asynchronous callback execution across all paths,
+// including fast-fail and cancellation paths.
+void RunCallbackAsync(
+    AtMemoryQueryService::FetchUnmaskedPiiEntitiesCallback callback,
+    AtMemoryQueryService::SpiiRetrievalResult result) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
+}
+
+// Called when `PersonalContextService` returns the unmasked PII entities.
+// Extracts the unmasked string matching `data_type` and runs the `callback`
+// with the result or a failure reason.
+void OnFetchPiiEntityCompleted(
+    MemoryDataType data_type,
+    AtMemoryQueryService::FetchUnmaskedPiiEntitiesCallback callback,
+    personal_context::FetchPiiEntitiesResult result) {
+  if (!result.response.has_value() || result.response->entities().empty()) {
+    RunCallbackAsync(
+        std::move(callback),
+        base::unexpected(
+            AtMemoryQueryService::SpiiRetrievalFailureReason::kFetchFailed));
+    return;
+  }
+
+  std::optional<std::u16string> unmasked_value =
+      GetUnmaskedPiiFromEntity(result.response->entities(0), data_type);
+  if (!unmasked_value || unmasked_value->empty()) {
+    RunCallbackAsync(
+        std::move(callback),
+        base::unexpected(
+            AtMemoryQueryService::SpiiRetrievalFailureReason::kParseFailed));
+    return;
+  }
+
+  RunCallbackAsync(std::move(callback), std::move(*unmasked_value));
+}
+
 }  // namespace
 
 AtMemoryQueryService::AtMemoryQueryService(
@@ -638,9 +782,14 @@ AtMemoryQueryService::AtMemoryQueryService(
 AtMemoryQueryService::~AtMemoryQueryService() = default;
 
 void AtMemoryQueryService::Shutdown() {
-  weak_ptr_factory_.InvalidateWeakPtrs();
+  query_weak_ptr_factory_.InvalidateWeakPtrs();
+  pii_unmasking_weak_ptr_factory_.InvalidateWeakPtrs();
   data_provider_.reset();
   personal_context_service_ = nullptr;
+  if (device_authenticator_) {
+    device_authenticator_->Cancel();
+    device_authenticator_.reset();
+  }
 }
 
 void AtMemoryQueryService::Query(
@@ -649,7 +798,7 @@ void AtMemoryQueryService::Query(
     std::u16string_view title,
     base::RepeatingCallback<void(MemorySearchResults)> callback) {
   // Invalidate any in-flight queries.
-  weak_ptr_factory_.InvalidateWeakPtrs();
+  query_weak_ptr_factory_.InvalidateWeakPtrs();
 
   if (net::NetworkChangeNotifier::IsOffline()) {
     callback.Run(MemorySearchResults(MemorySearchStatus::kNoConnectionFailure));
@@ -675,7 +824,47 @@ void AtMemoryQueryService::Query(
       personal_context::proto::CONTEXT_MEMORY_FEATURE_AT_MEMORY,
       request_metadata, options,
       base::BindOnce(&AtMemoryQueryService::OnPersonalContextRetrieved,
-                     weak_ptr_factory_.GetWeakPtr(), callback));
+                     query_weak_ptr_factory_.GetWeakPtr(), callback));
+}
+
+void AtMemoryQueryService::AuthenticateAndFetchPiiEntity(
+    const AutofillClient& client,
+    const std::u16string& auth_message,
+    std::u16string_view masked_value,
+    accessibility_annotator::MemoryDataType data_type,
+    base::span<const accessibility_annotator::EntryMetadata> metadata_list,
+    FetchUnmaskedPiiEntitiesCallback callback) {
+  if (device_authenticator_) {
+    RunCallbackAsync(
+        std::move(callback),
+        base::unexpected(SpiiRetrievalFailureReason::kReauthInProgress));
+    return;
+  }
+
+  if (net::NetworkChangeNotifier::IsOffline()) {
+    RunCallbackAsync(
+        std::move(callback),
+        base::unexpected(SpiiRetrievalFailureReason::kNoConnection));
+    return;
+  }
+
+  device_authenticator_ =
+      client.GetDeviceAuthenticator("Autofill.AtMemory.ReauthToUnmask");
+  if (!device_authenticator_ ||
+      !device_authenticator_->CanAuthenticateWithBiometricOrScreenLock()) {
+    device_authenticator_.reset();
+    RunCallbackAsync(
+        std::move(callback),
+        base::unexpected(SpiiRetrievalFailureReason::kReauthFailed));
+    return;
+  }
+
+  device_authenticator_->AuthenticateWithMessage(
+      auth_message,
+      base::BindOnce(&AtMemoryQueryService::OnAuthenticationCompleted,
+                     pii_unmasking_weak_ptr_factory_.GetWeakPtr(),
+                     std::u16string(masked_value), data_type,
+                     base::ToVector(metadata_list), std::move(callback)));
 }
 
 void AtMemoryQueryService::OnPersonalContextRetrieved(
@@ -750,7 +939,7 @@ void AtMemoryQueryService::OnPersonalContextRetrieved(
   data_provider_->RetrieveAll(
       local_data_types,
       base::BindOnce(&AtMemoryQueryService::OnLocalDataRetrieved,
-                     weak_ptr_factory_.GetWeakPtr(), callback,
+                     query_weak_ptr_factory_.GetWeakPtr(), callback,
                      std::move(remote_results), std::move(filter_words),
                      std::move(result.server_request_id)));
 }
@@ -776,6 +965,42 @@ void AtMemoryQueryService::OnLocalDataRetrieved(
                                      std::move(ranked_results));
   search_results.server_request_id = std::move(server_request_id);
   callback.Run(std::move(search_results));
+}
+
+void AtMemoryQueryService::OnAuthenticationCompleted(
+    std::u16string masked_value,
+    accessibility_annotator::MemoryDataType data_type,
+    std::vector<accessibility_annotator::EntryMetadata> metadata_list,
+    FetchUnmaskedPiiEntitiesCallback callback,
+    bool auth_succeeded) {
+  device_authenticator_.reset();
+  if (!auth_succeeded) {
+    RunCallbackAsync(
+        std::move(callback),
+        base::unexpected(SpiiRetrievalFailureReason::kReauthFailed));
+    return;
+  }
+
+  if (!personal_context_service_) {
+    RunCallbackAsync(
+        std::move(callback),
+        base::unexpected(SpiiRetrievalFailureReason::kFetchFailed));
+    return;
+  }
+
+  personal_context::proto::FetchPiiEntitiesRequest request;
+  request.set_feature(
+      personal_context::proto::CONTEXT_MEMORY_FEATURE_AT_MEMORY);
+  *request.add_masked_entities() =
+      ToPersonalContextEntity(masked_value, data_type, metadata_list);
+
+  personal_context::ContextMemoryRequestOptions options;
+  options.request_timeout = features::kAutofillAtMemoryRequestTimeout.Get();
+
+  personal_context_service_->FetchPiiEntities(
+      request, options,
+      base::BindOnce(OnFetchPiiEntityCompleted, data_type,
+                     std::move(callback)));
 }
 
 }  // namespace autofill
