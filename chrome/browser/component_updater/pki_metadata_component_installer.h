@@ -17,6 +17,7 @@
 #include "components/component_updater/component_installer.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "net/base/hash_value.h"
+#include "net/cert/root_store_proto_lite/mtc_config.pb.h"
 #include "net/net_buildflags.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
@@ -105,8 +106,8 @@ class PKIMetadataComponentInstallerService final {
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   static std::optional<mojo_base::ProtoWrapper> ParseChromeRootStore(
       const base::FilePath& crs_pb_path);
-  static std::optional<mojo_base::ProtoWrapper> ParseSignerSet(
-      const base::FilePath& signer_pb_path);
+  static std::optional<chrome_root_store::MtcConfig> ParseMtcConfig(
+      const base::FilePath& mtc_config_pb_path);
 
   // Updates SystemNetworkContextManager and cert verifiers with the component
   // delivered Chrome Root Store data and optional Signer Set data.
