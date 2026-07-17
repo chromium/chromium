@@ -1619,7 +1619,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
             testSupport.ADD_TAB_CONTEXT_FN, testSupport.FAKE_TOKEN_STRING);
 
         testProxy.searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(
-            tab);
+            tab, null);
 
         await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
         await testProxy.element.updateComplete;
@@ -1645,7 +1645,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
             testSupport.ADD_TAB_CONTEXT_FN, testSupport.FAKE_TOKEN_STRING);
 
         testProxy.searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(
-            tab);
+            tab, null);
         await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
         await microtasksFinished();
 
@@ -1683,7 +1683,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
             testSupport.ADD_TAB_CONTEXT_FN, '');
 
         testProxy.searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(
-            tab);
+            tab, null);
         await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
         await testProxy.element.updateComplete;
         await microtasksFinished();
@@ -1705,7 +1705,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
         // callback result.
 
         testProxy.searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(
-            tab);
+            tab, null);
 
         await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
         await testProxy.element.updateComplete;
@@ -1733,7 +1733,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
             testSupport.ADD_TAB_CONTEXT_FN, testSupport.FAKE_TOKEN_STRING_2);
 
         testProxy.searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(
-            tab2);
+            tab2, null);
 
         await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
         await testProxy.element.updateComplete;
@@ -1772,7 +1772,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
             testSupport.ADD_TAB_CONTEXT_FN, '');
 
         testProxy.searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(
-            tab);
+            tab, null);
         await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
         await testProxy.element.updateComplete;
         await microtasksFinished();
@@ -1797,7 +1797,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
             testSupport.ADD_TAB_CONTEXT_FN, testSupport.FAKE_TOKEN_STRING);
 
         testProxy.searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(
-            tab);
+            tab, null);
         await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
 
         await testProxy.element.updateComplete;

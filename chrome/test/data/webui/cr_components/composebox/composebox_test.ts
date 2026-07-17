@@ -62,8 +62,9 @@ suite('ComposeboxTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
-  test('UpdateAutoSuggestedTabContext_NullDoesNotDelete', () => {
+  test('UpdateAutoSuggestedTabContext_NullDoesNotDeleteIfConditionsMet', () => {
     loadTimeData.overrideValues({webUIOmniboxAskGAboutThisPageEnabled: true});
+    composebox.isSidePanel = true;
     const token = {high: 0n, low: 1n} as any;
     const mockFile =
         new ComposeboxFile(token, 'Auto Tab', 'tab', InputType.kBrowserTab, {
@@ -81,7 +82,8 @@ suite('ComposeboxTest', () => {
     };
 
     // Call with null, should NOT delete.
-    composebox.updateAutoSuggestedTabContextForTesting(null);
+    composebox.updateAutoSuggestedTabContextForTesting(
+        null, 'OmniboxPageAction');
     assertFalse(deleteFileCalled);
 
     // Call with different URL, SHOULD delete.
@@ -93,10 +95,12 @@ suite('ComposeboxTest', () => {
       showInPreviousTabChip: false,
       lastActive: {internalValue: BigInt(1)} as any,
     };
-    composebox.updateAutoSuggestedTabContextForTesting(differentTab);
+    composebox.updateAutoSuggestedTabContextForTesting(
+        differentTab, 'OmniboxPageAction');
     assertTrue(deleteFileCalled);
 
     // Restore
+    composebox.isSidePanel = false;
     composebox.deleteFile = originalDeleteFile;
   });
 
@@ -126,32 +130,36 @@ suite('ComposeboxTest', () => {
     composebox.deleteFile = originalDeleteFile;
   });
 
-  test('UpdateAutoSuggestedTabContext_NullDoesNotDeleteIfSidePanel', () => {
-    loadTimeData.overrideValues({webUIOmniboxAskGAboutThisPageEnabled: false});
-    composebox.isSidePanel = true;
-    const token = {high: 0n, low: 1n} as any;
-    const mockFile =
-        new ComposeboxFile(token, 'Auto Tab', 'tab', InputType.kBrowserTab, {
-          isDeletable: true,
-          tabId: 1,
-          url: 'http://example.com',
-        });
-    composebox.setAutomaticActiveTabForTesting(mockFile);
+  test(
+      'UpdateAutoSuggestedTabContext_NullDeletesIfFeatureDisabledEvenIfSidePanel',
+      () => {
+        loadTimeData.overrideValues(
+            {webUIOmniboxAskGAboutThisPageEnabled: false});
+        composebox.isSidePanel = true;
+        const token = {high: 0n, low: 1n} as any;
+        const mockFile = new ComposeboxFile(
+            token, 'Auto Tab', 'tab', InputType.kBrowserTab, {
+              isDeletable: true,
+              tabId: 1,
+              url: 'http://example.com',
+            });
+        composebox.setAutomaticActiveTabForTesting(mockFile);
 
-    let deleteFileCalled = false;
-    const originalDeleteFile = composebox.deleteFile;
-    composebox.deleteFile = (_uuid) => {
-      deleteFileCalled = true;
-      return null;
-    };
+        let deleteFileCalled = false;
+        const originalDeleteFile = composebox.deleteFile;
+        composebox.deleteFile = (_uuid) => {
+          deleteFileCalled = true;
+          return null;
+        };
 
-    // Call with null, should NOT delete because isSidePanel is true.
-    composebox.updateAutoSuggestedTabContextForTesting(null);
-    assertFalse(deleteFileCalled);
+        // Call with null, should delete because feature is disabled.
+        composebox.updateAutoSuggestedTabContextForTesting(
+            null, 'OmniboxPageAction');
+        assertTrue(deleteFileCalled);
 
-    // Restore
-    composebox.isSidePanel = false;
-    composebox.deleteFile = originalDeleteFile;
-  });
+        // Restore
+        composebox.isSidePanel = false;
+        composebox.deleteFile = originalDeleteFile;
+      });
 });
 // LINT.ThenChange(//ui/webui/resources/cr_components/composebox/Componentization.md)
