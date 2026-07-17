@@ -44,7 +44,8 @@ class EventBasedLogManagerBrowserTest
 IN_PROC_BROWSER_TEST_F(EventBasedLogManagerBrowserTest,
                        AddAllExpectedEventObservers) {
   SetLogUploadEnabled(true);
-  policy::EventBasedLogManager log_manager(g_browser_process->platform_part()
+  policy::EventBasedLogManager log_manager(g_browser_process->local_state(),
+                                           g_browser_process->platform_part()
                                                ->browser_policy_connector_ash()
                                                ->GetDeviceCloudPolicyManager());
   const std::map<ash::reporting::TriggerEventType,
@@ -60,7 +61,8 @@ IN_PROC_BROWSER_TEST_F(EventBasedLogManagerBrowserTest,
 IN_PROC_BROWSER_TEST_F(EventBasedLogManagerBrowserTest,
                        RemoveEventObserversWhenPolicyIsDisabled) {
   SetLogUploadEnabled(true);
-  policy::EventBasedLogManager log_manager(g_browser_process->platform_part()
+  policy::EventBasedLogManager log_manager(g_browser_process->local_state(),
+                                           g_browser_process->platform_part()
                                                ->browser_policy_connector_ash()
                                                ->GetDeviceCloudPolicyManager());
   // Verify that event observers are added.

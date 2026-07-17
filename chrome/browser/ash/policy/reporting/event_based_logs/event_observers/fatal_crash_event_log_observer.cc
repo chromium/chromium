@@ -17,7 +17,9 @@
 namespace policy {
 
 FatalCrashEventLogObserver::FatalCrashEventLogObserver(
-    DeviceCloudPolicyManagerAsh& policy_manager) {
+    PrefService* local_state,
+    DeviceCloudPolicyManagerAsh& policy_manager)
+    : EventObserverBase(local_state) {
   reporting::FatalCrashEventsObserver* fatal_crash_events_observer =
       CHECK_DEREF(policy_manager.GetMetricReportingManager())
           .fatal_crash_events_observer();

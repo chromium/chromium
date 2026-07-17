@@ -10,12 +10,15 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/reporting/event_based_logs/event_based_log_uploader.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
 #include "components/reporting/util/status.h"
+
+class PrefService;
 
 namespace policy {
 
@@ -72,7 +75,8 @@ enum class EventBasedUploadStatus {
 // };
 class EventObserverBase {
  public:
-  EventObserverBase();
+  // `local_state` must be non-null and must outlive `this`.
+  explicit EventObserverBase(PrefService* local_state);
 
   EventObserverBase(const EventObserverBase&) = delete;
   EventObserverBase& operator=(const EventObserverBase&) = delete;
@@ -130,6 +134,7 @@ class EventObserverBase {
   void EmitMetrics(EventBasedUploadStatus result_status);
 
   SEQUENCE_CHECKER(sequence_checker_);
+  const raw_ref<PrefService> local_state_;
   std::unique_ptr<EventBasedLogUploader> log_uploader_;
   // This callback is set by the caller of `TriggerLogUpload()` function and
   // will be called when the log upload is triggered. The caller can handle the

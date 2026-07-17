@@ -31,8 +31,10 @@ constexpr ash::reporting::TriggerEventType kAllTriggerEventTypes[] = {
 namespace policy {
 
 EventBasedLogManager::EventBasedLogManager(
+    PrefService* local_state,
     DeviceCloudPolicyManagerAsh* policy_manager)
-    : policy_manager_(CHECK_DEREF(policy_manager)) {
+    : local_state_(CHECK_DEREF(local_state)),
+      policy_manager_(CHECK_DEREF(policy_manager)) {
   ash::CrosSettings* settings = ash::CrosSettings::Get();
   log_upload_enabled_policy_subscription_ = settings->AddSettingsObserver(
       ash::kSystemLogUploadEnabled,
@@ -80,13 +82,13 @@ void EventBasedLogManager::MaybeAddAllEventObservers() {
     switch (event_type) {
       case ash::reporting::TriggerEventType::OS_UPDATE_FAILED:
         event_observers_.emplace(
-            event_type,
-            std::make_unique<OsUpdateEventObserver>(&policy_manager_.get()));
+            event_type, std::make_unique<OsUpdateEventObserver>(
+                            &local_state_.get(), &policy_manager_.get()));
         break;
       case ash::reporting::TriggerEventType::FATAL_CRASH:
-        event_observers_.emplace(event_type,
-                                 std::make_unique<FatalCrashEventLogObserver>(
-                                     policy_manager_.get()));
+        event_observers_.emplace(
+            event_type, std::make_unique<FatalCrashEventLogObserver>(
+                            &local_state_.get(), policy_manager_.get()));
         break;
       case ash::reporting::TRIGGER_EVENT_TYPE_UNSPECIFIED:
         continue;

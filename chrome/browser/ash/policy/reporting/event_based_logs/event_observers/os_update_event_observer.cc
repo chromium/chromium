@@ -15,8 +15,10 @@
 namespace policy {
 
 OsUpdateEventObserver::OsUpdateEventObserver(
+    PrefService* local_state,
     DeviceCloudPolicyManagerAsh* policy_manager)
-    : policy_manager_(CHECK_DEREF(policy_manager)) {
+    : EventObserverBase(local_state),
+      policy_manager_(CHECK_DEREF(policy_manager)) {
   policy_manager_->GetOsUpdatesReporter()->AddObserver(this);
 }
 

@@ -135,6 +135,7 @@ IN_PROC_BROWSER_TEST_F(FatalCrashEventLogObserverBrowserTest,
                 base::test::RunOnceCallback<3>(reporting::Status::StatusOK())));
 
   policy::FatalCrashEventLogObserver event_observer(
+      g_browser_process->local_state(),
       CHECK_DEREF(g_browser_process->platform_part()
                       ->browser_policy_connector_ash()
                       ->GetDeviceCloudPolicyManager()));

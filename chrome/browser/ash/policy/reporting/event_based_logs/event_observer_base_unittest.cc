@@ -48,7 +48,8 @@ class FakeLogUploader : public policy::EventBasedLogUploader {
 // A fake implementation of `EventObserverBase` for testing.
 class TestEventObserver : public policy::EventObserverBase {
  public:
-  TestEventObserver() {
+  explicit TestEventObserver(PrefService* local_state)
+      : EventObserverBase(local_state) {
     SetLogUploaderForTesting(std::make_unique<FakeLogUploader>());
   }
 
@@ -85,7 +86,8 @@ class EventObserverBaseTest : public testing::Test {
 }  // namespace
 
 TEST_F(EventObserverBaseTest, SuccessfulFirstUpload) {
-  TestEventObserver event_observer;
+  TestEventObserver event_observer(
+      TestingBrowserProcess::GetGlobal()->local_state());
   base::test::TestFuture<policy::EventBasedUploadStatus> test_future;
   event_observer.TriggerLogUpload(policy::GenerateEventBasedLogUploadId(),
                                   test_future.GetCallback());
@@ -99,7 +101,8 @@ TEST_F(EventObserverBaseTest, SuccessfulFirstUpload) {
 }
 
 TEST_F(EventObserverBaseTest, SuccessfulUploadAfterTimeLimit) {
-  TestEventObserver event_observer;
+  TestEventObserver event_observer(
+      TestingBrowserProcess::GetGlobal()->local_state());
 
   // Set last upload time as more than the default time limit (24 hours).
   SetLastUploadTime(event_observer.GetEventName(),
@@ -118,7 +121,8 @@ TEST_F(EventObserverBaseTest, SuccessfulUploadAfterTimeLimit) {
 }
 
 TEST_F(EventObserverBaseTest, DeclinedUploadBeforeTimeLimit) {
-  TestEventObserver event_observer;
+  TestEventObserver event_observer(
+      TestingBrowserProcess::GetGlobal()->local_state());
 
   // Set last upload time as less than the default time limit (24 hours).
   SetLastUploadTime(event_observer.GetEventName(),
@@ -137,7 +141,8 @@ TEST_F(EventObserverBaseTest, DeclinedUploadBeforeTimeLimit) {
 }
 
 TEST_F(EventObserverBaseTest, DeclinedUploadForDifferentEventType) {
-  TestEventObserver event_observer;
+  TestEventObserver event_observer(
+      TestingBrowserProcess::GetGlobal()->local_state());
 
   // Set last upload time for a different event type as less than the default
   // time limit (24 hours).

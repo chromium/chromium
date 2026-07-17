@@ -132,9 +132,9 @@ IN_PROC_BROWSER_TEST_F(OsUpdateEventObserverBrowserTest,
       }));
 
   policy::OsUpdateEventObserver event_observer(
-      g_browser_process->platform_part()
-          ->browser_policy_connector_ash()
-          ->GetDeviceCloudPolicyManager());
+      g_browser_process->local_state(), g_browser_process->platform_part()
+                                            ->browser_policy_connector_ash()
+                                            ->GetDeviceCloudPolicyManager());
   event_observer.SetLogUploaderForTesting(std::move(mock_uploader));
 
   SendFakeUpdateFailure();

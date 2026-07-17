@@ -14,6 +14,8 @@
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
 
+class PrefService;
+
 namespace policy {
 
 class DeviceCloudPolicyManagerAsh;
@@ -24,8 +26,10 @@ class OsUpdateEventObserver
     : public EventObserverBase,
       reporting::OsUpdatesReporter::OsUpdateEventBasedLogObserver {
  public:
-  // `policy_manager` must be non-null and must outlive `this`.
-  explicit OsUpdateEventObserver(DeviceCloudPolicyManagerAsh* policy_manager);
+  // `local_state` and `policy_manager` must be non-null and must outlive
+  // `this`.
+  OsUpdateEventObserver(PrefService* local_state,
+                        DeviceCloudPolicyManagerAsh* policy_manager);
   ~OsUpdateEventObserver() override;
 
   // EventObserverBase override

@@ -15,14 +15,18 @@
 #include "chrome/browser/ash/policy/reporting/event_based_logs/event_observer_base.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
 
+class PrefService;
+
 namespace policy {
 
 class DeviceCloudPolicyManagerAsh;
 
 class EventBasedLogManager {
  public:
-  // `policy_manager` must not be null and must outlive `this`.
-  explicit EventBasedLogManager(DeviceCloudPolicyManagerAsh* policy_manager);
+  // `local_state` and `policy_manager` must not be null and must outlive
+  // `this`.
+  EventBasedLogManager(PrefService* local_state,
+                       DeviceCloudPolicyManagerAsh* policy_manager);
 
   EventBasedLogManager(const EventBasedLogManager&) = delete;
   EventBasedLogManager& operator=(const EventBasedLogManager&) = delete;
@@ -45,6 +49,7 @@ class EventBasedLogManager {
   void MaybeAddAllEventObservers();
 
   SEQUENCE_CHECKER(sequence_checker_);
+  const raw_ref<PrefService> local_state_;
   const raw_ref<DeviceCloudPolicyManagerAsh> policy_manager_;
   // List of event observers.
   std::map<ash::reporting::TriggerEventType, std::unique_ptr<EventObserverBase>>
