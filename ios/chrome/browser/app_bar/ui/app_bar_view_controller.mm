@@ -1365,6 +1365,8 @@ UIColor* AssistantHighlightBackgroundColor() {
     [self.tabGridHandler exitTabGrid];
   } else {
     if (_isNtpVisible) {
+      base::RecordAction(
+          base::UserMetricsAction("MobileToolbarShowStackViewOnNTP"));
       RecordHomeAction(IOSHomeActionType::kTabSwitcher, _isStartSurface);
     }
     [self recordAction:"MobileToolbarShowStackView"
@@ -1403,6 +1405,8 @@ UIColor* AssistantHighlightBackgroundColor() {
                   previewProvider:nil
                    actionProvider:^UIMenu*(
                        NSArray<UIMenuElement*>* suggestedActions) {
+                     base::RecordAction(base::UserMetricsAction(
+                         "MobileMenuToolbarMenuTriggered"));
                      return menu;
                    }];
 }
