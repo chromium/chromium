@@ -235,12 +235,10 @@ class AddressFormDataImporterTest
                               const FormStructure& form,
                               bool allow_save_prompts = true) {
     std::vector<FormDataImporterTestApi::ExtractedAddressProfile>
-        extracted_address_profiles;
+        extracted_address_profiles =
+            test_api(GetAddressFormDataImporter()).ExtractAddressProfiles(form);
 
-    EXPECT_EQ(
-        extraction_successful,
-        test_api(GetAddressFormDataImporter())
-                .ExtractAddressProfiles(form, &extracted_address_profiles) > 0);
+    EXPECT_EQ(extraction_successful, !extracted_address_profiles.empty());
 
     if (!extraction_successful) {
       EXPECT_FALSE(test_api(GetAddressFormDataImporter())
@@ -1772,13 +1770,9 @@ TEST_F(AddressFormDataImporterTest,
       AutofillClient::AutofillPolicyDataCategory::kContactInfo,
       /*blocked=*/true);
 
-  std::vector<AddressFormDataImporter::ExtractedAddressProfile>
-      extracted_profiles;
-  size_t num_extracted =
-      test_api(GetAddressFormDataImporter())
-          .ExtractAddressProfiles(*form_structure, &extracted_profiles);
-  EXPECT_EQ(0u, num_extracted);
-  EXPECT_TRUE(extracted_profiles.empty());
+  EXPECT_TRUE(test_api(GetAddressFormDataImporter())
+                  .ExtractAddressProfiles(*form_structure)
+                  .empty());
 }
 
 }  // namespace

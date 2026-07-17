@@ -201,12 +201,11 @@ class FormDataImporterTest : public testing::Test {
                               const FormStructure& form,
                               bool allow_save_prompts = true) {
     std::vector<FormDataImporterTestApi::ExtractedAddressProfile>
-        extracted_address_profiles;
+        extracted_address_profiles =
+            test_api(form_data_importer().GetAddressFormDataImporter())
+                .ExtractAddressProfiles(form);
 
-    EXPECT_EQ(
-        extraction_successful,
-        test_api(form_data_importer().GetAddressFormDataImporter())
-                .ExtractAddressProfiles(form, &extracted_address_profiles) > 0);
+    EXPECT_EQ(extraction_successful, !extracted_address_profiles.empty());
 
     if (!extraction_successful) {
       EXPECT_FALSE(test_api(form_data_importer().GetAddressFormDataImporter())

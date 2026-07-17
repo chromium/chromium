@@ -199,14 +199,15 @@ void AddressFormDataImporter::OnAddressDataChanged() {
   multistep_importer_.OnAddressDataChanged(address_data_manager());
 }
 
-size_t AddressFormDataImporter::ExtractAddressProfiles(
-    const FormStructure& form,
-    std::vector<ExtractedAddressProfile>* extracted_address_profiles) {
+std::vector<AddressFormDataImporter::ExtractedAddressProfile>
+AddressFormDataImporter::ExtractAddressProfiles(const FormStructure& form) {
   if (client_->IsAutofillTypeBlockedByPolicy(
           client_->GetLastCommittedPrimaryMainFrameURL(),
           AutofillClient::AutofillPolicyDataCategory::kContactInfo)) {
-    return 0;
+    return {};
   }
+
+  std::vector<ExtractedAddressProfile> extracted_address_profiles;
 
   // Create a buffer to collect logging output for the autofill-internals.
   LogManager* log_manager = client_->GetCurrentLogManager();
@@ -219,7 +220,6 @@ size_t AddressFormDataImporter::ExtractAddressProfiles(
   // We save a maximum of 2 profiles per submitted form (e.g. for shipping and
   // billing).
   static const size_t kMaxNumAddressProfilesSaved = 2;
-  size_t num_complete_profiles = 0;
 
   if (!form.field_count()) {
     LOG_AF(import_log_buffer) << LogMessage::kImportAddressProfileFromFormFailed
@@ -234,7 +234,7 @@ size_t AddressFormDataImporter::ExtractAddressProfiles(
     }
 
     for (const auto& [section, fields] : section_fields) {
-      if (num_complete_profiles == kMaxNumAddressProfilesSaved) {
+      if (extracted_address_profiles.size() >= kMaxNumAddressProfilesSaved) {
         break;
       }
       // Log the output from a section in a separate div for readability.
@@ -245,28 +245,29 @@ size_t AddressFormDataImporter::ExtractAddressProfiles(
           << CTag{};
       // Try to extract an address profile from the form fields of this section.
       // Only allow for a prompt if no other complete profile was found so far.
-      if (ExtractAddressProfileFromSection(
-              fields, form.source_url(), form.submission_source(),
-              extracted_address_profiles, import_log_buffer)) {
-        num_complete_profiles++;
+      if (std::optional<ExtractedAddressProfile> profile =
+              ExtractAddressProfileFromSection(fields, form.source_url(),
+                                               form.submission_source(),
+                                               import_log_buffer)) {
+        extracted_address_profiles.push_back(std::move(*profile));
       }
       // And close the div of the section import log.
       LOG_AF(import_log_buffer) << CTag{"div"};
     }
     autofill_metrics::LogAddressFormImportStatusMetric(
-        num_complete_profiles == 0
+        extracted_address_profiles.empty()
             ? autofill_metrics::AddressProfileImportStatusMetric::kNoImport
             : autofill_metrics::AddressProfileImportStatusMetric::
                   kRegularImport);
   }
   LOG_AF(import_log_buffer)
       << LogMessage::kImportAddressProfileFromFormNumberOfImports
-      << num_complete_profiles << CTag{};
+      << extracted_address_profiles.size() << CTag{};
 
   // Write log buffer to autofill-internals.
   LOG_AF(log_manager) << std::move(import_log_buffer);
 
-  return num_complete_profiles;
+  return extracted_address_profiles;
 }
 
 bool AddressFormDataImporter::ProcessExtractedAddressProfiles(
@@ -510,11 +511,11 @@ AutofillProfile AddressFormDataImporter::ConstructProfileFromObservedValues(
   return candidate_profile;
 }
 
-bool AddressFormDataImporter::ExtractAddressProfileFromSection(
+std::optional<AddressFormDataImporter::ExtractedAddressProfile>
+AddressFormDataImporter::ExtractAddressProfileFromSection(
     base::span<const AutofillField* const> section_fields,
     const GURL& source_url,
     mojom::SubmissionSource submission_source,
-    std::vector<ExtractedAddressProfile>* extracted_address_profiles,
     LogBuffer& import_log_buffer) {
   // Tracks if the form section contains multiple distinct email addresses.
   bool has_multiple_distinct_email_addresses = false;
@@ -608,7 +609,7 @@ bool AddressFormDataImporter::ExtractAddressProfileFromSection(
                     : AddressImportRequirement::kOverallRequirementViolated);
 
   if (!finalized_import || !all_fulfilled) {
-    return false;
+    return std::nullopt;
   }
 
   autofill_metrics::LogZipCodeLengthMetric(
@@ -625,8 +626,7 @@ bool AddressFormDataImporter::ExtractAddressProfileFromSection(
   extracted_address_profile.profile = candidate_profile;
   extracted_address_profile.url = source_url;
   extracted_address_profile.import_metadata = import_metadata;
-  extracted_address_profiles->push_back(std::move(extracted_address_profile));
-  return true;
+  return extracted_address_profile;
 }
 
 std::u16string AddressFormDataImporter::GetFallbackCountry(

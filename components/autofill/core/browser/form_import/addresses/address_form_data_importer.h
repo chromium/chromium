@@ -64,15 +64,13 @@ class AddressFormDataImporter : public AddressDataManager::Observer {
   // AddressDataManager::Observer:
   void OnAddressDataChanged() override;
 
-  // Attempts to construct `ExtractedAddressProfile` by extracting values
+  // Attempts to construct `ExtractedAddressProfile`s by extracting values
   // from the fields in the `form`'s sections. Extraction can fail if the
   // fields' values don't pass validation. Apart from complete address profiles,
-  // partial profiles for silent updates are extracted. All are stored in
-  // `extracted_form_data`'s `extracted_address_profiles`.
-  // The function returns the number of _complete_ extracted profiles.
-  size_t ExtractAddressProfiles(
-      const FormStructure& form,
-      std::vector<ExtractedAddressProfile>* extracted_address_profiles);
+  // partial profiles for silent updates are extracted.
+  // The function returns all (both partial and complete) extracted profiles.
+  std::vector<ExtractedAddressProfile> ExtractAddressProfiles(
+      const FormStructure& form);
 
   // Processes the extracted address profiles. `extracted_address_profiles`
   // contains the addresses extracted from the form. `allow_prompt` denotes if a
@@ -115,11 +113,10 @@ class AddressFormDataImporter : public AddressDataManager::Observer {
 
   // Helper method for `ExtractAddressProfiles` which only considers the fields
   // for the specified `section_fields`.
-  bool ExtractAddressProfileFromSection(
+  std::optional<ExtractedAddressProfile> ExtractAddressProfileFromSection(
       base::span<const AutofillField* const> section_fields,
       const GURL& source_url,
       mojom::SubmissionSource submission_source,
-      std::vector<ExtractedAddressProfile>* extracted_address_profiles,
       LogBuffer& import_log_buffer);
 
   // Returns the fallback value for the profile country. The following values
