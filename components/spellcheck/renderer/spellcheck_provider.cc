@@ -386,7 +386,7 @@ void SpellCheckProvider::SpellCheckCustomDictionaryChanged(
   effective_added.reserve(words_added.size());
   bool dropped_some = false;
   for (const std::string& word : words_added) {
-    if (word.size() > spellcheck::kMaxCustomDictionaryWordBytes) {
+    if (word.size() > spellcheck::kMaxDocumentCustomDictionaryWordBytes) {
       dropped_some = true;
       continue;
     }

@@ -825,14 +825,14 @@ TEST_F(SpellCheckProviderTest, DocumentCustomDictionaryEnforcesWordCountCap) {
                                 1);
 }
 
-// Verifies that a word exceeding kMaxCustomDictionaryWordBytes is dropped on
-// insert even when there is room in the per-document set.
+// Verifies that a word exceeding kMaxDocumentCustomDictionaryWordBytes is
+// dropped on insert even when there is room in the per-document set.
 TEST_F(SpellCheckProviderTest, DocumentCustomDictionaryRejectsOverlongWord) {
   blink::WebRuntimeFeatures::EnableFeatureFromString(
       "SpellCheckCustomDictionaryAPI", true);
 
-  const std::string overlong(spellcheck::kMaxCustomDictionaryWordBytes + 1,
-                             'a');
+  const std::string overlong(
+      spellcheck::kMaxDocumentCustomDictionaryWordBytes + 1, 'a');
   base::HistogramTester histograms;
   // The overlong word is dropped; the well-formed word is accepted.
   static_cast<blink::WebTextCheckClient*>(&provider_)
