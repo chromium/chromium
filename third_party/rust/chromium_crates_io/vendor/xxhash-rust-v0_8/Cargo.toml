@@ -12,7 +12,7 @@
 [package]
 edition = "2018"
 name = "xxhash-rust"
-version = "0.8.16"
+version = "0.8.17"
 authors = ["Douman <douman@gmx.se>"]
 build = false
 include = [
@@ -82,7 +82,7 @@ name = "test-vectors"
 path = "tests/test-vectors.rs"
 
 [dev-dependencies.getrandom]
-version = "0.3"
+version = "0.4"
 
 [dev-dependencies.xxhash-c-sys]
 version = "0.8.6"

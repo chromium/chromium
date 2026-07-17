@@ -1288,8 +1288,13 @@ impl Xxh3Builder {
 
     #[inline(always)]
     ///Sets `seed` for `xxh3` algorithm
+    ///
+    ///This method overrides default secret with custom based on seed.
+    ///
+    ///To counter it, override secret using [Xxh3Builder::with_secret]
     pub const fn with_seed(mut self, seed: u64) -> Self {
         self.seed = seed;
+        self.secret = const_custom_default_secret(seed);
         self
     }
 
