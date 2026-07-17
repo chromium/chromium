@@ -1165,6 +1165,7 @@ source_set("core") {
     "//components/metrics/private_metrics:private_metrics_features",
     "//components/metrics_services_manager",
     "//components/mirroring/service:mirroring_service",
+    "//components/multistep_filter/core:features",
     "//components/network_time",
     "//components/no_state_prefetch/browser",
     "//components/no_state_prefetch/common",

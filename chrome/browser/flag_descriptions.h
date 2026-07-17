@@ -6640,6 +6640,12 @@ inline constexpr char kMarkAllCredentialsAsLeakedDescription[] =
     "in combination with #improved-password-change-service to better test the "
     "improved password change service";
 
+inline constexpr char kMultistepFilterName[] = "Multistep Filter";
+inline constexpr char kMultistepFilterDescription[] =
+    "Allows users to quickly apply search filters when "
+    "browsing supported websites. Suggestions are based on recent "
+    "browsing activity and filters are saved locally on the device.";
+
 inline constexpr char kMuteNotificationSnoozeActionName[] =
     "Snooze action for mute notifications";
 inline constexpr char kMuteNotificationSnoozeActionDescription[] =
