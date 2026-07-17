@@ -91,6 +91,7 @@ struct TriggerInvokeFromInternalsOptions {
   FreCompletionWaitMode fre_completion_wait_mode = kDefault;
   bool? show_panel;
   InvokeTargetSurface surface;
+  int32? specific_tab_index;
   ActuationTarget actuation_target;
   // Source-specific payload for the invocation.
   InvocationPayload? payload;
@@ -111,6 +112,9 @@ interface InternalsPageHandler {
   TriggerInvokeFromInternalsAction(
       TriggerInvokeFromInternalsOptions options)
       => (bool success, string error_message);
+
+  // Gets the titles of all open tabs in the current window.
+  GetOpenTabs() => (array<string> tab_titles);
 
   // Sets the web continuity originating host URL preset for the internals page.
   SetWebContinuityOriginatingHostUrlPreset(

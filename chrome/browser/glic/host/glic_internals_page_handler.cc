@@ -700,6 +700,26 @@ void GlicInternalsPageHandler::SetGuestUrlPresets(const GURL& autopush_url,
   g_browser_process->local_state()->SetString(prefs::kGlicGuestUrlPresetProd,
                                               prod_url.spec());
 }
+void GlicInternalsPageHandler::GetOpenTabs(GetOpenTabsCallback callback) {
+  std::vector<std::string> tab_titles;
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(webui_contents_);
+  if (tab) {
+    BrowserWindowInterface* current_browser = tab->GetBrowserWindowInterface();
+    if (current_browser) {
+      TabListInterface* tab_list = TabListInterface::From(current_browser);
+      if (tab_list) {
+        for (int i = 0; i < tab_list->GetTabCount(); ++i) {
+          tabs::TabInterface* t = tab_list->GetTab(i);
+          if (t) {
+            tab_titles.push_back(base::UTF16ToUTF8(t->GetTitle()));
+          }
+        }
+      }
+    }
+  }
+  std::move(callback).Run(std::move(tab_titles));
+}
 
 void GlicInternalsPageHandler::TriggerInvokeFromInternalsAction(
     mojom::TriggerInvokeFromInternalsOptionsPtr mojo_options,
@@ -843,6 +863,17 @@ void GlicInternalsPageHandler::TriggerInvokeFromInternalsAction(
     new_tab.open_in_foreground =
         mojo_options->surface->get_new_tab()->open_in_foreground;
     options.target.surface = new_tab;
+  }
+
+  if (mojo_options->specific_tab_index.has_value()) {
+    int32_t index = mojo_options->specific_tab_index.value();
+    TabListInterface* tab_list = TabListInterface::From(current_browser);
+    if (tab_list && index >= 0 && index < tab_list->GetTabCount()) {
+      tabs::TabInterface* target_tab = tab_list->GetTab(index);
+      if (target_tab) {
+        options.target.surface = target_tab->GetHandle();
+      }
+    }
   }
 
   LogGlicInvokeOptions(options, mojo_options->auto_submit,

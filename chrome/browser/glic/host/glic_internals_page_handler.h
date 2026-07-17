@@ -42,6 +42,8 @@ class GlicInternalsPageHandler : public glic::mojom::InternalsPageHandler {
       mojom::TriggerInvokeFromInternalsOptionsPtr options,
       TriggerInvokeFromInternalsActionCallback callback) override;
 
+  void GetOpenTabs(GetOpenTabsCallback callback) override;
+
   void SetWebContinuityOriginatingHostUrlPreset(
       const GURL& web_continuity_originating_host_url) override;
 

@@ -55,6 +55,8 @@ export class GlicInternalsAppElement extends CrLitElement {
       selectedTabIndex_: {type: Number},
       invokeConversationType_: {type: String},
       invokeConversationId_: {type: String},
+      invokeSpecificTabIndex_: {type: Number},
+      availableTabs_: {type: Array},
       tabNames_: {type: Array},
       featureModeEnumValues_: {type: Array},
     };
@@ -83,6 +85,8 @@ export class GlicInternalsAppElement extends CrLitElement {
       FreCompletionWaitMode.kDefault;
   protected accessor invokeConversationType_: string = 'default';
   protected accessor invokeConversationId_: string = '';
+  protected accessor invokeSpecificTabIndex_: number = 0;
+  protected accessor availableTabs_: string[] = [];
 
   protected accessor selectedTabIndex_: number = 0;
   protected accessor tabNames_: string[] = ['General', 'Debug Controls'];
@@ -318,8 +322,26 @@ export class GlicInternalsAppElement extends CrLitElement {
         (e.target as HTMLInputElement).value;
   }
 
-  protected onInvokeSurfaceTypeChange_(e: Event) {
+  protected async onInvokeSurfaceTypeChange_(e: Event) {
     this.invokeSurfaceType_ = (e.target as HTMLSelectElement).value;
+    if (this.invokeSurfaceType_ === 'specificTab') {
+      await this.refreshOpenTabs_();
+    }
+  }
+
+  protected async refreshOpenTabs_() {
+    const {tabTitles} = await this.pageHandler_.getOpenTabs();
+    this.availableTabs_ = tabTitles;
+    this.invokeSpecificTabIndex_ = 0;
+  }
+
+  protected onRefreshTabsClick_() {
+    this.refreshOpenTabs_();
+  }
+
+  protected onInvokeSpecificTabIndexChange_(e: Event) {
+    this.invokeSpecificTabIndex_ =
+        Number((e.target as HTMLSelectElement).value);
   }
 
   protected onInvokeZssOverrideChange_(e: Event) {
@@ -346,9 +368,12 @@ export class GlicInternalsAppElement extends CrLitElement {
         Number((e.target as HTMLSelectElement).value);
   }
   protected onTriggerInvokeClick_() {
-    const surface = this.invokeSurfaceType_ === 'newTab' ?
-        {newTab: {openInForeground: this.invokeOpenInForeground_}} :
-        {defaultSurface: {}};
+    let surface: TriggerInvokeFromInternalsOptions['surface'];
+    if (this.invokeSurfaceType_ === 'newTab') {
+      surface = {newTab: {openInForeground: this.invokeOpenInForeground_}};
+    } else {
+      surface = {defaultSurface: {}};
+    }
 
     let payload = null;
     if (this.invokeInvocationSource_ === InvocationSource.kUniversalCart) {
@@ -395,6 +420,9 @@ export class GlicInternalsAppElement extends CrLitElement {
       focusOnShow: this.invokeFocusOnShow_,
       freCompletionWaitMode: this.invokeFreCompletionWaitMode_,
       surface: surface,
+      specificTabIndex: this.invokeSurfaceType_ === 'specificTab' ?
+          this.invokeSpecificTabIndex_ :
+          null,
       actuationTarget: this.invokeActuationTarget_,
       showPanel: this.invokeAutoSubmit_ ? this.invokeShowPanel_ : null,
       payload: payload,

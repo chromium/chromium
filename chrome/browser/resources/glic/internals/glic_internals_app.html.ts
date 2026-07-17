@@ -328,10 +328,23 @@ export function getHtml(this: GlicInternalsAppElement) {
                 .value="${this.invokeSurfaceType_}"
                 @change="${this.onInvokeSurfaceTypeChange_}">
               <option value="default">Default</option>
+              <option value="specificTab">Specific Tab</option>
               <option value="newTab">New Tab</option>
             </select>
             ${this.invokeSurfaceType_ === 'default' ? html`
               <span style="color: gray;">(Uses this window)</span>
+            ` : html``}
+            ${this.invokeSurfaceType_ === 'specificTab' ? html`
+              <select id="invokeSpecificTabIndexSelect"
+                  .value="${this.invokeSpecificTabIndex_.toString()}"
+                  @change="${this.onInvokeSpecificTabIndexChange_}">
+                ${this.availableTabs_.map((tabTitle, index) => html`
+                  <option value="${index}">${index}: ${tabTitle}</option>
+                `)}
+              </select>
+              <cr-button @click="${this.onRefreshTabsClick_}">
+                Refresh
+              </cr-button>
             ` : html``}
             ${this.invokeSurfaceType_ === 'newTab' ? html`
               <label style="display: flex; align-items: center; gap: 4px;">
