@@ -79,7 +79,6 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case PersonalContextEligibilityState::kEligible:
       return true;
     case PersonalContextEligibilityState::kDisabledNotEligible:
-    case PersonalContextEligibilityState::kDisabledNeedsOptIn:
       return false;
   }
 }

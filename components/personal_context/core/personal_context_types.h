@@ -40,8 +40,9 @@ enum class PersonalContextNonEligibilityReason {
 // entrypoint visibility.
 enum class PersonalContextEligibilityState {
   kDisabledNotEligible = 0,  // Not eligible.
-  kDisabledNeedsOptIn = 1,   // Not eligible, requires account opt-in.
-  kEligible = 2              // Eligible.
+  // TODO(crbug.com/494149753): Set to 1 once
+  // `kPersonalContextForceEnablementStateParam` is removed.
+  kEligible = 2  // Eligible.
 };
 
 // Defines the result of a PersonalContextService::FetchContext operation.

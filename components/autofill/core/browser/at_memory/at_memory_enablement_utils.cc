@@ -55,9 +55,6 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
   using enum personal_context::PersonalContextEligibilityState;
   switch (personal_context_service->GetEligibilityState()) {
     case kDisabledNotEligible:
-    // TODO(crbug.com/504893949) Consider handling this status differently when
-    // implementing opt-in logic.
-    case kDisabledNeedsOptIn:
       MaybeOutputReason(debug_message,
                         "User is not eligible for Personal Context.");
       return false;

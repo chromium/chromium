@@ -35,7 +35,6 @@ std::optional<PersonalContextEligibilityState> GetForcedEligibilityState() {
       features::debug::kPersonalContextForceEnablementStateParam.Get());
   switch (unsafe_type) {
     case PersonalContextEligibilityState::kDisabledNotEligible:
-    case PersonalContextEligibilityState::kDisabledNeedsOptIn:
     case PersonalContextEligibilityState::kEligible:
       return unsafe_type;
   }
@@ -260,11 +259,7 @@ PersonalContextEligibilityServiceImpl::ComputeEligibilityState() {
   if (auto [satisfied, reason] =
           SatisfiesPrefsRequirements(pref_service_.get());
       !satisfied) {
-    return std::pair{
-        personal_context::features::IsPersonalContextFirstRunOptInEnabled()
-            ? kDisabledNeedsOptIn
-            : kDisabledNotEligible,
-        reason};
+    return std::pair{kDisabledNotEligible, reason};
   }
 
   return std::pair{kEligible, PersonalContextNonEligibilityReason::kEligible};

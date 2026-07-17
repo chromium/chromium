@@ -59,7 +59,6 @@ bool IsPersonalContextEligible(
   using enum personal_context::PersonalContextEligibilityState;
   switch (state) {
     case kDisabledNotEligible:
-    case kDisabledNeedsOptIn:
       return false;
     case kEligible:
       return true;

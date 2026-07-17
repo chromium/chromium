@@ -126,15 +126,6 @@ TEST_F(PersonalContextEligibilityServiceImplTest, ForcedEnablementState) {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeatureWithParameters(
         features::debug::kPersonalContextForceEnablementState,
-        {{"state", "1"}});
-    EXPECT_EQ(service().GetEligibilityState(),
-              PersonalContextEligibilityState::kDisabledNeedsOptIn);
-  }
-
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        features::debug::kPersonalContextForceEnablementState,
         {{"state", "2"}});
     EXPECT_EQ(service().GetEligibilityState(),
               PersonalContextEligibilityState::kEligible);
@@ -332,40 +323,6 @@ TEST_F(PersonalContextEligibilityServiceImplTest,
   // The cache should be updated back to kEligible.
   EXPECT_EQ(service().GetEligibilityState(),
             PersonalContextEligibilityState::kEligible);
-}
-
-TEST_F(PersonalContextEligibilityServiceImplTest,
-       DisabledWhenAccountSettingsServiceNotAvailableAndOptInEnabled) {
-  base::test::ScopedFeatureList feature_list{
-      features::kPersonalContextFirstRunOptIn};
-
-  service_ = std::make_unique<PersonalContextEligibilityServiceImpl>(
-      nullptr, identity_test_env_.identity_manager(), &pref_service_,
-      GeoIpCountryCode("US"), "en-US");
-
-  EXPECT_EQ(service().GetEligibilityState(),
-            PersonalContextEligibilityState::kDisabledNotEligible);
-}
-
-TEST_F(PersonalContextEligibilityServiceImplTest,
-       NeedsOptInWhenGlicFreNotCompletedAndOptInEnabled) {
-  base::test::ScopedFeatureList feature_list{
-      features::kPersonalContextFirstRunOptIn};
-
-  pref_service_.SetInteger(
-      ::glic::prefs::kGlicCompletedFre,
-      std::to_underlying(::glic::prefs::FreStatus::kNotStarted));
-
-  // Compute eligibility state so changes to pref are picked up.
-  PersonalContextEligibilityServiceImplTestApi(&service())
-      .ComputeEligibilityState();
-
-  EXPECT_EQ(service().GetEligibilityState(),
-            PersonalContextEligibilityState::kDisabledNeedsOptIn);
-
-  histogram_tester().ExpectBucketCount(
-      "Autofill.PersonalContext.NonEligibilityReason",
-      PersonalContextNonEligibilityReason::kNotGlicFirstRun, 1);
 }
 
 class PersonalContextEligibilityServiceImplGeolocationTest

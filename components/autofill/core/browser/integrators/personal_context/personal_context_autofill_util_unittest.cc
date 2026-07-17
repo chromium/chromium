@@ -84,7 +84,6 @@ TEST_F(PersonalContextAutofillUtilTest,
   };
 
   EXPECT_FALSE(check_state(kDisabledNotEligible));
-  EXPECT_FALSE(check_state(kDisabledNeedsOptIn));
   EXPECT_TRUE(check_state(kEligible));
 
   EXPECT_FALSE(ShouldShowPersonalContextAutofillSetting(

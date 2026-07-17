@@ -233,17 +233,6 @@ TEST_F(PersonalContextFirstRunServiceImplTest,
   EXPECT_EQ(future.Get(), FirstRunTriggerResult::kIgnoredAlreadyEnabled);
 }
 
-TEST_F(PersonalContextFirstRunServiceImplTest, DoesNotTriggerWhenNeedsOptIn) {
-  EXPECT_CALL(*eligibility_service(), GetEligibilityState())
-      .WillOnce(Return(PersonalContextEligibilityState::kDisabledNeedsOptIn));
-
-  EXPECT_CALL(*client(), ShowNotice).Times(0);
-
-  base::test::TestFuture<FirstRunTriggerResult> future;
-  service()->MaybeTriggerFirstRun(nullptr, FirstRunInvocationSource::kAutofill,
-                                  future.GetCallback());
-  EXPECT_EQ(future.Get(), FirstRunTriggerResult::kIgnoredNotEligible);
-}
 
 TEST_F(PersonalContextFirstRunServiceImplTest, TriggersWhenShouldShowNotice) {
   EXPECT_CALL(*eligibility_service(), GetEligibilityState())

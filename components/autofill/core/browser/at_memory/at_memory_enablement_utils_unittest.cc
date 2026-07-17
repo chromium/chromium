@@ -233,16 +233,6 @@ TEST_F(AtMemoryEnablementUtilsTest, MayPerformAtMemoryAction_States) {
   EXPECT_TRUE(MayPerformAtMemoryAction(
       AtMemoryAction::kAllowCustomizeAtMemoryShortcut, autofill_client()));
 
-  // State: kDisabledNeedsOptIn
-  EXPECT_CALL(personal_context_service_, GetEligibilityState)
-      .WillOnce(Return(personal_context::PersonalContextEligibilityState::
-                           kDisabledNeedsOptIn));
-  autofill_client().GetPrefs()->SetUserPref(
-      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
-      base::Value(false));
-  EXPECT_FALSE(MayPerformAtMemoryAction(AtMemoryAction::kShowAtMemoryInSettings,
-                                        autofill_client()));
-
   // State: kDisabledNotEligible
   EXPECT_CALL(personal_context_service_, GetEligibilityState)
       .WillOnce(Return(personal_context::PersonalContextEligibilityState::
