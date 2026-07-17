@@ -1057,6 +1057,40 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, AccessibleName) {
             data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
 
+IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, AccessibleNameUpdatesOnTabFocus) {
+  AppendTab();
+  Tab* tab = tab_strip()->tab_at(1);
+  tabs::TabInterface* tab_interface = tab->tab_handle().Get();
+  ASSERT_TRUE(tab_interface);
+
+  auto* helper = TabResourceUsageTabHelper::From(tab_interface);
+  ASSERT_TRUE(helper);
+
+  // Initially, the accessible name should be just the tab title.
+  ui::AXNodeData data;
+  tab->GetViewAccessibility().GetAccessibleNodeData(&data);
+  std::u16string initial_name =
+      data.GetString16Attribute(ax::mojom::StringAttribute::kName);
+  EXPECT_EQ(u"New Tab", initial_name);
+
+  // Set memory usage.
+  base::ByteSize memory_usage = base::ByteSize(1024 * 1024);  // 1 MiB
+  helper->SetMemoryUsage(memory_usage);
+
+  // Focus the tab via FocusManager. Gaining focus should update the accessible
+  // name.
+  tab->GetFocusManager()->SetFocusedView(tab);
+
+  data = ui::AXNodeData();
+  tab->GetViewAccessibility().GetAccessibleNodeData(&data);
+  std::u16string updated_name =
+      data.GetString16Attribute(ax::mojom::StringAttribute::kName);
+
+  // The updated name should contain the memory usage.
+  std::u16string expected_memory_string = ui::FormatBytes(memory_usage);
+  EXPECT_NE(std::u16string::npos, updated_name.find(expected_memory_string));
+}
+
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
                        DISABLED_TabGroupHeaderAccessibleProperties) {
   browser()->set_update_ui_immediately_for_testing();

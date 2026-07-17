@@ -644,6 +644,10 @@ void TabView::OnFocus() {
         GetTabInterface());
   }
 
+  // Update the accessible label before showing the hover card to ensure that
+  // the displayed memory usage is in sync with what will be read to screen
+  // readers.
+  UpdateAccessibleName();
   UpdateHoverCard(this, TabSlotController::HoverCardUpdateType::kFocus);
   InvalidateLayout();
 }
@@ -999,6 +1003,17 @@ void TabView::OnTabStateChanged() {
 void TabView::OnTabDataChanged(TabChangeType change_type,
                                const tabs::TabData& data) {
   CHECK(collection_node_);
+
+  // Update the accessible name when the hovered tab's memory usage changes
+  // so screen readers are in sync with the hover card. Skips updating
+  // other visual UI elements (title, favicon, alert buttons) because those
+  // states usually do not change when memory is updated.
+  if (change_type == TabChangeType::kResourceUsageOnly) {
+    if (IsActive() || HasFocus()) {
+      UpdateAccessibleName();
+    }
+    return;
+  }
   UpdateTabData(GetTabInterface());
 }
 

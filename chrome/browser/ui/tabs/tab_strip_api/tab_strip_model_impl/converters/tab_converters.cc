@@ -45,6 +45,8 @@ tabs_api::mojom::TabFieldMaskPtr BuildTabFieldMask(TabChangeType type) {
     case TabChangeType::kBlockedOnly:
       mask->is_blocked = true;
       break;
+    case TabChangeType::kResourceUsageOnly:
+      break;
   }
   return mask;
 }

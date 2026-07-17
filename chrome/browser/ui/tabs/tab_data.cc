@@ -128,6 +128,12 @@ TabDataObserver::TabDataObserver(TabInterface* tab_interface)
   tab_detached_subscription_ =
       tab_interface_->RegisterWillDetach(base::BindRepeating(
           &TabDataObserver::OnTabDetached, base::Unretained(this)));
+  TabResourceUsageTabHelper* const tab_resource_usage_tab_helper =
+      TabResourceUsageTabHelper::From(tab_interface_);
+  tab_resource_usage_subscription_ =
+      tab_resource_usage_tab_helper->AddResourceUsageChangeCallback(
+          base::BindRepeating(&TabDataObserver::OnResourceUsageChanged,
+                              base::Unretained(this)));
 
   // Initialize the tab data.
   OnTabUIChange();
@@ -202,8 +208,15 @@ void TabDataObserver::OnTabDetached(tabs::TabInterface* tab_interface,
     pinned_state_change_subscription_ = base::CallbackListSubscription();
     blocked_state_change_subscription_ = base::CallbackListSubscription();
     tab_detached_subscription_ = base::CallbackListSubscription();
+    tab_resource_usage_subscription_ = base::CallbackListSubscription();
     tab_interface_ = nullptr;
   }
+}
+
+void TabDataObserver::OnResourceUsageChanged(
+    scoped_refptr<const ::TabResourceUsage> usage) {
+  tab_data_.tab_resource_usage = usage;
+  NotifyTabDataChanged(TabChangeType::kResourceUsageOnly);
 }
 
 }  // namespace tabs
