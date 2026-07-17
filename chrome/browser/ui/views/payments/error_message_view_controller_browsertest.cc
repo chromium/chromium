@@ -161,9 +161,9 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestErrorMessageMandatoryUiEnabledTest,
   views::View* content_view =
       GetChildByDialogViewID(error_sheet, DialogViewID::CONTENT_VIEW);
   ASSERT_NE(nullptr, content_view);
-  ASSERT_EQ(1u, content_view->children().size());
+  ASSERT_EQ(2u, content_view->children().size());
 
-  views::Label* label = static_cast<views::Label*>(content_view->children()[0]);
+  views::Label* label = static_cast<views::Label*>(content_view->children()[1]);
   std::u16string_view label_text = label->GetText();
 
   EXPECT_TRUE(label_text.contains(base::ASCIIToUTF16(kMerchantOrigin)));

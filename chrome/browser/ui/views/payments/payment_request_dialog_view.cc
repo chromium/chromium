@@ -194,6 +194,19 @@ void PaymentRequestDialogView::ShowErrorMessage() {
                             weak_ptr_factory_.GetWeakPtr()),
                         &controller_map_),
                     /* animate = */ false);
+
+  if (base::FeatureList::IsEnabled(
+          features::kPaymentRequestMandatoryPaymentAppUi)) {
+    is_showing_large_payment_handler_window_ = true;
+    int preferred_height =
+        view_stack_->top()->GetHeightForWidth(GetActualDialogWidth());
+
+    payment_handler_window_height_ = std::clamp(
+        preferred_height, kPreferredPaymentHandlerErrorMessageDialogHeight,
+        kPreferredPaymentHandlerDialogHeight);
+    ResizeDialogWindow();
+  }
+
   HideProcessingSpinner();
 
   if (observer_for_testing_) {

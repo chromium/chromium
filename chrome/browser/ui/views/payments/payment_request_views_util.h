@@ -46,6 +46,9 @@ inline constexpr int kDialogHeight = 450;
 inline constexpr int kPreferredPaymentHandlerDialogWidth = 608;
 inline constexpr int kPreferredPaymentHandlerDialogHeight = 600;
 
+// Preferred dimensions of the payment handler error message dialog in pixels.
+inline constexpr int kPreferredPaymentHandlerErrorMessageDialogHeight = 196;
+
 // Fixed width of the amount sections in the payment sheet and the order summary
 // sheet, in pixels.
 inline constexpr int kAmountSectionWidth = 96;
