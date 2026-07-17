@@ -33,6 +33,9 @@
 #include "components/prefs/pref_registry.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include <jni.h>
+
+#include "base/android/jni_android.h"
 #include "components/prefs/android/pref_service_android.h"
 #endif
 
@@ -543,9 +546,20 @@ void PrefService::SetUserPrefValue(std::string_view path,
 
   const Preference* pref = FindPreference(path);
   if (!pref) {
+#if BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/535326218): Throw Java exception so that we get a Java
+    // stack trace of the caller of the unregistered preference.
+    JNIEnv* env = base::android::AttachCurrentThread();
+    jclass clazz = env->FindClass("java/lang/RuntimeException");
+    std::string msg =
+        "Trying to write an unregistered pref: " + std::string(path);
+    env->ThrowNew(clazz, msg.c_str());
+    return;
+#else
     DUMP_WILL_BE_NOTREACHED()
         << "Trying to write an unregistered pref: " << path;
     return;
+#endif
   }
   if (pref->GetType() != new_value.type()) {
     NOTREACHED() << "Trying to set pref " << path << " of type "
