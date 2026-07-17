@@ -3059,9 +3059,9 @@ deps = {
     Var('chromium_git') + '/external/github.com/GoogleChromeLabs/text-fragments-polyfill.git' + '@' + 'abc6ed408b3f20e91d9cbda9977748459f5e3877',
 
   'src/third_party/tflite/src':
-    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + 'a12cd7d36bb3dbae1dd7a4b572643084bc62f6e1',
+    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + '6eded1ce7a1aa23f6ff3e22f163c43061bc14c9f',
   'src/third_party/litert/src':
-    Var('chromium_git') + '/external/github.com/google-ai-edge/LiteRT.git' + '@' + 'd419a5d6b81ad7f6db0a469dac5b82d47f3ac980',
+    Var('chromium_git') + '/external/github.com/google-ai-edge/LiteRT.git' + '@' + '61f432493259e1eddbb72a24426b15beea9395fd',
   'src/third_party/turbine/cipd': {
       'packages': [
           {
@@ -3191,7 +3191,7 @@ deps = {
   },
 
   'src/third_party/xnnpack/src':
-    Var('chromium_git') + '/external/github.com/google/XNNPACK.git' + '@' + 'd9ff5bf36955f97c657013272acd3a46d696b301',
+    Var('chromium_git') + '/external/github.com/google/XNNPACK.git' + '@' + 'dff8cb5db8c102d0f65140838f11de8bc9668c86',
 
   'src/third_party/libei/src': {
       'url': Var('chromium_git') + '/external/gitlab.freedesktop.org/libinput/libei.git' + '@' + '5d6d8e6590df210b75559a889baa9459c68d9366',

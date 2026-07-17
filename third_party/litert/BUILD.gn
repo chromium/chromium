@@ -70,6 +70,7 @@ config("litert_config") {
     "LITERT_DISABLE_OPENCL_SUPPORT",
     "LITERT_DISABLE_OPENGL_SUPPORT",
     "LITERT_HAS_OPENCL_SUPPORT=0",
+    "LITERT_STATIC",
     "LITERT_WITH_EXTERNAL_WEIGHT_LOADER",
   ]
 
@@ -217,6 +218,8 @@ source_set("litert_headers") {
     "src/litert/c/internal/litert_delegate_wrapper.h",
     "src/litert/c/internal/litert_external_litert_buffer_context.h",
     "src/litert/c/internal/litert_logging.h",
+    "src/litert/c/internal/litert_runtime_api_export.h",
+    "src/litert/c/internal/litert_runtime_c_api.h",
     "src/litert/c/internal/litert_runtime_context.h",
     "src/litert/c/internal/litert_tensor_buffer_registry.h",
     "src/litert/c/litert_builder.h",
@@ -385,6 +388,7 @@ static_library("litert_c") {
     "src/litert/c/internal/litert_delegate_wrapper.cc",
     "src/litert/c/internal/litert_external_litert_buffer_context.cc",
     "src/litert/c/internal/litert_logging.cc",
+    "src/litert/c/internal/litert_runtime_api_export.cc",
     "src/litert/c/internal/litert_runtime_context.cc",
     "src/litert/c/internal/litert_tensor_buffer_registry.cc",
     "src/litert/c/litert_builder.cc",
