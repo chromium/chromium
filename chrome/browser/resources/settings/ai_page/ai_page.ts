@@ -4,6 +4,10 @@
 
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import '../settings_page/settings_section.js';
+// <if expr="_google_chrome">
+import '../internal/icons.html.js';
+
+// </if>
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
