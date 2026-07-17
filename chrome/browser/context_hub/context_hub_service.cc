@@ -103,8 +103,10 @@ void ContextHubService::GetAllEntries(
 }
 
 // TODO(crbug.com/531938478): Update to handle APC ingestion.
-void ContextHubService::GenerateTabGroups(std::vector<TabData> tabs,
-                                          GroupTabsCallback callback) {
+void ContextHubService::GenerateTabGroups(
+    std::vector<TabData> tabs,
+    const std::string& user_command,
+    GroupTabsCallback callback) {
   optimization_guide::proto::ContextHubRequest request;
   request.set_request_type(
       optimization_guide::proto::CONTEXT_HUB_REQUEST_TYPE_GROUPING);
@@ -117,6 +119,7 @@ void ContextHubService::GenerateTabGroups(std::vector<TabData> tabs,
     tab_proto->set_url(tab.url.spec());
   }
 
+  // TODO(b/534492009): Add support for user command once the proto is synced.
   optimization_guide_remote_model_executor_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kContextHub, request,
       optimization_guide::ModelExecutionOptions(),
@@ -179,14 +182,16 @@ void ContextHubService::HandleModelExecutionResult(
   std::move(callback).Run(std::move(groups), std::move(ungrouped_tabs));
 }
 
-void ContextHubService::GroupTabs(std::vector<TabData> tabs,
-                                  GroupTabsCallback callback) {
+void ContextHubService::GroupTabs(
+    std::vector<TabData> tabs,
+    const std::string& user_command,
+    GroupTabsCallback callback) {
   if (tabs.size() < 2) {
     std::move(callback).Run({}, std::move(tabs));
     return;
   }
 
-  GenerateTabGroups(std::move(tabs), std::move(callback));
+  GenerateTabGroups(std::move(tabs), user_command, std::move(callback));
 }
 
 }  // namespace context_hub

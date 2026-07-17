@@ -87,7 +87,8 @@ export class TabGroupsElement extends CrLitElement {
 
     try {
       const {groups, ungroupedTabs} =
-          await BrowserProxyImpl.getInstance().handler.retrieveAndGroupTabs();
+          await BrowserProxyImpl.getInstance().handler.retrieveAndGroupTabs(
+              this.inputValue_);
 
       this.groups_ = groups
                          .map(group => ({

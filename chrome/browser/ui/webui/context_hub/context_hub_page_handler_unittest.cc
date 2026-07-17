@@ -373,6 +373,7 @@ TEST_F(ContextHubPageHandlerTest, RetrieveAndGroupTabs_NoTabs) {
                          std::vector<browser::context_hub::mojom::TabInfoPtr>>
       future;
   handler_->RetrieveAndGroupTabs(
+      "",
       future
           .GetCallback<std::vector<browser::context_hub::mojom::TabGroupPtr>,
                        std::vector<browser::context_hub::mojom::TabInfoPtr>>());
@@ -440,6 +441,7 @@ TEST_F(ContextHubPageHandlerTest, RetrieveAndGroupTabs_WithTabs) {
                          std::vector<browser::context_hub::mojom::TabInfoPtr>>
       future;
   handler_->RetrieveAndGroupTabs(
+      "",
       future
           .GetCallback<std::vector<browser::context_hub::mojom::TabGroupPtr>,
                        std::vector<browser::context_hub::mojom::TabInfoPtr>>());

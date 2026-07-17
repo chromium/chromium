@@ -256,6 +256,7 @@ void ContextHubPageHandler::GetTabs(GetTabsCallback callback) {
 }
 
 void ContextHubPageHandler::RetrieveAndGroupTabs(
+    const std::string& user_command,
     RetrieveAndGroupTabsCallback callback) {
   context_hub::ContextHubService* service =
       ContextHubServiceFactory::GetForProfile(profile_);
@@ -265,7 +266,7 @@ void ContextHubPageHandler::RetrieveAndGroupTabs(
   }
 
   service->GroupTabs(
-      GetOpenTabs(tab_provider_.get(), web_contents_),
+      GetOpenTabs(tab_provider_.get(), web_contents_), user_command,
       base::BindOnce(
           [](RetrieveAndGroupTabsCallback callback,
              std::vector<context_hub::TabGroupData> groups,

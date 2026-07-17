@@ -49,7 +49,8 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler {
       const std::vector<int64_t>& ids,
       DeleteMemoryBankEntriesCallback callback) override;
   void GetTabs(GetTabsCallback callback) override;
-  void RetrieveAndGroupTabs(RetrieveAndGroupTabsCallback callback) override;
+  void RetrieveAndGroupTabs(const std::string& user_command,
+                            RetrieveAndGroupTabsCallback callback) override;
   void SwitchToTab(int32_t tab_id) override;
 
  private:

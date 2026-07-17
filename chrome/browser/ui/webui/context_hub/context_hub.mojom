@@ -4,8 +4,8 @@
 
 module browser.context_hub.mojom;
 
-import "url/mojom/url.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "url/mojom/url.mojom";
 
 feature kAutoTabGroups {
   const string name = "AutoTabGroups";
@@ -92,10 +92,11 @@ interface PageHandler {
   [RuntimeFeature=kAutoTabGroups]
   GetTabs() => (array<TabInfo> tabs);
 
-  // Retrieves and groups related open tabs.
+  // Retrieves and groups related open tabs based on the user command.
+  // User command is inputted via WebUI textbox.
   [RuntimeFeature=kAutoTabGroups]
-  RetrieveAndGroupTabs() =>
-      (array<TabGroup> groups, array<TabInfo> ungrouped_tabs);
+  RetrieveAndGroupTabs(string user_command)
+      => (array<TabGroup> groups, array<TabInfo> ungrouped_tabs);
 
   // Switches to the specified tab.
   SwitchToTab(int32 tab_id);

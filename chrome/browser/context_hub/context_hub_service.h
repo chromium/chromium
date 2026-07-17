@@ -64,7 +64,9 @@ class ContextHubService : public KeyedService {
       base::OnceCallback<void(std::vector<TabGroupData> groups,
                               std::vector<TabData> ungrouped_tabs)>;
   // Groups tabs based on the provided `tabs` list.
-  void GroupTabs(std::vector<TabData> tabs, GroupTabsCallback callback);
+  void GroupTabs(std::vector<TabData> tabs,
+                 const std::string& user_command,
+                 GroupTabsCallback callback);
 
   // Memory bank wrappers that forward operations to the underlying storage
   // backend.
@@ -91,7 +93,9 @@ class ContextHubService : public KeyedService {
  private:
   // Generates tab groups based on the provided `tabs` and invokes `callback`
   // with the resulting groups and any ungrouped tabs.
-  void GenerateTabGroups(std::vector<TabData> tabs, GroupTabsCallback callback);
+  void GenerateTabGroups(std::vector<TabData> tabs,
+                         const std::string& user_command,
+                         GroupTabsCallback callback);
 
   // Handles the async response from the AutoTodos fetch.
   void OnAutoTodosFetched(AutoTodosCallback callback,

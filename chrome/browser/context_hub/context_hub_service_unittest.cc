@@ -176,7 +176,7 @@ TEST_F(ContextHubServiceTest, GroupTabs_NoTabs) {
   base::test::TestFuture<std::vector<TabGroupData>, std::vector<TabData>>
       future;
   service_.GroupTabs(
-      {},
+      {}, "",
       future.GetCallback<std::vector<TabGroupData>, std::vector<TabData>>());
   auto [groups, ungrouped_tabs] = future.Take();
   EXPECT_TRUE(groups.empty());
@@ -233,7 +233,7 @@ TEST_F(ContextHubServiceTest, GroupTabs_WithTabs) {
   base::test::TestFuture<std::vector<TabGroupData>, std::vector<TabData>>
       future;
   service_.GroupTabs(
-      std::move(input_tabs),
+      std::move(input_tabs), "",
       future.GetCallback<std::vector<TabGroupData>, std::vector<TabData>>());
   std::tuple<std::vector<TabGroupData>, std::vector<TabData>> result =
       future.Take();
@@ -278,7 +278,7 @@ TEST_F(ContextHubServiceTest, GroupTabs_MESError) {
   base::test::TestFuture<std::vector<TabGroupData>, std::vector<TabData>>
       future;
   service_.GroupTabs(
-      std::move(input_tabs),
+      std::move(input_tabs), "",
       future.GetCallback<std::vector<TabGroupData>, std::vector<TabData>>());
   std::tuple<std::vector<TabGroupData>, std::vector<TabData>> result =
       future.Take();
