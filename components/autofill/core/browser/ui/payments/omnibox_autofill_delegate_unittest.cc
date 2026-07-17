@@ -469,6 +469,9 @@ TEST_F(OmniboxAutofillDelegateTest,
 
 TEST_F(OmniboxAutofillDelegateTest,
        OnAutofillManagerStateChanged_WasActive_HideChip) {
+  FormData form = CreateTestCreditCardFormData();
+  FormsSeen({form});
+
   payments_autofill_client().ShowOmniboxAutofillChip(
       /*suggestions=*/{},
       /*on_suggestions_shown=*/base::DoNothing(),
@@ -526,6 +529,9 @@ TEST_F(OmniboxAutofillDelegateTest,
 
 TEST_F(OmniboxAutofillDelegateTest,
        OnAutofillManagerStateChanged_WasNotActive_DoesNotHideChip) {
+  FormData form = CreateTestCreditCardFormData();
+  FormsSeen({form});
+
   payments_autofill_client().ShowOmniboxAutofillChip(
       /*suggestions=*/{},
       /*on_suggestions_shown=*/base::DoNothing(),

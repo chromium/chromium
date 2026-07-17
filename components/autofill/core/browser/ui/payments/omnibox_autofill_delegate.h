@@ -76,8 +76,11 @@ class OmniboxAutofillDelegate : public AutofillManager::Observer,
   bool IsOutermostMainFrameActiveAutofillManager(AutofillManager& manager);
 
   // Checks if the given `field` is in the main frame.
-  bool FieldIsInMainFrame(AutofillManager& manager,
+  bool IsFieldInMainFrame(AutofillManager& manager,
                           const AutofillField& field) const;
+
+  // Checks if `trigger_field_global_id_` is in the frame.
+  bool IsTriggerFieldGlobalIdInFrame(AutofillDriver& driver) const;
 
   // Resets the delegate's internal state, clearing `candidate_form_found_`
   // `trigger_form_global_id_`, and `trigger_field_global_id_`.

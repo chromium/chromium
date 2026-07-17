@@ -202,7 +202,7 @@ void OmniboxAutofillDelegate::OnFieldTypesDetermined(
       }
       found_credit_card_number_field = true;
     }
-    if (!FieldIsInMainFrame(manager, *field)) {
+    if (!IsFieldInMainFrame(manager, *field)) {
       iframe_origins.insert(field->origin());
     }
   }
@@ -245,11 +245,21 @@ void OmniboxAutofillDelegate::OnAutofillManagerStateChanged(
     AutofillManager& manager,
     AutofillManager::LifecycleState previous,
     AutofillManager::LifecycleState current) {
+  if (!candidate_form_found_) {
+    // Candidate form has not yet been found, so the chip is not being shown.
+    return;
+  }
   switch (previous) {
     case AutofillManager::LifecycleState::kActive:
-      HideOmniboxAutofillChip();
+      // Hide the chip only when the specific frame containing the trigger field
+      // transitions away from active.
+      if (IsTriggerFieldGlobalIdInFrame(manager.driver())) {
+        HideOmniboxAutofillChip();
+      }
       break;
-    default:
+    case AutofillManager::LifecycleState::kInactive:
+    case AutofillManager::LifecycleState::kPendingReset:
+    case AutofillManager::LifecycleState::kPendingDeletion:
       break;
   }
 }
@@ -452,11 +462,21 @@ bool OmniboxAutofillDelegate::IsOutermostMainFrameActiveAutofillManager(
          !manager.driver().IsEmbedded() && manager.driver().IsActive();
 }
 
-bool OmniboxAutofillDelegate::FieldIsInMainFrame(
+bool OmniboxAutofillDelegate::IsFieldInMainFrame(
     AutofillManager& manager,
     const AutofillField& field) const {
   return field.host_frame() == manager.driver().GetFrameToken() &&
          !manager.driver().GetParent();
+}
+
+bool OmniboxAutofillDelegate::IsTriggerFieldGlobalIdInFrame(
+    AutofillDriver& driver) const {
+  if (!candidate_form_found_) {
+    // Candidate form has not yet been found, so the trigger field has not been
+    // found.
+    return false;
+  }
+  return trigger_field_global_id_.frame_token == driver.GetFrameToken();
 }
 
 void OmniboxAutofillDelegate::Reset() {
