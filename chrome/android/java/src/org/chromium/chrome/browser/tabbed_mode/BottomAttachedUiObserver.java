@@ -386,7 +386,9 @@ public class BottomAttachedUiObserver
     private boolean shouldMatchBottomSheetColor() {
         if (!mBottomSheetVisible) return false;
 
-        if (BottomSheetUtils.isContentActingAsBrowserControls(mBottomSheetController)) {
+        if (BottomSheetUtils.isContentActingAsBrowserControls(
+                mBottomSheetController,
+                ChromeFeatureList.sBottomSheetAsBrowserControls.isEnabled())) {
             return false;
         }
 

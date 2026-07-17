@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.ui;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
@@ -17,12 +16,17 @@ public final class BottomSheetUtils {
 
     /**
      * Returns whether the bottom sheet controller holds content that acts as browser controls,
-     * checking the feature flag as well.
+     * checking the feature flag and whether it is enabled for the current context as well.
+     *
+     * @param controller The {@link BottomSheetController} to check.
+     * @param isBottomSheetAsBrowserControlsEnabled Whether bottom sheet acting as browser controls
+     *     is enabled for the current context.
      */
     public static boolean isContentActingAsBrowserControls(
-            @Nullable BottomSheetController controller) {
+            @Nullable BottomSheetController controller,
+            boolean isBottomSheetAsBrowserControlsEnabled) {
         if (controller == null) return false;
-        if (!ChromeFeatureList.sBottomSheetAsBrowserControls.isEnabled()) return false;
+        if (!isBottomSheetAsBrowserControlsEnabled) return false;
 
         BottomSheetContent content = controller.getCurrentSheetContent();
         return content != null && content.actsAsBrowserControls();

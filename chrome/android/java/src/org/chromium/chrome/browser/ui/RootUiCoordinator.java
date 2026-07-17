@@ -785,7 +785,7 @@ public class RootUiCoordinator
                                         mBottomSheetControllerSupplier.get();
                                 return controller != null
                                         && BottomSheetUtils.isContentActingAsBrowserControls(
-                                                controller)
+                                                controller, isBottomSheetAsBrowserControlsEnabled())
                                         && controller.isFullWidth();
                             }
                         },
@@ -2449,7 +2449,8 @@ public class RootUiCoordinator
                         mOmniboxFocusStateSupplier,
                         panelManagerSupplier,
                         mLayoutStateProviderOneShotSupplier,
-                        mBottomControlsStacker);
+                        mBottomControlsStacker,
+                        isBottomSheetAsBrowserControlsEnabled());
 
         // TODO(crbug.com/40208738): Consider moving handler registration to feature code.
         assert mBackPressManager != null
@@ -2460,6 +2461,14 @@ public class RootUiCoordinator
             mBackPressManager.addHandler(
                     bottomSheetBackPressHandler, BackPressHandler.Type.BOTTOM_SHEET);
         }
+    }
+
+    /**
+     * Returns whether the bottom sheet acting as browser controls is enabled for the current
+     * activity.
+     */
+    protected boolean isBottomSheetAsBrowserControlsEnabled() {
+        return false;
     }
 
     /** Returns whether the Android Edge To Edge Feature is supported for the current activity. */
