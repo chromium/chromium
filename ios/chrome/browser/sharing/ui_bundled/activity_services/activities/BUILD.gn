@@ -29,6 +29,7 @@ source_set("activities") {
     "//components/bookmarks/common",
     "//components/prefs",
     "//components/send_tab_to_self",
+    "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/send_tab_to_self/model",

@@ -2853,7 +2853,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_COPY_LINK" desc="Menu item for copying the link to the current page. [CHAR_LIMIT=27]">
         Copy link
       </message>
-      <message name="IDS_MENU_SEND_TO_DEVICES" desc="Menu item for sending the page to another device. [CHAR_LIMIT=27]">
+      <message name="IDS_MENU_SEND_TO_DEVICES" desc="Menu item for sending the current page to another device. [CHAR_LIMIT=27]">
         Send to your device
       </message>
       <message name="IDS_MENU_QR_CODE" desc="Menu item for generating a QR Code for the current page. [CHAR_LIMIT=27]">

@@ -69,7 +69,7 @@ public class SaveAndShareItemBuilder {
                         mContext,
                         mAppMenuItemTheme,
                         R.id.send_to_devices_menu_id,
-                        R.string.menu_send_to_devices,
+                        R.string.send_tab_to_self,
                         Resources.ID_NULL,
                         mIsMenuIconAtStart),
                 /* showIcon= */ false);

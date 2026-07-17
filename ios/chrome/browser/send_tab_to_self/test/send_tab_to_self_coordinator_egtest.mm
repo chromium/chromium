@@ -104,8 +104,7 @@ void DismissSnackbar() {
 
   [ChromeEarlGreyUI shareCurrentPage];
 
-  NSString* sendTabToSelf =
-      l10n_util::GetNSString(IDS_IOS_SEND_TAB_TO_SELF_TARGET_DEVICE_ACTION);
+  NSString* sendTabToSelf = l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF);
   [ChromeEarlGrey verifyTextVisibleInActivitySheetWithID:sendTabToSelf];
 
   // Clean up the activity sheet.
@@ -123,8 +122,7 @@ void DismissSnackbar() {
 
   [ChromeEarlGreyUI shareCurrentPage];
 
-  NSString* sendTabToSelf =
-      l10n_util::GetNSString(IDS_IOS_SEND_TAB_TO_SELF_TARGET_DEVICE_ACTION);
+  NSString* sendTabToSelf = l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF);
   [ChromeEarlGrey tapButtonInActivitySheetWithID:sendTabToSelf];
 
   [SigninEarlGreyUI verifyWebSigninIsVisible:YES];
@@ -160,8 +158,7 @@ void DismissSnackbar() {
   [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
 
   [ChromeEarlGreyUI shareCurrentPage];
-  NSString* sendTabToSelf =
-      l10n_util::GetNSString(IDS_IOS_SEND_TAB_TO_SELF_TARGET_DEVICE_ACTION);
+  NSString* sendTabToSelf = l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF);
   [ChromeEarlGrey tapButtonInActivitySheetWithID:sendTabToSelf];
 
   // Tap the menu button on the top left.
@@ -191,8 +188,7 @@ void DismissSnackbar() {
   [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
 
   [ChromeEarlGreyUI shareCurrentPage];
-  NSString* sendTabToSelf =
-      l10n_util::GetNSString(IDS_IOS_SEND_TAB_TO_SELF_TARGET_DEVICE_ACTION);
+  NSString* sendTabToSelf = l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF);
   [ChromeEarlGrey tapButtonInActivitySheetWithID:sendTabToSelf];
 
   // Verify the "No devices found" title is shown.
@@ -231,8 +227,7 @@ void DismissSnackbar() {
   [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
 
   [ChromeEarlGreyUI shareCurrentPage];
-  NSString* sendTabToSelf =
-      l10n_util::GetNSString(IDS_IOS_SEND_TAB_TO_SELF_TARGET_DEVICE_ACTION);
+  NSString* sendTabToSelf = l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF);
   [ChromeEarlGrey tapButtonInActivitySheetWithID:sendTabToSelf];
 
   [ChromeEarlGrey
@@ -259,8 +254,7 @@ void DismissSnackbar() {
   [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
 
   [ChromeEarlGreyUI shareCurrentPage];
-  NSString* sendTabToSelf =
-      l10n_util::GetNSString(IDS_IOS_SEND_TAB_TO_SELF_TARGET_DEVICE_ACTION);
+  NSString* sendTabToSelf = l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF);
   [ChromeEarlGrey tapButtonInActivitySheetWithID:sendTabToSelf];
 
   // Verify the device is shown in the device picker.
@@ -313,8 +307,7 @@ void DismissSnackbar() {
   [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
 
   [ChromeEarlGreyUI shareCurrentPage];
-  NSString* sendTabToSelf =
-      l10n_util::GetNSString(IDS_IOS_SEND_TAB_TO_SELF_TARGET_DEVICE_ACTION);
+  NSString* sendTabToSelf = l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF);
   [ChromeEarlGrey tapButtonInActivitySheetWithID:sendTabToSelf];
 
   // Verify the device is shown in the device picker.
@@ -352,8 +345,7 @@ void DismissSnackbar() {
   [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
 
   [ChromeEarlGreyUI shareCurrentPage];
-  NSString* sendTabToSelf =
-      l10n_util::GetNSString(IDS_IOS_SEND_TAB_TO_SELF_TARGET_DEVICE_ACTION);
+  NSString* sendTabToSelf = l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF);
   [ChromeEarlGrey tapButtonInActivitySheetWithID:sendTabToSelf];
 
   // Verify the device is shown in the device picker.
@@ -631,7 +623,7 @@ void DismissSnackbar() {
   // Verify the "Send to your device" menu item shows up.
   id<GREYMatcher> sendToDevicesMenuItem =
       chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-          IDS_IOS_SEND_TAB_TO_SELF_TARGET_DEVICE_ACTION);
+          IDS_SEND_TAB_TO_SELF);
   [[EarlGrey selectElementWithMatcher:sendToDevicesMenuItem]
       assertWithMatcher:grey_sufficientlyVisible()];
 
@@ -673,7 +665,7 @@ void DismissSnackbar() {
   // Verify the "Send to your device" menu item shows up.
   id<GREYMatcher> sendToDevicesMenuItem =
       chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-          IDS_IOS_SEND_TAB_TO_SELF_TARGET_DEVICE_ACTION);
+          IDS_SEND_TAB_TO_SELF);
   [[EarlGrey selectElementWithMatcher:sendToDevicesMenuItem]
       assertWithMatcher:grey_sufficientlyVisible()];
 
@@ -733,7 +725,7 @@ void DismissSnackbar() {
   // Verify the "Send to your device" menu item shows up.
   id<GREYMatcher> sendToDevicesMenuItem =
       chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-          IDS_IOS_SEND_TAB_TO_SELF_TARGET_DEVICE_ACTION);
+          IDS_SEND_TAB_TO_SELF);
   [[EarlGrey selectElementWithMatcher:sendToDevicesMenuItem]
       assertWithMatcher:grey_sufficientlyVisible()];
 

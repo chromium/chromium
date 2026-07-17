@@ -450,7 +450,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
         assertTrue(
                 "Property models should contain send-tab-to-self.",
-                propertyModelsContain(propertyModels, R.string.menu_send_to_devices));
+                propertyModelsContain(propertyModels, R.string.send_tab_to_self));
     }
 
     @Test

@@ -8,10 +8,10 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/send_tab_to_self/metrics_util.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/data/share_to_data.h"
-#import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -47,7 +47,7 @@ NSString* const kSendTabToSelfActivityType =
 }
 
 - (NSString*)activityTitle {
-  return l10n_util::GetNSString(IDS_IOS_SEND_TAB_TO_SELF_TARGET_DEVICE_ACTION);
+  return l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF);
 }
 
 - (UIImage*)activityImage {

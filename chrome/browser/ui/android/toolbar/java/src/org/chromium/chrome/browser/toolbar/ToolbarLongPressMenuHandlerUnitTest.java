@@ -570,8 +570,7 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
                 list.get(1).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         assertEquals(
-                R.string.menu_send_to_devices,
-                list.get(2).model.get(ListMenuItemProperties.TITLE_ID));
+                R.string.menu_send_to_devices, list.get(2).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
                 ToolbarLongPressMenuHandler.MenuItemType.SEND_TAB_TO_SELF,
                 list.get(2).model.get(ListMenuItemProperties.MENU_ITEM_ID));

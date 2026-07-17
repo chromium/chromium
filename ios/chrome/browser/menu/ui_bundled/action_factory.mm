@@ -8,6 +8,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/menu/ui_bundled/menu_action_type.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
@@ -885,12 +886,10 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 - (UIAction*)actionToSendTabToSelfWithBlock:(ProceduralBlock)block {
   UIImage* image =
       CustomSymbolWithPointSize(kRecentTabsSymbol, kSymbolActionPointSize);
-  return
-      [self actionWithTitle:l10n_util::GetNSString(
-                                IDS_IOS_SEND_TAB_TO_SELF_TARGET_DEVICE_ACTION)
-                      image:image
-                       type:MenuActionType::SendTabToSelf
-                      block:block];
+  return [self actionWithTitle:l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF)
+                         image:image
+                          type:MenuActionType::SendTabToSelf
+                         block:block];
 }
 
 @end

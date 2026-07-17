@@ -229,7 +229,7 @@ public class AndroidShareSheetControllerUnitTest {
             assertCustomActions(
                     intent,
                     R.string.sharing_long_screenshot,
-                    R.string.menu_send_to_devices,
+                    R.string.send_tab_to_self,
                     R.string.qr_code_share_icon_label);
         } else {
             assertCustomActions(
@@ -237,7 +237,7 @@ public class AndroidShareSheetControllerUnitTest {
                     R.string.sharing_tab_group,
                     R.string.sharing_long_screenshot,
                     R.string.print_share_activity_title,
-                    R.string.menu_send_to_devices,
+                    R.string.send_tab_to_self,
                     R.string.qr_code_share_icon_label);
         }
     }
@@ -378,7 +378,7 @@ public class AndroidShareSheetControllerUnitTest {
         assertCustomActions(
                 intent,
                 R.string.sharing_copy_image_with_link,
-                R.string.menu_send_to_devices,
+                R.string.send_tab_to_self,
                 R.string.qr_code_share_icon_label);
     }
 
@@ -403,7 +403,7 @@ public class AndroidShareSheetControllerUnitTest {
         assertCustomActions(
                 intent,
                 R.string.sharing_copy_image_with_link,
-                R.string.menu_send_to_devices,
+                R.string.send_tab_to_self,
                 R.string.qr_code_share_icon_label);
 
         chooseCustomAction(
@@ -573,7 +573,7 @@ public class AndroidShareSheetControllerUnitTest {
         assertCustomActions(
                 chooserIntent,
                 R.string.sharing_copy_highlight_without_link,
-                R.string.menu_send_to_devices,
+                R.string.send_tab_to_self,
                 R.string.qr_code_share_icon_label);
 
         // Toggle the modify action again, link is removed from text.
@@ -691,7 +691,7 @@ public class AndroidShareSheetControllerUnitTest {
         assertCustomActions(
                 intent,
                 R.string.sharing_copy_image_with_link,
-                R.string.menu_send_to_devices,
+                R.string.send_tab_to_self,
                 R.string.qr_code_share_icon_label);
         chooseCustomAction(intent, R.string.qr_code_share_icon_label, ShareCustomAction.QR_CODE);
 
@@ -721,7 +721,7 @@ public class AndroidShareSheetControllerUnitTest {
                 intent,
                 R.string.sharing_copy_image,
                 R.string.sharing_copy_image_with_link,
-                R.string.menu_send_to_devices,
+                R.string.send_tab_to_self,
                 R.string.qr_code_share_icon_label);
 
         Intent shareIntent = intent.getParcelableExtra(Intent.EXTRA_INTENT);
@@ -752,7 +752,7 @@ public class AndroidShareSheetControllerUnitTest {
                         .build();
         mController.showShareSheet(params, chromeShareExtras, 1L);
         Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
-        assertCustomActions(intent, R.string.sharing_copy_image, R.string.menu_send_to_devices);
+        assertCustomActions(intent, R.string.sharing_copy_image, R.string.send_tab_to_self);
 
         Intent shareIntent = intent.getParcelableExtra(Intent.EXTRA_INTENT);
         Assert.assertTrue(
@@ -779,7 +779,7 @@ public class AndroidShareSheetControllerUnitTest {
             assertCustomActions(
                     intent,
                     R.string.sharing_long_screenshot,
-                    R.string.menu_send_to_devices,
+                    R.string.send_tab_to_self,
                     R.string.qr_code_share_icon_label);
         } else {
             assertCustomActions(
@@ -787,7 +787,7 @@ public class AndroidShareSheetControllerUnitTest {
                     R.string.sharing_tab_group,
                     R.string.sharing_long_screenshot,
                     R.string.print_share_activity_title,
-                    R.string.menu_send_to_devices,
+                    R.string.send_tab_to_self,
                     R.string.qr_code_share_icon_label);
         }
         chooseCustomAction(

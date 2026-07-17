@@ -15,6 +15,7 @@ source_set("ui_bundled") {
     "//components/open_from_clipboard",
     "//components/prefs",
     "//components/search_engines",
+    "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/cobrowse/model",
     "//ios/chrome/browser/intelligence/bwg/utils:constants",
