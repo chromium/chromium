@@ -168,10 +168,6 @@
 #include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "ui/gfx/geometry/size.h"
 
-// Killswitch guarding WebGL creating its CanvasResourceProvider with the size
-// of its DrawingBuffer rather than the size of its Host.
-BASE_FEATURE(kWebGLCanvasResourceProviderDrawingBufferSize,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Populates parameters from texImage2D except for border, width, height, and
 // depth (which are not present for all texImage2D functions).
@@ -2195,29 +2191,15 @@ WebGLRenderingContextBase::GetSharedImageResourceProvider() {
     return nullptr;
   }
 
-  if (!base::FeatureList::IsEnabled(
-          kWebGLCanvasResourceProviderDrawingBufferSize) &&
-      !Host()->IsValidImageSize()) {
-    did_fail_to_create_resource_provider_ = true;
-    return nullptr;
-  }
-
-  if (base::FeatureList::IsEnabled(
-          kWebGLCanvasResourceProviderDrawingBufferSize) &&
-      !GetDrawingBuffer()) {
+  if (!GetDrawingBuffer()) {
     return nullptr;
   }
 
   const SkAlphaType alpha_type = GetAlphaType();
   const viz::SharedImageFormat format = GetSharedImageFormat();
   const gfx::ColorSpace color_space = GetColorSpace();
-  const gfx::HDRMetadata hdr_metadata =
-      GetDrawingBuffer() ? GetDrawingBuffer()->GetHdrMetadata()
-                         : gfx::HDRMetadata();
-  const gfx::Size size = base::FeatureList::IsEnabled(
-                             kWebGLCanvasResourceProviderDrawingBufferSize)
-                             ? GetDrawingBuffer()->Size()
-                             : Host()->Size();
+  const gfx::HDRMetadata hdr_metadata = GetDrawingBuffer()->GetHdrMetadata();
+  const gfx::Size size = GetDrawingBuffer()->Size();
   // Note: We must not initialize the CRP using Skia. The CRP can have bottom
   // left origin in which case Skia Graphite won't be able to render into it,
   // and WebGL is responsible for clearing the CRP when it renders anyway and
