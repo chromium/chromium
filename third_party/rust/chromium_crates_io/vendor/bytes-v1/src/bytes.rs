@@ -1,4 +1,4 @@
-use core::mem::{self, ManuallyDrop};
+use core::mem::{self, ManuallyDrop, MaybeUninit};
 use core::ops::{Deref, RangeBounds};
 use core::ptr::NonNull;
 use core::{cmp, fmt, hash, ptr, slice};
@@ -946,24 +946,26 @@ impl From<&'static str> for Bytes {
 
 impl From<Vec<u8>> for Bytes {
     fn from(vec: Vec<u8>) -> Bytes {
+        // Avoid an extra allocation if possible.
+        if vec.len() == vec.capacity() {
+            return Bytes::from(vec.into_boxed_slice());
+        }
+
+        let shared = Box::new(MaybeUninit::<Shared>::uninit());
         let mut vec = ManuallyDrop::new(vec);
         let ptr = vec.as_mut_ptr();
         let len = vec.len();
         let cap = vec.capacity();
 
-        // Avoid an extra allocation if possible.
-        if len == cap {
-            let vec = ManuallyDrop::into_inner(vec);
-            return Bytes::from(vec.into_boxed_slice());
-        }
+        let shared = Shared::init_to_raw(
+            shared,
+            Shared {
+                buf: ptr,
+                cap,
+                ref_cnt: AtomicUsize::new(1),
+            },
+        );
 
-        let shared = Box::new(Shared {
-            buf: ptr,
-            cap,
-            ref_cnt: AtomicUsize::new(1),
-        });
-
-        let shared = Box::into_raw(shared);
         // The pointer should be aligned, so this assert should
         // always succeed.
         debug_assert!(
@@ -1327,6 +1329,15 @@ struct Shared {
     ref_cnt: AtomicUsize,
 }
 
+impl Shared {
+    fn init_to_raw(b: Box<MaybeUninit<Self>>, v: Self) -> *mut Self {
+        let shared = Box::into_raw(b).cast::<Self>();
+        // SAFETY: The Box has the right layout.
+        unsafe { shared.write(v) };
+        shared
+    }
+}
+
 impl Drop for Shared {
     fn drop(&mut self) {
         unsafe { dealloc(self.buf, Layout::from_size_align(self.cap, 1).unwrap()) }
@@ -1472,16 +1483,18 @@ unsafe fn shallow_clone_vec(
     // updated and since the buffer hasn't been promoted to an
     // `Arc`, those three fields still are the components of the
     // vector.
-    let shared = Box::new(Shared {
-        buf,
-        cap: offset.offset_from(buf) as usize + len,
-        // Initialize refcount to 2. One for this reference, and one
-        // for the new clone that will be returned from
-        // `shallow_clone`.
-        ref_cnt: AtomicUsize::new(2),
-    });
-
-    let shared = Box::into_raw(shared);
+    let shared = Box::new(MaybeUninit::<Shared>::uninit());
+    let shared = Shared::init_to_raw(
+        shared,
+        Shared {
+            buf,
+            cap: offset.offset_from(buf) as usize + len,
+            // Initialize refcount to 2. One for this reference, and one
+            // for the new clone that will be returned from
+            // `shallow_clone`.
+            ref_cnt: AtomicUsize::new(2),
+        },
+    );
 
     // The pointer should be aligned, so this assert should
     // always succeed.

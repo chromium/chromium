@@ -79,6 +79,15 @@ struct Shared {
     ref_count: AtomicUsize,
 }
 
+impl Shared {
+    fn init_to_raw(b: Box<MaybeUninit<Self>>, v: Self) -> *mut Self {
+        let shared = Box::into_raw(b).cast::<Self>();
+        // SAFETY: The Box has the right layout.
+        unsafe { shared.write(v) };
+        shared
+    }
+}
+
 // Assert that the alignment of `Shared` is divisible by 2.
 // This is a necessary invariant since we depend on allocating `Shared` a
 // shared object to implicitly carry the `KIND_ARC` flag in its pointer.
@@ -1112,13 +1121,18 @@ impl BytesMut {
         // updated and since the buffer hasn't been promoted to an
         // `Arc`, those three fields still are the components of the
         // vector.
-        let shared = Box::new(Shared {
-            vec: rebuild_vec(self.ptr.as_ptr(), self.len, self.cap, off),
-            original_capacity_repr,
-            ref_count: AtomicUsize::new(ref_cnt),
-        });
-
-        let shared = Box::into_raw(shared);
+        //
+        // Explicitly allocate before invoking rebuild_vec() so that
+        // the vector is not dropped if Box::new() panics.
+        let shared = Box::new(MaybeUninit::<Shared>::uninit());
+        let shared = Shared::init_to_raw(
+            shared,
+            Shared {
+                vec: rebuild_vec(self.ptr.as_ptr(), self.len, self.cap, off),
+                original_capacity_repr,
+                ref_count: AtomicUsize::new(ref_cnt),
+            },
+        );
 
         // The pointer should be aligned, so this assert should
         // always succeed.

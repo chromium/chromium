@@ -1,3 +1,8 @@
+# 1.12.1 (July 8th, 2026)
+
+### Fixed
+- Properly handle when `Box::new` panics (#837)
+
 # 1.12.0 (June 18th, 2026)
 
 ### Added
