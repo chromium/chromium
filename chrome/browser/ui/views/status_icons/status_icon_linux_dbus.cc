@@ -520,7 +520,13 @@ StatusIconLinuxDbus::~StatusIconLinuxDbus() {
 
   Multiplexer::Get()->Unregister(service_name_, bus_.get());
   if (!service_name_.empty()) {
-    bus_->ReleaseOwnership(service_name_);
+    bus_->GetDBusTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](scoped_refptr<dbus::Bus> bus, const std::string& service_name) {
+              bus->ReleaseOwnership(service_name);
+            },
+            bus_, service_name_));
   }
 
   if (menu_) {
