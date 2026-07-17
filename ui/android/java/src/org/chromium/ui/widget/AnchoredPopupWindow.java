@@ -31,6 +31,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.theme.FillInContextThemeWrapper;
 import org.chromium.ui.util.AttrUtils;
 
 import java.lang.annotation.Retention;
@@ -687,7 +688,11 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
             RectProvider anchorRectProvider,
             @Nullable RectProvider viewportRectProvider,
             @Nullable SpecCalculator calculator) {
-        mContext = context;
+        // Fill in missing theme attributes (such as R.attr.minInteractTargetSize) with adaptive
+        // density defaults in case the context theme does not define them (e.g. in WebView).
+        mContext =
+                new FillInContextThemeWrapper(
+                        context, R.style.ThemeOverlay_UI_AdaptiveDensityDefaults);
         mRootView = rootView.getRootView();
         mContentViewCreator = contentViewCreator;
         mViewportRectProvider =
@@ -1219,12 +1224,15 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
     }
 
     private int getMinInteractSizePx() {
-        final float density = mRootView.getResources().getDisplayMetrics().density;
+        // Use mContext instead of mRootView because mRootView's context belongs to the host app
+        // and not Chrome. Now that mContext is wrapped with FillInContextThemeWrapper,
+        // R.attr.minInteractTargetSize will always resolve correctly.
+        final float density = mContext.getResources().getDisplayMetrics().density;
         int minInteractSizePx =
                 AttrUtils.getDimensionPixelSize(mContext, R.attr.minInteractTargetSize);
         if (minInteractSizePx == -1) {
             minInteractSizePx =
-                    mRootView.getResources().getDimensionPixelSize(R.dimen.min_touch_target_size);
+                    mContext.getResources().getDimensionPixelSize(R.dimen.min_touch_target_size);
         }
         // Add 1dp margin on each side
         int marginPx = (int) Math.ceil(density);

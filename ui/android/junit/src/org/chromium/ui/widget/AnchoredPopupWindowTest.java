@@ -108,7 +108,8 @@ public final class AnchoredPopupWindowTest {
         ChromePopupWindow mockPopup = mock(ChromePopupWindow.class);
         doReturn(mockPopup).when(mockFactory).createPopupWindow(any());
 
-        AnchoredPopupWindow popupWindow = createAnchorPopupWindow(0);
+        AnchoredPopupWindow popupWindow =
+                createAnchorPopupWindow(/* allowNonTouchableSize= */ true);
         popupWindow.setAnimateFromAnchor(true);
         popupWindow.showPopupWindow();
         verify(mockPopup).setAnimationStyle(anyInt());
@@ -122,7 +123,8 @@ public final class AnchoredPopupWindowTest {
         ChromePopupWindow mockPopup = mock(ChromePopupWindow.class);
         doReturn(mockPopup).when(mockFactory).createPopupWindow(any());
 
-        AnchoredPopupWindow popupWindow = createAnchorPopupWindow(0);
+        AnchoredPopupWindow popupWindow =
+                createAnchorPopupWindow(/* allowNonTouchableSize= */ true);
         popupWindow.setAnimationStyle(R.style.DropdownPopupWindow);
         verify(mockPopup).setAnimationStyle(R.style.DropdownPopupWindow);
 
@@ -145,8 +147,7 @@ public final class AnchoredPopupWindowTest {
         when(contentView.getMeasuredWidth()).thenReturn(1);
         when(mockPopup.getContentView()).thenReturn(contentView);
 
-        AnchoredPopupWindow anchoredPopupWindow =
-                createAnchorPopupWindow(DisplayMetrics.DENSITY_HIGH);
+        AnchoredPopupWindow anchoredPopupWindow = createAnchorPopupWindow();
         anchoredPopupWindow.show();
 
         verify(mockPopup, never()).update(anyInt(), anyInt(), anyInt(), anyInt());
@@ -165,8 +166,7 @@ public final class AnchoredPopupWindowTest {
         when(contentView.getMeasuredWidth()).thenReturn(1);
         when(mockPopup.getContentView()).thenReturn(contentView);
 
-        AnchoredPopupWindow anchoredPopupWindow =
-                createAnchorPopupWindow(DisplayMetrics.DENSITY_HIGH);
+        AnchoredPopupWindow anchoredPopupWindow = createAnchorPopupWindow();
         anchoredPopupWindow.setAllowNonTouchableSize(true);
         anchoredPopupWindow.show();
 
@@ -260,7 +260,7 @@ public final class AnchoredPopupWindowTest {
                 .setElevation(20f)
                 .build();
 
-        verify(mockFactory).createPopupWindow(mActivity);
+        verify(mockFactory).createPopupWindow(any());
     }
 
     @Test
@@ -334,13 +334,17 @@ public final class AnchoredPopupWindowTest {
                         anyBoolean());
     }
 
-    private AnchoredPopupWindow createAnchorPopupWindow(int density) {
+    private AnchoredPopupWindow createAnchorPopupWindow() {
+        return createAnchorPopupWindow(/* allowNonTouchableSize= */ false);
+    }
+
+    private AnchoredPopupWindow createAnchorPopupWindow(boolean allowNonTouchableSize) {
         View view = mock(View.class, Answers.RETURNS_DEEP_STUBS);
-        DisplayMetrics fakeMetrics = new DisplayMetrics();
-        fakeMetrics.density = density;
-        when(view.getRootView().getResources().getDisplayMetrics()).thenReturn(fakeMetrics);
         when(view.getRootView().isAttachedToWindow()).thenReturn(true);
         RectProvider provider = new RectProvider(new Rect(0, 0, 0, 0));
-        return new AnchoredPopupWindow(mActivity, view, mDrawable, mContentView, provider);
+        AnchoredPopupWindow popup =
+                new AnchoredPopupWindow(mActivity, view, mDrawable, mContentView, provider);
+        popup.setAllowNonTouchableSize(allowNonTouchableSize);
+        return popup;
     }
 }
