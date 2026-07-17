@@ -1385,7 +1385,7 @@
     Smarter autofill, kept private
   </message>
   <message name="IDS_AUTOFILL_AI_PRIVATE_INFERENCE_NOTICE_DESCRIPTION" desc="A description text of the notice that infroms the user that page content will be processed privately in the cloud.">
-    To improve suggestions and fill forms faster, the content and URLs of the pages you visit can be processed in a private space in the cloud.
+    To better understand and fill forms, the content and URLs of the pages you visit can be processed in a private space in the cloud.
   </message>
   <message name="IDS_AUTOFILL_AI_PRIVATE_INFERENCE_NOTICE_PRIMARY_BUTTON_TEXT" desc="A primary button text of the notice that infroms the user that page content will be processed privately in the cloud.">
     Got it
