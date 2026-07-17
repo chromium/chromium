@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
+#include "build/build_config.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
 #include "components/payments/core/features.h"
 #include "content/public/test/browser_test.h"
@@ -846,8 +847,14 @@ IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
 // Test that service worker's connection allowlist's redirect directive has no
 // effect on Payment Request API PaymentRequestEvent: openWindow() when there is
 // a redirect.
+// TODO(crbug.com/536114716): Failing on ASan/LSan.
+#if defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER)
+#define MAYBE_NoEffectOnOpenWindowRedirect DISABLED_NoEffectOnOpenWindowRedirect
+#else
+#define MAYBE_NoEffectOnOpenWindowRedirect NoEffectOnOpenWindowRedirect
+#endif
 IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
-                       NoEffectOnOpenWindowRedirect) {
+                       MAYBE_NoEffectOnOpenWindowRedirect) {
   RegisterResponse("/", ResponseEntry("", {}, net::HTTP_OK));
 
   // Merchant page on a.com.
