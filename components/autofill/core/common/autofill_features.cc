@@ -364,9 +364,6 @@ BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(kAutofillAiWalletPrivatePassesDeepLink,
                                        base::FEATURE_ENABLED_FOR_COUNTRIES,
                                        WALLET_SUPPORTED_COUNTRIES);
 
-// If enabled, Autofill AI Shopping entities are surfaced from Google Wallet.
-BASE_FEATURE(kAutofillAiWalletShopping, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, AutofillAi supports vehicle registration entities from Google
 // Wallet.
 DEFINE_FEATURE_WITH_MOBILE_COUNTRY_RESTRICTION(

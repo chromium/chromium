@@ -92,7 +92,7 @@ import java.util.List;
     ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID,
     ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
     ChromeFeatureList.AUTOFILL_AI_AVAILABLE_BY_DEFAULT,
-    ChromeFeatureList.AUTOFILL_AI_WALLET_SHOPPING
+    ChromeFeatureList.AUTOFILL_AMBIENT_AUTOFILL
 })
 public class AutofillShoppingFragmentTest {
     @Rule

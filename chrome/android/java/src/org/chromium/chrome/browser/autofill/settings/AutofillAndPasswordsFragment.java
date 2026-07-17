@@ -329,7 +329,7 @@ public class AutofillAndPasswordsFragment extends ChromeBaseSettingsFragment {
 
     private static boolean shouldShowShopping() {
         return shouldShowAutofillAiSettings()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_WALLET_SHOPPING);
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AMBIENT_AUTOFILL);
     }
 
     private ManagedPreferenceDelegate createManagedPreferenceDelegate() {
