@@ -104,7 +104,9 @@ bool CheckRequiredStylesPresent(IDWriteFontCollection* collection,
       if (FAILED(family->GetFirstMatchingFont(
               font_style.required_weight, font_style.required_stretch,
               font_style.required_style, &font))) {
-        CHECK(false, base::NotFatalUntil::M152);
+        // TODO(crbug.com/533686474): CHECK-exclusion: Convert to a CHECK once
+        // we are confident it won't be triggered.
+        DCHECK(false);
         return true;
       }
 
