@@ -28,6 +28,7 @@ enum class LogEventType {
   kSuggestionGenerated,
   kSuggestionSuppressed,
   kSuggestionCleared,
+  kSuggestionPreserved,
   kSuggestionShown,
   kSuggestionAccepted,
   kSuggestionApplied,

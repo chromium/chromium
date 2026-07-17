@@ -461,6 +461,96 @@ TEST_F(FilterTabControllerTest, SameUrlReCommitNavigation) {
   controller_->OnNavigationFinished(metadata);
 }
 
+// Tests that a navigation without user gesture to the same host and path
+// preserves the existing suggestion UI.
+TEST_F(FilterTabControllerTest,
+       NavigationWithoutUserGestureSamePathPreservesSuggestion) {
+  FilterNavigationMetadata metadata =
+      CreateMetadata(1, GURL("https://example.com/"));
+  metadata.has_user_gesture = true;
+
+  UrlFilterSuggestion suggestion =
+      CreateDefaultSuggestion(metadata.navigation_id, metadata.url);
+  base::Uuid annotation_id = base::Uuid::GenerateRandomV4();
+  RetentionStateSnapshot snapshot;
+  MultistepFilterUiDelegate::SuggestionUiCallbacks callbacks;
+
+  RunNavigationAndShowSuggestion(metadata, suggestion, annotation_id, snapshot,
+                                 callbacks);
+
+  FilterNavigationMetadata second_metadata =
+      CreateMetadata(2, GURL("https://example.com/?query=1"));
+  second_metadata.prev_url = GURL("https://example.com/");
+  second_metadata.has_user_gesture = false;
+
+  EXPECT_CALL(*mock_delegate_, ClearSuggestion).Times(0);
+  EXPECT_CALL(*mock_delegate_, OnSuggestionGenerated).Times(0);
+  EXPECT_CALL(observer_, OnExtractionFinishedForTest).Times(0);
+  EXPECT_CALL(observer_, OnSuggestionGeneratedForTest).Times(0);
+
+  controller_->OnNavigationFinished(second_metadata);
+}
+
+// Tests that a navigation without user gesture to the same host but different
+// path clears the existing suggestion UI.
+TEST_F(FilterTabControllerTest,
+       NavigationWithoutUserGestureDifferentPathClearsSuggestion) {
+  FilterNavigationMetadata metadata =
+      CreateMetadata(1, GURL("https://example.com/"));
+  metadata.has_user_gesture = true;
+
+  UrlFilterSuggestion suggestion =
+      CreateDefaultSuggestion(metadata.navigation_id, metadata.url);
+  base::Uuid annotation_id = base::Uuid::GenerateRandomV4();
+  RetentionStateSnapshot snapshot;
+  MultistepFilterUiDelegate::SuggestionUiCallbacks callbacks;
+
+  RunNavigationAndShowSuggestion(metadata, suggestion, annotation_id, snapshot,
+                                 callbacks);
+
+  FilterNavigationMetadata second_metadata =
+      CreateMetadata(2, GURL("https://example.com/different_page"));
+  second_metadata.prev_url = GURL("https://example.com/");
+  second_metadata.has_user_gesture = false;
+
+  EXPECT_CALL(*mock_delegate_, ClearSuggestion()).Times(1);
+  EXPECT_CALL(*mock_delegate_, OnSuggestionGenerated(Eq(std::nullopt), _));
+  EXPECT_CALL(observer_, OnExtractionFinishedForTest(Eq(std::nullopt)));
+  EXPECT_CALL(observer_, OnSuggestionGeneratedForTest(Eq(std::nullopt)));
+
+  controller_->OnNavigationFinished(second_metadata);
+}
+
+// Tests that a navigation without user gesture to a different host clears the
+// existing suggestion UI.
+TEST_F(FilterTabControllerTest,
+       NavigationWithoutUserGestureDifferentHostClearsSuggestion) {
+  FilterNavigationMetadata metadata =
+      CreateMetadata(1, GURL("https://example.com/"));
+  metadata.has_user_gesture = true;
+
+  UrlFilterSuggestion suggestion =
+      CreateDefaultSuggestion(metadata.navigation_id, metadata.url);
+  base::Uuid annotation_id = base::Uuid::GenerateRandomV4();
+  RetentionStateSnapshot snapshot;
+  MultistepFilterUiDelegate::SuggestionUiCallbacks callbacks;
+
+  RunNavigationAndShowSuggestion(metadata, suggestion, annotation_id, snapshot,
+                                 callbacks);
+
+  FilterNavigationMetadata second_metadata =
+      CreateMetadata(2, GURL("https://different.com/"));
+  second_metadata.prev_url = GURL("https://example.com/");
+  second_metadata.has_user_gesture = false;
+
+  EXPECT_CALL(*mock_delegate_, ClearSuggestion()).Times(1);
+  EXPECT_CALL(*mock_delegate_, OnSuggestionGenerated(Eq(std::nullopt), _));
+  EXPECT_CALL(observer_, OnExtractionFinishedForTest(Eq(std::nullopt)));
+  EXPECT_CALL(observer_, OnSuggestionGeneratedForTest(Eq(std::nullopt)));
+
+  controller_->OnNavigationFinished(second_metadata);
+}
+
 // Tests that SPA (Single Page Application) fragment routing preserves existing
 // suggestion UI, but correctly cascades to new extractions and suggestions on
 // success.
