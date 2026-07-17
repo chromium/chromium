@@ -7,12 +7,14 @@
 #include <limits.h>
 #include <stddef.h>
 
+#include <optional>
 #include <string>
 #include <string_view>
 
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -397,8 +399,37 @@ bool PhoneNumber::PhoneCombineHelper::ParseNumber(
     return true;
   }
 
-  return i18n::ConstructPhoneNumber(country_ + city_ + phone_,
+  return i18n::ConstructPhoneNumber(base::StrCat({country_, city_, phone_}),
                                     GetRegion(profile, app_locale), value);
+}
+
+std::optional<std::u16string> PhoneNumber::PhoneCombineHelper::GetRegionCode()
+    const {
+  auto get_region =
+      [](std::u16string_view number) -> std::optional<std::u16string> {
+    constexpr std::string_view kUnknownRegion("ZZ");
+    const std::string region =
+        i18n::PhoneObject(number, std::string(kUnknownRegion),
+                          /*infer_country_code=*/false)
+            .region();
+    return region.empty() ? std::nullopt
+                          : std::optional(base::UTF8ToUTF16(region));
+  };
+
+  // Prefer using the whole phone number over separate number components if
+  // available and try to determine its associated region. If no whole number is
+  // available, fall back to a combination of the components. This follows the
+  // logic of `PhoneCombineHelper::ParseNumber()` which should return a phone
+  // number that matches the region returned by this function.
+  if (!whole_number_.empty()) {
+    return get_region(whole_number_);
+  }
+  if (const std::u16string combined_number =
+          base::StrCat({country_, city_, phone_});
+      !combined_number.empty()) {
+    return get_region(combined_number);
+  }
+  return std::nullopt;
 }
 
 // static

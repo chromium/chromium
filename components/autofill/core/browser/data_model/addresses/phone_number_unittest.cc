@@ -338,6 +338,52 @@ TEST(PhoneCombineHelperTest, SetsAllPhoneFieldTypes) {
   });
 }
 
+// Tests retrieving the region code from a whole phone number.
+TEST(PhoneCombineHelperTest, GetRegionCodeWholeNumber) {
+  PhoneNumber::PhoneCombineHelper helper;
+  helper.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"+43 1 2345678");
+
+  const std::optional<std::u16string> region = helper.GetRegionCode();
+  ASSERT_TRUE(region);
+  EXPECT_EQ(u"AT", *region);
+}
+
+// Tests retrieving the region code from a combined phone number.
+TEST(PhoneCombineHelperTest, GetRegionCodeCombinedNumber) {
+  const base::flat_map<FieldType, std::u16string> observed_values = {
+      // Valid phone number components.
+      {PHONE_HOME_COUNTRY_CODE, u"+1"},
+      {PHONE_HOME_CITY_CODE, u"650"},
+      {PHONE_HOME_NUMBER_PREFIX, u"234"},
+      {PHONE_HOME_NUMBER_SUFFIX, u"5682"}};
+
+  const PhoneNumber::PhoneCombineHelper helper =
+      PhoneNumber::PhoneCombineHelper::FromObservedValues(observed_values);
+
+  const std::optional<std::u16string> region = helper.GetRegionCode();
+  ASSERT_TRUE(region);
+  EXPECT_EQ(u"US", *region);
+}
+
+// Tests that no region is determined for national whole number, but
+// international phone number components (to be consistent with the behavior of
+// `ParseNumber`).
+TEST(PhoneCombineHelperTest, GetRegionCodeNationalWholeNumber) {
+  const base::flat_map<FieldType, std::u16string> observed_values = {
+      // National whole phone number.
+      {PHONE_HOME_WHOLE_NUMBER, u"0174 12 34 567"},
+      // International phone number components.
+      {PHONE_HOME_COUNTRY_CODE, u"+1"},
+      {PHONE_HOME_CITY_CODE, u"650"},
+      {PHONE_HOME_NUMBER_PREFIX, u"234"},
+      {PHONE_HOME_NUMBER_SUFFIX, u"5682"}};
+
+  const PhoneNumber::PhoneCombineHelper helper =
+      PhoneNumber::PhoneCombineHelper::FromObservedValues(observed_values);
+
+  EXPECT_FALSE(helper.GetRegionCode());
+}
+
 TEST(PhoneNumberTest, InternationalPhoneHomeCityAndNumber_US) {
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");

@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -99,6 +100,10 @@ class PhoneNumber : public FormGroup {
     bool ParseNumber(const AutofillProfile& profile,
                      std::string_view app_locale,
                      std::u16string* value) const;
+
+    // Parses the combined phone number and returns the region to which it
+    // belongs.
+    std::optional<std::u16string> GetRegionCode() const;
 
     // Returns true if both `phone_` and `whole_number_` are empty.
     bool IsEmpty() const;
