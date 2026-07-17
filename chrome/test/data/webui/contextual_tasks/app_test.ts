@@ -438,12 +438,14 @@ suite('ContextualTasksAppTest', function() {
     proxy.callbackRouterRemote.onAiPageStatusChanged(false);
     await proxy.callbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
+    await appElement.updateComplete;
 
     assertFalse(appElement.hasAttribute('is-ai-page_'));
 
     proxy.callbackRouterRemote.onAiPageStatusChanged(true);
     await proxy.callbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
+    await appElement.updateComplete;
 
     assertTrue(appElement.hasAttribute('is-ai-page_'));
   });

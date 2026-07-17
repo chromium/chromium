@@ -336,6 +336,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
   protected accessor darkMode_: boolean = loadTimeData.getBoolean('darkMode');
   protected accessor isErrorDialogVisible_: boolean = false;
   private pendingUrl_: string = '';
+  private isCookieSyncComplete_: boolean = false;
   protected accessor threadTitle_: string = '';
   protected accessor isInBasicMode_: boolean = false;
   protected accessor isInputHidden_: boolean = false;
@@ -490,6 +491,8 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
           this.postMessageToWebview.bind(this)),
       callbackRouter.onHandshakeComplete.addListener(
           this.onHandshakeComplete.bind(this)),
+      callbackRouter.onCookieSyncCompleted.addListener(
+          this.onCookieSyncCompleted.bind(this)),
 
       // TODO(crbug.com/474359572): Rename this to be more descriptive of what
       // it actually does.
@@ -1459,9 +1462,9 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
 
   private maybeLoadPendingUrl_() {
     // If all the data needed to make the initial request is available, load
-    // the pending URL.
+    // the pending URL after cookie sync completes (or fails/times out).
     if (this.pendingUrl_ && this.commonSearchParams_ &&
-        !this.isErrorPageVisible_) {
+        !this.isErrorPageVisible_ && this.isCookieSyncComplete_) {
       if (!isFullWebView(this.$.threadFrame)) {
         const url = new URL(this.pendingUrl_);
         this.$.threadFrame.src = this.addCommonSearchParams(url).href;
@@ -1475,6 +1478,14 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
   private onHandshakeComplete() {
     assert(this.postMessageHandler_);
     this.postMessageHandler_.completeHandshake();
+  }
+
+  private onCookieSyncCompleted() {
+    if (this.isCookieSyncComplete_) {
+      return;
+    }
+    this.isCookieSyncComplete_ = true;
+    this.maybeLoadPendingUrl_();
   }
 
   private async updateSidePanelState() {

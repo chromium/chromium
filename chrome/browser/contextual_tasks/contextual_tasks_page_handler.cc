@@ -258,6 +258,9 @@ ContextualTasksPageHandler::ContextualTasksPageHandler(
       panel_controller_(panel_controller) {
   CHECK(contextual_tasks_service_);
   contextual_tasks_service_observation_.Observe(contextual_tasks_service_);
+  ui_service_->EnsureCookiesSynced(
+      base::BindOnce(&ContextualTasksPageHandler::OnCookieSyncCompleted,
+                     weak_ptr_factory_.GetWeakPtr()));
 
 #if !BUILDFLAG(IS_ANDROID)
   if (contextual_tasks::IsContextualTasksPinButtonInToolbarEnabled()) {
@@ -272,6 +275,12 @@ ContextualTasksPageHandler::ContextualTasksPageHandler(
 }
 
 ContextualTasksPageHandler::~ContextualTasksPageHandler() = default;
+
+void ContextualTasksPageHandler::OnCookieSyncCompleted() {
+  if (web_ui_controller_ && web_ui_controller_->GetPageRemote()) {
+    web_ui_controller_->GetPageRemote()->OnCookieSyncCompleted();
+  }
+}
 
 void ContextualTasksPageHandler::GetThreadUrl(GetThreadUrlCallback callback) {
   std::optional<base::Uuid> task_id = web_ui_controller_->GetTaskId();

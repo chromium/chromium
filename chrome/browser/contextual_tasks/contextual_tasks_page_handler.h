@@ -12,6 +12,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_interface.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -110,6 +111,7 @@ class ContextualTasksPageHandler
   void OnActionsChanged() override;
 
  private:
+  void OnCookieSyncCompleted();
   void UpdateContextForTask(const base::Uuid& task_id);
   void OnReceivedUpdatedThreadContextLibrary(
       const lens::UpdateThreadContextLibrary& message);

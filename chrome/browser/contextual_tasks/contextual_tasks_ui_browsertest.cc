@@ -78,6 +78,7 @@ class MockContextualTasksPage : public contextual_tasks::mojom::Page {
   ~MockContextualTasksPage() override = default;
 
   MOCK_METHOD(void, SetOAuthToken, (const std::string& token), (override));
+  MOCK_METHOD(void, OnCookieSyncCompleted, (), (override));
   MOCK_METHOD(void, SetThreadTitle, (const std::string& title), (override));
   MOCK_METHOD(void, OnSidePanelStateChanged, (), (override));
   MOCK_METHOD(void,
@@ -162,7 +163,10 @@ class MockContextualTasksCookieSynchronizer
       : ContextualTasksCookieSynchronizer(context, identity_manager) {}
   ~MockContextualTasksCookieSynchronizer() override = default;
 
-  MOCK_METHOD(void, CopyCookiesToWebviewStoragePartition, (), (override));
+  MOCK_METHOD(void,
+              CopyCookiesToWebviewStoragePartition,
+              (base::OnceClosure callback),
+              (override));
 };
 
 }  // namespace
@@ -448,7 +452,8 @@ class ContextualTasksUICookieSyncBrowserTest
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksUICookieSyncBrowserTest,
                        OnInnerWebContentsCreated_TriggersCookieSync) {
-  EXPECT_CALL(*mock_synchronizer_, CopyCookiesToWebviewStoragePartition())
+  EXPECT_CALL(*mock_synchronizer_,
+              CopyCookiesToWebviewStoragePartition(testing::_))
       .Times(1);
 
   // Create inner contents to trigger the observer.

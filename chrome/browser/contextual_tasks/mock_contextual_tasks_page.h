@@ -39,6 +39,7 @@ class MockContextualTasksPage : public mojom::Page {
               SetOAuthToken,
               (const std::string& oauth_token),
               (override));
+  MOCK_METHOD(void, OnCookieSyncCompleted, (), (override));
   MOCK_METHOD(void,
               OnContextUpdated,
               (std::vector<mojom::ContextInfoPtr> context),

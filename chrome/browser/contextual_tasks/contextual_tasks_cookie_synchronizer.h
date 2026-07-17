@@ -12,6 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -47,8 +48,9 @@ class ContextualTasksCookieSynchronizer
       const ContextualTasksCookieSynchronizer&) = delete;
   ~ContextualTasksCookieSynchronizer() override;
 
-  // Virtual for overriding in tests.
-  virtual void CopyCookiesToWebviewStoragePartition();
+  // Virtual for overriding in tests. Pass a non-null callback (e.g.
+  // base::DoNothing() if completion notification is not needed).
+  virtual void CopyCookiesToWebviewStoragePartition(base::OnceClosure callback);
 
   // signin::IdentityManager::Observer
   void OnIdentityManagerShutdown(
@@ -84,6 +86,9 @@ class ContextualTasksCookieSynchronizer
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       observation_{this};
+
+  // Callbacks waiting for cookie synchronization to complete.
+  std::vector<base::OnceClosure> pending_cookie_sync_completion_callbacks_;
 
   base::OneShotTimer timeout_;
   std::unique_ptr<signin::AccountsCookieMutator::SetAccountsInCookieTask>

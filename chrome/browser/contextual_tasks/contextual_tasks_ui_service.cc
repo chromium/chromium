@@ -283,9 +283,12 @@ ContextualTasksUiService::ContextualTasksUiService(
 
 ContextualTasksUiService::~ContextualTasksUiService() = default;
 
-void ContextualTasksUiService::EnsureCookiesSynced() {
+void ContextualTasksUiService::EnsureCookiesSynced(base::OnceClosure callback) {
   if (cookie_synchronizer_) {
-    cookie_synchronizer_->CopyCookiesToWebviewStoragePartition();
+    cookie_synchronizer_->CopyCookiesToWebviewStoragePartition(
+        std::move(callback));
+  } else {
+    std::move(callback).Run();
   }
 }
 

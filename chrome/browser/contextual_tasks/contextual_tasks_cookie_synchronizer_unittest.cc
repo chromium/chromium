@@ -85,21 +85,8 @@ class ContextualTasksCookieSynchronizerForTest
     return test_storage_partition_;
   }
 
-  void SetCallback(base::OnceCallback<void(bool)> callback) {
-    callback_ = std::move(callback);
-  }
-
- protected:
-  void CompleteAuth(bool is_success) override {
-    ContextualTasksCookieSynchronizer::CompleteAuth(is_success);
-    if (callback_) {
-      std::move(callback_).Run(is_success);
-    }
-  }
-
  private:
   raw_ptr<content::TestStoragePartition> test_storage_partition_;
-  base::OnceCallback<void(bool)> callback_;
 };
 
 }  // namespace
@@ -167,26 +154,26 @@ class ContextualTasksCookieSynchronizerTest : public testing::Test {
 };
 
 TEST_F(ContextualTasksCookieSynchronizerTest, AuthSuccess) {
-  base::test::TestFuture<bool> result;
+  base::test::TestFuture<void> result;
   SetResponseForResult(signin::SetAccountsInCookieResult::kSuccess);
 
-  cookie_synchronizer().SetCallback(result.GetCallback());
-  cookie_synchronizer().CopyCookiesToWebviewStoragePartition();
-  EXPECT_TRUE(result.Get());
+  cookie_synchronizer().CopyCookiesToWebviewStoragePartition(
+      result.GetCallback());
+  EXPECT_TRUE(result.Wait());
 }
 
 TEST_F(ContextualTasksCookieSynchronizerTest, AuthPersistentFailure) {
-  base::test::TestFuture<bool> result;
+  base::test::TestFuture<void> result;
   SetResponseForResult(signin::SetAccountsInCookieResult::kPersistentError);
 
-  cookie_synchronizer().SetCallback(result.GetCallback());
-  cookie_synchronizer().CopyCookiesToWebviewStoragePartition();
-  EXPECT_FALSE(result.Get());
+  cookie_synchronizer().CopyCookiesToWebviewStoragePartition(
+      result.GetCallback());
+  EXPECT_TRUE(result.Wait());
 }
 
 TEST_F(ContextualTasksCookieSynchronizerTest, AuthTransientSuccessOnRetry) {
   // This test verifies that OAuthMultiloginHelper performs retries for us.
-  base::test::TestFuture<bool> result;
+  base::test::TestFuture<void> result;
 
   int request_count = 0;
   test_signin_client_.GetTestURLLoaderFactory()->SetInterceptor(
@@ -200,57 +187,57 @@ TEST_F(ContextualTasksCookieSynchronizerTest, AuthTransientSuccessOnRetry) {
                 : signin::SetAccountsInCookieResult::kSuccess);
       }));
 
-  cookie_synchronizer().SetCallback(result.GetCallback());
-  cookie_synchronizer().CopyCookiesToWebviewStoragePartition();
-  EXPECT_TRUE(result.Get());
+  cookie_synchronizer().CopyCookiesToWebviewStoragePartition(
+      result.GetCallback());
+  EXPECT_TRUE(result.Wait());
 }
 
 TEST_F(ContextualTasksCookieSynchronizerTest, AuthTransientFailure_MaxRetry) {
-  base::test::TestFuture<bool> result;
+  base::test::TestFuture<void> result;
   SetResponseForResult(signin::SetAccountsInCookieResult::kTransientError);
 
-  cookie_synchronizer().SetCallback(result.GetCallback());
-  cookie_synchronizer().CopyCookiesToWebviewStoragePartition();
-  EXPECT_FALSE(result.Get());
+  cookie_synchronizer().CopyCookiesToWebviewStoragePartition(
+      result.GetCallback());
+  EXPECT_TRUE(result.Wait());
 }
 
 TEST_F(ContextualTasksCookieSynchronizerTest, FailsOnTimeOut) {
-  base::test::TestFuture<bool> result;
-  cookie_synchronizer().SetCallback(result.GetCallback());
-  cookie_synchronizer().CopyCookiesToWebviewStoragePartition();
+  base::test::TestFuture<void> result;
+  cookie_synchronizer().CopyCookiesToWebviewStoragePartition(
+      result.GetCallback());
 
   task_environment_.FastForwardBy(kCookieSyncDefaultTimeout -
                                   base::Milliseconds(10));
   EXPECT_FALSE(result.IsReady());
   task_environment_.FastForwardBy(base::Milliseconds(10));
-  EXPECT_FALSE(result.Get());
+  EXPECT_TRUE(result.Wait());
 }
 
 TEST_F(ContextualTasksCookieSynchronizerTest, WorksAfterTimeout) {
-  base::test::TestFuture<bool> result;
-  cookie_synchronizer().SetCallback(result.GetCallback());
-  cookie_synchronizer().CopyCookiesToWebviewStoragePartition();
+  base::test::TestFuture<void> result;
+  cookie_synchronizer().CopyCookiesToWebviewStoragePartition(
+      result.GetCallback());
 
   task_environment_.FastForwardBy(kCookieSyncDefaultTimeout);
-  EXPECT_FALSE(result.Get());
+  EXPECT_TRUE(result.Wait());
 
-  result.Clear();
+  base::test::TestFuture<void> result2;
   SetResponseForResult(signin::SetAccountsInCookieResult::kSuccess);
 
-  cookie_synchronizer().SetCallback(result.GetCallback());
-  cookie_synchronizer().CopyCookiesToWebviewStoragePartition();
+  cookie_synchronizer().CopyCookiesToWebviewStoragePartition(
+      result2.GetCallback());
 
-  EXPECT_TRUE(result.Get());
+  EXPECT_TRUE(result2.Wait());
 }
 
 TEST_F(ContextualTasksCookieSynchronizerTest, NullIdentityManagerDoesNotCrash) {
   ContextualTasksCookieSynchronizerForTest synchronizer_with_null_identity(
       &test_profile_, /*identity_manager=*/nullptr, &test_storage_partition_);
 
-  base::test::TestFuture<bool> result;
-  synchronizer_with_null_identity.SetCallback(result.GetCallback());
-  synchronizer_with_null_identity.CopyCookiesToWebviewStoragePartition();
+  base::test::TestFuture<void> result;
+  synchronizer_with_null_identity.CopyCookiesToWebviewStoragePartition(
+      result.GetCallback());
 
-  EXPECT_FALSE(result.Get());
+  EXPECT_TRUE(result.Wait());
 }
 }  // namespace contextual_tasks

@@ -249,6 +249,12 @@ interface Page {
   // if it expires.
   SetOAuthToken(string oauth_token);
 
+  // Called once upon page startup, after cookie synchronization to the
+  // webview's storage partition completes. We block page load until the cookie
+  // sync completes to ensure the login state is correctly propagated for fresh
+  // starts.
+  OnCookieSyncCompleted();
+
   // Called by the browser process (C++) when the context associated with the
   // task is updated (e.g. tabs, files or images added/removed). This is used
   // for updating the icon shown on the sources menu entry point.

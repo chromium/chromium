@@ -108,7 +108,8 @@ class ContextualTasksUiService : public KeyedService {
   void Shutdown() override;
 
   // Triggers the cookie synchronization to the isolated partition.
-  virtual void EnsureCookiesSynced();
+  virtual void EnsureCookiesSynced(
+      base::OnceClosure callback = base::DoNothing());
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
