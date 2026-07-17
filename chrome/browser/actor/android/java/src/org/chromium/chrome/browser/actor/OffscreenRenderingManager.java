@@ -186,6 +186,13 @@ public class OffscreenRenderingManager {
         ResettersForTesting.register(() -> sInstance = oldInstance);
     }
 
+    /** Returns the offscreen WindowAndroid used for rendering, initializing it if necessary. */
+    public WindowAndroid getOffscreenWindow() {
+        ensureNativeInitialized();
+        assert mOffscreenWindow != null;
+        return mOffscreenWindow;
+    }
+
     @NativeMethods
     interface Natives {
         long init(@JniType("ui::WindowAndroid*") WindowAndroid window, int width, int height);
