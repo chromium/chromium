@@ -5,6 +5,7 @@
 #include "media/webrtc/voice_isolation/voice_isolation.h"
 
 #include <memory>
+#include <numeric>
 
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
@@ -12,30 +13,26 @@
 
 namespace media {
 
-TEST(VoiceIsolationTest, UnsupportedFormatsCrashes) {
-  AudioParameters unsupported_params(AudioParameters::AUDIO_BITSTREAM_AC3,
-                                     ChannelLayoutConfig::Stereo(), 48000, 480);
-  EXPECT_DEATH_IF_SUPPORTED(
-      VoiceIsolation::CreateForTesting(unsupported_params), "");
-}
-
-TEST(VoiceIsolationTest, ProcessAudioCopiesToAllChannels) {
+TEST(VoiceIsolationTest, ProcessAudioDownmixesAndUpmixes) {
+  // Configure the audio parameters to the same internal parameters of
+  // VoiceIsolation. In this case the ConvertingAudioFifo should not do
+  // resampling, but it WILL do downmixing and upmixing.
+  constexpr int kSampleRate = 16000;
+  constexpr int kFrameSize = 320;
   AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
-                         ChannelLayoutConfig::Stereo(), 48000, 480);
+                         ChannelLayoutConfig::Stereo(), kSampleRate,
+                         kFrameSize);
   std::unique_ptr<VoiceIsolation> voice_isolation =
-      VoiceIsolation::CreateForTesting(params);
+      VoiceIsolation::Create(nullptr, params);
   ASSERT_NE(voice_isolation, nullptr);
 
-  // Use a 3-channel bus to ensure copying happens to all other channels.
-  std::unique_ptr<AudioBus> input_bus = AudioBus::Create(3, 480);
-  std::unique_ptr<AudioBus> output_bus = AudioBus::Create(3, 480);
+  // Use a 2-channel bus to match the AudioParameters.
+  std::unique_ptr<AudioBus> input_bus = AudioBus::Create(2, kFrameSize);
+  std::unique_ptr<AudioBus> output_bus = AudioBus::Create(2, kFrameSize);
 
   // Fill input bus with dummy data.
-  for (int i = 0; i < 480; ++i) {
-    input_bus->channel(0)[i] = i * 0.001f;
-    input_bus->channel(1)[i] = -1.0f;  // Ignored by passthrough
-    input_bus->channel(2)[i] = -2.0f;  // Ignored by passthrough
-  }
+  std::fill(input_bus->channel(0).begin(), input_bus->channel(0).end(), 2.0f);
+  std::fill(input_bus->channel(1).begin(), input_bus->channel(1).end(), 4.0f);
 
   // Clear output bus to verify changes.
   output_bus->Zero();
@@ -43,14 +40,53 @@ TEST(VoiceIsolationTest, ProcessAudioCopiesToAllChannels) {
   voice_isolation->ProcessAudio(*input_bus, *output_bus);
 
   // Expected results:
-  // - Channel 0 is processed
-  // - Channel 1 and 2 are copied from output channel 0.
-  for (int i = 0; i < 480; ++i) {
-    float expected = i * 0.001f;
+  // Downmixing stereo to mono uses 0.5 scale to avoid clipping full scale
+  // stereo mixes. Mono channel = left * 0.5 + right * 0.5 = 2.0 * 0.5 + 4.0 *
+  // 0.5 = 3.0. Upmixing mono to stereo simply copies the mono channel to both
+  // left and right.
+  for (int i = 0; i < kFrameSize; ++i) {
+    constexpr float expected = 3.0f;
     EXPECT_FLOAT_EQ(output_bus->channel(0)[i], expected);
     EXPECT_FLOAT_EQ(output_bus->channel(1)[i], expected);
-    EXPECT_FLOAT_EQ(output_bus->channel(2)[i], expected);
   }
 }
 
+TEST(VoiceIsolationTest, VoiceIsolationCanAdaptToAudioParameters) {
+  // External signal is 48kHz, 10ms frames.
+  constexpr int kSampleRate = 48000;
+  constexpr int kFrameSize = kSampleRate / 100;
+  AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
+                         ChannelLayoutConfig::Stereo(), kSampleRate,
+                         kFrameSize);
+  std::unique_ptr<VoiceIsolation> voice_isolation =
+      VoiceIsolation::Create(nullptr, params);
+  ASSERT_NE(voice_isolation, nullptr);
+
+  // Use a 3-channel bus to ensure copying happens to all other channels.
+  std::unique_ptr<AudioBus> input_bus = AudioBus::Create(2, kFrameSize);
+  std::unique_ptr<AudioBus> output_bus = AudioBus::Create(2, kFrameSize);
+
+  // Fill input bus with dummy data.
+  std::fill(input_bus->channel(0).begin(), input_bus->channel(0).end(), 42.f);
+  std::fill(input_bus->channel(1).begin(), input_bus->channel(1).end(), -1.0f);
+
+  // Clear output bus to verify changes.
+  output_bus->Zero();
+
+  // The resamplers and buffers introduce a delay in voice_isolation of at least
+  // 4 frames.
+  for (int j = 0; j < 4; ++j) {
+    voice_isolation->ProcessAudio(*input_bus, *output_bus);
+    float output_energy = std::inner_product(
+        output_bus->channel(0).begin(), output_bus->channel(0).end(),
+        output_bus->channel(0).begin(), 0.0f);
+    EXPECT_FLOAT_EQ(output_energy, 0.0f);
+  }
+
+  voice_isolation->ProcessAudio(*input_bus, *output_bus);
+  float output_energy = std::inner_product(
+      output_bus->channel(0).begin(), output_bus->channel(0).end(),
+      output_bus->channel(0).begin(), 0.0f);
+  EXPECT_GT(output_energy, 0.0f);
+}
 }  // namespace media

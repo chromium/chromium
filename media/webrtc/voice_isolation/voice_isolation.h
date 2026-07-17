@@ -14,6 +14,7 @@ namespace media {
 
 class AudioBus;
 class AudioParameters;
+class ConvertingAudioFifo;
 class VoiceIsolationComponent;
 
 class COMPONENT_EXPORT(MEDIA_WEBRTC) VoiceIsolation {
@@ -36,9 +37,12 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) VoiceIsolation {
       const media::AudioParameters& audio_params);
 
  private:
-  explicit VoiceIsolation(
-      std::unique_ptr<VoiceIsolationComponent> internal_voice_isolation);
+  VoiceIsolation(
+      std::unique_ptr<VoiceIsolationComponent> internal_voice_isolation,
+      const media::AudioParameters& audio_params);
   std::unique_ptr<VoiceIsolationComponent> internal_voice_isolation_;
+  std::unique_ptr<media::ConvertingAudioFifo> forward_fifo_;
+  std::unique_ptr<media::ConvertingAudioFifo> backward_fifo_;
 };
 }  // namespace media
 

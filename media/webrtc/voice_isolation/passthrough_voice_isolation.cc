@@ -21,9 +21,8 @@ void PassthroughVoiceIsolation::ProcessAudio(base::span<const float> input,
                                              base::span<float> output) {
   DVLOG(1) << "PassthroughVoiceIsolation::ProcessAudio frame_size="
            << input.size();
-  // TODO(barrerap): Add back once we have a resampler in place.
-  // CHECK_EQ(input.size(), frame_size_);
-  // CHECK_EQ(output.size(), frame_size_);
+  CHECK_EQ(input.size(), frame_size_);
+  CHECK_EQ(output.size(), frame_size_);
   output.copy_from(input);
 }
 
