@@ -82,7 +82,8 @@ class PasskeyTabHelper : public web::WebStateObserver,
   void HandleCreateRequestedEvent(RegistrationRequestParams params);
 
   // Handles PublicKeyCredential.signalUnknownCredential request.
-  void HandleSignalUnknownCredentialEvent(SignalUnknownCredentialParams params);
+  void HandleSignalUnknownCredentialEvent(const url::Origin& origin,
+                                          SignalUnknownCredentialParams params);
 
   // Returns whether the tab helper's passkey model contains a passkey matching
   // the provided rp id and credential id.

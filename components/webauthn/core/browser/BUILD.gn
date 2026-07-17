@@ -24,8 +24,6 @@ source_set("browser") {
 
   if (!is_android && use_blink) {
     sources += [
-      "passkey_change_quota_tracker.cc",
-      "passkey_change_quota_tracker.h",
       "rate_limiter_slide_window.cc",
       "rate_limiter_slide_window.h",
     ]
@@ -42,6 +40,8 @@ source_set("browser") {
 
   if (!is_android) {
     sources += [
+      "passkey_change_quota_tracker.cc",
+      "passkey_change_quota_tracker.h",
       "passkey_sync_bridge.cc",
       "passkey_sync_bridge.h",
     ]

@@ -308,7 +308,7 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
   if (is_signal_unknown_credential_event) {
     if (auto params = BuildSignalUnknownCredentialParams(dict)) {
       passkey_tab_helper->HandleSignalUnknownCredentialEvent(
-          *std::move(params));
+          message.security_origin(), *std::move(params));
     }
     return;
   }

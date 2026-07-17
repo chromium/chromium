@@ -15,6 +15,7 @@
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/webauthn/core/browser/client_data_json.h"
 #import "components/webauthn/core/browser/common_utils.h"
+#import "components/webauthn/core/browser/passkey_change_quota_tracker.h"
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "components/webauthn/core/browser/remote_validation.h"
@@ -359,9 +360,38 @@ void PasskeyTabHelper::HandleCreateRequestedEvent(
 }
 
 void PasskeyTabHelper::HandleSignalUnknownCredentialEvent(
+    const url::Origin& origin,
     SignalUnknownCredentialParams params) {
-  // TODO(crbug.com/460487030): Implement browser-layer logic.
-  return;
+  if (OriginAllowedToMakeWebAuthnRequests(origin) !=
+      ValidationStatus::kSuccess) {
+    return;
+  }
+
+  if (!OriginIsAllowedToClaimRelyingPartyId(params.rp_id, origin)) {
+    // TODO(crbug.com/460487030): Perform remote RP ID validation.
+    return;
+  }
+
+  PasskeyChangeQuotaTracker* quota_tracker =
+      PasskeyChangeQuotaTracker::GetInstance();
+  if (!quota_tracker->CanMakeChange(origin)) {
+    return;
+  }
+
+  std::string credential_id(params.credential_id.begin(),
+                            params.credential_id.end());
+  std::optional<sync_pb::WebauthnCredentialSpecifics> credential_specifics =
+      passkey_model_->GetPasskey(
+          params.rp_id, credential_id,
+          webauthn::PasskeyModel::ShadowedCredentials::kExclude);
+  if (!credential_specifics || credential_specifics->hidden()) {
+    return;
+  }
+
+  passkey_model_->HidePasskey(credential_id, base::Time::Now());
+  quota_tracker->TrackChange(origin);
+  // TODO(crbug.com/460487030): Display UI confirmation.
+  // TODO(crbug.com/460487030): Log metrics.
 }
 
 void PasskeyTabHelper::HandleCreateRequestedEvent(

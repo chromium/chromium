@@ -17,6 +17,7 @@
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/shared_password_controller.h"
+#import "components/webauthn/core/browser/passkey_change_quota_tracker.h"
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "components/webauthn/core/browser/test_passkey_model.h"
 #import "components/webauthn/ios/fake_ios_passkey_client.h"
@@ -121,6 +122,7 @@ class PasskeyTabHelperTest : public PlatformTest {
     PasskeyTabHelper::CreateForWebState(&fake_web_state_, passkey_model_.get(),
                                         test_password_store_,
                                         std::move(client));
+    PasskeyChangeQuotaTracker::GetInstance()->ResetForTesting();
   }
 
   ~PasskeyTabHelperTest() override {
@@ -150,6 +152,11 @@ class PasskeyTabHelperTest : public PlatformTest {
 
   PasskeyTabHelper* passkey_tab_helper() {
     return PasskeyTabHelper::FromWebState(&fake_web_state_);
+  }
+
+  sync_pb::WebauthnCredentialSpecifics GetPasskey(const std::string& cred_id) {
+    return *passkey_model_->GetPasskey(
+        kRpId, cred_id, PasskeyModel::ShadowedCredentials::kInclude);
   }
 
   void MaybeShowInterstitialAndRegister(RegistrationRequestParams params) {
@@ -1121,6 +1128,68 @@ TEST_F(PasskeyTabHelperTest, HandleAssertionMalformedRemoteFrameIdGraceful) {
 
   // Verify that the suggestion bottom sheet was NOT shown.
   EXPECT_FALSE(client_->DidShowSuggestionBottomSheet());
+}
+
+// Tests that HandleSignalUnknownCredential hides the passkey matching the
+// provided credential ID from the model when the origin is valid.
+TEST_F(PasskeyTabHelperTest, HandleSignalUnknownCredentialEventSuccess) {
+  SetUpWebFramesManagerAndWebFrame(GURL(kOriginURL));
+
+  sync_pb::WebauthnCredentialSpecifics passkey = GetTestPasskey(kCredentialId);
+  static_cast<TestPasskeyModel*>(passkey_model_.get())
+      ->AddNewPasskeyForTesting(passkey);
+
+  SignalUnknownCredentialParams params{kRpId, AsByteVector(kCredentialId)};
+
+  passkey_tab_helper()->HandleSignalUnknownCredentialEvent(
+      url::Origin::Create(GURL(kOriginURL)), std::move(params));
+
+  // The passkey should now be marked as hidden.
+  EXPECT_TRUE(GetPasskey(kCredentialId).hidden());
+}
+
+// Tests that HandleSignalUnknownCredentialEvent drops requests with invalid
+// origins.
+TEST_F(PasskeyTabHelperTest, HandleSignalUnknownCredentialEventInvalidOrigin) {
+  SetUpWebFramesManagerAndWebFrame(GURL(kOriginURL));
+
+  sync_pb::WebauthnCredentialSpecifics passkey = GetTestPasskey(kCredentialId);
+  static_cast<TestPasskeyModel*>(passkey_model_.get())
+      ->AddNewPasskeyForTesting(passkey);
+
+  SignalUnknownCredentialParams params{"otherdomain.com",
+                                       AsByteVector(kCredentialId)};
+
+  // The call should be ignored and passkey remain unhidden.
+  passkey_tab_helper()->HandleSignalUnknownCredentialEvent(
+      url::Origin::Create(GURL(kOriginURL)), std::move(params));
+  EXPECT_FALSE(GetPasskey(kCredentialId).hidden());
+}
+
+// Tests that HandleSignalUnknownCredentialEvent ignores requests when quota is
+// exceeded.
+TEST_F(PasskeyTabHelperTest, HandleSignalUnknownCredentialEventQuotaExceeded) {
+  SetUpWebFramesManagerAndWebFrame(GURL(kOriginURL));
+
+  sync_pb::WebauthnCredentialSpecifics passkey = GetTestPasskey(kCredentialId);
+  static_cast<TestPasskeyModel*>(passkey_model_.get())
+      ->AddNewPasskeyForTesting(passkey);
+
+  const url::Origin origin = url::Origin::Create(GURL(kOriginURL));
+
+  for (int i = 0; i < PasskeyChangeQuotaTracker::kMaxTokensPerRP; ++i) {
+    SignalUnknownCredentialParams params{kRpId, AsByteVector(kCredentialId)};
+    passkey_tab_helper()->HandleSignalUnknownCredentialEvent(origin,
+                                                             std::move(params));
+    static_cast<TestPasskeyModel*>(passkey_model_.get())
+        ->UnhidePasskey(kCredentialId);
+  }
+
+  // Quota is now exhausted. Subsequent calls should be ignored.
+  SignalUnknownCredentialParams params{kRpId, AsByteVector(kCredentialId)};
+  passkey_tab_helper()->HandleSignalUnknownCredentialEvent(origin,
+                                                           std::move(params));
+  EXPECT_FALSE(GetPasskey(kCredentialId).hidden());
 }
 
 }  // namespace webauthn
