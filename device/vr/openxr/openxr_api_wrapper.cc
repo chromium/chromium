@@ -235,6 +235,18 @@ XrResult OpenXrApiWrapper::ShutdownSession() {
 void OpenXrApiWrapper::Uninitialize() {
   // The instance is owned by the OpenXRDevice, so don't destroy it here.
 
+  // Child handles are implicitly destroyed with their parent XrSession, and
+  // destroying them afterwards is undefined behavior (runtimes may return
+  // XR_ERROR_HANDLE_INVALID or fault). Tear down everything that owns a
+  // session-parented handle here, while the session is still valid, instead
+  // of letting these destructors run after xrDestroySession(). Reset() below
+  // re-clears them as a no-op.
+  input_helper_.reset();
+  depth_sensor_.reset();
+  light_estimator_.reset();
+  scene_understanding_manager_.reset();
+  mesh_manager_.reset();
+
   // Destroying an session in OpenXr also destroys all child objects of that
   // instance (including the swapchain, and spaces objects),
   // so they don't need to be manually destroyed.
