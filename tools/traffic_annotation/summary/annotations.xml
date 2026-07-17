@@ -538,4 +538,5 @@ Refer to README.md for content description and update process.
  <item id="enterprise_proxy_pvd_fetch" added_in_milestone="152" content_hash_code="0635c190" os_list="android" file_path="components/enterprise/net/core/enterprise_proxy_service.cc" />
  <item id="read_aloud_generate_text" added_in_milestone="152" content_hash_code="004d1146" os_list="linux,windows,android,chromeos" file_path="components/optimization_guide/core/model_execution/model_execution_fetcher_impl.cc" />
  <item id="read_aloud_synthesize" added_in_milestone="152" content_hash_code="01f5f507" os_list="linux,windows,android,chromeos" file_path="components/optimization_guide/core/model_execution/model_execution_fetcher_impl.cc" />
+ <item id="safe_browsing_v5_get_hash" added_in_milestone="152" content_hash_code="042aa735" os_list="linux,windows,android,chromeos" file_path="components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.cc" />
 </annotations>

@@ -161,6 +161,29 @@ source_set("v5_search_hashes_util") {
   ]
 }
 
+source_set("v5_get_hash_protocol_manager") {
+  sources = [
+    "v5_get_hash_protocol_manager.cc",
+    "v5_get_hash_protocol_manager.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    ":util",
+    ":v5_search_hashes_util",
+  ]
+  deps = [
+    ":v4_protocol_manager_util",
+    "//base",
+    "//components/keyed_service/core",
+    "//components/safe_browsing/core/browser/db:v4_protocol_config",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common/proto:webui_proto",
+    "//services/network/public/cpp",
+  ]
+}
+
 static_library("sb_local_database_manager") {
   sources = [
     "sb_local_database_manager.cc",
@@ -401,6 +424,7 @@ source_set("unit_tests_shared") {
     "sb_protocol_manager_util_unittest.cc",
     "util_unittest.cc",
     "v4_get_hash_protocol_manager_unittest.cc",
+    "v5_get_hash_protocol_manager_unittest.cc",
     "v5_search_hashes_cache_unittest.cc",
     "v5_search_hashes_util_unittest.cc",
   ]
@@ -413,6 +437,7 @@ source_set("unit_tests_shared") {
     ":v4_get_hash_protocol_manager",
     ":v4_protocol_manager_util",
     ":v4_test_util",
+    ":v5_get_hash_protocol_manager",
     ":v5_search_hashes_cache",
     ":v5_search_hashes_util",
     "//base",
