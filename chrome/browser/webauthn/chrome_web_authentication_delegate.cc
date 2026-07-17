@@ -464,15 +464,15 @@ void ChromeWebAuthenticationDelegate::UpdateUserPasskeys(
   for (const auto& passkey : passkey_store->GetPasskeys(
            relying_party_id,
            webauthn::PasskeyModel::ShadowedCredentials::kExclude)) {
-    if (std::vector<uint8_t>(passkey.user_id().begin(),
-                             passkey.user_id().end()) == user_id &&
+    if (base::as_byte_span(passkey.user_id()) == user_id &&
         (passkey.user_name() != name ||
          passkey.user_display_name() != display_name)) {
-      passkey_store->UpdatePasskey(
-          passkey.credential_id(),
-          {.user_name = name, .user_display_name = display_name},
-          /*updated_by_user=*/false);
-      is_passkey_updated = true;
+      if (passkey_store->UpdatePasskey(
+              passkey.credential_id(),
+              {.user_name = name, .user_display_name = display_name},
+              /*updated_by_user=*/false)) {
+        is_passkey_updated = true;
+      }
     }
   }
   if (is_passkey_updated) {
