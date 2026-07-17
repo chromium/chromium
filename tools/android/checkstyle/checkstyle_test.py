@@ -341,6 +341,16 @@ class A {
 
     @java("""
 class A {
+    void test() {
+        var _ = 1; // good
+    }
+}
+""")
+    def test_LocalVariableName_unnamed(self):
+        self._check()
+
+    @java("""
+class A {
     void test(int a) {
         switch (a) {
             case 1:
