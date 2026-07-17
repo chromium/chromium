@@ -337,6 +337,8 @@ OwningTestTabModel::OwningTestTabModel(
 }
 
 OwningTestTabModel::~OwningTestTabModel() {
+  observer_list_.Notify(&TabModelObserver::OnTabModelDestroyed,
+                        std::ref(*this));
   ForceCloseAllTabs();
   TabModelList::RemoveTabModel(this);
 }

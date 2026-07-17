@@ -83,6 +83,7 @@ source_set("unit_tests") {
     "//base",
     "//chrome/browser/tab_list:test_support",
     "//chrome/browser/ui:test_support",
+    "//chrome/browser/ui/android/tab_model:test_support",
     "//chrome/browser/ui/side_panel:side_panel_ui_provider",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//chrome/browser/ui/side_panel/test/android:native_unit_test_support_jni",

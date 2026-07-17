@@ -270,6 +270,9 @@ void TabModelObserverJniBridge::RemoveTabListInterfaceObserver(
 }
 
 void TabModelObserverJniBridge::NotifyShutdown() {
+  for (auto& observer : model_observers_) {
+    observer.OnTabModelDestroyed(*tab_model_);
+  }
   for (auto& observer : interface_observers_) {
     observer.OnTabListDestroyed(*tab_model_);
   }

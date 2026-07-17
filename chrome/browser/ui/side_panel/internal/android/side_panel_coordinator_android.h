@@ -187,7 +187,7 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   ui::ScopedUnownedUserData<SidePanelCoordinatorAndroid>
       scoped_unowned_user_data_;
 
-  SidePanelTabListObserverAndroid tab_list_observer_;
+  SidePanelTabListObserverAndroid tab_model_observer_;
 };
 
 #endif  // CHROME_BROWSER_UI_SIDE_PANEL_INTERNAL_ANDROID_SIDE_PANEL_COORDINATOR_ANDROID_H_

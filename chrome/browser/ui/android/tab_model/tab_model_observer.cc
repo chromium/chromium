@@ -62,3 +62,5 @@ void TabModelObserver::OnTabGroupMoved(tab_groups::TabGroupId group_id,
 
 void TabModelObserver::OnTabGroupVisualsChanged(
     tab_groups::TabGroupId group_id) {}
+
+void TabModelObserver::OnTabModelDestroyed(TabModel& tab_model) {}

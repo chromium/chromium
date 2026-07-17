@@ -6,13 +6,12 @@
 #define CHROME_BROWSER_UI_SIDE_PANEL_INTERNAL_ANDROID_SIDE_PANEL_TAB_LIST_OBSERVER_ANDROID_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
-#include "chrome/browser/tab_list/tab_list_interface.h"
-#include "chrome/browser/tab_list/tab_list_interface_observer.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
 
 class SidePanelCoordinatorAndroid;
 
-// Observes changes in the tab list (e.g., active tab changes) and notifies
+// Observes changes in the tab model (e.g., active tab changes) and notifies
 // `SidePanelCoordinatorAndroid` to update the side panel UI accordingly.
 //
 // Note:
@@ -20,9 +19,9 @@ class SidePanelCoordinatorAndroid;
 //   they are co-dependent and designed to work together.
 // * This class is tested alongside `SidePanelCoordinatorAndroid` in
 //   `side_panel_coordinator_android_browsertest.cc`.
-class SidePanelTabListObserverAndroid final : public TabListInterfaceObserver {
+class SidePanelTabListObserverAndroid final : public TabModelObserver {
  public:
-  SidePanelTabListObserverAndroid(TabListInterface* tab_list,
+  SidePanelTabListObserverAndroid(TabModel* tab_model,
                                   SidePanelCoordinatorAndroid* coordinator);
   ~SidePanelTabListObserverAndroid() override;
 
@@ -32,22 +31,23 @@ class SidePanelTabListObserverAndroid final : public TabListInterfaceObserver {
       const SidePanelTabListObserverAndroid&) = delete;
 
  private:
-  // Implements `TabListInterfaceObserver`:
-  void OnActiveTabChanged(TabListInterface& tab_list,
-                          tabs::TabInterface* tab) override;
-  void OnTabRemoved(TabListInterface& tab_list,
-                    tabs::TabInterface* tab,
-                    TabRemovedReason removed_reason) override;
-  void OnAllTabsAreClosing(TabListInterface& tab_list) override;
-  void OnTabListDestroyed(TabListInterface& tab_list) override;
+  // Implements `TabModelObserver`:
+  void DidSelectTab(TabAndroid* tab, TabModel::TabSelectionType type) override;
+  void DidRemoveTabForClosure(TabAndroid* tab) override;
+  void TabRemoved(TabAndroid* tab) override;
+  void AllTabsAreClosing() override;
+  void OnTabModelDestroyed(TabModel& tab_model) override;
 
   const raw_ptr<SidePanelCoordinatorAndroid> coordinator_;
+
+  // The `TabModel` that's observed.
+  raw_ptr<TabModel> tab_model_ = nullptr;
 
   // `TabHandle` for the current active tab.
   //
   // We need to cache the active tab handle because
-  // `TabListInterfaceObserver:: OnActiveTabChanged()` does not provide the
-  // previous active tab.
+  // `TabModelObserver::DidSelectTab()` does not provide the previous active
+  // tab.
   //
   // Note:
   //
@@ -65,9 +65,6 @@ class SidePanelTabListObserverAndroid final : public TabListInterfaceObserver {
   // initial active tab index). In this case, it's hard to tell if the active
   // tab has changed or not.
   tabs::TabHandle active_tab_handle_;
-
-  base::ScopedObservation<TabListInterface, TabListInterfaceObserver>
-      observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_SIDE_PANEL_INTERNAL_ANDROID_SIDE_PANEL_TAB_LIST_OBSERVER_ANDROID_H_

@@ -10,7 +10,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "chrome/browser/tab_list/mock_tab_list_interface.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
 #include "chrome/browser/ui/side_panel/test/android/native_unit_test_support_jni/SidePanelCoordinatorAndroidNativeUnitTestSupport_jni.h"
@@ -67,11 +67,10 @@ class SidePanelCoordinatorAndroidUnitTest : public testing::Test {
   }
 
   void SetUpMockTabList() {
-    mock_tab_list_ =
-        std::make_unique<testing::NiceMock<MockTabListInterface>>();
+    test_tab_model_ = std::make_unique<TestTabModel>(/*profile=*/nullptr);
     tab_list_user_data_ =
         std::make_unique<ui::ScopedUnownedUserData<TabListInterface>>(
-            browser_user_data_host_, *mock_tab_list_);
+            browser_user_data_host_, *test_tab_model_);
   }
 
   ScopedJavaGlobalRef<jobject> java_test_support_;
@@ -81,7 +80,7 @@ class SidePanelCoordinatorAndroidUnitTest : public testing::Test {
   ui::UnownedUserDataHost browser_user_data_host_;
 
   // Fields for `TabListInterface`:
-  std::unique_ptr<MockTabListInterface> mock_tab_list_;
+  std::unique_ptr<TestTabModel> test_tab_model_;
   std::unique_ptr<ui::ScopedUnownedUserData<TabListInterface>>
       tab_list_user_data_;
 };

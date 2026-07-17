@@ -97,6 +97,9 @@ class TabModelObserver {
 
   // Called after a tab group's visual data has been changed.
   virtual void OnTabGroupVisualsChanged(tab_groups::TabGroupId group_id);
+
+  // Called when the TabModel is destroyed.
+  virtual void OnTabModelDestroyed(TabModel& tab_model);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_TAB_MODEL_TAB_MODEL_OBSERVER_H_
