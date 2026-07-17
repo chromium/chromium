@@ -101,7 +101,7 @@ class AddressFormDataImporter : public AddressDataManager::Observer {
   base::flat_map<FieldType, std::u16string> GetAddressObservedFieldValues(
       base::span<const AutofillField* const> section_fields,
       ProfileImportMetadata& import_metadata,
-      LogBuffer* import_log_buffer,
+      LogBuffer& import_log_buffer,
       bool& has_invalid_field_types,
       bool& has_multiple_distinct_email_addresses,
       bool& has_address_related_fields) const;
@@ -110,7 +110,7 @@ class AddressFormDataImporter : public AddressDataManager::Observer {
   // the form. Used during `ExtractAddressProfileFromSection()`.
   AutofillProfile ConstructProfileFromObservedValues(
       const base::flat_map<FieldType, std::u16string>& observed_values,
-      LogBuffer* import_log_buffer,
+      LogBuffer& import_log_buffer,
       ProfileImportMetadata& import_metadata);
 
   // Helper method for `ExtractAddressProfiles` which only considers the fields
@@ -120,7 +120,7 @@ class AddressFormDataImporter : public AddressDataManager::Observer {
       const GURL& source_url,
       mojom::SubmissionSource submission_source,
       std::vector<ExtractedAddressProfile>* extracted_address_profiles,
-      LogBuffer* import_log_buffer);
+      LogBuffer& import_log_buffer);
 
   // Returns the fallback value for the profile country. The following values
   // are used, with decreasing priority: region of given phone number (if it is

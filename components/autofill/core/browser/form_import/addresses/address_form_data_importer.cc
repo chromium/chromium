@@ -119,7 +119,7 @@ bool IsValidFieldTypeAndValue(
     const base::flat_map<FieldType, ValueForImport>& preceding_values,
     FieldType field_type,
     const ValueForImport& current_values,
-    LogBuffer* import_log_buffer) {
+    LogBuffer& import_log_buffer) {
   // Abandon the import if an email address value shows up in a field that is
   // not an email address.
   if (field_type != EMAIL_ADDRESS &&
@@ -247,7 +247,7 @@ size_t AddressFormDataImporter::ExtractAddressProfiles(
       // Only allow for a prompt if no other complete profile was found so far.
       if (ExtractAddressProfileFromSection(
               fields, form.source_url(), form.submission_source(),
-              extracted_address_profiles, &import_log_buffer)) {
+              extracted_address_profiles, import_log_buffer)) {
         num_complete_profiles++;
       }
       // And close the div of the section import log.
@@ -324,7 +324,7 @@ base::flat_map<FieldType, std::u16string>
 AddressFormDataImporter::GetAddressObservedFieldValues(
     base::span<const AutofillField* const> section_fields,
     ProfileImportMetadata& import_metadata,
-    LogBuffer* import_log_buffer,
+    LogBuffer& import_log_buffer,
     bool& has_invalid_field_types,
     bool& has_multiple_distinct_email_addresses,
     bool& has_address_related_fields) const {
@@ -440,7 +440,7 @@ AddressFormDataImporter::GetAddressObservedFieldValues(
 
 AutofillProfile AddressFormDataImporter::ConstructProfileFromObservedValues(
     const base::flat_map<FieldType, std::u16string>& observed_values,
-    LogBuffer* import_log_buffer,
+    LogBuffer& import_log_buffer,
     ProfileImportMetadata& import_metadata) {
   AutofillProfile candidate_profile(
       i18n_model_definition::kLegacyHierarchyCountryCode);
@@ -515,7 +515,7 @@ bool AddressFormDataImporter::ExtractAddressProfileFromSection(
     const GURL& source_url,
     mojom::SubmissionSource submission_source,
     std::vector<ExtractedAddressProfile>* extracted_address_profiles,
-    LogBuffer* import_log_buffer) {
+    LogBuffer& import_log_buffer) {
   // Tracks if the form section contains multiple distinct email addresses.
   bool has_multiple_distinct_email_addresses = false;
 
@@ -557,12 +557,12 @@ bool AddressFormDataImporter::ExtractAddressProfileFromSection(
   // Remove invalid values of types that are optional in some countries.
   // This is done after `FinalizeAfterImport()` to ensure that formatted
   // invalid values are also removed.
-  RemoveInvalidValues(candidate_profile, import_log_buffer, import_metadata);
+  RemoveInvalidValues(candidate_profile, &import_log_buffer, import_metadata);
 
   // Reject the profile if the validation requirements are not met.
   // `ValidateNonEmptyValues()` goes first to collect metrics.
   bool has_invalid_information =
-      !ValidateNonEmptyValues(candidate_profile, import_log_buffer) ||
+      !ValidateNonEmptyValues(candidate_profile, &import_log_buffer) ||
       has_multiple_distinct_email_addresses || has_invalid_field_types ||
       has_synthesized_types;
 
@@ -581,8 +581,9 @@ bool AddressFormDataImporter::ExtractAddressProfileFromSection(
 
   // Do not import a profile if any of the requirements is violated.
   // `IsMinimumAddress()` goes first, since it logs to autofill-internals.
-  bool all_fulfilled = IsMinimumAddress(candidate_profile, import_log_buffer) &&
-                       !has_invalid_information;
+  bool all_fulfilled =
+      IsMinimumAddress(candidate_profile, &import_log_buffer) &&
+      !has_invalid_information;
 
   // Collect metrics regarding the requirements for an address profile import.
   autofill_metrics::LogAddressFormImportRequirementMetric(candidate_profile);
