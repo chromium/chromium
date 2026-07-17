@@ -6617,6 +6617,11 @@ inline constexpr char kReadAnythingWithReadabilityName[] =
 inline constexpr char kReadAnythingWithReadabilityDescription[] =
     "Enables the experimental text webpage distillation using readability.js "
     "method for reading mode.";
+inline constexpr char kReadAnythingImprovedUiName[] =
+    "Reading Mode Improved UI";
+inline constexpr char kReadAnythingImprovedUiDescription[] =
+    "Enables menu grouping for Reading Mode and the listen to this page entry "
+    "point.";
 
 inline constexpr char kRealboxVirtualFocusNavigationName[] =
     "Enable Realbox Virtual Focus Navigation";

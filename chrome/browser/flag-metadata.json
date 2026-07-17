@@ -8315,7 +8315,15 @@
     "owners": [ "kristislee@google.com", "lwinston@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 155
   },
-
+  {
+    "name": "read-anything-improved-ui",
+    "owners": [
+      "martinglopez@google.com",
+      "chrome-reading-mode-eng@google.com",
+      "//ui/accessibility/OWNERS"
+    ],
+    "expiry_milestone": 155
+  },
   {
     "name": "read-anything-line-focus",
     "owners": [ "kristislee@google.com", "komo-eng@google.com", "//ui/accessibility/OWNERS" ],

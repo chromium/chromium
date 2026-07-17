@@ -13443,6 +13443,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUniversalKeyboardHandlingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kUniversalKeyboardHandling)},
 #endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+    {"read-anything-improved-ui",
+     flag_descriptions::kReadAnythingImprovedUiName,
+     flag_descriptions::kReadAnythingImprovedUiDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kReadAnythingImprovedUi)},
+#endif
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

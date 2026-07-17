@@ -9363,6 +9363,7 @@ from previous Chrome versions.
   <int value="-1664497967" label="SendPasswords:enabled"/>
   <int value="-1664290318" label="ComputePressure:enabled"/>
   <int value="-1663410466" label="top-document-isolation"/>
+  <int value="-1663262870" label="ReadAnythingImprovedUi:disabled"/>
   <int value="-1663125441" label="OptInImeMenu:enabled"/>
   <int value="-1662763888" label="SidePanelJourneys:disabled"/>
   <int value="-1662646099" label="NTPOfflinePageSuggestions:enabled"/>
@@ -16997,6 +16998,7 @@ from previous Chrome versions.
   <int value="753999924" label="EnableOAuthMultiloginCookiesBinding:disabled"/>
   <int value="756018202" label="CCTMinimized:enabled"/>
   <int value="756897997" label="PaintHoldingCrossOrigin:disabled"/>
+  <int value="757620268" label="ReadAnythingImprovedUi:enabled"/>
   <int value="757645375" label="AndroidDarkSearch:disabled"/>
   <int value="757912345" label="SnapGroup:disabled"/>
   <int value="758299873" label="OmniboxSuggestionHoverFillShape:enabled"/>
