@@ -16,7 +16,7 @@ export function createDummyProfileState(): ProfileState {
     avatarIcon: '',
     profileCardButtonLabel: '',
     hasEnterpriseLabel: false,
-    hasAiRing: false,
+    hasAvatarRing: false,
   };
 }
 

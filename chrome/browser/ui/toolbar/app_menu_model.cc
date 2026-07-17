@@ -547,12 +547,13 @@ ProfileSubMenuModel::ProfileSubMenuModel(
             ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
                 avatar_image, avatar_icon_size, avatar_icon_size,
                 profiles::SHAPE_CIRCLE));
-        // TODO(crbug.com/530147081): Clarify the AI ring may show up for users
+        // TODO(crbug.com/530147081): Clarify if the ring may show up for users
         // with a placeholder icon. Signed in users should have always an
         // account_info and thus they will never have a placeholder icon.
-        if (IsAiSubscriptionRingEnabled(profile)) {
-          avatar_image_model_ = ui::ImageModel::FromImageSkia(AddAiRingToAvatar(
-              avatar_model, *color_provider, avatar_icon_size));
+        if (ShouldShowAvatarGradientRing(profile)) {
+          avatar_image_model_ =
+              ui::ImageModel::FromImageSkia(AddLinearGradientRingToAvatar(
+                  avatar_model, *color_provider, avatar_icon_size));
         } else {
           avatar_image_model_ = avatar_model;
         }
@@ -589,8 +590,9 @@ ProfileSubMenuModel::ProfileSubMenuModel(
       if (base::FeatureList::IsEnabled(
               switches::kEnableAiSubscriptionAvatarRing) &&
           profile_entry->GetAiSubscriptionTier() > 0) {
-        avatar_model = ui::ImageModel::FromImageSkia(
-            AddAiRingToAvatar(avatar_model, *color_provider, avatar_icon_size));
+        avatar_model =
+            ui::ImageModel::FromImageSkia(AddLinearGradientRingToAvatar(
+                avatar_model, *color_provider, avatar_icon_size));
       }
 
       AddItemWithIcon(

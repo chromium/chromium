@@ -62,7 +62,7 @@ struct ProfilePickerTestParam {
   std::optional<std::variant<ForceSigninUIError::Type, SigninUIError::Type>>
       signin_error_dialog_type;
   bool error_with_signin_button = false;
-  bool use_ai_avatar_ring = false;
+  bool use_gradient_avatar_ring = false;
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -174,21 +174,21 @@ const ProfilePickerTestParam kTestParams[] = {
                           .use_dark_theme = true},
      .use_multiple_profiles = true,
      .use_refreshed_ui = true},
-    {.pixel_test_param = {.test_suffix = "SingleProfileAiRing"},
-     .use_ai_avatar_ring = true},
-    {.pixel_test_param = {.test_suffix = "DarkSingleProfileAiRing",
+    {.pixel_test_param = {.test_suffix = "SingleProfileGradientRing"},
+     .use_gradient_avatar_ring = true},
+    {.pixel_test_param = {.test_suffix = "DarkSingleProfileGradientRing",
                           .use_dark_theme = true},
-     .use_ai_avatar_ring = true},
-    {.pixel_test_param = {.test_suffix = "SingleProfileManagedAiRing"},
+     .use_gradient_avatar_ring = true},
+    {.pixel_test_param = {.test_suffix = "SingleProfileManagedGradientRing"},
      .is_enterprise_badging_enabled = true,
-     .use_ai_avatar_ring = true},
-    {.pixel_test_param = {.test_suffix = "MultipleProfilesAiRing"},
+     .use_gradient_avatar_ring = true},
+    {.pixel_test_param = {.test_suffix = "MultipleProfilesGradientRing"},
      .use_multiple_profiles = true,
-     .use_ai_avatar_ring = true},
-    {.pixel_test_param = {.test_suffix = "DarkMultipleProfilesAiRing",
+     .use_gradient_avatar_ring = true},
+    {.pixel_test_param = {.test_suffix = "DarkMultipleProfilesGradientRing",
                           .use_dark_theme = true},
      .use_multiple_profiles = true,
-     .use_ai_avatar_ring = true},
+     .use_gradient_avatar_ring = true},
 };
 
 enum class ProfileStatus {
@@ -196,8 +196,8 @@ enum class ProfileStatus {
   kSignedIn,
   kSignedInManaged,
   kSignedInSupervised,
-  kSignedInAiSubscription,
-  kSignedInManagedAiSubscription,
+  kSignedInGradientRing,
+  kSignedInManagedGradientRing,
 };
 
 void SetSigninProfileProperties(Profile* profile,
@@ -234,7 +234,7 @@ void SetSigninProfileProperties(Profile* profile,
           account_info, identity_manager, true);
       break;
     }
-    case ProfileStatus::kSignedInAiSubscription: {
+    case ProfileStatus::kSignedInGradientRing: {
       account_info = signin::MakePrimaryAccountAvailable(
           identity_manager, kOtherEmail, signin::ConsentLevel::kSignin);
       g_browser_process->profile_manager()
@@ -243,7 +243,7 @@ void SetSigninProfileProperties(Profile* profile,
           ->SetAiSubscriptionTier(1);
       break;
     }
-    case ProfileStatus::kSignedInManagedAiSubscription: {
+    case ProfileStatus::kSignedInManagedGradientRing: {
       account_info = signin::MakePrimaryAccountAvailable(
           identity_manager, kOtherManagedEmail, signin::ConsentLevel::kSignin);
       account_info =
@@ -270,7 +270,7 @@ void SetSigninProfileProperties(Profile* profile,
   }
 
   if (profile_status == ProfileStatus::kSignedInManaged ||
-      profile_status == ProfileStatus::kSignedInManagedAiSubscription) {
+      profile_status == ProfileStatus::kSignedInManagedGradientRing) {
     enterprise_util::SetUserAcceptedAccountManagement(profile, true);
   }
 }
@@ -278,13 +278,13 @@ void SetSigninProfileProperties(Profile* profile,
 // Create 4 profiles with different icons and types.
 void AddMultipleProfiles(bool is_glic_version,
                          bool has_supervised_user,
-                         bool use_ai_avatar_ring) {
+                         bool use_gradient_avatar_ring) {
   ProfileStatus signed_in_status_with_potential_ai_subscription =
-      use_ai_avatar_ring ? ProfileStatus::kSignedInAiSubscription
-                         : ProfileStatus::kSignedIn;
+      use_gradient_avatar_ring ? ProfileStatus::kSignedInGradientRing
+                               : ProfileStatus::kSignedIn;
   ProfileStatus managed_status_with_potential_ai_subscription =
-      use_ai_avatar_ring ? ProfileStatus::kSignedInManagedAiSubscription
-                         : ProfileStatus::kSignedInManaged;
+      use_gradient_avatar_ring ? ProfileStatus::kSignedInManagedGradientRing
+                               : ProfileStatus::kSignedInManaged;
 
   std::vector<ProfileStatus> profiles_status;
   if (is_glic_version) {
@@ -333,7 +333,7 @@ class ProfilePickerUIPixelTest
     } else {
       disabled_features.push_back(switches::kFirstRunDesktopRefresh);
     }
-    if (GetParam().use_ai_avatar_ring) {
+    if (GetParam().use_gradient_avatar_ring) {
       enabled_features.push_back(
           {switches::kEnableAiSubscriptionAvatarRing, {}});
     } else {
@@ -415,15 +415,15 @@ class ProfilePickerUIPixelTest
     bool no_glic_eligible_profiles = GetParam().no_glic_eligible_profiles;
 
     // Sign in the default profile if needed.
-    bool sign_in_default =
-        (is_glic_version && !no_glic_eligible_profiles) ||
-        (GetParam().use_ai_avatar_ring && !GetParam().use_multiple_profiles);
+    bool sign_in_default = (is_glic_version && !no_glic_eligible_profiles) ||
+                           (GetParam().use_gradient_avatar_ring &&
+                            !GetParam().use_multiple_profiles);
     if (sign_in_default) {
       ProfileStatus status = ProfileStatus::kSignedIn;
-      if (GetParam().use_ai_avatar_ring) {
+      if (GetParam().use_gradient_avatar_ring) {
         status = GetParam().is_enterprise_badging_enabled
-                     ? ProfileStatus::kSignedInManagedAiSubscription
-                     : ProfileStatus::kSignedInAiSubscription;
+                     ? ProfileStatus::kSignedInManagedGradientRing
+                     : ProfileStatus::kSignedInGradientRing;
       }
       SetSigninProfileProperties(browser()->GetProfile(), status,
                                  is_glic_version);
@@ -445,7 +445,7 @@ class ProfilePickerUIPixelTest
       // `no_glic_eligible_profiles` must be set to false.
       CHECK(!is_glic_version || !no_glic_eligible_profiles);
       AddMultipleProfiles(is_glic_version, GetParam().has_supervised_user,
-                          GetParam().use_ai_avatar_ring);
+                          GetParam().use_gradient_avatar_ring);
     }
 
     if (GetParam().disallow_profile_creation) {

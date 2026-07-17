@@ -23,10 +23,11 @@ class ColorProvider;
 class ImageModel;
 }  // namespace ui
 
-// LINT.IfChange(AiRingSpecs)
-inline constexpr int kAiRingGapDip = 2;
-inline constexpr int kAiRingThicknessDip = 3;
-// LINT.ThenChange(//chrome/browser/resources/signin/profile_picker/profile_picker_shared.css:AiRingSpecs)
+// LINT.IfChange(AvatarRingSpecs)
+inline constexpr int kAvatarRingGapDip = 2;
+inline constexpr int kAvatarRingThicknessDip = 3;
+// LINT.ThenChange(//chrome/browser/resources/signin/profile_picker/profile_picker_shared.css:AvatarRingSpecs,
+// //chrome/browser/resources/webui_toolbar/avatar_button.css:AvatarRingSpecs)
 
 // Navigates to the Google Account page.
 void NavigateToGoogleAccountPage(Profile* profile, const std::string& email);
@@ -65,13 +66,14 @@ bool IsOpenLinkOTREnabled(Profile* source_profie, const GURL& url);
 
 // Returns true if the AI subscription ring feature is enabled and the profile
 // is eligible (has an active subscription tier > 0).
-bool IsAiSubscriptionRingEnabled(Profile* profile);
+bool ShouldShowAvatarGradientRing(Profile* profile);
 
-// Returns the avatar image with the AI subscription ring.
-gfx::ImageSkia AddAiRingToAvatar(const ui::ImageModel& avatar_image,
-                                 const ui::ColorProvider& color_provider,
-                                 int avatar_size,
-                                 int gap_width = kAiRingGapDip,
-                                 int ring_thickness = kAiRingThicknessDip);
+// Returns the avatar image with the linear gradient ring.
+gfx::ImageSkia AddLinearGradientRingToAvatar(
+    const ui::ImageModel& avatar_image,
+    const ui::ColorProvider& color_provider,
+    int avatar_size,
+    int gap_width = kAvatarRingGapDip,
+    int ring_thickness = kAvatarRingThicknessDip);
 
 #endif  // CHROME_BROWSER_UI_PROFILES_PROFILE_VIEW_UTILS_H_

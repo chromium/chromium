@@ -40,7 +40,7 @@ suite('ProfileCardMenuTest', function() {
       avatarBadge: ``,
       profileCardButtonLabel: ``,
       hasEnterpriseLabel: false,
-      hasAiRing: false,
+      hasAvatarRing: false,
     };
     profileCardMenuElement.profileState = testProfileState;
     document.body.appendChild(profileCardMenuElement);

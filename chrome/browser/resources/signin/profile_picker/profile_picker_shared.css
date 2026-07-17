@@ -95,18 +95,18 @@
   width: var(--profile-card-avatar-icon-size);
 }
 
-.profile-avatar.with-ai-ring {
-  /* LINT.IfChange(AiRingSpecs) */
-  --ai-ring-gap: 2px;
-  --ai-ring-thickness: 3px;
-  /* LINT.ThenChange(//chrome/browser/ui/profiles/profile_view_utils.h:AiRingSpecs) */
+.profile-avatar.with-avatar-ring {
+  /* LINT.IfChange(AvatarRingSpecs) */
+  --avatar-ring-gap: 2px;
+  --avatar-ring-thickness: 3px;
+  /* LINT.ThenChange(//chrome/browser/ui/profiles/profile_view_utils.h:AvatarRingSpecs) */
 
-  /* The avatar with AI ring is already cropped as circular image,
+  /* The avatar with avatar ring is already cropped as circular image,
   we remove the border-radius otherwise this crops part of the ring. */
   border-radius: 0;
-  height: calc(var(--profile-card-avatar-icon-size) + 2 * (var(--ai-ring-gap) + var(--ai-ring-thickness)));
-  margin: calc(-1 * (var(--ai-ring-gap) + var(--ai-ring-thickness)));
-  width: calc(var(--profile-card-avatar-icon-size) + 2 * (var(--ai-ring-gap) + var(--ai-ring-thickness)));
+  height: calc(var(--profile-card-avatar-icon-size) + 2 * (var(--avatar-ring-gap) + var(--avatar-ring-thickness)));
+  margin: calc(-1 * (var(--avatar-ring-gap) + var(--avatar-ring-thickness)));
+  width: calc(var(--profile-card-avatar-icon-size) + 2 * (var(--avatar-ring-gap) + var(--avatar-ring-thickness)));
 }
 
 

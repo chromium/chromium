@@ -271,15 +271,16 @@ ui::ImageModel EmbedAvatarOntoImage(int resource_id,
                                     size_t avatar_size);
 
 #if !BUILDFLAG(IS_ANDROID)
-// Returns a circular avatar with a decorative AI subscription ring.
-gfx::ImageSkia AddAiRingToAvatar(const ui::ImageModel& avatar_image,
-                                 const ui::ColorProvider& color_provider,
-                                 SkColor start_color,
-                                 SkColor end_color,
-                                 base::span<const float, 4> positions,
-                                 int avatar_size,
-                                 int gap_width,
-                                 int ring_thickness);
+// Returns a circular avatar with a decorative linear gradient ring.
+gfx::ImageSkia AddLinearGradientRingToAvatar(
+    const ui::ImageModel& avatar_image,
+    const ui::ColorProvider& color_provider,
+    SkColor start_color,
+    SkColor end_color,
+    base::span<const float, 4> positions,
+    int avatar_size,
+    int gap_width,
+    int ring_thickness);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace profiles

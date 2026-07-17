@@ -4137,10 +4137,10 @@ INSTANTIATE_TEST_SUITE_P(All,
                          AvatarToolbarButtonPasskeyUnlockErrorBrowserTest,
                          testing::Bool());
 
-class AvatarToolbarButtonAiRingBrowserTest
+class AvatarToolbarButtonGradientRingBrowserTest
     : public AvatarToolbarButtonBrowserTestBase {
  public:
-  AvatarToolbarButtonAiRingBrowserTest() {
+  AvatarToolbarButtonGradientRingBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(
         switches::kEnableAiSubscriptionAvatarRing);
   }
@@ -4155,7 +4155,7 @@ class AvatarToolbarButtonAiRingBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonAiRingBrowserTest,
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonGradientRingBrowserTest,
                        PrefChangeTriggersLayoutAndIconUpdate) {
   AvatarToolbarButton* avatar_button = static_cast<AvatarToolbarButton*>(
       BrowserView::GetBrowserViewForBrowser(browser())
@@ -4164,8 +4164,8 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonAiRingBrowserTest,
   ASSERT_TRUE(avatar_button);
   AvatarToolbarButtonTestAccessor avatar_accessor(browser());
 
-  // Assert that AI ring is not enabled initially.
-  ASSERT_FALSE(IsAiSubscriptionRingEnabled(browser()->GetProfile()));
+  // Assert that gradient ring is not enabled initially.
+  ASSERT_FALSE(ShouldShowAvatarGradientRing(browser()->GetProfile()));
 
   std::optional<ui::ImageModel> normal_icon =
       avatar_button->GetImageModel(views::Button::ButtonState::STATE_NORMAL);
@@ -4181,8 +4181,8 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonAiRingBrowserTest,
   SetAiSubscriptionTierForProfile(1);
   waiter1->Wait();
 
-  // The AI ring should be enabled now.
-  EXPECT_TRUE(IsAiSubscriptionRingEnabled(browser()->GetProfile()));
+  // The gradient ring should be enabled now.
+  EXPECT_TRUE(ShouldShowAvatarGradientRing(browser()->GetProfile()));
   std::optional<ui::ImageModel> ring_icon =
       avatar_button->GetImageModel(views::Button::ButtonState::STATE_NORMAL);
   EXPECT_TRUE(ring_icon);
@@ -4205,7 +4205,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonAiRingBrowserTest,
   SetAiSubscriptionTierForProfile(0);
   waiter2->Wait();
 
-  EXPECT_FALSE(IsAiSubscriptionRingEnabled(browser()->GetProfile()));
+  EXPECT_FALSE(ShouldShowAvatarGradientRing(browser()->GetProfile()));
   std::optional<ui::ImageModel> restored_icon =
       avatar_button->GetImageModel(views::Button::ButtonState::STATE_NORMAL);
   ASSERT_TRUE(restored_icon);
@@ -4216,8 +4216,8 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonAiRingBrowserTest,
   EXPECT_EQ(restored_insets, standard_insets);
 }
 
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonAiRingBrowserTest,
-                       SigninPendingSuppressesAiRing) {
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonGradientRingBrowserTest,
+                       SigninPendingSuppressesGradientRing) {
   AvatarToolbarButton* avatar_button = static_cast<AvatarToolbarButton*>(
       GetAvatarToolbarButtonInterface(browser()));
   ASSERT_TRUE(avatar_button);
@@ -4241,13 +4241,13 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonAiRingBrowserTest,
   const gfx::Insets standard_insets =
       avatar_button->GetLayoutInsets().value_or(gfx::Insets());
 
-  // Set AI subscription. This will not trigger the AI ring because SigninPending
-  // suppresses it.
+  // Set AI subscription. This will not trigger the gradient ring because
+  // SigninPending suppresses it.
   auto waiter2 = avatar_accessor.CreateUpdateWaiter();
   SetAiSubscriptionTierForProfile(1);
   waiter2->Wait();
 
-  // Verify that the AI ring is not enabled for the button.
+  // Verify that the gradient ring is not enabled for the button.
   std::optional<ui::ImageModel> current_icon =
       avatar_button->GetImageModel(views::Button::ButtonState::STATE_NORMAL);
   ASSERT_TRUE(current_icon);

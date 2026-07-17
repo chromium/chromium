@@ -581,9 +581,9 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, Safety_Hub_shown_notification) {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-class AppMenuProfileAiRingBrowserTest : public AppMenuBrowserTest {
+class AppMenuProfileGradientRingBrowserTest : public AppMenuBrowserTest {
  public:
-  AppMenuProfileAiRingBrowserTest() {
+  AppMenuProfileGradientRingBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(
         switches::kEnableAiSubscriptionAvatarRing);
   }
@@ -627,8 +627,8 @@ class AppMenuProfileAiRingBrowserTest : public AppMenuBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(AppMenuProfileAiRingBrowserTest,
-                       ProfileMenuIconHasAiRing) {
+IN_PROC_BROWSER_TEST_F(AppMenuProfileGradientRingBrowserTest,
+                       ProfileMenuIconHasGradientRing) {
   // Sign in with an image to get a non-placeholder avatar.
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(browser()->GetProfile());

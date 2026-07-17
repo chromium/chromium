@@ -55,7 +55,7 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
       profileCardButtonLabel: '',
       avatarBadge: '',
       hasEnterpriseLabel: false,
-      hasAiRing: false,
+      hasAvatarRing: false,
     };
 
     /**

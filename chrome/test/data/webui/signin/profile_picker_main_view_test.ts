@@ -64,7 +64,7 @@ function generateProfilesList(n: number): ProfileState[] {
              avatarBadge: i % 4 === 0 ? 'cr:domain' : '',
              profileCardButtonLabel: '',
              hasEnterpriseLabel: false,
-             hasAiRing: i % 3 === 0,
+             hasAvatarRing: i % 3 === 0,
            }));
 }
 
@@ -146,8 +146,8 @@ suite('ProfilePickerMainViewTest', function() {
       assertEquals(
           avatarElement.src.split('/').pop(), expectedProfile.avatarIcon);
       assertEquals(
-          avatarElement.classList.contains('with-ai-ring'),
-          expectedProfile.hasAiRing);
+          avatarElement.classList.contains('with-avatar-ring'),
+          expectedProfile.hasAvatarRing);
     }
   }
 
@@ -204,7 +204,7 @@ suite('ProfilePickerMainViewTest', function() {
       avatarBadge: 'cr:domain',
       profileCardButtonLabel: '',
       hasEnterpriseLabel: true,
-      hasAiRing: false,
+      hasAvatarRing: false,
     });
     await simulateProfilesListChanged(profiles);
 

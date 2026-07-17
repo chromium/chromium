@@ -703,7 +703,7 @@ class ProfileMenuViewPixelTest
       if (GetParam().with_ai_avatar_ring) {
         ProfileAttributesStorage& storage =
             profile_manager->GetProfileAttributesStorage();
-        // Enable the AI ring for a subset of the profiles.
+        // Enable the AI subscription for a subset of the profiles.
         for (const auto& path : {default_profile.GetPath(), dark_profile_path,
                                  theme_profile_path}) {
           storage.GetProfileAttributesWithPath(path)->SetAiSubscriptionTier(1);

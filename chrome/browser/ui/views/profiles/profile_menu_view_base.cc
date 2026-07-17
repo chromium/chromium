@@ -197,8 +197,8 @@ class AvatarImageView : public views::ImageView {
     DCHECK(!avatar_image_.IsEmpty());
     ui::ColorProvider* color_provider = GetColorProvider();
     CHECK(color_provider);
-    const bool is_ai_ring_enabled =
-        IsAiSubscriptionRingEnabled(&(root_view_->profile()));
+    const bool should_show_gradient_ring_enabled =
+        ShouldShowAvatarGradientRing(&(root_view_->profile()));
 
     gfx::ImageSkia sized_avatar_image;
     bool should_crop = true;
@@ -211,11 +211,11 @@ class AvatarImageView : public views::ImageView {
       // Dotted ring avatar does not support a border, as the border is already
       // included with the dotted ring.
       CHECK_EQ(border_size_, 0);
-    } else if (is_ai_ring_enabled) {
+    } else if (should_show_gradient_ring_enabled) {
       // Keep the avatar's size identical with the no-ring case, the ring
       // expands outwards.
-      sized_avatar_image =
-          AddAiRingToAvatar(avatar_image_, *color_provider, image_size_);
+      sized_avatar_image = AddLinearGradientRingToAvatar(
+          avatar_image_, *color_provider, image_size_);
       should_crop = false;
     } else {
       if (border_size_ > 0) {

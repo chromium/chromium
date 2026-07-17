@@ -214,7 +214,7 @@ ui::ImageModel GetAvatarImageWithDottedRing(
       image_with_ring.size().height(), profiles::AvatarShape::SHAPE_CIRCLE));
 }
 
-// Adjust the layout insets so the the AI rings fits comfortable
+// Adjust the layout insets so the the avatar rings fits comfortable
 // outside the avatar, preserving the original avatar size.
 const gfx::Insets CalculateInsetsForAvatarRing(int total_icon_size,
                                                int avatar_size,
@@ -243,7 +243,7 @@ class PrivateBaseStateProvider : public StateProvider,
                                     StateObserver* state_observer)
       : StateProvider(profile,
                       state_observer,
-                      /*should_consider_ai_subscription=*/false) {
+                      /*should_consider_avatar_ring=*/false) {
     browser_collection_observer_.Observe(
         GlobalBrowserCollection::GetInstance());
   }
@@ -374,7 +374,7 @@ class ExplicitStateProvider : public StateProvider {
       std::optional<base::RepeatingCallback<void(bool)>> explicit_action)
       : StateProvider(profile,
                       state_observer,
-                      /*should_consider_ai_subscription=*/true),
+                      /*should_consider_avatar_ring=*/true),
         explicit_text_(std::move(explicit_text)),
         accessibility_label_(std::move(accessibility_label)),
         explicit_action_(std::move(explicit_action)) {}
@@ -608,7 +608,7 @@ class OnSigninStateProvider : public StateProvider {
                                  StateObserver* state_observer)
       : StateProvider(browser->GetProfile(),
                       state_observer,
-                      /*should_consider_ai_subscription=*/true),
+                      /*should_consider_avatar_ring=*/true),
         browser_(*browser),
         coordinator_(
             OnSigninCoordinator::GetForProfile(*browser->GetProfile())) {}
@@ -666,7 +666,7 @@ class ShowIdentityNameStateProvider : public StateProvider,
       AvatarToolbarButtonInterface* avatar_control)
       : StateProvider(profile,
                       state_observer,
-                      /*should_consider_ai_subscription=*/true),
+                      /*should_consider_avatar_ring=*/true),
         avatar_control_(*avatar_control) {
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile);
@@ -1291,7 +1291,7 @@ class PromoStateProvider : public StateProvider {
   explicit PromoStateProvider(Browser* browser, StateObserver* state_observer)
       : StateProvider(browser->GetProfile(),
                       state_observer,
-                      /*should_consider_ai_subscription=*/true),
+                      /*should_consider_avatar_ring=*/true),
         coordinator_(PromoStateProviderCoordinator::GetOrCreateForProfile(
             *browser->GetProfile())),
         browser_(*browser) {}
@@ -1382,7 +1382,7 @@ class PasskeyStateProvider : public StateProvider,
   explicit PasskeyStateProvider(Profile* profile, StateObserver* state_observer)
       : StateProvider(profile,
                       state_observer,
-                      /*should_consider_ai_subscription=*/false) {
+                      /*should_consider_avatar_ring=*/false) {
     passkey_manager_observation_.Observe(
         webauthn::PasskeyUnlockManagerFactory::GetForProfile(profile));
   }
@@ -1495,8 +1495,8 @@ class SyncErrorBaseStateProvider : public StateProvider,
       Profile* profile,
       StateObserver* state_observer,
       std::optional<syncer::SyncService::UserActionableError> sync_error_type,
-      bool should_consider_ai_subscription = false)
-      : StateProvider(profile, state_observer, should_consider_ai_subscription),
+      bool should_consider_avatar_ring = false)
+      : StateProvider(profile, state_observer, should_consider_avatar_ring),
         sync_error_type_(sync_error_type),
         last_avatar_error_(GetAvatarError(profile)) {
     if (auto* sync_service = SyncServiceFactory::GetForProfile(profile)) {
@@ -1696,7 +1696,7 @@ class GenericSyncErrorStateProvider : public SyncErrorBaseStateProvider {
       : SyncErrorBaseStateProvider(profile,
                                    state_observer,
                                    /*sync_error_type=*/std::nullopt,
-                                   /*should_consider_ai_subscription=*/false) {}
+                                   /*should_consider_avatar_ring=*/false) {}
 
   ~GenericSyncErrorStateProvider() override = default;
 
@@ -1787,7 +1787,7 @@ class SigninPendingStateProvider : public StateProvider,
       AvatarToolbarButtonInterface* avatar_control)
       : StateProvider(profile,
                       state_observer,
-                      /*should_consider_ai_subscription=*/false),
+                      /*should_consider_avatar_ring=*/false),
         identity_manager_(*IdentityManagerFactory::GetForProfile(profile)),
         avatar_control_(*avatar_control) {
     identity_manager_observation_.Observe(&identity_manager_.get());
@@ -1947,7 +1947,7 @@ class ManagementStateProvider : public StateProvider,
                                    AvatarToolbarButtonInterface* avatar_control)
       : StateProvider(profile,
                       state_observer,
-                      /*should_consider_ai_subscription=*/true),
+                      /*should_consider_avatar_ring=*/true),
         avatar_control_(*avatar_control) {
     browser_collection_observer_.Observe(
         GlobalBrowserCollection::GetInstance());
@@ -2021,7 +2021,7 @@ class NormalStateProvider : public StateProvider {
   explicit NormalStateProvider(Profile* profile, StateObserver* state_observer)
       : StateProvider(profile,
                       state_observer,
-                      /*should_consider_ai_subscription=*/true) {}
+                      /*should_consider_avatar_ring=*/true) {}
 
   // StateProvider:
   bool IsActive() const override {
@@ -2046,10 +2046,10 @@ class NormalStateProvider : public StateProvider {
 
 StateProvider::StateProvider(Profile* profile,
                              StateObserver* state_observer,
-                             bool should_consider_ai_subscription)
+                             bool should_consider_avatar_ring)
     : profile_(*profile),
       state_observer_(*state_observer),
-      should_consider_ai_subscription_(should_consider_ai_subscription) {}
+      should_consider_avatar_ring_(should_consider_avatar_ring) {}
 
 StateProvider::~StateProvider() = default;
 
@@ -2077,22 +2077,21 @@ std::pair<ui::ImageModel, AvatarIconType> StateProvider::GetAvatarIcon(
 
   // TODO(crbug.com/516795763): Ensure this is is triggered every time the ai
   // subscription level changes (via listening for changes).
-  if (ShouldShowAiAvatarRing()) {
+  if (ShouldShowGradientAvatarRing()) {
     gfx::ImageSkia avatar_with_ai_ring =
-        AddAiRingToAvatar(avatar_model, color_provider, icon_size);
+        AddLinearGradientRingToAvatar(avatar_model, color_provider, icon_size);
     return {ui::ImageModel::FromImageSkia(avatar_with_ai_ring), icon_type};
   }
 
   return {avatar_model, icon_type};
 }
 
-bool StateProvider::ShouldShowAiAvatarRing() const {
-  if (!should_consider_ai_subscription_) {
+bool StateProvider::ShouldShowGradientAvatarRing() const {
+  if (!should_consider_avatar_ring_) {
     return false;
   }
-  return IsAiSubscriptionRingEnabled(&profile());
+  return ShouldShowAvatarGradientRing(&profile());
 }
-
 
 std::u16string StateProvider::GetAvatarTooltipText() const {
   return profiles::GetAvatarNameForProfile(profile().GetPath());
@@ -2143,7 +2142,7 @@ gfx::Insets StateProvider::GetLayoutInsets(int total_size,
                                            bool is_label_visible) const {
   gfx::Insets insets = ::GetLayoutInsets(is_label_visible ? AVATAR_CHIP_PADDING
                                                           : TOOLBAR_BUTTON);
-  if (ShouldShowAiAvatarRing()) {
+  if (ShouldShowGradientAvatarRing()) {
     return CalculateInsetsForAvatarRing(total_size, avatar_size, insets,
                                         is_label_visible);
   }

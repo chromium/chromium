@@ -1314,10 +1314,11 @@ void ProfileMenuView::BuildOtherProfilesSection(
     if (base::FeatureList::IsEnabled(
             switches::kEnableAiSubscriptionAvatarRing) &&
         profile_entry->GetAiSubscriptionTier() > 0) {
-      avatar_image = ui::ImageModel::FromImageSkia(AddAiRingToAvatar(
-          avatar_image,
-          *BrowserWindow::FromBrowser(&browser())->GetColorProvider(),
-          kOtherProfileImageSize));
+      avatar_image =
+          ui::ImageModel::FromImageSkia(AddLinearGradientRingToAvatar(
+              avatar_image,
+              *BrowserWindow::FromBrowser(&browser())->GetColorProvider(),
+              kOtherProfileImageSize));
     } else {
       avatar_image = ProfileMenuViewBase::GetCircularSizedImage(
           avatar_image, kOtherProfileImageSize);

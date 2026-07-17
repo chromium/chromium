@@ -78,14 +78,14 @@ class StateProvider {
   // Consider overriding `Init()` if you need to add a potential code to
   // `RequestUpdate()`. The init method will be
   // called right after all the main states are created.
-  // `should_consider_ai_subscription` specifies if this state may display
-  // the AI subscription ring to eligible users (subject to other conditions).
+  // `should_consider_avatar_ring` specifies if this state may display
+  // the linear gradient ring to eligible users (subject to other conditions).
   // The default behavior is to show it, but some error states that manipulate
   // the avatar (e.g. they add a dotted ring around it) should set this to
   // false.
   explicit StateProvider(Profile* profile,
                          StateObserver* state_observer,
-                         bool should_consider_ai_subscription);
+                         bool should_consider_avatar_ring);
 
   virtual ~StateProvider();
 
@@ -115,8 +115,8 @@ class StateProvider {
 
   // Returns the avatar icon and its type.
   // Note: If you are overriding this method to show a custom icon that
-  // doesn't support the AI ring, make sure to pass `false` for
-  // `should_consider_ai_subscription` in the constructor.
+  // doesn't support the avatar ring, make sure to pass `false` for
+  // `should_consider_avatar_ring` in the constructor.
   virtual std::pair<ui::ImageModel, AvatarIconType> GetAvatarIcon(
       int icon_size,
       SkColor /*icon_color*/,
@@ -156,8 +156,8 @@ class StateProvider {
   // purposes.
   virtual void ClearForTesting();
 
-  // Returns whether we should show the AI avatar ring.
-  bool ShouldShowAiAvatarRing() const;
+  // Returns whether we should show the avatar ring.
+  bool ShouldShowGradientAvatarRing() const;
 
   // Returns the layout insets for the button.
   virtual gfx::Insets GetLayoutInsets(int total_size,
@@ -177,7 +177,7 @@ class StateProvider {
  private:
   const raw_ref<Profile> profile_;
   const raw_ref<StateObserver> state_observer_;
-  const bool should_consider_ai_subscription_;
+  const bool should_consider_avatar_ring_;
 };
 
 class StateObserver {

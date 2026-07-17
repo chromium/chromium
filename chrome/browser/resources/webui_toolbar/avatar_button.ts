@@ -55,7 +55,7 @@ export class AvatarButtonElement extends AvatarButtonElementBase {
     accessibilityName: '',
     accessibilityDescription: '',
     enabled: true,
-    hasAiRing: false,
+    hasLinearGradientRing: false,
   };
 
   protected getTooltip_(): string {

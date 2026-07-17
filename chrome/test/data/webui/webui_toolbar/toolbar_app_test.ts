@@ -168,7 +168,7 @@ function createMockNavigationState() {
       accessibilityName: '',
       accessibilityDescription: '',
       enabled: true,
-      hasAiRing: false,
+      hasLinearGradientRing: false,
     },
     layoutConstantsVersion: 0,
     pinnedToolbarActionsState: [],
@@ -583,7 +583,7 @@ suite('ToolbarAppTest', () => {
         'highlight-incognito');
   });
 
-  test('AvatarButtonAiRing', async () => {
+  test('AvatarButtonLinearGradientRing', async () => {
     loadTimeData.overrideValues({
       initialWebUISurfaceSyncEnabled: false,
     });
@@ -596,7 +596,7 @@ suite('ToolbarAppTest', () => {
     const innerButton = avatarButton.shadowRoot.querySelector('#button')!;
 
     // Helper to update state and check attribute
-    const checkAiRing = async (hasAiRing: boolean) => {
+    const checkLinearGradientRing = async (hasLinearGradientRing: boolean) => {
       const navigationState = createMockNavigationState();
       navigationState.avatarControlState = {
         state: AvatarToolbarButtonState.kNormal,
@@ -606,7 +606,7 @@ suite('ToolbarAppTest', () => {
         accessibilityName: '',
         accessibilityDescription: '',
         enabled: true,
-        hasAiRing: hasAiRing,
+        hasLinearGradientRing: hasLinearGradientRing,
       };
       browserProxy.fireNavigationStateListener([], navigationState);
       await microtasksFinished();
@@ -615,14 +615,14 @@ suite('ToolbarAppTest', () => {
       const actualButton = innerButton.shadowRoot!.querySelector('#button')!;
       const buttonStyle = window.getComputedStyle(actualButton);
 
-      if (hasAiRing) {
-        assertTrue(innerButton.hasAttribute('has-ai-ring'));
+      if (hasLinearGradientRing) {
+        assertTrue(innerButton.hasAttribute('has-linear-gradient-ring'));
         assertEquals('30px', iconStyle.width);
         assertEquals('30px', iconStyle.height);
         assertEquals('5px', buttonStyle.paddingLeft);
         assertEquals('7px', buttonStyle.paddingRight);
       } else {
-        assertFalse(innerButton.hasAttribute('has-ai-ring'));
+        assertFalse(innerButton.hasAttribute('has-linear-gradient-ring'));
         assertEquals('20px', iconStyle.width);
         assertEquals('20px', iconStyle.height);
         assertEquals('10px', buttonStyle.paddingLeft);
@@ -630,7 +630,7 @@ suite('ToolbarAppTest', () => {
       }
     };
 
-    await checkAiRing(false);
-    await checkAiRing(true);
+    await checkLinearGradientRing(false);
+    await checkLinearGradientRing(true);
   });
 });

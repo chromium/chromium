@@ -173,7 +173,7 @@ bool IsOpenLinkOTREnabled(Profile* source_profie, const GURL& url) {
   return incognito_avail != policy::IncognitoModeAvailability::kDisabled;
 }
 
-bool IsAiSubscriptionRingEnabled(Profile* profile) {
+bool ShouldShowAvatarGradientRing(Profile* profile) {
   if (!base::FeatureList::IsEnabled(
           switches::kEnableAiSubscriptionAvatarRing)) {
     return false;
@@ -190,20 +190,21 @@ bool IsAiSubscriptionRingEnabled(Profile* profile) {
          subscription_service->GetAiSubscriptionTier() > 0;
 }
 
-gfx::ImageSkia AddAiRingToAvatar(const ui::ImageModel& avatar_image,
-                                 const ui::ColorProvider& color_provider,
-                                 int avatar_size,
-                                 int gap_width,
-                                 int ring_thickness) {
+gfx::ImageSkia AddLinearGradientRingToAvatar(
+    const ui::ImageModel& avatar_image,
+    const ui::ColorProvider& color_provider,
+    int avatar_size,
+    int gap_width,
+    int ring_thickness) {
   // Gradient stops corresponding to SVG:
   // 1) 0 to 85%: Solid start_color
   // 2) 85% to 99.6%: Linear transition between start and end color.
   // 3) 99.6% to 100%: Solid end_color.
   constexpr float kPositions[] = {0.0f, 0.85f, 0.995943f, 1.0f};
 
-  return profiles::AddAiRingToAvatar(
+  return profiles::AddLinearGradientRingToAvatar(
       avatar_image, color_provider,
-      color_provider.GetColor(kColorAiSubscriptionRingGradientStart),
-      color_provider.GetColor(kColorAiSubscriptionRingGradientEnd), kPositions,
+      color_provider.GetColor(kColorAvatarRingGradientStart),
+      color_provider.GetColor(kColorAvatarRingGradientEnd), kPositions,
       avatar_size, gap_width, ring_thickness);
 }

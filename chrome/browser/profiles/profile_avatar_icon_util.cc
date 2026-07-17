@@ -1235,14 +1235,15 @@ ui::ImageModel EmbedAvatarOntoImage(int resource_id,
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-gfx::ImageSkia AddAiRingToAvatar(const ui::ImageModel& avatar_image,
-                                 const ui::ColorProvider& color_provider,
-                                 SkColor start_color,
-                                 SkColor end_color,
-                                 base::span<const float, 4> positions,
-                                 int avatar_size,
-                                 int gap_width,
-                                 int ring_thickness) {
+gfx::ImageSkia AddLinearGradientRingToAvatar(
+    const ui::ImageModel& avatar_image,
+    const ui::ColorProvider& color_provider,
+    SkColor start_color,
+    SkColor end_color,
+    base::span<const float, 4> positions,
+    int avatar_size,
+    int gap_width,
+    int ring_thickness) {
   DCHECK(!avatar_image.IsEmpty());
 
   AiSubscriptionRingGeometry geom(avatar_size, gap_width, ring_thickness);
@@ -1256,7 +1257,7 @@ gfx::ImageSkia AddAiRingToAvatar(const ui::ImageModel& avatar_image,
   auto shader = CreateAiSubscriptionRingShader(geom.total_size, start_color,
                                                end_color, positions);
 
-  // Create the composite image with the AI ring.
+  // Create the composite image with the linear gradient ring.
   return gfx::ImageSkia(std::make_unique<AvatarWithProjectedRingSource>(
                             sized_avatar_image, geom, std::move(shader)),
                         gfx::Size(geom.total_size, geom.total_size));

@@ -15,8 +15,10 @@
   align-self: center;
   /* Enable interpolation between 'max-content' and 0 */
   interpolate-size: allow-keywords;
-  /* kAiRingGapDip (2px) + kAiRingThicknessDip (3px) = 5px */
+  /* LINT.IfChange(AvatarRingSpecs) */
+  /* kAvatarRingGapDip (2px) + kAvatarRingThicknessDip (3px) = 5px */
   --avatar-ring-delta: 5px;
+  /* LINT.ThenChange(//chrome/browser/ui/profiles/profile_view_utils.h:AvatarRingSpecs) */
 }
 
 #button {
@@ -91,14 +93,14 @@
       var(--color-avatar-button-highlight-incognito-foreground);
 }
 
-#button[has-ai-ring] {
+#button[has-linear-gradient-ring] {
   --toolbar-chip-padding-start:
       calc(var(--avatar-chip-padding-left) - var(--avatar-ring-delta));
   --toolbar-chip-padding-end:
       calc(var(--avatar-chip-padding-right) - var(--avatar-ring-delta));
 }
 
-#button[has-ai-ring] #icon {
+#button[has-linear-gradient-ring] #icon {
   --icon-size:
       calc(var(--toolbar-button-icon-size) + 2 * var(--avatar-ring-delta));
 }
