@@ -165,12 +165,8 @@
 }
 
 - (void)onFeatureEngagementTrackerInitialized:(BOOL)success {
-  DCHECK(self.profileState.profile);
-  if (!IsRecordRecentActiveDaysEnabled()) {
-    return;
-  }
-
-  if (!success) {
+  if (!IsRecordRecentActiveDaysEnabled() || !self.profileState.profile ||
+      !success) {
     return;
   }
 
