@@ -97,7 +97,7 @@ class NativePixmapFrameResource : public FrameResource {
       const override;
   const VideoFrameLayout& layout() const override;
   VideoPixelFormat format() const override;
-  int stride(size_t plane) const override;
+  size_t stride(size_t plane) const override;
   VideoFrame::StorageType storage_type() const override;
   int row_bytes(size_t plane) const override;
   const gfx::Size& coded_size() const override;

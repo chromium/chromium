@@ -105,9 +105,8 @@ class FrameResource : public base::RefCountedThreadSafe<FrameResource> {
 
   virtual VideoPixelFormat format() const = 0;
 
-  // Returns the stride in bytes of a plane. Note that stride can be negative if
-  // the image layout is bottom-up.
-  virtual int stride(size_t plane) const = 0;
+  // Returns the stride in bytes of a plane.
+  virtual size_t stride(size_t plane) const = 0;
 
   virtual VideoFrame::StorageType storage_type() const = 0;
 

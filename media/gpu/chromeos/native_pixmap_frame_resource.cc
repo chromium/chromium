@@ -313,7 +313,7 @@ VideoPixelFormat NativePixmapFrameResource::format() const {
   return layout_.format();
 }
 
-int NativePixmapFrameResource::stride(size_t plane) const {
+size_t NativePixmapFrameResource::stride(size_t plane) const {
   CHECK_LT(plane, layout().num_planes());
   return layout().planes()[plane].stride;
 }

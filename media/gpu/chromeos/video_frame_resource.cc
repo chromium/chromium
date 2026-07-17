@@ -95,7 +95,7 @@ VideoPixelFormat VideoFrameResource::format() const {
   return frame_->format();
 }
 
-int VideoFrameResource::stride(size_t plane) const {
+size_t VideoFrameResource::stride(size_t plane) const {
   return frame_->stride(plane);
 }
 
