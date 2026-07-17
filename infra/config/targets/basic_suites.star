@@ -1412,27 +1412,6 @@ targets.legacy_basic_suite(
     },
 )
 
-targets.legacy_basic_suite(
-    name = "ondevice_model_benchmark_tests_gpu_submodel_suite",
-    tests = {
-        "ondevice_model_benchmark_tests_gpu_submodel": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "ondevice_model_benchmark_tests_gpu_no_submodel_suite",
-    tests = {
-        "ondevice_model_benchmark_tests_gpu_no_submodel": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "ondevice_model_benchmark_tests_cpu_no_submodel_suite",
-    tests = {
-        "ondevice_model_benchmark_tests_cpu_no_submodel": targets.legacy_test_config(),
-    },
-)
-
 # TODO(b:484388901): Enable GPU backedn testing when the issue is fixed.
 # targets.legacy_basic_suite(
 #     name = "litert_e2e_tests_gpu_suite",

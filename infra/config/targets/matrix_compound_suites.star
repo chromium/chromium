@@ -847,10 +847,6 @@ targets.legacy_matrix_compound_suite(
         "model_validation_tests_suite": None,
         "model_validation_tests_light_suite": None,
         "ondevice_stability_tests_suite": None,
-        # TODO(b:464046877): Enable after the timeout issue is fixed.
-        # "ondevice_model_benchmark_tests_gpu_submodel_suite": None,
-        # "ondevice_model_benchmark_tests_gpu_no_submodel_suite": None,
-        # "ondevice_model_benchmark_tests_cpu_no_submodel_suite": None,
         # TODO(b:484388901): Enable GPU backend testing when the issue is fixed.
         # "litert_e2e_tests_gpu_suite": None,
         "litert_e2e_tests_cpu_suite": None,
@@ -908,24 +904,6 @@ targets.legacy_matrix_compound_suite(
         "opt_target_coverage_test_suite": targets.legacy_matrix_config(
             mixins = [
                 "gce",
-            ],
-        ),
-        "ondevice_model_benchmark_tests_gpu_submodel_suite": targets.legacy_matrix_config(
-            mixins = [
-                "chrome-intelligence-swarming-pool",
-                "non-gce",
-            ],
-        ),
-        "ondevice_model_benchmark_tests_gpu_no_submodel_suite": targets.legacy_matrix_config(
-            mixins = [
-                "chrome-intelligence-swarming-pool",
-                "non-gce",
-            ],
-        ),
-        "ondevice_model_benchmark_tests_cpu_no_submodel_suite": targets.legacy_matrix_config(
-            mixins = [
-                "chrome-intelligence-swarming-pool",
-                "non-gce",
             ],
         ),
         # TODO(b:484388901): Enable GPU backedn testing when the issue is fixed.
@@ -1015,24 +993,6 @@ targets.legacy_matrix_compound_suite(
                 "AMD_RADEON_RX_5500_XT",
                 "INTEL_UHD_630_OR_770",
                 "NVIDIA_GEFORCE_GTX_1660",
-            ],
-        ),
-        "ondevice_model_benchmark_tests_gpu_submodel_suite": targets.legacy_matrix_config(
-            mixins = [
-                "chrome-intelligence-swarming-pool",
-                "non-gce",
-            ],
-        ),
-        "ondevice_model_benchmark_tests_gpu_no_submodel_suite": targets.legacy_matrix_config(
-            mixins = [
-                "chrome-intelligence-swarming-pool",
-                "non-gce",
-            ],
-        ),
-        "ondevice_model_benchmark_tests_cpu_no_submodel_suite": targets.legacy_matrix_config(
-            mixins = [
-                "chrome-intelligence-swarming-pool",
-                "non-gce",
             ],
         ),
         # TODO(b:484388901): Enable GPU backedn testing when the issue is fixed.

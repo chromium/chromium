@@ -1791,12 +1791,6 @@ targets.binaries.generated_script(
 )
 
 targets.binaries.generated_script(
-    name = "ondevice_model_benchmark_tests",
-    label = "//components/optimization_guide/internal/testing:ondevice_model_benchmark_tests",
-    module_scheme = "flat",
-)
-
-targets.binaries.generated_script(
     name = "ondevice_api_scrape_tests",
     label = "//components/optimization_guide/internal/testing:ondevice_api_scrape_tests",
     skip_usage_check = True,
