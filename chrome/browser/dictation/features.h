@@ -29,6 +29,10 @@ extern const base::FeatureParam<bool> kUseComponentExtension;
 // provided in the StartStream message.
 extern const base::FeatureParam<bool> kSendContextAsync;
 
+// If true, partial transcription text will be included in the composition as it
+// comes in rather than only updating the composition for final text.
+extern const base::FeatureParam<bool> kShowPartials;
+
 }  // namespace dictation
 
 #endif  // CHROME_BROWSER_DICTATION_FEATURES_H_

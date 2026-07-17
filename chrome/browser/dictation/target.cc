@@ -4,6 +4,7 @@
 
 #include "chrome/browser/dictation/target.h"
 
+#include "chrome/browser/dictation/features.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -39,7 +40,7 @@ content::RenderWidgetHost* Target::GetRenderWidgetHost() const {
 }
 
 void Target::SetComposition(const std::u16string& text, bool is_final) {
-  if (!is_final) {
+  if (!is_final && !kShowPartials.Get()) {
     return;
   }
 
@@ -57,9 +58,12 @@ void Target::SetComposition(const std::u16string& text, bool is_final) {
 
   // Specify an ImeTextSpan for the entire text to make it look like a user
   // typing without a visual difference for the composition.
+  // But if we're showing partials for testing, still include an underline to
+  // visually distinguish partials.
   ui::ImeTextSpan text_span;
   text_span.end_offset = text.length();
-  text_span.underline_style = ui::ImeTextSpan::UnderlineStyle::kNone;
+  text_span.underline_style = is_final ? ui::ImeTextSpan::UnderlineStyle::kNone
+                                       : ui::ImeTextSpan::UnderlineStyle::kDot;
 
   last_sent_composition_ = text;
 

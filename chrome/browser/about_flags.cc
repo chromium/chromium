@@ -4719,8 +4719,11 @@ const FeatureEntry::FeatureVariation kGlassFrameVariations[] = {
 #if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kDictationEvalModeParam[] = {
     {"eval_mode", "true"}};
+const FeatureEntry::FeatureParam kDictationShowPartialsParam[] = {
+    {"show_partials", "true"}};
 const FeatureEntry::FeatureVariation kDictationVariations[] = {
-    {"with evaluation mode", kDictationEvalModeParam, nullptr}};
+    {"with evaluation mode", kDictationEvalModeParam, nullptr},
+    {"with shown partials", kDictationShowPartialsParam, nullptr}};
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // RECORDING USER METRICS FOR FLAGS:
