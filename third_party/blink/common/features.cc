@@ -5,6 +5,7 @@
 #include "third_party/blink/public/common/features.h"
 
 #include "base/command_line.h"
+#include "base/feature.h"
 #include "base/feature_list.h"
 #include "base/features.h"
 #include "base/time/time.h"
@@ -2600,6 +2601,9 @@ BASE_FEATURE(kEmulateLoadStartedForInspectorOncePerResource,
 // Whether force-showing popovers is enabled.
 BASE_FEATURE(kDevToolsAllowPopoverForcing, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enable the 'unframed' display override for IWAs. go/unframed-explainer-doc.
+BASE_FEATURE(kUnframedIwa, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If enabled, the usage of unload handlers causes a blocklisted reason for
 // BFCache. The purpose is to capture their source location.
 BASE_FEATURE(kUnloadBlocklisted, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -2770,9 +2774,6 @@ BASE_FEATURE(kWorkerThreadRespectTermRequest, base::FEATURE_ENABLED_BY_DEFAULT);
 // Indicates that renderer is running on an Android XR (AR/VR) device.
 // Enables certain features which are not needed on other platforms.
 BASE_FEATURE(kXrDevice, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enable the 'unframed' display override for IWAs. go/unframed-explainer-doc.
-BASE_FEATURE(kUnframedIwa, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When adding new features or constants for features, please keep the features
 // sorted by identifier name (e.g. `kAwesomeFeature`), and the constants for

@@ -2227,6 +2227,9 @@ TEST_F(ManifestToWebAppInstallInfoJobTest,
 
 TEST_F(ManifestToWebAppInstallInfoJobTest,
        IgnoresUnframedDisplayOverrideWhenTheFeatureIsDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(blink::features::kUnframedIwa);
+
   ASSERT_FALSE(base::FeatureList::IsEnabled(blink::features::kUnframedIwa));
 
   SetupBasicPageState();
