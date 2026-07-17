@@ -16470,6 +16470,21 @@
             ]
         }
     ],
+    "MapsNativePreviewLinkifiedAddress": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSMiniMapLinkifiedAddress"
+                    ]
+                }
+            ]
+        }
+    ],
     "MapsNativePreviewUniversalLink": [
         {
             "platforms": [
