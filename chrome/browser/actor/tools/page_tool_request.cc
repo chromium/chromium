@@ -6,11 +6,13 @@
 
 #include <optional>
 
+#include "base/feature_list.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/actor/tools/page_tool.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_constants.h"
+#include "chrome/common/chrome_features.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/tabs/public/tab_interface.h"
@@ -66,6 +68,20 @@ std::string PageToolRequest::GetTextContentSentToRenderer() const {
 
 const PageTarget& PageToolRequest::GetTarget() const {
   return target_;
+}
+
+bool PageToolRequest::RequiresTargetInLastApc() const {
+  return HasApcNodeTarget() &&
+         base::FeatureList::IsEnabled(features::kGlicActorToctouValidation);
+}
+
+bool PageToolRequest::IsSubframeTargetingAllowed() const {
+  return true;
+}
+
+bool PageToolRequest::HasApcNodeTarget() const {
+  const DomNode* node = std::get_if<DomNode>(&target_);
+  return node && node->node_id != kRootElementDomNodeId;
 }
 
 }  // namespace actor

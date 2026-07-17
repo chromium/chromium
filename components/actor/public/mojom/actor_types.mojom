@@ -48,7 +48,7 @@ enum ActionResultCode {
   // The target frame in the renderer no longer exists or is shutting down.
   kFrameWentAway = 17,
 
-  // The target DOMNodeId does not exist in the document.
+  // The target DOMNodeId is not in the live document or the last APC.
   kInvalidDomNodeId = 18,
 
   // The targeted element cannot be modified because it is disabled.

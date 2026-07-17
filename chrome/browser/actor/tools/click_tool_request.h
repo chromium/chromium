@@ -44,6 +44,8 @@ class ClickToolRequest : public PageToolRequest {
   mojom::ToolActionPtr ToMojoToolAction(
       content::RenderFrameHost& frame) const override;
   std::unique_ptr<PageToolRequest> Clone() const override;
+  bool RequiresTargetInLastApc() const override;
+  bool IsSubframeTargetingAllowed() const override;
 
   void WillSendToRenderer(
       content::RenderWidgetHost* render_widget_host) override;

@@ -57,6 +57,12 @@ class PageToolRequest : public TabToolRequest {
   // Returns what in the page the tool should act upon.
   const PageTarget& GetTarget() const;
 
+  // Returns whether a non-root DOM target must appear in the last APC.
+  virtual bool RequiresTargetInLastApc() const;
+
+  // Returns whether the action may target a node outside the main frame.
+  virtual bool IsSubframeTargetingAllowed() const;
+
   // Called just before the tool action is sent to the renderer.
   // TODO(https://crbug.com/470325962): Implement this in all child classes and
   // make this pure virtual.
@@ -64,6 +70,10 @@ class PageToolRequest : public TabToolRequest {
       content::RenderWidgetHost* render_widget_host) {}
 
  private:
+  // Returns whether the target is a non-root DOM node rather than a coordinate
+  // or the viewport.
+  bool HasApcNodeTarget() const;
+
   PageTarget target_;
 };
 

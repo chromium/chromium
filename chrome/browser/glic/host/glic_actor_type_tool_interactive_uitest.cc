@@ -181,6 +181,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorTypeToolUiTest,
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kTypingTestTabId),
+      // Save APC before sending the fake target id.
+      GetPageContextForActorTab(),
       ExecuteAction(std::move(type_provider),
                     actor::mojom::ActionResultCode::kInvalidDomNodeId));
 }

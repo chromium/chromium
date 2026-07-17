@@ -60,6 +60,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorMouseMoveToolUiTest, NonExistentNode) {
       StartActorTaskInNewTab(task_url, kNewActorTabId),
       GetPageContextForActorTab(),
       WaitForJsResult(kNewActorTabId, "()=>{ return event_log.join(',') }", ""),
+      // The fake id is missing from the saved APC, so the browser rejects it.
       ExecuteAction(
           base::BindLambdaForTesting([this]() {
             content::RenderFrameHost* frame =

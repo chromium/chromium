@@ -123,6 +123,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, FailOnInvalidNodeId) {
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
       GetPageContextForActorTab(),
+      // The fake id is missing from the saved APC, so the browser rejects it.
       ExecuteAction(
           base::BindLambdaForTesting([this]() {
             content::RenderFrameHost* frame =
