@@ -2572,6 +2572,13 @@ class LocationBarMediator
             return false;
         }
 
+        if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN
+                && mCurrentInput != null
+                && mCurrentInput.getAutocompleteState() == AutocompleteState.STANDBY) {
+            mCurrentInput.setAutocompleteState(AutocompleteState.ENABLED);
+            return true;
+        }
+
         boolean isBackwardsTab = KeyNavigationUtil.isTabBackward(event);
         boolean isForwardTab = KeyNavigationUtil.isTabForward(event);
         boolean isActivation = KeyNavigationUtil.isButtonActivate(event);
