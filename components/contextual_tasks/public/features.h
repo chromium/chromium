@@ -14,6 +14,7 @@
 namespace contextual_tasks {
 
 BASE_DECLARE_FEATURE(kContextualTasks);
+BASE_DECLARE_FEATURE(kContextualTasksPrivateApiNoAnimation);
 BASE_DECLARE_FEATURE(kContextualTasksEphemeralBrandedEntryPoint);
 BASE_DECLARE_FEATURE(kContextualTasksExtraOauthScopes);
 BASE_DECLARE_FEATURE(kEnableContextualTasksPinButtonInToolbar);
@@ -141,6 +142,7 @@ extern const base::FeatureParam<OverflowMenuItems>
     kContextualTasksSpatialModelToolbarLayoutOverflowItems;
 
 bool GetIsContextualTasksPdfCitationsEnabled();
+bool ShouldContextualTasksPrivateApiUseNoAnimation();
 
 bool GetIsContextualTasksLazyFetchClusterInfoEnabled();
 
@@ -439,6 +441,8 @@ extern bool GetIsWebpageApcComparisonEnabled();
 
 namespace flag_descriptions {
 
+extern const char kContextualTasksPrivateApiNoAnimationName[];
+extern const char kContextualTasksPrivateApiNoAnimationDescription[];
 extern const char kContextualTasksName[];
 extern const char kContextualTasksDescription[];
 extern const char kContextualTasksContextLibraryName[];

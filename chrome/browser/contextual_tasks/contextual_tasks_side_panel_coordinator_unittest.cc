@@ -968,5 +968,48 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
   EXPECT_EQ(final_count, 1);
 }
 
+TEST_F(ContextualTasksSidePanelCoordinatorTest, Show_StandardAnimation) {
+  EXPECT_CALL(*mock_panel_host_,
+              Show(ContextualTasksPanelHost::AnimationStyle::kStandard))
+      .Times(1);
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
+      /*use_no_animation=*/false);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       Show_TransitionFromTabAnimation) {
+  EXPECT_CALL(
+      *mock_panel_host_,
+      Show(ContextualTasksPanelHost::AnimationStyle::kTransitionFromTab))
+      .Times(1);
+  coordinator_->Show(
+      /*transition_from_tab=*/true,
+      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
+      /*use_no_animation=*/false);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest, Show_NoAnimation) {
+  EXPECT_CALL(*mock_panel_host_,
+              Show(ContextualTasksPanelHost::AnimationStyle::kNoAnimation))
+      .Times(1);
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
+      /*use_no_animation=*/true);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       Show_NoAnimation_OverridesTransition) {
+  EXPECT_CALL(*mock_panel_host_,
+              Show(ContextualTasksPanelHost::AnimationStyle::kNoAnimation))
+      .Times(1);
+  coordinator_->Show(
+      /*transition_from_tab=*/true,
+      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
+      /*use_no_animation=*/true);
+}
+
 }  // namespace contextual_tasks
 

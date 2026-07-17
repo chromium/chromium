@@ -50,6 +50,7 @@ class MockContextualTasksUiService : public ContextualTasksUiService {
        std::unique_ptr<contextual_search::ContextualSearchSessionHandle>,
        bool,
        omnibox::ChromeAimEntryPoint,
+       bool,
        bool),
       (override));
   MOCK_METHOD(GURL, GetDefaultAiPageUrl, (), (override));
