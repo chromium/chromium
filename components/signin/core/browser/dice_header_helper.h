@@ -48,6 +48,11 @@ class DiceHeaderHelper : public SigninHeaderHelper {
 
   ~DiceHeaderHelper() override = default;
 
+  // Returns the protocol version currently enabled (`kDiceProtocolVersion` or
+  // `kDiceProtocolVersion2` according to the `kDiceHeaderVersion2` feature
+  // flag).
+  static const char* GetDiceProtocolVersion();
+
   // Returns the parameters contained in the X-Chrome-ID-Consistency-Response
   // response header.
   static DiceResponseParams BuildDiceSigninResponseParams(

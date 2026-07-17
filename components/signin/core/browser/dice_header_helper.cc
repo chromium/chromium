@@ -188,6 +188,13 @@ DiceHeaderHelper::DiceHeaderHelper(AccountConsistencyMethod account_consistency)
     : account_consistency_(account_consistency) {}
 
 // static
+const char* DiceHeaderHelper::GetDiceProtocolVersion() {
+  return base::FeatureList::IsEnabled(switches::kDiceHeaderVersion2)
+             ? kDiceProtocolVersion2
+             : kDiceProtocolVersion;
+}
+
+// static
 DiceResponseParams DiceHeaderHelper::BuildDiceSigninResponseParams(
     const std::string& header_value) {
   DCHECK(!header_value.empty());
@@ -441,11 +448,7 @@ std::string DiceHeaderHelper::BuildRequestHeader(
     bool sync_feature_enabled,
     const std::string& device_id) {
   std::vector<std::string> parts;
-  const char* version =
-      base::FeatureList::IsEnabled(switches::kDiceHeaderVersion2)
-          ? kDiceProtocolVersion2
-          : kDiceProtocolVersion;
-  parts.push_back(base::StringPrintf("version=%s", version));
+  parts.push_back(base::StringPrintf("version=%s", GetDiceProtocolVersion()));
   parts.push_back("client_id=" +
                   GaiaUrls::GetInstance()->oauth2_chrome_client_id());
   if (!device_id.empty()) {
