@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/test/base/ash/js2gtest.gni")
-
 assert(is_chromeos, "Personalization App is ChromeOS only")
 
 static_library("personalization_app") {
