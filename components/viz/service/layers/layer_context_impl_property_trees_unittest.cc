@@ -850,6 +850,36 @@ TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
 }
 
 TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       TransformNodeParentIdEqualToId) {
+  auto update = CreateDefaultUpdate();
+  auto node_update = mojom::TransformNode::New();
+  node_update->id = next_transform_id_;
+  node_update->parent_id = next_transform_id_;  // parent_id == id
+  update->transform_nodes.push_back(std::move(node_update));
+  update->num_transform_nodes = next_transform_id_ + 1;
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            "Property tree node parent_id must be less than id");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       TransformNodeParentIdGreaterThanId) {
+  auto update = CreateDefaultUpdate();
+  auto node_update = mojom::TransformNode::New();
+  node_update->id = next_transform_id_;
+  node_update->parent_id = next_transform_id_ + 1;  // parent_id > id
+  update->transform_nodes.push_back(std::move(node_update));
+  update->num_transform_nodes = next_transform_id_ + 2;
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            "Property tree node parent_id must be less than id");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
        InvalidTransformNodeIdOnUpdate) {
   auto update = CreateDefaultUpdate();
   auto node_update = mojom::TransformNode::New();
@@ -1166,6 +1196,38 @@ TEST_F(LayerContextImplUpdateDisplayTreeClipNodeTest, InvalidClipNodeParentId) {
 }
 
 TEST_F(LayerContextImplUpdateDisplayTreeClipNodeTest,
+       ClipNodeParentIdEqualToId) {
+  auto update = CreateDefaultUpdate();
+  auto node_update = mojom::ClipNode::New();
+  node_update->id = next_clip_id_;
+  node_update->parent_id = next_clip_id_;  // parent_id == id
+  node_update->transform_id = cc::kRootPropertyNodeId;
+  update->clip_nodes.push_back(std::move(node_update));
+  update->num_clip_nodes = next_clip_id_ + 1;
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            "Property tree node parent_id must be less than id");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeClipNodeTest,
+       ClipNodeParentIdGreaterThanId) {
+  auto update = CreateDefaultUpdate();
+  auto node_update = mojom::ClipNode::New();
+  node_update->id = next_clip_id_;
+  node_update->parent_id = next_clip_id_ + 1;  // parent_id > id
+  node_update->transform_id = cc::kRootPropertyNodeId;
+  update->clip_nodes.push_back(std::move(node_update));
+  update->num_clip_nodes = next_clip_id_ + 2;
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            "Property tree node parent_id must be less than id");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeClipNodeTest,
        InvalidClipNodeTransformId) {
   auto update = CreateDefaultUpdate();
   auto node_update = mojom::ClipNode::New();
@@ -1395,6 +1457,42 @@ TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
   auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), "Invalid property tree node parent_id");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
+       EffectNodeParentIdEqualToId) {
+  auto update = CreateDefaultUpdate();
+  auto node_update = mojom::EffectNode::New();
+  node_update->id = next_effect_id_;
+  node_update->parent_id = next_effect_id_;  // parent_id == id
+  node_update->transform_id = cc::kRootPropertyNodeId;
+  node_update->clip_id = cc::kRootPropertyNodeId;
+  node_update->target_id = cc::kRootPropertyNodeId;
+  update->effect_nodes.push_back(std::move(node_update));
+  update->num_effect_nodes = next_effect_id_ + 1;
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            "Property tree node parent_id must be less than id");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
+       EffectNodeParentIdGreaterThanId) {
+  auto update = CreateDefaultUpdate();
+  auto node_update = mojom::EffectNode::New();
+  node_update->id = next_effect_id_;
+  node_update->parent_id = next_effect_id_ + 1;  // parent_id > id
+  node_update->transform_id = cc::kRootPropertyNodeId;
+  node_update->clip_id = cc::kRootPropertyNodeId;
+  node_update->target_id = cc::kRootPropertyNodeId;
+  update->effect_nodes.push_back(std::move(node_update));
+  update->num_effect_nodes = next_effect_id_ + 2;
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            "Property tree node parent_id must be less than id");
 }
 
 TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
@@ -2197,6 +2295,38 @@ TEST_F(LayerContextImplUpdateDisplayTreeScrollNodeTest,
   auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), "Invalid property tree node parent_id");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeScrollNodeTest,
+       ScrollNodeParentIdEqualToId) {
+  auto update = CreateDefaultUpdate();
+  auto node_update = mojom::ScrollNode::New();
+  node_update->id = next_scroll_id_;
+  node_update->parent_id = next_scroll_id_;  // parent_id == id
+  node_update->transform_id = cc::kRootPropertyNodeId;
+  update->scroll_nodes.push_back(std::move(node_update));
+  update->num_scroll_nodes = next_scroll_id_ + 1;
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            "Property tree node parent_id must be less than id");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeScrollNodeTest,
+       ScrollNodeParentIdGreaterThanId) {
+  auto update = CreateDefaultUpdate();
+  auto node_update = mojom::ScrollNode::New();
+  node_update->id = next_scroll_id_;
+  node_update->parent_id = next_scroll_id_ + 1;  // parent_id > id
+  node_update->transform_id = cc::kRootPropertyNodeId;
+  update->scroll_nodes.push_back(std::move(node_update));
+  update->num_scroll_nodes = next_scroll_id_ + 2;
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            "Property tree node parent_id must be less than id");
 }
 
 TEST_F(LayerContextImplUpdateDisplayTreeScrollNodeTest,

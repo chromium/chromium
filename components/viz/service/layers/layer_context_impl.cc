@@ -635,6 +635,11 @@ base::expected<bool, std::string> UpdatePropertyTree(
       return base::unexpected("Invalid property tree node parent_id");
     }
 
+    if (wire->id > cc::kRootPropertyNodeId && wire->parent_id >= wire->id) {
+      return base::unexpected(
+          "Property tree node parent_id must be less than id");
+    }
+
     if (wire->parent_id == cc::kInvalidPropertyNodeId &&
         wire->id != cc::kRootPropertyNodeId &&
         wire->id != cc::kSecondaryRootPropertyNodeId) {
