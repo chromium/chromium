@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
@@ -101,6 +102,28 @@ int OmniboxContextMenu::GetMaxWidthForMenu(views::MenuItemView* menu) {
   return width;
 }
 void OmniboxContextMenu::WillShowMenu(views::MenuItemView* menu) {
+  if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
+    if (menu == menu_ && controller_->shared_tabs_menu_model() &&
+        !was_add_tabs_button_shown_logged_) {
+      base::UmaHistogramBoolean("ContextualSearch.AddTabsButton.Shown.Omnibox",
+                                true);
+      was_add_tabs_button_shown_logged_ = true;
+    }
+
+    if (menu->GetCommand() == IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU) {
+      if (!was_add_tabs_button_hovered_logged_) {
+        base::UmaHistogramBoolean(
+            "ContextualSearch.AddTabsButton.Hovered.Omnibox", true);
+        was_add_tabs_button_hovered_logged_ = true;
+      }
+      if (!was_add_tabs_flyout_shown_logged_) {
+        base::UmaHistogramBoolean(
+            "ContextualSearch.AddTabsFlyout.Shown.Omnibox", true);
+        was_add_tabs_flyout_shown_logged_ = true;
+      }
+    }
+  }
+
   // For both tabs and regular context menu:
   if (menu == menu_ ||
       menu->GetCommand() == IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU) {

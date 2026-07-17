@@ -112,6 +112,65 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="ContextualSearch.AddTabsButton.Clicked.{ContextualSearchSource}"
+    enum="Boolean" expires_after="2027-07-16">
+  <owner>ananyaseelam@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Recorded when the user clicks the &quot;Add Tabs&quot; menu item via keydown
+    in the contextual action menu on {ContextualSearchSource}. Always logged as
+    true.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
+    name="ContextualSearch.AddTabsButton.Hovered.{ContextualSearchSource}"
+    enum="Boolean" expires_after="2027-07-16">
+  <owner>ananyaseelam@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Recorded when the user hovers over the &quot;Add Tabs&quot; menu item in the
+    contextual action menu on {ContextualSearchSource}. Always logged as true.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram name="ContextualSearch.AddTabsButton.Shown.{ContextualSearchSource}"
+    enum="Boolean" expires_after="2027-07-16">
+  <owner>ananyaseelam@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Recorded when the &quot;Add Tabs&quot; menu item in the contextual action
+    menu is shown on {ContextualSearchSource}. Always logged as true.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram name="ContextualSearch.AddTabsFlyout.Shown.{ContextualSearchSource}"
+    enum="Boolean" expires_after="2027-07-16">
+  <owner>ananyaseelam@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Recorded when the &quot;Add Tabs&quot; flyout is opened and tab suggestions
+    are shown on {ContextualSearchSource}. Always logged as true.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
+    name="ContextualSearch.AddTabsFlyout.TabSelected.{ContextualSearchSource}"
+    enum="Boolean" expires_after="2027-07-16">
+  <owner>ananyaseelam@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Recorded when the user adds a tab from the &quot;Add Tabs&quot; flyout on
+    {ContextualSearchSource}. Always logged as true.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
     name="ContextualSearch.AiModeButtonClick.{ContextualSearchAiModeButtonSurface}"
     enum="Boolean" expires_after="2026-12-16">
   <owner>niharm@google.com</owner>

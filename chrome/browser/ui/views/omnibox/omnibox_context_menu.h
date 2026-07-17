@@ -79,6 +79,10 @@ class OmniboxContextMenu : public views::MenuDelegate,
   // The drop shadows of the menus, mapped from the shadowed container view.
   base::flat_map<raw_ptr<views::View>, std::unique_ptr<views::ViewShadow>>
       view_shadows_;
+
+  bool was_add_tabs_button_shown_logged_ = false;
+  bool was_add_tabs_button_hovered_logged_ = false;
+  bool was_add_tabs_flyout_shown_logged_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_CONTEXT_MENU_H_
