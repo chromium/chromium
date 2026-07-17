@@ -2373,7 +2373,8 @@ LayoutResult::EStatus BlockLayoutAlgorithm::HandleInflow(
       child, child_break_token, child_data, ChildAvailableSize(),
       /* is_new_fc */ false, forced_bfc_block_offset,
       has_clearance_past_adjoining_floats,
-      previous_inflow_position->block_end_annotation_space);
+      previous_inflow_position->block_end_annotation_space,
+      previous_inflow_position->previous_sibling_block_end_annotation_space);
   const LayoutResult* layout_result =
       LayoutInflow(child_space, child_break_token, early_break_,
                    column_spanner_path_, &child, inline_child_layout_context);
@@ -2577,7 +2578,10 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
 
     const ConstraintSpace new_child_space = CreateConstraintSpaceForChild(
         child, child_break_token, *child_data, ChildAvailableSize(),
-        /* is_new_fc */ false, child_bfc_block_offset);
+        /* is_new_fc */ false, child_bfc_block_offset,
+        /* has_clearance_past_adjoining_floats */ false,
+        /* block_end_annotation_space */ LayoutUnit(),
+        previous_inflow_position->previous_sibling_block_end_annotation_space);
     layout_result =
         LayoutInflow(new_child_space, child_break_token, early_break_,
                      column_spanner_path_, &child, inline_child_layout_context);
@@ -2598,7 +2602,11 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
 
       const ConstraintSpace final_child_space = CreateConstraintSpaceForChild(
           child, child_break_token, *child_data, ChildAvailableSize(),
-          /* is_new_fc */ false, child_bfc_block_offset);
+          /* is_new_fc */ false, child_bfc_block_offset,
+          /* has_clearance_past_adjoining_floats */ false,
+          /* block_end_annotation_space */ LayoutUnit(),
+          previous_inflow_position
+              ->previous_sibling_block_end_annotation_space);
       layout_result = LayoutInflow(final_child_space, child_break_token,
                                    early_break_, column_spanner_path_, &child,
                                    inline_child_layout_context);
@@ -3445,7 +3453,8 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
     bool is_new_fc,
     const std::optional<LayoutUnit> child_bfc_block_offset,
     bool has_clearance_past_adjoining_floats,
-    LayoutUnit block_start_annotation_space) {
+    LayoutUnit block_start_annotation_space,
+    LayoutUnit previous_sibling_block_end_annotation_space) {
   const ComputedStyle& child_style = child.Style();
   const auto child_writing_direction = child_style.GetWritingDirection();
   const auto& constraint_space = GetConstraintSpace();
@@ -3617,6 +3626,13 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
         line_clamp_data_.data.IsLineClampContext() &&
         (constraint_space.ShouldTextBoxTrimInsideWhenLineClamp() ||
          container_builder_.ShouldTextBoxTrimNodeEnd()));
+    if (RuntimeEnabledFeatures::AnnotationSpaceOnStartEnabled() &&
+        GetConstraintSpace().ContainsAnnotations() &&
+        !GetConstraintSpace().IsInsideBalancedColumns() &&
+        previous_sibling_block_end_annotation_space > LayoutUnit()) {
+      builder.SetPreviousSiblingBlockEndAnnotationSpace(
+          previous_sibling_block_end_annotation_space);
+    }
   }
   builder.SetBlockStartAnnotationSpace(block_start_annotation_space);
 

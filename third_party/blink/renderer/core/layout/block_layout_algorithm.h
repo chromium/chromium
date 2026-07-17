@@ -238,7 +238,8 @@ class CORE_EXPORT BlockLayoutAlgorithm
       bool is_new_fc,
       const std::optional<LayoutUnit> bfc_block_offset = std::nullopt,
       bool has_clearance_past_adjoining_floats = false,
-      LayoutUnit block_start_annotation_space = LayoutUnit());
+      LayoutUnit block_start_annotation_space = LayoutUnit(),
+      LayoutUnit previous_sibling_block_end_annotation_space = LayoutUnit());
 
   // @return Estimated BFC block offset for the "to be layout" child.
   InflowChildData ComputeChildData(const PreviousInflowPosition&,
