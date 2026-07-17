@@ -12,6 +12,8 @@ import static org.junit.Assert.assertTrue;
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.ui.base.DeviceFormFactor.PHONE;
 
+import android.app.Activity;
+
 import androidx.core.util.Pair;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
@@ -23,7 +25,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.ActivityFinisher;
+import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -41,7 +45,10 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.history.BrowsingHistoryBridge;
 import org.chromium.chrome.browser.history.HistoryItem;
 import org.chromium.chrome.browser.history.HistoryProvider.BrowsingHistoryObserver;
+import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -75,8 +82,6 @@ public class TabSwitcherSearchTest {
     private static final int SERVER_PORT = 13245;
     private static final String URL_PREFIX = "127.0.0.1:" + SERVER_PORT;
 
-    // The Activity doesn't get reused because tearDown() closes it, but resetting the tab state
-    // is necessary for some tests.
     @Rule
     public AutoResetCtaTransitTestRule mCtaTestRule =
             ChromeTransitTestRules.autoResetCtaActivityRule();
@@ -98,7 +103,25 @@ public class TabSwitcherSearchTest {
 
     @After
     public void tearDown() {
-        ActivityFinisher.finishAll();
+        if (mUserActionTester != null) {
+            mUserActionTester.tearDown();
+        }
+        for (Activity activity : ApplicationStatus.getRunningActivities()) {
+            if (activity instanceof SearchActivity && !activity.isFinishing()) {
+                ApplicationTestUtils.finishActivity(activity);
+            }
+        }
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ChromeTabbedActivity cta = mCtaTestRule.getActivity();
+                    if (cta != null) {
+                        TabModelSelector selector = cta.getTabModelSelector();
+                        if (selector != null) {
+                            selector.selectModel(/* incognito= */ false);
+                        }
+                    }
+                    IncognitoTabHostUtils.closeAllIncognitoTabs();
+                });
     }
 
     @Test

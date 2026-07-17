@@ -36,8 +36,15 @@ base::LazyInstance<GroupConfigMap>::DestructorAtExit g_default_groups =
     LAZY_INSTANCE_INITIALIZER;
 base::LazyInstance<GroupConfigMap>::DestructorAtExit g_default_hub_zps_groups =
     LAZY_INSTANCE_INITIALIZER;
+#if BUILDFLAG(IS_ANDROID)
+base::LazyInstance<GroupConfigMap>::DestructorAtExit
+    g_default_hub_typed_groups_regular = LAZY_INSTANCE_INITIALIZER;
+base::LazyInstance<GroupConfigMap>::DestructorAtExit
+    g_default_hub_typed_groups_incognito = LAZY_INSTANCE_INITIALIZER;
+#else
 base::LazyInstance<GroupConfigMap>::DestructorAtExit
     g_default_hub_typed_groups = LAZY_INSTANCE_INITIALIZER;
+#endif
 
 const GroupConfigMap& BuildDefaultGroups() {
   if (g_default_groups.Get().empty()) {
@@ -80,36 +87,75 @@ const GroupConfigMap& BuildDefaultHubZPSGroups() {
 }
 
 const GroupConfigMap& BuildDefaultHubTypedGroups(bool is_incognito) {
+#if BUILDFLAG(IS_ANDROID)
+  if (is_incognito) {
+    if (g_default_hub_typed_groups_incognito.Get().empty()) {
+      g_default_hub_typed_groups_incognito.Get() = {
+          // clang-format off
+          {GROUP_MOBILE_OPEN_TABS, CreateGroup(SECTION_MOBILE_OPEN_TABS)},
+          {GROUP_MOBILE_BOOKMARKS,
+           CreateGroup(SECTION_MOBILE_BOOKMARKS,
+                       GroupConfig_RenderType_DEFAULT_VERTICAL,
+                       IDS_SEARCH_ENGINES_STARTER_PACK_BOOKMARKS_NAME)},
+          {GROUP_MOBILE_HISTORY,
+           CreateGroup(SECTION_MOBILE_HISTORY,
+                       GroupConfig_RenderType_DEFAULT_VERTICAL,
+                       IDS_OMNIBOX_HUB_HISTORY_HEADER)},
+          {GROUP_SEARCH,
+           CreateGroup(SECTION_SEARCH,
+                       GroupConfig_RenderType_DEFAULT_VERTICAL,
+                       IDS_OMNIBOX_HUB_SEARCH_HEADER)}
+          // clang-format on
+      };
+    }
+    return g_default_hub_typed_groups_incognito.Get();
+  } else {
+    if (g_default_hub_typed_groups_regular.Get().empty()) {
+      g_default_hub_typed_groups_regular.Get() = {
+          // clang-format off
+          {GROUP_MOBILE_OPEN_TABS,
+           CreateGroup(SECTION_MOBILE_OPEN_TABS,
+                       GroupConfig_RenderType_DEFAULT_VERTICAL,
+                       IDS_OMNIBOX_HUB_TYPED_MATCH_HEADER)},
+          {GROUP_MOBILE_BOOKMARKS,
+           CreateGroup(SECTION_MOBILE_BOOKMARKS,
+                       GroupConfig_RenderType_DEFAULT_VERTICAL,
+                       IDS_SEARCH_ENGINES_STARTER_PACK_BOOKMARKS_NAME)},
+          {GROUP_MOBILE_HISTORY,
+           CreateGroup(SECTION_MOBILE_HISTORY,
+                       GroupConfig_RenderType_DEFAULT_VERTICAL,
+                       IDS_OMNIBOX_HUB_HISTORY_HEADER)},
+          {GROUP_SEARCH,
+           CreateGroup(SECTION_SEARCH,
+                       GroupConfig_RenderType_DEFAULT_VERTICAL,
+                       IDS_OMNIBOX_HUB_SEARCH_HEADER)}
+          // clang-format on
+      };
+    }
+    return g_default_hub_typed_groups_regular.Get();
+  }
+#else
   if (g_default_hub_typed_groups.Get().empty()) {
     g_default_hub_typed_groups.Get() = {
         // clang-format off
-                {GROUP_MOBILE_OPEN_TABS,
-#if BUILDFLAG(IS_ANDROID)
-         !is_incognito
-             ? CreateGroup(SECTION_MOBILE_OPEN_TABS,
-                           GroupConfig_RenderType_DEFAULT_VERTICAL,
-                           IDS_OMNIBOX_HUB_TYPED_MATCH_HEADER)
-             : CreateGroup(SECTION_MOBILE_OPEN_TABS)
-#else
-             CreateGroup(SECTION_MOBILE_OPEN_TABS)
-#endif
-        },
+        {GROUP_MOBILE_OPEN_TABS, CreateGroup(SECTION_MOBILE_OPEN_TABS)},
         {GROUP_MOBILE_BOOKMARKS,
-             CreateGroup(SECTION_MOBILE_BOOKMARKS,
-                         GroupConfig_RenderType_DEFAULT_VERTICAL,
-                         IDS_SEARCH_ENGINES_STARTER_PACK_BOOKMARKS_NAME)},
+         CreateGroup(SECTION_MOBILE_BOOKMARKS,
+                     GroupConfig_RenderType_DEFAULT_VERTICAL,
+                     IDS_SEARCH_ENGINES_STARTER_PACK_BOOKMARKS_NAME)},
         {GROUP_MOBILE_HISTORY,
-             CreateGroup(SECTION_MOBILE_HISTORY,
-                         GroupConfig_RenderType_DEFAULT_VERTICAL,
-                         IDS_OMNIBOX_HUB_HISTORY_HEADER)},
+         CreateGroup(SECTION_MOBILE_HISTORY,
+                     GroupConfig_RenderType_DEFAULT_VERTICAL,
+                     IDS_OMNIBOX_HUB_HISTORY_HEADER)},
         {GROUP_SEARCH,
-             CreateGroup(SECTION_SEARCH,
-                         GroupConfig_RenderType_DEFAULT_VERTICAL,
-                         IDS_OMNIBOX_HUB_SEARCH_HEADER)}
+         CreateGroup(SECTION_SEARCH,
+                     GroupConfig_RenderType_DEFAULT_VERTICAL,
+                     IDS_OMNIBOX_HUB_SEARCH_HEADER)}
         // clang-format on
     };
   }
   return g_default_hub_typed_groups.Get();
+#endif
 }
 
 }  // namespace
@@ -131,7 +177,12 @@ const omnibox::GroupConfigMap& BuildDefaultGroupsForInput(
 void ResetDefaultGroupsForTest() {
   g_default_groups.Get().clear();
   g_default_hub_zps_groups.Get().clear();
+#if BUILDFLAG(IS_ANDROID)
+  g_default_hub_typed_groups_regular.Get().clear();
+  g_default_hub_typed_groups_incognito.Get().clear();
+#else
   g_default_hub_typed_groups.Get().clear();
+#endif
 }
 
 GroupId GroupIdForNumber(int value) {
