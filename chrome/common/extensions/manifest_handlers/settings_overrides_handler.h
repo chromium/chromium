@@ -17,6 +17,8 @@ namespace extensions {
 // An extension can add a search engine as default or non-default, overwrite the
 // homepage and append a startup page to the list.
 struct SettingsOverrides : public Extension::ManifestData {
+  static const char* kManifestDataKey;
+
   SettingsOverrides();
 
   SettingsOverrides(const SettingsOverrides&) = delete;

@@ -15,6 +15,8 @@ namespace extensions {
 
 // Structured contents of the "side_panel" key.
 struct SidePanelInfo : public Extension::ManifestData {
+  static const char* kManifestDataKey;
+
   SidePanelInfo();
   ~SidePanelInfo() override;
 

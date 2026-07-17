@@ -55,12 +55,14 @@ static base::LazyInstance<AppLaunchInfo>::DestructorAtExit
     g_empty_app_launch_info = LAZY_INSTANCE_INITIALIZER;
 
 const AppLaunchInfo& GetAppLaunchInfo(const Extension* extension) {
-  const AppLaunchInfo* info = static_cast<const AppLaunchInfo*>(
-      extension->GetManifestData(keys::kLaunch));
+  const AppLaunchInfo* info = extension->GetManifestData<AppLaunchInfo>();
   return info ? *info : g_empty_app_launch_info.Get();
 }
 
 }  // namespace
+
+// static
+const char* AppLaunchInfo::kManifestDataKey = keys::kLaunch;
 
 AppLaunchInfo::AppLaunchInfo() = default;
 
@@ -252,7 +254,7 @@ bool AppLaunchManifestHandler::Parse(Extension* extension,
   std::unique_ptr<AppLaunchInfo> info(new AppLaunchInfo);
   if (!info->Parse(extension, error))
     return false;
-  extension->SetManifestData(keys::kLaunch, std::move(info));
+  extension->SetManifestData(AppLaunchInfo::kManifestDataKey, std::move(info));
   return true;
 }
 

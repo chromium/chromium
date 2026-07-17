@@ -18,11 +18,13 @@ namespace errors = manifest_errors;
 
 using SidePanelManifestKeys = api::side_panel::ManifestKeys;
 
+// static
+const char* SidePanelInfo::kManifestDataKey = SidePanelManifestKeys::kSidePanel;
+
 namespace {
 
 const SidePanelInfo* GetResourcesInfo(const Extension* extension) {
-  return static_cast<const SidePanelInfo*>(
-      extension->GetManifestData(SidePanelManifestKeys::kSidePanel));
+  return extension->GetManifestData<SidePanelInfo>();
 }
 
 std::unique_ptr<SidePanelInfo> ParseFromDictionary(const Extension& extension,
@@ -73,8 +75,7 @@ bool SidePanelManifestHandler::Parse(Extension* extension,
   if (!info) {
     return false;
   }
-  extension->SetManifestData(SidePanelManifestKeys::kSidePanel,
-                             std::move(info));
+  extension->SetManifestData(SidePanelInfo::kManifestDataKey, std::move(info));
   return true;
 }
 

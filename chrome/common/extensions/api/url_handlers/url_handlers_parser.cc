@@ -53,6 +53,9 @@ const UrlHandlerInfo* GetMatchingUrlHandler(const Extension* extension,
 namespace mkeys = manifest_keys;
 namespace merrors = manifest_errors;
 
+// static
+const char* UrlHandlers::kManifestDataKey = mkeys::kUrlHandlers;
+
 UrlHandlerInfo::UrlHandlerInfo() = default;
 
 UrlHandlerInfo::UrlHandlerInfo(UrlHandlerInfo&& other) = default;
@@ -66,8 +69,7 @@ UrlHandlers::~UrlHandlers() = default;
 // static
 const std::vector<UrlHandlerInfo>* UrlHandlers::GetUrlHandlers(
     const Extension* extension) {
-  const UrlHandlers* info = static_cast<const UrlHandlers*>(
-      extension->GetManifestData(mkeys::kUrlHandlers));
+  const UrlHandlers* info = extension->GetManifestData<UrlHandlers>();
   return info ? &info->handlers : nullptr;
 }
 
@@ -166,7 +168,7 @@ bool UrlHandlersParser::Parse(Extension* extension, std::u16string* error) {
     }
   }
 
-  extension->SetManifestData(mkeys::kUrlHandlers, std::move(info));
+  extension->SetManifestData(UrlHandlers::kManifestDataKey, std::move(info));
 
   return true;
 }

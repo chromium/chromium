@@ -17,6 +17,8 @@ namespace extensions {
 // A structure to hold the parsed list of native messaging hosts that can
 // connect to this extension.
 struct NativelyConnectableHosts : public Extension::ManifestData {
+  static const char* kManifestDataKey;
+
   NativelyConnectableHosts();
   ~NativelyConnectableHosts() override;
 

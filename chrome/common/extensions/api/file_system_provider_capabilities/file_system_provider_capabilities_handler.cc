@@ -16,6 +16,10 @@
 
 namespace extensions {
 
+// static
+const char* FileSystemProviderCapabilities::kManifestDataKey =
+    manifest_keys::kFileSystemProviderCapabilities;
+
 FileSystemProviderCapabilities::FileSystemProviderCapabilities()
     : configurable_(false),
       watchable_(false),
@@ -45,9 +49,7 @@ FileSystemProviderCapabilitiesHandler::
 // static
 const FileSystemProviderCapabilities* FileSystemProviderCapabilities::Get(
     const Extension* extension) {
-  return static_cast<const FileSystemProviderCapabilities*>(
-      extension->GetManifestData(
-          manifest_keys::kFileSystemProviderCapabilities));
+  return extension->GetManifestData<FileSystemProviderCapabilities>();
 }
 
 bool FileSystemProviderCapabilitiesHandler::Parse(Extension* extension,
@@ -105,7 +107,7 @@ bool FileSystemProviderCapabilitiesHandler::Parse(Extension* extension,
               false) /* false by default */,
           source));
 
-  extension->SetManifestData(manifest_keys::kFileSystemProviderCapabilities,
+  extension->SetManifestData(FileSystemProviderCapabilities::kManifestDataKey,
                              std::move(capabilities));
   return true;
 }

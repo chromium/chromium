@@ -152,8 +152,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
   EXPECT_EQ(mojom::ManifestLocation::kComponent, extension1->location());
 
   const ExternallyConnectableInfo* info1 =
-      static_cast<const ExternallyConnectableInfo*>(
-          extension1->GetManifestData(manifest_keys::kExternallyConnectable));
+      ExternallyConnectableInfo::Get(extension1);
   ASSERT_TRUE(info1);
   EXPECT_EQ(1ul, info1->matches.size());
 
@@ -169,8 +168,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
   EXPECT_EQ(mojom::ManifestLocation::kComponent, extension2->location());
 
   const ExternallyConnectableInfo* info2 =
-      static_cast<const ExternallyConnectableInfo*>(
-          extension2->GetManifestData(manifest_keys::kExternallyConnectable));
+      ExternallyConnectableInfo::Get(extension2);
   ASSERT_TRUE(info2);
   EXPECT_EQ(1ul, info2->matches.size());
 

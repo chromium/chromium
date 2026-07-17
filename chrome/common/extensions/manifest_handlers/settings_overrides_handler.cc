@@ -119,6 +119,10 @@ std::string FormatUrlForDisplay(const GURL& url) {
 
 }  // namespace
 
+// static
+const char* SettingsOverrides::kManifestDataKey =
+    manifest_keys::kSettingsOverride;
+
 SettingsOverrides::SettingsOverrides() = default;
 
 SettingsOverrides::~SettingsOverrides() = default;
@@ -126,8 +130,7 @@ SettingsOverrides::~SettingsOverrides() = default;
 // static
 const SettingsOverrides* SettingsOverrides::Get(
     const Extension* extension) {
-  return static_cast<const SettingsOverrides*>(
-      extension->GetManifestData(manifest_keys::kSettingsOverride));
+  return extension->GetManifestData<SettingsOverrides>();
 }
 
 SettingsOverridesHandler::SettingsOverridesHandler() = default;
@@ -196,7 +199,8 @@ bool SettingsOverridesHandler::Parse(Extension* extension,
             PermissionsInfo::GetInstance()->GetByID(APIPermissionID::kHomepage),
             FormatUrlForDisplay(*(info->homepage))));
   }
-  extension->SetManifestData(manifest_keys::kSettingsOverride, std::move(info));
+  extension->SetManifestData(SettingsOverrides::kManifestDataKey,
+                             std::move(info));
   return true;
 }
 

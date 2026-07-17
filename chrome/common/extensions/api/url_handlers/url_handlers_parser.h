@@ -37,6 +37,8 @@ struct UrlHandlerInfo {
 // UrlHandlers allow platform apps to declare they handle specific URLs. See
 // https://developer.chrome.com/docs/apps/manifest/url_handlers
 struct UrlHandlers : public Extension::ManifestData {
+  static const char* kManifestDataKey;
+
   UrlHandlers();
   ~UrlHandlers() override;
 

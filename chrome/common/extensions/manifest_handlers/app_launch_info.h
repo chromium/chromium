@@ -21,6 +21,8 @@ namespace extensions {
 // Container that holds the parsed app launch data.
 class AppLaunchInfo : public Extension::ManifestData {
  public:
+  static const char* kManifestDataKey;
+
   AppLaunchInfo();
 
   AppLaunchInfo(const AppLaunchInfo&) = delete;

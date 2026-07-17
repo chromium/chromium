@@ -20,6 +20,8 @@ enum FileSystemProviderSource { SOURCE_FILE, SOURCE_NETWORK, SOURCE_DEVICE };
 // Represents capabilities of a file system provider.
 class FileSystemProviderCapabilities : public Extension::ManifestData {
  public:
+  static const char* kManifestDataKey;
+
   FileSystemProviderCapabilities();
   FileSystemProviderCapabilities(bool configurable,
                                  bool watchable,
