@@ -730,7 +730,7 @@ void RenderWidgetHostInputEventRouter::DispatchMouseEvent(
 
   if (root_view_receive_additional_mouse_up_ && target != root_view &&
       mouse_event.GetType() == blink::WebInputEvent::Type::kMouseUp) {
-    root_view->ProcessMouseEvent(event, latency);
+    root_view->ProcessMouseEvent(mouse_event, latency);
   }
 }
 

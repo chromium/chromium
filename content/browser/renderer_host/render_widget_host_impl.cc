@@ -3517,6 +3517,14 @@ void RenderWidgetHostImpl::SetAutoscrollSelectionActiveInMainFrame(
     return;
   }
 
+  // Only the outermost main frame should request this. Main frames of inner
+  // frame trees (e.g. fenced frames, guest views) share the outer WebContents'
+  // input event router, but should not be allowed to trigger mouse-up routing
+  // to the outermost root view.
+  if (!frame_tree_ || !frame_tree_->is_primary()) {
+    return;
+  }
+
   if (!delegate_ || !delegate_->GetInputEventRouter()) {
     return;
   }

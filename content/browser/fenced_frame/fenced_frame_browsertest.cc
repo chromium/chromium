@@ -21,6 +21,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "components/input/render_widget_host_input_event_router.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/back_forward_cache_browsertest.h"
@@ -31,6 +32,8 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
+#include "content/browser/renderer_host/render_widget_host_impl.h"
+#include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
@@ -1116,6 +1119,79 @@ IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest,
   mouse_event.button = blink::WebPointerProperties::Button::kLeft;
   mouse_event.SetPositionInWidget(5, 5);
   fenced_frame_rfh->GetRenderWidgetHost()->ForwardMouseEvent(mouse_event);
+}
+
+// Tests that a SetAutoscrollSelectionActiveInMainFrame request from a fenced
+// frame's main-frame widget does not affect mouse-up routing to the outer
+// root view. This should only be honored for the outermost main frame.
+IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest,
+                       AutoscrollSelectionFromFencedFrameIgnored) {
+  ASSERT_TRUE(https_server()->Start());
+  const GURL main_url = https_server()->GetURL("c.test", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  RenderFrameHostImplWrapper primary_rfh(primary_main_frame_host());
+
+  const GURL fenced_frame_url =
+      https_server()->GetURL("c.test", "/fenced_frames/title1.html");
+  RenderFrameHostImplWrapper fenced_frame_rfh(
+      fenced_frame_test_helper().CreateFencedFrame(primary_rfh.get(),
+                                                   fenced_frame_url));
+
+  RenderWidgetHostImpl* fenced_frame_rwh =
+      fenced_frame_rfh->GetRenderWidgetHost();
+  RenderWidgetHostImpl* primary_rwh = primary_rfh->GetRenderWidgetHost();
+
+  ASSERT_TRUE(fenced_frame_rwh->owner_delegate());
+  ASSERT_TRUE(fenced_frame_rwh->GetView()->IsRenderWidgetHostViewChildFrame());
+
+  input::RenderWidgetHostInputEventRouter* router =
+      web_contents()->GetInputEventRouter();
+
+  RenderWidgetHostMouseEventMonitor primary_monitor(primary_rwh);
+  RenderWidgetHostMouseEventMonitor fenced_frame_monitor(fenced_frame_rwh);
+
+  // 1. Simulate the request arriving from the fenced frame's renderer.
+  // It should be ignored.
+  fenced_frame_rwh->SetAutoscrollSelectionActiveInMainFrame(true);
+
+  // Dispatch MouseUp to fenced frame.
+  blink::WebMouseEvent mouse_up(
+      blink::WebInputEvent::Type::kMouseUp, blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_up.button = blink::WebPointerProperties::Button::kLeft;
+  mouse_up.SetPositionInWidget(10, 20);
+  gfx::PointF target_location(5, 8);
+
+  router->DispatchMouseEvent(primary_rwh->GetView(),
+                             fenced_frame_rwh->GetView(), mouse_up,
+                             ui::LatencyInfo(), target_location);
+
+  // Fenced frame should receive it at target_location.
+  EXPECT_TRUE(fenced_frame_monitor.EventWasReceived());
+  EXPECT_EQ(fenced_frame_monitor.event().PositionInWidget().x(), 5);
+  EXPECT_EQ(fenced_frame_monitor.event().PositionInWidget().y(), 8);
+  // Primary main frame should NOT receive it.
+  EXPECT_FALSE(primary_monitor.EventWasReceived());
+
+  // Reset monitors.
+  fenced_frame_monitor.ResetEventReceived();
+  primary_monitor.ResetEventReceived();
+
+  // 2. The outermost main frame's request should still be honored.
+  primary_rwh->SetAutoscrollSelectionActiveInMainFrame(true);
+
+  router->DispatchMouseEvent(primary_rwh->GetView(),
+                             fenced_frame_rwh->GetView(), mouse_up,
+                             ui::LatencyInfo(), target_location);
+
+  // Fenced frame should receive it at target_location.
+  EXPECT_TRUE(fenced_frame_monitor.EventWasReceived());
+  EXPECT_EQ(fenced_frame_monitor.event().PositionInWidget().x(), 5);
+  EXPECT_EQ(fenced_frame_monitor.event().PositionInWidget().y(), 8);
+  // Primary main frame should ALSO receive it, but at original coordinates.
+  EXPECT_TRUE(primary_monitor.EventWasReceived());
+  EXPECT_EQ(primary_monitor.event().PositionInWidget().x(), 10);
+  EXPECT_EQ(primary_monitor.event().PositionInWidget().y(), 20);
 }
 
 // Test that WebContents::GetFocusedFrame includes results from a fenced
