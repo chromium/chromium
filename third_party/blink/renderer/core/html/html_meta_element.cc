@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/csp/source_list_directive.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -47,6 +48,8 @@
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
+#include "third_party/blink/renderer/platform/network/http_parsers.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
@@ -690,7 +693,7 @@ void HTMLMetaElement::ProcessContent() {
 
   if (RuntimeEnabledFeatures::ResponsiveIframesEnabled() &&
       EqualIgnoringAsciiCase(name_value, keywords::kResponsiveEmbeddedSizing) &&
-      !GetDocument().body()) {
+      !GetDocument().body() && IsAllowedOrigins()) {
     GetDocument().SetResponsiveEmbeddedSizing();
   }
 
@@ -763,6 +766,47 @@ void HTMLMetaElement::ProcessContent() {
     UseCounter::Count(&GetDocument(), WebFeature::kWebAppTitle);
     GetDocument().UpdateApplicationTitle();
   }
+}
+
+bool HTMLMetaElement::IsAllowedOrigins() const {
+  const AtomicString& allowed_origins =
+      FastGetAttribute(html_names::kAllowedOriginsAttr);
+  if (allowed_origins.IsNull()) {
+    return false;
+  }
+  const Document& document = GetDocument();
+  const LocalFrame* frame = document.GetFrame();
+  if (!frame) {
+    return false;
+  }
+  const Frame* frame_tree_parent = frame->Tree().Parent();
+  if (!frame_tree_parent) {
+    return false;
+  }
+  const SecurityOrigin* container_origin =
+      frame_tree_parent->GetSecurityContext()->GetSecurityOrigin();
+  if (!container_origin) {
+    return false;
+  }
+  const ExecutionContext* execution_context = GetExecutionContext();
+  if (!execution_context) {
+    return false;
+  }
+
+  const network::mojom::blink::CSPSourceListPtr source_list =
+      ParseAllowedOrigins(allowed_origins);
+  if (!source_list) {
+    return false;
+  }
+
+  const KURL container_url(container_origin->ToUrlOrigin().GetURL());
+  const SecurityOrigin* self_origin = execution_context->GetSecurityOrigin();
+  const auto self_source = network::mojom::blink::CSPSource::New(
+      self_origin->Protocol(), self_origin->Host(), self_origin->Port(), "",
+      false, false);
+  const CSPCheckResult result =
+      CSPSourceListAllows(*source_list, *self_source, container_url);
+  return result.IsAllowed();
 }
 
 TextEncoding HTMLMetaElement::ComputeEncoding() const {

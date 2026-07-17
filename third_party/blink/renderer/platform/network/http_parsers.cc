@@ -1155,6 +1155,15 @@ ParseContentSecurityPolicyHeaders(
   return parsed_csps;
 }
 
+network::mojom::blink::CSPSourceListPtr ParseAllowedOrigins(
+    const String& raw_value) {
+  std::vector<std::string> parsing_errors;
+  // `allowed-origins` uses the same syntax as CSP `frame-ancestors`.
+  return network::mojom::ConvertToBlink(
+      network::ParseSourceList(network::mojom::CSPDirectiveName::FrameAncestors,
+                               raw_value.Utf8(), parsing_errors));
+}
+
 network::mojom::blink::SRIMessageSignaturesPtr
 ParseSRIMessageSignaturesFromHeaders(const String& raw_headers) {
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>(
