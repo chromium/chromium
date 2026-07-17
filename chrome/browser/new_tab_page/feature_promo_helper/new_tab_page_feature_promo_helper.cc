@@ -75,9 +75,7 @@ void ShowCustomizeChromeSidePanel(Profile* profile) {
           actions::ActionInvocationContext::Builder()
               .SetProperty(
                   kSidePanelOpenTriggerKey,
-                  static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
-                      SidePanelOpenTrigger::
-                          kNewTabPageAutomaticCustomizeChrome))
+                  SidePanelOpenTrigger::kNewTabPageAutomaticCustomizeChrome)
               .Build());
 }
 

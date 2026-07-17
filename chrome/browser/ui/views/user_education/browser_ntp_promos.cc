@@ -113,10 +113,8 @@ void InvokeCustomizationPromo(ContextPtr context) {
                       ->root_action_item())
       ->InvokeAction(
           actions::ActionInvocationContext::Builder()
-              .SetProperty(
-                  kSidePanelOpenTriggerKey,
-                  static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
-                      SidePanelOpenTrigger::kNewTabPageCustomizationPromo))
+              .SetProperty(kSidePanelOpenTriggerKey,
+                           SidePanelOpenTrigger::kNewTabPageCustomizationPromo)
               .Build());
 }
 

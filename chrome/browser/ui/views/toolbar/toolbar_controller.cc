@@ -833,11 +833,8 @@ void ToolbarController::ExecuteCommand(int command_id, int event_flags) {
           [&, this](actions::ActionId id) {
             pinned_actions_delegate_->GetActionItemFor(id)->InvokeAction(
                 actions::ActionInvocationContext::Builder()
-                    .SetProperty(
-                        kSidePanelOpenTriggerKey,
-                        static_cast<
-                            std::underlying_type_t<SidePanelOpenTrigger>>(
-                            SidePanelOpenTrigger::kOverflowMenu))
+                    .SetProperty(kSidePanelOpenTriggerKey,
+                                 SidePanelOpenTrigger::kOverflowMenu)
                     .Build());
             action_key.emplace<actions::ActionId>(id);
           },

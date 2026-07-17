@@ -379,10 +379,8 @@ void WebUIPinnedToolbarActions::Invoke(
   if (actions::ActionItem* action = GetActionItemFor(*id)) {
     action->InvokeAction(
         actions::ActionInvocationContext::Builder()
-            .SetProperty(
-                kSidePanelOpenTriggerKey,
-                static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
-                    SidePanelOpenTrigger::kPinnedEntryToolbarButton))
+            .SetProperty(kSidePanelOpenTriggerKey,
+                         SidePanelOpenTrigger::kPinnedEntryToolbarButton)
             .Build());
   }
 }

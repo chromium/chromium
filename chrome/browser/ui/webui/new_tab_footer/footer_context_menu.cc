@@ -91,13 +91,10 @@ void FooterContextMenu::ExecuteCommand(int command_id, int event_flags) {
       actions::ActionManager::Get()
           .FindAction(kActionSidePanelShowCustomizeChromeFooter,
                       /*scope=*/browser_->GetActions()->root_action_item())
-          ->InvokeAction(
-              actions::ActionInvocationContext::Builder()
-                  .SetProperty(
-                      kSidePanelOpenTriggerKey,
-                      static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
-                          SidePanelOpenTrigger::kNewTabFooter))
-                  .Build());
+          ->InvokeAction(actions::ActionInvocationContext::Builder()
+                             .SetProperty(kSidePanelOpenTriggerKey,
+                                          SidePanelOpenTrigger::kNewTabFooter)
+                             .Build());
       break;
     }
   }

@@ -876,10 +876,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   // Create a context with a valid trigger for the action.
   actions::ActionInvocationContext context =
       actions::ActionInvocationContext::Builder()
-          .SetProperty(
-              kSidePanelOpenTriggerKey,
-              static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
-                  SidePanelOpenTrigger::kPinnedEntryToolbarButton))
+          .SetProperty(kSidePanelOpenTriggerKey,
+                       SidePanelOpenTrigger::kPinnedEntryToolbarButton)
           .Build();
 
   read_anything_action->InvokeAction(std::move(context));
@@ -891,10 +889,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   // Create a new context for the second invocation.
   actions::ActionInvocationContext context2 =
       actions::ActionInvocationContext::Builder()
-          .SetProperty(
-              kSidePanelOpenTriggerKey,
-              static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
-                  SidePanelOpenTrigger::kPinnedEntryToolbarButton))
+          .SetProperty(kSidePanelOpenTriggerKey,
+                       SidePanelOpenTrigger::kPinnedEntryToolbarButton)
           .Build();
   read_anything_action->InvokeAction(std::move(context2));
 

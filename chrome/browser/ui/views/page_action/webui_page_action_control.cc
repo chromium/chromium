@@ -358,22 +358,13 @@ void WebUIPageActionControl::WebUIPageActionDelegate::NotifyClick(
 
   auto builder =
       actions::ActionInvocationContext::Builder()
-          .SetProperty(
-              page_actions::kPageActionTriggerKey,
-              static_cast<
-                  std::underlying_type_t<page_actions::PageActionTrigger>>(
-                  trigger))
-          .SetProperty(
-              page_actions::kPageActionEntryPointKey,
-              static_cast<
-                  std::underlying_type_t<page_actions::PageActionEntryPoint>>(
-                  page_actions::PageActionEntryPoint::kSuggestionChip));
+          .SetProperty(page_actions::kPageActionTriggerKey, trigger)
+          .SetProperty(page_actions::kPageActionEntryPointKey,
+                       page_actions::PageActionEntryPoint::kSuggestionChip);
   if (auto side_panel_trigger =
           GetSidePanelOpenTriggerForPageAction(action_item_->GetActionId())) {
-    builder = std::move(builder).SetProperty(
-        kSidePanelOpenTriggerKey,
-        static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
-            *side_panel_trigger));
+    builder = std::move(builder).SetProperty(kSidePanelOpenTriggerKey,
+                                             *side_panel_trigger);
   }
   action_item_->InvokeAction(std::move(builder).Build());
 }

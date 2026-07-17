@@ -352,21 +352,14 @@ void PageActionView::NotifyClick(const ui::Event& event) {
   click_callback_.Run(trigger_source);
 
   IconLabelBubbleView::NotifyClick(event);
-  auto builder =
-      actions::ActionInvocationContext::Builder()
-          .SetProperty(kPageActionTriggerKey,
-                       static_cast<std::underlying_type_t<PageActionTrigger>>(
-                           trigger_source))
-          .SetProperty(
-              kPageActionEntryPointKey,
-              static_cast<std::underlying_type_t<PageActionEntryPoint>>(
-                  PageActionEntryPoint::kSuggestionChip));
+  auto builder = actions::ActionInvocationContext::Builder()
+                     .SetProperty(kPageActionTriggerKey, trigger_source)
+                     .SetProperty(kPageActionEntryPointKey,
+                                  PageActionEntryPoint::kSuggestionChip);
   if (auto side_panel_trigger =
           GetSidePanelOpenTriggerForPageAction(action_item_->GetActionId())) {
-    builder = std::move(builder).SetProperty(
-        kSidePanelOpenTriggerKey,
-        static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
-            *side_panel_trigger));
+    builder = std::move(builder).SetProperty(kSidePanelOpenTriggerKey,
+                                             *side_panel_trigger);
   }
   action_item_->InvokeAction(std::move(builder).Build());
 }
@@ -609,19 +602,13 @@ void PageActionView::AnchoredMessageChipClick() {
   click_callback_.Run(PageActionTrigger::kMouse);
   auto builder =
       actions::ActionInvocationContext::Builder()
-          .SetProperty(kPageActionTriggerKey,
-                       static_cast<std::underlying_type_t<PageActionTrigger>>(
-                           PageActionTrigger::kMouse))
-          .SetProperty(
-              kPageActionEntryPointKey,
-              static_cast<std::underlying_type_t<PageActionEntryPoint>>(
-                  PageActionEntryPoint::kAnchoredMessage));
+          .SetProperty(kPageActionTriggerKey, PageActionTrigger::kMouse)
+          .SetProperty(kPageActionEntryPointKey,
+                       PageActionEntryPoint::kAnchoredMessage);
   if (auto side_panel_trigger =
           GetSidePanelOpenTriggerForPageAction(action_item_->GetActionId())) {
-    builder = std::move(builder).SetProperty(
-        kSidePanelOpenTriggerKey,
-        static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
-            *side_panel_trigger));
+    builder = std::move(builder).SetProperty(kSidePanelOpenTriggerKey,
+                                             *side_panel_trigger);
   }
   action_item_->InvokeAction(std::move(builder).Build());
   anchored_message_close_callback_.Run();
