@@ -41,8 +41,8 @@ void BrowserWindowModalDialogDelegate::SetWebContentsBlocked(
     content::WebContents* web_contents,
     bool blocked) {
   TabStripModel* tab_strip_model = browser_->GetTabStripModel();
-  tabs::TabInterface* tab = tab_strip_model->GetTabForWebContents(web_contents);
-  if (!tab) {
+  int index = tab_strip_model->GetIndexOfWebContents(web_contents);
+  if (index == TabStripModel::kNoTab) {
     // The WebContents may no longer exist in the TabStripModel.
     // If the WebContents has a DevTools window, the call is meant for the
     // DevTools area.
@@ -78,11 +78,12 @@ void BrowserWindowModalDialogDelegate::SetWebContentsBlocked(
     }
   }
 
-  tab_strip_model->SetTabBlocked(tab_strip_model->GetIndexOfTab(tab), blocked);
+  tab_strip_model->SetTabBlocked(index, blocked);
 
   const bool browser_active =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile() == browser_;
-  bool contents_is_active = tab_strip_model->GetActiveTab() == tab;
+  bool contents_is_active =
+      tab_strip_model->GetActiveWebContents() == web_contents;
   // If the WebContents is foremost (the active tab in the front-most browser)
   // and is being unblocked, focus it to make sure that input works again.
   if (!blocked && contents_is_active && browser_active) {
