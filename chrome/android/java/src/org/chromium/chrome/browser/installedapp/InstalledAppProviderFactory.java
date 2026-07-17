@@ -19,12 +19,20 @@ public class InstalledAppProviderFactory
         implements InterfaceFactory<@Nullable InstalledAppProvider> {
     private final RenderFrameHost mRenderFrameHost;
 
+    // BadMessageReason::RFH_INVALID_CALL_FROM_NOT_MAIN_FRAME in
+    // content/browser/bad_message.h
+    private static final int RFH_INVALID_CALL_FROM_NOT_MAIN_FRAME = 227;
+
     public InstalledAppProviderFactory(RenderFrameHost renderFrameHost) {
         mRenderFrameHost = renderFrameHost;
     }
 
     @Override
-    public InstalledAppProvider createImpl() {
+    public @Nullable InstalledAppProvider createImpl() {
+        if (!mRenderFrameHost.isInPrimaryMainFrame()) {
+            mRenderFrameHost.terminateRendererDueToBadMessage(RFH_INVALID_CALL_FROM_NOT_MAIN_FRAME);
+            return null;
+        }
         Profile profile =
                 Profile.fromWebContents(WebContentsStatics.fromRenderFrameHost(mRenderFrameHost));
         assert profile != null;

@@ -113,6 +113,12 @@ public class RenderFrameHostImpl implements RenderFrameHost {
     }
 
     @Override
+    public boolean isInPrimaryMainFrame() {
+        if (mNativeRenderFrameHostAndroid == 0) return false;
+        return RenderFrameHostImplJni.get().isInPrimaryMainFrame(mNativeRenderFrameHostAndroid);
+    }
+
+    @Override
     public void getCanonicalUrlForSharing(Callback<@Nullable GURL> callback) {
         if (mNativeRenderFrameHostAndroid == 0) {
             callback.onResult(null);
@@ -336,6 +342,8 @@ public class RenderFrameHostImpl implements RenderFrameHost {
         Origin getLastCommittedOrigin(long nativeRenderFrameHostAndroid);
 
         RenderFrameHost getMainFrame(long nativeRenderFrameHostAndroid);
+
+        boolean isInPrimaryMainFrame(long nativeRenderFrameHostAndroid);
 
         void getCanonicalUrlForSharing(
                 long nativeRenderFrameHostAndroid,

@@ -1594,6 +1594,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/incognito/IncognitoWindowNightModeStateProviderUnitTest.java",
       "src/org/chromium/chrome/browser/init/ActivityProfileProviderTest.java",
       "src/org/chromium/chrome/browser/init/AsyncInitTaskRunnerTest.java",
+      "src/org/chromium/chrome/browser/installedapp/InstalledAppProviderFactoryTest.java",
       "src/org/chromium/chrome/browser/invalidation/ResumableDelayedTaskRunnerTest.java",
       "src/org/chromium/chrome/browser/invalidation/SessionsInvalidationManagerTest.java",
       "src/org/chromium/chrome/browser/messages/ChromeMessageAutodismissDurationProviderTest.java",

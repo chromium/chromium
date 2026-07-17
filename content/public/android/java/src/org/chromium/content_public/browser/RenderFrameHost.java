@@ -72,6 +72,11 @@ public interface RenderFrameHost {
     @Nullable RenderFrameHost getMainFrame();
 
     /**
+     * @return Whether the frame is the primary main frame.
+     */
+    boolean isInPrimaryMainFrame();
+
+    /**
      * Fetch the canonical URL associated with the fame.
      *
      * @param callback The callback to be notified once the canonical URL has been fetched.

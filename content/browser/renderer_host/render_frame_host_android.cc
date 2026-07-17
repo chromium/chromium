@@ -125,6 +125,10 @@ ScopedJavaLocalRef<jobject> RenderFrameHostAndroid::GetMainFrame(JNIEnv* env) {
   return render_frame_host_->GetMainFrame()->GetJavaRenderFrameHost();
 }
 
+bool RenderFrameHostAndroid::IsInPrimaryMainFrame(JNIEnv* env) const {
+  return render_frame_host_->IsInPrimaryMainFrame();
+}
+
 void RenderFrameHostAndroid::GetCanonicalUrlForSharing(
     base::OnceCallback<void(const std::optional<GURL>&)> callback) const {
   render_frame_host_->GetCanonicalUrl(std::move(callback));
