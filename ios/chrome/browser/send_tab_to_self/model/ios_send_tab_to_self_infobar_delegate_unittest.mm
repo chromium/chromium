@@ -76,8 +76,12 @@ class IOSSendTabToSelfInfoBarDelegateTest : public PlatformTest {
   id<SceneCommands> mock_scene_commands_;
 };
 
-// Tests that the infobar delegate properties are correctly set.
+// Tests that the infobar delegate properties are correctly set when auto-open
+// is disabled.
 TEST_F(IOSSendTabToSelfInfoBarDelegateTest, Properties) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(send_tab_to_self::kSendTabToSelfAutoOpen);
+
   const SendTabToSelfEntry* entry =
       model_.AddEntryRemotely(GURL("http://www.test.com"), "title", "device1",
                               PageContext(), NavigationHistory());
@@ -93,8 +97,38 @@ TEST_F(IOSSendTabToSelfInfoBarDelegateTest, Properties) {
       confirm_delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK));
 }
 
-// Tests that Accept() correctly marks the entry as opened and opens the URL.
+// Tests that the infobar delegate properties are correctly set when auto-open
+// is enabled.
+TEST_F(IOSSendTabToSelfInfoBarDelegateTest, PropertiesWithAutoOpen) {
+  base::test::ScopedFeatureList feature_list(
+      send_tab_to_self::kSendTabToSelfAutoOpen);
+
+  const SendTabToSelfEntry* entry =
+      model_.AddEntryRemotely(GURL("http://www.test.com"), "title", "device1",
+                              PageContext(), NavigationHistory());
+  auto delegate = IOSSendTabToSelfInfoBarDelegate::Create(
+      entry, &model_, mock_scene_commands_, web_state_list_.get());
+  ConfirmInfoBarDelegate* confirm_delegate = delegate.get();
+
+  EXPECT_EQ(ConfirmInfoBarDelegate::BUTTON_OK, confirm_delegate->GetButtons());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_SEND_TAB_TO_SELF_INFOBAR_AUTO_OPEN_TITLE),
+      confirm_delegate->GetTitleText());
+  EXPECT_EQ(l10n_util::GetStringFUTF16(
+                IDS_SEND_TAB_TO_SELF_INFOBAR_AUTO_OPEN_SUBTITLE,
+                base::UTF8ToUTF16(entry->GetDeviceName())),
+            confirm_delegate->GetMessageText());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_SEND_TAB_TO_SELF_INFOBAR_MESSAGE_URL),
+      confirm_delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK));
+}
+
+// Tests that Accept() correctly marks the entry as opened and opens the URL
+// when auto-open is disabled.
 TEST_F(IOSSendTabToSelfInfoBarDelegateTest, Accept) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(send_tab_to_self::kSendTabToSelfAutoOpen);
+
   const SendTabToSelfEntry* entry =
       model_.AddEntryRemotely(GURL("http://www.test.com"), "title", "device1",
                               PageContext(), NavigationHistory());
@@ -124,10 +158,12 @@ TEST_F(IOSSendTabToSelfInfoBarDelegateTest, Accept) {
 }
 
 // Tests that Accept() correctly passes the text fragment if a scroll position
-// is present.
+// is present when auto-open is disabled.
 TEST_F(IOSSendTabToSelfInfoBarDelegateTest, AcceptWithScrollPosition) {
-  base::test::ScopedFeatureList feature_list(
-      kSendTabToSelfPropagateScrollPosition);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{kSendTabToSelfPropagateScrollPosition},
+      /*disabled_features=*/{send_tab_to_self::kSendTabToSelfAutoOpen});
 
   PageContext page_context;
   page_context.scroll_position.text_fragment.text_start = "start";
@@ -161,9 +197,12 @@ TEST_F(IOSSendTabToSelfInfoBarDelegateTest, AcceptWithScrollPosition) {
 }
 
 // Tests that Accept() (called when the user taps the primary button on the
-// infobar) correctly passes nil for the text fragment if no scroll
-// position is present.
+// infobar) correctly passes nil for the text fragment if no scroll position is
+// present when auto-open is disabled.
 TEST_F(IOSSendTabToSelfInfoBarDelegateTest, AcceptWithoutScrollPosition) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(send_tab_to_self::kSendTabToSelfAutoOpen);
+
   const SendTabToSelfEntry* entry =
       model_.AddEntryRemotely(GURL("http://www.test.com"), "title", "device1",
                               PageContext(), NavigationHistory());
@@ -191,7 +230,7 @@ TEST_F(IOSSendTabToSelfInfoBarDelegateTest, AcceptWithoutScrollPosition) {
   EXPECT_OCMOCK_VERIFY((id)mock_scene_commands_);
 }
 
-// Tests that Cancel() correctly dismisses the entry.
+// Tests that Cancel() correctly dismisses the entry without opening any tab.
 TEST_F(IOSSendTabToSelfInfoBarDelegateTest, Cancel) {
   const SendTabToSelfEntry* entry =
       model_.AddEntryRemotely(GURL("http://www.test.com"), "title", "device1",
@@ -200,8 +239,11 @@ TEST_F(IOSSendTabToSelfInfoBarDelegateTest, Cancel) {
       entry, &model_, mock_scene_commands_, web_state_list_.get());
   ConfirmInfoBarDelegate* confirm_delegate = delegate.get();
 
+  EXPECT_EQ(0, web_state_list_->active_index());
   EXPECT_TRUE(confirm_delegate->Cancel());
   EXPECT_EQ(entry->GetGUID(), model_.last_dismissed_guid());
+  EXPECT_EQ("", model_.last_opened_guid());
+  EXPECT_EQ(0, web_state_list_->active_index());
 }
 
 // Tests that Accept() directly activates the single received tab when auto-open

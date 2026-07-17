@@ -8,6 +8,7 @@
 
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
@@ -312,7 +313,8 @@ class SendTabToSelfBrowserAgentAutoOpenTest
  public:
   SendTabToSelfBrowserAgentAutoOpenTest()
       : SendTabToSelfBrowserAgentTest(
-            {send_tab_to_self::kSendTabToSelfAutoOpen}) {
+            {send_tab_to_self::kSendTabToSelfAutoOpen,
+             send_tab_to_self::kSendTabToSelfPropagateScrollPosition}) {
     model_->SetLocalCacheGuid(kDeviceID);
   }
 };
@@ -341,6 +343,39 @@ TEST_F(SendTabToSelfBrowserAgentAutoOpenTest,
   histogram_tester.ExpectUniqueSample(
       "Sharing.SendTabToSelf.AutoOpenOutcome2",
       send_tab_to_self::AutoOpenOutcome::kTabsOpenedImmediatelyInBackground, 1);
+}
+
+// Tests that auto-opening a received tab in the background passes the entry
+// GUID on the OpenNewTabCommand (which will later be used to restore the scroll
+// position).
+TEST_F(SendTabToSelfBrowserAgentAutoOpenTest,
+       ShouldAutoOpenNewEntriesInBackgroundWithScrollPosition) {
+  web::WebState* web_state = AppendNewWebState(GURL(kBlankURL));
+  InfoBarManagerImpl* infobar_manager =
+      InfoBarManagerImpl::FromWebState(web_state);
+  EXPECT_EQ(0UL, infobar_manager->infobars().size());
+
+  __block NSString* received_guid = nil;
+  OCMExpect([mock_scene_commands_
+      openURLInNewTab:[OCMArg checkWithBlock:^BOOL(OpenNewTabCommand* command) {
+        EXPECT_EQ(YES, command.inBackground);
+        EXPECT_NSEQ(nil, command.textFragment);
+        received_guid = [command.sendTabToSelfEntryGUID copy];
+        return received_guid != nil;
+      }]]);
+
+  send_tab_to_self::PageContext page_context;
+  page_context.scroll_position.text_fragment.text_start = "start";
+  page_context.scroll_position.text_fragment.text_end = "end";
+
+  const send_tab_to_self::SendTabToSelfEntry* entry = model_->AddEntryRemotely(
+      GURL(kExampleURL), "title", kDeviceID, page_context,
+      send_tab_to_self::NavigationHistory());
+
+  [mock_scene_commands_ verify];
+  EXPECT_NSEQ(base::SysUTF8ToNSString(entry->GetGUID()), received_guid);
+  EXPECT_TRUE(model_->GetEntryByGUID(entry->GetGUID())->IsOpened());
+  EXPECT_EQ(1UL, infobar_manager->infobars().size());
 }
 
 TEST_F(SendTabToSelfBrowserAgentAutoOpenTest,
