@@ -46,7 +46,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
-import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseActivityTestRule;
@@ -99,23 +98,12 @@ import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @DoNotBatch(reason = "This test relies on native initialization")
 public class SigninPromoCoordinatorTest {
-    /**
-     * TODO(crbug.com/493130564): Remove these parameters after a
-     * MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS launch.
-     */
-    @ParameterAnnotations.ClassParameter
-    public static final List<ParameterSet> sClassParams =
-            Arrays.asList(
-                    new ParameterSet().value(true).name("IdentityManagerMigrationEnabled"),
-                    new ParameterSet().value(false).name("IdentityManagerMigrationDisabled"));
-
     private static final List<Integer> sAccessPoints =
             List.of(
                     SigninAccessPoint.BOOKMARK_MANAGER,
@@ -191,12 +179,6 @@ public class SigninPromoCoordinatorTest {
     private boolean mIsSetupListActive;
     private boolean mIsActivityStarted;
     private boolean mIsNativeInitialized;
-
-    public SigninPromoCoordinatorTest(boolean isIdentityManagerMigrationEnabled) {
-        FeatureOverrides.overrideFlag(
-                SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
-                isIdentityManagerMigrationEnabled);
-    }
 
     @Before
     public void setUp() {

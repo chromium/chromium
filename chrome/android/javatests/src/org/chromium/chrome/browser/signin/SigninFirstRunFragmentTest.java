@@ -65,13 +65,11 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
-import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewFinder;
@@ -132,25 +130,12 @@ import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.ViewUtils;
 
-import java.util.Arrays;
-import java.util.List;
-
 /** Tests for the class {@link SigninFirstRunFragment}. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "Relies on global state")
 public class SigninFirstRunFragmentTest {
-    /**
-     * TODO(crbug.com/493130564): Revert to regular runner after
-     * MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS launch.
-     */
-    @ParameterAnnotations.ClassParameter
-    private static final List<ParameterSet> sClassParams =
-            Arrays.asList(
-                    new ParameterSet().value(true).name("IdentityManagerMigrationEnabled"),
-                    new ParameterSet().value(false).name("IdentityManagerMigrationDisabled"));
-
     /** This class is used to test {@link SigninFirstRunFragment}. */
     public static class CustomSigninFirstRunFragment extends SigninFirstRunFragment {
         private FirstRunPageDelegate mFirstRunPageDelegate;
@@ -187,12 +172,6 @@ public class SigninFirstRunFragmentTest {
     private Promise<Void> mNativeInitializationPromise;
     private final FakeEnterpriseInfo mFakeEnterpriseInfo = new FakeEnterpriseInfo();
     private CustomSigninFirstRunFragment mFragment;
-
-    public SigninFirstRunFragmentTest(boolean isIdentityManagerMigrationEnabled) {
-        FeatureOverrides.overrideFlag(
-                SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
-                isIdentityManagerMigrationEnabled);
-    }
 
     @ParameterAnnotations.UseMethodParameterBefore(NightModeTestUtils.NightModeParams.class)
     public void setupNightMode(boolean nightModeEnabled) {
