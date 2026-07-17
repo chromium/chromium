@@ -424,4 +424,21 @@ source_set("unit_tests") {
       "//ui/gfx:test_support",
     ]
   }
+
+  if (is_android) {
+    sources += [
+      "android/attribute_instance_android_unittest.cc",
+      "android/autofill_ai_save_update_entity_prompt_controller_unittest.cc",
+      "android/entity_data_manager_android_unittest.cc",
+      "android/entity_instance_android_unittest.cc",
+      "android/mock_autofill_ai_save_update_entity_prompt_view.cc",
+      "android/mock_autofill_ai_save_update_entity_prompt_view.h",
+      "android/save_update_address_profile_prompt_controller_unittest.cc",
+    ]
+    deps += [
+      "//chrome/browser/autofill",
+      "//chrome/browser/sync",
+      "//chrome/browser/ui/autofill",
+    ]
+  }
 }
