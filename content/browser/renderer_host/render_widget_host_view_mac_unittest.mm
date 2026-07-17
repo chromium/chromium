@@ -34,6 +34,7 @@
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
 #include "content/browser/renderer_host/frame_tree.h"
+#include "content/browser/renderer_host/input/motion_event_web.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/text_input_client_mac.h"
 #include "content/browser/renderer_host/text_input_manager.h"
@@ -59,6 +60,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
+#include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/ocmock_extensions.h"
 #include "ui/base/cocoa/secure_password_input.h"
@@ -1140,6 +1142,66 @@ TEST_F(RenderWidgetHostViewMacTest, CompositionEventAfterDestroy) {
                                      actualRange:&actual_range];
   EXPECT_NSEQ(NSZeroRect, rect);
   EXPECT_EQ(gfx::Range(), gfx::Range(actual_range));
+}
+
+namespace {
+
+// Destroys the supplied RenderWidgetHostViewMac the first time a gesture event
+// is observed on the associated RenderWidgetHost.
+class ViewDestroyingInputEventObserver
+    : public RenderWidgetHost::InputEventObserver {
+ public:
+  explicit ViewDestroyingInputEventObserver(RenderWidgetHostViewMac* view)
+      : view_(view) {}
+
+  void OnInputEvent(const RenderWidgetHost& host,
+                    const blink::WebInputEvent& event,
+                    InputEventSource source) override {
+    if (view_ && blink::WebInputEvent::IsGestureEventType(event.GetType())) {
+      gesture_event_seen_ = true;
+      view_.ExtractAsDangling()->Destroy();
+    }
+  }
+
+  bool gesture_event_seen() const { return gesture_event_seen_; }
+
+ private:
+  raw_ptr<RenderWidgetHostViewMac> view_;
+  bool gesture_event_seen_ = false;
+};
+
+}  // namespace
+
+// Tests that ProcessAckedTouchEvent does not access |this| after the view has
+// been synchronously destroyed during gesture dispatch from OnTouchEventAck.
+TEST_F(RenderWidgetHostViewMacTest,
+       ProcessAckedTouchEventAfterViewDestroyedDuringGestureDispatch) {
+  blink::SyntheticWebTouchEvent touch_event;
+  touch_event.PressPoint(10, 10);
+  ASSERT_TRUE(rwhv_mac_->GetFilteredGestureProviderForTesting()
+                  ->OnTouchEvent(MotionEventWeb(touch_event))
+                  .succeeded);
+
+  input::TouchEventWithLatencyInfo touch_start_with_latency(touch_event);
+  rwhv_mac_->ProcessAckedTouchEvent(
+      touch_start_with_latency,
+      blink::mojom::InputEventResultState::kNotConsumed);
+
+  touch_event.MovePoint(0, 80, 80);
+  ASSERT_TRUE(rwhv_mac_->GetFilteredGestureProviderForTesting()
+                  ->OnTouchEvent(MotionEventWeb(touch_event))
+                  .succeeded);
+
+  ViewDestroyingInputEventObserver observer(rwhv_mac_);
+  host_->AddInputEventObserver(&observer);
+
+  input::TouchEventWithLatencyInfo touch_move_with_latency(touch_event);
+  touch_move_with_latency.event.touch_start_or_first_touch_move = true;
+  rwhv_mac_->ProcessAckedTouchEvent(
+      touch_move_with_latency, blink::mojom::InputEventResultState::kConsumed);
+
+  EXPECT_TRUE(observer.gesture_event_seen());
+  host_->RemoveInputEventObserver(&observer);
 }
 
 // Verify that |SetActive()| calls |RenderWidgetHostImpl::LostFocus()| and
