@@ -16,6 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -25,8 +26,8 @@ import org.chromium.base.test.util.KeyUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 
@@ -35,10 +36,11 @@ import org.chromium.content_public.browser.test.util.DOMUtils;
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
 })
+@Batch(Batch.PER_CLASS)
 public class FocusedEditableTextFieldZoomTest {
     @Rule
-    public FreshCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.autoResetCtaActivityRule();
 
     private static final int TEST_TIMEOUT = 5000;
     private static final String TEXTFIELD_DOM_ID = "textfield";
@@ -49,8 +51,11 @@ public class FocusedEditableTextFieldZoomTest {
 
     @Before
     public void setUp() {
-        mActivityTestRule.startOnTestServerUrl(
-                "/chrome/test/data/android/focused_editable_zoom.html");
+        String url =
+                mActivityTestRule
+                        .getTestServer()
+                        .getURL("/chrome/test/data/android/focused_editable_zoom.html");
+        mActivityTestRule.startOnWebPage(url);
         mCoordinates = Coordinates.createFor(mActivityTestRule.getWebContents());
         waitForInitialZoom();
     }
