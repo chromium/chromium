@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/modules/webgl/webgl_program.h"
 
+#include "base/check_op.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_context_object_support.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_shader.h"
@@ -86,6 +87,7 @@ void WebGLProgram::IncreaseActiveTransformFeedbackCount() {
 }
 
 void WebGLProgram::DecreaseActiveTransformFeedbackCount() {
+  CHECK_GT(active_transform_feedback_count_, 0u);
   --active_transform_feedback_count_;
 }
 
