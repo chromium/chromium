@@ -23,6 +23,7 @@ enum ItemType {
   kItemTypeAlertViewController = kItemTypeEnumZero,
   kItemTypeButtonStackViewController,
   kItemTypeConfirmationAlertViewController,
+  kItemTypeButtonStackWithCustomDetentViewController,
 };
 
 // Spacing Constant.
@@ -65,6 +66,11 @@ const CGFloat kImageTopSpacing = 20;
       initWithType:kItemTypeButtonStackViewController];
   buttonStackItem.text = @"ButtonStackViewController";
 
+  TableViewTextItem* buttonStackWithCustomDetentItem =
+      [[TableViewTextItem alloc]
+          initWithType:kItemTypeButtonStackWithCustomDetentViewController];
+  buttonStackWithCustomDetentItem.text = @"ButtonStack + CustomDetent";
+
   TableViewTextItem* confirmationAlertItem = [[TableViewTextItem alloc]
       initWithType:kItemTypeConfirmationAlertViewController];
   confirmationAlertItem.text = @"ConfirmationAlertViewController";
@@ -77,6 +83,8 @@ const CGFloat kImageTopSpacing = 20;
       toSectionWithIdentifier:kSectionIdentifierViewController];
   [model addItem:buttonStackItem
       toSectionWithIdentifier:kSectionIdentifierViewController];
+  [model addItem:buttonStackWithCustomDetentItem
+      toSectionWithIdentifier:kSectionIdentifierViewController];
   [model addItem:confirmationAlertItem
       toSectionWithIdentifier:kSectionIdentifierViewController];
 }
@@ -84,7 +92,7 @@ const CGFloat kImageTopSpacing = 20;
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
-    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+    performPrimaryActionForRowAtIndexPath:(NSIndexPath*)indexPath {
   switch ([self.tableViewModel itemTypeForIndexPath:indexPath]) {
     case kItemTypeAlertViewController: {
       [self presentViewController:[self configuredAlertViewController]
@@ -98,6 +106,13 @@ const CGFloat kImageTopSpacing = 20;
                        completion:nil];
       break;
     }
+    case kItemTypeButtonStackWithCustomDetentViewController: {
+      [self presentViewController:
+                [self configuredButtonStackViewControllerWithCustomDetent]
+                         animated:YES
+                       completion:nil];
+      break;
+    }
     case kItemTypeConfirmationAlertViewController: {
       [self
           presentViewController:[self configuredConfirmationAlertViewController]
@@ -106,6 +121,11 @@ const CGFloat kImageTopSpacing = 20;
       break;
     }
   }
+}
+
+- (void)tableView:(UITableView*)tableView
+    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 #pragma mark - Private
@@ -153,7 +173,27 @@ const CGFloat kImageTopSpacing = 20;
   // The `ButtonStackViewController` should always be subclassed.
   DemoButtonStackViewController* buttonStackViewController =
       [[DemoButtonStackViewController alloc]
-          initWithConfiguration:_configuration];
+          initWithConfiguration:_configuration
+              scrollableContent:YES];
+
+  return buttonStackViewController;
+}
+
+// Initializes and configures the `ButtonStackViewController` with custom
+// detent.
+- (DemoButtonStackViewController*)
+    configuredButtonStackViewControllerWithCustomDetent {
+  DemoButtonStackViewController* buttonStackViewController =
+      [[DemoButtonStackViewController alloc]
+          initWithConfiguration:_configuration
+              scrollableContent:NO];
+
+  buttonStackViewController.modalPresentationStyle =
+      UIModalPresentationPageSheet;
+  UISheetPresentationControllerDetent* customDetent =
+      [buttonStackViewController preferredHeightDetent];
+  buttonStackViewController.sheetPresentationController.detents =
+      @[ customDetent ];
 
   return buttonStackViewController;
 }
@@ -179,8 +219,6 @@ const CGFloat kImageTopSpacing = 20;
 
   return confirmationAlertViewController;
 }
-
-#pragma mark - Private Helpers
 
 // Returns a `UILabel` with the desired string.
 - (UILabel*)configuredLabelWithString:(NSString*)string {
