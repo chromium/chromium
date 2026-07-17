@@ -299,6 +299,13 @@ class GeminiBrowserAgentTest : public PlatformTest {
     gemini_browser_agent_->DetachTabWithID(tab_id);
   }
 
+  // Wrapper for `UpdateLocalTabAttachmentState`.
+  void UpdateLocalTabAttachmentState(
+      NSString* tab_id,
+      ios::provider::GeminiPageContextAttachmentState new_state) {
+    gemini_browser_agent_->UpdateLocalTabAttachmentState(tab_id, new_state);
+  }
+
   base::test::ScopedFeatureList feature_list_;
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_;
@@ -1325,32 +1332,10 @@ TEST_F(GeminiBrowserAgentTest, TestDetachInvalidTabId) {
   EXPECT_EQ(initial_size, GetRawAttachedTabs().size());
 }
 
-// Tests that DetachTabWithID gracefully early-exits when there is no active
-// web state.
-TEST_F(GeminiBrowserAgentTest, TestDetachTabWithoutActiveWebState) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({kGeminiMultiTabContext, kPageActionMenu}, {});
-
-  // Clear raw_ptrs to prevent DanglingPtr crashes during TearDown when the
-  // WebState (and its associated frames/helpers) is destroyed.
-  web_state_ = nullptr;
-  fake_main_frame_ = nullptr;
-  gemini_tab_helper_ = nullptr;
-
-  // Close the active web state so that GetActiveWebState() returns nullptr.
-  browser_->GetWebStateList()->CloseWebStateAt(
-      0, WebStateList::ClosingReason::kDefault);
-  ASSERT_EQ(nullptr, browser_->GetWebStateList()->GetActiveWebState());
-
-  DetachTabWithID(@"123");
-
-  // Should not crash.
-  EXPECT_EQ(0u, GetRawAttachedTabs().size());
-}
-
-// Tests that DetachTabWithID updates the attachment state of the active tab
-// without removing it.
-TEST_F(GeminiBrowserAgentTest, TestDetachActiveTab) {
+// Tests that UpdateLocalTabAttachmentState updates the attachment state of the
+// active tab without removing it.
+TEST_F(GeminiBrowserAgentTest,
+       TestUpdateLocalTabAttachmentStateDetachesActiveTab) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({kGeminiMultiTabContext, kPageActionMenu}, {});
 
@@ -1371,7 +1356,8 @@ TEST_F(GeminiBrowserAgentTest, TestDetachActiveTab) {
 
   NSString* tab_id_str =
       [NSString stringWithFormat:@"%d", active_id.identifier()];
-  DetachTabWithID(tab_id_str);
+  UpdateLocalTabAttachmentState(
+      tab_id_str, ios::provider::GeminiPageContextAttachmentState::kDetached);
 
   // Verify it is still in the map but detached.
   tabs = GetRawAttachedTabs();

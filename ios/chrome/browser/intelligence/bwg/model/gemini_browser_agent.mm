@@ -2352,22 +2352,29 @@ void GeminiBrowserAgent::DetachTabWithID(NSString* tab_id) {
 
   web::WebState* active_web_state =
       browser_->GetWebStateList()->GetActiveWebState();
-  if (!active_web_state) {
+  CHECK(active_web_state);
+  CHECK(detached_tab_id != active_web_state->GetUniqueIdentifier());
+
+  attached_tabs_.erase(detached_tab_id);
+
+  GeminiPageContext* active_page_context = base::FindPtrOrNull(
+      attached_tabs_, active_web_state->GetUniqueIdentifier());
+  ios::provider::UpdateActivePageContext(active_page_context, GetSharedTabs());
+}
+
+void GeminiBrowserAgent::UpdateLocalTabAttachmentState(
+    NSString* tab_id,
+    ios::provider::GeminiPageContextAttachmentState new_state) {
+  int32_t identifier_value;
+  if (!base::StringToInt(base::SysNSStringToUTF8(tab_id), &identifier_value)) {
     return;
   }
-  web::WebStateID active_web_state_id = active_web_state->GetUniqueIdentifier();
 
-  GeminiPageContext* active_page_context =
-      base::FindPtrOrNull(attached_tabs_, active_web_state_id);
+  web::WebStateID attached_tab_id =
+      web::WebStateID::FromSerializedValue(identifier_value);
 
-  // Mark the detached tab as `kDetached` if it is the active tab. Otherwise,
-  // remove it from `attached_tabs_`.
-  if (detached_tab_id == active_web_state_id) {
-    active_page_context.geminiPageContextAttachmentState =
-        ios::provider::GeminiPageContextAttachmentState::kDetached;
-  } else {
-    attached_tabs_.erase(detached_tab_id);
+  if (GeminiPageContext* page_context =
+          base::FindPtrOrNull(attached_tabs_, attached_tab_id)) {
+    page_context.geminiPageContextAttachmentState = new_state;
   }
-
-  ios::provider::UpdateActivePageContext(active_page_context, GetSharedTabs());
 }

@@ -148,8 +148,14 @@ typedef NS_ENUM(NSInteger, GeminiCancelType) {
                                           sessionID:(NSString*)sessionID
                                      conversationID:(NSString*)conversationID;
 
-// Called when a request to detach a tab with a specific ID is made.
+// Called when a request to detach a tab with the given ID is made.
 - (void)didRequestToDetachTabWithID:(NSString*)tabID;
+
+// Called when a tab with the given ID has been attached by the Floaty.
+- (void)didAttachTabWithID:(NSString*)tabID;
+
+// Called when a tab with the given ID has been detached by the Floaty.
+- (void)didDetachTabWithID:(NSString*)tabID;
 
 #pragma mark - Gemini Live
 

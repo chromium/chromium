@@ -368,6 +368,13 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Removes a tab from selected tabs and propagates attached tabs to Gemini.
   void DetachTabWithID(NSString* tab_id);
 
+  // Changes the attachment state of the given tab without propagating it to the
+  // provider. Useful when the provider notifies Chrome about changes to page
+  // context attachment state.
+  void UpdateLocalTabAttachmentState(
+      NSString* tab_id,
+      ios::provider::GeminiPageContextAttachmentState new_state);
+
   // The gateway for bridging internal protocols.
   __strong id<BWGGatewayProtocol> bwg_gateway_ = nullptr;
 

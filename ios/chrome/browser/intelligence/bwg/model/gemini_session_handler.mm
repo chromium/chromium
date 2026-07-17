@@ -377,6 +377,18 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
   }
 }
 
+- (void)didAttachTabWithID:(NSString*)tabID {
+  if (self.tabAttachedCallback) {
+    self.tabAttachedCallback(tabID);
+  }
+}
+
+- (void)didDetachTabWithID:(NSString*)tabID {
+  if (self.tabDetachedCallback) {
+    self.tabDetachedCallback(tabID);
+  }
+}
+
 - (void)geminiLiveUserDidBargeIn {
   [self.geminiViewStateDelegate geminiLiveUserDidBargeIn];
 }

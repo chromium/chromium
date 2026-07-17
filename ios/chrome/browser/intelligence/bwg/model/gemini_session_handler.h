@@ -23,6 +23,12 @@ class Tracker;
 // Callback type invoked when a request to detach a tab is made.
 typedef void (^GeminiTabDetachRequestCallback)(NSString* tabID);
 
+// Callback type invoked when a tab has been attached by the Floaty.
+typedef void (^GeminiTabAttachedCallback)(NSString* tabID);
+
+// Callback type invoked when a tab has been detached by the Floaty.
+typedef void (^GeminiTabDetachedCallback)(NSString* tabID);
+
 // Handler for the Gemini sessions.
 @interface GeminiSessionHandler : NSObject <GeminiSessionDelegate>
 
@@ -54,6 +60,12 @@ typedef void (^GeminiTabDetachRequestCallback)(NSString* tabID);
 // Callback invoked when the user requests to detach a tab from the floaty.
 @property(nonatomic, copy)
     GeminiTabDetachRequestCallback tabDetachRequestCallback;
+
+// Callback invoked when the user attaches a tab via the floaty.
+@property(nonatomic, copy) GeminiTabAttachedCallback tabAttachedCallback;
+
+// Callback invoked when the user detaches a tab via the floaty.
+@property(nonatomic, copy) GeminiTabDetachedCallback tabDetachedCallback;
 
 @end
 
