@@ -2,6 +2,38 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("container_mediator") {
+  sources = [
+    "gemini_container_mediator.h",
+    "gemini_container_mediator.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/feature_engagement/public",
+    "//components/prefs",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/intelligence/bwg/model",
+    "//ios/chrome/browser/intelligence/bwg/model:config",
+    "//ios/chrome/browser/intelligence/bwg/model:gemini_service",
+    "//ios/chrome/browser/intelligence/bwg/model:gemini_service_factory",
+    "//ios/chrome/browser/intelligence/bwg/model:page_context",
+    "//ios/chrome/browser/intelligence/bwg/model:tab_helper",
+    "//ios/chrome/browser/intelligence/bwg/utils:constants",
+    "//ios/chrome/browser/intelligence/bwg/utils:feature_availability",
+    "//ios/chrome/browser/intelligence/bwg/utils:prefs",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/public/provider/chrome/browser/bwg:gemini_api",
+    "//ios/web/public",
+    "//ui/base",
+  ]
+}
+
 source_set("coordinator") {
   sources = [
     "gemini_container_coordinator.h",
@@ -15,6 +47,7 @@ source_set("coordinator") {
     "gemini_first_run_mediator_delegate.h",
   ]
   deps = [
+    ":container_mediator",
     "//base",
     "//components/feature_engagement/public",
     "//components/prefs",
@@ -64,9 +97,13 @@ source_set("coordinator") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "gemini_first_run_coordinator_unittest.mm" ]
+  sources = [
+    "gemini_container_mediator_unittest.mm",
+    "gemini_first_run_coordinator_unittest.mm",
+  ]
 
   deps = [
+    ":container_mediator",
     ":coordinator",
     "//base/test:test_support",
     "//components/feature_engagement/public",
@@ -81,6 +118,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/fullscreen/ui_bundled/test",
     "//ios/chrome/browser/intelligence/bwg/model:browser_agent",
+    "//ios/chrome/browser/intelligence/bwg/model:config",
+    "//ios/chrome/browser/intelligence/bwg/model:tab_helper",
     "//ios/chrome/browser/intelligence/bwg/ui",
     "//ios/chrome/browser/intelligence/bwg/utils:constants",
     "//ios/chrome/browser/intelligence/features",
@@ -101,6 +140,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:test_support",
     "//ios/chrome/test:test_support",
+    "//ios/public/provider/chrome/browser/bwg:gemini_api",
     "//ios/web/public/test",
     "//third_party/ocmock",
   ]

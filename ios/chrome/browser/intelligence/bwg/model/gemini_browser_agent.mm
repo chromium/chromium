@@ -7,6 +7,7 @@
 #import <AVFoundation/AVFoundation.h>
 
 #import "base/barrier_closure.h"
+#import "base/check.h"
 #import "base/containers/map_util.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
@@ -14,6 +15,7 @@
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
+#import "base/not_fatal_until.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -35,6 +37,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_actuation_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_camera_handler.h"
@@ -443,6 +446,13 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
     ConfigureGemini();
   }
 
+  if (!IsIOSGeminiBottomSheetMigrationEnabled()) {
+    gemini_container_mediator_ = [[GeminiContainerMediator alloc]
+        initWithWebStateList:browser_->GetWebStateList()
+                     profile:browser_->GetProfile()
+                     gateway:bwg_gateway_];
+  }
+
   // Sets up observation of fullscreen state.
   if (IsFullscreenRefactoringEnabled()) {
     FullscreenBrowserAgent* agent =
@@ -518,6 +528,11 @@ GeminiBrowserAgent::~GeminiBrowserAgent() {
 
   gemini_actuation_handler_ = nil;
 
+  if (!IsIOSGeminiBottomSheetMigrationEnabled()) {
+    [gemini_container_mediator_ disconnect];
+    gemini_container_mediator_ = nil;
+  }
+
   [gemini_consent_provider_handler_ disconnect];
   gemini_consent_provider_handler_ = nil;
 
@@ -562,6 +577,11 @@ void GeminiBrowserAgent::BrowserDestroyed(Browser* browser) {
 
   gemini_actuation_handler_ = nil;
   gemini_tab_picker_handler_ = nil;
+
+  if (!IsIOSGeminiBottomSheetMigrationEnabled()) {
+    [gemini_container_mediator_ disconnect];
+    gemini_container_mediator_ = nil;
+  }
 
   [gemini_consent_provider_handler_ disconnect];
   gemini_consent_provider_handler_ = nil;
@@ -818,25 +838,6 @@ void GeminiBrowserAgent::StartGeminiFlow(UIViewController* base_view_controller,
       startGeminiFirstRunWithCompletion:BlockRunningClosureIfSuccess(
                                             std::move(present_floaty_closure))
                          fromEntryPoint:entry_point];
-}
-
-GeminiConfiguration*
-GeminiBrowserAgent::CreateGeminiConfigurationForActiveWebState(
-    UIViewController* base_view_controller,
-    GeminiStartupState* startup_state) {
-  web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
-  if (!web_state) {
-    return nil;
-  }
-  GeminiTabHelper* gemini_tab_helper = GetActiveTabHelper(web_state);
-  if (!gemini_tab_helper) {
-    return nil;
-  }
-  GeminiPageContext* initial_page_context =
-      gemini_tab_helper->GetPartialPageContext();
-  ApplyUserPrefsToPageContext(initial_page_context);
-  return CreateGeminiConfiguration(base_view_controller, startup_state,
-                                   web_state, initial_page_context);
 }
 
 void GeminiBrowserAgent::ShowGeminiLiveMicrophoneAlert(
@@ -1138,9 +1139,12 @@ void GeminiBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
     [gemini_page_state_change_handler_
         setBaseViewController:base_view_controller];
 
-    ApplyUserPrefsToPageContext(initial_page_context);
-    GeminiConfiguration* config = CreateGeminiConfiguration(
-        base_view_controller, startup_state, web_state, initial_page_context);
+    CHECK(gemini_container_mediator_, base::NotFatalUntil::M155);
+    GeminiConfiguration* config = [gemini_container_mediator_
+        createGeminiConfigurationForActiveWebState:startup_state];
+    config.baseViewController = base_view_controller;
+    config.initialBottomOffset = GetFloatyOffset();
+    config.hostWindowScene = browser_->GetSceneState().scene;
 
     DismissGeminiFromOtherWindows(base::BindOnce(
         &GeminiBrowserAgent::InvokeFloaty, weak_factory_.GetWeakPtr(), config));
@@ -1383,18 +1387,8 @@ void GeminiBrowserAgent::DismissFloaty() {
 
   LogLiveSessionMetrics(/*force=*/true);
 
-  feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForProfile(browser_->GetProfile());
-  if (tracker) {
-    if (has_triggered_gemini_live_iph_) {
-      tracker->Dismissed(feature_engagement::kIPHiOSGeminiLiveIPHFeature);
-      has_triggered_gemini_live_iph_ = false;
-    }
-    if (has_triggered_gemini_live_new_badge_) {
-      tracker->Dismissed(feature_engagement::kIPHiOSGeminiLiveNewBadgeFeature);
-      has_triggered_gemini_live_new_badge_ = false;
-    }
-  }
+  CHECK(gemini_container_mediator_, base::NotFatalUntil::M155);
+  [gemini_container_mediator_ disconnect];
 
   // TODO(crbug.com/517583120): Remove when the temporary actuation prototype is
   // cleaned up.
@@ -2043,73 +2037,6 @@ void GeminiBrowserAgent::UpdateFloatyWithPartialPageContext() {
         tab_helper->GetPartialPageContext();
     PropagatePageContextToProvider(gemini_page_context);
   }
-}
-
-GeminiConfiguration* GeminiBrowserAgent::CreateGeminiConfiguration(
-    UIViewController* base_view_controller,
-    GeminiStartupState* startup_state,
-    web::WebState* web_state,
-    GeminiPageContext* page_context) {
-  GeminiTabHelper* gemini_tab_helper = GetActiveTabHelper(web_state);
-  if (!gemini_tab_helper) {
-    return nil;
-  }
-
-  GeminiConfiguration* config = [[GeminiConfiguration alloc] init];
-  config.baseViewController = base_view_controller;
-  config.authService =
-      AuthenticationServiceFactory::GetForProfile(browser_->GetProfile());
-  config.singleSignOnService =
-      GetApplicationContext()->GetSingleSignOnService();
-  config.gateway = bwg_gateway_;
-  config.gateway.sessionHandler.isFirstSession = startup_state.isFirstSession;
-  config.imageAttachment = startup_state.imageAttachment;
-
-  config.clientID = base::SysUTF8ToNSString(gemini_tab_helper->GetClientId());
-  std::optional<std::string> maybe_server_id =
-      gemini::GetConversationId(browser_->GetProfile()->GetPrefs());
-  config.serverID =
-      maybe_server_id ? base::SysUTF8ToNSString(*maybe_server_id) : nil;
-  config.shouldAnimatePresentation = YES;
-  config.lastInteractionURLDifferent =
-      gemini_tab_helper->IsLastInteractionUrlDifferent();
-  config.shouldShowSuggestionChips =
-      gemini_tab_helper->ShouldShowSuggestionChips();
-  config.contextualCueChipLabel = startup_state.prepopulatedPrompt;
-  config.entryPoint = startup_state.entryPoint;
-  config.imageRemixIPHShouldShow =
-      startup_state.entryPoint == gemini::EntryPoint::ImageRemixIPH;
-
-  feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForProfile(browser_->GetProfile());
-  // Only trigger and show the IPH/new badge if Gemini Live is available for the
-  // current user.
-  if (tracker && gemini::IsFeatureAvailable(gemini::Feature::kLive,
-                                            browser_->GetProfile())) {
-    config.shouldShowGeminiLiveIPH = tracker->ShouldTriggerHelpUI(
-        feature_engagement::kIPHiOSGeminiLiveIPHFeature);
-    config.shouldShowGeminiLiveNewBadge = tracker->ShouldTriggerHelpUI(
-        feature_engagement::kIPHiOSGeminiLiveNewBadgeFeature);
-    has_triggered_gemini_live_iph_ = config.shouldShowGeminiLiveIPH;
-    has_triggered_gemini_live_new_badge_ = config.shouldShowGeminiLiveNewBadge;
-  } else {
-    config.shouldShowGeminiLiveIPH = NO;
-    config.shouldShowGeminiLiveNewBadge = NO;
-  }
-  config.geminiLiveIPHText = l10n_util::GetNSString(IDS_IOS_GEMINI_LIVE_IPH);
-
-  config.geminiLocationPermissionState =
-      ios::provider::GeminiLocationPermissionState::kUnknown;
-  config.pageContext = page_context;
-  config.initialBottomOffset = GetFloatyOffset();
-  config.hostWindowScene = browser_->GetSceneState().scene;
-  GeminiService* gemini_service =
-      GeminiServiceFactory::GetForProfile(browser_->GetProfile());
-  config.needsAccountCapabilityRestriction =
-      gemini_service && gemini_service->HasGeminiInChromeCapability() &&
-      !gemini_service->HasModelExecutionCapability();
-
-  return config;
 }
 
 void GeminiBrowserAgent::PrepareFloatyToBeShown() {

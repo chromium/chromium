@@ -259,16 +259,6 @@ class GeminiBrowserAgentTest : public PlatformTest {
     gemini_browser_agent_->RequestPageContextGeneration();
   }
 
-  // Wrapper for `CreateGeminiConfiguration`.
-  GeminiConfiguration* CreateGeminiConfiguration(
-      UIViewController* base_view_controller,
-      GeminiStartupState* startup_state,
-      web::WebState* web_state,
-      GeminiPageContext* page_context) {
-    return gemini_browser_agent_->CreateGeminiConfiguration(
-        base_view_controller, startup_state, web_state, page_context);
-  }
-
   // Setter for `processing_status_`.
   void SetProcessingStatus(ios::provider::GeminiClientMode mode) {
     gemini_browser_agent_->processing_status_ = mode;
@@ -905,17 +895,14 @@ TEST_F(GeminiBrowserAgentTest, TestGeminiLiveIPHAndNewBadgeFET) {
                   feature_engagement::kIPHiOSGeminiLiveNewBadgeFeature)))
       .WillOnce(testing::Return(true));
 
+  // Simulate FRE completion.
+  profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
+
+  // Start Gemini, which should trigger the IPHs.
   UIViewController* base_view_controller = [[UIViewController alloc] init];
   GeminiStartupState* startup_state =
       [[GeminiStartupState alloc] initWithEntryPoint:gemini::EntryPoint::Promo];
-  GeminiPageContext* page_context = [[GeminiPageContext alloc] init];
-
-  // Call CreateGeminiConfiguration to trigger the features.
-  GeminiConfiguration* config = CreateGeminiConfiguration(
-      base_view_controller, startup_state, web_state_, page_context);
-
-  EXPECT_TRUE(config.shouldShowGeminiLiveIPH);
-  EXPECT_TRUE(config.shouldShowGeminiLiveNewBadge);
+  gemini_browser_agent_->StartGeminiFlow(base_view_controller, startup_state);
 
   // Setup mock tracker expectations for dismissal
   EXPECT_CALL(
@@ -926,9 +913,6 @@ TEST_F(GeminiBrowserAgentTest, TestGeminiLiveIPHAndNewBadgeFET) {
               Dismissed(testing::Ref(
                   feature_engagement::kIPHiOSGeminiLiveNewBadgeFeature)))
       .Times(1);
-
-  // Emulate the floaty being invoked so DismissFloaty actually runs fully.
-  SetIsFloatyInvoked(true);
 
   gemini_browser_agent_->DismissFloaty();
 }

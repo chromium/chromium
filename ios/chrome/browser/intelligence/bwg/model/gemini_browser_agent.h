@@ -44,6 +44,7 @@ enum class FloatyUpdateSource;
 }  // namespace gemini
 
 class ScopedFullscreenDisabler;
+@class GeminiContainerMediator;
 @class GeminiLinkOpeningHandler;
 @class GeminiPageStateChangeHandler;
 @class GeminiSessionHandler;
@@ -127,10 +128,11 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   void StartGeminiFlow(UIViewController* base_view_controller,
                        GeminiStartupState* startup_state);
 
-  // Creates and returns the GeminiConfiguration for the active web state.
-  GeminiConfiguration* CreateGeminiConfigurationForActiveWebState(
-      UIViewController* base_view_controller,
-      GeminiStartupState* startup_state);
+  // Returns the gateway for bridging internal protocols.
+  id<BWGGatewayProtocol> bwg_gateway() const { return bwg_gateway_; }
+
+  // Sets the UI command handlers on the session handler.
+  void SetSessionCommandHandlers();
 
   // Presents a Gemini Live microphone authorization alert or Settings prompt.
   void ShowGeminiLiveMicrophoneAlert(UIViewController* base_view_controller,
@@ -212,24 +214,12 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   void PresentFloaty(UIViewController* base_view_controller,
                      GeminiStartupState* startup_state);
 
-  // Creates the configuration for the Gemini overlay.
-  GeminiConfiguration* CreateGeminiConfiguration(
-      UIViewController* base_view_controller,
-      GeminiStartupState* startup_state,
-      web::WebState* web_state,
-      GeminiPageContext* page_context);
-
   // Adjusts the configuration around the Gemini page context based on user
   // prefs.
   void ApplyUserPrefsToPageContext(GeminiPageContext* gemini_page_context);
 
   // Records the page type when Gemini is invoked.
   void RecordInvocationPageType();
-
-  // Sets the UI command handlers on the session handler. This cannot be called
-  // in the constructor because some objects fail the protocol conformance test
-  // at that time.
-  void SetSessionCommandHandlers();
 
   // Helper to get the GeminiTabHelper for the active web state if it matches
   // the provided web state.
@@ -409,6 +399,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Handler for Gemini actor.
   __strong GeminiActuationHandler* gemini_actuation_handler_ = nullptr;
 
+  // Mediator for the Gemini container. Remove after bottom sheet migrations.
+  __strong GeminiContainerMediator* gemini_container_mediator_ = nil;
+
   // Delegate implementation for BWGSessionHandler.
   __strong GeminiViewStateChangeHandler* gemini_view_state_handler_ = nullptr;
 
@@ -519,11 +512,6 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
 
   // Whether we are currently displaying the Live session dormant snackbar.
   bool is_showing_live_session_dormant_snackbar_ = false;
-
-  // Track if we have triggered feature engagement for Gemini Live IPH or New
-  // Badge.
-  bool has_triggered_gemini_live_iph_ = false;
-  bool has_triggered_gemini_live_new_badge_ = false;
 
   // The entry point that triggered the current Gemini flow.
   gemini::EntryPoint entry_point_ = gemini::EntryPoint::Unknown;
