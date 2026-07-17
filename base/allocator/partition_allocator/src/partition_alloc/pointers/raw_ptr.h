@@ -1146,6 +1146,20 @@ struct RemovePointer<raw_ptr<T, Traits>> {
 template <typename T>
 using RemovePointerT = typename RemovePointer<T>::type;
 
+// Like `raw_ptr<RemovePointerT<T>>` but handles the case where T might
+// not be a pointer type without introducing another layer of indirection.
+template <typename T, RawPtrTraits Traits>
+struct RawPtrIfPtr {
+  using type = T;
+};
+template <typename T, RawPtrTraits Traits>
+  requires(!std::is_same_v<T, RemovePointerT<T>>)
+struct RawPtrIfPtr<T, Traits> {
+  using type = raw_ptr<RemovePointerT<T>, Traits>;
+};
+template <typename T, RawPtrTraits Traits = RawPtrTraits::kEmpty>
+using RawPtrIfPtrT = typename RawPtrIfPtr<T, Traits>::type;
+
 }  // namespace base
 
 using base::raw_ptr;
