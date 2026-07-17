@@ -213,11 +213,15 @@ void BnplManager::OnUserDecisionToUseBnpl(
         // empty. Instead, continue to show disabled issuers.
         if (is_card_number_field_empty_) {
           browser_autofill_manager_->GetAmountExtractionManager()
-              .TriggerCheckoutAmountExtractionWithAi();
+              .TriggerCheckoutAmountExtractionWithAi(
+                  base::BindOnce(&BnplManager::OnAmountExtractionReturnedFromAi,
+                                 weak_factory_.GetWeakPtr()));
         }
       } else {
         browser_autofill_manager_->GetAmountExtractionManager()
-            .TriggerCheckoutAmountExtractionWithAi();
+            .TriggerCheckoutAmountExtractionWithAi(
+                base::BindOnce(&BnplManager::OnAmountExtractionReturnedFromAi,
+                               weak_factory_.GetWeakPtr()));
       }
     } else {
       // On user decision to use BNPL, if the user has not seen the AI
@@ -250,7 +254,9 @@ void BnplManager::OnIssuerAccepted(BnplIssuer issuer) {
           features::kAutofillEnableAiBasedAmountExtraction) &&
       !ongoing_flow_state_->final_checkout_amount) {
     browser_autofill_manager_->GetAmountExtractionManager()
-        .TriggerCheckoutAmountExtractionWithAi();
+        .TriggerCheckoutAmountExtractionWithAi(
+            base::BindOnce(&BnplManager::OnAmountExtractionReturnedFromAi,
+                           weak_factory_.GetWeakPtr()));
     return;
   }
 

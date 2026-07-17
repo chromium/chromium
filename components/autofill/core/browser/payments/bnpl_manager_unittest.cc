@@ -123,7 +123,10 @@ class MockAmountExtractionManager : public AmountExtractionManager {
   explicit MockAmountExtractionManager(BrowserAutofillManager* autofill_manager)
       : AmountExtractionManager(autofill_manager) {}
 
-  MOCK_METHOD(void, TriggerCheckoutAmountExtractionWithAi, (), (override));
+  MOCK_METHOD(void,
+              TriggerCheckoutAmountExtractionWithAi,
+              (AiAmountExtractionCallback),
+              (override));
   MOCK_METHOD(void, Reset, (), (override));
 };
 
@@ -1024,14 +1027,12 @@ TEST_F(BnplManagerTest, FetchVcnDetails_Reset) {
 
 TEST_F(BnplManagerTest, CancelOngoingRequests) {
   EXPECT_CALL(*payments_network_interface_, CancelRequest);
-  EXPECT_CALL(*mock_amount_extraction_manager_, Reset);
 
   test_api(*bnpl_manager_).CancelOngoingRequests();
 }
 
 TEST_F(BnplManagerTest, Reset_CallsCancelOngoingRequests) {
   EXPECT_CALL(*payments_network_interface_, CancelRequest);
-  EXPECT_CALL(*mock_amount_extraction_manager_, Reset);
 
   test_api(*bnpl_manager_).Reset();
 }
@@ -2522,7 +2523,7 @@ TEST_F(BnplManagerTest,
       prefs::kAutofillAmountExtractionAiTermsSeen, true);
 
   EXPECT_CALL(*mock_amount_extraction_manager_,
-              TriggerCheckoutAmountExtractionWithAi());
+              TriggerCheckoutAmountExtractionWithAi);
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_CALL(GetBnplUiDelegate(), ShowProgressUi);
 #else   // Desktop only.
@@ -2543,7 +2544,7 @@ TEST_F(BnplManagerTest,
       features::kAutofillEnableAiBasedAmountExtraction);
 
   EXPECT_CALL(*mock_amount_extraction_manager_,
-              TriggerCheckoutAmountExtractionWithAi())
+              TriggerCheckoutAmountExtractionWithAi)
       .Times(0);
   EXPECT_CALL(GetBnplUiDelegate(), ShowSelectBnplIssuerUi);
 
@@ -2558,7 +2559,7 @@ TEST_F(BnplManagerTest,
   scoped_feature_list.InitAndDisableFeature(
       features::kAutofillEnableAiBasedAmountExtraction);
   EXPECT_CALL(*mock_amount_extraction_manager_,
-              TriggerCheckoutAmountExtractionWithAi())
+              TriggerCheckoutAmountExtractionWithAi)
       .Times(0);
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_CALL(GetBnplUiDelegate(), ShowProgressUi);
@@ -2587,7 +2588,7 @@ TEST_F(BnplManagerTest, OnUserDecisionToUseBnpl_TriggersExtractionIfTermsSeen) {
   EXPECT_CALL(GetBnplUiDelegate(), ShowSelectBnplIssuerUi);
 #endif  // BUILDFLAG(IS_ANDROID)
   EXPECT_CALL(*mock_amount_extraction_manager_,
-              TriggerCheckoutAmountExtractionWithAi());
+              TriggerCheckoutAmountExtractionWithAi);
 
   bnpl_manager_->OnUserDecisionToUseBnpl(
       /*final_checkout_amount=*/std::nullopt,
@@ -2631,7 +2632,7 @@ TEST_F(BnplManagerTest, OnIssuerAccepted_TriggersExtractionAfterTermsNotSeen) {
 
   InSequence s;
   EXPECT_CALL(*mock_amount_extraction_manager_,
-              TriggerCheckoutAmountExtractionWithAi());
+              TriggerCheckoutAmountExtractionWithAi);
   EXPECT_CALL(GetBnplUiDelegate(), UpdateBnplIssuerUi);
 
   test_api(*bnpl_manager_).OnIssuerAccepted(test::GetTestUnlinkedBnplIssuer());
@@ -3542,7 +3543,6 @@ TEST_F(
               Field(&Suggestion::type, SuggestionType::kManageCreditCard)),
           AutofillSuggestionTriggerSource::kFormControlElementClicked));
   EXPECT_CALL(*payments_network_interface_, CancelRequest);
-  EXPECT_CALL(*mock_amount_extraction_manager_, Reset);
 
   bnpl_manager_->OnUserDecisionToUseSavedCards();
 
@@ -3583,7 +3583,6 @@ TEST_F(
 
   ASSERT_EQ(bnpl_manager_->GetCachedSuggestions(), suggestions);
   EXPECT_CALL(*payments_network_interface_, CancelRequest);
-  EXPECT_CALL(*mock_amount_extraction_manager_, Reset);
 
   bnpl_manager_->OnUserDecisionToUseSavedCards();
 
@@ -3594,7 +3593,7 @@ TEST_F(
   // Switching back to Pay Later tab should re-trigger the AI based amount
   // extraction.
   EXPECT_CALL(*mock_amount_extraction_manager_,
-              TriggerCheckoutAmountExtractionWithAi());
+              TriggerCheckoutAmountExtractionWithAi);
   bnpl_manager_->OnUserDecisionToUseBnpl(
       /*final_checkout_amount=*/std::nullopt,
       /*on_bnpl_vcn_fetched_callback=*/base::DoNothing());
@@ -3657,7 +3656,6 @@ TEST_F(
               Field(&Suggestion::type, SuggestionType::kManageCreditCard)),
           AutofillSuggestionTriggerSource::kFormControlElementClicked));
   EXPECT_CALL(*payments_network_interface_, CancelRequest);
-  EXPECT_CALL(*mock_amount_extraction_manager_, Reset);
 
   bnpl_manager_->OnUserDecisionToUseSavedCards();
 
@@ -3667,7 +3665,7 @@ TEST_F(
   // Switching back to Pay Later tab should not trigger the AI based amount
   // extraction.
   EXPECT_CALL(*mock_amount_extraction_manager_,
-              TriggerCheckoutAmountExtractionWithAi())
+              TriggerCheckoutAmountExtractionWithAi)
       .Times(0);
   bnpl_manager_->OnUserDecisionToUseBnpl(
       /*final_checkout_amount=*/std::nullopt,
@@ -3729,7 +3727,6 @@ TEST_F(BnplManagerPayLaterTabTest,
               Field(&Suggestion::type, SuggestionType::kManageCreditCard)),
           AutofillSuggestionTriggerSource::kFormControlElementClicked));
   EXPECT_CALL(*payments_network_interface_, CancelRequest);
-  EXPECT_CALL(*mock_amount_extraction_manager_, Reset);
 
   bnpl_manager_->OnUserDecisionToUseSavedCards();
 

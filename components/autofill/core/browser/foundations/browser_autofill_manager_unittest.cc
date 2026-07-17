@@ -800,7 +800,10 @@ class MockAmountExtractionManager : public payments::AmountExtractionManager {
                FillingProduct filling_product,
                FieldType field_type),
               (const, override));
-  MOCK_METHOD(void, TriggerCheckoutAmountExtraction, (), (override));
+  MOCK_METHOD(void,
+              TriggerCheckoutAmountExtraction,
+              (AmountExtractionCallback),
+              (override));
 };
 
 class TestBrowserAutofillManager : public autofill::TestBrowserAutofillManager {

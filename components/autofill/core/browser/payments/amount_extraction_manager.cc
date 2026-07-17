@@ -33,7 +33,6 @@
 #include "components/autofill/core/browser/metrics/payments/ai_amount_extraction_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/amount_extraction_metrics.h"
 #include "components/autofill/core/browser/payments/amount_extraction_heuristic_regexes.h"
-#include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
@@ -202,17 +201,19 @@ AmountExtractionManager::GetEligibleFeatures(
   return {};
 }
 
-void AmountExtractionManager::FetchAiPageContent() {
+void AmountExtractionManager::FetchAiPageContent(
+    AiAmountExtractionCallback result_callback) {
   CHECK(base::FeatureList::IsEnabled(
       features::kAutofillEnableAiBasedAmountExtraction));
   ai_amount_extraction_start_time_ = base::TimeTicks::Now();
 
-  autofill_manager_->client().GetAiPageContent(
-      base::BindOnce(&AmountExtractionManager::OnAiPageContentReceived,
-                     weak_ptr_factory_.GetWeakPtr()));
+  autofill_manager_->client().GetAiPageContent(base::BindOnce(
+      &AmountExtractionManager::OnAiPageContentReceived,
+      weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
 }
 
 void AmountExtractionManager::OnAiPageContentReceived(
+    AiAmountExtractionCallback result_callback,
     std::optional<optimization_guide::proto::AnnotatedPageContent> result) {
   if (!has_logged_apc_fetch_result_) {
     autofill_metrics::LogAiAmountExtractionApcFetchResult(
@@ -222,11 +223,9 @@ void AmountExtractionManager::OnAiPageContentReceived(
   }
 
   if (!result) {
-    if (BnplManager* bnpl_manager =
-            autofill_manager_->GetPaymentsBnplManager()) {
-      bnpl_manager->OnAmountExtractionReturnedFromAi(base::unexpected(
-          AiAmountExtractionResult::Error::kFailureToGenerateApc));
-    }
+    std::move(result_callback)
+        .Run(base::unexpected(
+            AiAmountExtractionResult::Error::kFailureToGenerateApc));
     // Stop the timer because amount extraction is finished with a failure.
     Reset();
     return;
@@ -240,23 +239,36 @@ void AmountExtractionManager::OnAiPageContentReceived(
       std::move(request),
       {.execution_timeout = kAiBasedAmountExtractionWaitTime},
       base::BindOnce(&AmountExtractionManager::OnCheckoutAmountReceivedFromAi,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(result_callback)));
 }
 
-void AmountExtractionManager::TriggerCheckoutAmountExtractionWithAi() {
+void AmountExtractionManager::TriggerCheckoutAmountExtractionWithAi(
+    AiAmountExtractionCallback callback) {
+  // When new AI amount extraction is triggered, invalidate existing callbacks
+  // to other features.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
+  auto [result_callback, on_timeout_reached_with_ai_callback] =
+      base::SplitOnceCallback(std::move(callback));
+
   // In case of timeout, cancel the request and show the error dialog.
   timeout_timer_.Start(
       FROM_HERE, kAiBasedAmountExtractionWaitTime,
-      base::BindOnce(&AmountExtractionManager::OnTimeoutReached,
-                     weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&AmountExtractionManager::OnTimeoutReachedWithAi,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(on_timeout_reached_with_ai_callback)));
 
-  FetchAiPageContent();
+  FetchAiPageContent(std::move(result_callback));
 }
 
-void AmountExtractionManager::TriggerCheckoutAmountExtraction() {
+void AmountExtractionManager::TriggerCheckoutAmountExtraction(
+    AmountExtractionCallback callback) {
   if (search_request_pending_) {
     return;
   }
+  auto [result_callback, on_timeout_reached_callback] =
+      base::SplitOnceCallback(std::move(callback));
   search_request_pending_ = true;
   const AmountExtractionHeuristicRegexes& heuristics =
       AmountExtractionHeuristicRegexes::GetInstance();
@@ -265,12 +277,14 @@ void AmountExtractionManager::TriggerCheckoutAmountExtraction() {
       base::UTF8ToUTF16(heuristics.keyword_pattern()),
       heuristics.number_of_ancestor_levels_to_search(),
       base::BindOnce(&AmountExtractionManager::OnCheckoutAmountReceived,
-                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(),
+                     std::move(result_callback)));
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&AmountExtractionManager::OnTimeoutReached,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(on_timeout_reached_callback)),
       kAmountExtractionWaitTime);
 }
 
@@ -284,6 +298,7 @@ bool AmountExtractionManager::SeenUnsupportedCurrencyForPageLoad() const {
 
 void AmountExtractionManager::OnCheckoutAmountReceived(
     base::TimeTicks search_request_start_timestamp,
+    AmountExtractionCallback result_callback,
     const std::string& extracted_amount) {
   base::TimeDelta latency =
       base::TimeTicks::Now() - search_request_start_timestamp;
@@ -300,10 +315,9 @@ void AmountExtractionManager::OnCheckoutAmountReceived(
   std::optional<int64_t> parsed_extracted_amount =
       MaybeParseAmountToMonetaryMicroUnits(extracted_amount);
 
-  if (BnplManager* bnpl_manager = autofill_manager_->GetPaymentsBnplManager()) {
-    bnpl_manager->OnAmountExtractionReturned(parsed_extracted_amount,
-                                             /*timeout_reached=*/false);
-  }
+  std::move(result_callback)
+      .Run(parsed_extracted_amount,
+           /*timeout_reached=*/false);
   if constexpr (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
                 BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)) {
     if (base::FeatureList::IsEnabled(
@@ -320,6 +334,7 @@ void AmountExtractionManager::OnCheckoutAmountReceived(
 }
 
 void AmountExtractionManager::OnCheckoutAmountReceivedFromAi(
+    AiAmountExtractionCallback result_callback,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   // If no timeout, it means the server response came back in time, stop the
@@ -330,12 +345,6 @@ void AmountExtractionManager::OnCheckoutAmountReceivedFromAi(
   base::TimeDelta latency =
       base::TimeTicks::Now() - ai_amount_extraction_start_time_.value();
   ai_amount_extraction_start_time_.reset();
-
-  BnplManager* bnpl_manager = autofill_manager_->GetPaymentsBnplManager();
-  if (!bnpl_manager) {
-    Reset();
-    return;
-  }
 
   const std::optional<optimization_guide::proto::AmountExtractionResponse>
       response = result.response.has_value()
@@ -353,44 +362,56 @@ void AmountExtractionManager::OnCheckoutAmountReceivedFromAi(
   }
 
   LogAiAmountExtractionResultIfApplicable(extraction_result, latency);
-  bnpl_manager->OnAmountExtractionReturnedFromAi(std::move(extraction_result));
+  std::move(result_callback).Run(std::move(extraction_result));
   Reset();
 }
 
-void AmountExtractionManager::OnTimeoutReached() {
+void AmountExtractionManager::OnTimeoutReached(
+    AmountExtractionCallback callback) {
   amount_extraction_status_.has_timed_out_for_page_load = true;
   // Once timeout is reached, cancel all the pending function calls.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableAiBasedAmountExtraction)) {
-    AiAmountExtractionResult::ResultType result =
-        base::unexpected(AiAmountExtractionResult::Error::kTimeout);
-    if (BnplManager* bnpl_manager =
-            autofill_manager_->GetPaymentsBnplManager()) {
-      bnpl_manager->OnAmountExtractionReturnedFromAi(result);
-    }
-    LogAiAmountExtractionResultIfApplicable(result, /*latency=*/std::nullopt);
-  } else {
-    // If the amount is found, ignore this callback.
-    if (!search_request_pending_) {
-      return;
-    }
-    search_request_pending_ = false;
-    if (BnplManager* bnpl_manager =
-            autofill_manager_->GetPaymentsBnplManager()) {
-      bnpl_manager->OnAmountExtractionReturned(
-          /*extracted_amount=*/std::nullopt,
-          /*timeout_reached=*/true);
-    }
-    if (!has_logged_amount_extraction_result_) {
-      autofill_metrics::LogAmountExtractionResult(
-          /*latency=*/std::nullopt,
-          autofill_metrics::AmountExtractionResult::kTimeout,
-          GetMainFrameDriver()->GetPageUkmSourceId());
-      has_logged_amount_extraction_result_ = true;
+  // If the amount is found, ignore this callback.
+  if (!search_request_pending_) {
+    return;
+  }
+  search_request_pending_ = false;
+  std::move(callback).Run(
+      /*extracted_amount=*/std::nullopt,
+      /*timeout_reached=*/true);
+  if (!has_logged_amount_extraction_result_) {
+    autofill_metrics::LogAmountExtractionResult(
+        /*latency=*/std::nullopt,
+        autofill_metrics::AmountExtractionResult::kTimeout,
+        GetMainFrameDriver()->GetPageUkmSourceId());
+    has_logged_amount_extraction_result_ = true;
+  }
+
+  if constexpr (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+                BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)) {
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillEnableAmountExtractionTesting)) {
+      VLOG(3) << "The amount extraction on domain "
+              << autofill_manager_->client()
+                     .GetLastCommittedPrimaryMainFrameOrigin()
+              << " reached a timeout.";
     }
   }
+
+  Reset();
+}
+
+void AmountExtractionManager::OnTimeoutReachedWithAi(
+    AiAmountExtractionCallback callback) {
+  amount_extraction_status_.has_timed_out_for_page_load = true;
+  // Once timeout is reached, cancel all the pending function calls.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
+  AiAmountExtractionResult::ResultType result =
+      base::unexpected(AiAmountExtractionResult::Error::kTimeout);
+  LogAiAmountExtractionResultIfApplicable(result, /*latency=*/std::nullopt);
+  std::move(callback).Run(std::move(result));
 
   if constexpr (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
                 BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)) {

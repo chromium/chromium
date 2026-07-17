@@ -46,6 +46,8 @@ struct OptimizationGuideModelExecutionResult;
 
 namespace autofill::payments {
 
+class BnplManager;
+
 // Encapsulates the result of the AI-based amount extraction process.
 // This uses base::expected to enforce explicit handling of both the success
 // path (valid amount and currency) and specific failure cases. This
@@ -93,6 +95,17 @@ class AmountExtractionManager {
  public:
   using AmountExtractionResponse =
       optimization_guide::proto::AmountExtractionResponse;
+
+  // Callback function for regex-based amount extraction. It will receive the
+  // `extracted_amount` and the `timeout_reached` status.
+  using AmountExtractionCallback =
+      base::OnceCallback<void(const std::optional<int64_t>& extracted_amount,
+                              bool timeout_reached)>;
+
+  // Callback function for AI-based amount extraction. It will receive the
+  // `ResultType` from AI-based amount extraction.
+  using AiAmountExtractionCallback =
+      base::OnceCallback<void(AiAmountExtractionResult::ResultType result)>;
 
   // Enum for all features that require amount extraction.
   enum class EligibleFeature {
@@ -151,14 +164,16 @@ class AmountExtractionManager {
       FieldType field_type) const;
 
   // Fetch the page content for the AI-based amount extraction.
-  void FetchAiPageContent();
+  void FetchAiPageContent(AiAmountExtractionCallback result_callback);
 
   // Trigger the search for the final checkout amount from the DOM of the
   // current page.
-  virtual void TriggerCheckoutAmountExtraction();
+  virtual void TriggerCheckoutAmountExtraction(
+      AmountExtractionCallback callback);
 
   // Trigger the search for the final checkout amount using server-side AI.
-  virtual void TriggerCheckoutAmountExtractionWithAi();
+  virtual void TriggerCheckoutAmountExtractionWithAi(
+      AiAmountExtractionCallback callback);
 
   // Indicates whether the AI-based amount extraction timed out for the current
   // page load. Tied to the lifecycle of `this` and should not be reset by
@@ -173,6 +188,7 @@ class AmountExtractionManager {
  protected:
   // Callback function for `AutofillClient::GetAiPageContent`.
   void OnAiPageContentReceived(
+      AiAmountExtractionCallback result_callback,
       std::optional<optimization_guide::proto::AnnotatedPageContent> result);
 
   // Invoked after the amount extraction process completes.
@@ -181,11 +197,16 @@ class AmountExtractionManager {
   // when TriggerCheckoutAmountExtraction is called.
   virtual void OnCheckoutAmountReceived(
       base::TimeTicks search_request_start_timestamp,
+      AmountExtractionCallback result_callback,
       const std::string& extracted_amount);
 
-  // Checks whether the current amount search has reached the timeout or not.
-  // If so, cancel the ongoing search.
-  virtual void OnTimeoutReached();
+  // Checks whether the current regex-based amount search has reached the
+  // timeout or not. If so, cancel the ongoing search.
+  virtual void OnTimeoutReached(AmountExtractionCallback callback);
+
+  // Checks whether the current AI-based amount search has reached the
+  // timeout or not. If so, cancel the ongoing search.
+  virtual void OnTimeoutReachedWithAi(AiAmountExtractionCallback callback);
 
   // Cancels in-progress requests and resets the state. Also invalidates
   // `AmountExtractionManager` weak pointers from the factory.
@@ -197,6 +218,7 @@ class AmountExtractionManager {
 
   // Invoked once the amount extraction from the model executor is complete.
   void OnCheckoutAmountReceivedFromAi(
+      AiAmountExtractionCallback result_callback,
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 

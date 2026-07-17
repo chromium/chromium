@@ -1805,7 +1805,13 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
           // AI-based amount extraction is enabled, this should not be
           // triggered.
           if (ai_amount_extraction_disabled) {
-            GetAmountExtractionManager().TriggerCheckoutAmountExtraction();
+            if (payments::BnplManager* bnpl_manager =
+                    GetPaymentsBnplManager()) {
+              GetAmountExtractionManager().TriggerCheckoutAmountExtraction(
+                  base::BindOnce(
+                      &payments::BnplManager::OnAmountExtractionReturned,
+                      bnpl_manager->GetWeakPtr()));
+            }
           }
       }
     }

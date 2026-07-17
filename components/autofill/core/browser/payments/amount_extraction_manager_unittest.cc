@@ -95,9 +95,14 @@ class MockAmountExtractionManager : public AmountExtractionManager {
   MOCK_METHOD(void,
               OnCheckoutAmountReceived,
               (base::TimeTicks search_request_start_timestamp,
+               AmountExtractionCallback result_callback,
                const std::string& extracted_amount),
               (override));
-  MOCK_METHOD(void, OnTimeoutReached, (), (override));
+  MOCK_METHOD(void, OnTimeoutReached, (AmountExtractionCallback), (override));
+  MOCK_METHOD(void,
+              OnTimeoutReachedWithAi,
+              (AiAmountExtractionCallback),
+              (override));
 };
 
 class AmountExtractionManagerTest
@@ -146,12 +151,15 @@ class AmountExtractionManagerTest
 
   void FakeCheckoutAmountReceived(const std::string& extracted_amount) {
     test_api(*amount_extraction_manager_)
-        .OnCheckoutAmountReceived(base::TimeTicks::Now(), extracted_amount);
+        .OnCheckoutAmountReceived(base::TimeTicks::Now(),
+                                  mock_amount_extraction_callback_.Get(),
+                                  extracted_amount);
   }
 
   void FakeAmountExtractionTimeout() {
     test_api(*amount_extraction_manager_).SetSearchRequestPending(true);
-    test_api(*amount_extraction_manager_).OnTimeoutReached();
+    test_api(*amount_extraction_manager_)
+        .OnTimeoutReached(mock_amount_extraction_callback_.Get());
   }
 
   void FakeCheckoutAmountReceivedFromAi(
@@ -176,6 +184,7 @@ class AmountExtractionManagerTest
 
     test_api(*amount_extraction_manager_)
         .OnCheckoutAmountReceivedFromAi(
+            mock_ai_amount_extraction_callback_.Get(),
             is_mocking_empty_result
                 ? optimization_guide::OptimizationGuideModelExecutionResult()
                 : optimization_guide::OptimizationGuideModelExecutionResult(
@@ -208,6 +217,10 @@ class AmountExtractionManagerTest
   std::unique_ptr<MockAmountExtractionManager> mock_amount_extraction_manager_;
   ukm::TestAutoSetUkmRecorder ukm_recorder_;
   NiceMock<optimization_guide::MockRemoteModelExecutor> mock_model_executor_;
+  base::MockCallback<AmountExtractionManager::AmountExtractionCallback>
+      mock_amount_extraction_callback_;
+  base::MockCallback<AmountExtractionManager::AiAmountExtractionCallback>
+      mock_ai_amount_extraction_callback_;
 };
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -604,7 +617,8 @@ TEST_F(AmountExtractionManagerTest, TriggerCheckoutAmountExtraction) {
           _))
       .Times(1);
 
-  amount_extraction_manager_->TriggerCheckoutAmountExtraction();
+  amount_extraction_manager_->TriggerCheckoutAmountExtraction(
+      base::DoNothing());
 }
 
 // Tests that the MaybeParseAmountToMonetaryMicroUnits parser converts the input
@@ -894,7 +908,8 @@ TEST_F(AmountExtractionManagerTest,
           _))
       .Times(1);
 
-  amount_extraction_manager_->TriggerCheckoutAmountExtraction();
+  amount_extraction_manager_->TriggerCheckoutAmountExtraction(
+      base::DoNothing());
   histogram_tester.ExpectUniqueTimeSample(
       "Autofill.AmountExtraction.Latency2.Success",
       base::Milliseconds(kDefaultAmountExtractionLatencyMs), 1);
@@ -936,7 +951,8 @@ TEST_F(AmountExtractionManagerTest,
           _))
       .Times(1);
 
-  amount_extraction_manager_->TriggerCheckoutAmountExtraction();
+  amount_extraction_manager_->TriggerCheckoutAmountExtraction(
+      base::DoNothing());
   histogram_tester.ExpectUniqueTimeSample(
       "Autofill.AmountExtraction.Latency2.Failure",
       base::Milliseconds(kDefaultAmountExtractionLatencyMs), 1);
@@ -978,7 +994,8 @@ TEST_F(AmountExtractionManagerTest, AmountExtractionResult_Metric_Successful) {
           _))
       .Times(1);
 
-  amount_extraction_manager_->TriggerCheckoutAmountExtraction();
+  amount_extraction_manager_->TriggerCheckoutAmountExtraction(
+      base::DoNothing());
   histogram_tester.ExpectUniqueSample(
       "Autofill.AmountExtraction.Result2",
       autofill_metrics::AmountExtractionResult::kSuccessful, 1);
@@ -1011,7 +1028,8 @@ TEST_F(AmountExtractionManagerTest,
           _))
       .Times(1);
 
-  amount_extraction_manager_->TriggerCheckoutAmountExtraction();
+  amount_extraction_manager_->TriggerCheckoutAmountExtraction(
+      base::DoNothing());
   histogram_tester.ExpectUniqueSample(
       "Autofill.AmountExtraction.Result2",
       autofill_metrics::AmountExtractionResult::kAmountNotFound, 1);
@@ -1045,7 +1063,8 @@ TEST_F(AmountExtractionManagerTest, AmountExtractionResult_Metric_Timeout) {
                     base::Milliseconds(100));
           });
 
-  amount_extraction_manager_->TriggerCheckoutAmountExtraction();
+  amount_extraction_manager_->TriggerCheckoutAmountExtraction(
+      base::DoNothing());
   task_environment_.FastForwardBy(
       AmountExtractionManager::kAmountExtractionWaitTime);
 
@@ -1074,7 +1093,8 @@ TEST_F(AmountExtractionManagerTest, AiAmountExtraction_ResultMetrics_Success) {
   EXPECT_CALL(autofill_client(), GetAiPageContent)
       .WillOnce(MoveArg<0>(&fetch_callback));
 
-  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi(
+      base::DoNothing());
   ASSERT_TRUE(fetch_callback);
 
   ModelExecutionCallback model_callback;
@@ -1129,7 +1149,8 @@ TEST_F(AmountExtractionManagerTest,
             /*model_quality_log_entry=*/nullptr);
       }));
 
-  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi(
+      base::DoNothing());
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.AiAmountExtraction.Result",
@@ -1164,7 +1185,8 @@ TEST_F(AmountExtractionManagerTest,
             /*model_quality_log_entry=*/nullptr);
       }));
 
-  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi(
+      base::DoNothing());
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.AiAmountExtraction.Result",
@@ -1182,7 +1204,8 @@ TEST_F(AmountExtractionManagerTest,
   EXPECT_CALL(autofill_client(), GetAiPageContent)
       .WillOnce(MoveArg<0>(&fetch_callback));
 
-  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi(
+      base::DoNothing());
 
   EXPECT_CALL(autofill_client(), GetRemoteModelExecutor())
       .WillOnce(Return(model_executor()));
@@ -1221,7 +1244,8 @@ TEST_F(AmountExtractionManagerTest, AiAmountExtraction_ResultMetrics_Timeout) {
 
   EXPECT_CALL(autofill_client(), GetAiPageContent);
 
-  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi(
+      base::DoNothing());
 
   task_environment_.FastForwardBy(
       AmountExtractionManager::kAiBasedAmountExtractionWaitTime +
@@ -1240,7 +1264,8 @@ TEST_F(AmountExtractionManagerTest,
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(autofill_client(), GetAiPageContent);
-  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi(
+      base::DoNothing());
 
   task_environment_.FastForwardBy(
       AmountExtractionManager::kAiBasedAmountExtractionWaitTime +
@@ -1252,7 +1277,8 @@ TEST_F(AmountExtractionManagerTest,
       /*expected_count=*/1);
 
   EXPECT_CALL(autofill_client(), GetAiPageContent);
-  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi(
+      base::DoNothing());
 
   task_environment_.FastForwardBy(
       AmountExtractionManager::kAiBasedAmountExtractionWaitTime +
@@ -1489,7 +1515,8 @@ TEST_F(AmountExtractionManagerTest, AiAmountExtraction_LatencyMetrics_Success) {
   EXPECT_CALL(autofill_client(), GetAiPageContent)
       .WillOnce(MoveArg<0>(&fetch_callback));
 
-  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi(
+      base::DoNothing());
   ASSERT_TRUE(fetch_callback);
 
   ModelExecutionCallback model_callback;
@@ -1544,7 +1571,8 @@ TEST_F(AmountExtractionManagerTest, AiAmountExtraction_LatencyMetrics_Failure) {
   EXPECT_CALL(autofill_client(), GetAiPageContent)
       .WillOnce(MoveArg<0>(&fetch_callback));
 
-  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi(
+      base::DoNothing());
   ASSERT_TRUE(fetch_callback);
 
   ModelExecutionCallback model_callback;
@@ -1593,7 +1621,8 @@ TEST_F(AmountExtractionManagerTest,
   EXPECT_CALL(autofill_client(), GetAiPageContent)
       .WillOnce(MoveArg<0>(&fetch_callback));
 
-  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi(
+      base::DoNothing());
 
   EXPECT_CALL(autofill_client(), GetRemoteModelExecutor())
       .WillOnce(Return(model_executor()));
@@ -1645,7 +1674,8 @@ TEST_F(AmountExtractionManagerTest, AiAmountExtraction_Timeout_NoLatency) {
       features::kAutofillEnableAiBasedAmountExtraction};
   base::HistogramTester histogram_tester;
 
-  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi(
+      base::DoNothing());
   task_environment_.FastForwardBy(
       AmountExtractionManager::kAiBasedAmountExtractionWaitTime +
       base::Seconds(1));
@@ -1693,8 +1723,9 @@ TEST_F(AmountExtractionManagerTest, TimeoutExpiresBeforeResponse) {
           });
   EXPECT_CALL(*mock_amount_extraction_manager_, OnCheckoutAmountReceived)
       .Times(0);
-  EXPECT_CALL(*mock_amount_extraction_manager_, OnTimeoutReached()).Times(1);
-  mock_amount_extraction_manager_->TriggerCheckoutAmountExtraction();
+  EXPECT_CALL(*mock_amount_extraction_manager_, OnTimeoutReached).Times(1);
+  mock_amount_extraction_manager_->TriggerCheckoutAmountExtraction(
+      base::DoNothing());
   task_environment_.RunUntilIdle();
   task_environment_.FastForwardBy(
       AmountExtractionManager::kAmountExtractionWaitTime);
@@ -1714,10 +1745,11 @@ TEST_F(AmountExtractionManagerTest, ResponseBeforeTimeout) {
             std::move(callback).Run("123");
           });
   EXPECT_CALL(*mock_amount_extraction_manager_,
-              OnCheckoutAmountReceived(_, Eq("123")))
+              OnCheckoutAmountReceived(_, _, Eq("123")))
       .Times(1);
-  EXPECT_CALL(*mock_amount_extraction_manager_, OnTimeoutReached()).Times(0);
-  mock_amount_extraction_manager_->TriggerCheckoutAmountExtraction();
+  EXPECT_CALL(*mock_amount_extraction_manager_, OnTimeoutReached).Times(0);
+  mock_amount_extraction_manager_->TriggerCheckoutAmountExtraction(
+      base::DoNothing());
   task_environment_.RunUntilIdle();
 }
 
@@ -1725,9 +1757,8 @@ TEST_F(AmountExtractionManagerTest, ResponseBeforeTimeout) {
 // extraction receives a empty result.
 TEST_F(AmountExtractionManagerTest,
        OnCheckoutAmountReceived_EmptyResult_BnplManagerNotified) {
-  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
-              OnAmountExtractionReturned(std::optional<int64_t>(),
-                                         /*timeout_reached=*/false))
+  EXPECT_CALL(mock_amount_extraction_callback_, Run(std::optional<int64_t>(),
+                                                    /*timeout_reached=*/false))
       .Times(1);
 
   FakeCheckoutAmountReceived("");
@@ -1737,9 +1768,9 @@ TEST_F(AmountExtractionManagerTest,
 // extraction receives a result with correct format.
 TEST_F(AmountExtractionManagerTest,
        OnCheckoutAmountReceived_AmountInCorrectFormat_BnplManagerNotified) {
-  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
-              OnAmountExtractionReturned(std::optional<int64_t>(123'450'000LL),
-                                         /*timeout_reached=*/false))
+  EXPECT_CALL(mock_amount_extraction_callback_,
+              Run(std::optional<int64_t>(123'450'000LL),
+                  /*timeout_reached=*/false))
       .Times(1);
 
   FakeCheckoutAmountReceived("$ 123.45");
@@ -1757,9 +1788,8 @@ TEST_F(AmountExtractionManagerTest,
       /*disabled_features=*/{features::kAutofillEnableAiBasedAmountExtraction,
                              features::kAutofillEnableAmountExtractionTesting});
 
-  EXPECT_CALL(
-      *autofill_manager().GetPaymentsBnplManager(),
-      OnAmountExtractionReturned(Eq(std::nullopt), /*timeout_reached=*/true))
+  EXPECT_CALL(mock_amount_extraction_callback_,
+              Run(Eq(std::nullopt), /*timeout_reached=*/true))
       .Times(1);
 
   FakeAmountExtractionTimeout();
@@ -1772,8 +1802,8 @@ TEST_F(AmountExtractionManagerTest,
   test_api(*amount_extraction_manager_)
       .SetAiAmountExtractionStartTime(base::TimeTicks::Now());
 
-  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
-              OnAmountExtractionReturnedFromAi(Eq(base::unexpected(
+  EXPECT_CALL(mock_ai_amount_extraction_callback_,
+              Run(Eq(base::unexpected(
                   AiAmountExtractionResult::Error::kNegativeAmount))));
 
   FakeCheckoutAmountReceivedFromAi(-123.45, "USD", true);
@@ -1786,8 +1816,8 @@ TEST_F(AmountExtractionManagerTest,
   test_api(*amount_extraction_manager_)
       .SetAiAmountExtractionStartTime(base::TimeTicks::Now());
 
-  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
-              OnAmountExtractionReturnedFromAi(Eq(base::unexpected(
+  EXPECT_CALL(mock_ai_amount_extraction_callback_,
+              Run(Eq(base::unexpected(
                   AiAmountExtractionResult::Error::kMissingCurrency))));
 
   FakeCheckoutAmountReceivedFromAi(123.45, std::nullopt, true);
@@ -1800,8 +1830,8 @@ TEST_F(AmountExtractionManagerTest,
   test_api(*amount_extraction_manager_)
       .SetAiAmountExtractionStartTime(base::TimeTicks::Now());
 
-  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
-              OnAmountExtractionReturnedFromAi(Eq(base::unexpected(
+  EXPECT_CALL(mock_ai_amount_extraction_callback_,
+              Run(Eq(base::unexpected(
                   AiAmountExtractionResult::Error::kNegativeAmount))));
 
   FakeCheckoutAmountReceivedFromAi(-123.45, std::nullopt, true);
@@ -1814,8 +1844,8 @@ TEST_F(AmountExtractionManagerTest,
   test_api(*amount_extraction_manager_)
       .SetAiAmountExtractionStartTime(base::TimeTicks::Now());
 
-  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
-              OnAmountExtractionReturnedFromAi(Eq(base::unexpected(
+  EXPECT_CALL(mock_ai_amount_extraction_callback_,
+              Run(Eq(base::unexpected(
                   AiAmountExtractionResult::Error::kUnsupportedCurrency))));
 
   FakeCheckoutAmountReceivedFromAi(123.45, "GBP", true);
@@ -1830,8 +1860,7 @@ TEST_F(AmountExtractionManagerTest,
   AiAmountExtractionResult::ResultType expected_success =
       std::make_pair(123'450'000, "USD");
 
-  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
-              OnAmountExtractionReturnedFromAi(Eq(expected_success)));
+  EXPECT_CALL(mock_ai_amount_extraction_callback_, Run(Eq(expected_success)));
 
   FakeCheckoutAmountReceivedFromAi(123.45, "USD", true);
 }
@@ -1843,8 +1872,8 @@ TEST_F(AmountExtractionManagerTest,
   test_api(*amount_extraction_manager_)
       .SetAiAmountExtractionStartTime(base::TimeTicks::Now());
 
-  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
-              OnAmountExtractionReturnedFromAi(Eq(base::unexpected(
+  EXPECT_CALL(mock_ai_amount_extraction_callback_,
+              Run(Eq(base::unexpected(
                   AiAmountExtractionResult::Error::kMissingServerResponse))));
 
   // Pass an empty model execution response to mock the server returned nothing.
@@ -1862,7 +1891,8 @@ TEST_F(AmountExtractionManagerTest,
   EXPECT_CALL(autofill_client(), GetAiPageContent)
       .WillOnce(MoveArg<0>(&fetch_callback));
 
-  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi(
+      mock_ai_amount_extraction_callback_.Get());
 
   ASSERT_TRUE(fetch_callback);
 
@@ -1888,8 +1918,7 @@ TEST_F(AmountExtractionManagerTest,
   AiAmountExtractionResult::ResultType expected_success =
       std::make_pair(100'000'000, "USD");
 
-  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
-              OnAmountExtractionReturnedFromAi(expected_success));
+  EXPECT_CALL(mock_ai_amount_extraction_callback_, Run(expected_success));
 
   // Construct response
   optimization_guide::proto::AmountExtractionResponse response_proto;
@@ -1913,11 +1942,12 @@ TEST_F(AmountExtractionManagerTest, AiAmountExtraction_TimeoutDuringFetch) {
   EXPECT_CALL(autofill_client(), GetAiPageContent)
       .WillOnce(MoveArg<0>(&fetch_callback));
 
-  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi(
+      mock_ai_amount_extraction_callback_.Get());
 
-  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
-              OnAmountExtractionReturnedFromAi(Eq(base::unexpected(
-                  AiAmountExtractionResult::Error::kTimeout))));
+  EXPECT_CALL(
+      mock_ai_amount_extraction_callback_,
+      Run(Eq(base::unexpected(AiAmountExtractionResult::Error::kTimeout))));
   ASSERT_FALSE(amount_extraction_manager_->HasTimedOutForPageLoad());
 
   // Fast forward past the timeout limit.
@@ -1944,7 +1974,8 @@ TEST_F(AmountExtractionManagerTest,
   EXPECT_CALL(autofill_client(), GetAiPageContent)
       .WillOnce(MoveArg<0>(&fetch_callback));
 
-  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi(
+      mock_ai_amount_extraction_callback_.Get());
   ASSERT_TRUE(fetch_callback);
 
   ModelExecutionCallback model_callback;
@@ -1965,9 +1996,9 @@ TEST_F(AmountExtractionManagerTest,
   std::move(fetch_callback).Run(std::make_optional(test_proto));
 
   ASSERT_TRUE(model_callback);
-  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
-              OnAmountExtractionReturnedFromAi(Eq(base::unexpected(
-                  AiAmountExtractionResult::Error::kTimeout))));
+  EXPECT_CALL(
+      mock_ai_amount_extraction_callback_,
+      Run(Eq(base::unexpected(AiAmountExtractionResult::Error::kTimeout))));
   ASSERT_FALSE(amount_extraction_manager_->HasTimedOutForPageLoad());
 
   // Fast forward past the timeout limit.
@@ -1981,9 +2012,7 @@ TEST_F(AmountExtractionManagerTest,
   response_proto.set_currency("USD");
   response_proto.set_is_successful(true);
 
-  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
-              OnAmountExtractionReturnedFromAi)
-      .Times(0);
+  EXPECT_CALL(mock_ai_amount_extraction_callback_, Run).Times(0);
   EXPECT_TRUE(amount_extraction_manager_->HasTimedOutForPageLoad());
 
   // Model execution still returns and verifies its response is ignored.
@@ -2001,10 +2030,11 @@ TEST_F(AmountExtractionManagerTest, AiAmountExtraction_FetchReturnsEmpty) {
   EXPECT_CALL(autofill_client(), GetAiPageContent)
       .WillOnce(MoveArg<0>(&fetch_callback));
 
-  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi(
+      mock_ai_amount_extraction_callback_.Get());
 
-  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
-              OnAmountExtractionReturnedFromAi(Eq(base::unexpected(
+  EXPECT_CALL(mock_ai_amount_extraction_callback_,
+              Run(Eq(base::unexpected(
                   AiAmountExtractionResult::Error::kFailureToGenerateApc))));
 
   EXPECT_CALL(*model_executor(), ExecuteModel).Times(0);
@@ -2023,7 +2053,8 @@ TEST_F(AmountExtractionManagerTest,
   EXPECT_CALL(autofill_client(), GetAiPageContent)
       .WillOnce(MoveArg<0>(&fetch_callback));
 
-  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi(
+      base::DoNothing());
 
   ASSERT_TRUE(fetch_callback);
 
@@ -2058,7 +2089,8 @@ TEST_F(AmountExtractionManagerTest,
   EXPECT_CALL(autofill_client(), GetAiPageContent)
       .WillOnce(MoveArg<0>(&fetch_callback));
 
-  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi(
+      base::DoNothing());
 
   ASSERT_TRUE(fetch_callback);
 
@@ -2098,7 +2130,8 @@ TEST_F(AmountExtractionManagerTest,
         std::move(callback).Run(std::make_optional(test_proto));
       });
 
-  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi(
+      base::DoNothing());
 
   histogram_tester.ExpectBucketCount(
       "Autofill.AiAmountExtraction.ApcFetchResult", true, 1);
@@ -2112,7 +2145,8 @@ TEST_F(AmountExtractionManagerTest,
                 .size(),
             1UL);
 
-  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi(
+      base::DoNothing());
 
   histogram_tester.ExpectBucketCount(
       "Autofill.AiAmountExtraction.ApcFetchResult", true, 1);
@@ -2134,7 +2168,8 @@ TEST_F(AmountExtractionManagerTest,
 
   EXPECT_CALL(autofill_client(), GetAiPageContent);
 
-  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi(
+      base::DoNothing());
 
   EXPECT_TRUE(test_api(*amount_extraction_manager_).IsTimeoutTimerRunning());
 
@@ -2145,13 +2180,72 @@ TEST_F(AmountExtractionManagerTest,
 
 TEST_F(AmountExtractionManagerTest,
        AiAmountExtraction_ResetWhenAiFeatureDisabled) {
-  amount_extraction_manager_->TriggerCheckoutAmountExtraction();
+  amount_extraction_manager_->TriggerCheckoutAmountExtraction(
+      base::DoNothing());
 
   EXPECT_TRUE(test_api(*amount_extraction_manager_).GetSearchRequestPending());
 
   test_api(*amount_extraction_manager_).Reset();
 
   EXPECT_FALSE(test_api(*amount_extraction_manager_).GetSearchRequestPending());
+}
+
+TEST_F(AmountExtractionManagerTest, TriggerWithAi_CancelsPreviousRequest) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableAiBasedAmountExtraction};
+
+  base::MockCallback<AmountExtractionManager::AiAmountExtractionCallback>
+      callback_a;
+  base::MockCallback<AmountExtractionManager::AiAmountExtractionCallback>
+      callback_b;
+
+  // 1. Trigger AI amount extraction for feature A.
+  ApcFetchCallback fetch_callback_a;
+  EXPECT_CALL(autofill_client(), GetAiPageContent)
+      .WillOnce(MoveArg<0>(&fetch_callback_a));
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi(
+      callback_a.Get());
+  ASSERT_TRUE(fetch_callback_a);
+
+  // 2. Before feature A's amount extraction completes, trigger AI extraction
+  // for feature B.
+  ApcFetchCallback fetch_callback_b;
+  EXPECT_CALL(autofill_client(), GetAiPageContent)
+      .WillOnce(MoveArg<0>(&fetch_callback_b));
+
+  // Feature A's callback shouldn't be run.
+  EXPECT_CALL(callback_a, Run).Times(0);
+
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi(
+      callback_b.Get());
+  ASSERT_TRUE(fetch_callback_b);
+
+  optimization_guide::proto::AnnotatedPageContent test_proto;
+  test_proto.set_tab_id(1234);
+  std::move(fetch_callback_a).Run(std::make_optional(test_proto));
+
+  ModelExecutionCallback model_callback_b;
+  EXPECT_CALL(*model_executor(), ExecuteModel)
+      .WillOnce(MoveArg<3>(&model_callback_b));
+
+  std::move(fetch_callback_b).Run(std::make_optional(test_proto));
+  ASSERT_TRUE(model_callback_b);
+
+  // Mock amount extraction.
+  optimization_guide::proto::AmountExtractionResponse response;
+  response.set_final_checkout_amount(100);
+  response.set_currency("USD");
+  response.set_is_successful(true);
+
+  // Feature B's callback should run.
+  AiAmountExtractionResult::ResultType expected_success =
+      std::make_pair(100'000'000, "USD");
+  EXPECT_CALL(callback_b, Run(Eq(expected_success)));
+
+  std::move(model_callback_b)
+      .Run(optimization_guide::OptimizationGuideModelExecutionResult(
+               optimization_guide::AnyWrapProto(response), nullptr),
+           nullptr);
 }
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||

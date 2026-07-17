@@ -130,6 +130,8 @@ class BnplManager : public AutofillManager::Observer {
   // `BnplManager` weak pointers from the factory.
   virtual void CancelOngoingRequests();
 
+  base::WeakPtr<BnplManager> GetWeakPtr() { return weak_factory_.GetWeakPtr(); }
+
   // AutofillManager::Observer:
   void OnSuggestionsHidden(AutofillManager& manager,
                            SuggestionHidingReason reason) override;

@@ -8,8 +8,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/metrics/ukm_metrics_test_utils.h"
+#include "components/autofill/core/browser/payments/amount_extraction_manager.h"
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -473,6 +475,18 @@ INSTANTIATE_TEST_SUITE_P(,
                                          IssuerId::kBnplAfterpay,
                                          IssuerId::kBnplKlarna));
 
+class MockAmountExtractionManager : public payments::AmountExtractionManager {
+ public:
+  explicit MockAmountExtractionManager(BrowserAutofillManager* autofill_manager)
+      : payments::AmountExtractionManager(autofill_manager) {}
+
+  MOCK_METHOD(void,
+              TriggerCheckoutAmountExtractionWithAi,
+              (AiAmountExtractionCallback),
+              (override));
+  MOCK_METHOD(void, Reset, (), (override));
+};
+
 class BnplFormEventsMetricsTest : public AutofillMetricsBaseTest,
                                   public testing::Test {
  public:
@@ -482,6 +496,11 @@ class BnplFormEventsMetricsTest : public AutofillMetricsBaseTest,
 
   void SetUp() override {
     SetUpHelper();
+
+    test_api(autofill_manager())
+        .set_amount_extraction_manager(
+            std::make_unique<testing::NiceMock<MockAmountExtractionManager>>(
+                &autofill_manager()));
 
     form_ =
         GetAndAddSeenForm({.description_for_logging = "Bnpl",

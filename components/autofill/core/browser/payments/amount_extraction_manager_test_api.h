@@ -48,21 +48,31 @@ class AmountExtractionManagerTestApi {
     amount_extraction_manager_->ai_amount_extraction_start_time_ = time;
   }
 
-  void OnCheckoutAmountReceived(base::TimeTicks search_request_start_timestamp,
-                                const std::string& extracted_amount) {
+  void OnCheckoutAmountReceived(
+      base::TimeTicks search_request_start_timestamp,
+      AmountExtractionManager::AmountExtractionCallback callback,
+      const std::string& extracted_amount) {
     return amount_extraction_manager_->OnCheckoutAmountReceived(
-        search_request_start_timestamp, extracted_amount);
+        search_request_start_timestamp, std::move(callback), extracted_amount);
   }
 
   void OnCheckoutAmountReceivedFromAi(
+      AmountExtractionManager::AiAmountExtractionCallback callback,
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
     return amount_extraction_manager_->OnCheckoutAmountReceivedFromAi(
-        std::move(result), std::move(log_entry));
+        std::move(callback), std::move(result), std::move(log_entry));
   }
 
-  void OnTimeoutReached() {
-    return amount_extraction_manager_->OnTimeoutReached();
+  void OnTimeoutReached(
+      AmountExtractionManager::AmountExtractionCallback callback) {
+    return amount_extraction_manager_->OnTimeoutReached(std::move(callback));
+  }
+
+  void OnTimeoutReachedWithAi(
+      AmountExtractionManager::AiAmountExtractionCallback callback) {
+    return amount_extraction_manager_->OnTimeoutReachedWithAi(
+        std::move(callback));
   }
 
  private:
