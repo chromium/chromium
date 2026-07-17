@@ -56,6 +56,8 @@ source_set("tests") {
     "//content/services/devtools_media_encoding_service/public/mojom",
     "//content/test:test_support",
     "//media:media_buildflags",
+    "//media:test_support",
+    "//media/mojo/common",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/test_support:test_utils",
     "//testing/gtest",
