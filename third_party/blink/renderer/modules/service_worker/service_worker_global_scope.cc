@@ -2825,9 +2825,15 @@ void ServiceWorkerGlobalScope::InsertNewItemToRaceNetworkRequests(
   auto info = std::make_unique<RaceNetworkRequestInfo>(
       fetch_event_id, race_network_request_token,
       std::move(url_loader_factory));
-  race_network_request_fetch_event_ids_.insert(fetch_event_id, info.get());
+  RaceNetworkRequestInfo* info_raw = info.get();
   auto insert_result = race_network_requests_.insert(race_network_request_token,
                                                      std::move(info));
+  // WTF::HashMap::insert does not consume |info| on a duplicate key; in that
+  // case |info| (and |info_raw|) is freed at scope exit. Only publish the raw
+  // pointer into the secondary index after the owning insert succeeds.
+  if (insert_result.is_new_entry) {
+    race_network_request_fetch_event_ids_.insert(fetch_event_id, info_raw);
+  }
 
   // DumpWithoutCrashing if the token is empty, or not inserted as a new entry
   // to |race_network_request_loader_factories_|.
