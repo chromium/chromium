@@ -153,6 +153,9 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
 
   // Returns whether the OS version is supported.
   static bool IsOsVersionSupported();
+  // Returns whether system requirements (like RAM and Chromebook hardware) are
+  // met.
+  static bool IsSystemRequirementMet();
   // Checks whether this client is likely a dogfooder, taking the ignore dogfood
   // feature into account.
   static bool IsLikelyDogfoodClient();
@@ -499,6 +502,9 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
 
   // Test-only method to bypass enablement checks.
   static void SetBypassEnablementChecksForTesting(bool bypass);
+
+  // Test-only method to bypass system requirement checks.
+  static void SetSystemRequirementMetForTesting(std::optional<bool> met);
 
   // This is called anytime IsAllowed() might return a different value.
   using EnableChangedCallback = base::RepeatingClosure;

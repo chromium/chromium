@@ -754,6 +754,7 @@ class GlicEnablingAnchorEntryPointTestBase : public testing::Test {
     if (IsSkipped()) {
       return;
     }
+    GlicEnabling::SetSystemRequirementMetForTesting(std::nullopt);
     identity_test_env_adaptor_.reset();
     profile_ = nullptr;
     FlushMessageLoop();
@@ -932,6 +933,28 @@ TEST_F(GlicEnablingAnchorEntryPointTestBase,
   // When anchored, capability failures map to kIneligibleAccount.
   EXPECT_EQ(GlicEnabling::GetProfileReadyState(profile()),
             mojom::ProfileReadyState::kIneligibleAccount);
+}
+
+TEST_F(GlicEnablingAnchorEntryPointTestBase,
+       SystemRequirementFail_BypassesAnchorState) {
+  profile()->GetPrefs()->SetInteger(
+      glic::prefs::kGlicCompletedFre,
+      std::to_underlying(glic::prefs::FreStatus::kCompleted));
+
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      {features::kGlicAnchorEntryPointForOnboardedUsers, features::kGlic}, {});
+
+  // Force system requirements to fail
+  GlicEnabling::SetSystemRequirementMetForTesting(false);
+
+  // The fallback anchor state should be rejected, resulting in a hard block.
+  EXPECT_EQ(GlicEnabling::GetProfileReadyState(profile()),
+            mojom::ProfileReadyState::kIneligible);
+
+  // UI Entrypoints should be completely hidden.
+  EXPECT_FALSE(
+      GlicEnabling::EnablementForProfile(profile()).ShouldShowGlicButton());
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
