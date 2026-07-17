@@ -31,6 +31,7 @@ source_set("internal") {
 
   deps = [
     "//base",
+    "//components/browser_actuator/internal/proto",
     "//components/keyed_service/core",
   ]
 }
