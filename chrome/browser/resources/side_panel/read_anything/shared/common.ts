@@ -95,19 +95,28 @@ export function getReadingModeTextNodes(root: Node): Node[] {
   const walker = createVisibleTreeWalker(root);
   let currentNode;
 
+  while ((currentNode = getNextValidNode(walker))) {
+    textNodes.push(currentNode);
+  }
+  return textNodes;
+}
+
+// Gets the next valid node for reading mode using the given TreeWalker.
+// This includes valid marker elements and text nodes.
+function getNextValidNode(walker: TreeWalker): Node|null {
+  let currentNode;
   while (currentNode = walker.nextNode()) {
     if (currentNode.nodeType === Node.ELEMENT_NODE) {
       const marker = addNodeForListElement(currentNode as HTMLElement);
       if (marker) {
-        textNodes.push(marker);
+        return marker;
       }
-    } else if (currentNode.nodeType === Node.TEXT_NODE) {
-      if (currentNode.textContent) {
-        textNodes.push(currentNode);
-      }
+    } else if (
+        currentNode.nodeType === Node.TEXT_NODE && currentNode.textContent) {
+      return currentNode;
     }
   }
-  return textNodes;
+  return null;
 }
 
 // Creates a TreeWalker configured to skip hidden elements, consistent with
