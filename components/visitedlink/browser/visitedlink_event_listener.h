@@ -41,7 +41,8 @@ class VisitedLinkEventListener
   // Used by PartitionedVisitedLinkWriter to provide and store a raw pointer to
   // the owning object.
   VisitedLinkEventListener(content::BrowserContext* browser_context,
-                           PartitionedVisitedLinkWriter* partitioned_writer);
+                           PartitionedVisitedLinkWriter* partitioned_writer,
+                           bool is_pseudo_partitioned);
 
   VisitedLinkEventListener(const VisitedLinkEventListener&) = delete;
   VisitedLinkEventListener& operator=(const VisitedLinkEventListener&) = delete;
@@ -57,6 +58,8 @@ class VisitedLinkEventListener
   // Sets a custom timer to use for coalescing events for testing.
   // |coalesce_timer_override| must outlive this.
   void SetCoalesceTimerForTest(base::OneShotTimer* coalesce_timer_override);
+
+  bool is_pseudo_partitioned() const { return is_pseudo_partitioned_; }
 
   // content::RenderProcessHostCreationObserver:
   void OnRenderProcessHostCreated(content::RenderProcessHost* rph) override;
@@ -103,6 +106,9 @@ class VisitedLinkEventListener
   // Used to filter RENDERER_PROCESS_CREATED notifications to renderers that
   // belong to this BrowserContext.
   raw_ptr<content::BrowserContext> browser_context_;
+
+  // Whether the visited link hashtable is pseudo-partitioned.
+  bool is_pseudo_partitioned_ = false;
 };
 
 }  // namespace visitedlink

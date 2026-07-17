@@ -1774,6 +1774,26 @@ class PartitionedVisitedLinkEventsTest
   std::unique_ptr<PartitionedVisitedLinkWriter> partitioned_writer_;
 };
 
+TEST_F(PartitionedVisitedLinkEventsTest, IsPseudoPartitionedState) {
+  content::TestBrowserContext context;
+
+  // Test when use_constant_salt is false (truly partitioned).
+  auto writer_partitioned = std::make_unique<PartitionedVisitedLinkWriter>(
+      &context, &delegate_, /*use_constant_salt=*/false);
+  auto* listener_partitioned =
+      static_cast<VisitedLinkEventListener*>(writer_partitioned->GetListener());
+  ASSERT_TRUE(listener_partitioned);
+  EXPECT_FALSE(listener_partitioned->is_pseudo_partitioned());
+
+  // Test when use_constant_salt is true (pseudo-partitioned).
+  auto writer_pseudo = std::make_unique<PartitionedVisitedLinkWriter>(
+      &context, &delegate_, /*use_constant_salt=*/true);
+  auto* listener_pseudo =
+      static_cast<VisitedLinkEventListener*>(writer_pseudo->GetListener());
+  ASSERT_TRUE(listener_pseudo);
+  EXPECT_TRUE(listener_pseudo->is_pseudo_partitioned());
+}
+
 TEST_F(PartitionedVisitedLinkEventsTest, Coalescence) {
   // Waiting for notifications that the table build is complete.
   content::RunAllTasksUntilIdle();

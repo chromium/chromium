@@ -213,8 +213,9 @@ PartitionedVisitedLinkWriter::PartitionedVisitedLinkWriter(
     bool use_constant_salt)
     : browser_context_(browser_context),
       delegate_(delegate),
-      listener_(
-          std::make_unique<VisitedLinkEventListener>(browser_context, this)),
+      listener_(std::make_unique<VisitedLinkEventListener>(browser_context,
+                                                           this,
+                                                           use_constant_salt)),
       use_constant_salt_(use_constant_salt) {
   if (use_constant_salt_) {
     is_pseudo_partitioned_ = true;

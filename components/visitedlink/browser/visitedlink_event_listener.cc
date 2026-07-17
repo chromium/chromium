@@ -153,10 +153,12 @@ VisitedLinkEventListener::VisitedLinkEventListener(
 
 VisitedLinkEventListener::VisitedLinkEventListener(
     content::BrowserContext* browser_context,
-    PartitionedVisitedLinkWriter* partitioned_writer)
+    PartitionedVisitedLinkWriter* partitioned_writer,
+    bool is_pseudo_partitioned)
     : coalesce_timer_(&default_coalesce_timer_),
       partitioned_writer_(partitioned_writer),
-      browser_context_(browser_context) {}
+      browser_context_(browser_context),
+      is_pseudo_partitioned_(is_pseudo_partitioned) {}
 
 VisitedLinkEventListener::~VisitedLinkEventListener() {
   if (!pending_visited_links_.empty())
@@ -212,6 +214,12 @@ void VisitedLinkEventListener::Reset(bool invalidate_hashes) {
 // TODO(crbug.com/349618663): consider BFCache restores for redirect chains
 // that took place during table build and how they recover their salts.
 void VisitedLinkEventListener::UpdateOriginSalts() {
+  // If using pseudo-partitioning, then a constant salt is being used in
+  // the hashtable. Thus, there is no need to update the origin salts. This
+  // occurs in Android WebView.
+  if (is_pseudo_partitioned_) {
+    return;
+  }
   // Iterate through each of our VisitedLinkUpdaters and obtain the
   // corresponding RenderProcessHost.
   for (const auto& [id, updater] : updaters_) {
