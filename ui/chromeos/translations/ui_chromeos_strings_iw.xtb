@@ -112,7 +112,7 @@
 <translation id="1810764548349082891">אין תצוגה מקדימה זמינה</translation>
 <translation id="1812302367230252929">תעתיק אמהרית</translation>
 <translation id="1813278315230285598">שירותים</translation>
-<translation id="181434555916624618">כרגע, תוצאות עם אנשים לא יוצגו. אפשר לנסות הנחיה אחרת.</translation>
+<translation id="181434555916624618">כרגע, תוצאות עם אנשים לא יוצגו. אפשר לנסות פרומפט אחר.</translation>
 <translation id="1829129547161959350">פינגווין</translation>
 <translation id="1832073788765803750">קטאקאנה בחצי רוחב</translation>
 <translation id="1834290891154666894">הרשומה של התאמת שמות הנושאים החלופיים לא תקינה</translation>
@@ -441,7 +441,7 @@
 <translation id="4432921877815220091">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, הפעלה בסיום הגדרת המכשיר, בניהול האדמין</translation>
 <translation id="4439427728133035643">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, התחברות</translation>
 <translation id="4442424173763614572">‏חיפוש ה-DNS נכשל</translation>
-<translation id="4445896958353114391">מתבצע סנכרון של קבצים</translation>
+<translation id="4445896958353114391">מסתנכרנים קבצים</translation>
 <translation id="4462159676511157176">שרתי שמות מותאמים אישית</translation>
 <translation id="4465725236958772856">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />, הרשת מנוהלת על ידי מנהל המערכת שלך, התחברות</translation>
 <translation id="4470564870223067757">Hangul 2 Set</translation>

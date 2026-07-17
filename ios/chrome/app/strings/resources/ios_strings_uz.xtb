@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">Parollarni saqlash</translation>
 <translation id="1764070164487214210">Qanday boriladi</translation>
 <translation id="1764511703783285459">Boshqa parol menejeri hech qaysi parol yoki kirish kalitini ulashmadi.</translation>
+<translation id="1765555082983153259">“Chrome” mikrofoningizdan foydalanmoqchi</translation>
 <translation id="1767766085187034454">Google Tarjimon</translation>
 <translation id="1771016937398045251">Asboblar menyusi</translation>
 <translation id="1772468122139624049">Varaqlar qayta yuklanmadi</translation>
@@ -2467,6 +2468,7 @@ Kompyuterda davom etish uchun <ph name="OTHER_EMAIL" /> hisobiga almashtiring. B
 <translation id="9149866541089851383">O‘zgartirish...</translation>
 <translation id="9152637745605628097">Mavzular, ranglar yoki rasm yuklashdan tanlang</translation>
 <translation id="9159628751968616911">Bu sahifani yuborish</translation>
+<translation id="9162412286847966593">Tashkilotingiz maʼlumotlari va yozuvlari generativ AI modellarini yaxshilashda ishlatilmaydi. <ph name="BEGIN_LINK" />Maxfiyligingiz va Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Parollar avtomatik kiritilishini yoqish</translation>
 <translation id="9165320910061267720">Narx tushishiga oid bildirishnomalar olish uchun iOS sozlamalari orqali bildirishnomalarni yoqishingiz kerak.</translation>
 <translation id="9179151630575358778">Bu elementni berkitadi</translation>

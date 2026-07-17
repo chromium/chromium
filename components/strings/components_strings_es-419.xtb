@@ -5178,7 +5178,7 @@ Detalles adicionales:
 <translation id="9063800855227801443">No se puede capturar contenido confidencial</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9065745800631924235">Búsqueda de <ph name="TEXT" /> desde el historial</translation>
-<translation id="9066116644715286230">{NUM_TABS,plural, =1{Detalles del uso compartido de pestañas. Se está compartiendo 1 pestaña de {WEBSITE_LIST_STR}}other{Detalles del uso compartido de pestañas. Se están compartiendo {NUM_TABS} pestañas de {WEBSITE_LIST_STR}}}</translation>
+<translation id="9066116644715286230">{NUM_TABS,plural, =1{Detalles de las pestañas compartidas. Se está compartiendo 1 pestaña de {WEBSITE_LIST_STR}}other{Detalles de las pestañas compartidas. Se están compartiendo {NUM_TABS} pestañas de {WEBSITE_LIST_STR}}}</translation>
 <translation id="90695670378604968">Plástico (mate)</translation>
 <translation id="9069693763241529744">Bloqueado por una extensión</translation>
 <translation id="9073799351042754113">Elegiste desactivar las advertencias de seguridad para este sitio.</translation>

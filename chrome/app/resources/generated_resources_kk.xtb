@@ -856,7 +856,7 @@
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />Қолданба деректеріне контактілер, хабарлар және фотосуреттер сияқты қолданба сақтаған (әзірлеуші параметрлеріне байланысты) кез келген дерек жатуы мүмкін. Сақтық көшірме деректері Drive жадында орын алмайды.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Бұл қызметті "Параметрлер" бөлімінен өшіруге болады.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="1637765355341780467">Профильді ашу кезінде бірдеңе дұрыс болмады. Кейбір мүмкіндіктер қолжетімді болмауы мүмкін.</translation>
-<translation id="1639239467298939599">Жүктелуде</translation>
+<translation id="1639239467298939599">Жүктеліп жатыр</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1641496881756082050"><ph name="NETWORK_NAME" /> желісіне қатысты басқа әрекеттер</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Дұрыс форматталмағандықтан, тағы 1 құпия сөз импортталмады.}other{Дұрыс форматталмағандықтан, тағы {NUM_PASSWORDS} құпия сөз импортталмады.}}</translation>
@@ -3654,7 +3654,7 @@
 <translation id="3706366828968376544">Экранды <ph name="DEVICE_NAME" /> құрылғысына трансляциялауды жалғастыру</translation>
 <translation id="3706463572498736864">Әр парақтағы бет саны</translation>
 <translation id="370649949373421643">Wi‑Fi желісін қосу</translation>
-<translation id="370665806235115550">Жүктелуде…</translation>
+<translation id="370665806235115550">Жүктеліп жатыр…</translation>
 <translation id="3707034683772193706">Сіз кірген сайт көбінесе бот емес екеніңізді растау үшін Chrome-мен ақпараттың шағын көлемін сақтай алады</translation>
 <translation id="3707163604290651814">Аккаунтқа <ph name="NAME" /> ретінде кірдіңіз.</translation>
 <translation id="3707348585109246684">Сілтемені жаңа <ph name="APP" /> қойындысында ашу</translation>
@@ -9869,6 +9869,7 @@
 <translation id="8372678064309688510">Мекенжайыңыз сақталды</translation>
 <translation id="8373652277231415614">Crostini ортақ каталогтері</translation>
 <translation id="8374243500935816406">Сайттарға барлық дисплейде терезелерді басқаруға рұқсат бермеу</translation>
+<translation id="8375703478696038265">Қадам: <ph name="STEP_NUMBER" />/<ph name="TOTAL_STEPS" /></translation>
 <translation id="8376137163494131156">Google Cast құрылғысына не болып жатқанын хабарлаңыз</translation>
 <translation id="8376384591331888629">Осы сайттағы үшінші тараптың cookie файлдарын қоса</translation>
 <translation id="8376451933628734023">Егер бұл веб-қолданба өзінің басқа қолданба екеніне сізді сендіргісі келсе, оны жойып тастаңыз.</translation>

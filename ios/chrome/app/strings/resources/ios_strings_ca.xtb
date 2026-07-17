@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">Desa les contrasenyes</translation>
 <translation id="1764070164487214210">Indicacions</translation>
 <translation id="1764511703783285459">L'altre gestor de contrasenyes no ha compartit cap contrasenya o clau d'accés</translation>
+<translation id="1765555082983153259">"Chrome" vol accedir al micròfon</translation>
 <translation id="1767766085187034454">Traductor de Google</translation>
 <translation id="1771016937398045251">Menú Eines</translation>
 <translation id="1772468122139624049">No es poden tornar a carregar les pestanyes</translation>
@@ -256,7 +257,7 @@
 <translation id="1807893857950749072">Permet les notificacions de seguiment de preus…</translation>
 <translation id="1809929083618343438">Se suprimirà la informació seleccionada de Chrome, però no se suprimirà del teu Compte de Google.</translation>
 <translation id="1810976980198522421">Cancel·la</translation>
-<translation id="1815941218935345331">Contrasenya</translation>
+<translation id="1815941218935345331">Codi d'accés</translation>
 <translation id="1818687879307252150">{count,plural, =0{Cap contrasenya en perill}=1{{count} contrasenya en perill}other{{count} contrasenyes en perill}}</translation>
 <translation id="1819374301217551116">Seguiment de preus i estadístiques</translation>
 <translation id="1820195936249950412">Inicia la sessió amb un compte vàlid</translation>
@@ -1538,7 +1539,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6160780110287872296">Vols baixar el fitxer?</translation>
 <translation id="6165508094623778733">Més informació</translation>
 <translation id="6168647875670665004">Suggeriments d'articles</translation>
-<translation id="6169031022444660352">Per suprimir totes les credencials desades, primer has de configurar una contrasenya al dispositiu.</translation>
+<translation id="6169031022444660352">Per suprimir totes les credencials desades, primer has de configurar un codi d'accés al dispositiu.</translation>
 <translation id="6172428250974276014">Sí, mantén les dades separades (opció recomanada)</translation>
 <translation id="6173499589275053515">S'ha desat la contrasenya al teu Compte de Google (<ph name="EMAIL" />)</translation>
 <translation id="6181969657494915430">Cerca a la pantalla</translation>
@@ -1799,7 +1800,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="6924299883035848912">Amaga l'opció Suprimeix les dades de navegació</translation>
 <translation id="6930162026494574854">Restableix la configuració del Traductor</translation>
 <translation id="6930799952781667037">Toca per canviar a aquest idioma.</translation>
-<translation id="693761253105515415">Estableix una contrasenya</translation>
+<translation id="693761253105515415">Estableix un codi d'accés</translation>
 <translation id="6945221475159498467">Selecciona</translation>
 <translation id="6946722113367118030">Pensant</translation>
 <translation id="6950522403736391608">Amagades</translation>
@@ -1952,7 +1953,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="750493650310597496">No se n'ha seleccionat cap</translation>
 <translation id="7505402981231763928">Has d'iniciar la sessió per utilitzar Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
-<translation id="7508728395076009983">Per bloquejar les pestanyes d'incògnit, configura Touch ID, Face ID o una contrasenya.</translation>
+<translation id="7508728395076009983">Per bloquejar les pestanyes d'incògnit, configura Touch ID, Face ID o un codi d'accés.</translation>
 <translation id="750886945254958667">Conserva aquest grup per afegir-hi pestanyes més endavant o surt-ne si ja no vols accedir-hi més</translation>
 <translation id="7511099437872594216">Pestanyes</translation>
 <translation id="7511727374778217603">{COUNT,plural, =1{Afegeix fins a 1 pestanya}other{Afegeix fins a {COUNT} pestanyes}}</translation>
@@ -2198,7 +2199,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="8283172974887967105">Estableix…</translation>
 <translation id="8289930144142009940">S'han desactivat les notificacions de <ph name="FEATURE_NAME" /></translation>
 <translation id="8292893224181644074">Baixada completada</translation>
-<translation id="8299417921174340354">Per utilitzar les contrasenyes, primer has d'establir una contrasenya al dispositiu.</translation>
+<translation id="8299417921174340354">Per utilitzar les contrasenyes, primer has d'establir un codi d'accés al dispositiu.</translation>
 <translation id="8307481894409578819">Aquest fitxer no s'ha pogut penjar</translation>
 <translation id="8319076807703933069">Cerca nova</translation>
 <translation id="8319282042900445670">S'ha configurat un recordatori per a les <ph name="TIME" /> del dia <ph name="DATE" /></translation>
@@ -2213,7 +2214,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="8360164927489392419">Les gravacions de les teves interaccions amb Live i el contingut que hi comparteixes es desen i es tracten d'acord amb l’<ph name="BEGIN_LINK" />avís de privadesa de les aplicacions de Gemini<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="8361189290032177785">{count,plural, =1{S'ha importat {count} adreça d'interès}other{S'han importat {count} adreces d'interès}}</translation>
 <translation id="8363484128299778310">Recuperació temporal en cas de problemes</translation>
-<translation id="8364563001733875155">Per canviar el PIN, configura primer una contrasenya al dispositiu.</translation>
+<translation id="8364563001733875155">Per canviar el PIN, configura primer un codi d'accés al dispositiu.</translation>
 <translation id="8366466717204352506">No s'ha fet mai la comprovació</translation>
 <translation id="8367705492654390392">Pregunta el que vulguis</translation>
 <translation id="8368001212524806591">Fes un seguiment del preu</translation>
@@ -2467,6 +2468,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="9149866541089851383">Edita...</translation>
 <translation id="9152637745605628097">Tria entre temes i colors, o penja una imatge</translation>
 <translation id="9159628751968616911">Envia la pàgina web</translation>
+<translation id="9162412286847966593">Les dades i les gravacions de la teva organització no s'utilitzaran per millorar els models d'IA generativa. <ph name="BEGIN_LINK" />La teva privadesa i Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Activa l'opció Emplena automàticament les contrasenyes</translation>
 <translation id="9165320910061267720">Per rebre notificacions d'alertes de baixada de preu, cal que activis les notificacions a la configuració d'iOS.</translation>
 <translation id="9179151630575358778">Amaga aquest element</translation>

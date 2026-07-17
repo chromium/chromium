@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">Cadw Cyfrineiriau</translation>
 <translation id="1764070164487214210">Cyfarwyddiadau</translation>
 <translation id="1764511703783285459">Ni rannodd y rheolwr cyfrineiriau arall unrhyw gyfrineiriau na chodau pas</translation>
+<translation id="1765555082983153259">Hoffai “Chrome” gael mynediad at eich meicroffon</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1771016937398045251">Dewislen offer</translation>
 <translation id="1772468122139624049">Methu ag ail-lwytho tabiau</translation>
@@ -2467,6 +2468,7 @@ I barhau o'ch cyfrifiadur, newidiwch i <ph name="OTHER_EMAIL" />. Byddwch yn cae
 <translation id="9149866541089851383">Golygu…</translation>
 <translation id="9152637745605628097">Dewis o themâu, lliwiau neu uwchlwytho llun</translation>
 <translation id="9159628751968616911">Anfon tudalen we</translation>
+<translation id="9162412286847966593">Ni fydd data a recordiadau eich sefydliad yn cael eu defnyddio i wella modelau AI cynhyrchiol. <ph name="BEGIN_LINK" />Eich preifatrwydd a Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Troi Awtolenwi Cyfrineiriau ymlaen</translation>
 <translation id="9165320910061267720">I gael hysbysiadau o rybuddion gostyngiad mewn prisiau, bydd angen i chi droi hysbysiadau ymlaen yn eich gosodiadau iOS.</translation>
 <translation id="9179151630575358778">Yn cuddio'r eitem hon</translation>

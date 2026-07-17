@@ -399,7 +399,7 @@
 <translation id="2152895518047545149">Ez duzu egitekorik. Bikain!</translation>
 <translation id="2159568970844941445">Ez dago irudirik Fitxategiak aplikazioan</translation>
 <translation id="2160985496866145279">Itzali Bruschetta</translation>
-<translation id="2161132820593978283">Probatu kamerako markoa beti pantailaren erdian egon zaitezen bideodeietan. Aktiba ezazu ezarpen bizkorretan.</translation>
+<translation id="2161132820593978283">Probatu kamera-enkoadraketa beti pantailaren erdian egon zaitezen bideodeietan. Aktiba ezazu ezarpen bizkorretan.</translation>
 <translation id="216955976692983107">Aldatu leiho-lauzaren tamaina eskuinerantz</translation>
 <translation id="2185166372312820725">Joan aurreko fitxara</translation>
 <translation id="2185444992308415167">Mugitu lehenengo zortzi fitxen artean</translation>
@@ -2120,7 +2120,7 @@ Berriki instalatu da</translation>
 <translation id="696103774840402661"><ph name="DEVICE_TYPE" /> gailuan gordeta zeuden erabiltzaile guztien fitxategi eta gailuko datu guztiak betiko ezabatu dira.</translation>
 <translation id="6961121602502368900">Telefonoa isilarazteko aukera ez dago erabilgarri laneko profilean</translation>
 <translation id="6961840794482373852">Alt + gora egiteko gezi-tekla lasterbidea aldatu egin da. Orrian gora egiteko tekla erabiltzeko, sakatu <ph name="LAUNCHER_KEY_NAME" /> tekla + gora egiteko gezi-tekla.</translation>
-<translation id="696267987219125751">Kamerako markoa desaktibatuta dago.</translation>
+<translation id="696267987219125751">Kamera-enkoadraketa desaktibatuta dago.</translation>
 <translation id="6965382102122355670">Ados</translation>
 <translation id="6967112302799758487">Chromebook-erako Steam (beta-bertsioa) zerbitzuaren bidez instalatutako aplikazio eta joko guztiak gailutik kenduko dira. Aplikazio eta joko horiekin loturiko datuak ere kenduko dira. Desinstalatu aurretik, ziurtatu gordetako aplikazio eta jokoen babeskopiak egiten dituzula.</translation>
 <translation id="6972629891077993081">HID gailuak</translation>
@@ -2297,7 +2297,7 @@ Berriki instalatu da</translation>
 <translation id="7514365320538308">Deskargatu</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">orrian behera tekla</translation>
-<translation id="7519206258459640379">Kamerako markoa aktibatuta dago.</translation>
+<translation id="7519206258459640379">Kamera-enkoadraketa aktibatuta dago.</translation>
 <translation id="7519649142417630956">Gailua itzaltzen denean, administratzailearen saioa amaituko da, eta ezin izango du kontrolatu gailua.
 
 Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
@@ -2342,7 +2342,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="7611213136657090146">Konektatu egin da berriro kamera.</translation>
 <translation id="7613620083300976559">Aktibatu jokoak kontrolatzeko aukerak</translation>
 <translation id="761530003705945209">Egin babeskopiak Google Drive-n. Leheneratu gailuaren datuak edo aldatu gailua edonoiz. Aplikazioetako datuak sartzen dira babeskopietan. Babeskopiak Google-ra kargatzen dira, eta Google-ko kontuko pasahitza erabilita enkriptatzen.</translation>
-<translation id="761736749114493194">Aktibatu/Desaktibatu kamerako markoa. <ph name="STATE_TEXT" /></translation>
+<translation id="761736749114493194">Aktibatu/Desaktibatu kamera-enkoadraketa. <ph name="STATE_TEXT" /></translation>
 <translation id="7621008024906456933">Quick Share-ren ezarpenak</translation>
 <translation id="7621382409404463535">Sistemak ezin izan du gorde gailuaren konfigurazioa.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
@@ -2667,7 +2667,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8535393432370007982">Desegin kolorearen arabera ordenatzeko irizpidea ezartzeko aukera</translation>
 <translation id="8536886494750559755">Erakutsi Quick Share-ren ezarpenak. Denentzat ikusgai egongo diren denbora: <ph name="TIME_REMAINING" />.</translation>
 <translation id="8539803091108018926">Kopiatu da testua arbelean</translation>
-<translation id="8541078764854166027">Kamerako markoa</translation>
+<translation id="8541078764854166027">Kamera-enk.</translation>
 <translation id="8542053257095774575">Ez dago lan-eremu edo txantiloirik gordeta</translation>
 <translation id="8546059259582788728">Desegin da ordenatzeko irizpidea ezartzeko aukera</translation>
 <translation id="8551588720239073785">Data- eta ordu-ezarpenak</translation>

@@ -7459,7 +7459,7 @@
 <translation id="6585124893636629274">Закрыть Gemini в Chrome</translation>
 <translation id="6585584201072946561">Настроить размер текста и шрифт для веб-браузера</translation>
 <translation id="6586099239452884121">Гостевой режим</translation>
-<translation id="6586451623538375658">Поменять местами кнопки мыши</translation>
+<translation id="6586451623538375658">Переключить основную кнопку мыши</translation>
 <translation id="6588043302623806746">Использовать безопасный DNS-сервер</translation>
 <translation id="6589760925779188068">Панна-котта</translation>
 <translation id="6589769062042696460">Когда вы начинаете новый чат, у Gemini появляется доступ к открытой вкладке. Эти данные не используются для улучшения моделей генеративного ИИ. Подробнее <ph name="LINK_BEGIN" />об ИИ и конфиденциальности<ph name="LINK_END" />…</translation>
@@ -9882,6 +9882,7 @@
 <translation id="8372678064309688510">Адрес сохранен</translation>
 <translation id="8373652277231415614">Общие каталоги Crostini</translation>
 <translation id="8374243500935816406">Запретить сайтам управление окнами на всех ваших экранах</translation>
+<translation id="8375703478696038265">Шаг <ph name="STEP_NUMBER" /> из <ph name="TOTAL_STEPS" /></translation>
 <translation id="8376137163494131156">Отправьте нам отзыв о Google Cast</translation>
 <translation id="8376384591331888629">В том числе сторонние файлы cookie на сайте</translation>
 <translation id="8376451933628734023">Если разработчики пытаются выдать это веб-приложение за другое, удалите его.</translation>

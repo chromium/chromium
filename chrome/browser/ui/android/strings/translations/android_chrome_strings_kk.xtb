@@ -151,7 +151,7 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, бөлісу қойындысы</translation>
 <translation id="160275202205869636">Қосылса, Google аккаунтыңыздағы деректерді пайдаланыңыз және сақтаңыз. Өшірілсе, деректер тек осы құрылғыға сақталады.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Таңдалған 1 элементті өшіру}other{Таңдалған # элементті өшіру}}</translation>
-<translation id="1639239467298939599">Жүктелуде</translation>
+<translation id="1639239467298939599">Жүктеліп жатыр</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="164269334534774161">Осы беттің <ph name="CREATION_TIME" /> күнгі офлайн көшірмесі шығарылды</translation>
 <translation id="1644574205037202324">Тарих</translation>
@@ -1384,7 +1384,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="6723740634201835758">Google аккаунтыңызда</translation>
 <translation id="6734310707649923383">Сіз кірген беттерді көруіңізге не оларды тарихтан жоюға болады.</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, жазудың бекітілген инкогнито қойындысы</translation>
-<translation id="6738867403308150051">Жүктелуде…</translation>
+<translation id="6738867403308150051">Жүктеп алынып жатыр…</translation>
 <translation id="6745063744988317486">Моно</translation>
 <translation id="6746338529702829275">Аккаунт деректерін қарап шығу</translation>
 <translation id="6746834324024491643">Құпия сөздер мен басқа деректерді барлық құрылғыдан алу үшін <ph name="EMAIL" /> ретінде кіріңіз.</translation>
@@ -1418,7 +1418,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="6830728435402077660">Қауіпсіз емес</translation>
 <translation id="6831043979455480757">Аудару</translation>
 <translation id="6835182496791325827">Chrome сіз жоқта іздеу сұрауларыңызға ең жақсы нәтижелерді тапқан кезде, хабарландыру алыңыз.</translation>
-<translation id="6846298663435243399">Жүктелуде…</translation>
+<translation id="6846298663435243399">Жүктеліп жатыр…</translation>
 <translation id="6850409657436465440">Жүктеп алу әлі аяқталған жоқ</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> қойынды жабылған</translation>
 <translation id="6852437757508328589">{NUM_RESULTS,plural, =1{1 нәтиже табылды}other{# нәтиже табылды}}</translation>

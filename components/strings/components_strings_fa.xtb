@@ -111,7 +111,7 @@
 <translation id="1175364870820465910">&amp;چاپ...</translation>
 <translation id="1175393348063009671">عکس (مات)</translation>
 <translation id="1175875016430184367">سه منگنه در راست</translation>
-<translation id="1177548198167638471">دوباره نپرسیدن</translation>
+<translation id="1177548198167638471">دیگر نپرسیدن</translation>
 <translation id="1177863135347784049">سفارشی</translation>
 <translation id="1178581264944972037">مکث</translation>
 <translation id="1178821169867863726">۱۶ × ۱۲ اینچ</translation>
@@ -208,7 +208,7 @@
 <translation id="1314784609072437689">ملغی کردن صفحه‌کلید</translation>
 <translation id="1316805916535763484">دوره‌های آموزش آنلاین آزاد</translation>
 <translation id="1318023360584041678">در گروه زبانه ذخیره شد</translation>
-<translation id="1319245136674974084">برای این برنامه دوباره پرسیده نشود</translation>
+<translation id="1319245136674974084">دیگر برای این برنامه نپرسیدن</translation>
 <translation id="1322083935398004629">سیاست</translation>
 <translation id="132301787627749051">جستجوی تصویر بریده‌دان</translation>
 <translation id="1323433172918577554">بیشتر نشان دادن</translation>
@@ -434,7 +434,7 @@
 <translation id="1656489000284462475">تحویل گرفتن</translation>
 <translation id="1658111267661135323">تلویزیون و ویدیو</translation>
 <translation id="1658918301167915956">دستگاه‌های بلوتوث</translation>
-<translation id="1662550410081243962">ذخیره و تکمیل روش‌های پرداخت</translation>
+<translation id="1662550410081243962">ذخیره و پر کردن روش‌های پرداخت</translation>
 <translation id="1662980953334786797">ترتیب یکسان</translation>
 <translation id="1663943134801823270">‏کارت‌ها و نشانی‌ها از Chrome‌ هستند. می‌توانید آن‌ها را در <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> مدیریت کنید.</translation>
 <translation id="1664389769577564606">فتوپلیمر فلکسو</translation>
@@ -834,7 +834,7 @@
 <translation id="2277753418458118549">نمایش جزئیات اتصال</translation>
 <translation id="2277949605527755300">‫<ph name="URL" /> می‌خواهد دست‌هایتان را ردیابی کند</translation>
 <translation id="22792995594807632">قبل‌از بارگیری باید بررسی شود</translation>
-<translation id="2283340219607151381">ذخیره و تکمیل نشانی‌ها</translation>
+<translation id="2283340219607151381">ذخیره و پر کردن نشانی‌ها</translation>
 <translation id="2283447177162560884">«<ph name="PAGE_TITLE" />» حذف شد</translation>
 <translation id="2283599456633275070">سفر</translation>
 <translation id="2285709459648658719">گذرنامه</translation>
@@ -4818,7 +4818,7 @@
 <translation id="8449036207308062757">مدیریت فضای ذخیره‌سازی</translation>
 <translation id="8449155699563577224">۲۴ × ۱۷ اینچ</translation>
 <translation id="8449836157089738489">باز کردن همه در گروه زبانه جدید</translation>
-<translation id="8451518040456311377">ذخیره و تکمیل مدارک شناسایی</translation>
+<translation id="8451518040456311377">ذخیره و پر کردن مدارک شناسایی</translation>
 <translation id="84561192812921051">‏سرپرست شما می‌تواند تنظیمات نمایه و مرورگرتان را از دور تغییر دهد، اطلاعات مربوط به مرورگر را ازطریق گزارش گرفتن تجزیه‌وتحلیل کند، و دیگر اقدامات ضروری را انجام دهد. ممکن است فعالیت‌های انجام‌شده در این دستگاه از خارج از Chrome هم مدیریت شود.  <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">برگ زیرین بسته شد.</translation>
 <translation id="8456775115498700722">‏اکنون می‌توانید اطلاعات کارت <ph name="CARD_ISSUER_NAME" /> خود را به‌طور خودکار تکمیل کنید، زیرا حساب <ph name="CARD_ISSUER_NAME" /> شما به Google Pay پیوند شده است.</translation>
@@ -5096,7 +5096,7 @@
 <translation id="8922734931659847428">فهرست محدودی از نشانی وب صفحه‌هایی که بازدید می‌کنید و <ph name="BEGIN_LINK" />رویدادهای فناوری قدیمی<ph name="END_LINK" /> در آن‌ها روی می‌دهد</translation>
 <translation id="892588693504540538">سوراخ در بالا سمت راست</translation>
 <translation id="8926082624786998759">‏‫DevTools در این صفحه مجاز نیست</translation>
-<translation id="8926389886865778422">دوباره سؤال نشود</translation>
+<translation id="8926389886865778422">دیگر نپرسیدن</translation>
 <translation id="8926400492587758246">پرداخت در اقساط ماهانه با مبالغ کم</translation>
 <translation id="8932102934695377596">ساعت شما عقب است</translation>
 <translation id="893332455753468063">افزودن نام</translation>

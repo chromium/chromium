@@ -263,7 +263,7 @@
 <translation id="1175914831232945926">ارقام</translation>
 <translation id="1176471985365269981">اجازه ندارد فایل‌ها یا پوشه‌های درون دستگاه را ویرایش کند</translation>
 <translation id="1177440945615690056">می‌توانید در «تنظیمات» به هر شبکه تلفن همراه واجدشرایطی متصل شوید</translation>
-<translation id="1177548198167638471">دوباره نپرسیدن</translation>
+<translation id="1177548198167638471">دیگر نپرسیدن</translation>
 <translation id="1177863135347784049">سفارشی</translation>
 <translation id="1178093605842850860">اجازه دارد این سایت را بخواند و تغییر دهد</translation>
 <translation id="1178357842179817577">از شما دربرابر سایت‌ها، بارگیری‌ها، و افزونه‌های خطرناک محافظت می‌کند</translation>
@@ -373,7 +373,7 @@
 <translation id="1256143630373008432">خودآزمایی ناموفق بود</translation>
 <translation id="1256588359404100567">تنظیم از دستگاه قبلی‌تان همگام‌سازی شده است.</translation>
 <translation id="1257336506558170607">صادر کردن گواهینامه انتخاب‌شده</translation>
-<translation id="1258491128795710625">ویژگی‌های جدید</translation>
+<translation id="1258491128795710625">تازه‌ها</translation>
 <translation id="1260451001046713751">همیشه اجازه دادن پنجره‌های بازشو و هدایت‌ها از <ph name="HOST" /></translation>
 <translation id="1261380933454402672">متوسط</translation>
 <translation id="1262395978737369974">همیشه اجازه داشتن برای استفاده از بهینه‌سازی جاوا اسکریپت</translation>
@@ -435,7 +435,7 @@
 <translation id="1303671224831497365">هیچ دستگاه بلوتوثی یافت نشد</translation>
 <translation id="1306518237408758433">باز کردن <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="1307165550267142340">پین ایجاد شد</translation>
-<translation id="1307431692088049276">دوباره از من پرسیده نشود</translation>
+<translation id="1307431692088049276">دیگر نپرسیدن از من</translation>
 <translation id="130744661532298792">‏برای اطمینان از اینکه همیشه می‌توانید از گذرواژه‌های ذخیره‌شده در «حساب Google» خود استفاده کنید، هویتتان را درستی‌سنجی کنید</translation>
 <translation id="1307559529304613120">‏متأسفانه سیستم نتوانست کد دسترسی دراز مدت به API را برای این دستگاه ذخیره کند.</translation>
 <translation id="1311092170520822848">این سایت کارت‌خوان‌های هوشمند متصل به دستگاهتان و احتمالاً کارت‌های هوشمندی را که دردسترس آن‌ها است کنترل می‌کند</translation>
@@ -1721,7 +1721,7 @@
 <translation id="2270668657177045040">یک سایت و زیردامنه‌های آن می‌توانند ببینند که چه برنامه‌های وب مرتبطی در دستگاهتان نصب شده است.</translation>
 <translation id="2271452184061378400">گروه‌های زبانه شما اینجا ذخیره می‌شود</translation>
 <translation id="2271986192355138465">آشنایی با نحوه نصب برنامه‌های وب</translation>
-<translation id="2272430695183451567">۰ کلید اختصاص داده شده است</translation>
+<translation id="2272430695183451567">‫۰ کلید اختصاص داده شده</translation>
 <translation id="2272570998639520080">جام مارتینی</translation>
 <translation id="2273432041732361925">نباید نویسه تکراری یا توالی ۴ نویسه‌ای یا بیشتر داشته باشد</translation>
 <translation id="2274840746523584236">‏Chromebook خود را شارژ کنید</translation>
@@ -7865,7 +7865,7 @@
 <translation id="6863496016067551393">همه افزونه‌ها مجاز هستند</translation>
 <translation id="686366188661646310">گذرواژه حذف شود؟</translation>
 <translation id="6863925886424789941">کولوسئوم</translation>
-<translation id="6865313869410766144">داده‌های فرم تکمیل خودکار</translation>
+<translation id="6865313869410766144">داده‌های تکمیل خودکار فرم</translation>
 <translation id="6865708901122695652">‏گزارش وقایع WebRTC (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">بی‌صدا</translation>
 <translation id="686664946474413495">دمای رنگ</translation>
@@ -9831,7 +9831,7 @@
 <translation id="8323317289166663449">همه داده‌های شما را در رایانه و همه وب‌سایت‌ها بخواند و تغییر دهد</translation>
 <translation id="8323518750352551353">مرور جدا شود؟</translation>
 <translation id="8323744572398547859">‏برای اینکه به زبانه‌های بازشده در سایر دستگاه‌ها دسترسی داشته باشید، به سیستم وارد شوید و سابقه را همگام‌سازی کنید. همچنین گذرواژه‌هایتان و اطلاعات دیگر را در همه دستگاه‌هایتان دریافت خواهید کرد. هرزمان بخواهید می‌توانید همگام‌سازی را در تنظیمات متوقف کنید. Google ممکن است «جستجو» و سرویس‌های دیگر را براساس سابقه‌تان شخصی‌سازی کند.</translation>
-<translation id="8324158725704657629">دوباره سؤال نشود</translation>
+<translation id="8324158725704657629">دیگر نپرسیدن</translation>
 <translation id="8325413836429495820">اجازه ندارد بریده‌دان را ببیند</translation>
 <translation id="8326478304147373412">‏PKCS #7، زنجیره گواهی</translation>
 <translation id="8327386430364625757">قلم ریاضی</translation>
@@ -9892,6 +9892,7 @@
 <translation id="8372678064309688510">نشانی شما ذخیره شد</translation>
 <translation id="8373652277231415614">‏فهرست‌های راهنمای هم‌رسانی‌شده Crostini</translation>
 <translation id="8374243500935816406">به سایت‌ها اجازه داده نمی‌شود پنجره‌های همه نمایشگرهایتان را مدیریت کنند</translation>
+<translation id="8375703478696038265">مرحله <ph name="STEP_NUMBER" /> از <ph name="TOTAL_STEPS" /></translation>
 <translation id="8376137163494131156">‏به ما بگویید Google Cast چه مشکلی دارد.</translation>
 <translation id="8376384591331888629">شامل کوکی‌های طرف سوم در این سایت می‌شود</translation>
 <translation id="8376451933628734023">اگر این برنامه وب می‌خواهد شما را فریب دهد که فکر کنید برنامه دیگری است، آن را حذف نصب کنید.</translation>
@@ -10638,7 +10639,7 @@
 <translation id="8925124370124776087">اکنون نوار عنوان پنهان است</translation>
 <translation id="8925308599005372373">بارگذاری پی‌دی‌اف</translation>
 <translation id="8925458182817574960">&amp;تنظیمات</translation>
-<translation id="8926389886865778422">دوباره سؤال نشود</translation>
+<translation id="8926389886865778422">دیگر نپرسیدن</translation>
 <translation id="8926555406617248399">زبانه‌ها پنهان شد</translation>
 <translation id="8927438609932588163">سایت‌ها مجازند در دستگاه داده ذخیره کنند</translation>
 <translation id="8929696694736010839">فقط جلسه «ناشناس» کنونی</translation>
