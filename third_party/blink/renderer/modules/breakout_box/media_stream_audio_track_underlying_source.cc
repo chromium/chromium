@@ -27,7 +27,7 @@
 namespace blink {
 
 BASE_FEATURE(kBreakoutBoxExposePageRelativeAudioCaptureTime,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Expects all calls to SetFormat() and CopyIntoAudioBuffer() to come from the
 // same thread/sequence. This is almost certainly the realtime Audio capture
