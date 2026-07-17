@@ -48,8 +48,11 @@ const PERMISSION_PROMPT_CSS_CLASS = 'permission-prompt-showing';
 type Constructor<T> = new (...args: any[]) => T;
 
 function dedupeTabs(restoredTabs: TabInfo[], recentTabs: TabInfo[]): TabInfo[] {
-  const restoredIds = new Set(restoredTabs.map(t => t.tabId));
-  return recentTabs.filter(t => !restoredIds.has(t.tabId));
+  const restoredUrlMap = new Map(restoredTabs.map(t => [t.tabId, t.url]));
+  return recentTabs.filter(t => {
+    const restoredUrl = restoredUrlMap.get(t.tabId);
+    return restoredUrl !== t.url;
+  });
 }
 
 export const ComposeboxEmbedderMixin =

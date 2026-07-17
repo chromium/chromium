@@ -614,9 +614,18 @@ export class ContextualActionMenuElement extends
   protected isTabSelected_(tabOrId: TabInfo|number): boolean {
     const tabId = typeof tabOrId === 'number' ? tabOrId : tabOrId.tabId;
     const isAimThreadRestored = this.contextManagementInComposeboxEnabled &&
-        (this.aimThreadRestoredTabs ||
-         []).some(restoredTab => restoredTab.tabId === tabId);
+        (this.aimThreadRestoredTabs || []).some(restoredTab => {
+          if (typeof tabOrId === 'object') {
+            return restoredTab.tabId === tabId &&
+                restoredTab.url === tabOrId.url;
+          }
+          return restoredTab.tabId === tabId;
+        });
     return this.disabledTabIds.has(tabId) || isAimThreadRestored;
+  }
+
+  protected getSubmittedTabIds_(): Set<number> {
+    return new Set((this.aimThreadRestoredTabs || []).map(t => t.tabId));
   }
 
   protected getToolLabel_(tool: ToolMode): string {
@@ -726,8 +735,10 @@ export class ContextualActionMenuElement extends
   // Checks if a tab item in the context menu should be disabled.
   protected isTabDisabled_(tab: TabInfo): boolean {
     const isRestored = this.contextManagementInComposeboxEnabled &&
-        (this.aimThreadRestoredTabs ||
-         []).some(restoredTab => restoredTab.tabId === tab.tabId);
+        (this.aimThreadRestoredTabs || [])
+            .some(
+                restoredTab => restoredTab.tabId === tab.tabId &&
+                    restoredTab.url === tab.url);
     if (isRestored) {
       if (this.enableTabDeselection_ && this.isTabSelected_(tab)) {
         return false;

@@ -1481,6 +1481,38 @@ suite('ContextualActionMenu', () => {
   });
 
   test(
+      'Action menu preserves submitted tab state in favicon group',
+      async () => {
+        actionMenu.remove();
+        actionMenu =
+            document.createElement('cr-composebox-contextual-action-menu');
+        actionMenu.contextManagementInComposeboxEnabled = true;
+
+        const submittedTab = createTabSuggestion({
+          tabId: 1,
+          title: 'Submitted Tab',
+          url: 'https://google.com',
+        });
+        actionMenu.tabSuggestions = [submittedTab];
+        actionMenu.aimThreadRestoredTabs = [submittedTab];
+
+        actionMenu.inputState = new MockInputState({
+          allowedInputTypes: [InputType.kBrowserTab],
+        });
+
+        document.body.appendChild(actionMenu);
+        actionMenu.showAt(actionMenu);
+        await microtasksFinished();
+
+        const faviconGroup = $$(actionMenu, 'composebox-favicon-group') as
+            ComposeboxFaviconGroupElement;
+        assertTrue(isVisible(faviconGroup));
+
+        assertTrue(faviconGroup.submittedTabIds.has(1));
+        assertEquals(1, faviconGroup.submittedTabIds.size);
+      });
+
+  test(
       'Disables uploads and tabs immediately when maxFileCount is reached',
       async () => {
         // Recreate actionMenu with maxFileCount = 1.

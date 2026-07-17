@@ -30,10 +30,12 @@ export class ComposeboxFaviconGroupElement extends CrLitElement {
       tabs: {type: Array},
       visibleTabs_: {type: Array},
       remainingCount_: {type: Number},
+      submittedTabIds: {type: Object},
     };
   }
 
   accessor tabs: TabInfo[] = [];
+  accessor submittedTabIds: Set<number> = new Set();
   protected accessor visibleTabs_: TabInfo[] = [];
   protected accessor remainingCount_: number = 0;
   private loadedFavicons_: Map<number, string> = new Map();
@@ -53,7 +55,7 @@ export class ComposeboxFaviconGroupElement extends CrLitElement {
     // 'wait-for-tab-load' prompts the C++ backend to observe the active tab
     // and return the fully loaded favicon URL once ready.
     for (const tab of this.visibleTabs_) {
-      if (tab.tabId) {
+      if (tab.tabId && !this.submittedTabIds.has(tab.tabId)) {
         this.fire('wait-for-tab-load', {
           tabId: tab.tabId,
           onTabLoaded: (faviconDataUrl?: string) => {
@@ -75,7 +77,10 @@ export class ComposeboxFaviconGroupElement extends CrLitElement {
       const tabObj = tab as {url: string | {url: string}, tabId?: number};
       const urlStr =
           typeof tabObj.url === 'string' ? tabObj.url : tabObj.url.url;
-      return (tabObj.tabId && this.loadedFavicons_.get(tabObj.tabId)) ||
+      const isSubmitted =
+          tabObj.tabId && this.submittedTabIds.has(tabObj.tabId);
+      return (tabObj.tabId && !isSubmitted &&
+              this.loadedFavicons_.get(tabObj.tabId)) ||
           getFaviconForPageURL(urlStr, false);
     }
     return getFaviconForPageURL(tab, false);
