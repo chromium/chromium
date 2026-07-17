@@ -263,7 +263,7 @@ void ExtensionsMenuEntryView::Update(
     site_permissions_button_->GetViewAccessibility().SetIsIgnored(false);
     site_permissions_button_->GetViewAccessibility().SetIsLeaf(true);
     site_permissions_button_->SetFocusBehavior(
-        views::View::FocusBehavior::NEVER);
+        views::View::FocusBehavior::ALWAYS);
     site_permissions_button_->PreferredSizeChanged();
   } else {
     site_permissions_button_->SetVisible(false);
