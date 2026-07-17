@@ -14,10 +14,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
-#include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
+#include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -74,8 +74,9 @@ class LocationSavedNotificationDelegate
 
 DeviceCommandQueryGeolocationJob::DeviceCommandQueryGeolocationJob(
     PrefService* local_state,
-    const DeviceCloudPolicyManagerAsh* policy_manager)
-    : local_state_(CHECK_DEREF(local_state)), policy_manager_(policy_manager) {}
+    const CloudPolicyStore* device_cloud_policy_store)
+    : local_state_(CHECK_DEREF(local_state)),
+      policy_store_(device_cloud_policy_store) {}
 
 DeviceCommandQueryGeolocationJob::~DeviceCommandQueryGeolocationJob() = default;
 
@@ -125,13 +126,12 @@ DeviceCommandQueryGeolocationJob::GetType() const {
 
 std::optional<enterprise_management::QueryGeolocationCommandResultCode>
 DeviceCommandQueryGeolocationJob::CheckIfCommandIsAllowed() const {
-  if (!policy_manager_ || !policy_manager_->core()->store()) {
+  if (!policy_store_) {
     return enterprise_management::QueryGeolocationCommandResultCode::
         DEVICE_NOT_MANAGED;
   }
 
-  const enterprise_management::PolicyData* policy =
-      policy_manager_->core()->store()->policy();
+  const enterprise_management::PolicyData* policy = policy_store_->policy();
   if (!policy || !policy->has_device_state()) {
     return enterprise_management::QueryGeolocationCommandResultCode::
         DEVICE_NOT_MANAGED;

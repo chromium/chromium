@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
@@ -91,10 +92,12 @@ std::unique_ptr<RemoteCommandJob> DeviceCommandsFactoryAsh::BuildJobForType(
           local_state);
     case RemoteCommand::FETCH_SUPPORT_PACKET:
       return std::make_unique<DeviceCommandFetchSupportPacketJob>();
-    case RemoteCommand::QUERY_GEOLOCATION:
-      return std::make_unique<DeviceCommandQueryGeolocationJob>(
-          local_state,
+    case RemoteCommand::QUERY_GEOLOCATION: {
+      DeviceCloudPolicyManagerAsh& policy_manager = CHECK_DEREF(
           browser_policy_connector_ash->GetDeviceCloudPolicyManager());
+      return std::make_unique<DeviceCommandQueryGeolocationJob>(
+          local_state, policy_manager.core()->store());
+    }
 
     case RemoteCommand::COMMAND_ECHO_TEST:
     case RemoteCommand::USER_ARC_COMMAND:

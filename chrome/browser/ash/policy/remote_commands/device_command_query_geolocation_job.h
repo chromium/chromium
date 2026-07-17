@@ -19,14 +19,16 @@ class PrefService;
 
 namespace policy {
 
-class DeviceCloudPolicyManagerAsh;
+class CloudPolicyStore;
 
 class DeviceCommandQueryGeolocationJob : public RemoteCommandJob {
  public:
   // `local_state` must be non-null and must outlive `this`.
+  // `device_cloud_policy_store` may be null. If non-null, it must outlive
+  // `this`.
   DeviceCommandQueryGeolocationJob(
       PrefService* local_state,
-      const DeviceCloudPolicyManagerAsh* policy_manager);
+      const CloudPolicyStore* device_cloud_policy_store);
   ~DeviceCommandQueryGeolocationJob() override;
 
   DeviceCommandQueryGeolocationJob(const DeviceCommandQueryGeolocationJob&) =
@@ -59,7 +61,7 @@ class DeviceCommandQueryGeolocationJob : public RemoteCommandJob {
                           const base::TimeDelta elapsed);
 
   const raw_ref<PrefService> local_state_;
-  const raw_ptr<const DeviceCloudPolicyManagerAsh> policy_manager_;
+  const raw_ptr<const CloudPolicyStore> policy_store_;
   base::WeakPtrFactory<DeviceCommandQueryGeolocationJob> weak_factory_{this};
 };
 
