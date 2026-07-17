@@ -377,4 +377,25 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest, ShowsToastOnError) {
   // clang-format on
 }
 
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
+                       NavigationEndsSession) {
+  // clang-format off
+  RunTestSequence(
+    StartSession(),
+    WaitForShow(DictationBubbleUi::kViewElementIdForTesting),
+
+    // Simulate navigation.
+    Do([this]{
+      ASSERT_TRUE(chrome_test_utils::NavigateToURL(web_contents(),
+                                                   GURL("about:blank")));
+    }),
+
+    // The UI should hide and the session should be ended immediately.
+    WaitForHide(DictationBubbleUi::kViewElementIdForTesting),
+    CheckHasSession(false),
+    CheckShowingDictationStoppedToast(true)
+  );
+  // clang-format on
+}
+
 }  // namespace dictation

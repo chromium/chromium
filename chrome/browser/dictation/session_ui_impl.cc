@@ -111,6 +111,17 @@ void SessionUiImpl::OnError(StreamType stream_type) {
   }
 }
 
+void SessionUiImpl::OnStopped() {
+  BrowserWindowInterface* const window = tab_->GetBrowserWindowInterface();
+  if (window) {
+    ToastController* const toast_controller =
+        window->GetFeatures().toast_controller();
+    if (toast_controller) {
+      toast_controller->MaybeShowToast(ToastParams(ToastId::kDictationStopped));
+    }
+  }
+}
+
 void SessionUiImpl::OnSessionStateChanged(SessionState state) {
   bubble_ui_->SetState(ToBubbleUiState(state));
 }
