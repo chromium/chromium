@@ -895,6 +895,13 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             // Initialize TabModel.
             mTabModelOrchestrator.onNativeLibraryReady(getTabContentManager());
 
+            // CoBrowseViewFactory must be initialized synchronously after the TabModel to
+            // ensure the native CoBrowseViewsBridge won't miss the first "did insert tab"
+            // event.
+            // This is important for processing reparenting intents, which inserts tabs
+            // and requires re-creating Java CoBrowseViews.
+            ((TabbedRootUiCoordinator) mRootUiCoordinator).initializeCoBrowseViewFactory();
+
             mTabModelNotificationDotManager.initWithNative(mTabModelSelector);
             initializeChromeAndroidTask(
                     BrowserWindowType.NORMAL,

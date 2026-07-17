@@ -1278,7 +1278,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mBookmarkBarVisibilityProvider.addObserver(mBookmarkBarVisibilityObserver);
         }
 
-        initiateTabBottomSheetManagers();
+        initializeTabBottomSheetManagers();
 
         if (GlicEnabling.isEnabledByFlags()
                 && (mTabBottomSheetManager != null || AndroidSidePanelEnabledFn.isEnabled())) {
@@ -1963,7 +1963,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         return bottomChinColorHelper;
     }
 
-    private void initiateTabBottomSheetManagers() {
+    /**
+     * Initializes the CoBrowseViewFactory. This is called early during Activity initialization to
+     * ensure the factory is available before any reparented tabs are inserted and trigger view
+     * recreation.
+     */
+    public void initializeCoBrowseViewFactory() {
         if (TabBottomSheetUtils.isTabBottomSheetEnabled()
                 || AndroidSidePanelEnabledFn.isEnabled()) {
             View contentView =
@@ -1992,6 +1997,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                     mProfileSupplier.asNonNull().get()),
                             new BookmarkManagerOpenerImpl());
         }
+    }
+
+    private void initializeTabBottomSheetManagers() {
         if (TabBottomSheetUtils.isTabBottomSheetEnabled()) {
             mTabBottomSheetManager =
                     new TabBottomSheetManagerImpl(
