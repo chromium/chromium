@@ -8620,7 +8620,11 @@
             ],
             "experiments": [
                 {
-                    "name": "DynamicAiModeButtonEnabled",
+                    "name": "OmniboxDynamicColorRealboxDynamic",
+                    "params": {
+                        "Omnibox_DynamicAnimation": "false",
+                        "Omnibox_DynamicColorScheme": "true"
+                    },
                     "enable_features": [
                         "NtpRealboxDynamicAiModeButton",
                         "WebUIOmniboxDynamicAiModeButton"
