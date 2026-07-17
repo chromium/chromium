@@ -4,13 +4,11 @@
 
 import 'chrome://settings/lazy_load.js';
 
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {SettingsAddLanguagesDialogElement, SettingsLiveCaptionElement} from 'chrome://settings/lazy_load.js';
 import {CaptionsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import type {SettingsAddLanguagesDialogElement, SettingsLiveCaptionElement} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, loadTimeData, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertStringContains, assertStringExcludes, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -74,8 +72,7 @@ suite('LiveCaptionSection', function() {
     await prefService.whenInitialized();
 
     settingsPrefs = document.createElement('settings-prefs');
-    const settingsPrivate = new FakeSettingsPrivate(initialPrefs);
-    settingsPrefs.initialize(settingsPrivate);
+    settingsPrefs.initialize(prefsBrowserProxy.fakeApi);
     document.body.appendChild(settingsPrefs);
     await CrSettingsPrefs.initialized;
 
@@ -91,13 +88,12 @@ suite('LiveCaptionSection', function() {
     liveCaptionSection = document.createElement('settings-live-caption');
     document.body.appendChild(liveCaptionSection);
 
-    flush();
     return settingsLanguages.whenReady();
   });
 
   test('caption.enable toggle', function() {
     const settingsToggle =
-        liveCaptionSection.shadowRoot!.querySelector<HTMLElement>(
+        liveCaptionSection.shadowRoot.querySelector<HTMLElement>(
             '#liveCaptionToggleButton');
     assertTrue(!!settingsToggle);
 
@@ -122,14 +118,14 @@ suite('LiveCaptionSection', function() {
     // Need to make the section visible first, for the innerText calls below to
     // behave correctly.
     const settingsToggle =
-        liveCaptionSection.shadowRoot!.querySelector<HTMLElement>(
+        liveCaptionSection.shadowRoot.querySelector<HTMLElement>(
             '#liveCaptionToggleButton');
     assertTrue(!!settingsToggle);
     settingsToggle.click();
     await microtasksFinished();
 
     const addLanguagesButton =
-        liveCaptionSection.shadowRoot!.querySelector<HTMLElement>(
+        liveCaptionSection.shadowRoot.querySelector<HTMLElement>(
             '#addLanguage');
     assertTrue(!!addLanguagesButton);
     assertTrue(isVisible(addLanguagesButton));
@@ -138,13 +134,13 @@ suite('LiveCaptionSection', function() {
     addLanguagesButton.click();
     await whenDialogOpen;
 
-    dialog = liveCaptionSection.shadowRoot!.querySelector(
-        'settings-add-languages-dialog')!;
+    dialog = liveCaptionSection.shadowRoot.querySelector(
+        'settings-add-languages-dialog');
     assertTrue(!!dialog);
     assertEquals(dialog.id, 'addLanguagesDialog');
 
     const languageListDiv =
-        liveCaptionSection.shadowRoot!.querySelector<HTMLElement>(
+        liveCaptionSection.shadowRoot.querySelector<HTMLElement>(
             '#languageList');
     assertTrue(!!languageListDiv);
 
@@ -152,17 +148,16 @@ suite('LiveCaptionSection', function() {
         languageListDiv.querySelectorAll<HTMLElement>('.list-item');
     assertEquals(1, languagePacks.length);
 
-    assertTrue(!!dialog);
     const whenDialogClosed = eventToPromise('close', dialog);
     dialog.dispatchEvent(
         new CustomEvent('languages-added', {detail: ['fr-FR']}));
     dialog.$.dialog.close();
-    flush();
 
     await Promise.all([
       whenDialogClosed,
       browserProxy.whenCalled('installLanguagePacks'),
     ]);
+    await microtasksFinished();
 
     languagePacks = languageListDiv.querySelectorAll<HTMLElement>('.list-item');
     assertEquals(2, languagePacks.length);
@@ -177,32 +172,47 @@ suite('LiveCaptionSection', function() {
     assertEquals(2, menuButtons.length);
     menuButtons[1]!.click();
     const actionMenu =
-        liveCaptionSection.shadowRoot!.querySelector('cr-action-menu')!;
+        liveCaptionSection.shadowRoot.querySelector('cr-action-menu');
+    assertTrue(!!actionMenu);
     assertTrue(actionMenu.open);
 
     // Change the default language to French.
-    liveCaptionSection.shadowRoot!
-        .querySelector<HTMLElement>('#make-default-button')!.click();
+    const makeDefaultButton =
+        liveCaptionSection.shadowRoot.querySelector<HTMLElement>(
+            '#make-default-button');
+    assertTrue(!!makeDefaultButton);
+    makeDefaultButton.click();
+    await microtasksFinished();
     assertFalse(actionMenu.open);
     assertStringExcludes(languagePacks[0]!.innerText, '(default)');
     assertStringContains(languagePacks[1]!.innerText, '(default)');
 
     // Remove the French language pack and verify that English is the new
     // default language.
-    menuButtons[1]!.click();
-    liveCaptionSection.shadowRoot!.querySelector<HTMLElement>(
-                                      '#remove-button')!.click();
+    const updatedMenuButtons = languageListDiv.querySelectorAll<HTMLElement>(
+        'cr-icon-button.icon-more-vert');
+    assertEquals(2, updatedMenuButtons.length);
+    updatedMenuButtons[1]!.click();
+    const removeButton =
+        liveCaptionSection.shadowRoot.querySelector<HTMLElement>(
+            '#remove-button');
+    assertTrue(!!removeButton);
+    removeButton.click();
+    await microtasksFinished();
     assertFalse(actionMenu.open);
     assertStringContains(languagePacks[0]!.innerText, '(default)');
-    flush();
     languagePacks = languageListDiv.querySelectorAll<HTMLElement>('.list-item');
     assertEquals(1, languagePacks.length);
   });
 
   test('more action button aria label', async function() {
+    await prefService.setPrefValue(
+        'accessibility.captions.live_caption_enabled', true);
+    await microtasksFinished();
+
     const defaultLabel = loadTimeData.getString('defaultLanguageLabel');
     const getMoreButtons = () =>
-        liveCaptionSection.shadowRoot!.querySelectorAll<HTMLElement>(
+        liveCaptionSection.shadowRoot.querySelectorAll<HTMLElement>(
             'cr-icon-button.icon-more-vert');
     let moreButtons = getMoreButtons();
 
@@ -212,23 +222,26 @@ suite('LiveCaptionSection', function() {
 
     // Add a new language - French.
     const addLanguagesButton =
-        liveCaptionSection.shadowRoot!.querySelector<HTMLElement>(
-            '#addLanguage')!;
+        liveCaptionSection.shadowRoot.querySelector<HTMLElement>(
+            '#addLanguage');
+    const whenDialogOpen = eventToPromise('cr-dialog-open', liveCaptionSection);
+    assertTrue(!!addLanguagesButton);
     addLanguagesButton.click();
-    flush();
+    await whenDialogOpen;
 
-    dialog = liveCaptionSection.shadowRoot!.querySelector(
-        'settings-add-languages-dialog')!;
+    dialog = liveCaptionSection.shadowRoot.querySelector(
+        'settings-add-languages-dialog');
+    assertTrue(!!dialog);
     const whenDialogClosed = eventToPromise('close', dialog);
     dialog.dispatchEvent(
         new CustomEvent('languages-added', {detail: ['fr-FR']}));
     dialog.$.dialog.close();
-    flush();
 
     await Promise.all([
       whenDialogClosed,
       browserProxy.whenCalled('installLanguagePacks'),
     ]);
+    await microtasksFinished();
 
     // The new language (French) should not have the default label.
     moreButtons = getMoreButtons();
@@ -238,12 +251,18 @@ suite('LiveCaptionSection', function() {
 
     // Change the default language to French.
     frenchButton.click();
-    liveCaptionSection.shadowRoot!
-        .querySelector<HTMLElement>('#make-default-button')!.click();
-    flush();
+    const makeDefaultButton =
+        liveCaptionSection.shadowRoot.querySelector<HTMLElement>(
+            '#make-default-button');
+    assertTrue(!!makeDefaultButton);
+    makeDefaultButton.click();
+    await microtasksFinished();
     // The English button should no longer have the default label.
-    assertStringExcludes(englishButton.ariaLabel!, defaultLabel);
+    moreButtons = getMoreButtons();
+    assertStringContains(moreButtons[0]!.ariaLabel!, 'English');
+    assertStringExcludes(moreButtons[0]!.ariaLabel!, defaultLabel);
     // The French button should have the default label.
-    assertStringContains(frenchButton.ariaLabel!, defaultLabel);
+    assertStringContains(moreButtons[1]!.ariaLabel!, 'French');
+    assertStringContains(moreButtons[1]!.ariaLabel!, defaultLabel);
   });
 });

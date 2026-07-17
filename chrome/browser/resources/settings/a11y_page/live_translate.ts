@@ -10,15 +10,13 @@
  * other versions of Windows.
  */
 
-import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import '../controls/settings_dropdown_menu.js';
 import '../controls/settings_toggle_button.js';
-import '../settings_shared.css.js';
 
-import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
+import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 
 import type {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
@@ -26,10 +24,11 @@ import {loadTimeData} from '../i18n_setup.js';
 import {getLanguageHelperInstance} from '../languages_page/languages.js';
 import {isTranslateBaseLanguage} from '../languages_page/languages_util.js';
 
-import {getTemplate} from './live_translate.html.js';
+import {getCss} from './live_translate.css.js';
+import {getHtml} from './live_translate.html.js';
 
 const SettingsLiveTranslateElementBase =
-    WebUiListenerMixin(PrefServiceObserverMixin(PolymerElement));
+    WebUiListenerMixinLit(PrefServiceObserverMixinLit(CrLitElement));
 
 export interface SettingsLiveTranslateElement {
   $: {
@@ -37,44 +36,36 @@ export interface SettingsLiveTranslateElement {
   };
 }
 
+export type LiveTranslateElement = SettingsLiveTranslateElement;
+
 export class SettingsLiveTranslateElement extends
     SettingsLiveTranslateElementBase {
   static get is() {
     return 'settings-live-translate';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      isLiveTranslateEnabled_: {
-        type: Boolean,
-        value: false,
-      },
-
-      enableLiveTranslateSubtitle_: {
-        type: String,
-        value: loadTimeData.getString('captionsEnableLiveTranslateSubtitle'),
-      },
-
-      languageOptions_: {
-        type: Array,
-        value: () => [],
-      },
-
-      translatableLanguages_: {
-        type: Array,
-        value: () => [],
-      },
+      isLiveTranslateEnabled_: {type: Boolean},
+      enableLiveTranslateSubtitle_: {type: String},
+      languageOptions_: {type: Array},
+      translatableLanguages_: {type: Array},
     };
   }
 
-  declare private isLiveTranslateEnabled_: boolean;
-  declare private enableLiveTranslateSubtitle_: string;
-  declare private languageOptions_: DropdownMenuOptionList;
-  declare private translatableLanguages_: DropdownMenuOptionList;
+  protected accessor isLiveTranslateEnabled_: boolean = false;
+  protected accessor enableLiveTranslateSubtitle_: string =
+      loadTimeData.getString('captionsEnableLiveTranslateSubtitle');
+  protected accessor languageOptions_: DropdownMenuOptionList = [];
+  protected accessor translatableLanguages_: DropdownMenuOptionList = [];
 
   override connectedCallback() {
     super.connectedCallback();
@@ -97,7 +88,7 @@ export class SettingsLiveTranslateElement extends
     });
   }
 
-  private onLiveTranslateEnabledChange_() {
+  protected onLiveTranslateEnabledChange_() {
     chrome.metricsPrivate.recordBoolean(
         'Accessibility.LiveTranslate.EnableFromSettings',
         this.$.liveTranslateToggleButton.checked);

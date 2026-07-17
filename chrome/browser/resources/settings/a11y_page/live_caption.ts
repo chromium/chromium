@@ -13,135 +13,110 @@
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '//resources/cr_elements/cr_shared_style.css.js';
 import '../controls/settings_toggle_button.js';
-import '../settings_shared.css.js';
 
-import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {CaptionsBrowserProxy, LiveCaptionLanguage, LiveCaptionLanguageList} from '/shared/settings/a11y_page/captions_browser_proxy.js';
 import {CaptionsBrowserProxyImpl} from '/shared/settings/a11y_page/captions_browser_proxy.js';
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
-import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
+import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 
-import {getTemplate} from './live_caption.html.js';
+import {getCss} from './live_caption.css.js';
+import {getHtml} from './live_caption.html.js';
 
 // clang-format off
+
 // <if expr="not is_chromeos">
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
+import '../languages_page/add_languages_dialog.js';
+import './live_translate.js';
 
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-
-import './live_translate.js';
-import '../languages_page/add_languages_dialog.js';
-
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
+import type {CrLazyRenderLitElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // </if>
 // clang-format on
 
 
 // <if expr="is_chromeos">
 const SettingsLiveCaptionElementBase =
-    WebUiListenerMixin(PrefServiceObserverMixin(PolymerElement));
+    WebUiListenerMixinLit(PrefServiceObserverMixinLit(CrLitElement));
 // </if>
 // <if expr="not is_chromeos">
-const SettingsLiveCaptionElementBase =
-    WebUiListenerMixin(ListPropertyUpdateMixin(
-        PrefServiceObserverMixin(I18nMixin(PolymerElement))));
+const SettingsLiveCaptionElementBase = WebUiListenerMixinLit(
+    PrefServiceObserverMixinLit(I18nMixinLit(CrLitElement)));
 
 export interface SettingsLiveCaptionElement {
   $: {
-    menu: CrLazyRenderElement<CrActionMenuElement>,
+    menu: CrLazyRenderLitElement<CrActionMenuElement>,
   };
 }
 // </if>
+
+export type LiveCaptionElement = SettingsLiveCaptionElement;
 
 export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
   static get is() {
     return 'settings-live-caption';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      isLiveCaptionEnabled_: {
-        type: Boolean,
-        value: false,
-      },
+      isLiveCaptionEnabled_: {type: Boolean},
 
       /**
        * The subtitle to display under the Live Caption heading. Generally, this
        * is a generic subtitle describing the feature. While the SODA model is
        * being downloading, this displays the download progress.
        */
-      enableLiveCaptionSubtitle_: {
-        type: String,
-        value: loadTimeData.getString('captionsEnableLiveCaptionSubtitle'),
-      },
-
-      enableLiveCaptionMultiLanguage_: {
-        type: Boolean,
-        value: function() {
-          return loadTimeData.getBoolean('enableLiveCaptionMultiLanguage');
-        },
-      },
+      enableLiveCaptionSubtitle_: {type: String},
+      enableLiveCaptionMultiLanguage_: {type: Boolean},
 
       // <if expr="not is_chromeos">
-      liveCaptionLanguagePref_: Object,
-
-      enableLiveTranslate_: {
-        type: Boolean,
-        value: function() {
-          return loadTimeData.getBoolean('enableLiveTranslate');
-        },
-      },
-
-      installedLanguagePacks_: {
-        type: Array,
-        value: () => [],
-      },
-
-      availableLanguagePacks_: {
-        type: Array,
-        value: () => [],
-      },
-
-      /**
-       * The language to display the details for.
-       */
-      detailLanguage_: Object,
-
-      showAddLanguagesDialog_: Boolean,
+      liveCaptionLanguagePref_: {type: Object},
+      enableLiveTranslate_: {type: Boolean},
+      installedLanguagePacks_: {type: Array},
+      availableLanguagePacks_: {type: Array},
+      detailLanguage_: {type: Object},
+      showAddLanguagesDialog_: {type: Boolean},
       // </if>
     };
   }
 
-  declare private isLiveCaptionEnabled_: boolean;
+  protected accessor isLiveCaptionEnabled_: boolean = false;
+  protected accessor enableLiveCaptionSubtitle_: string =
+      loadTimeData.getString('captionsEnableLiveCaptionSubtitle');
+  protected accessor enableLiveCaptionMultiLanguage_: boolean =
+      loadTimeData.getBoolean('enableLiveCaptionMultiLanguage');
   // <if expr="not is_chromeos">
-  declare private liveCaptionLanguagePref_:
+  protected accessor liveCaptionLanguagePref_:
       chrome.settingsPrivate.PrefObject<string>|undefined;
-  declare private enableLiveTranslate_: boolean;
-  declare private installedLanguagePacks_: LiveCaptionLanguageList;
-  declare private availableLanguagePacks_: LiveCaptionLanguageList;
-  declare private detailLanguage_?: LiveCaptionLanguage;
-  declare private showAddLanguagesDialog_: boolean;
+  protected accessor enableLiveTranslate_: boolean =
+      loadTimeData.getBoolean('enableLiveTranslate');
+  protected accessor installedLanguagePacks_: LiveCaptionLanguageList = [];
+  protected accessor availableLanguagePacks_: LiveCaptionLanguageList = [];
+  protected accessor detailLanguage_: LiveCaptionLanguage|undefined;
+  protected accessor showAddLanguagesDialog_: boolean = false;
   // </if>
+
   private browserProxy_: CaptionsBrowserProxy =
       CaptionsBrowserProxyImpl.getInstance();
-  declare private enableLiveCaptionSubtitle_: string;
-  declare private enableLiveCaptionMultiLanguage_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -157,8 +132,9 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
     // </if>
   }
 
-  override ready() {
-    super.ready();
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+
     // <if expr="not is_chromeos">
     this.browserProxy_.getInstalledLanguagePacks().then(
         (installedLanguagePacks: LiveCaptionLanguageList) => {
@@ -192,7 +168,7 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
    * @return the Live Caption toggle element.
    */
   getLiveCaptionToggle(): SettingsToggleButtonElement {
-    return this.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+    return this.shadowRoot.querySelector<SettingsToggleButtonElement>(
         '#liveCaptionToggleButton')!;
   }
 
@@ -204,7 +180,7 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
     return label;
   }
 
-  private onLiveCaptionEnabledChanged_(event: Event) {
+  protected onLiveCaptionEnabledChange_(event: Event) {
     const liveCaptionEnabled =
         (event.target as SettingsToggleButtonElement).checked;
     chrome.metricsPrivate.recordBoolean(
@@ -217,7 +193,7 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
     // </if>
   }
 
-  private onLiveCaptionMaskOffensiveWordsChanged_(event: Event) {
+  protected onLiveCaptionMaskOffensiveWordsChange_(event: Event) {
     const liveCaptionMaskOffensiveWords =
         (event.target as SettingsToggleButtonElement).checked;
     chrome.metricsPrivate.recordBoolean(
@@ -226,24 +202,29 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
   }
 
   // <if expr="not is_chromeos">
-  private onAddLanguagesClick_(e: Event) {
+  protected onAddLanguagesClick_(e: Event) {
     e.preventDefault();
     this.showAddLanguagesDialog_ = true;
   }
 
-  private onAddLanguagesDialogClose_() {
+  protected onAddLanguagesDialogClose_() {
     this.showAddLanguagesDialog_ = false;
-    const toFocus = this.shadowRoot!.querySelector<HTMLElement>('#addLanguage');
+    const toFocus = this.shadowRoot.querySelector<HTMLElement>('#addLanguage');
     assert(toFocus);
     focusWithoutInk(toFocus);
   }
 
-  private onDotsClick_(e: DomRepeatEvent<LiveCaptionLanguage>) {
-    this.detailLanguage_ = Object.assign({}, e.model.item);
-    this.$.menu.get().showAt(e.target as HTMLElement);
+  protected onDotsClick_(e: Event) {
+    const target = e.currentTarget as HTMLElement;
+    const code = target.dataset['code'];
+    assert(code);
+    const item = this.installedLanguagePacks_.find(p => p.code === code);
+    assert(item);
+    this.detailLanguage_ = Object.assign({}, item);
+    this.$.menu.get().showAt(target);
   }
 
-  private isDefaultLanguage_(languageCode: string): boolean {
+  protected isDefaultLanguage_(languageCode: string): boolean {
     if (this.liveCaptionLanguagePref_ === undefined) {
       return false;
     }
@@ -251,14 +232,14 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
     return languageCode === this.liveCaptionLanguagePref_.value;
   }
 
-  private onMakeDefaultClick_() {
+  protected onMakeDefaultClick_() {
     this.$.menu.get().close();
     PrefService.getInstance().setPrefValue(
         'accessibility.captions.live_caption_language',
         this.detailLanguage_!.code);
   }
 
-  private onRemoveLanguageClick_() {
+  protected onRemoveLanguageClick_() {
     if (!this.detailLanguage_) {
       return;
     }
@@ -283,7 +264,7 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
     }
   }
 
-  private onLanguagesAdded_(e: CustomEvent<string[]>) {
+  protected onLanguagesAdded_(e: CustomEvent<string[]>) {
     this.installLanguagePacks_(e.detail);
   }
 
@@ -297,19 +278,16 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
       }
     });
 
-    this.updateList(
-        `installedLanguagePacks_`, item => item.code,
-        this.installedLanguagePacks_.concat(newLanguagePacks));
+    this.installedLanguagePacks_ =
+        this.installedLanguagePacks_.concat(newLanguagePacks);
     this.browserProxy_.installLanguagePacks(languageCodes);
   }
 
-  private filterAvailableLanguagePacks_(
-      availableLanguagePacks: LiveCaptionLanguageList,
-      installedLanguagePacks: LiveCaptionLanguageList):
+  protected filterAvailableLanguagePacks_():
       chrome.languageSettingsPrivate.Language[] {
     const filteredLanguagePacks =
-        availableLanguagePacks.filter(availableLanguagePack => {
-          return !installedLanguagePacks.some(
+        this.availableLanguagePacks_.filter(availableLanguagePack => {
+          return !this.installedLanguagePacks_.some(
               installedLanguagePack =>
                   installedLanguagePack.code === availableLanguagePack.code);
         });
@@ -359,7 +337,7 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
       const language = this.installedLanguagePacks_[i];
       if (language.code === languageCode) {
         language.downloadProgress = sodaDownloadProgress;
-        this.notifyPath('installedLanguagePacks_.' + i + '.downloadProgress');
+        this.requestUpdate();
         break;
       }
     }

@@ -11,11 +11,13 @@ import {CrSettingsPrefs, loadTimeData, PrefsBrowserProxy, PrefService} from 'chr
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 
+import {getFakeLanguagePrefs} from './fake_language_settings_private.js';
 import {TestCaptionsBrowserProxy} from './test_captions_browser_proxy.js';
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
 function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
   return [
+    ...getFakeLanguagePrefs(),
     {
       key: 'accessibility.captions.live_translate_enabled',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
@@ -44,13 +46,15 @@ suite('LiveTranslateSection', function() {
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
-    const prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    const initialPrefs = getInitialPrefs();
+    const prefsBrowserProxy = new TestPrefsBrowserProxy(initialPrefs);
     PrefsBrowserProxy.setInstance(prefsBrowserProxy);
     PrefService.resetInstanceForTesting();
     prefService = PrefService.getInstance();
     await prefService.whenInitialized();
 
     const settingsPrefs = document.createElement('settings-prefs');
+    settingsPrefs.initialize(prefsBrowserProxy.fakeApi);
     document.body.appendChild(settingsPrefs);
     await CrSettingsPrefs.initialized;
 
@@ -72,7 +76,7 @@ suite('LiveTranslateSection', function() {
 
   test('translate.enable toggle', function() {
     const settingsToggle =
-        liveTranslateSection.shadowRoot!.querySelector<HTMLElement>(
+        liveTranslateSection.shadowRoot.querySelector<HTMLElement>(
             '#liveTranslateToggleButton');
     assertTrue(!!settingsToggle);
 
@@ -98,7 +102,7 @@ suite('LiveTranslateSection', function() {
         'accessibility.captions.live_translate_enabled', true);
     flush();
 
-    const dropdown = liveTranslateSection.shadowRoot!.querySelector(
+    const dropdown = liveTranslateSection.shadowRoot.querySelector(
         '#targetLanguageDropdown')!;
     const select = dropdown.shadowRoot!.querySelector('select')!;
     const expectedLabel =

@@ -447,6 +447,8 @@ build_webui("build") {
     "settings_vars.css",
 
     # subfolder files
+    "a11y_page/live_caption.css",
+    "a11y_page/live_translate.css",
     "about_page/about_page.css",
     "appearance_page/appearance_fonts_page.css",
     "appearance_page/appearance_page.css",
