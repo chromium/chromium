@@ -46,6 +46,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/animation/widget_fade_animator.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/widget/widget_utils.h"
 
@@ -504,6 +505,35 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
   ASSERT_TRUE(
       IsButtonVisible(pip_frame_view()->GetBackToTabButtonForTesting()));
   ASSERT_TRUE(IsButtonVisible(pip_frame_view()->GetCloseButtonForTesting()));
+}
+
+// Verifies that PipTopBarAnimationController::Delegate is wired up correctly:
+// activating/deactivating the top bar via UpdateTopBarView() should drive
+// ApplyTopBarForegroundColor() through to the window title, changing its
+// enabled color between the active and inactive steady states.
+IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
+                       TopBarForegroundColorChangesWithActivation) {
+  ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
+
+  pip_frame_view()->UpdateTopBarView(/*render_active=*/false);
+  WaitForTopBarAnimations(
+      pip_frame_view()->GetRenderInactiveAnimationsForTesting());
+  const SkColor inactive_color =
+      pip_frame_view()->GetWindowTitleForTesting()->GetEnabledColor();
+
+  pip_frame_view()->UpdateTopBarView(/*render_active=*/true);
+  WaitForTopBarAnimations(
+      pip_frame_view()->GetRenderActiveAnimationsForTesting());
+  const SkColor active_color =
+      pip_frame_view()->GetWindowTitleForTesting()->GetEnabledColor();
+
+  EXPECT_NE(inactive_color, active_color);
+
+  pip_frame_view()->UpdateTopBarView(/*render_active=*/false);
+  WaitForTopBarAnimations(
+      pip_frame_view()->GetRenderInactiveAnimationsForTesting());
+  EXPECT_EQ(inactive_color,
+            pip_frame_view()->GetWindowTitleForTesting()->GetEnabledColor());
 }
 
 IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,

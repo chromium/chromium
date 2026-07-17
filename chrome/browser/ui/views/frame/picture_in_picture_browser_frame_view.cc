@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/picture_in_picture/picture_in_picture_bounds_change_animation.h"
 #include "chrome/browser/ui/views/picture_in_picture/picture_in_picture_tucker.h"
+#include "chrome/browser/ui/views/picture_in_picture/pip_top_bar_animation_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
 #include "components/vector_icons/vector_icons.h"
@@ -44,11 +46,9 @@
 #include "ui/display/screen.h"
 #include "ui/events/event_observer.h"
 #include "ui/gfx/animation/animation.h"
-#include "ui/gfx/animation/animation_container.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/animation/compositor_animation_runner.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -85,28 +85,6 @@ constexpr int KIconViewVerticalMargin = 5;
 
 constexpr int kResizeBorder = 10;
 constexpr int kResizeAreaCornerSize = 16;
-
-// The time duration that the top bar animation will take in total.
-constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(250);
-
-// The animation durations for the top right buttons, which are separated into
-// multiple parts because some changes need to be delayed.
-constexpr std::array<base::TimeDelta, 2>
-    kMoveCameraButtonToRightAnimationDurations = {kAnimationDuration * 0.4,
-                                                  kAnimationDuration * 0.6};
-constexpr std::array<base::TimeDelta, 3>
-    kShowBackToTabButtonAnimationDurations = {kAnimationDuration * 0.4,
-                                              kAnimationDuration * 0.4,
-                                              kAnimationDuration * 0.2};
-constexpr std::array<base::TimeDelta, 2>
-    kHideBackToTabButtonAnimationDurations = {kAnimationDuration * 0.4,
-                                              kAnimationDuration * 0.6};
-constexpr std::array<base::TimeDelta, 3> kCloseButtonAnimationDurations = {
-    kAnimationDuration * 0.2, kAnimationDuration * 0.4,
-    kAnimationDuration * 0.4};
-
-constexpr base::TimeDelta kShowHideAllButtonsAnimationDuration =
-    kAnimationDuration;
 
 class BackToTabButton : public OverlayWindowImageButton {
   METADATA_HEADER(BackToTabButton, OverlayWindowImageButton)
@@ -208,44 +186,7 @@ void DefinitelyExitPictureInPicture(
 PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
     BrowserWidget* widget,
     BrowserView* browser_view)
-    : BrowserFrameView(widget, browser_view),
-      top_bar_color_animation_(this),
-      move_camera_button_to_left_animation_(this),
-      move_camera_button_to_right_animation_(gfx::MultiAnimation::Parts{
-          {kMoveCameraButtonToRightAnimationDurations[0],
-           gfx::Tween::Type::ZERO, 1.0, 1.0},
-          {kMoveCameraButtonToRightAnimationDurations[1],
-           gfx::Tween::Type::EASE_OUT, 1.0, 0.0}}),
-      show_back_to_tab_button_animation_(
-          gfx::MultiAnimation::Parts{{kShowBackToTabButtonAnimationDurations[0],
-                                      gfx::Tween::Type::ZERO, 0.0, 0.0},
-                                     {kShowBackToTabButtonAnimationDurations[1],
-                                      gfx::Tween::Type::LINEAR, 0.0, 1.0},
-                                     {kShowBackToTabButtonAnimationDurations[2],
-                                      gfx::Tween::Type::ZERO, 1.0, 1.0}}),
-      hide_back_to_tab_button_animation_(
-          gfx::MultiAnimation::Parts{{kHideBackToTabButtonAnimationDurations[0],
-                                      gfx::Tween::Type::LINEAR, 1.0, 0.0},
-                                     {kHideBackToTabButtonAnimationDurations[1],
-                                      gfx::Tween::Type::ZERO, 0.0, 0.0}}),
-      show_close_button_animation_(gfx::MultiAnimation::Parts{
-          {kCloseButtonAnimationDurations[0], gfx::Tween::Type::ZERO, 0.0, 0.0},
-          {kCloseButtonAnimationDurations[1], gfx::Tween::Type::LINEAR, 0.0,
-           1.0},
-          {kCloseButtonAnimationDurations[2], gfx::Tween::Type::ZERO, 1.0,
-           1.0}}),
-      hide_close_button_animation_(gfx::MultiAnimation::Parts{
-          {kCloseButtonAnimationDurations[0], gfx::Tween::Type::ZERO, 1.0, 1.0},
-          {kCloseButtonAnimationDurations[1], gfx::Tween::Type::LINEAR, 1.0,
-           0.0},
-          {kCloseButtonAnimationDurations[2], gfx::Tween::Type::ZERO, 0.0,
-           0.0}}),
-      show_all_buttons_animation_(kShowHideAllButtonsAnimationDuration,
-                                  gfx::LinearAnimation::kDefaultFrameRate,
-                                  this),
-      hide_all_buttons_animation_(kShowHideAllButtonsAnimationDuration,
-                                  gfx::LinearAnimation::kDefaultFrameRate,
-                                  this) {
+    : BrowserFrameView(widget, browser_view) {
   // We create our own top container, so we hide the one created by default (and
   // its children) from the user and accessibility tools.
   browser_view->top_container()->SetVisible(false);
@@ -379,36 +320,12 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
           },
           base::Unretained(this))));
 
-  // Enable button layer rendering to set opacity for animation.
-  if (back_to_tab_button_) {
-    back_to_tab_button_->SetPaintToLayer();
-    back_to_tab_button_->layer()->SetFillsBoundsOpaquely(false);
-  }
-  close_image_button_->SetPaintToLayer();
-  close_image_button_->layer()->SetFillsBoundsOpaquely(false);
-
-  // Creates the top bar title color and camera icon color animation. Set the
-  // initial state to 1.0 because the window is active when first shown.
-  top_bar_color_animation_.SetSlideDuration(kAnimationDuration);
-  top_bar_color_animation_.SetTweenType(gfx::Tween::LINEAR);
-  top_bar_color_animation_.Reset(1.0);
-
-  // Creates the camera icon movement animations with the default EASE_OUT type.
-  move_camera_button_to_left_animation_.SetSlideDuration(kAnimationDuration);
-  move_camera_button_to_right_animation_.set_continuous(false);
-  move_camera_button_to_right_animation_.set_delegate(this);
-
-  // Creates the button animations.
-  if (back_to_tab_button_) {
-    show_back_to_tab_button_animation_.set_continuous(false);
-    show_back_to_tab_button_animation_.set_delegate(this);
-    hide_back_to_tab_button_animation_.set_continuous(false);
-    hide_back_to_tab_button_animation_.set_delegate(this);
-  }
-  show_close_button_animation_.set_continuous(false);
-  show_close_button_animation_.set_delegate(this);
-  hide_close_button_animation_.set_continuous(false);
-  hide_close_button_animation_.set_delegate(this);
+  // Creates the controller that owns and drives the top-bar hover animations,
+  // now that the buttons and content-setting views it references exist. It
+  // paints the window-control buttons to layers so their opacity can be
+  // animated, and starts in the active state. Mirrors DocumentPipFrameView.
+  animation_controller_ = std::make_unique<PipTopBarAnimationController>(
+      this, back_to_tab_button_, close_image_button_, content_setting_views_);
 
   // If the window manager wants us to display an overlay, get it.  In practice,
   // this is the auto-pip Allow / Block content setting UI.
@@ -626,23 +543,10 @@ void PictureInPictureBrowserFrameView::AddedToWidget() {
   child_dialog_observer_helper_ =
       std::make_unique<PipChildDialogObserverHelper>(this);
 
-  // Creates an animation container to ensure all the animations update at the
-  // same time.
-  gfx::AnimationContainer* animation_container = new gfx::AnimationContainer();
-  animation_container->SetAnimationRunner(
-      std::make_unique<views::CompositorAnimationRunner>(GetWidget()));
-  top_bar_color_animation_.SetContainer(animation_container);
-  move_camera_button_to_left_animation_.SetContainer(animation_container);
-  move_camera_button_to_right_animation_.SetContainer(animation_container);
-  show_all_buttons_animation_.SetContainer(animation_container);
-  hide_all_buttons_animation_.SetContainer(animation_container);
-
-  if (back_to_tab_button_) {
-    show_back_to_tab_button_animation_.SetContainer(animation_container);
-    hide_back_to_tab_button_animation_.SetContainer(animation_container);
-    show_close_button_animation_.SetContainer(animation_container);
-    hide_close_button_animation_.SetContainer(animation_container);
-  }
+  // Attach the top-bar animations to a compositor-backed container so they
+  // update together and in sync with the display. Requires the Widget, so it
+  // is deferred from the ctor to here. Mirrors DocumentPipFrameView.
+  animation_controller_->SetUpAnimationContainer(GetWidget());
 
   // TODO(crbug.com/40279642): Don't force dark mode once we support a
   // light mode window.
@@ -851,16 +755,17 @@ LocationBarModel* PictureInPictureBrowserFrameView::GetLocationBarModel()
 ui::ImageModel PictureInPictureBrowserFrameView::GetLocationIcon(
     LocationIconView::Delegate::IconFetchedCallback on_icon_fetched) {
   // If we're animating between colors, use the current color value.
-  if (current_foreground_color_.has_value()) {
+  if (const auto current_foreground_color =
+          animation_controller_->current_foreground_color();
+      current_foreground_color.has_value()) {
     return ui::ImageModel::FromVectorIcon(location_bar_model_->GetVectorIcon(),
-                                          *current_foreground_color_,
+                                          *current_foreground_color,
                                           kWindowIconImageSize);
   }
 
-  ui::ColorId foreground_color_id =
-      (top_bar_color_animation_.GetCurrentValue() == 0)
-          ? kColorPipWindowForegroundInactive
-          : kColorPipWindowForeground;
+  ui::ColorId foreground_color_id = animation_controller_->is_top_bar_active()
+                                        ? kColorPipWindowForeground
+                                        : kColorPipWindowForegroundInactive;
 
   return ui::ImageModel::FromVectorIcon(location_bar_model_->GetVectorIcon(),
                                         foreground_color_id,
@@ -987,81 +892,24 @@ void PictureInPictureBrowserFrameView::EnforceTucking() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// gfx::AnimationDelegate implementations:
+// PipTopBarAnimationController::Delegate implementations:
 
-void PictureInPictureBrowserFrameView::AnimationEnded(
-    const gfx::Animation* animation) {
-  if (animation == &top_bar_color_animation_) {
-    current_foreground_color_ = std::nullopt;
-    location_icon_view_->Update(/*suppress_animations=*/false);
+void PictureInPictureBrowserFrameView::ApplyTopBarForegroundColor(
+    SkColor color) {
+  window_title_->SetEnabledColor(color);
+  for (ContentSettingImageView* view : content_setting_views_) {
+    view->SetIconColor(color);
   }
+
+  // NOTE: This handles what was previously
+  // PictureInPictureBrowserFrameView::AnimationEnded/AnimationProgressed
+  // updating the window icon directly.
+  location_icon_view_->Update(/*suppress_animations=*/false);
 }
 
-void PictureInPictureBrowserFrameView::AnimationProgressed(
-    const gfx::Animation* animation) {
-  if (animation == &top_bar_color_animation_) {
-    SkColor color = gfx::Tween::ColorValueBetween(
-        animation->GetCurrentValue(),
-        GetColorProvider()->GetColor(kColorPipWindowForegroundInactive),
-        GetColorProvider()->GetColor(kColorPipWindowForeground));
-    window_title_->SetEnabledColor(color);
-    for (ContentSettingImageView* view : content_setting_views_) {
-      view->SetIconColor(color);
-    }
-    current_foreground_color_ = color;
-    location_icon_view_->Update(/*suppress_animations=*/false);
-    return;
-  }
-
-  if (animation == &move_camera_button_to_left_animation_ ||
-      animation == &move_camera_button_to_right_animation_) {
-    int close_and_back_to_tab_button_combined_widths =
-        close_image_button_->width();
-    if (back_to_tab_button_) {
-      close_and_back_to_tab_button_combined_widths +=
-          back_to_tab_button_->width();
-    }
-    for (ContentSettingImageView* view : content_setting_views_) {
-      // Set the position of camera icon relative to |button_container_view_|.
-      view->SetX(animation->CurrentValueBetween(
-          close_and_back_to_tab_button_combined_widths, 0));
-    }
-    return;
-  }
-
-  if (animation == &show_all_buttons_animation_ ||
-      animation == &hide_all_buttons_animation_) {
-    double animation_current_value = animation->GetCurrentValue();
-
-    // Update the animation current value when running "hide" annimations. Since
-    // `hide_all_buttons_animation_` uses `gfx::LinearAnimation`, which goes
-    // from 0.0 to 1.0.
-    if (animation == &hide_all_buttons_animation_) {
-      animation_current_value = 1.0 - animation_current_value;
-    }
-    if (back_to_tab_button_) {
-      back_to_tab_button_->layer()->SetOpacity(animation_current_value);
-    }
-    close_image_button_->layer()->SetOpacity(animation_current_value);
-    return;
-  }
-
-  // If there are no visible content setting views, return, since show/hide all
-  // buttons animation has already taken care of animating all buttons.
-  if (!HasAnyVisibleContentSettingViews()) {
-    return;
-  }
-
-  if (animation == &show_back_to_tab_button_animation_ ||
-      animation == &hide_back_to_tab_button_animation_) {
-    CHECK(back_to_tab_button_);
-    back_to_tab_button_->layer()->SetOpacity(animation->GetCurrentValue());
-    return;
-  }
-
-  CHECK(animation == &show_close_button_animation_ ||
-        animation == &hide_close_button_animation_);
-  close_image_button_->layer()->SetOpacity(animation->GetCurrentValue());
+const ui::ColorProvider*
+PictureInPictureBrowserFrameView::GetTopBarColorProvider() const {
+  return GetColorProvider();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1131,66 +979,10 @@ void PictureInPictureBrowserFrameView::UpdateContentSettingsIcons() {
 }
 
 void PictureInPictureBrowserFrameView::UpdateTopBarView(bool render_active) {
-  // Check if the update is needed to avoid redundant animations.
-  if (render_active_ == render_active) {
-    return;
-  }
-
-  render_active_ = render_active;
-
-  bool has_any_visible_content_setting_views =
-      HasAnyVisibleContentSettingViews();
-
-  // Stop the previous animations since if this function is called too soon,
-  // previous animations may override the new animations.
-  if (render_active_) {
-    move_camera_button_to_right_animation_.Stop();
-    if (has_any_visible_content_setting_views) {
-      if (back_to_tab_button_) {
-        hide_back_to_tab_button_animation_.Stop();
-      }
-      hide_close_button_animation_.Stop();
-    } else {
-      hide_all_buttons_animation_.Stop();
-    }
-
-    top_bar_color_animation_.Show();
-
-    // SlideAnimation needs to be reset if only Show() is called.
-    move_camera_button_to_left_animation_.Reset(0.0);
-    move_camera_button_to_left_animation_.Show();
-
-    if (has_any_visible_content_setting_views) {
-      if (back_to_tab_button_) {
-        show_back_to_tab_button_animation_.Start();
-      }
-      show_close_button_animation_.Start();
-    } else {
-      show_all_buttons_animation_.Start();
-    }
-  } else {
-    move_camera_button_to_left_animation_.Stop();
-
-    if (has_any_visible_content_setting_views) {
-      if (back_to_tab_button_) {
-        show_back_to_tab_button_animation_.Stop();
-      }
-      show_close_button_animation_.Stop();
-    } else {
-      show_all_buttons_animation_.Stop();
-    }
-
-    top_bar_color_animation_.Hide();
-    move_camera_button_to_right_animation_.Start();
-    if (has_any_visible_content_setting_views) {
-      if (back_to_tab_button_) {
-        hide_back_to_tab_button_animation_.Start();
-      }
-      hide_close_button_animation_.Start();
-    } else {
-      hide_all_buttons_animation_.Start();
-    }
-  }
+  // Pass the target state into the controller and let it handle overlapping
+  // start/stop transitions and animations automatically. Mirrors
+  // DocumentPipFrameView.
+  animation_controller_->SetTopBarActiveStatus(render_active);
 }
 
 gfx::Insets PictureInPictureBrowserFrameView::ResizeBorderInsets() const {
@@ -1236,32 +1028,14 @@ bool PictureInPictureBrowserFrameView::HasAnyVisibleContentSettingViews()
 // Helper functions for testing.
 std::vector<gfx::Animation*>
 PictureInPictureBrowserFrameView::GetRenderActiveAnimationsForTesting() {
-  DCHECK(render_active_);
-  std::vector<gfx::Animation*> animations(
-      {&top_bar_color_animation_, &move_camera_button_to_left_animation_,
-       &show_close_button_animation_});
-  if (back_to_tab_button_) {
-    animations.push_back(&show_back_to_tab_button_animation_);
-  }
-  if (!HasAnyVisibleContentSettingViews()) {
-    animations.push_back(&show_all_buttons_animation_);
-  }
-  return animations;
+  return animation_controller_
+      ->GetActiveTransitionAnimationsForTesting();  // IN-TEST
 }
 
 std::vector<gfx::Animation*>
 PictureInPictureBrowserFrameView::GetRenderInactiveAnimationsForTesting() {
-  DCHECK(!render_active_);
-  std::vector<gfx::Animation*> animations(
-      {&top_bar_color_animation_, &move_camera_button_to_right_animation_,
-       &hide_close_button_animation_});
-  if (back_to_tab_button_) {
-    animations.push_back(&hide_back_to_tab_button_animation_);
-  }
-  if (!HasAnyVisibleContentSettingViews()) {
-    animations.push_back(&hide_all_buttons_animation_);
-  }
-  return animations;
+  return animation_controller_
+      ->GetInactiveTransitionAnimationsForTesting();  // IN-TEST
 }
 
 views::View* PictureInPictureBrowserFrameView::GetBackToTabButtonForTesting() {
