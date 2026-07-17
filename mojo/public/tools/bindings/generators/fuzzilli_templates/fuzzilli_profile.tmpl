@@ -15,6 +15,14 @@ private static let mojoPrefix = "{{module.namespace}}."
 ///
 {% include "interfaces.tmpl" %}
 
+{%- if arrays %}
+
+///
+/// Arrays
+///
+{% include "arrays.tmpl" %}
+{%- endif %}
+
 ///
 /// Generators
 ///

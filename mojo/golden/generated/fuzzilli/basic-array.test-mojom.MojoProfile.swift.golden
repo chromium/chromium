@@ -22,6 +22,12 @@ extension ILType {
         withProperties: ["$"],
         withMethods: [
             "get",
+            "syncGetBools",
+            "syncGetStrings",
+            "getBools",
+            "getStrings",
+            "passFloats",
+            "passInts",
         ])
     fileprivate static let jsGoldenPrimaryRemoteWrapper: ILType = .object(
         ofGroup: "golden.PrimaryRemoteWrapper",
@@ -41,6 +47,20 @@ extension ObjectGroup {
                 .plain(.jsGoldenEntryArray),
                 .plain(.integer),
             ] => .jsPromise,
+            "syncGetBools": [
+            ] => .jsPromise,
+            "syncGetStrings": [
+            ] => .jsPromise,
+            "getBools": [
+            ] => .jsPromise,
+            "getStrings": [
+            ] => .jsPromise,
+            "passFloats": [
+                .plain(.jsFloatArray),
+            ] => .undefined,
+            "passInts": [
+                .plain(.jsIntegerArray),
+            ] => .undefined,
         ]
     )
 
@@ -61,6 +81,72 @@ extension ObjectGroup {
         properties: [:],
         methods: [:]
     )
+}
+
+///
+/// Arrays
+///
+extension ILType {
+    fileprivate static let jsGoldenEntryArray: ILType =
+        .createJsArrayType(ofElementType: .jsGoldenEntry)
+    fileprivate static let jsBooleanArray: ILType =
+        .createJsArrayType(ofElementType: .jsBooleanElement)
+    fileprivate static let jsStringArray: ILType =
+        .createJsArrayType(ofElementType: .jsStringElement)
+    fileprivate static let jsFloatArray: ILType =
+        .createJsArrayType(ofElementType: .jsFloatElement)
+    fileprivate static let jsIntegerArray: ILType =
+        .createJsArrayType(ofElementType: .jsIntegerElement)
+}
+private let MojoGoldenEntryArrayGenerator = CodeGenerator(
+    "MojoGoldenEntryArrayGenerator",
+    inputs: .required(.jsGoldenEntry),
+    produces: [.jsGoldenEntryArray]
+) { b, elem in
+    b.createArray(
+        with: [elem],
+        elementGroupName:
+            ObjectGroup.goldenEntry.group.name)
+}
+private let MojoBooleanArrayGenerator = CodeGenerator(
+    "MojoBooleanArrayGenerator",
+    inputs: .required(.boolean),
+    produces: [.jsBooleanArray]
+) { b, elem in
+    b.createArray(
+        with: [elem],
+        elementGroupName:
+            ObjectGroup.booleanElement.group.name)
+}
+private let MojoStringArrayGenerator = CodeGenerator(
+    "MojoStringArrayGenerator",
+    inputs: .required(.string),
+    produces: [.jsStringArray]
+) { b, elem in
+    b.createArray(
+        with: [elem],
+        elementGroupName:
+            ObjectGroup.stringElement.group.name)
+}
+private let MojoFloatArrayGenerator = CodeGenerator(
+    "MojoFloatArrayGenerator",
+    inputs: .required(.float),
+    produces: [.jsFloatArray]
+) { b, elem in
+    b.createArray(
+        with: [elem],
+        elementGroupName:
+            ObjectGroup.floatElement.group.name)
+}
+private let MojoIntegerArrayGenerator = CodeGenerator(
+    "MojoIntegerArrayGenerator",
+    inputs: .required(.integer),
+    produces: [.jsIntegerArray]
+) { b, elem in
+    b.createArray(
+        with: [elem],
+        elementGroupName:
+            ObjectGroup.integerElement.group.name)
 }
 
 ///
@@ -165,6 +251,11 @@ let mojoPrimaryProfile = Profile(
     additionalCodeGenerators: [
         (MojoMethodCallGenerator, 10000),
         (MojoPropertyRetrievalGenerator, 10000),
+        (MojoGoldenEntryArrayGenerator, 1),
+        (MojoBooleanArrayGenerator, 1),
+        (MojoStringArrayGenerator, 1),
+        (MojoFloatArrayGenerator, 1),
+        (MojoIntegerArrayGenerator, 1),
     ] + commonMojoCodeGenerators,
     additionalProgramTemplates: WeightedList([]),
     disabledCodeGenerators: mojoDisabledGenerators,

@@ -5,6 +5,17 @@ module golden;
 
 interface Primary {
   Get(array<Entry> token_arr, int32 index) => (Entry result);
+
+  [Sync]
+  SyncGetBools() => (array<bool> bools);
+
+  [Sync]
+  SyncGetStrings() => (array<string> strings);
+
+  GetBools() => (array<bool> bools);
+  GetStrings() => (array<string> strings);
+  PassFloats(array<float> floats);
+  PassInts(array<int32> ints);
 };
 
 struct Entry {};

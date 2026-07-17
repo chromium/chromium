@@ -53,6 +53,7 @@ class Generator(generator.Generator):
     self.primary_interface = None
     self.interface_remotes = {}
     self.interface_receivers = {}
+    self.arrays = {}
 
   def GetFilters(self):
     return {
@@ -79,6 +80,7 @@ class Generator(generator.Generator):
         "primary": self.primary_interface,
         "interface_remotes": list(self.interface_remotes.values()),
         "interface_receivers": list(self.interface_receivers.values()),
+        "arrays": list(self.arrays.values()),
     }
 
   def _IsIgnoredType(self, kind):
@@ -90,8 +92,17 @@ class Generator(generator.Generator):
     if self._IsIgnoredType(kind):
       return
 
-    if mojom.IsAnyInterfaceKind(kind):
+    if mojom.IsArrayKind(kind):
+      self._CollectArray(kind, is_in_js)
+    elif mojom.IsAnyInterfaceKind(kind):
       self._CollectInterface(kind, is_in_js)
+
+  def _CollectArray(self, array, is_in_js):
+    name = self._FormatUniqueName(array.kind)
+    if name in self.arrays:
+      return
+    self.arrays[name] = array
+    self._CollectInterfaceAndTypes(array.kind, is_in_js)
 
   # Marks the interface as a remote or receiver depending on which "side"
   # (JS or browser) the interface is used from. The `is_in_js` parameter
@@ -153,12 +164,17 @@ class Generator(generator.Generator):
   def _FormatUniqueName(self, kind, primitive_with_suffix=False):
     if kind in PRIMITIVES_MAPPING:
       name = generator.ToCamel(PRIMITIVES_MAPPING[kind])
-      return name if primitive_with_suffix else name + "Element"
+      return name + "Element" if primitive_with_suffix else name
 
-    prefix = "".join(
+    # Certain kinds, such as `Array`, do not have a `module` attribute
+    prefix = "" if not kind.module else "".join(
         generator.ToCamel(part) for part in kind.module.namespace.split("."))
 
     if mojom.IsArrayKind(kind):
+      # Despite the lack of a prefix, the element's unique name ensures that
+      # the name of the array is unique within each profile. If two modules
+      # have the same array (e.g., `FooArray`), the name's will not collide
+      # as the `ILType` definitions are `fileprivate`.
       return f"{self._FormatUniqueName(kind.kind)}Array"
 
     if self._IsAnyPendingRemoteKind(kind) or self._IsAnyPendingReceiverKind(

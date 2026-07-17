@@ -1,0 +1,21 @@
+extension ILType {
+{%- for array in arrays %}
+    fileprivate static let {{array|format_il_type}}: ILType =
+        .createJsArrayType(ofElementType: .{{array.kind|format_il_type(primitive_with_suffix=True)}})
+{%- endfor %}
+}
+
+{%- for array in arrays %}
+private let Mojo{{array|format_unique_name}}Generator = CodeGenerator(
+    "Mojo{{array|format_unique_name}}Generator",
+    inputs: .required(.{{array.kind|format_il_type}}),
+    produces: [.{{array|format_il_type}}]
+) { b, elem in
+    b.createArray(
+        with: [elem],
+        elementGroupName:
+            ObjectGroup.
+                {{- array.kind|format_unique_name(primitive_with_suffix=True)|to_camel(True) -}}
+                .group.name)
+}
+{%- endfor %}
