@@ -11,7 +11,7 @@ ADDRESS_HOME_LINE2 | a2 | 주소 2: |  | ln_1
 ADDRESS_HOME_CITY | ct | 시군구: |  | ln_1
 ADDRESS_HOME_CITY | ct2 | 시·군·구: |  | ln_1
 ADDRESS_HOME_ZIP | zc | 우편번호: |  | ln_1
-ADDRESS_HOME_ZIP | zc2 | 우편 번호: |  | ln_1
+UNKNOWN_TYPE | zc2 | 우편 번호: |  | ln_1
 ADDRESS_HOME_STATE | st | 시도: |  | ln_1
 ADDRESS_HOME_STATE | st2 | 시・도: |  | ln_1
 EMAIL_ADDRESS | em | Email: |  | ln_1

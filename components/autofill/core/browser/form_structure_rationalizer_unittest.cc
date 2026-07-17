@@ -1342,6 +1342,27 @@ TEST_F(RationalizeRepeatedZipTest, TwoConsecutiveZipMaxLengthNotSet) {
                             ADDRESS_HOME_CITY));
 }
 
+// Tests that the second consecutive ADDRESS_HOME_ZIP field is rationalized to
+// UNKNOWN_TYPE if its source of prediction is heuristic and conditions
+// to rationalize to zip prefix/suffix did not match.
+TEST_F(RationalizeRepeatedZipTest, TwoConsecutiveHeuristicZip) {
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure({
+      {.label = "Full Name", .name = "fullName", .server_type = NAME_FULL},
+      {.label = "Zip",
+       .name = "zip",
+       .server_type = NO_SERVER_DATA,
+       .heuristic_type = ADDRESS_HOME_ZIP},
+      {.label = "Zip",
+       .name = "zip",
+       .server_type = NO_SERVER_DATA,
+       .heuristic_type = ADDRESS_HOME_ZIP},
+      {.label = "City", .name = "city", .server_type = ADDRESS_HOME_CITY},
+  });
+  EXPECT_THAT(GetTypes(*form_structure),
+              FieldTypesAre(NAME_FULL, ADDRESS_HOME_ZIP, UNKNOWN_TYPE,
+                            ADDRESS_HOME_CITY));
+}
+
 // Tests that 3 consecutive ADDRESS_HOME_ZIP fields are not affected
 // by the rationalization.
 TEST_F(RationalizeRepeatedZipTest, ThreeConsecutiveZip) {

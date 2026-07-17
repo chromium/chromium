@@ -1045,6 +1045,17 @@ void FormStructureRationalizer::RationalizeRepeatedZipCodeFields(
                           AutofillPredictionSource::kRationalization);
       second_zip.SetTypeTo(AutofillType(ADDRESS_HOME_ZIP_SUFFIX),
                            AutofillPredictionSource::kRationalization);
+    } else if (second_zip.PredictionSource() ==
+               AutofillPredictionSource::kHeuristics) {
+      // Prevents filling the full zip code twice when repeated zip fields don't
+      // qualify as a prefix/suffix pair. This only applies to heuristics, since
+      // the confidence in other prediction sources is higher.
+      LOG_AF(log_manager)
+          << LoggingScope::kRationalization << LogMessage::kRationalization
+          << "Zip Code Rationalization: Converting sequence of (zip, "
+             "zip) to (zip, unknown)";
+      second_zip.SetTypeTo(AutofillType(UNKNOWN_TYPE),
+                           AutofillPredictionSource::kRationalization);
     }
   }
 }
