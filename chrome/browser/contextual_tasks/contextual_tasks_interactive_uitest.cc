@@ -28,6 +28,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_web_view.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -56,6 +57,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
@@ -767,12 +769,16 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
         // The click detaches this tab's WebContents into the side panel, so the
         // element disappears mid-stop; fire-and-forget to avoid kElementHidden.
         ExecuteJsAt(kInnerWebContentsId, kThreadLink, "el => el.click()",
-                         ExecuteJsMode::kFireAndForget),
+                    ExecuteJsMode::kFireAndForget),
         WaitForShow(kContextualTasksSidePanelWebViewElementId),
         UninstrumentWebContents(kInnerWebContentsId,
                                 /*fail_if_not_instrumented=*/false),
-        InstrumentNonTabWebView(side_panel_id,
-                                kContextualTasksSidePanelWebViewElementId,
+        NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                         "SidePanelContentWebViewName",
+                         [](ContextualTasksWebView* web_view) -> views::View* {
+                           return web_view->content_web_view();
+                         }),
+        InstrumentNonTabWebView(side_panel_id, "SidePanelContentWebViewName",
                                 /*wait_for_ready=*/true),
         WaitForElementExists(side_panel_id, {"contextual-tasks-app"}),
         InstrumentInnerWebContents(kInnerWebContentsId, side_panel_id, 0));
@@ -1359,8 +1365,13 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
             omnibox::DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT);
       }),
       WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                       "SidePanelContentWebViewName",
+                       [](ContextualTasksWebView* web_view) -> views::View* {
+                         return web_view->content_web_view();
+                       }),
       InstrumentNonTabWebView(kSidePanelWebContentsId,
-                              kContextualTasksSidePanelWebViewElementId),
+                              "SidePanelContentWebViewName"),
       InstrumentInnerWebContents(kInnerWebContentsId, kSidePanelWebContentsId,
                                  0),
 
@@ -1424,8 +1435,13 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
             omnibox::DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT);
       }),
       WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                       "SidePanelContentWebViewName",
+                       [](ContextualTasksWebView* web_view) -> views::View* {
+                         return web_view->content_web_view();
+                       }),
       InstrumentNonTabWebView(kSidePanelWebContentsId,
-                              kContextualTasksSidePanelWebViewElementId),
+                              "SidePanelContentWebViewName"),
       InstrumentInnerWebContents(kInnerWebContentsId, kSidePanelWebContentsId,
                                  0),
 
@@ -1540,8 +1556,13 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTestWithChips,
             omnibox::DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT);
       }),
       WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                       "SidePanelContentWebViewName",
+                       [](ContextualTasksWebView* web_view) -> views::View* {
+                         return web_view->content_web_view();
+                       }),
       InstrumentNonTabWebView(kSidePanelWebContentsId,
-                              kContextualTasksSidePanelWebViewElementId),
+                              "SidePanelContentWebViewName"),
       InstrumentInnerWebContents(kInnerWebContentsId, kSidePanelWebContentsId,
                                  0),
 
@@ -1622,8 +1643,13 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTestWithChips,
             omnibox::DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT);
       }),
       WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                       "SidePanelContentWebViewName",
+                       [](ContextualTasksWebView* web_view) -> views::View* {
+                         return web_view->content_web_view();
+                       }),
       InstrumentNonTabWebView(kSidePanelWebContentsId,
-                              kContextualTasksSidePanelWebViewElementId),
+                              "SidePanelContentWebViewName"),
       InstrumentInnerWebContents(kInnerWebContentsId, kSidePanelWebContentsId,
                                  0),
 
@@ -2030,8 +2056,12 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksInteractiveUiTestParameterized,
     sequence = Steps(
         std::move(sequence),
         WaitForShow(kContextualTasksSidePanelWebViewElementId),
-        InstrumentNonTabWebView(kPrimaryTab2,
-                                kContextualTasksSidePanelWebViewElementId),
+        NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                         "SidePanelContentWebViewName",
+                         [](ContextualTasksWebView* web_view) -> views::View* {
+                           return web_view->content_web_view();
+                         }),
+        InstrumentNonTabWebView(kPrimaryTab2, "SidePanelContentWebViewName"),
         InstrumentInnerWebContents(kInnerWebContentsId2, kPrimaryTab2, 0),
         WaitForShow(kInnerWebContentsId2),
         WithElement(kInnerWebContentsId2,
@@ -2180,8 +2210,12 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksInteractiveUiTestParameterized,
     sequence = Steps(
         std::move(sequence),
         WaitForShow(kContextualTasksSidePanelWebViewElementId),
-        InstrumentNonTabWebView(kPrimaryTab2,
-                                kContextualTasksSidePanelWebViewElementId),
+        NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                         "SidePanelContentWebViewName",
+                         [](ContextualTasksWebView* web_view) -> views::View* {
+                           return web_view->content_web_view();
+                         }),
+        InstrumentNonTabWebView(kPrimaryTab2, "SidePanelContentWebViewName"),
         InstrumentInnerWebContents(kInnerWebContentsId2, kPrimaryTab2, 0),
         WaitForShow(kInnerWebContentsId2),
         WithElement(kInnerWebContentsId2,
@@ -2302,8 +2336,13 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
             omnibox::DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT);
       }),
       WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                       "SidePanelContentWebViewName",
+                       [](ContextualTasksWebView* web_view) -> views::View* {
+                         return web_view->content_web_view();
+                       }),
       InstrumentNonTabWebView(kSidePanelWebContentsId,
-                              kContextualTasksSidePanelWebViewElementId),
+                              "SidePanelContentWebViewName"),
       InstrumentInnerWebContents(kInnerWebContentsId, kSidePanelWebContentsId,
                                  0),
 

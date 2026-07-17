@@ -10,18 +10,41 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/view_type_utils.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_class_properties.h"
 
 namespace contextual_tasks {
 
 ContextualTasksWebView::ContextualTasksWebView(
-    content::BrowserContext* browser_context)
-    : views::WebView(browser_context) {
+    content::BrowserContext* browser_context) {
   SetProperty(views::kElementIdentifierKey,
               kContextualTasksSidePanelWebViewElementId);
+
+  if (base::FeatureList::IsEnabled(kContextualTasksSidePanelRearchitecture)) {
+    views::BoxLayout* layout =
+        SetLayoutManager(std::make_unique<views::BoxLayout>(
+            views::BoxLayout::Orientation::kVertical));
+
+    toolbar_web_view_ =
+        AddChildView(std::make_unique<views::WebView>(browser_context));
+    toolbar_web_view_->SetPreferredSize(gfx::Size(0, 40));
+
+    content_web_view_ =
+        AddChildView(std::make_unique<views::WebView>(browser_context));
+    layout->SetFlexForView(content_web_view_, 1);
+  } else {
+    SetLayoutManager(std::make_unique<views::FillLayout>());
+    content_web_view_ =
+        AddChildView(std::make_unique<views::WebView>(browser_context));
+  }
 }
 
 ContextualTasksWebView::~ContextualTasksWebView() {
@@ -33,26 +56,30 @@ base::WeakPtr<ContextualTasksWebView> ContextualTasksWebView::GetWeakPtr() {
 }
 
 void ContextualTasksWebView::SetWebContents(content::WebContents* wc) {
-  if (web_contents() == wc) {
+  if (content_web_view_->web_contents() == wc) {
     return;
   }
 
-  if (web_contents() && !web_contents()->IsBeingDestroyed()) {
-    web_contents()->WasHidden();
+  if (content_web_view_->web_contents()) {
+    if (!content_web_view_->web_contents()->IsBeingDestroyed()) {
+      content_web_view_->web_contents()->WasHidden();
+    }
+    content_web_view_->web_contents()->SetDelegate(nullptr);
   }
-  DetachWebContentsModalDialogManager(web_contents());
+  DetachWebContentsModalDialogManager(content_web_view_->web_contents());
 
   AttachWebContentsModalDialogManager(wc);
-  views::WebView::SetWebContents(wc);
+  content_web_view_->SetWebContents(wc);
 
   if (wc) {
     wc->WasShown();
-    // Set `this` as the delegate to handle media access permissions.
     wc->SetDelegate(this);
-    // Set ViewType::kComponent so `ChromeSpeechRecognitionManagerDelegate`
-    // allows speech recognition in `CheckRenderFrameType()`.
     extensions::SetViewType(wc, extensions::mojom::ViewType::kComponent);
   }
+}
+
+content::WebContents* ContextualTasksWebView::web_contents() const {
+  return content_web_view_ ? content_web_view_->web_contents() : nullptr;
 }
 
 void ContextualTasksWebView::RequestMediaAccessPermission(
@@ -118,5 +145,8 @@ void ContextualTasksWebView::DetachWebContentsModalDialogManager(
     dialog_manager->SetDelegate(nullptr);
   }
 }
+
+BEGIN_METADATA(ContextualTasksWebView)
+END_METADATA
 
 }  // namespace contextual_tasks
