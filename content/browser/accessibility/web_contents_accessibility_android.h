@@ -327,7 +327,8 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
 
   void UpdateFrameInfo(float page_scale);
 
-  bool IsNodeLikelyKnownByAndroidFrameworkForExperiment(int32_t unique_id);
+  virtual bool IsNodeLikelyKnownByAndroidFrameworkForExperiment(
+      int32_t unique_id);
 
   // Set a new max for TYPE_WINDOW_CONTENT_CHANGED events to fire.
   void SetMaxContentChangedEventsToFireForTesting(JNIEnv* env,
@@ -424,7 +425,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   void HandleCheckStateChanged(int32_t unique_id);
   void HandleClicked(int32_t unique_id);
   void HandleMenuOpened(int32_t unique_id);
-  void HandleWindowContentChange(int32_t unique_id, int32_t subType);
+  virtual void HandleWindowContentChange(int32_t unique_id, int32_t subType);
   void HandleScrollPositionChanged(int32_t unique_id);
   void HandleSortDirectionChanged(int32_t unique_id);
   void HandleScrolledToAnchor(int32_t unique_id);

@@ -88,6 +88,16 @@ class MockWebContentsAccessibilityAndroid
   explicit MockWebContentsAccessibilityAndroid(int64_t ax_tree_update_ptr)
       : WebContentsAccessibilityAndroid(ax_tree_update_ptr) {}
 
+  MOCK_METHOD(void,
+              HandleWindowContentChange,
+              (int32_t unique_id, int32_t subType),
+              (override));
+
+  MOCK_METHOD(bool,
+              IsNodeLikelyKnownByAndroidFrameworkForExperiment,
+              (int32_t unique_id),
+              (override));
+
   BrowserAccessibilityAndroid* GetAXFromUniqueIDForTesting(
       int32_t unique_id) const {
     return GetAXFromUniqueID(unique_id);
@@ -2106,6 +2116,73 @@ TEST_F(BrowserAccessibilityAndroidTest, TestIsSelectionContextBoundary) {
   EXPECT_TRUE(video_node->IsSelectionContextBoundary());
   EXPECT_TRUE(audio_node->IsSelectionContextBoundary());
   EXPECT_FALSE(paragraph_node->IsSelectionContextBoundary());
+}
+
+TEST_F(BrowserAccessibilityAndroidTest, TestIsNodeLikelyKnownFilter) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kAccessibilityRequestScopedContentChangedEvents,
+      {{"prevent_window_content_changes_for_nodes_not_likely_in_android",
+        "true"}});
+
+  int kKnownNodeId = 11;
+  ui::AXNodeData known_node;
+  known_node.id = kKnownNodeId;
+  known_node.role = ax::mojom::Role::kGenericContainer;
+
+  int kUnknownNodeId = 12;
+  ui::AXNodeData unknown_node;
+  unknown_node.id = kUnknownNodeId;
+  unknown_node.role = ax::mojom::Role::kGenericContainer;
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {kKnownNodeId, kUnknownNodeId};
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          MakeAXTreeUpdateForTesting(root, known_node, unknown_node),
+          node_id_delegate_, test_browser_accessibility_delegate_.get()));
+
+  BrowserAccessibilityManagerAndroid* manager_android =
+      ToBrowserAccessibilityManagerAndroid(manager.get());
+
+  ui::BrowserAccessibility* b_known_node = manager->GetFromID(kKnownNodeId);
+  ui::BrowserAccessibility* b_unknown_node = manager->GetFromID(kUnknownNodeId);
+
+  // Get the unique IDs used by WebContentsAccessibility.
+  int32_t known_unique_id =
+      static_cast<BrowserAccessibilityAndroid*>(b_known_node)->GetUniqueId();
+  int32_t unknown_unique_id =
+      static_cast<BrowserAccessibilityAndroid*>(b_unknown_node)->GetUniqueId();
+
+  // Set up expectations for IsNodeLikelyKnownByAndroidFrameworkForExperiment.
+  EXPECT_CALL(mock_web_contents_accessibility_android_,
+              IsNodeLikelyKnownByAndroidFrameworkForExperiment(known_unique_id))
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(
+      mock_web_contents_accessibility_android_,
+      IsNodeLikelyKnownByAndroidFrameworkForExperiment(unknown_unique_id))
+      .WillRepeatedly(testing::Return(false));
+
+  // The known node should trigger a single call to HandleWindowContentChange.
+  EXPECT_CALL(mock_web_contents_accessibility_android_,
+              HandleWindowContentChange(known_unique_id, testing::_))
+      .Times(1);
+
+  // The unknown node should NOT trigger a call to HandleWindowContentChange.
+  EXPECT_CALL(mock_web_contents_accessibility_android_,
+              HandleWindowContentChange(unknown_unique_id, testing::_))
+      .Times(0);
+
+  // Test name changed event on known node
+  manager_android->FireGeneratedEvent(ui::AXEventGenerator::Event::NAME_CHANGED,
+                                      b_known_node->node());
+
+  // Test name changed event on unknown node
+  manager_android->FireGeneratedEvent(ui::AXEventGenerator::Event::NAME_CHANGED,
+                                      b_unknown_node->node());
 }
 
 }  // namespace content
