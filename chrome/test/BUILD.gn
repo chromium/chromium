@@ -6552,8 +6552,6 @@ test("unit_tests") {
     # !is_android
     sources += [
       "../browser/browser_commands_unittest.cc",
-      "../browser/safe_browsing/generated_safe_browsing_pref_unittest.cc",
-      "../browser/safe_browsing/generated_security_settings_bundle_pref_unittest.cc",
       "../browser/ui/accelerator_table_unittest.cc",
       "../browser/ui/browser_command_controller_unittest.cc",
       "../browser/ui/browser_manager_service_factory_unittest.cc",
