@@ -73,6 +73,8 @@ int AutocompleteClassifier::DefaultOmniboxProviders(bool is_low_memory_device) {
 #endif
 #if BUILDFLAG(IS_ANDROID)
       AutocompleteProvider::TYPE_VOICE_SUGGEST |
+      // For Desktop Android's Lens Overlay integration.
+      AutocompleteProvider::TYPE_CONTEXTUAL_SEARCH |
       // Only enabled for hub search.
       AutocompleteProvider::TYPE_OPEN_TAB |
       // Only enabled for hub search.
