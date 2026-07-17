@@ -252,4 +252,52 @@ TEST_F(BnplPopupRowViewTest, UnlinkedIssuer_NoLinkedPill) {
   EXPECT_THAT(pill, IsNull());
 }
 
+// Tests that AtMemory suggestions ignore filter match bolding even when a
+// filter match is provided to CreatePopupRowView.
+TEST_F(PopupRowFactoryUtilsTest, AtMemorySuggestionIgnoresFilterMatchBolding) {
+  Suggestion atmemory_suggestion(u"@memory query text search",
+                                 SuggestionType::kAtMemorySearchAffordance);
+  AutofillPopupController::SuggestionFilterMatch filter_match{
+      .main_text_match = gfx::Range(0, 25)};
+
+  // Helper lambda to recursively find the main text Label view.
+  auto find_main_text_label = [](auto& self,
+                                 views::View* view) -> views::Label* {
+    for (views::View* child : view->children()) {
+      if (auto* label = views::AsViewClass<views::Label>(child)) {
+        return label;
+      }
+      if (auto* found = self(self, child)) {
+        return found;
+      }
+    }
+    return nullptr;
+  };
+
+  // Create content view directly WITH filter_match applied (bolded).
+  std::unique_ptr<PopupRowContentView> content_view_with_bolding =
+      CreatePopupRowContentView(atmemory_suggestion,
+                                /*show_new_badge=*/std::nullopt,
+                                FillingProduct::kAtMemory, filter_match);
+  views::Label* bolded_label = find_main_text_label(
+      find_main_text_label, content_view_with_bolding.get());
+  ASSERT_THAT(bolded_label, NotNull());
+  int bolded_width = bolded_label->GetPreferredSize().width();
+
+  // Populate controller suggestions so CreatePopupRowView can query index 0
+  // for the AtMemory suggestion when creating the row view with filter_match.
+  controller().set_suggestions({atmemory_suggestion});
+  auto row_view =
+      CreatePopupRowView(controller().GetWeakPtr(), a11y_selection_delegate(),
+                         selection_delegate(), 0, filter_match);
+  views::Label* atmemory_label =
+      find_main_text_label(find_main_text_label, &row_view->GetContentView());
+  ASSERT_THAT(atmemory_label, NotNull());
+  int atmemory_label_width = atmemory_label->GetPreferredSize().width();
+
+  // Verify that AtMemory main text label is narrower than the bolded version
+  // because filter_match bolding was ignored.
+  EXPECT_LT(atmemory_label_width, bolded_width);
+}
+
 }  // namespace autofill
