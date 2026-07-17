@@ -341,10 +341,8 @@ void CSSPseudoElementsCacheData::CacheCSSPseudoElement(
     const AtomicString& pseudo_argument,
     CSSPseudoElement& pseudo_element) {
   PseudoElementCacheKey key(pseudo_id, pseudo_argument);
-  auto it = pseudo_elements_map_.find(key);
-  if (it != pseudo_elements_map_.end()) {
-    return;
-  }
+  // insert() keeps any existing entry, so the first cached pseudo-element for
+  // a key stays cached.
   pseudo_elements_map_.insert(key, &pseudo_element);
 }
 

@@ -175,18 +175,20 @@ HeapVector<Member<Element>> ScrollMarkerChooser::ComputeTargetPositions(
   // Update the target positions to account for unreachable targets.
   double before_range_start = min_position_;
   for (auto& target : before_targets) {
-    double previous_target_position = target_positions.at(target);
+    auto it = target_positions.find(target);
+    double previous_target_position = it->value;
     double current_target_position =
         ((previous_target_position - *min_candidate_position) /
          (before_range_start + distribute_range - *min_candidate_position)) *
             distribute_range +
         before_range_start;
-    target_positions.Set(target, current_target_position);
+    it->value = current_target_position;
   }
 
   double after_range_start = max_position_ - distribute_range;
   for (auto& target : after_targets) {
-    double previous_target_position = target_positions.at(target);
+    auto it = target_positions.find(target);
+    double previous_target_position = it->value;
     double current_target_position =
         ((previous_target_position - (after_range_start)) /
          (*max_candidate_position - (after_range_start))) *

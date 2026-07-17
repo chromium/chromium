@@ -102,15 +102,13 @@ inline void UserActionElementSet::ClearFlags(Element* element, unsigned flags) {
 }
 
 inline void UserActionElementSet::SetFlags(Element* element, unsigned flags) {
-  ElementFlagMap::iterator result = elements_.find(element);
-  if (result != elements_.end()) {
+  ElementFlagMap::AddResult result = elements_.insert(element, flags);
+  if (result.is_new_entry) {
+    element->SetUserActionElement(true);
+  } else {
     DCHECK(element->IsUserActionElement());
-    result->value |= flags;
-    return;
+    result.stored_value->value |= flags;
   }
-
-  element->SetUserActionElement(true);
-  elements_.insert(element, flags);
 }
 
 void UserActionElementSet::Trace(Visitor* visitor) const {
