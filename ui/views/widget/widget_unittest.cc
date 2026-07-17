@@ -18,6 +18,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/gtest_util.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -6467,10 +6468,18 @@ namespace {
 
 class WidgetModalVisibilityObserver : public WidgetObserver {
  public:
-  MOCK_METHOD(void,
-              OnWidgetWindowModalVisibilityChanged,
-              (Widget*, bool),
-              (override));
+  void OnWidgetWindowModalVisibilityChanged(Widget* widget,
+                                            bool visible) override {
+    last_visibility_ = visible;
+    change_count_++;
+  }
+
+  std::optional<bool> last_visibility() const { return last_visibility_; }
+  size_t change_count() const { return change_count_; }
+
+ private:
+  std::optional<bool> last_visibility_;
+  size_t change_count_ = 0;
 };
 
 }  // namespace
@@ -6493,28 +6502,27 @@ TEST_F(WidgetTest, ChildWidgetNotifiesModalVisibilityChanged) {
   child_widget->Init(std::move(params));
 
   // Sequence: show -> hide -> show -> destroy.
-  testing::InSequence seq;
-  EXPECT_CALL(observer,
-              OnWidgetWindowModalVisibilityChanged(widget.get(), true));
-  EXPECT_CALL(observer,
-              OnWidgetWindowModalVisibilityChanged(widget.get(), false));
-  EXPECT_CALL(observer,
-              OnWidgetWindowModalVisibilityChanged(widget.get(), true));
-  EXPECT_CALL(observer,
-              OnWidgetWindowModalVisibilityChanged(widget.get(), false));
+  child_widget->Show();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return observer.last_visibility() == true; }));
+  EXPECT_EQ(1u, observer.change_count());
 
-  WidgetVisibleWaiter waiter(child_widget.get());
-  child_widget->Show();
-  waiter.Wait();
   child_widget->Hide();
-  waiter.WaitUntilInvisible();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return observer.last_visibility() == false; }));
+  EXPECT_EQ(2u, observer.change_count());
+
   child_widget->Show();
-  waiter.Wait();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return observer.last_visibility() == true; }));
+  EXPECT_EQ(3u, observer.change_count());
+
   // Destroy the child widget, the parent should be notified about child modal
   // visibility change.
   child_widget.reset();
-  // No need to wait for visibility change because the widget is already
-  // destroyed.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return observer.last_visibility() == false; }));
+  EXPECT_EQ(4u, observer.change_count());
 
   widget->RemoveObserver(&observer);
 }

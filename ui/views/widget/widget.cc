@@ -1704,8 +1704,6 @@ void Widget::OnWindowModalVisibilityChanged(bool visible) {
   //   NativeWidgetMacNSWindowHost::OnSheetModalShown/Closed.
   // - Others: initiated by child Widget, i.e.,
   //   Widget::OnNativeWidgetVisibilityChanged.
-  // - all platforms: initiated by a CLIENT_OWNS_WIDGET child Widget when the
-  //   client destroys it.
   // TODO(crbug.com/450705434): on Windows and Linux the file select dialog is
   // also non-views dialog. Send the notification on showing and closing such
   // dialogs too.
@@ -2866,13 +2864,6 @@ void Widget::HandleWidgetDestroyed() {
   CHECK(widget_destroying_handled_);
   if (native_widget_destroyed_) {
     return;
-  }
-
-  // The widget can still be visible. This happens on macOS when
-  // the client destroys a CLIENT_OWNS_WIDGET widget. The OS has no
-  // chance to send us a visibility change event.
-  if (IsVisible()) {
-    MaybeNotifyParentAboutWindowModalVisibilityChanged(false);
   }
 
   ax_mode_observation_.Reset();
