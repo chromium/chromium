@@ -6,11 +6,11 @@
 
 #import "base/check.h"
 #import "base/metrics/histogram_functions.h"
-#import "base/metrics/puma_histogram_functions.h"
 #import "base/time/time.h"
 #import "components/activity_reporter/activity_reporter.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/metrics/private_metrics/puma_histogram_functions.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
@@ -126,8 +126,8 @@
 
   // Records true each time Session.TotalDuration is supposed to be recorded
   // in a PUMA histogram. Allowing for the count to be collected.
-  base::PumaHistogramBoolean(
-      base::PumaType::kRc,
+  metrics::private_metrics::PumaHistogramBoolean(
+      metrics::private_metrics::PumaType::kRc,
       "PUMA.RegionalCapabilities.Session.TotalDuration.Recorded", true);
 
   _sessionStartTimestamp = base::TimeTicks();

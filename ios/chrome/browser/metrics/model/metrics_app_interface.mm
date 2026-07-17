@@ -7,7 +7,6 @@
 #import <memory>
 #import <string>
 
-#import "base/metrics/puma_histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/user_action_tester.h"
@@ -17,6 +16,7 @@
 #import "components/metrics/dwa/dwa_service.h"
 #import "components/metrics/metrics_service.h"
 #import "components/metrics/private_metrics/private_metrics_reporting_service.h"
+#import "components/metrics/private_metrics/puma_histogram_functions.h"
 #import "components/metrics/private_metrics/puma_service.h"
 #import "components/metrics_services_manager/metrics_services_manager.h"
 #import "components/network_time/network_time_tracker.h"
@@ -260,11 +260,13 @@ metrics::MetricsService* GetMetricsService() {
 }
 
 + (void)recordTestPumaMetric {
-  base::PumaHistogramBoolean(base::PumaType::kRc, kTestBooleanHistogram, true);
-  base::PumaHistogramExactLinear(base::PumaType::kRc, kTestLinearHistogram, 50,
-                                 101);
-  base::PumaHistogramEnumeration(base::PumaType::kRc, kTestEnumHistogram,
-                                 TestEnum::kValueA);
+  metrics::private_metrics::PumaHistogramBoolean(
+      metrics::private_metrics::PumaType::kRc, kTestBooleanHistogram, true);
+  metrics::private_metrics::PumaHistogramExactLinear(
+      metrics::private_metrics::PumaType::kRc, kTestLinearHistogram, 50, 101);
+  metrics::private_metrics::PumaHistogramEnumeration(
+      metrics::private_metrics::PumaType::kRc, kTestEnumHistogram,
+      TestEnum::kValueA);
 }
 
 + (void)flushPumaService {

@@ -6,9 +6,9 @@
 
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_snapshot_manager.h"
-#include "base/metrics/puma_histogram_functions.h"
 #include "base/metrics/statistics_recorder.h"
 #include "components/metrics/histogram_encoder.h"
+#include "components/metrics/private_metrics/puma_histogram_functions.h"
 
 namespace metrics::private_metrics {
 
@@ -27,7 +27,7 @@ void PumaHistogramEncoder::RecordDelta(const base::HistogramBase& histogram,
 
 // static
 void PumaHistogramEncoder::EncodeHistogramDeltas(
-    base::PumaType puma_type,
+    PumaType puma_type,
     PrivateUserMetrics& puma_proto) {
   PumaHistogramEncoder encoder(puma_proto);
 

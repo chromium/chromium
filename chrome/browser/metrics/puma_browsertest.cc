@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "base/metrics/puma_histogram_functions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -14,6 +13,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/country_codes/country_codes.h"
 #include "components/metrics/private_metrics/private_metrics_features.h"
+#include "components/metrics/private_metrics/puma_histogram_functions.h"
 #include "components/metrics/private_metrics/puma_service.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/prefs/pref_service.h"
@@ -150,12 +150,13 @@ class PumaBrowserTest : public SyncTest {
   }
 
   void RecordTestPumaMetric() {
-    base::PumaHistogramBoolean(base::PumaType::kRc, kTestBooleanHistogram,
-                               true);
-    base::PumaHistogramExactLinear(base::PumaType::kRc, kTestLinearHistogram,
-                                   50, 101);
-    base::PumaHistogramEnumeration(base::PumaType::kRc, kTestEnumHistogram,
-                                   TestEnum::kValueA);
+    metrics::private_metrics::PumaHistogramBoolean(
+        metrics::private_metrics::PumaType::kRc, kTestBooleanHistogram, true);
+    metrics::private_metrics::PumaHistogramExactLinear(
+        metrics::private_metrics::PumaType::kRc, kTestLinearHistogram, 50, 101);
+    metrics::private_metrics::PumaHistogramEnumeration(
+        metrics::private_metrics::PumaType::kRc, kTestEnumHistogram,
+        TestEnum::kValueA);
   }
 
   void FlushPumaService() {

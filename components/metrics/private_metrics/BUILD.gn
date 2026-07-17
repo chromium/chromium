@@ -30,6 +30,8 @@ component("private_metrics_recorders") {
   sources = [
     "dkm_recorder.cc",
     "dkm_recorder.h",
+    "puma_histogram_functions.cc",
+    "puma_histogram_functions.h",
   ]
   defines = [ "IS_PRIVATE_METRICS_RECORDERS_IMPL" ]
   public_deps = [
@@ -116,6 +118,7 @@ source_set("unit_tests") {
     "//components/metrics/private_metrics/puma_service_unittest.cc",
     "data_upload_config_downloader_unittest.cc",
     "dkm_entry_builder_unittest.cc",
+    "puma_histogram_functions_unittest.cc",
   ]
   deps = [
     ":private_metrics",

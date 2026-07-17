@@ -660,6 +660,7 @@ if (is_android) {
       "//components/location/android:settings",
       "//components/messages/android",
       "//components/messages/android:feature_flags",
+      "//components/metrics/private_metrics",
       "//components/module_installer/android:native",
       "//components/offline_pages/task",
       "//components/omnibox/browser",

@@ -4,7 +4,7 @@
 
 #include "components/metrics/private_metrics/puma_histogram_encoder.h"
 
-#include "base/metrics/puma_histogram_functions.h"
+#include "components/metrics/private_metrics/puma_histogram_functions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace metrics::private_metrics {
@@ -19,18 +19,18 @@ using ::private_metrics::PrivateUserMetrics;
 TEST(PumaHistogramEncoderTest, EncodesEmptyHistogramDeltas) {
   PrivateUserMetrics puma_proto;
 
-  PumaHistogramEncoder::EncodeHistogramDeltas(base::PumaType::kRc, puma_proto);
+  PumaHistogramEncoder::EncodeHistogramDeltas(PumaType::kRc, puma_proto);
 
   EXPECT_EQ(puma_proto.histogram_events_size(), 0);
 }
 
 TEST(PumaHistogramEncoderTest, EncodesHistogramDeltas) {
-  base::PumaHistogramExactLinear(
-      base::PumaType::kRc, "PumaHistogramEncoderTest.TestHistogram", 12, 100);
+  PumaHistogramExactLinear(PumaType::kRc,
+                           "PumaHistogramEncoderTest.TestHistogram", 12, 100);
 
   PrivateUserMetrics puma_proto;
 
-  PumaHistogramEncoder::EncodeHistogramDeltas(base::PumaType::kRc, puma_proto);
+  PumaHistogramEncoder::EncodeHistogramDeltas(PumaType::kRc, puma_proto);
 
   EXPECT_EQ(puma_proto.histogram_events_size(), 1);
 
@@ -42,22 +42,22 @@ TEST(PumaHistogramEncoderTest, EncodesHistogramDeltas) {
 }
 
 TEST(PumaHistogramEncoderTest, DoesNotDoubleEncodeHistogramDeltas) {
-  base::PumaHistogramBoolean(base::PumaType::kRc,
-                             "PumaHistogramEncoderTest.TestHistogram1", true);
+  PumaHistogramBoolean(PumaType::kRc, "PumaHistogramEncoderTest.TestHistogram1",
+                       true);
 
   PrivateUserMetrics puma_proto1;
-  PumaHistogramEncoder::EncodeHistogramDeltas(base::PumaType::kRc, puma_proto1);
+  PumaHistogramEncoder::EncodeHistogramDeltas(PumaType::kRc, puma_proto1);
   EXPECT_EQ(puma_proto1.histogram_events_size(), 1);
 
   PrivateUserMetrics puma_proto2;
-  PumaHistogramEncoder::EncodeHistogramDeltas(base::PumaType::kRc, puma_proto2);
+  PumaHistogramEncoder::EncodeHistogramDeltas(PumaType::kRc, puma_proto2);
   EXPECT_EQ(puma_proto2.histogram_events_size(), 0);
 
-  base::PumaHistogramBoolean(base::PumaType::kRc,
-                             "PumaHistogramEncoderTest.TestHistogram2", true);
+  PumaHistogramBoolean(PumaType::kRc, "PumaHistogramEncoderTest.TestHistogram2",
+                       true);
 
   PrivateUserMetrics puma_proto3;
-  PumaHistogramEncoder::EncodeHistogramDeltas(base::PumaType::kRc, puma_proto3);
+  PumaHistogramEncoder::EncodeHistogramDeltas(PumaType::kRc, puma_proto3);
   EXPECT_EQ(puma_proto3.histogram_events_size(), 1);
 }
 

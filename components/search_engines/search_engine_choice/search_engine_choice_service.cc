@@ -19,7 +19,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/puma_histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
 #include "base/not_fatal_until.h"
@@ -30,6 +29,7 @@
 #include "base/version.h"
 #include "base/version_info/version_info.h"
 #include "components/country_codes/country_codes.h"
+#include "components/metrics/private_metrics/puma_histogram_functions.h"
 #include "components/metrics/profile_metrics_service.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/policy_service.h"
@@ -305,8 +305,8 @@ void RecordLegacyStaticEligibilityInternal(
 
   profile_metrics_service.UmaHistogramEnumeration(
       kSearchEngineChoiceScreenProfileInitConditionsHistogram, condition);
-  base::PumaHistogramEnumeration(
-      base::PumaType::kRc,
+  metrics::private_metrics::PumaHistogramEnumeration(
+      metrics::private_metrics::PumaType::kRc,
       kPumaSearchChoiceScreenProfileInitConditionsHistogram, condition);
 }
 
@@ -763,9 +763,9 @@ void SearchEngineChoiceService::RecordTriggeringEligibility(
 
   profile_metrics_service_->UmaHistogramEnumeration(
       kSearchEngineChoiceScreenNavigationConditionsHistogram, condition);
-  base::PumaHistogramEnumeration(
-      base::PumaType::kRc, kPumaSearchChoiceScreenNavigationConditionsHistogram,
-      condition);
+  metrics::private_metrics::PumaHistogramEnumeration(
+      metrics::private_metrics::PumaType::kRc,
+      kPumaSearchChoiceScreenNavigationConditionsHistogram, condition);
 
   regional_capabilities::RecordTriggeringFunnelStageDetails(
       condition, *profile_metrics_service_);
@@ -784,8 +784,9 @@ void SearchEngineChoiceService::RecordChoiceScreenEvent(
 
   profile_metrics_service_->UmaHistogramEnumeration(
       kSearchEngineChoiceScreenEventsHistogram, event);
-  base::PumaHistogramEnumeration(base::PumaType::kRc,
-                                 kPumaSearchChoiceScreenEventsHistogram, event);
+  metrics::private_metrics::PumaHistogramEnumeration(
+      metrics::private_metrics::PumaType::kRc,
+      kPumaSearchChoiceScreenEventsHistogram, event);
 
   if (event == SearchEngineChoiceScreenEvents::kChoiceScreenWasDisplayed ||
       event == SearchEngineChoiceScreenEvents::kFreChoiceScreenWasDisplayed ||

@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/metrics/puma_histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
@@ -28,6 +27,7 @@
 #include "components/activity_reporter/activity_reporter.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
+#include "components/metrics/private_metrics/puma_histogram_functions.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/ukm/ukm_service.h"
@@ -286,8 +286,8 @@ base::TimeDelta UmaSessionStats::SessionTimeTracker::EndForegroundSession() {
 
   // Records true each time Session.TotalDuration is supposed to be recorded
   // in a PUMA histogram. Allowing for the count to be collected.
-  base::PumaHistogramBoolean(
-      base::PumaType::kRc,
+  metrics::private_metrics::PumaHistogramBoolean(
+      metrics::private_metrics::PumaType::kRc,
       "PUMA.RegionalCapabilities.Session.TotalDuration.Recorded", true);
   g_browser_process->activity_reporter()->ReportActive();
   return duration;

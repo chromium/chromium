@@ -244,6 +244,7 @@ source_set("session_metrics_profile_agent") {
     "//base",
     "//components/activity_reporter",
     "//components/feature_engagement/public",
+    "//components/metrics/private_metrics",
     "//components/prefs",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/metrics/model",

@@ -9,7 +9,6 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_samples.h"
-#include "base/metrics/puma_histogram_functions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-spi.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,8 +27,6 @@ const char kHistogram3[] = "Test3";
 const char kHistogram4[] = "Test4";
 const char kHistogram5[] = "Test5";
 const char kHistogram6[] = "Test6";
-const char kHistogram7[] = "Test7";
-const char kHistogram8[] = "Test8";
 
 TEST(HistogramTesterTest, Scope) {
   // Record a histogram before the creation of the recorder.
@@ -368,48 +365,5 @@ TEST(HistogramTesterTest, BucketsInclude) {
   EXPECT_THAT(a({b(1, 1), b(2, 2)}),
               Not(BucketsInclude(b(0, 0), b(1, 0), b(2, 0))));
 }
-
-TEST(HistogramTesterTest, PumaScope) {
-  // Record a PUMA histogram before the creation of the recorder.
-  base::PumaHistogramBoolean(base::PumaType::kRc, kHistogram1, true);
-
-  HistogramTester tester;
-
-  // Verify that no PUMA histogram is recorded.
-  tester.ExpectTotalCount(kHistogram1, 0);
-
-  // Record a PUMA histogram after the creation of the recorder.
-  base::PumaHistogramBoolean(base::PumaType::kRc, kHistogram1, true);
-
-  // Verify that one PUMA histogram is recorded.
-  std::unique_ptr<HistogramSamples> samples(
-      tester.GetHistogramSamplesSinceCreation(kHistogram1));
-  EXPECT_TRUE(samples);
-  EXPECT_EQ(1, samples->TotalCount());
-}
-
-TEST(HistogramTesterTest, PumaTestUniqueSample) {
-  HistogramTester tester;
-
-  // Emit '2' three times.
-  base::PumaHistogramExactLinear(base::PumaType::kRc, kHistogram7, 2, 5);
-  base::PumaHistogramExactLinear(base::PumaType::kRc, kHistogram7, 2, 5);
-  base::PumaHistogramExactLinear(base::PumaType::kRc, kHistogram7, 2, 5);
-
-  tester.ExpectUniqueSample(kHistogram7, 2, 3);
-  tester.ExpectUniqueTimeSample(kHistogram7, base::Milliseconds(2), 3);
-}
-
-TEST(HistogramTesterTest, PumaTestGetAllSamples) {
-  HistogramTester tester;
-  base::PumaHistogramExactLinear(base::PumaType::kRc, kHistogram8, 2, 5);
-  base::PumaHistogramExactLinear(base::PumaType::kRc, kHistogram8, 3, 5);
-  base::PumaHistogramExactLinear(base::PumaType::kRc, kHistogram8, 3, 5);
-  base::PumaHistogramExactLinear(base::PumaType::kRc, kHistogram8, 5, 5);
-
-  EXPECT_THAT(tester.GetAllSamples(kHistogram8),
-              ElementsAre(Bucket(2, 1), Bucket(3, 2), Bucket(5, 1)));
-}
-
 }  // namespace
 }  // namespace base

@@ -7,13 +7,13 @@
 #include <optional>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/puma_histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/version.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/private_metrics/private_metrics_features.h"
 #include "components/metrics/private_metrics/private_metrics_pref_names.h"
 #include "components/metrics/private_metrics/puma_histogram_encoder.h"
+#include "components/metrics/private_metrics/puma_histogram_functions.h"
 #include "components/regional_capabilities/access/country_access_reason.h"
 #include "components/regional_capabilities/regional_capabilities_country_id.h"
 #include "components/version_info/version_info.h"
@@ -232,7 +232,7 @@ PumaService::BuildPrivateMetricRcReport() {
   }
 
   ::private_metrics::PrivateUserMetrics report;
-  PumaHistogramEncoder::EncodeHistogramDeltas(base::PumaType::kRc, report);
+  PumaHistogramEncoder::EncodeHistogramDeltas(PumaType::kRc, report);
 
   if (report.histogram_events_size() == 0) {
     // No histograms to report.

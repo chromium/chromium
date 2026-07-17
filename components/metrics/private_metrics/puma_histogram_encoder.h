@@ -7,7 +7,7 @@
 
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_snapshot_manager.h"
-#include "base/metrics/puma_histogram_functions.h"
+#include "components/metrics/private_metrics/puma_histogram_functions.h"
 #include "third_party/metrics_proto/private_metrics/private_user_metrics.pb.h"
 
 namespace metrics::private_metrics {
@@ -28,7 +28,7 @@ class PumaHistogramEncoder : public base::HistogramSnapshotManager {
   // Encodes histogram deltas (i.e. data logged since the last call) into the
   // given PUMA proto. Only histograms with `required_flags` are included.
   static void EncodeHistogramDeltas(
-      base::PumaType puma_type,
+      PumaType puma_type,
       ::private_metrics::PrivateUserMetrics& puma_proto);
 
  private:

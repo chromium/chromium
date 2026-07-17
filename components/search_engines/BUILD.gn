@@ -96,6 +96,7 @@ static_library("search_engines") {
     "//components/lens:mime_type",
     "//components/lens/proto/server:proto",
     "//components/metrics",
+    "//components/metrics/private_metrics",
     "//components/omnibox/common",
     "//components/policy:generated",
     "//components/policy/core/browser",

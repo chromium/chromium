@@ -1,16 +1,22 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/metrics/puma_histogram_functions.h"
+#include "components/metrics/private_metrics/puma_histogram_functions.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/notreached.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
+namespace metrics::private_metrics {
+
+using base::HistogramBase;
+using base::HistogramTester;
+using base::StatisticsRecorder;
 
 namespace {
 
@@ -167,4 +173,50 @@ TEST_F(PumaHistogramFunctionsTest, EnumerationWithoutSize) {
   tester.ExpectUniqueSample(histogram, PumaHistogramTestingEnum2::kSecond, 1);
 }
 
-}  // namespace base
+TEST_F(PumaHistogramFunctionsTest, PumaScope) {
+  const char* histogram = "PUMA.Testing.HistogramScope";
+  // Record a PUMA histogram before the creation of the recorder.
+  PumaHistogramBoolean(PumaType::kRc, histogram, true);
+
+  HistogramTester tester;
+
+  // Verify that no PUMA histogram is recorded.
+  tester.ExpectTotalCount(histogram, 0);
+
+  // Record a PUMA histogram after the creation of the recorder.
+  PumaHistogramBoolean(PumaType::kRc, histogram, true);
+
+  // Verify that one PUMA histogram is recorded.
+  std::unique_ptr<base::HistogramSamples> samples(
+      tester.GetHistogramSamplesSinceCreation(histogram));
+  ASSERT_TRUE(samples);
+  EXPECT_EQ(1, samples->TotalCount());
+}
+
+TEST_F(PumaHistogramFunctionsTest, PumaTestUniqueSample) {
+  const char* histogram = "PUMA.Testing.HistogramUniqueSample";
+  HistogramTester tester;
+
+  // Emit '2' three times.
+  PumaHistogramExactLinear(PumaType::kRc, histogram, 2, 5);
+  PumaHistogramExactLinear(PumaType::kRc, histogram, 2, 5);
+  PumaHistogramExactLinear(PumaType::kRc, histogram, 2, 5);
+
+  tester.ExpectUniqueSample(histogram, 2, 3);
+  tester.ExpectUniqueTimeSample(histogram, base::Milliseconds(2), 3);
+}
+
+TEST_F(PumaHistogramFunctionsTest, PumaTestGetAllSamples) {
+  const char* histogram = "PUMA.Testing.HistogramGetAllSamples";
+  HistogramTester tester;
+  PumaHistogramExactLinear(PumaType::kRc, histogram, 2, 5);
+  PumaHistogramExactLinear(PumaType::kRc, histogram, 3, 5);
+  PumaHistogramExactLinear(PumaType::kRc, histogram, 3, 5);
+  PumaHistogramExactLinear(PumaType::kRc, histogram, 5, 5);
+
+  EXPECT_THAT(tester.GetAllSamples(histogram),
+              testing::ElementsAre(base::Bucket(2, 1), base::Bucket(3, 2),
+                                   base::Bucket(5, 1)));
+}
+
+}  // namespace metrics::private_metrics

@@ -1,9 +1,9 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_METRICS_PUMA_HISTOGRAM_FUNCTIONS_H_
-#define BASE_METRICS_PUMA_HISTOGRAM_FUNCTIONS_H_
+#ifndef COMPONENTS_METRICS_PRIVATE_METRICS_PUMA_HISTOGRAM_FUNCTIONS_H_
+#define COMPONENTS_METRICS_PRIVATE_METRICS_PUMA_HISTOGRAM_FUNCTIONS_H_
 
 // Private UMA (PUMA) is an alternative metrics collection system to UMA. It
 // allows collecting metrics with e.g. reduced system information.
@@ -24,11 +24,11 @@
 
 #include <string_view>
 
-#include "base/base_export.h"
 #include "base/check_op.h"
+#include "base/component_export.h"
 #include "base/metrics/histogram_base.h"
 
-namespace base {
+namespace metrics::private_metrics {
 
 // PumaType discriminates between different Private UMA metrics collection
 // systems. Different collection systems can e.g. use different backends or
@@ -36,28 +36,32 @@ namespace base {
 //
 // Implementation note: values of these enums should contain the final set of
 // flags that the given type of histogram should have. This provides 0-cost
-// mapping between PumaType and HistogramBase::Flags.
+// mapping between PumaType and base::HistogramBase::Flags.
 enum class PumaType : uint16_t {
   // Private UMA for Regional Capabilities.
-  kRc = HistogramBase::Flags::kPumaRcTargetedHistogramFlag,
+  kRc = base::HistogramBase::Flags::kPumaRcTargetedHistogramFlag,
 };
 
 // Converts the given PumaType to histogram flags that should be applied to
 // records emitted with this PumaType.
-constexpr HistogramBase::Flags PumaTypeToHistogramFlags(PumaType puma_type) {
-  return static_cast<HistogramBase::Flags>(static_cast<uint16_t>(puma_type));
+constexpr base::HistogramBase::Flags PumaTypeToHistogramFlags(
+    PumaType puma_type) {
+  return static_cast<base::HistogramBase::Flags>(
+      static_cast<uint16_t>(puma_type));
 }
 
 // PUMA version of base::UmaHistogramBoolean().
-BASE_EXPORT void PumaHistogramBoolean(PumaType puma_type,
-                                      std::string_view name,
-                                      bool sample);
+COMPONENT_EXPORT(PRIVATE_METRICS_RECORDERS)
+void PumaHistogramBoolean(PumaType puma_type,
+                          std::string_view name,
+                          bool sample);
 
 // PUMA version of base::UmaHistogramExactLinear().
-BASE_EXPORT void PumaHistogramExactLinear(PumaType puma_type,
-                                          std::string_view name,
-                                          int sample,
-                                          int exclusive_max);
+COMPONENT_EXPORT(PRIVATE_METRICS_RECORDERS)
+void PumaHistogramExactLinear(PumaType puma_type,
+                              std::string_view name,
+                              int sample,
+                              int exclusive_max);
 
 // PUMA version of base::UmaHistogramEnumeration().
 template <typename T>
@@ -89,6 +93,6 @@ void PumaHistogramEnumeration(PumaType puma_type,
                                   static_cast<int>(enum_size));
 }
 
-}  // namespace base
+}  // namespace metrics::private_metrics
 
-#endif  // BASE_METRICS_PUMA_HISTOGRAM_FUNCTIONS_H_
+#endif  // COMPONENTS_METRICS_PRIVATE_METRICS_PUMA_HISTOGRAM_FUNCTIONS_H_

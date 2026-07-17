@@ -6,10 +6,10 @@
 
 #include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/puma_histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "components/country_codes/country_codes.h"
+#include "components/metrics/private_metrics/puma_histogram_functions.h"
 #include "components/metrics/profile_metrics_service.h"
 #include "components/regional_capabilities/program_settings.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
@@ -178,9 +178,9 @@ void RecordFunnelStage(
     metrics::ProfileMetricsService& profile_metrics_service) {
   profile_metrics_service.UmaHistogramEnumeration(
       "RegionalCapabilities.FunnelStage.Reported", stage);
-  base::PumaHistogramEnumeration(
-      base::PumaType::kRc, "PUMA.RegionalCapabilities.FunnelStage.Reported",
-      stage);
+  metrics::private_metrics::PumaHistogramEnumeration(
+      metrics::private_metrics::PumaType::kRc,
+      "PUMA.RegionalCapabilities.FunnelStage.Reported", stage);
 }
 
 void RecordEligibilityFunnelStageDetails(
@@ -188,9 +188,9 @@ void RecordEligibilityFunnelStageDetails(
     metrics::ProfileMetricsService& profile_metrics_service) {
   profile_metrics_service.UmaHistogramEnumeration(
       "RegionalCapabilities.FunnelStage.Eligibility", conditions);
-  base::PumaHistogramEnumeration(
-      base::PumaType::kRc, "PUMA.RegionalCapabilities.FunnelStage.Eligibility",
-      conditions);
+  metrics::private_metrics::PumaHistogramEnumeration(
+      metrics::private_metrics::PumaType::kRc,
+      "PUMA.RegionalCapabilities.FunnelStage.Eligibility", conditions);
 }
 
 void RecordTriggeringFunnelStageDetails(
@@ -198,9 +198,9 @@ void RecordTriggeringFunnelStageDetails(
     metrics::ProfileMetricsService& profile_metrics_service) {
   profile_metrics_service.UmaHistogramEnumeration(
       "RegionalCapabilities.FunnelStage.Triggering", conditions);
-  base::PumaHistogramEnumeration(
-      base::PumaType::kRc, "PUMA.RegionalCapabilities.FunnelStage.Triggering",
-      conditions);
+  metrics::private_metrics::PumaHistogramEnumeration(
+      metrics::private_metrics::PumaType::kRc,
+      "PUMA.RegionalCapabilities.FunnelStage.Triggering", conditions);
 }
 
 void RecordActiveRegionalProgram(

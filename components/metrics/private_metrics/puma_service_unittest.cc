@@ -6,13 +6,13 @@
 
 #include <memory>
 
-#include "base/metrics/puma_histogram_functions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/country_codes/country_codes.h"
 #include "components/metrics/private_metrics/private_metrics_features.h"
 #include "components/metrics/private_metrics/private_metrics_pref_names.h"
+#include "components/metrics/private_metrics/puma_histogram_functions.h"
 #include "components/metrics/test/test_metrics_service_client.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/regional_capabilities/regional_capabilities_country_id.h"
@@ -184,8 +184,8 @@ TEST_F(PumaServiceRcTest, RcBuildReport_DoesNotCreateReportWithoutEvents) {
 }
 
 TEST_F(PumaServiceRcTest, RcBuildReport_DoesCreateReportWithEvents) {
-  base::PumaHistogramBoolean(base::PumaType::kRc,
-                             "PUMA.PumaServiceTestHistogram.Boolean1", true);
+  PumaHistogramBoolean(PumaType::kRc, "PUMA.PumaServiceTestHistogram.Boolean1",
+                       true);
 
   auto report = puma_service_->BuildPrivateMetricRcReport();
   EXPECT_TRUE(report.has_value());
@@ -197,8 +197,8 @@ TEST_F(PumaServiceRcTest, RcBuildReport_DoesCreateReportWithEvents) {
 }
 
 TEST_F(PumaServiceTest, RcBuildReport_DoesNotCreateReportWithFeatureDisabled) {
-  base::PumaHistogramBoolean(base::PumaType::kRc,
-                             "PUMA.PumaServiceTestHistogram.Boolean2", true);
+  PumaHistogramBoolean(PumaType::kRc, "PUMA.PumaServiceTestHistogram.Boolean2",
+                       true);
 
   auto report = puma_service_->BuildPrivateMetricRcReport();
   EXPECT_FALSE(report.has_value());
@@ -210,8 +210,8 @@ TEST_F(PumaServiceTest, RcBuildReport_DoesNotCreateReportWithFeatureDisabled) {
 }
 
 TEST_F(PumaServiceRcTest, RcBuildReport_PayloadProperlyFilled) {
-  base::PumaHistogramExactLinear(
-      base::PumaType::kRc, "PUMA.PumaServiceTestHistogram.Linear1", 12, 100);
+  PumaHistogramExactLinear(PumaType::kRc,
+                           "PUMA.PumaServiceTestHistogram.Linear1", 12, 100);
 
   auto report = puma_service_->BuildPrivateMetricRcReport();
 
@@ -230,8 +230,8 @@ TEST_F(PumaServiceRcTest, RcBuildReport_PayloadProperlyFilled) {
 }
 
 TEST_F(PumaServiceRcTest, RcBuildReportAndStore_DoesCreateAndStoreReport) {
-  base::PumaHistogramBoolean(base::PumaType::kRc,
-                             "PUMA.PumaServiceTestHistogram.Boolean3", true);
+  PumaHistogramBoolean(PumaType::kRc, "PUMA.PumaServiceTestHistogram.Boolean3",
+                       true);
 
   EXPECT_EQ(GetUnsentLogCount(), 0u);
 
@@ -261,8 +261,8 @@ TEST_F(PumaServiceRcTest, RcBuildReportAndStore_DoesNotStoreReportWithNoData) {
 }
 
 TEST_F(PumaServiceRcTest, RcLogsArePersistedAfterFlush) {
-  base::PumaHistogramBoolean(base::PumaType::kRc,
-                             "PUMA.PumaServiceTestHistogram.Boolean4", true);
+  PumaHistogramBoolean(PumaType::kRc, "PUMA.PumaServiceTestHistogram.Boolean4",
+                       true);
 
   EXPECT_EQ(GetPersistedLogCount(), 0u);
   puma_service_->Flush(
@@ -273,8 +273,8 @@ TEST_F(PumaServiceRcTest, RcLogsArePersistedAfterFlush) {
 TEST_F(PumaServiceRcTest, RcLogsArePersistedAfterDisablingReporting) {
   puma_service_->EnableReporting();
 
-  base::PumaHistogramBoolean(base::PumaType::kRc,
-                             "PUMA.PumaServiceTestHistogram.Boolean5", true);
+  PumaHistogramBoolean(PumaType::kRc, "PUMA.PumaServiceTestHistogram.Boolean5",
+                       true);
 
   EXPECT_EQ(GetPersistedLogCount(), 0u);
   puma_service_->DisableReporting();
@@ -283,8 +283,8 @@ TEST_F(PumaServiceRcTest, RcLogsArePersistedAfterDisablingReporting) {
 
 TEST_F(PumaServiceRcTest,
        RcLogsAreNotPersistedAfterDisablingReportingWhenReportingWasDisabled) {
-  base::PumaHistogramBoolean(base::PumaType::kRc,
-                             "PUMA.PumaServiceTestHistogram.Boolean6", true);
+  PumaHistogramBoolean(PumaType::kRc, "PUMA.PumaServiceTestHistogram.Boolean6",
+                       true);
 
   EXPECT_EQ(GetPersistedLogCount(), 0u);
   puma_service_->DisableReporting();
@@ -294,8 +294,8 @@ TEST_F(PumaServiceRcTest,
 TEST_F(PumaServiceRcTest, RcLogsArePersistedAfterDestruction) {
   puma_service_->EnableReporting();
 
-  base::PumaHistogramBoolean(base::PumaType::kRc,
-                             "PUMA.PumaServiceTestHistogram.Boolean7", true);
+  PumaHistogramBoolean(PumaType::kRc, "PUMA.PumaServiceTestHistogram.Boolean7",
+                       true);
 
   EXPECT_EQ(GetPersistedLogCount(), 0u);
   puma_service_ = nullptr;
@@ -304,8 +304,8 @@ TEST_F(PumaServiceRcTest, RcLogsArePersistedAfterDestruction) {
 
 TEST_F(PumaServiceRcTest,
        RcLogsAreNotPersistedAfterDestructionWhenReportingWasInactive) {
-  base::PumaHistogramBoolean(base::PumaType::kRc,
-                             "PUMA.PumaServiceTestHistogram.Boolean8", true);
+  PumaHistogramBoolean(PumaType::kRc, "PUMA.PumaServiceTestHistogram.Boolean8",
+                       true);
 
   EXPECT_EQ(GetPersistedLogCount(), 0u);
   puma_service_ = nullptr;
@@ -338,8 +338,8 @@ TEST_F(PumaServiceTest, EnableReportingTwiceDoesNotStartAdditionalTasks) {
 TEST_F(PumaServiceRcTest, UploadUnsentLogs) {
   puma_service_->EnableReporting();
 
-  base::PumaHistogramBoolean(base::PumaType::kRc,
-                             "PUMA.PumaServiceTestHistogram.Boolean9", true);
+  PumaHistogramBoolean(PumaType::kRc, "PUMA.PumaServiceTestHistogram.Boolean9",
+                       true);
 
   EXPECT_EQ(GetUnsentLogCount(), 0u);
   EXPECT_EQ(GetPersistedLogCount(), 0u);
@@ -371,8 +371,8 @@ TEST_F(PumaServiceRcTest, UploadUnsentLogs) {
 TEST_F(PumaServiceRcTest, UploadPersistedLogs) {
   puma_service_->EnableReporting();
 
-  base::PumaHistogramBoolean(base::PumaType::kRc,
-                             "PUMA.PumaServiceTestHistogram.Boolean10", true);
+  PumaHistogramBoolean(PumaType::kRc, "PUMA.PumaServiceTestHistogram.Boolean10",
+                       true);
 
   EXPECT_EQ(GetUnsentLogCount(), 0u);
   EXPECT_EQ(GetPersistedLogCount(), 0u);
@@ -418,8 +418,8 @@ TEST_F(PumaServiceRcTest, UploadPersistedLogs) {
 TEST_F(PumaServiceRcTest, LogsUploadedPeriodically) {
   puma_service_->EnableReporting();
 
-  base::PumaHistogramBoolean(base::PumaType::kRc,
-                             "PUMA.PumaServiceTestHistogram.Boolean11", true);
+  PumaHistogramBoolean(PumaType::kRc, "PUMA.PumaServiceTestHistogram.Boolean11",
+                       true);
 
   EXPECT_EQ(GetUnsentLogCount(), 0u);
 
@@ -440,8 +440,8 @@ TEST_F(PumaServiceRcTest, LogsUploadedPeriodically) {
 
   EXPECT_EQ(GetUnsentLogCount(), 0u);
 
-  base::PumaHistogramBoolean(base::PumaType::kRc,
-                             "PUMA.PumaServiceTestHistogram.Boolean12", true);
+  PumaHistogramBoolean(PumaType::kRc, "PUMA.PumaServiceTestHistogram.Boolean12",
+                       true);
 
   histogram_tester_.ExpectTotalCount(kHistogramPumaLogRotationOutcome, 1);
 
