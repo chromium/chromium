@@ -833,6 +833,24 @@ static void TestArithmetic(const char* dst, int line) {
   TEST_EXPECTED_VALUE(DstLimits::Underflow(), ClampedNumeric<Dst>(-1) / 0);
   TEST_EXPECTED_VALUE(0, ClampedNumeric<Dst>(0) / 0);
 
+  // Invalid state must propagate to Dst.
+  {
+    auto invalid_value = CheckAdd(DstLimits::max(), DstLimits::max());
+    ASSERT_FALSE(invalid_value.IsValid());
+
+    CheckedNumeric<Dst> invalid_cast = invalid_value;
+    EXPECT_FALSE(invalid_cast.IsValid());
+
+    TEST_EXPECTED_FAILURE(Dst{1} + invalid_value);
+    TEST_EXPECTED_FAILURE(Dst{1} - invalid_value);
+    TEST_EXPECTED_FAILURE(Dst{1} * invalid_value);
+    TEST_EXPECTED_FAILURE(Dst{1} / invalid_value);
+    TEST_EXPECTED_FAILURE(invalid_value + Dst{1});
+    TEST_EXPECTED_FAILURE(invalid_value - Dst{1});
+    TEST_EXPECTED_FAILURE(invalid_value * Dst{1});
+    TEST_EXPECTED_FAILURE(invalid_value / Dst{1});
+  }
+
   TestSpecializedArithmetic<Dst>(dst, line);
 }
 
@@ -1432,6 +1450,26 @@ TEST(SafeNumerics, CastTests) {
   EXPECT_TRUE(CheckedNumeric<uint64_t>(StrictNumeric<unsigned>(1U)).IsValid());
   EXPECT_TRUE(CheckedNumeric<int>(StrictNumeric<unsigned>(1U)).IsValid());
   EXPECT_FALSE(CheckedNumeric<unsigned>(StrictNumeric<int>(-1)).IsValid());
+
+  // A double to float conversion is not statically guaranteed to be contained.
+  // However, if the value fits, it should still dynamically evaluate to valid.
+  CheckedNumeric<float> valid_float = CheckedNumeric<double>(1.0);
+  ASSERT_TRUE(valid_float.IsValid());
+  EXPECT_EQ(1.0f, valid_float.ValueOrDie());
+
+  // Converting CheckedNumeric<double>(NaN) to CheckedNumeric<float> should be
+  // invalid.
+  CheckedNumeric<double> double_nan(std::numeric_limits<double>::quiet_NaN());
+  EXPECT_FALSE(double_nan.IsValid());
+  CheckedNumeric<float> float_nan = double_nan;
+  EXPECT_FALSE(float_nan.IsValid());
+
+  // Converting CheckedNumeric<double>(out of range for float) to
+  // CheckedNumeric<float> should be invalid.
+  CheckedNumeric<double> in_range_double(std::numeric_limits<double>::max());
+  ASSERT_TRUE(in_range_double.IsValid());
+  CheckedNumeric<float> out_of_range_float = in_range_double;
+  EXPECT_FALSE(out_of_range_float.IsValid());
 
   EXPECT_TRUE(IsValueNegative(-1));
   EXPECT_TRUE(IsValueNegative(numeric_limits<int>::lowest()));
