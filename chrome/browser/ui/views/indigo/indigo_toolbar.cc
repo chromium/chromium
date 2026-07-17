@@ -34,6 +34,8 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/layout/animating_layout_manager.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_manager_base.h"
@@ -185,14 +187,15 @@ std::unique_ptr<views::ImageView> CreateCompactSparkIcon() {
 
 // A custom view that tracks mouse and focus events to notify when the toolbar's
 // interaction state starts or ends.
-class IndigoToolbarView : public views::FlexLayoutView,
+class IndigoToolbarView : public views::View,
                           public views::FocusChangeListener {
-  METADATA_HEADER(IndigoToolbarView, views::FlexLayoutView)
+  METADATA_HEADER(IndigoToolbarView, views::View)
 
  public:
   explicit IndigoToolbarView(
       base::RepeatingCallback<void(bool)> interaction_changed_callback)
       : interaction_changed_callback_(std::move(interaction_changed_callback)) {
+    SetLayoutManager(std::make_unique<views::FillLayout>());
     SetNotifyEnterExitOnChild(true);
   }
 
@@ -200,20 +203,25 @@ class IndigoToolbarView : public views::FlexLayoutView,
   IndigoToolbarView& operator=(const IndigoToolbarView&) = delete;
   ~IndigoToolbarView() override = default;
 
+  void ChildPreferredSizeChanged(views::View* child) override {
+    views::View::ChildPreferredSizeChanged(child);
+    PreferredSizeChanged();
+  }
+
   void OnMouseEntered(const ui::MouseEvent& event) override {
-    views::FlexLayoutView::OnMouseEntered(event);
+    views::View::OnMouseEntered(event);
     is_mouse_over_ = true;
     MaybeNotifyInteractionState();
   }
 
   void OnMouseExited(const ui::MouseEvent& event) override {
-    views::FlexLayoutView::OnMouseExited(event);
+    views::View::OnMouseExited(event);
     is_mouse_over_ = false;
     MaybeNotifyInteractionState();
   }
 
   void AddedToWidget() override {
-    views::FlexLayoutView::AddedToWidget();
+    views::View::AddedToWidget();
     if (auto* focus_manager = GetFocusManager()) {
       focus_manager->AddFocusChangeListener(this);
     }
@@ -223,7 +231,7 @@ class IndigoToolbarView : public views::FlexLayoutView,
     if (auto* focus_manager = GetFocusManager()) {
       focus_manager->RemoveFocusChangeListener(this);
     }
-    views::FlexLayoutView::RemovedFromWidget();
+    views::View::RemovedFromWidget();
   }
 
   void OnDidChangeFocus(views::View* focused_before,
@@ -356,6 +364,8 @@ END_METADATA
 }  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(IndigoToolbar, kToolbarElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(IndigoToolbar,
+                                      kAnimatingContainerElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(IndigoToolbar, kCloseButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(IndigoToolbar, kExpandButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(IndigoToolbar, kChevronElementId);
@@ -392,25 +402,22 @@ std::unique_ptr<views::View> IndigoToolbar::CreateToolbarView() {
 
   auto toolbar_view = std::make_unique<IndigoToolbarView>(base::BindRepeating(
       &IndigoToolbar::OnToolbarInteractionChanged, base::Unretained(this)));
-  auto view =
-      views::Builder<views::FlexLayoutView>(std::move(toolbar_view))
-          .SetProperty(views::kElementIdentifierKey, kToolbarElementId)
-          .SetPaintToLayer()
-          .CustomConfigure(base::BindOnce([](views::View* view) {
-            view->layer()->SetFillsBoundsOpaquely(false);
-            view->layer()->SetName("IndigoToolbar");
-            view->GetViewAccessibility().SetRole(ax::mojom::Role::kToolbar);
-            view->GetViewAccessibility().SetName(
-                l10n_util::GetStringUTF16(IDS_INDIGO_TOOLBAR_CAPTION));
-          }))
-          .SetBackground(
-              std::make_unique<views::BubbleBackground>(bubble_border.get()))
-          .SetBorder(std::move(bubble_border))
-          .SetOrientation(views::LayoutOrientation::kVertical)
-          .SetMainAxisAlignment(views::LayoutAlignment::kStart)
-          .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
-          .SetDefault(views::kMarginsKey, gfx::Insets())
-          .SetCollapseMargins(true)
+
+  auto layout_manager = std::make_unique<views::AnimatingLayoutManager>();
+  auto* animating_layout = layout_manager.get();
+  animating_layout
+      ->SetBoundsAnimationMode(
+          views::AnimatingLayoutManager::BoundsAnimationMode::kAnimateBothAxes)
+      .SetAnimationDuration(kToolbarAnimationDuration)
+      .SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN)
+      .SetDefaultFadeMode(
+          views::AnimatingLayoutManager::FadeInOutMode::kSlideFromLeadingEdge);
+
+  auto animating_container =
+      views::Builder<views::View>()
+          .SetLayoutManager(std::move(layout_manager))
+          .SetProperty(views::kElementIdentifierKey,
+                       kAnimatingContainerElementId)
           .AddChildren(
               // Top row: Always visible
               views::Builder<views::FlexLayoutView>()
@@ -522,6 +529,35 @@ std::unique_ptr<views::View> IndigoToolbar::CreateToolbarView() {
                                        kDeletePhotoButtonElementId)))
           .Build();
 
+  // The animating layout requires a target layout manager to handle the actual
+  // sizing and positioning of children during and after animations.
+  auto flex_layout = std::make_unique<views::FlexLayout>();
+  flex_layout->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetMainAxisAlignment(views::LayoutAlignment::kStart)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
+      .SetDefault(views::kMarginsKey, gfx::Insets())
+      .SetCollapseMargins(true);
+
+  animating_layout->SetTargetLayoutManager(std::move(flex_layout));
+
+  auto view =
+      views::Builder<views::View>(std::move(toolbar_view))
+          .SetProperty(views::kElementIdentifierKey, kToolbarElementId)
+          .SetPaintToLayer()
+          .CustomConfigure(base::BindOnce([](views::View* view) {
+            view->layer()->SetFillsBoundsOpaquely(false);
+            view->layer()->SetMasksToBounds(true);
+            view->layer()->SetName("IndigoToolbar");
+            view->GetViewAccessibility().SetRole(ax::mojom::Role::kToolbar);
+            view->GetViewAccessibility().SetName(
+                l10n_util::GetStringUTF16(IDS_INDIGO_TOOLBAR_CAPTION));
+          }))
+          .SetBackground(
+              std::make_unique<views::BubbleBackground>(bubble_border.get()))
+          .SetBorder(std::move(bubble_border))
+          .AddChild(views::Builder<views::View>(std::move(animating_container)))
+          .Build();
+
   return view;
 }
 
@@ -562,6 +598,15 @@ void IndigoToolbar::Show(views::View* parent_view) {
     // expanded mode. We must explicitly invoke SetPresentationState to reset
     // its layout and button states back to collapsed.
     SetPresentationState(PresentationState::kCollapsed);
+    // ResetLayout immediately flushes the changes without waiting for
+    // animation. This is needed to jump to the collapsed state immediately
+    // since the view might be animating from a previous incarnation.
+    views::View* animating_container =
+        view->GetViewByElementId(kAnimatingContainerElementId);
+    CHECK(animating_container);
+    static_cast<views::AnimatingLayoutManager*>(
+        animating_container->GetLayoutManager())
+        ->ResetLayout();
   }
 
   // Default properties: initially unanchored with default corner offset.
@@ -616,7 +661,7 @@ void IndigoToolbar::TabDidBecomeVisible(views::View* parent_view) {
     DCHECK(parent_view->children().empty());
     parent_view->AddChildView(std::move(owned_view_));
     parent_view->InvalidateLayout();
-    StartAutoCompactTimerIfNeeded();
+    StartAutoCompactTimerIfNeeded(kInitialAutoCompactDelay);
   }
 }
 
@@ -627,7 +672,7 @@ void IndigoToolbar::OnToolbarInteractionChanged(bool interacting) {
   } else if (interacting) {
     auto_compact_timer_.Stop();
   } else {
-    StartAutoCompactTimerIfNeeded();
+    StartAutoCompactTimerIfNeeded(kInteractionAutoCompactDelay);
   }
 }
 
@@ -679,7 +724,8 @@ void IndigoToolbar::UpdateTrackedPosition(const gfx::Rect& rect) {
   } else if (!was_visible) {
     SetPresentationState(presentation_state_ == PresentationState::kExpanded
                              ? PresentationState::kExpanded
-                             : PresentationState::kCollapsed);
+                             : PresentationState::kCollapsed,
+                         kInitialAutoCompactDelay);
   }
 
   if (view->parent()) {
@@ -693,22 +739,24 @@ void IndigoToolbar::OnAutoCompactTimer() {
   }
 }
 
-void IndigoToolbar::StartAutoCompactTimerIfNeeded() {
+void IndigoToolbar::StartAutoCompactTimerIfNeeded(base::TimeDelta delay) {
   if (!IsToolbarReadyForAutoCompact()) {
     return;
   }
 
-  auto_compact_timer_.Start(FROM_HERE, kAutoCompactDelay, this,
+  auto_compact_timer_.Start(FROM_HERE, delay, this,
                             &IndigoToolbar::OnAutoCompactTimer);
 }
 
-void IndigoToolbar::SetPresentationState(PresentationState state) {
+void IndigoToolbar::SetPresentationState(PresentationState state,
+                                         base::TimeDelta auto_compact_delay) {
   views::View* view = view_tracker_.view();
   if (!view) {
     presentation_state_ = state;
     return;
   }
 
+  const PresentationState previous_state = presentation_state_;
   presentation_state_ = state;
 
   const bool is_compact = state == PresentationState::kCompact;
@@ -723,15 +771,29 @@ void IndigoToolbar::SetPresentationState(PresentationState state) {
   views::View* expanded_container =
       view->GetViewByElementId(kExpandedContainerElementId);
   CHECK(expanded_container);
-  expanded_container->SetVisible(is_expanded);
 
   if (is_expanded || is_compact || is_interacting_) {
     auto_compact_timer_.Stop();
   } else {
-    StartAutoCompactTimerIfNeeded();
+    StartAutoCompactTimerIfNeeded(auto_compact_delay);
   }
 
-  view->InvalidateLayout();
+  views::View* animating_container =
+      view->GetViewByElementId(kAnimatingContainerElementId);
+  CHECK(animating_container);
+  auto* animating_layout = static_cast<views::AnimatingLayoutManager*>(
+      animating_container->GetLayoutManager());
+
+  // FadeIn and FadeOut will automatically handle the visibility of the internal
+  // child while animating the bounds of the outer container.
+  const bool was_expanded = (previous_state == PresentationState::kExpanded);
+  if (is_expanded != was_expanded) {
+    if (is_expanded) {
+      animating_layout->FadeIn(expanded_container);
+    } else {
+      animating_layout->FadeOut(expanded_container);
+    }
+  }
 }
 
 bool IndigoToolbar::IsToolbarReadyForAutoCompact() const {
