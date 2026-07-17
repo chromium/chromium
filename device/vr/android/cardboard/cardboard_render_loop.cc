@@ -18,6 +18,7 @@
 #include "device/vr/public/mojom/vr_service.mojom-shared.h"
 #include "device/vr/util/transform_utils.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "ui/gfx/geometry/decomposed_transform.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_bindings_autogen_gl.h"
@@ -371,14 +372,16 @@ void CardboardRenderLoop::GetFrameData(
   // Translate the head pose into the viewer pose pointer
   // This needs to be inverted because the Cardboard SDK appears to be giving
   // back values that are the inverse of what WebXR expects.
-  mojom::VRPosePtr pose = mojom::VRPose::New();
-  pose->position = gfx::Point3F(-position[0], -position[1], -position[2]);
-  pose->orientation = gfx::Quaternion(-orientation[0], -orientation[1],
-                                      -orientation[2], orientation[3]);
-  pose->emulated_position = true;
+  gfx::DecomposedTransform viewer_from_mojo_decomp;
+  viewer_from_mojo_decomp.quaternion = gfx::Quaternion(
+      orientation[0], orientation[1], orientation[2], orientation[3]);
+  viewer_from_mojo_decomp.translate = {position[0], position[1], position[2]};
+  auto viewer_from_mojo = gfx::Transform::Compose(viewer_from_mojo_decomp);
+  gfx::Transform mojo_from_viewer = viewer_from_mojo.GetCheckedInverse();
 
-  gfx::Transform mojo_from_viewer = vr_utils::VrPoseToTransform(pose.get());
-  frame_data->render_info->mojo_from_viewer = std::move(pose);
+  frame_data->render_info->mojo_from_viewer =
+      vr_utils::GfxTransformToVrPose(mojo_from_viewer,
+                                     /*emulated_position=*/true);
 
   // Get the view transform for each eye
   left_eye_->geometry->mojo_from_view =
