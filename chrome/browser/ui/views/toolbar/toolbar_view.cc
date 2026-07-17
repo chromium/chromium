@@ -1272,6 +1272,10 @@ ExtensionsToolbarButton* ToolbarView::GetExtensionsButton() const {
   return extensions_container_->GetExtensionsButton();
 }
 
+views::LabelButton* ToolbarView::GetGlicButton() {
+  return glic_button_;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // ToolbarView, LocationBarView::Delegate implementation:
 

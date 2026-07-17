@@ -68,6 +68,7 @@ class PerformanceInterventionButton;
 
 namespace views {
 class FlexLayout;
+class LabelButton;
 }  // namespace views
 
 namespace glic {
@@ -184,6 +185,8 @@ class ToolbarView : public views::AccessiblePaneView,
   }
   MediaToolbarButtonView* media_button() const { return media_button_; }
   HomeButton* home_button() const { return home_; }
+
+  views::LabelButton* GetGlicButton();
 
   // TODO(crbug.com/513238408): Remove this once toolbar layout/overflow is
   // fixed.

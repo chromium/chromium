@@ -53,6 +53,7 @@
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -1289,11 +1290,10 @@ TabStripRegionView* BrowserView::tab_strip_view() const {
 
 views::LabelButton* BrowserView::GetGlicButton() {
   auto* controller = tabs::VerticalTabStripStateController::From(browser_);
-  if (vertical_tab_strip_region_view_ && controller &&
-      controller->ShouldDisplayVerticalTabs()) {
-    // Vertical Tabs does not have an equivalent button at this point in time.
-    // Return nothing for now.
-    return nullptr;
+  if ((vertical_tab_strip_region_view_ && controller &&
+       controller->ShouldDisplayVerticalTabs()) ||
+      base::FeatureList::IsEnabled(features::kGlicHorizontalTabToolbarButton)) {
+    return toolbar()->GetGlicButton();
   }
 
   return BrowserElementsViews::From(browser_.get())
