@@ -61,7 +61,7 @@ void OmniboxPopupPresenterBase::Show() {
   // Drop stale metrics callbacks.
   metrics_weak_factory_.InvalidateWeakPtrs();
   // Drop stale visual state callbacks.
-  weak_factory_.InvalidateWeakPtrs();
+  visual_state_weak_factory_.InvalidateWeakPtrs();
 
   EnsureWidgetCreated();
   SynchronizePopupBounds();
@@ -77,22 +77,20 @@ void OmniboxPopupPresenterBase::Show() {
     // immediately drop the callback, resulting in lost telemetry data.
     content->GetWebContents()->WasShown();
 
-    // TODO(crbug.com/507159575): Refactor into `OnVisualStateReady` callback to
-    // avoid registering a 2nd callback when the classic popup is deferred.
-    // Log result ready metric before checking deferral logic. This ensures we
-    // don't miss the initial frame commit if we don't defer.
-    LogResultToContentReadyMetric(content->GetWebContents());
-
     auto show_request_time = base::TimeTicks::Now();
     auto timeout = ShouldDeferUntilVisualStateReady();
     if (timeout.has_value()) {
       is_deferred_ = true;
 
+      base::TimeTicks result_ready_time =
+          controller()->autocomplete_controller()->result().result_ready_time();
+
       content->GetWebContents()
           ->GetPrimaryMainFrame()
           ->InsertVisualStateCallback(
               base::BindOnce(&OmniboxPopupPresenterBase::OnVisualStateReady,
-                             weak_factory_.GetWeakPtr(), show_request_time,
+                             visual_state_weak_factory_.GetWeakPtr(),
+                             show_request_time, result_ready_time,
                              /*from_fallback=*/false));
 
       // Add a backup timer in case the visual state callback is never called.
@@ -102,11 +100,13 @@ void OmniboxPopupPresenterBase::Show() {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&OmniboxPopupPresenterBase::OnVisualStateReady,
-                         weak_factory_.GetWeakPtr(), show_request_time,
+                         visual_state_weak_factory_.GetWeakPtr(),
+                         show_request_time, result_ready_time,
                          /*from_fallback=*/true,
                          /*success=*/false),
           timeout.value());
     } else {
+      LogResultToContentReadyMetric(content->GetWebContents());
       ShowWidget(show_request_time);
     }
   }
@@ -114,8 +114,13 @@ void OmniboxPopupPresenterBase::Show() {
 
 void OmniboxPopupPresenterBase::OnVisualStateReady(
     base::TimeTicks show_request_time,
+    base::TimeTicks result_ready_time,
     bool from_fallback,
     bool success) {
+  if (!from_fallback) {
+    OnVisualStateReadyForMetrics(result_ready_time, success);
+  }
+
   if (!is_deferred_) {
     return;
   }
@@ -237,7 +242,7 @@ void OmniboxPopupPresenterBase::Hide() {
   // Drop stale metrics callbacks.
   metrics_weak_factory_.InvalidateWeakPtrs();
   // Drop stale visual state callbacks.
-  weak_factory_.InvalidateWeakPtrs();
+  visual_state_weak_factory_.InvalidateWeakPtrs();
 
   // Only close if UI DevTools settings allow.
   if (widget_ && widget_->ShouldHandleNativeWidgetActivationChanged(false)) {
@@ -401,7 +406,7 @@ void OmniboxPopupPresenterBase::OnWidgetClosed(
   // Drop metrics callbacks when the widget is closed.
   metrics_weak_factory_.InvalidateWeakPtrs();
   // Drop stale visual state callbacks when the widget is closed.
-  weak_factory_.InvalidateWeakPtrs();
+  visual_state_weak_factory_.InvalidateWeakPtrs();
   if (auto* frame = GetResultsFrame()) {
     owned_omnibox_popup_webui_container_ = frame->ExtractContents();
   }

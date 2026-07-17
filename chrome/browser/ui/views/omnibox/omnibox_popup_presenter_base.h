@@ -178,6 +178,7 @@ class OmniboxPopupPresenterBase : public content::WebContentsObserver,
 
   // Callback for when the visual state is ready.
   void OnVisualStateReady(base::TimeTicks show_widget_time,
+                          base::TimeTicks result_ready_time,
                           bool from_fallback,
                           bool success);
 
@@ -225,7 +226,12 @@ class OmniboxPopupPresenterBase : public content::WebContentsObserver,
   // Minimum size bounds of omnibox popup.
   gfx::Size minimum_size_;
 
+  // Weak pointer factory for callbacks related to metrics logging.
   base::WeakPtrFactory<OmniboxPopupPresenterBase> metrics_weak_factory_{this};
+  // Weak pointer factory for callbacks related to visual state.
+  base::WeakPtrFactory<OmniboxPopupPresenterBase> visual_state_weak_factory_{
+      this};
+  // Weak pointer factory for general callbacks.
   base::WeakPtrFactory<OmniboxPopupPresenterBase> weak_factory_{this};
 };
 
