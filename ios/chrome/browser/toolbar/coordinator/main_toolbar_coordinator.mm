@@ -942,10 +942,6 @@ inline LayoutStateToolbarPassKey PassKey() {
 }
 
 - (UIView*)entrypointViewVisualCopy {
-  if (IsToolbarGlassPrototypeEnabled()) {
-    return nil;
-  }
-
   if (IsChromeNextIaEnabled()) {
     if ([self isToolbarPositionBottom] || [self isNTP]) {
       return nil;

@@ -1047,10 +1047,4 @@ BASE_DECLARE_FEATURE(kSearchEngineChoiceScreenSnackbar);
 // Returns true if SearchEngineChoiceScreenSnackbar is enabled.
 bool IsSearchEngineChoiceScreenSnackbarEnabled();
 
-// Enables the ToolbarGlassPrototype feature.
-BASE_DECLARE_FEATURE(kToolbarGlassPrototype);
-
-// Returns true if the ToolbarGlassPrototype feature is enabled.
-bool IsToolbarGlassPrototypeEnabled();
-
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

@@ -1263,9 +1263,3 @@ BASE_FEATURE(kSearchEngineChoiceScreenSnackbar,
 bool IsSearchEngineChoiceScreenSnackbarEnabled() {
   return base::FeatureList::IsEnabled(kSearchEngineChoiceScreenSnackbar);
 }
-
-BASE_FEATURE(kToolbarGlassPrototype, base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsToolbarGlassPrototypeEnabled() {
-  return base::FeatureList::IsEnabled(kToolbarGlassPrototype);
-}
