@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
-import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.autofill.settings.personal_context.AutofillPersonalContextFragment;
 import org.chromium.chrome.browser.device_reauth.BiometricStatus;
 import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
@@ -158,7 +157,7 @@ public class AutofillOptionsMediator implements ModalDialogProperties.Controller
         mModel.set(PERSONAL_CONTEXT_ENABLED, isPersonalContextOn());
         mModel.set(PERSONAL_CONTEXT_VISIBLE, isPersonalContextVisible());
         RecordHistogram.recordEnumeratedHistogram(
-                HISTOGRAM_REFERRER, referrer, AutofillOptionsReferrer.COUNT);
+                HISTOGRAM_REFERRER, referrer, AutofillOptionsReferrer.MAX_VALUE + 1);
     }
 
     void destroy() {

@@ -35,7 +35,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment;
-import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment.AutofillOptionsReferrer;
+import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.autofill.settings.personal_context.AutofillPersonalContextFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -162,7 +162,7 @@ public class SettingsNavigationHelperTest {
                         mBundleCaptor.capture(),
                         eq(true));
         assertEquals(
-                AutofillOptionsFragment.AutofillOptionsReferrer.PRIVATE_INFERENCE_NOTICE,
+                AutofillOptionsReferrer.PRIVATE_INFERENCE_NOTICE,
                 mBundleCaptor.getValue().getInt(AutofillOptionsFragment.AUTOFILL_OPTIONS_REFERRER));
     }
 }

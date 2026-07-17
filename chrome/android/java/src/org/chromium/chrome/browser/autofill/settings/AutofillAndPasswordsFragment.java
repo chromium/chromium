@@ -25,7 +25,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment;
-import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment.AutofillOptionsReferrer;
+import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.autofill.settings.personal_context.AutofillPersonalContextFragment;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -171,9 +171,7 @@ public class AutofillAndPasswordsFragment extends ChromeBaseSettingsFragment {
                             AutofillPersonalContextFragment
                                     .ACTION_ENTRY_FROM_AUTOFILL_AND_PASSWORDS);
                     SettingsNavigationHelper.showAutofillPersonalContextSettings(
-                            getActivity(),
-                            AutofillOptionsFragment.AutofillOptionsReferrer
-                                    .AUTOFILL_AND_PASSWORDS_FRAGMENT);
+                            getActivity(), AutofillOptionsReferrer.AUTOFILL_AND_PASSWORDS_FRAGMENT);
                     return true;
                 });
 

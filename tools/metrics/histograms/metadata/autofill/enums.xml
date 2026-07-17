@@ -3054,7 +3054,7 @@ Called by update_autofill_enums.py.-->
              notice."/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/autofill/android/java/src/org/chromium/chrome/browser/autofill/settings/options/AutofillOptionsFragment.java:AutofillOptionsReferrer) -->
+<!-- LINT.ThenChange(//chrome/browser/android/preferences/autofill/settings_navigation_helper.h:AutofillOptionsReferrer) -->
 
 <enum name="AutofillOtpAuthEvent">
   <int value="0" label="Unknown result"/>
