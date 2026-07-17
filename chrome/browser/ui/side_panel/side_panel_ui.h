@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_UI_H_
 
 #include "base/callback_list.h"
-#include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
@@ -90,7 +89,7 @@ class SidePanelUI {
 
   // Similar to IsSidePanelEntryShowing, but restricts to either the tab-scoped
   // or window-scoped registry.
-  virtual bool IsSidePanelEntryShowing(const SidePanelEntry::Key& entry_key,
+  virtual bool IsSidePanelEntryShowing(const SidePanelEntryKey& entry_key,
                                        bool for_tab) const = 0;
 
   // Register for this callback to detect when the side panel opens or changes.

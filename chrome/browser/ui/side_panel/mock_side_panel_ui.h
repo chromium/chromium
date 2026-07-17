@@ -51,7 +51,7 @@ class MockSidePanelUI : public SidePanelUI {
               (const, override));
   MOCK_METHOD(bool,
               IsSidePanelEntryShowing,
-              (const SidePanelEntry::Key& entry_key, bool for_tab),
+              (const SidePanelEntryKey& entry_key, bool for_tab),
               (const, override));
   MOCK_METHOD(base::CallbackListSubscription,
               RegisterSidePanelShown,

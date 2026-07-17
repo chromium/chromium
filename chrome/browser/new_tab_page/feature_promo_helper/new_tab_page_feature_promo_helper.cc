@@ -200,7 +200,7 @@ void NewTabPageFeaturePromoHelper::MaybeTriggerAutomaticCustomizeChromePromo(
   auto* browser_interface = webui::GetBrowserWindowInterface(web_contents);
   if (!browser_interface ||
       browser_interface->GetFeatures().side_panel_ui()->IsSidePanelEntryShowing(
-          SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome))) {
+          SidePanelEntryKey(SidePanelEntryId::kCustomizeChrome))) {
     return;
   }
 

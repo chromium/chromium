@@ -4,11 +4,6 @@
 
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 
-// TODO(crbug.com/492550611): Remove once we only need BWI.
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser.h"
-#endif
-
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"

@@ -51,6 +51,7 @@ source_set("test_support") {
     "//chrome/browser/tab_list",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window:create_browser_window",
+    "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/side_panel:side_panel_ui_provider",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//components/feature_engagement/test:test_support",

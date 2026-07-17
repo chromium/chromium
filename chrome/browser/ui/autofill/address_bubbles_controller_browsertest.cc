@@ -92,8 +92,8 @@ IN_PROC_BROWSER_TEST_P(AddressBubblesControllerBrowserTest,
   }
   SidePanelUI* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
   content::WebContents* side_panel_web_contents =
-      side_panel_ui->GetWebContentsForTest(SidePanelEntry::Id::kReadingList);
-  side_panel_ui->Show(SidePanelEntry::Id::kReadingList);
+      side_panel_ui->GetWebContentsForTest(SidePanelEntryId::kReadingList);
+  side_panel_ui->Show(SidePanelEntryId::kReadingList);
   AutofillProfile profile = test::GetFullProfile();
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
 
