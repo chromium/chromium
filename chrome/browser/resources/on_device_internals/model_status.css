@@ -67,3 +67,7 @@ td {
 #needs-restart {
   color: var(--google-yellow-300);
 }
+
+a {
+  color: var(--cr-link-color);
+}
