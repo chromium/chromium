@@ -5,6 +5,7 @@
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 
+import {VoiceSearchQuerySource} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -408,6 +409,10 @@ export class VoiceSearchOverlayElement extends CrLitElement {
         new URL('/search', loadTimeData.getString('googleBaseUrl'));
     queryUrl.search = searchParams.toString();
     recordVoiceAction(Action.QUERY_SUBMITTED);
+    recordEnumeration(
+        'VoiceSearch.QuerySubmission.Source',
+        VoiceSearchQuerySource.NTP_REALBOX,
+        VoiceSearchQuerySource.MAX_VALUE + 1);
     WindowProxy.getInstance().navigate(queryUrl.href);
   }
 
