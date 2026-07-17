@@ -7,10 +7,16 @@ assert(is_win || is_mac || is_linux || is_chromeos)
 import("//build/config/ui.gni")
 
 source_set("app_menu") {
-  public = [ "action_app_menu.h" ]
+  public = [
+    "action_app_menu.h",
+    "app_menu_action_manager.h",
+    "app_menu_proxy_action_item.h",
+    "app_menu_section_action_item.h",
+  ]
 
   public_deps = [
     "//base",
+    "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/views",
     "//components/user_education/common",
@@ -22,7 +28,12 @@ source_set("app_menu") {
 }
 
 source_set("impl") {
-  sources = [ "action_app_menu.cc" ]
+  sources = [
+    "action_app_menu.cc",
+    "app_menu_action_manager.cc",
+    "app_menu_proxy_action_item.cc",
+    "app_menu_section_action_item.cc",
+  ]
 
   deps = [
     ":app_menu",
@@ -34,6 +45,7 @@ source_set("impl") {
     "//chrome/browser/search",
     "//chrome/browser/search_engines",
     "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/views",
@@ -60,10 +72,14 @@ if (toolkit_views) {
   source_set("unit_tests") {
     testonly = true
 
-    sources = [ "action_app_menu_unittest.cc" ]
+    sources = [
+      "action_app_menu_unittest.cc",
+      "app_menu_action_manager_unittest.cc",
+    ]
 
     deps = [
       ":app_menu",
+      ":impl",
       "//base",
       "//base/test:test_support",
       "//chrome/app:generated_resources",
