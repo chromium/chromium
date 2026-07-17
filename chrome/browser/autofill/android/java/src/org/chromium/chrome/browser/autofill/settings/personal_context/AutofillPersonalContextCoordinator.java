@@ -19,14 +19,29 @@ public class AutofillPersonalContextCoordinator {
     private AutofillPersonalContextCoordinator(
             AutofillPersonalContextFragment fragment, Context context, Profile profile) {
         mFragment = fragment;
-        mMediator = new AutofillPersonalContextMediator(context, profile);
+        mMediator =
+                new AutofillPersonalContextMediator(
+                        context, profile, fragment.getCustomTabLauncher());
     }
 
     public static void createFor(
             AutofillPersonalContextFragment fragment, Context context, Profile profile) {
         AutofillPersonalContextCoordinator coordinator =
                 new AutofillPersonalContextCoordinator(fragment, context, profile);
-        coordinator.initialize();
+        coordinator.initializeOnViewCreated();
+    }
+
+    private void initializeOnViewCreated() {
+        mFragment
+                .getViewLifecycleOwnerLiveData()
+                .observe(
+                        mFragment,
+                        lifecycleOwner -> {
+                            if (lifecycleOwner == null) {
+                                return;
+                            }
+                            initialize();
+                        });
     }
 
     private void initialize() {

@@ -85,6 +85,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.autofill_ai.AutofillAiOptInStatus;
+import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.prefs.PrefService;
@@ -142,6 +143,7 @@ public class AutofillOptionsTest {
     @Mock private EntityDataManager.Natives mMockEntityDataManagerJni;
     @Mock private ReauthenticatorBridge mMockReauthenticatorBridge;
     @Mock private SettingsIndexData mSearchIndexDataMock;
+    @Mock private SettingsCustomTabLauncher mMockCustomTabLauncher;
     private UserActionTester mActionTester;
 
     @Captor ArgumentCaptor<PropertyModel> mRestartConfirmationDialogModelCaptor;
@@ -176,6 +178,8 @@ public class AutofillOptionsTest {
                                 Fragment fragment = super.instantiate(classLoader, className);
                                 if (fragment instanceof AutofillOptionsFragment) {
                                     ((AutofillOptionsFragment) fragment).setProfile(mProfile);
+                                    ((AutofillOptionsFragment) fragment)
+                                            .setCustomTabLauncher(mMockCustomTabLauncher);
                                 }
                                 return fragment;
                             }

@@ -12,10 +12,10 @@ import android.content.Context;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator for Autofill Personal Context settings. */
@@ -23,11 +23,14 @@ import org.chromium.ui.modelutil.PropertyModel;
 class AutofillPersonalContextMediator {
     private final Context mContext;
     private final Profile mProfile;
+    private final SettingsCustomTabLauncher mCustomTabLauncher;
     private final PropertyModel mModel;
 
-    AutofillPersonalContextMediator(Context context, Profile profile) {
+    AutofillPersonalContextMediator(
+            Context context, Profile profile, SettingsCustomTabLauncher customTabLauncher) {
         mContext = context;
         mProfile = profile;
+        mCustomTabLauncher = customTabLauncher;
 
         mModel =
                 new PropertyModel.Builder(AutofillPersonalContextProperties.ALL_KEYS)
@@ -58,7 +61,7 @@ class AutofillPersonalContextMediator {
     }
 
     private void onManageConnectedAppsClicked() {
-        AutofillUiUtils.openLink(
+        mCustomTabLauncher.openUrlInCct(
                 mContext, EntityDataManager.getPersonalContextManageConnectedAppsUrl());
         RecordUserAction.record(AutofillPersonalContextFragment.ACTION_MANAGE_CONNECTED_APPS);
     }

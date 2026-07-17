@@ -75,7 +75,8 @@ public class AutofillOptionsCoordinator {
                         mFragment.getProfile(),
                         modalDialogManagerSupplier,
                         this::buildRestartConfirmationDialog,
-                        restartRunnable);
+                        restartRunnable,
+                        mFragment.getCustomTabLauncher());
     }
 
     /**
