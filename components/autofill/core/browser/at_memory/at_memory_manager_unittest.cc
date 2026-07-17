@@ -216,24 +216,6 @@ class AtMemoryManagerTest : public Test,
       update_callback_;
 };
 
-// Returns a matcher that checks if a suggestion's children correspond to a
-// suggestion with a "Manage enhanced autofill" footer. When child matchers are
-// provided, it expects them followed by a separator and the "Manage enhanced
-// autofill" footer. If no child matchers are provided, it expects only the
-// footer without a separator.
-template <typename... Matchers>
-auto ChildrenWithManageEnhancedAutofillFooterAre(Matchers&&... matchers) {
-  if constexpr (sizeof...(matchers) == 0) {
-    return ElementsAre(
-        EqualsSuggestion(SuggestionType::kManageEnhancedAutofill));
-  } else {
-    return ElementsAre(
-        std::forward<Matchers>(matchers)...,
-        EqualsSuggestion(SuggestionType::kSeparator),
-        EqualsSuggestion(SuggestionType::kManageEnhancedAutofill));
-  }
-}
-
 // Matches a Suggestion of type `kAtMemorySearchResult` with the given
 // `memory_data_type` and matching children suggestions.
 Matcher<Suggestion> EqualsAtMemorySuggestion(
@@ -255,9 +237,29 @@ template <typename... Matchers>
 Matcher<Suggestion> EqualsSuggestionWithManageEnhancedAutofillFooter(
     MemoryDataType memory_data_type,
     Matchers&&... matchers) {
-  return EqualsAtMemorySuggestion(memory_data_type,
-                                  ChildrenWithManageEnhancedAutofillFooterAre(
-                                      std::forward<Matchers>(matchers)...));
+  auto attribution_matcher = AllOf(
+      EqualsSuggestion(
+          SuggestionType::kAtMemorySearchResult,
+          l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_AT_MEMORY_SOURCE_ATTRIBUTION_PERSONAL_INTELLIGENCE)),
+      Field(&Suggestion::acceptability,
+            Suggestion::Acceptability::kUnacceptable));
+
+  if constexpr (sizeof...(matchers) == 0) {
+    return EqualsAtMemorySuggestion(
+        memory_data_type,
+        ElementsAre(attribution_matcher,
+                    EqualsSuggestion(SuggestionType::kSeparator),
+                    EqualsSuggestion(SuggestionType::kManageEnhancedAutofill)));
+  } else {
+    return EqualsAtMemorySuggestion(
+        memory_data_type,
+        ElementsAre(std::forward<Matchers>(matchers)...,
+                    EqualsSuggestion(SuggestionType::kSeparator),
+                    attribution_matcher,
+                    EqualsSuggestion(SuggestionType::kSeparator),
+                    EqualsSuggestion(SuggestionType::kManageEnhancedAutofill)));
+  }
 }
 
 // Matches a Suggestion with the given `memory_data_type` and a single footer
@@ -486,14 +488,14 @@ TEST_F(AtMemoryManagerTest,
 
   EXPECT_THAT(final_suggestions,
               ElementsAre(EqualsSuggestionWithManageEnhancedAutofillFooter(
-                  MemoryDataType::kAddressFull,
-                  EqualsSuggestion(SuggestionType::kAtMemorySearchResult))));
+                  MemoryDataType::kAddressFull)));
 }
 
-// Tests that data with no source defaults to displaying the "Manage enhanced
-// autofill" footer.
-TEST_F(AtMemoryManagerTest,
-       OnSearchSubmitted_NoSource_ShowsManageEnhancedAutofillFooter) {
+// Tests that data with no source defaults to displaying the Gemini attribution
+// and "Manage enhanced autofill" footer.
+TEST_F(
+    AtMemoryManagerTest,
+    OnSearchSubmitted_NoSource_ShowsGeminiAttributionAndManageEnhancedAutofillFooter) {
   auto [form_id, field_id] = SeeForm();
   manager().OnPopupShown(form_id, field_id,
                          AutofillSuggestionTriggerSource::kAtMemory,
@@ -1557,7 +1559,7 @@ TEST_F(AtMemoryManagerTest, RemoteSensitiveMetadata_Obfuscated) {
             GetObfuscatedValue(u"987654321", kVisibleSuffixLength));
 
   // 2. Verify Child Suggestion obfuscation in the flyout menu.
-  ASSERT_EQ(final_suggestions[0].children.size(), 3u);
+  ASSERT_EQ(final_suggestions[0].children.size(), 5u);
   EXPECT_EQ(final_suggestions[0].children[0].main_text.value,
             GetObfuscatedValue(u"987654321", kVisibleSuffixLength));
 

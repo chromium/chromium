@@ -370,43 +370,24 @@ Suggestion CreateSourceAttributionSuggestion() {
 
 std::vector<Suggestion> CreateFooterSuggestions(
     const MemorySearchResult& entry) {
-  if (entry.sources.empty()) {
-    // If there's no source, default to "Manage enhanced autofill".
-    std::vector<Suggestion> result;
-    result.emplace_back(CreateManageEnhancedAutofillSuggestion());
-    return result;
+  std::vector<Suggestion> suggestions;
+  if (IsMemorySearchResultAutofillSourced(entry)) {
+    Suggestion manage_information(
+        l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_MANAGE_SUGGESTION_MAIN_TEXT),
+        GetManageSuggestionType(entry.type));
+    manage_information.icon = Suggestion::Icon::kSettings;
+    manage_information.filtration_policy =
+        Suggestion::FiltrationPolicy::kStatic;
+    suggestions.emplace_back(std::move(manage_information));
+  } else {
+    Suggestion separator(SuggestionType::kSeparator);
+    separator.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+    suggestions.reserve(3);
+    suggestions.emplace_back(CreateSourceAttributionSuggestion());
+    suggestions.emplace_back(std::move(separator));
+    suggestions.emplace_back(CreateManageEnhancedAutofillSuggestion());
   }
-
-  const accessibility_annotator::MemoryEntrySource& source =
-      entry.sources.front();
-
-  switch (source.type) {
-    case MemoryEntrySourceType::kGmail:
-    case MemoryEntrySourceType::kCalendar:
-    case MemoryEntrySourceType::kPhotos: {
-      Suggestion separator(SuggestionType::kSeparator);
-      separator.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
-      std::vector<Suggestion> result;
-      result.reserve(3);
-      result.emplace_back(CreateSourceAttributionSuggestion());
-      result.emplace_back(std::move(separator));
-      result.emplace_back(CreateManageEnhancedAutofillSuggestion());
-      return result;
-    }
-    case MemoryEntrySourceType::kAutofill: {
-      Suggestion manage_information(
-          l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_AI_MANAGE_SUGGESTION_MAIN_TEXT),
-          GetManageSuggestionType(entry.type));
-      manage_information.icon = Suggestion::Icon::kSettings;
-      manage_information.filtration_policy =
-          Suggestion::FiltrationPolicy::kStatic;
-      std::vector<Suggestion> result;
-      result.emplace_back(std::move(manage_information));
-      return result;
-    }
-  }
-  NOTREACHED();
+  return suggestions;
 }
 
 Suggestion TransformResultIntoSuggestion(const MemorySearchResult& entry) {
