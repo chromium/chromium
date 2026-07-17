@@ -42,6 +42,22 @@ fn test_try_cast_slice() {
 }
 
 #[test]
+fn test_cast_slice_empty_alignment() {
+  // Regression/doc test for #342: an EMPTY slice is still subject to the
+  // target alignment requirement. Build a guaranteed 4-aligned byte slice from
+  // a [u32; 1], then `&bytes[1..1]` is a length-0 slice whose pointer is
+  // deterministically base+1 (not 4-aligned).
+  let aligned: [u32; 1] = [0];
+  let bytes: &[u8] = cast_slice(&aligned);
+  let empty_unaligned: &[u8] = &bytes[1..1];
+  assert!(empty_unaligned.is_empty());
+  assert_eq!(
+    try_cast_slice::<u8, u32>(empty_unaligned),
+    Err(PodCastError::TargetAlignmentGreaterAndInputNotAligned)
+  );
+}
+
+#[test]
 fn test_try_cast_slice_mut() {
   // some align4 data
   let u32_slice: &mut [u32] = &mut [4, 5, 6];

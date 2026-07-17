@@ -269,7 +269,11 @@ impl core::fmt::Display for PodCastError {
 impl std::error::Error for PodCastError {}
 
 // Rust 1.81+
-#[cfg(all(feature = "impl_core_error", not(feature = "extern_crate_std")))]
+#[cfg(all(
+  feature = "impl_core_error",
+  not(feature = "extern_crate_std"),
+  not(target_arch = "spirv")
+))]
 impl core::error::Error for PodCastError {}
 
 /// Re-interprets `&T` as `&[u8]`.
@@ -497,7 +501,7 @@ pub fn try_cast_mut<
 /// ## Failure
 ///
 /// * If the target type has a greater alignment requirement and the input slice
-///   isn't aligned.
+///   isn't aligned. **Note:** This rule applies even if the slice is empty!
 /// * If the target element type is a different size from the current element
 ///   type, and the output slice wouldn't be a whole number of elements when
 ///   accounting for the size change (eg: 3 `u16` values is 1.5 `u32` values, so
