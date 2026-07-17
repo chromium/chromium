@@ -16,10 +16,15 @@
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
 #include "extensions/renderer/v8_helpers.h"
+#include "gin/converter.h"
 #include "gin/public/gin_embedders.h"
+#include "gin/public/wrappable_pointer_tags.h"
+#include "gin/public/wrapper_info.h"
+#include "gin/wrappable.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "v8/include/cppgc/allocation.h"
 #include "v8/include/v8-context.h"
-#include "v8/include/v8-external.h"
+#include "v8/include/v8-cppgc.h"
 #include "v8/include/v8-function-callback.h"
 #include "v8/include/v8-isolate.h"
 #include "v8/include/v8-object.h"
@@ -34,6 +39,37 @@ namespace {
 const char kHandlerFunction[] = "handler_function";
 const char kFeatureName[] = "feature_name";
 }  // namespace
+
+// An Oilpan-allocated gin::Wrappable object that owns a HandlerFunction. Using a
+// gin::Wrappable ensures that the lifetime of the object is managed by the C++
+// garbage collector (Oilpan) and lives at least as long as its JavaScript
+// wrapper object.
+class WrappedHandlerFunction final
+    : public gin::Wrappable<WrappedHandlerFunction> {
+ public:
+  static constexpr gin::WrapperInfo kWrapperInfo = {
+      {gin::kEmbedderNativeGin},
+      gin::kWrappedHandlerFunction};
+
+  explicit WrappedHandlerFunction(
+      ObjectBackedNativeHandler::HandlerFunction handler_function)
+      : handler_function_(std::move(handler_function)) {}
+
+  const gin::WrapperInfo* wrapper_info() const override {
+    return &kWrapperInfo;
+  }
+
+  void Run(const v8::FunctionCallbackInfo<v8::Value>& args) {
+    if (!handler_function_.is_null()) {
+      handler_function_.Run(args);
+    }
+  }
+
+  void Reset() { handler_function_.Reset(); }
+
+ private:
+  ObjectBackedNativeHandler::HandlerFunction handler_function_;
+};
 
 ObjectBackedNativeHandler::ObjectBackedNativeHandler(ScriptContext* context)
     : context_(context),
@@ -119,13 +155,10 @@ void ObjectBackedNativeHandler::Router(
       }
     }
   }
-  // This CHECK is *important*. Otherwise, we'll go around happily executing
-  // something random.  See crbug.com/40083092.
-  CHECK(handler_function_value->IsExternal());
-  static_cast<HandlerFunction*>(
-      handler_function_value.As<v8::External>()->Value(
-          gin::kObjectBackedNativeHandlerHandlerFunctionTag))
-      ->Run(args);
+
+  WrappedHandlerFunction* wrapped_handler = nullptr;
+  CHECK(gin::ConvertFromV8(isolate, handler_function_value, &wrapped_handler));
+  wrapped_handler->Run(args);
 
   // Verify that the return value, if any, is accessible by the context.
   v8::ReturnValue<v8::Value> ret = args.GetReturnValue();
@@ -158,12 +191,12 @@ void ObjectBackedNativeHandler::RouteHandlerFunction(
   // Create and store a new HandlerFunction, and add a weak reference to it
   // in a v8 object so that we can retrieve it from the constructed v8
   // function.
-  handler_functions_.push_back(
-      std::make_unique<HandlerFunction>(std::move(handler_function)));
-  SetPrivate(
-      data, kHandlerFunction,
-      v8::External::New(isolate, handler_functions_.back().get(),
-                        gin::kObjectBackedNativeHandlerHandlerFunctionTag));
+  auto* wrapped_handler = cppgc::MakeGarbageCollected<WrappedHandlerFunction>(
+      isolate->GetCppHeap()->GetAllocationHandle(),
+      std::move(handler_function));
+  handler_functions_.emplace_back(wrapped_handler);
+  SetPrivate(data, kHandlerFunction,
+             wrapped_handler->GetWrapper(isolate).ToLocalChecked());
   DCHECK(feature_name.empty() ||
          ExtensionAPI::GetSharedInstance()->GetFeatureDependency(feature_name))
       << feature_name;
@@ -195,11 +228,9 @@ void ObjectBackedNativeHandler::Invalidate() {
       CHECK(GetPrivate(local_data, kHandlerFunction, &handler_function_value));
       DeletePrivate(local_data, kHandlerFunction);
     }
-  } else {
-    for (auto& fn : handler_functions_) {
-      fn->Reset();
-      fn.release();
-    }
+  }
+  for (auto& fn : handler_functions_) {
+    fn->Reset();
   }
 
   router_data_.clear();

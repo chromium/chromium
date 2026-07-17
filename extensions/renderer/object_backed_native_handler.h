@@ -11,12 +11,14 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "extensions/renderer/native_handler.h"
+#include "v8/include/cppgc/persistent.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-persistent-handle.h"
 #include "v8/include/v8-util.h"
 
 namespace extensions {
 class ScriptContext;
+class WrappedHandlerFunction;
 
 // An ObjectBackedNativeHandler is a factory for JS objects with functions on
 // them that map to native C++ functions. Subclasses should call
@@ -41,10 +43,10 @@ class ObjectBackedNativeHandler : public NativeHandler {
 
   v8::Isolate* GetIsolate() const;
 
- protected:
   using HandlerFunction =
       base::RepeatingCallback<void(const v8::FunctionCallbackInfo<v8::Value>&)>;
 
+ protected:
   virtual void AddRoutes() = 0;
 
   // Installs a new 'route' from `name` to `handler_function`. This means that
@@ -130,8 +132,10 @@ class ObjectBackedNativeHandler : public NativeHandler {
   using RouterData = std::vector<v8::Global<v8::Object>>;
   RouterData router_data_;
 
-  // Owned list of HandlerFunctions.
-  std::vector<std::unique_ptr<HandlerFunction>> handler_functions_;
+  // Persistent handles to the garbage-collected WrappedHandlerFunctions so
+  // that the C++ garbage collector (Oilpan) can root and trace them from this
+  // off-heap object.
+  std::vector<cppgc::Persistent<WrappedHandlerFunction>> handler_functions_;
 
   raw_ptr<ScriptContext, DanglingUntriaged> context_;
 
