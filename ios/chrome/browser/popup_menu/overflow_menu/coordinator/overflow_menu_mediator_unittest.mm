@@ -552,8 +552,14 @@ TEST_F(OverflowMenuMediatorTest, TestMenuItemsCount) {
 
   // New Tab, New Incognito Tab.
   NSUInteger number_of_tab_actions = 2;
-  if (IsSplitToolbarMode(mediator_.baseViewController)) {
+  BOOL showReloadStopAction;
+  if (IsChromeNextIaEnabled()) {
+    showReloadStopAction = !CanShowTabStrip(mediator_.baseViewController);
+  } else {
     // Stop/Reload only shows in split toolbar mode.
+    showReloadStopAction = IsSplitToolbarMode(mediator_.baseViewController);
+  }
+  if (showReloadStopAction) {
     number_of_tab_actions++;
   }
   if (base::ios::IsMultipleScenesSupported()) {

@@ -1927,10 +1927,16 @@ void GetPresetNTPBackgroundPreview(
     [appActions addObject:self.shareAction];
   }
 
-  // The reload/stop action is only shown when the reload button is not in the
-  // toolbar. The reload button is shown in the toolbar when the toolbar is not
-  // split.
-  if (IsSplitToolbarMode(self.baseViewController)) {
+  BOOL showReloadStopAction;
+  if (IsChromeNextIaEnabled()) {
+    showReloadStopAction = !CanShowTabStrip(self.baseViewController);
+  } else {
+    // The reload/stop action is only shown when the reload button is not in the
+    // toolbar. The reload button is shown in the toolbar when the toolbar is
+    // not split.
+    showReloadStopAction = IsSplitToolbarMode(self.baseViewController);
+  }
+  if (showReloadStopAction) {
     OverflowMenuAction* reloadStopAction =
         ([self isPageLoading]) ? self.stopLoadAction : self.reloadAction;
     [appActions addObject:reloadStopAction];
