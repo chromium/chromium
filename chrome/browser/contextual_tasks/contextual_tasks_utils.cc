@@ -167,12 +167,14 @@ PrepareClientToAimRequestInfo(
     omnibox::ModelMode active_model,
     std::optional<int64_t> active_tab_context_id,
     std::optional<base::UnguessableToken> overlay_token,
-    bool is_voice_search) {
+    bool is_voice_search,
+    const std::map<std::string, std::string>& additional_cgi_params) {
   CHECK(web_ui_interface);
   auto info =
       std::make_unique<contextual_search::ContextualSearchContextController::
                            CreateClientToAimRequestInfo>();
   info->query_text = query;
+  info->additional_cgi_params = additional_cgi_params;
   info->query_text_source =
       is_voice_search ? lens::QueryPayload::QUERY_TEXT_SOURCE_VOICE_INPUT
                       : lens::QueryPayload::QUERY_TEXT_SOURCE_KEYBOARD_INPUT;

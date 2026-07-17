@@ -49,6 +49,7 @@
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_invocation_source.h"
+#include "components/lens/lens_url_utils.h"
 #include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/input_state.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -167,10 +168,13 @@ void ContextualTasksOmniboxClient::OnAutocompleteAccept(
     const std::u16string& text,
     const AutocompleteMatch& match,
     const AutocompleteMatch& alternative_nav_match) {
+  const std::map<std::string, std::string>& additional_params =
+      lens::GetParametersMapWithoutQuery(destination_url);
+
   std::string query_text;
   net::GetValueForKeyInQuery(destination_url, "q", &query_text);
-  composebox_handler_->CreateAndSendQueryMessage(query_text,
-                                                 /*is_voice_search=*/false);
+  composebox_handler_->CreateAndSendQueryMessage(
+      query_text, /*is_voice_search=*/false, additional_params);
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -351,7 +355,8 @@ void ContextualTasksComposeboxHandler::SubmitQuery(
 
 void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
     const std::string& query,
-    bool is_voice_search) {
+    bool is_voice_search,
+    const std::map<std::string, std::string>& additional_cgi_params) {
   base::RecordAction(base::UserMetricsAction(
       "ContextualTasks.Composebox.UserAction.QuerySubmitted"));
   auto* session_handle = GetContextualSessionHandle();
@@ -381,7 +386,7 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
   if (!task_id.has_value() || !contextual_tasks_service ||
       is_only_visual_selection) {
     ContinueCreateAndSendQueryMessage(query, task_id, overlay_token,
-                                      is_voice_search);
+                                      is_voice_search, additional_cgi_params);
     return;
   }
 
@@ -443,14 +448,16 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
       [](ContextualTasksComposeboxHandler* handler, std::string query,
          std::optional<base::Uuid> task_id,
          std::optional<base::UnguessableToken> token, bool voice,
+         std::map<std::string, std::string> cgi_params,
          base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
              handle) {
         // The session handle is accessed via GetContextualSessionHandle(),
         // so we ignore it here.
-        handler->ContinueCreateAndSendQueryMessage(query, task_id, token,
-                                                   voice);
+        handler->ContinueCreateAndSendQueryMessage(query, task_id, token, voice,
+                                                   std::move(cgi_params));
       },
-      base::Unretained(this), query, task_id, overlay_token, is_voice_search);
+      base::Unretained(this), query, task_id, overlay_token, is_voice_search,
+      additional_cgi_params);
 
   contextual_tasks::QueryContextualizer::ContextualizeParams params;
   params.task_id = task_id;
@@ -633,7 +640,8 @@ void ContextualTasksComposeboxHandler::ContinueCreateAndSendQueryMessage(
     std::string query,
     std::optional<base::Uuid> original_task_id,
     std::optional<base::UnguessableToken> overlay_token,
-    bool is_voice_search) {
+    bool is_voice_search,
+    const std::map<std::string, std::string>& additional_cgi_params) {
   if (recontextualization_pending_count_ > 0) {
     recontextualization_pending_count_--;
   }
@@ -661,7 +669,8 @@ void ContextualTasksComposeboxHandler::ContinueCreateAndSendQueryMessage(
         contextual_tasks::PrepareClientToAimRequestInfo(
             query, session_handle, web_ui_interface_,
             GetInputState().active_tool, GetInputState().active_model,
-            GetActiveTabContextId(), overlay_token, is_voice_search);
+            GetActiveTabContextId(), overlay_token, is_voice_search,
+            additional_cgi_params);
 
     // Delay submission if context still uploading.
     if (IsAnyContextUploading()) {

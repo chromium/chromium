@@ -623,6 +623,28 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       CreateAndSendQueryMessage_PipesAdditionalCgiParams) {
+  std::string kQuery = "direct query";
+  std::map<std::string, std::string> kCgiParams = {
+      {"gs_lcrp", "EgZjaHJvbWWwAgE"}, {"source", "chrome.crn.rb"}};
+  EXPECT_CALL(*mock_ui_, GetTaskId())
+      .WillRepeatedly(testing::ReturnRefOfCopy(std::optional<base::Uuid>()));
+  EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
+      .WillOnce([&kQuery, &kCgiParams](
+                    std::unique_ptr<
+                        contextual_search::ContextualSearchContextController::
+                            CreateClientToAimRequestInfo> info) {
+        EXPECT_EQ(info->query_text, kQuery);
+        EXPECT_EQ(info->additional_cgi_params, kCgiParams);
+        return lens::ClientToAimMessage();
+      });
+  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_));
+
+  handler_->CreateAndSendQueryMessage(kQuery, /*is_voice_search=*/false,
+                                      kCgiParams);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
                        CreateAndSendQueryMessage_UpdatesMetricsRecorderSource) {
   // Set the initial source of the session metrics recorder to kLens.
   session_handle_->GetMetricsRecorder()->UpdateContextualSearchSource(
