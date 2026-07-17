@@ -272,7 +272,9 @@ TEST(PhoneNumberTest, UpdateCachedPhoneNumber) {
   EXPECT_EQ(u"70", phone.GetInfo(PHONE_HOME_CITY_CODE, "US"));
 }
 
-TEST(PhoneNumberTest, PhoneCombineHelper) {
+// Tests that `PhoneCombineHelper` can construct a valid phone number from its
+// collected phone components.
+TEST(PhoneCombineHelperTest, SetInfoAndParseNumber) {
   // PhoneCombineHelper is largely covered via PhoneImportAndGetTest. This
   // just tests some remaining edge cases:
 
@@ -296,7 +298,29 @@ TEST(PhoneNumberTest, PhoneCombineHelper) {
   EXPECT_EQ(u"(650) 234-5682", parsed_phone);
 }
 
-TEST(PhoneNumberTest, HelperSetsAllPhoneFieldTypes) {
+// Tests the construction of a `PhoneCombineHelper` instance from a collection
+// of observed field values.
+TEST(PhoneCombineHelperTest, FromObservedValues) {
+  const base::flat_map<FieldType, std::u16string> observed_values = {
+      // Valid phone number components.
+      {PHONE_HOME_CITY_CODE, u"650"},
+      {PHONE_HOME_NUMBER_PREFIX, u"234"},
+      {PHONE_HOME_NUMBER_SUFFIX, u"5682"},
+      // Unrelated field, should be ignored.
+      {EMAIL_ADDRESS, u"test@example.com"}};
+
+  const PhoneNumber::PhoneCombineHelper helper =
+      PhoneNumber::PhoneCombineHelper::FromObservedValues(observed_values);
+
+  std::u16string parsed_phone;
+  EXPECT_TRUE(helper.ParseNumber(
+      AutofillProfile(i18n_model_definition::kLegacyHierarchyCountryCode),
+      kLocale, &parsed_phone));
+  EXPECT_EQ(u"(650) 234-5682", parsed_phone);
+}
+
+// Tests that `PhoneCombineHelper` can handle all types of phone fields.
+TEST(PhoneCombineHelperTest, SetsAllPhoneFieldTypes) {
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   PhoneNumber phone_number(&profile);
 

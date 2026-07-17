@@ -79,7 +79,14 @@ class PhoneNumber : public FormGroup {
   // The class used to combine home phone parts into a whole number.
   class PhoneCombineHelper {
    public:
+    static PhoneCombineHelper FromObservedValues(
+        const base::flat_map<FieldType, std::u16string>& observed_values);
+
     PhoneCombineHelper();
+    PhoneCombineHelper(const PhoneCombineHelper&);
+    PhoneCombineHelper(PhoneCombineHelper&&);
+    PhoneCombineHelper& operator=(const PhoneCombineHelper&);
+    PhoneCombineHelper& operator=(PhoneCombineHelper&&);
     ~PhoneCombineHelper();
 
     // Processes the `value` accordingly given a phone number `field_type`.

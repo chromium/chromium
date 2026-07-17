@@ -329,8 +329,27 @@ void PhoneNumber::UpdateCacheIfNeeded(std::string_view app_locale) const {
   }
 }
 
-PhoneNumber::PhoneCombineHelper::PhoneCombineHelper() = default;
+PhoneNumber::PhoneCombineHelper
+PhoneNumber::PhoneCombineHelper::FromObservedValues(
+    const base::flat_map<FieldType, std::u16string>& observed_values) {
+  PhoneCombineHelper combined_phone;
+  for (const auto& [type, value] : observed_values) {
+    if (GroupTypeOfFieldType(type) == FieldTypeGroup::kPhone) {
+      combined_phone.SetInfo(type, value);
+    }
+  }
+  return combined_phone;
+}
 
+PhoneNumber::PhoneCombineHelper::PhoneCombineHelper() = default;
+PhoneNumber::PhoneCombineHelper::PhoneCombineHelper(const PhoneCombineHelper&) =
+    default;
+PhoneNumber::PhoneCombineHelper::PhoneCombineHelper(PhoneCombineHelper&&) =
+    default;
+PhoneNumber::PhoneCombineHelper& PhoneNumber::PhoneCombineHelper::operator=(
+    const PhoneCombineHelper&) = default;
+PhoneNumber::PhoneCombineHelper& PhoneNumber::PhoneCombineHelper::operator=(
+    PhoneCombineHelper&&) = default;
 PhoneNumber::PhoneCombineHelper::~PhoneCombineHelper() = default;
 
 void PhoneNumber::PhoneCombineHelper::SetInfo(FieldType field_type,

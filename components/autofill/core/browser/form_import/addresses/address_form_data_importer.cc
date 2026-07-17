@@ -439,48 +439,42 @@ AutofillProfile AddressFormDataImporter::ConstructProfileFromObservedValues(
   AutofillProfile candidate_profile(
       i18n_model_definition::kLegacyHierarchyCountryCode);
 
+  // Since the profile requires a complete phone number, the observed components
+  // of a phone number are collected first. If possible, these components are
+  // then combined into a whole phone number that can be stored in the profile.
+  const PhoneNumber::PhoneCombineHelper combined_phone =
+      PhoneNumber::PhoneCombineHelper::FromObservedValues(observed_values);
+
+  // In order to use the correct representation for addresses, establish the
+  // country of the profile first.
   auto country_it = observed_values.find(ADDRESS_HOME_COUNTRY);
   if (country_it != observed_values.end()) {
-    // Try setting the collected country value into the profile and report
-    // invalid country if the operation failed.
     candidate_profile.SetInfoWithVerificationStatus(
         ADDRESS_HOME_COUNTRY, country_it->second, client_->GetAppLocale(),
         VerificationStatus::kObserved);
 
-    // Track the validity of the entered country for metrics.
     import_metadata.observed_invalid_country =
         !candidate_profile.HasRawInfo(ADDRESS_HOME_COUNTRY);
   }
 
-  // When setting a phone number, the region is deduced from the profile's
-  // country or the app locale. For the variation country code to take
-  // precedence over the app locale, country code complemention needs to happen
-  // before `SetPhoneNumber()`.
+  // When setting a phone number, the region is only deduced from the profile's
+  // country or the app locale. To also use the variation country for
+  // complementing the phone number's country code, the profile country
+  // complemention needs to happen before `SetPhoneNumber()`.
   import_metadata.did_complement_country =
       ComplementCountry(candidate_profile, import_log_buffer);
 
-  // We only set complete phone, so aggregate phone parts in these vars and set
-  // complete at the end.
-  PhoneNumber::PhoneCombineHelper combined_phone;
-
-  // Populate the profile with the collected values. Note that this is after the
-  // profile's country has been set to make sure the correct address
-  // representation is used.
   for (const auto& [type, value] : observed_values) {
     // The profile country has already been established by this point. It's
     // ignored here to avoid re-setting up a potentially invalid country that
-    // was present in the form.
-    if (type == ADDRESS_HOME_COUNTRY) {
+    // was present in the form. The same applies to fields for a phone number.
+    if (type == ADDRESS_HOME_COUNTRY ||
+        GroupTypeOfFieldType(type) == FieldTypeGroup::kPhone) {
       continue;
     }
-    if (GroupTypeOfFieldType(type) == FieldTypeGroup::kPhone) {
-      // We need to store phone data in the variables, before building the whole
-      // number at the end.
-      combined_phone.SetInfo(type, value);
-    } else {
-      candidate_profile.SetInfoWithVerificationStatus(
-          type, value, client_->GetAppLocale(), VerificationStatus::kObserved);
-    }
+
+    candidate_profile.SetInfoWithVerificationStatus(
+        type, value, client_->GetAppLocale(), VerificationStatus::kObserved);
   }
 
   // Track if the form contains split zip fields such that at least zip prefix
