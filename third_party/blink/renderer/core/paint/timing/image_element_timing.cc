@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/check_deref.h"
 #include "base/time/time.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -50,8 +51,6 @@ IsExplicitlyRegisteredForElementTiming(const LayoutObject& layout_object) {
 }
 }  // namespace internal
 
-// static
-const char ImageElementTiming::kSupplementName[] = "ImageElementTiming";
 
 AtomicString ImagePaintString() {
   DEFINE_STATIC_LOCAL(const AtomicString, kImagePaint, ("image-paint"));
@@ -60,17 +59,12 @@ AtomicString ImagePaintString() {
 
 // static
 ImageElementTiming& ImageElementTiming::From(LocalDOMWindow& window) {
-  ImageElementTiming* timing =
-      Supplement<LocalDOMWindow>::From<ImageElementTiming>(window);
-  if (!timing) {
-    timing = MakeGarbageCollected<ImageElementTiming>(window);
-    ProvideTo(window, timing);
-  }
-  return *timing;
+  return CHECK_DEREF(
+      PaintTiming::From(*window.document()).GetImageElementTiming());
 }
 
 ImageElementTiming::ImageElementTiming(LocalDOMWindow& window)
-    : Supplement<LocalDOMWindow>(window) {}
+    : window_(&window) {}
 
 void ImageElementTiming::NotifyImageFinished(
     const LayoutObject& layout_object,
@@ -133,7 +127,7 @@ void ImageElementTiming::NotifyImagePaintedInternal(
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
     base::TimeTicks load_time,
     const gfx::Rect& image_border) {
-  LocalFrame* frame = GetSupplementable()->GetFrame();
+  LocalFrame* frame = window_->GetFrame();
   DCHECK(frame == layout_object.GetDocument().GetFrame());
   // Background images could cause |node| to not be an element. For example,
   // style applied to body causes this node to be a Document Node. Therefore,
@@ -169,9 +163,8 @@ void ImageElementTiming::NotifyImagePaintedInternal(
   const AtomicString& id = element->GetIdAttribute();
 
   const KURL& url = cached_image.Url();
-  ExecutionContext* context = layout_object.GetDocument().GetExecutionContext();
-  DCHECK(GetSupplementable()->document() == &layout_object.GetDocument());
-  DCHECK(context->GetSecurityOrigin());
+  DCHECK(window_->document() == &layout_object.GetDocument());
+  DCHECK(window_->GetSecurityOrigin());
 
   // If the image URL is a data URL ("data:image/..."), then the |name| of the
   // PerformanceElementTiming entry should be the URL trimmed to 100 characters.
@@ -203,7 +196,7 @@ OptionalPaintTimingCallback ImageElementTiming::TakePaintTimingCallback() {
           return;
         }
         WindowPerformance* performance =
-            DOMWindowPerformance::performance(*self->GetSupplementable());
+            DOMWindowPerformance::performance(*self->window_);
         if (!performance) {
           return;
         }
@@ -276,9 +269,7 @@ void ImageElementTiming::EnsureContainerTiming() {
   if (container_timing_) {
     return;
   }
-  LocalDOMWindow* window = GetSupplementable();
-  DCHECK(window);
-  container_timing_ = ContainerTiming::From(*window);
+  container_timing_ = ContainerTiming::From(*window_);
 }
 
 bool ImageElementTiming::ContributesToContainerTiming(const Element* element) {
@@ -293,15 +284,14 @@ bool ImageElementTiming::NeededForTiming(const LayoutObject& layout_object) {
 }
 
 bool ImageElementTiming::IsContainerTimingEnabled() {
-  WindowPerformance* performance =
-      DOMWindowPerformance::performance(*GetSupplementable());
+  WindowPerformance* performance = DOMWindowPerformance::performance(*window_);
   return performance ? performance->IsContainerTimingEnabled() : false;
 }
 
 void ImageElementTiming::Trace(Visitor* visitor) const {
+  visitor->Trace(window_);
   visitor->Trace(element_timings_);
   visitor->Trace(background_image_timestamps_);
-  Supplement<LocalDOMWindow>::Trace(visitor);
   visitor->Trace(container_timing_);
 }
 

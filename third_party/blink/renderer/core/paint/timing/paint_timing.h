@@ -28,6 +28,7 @@ class TickClock;
 
 namespace blink {
 struct DOMPaintTimingInfo;
+class ImageElementTiming;
 class LocalFrame;
 class PaintTimingDetector;
 class TextElementTiming;
@@ -209,6 +210,8 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
     return *paint_timing_detector_.Get();
   }
 
+  ImageElementTiming* GetImageElementTiming() { return image_element_timing_; }
+
  private:
   friend class RecodingTimeAfterBackForwardCacheRestoreFrameCallback;
 
@@ -283,6 +286,7 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   base::TimeTicks lcp_mouse_over_dispatch_time_;
 
   Member<PaintTimingDetector> paint_timing_detector_;
+  Member<ImageElementTiming> image_element_timing_;
   Member<TextElementTiming> text_element_timing_;
   Member<FirstMeaningfulPaintDetector> fmp_detector_;
   // The callback ID for requestAnimationFrame to record its time after the page

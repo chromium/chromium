@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -29,11 +28,8 @@ class StyleImage;
 // ImageElementTiming is responsible for tracking the paint timings for <img>
 // elements for a given window.
 class CORE_EXPORT ImageElementTiming final
-    : public GarbageCollected<ImageElementTiming>,
-      public Supplement<LocalDOMWindow> {
+    : public GarbageCollected<ImageElementTiming> {
  public:
-  static const char kSupplementName[];
-
   // The maximum amount of characters included in Element Timing and Largest
   // Contentful Paint for inline images.
   static constexpr const unsigned kInlineImageMaxChars = 100;
@@ -67,7 +63,7 @@ class CORE_EXPORT ImageElementTiming final
   void NotifyImageRemoved(const LayoutObject*,
                           const ImageResourceContent* image);
 
-  void Trace(Visitor*) const override;
+  void Trace(Visitor*) const;
 
   OptionalPaintTimingCallback TakePaintTimingCallback();
 
@@ -144,6 +140,8 @@ class CORE_EXPORT ImageElementTiming final
       background_image_timestamps_;
 
   Member<ContainerTiming> container_timing_;
+
+  Member<LocalDOMWindow> window_;
 };
 
 }  // namespace blink

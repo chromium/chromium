@@ -247,9 +247,9 @@ void PaintTiming::MarkPaintTimingInternal() {
       GetFrame()->DomWindow()->GetSoftNavigationHeuristics();
 
   // 3. Let paintedImages be a new ordered set...
+  CHECK(image_element_timing_);
   auto add_painted_images_element_timing_entries =
-      ImageElementTiming::From(*GetFrame()->DomWindow())
-          .TakePaintTimingCallback();
+      image_element_timing_->TakePaintTimingCallback();
   // 4. Let paintedTextNodes be a new ordered set
   auto compute_painted_text_entries =
       paint_timing_detector_->GetTextPaintTimingDetector()
@@ -474,6 +474,7 @@ void PaintTiming::SetTickClockForTesting(const base::TickClock* clock) {
 void PaintTiming::Trace(Visitor* visitor) const {
   visitor->Trace(paint_timing_detector_);
   visitor->Trace(fmp_detector_);
+  visitor->Trace(image_element_timing_);
   visitor->Trace(text_element_timing_);
   visitor->Trace(callback_manager_);
   Supplement<Document>::Trace(visitor);
@@ -489,6 +490,7 @@ PaintTiming::PaintTiming(Document& document)
   // isn't guaranteed since it's created lazily.
   if (LocalDOMWindow* window = document.domWindow()) {
     text_element_timing_ = MakeGarbageCollected<TextElementTiming>(*window);
+    image_element_timing_ = MakeGarbageCollected<ImageElementTiming>(*window);
   }
 }
 
