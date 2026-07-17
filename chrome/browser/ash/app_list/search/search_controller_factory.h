@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
 
 class AppListControllerDelegate;
+class PrefService;
 class Profile;
 
 namespace ash {
@@ -21,7 +22,9 @@ namespace app_list {
 class SearchController;
 
 // Build a SearchController instance with the profile.
+// `local_state` must be non-null and must outlive the returned object.
 std::unique_ptr<SearchController> CreateSearchController(
+    PrefService* local_state,
     Profile* profile,
     AppListModelUpdater* model_updater,
     AppListControllerDelegate* list_controller,

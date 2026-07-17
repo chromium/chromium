@@ -48,6 +48,7 @@
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/browser_delegate/browser_type.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -553,8 +554,10 @@ void AppListClientImpl::SetProfile(Profile* new_profile) {
 }
 
 void AppListClientImpl::SetUpSearchUI() {
+  // TODO(crbug.com/404129453): Avoid using g_browser_process.
   search_controller_ = app_list::CreateSearchController(
-      profile_, current_model_updater_, this, GetNotifier());
+      g_browser_process->local_state(), profile_, current_model_updater_, this,
+      GetNotifier());
 
   // Refresh the results used for the suggestion chips with empty query.
   // This fixes crbug.com/40642741.

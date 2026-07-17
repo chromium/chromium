@@ -77,7 +77,4 @@ specific_include_rules = {
   "local_image_search_service_factory\\.cc": [
     "+chrome/browser/browser_process.h",
   ],
-  "search_controller_factory\\.cc": [
-    "+chrome/browser/browser_process.h",
-  ],
 }

@@ -32,3 +32,9 @@ include_rules = [
   "+chrome/common",
   "+chrome/test",
 ]
+
+specific_include_rules = {
+  "quick_insert_client_impl\\.cc": [
+    "+chrome/browser/browser_process.h",
+  ],
+}

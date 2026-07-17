@@ -44,6 +44,7 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ash/lobster/lobster_service_provider.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -161,8 +162,10 @@ std::unique_ptr<app_list::SearchProvider> CreateDriveSearchProvider(
 
 std::unique_ptr<app_list::SearchProvider> CreateFileSearchProvider(
     Profile* profile) {
+  // TODO(crbug.com/393260137): Avoid using g_browser_process.
   return std::make_unique<app_list::FileSearchProvider>(
-      profile, base::FileEnumerator::FileType::FILES,
+      g_browser_process->local_state(), profile,
+      base::FileEnumerator::FileType::FILES,
       std::vector<std::string>{".jpg", ".jpeg", ".png", ".gif", ".webp"});
 }
 

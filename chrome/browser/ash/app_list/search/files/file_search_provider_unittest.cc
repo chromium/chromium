@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -47,8 +48,9 @@ class FileSearchProviderTest : public testing::Test {
     profile_ = std::make_unique<TestingProfile>();
     search_controller_ = std::make_unique<TestSearchController>();
     auto provider = std::make_unique<FileSearchProvider>(
-        profile_.get(), base::FileEnumerator::FileType::FILES |
-                            base::FileEnumerator::FileType::DIRECTORIES);
+        TestingBrowserProcess::GetGlobal()->local_state(), profile_.get(),
+        base::FileEnumerator::FileType::FILES |
+            base::FileEnumerator::FileType::DIRECTORIES);
     provider_ = provider.get();
     search_controller_->AddProvider(std::move(provider));
 

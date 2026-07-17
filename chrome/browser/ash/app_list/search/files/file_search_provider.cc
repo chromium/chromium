@@ -27,7 +27,6 @@
 #include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace app_list {
@@ -145,10 +144,12 @@ std::vector<FileSearchProvider::FileInfo> SearchFilesByPattern(
 }  // namespace
 
 FileSearchProvider::FileSearchProvider(
+    const PrefService* local_state,
     Profile* profile,
     int file_type,
     std::vector<std::string> allowed_extensions)
     : SearchProvider(SearchCategory::kFiles),
+      local_state_(CHECK_DEREF(local_state)),
       profile_(profile),
       thumbnail_loader_(profile),
       root_path_(file_manager::util::GetMyFilesFolderForProfile(profile)),
@@ -188,14 +189,12 @@ void FileSearchProvider::Start(const std::u16string& query) {
   }
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(
-          SearchFilesByPattern, root_path_, query, query_start_time_,
-          // TODO(crbug.com/404129453): Avoid using g_browser_process.
-          (file_manager::trash::IsTrashEnabledForProfile(
-               CHECK_DEREF(g_browser_process->local_state()), profile_)
-               ? trash_paths_
-               : std::vector<base::FilePath>()),
-          file_type_, allowed_extensions_),
+      base::BindOnce(SearchFilesByPattern, root_path_, query, query_start_time_,
+                     (file_manager::trash::IsTrashEnabledForProfile(
+                          local_state_.get(), profile_)
+                          ? trash_paths_
+                          : std::vector<base::FilePath>()),
+                     file_type_, allowed_extensions_),
       base::BindOnce(&FileSearchProvider::OnSearchComplete,
                      weak_factory_.GetWeakPtr()));
 }

@@ -34,7 +34,6 @@
 #include "chrome/browser/ash/app_list/search/system_info/system_info_card_provider.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
@@ -50,13 +49,13 @@ constexpr size_t kMaxPlayStoreResults = 12;
 }  // namespace
 
 std::unique_ptr<SearchController> CreateSearchController(
+    PrefService* local_state,
     Profile* profile,
     AppListModelUpdater* model_updater,
     AppListControllerDelegate* list_controller,
     ash::AppListNotifier* notifier) {
   auto controller = std::make_unique<SearchController>(
-      g_browser_process->local_state(), model_updater, list_controller,
-      notifier, profile);
+      local_state, model_updater, list_controller, notifier, profile);
   controller->Initialize();
 
   // Add search providers.
@@ -73,8 +72,9 @@ std::unique_ptr<SearchController> CreateSearchController(
   // on Chrome OS.
   if (!profile->IsGuestSession()) {
     controller->AddProvider(std::make_unique<FileSearchProvider>(
-        profile, base::FileEnumerator::FileType::FILES |
-                     base::FileEnumerator::FileType::DIRECTORIES));
+        local_state, profile,
+        base::FileEnumerator::FileType::FILES |
+            base::FileEnumerator::FileType::DIRECTORIES));
     controller->AddProvider(std::make_unique<DriveSearchProvider>(profile));
     controller->AddProvider(std::make_unique<SystemInfoCardProvider>(profile));
     if (search_features::IsLauncherImageSearchEnabled()) {

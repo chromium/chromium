@@ -12,6 +12,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/ash/thumbnail_loader/thumbnail_loader.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 
+class PrefService;
 class Profile;
 
 namespace app_list {
@@ -40,9 +42,11 @@ class FileSearchProvider : public SearchProvider {
           last_accessed(last_accessed) {}
   };
 
+  // `local_state` must be non-null and must outlive `this`.
   // If `allowed_extensions` is not empty, then only results that have an
   // extension in `allowed_extensions` will be returned.
   explicit FileSearchProvider(
+      const PrefService* local_state,
       Profile* profile,
       int file_type = base::FileEnumerator::FileType::FILES |
                       base::FileEnumerator::FileType::DIRECTORIES,
@@ -76,6 +80,7 @@ class FileSearchProvider : public SearchProvider {
   std::u16string last_query_;
   std::optional<ash::string_matching::TokenizedString> last_tokenized_query_;
 
+  const raw_ref<const PrefService> local_state_;
   const raw_ptr<Profile> profile_;
   ash::ThumbnailLoader thumbnail_loader_;
   base::FilePath root_path_;
