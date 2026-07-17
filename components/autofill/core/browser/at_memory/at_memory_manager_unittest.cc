@@ -1221,6 +1221,79 @@ TEST_F(AtMemoryManagerTest, PersonalContext_AppendsNoticeSuggestion) {
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
+// Tests that before search results are returned (when only the search
+// affordance suggestion to start a query is shown), the personal context notice
+// is appended at the end (after the search affordance suggestion).
+TEST_F(AtMemoryManagerTest,
+       PersonalContext_NoticePositioning_SearchAffordance) {
+  autofill_client().set_should_show_personal_context_at_memory_notice(true);
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
+                         AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
+                         /*is_context_secure=*/true, update_callback_.Get(),
+                         ukm::kInvalidSourceId);
+
+  // Set up expectation for `update_callback_` when the filter text changes.
+  std::vector<Suggestion> suggestions;
+  EXPECT_CALL(update_callback_,
+              Run(_, AutofillSuggestionTriggerSource::kAtMemory))
+      .WillOnce(SaveArg<0>(&suggestions));
+
+  // Simulate user typing in the search bar to show the search affordance.
+  manager().OnFilterChanged(u"query");
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  ASSERT_EQ(1u, suggestions.size());
+  EXPECT_EQ(SuggestionType::kAtMemorySearchAffordance, suggestions[0].type);
+#else
+  ASSERT_EQ(2u, suggestions.size());
+  EXPECT_EQ(SuggestionType::kAtMemorySearchAffordance, suggestions[0].type);
+  EXPECT_EQ(SuggestionType::kPersonalContextNotice, suggestions[1].type);
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+}
+
+// Tests that after search results are returned, the personal context notice
+// is prepended at the top (before the search result suggestions).
+TEST_F(AtMemoryManagerTest, PersonalContext_NoticePositioning_SearchResults) {
+  autofill_client().set_should_show_personal_context_at_memory_notice(true);
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
+                         AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
+                         /*is_context_secure=*/true, update_callback_.Get(),
+                         ukm::kInvalidSourceId);
+
+  // Mock search results returned by the query service.
+  std::vector<MemorySearchResult> entries;
+  entries.emplace_back(MemoryDataType::kUnknown, u"", u"Some Value");
+
+  EXPECT_CALL(mock_query_service(),
+              Query(std::u16string_view(u"query"), _, _, _))
+      .WillOnce(RunOnceCallback<3>(MemorySearchResults(
+          MemorySearchStatus::kFinalResponseSuccess, std::move(entries))));
+
+  // Capture the `suggestions` delivered to the `update_callback_`.
+  std::vector<Suggestion> suggestions;
+  EXPECT_CALL(update_callback_,
+              Run(_, AutofillSuggestionTriggerSource::kAtMemory))
+      .WillRepeatedly(SaveArg<0>(&suggestions));
+
+  // Submit the search query to trigger query execution.
+  manager().OnSearchSubmitted(u"query");
+
+  // Verify that the personal context notice card is prepended first, followed
+  // by the search result entry.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  ASSERT_EQ(1u, suggestions.size());
+  EXPECT_EQ(SuggestionType::kAtMemorySearchResult, suggestions[0].type);
+#else
+  ASSERT_EQ(2u, suggestions.size());
+  EXPECT_EQ(SuggestionType::kPersonalContextNotice, suggestions[0].type);
+  EXPECT_EQ(SuggestionType::kAtMemorySearchResult, suggestions[1].type);
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+}
+
 // Tests that the personal context notice is not appended when the user does not
 // need to see the notice.
 TEST_F(AtMemoryManagerTest, PersonalContext_DoesNotAppendNoticeSuggestion) {
