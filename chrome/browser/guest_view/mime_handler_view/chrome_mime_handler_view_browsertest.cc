@@ -747,3 +747,63 @@ IN_PROC_BROWSER_TEST_P(ChromeMimeHandlerViewTest, FrameIterationBeforeAttach) {
   EXPECT_EQ(expected_outermost_rfh,
             guest_main_frame->GetOutermostMainFrameOrEmbedder());
 }
+
+IN_PROC_BROWSER_TEST_P(ChromeMimeHandlerViewTest, PostMessageGetterOverwrite) {
+  TestGuestViewManager* manager = GetGuestViewManager();
+  TestMimeHandlerViewGuest::RegisterTestGuestViewType(manager);
+  ASSERT_TRUE(LoadTestExtension());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+
+  auto* web_contents = GetEmbedderWebContents();
+
+  const char kSetupScript[] = R"(
+    (() => {
+      const iframe = document.createElement('iframe');
+      iframe.src = 'testEmbedded.csv';
+      document.body.appendChild(iframe);
+    })();
+  )";
+
+  ASSERT_TRUE(content::ExecJs(web_contents, kSetupScript));
+
+  guest_view::GuestViewBase* guest = manager->WaitForNextGuestViewCreated();
+  ASSERT_TRUE(guest);
+  ASSERT_TRUE(manager->WaitUntilAttachedAndLoaded(guest));
+
+  // This replaces the internal embed element with our own frame of the same
+  // name. The new frame has a custom getter for the postMessage property, which
+  // destroys the parent iframe when accessed. Then we trigger a postMessage.
+  // The implementation should be robust to this manipulation.
+  // See https://crbug.com/516910450
+  const char kReproScript[] = R"(
+    (async () => {
+      const iframe = document.querySelector('iframe');
+      while (typeof iframe.contentDocument.querySelector('embed')?.postMessage
+                 !== 'function') {
+        await new Promise(r => setTimeout(r));
+      }
+      let innerEmbed = iframe.contentDocument.querySelector('embed');
+      let internalid = innerEmbed.getAttribute('internalid');
+      let savedPostMessage = innerEmbed.postMessage;
+
+      innerEmbed.remove();
+      let evilFrame = iframe.contentDocument.createElement('iframe');
+      evilFrame.name = internalid;
+      iframe.contentDocument.body.appendChild(evilFrame);
+
+      Object.defineProperty(evilFrame.contentWindow, 'postMessage', {
+        configurable: true,
+        get() {
+          iframe.remove();
+          return function() {};
+        }
+      });
+
+      savedPostMessage({});
+    })();
+  )";
+
+  ASSERT_TRUE(content::ExecJs(web_contents, kReproScript));
+}

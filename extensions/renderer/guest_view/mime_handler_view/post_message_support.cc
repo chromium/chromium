@@ -145,8 +145,14 @@ void PostMessageSupport::PostJavaScriptMessage(v8::Isolate* isolate,
   v8::Local<v8::Object> target_window_proxy =
       target_frame->GlobalProxy(isolate);
   gin::Dictionary window_object(isolate, target_window_proxy);
+  auto weak_this = weak_factory_.GetWeakPtr();
   v8::Local<v8::Function> post_message;
   if (!window_object.Get(std::string(kPostMessageName), &post_message)) {
+    return;
+  }
+  if (!weak_this) {
+    // Getting the function may have executed a malicious script that destroyed
+    // `this`. See https://crbug.com/516910450
     return;
   }
 
