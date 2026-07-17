@@ -302,6 +302,89 @@ suite('ComposeboxMixinTest', () => {
       });
 
   test(
+      'Suggestions are sorted by most recently selected shown first.',
+      async () => {
+        loadTimeData.overrideValues({
+          contextManagementInComposeboxEnabled: true,
+          contextManagementInOmniboxEnabled: true,
+        });
+
+        // Disable tab deselection so restored tabs cannot be deselected.
+        element.tabDeselectionEnabled = false;
+
+        // Setup tabs:
+        // 1. Restored (tab1, tab2)
+        // 2. Recent & Selected (tab3)
+        // 3. Recent & Unselected (tab4)
+        const tab1 = {
+          tabId: 1,
+          title: 'Tab 1',
+          url: 'about:blank?1',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        };
+        const tab2 = {
+          tabId: 2,
+          title: 'Tab 2',
+          url: 'about:blank?2',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        };
+        const tab3 = {
+          tabId: 3,
+          title: 'Tab 3',
+          url: 'about:blank?3',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        };
+        const tab4 = {
+          tabId: 4,
+          title: 'Tab 4',
+          url: 'about:blank?4',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        };
+
+        // Mock open tabs in browser to return tab3 and tab4.
+        searchboxHandler.setResultFor(
+            'getRecentTabs', Promise.resolve({tabs: [tab3, tab4]}));
+
+        element.contextManagementInComposeboxEnabled = true;
+        element.aimThreadRestoredTabs = [tab1, tab2];
+        element.addedTabsIds = new Map([
+          [3, 'token3' as unknown as UnguessableToken],
+        ]);
+
+        await element.refreshTabSuggestions();
+
+        // After `refreshTabSuggestions()`, tabs should be sorted as:
+        // `[selectedRecent, restored, unselectedRecent]`.
+        assertEquals(4, element.tabSuggestions.length);
+        assertEquals(3, element.tabSuggestions[0]!.tabId);
+        assertEquals(1, element.tabSuggestions[1]!.tabId);
+        assertEquals(2, element.tabSuggestions[2]!.tabId);
+        assertEquals(4, element.tabSuggestions[3]!.tabId);
+
+        // Modify selection of recent tabs (deselect tab3, select tab4).
+        element.addedTabsIds = new Map([
+          [4, 'token4' as unknown as UnguessableToken],
+        ]);
+
+        element.onContextMenuOpened();
+
+        // Tabs should be re-sorted based on updated states.
+        assertEquals(4, element.tabSuggestions.length);
+        assertEquals(4, element.tabSuggestions[0]!.tabId);
+        assertEquals(1, element.tabSuggestions[1]!.tabId);
+        assertEquals(2, element.tabSuggestions[2]!.tabId);
+        assertEquals(3, element.tabSuggestions[3]!.tabId);
+      });
+
+  test(
       'refreshTabSuggestions() filters out closed restored tabs when tabDeselectionEnabled is true',
       async () => {
         const tab1 = {

@@ -1409,26 +1409,31 @@ export const ComposeboxEmbedderMixin =
           this.focusInput();
         }
 
+        private getSortedTabSuggestions_(suggestions: TabInfo[]): TabInfo[] {
+          const selectedTabIds = new Set(this.addedTabsIds.keys());
+          const restoredTabIds = this.contextManagementInComposeboxEnabled ?
+              new Set(
+                  (this.aimThreadRestoredTabs || []).map(tab => tab.tabId)) :
+              new Set<number>();
+
+          const selected =
+              suggestions.filter(tab => selectedTabIds.has(tab.tabId));
+          const restored = suggestions.filter(
+              tab => restoredTabIds.has(tab.tabId) &&
+                  !selectedTabIds.has(tab.tabId));
+          const other = suggestions.filter(
+              tab => !selectedTabIds.has(tab.tabId) &&
+                  !restoredTabIds.has(tab.tabId));
+
+          return [...selected, ...restored, ...other];
+        }
+
         onContextMenuOpened() {
           this.browserTabContextAdded = false;
           this.contextMenuOpened = true;
           if (this.tabSuggestionsState === TabSuggestionsState.LOADED) {
-            const selectedTabIds = new Set(this.addedTabsIds.keys());
-            const restoredTabIds = this.contextManagementInComposeboxEnabled ?
-                new Set(
-                    (this.aimThreadRestoredTabs || []).map(tab => tab.tabId)) :
-                new Set<number>();
-
-            const selected = this.tabSuggestions.filter(
-                tab => selectedTabIds.has(tab.tabId));
-            const restored = this.tabSuggestions.filter(
-                tab => restoredTabIds.has(tab.tabId) &&
-                    !selectedTabIds.has(tab.tabId));
-            const other = this.tabSuggestions.filter(
-                tab => !selectedTabIds.has(tab.tabId) &&
-                    !restoredTabIds.has(tab.tabId));
-
-            this.tabSuggestions = [...selected, ...restored, ...other];
+            this.tabSuggestions =
+                this.getSortedTabSuggestions_(this.tabSuggestions);
             if (this.inputState) {
               const {allowedInputTypes, disabledInputTypes} = this.inputState;
               if (allowedInputTypes.includes(InputType.kBrowserTab) &&
@@ -2414,18 +2419,10 @@ export const ComposeboxEmbedderMixin =
 
             const processedRecentTabs = dedupeTabs(restored, tabs);
 
-            const selectedTabIds = new Set(this.addedTabsIds.keys());
-
-            const selectedRecent = processedRecentTabs.filter(
-                tab => selectedTabIds.has(tab.tabId));
-            const unselectedRecent = processedRecentTabs.filter(
-                tab => !selectedTabIds.has(tab.tabId));
-
-            this.tabSuggestions = [
-              ...selectedRecent,
+            this.tabSuggestions = this.getSortedTabSuggestions_([
+              ...processedRecentTabs,
               ...restored,
-              ...unselectedRecent,
-            ];
+            ]);
             this.tabSuggestionsState = TabSuggestionsState.LOADED;
 
             if (this.inputState) {
