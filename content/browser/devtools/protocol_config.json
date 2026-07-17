@@ -250,6 +250,16 @@
             {
                 "domain": "WebMCP",
                 "async": ["invokeTool"]
+            },
+            {
+                "domain": "Debugger",
+                "include": [
+                    "setBreakpointByUrl",
+                    "removeBreakpoint"
+                ],
+                "exclude": [
+                    "setBreakpoint"
+                ]
             }
         ]
     },

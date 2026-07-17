@@ -162,6 +162,19 @@ struct ScriptToEvaluateOnNewDocument {
   bool include_command_line_api;
 };
 
+union URLBreakpointLocator {
+  string url;
+  string url_regex;
+  string script_hash;
+};
+
+struct URLBreakpoint {
+  int32 line_number;
+  URLBreakpointLocator locator;
+  int32? column_number;
+  string? condition;
+};
+
 // Represents an attached session which exposes remote debugging protocol.
 // This interface is implemented in renderer hosting entity under debug.
 //
@@ -218,6 +231,7 @@ struct BrowserOriginatingSessionState {
   map<string /* scriptId */, ScriptToEvaluateOnNewDocument> scripts_to_evaluate_on_new_document;
   string script_to_evaluate_on_load_once;
   map<string /* header name */, string /* header value */> extra_request_headers;
+  map<string /* breakpointId */, URLBreakpoint> url_breakpoints;
 };
 
 // The renderer originating session state is a mapping from keys to either values

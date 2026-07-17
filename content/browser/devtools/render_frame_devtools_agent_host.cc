@@ -26,6 +26,7 @@
 #include "content/browser/devtools/protocol/audits_handler.h"
 #include "content/browser/devtools/protocol/background_service_handler.h"
 #include "content/browser/devtools/protocol/browser_handler.h"
+#include "content/browser/devtools/protocol/debugger_handler.h"
 #include "content/browser/devtools/protocol/device_access_handler.h"
 #include "content/browser/devtools/protocol/device_orientation_handler.h"
 #include "content/browser/devtools/protocol/digital_credentials_handler.h"
@@ -407,6 +408,7 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session) {
   auto* browser_handler =
       session->CreateAndAddHandler<protocol::BrowserHandler>(
           session->GetClient()->MayWriteLocalFiles());
+  session->CreateAndAddHandler<protocol::DebuggerHandler>();
   session->CreateAndAddHandler<protocol::DeviceAccessHandler>();
   session->CreateAndAddHandler<protocol::DeviceOrientationHandler>();
   session->CreateAndAddHandler<protocol::DOMHandler>(

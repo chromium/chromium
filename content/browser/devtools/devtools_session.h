@@ -38,6 +38,7 @@ namespace protocol {
 class DevToolsDomainHandler;
 class AuditsHandler;
 class DOMHandler;
+class DebuggerHandler;
 class DeviceOrientationHandler;
 class EmulationHandler;
 class InputHandler;
@@ -240,6 +241,7 @@ class DevToolsSession : public protocol::FrontendChannel,
     return std::disjunction_v<
         std::is_same<T, protocol::AuditsHandler>,
         std::is_same<T, protocol::DOMHandler>,
+        std::is_same<T, protocol::DebuggerHandler>,
         std::is_same<T, protocol::DeviceOrientationHandler>,
         std::is_same<T, protocol::EmulationHandler>,
         std::is_same<T, protocol::InputHandler>,

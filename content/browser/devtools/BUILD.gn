@@ -65,6 +65,7 @@ action("concatenate_protocols") {
       "$root_gen_dir/third_party/blink/public/devtools_protocol/protocol.json"
   inputs = [
     _blink_protocol_path,
+    "//v8/include/js_protocol.pdl",
     "//third_party/inspector_protocol/pdl.py",
   ]
   output_file = _concatenated_protocol_path
@@ -117,6 +118,8 @@ inspector_protocol_generate("protocol_sources") {
     "protocol/digital_credentials.h",
     "protocol/dom.cc",
     "protocol/dom.h",
+    "protocol/debugger.cc",
+    "protocol/debugger.h",
     "protocol/emulation.cc",
     "protocol/emulation.h",
     "protocol/fed_cm.cc",
