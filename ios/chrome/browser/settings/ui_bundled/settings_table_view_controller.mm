@@ -52,6 +52,7 @@
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/catalogs/ui/button_catalog_view_controller.h"
 #import "ios/chrome/browser/catalogs/ui/table_cell_catalog_view_controller.h"
+#import "ios/chrome/browser/catalogs/ui/view_catalog_view_controller.h"
 #import "ios/chrome/browser/catalogs/ui/view_controller_catalog_view_controller.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_util.h"
@@ -637,6 +638,8 @@ struct EnhancedSafeBrowsingActivePromoData
         toSectionWithIdentifier:SettingsSectionIdentifierDebug];
     [model addItem:[self viewControllerCatalogDetailItem]
         toSectionWithIdentifier:SettingsSectionIdentifierDebug];
+    [model addItem:[self viewCatalogDetailItem]
+        toSectionWithIdentifier:SettingsSectionIdentifierDebug];
   }
 
   if (experimental_flags::ShouldShowBackendPromoDebugTools()) {
@@ -1165,6 +1168,15 @@ struct EnhancedSafeBrowsingActivePromoData
           accessibilityIdentifier:nil];
 }
 
+- (TableViewDetailIconItem*)viewCatalogDetailItem {
+  return [self detailItemWithType:SettingsItemTypeViewCatalog
+                             text:@"View Catalog"
+                       detailText:nil
+                           symbol:DefaultSettingsRootSymbol(kCartSymbol)
+            symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
+          accessibilityIdentifier:nil];
+}
+
 #pragma mark Item Constructors
 
 - (TableViewDetailIconItem*)detailItemWithType:(NSInteger)type
@@ -1412,6 +1424,12 @@ struct EnhancedSafeBrowsingActivePromoData
     case SettingsItemTypeViewControllerCatalog:
       [self.navigationController
           pushViewController:[[ViewControllerCatalogViewController alloc] init]
+                    animated:YES];
+      break;
+    case SettingsItemTypeViewCatalog:
+      [self.navigationController
+          pushViewController:[[ViewCatalogViewController alloc]
+                                 initWithBrowser:_browser]
                     animated:YES];
       break;
     case SettingsItemTypeBWGSettings:
