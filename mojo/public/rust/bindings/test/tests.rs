@@ -35,7 +35,7 @@ fn test_watcher_basic() {
     test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
 
     use bindings::message_pipe_watcher::{MessagePipeWatcher, ResponseSender};
-    use system::message::{FullyReadableWithHandlesMessage, WritableMessage};
+    use system::message::{ReadableWithHandlesMessage, WritableMessage};
     use system::message_pipe::MessageEndpoint;
 
     let (sender, receiver) = MessageEndpoint::create_pipe().unwrap();
@@ -45,13 +45,11 @@ fn test_watcher_basic() {
 
     // When we receive a message at the receiver, store it in `received_messages`
     // and send a simple response.
-    let receiver_msg_handler = move |raw_msg: FullyReadableWithHandlesMessage,
+    let receiver_msg_handler = move |raw_msg: ReadableWithHandlesMessage,
                                      sender: ResponseSender| {
         let msg_contents = String::from_utf8(raw_msg.read_bytes().unwrap().to_vec()).unwrap();
         received_messages_clone.lock().unwrap().push(msg_contents);
-        sender.try_send_response(
-            WritableMessage::new_with_bytes(b"Got it!").unwrap().finalize_for_sending(),
-        );
+        sender.try_send_response(WritableMessage::new_with_bytes(b"Got it!").unwrap().into());
     };
 
     let run_loop = RunLoop::new();
@@ -72,17 +70,11 @@ fn test_watcher_basic() {
     let receiver = MessagePipeWatcher::new(receiver, receiver_msg_handler, None, true).unwrap();
 
     // Send some messages through; this should trigger the handler twice
-    sender
-        .send_message(WritableMessage::new_with_bytes(b"Message 1").unwrap().finalize_for_sending())
-        .unwrap();
-    sender
-        .send_message(WritableMessage::new_with_bytes(b"Message 2").unwrap().finalize_for_sending())
-        .unwrap();
+    sender.send_message(WritableMessage::new_with_bytes(b"Message 1").unwrap().into()).unwrap();
+    sender.send_message(WritableMessage::new_with_bytes(b"Message 2").unwrap().into()).unwrap();
     // Send a message the other way and make sure it arrived
     receiver
-        .send_message(
-            WritableMessage::new_with_bytes(b"From Receiver").unwrap().finalize_for_sending(),
-        )
+        .send_message(WritableMessage::new_with_bytes(b"From Receiver").unwrap().into())
         .unwrap();
 
     run_loop.run();
@@ -846,9 +838,8 @@ fn test_bad_control_message() {
     );
     let msg = MojomMessage { header, payload: vec![], handles: vec![], raw_message_handle: None };
     let (serialized, handles) = msg.into_data();
-    let raw_msg = system::message::WritableMessage::new_with_data(&serialized, handles)
-        .unwrap()
-        .finalize_for_sending();
+    let raw_msg =
+        system::message::WritableMessage::new_with_data(&serialized, handles).unwrap().into();
     handle1.write(raw_msg).unwrap();
 
     // Run the loop to process the message

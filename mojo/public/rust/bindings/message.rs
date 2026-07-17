@@ -14,7 +14,8 @@ chromium::import! {
 
 use crate::message_header::*;
 use system::message::{
-    BadMessageError, FullyReadableWithHandlesMessage, ReadableBytesOnlyMessage, WritableMessage,
+    BadMessageError, ReadableBytesOnlyMessage, ReadableWithHandlesMessage, SendableMessage,
+    WritableMessage,
 };
 use system::mojo_types::UntypedHandle;
 
@@ -31,7 +32,6 @@ pub struct MojomMessage {
     pub header: MessageHeader,
     pub payload: Vec<u8>,
     pub handles: Vec<UntypedHandle>,
-    // This field should only be set for messages that came in across the wire;
     // we keep the raw handle around so we can report a bad message later if
     // necessary.
     pub raw_message_handle: Option<ReadableBytesOnlyMessage>,
@@ -42,7 +42,7 @@ impl MojomMessage {
     ///
     /// If parsing fails, this will return `None` and report the original
     /// message as malformed.
-    pub fn parse_raw_or_report_bad_message(msg: FullyReadableWithHandlesMessage) -> Option<Self> {
+    pub fn parse_raw_or_report_bad_message(msg: ReadableWithHandlesMessage) -> Option<Self> {
         let (handles, mut msg_bytes_only) = msg.read_data().unwrap();
 
         let raw_bytes = msg_bytes_only.read_bytes().unwrap();
@@ -79,10 +79,14 @@ impl MojomMessage {
     }
 }
 
-impl From<MojomMessage> for WritableMessage {
+impl From<MojomMessage> for SendableMessage {
     fn from(msg: MojomMessage) -> Self {
+        // This is more of a sanity check. There is nothing stopping us from re-sending
+        // a message given that the handle is there, but we should never end up in that
+        // situation, hence a technical bug somewhere.
+        assert!(msg.raw_message_handle.is_none(), "Cannot re-send an incoming message");
         let (payload, handles) = msg.into_data();
         // This can only fail if we're out of memory
-        WritableMessage::new_with_data(&payload, handles).unwrap()
+        WritableMessage::new_with_data(&payload, handles).unwrap().into()
     }
 }

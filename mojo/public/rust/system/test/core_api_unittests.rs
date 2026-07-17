@@ -31,7 +31,7 @@ fn test_basic_message_write_and_send() {
         system::message::WritableMessage::new_with_data(b"hello", vec![dummy_handle.into()])
             .unwrap();
 
-    let write_result = endpoint_b.write(hello.finalize_for_sending());
+    let write_result = endpoint_b.write(hello.into());
     expect_true!(write_result.is_ok());
 
     // Attempt to read the result.
@@ -119,7 +119,7 @@ fn test_trap_signal_on_readable() {
     trap.arm().expect("Failed to arm trap");
 
     let hello = system::message::WritableMessage::new_with_bytes(b"hello").unwrap();
-    let write_result = endpoint_b.write(hello.finalize_for_sending());
+    let write_result = endpoint_b.write(hello.into());
     expect_true!(write_result.is_ok());
     {
         let count = hit_count.lock().unwrap();
@@ -179,7 +179,7 @@ fn test_make_regular_trap() {
 fn test_report_bad_message() {
     let (endpoint_a, endpoint_b) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
     let msg = system::message::WritableMessage::new_with_bytes(b"moist").unwrap();
-    endpoint_b.write(msg.finalize_for_sending()).unwrap();
+    endpoint_b.write(msg.into()).unwrap();
     let mut received_msg = endpoint_a.read().unwrap();
 
     let err_msg: Arc<Mutex<String>> = Arc::new(Mutex::new("".to_string()));
@@ -207,12 +207,12 @@ fn test_typestate_transitions() {
             .unwrap();
 
     // State 2: SendableMessage
-    let sendable_msg: system::message::SendableMessage = msg.finalize_for_sending();
+    let sendable_msg: system::message::SendableMessage = msg.into();
     let write_result = endpoint_b.write(sendable_msg);
     expect_true!(write_result.is_ok());
 
-    // State 3: FullyReadableWithHandlesMessage
-    let fully_readable_msg: system::message::FullyReadableWithHandlesMessage =
+    // State 3: ReadableMessage
+    let fully_readable_msg: system::message::ReadableWithHandlesMessage =
         endpoint_a.read().expect("failed to read");
 
     // Can read bytes in FullyReadable

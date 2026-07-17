@@ -12,7 +12,7 @@ chromium::import! {
 }
 
 use sequenced_task_runner::SequencedTaskRunnerHandle;
-use system::message::{FullyReadableWithHandlesMessage, SendableMessage};
+use system::message::{ReadableWithHandlesMessage, SendableMessage};
 use system::message_pipe::MessageEndpoint;
 use system::mojo_types::MojoResult;
 use system::trap::{ArmResult, HandleSignals, Trap, TrapError, TrapEvent, TriggerCondition};
@@ -94,12 +94,12 @@ impl ResponseSender {
 /// 2. A (weak) reference to the endpoint in question, so the handler can send a
 ///    response if it wishes.
 pub trait MessagePipeWatcherHandler:
-    FnMut(FullyReadableWithHandlesMessage, ResponseSender) + Send + 'static
+    FnMut(ReadableWithHandlesMessage, ResponseSender) + Send + 'static
 {
 }
 
 impl<T> MessagePipeWatcherHandler for T where
-    T: FnMut(FullyReadableWithHandlesMessage, ResponseSender) + Send + 'static
+    T: FnMut(ReadableWithHandlesMessage, ResponseSender) + Send + 'static
 {
 }
 

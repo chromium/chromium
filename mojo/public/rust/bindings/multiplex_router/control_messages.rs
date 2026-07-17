@@ -78,7 +78,7 @@ pub struct RunOrClosePipeMessageParams {
 
 /// Construct a `MojomMessage` containing a `PeerAssociatedEndpointClosedEvent`
 /// control message.
-pub fn construct_peer_endpoint_closed_message(id: InterfaceId) -> MojomMessage {
+pub fn construct_peer_endpoint_closed_message(id: InterfaceId) -> system::message::SendableMessage {
     let event = PeerAssociatedEndpointClosedEvent { id, disconnect_reason: None };
     let input = RunOrClosePipeInput::PeerAssociatedEndpointClosedEvent(event);
     let params = RunOrClosePipeMessageParams { input };
@@ -93,7 +93,7 @@ pub fn construct_peer_endpoint_closed_message(id: InterfaceId) -> MojomMessage {
         interface_ids_offset,
     );
 
-    MojomMessage { header, payload, handles, raw_message_handle: None }
+    MojomMessage { header, payload, handles, raw_message_handle: None }.into()
 }
 
 /// Parse a control message from its wire representation.
