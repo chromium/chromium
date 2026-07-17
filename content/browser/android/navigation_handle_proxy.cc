@@ -52,6 +52,7 @@ void NavigationHandleProxy::DidStart() {
       env, java_navigation_handle_,
       url::GURLAndroid::FromNativeGURL(
           env, cpp_navigation_handle_->GetReferrer().url),
+      static_cast<jint>(cpp_navigation_handle_->GetReferrer().policy),
       url::GURLAndroid::FromNativeGURL(
           env, cpp_navigation_handle_->GetBaseURLForDataURL()),
       cpp_navigation_handle_->IsInPrimaryMainFrame(),

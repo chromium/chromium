@@ -306,7 +306,7 @@ public class CustomTabExternalNavigationTest {
                 new ExternalNavigationParams.Builder(
                                 insideVerifiedOriginUrl,
                                 /* isIncognito= */ false,
-                                /* referrer= */ GURL.emptyGURL(),
+                                /* referrer= */ null,
                                 /* pageTransition= */ 0,
                                 /* isRedirect= */ false)
                         .setRedirectHandler(RedirectHandler.create())
@@ -320,7 +320,7 @@ public class CustomTabExternalNavigationTest {
                 new ExternalNavigationParams.Builder(
                                 outsideVerifiedOriginUrl,
                                 /* isIncognito= */ false,
-                                /* referrer= */ GURL.emptyGURL(),
+                                /* referrer */ null,
                                 /* pageTransition= */ 0,
                                 /* isRedirect= */ false)
                         .setRedirectHandler(RedirectHandler.create())
@@ -335,7 +335,7 @@ public class CustomTabExternalNavigationTest {
                 new ExternalNavigationParams.Builder(
                                 insideVerifiedOriginUrl,
                                 /* isIncognito= */ false,
-                                /* referrer= */ GURL.emptyGURL(),
+                                /* referrer= */ null,
                                 /* pageTransition= */ 0,
                                 /* isRedirect= */ false)
                         .setRedirectHandler(RedirectHandler.create())

@@ -78,7 +78,9 @@ import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentUrlConstants;
+import org.chromium.content_public.common.Referrer;
 import org.chromium.net.NetworkChangeNotifier;
+import org.chromium.network.mojom.ReferrerPolicy;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.PageTransition;
@@ -1182,7 +1184,14 @@ public class ContextualSearchManager
                     isRendererInitiated);
             ExternalNavigationParams params =
                     new ExternalNavigationParams.Builder(
-                                    escapedUrl, false, referrerUrl, pageTransition, isRedirect)
+                                    escapedUrl,
+                                    false,
+                                    GURL.isEmptyOrInvalid(referrerUrl)
+                                            ? null
+                                            : new Referrer(
+                                                    referrerUrl.getSpec(), ReferrerPolicy.DEFAULT),
+                                    pageTransition,
+                                    isRedirect)
                             .setRedirectHandler(mRedirectHandler)
                             .setIsMainFrame(isInPrimaryMainFrame)
                             .build();

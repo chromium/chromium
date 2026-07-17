@@ -16,7 +16,9 @@ import org.chromium.base.UserDataHost;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.framehost.PageImpl;
+import org.chromium.content_public.common.Referrer;
 import org.chromium.net.NetError;
+import org.chromium.network.mojom.ReferrerPolicy;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
@@ -35,6 +37,7 @@ public class NavigationHandle {
     private @PageTransition int mPageTransition;
     private GURL mUrl;
     private @Nullable GURL mReferrerUrl;
+    private int mReferrerPolicy;
     private @Nullable GURL mBaseUrlForDataUrl;
     private boolean mHasCommitted;
     private boolean mIsDownload;
@@ -102,6 +105,7 @@ public class NavigationHandle {
                         /* isRestore= */ false);
         handle.didStart(
                 /* referrerUrl= */ GURL.emptyGURL(),
+                /* referrerPolicy= */ ReferrerPolicy.DEFAULT,
                 /* baseUrlForDataUrl= */ GURL.emptyGURL(),
                 isInPrimaryMainFrame,
                 isSameDocument,
@@ -143,6 +147,7 @@ public class NavigationHandle {
     @CalledByNative
     private void didStart(
             GURL referrerUrl,
+            int referrerPolicy,
             GURL baseUrlForDataUrl,
             boolean isInPrimaryMainFrame,
             boolean isSameDocument,
@@ -158,6 +163,7 @@ public class NavigationHandle {
             String mimeType,
             @Nullable WebContents webContents) {
         mReferrerUrl = referrerUrl;
+        mReferrerPolicy = referrerPolicy;
         mBaseUrlForDataUrl = baseUrlForDataUrl;
         mIsInPrimaryMainFrame = isInPrimaryMainFrame;
         mIsSameDocument = isSameDocument;
@@ -279,6 +285,20 @@ public class NavigationHandle {
     public GURL getReferrerUrl() {
         assert mStarted;
         return assumeNonNull(mReferrerUrl);
+    }
+
+    /** The referrer policy for the navigation. */
+    public int getReferrerPolicy() {
+        assert mStarted;
+        return mReferrerPolicy;
+    }
+
+    /** The referrer for the navigation. */
+    public @Nullable Referrer getReferrer() {
+        assert mStarted;
+        GURL referrerUrl = getReferrerUrl();
+        if (GURL.isEmptyOrInvalid(referrerUrl)) return null;
+        return new Referrer(referrerUrl.getSpec(), getReferrerPolicy());
     }
 
     /** Used for specifying a base URL for pages loaded via data URLs. */
