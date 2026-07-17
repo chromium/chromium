@@ -18994,22 +18994,6 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="PaymentRequest.TransactionAmount">
-  <owner>smcgruer@chromium.org</owner>
-  <owner>chrome-payments-eng@google.com</owner>
-  <metric name="Category">
-    <summary>
-      Tranaction size can be zero, micro, or regular. Values defined in the
-      TransactionSize enum of components/payments/core/journey_logger.h.
-    </summary>
-  </metric>
-  <metric name="CompletionStatus" enum="Boolean">
-    <summary>
-      Whether the transaction has been triggered or completed.
-    </summary>
-  </metric>
-</event>
-
 <event name="Pepper.Broker" singular="True">
   <owner>raymes@chromium.org</owner>
   <summary>
