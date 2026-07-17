@@ -16,6 +16,7 @@ import '../internal/icons.html.js';
 
 // </if>
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
@@ -85,6 +86,12 @@ export class SettingsWalletablePassDetectionToggleElement extends
       this.set('walletablePassDetectionOptedIn_.value', false);
       this.ineligibleUser_ = true;
     }
+  }
+
+  protected getNotificationsIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:notifications' :
+        'privacy:notifications-old';
   }
 }
 

@@ -355,6 +355,18 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         'privacy:cookie' :
         'privacy:cookie-old';
   }
+
+  protected getLockIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:lock' :
+        'privacy:lock-old';
+  }
+
+  protected getPageInfoIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:page-info' :
+        'privacy:page-info-old';
+  }
 }
 
 declare global {

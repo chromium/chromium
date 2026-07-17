@@ -25,6 +25,7 @@ import '../settings_shared.css.js';
 import '../site_favicon.js';
 
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -323,6 +324,18 @@ export class ProtocolHandlersElement extends ProtocolHandlersElementBase {
   // SettingsViewMixin implementation.
   override focusBackButton() {
     this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+  }
+
+  protected getProtocolHandlerIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:protocol-handler' :
+        'privacy:protocol-handler-old';
+  }
+
+  protected getProtocolHandlerOffIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:protocol-handler-off' :
+        'privacy:protocol-handler-off-old';
   }
 }
 

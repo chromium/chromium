@@ -52,6 +52,12 @@ export class SensorsPageElement extends SensorsPageElementBase {
   override focusBackButton() {
     this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
+
+  protected getSensorsIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:sensors' :
+        'privacy:sensors-old';
+  }
 }
 
 declare global {

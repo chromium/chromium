@@ -301,7 +301,9 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_MICROPHONE,
       id: Id.MIC,
       label: 'siteSettingsMic',
-      icon: 'privacy:mic',
+      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'privacy:mic' :
+          'privacy:mic-old',
       enabledLabel: 'siteSettingsMicAsk',
       disabledLabel: 'siteSettingsMicBlocked',
     },
@@ -309,7 +311,9 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_MIDI_DEVICES,
       id: Id.MIDI_DEVICES,
       label: 'siteSettingsMidiDevices',
-      icon: 'privacy:piano',
+      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'privacy:piano' :
+          'privacy:piano-old',
       enabledLabel: 'siteSettingsMidiAsk',
       disabledLabel: 'siteSettingsMidiBlocked',
     },
@@ -324,7 +328,9 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_NOTIFICATIONS,
       id: Id.NOTIFICATIONS,
       label: 'siteSettingsNotifications',
-      icon: 'privacy:notifications',
+      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'privacy:notifications' :
+          'privacy:notifications-old',
     },
     {
       route: routes.OFFER_WRITING_HELP,
@@ -383,7 +389,9 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_HANDLERS,
       id: Id.PROTOCOL_HANDLERS,
       label: 'siteSettingsHandlers',
-      icon: 'privacy:protocol-handler',
+      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'privacy:protocol-handler' :
+          'privacy:protocol-handler-old',
       enabledLabel: 'siteSettingsProtocolHandlersAllowed',
       disabledLabel: 'siteSettingsProtocolHandlersBlocked',
       shouldShow: () => !loadTimeData.getBoolean('isGuest'),
@@ -392,7 +400,9 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_SENSORS,
       id: Id.SENSORS,
       label: 'siteSettingsSensors',
-      icon: 'privacy:sensors',
+      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'privacy:sensors' :
+          'privacy:sensors-old',
       enabledLabel: 'siteSettingsSensorsAllowed',
       disabledLabel: 'siteSettingsSensorsBlocked',
       askLabel: 'siteSettingsSensorsAsk',
@@ -484,7 +494,9 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_WINDOW_MANAGEMENT,
       id: Id.WINDOW_MANAGEMENT,
       label: 'siteSettingsWindowManagement',
-      icon: 'privacy:select-window',
+      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'privacy:select-window' :
+          'privacy:select-window-old',
       enabledLabel: 'siteSettingsWindowManagementAsk',
       disabledLabel: 'siteSettingsWindowManagementBlocked',
     },

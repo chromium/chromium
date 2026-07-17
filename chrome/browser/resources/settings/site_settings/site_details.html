@@ -160,13 +160,13 @@
           icon="cr:videocam" label="$i18n{siteSettingsCamera}">
       </site-details-permission>
       <site-details-permission category="[[contentSettingsTypesEnum_.MIC]]"
-          icon="privacy:mic" label="$i18n{siteSettingsMic}">
+          icon="[[getMicIcon_()]]" label="$i18n{siteSettingsMic}">
       </site-details-permission>
       <site-details-permission category="[[contentSettingsTypesEnum_.SENSORS]]"
-          icon="privacy:sensors" label="$i18n{siteSettingsSensors}">
+          icon="[[getSensorsIcon_()]]" label="$i18n{siteSettingsSensors}">
       </site-details-permission>
       <site-details-permission category="[[contentSettingsTypesEnum_.NOTIFICATIONS]]"
-          icon="privacy:notifications"
+          icon="[[getNotificationsIcon_()]]"
           label="$i18n{siteSettingsNotifications}">
       </site-details-permission>
       <site-details-permission category="[[contentSettingsTypesEnum_.JAVASCRIPT]]"
@@ -195,7 +195,7 @@
       </site-details-permission>
       <site-details-permission
           category="[[contentSettingsTypesEnum_.MIDI_DEVICES]]"
-          icon="privacy:piano" label="$i18n{siteSettingsMidiDevices}">
+          icon="[[getPianoIcon_()]]" label="$i18n{siteSettingsMidiDevices}">
       </site-details-permission>
       <site-details-permission category="[[contentSettingsTypesEnum_.USB_DEVICES]]"
           icon="privacy:usb" label="$i18n{siteSettingsUsbDevices}"
@@ -296,7 +296,7 @@
       </site-details-permission>
       <site-details-permission
           category="[[contentSettingsTypesEnum_.WINDOW_MANAGEMENT]]"
-          icon="privacy:select-window"
+          icon="[[getSelectWindowIcon_()]]"
           label="$i18n{siteSettingsWindowManagement}">
       </site-details-permission>
       <site-details-permission

@@ -228,7 +228,9 @@ class SettingsSiteSettingsListElement extends
       return;
     }
 
-    let icon = 'privacy:sensors';
+    let icon = loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:sensors' :
+        'privacy:sensors-old';
     if (setting === ContentSetting.ASK) {
       icon = 'privacy:sensors-ask';
     } else if (setting === ContentSetting.BLOCK) {

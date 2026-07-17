@@ -188,6 +188,18 @@ export class NotificationsPageElement extends NotificationsPageElementBase {
   override focusBackButton() {
     this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
+
+  protected getNotificationsIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:notifications' :
+        'privacy:notifications-old';
+  }
+
+  protected getNotificationsOffIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:notifications-off' :
+        'privacy:notifications-off-old';
+  }
 }
 
 declare global {

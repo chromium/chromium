@@ -873,6 +873,12 @@ export class AllSitesElement extends AllSitesElementBase {
   override focusBackButton() {
     this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
+
+  protected getPageInfoIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:page-info' :
+        'privacy:page-info-old';
+  }
 }
 
 declare global {

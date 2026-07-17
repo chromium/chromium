@@ -47,6 +47,12 @@ export class PdfDocumentsPageElement extends PdfDocumentsPageElementBase {
   override focusBackButton() {
     this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
+
+  protected getOpenInBrowserIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:open-in-browser' :
+        'privacy:open-in-browser-old';
+  }
 }
 
 declare global {

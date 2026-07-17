@@ -415,7 +415,9 @@ suite('SiteSettingsList', function() {
       route: routes.SITE_SETTINGS_SENSORS,
       id: ContentSettingsTypes.SENSORS,
       label: 'siteSettingsSensors',
-      icon: 'privacy:sensors',
+      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'privacy:sensors' :
+          'privacy:sensors-old',
       enabledLabel: 'siteSettingsSensorsAllowed',
       disabledLabel: 'siteSettingsSensorsBlocked',
       askLabel: 'siteSettingsSensorsAsk',
@@ -439,7 +441,11 @@ suite('SiteSettingsList', function() {
         [], []);
     browserProxy.setPrefs(allowPrefs);
     await flushTasks();
-    assertEquals('privacy:sensors', sensorsRow.startIcon);
+    assertEquals(
+        loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'privacy:sensors' :
+            'privacy:sensors-old',
+        sensorsRow.startIcon);
 
     // Test ASK setting -> should show privacy:sensors-ask
     const askPrefs = createSiteSettingsPrefs(

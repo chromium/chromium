@@ -568,6 +568,36 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
         'privacy:imagesmode' :
         'privacy:imagesmode-old';
   }
+
+  protected getMicIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:mic' :
+        'privacy:mic-old';
+  }
+
+  protected getNotificationsIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:notifications' :
+        'privacy:notifications-old';
+  }
+
+  protected getPianoIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:piano' :
+        'privacy:piano-old';
+  }
+
+  protected getSelectWindowIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:select-window' :
+        'privacy:select-window-old';
+  }
+
+  protected getSensorsIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:sensors' :
+        'privacy:sensors-old';
+  }
 }
 
 declare global {
