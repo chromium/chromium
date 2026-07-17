@@ -9490,3 +9490,7 @@ crbug.com/534698830 external/wpt/worklets/audio-worklet-service-worker-intercept
 
 # DevTools CL block unblock: Failing due to encoding changes
 crbug.com/529423495 http/tests/devtools/elements/styles/xsl-transformed.js [ Failure ]
+
+# Gardener 2026-07-17
+crbug.com/535696870 [ Linux ] external/wpt/html/semantics/permission-element/bounded-sizes-reftest.tentative.html [ Failure Pass ]
+crbug.com/535696870 [ Linux ] virtual/permission-element/external/wpt/html/semantics/permission-element/bounded-sizes-reftest.tentative.html [ Failure Pass ]
