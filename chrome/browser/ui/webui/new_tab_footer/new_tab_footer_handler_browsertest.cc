@@ -22,6 +22,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/test_extension_dir.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/menu_model.h"
@@ -65,19 +67,23 @@ class NewTabFooterHandlerBrowserTest : public extensions::ExtensionBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
     embedder_ = std::make_unique<TestEmbedder>();
     handler_ = std::make_unique<NewTabFooterHandler>(
-        mojo::PendingReceiver<new_tab_footer::mojom::NewTabFooterHandler>(),
+        handler_remote_.BindNewPipeAndPassReceiver(),
         document_.BindAndGetRemote(), embedder_->GetWeakPtr(),
         NtpCustomBackgroundServiceFactory::GetForProfile(profile()),
         web_contents());
   }
 
   void TearDownOnMainThread() override {
+    handler_remote_.reset();
     handler_.reset();
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
   TestEmbedder& embedder() { return *embedder_; }
   NewTabFooterHandler& handler() { return *handler_; }
+  mojo::Remote<new_tab_footer::mojom::NewTabFooterHandler>& handler_remote() {
+    return handler_remote_;
+  }
   content::WebContents* web_contents() {
     return chrome_test_utils::GetActiveWebContents(this);
   }
@@ -86,6 +92,7 @@ class NewTabFooterHandlerBrowserTest : public extensions::ExtensionBrowserTest {
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestEmbedder> embedder_;
   std::unique_ptr<NewTabFooterHandler> handler_;
+  mojo::Remote<new_tab_footer::mojom::NewTabFooterHandler> handler_remote_;
   testing::NiceMock<MockNewTabFooterDocument> document_;
 };
 
@@ -151,6 +158,40 @@ IN_PROC_BROWSER_TEST_F(NewTabFooterHandlerBrowserTest, OpenManagementPage) {
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   const GURL expected_url = GURL(chrome::kChromeUIManagementURL);
   EXPECT_EQ(expected_url, web_contents()->GetLastCommittedURL());
+}
+
+// One test per rejected scheme: ReportBadMessage breaks the pipe, so reusing a
+// single Remote across iterations doesn't work.
+IN_PROC_BROWSER_TEST_F(NewTabFooterHandlerBrowserTest,
+                       OpenUrlInCurrentTab_RejectsHttp) {
+  mojo::test::BadMessageObserver bad_message_observer;
+  handler_remote()->OpenUrlInCurrentTab(GURL("http://example.test/"));
+  EXPECT_EQ("OpenUrlInCurrentTab: scheme must be https",
+             bad_message_observer.WaitForBadMessage());
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabFooterHandlerBrowserTest,
+                       OpenUrlInCurrentTab_RejectsWss) {
+  mojo::test::BadMessageObserver bad_message_observer;
+  handler_remote()->OpenUrlInCurrentTab(GURL("wss://example.test/"));
+  EXPECT_EQ("OpenUrlInCurrentTab: scheme must be https",
+             bad_message_observer.WaitForBadMessage());
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabFooterHandlerBrowserTest,
+                       OpenUrlInCurrentTab_RejectsChromeScheme) {
+  mojo::test::BadMessageObserver bad_message_observer;
+  handler_remote()->OpenUrlInCurrentTab(GURL("chrome://version/"));
+  EXPECT_EQ("OpenUrlInCurrentTab: scheme must be https",
+             bad_message_observer.WaitForBadMessage());
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabFooterHandlerBrowserTest,
+                       OpenUrlInCurrentTab_RejectsJavascript) {
+  mojo::test::BadMessageObserver bad_message_observer;
+  handler_remote()->OpenUrlInCurrentTab(GURL("javascript:void(0);"));
+  EXPECT_EQ("OpenUrlInCurrentTab: scheme must be https",
+             bad_message_observer.WaitForBadMessage());
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabFooterHandlerBrowserTest, ShowContextMenu) {

@@ -36,6 +36,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "net/base/url_util.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -45,6 +46,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/gfx/image/image_skia_rep_default.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "url/url_constants.h"
 
 NewTabFooterHandler::NewTabFooterHandler(
     mojo::PendingReceiver<new_tab_footer::mojom::NewTabFooterHandler>
@@ -123,11 +125,11 @@ void NewTabFooterHandler::OpenExtensionOptionsPageWithFallback() {
     options_url = net::AppendOrReplaceQueryParameter(options_url, "id",
                                                      curr_ntp_extension_id_);
   }
-  OpenUrlInCurrentTab(options_url);
+  OpenUrlInCurrentTabInternal(options_url);
 }
 
 void NewTabFooterHandler::OpenManagementPage() {
-  OpenUrlInCurrentTab(GURL(chrome::kChromeUIManagementURL));
+  OpenUrlInCurrentTabInternal(GURL(chrome::kChromeUIManagementURL));
 }
 
 void NewTabFooterHandler::ShowContextMenu(const gfx::Point& point) {
@@ -165,6 +167,16 @@ void NewTabFooterHandler::UpdateManagementNotice() {
 }
 
 void NewTabFooterHandler::OpenUrlInCurrentTab(const GURL& url) {
+  // Mojo entry: renderer-supplied URLs become browser-initiated navigations,
+  // so only https:// is allowed; anything else is treated as a bad message.
+  if (!url.SchemeIs(url::kHttpsScheme)) {
+    mojo::ReportBadMessage("OpenUrlInCurrentTab: scheme must be https");
+    return;
+  }
+  OpenUrlInCurrentTabInternal(url);
+}
+
+void NewTabFooterHandler::OpenUrlInCurrentTabInternal(const GURL& url) {
   auto* browser_window = webui::GetBrowserWindowInterface(web_contents_);
   if (!browser_window || !url.is_valid()) {
     return;
