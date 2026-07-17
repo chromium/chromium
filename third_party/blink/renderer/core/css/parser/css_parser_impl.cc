@@ -2494,8 +2494,9 @@ StyleRuleMixin* CSSParserImpl::ConsumeMixinRule(CSSParserTokenStream& stream) {
   std::unique_ptr<HeapVector<CSSSelector>, decltype(func_clear_arena)>
       scope_guard(&arena_, std::move(func_clear_arena));
 
-  // Parse the prelude; just a function token (the name) and some arguments.
-  if (stream.Peek().GetType() != kFunctionToken) {
+  // Parse the prelude: a dashed ident with an optional parameter list.
+  if (stream.Peek().GetType() != kIdentToken &&
+      stream.Peek().GetType() != kFunctionToken) {
     ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleMixin);
     return nullptr;  // Parse error.
   }
@@ -2505,9 +2506,12 @@ StyleRuleMixin* CSSParserImpl::ConsumeMixinRule(CSSParserTokenStream& stream) {
     return nullptr;
   }
 
-  // Parse the argument list (which may be empty).
+  // Parse the parameter list (which may be empty).
   std::optional<HeapVector<StyleRuleFunction::Parameter>> parameters;
-  {
+  if (stream.Peek().GetType() == kIdentToken) {
+    stream.ConsumeIncludingWhitespace();
+    parameters.emplace();
+  } else {
     CSSParserTokenStream::BlockGuard guard(stream);
     stream.ConsumeWhitespace();
     parameters = ConsumeFunctionParameters(stream);
@@ -2518,8 +2522,8 @@ StyleRuleMixin* CSSParserImpl::ConsumeMixinRule(CSSParserTokenStream& stream) {
   }
   stream.ConsumeWhitespace();
 
-  // After the argument list, there should be nothing (there's no return value,
-  // unlike with functions).
+  // After the name or parameter list, there should be nothing (there's no
+  // return value, unlike with functions).
   if (!ConsumeEndOfPreludeForAtRuleWithBlock(stream,
                                              CSSAtRuleID::kCSSAtRuleMixin)) {
     return nullptr;
