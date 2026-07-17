@@ -32,6 +32,9 @@ message ScamDetectionRequest {
   // This text will be used to add onto the prompt under the model execution
   // config.
   string rendered_text = 1 [features = { field_presence: EXPLICIT }];
+
+  // The URL of the web page being scanned.
+  string url = 2 [features = { field_presence: EXPLICIT }];
 }
 
 // Information about LLM detection of a page of what the page is about. This

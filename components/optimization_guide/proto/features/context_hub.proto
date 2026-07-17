@@ -37,6 +37,12 @@ message ContextHubRequest {
 
   // The entry items for the request.
   repeated EntryItem entry_items = 2;
+
+  // All pre-existing tab groups
+  repeated TabGroupMinimal pre_existing_tab_groups = 3;
+
+  // User instruction about how the tabs should be grouped.
+  string user_command = 4 [features = { field_presence: EXPLICIT }];
 }
 
 message EntryItem {
@@ -56,8 +62,14 @@ message ContextHubResponse {
 // Holds the output data for a request of type
 // CONTEXT_HUB_REQUEST_TYPE_GROUPING.
 message GroupResponse {
-  // The tab groups.
+  // TODO(crbug.com/534358600): Deprecate this field in favor of minimal_tab_groups.
   repeated TabGroup tab_groups = 1;
+
+  // The tab groups.
+  repeated TabGroupMinimal minimal_tab_groups = 2;
+
+  // The tab ids that are not in any tab group.
+  repeated int64 ungrouped_tab_ids = 3;
 }
 
 enum ContextHubRequestType {
