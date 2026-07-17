@@ -40,6 +40,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "third_party/zlib/google/compression_utils.h"
+#include "url/origin.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -422,6 +423,30 @@ IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiTest, TestStartStopDiscard) {
   EXPECT_TRUE(StartLogging());
   EXPECT_TRUE(StopLogging());
   EXPECT_TRUE(DiscardLog());
+}
+
+// A function dispatched in the on-the-record profile without incognito access
+// must not resolve a tab that lives in the incognito profile.
+IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiTest,
+                       CannotResolveIncognitoTabWithoutIncognitoAccess) {
+  content::WebContents* incognito_contents =
+      PlatformOpenURLOffTheRecord(profile(), GURL("chrome://version"));
+  ASSERT_TRUE(incognito_contents);
+
+  base::ListValue parameters;
+  base::DictValue request_info;
+  request_info.Set("tabId",
+                   extensions::ExtensionTabUtil::GetTabId(incognito_contents));
+  parameters.Append(std::move(request_info));
+  parameters.Append(
+      url::Origin::Create(incognito_contents->GetLastCommittedURL())
+          .GetURL()
+          .spec());
+
+  // RunFunctionAndExpectError() uses GetProfile() which returns the
+  // on-the-record profile. So the incognito tab must not be found.
+  RunFunctionAndExpectError<WebrtcLoggingPrivateStartFunction>(
+      parameters, "No tab with id: *.");
 }
 
 // Tests WebRTC diagnostic logging. Sets up the browser to save the multipart

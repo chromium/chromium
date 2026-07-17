@@ -158,7 +158,8 @@ content::RenderProcessHost* WebrtcLoggingPrivateFunction::RphFromRequest(
 
   int tab_id = *request.tab_id;
   content::WebContents* contents = nullptr;
-  if (!ExtensionTabUtil::GetTabById(tab_id, browser_context(), true,
+  if (!ExtensionTabUtil::GetTabById(tab_id, browser_context(),
+                                    include_incognito_information(),
                                     &contents)) {
     *error = extensions::ErrorUtils::FormatErrorMessage(
         extensions::ExtensionTabUtil::kTabNotFoundError,
