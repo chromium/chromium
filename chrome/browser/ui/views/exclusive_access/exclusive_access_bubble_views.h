@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_EXCLUSIVE_ACCESS_BUBBLE_VIEWS_H_
-#define CHROME_BROWSER_UI_VIEWS_EXCLUSIVE_ACCESS_BUBBLE_VIEWS_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_EXCLUSIVE_ACCESS_EXCLUSIVE_ACCESS_BUBBLE_VIEWS_H_
+#define CHROME_BROWSER_UI_VIEWS_EXCLUSIVE_ACCESS_EXCLUSIVE_ACCESS_BUBBLE_VIEWS_H_
 
 #include <memory>
 
@@ -132,4 +132,4 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
   base::WeakPtrFactory<ExclusiveAccessBubbleViews> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_EXCLUSIVE_ACCESS_BUBBLE_VIEWS_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_EXCLUSIVE_ACCESS_EXCLUSIVE_ACCESS_BUBBLE_VIEWS_H_

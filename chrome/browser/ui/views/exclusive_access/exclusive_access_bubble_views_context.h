@@ -1,8 +1,8 @@
 // Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#ifndef CHROME_BROWSER_UI_VIEWS_EXCLUSIVE_ACCESS_BUBBLE_VIEWS_CONTEXT_H_
-#define CHROME_BROWSER_UI_VIEWS_EXCLUSIVE_ACCESS_BUBBLE_VIEWS_CONTEXT_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_EXCLUSIVE_ACCESS_EXCLUSIVE_ACCESS_BUBBLE_VIEWS_CONTEXT_H_
+#define CHROME_BROWSER_UI_VIEWS_EXCLUSIVE_ACCESS_EXCLUSIVE_ACCESS_BUBBLE_VIEWS_CONTEXT_H_
 
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_ui_types.h"
@@ -42,4 +42,4 @@ class ExclusiveAccessBubbleViewsContext {
   virtual void DestroyAnyExclusiveAccessBubble() = 0;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_EXCLUSIVE_ACCESS_BUBBLE_VIEWS_CONTEXT_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_EXCLUSIVE_ACCESS_EXCLUSIVE_ACCESS_BUBBLE_VIEWS_CONTEXT_H_

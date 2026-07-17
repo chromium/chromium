@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
+#include "chrome/browser/ui/views/exclusive_access/exclusive_access_bubble_views.h"
 
 #include <string>
 
@@ -104,8 +104,8 @@ class ExclusiveAccessBubbleViewsTest : public InProcessBrowserTest {
     return u"Fullscreen";
 #else
     ui::Accelerator accelerator;
-    AcceleratorProviderForBrowser(browser())
-        ->GetAcceleratorForCommandId(IDC_FULLSCREEN, &accelerator);
+    AcceleratorProviderForBrowser(browser())->GetAcceleratorForCommandId(
+        IDC_FULLSCREEN, &accelerator);
     return accelerator.GetShortcutText();
 #endif
   }
