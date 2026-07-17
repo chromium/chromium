@@ -46,10 +46,7 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/stts_sheet_margin"
-            android:background="@drawable/stts_enhanced_card_background"
-            android:padding="8dp"
             android:clipToPadding="false"
-            android:clipToOutline="true"
             android:divider="@null" />
 
         <LinearLayout

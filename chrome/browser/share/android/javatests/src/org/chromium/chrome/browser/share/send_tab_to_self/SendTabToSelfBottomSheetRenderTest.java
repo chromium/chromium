@@ -15,8 +15,8 @@ import android.view.View;
 
 import androidx.test.filters.MediumTest;
 
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,11 +26,14 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.params.ParameterAnnotations;
+import org.chromium.base.test.params.ParameterSet;
+import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -39,6 +42,7 @@ import org.chromium.components.sync_device_info.FormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
+import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -46,11 +50,18 @@ import java.util.Arrays;
 import java.util.List;
 
 /** Render tests for the send-tab-to-self bottom sheets. */
-@RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
+@DoNotBatch(reason = "Night mode requires clean activity launch.")
+@RunWith(ParameterizedRunner.class)
+@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 public class SendTabToSelfBottomSheetRenderTest {
-    @ClassRule
-    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+    @ParameterAnnotations.ClassParameter
+    private static final List<ParameterSet> sClassParams =
+            Arrays.asList(
+                    new ParameterSet().value(false).name("Default"),
+                    new ParameterSet().value(true).name("NightMode"));
+
+    @Rule
+    public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Rule
@@ -67,9 +78,19 @@ public class SendTabToSelfBottomSheetRenderTest {
     @Mock private IdentityManager mIdentityManager;
     @Mock private BottomSheetController mBottomSheetController;
 
-    @BeforeClass
-    public static void setupSuite() {
-        sActivityTestRule.launchActivity(null);
+    public SendTabToSelfBottomSheetRenderTest(boolean nightModeEnabled) {
+        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
+        mRenderTestRule.setNightModeEnabled(nightModeEnabled);
+    }
+
+    @Before
+    public void setUp() {
+        mActivityTestRule.launchActivity(null);
+    }
+
+    @After
+    public void tearDown() {
+        NightModeTestUtils.tearDownNightModeForBlankUiTestActivity();
     }
 
     @Test
@@ -84,7 +105,7 @@ public class SendTabToSelfBottomSheetRenderTest {
                                 "My Computer", "guid2", FormFactor.DESKTOP, "Active 1 day ago"),
                         new TargetDeviceInfo(
                                 "My Tablet", "guid3", FormFactor.TABLET, "Active 2 days ago"));
-        Activity activity = sActivityTestRule.getActivity();
+        Activity activity = mActivityTestRule.getActivity();
         View view =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -116,7 +137,7 @@ public class SendTabToSelfBottomSheetRenderTest {
                                 "My Computer", "guid2", FormFactor.DESKTOP, "Active 1 day ago"),
                         new TargetDeviceInfo(
                                 "My Tablet", "guid3", FormFactor.TABLET, "Active 2 days ago"));
-        Activity activity = sActivityTestRule.getActivity();
+        Activity activity = mActivityTestRule.getActivity();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     DevicePickerBottomSheetContent sheetContent =
@@ -139,7 +160,7 @@ public class SendTabToSelfBottomSheetRenderTest {
     @Feature("RenderTest")
     public void testNoTargetDeviceBottomSheet() throws Throwable {
         setUpAccountData(TestAccounts.ACCOUNT1);
-        Activity activity = sActivityTestRule.getActivity();
+        Activity activity = mActivityTestRule.getActivity();
         View view =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -156,7 +177,7 @@ public class SendTabToSelfBottomSheetRenderTest {
     public void testNoTargetDeviceBottomSheetWithNonDisplayableAccountEmail() throws Throwable {
         AccountInfo account = TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL;
         setUpAccountData(account);
-        Activity activity = sActivityTestRule.getActivity();
+        Activity activity = mActivityTestRule.getActivity();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     NoTargetDeviceBottomSheetContent sheetContent =
@@ -178,7 +199,7 @@ public class SendTabToSelfBottomSheetRenderTest {
                                 "My Computer", "guid2", FormFactor.DESKTOP, "Active 1 day ago"),
                         new TargetDeviceInfo(
                                 "My Tablet", "guid3", FormFactor.TABLET, "Active 2 days ago"));
-        Activity activity = sActivityTestRule.getActivity();
+        Activity activity = mActivityTestRule.getActivity();
         View view =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
