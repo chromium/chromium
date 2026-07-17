@@ -137,10 +137,24 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
         return received ? entries : null;
     }
 
+    /**
+     * Commits all pending tab closures in the regular tab model. Restoring a tab can synchronously
+     * commit pending tab group closures, which calls back into TabRestoreService's
+     * CreateHistoricalGroup. To prevent concurrent modification issues in TabRestoreService, we
+     * commit all pending closures before starting restoration.
+     */
+    private void commitTabClosuresInRegularModel() {
+        TabModel regularModel = mTabModelSelector.getModel(/* incognito= */ false);
+        if (regularModel != null) {
+            regularModel.commitAllTabClosures();
+        }
+    }
+
     @Override
     public boolean openRecentlyClosedTab(
             TabModel tabModel, RecentlyClosedTab recentTab, int windowOpenDisposition) {
         assert mTabModelSelector.getModel(tabModel.isIncognito()) == tabModel;
+        commitTabClosuresInRegularModel();
         return RecentlyClosedBridgeJni.get()
                 .openRecentlyClosedTab(
                         mNativeBridge, tabModel, recentTab.getSessionId(), windowOpenDisposition);
@@ -150,6 +164,7 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
     public boolean openRecentlyClosedEntry(TabModel tabModel, RecentlyClosedEntry recentEntry) {
         assert mTabModelSelector.getModel(tabModel.isIncognitoBranded()) == tabModel
                 && recentEntry instanceof SessionRecentlyClosedEntry;
+        commitTabClosuresInRegularModel();
         SessionRecentlyClosedEntry sessionRecentEntry = (SessionRecentlyClosedEntry) recentEntry;
         return RecentlyClosedBridgeJni.get()
                 .openRecentlyClosedEntry(
@@ -159,6 +174,7 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
     @Override
     public void openMostRecentlyClosedEntry(TabModel tabModel) {
         assert mTabModelSelector.getModel(tabModel.isIncognito()) == tabModel;
+        commitTabClosuresInRegularModel();
         RecentlyClosedBridgeJni.get().openMostRecentlyClosedEntry(mNativeBridge, tabModel);
     }
 

@@ -1670,33 +1670,26 @@ public class RecentlyClosedBridgeTest {
                 });
 
         // 1. Blank tab
-        // 2. Restored tabB
-        // 3. Restored tabC
+        // 2. Restored tabA (Group 2)
         final List<Tab> tabs = getAllTabs();
-        Assert.assertEquals(3, tabs.size());
-        Assert.assertEquals(group1Titles[1], ChromeTabUtils.getTitleOnUiThread(tabs.get(1)));
-        Assert.assertEquals(group1Urls[1], ChromeTabUtils.getUrlOnUiThread(tabs.get(1)).getSpec());
-        Assert.assertEquals(group1Titles[0], ChromeTabUtils.getTitleOnUiThread(tabs.get(2)));
-        Assert.assertEquals(group1Urls[0], ChromeTabUtils.getUrlOnUiThread(tabs.get(2)).getSpec());
+        Assert.assertEquals(2, tabs.size());
+        Assert.assertEquals(group2Titles[0], ChromeTabUtils.getTitleOnUiThread(tabs.get(1)));
+        Assert.assertEquals(group2Urls[0], ChromeTabUtils.getUrlOnUiThread(tabs.get(1)).getSpec());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
-                            "Group 1", mTabModel.getTabGroupTitle(tabs.get(1).getTabGroupId()));
+                            "Group 2", mTabModel.getTabGroupTitle(tabs.get(1).getTabGroupId()));
                     Assert.assertTrue(mTabModel.isTabInTabGroup(tabs.get(1)));
-                    Assert.assertEquals(
-                            Arrays.asList(new Tab[] {tabs.get(1), tabs.get(2)}),
-                            mTabModel.getRelatedTabList(tabs.get(1).getId()));
                 });
-
         tabCount = getRecentEntriesAndReturnActiveTabCount(recentEntries);
-        Assert.assertEquals(3, tabCount);
+        Assert.assertEquals(2, tabCount);
         Assert.assertEquals(1, recentEntries.size());
         assertEntryIs(
                 recentEntries.get(0),
                 RecentlyClosedGroup.class,
-                new String[] {"Group 2"},
-                group2Titles,
-                group2Urls);
+                new String[] {"Group 1"},
+                group1Titles,
+                group1Urls);
     }
 
     // TODO(crbug.com/40218713): Add a test a case where bulk closures remain in the native service,
@@ -1761,6 +1754,62 @@ public class RecentlyClosedBridgeTest {
                 expectedTitles.containsAll(actualTitles)
                         && actualTitles.containsAll(expectedTitles));
         assertTabsAre(event.getTabs(), titles, urls);
+    }
+
+    @Test
+    @MediumTest
+    public void testOpenRecentlyClosedTab_CommitsPendingClosures() {
+        final String urlA = getUrl(TEST_PAGE_A);
+        final String urlB = getUrl(TEST_PAGE_B);
+        final Tab tabA = mActivityTestRule.loadUrlInNewTab(urlA, /* incognito= */ false);
+        final Tab tabB = mActivityTestRule.loadUrlInNewTab(urlB, /* incognito= */ false);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Close tabB without undo so it goes to recently closed.
+                    closeTabs(TabClosureParams.closeTab(tabB).allowUndo(false).build());
+                    // Close tabA with undo so it is pending.
+                    closeTabs(TabClosureParams.closeTab(tabA).allowUndo(true).build());
+                });
+
+        // Verify tabA closure is pending.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertTrue(mTabModel.isClosurePending(tabA.getId()));
+                });
+
+        final List<RecentlyClosedEntry> recentEntries = new ArrayList<>();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    recentEntries.addAll(
+                            mRecentlyClosedBridge.getRecentlyClosedEntries(MAX_ENTRY_COUNT));
+                });
+
+        RecentlyClosedTab recentTabB = null;
+        for (RecentlyClosedEntry entry : recentEntries) {
+            if (entry instanceof RecentlyClosedTab) {
+                RecentlyClosedTab rt = (RecentlyClosedTab) entry;
+                if (rt.getUrl().getSpec().equals(urlB)) {
+                    recentTabB = rt;
+                    break;
+                }
+            }
+        }
+        Assert.assertNotNull(recentTabB);
+        final RecentlyClosedTab finalRecentTabB = recentTabB;
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Restore tabB. This should commit tabA's closure.
+                    mRecentlyClosedBridge.openRecentlyClosedTab(
+                            mTabModel, finalRecentTabB, WindowOpenDisposition.NEW_FOREGROUND_TAB);
+                });
+
+        // Verify tabA closure is no longer pending (it was committed).
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertFalse(mTabModel.isClosurePending(tabA.getId()));
+                });
     }
 
     private List<Tab> getAllTabs() {

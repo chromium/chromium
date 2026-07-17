@@ -304,6 +304,10 @@ std::optional<SessionID> TabRestoreServiceHelper::CreateHistoricalTab(
 }
 
 void TabRestoreServiceHelper::BrowserClosing(LiveTabContext* context) {
+  if (restoring_) {
+    return;
+  }
+
   closing_contexts_.insert(context);
 
   auto window = std::make_unique<Window>();
@@ -386,6 +390,10 @@ TabRestoreServiceHelper::CreateHistoricalGroupImpl(
 void TabRestoreServiceHelper::CreateHistoricalGroup(
     LiveTabContext* context,
     const tab_groups::TabGroupId& id) {
+  if (restoring_) {
+    return;
+  }
+
   closing_groups_.insert(id);
 
   auto group = CreateHistoricalGroupImpl(context, id);
@@ -397,6 +405,10 @@ void TabRestoreServiceHelper::CreateHistoricalGroup(
 void TabRestoreServiceHelper::CreateHistoricalSplit(
     LiveTabContext* context,
     const split_tabs::SplitTabId& id) {
+  if (restoring_) {
+    return;
+  }
+
   std::vector<std::pair<int, LiveTab*>> split_tabs;
   for (int tab_index = 0; tab_index < context->GetTabCount(); ++tab_index) {
     if (context->GetSplitForTab(tab_index) == id) {
