@@ -130,10 +130,13 @@ TEST_F(PopupPersonalContextNoticeViewTest, InitialStateAtMemorySource) {
       base::JoinString({expected_title, expected_context, expected_link}, u" "),
       description->GetText());
 
-  // Check that the description contains a link with a correct text.
+  // Check that the description contains a link with a correct text and
+  // underline style.
   views::Link* settings_link = description->GetFirstLinkForTesting();
   EXPECT_TRUE(settings_link);
   EXPECT_EQ(expected_link, settings_link->GetText());
+  EXPECT_NE(settings_link->font_list().GetFontStyle() & gfx::Font::UNDERLINE,
+            0);
 
   // Check that the "Got it" button is visible and has the correct text.
   views::MdTextButton* got_it_button = view().got_it_button_for_testing();

@@ -35,6 +35,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -46,7 +47,7 @@ namespace {
 constexpr int kBetweenChildSpacing = 8;
 constexpr int kBackgroundCornerRadius = 10;
 constexpr int kBorderInsets = 12;
-constexpr int kRowVerticalMargin = 8;
+constexpr int kRowVerticalMargin = 12;
 constexpr int kRowHorizontalMargin = 12;
 constexpr int kMinimumWidth = 320;
 
@@ -109,6 +110,9 @@ PopupPersonalContextNoticeView::PopupPersonalContextNoticeView(
   GetViewAccessibility().SetName(full_text, ax::mojom::NameFrom::kAttribute);
   description_->SetText(std::move(full_text));
   description_->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
+  description_->SetDefaultTextStyle(views::style::STYLE_BODY_5);
+  description_->SetLineHeight(views::TypographyProvider::Get().GetLineHeight(
+      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_BODY_5));
 
   views::StyledLabel::RangeStyleInfo title_style;
   title_style.text_style = views::style::STYLE_BODY_5_MEDIUM;
@@ -116,8 +120,8 @@ PopupPersonalContextNoticeView::PopupPersonalContextNoticeView(
   description_->AddStyleRange(gfx::Range(0, title_text.length()), title_style);
 
   views::StyledLabel::RangeStyleInfo context_style;
-  context_style.text_style = views::style::STYLE_BODY_5_MEDIUM;
-  context_style.override_color_id = ui::kColorLabelForegroundSecondary;
+  context_style.text_style = views::style::STYLE_BODY_5;
+  context_style.override_color_id = ui::kColorSysOnSurfaceSubtle;
   description_->AddStyleRange(
       gfx::Range(title_text.length() + 1,
                  title_text.length() + 1 + context_text.length()),
@@ -128,6 +132,8 @@ PopupPersonalContextNoticeView::PopupPersonalContextNoticeView(
       views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
           &PopupPersonalContextNoticeView::OnSettingsLinkClicked,
           base::Unretained(this)));
+  link_style.text_style = views::style::STYLE_LINK_5;
+  link_style.override_color_id = ui::kColorSysPrimary;
   description_->AddStyleRange(gfx::Range(link_start, full_text_length),
                               link_style);
 
@@ -207,6 +213,7 @@ void PopupPersonalContextNoticeView::Layout(views::View::PassKey pass_key) {
   auto* link = GetSettingsLink();
   if (link) {
     link->SetFocusBehavior(views::View::FocusBehavior::NEVER);
+    link->SetFontList(link->font_list().DeriveWithStyle(gfx::Font::UNDERLINE));
   }
 }
 
@@ -228,9 +235,7 @@ gfx::Size PopupPersonalContextNoticeView::CalculatePreferredSize(
   gfx::Size content_preferred_size =
       views::View::CalculatePreferredSize(views::SizeBounds(width, {}));
 
-  int height = content_preferred_size.height() + GetInsets().height();
-
-  return gfx::Size(width, height);
+  return content_preferred_size;
 }
 
 PopupPersonalContextNoticeView::~PopupPersonalContextNoticeView() = default;
