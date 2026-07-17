@@ -985,10 +985,11 @@ template("test_runner_script") {
       assert(false, "Invalid test type: $_test_type.")
     }
 
-    # Devil does not reliably work with component builds of its tools. There's
-    # no benefit to them, so fall back to prebuilts for component builds.
+    # Devil does not reliably work with component builds of its tools, nor with
+    # sanitizer builds where transitive deps are instrumented. There's
+    # no benefit to them, so fall back to prebuilts for these builds.
     # https://crbug.com/1404180
-    if (_test_type != "junit" && !is_component_build) {
+    if (_test_type != "junit" && !is_component_build && !using_sanitizer) {
       executable_args += [ "--use-local-devil-tools" ]
     }
 

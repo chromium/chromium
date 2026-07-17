@@ -27,13 +27,13 @@ log -t cr_wrap.sh -- "Launching with HWASAN enabled."
     # https://github.com/google/sanitizers/wiki/AddressSanitizerOnAndroid/01f8df1ac1a447a8475cdfcb03e8b13140042dbd#running-with-wrapsh-recommended
     ret += f"""
 HERE="$(cd "$(dirname "$0")" && pwd)"
-# Options suggested by wiki docs:
-_ASAN_OPTIONS="log_to_syslog=false,allow_user_segv_handler=1"
-# Chromium-specific option (supposedly for graphics drivers):
-_ASAN_OPTIONS="$_ASAN_OPTIONS,strict_memcmp=0,use_sigaltstack=1"
-_LD_PRELOAD="$HERE/libclang_rt.asan-{arch}-android.so"
+    # Options suggested by wiki docs:
+    _ASAN_OPTIONS="log_to_syslog=true,allow_user_segv_handler=1"
+    # Chromium-specific option (supposedly for graphics drivers):
+    _ASAN_OPTIONS="$_ASAN_OPTIONS,strict_memcmp=0,use_sigaltstack=1"
+    _LD_PRELOAD="$(dirname "$(dirname "$HERE")")/base.apk!/lib/{arch}/libclang_rt.asan-{arch}-android.so"
 
-log -t cr_wrap.sh -- "Launching with ASAN enabled."
+    log -t cr_wrap.sh -- "Launching with ASAN enabled."
 """
     env['LD_PRELOAD'] = '$_LD_PRELOAD'
     env['ASAN_OPTIONS'] = '$_ASAN_OPTIONS'
@@ -68,8 +68,9 @@ def main():
     for prop in args.env.split():
       key, value = prop.split('=', 1)
       env[key] = value
-  pathlib.Path(args.output).write_text(
-      _generate(args.arch, args.hwasan, args.asan, env))
+  output_path = pathlib.Path(args.output)
+  output_path.write_text(_generate(args.arch, args.hwasan, args.asan, env))
+  output_path.chmod(0o755)
 
 
 if __name__ == '__main__':
