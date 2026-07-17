@@ -111,6 +111,8 @@ CSSFontFaceSrcValue::FontTechnology ValueIDToTechnology(CSSValueID valueID) {
       return CSSFontFaceSrcValue::FontTechnology::kTechnologyCDBT;
     case CSSValueID::kColorSbix:
       return CSSFontFaceSrcValue::FontTechnology::kTechnologySBIX;
+    case CSSValueID::kIncremental:
+      return CSSFontFaceSrcValue::FontTechnology::kTechnologyIncremental;
     default:
       NOTREACHED();
   }

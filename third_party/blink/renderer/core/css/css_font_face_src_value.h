@@ -68,8 +68,8 @@ class CORE_EXPORT CSSFontFaceSrcValue : public CSSValue {
   void SetFormat(const String& format) { format_ = format; }
 
   /* Only supported technologies need to be listed here, as we can reject other
-   * font face source component values, hence remove SVG and incremental for
-   * now, compare https://drafts.csswg.org/css-fonts-4/#font-face-src-parsing */
+   * font face source component values, hence remove SVG for now, compare
+   * https://drafts.csswg.org/css-fonts-4/#font-face-src-parsing */
   enum class FontTechnology {
     kTechnologyAvar2,
     kTechnologyFeaturesAAT,
@@ -78,6 +78,7 @@ class CORE_EXPORT CSSFontFaceSrcValue : public CSSValue {
     kTechnologyCOLRv1,
     kTechnologySBIX,
     kTechnologyCDBT,
+    kTechnologyIncremental,
     kTechnologyVariations,
     kTechnologyPalettes,
     kTechnologyUnknown

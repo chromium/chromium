@@ -3623,6 +3623,12 @@
       public: true,
     },
     {
+      // Support for https://www.w3.org/TR/IFT/. Tracked at
+      // https://chromestatus.com/feature/5135917565214720.
+      name: "IncrementalFontTransfer",
+      status: "test",
+    },
+    {
       name: "InertElementNonEditable",
       status: "stable",
     },

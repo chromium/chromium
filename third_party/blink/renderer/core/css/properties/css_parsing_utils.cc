@@ -6826,9 +6826,10 @@ bool IsSupportedKeywordTech(CSSValueID keyword) {
       return true;
     case CSSValueID::kAvar2:
       return RuntimeEnabledFeatures::FontFormatAvar2Enabled();
+    case CSSValueID::kIncremental:
+      return RuntimeEnabledFeatures::IncrementalFontTransferEnabled();
     case CSSValueID::kFeaturesGraphite:
     case CSSValueID::kColorSVG:
-    case CSSValueID::kIncremental:
       return false;
     default:
       return false;

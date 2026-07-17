@@ -65,6 +65,8 @@ String TechnologyToString(CSSFontFaceSrcValue::FontTechnology font_technology) {
       return "features-aat";
     case CSSFontFaceSrcValue::FontTechnology::kTechnologyFeaturesOT:
       return "features-opentype";
+    case CSSFontFaceSrcValue::FontTechnology::kTechnologyIncremental:
+      return "incremental";
     case CSSFontFaceSrcValue::FontTechnology::kTechnologyPalettes:
       return "palettes";
     case CSSFontFaceSrcValue::FontTechnology::kTechnologyCOLRv0:
