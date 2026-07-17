@@ -4920,6 +4920,43 @@
             ]
         }
     ],
+    "CdmServicePriorityElevation": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "ProcessAndThreadPriority_20260716",
+                    "enable_features": [
+                        "CdmProcessPriorityElevation",
+                        "CdmThreadPriorityElevation"
+                    ]
+                },
+                {
+                    "name": "ProcessPriorityOnly_20260716",
+                    "enable_features": [
+                        "CdmProcessPriorityElevation"
+                    ],
+                    "disable_features": [
+                        "CdmThreadPriorityElevation"
+                    ]
+                },
+                {
+                    "name": "ThreadPriorityOnly_20260716",
+                    "enable_features": [
+                        "CdmThreadPriorityElevation"
+                    ],
+                    "disable_features": [
+                        "CdmProcessPriorityElevation"
+                    ]
+                }
+            ]
+        }
+    ],
     "CentralizedInfoBarFramework": [
         {
             "platforms": [
