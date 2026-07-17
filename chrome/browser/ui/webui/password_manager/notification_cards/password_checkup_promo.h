@@ -12,19 +12,22 @@ namespace extensions {
 class PasswordsPrivateDelegate;
 }  // namespace extensions
 
-// Password checkup promo card. Despite other promo cards this one should be
-// shown regularly but not more often than kPasswordCheckupPromoPeriod.
-class PasswordCheckupPromo : public password_manager::PasswordPromoCardBase {
+// Password checkup notification card. Despite other notification cards this one
+// should be shown regularly but not more often than
+// kPasswordCheckupPromoPeriod.
+class PasswordCheckupPromo
+    : public password_manager::PasswordNotificationCardBase {
  public:
   PasswordCheckupPromo(PrefService* prefs,
                        extensions::PasswordsPrivateDelegate* delegate);
   ~PasswordCheckupPromo() override;
 
  private:
-  // PasswordPromoCardBase implementation.
-  std::string GetPromoID() const override;
-  password_manager::PromoCardType GetPromoCardType() const override;
-  bool ShouldShowPromo() const override;
+  // PasswordNotificationCardBase implementation.
+  std::string GetCardID() const override;
+  password_manager::NotificationCardType GetNotificationCardType()
+      const override;
+  bool ShouldShowCard() const override;
   std::u16string GetTitle() const override;
   std::u16string GetDescription() const override;
   std::u16string GetActionButtonText() const override;

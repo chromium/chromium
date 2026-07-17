@@ -5,14 +5,13 @@
 import 'chrome://password-manager/password_manager.js';
 
 import type {PasswordsSectionElement} from 'chrome://password-manager/password_manager.js';
-import {Page, PasswordManagerImpl, PromoCardsProxyImpl, Router, SyncBrowserProxyImpl, UrlParam} from 'chrome://password-manager/password_manager.js';
-import {BatchUploadPasswordsEntryPoint} from 'chrome://password-manager/password_manager.js';
+import {BatchUploadPasswordsEntryPoint, Page, PasswordManagerImpl, PromoCardsProxyImpl, Router, SyncBrowserProxyImpl, UrlParam} from 'chrome://password-manager/password_manager.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
+import {TestPromoCardsProxy} from './test_notification_cards_browser_proxy.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
-import {TestPromoCardsProxy} from './test_promo_cards_browser_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 import {createAffiliatedDomain, createCredentialGroup, createPasswordEntry} from './test_util.js';
 
@@ -51,7 +50,8 @@ suite('PasswordsSectionTest', function() {
     };
 
     const section = await createPasswordsSection();
-    let promoCardElement = section.shadowRoot!.querySelector('promo-card');
+    let promoCardElement =
+        section.shadowRoot!.querySelector('notification-card');
 
     // Verify promo card is shown.
     assertTrue(!!promoCardElement);
@@ -75,7 +75,7 @@ suite('PasswordsSectionTest', function() {
     await flushTasks();
 
     // Verify that the promo card is hidden.
-    promoCardElement = section.shadowRoot!.querySelector('promo-card');
+    promoCardElement = section.shadowRoot!.querySelector('notification-card');
     assertFalse(!!promoCardElement);
   });
 
@@ -88,7 +88,8 @@ suite('PasswordsSectionTest', function() {
     };
 
     const section = await createPasswordsSection();
-    let promoCardElement = section.shadowRoot!.querySelector('promo-card');
+    let promoCardElement =
+        section.shadowRoot!.querySelector('notification-card');
 
     // Verify promo card is shown.
     assertTrue(!!promoCardElement);
@@ -105,7 +106,7 @@ suite('PasswordsSectionTest', function() {
     await flushTasks();
 
     // Verify that the promo card is hidden.
-    promoCardElement = section.shadowRoot!.querySelector('promo-card');
+    promoCardElement = section.shadowRoot!.querySelector('notification-card');
     assertFalse(!!promoCardElement);
   });
 
@@ -118,7 +119,8 @@ suite('PasswordsSectionTest', function() {
     };
 
     const section = await createPasswordsSection();
-    let promoCardElement = section.shadowRoot!.querySelector('promo-card');
+    let promoCardElement =
+        section.shadowRoot!.querySelector('notification-card');
 
     // Verify promo card is shown.
     assertTrue(!!promoCardElement);
@@ -131,7 +133,7 @@ suite('PasswordsSectionTest', function() {
     await flushTasks();
 
     // Verify that the promo card is hidden.
-    promoCardElement = section.shadowRoot!.querySelector('promo-card');
+    promoCardElement = section.shadowRoot!.querySelector('notification-card');
     assertFalse(!!promoCardElement);
   });
 
@@ -157,7 +159,8 @@ suite('PasswordsSectionTest', function() {
     };
 
     const section = await createPasswordsSection();
-    const promoCardElement = section.shadowRoot!.querySelector('promo-card');
+    const promoCardElement =
+        section.shadowRoot!.querySelector('notification-card');
     assertFalse(!!promoCardElement);
   });
 
@@ -179,7 +182,8 @@ suite('PasswordsSectionTest', function() {
     };
 
     const section = await createPasswordsSection();
-    const promoCardElement = section.shadowRoot!.querySelector('promo-card');
+    const promoCardElement =
+        section.shadowRoot!.querySelector('notification-card');
     assertFalse(!!promoCardElement);
   });
 
@@ -211,7 +215,8 @@ suite('PasswordsSectionTest', function() {
     passwordManager.setRequestCredentialsDetailsResponse([password]);
 
     const section = await createPasswordsSection();
-    const promoCardElement = section.shadowRoot!.querySelector('promo-card');
+    const promoCardElement =
+        section.shadowRoot!.querySelector('notification-card');
     assertTrue(!!promoCardElement);
     assertTrue(isVisible(promoCardElement.$.actionButton));
 

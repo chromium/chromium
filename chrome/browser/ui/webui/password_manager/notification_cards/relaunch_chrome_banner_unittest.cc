@@ -19,9 +19,10 @@ using testing::IsEmpty;
 
 namespace password_manager {
 
-class PromoCardRelaunchChromeTest : public ChromeRenderViewHostTestHarness {
+class NotificationCardRelaunchChromeTest
+    : public ChromeRenderViewHostTestHarness {
  public:
-  PromoCardRelaunchChromeTest()
+  NotificationCardRelaunchChromeTest()
       : ChromeRenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_.InitAndEnableFeature(
@@ -34,26 +35,26 @@ class PromoCardRelaunchChromeTest : public ChromeRenderViewHostTestHarness {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(PromoCardRelaunchChromeTest, ShouldShow) {
-  auto promo = std::make_unique<RelaunchChromePromo>(pref_service());
+TEST_F(NotificationCardRelaunchChromeTest, ShouldShow) {
+  auto promo = std::make_unique<RelaunchChromeBanner>(pref_service());
 
   promo->set_is_encryption_available(false);
-  EXPECT_TRUE(promo->ShouldShowPromo());
+  EXPECT_TRUE(promo->ShouldShowCard());
 
   promo->set_is_encryption_available(true);
-  EXPECT_FALSE(promo->ShouldShowPromo());
+  EXPECT_FALSE(promo->ShouldShowCard());
 }
 
-TEST_F(PromoCardRelaunchChromeTest, ShouldShowAfterDismiss) {
+TEST_F(NotificationCardRelaunchChromeTest, ShouldShowAfterDismiss) {
   ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
               IsEmpty());
 
-  auto promo = std::make_unique<RelaunchChromePromo>(pref_service());
+  auto promo = std::make_unique<RelaunchChromeBanner>(pref_service());
   promo->set_is_encryption_available(false);
-  EXPECT_TRUE(promo->ShouldShowPromo());
+  EXPECT_TRUE(promo->ShouldShowCard());
 
-  promo->OnPromoCardDismissed();
-  EXPECT_TRUE(promo->ShouldShowPromo());
+  promo->OnNotificationCardDismissed();
+  EXPECT_TRUE(promo->ShouldShowCard());
 }
 
 }  // namespace password_manager

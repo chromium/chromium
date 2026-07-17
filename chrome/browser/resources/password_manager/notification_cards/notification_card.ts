@@ -11,16 +11,16 @@ import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
-import {BatchUploadPasswordsEntryPoint, SyncBrowserProxyImpl} from '../sync_browser_proxy.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PasswordManagerImpl} from '../password_manager_proxy.js';
 import {Page, Router, UrlParam} from '../router.js';
+import {BatchUploadPasswordsEntryPoint, SyncBrowserProxyImpl} from '../sync_browser_proxy.js';
 
-import {getTemplate} from './promo_card.html.js';
-import type {PromoCard} from './promo_cards_browser_proxy.js';
-import {PromoCardsProxyImpl} from './promo_cards_browser_proxy.js';
+import {getTemplate} from './notification_card.html.js';
+import type {PromoCard} from './notification_cards_browser_proxy.js';
+import {PromoCardsProxyImpl} from './notification_cards_browser_proxy.js';
 
 // WARNING: Keep synced with
 // chrome/browser/ui/webui/password_manager/promo_cards_handler.cc.
@@ -73,7 +73,7 @@ const PromoCardElementBase = I18nMixin(PolymerElement);
 
 export class PromoCardElement extends PromoCardElementBase {
   static get is() {
-    return 'promo-card';
+    return 'notification-card';
   }
 
   static get template() {
@@ -150,7 +150,7 @@ export class PromoCardElement extends PromoCardElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'promo-card': PromoCardElement;
+    'notification-card': PromoCardElement;
   }
 }
 

@@ -14,17 +14,19 @@ class PasswordsPrivateDelegate;
 }
 
 // Promo card to communicate that there are passwords saved only on this device.
-class MovePasswordsPromo : public password_manager::PasswordPromoCardBase {
+class MovePasswordsPromo
+    : public password_manager::PasswordNotificationCardBase {
  public:
   explicit MovePasswordsPromo(Profile* profile,
                               extensions::PasswordsPrivateDelegate* delegate);
   ~MovePasswordsPromo() override;
 
  private:
-  // PasswordPromoCardBase implementation.
-  std::string GetPromoID() const override;
-  password_manager::PromoCardType GetPromoCardType() const override;
-  bool ShouldShowPromo() const override;
+  // PasswordNotificationCardBase implementation.
+  std::string GetCardID() const override;
+  password_manager::NotificationCardType GetNotificationCardType()
+      const override;
+  bool ShouldShowCard() const override;
   std::u16string GetTitle() const override;
   std::u16string GetDescription() const override;
   std::u16string GetActionButtonText() const override;

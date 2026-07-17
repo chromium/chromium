@@ -18,22 +18,23 @@ constexpr char kCheckupPromoId[] = "password_checkup_promo";
 PasswordCheckupPromo::PasswordCheckupPromo(
     PrefService* prefs,
     extensions::PasswordsPrivateDelegate* delegate)
-    : password_manager::PasswordPromoCardBase(kCheckupPromoId, prefs) {
+    : password_manager::PasswordNotificationCardBase(kCheckupPromoId, prefs) {
   CHECK(delegate);
   delegate_ = delegate->AsWeakPtr();
 }
 
 PasswordCheckupPromo::~PasswordCheckupPromo() = default;
 
-std::string PasswordCheckupPromo::GetPromoID() const {
+std::string PasswordCheckupPromo::GetCardID() const {
   return kCheckupPromoId;
 }
 
-password_manager::PromoCardType PasswordCheckupPromo::GetPromoCardType() const {
-  return password_manager::PromoCardType::kCheckup;
+password_manager::NotificationCardType
+PasswordCheckupPromo::GetNotificationCardType() const {
+  return password_manager::NotificationCardType::kCheckup;
 }
 
-bool PasswordCheckupPromo::ShouldShowPromo() const {
+bool PasswordCheckupPromo::ShouldShowCard() const {
   // Don't show promo if checkup is disabled by policy.
   if (!prefs_->GetBoolean(
           password_manager::prefs::kPasswordLeakDetectionEnabled)) {
@@ -43,11 +44,11 @@ bool PasswordCheckupPromo::ShouldShowPromo() const {
   if (!delegate_ || delegate_->GetCredentialGroups().empty()) {
     return false;
   }
-  // If promo card was dismissed or shown already for
+  // If notification card was dismissed or shown already for
   // `kPromoDisplayLimit` times, show it in a week next time.
   bool should_suppress =
-      was_dismissed_ ||
-      number_of_times_shown_ >= PasswordPromoCardBase::kPromoDisplayLimit;
+      was_dismissed_ || number_of_times_shown_ >=
+                            PasswordNotificationCardBase::kPromoDisplayLimit;
   return !should_suppress ||
          base::Time().Now() - last_time_shown_ > kPasswordCheckupPromoPeriod;
 }

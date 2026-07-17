@@ -32,79 +32,82 @@ constexpr char kLastTimeShownKey[] = "last_time_shown";
 constexpr char kNumberOfTimesShownKey[] = "number_of_times_shown";
 constexpr char kWasDismissedKey[] = "was_dismissed";
 
-// Creates new pref entry for the promo card with a given id.
-base::DictValue CreatePromoCardPrefEntry(const std::string& id) {
-  base::DictValue promo_card_pref_entry;
-  promo_card_pref_entry.Set(kIdKey, id);
-  promo_card_pref_entry.Set(kLastTimeShownKey, base::TimeToValue(base::Time()));
-  promo_card_pref_entry.Set(kNumberOfTimesShownKey, 0);
-  promo_card_pref_entry.Set(kWasDismissedKey, false);
-  return promo_card_pref_entry;
+// Creates new pref entry for the notification card with a given id.
+base::DictValue CreateNotificationCardPrefEntry(const std::string& id) {
+  base::DictValue notification_card_pref_entry;
+  notification_card_pref_entry.Set(kIdKey, id);
+  notification_card_pref_entry.Set(kLastTimeShownKey,
+                                   base::TimeToValue(base::Time()));
+  notification_card_pref_entry.Set(kNumberOfTimesShownKey, 0);
+  notification_card_pref_entry.Set(kWasDismissedKey, false);
+  return notification_card_pref_entry;
 }
 
 }  // namespace
 
 // static
 
-PasswordPromoCardBase::PasswordPromoCardBase(const std::string& id,
-                                             PrefService* prefs)
+PasswordNotificationCardBase::PasswordNotificationCardBase(
+    const std::string& id,
+    PrefService* prefs)
     : prefs_(prefs) {
-  const base::ListValue& promo_card_prefs =
+  const base::ListValue& notification_card_prefs =
       prefs_->GetList(prefs::kPasswordManagerPromoCardsList);
-  for (const auto& promo_card_pref : promo_card_prefs) {
-    auto* promo_id = promo_card_pref.GetDict().FindString(kIdKey);
+  for (const auto& notification_card_pref : notification_card_prefs) {
+    auto* promo_id = notification_card_pref.GetDict().FindString(kIdKey);
 
     if (promo_id == nullptr || *promo_id != id) {
       continue;
     }
 
     number_of_times_shown_ =
-        *promo_card_pref.GetDict().FindInt(kNumberOfTimesShownKey);
-    last_time_shown_ =
-        base::ValueToTime(promo_card_pref.GetDict().Find(kLastTimeShownKey))
-            .value();
-    was_dismissed_ = *promo_card_pref.GetDict().FindBool(kWasDismissedKey);
+        *notification_card_pref.GetDict().FindInt(kNumberOfTimesShownKey);
+    last_time_shown_ = base::ValueToTime(notification_card_pref.GetDict().Find(
+                                             kLastTimeShownKey))
+                           .value();
+    was_dismissed_ =
+        *notification_card_pref.GetDict().FindBool(kWasDismissedKey);
     return;
   }
   // If there is no pref with matching ID, create one.
   ScopedListPrefUpdate update(prefs_, prefs::kPasswordManagerPromoCardsList);
-  update.Get().Append(CreatePromoCardPrefEntry(id));
+  update.Get().Append(CreateNotificationCardPrefEntry(id));
 }
 
-PasswordPromoCardBase::~PasswordPromoCardBase() = default;
+PasswordNotificationCardBase::~PasswordNotificationCardBase() = default;
 
-std::u16string PasswordPromoCardBase::GetActionButtonText() const {
+std::u16string PasswordNotificationCardBase::GetActionButtonText() const {
   return std::u16string();
 }
 
-void PasswordPromoCardBase::OnPromoCardDismissed() {
+void PasswordNotificationCardBase::OnNotificationCardDismissed() {
   was_dismissed_ = true;
 
   ScopedListPrefUpdate update(prefs_, prefs::kPasswordManagerPromoCardsList);
-  for (auto& promo_card_pref : update.Get()) {
-    if (*promo_card_pref.GetDict().FindString(kIdKey) == GetPromoID()) {
-      promo_card_pref.GetDict().Set(kWasDismissedKey, true);
+  for (auto& notification_card_pref : update.Get()) {
+    if (*notification_card_pref.GetDict().FindString(kIdKey) == GetCardID()) {
+      notification_card_pref.GetDict().Set(kWasDismissedKey, true);
       break;
     }
   }
 }
 
-void PasswordPromoCardBase::OnPromoCardShown() {
+void PasswordNotificationCardBase::OnNotificationCardShown() {
   number_of_times_shown_++;
   last_time_shown_ = base::Time::Now();
 
   ScopedListPrefUpdate update(prefs_, prefs::kPasswordManagerPromoCardsList);
-  for (auto& promo_card_pref : update.Get()) {
-    if (*promo_card_pref.GetDict().FindString(kIdKey) == GetPromoID()) {
-      promo_card_pref.GetDict().Set(kNumberOfTimesShownKey,
-                                    number_of_times_shown_);
-      promo_card_pref.GetDict().Set(kLastTimeShownKey,
-                                    base::TimeToValue(last_time_shown_));
+  for (auto& notification_card_pref : update.Get()) {
+    if (*notification_card_pref.GetDict().FindString(kIdKey) == GetCardID()) {
+      notification_card_pref.GetDict().Set(kNumberOfTimesShownKey,
+                                           number_of_times_shown_);
+      notification_card_pref.GetDict().Set(kLastTimeShownKey,
+                                           base::TimeToValue(last_time_shown_));
       break;
     }
   }
   base::UmaHistogramEnumeration("PasswordManager.PromoCard.Shown",
-                                GetPromoCardType());
+                                GetNotificationCardType());
 }
 
 }  // namespace password_manager

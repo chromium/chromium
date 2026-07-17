@@ -40,9 +40,10 @@ namespace {
 
 const char kTestCallbackId[] = "test-callback-id";
 
-auto HasSamePromoCards(const std::vector<std::string>& promo_cards) {
+auto HasSameNotificationCards(
+    const std::vector<std::string>& notification_cards) {
   std::vector<Matcher<const base::Value&>> matchers;
-  for (const auto& p : promo_cards) {
+  for (const auto& p : notification_cards) {
     matchers.push_back(Truly([p](const base::Value& a) {
       return p == *a.GetDict().FindString("id");
     }));
@@ -50,15 +51,18 @@ auto HasSamePromoCards(const std::vector<std::string>& promo_cards) {
   return UnorderedElementsAreArray(matchers);
 }
 
-class MockPromoCard : public PasswordPromoCardBase {
+class MockNotificationCard : public PasswordNotificationCardBase {
  public:
-  MockPromoCard(const std::string& id, PrefService* prefs)
-      : PasswordPromoCardBase(id, prefs) {}
+  MockNotificationCard(const std::string& id, PrefService* prefs)
+      : PasswordNotificationCardBase(id, prefs) {}
 
-  MOCK_METHOD(std::string, GetPromoID, (), (const, override));
-  MOCK_METHOD(PromoCardType, GetPromoCardType, (), (const, override));
+  MOCK_METHOD(std::string, GetCardID, (), (const, override));
+  MOCK_METHOD(NotificationCardType,
+              GetNotificationCardType,
+              (),
+              (const, override));
   MOCK_METHOD(std::u16string, GetTitle, (), (const, override));
-  MOCK_METHOD(bool, ShouldShowPromo, (), (const, override));
+  MOCK_METHOD(bool, ShouldShowCard, (), (const, override));
   MOCK_METHOD(std::u16string, GetDescription, (), (const, override));
 
   int number_of_times_shown() const { return number_of_times_shown_; }
@@ -67,9 +71,9 @@ class MockPromoCard : public PasswordPromoCardBase {
 
 }  // namespace
 
-class PromoCardsHandlerTest : public ChromeRenderViewHostTestHarness {
+class NotificationCardsHandlerTest : public ChromeRenderViewHostTestHarness {
  public:
-  PromoCardsHandlerTest()
+  NotificationCardsHandlerTest()
       : ChromeRenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
@@ -79,20 +83,21 @@ class PromoCardsHandlerTest : public ChromeRenderViewHostTestHarness {
 
     prefs_.registry()->RegisterListPref(prefs::kPasswordManagerPromoCardsList);
 
-    std::vector<std::unique_ptr<password_manager::PasswordPromoCardBase>> cards;
-    cards.emplace_back(
-        std::make_unique<MockPromoCard>("password_checkup_promo", &prefs_));
-    card1_ = static_cast<MockPromoCard*>(cards.back().get());
-    ON_CALL(*card1_, GetPromoID)
-        .WillByDefault(Return("password_checkup_promo"));
-    cards.emplace_back(
-        std::make_unique<MockPromoCard>("password_shortcut_promo", &prefs_));
-    card2_ = static_cast<MockPromoCard*>(cards.back().get());
-    ON_CALL(*card2_, GetPromoID)
+    std::vector<std::unique_ptr<password_manager::PasswordNotificationCardBase>>
+        cards;
+    cards.emplace_back(std::make_unique<MockNotificationCard>(
+        "password_checkup_promo", &prefs_));
+    card1_ = static_cast<MockNotificationCard*>(cards.back().get());
+    ON_CALL(*card1_, GetCardID).WillByDefault(Return("password_checkup_promo"));
+    cards.emplace_back(std::make_unique<MockNotificationCard>(
+        "password_shortcut_promo", &prefs_));
+    card2_ = static_cast<MockNotificationCard*>(cards.back().get());
+    ON_CALL(*card2_, GetCardID)
         .WillByDefault(Return("password_shortcut_promo"));
 
-    auto handler = std::make_unique<PromoCardsHandler>(
-        base::PassKey<PromoCardsHandlerTest>(), profile(), std::move(cards));
+    auto handler = std::make_unique<NotificationCardsHandler>(
+        base::PassKey<NotificationCardsHandlerTest>(), profile(),
+        std::move(cards));
     handler_ = handler.get();
     web_ui_.AddMessageHandler(std::move(handler));
     static_cast<content::WebUIMessageHandler*>(handler_)
@@ -135,35 +140,35 @@ class PromoCardsHandlerTest : public ChromeRenderViewHostTestHarness {
 
   content::TestWebUI* web_ui() { return &web_ui_; }
   TestingPrefServiceSimple* pref_service() { return &prefs_; }
-  MockPromoCard* first_card() { return card1_; }
-  MockPromoCard* second_card() { return card2_; }
+  MockNotificationCard* first_card() { return card1_; }
+  MockNotificationCard* second_card() { return card2_; }
 
  private:
   scoped_refptr<TestPasswordStore> profile_store_;
   TestingPrefServiceSimple prefs_;
   content::TestWebUI web_ui_;
-  raw_ptr<PromoCardsHandler> handler_;
-  raw_ptr<MockPromoCard> card1_;
-  raw_ptr<MockPromoCard> card2_;
+  raw_ptr<NotificationCardsHandler> handler_;
+  raw_ptr<MockNotificationCard> card1_;
+  raw_ptr<MockNotificationCard> card2_;
 };
 
-TEST_F(PromoCardsHandlerTest, GetAllPromoCards) {
+TEST_F(NotificationCardsHandlerTest, GetAllNotificationCards) {
   pref_service()->ClearPref(prefs::kPasswordManagerPromoCardsList);
   task_environment()->RunUntilIdle();
 
-  // Enforce delegate creation before retrieving promo cards.
+  // Enforce delegate creation before retrieving notification cards.
   scoped_refptr<extensions::PasswordsPrivateDelegate> delegate =
       extensions::PasswordsPrivateDelegateFactory::GetForBrowserContext(
           profile(), true);
 
-  auto promo_card_handler = PromoCardsHandler(profile());
+  auto notification_card_handler = NotificationCardsHandler(profile());
   task_environment()->RunUntilIdle();
 
   const base::ListValue& list =
       profile()->GetPrefs()->GetList(prefs::kPasswordManagerPromoCardsList);
   task_environment()->RunUntilIdle();
 
-  std::vector<std::string> promo_cards = {
+  std::vector<std::string> notification_cards = {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       "password_checkup_promo", "passwords_on_web_promo",
       "password_shortcut_promo", "access_on_any_device_promo"
@@ -172,26 +177,26 @@ TEST_F(PromoCardsHandlerTest, GetAllPromoCards) {
 
 #if (BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS)) && \
     BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  promo_cards.emplace_back("move_passwords_promo");
+  notification_cards.emplace_back("move_passwords_promo");
 #endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  promo_cards.emplace_back("relaunch_chrome_promo");
+  notification_cards.emplace_back("relaunch_chrome_promo");
 #endif
 
   task_environment()->RunUntilIdle();
-  EXPECT_THAT(list, HasSamePromoCards(promo_cards));
+  EXPECT_THAT(list, HasSameNotificationCards(notification_cards));
 }
 
-TEST_F(PromoCardsHandlerTest, GetAvailablePromoCard) {
+TEST_F(NotificationCardsHandlerTest, GetAvailableNotificationCard) {
   ASSERT_EQ(0, first_card()->number_of_times_shown());
   ASSERT_EQ(0, second_card()->number_of_times_shown());
 
   base::ListValue args;
   args.Append(kTestCallbackId);
 
-  EXPECT_CALL(*first_card(), ShouldShowPromo).WillRepeatedly(Return(false));
-  EXPECT_CALL(*second_card(), ShouldShowPromo).WillRepeatedly(Return(true));
+  EXPECT_CALL(*first_card(), ShouldShowCard).WillRepeatedly(Return(false));
+  EXPECT_CALL(*second_card(), ShouldShowCard).WillRepeatedly(Return(true));
 
   EXPECT_CALL(*second_card(), GetTitle).WillRepeatedly(Return(u"Title"));
   EXPECT_CALL(*second_card(), GetDescription)
@@ -200,23 +205,24 @@ TEST_F(PromoCardsHandlerTest, GetAvailablePromoCard) {
   web_ui()->ProcessWebUIMessage(GURL(), "getAvailablePromoCard",
                                 std::move(args));
 
-  // Verify that promo was shown and content returned matches promo content.
+  // Verify that notification card was shown and content returned matches card
+  // content.
   EXPECT_EQ(0, first_card()->number_of_times_shown());
   EXPECT_EQ(1, second_card()->number_of_times_shown());
 
   const base::DictValue& response = GetLastSuccessfulResponse();
-  EXPECT_EQ(second_card()->GetPromoID(), *response.FindString("id"));
+  EXPECT_EQ(second_card()->GetCardID(), *response.FindString("id"));
   EXPECT_EQ(base::UTF16ToUTF8(second_card()->GetTitle()),
             *response.FindString("title"));
   EXPECT_EQ(base::UTF16ToUTF8(second_card()->GetDescription()),
             *response.FindString("description"));
 }
 
-TEST_F(PromoCardsHandlerTest, TheOldestPromoReturned) {
-  // Mark both promo cards as shown.
-  first_card()->OnPromoCardShown();
+TEST_F(NotificationCardsHandlerTest, TheOldestCardReturned) {
+  // Mark both notification cards as shown.
+  first_card()->OnNotificationCardShown();
   AdvanceClock(base::Days(1));
-  second_card()->OnPromoCardShown();
+  second_card()->OnNotificationCardShown();
   ASSERT_LT(first_card()->last_time_shown(), second_card()->last_time_shown());
 
   ASSERT_EQ(1, first_card()->number_of_times_shown());
@@ -225,29 +231,29 @@ TEST_F(PromoCardsHandlerTest, TheOldestPromoReturned) {
   base::ListValue args;
   args.Append(kTestCallbackId);
 
-  EXPECT_CALL(*first_card(), ShouldShowPromo).WillRepeatedly(Return(true));
-  EXPECT_CALL(*second_card(), ShouldShowPromo).WillRepeatedly(Return(true));
+  EXPECT_CALL(*first_card(), ShouldShowCard).WillRepeatedly(Return(true));
+  EXPECT_CALL(*second_card(), ShouldShowCard).WillRepeatedly(Return(true));
 
   web_ui()->ProcessWebUIMessage(GURL(), "getAvailablePromoCard",
                                 std::move(args));
 
-  // Verify that promo was shown.
+  // Verify that notification card was shown.
   EXPECT_EQ(2, first_card()->number_of_times_shown());
   EXPECT_EQ(1, second_card()->number_of_times_shown());
 
   const base::DictValue& response = GetLastSuccessfulResponse();
-  EXPECT_EQ(first_card()->GetPromoID(), *response.FindString("id"));
+  EXPECT_EQ(first_card()->GetCardID(), *response.FindString("id"));
 }
 
-TEST_F(PromoCardsHandlerTest, NoAvailablePromo) {
+TEST_F(NotificationCardsHandlerTest, NoAvailableCard) {
   ASSERT_EQ(0, first_card()->number_of_times_shown());
   ASSERT_EQ(0, second_card()->number_of_times_shown());
 
   base::ListValue args;
   args.Append(kTestCallbackId);
 
-  EXPECT_CALL(*first_card(), ShouldShowPromo).WillRepeatedly(Return(false));
-  EXPECT_CALL(*second_card(), ShouldShowPromo).WillRepeatedly(Return(false));
+  EXPECT_CALL(*first_card(), ShouldShowCard).WillRepeatedly(Return(false));
+  EXPECT_CALL(*second_card(), ShouldShowCard).WillRepeatedly(Return(false));
 
   web_ui()->ProcessWebUIMessage(GURL(), "getAvailablePromoCard",
                                 std::move(args));
@@ -256,12 +262,12 @@ TEST_F(PromoCardsHandlerTest, NoAvailablePromo) {
   EXPECT_EQ(0, second_card()->number_of_times_shown());
 }
 
-TEST_F(PromoCardsHandlerTest, RecordPromoDismissed) {
+TEST_F(NotificationCardsHandlerTest, RecordCardDismissed) {
   ASSERT_FALSE(first_card()->was_dismissed());
   ASSERT_FALSE(second_card()->was_dismissed());
 
   base::ListValue args;
-  args.Append(first_card()->GetPromoID());
+  args.Append(first_card()->GetCardID());
 
   web_ui()->ProcessWebUIMessage(GURL(), "recordPromoDismissed",
                                 std::move(args));
@@ -270,9 +276,10 @@ TEST_F(PromoCardsHandlerTest, RecordPromoDismissed) {
   EXPECT_FALSE(second_card()->was_dismissed());
 }
 
-TEST_F(PromoCardsHandlerTest, RelaunchChromePromoHasTheHighestPriority) {
-  MockPromoCard* some_card = first_card();
-  MockPromoCard* relaunch_chrome_card = second_card();
+TEST_F(NotificationCardsHandlerTest,
+       RelaunchChromeBannerHasTheHighestPriority) {
+  MockNotificationCard* some_card = first_card();
+  MockNotificationCard* relaunch_chrome_card = second_card();
 
   ASSERT_EQ(0, some_card->number_of_times_shown());
   ASSERT_EQ(0, relaunch_chrome_card->number_of_times_shown());
@@ -280,16 +287,16 @@ TEST_F(PromoCardsHandlerTest, RelaunchChromePromoHasTheHighestPriority) {
   base::ListValue args;
   args.Append(kTestCallbackId);
 
-  EXPECT_CALL(*some_card, ShouldShowPromo).WillRepeatedly(Return(true));
-  EXPECT_CALL(*relaunch_chrome_card, ShouldShowPromo)
+  EXPECT_CALL(*some_card, ShouldShowCard).WillRepeatedly(Return(true));
+  EXPECT_CALL(*relaunch_chrome_card, ShouldShowCard)
       .WillRepeatedly(Return(true));
-  EXPECT_CALL(*relaunch_chrome_card, GetPromoCardType)
-      .WillRepeatedly(Return(PromoCardType::kRelauchChrome));
+  EXPECT_CALL(*relaunch_chrome_card, GetNotificationCardType)
+      .WillRepeatedly(Return(NotificationCardType::kRelauchChrome));
 
   web_ui()->ProcessWebUIMessage(GURL(), "getAvailablePromoCard",
                                 std::move(args));
 
-  // Verify that promo was shown.
+  // Verify that notification card was shown.
   EXPECT_EQ(0, some_card->number_of_times_shown());
   EXPECT_EQ(1, relaunch_chrome_card->number_of_times_shown());
 }

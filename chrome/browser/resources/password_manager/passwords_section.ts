@@ -9,8 +9,8 @@ import './password_list_item.js';
 import './dialogs/add_password_dialog.js';
 import './dialogs/auth_timed_out_dialog.js';
 import './user_utils_mixin.js';
-import './promo_cards/promo_card.js';
-import './promo_cards/promo_cards_browser_proxy.js';
+import './notification_cards/notification_card.js';
+import './notification_cards/notification_cards_browser_proxy.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
@@ -25,11 +25,11 @@ import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/ir
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {FocusConfig} from './focus_config.js';
+import {PromoCardId} from './notification_cards/notification_card.js';
+import type {PromoCard} from './notification_cards/notification_cards_browser_proxy.js';
+import {PromoCardsProxyImpl} from './notification_cards/notification_cards_browser_proxy.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {getTemplate} from './passwords_section.html.js';
-import {PromoCardId} from './promo_cards/promo_card.js';
-import type {PromoCard} from './promo_cards/promo_cards_browser_proxy.js';
-import {PromoCardsProxyImpl} from './promo_cards/promo_cards_browser_proxy.js';
 import type {Route} from './router.js';
 import {Page, RouteObserverMixin, Router, UrlParam} from './router.js';
 import {UserUtilMixin} from './user_utils_mixin.js';

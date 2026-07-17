@@ -10,10 +10,11 @@
 #include "chrome/browser/ui/webui/password_manager/notification_card.h"
 
 // Promo card to communicate that there is an error with the Keychain.
-class RelaunchChromePromo : public password_manager::PasswordPromoCardBase {
+class RelaunchChromeBanner
+    : public password_manager::PasswordNotificationCardBase {
  public:
-  explicit RelaunchChromePromo(PrefService* prefs);
-  ~RelaunchChromePromo() override;
+  explicit RelaunchChromeBanner(PrefService* prefs);
+  ~RelaunchChromeBanner() override;
 
   const std::optional<bool> is_encryption_available() const {
     return is_encryption_available_;
@@ -22,10 +23,11 @@ class RelaunchChromePromo : public password_manager::PasswordPromoCardBase {
     is_encryption_available_ = available;
   }
 
-  // PasswordPromoCardBase implementation.
-  std::string GetPromoID() const override;
-  password_manager::PromoCardType GetPromoCardType() const override;
-  bool ShouldShowPromo() const override;
+  // PasswordNotificationCardBase implementation.
+  std::string GetCardID() const override;
+  password_manager::NotificationCardType GetNotificationCardType()
+      const override;
+  bool ShouldShowCard() const override;
   std::u16string GetTitle() const override;
   std::u16string GetDescription() const override;
   std::u16string GetActionButtonText() const override;

@@ -17,7 +17,7 @@
 #include "content/public/browser/web_ui_message_handler.h"
 
 class Profile;
-class RelaunchChromePromo;
+class RelaunchChromeBanner;
 
 namespace os_crypt_async {
 class Encryptor;
@@ -25,34 +25,35 @@ class Encryptor;
 
 namespace password_manager {
 
-class PasswordPromoCardBase;
+class PasswordNotificationCardBase;
 
 // A class allowing providing PasswordManager WebUI capability to dynamically
-// display actionable promo cards depending on the current account preferences
-// and already seen promos.
-class PromoCardsHandler : public content::WebUIMessageHandler {
+// display actionable notification cards depending on the current account
+// preferences and already seen cards.
+class NotificationCardsHandler : public content::WebUIMessageHandler {
  public:
-  explicit PromoCardsHandler(Profile* profile);
-  PromoCardsHandler(
-      base::PassKey<class PromoCardsHandlerTest>,
+  explicit NotificationCardsHandler(Profile* profile);
+  NotificationCardsHandler(
+      base::PassKey<class NotificationCardsHandlerTest>,
       Profile* profile,
-      std::vector<std::unique_ptr<PasswordPromoCardBase>> promo_cards);
+      std::vector<std::unique_ptr<PasswordNotificationCardBase>>
+          notification_cards);
 
-  PromoCardsHandler(const PromoCardsHandler&) = delete;
-  PromoCardsHandler& operator=(const PromoCardsHandler&) = delete;
+  NotificationCardsHandler(const NotificationCardsHandler&) = delete;
+  NotificationCardsHandler& operator=(const NotificationCardsHandler&) = delete;
 
-  ~PromoCardsHandler() override;
+  ~NotificationCardsHandler() override;
 
  private:
   // WebUIMessageHandler:
   void RegisterMessages() override;
 
   void RestartChrome(const base::ListValue& args);
-  void HandleGetAvailablePromoCard(const base::ListValue& args);
-  void FinishGetAvailablePromoCard(const base::Value& callback_id);
-  void HandleRecordPromoDismissed(const base::ListValue& args);
+  void HandleGetAvailableNotificationCard(const base::ListValue& args);
+  void FinishGetAvailableNotificationCard(const base::Value& callback_id);
+  void HandleRecordNotificationDismissed(const base::ListValue& args);
 
-  PasswordPromoCardBase* GetPromoToShowAndUpdatePref();
+  PasswordNotificationCardBase* GetNotificationCardToShowAndUpdatePref();
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   void OnEncryptorReceived(base::Value callback_id,
@@ -61,12 +62,13 @@ class PromoCardsHandler : public content::WebUIMessageHandler {
 
   raw_ptr<Profile> profile_;
 
-  std::vector<std::unique_ptr<PasswordPromoCardBase>> promo_cards_;
+  std::vector<std::unique_ptr<PasswordNotificationCardBase>>
+      notification_cards_;
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  // This points into `promo_cards_`, so should be ordered after it.
-  raw_ptr<RelaunchChromePromo> relaunch_chrome_promo_ = nullptr;
+  // This points into `notification_cards_`, so should be ordered after it.
+  raw_ptr<RelaunchChromeBanner> relaunch_chrome_banner_ = nullptr;
 
-  base::WeakPtrFactory<PromoCardsHandler> weak_ptr_factory_{this};
+  base::WeakPtrFactory<NotificationCardsHandler> weak_ptr_factory_{this};
 #endif
 };
 

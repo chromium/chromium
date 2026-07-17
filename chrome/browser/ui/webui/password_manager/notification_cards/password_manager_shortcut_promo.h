@@ -12,15 +12,16 @@ class Profile;
 
 // Promo card to create shortcut to the Password Manager.
 class PasswordManagerShortcutPromo
-    : public password_manager::PasswordPromoCardBase {
+    : public password_manager::PasswordNotificationCardBase {
  public:
   explicit PasswordManagerShortcutPromo(Profile* profile);
 
  private:
-  // PasswordPromoCardBase implementation.
-  std::string GetPromoID() const override;
-  password_manager::PromoCardType GetPromoCardType() const override;
-  bool ShouldShowPromo() const override;
+  // PasswordNotificationCardBase implementation.
+  std::string GetCardID() const override;
+  password_manager::NotificationCardType GetNotificationCardType()
+      const override;
+  bool ShouldShowCard() const override;
   std::u16string GetTitle() const override;
   std::u16string GetDescription() const override;
   std::u16string GetActionButtonText() const override;

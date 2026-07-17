@@ -35,13 +35,13 @@ build_webui("build") {
       "images/password_shortcut_promo_dark.svg",
       "images/passwords_on_web_promo.svg",
       "images/passwords_on_web_promo_dark.svg",
-      "images/relaunch_chrome_promo.svg",
-      "images/relaunch_chrome_promo_dark.svg",
+      "images/relaunch_chrome_banner.svg",
+      "images/relaunch_chrome_banner_dark.svg",
     ]
   } else {
     static_files += [
-      "images/relaunch_chrome_promo_dark_non_branded.svg",
-      "images/relaunch_chrome_promo_non_branded.svg",
+      "images/relaunch_chrome_banner_dark_non_branded.svg",
+      "images/relaunch_chrome_banner_non_branded.svg",
       "manifest.webmanifest",
     ]
   }
@@ -76,7 +76,7 @@ build_webui("build") {
     "passwords_importer.ts",
     "passwords_section.ts",
     "prefs/pref_toggle_button.ts",
-    "promo_cards/promo_card.ts",
+    "notification_cards/notification_card.ts",
     "settings_section.ts",
     "sharing/share_password_confirmation_dialog.ts",
     "sharing/share_password_dialog_header.ts",
@@ -98,7 +98,7 @@ build_webui("build") {
     "passkeys_browser_proxy.ts",
     "password_manager.ts",
     "password_manager_proxy.ts",
-    "promo_cards/promo_cards_browser_proxy.ts",
+    "notification_cards/notification_cards_browser_proxy.ts",
     "router.ts",
     "searchable_label.ts",
     "sharing/metrics_utils.ts",

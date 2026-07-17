@@ -13,16 +13,18 @@ class SyncService;
 
 // Promoting web version of Password Manager. Has a link to the website in the
 // description.
-class WebPasswordManagerPromo : public password_manager::PasswordPromoCardBase {
+class WebPasswordManagerPromo
+    : public password_manager::PasswordNotificationCardBase {
  public:
   WebPasswordManagerPromo(PrefService* prefs,
                           const syncer::SyncService* sync_service);
 
  private:
-  // PasswordPromoCardBase implementation.
-  std::string GetPromoID() const override;
-  password_manager::PromoCardType GetPromoCardType() const override;
-  bool ShouldShowPromo() const override;
+  // PasswordNotificationCardBase implementation.
+  std::string GetCardID() const override;
+  password_manager::NotificationCardType GetNotificationCardType()
+      const override;
+  bool ShouldShowCard() const override;
   std::u16string GetTitle() const override;
   std::u16string GetDescription() const override;
 

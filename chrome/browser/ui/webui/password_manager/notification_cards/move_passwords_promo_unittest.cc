@@ -33,9 +33,10 @@ std::unique_ptr<KeyedService> TestingSyncFactoryFunction(
 }
 }  // namespace
 
-class PromoCardMovePasswordsTest : public ChromeRenderViewHostTestHarness {
+class NotificationCardMovePasswordsTest
+    : public ChromeRenderViewHostTestHarness {
  public:
-  PromoCardMovePasswordsTest()
+  NotificationCardMovePasswordsTest()
       : ChromeRenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
@@ -92,57 +93,57 @@ class PromoCardMovePasswordsTest : public ChromeRenderViewHostTestHarness {
   scoped_refptr<extensions::PasswordsPrivateDelegate> delegate_;
 };
 
-TEST_F(PromoCardMovePasswordsTest, NoPromoIfNoPasswords) {
+TEST_F(NotificationCardMovePasswordsTest, NoPromoIfNoPasswords) {
   EnableAccountStorage();
 
   ASSERT_THAT(pref_service()->GetList(
                   password_manager::prefs::kPasswordManagerPromoCardsList),
               IsEmpty());
-  std::unique_ptr<password_manager::PasswordPromoCardBase> promo =
+  std::unique_ptr<password_manager::PasswordNotificationCardBase> promo =
       std::make_unique<MovePasswordsPromo>(profile(), delegate());
 
-  EXPECT_FALSE(promo->ShouldShowPromo());
+  EXPECT_FALSE(promo->ShouldShowCard());
 }
 
-TEST_F(PromoCardMovePasswordsTest, NoPromoIfAccountStorageDisabled) {
+TEST_F(NotificationCardMovePasswordsTest, NoPromoIfAccountStorageDisabled) {
   SavePassword();
 
   ASSERT_THAT(pref_service()->GetList(
                   password_manager::prefs::kPasswordManagerPromoCardsList),
               IsEmpty());
-  std::unique_ptr<password_manager::PasswordPromoCardBase> promo =
+  std::unique_ptr<password_manager::PasswordNotificationCardBase> promo =
       std::make_unique<MovePasswordsPromo>(profile(), delegate());
 
-  EXPECT_FALSE(promo->ShouldShowPromo());
+  EXPECT_FALSE(promo->ShouldShowCard());
 }
 
-TEST_F(PromoCardMovePasswordsTest, NoPromoIfNoLocalPasswords) {
+TEST_F(NotificationCardMovePasswordsTest, NoPromoIfNoLocalPasswords) {
   EnableAccountStorage();
   SavePassword(password_manager::PasswordForm::Store::kAccountStore);
 
   ASSERT_THAT(pref_service()->GetList(
                   password_manager::prefs::kPasswordManagerPromoCardsList),
               IsEmpty());
-  std::unique_ptr<password_manager::PasswordPromoCardBase> promo =
+  std::unique_ptr<password_manager::PasswordNotificationCardBase> promo =
       std::make_unique<MovePasswordsPromo>(profile(), delegate());
 
-  EXPECT_FALSE(promo->ShouldShowPromo());
+  EXPECT_FALSE(promo->ShouldShowCard());
 }
 
-TEST_F(PromoCardMovePasswordsTest, PromoShownWithSavedLocalPasswords) {
+TEST_F(NotificationCardMovePasswordsTest, PromoShownWithSavedLocalPasswords) {
   EnableAccountStorage();
   SavePassword();
 
   ASSERT_THAT(pref_service()->GetList(
                   password_manager::prefs::kPasswordManagerPromoCardsList),
               IsEmpty());
-  std::unique_ptr<password_manager::PasswordPromoCardBase> promo =
+  std::unique_ptr<password_manager::PasswordNotificationCardBase> promo =
       std::make_unique<MovePasswordsPromo>(profile(), delegate());
 
-  EXPECT_TRUE(promo->ShouldShowPromo());
+  EXPECT_TRUE(promo->ShouldShowCard());
 }
 
-TEST_F(PromoCardMovePasswordsTest, PromoShownIn7DaysAfterDismiss) {
+TEST_F(NotificationCardMovePasswordsTest, PromoShownIn7DaysAfterDismiss) {
   base::HistogramTester histogram_tester;
   EnableAccountStorage();
   SavePassword();
@@ -150,19 +151,19 @@ TEST_F(PromoCardMovePasswordsTest, PromoShownIn7DaysAfterDismiss) {
   ASSERT_THAT(pref_service()->GetList(
                   password_manager::prefs::kPasswordManagerPromoCardsList),
               IsEmpty());
-  std::unique_ptr<password_manager::PasswordPromoCardBase> promo =
+  std::unique_ptr<password_manager::PasswordNotificationCardBase> promo =
       std::make_unique<MovePasswordsPromo>(profile(), delegate());
-  EXPECT_TRUE(promo->ShouldShowPromo());
+  EXPECT_TRUE(promo->ShouldShowCard());
 
-  promo->OnPromoCardShown();
-  promo->OnPromoCardDismissed();
-  EXPECT_FALSE(promo->ShouldShowPromo());
+  promo->OnNotificationCardShown();
+  promo->OnNotificationCardDismissed();
+  EXPECT_FALSE(promo->ShouldShowCard());
 
   // Check that in 7 days it's shown again even after dismissing.
   task_environment()->AdvanceClock(base::Days(7) + base::Seconds(1));
-  EXPECT_TRUE(promo->ShouldShowPromo());
+  EXPECT_TRUE(promo->ShouldShowCard());
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PromoCard.Shown",
-      password_manager::PromoCardType::kMovePasswords, 1);
+      password_manager::NotificationCardType::kMovePasswords, 1);
 }

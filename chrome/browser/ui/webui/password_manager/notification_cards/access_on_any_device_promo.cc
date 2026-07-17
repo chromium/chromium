@@ -14,21 +14,22 @@ extern const char16_t kGetStartedOnIOS[] =
 constexpr char kAccessOnAnyDevicePromoId[] = "access_on_any_device_promo";
 
 AccessOnAnyDevicePromo::AccessOnAnyDevicePromo(PrefService* prefs)
-    : password_manager::PasswordPromoCardBase(kAccessOnAnyDevicePromoId,
-                                              prefs) {}
+    : password_manager::PasswordNotificationCardBase(kAccessOnAnyDevicePromoId,
+                                                     prefs) {}
 
-std::string AccessOnAnyDevicePromo::GetPromoID() const {
+std::string AccessOnAnyDevicePromo::GetCardID() const {
   return kAccessOnAnyDevicePromoId;
 }
 
-password_manager::PromoCardType AccessOnAnyDevicePromo::GetPromoCardType()
-    const {
-  return password_manager::PromoCardType::kAccessOnAnyDevice;
+password_manager::NotificationCardType
+AccessOnAnyDevicePromo::GetNotificationCardType() const {
+  return password_manager::NotificationCardType::kAccessOnAnyDevice;
 }
 
-bool AccessOnAnyDevicePromo::ShouldShowPromo() const {
+bool AccessOnAnyDevicePromo::ShouldShowCard() const {
   return !was_dismissed_ &&
-         number_of_times_shown_ < PasswordPromoCardBase::kPromoDisplayLimit;
+         number_of_times_shown_ <
+             PasswordNotificationCardBase::kPromoDisplayLimit;
 }
 
 std::u16string AccessOnAnyDevicePromo::GetTitle() const {

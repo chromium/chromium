@@ -10,20 +10,21 @@
 
 constexpr char kRelauchChromeId[] = "relaunch_chrome_promo";
 
-RelaunchChromePromo::RelaunchChromePromo(PrefService* prefs)
-    : password_manager::PasswordPromoCardBase(kRelauchChromeId, prefs) {}
+RelaunchChromeBanner::RelaunchChromeBanner(PrefService* prefs)
+    : password_manager::PasswordNotificationCardBase(kRelauchChromeId, prefs) {}
 
-RelaunchChromePromo::~RelaunchChromePromo() = default;
+RelaunchChromeBanner::~RelaunchChromeBanner() = default;
 
-std::string RelaunchChromePromo::GetPromoID() const {
+std::string RelaunchChromeBanner::GetCardID() const {
   return kRelauchChromeId;
 }
 
-password_manager::PromoCardType RelaunchChromePromo::GetPromoCardType() const {
-  return password_manager::PromoCardType::kRelauchChrome;
+password_manager::NotificationCardType
+RelaunchChromeBanner::GetNotificationCardType() const {
+  return password_manager::NotificationCardType::kRelauchChrome;
 }
 
-bool RelaunchChromePromo::ShouldShowPromo() const {
+bool RelaunchChromeBanner::ShouldShowCard() const {
   if (is_encryption_available_.value_or(true)) {
     return false;
   }
@@ -32,7 +33,7 @@ bool RelaunchChromePromo::ShouldShowPromo() const {
       password_manager::features::kRestartToGainAccessToKeychain);
 }
 
-std::u16string RelaunchChromePromo::GetTitle() const {
+std::u16string RelaunchChromeBanner::GetTitle() const {
   return l10n_util::GetStringUTF16(
 #if BUILDFLAG(IS_MAC)
       IDS_PASSWORD_MANAGER_UI_RELAUNCH_CHROME_PROMO_CARD_TITLE
@@ -42,7 +43,7 @@ std::u16string RelaunchChromePromo::GetTitle() const {
   );
 }
 
-std::u16string RelaunchChromePromo::GetDescription() const {
+std::u16string RelaunchChromeBanner::GetDescription() const {
   return l10n_util::GetStringUTF16(
 #if BUILDFLAG(IS_MAC)
       IDS_PASSWORD_MANAGER_UI_RELAUNCH_CHROME_PROMO_CARD_DESCRIPTION
@@ -52,7 +53,7 @@ std::u16string RelaunchChromePromo::GetDescription() const {
   );
 }
 
-std::u16string RelaunchChromePromo::GetActionButtonText() const {
+std::u16string RelaunchChromeBanner::GetActionButtonText() const {
   return l10n_util::GetStringUTF16(
       IDS_PASSWORD_MANAGER_UI_RELAUNCH_CHROME_PROMO_CARD_ACTION);
 }

@@ -42,35 +42,37 @@ namespace password_manager {
 
 namespace {
 
-// Returns the base::Value associated with the promo card.
-base::DictValue PromoCardToValueDict(const PasswordPromoCardBase* promo_card) {
+// Returns the base::Value associated with the notification card.
+base::DictValue NotificationCardToValueDict(
+    const PasswordNotificationCardBase* notification_card) {
   base::DictValue dict;
-  dict.Set("id", promo_card->GetPromoID());
-  dict.Set("title", promo_card->GetTitle());
-  dict.Set("description", promo_card->GetDescription());
-  if (!promo_card->GetActionButtonText().empty()) {
-    dict.Set("actionButtonText", promo_card->GetActionButtonText());
+  dict.Set("id", notification_card->GetCardID());
+  dict.Set("title", notification_card->GetTitle());
+  dict.Set("description", notification_card->GetDescription());
+  if (!notification_card->GetActionButtonText().empty()) {
+    dict.Set("actionButtonText", notification_card->GetActionButtonText());
   }
   return dict;
 }
 
 }  // namespace
 
-PromoCardsHandler::PromoCardsHandler(Profile* profile) : profile_(profile) {
+NotificationCardsHandler::NotificationCardsHandler(Profile* profile)
+    : profile_(profile) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  promo_cards_.push_back(std::make_unique<PasswordCheckupPromo>(
+  notification_cards_.push_back(std::make_unique<PasswordCheckupPromo>(
       profile->GetPrefs(),
       extensions::PasswordsPrivateDelegateFactory::GetForBrowserContext(profile,
                                                                         false)
           .get()));
-  promo_cards_.push_back(std::make_unique<WebPasswordManagerPromo>(
+  notification_cards_.push_back(std::make_unique<WebPasswordManagerPromo>(
       profile->GetPrefs(), SyncServiceFactory::GetForProfile(profile)));
-  promo_cards_.push_back(
+  notification_cards_.push_back(
       std::make_unique<PasswordManagerShortcutPromo>(profile));
-  promo_cards_.push_back(
+  notification_cards_.push_back(
       std::make_unique<AccessOnAnyDevicePromo>(profile->GetPrefs()));
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS)
-  promo_cards_.push_back(std::make_unique<MovePasswordsPromo>(
+  notification_cards_.push_back(std::make_unique<MovePasswordsPromo>(
       profile,
       extensions::PasswordsPrivateDelegateFactory::GetForBrowserContext(profile,
                                                                         false)
@@ -79,115 +81,123 @@ PromoCardsHandler::PromoCardsHandler(Profile* profile) : profile_(profile) {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  auto relaunch_promo =
-      std::make_unique<RelaunchChromePromo>(profile->GetPrefs());
-  relaunch_chrome_promo_ = relaunch_promo.get();
-  promo_cards_.push_back(std::move(relaunch_promo));
+  auto relaunch_banner =
+      std::make_unique<RelaunchChromeBanner>(profile->GetPrefs());
+  relaunch_chrome_banner_ = relaunch_banner.get();
+  notification_cards_.push_back(std::move(relaunch_banner));
 #endif
 }
 
-PromoCardsHandler::PromoCardsHandler(
-    base::PassKey<class PromoCardsHandlerTest>,
+NotificationCardsHandler::NotificationCardsHandler(
+    base::PassKey<class NotificationCardsHandlerTest>,
     Profile* profile,
-    std::vector<std::unique_ptr<PasswordPromoCardBase>> promo_cards)
-    : profile_(profile), promo_cards_(std::move(promo_cards)) {}
+    std::vector<std::unique_ptr<PasswordNotificationCardBase>>
+        notification_cards)
+    : profile_(profile), notification_cards_(std::move(notification_cards)) {}
 
-PromoCardsHandler::~PromoCardsHandler() = default;
+NotificationCardsHandler::~NotificationCardsHandler() = default;
 
-void PromoCardsHandler::RegisterMessages() {
+void NotificationCardsHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "getAvailablePromoCard",
-      base::BindRepeating(&PromoCardsHandler::HandleGetAvailablePromoCard,
-                          base::Unretained(this)));
+      base::BindRepeating(
+          &NotificationCardsHandler::HandleGetAvailableNotificationCard,
+          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "recordPromoDismissed",
-      base::BindRepeating(&PromoCardsHandler::HandleRecordPromoDismissed,
-                          base::Unretained(this)));
+      base::BindRepeating(
+          &NotificationCardsHandler::HandleRecordNotificationDismissed,
+          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "restartBrowser", base::BindRepeating(&PromoCardsHandler::RestartChrome,
-                                            base::Unretained(this)));
+      "restartBrowser",
+      base::BindRepeating(&NotificationCardsHandler::RestartChrome,
+                          base::Unretained(this)));
 }
 
-void PromoCardsHandler::RestartChrome(const base::ListValue& args) {
+void NotificationCardsHandler::RestartChrome(const base::ListValue& args) {
   chrome::AttemptRestart();
 }
 
-void PromoCardsHandler::HandleGetAvailablePromoCard(
+void NotificationCardsHandler::HandleGetAvailableNotificationCard(
     const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (relaunch_chrome_promo_ &&
-      !relaunch_chrome_promo_->is_encryption_available().has_value()) {
+  if (relaunch_chrome_banner_ &&
+      !relaunch_chrome_banner_->is_encryption_available().has_value()) {
     g_browser_process->os_crypt_async()->GetInstance(
-        base::BindOnce(&PromoCardsHandler::OnEncryptorReceived,
+        base::BindOnce(&NotificationCardsHandler::OnEncryptorReceived,
                        weak_ptr_factory_.GetWeakPtr(), callback_id.Clone()));
     return;
   }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  FinishGetAvailablePromoCard(callback_id);
+  FinishGetAvailableNotificationCard(callback_id);
 }
 
-void PromoCardsHandler::FinishGetAvailablePromoCard(
+void NotificationCardsHandler::FinishGetAvailableNotificationCard(
     const base::Value& callback_id) {
-  PasswordPromoCardBase* promo_card_to_show = GetPromoToShowAndUpdatePref();
-  if (promo_card_to_show) {
-    ResolveJavascriptCallback(callback_id,
-                              PromoCardToValueDict(promo_card_to_show));
+  PasswordNotificationCardBase* notification_card_to_show =
+      GetNotificationCardToShowAndUpdatePref();
+  if (notification_card_to_show) {
+    ResolveJavascriptCallback(
+        callback_id, NotificationCardToValueDict(notification_card_to_show));
   } else {
     ResolveJavascriptCallback(callback_id, base::Value());
   }
 }
 
-void PromoCardsHandler::HandleRecordPromoDismissed(
+void NotificationCardsHandler::HandleRecordNotificationDismissed(
     const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(1U, args.size());
-  const std::string& promo_id = args[0].GetString();
+  const std::string& card_id = args[0].GetString();
 
-  for (auto& promo_card : promo_cards_) {
-    if (promo_card->GetPromoID() == promo_id) {
-      promo_card->OnPromoCardDismissed();
+  for (auto& notification_card : notification_cards_) {
+    if (notification_card->GetCardID() == card_id) {
+      notification_card->OnNotificationCardDismissed();
       return;
     }
   }
 }
 
-PasswordPromoCardBase* PromoCardsHandler::GetPromoToShowAndUpdatePref() {
-  std::vector<PasswordPromoCardBase*> promo_card_to_show_candidates;
-  for (const auto& promo_card : promo_cards_) {
-    if (promo_card->ShouldShowPromo()) {
+PasswordNotificationCardBase*
+NotificationCardsHandler::GetNotificationCardToShowAndUpdatePref() {
+  std::vector<PasswordNotificationCardBase*>
+      notification_card_to_show_candidates;
+  for (const auto& notification_card : notification_cards_) {
+    if (notification_card->ShouldShowCard()) {
       // If there's a reason to show relaunch Chrome bubble, it should take the
       // highest priority.
-      if (promo_card->GetPromoCardType() == PromoCardType::kRelauchChrome) {
-        promo_card->OnPromoCardShown();
-        return promo_card.get();
+      if (notification_card->GetNotificationCardType() ==
+          NotificationCardType::kRelauchChrome) {
+        notification_card->OnNotificationCardShown();
+        return notification_card.get();
       }
-      promo_card_to_show_candidates.push_back(promo_card.get());
+      notification_card_to_show_candidates.push_back(notification_card.get());
     }
   }
-  if (promo_card_to_show_candidates.empty()) {
+  if (notification_card_to_show_candidates.empty()) {
     return nullptr;
   }
   // Sort based on last time shown.
-  auto* promo_to_show = *std::ranges::min_element(
-      promo_card_to_show_candidates, [](auto* lhs, auto* rhs) {
+  auto* card_to_show = *std::ranges::min_element(
+      notification_card_to_show_candidates, [](auto* lhs, auto* rhs) {
         return lhs->last_time_shown() < rhs->last_time_shown();
       });
 
-  promo_to_show->OnPromoCardShown();
-  return promo_to_show;
+  card_to_show->OnNotificationCardShown();
+  return card_to_show;
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-void PromoCardsHandler::OnEncryptorReceived(
+void NotificationCardsHandler::OnEncryptorReceived(
     base::Value callback_id,
     scoped_refptr<os_crypt_async::Encryptor> encryptor) {
-  relaunch_chrome_promo_->set_is_encryption_available(
+  relaunch_chrome_banner_->set_is_encryption_available(
       encryptor->IsEncryptionAvailable());
-  FinishGetAvailablePromoCard(callback_id);
+  FinishGetAvailableNotificationCard(callback_id);
 }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
