@@ -171,13 +171,13 @@ public class OmniboxMetrics {
         return TimingMetric.shortThreadTime("Android.Omnibox.SuggestionView.CreateTime3");
     }
 
-    /** Record thread time spent inflating the Suggestion dropdown on async background thread. */
-    public static @Nullable TimingMetric recordSuggestionsDropdownAsyncInflationThreadTime() {
+    /** Record thread time spent inflating the Suggestion dropdown. */
+    public static @Nullable TimingMetric recordSuggestionsDropdownInflationThreadTime() {
         return TimingMetric.shortThreadTime("Android.Omnibox.SuggestionsDropdown.InflationTime2");
     }
 
-    /** Record wall time spent inflating the Suggestion dropdown on async background thread. */
-    public static @Nullable TimingMetric recordSuggestionsDropdownAsyncInflationWallTime() {
+    /** Record wall time spent inflating the Suggestion dropdown. */
+    public static @Nullable TimingMetric recordSuggestionsDropdownInflationWallTime() {
         return TimingMetric.shortUptime("Android.Omnibox.SuggestionsDropdown.InflationTime3");
     }
 

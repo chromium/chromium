@@ -302,10 +302,8 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             SuggestionLayoutScrollListener suggestionLayoutScrollListener) {
         super(context, attrs, android.R.attr.dropDownListViewStyle);
 
-        try (TimingMetric metric =
-                        OmniboxMetrics.recordSuggestionsDropdownAsyncInflationThreadTime();
-                TimingMetric metric2 =
-                        OmniboxMetrics.recordSuggestionsDropdownAsyncInflationWallTime();
+        try (TimingMetric metric = OmniboxMetrics.recordSuggestionsDropdownInflationThreadTime();
+                TimingMetric metric2 = OmniboxMetrics.recordSuggestionsDropdownInflationWallTime();
                 TraceEvent tracing = TraceEvent.scoped("OmniboxSuggestionsDropdown.Constructor")) {
             boolean runsOnExpectedThread =
                     OmniboxFeatures.sAsyncViewInflation.isEnabled()
