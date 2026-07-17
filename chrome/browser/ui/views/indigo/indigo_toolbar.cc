@@ -284,6 +284,9 @@ class IndigoExpandButton : public HoverButton {
     title()->SetEnabledColor(ui::kColorSysOnSurface);
     views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                   kExpandButtonHoverRadius);
+    views::InkDrop::UseInkDropForFloodFillRipple(views::InkDrop::Get(this),
+                                                 /*highlight_on_hover=*/true,
+                                                 /*highlight_on_focus=*/true);
     SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
     CHECK(icon_view());
@@ -578,6 +581,10 @@ std::unique_ptr<views::Button> IndigoToolbar::CreateExpandedButton(
       gfx::Insets::VH(kMenuItemVerticalMargin, kMenuItemHorizontalMargin));
   views::InstallRoundRectHighlightPathGenerator(button.get(), gfx::Insets(),
                                                 kMenuItemHoverCornerRadius);
+  views::InkDrop::UseInkDropForFloodFillRipple(
+      views::InkDrop::Get(button.get()),
+      /*highlight_on_hover=*/true,
+      /*highlight_on_focus=*/true);
   button->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   return button;
 }
