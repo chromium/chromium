@@ -64,10 +64,10 @@ public class AudioBecomingNoisyReceiver extends BroadcastReceiver {
      */
     public static void removeObserver(AudioBecomingNoisyObserver observer) {
         ThreadUtils.assertOnUiThread();
-        AudioBecomingNoisyReceiver instance = getInstance();
-        instance.mObservers.removeObserver(observer);
-        if (instance.mObservers.isEmpty()) {
-            instance.unregister();
+        if (sInstance == null) return;
+        sInstance.mObservers.removeObserver(observer);
+        if (sInstance.mObservers.isEmpty()) {
+            sInstance.unregister();
         }
     }
 
