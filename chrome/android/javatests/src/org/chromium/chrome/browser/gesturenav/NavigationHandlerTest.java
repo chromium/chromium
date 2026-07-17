@@ -45,8 +45,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -82,8 +82,8 @@ public class NavigationHandlerTest {
     private NavigationHandler mNavigationHandler;
 
     @Rule
-    public AutoResetCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private GestureNavigationTestUtils mNavUtils;
     private WebPageStation mPage;
@@ -92,7 +92,7 @@ public class NavigationHandlerTest {
     public void setUp() throws InterruptedException {
         TestAnimations.setEnabled(true);
         mTestServer = mActivityTestRule.getTestServer();
-        mPage = mActivityTestRule.startOnWebPage(mTestServer.getURL(TEST_PAGE));
+        mPage = mActivityTestRule.startOnTestServerUrl(TEST_PAGE);
         CompositorAnimationHandler.setTestingMode(true);
         mNavUtils = new GestureNavigationTestUtils(mActivityTestRule::getActivity);
         mNavigationHandler = mNavUtils.getNavigationHandler();
