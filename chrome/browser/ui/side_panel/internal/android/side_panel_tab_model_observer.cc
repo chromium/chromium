@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/side_panel/internal/android/side_panel_tab_list_observer_android.h"
+#include "chrome/browser/ui/side_panel/internal/android/side_panel_tab_model_observer.h"
 
 #include "base/check.h"
 #include "chrome/browser/android/tab_android.h"
@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/side_panel/internal/android/side_panel_coordinator_android.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 
-SidePanelTabListObserverAndroid::SidePanelTabListObserverAndroid(
+SidePanelTabModelObserver::SidePanelTabModelObserver(
     TabModel* tab_model,
     SidePanelCoordinatorAndroid* coordinator)
     : coordinator_(coordinator), tab_model_(tab_model) {
@@ -21,15 +21,14 @@ SidePanelTabListObserverAndroid::SidePanelTabListObserverAndroid(
   tab_model_->AddObserver(this);
 }
 
-SidePanelTabListObserverAndroid::~SidePanelTabListObserverAndroid() {
+SidePanelTabModelObserver::~SidePanelTabModelObserver() {
   if (tab_model_) {
     tab_model_->RemoveObserver(this);
   }
 }
 
-void SidePanelTabListObserverAndroid::DidSelectTab(
-    TabAndroid* tab,
-    TabModel::TabSelectionType type) {
+void SidePanelTabModelObserver::DidSelectTab(TabAndroid* tab,
+                                             TabModel::TabSelectionType type) {
   CHECK(tab) << "New active tab should never be null.";
 
   tabs::TabInterface* old_tab = active_tab_handle_.Get();
@@ -71,29 +70,29 @@ void SidePanelTabListObserverAndroid::DidSelectTab(
   active_tab_handle_ = tab->GetHandle();
 }
 
-void SidePanelTabListObserverAndroid::DidRemoveTabForClosure(TabAndroid* tab) {
+void SidePanelTabModelObserver::DidRemoveTabForClosure(TabAndroid* tab) {
   CHECK(tab);
   coordinator_->ClearDeferredEntryForTab(tab->GetHandle());
 }
 
-void SidePanelTabListObserverAndroid::TabRemoved(TabAndroid* tab) {
+void SidePanelTabModelObserver::TabRemoved(TabAndroid* tab) {
   CHECK(tab);
   coordinator_->ClearDeferredEntryForTab(tab->GetHandle());
   coordinator_->OnTabReparented(tab);
 }
 
-void SidePanelTabListObserverAndroid::AllTabsAreClosing() {
-  // Usually when a tab is closed, OnActiveTabChanged() will be called and it
-  // will update the side panel states, including closing the side panel if the
-  // new active tab doesn't need it.
+void SidePanelTabModelObserver::AllTabsAreClosing() {
+  // Usually when a tab is closed, DidSelectTab() will be called for the new
+  // active tab and it will update the side panel states, including closing the
+  // side panel if the new active tab doesn't need it.
   //
   // However, when the user closes all tabs, such as via the three-dot menu in
-  // the Grid Tab Switcher (GTS), OnActiveTabChanged() won't be called, but we
-  // also need to close the side panel if it's shown. Otherwise, when the user
+  // the Grid Tab Switcher (GTS), DidSelectTab() won't be called, but we also
+  // need to close the side panel if it's shown. Otherwise, when the user
   // creates a new tab, the side panel for a destroyed tab will remain.
   //
   // A common question might be: When the user creates a new tab after closing
-  // all tabs, shouldn't OnActiveTabChanged() fix the side panel states?
+  // all tabs, shouldn't DidSelectTab() fix the side panel states?
   //
   // The answer:
   //
@@ -102,19 +101,19 @@ void SidePanelTabListObserverAndroid::AllTabsAreClosing() {
   // Side panel code should reflect this state because GTS is laid on top of the
   // main browser UI (i.e., the main browser UI is still alive).
   //
-  // Secondly, OnActiveTabChanged() only closes the side panel if
+  // Secondly, DidSelectTab() only closes the side panel if
   // (1) the side panel is currently shown,
   // (2) the new active tab doesn't have an active SidePanelEntry, and
   // (3) the old tab hasn't been deleted.
   //
-  // Relying on OnActiveTabChanged() won't meet the condition in (3), and we
+  // Relying on DidSelectTab() won't meet the condition in (3), and we
   // shouldn't change (3) as it prevents holding/dereferencing an _invalid_
   // pointer to the SidePanelRegistry of the deleted tab.
   coordinator_->Close(SidePanelEntryHideReason::kSidePanelClosed,
                       /*suppress_animations=*/true);
 }
 
-void SidePanelTabListObserverAndroid::OnTabModelDestroyed(TabModel& tab_model) {
+void SidePanelTabModelObserver::OnTabModelDestroyed(TabModel& tab_model) {
   CHECK(tab_model_ == &tab_model);
   tab_model_->RemoveObserver(this);
   tab_model_ = nullptr;

@@ -11,7 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/side_panel/internal/android/side_panel_deferred_entry_tracker.h"
-#include "chrome/browser/ui/side_panel/internal/android/side_panel_tab_list_observer_android.h"
+#include "chrome/browser/ui/side_panel/internal/android/side_panel_tab_model_observer.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui_base.h"
 #include "third_party/jni_zero/jni_zero.h"
@@ -187,7 +187,7 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   ui::ScopedUnownedUserData<SidePanelCoordinatorAndroid>
       scoped_unowned_user_data_;
 
-  SidePanelTabListObserverAndroid tab_model_observer_;
+  SidePanelTabModelObserver tab_model_observer_;
 };
 
 #endif  // CHROME_BROWSER_UI_SIDE_PANEL_INTERNAL_ANDROID_SIDE_PANEL_COORDINATOR_ANDROID_H_

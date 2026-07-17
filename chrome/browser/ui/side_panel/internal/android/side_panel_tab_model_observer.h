@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_SIDE_PANEL_INTERNAL_ANDROID_SIDE_PANEL_TAB_LIST_OBSERVER_ANDROID_H_
-#define CHROME_BROWSER_UI_SIDE_PANEL_INTERNAL_ANDROID_SIDE_PANEL_TAB_LIST_OBSERVER_ANDROID_H_
+#ifndef CHROME_BROWSER_UI_SIDE_PANEL_INTERNAL_ANDROID_SIDE_PANEL_TAB_MODEL_OBSERVER_H_
+#define CHROME_BROWSER_UI_SIDE_PANEL_INTERNAL_ANDROID_SIDE_PANEL_TAB_MODEL_OBSERVER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
@@ -19,16 +19,15 @@ class SidePanelCoordinatorAndroid;
 //   they are co-dependent and designed to work together.
 // * This class is tested alongside `SidePanelCoordinatorAndroid` in
 //   `side_panel_coordinator_android_browsertest.cc`.
-class SidePanelTabListObserverAndroid final : public TabModelObserver {
+class SidePanelTabModelObserver final : public TabModelObserver {
  public:
-  SidePanelTabListObserverAndroid(TabModel* tab_model,
-                                  SidePanelCoordinatorAndroid* coordinator);
-  ~SidePanelTabListObserverAndroid() override;
+  SidePanelTabModelObserver(TabModel* tab_model,
+                            SidePanelCoordinatorAndroid* coordinator);
+  ~SidePanelTabModelObserver() override;
 
-  SidePanelTabListObserverAndroid(const SidePanelTabListObserverAndroid&) =
+  SidePanelTabModelObserver(const SidePanelTabModelObserver&) = delete;
+  SidePanelTabModelObserver& operator=(const SidePanelTabModelObserver&) =
       delete;
-  SidePanelTabListObserverAndroid& operator=(
-      const SidePanelTabListObserverAndroid&) = delete;
 
  private:
   // Implements `TabModelObserver`:
@@ -67,4 +66,4 @@ class SidePanelTabListObserverAndroid final : public TabModelObserver {
   tabs::TabHandle active_tab_handle_;
 };
 
-#endif  // CHROME_BROWSER_UI_SIDE_PANEL_INTERNAL_ANDROID_SIDE_PANEL_TAB_LIST_OBSERVER_ANDROID_H_
+#endif  // CHROME_BROWSER_UI_SIDE_PANEL_INTERNAL_ANDROID_SIDE_PANEL_TAB_MODEL_OBSERVER_H_

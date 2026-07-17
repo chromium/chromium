@@ -16,8 +16,8 @@ source_set("android") {
     "side_panel_coordinator_android.h",
     "side_panel_deferred_entry_tracker.cc",
     "side_panel_deferred_entry_tracker.h",
-    "side_panel_tab_list_observer_android.cc",
-    "side_panel_tab_list_observer_android.h",
+    "side_panel_tab_model_observer.cc",
+    "side_panel_tab_model_observer.h",
     "window_scoped_side_panel_registry_bridge.cc",
     "window_scoped_side_panel_registry_bridge.h",
   ]
