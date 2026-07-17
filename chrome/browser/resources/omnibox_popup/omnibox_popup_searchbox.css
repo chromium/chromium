@@ -11,7 +11,6 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --cr-searchbox-icon-left-position: 5px;
   --cr-searchbox-icon-top-position: 0;
   --cr-searchbox-border-radius: calc(0.5 * var(--cr-searchbox-height));
   --cr-searchbox-icon-spacing: 11px;
@@ -21,9 +20,7 @@
       0 1px 3px 0 rgba(0, 0, 0, 0.30);
   --cr-searchbox-voice-icon-offset: 16px;
   --cr-searchbox-voice-search-button-width: 0px;
-
   --cr-searchbox-width: calc(100% - 2 * var(--alignment-inset-horizontal));
-  --cr-searchbox-height: calc(var(--location-bar-height) + 2 * var(--alignment-inset-top));
   border-radius: var(--cr-searchbox-border-radius);
   display: block;
   font-size: var(--cr-searchbox-font-size, 16px);
@@ -41,7 +38,7 @@
   --alignment-inset-top: 6px;
   --alignment-inset-horizontal: 1px;
   --cr-searchbox-font-size: 15px;
-  --location-bar-height: 36px;
+  --cr-searchbox-height: 36px;
   --location-bar-page-info-icon-vertical-padding: 3px;
 }
 
@@ -53,7 +50,7 @@
   --alignment-inset-top: 5px;
   --alignment-inset-horizontal: 6px;
   --cr-searchbox-font-size: 14px;
-  --location-bar-height: 34px;
+  --cr-searchbox-height: 32px;
   --location-bar-page-info-icon-vertical-padding: 5px;
 }
 
@@ -68,18 +65,16 @@
 /* TODO(b/511199705): Ensure input has correct size when results visible. */
 /* TODO(b/504669359): Define other location bar border colors such as high contrast. */
 :host(:not([dropdown-is-visible])) {
-  --cr-searchbox-height: var(--location-bar-height);
+  --cr-searchbox-icon-right-position: 2px;
   --cr-searchbox-input-height: calc(
-      var(--location-bar-height) -
+      var(--cr-searchbox-height) -
       2 * var(--location-bar-page-info-icon-vertical-padding));
-  --cr-searchbox-shadow: none;
+  --cr-searchbox-shadow: inset 0 0 0 1px var(--color-location-bar-border-on-mismatch);
+  --cr-searchbox-width: calc(100% - 2 * var(--alignment-inset-horizontal));
   box-sizing: border-box;
+  margin-inline: auto;
   margin-top: var(--alignment-inset-top);
   margin-bottom: var(--alignment-inset-top);
-}
-
-:host(:not([dropdown-is-visible])) #inputWrapper:not(:focus-within) {
-  border: 1px solid var(--color-location-bar-border-on-mismatch);
 }
 
 :host(:not([dropdown-is-visible])) #inputWrapper:hover:not(:focus-within) {
@@ -88,14 +83,14 @@
 }
 
 :host(:not([dropdown-is-visible])) #inputWrapper:focus-within {
-  /* Transparent border so that there is no shift. */
-  border: 1px solid transparent;
-  box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
+  box-shadow: 0 0 0 2px var(--cr-focus-outline-color);
 }
 
 /* TODO(b/511199705): Widget is too wide when dropdown is visible. This is a
    workaround until we fix that. */
 :host([dropdown-is-visible]) {
+  --cr-searchbox-icon-left-position: 12px;
+  --cr-searchbox-icon-right-position: 10px;
   --cr-searchbox-border-radius: 16px;
   --cr-searchbox-width: 100%;
 }
@@ -128,18 +123,21 @@
   background-color: var(--color-searchbox-background);
   border-radius: var(--cr-searchbox-border-radius);
   box-shadow: var(--cr-searchbox-shadow);
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   height: auto;
-  min-height: var(--location-bar-height);
+  min-height: var(--cr-searchbox-height);
   position: relative;
   width: 100%;
 }
 
 cr-searchbox-input::part(searchbox-input) {
   align-self: center;
+  box-sizing: border-box;
   height: var(--cr-searchbox-input-height);
-  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-top: 0;
 }
 
 :host([searchbox-chrome-refresh-theming]) cr-searchbox-input::part(searchbox-input)::selection {

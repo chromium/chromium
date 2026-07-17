@@ -299,7 +299,26 @@ gfx::Insets RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets() {
   if (ui::TouchUiController::Get()->touch_ui()) {
     return gfx::Insets::TLBR(6, 1, 5, 1);
   }
+#if BUILDFLAG(IS_MAC)
+  // On macOS, the popup is hosted in a separate native window. Converting
+  // sub-pixel Views layout coordinates of the location bar to integer screen
+  // coordinates for the OS window positioning introduces rounding discrepancies
+  // (up to 1px). Additionally, differences in visual border rendering thickness
+  // (1px CSS outline in WebUI vs 0.5px native retina border) require a slightly
+  // tighter fit.
+  //
+  // To avoid adding platform-specific 1px hacks or relative offsets in the
+  // shared WebUI CSS:
+  // - We set the vertical inset to 4px (1px smaller than default 5px). This
+  //   effectively offsets the widget top down by 1px, centering the 32px
+  //   WebUI searchbox inside the 34px native height.
+  // - We set the horizontal inset to 5px (1px smaller than default 6px). This
+  //   narrows the widget by 2px overall, aligning the searchbox's visual
+  //   boundaries with the native location bar's visual border.
+  return gfx::Insets::VH(4, 5);
+#else
   return gfx::Insets::VH(5, 6);
+#endif
 }
 
 // static

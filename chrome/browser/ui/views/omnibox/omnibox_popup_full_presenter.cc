@@ -182,9 +182,8 @@ void OmniboxPopupFullPresenter::SynchronizePopupBounds() {
   CHECK(results_frame);
   results_frame->SetElevation(target_elevation);
 
-  // Use the content height reported by WebUI. This avoids premature shrinking
-  // before the WebUI has had a chance to update its content.
-  widget_bounds.set_height(std::max(content_height_, default_height));
+  widget_bounds.set_height(content_height_ > 1 ? content_height_
+                                               : default_height);
 
   // Set width and height to at least their minimums (e.g. for permission
   // prompts).

@@ -85,7 +85,7 @@ input::-webkit-search-cancel-button {
 
 cr-searchbox-icon {
   height: 100%;
-  padding-inline-end: 4px;
+  padding-inline-end: var(--cr-searchbox-icon-right-position, 4px);
   padding-inline-start: var(--cr-searchbox-icon-left-position);
   position: relative;
   top: var(--cr-searchbox-icon-top-position);
