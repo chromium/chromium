@@ -212,6 +212,13 @@ bool ParsePhoneNumber(std::u16string_view value,
 
   // The region might be different from what we started with.
   phone_util->GetRegionCodeForNumber(*i18n_number, inferred_region);
+  constexpr std::string_view kUnknownPhoneRegionCode = "ZZ";
+  if (*inferred_region == kUnknownPhoneRegionCode ||
+      !phone_util->IsValidNumberForRegion(*i18n_number, *inferred_region)) {
+    // Reset inferred region to empty string if the region code or the phone
+    // number is invalid.
+    *inferred_region = "";
+  }
 
   return true;
 }

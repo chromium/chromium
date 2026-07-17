@@ -96,8 +96,8 @@ INSTANTIATE_TEST_SUITE_P(
         // Should fail parsing in US.
         ParseNumberTestCase{false, u"17134567", "US"},
         // Does not have area code, but still a possible number with
-        // unknown("ZZ") deduced region.
-        ParseNumberTestCase{true, u"7134567", "US", u"7134567", u"", u"", "ZZ"},
+        // unknown("") deduced region.
+        ParseNumberTestCase{true, u"7134567", "US", u"7134567", u"", u"", ""},
         // Valid Canadian toll-free number.
         ParseNumberTestCase{true, u"3101234", "CA", u"1234", u"310", u"", "CA"},
         // Test for string with greater than 7 digits but less than 10 digits.
@@ -118,14 +118,14 @@ INSTANTIATE_TEST_SUITE_P(
         // Test for string with exactly 10 digits.
         // Should give back phone number and city code.
         // This one has an incorrect area code but could still be a possible
-        // number with unknown("ZZ") deducted region.
+        // number with unknown("") deduced region.
         ParseNumberTestCase{true, u"1234567890", "US", u"1234567890", u"", u"",
-                            "ZZ"},
+                            ""},
         // This is actually not a valid number because the first number after
         // area code is 1. But it's still a possible number, just with deduced
-        // country set to unknown("ZZ").
+        // country set to unknown("").
         ParseNumberTestCase{true, u"6501567890", "US", u"1567890", u"650", u"",
-                            "ZZ"},
+                            ""},
         ParseNumberTestCase{true, u"6504567890", "US", u"4567890", u"650", u"",
                             "US"},
         // Test for string with exactly 10 digits and separators.
@@ -133,9 +133,9 @@ INSTANTIATE_TEST_SUITE_P(
         ParseNumberTestCase{true, u"(650) 456-7890", "US", u"4567890", u"650",
                             u"", "US"},
         // Tests for string with over 10 digits.
-        // 01 is incorrect prefix in the USA, we interpret 011 as prefix, and
-        // rest is parsed as a Singapore number(country code "SG").
-        ParseNumberTestCase{true, u"0116504567890", "US", u"04567890", u"",
+        // 011 is a correct "dial out" prefix in the USA, parse remaining phone
+        // number as a Singapore number (country code "65", region code "SG").
+        ParseNumberTestCase{true, u"0116591234567", "US", u"4567", u"9123",
                             u"65", "SG"},
         // 011 is a correct "dial out" prefix in the USA - the parsing should
         // succeed.
