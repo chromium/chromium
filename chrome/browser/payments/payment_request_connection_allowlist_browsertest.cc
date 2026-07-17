@@ -48,6 +48,54 @@ constexpr char kDefaultPaymentPageContent[] = R"(
   </html>
 )";
 
+constexpr char kOpenWindowMerchantPage[] = R"(
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <title>Payment Request Open Window Test</title>
+      <meta charset="utf-8">
+    </head>
+    <body>
+      <script>
+        async function testOpenWindow(methodName, url) {
+          try {
+            const request = new PaymentRequest(
+                [{supportedMethods: methodName, data: {url}}],
+                {total: {label: 'Total',
+                         amount: {currency: 'USD', value: '0.01'}}});
+            const response = await request.show();
+            await response.complete('success');
+            return response.details.error || 'success';
+          } catch (e) {
+            return e.message;
+          }
+        }
+      </script>
+    </body>
+  </html>
+)";
+
+constexpr char kOpenWindowServiceWorkerScript[] = R"(
+  self.addEventListener('canmakepayment', (evt) => {
+    evt.respondWith(true);
+  });
+  self.addEventListener('paymentrequest', (evt) => {
+    const url = evt.methodData[0].data.url;
+    const methodName = evt.methodData[0].supportedMethods;
+    evt.respondWith((async () => {
+      try {
+        const windowClient = await evt.openWindow(url);
+        if (windowClient) {
+          return {methodName, details: {}};
+        } else {
+          return {methodName, details: {error: 'open_window_failed'}};
+        }
+      } catch (error) {
+        return {methodName, details: {error: error.message}};
+      }
+    })());
+  });
+)";
 struct ResponseEntry {
   std::string content;
   absl::flat_hash_map<std::string, std::string> headers;
@@ -682,6 +730,187 @@ IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
             net::OK);
   EXPECT_EQ(monitor.WaitForRequestCompletion(icon_url).error_code,
             net::ERR_NETWORK_ACCESS_REVOKED);
+}
+
+// Test that Payment Request API PaymentRequestEvent.openWindow() is allowed
+// when the URL is allowed by the connection allowlist.
+IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
+                       OpenWindowAllowed) {
+  RegisterResponse("/", ResponseEntry("", {}, net::HTTP_OK));
+
+  // Merchant page on a.com.
+  RegisterResponse(
+      "/payment_request_connection_allowlist_open_window_allowed.html",
+      ResponseEntry(kOpenWindowMerchantPage, {}));
+
+  // Payment app service worker on b.com. Attempts to open window.html via
+  // PaymentRequestEvent.openWindow(). Resolves payment with 'success' if
+  // opened, otherwise the error message.
+  RegisterResponse("/connection_allowlist_open_window/sw.js",
+                   ResponseEntry(kOpenWindowServiceWorkerScript,
+                                 {{"Content-Type", "application/javascript"},
+                                  {"Connection-Allowlist", R"(
+                                    (
+                                      "*://b.com:*/*/window.html"
+                                    )
+                                  )"}}));
+
+  // Target to be opened by the service worker via PaymentRequestEvent:
+  // openWindow().
+  std::string window_relative_url{
+      "/connection_allowlist_open_window/window.html"};
+  RegisterResponse(
+      window_relative_url,
+      ResponseEntry("<!DOCTYPE html><html><body>Window</body></html>",
+                    {{"Content-Type", "text/html"}}));
+
+  NavigateTo("a.com",
+             "/payment_request_connection_allowlist_open_window_allowed.html");
+
+  std::string payment_method;
+  InstallPaymentApp("b.com", "/connection_allowlist_open_window/sw.js",
+                    &payment_method);
+
+  GURL window_url = https_server()->GetURL("b.com", window_relative_url);
+  content::URLLoaderMonitor monitor({window_url});
+
+  // Verify PaymentRequestEvent: openWindow() succeeds because window.html
+  // matches the service worker's allowlist.
+  EXPECT_EQ("success", content::EvalJs(GetActiveWebContents(),
+                                       content::JsReplace(
+                                           "testOpenWindow($1, $2)",
+                                           payment_method, window_url.spec())));
+  // Verify `window_url` was requested. We check `GetRequestInfo()` instead of
+  // `WaitForRequestCompletion()` because `testOpenWindow()` completes the
+  // payment request right after `openWindow()` resolves, closing the payment
+  // handler window before `URLLoaderMonitor` may have received `OnComplete()`.
+  monitor.WaitForUrls({window_url});
+  EXPECT_TRUE(monitor.GetRequestInfo(window_url).has_value());
+}
+
+// Test that Payment Request API PaymentRequestEvent.openWindow() is blocked
+// when the URL is not allowed by the connection allowlist.
+IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
+                       OpenWindowBlocked) {
+  RegisterResponse("/", ResponseEntry("", {}, net::HTTP_OK));
+
+  // Merchant page on a.com.
+  RegisterResponse(
+      "/payment_request_connection_allowlist_open_window_blocked.html",
+      ResponseEntry(kOpenWindowMerchantPage, {}));
+
+  // Payment app service worker on b.com. The service worker has an empty
+  // connection allowlist, which means no request is allowed.
+  RegisterResponse("/connection_allowlist_open_window/sw.js",
+                   ResponseEntry(kOpenWindowServiceWorkerScript,
+                                 {{"Content-Type", "application/javascript"},
+                                  {"Connection-Allowlist", "()"}}));
+
+  // Target to be opened by the service worker via
+  // PaymentRequestEvent.openWindow().
+  std::string window_relative_url{
+      "/connection_allowlist_open_window/window.html"};
+  RegisterResponse(
+      window_relative_url,
+      ResponseEntry("<!DOCTYPE html><html><body>Window</body></html>",
+                    {{"Content-Type", "text/html"}}));
+
+  NavigateTo("a.com",
+             "/payment_request_connection_allowlist_open_window_blocked.html");
+
+  std::string payment_method;
+  InstallPaymentApp("b.com", "/connection_allowlist_open_window/sw.js",
+                    &payment_method);
+
+  GURL window_url = https_server()->GetURL("b.com", window_relative_url);
+  content::URLLoaderMonitor monitor({window_url});
+
+  // Verify PaymentRequestEvent.openWindow() resolves to null and returns
+  // the error message because window.html is not allowed by service worker's
+  // allowlist.
+  EXPECT_THAT(
+      content::EvalJs(GetActiveWebContents(),
+                      content::JsReplace("testOpenWindow($1, $2)",
+                                         payment_method, window_url.spec()))
+          .ExtractString(),
+      HasSubstr(" is blocked by Connection Allowlist."));
+
+  // The monitor never receives the request because it is blocked by the
+  // connection allowlist check in
+  // `ServiceWorkerVersion::OpenPaymentHandlerWindow`. It stops the request
+  // before it reaches the URL loader. So it does not complete with net error
+  // `ERR_NETWORK_ACCESS_REVOKED`.
+  EXPECT_FALSE(monitor.GetRequestInfo(window_url).has_value());
+}
+
+// Test that service worker's connection allowlist's redirect directive has no
+// effect on Payment Request API PaymentRequestEvent: openWindow() when there is
+// a redirect.
+IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
+                       NoEffectOnOpenWindowRedirect) {
+  RegisterResponse("/", ResponseEntry("", {}, net::HTTP_OK));
+
+  // Merchant page on a.com.
+  RegisterResponse(
+      "/payment_request_connection_allowlist_open_window_redirect_allowed.html",
+      ResponseEntry(kOpenWindowMerchantPage, {}));
+
+  // Payment app service worker on b.com. Attempts to open redirect.html via
+  // PaymentRequestEvent: openWindow(), which is then redirected to window.html.
+  // Resolves payment with 'success' if opened, otherwise the error message.
+  // Note the service worker's connection allowlist specifies `redirects=block`.
+  // However, it should not have effect on PaymentRequestEvent: openWindow().
+  RegisterResponse("/connection_allowlist_open_window/sw.js",
+                   ResponseEntry(kOpenWindowServiceWorkerScript,
+                                 {{"Content-Type", "application/javascript"},
+                                  {"Connection-Allowlist", R"(
+                                    (
+                                      response-origin
+                                      "*://b.com:*/*/redirect.html"
+                                    ); redirects=block
+                                  )"}}));
+
+  GURL target_window_url = https_server()->GetURL(
+      "b.com", "/connection_allowlist_open_window/window.html");
+  RegisterResponse("/connection_allowlist_open_window/redirect.html",
+                   ResponseEntry("", {{"Location", target_window_url.spec()}},
+                                 net::HTTP_FOUND));
+
+  // Target window document on b.com.
+  RegisterResponse(
+      "/connection_allowlist_open_window/window.html",
+      ResponseEntry("<!DOCTYPE html><html><body>Window</body></html>",
+                    {{"Content-Type", "text/html"}}));
+
+  NavigateTo("a.com",
+             "/payment_request_connection_allowlist_open_window_redirect_"
+             "allowed.html");
+
+  std::string payment_method;
+  InstallPaymentApp("b.com", "/connection_allowlist_open_window/sw.js",
+                    &payment_method);
+
+  GURL redirect_url = https_server()->GetURL(
+      "b.com", "/connection_allowlist_open_window/redirect.html");
+  content::URLLoaderMonitor monitor({redirect_url});
+
+  // Verify PaymentRequestEvent: openWindow() succeeds because the initial
+  // request URL redirect.html matches the service worker's connection
+  // allowlist. And the connection allowlist's redirect directive has no effect
+  // for PaymentRequestEvent: openWindow().
+  EXPECT_EQ(
+      "success",
+      content::EvalJs(GetActiveWebContents(),
+                      content::JsReplace("testOpenWindow($1, $2)",
+                                         payment_method, redirect_url.spec())));
+  // Verify `redirect_url` was requested. We check `GetRequestInfo()` instead
+  // of `WaitForRequestCompletion()` because `testOpenWindow()` completes the
+  // payment request right after `openWindow()` resolves, closing the payment
+  // handler window. Closing the window destroys its `WebContents` and in-flight
+  // URL loaders before `URLLoaderMonitor` may have received `OnComplete()` from
+  // the network service.
+  monitor.WaitForUrls({redirect_url});
+  EXPECT_TRUE(monitor.GetRequestInfo(redirect_url).has_value());
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(

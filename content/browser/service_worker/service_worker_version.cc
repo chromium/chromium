@@ -38,6 +38,7 @@
 #include "components/services/storage/public/mojom/service_worker_database.mojom-forward.h"
 #include "content/browser/back_forward_cache/back_forward_cache_can_store_document_result.h"
 #include "content/browser/bad_message.h"
+#include "content/browser/connection_allowlist_utils.h"
 #include "content/browser/renderer_host/local_network_access_util.h"
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
 #include "content/browser/service_worker/payment_handler_support.h"
@@ -1896,6 +1897,29 @@ void ServiceWorkerVersion::OpenPaymentHandlerWindow(
         "Received PaymentRequestEvent#openWindow() request without a pending "
         "PaymentRequestEvent.");
     receiver_.reset();
+    return;
+  }
+
+  // `PaymentHandlerSupport::ShowPaymentHandlerWindow` implements API
+  // `PaymentRequestEvent: openWindow()` with two different paths.
+  // - Main path: Uses `PaymentHandlerWebFlowViewController` to open the window.
+  // - Fallback path: If the main path fails, it falls back to use
+  //   `ServiceWorkerVersion::OpenWindow`, which eventually calls
+  //   `service_worker_client_utils::OpenWindow`.
+  //
+  // `service_worker_client_utils::OpenWindow` also performs the
+  // `ConnectionAllowlistAllowsUrlAndReportIfNeeded` check. This means in the
+  // fallback case, the allowlist check might run twice. This redundancy does
+  // not impact performance. It is necessary to have the check here for
+  // covering the main path.
+  if (policy_container_host() &&
+      !ConnectionAllowlistAllowsUrlAndReportIfNeeded(
+          policy_container_host()->policies(), url)) {
+    // The request URL is not allowed by the Service Worker's Connection
+    // Allowlist. See: https://github.com/WICG/connection-allowlists.
+    std::move(callback).Run(
+        /*success=*/false, /*client=*/nullptr,
+        url.spec() + " is blocked by Connection Allowlist.");
     return;
   }
 
