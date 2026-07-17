@@ -1175,8 +1175,8 @@ net::StorageAccessApiStatus ShouldLoadWithStorageAccess(
     // Navigation was not self-initiated.
     return net::StorageAccessApiStatus::kNone;
   }
-  if (!common_params.initiator_origin ||
-      !common_params.initiator_origin->IsSameOriginWith(response_url) ||
+  if (!previous_document_rfh->GetLastCommittedOrigin().IsSameOriginWith(
+          response_url) ||
       did_encounter_cross_origin_redirect) {
     // Navigation is not fully same-origin.
     return net::StorageAccessApiStatus::kNone;
