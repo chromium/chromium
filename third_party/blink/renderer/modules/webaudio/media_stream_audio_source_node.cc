@@ -95,7 +95,8 @@ MediaStreamAudioSourceNode* MediaStreamAudioSourceNode::Create(
   // this provider, which is [[input track]] from the spec.
   std::unique_ptr<AudioSourceProvider> provider =
       audio_track->CreateWebAudioSource(context.sampleRate(),
-                                        context.PlatformBufferDuration());
+                                        context.PlatformBufferDuration(),
+                                        context.renderQuantumSize());
 
   // 1.24.1. Step 4.
   MediaStreamAudioSourceNode* node =

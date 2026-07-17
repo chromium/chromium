@@ -174,7 +174,8 @@ std::unique_ptr<WebAudioSourceProvider>
 CreateWebAudioSourceFromMediaStreamTrack(
     MediaStreamComponent* component,
     int context_sample_rate,
-    base::TimeDelta platform_buffer_duration) {
+    base::TimeDelta platform_buffer_duration,
+    uint32_t render_quantum_frames) {
   MediaStreamTrackPlatform* media_stream_track = component->GetPlatformTrack();
   if (!media_stream_track) {
     DLOG(ERROR) << "Native track missing for webaudio source.";
@@ -185,7 +186,8 @@ CreateWebAudioSourceFromMediaStreamTrack(
   DCHECK_EQ(source->GetType(), MediaStreamSource::kTypeAudio);
 
   return std::make_unique<WebAudioMediaStreamAudioSink>(
-      component, context_sample_rate, platform_buffer_duration);
+      component, context_sample_rate, platform_buffer_duration,
+      render_quantum_frames);
 }
 
 void DidCloneMediaStreamTrack(MediaStreamComponent* clone) {
@@ -1071,10 +1073,12 @@ bool MediaStreamTrackImpl::HasPendingActivity() const {
 
 std::unique_ptr<AudioSourceProvider> MediaStreamTrackImpl::CreateWebAudioSource(
     int context_sample_rate,
-    base::TimeDelta platform_buffer_duration) {
+    base::TimeDelta platform_buffer_duration,
+    uint32_t render_quantum_frames) {
   return std::make_unique<MediaStreamWebAudioSource>(
       CreateWebAudioSourceFromMediaStreamTrack(Component(), context_sample_rate,
-                                               platform_buffer_duration));
+                                               platform_buffer_duration,
+                                               render_quantum_frames));
 }
 
 std::optional<const MediaStreamDevice> MediaStreamTrackImpl::device() const {

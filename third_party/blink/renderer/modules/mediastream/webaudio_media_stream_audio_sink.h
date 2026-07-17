@@ -46,11 +46,10 @@ class MODULES_EXPORT WebAudioMediaStreamAudioSink
       public media::AudioConverter::InputCallback,
       public WebMediaStreamAudioSink {
  public:
-  static const int kWebAudioRenderBufferSize;
-
   WebAudioMediaStreamAudioSink(MediaStreamComponent* component,
                                int context_sample_rate,
-                               base::TimeDelta platform_buffer_duration);
+                               base::TimeDelta platform_buffer_duration,
+                               uint32_t render_quantum_frames);
 
   WebAudioMediaStreamAudioSink(const WebAudioMediaStreamAudioSink&) = delete;
   WebAudioMediaStreamAudioSink& operator=(const WebAudioMediaStreamAudioSink&) =

@@ -36,14 +36,14 @@ class WebAudioMediaStreamAudioSinkTest : public testing::Test {
   void Configure(int source_sample_rate,
                  int source_buffer_size,
                  int context_sample_rate,
-                 base::TimeDelta platform_buffer_duration) {
+                 base::TimeDelta platform_buffer_duration,
+                 uint32_t render_quantum_frames) {
     source_params_.Reset(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                          media::ChannelLayoutConfig::Mono(), source_sample_rate,
                          source_buffer_size);
     sink_params_.Reset(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                        media::ChannelLayoutConfig::Stereo(),
-                       context_sample_rate,
-                       WebAudioMediaStreamAudioSink::kWebAudioRenderBufferSize);
+                       context_sample_rate, render_quantum_frames);
     sink_bus_ = media::AudioBus::Create(sink_params_);
     auto* audio_source = MakeGarbageCollected<MediaStreamSource>(
         "dummy_source_id", MediaStreamSource::kTypeAudio, "dummy_source_name",
@@ -53,7 +53,8 @@ class WebAudioMediaStreamAudioSinkTest : public testing::Test {
         "audio_track", audio_source,
         std::make_unique<MediaStreamAudioTrack>(true));
     source_provider_ = std::make_unique<WebAudioMediaStreamAudioSink>(
-        component_, context_sample_rate, platform_buffer_duration);
+        component_, context_sample_rate, platform_buffer_duration,
+        render_quantum_frames);
     source_provider_->OnSetFormat(source_params_);
   }
 
@@ -68,7 +69,8 @@ class WebAudioMediaStreamAudioSinkTest : public testing::Test {
 TEST_F(WebAudioMediaStreamAudioSinkTest, VerifyDataFlow) {
   Configure(/*source_sample_rate=*/48000, /*source_buffer_size=*/480,
             /*context_sample_rate=*/44100,
-            /*platform_buffer_duration=*/base::Milliseconds(10));
+            /*platform_buffer_duration=*/base::Milliseconds(10),
+            /*render_quantum_frames=*/128);
 
   // Point the std::vector into memory owned by |sink_bus_|.
   std::vector<base::span<float>> audio_data(
@@ -130,7 +132,8 @@ TEST_F(WebAudioMediaStreamAudioSinkTest,
        DeleteSourceProviderBeforeStoppingTrack) {
   Configure(/*source_sample_rate=*/48000, /*source_buffer_size=*/480,
             /*context_sample_rate=*/44100,
-            /*platform_buffer_duration=*/base::Milliseconds(10));
+            /*platform_buffer_duration=*/base::Milliseconds(10),
+            /*render_quantum_frames=*/128);
 
   source_provider_.reset();
 
@@ -142,7 +145,8 @@ TEST_F(WebAudioMediaStreamAudioSinkTest,
        StopTrackBeforeDeletingSourceProvider) {
   Configure(/*source_sample_rate=*/48000, /*source_buffer_size=*/480,
             /*context_sample_rate=*/44100,
-            /*platform_buffer_duration=*/base::Milliseconds(10));
+            /*platform_buffer_duration=*/base::Milliseconds(10),
+            /*render_quantum_frames=*/128);
 
   // Stop the audio track.
   MediaStreamAudioTrack::From(component_.Get())->Stop();
@@ -154,7 +158,7 @@ TEST_F(WebAudioMediaStreamAudioSinkTest,
 class WebAudioMediaStreamAudioSinkFifoTest
     : public WebAudioMediaStreamAudioSinkTest,
       public testing::WithParamInterface<
-          std::tuple<int, int, float, float, int>> {};
+          std::tuple<int, int, float, float, int, int>> {};
 
 TEST_P(WebAudioMediaStreamAudioSinkFifoTest, VerifyFifo) {
   int source_sample_rate = std::get<0>(GetParam());
@@ -162,13 +166,15 @@ TEST_P(WebAudioMediaStreamAudioSinkFifoTest, VerifyFifo) {
   float device_callback_irregularity_coefficient = std::get<2>(GetParam());
   float produce_offset_coefficient = std::get<3>(GetParam());
   int source_buffer_size = std::get<4>(GetParam());
+  int render_quantum_frames = std::get<5>(GetParam());
 
   int context_buffer_size =
       media::AudioLatency::GetHighLatencyBufferSize(context_sample_rate, 0);
 
   Configure(
       source_sample_rate, source_buffer_size, context_sample_rate,
-      audio_utilities::FramesToTime(context_buffer_size, context_sample_rate));
+      audio_utilities::FramesToTime(context_buffer_size, context_sample_rate),
+      render_quantum_frames);
 
   // 1. Source preparation.
   std::unique_ptr<media::AudioBus> source_bus =
@@ -223,8 +229,11 @@ TEST_P(WebAudioMediaStreamAudioSinkFifoTest, VerifyFifo) {
       source_params_.sample_rate();
 
   uint64_t consume_counter = consume_step;
+  uint64_t render_quantum_step = static_cast<uint64_t>(render_quantum_frames) *
+                                 source_params_.sample_rate();
   uint64_t consume_delay =
-      (1 + device_callback_irregularity_coefficient) * consume_step;
+      consume_step + render_quantum_step +
+      device_callback_irregularity_coefficient * consume_step;
   uint64_t counter = produce_offset_coefficient * produce_step;
 
   uint64_t test_duration_seconds = 5;
@@ -240,12 +249,8 @@ TEST_P(WebAudioMediaStreamAudioSinkFifoTest, VerifyFifo) {
     // Produce.
     source_provider_->OnData(*source_bus, base::TimeTicks::Min());
 
-    if (consume_counter + consume_delay > counter) {
-      continue;
-    }
-
     // It's time to consume!
-    while (consume_counter <= counter) {
+    while (consume_counter + consume_delay <= counter) {
       pull_fifo.Consume(output_bus.get(), output_params.frames_per_buffer());
       consume_counter += consume_step;
     }  // while
@@ -270,6 +275,58 @@ INSTANTIATE_TEST_SUITE_P(
         // produce_offset_coefficient, 0..1
         testing::ValuesIn({0.0f, 0.1f}),
         // source_buffer_size
-        testing::ValuesIn({128, 512, 480})));
+        testing::ValuesIn({128, 512, 480}),
+        // render_quantum_frames
+        testing::ValuesIn({128, 1024})));
+
+TEST_F(WebAudioMediaStreamAudioSinkTest, VerifyDataFlow1024) {
+  Configure(/*source_sample_rate=*/48000, /*source_buffer_size=*/480,
+            /*context_sample_rate=*/44100,
+            /*platform_buffer_duration=*/base::Milliseconds(10),
+            /*render_quantum_frames=*/1024);
+
+  // Point the std::vector into memory owned by `sink_bus_`.
+  std::vector<base::span<float>> audio_data(
+      static_cast<size_t>(sink_bus_->channels()));
+  for (int i = 0; i < sink_bus_->channels(); ++i) {
+    audio_data[i] = sink_bus_->channel(i);
+  }
+
+  // Enable the `source_provider_` by asking for data. This will inject
+  // source_params_.frames_per_buffer() of zeroes into the resampler since there
+  // is no available data in the FIFO.
+  source_provider_->ProvideInput(audio_data, sink_params_.frames_per_buffer());
+  EXPECT_EQ(0, sink_bus_->channel(0)[0]);
+
+  // Create a source AudioBus with channel data filled with non-zero values.
+  const std::unique_ptr<media::AudioBus> source_bus =
+      media::AudioBus::Create(source_params_);
+  std::ranges::for_each(source_bus->AllChannels(), [](const auto& channel) {
+    std::ranges::fill(channel, 0.5f);
+  });
+
+  // Deliver 6 packets of data to `source_provider_`.
+  // 6 * 480 = 2880 frames, which is enough for multiple 1024 output frames.
+  base::TimeTicks estimated_capture_time = base::TimeTicks::Now();
+  for (int i = 0; i < 6; ++i) {
+    source_provider_->OnData(*source_bus, estimated_capture_time);
+    estimated_capture_time +=
+        source_bus->frames() * base::Seconds(1) / source_params_.sample_rate();
+  }
+
+  // Consume second packet. It should contain some transition, but index 500
+  // should be 0.5f.
+  sink_bus_->Zero();
+  source_provider_->ProvideInput(audio_data, sink_params_.frames_per_buffer());
+  EXPECT_NEAR(0.5f, sink_bus_->channel(0)[500], 0.001f);
+
+  // Consume third packet. It should be fully 0.5f.
+  sink_bus_->Zero();
+  source_provider_->ProvideInput(audio_data, sink_params_.frames_per_buffer());
+
+  EXPECT_NEAR(0.5f, sink_bus_->channel(0)[0], 0.001f);
+  EXPECT_NEAR(0.5f, sink_bus_->channel(1)[0], 0.001f);
+  EXPECT_FLOAT_EQ(sink_bus_->channel(0)[0], sink_bus_->channel(1)[0]);
+}
 
 }  // namespace blink

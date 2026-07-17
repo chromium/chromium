@@ -14,20 +14,17 @@
 #include "media/base/audio_fifo.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_timestamp_helper.h"
+#include "media/base/sinc_resampler.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/renderer/platform/media/web_audio_source_provider_client.h"
 
 namespace blink {
 
-// Size of the buffer that WebAudio processes each time, it is the same value
-// as AudioNode::ProcessingSizeInFrames in WebKit.
-// static
-const int WebAudioMediaStreamAudioSink::kWebAudioRenderBufferSize = 128;
-
 WebAudioMediaStreamAudioSink::WebAudioMediaStreamAudioSink(
     MediaStreamComponent* component,
     int context_sample_rate,
-    base::TimeDelta platform_buffer_duration)
+    base::TimeDelta platform_buffer_duration,
+    uint32_t render_quantum_frames)
     : is_enabled_(false),
       component_(component),
       track_stopped_(false),
@@ -35,7 +32,7 @@ WebAudioMediaStreamAudioSink::WebAudioMediaStreamAudioSink(
       sink_params_(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                    media::ChannelLayoutConfig::Stereo(),
                    context_sample_rate,
-                   kWebAudioRenderBufferSize) {
+                   render_quantum_frames) {
   CHECK(sink_params_.IsValid());
   CHECK_GT(platform_buffer_duration_, base::TimeDelta());
 
@@ -77,23 +74,31 @@ void WebAudioMediaStreamAudioSink::OnSetFormat(
   audio_converter_->AddInput(this);
 
   // `fifo_` receives audio in OnData() in buffers of a size defined by
-  // `source_params_`. It is consumed by `audio_converter_`  in buffers of the
+  // `source_params_`. It is consumed by `audio_converter_` in buffers of the
   // same size. `audio_converter_` resamples from source_params_.sample_rate()
-  // to sink_params_.sample_rate() and rebuffers into kWebAudioRenderBufferSize
-  // chunks. However `audio_converter_->Convert()` are not spaced evenly: they
-  // will come in batches as the audio destination is filling up the output
-  // buffer of `platform_buffer_duration_' while rendering the media stream via
-  // an output device.
+  // to `sink_params_.sample_rate()` and rebuffers into chunks of size
+  // `sink_params_.frames_per_buffer()`. However, calls to
+  // `audio_converter_->Convert()` are not spaced evenly: they will come in
+  // batches. The batch size is determined by the output buffer, which is either
+  // `platform_buffer_duration_` when rendering a media stream via an output
+  // device, or `sink_quantum_duration` (determined by
+  // `sink_params_.frames_per_buffer()`) as part of a WebAudio processing graph.
+  // Whichever is larger determines the batch size.
 
   audio_converter_->PrimeWithSilence();
+  base::TimeDelta sink_quantum_duration =
+      media::AudioTimestampHelper::FramesToTime(
+          sink_params_.frames_per_buffer(), sink_params_.sample_rate());
+  base::TimeDelta buffer_duration =
+      std::max(platform_buffer_duration_, sink_quantum_duration);
   const int max_batch_read_count =
-      ceil(platform_buffer_duration_.InMicrosecondsF() /
+      ceil(buffer_duration.InMicrosecondsF() /
            source_params_.GetBufferDuration().InMicrosecondsF());
 
   // Due to resampling/rebuffering, audio consumption irregularities, and
   // possible misalignments of audio production/consumption callbacks, we should
   // be able to store audio for multiple batch-pulls.
-  const size_t kMaxNumberOfBatchReads = 5;
+  const size_t kMaxNumberOfBatchReads = 6;
   fifo_ = std::make_unique<media::AudioFifo>(
       source_params_.channels(), kMaxNumberOfBatchReads * max_batch_read_count *
                                      source_params_.frames_per_buffer());
@@ -164,7 +169,7 @@ void WebAudioMediaStreamAudioSink::ProvideInput(
     base::span<const base::span<float>> audio_data,
     int number_of_frames) {
   NON_REENTRANT_SCOPE(provide_input_reentrancy_checker_);
-  DCHECK_EQ(number_of_frames, kWebAudioRenderBufferSize);
+  DCHECK_EQ(number_of_frames, sink_params_.frames_per_buffer());
 
   TRACE_EVENT2(TRACE_DISABLED_BY_DEFAULT("mediastream"),
                "WebAudioMediaStreamAudioSink::ProvideInput", "this",

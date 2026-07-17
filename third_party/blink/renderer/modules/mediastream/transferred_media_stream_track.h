@@ -98,7 +98,8 @@ class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
 
   std::unique_ptr<AudioSourceProvider> CreateWebAudioSource(
       int context_sample_rate,
-      base::TimeDelta platform_buffer_duration) override;
+      base::TimeDelta platform_buffer_duration,
+      uint32_t render_quantum_frames) override;
 
   ImageCapture* GetImageCapture() override;
   std::optional<const MediaStreamDevice> device() const override;
