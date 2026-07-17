@@ -76,7 +76,7 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/at_memory_flyout_margin_bottom"
             android:text="@string/autofill_at_memory_suggestion_source_text"
-            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
             android:gravity="center_vertical" />
 
     <TextView
