@@ -188,8 +188,8 @@ void PageActionView::OnPageActionModelChanged(
 
   const bool was_chip_visible = IsChipVisible();
 
-  UpdateAnimationState(model);
   UpdateIconImage();
+  UpdateAnimationState(model);
 
   if (visible && model.ShouldShowAnchoredMessage()) {
     CreateAndShowAnchoredMessage(model);
