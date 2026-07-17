@@ -208,6 +208,7 @@ source_set("asan_raw_ptr_service") {
 
     deps += [
       ":compiler_specific",
+      ":dcheck_is_on",
       ":debugging_buildflags",
       ":feature_buildflags",
       ":fuzzing_buildflags",
