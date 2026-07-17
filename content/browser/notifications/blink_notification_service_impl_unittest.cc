@@ -474,6 +474,7 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
 
   RenderViewHostTestEnabler rvh_enabler_;
 
+ protected:
   std::unique_ptr<WebContents> contents_;
 };
 
@@ -515,6 +516,34 @@ TEST_F(BlinkNotificationServiceImplTest, GetPermissionStatus) {
   }
 
   EXPECT_EQ(blink::mojom::PermissionStatus::ASK, GetPermissionCallbackResult());
+}
+
+TEST_F(BlinkNotificationServiceImplTest, OpaqueOriginDeniedNotifications) {
+  SetPermissionStatus(blink::mojom::PermissionStatus::GRANTED);
+
+  // Create a service with an opaque origin storage key.
+  blink::StorageKey opaque_storage_key =
+      blink::StorageKey::CreateFirstParty(url::Origin());
+  mojo::Remote<blink::mojom::NotificationService>
+      opaque_notification_service_remote;
+
+  notification_context_->CreateService(
+      &render_process_host_, opaque_storage_key,
+      /*document_url=*/GURL(),
+      contents_.get()->GetPrimaryMainFrame()->GetWeakDocumentPtr(),
+      RenderProcessHost::NotificationServiceCreatorType::kDocument,
+      opaque_notification_service_remote.BindNewPipeAndPassReceiver());
+
+  {
+    base::RunLoop run_loop;
+    opaque_notification_service_remote->GetPermissionStatus(base::BindOnce(
+        &BlinkNotificationServiceImplTest::DidGetPermissionStatus,
+        base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+
+  EXPECT_EQ(blink::mojom::PermissionStatus::DENIED,
+            GetPermissionCallbackResult());
 }
 
 TEST_F(BlinkNotificationServiceImplTest,

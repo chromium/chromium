@@ -27,9 +27,11 @@
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_request_description.h"
 #include "content/public/browser/permission_result.h"
+#include "content/public/browser/render_frame_host.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_info.h"
@@ -88,6 +90,14 @@ ContentSetting NotificationPermissionContext::GetContentSettingStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
+  if (render_frame_host) {
+    if (render_frame_host->GetLastCommittedOrigin().opaque()) {
+      return CONTENT_SETTING_BLOCK;
+    }
+  } else if (url::Origin::Create(requesting_origin).opaque()) {
+    return CONTENT_SETTING_BLOCK;
+  }
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Extensions can declare the "notifications" permission in their manifest
   // that also grant permission to use the Web Notification API.

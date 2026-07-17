@@ -53,6 +53,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -238,6 +239,30 @@ class PageInfoBubbleViewDialogBrowserTest : public DialogBrowserTest {
       url = file_url;
     }
 
+    content::URLLoaderInterceptor url_loader_interceptor(base::BindRepeating(
+        [](content::URLLoaderInterceptor::RequestParams* params) {
+          content::URLLoaderInterceptor::WriteResponse(
+              "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n",
+              "<html><body></body></html>", params->client.get());
+          return true;
+        }));
+
+    if (name == kNotificationsEmbargoed) {
+      permissions::PermissionDecisionAutoBlocker* autoblocker =
+          permissions::PermissionsClient::Get()
+              ->GetPermissionDecisionAutoBlocker(browser()->GetProfile());
+      // Place under embargo for multiple dismissals.
+      autoblocker->RecordDismissAndEmbargo(
+          url, ContentSettingsType::NOTIFICATIONS,
+          /*dismissed_prompt_was_quiet=*/false);
+      autoblocker->RecordDismissAndEmbargo(
+          url, ContentSettingsType::NOTIFICATIONS,
+          /*dismissed_prompt_was_quiet=*/false);
+      autoblocker->RecordDismissAndEmbargo(
+          url, ContentSettingsType::NOTIFICATIONS,
+          /*dismissed_prompt_was_quiet=*/false);
+    }
+
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     OpenPageInfoBubble(browser());
 
@@ -307,22 +332,6 @@ class PageInfoBubbleViewDialogBrowserTest : public DialogBrowserTest {
       identity.identity_status = PageInfo::SITE_IDENTITY_STATUS_CERT;
       identity.connection_status =
           PageInfo::SITE_CONNECTION_STATUS_INSECURE_PASSIVE_SUBRESOURCE;
-    }
-
-    if (name == kNotificationsEmbargoed) {
-      permissions::PermissionDecisionAutoBlocker* autoblocker =
-          permissions::PermissionsClient::Get()
-              ->GetPermissionDecisionAutoBlocker(browser()->GetProfile());
-      // Place under embargo for multiple dismissals.
-      autoblocker->RecordDismissAndEmbargo(
-          url, ContentSettingsType::NOTIFICATIONS,
-          /*dismissed_prompt_was_quiet=*/false);
-      autoblocker->RecordDismissAndEmbargo(
-          url, ContentSettingsType::NOTIFICATIONS,
-          /*dismissed_prompt_was_quiet=*/false);
-      autoblocker->RecordDismissAndEmbargo(
-          url, ContentSettingsType::NOTIFICATIONS,
-          /*dismissed_prompt_was_quiet=*/false);
     }
 
     if (name == kAllowAllPermissions || name == kBlockAllPermissions) {

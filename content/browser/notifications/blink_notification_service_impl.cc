@@ -243,6 +243,10 @@ BlinkNotificationServiceImpl::CheckPermissionStatus() {
     return blink::mojom::PermissionStatus::DENIED;
   }
 
+  if (storage_key_.origin().opaque()) {
+    return blink::mojom::PermissionStatus::DENIED;
+  }
+
   const auto permission_descriptor = content::PermissionDescriptorUtil::
       CreatePermissionDescriptorForPermissionType(
           blink::PermissionType::NOTIFICATIONS);

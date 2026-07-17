@@ -32,7 +32,10 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_renderer_host.h"
 #include "extensions/buildflags/buildflags.h"
+#include "net/http/http_response_headers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "url/gurl.h"
@@ -672,3 +675,114 @@ TEST_F(NotificationPermissionContextTest, ExtensionPermissionOverrideDenied) {
           .status);
 }
 #endif
+
+TEST_F(NotificationPermissionContextTest, SandboxedIFrameSameOrigin) {
+  // Set default notification permission to ALLOW.
+  HostContentSettingsMapFactory::GetForProfile(profile())
+      ->SetDefaultContentSetting(ContentSettingsType::NOTIFICATIONS,
+                                 CONTENT_SETTING_ALLOW);
+
+  GURL main_url("https://example.com");
+  NavigateAndCommit(main_url);
+
+  NotificationPermissionContext context(profile());
+
+  // Verify main frame is allowed.
+  EXPECT_EQ(
+      PermissionStatus::GRANTED,
+      context
+          .GetPermissionStatus(content::PermissionDescriptorUtil::
+                                   CreatePermissionDescriptorForPermissionType(
+                                       blink::PermissionType::NOTIFICATIONS),
+                               main_rfh(), main_url, main_url)
+          .status);
+
+  // Create child frame.
+  content::RenderFrameHost* child_rfh =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("child");
+
+  // Navigate child frame with CSP sandbox.
+  // Same-origin URL, but sandbox will make it opaque.
+  auto simulator = content::NavigationSimulator::CreateRendererInitiated(
+      main_url, child_rfh);
+  simulator->SetResponseHeaders(
+      net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200 OK")
+          .AddHeader("Content-Security-Policy", "sandbox")
+          .Build());
+  simulator->Start();
+  simulator->Commit();
+  child_rfh = simulator->GetFinalRenderFrameHost();
+
+  // The child frame should have an opaque origin.
+  EXPECT_TRUE(child_rfh->GetLastCommittedOrigin().opaque());
+
+  // Expect DENIED for the sandboxed child frame.
+  EXPECT_EQ(
+      PermissionStatus::DENIED,
+      context
+          .GetPermissionStatus(content::PermissionDescriptorUtil::
+                                   CreatePermissionDescriptorForPermissionType(
+                                       blink::PermissionType::NOTIFICATIONS),
+                               child_rfh, main_url, main_url)
+          .status);
+}
+
+TEST_F(NotificationPermissionContextTest, SandboxedIFrameCrossOrigin) {
+  // Set default notification permission to ALLOW.
+  HostContentSettingsMapFactory::GetForProfile(profile())
+      ->SetDefaultContentSetting(ContentSettingsType::NOTIFICATIONS,
+                                 CONTENT_SETTING_ALLOW);
+
+  GURL main_url("https://example.com");
+  GURL cross_origin_url("https://example.org");
+  NavigateAndCommit(main_url);
+
+  NotificationPermissionContext context(profile());
+
+  // Create normal child frame.
+  content::RenderFrameHost* normal_child_rfh =
+      content::RenderFrameHostTester::For(main_rfh())
+          ->AppendChild("normal_child");
+  auto simulator = content::NavigationSimulator::CreateRendererInitiated(
+      cross_origin_url, normal_child_rfh);
+  simulator->Commit();
+  normal_child_rfh = simulator->GetFinalRenderFrameHost();
+
+  // Verify normal cross-origin child frame is allowed (because default is
+  // ALLOW).
+  EXPECT_EQ(
+      PermissionStatus::GRANTED,
+      context
+          .GetPermissionStatus(content::PermissionDescriptorUtil::
+                                   CreatePermissionDescriptorForPermissionType(
+                                       blink::PermissionType::NOTIFICATIONS),
+                               normal_child_rfh, cross_origin_url, main_url)
+          .status);
+
+  // Create sandboxed child frame.
+  content::RenderFrameHost* sandboxed_child_rfh =
+      content::RenderFrameHostTester::For(main_rfh())
+          ->AppendChild("sandboxed_child");
+  auto simulator2 = content::NavigationSimulator::CreateRendererInitiated(
+      cross_origin_url, sandboxed_child_rfh);
+  simulator2->SetResponseHeaders(
+      net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200 OK")
+          .AddHeader("Content-Security-Policy", "sandbox")
+          .Build());
+  simulator2->Start();
+  simulator2->Commit();
+  sandboxed_child_rfh = simulator2->GetFinalRenderFrameHost();
+
+  // The child frame should have an opaque origin.
+  EXPECT_TRUE(sandboxed_child_rfh->GetLastCommittedOrigin().opaque());
+
+  // Expect DENIED for the sandboxed child frame.
+  EXPECT_EQ(
+      PermissionStatus::DENIED,
+      context
+          .GetPermissionStatus(content::PermissionDescriptorUtil::
+                                   CreatePermissionDescriptorForPermissionType(
+                                       blink::PermissionType::NOTIFICATIONS),
+                               sandboxed_child_rfh, cross_origin_url, main_url)
+          .status);
+}
