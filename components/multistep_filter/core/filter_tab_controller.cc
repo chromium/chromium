@@ -191,8 +191,16 @@ base::WeakPtr<FilterTabController> FilterTabController::GetWeakPtr() {
 
 void FilterTabController::OnNavigationFinished(
     const FilterNavigationMetadata& metadata) {
-  metrics_tracker_.OnNavigationFinished(metadata);
-  weak_ptr_factory_.InvalidateWeakPtrs();
+  const bool is_background_redirect_on_same_page =
+      !metadata.has_user_gesture && !metadata.prev_url.is_empty() &&
+      metadata.url.GetHost() == metadata.prev_url.GetHost() &&
+      metadata.url.path() == metadata.prev_url.path();
+
+  if (!is_background_redirect_on_same_page) {
+    metrics_tracker_.OnNavigationFinished(metadata);
+    weak_ptr_factory_.InvalidateWeakPtrs();
+  }
+
   // Set up ScopedClosureRunners to ensure that the test observer is always
   // notified of pipeline completion (with std::nullopt results) even if the
   // navigation is determined to be ineligible and returns early. This is an
@@ -210,10 +218,6 @@ void FilterTabController::OnNavigationFinished(
 
   const bool is_same_page =
       metadata.is_same_document_navigation || metadata.url == metadata.prev_url;
-  const bool is_background_redirect_on_same_page =
-      !metadata.has_user_gesture && !metadata.prev_url.is_empty() &&
-      metadata.url.GetHost() == metadata.prev_url.GetHost() &&
-      metadata.url.path() == metadata.prev_url.path();
 
   if (!is_same_page && !is_background_redirect_on_same_page) {
     LogSuggestionCleared(log_router_, metadata);

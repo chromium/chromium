@@ -370,7 +370,8 @@ class FilterTabControllerTest : public testing::Test {
   }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   signin::IdentityTestEnvironment identity_test_env_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<StrictMock<MockMultistepFilterService>> mock_service_;
@@ -549,6 +550,133 @@ TEST_F(FilterTabControllerTest,
   EXPECT_CALL(observer_, OnSuggestionGeneratedForTest(Eq(std::nullopt)));
 
   controller_->OnNavigationFinished(second_metadata);
+}
+
+// Tests that a background redirect on the same page does not interrupt an
+// ongoing extraction flow from the previous navigation.
+TEST_F(FilterTabControllerTest, BackgroundRedirectDoesNotInterruptOngoingFlow) {
+  FilterNavigationMetadata metadata1 =
+      CreateMetadata(1, GURL("https://example.com/"));
+  metadata1.has_user_gesture = true;
+
+  base::OnceCallback<void(std::vector<std::string>)> tasks_callback;
+  EXPECT_CALL(*mock_delegate_, ClearSuggestion());
+  EXPECT_CALL(*mock_service_, HasUserProvidedConsent(metadata1.navigation_id,
+                                                     metadata1.url.GetHost()))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_annotation_client(),
+              GetSupportedTasks(metadata1.url, _, metadata1.navigation_id))
+      .WillOnce(testing::SaveArgByMove<1>(&tasks_callback));
+
+  controller_->OnNavigationFinished(metadata1);
+  ASSERT_FALSE(tasks_callback.is_null());
+
+  FilterNavigationMetadata metadata2 =
+      CreateMetadata(2, GURL("https://example.com/?query=1"));
+  metadata2.prev_url = GURL("https://example.com/");
+  metadata2.has_user_gesture = false;
+
+  EXPECT_CALL(*mock_delegate_, ClearSuggestion).Times(0);
+  EXPECT_CALL(*mock_delegate_, OnSuggestionGenerated).Times(0);
+
+  controller_->OnNavigationFinished(metadata2);
+
+  std::vector<std::string> supported_tasks = {"Task1"};
+  base::Uuid expected_id = base::Uuid::GenerateRandomV4();
+  FilterAnnotation annotation(expected_id, "Task1", "example.com",
+                              base::Time::Now(), {});
+  UrlFilterSuggestion expected_suggestion =
+      CreateDefaultSuggestion(metadata1.navigation_id, metadata1.url);
+
+  EXPECT_CALL(*mock_extractor_, ExtractAnnotationFromUrl(
+                                    metadata1.url, _, metadata1.navigation_id))
+      .WillOnce(base::test::RunOnceCallback<1>(annotation));
+  EXPECT_CALL(*mock_generator_,
+              GenerateSuggestion(metadata1.url, supported_tasks, _,
+                                 metadata1.navigation_id))
+      .WillOnce(base::test::RunOnceCallback<2>(expected_suggestion));
+  EXPECT_CALL(*mock_delegate_,
+              OnSuggestionGenerated(std::optional(expected_suggestion), _));
+  EXPECT_CALL(observer_,
+              OnExtractionFinishedForTest(std::optional(expected_id)));
+  EXPECT_CALL(observer_,
+              OnSuggestionGeneratedForTest(std::optional(expected_suggestion)));
+
+  std::move(tasks_callback).Run(supported_tasks);
+}
+
+// Tests that a background redirect on the same page does not reset the
+// latency base (navigation finish time) in the metrics tracker.
+TEST_F(FilterTabControllerTest, BackgroundRedirectDoesNotResetLatencyBase) {
+  base::HistogramTester histogram_tester;
+
+  FilterNavigationMetadata metadata1 =
+      CreateMetadata(1, GURL("https://example.com/"));
+  metadata1.has_user_gesture = true;
+
+  base::OnceCallback<void(std::vector<std::string>)> tasks_callback;
+  EXPECT_CALL(*mock_delegate_, ClearSuggestion());
+  EXPECT_CALL(*mock_service_, HasUserProvidedConsent(metadata1.navigation_id,
+                                                     metadata1.url.GetHost()))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_annotation_client(),
+              GetSupportedTasks(metadata1.url, _, metadata1.navigation_id))
+      .WillOnce(testing::SaveArgByMove<1>(&tasks_callback));
+
+  controller_->OnNavigationFinished(metadata1);
+  ASSERT_FALSE(tasks_callback.is_null());
+
+  task_environment_.FastForwardBy(base::Seconds(2));
+
+  FilterNavigationMetadata metadata2 =
+      CreateMetadata(2, GURL("https://example.com/?query=1"));
+  metadata2.prev_url = GURL("https://example.com/");
+  metadata2.has_user_gesture = false;
+
+  controller_->OnNavigationFinished(metadata2);
+
+  task_environment_.FastForwardBy(base::Seconds(3));
+
+  std::vector<std::string> supported_tasks = {"Task1"};
+  base::Uuid expected_id = base::Uuid::GenerateRandomV4();
+  FilterAnnotation annotation(expected_id, "Task1", "example.com",
+                              base::Time::Now(), {});
+  UrlFilterSuggestion expected_suggestion =
+      CreateDefaultSuggestion(metadata1.navigation_id, metadata1.url);
+
+  EXPECT_CALL(*mock_extractor_, ExtractAnnotationFromUrl(
+                                    metadata1.url, _, metadata1.navigation_id))
+      .WillOnce(base::test::RunOnceCallback<1>(annotation));
+  EXPECT_CALL(*mock_generator_,
+              GenerateSuggestion(metadata1.url, supported_tasks, _,
+                                 metadata1.navigation_id))
+      .WillOnce(base::test::RunOnceCallback<2>(expected_suggestion));
+
+  MultistepFilterUiDelegate::SuggestionUiCallbacks captured_callbacks;
+  EXPECT_CALL(*mock_delegate_,
+              OnSuggestionGenerated(std::optional(expected_suggestion), _))
+      .WillOnce(testing::SaveArgByMove<1>(&captured_callbacks));
+
+  EXPECT_CALL(observer_,
+              OnExtractionFinishedForTest(std::optional(expected_id)));
+  EXPECT_CALL(observer_,
+              OnSuggestionGeneratedForTest(std::optional(expected_suggestion)));
+
+  std::move(tasks_callback).Run(supported_tasks);
+
+  EXPECT_CALL(*mock_service_, GetRetentionState())
+      .WillOnce(Return(RetentionStateSnapshot()));
+  EXPECT_CALL(*mock_service_, RecordSuggestionImpression()).Times(1);
+  EXPECT_CALL(*mock_service_,
+              DeleteAnnotationsForTask("Task1", metadata1.navigation_id, _))
+      .Times(1);
+
+  ASSERT_FALSE(captured_callbacks.on_suggestion_shown.is_null());
+  std::move(captured_callbacks.on_suggestion_shown).Run();
+
+  histogram_tester.ExpectUniqueTimeSample(
+      kMultistepFilterTimeNavigationToSuggestionShownHistogram,
+      base::Seconds(5), 1);
 }
 
 // Tests that SPA (Single Page Application) fragment routing preserves existing
