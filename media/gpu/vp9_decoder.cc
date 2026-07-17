@@ -251,12 +251,18 @@ VP9Decoder::DecodeResult VP9Decoder::Decode() {
     gfx::Size new_pic_size = curr_frame_size_;
     gfx::Rect new_render_rect(curr_frame_hdr_->render_width,
                               curr_frame_hdr_->render_height);
-    // For safety, check the validity of render size or leave it as pic size.
-    if (!gfx::Rect(new_pic_size).Contains(new_render_rect)) {
-      DVLOG(1) << "Render size exceeds picture size. render size: "
+    const gfx::Rect frame_size(curr_frame_hdr_->frame_width,
+                               curr_frame_hdr_->frame_height);
+    if (!frame_size.Contains(new_render_rect)) {
+      // For safety, check the validity of render size or leave it as the actual
+      // per-frame decoded size. In the k-SVC path |curr_frame_size_| is the
+      // *maximum* layer size (Vp9Parser::ParseSVCFrame stamps allocate_size
+      // onto every layer), so clamping against it would allow render_rect to
+      // extend into the undecoded region of the surface (b/149727823).
+      DVLOG(1) << "Render size exceeds frame size. render size: "
                << new_render_rect.ToString()
-               << ", picture size: " << new_pic_size.ToString();
-      new_render_rect = gfx::Rect(new_pic_size);
+               << ", frame size: " << frame_size.ToString();
+      new_render_rect = frame_size;
     }
     VideoCodecProfile new_profile =
         VP9ProfileToVideoCodecProfile(curr_frame_hdr_->profile);
