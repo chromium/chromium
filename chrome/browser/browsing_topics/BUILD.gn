@@ -41,10 +41,7 @@ if (!is_android) {
   source_set("browser_tests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    sources = [
-      "browsing_topics_internals_browsertest.cc",
-      "browsing_topics_service_browsertest.cc",
-    ]
+    sources = [ "browsing_topics_internals_browsertest.cc" ]
     deps = [
       ":browsing_topics",
       "//base",

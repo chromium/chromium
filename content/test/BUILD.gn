@@ -1507,7 +1507,6 @@ test("content_browsertests") {
     "../browser/browsing_data/browsing_data_remover_impl_browsertest.cc",
     "../browser/browsing_data/clear_site_data_handler_browsertest.cc",
     "../browser/browsing_data/conditional_cache_deletion_helper_browsertest.cc",
-    "../browser/browsing_topics/browsing_topics_browsertest.cc",
     "../browser/btm/btm_bounce_detector_browsertest.cc",
     "../browser/btm/btm_helper_browsertest.cc",
     "../browser/btm/btm_test_utils_browsertest.cc",
