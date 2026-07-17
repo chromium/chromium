@@ -49,6 +49,7 @@ pub mod data_pipe;
 pub mod functions;
 pub mod message;
 pub mod message_pipe;
+pub mod platform;
 pub mod trap;
 
 // These types are so fundamental that everyone using this module will need

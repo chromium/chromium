@@ -15,6 +15,7 @@ rust_static_library("c_mojo_api") {
     "lib.rs",
     "message.rs",
     "message_pipe.rs",
+    "platform.rs",
     "result.rs",
     "trap.rs",
   ]
