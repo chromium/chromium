@@ -440,4 +440,10 @@ BASE_DECLARE_FEATURE(kGeminiFRERefactor);
 // Helper function to check if `kGeminiFRERefactor` is enabled.
 bool IsGeminiFRERefactorEnabled();
 
+// Feature flag to control the Gemini coordinator teardown crash fix.
+BASE_DECLARE_FEATURE(kGeminiCoordinatorTeardownFix);
+
+// Returns true if the Gemini coordinator teardown crash fix is enabled.
+bool IsGeminiCoordinatorTeardownFixEnabled();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_

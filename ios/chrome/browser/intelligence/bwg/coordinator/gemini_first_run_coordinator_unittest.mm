@@ -302,6 +302,9 @@ TEST_F(GeminiFirstRunCoordinatorTest, TestLiveFirstRunStarts) {
 // Tests that stopping the coordinator with a completion handler that
 // deallocates the coordinator synchronously does not crash.
 TEST_F(GeminiFirstRunCoordinatorTest, SynchronousDeallocOnStopDoesNotCrash) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeature(kGeminiCoordinatorTeardownFix);
+
   base_view_controller_ = [[UIViewController alloc] init];
   scoped_window_ = std::make_unique<ScopedKeyWindow>();
   [scoped_window_->Get() setRootViewController:base_view_controller_];

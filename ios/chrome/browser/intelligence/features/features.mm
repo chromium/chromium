@@ -863,3 +863,9 @@ BASE_FEATURE(kGeminiFRERefactor, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsGeminiFRERefactorEnabled() {
   return base::FeatureList::IsEnabled(kGeminiFRERefactor);
 }
+
+BASE_FEATURE(kGeminiCoordinatorTeardownFix, base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsGeminiCoordinatorTeardownFixEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiCoordinatorTeardownFix);
+}
