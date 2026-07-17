@@ -6356,9 +6356,6 @@ test("unit_tests") {
       "../browser/readaloud/android/prefs_unittest.cc",
       "../browser/signin/android/cross_device_signin_flow_navigation_throttle_unittest.cc",
       "../browser/signin/android/signin_manager_android_unittest.cc",
-      "../browser/webauthn/android/cable_module_android_unittest.cc",
-      "../browser/webauthn/android/cable_registration_state_unittest.cc",
-      "../browser/webauthn/android/credential_sorter_android_unittest.cc",
     ]
 
     deps += [
