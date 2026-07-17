@@ -40,6 +40,8 @@ class PopupPersonalContextNoticeView : public PopupInteractiveRowView {
 
   // PopupInteractiveRowView:
   std::optional<CellType> GetSelectedCell() const override;
+  // When entering the notice view row, sets the focus on the "Settings" link.
+  // When leaving it, removes the focus from any element currently focused.
   void SetSelectedCell(std::optional<CellType> cell) override;
   bool HandleKeyPressEvent(const input::NativeWebKeyboardEvent& event) override;
   bool IsSelectable() const override;
@@ -54,6 +56,8 @@ class PopupPersonalContextNoticeView : public PopupInteractiveRowView {
   views::MdTextButton* got_it_button_for_testing() const {
     return got_it_button_;
   }
+  bool is_link_focused_for_testing() const { return is_link_focused_; }
+  bool is_button_focused_for_testing() const { return is_button_focused_; }
 
  private:
   // Marks the notice as acknowledged and removes it from the parent view.
@@ -61,6 +65,21 @@ class PopupPersonalContextNoticeView : public PopupInteractiveRowView {
 
   // Opens personal context settings for autofill in Chrome settings.
   void OnSettingsLinkClicked();
+
+  // Set the navigation focus on the "Settings" link.
+  void FocusLink();
+
+  // Remove the navigation focus from the "Settings" link.
+  void UnfocusLink();
+
+  // Applies or clears the focus border styling on all link fragments.
+  void UpdateLinkBorders(bool focused);
+
+  // Set the navigation focus on the "Got it" button.
+  void FocusButton();
+
+  // Remove the navigation focus from the "Got it" button.
+  void UnfocusButton();
 
   // Returns the link element inside of `description_`.
   views::Link* GetSettingsLink() const;
@@ -83,6 +102,12 @@ class PopupPersonalContextNoticeView : public PopupInteractiveRowView {
 
   // The button users click to acknowledge the notice.
   raw_ptr<views::MdTextButton> got_it_button_ = nullptr;
+
+  // True if the navigation focus is currently on the "Settings" link.
+  bool is_link_focused_ = false;
+
+  // True if the navigation focus is currently on the "Got it" button.
+  bool is_button_focused_ = false;
 
   // The controller for the popup this notice is part of.
   const base::WeakPtr<AutofillPopupController> controller_;
