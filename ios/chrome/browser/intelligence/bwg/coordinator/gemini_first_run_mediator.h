@@ -52,9 +52,6 @@ class IdentityManager;
 - (GeminiConsentConfiguration*)consentConfigurationForFirstRunType:
     (GeminiFirstRunType)firstRunType;
 
-// Aborts the flow due to mic permission denial without resetting consent.
-- (void)didRefuseLiveMicPermission;
-
 // Disconnects the mediator, firing the completion callback with failure.
 - (void)disconnect;
 

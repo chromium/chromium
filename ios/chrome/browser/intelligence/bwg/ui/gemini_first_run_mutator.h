@@ -34,6 +34,9 @@
 // Did refuse Gemini consent. Triggered by cancel.
 - (void)didRefuseGeminiConsent;
 
+// Did refuse Live onboarding.
+- (void)didRefuseLiveOnboarding;
+
 // Handles tap on learn about your choices.
 - (void)openNewTabWithURL:(const GURL&)URL;
 

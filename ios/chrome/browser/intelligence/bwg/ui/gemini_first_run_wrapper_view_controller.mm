@@ -428,7 +428,11 @@ const CGFloat kInsetAdjustment = 20;
     [self.mutator didCloseGeminiPromo];
   } else if (_currentChildViewController == _consentViewController) {
     RecordFirstRunConsentAction(IOSGeminiFirstRunAction::kDismiss);
-    [self.mutator didRefuseGeminiConsent];
+    if (_firstRunType == GeminiFirstRunType::kLive) {
+      [self.mutator didRefuseLiveOnboarding];
+    } else {
+      [self.mutator didRefuseGeminiConsent];
+    }
   }
 }
 

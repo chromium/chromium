@@ -851,18 +851,24 @@ void GeminiBrowserAgent::ShowGeminiLiveMicrophoneAlert(
                                completionHandler:^(BOOL granted) {
                                  dispatch_async(dispatch_get_main_queue(), ^{
                                    if (granted) {
-                                     browser_->GetProfile()
-                                         ->GetPrefs()
-                                         ->SetBoolean(
-                                             prefs::
-                                                 kIOSGeminiLiveMicrophoneSetting,
-                                             true);
-                                     if (completion) {
-                                       completion(YES);
+                                     if (!browser_->GetProfile()->GetPrefs()->GetBoolean(
+                                             prefs::kIOSGeminiLiveMicrophoneSetting)) {
+                                       ShowGeminiMicrophonePermissionAlert(
+                                           base_view_controller,
+                                           browser_->GetProfile()->AsWeakPtr(),
+                                           completion);
+                                     } else {
+                                       if (completion) {
+                                         completion(YES);
+                                       }
                                      }
                                    } else {
-                                     ShowMicrophoneSettingsAlert(
-                                         base_view_controller, completion);
+                                     // If user reject mic permission on the
+                                     // native iOS alert, we call completion to
+                                     // reset state.
+                                     if (completion) {
+                                       completion(NO);
+                                     }
                                    }
                                  });
                                }];
