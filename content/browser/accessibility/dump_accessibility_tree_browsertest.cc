@@ -103,6 +103,31 @@ std::vector<std::string> DumpAccessibilityTreeTest::Dump() {
                            base::SPLIT_WANT_NONEMPTY);
 }
 
+void DumpAccessibilityTreeTest::RunApgPatternThirdPartyTest(
+    const base::FilePath::CharType* file_path) {
+  base::FilePath source_dir;
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_dir));
+  base::FilePath test_file =
+      source_dir
+          .Append(FILE_PATH_LITERAL(
+              "third_party/aria-practices/src/content/patterns"))
+          .Append(base::FilePath(file_path));
+
+  base::FilePath expectation_path =
+      source_dir.Append(FILE_PATH_LITERAL("content/test/data/accessibility"))
+          .Append(base::FilePath::FromASCII(kApgPatternThirdParty))
+          .Append(base::FilePath(file_path).BaseName());
+
+  // The HTTP server serves files relative to the registered directory.
+  // The registered directory is third_party/aria-practices/src/content.
+  // So the URL path should be relative to that.
+  // file_path is something like "meter/examples/meter.html".
+  base::FilePath relative_path(file_path);
+  std::string dir = "patterns/" + relative_path.DirName().MaybeAsASCII();
+  RunTest(ui::kAXModeComplete | ui::AXMode::kScreenReader, test_file,
+          dir.c_str(), expectation_path);
+}
+
 void DumpAccessibilityTreeTest::ChooseFeatures(
     std::vector<base::test::FeatureRef>* enabled_features,
     std::vector<base::test::FeatureRef>* disabled_features) {
@@ -5109,6 +5134,11 @@ IN_PROC_BROWSER_TEST_P(
     AccessibilityListWithMultiLineListItemInContentEditable) {
   RunHtmlTest(FILE_PATH_LITERAL(
       "list-with-multi-line-list-item-in-content-editable.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityApgPatternThirdPartyMeter) {
+  RunApgPatternThirdPartyTest(FILE_PATH_LITERAL("meter/examples/meter.html"));
 }
 
 }  // namespace content

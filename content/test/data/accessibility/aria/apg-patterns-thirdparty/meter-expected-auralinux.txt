@@ -1,0 +1,135 @@
+[document web] name='Meter Example'
+++[landmark] name='Related Links'
+++++[list]
+++++++[list item]
+++++++++[static] name='%E2%80%A2 '
+++++++++[link] name='Related Issues'
+++++++++++[static] name='Related Issues'
+++++++[list item]
+++++++++[static] name='%E2%80%A2 '
+++++++++[link] name='Design Pattern'
+++++++++++[static] name='Design Pattern'
+++[landmark]
+++++[heading] name='Meter Example'
+++++++[static] name='Meter Example'
+++++[section]
+++++++[heading] name='About This Example'
+++++++++[static] name='About This Example'
+++++++[paragraph]
+++++++++[static] name='The following example of a CPU meter demonstrates the '
+++++++++[link] name='Meter Pattern'
+++++++++++[static] name='Meter Pattern'
+++++++++[static] name='.'
+++++[section]
+++++++[heading] name='Example' label-for=[separator,separator]
+++++++++[static] name='Example'
+++++++[separator] name='Start of Example' horizontal labelled-by=[heading]
+++++++[section]
+++++++++[paragraph]
+++++++++++[static] name='The value of this meter changes every 5 seconds. Use the pause button to stop changes.'
+++++++++[heading] name='Central Processing Unit (CPU) Usage' label-for=[level bar]
+++++++++++[static] name='Central Processing Unit (CPU) Usage'
+++++++++[paragraph]
+++++++++++[push button] name='Pause Updates'
+++++++++[level bar] name='Central Processing Unit (CPU) Usage' labelled-by=[heading] current=90.000000 minimum=0.000000 maximum=100.000000
+++++++[separator] name='End of Example' horizontal labelled-by=[heading]
+++++[section]
+++++++[heading] name='Keyboard Support'
+++++++++[static] name='Keyboard Support'
+++++++[paragraph]
+++++++++[static] name='Not applicable.'
+++++[section]
+++++++[heading] name='Role, Property, State, and Tabindex Attributes' label-for=[table]
+++++++++[static] name='Role, Property, State, and Tabindex Attributes'
+++++++[table] name='Role, Property, State, and Tabindex Attributes' labelled-by=[heading] cols=4 headers=('Role', 'Attribute', 'Element', 'Usage'); rows=6 headers=('meter', 'aria-valuemin="NUMBER"', 'aria-valuemax="NUMBER"', 'aria-valuenow="NUMBER"', 'aria-labelledby'); caption=false; spans=(all: 1x1)
+++++++++[table row]
+++++++++++[column header] name='Role' (row=0, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++++++[static] name='Role'
+++++++++++[column header] name='Attribute' (row=0, col=1, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++++++[static] name='Attribute'
+++++++++++[column header] name='Element' (row=0, col=2, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++++++[static] name='Element'
+++++++++++[column header] name='Usage' (row=0, col=3, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++++++[static] name='Usage'
+++++++++[table row]
+++++++++++[row header] name='meter' (row=1, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++++++[static]
+++++++++++++++[static] name='meter'
+++++++++++[table cell] (row=1, col=1, row_span=1, col_span=1, n_row_headers=1, n_col_headers=1)
+++++++++++[table cell] name='div' (row=1, col=2, row_span=1, col_span=1, n_row_headers=1, n_col_headers=1)
+++++++++++++[static]
+++++++++++++++[static] name='div'
+++++++++++[table cell] name='Identifies the element as a meter.' (row=1, col=3, row_span=1, col_span=1, n_row_headers=1, n_col_headers=1)
+++++++++++++[list]
+++++++++++++++[list item]
+++++++++++++++++[static] name='%E2%80%A2 '
+++++++++++++++++[static] name='Identifies the element as a '
+++++++++++++++++[static]
+++++++++++++++++++[static] name='meter'
+++++++++++++++++[static] name='.'
+++++++++[table row]
+++++++++++[table cell] (row=2, col=0, row_span=1, col_span=1, n_row_headers=1, n_col_headers=1)
+++++++++++[row header] name='aria-valuemin="NUMBER"' (row=2, col=1, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++++++[static]
+++++++++++++++[static] name='aria-valuemin="NUMBER"'
+++++++++++[table cell] name='div' (row=2, col=2, row_span=1, col_span=1, n_row_headers=1, n_col_headers=1)
+++++++++++++[static]
+++++++++++++++[static] name='div'
+++++++++++[table cell] name='Specifies the minimum value the meter can have.' (row=2, col=3, row_span=1, col_span=1, n_row_headers=1, n_col_headers=1)
+++++++++++++[static] name='Specifies the minimum value the meter can have.'
+++++++++[table row]
+++++++++++[table cell] (row=3, col=0, row_span=1, col_span=1, n_row_headers=1, n_col_headers=1)
+++++++++++[row header] name='aria-valuemax="NUMBER"' (row=3, col=1, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++++++[static]
+++++++++++++++[static] name='aria-valuemax="NUMBER"'
+++++++++++[table cell] name='div' (row=3, col=2, row_span=1, col_span=1, n_row_headers=1, n_col_headers=1)
+++++++++++++[static]
+++++++++++++++[static] name='div'
+++++++++++[table cell] name='Specifies the maximum value the meter can have.' (row=3, col=3, row_span=1, col_span=1, n_row_headers=1, n_col_headers=1)
+++++++++++++[static] name='Specifies the maximum value the meter can have.'
+++++++++[table row]
+++++++++++[table cell] (row=4, col=0, row_span=1, col_span=1, n_row_headers=1, n_col_headers=1)
+++++++++++[row header] name='aria-valuenow="NUMBER"' (row=4, col=1, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++++++[static]
+++++++++++++++[static] name='aria-valuenow="NUMBER"'
+++++++++++[table cell] name='div' (row=4, col=2, row_span=1, col_span=1, n_row_headers=1, n_col_headers=1)
+++++++++++++[static]
+++++++++++++++[static] name='div'
+++++++++++[table cell] name='Specifies the current value of the meter.' (row=4, col=3, row_span=1, col_span=1, n_row_headers=1, n_col_headers=1)
+++++++++++++[static] name='Specifies the current value of the meter.'
+++++++++[table row]
+++++++++++[table cell] (row=5, col=0, row_span=1, col_span=1, n_row_headers=1, n_col_headers=1)
+++++++++++[row header] name='aria-labelledby' (row=5, col=1, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++++++[static]
+++++++++++++++[static] name='aria-labelledby'
+++++++++++[table cell] name='div' (row=5, col=2, row_span=1, col_span=1, n_row_headers=1, n_col_headers=1)
+++++++++++++[static]
+++++++++++++++[static] name='div'
+++++++++++[table cell] name='Identifies the element that provides the accessible name of the meter.' (row=5, col=3, row_span=1, col_span=1, n_row_headers=1, n_col_headers=1)
+++++++++++++[static] name='Identifies the element that provides the accessible name of the '
+++++++++++++[static]
+++++++++++++++[static] name='meter'
+++++++++++++[static] name='.'
+++++[section]
+++++++[heading] name='JavaScript and CSS Source Code'
+++++++++[static] name='JavaScript and CSS Source Code'
+++++++[list]
+++++++++[list item]
+++++++++++[static] name='%E2%80%A2 '
+++++++++++[static] name='CSS: '
+++++++++++[link] name='meter.css'
+++++++++++++[static] name='meter.css'
+++++++++[list item]
+++++++++++[static] name='%E2%80%A2 '
+++++++++++[static] name='JavaScript: '
+++++++++++[link] name='meter.js'
+++++++++++++[static] name='meter.js'
+++++[section]
+++++++[heading] name='HTML Source Code' label-for=[separator,separator]
+++++++++[static] name='HTML Source Code'
+++++++[paragraph]
+++++++++[static] name='To copy the following HTML code, please open it in CodePen.'
+++++++[separator] name='Start of HTML Source Code' horizontal labelled-by=[heading]
+++++++[section]
+++++++++[static]
+++++++[separator] name='End of HTML Source Code' horizontal labelled-by=[heading]

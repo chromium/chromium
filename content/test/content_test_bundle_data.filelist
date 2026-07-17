@@ -394,6 +394,9 @@ data/accessibility/aria/annotation-roles-expected-mac.txt
 data/accessibility/aria/annotation-roles-expected-uia-win.txt
 data/accessibility/aria/annotation-roles-expected-win.txt
 data/accessibility/aria/annotation-roles.html
+data/accessibility/aria/apg-patterns-thirdparty/meter-expected-android-external.txt
+data/accessibility/aria/apg-patterns-thirdparty/meter-expected-auralinux.txt
+data/accessibility/aria/apg-patterns-thirdparty/meter-expected-blink.txt
 data/accessibility/aria/apg-patterns/aria-accordion-expected-android-external.txt
 data/accessibility/aria/apg-patterns/aria-accordion-expected-android.txt
 data/accessibility/aria/apg-patterns/aria-accordion-expected-blink.txt
@@ -7556,9 +7559,6 @@ data/gpu/meet_effects/meet-gpu-tests/release/assets/palm_detection_11163d1e08799
 data/gpu/meet_effects/meet-gpu-tests/release/assets/palm_detection_62525a12f9eedf99fc14db53a0ca1c44.f16.tflite.wasm.data
 data/gpu/meet_effects/meet-gpu-tests/release/assets/palm_detection_79b00d1bcd3bcb460cd40b038bd70f09.f16.tflite.zip
 data/gpu/meet_effects/meet-gpu-tests/release/assets/palm_detection_7b7b2bf66cff9b113b887fb92552ad65.f16.tflite.metadata.jspb
-data/gpu/meet_effects/meet-gpu-tests/release/assets/preprocess__gxp_lib_659ce880613b0fa34a0b1bcfd77c25d4.wasm.data
-data/gpu/meet_effects/meet-gpu-tests/release/assets/preprocess__gxp_lib_8ca98184b65c7374fc50557a6064f21e.zip
-data/gpu/meet_effects/meet-gpu-tests/release/assets/preprocess__gxp_lib_90d3b31744dbbb2fd8ec9e577aa95086.metadata.jspb
 data/gpu/meet_effects/meet-gpu-tests/release/assets/rainbow_wig_and_eyelashes_4320e727bc3e93838b16ee409b041d35.wasm.data
 data/gpu/meet_effects/meet-gpu-tests/release/assets/rainbow_wig_and_eyelashes_5c8a35f8e9aeb15a737d16307ab8a3aa.zip
 data/gpu/meet_effects/meet-gpu-tests/release/assets/rainbow_wig_and_eyelashes_d427110d3ae5eca7f33221205b23575c.metadata.jspb
@@ -7574,9 +7574,6 @@ data/gpu/meet_effects/meet-gpu-tests/release/assets/segmentation_lite_526_cbba19
 data/gpu/meet_effects/meet-gpu-tests/release/assets/segmentation_mobile_lite_1382_1b7fc72c576639ec602effd175e09086.f16.metadata.jspb
 data/gpu/meet_effects/meet-gpu-tests/release/assets/segmentation_mobile_lite_1382_79c5880f4bab826510b5f530a3b3dede.f16.zip
 data/gpu/meet_effects/meet-gpu-tests/release/assets/segmentation_mobile_lite_1382_b43a216393103915415aeed27379c97d.f16.wasm.data
-data/gpu/meet_effects/meet-gpu-tests/release/assets/segmentation_smoothing__gxp_lib_61f13762ef2206764f2ed88ab6a23ba9.metadata.jspb
-data/gpu/meet_effects/meet-gpu-tests/release/assets/segmentation_smoothing__gxp_lib_c6c0831adf5ca2913512a4a90fb8c8cb.zip
-data/gpu/meet_effects/meet-gpu-tests/release/assets/segmentation_smoothing__gxp_lib_c9de2210d27f914973baa7ad229f0e2c.wasm.data
 data/gpu/meet_effects/meet-gpu-tests/release/assets/selfiesegmentation_qnn_512_3138_12c7664b00a405d88f16e84a332e1d35.sm8750.zip
 data/gpu/meet_effects/meet-gpu-tests/release/assets/selfiesegmentation_qnn_512_3138_12cab94f7862d4788ce6a074d8477e30.sm8550.wasm.data
 data/gpu/meet_effects/meet-gpu-tests/release/assets/selfiesegmentation_qnn_512_3138_1e57efd9354d332419945d56c60146a2.sm8650.metadata.jspb

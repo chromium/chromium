@@ -17,6 +17,8 @@ namespace content {
 constexpr const char kAccName[]{"accname"};
 constexpr const char kAria[]{"aria"};
 constexpr const char kApgPattern[]{"aria/apg-patterns"};
+inline constexpr const char kApgPatternThirdParty[]{
+    "aria/apg-patterns-thirdparty"};
 constexpr const char kCSS[]{"css"};
 constexpr const char kCrash[]{"crash"};
 constexpr const char kFormControls[]{"form-controls"};
@@ -94,6 +96,8 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
   void RunOnScreenTest(const base::FilePath::CharType* file_path) {
     RunTypedTest<kHtml>(file_path, ui::kAXModeOnScreen);
   }
+
+  void RunApgPatternThirdPartyTest(const base::FilePath::CharType* file_path);
 
  protected:
   // Override from DumpAccessibilityTestBase.

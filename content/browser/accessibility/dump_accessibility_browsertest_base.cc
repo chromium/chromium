@@ -210,6 +210,12 @@ void DumpAccessibilityTestBase::SetUpCommandLine(
 void DumpAccessibilityTestBase::SetUpOnMainThread() {
   host_resolver()->AddRule("*", "127.0.0.1");
   SetupCrossSiteRedirector(embedded_test_server());
+  base::FilePath source_dir;
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_dir));
+  static const base::FilePath::CharType kAriaPracticesDir[] =
+      FILE_PATH_LITERAL("third_party/aria-practices/src/content");
+  embedded_test_server()->ServeFilesFromDirectory(
+      source_dir.Append(kAriaPracticesDir));
   ASSERT_TRUE(embedded_test_server()->Start());
 }
 
@@ -350,22 +356,6 @@ std::string DumpAccessibilityTestBase::FormatWebContentsTestNode(
   return base::EscapeNonASCII(contents);
 }
 
-void DumpAccessibilityTestBase::RunTest(
-    ui::AXMode mode,
-    const base::FilePath file_path,
-    const char* file_dir,
-    const base::FilePath::StringType& expectations_qualifier) {
-  RunTestForPlatform(mode, file_path, file_dir, expectations_qualifier);
-}
-
-void DumpAccessibilityTestBase::RunTest(
-    const base::FilePath file_path,
-    const char* file_dir,
-    const base::FilePath::StringType& expectations_qualifier) {
-  RunTestForPlatform(ui::kAXModeDefaultForTests, file_path, file_dir,
-                     expectations_qualifier);
-}
-
 // TODO(accessibility) Consider renaming these things to
 // WaitForAccessibiltiyClean(), Action::kRequestAccessibilityCleanNotification,
 // Event::kAccessibilityClean, etc. because this can be used multiple times
@@ -479,11 +469,31 @@ void DumpAccessibilityTestBase::WaitForFinalTreeContents() {
   }
 }
 
-void DumpAccessibilityTestBase::RunTestForPlatform(
-    ui::AXMode ax_mode_for_test,
-    const base::FilePath file_path,
-    const char* file_dir,
+void DumpAccessibilityTestBase::RunTest(
+    ui::AXMode mode,
+    const base::FilePath test_page_path,
+    const char* test_page_dir,
     const base::FilePath::StringType& expectations_qualifier) {
+  RunTest(mode, test_page_path, test_page_dir, test_page_path,
+          expectations_qualifier);
+}
+
+void DumpAccessibilityTestBase::RunTest(
+    const base::FilePath test_page_path,
+    const char* test_page_dir,
+    const base::FilePath::StringType& expectations_qualifier) {
+  RunTest(ui::kAXModeDefaultForTests, test_page_path, test_page_dir,
+          test_page_path, expectations_qualifier);
+}
+
+void DumpAccessibilityTestBase::RunTest(
+    ui::AXMode ax_mode_for_test,
+    const base::FilePath test_page_path,
+    const char* test_page_dir,
+    const base::FilePath& expectation_path,
+    const base::FilePath::StringType& expectations_qualifier) {
+  CHECK(!expectation_path.empty());
+
   // Ignore the hovered state (set when the mouse is hovering over
   // an object) because it makes test output change based on the mouse position.
   ui::BrowserAccessibility::ignore_hovered_state_for_testing_ = true;
@@ -509,11 +519,11 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   std::optional<ui::AXInspectScenario> scenario =
-      test_helper_.ParseScenario(file_path, DefaultFilters());
+      test_helper_.ParseScenario(test_page_path, DefaultFilters());
   if (!scenario) {
     ADD_FAILURE()
         << "Failed to process a testing file. The file might not exist: "
-        << file_path.LossyDisplayName();
+        << test_page_path.LossyDisplayName();
     return;
   }
   scenario_ = std::move(*scenario);
@@ -521,16 +531,19 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
   std::optional<std::vector<std::string>> expected_lines;
 
   // Get expectation lines from expectation file if any.
-  base::FilePath expected_file =
-      test_helper_.GetExpectationFilePath(file_path, expectations_qualifier);
+  base::FilePath expected_file = test_helper_.GetExpectationFilePath(
+      expectation_path, expectations_qualifier);
   if (!expected_file.empty()) {
     expected_lines = test_helper_.LoadExpectationFile(expected_file);
   }
 
   // Get the test URL.
-  GURL url(embedded_test_server()->GetURL(
-      "a.test",
-      "/" + std::string(file_dir) + "/" + file_path.BaseName().MaybeAsASCII()));
+  std::string url_path = "";
+  if (test_page_dir && strlen(test_page_dir) > 0) {
+    url_path += "/" + std::string(test_page_dir);
+  }
+  url_path += "/" + test_page_path.BaseName().MaybeAsASCII();
+  GURL url(embedded_test_server()->GetURL("a.test", url_path));
   WebContentsImpl* web_contents = GetWebContents();
 
   std::optional<ScopedAccessibilityModeOverride> accessibility_mode;
@@ -611,7 +624,7 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
 
   // Validate against the expectation file.
   bool matches_expectation = test_helper_.ValidateAgainstExpectation(
-      file_path, expected_file, actual_lines, *expected_lines);
+      test_page_path, expected_file, actual_lines, *expected_lines);
   EXPECT_TRUE(matches_expectation);
   if (!matches_expectation) {
     OnDiffFailed();

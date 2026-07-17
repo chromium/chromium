@@ -2074,6 +2074,7 @@ test("content_browsertests") {
   data = [
     "data/",
     "//media/test/data/",
+    "//third_party/aria-practices/src/content/patterns/",
     "//mojo/public/interfaces/bindings/tests/data/validation/",
     "$root_gen_dir/content/shell/common/rust_test.test-mojom-lite.js",
     "$root_gen_dir/mojo/public/js/mojo_bindings_lite.js",

@@ -41,7 +41,9 @@ TEST_EXPECTED_STR = 'Expected output: '
 TEST_ACTUAL_STR = 'Actual'
 TEST_END_STR = '<-- End-of-file -->'
 
-TEST_NAME_REGEX = re.compile('content.test.*accessibility.([^@]*)')
+TEST_NAME_REGEX = re.compile(r'(?:content.test.*accessibility|'
+                             r'third_party.aria-practices.src.content.patterns)'
+                             r'.([^@]*)')
 
 # A global that keeps track of files we've already updated, so we don't
 # bother to update the same file twice.

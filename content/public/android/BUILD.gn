@@ -721,6 +721,7 @@ android_library("content_javatests") {
   data = [
     "//content/test/data/accessibility/accname/",
     "//content/test/data/accessibility/aria/",
+    "//third_party/aria-practices/src/content/patterns/",
     "//content/test/data/accessibility/css/",
     "//content/test/data/accessibility/event/",
     "//content/test/data/accessibility/html/",

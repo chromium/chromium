@@ -58,8 +58,8 @@ class DumpAccessibilityTestBase
   // or fail based on the diff.
   // Run with given AXMode.
   void RunTest(ui::AXMode mode,
-               const base::FilePath file_path,
-               const char* file_dir,
+               const base::FilePath test_page_path,
+               const char* test_page_dir,
                const base::FilePath::StringType& expectations_qualifier =
                    FILE_PATH_LITERAL(""));
 
@@ -68,13 +68,23 @@ class DumpAccessibilityTestBase
   // compares the output to the expected result and has the test succeed
   // or fail based on the diff.
   // Run with default kAXModeComplete.
-  void RunTest(const base::FilePath file_path,
-               const char* file_dir,
+  void RunTest(const base::FilePath test_page_path,
+               const char* test_page_dir,
+               const base::FilePath::StringType& expectations_qualifier =
+                   FILE_PATH_LITERAL(""));
+
+  // Overload that allows specifying a different expectation path. By default,
+  // the methods above expect the test page file to be in the same path as the
+  // expectation file.
+  void RunTest(ui::AXMode mode,
+               const base::FilePath test_page_path,
+               const char* test_page_dir,
+               const base::FilePath& expectation_path,
                const base::FilePath::StringType& expectations_qualifier =
                    FILE_PATH_LITERAL(""));
 
   template <const char* type>
-  void RunTypedTest(const base::FilePath::CharType* file_path,
+  void RunTypedTest(const base::FilePath::CharType* test_page_path,
                     ui::AXMode mode = ui::kAXModeComplete |
                                       ui::AXMode::kScreenReader,
                     const base::FilePath::StringType& expectations_qualifier =
@@ -84,7 +94,7 @@ class DumpAccessibilityTestBase
       base::ScopedAllowBlockingForTesting allow_blocking;
       ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
     }
-    base::FilePath test_file = test_path.Append(base::FilePath(file_path));
+    base::FilePath test_file = test_path.Append(base::FilePath(test_page_path));
 
     std::string dir(std::string() + "accessibility/" + type);
     RunTest(mode, test_file, dir.c_str(), expectations_qualifier);
@@ -173,12 +183,6 @@ class DumpAccessibilityTestBase
   // Dump the whole accessibility tree, without applying any filters,
   // and return it as a string.
   std::string DumpUnfilteredAccessibilityTreeAsString();
-
-  void RunTestForPlatform(ui::AXMode mode,
-                          const base::FilePath file_path,
-                          const char* file_dir,
-                          const base::FilePath::StringType&
-                              expectations_qualifier = FILE_PATH_LITERAL(""));
 
   // Retrieve the accessibility node that matches the accessibility name. There
   // is an optional search_root parameter that defaults to the document root if

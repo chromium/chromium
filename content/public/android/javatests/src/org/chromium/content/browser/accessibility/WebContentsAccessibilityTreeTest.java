@@ -53,6 +53,10 @@ public class WebContentsAccessibilityTreeTest {
     private static final String BASE_ARIA_FILE_PATH = "content/test/data/accessibility/aria/";
     private static final String BASE_APG_PATTERN_FILE_PATH =
             "content/test/data/accessibility/aria/apg-patterns/";
+    private static final String BASE_APG_PATTERN_THIRDPARTY_INPUT_PATH =
+            "third_party/aria-practices/src/content/patterns/";
+    private static final String BASE_APG_PATTERN_THIRDPARTY_EXPECTATION_PATH =
+            "content/test/data/accessibility/aria/apg-patterns-thirdparty/";
     private static final String BASE_CSS_FILE_PATH = "content/test/data/accessibility/css/";
     private static final String BASE_HTML_FILE_PATH = "content/test/data/accessibility/html/";
     private static final String BASE_MATHML_FILE_PATH = "content/test/data/accessibility/mathml/";
@@ -78,21 +82,29 @@ public class WebContentsAccessibilityTreeTest {
      * @param expectationFilePath directory that holds the test files
      */
     private void performTest(String inputFile, String expectationFile, String expectationFilePath) {
+        performTest(inputFile, expectationFilePath, expectationFile, expectationFilePath);
+    }
+
+    private void performTest(
+            String inputFile,
+            String inputFilePath,
+            String expectationFile,
+            String expectationFilePath) {
         // Build page from given file and enable testing framework.
-        mActivityTestRule.setupTestFromFile(expectationFilePath + inputFile);
+        mActivityTestRule.setupTestFromFile(inputFilePath + inputFile);
 
         // Create extra strings to print to logs along with potential error(s) for rebase tool.
         String accessibilityNodeInfoErrorPrefix =
                 String.format(
                         "\n\nTesting: %s%s\nExpected output: %s%s",
-                        expectationFilePath,
+                        inputFilePath,
                         inputFile,
                         expectationFilePath,
                         expectationFile + DEFAULT_FILE_SUFFIX);
         // String assistDataErrorPrefix =
         //         String.format(
         //                 "\n\nTesting: %s%s\nExpected output: %s%s",
-        //                 expectationFilePath,
+        //                 inputFilePath,
         //                 inputFile,
         //                 expectationFilePath,
         //                 expectationFile + ASSIST_DATA_FILE_SUFFIX);
@@ -181,6 +193,19 @@ public class WebContentsAccessibilityTreeTest {
 
     private void performApgPatternTest(String inputFile, String expectationFile) {
         performTest(inputFile, expectationFile, BASE_APG_PATTERN_FILE_PATH);
+    }
+
+    private void performApgPatternThirdPartyTest(String input) {
+        String filename = input.substring(input.lastIndexOf('/') + 1);
+        performApgPatternThirdPartyTest(input, removeHtmlSuffix(filename));
+    }
+
+    private void performApgPatternThirdPartyTest(String inputFile, String expectationFile) {
+        performTest(
+                inputFile,
+                BASE_APG_PATTERN_THIRDPARTY_INPUT_PATH,
+                expectationFile,
+                BASE_APG_PATTERN_THIRDPARTY_EXPECTATION_PATH);
     }
 
     private void performCssTest(String input) {
@@ -1377,6 +1402,12 @@ public class WebContentsAccessibilityTreeTest {
     @SmallTest
     public void test_ariaTreeviewFileDirectoryDeclaredProperties() {
         performApgPatternTest("aria-treeview-file-directory-declared-properties.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApgPatternThirdPartyMeter() {
+        performApgPatternThirdPartyTest("meter/examples/meter.html");
     }
 
     // ------------------ CSS TESTS ------------------ //
