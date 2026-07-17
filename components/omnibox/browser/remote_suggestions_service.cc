@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/char_iterator.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -334,6 +335,21 @@ GURL AddSuggestInventoryParamToEndpointUrl(
   return modified_url;
 }
 
+GURL AddQueryBuilderStatsToEndpointUrl(
+    const TemplateURLRef::SearchTermsArgs& search_terms_args,
+    const GURL& url_to_modify) {
+  GURL modified_url = GURL(url_to_modify);
+  if (search_terms_args.input_method > 0) {
+    modified_url = net::AppendOrReplaceQueryParameter(
+        modified_url, "qbi.m",
+        base::NumberToString(search_terms_args.input_method));
+    modified_url = net::AppendOrReplaceQueryParameter(
+        modified_url, "qbi.l",
+        base::NumberToString(search_terms_args.search_terms.length()));
+  }
+  return modified_url;
+}
+
 GURL ReplaceLensSuggestPathPlaceholderInEndpointUrl(
     const TemplateURLRef::SearchTermsArgs& search_terms_args,
     const GURL& url_to_modify) {
@@ -457,6 +473,7 @@ GURL RemoteSuggestionsService::EndpointUrl(
   url = AddSmartComposePreviousQueryToEndpointUrl(search_terms_args, url);
   url = ReplaceLensSuggestPathPlaceholderInEndpointUrl(search_terms_args, url);
   url = AddSuggestInventoryParamToEndpointUrl(search_terms_args, url);
+  url = AddQueryBuilderStatsToEndpointUrl(search_terms_args, url);
 
   return url;
 }

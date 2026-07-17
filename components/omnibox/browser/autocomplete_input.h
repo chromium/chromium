@@ -18,6 +18,7 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
+#include "third_party/omnibox_proto/chrome_searchbox_stats.pb.h"
 #include "third_party/omnibox_proto/suggest_inventory.pb.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
@@ -395,6 +396,15 @@ class AutocompleteInput {
     previous_query_ = previous_query;
   }
 
+  std::optional<omnibox::metrics::ChromeSearchboxStats::InputMethod>
+  input_method() const {
+    return input_method_;
+  }
+  void set_input_method(
+      omnibox::metrics::ChromeSearchboxStats::InputMethod input_method) {
+    input_method_ = input_method;
+  }
+
   // Resets all internal variables to the null-constructed state.
   void Clear();
 
@@ -484,6 +494,12 @@ class AutocompleteInput {
   // This is only relevant for contextual tasks where a previous query might
   // be submitted and follow-up queries can be asked in the same thread.
   std::string previous_query_;
+  // The method the input was entered (e.g. voice). Passed to suggest requests
+  // for searchboxes that want a smart compose responses. Used to determine
+  // when to trigger smart compose. Optional since it's currently only needed
+  // for composebox inputs.
+  std::optional<omnibox::metrics::ChromeSearchboxStats::InputMethod>
+      input_method_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_INPUT_H_
