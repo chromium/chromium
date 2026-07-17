@@ -8,8 +8,10 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
+import static androidx.test.espresso.matcher.ViewMatchers.isClickable;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayingAtLeast;
+import static androidx.test.espresso.matcher.ViewMatchers.isFocusable;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -160,6 +162,11 @@ public class ChromeExpandableSwitchPreferenceTest {
 
         // Verify that the preference is expanded.
         onView(withId(R.id.expandable_switch_expanded_area)).check(matches(isDisplayed()));
+
+        // Verify that the expanded area container is not focusable or clickable for accessibility.
+        onView(withId(R.id.expandable_switch_expanded_area))
+                .check(matches(not(isClickable())))
+                .check(matches(not(isFocusable())));
 
         // Click on the expanded area.
         onView(withId(R.id.expandable_switch_expanded_area)).perform(click());

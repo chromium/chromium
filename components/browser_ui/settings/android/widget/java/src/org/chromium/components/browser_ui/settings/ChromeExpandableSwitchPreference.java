@@ -4,6 +4,7 @@
 
 package org.chromium.components.browser_ui.settings;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
@@ -73,6 +74,9 @@ public class ChromeExpandableSwitchPreference extends ChromeSwitchPreference {
     }
 
     @Override
+    // Suppress lint warning for setOnTouchListener on expandedArea, which catches touch events
+    // to prevent preference toggling without making expandedArea clickable/focusable for TalkBack.
+    @SuppressLint("ClickableViewAccessibility")
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
@@ -140,10 +144,12 @@ public class ChromeExpandableSwitchPreference extends ChromeSwitchPreference {
         }
         if (expandedArea != null) {
             expandedArea.setVisibility(mExpanded ? View.VISIBLE : View.GONE);
-            // Catch the click event on the expanded area to prevent it from propagating to the
+            // Catch touch events on the expanded area to prevent them from propagating to the
             // parent view. This prevents the preference from toggling when the user interacts
-            // with the expanded content.
-            expandedArea.setOnClickListener(v -> {});
+            // with the expanded content. We use setOnTouchListener instead of setOnClickListener
+            // so that expandedArea does not become clickable/focusable for accessibility (TalkBack)
+            // or keyboard navigation.
+            expandedArea.setOnTouchListener((v, event) -> true);
             if (!isEnabled()) {
                 ViewUtils.setEnabledRecursive(expandedArea, false);
             }
