@@ -121,7 +121,9 @@ class OpenXrRenderLoop : public XRThread,
   void CleanUp() override;
 
   void ClearPendingFrame();
-  void StartPendingFrame();
+  // Returns false if the session ended synchronously while starting the frame
+  // (see the .cc); callers should bail without touching `pending_frame_`.
+  bool StartPendingFrame();
 
   void StartRuntimeFinish(
       base::RepeatingCallback<void(mojom::XRVisibilityState)>

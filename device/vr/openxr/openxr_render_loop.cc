@@ -178,7 +178,12 @@ void OpenXrRenderLoop::GetFrameData(
     // Function should no-op if no change is needed.
     depth->SetDepthActive(options->depth_active);
   }
-  StartPendingFrame();
+  // Bail if the session ended while starting the frame. ExitPresent() has
+  // already reset `frame_data_receiver_`, so dropping `callback` during
+  // teardown is safe.
+  if (!StartPendingFrame()) {
+    return;
+  }
   webxr_has_pose_ = true;
   pending_frame_->sent_frame_data_time_ = base::TimeTicks::Now();
 
@@ -308,17 +313,27 @@ void OpenXrRenderLoop::ClearPendingFrame() {
   }
 }
 
-void OpenXrRenderLoop::StartPendingFrame() {
+bool OpenXrRenderLoop::StartPendingFrame() {
   DVLOG(3) << __func__ << " pending_frame_=" << pending_frame_.has_value();
   if (!pending_frame_) {
     pending_frame_.emplace();
     pending_frame_->waiting_for_webxr_ = webxr_visible_;
     pending_frame_->waiting_for_overlay_ = overlay_visible_;
-    pending_frame_->frame_data_ = GetNextFrameData();
+    // GetNextFrameData() can synchronously end the session (e.g. no locatable
+    // views for kMaxInvalidViewFrames), which calls ExitPresent() and resets
+    // `pending_frame_`. Compute into a local and report failure if that
+    // happened, so callers stop instead of dereferencing a disengaged optional.
+    mojom::XRFrameDataPtr next_frame_data = GetNextFrameData();
+    if (!pending_frame_) {
+      DVLOG(1) << __func__ << ": session ended during GetNextFrameData()";
+      return false;
+    }
+    pending_frame_->frame_data_ = std::move(next_frame_data);
     // GetNextFrameData() should never return null:
     DCHECK(pending_frame_->frame_data_);
     pending_frame_->render_info_ = GetRenderInfo(*pending_frame_->frame_data_);
   }
+  return true;
 }
 
 void OpenXrRenderLoop::StartRuntimeFinish(
@@ -619,8 +634,12 @@ void OpenXrRenderLoop::RequestNextOverlayPose(
   DCHECK(overlay_visible_);
   TRACE_EVENT_INSTANT("xr", "OpenXrRenderLoop::RequestOverlayPose");
 
-  // Ensure we have a pending frame.
-  StartPendingFrame();
+  // Ensure we have a pending frame; bail if the session ended while starting
+  // it. ExitPresent() has already reset the overlay receiver, so dropping this
+  // callback during teardown is safe.
+  if (!StartPendingFrame()) {
+    return;
+  }
 
   std::move(callback).Run(pending_frame_->render_info_->Clone());
 }
