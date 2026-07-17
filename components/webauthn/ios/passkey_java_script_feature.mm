@@ -131,6 +131,9 @@ WebAuthenticationIOSContentAreaEvent ToWebAuthenticationIOSContentAreaEvent(
     case PasskeyScriptEvent::kSignalCurrentUserDetails:
       return WebAuthenticationIOSContentAreaEvent::
           kSignalCurrentUserDetailsRequested;
+    case PasskeyScriptEvent::kSignalAllAcceptedCredentials:
+      return WebAuthenticationIOSContentAreaEvent::
+          kSignalAllAcceptedCredentialsRequested;
   }
 }
 
@@ -298,10 +301,13 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
       (*event == PasskeyScriptEvent::kSignalUnknownCredential);
   bool is_signal_current_user_details_event =
       (*event == PasskeyScriptEvent::kSignalCurrentUserDetails);
+  bool is_signal_all_accepted_credentials_event =
+      (*event == PasskeyScriptEvent::kSignalAllAcceptedCredentials);
 
   if (!is_handle_get_request_event && !is_handle_create_request_event &&
       !is_cancel_request_event && !is_signal_unknown_credential_event &&
-      !is_signal_current_user_details_event) {
+      !is_signal_current_user_details_event &&
+      !is_signal_all_accepted_credentials_event) {
     return;
   }
 
@@ -322,6 +328,14 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
   if (is_signal_current_user_details_event) {
     if (auto params = BuildSignalCurrentUserDetailsParams(dict)) {
       passkey_tab_helper->HandleSignalCurrentUserDetailsEvent(
+          message.security_origin(), *std::move(params));
+    }
+    return;
+  }
+
+  if (is_signal_all_accepted_credentials_event) {
+    if (auto params = BuildSignalAllAcceptedCredentialsParams(dict)) {
+      passkey_tab_helper->HandleSignalAllAcceptedCredentialsEvent(
           message.security_origin(), *std::move(params));
     }
     return;

@@ -129,6 +129,13 @@ interface CurrentUserDetailsOptions {
   displayName: string;
 }
 
+// Options passed to PublicKeyCredential.signalAllAcceptedCredentials.
+interface AllAcceptedCredentialsOptions {
+  rpId: string;
+  userId: string;
+  allAcceptedCredentialIds: string[];
+}
+
 // Class to backup and override PublicKeyCredential methods.
 class PublicKeyCredentialOverrider {
   private static readonly IS_UVPAA =
@@ -152,6 +159,10 @@ class PublicKeyCredentialOverrider {
   // PublicKeyCredential.signalCurrentUserDetails.
   private originalSignalCurrentUserDetails:
       ((options: CurrentUserDetailsOptions) => Promise<void>)|undefined;
+
+  // PublicKeyCredential.signalAllAcceptedCredentials.
+  private originalSignalAllAcceptedCredentials:
+      ((options: AllAcceptedCredentialsOptions) => Promise<void>)|undefined;
 
   constructor() {
     // PublicKeyCredential can be undefined.
@@ -185,6 +196,12 @@ class PublicKeyCredentialOverrider {
     if (PublicKeyCredential.signalCurrentUserDetails) {
       this.originalSignalCurrentUserDetails =
           PublicKeyCredential.signalCurrentUserDetails.bind(
+              PublicKeyCredential);
+    }
+
+    if (PublicKeyCredential.signalAllAcceptedCredentials) {
+      this.originalSignalAllAcceptedCredentials =
+          PublicKeyCredential.signalAllAcceptedCredentials.bind(
               PublicKeyCredential);
     }
   }
@@ -242,6 +259,14 @@ class PublicKeyCredentialOverrider {
         writable: true,
         configurable: true,
       });
+
+      Object.defineProperty(
+          PublicKeyCredential, 'signalAllAcceptedCredentials', {
+            value: (options: AllAcceptedCredentialsOptions) =>
+                signalAllAcceptedCredentials(options),
+            writable: true,
+            configurable: true,
+          });
     } else if (shouldShimIsUVPAA()) {
       Object.defineProperty(
           PublicKeyCredential, PublicKeyCredentialOverrider.IS_UVPAA, {
@@ -334,6 +359,16 @@ class PublicKeyCredentialOverrider {
       Promise<void> {
     if (this.originalSignalCurrentUserDetails) {
       return this.originalSignalCurrentUserDetails(options);
+    }
+    return Promise.resolve();
+  }
+
+  // Invokes the original WebKit implementation of
+  // PublicKeyCredential.signalAllAcceptedCredentials().
+  passthroughSignalAllAcceptedCredentials(
+      options: AllAcceptedCredentialsOptions): Promise<void> {
+    if (this.originalSignalAllAcceptedCredentials) {
+      return this.originalSignalAllAcceptedCredentials(options);
     }
     return Promise.resolve();
   }
@@ -884,6 +919,27 @@ function signalCurrentUserDetails(options: CurrentUserDetailsOptions):
             'userId': options.userId,
             'name': options.name,
             'displayName': options.displayName,
+          });
+        }
+      });
+}
+
+// Handles PublicKeyCredential.signalAllAcceptedCredentials calls from the
+// webpage by invoking WebKit's native implementation first, and notifying the
+// browser C++ layer only upon successful resolution.
+function signalAllAcceptedCredentials(options: AllAcceptedCredentialsOptions):
+    Promise<void> {
+  return publicKeyCredentialOverrider
+      .passthroughSignalAllAcceptedCredentials(options)
+      .then(() => {
+        if (options && typeof options.rpId === 'string' &&
+            typeof options.userId === 'string' &&
+            Array.isArray(options.allAcceptedCredentialIds)) {
+          sendWebKitMessage(HANDLER_NAME, {
+            'event': 'signalAllAcceptedCredentials',
+            'rpId': options.rpId,
+            'userId': options.userId,
+            'allAcceptedCredentialIds': options.allAcceptedCredentialIds,
           });
         }
       });

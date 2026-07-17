@@ -166,6 +166,13 @@ struct SignalCurrentUserDetailsParams {
   std::string display_name;
 };
 
+// Parameters for PublicKeyCredential.signalAllAcceptedCredentials.
+struct SignalAllAcceptedCredentialsParams {
+  std::string rp_id;
+  std::vector<uint8_t> user_id;
+  std::vector<std::vector<uint8_t>> all_accepted_credential_ids;
+};
+
 }  // namespace webauthn
 
 #endif  // COMPONENTS_WEBAUTHN_IOS_PASSKEY_REQUEST_PARAMS_H_

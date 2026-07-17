@@ -26,6 +26,7 @@ enum class PasskeyScriptEvent {
   kLogCreateResolvedNonGpm,
   kSignalUnknownCredential,
   kSignalCurrentUserDetails,
+  kSignalAllAcceptedCredentials,
 };
 
 // Function to check if a credential exists in GPM.
@@ -101,6 +102,11 @@ std::optional<SignalUnknownCredentialParams> BuildSignalUnknownCredentialParams(
 // in the provided dictionary.
 std::optional<SignalCurrentUserDetailsParams>
 BuildSignalCurrentUserDetailsParams(const base::DictValue& dict);
+
+// Builds a SignalAllAcceptedCredentialsParams object from the parameters
+// contained in the provided dictionary.
+std::optional<SignalAllAcceptedCredentialsParams>
+BuildSignalAllAcceptedCredentialsParams(const base::DictValue& dict);
 
 // Parses the event string into a strongly typed enum.
 std::optional<PasskeyScriptEvent> ParsePasskeyScriptEvent(

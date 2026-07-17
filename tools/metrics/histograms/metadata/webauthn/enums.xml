@@ -592,6 +592,9 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="SignalCurrentUserDetailsRequested">
     Page requested a WebAuthn signalCurrentUserDetails call.
   </int>
+  <int value="10" label="SignalAllAcceptedCredentialsRequested">
+    Page requested a WebAuthn signalAllAcceptedCredentials call.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//components/webauthn/ios/passkey_tab_helper.h) -->

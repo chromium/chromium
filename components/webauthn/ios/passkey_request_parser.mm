@@ -28,12 +28,14 @@ constexpr char kLogGetResolved[] = "logGetResolved";
 constexpr char kLogCreateResolved[] = "logCreateResolved";
 constexpr char kSignalUnknownCredential[] = "signalUnknownCredential";
 constexpr char kSignalCurrentUserDetails[] = "signalCurrentUserDetails";
+constexpr char kSignalAllAcceptedCredentials[] = "signalAllAcceptedCredentials";
 
 // Parameters for logging events.
 constexpr char kCredentialId[] = "credentialId";
 constexpr char kRpId[] = "rpId";
 constexpr char kIsGpm[] = "isGpm";
 constexpr char kUserId[] = "userId";
+constexpr char kAllAcceptedCredentialIds[] = "allAcceptedCredentialIds";
 
 // Request ID associated with deferred promises.
 constexpr char kRequestId[] = "requestId";
@@ -577,6 +579,37 @@ BuildSignalCurrentUserDetailsParams(const base::DictValue& dict) {
                                         *display_name};
 }
 
+std::optional<SignalAllAcceptedCredentialsParams>
+BuildSignalAllAcceptedCredentialsParams(const base::DictValue& dict) {
+  const std::string* rp_id = dict.FindString(kRpId);
+  const std::string* user_id_base64 = dict.FindString(kUserId);
+  const base::ListValue* credential_ids_list =
+      dict.FindList(kAllAcceptedCredentialIds);
+  if (!rp_id || rp_id->empty() || !user_id_base64 || user_id_base64->empty() ||
+      !credential_ids_list) {
+    return std::nullopt;
+  }
+  std::optional<std::vector<uint8_t>> user_id =
+      Base64UrlDecode(*user_id_base64);
+  if (!user_id.has_value()) {
+    return std::nullopt;
+  }
+  std::vector<std::vector<uint8_t>> all_accepted_credential_ids;
+  for (const base::Value& credential_id_value : *credential_ids_list) {
+    if (!credential_id_value.is_string()) {
+      return std::nullopt;
+    }
+    std::optional<std::vector<uint8_t>> credential_id =
+        Base64UrlDecode(credential_id_value.GetString());
+    if (!credential_id.has_value()) {
+      return std::nullopt;
+    }
+    all_accepted_credential_ids.push_back(*std::move(credential_id));
+  }
+  return SignalAllAcceptedCredentialsParams{
+      *rp_id, *std::move(user_id), std::move(all_accepted_credential_ids)};
+}
+
 std::optional<PasskeyScriptEvent> ParsePasskeyScriptEvent(
     const base::DictValue& dict,
     const url::Origin& caller_origin,
@@ -606,6 +639,9 @@ std::optional<PasskeyScriptEvent> ParsePasskeyScriptEvent(
   }
   if (*event_string == kSignalCurrentUserDetails) {
     return PasskeyScriptEvent::kSignalCurrentUserDetails;
+  }
+  if (*event_string == kSignalAllAcceptedCredentials) {
+    return PasskeyScriptEvent::kSignalAllAcceptedCredentials;
   }
 
   bool is_log_get_resolved = (*event_string == kLogGetResolved);

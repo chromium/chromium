@@ -909,4 +909,31 @@ TEST_F(PasskeyRequestParserTest, BuildSignalCurrentUserDetailsParamsInvalid) {
   EXPECT_FALSE(BuildSignalCurrentUserDetailsParams(dict).has_value());
 }
 
+TEST_F(PasskeyRequestParserTest,
+       BuildSignalAllAcceptedCredentialsParamsSuccess) {
+  base::DictValue dict;
+  dict.Set(kRpId, kExampleRpId);
+  dict.Set("userId", kBase64url);
+  base::ListValue cred_ids;
+  cred_ids.Append(kBase64url_2);
+  dict.Set("allAcceptedCredentialIds", std::move(cred_ids));
+
+  auto result = BuildSignalAllAcceptedCredentialsParams(dict);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->rp_id, kExampleRpId);
+  EXPECT_EQ(result->user_id, Base64UrlDecode(kBase64url));
+  ASSERT_EQ(result->all_accepted_credential_ids.size(), 1u);
+  EXPECT_EQ(result->all_accepted_credential_ids[0],
+            Base64UrlDecode(kBase64url_2));
+}
+
+TEST_F(PasskeyRequestParserTest,
+       BuildSignalAllAcceptedCredentialsParamsInvalid) {
+  base::DictValue dict;
+  dict.Set(kRpId, kExampleRpId);
+  dict.Set("userId", kBase64url);
+  // Missing allAcceptedCredentialIds list.
+  EXPECT_FALSE(BuildSignalAllAcceptedCredentialsParams(dict).has_value());
+}
+
 }  // namespace webauthn

@@ -437,6 +437,53 @@ void PasskeyTabHelper::HandleSignalCurrentUserDetailsEvent(
   // TODO(crbug.com/460487030): Log metrics.
 }
 
+void PasskeyTabHelper::HandleSignalAllAcceptedCredentialsEvent(
+    const url::Origin& origin,
+    SignalAllAcceptedCredentialsParams params) {
+  if (OriginAllowedToMakeWebAuthnRequests(origin) !=
+      ValidationStatus::kSuccess) {
+    return;
+  }
+
+  if (!OriginIsAllowedToClaimRelyingPartyId(params.rp_id, origin)) {
+    // TODO(crbug.com/460487030): Perform remote RP ID validation.
+    return;
+  }
+
+  PasskeyChangeQuotaTracker* quota_tracker =
+      PasskeyChangeQuotaTracker::GetInstance();
+  if (!quota_tracker->CanMakeChange(origin)) {
+    return;
+  }
+
+  std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
+      passkey_model_->GetPasskeys(params.rp_id,
+                                  PasskeyModel::ShadowedCredentials::kExclude);
+  const auto passkey_it =
+      std::ranges::find_if(passkeys, [&params](const auto& passkey) {
+        return base::as_byte_span(passkey.user_id()) == params.user_id;
+      });
+  if (passkey_it == passkeys.end()) {
+    return;
+  }
+
+  bool passkey_in_list =
+      std::ranges::contains(params.all_accepted_credential_ids,
+                            base::as_byte_span(passkey_it->credential_id()));
+  if ((passkey_in_list && !passkey_it->hidden()) ||
+      (!passkey_in_list && passkey_it->hidden())) {
+    return;
+  }
+
+  if (passkey_in_list) {
+    passkey_model_->UnhidePasskey(passkey_it->credential_id());
+  } else {
+    passkey_model_->HidePasskey(passkey_it->credential_id(), base::Time::Now());
+  }
+  quota_tracker->TrackChange(origin);
+  // TODO(crbug.com/460487030): Log metrics.
+}
+
 void PasskeyTabHelper::HandleCreateRequestedEvent(
     web::WebFrame* web_frame,
     RegistrationRequestParams params) {

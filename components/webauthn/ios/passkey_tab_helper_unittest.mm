@@ -1274,4 +1274,100 @@ TEST_F(PasskeyTabHelperTest, HandleSignalCurrentUserDetailsEventQuotaExceeded) {
   EXPECT_NE(final_passkey.user_display_name(), "Exhausted");
 }
 
+// Tests that HandleSignalAllAcceptedCredentialsEvent hides a passkey missing
+// from the accepted list.
+TEST_F(PasskeyTabHelperTest, HandleSignalAllAcceptedCredentialsEventHide) {
+  SetUpWebFramesManagerAndWebFrame(GURL(kOriginURL));
+
+  sync_pb::WebauthnCredentialSpecifics passkey = GetTestPasskey(kCredentialId);
+  static_cast<TestPasskeyModel*>(passkey_model_.get())
+      ->AddNewPasskeyForTesting(passkey);
+
+  const std::vector<uint8_t> user_id(passkey.user_id().begin(),
+                                     passkey.user_id().end());
+  // Empty list of accepted credentials -> passkey should be hidden.
+  SignalAllAcceptedCredentialsParams params{kRpId, user_id, {}};
+
+  passkey_tab_helper()->HandleSignalAllAcceptedCredentialsEvent(
+      url::Origin::Create(GURL(kOriginURL)), std::move(params));
+
+  EXPECT_TRUE(GetPasskey(kCredentialId).hidden());
+}
+
+// Tests that HandleSignalAllAcceptedCredentialsEvent restores/unhides a passkey
+// present in the accepted list.
+TEST_F(PasskeyTabHelperTest, HandleSignalAllAcceptedCredentialsEventRestore) {
+  SetUpWebFramesManagerAndWebFrame(GURL(kOriginURL));
+
+  sync_pb::WebauthnCredentialSpecifics passkey = GetTestPasskey(kCredentialId);
+  static_cast<TestPasskeyModel*>(passkey_model_.get())
+      ->AddNewPasskeyForTesting(passkey);
+  static_cast<TestPasskeyModel*>(passkey_model_.get())
+      ->HidePasskey(kCredentialId, base::Time::Now());
+
+  ASSERT_TRUE(GetPasskey(kCredentialId).hidden());
+
+  const std::vector<uint8_t> user_id(passkey.user_id().begin(),
+                                     passkey.user_id().end());
+  SignalAllAcceptedCredentialsParams params{
+      kRpId, user_id, {AsByteVector(kCredentialId)}};
+
+  passkey_tab_helper()->HandleSignalAllAcceptedCredentialsEvent(
+      url::Origin::Create(GURL(kOriginURL)), std::move(params));
+
+  EXPECT_FALSE(GetPasskey(kCredentialId).hidden());
+}
+
+// Tests that HandleSignalAllAcceptedCredentialsEvent drops requests with
+// invalid origins.
+TEST_F(PasskeyTabHelperTest,
+       HandleSignalAllAcceptedCredentialsEventInvalidOrigin) {
+  SetUpWebFramesManagerAndWebFrame(GURL(kOriginURL));
+
+  sync_pb::WebauthnCredentialSpecifics passkey = GetTestPasskey(kCredentialId);
+  static_cast<TestPasskeyModel*>(passkey_model_.get())
+      ->AddNewPasskeyForTesting(passkey);
+
+  const std::vector<uint8_t> user_id(passkey.user_id().begin(),
+                                     passkey.user_id().end());
+  // Mismatched origin.
+  SignalAllAcceptedCredentialsParams params{"otherdomain.com", user_id, {}};
+
+  passkey_tab_helper()->HandleSignalAllAcceptedCredentialsEvent(
+      url::Origin::Create(GURL(kOriginURL)), std::move(params));
+
+  EXPECT_FALSE(GetPasskey(kCredentialId).hidden());
+}
+
+// Tests that HandleSignalAllAcceptedCredentialsEvent ignores requests when
+// quota is exceeded.
+TEST_F(PasskeyTabHelperTest,
+       HandleSignalAllAcceptedCredentialsEventQuotaExceeded) {
+  SetUpWebFramesManagerAndWebFrame(GURL(kOriginURL));
+
+  sync_pb::WebauthnCredentialSpecifics passkey = GetTestPasskey(kCredentialId);
+  static_cast<TestPasskeyModel*>(passkey_model_.get())
+      ->AddNewPasskeyForTesting(passkey);
+
+  const url::Origin origin = url::Origin::Create(GURL(kOriginURL));
+  const std::vector<uint8_t> user_id(passkey.user_id().begin(),
+                                     passkey.user_id().end());
+
+  for (int i = 0; i < PasskeyChangeQuotaTracker::kMaxTokensPerRP; ++i) {
+    SignalAllAcceptedCredentialsParams params{kRpId, user_id, {}};
+    passkey_tab_helper()->HandleSignalAllAcceptedCredentialsEvent(
+        origin, std::move(params));
+    static_cast<TestPasskeyModel*>(passkey_model_.get())
+        ->UnhidePasskey(kCredentialId);
+  }
+
+  // Quota is now exhausted. Subsequent call should be ignored and passkey
+  // remains unhidden.
+  SignalAllAcceptedCredentialsParams params{kRpId, user_id, {}};
+  passkey_tab_helper()->HandleSignalAllAcceptedCredentialsEvent(
+      origin, std::move(params));
+
+  EXPECT_FALSE(GetPasskey(kCredentialId).hidden());
+}
+
 }  // namespace webauthn
