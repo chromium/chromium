@@ -1,10 +1,9 @@
 <html>
   <head>
-    <meta charset=UTF-8">
-    <title>E2E Cover</title>
+    <title>E2E Auto Scroll</title>
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+      content="width=device-width, initial-scale=1.0"
     >
     <!-- Stylesheet -->
     <style>
@@ -20,7 +19,6 @@
             border: 10px solid orange;
             margin:0
         }
-
         .pink-footer-inset {
             position: fixed;
             left: 25%;
@@ -31,26 +29,13 @@
             color: black;
             text-align: center;
         }
-        .safe-area-visualizer {
-            position: fixed;
-            top: env(safe-area-inset-top, 0px);
-            bottom: env(safe-area-inset-bottom, 0px);
-            left: env(safe-area-inset-left, 0px);
-            right: env(safe-area-inset-right, 0px);
-            border: 2px dashed red;
-            pointer-events: none;
-            z-index: 9999;
-        }
     </style>
   </head>
-
-  <body style="background-color:green;">
-    <div class="safe-area-visualizer"></div>
-    <p>Test page for viewport-fit and notch support</p>
+  <body style="background-color:grey;">
+    <p>Test page for viewport-fit and notch support (Scrollable)</p>
     <h2>
-       Uses viewport-fit=cover
+       Uses viewport-fit=auto
     </h2>
     <div class="pink-footer-inset">Footer</div>
   </body>
 </html>
-

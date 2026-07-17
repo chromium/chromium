@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>E2E Cover with Fixed Header</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            height: 200vh;
+            margin: 0;
+            background-color: lightblue;
+            font-family: sans-serif;
+        }
+        .fixed-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: navy;
+            color: white;
+            text-align: center;
+            font-size: 20px;
+            /* Use safe area inset to pad the header content away from status bar */
+            padding-top: env(safe-area-inset-top, 0px);
+            padding-bottom: 15px;
+            border-bottom: 5px solid gold;
+        }
+        .content {
+            padding-top: 120px;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+        .pink-footer-inset {
+            position: fixed;
+            left: 25%;
+            bottom: 0;
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+            width: 50%;
+            background-color: pink;
+            color: black;
+            text-align: center;
+            padding-top: 10px;
+            padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+        }
+        .safe-area-visualizer {
+            position: fixed;
+            top: env(safe-area-inset-top, 0px);
+            bottom: env(safe-area-inset-bottom, 0px);
+            left: env(safe-area-inset-left, 0px);
+            right: env(safe-area-inset-right, 0px);
+            border: 2px dashed red;
+            pointer-events: none;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+    <div class="safe-area-visualizer"></div>
+    <div class="fixed-header">Fixed Header (Top Safe Area)</div>
+    <div class="content">
+        <p>Test page for top edge-to-edge with a fixed header utilizing <code>safe-area-inset-top</code>.</p>
+        <p>Scroll down to hide the top toolbar. The header should stay fixed at the top, and its content should remain padded below the status bar.</p>
+    </div>
+    <div class="pink-footer-inset">Footer (Bottom Safe Area)</div>
+</body>
+</html>
