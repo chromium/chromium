@@ -63,7 +63,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="kCodeCaches"/>
   <int value="11" label="kNetworkErrorLogging"/>
   <int value="12" label="kTrustTokens"/>
-  <int value="13" label="kConversions"/>
+  <int value="13" label="(obsolete) kConversions"/>
   <int value="14" label="(obsolete) kDeferredCookies"/>
   <int value="15" label="kSharedStorage"/>
   <int value="16" label="kPreflightCache"/>
@@ -302,7 +302,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="kSessionStorage"/>
   <int value="6" label="kShaderCache"/>
   <int value="7" label="kPluginPrivate"/>
-  <int value="8" label="kConversions"/>
+  <int value="8" label="(obsolete) kConversions"/>
   <int value="9" label="kAggregationService"/>
   <int value="10" label="kSharedStorage"/>
   <int value="11" label="kGpuCache"/>

@@ -1,19 +1,3 @@
 include_rules = [
-  "+components/aggregation_service",
-  "+mojo/public/cpp/bindings/default_construct_tag.h",
-  "+net/base/schemeful_site.h",
-  "+net/http/structured_headers.h",
   "+services/network/public/cpp",
-  "+third_party/fuzztest/src/fuzztest/fuzztest.h",
 ]
-
-specific_include_rules = {
-  "registration_mojom_traits\\.(h|cc)": [
-    "+mojo/public/cpp/base/int128_mojom_traits.h",
-    "+mojo/public/cpp/base/time_mojom_traits.h",
-  ],
-  "registration_header_error_mojom_traits\\.(h|cc)": [
-    "+mojo/public/cpp/bindings/struct_traits.h",
-    "+mojo/public/cpp/bindings/union_traits.h",
-  ],
-}

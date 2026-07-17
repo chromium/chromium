@@ -912,7 +912,7 @@ class StoragePartitionImpl::DataDeletionHelper {
     kSessionStorage = 5,
     kShaderCache = 6,    // Deprecated in favor of using kGpuCache.
     kPluginPrivate = 7,  // Deprecated.
-    kConversions = 8,
+    kConversions = 8,    // Deprecated.
     kAggregationService = 9,
     kSharedStorage = 10,
     kGpuCache = 11,

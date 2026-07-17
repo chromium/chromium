@@ -944,8 +944,6 @@ const char* BrowsingDataRemoverImpl::GetHistogramSuffix(TracingDataType task) {
       return "NetworkErrorLogging";
     case TracingDataType::kTrustTokens:
       return "TrustTokens";
-    case TracingDataType::kConversions:
-      return "Conversions";
     case TracingDataType::kSharedStorage:
       return "SharedStorage";
     case TracingDataType::kPreflightCache:

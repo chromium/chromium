@@ -140,7 +140,7 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
     kCodeCaches = 10,
     kNetworkErrorLogging = 11,
     kTrustTokens = 12,
-    kConversions = 13,
+    // Deprecated: kConversions = 13,
     // Deprecated: kDeferredCookies = 14,
     kSharedStorage = 15,
     kPreflightCache = 16,

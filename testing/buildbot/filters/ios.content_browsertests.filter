@@ -507,7 +507,6 @@
 
 # TODO(crbug.com/514423254): Miscellaneous content_browsertests failures on iOS
 # Blink.
--All/AttributionsBrowserTest.ServiceWorkerPerformsAttributionSrcRegistration_SupportHeaderSet_createAttributionEligibleScriptSrc/1
 -All/EmergencyStopTracingTest.StopOnThreadPool/0
 -All/EmergencyStopTracingTest.StopOnThreadPoolTwice/0
 -All/EmergencyStopTracingTest.StopOnUIThread/0
