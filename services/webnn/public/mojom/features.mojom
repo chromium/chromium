@@ -51,11 +51,6 @@ feature kWebNNOnnxRuntime {
   const bool default_state = true;
 };
 
-// Enables the LiteRT Runtime backend for WebNN.
-feature kWebNNLiteRT {
-  const string name = "WebNNLiteRT";
-  const bool default_state = true;
-};
 
 // Enables offloading graph construction/compilation to an out-of-process
 // WebNN Compiler process, isolated from the GPU process. When disabled,

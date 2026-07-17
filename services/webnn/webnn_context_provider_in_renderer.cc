@@ -14,13 +14,7 @@
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 
-#if BUILDFLAG(WEBNN_USE_TFLITE)
-#include "services/webnn/tflite/context_impl_tflite.h"  // nogncheck
-#endif  // BUILDFLAG(WEBNN_USE_TFLITE)
-
 #if BUILDFLAG(WEBNN_USE_LITERT)
-#include "base/feature_list.h"
-#include "services/webnn/public/mojom/features.mojom-features.h"
 #include "services/webnn/tflite/context_impl_litert.h"  // nogncheck
 #endif
 
@@ -60,23 +54,9 @@ void WebNNContextProviderInRenderer::CreateWebNNContext(
   // Post context creation to the owning_task_runner so the Mojo receiver is
   // bound on the correct sequence (matching the GPU-process pattern).
 #if BUILDFLAG(WEBNN_USE_LITERT)
-  if (base::FeatureList::IsEnabled(mojom::features::kWebNNLiteRT)) {
-    owning_task_runner->PostTaskAndReplyWithResult(
-        FROM_HERE,
-        base::BindOnce(&litert::ContextImplLiteRt::CreateForRenderer,
-                       std::move(receiver), GetWeakPtr(), std::move(options),
-                       owning_task_runner, main_task_runner_),
-        base::BindOnce(
-            &WebNNContextProviderInRenderer::OnCreateWebNNContextImpl,
-            GetWeakPtr(), std::move(callback), std::move(remote)));
-    return;
-  }
-#endif  // BUILDFLAG(WEBNN_USE_LITERT)
-
-#if BUILDFLAG(WEBNN_USE_TFLITE)
   owning_task_runner->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&tflite::ContextImplTflite::CreateForRenderer,
+      base::BindOnce(&litert::ContextImplLiteRt::CreateForRenderer,
                      std::move(receiver), GetWeakPtr(), std::move(options),
                      owning_task_runner, main_task_runner_),
       base::BindOnce(&WebNNContextProviderInRenderer::OnCreateWebNNContextImpl,
@@ -85,7 +65,7 @@ void WebNNContextProviderInRenderer::CreateWebNNContext(
   std::move(callback).Run(ToError<mojom::CreateContextResult>(
       mojom::Error::Code::kNotSupportedError,
       "WebNN is not supported on this platform."));
-#endif  // BUILDFLAG(WEBNN_USE_TFLITE)
+#endif  // BUILDFLAG(WEBNN_USE_LITERT)
 }
 
 void WebNNContextProviderInRenderer::OnCreateWebNNContextImpl(

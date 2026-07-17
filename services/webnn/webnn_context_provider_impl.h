@@ -212,22 +212,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
       WebNNContextImplPtr context_impl);
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(WEBNN_USE_TFLITE)
-  void CreateTFLiteContext(
-      ScopedTrace scoped_trace,
-      mojom::CreateContextOptionsPtr options,
-      mojo::ScopedDataPipeProducerHandle write_tensor_producer,
-      mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
-      mojo::ScopedDataPipeProducerHandle read_tensor_producer,
-      mojo::ScopedDataPipeConsumerHandle read_tensor_consumer,
-      std::unique_ptr<GpuTaskScheduler> gpu_task_scheduler,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      mojo::PendingReceiver<mojom::WebNNContext> receiver,
-      mojo::PendingRemote<mojom::WebNNContext> remote,
-      CreateWebNNContextCallback callback,
-      bool is_incognito,
-      scoped_refptr<gpu::MemoryTracker> memory_tracker);
-#endif  // BUILDFLAG(WEBNN_USE_TFLITE)
 
 #if BUILDFLAG(WEBNN_USE_LITERT)
   void CreateLiteRtContext(

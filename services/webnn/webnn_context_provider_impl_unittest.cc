@@ -23,7 +23,7 @@ namespace webnn {
 // For supported platforms, it should be tested by the backend specific test
 // cases.
 //
-// For platforms using TFLite, `tflite::ContextImplTflite` is always available.
+// For platforms using LiteRT, `litert::ContextImplLiteRt` is always available.
 
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC) && \
     !BUILDFLAG(WEBNN_USE_TFLITE) && !BUILDFLAG(WEBNN_USE_LITERT)

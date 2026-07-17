@@ -3314,11 +3314,6 @@ inline constexpr char kWebNNOnnxRuntimeDescription[] =
     "Enables using ONNX Runtime for CPU, GPU and NPU inference with the WebNN "
     "API. Disabling this flag enables a fallback to TFLite.";
 
-inline constexpr char kWebNNLiteRTName[] = "LiteRT backend for WebNN";
-inline constexpr char kWebNNLiteRTDescription[] =
-    "Enables the LiteRT backend for WebNN. Disabling this flag enables a "
-    "fallback to TFLite.";
-
 inline constexpr char kSystemProxyForSystemServicesName[] =
     "Enable system-proxy for selected system services";
 inline constexpr char kSystemProxyForSystemServicesDescription[] =

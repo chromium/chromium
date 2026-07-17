@@ -10173,11 +10173,6 @@
     "expiry_milestone": 156
   },
   {
-    "name": "webnn-litert",
-    "owners": [ "reillyg@chromium.org",  "phillis@chromium.org", "lyjiang@google.com" ],
-    "expiry_milestone": 156
-  },
-  {
     "name": "webnn-onnxruntime",
     "owners": [ "reillyg@chromium.org", "rafael.cintron@microsoft.com" ],
     "expiry_milestone": 156
