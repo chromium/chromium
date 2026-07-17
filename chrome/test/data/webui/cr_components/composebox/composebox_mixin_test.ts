@@ -1687,6 +1687,26 @@ suite('ComposeboxMixinTest', () => {
         element.resetRestoredTabs();
         await microtasksFinished();
         assertEquals(0, element.aimThreadRestoredTabs.length);
+
+        // Reset restored tabs.
+        element.aimThreadRestoredTabs = [{
+          tabId: 1,
+          title: 'Restored Tab',
+          url: 'about:blank?1',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        }];
+
+        // Flag ON, but source is Omnibox: "clearAllInputs(querySubmitted =
+        // false)" (clear all button pressed) resets restored tabs.
+        element.contextManagementInComposeboxEnabled = true;
+        element.composeboxSource = 'Omnibox';
+        element.clearAllInputs(
+            /* querySubmitted= */ false,
+            /* shouldBlockAutoSuggestedTabs= */ false);
+        await microtasksFinished();
+        assertEquals(0, element.aimThreadRestoredTabs.length);
       });
 
   test(
