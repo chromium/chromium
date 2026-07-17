@@ -6,6 +6,7 @@
 #         fuchsia
 #         linux ubuntu
 #         mac highsierra mojave catalina bigsur monterey ventura sonoma sequoia
+#             macos26
 #         win win8 win10 win11 ]
 # Devices
 # tags: [ android-pixel-2 android-pixel-4 android-pixel-6 android-pixel-10
@@ -122,6 +123,9 @@ crbug.com/425745937 [ fuchsia web-engine-shell fuchsia-board-astro ] ExpectedCol
 # Slow on DCHECK builds being used on fuchsia builders.
 crbug.com/425745937 [ fuchsia web-engine-shell fuchsia-board-sherlock ] ExpectedColor_maps [ Slow ]
 crbug.com/425745937 [ fuchsia web-engine-shell fuchsia-board-nelson ] ExpectedColor_maps [ Slow ]
+
+crbug.com/535697669 [ macos26 apple-angle-metal-renderer:-apple-m2 ] ExpectedColor_MediaRecorderFrom2DCanvas [ Slow ]
+crbug.com/535697669 [ macos26 apple-angle-metal-renderer:-apple-m2 ] ExpectedColor_MediaRecorderFromVideoElement [ Slow ]
 
 ###################
 # Failures/Flakes #

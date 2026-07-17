@@ -51,6 +51,7 @@ TAG_SPECIALIZATIONS = {
             'ventura',
             'sonoma',
             'sequoia',
+            'macos26',
         ],
         'win': [
             'win8',
