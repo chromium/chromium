@@ -28,8 +28,14 @@ if (is_win) {
 
   source_set("test_support") {
     testonly = true
-    public = [ "delegated_tasks/test_support/mock_peh_launcher.h" ]
-    sources = [ "delegated_tasks/test_support/mock_peh_launcher.cc" ]
+    public = [
+      "delegated_tasks/test_support/mock_delegated_task_runner.h",
+      "delegated_tasks/test_support/mock_peh_launcher.h",
+    ]
+    sources = [
+      "delegated_tasks/test_support/mock_delegated_task_runner.cc",
+      "delegated_tasks/test_support/mock_peh_launcher.cc",
+    ]
     public_deps = [
       ":delegated_tasks",
       "//testing/gmock",

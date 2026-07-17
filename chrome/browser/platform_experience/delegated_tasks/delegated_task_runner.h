@@ -49,8 +49,8 @@ class DelegatedTaskRunner : public base::win::ObjectWatcher::Delegate {
 
   // Runs the provided task and asynchronously returns the task completion
   // result in the `callback`.
-  void Run(std::unique_ptr<DelegatedTask> task,
-           DelegatedTaskCompletionCallback callback);
+  virtual void Run(std::unique_ptr<DelegatedTask> task,
+                   DelegatedTaskCompletionCallback callback);
 
  private:
   void CleanupAndReturnResult(

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/search_promotion/search_promotion_manager.h"
 
+#include <memory>
 #include <string_view>
 #include <utility>
 
@@ -12,9 +13,11 @@
 #include "base/notimplemented.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/platform_experience/delegated_tasks/delegated_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/shell_integration.h"
+#include "chrome/browser/ui/search_promotion/register_search_promotion_task.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -42,8 +45,11 @@ enum class DefaultBrowserType {
 
 }  // namespace
 
-SearchPromotionManager::SearchPromotionManager(Profile& profile)
-    : profile_(profile) {
+SearchPromotionManager::SearchPromotionManager(
+    Profile& profile,
+    CreateTaskRunnerCallback create_task_runner_callback)
+    : profile_(profile),
+      create_task_runner_callback_(std::move(create_task_runner_callback)) {
   // SearchPromotionManager is currently a Windows-only feature intended to
   // promote specific search-related behaviors. On other platforms, the
   // manager remains inert.
@@ -231,10 +237,77 @@ void SearchPromotionManager::OnEngagementResultRetrieved(
   }
 }
 
+void SearchPromotionManager::RunRegisterTask(
+    std::unique_ptr<RegisterSearchPromotionTask> task) {
+  // Guard against invalid tasks or tasks already in flight.
+  if (!task || task_runner_ || !is_promo_allowed_) {
+    return;
+  }
+
+  task_runner_ = create_task_runner_callback_.Run();
+  task_runner_->Run(std::move(task),
+                    base::BindOnce(&SearchPromotionManager::HandleTaskResult,
+                                   weak_ptr_factory_.GetWeakPtr()));
+}
+
 void SearchPromotionManager::PerformArmA() {
-  NOTIMPLEMENTED();
+  std::string store_url_str =
+      feature_engagement::kSearchPromotionStoreUrl.Get();
+  GURL store_url(store_url_str);
+  if (!store_url.is_valid()) {
+    return;
+  }
+  RunRegisterTask(std::make_unique<RegisterSearchPromotionTask>(
+      /*post_install_url=*/store_url, /*extension_id=*/""));
 }
 
 void SearchPromotionManager::PerformArmB() {
-  NOTIMPLEMENTED();
+  std::string extension_id =
+      feature_engagement::kSearchPromotionExtensionId.Get();
+  std::string instructions_url_str =
+      feature_engagement::kSearchPromotionInstructionsUrl.Get();
+  GURL instructions_url(instructions_url_str);
+  if (extension_id.empty() || !instructions_url.is_valid()) {
+    return;
+  }
+  RunRegisterTask(std::make_unique<RegisterSearchPromotionTask>(
+      /*post_install_url=*/instructions_url, /*extension_id=*/extension_id));
+}
+
+void SearchPromotionManager::HandleTaskResult(
+    platform_experience::DelegatedTaskResult task_result) {
+  task_runner_.reset();
+
+  // TODO(crbug.com/535186625): Implement handling of exit codes and metrics.
+  if (!task_result.exit_code_or_status.has_value()) {
+    // Handle why task was not executed successfully.
+    platform_experience::DelegatedTaskStatus task_status =
+        task_result.exit_code_or_status.error();
+    switch (task_status) {
+      case platform_experience::DelegatedTaskStatus::kPehNotFound:
+      case platform_experience::DelegatedTaskStatus::kTaskTimeout:
+      case platform_experience::DelegatedTaskStatus::kInvalidArgs:
+      default:
+        break;
+    }
+    return;
+  }
+
+  // Handle exit code from task.
+  std::optional<SearchPromotionExitCode> exit_code =
+      RegisterSearchPromotionTask::ParseExitCode(
+          *task_result.exit_code_or_status);
+  if (!exit_code.has_value()) {
+    // Handle invalid exit code.
+  }
+
+  switch (*exit_code) {
+    case SearchPromotionExitCode::kInvalidExtensionId:
+    case SearchPromotionExitCode::kInvalidPostInstallUrl:
+    case SearchPromotionExitCode::kForegroundFallbackLaunchFailed:
+    case SearchPromotionExitCode::kTimeout:
+    case SearchPromotionExitCode::kSuccessBackground:
+    case SearchPromotionExitCode::kSuccessWithForegroundFallback:
+      break;
+  }
 }

@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_UI_SEARCH_PROMOTION_SEARCH_PROMOTION_MANAGER_H_
 #define CHROME_BROWSER_UI_SEARCH_PROMOTION_SEARCH_PROMOTION_MANAGER_H_
 
+#include <memory>
 #include <string_view>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/platform_experience/delegated_tasks/delegated_task_runner.h"
 #include "chrome/browser/shell_integration.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -16,6 +19,7 @@
 
 class BrowserUserEducationInterface;
 class Profile;
+class RegisterSearchPromotionTask;
 
 namespace segmentation_platform {
 struct ClassificationResult;
@@ -29,7 +33,11 @@ struct ClassificationResult;
 // resolution for tab and UI-level features.
 class SearchPromotionManager : public KeyedService {
  public:
-  explicit SearchPromotionManager(Profile& profile);
+  using CreateTaskRunnerCallback = base::RepeatingCallback<
+      std::unique_ptr<platform_experience::DelegatedTaskRunner>()>;
+
+  SearchPromotionManager(Profile& profile,
+                         CreateTaskRunnerCallback create_task_runner_callback);
   SearchPromotionManager(const SearchPromotionManager&) = delete;
   SearchPromotionManager& operator=(const SearchPromotionManager&) = delete;
   ~SearchPromotionManager() override;
@@ -63,6 +71,10 @@ class SearchPromotionManager : public KeyedService {
   void PerformArmA();
   void PerformArmB();
 
+  void RunRegisterTask(std::unique_ptr<RegisterSearchPromotionTask> task);
+
+  void HandleTaskResult(platform_experience::DelegatedTaskResult result);
+
   void RecordDefaultBrowserState(
       shell_integration::DefaultWebClientState state);
   void OnPromoClosed();
@@ -76,6 +88,9 @@ class SearchPromotionManager : public KeyedService {
   bool was_accepted_ = false;
 
   const raw_ref<Profile> profile_;
+
+  CreateTaskRunnerCallback create_task_runner_callback_;
+  std::unique_ptr<platform_experience::DelegatedTaskRunner> task_runner_;
 
   base::WeakPtrFactory<SearchPromotionManager> weak_ptr_factory_{this};
 };

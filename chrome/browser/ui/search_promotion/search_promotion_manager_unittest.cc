@@ -9,16 +9,22 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/platform_experience/delegated_tasks/delegated_task_runner.h"
+#include "chrome/browser/platform_experience/delegated_tasks/test_support/mock_delegated_task_runner.h"
+#include "chrome/browser/platform_experience/delegated_tasks/test_support/mock_peh_launcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/search_promotion/register_search_promotion_task.h"
 #include "chrome/browser/ui/search_promotion/search_promotion_manager_factory.h"
 #include "chrome/browser/ui/search_promotion/search_promotion_navigation_observer.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -45,24 +51,35 @@ namespace {
 
 class MockSearchPromotionManager : public SearchPromotionManager {
  public:
-  explicit MockSearchPromotionManager(Profile& profile)
-      : SearchPromotionManager(profile) {}
+  MockSearchPromotionManager(Profile& profile,
+                             CreateTaskRunnerCallback callback)
+      : SearchPromotionManager(profile, std::move(callback)) {}
   MOCK_METHOD(void,
               OnTargetURLVisited,
               (BrowserUserEducationInterface & user_education),
               (override));
 };
 
+std::unique_ptr<platform_experience::DelegatedTaskRunner>
+CreateMockTaskRunner() {
+  return std::make_unique<platform_experience::MockDelegatedTaskRunner>();
+}
+
+SearchPromotionManager::CreateTaskRunnerCallback
+GetCreateMockTaskRunnerCallback() {
+  return base::BindRepeating([]() { return CreateMockTaskRunner(); });
+}
+
 std::unique_ptr<KeyedService> BuildMockSearchPromotionManager(
     content::BrowserContext* context) {
   return std::make_unique<MockSearchPromotionManager>(
-      *Profile::FromBrowserContext(context));
+      *Profile::FromBrowserContext(context), GetCreateMockTaskRunnerCallback());
 }
 
 std::unique_ptr<KeyedService> BuildSearchPromotionManager(
     content::BrowserContext* context) {
   return std::make_unique<SearchPromotionManager>(
-      *Profile::FromBrowserContext(context));
+      *Profile::FromBrowserContext(context), GetCreateMockTaskRunnerCallback());
 }
 
 std::unique_ptr<KeyedService> BuildMockSegmentationPlatformService(
@@ -134,14 +151,16 @@ TEST_F(SearchPromotionManagerTest, IsPromoAllowedGuardedByFeature) {
   feature_list_.InitAndDisableFeature(
       feature_engagement::kIPHSearchPromotionFeature);
   {
-    SearchPromotionManager manager(*profile());
+    SearchPromotionManager manager(*profile(),
+                                   GetCreateMockTaskRunnerCallback());
     EXPECT_FALSE(IsPromoAllowed(manager));
   }
 
   feature_list_.Reset();
   InitSearchPromotionFeature();
   {
-    SearchPromotionManager manager(*profile());
+    SearchPromotionManager manager(*profile(),
+                                   GetCreateMockTaskRunnerCallback());
     EXPECT_TRUE(IsPromoAllowed(manager));
   }
 }
@@ -474,4 +493,127 @@ TEST_F(SearchPromotionManagerTest, OnPromoAcceptedWithNullTrackerDoesNotCrash) {
 
   SearchPromotionManager* manager = RecreateSearchPromotionManager();
   manager->OnPromoAccepted();
+}
+
+class SearchPromotionManagerTaskRunnerTest : public SearchPromotionManagerTest {
+ protected:
+  void SetUp() override {
+    mock_runner_ =
+        std::make_unique<platform_experience::MockDelegatedTaskRunner>();
+
+    SearchPromotionManagerTest::SetUp();
+    SearchPromotionManagerFactory::GetInstance()->SetTestingFactory(
+        profile(), base::BindRepeating(&SearchPromotionManagerTaskRunnerTest::
+                                           BuildMockSearchPromotionManager,
+                                       base::Unretained(this)));
+  }
+
+  std::unique_ptr<KeyedService> BuildMockSearchPromotionManager(
+      content::BrowserContext* context) {
+    return std::make_unique<MockSearchPromotionManager>(
+        *Profile::FromBrowserContext(context),
+        base::BindRepeating(
+            &SearchPromotionManagerTaskRunnerTest::CreateMockTaskRunner,
+            base::Unretained(this)));
+  }
+
+  std::unique_ptr<platform_experience::DelegatedTaskRunner>
+  CreateMockTaskRunner() {
+    return std::move(mock_runner_);
+  }
+
+  SearchPromotionManager* manager() {
+    return SearchPromotionManagerFactory::GetForProfile(profile());
+  }
+
+  // Holds ownership until CreateMockTaskRunner() moves it out.
+  std::unique_ptr<platform_experience::MockDelegatedTaskRunner> mock_runner_;
+};
+
+TEST_F(SearchPromotionManagerTaskRunnerTest, PerformArmASuccess) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      feature_engagement::kIPHSearchPromotionFeature,
+      {{"arm", "arm_a"}, {"store_url", "https://google.com/store"}});
+
+  base::test::TestFuture<void> future;
+  EXPECT_CALL(*mock_runner_, Run(testing::_, testing::_))
+      .WillOnce(
+          [&](std::unique_ptr<platform_experience::DelegatedTask> task,
+              platform_experience::DelegatedTaskCompletionCallback callback) {
+            platform_experience::DelegatedTaskResult result;
+            result.exit_code_or_status =
+                std::to_underlying(SearchPromotionExitCode::kSuccessBackground);
+            std::move(callback).Run(result);
+
+            future.GetCallback().Run();
+          });
+
+  manager()->OnPromoAccepted();
+  EXPECT_TRUE(future.Wait());
+
+  // TODO(crbug.com/535186625): Verify task result once result handling is
+  // implemented.
+}
+
+TEST_F(SearchPromotionManagerTaskRunnerTest, PerformArmBSuccess) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      feature_engagement::kIPHSearchPromotionFeature,
+      {{"arm", "arm_b"},
+       {"extension_id", "test_extension_id"},
+       {"instructions_url", "https://google.com/instructions"}});
+
+  base::test::TestFuture<void> future;
+  EXPECT_CALL(*mock_runner_, Run(testing::_, testing::_))
+      .WillOnce(
+          [&](std::unique_ptr<platform_experience::DelegatedTask> task,
+              platform_experience::DelegatedTaskCompletionCallback callback) {
+            platform_experience::DelegatedTaskResult result;
+            result.exit_code_or_status =
+                std::to_underlying(SearchPromotionExitCode::kSuccessBackground);
+            std::move(callback).Run(result);
+
+            future.GetCallback().Run();
+          });
+
+  manager()->OnPromoAccepted();
+  EXPECT_TRUE(future.Wait());
+
+  // TODO(crbug.com/535186625): Verify task result once result handling is
+  // implemented.
+}
+
+TEST_F(SearchPromotionManagerTaskRunnerTest, InvalidAndEmptyPostInstallUrl) {
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        feature_engagement::kIPHSearchPromotionFeature,
+        {{"arm", "arm_a"}, {"store_url", "1234"}});
+
+    EXPECT_CALL(*mock_runner_, Run(testing::_, testing::_)).Times(0);
+
+    manager()->OnPromoAccepted();
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        feature_engagement::kIPHSearchPromotionFeature,
+        {{"arm", "arm_a"}, {"store_url", ""}});
+
+    EXPECT_CALL(*mock_runner_, Run(testing::_, testing::_)).Times(0);
+
+    manager()->OnPromoAccepted();
+  }
+}
+
+TEST_F(SearchPromotionManagerTaskRunnerTest, PromoFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      feature_engagement::kIPHSearchPromotionFeature);
+
+  EXPECT_CALL(*mock_runner_, Run(testing::_, testing::_)).Times(0);
+
+  manager()->OnPromoAccepted();
 }

@@ -46,8 +46,12 @@ SearchPromotionManagerFactory::BuildServiceInstanceForBrowserContext(
           feature_engagement::kIPHSearchPromotionFeature)) {
     return nullptr;
   }
+
   return std::make_unique<SearchPromotionManager>(
-      *Profile::FromBrowserContext(context));
+      *Profile::FromBrowserContext(context),
+      /*create_task_runner_callback=*/base::BindRepeating([]() {
+        return std::make_unique<platform_experience::DelegatedTaskRunner>();
+      }));
 }
 
 // We initialize eagerly to trigger the asynchronous segmentation query on
