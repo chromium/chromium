@@ -138,6 +138,14 @@ AutofillAiModelCacheImpl::GetFieldPredictions(
     const optimization_guide::proto::FieldTypeResponse& prediction =
         server_response.field_responses(i);
 
+    std::vector<FieldType> field_types;
+    field_types.reserve(prediction.all_field_types_size());
+    for (int type_int : prediction.all_field_types()) {
+      if (std::optional<FieldType> type = ToSafeFieldType(type_int)) {
+        field_types.push_back(*type);
+      }
+    }
+
     // TODO(crbug.com/389625753): Either implement format strings properly and
     // include more types than just date in the model or remove them completely.
     std::optional<AutofillFormatString> format_string;
@@ -147,14 +155,13 @@ AutofillAiModelCacheImpl::GetFieldPredictions(
       format_string.emplace(std::move(format_string_u16),
                             FormatString_Type_DATE);
     }
+
     result.emplace_back(
         FieldIdentifier{
             .signature = FieldSignature(identifier.field_signature()),
             .rank_in_signature_group =
                 identifier.field_rank_in_signature_group()},
-        FieldPrediction(
-            ToSafeFieldType(prediction.field_type()).value_or(NO_SERVER_DATA),
-            std::move(format_string)));
+        FieldPrediction(std::move(field_types), std::move(format_string)));
   }
   return std::move(result);
 }

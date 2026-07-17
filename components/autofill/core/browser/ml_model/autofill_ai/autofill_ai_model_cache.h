@@ -9,6 +9,7 @@
 
 #include <map>
 #include <optional>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
@@ -43,7 +44,7 @@ class AutofillAiModelCache : public KeyedService {
   struct FieldPrediction final {
     FieldPrediction();
     explicit FieldPrediction(
-        FieldType type,
+        std::vector<FieldType> field_types,
         std::optional<AutofillFormatString> format_string = std::nullopt);
     FieldPrediction(const FieldPrediction&);
     FieldPrediction& operator=(const FieldPrediction&);
@@ -51,7 +52,7 @@ class AutofillAiModelCache : public KeyedService {
     FieldPrediction& operator=(FieldPrediction&&);
     ~FieldPrediction();
 
-    FieldType field_type = NO_SERVER_DATA;
+    std::vector<FieldType> field_types;
     std::optional<AutofillFormatString> format_string;
 
     friend constexpr bool operator==(const FieldPrediction&,

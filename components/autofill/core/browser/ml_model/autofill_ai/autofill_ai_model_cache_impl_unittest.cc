@@ -205,15 +205,16 @@ TEST_F(AutofillAiModelCacheImplTest, GetFieldPredictions) {
   AutofillAiModelCache::ModelResponse model_response;
   {
     auto* field_response = model_response.add_field_responses();
-    field_response->set_field_type(PASSPORT_NUMBER);
+    field_response->add_all_field_types(PASSPORT_NUMBER);
+    field_response->add_all_field_types(NATIONAL_ID_CARD_NUMBER);
   }
   {
     auto* field_response = model_response.add_field_responses();
-    field_response->set_field_type(PASSPORT_ISSUING_COUNTRY);
+    field_response->add_all_field_types(PASSPORT_ISSUING_COUNTRY);
   }
   {
     auto* field_response = model_response.add_field_responses();
-    field_response->set_field_type(PASSPORT_EXPIRATION_DATE);
+    field_response->add_all_field_types(PASSPORT_EXPIRATION_DATE);
     field_response->set_formatting_meta("DD.MM.YYYY");
   }
 
@@ -229,10 +230,11 @@ TEST_F(AutofillAiModelCacheImplTest, GetFieldPredictions) {
   EXPECT_THAT(
       cache().GetFieldPredictions(form_signature),
       UnorderedElementsAre(
-          Pair(identifier1, FieldPrediction(PASSPORT_NUMBER)),
-          Pair(identifier2, FieldPrediction(PASSPORT_ISSUING_COUNTRY)),
+          Pair(identifier1,
+               FieldPrediction({PASSPORT_NUMBER, NATIONAL_ID_CARD_NUMBER})),
+          Pair(identifier2, FieldPrediction({PASSPORT_ISSUING_COUNTRY})),
           Pair(identifier3,
-               FieldPrediction(PASSPORT_EXPIRATION_DATE,
+               FieldPrediction({PASSPORT_EXPIRATION_DATE},
                                AutofillFormatString(u"DD.MM.YYYY",
                                                     FormatString_Type_DATE)))));
 }
@@ -247,7 +249,7 @@ TEST_F(AutofillAiModelCacheImplTest, GetFieldPredictionsInvalidType) {
     auto* field_response = model_response.add_field_responses();
     constexpr int invalid_field_type = 789;
     static_assert(!ToSafeFieldType(invalid_field_type).has_value());
-    field_response->set_field_type(invalid_field_type);
+    field_response->add_all_field_types(invalid_field_type);
   }
 
   using FieldIdentifier = AutofillAiModelCache::FieldIdentifier;

@@ -6270,12 +6270,13 @@ TEST_F(BrowserAutofillManagerTest_MockAutofillAi_WithModel, CacheResultUsed) {
   using FieldIdentifier = AutofillAiModelCache::FieldIdentifier;
   using ModelFieldPrediction = AutofillAiModelCache::FieldPrediction;
   auto predictions = base::flat_map<FieldIdentifier, ModelFieldPrediction>(
-      {std::pair{FieldIdentifier{.signature = field_signature1},
-                 ModelFieldPrediction(PASSPORT_NUMBER)},
+      {std::pair{
+           FieldIdentifier{.signature = field_signature1},
+           ModelFieldPrediction({PASSPORT_NUMBER, NATIONAL_ID_CARD_NUMBER})},
        std::pair{
            FieldIdentifier{.signature = field_signature2},
            ModelFieldPrediction(
-               PASSPORT_ISSUE_DATE,
+               {PASSPORT_ISSUE_DATE},
                AutofillFormatString(u"D.M.YYYY", FormatString_Type_DATE))}});
 
   EXPECT_CALL(cache(), Contains(form_signature)).WillOnce(Return(true));
@@ -6294,7 +6295,7 @@ TEST_F(BrowserAutofillManagerTest_MockAutofillAi_WithModel, CacheResultUsed) {
   EXPECT_THAT(fs->field(1)->Type().GetAutofillAiTypes(),
               ElementsAre(NAME_LAST));
   EXPECT_THAT(fs->field(2)->Type().GetAutofillAiTypes(),
-              ElementsAre(PASSPORT_NUMBER));
+              ElementsAre(PASSPORT_NUMBER, NATIONAL_ID_CARD_NUMBER));
   EXPECT_THAT(fs->field(3)->Type().GetAutofillAiTypes(),
               ElementsAre(PASSPORT_ISSUE_DATE));
   ASSERT_TRUE(fs->field(3)->format_string().has_value());
@@ -6324,11 +6325,11 @@ TEST_F(BrowserAutofillManagerTest_MockAutofillAi_WithModel,
   using ModelFieldPrediction = AutofillAiModelCache::FieldPrediction;
   auto predictions = base::flat_map<FieldIdentifier, ModelFieldPrediction>(
       {std::pair{FieldIdentifier{.signature = field_signature1},
-                 ModelFieldPrediction(PASSPORT_NUMBER)},
+                 ModelFieldPrediction({PASSPORT_NUMBER})},
        std::pair{
            FieldIdentifier{.signature = field_signature2},
            ModelFieldPrediction(
-               PASSPORT_ISSUE_DATE,
+               {PASSPORT_ISSUE_DATE},
                AutofillFormatString(u"D.M.YYYY", FormatString_Type_DATE))}});
 
   ON_CALL(cache(), Contains(form_signature)).WillByDefault(Return(true));

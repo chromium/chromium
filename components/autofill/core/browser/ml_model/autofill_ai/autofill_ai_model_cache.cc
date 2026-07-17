@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "components/autofill/core/browser/autofill_format_string.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -15,9 +16,10 @@ namespace autofill {
 AutofillAiModelCache::FieldPrediction::FieldPrediction() = default;
 
 AutofillAiModelCache::FieldPrediction::FieldPrediction(
-    FieldType type,
+    std::vector<FieldType> field_types,
     std::optional<AutofillFormatString> format_string)
-    : field_type(type), format_string(std::move(format_string)) {}
+    : field_types(std::move(field_types)),
+      format_string(std::move(format_string)) {}
 
 AutofillAiModelCache::FieldPrediction::FieldPrediction(const FieldPrediction&) =
     default;

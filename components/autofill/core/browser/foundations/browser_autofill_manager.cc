@@ -2662,11 +2662,11 @@ void BrowserAutofillManager::AddCachedAutofillAiPredictions(
       continue;
     }
     const ModelFieldPrediction& prediction = it->second;
-    if (prediction.field_type != NO_SERVER_DATA) {
+    for (FieldType type : prediction.field_types) {
       using ServerPrediction = AutofillQueryResponse::FormSuggestion::
           FieldSuggestion::FieldPrediction;
       ServerPrediction server_prediction;
-      server_prediction.set_type(prediction.field_type);
+      server_prediction.set_type(type);
       server_prediction.set_source(ServerPrediction::SOURCE_AUTOFILL_AI);
       field->MaybeAddServerPrediction(std::move(server_prediction));
     }
