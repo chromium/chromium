@@ -88,20 +88,28 @@ ClientStub* FakeConnectionToClient::client_stub() {
   return client_stub_;
 }
 
+void FakeConnectionToClient::Start() {}
+
 void FakeConnectionToClient::Disconnect(ErrorCode disconnect_error,
                                         std::string_view error_details,
                                         const SourceLocation& error_location) {
-  CHECK(is_connected_);
+  if (!is_connected_) {
+    return;
+  }
 
   is_connected_ = false;
   disconnect_error_ = disconnect_error;
-  if (event_handler_) {
-    event_handler_->OnConnectionClosed(disconnect_error_);
+  if (session_) {
+    session_->Close(disconnect_error, error_details, error_location);
   }
 }
 
 Session* FakeConnectionToClient::session() {
   return session_.get();
+}
+
+Transport* FakeConnectionToClient::transport() {
+  return nullptr;
 }
 
 void FakeConnectionToClient::set_clipboard_stub(ClipboardStub* clipboard_stub) {

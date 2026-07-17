@@ -120,6 +120,8 @@ class JingleSession : public Session {
   // Called when authentication is finished.
   void OnAuthenticated();
 
+  void StartTransport();
+
   // Sets |state_| to |new_state| and calls state change callback.
   void SetState(State new_state);
 
@@ -150,6 +152,7 @@ class JingleSession : public Session {
   std::unique_ptr<Authenticator> authenticator_;
 
   raw_ptr<Transport> transport_ = nullptr;
+  bool transport_started_ = false;
 
   // Pending Iq requests. Used for all messages except transport-info.
   std::vector<std::unique_ptr<IqRequest>> pending_requests_;

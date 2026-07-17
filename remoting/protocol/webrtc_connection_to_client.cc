@@ -67,12 +67,15 @@ WebrtcConnectionToClient::WebrtcConnectionToClient(
   if (audio_task_runner_) {
     transport_->audio_module()->SetAudioTaskRunner(audio_task_runner_);
   }
-  session_->SetEventHandler(this);
-  session_->SetTransport(transport_.get());
 }
 
 WebrtcConnectionToClient::~WebrtcConnectionToClient() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+}
+
+void WebrtcConnectionToClient::Start() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  event_handler_->CreateMediaStreams();
 }
 
 void WebrtcConnectionToClient::SetEventHandler(
@@ -86,11 +89,27 @@ protocol::Session* WebrtcConnectionToClient::session() {
   return session_.get();
 }
 
+Transport* WebrtcConnectionToClient::transport() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return transport_.get();
+}
+
 void WebrtcConnectionToClient::Disconnect(
     ErrorCode error,
     std::string_view error_details,
     const SourceLocation& error_location) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (closed_) {
+    return;
+  }
+  closed_ = true;
+
+  control_dispatcher_.reset();
+  event_dispatcher_.reset();
+  if (transport_) {
+    transport_->Close(error, std::string(error_details), FROM_HERE);
+    transport_.reset();
+  }
 
   // This should trigger OnConnectionClosed() event and this object
   // may be destroyed as the result.
@@ -175,49 +194,6 @@ PeerConnectionControls* WebrtcConnectionToClient::peer_connection_controls() {
 
 WebrtcEventLogData* WebrtcConnectionToClient::rtc_event_log() {
   return transport_->rtc_event_log();
-}
-
-void WebrtcConnectionToClient::OnSessionStateChange(Session::State state) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  DCHECK(event_handler_);
-  switch (state) {
-    case Session::INITIALIZING:
-    case Session::CONNECTING:
-    case Session::ACCEPTING:
-    case Session::ACCEPTED:
-      // Don't care about these events.
-      break;
-
-    case Session::AUTHENTICATING:
-      event_handler_->OnConnectionAuthenticating();
-      break;
-
-    case Session::AUTHENTICATED: {
-      base::WeakPtr<WebrtcConnectionToClient> self = weak_factory_.GetWeakPtr();
-      event_handler_->OnConnectionAuthenticated(
-          session_->authenticator().GetSessionPolicies());
-
-      // OnConnectionAuthenticated() call above may result in the connection
-      // being torn down.
-      if (self) {
-        event_handler_->CreateMediaStreams();
-      }
-      break;
-    }
-
-    case Session::CLOSED:
-    case Session::FAILED:
-      control_dispatcher_.reset();
-      event_dispatcher_.reset();
-      transport_->Close(
-          state == Session::CLOSED ? ErrorCode::OK : session_->error(),
-          /* error_details= */ {}, FROM_HERE);
-      transport_.reset();
-      event_handler_->OnConnectionClosed(
-          state == Session::CLOSED ? ErrorCode::OK : session_->error());
-      break;
-  }
 }
 
 void WebrtcConnectionToClient::OnWebrtcTransportConnecting() {

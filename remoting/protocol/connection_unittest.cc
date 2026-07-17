@@ -267,7 +267,7 @@ class FakeAudioPlayer : public AudioStub {
 
 }  // namespace
 
-class ConnectionTest : public testing::Test {
+class ConnectionTest : public testing::Test, public Session::EventHandler {
  public:
   ConnectionTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
@@ -285,6 +285,23 @@ class ConnectionTest : public testing::Test {
   void DestroyHost() {
     host_connection_.reset();
     run_loop_->Quit();
+  }
+
+  void OnSessionStateChange(Session::State state) override {
+    if (state == Session::AUTHENTICATED) {
+      if (host_connection_) {
+        host_connection_->session()->SetTransport(
+            host_connection_->transport());
+        host_connection_->Start();
+      }
+    } else if (state == Session::CLOSED || state == Session::FAILED) {
+      if (host_connection_) {
+        ErrorCode error = state == Session::CLOSED
+                              ? ErrorCode::OK
+                              : host_connection_->session()->error();
+        host_connection_->Disconnect(error, {}, FROM_HERE);
+      }
+    }
   }
 
  protected:
@@ -305,6 +322,7 @@ class ConnectionTest : public testing::Test {
 
     // Setup host side.
     host_connection_->SetEventHandler(&host_event_handler_);
+    host_connection_->session()->SetEventHandler(this);
     host_connection_->set_clipboard_stub(&host_clipboard_stub_);
     host_connection_->set_host_stub(&host_stub_);
     host_connection_->set_input_stub(&host_input_stub_);
@@ -319,11 +337,6 @@ class ConnectionTest : public testing::Test {
   }
 
   void Connect() {
-    {
-      testing::InSequence sequence;
-      EXPECT_CALL(host_event_handler_, OnConnectionAuthenticating());
-      EXPECT_CALL(host_event_handler_, OnConnectionAuthenticated(nullptr));
-    }
     EXPECT_CALL(host_event_handler_, OnConnectionChannelsConnected())
         .WillOnce(InvokeWithoutArgs(this, &ConnectionTest::OnHostConnected));
     EXPECT_CALL(host_event_handler_, OnRouteChange(_, _))
@@ -481,7 +494,6 @@ TEST_F(ConnectionTest, MAYBE_Disconnect) {
 
   EXPECT_CALL(client_event_handler_,
               OnConnectionState(ConnectionToHost::CLOSED, ErrorCode::OK));
-  EXPECT_CALL(host_event_handler_, OnConnectionClosed(ErrorCode::OK));
 
   client_session_->Close(ErrorCode::OK, /* error_details= */ {}, FROM_HERE);
   base::RunLoop().RunUntilIdle();

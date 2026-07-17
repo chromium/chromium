@@ -18,8 +18,6 @@ struct JingleTransportInfo;
 
 namespace remoting::protocol {
 
-class Authenticator;
-
 enum class TransportRole {
   SERVER,
   CLIENT,
@@ -57,7 +55,7 @@ class Transport {
   // Sets the object responsible for delivering outgoing transport-info messages
   // to the peer.
   virtual void Start(
-      Authenticator* authenticator,
+      const std::string& auth_key,
       SendTransportInfoCallback send_transport_info_callback) = 0;
   virtual bool ProcessTransportInfo(
       const JingleTransportInfo& transport_info) = 0;

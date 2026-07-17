@@ -53,6 +53,7 @@
 #include "remoting/protocol/input_event_timestamps.h"
 #include "remoting/protocol/mouse_cursor_monitor.h"
 #include "remoting/protocol/pairing_registry.h"
+#include "remoting/protocol/session.h"
 #include "remoting/protocol/transport.h"
 #include "remoting/protocol/video_stream.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
@@ -84,6 +85,7 @@ class VideoLayout;
 // per-client state.
 class ClientSession : public protocol::HostStub,
                       public protocol::ConnectionToClient::EventHandler,
+                      public protocol::Session::EventHandler,
                       public ClientSessionControl,
                       public ClientSessionDetails,
                       public ClientSessionEvents,
@@ -166,12 +168,8 @@ class ClientSession : public protocol::HostStub,
       const protocol::TerminalControl& terminal_control) override;
 
   // protocol::ConnectionToClient::EventHandler interface.
-  void OnConnectionAuthenticating() override;
-  void OnConnectionAuthenticated(
-      const SessionPolicies* session_policies) override;
   void CreateMediaStreams() override;
   void OnConnectionChannelsConnected() override;
-  void OnConnectionClosed(protocol::ErrorCode error) override;
   void OnTransportProtocolChange(const std::string& protocol) override;
   void OnRouteChange(const std::string& channel_name,
                      const protocol::TransportRoute& route) override;
@@ -204,6 +202,9 @@ class ClientSession : public protocol::HostStub,
   void OnSessionServicesClientConnected(
       mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver)
       override;
+
+  // protocol::Session::EventHandler interface.
+  void OnSessionStateChange(protocol::Session::State state) override;
 
   // ClientSessionDetails interface.
   ClientSessionControl* session_control() override;
@@ -254,6 +255,13 @@ class ClientSession : public protocol::HostStub,
   }
 
  private:
+  friend class ClientSessionTest;
+  friend class ChromotingHostTest;
+
+  void OnConnectionAuthenticating();
+  void OnConnectionAuthenticated(const SessionPolicies* session_policies);
+  void OnConnectionClosed(protocol::ErrorCode error);
+
   void OnDesktopEnvironmentCreated(
       std::unique_ptr<DesktopEnvironment> desktop_environment);
 

@@ -78,6 +78,7 @@
 #include "remoting/proto/event.pb.h"
 #include "remoting/protocol/audio_sample_info.h"
 #include "remoting/protocol/audio_stream.h"
+#include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/capability_names.h"
 #include "remoting/protocol/client_stub.h"
 #include "remoting/protocol/clipboard_thread_proxy.h"
@@ -158,6 +159,7 @@ ClientSession::ClientSession(
       local_session_policies_provider_(local_session_policies_provider) {
   connection_->session()->AddPlugin(&host_experiment_session_plugin_);
   connection_->SetEventHandler(this);
+  connection_->session()->SetEventHandler(this);
 
   HostExtensionSessionManager::HostExtensions all_extensions = extensions;
   bool gnubby_policy_enabled = true;
@@ -671,6 +673,9 @@ void ClientSession::OnConnectionAuthenticated(
   connection_->ApplyNetworkSettings(
       protocol::NetworkSettings(effective_policies_));
 
+  connection_->session()->SetTransport(connection_->transport());
+  connection_->Start();
+
   DesktopEnvironmentOptions options = desktop_environment_options_;
   options.ApplySessionOptions(session_options);
   if (effective_policies_.curtain_required.has_value()) {
@@ -1081,6 +1086,39 @@ void ClientSession::SetEventTimestampsSourceForTests(
   event_timestamp_source_for_tests_ = event_timestamp_source;
   for (const auto& [_, video_stream] : video_streams_) {
     video_stream->SetEventTimestampsSource(event_timestamp_source_for_tests_);
+  }
+}
+
+void ClientSession::OnSessionStateChange(protocol::Session::State state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(connection_);
+
+  switch (state) {
+    case protocol::Session::INITIALIZING:
+    case protocol::Session::CONNECTING:
+    case protocol::Session::ACCEPTING:
+    case protocol::Session::ACCEPTED:
+      // Don't care about these events.
+      break;
+
+    case protocol::Session::AUTHENTICATING:
+      OnConnectionAuthenticating();
+      break;
+
+    case protocol::Session::AUTHENTICATED:
+      OnConnectionAuthenticated(
+          connection_->session()->authenticator().GetSessionPolicies());
+      break;
+
+    case protocol::Session::CLOSED:
+    case protocol::Session::FAILED: {
+      ErrorCode error = state == protocol::Session::CLOSED
+                            ? ErrorCode::OK
+                            : connection_->session()->error();
+      connection_->Disconnect(error, /* error_details= */ {}, FROM_HERE);
+      OnConnectionClosed(error);
+      break;
+    }
   }
 }
 

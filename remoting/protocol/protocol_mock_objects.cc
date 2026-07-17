@@ -41,7 +41,21 @@ MockCursorShapeStub::~MockCursorShapeStub() = default;
 MockVideoStub::MockVideoStub() = default;
 MockVideoStub::~MockVideoStub() = default;
 
-MockSession::MockSession() = default;
+MockSession::MockSession() {
+  ON_CALL(*this, SetEventHandler(testing::_))
+      .WillByDefault(
+          [this](Session::EventHandler* handler) { event_handler_ = handler; });
+  ON_CALL(*this, error()).WillByDefault([this]() { return error_; });
+  ON_CALL(*this, Close(testing::_, testing::_, testing::_))
+      .WillByDefault([this](ErrorCode error, std::string_view error_details,
+                            const SourceLocation& location) {
+        error_ = error;
+        if (event_handler_) {
+          event_handler_->OnSessionStateChange(
+              error == ErrorCode::OK ? Session::CLOSED : Session::FAILED);
+        }
+      });
+}
 MockSession::~MockSession() = default;
 
 MockSessionManager::MockSessionManager() = default;

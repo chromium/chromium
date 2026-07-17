@@ -119,7 +119,7 @@ class WebrtcTransport : public Transport,
   void ApplyNetworkSettings(const NetworkSettings& network_settings);
 
   // Transport implementations.
-  void Start(Authenticator* authenticator,
+  void Start(const std::string& auth_key,
              SendTransportInfoCallback send_transport_info_callback) override;
   bool ProcessTransportInfo(const JingleTransportInfo& transport_info) override;
 

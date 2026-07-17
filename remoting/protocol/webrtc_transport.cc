@@ -480,7 +480,7 @@ void WebrtcTransport::ApplyNetworkSettings(
 }
 
 void WebrtcTransport::Start(
-    Authenticator* authenticator,
+    const std::string& auth_key,
     SendTransportInfoCallback send_transport_info_callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(send_transport_info_callback_.is_null());
@@ -492,7 +492,7 @@ void WebrtcTransport::Start(
 
   send_transport_info_callback_ = std::move(send_transport_info_callback);
 
-  hmac_key_ = base::ToVector(base::as_byte_span(authenticator->GetAuthKey()));
+  hmac_key_ = base::ToVector(base::as_byte_span(auth_key));
 
   event_handler_->OnWebrtcTransportConnecting();
 

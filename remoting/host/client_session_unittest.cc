@@ -164,6 +164,8 @@ class ClientSessionTest : public testing::Test {
   // Notifies the client session that the client connection has been
   // authenticated and channels have been connected. This effectively enables
   // the input pipe line and starts video capturing.
+  void AuthenticateClientSession(
+      const SessionPolicies* session_policies = nullptr);
   void ConnectClientSession(const SessionPolicies* session_policies = nullptr);
 
   // Add a fake display to the layout list. Used in conjunction with
@@ -292,6 +294,11 @@ void ClientSessionTest::CreateClientSession() {
   CreateClientSession(std::make_unique<protocol::FakeSession>());
 }
 
+void ClientSessionTest::AuthenticateClientSession(
+    const SessionPolicies* session_policies) {
+  client_session_->OnConnectionAuthenticated(session_policies);
+}
+
 void ClientSessionTest::ConnectClientSession(
     const SessionPolicies* session_policies) {
   EXPECT_CALL(session_event_handler_, OnSessionPoliciesReceived(_))
@@ -306,7 +313,7 @@ void ClientSessionTest::ConnectClientSession(
   EXPECT_FALSE(connection_->clipboard_stub());
   EXPECT_FALSE(connection_->input_stub());
 
-  client_session_->OnConnectionAuthenticated(session_policies);
+  AuthenticateClientSession(session_policies);
   client_session_->CreateMediaStreams();
   client_session_->OnConnectionChannelsConnected();
   future.Get();
@@ -430,7 +437,7 @@ TEST_F(ClientSessionTest, DisconnectsIfOnSessionPoliciesReceivedReturnsError) {
       .WillOnce(Return(ErrorCode::DISALLOWED_BY_POLICY));
 
   CreateClientSession();
-  client_session_->OnConnectionAuthenticated(nullptr);
+  AuthenticateClientSession(nullptr);
 
   EXPECT_FALSE(connection_->is_connected());
   EXPECT_EQ(connection_->disconnect_error(), ErrorCode::DISALLOWED_BY_POLICY);

@@ -21,7 +21,6 @@ namespace remoting {
 class DesktopCapturer;
 class FifoBufferWriter;
 class SessionOptions;
-struct SessionPolicies;
 }  // namespace remoting
 
 namespace remoting::protocol {
@@ -44,15 +43,6 @@ class ConnectionToClient {
  public:
   class EventHandler {
    public:
-    // Called when the network connection is authenticating
-    virtual void OnConnectionAuthenticating() = 0;
-
-    // Called when the network connection is authenticated. `session_policies`
-    // is nullptr if no session policies are specified, in which case local
-    // policies should be used.
-    virtual void OnConnectionAuthenticated(
-        const SessionPolicies* session_policies) = 0;
-
     // Called to request creation of video streams. May be called before or
     // after OnConnectionChannelsConnected().
     virtual void CreateMediaStreams() = 0;
@@ -60,9 +50,6 @@ class ConnectionToClient {
     // Called when the network connection is authenticated and all
     // channels are connected.
     virtual void OnConnectionChannelsConnected() = 0;
-
-    // Called when the network connection is closed or failed.
-    virtual void OnConnectionClosed(ErrorCode error) = 0;
 
     // Called when the transport protocol (TCP/UDP) changes and all channels are
     // connected.
@@ -96,6 +83,12 @@ class ConnectionToClient {
   // Returns the Session object for the connection.
   // TODO(sergeyu): Remove this method.
   virtual Session* session() = 0;
+
+  // Returns the Transport object for the connection.
+  virtual Transport* transport() = 0;
+
+  // Starts the client connection and media streams after authentication.
+  virtual void Start() = 0;
 
   // Disconnect the client connection.
   virtual void Disconnect(ErrorCode error,

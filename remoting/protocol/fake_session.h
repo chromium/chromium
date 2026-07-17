@@ -52,6 +52,7 @@ class FakeSession : public Session {
   void SetAttachment(size_t round, const Attachment& attachment);
 
   // Session interface.
+  void StartTransport();
   void SetEventHandler(EventHandler* event_handler) override;
   ErrorCode error() const override;
   const std::string& jid() override;
@@ -79,6 +80,7 @@ class FakeSession : public Session {
 
   ErrorCode error_ = ErrorCode::OK;
   bool closed_ = false;
+  bool transport_started_ = false;
 
   base::WeakPtr<FakeSession> peer_;
   base::TimeDelta signaling_delay_;

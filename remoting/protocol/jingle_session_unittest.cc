@@ -101,7 +101,7 @@ class FakeTransport : public Transport {
   }
 
   // Transport interface.
-  void Start(Authenticator* authenticator,
+  void Start(const std::string& auth_key,
              SendTransportInfoCallback send_transport_info_callback) override {
     send_transport_info_callback_ = send_transport_info_callback;
   }

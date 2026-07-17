@@ -231,11 +231,11 @@ class WebrtcTransportTest : public testing::Test {
 
     // Start both transports.
     host_transport_->Start(
-        host_authenticator_.get(),
+        host_authenticator_->GetAuthKey(),
         base::BindRepeating(&WebrtcTransportTest::ProcessTransportInfo,
                             base::Unretained(this), &client_transport_, true));
     client_transport_->Start(
-        client_authenticator_.get(),
+        client_authenticator_->GetAuthKey(),
         base::BindRepeating(&WebrtcTransportTest::ProcessTransportInfo,
                             base::Unretained(this), &host_transport_, false));
 

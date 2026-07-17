@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "net/base/ip_endpoint.h"
@@ -93,14 +94,8 @@ class MockConnectionToClientEventHandler
 
   ~MockConnectionToClientEventHandler() override;
 
-  MOCK_METHOD(void, OnConnectionAuthenticating, (), (override));
-  MOCK_METHOD(void,
-              OnConnectionAuthenticated,
-              (const SessionPolicies*),
-              (override));
   MOCK_METHOD(void, CreateMediaStreams, (), (override));
   MOCK_METHOD(void, OnConnectionChannelsConnected, (), (override));
-  MOCK_METHOD(void, OnConnectionClosed, (ErrorCode error), (override));
   MOCK_METHOD(void,
               OnTransportProtocolChange,
               (const std::string& protocol),
@@ -323,6 +318,10 @@ class MockSession : public Session {
                const SourceLocation& location),
               (override));
   MOCK_METHOD(void, AddPlugin, (SessionPlugin * plugin), (override));
+
+ private:
+  raw_ptr<Session::EventHandler> event_handler_ = nullptr;
+  ErrorCode error_ = ErrorCode::OK;
 };
 
 class MockSessionManager : public SessionManager {

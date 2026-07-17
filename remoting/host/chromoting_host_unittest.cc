@@ -173,6 +173,11 @@ class ChromotingHostTest : public testing::Test {
     }
   }
 
+  void CloseClientConnection(ClientSession* client,
+                             ErrorCode error = ErrorCode::OK) {
+    client->OnConnectionClosed(error);
+  }
+
   void TearDown() override {
     if (host_) {
       ShutdownHost();
@@ -341,7 +346,7 @@ TEST_F(ChromotingHostTest, Reconnect) {
 
   // Disconnect first client.
   ClientSession* client1 = ExpectClientDisconnected(0);
-  client1->OnConnectionClosed(ErrorCode::OK);
+  CloseClientConnection(client1);
 
   // Connect second client.
   future = ExpectClientConnected(1);
@@ -350,7 +355,7 @@ TEST_F(ChromotingHostTest, Reconnect) {
 
   // Disconnect second client.
   ClientSession* client2 = ExpectClientDisconnected(1);
-  client2->OnConnectionClosed(ErrorCode::OK);
+  CloseClientConnection(client2);
 }
 
 TEST_F(
@@ -374,7 +379,7 @@ TEST_F(
 
   // Disconnect second client.
   ClientSession* client2 = ExpectClientDisconnected(1);
-  client2->OnConnectionClosed(ErrorCode::OK);
+  CloseClientConnection(client2);
 }
 
 TEST_F(
@@ -398,9 +403,9 @@ TEST_F(
 
   // Disconnect both.
   ClientSession* client1 = ExpectClientDisconnected(0);
-  client1->OnConnectionClosed(ErrorCode::OK);
+  CloseClientConnection(client1);
   ClientSession* client2 = ExpectClientDisconnected(1);
-  client2->OnConnectionClosed(ErrorCode::OK);
+  CloseClientConnection(client2);
 }
 
 TEST_F(ChromotingHostTest, IncomingSessionAccepted) {

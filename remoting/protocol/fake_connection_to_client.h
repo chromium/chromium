@@ -74,11 +74,13 @@ class FakeConnectionToClient : public ConnectionToClient {
   void SetAudioWriter(std::unique_ptr<FifoBufferWriter> writer) override;
 
   ClientStub* client_stub() override;
+  void Start() override;
   void Disconnect(ErrorCode error,
                   std::string_view error_details,
                   const SourceLocation& error_location) override;
 
   Session* session() override;
+  Transport* transport() override;
 
   void set_clipboard_stub(ClipboardStub* clipboard_stub) override;
   void set_host_stub(HostStub* host_stub) override;

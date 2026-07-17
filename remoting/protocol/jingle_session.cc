@@ -349,6 +349,9 @@ void JingleSession::SetTransport(Transport* transport) {
   DCHECK(!transport_);
   DCHECK(transport);
   transport_ = transport;
+  if (state_ == AUTHENTICATED) {
+    StartTransport();
+  }
 }
 
 void JingleSession::SendTransportInfo(
@@ -801,7 +804,25 @@ void JingleSession::ProcessAuthenticationStep() {
 }
 
 void JingleSession::OnAuthenticated() {
-  transport_->Start(authenticator_.get(),
+  base::WeakPtr<JingleSession> self = weak_factory_.GetWeakPtr();
+  if (transport_) {
+    StartTransport();
+    if (!self) {
+      return;
+    }
+  }
+
+  SetState(AUTHENTICATED);
+}
+
+void JingleSession::StartTransport() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (transport_started_ || !transport_) {
+    return;
+  }
+  transport_started_ = true;
+
+  transport_->Start(authenticator_->GetAuthKey(),
                     base::BindRepeating(&JingleSession::SendTransportInfo,
                                         weak_factory_.GetWeakPtr()));
 
@@ -819,8 +840,6 @@ void JingleSession::OnAuthenticated() {
       return;
     }
   }
-
-  SetState(AUTHENTICATED);
 }
 
 void JingleSession::SetState(State new_state) {
