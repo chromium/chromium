@@ -4,9 +4,12 @@
 
 #include "chromecast/starboard/media/renderer/demuxer_stream_reader.h"
 
+#include <sys/mman.h>
+
 #include <array>
 #include <cstdint>
 #include <functional>
+#include <limits>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -27,6 +30,7 @@
 #include "media/base/encryption_scheme.h"
 #include "media/base/mock_filters.h"
 #include "media/base/sample_format.h"
+#include "media/base/test_helpers.h"
 #include "media/base/video_transformation.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -178,6 +182,65 @@ TEST_F(DemuxerStreamReaderTest, ReadsVideoBufferAndCallsBufferCb) {
   std::move(read_cb).Run(DemuxerStream::Status::kOk, {buffer});
 
   RunPendingTasks();
+}
+
+TEST_F(DemuxerStreamReaderTest, RejectsVideoBufferLargerThanIntMax) {
+  // StarboardSampleInfo::buffer_size is an int, so a DecoderBuffer whose size
+  // does not fit in an int must be reported as an error rather than being
+  // forwarded with a truncated size.
+  constexpr int kSeekTicket = 7;
+  constexpr size_t kBufferSize =
+      static_cast<size_t>(std::numeric_limits<int>::max()) + 2;
+
+  // Reserve address space without committing physical pages so that the test
+  // does not require gigabytes of RAM.
+  void* mapping = mmap(nullptr, kBufferSize, PROT_READ,
+                       MAP_PRIVATE | MAP_ANONYMOUS | MAP_NORESERVE, -1, 0);
+  if (mapping == MAP_FAILED) {
+    GTEST_SKIP() << "Unable to reserve " << kBufferSize
+                 << " bytes of address space.";
+  }
+
+  auto external_memory = std::make_unique<DecoderBuffer::UnownedExternalMemory>(
+      // SAFETY: `mapping` refers to `kBufferSize` bytes returned by mmap above
+      // and remains valid until the matching munmap below.
+      UNSAFE_BUFFERS(base::span<const uint8_t>(
+          static_cast<const uint8_t*>(mapping), kBufferSize)));
+  scoped_refptr<DecoderBuffer> buffer =
+      DecoderBuffer::FromExternalMemory(std::move(external_memory));
+  ASSERT_EQ(buffer->size(), kBufferSize);
+
+  StarboardVideoSampleInfo video_sample_info =
+      CreateVideoSample(kBufferData).video_sample_info;
+
+  EXPECT_CALL(handle_eos_cb_, Call).Times(0);
+  EXPECT_CALL(handle_buffer_cb_, Call).Times(0);
+  EXPECT_CALL(renderer_client_,
+              OnError(HasStatusCode(::media::PIPELINE_ERROR_DECODE)))
+      .Times(1);
+  base::OnceCallback<void(
+      DemuxerStream::Status status,
+      std::vector<scoped_refptr<::media::DecoderBuffer>> buffers)>
+      read_cb;
+  EXPECT_CALL(video_stream_, OnRead).WillOnce(SaveArgByMove<0>(&read_cb));
+
+  DemuxerStreamReader stream_reader(
+      /*audio_stream=*/nullptr, &video_stream_,
+      /*audio_sample_info=*/std::nullopt, video_sample_info,
+      base::BindLambdaForTesting(handle_buffer_cb_.AsStdFunction()),
+      base::BindLambdaForTesting(handle_eos_cb_.AsStdFunction()),
+      &renderer_client_, &metrics_helper_);
+  stream_reader.ReadBuffer(kSeekTicket,
+                           StarboardMediaType::kStarboardMediaTypeVideo);
+
+  // Simulate the DemuxerStream providing the oversized buffer.
+  ASSERT_FALSE(read_cb.is_null());
+  std::move(read_cb).Run(DemuxerStream::Status::kOk, {buffer});
+
+  RunPendingTasks();
+
+  buffer.reset();
+  munmap(mapping, kBufferSize);
 }
 
 TEST_F(DemuxerStreamReaderTest, ReadsVideoBufferAndCallsEosCb) {

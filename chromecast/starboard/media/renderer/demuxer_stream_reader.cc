@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
@@ -243,10 +244,19 @@ void DemuxerStreamReader::OnReadBuffer(
     buffer = convert_audio_fn_.Run(std::move(buffer));
   }
 
+  // StarboardSampleInfo::buffer_size is an int, so reject anything that does
+  // not fit rather than silently truncating the value.
+  if (!base::IsValueInRangeForNumericType<int>(buffer->size())) {
+    LOG(ERROR) << "DecoderBuffer size (" << buffer->size()
+               << ") exceeds the maximum supported sample size.";
+    client_->OnError(::media::PIPELINE_ERROR_DECODE);
+    return;
+  }
+
   StarboardSampleInfo sample_info = {};
   sample_info.type = type;
   sample_info.buffer = base::span(*buffer).data();
-  sample_info.buffer_size = buffer->size();
+  sample_info.buffer_size = static_cast<int>(buffer->size());
   sample_info.timestamp = buffer->timestamp().InMicroseconds();
   sample_info.side_data = base::span<const StarboardSampleSideData>();
 
