@@ -209,12 +209,11 @@ std::u16string PhoneNumber::GetInfo(const AutofillType& autofill_type,
       // desirable in other regions. Closed bug crbug.com/98911 contains
       // additional context.
       std::string country_code = *profile_->GetAddressCountryCode();
-      if (country_code == "US" || country_code == "CA"){
-        std::string region_code = cached_parsed_phone_.GetRegionCode();
-        if ((region_code == "US" || region_code == "CA") &&
-            whole_number_[0] == u'+') {
-          whole_number_ = whole_number_.substr(1);
-        }
+      const std::string& region_code = cached_parsed_phone_.region();
+      if ((country_code == "US" || country_code == "CA") &&
+          (region_code == "US" || region_code == "CA") &&
+          whole_number_[0] == u'+') {
+        whole_number_.erase(whole_number_.begin());
       }
       return whole_number_;
     }

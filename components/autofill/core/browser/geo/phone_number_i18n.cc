@@ -448,14 +448,5 @@ const std::u16string& PhoneObject::GetWholeNumber() const {
   return whole_number_;
 }
 
-std::string PhoneObject::GetRegionCode() const {
-  std::string region_code;
-  if (i18n_number_){
-    PhoneNumberUtil* phone_util = PhoneNumberUtil::GetInstance();
-    phone_util->GetRegionCodeForNumber(*i18n_number_, &region_code);
-  }
-  return region_code;
-}
-
 }  // namespace i18n
 }  // namespace autofill

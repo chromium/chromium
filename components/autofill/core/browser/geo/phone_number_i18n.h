@@ -134,8 +134,6 @@ class PhoneObject final {
   const std::u16string& GetFormattedNumber() const;
   std::u16string GetNationallyFormattedNumber() const;
   const std::u16string& GetWholeNumber() const;
-  std::string GetRegionCode() const;
-
 
   bool IsValidNumber() const { return i18n_number_ != nullptr; }
 
