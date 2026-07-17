@@ -20,6 +20,7 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -76,6 +77,12 @@ const char kLargeLanguages[] =
     "qu,pa,es-VE,es-UY,es-US,es-ES,es-419,es-MX,es-PE,es-HN,es-CR,es-AR,es,st,"
     "so,sl,sk,si,wa,vi,uz,ug,uk,ur,yi,xh,wo,fy,cy,yo,zu,es-CL,es-CO,su,ta,sv,"
     "sw,tg,tn,to,ti,th,te,tt,tr,tk,tw";
+
+const size_t kLargeLanguagesCount = base::SplitString(kLargeLanguages,
+                                                      ",",
+                                                      base::TRIM_WHITESPACE,
+                                                      base::SPLIT_WANT_ALL)
+                                        .size();
 
 static constexpr const char kFirstPartyOriginUrl[] = "https://127.0.0.1:44444";
 static constexpr char kThirdPartyOriginUrl[] = "https://my-site.com:44444";
@@ -3186,10 +3193,14 @@ IN_PROC_BROWSER_TEST_P(ReduceAcceptLanguageCountBrowserTest, RegularRequest) {
   }
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  // Expect a total count of 3. The histogram is recorded once during initial
-  // profile setup, and then twice more when SetPrefsAcceptLanguage is called
-  // to sync the preference to the renderer and network services.
-  histograms.ExpectTotalCount("LanguageUsage.AcceptLanguage.Count2", 3);
+  // Expect 3 samples recorded for kLargeLanguages when SetPrefsAcceptLanguage
+  // is called (1 during initial profile setup, and twice more when
+  // SetPrefsAcceptLanguage is called to sync the preference to the renderer and
+  // network services). When WebUI Omnibox is enabled, an additional sample is
+  // recorded for WebUI Omnibox's WebContents, bringing the expected count to 4.
+  histograms.ExpectBucketCount("LanguageUsage.AcceptLanguage.Count2",
+                               kLargeLanguagesCount,
+                               omnibox::IsWebUIOmniboxPopupEnabled() ? 4 : 3);
 }
 
 IN_PROC_BROWSER_TEST_P(ReduceAcceptLanguageCountBrowserTest, Iframe) {
@@ -3220,8 +3231,12 @@ IN_PROC_BROWSER_TEST_P(ReduceAcceptLanguageCountBrowserTest, Iframe) {
   EXPECT_EQ(LastRequestUrl().GetPath(), "/subframe_simple.html");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  // Expect a total count of 3. The histogram is recorded once during initial
-  // profile setup, and then twice more when SetPrefsAcceptLanguage is called
-  // to sync the preference to the renderer and network services.
-  histograms.ExpectTotalCount("LanguageUsage.AcceptLanguage.Count2", 3);
+  // Expect 3 samples recorded for kLargeLanguages when SetPrefsAcceptLanguage
+  // is called (1 during initial profile setup, and twice more when
+  // SetPrefsAcceptLanguage is called to sync the preference to the renderer and
+  // network services). When WebUI Omnibox is enabled, an additional sample is
+  // recorded for WebUI Omnibox's WebContents, bringing the expected count to 4.
+  histograms.ExpectBucketCount("LanguageUsage.AcceptLanguage.Count2",
+                               kLargeLanguagesCount,
+                               omnibox::IsWebUIOmniboxPopupEnabled() ? 4 : 3);
 }
