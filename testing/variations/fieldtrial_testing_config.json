@@ -19049,7 +19049,11 @@
     "PasswordSaveInContextErrorResolution": [
         {
             "platforms": [
-                "ios"
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
