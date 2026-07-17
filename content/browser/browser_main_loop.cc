@@ -189,6 +189,7 @@
 #include "media/base/android/media_drm_bridge_client.h"
 #include "ui/android/screen_android.h"
 #include "ui/display/screen.h"
+#include "ui/events/devices/input_device_observer_android.h"
 #include "ui/gl/gl_surface.h"
 #endif
 
@@ -1290,6 +1291,14 @@ void BrowserMainLoop::ShutdownThreadsAndCleanUp() {
     TRACE_EVENT0("shutdown", "BrowserMainLoop::Subsystem:GamepadService");
     device::GamepadService::GetInstance()->Terminate();
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  {
+    TRACE_EVENT0("shutdown",
+                 "BrowserMainLoop::Subsystem:InputDeviceObserverAndroid");
+    ui::InputDeviceObserverAndroid::GetInstance()->Shutdown();
+  }
+#endif
   {
     TRACE_EVENT0("shutdown", "BrowserMainLoop::Subsystem:DeleteDataSources");
     URLDataManager::DeleteDataSources();
@@ -1543,6 +1552,10 @@ bool BrowserMainLoop::InitializeToolkit() {
   if (!env_)
     return false;
 #endif  // defined(USE_AURA)
+
+#if BUILDFLAG(IS_ANDROID)
+  ui::InputDeviceObserverAndroid::GetInstance()->Initialize();
+#endif
 
   if (parts_)
     parts_->ToolkitInitialized();

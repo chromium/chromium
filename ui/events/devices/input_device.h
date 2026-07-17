@@ -18,6 +18,8 @@ namespace ui {
 enum InputDeviceType {
   INPUT_DEVICE_INTERNAL,   // Internally connected input device.
   INPUT_DEVICE_USB,        // Known externally connected usb input device.
+                           // On Android, Bluetooth devices might be classified
+                           // as USB due to limitations in differentiating them.
   INPUT_DEVICE_BLUETOOTH,  // Known externally connected bluetooth input device.
   INPUT_DEVICE_UNKNOWN,    // Device that may or may not be an external device.
 };

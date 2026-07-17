@@ -50,6 +50,7 @@ component("devices") {
     sources += [
       "input_device_observer_android.cc",
       "input_device_observer_android.h",
+      "input_device_observer_android_test_helper.h",
     ]
   }
 
@@ -102,6 +103,10 @@ source_set("unittests") {
     "input_device_unittest.cc",
     "touchscreen_device_unittest.cc",
   ]
+
+  if (is_android) {
+    sources += [ "input_device_observer_android_unittest.cc" ]
+  }
 
   if (is_ios && use_blink && target_platform == "iphoneos") {
     sources += [ "input_device_observer_ios_unittest.cc" ]
