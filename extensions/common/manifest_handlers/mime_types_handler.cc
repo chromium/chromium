@@ -257,8 +257,7 @@ bool MimeTypesHandlerParser::Parse(extensions::Extension* extension,
       return true;
     }
 
-    extension->SetManifestData(MimeTypesHandlerInfo::kManifestDataKey,
-                               std::move(info));
+    extension->SetManifestData(std::move(info));
     return true;
   }
 
@@ -292,8 +291,7 @@ bool MimeTypesHandlerParser::Parse(extensions::Extension* extension,
     info->handler_.AddMIMEType(mime_type, handler_gurl, /*can_embed=*/false);
   }
 
-  extension->SetManifestData(MimeTypesHandlerInfo::kManifestDataKey,
-                             std::move(info));
+  extension->SetManifestData(std::move(info));
   return true;
 }
 

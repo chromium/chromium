@@ -195,8 +195,7 @@ bool IconVariantsHandler::Parse(Extension* extension, std::u16string* error) {
   icon_variants_info->icon_variants = std::move(icon_variants);
   icon_variants_info->InitializeIconSets();
 
-  extension->SetManifestData(IconVariantsInfo::kManifestDataKey,
-                             std::move(icon_variants_info));
+  extension->SetManifestData(std::move(icon_variants_info));
   return true;
 }
 

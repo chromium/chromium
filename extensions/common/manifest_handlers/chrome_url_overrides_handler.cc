@@ -115,8 +115,7 @@ bool URLOverridesHandler::Parse(Extension* extension, std::u16string* error) {
         extension, mojom::APIPermissionID::kNewTabPageOverride);
   }
 
-  extension->SetManifestData(URLOverrides::kManifestDataKey,
-                             std::move(url_overrides));
+  extension->SetManifestData(std::move(url_overrides));
 
   return true;
 }

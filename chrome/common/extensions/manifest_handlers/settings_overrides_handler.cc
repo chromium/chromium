@@ -199,8 +199,7 @@ bool SettingsOverridesHandler::Parse(Extension* extension,
             PermissionsInfo::GetInstance()->GetByID(APIPermissionID::kHomepage),
             FormatUrlForDisplay(*(info->homepage))));
   }
-  extension->SetManifestData(SettingsOverrides::kManifestDataKey,
-                             std::move(info));
+  extension->SetManifestData(std::move(info));
   return true;
 }
 

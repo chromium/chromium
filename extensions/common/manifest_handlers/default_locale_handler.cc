@@ -52,7 +52,7 @@ bool DefaultLocaleHandler::Parse(Extension* extension, std::u16string* error) {
   }
   info->default_locale = *default_locale;
 
-  extension->SetManifestData(LocaleInfo::kManifestDataKey, std::move(info));
+  extension->SetManifestData(std::move(info));
   return true;
 }
 

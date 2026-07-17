@@ -153,7 +153,6 @@ bool DNRManifestHandler::Parse(Extension* extension, std::u16string* error) {
   }
 
   extension->SetManifestData(
-      dnr_api::ManifestKeys::kDeclarativeNetRequest,
       std::make_unique<DNRManifestData>(std::move(rulesets_info)));
   return true;
 }

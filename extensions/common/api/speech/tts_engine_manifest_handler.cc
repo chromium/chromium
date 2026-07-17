@@ -199,7 +199,7 @@ bool TtsEngineManifestHandler::Parse(Extension* extension,
     return false;
   }
 
-  extension->SetManifestData(keys::kTtsVoices, std::move(info));
+  extension->SetManifestData(std::move(info));
   return true;
 }
 

@@ -262,7 +262,7 @@ bool ThemeHandler::Parse(Extension* extension, std::u16string* error) {
     extension->AddInstallWarning(InstallWarning(warning, keys::kThemeImages));
   }
 
-  extension->SetManifestData(keys::kTheme, std::move(theme_info));
+  extension->SetManifestData(std::move(theme_info));
   return true;
 }
 

@@ -336,8 +336,7 @@ bool WebAccessibleResourcesHandler::Parse(Extension* extension,
   if (!info) {
     return false;
   }
-  extension->SetManifestData(WebAccessibleResourcesInfo::kManifestDataKey,
-                             std::move(info));
+  extension->SetManifestData(std::move(info));
   return true;
 }
 base::span<const char* const> WebAccessibleResourcesHandler::Keys() const {

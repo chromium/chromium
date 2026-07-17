@@ -260,8 +260,7 @@ bool WebFileHandlersParser::Parse(Extension* extension, std::u16string* error) {
     return false;
   }
 
-  extension->SetManifestData(WebFileHandlers::kManifestDataKey,
-                             std::move(info));
+  extension->SetManifestData(std::move(info));
   return true;
 }
 

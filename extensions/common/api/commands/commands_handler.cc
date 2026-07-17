@@ -66,7 +66,7 @@ bool CommandsHandler::Parse(Extension* extension, std::u16string* error) {
   if (!extension->manifest()->FindKey(keys::kCommands)) {
     std::unique_ptr<CommandsInfo> commands_info(new CommandsInfo);
     MaybeSetActionDefault(extension, commands_info.get());
-    extension->SetManifestData(keys::kCommands, std::move(commands_info));
+    extension->SetManifestData(std::move(commands_info));
     return true;
   }
 
@@ -145,7 +145,7 @@ bool CommandsHandler::Parse(Extension* extension, std::u16string* error) {
   }
 
   MaybeSetActionDefault(extension, commands_info.get());
-  extension->SetManifestData(keys::kCommands, std::move(commands_info));
+  extension->SetManifestData(std::move(commands_info));
   return true;
 }
 

@@ -254,7 +254,7 @@ bool AppLaunchManifestHandler::Parse(Extension* extension,
   std::unique_ptr<AppLaunchInfo> info(new AppLaunchInfo);
   if (!info->Parse(extension, error))
     return false;
-  extension->SetManifestData(AppLaunchInfo::kManifestDataKey, std::move(info));
+  extension->SetManifestData(std::move(info));
   return true;
 }
 

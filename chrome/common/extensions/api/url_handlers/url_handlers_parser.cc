@@ -168,7 +168,7 @@ bool UrlHandlersParser::Parse(Extension* extension, std::u16string* error) {
     }
   }
 
-  extension->SetManifestData(UrlHandlers::kManifestDataKey, std::move(info));
+  extension->SetManifestData(std::move(info));
 
   return true;
 }

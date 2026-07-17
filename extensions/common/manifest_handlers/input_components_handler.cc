@@ -158,8 +158,7 @@ bool InputComponentsHandler::Parse(Extension* extension,
     component.input_view_url = std::move(input_view_url);
     info->input_components.push_back(std::move(component));
   }
-  extension->SetManifestData(InputComponents::kManifestDataKey,
-                             std::move(info));
+  extension->SetManifestData(std::move(info));
   return true;
 }
 

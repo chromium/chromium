@@ -313,7 +313,6 @@ bool CSPHandler::Parse(Extension* extension, std::u16string* error) {
   }
 
   extension->SetManifestData(
-      CSPInfo::kManifestDataKey,
       std::make_unique<CSPInfo>(std::move(extension_pages_csp),
                                 std::move(sandbox_csp)));
   return true;
@@ -351,7 +350,6 @@ bool CSPHandler::ParseCSPDictionary(Extension* extension,
   }
 
   extension->SetManifestData(
-      CSPInfo::kManifestDataKey,
       std::make_unique<CSPInfo>(std::move(extension_pages_csp),
                                 std::move(sandbox_csp)));
   return true;

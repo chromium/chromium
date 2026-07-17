@@ -49,7 +49,6 @@ bool OfflineEnabledHandler::Parse(Extension* extension, std::u16string* error) {
     const bool has_webview_permission = PermissionsParser::HasAPIPermission(
         extension, mojom::APIPermissionID::kWebView);
     extension->SetManifestData(
-        OfflineEnabledInfo::kManifestDataKey,
         std::make_unique<OfflineEnabledInfo>(!has_webview_permission));
     return true;
   }
@@ -61,7 +60,6 @@ bool OfflineEnabledHandler::Parse(Extension* extension, std::u16string* error) {
   bool offline_enabled = offline_enabled_value->GetBool();
 
   extension->SetManifestData(
-      OfflineEnabledInfo::kManifestDataKey,
       std::make_unique<OfflineEnabledInfo>(offline_enabled));
   return true;
 }

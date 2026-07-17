@@ -53,8 +53,7 @@ bool NativelyConnectableHandler::Parse(Extension* extension,
     hosts->hosts.insert(host.GetString());
   }
 
-  extension->SetManifestData(NativelyConnectableHosts::kManifestDataKey,
-                             std::move(hosts));
+  extension->SetManifestData(std::move(hosts));
   return true;
 }
 

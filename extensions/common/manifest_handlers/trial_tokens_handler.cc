@@ -115,8 +115,7 @@ bool TrialTokensHandler::Parse(Extension* extension, std::u16string* error) {
     return true;
   }
 
-  extension->SetManifestData(TrialTokens::kManifestDataKey,
-                             std::make_unique<TrialTokens>(std::move(tokens)));
+  extension->SetManifestData(std::make_unique<TrialTokens>(std::move(tokens)));
   return true;
 }
 

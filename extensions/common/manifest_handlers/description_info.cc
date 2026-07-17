@@ -41,8 +41,7 @@ bool DescriptionHandler::Parse(Extension* extension, std::u16string* error) {
   const std::string& description = desc_value->GetString();
   // If description is empty, we do not need to save it at all.
   if (!description.empty()) {
-    extension->SetManifestData(DescriptionInfo::kManifestDataKey,
-                               std::make_unique<DescriptionInfo>(description));
+    extension->SetManifestData(std::make_unique<DescriptionInfo>(description));
   }
 
   return true;

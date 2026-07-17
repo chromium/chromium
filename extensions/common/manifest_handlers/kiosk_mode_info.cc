@@ -202,10 +202,9 @@ bool KioskModeHandler::Parse(Extension* extension, std::u16string* error) {
     always_update = temp->GetBool();
   }
 
-  extension->SetManifestData(KioskModeInfo::kManifestDataKey,
-                             std::make_unique<KioskModeInfo>(
-                                 kiosk_status, std::move(secondary_apps),
-                                 required_platform_version, always_update));
+  extension->SetManifestData(std::make_unique<KioskModeInfo>(
+      kiosk_status, std::move(secondary_apps), required_platform_version,
+      always_update));
 
   return true;
 }

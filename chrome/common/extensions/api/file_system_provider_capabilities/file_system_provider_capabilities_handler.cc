@@ -107,8 +107,7 @@ bool FileSystemProviderCapabilitiesHandler::Parse(Extension* extension,
               false) /* false by default */,
           source));
 
-  extension->SetManifestData(FileSystemProviderCapabilities::kManifestDataKey,
-                             std::move(capabilities));
+  extension->SetManifestData(std::move(capabilities));
   return true;
 }
 

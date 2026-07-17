@@ -50,7 +50,7 @@ bool OmniboxHandler::Parse(Extension* extension, std::u16string* error) {
     return false;
   }
 
-  extension->SetManifestData(ManifestKeys::kOmnibox, std::move(info));
+  extension->SetManifestData(std::move(info));
   return true;
 }
 

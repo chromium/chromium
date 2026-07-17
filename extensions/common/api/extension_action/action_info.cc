@@ -270,8 +270,7 @@ void ActionInfo::SetExtensionActionInfo(Extension* extension,
   // Note: we store all actions (actions, browser actions, and page actions)
   // under the same key for simplicity because they are mutually exclusive,
   // and most callers shouldn't care about the type.
-  extension->SetManifestData(keys::kAction,
-                             std::make_unique<ActionInfoData>(std::move(info)));
+  extension->SetManifestData(std::make_unique<ActionInfoData>(std::move(info)));
 }
 
 // static

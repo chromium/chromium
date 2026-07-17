@@ -93,8 +93,7 @@ bool IconsHandler::Parse(Extension* extension, std::u16string* error) {
     extension->AddInstallWarning(InstallWarning(warning, keys::kIcons));
   }
 
-  extension->SetManifestData(IconsInfo::kManifestDataKey,
-                             std::move(icons_info));
+  extension->SetManifestData(std::move(icons_info));
   return true;
 }
 

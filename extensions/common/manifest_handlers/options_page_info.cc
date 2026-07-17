@@ -181,8 +181,7 @@ bool OptionsPageHandler::Parse(Extension* extension, std::u16string* error) {
   }
 
   extension->AddInstallWarnings(std::move(install_warnings));
-  extension->SetManifestData(OptionsPageInfo::kManifestDataKey,
-                             std::move(info));
+  extension->SetManifestData(std::move(info));
   return true;
 }
 

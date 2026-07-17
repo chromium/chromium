@@ -142,7 +142,7 @@ bool AutomationHandler::Parse(Extension* extension, std::u16string* error) {
     return true;
   }
 
-  extension->SetManifestData(keys::kAutomation, std::move(info));
+  extension->SetManifestData(std::move(info));
   return true;
 }
 

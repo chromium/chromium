@@ -60,8 +60,7 @@ bool IncognitoHandler::Parse(Extension* extension, std::u16string* error) {
                : api::incognito::IncognitoMode::kSpanning;
   }
 
-  extension->SetManifestData(IncognitoInfo::kManifestDataKey,
-                             std::make_unique<IncognitoInfo>(mode));
+  extension->SetManifestData(std::make_unique<IncognitoInfo>(mode));
   return true;
 }
 

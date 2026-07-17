@@ -260,6 +260,13 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   void SetManifestData(std::string_view key,
                        std::unique_ptr<ManifestData> data);
 
+  template <class T>
+  void SetManifestData(std::unique_ptr<T> data) {
+    static_assert(std::is_base_of_v<ManifestData, T>,
+                  "T must derive from Extension::ManifestData");
+    SetManifestData(T::kManifestDataKey, std::move(data));
+  }
+
   // Sets the GUID for this extension. Note: this should *only* be used when
   // duplicating an existing extension; otherwise, the GUID will be
   // appropriately set during creation (ensuring uniqueness).

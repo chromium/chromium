@@ -201,7 +201,7 @@ bool WebviewHandler::Parse(Extension* extension, std::u16string* error) {
     info->AddPartitionItem(std::move(partition_item));
   }
 
-  extension->SetManifestData(WebviewInfo::kManifestDataKey, std::move(info));
+  extension->SetManifestData(std::move(info));
   return true;
 }
 

@@ -61,7 +61,6 @@ bool MessageSerializationHandler::Parse(Extension* extension,
   }
 
   extension->SetManifestData(
-      MessageSerializationInfo::kManifestDataKey,
       std::make_unique<MessageSerializationInfo>(opts_in_structured_clone));
   return true;
 }

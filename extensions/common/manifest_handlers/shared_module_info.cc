@@ -223,8 +223,7 @@ bool SharedModuleHandler::Parse(Extension* extension, std::u16string* error) {
     info->set_imports(std::move(imports));
   }
 
-  extension->SetManifestData(SharedModuleInfo::kManifestDataKey,
-                             std::move(info));
+  extension->SetManifestData(std::move(info));
   return true;
 }
 

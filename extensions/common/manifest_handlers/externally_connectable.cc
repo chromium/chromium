@@ -72,8 +72,7 @@ bool ExternallyConnectableHandler::Parse(Extension* extension,
   }
 
   extension->AddInstallWarnings(std::move(install_warnings));
-  extension->SetManifestData(ExternallyConnectableInfo::kManifestDataKey,
-                             std::move(info));
+  extension->SetManifestData(std::move(info));
   return true;
 }
 

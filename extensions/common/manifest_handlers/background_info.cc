@@ -377,7 +377,7 @@ bool BackgroundManifestHandler::Parse(Extension* extension,
     return false;
   }
 
-  extension->SetManifestData(kBackground, std::move(info));
+  extension->SetManifestData(std::move(info));
   return true;
 }
 

@@ -87,8 +87,7 @@ bool ReplacementAppsHandler::Parse(Extension* extension,
     return false;
   }
 
-  extension->SetManifestData(ReplacementAppsInfo::kManifestDataKey,
-                             std::move(info));
+  extension->SetManifestData(std::move(info));
   return true;
 }
 

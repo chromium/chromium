@@ -27,7 +27,7 @@ bool UsbPrinterManifestHandler::Parse(Extension* extension,
     return false;
   }
 
-  extension->SetManifestData(manifest_keys::kUsbPrinters, std::move(data));
+  extension->SetManifestData(std::move(data));
   return true;
 }
 

@@ -156,8 +156,7 @@ bool ProtocolHandlersParser::Parse(Extension* extension,
   std::vector<InstallWarning> install_warnings;
   auto info = ParseEntryList(*extension, install_warnings);
   if (info) {
-    extension->SetManifestData(ProtocolHandlers::kManifestDataKey,
-                               std::move(info));
+    extension->SetManifestData(std::move(info));
   }
 
   extension->AddInstallWarnings(std::move(install_warnings));

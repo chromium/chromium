@@ -210,7 +210,7 @@ bool FileHandlersParser::Parse(Extension* extension, std::u16string* error) {
     return false;
   }
 
-  extension->SetManifestData(FileHandlers::kManifestDataKey, std::move(info));
+  extension->SetManifestData(std::move(info));
   extension->AddInstallWarnings(std::move(install_warnings));
   return true;
 }

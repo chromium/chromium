@@ -39,8 +39,7 @@ bool VersionNameHandler::Parse(Extension* extension, std::u16string* error) {
   const std::string& version_name = version_name_value->GetString();
   // If "version_name" is empty, we do not need to save it at all.
   if (!version_name.empty()) {
-    extension->SetManifestData(VersionNameInfo::kManifestDataKey,
-                               std::make_unique<VersionNameInfo>(version_name));
+    extension->SetManifestData(std::make_unique<VersionNameInfo>(version_name));
   }
 
   return true;

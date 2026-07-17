@@ -57,8 +57,7 @@ bool RequirementsHandler::Parse(Extension* extension, std::u16string* error) {
 
   auto requirements_info = std::make_unique<RequirementsInfo>();
   if (!manifest_keys.requirements) {
-    extension->SetManifestData(RequirementsInfo::kManifestDataKey,
-                               std::move(requirements_info));
+    extension->SetManifestData(std::move(requirements_info));
     return true;
   }
 
@@ -82,8 +81,7 @@ bool RequirementsHandler::Parse(Extension* extension, std::u16string* error) {
         requirements._3d->features, api::requirements::_3DFeature::kWebgl);
   }
 
-  extension->SetManifestData(RequirementsInfo::kManifestDataKey,
-                             std::move(requirements_info));
+  extension->SetManifestData(std::move(requirements_info));
   return true;
 }
 

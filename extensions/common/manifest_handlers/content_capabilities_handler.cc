@@ -116,8 +116,7 @@ bool ContentCapabilitiesHandler::Parse(Extension* extension,
     }
   }
 
-  extension->SetManifestData(ContentCapabilitiesInfo::kManifestDataKey,
-                             std::move(info));
+  extension->SetManifestData(std::move(info));
   return true;
 }
 

@@ -69,8 +69,7 @@ bool OAuth2ManifestHandler::Parse(Extension* extension, std::u16string* error) {
 
   auto manifest_data = std::make_unique<OAuth2ManifestData>();
   manifest_data->info = std::move(info);
-  extension->SetManifestData(OAuth2ManifestData::kManifestDataKey,
-                             std::move(manifest_data));
+  extension->SetManifestData(std::move(manifest_data));
   return true;
 }
 

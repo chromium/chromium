@@ -77,9 +77,8 @@ bool AppDisplayManifestHandler::Parse(Extension* extension,
     display_in_new_tab_page = display_in_launcher;
   }
 
-  extension->SetManifestData(AppDisplayInfo::kManifestDataKey,
-                             std::make_unique<AppDisplayInfo>(
-                                 display_in_launcher, display_in_new_tab_page));
+  extension->SetManifestData(std::make_unique<AppDisplayInfo>(
+      display_in_launcher, display_in_new_tab_page));
   return true;
 }
 

@@ -75,7 +75,7 @@ bool SidePanelManifestHandler::Parse(Extension* extension,
   if (!info) {
     return false;
   }
-  extension->SetManifestData(SidePanelInfo::kManifestDataKey, std::move(info));
+  extension->SetManifestData(std::move(info));
   return true;
 }
 

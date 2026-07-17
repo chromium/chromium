@@ -82,8 +82,7 @@ bool SandboxedPageHandler::Parse(Extension* extension, std::u16string* error) {
     sandboxed_info->pages.AddPattern(pattern);
   }
 
-  extension->SetManifestData(SandboxedPageInfo::kManifestDataKey,
-                             std::move(sandboxed_info));
+  extension->SetManifestData(std::move(sandboxed_info));
   return true;
 }
 
