@@ -150,7 +150,10 @@ void PageStabilityMonitor::MoveToState(State new_state) {
 }
 
 void PageStabilityMonitor::StopMonitoring() {
-  // TODO(crbug.com/498991756): Stop JS monitoring here.
+  if (target_frame_ && target_frame_->GetBrowserState()) {
+    PageStabilityJavaScriptFeature::GetInstance()->CancelWaitForStability(
+        target_frame_.get());
+  }
 }
 
 void PageStabilityMonitor::Teardown() {

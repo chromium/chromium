@@ -40,6 +40,9 @@ class PageStabilityJavaScriptFeature : public web::JavaScriptFeature {
   void WaitForStability(base::WeakPtr<web::WebFrame> target_frame,
                         base::OnceCallback<void(ToolExecutionResult)> callback);
 
+  // Cancels a previous call to `WaitForStability` in `target_frame`.
+  void CancelWaitForStability(web::WebFrame* target_frame);
+
   // JavaScriptFeature:
   std::optional<std::string> GetScriptMessageHandlerName() const override;
   void ScriptMessageReceived(web::WebState* web_state,

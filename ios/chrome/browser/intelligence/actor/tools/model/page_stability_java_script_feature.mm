@@ -108,6 +108,16 @@ void PageStabilityJavaScriptFeature::WaitForStability(
   }
 }
 
+void PageStabilityJavaScriptFeature::CancelWaitForStability(
+    web::WebFrame* target_frame) {
+  if (!target_frame || !target_frame->GetBrowserState() ||
+      !target_frame->GetWebFrameInternal()) {
+    return;
+  }
+  CallJavaScriptFunction(target_frame, "page_stability.cancelWaitForStability",
+                         /*parameters=*/{});
+}
+
 std::optional<std::string>
 PageStabilityJavaScriptFeature::GetScriptMessageHandlerName() const {
   return "PageStabilityMetricsHandler";

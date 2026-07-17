@@ -169,4 +169,24 @@ TEST_F(PageStabilityJavascriptTest,
   EXPECT_TRUE([resultDict[@"timedOut"] boolValue]);
 }
 
+TEST_F(PageStabilityJavascriptTest,
+       WaitForStability_Cancel_ResolvesToUnsettled) {
+  NSString* script = @R"(
+    var promise = __gCrWeb.getRegisteredApi('page_stability')
+                         .getFunction('waitForStability')({
+                           windowDurationMs: 500,
+                           mutationCap: 2,
+                           timeoutMs: 2000,
+                         });
+    __gCrWeb.getRegisteredApi('page_stability')
+           .getFunction('cancelWaitForStability')();
+    return promise;
+  )";
+  id result = web::test::ExecuteAsyncJavaScript(web_view(), script, nil);
+  NSDictionary* resultDict = base::apple::ObjCCast<NSDictionary>(result);
+  ASSERT_TRUE(resultDict);
+  EXPECT_FALSE([resultDict[@"settled"] boolValue]);
+  EXPECT_FALSE([resultDict[@"timedOut"] boolValue]);
+}
+
 }  // namespace

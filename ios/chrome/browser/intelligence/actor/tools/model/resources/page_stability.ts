@@ -96,6 +96,10 @@ interface StabilityResult {
 // Interaction intervals that have not been closed yet.
 const activeIntervals = new Set<TrackingInterval>();
 
+// A function to cancel an earlier call to `waitForStability`.
+let cancelStabilityCheck: (() => void)|null = null;
+
+
 // The observer monitoring DOM mutations.
 const observer = new MutationObserver((mutations) => {
   if (activeIntervals.size === 0) {
@@ -207,13 +211,16 @@ function waitForStability(options: {
   mutationCap: number,
   timeoutMs: number,
 }): Promise<StabilityResult> {
-  let isDone = false;
+  if (cancelStabilityCheck !== null) {
+    cancelStabilityCheck();
+  }
+
   let stabilityTimerId: number|null = null;
   let timeoutTimerId: number|null = null;
   let stabilityInterval: TrackingInterval|null = null;
 
   const cleanUp = () => {
-    isDone = true;
+    cancelStabilityCheck = null;
     if (stabilityTimerId !== null) {
       clearTimeout(stabilityTimerId);
     }
@@ -231,11 +238,17 @@ function waitForStability(options: {
     }
   };
 
+  const cancelPromise = new Promise<StabilityResult>((resolve) => {
+    cancelStabilityCheck = () => {
+      cleanUp();
+      resolve({
+        settled: false,
+      });
+    };
+  });
+
   const timeoutPromise = new Promise<StabilityResult>((resolve) => {
     timeoutTimerId = setTimeout(() => {
-      if (isDone) {
-        return;
-      }
       cleanUp();
       resolve({
         settled: false,
@@ -246,10 +259,6 @@ function waitForStability(options: {
 
   const stabilityPromise = new Promise<StabilityResult>((resolve) => {
     const checkStability = () => {
-      if (isDone) {
-        return;
-      }
-
       stabilityInterval = {
         interactionTime: performance.now(),
         startCount: cumulativeMutationCount,
@@ -264,10 +273,6 @@ function waitForStability(options: {
       trackMutationsAfterInteraction();
 
       stabilityTimerId = setTimeout(() => {
-        if (isDone) {
-          return;
-        }
-
         const count = cumulativeMutationCount - stabilityInterval!.startCount;
         activeIntervals.delete(stabilityInterval!);
         stabilityInterval = null;
@@ -288,7 +293,13 @@ function waitForStability(options: {
     checkStability();
   });
 
-  return Promise.race([timeoutPromise, stabilityPromise]);
+  return Promise.race([cancelPromise, timeoutPromise, stabilityPromise]);
+}
+
+function cancelWaitForStability() {
+  if (cancelStabilityCheck !== null) {
+    cancelStabilityCheck();
+  }
 }
 
 if (pageStabilityMetricsEnabled()) {
@@ -298,6 +309,7 @@ if (pageStabilityMetricsEnabled()) {
 
 const pageStabilityApi = new CrWebApi('page_stability');
 pageStabilityApi.addFunction('waitForStability', waitForStability);
+pageStabilityApi.addFunction('cancelWaitForStability', cancelWaitForStability);
 if (!gCrWeb.hasRegisteredApi('page_stability')) {
   gCrWeb.registerApi(pageStabilityApi);
 }
