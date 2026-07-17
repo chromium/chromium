@@ -1608,7 +1608,9 @@ TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
   EXPECT_THAT(
       suggestions1,
       SuggestionsAre(HasMainText(u"123"),
-                     EqualsSuggestion(SuggestionType::kAutofillAiOtherOrders)));
+                     EqualsSuggestion(SuggestionType::kAutofillAiOtherOrders,
+                                      l10n_util::GetStringUTF16(
+                                          IDS_AUTOFILL_AI_OTHER_ORDERS))));
 
   // 2. Set page URL to "https://sub.other.com/checkout".
   client().set_last_committed_primary_main_frame_url(
@@ -1622,7 +1624,9 @@ TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
   EXPECT_THAT(
       suggestions2,
       SuggestionsAre(HasMainText(u"456"),
-                     EqualsSuggestion(SuggestionType::kAutofillAiOtherOrders)));
+                     EqualsSuggestion(SuggestionType::kAutofillAiOtherOrders,
+                                      l10n_util::GetStringUTF16(
+                                          IDS_AUTOFILL_AI_OTHER_ORDERS))));
 
   // 3. Set page URL to a site that doesn't match either (e.g.
   // "https://random.com").
@@ -1634,9 +1638,10 @@ TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
 
   // Both orders should be in the fallback menu since neither matches
   // random.com.
-  EXPECT_THAT(
-      suggestions3,
-      SuggestionsAre(EqualsSuggestion(SuggestionType::kAutofillAiOtherOrders)));
+  EXPECT_THAT(suggestions3,
+              SuggestionsAre(EqualsSuggestion(
+                  SuggestionType::kAutofillAiOtherOrders,
+                  l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_ALL_ORDERS))));
 }
 
 TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
@@ -1669,7 +1674,9 @@ TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
   EXPECT_THAT(suggestions1,
               SuggestionsAre(
                   EqualsSuggestion(SuggestionType::kFillAutofillAi, u"TR123"),
-                  EqualsSuggestion(SuggestionType::kAutofillAiOtherShipments)));
+                  EqualsSuggestion(SuggestionType::kAutofillAiOtherShipments,
+                                   l10n_util::GetStringUTF16(
+                                       IDS_AUTOFILL_AI_OTHER_SHIPMENTS))));
 
   // 2. Set page URL to "https://sub.other-carrier.com/track".
   client().set_last_committed_primary_main_frame_url(
@@ -1683,7 +1690,9 @@ TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
   EXPECT_THAT(suggestions2,
               SuggestionsAre(
                   EqualsSuggestion(SuggestionType::kFillAutofillAi, u"TR456"),
-                  EqualsSuggestion(SuggestionType::kAutofillAiOtherShipments)));
+                  EqualsSuggestion(SuggestionType::kAutofillAiOtherShipments,
+                                   l10n_util::GetStringUTF16(
+                                       IDS_AUTOFILL_AI_OTHER_SHIPMENTS))));
 
   // 3. Set page URL to "https://random.com".
   client().set_last_committed_primary_main_frame_url(
@@ -1694,8 +1703,10 @@ TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
 
   // Both shipments should be in the fallback menu since neither matches
   // random.com.
-  EXPECT_THAT(suggestions3, SuggestionsAre(EqualsSuggestion(
-                                SuggestionType::kAutofillAiOtherShipments)));
+  EXPECT_THAT(suggestions3,
+              SuggestionsAre(EqualsSuggestion(
+                  SuggestionType::kAutofillAiOtherShipments,
+                  l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_ALL_SHIPMENTS))));
 }
 
 // Test that PersonalContext Order entities are sorted descending by order date,
@@ -1933,10 +1944,10 @@ TEST_F(AutofillAiSuggestionGeneratorTest, GeneratesOtherOrdersSuggestion) {
 
 // Tests that when there are no primary order suggestions (e.g. no orders
 // match the current site's domain), fallback order suggestions are still
-// generated and the menu is labeled "Other orders"
-// (IDS_AUTOFILL_AI_OTHER_ORDERS).
+// generated and the menu is labeled "All orders"
+// (IDS_AUTOFILL_AI_ALL_ORDERS).
 TEST_F(AutofillAiSuggestionGeneratorTest,
-       GeneratesOtherOrdersSuggestion_NoPrimaryOrders) {
+       GeneratesAllOrdersSuggestion_NoPrimaryOrders) {
   EntityInstance order_bestbuy = GetOrderEntityInstance({
       .merchant_name = u"BestBuy",
       .merchant_domain = u"bestbuy.com",
@@ -1960,13 +1971,13 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
 
   // Expected layout:
   // 1. The fallback parent suggestion (`kAutofillAiOtherOrders`), labeled
-  //    "Other orders", containing BestBuy and Costco as children.
+  //    "All orders", containing BestBuy and Costco as children.
   // 2. The footer separator and manage suggestions.
   EXPECT_THAT(suggestions,
               SuggestionsAre(AllOf(
                   SuggestionTypeHasTextAndAcceptability(
                       SuggestionType::kAutofillAiOtherOrders,
-                      l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_OTHER_ORDERS),
+                      l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_ALL_ORDERS),
                       Suggestion::Acceptability::kUnacceptable),
                   ChildrenAre(SuggestionTypeHasTextAndAcceptability(
                                   SuggestionType::kFillAutofillAi, u"BestBuy",
@@ -1977,7 +1988,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
 }
 
 // Tests that the "Other shipments" suggestion is correctly generated when there
-// are fallback shipment entities. It verifies the hierarchy and acceptability.
+// are fallback shipment entities alongside primary shipment entities.
 TEST_F(AutofillAiSuggestionGeneratorTest, GeneratesOtherShipmentsSuggestion) {
   // Setup: 3 shipment entities with different domains.
   EntityInstance shipment_a = test::GetShipmentEntityInstance({
@@ -2028,10 +2039,10 @@ TEST_F(AutofillAiSuggestionGeneratorTest, GeneratesOtherShipmentsSuggestion) {
 }
 
 // Tests that when there are no primary shipment suggestions, fallback shipment
-// suggestions are still generated and the menu is labeled "Other shipments"
-// (`IDS_AUTOFILL_AI_OTHER_SHIPMENTS`).
+// suggestions are still generated and the menu is labeled "All shipments"
+// (`IDS_AUTOFILL_AI_ALL_SHIPMENTS`).
 TEST_F(AutofillAiSuggestionGeneratorTest,
-       GeneratesOtherShipmentsSuggestion_NoPrimaryShipments) {
+       GeneratesAllShipmentsSuggestion_NoPrimaryShipments) {
   EntityInstance shipment_a = test::GetShipmentEntityInstance({
       .tracking_number = u"TR456",
       .carrier_domain = u"other-carrier.com",
@@ -2053,21 +2064,20 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
 
   // Expected layout:
   // 1. The fallback parent suggestion (`kAutofillAiOtherShipments`), labeled
-  //    "Other shipments", containing TR456 and TR789 as children.
+  //    "All shipments", containing TR456 and TR789 as children.
   // 2. The footer separator and manage suggestions.
-  EXPECT_THAT(
-      suggestions,
-      SuggestionsAre(
-          AllOf(SuggestionTypeHasTextAndAcceptability(
-                    SuggestionType::kAutofillAiOtherShipments,
-                    l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_OTHER_SHIPMENTS),
-                    Suggestion::Acceptability::kUnacceptable),
-                ChildrenAre(SuggestionTypeHasTextAndAcceptability(
-                                SuggestionType::kFillAutofillAi, u"TR456",
-                                Suggestion::Acceptability::kAcceptable),
-                            SuggestionTypeHasTextAndAcceptability(
-                                SuggestionType::kFillAutofillAi, u"TR789",
-                                Suggestion::Acceptability::kAcceptable)))));
+  EXPECT_THAT(suggestions,
+              SuggestionsAre(AllOf(
+                  SuggestionTypeHasTextAndAcceptability(
+                      SuggestionType::kAutofillAiOtherShipments,
+                      l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_ALL_SHIPMENTS),
+                      Suggestion::Acceptability::kUnacceptable),
+                  ChildrenAre(SuggestionTypeHasTextAndAcceptability(
+                                  SuggestionType::kFillAutofillAi, u"TR456",
+                                  Suggestion::Acceptability::kAcceptable),
+                              SuggestionTypeHasTextAndAcceptability(
+                                  SuggestionType::kFillAutofillAi, u"TR789",
+                                  Suggestion::Acceptability::kAcceptable)))));
 }
 
 }  // namespace
