@@ -29,7 +29,7 @@ class MODULES_EXPORT MediaStreamAudioDestinationHandler final
   static scoped_refptr<MediaStreamAudioDestinationHandler> Create(
       AudioNode&,
       uint32_t number_of_channels,
-      WebAudioDestinationConsumer*);
+      scoped_refptr<WebAudioDestinationConsumer>);
   MediaStreamAudioDestinationHandler(
       const MediaStreamAudioDestinationHandler&) = delete;
   MediaStreamAudioDestinationHandler& operator=(
@@ -45,7 +45,9 @@ class MODULES_EXPORT MediaStreamAudioDestinationHandler final
   friend class MediaStreamAudioDestinationHandlerTest;
 
   MediaStreamAudioDestinationHandler(
-      AudioNode&, uint32_t number_of_channels, WebAudioDestinationConsumer*);
+      AudioNode&,
+      uint32_t number_of_channels,
+      scoped_refptr<WebAudioDestinationConsumer>);
 
   // AudioHandler
   void Process(uint32_t frames_to_process) override;
@@ -64,7 +66,7 @@ class MODULES_EXPORT MediaStreamAudioDestinationHandler final
   // Sets the WebAudioDestinationConsumer that receives audio data from this
   // handler. The consumer is then responsible for providing this data to the
   // MediaStream infrastructure.
-  void SetConsumer(WebAudioDestinationConsumer*,
+  void SetConsumer(scoped_refptr<WebAudioDestinationConsumer>,
                    int number_of_channels,
                    float sample_rate);
 
@@ -76,8 +78,11 @@ class MODULES_EXPORT MediaStreamAudioDestinationHandler final
   void SendLogMessage(const char* const function_name, const String& message);
 
   base::Lock consumer_lock_;
-  // `destination_consumer_` is owned by the node's MediaStreamSource.
-  raw_ptr<WebAudioDestinationConsumer, DanglingUntriaged>
+  // `destination_consumer_` is the `AudioConsumer` proxy that acts as a
+  // thread-safe bridge between the AudioHandler on the real-time audio thread
+  // and the WebAudioMediaStreamSource on the main thread. It handles proper
+  // synchronization to prevent Use-After-Free issues during garbage collection.
+  scoped_refptr<WebAudioDestinationConsumer>
       destination_consumer_ GUARDED_BY(consumer_lock_);
   Vector<const float*> consumer_bus_wrapper_ GUARDED_BY(consumer_lock_);
 

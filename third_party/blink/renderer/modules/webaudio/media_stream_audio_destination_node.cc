@@ -86,7 +86,8 @@ MediaStreamAudioDestinationNode::MediaStreamAudioDestinationNode(
 
   SetHandler(
       MediaStreamAudioDestinationHandler::Create(
-          *this, number_of_channels, audio_source_ptr));
+          *this, number_of_channels, audio_source_ptr->Consumer()));
+
   SendLogMessage(
       __func__, String::Format(
                     "({context.state=%s}, {context.sampleRate=%.0f}, "
@@ -147,10 +148,6 @@ void MediaStreamAudioDestinationNode::Trace(Visitor* visitor) const {
   visitor->Trace(stream_);
   visitor->Trace(source_);
   AudioNode::Trace(visitor);
-}
-
-void MediaStreamAudioDestinationNode::Dispose() {
-  GetOwnHandler().RemoveConsumer();
 }
 
 void MediaStreamAudioDestinationNode::ReportDidCreate() {

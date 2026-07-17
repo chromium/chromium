@@ -8,6 +8,9 @@
 #include <memory>
 #include <vector>
 
+#include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
@@ -24,10 +27,27 @@ namespace blink {
 // MediaStreamAudioTracks. Audio data is transported directly to the tracks in
 // 10 ms chunks.
 class PLATFORM_EXPORT WebAudioMediaStreamSource final
-    : public MediaStreamAudioSource,
-      public WebAudioDestinationConsumer {
+    : public MediaStreamAudioSource {
  public:
-  WebAudioMediaStreamSource(
+  // A thread-safe proxy that delivers audio data from the audio thread.
+  // It detaches from the owner during destruction to ensure safety.
+  class AudioConsumer final : public WebAudioDestinationConsumer {
+   public:
+    explicit AudioConsumer(WebAudioMediaStreamSource* owner);
+
+    // Clears the owner reference to stop processing safely during destruction.
+    void Detach();
+
+    void SetFormat(int number_of_channels, float sample_rate) override;
+    void ConsumeAudio(const Vector<const float*>& audio_data,
+                      int number_of_frames) override;
+
+   private:
+    base::Lock lock_;
+    raw_ptr<WebAudioMediaStreamSource> owner_ GUARDED_BY(lock_);
+  };
+
+  explicit WebAudioMediaStreamSource(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   WebAudioMediaStreamSource(const WebAudioMediaStreamSource&) = delete;
   WebAudioMediaStreamSource& operator=(const WebAudioMediaStreamSource&) =
@@ -35,15 +55,13 @@ class PLATFORM_EXPORT WebAudioMediaStreamSource final
 
   ~WebAudioMediaStreamSource() override;
 
+  scoped_refptr<AudioConsumer> Consumer() { return consumer_; }
+
  private:
-  // WebAudioDestinationConsumer implementation.
-  //
-  // Note: Blink ensures setFormat() and consumeAudio() are not called
-  // concurrently across threads, but these methods could be called on any
-  // thread.
-  void SetFormat(int number_of_channels, float sample_rate) override;
-  void ConsumeAudio(const Vector<const float*>& audio_data,
-                    int number_of_frames) override;
+  scoped_refptr<AudioConsumer> consumer_;
+  void ConsumeAudioInternal(const Vector<const float*>& audio_data,
+                            int number_of_frames);
+  void SetFormat(int number_of_channels, float sample_rate);
 
   // Called by AudioPushFifo zero or more times during the call to
   // consumeAudio().  Delivers audio data with the required buffer size to the
