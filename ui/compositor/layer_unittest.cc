@@ -773,7 +773,7 @@ TEST_P(LayerWithRealCompositorTest, DrawTree) {
 TEST_P(LayerWithRealCompositorTest, SchedulePaintUpdatesMask) {
   std::unique_ptr<Layer> layer =
       CreateColorLayer(SK_ColorRED, gfx::Rect(20, 20, 400, 400));
-  std::unique_ptr<Layer> mask_layer = CreateLayer(ui::LAYER_TEXTURED);
+  auto mask_layer = CreateLayer<LayerTextured>();
   mask_layer->SetBounds(gfx::Rect(layer->GetTargetBounds().size()));
   layer->SetMaskLayer(mask_layer.get());
 
@@ -2805,10 +2805,10 @@ TEST_P(LayerWithDelegateTest, TransferableResourceMirroring) {
       resource, base::BindOnce(ReturnMailbox, &release_callback_run),
       gfx::Size(10, 10));
   EXPECT_FALSE(release_callback_run);
-  EXPECT_TRUE(layer->has_external_content());
+  EXPECT_TRUE(layer->HasExternalContent());
 
   auto mirror = layer->Mirror();
-  EXPECT_TRUE(mirror->has_external_content());
+  EXPECT_TRUE(mirror->HasExternalContent());
 
   // Clearing the resource on a mirror layer should not release the source layer
   // resource.
@@ -2816,14 +2816,14 @@ TEST_P(LayerWithDelegateTest, TransferableResourceMirroring) {
   EXPECT_FALSE(release_callback_run);
 
   mirror = layer->Mirror();
-  EXPECT_TRUE(mirror->has_external_content());
+  EXPECT_TRUE(mirror->HasExternalContent());
 
   // Clearing the transferable resource on the source layer should clear it from
   // the mirror layer as well.
   layer->SetShowSolidColorContent();
   EXPECT_TRUE(release_callback_run);
-  EXPECT_FALSE(layer->has_external_content());
-  EXPECT_FALSE(mirror->has_external_content());
+  EXPECT_FALSE(layer->HasExternalContent());
+  EXPECT_FALSE(mirror->HasExternalContent());
 
   resource = viz::TransferableResource::Make(
       gpu::ClientSharedImage::CreateForTesting(),
@@ -2836,8 +2836,8 @@ TEST_P(LayerWithDelegateTest, TransferableResourceMirroring) {
       resource, base::BindOnce(ReturnMailbox, &release_callback_run),
       gfx::Size(10, 10));
   EXPECT_FALSE(release_callback_run);
-  EXPECT_TRUE(layer->has_external_content());
-  EXPECT_TRUE(mirror->has_external_content());
+  EXPECT_TRUE(layer->HasExternalContent());
+  EXPECT_TRUE(mirror->HasExternalContent());
 
   layer.reset();
 }

@@ -12,15 +12,16 @@
 
 namespace ui {
 class Layer;
-}
+class LayerWithExternalTexture;
+}  // namespace ui
 
 namespace gfx {
 class Size;
-}
+}  // namespace gfx
 
 namespace viz {
 class CopyOutputResult;
-}
+}  // namespace viz
 
 namespace ash {
 
@@ -37,7 +38,8 @@ using LayerCopyCallback =
 ASH_EXPORT void CopyLayerContentToNewLayer(ui::Layer* layer,
                                            LayerCopyCallback callback);
 
-using GetTargetLayerCallback = base::OnceCallback<void(ui::Layer**)>;
+using GetTargetLayerCallback =
+    base::OnceCallback<void(ui::LayerWithExternalTexture**)>;
 
 // Copy the content of |original_layer| to a new layer given via |callback|.
 // This is an async API and |callback| is called when the copy result is ready.

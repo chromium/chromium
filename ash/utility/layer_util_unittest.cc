@@ -80,11 +80,13 @@ TEST_F(LayerUtilTest, CopyContentToExistingLayer) {
 
   {
     bool called = false;
-    base::CancelableOnceCallback<void(ui::Layer**)> cancelable;
-    cancelable.Reset(base::BindLambdaForTesting([&](ui::Layer** dummy) {
-      called = true;
-      *dummy = &layer2;
-    }));
+    base::CancelableOnceCallback<void(ui::LayerWithExternalTexture**)>
+        cancelable;
+    cancelable.Reset(
+        base::BindLambdaForTesting([&](ui::LayerWithExternalTexture** dummy) {
+          called = true;
+          *dummy = &layer2;
+        }));
     CopyLayerContentToLayer(&layer1, cancelable.callback());
 
     GenerateOneFrame();
@@ -95,11 +97,13 @@ TEST_F(LayerUtilTest, CopyContentToExistingLayer) {
   // Test cancel scenario.
   {
     bool called = false;
-    base::CancelableOnceCallback<void(ui::Layer**)> cancelable;
-    cancelable.Reset(base::BindLambdaForTesting([&](ui::Layer** dummy) {
-      called = true;
-      *dummy = &layer2;
-    }));
+    base::CancelableOnceCallback<void(ui::LayerWithExternalTexture**)>
+        cancelable;
+    cancelable.Reset(
+        base::BindLambdaForTesting([&](ui::LayerWithExternalTexture** dummy) {
+          called = true;
+          *dummy = &layer2;
+        }));
 
     CopyLayerContentToLayer(&layer1, cancelable.callback());
     cancelable.Cancel();

@@ -89,7 +89,7 @@ std::string PrintViewGraphImpl(const View* view) {
     result.append(", shape=box");
   }
   if (view->layer()) {
-    if (view->layer()->has_external_content()) {
+    if (view->layer()->HasExternalContent()) {
       result.append(", color=green");
     } else {
       result.append(", color=red");

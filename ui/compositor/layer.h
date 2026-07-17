@@ -83,8 +83,7 @@ class LayerThreadedAnimationDelegate;
 // delete a Layer and it has children, the parent of each child Layer is set to
 // NULL, but the children are not deleted.
 class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
-                                public cc::ContentLayerClient,
-                                public cc::TextureLayerClient {
+                                public cc::ContentLayerClient {
   // TODO(crbug.com/453831486): Remove this macro once the bug gets fixed.
   ADVANCED_MEMORY_SAFETY_CHECKS();
 
@@ -142,7 +141,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // content is only mirrored if painted by a delegate or backed by a surface.
   // As the mirror layer rasterizes its contents separately, this might have
   // some negative impact on performance.
-  // TODO(crbug.com/522627357): Make it a virtual method.
   std::unique_ptr<Layer> Mirror();
   std::unique_ptr<Layer> Mirror(const LayerMirrorSettings& settings);
 
@@ -464,13 +462,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   const std::string& name() const { return name_; }
   void SetName(const std::string& name);
 
-  // Set new TransferableResource for this layer. This method only supports
-  // a gpu-backed |resource| which is assumed to have top-left origin.
-  void SetTransferableResource(const viz::TransferableResource& resource,
-                               viz::ReleaseCallback release_callback,
-                               gfx::Size texture_size_in_dip);
-  void SetTextureSize(gfx::Size texture_size_in_dip);
-
   // Begins showing content from a surface with a particular ID.
   // TODO(crbug.com/40285157): with surface sync, size shouldn't rely on
   // `frame_size_in_dip` anymore, so this method can be deleted, and
@@ -502,9 +493,21 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // Returns the fallback SurfaceId set by SetOldestAcceptableFallback.
   const viz::SurfaceId* GetOldestAcceptableFallback() const;
 
-  bool has_external_content() const {
-    return texture_layer_.get() || surface_layer_.get();
-  }
+  // Returns true if the layer has external content, such as a surface layer or
+  // an external texture.
+  virtual bool HasExternalContent() const;
+
+  // Returns true if the layer has a transferable resource. A transferable
+  // resource is an externally provided GPU resource (e.g., a texture or
+  // hardware buffer) that the layer can display without needing to paint
+  // content itself.
+  virtual bool HasTransferableResource() const;
+
+  // Returns true if the layer should schedule a paint when requested. By
+  // default, this is true for layers with painted content or external
+  // transferable resources, but false for layers that do not draw or draw
+  // pre-defined content like nine-patch.
+  virtual bool ShouldSchedulePaint() const = 0;
 
   const viz::SurfaceId& external_content_surface_id() const {
     return surface_layer_->surface_id();
@@ -577,10 +580,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   cc::Layer* cc_layer_for_testing() { return cc_layer_; }
   const cc::Layer* cc_layer_for_testing() const { return cc_layer_; }
 
-  // TextureLayerClient implementation.
-  bool PrepareTransferableResource(
-      viz::TransferableResource* resource,
-      viz::ReleaseCallback* release_callback) override;
 
   float device_scale_factor() const { return device_scale_factor_; }
 
@@ -632,6 +631,9 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
  protected:
   explicit Layer(LayerType type);
 
+  virtual std::unique_ptr<Layer> CreateMirror(
+      const LayerMirrorSettings& settings);
+
   virtual void HandleDeviceScaleFactorChange();
 
   void Destroy();
@@ -641,6 +643,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   friend class LayerOwner;
   friend class LayerNotDrawn;
   friend class LayerTextured;
+  friend class LayerWithExternalTexture;
   friend class LayerSolidColor;
   friend class LayerNinePatch;
   friend class ScopedLayerRequest<LayerRequestType::kPaint>;
@@ -727,7 +730,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   void CreateCcLayer();
 
   // Recomputes and sets to |cc_layer_|.
-  void RecomputeDrawsContentAndUVRect();
+  virtual void RecomputeDrawsContentAndUVRect();
   void RecomputePosition();
 
   // Set all filters which got applied to the layer.
@@ -871,7 +874,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // pointers, depending on which sort of layer this is.
   // TODO(crbug.com/522627357): Move to subclasses.
   scoped_refptr<cc::PictureLayer> content_layer_;
-  scoped_refptr<cc::TextureLayer> texture_layer_;
   scoped_refptr<cc::SurfaceLayer> surface_layer_;
   // TODO(crbug.com/522627357): Move it subclasses and expose via a virtual
   // getter.
@@ -879,13 +881,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
 
   // A cached copy of |Compositor::device_scale_factor()|.
   float device_scale_factor_;
-
-  // The external resource used by texture_layer_.
-  viz::TransferableResource transfer_resource_;
-
-  // The callback to release the mailbox. This is only set after
-  // SetTransferableResource() is called, before we give it to the TextureLayer.
-  viz::ReleaseCallback transfer_release_callback_;
 
   // The size of the frame or texture in DIP, set when SetShowDelegatedContent
   // or SetTransferableResource() was called.
@@ -930,9 +925,59 @@ class COMPOSITOR_EXPORT LayerNotDrawn : public Layer {
   LayerNotDrawn& operator=(const LayerNotDrawn&) = delete;
 
   ~LayerNotDrawn() override;
+
+  bool ShouldSchedulePaint() const override;
 };
 
-class COMPOSITOR_EXPORT LayerTextured : public Layer {
+class COMPOSITOR_EXPORT LayerWithExternalTexture
+    : public Layer,
+      public cc::TextureLayerClient {
+ public:
+  LayerWithExternalTexture(const LayerWithExternalTexture&) = delete;
+  LayerWithExternalTexture& operator=(const LayerWithExternalTexture&) = delete;
+
+  ~LayerWithExternalTexture() override;
+
+  // Set new TransferableResource for this layer. This method only supports
+  // a gpu-backed `resource` which is assumed to have top-left origin.
+  void SetTransferableResource(const viz::TransferableResource& resource,
+                               viz::ReleaseCallback release_callback,
+                               gfx::Size texture_size_in_dip);
+  void SetTextureSize(gfx::Size texture_size_in_dip);
+
+  // Layer:
+  bool HasExternalContent() const override;
+  bool HasTransferableResource() const override;
+  void RecomputeDrawsContentAndUVRect() override;
+  bool ShouldSchedulePaint() const override;
+
+  // TextureLayerClient:
+  bool PrepareTransferableResource(
+      viz::TransferableResource* resource,
+      viz::ReleaseCallback* release_callback) override;
+
+  const viz::TransferableResource& transfer_resource() const {
+    return transfer_resource_;
+  }
+
+ protected:
+  explicit LayerWithExternalTexture(LayerType type);
+
+  // Layer:
+  std::unique_ptr<Layer> CreateMirror(
+      const LayerMirrorSettings& settings) override;
+  void Reset() override;
+
+  cc::TextureLayer* texture_layer() { return texture_layer_.get(); }
+  const cc::TextureLayer* texture_layer() const { return texture_layer_.get(); }
+
+ private:
+  scoped_refptr<cc::TextureLayer> texture_layer_;
+  viz::TransferableResource transfer_resource_;
+  viz::ReleaseCallback transfer_release_callback_;
+};
+
+class COMPOSITOR_EXPORT LayerTextured : public LayerWithExternalTexture {
  public:
   static constexpr LayerType kType = LAYER_TEXTURED;
 
@@ -942,9 +987,11 @@ class COMPOSITOR_EXPORT LayerTextured : public Layer {
   LayerTextured& operator=(const LayerTextured&) = delete;
 
   ~LayerTextured() override;
+
+  bool ShouldSchedulePaint() const override;
 };
 
-class COMPOSITOR_EXPORT LayerSolidColor : public Layer {
+class COMPOSITOR_EXPORT LayerSolidColor : public LayerWithExternalTexture {
  public:
   static constexpr LayerType kType = LAYER_SOLID_COLOR;
 
@@ -970,6 +1017,9 @@ class COMPOSITOR_EXPORT LayerSolidColor : public Layer {
   void SetColor(SkColor color);
   SkColor GetTargetColor() const;
   SkColor background_color() const;
+
+  // Layer:
+  bool ShouldSchedulePaint() const override;
 
   cc::MirrorLayer* mirror_layer_for_testing() { return mirror_layer_.get(); }
 
@@ -1003,6 +1053,9 @@ class COMPOSITOR_EXPORT LayerNinePatch : public Layer {
   LayerNinePatch& operator=(const LayerNinePatch&) = delete;
 
   ~LayerNinePatch() override;
+
+  // Layer:
+  bool ShouldSchedulePaint() const override;
 
   // Updates the nine patch layer's image, aperture and border.
   void UpdateNinePatchLayerImage(const gfx::ImageSkia& image);

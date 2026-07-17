@@ -4364,7 +4364,7 @@ void VerifyStaleContentOnFrameEviction(
 
   // Initially there should be no stale content set.
   EXPECT_FALSE(
-      delegated_frame_host->stale_content_layer()->has_external_content());
+      delegated_frame_host->stale_content_layer()->HasExternalContent());
   EXPECT_EQ(delegated_frame_host->frame_eviction_state(),
             DelegatedFrameHost::FrameEvictionState::kNotStarted);
 
@@ -4383,7 +4383,7 @@ void VerifyStaleContentOnFrameEviction(
   waiter.WaitForEvictionState(
       DelegatedFrameHost::FrameEvictionState::kNotStarted);
   EXPECT_TRUE(
-      delegated_frame_host->stale_content_layer()->has_external_content());
+      delegated_frame_host->stale_content_layer()->HasExternalContent());
 }
 
 #endif  // defined(USE_AURA)

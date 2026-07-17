@@ -114,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(DisplayGpuCrashBrowserTest, DISABLED_CrashInMirror) {
     ASSERT_EQ(mirror->GetAllRootWindows().size(), 1u);
     const aura::Window* mirror_window =
         mirror->GetMirrorWindowForDisplayIdForTest(secondary_id);
-    EXPECT_TRUE(mirror_window->layer()->has_external_content());
+    EXPECT_TRUE(mirror_window->layer()->HasExternalContent());
     EXPECT_EQ(primary_root->GetSurfaceId(),
               mirror_window->layer()->external_content_surface_id());
   }
@@ -154,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(DisplayGpuCrashBrowserTest, CrashInUnified) {
     const aura::Window* mirror_window =
         mirror_window_controller->GetMirrorWindowForDisplayIdForTest(
             display.id());
-    EXPECT_TRUE(mirror_window->layer()->has_external_content());
+    EXPECT_TRUE(mirror_window->layer()->HasExternalContent());
     EXPECT_EQ(primary_root->GetSurfaceId(),
               mirror_window->layer()->external_content_surface_id());
   }

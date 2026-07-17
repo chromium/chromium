@@ -110,7 +110,7 @@ void DelegatedFrameHost::WasShown(
                cc::DeadlinePolicy::UseDefaultDeadline());
 
   // Remove stale content that might be displayed.
-  if (stale_content_layer_->has_external_content()) {
+  if (stale_content_layer_->HasExternalContent()) {
     stale_content_layer_->SetShowSolidColorContent();
     stale_content_layer_->SetVisible(false);
   }
@@ -460,7 +460,7 @@ void DelegatedFrameHost::EvictDelegatedFrame(
   // white screens from being displayed during various animations such as the
   // CrOS overview mode.
   if (client_->ShouldShowStaleContentOnEviction() &&
-      !stale_content_layer_->has_external_content()) {
+      !stale_content_layer_->HasExternalContent()) {
     SetFrameEvictionStateAndNotifyObservers(
         FrameEvictionState::kPendingEvictionRequests);
     auto callback =
@@ -523,7 +523,7 @@ void DelegatedFrameHost::DidCopyStaleContent(
 
 // TODO(crbug.com/40812011): This DCHECK occasionally gets hit on Chrome OS.
 #if !BUILDFLAG(IS_CHROMEOS)
-  CHECK(!stale_content_layer_->has_external_content());
+  CHECK(!stale_content_layer_->HasExternalContent());
 #endif
   stale_content_layer_->SetVisible(true);
   stale_content_layer_->SetBounds(gfx::Rect(surface_dip_size_));

@@ -18,7 +18,7 @@ namespace {
 
 void CopyCopyOutputResultToLayer(
     std::unique_ptr<viz::CopyOutputResult> copy_result,
-    ui::Layer* target_layer) {
+    ui::LayerWithExternalTexture* target_layer) {
   DCHECK(!copy_result->IsEmpty());
   DCHECK_EQ(copy_result->format(), viz::CopyOutputResult::Format::RGBA);
   DCHECK_EQ(copy_result->destination(),
@@ -62,7 +62,7 @@ void CopyToLayerOnCopyRequestFinished(
   if (!copy_result || copy_result->IsEmpty())
     return;
 
-  ui::Layer* layer = nullptr;
+  ui::LayerWithExternalTexture* layer = nullptr;
   std::move(get_target_layer_callback).Run(&layer);
   if (!layer)
     return;
