@@ -1793,6 +1793,18 @@ internal::SchedulerLoopQuarantineRoot&
 PartitionRoot::GetSchedulerLoopQuarantineRoot() {
   return scheduler_loop_quarantine_root_;
 }
+
+bool PartitionRoot::IsSchedulerLoopQuarantineTarget(
+    const internal::BucketSizeDetails& size_details) {
+  internal::ThreadCache* thread_cache = GetThreadCache();
+  if (internal::ThreadCache::IsValid(thread_cache)) [[likely]] {
+    return thread_cache->GetSchedulerLoopQuarantineBranch().IsQuarantineTarget(
+        size_details);
+  } else {
+    return scheduler_loop_quarantine_.IsQuarantineTarget(size_details);
+  }
+}
+
 }  // namespace partition_alloc
 
 #endif  // PARTITION_ALLOC_INTERNAL_PARTITION_ROOT_INTERNAL_H_

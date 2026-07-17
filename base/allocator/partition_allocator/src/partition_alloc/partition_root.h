@@ -786,6 +786,9 @@ class alignas(internal::kPartitionCachelineSize)
   PA_NOINLINE size_t
   GetSlotSizeFromRequestedSizeForTesting(size_t requested_size) const;
 
+  PA_ALWAYS_INLINE bool IsSchedulerLoopQuarantineTarget(
+      const internal::BucketSizeDetails& size_details);
+
  private:
   static inline StraightenLargerSlotSpanFreeListsMode
       straighten_larger_slot_span_free_lists_ =

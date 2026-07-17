@@ -192,6 +192,21 @@ inline bool Quarantine(void* object, size_t object_size, size_t alignment) {
     return false;
   }
 
+  auto size_details =
+      lightweight_quarantine_partition_root->SlotSpanToBucketSizeDetails(
+          slot_span);
+  // If the object is MiracleObject, should not quarantine it here.
+  // Firstly check whether ThreadCache is enabled for the root or not.
+  // If enabled, ThreadBoundedSchedulerLoopQuarantineBranch might
+  // capture this free().
+  // Otherwise, global SchedulerLoopQnarantineBranch might capture
+  // this free().
+  // Then, the object will not be captured by SchedulerLoopQuarantine.
+  // EULD will capture the object.
+  if (root->IsSchedulerLoopQuarantineTarget(size_details)) {
+    return false;
+  }
+
   size_t usable_size = root->GetSlotUsableSize(slot_span);
   ExtremeLightweightDetectorUtil::Zap(object, object_size, usable_size,
                                       alignment);

@@ -201,6 +201,25 @@ bool SchedulerLoopQuarantineBranch<thread_bound>::IsQuarantinedForTesting(
 }
 
 template <bool thread_bound>
+bool SchedulerLoopQuarantineBranch<thread_bound>::IsQuarantineTarget(
+    const internal::BucketSizeDetails& size_details) const {
+  if (!enable_quarantine_ || pause_quarantine_) [[unlikely]] {
+    return false;
+  }
+  if (size_details.slot_size > BucketIndexLookup::kMaxBucketSize ||
+      largest_bucket_index_ < size_details.bucket_index) [[unlikely]] {
+    return false;
+  }
+  const size_t slot_size = size_details.slot_size;
+  const size_t capacity_in_bytes =
+      branch_capacity_in_bytes_.load(std::memory_order_relaxed);
+  if (capacity_in_bytes < slot_size) [[unlikely]] {
+    return false;
+  }
+  return true;
+}
+
+template <bool thread_bound>
 void SchedulerLoopQuarantineBranch<thread_bound>::SetCapacityInBytes(
     size_t capacity_in_bytes) {
   branch_capacity_in_bytes_.store(capacity_in_bytes, std::memory_order_relaxed);

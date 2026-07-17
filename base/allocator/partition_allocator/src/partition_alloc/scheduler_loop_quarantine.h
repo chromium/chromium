@@ -164,6 +164,9 @@ class SchedulerLoopQuarantineBranch {
   // Determines this list contains an object.
   bool IsQuarantinedForTesting(void* object) PA_LOCKS_EXCLUDED(lock_);
 
+  bool IsQuarantineTarget(
+      const internal::BucketSizeDetails& size_details) const;
+
   size_t GetCapacityInBytes() {
     return branch_capacity_in_bytes_.load(std::memory_order_relaxed);
   }
