@@ -399,27 +399,6 @@ static void JNI_TraceEvent_StartupLaunchCause(JNIEnv* env,
       });
 }
 
-static void JNI_TraceEvent_StartupTimeToFirstVisibleContent2(
-    JNIEnv* env,
-    int64_t activity_id,
-    int64_t start_time_ms,
-    int64_t duration_ms) {
-  [[maybe_unused]] const perfetto::Track track(
-      base::trace_event::GetNextGlobalTraceId(),
-      perfetto::ProcessTrack::Current());
-  TRACE_EVENT_BEGIN(
-      "interactions,startup", "Startup.TimeToFirstVisibleContent2", track,
-      TimeTicks() + Milliseconds(start_time_ms),
-      [&](perfetto::EventContext ctx) {
-        auto* start_up = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
-                             ->set_startup();
-        start_up->set_activity_id(activity_id);
-      });
-
-  TRACE_EVENT_END("interactions,startup", track,
-                  TimeTicks() + Milliseconds(start_time_ms + duration_ms));
-}
-
 static void JNI_TraceEvent_StartupTimeToFirstFrame2(JNIEnv* env,
                                                     int64_t start_time_ms,
                                                     int64_t duration_ms) {

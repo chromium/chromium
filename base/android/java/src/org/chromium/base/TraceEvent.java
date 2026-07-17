@@ -510,13 +510,6 @@ public class TraceEvent implements AutoCloseable {
         }
     }
 
-    /** Records 'Startup.TimeToFirstVisibleContent2' event with the 'interactions' category. */
-    public static void startupTimeToFirstVisibleContent2(
-            long activityId, long startTimeMs, long durationMs) {
-        if (!sEnabled) return;
-        TraceEventJni.get().startupTimeToFirstVisibleContent2(activityId, startTimeMs, durationMs);
-    }
-
     /** Records 'Startup.Android.Cold.TimeToFirstFrame2' event with the 'startup' category. */
     public static void startupTimeToFirstFrame2(long startTimeMs, long durationMs) {
         if (!sEnabled) return;
@@ -716,8 +709,6 @@ public class TraceEvent implements AutoCloseable {
         void startupActivityStart(long activityId, long startTimeMs);
 
         void startupLaunchCause(long activityId, long startTimeMs, int launchCause);
-
-        void startupTimeToFirstVisibleContent2(long activityId, long startTimeMs, long durationMs);
 
         void startupTimeToFirstFrame2(long startTimeMs, long durationMs);
     }
