@@ -34,7 +34,6 @@ class AutofillField;
 class AutofillProfile;
 class FormStructure;
 class LogBuffer;
-class PhoneCombineHelper;
 class SourceId;
 
 // Owned by `FormDataImporter`. Responsible for address-related form data
@@ -90,6 +89,7 @@ class AddressFormDataImporter : public AddressDataManager::Observer {
       const FormStructure& submitted_form) const;
 
   AddressDataManager& address_data_manager();
+  const AddressDataManager& address_data_manager() const;
 
   MultiStepImportMerger& multi_step_import_merger();
 
@@ -122,12 +122,11 @@ class AddressFormDataImporter : public AddressDataManager::Observer {
       std::vector<ExtractedAddressProfile>* extracted_address_profiles,
       LogBuffer* import_log_buffer);
 
-  // If the `profile`'s country is not empty, complements it with
-  // `AddressDataManager::GetDefaultCountryCodeForNewAddress()`, while logging
-  // to the `import_log_buffer`.
-  // Returns true if the country was complemented.
-  bool ComplementCountry(AutofillProfile& profile,
-                         LogBuffer* import_log_buffer);
+  // Returns the fallback value for the profile country. The following values
+  // are used, with decreasing priority: region of given phone number (if it is
+  // in international format), variation country, country of app locale.
+  std::u16string GetFallbackCountry(
+      const PhoneNumber::PhoneCombineHelper& combined_phone) const;
 
   // Sets the `profile`'s PHONE_HOME_WHOLE_NUMBER to the `combined_phone`, if
   // possible. The phone number's region is deduced based on the profile's

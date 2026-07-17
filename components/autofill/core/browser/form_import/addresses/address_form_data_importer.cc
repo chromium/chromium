@@ -18,6 +18,7 @@
 #include "base/check_deref.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/map_util.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
@@ -310,6 +311,11 @@ AddressDataManager& AddressFormDataImporter::address_data_manager() {
   return client_->GetPersonalDataManager().address_data_manager();
 }
 
+const AddressDataManager& AddressFormDataImporter::address_data_manager()
+    const {
+  return client_->GetPersonalDataManager().address_data_manager();
+}
+
 MultiStepImportMerger& AddressFormDataImporter::multi_step_import_merger() {
   return multistep_importer_;
 }
@@ -447,10 +453,10 @@ AutofillProfile AddressFormDataImporter::ConstructProfileFromObservedValues(
 
   // In order to use the correct representation for addresses, establish the
   // country of the profile first.
-  auto country_it = observed_values.find(ADDRESS_HOME_COUNTRY);
-  if (country_it != observed_values.end()) {
+  if (const std::u16string* country =
+          base::FindOrNull(observed_values, ADDRESS_HOME_COUNTRY)) {
     candidate_profile.SetInfoWithVerificationStatus(
-        ADDRESS_HOME_COUNTRY, country_it->second, client_->GetAppLocale(),
+        ADDRESS_HOME_COUNTRY, *country, client_->GetAppLocale(),
         VerificationStatus::kObserved);
 
     import_metadata.observed_invalid_country =
@@ -461,8 +467,18 @@ AutofillProfile AddressFormDataImporter::ConstructProfileFromObservedValues(
   // country or the app locale. To also use the variation country for
   // complementing the phone number's country code, the profile country
   // complemention needs to happen before `SetPhoneNumber()`.
-  import_metadata.did_complement_country =
-      ComplementCountry(candidate_profile, import_log_buffer);
+  if (!candidate_profile.HasRawInfo(ADDRESS_HOME_COUNTRY)) {
+    const std::u16string fallback_country = GetFallbackCountry(combined_phone);
+
+    import_metadata.did_complement_country =
+        candidate_profile.SetInfoWithVerificationStatus(
+            ADDRESS_HOME_COUNTRY, fallback_country, client_->GetAppLocale(),
+            VerificationStatus::kObserved);
+
+    LOG_AF(import_log_buffer)
+        << LogMessage::kImportAddressProfileComplementedCountryCode
+        << fallback_country << CTag{};
+  }
 
   for (const auto& [type, value] : observed_values) {
     // The profile country has already been established by this point. It's
@@ -558,8 +574,8 @@ bool AddressFormDataImporter::ExtractAddressProfileFromSection(
                                                import_metadata);
   }
 
-  // This relies on the profile's country code and must be done strictly after
-  // `ComplementCountry()`.
+  // Requires that the profile's country code is set first (e.g., to
+  // `GetFallbackCountry()` if not observed explicitly).
   candidate_profile.ClearFields(
       candidate_profile.FindInaccessibleProfileValues());
 
@@ -612,21 +628,21 @@ bool AddressFormDataImporter::ExtractAddressProfileFromSection(
   return true;
 }
 
-bool AddressFormDataImporter::ComplementCountry(AutofillProfile& profile,
-                                                LogBuffer* import_log_buffer) {
-  if (profile.HasRawInfo(ADDRESS_HOME_COUNTRY)) {
-    return false;
-  }
-  const std::string fallback =
-      address_data_manager().GetDefaultCountryCodeForNewAddress().value();
-  if (import_log_buffer) {
-    *import_log_buffer
-        << LogMessage::kImportAddressProfileComplementedCountryCode << fallback
-        << CTag{};
-  }
-  return profile.SetInfoWithVerificationStatus(
-      ADDRESS_HOME_COUNTRY, base::ASCIIToUTF16(fallback),
-      client_->GetAppLocale(), VerificationStatus::kObserved);
+std::u16string AddressFormDataImporter::GetFallbackCountry(
+    const PhoneNumber::PhoneCombineHelper& combined_phone) const {
+  return combined_phone.GetRegionCode()
+      .and_then(
+          [](std::u16string region_code) -> std::optional<std::u16string> {
+            // Perform feature check only if phone number is in international
+            // format and contains a region code.
+            if (base::FeatureList::IsEnabled(
+                    features::kAutofillComplementCountryUsingPhoneNumber)) {
+              return region_code;
+            }
+            return std::nullopt;
+          })
+      .value_or(base::UTF8ToUTF16(
+          *address_data_manager().GetDefaultCountryCodeForNewAddress()));
 }
 
 bool AddressFormDataImporter::SetPhoneNumber(

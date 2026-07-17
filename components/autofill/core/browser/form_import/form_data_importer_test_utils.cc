@@ -167,13 +167,15 @@ TypeValuePairs GetDefaultProfileTypeValuePairs() {
 void SetValueForType(TypeValuePairs& pairs,
                      FieldType type,
                      const std::string& value) {
-  auto it = std::ranges::find(pairs, type,
-                              [](const auto& pair) { return pair.first; });
-  CHECK(it != pairs.end());
-  if (value.empty()) {
+  auto it =
+      std::ranges::find(pairs, type, &std::pair<FieldType, std::string>::first);
+
+  if (value.empty() && it != pairs.end()) {
     pairs.erase(it);
-  } else {
+  } else if (it != pairs.end()) {
     it->second = value;
+  } else if (!value.empty()) {
+    pairs.emplace_back(type, value);
   }
 }
 

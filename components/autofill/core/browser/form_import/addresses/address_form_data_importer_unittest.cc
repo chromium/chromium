@@ -109,7 +109,9 @@ TypeValuePairs GetThirdProfileTypeValuePairs() {
 }
 
 // Wraps `GetDefaultProfileTypeValuePairs()` but replaces `kDefaultCountry` with
-// `country`. If `country` is empty, ADDRESS_HOME_COUNTRY is removed entirely.
+// `country` and updates to a phone number of that country. If `country` is
+// empty, `ADDRESS_HOME_COUNTRY` is removed entirely. If no phone number for the
+// given country is found, remove `PHONE_HOME_WHOLE_NUMBER`.
 TypeValuePairs GetDefaultProfileTypeValuePairsWithOverriddenCountry(
     const std::string& country) {
   auto pairs = GetDefaultProfileTypeValuePairs();
@@ -120,6 +122,11 @@ TypeValuePairs GetDefaultProfileTypeValuePairsWithOverriddenCountry(
     SetValueForType(pairs, PHONE_HOME_WHOLE_NUMBER, kDefaultPhoneMexico);
   } else if (country == "AM" || country == "Armenien") {
     SetValueForType(pairs, PHONE_HOME_WHOLE_NUMBER, kDefaultPhoneArmenia);
+  } else if (country == "US" || country == "United States") {
+    SetValueForType(pairs, PHONE_HOME_WHOLE_NUMBER, kDefaultPhone);
+  } else {
+    // Delete phone number if no default phone number is known for the country.
+    SetValueForType(pairs, PHONE_HOME_WHOLE_NUMBER, "");
   }
   return pairs;
 }
@@ -361,34 +368,107 @@ TEST_F(AddressFormDataImporterTest, ComplementCountry_PartOfForm) {
 // Tests that the complemented country prefers the variation country code over
 // the app locale (US). The form's country field is left empty.
 TEST_F(AddressFormDataImporterTest, ComplementCountry_VariationCountryCode) {
-  AutofillProfile kDefaultGermanProfile =
-      ConstructDefaultProfileWithOverriddenCountry("DE");
+  // Retrieve a default profile with overridden country and ensure it does not
+  // have a phone number (to avoid complementation using its country code).
+  TypeValuePairs expected_values =
+      GetDefaultProfileTypeValuePairsWithOverriddenCountry("DE");
+  SetValueForType(expected_values, PHONE_HOME_WHOLE_NUMBER, "");
 
   autofill_client().SetVariationConfigCountryCode(GeoIpCountryCode("DE"));
 
-  // Retrieve a default profile with overridden country and overridden phone
-  // number to match kDefaultGermanProfile.
-  TypeValuePairs form_structure_pairs =
+  // Clear the country and phone number to verify that it is complemented from
+  // the variation config.
+  TypeValuePairs test_values =
       GetDefaultProfileTypeValuePairsWithOverriddenCountry("DE");
-  // Clear the country to verify that it gets complemented from the variation
-  // config.
-  SetValueForType(form_structure_pairs, ADDRESS_HOME_COUNTRY, "");
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructFormStructureFromTypeValuePairs(form_structure_pairs);
+  SetValueForType(test_values, ADDRESS_HOME_COUNTRY, "");
+  SetValueForType(test_values, PHONE_HOME_WHOLE_NUMBER, "");
 
-  ExtractAddressProfilesAndVerifyExpectation(*form_structure,
-                                             {kDefaultGermanProfile});
+  ExtractAddressProfilesAndVerifyExpectation(
+      *ConstructFormStructureFromTypeValuePairs(test_values),
+      {ConstructProfileFromTypeValuePairs(expected_values)});
 }
 
 // Tests that without a variation country code, the country is complemented by
 // the app locale. The form's country field is left empty.
 TEST_F(AddressFormDataImporterTest,
        ComplementCountry_VariationConfigCountryCode) {
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructFormStructureFromTypeValuePairs(
-          GetDefaultProfileTypeValuePairsWithOverriddenCountry(""));
+  TypeValuePairs form_structure_pairs =
+      GetDefaultProfileTypeValuePairsWithOverriddenCountry("");
+
+  TypeValuePairs profile_pairs =
+      GetDefaultProfileTypeValuePairsWithOverriddenCountry("US");
+  SetValueForType(profile_pairs, PHONE_HOME_WHOLE_NUMBER, "");
+
   ExtractAddressProfilesAndVerifyExpectation(
-      *form_structure, {ConstructDefaultProfileWithOverriddenCountry("US")});
+      *ConstructFormStructureFromTypeValuePairs(form_structure_pairs),
+      {ConstructProfileFromTypeValuePairs(profile_pairs)});
+}
+
+// Tests that a form with an address without a country is complemented by using
+// the region deduced from the phone number (using its country code) in
+// `PHONE_HOME_WHOLE_NUMBER`.
+TEST_F(AddressFormDataImporterTest,
+       ComplementCountry_WholePhoneNumberCountryCode) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      features::kAutofillComplementCountryUsingPhoneNumber);
+
+  TypeValuePairs no_country_with_phone =
+      GetDefaultProfileTypeValuePairsWithOverriddenCountry("");
+  SetValueForType(no_country_with_phone, PHONE_HOME_WHOLE_NUMBER,
+                  kDefaultPhoneMexico);
+
+  TypeValuePairs expected_values = no_country_with_phone;
+  SetValueForType(expected_values, ADDRESS_HOME_COUNTRY, "MX");
+
+  ExtractAddressProfilesAndVerifyExpectation(
+      *ConstructFormStructureFromTypeValuePairs(no_country_with_phone),
+      {ConstructProfileFromTypeValuePairs(expected_values)});
+}
+
+// Tests that a form with an explicit country set uses that country instead of
+// using the phone number that is associated with another country.
+TEST_F(AddressFormDataImporterTest,
+       ComplementCountry_ConflictingPhoneCountryCode) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      features::kAutofillComplementCountryUsingPhoneNumber);
+
+  TypeValuePairs explicit_country_with_conflicting_phone =
+      GetDefaultProfileTypeValuePairsWithOverriddenCountry("FR");
+  SetValueForType(explicit_country_with_conflicting_phone,
+                  PHONE_HOME_WHOLE_NUMBER, kDefaultPhoneMexico);
+
+  ExtractAddressProfilesAndVerifyExpectation(
+      *ConstructFormStructureFromTypeValuePairs(
+          explicit_country_with_conflicting_phone),
+      {ConstructProfileFromTypeValuePairs(
+          explicit_country_with_conflicting_phone)});
+}
+
+// Tests that the country is correctly deduced using a whole phone number that
+// uses an ambiguous country code (e.g., +1 is used for all countries in North
+// America and the exact country is determined using the North American
+// Numbering Plan (NANP)).
+TEST_F(AddressFormDataImporterTest,
+       ComplementCountry_WholePhoneNumberAmbiguousCountryCode) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      features::kAutofillComplementCountryUsingPhoneNumber);
+
+  const std::string kCanadianPhoneNumber = "+1 250-555-0199";
+
+  TypeValuePairs no_country_with_canadian_phone =
+      GetDefaultProfileTypeValuePairsWithOverriddenCountry("");
+  SetValueForType(no_country_with_canadian_phone, PHONE_HOME_WHOLE_NUMBER,
+                  kCanadianPhoneNumber);
+
+  TypeValuePairs canadian_profile_values = no_country_with_canadian_phone;
+  SetValueForType(canadian_profile_values, ADDRESS_HOME_COUNTRY, "CA");
+
+  ExtractAddressProfilesAndVerifyExpectation(
+      *ConstructFormStructureFromTypeValuePairs(no_country_with_canadian_phone),
+      {ConstructProfileFromTypeValuePairs(canadian_profile_values)});
 }
 
 // Tests that the country is complemented before parsing the phone number. This
@@ -505,10 +585,12 @@ TEST_F(AddressFormDataImporterTest, ParseI18nPhoneNumberInCityAndNumberField) {
 // default to the locale's country "US".
 TEST_F(AddressFormDataImporterTest, InvalidCountry) {
   // Due to the extra 'A', the country of this `form_structure` is invalid.
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructFormStructureFromTypeValuePairs(
-          GetDefaultProfileTypeValuePairsWithOverriddenCountry("USAA"));
-  ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(*form_structure);
+  TypeValuePairs form_structure_pairs =
+      GetDefaultProfileTypeValuePairsWithOverriddenCountry("USAA");
+  SetValueForType(form_structure_pairs, PHONE_HOME_WHOLE_NUMBER, kDefaultPhone);
+
+  ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(
+      *ConstructFormStructureFromTypeValuePairs(form_structure_pairs));
 }
 
 // Tests that invalid phone numbers are removed and importing continues.
@@ -1407,11 +1489,12 @@ TEST_F(AddressFormDataImporterTest,
 // country, which is ignored on import.
 TEST_F(AddressFormDataImporterTest,
        ImportAddressProfiles_IncompleteComposedCountryName) {
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructFormStructureFromTypeValuePairs(
-          GetDefaultProfileTypeValuePairsWithOverriddenCountry(
-              "Myanmar"));  // Missing the [Burma] part
-  ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(*form_structure);
+  TypeValuePairs form_structure_pairs =
+      GetDefaultProfileTypeValuePairsWithOverriddenCountry(
+          "Myanmar");  // Missing the [Burma] part
+  SetValueForType(form_structure_pairs, PHONE_HOME_WHOLE_NUMBER, kDefaultPhone);
+  ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(
+      *ConstructFormStructureFromTypeValuePairs(form_structure_pairs));
 }
 
 // Tests a 2-page multi-step extraction.

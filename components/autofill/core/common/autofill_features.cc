@@ -489,6 +489,11 @@ BASE_FEATURE(kAutofillAtMemoryTriggerShortcut,
 BASE_FEATURE(kAutofillBetterLocalHeuristicPlaceholderSupport,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, deduce country of a new address profile based on the phone
+// number if not explicitly observed.
+BASE_FEATURE(kAutofillComplementCountryUsingPhoneNumber,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Same as `kAutofillAddressUserPerceptionSurvey` but for credit card forms.
 BASE_FEATURE(kAutofillCreditCardUserPerceptionSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);
