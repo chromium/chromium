@@ -1449,8 +1449,15 @@ void WidgetBase::UpdateCompositionInfo(bool immediate_request) {
     // Composition information is only available on editable node.
     range = gfx::Range::InvalidRange();
   } else {
+    base::WeakPtr<WidgetBase> weak_this = weak_ptr_factory_.GetWeakPtr();
     GetCompositionRange(&range);
+    if (!weak_this) {
+      return;
+    }
     GetCompositionCharacterBounds(&character_bounds);
+    if (!weak_this) {
+      return;
+    }
   }
 
   if (!immediate_request &&
