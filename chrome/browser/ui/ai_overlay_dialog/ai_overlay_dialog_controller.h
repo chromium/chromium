@@ -25,7 +25,8 @@ class AiOverlayDialogController : public content::WebContentsDelegate {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnCaptionsVisibleChanged(bool visible) {}
+    virtual void OnInputCaptionsVisibleChanged(bool visible) {}
+    virtual void OnOutputCaptionsVisibleChanged(bool visible) {}
     virtual void OnUsePersonaChanged(bool use_persona) {}
   };
 
@@ -61,11 +62,19 @@ class AiOverlayDialogController : public content::WebContentsDelegate {
   void ResizeDueToAutoResize(content::WebContents* source,
                              const gfx::Size& new_size) override;
 
-  bool captions_visible() const { return captions_visible_; }
-  void set_captions_visible(bool visible);
+  bool input_captions_visible() const { return input_captions_visible_; }
+  void SetInputCaptionsVisible(bool visible);
+
+  bool output_captions_visible() const { return output_captions_visible_; }
+  void SetOutputCaptionsVisible(bool visible);
+
+  bool captions_visible() const {
+    return input_captions_visible_ && output_captions_visible_;
+  }
+  void SetCaptionsVisible(bool visible);
 
   bool use_persona() const { return use_persona_; }
-  void set_use_persona(bool use_persona);
+  void SetUsePersona(bool use_persona);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -80,7 +89,8 @@ class AiOverlayDialogController : public content::WebContentsDelegate {
 
   const raw_ptr<HostContentSettingsMap> host_content_settings_map_;
 
-  bool captions_visible_ = true;
+  bool input_captions_visible_ = true;
+  bool output_captions_visible_ = true;
   bool use_persona_ = false;
 
   base::ObserverList<Observer> observers_;

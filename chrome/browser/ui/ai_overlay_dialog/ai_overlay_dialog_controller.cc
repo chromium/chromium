@@ -21,6 +21,8 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/view_type_utils.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "ui/actions/actions.h"
 #include "ui/base/class_property.h"
 #include "ui/base/models/image_model.h"
@@ -78,6 +80,8 @@ void AiOverlayDialogController::ShowOverlay() {
 
   webui::SetBrowserWindowInterface(overlay_web_view->GetWebContents(),
                                    browser_);
+  extensions::SetViewType(overlay_web_view->GetWebContents(),
+                          extensions::mojom::ViewType::kComponent);
   overlay_web_view->GetWebContents()->SetDelegate(this);
 
   overlay_web_view->LoadInitialURL(
@@ -146,19 +150,38 @@ bool AiOverlayDialogController::IsOverlayShowing() const {
   return overlay_web_view != nullptr && overlay_web_view->GetVisible();
 }
 
-void AiOverlayDialogController::set_captions_visible(bool visible) {
-  VLOG(1) << "set_captions_visible: " << visible;
-  if (captions_visible_ == visible) {
+// TODO(crbug.com/535704548): Consider renaming SetInputCaptionsVisible /
+// SetCaptionsVisible to SetInputCaptionsEnabled / SetCaptionsEnabled to
+// differentiate from ephemeral visibility.
+void AiOverlayDialogController::SetInputCaptionsVisible(bool visible) {
+  VLOG(1) << "SetInputCaptionsVisible: " << visible;
+  if (input_captions_visible_ == visible) {
     return;
   }
-  captions_visible_ = visible;
+  input_captions_visible_ = visible;
   for (auto& observer : observers_) {
-    observer.OnCaptionsVisibleChanged(visible);
+    observer.OnInputCaptionsVisibleChanged(visible);
   }
 }
 
-void AiOverlayDialogController::set_use_persona(bool use_persona) {
-  VLOG(1) << "set_use_persona: " << use_persona;
+void AiOverlayDialogController::SetOutputCaptionsVisible(bool visible) {
+  VLOG(1) << "SetOutputCaptionsVisible: " << visible;
+  if (output_captions_visible_ == visible) {
+    return;
+  }
+  output_captions_visible_ = visible;
+  for (auto& observer : observers_) {
+    observer.OnOutputCaptionsVisibleChanged(visible);
+  }
+}
+
+void AiOverlayDialogController::SetCaptionsVisible(bool visible) {
+  SetInputCaptionsVisible(visible);
+  SetOutputCaptionsVisible(visible);
+}
+
+void AiOverlayDialogController::SetUsePersona(bool use_persona) {
+  VLOG(1) << "SetUsePersona: " << use_persona;
   if (use_persona_ == use_persona) {
     return;
   }

@@ -90,7 +90,8 @@ AiOverlayDialogPageHandler::AiOverlayDialogPageHandler(
       browser_(browser) {
   if (auto* controller = AiOverlayDialogController::From(browser_)) {
     controller->AddObserver(this);
-    page_->SetCaptionsVisible(controller->captions_visible());
+    page_->SetInputCaptionsVisible(controller->input_captions_visible());
+    page_->SetOutputCaptionsVisible(controller->output_captions_visible());
     page_->SetUsePersona(controller->use_persona());
   }
 }
@@ -190,8 +191,12 @@ void AiOverlayDialogPageHandler::UpdateCurrentPageContext(
                                   std::move(root_node));
 }
 
-void AiOverlayDialogPageHandler::OnCaptionsVisibleChanged(bool visible) {
-  page_->SetCaptionsVisible(visible);
+void AiOverlayDialogPageHandler::OnInputCaptionsVisibleChanged(bool visible) {
+  page_->SetInputCaptionsVisible(visible);
+}
+
+void AiOverlayDialogPageHandler::OnOutputCaptionsVisibleChanged(bool visible) {
+  page_->SetOutputCaptionsVisible(visible);
 }
 
 void AiOverlayDialogPageHandler::OnUsePersonaChanged(bool use_persona) {

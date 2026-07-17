@@ -40,12 +40,16 @@ constexpr int kOptionsIconSizeTouch = 24;
 constexpr int kExtraWidth = 12;
 constexpr int kExtraWidthTouch = 24;
 
-void OnCaptionsToggled(ttc::AiOverlayDialogController* controller) {
-  controller->set_captions_visible(!controller->captions_visible());
+void OnInputCaptionsToggled(ttc::AiOverlayDialogController* controller) {
+  controller->SetInputCaptionsVisible(!controller->input_captions_visible());
+}
+
+void OnOutputCaptionsToggled(ttc::AiOverlayDialogController* controller) {
+  controller->SetOutputCaptionsVisible(!controller->output_captions_visible());
 }
 
 void OnPersonaToggled(ttc::AiOverlayDialogController* controller) {
-  controller->set_use_persona(!controller->use_persona());
+  controller->SetUsePersona(!controller->use_persona());
 }
 
 }  // namespace
@@ -173,18 +177,43 @@ void AiOverlayToolbarButton::OnOptionsButtonPressed() {
                            views::LayoutAlignment::kCenter, 0.0f,
                            views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
 
-  // Captions row
+  // Input Captions row
   contents_view->AddRows(1, views::TableLayout::kFixedSize);
 
-  auto* captions_label =
-      contents_view->AddChildView(std::make_unique<views::Label>(u"Captions"));
-  captions_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  // TODO(crbug.com/535704548): Move these hardcoded UI string literals ("Input
+  // Captions", "Output Captions", "Persona") to generated_resources.grd for
+  // localization.
+  auto* input_captions_label = contents_view->AddChildView(
+      std::make_unique<views::Label>(u"Input Captions"));
+  input_captions_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
-  auto* captions_toggle =
+  auto* input_captions_toggle =
       contents_view->AddChildView(std::make_unique<views::ToggleButton>(
-          base::BindRepeating(&OnCaptionsToggled, controller)));
-  captions_toggle->SetIsOn(controller->captions_visible());
-  captions_toggle->GetViewAccessibility().SetName(u"Captions");
+          base::BindRepeating(&OnInputCaptionsToggled, controller)));
+  input_captions_toggle->SetIsOn(controller->input_captions_visible());
+  input_captions_toggle->GetViewAccessibility().SetName(u"Input Captions");
+
+  // Spacing between captions rows
+  contents_view->AddPaddingRow(0,
+                               ChromeLayoutProvider::Get()->GetDistanceMetric(
+                                   views::DISTANCE_RELATED_CONTROL_VERTICAL) /
+                                   4);
+
+  // Output Captions row
+  contents_view->AddRows(1, views::TableLayout::kFixedSize);
+
+  // TODO(crbug.com/535704548): Move these hardcoded UI string literals ("Input
+  // Captions", "Output Captions", "Persona") to generated_resources.grd for
+  // localization.
+  auto* output_captions_label = contents_view->AddChildView(
+      std::make_unique<views::Label>(u"Output Captions"));
+  output_captions_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+  auto* output_captions_toggle =
+      contents_view->AddChildView(std::make_unique<views::ToggleButton>(
+          base::BindRepeating(&OnOutputCaptionsToggled, controller)));
+  output_captions_toggle->SetIsOn(controller->output_captions_visible());
+  output_captions_toggle->GetViewAccessibility().SetName(u"Output Captions");
 
   // Spacing between rows
   contents_view->AddPaddingRow(0,

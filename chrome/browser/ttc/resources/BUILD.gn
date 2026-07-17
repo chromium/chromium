@@ -33,7 +33,9 @@ build_webui("build") {
     "audio_player.ts",
     "audio_processor.ts",
     "audio_utils.ts",
+    "caption_block_manager.ts",
     "journal.ts",
+    "local_speech_recognition.ts",
     "logging.ts",
     "page_context_manager.ts",
   ]

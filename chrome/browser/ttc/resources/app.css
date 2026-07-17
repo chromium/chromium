@@ -12,6 +12,10 @@
   display: flex;
   flex-direction: row;
   align-items: flex-end;
+  justify-content: flex-end;
+  width: 800px;
+  min-height: 240px; /* Prevent height from collapsing when persona is disabled so captions still show */
+  position: relative;
 }
 
 #mock-buttons-column {
@@ -33,6 +37,8 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  position: relative;
+  z-index: 2;
 }
 
 video {
@@ -86,34 +92,73 @@ video[hidden],
   }
 }
 
-#transcription {
-  /* Because the flexbox resides in an auto-resized container, the sizing
-   * algorithm makes this box as small as possible. To prevent the captions from
-   * giving-way to the shrinking by wrapping, we use 'width: max-content' to set
-   * the width of this container to the maximum width without wrapping (i.e. the
-   * width if the text was all on one line), then set 'max-width' to impose a
-   * limit beyond which wrapping occurs. */
-  width: max-content;
-  max-width: 500px;
+#transcription-container {
+  position: absolute;
+  bottom: 24px;
+  left: 16px;
+  right: 16px;
+  z-index: 1;
+  pointer-events: none;
+  background: rgba(20, 20, 20, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  padding: 16px 24px; /* Symmetrical padding by default */
+  border-radius: 16px;
+  font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.5;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  /* Stable width on wide screens, but scales fluidly to 100% on narrow screens */
+  width: 640px;
+  max-width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+  letter-spacing: -0.01em;
 
-  margin-bottom: 20px;
-
-  /* hidden to avoid captions' box-decorations escaping the cell */
-  overflow: hidden;
+  /* Strictly fixed height for exactly 2 lines of text (54px) plus padding (16px * 2) = 86px */
+  height: 86px;
 }
 
-#transcription[hidden] {
+#transcription-container.has-persona {
+  padding-right: 120px; /* Reduced right padding to clear the avatar when enabled */
+}
+
+#transcription-container[hidden] {
   display: none;
 }
 
-#transcription-text {
-  background-color: rgba(0, 0, 0, 0.85);
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 16px;
-  line-height: 1.4;
-  box-decoration-break: clone;
+.caption-bubble {
+  width: 100%;
+  height: 54px; /* Strictly 2 lines of text (27px * 2) */
+  min-height: 54px;
+  max-height: 54px;
+  white-space: pre-line;
+  box-sizing: border-box;
+  overflow-y: auto;
+  scrollbar-width: none; /* Hide scrollbar for clean premium look */
+  transition: color 200ms ease;
+}
+
+.caption-bubble::-webkit-scrollbar {
+  display: none; /* Hide scrollbar in WebKit */
+}
+
+.caption-bubble.input {
+  text-align: left;
+  color: #90caf9; /* Beautiful, distinct light blue text */
+}
+
+.caption-bubble.output {
+  text-align: right;
+  color: #ffe082; /* Beautiful, distinct light amber text */
+}
+
+.caption-bubble[hidden] {
+  display: none;
 }
 
 .inject-audio {

@@ -25,6 +25,18 @@ export interface PersistedPageContext {
   content: unknown|null;
 }
 
+export enum ChunkAccumulationMode {
+  /* Replaces existing text (e.g. for accumulating snapshot recognizers). */
+  REPLACE = 'replace',
+  /* Appends to existing text (e.g. for delta chunk streams). */
+  APPEND = 'append',
+}
+
+export interface UpdateTurnOptions {
+  inputMode?: ChunkAccumulationMode;
+  outputMode?: ChunkAccumulationMode;
+}
+
 export interface JournalEntry {
   timestamp: number;
   type: JournalEntryType;
@@ -61,17 +73,39 @@ export class Journal {
         .map(e => e.data as PersistedPageContext);
   }
 
-  // Concatenates the supplied input and output transcriptions to the latest
-  // Turn's transcriptions if the latest turn is still in progress. If the
-  // latest turn is completed or no turn yet exists, a new Turn entry is first
-  // created.
-  updateCurrentTurn(input?: string, output?: string) {
+  /**
+   * Updates the supplied input and output transcriptions on the latest Turn.
+   * If the latest turn is completed or no turn yet exists, a new Turn entry is
+   * first created.
+   *
+   * Note on chunking behavior (`options`):
+   * Different speech/streaming APIs yield text differently:
+   * - Local/client speech recognizers (like Web Speech or Gemini live input)
+   *   often send accumulating full snapshots ("hello" -> "hello world"),
+   * requiring `ChunkAccumulationMode.REPLACE` (default for `input`).
+   * - Model response streams (like Gemini Live output) typically yield delta
+   *   chunks ("hello" -> " world" -> "!!"), requiring
+   *   `ChunkAccumulationMode.APPEND` (default for `output`).
+   */
+  updateCurrentTurn(
+      input?: string, output?: string, options: UpdateTurnOptions = {
+        inputMode: ChunkAccumulationMode.REPLACE,
+        outputMode: ChunkAccumulationMode.APPEND,
+      }) {
     const turn = this.getOrCreateLastTurn();
-    if (input) {
-      turn.inputTranscript += input;
+    if (input !== undefined) {
+      if (options.inputMode === ChunkAccumulationMode.APPEND) {
+        turn.inputTranscript += input;
+      } else {
+        turn.inputTranscript = input;
+      }
     }
-    if (output) {
-      turn.outputTranscript += output;
+    if (output !== undefined) {
+      if (options.outputMode === ChunkAccumulationMode.REPLACE) {
+        turn.outputTranscript = output;
+      } else {
+        turn.outputTranscript += output;
+      }
     }
   }
 

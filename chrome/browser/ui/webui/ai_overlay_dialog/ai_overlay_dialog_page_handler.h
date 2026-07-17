@@ -46,7 +46,8 @@ class AiOverlayDialogPageHandler
       ai_overlay_dialog::mojom::PageContentNodePtr root_node = nullptr);
 
   // AiOverlayDialogController::Observer
-  void OnCaptionsVisibleChanged(bool visible) override;
+  void OnInputCaptionsVisibleChanged(bool visible) override;
+  void OnOutputCaptionsVisibleChanged(bool visible) override;
   void OnUsePersonaChanged(bool use_persona) override;
 
  private:

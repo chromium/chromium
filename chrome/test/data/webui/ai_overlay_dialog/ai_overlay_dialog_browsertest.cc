@@ -40,4 +40,12 @@ IN_PROC_BROWSER_TEST_F(AiOverlayDialogWebUIBrowserTest, Persona) {
   RunTest("ai_overlay_dialog/persona_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(AiOverlayDialogWebUIBrowserTest, Conversation) {
+  RunTest("ai_overlay_dialog/conversation_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(AiOverlayDialogWebUIBrowserTest, ApiSession) {
+  RunTest("ai_overlay_dialog/api_session_test.js", "mocha.run()");
+}
+
 }  // namespace ttc

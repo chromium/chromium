@@ -40,6 +40,10 @@ export class AudioPlayer {
     return Math.sqrt(sumSquares / dataArray.length);
   }
 
+  isPlaying(): boolean {
+    return this.sources.length > 0;
+  }
+
   play(base64Data: string) {
     if (!this.audioContext) {
       return;

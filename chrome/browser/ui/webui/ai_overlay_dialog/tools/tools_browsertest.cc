@@ -63,7 +63,8 @@ class FakePage : public ai_overlay_dialog::mojom::Page {
   void UpdateCurrentPageContext(
       const std::string& page_title,
       ai_overlay_dialog::mojom::PageContentNodePtr root_node) override {}
-  void SetCaptionsVisible(bool visible) override {}
+  void SetInputCaptionsVisible(bool visible) override {}
+  void SetOutputCaptionsVisible(bool visible) override {}
   void SetUsePersona(bool use_persona) override {}
 
  private:

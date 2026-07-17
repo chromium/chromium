@@ -48,8 +48,13 @@ interface Page {
   // Passes context about the current page to the app.
   UpdateCurrentPageContext(string page_title, PageContentNode? root_node);
 
-  // Controls whether captions are visible.
-  SetCaptionsVisible(bool visible);
+  // TODO(crbug.com/535704548): Consider renaming SetInputCaptionsVisible to
+  // SetInputCaptionsEnabled to avoid confusion with time-based/ephemeral visibility.
+  // Controls whether input captions are visible.
+  SetInputCaptionsVisible(bool visible);
+
+  // Controls whether output captions are visible.
+  SetOutputCaptionsVisible(bool visible);
 
   // Sets whether to use a persona.
   SetUsePersona(bool use_persona);
