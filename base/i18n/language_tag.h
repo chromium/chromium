@@ -95,6 +95,8 @@ class BASE_I18N_EXPORT LanguageTag {
         .value_or(i18n_internal::ParsedBcp47Tag())
         .language;
   }
+  // Creates a new `LanguageTag` containing only the language subtag.
+  LanguageTag WithLanguageSubtagOnly() const;
 
   // Returns the region subtag in the language tag if present.
   // Examples:

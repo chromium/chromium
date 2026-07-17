@@ -93,6 +93,11 @@ std::string LanguageTag::ToLegacyICUFormat() const {
   return legacy_code;
 }
 
+LanguageTag LanguageTag::WithLanguageSubtagOnly() const {
+  CHECK(language_subtag().size() >= 2);
+  return LanguageTag(ImmutableStringType({language_subtag()}));
+}
+
 LanguageTag::LanguageTag(ImmutableStringType tag) : tag_(std::move(tag)) {
   CHECK(tag_string().size() >= 2);
 }

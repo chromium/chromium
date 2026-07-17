@@ -572,18 +572,21 @@ TEST(LanguageTagTest, GetLanguageSubtag) {
   ASSERT_OK_AND_ASSIGN(LanguageTag lt_en_us,
                        LanguageTagConverter::GetInstance().FromString("en-US"));
   EXPECT_EQ(lt_en_us.language_subtag(), "en");
+  EXPECT_EQ(lt_en_us.WithLanguageSubtagOnly(), GetKnownLanguageTag("en"));
 
   // Undefined case.
   ASSERT_OK_AND_ASSIGN(
       LanguageTag und_us,
       LanguageTagConverter::GetInstance().FromString("und-US"));
   EXPECT_EQ(und_us.language_subtag(), "und");
+  EXPECT_EQ(und_us.WithLanguageSubtagOnly(), GetKnownLanguageTag("und"));
 
   // Chinese case.
   ASSERT_OK_AND_ASSIGN(
       LanguageTag zh_cn,
       LanguageTagConverter::GetInstance().FromString("zh-Hans-CN"));
   EXPECT_EQ(zh_cn.language_subtag(), "zh");
+  EXPECT_EQ(zh_cn.WithLanguageSubtagOnly(), GetKnownLanguageTag("zh"));
 }
 
 TEST(LanguageTagTest, GetRegionSubtag) {
