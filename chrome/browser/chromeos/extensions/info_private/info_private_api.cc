@@ -15,6 +15,7 @@
 #include "base/check_deref.h"
 #include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -351,7 +352,7 @@ std::unique_ptr<base::Value> GetValue(const std::string& property_name) {
 
   if (property_name == kPropertyInitialLocale) {
     return std::make_unique<base::Value>(
-        ash::StartupUtils::GetInitialLocale(local_state));
+        ash::StartupUtils::GetInitialLocale(local_state).tag_string());
   }
 
   if (property_name == kPropertyBoard) {

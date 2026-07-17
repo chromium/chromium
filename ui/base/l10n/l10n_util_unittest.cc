@@ -566,61 +566,6 @@ TEST_F(L10nUtilTest, GetParentLocales) {
               ElementsAre("sr_Cyrl_RS", "sr_Cyrl", "sr"));
 }
 
-TEST_F(L10nUtilTest, IsValidLocaleSyntax) {
-  // Test valid locales.
-  EXPECT_TRUE(l10n_util::IsValidLocaleSyntax("en"));
-  EXPECT_TRUE(l10n_util::IsValidLocaleSyntax("fr"));
-  EXPECT_TRUE(l10n_util::IsValidLocaleSyntax("de"));
-  EXPECT_TRUE(l10n_util::IsValidLocaleSyntax("pt"));
-  EXPECT_TRUE(l10n_util::IsValidLocaleSyntax("zh"));
-  EXPECT_TRUE(l10n_util::IsValidLocaleSyntax("fil"));
-  EXPECT_TRUE(l10n_util::IsValidLocaleSyntax("haw"));
-  EXPECT_TRUE(l10n_util::IsValidLocaleSyntax("en-US"));
-  EXPECT_TRUE(l10n_util::IsValidLocaleSyntax("en_US"));
-  EXPECT_TRUE(l10n_util::IsValidLocaleSyntax("en_GB"));
-  EXPECT_TRUE(l10n_util::IsValidLocaleSyntax("pt-BR"));
-  EXPECT_TRUE(l10n_util::IsValidLocaleSyntax("zh_CN"));
-  EXPECT_TRUE(l10n_util::IsValidLocaleSyntax("zh_Hans"));
-  EXPECT_TRUE(l10n_util::IsValidLocaleSyntax("zh_Hans_CN"));
-  EXPECT_TRUE(l10n_util::IsValidLocaleSyntax("zh_Hant"));
-  EXPECT_TRUE(l10n_util::IsValidLocaleSyntax("zh_Hant_TW"));
-  EXPECT_TRUE(l10n_util::IsValidLocaleSyntax("fr_CA"));
-  EXPECT_TRUE(l10n_util::IsValidLocaleSyntax("i-klingon"));
-  EXPECT_TRUE(l10n_util::IsValidLocaleSyntax("es-419"));
-  EXPECT_TRUE(l10n_util::IsValidLocaleSyntax("en_IE_PREEURO"));
-  EXPECT_TRUE(l10n_util::IsValidLocaleSyntax("en_IE_u_cu_IEP"));
-  EXPECT_TRUE(l10n_util::IsValidLocaleSyntax("en_IE@currency=IEP"));
-  EXPECT_TRUE(l10n_util::IsValidLocaleSyntax("fr@x=y"));
-  EXPECT_TRUE(l10n_util::IsValidLocaleSyntax("zh_CN@foo=bar"));
-  EXPECT_TRUE(l10n_util::IsValidLocaleSyntax(
-      "fr@collation=phonebook;calendar=islamic-civil"));
-  EXPECT_TRUE(l10n_util::IsValidLocaleSyntax(
-      "sr_Latn_RS_REVISED@currency=USD"));
-
-  // Test invalid locales.
-  EXPECT_FALSE(l10n_util::IsValidLocaleSyntax(std::string()));
-  EXPECT_FALSE(l10n_util::IsValidLocaleSyntax("x"));
-  EXPECT_FALSE(l10n_util::IsValidLocaleSyntax("12"));
-  EXPECT_FALSE(l10n_util::IsValidLocaleSyntax("456"));
-  EXPECT_FALSE(l10n_util::IsValidLocaleSyntax("a1"));
-  EXPECT_FALSE(l10n_util::IsValidLocaleSyntax("enUS"));
-  EXPECT_FALSE(l10n_util::IsValidLocaleSyntax("zhcn"));
-  EXPECT_FALSE(l10n_util::IsValidLocaleSyntax("en.US"));
-  EXPECT_FALSE(l10n_util::IsValidLocaleSyntax("en#US"));
-  EXPECT_FALSE(l10n_util::IsValidLocaleSyntax("-en-US"));
-  EXPECT_FALSE(l10n_util::IsValidLocaleSyntax("en-US-"));
-  EXPECT_FALSE(l10n_util::IsValidLocaleSyntax("123-en-US"));
-  EXPECT_FALSE(l10n_util::IsValidLocaleSyntax("Latin"));
-  EXPECT_FALSE(l10n_util::IsValidLocaleSyntax("German"));
-  EXPECT_FALSE(l10n_util::IsValidLocaleSyntax("pt--BR"));
-  EXPECT_FALSE(l10n_util::IsValidLocaleSyntax("sl-macedonia"));
-  EXPECT_FALSE(l10n_util::IsValidLocaleSyntax("@"));
-  EXPECT_FALSE(l10n_util::IsValidLocaleSyntax("en-US@"));
-  EXPECT_FALSE(l10n_util::IsValidLocaleSyntax("en-US@x"));
-  EXPECT_FALSE(l10n_util::IsValidLocaleSyntax("en-US@x="));
-  EXPECT_FALSE(l10n_util::IsValidLocaleSyntax("en-US@=y"));
-}
-
 TEST_F(L10nUtilTest, TimeDurationFormatAllLocales) {
   base::test::ScopedRestoreICUDefaultLocale restore_locale;
 

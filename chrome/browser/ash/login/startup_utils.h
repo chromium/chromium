@@ -13,6 +13,10 @@ class PrefRegistrySimple;
 class PrefService;
 
 namespace base {
+namespace i18n {
+class LanguageTag;
+}  // namespace i18n
+
 class Time;
 class TimeDelta;
 }  // namespace base
@@ -65,7 +69,8 @@ class StartupUtils {
   static void MarkEnrollmentRecoveryRequired(PrefService& local_state);
 
   // Returns initial locale from local settings.
-  static std::string GetInitialLocale(const PrefService& local_state);
+  static base::i18n::LanguageTag GetInitialLocale(
+      const PrefService& local_state);
 
   // Sets initial locale in local settings.
   static void SetInitialLocale(PrefService& local_state,

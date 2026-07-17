@@ -124,7 +124,7 @@
   },
   {
     "id": "ckb-g1",
-    "locale": "ckb-g1",
+    "locale": "ckb",
     "dots": "6",
     "grade": "1",
     "fileNames": "ckb-g1.ctb"
@@ -202,7 +202,7 @@
   },
   {
     "id": "sk-g1",
-    "locale": "sk-g1",
+    "locale": "sk",
     "dots": "6",
     "grade": "1",
     "fileNames": "sk-g1.ctb"
@@ -292,21 +292,21 @@
   },
   {
     "id": "es-g1",
-    "locale": "es-g1",
+    "locale": "es",
     "dots": "6",
     "grade": "1",
     "fileNames": "es-g1.ctb"
   },
   {
     "id": "hr-g1",
-    "locale": "hr-g1",
+    "locale": "hr",
     "dots": "6",
     "grade": "1",
     "fileNames": "hr-g1.ctb"
   },
   {
     "id": "cs-g1",
-    "locale": "cs-g1",
+    "locale": "cs",
     "dots": "6",
     "grade": "1",
     "fileNames": "cs-g1.ctb"
@@ -472,7 +472,7 @@
   },
   {
     "id": "sr-g1",
-    "locale": "sr-g1",
+    "locale": "sr",
     "dots": "6",
     "grade": "1",
     "fileNames": "sr-g1.ctb"
@@ -881,7 +881,7 @@
   },
   {
     "id": "et-g0",
-    "locale": "et-g0",
+    "locale": "et",
     "dots": "6",
     "grade": "0",
     "fileNames": "et-g0.utb"
@@ -1038,7 +1038,7 @@
   },
   {
     "id": "tr-g1",
-    "locale": "tr-g1",
+    "locale": "tr",
     "dots": "6",
     "grade": "1",
     "fileNames": "tr-g1.ctb"
@@ -1130,7 +1130,7 @@
   },
   {
     "id": "ca-g1",
-    "locale": "ca-g1",
+    "locale": "ca",
     "dots": "6",
     "grade": "1",
     "fileNames": "ca-g1.ctb"
@@ -1183,7 +1183,7 @@
   },
   {
     "id": "tr-g2",
-    "locale": "tr-g2",
+    "locale": "tr",
     "dots": "6",
     "grade": "2",
     "fileNames": "tr-g2.ctb"
@@ -1198,7 +1198,7 @@
   },
   {
     "id": "eo-g1",
-    "locale": "eo-g1",
+    "locale": "eo",
     "dots": "6",
     "grade": "1",
     "fileNames": "eo-g1.ctb"
@@ -1380,7 +1380,7 @@
   },
   {
     "id": "de-g0-detailed",
-    "locale": "de-g0",
+    "locale": "de",
     "dots": "6",
     "grade": "0",
     "fileNames": "de-g0-detailed.utb",
@@ -1396,7 +1396,7 @@
   },
   {
     "id": "de-g1-detailed",
-    "locale": "de-g1",
+    "locale": "de",
     "dots": "6",
     "grade": "1",
     "fileNames": "de-g1-detailed.ctb",

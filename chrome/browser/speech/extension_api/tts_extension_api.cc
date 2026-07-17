@@ -10,6 +10,8 @@
 #include <string>
 #include <utility>
 
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -197,7 +199,9 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
     EXTENSION_FUNCTION_VALIDATE(lang_value->is_string());
     lang = lang_value->GetString();
   }
-  if (!lang.empty() && !l10n_util::IsValidLocaleSyntax(lang)) {
+  if (!lang.empty() && !base::i18n::LanguageTagConverter::GetInstance()
+                            .FromString(lang)
+                            .has_value()) {
     return RespondNow(Error(constants::kErrorInvalidLang));
   }
 

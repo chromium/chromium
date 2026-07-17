@@ -354,12 +354,13 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
       bool locale_supported = false;
       for (const base::Value& locale : *supported_locales) {
         const std::string* current_locale = locale.GetIfString();
-        if (current_locale && l10n_util::IsValidLocaleSyntax(*current_locale)) {
-          std::optional<base::i18n::LanguageTag> current_tag =
-              base::i18n::LanguageTagConverter::GetInstance().FromString(
-                  *current_locale);
-          std::string normalized_locale =
-              current_tag ? current_tag->ToLegacyICUFormat() : "";
+        std::optional<base::i18n::LanguageTag> current_tag =
+            current_locale
+                ? base::i18n::LanguageTagConverter::GetInstance().FromString(
+                      *current_locale)
+                : std::nullopt;
+        if (current_tag) {
+          std::string normalized_locale = current_tag->ToLegacyICUFormat();
           if (std::ranges::contains(browser_locales, normalized_locale)) {
             locale_supported = true;
             break;

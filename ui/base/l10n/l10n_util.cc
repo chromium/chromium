@@ -523,74 +523,7 @@ std::vector<std::string> GetParentLocales(std::string_view current_locale) {
   return parent_locales;
 }
 
-bool IsValidLocaleSyntax(std::string_view locale) {
-  // Check that the length is plausible.
-  if (locale.size() < 2 || locale.size() >= ULOC_FULLNAME_CAPACITY)
-    return false;
 
-  // Strip off the part after an '@' sign, which might contain keywords,
-  // as in en_IE@currency=IEP or fr@collation=phonebook;calendar=islamic-civil.
-  // We don't validate that part much, just check that there's at least one
-  // equals sign in a plausible place. Normalize the prefix so that hyphens
-  // are changed to underscores.
-  std::string prefix(locale);
-  std::ranges::replace(prefix, '-', '_');
-  const size_t split_point = locale.find("@");
-  if (split_point != std::string::npos) {
-    const std::string_view keywords = locale.substr(split_point + 1);
-    prefix = locale.substr(0, split_point);
-
-    size_t equals_loc = keywords.find("=");
-    if (equals_loc == 0 || equals_loc == std::string::npos ||
-        equals_loc > keywords.size() - 2) {
-      return false;
-    }
-  }
-
-  // Check that all characters before the at-sign are alphanumeric or
-  // underscore.
-  for (char ch : prefix) {
-    if (!base::IsAsciiAlpha(ch) && !base::IsAsciiDigit(ch) && ch != '_')
-      return false;
-  }
-
-  // Check that the initial token (before the first hyphen/underscore)
-  // is 1 - 3 alphabetical characters (a language tag).
-  for (size_t i = 0; i < prefix.size(); i++) {
-    char ch = prefix[i];
-    if (ch == '_') {
-      if (i < 1 || i > 3)
-        return false;
-      break;
-    }
-    if (!base::IsAsciiAlpha(ch))
-      return false;
-  }
-
-  // Check that the all tokens after the initial token are 1 - 8 characters.
-  // (Tokenize/StringTokenizer don't work here, they collapse multiple
-  // delimiters into one.)
-  int token_len = 0;
-  int token_index = 0;
-  for (char ch : prefix) {
-    if (ch != '_') {
-      token_len++;
-      continue;
-    }
-
-    if (token_index > 0 && (token_len < 1 || token_len > 8)) {
-      return false;
-    }
-    token_index++;
-    token_len = 0;
-  }
-  if (token_index == 0 && (token_len < 1 || token_len > 3))
-    return false;
-  if (token_len < 1 || token_len > 8)
-    return false;
-
-  return true;
-}
 
 std::string GetStringUTF8(int message_id) {
   return base::UTF16ToUTF8(GetStringUTF16(message_id));

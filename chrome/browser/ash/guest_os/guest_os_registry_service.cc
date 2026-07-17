@@ -15,6 +15,8 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
@@ -124,12 +126,9 @@ base::DictValue ProtoToDictionary(const App::LocaleString& locale_string) {
   base::DictValue result;
   for (const App::LocaleString::Entry& entry : locale_string.values()) {
     const std::string& locale = entry.locale();
-
-    std::string locale_with_dashes(locale);
-    std::replace(locale_with_dashes.begin(), locale_with_dashes.end(), '_',
-                 '-');
-    if (!locale.empty() &&
-        !l10n_util::IsValidLocaleSyntax(locale_with_dashes)) {
+    if (!locale.empty() && !base::i18n::LanguageTagConverter::GetInstance()
+                                .FromString(locale)
+                                .has_value()) {
       continue;
     }
 
@@ -165,12 +164,9 @@ base::DictValue LocaleStringsProtoToDictionary(
   base::DictValue result;
   for (const auto& strings_with_locale : repeated_locale_string.values()) {
     const std::string& locale = strings_with_locale.locale();
-
-    std::string locale_with_dashes(locale);
-    std::replace(locale_with_dashes.begin(), locale_with_dashes.end(), '_',
-                 '-');
-    if (!locale.empty() &&
-        !l10n_util::IsValidLocaleSyntax(locale_with_dashes)) {
+    if (!locale.empty() && !base::i18n::LanguageTagConverter::GetInstance()
+                                .FromString(locale)
+                                .has_value()) {
       continue;
     }
     result.Set(locale, ProtoToList(strings_with_locale.value()));

@@ -11,6 +11,7 @@
 
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_translation_dispatcher.h"
@@ -68,8 +69,8 @@ class BabelOrcaCaptionTranslator {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  std::optional<std::string> current_source_language_;
-  std::optional<std::string> current_target_language_;
+  std::optional<base::i18n::LanguageTag> current_source_language_;
+  std::optional<base::i18n::LanguageTag> current_target_language_;
 
   ::captions::TranslationCache translation_cache_;
   std::unique_ptr<BabelOrcaTranslationDipsatcher> translation_dispatcher_;

@@ -17,6 +17,8 @@
 #include "base/check_deref.h"
 #include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/json/string_escape.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
@@ -2349,8 +2351,12 @@ const std::string ReadAnythingAppController::GetDisplayNameForLocale(
     const std::string& display_locale) const {
   bool found_valid_result = false;
   std::string locale_result;
-  if (l10n_util::IsValidLocaleSyntax(locale) &&
-      l10n_util::IsValidLocaleSyntax(display_locale)) {
+  if (base::i18n::LanguageTagConverter::GetInstance()
+          .FromString(locale)
+          .has_value() &&
+      base::i18n::LanguageTagConverter::GetInstance()
+          .FromString(display_locale)
+          .has_value()) {
     locale_result = base::UTF16ToUTF8(l10n_util::GetDisplayNameForLocale(
         locale, display_locale, /*is_for_ui=*/true));
     // Check for valid locales before getting the display name.
