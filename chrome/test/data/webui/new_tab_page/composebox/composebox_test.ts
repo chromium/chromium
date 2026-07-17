@@ -690,6 +690,62 @@ suite('NewTabPageComposeboxTest', () => {
           testProxy.searchboxHandler.getCallCount('openAutocompleteMatch'), 1);
     });
 
+    test('Realbox keepMenuOpenOnTabSelect reads from loadTimeData', () => {
+      loadTimeData.overrideValues({
+        keepMenuOpenOnTabSelectForRealbox: false,
+      });
+      createComposeboxElement(testProxy);
+      assertFalse(testProxy.element.keepMenuOpenOnTabSelect);
+
+      loadTimeData.overrideValues({
+        keepMenuOpenOnTabSelectForRealbox: true,
+      });
+      assertTrue(testProxy.element.keepMenuOpenOnTabSelect);
+    });
+
+    test('Realbox keepMenuOpenForMultiSelection gating behavior', async () => {
+      createComposeboxElement(testProxy);
+
+      let openMenuCalled = false;
+      testProxy.element.getContextEntrypointElement = () => {
+        return {
+          openMenuForMultiSelection: () => {
+            openMenuCalled = true;
+          },
+        } as ContextualEntrypointAndMenuElement;
+      };
+
+      // Case 1: `contextManagementEnabled`= true,
+      // `keepMenuOpenOnTabSelectForRealbox` = false -> returns early
+      // and does not keep menu open.
+      testProxy.element.contextManagementInComposeboxEnabled = true;
+      loadTimeData.overrideValues({
+        keepMenuOpenOnTabSelectForRealbox: false,
+      });
+      openMenuCalled = false;
+      await testProxy.element.keepMenuOpenForMultiSelection();
+      assertFalse(openMenuCalled);
+
+      // Case 2: `contextManagementEnabled = true`,
+      // `keepMenuOpenOnTabSelectForRealbox = true` -> keeps menu open
+      loadTimeData.overrideValues({
+        keepMenuOpenOnTabSelectForRealbox: true,
+      });
+      openMenuCalled = false;
+      await testProxy.element.keepMenuOpenForMultiSelection();
+      assertTrue(openMenuCalled);
+
+      // Case 3: `contextManagementEnabled = false` (!`contextMenu`) ->
+      // keeps menu open regardless of `keepOpen` flag
+      testProxy.element.contextManagementInComposeboxEnabled = false;
+      loadTimeData.overrideValues({
+        keepMenuOpenOnTabSelectForRealbox: false,
+      });
+      openMenuCalled = false;
+      await testProxy.element.keepMenuOpenForMultiSelection();
+      assertTrue(openMenuCalled);
+    });
+
     // Required to test how the voice chips are integrated into NTP html
     // (event listeners, id's, classes, etc.):
     suite('voice search', () => {
@@ -1347,61 +1403,5 @@ suite('NewTabPageComposeboxResizeObserverTest', () => {
     assertEquals(
         0, getActiveObserversForTarget(testProxy.element.$.matches).length);
     assertTrue(composeboxObservers.every(observer => observer.disconnected));
-  });
-
-  test('Realbox keepMenuOpenOnTabSelect reads from loadTimeData', () => {
-    loadTimeData.overrideValues({
-      keepMenuOpenOnTabSelectForRealbox: false,
-    });
-    createComposeboxElement(testProxy);
-    assertFalse(testProxy.element.keepMenuOpenOnTabSelect);
-
-    loadTimeData.overrideValues({
-      keepMenuOpenOnTabSelectForRealbox: true,
-    });
-    assertTrue(testProxy.element.keepMenuOpenOnTabSelect);
-  });
-
-  test('Realbox keepMenuOpenForMultiSelection gating behavior', async () => {
-    createComposeboxElement(testProxy);
-
-    let openMenuCalled = false;
-    testProxy.element.getContextEntrypointElement = () => {
-      return {
-        openMenuForMultiSelection: () => {
-          openMenuCalled = true;
-        },
-      } as ContextualEntrypointAndMenuElement;
-    };
-
-    // Case 1: `contextManagementEnabled`= true,
-    // `keepMenuOpenOnTabSelectForRealbox` = false -> returns early
-    // and does not keep menu open.
-    testProxy.element.contextManagementInComposeboxEnabled = true;
-    loadTimeData.overrideValues({
-      keepMenuOpenOnTabSelectForRealbox: false,
-    });
-    openMenuCalled = false;
-    await testProxy.element.keepMenuOpenForMultiSelection();
-    assertFalse(openMenuCalled);
-
-    // Case 2: `contextManagementEnabled = true`,
-    // `keepMenuOpenOnTabSelectForRealbox = true` -> keeps menu open
-    loadTimeData.overrideValues({
-      keepMenuOpenOnTabSelectForRealbox: true,
-    });
-    openMenuCalled = false;
-    await testProxy.element.keepMenuOpenForMultiSelection();
-    assertTrue(openMenuCalled);
-
-    // Case 3: `contextManagementEnabled = false` (!`contextMenu`) ->
-    // keeps menu open regardless of `keepOpen` flag
-    testProxy.element.contextManagementInComposeboxEnabled = false;
-    loadTimeData.overrideValues({
-      keepMenuOpenOnTabSelectForRealbox: false,
-    });
-    openMenuCalled = false;
-    await testProxy.element.keepMenuOpenForMultiSelection();
-    assertTrue(openMenuCalled);
   });
 });
