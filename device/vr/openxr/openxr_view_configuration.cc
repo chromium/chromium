@@ -11,8 +11,12 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/system/sys_info.h"
 #include "build/build_config.h"
+#include "device/vr/public/cpp/switches.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
@@ -28,6 +32,12 @@ constexpr XrView kDefaultView{
     /*next=*/nullptr,
     /*pose=*/{{0, 0, 0, 1}, {0, 0, 0}},
     /*fov=*/{kDefaultFov, kDefaultFov, kDefaultFov, kDefaultFov}};
+
+// TODO(crbug.com/529457611): Windows does not support framebuffer scaling.
+constexpr bool kSupportsViewportScaling = !BUILDFLAG(IS_WIN);
+
+constexpr base::ByteSize kLowMemoryThreshold = base::GiBU(8);
+constexpr double kLowMemoryDefaultMaxScaleFactor = 1.5f;
 }  // namespace
 
 mojom::XREye GetEyeFromIndex(int i) {
@@ -54,8 +64,77 @@ OpenXrViewProperties::OpenXrViewProperties(
            << xr_properties_.recommendedImageRectWidth
            << " recommendedImageRectHeight="
            << xr_properties_.recommendedImageRectHeight;
+
+  CalculateViewportScaledProperties();
 }
 OpenXrViewProperties::~OpenXrViewProperties() = default;
+
+void OpenXrViewProperties::CalculateViewportScaledProperties() {
+  // Clamp texture sizes based on GL texture limits and number of views.
+  uint32_t clamped_recommended_width =
+      ClampWidth(xr_properties_.recommendedImageRectWidth);
+  uint32_t clamped_recommended_height =
+      ClampHeight(xr_properties_.recommendedImageRectHeight);
+
+  // If viewport scaling isn't supported, just use the recommended width/height.
+  if constexpr (!kSupportsViewportScaling) {
+    viewport_scaled_width_ = clamped_recommended_width;
+    viewport_scaled_height_ = clamped_recommended_height;
+    return;
+  }
+
+  uint32_t clamped_max_width = ClampWidth(xr_properties_.maxImageRectWidth);
+  uint32_t clamped_max_height = ClampHeight(xr_properties_.maxImageRectHeight);
+
+  // Determine what scale factor will be applied to the recommended width and
+  // height to report the maximum allowed width/height to the page. The inverse
+  // of this will be reported to the page as the `defaultFrameBufferScale`,
+  // since that is the actual recommendation, but if the page then sets their
+  // framebuffer scale to 1.0 they'd receive this maximum texture size. By
+  // computing the scale factor this way, we ensure that the aspect ratio of the
+  // recommended width/height are preserved.
+  // Start by computing the absolute largest scale factor that can be applied
+  // (e.g. the scale factor that will max out the recommended width or height
+  // first when applied).
+  double scale_factor = std::min(
+      static_cast<double>(clamped_max_width) / clamped_recommended_width,
+      static_cast<double>(clamped_max_height) / clamped_recommended_height);
+  DVLOG(1) << __func__ << " initial scale_factor=" << scale_factor;
+
+  // We absolutely cannot go over the current scale_factor due to hardware
+  // limitations, but if there's a value set from the command line, don't use
+  // our default logic for determining the scale factor to apply.
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kWebXrMaxFramebufferScale)) {
+    std::string switch_value =
+        command_line->GetSwitchValueASCII(switches::kWebXrMaxFramebufferScale);
+    double command_line_scale_limit;
+    if (base::StringToDouble(switch_value, &command_line_scale_limit) &&
+        command_line_scale_limit > 0.0) {
+      DVLOG(1) << __func__ << " command line switch "
+               << switches::kWebXrMaxFramebufferScale << "="
+               << command_line_scale_limit
+               << " computed scale_factor=" << scale_factor;
+      scale_factor = std::min(scale_factor, command_line_scale_limit);
+    }
+  } else {
+    // Limit max framebuffer scale on low-memory devices.
+    if (base::SysInfo::AmountOfTotalPhysicalMemory() <= kLowMemoryThreshold) {
+      scale_factor = std::min(scale_factor, kLowMemoryDefaultMaxScaleFactor);
+    }
+  }
+
+  // Compute final viewport dimensions by scaling recommended bounds by
+  // scale_factor.
+  viewport_scaled_width_ =
+      ClampWidth(std::round(clamped_recommended_width * scale_factor));
+  viewport_scaled_height_ =
+      ClampHeight(std::round(clamped_recommended_height * scale_factor));
+
+  DVLOG(1) << __func__ << " final scale_factor=" << scale_factor
+           << " viewport_scaled_width_=" << viewport_scaled_width_
+           << " viewport_scaled_height_=" << viewport_scaled_height_;
+}
 
 uint32_t OpenXrViewProperties::ClampWidth(uint32_t val) const {
   return std::min(
@@ -67,23 +146,11 @@ uint32_t OpenXrViewProperties::ClampHeight(uint32_t val) const {
 }
 
 uint32_t OpenXrViewProperties::Width() const {
-  // TODO(crbug.com/529457611): Windows does not support framebuffer scaling, so
-  // must use the recommended size.
-  if constexpr (BUILDFLAG(IS_WIN)) {
-    return ClampWidth(xr_properties_.recommendedImageRectWidth);
-  } else {
-    return ClampWidth(xr_properties_.maxImageRectWidth);
-  }
+  return viewport_scaled_width_;
 }
 
 uint32_t OpenXrViewProperties::Height() const {
-  // TODO(crbug.com/529457611): Windows does not support framebuffer scaling, so
-  // must use the recommended size.
-  if constexpr (BUILDFLAG(IS_WIN)) {
-    return ClampHeight(xr_properties_.recommendedImageRectHeight);
-  } else {
-    return ClampHeight(xr_properties_.maxImageRectHeight);
-  }
+  return viewport_scaled_height_;
 }
 
 uint32_t OpenXrViewProperties::RecommendedSwapchainSampleCount() const {
@@ -91,19 +158,21 @@ uint32_t OpenXrViewProperties::RecommendedSwapchainSampleCount() const {
 }
 
 float OpenXrViewProperties::RecommendedViewportScale() const {
-  // TODO(crbug.com/529457611): Windows does not support framebuffer scaling, so
-  // must use the recommended size.
-  if constexpr (BUILDFLAG(IS_WIN)) {
+  // Width() and Height() *should* return the same values as the ClampWidth and
+  // ClampHeight calls on the recommended values, meaning that the calculations
+  // work out to 1.0, but due to floating point precision and to avoid needless
+  // calculations, just return 1 directly if viewport scaling isn't supported.
+  if constexpr (!kSupportsViewportScaling) {
     return 1.0f;
-  } else {
-    float width_scale = static_cast<float>(ClampWidth(
-                            xr_properties_.recommendedImageRectWidth)) /
-                        Width();
-    float height_scale = static_cast<float>(ClampHeight(
-                             xr_properties_.recommendedImageRectHeight)) /
-                         Height();
-    return std::min(width_scale, height_scale);
   }
+
+  float width_scale =
+      static_cast<float>(ClampWidth(xr_properties_.recommendedImageRectWidth)) /
+      Width();
+  float height_scale = static_cast<float>(ClampHeight(
+                           xr_properties_.recommendedImageRectHeight)) /
+                       Height();
+  return std::min(width_scale, height_scale);
 }
 
 uint32_t OpenXrViewProperties::MaxSwapchainSampleCount() const {

@@ -16,6 +16,8 @@ COMPONENT_EXPORT(VR_FEATURES)
 extern const char kWebXrHandAnonymizationStrategyRuntime[];
 COMPONENT_EXPORT(VR_FEATURES)
 extern const char kWebXrHandAnonymizationStrategyFallback[];
+COMPONENT_EXPORT(VR_FEATURES)
+extern const char kWebXrMaxFramebufferScale[];
 }  // namespace device::switches
 
 #endif  // DEVICE_VR_PUBLIC_CPP_SWITCHES_H_
