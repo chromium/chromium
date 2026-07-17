@@ -435,7 +435,8 @@ CGFloat const kTitleLogoHeight = 32;
 #pragma mark - ConfirmationAlertViewController
 
 - (void)customizeSubtitle:(UITextView*)subtitle {
-  subtitle.textContainerInset = UIEdgeInsetsZero;
+  subtitle.font =
+      PreferredFontForTextStyle(UIFontTextStyleFootnote, UIFontWeightSemibold);
 }
 
 @end

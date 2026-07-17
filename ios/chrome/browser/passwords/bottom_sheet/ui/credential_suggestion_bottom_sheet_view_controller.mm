@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/favicon_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/image_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/credential_provider/net_util.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
@@ -302,6 +303,11 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
     // Setting `attributedText` overrides `textColor` set in the parent class,
     // which does not render visibly in dark mode.
     subtitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  } else {
+    // When `_subtitle` is nil, the parent class default subtitle text is used.
+    // Apply semibold styling to the entire default header subtitle.
+    subtitle.font = PreferredFontForTextStyle(UIFontTextStyleFootnote,
+                                              UIFontWeightSemibold);
   }
 }
 
