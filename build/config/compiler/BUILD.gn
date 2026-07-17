@@ -1797,6 +1797,9 @@ config("tot_warnings") {
     cflags += [
       # TODO(crbug.com/533040708): Figure out what to do about this.
       "-Wno-deprecated-attributes",
+
+      # TODO(crbug.com/526996813): Figure out what to do about this.
+      "-Wno-stringop-overread",
     ]
   }
 }
