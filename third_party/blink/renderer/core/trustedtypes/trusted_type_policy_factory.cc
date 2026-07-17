@@ -486,6 +486,15 @@ void TrustedTypePolicyFactory::Trace(Visitor* visitor) const {
   visitor->Trace(policy_map_);
 }
 
+// Ensure that the qualified names are constructed on the main thread to avoid
+// race conditions in the QualifiedNameCache (crbug.com/503618702).
+// static
+void TrustedTypePolicyFactory::EagerlyInitializeOnMainThread() {
+  DCHECK(IsMainThread());
+  GetAttributeTypeVector();
+  GetPropertyTypeVector();
+}
+
 inline bool FindEventHandlerAttributeInTable(
     const AtomicString& attributeName) {
   return SpecificTrustedType::kScript ==
