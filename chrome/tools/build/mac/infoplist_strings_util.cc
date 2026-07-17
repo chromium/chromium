@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // Helper tool that is built and run during a build to pull strings from
 // the GRD files and generate the InfoPlist.strings files needed for
 // macOS app bundles.
@@ -18,6 +13,8 @@
 #include <memory>
 #include <string_view>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/i18n/icu_util.h"
@@ -57,8 +54,8 @@ std::string LoadStringFromDataPack(ui::DataPack* data_pack,
   if (data_pack->GetTextEncodingType() == ui::DataPack::UTF8)
     return std::string(data.value());
   if (data_pack->GetTextEncodingType() == ui::DataPack::UTF16) {
-    return base::UTF16ToUTF8(std::u16string(
-        reinterpret_cast<const char16_t*>(data->data()), data->length() / 2));
+    return base::UTF16ToUTF8(UNSAFE_TODO(std::u16string(
+        reinterpret_cast<const char16_t*>(data->data()), data->length() / 2)));
   }
 
   LOG(FATAL) << "requested string " << resource_id_str
@@ -90,6 +87,9 @@ const char kAppType_Helper[] = "helper";  // Helper app
 }  // namespace
 
 int main(int argc, char* const argv[]) {
+  // SAFETY: Standard C++ main contract.
+  auto args = UNSAFE_BUFFERS(base::span(argv, static_cast<size_t>(argc)));
+
   const char* version_string = nullptr;
   const char* grit_output_dir = nullptr;
   const char* branding_strings_name = nullptr;
@@ -98,7 +98,8 @@ int main(int argc, char* const argv[]) {
 
   // Process the args
   int ch;
-  while ((ch = getopt(argc, argv, "t:v:g:b:o:")) != -1) {
+  while ((ch = getopt(static_cast<int>(args.size()), args.data(),
+                      "t:v:g:b:o:")) != -1) {
     switch (ch) {
       case 't':
         app_type = optarg;
@@ -119,31 +120,29 @@ int main(int argc, char* const argv[]) {
         LOG(FATAL) << "bad command line arg";
     }
   }
-  argc -= optind;
-  argv += optind;
 
   // Check our args
   CHECK(version_string) << "Missing version string";
   CHECK(grit_output_dir) << "Missing grit output dir path";
   CHECK(output_dir) << "Missing path to write InfoPlist.strings files";
   CHECK(branding_strings_name) << "Missing branding strings file name";
-  CHECK(argc) << "Missing language list";
+
+  // getopt() reorders elements in-place so that non-option arguments are at
+  // the end, starting at optind.
+  auto lang_list = args.subspan(static_cast<size_t>(optind));
+  CHECK(!lang_list.empty()) << "Missing language list";
+
   CHECK(app_type == kAppType_Main || app_type == kAppType_Helper)
       << "Unknown app type";
 
-  char* const* lang_list = argv;
-  int lang_list_count = argc;
-
   base::i18n::InitializeICU();
 
-  for (int loop = 0; loop < lang_list_count; ++loop) {
-    std::string cur_lang = lang_list[loop];
-
+  for (std::string lang : lang_list) {
     // Open the branded string pak file
     std::unique_ptr<ui::DataPack> branded_data_pack(
-        LoadResourceDataPack(grit_output_dir, branding_strings_name, cur_lang));
+        LoadResourceDataPack(grit_output_dir, branding_strings_name, lang));
     CHECK(branded_data_pack)
-        << "failed to load branded pak for language: " << cur_lang;
+        << "failed to load branded pak for language: " << lang;
 
     uint32_t name_id = IDS_PRODUCT_NAME;
     const char* name_id_str = "IDS_PRODUCT_NAME";
@@ -153,28 +152,27 @@ int main(int argc, char* const argv[]) {
     }
 
     // Fetch the strings.
-    std::string name = LoadStringFromDataPack(branded_data_pack.get(), cur_lang,
+    std::string name = LoadStringFromDataPack(branded_data_pack.get(), lang,
                                               name_id, name_id_str);
     std::string copyright_format = LoadStringFromDataPack(
-        branded_data_pack.get(), cur_lang, IDS_ABOUT_VERSION_COPYRIGHT,
+        branded_data_pack.get(), lang, IDS_ABOUT_VERSION_COPYRIGHT,
         "IDS_ABOUT_VERSION_COPYRIGHT");
 
     std::string copyright =
         base::UTF16ToUTF8(base::i18n::MessageFormatter::FormatWithNumberedArgs(
             base::UTF8ToUTF16(copyright_format), base::Time::Now()));
 
-    std::string permission_reason =
-        LoadStringFromDataPack(branded_data_pack.get(), cur_lang,
-                               IDS_RUNTIME_PERMISSION_OS_REASON_TEXT,
-                               "IDS_RUNTIME_PERMISSION_OS_REASON_TEXT");
+    std::string permission_reason = LoadStringFromDataPack(
+        branded_data_pack.get(), lang, IDS_RUNTIME_PERMISSION_OS_REASON_TEXT,
+        "IDS_RUNTIME_PERMISSION_OS_REASON_TEXT");
 
     std::string local_network_access_permission_description =
-        LoadStringFromDataPack(branded_data_pack.get(), cur_lang,
+        LoadStringFromDataPack(branded_data_pack.get(), lang,
                                IDS_LOCAL_NETWORK_ACCESS_PERMISSION_DESC,
                                "IDS_LOCAL_NETWORK_ACCESS_PERMISSION_DESC");
 
     std::string chromium_shortcut_description = LoadStringFromDataPack(
-        branded_data_pack.get(), cur_lang, IDS_CHROMIUM_SHORCUT_DESCRIPTION,
+        branded_data_pack.get(), lang, IDS_CHROMIUM_SHORCUT_DESCRIPTION,
         "IDS_CHROMIUM_SHORCUT_DESCRIPTION");
 
     // For now, assume this is ok for all languages. If we need to, this could
@@ -209,13 +207,14 @@ int main(int argc, char* const argv[]) {
     // For Cocoa to find the locale at runtime, it needs to use '_' instead of
     // '-' (http://crbug.com/40986722).  Also, 'en-US' should be represented
     // simply as 'en' (http://crbug.com/40974786, http://crbug.com/40077718).
-    if (cur_lang == "en-US")
-      cur_lang = "en";
-    base::ReplaceChars(cur_lang, "-", "_", &cur_lang);
+    if (lang == "en-US") {
+      lang = "en";
+    }
+    base::ReplaceChars(lang, "-", "_", &lang);
 
     // Make sure the lproj we write to exists
     std::string output_path =
-        base::StringPrintf("%s/%s.lproj", output_dir, cur_lang.c_str());
+        base::StringPrintf("%s/%s.lproj", output_dir, lang.c_str());
     CHECK(base::CreateDirectory(base::FilePath(output_path)))
         << "failed to create '" << output_path << "'";
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/installer/gcapi_mac/gcapi.h"
 
 #import <Cocoa/Cocoa.h>
@@ -16,6 +11,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/utsname.h>
+
+#include "base/compiler_specific.h"
 
 namespace {
 
@@ -66,11 +63,11 @@ bool IsMacOSVersionSupported() {
   if (uname(&uname_info) != 0) {
     return false;
   }
-  if (strcmp(uname_info.sysname, "Darwin") != 0) {
+  if (UNSAFE_TODO(strcmp(uname_info.sysname, "Darwin")) != 0) {
     return false;
   }
 
-  char* dot = strchr(uname_info.release, '.');
+  char* dot = UNSAFE_TODO(strchr(uname_info.release, '.'));
   if (!dot) {
     return false;
   }
@@ -465,9 +462,9 @@ int InstallGoogleChrome(const char* source_path,
     }
 
     BOOL valid_brand_code =
-        brand_code && strlen(brand_code) == 4 && isbrandchar(brand_code[0]) &&
-        isbrandchar(brand_code[1]) && isbrandchar(brand_code[2]) &&
-        isbrandchar(brand_code[3]);
+        UNSAFE_TODO(brand_code && strlen(brand_code) == 4 &&
+                    isbrandchar(brand_code[0]) && isbrandchar(brand_code[1]) &&
+                    isbrandchar(brand_code[2]) && isbrandchar(brand_code[3]));
 
     if (valid_brand_code) {
       WriteBrandCode(brand_code, user);

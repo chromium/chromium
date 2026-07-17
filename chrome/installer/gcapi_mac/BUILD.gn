@@ -31,6 +31,8 @@ static_library("gcapi_lib") {
     "gcapi.mm",
   ]
 
+  deps = [ "//base:compiler_specific" ]
+
   frameworks = [ "Cocoa.framework" ]
 
   # Don't use runtime_library, to be able to pick a custom mmacos-version-min.
