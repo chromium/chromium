@@ -41,8 +41,10 @@
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_service.h"
 #include "services/device/public/cpp/test/test_wake_lock_provider.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -73,9 +75,11 @@ class DeviceScheduledUpdateCheckerForTest
   DeviceScheduledUpdateCheckerForTest(
       ash::CrosSettings* cros_settings,
       ash::NetworkStateHandler* network_state_handler,
+      PolicyService* policy_service,
       std::unique_ptr<ScheduledTaskExecutor> task_executor)
       : DeviceScheduledUpdateChecker(cros_settings,
                                      network_state_handler,
+                                     policy_service,
                                      std::move(task_executor)) {}
 
   DeviceScheduledUpdateCheckerForTest(
@@ -134,7 +138,13 @@ class DeviceScheduledUpdateCheckerTest : public testing::Test {
         std::make_unique<DeviceScheduledUpdateCheckerForTest>(
             ash::CrosSettings::Get(),
             network_state_test_helper_->network_state_handler(),
-            std::move(task_executor));
+            &mock_policy_service_, std::move(task_executor));
+
+    ON_CALL(mock_policy_service_, RefreshPolicies(testing::_, testing::_))
+        .WillByDefault(
+            [](base::OnceClosure callback, policy::PolicyFetchReason reason) {
+              std::move(callback).Run();
+            });
   }
 
   DeviceScheduledUpdateCheckerTest(const DeviceScheduledUpdateCheckerTest&) =
@@ -346,6 +356,7 @@ class DeviceScheduledUpdateCheckerTest : public testing::Test {
   // Owned by |device_scheduled_update_checker_|
   raw_ptr<FakeScheduledTaskExecutor, DanglingUntriaged>
       scheduled_task_executor_;
+  testing::NiceMock<policy::MockPolicyService> mock_policy_service_;
   std::unique_ptr<DeviceScheduledUpdateCheckerForTest>
       device_scheduled_update_checker_;
   ash::ScopedTestingCrosSettings cros_settings_;

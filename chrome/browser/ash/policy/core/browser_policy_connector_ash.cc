@@ -317,6 +317,7 @@ void BrowserPolicyConnectorAsh::Init(
       std::make_unique<DeviceScheduledUpdateChecker>(
           ash::CrosSettings::Get(),
           ash::NetworkHandler::Get()->network_state_handler(),
+          GetPolicyService(),
           std::make_unique<ScheduledTaskExecutorImpl>(
               update_checker_internal::kUpdateCheckTimerTag));
 

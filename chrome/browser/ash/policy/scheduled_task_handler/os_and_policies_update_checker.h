@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_POLICY_SCHEDULED_TASK_HANDLER_OS_AND_POLICIES_UPDATE_CHECKER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -19,6 +20,8 @@ class NetworkStateHandler;
 }  // namespace ash
 
 namespace policy {
+
+class PolicyService;
 
 namespace update_checker_internal {
 
@@ -44,8 +47,9 @@ inline constexpr base::TimeDelta kWaitForNetworkTimeout = base::Minutes(5);
 class OsAndPoliciesUpdateChecker : public ash::UpdateEngineClient::Observer,
                                    public ash::NetworkStateHandlerObserver {
  public:
-  explicit OsAndPoliciesUpdateChecker(
-      ash::NetworkStateHandler* network_state_handler);
+  // `policy_service` must be non-null and must outlive `this`.
+  OsAndPoliciesUpdateChecker(ash::NetworkStateHandler* network_state_handler,
+                             PolicyService* policy_service);
 
   OsAndPoliciesUpdateChecker(const OsAndPoliciesUpdateChecker&) = delete;
   OsAndPoliciesUpdateChecker& operator=(const OsAndPoliciesUpdateChecker&) =
@@ -121,6 +125,7 @@ class OsAndPoliciesUpdateChecker : public ash::UpdateEngineClient::Observer,
 
   // Not owned.
   const raw_ptr<ash::NetworkStateHandler> network_state_handler_;
+  const raw_ref<PolicyService> policy_service_;
   base::ScopedObservation<ash::NetworkStateHandler,
                           ash::NetworkStateHandlerObserver>
       network_state_handler_observer_{this};

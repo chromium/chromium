@@ -45,6 +45,7 @@ constexpr char kTaskTimeFieldName[] = "update_check_time";
 DeviceScheduledUpdateChecker::DeviceScheduledUpdateChecker(
     ash::CrosSettings* cros_settings,
     ash::NetworkStateHandler* network_state_handler,
+    PolicyService* policy_service,
     std::unique_ptr<ScheduledTaskExecutor> update_check_executor)
     : cros_settings_(cros_settings),
       cros_settings_subscription_(cros_settings_->AddSettingsObserver(
@@ -55,7 +56,7 @@ DeviceScheduledUpdateChecker::DeviceScheduledUpdateChecker(
       start_update_check_timer_task_executor_(
           update_checker_internal::kMaxStartUpdateCheckTimerRetryIterations,
           update_checker_internal::kStartUpdateCheckTimerRetryTime),
-      os_and_policies_update_checker_(network_state_handler),
+      os_and_policies_update_checker_(network_state_handler, policy_service),
       update_check_executor_(std::move(update_check_executor)) {
   ash::system::TimezoneSettings::GetInstance()->AddObserver(this);
   // Check if policy already exists.

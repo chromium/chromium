@@ -21,14 +21,18 @@
 
 namespace policy {
 
+class PolicyService;
+
 // This class listens for changes in the scheduled update check policy and then
 // manages recurring update checks based on the policy.
 class DeviceScheduledUpdateChecker
     : public ash::system::TimezoneSettings::Observer {
  public:
+  // `policy_service` must be non-null and must outlive `this`.
   DeviceScheduledUpdateChecker(
       ash::CrosSettings* cros_settings,
       ash::NetworkStateHandler* network_state_handler,
+      PolicyService* policy_service,
       std::unique_ptr<ScheduledTaskExecutor> update_check_executor);
 
   DeviceScheduledUpdateChecker(const DeviceScheduledUpdateChecker&) = delete;
