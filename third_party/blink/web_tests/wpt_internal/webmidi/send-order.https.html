@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+</head>
+<body>
+<script type="module">
+import {MockMIDIService} from './resources/mock-midiservice.js';
+
+const mock = new MockMIDIService();
+
+promise_test(async t => {
+  await test_driver.set_permission({name: 'midi', sysex: true}, 'granted');
+  const access = await navigator.requestMIDIAccess({sysex: true});
+  const input = access.inputs.values().next().value;
+  const output = access.outputs.values().next().value;
+
+  const received = [];
+  const received_promise = new Promise(resolve => {
+    input.onmidimessage = (event) => {
+      received.push(Array.from(event.data));
+      if (received.length === 3) {
+        resolve();
+      }
+    };
+  });
+
+  // Send 3 messages in order immediately (port is opening).
+  const m1 = [0x90, 0x45, 0x7f];
+  const m2 = [0x80, 0x45, 0x00];
+  const m3 = [0x90, 0x46, 0x7f];
+  output.send(m1);
+  output.send(m2);
+  output.send(m3);
+
+  await received_promise;
+  assert_array_equals(received[0], m1);
+  assert_array_equals(received[1], m2);
+  assert_array_equals(received[2], m3);
+}, 'send() in order (implicit open)');
+
+promise_test(async t => {
+  await test_driver.set_permission({name: 'midi', sysex: true}, 'granted');
+  const access = await navigator.requestMIDIAccess({sysex: true});
+  const input = access.inputs.values().next().value;
+  const output = access.outputs.values().next().value;
+
+  // Open the port by sending a placeholder message and waiting for it.
+  const placeholder = [0x90, 0x30, 0x00];
+  const placeholder_received = new Promise(resolve => {
+    input.onmidimessage = (event) => {
+      if (event.data[1] === 0x30) {
+        resolve();
+      }
+    };
+  });
+  output.send(placeholder);
+  await placeholder_received;
+
+  // Now the port should be open.
+  const received = [];
+  const received_promise = new Promise(resolve => {
+    input.onmidimessage = (event) => {
+      received.push(Array.from(event.data));
+      if (received.length === 3) {
+        resolve();
+      }
+    };
+  });
+
+  const m1 = [0x90, 0x45, 0x7f];
+  const m2 = [0x80, 0x45, 0x00];
+  const m3 = [0x90, 0x46, 0x7f];
+  output.send(m1);
+  output.send(m2);
+  output.send(m3);
+
+  await received_promise;
+  assert_array_equals(received[0], m1);
+  assert_array_equals(received[1], m2);
+  assert_array_equals(received[2], m3);
+}, 'send() in order (explicit open)');
+</script>
+</body>
+</html>
