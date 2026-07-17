@@ -1010,8 +1010,13 @@ public final class ProductionSupportedFlagList {
                         + AwSwitches.STARTUP_NON_BLOCKING_WEBVIEW_CONSTRUCTOR
                         + " is enabled."),
         Flag.baseFeature(
-                AccessibilityFeatures.ACCESSIBILITY_MAGNIFICATION_FOLLOWS_FOCUS,
-                "Enables Magnification and other views to keep the text cursor onscreen."),
+                AccessibilityFeatures.ACCESSIBILITY_MAGNIFICATION_FOLLOWS_FOCUS_KEYBOARD_ATTACHED,
+                "Enables Magnification and other views to keep the text cursor onscreen when"
+                        + " physical keyboard is attached."),
+        Flag.baseFeature(
+                AccessibilityFeatures.ACCESSIBILITY_MAGNIFICATION_FOLLOWS_FOCUS_NO_KEYBOARD,
+                "Enables Magnification and other views to keep the text cursor onscreen when no"
+                        + " physical keyboard is attached."),
         Flag.baseFeature(
                 AccessibilityFeatures.ACCESSIBILITY_TEXT_CHANGE_TYPES,
                 "Enables text change types for text changed events."),
@@ -1152,9 +1157,13 @@ public final class ProductionSupportedFlagList {
                 ContentFeatures.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
                 "When enabled, TYPE_ANNOUNCE events will no longer be sent from Chrome."),
         Flag.baseFeature(
-                AccessibilityFeatures.ACCESSIBILITY_MAGNIFICATION_FOLLOWS_FOCUS,
+                AccessibilityFeatures.ACCESSIBILITY_MAGNIFICATION_FOLLOWS_FOCUS_KEYBOARD_ATTACHED,
                 "When enabled, the Android framework will be notified when the text cursor or input"
-                        + " focus moves."),
+                        + " focus moves and a physical keyboard is attached."),
+        Flag.baseFeature(
+                AccessibilityFeatures.ACCESSIBILITY_MAGNIFICATION_FOLLOWS_FOCUS_NO_KEYBOARD,
+                "When enabled, the Android framework will be notified when the text cursor or input"
+                        + " focus moves and no physical keyboard is attached."),
         Flag.baseFeature(
                 ContentFeatures.ACCESSIBILITY_SEQUENTIAL_FOCUS,
                 "When enabled, keyboard focus starting point will be synchronized with"

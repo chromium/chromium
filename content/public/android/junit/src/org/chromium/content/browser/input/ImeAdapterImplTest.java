@@ -13,11 +13,14 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.graphics.Rect;
 import android.os.SystemClock;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -44,13 +47,17 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.EventType;
+import org.chromium.blink.mojom.InputCursorAnchorInfo;
 import org.chromium.blink_public.web.WebInputEventModifier;
+import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ImeEventObserver;
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentFeatures;
+import org.chromium.ui.accessibility.AccessibilityFeatures;
+import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.base.ime.TextInputType;
 import org.chromium.ui.mojom.ImeTextSpanType;
 import org.chromium.ui.test.util.TestViewAndroidDelegate;
@@ -635,5 +642,64 @@ public class ImeAdapterImplTest {
 
         verify(mInputMethodManagerWrapper, never()).isActive(any());
         verify(mInputMethodManagerWrapper, never()).hideSoftInputFromWindow(any(), anyInt(), any());
+    }
+
+    private void doUpdateCursorAnchorInfoTest(boolean shouldExpectRequestRectangleOnScreen) {
+        RenderCoordinatesImpl renderCoordinates = mock(RenderCoordinatesImpl.class);
+        when(mWebContentsImpl.getRenderCoordinates()).thenReturn(renderCoordinates);
+        when(renderCoordinates.getDeviceScaleFactor()).thenReturn(1.0f);
+        when(renderCoordinates.getContentOffsetYPixInt()).thenReturn(0);
+
+        when(mContainerView.getLocalVisibleRect(any(Rect.class)))
+                .thenAnswer(
+                        (Answer<Boolean>)
+                                invocation -> {
+                                    Rect rect = invocation.getArgument(0);
+                                    rect.set(0, 0, Integer.MAX_VALUE, Integer.MAX_VALUE);
+                                    return true;
+                                });
+
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.onConnectedToRenderProcess();
+
+        InputCursorAnchorInfo anchorInfo = new InputCursorAnchorInfo();
+        anchorInfo.insertionMarker = new org.chromium.gfx.mojom.Rect();
+        // Width and height are arbitrary non-zero value.
+        anchorInfo.insertionMarker.width = 10;
+        anchorInfo.insertionMarker.height = 10;
+        adapter.updateCursorAnchorInfo(anchorInfo);
+
+        verify(mContainerView, times(shouldExpectRequestRectangleOnScreen ? 1 : 0))
+                .requestRectangleOnScreen(any(Rect.class));
+    }
+
+    @Test
+    @EnableFeatures(
+            AccessibilityFeatures.ACCESSIBILITY_MAGNIFICATION_FOLLOWS_FOCUS_KEYBOARD_ATTACHED)
+    public void testUpdateCursorAnchorInfo_MagnificationFollowsFocusEnabled_KeyboardAttached() {
+        DeviceInput.setSupportsKeyboardForTesting(true);
+        doUpdateCursorAnchorInfoTest(/* shouldExpectRequestRectangleOnScreen= */ true);
+    }
+
+    @Test
+    @DisableFeatures(
+            AccessibilityFeatures.ACCESSIBILITY_MAGNIFICATION_FOLLOWS_FOCUS_KEYBOARD_ATTACHED)
+    public void testUpdateCursorAnchorInfo_MagnificationFollowsFocusDisabled_KeyboardAttached() {
+        DeviceInput.setSupportsKeyboardForTesting(true);
+        doUpdateCursorAnchorInfoTest(/* shouldExpectRequestRectangleOnScreen= */ false);
+    }
+
+    @Test
+    @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_MAGNIFICATION_FOLLOWS_FOCUS_NO_KEYBOARD)
+    public void testUpdateCursorAnchorInfo_MagnificationFollowsFocusEnabled_NoKeyboard() {
+        DeviceInput.setSupportsKeyboardForTesting(false);
+        doUpdateCursorAnchorInfoTest(/* shouldExpectRequestRectangleOnScreen= */ true);
+    }
+
+    @Test
+    @DisableFeatures(AccessibilityFeatures.ACCESSIBILITY_MAGNIFICATION_FOLLOWS_FOCUS_NO_KEYBOARD)
+    public void testUpdateCursorAnchorInfo_MagnificationFollowsFocusDisabled_NoKeyboard() {
+        DeviceInput.setSupportsKeyboardForTesting(false);
+        doUpdateCursorAnchorInfoTest(/* shouldExpectRequestRectangleOnScreen= */ false);
     }
 }

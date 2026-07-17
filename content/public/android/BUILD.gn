@@ -806,6 +806,7 @@ robolectric_binary("content_junit_tests") {
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//ui/accessibility:accessibility_features_java",
     "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",
     "//ui/base/ime/mojom:mojom_java",
