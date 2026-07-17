@@ -13,6 +13,9 @@ import type {ContextualEntrypointButtonElement} from '//resources/cr_components/
 import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import type {SearchboxDropdownElement} from '//resources/cr_components/searchbox/searchbox_dropdown.js';
 import {kDefaultSelection} from '//resources/cr_components/searchbox/searchbox_match.js';
+import {getMatchSelections, getNextSelection, selectionIsNativelySupported, selectionsEqual, selectionToString} from '//resources/cr_components/searchbox/selection_control.js';
+import type {AutocompleteResult, OmniboxPopupSelection, SelectionDirection, SelectionStep} from '//resources/cr_components/searchbox/selection_control.js';
+import {SelectionLineState} from '//resources/cr_components/searchbox/selection_control.js';
 import {getInstance as getA11yAnnouncer} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assertNotReached} from '//resources/js/assert.js';
@@ -21,8 +24,6 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_reporter.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
-import {SelectionDirection, SelectionLineState, SelectionStep} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {AutocompleteResult, OmniboxPopupSelection} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {WindowOpenDisposition} from '//resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 
@@ -34,37 +35,6 @@ import {browserProxyFactory} from './omnibox_popup.mojom-webui.js';
 // 675px ~= 449px (--cr-realbox-primary-side-min-width) * 1.5 + some margin.
 const canShowSecondarySideMediaQueryList =
     window.matchMedia('(min-width: 675px)');
-
-// Notifies an a11y announcer to read the aria-label for given element.
-function announceElementAriaLabel(element: HTMLElement) {
-  const message = element.getAttribute('aria-label');
-  if (message) {
-    // Note: ariaNotify is more efficient and appears to work more reliably, but
-    // support is not guaranteed in all browsers. Fall back on a11y announcer if
-    // the ariaNotify function is unavailable.
-    if (element.ariaNotify) {
-      element.ariaNotify(message);
-    } else {
-      getA11yAnnouncer(element).announce(message);
-    }
-  }
-}
-
-// Not all selection states of the webui popup are supported on the native
-// browser side.
-function selectionIsNativelySupported(s: OmniboxPopupSelection): boolean {
-  return s.state !== SelectionLineState.kFocusedButtonContextEntrypoint;
-}
-
-function selectionsEqual(
-    a: OmniboxPopupSelection, b: OmniboxPopupSelection): boolean {
-  return a.line === b.line && a.state === b.state &&
-      a.actionIndex === b.actionIndex;
-}
-
-function selectionToString(s: OmniboxPopupSelection) {
-  return `{${s.line},${s.state},${s.actionIndex}}`;
-}
 
 // Displays the autocomplete matches in the autocomplete result.
 export class OmniboxPopupAppElement extends I18nMixinLit
@@ -406,8 +376,20 @@ export class OmniboxPopupAppElement extends I18nMixinLit
       entrypoint.hasPopupFocus = this.selection_.state ===
           SelectionLineState.kFocusedButtonContextEntrypoint;
       if (entrypoint.hasPopupFocus) {
-        announceElementAriaLabel(
-            entrypoint.shadowRoot.querySelector('#entrypoint')!);
+        this.notifyContextualEntrypoint_(entrypoint);
+      }
+    }
+  }
+
+  private notifyContextualEntrypoint_(
+      entrypoint: ContextualEntrypointButtonElement) {
+    const message = entrypoint.shadowRoot.querySelector('#entrypoint')
+                        ?.getAttribute('aria-label');
+    if (message) {
+      if (entrypoint.ariaNotify) {
+        entrypoint.ariaNotify(message);
+      } else {
+        getA11yAnnouncer(entrypoint).announce(message);
       }
     }
   }
@@ -418,57 +400,12 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   // browser/input focus, popup-focus shows what item from the popup will be
   // opened when user presses Enter).
   private stepSelection_(direction: SelectionDirection, step: SelectionStep) {
-    this.setSelection_(
-        this.getNextSelection_(this.selection_, direction, step));
-  }
-
-  // Given a current `from` selection, finds the next selection in the order
-  // of all available selections. Traverses forward or backward by larger
-  // or smaller steps as indicated by `direction` and `step` parameters,
-  // which are in turn determined by user input signals such as arrow or
-  // tab keystrokes.
-  private getNextSelection_(
-      from: OmniboxPopupSelection, direction: SelectionDirection,
-      step: SelectionStep): OmniboxPopupSelection {
     if (!this.result_) {
-      return from;
+      return;
     }
     const available = this.getResultSelections_(this.result_);
-    if (available.length === 0) {
-      return from;
-    }
-    const isNormal = (selection: OmniboxPopupSelection) =>
-        selection.state === SelectionLineState.kNormal;
-    let fromIndex = available.findIndex(s => selectionsEqual(from, s));
-    if (fromIndex < 0 && from.state === SelectionLineState.kKeywordMode) {
-      // Second chance for keyword mode selections, to accommodate instant
-      // keyword mode lines activating keyword mode from native side.
-      fromIndex = available.findIndex(
-          s =>
-              selectionsEqual({...from, state: SelectionLineState.kNormal}, s));
-    }
-    if (fromIndex < 0) {
-      available.splice(0, 0, from);
-      fromIndex = 0;
-    }
-    if (step === SelectionStep.kAllLines) {
-      const normalIndex = direction === SelectionDirection.kBackward ?
-          available.findIndex(isNormal) :
-          available.findLastIndex(isNormal);
-      return normalIndex < 0 ? from : available[normalIndex]!;
-    }
-    for (let offset = 1; offset < available.length; offset++) {
-      const index =
-          (fromIndex +
-           (direction === SelectionDirection.kForward ? offset : -offset) +
-           available.length) %
-          available.length;
-      const selection = available[index]!;
-      if (step === SelectionStep.kStateOrLine || isNormal(selection)) {
-        return selection;
-      }
-    }
-    return from;
+    this.setSelection_(
+        getNextSelection(this.selection_, direction, step, available));
   }
 
   // Returns the full set of selections available based on the given
@@ -477,42 +414,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   // should eventually be driven entirely by a single data structure.
   private getResultSelections_(result: AutocompleteResult):
       OmniboxPopupSelection[] {
-    const available = [];
-    for (let matchIndex = 0; matchIndex < result.matches.length; matchIndex++) {
-      const match = result.matches[matchIndex]!;
-      // Preserve selection of the default match, even if hidden, to stay
-      // compatible with OmniboxEditModel's keyword mode handling.
-      if (match.isHidden && !match.allowedToBeDefaultMatch) {
-        continue;
-      }
-      available.push({
-        line: matchIndex,
-        state: SelectionLineState.kNormal,
-        actionIndex: 0,
-      });
-      if (match.keywordChipHint.length > 0) {
-        available.push({
-          line: matchIndex,
-          state: SelectionLineState.kKeywordMode,
-          actionIndex: 0,
-        });
-      }
-      for (let actionIndex = 0; actionIndex < match.actions.length;
-           actionIndex++) {
-        available.push({
-          line: matchIndex,
-          state: SelectionLineState.kFocusedButtonAction,
-          actionIndex: actionIndex,
-        });
-      }
-      if (match.supportsDeletion) {
-        available.push({
-          line: matchIndex,
-          state: SelectionLineState.kFocusedButtonRemoveSuggestion,
-          actionIndex: 0,
-        });
-      }
-    }
+    const available = getMatchSelections(result);
     // TODO(crbug.com/462775253): Ideally everything available for selection
     // comes from the AutocompleteResult.
     if (this.showContextEntrypoint_ && !this.shouldHideEntrypointButton_()) {
