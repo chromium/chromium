@@ -22,3 +22,10 @@ crbug.com/523267238 SmokeTestCase/testFlakyCrashPassingMethod [ Pass Crash ]
 # Gardening surpression 2026-07-09
 crbug.com/533057223 [ iPad Simulator ] SigninCoordinatorTestCase/testSyncOnWhenPassphraseIntroducedAfterSignIn [ Pass Failure ]
 crbug.com/533075931 [ iPad Simulator ] GeminiCopresenceTestCase/testConversationPersistenceOnSignOut [ Pass Failure ]
+
+# Multi-window iPad iOS 27 issues
+crbug.com/508127830 [ iOS27 Device ] MultitaskingWindowTestCase/testResizeToCompactAndReturnToFullscreen [ Skip ]
+crbug.com/508127830 [ iOS27 Device ] MultitaskingWindowTestCase/testStatusBarTapToWindowedModeAndMultipleResizes [ Skip ]
+crbug.com/508127830 [ iOS27 Device ] MultitaskingWindowTestCase/testStatusBarTapToWindowedModeAndResize [ Skip ]
+crbug.com/508127830 [ iOS27 Device ] MultitaskingWindowTestCase/testStatusBarTapToWindowedModeAndReturnToFullscreen [ Skip ]
+crbug.com/508127830 [ iOS27 Device ] SearchEngineTestCase/testOpenSecondWindow [ Skip ]
