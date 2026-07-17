@@ -57,8 +57,6 @@ source_set("impl") {
     "adapters:impl",
     "utils",
     "//chrome/browser/extensions",
-    "//chrome/browser/glic/browser_ui",
-    "//chrome/browser/glic/resources:grit_grit",
     "//chrome/browser/resources/webui_toolbar:resources_grit",
     "//chrome/browser/resources/webui_toolbar_shared:resources_grit",
     "//chrome/browser/ui:browser_element_identifiers",

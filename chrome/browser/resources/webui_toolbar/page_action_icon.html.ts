@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {PageActionIconElement} from './page_action_icon.js';
 
 export function getHtml(this: PageActionIconElement) {
   return html`<!--_html_template_start_-->
 <cr-icon-button id="button"
-    iron-icon="${this.getIronIcon_() ?? nothing}"
-    style="${this.getIconStyle_() ?? nothing}"
+    class="${this.getIconClass_()}"
     title="${this.state.tooltipText}"
     aria-label="${this.getAriaLabel_()}"
     @click="${this.onClick_}"

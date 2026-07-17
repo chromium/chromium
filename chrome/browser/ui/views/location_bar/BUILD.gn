@@ -268,7 +268,6 @@ source_set("browser_tests") {
     "//chrome/browser/apps/link_capturing",
     "//chrome/browser/apps/link_capturing:test_support",
     "//chrome/browser/content_settings",
-    "//chrome/browser/ui:browser_actions",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/views/frame",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
