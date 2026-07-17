@@ -11,17 +11,12 @@
 
 #include "chrome/browser/ash/app_mode/fake_kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "components/account_id/account_id.h"
-#include "components/prefs/testing_pref_service.h"
-#include "components/session_manager/core/fake_session_manager_delegate.h"
-#include "components/session_manager/core/session_manager.h"
-#include "components/user_manager/fake_user_manager_delegate.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/test_helper.h"
+#include "components/session_manager/test/test_user_session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#include "components/user_manager/user_manager_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_skia.h"
@@ -51,30 +46,23 @@ class ReceiverHandlerDelegateImplIsAppEnabledTest
     : public testing::TestWithParam<IsAppEnabledTestCase> {
  protected:
   void SetUp() override {
-    user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
-        std::make_unique<user_manager::FakeUserManagerDelegate>(),
-        &testing_local_state_));
-    user_manager::UserManager::RegisterPrefs(testing_local_state_.registry());
-    account_id_ = user_manager::TestHelper(user_manager::UserManager::Get())
-                      .AddKioskWebAppUser(GenerateDeviceLocalAccountUserId(
-                          /*account_id=*/"webkiosk",
-                          policy::DeviceLocalAccountType::kWebKioskApp))
-                      ->GetAccountId();
-    session_manager_.OnUserManagerCreated(user_manager::UserManager::Get());
+    user_session_manager_ = std::make_unique<ash::test::TestUserSessionManager>(
+        TestingBrowserProcess::GetGlobal()->local_state());
+    user_manager::User* user = user_session_manager_->AddKioskWebAppUser(
+        GenerateDeviceLocalAccountUserId(
+            /*account_id=*/"webkiosk",
+            policy::DeviceLocalAccountType::kWebKioskApp));
+    ASSERT_TRUE(user);
+    account_id_ = user->GetAccountId();
   }
 
-  void CreateSession() {
-    session_manager_.CreateSession(account_id_, /*username_hash=*/"hash",
-                                   /*new_user=*/false,
-                                   /*has_active_session=*/false);
-  }
+  void TearDown() override { user_session_manager_.reset(); }
 
-  TestingPrefServiceSimple testing_local_state_;
+  void CreateSession() { user_session_manager_->LogIn(account_id_); }
+
   AccountId account_id_;
   MockKioskController kiosk_controller_;
-  user_manager::ScopedUserManager user_manager_;
-  session_manager::SessionManager session_manager_{
-      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
+  std::unique_ptr<ash::test::TestUserSessionManager> user_session_manager_;
 };
 
 TEST_F(ReceiverHandlerDelegateImplIsAppEnabledTest, AppMissing) {

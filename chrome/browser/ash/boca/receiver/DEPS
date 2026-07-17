@@ -1,3 +1,9 @@
 include_rules = [
   "+chrome/browser/ash/app_mode",
 ]
+
+specific_include_rules = {
+  ".*unittest\\.cc": [
+    "+chrome/test/base",
+  ],
+}
