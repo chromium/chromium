@@ -13,7 +13,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
 
-class Browser;
+class BrowserWindowInterface;
 class ToolbarButton;
 
 namespace media_router {
@@ -28,8 +28,9 @@ class CastBrowserController : public IssuesObserver,
                               public MediaRoutesObserver,
                               public MirroringMediaControllerHost::Observer {
  public:
-  explicit CastBrowserController(Browser* browser);
-  CastBrowserController(Browser* browser, MediaRouter* media_router);
+  explicit CastBrowserController(BrowserWindowInterface* browser);
+  CastBrowserController(BrowserWindowInterface* browser,
+                        MediaRouter* media_router);
   CastBrowserController(const CastBrowserController&) = delete;
   CastBrowserController& operator=(const CastBrowserController&) = delete;
   ~CastBrowserController() override;
@@ -61,7 +62,7 @@ class CastBrowserController : public IssuesObserver,
 
   void StopObservingMirroringMediaControllerHosts();
 
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
 
   // This value is set only when there is an outstanding issue.
   std::optional<media_router::IssueInfo::Severity> issue_severity_;
