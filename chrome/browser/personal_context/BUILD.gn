@@ -54,6 +54,7 @@ if (!is_android) {
       "//chrome/browser/signin",
       "//chrome/test:test_support",
       "//components/account_settings:test_support",
+      "//components/glic:glic_pref_names",
       "//components/personal_context/core",
       "//components/personal_context/core:features",
       "//components/signin/public/identity_manager:test_support",

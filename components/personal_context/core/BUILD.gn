@@ -29,6 +29,7 @@ source_set("core") {
     ":prefs",
     "//base",
     "//components/account_settings",
+    "//components/glic:glic_pref_names",
     "//components/keyed_service/core",
     "//components/personal_context/proto:personal_context_proto",
     "//components/prefs",

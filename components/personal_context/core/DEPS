@@ -1,5 +1,6 @@
 include_rules = [
   "+components/account_settings",
+  "+components/glic",
   "+components/keyed_service/core",
   "+components/prefs",
   "+components/signin/public/base",

@@ -4,6 +4,8 @@
 
 #include "components/personal_context/core/personal_context_eligibility_service_impl.h"
 
+#include <utility>
+
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -11,6 +13,7 @@
 #include "components/account_settings/account_settings.h"
 #include "components/account_settings/account_settings_features.h"
 #include "components/account_settings/mock_account_setting_service.h"
+#include "components/glic/glic_pref_names.h"
 #include "components/personal_context/core/personal_context_debug_features.h"
 #include "components/personal_context/core/personal_context_eligibility_service_impl_test_api.h"
 #include "components/personal_context/core/personal_context_features.h"
@@ -78,6 +81,9 @@ class PersonalContextEligibilityServiceImplTest : public testing::Test {
 
   void SetPrefs() {
     personal_context::prefs::RegisterProfilePrefs(pref_service_.registry());
+    pref_service_.registry()->RegisterIntegerPref(
+        ::glic::prefs::kGlicCompletedFre,
+        std::to_underlying(::glic::prefs::FreStatus::kCompleted));
     pref_service_.SetBoolean(
         personal_context::prefs::
             kPersonalContextAmbientAutofillNoticeShouldBeShown,
@@ -342,49 +348,24 @@ TEST_F(PersonalContextEligibilityServiceImplTest,
 }
 
 TEST_F(PersonalContextEligibilityServiceImplTest,
-       NeedsOptInWhenAccountOptedOutOfContextAndOptInEnabled) {
+       NeedsOptInWhenGlicFreNotCompletedAndOptInEnabled) {
   base::test::ScopedFeatureList feature_list{
       features::kPersonalContextFirstRunOptIn};
 
+  pref_service_.SetInteger(
+      ::glic::prefs::kGlicCompletedFre,
+      std::to_underlying(::glic::prefs::FreStatus::kNotStarted));
+
+  // Compute eligibility state so changes to pref are picked up.
   PersonalContextEligibilityServiceImplTestApi(&service())
       .ComputeEligibilityState();
 
-  EXPECT_CALL(mock_account_settings_service_,
-              GetBoolean(AccountSettingWithName(
-                  account_settings::kAccountSettingContext.name)))
-      .WillOnce(Return(false));
-
-  service().OnAccountSettingDataUpdated(
-      account_settings::kAccountSettingContext.name);
   EXPECT_EQ(service().GetEligibilityState(),
             PersonalContextEligibilityState::kDisabledNeedsOptIn);
-}
 
-TEST_F(PersonalContextEligibilityServiceImplTest,
-       NeedsOptInWhenNoContextSourcesEnabledAndOptInEnabled) {
-  base::test::ScopedFeatureList feature_list{
-      features::kPersonalContextFirstRunOptIn};
-
-  PersonalContextEligibilityServiceImplTestApi(&service())
-      .ComputeEligibilityState();
-
-  EXPECT_CALL(mock_account_settings_service_,
-              GetBoolean(AccountSettingWithName(
-                  account_settings::kAccountSettingContext.name)))
-      .WillOnce(Return(true));
-  EXPECT_CALL(mock_account_settings_service_,
-              GetBoolean(AccountSettingWithName(
-                  account_settings::kAccountSettingContextWorkspace.name)))
-      .WillOnce(Return(false));
-  EXPECT_CALL(mock_account_settings_service_,
-              GetBoolean(AccountSettingWithName(
-                  account_settings::kAccountSettingContextPhotos.name)))
-      .WillOnce(Return(false));
-
-  service().OnAccountSettingDataUpdated(
-      account_settings::kAccountSettingContext.name);
-  EXPECT_EQ(service().GetEligibilityState(),
-            PersonalContextEligibilityState::kDisabledNeedsOptIn);
+  histogram_tester().ExpectBucketCount(
+      "Autofill.PersonalContext.NonEligibilityReason",
+      PersonalContextNonEligibilityReason::kNotGlicFirstRun, 1);
 }
 
 class PersonalContextEligibilityServiceImplGeolocationTest
@@ -454,6 +435,39 @@ TEST_P(PersonalContextEligibilityServiceImplLocaleTest, CheckLocaleEnablement) {
         "Autofill.PersonalContext.NonEligibilityReason",
         PersonalContextNonEligibilityReason::kNotLocaleEnUS, 1);
   }
+}
+
+TEST_F(PersonalContextEligibilityServiceImplTest,
+       DisabledWhenGlicFreNotCompleted) {
+  pref_service_.SetInteger(
+      ::glic::prefs::kGlicCompletedFre,
+      std::to_underlying(::glic::prefs::FreStatus::kNotStarted));
+
+  EXPECT_EQ(service().GetEligibilityState(),
+            PersonalContextEligibilityState::kDisabledNotEligible);
+
+  histogram_tester().ExpectBucketCount(
+      "Autofill.PersonalContext.NonEligibilityReason",
+      PersonalContextNonEligibilityReason::kNotGlicFirstRun, 1);
+}
+
+TEST_F(PersonalContextEligibilityServiceImplTest,
+       NotifiedWhenGlicFreStatusChanges) {
+  MockPersonalContextEligibilityServiceObserver observer;
+  service().AddObserver(&observer);
+
+  EXPECT_CALL(observer,
+              OnEligibilityStateChanged(
+                  PersonalContextEligibilityState::kDisabledNotEligible));
+
+  pref_service_.SetInteger(
+      ::glic::prefs::kGlicCompletedFre,
+      std::to_underlying(::glic::prefs::FreStatus::kNotStarted));
+
+  EXPECT_EQ(service().GetEligibilityState(),
+            PersonalContextEligibilityState::kDisabledNotEligible);
+
+  service().RemoveObserver(&observer);
 }
 
 }  // namespace

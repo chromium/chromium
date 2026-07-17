@@ -27,9 +27,10 @@ enum class PersonalContextNonEligibilityReason {
   kNotOptedInToContext = 5,
   kNotPhotosAndWorkspaceAvailable = 6,
   kPersonalIntelligencePrefDisabled = 7,
-  kNotG1Subscriber = 8,
-  kNotAndroidPremiumDevice = 9,
-  kEligible = 10,
+  kNotGlicFirstRun = 8,
+  kNotG1Subscriber = 9,
+  kNotAndroidPremiumDevice = 10,
+  kEligible = 11,
   kMaxValue = kEligible
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:PersonalContextNonEligibilityReason)

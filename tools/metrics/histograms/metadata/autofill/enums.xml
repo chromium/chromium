@@ -5594,9 +5594,10 @@ Called by update_autofill_enums.py.-->
   <int value="5" label="Not opted in to context"/>
   <int value="6" label="Photos and Workspace context unavailable"/>
   <int value="7" label="Personal Intelligence preferences disabled"/>
-  <int value="8" label="Not G1 subscriber"/>
-  <int value="9" label="Not Android premium device"/>
-  <int value="10" label="Eligible"/>
+  <int value="8" label="Glic first run not complete"/>
+  <int value="9" label="Not G1 subscriber"/>
+  <int value="10" label="Not Android premium device"/>
+  <int value="11" label="Eligible"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/personal_context/core/personal_context_types.h:PersonalContextNonEligibilityReason) -->
