@@ -299,6 +299,49 @@ suite('ComposeboxMixinTest', () => {
         assertEquals('about:blank?3', element.tabSuggestions[3]!.url);
       });
 
+  test(
+      'refreshTabSuggestions() filters out closed restored tabs when tabDeselectionEnabled is true',
+      async () => {
+        const tab1 = {
+          tabId: 10,
+          title: 'Tab 1',
+          url: 'about:blank?1',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        };
+        const tab2Closed = {
+          tabId: 20,
+          title: 'Tab 2',
+          url: 'about:blank?2',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        };
+
+        // Mock open tabs in browser to return only tab1 (tab2 is closed/deleted
+        // from tab strip).
+        searchboxHandler.setResultFor(
+            'getRecentTabs', Promise.resolve({tabs: [tab1]}));
+
+        element.tabDeselectionEnabled = true;
+        element.aimThreadRestoredTabs = [tab1, tab2Closed];
+
+        await element.refreshTabSuggestions();
+
+        // Verify: deleteTabContext is called for the closed restored tab
+        // (tabId: 20).
+        const deleteTabContextCalls =
+            searchboxHandler.getCallCount('deleteTabContext');
+        assertEquals(1, deleteTabContextCalls);
+        assertEquals(20, searchboxHandler.getArgs('deleteTabContext')[0]);
+
+        // Verify: closed restored tab is filtered out from
+        // aimThreadRestoredTabs list.
+        assertEquals(1, element.aimThreadRestoredTabs.length);
+        assertEquals(10, element.aimThreadRestoredTabs[0]!.tabId);
+      });
+
   test('submitCleanup() clears active tab selections', async () => {
     const tokenTab = 'test-token-tab' as unknown as UnguessableToken;
     const selectedTabId = 100;
