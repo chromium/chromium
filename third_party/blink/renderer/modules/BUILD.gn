@@ -651,6 +651,8 @@ source_set("unit_tests") {
     "webaudio/oscillator_handler_test.cc",
     "webaudio/script_processor_node_test.cc",
     "webaudio/stereo_panner_node_test.cc",
+    "webaudio/testing/fake_audio_thread.cc",
+    "webaudio/testing/fake_audio_thread.h",
     "webaudio/testing/mock_web_audio_device.h",
     "webrtc/rtc_test.cc",
     "webrtc/webrtc_audio_device_impl_test.cc",

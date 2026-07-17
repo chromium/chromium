@@ -7,18 +7,16 @@
 #include <memory>
 
 #include "base/synchronization/lock.h"
-#include "base/synchronization/waitable_event.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_param.h"
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_context.h"
 #include "third_party/blink/renderer/modules/webaudio/oscillator_node.h"
+#include "third_party/blink/renderer/modules/webaudio/testing/fake_audio_thread.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
-#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
-#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
@@ -46,31 +44,21 @@ TEST(AudioParamHandlerTest, UAFOnGCDerivedFromSummingBus) {
   Persistent<AudioParam> frequency_param = osc2->frequency();
 
   // Create a background thread to simulate the audio thread.
-  std::unique_ptr<NonMainThread> audio_thread = NonMainThread::CreateThread(
-      ThreadCreationParams(ThreadType::kRealtimeAudioWorkletThread));
+  FakeAudioThread audio_thread(ThreadType::kRealtimeAudioWorkletThread);
 
-  base::WaitableEvent event;
-
-  PostCrossThreadTask(
-      *audio_thread->GetTaskRunner(), FROM_HERE,
+  audio_thread.RunOnAudioThreadWithContext(
+      context,
       CrossThreadBindOnce(
-          [](OfflineAudioContext* context, AudioParam* param,
-             base::WaitableEvent* event) {
-            context->GetDeferredTaskHandler()
-                .SetAudioThreadToCurrentThread();
+          [](OfflineAudioContext* context, AudioParam* param) {
             {
               DeferredTaskHandler::GraphAutoLocker locker(
                   context->GetDeferredTaskHandler());
               context->GetDeferredTaskHandler().HandleDeferredTasks();
             }
             param->Handler().FinalValue();
-            event->Signal();
           },
           WrapCrossThreadPersistent(context),
-          WrapCrossThreadPersistent(frequency_param.Get()),
-          CrossThreadUnretained(&event)));
-
-  event.Wait();
+          WrapCrossThreadPersistent(frequency_param.Get())));
 
   // Drop references to nodes.
   osc1 = nullptr;

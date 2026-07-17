@@ -49,8 +49,7 @@
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
-#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
-#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/modules/webaudio/testing/fake_audio_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/scoped_mocked_url.h"
@@ -556,27 +555,22 @@ class ContextRenderer : public GarbageCollected<ContextRenderer> {
  public:
   explicit ContextRenderer(AudioContext* context)
       : context_(context),
-        audio_thread_(NonMainThread::CreateThread(
-            ThreadCreationParams(ThreadType::kRealtimeAudioWorkletThread))) {}
+        audio_thread_(ThreadType::kRealtimeAudioWorkletThread) {}
   ~ContextRenderer() = default;
 
   void Init() {
-    PostCrossThreadTask(
-        *audio_thread_->GetTaskRunner(), FROM_HERE,
-        CrossThreadBindOnce(&ContextRenderer::SetContextAudioThread,
-                            WrapCrossThreadWeakPersistent(this)));
-    event_.Wait();
+    audio_thread_.RunOnAudioThreadWithContext(
+        context_.Get(),
+        CrossThreadBindOnce([]() {}));
   }
 
   void Render(uint32_t frames_to_process,
               base::TimeDelta playout_delay,
               const media::AudioGlitchInfo& glitch_info) {
-    PostCrossThreadTask(
-        *audio_thread_->GetTaskRunner(), FROM_HERE,
+    audio_thread_.RunOnAudioThread(
         CrossThreadBindOnce(&ContextRenderer::RenderOnAudioThread,
                             WrapCrossThreadWeakPersistent(this),
                             frames_to_process, playout_delay, glitch_info));
-    event_.Wait();
   }
 
   void Trace(Visitor* visitor) const { visitor->Trace(context_); }
@@ -590,13 +584,6 @@ class ContextRenderer : public GarbageCollected<ContextRenderer> {
   }
 
  private:
-  void SetContextAudioThread() {
-    static_cast<AudioContext*>(context_)
-        ->GetDeferredTaskHandler()
-        .SetAudioThreadToCurrentThread();
-    event_.Signal();
-  }
-
   void RenderOnAudioThread(uint32_t frames_to_process,
                            base::TimeDelta playout_delay,
                            const media::AudioGlitchInfo& glitch_info) {
@@ -605,12 +592,10 @@ class ContextRenderer : public GarbageCollected<ContextRenderer> {
     static_cast<AudioContext*>(context_)->HandlePreRenderTasks(
         frames_to_process, &output_position, &audio_callback_metric,
         playout_delay, glitch_info);
-    event_.Signal();
   }
 
   WeakMember<AudioContext> context_;
-  const std::unique_ptr<blink::NonMainThread> audio_thread_;
-  base::WaitableEvent event_{base::WaitableEvent::ResetPolicy::AUTOMATIC};
+  FakeAudioThread audio_thread_;
 };
 
 class AudioContextStatsTest : public AudioContextTest, public base::TickClock {
