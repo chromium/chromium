@@ -22,6 +22,10 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.util.SizeF;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityEvent;
+import android.widget.FrameLayout;
 
 import androidx.test.annotation.UiThreadTest;
 
@@ -57,6 +61,7 @@ import org.chromium.ui.xr.scenecore.XrSurfaceEntityShape;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityStereoMode;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityView;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -390,6 +395,109 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
                 (int) formatCoordinator.getRecommendedProjectionTypeForTesting());
     }
 
+    /** Tests that seekBar accessibility events are blocked during programmatic updates. */
+    @Test
+    @UiThreadTest
+    public void testSeekBarAccessibilityEventsBlockedDuringPlayback() throws Exception {
+        // 1. Create a visible activity and coordinator to ensure view attachment.
+        Activity visibleActivity =
+                Robolectric.buildActivity(org.chromium.ui.base.TestActivity.class)
+                        .create()
+                        .start()
+                        .resume()
+                        .visible()
+                        .get();
+        visibleActivity.setTheme(org.chromium.chrome.R.style.Theme_BrowserUI_Light);
+
+        ImmersiveVideoPlaybackCoordinator visibleCoordinator =
+                new TestImmersiveVideoPlaybackCoordinator(
+                        visibleActivity,
+                        mWindowAndroid,
+                        mVideoControlDelegate,
+                        mXrSceneCoreSessionManager,
+                        mCompositorView);
+        visibleCoordinator.show();
+
+        ImmersiveVideoControlView panel =
+                assumeNonNull(
+                        visibleCoordinator
+                                .getControlCoordinatorForTesting()
+                                .getControlPanelForTesting());
+        Slider originalSlider = panel.getSeekBarForTesting();
+
+        // 2. Enable accessibility in Robolectric.
+        android.view.accessibility.AccessibilityManager accessibilityManager =
+                (android.view.accessibility.AccessibilityManager)
+                        visibleActivity.getSystemService("accessibility");
+        var shadowManager = org.robolectric.Shadows.shadowOf(accessibilityManager);
+        shadowManager.setEnabled(true);
+        android.accessibilityservice.AccessibilityServiceInfo serviceInfo =
+                new android.accessibilityservice.AccessibilityServiceInfo();
+        serviceInfo.eventTypes = AccessibilityEvent.TYPES_ALL_MASK;
+        shadowManager.setEnabledAccessibilityServiceList(List.of(serviceInfo));
+        assertTrue(accessibilityManager.isEnabled());
+
+        // 3. Remove original slider from panel.
+        ViewGroup originalParent = (ViewGroup) originalSlider.getParent();
+        int index = originalParent.indexOfChild(originalSlider);
+        originalParent.removeView(originalSlider);
+
+        // 4. Create a TestSlider and replace the private field in panel.
+        TestSlider testSlider = new TestSlider(visibleActivity);
+        java.lang.reflect.Field seekBarField =
+                ImmersiveVideoControlView.class.getDeclaredField("mSeekBar");
+        seekBarField.setAccessible(true);
+        seekBarField.set(panel, testSlider);
+
+        // Add testSlider back to panel at the same index.
+        originalParent.addView(testSlider, index);
+
+        // 5. Add panel to a TestFrameLayout parent to monitor events.
+        if (panel.getParent() != null) {
+            ((ViewGroup) panel.getParent()).removeView(panel);
+        }
+        TestFrameLayout testParent = new TestFrameLayout(visibleActivity);
+        testParent.addView(panel);
+        visibleActivity.setContentView(testParent);
+
+        // Allow Robolectric to process layout and attach events so accessibility is initialized.
+        ShadowLooper.idleMainLooper();
+
+        // Verify attachment
+        assertTrue(testSlider.isAttachedToWindow());
+        assertTrue(panel.isAttachedToWindow());
+
+        // 6. Programmatic update during active playback (playing): setProgress and position label
+        // updates should block accessibility events.
+        panel.setPlaybackState(true);
+        panel.setProgress(50);
+        panel.getPositionLabelForTesting()
+                .sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+        ShadowLooper.idleMainLooper(1000, java.util.concurrent.TimeUnit.MILLISECONDS);
+        // Verify that parent did NOT receive any accessibility events.
+        assertTrue(testParent.getReceivedEvents().isEmpty());
+
+        // 6b. Programmatic update when paused: setProgress and position label updates should NOT
+        // block accessibility events.
+        panel.setPlaybackState(false);
+        testParent.clearEvents();
+        panel.setProgress(75);
+        panel.getPositionLabelForTesting()
+                .sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+        ShadowLooper.idleMainLooper(1000, java.util.concurrent.TimeUnit.MILLISECONDS);
+        // Verify that parent DID receive the accessibility event because playback is paused.
+        assertFalse(testParent.getReceivedEvents().isEmpty());
+
+        // 7. Directly sending accessibility event (simulating user interaction or focus) should
+        // NOT be blocked.
+        testParent.clearEvents();
+        testSlider.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_SELECTED);
+        ShadowLooper.idleMainLooper();
+        // Verify that parent DID receive the accessibility event.
+        assertEquals(1, testParent.getReceivedEvents().size());
+        assertEquals(panel, testParent.getReceivedChild());
+    }
+
     /** Test subclass that allows injecting mocked dependencies by overriding protected methods. */
     private static class TestImmersiveVideoPlaybackCoordinator
             extends ImmersiveVideoPlaybackCoordinator {
@@ -420,6 +528,46 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
                     return mMockCompositorView;
                 }
             };
+        }
+    }
+
+    private static class TestSlider extends Slider {
+        public TestSlider(android.content.Context context) {
+            super(context);
+        }
+
+        @Override
+        public boolean isShown() {
+            return true;
+        }
+    }
+
+    private static class TestFrameLayout extends FrameLayout {
+        private final List<AccessibilityEvent> mReceivedEvents = new java.util.ArrayList<>();
+        private View mReceivedChild;
+
+        public TestFrameLayout(android.content.Context context) {
+            super(context);
+        }
+
+        @Override
+        public boolean requestSendAccessibilityEvent(View child, AccessibilityEvent event) {
+            mReceivedChild = child;
+            mReceivedEvents.add(AccessibilityEvent.obtain(event));
+            return super.requestSendAccessibilityEvent(child, event);
+        }
+
+        public List<AccessibilityEvent> getReceivedEvents() {
+            return mReceivedEvents;
+        }
+
+        public View getReceivedChild() {
+            return mReceivedChild;
+        }
+
+        public void clearEvents() {
+            mReceivedEvents.clear();
+            mReceivedChild = null;
         }
     }
 }
