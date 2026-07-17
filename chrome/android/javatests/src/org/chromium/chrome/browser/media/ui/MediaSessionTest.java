@@ -14,6 +14,7 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -22,6 +23,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -58,6 +60,7 @@ import java.util.concurrent.TimeoutException;
     MediaSwitches.AUTOPLAY_NO_GESTURE_REQUIRED_POLICY,
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE
 })
+@Batch(Batch.PER_CLASS)
 public class MediaSessionTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
@@ -73,6 +76,11 @@ public class MediaSessionTest {
     private static final long DEFAULT_POLL_INTERVAL = 50L;
 
     private EmbeddedTestServer mTestServer;
+
+    @After
+    public void tearDown() {
+        MediaNotificationManager.resetForTesting();
+    }
 
     @Test
     @LargeTest

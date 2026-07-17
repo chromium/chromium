@@ -9,12 +9,14 @@ import android.media.AudioManager;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.R;
@@ -33,6 +35,7 @@ import org.chromium.ui.base.DeviceFormFactor;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class AutoplayMutedNotificationTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
@@ -85,6 +88,14 @@ public class AutoplayMutedNotificationTest {
     public void setUp() {
         mAudioFocusChangeListener = new MockAudioFocusChangeListener();
         mActivityTestRule.startOnTestServerUrl(TEST_PATH);
+    }
+
+    @After
+    public void tearDown() {
+        if (mAudioFocusChangeListener != null) {
+            getAudioManager().abandonAudioFocus(mAudioFocusChangeListener);
+        }
+        MediaNotificationManager.resetForTesting();
     }
 
     @Test
