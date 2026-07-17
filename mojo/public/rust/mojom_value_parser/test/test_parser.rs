@@ -966,11 +966,11 @@ fn test_string_parsing() -> anyhow::Result<()> {
             "[u4]32 [u4]3 ",
             "[dist8]life_ptr [dist8]universe_ptr [dist8]everything_ptr",
             "[anchr]life_ptr",
-            &str_wire_format("life"),
+            str_wire_format("life"),
             "[anchr]universe_ptr",
-            &str_wire_format("universe"),
+            str_wire_format("universe"),
             "[anchr]everything_ptr",
-            &str_wire_format("everything"),
+            str_wire_format("everything"),
         ),
     )?;
 
@@ -984,9 +984,9 @@ fn test_string_parsing() -> anyhow::Result<()> {
             "[anchr]values_ptr ",
             "[u4]24 [u4]2 [dist8]ten_ptr [dist8]twenty_ptr ",
             "[anchr]ten_ptr ",
-            &str_wire_format("ten"),
+            str_wire_format("ten"),
             "[anchr]twenty_ptr ",
-            &str_wire_format("twenty"),
+            str_wire_format("twenty"),
         ),
     )?;
 
@@ -998,9 +998,9 @@ fn test_string_parsing() -> anyhow::Result<()> {
             "[anchr]keys_ptr ",
             "[u4]24 [u4]2 [dist8]four_ptr [dist8]three_ptr ",
             "[anchr]four_ptr ",
-            &str_wire_format("four"),
+            str_wire_format("four"),
             "[anchr]three_ptr ",
-            &str_wire_format("three"),
+            str_wire_format("three"),
             "[anchr]values_ptr ",
             "[u4]12 [u4]2 [s2]4 [s2]3 [u4]0 ",
         ),
@@ -1022,7 +1022,7 @@ fn test_complex_union_parsing() -> anyhow::Result<()> {
         HoldsComplexTypes::str("union_string".to_string()),
         &format!(
             "[u4]16 [u4]0 [dist8]union_str_ptr [anchr]union_str_ptr {}",
-            &str_wire_format("union_string")
+            str_wire_format("union_string")
         ),
     )?;
 
@@ -1030,7 +1030,7 @@ fn test_complex_union_parsing() -> anyhow::Result<()> {
         ComplexUnionHolder { u: HoldsComplexTypes::str("union_string".to_string()) },
         &format!(
             "[u4]24 [u4]0 [u4]16 [u4]0 [dist8]union_str_ptr [anchr]union_str_ptr {}",
-            &str_wire_format("union_string")
+            str_wire_format("union_string")
         ),
     )?;
 
@@ -1187,7 +1187,7 @@ fn test_nullable_parsing() -> anyhow::Result<()> {
         UnionWithNullables::str(Some("union_string".to_string())),
         &format!(
             "[u4]16 [u4]1 [dist8]union_str_ptr [anchr]union_str_ptr {}",
-            &str_wire_format("union_string")
+            str_wire_format("union_string")
         ),
     )?;
     validate_parsing::<UnionWithNullables>(
@@ -1209,7 +1209,7 @@ fn test_nullable_parsing() -> anyhow::Result<()> {
             "{} {} {}",
             "[u4]40 [u4]0 [u4]16 [u4]2 [u8]0 [u8]0 [dist8]str_ptr ",
             "[anchr]str_ptr ",
-            &str_wire_format("holla")
+            str_wire_format("holla")
         ),
     )?;
     validate_parsing::<NullableOthers>(
@@ -1243,7 +1243,7 @@ fn test_nullable_parsing() -> anyhow::Result<()> {
             "[anchr]keys_ptr [u4]10 [u4]2 [u1]1 [u1]3 [u2]0 [u4]0 ",
             "[anchr]values_ptr [u4]10 [u4]2 [u1]2 [u1]4 [u2]0 [u4]0 ",
             "[anchr]str_ptr ",
-            &str_wire_format("hello")
+            str_wire_format("hello")
         ),
     )?;
 
