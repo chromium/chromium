@@ -171,6 +171,11 @@ void EventDispatchHelper::DispatchEventImpl(
     const ExtensionId& restrict_to_extension_id,
     const GURL& restrict_to_url,
     std::unique_ptr<Event> event) {
+  // A dispatch-target restriction identifies one context of one extension.
+  // It is only meaningful for extension-scoped dispatch.
+  DCHECK(!event->restrict_to_dispatch_target ||
+         !restrict_to_extension_id.empty());
+
   std::set<const EventListener*> listeners(
       listeners_->GetEventListeners(*event));
   bool did_handle_event = false;
@@ -219,7 +224,8 @@ bool EventDispatchHelper::DispatchEventToLazyListener(
     const EventListener* listener) {
   DCHECK(listener->IsLazy());
   if (!ListenerMeetsRestrictions(listener, restrict_to_extension_id,
-                                 restrict_to_url)) {
+                                 restrict_to_url,
+                                 event.restrict_to_dispatch_target)) {
     return false;
   }
 
@@ -250,7 +256,8 @@ bool EventDispatchHelper::DispatchEventToActiveListener(
     const EventListener* listener) {
   DCHECK(!listener->IsLazy());
   if (!ListenerMeetsRestrictions(listener, restrict_to_extension_id,
-                                 restrict_to_url)) {
+                                 restrict_to_url,
+                                 event.restrict_to_dispatch_target)) {
     return false;
   }
 
@@ -431,7 +438,9 @@ bool EventDispatchHelper::IsAlreadyQueued(
 bool EventDispatchHelper::ListenerMeetsRestrictions(
     const EventListener* listener,
     const ExtensionId& restrict_to_extension_id,
-    const GURL& restrict_to_url) const {
+    const GURL& restrict_to_url,
+    const std::optional<Event::DispatchTarget>& restrict_to_dispatch_target)
+    const {
   if (!restrict_to_extension_id.empty() &&
       restrict_to_extension_id != listener->extension_id()) {
     return false;
@@ -440,6 +449,18 @@ bool EventDispatchHelper::ListenerMeetsRestrictions(
   if (!restrict_to_url.is_empty() &&
       !url::IsSameOriginWith(restrict_to_url, listener->listener_url())) {
     return false;
+  }
+
+  if (restrict_to_dispatch_target) {
+    const Event::DispatchTarget& target = *restrict_to_dispatch_target;
+    if (listener->IsLazy()) {
+      return target.IsLazy();
+    }
+    return !target.IsLazy() &&
+           listener->process()->GetID() == target.render_process_id &&
+           listener->worker_thread_id() == target.worker_thread_id &&
+           listener->service_worker_version_id() ==
+               target.service_worker_version_id;
   }
 
   return true;

@@ -386,6 +386,10 @@ class EventRouter : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(EventRouterTest, DispatchPendingEvent_NullContext);
   FRIEND_TEST_ALL_PREFIXES(EventRouterDispatchTest, TestDispatch);
   FRIEND_TEST_ALL_PREFIXES(EventRouterDispatchTest, TestDispatchCallback);
+  FRIEND_TEST_ALL_PREFIXES(EventRouterDispatchTest,
+                           ActiveDispatchTargetRestrictsToWorker);
+  FRIEND_TEST_ALL_PREFIXES(EventRouterDispatchTest,
+                           ActiveDispatchTargetMissingFiresCannotDispatch);
   FRIEND_TEST_ALL_PREFIXES(EventRouterFilterTest,
                            AddFilteredLazyListenerForUnloadedExtension);
   FRIEND_TEST_ALL_PREFIXES(
@@ -703,6 +707,24 @@ struct Event {
 
   // If present, then the event will only be sent to this context type.
   const std::optional<mojom::ContextType> restrict_to_context_type;
+
+  // Identifies a single renderer-side target for `restrict_to_dispatch_target`.
+  struct DispatchTarget {
+    content::ChildProcessId render_process_id;
+    int worker_thread_id = kMainThreadId;
+    int64_t service_worker_version_id =
+        blink::mojom::kInvalidServiceWorkerVersionId;
+
+    bool IsLazy() const { return render_process_id.is_null(); }
+
+    friend bool operator==(const DispatchTarget&,
+                           const DispatchTarget&) = default;
+  };
+
+  // If set, the event is delivered only to the identified target. Only
+  // meaningful with extension-scoped dispatch (`DispatchEventToExtension()`).
+  // If no matching listener handles it, `cannot_dispatch_callback` fires.
+  std::optional<DispatchTarget> restrict_to_dispatch_target;
 
   // If not empty, the event is only sent to extensions with host permissions
   // for this url.

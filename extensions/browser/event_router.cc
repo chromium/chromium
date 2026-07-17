@@ -1913,6 +1913,7 @@ std::unique_ptr<Event> Event::CopySelectively(bool copy_event_args,
   copy->will_dispatch_callback = will_dispatch_callback;
   copy->did_dispatch_callback = did_dispatch_callback;
   copy->cannot_dispatch_callback = cannot_dispatch_callback;
+  copy->restrict_to_dispatch_target = restrict_to_dispatch_target;
 
   return copy;
 }

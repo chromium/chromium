@@ -5,12 +5,14 @@
 #ifndef EXTENSIONS_BROWSER_EVENTS_EVENT_DISPATCH_HELPER_H_
 #define EXTENSIONS_BROWSER_EVENTS_EVENT_DISPATCH_HELPER_H_
 
+#include <optional>
 #include <set>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/values.h"
+#include "extensions/browser/event_router.h"
 #include "extensions/browser/lazy_context_id.h"
 #include "extensions/browser/lazy_context_task_queue.h"
 #include "extensions/common/extension_id.h"
@@ -26,7 +28,6 @@ class EventListener;
 class EventListenerMap;
 class Extension;
 class ExtensionRegistry;
-struct Event;
 
 // A unique identifier for an active listener context. This is used to
 // de-duplicate event dispatches to the same active listener context.
@@ -168,14 +169,21 @@ class EventDispatchHelper {
   bool IsAlreadyQueued(const LazyContextId& dispatch_context) const;
 
   // Returns true if the given `listener` meets dispatch restrictions. Events
-  // may be restricted to a particular extension ID or URL context.
+  // may be restricted to a particular extension ID or URL context, and to a
+  // single dispatch target.
   //
   // If `restrict_to_extension_id` is non-empty, the listener's extension ID
   // must match it. If `restrict_to_url` is non-empty, the listener's URL must
-  // be same-origin with it.
+  // be same-origin with it. If `restrict_to_dispatch_target` is set, the
+  // listener's context identity must match it: an active target matches only
+  // the listener registration with that exact (process, worker thread,
+  // service worker version) identity, and a lazy target matches only lazy
+  // registrations.
   bool ListenerMeetsRestrictions(const EventListener* listener,
                                  const ExtensionId& restrict_to_extension_id,
-                                 const GURL& restrict_to_url) const;
+                                 const GURL& restrict_to_url,
+                                 const std::optional<Event::DispatchTarget>&
+                                     restrict_to_dispatch_target) const;
 
   // Gets off-the-record browser context if
   //     - The extension has incognito mode set to "split"
