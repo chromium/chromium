@@ -960,9 +960,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
   histogram_tester_->ExpectUniqueSample(
       "Blink.FedCm.IdpSigninStatus.MismatchDialogResult",
-      static_cast<int>(FedCmAccountSelectionView::MismatchDialogResult::
-                           kDismissedByCloseIcon),
-      1);
+      static_cast<int>(MismatchDialogResult::kDismissedByCloseIcon), 1);
 }
 
 // Tests that when the mismatch dialog is closed through means other than the
@@ -980,9 +978,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
   histogram_tester_->ExpectUniqueSample(
       "Blink.FedCm.IdpSigninStatus.MismatchDialogResult",
-      static_cast<int>(FedCmAccountSelectionView::MismatchDialogResult::
-                           kDismissedForOtherReasons),
-      1);
+      static_cast<int>(MismatchDialogResult::kDismissedForOtherReasons), 1);
 }
 
 // Tests that when FedCmAccountSelectionView is destroyed while the mismatch
@@ -997,9 +993,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MismatchDialogDestroyedMetric) {
 
   histogram_tester_->ExpectUniqueSample(
       "Blink.FedCm.IdpSigninStatus.MismatchDialogResult",
-      static_cast<int>(FedCmAccountSelectionView::MismatchDialogResult::
-                           kDismissedForOtherReasons),
-      1);
+      static_cast<int>(MismatchDialogResult::kDismissedForOtherReasons), 1);
 }
 
 // Tests that when the continue button on the mismatch dialog is clicked, the
@@ -1016,9 +1010,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
   histogram_tester_->ExpectUniqueSample(
       "Blink.FedCm.IdpSigninStatus.MismatchDialogResult",
-      static_cast<int>(
-          FedCmAccountSelectionView::MismatchDialogResult::kContinued),
-      1);
+      static_cast<int>(MismatchDialogResult::kContinued), 1);
 }
 
 // Tests that when the continue button on the mismatch dialog is clicked and
@@ -1038,9 +1030,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
   histogram_tester_->ExpectUniqueSample(
       "Blink.FedCm.IdpSigninStatus.MismatchDialogResult",
-      static_cast<int>(
-          FedCmAccountSelectionView::MismatchDialogResult::kContinued),
-      1);
+      static_cast<int>(MismatchDialogResult::kContinued), 1);
 }
 
 // Test transitioning from IdP sign-in status mismatch dialog to regular sign-in

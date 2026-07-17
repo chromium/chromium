@@ -101,6 +101,27 @@ enum class LoadingDialogResult {
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmLoadingDialogResult)
 
+// This enum describes the outcome of the mismatch dialog and is used for
+// histograms. Do not remove or modify existing values, but you may add new
+// values at the end.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ui.android.webid
+// LINT.IfChange(MismatchDialogResult)
+
+enum class MismatchDialogResult {
+  kContinued = 0,
+  kDismissedByCloseIcon = 1,
+  kDismissedForOtherReasons = 2,
+  // Android-specific
+  kSwipe = 3,
+  // Android-specific
+  kBackPress = 4,
+  // Android-specific
+  kTapScrim = 5,
+  kMaxValue = kTapScrim
+};
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmMismatchDialogResult)
+
 // This enum describes the outcome of the disclosure dialog and is used for
 // histograms. Do not remove or modify existing values, but you may add new
 // values at the end.

@@ -148,6 +148,14 @@ class AccountSelectionMediator {
     // recorded for active mode.
     private @Nullable Integer mDisclosureDialogState;
 
+    // The current state of the mismatch dialog if opened for metrics purposes.
+    private @Nullable Integer mMismatchDialogState;
+
+    // Whether the user clicked the continue button for the mismatch dialog.
+    // This button also dismisses the dialog, so we use this to prevent us from double counting the
+    // Blink.FedCm.IdpSigninStatus.MismatchDialogResult metric
+    private boolean mIsMismatchContinueClicked;
+
     // Whether there was a login to IDP CCT that was closed while the loading dialog is open. This
     // could mean that the user successfully completed the login to IDP flow.
     private boolean mIsLoadingDialogLoginToIdpClosed;
@@ -259,6 +267,10 @@ class AccountSelectionMediator {
                                             mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL
                                                     ? DisclosureDialogResult.SWIPE
                                                     : null;
+                                    mMismatchDialogState =
+                                            mHeaderType == HeaderType.SIGN_IN_TO_IDP_STATIC
+                                                    ? MismatchDialogResult.SWIPE
+                                                    : null;
                                 } else if (reason
                                         == BottomSheetController.StateChangeReason.BACK_PRESS) {
                                     dismissReason = IdentityRequestDialogDismissReason.BACK_PRESS;
@@ -272,6 +284,10 @@ class AccountSelectionMediator {
                                     mLoadingDialogState =
                                             mHeaderType == HeaderType.LOADING
                                                     ? LoadingDialogResult.BACK_PRESS
+                                                    : null;
+                                    mMismatchDialogState =
+                                            mHeaderType == HeaderType.SIGN_IN_TO_IDP_STATIC
+                                                    ? MismatchDialogResult.BACK_PRESS
                                                     : null;
                                 } else if (reason
                                         == BottomSheetController.StateChangeReason.TAP_SCRIM) {
@@ -290,6 +306,10 @@ class AccountSelectionMediator {
                                     mDisclosureDialogState =
                                             mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL
                                                     ? DisclosureDialogResult.TAP_SCRIM
+                                                    : null;
+                                    mMismatchDialogState =
+                                            mHeaderType == HeaderType.SIGN_IN_TO_IDP_STATIC
+                                                    ? MismatchDialogResult.TAP_SCRIM
                                                     : null;
                                 }
                                 onDismissed(dismissReason);
@@ -522,6 +542,8 @@ class AccountSelectionMediator {
         if (mUkmRecorder != null) {
             mUkmRecorder.addMetric("Button.LoadingDialogResult", mLoadingDialogState).record();
         }
+
+        // Reset the state to prevent double-recording.
         mLoadingDialogState = null;
     }
 
@@ -547,7 +569,32 @@ class AccountSelectionMediator {
                     .addMetric("Button.DisclosureDialogResult", mDisclosureDialogState)
                     .record();
         }
+
+        // Reset the state to prevent double-recording.
         mDisclosureDialogState = null;
+    }
+
+    private void maybeRecordMismatchDialogResult() {
+        // mMismatchDialogState is set on dismissal e.g. tap scrim, back press or if the user
+        // presses continue. If it hasn't been set but onDismissed is called while the mismatch
+        // dialog is being shown, then we don't know what caused the dismissal.
+        if (!mIsMismatchContinueClicked
+                && mMismatchDialogState == null
+                && mHeaderType == HeaderType.SIGN_IN_TO_IDP_STATIC) {
+            mMismatchDialogState = MismatchDialogResult.DISMISSED_FOR_OTHER_REASONS;
+        }
+
+        if (mMismatchDialogState == null) return;
+
+        assert mHeaderType == HeaderType.SIGN_IN_TO_IDP_STATIC;
+
+        RecordHistogram.recordEnumeratedHistogram(
+                "Blink.FedCm.IdpSigninStatus.MismatchDialogResult",
+                mMismatchDialogState,
+                MismatchDialogResult.MAX_VALUE + 1);
+
+        // Reset the state to prevent double-recording.
+        mMismatchDialogState = null;
     }
 
     boolean showVerifySheet(Account account) {
@@ -647,6 +694,8 @@ class AccountSelectionMediator {
         mIdpDataListForShowAccounts = null;
         mRpContext = rpContext;
         mHeaderType = HeaderProperties.HeaderType.SIGN_IN_TO_IDP_STATIC;
+        mIsMismatchContinueClicked = false;
+        mMismatchDialogState = null;
         if (!updateSheet(
                 /* accounts= */ Collections.emptyList(),
                 /* identityProviders= */ Collections.emptyList(),
@@ -1169,6 +1218,11 @@ class AccountSelectionMediator {
         assert buttonData.mIdpMetadata != null;
         assert buttonData.mAccount == null;
         if (!shouldInputBeProcessed()) return;
+        if (mHeaderType == HeaderType.SIGN_IN_TO_IDP_STATIC) {
+            mIsMismatchContinueClicked = true;
+            mMismatchDialogState = MismatchDialogResult.CONTINUED;
+            maybeRecordMismatchDialogResult();
+        }
         maybeRecordAccountChooserResult(AccountChooserResult.USE_OTHER_ACCOUNT_BUTTON);
         mDelegate.onLoginToIdP(
                 buttonData.mIdpMetadata.getConfigUrl(), buttonData.mIdpMetadata.getLoginUrl());
@@ -1252,11 +1306,19 @@ class AccountSelectionMediator {
             return;
         }
 
+        // If dismissed from the close button for mismatch dialog, set the dialog state for
+        // recording the dialog result.
+        if (dismissReason == IdentityRequestDialogDismissReason.CLOSE_BUTTON
+                && mHeaderType == HeaderType.SIGN_IN_TO_IDP_STATIC) {
+            mMismatchDialogState = MismatchDialogResult.DISMISSED_BY_CLOSE_ICON;
+        }
+
         if (mAccountChooserState != null) {
             maybeRecordAccountChooserResult(mAccountChooserState);
         }
         maybeRecordLoadingDialogResult();
         maybeRecordDisclosureDialogResult();
+        maybeRecordMismatchDialogResult();
         dismissContent();
         mDelegate.onDismissed(dismissReason);
     }

@@ -365,20 +365,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
     LOADING,
   };
 
-  // This enum describes the outcome of the mismatch dialog and is used for
-  // histograms. Do not remove or modify existing values, but you may add new
-  // values at the end.
-  // LINT.IfChange(MismatchDialogResult)
-
-  enum class MismatchDialogResult {
-    kContinued = 0,
-    kDismissedByCloseIcon = 1,
-    kDismissedForOtherReasons = 2,
-    kMaxValue = kDismissedForOtherReasons
-  };
-
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmMismatchDialogResult)
-
   // This enum describes the outcome of the pop-up window and is used for
   // histograms. Do not remove or modify existing values, but you may add new
   // values at the end.

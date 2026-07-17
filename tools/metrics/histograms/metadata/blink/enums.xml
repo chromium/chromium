@@ -7190,9 +7190,12 @@ Called by update_permissions_policy_enum.py.-->
   <int value="0" label="Continue button clicked"/>
   <int value="1" label="Dismissed by user through clicking close icon"/>
   <int value="2" label="Dialog unhandled by user"/>
+  <int value="3" label="Swiped down on Android"/>
+  <int value="4" label="Back press on Android"/>
+  <int value="5" label="Tap scrim on Android"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h:MismatchDialogResult) -->
+<!-- LINT.ThenChange(//chrome/browser/ui/webid/identity_ui_utils.h:MismatchDialogResult) -->
 
 <!-- LINT.IfChange(FedCmMismatchDialogType) -->
 
