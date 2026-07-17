@@ -399,6 +399,7 @@ MediaFormatPtr CreateVideoFormat(const VideoEncodeAccelerator::Config& config,
                                  std::optional<gfx::ColorSpace> cs,
                                  int num_temporal_layers,
                                  PixelFormat format) {
+  int iframe_interval = config.gop_length.value_or(kDefaultGOPLength);
   const auto codec = VideoCodecProfileToVideoCodec(config.output_profile);
   const auto mime = MediaCodecUtil::CodecToAndroidMimeType(codec);
   MediaFormatPtr result(AMediaFormat_new());
@@ -426,11 +427,8 @@ MediaFormatPtr CreateVideoFormat(const VideoEncodeAccelerator::Config& config,
                         frame_size.height());
 
   AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_FRAME_RATE, framerate);
-  float iframe_interval_sec =
-      static_cast<float>(config.gop_length.value_or(kDefaultGOPLength)) /
-      framerate;
-  AMediaFormat_setFloat(result.get(), AMEDIAFORMAT_KEY_I_FRAME_INTERVAL,
-                        iframe_interval_sec);
+  AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_I_FRAME_INTERVAL,
+                        iframe_interval);
   AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_COLOR_FORMAT, format);
 
   if (config.require_low_delay) {
@@ -744,12 +742,6 @@ EncoderStatus NdkVideoEncodeAccelerator::Initialize(
     config_.required_encoder_type = EncoderType::kHardware;
   }
 
-  if (config.framerate == 0) {
-    MEDIA_LOG(ERROR, log_) << "Invalid config: framerate is 0";
-    return {EncoderStatus::Codes::kEncoderUnsupportedConfig,
-            "Framerate cannot be 0"};
-  }
-
   effective_framerate_ = config.framerate;
   num_temporal_layers_ =
       config_.HasTemporalLayer()
@@ -869,12 +861,6 @@ void NdkVideoEncodeAccelerator::RequestEncodingParametersChange(
   if (size.has_value()) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderUnsupportedConfig,
                        "Update output frame size is not supported"});
-    return;
-  }
-
-  if (framerate == 0) {
-    NotifyErrorStatus({EncoderStatus::Codes::kEncoderUnsupportedConfig,
-                       "Framerate cannot be zero"});
     return;
   }
 

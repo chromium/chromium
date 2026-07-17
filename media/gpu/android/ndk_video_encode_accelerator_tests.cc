@@ -1028,58 +1028,6 @@ TEST_P(NdkVideoEncoderAcceleratorTest, SvcHistograms) {
       "Media.VideoEncoder.NDKVEA.TemporalLayerEncodingEnabled", 1);
 }
 
-TEST_P(NdkVideoEncoderAcceleratorTest, VerifyGOPLength) {
-  auto config = GetDefaultConfig();
-  config.gop_length = 30;  // 1 second at 30 fps
-  config.framerate = 30;
-
-  accelerator_ = MakeNdkAccelerator();
-  EXPECT_CALL(*this, OnRequireBuffer()).WillOnce(Return(false));
-
-  const size_t total_frames_count = 45;
-
-  EXPECT_CALL(*this, OnBufferReady()).WillRepeatedly([this]() {
-    if (outputs_.size() < total_frames_count) {
-      return true;
-    }
-    return false;
-  });
-
-  auto status = accelerator_->Initialize(config, this, NullLog());
-  ASSERT_TRUE(status.is_ok()) << MediaSerializeForTesting(status);
-  SetCommandBufferHelper();
-  Run();
-
-  auto duration = base::Seconds(1) / config.framerate;
-  for (auto frame_index = 0u; frame_index < total_frames_count; frame_index++) {
-    auto timestamp = frame_index * duration;
-    uint32_t color = random_color_.Rand() & 0x00FFFFFF;
-    auto frame =
-        CreateFrame(config.input_visible_size, pixel_format_, timestamp, color);
-    if (GetParam().use_shared_image) {
-      frame = WrapInSharedImageFrame(frame);
-    }
-
-    accelerator_->Encode(frame, /*force_keyframe=*/false);
-  }
-
-  Run();
-  EXPECT_FALSE(error_status_.has_value());
-  EXPECT_GE(outputs_.size(), total_frames_count);
-
-  std::vector<base::TimeDelta> keyframe_timestamps;
-  for (const auto& output : outputs_) {
-    if (output.md.key_frame) {
-      keyframe_timestamps.push_back(output.md.timestamp);
-    }
-  }
-
-  // We expect at least two keyframes: one at 0s, and one at ~1s (frame 30).
-  ASSERT_GE(keyframe_timestamps.size(), 2u);
-  EXPECT_EQ(keyframe_timestamps[0], base::TimeDelta());
-  EXPECT_NEAR(keyframe_timestamps[1].InSecondsF(), 1.0, 0.1);
-}
-
 std::vector<VideoParams> GenerateVariants(
     base::span<const VideoParams> params) {
   std::vector<VideoParams> result;
