@@ -2048,6 +2048,21 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.Ai.Unmask.Result{RecordType}"
+    enum="AutofillAiUnmaskResult" expires_after="2027-03-09">
+  <owner>tobson@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the result of the unmasking flow for a sensitive Autofill AI entity.
+    Emitted immediately when unmasked data is retrieved from the local cache,
+    when the unmasking network request completes, or when device
+    re-authentication fails.
+
+    {RecordType}
+  </summary>
+  <token key="RecordType" variants="Autofill.Ai.EntityRecordType"/>
+</histogram>
+
 <histogram name="Autofill.Ai.WalletContextualSurfacingEnabled" enum="Boolean"
     expires_after="2026-12-12">
   <owner>jihadghanna@google.com</owner>

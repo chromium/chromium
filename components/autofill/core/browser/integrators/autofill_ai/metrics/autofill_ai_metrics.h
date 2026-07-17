@@ -65,6 +65,22 @@ std::string_view EntityPromptTypeToMetricsString(
 int GetBucketForAutofillAiReauthResultByFieldType(FieldType field_type,
                                                   bool auth_succeeded);
 
+// LINT.IfChange(AutofillAiUnmaskResult)
+enum class AutofillAiUnmaskResult {
+  kSuccess = 0,
+  kCacheHit = 1,
+  kReauthFailed = 2,
+  kNetworkError = 3,
+  kEmptyResponse = 4,
+  kParsingError = 5,
+  kMaxValue = kParsingError,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAiUnmaskResult)
+
+// Logs the outcome of unmasking a sensitive Autofill AI suggestion.
+void LogUnmaskResult(EntityInstance::RecordType record_type,
+                     AutofillAiUnmaskResult result);
+
 // Logs the result of the reauthentication flow per field type.
 void LogReauthToFillResultPerFieldType(const FieldTypeSet& ai_field_types,
                                        bool auth_succeeded);

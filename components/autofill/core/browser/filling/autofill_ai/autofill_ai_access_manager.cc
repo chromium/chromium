@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/network/autofill_ai/autofill_ai_personal_context_access_manager.h"
 #include "components/autofill/core/browser/network/autofill_ai/wallet_pass_access_manager.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -116,6 +117,12 @@ void AutofillAiAccessManager::MaybeAuthenticate(
         if (auth_succeeded) {
           std::move(callback).Run(std::move(entity), /*reauth_attempted=*/true);
         } else {
+          // TODO(b/489690454): Emit this metric for Wallet entities.
+          if (entity.record_type() ==
+              EntityInstance::RecordType::kPersonalContext) {
+            LogUnmaskResult(entity.record_type(),
+                            AutofillAiUnmaskResult::kReauthFailed);
+          }
           std::move(callback).Run(
               base::unexpected(FailureReason::kReauthFailed),
               /*reauth_attempted=*/true);

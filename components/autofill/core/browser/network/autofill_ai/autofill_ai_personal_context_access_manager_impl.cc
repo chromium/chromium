@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/network/autofill_ai/personal_context_conversion_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/dense_set.h"
+#include "components/personal_context/core/context_memory_error.h"
 #include "components/personal_context/core/personal_context_eligibility_service.h"
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/personal_context/core/personal_context_service.h"
@@ -265,6 +266,8 @@ void AutofillAiPersonalContextAccessManagerImpl::GetUnmaskedSpiiEntity(
     GetUnmaskedSpiiEntityCallback callback) {
   if (auto it = unmasked_spii_cache_.find(id);
       it != unmasked_spii_cache_.end()) {
+    LogUnmaskResult(EntityInstance::RecordType::kPersonalContext,
+                    AutofillAiUnmaskResult::kCacheHit);
     std::move(callback).Run(*it);
     return;
   }
@@ -295,8 +298,14 @@ void AutofillAiPersonalContextAccessManagerImpl::OnFetchPiiEntitiesComplete(
     base::TimeTicks request_start_time,
     personal_context::FetchPiiEntitiesResult result) {
   LogRequestLatency(RequestType::kSpiiUnmasking, request_start_time);
-
+  using enum AutofillAiUnmaskResult;
   if (!result.response.has_value()) {
+    using ExecutionError = personal_context::ContextMemoryError::ExecutionError;
+    const AutofillAiUnmaskResult outcome =
+        result.response.error().error() == ExecutionError::kResponseParseError
+            ? kParsingError
+            : kNetworkError;
+    LogUnmaskResult(EntityInstance::RecordType::kPersonalContext, outcome);
     std::move(callback).Run(std::nullopt);
     return;
   }
@@ -304,6 +313,8 @@ void AutofillAiPersonalContextAccessManagerImpl::OnFetchPiiEntitiesComplete(
   const personal_context::proto::FetchPiiEntitiesResponse& response =
       result.response.value();
   if (response.entities().empty()) {
+    LogUnmaskResult(EntityInstance::RecordType::kPersonalContext,
+                    kEmptyResponse);
     std::move(callback).Run(std::nullopt);
     return;
   }
@@ -312,12 +323,15 @@ void AutofillAiPersonalContextAccessManagerImpl::OnFetchPiiEntitiesComplete(
       PersonalContextEntityToEntityInstance(response.entities(0),
                                             /*is_masked=*/false);
   if (!unmasked_entity) {
+    LogUnmaskResult(EntityInstance::RecordType::kPersonalContext,
+                    kParsingError);
     std::move(callback).Run(std::nullopt);
     return;
   }
 
   EntityInstance final_entity = unmasked_entity->CopyWithNewEntityId(id);
   CacheUnmaskedSpiiEntity(final_entity);
+  LogUnmaskResult(EntityInstance::RecordType::kPersonalContext, kSuccess);
   std::move(callback).Run(std::move(final_entity));
 }
 

@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -23,6 +24,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/network/autofill_ai/mock_autofill_ai_personal_context_access_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
@@ -222,6 +224,44 @@ TEST_F(AutofillAiAccessManagerTest, ReauthRequired_ReauthRejected) {
 
   EXPECT_TRUE(access_manager().FetchEntityInstance(
       passport, /*will_fill_sensitive_info=*/true, callback.Get()));
+}
+
+// Tests that when re-authentication is required and rejected for a
+// Personal Context entity, kReauthFailed is logged to the Unmask.Result metric.
+TEST_F(AutofillAiAccessManagerTest,
+       ReauthRequired_ReauthRejected_PersonalContext) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kAutofillAiReauthRequired);
+
+  EntityInstance passport = test::GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kPersonalContext});
+  AddOrUpdateEntityInstance(passport);
+
+  mock_authenticator_ =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+  EXPECT_CALL(*mock_authenticator_, CanAuthenticateWithBiometricOrScreenLock)
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_authenticator_, AuthenticateWithMessage)
+      .WillOnce(RunOnceCallback<1>(false));
+  test_api(access_manager())
+      .SetDeviceAuthenticator(std::move(mock_authenticator_));
+
+  base::MockCallback<AutofillAiAccessManager::OnEntityInstanceFetchedCallback>
+      callback;
+  EXPECT_CALL(
+      callback,
+      Run(base::expected<EntityInstance,
+                         AutofillAiAccessManager::FailureReason>(
+              base::unexpected(
+                  AutofillAiAccessManager::FailureReason::kReauthFailed)),
+          /*reauth_attempted=*/true));
+
+  base::HistogramTester histogram_tester;
+  EXPECT_TRUE(access_manager().FetchEntityInstance(
+      passport, /*will_fill_sensitive_info=*/true, callback.Get()));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.Unmask.Result.PersonalContext",
+      AutofillAiUnmaskResult::kReauthFailed, 1);
 }
 
 // Tests that when re-authentication is required but the device does not support

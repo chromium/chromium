@@ -18,6 +18,7 @@
 #include "base/test/test_future.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/network/autofill_ai/autofill_ai_personal_context_access_manager_impl_test_api.h"
 #include "components/autofill/core/browser/network/autofill_ai/personal_context_conversion_util.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
@@ -218,6 +219,31 @@ class AutofillAiPersonalContextAccessManagerImplTest : public testing::Test {
     }
 
     access_manager().PrefetchContext(requested_types);
+  }
+
+  // Prefetches a single masked Passport entity and returns its GUID.
+  EntityInstance::EntityId PrefetchMaskedPassportAndGetGuid(
+      std::string_view passport_number = "P123") {
+    personal_context::proto::ContextMemoryAmbientAutofillResponse
+        presence_response;
+    presence_response.add_entities()
+        ->mutable_sensitive_pii_presence()
+        ->set_type(SensitivePiiPresence::PASSPORT);
+    personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
+    spii_response.add_entities()->mutable_passport()->set_number(
+        std::string(passport_number));
+
+    std::vector<EntityInstance> entities;
+    EXPECT_CALL(mock_observer(),
+                OnPrefetchContextComplete(_, Optional(IsEmpty())));
+    EXPECT_CALL(mock_observer(),
+                OnPrefetchContextComplete(_, Optional(Not(IsEmpty()))))
+        .WillOnce(SaveOptSpanToVector<1>(&entities));
+    PrefetchContextSync({EntityType(EntityTypeName::kPassport)},
+                        {EntityType(EntityTypeName::kPassport)},
+                        presence_response, spii_response);
+    CHECK_EQ(entities.size(), 1u);
+    return entities[0].guid();
   }
 
  protected:
@@ -1090,7 +1116,11 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 
   // No service call expected.
   EXPECT_CALL(mock_personal_context_service(), FetchPiiEntities).Times(0);
+  base::HistogramTester histogram_tester;
   EXPECT_EQ(GetUnmaskedSpiiEntitySync(passport.guid()), passport);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.Unmask.Result.PersonalContext",
+      AutofillAiUnmaskResult::kCacheHit, 1);
 }
 
 // Tests that GetUnmaskedSpiiEntity triggers a service call on cache miss
@@ -1129,6 +1159,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
       .WillOnce(RunOnceCallback<2>(personal_context::FetchPiiEntitiesResult(
           base::ok(std::move(expected_response)))));
 
+  base::HistogramTester histogram_tester;
   // Call GetUnmaskedSpiiEntity.
   {
     std::optional<EntityInstance> result =
@@ -1142,6 +1173,9 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
             ->GetCompleteRawInfo(),
         u"P123_UNMASKED");
   }
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.Unmask.Result.PersonalContext",
+      AutofillAiUnmaskResult::kSuccess, 1);
 
   // Verify that the unmasked passport is now cached in the unmasked cache by
   // calling `GetUnmaskedSpiiEntitySync` again and ensuring no service call
@@ -1154,6 +1188,9 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
     EXPECT_EQ(cached_result->guid(), passport_masked.guid());
     EXPECT_FALSE(cached_result->IsMaskedEntity());
   }
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Ai.Unmask.Result.PersonalContext",
+      AutofillAiUnmaskResult::kCacheHit, 1);
 }
 
 // Tests that `GetUnmaskedSpiiEntity` returns `std::nullopt` immediately
@@ -1164,7 +1201,10 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 
   // No service call expected because it's not prefetched.
   EXPECT_CALL(mock_personal_context_service(), FetchPiiEntities).Times(0);
+  base::HistogramTester histogram_tester;
   EXPECT_EQ(GetUnmaskedSpiiEntitySync(unknown_id), std::nullopt);
+  histogram_tester.ExpectTotalCount("Autofill.Ai.Unmask.Result.PersonalContext",
+                                    0);
 }
 
 // Tests that `GetUnmaskedSpiiEntity` returns `std::nullopt` if the service call
@@ -1199,7 +1239,51 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
       .WillOnce(RunOnceCallback<2>(personal_context::FetchPiiEntitiesResult(
           base::unexpected(expected_error))));
 
+  base::HistogramTester histogram_tester;
   EXPECT_EQ(GetUnmaskedSpiiEntitySync(passport_guid), std::nullopt);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.Unmask.Result.PersonalContext",
+      AutofillAiUnmaskResult::kNetworkError, 1);
+}
+
+// Tests that when the service call returns a 200 OK with no entities,
+// kEmptyResponse is logged to the Unmask.Result metric.
+TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
+       GetUnmaskedSpiiEntity_EmptyResponse) {
+  EntityInstance::EntityId passport_guid = PrefetchMaskedPassportAndGetGuid();
+
+  personal_context::proto::FetchPiiEntitiesResponse empty_response;
+
+  EXPECT_CALL(mock_personal_context_service(), FetchPiiEntities(_, _, _))
+      .WillOnce(RunOnceCallback<2>(personal_context::FetchPiiEntitiesResult(
+          base::ok(std::move(empty_response)))));
+
+  base::HistogramTester histogram_tester;
+  EXPECT_EQ(GetUnmaskedSpiiEntitySync(passport_guid), std::nullopt);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.Unmask.Result.PersonalContext",
+      AutofillAiUnmaskResult::kEmptyResponse, 1);
+}
+
+// Tests that when the service call returns a ResponseParseError,
+// kParsingError is logged to the Unmask.Result metric.
+TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
+       GetUnmaskedSpiiEntity_ResponseParseError) {
+  EntityInstance::EntityId passport_guid = PrefetchMaskedPassportAndGetGuid();
+
+  using personal_context::ContextMemoryError;
+  ContextMemoryError expected_error = ContextMemoryError::FromExecutionError(
+      ContextMemoryError::ExecutionError::kResponseParseError);
+
+  EXPECT_CALL(mock_personal_context_service(), FetchPiiEntities(_, _, _))
+      .WillOnce(RunOnceCallback<2>(personal_context::FetchPiiEntitiesResult(
+          base::unexpected(expected_error))));
+
+  base::HistogramTester histogram_tester;
+  EXPECT_EQ(GetUnmaskedSpiiEntitySync(passport_guid), std::nullopt);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.Unmask.Result.PersonalContext",
+      AutofillAiUnmaskResult::kParsingError, 1);
 }
 
 // Tests that when OnEligibilityStateChanged is called with a disabled state,
