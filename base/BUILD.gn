@@ -4976,6 +4976,7 @@ if (is_android) {
     srcjar_deps = [ ":path_utils_jni" ]
     sources = [ "android/java/src/org/chromium/base/PathUtils.java" ]
     deps = [
+      ":file_path_java",
       ":log_java",
       ":resetters_java",
       ":tasks_java",
@@ -4999,6 +5000,10 @@ if (is_android) {
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
     ]
+  }
+
+  android_library("file_path_java") {
+    sources = [ "android/java/src/org/chromium/base/FilePath.java" ]
   }
 
   android_library("process_launcher_java") {
@@ -6141,6 +6146,7 @@ if (is_android) {
       "android/junit/src/org/chromium/base/ContentUriUtilsUnitTest.java",
       "android/junit/src/org/chromium/base/DiscardableReferencePoolTest.java",
       "android/junit/src/org/chromium/base/FeatureOverridesUnitTest.java",
+      "android/junit/src/org/chromium/base/FilePathTest.java",
       "android/junit/src/org/chromium/base/FileUtilsTest.java",
       "android/junit/src/org/chromium/base/FlagUnitTest.java",
       "android/junit/src/org/chromium/base/LogTest.java",
@@ -6214,6 +6220,7 @@ if (is_android) {
       ":base_shared_preferences_java",
       ":content_uri_utils_java",
       ":features_java",
+      ":file_path_java",
       ":flagged_apis_java",
       ":jni_callbacks_junit_tests_java",
       ":location_junit_tests",

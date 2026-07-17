@@ -24,7 +24,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -100,17 +99,20 @@ public abstract class PathUtils {
     // TODO(crbug.com/41484704): Merge the Chrome and WebView implementations
     // of isPathUnderAppDir into one.
     public static boolean isPathUnderAppDir(String path, Context context) {
-        File file = new File(path);
+        // Assume path is malicious and return true if path is not absolute or references parent.
+        FilePath file = FilePath.from(path);
+        if (!file.isAbsolute() || file.referencesParent()) {
+            return true;
+        }
+        String fileRealPath = file.value();
         File dataDir = context.getDataDir();
         File externalDir = ContextUtils.getApplicationContext().getExternalFilesDir(null);
-        try {
-            Path fileRealPath = file.toPath().toRealPath();
-            return (fileRealPath.startsWith(dataDir.toPath().toRealPath())
-                    || (externalDir != null
-                            && fileRealPath.startsWith(externalDir.toPath().toRealPath())));
-        } catch (Exception e) {
-            return false;
-        }
+        // Assume that dataDir and externalDir are already canonical paths and do simple
+        // String.startsWith() checks.  Also assume that the path input is not a symlink that clank
+        // will resolve to an internal file. Avoid File.getCanonicalPath() which blocks, or
+        // Path.getRealPath() which blocks and throws for non-existent paths.
+        return fileRealPath.startsWith(dataDir.toString())
+                || (externalDir != null && fileRealPath.startsWith(externalDir.toString()));
     }
 
     /**
