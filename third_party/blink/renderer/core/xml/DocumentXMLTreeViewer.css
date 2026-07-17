@@ -42,8 +42,7 @@ div.folder > span.hidden {
     margin-left: 1em;
 }
 
-.comment,
-.cdata {
+.comment {
     white-space: pre;
 }
 

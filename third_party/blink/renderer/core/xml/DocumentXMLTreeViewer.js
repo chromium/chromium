@@ -155,7 +155,7 @@ function processComment(parentElement, node)
 function processCDATA(parentElement, node)
 {
   var line = createLine();
-  line.appendChild(createCDATA('<![CDATA[ ' + node.nodeValue + ' ]]>'));
+  line.appendChild(createText('<![CDATA[ ' + node.nodeValue + ' ]]>'));
   parentElement.appendChild(line);
 }
 
@@ -228,14 +228,6 @@ function createComment(commentString)
   comment.classList.add('html-comment');
   comment.textContent = commentString;
   return comment;
-}
-
-function createCDATA(cdataString)
-{
-  var cdata = createHTMLElement('span');
-  cdata.classList.add('cdata');
-  cdata.textContent = cdataString;
-  return cdata;
 }
 
 function createText(value)
