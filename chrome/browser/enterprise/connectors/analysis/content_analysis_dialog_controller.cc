@@ -120,8 +120,12 @@ void ContentAnalysisDialogController::ShowDialogNow() {
     return;
   }
 
-  auto* manager =
-      web_modal::WebContentsModalDialogManager::FromWebContents(web_contents());
+  web_modal::WebContentsModalDialogManager* manager = nullptr;
+  if (web_contents()) {
+    manager = web_modal::WebContentsModalDialogManager::FromWebContents(
+        web_contents());
+  }
+
   if (!manager) {
     // `manager` being null indicates that `web_contents()` doesn't correspond
     // to a browser tab (ex: an extension background page reading the
