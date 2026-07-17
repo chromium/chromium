@@ -41,7 +41,6 @@
 #include "third_party/blink/renderer/core/frame/frame_console.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
-#include "third_party/blink/renderer/core/html/cross_origin_attribute.h"
 #include "third_party/blink/renderer/core/html/link_manifest.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -152,6 +151,20 @@ void HTMLLinkElement::ParseAttribute(
     // attribute mutations. See https://github.com/whatwg/html/issues/11400.
     if (value == params.old_value &&
         RuntimeEnabledFeatures::HTMLLinkElementAttributeValueChangesEnabled()) {
+      return;
+    }
+    Process();
+  } else if (name == html_names::kCrossoriginAttr) {
+    // See https://github.com/whatwg/html/pull/11620
+    // FIXME(bug 530710321): Do the same for preconnect/prefetch/stylesheet.
+    if (!rel_attribute_.IsCompressionDictionary()) {
+      return;
+    }
+
+    // We can respond to attribute mutations as usual, per the above code, but
+    // the link fetch & processing model must not be re-invoked for idempotent
+    // attribute mutations. See https://github.com/whatwg/html/issues/11400.
+    if (value == params.old_value) {
       return;
     }
     Process();
