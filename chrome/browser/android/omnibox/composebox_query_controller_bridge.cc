@@ -51,14 +51,13 @@
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "net/base/url_util.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "third_party/omnibox_proto/tool_config.pb.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
-
-#include "third_party/jni_zero/default_conversions.h"
 
 namespace jni_zero {
 template <>
@@ -360,7 +359,7 @@ ComposeboxQueryControllerBridge::CreateSearchUrlRequestInfoFromUrl(
   std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
       search_url_request_info = std::make_unique<
           ComposeboxQueryController::CreateSearchUrlRequestInfo>();
-  search_url_request_info->query_text = query_text;
+  net::GetValueForKeyInQuery(url, "q", &search_url_request_info->query_text);
   search_url_request_info->additional_params =
       lens::GetParametersMapWithoutQuery(url);
   search_url_request_info->query_start_time = base::Time::Now();
