@@ -20,13 +20,14 @@ class CredentialManagerDialogControllerMock
 
   ~CredentialManagerDialogControllerMock() override;
 
-  MOCK_CONST_METHOD0(GetLocalForms, const FormsVector&());
-  MOCK_CONST_METHOD0(GetOrigin, url::Origin());
-  MOCK_CONST_METHOD0(GetAccountChooserTitle, std::u16string());
-  MOCK_CONST_METHOD0(ShouldShowSignInButton, bool());
-  MOCK_CONST_METHOD0(GetAutoSigninPromoTitle, std::u16string());
-  MOCK_CONST_METHOD0(GetAutoSigninText, std::u16string());
-  MOCK_CONST_METHOD0(ShouldShowFooter, bool());
+  MOCK_METHOD(const FormsVector&, GetLocalForms, (), (const, override));
+  MOCK_METHOD(url::Origin, GetOrigin, (), (const, override));
+  MOCK_METHOD(bool, IsShowingAccountChooser, (), (const, override));
+  MOCK_METHOD(std::u16string, GetAccountChooserTitle, (), (const, override));
+  MOCK_METHOD(bool, ShouldShowSignInButton, (), (const, override));
+  MOCK_METHOD(std::u16string, GetAutoSigninPromoTitle, (), (const, override));
+  MOCK_METHOD(std::u16string, GetAutoSigninText, (), (const, override));
+  MOCK_METHOD(bool, ShouldShowFooter, (), (const, override));
   MOCK_METHOD(void,
               OnChooseCredentials,
               (const password_manager::PasswordForm& password_form,

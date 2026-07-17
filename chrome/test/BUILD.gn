@@ -4052,6 +4052,7 @@ if (!is_android) {
         "//chrome/browser/ui/media_router:browser_tests",
         "//chrome/browser/ui/page_action:icon_type",
         "//chrome/browser/ui/passwords:test_support",
+        "//chrome/browser/ui/passwords:test_support_ui",
         "//chrome/browser/ui/tabs:test_support",
         "//chrome/browser/ui/toasts:browser_tests",
         "//chrome/browser/ui/translate",
