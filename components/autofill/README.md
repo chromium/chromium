@@ -196,17 +196,16 @@ may sacrifice a little bit of correctness in favor of simplicity.
     * Implements `AutofillClient` interface.
     * Has siblings `AndroidAutofillClient`, `ChromeAutofillClientIOS` and
       `WebViewAutofillClientIOS`.
-  * `PersonalDataManager`
+  * `PersonalDataManager` and `PaymentsDataManager`
     * One instance per `BrowserContext` (Chrome profile). In incognito mode, the
       original profile's instance is used. This enables filling even in
       incognito mode. Imports are disabled in incognito mode by the
       `BrowserAutofillManager`.
     * Responsibilities:
       * Reading/writing/updating AutofillProfiles and payment information from
-        `AutofillTable` - an SQLite database used to persist data across browser
-        shutdown.
-      * Keeps a copy of `AutofillTable`'s data in memory, making them available
-        to the rest of Autofill.
+        `AddressAutofillTable` and `PaymentsAutofillTable` - an SQLite database used to persist data across browser shutdown.
+      * Keeps a copy of `AddressAutofillTable` and `PaymentsAutofillTable`'s data in memory,
+        making them available to the rest of Autofill.
       * Modifications triggered through the `PersonalDataManager` generally
         happen asynchronously. For details, see
         [go/pdm-autofill-table-interface](http://go/pdm-autofill-table-interface).
@@ -323,7 +322,7 @@ Several important subsets of FieldTypes exist:
   Every form group defines which FieldTypes it maintains. For example:
   * The supported type of [EmailInfo](https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:components/autofill/core/browser/data_model/contact_info.h;l=87;drc=10009f6ff9f3b626979c9422321686f360df7cee) is [EMAIL_ADDRESS](https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:components/autofill/core/browser/data_model/contact_info.cc;l=184;drc=59b1cf76cc21ae34bc99073e963f7d268b0a5c17).
   * The supported types of AutofillProfile are all name, address, phone number, etc. types.
-* Stored types of AutofillProfile: The set of types stored in AutofillTable,
+* Stored types of AutofillProfile: The set of types stored in AddressAutofillTable,
   defined by `AutofillProfile::kDatabaseStoredTypes`.
   * Not all supported types of AutofillProfile are stored, since types following
     a standard format can unambiguously be derived from another type. See
@@ -366,7 +365,7 @@ See [go/autofill-new-fieldtypes-in-data-model-dd](http://go/autofill-new-fieldty
 ## Where is Autofill data persisted?
 
 * See
-  [`../../components/autofill/core/browser/webdata/autofill_table.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/webdata/autofill_table.h)
+  [`../../components/autofill/core/browser/webdata/addresses/address_autofill_table.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/webdata/addresses/address_autofill_table.h)
 
 ## What is a form submission?
 
