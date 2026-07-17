@@ -72,7 +72,12 @@ import type {PermissionDashboardElement} from './permission_dashboard.js';
 import {ReadonlyOmniboxElement} from './readonly_omnibox.js';
 import {getClickSourceType, getContextMenuSourceType, PressHandler} from './toolbar_button.js';
 import {ToolbarChipButtonElement} from './toolbar_chip_button.js';
+import {CrLazyIconset} from './cr_lazy_iconset.js';
 
+import {IconsetMap} from '//resources/cr_elements/cr_icon/iconset_map.js';
+import {getTrustedHTML} from '//resources/js/static_types.js';
+
+// TODO(crbug.com/535392412): do not export these from app.ts, find a better place for them instead.
 export {
   AppMenuButtonElement,
   AppMenuIconType,
@@ -82,13 +87,15 @@ export {
   ContentSettingIconElement,
   ContentSettingImageType,
   ContentSettingsIconsElement,
+  CrLazyIconset,
   EventDispositionFlag,
   FocusRequestTarget,
   getClickSourceType,
   getContextMenuSourceType,
-  PressHandler,
+  getTrustedHTML,
   IconTable,
   IconType,
+  IconsetMap,
   INVALID_FOCUS_REQUEST_HANDLE,
   INVALID_NAVIGATION_CONTROLS_STATE_LISTENER_HANDLE,
   LhsChipIdentifier,
@@ -104,6 +111,7 @@ export {
   PermissionChipTheme,
   PermissionPromptStyle,
   PointerProxyImpl,
+  PressHandler,
   ReadonlyOmniboxElement,
   ToolbarChipButtonElement,
   TrackedElementManager,

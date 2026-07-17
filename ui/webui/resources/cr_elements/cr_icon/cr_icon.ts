@@ -7,7 +7,7 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './cr_icon.css.js';
-import type {CrIconsetElement} from './cr_iconset.js';
+import type {Iconset} from './iconset_map.js';
 import {IconsetMap} from './iconset_map.js';
 
 export class CrIconElement extends CrLitElement {
@@ -32,7 +32,7 @@ export class CrIconElement extends CrLitElement {
   accessor icon: string = '';
   private iconsetName_: string = '';
   private iconName_: string = '';
-  private iconset_: CrIconsetElement|null = null;
+  private iconset_: Iconset|null = null;
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);

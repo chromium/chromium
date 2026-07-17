@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from '//resources/js/assert.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import {assert} from '//resources/js/assert.js';
 
-import {IconsetMap} from './iconset_map.js';
 import {getCss} from './cr_iconset.css.js';
 import {getHtml} from './cr_iconset.html.js';
+import type {Iconset} from './iconset_map.js';
+import {IconsetMap} from './iconset_map.js';
 
 const APPLIED_ICON_CLASS: string = 'cr-iconset-svg-icon_';
 
@@ -18,7 +19,7 @@ export interface CrIconsetElement {
   };
 }
 
-export class CrIconsetElement extends CrLitElement {
+export class CrIconsetElement extends CrLitElement implements Iconset {
   static get is() {
     return 'cr-iconset';
   }

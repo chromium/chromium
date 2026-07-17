@@ -86,6 +86,7 @@ build_webui("build") {
     "content_setting_icon.ts",
     "content_settings_icons.html.ts",
     "content_settings_icons.ts",
+    "cr_lazy_iconset.ts",
     "extension.html.ts",
     "extension.ts",
     "extensions.html.ts",
