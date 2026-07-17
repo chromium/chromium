@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/mac/relauncher.h"
 
 #import <AppKit/AppKit.h>
@@ -21,10 +16,13 @@
 #include <unistd.h>
 
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include "base/apple/bundle_locations.h"
 #include "base/apple/osstatus_logging.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
@@ -278,7 +276,10 @@ int RelauncherMain(content::MainFunctionParams main_parameters) {
     }
     const char* const* argv = *argvp;
 
-    if (argc < 4 || RelauncherTypeArg() != argv[1]) {
+    // SAFETY: _NSGetArgv() returns a pointer to an array of size argc.
+    auto args = UNSAFE_BUFFERS(base::span(argv, static_cast<size_t>(argc)));
+
+    if (args.size() < 4 || RelauncherTypeArg() != args[1]) {
       LOG(ERROR) << "relauncher process invoked with unexpected arguments";
       return 1;
     }
@@ -301,9 +302,9 @@ int RelauncherMain(content::MainFunctionParams main_parameters) {
     std::string relaunch_executable;
     const std::string relauncher_dmg_device_arg =
         base::StringPrintf("--%s=", switches::kRelauncherProcessDMGDevice);
-    for (int argv_index = 2; argv_index < argc; ++argv_index) {
-      const std::string arg(argv[argv_index]);
-
+    // Discard the first two arguments (executable name and relauncher type).
+    std::ignore = args.take_first(2u);
+    for (const std::string arg : args) {
       // Strip any -psn_ arguments, as they apply to a specific process.
       if (arg.compare(0, strlen(kPSNArg), kPSNArg) == 0) {
         continue;
