@@ -72,6 +72,10 @@ class ProfileIOS;
 // has been created.
 - (void)incognitoProfileCreated;
 
+// Prepares command dispatchers across all browsers for shutdown. Must be
+// called before UI coordinators stop so unregistering targets fail silently.
+- (void)prepareForShutdown;
+
 // Tells the receiver to clean up prior to deallocation. It is an error for an
 // instance of this class to deallocate without a call to this method first.
 - (void)shutdown;

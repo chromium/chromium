@@ -120,8 +120,10 @@
 - (void)restart {
   CHECK(self.presenter, base::NotFatalUntil::M150);
   CHECK(self.browser, base::NotFatalUntil::M150);
-  _geminiHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), GeminiCommands);
+  if (IsPageActionMenuEnabled()) {
+    _geminiHandler = HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                                        GeminiCommands);
+  }
   if (_stopped && self.presenter.presentedViewController) {
     // Stopping animation is still in progress. Wait until it is done to
     // restart.

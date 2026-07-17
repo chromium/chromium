@@ -1731,6 +1731,12 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
 }
 
 - (void)teardownUI {
+  // Prepare command dispatchers across all browsers for shutdown right at the
+  // start. This ensures that any command targets (like SceneCoordinator) that
+  // unregister during `-stop` are recorded in CommandDispatcher's silently
+  // failing targets.
+  [self.browserLifecycleManager prepareForShutdown];
+
   // The UI should be stopped before the models they observe are stopped.
   [_mainCoordinator stop];
   _mainCoordinator = nil;
