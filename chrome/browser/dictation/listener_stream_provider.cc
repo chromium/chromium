@@ -4,10 +4,13 @@
 
 #include "chrome/browser/dictation/listener_stream_provider.h"
 
+#include <ostream>
+
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/dictation/dictation_context_fetcher.h"
 #include "chrome/browser/dictation/dictation_keyed_service.h"
 #include "chrome/browser/dictation/features.h"
+#include "chrome/browser/dictation/logging.h"
 #include "chrome/browser/dictation/stream_provider_delegate.h"
 #include "chrome/browser/dictation/target.h"
 #include "chrome/common/extensions/api/dictation_private.h"
@@ -37,6 +40,23 @@ extensions::api::dictation_private::DictationContext ConvertToApiContext(
   return api_context;
 }
 
+const char* ToString(StreamProvider::StreamState state) {
+  switch (state) {
+    case StreamProvider::StreamState::kInitializing:
+      return "kInitializing";
+    case StreamProvider::StreamState::kFailed:
+      return "kFailed";
+    case StreamProvider::StreamState::kTranscribing:
+      return "kTranscribing";
+    case StreamProvider::StreamState::kComplete:
+      return "kComplete";
+  }
+}
+
+std::ostream& operator<<(std::ostream& out, StreamProvider::StreamState state) {
+  return out << ToString(state);
+}
+
 }  // namespace
 
 ListenerStreamProvider::ListenerStreamProvider(
@@ -45,6 +65,7 @@ ListenerStreamProvider::ListenerStreamProvider(
     : delegate_(delegate), browser_context_(browser_context) {}
 
 ListenerStreamProvider::~ListenerStreamProvider() {
+  VT_LOG() << "Stream(" << stream_id_ << ") destroyed";
   if (stream_id_) {
     GetMultiplexer().UnregisterStreamProvider(stream_id_);
   }
@@ -60,6 +81,8 @@ void ListenerStreamProvider::BindToTargetAndConnect(
   DictationMultiplexer& multiplexer = GetMultiplexer();
   stream_id_ = multiplexer.GenerateStreamId();
   multiplexer.RegisterStreamProvider(stream_id_, this);
+
+  VT_LOG() << "Stream(" << stream_id_ << ")::" << __func__;
 
   context_fetcher_ = std::make_unique<DictationContextFetcher>();
   if (kSendContextAsync.Get()) {
@@ -80,6 +103,8 @@ void ListenerStreamProvider::StartStream(
     std::optional<DictationContext> result) {
   extensions::api::dictation_private::StartStreamDetails details;
   details.stream_id = stream_id_.value();
+
+  VT_LOG() << "Stream(" << stream_id_ << ")::" << __func__;
 
   if (result.has_value()) {
     details.context = ConvertToApiContext(std::move(*result));
@@ -126,6 +151,7 @@ void ListenerStreamProvider::OnAsyncContextCaptured(DictationContext result) {
 }
 
 void ListenerStreamProvider::Stop() {
+  VT_LOG() << "Stream(" << stream_id_ << ")::" << __func__;
   context_fetcher_.reset();
 
   if (!stream_id_) {
@@ -154,6 +180,8 @@ void ListenerStreamProvider::Stop() {
 
 void ListenerStreamProvider::OnTranscriptionUpdated(const std::string& data,
                                                     bool is_final) {
+  VT_LOG() << "Stream(" << stream_id_ << ")::" << __func__ << " data: " << data
+           << ", is_final: " << is_final;
   latest_transcription_ = data;
   is_final_for_testing_ = is_final;
 
@@ -168,6 +196,8 @@ void ListenerStreamProvider::OnTranscriptionUpdated(const std::string& data,
 }
 
 void ListenerStreamProvider::OnStreamStateChanged(StreamState state) {
+  VT_LOG() << "Stream(" << stream_id_ << ")::" << __func__ << " " << state_
+           << " --> " << state;
   // TODO(crbug.com/502587072): Assert state transitions are correct.
   StreamState old_state = state_;
   state_ = state;
