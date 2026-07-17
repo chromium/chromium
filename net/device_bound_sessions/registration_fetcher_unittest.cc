@@ -2221,8 +2221,6 @@ TEST_F(RegistrationTest, RefreshCachesSignedChallenge) {
   ASSERT_TRUE(server_.Start());
 
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
-  unexportable_keys::MockUnexportableKeyService mock_key_service;
-  mock_key_service.DelegateToService(unexportable_key_service());
 
   // No cached challenge initially.
   EXPECT_CALL(session_service(), GetLatestSignedRefreshChallenge(_))
@@ -2262,9 +2260,10 @@ TEST_F(RegistrationTest, RefreshCachedSignedChallengeUsed) {
   ASSERT_TRUE(server_.Start());
 
   // No calls to actual signing.
-  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   unexportable_keys::MockUnexportableKeyService mock_key_service;
-  mock_key_service.DelegateToService(unexportable_key_service());
+  EXPECT_CALL(mock_key_service, GetAlgorithm).Times(0);
+  EXPECT_CALL(mock_key_service, GetSubjectPublicKeyInfo).Times(0);
+  EXPECT_CALL(mock_key_service, SignSlowlyAsync).Times(0);
 
   // Create a matching cached challenge.
   SessionService::SignedRefreshChallenge cached_challenge;
@@ -2304,8 +2303,6 @@ TEST_F(RegistrationTest, RefreshCachedSignedChallengeDoesNotMatch) {
   ASSERT_TRUE(server_.Start());
 
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
-  unexportable_keys::MockUnexportableKeyService mock_key_service;
-  mock_key_service.DelegateToService(unexportable_key_service());
 
   // Add cached signed challenge that doesn't match (the challenge used is
   // different).
