@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/controls/webview/web_dialog_view.h"
-
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -27,6 +26,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/views/controls/webview/web_dialog_view.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -113,6 +113,7 @@ void WebDialogBrowserTest::SetUpOnMainThread() {
   auto* widget =
       views::Widget::CreateWindowWithParent(std::move(view), parent_view);
   widget->Show();
+  ASSERT_TRUE(base::test::RunUntil([&]() { return widget->IsVisible(); }));
 }
 
 void WebDialogBrowserTest::SimulateEscapeKey() {

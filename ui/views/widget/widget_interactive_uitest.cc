@@ -19,6 +19,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/run_until.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -1119,13 +1120,11 @@ TEST_F(DesktopWidgetTestInteractive, WindowModalWindowDestroyedActivationTest) {
       dialog_delegate.release(), gfx::NativeWindow(),
       top_level_widget->GetNativeView());
   modal_dialog_widget->SetBounds(gfx::Rect(100, 100, 200, 200));
-
-  // Note the dialog widget doesn't need a ShowSync. Since it is modal, it gains
-  // active status synchronously, even on Mac.
   modal_dialog_widget->Show();
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return focus_changes.size() == 3u; }));
 
   gfx::NativeView modal_native_view = modal_dialog_widget->GetNativeView();
-  ASSERT_EQ(3u, focus_changes.size());
   EXPECT_EQ(gfx::NativeView(), focus_changes[1]);
   EXPECT_EQ(modal_native_view, focus_changes[2]);
 
