@@ -118,3 +118,24 @@ source_set("file_system_access_test_support") {
     "//url",
   ]
 }
+
+if (is_win) {
+  source_set("uninstall_browser_prompt") {
+    public = [ "uninstall_view.h" ]
+    sources = [ "uninstall_view.cc" ]
+    deps = [
+      "//base",
+      "//chrome/app:branded_strings",
+      "//chrome/app:generated_resources",
+      "//chrome/browser/ui:uninstall_browser_prompt",
+      ":layout_provider",
+      "//chrome/common:constants",
+      "//content/public/common",
+      "//ui/base",
+      "//ui/gfx",
+      "//ui/gfx/geometry",
+      "//ui/views",
+    ]
+  }
+}
+
