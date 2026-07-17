@@ -103,6 +103,9 @@ BASE_FEATURE(kWebUIOmniboxAskGAboutThisPage, DISABLED);
 // If enabled, the Ai Mode button will be dynamically shown in the omnibox.
 BASE_FEATURE(kWebUIOmniboxDynamicAiModeButton, DISABLED);
 
+// If enabled, prevents closing the AIM popup while file chooser is open.
+BASE_FEATURE(kOmniboxKeepOpenOnFileSelection, ENABLED);
+
 // Decodes a proto object from its serialized Base64 string representation.
 // Returns true if decoding and parsing succeed, false otherwise.
 bool ParseProtoFromBase64String(const std::string& input,

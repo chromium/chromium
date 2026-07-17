@@ -8,6 +8,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "components/permissions/permission_request_manager.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -20,7 +21,8 @@ class OmniboxPopupPresenterDelegate;
 class OmniboxPopupAimPresenter
     : public OmniboxPopupPresenterBase,
       public views::WidgetObserver,
-      public permissions::PermissionRequestManager::Observer {
+      public permissions::PermissionRequestManager::Observer,
+      public views::FocusChangeListener {
  public:
   OmniboxPopupAimPresenter(LocationBar* location_bar,
                            OmniboxController* controller,
@@ -36,6 +38,9 @@ class OmniboxPopupAimPresenter
   std::optional<base::TimeDelta> ShouldDeferUntilVisualStateReady()
       const override;
   bool ShouldDetachWebContentsOnHide() const override;
+  // Triggered when a file selection dialog opened by this popup is closed,
+  // initiating the focus restoration flow.
+  void OnFileSelectionClosed() override;
 
  protected:
   // OmniboxPopupPresenterBase overrides:
@@ -50,6 +55,17 @@ class OmniboxPopupAimPresenter
   // widget activation changes from hiding the popup during prompt dismissal.
   void OnPromptRemoved() override;
 
+  // views::FocusChangeListener:
+  // Intercepts focus shifts while `is_restoring_focus_after_file_selection_` is
+  // active. When the window focus is restored to the native Omnibox text field,
+  // this redirect focus back onto the popup WebUI and resets the restoration
+  // state.
+  void OnDidChangeFocus(views::View* focused_before,
+                        views::View* focused_now) override;
+
+  // Resets focus restoration state and stops observing `FocusManager`.
+  void ResetFocusRestorationState();
+
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
 
@@ -57,9 +73,19 @@ class OmniboxPopupAimPresenter
                           permissions::PermissionRequestManager::Observer>
       permission_observation_{this};
 
+  // Observes the browser window's FocusManager to track focus restoration after
+  // the file selector closes.
+  base::ScopedObservation<views::FocusManager, views::FocusChangeListener>
+      focus_manager_observation_{this};
+
   // Set to true when a permission prompt is removed to prevent the omnibox
   // popup from closing due to activation loss while focus is being restored.
   bool is_handling_prompt_dismissal_ = false;
+
+  // Set to true when the file selection dialog is closed to prevent the
+  // omnibox popup from closing due to focus transitions during focus
+  // restoration.
+  bool is_restoring_focus_after_file_selection_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_AIM_PRESENTER_H_
