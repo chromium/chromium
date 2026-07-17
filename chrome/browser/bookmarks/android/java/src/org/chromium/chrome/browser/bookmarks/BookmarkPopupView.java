@@ -92,22 +92,22 @@ public class BookmarkPopupView extends ConstraintLayout {
     }
 
     /** Sets the click listener for the folder selector row. */
-    public void setFolderRowClickListener(OnClickListener listener) {
+    public void setFolderRowClickListener(@Nullable OnClickListener listener) {
         mFolderPickerRow.setOnClickListener(listener);
     }
 
     /** Sets the click listener for the Remove action button. */
-    public void setRemoveClickListener(OnClickListener listener) {
+    public void setRemoveClickListener(@Nullable OnClickListener listener) {
         mRemoveButton.setOnClickListener(listener);
     }
 
     /** Sets the click listener for the Done action button. */
-    public void setDoneClickListener(OnClickListener listener) {
+    public void setDoneClickListener(@Nullable OnClickListener listener) {
         mDoneButton.setOnClickListener(listener);
     }
 
     /** Sets the click listener for the top right Close icon button. */
-    public void setCloseClickListener(OnClickListener listener) {
+    public void setCloseClickListener(@Nullable OnClickListener listener) {
         mCloseButton.setOnClickListener(listener);
     }
 

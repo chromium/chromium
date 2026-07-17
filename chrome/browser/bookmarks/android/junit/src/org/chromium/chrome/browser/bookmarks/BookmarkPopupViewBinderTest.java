@@ -126,20 +126,11 @@ public class BookmarkPopupViewBinderTest {
                         .build();
         PropertyModelChangeProcessor.create(mModel, mView, BookmarkPopupViewBinder::bind);
 
-        verify(mView).setRemoveClickListener(mClickListenerCaptor.capture());
-        mClickListenerCaptor.getValue().onClick(null);
-
-        verify(mView).setCloseClickListener(mClickListenerCaptor.capture());
-        mClickListenerCaptor.getValue().onClick(null);
-
-        verify(mView).setDoneClickListener(mClickListenerCaptor.capture());
-        mClickListenerCaptor.getValue().onClick(null);
-
-        verify(mView).setFolderRowClickListener(mClickListenerCaptor.capture());
-        mClickListenerCaptor.getValue().onClick(null);
-
-        verify(mView).setTitleTextWatcher(mTextWatcherCaptor.capture());
-        mTextWatcherCaptor.getValue().onTextChanged("Updated title", 0, 0, 13);
+        verify(mView).setRemoveClickListener(null);
+        verify(mView).setCloseClickListener(null);
+        verify(mView).setDoneClickListener(null);
+        verify(mView).setFolderRowClickListener(null);
+        verify(mView).setTitleTextWatcher(null);
 
         verifyNoInteractions(
                 mRemoveRunnable, mCloseRunnable, mDoneRunnable, mFolderRowRunnable, mCallback);
