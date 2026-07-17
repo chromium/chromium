@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,28 +24,28 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 
 import java.util.concurrent.ExecutionException;
 
 /** Instrumentation tests for {@link AutofillSnackbar} */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DoNotBatch(reason = "AI automated batching attempt was unsuccessful.")
+@Batch(Batch.PER_CLASS)
 public class AutofillSnackbarControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
-    public FreshCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.autoResetCtaActivityRule();
 
     private static final String SNACKBAR_MESSAGE_TEXT = "message_text";
     private static final String SNACKBAR_ACTION_TEXT = "action_text";
@@ -63,6 +64,14 @@ public class AutofillSnackbarControllerTest {
         mAutofillSnackbarController =
                 new AutofillSnackbarController(NATIVE_AUTOFILL_SNACKBAR_VIEW, mSnackbarManager);
         AutofillSnackbarControllerJni.setInstanceForTesting(mNativeMock);
+    }
+
+    @After
+    public void tearDown() {
+        if (mSnackbarManager != null) {
+            ThreadUtils.runOnUiThreadBlocking(() -> mSnackbarManager.dismissAllSnackbars());
+        }
+        AutofillSnackbarControllerJni.setInstanceForTesting(null);
     }
 
     @Test
