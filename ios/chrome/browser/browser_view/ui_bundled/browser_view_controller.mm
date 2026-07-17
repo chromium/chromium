@@ -1310,9 +1310,11 @@ bool IsFullscreenNextIAEnabled() {
   // would be changed back to `kVisible` afterwards. Fix the bug and update the
   // visibility state.
 
-  [self.geminiHandler
-      hideFloatyIfInvokedAnimated:YES
-                       fromSource:gemini::FloatyUpdateSource::ViewTransition];
+  if (IsPageActionMenuEnabled()) {
+    [self.geminiHandler
+        hideFloatyIfInvokedAnimated:YES
+                         fromSource:gemini::FloatyUpdateSource::ViewTransition];
+  }
   void (^superCall)() = ^{
     [super presentViewController:viewControllerToPresent
                         animated:flag
@@ -1938,7 +1940,9 @@ bool IsFullscreenNextIAEnabled() {
   // TODO(crbug.com/40842406): Remove this and let
   // `PrimaryToolbarViewController` or `ToolbarCoordinator` call the update ?
   [self.toolbarCoordinator updateToolbar];
-  [self.geminiHandler updateFloatyWithTraitCollection:self.traitCollection];
+  if (IsPageActionMenuEnabled()) {
+    [self.geminiHandler updateFloatyWithTraitCollection:self.traitCollection];
+  }
 
   self.fullscreenController->BrowserTraitCollectionChangedEnd();
 }
@@ -1980,10 +1984,12 @@ bool IsFullscreenNextIAEnabled() {
     completion();
   }
 
-  [self.geminiHandler
-      updateFloatyVisibilityIfEligibleAnimated:NO
-                                    fromSource:gemini::FloatyUpdateSource::
-                                                   ViewTransition];
+  if (IsPageActionMenuEnabled()) {
+    [self.geminiHandler
+        updateFloatyVisibilityIfEligibleAnimated:NO
+                                      fromSource:gemini::FloatyUpdateSource::
+                                                     ViewTransition];
+  }
 }
 
 #pragma mark - Private Methods: Tap handling
@@ -2113,10 +2119,12 @@ bool IsFullscreenNextIAEnabled() {
   self.visibilityState = BrowserViewVisibilityState::kVisible;
   self.toolbarCoordinator.secondaryToolbarViewController.view
       .accessibilityElementsHidden = NO;
-  [self.geminiHandler
-      updateFloatyVisibilityIfEligibleAnimated:NO
-                                    fromSource:gemini::FloatyUpdateSource::
-                                                   ViewTransition];
+  if (IsPageActionMenuEnabled()) {
+    [self.geminiHandler
+        updateFloatyVisibilityIfEligibleAnimated:NO
+                                      fromSource:gemini::FloatyUpdateSource::
+                                                     ViewTransition];
+  }
 }
 
 #pragma mark - FullscreenUIElement methods
@@ -3196,9 +3204,11 @@ bool IsFullscreenNextIAEnabled() {
 - (void)lensOverlayDidPrepare:
     (LensOverlayStateNotifier*)lensOverlayStateNotifier {
   [self.sceneHandler hideAssistant];
-  [self.geminiHandler
-      hideFloatyIfInvokedAnimated:NO
-                       fromSource:gemini::FloatyUpdateSource::Overlay];
+  if (IsPageActionMenuEnabled()) {
+    [self.geminiHandler
+        hideFloatyIfInvokedAnimated:NO
+                         fromSource:gemini::FloatyUpdateSource::Overlay];
+  }
 }
 
 - (void)lensOverlayWillAppear:
@@ -3218,10 +3228,12 @@ bool IsFullscreenNextIAEnabled() {
 
 - (void)lensOverlayDidDisappear:
     (LensOverlayStateNotifier*)lensOverlayStateNotifier {
-  [self.geminiHandler
-      updateFloatyVisibilityIfEligibleAnimated:NO
-                                    fromSource:gemini::FloatyUpdateSource::
-                                                   Overlay];
+  if (IsPageActionMenuEnabled()) {
+    [self.geminiHandler
+        updateFloatyVisibilityIfEligibleAnimated:NO
+                                      fromSource:gemini::FloatyUpdateSource::
+                                                     Overlay];
+  }
 }
 
 - (void)lensOverlayDidReadjustPresentation:

@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/main/ui_bundled/wrangled_browser.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -37,6 +38,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser_list_observer.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -357,5 +359,47 @@ TEST_F(BrowserLifecycleManagerTest, TestSessionRestorationLogic) {
   [wrangler incognitoProfileCreated];
 
   EXPECT_EQ(3, session_restoration_observer().session_restoration_call_count());
+  [wrangler shutdown];
+}
+
+// Tests that calling -prepareForShutdown before unregistering a target from
+// CommandDispatcher allows late invocations during teardown to fail silently
+// instead of throwing unrecognized selector exceptions.
+TEST_F(BrowserLifecycleManagerTest, TestPrepareForShutdown) {
+  id mock_scene_handler = OCMProtocolMock(@protocol(SceneCommands));
+  id mock_settings_handler = OCMProtocolMock(@protocol(SettingsCommands));
+  id mock_gemini_handler = OCMProtocolMock(@protocol(GeminiCommands));
+  IncognitoReauthSceneAgent* reauth_agent = [[IncognitoReauthSceneAgent alloc]
+      initWithReauthModule:[[ReauthenticationModule alloc] init]];
+  [scene_state() addAgent:reauth_agent];
+  BrowserLifecycleManager* wrangler =
+      [[BrowserLifecycleManager alloc] initWithProfile:profile()
+                                            sceneState:scene_state()
+                                         sceneEndpoint:mock_scene_handler
+                                      settingsEndpoint:mock_settings_handler
+                                        geminiEndpoint:mock_gemini_handler];
+
+  [wrangler createMainCoordinatorAndInterface];
+  CommandDispatcher* dispatcher =
+      wrangler.mainInterface.browser->GetCommandDispatcher();
+
+  // Verify GeminiCommands handler is registered.
+  id<GeminiCommands> gemini_proxy =
+      HandlerForProtocol(dispatcher, GeminiCommands);
+  EXPECT_TRUE([gemini_proxy
+      respondsToSelector:@selector(hideFloatyIfInvokedAnimated:fromSource:)]);
+
+  // Call prepareForShutdown before stopping/unregistering the target.
+  [wrangler prepareForShutdown];
+
+  // Unregister the target (simulating SceneCoordinator::stop).
+  [dispatcher stopDispatchingToTarget:mock_gemini_handler];
+
+  // Because prepareForShutdown was called prior to unregistering, invoking a
+  // GeminiCommands method on the proxy during teardown should fail silently and
+  // not throw a doesNotRecognizeSelector exception.
+  [gemini_proxy hideFloatyIfInvokedAnimated:NO
+                                 fromSource:gemini::FloatyUpdateSource::Alert];
+
   [wrangler shutdown];
 }
