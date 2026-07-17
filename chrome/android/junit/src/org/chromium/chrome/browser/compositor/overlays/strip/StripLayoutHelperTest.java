@@ -3017,6 +3017,12 @@ public class StripLayoutHelperTest {
         when(tabs[1].getCloseButton()).thenReturn(closeButton);
         when(closeButton.getParentView()).thenReturn(tabs[1]);
         when(closeButton.getType()).thenReturn(ButtonType.TAB_CLOSE);
+        when(closeButton.handleLongClick())
+                .thenAnswer(
+                        inv -> {
+                            mStripLayoutHelper.onLongClick(closeButton);
+                            return true;
+                        });
         mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
         mStripLayoutHelper.onLongPress(150f, 0f);
 
@@ -5048,6 +5054,12 @@ public class StripLayoutHelperTest {
         when(tab.getWidth()).thenReturn(tabWidth);
         when(tab.getTabId()).thenReturn(id);
         when(tab.getDrawX()).thenReturn(drawX);
+        when(tab.handleLongClick())
+                .thenAnswer(
+                        inv -> {
+                            mStripLayoutHelper.onLongClick(tab);
+                            return true;
+                        });
         return tab;
     }
 

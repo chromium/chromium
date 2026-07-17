@@ -2507,8 +2507,6 @@ public class StripLayoutHelper
      */
     public void onLongPress(float x, float y) {
         resetTabCloseButtonPressedState();
-        // TODO(crbug.com/485925830): Refactor to a long-press handler, similar to the existing
-        //  click handler.
         StripLayoutView stripView = determineClickedView(x, y, /* buttons= */ 0);
 
         if (stripView == null) {
@@ -2524,7 +2522,7 @@ public class StripLayoutHelper
             mDelayedReorderView = stripView;
             mDelayedReorderInitialX = x;
         }
-        showContextMenu(stripView);
+        stripView.handleLongClick();
     }
 
     /** Returns {@code true} if a context menu triggered from long-pressing a view is showing. */
