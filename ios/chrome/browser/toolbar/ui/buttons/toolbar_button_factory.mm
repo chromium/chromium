@@ -68,14 +68,25 @@ constexpr CGFloat kDefaultSymbolPointSize = 19;
   [buttonsContainer setContentHuggingPriority:UILayoutPriorityRequired
                                       forAxis:UILayoutConstraintAxisHorizontal];
 
-  UIView* backgroundView = [[UIView alloc] init];
-  backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
-  backgroundView.backgroundColor =
-      IsToolbarGlassPrototypeEnabled()
-          ? ToolbarGlassPrototypeElementBackgroundColor(_incognito)
-          : ToolbarElementBackgroundColor(_incognito);
-  [buttonsContainer addSubview:backgroundView];
-  AddSameConstraints(backgroundView, buttonsContainer);
+  UIView* backgroundView;
+  if (IsToolbarGlassPrototypeEnabled()) {
+    UIBlurEffect* blurEffect = [UIBlurEffect
+        effectWithStyle:_incognito
+                            ? UIBlurEffectStyleSystemUltraThinMaterialDark
+                            : UIBlurEffectStyleSystemUltraThinMaterial];
+    UIVisualEffectView* blurBackgroundView =
+        [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+    blurBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+    [buttonsContainer addSubview:blurBackgroundView];
+    AddSameConstraints(blurBackgroundView, buttonsContainer);
+    backgroundView = blurBackgroundView;
+  } else {
+    backgroundView = [[UIView alloc] init];
+    backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+    backgroundView.backgroundColor = ToolbarElementBackgroundColor(_incognito);
+    [buttonsContainer addSubview:backgroundView];
+    AddSameConstraints(backgroundView, buttonsContainer);
+  }
 
   // Internal stack view to handle dynamic resizing when the forward button
   // visibility changes.
@@ -86,8 +97,15 @@ constexpr CGFloat kDefaultSymbolPointSize = 19;
   buttonsStack.distribution = UIStackViewDistributionFill;
   buttonsStack.alignment = UIStackViewAlignmentFill;
 
-  [backgroundView addSubview:buttonsStack];
-  AddSameConstraints(buttonsStack, backgroundView);
+  UIView* containerView = backgroundView;
+  if (IsToolbarGlassPrototypeEnabled()) {
+    if (UIVisualEffectView* blurView =
+            base::apple::ObjCCast<UIVisualEffectView>(backgroundView)) {
+      containerView = blurView.contentView;
+    }
+  }
+  [containerView addSubview:buttonsStack];
+  AddSameConstraints(buttonsStack, containerView);
 
   [NSLayoutConstraint activateConstraints:@[
     [buttonsContainer.heightAnchor
@@ -97,27 +115,14 @@ constexpr CGFloat kDefaultSymbolPointSize = 19;
   ConfigureCornerRadiusForToolbarButtonContainer(
       backgroundView, buttonsContainer.traitCollection);
   backgroundView.clipsToBounds = YES;
+  ConfigureShadowForToolbarElement(buttonsContainer);
 
   // Remove effects from the standalone buttons in the container
   ConfigureShadowForToolbarElement(backButton, /*remove_shadow*/ YES);
   ConfigureShadowForToolbarElement(forwardButton, /*remove_shadow*/ YES);
-  backButton.backgroundView.hidden = YES;
-  forwardButton.backgroundView.hidden = YES;
-
-  BOOL incognito = _incognito;
   if (IsToolbarGlassPrototypeEnabled()) {
-    ConfigureGlassToolbarElementShadow(buttonsContainer, incognito,
-                                       buttonsContainer.traitCollection);
-    [buttonsContainer
-        registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
-                    withHandler:^(id<UITraitEnvironment>,
-                                  UITraitCollection* traitCollection) {
-                      ConfigureGlassToolbarElementShadow(
-                          buttonsContainer, incognito,
-                          buttonsContainer.traitCollection);
-                    }];
-  } else {
-    ConfigureShadowForToolbarElement(buttonsContainer);
+    backButton.backgroundBlurView.effect = nil;
+    forwardButton.backgroundBlurView.effect = nil;
   }
 
   [buttonsContainer

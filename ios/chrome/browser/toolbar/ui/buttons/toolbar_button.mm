@@ -36,46 +36,52 @@ UIColor* NormalTintColor() {
   UIView* _backgroundView;
   UIView* _blueDotView;
   UIView* _gradientView;
-  BOOL _incognito;
 }
 
 @synthesize image = _image;
-@synthesize backgroundView = _backgroundView;
+@synthesize backgroundBlurView = _backgroundBlurView;
 
 - (instancetype)initWithImageLoader:(ToolbarButtonImageLoader)imageLoader
                           incognito:(BOOL)incognito {
   if ((self = [super initWithFrame:CGRectMake(0, 0, kToolbarButtonSize,
                                               kToolbarButtonSize)])) {
     _imageLoader = [imageLoader copy];
-    _incognito = incognito;
 
     [NSLayoutConstraint activateConstraints:@[
       [self.widthAnchor constraintEqualToConstant:kToolbarButtonSize],
       [self.heightAnchor constraintEqualToConstant:kToolbarButtonSize],
     ]];
 
-    _backgroundView = [[UIView alloc] initWithFrame:CGRectZero];
-    _backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
-    _backgroundView.backgroundColor =
-        IsToolbarGlassPrototypeEnabled()
-            ? ToolbarGlassPrototypeElementBackgroundColor(incognito)
-            : ToolbarElementBackgroundColor(incognito);
-    _backgroundView.userInteractionEnabled = NO;
-    _backgroundView.clipsToBounds = YES;
-    [self insertSubview:_backgroundView belowSubview:self.imageView];
-    AddSameConstraints(self, _backgroundView);
-
-    ConfigureCornerRadiusForToolbarButtonContainer(_backgroundView,
-                                                   self.traitCollection);
-
     if (IsToolbarGlassPrototypeEnabled()) {
-      ConfigureGlassToolbarElementShadow(self, _incognito,
-                                         self.traitCollection);
-      [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
-                         withAction:@selector(updateGlassShadow)];
+      UIBlurEffect* blurEffect = [UIBlurEffect
+          effectWithStyle:incognito
+                              ? UIBlurEffectStyleSystemUltraThinMaterialDark
+                              : UIBlurEffectStyleSystemUltraThinMaterial];
+      _backgroundBlurView =
+          [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+      _backgroundBlurView.translatesAutoresizingMaskIntoConstraints = NO;
+      _backgroundBlurView.userInteractionEnabled = NO;
+      _backgroundBlurView.clipsToBounds = YES;
+      [self insertSubview:_backgroundBlurView belowSubview:self.imageView];
+      AddSameConstraints(self, _backgroundBlurView);
+
+      ConfigureCornerRadiusForToolbarButtonContainer(_backgroundBlurView,
+                                                     self.traitCollection);
     } else {
-      ConfigureShadowForToolbarElement(self);
+      _backgroundView = [[UIView alloc] initWithFrame:CGRectZero];
+      _backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+      _backgroundView.backgroundColor =
+          ToolbarElementBackgroundColor(incognito);
+      _backgroundView.userInteractionEnabled = NO;
+      _backgroundView.clipsToBounds = YES;
+      [self insertSubview:_backgroundView belowSubview:self.imageView];
+      AddSameConstraints(self, _backgroundView);
+
+      ConfigureCornerRadiusForToolbarButtonContainer(_backgroundView,
+                                                     self.traitCollection);
     }
+
+    ConfigureShadowForToolbarElement(self);
 
     self.tintColor = NormalTintColor();
 
@@ -172,15 +178,10 @@ UIColor* NormalTintColor() {
 
 #pragma mark - Private
 
-// Updates the shadow when the glass prototype is enabled and appearance alters.
-- (void)updateGlassShadow {
-  CHECK(IsToolbarGlassPrototypeEnabled());
-  ConfigureGlassToolbarElementShadow(self, _incognito, self.traitCollection);
-}
-
 // Returns the active background container view.
 - (UIView*)backgroundContainer {
-  return _backgroundView;
+  return IsToolbarGlassPrototypeEnabled() ? _backgroundBlurView
+                                          : _backgroundView;
 }
 
 // Updates the highlight visibility.
@@ -188,8 +189,13 @@ UIColor* NormalTintColor() {
   if (_iphHighlighted && !_hasBlueDot) {
     if (!_gradientView) {
       _gradientView = CreateIPHGradientView();
-      [_backgroundView addSubview:_gradientView];
-      AddSameConstraints(_backgroundView, _gradientView);
+      if (IsToolbarGlassPrototypeEnabled()) {
+        [_backgroundBlurView.contentView addSubview:_gradientView];
+        AddSameConstraints(_backgroundBlurView.contentView, _gradientView);
+      } else {
+        [_backgroundView addSubview:_gradientView];
+        AddSameConstraints(_backgroundView, _gradientView);
+      }
     }
     _gradientView.hidden = NO;
     ConfigureIPHImageStyleForImageView(self.imageView);

@@ -11,24 +11,14 @@
 // not.
 UIColor* ToolbarElementBackgroundColor(BOOL incognito);
 
-// Returns the background color to be used for elements inside the toolbar when
-// the glass prototype is enabled.
-UIColor* ToolbarGlassPrototypeElementBackgroundColor(BOOL incognito);
-
-// Configures drop shadow around the bounds of a toolbar element inside the
-// glass prototype, adjusting across incognito and user interface styles.
-void ConfigureGlassToolbarElementShadow(UIView* container,
-                                        BOOL incognito,
-                                        UITraitCollection* trait_collection);
-
 // Configures the `container` to have the shadow of a toolbar button, or removes
 // the existing shadow if `remove_shadow` is YES.
 void ConfigureShadowForToolbarElement(UIView* container,
                                       BOOL remove_shadow = NO);
 
 // Configures corner radius of the `container` so that it takes on a rounded
-// rectangle shape if the window has a compact width. Otherwise, a pill/circle
-// shape. Under the glass prototype, this always configures a pill/circle shape.
+// rectangle shape if the window has a compact width. Otherwise, a a pill/circle
+// shape.
 void ConfigureCornerRadiusForToolbarButtonContainer(
     UIView* container,
     UITraitCollection* trait_collection);
