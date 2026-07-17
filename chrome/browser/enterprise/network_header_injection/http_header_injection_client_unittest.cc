@@ -9,6 +9,8 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/rand_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
@@ -129,6 +131,7 @@ class HttpHeaderInjectionClientTest : public testing::Test {
   }
 
  protected:
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
 };
@@ -240,6 +243,7 @@ TEST_F(HttpHeaderInjectionClientTest, TargetClientFails) {
 
 // Tests that the enterprise policy successfully injects headers when matched.
 TEST_F(HttpHeaderInjectionClientTest, InjectsHeaders) {
+  base::HistogramTester histogram_tester;
   SetPolicy("example.com", {{"X-Enterprise", "PolicyValue"}});
 
   mojo::Remote<network::mojom::TrustedHeaderClient> remote;
@@ -272,6 +276,8 @@ TEST_F(HttpHeaderInjectionClientTest, InjectsHeaders) {
 
   ValidateSingleHeaderLogEvent(future.Get<2>(), "X-Enterprise", "PolicyValue",
                                /*expected_is_override=*/false);
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.HttpHeaderInjection.RequestModified", true, 1);
 }
 
 // Tests that enterprise headers are correctly merged with modifications
@@ -379,6 +385,7 @@ TEST_F(HttpHeaderInjectionClientTest, PolicyOverwritesTargetClientHeaders) {
 // Tests that if the target client returns no modifications (std::nullopt),
 // those are passed through as-is when there is no enterprise policy.
 TEST_F(HttpHeaderInjectionClientTest, TargetClientReturnsNullopt) {
+  base::HistogramTester histogram_tester;
   MockTrustedHeaderClient target_client;
   // target_client returns nullopt by default.
 
@@ -403,6 +410,8 @@ TEST_F(HttpHeaderInjectionClientTest, TargetClientReturnsNullopt) {
 
   EXPECT_EQ(net::OK, out_result);
   EXPECT_FALSE(out_headers.has_value());
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.HttpHeaderInjection.RequestModified", false, 1);
 }
 
 // Tests that if the target client returns no modifications (std::nullopt),

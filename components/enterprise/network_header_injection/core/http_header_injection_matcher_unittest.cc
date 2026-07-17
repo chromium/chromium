@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/rand_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/enterprise/network_header_injection/core/http_header_injection_rule.h"
 #include "net/http/http_request_headers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,6 +20,7 @@ class HttpHeaderInjectionMatcherTest : public testing::Test {
   HttpHeaderInjectionMatcherTest()
       : matcher_(HttpHeaderInjectionMatcher::Create()) {}
 
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample_;
   std::unique_ptr<HttpHeaderInjectionMatcher> matcher_;
 };
 
@@ -30,6 +33,7 @@ TEST_F(HttpHeaderInjectionMatcherTest, EmptyMatcher_ReturnsNoHeaders) {
 
 // Tests that a leading dot in the domain pattern results in an exact match.
 TEST_F(HttpHeaderInjectionMatcherTest, ExactMatch_MatchesOnlyExactHost) {
+  base::HistogramTester histogram_tester;
   // In URLBlocklist style, a leading dot means exact match (no subdomains).
   matcher_->UpdateRules({{.url_patterns = {".example.com"},
                           .headers = {{"X-Enterprise-Test", "SecretValue"}}}});
@@ -40,6 +44,9 @@ TEST_F(HttpHeaderInjectionMatcherTest, ExactMatch_MatchesOnlyExactHost) {
 
   headers = matcher_->GetHeadersForUrl(GURL("https://sub.example.com"));
   EXPECT_TRUE(headers.IsEmpty());
+
+  histogram_tester.ExpectTotalCount("Enterprise.HttpHeaderInjection.MatchTime",
+                                    2);
 }
 
 // Tests that a domain pattern without a leading dot matches subdomains.

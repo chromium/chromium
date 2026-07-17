@@ -2982,6 +2982,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.HttpHeaderInjection.MatchTime" units="microseconds"
+    expires_after="2027-07-01">
+  <owner>antoli@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
+  <summary>
+    Records the time it takes to evaluate HttpHeaderInjection rules. This is
+    measured for a subsample of 0.1% of every network request when the policy is
+    enabled, right before the headers are sent.
+
+    This metric is reported only for clients with high-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.HttpHeaderInjection.RequestModified" enum="Boolean"
+    expires_after="2027-07-01">
+  <owner>antoli@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
+  <summary>
+    Records whether a network request was modified by the HttpHeaderInjection
+    policy. Emitted for a subsample of 0.1% of every network request when the
+    policy is enabled, right before headers are sent. True if headers were
+    injected, false otherwise.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.IdleTimeoutPolicies.ActionSuccess.{ActionType}"
     enum="BooleanSuccess" expires_after="2027-03-01">
   <owner>esalma@google.com</owner>

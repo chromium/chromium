@@ -9,6 +9,8 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/rand_util.h"
 #include "components/enterprise/network_header_injection/core/http_header_injection_service.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -125,7 +127,14 @@ void HttpHeaderInjectionClient::OnTargetBeforeSendHeadersComplete(
 
   net::HttpRequestHeaders headers_to_inject =
       service_->GetHeadersForUrl(request_url);
-  if (!headers_to_inject.IsEmpty()) {
+
+  bool modified = !headers_to_inject.IsEmpty();
+  if (base::ShouldRecordSubsampledMetric(0.001)) {
+    base::UmaHistogramBoolean("Enterprise.HttpHeaderInjection.RequestModified",
+                              modified);
+  }
+
+  if (modified) {
     if (!final_headers) {
       final_headers = original_headers;
     }

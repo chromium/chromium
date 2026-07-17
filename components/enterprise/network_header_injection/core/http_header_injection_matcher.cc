@@ -10,6 +10,8 @@
 
 #include "base/check.h"
 #include "base/hash/hash.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/rand_util.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
 #include "components/url_matcher/url_matcher.h"
@@ -152,6 +154,9 @@ void HttpHeaderInjectionMatcherImpl::UpdateRules(
 net::HttpRequestHeaders HttpHeaderInjectionMatcherImpl::GetHeadersForUrl(
     const GURL& url) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  bool should_sample = base::ShouldRecordSubsampledMetric(0.001);
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS_SUBSAMPLED(
+      "Enterprise.HttpHeaderInjection.MatchTime", should_sample);
   if (url.is_empty()) {
     return {};
   }
