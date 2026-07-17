@@ -35,6 +35,7 @@
 #include "components/personal_context/proto/context_memory_service.pb.h"
 #include "components/personal_context/proto/features/at_memory.pb.h"
 #include "net/base/network_change_notifier.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -391,6 +392,30 @@ void DeduplicateResults(std::vector<MemorySearchResult>& results) {
   results = std::move(unique_results);
 }
 
+// Reorders secondary metadata attributes in each suggestion by uniqueness.
+// Attributes with lower frequency of the same type (more unique values for a
+// given attribute type across all suggestions) appear first. Ties preserve
+// their original relative order.
+// TODO(crbug.com/535951437): Improve handling on `MemoryDataType::kUnknown`
+// results.
+void ReorderMetadataByUniqueness(std::vector<MemorySearchResult>& results) {
+  absl::flat_hash_map<std::pair<MemoryDataType, std::u16string>, size_t>
+      frequency_map;
+  for (const MemorySearchResult& result : results) {
+    for (const EntryMetadata& metadata : result.metadata_list) {
+      frequency_map[{metadata.type, metadata.value}]++;
+    }
+  }
+
+  for (MemorySearchResult& result : results) {
+    std::ranges::stable_sort(result.metadata_list,
+                             /*comp=*/{},
+                             /*proj=*/[&frequency_map](const EntryMetadata& m) {
+                               return frequency_map[{m.type, m.value}];
+                             });
+  }
+}
+
 // Filters search results by retaining only those entries that have the maximum
 // number of matching filter words. If `filter_words` is empty, all entries are
 // returned. If `filter_words` is provided but no entry matches any filter word,
@@ -621,6 +646,7 @@ void QueryPersonalContextDebug(
           [](base::RepeatingCallback<void(MemorySearchResults)> update_cb,
              std::vector<MemorySearchResult> results) {
             DeduplicateResults(results);
+            ReorderMetadataByUniqueness(results);
             update_cb.Run(MemorySearchResults(
                 MemorySearchStatus::kFinalResponseSuccess, std::move(results)));
           },
@@ -931,6 +957,7 @@ void AtMemoryQueryService::OnPersonalContextRetrieved(
     std::vector<MemorySearchResult> ranked_results =
         RankResults(/*local_results=*/{}, std::move(remote_results));
     DeduplicateResults(ranked_results);
+    ReorderMetadataByUniqueness(ranked_results);
     run_callback(MemorySearchStatus::kFinalResponseSuccess,
                  std::move(ranked_results));
     return;
@@ -960,6 +987,7 @@ void AtMemoryQueryService::OnLocalDataRetrieved(
   std::vector<MemorySearchResult> ranked_results =
       RankResults(std::move(filtered_local_results), std::move(remote_results));
   DeduplicateResults(ranked_results);
+  ReorderMetadataByUniqueness(ranked_results);
 
   MemorySearchResults search_results(MemorySearchStatus::kFinalResponseSuccess,
                                      std::move(ranked_results));

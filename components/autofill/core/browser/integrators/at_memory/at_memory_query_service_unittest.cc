@@ -9,7 +9,10 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
@@ -50,12 +53,16 @@ using ::base::test::ErrorIs;
 using ::base::test::RunOnceCallback;
 using ::base::test::TestFuture;
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::ByMove;
 using ::testing::ElementsAre;
+using ::testing::ElementsAreArray;
 using ::testing::Field;
+using ::testing::Matcher;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::UnorderedElementsAre;
+using ::testing::Values;
 
 class FakeMemoryDataProvider : public AutofillDataProvider {
  public:
@@ -1510,6 +1517,155 @@ TEST_F(AtMemoryQueryServiceTest, AuthenticateAndFetchPiiEntity_AuthInProgress) {
       ErrorIs(
           AtMemoryQueryService::SpiiRetrievalFailureReason::kReauthInProgress));
 }
+
+// Tests that secondary metadata attributes are reordered by uniqueness across
+// all returned suggestions (more unique values for a given attribute type
+// first).
+struct ReorderMetadataTestCase {
+  // Input metadata entries for each search result.
+  std::vector<std::vector<EntryMetadata>> input_metadata_per_result;
+  // Expected metadata entries for each search result after uniqueness sorting.
+  std::vector<std::vector<EntryMetadata>> expected_metadata_per_result;
+};
+
+class AtMemoryQueryServiceReorderMetadataTest
+    : public AtMemoryQueryServiceTest,
+      public ::testing::WithParamInterface<ReorderMetadataTestCase> {};
+
+// Tests that secondary metadata attributes in query search results are
+// reordered by uniqueness across all suggestions (more unique values of the
+// same type first), preserving original relative provider order when frequency
+// scores tie.
+TEST_P(AtMemoryQueryServiceReorderMetadataTest, ReordersSecondaryMetadata) {
+  personal_context::proto::AtMemoryQueryResponse response =
+      CreateQueryResponse();
+  response.mutable_autofill_fetch_plan()->add_data_types(
+      personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_FULL);
+  StubFetchContextResponse(std::move(response));
+
+  // Build input search results with metadata based on test parameters.
+  int id = 0;
+  std::vector<MemorySearchResult> input_results = base::ToVector(
+      GetParam().input_metadata_per_result,
+      [&id](const std::vector<EntryMetadata>& metadata_list) {
+        MemorySearchResult result(
+            MemoryDataType::kAddressFull, u"Address",
+            base::StrCat({u"Address ", base::NumberToString16(id++)}),
+            /*confidence_score=*/0.9);
+        result.metadata_list = metadata_list;
+        return result;
+      });
+
+  std::unique_ptr<FakeMemoryDataProvider> data_provider =
+      std::make_unique<FakeMemoryDataProvider>();
+  data_provider->SetResults(std::move(input_results));
+
+  std::unique_ptr<AtMemoryQueryService> service =
+      std::make_unique<AtMemoryQueryService>(std::move(data_provider),
+                                             &mock_service_, "en-US");
+
+  // Execute query and wait for search results.
+  base::test::TestFuture<MemorySearchResults> future;
+  service->Query(u"addresses", GURL("https://example.com"), u"Page Title",
+                 future.GetRepeatingCallback());
+  const MemorySearchResults& search_results = future.Get();
+
+  // Construct matchers that will verify secondary metadata ordering matches
+  // expectations for each result.
+  std::vector<Matcher<const MemorySearchResult&>> entry_matchers =
+      base::ToVector(
+          GetParam().expected_metadata_per_result,
+          [](const std::vector<EntryMetadata>& expected_list)
+              -> Matcher<const MemorySearchResult&> {
+            return Field(
+                &MemorySearchResult::metadata_list,
+                ElementsAreArray(base::ToVector(
+                    expected_list, [](const EntryMetadata& metadata) {
+                      return AllOf(
+                          Field(&EntryMetadata::type, metadata.type),
+                          Field(&EntryMetadata::type_name, metadata.type_name),
+                          Field(&EntryMetadata::value, metadata.value));
+                    })));
+          });
+  EXPECT_THAT(search_results.entries, ElementsAreArray(entry_matchers));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AtMemoryQueryServiceReorderMetadataTest,
+    Values(
+        // Reorders secondary metadata attributes by uniqueness (more unique
+        // values first).
+        ReorderMetadataTestCase{
+            .input_metadata_per_result =
+                {{{MemoryDataType::kAddressState, u"State", u"IL"},
+                  {MemoryDataType::kAddressCountry, u"Country",
+                   u"United States"},
+                  {MemoryDataType::kAddressCity, u"City", u"Springfield"}},
+                 {{MemoryDataType::kAddressCountry, u"Country",
+                   u"United States"},
+                  {MemoryDataType::kAddressCity, u"City", u"Boston"},
+                  {MemoryDataType::kAddressState, u"State", u"MA"}},
+                 {{MemoryDataType::kAddressState, u"State", u"IL"},
+                  {MemoryDataType::kAddressCity, u"City", u"Chicago"},
+                  {MemoryDataType::kAddressCountry, u"Country",
+                   u"United States"}}},
+            .expected_metadata_per_result =
+                {{{MemoryDataType::kAddressCity, u"City", u"Springfield"},
+                  {MemoryDataType::kAddressState, u"State", u"IL"},
+                  {MemoryDataType::kAddressCountry, u"Country",
+                   u"United States"}},
+                 {{MemoryDataType::kAddressCity, u"City", u"Boston"},
+                  {MemoryDataType::kAddressState, u"State", u"MA"},
+                  {MemoryDataType::kAddressCountry, u"Country",
+                   u"United States"}},
+                 {{MemoryDataType::kAddressCity, u"City", u"Chicago"},
+                  {MemoryDataType::kAddressState, u"State", u"IL"},
+                  {MemoryDataType::kAddressCountry, u"Country",
+                   u"United States"}}}},
+        // Preserves original order on tie when frequency scores are equal.
+        ReorderMetadataTestCase{
+            .input_metadata_per_result =
+                {{{MemoryDataType::kAddressCity, u"City", u"CommonVal"},
+                  {MemoryDataType::kAddressCity, u"City", u"AlsoCommonVal"},
+                  {MemoryDataType::kAddressCity, u"City", u"UniqueVal"}},
+                 {{MemoryDataType::kAddressCity, u"City", u"CommonVal"},
+                  {MemoryDataType::kAddressCity, u"City", u"AlsoCommonVal"}}},
+            .expected_metadata_per_result =
+                {{{MemoryDataType::kAddressCity, u"City", u"UniqueVal"},
+                  {MemoryDataType::kAddressCity, u"City", u"CommonVal"},
+                  {MemoryDataType::kAddressCity, u"City", u"AlsoCommonVal"}},
+                 {{MemoryDataType::kAddressCity, u"City", u"CommonVal"},
+                  {MemoryDataType::kAddressCity, u"City", u"AlsoCommonVal"}}}},
+        // Counts values of different types independently (e.g., SFO in
+        // departure airport vs. SFO in arrival airport).
+        ReorderMetadataTestCase{
+            .input_metadata_per_result =
+                {{{MemoryDataType::kFlightReservationDepartureAirport,
+                   u"Departure Airport", u"LAX"},
+                  {MemoryDataType::kFlightReservationDepartureAirport,
+                   u"Departure Airport", u"SFO"}},
+                 {{MemoryDataType::kFlightReservationDepartureAirport,
+                   u"Departure Airport", u"LAX"},
+                  {MemoryDataType::kFlightReservationDepartureAirport,
+                   u"Departure Airport", u"SFO"}},
+                 {{MemoryDataType::kFlightReservationDepartureAirport,
+                   u"Departure Airport", u"LAX"},
+                  {MemoryDataType::kFlightReservationArrivalAirport,
+                   u"Arrival Airport", u"SFO"}}},
+            .expected_metadata_per_result = {
+                {{MemoryDataType::kFlightReservationDepartureAirport,
+                  u"Departure Airport", u"SFO"},
+                 {MemoryDataType::kFlightReservationDepartureAirport,
+                  u"Departure Airport", u"LAX"}},
+                {{MemoryDataType::kFlightReservationDepartureAirport,
+                  u"Departure Airport", u"SFO"},
+                 {MemoryDataType::kFlightReservationDepartureAirport,
+                  u"Departure Airport", u"LAX"}},
+                {{MemoryDataType::kFlightReservationArrivalAirport,
+                  u"Arrival Airport", u"SFO"},
+                 {MemoryDataType::kFlightReservationDepartureAirport,
+                  u"Departure Airport", u"LAX"}}}}));
 
 }  // namespace
 
