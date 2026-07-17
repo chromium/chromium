@@ -661,6 +661,7 @@ public class ToolbarPositionControllerTest {
                         isOmniboxFocused,
                         isFindInPageShowing,
                         isFormFieldFocusedWithKeyboardVisible,
+                        /* isBrowserControlsHidden= */ false,
                         doesUserPreferTopToolbar,
                         ControlsPosition.BOTTOM));
 
@@ -673,6 +674,7 @@ public class ToolbarPositionControllerTest {
                         isOmniboxFocused,
                         isFindInPageShowing,
                         isFormFieldFocusedWithKeyboardVisible,
+                        /* isBrowserControlsHidden= */ false,
                         doesUserPreferTopToolbar,
                         ControlsPosition.BOTTOM));
 
@@ -685,6 +687,7 @@ public class ToolbarPositionControllerTest {
                         isOmniboxFocused,
                         isFindInPageShowing,
                         isFormFieldFocusedWithKeyboardVisible,
+                        /* isBrowserControlsHidden= */ false,
                         doesUserPreferTopToolbar,
                         ControlsPosition.BOTTOM));
 
@@ -697,6 +700,7 @@ public class ToolbarPositionControllerTest {
                         isOmniboxFocused,
                         isFindInPageShowing,
                         isFormFieldFocusedWithKeyboardVisible,
+                        /* isBrowserControlsHidden= */ false,
                         doesUserPreferTopToolbar,
                         ControlsPosition.BOTTOM));
 
@@ -709,6 +713,7 @@ public class ToolbarPositionControllerTest {
                         true,
                         isFindInPageShowing,
                         isFormFieldFocusedWithKeyboardVisible,
+                        /* isBrowserControlsHidden= */ false,
                         doesUserPreferTopToolbar,
                         ControlsPosition.BOTTOM));
 
@@ -721,6 +726,7 @@ public class ToolbarPositionControllerTest {
                         isOmniboxFocused,
                         true,
                         isFormFieldFocusedWithKeyboardVisible,
+                        /* isBrowserControlsHidden= */ false,
                         doesUserPreferTopToolbar,
                         ControlsPosition.BOTTOM));
 
@@ -733,6 +739,7 @@ public class ToolbarPositionControllerTest {
                         isOmniboxFocused,
                         isFindInPageShowing,
                         true,
+                        /* isBrowserControlsHidden= */ false,
                         doesUserPreferTopToolbar,
                         ControlsPosition.BOTTOM));
 
@@ -745,6 +752,7 @@ public class ToolbarPositionControllerTest {
                         isOmniboxFocused,
                         isFindInPageShowing,
                         isFormFieldFocusedWithKeyboardVisible,
+                        /* isBrowserControlsHidden= */ false,
                         doesUserPreferTopToolbar,
                         ControlsPosition.TOP));
 
@@ -757,6 +765,7 @@ public class ToolbarPositionControllerTest {
                         isOmniboxFocused,
                         isFindInPageShowing,
                         isFormFieldFocusedWithKeyboardVisible,
+                        /* isBrowserControlsHidden= */ false,
                         doesUserPreferTopToolbar,
                         ControlsPosition.TOP));
 
@@ -771,6 +780,7 @@ public class ToolbarPositionControllerTest {
                         isOmniboxFocused,
                         isFindInPageShowing,
                         isFormFieldFocusedWithKeyboardVisible,
+                        /* isBrowserControlsHidden= */ false,
                         doesUserPreferTopToolbar,
                         ControlsPosition.TOP));
 
@@ -784,6 +794,7 @@ public class ToolbarPositionControllerTest {
                         isOmniboxFocused,
                         isFindInPageShowing,
                         isFormFieldFocusedWithKeyboardVisible,
+                        /* isBrowserControlsHidden= */ false,
                         doesUserPreferTopToolbar,
                         ControlsPosition.TOP));
 
@@ -797,6 +808,7 @@ public class ToolbarPositionControllerTest {
                         isOmniboxFocused,
                         isFindInPageShowing,
                         isFormFieldFocusedWithKeyboardVisible,
+                        /* isBrowserControlsHidden= */ false,
                         true,
                         ControlsPosition.BOTTOM));
 
@@ -810,6 +822,7 @@ public class ToolbarPositionControllerTest {
                         isOmniboxFocused,
                         isFindInPageShowing,
                         isFormFieldFocusedWithKeyboardVisible,
+                        /* isBrowserControlsHidden= */ false,
                         true,
                         ControlsPosition.BOTTOM));
     }
@@ -1309,5 +1322,34 @@ public class ToolbarPositionControllerTest {
                 mProgressBarLayoutParams.gravity);
         assertEquals(Gravity.BOTTOM, mProgressBarLayoutParams.anchorGravity);
         assertEquals(CONTROL_CONTAINER_ID, mProgressBarLayoutParams.getAnchorId());
+    }
+
+    @Test
+    public void testCalculateStateTransition_hidden_snaps() {
+        assertEquals(
+                StateTransition.SNAP_TO_BOTTOM,
+                ToolbarPositionController.calculateStateTransition(
+                        /* prefStateChanged= */ true,
+                        /* ntpShowing= */ false,
+                        /* tabSwitcherShowing= */ false,
+                        /* isOmniboxFocused= */ false,
+                        /* isFindInPageShowing= */ false,
+                        /* isFormFieldFocusedWithKeyboardVisible= */ false,
+                        /* isBrowserControlsHidden= */ true,
+                        /* doesUserPreferTopToolbar= */ false,
+                        /* currentPosition= */ ControlsPosition.TOP));
+
+        assertEquals(
+                StateTransition.SNAP_TO_TOP,
+                ToolbarPositionController.calculateStateTransition(
+                        /* prefStateChanged= */ true,
+                        /* ntpShowing= */ false,
+                        /* tabSwitcherShowing= */ false,
+                        /* isOmniboxFocused= */ false,
+                        /* isFindInPageShowing= */ false,
+                        /* isFormFieldFocusedWithKeyboardVisible= */ false,
+                        /* isBrowserControlsHidden= */ true,
+                        /* doesUserPreferTopToolbar= */ true,
+                        /* currentPosition= */ ControlsPosition.BOTTOM));
     }
 }

@@ -534,6 +534,8 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                 mIsFormFieldFocusedSupplier.get()
                         && mKeyboardVisibilityDelegate.isKeyboardShowing(
                                 mControlContainer.getView());
+        boolean isBrowserControlsHidden =
+                mBrowserControlsSizer.getBrowserControlHiddenRatio() == 1.0f;
         @StateTransition
         int stateTransition =
                 calculateStateTransition(
@@ -543,6 +545,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                         isOmniboxFocused,
                         isFindInPageShowing,
                         isFormFieldFocusedWithKeyboardVisible,
+                        isBrowserControlsHidden,
                         isToolbarConfiguredToShowOnTop(),
                         mCurrentPosition.get());
         @ControlsPosition
@@ -656,6 +659,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             boolean isOmniboxFocused,
             boolean isFindInPageShowing,
             boolean isFormFieldFocusedWithKeyboardVisible,
+            boolean isBrowserControlsHidden,
             boolean doesUserPreferTopToolbar,
             @ControlsPosition int currentPosition) {
         @ControlsPosition int newControlsPosition;
@@ -678,7 +682,8 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             // the settings UI.
             int positionAndSource = AddressBarPreference.computeToolbarPositionAndSource();
             boolean animate =
-                    !isOmniboxFocused
+                    !isBrowserControlsHidden
+                            && !isOmniboxFocused
                             && !ntpShowing
                             && (positionAndSource == ToolbarPositionAndSource.TOP_LONG_PRESS
                                     || positionAndSource
@@ -791,6 +796,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                         /* isOmniboxFocused= */ false,
                         /* isFindInPageShowing= */ false,
                         /* isFormFieldFocusedWithKeyboardVisible= */ false,
+                        /* isBrowserControlsHidden= */ false,
                         isToolbarConfiguredToShowOnTop(),
                         /* currentPosition= */ ControlsPosition.BOTTOM)
                 == StateTransition.SNAP_TO_TOP;
