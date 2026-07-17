@@ -6,14 +6,14 @@
 
 #include <array>
 #include <cstdint>
-#include <cstring>
 #include <memory>
 #include <string>
 #include <string_view>
 
 #include "base/base64url.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
-#include "base/no_destructor.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -79,34 +79,30 @@ void EcdsaCupTestOneInputDoesNotCrash(std::string params,
 FUZZ_TEST(CupEcdsaFuzzTest, EcdsaCupTestOneInputDoesNotCrash);
 
 TEST_F(CupEcdsaTest, PrepareRequestParameters) {
-  constexpr std::string_view kRequest = "TestSequenceForCupEcdsaUnitTest";
-  constexpr std::string_view kRequestHashWithName =
+  static constexpr std::string_view kRequest =
+      "TestSequenceForCupEcdsaUnitTest";
+  static constexpr std::string_view kRequestHashWithName =
       "&cup2hreq="
       "cde1f7dc1311ed96813057ca321c2f5a17ea2c9c776ee0eb31965f7985a3074a";
-  constexpr std::string_view kKeyIdWithName = "cup2key=8:";
+  static constexpr std::string_view kKeyIdWithName = "cup2key=8:";
 
-  std::string query = cup().PrepareRequestParameters(kRequest);
-  std::string query2 = cup().PrepareRequestParameters(kRequest);
-  std::string query3 = cup().PrepareRequestParameters(kRequest);
-
-  for (const std::string& q : {query, query2, query3}) {
-    EXPECT_TRUE(base::StartsWith(q, kKeyIdWithName));
-    EXPECT_TRUE(base::EndsWith(q, kRequestHashWithName));
+  base::flat_set<std::string> queries;
+  for (int i = 0; i < 3; ++i) {
+    const std::string query = cup().PrepareRequestParameters(kRequest);
+    // With a 256-bit nonce, the probability of collision is negligible.
+    EXPECT_FALSE(queries.contains(query));
+    queries.insert(query);
+    EXPECT_TRUE(base::StartsWith(query, kKeyIdWithName));
+    EXPECT_TRUE(base::EndsWith(query, kRequestHashWithName));
     // The nonce is a base64url-encoded, 32-byte (256-bit) string.
-    [&](std::string_view nonce_b64) {
-      nonce_b64.remove_prefix(kKeyIdWithName.size());
-      nonce_b64.remove_suffix(kRequestHashWithName.size());
-      std::string nonce;
-      EXPECT_TRUE(base::Base64UrlDecode(
-          nonce_b64, base::Base64UrlDecodePolicy::DISALLOW_PADDING, &nonce));
-      EXPECT_EQ(32u, nonce.size());
-    }(q);
+    std::string_view nonce_b64 = query;
+    nonce_b64.remove_prefix(kKeyIdWithName.size());
+    nonce_b64.remove_suffix(kRequestHashWithName.size());
+    std::string nonce;
+    EXPECT_TRUE(base::Base64UrlDecode(
+        nonce_b64, base::Base64UrlDecodePolicy::DISALLOW_PADDING, &nonce));
+    EXPECT_EQ(nonce.size(), 32u);
   }
-
-  // With a 256-bit nonce, the probability of collision is negligible.
-  EXPECT_NE(query, query2);
-  EXPECT_NE(query, query3);
-  EXPECT_NE(query2, query3);
 }
 
 TEST_F(CupEcdsaTest, ValidateResponse_TestETagParsing) {
@@ -325,9 +321,9 @@ class CupMldsa44Test : public testing::Test {
  protected:
   Cup& cup() { return cup_; }
 
-  std::string SignResponse(const std::string& request_body,
-                           const std::string& response_body,
-                           const std::string& cup2key_params) {
+  std::string SignResponse(std::string_view request_body,
+                           std::string_view response_body,
+                           std::string_view cup2key_params) {
     auto req_hash = crypto::hash::Sha256(base::as_byte_span(request_body));
     auto resp_hash = crypto::hash::Sha256(base::as_byte_span(response_body));
 
@@ -340,14 +336,14 @@ class CupMldsa44Test : public testing::Test {
 
     auto signature_bytes = crypto::sign::Sign(
         crypto::sign::SignatureKind::MLDSA_44, priv_key_, inner_hash);
-    return absl::StrFormat("%s:%s", base::HexEncodeLower(signature_bytes),
-                           base::HexEncodeLower(req_hash));
+    return base::StrCat({base::HexEncodeLower(signature_bytes), ":",
+                         base::HexEncodeLower(req_hash)});
   }
 
-  std::string GetCup2KeyParams(const std::string& req_params) {
+  std::string GetCup2KeyParams(std::string_view req_params) {
     size_t start = req_params.find("cup2key=") + 8;
     size_t end = req_params.find("&", start);
-    return req_params.substr(start, end - start);
+    return std::string(req_params.substr(start, end - start));
   }
 
   CupMldsa44Test() {
@@ -380,34 +376,30 @@ void Mldsa44CupTestOneInputDoesNotCrash(std::string params,
 FUZZ_TEST(CupMldsa44FuzzTest, Mldsa44CupTestOneInputDoesNotCrash);
 
 TEST_F(CupMldsa44Test, PrepareRequestParameters) {
-  constexpr std::string_view kRequest = "TestSequenceForCupMldsa44UnitTest";
-  constexpr std::string_view kRequestHashWithName =
+  static constexpr std::string_view kRequest =
+      "TestSequenceForCupMldsa44UnitTest";
+  static constexpr std::string_view kRequestHashWithName =
       "&cup2hreq="
       "6cc674cc7d21d2eb7aac815fcf2814a793bac092f326f0a65cff0b539269099e";
-  constexpr std::string_view kKeyIdWithName = "cup2key=ML-DSA-44-16:";
+  static constexpr std::string_view kKeyIdWithName = "cup2key=ML-DSA-44-16:";
 
-  std::string query = cup().PrepareRequestParameters(kRequest);
-  std::string query2 = cup().PrepareRequestParameters(kRequest);
-  std::string query3 = cup().PrepareRequestParameters(kRequest);
-
-  for (const std::string& q : {query, query2, query3}) {
-    EXPECT_TRUE(base::StartsWith(q, kKeyIdWithName));
-    EXPECT_TRUE(base::EndsWith(q, kRequestHashWithName));
+  base::flat_set<std::string> queries;
+  for (int i = 0; i < 3; ++i) {
+    const std::string query = cup().PrepareRequestParameters(kRequest);
+    // With a 256-bit nonce, the probability of collision is negligible.
+    EXPECT_FALSE(queries.contains(query));
+    queries.insert(query);
+    EXPECT_TRUE(base::StartsWith(query, kKeyIdWithName));
+    EXPECT_TRUE(base::EndsWith(query, kRequestHashWithName));
     // The nonce is a base64url-encoded, 32-byte (256-bit) string.
-    [&](std::string_view nonce_b64) {
-      nonce_b64.remove_prefix(kKeyIdWithName.size());
-      nonce_b64.remove_suffix(kRequestHashWithName.size());
-      std::string nonce;
-      EXPECT_TRUE(base::Base64UrlDecode(
-          nonce_b64, base::Base64UrlDecodePolicy::DISALLOW_PADDING, &nonce));
-      EXPECT_EQ(32u, nonce.size());
-    }(q);
+    std::string_view nonce_b64 = query;
+    nonce_b64.remove_prefix(kKeyIdWithName.size());
+    nonce_b64.remove_suffix(kRequestHashWithName.size());
+    std::string nonce;
+    EXPECT_TRUE(base::Base64UrlDecode(
+        nonce_b64, base::Base64UrlDecodePolicy::DISALLOW_PADDING, &nonce));
+    EXPECT_EQ(nonce.size(), 32u);
   }
-
-  // With a 256-bit nonce, the probability of collision is negligible.
-  EXPECT_NE(query, query2);
-  EXPECT_NE(query, query3);
-  EXPECT_NE(query2, query3);
 }
 
 TEST_F(CupMldsa44Test, ValidateResponse_TestETagParsing) {
@@ -485,8 +477,9 @@ TEST_F(CupMldsa44Test, ValidateResponse_TestSigning) {
 
   // Failure case: Wrong nonce (signed against a different nonce).
   std::string wrong_cup2key =
-      cup2key.substr(0, cup2key.find(':') + 1) +
-      "0000000000000000000000000000000000000000000000000000000000000000";
+      base::StrCat({cup2key.substr(0, cup2key.find(':') + 1),
+                    "0000000000000000000000000000000000000000000000000000000000"
+                    "000000"});
   std::string wrong_nonce_etag =
       SignResponse("Request_A", "Response_A", wrong_cup2key);
   EXPECT_FALSE(cup().ValidateResponse("Response_A", wrong_nonce_etag));
