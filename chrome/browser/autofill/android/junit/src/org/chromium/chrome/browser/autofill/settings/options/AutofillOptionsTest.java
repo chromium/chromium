@@ -27,7 +27,6 @@ import static org.chromium.chrome.browser.autofill.settings.options.AutofillOpti
 import static org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsProperties.THIRD_PARTY_TOGGLE_IS_READ_ONLY;
 
 import android.content.ComponentName;
-import android.content.Context;
 import android.text.SpannableString;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -58,7 +57,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadow.api.Shadow;
-import org.robolectric.shadows.ShadowApplication;
+import org.robolectric.shadows.ShadowAutofillManager;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -137,13 +136,13 @@ public class AutofillOptionsTest {
     @Mock private FeedbackPolicyManager mFeedbackPolicyManager;
     @Mock private Runnable mRestartRunnable;
     @Mock private ModalDialogManager mDialogManager;
-    @Mock private AutofillManager mAutofillManager;
     @Mock private EntityDataManager mMockEntityDataManager;
     @Mock private PersonalDataManager mMockPersonalDataManager;
     @Mock private EntityDataManager.Natives mMockEntityDataManagerJni;
     @Mock private ReauthenticatorBridge mMockReauthenticatorBridge;
     @Mock private SettingsIndexData mSearchIndexDataMock;
     @Mock private SettingsCustomTabLauncher mMockCustomTabLauncher;
+    private ShadowAutofillManager mShadowAutofillManager;
     private UserActionTester mActionTester;
 
     @Captor ArgumentCaptor<PropertyModel> mRestartConfirmationDialogModelCaptor;
@@ -163,8 +162,12 @@ public class AutofillOptionsTest {
         HelpAndFeedbackLauncherFactory.setInstanceForTesting(mHelpAndFeedbackLauncher);
         FeedbackPolicyManager.setInstanceForTesting(mFeedbackPolicyManager);
         doReturn(true).when(mFeedbackPolicyManager).isUserFeedbackAllowed();
-        ShadowApplication shadowApplication = Shadow.extract(RuntimeEnvironment.getApplication());
-        shadowApplication.setSystemService(Context.AUTOFILL_MANAGER_SERVICE, mAutofillManager);
+        mShadowAutofillManager =
+                Shadow.extract(
+                        RuntimeEnvironment.getApplication()
+                                .getSystemService(AutofillManager.class));
+        mShadowAutofillManager.setEnabled(true);
+        mShadowAutofillManager.setAutofillSupported(true);
 
         mScenario =
                 FragmentScenario.launchInContainer(
@@ -206,7 +209,7 @@ public class AutofillOptionsTest {
     @Test
     @SmallTest
     public void constructedWithPrefAsDefaultForOption() {
-        doReturn(EXAMPLE_SERVICE_PACKAGE).when(mAutofillManager).getAutofillServiceComponentName();
+        mShadowAutofillManager.setAutofillServiceComponentName(EXAMPLE_SERVICE_PACKAGE);
         doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL);
         doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_THIRD_PARTY_PASSWORD_MANAGERS_ALLOWED);
 
@@ -223,7 +226,7 @@ public class AutofillOptionsTest {
     @Test
     @SmallTest
     public void optionDisabledForAwgUpdatesOnResume() {
-        doReturn(AWG_PACKAGE).when(mAutofillManager).getAutofillServiceComponentName();
+        mShadowAutofillManager.setAutofillServiceComponentName(AWG_PACKAGE);
         doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL);
         doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_THIRD_PARTY_PASSWORD_MANAGERS_ALLOWED);
 
@@ -252,7 +255,7 @@ public class AutofillOptionsTest {
     @Test
     @SmallTest
     public void optionDisabledByPolicy() {
-        doReturn(EXAMPLE_SERVICE_PACKAGE).when(mAutofillManager).getAutofillServiceComponentName();
+        mShadowAutofillManager.setAutofillServiceComponentName(EXAMPLE_SERVICE_PACKAGE);
         doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL);
         doReturn(false)
                 .when(mPrefs)
@@ -273,7 +276,7 @@ public class AutofillOptionsTest {
     @Test
     @SmallTest
     public void optionEnabledToSwitchOffAwg() {
-        doReturn(AWG_PACKAGE).when(mAutofillManager).getAutofillServiceComponentName();
+        mShadowAutofillManager.setAutofillServiceComponentName(AWG_PACKAGE);
         doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL);
         doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_THIRD_PARTY_PASSWORD_MANAGERS_ALLOWED);
 
@@ -550,7 +553,7 @@ public class AutofillOptionsTest {
     @Test
     @SmallTest
     public void toggledOptionStoresPackageNamePref() {
-        doReturn(EXAMPLE_SERVICE_PACKAGE).when(mAutofillManager).getAutofillServiceComponentName();
+        mShadowAutofillManager.setAutofillServiceComponentName(EXAMPLE_SERVICE_PACKAGE);
         doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_THIRD_PARTY_PASSWORD_MANAGERS_ALLOWED);
         doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL);
         PropertyModel model =
@@ -572,7 +575,7 @@ public class AutofillOptionsTest {
     @Test
     @SmallTest
     public void toggledOptionResetsPackageNamePref() {
-        doReturn(EXAMPLE_SERVICE_PACKAGE).when(mAutofillManager).getAutofillServiceComponentName();
+        mShadowAutofillManager.setAutofillServiceComponentName(EXAMPLE_SERVICE_PACKAGE);
         doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_THIRD_PARTY_PASSWORD_MANAGERS_ALLOWED);
         doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL);
         PropertyModel model =
