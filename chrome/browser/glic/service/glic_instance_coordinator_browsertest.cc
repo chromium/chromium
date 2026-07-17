@@ -1706,6 +1706,8 @@ class GlicInstanceCoordinatorLocalHotkeyScopeTest
     GlicInstanceCoordinatorBrowserTest::SetUpOnMainThread();
     g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
                                                  true);
+    g_browser_process->local_state()->SetBoolean(
+        prefs::kGlicHotkeyGlobalScopeEnabled, false);
   }
 
  private:

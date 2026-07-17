@@ -32,6 +32,11 @@ inline constexpr char kGlicLauncherEnabled[] = "glic.launcher_enabled";
 // local_hotkey_manager.cc.
 inline constexpr char kGlicLauncherHotkey[] = "glic.launcher_hotkey";
 
+// Boolean pref that determines if the Glic hotkey scope is global (true) or
+// local (false).
+inline constexpr char kGlicHotkeyGlobalScopeEnabled[] =
+    "glic.hotkey_global_scope_enabled";
+
 // String pref that keeps track of the non-localized version of the registered
 // selection hotkey for Glic.
 inline constexpr char kGlicSelectionHotkey[] = "glic.selection_hotkey";

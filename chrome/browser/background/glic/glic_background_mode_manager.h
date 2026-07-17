@@ -90,13 +90,12 @@ class GlicBackgroundModeManager : public GlicLauncherConfiguration::Observer,
   }
 
   bool IsInBackgroundModeForTesting() {
-    CHECK_EQ(static_cast<bool>(keep_alive_), static_cast<bool>(status_icon_));
     return keep_alive_ != nullptr;
   }
 
   GlicStatusIcon* GetStatusIconForTesting() { return status_icon_.get(); }
 
-  void EnterBackgroundMode();
+  void EnterBackgroundMode(bool show_status_icon);
   void ExitBackgroundMode();
 
  private:
@@ -106,7 +105,10 @@ class GlicBackgroundModeManager : public GlicLauncherConfiguration::Observer,
   void UnregisterHotkey();
   void UpdateState();
 
+  bool ShouldRegisterGlobalHotkey() const;
   bool IsEnabledInAnyLoadedProfile();
+  bool UpdateExpectedHotkeys();
+  ui::Accelerator GetHotkeyToShow() const;
 
   // A helper class for observing pref changes.
   std::unique_ptr<GlicLauncherConfiguration> configuration_;

@@ -216,9 +216,7 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest,
   // Registering an invalid hotkey should fail.
   ui::Accelerator updated_hotkey(ui::VKEY_A, ui::EF_NONE);
   RegisterLauncherHotkey(updated_hotkey);
-  EXPECT_NE(updated_hotkey,
-            manager->RegisteredHotkeyForTesting().at(static_cast<size_t>(
-                GlicBackgroundModeManager::HotkeyIndex::kPanelKey)));
+  EXPECT_TRUE(manager->RegisteredHotkeyForTesting().empty());
 }
 
 IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest,

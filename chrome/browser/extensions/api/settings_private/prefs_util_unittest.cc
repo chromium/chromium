@@ -7,8 +7,12 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util_enums.h"
+#include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -99,6 +103,25 @@ TEST_F(PrefsUtilTest, SetPref_FixesUpInvalidUrl) {
   EXPECT_EQ(prefs_util_->SetPref(::prefs::kHomePage, &value),
             settings_private::SetPrefResult::SUCCESS);
   EXPECT_EQ(profile_->GetPrefs()->GetString(::prefs::kHomePage), "");
+}
+
+TEST_F(PrefsUtilTest, GlicPrefsAllowlisted) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlic);
+  struct ScopedBypass {
+    ScopedBypass() {
+      glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
+    }
+    ~ScopedBypass() {
+      glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
+    }
+  } bypass;
+
+  std::optional<api::settings_private::PrefObject> pref =
+      prefs_util_->GetPref(glic::prefs::kGlicHotkeyGlobalScopeEnabled);
+  ASSERT_TRUE(pref.has_value());
+  EXPECT_EQ(pref->key, glic::prefs::kGlicHotkeyGlobalScopeEnabled);
+  EXPECT_EQ(pref->type, api::settings_private::PrefType::kBoolean);
 }
 
 }  // namespace extensions

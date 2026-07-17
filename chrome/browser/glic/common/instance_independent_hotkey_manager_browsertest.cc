@@ -79,6 +79,9 @@ IN_PROC_BROWSER_TEST_F(InstanceIndependentHotkeyManagerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(InstanceIndependentHotkeyManagerBrowserTest,
                        AcceleratorPressedLaunchesGlicInLocalScope) {
+  g_browser_process->local_state()->SetBoolean(
+      prefs::kGlicHotkeyGlobalScopeEnabled, false);
+
   GlicKeyedService* service = GlicKeyedServiceFactory::GetGlicKeyedService(
       GetBrowser()->GetProfile(), /*create=*/true);
   ASSERT_TRUE(service);
@@ -95,13 +98,45 @@ IN_PROC_BROWSER_TEST_F(InstanceIndependentHotkeyManagerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InstanceIndependentHotkeyManagerBrowserTest,
-                       AcceleratorPressedReturnsFalseWhenLauncherDisabled) {
+                       AcceleratorPressedLaunchesGlicEvenIfLauncherDisabled) {
   g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
                                                false);
-  InstanceIndependentHotkeyManager manager(&service()->instance_coordinator(),
+  g_browser_process->local_state()->SetBoolean(
+      prefs::kGlicHotkeyGlobalScopeEnabled, false);
+
+  GlicKeyedService* service = GlicKeyedServiceFactory::GetGlicKeyedService(
+      GetBrowser()->GetProfile(), /*create=*/true);
+  ASSERT_TRUE(service);
+
+  InstanceIndependentHotkeyManager manager(&service->instance_coordinator(),
                                            GetBrowser()->GetProfile());
+
+  // Simulate the accelerator being pressed.
+  EXPECT_TRUE(
+      manager.AcceleratorPressed(LocalHotkeyManager::Command::kPanelToggle));
+
+  // Verify that the panel actually opens.
+  EXPECT_TRUE(WaitForGlicOpen().has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(InstanceIndependentHotkeyManagerBrowserTest,
+                       AcceleratorPressedReturnsFalseWhenGlobalScopeEnabled) {
+  g_browser_process->local_state()->SetBoolean(
+      prefs::kGlicHotkeyGlobalScopeEnabled, true);
+
+  GlicKeyedService* service = GlicKeyedServiceFactory::GetGlicKeyedService(
+      GetBrowser()->GetProfile(), /*create=*/true);
+  ASSERT_TRUE(service);
+
+  InstanceIndependentHotkeyManager manager(&service->instance_coordinator(),
+                                           GetBrowser()->GetProfile());
+
+  // Since global scope is enabled, the local manager should return false.
   EXPECT_FALSE(
       manager.AcceleratorPressed(LocalHotkeyManager::Command::kPanelToggle));
+
+  // Verify that the panel is not showing.
+  EXPECT_FALSE(service->instance_coordinator().IsAnyPanelShowing());
 }
 
 class InstanceIndependentHotkeyManagerFeatureDisabledBrowserTest
@@ -123,6 +158,8 @@ class InstanceIndependentHotkeyManagerFeatureDisabledBrowserTest
 IN_PROC_BROWSER_TEST_F(
     InstanceIndependentHotkeyManagerFeatureDisabledBrowserTest,
     AcceleratorPressedDoesNotLaunchGlicWhenFeatureDisabled) {
+  g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
+                                               false);
   GlicKeyedService* service = GlicKeyedServiceFactory::GetGlicKeyedService(
       GetBrowser()->GetProfile(), /*create=*/true);
   ASSERT_TRUE(service);
@@ -136,6 +173,25 @@ IN_PROC_BROWSER_TEST_F(
       manager.AcceleratorPressed(LocalHotkeyManager::Command::kPanelToggle));
 
   // Verify that the panel is not showing.
+  EXPECT_FALSE(service->instance_coordinator().IsAnyPanelShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    InstanceIndependentHotkeyManagerFeatureDisabledBrowserTest,
+    AcceleratorPressedReturnsFalseWhenLauncherEnabled) {
+  g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
+                                               true);
+  GlicKeyedService* service = GlicKeyedServiceFactory::GetGlicKeyedService(
+      GetBrowser()->GetProfile(), /*create=*/true);
+  ASSERT_TRUE(service);
+
+  InstanceIndependentHotkeyManager manager(&service->instance_coordinator(),
+                                           GetBrowser()->GetProfile());
+
+  // If the feature is disabled, the local manager should return false (pass
+  // through to the global manager) even if the launcher is enabled.
+  EXPECT_FALSE(
+      manager.AcceleratorPressed(LocalHotkeyManager::Command::kPanelToggle));
   EXPECT_FALSE(service->instance_coordinator().IsAnyPanelShowing());
 }
 

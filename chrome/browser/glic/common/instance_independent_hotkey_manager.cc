@@ -66,15 +66,14 @@ bool InstanceIndependentHotkeyManager::AcceleratorPressed(
     LocalHotkeyManager::Command command) {
   switch (command) {
     case LocalHotkeyManager::Command::kPanelToggle: {
-      // If the hotkey is scoped globally (i.e. local scope is disabled),
-      // it is handled globally by GlicBackgroundModeManager. Let this local
-      // manager pass through to prevent duplicate triggering inside Chrome.
-      if (!base::FeatureList::IsEnabled(features::kGlicHotkeyLocalScope)) {
-        return false;
-      }
-      PrefService* local_state = g_browser_process->local_state();
-      if (!local_state ||
-          !local_state->GetBoolean(prefs::kGlicLauncherEnabled)) {
+      // If the hotkey is scoped globally (e.g., because the local scope
+      // feature is disabled or the user selected Global scope), let this local
+      // manager pass through (return false) to avoid handling it locally inside
+      // Chrome.
+      PrefService* const local_state = g_browser_process->local_state();
+      if (!base::FeatureList::IsEnabled(features::kGlicHotkeyLocalScope) ||
+          !local_state ||
+          local_state->GetBoolean(prefs::kGlicHotkeyGlobalScopeEnabled)) {
         return false;
       }
       coordinator_->Toggle(GetActiveGlicEligibleBrowser(profile_),

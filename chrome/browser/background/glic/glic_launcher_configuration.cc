@@ -23,8 +23,12 @@ namespace glic {
 namespace {
 
 ui::Accelerator GetAcceleratorFromPreference(const char* pref_name) {
-  const ui::Accelerator hotkey = ui::Command::StringToAccelerator(
-      g_browser_process->local_state()->GetString(pref_name));
+  PrefService* const local_state = g_browser_process->local_state();
+  if (!local_state) {
+    return ui::Accelerator();
+  }
+  const ui::Accelerator hotkey =
+      ui::Command::StringToAccelerator(local_state->GetString(pref_name));
 
   // Return empty accelerator if an invalid modifier was set.
   if (!hotkey.IsEmpty() &&
@@ -67,6 +71,11 @@ GlicLauncherConfiguration::GlicLauncherConfiguration(Observer* manager)
         base::BindRepeating(
             &GlicLauncherConfiguration::OnGlobalHotkeyPrefChanged,
             base::Unretained(this)));
+    pref_registrar_.Add(
+        prefs::kGlicHotkeyGlobalScopeEnabled,
+        base::BindRepeating(
+            &GlicLauncherConfiguration::OnGlobalHotkeyPrefChanged,
+            base::Unretained(this)));
   }
 }
 
@@ -75,6 +84,12 @@ GlicLauncherConfiguration::~GlicLauncherConfiguration() = default;
 // static
 bool GlicLauncherConfiguration::IsEnabled(bool* is_default_value) {
   PrefService* const pref_service = g_browser_process->local_state();
+  if (!pref_service) {
+    if (is_default_value) {
+      *is_default_value = false;
+    }
+    return false;
+  }
   if (is_default_value) {
     *is_default_value =
         pref_service->FindPreference(prefs::kGlicLauncherEnabled)
