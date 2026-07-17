@@ -440,6 +440,11 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   void HandleEditableTextChanged(int32_t unique_id, int32_t subType);
   void HandleSliderChanged(int32_t unique_id);
   void SendDelayedWindowContentChangedEvent();
+  // Handles value changes triggered by increment/decrement spinbutton
+  // intents. Note: These intents are only generated for native
+  // spinbuttons (e.g. via arrow up/down), forcing full text
+  // announcement for them.
+  void HandleSpinButtonStepIntent(int32_t unique_id);
   bool OnHoverEvent(const ui::MotionEventAndroid& event);
   void HandleHover(int32_t unique_id);
   void HandleNavigate(int32_t root_id);
@@ -635,6 +640,8 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   std::unique_ptr<ScopedAccessibilityMode> scoped_accessibility_mode_;
 
   int32_t tooltip_showing_node_id_ = 0;
+
+  bool should_announce_full_text_ = false;
 
   base::WeakPtrFactory<WebContentsAccessibilityAndroid> weak_ptr_factory_{this};
 };

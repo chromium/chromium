@@ -655,10 +655,34 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    public void test_ariaSpinbuttonAppendingTextChanged() {
+        performTest(
+                "aria-spinbutton-appending-text-changed.html",
+                "aria-spinbutton-appending-text-changed-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
     public void test_ariaSpinbuttonValuetextChanged() {
         performTest(
                 "aria-spinbutton-valuetext-change.html",
                 "aria-spinbutton-valuetext-change-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
+    public void test_nativeSpinbuttonAppendingTextChanged() {
+        performTest(
+                "native-spinbutton-appending-text-changed.html",
+                "native-spinbutton-appending-text-changed-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
+    public void test_nativeSpinbuttonArrowUpTextChanged() {
+        performTest(
+                "native-spinbutton-arrow-up-changed.html",
+                "native-spinbutton-arrow-up-changed-expected-android.txt");
     }
 
     @Test

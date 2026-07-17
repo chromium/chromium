@@ -2678,6 +2678,8 @@ data/accessibility/event/aria-sort-changed-expected-auralinux.txt
 data/accessibility/event/aria-sort-changed-expected-uia-win.txt
 data/accessibility/event/aria-sort-changed-expected-win.txt
 data/accessibility/event/aria-sort-changed.html
+data/accessibility/event/aria-spinbutton-appending-text-changed-expected-android.txt
+data/accessibility/event/aria-spinbutton-appending-text-changed.html
 data/accessibility/event/aria-spinbutton-value-both-change-expected-android.txt
 data/accessibility/event/aria-spinbutton-value-both-change-expected-auralinux.txt
 data/accessibility/event/aria-spinbutton-value-both-change-expected-mac.txt
@@ -3137,6 +3139,10 @@ data/accessibility/event/name-change-indirect-expected-uia-win.txt
 data/accessibility/event/name-change-indirect-expected-win.txt
 data/accessibility/event/name-change-indirect.html
 data/accessibility/event/name-change.html
+data/accessibility/event/native-spinbutton-appending-text-changed-expected-android.txt
+data/accessibility/event/native-spinbutton-appending-text-changed.html
+data/accessibility/event/native-spinbutton-arrow-up-changed-expected-android.txt
+data/accessibility/event/native-spinbutton-arrow-up-changed.html
 data/accessibility/event/navigation-api-expected-android.txt
 data/accessibility/event/navigation-api-expected-auralinux.txt
 data/accessibility/event/navigation-api-expected-win.txt
