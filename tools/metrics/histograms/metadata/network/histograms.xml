@@ -5184,6 +5184,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="NetworkService.CorsURLLoaderFactory.IsOutermostMainFrameClamped"
+    enum="Boolean" expires_after="2027-01-16">
+  <owner>pmeenan@chromium.org</owner>
+  <owner>src/services/network/OWNERS</owner>
+  <summary>
+    Recorded whenever a renderer request claims to originate from an outermost
+    main frame while its browser-created URLLoaderFactory does not. The request
+    value is clamped to the factory value. One known legitimate source is an
+    initial empty document in an opener-retaining popup created by a subframe.
+  </summary>
+</histogram>
+
 <histogram name="NetworkService.GrantAccessToDataPathError.{Directory}.Posix"
     enum="PopularOSErrno" expires_after="2026-01-22">
   <owner>ricea@chromium.org</owner>
