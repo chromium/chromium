@@ -50,10 +50,10 @@ export class SettingsYourSavedInfoPageIndexElement extends
     return {
       prefs: Object,
 
-      ambientAutofillEnabled_: {
+      isShoppingEnabled_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('ambientAutofillEnabled');
+          return loadTimeData.getBoolean('shoppingIntegrationEnabled');
         },
       },
 
@@ -67,7 +67,7 @@ export class SettingsYourSavedInfoPageIndexElement extends
   }
 
   declare prefs: Record<string, unknown>;
-  declare private ambientAutofillEnabled_: boolean;
+  declare private isShoppingEnabled_: boolean;
   declare private showSuggestionsFromGeminiSettings_: boolean;
 
   override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
@@ -121,7 +121,7 @@ export class SettingsYourSavedInfoPageIndexElement extends
               DataManagementSurvey.TRAVEL, isFromHomePage);
           break;
         case routes.YOUR_SAVED_INFO_SHOPPING:
-          assert(this.ambientAutofillEnabled_);
+          assert(this.isShoppingEnabled_);
           this.$.viewManager.switchView(
               'shopping', 'no-animation', 'no-animation');
           break;

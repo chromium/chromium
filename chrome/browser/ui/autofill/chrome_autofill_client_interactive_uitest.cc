@@ -275,6 +275,9 @@ class ChromeAutofillClientYourSavedInfoTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// Tests that calling ShowAutofillSettings() with
+// SuggestionType::kManageAutofillAi navigates the active tab to the main
+// "Your Saved Info" settings page and records the visit referrer metric.
 IN_PROC_BROWSER_TEST_F(ChromeAutofillClientYourSavedInfoTest,
                        ShowAutofillSettings_NavigatesToYourSavedInfo) {
   base::HistogramTester histogram_tester;
@@ -288,6 +291,58 @@ IN_PROC_BROWSER_TEST_F(ChromeAutofillClientYourSavedInfoTest,
   EXPECT_EQ(
       active_contents->GetVisibleURL(),
       GURL(std::string("chrome://settings/") + chrome::kAutofillSubPage));
+}
+
+// Tests that calling ShowAutofillSettings() with
+// SuggestionType::kManageAutofillAiIdentityDocs navigates the active tab to the
+// Identity Docs settings subpage and records the visit referrer metric.
+IN_PROC_BROWSER_TEST_F(ChromeAutofillClientYourSavedInfoTest,
+                       ShowAutofillSettings_NavigatesToIdentityDocs) {
+  base::HistogramTester histogram_tester;
+  client()->ShowAutofillSettings(SuggestionType::kManageAutofillAiIdentityDocs);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.YourSavedInfoSettingsPage.VisitReferrer",
+      autofill_metrics::AutofillSettingsReferrer::kFillingFlowDropdown, 1);
+  content::WebContents* active_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(
+      active_contents->GetVisibleURL(),
+      GURL(std::string("chrome://settings/") + chrome::kIdentityDocsSubPage));
+}
+
+// Tests that calling ShowAutofillSettings() with
+// SuggestionType::kManageAutofillAiTravel navigates the active tab to the
+// Travel settings subpage and records the visit referrer metric.
+IN_PROC_BROWSER_TEST_F(ChromeAutofillClientYourSavedInfoTest,
+                       ShowAutofillSettings_NavigatesToTravel) {
+  base::HistogramTester histogram_tester;
+  client()->ShowAutofillSettings(SuggestionType::kManageAutofillAiTravel);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.YourSavedInfoSettingsPage.VisitReferrer",
+      autofill_metrics::AutofillSettingsReferrer::kFillingFlowDropdown, 1);
+  content::WebContents* active_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(active_contents->GetVisibleURL(),
+            GURL(std::string("chrome://settings/") + chrome::kTravelSubPage));
+}
+
+// Tests that calling ShowAutofillSettings() with
+// SuggestionType::kManageAutofillAiShopping navigates the active tab to the
+// Shopping settings subpage and records the visit referrer metric.
+IN_PROC_BROWSER_TEST_F(ChromeAutofillClientYourSavedInfoTest,
+                       ShowAutofillSettings_NavigatesToShopping) {
+  base::HistogramTester histogram_tester;
+  client()->ShowAutofillSettings(SuggestionType::kManageAutofillAiShopping);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.YourSavedInfoSettingsPage.VisitReferrer",
+      autofill_metrics::AutofillSettingsReferrer::kFillingFlowDropdown, 1);
+  content::WebContents* active_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(active_contents->GetVisibleURL(),
+            GURL(std::string("chrome://settings/") + chrome::kShoppingSubPage));
 }
 
 }  // namespace

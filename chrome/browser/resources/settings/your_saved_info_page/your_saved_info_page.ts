@@ -102,10 +102,10 @@ export class SettingsYourSavedInfoPageElement extends
         type: Object,
       },
 
-      ambientAutofillEnabled_: {
+      isShoppingEnabled_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('ambientAutofillEnabled');
+          return loadTimeData.getBoolean('shoppingIntegrationEnabled');
         },
       },
 
@@ -120,7 +120,7 @@ export class SettingsYourSavedInfoPageElement extends
 
   declare prefs: Record<string, unknown>;
   declare private hierarchy_: DataTypeHierarchy;
-  declare private ambientAutofillEnabled_: boolean;
+  declare private isShoppingEnabled_: boolean;
   declare private showSuggestionsFromGeminiSettings_: boolean;
 
   private dataChipIdToChip_: Map<YourSavedInfoDataChip, DataChip> = new Map();
@@ -368,7 +368,7 @@ export class SettingsYourSavedInfoPageElement extends
           this.notifyPath('hierarchy_.shopping.chips');
         });
 
-    if (this.ambientAutofillEnabled_) {
+    if (this.isShoppingEnabled_) {
       this.availableAutofillAiTypes_.add(EntityTypeName.kOrder);
       this.availableAutofillAiTypes_.add(EntityTypeName.kShipment);
     }

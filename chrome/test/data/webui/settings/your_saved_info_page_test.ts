@@ -56,7 +56,7 @@ suite('YourSavedInfoPage', function() {
       enableYourSavedInfoSettingsPage: true,
       showIbansSettings: true,
       shouldShowPayOverTimeSettings: true,
-      ambientAutofillEnabled: true,
+      shoppingIntegrationEnabled: true,
       showSuggestionsFromGeminiSettings: true,
     });
   });
@@ -105,7 +105,7 @@ suite('YourSavedInfoPage', function() {
 
   test('ShoppingCategoryHiddenWhenFlagDisabled', async function() {
     await setupPage({
-      ambientAutofillEnabled: false,
+      shoppingIntegrationEnabled: false,
     });
 
     const shoppingCard =
@@ -384,7 +384,7 @@ suite('DataChipsVisibility', function() {
       enableYourSavedInfoSettingsPage: true,
       showIbansSettings: true,
       shouldShowPayOverTimeSettings: true,
-      ambientAutofillEnabled: true,
+      shoppingIntegrationEnabled: true,
     });
     await entityDataManager.whenCalled('getWritableEntityTypes');
 
@@ -492,7 +492,7 @@ suite('DataChipsVisibility', function() {
 
   test('DisabledAmbientAutofill', async function() {
     const yourSavedInfoPage = await setupPage({
-      ambientAutofillEnabled: false,
+      shoppingIntegrationEnabled: false,
     });
     assertFalse(
         isChildVisible(yourSavedInfoPage, '#shoppingManagerButton'),

@@ -30,7 +30,7 @@ suite('YourSavedInfoPageIndex', function() {
     loadTimeData.overrideValues({
       enableYourSavedInfoSettingsPage: true,
       showSuggestionsFromGeminiSettings: true,
-      ambientAutofillEnabled: true,
+      shoppingIntegrationEnabled: true,
     });
     resetRouterForTesting();
 
@@ -112,7 +112,7 @@ suite('YourSavedInfoPageIndex', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
       enableYourSavedInfoSettingsPage: true,
-      ambientAutofillEnabled: false,
+      shoppingIntegrationEnabled: false,
     });
     resetRouterForTesting();
 

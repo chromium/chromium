@@ -429,7 +429,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                           base::FeatureList::IsEnabled(
                               autofill::features::kYourSavedInfoSettingsPage));
 
-  html_source->AddBoolean("ambientAutofillEnabled",
+  html_source->AddBoolean("shoppingIntegrationEnabled",
                           base::FeatureList::IsEnabled(
                               autofill::features::kAutofillAmbientAutofill));
 

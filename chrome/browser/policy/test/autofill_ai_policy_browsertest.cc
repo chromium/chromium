@@ -54,7 +54,8 @@ class AutofillAiPolicyTest
   AutofillAiPolicyTest() {
     std::vector<base::test::FeatureRef> enabled_features{
         autofill::features::kAutofillAiWithDataSchema,
-        autofill::features::kAutofillAiIgnoreGeoIp};
+        autofill::features::kAutofillAiIgnoreGeoIp,
+        autofill::features::kAutofillAmbientAutofill};
     std::vector<base::test::FeatureRef> disabled_features;
 
     if (is_your_saved_info_settings_page_enabled()) {
@@ -156,6 +157,7 @@ IN_PROC_BROWSER_TEST_P(AutofillAiPolicyTest, SettingsNotDisabledByPolicy) {
   if (is_your_saved_info_settings_page_enabled()) {
     VerifySettingsUrlIsReachable(chrome::kIdentityDocsSubPage);
     VerifySettingsUrlIsReachable(chrome::kTravelSubPage);
+    VerifySettingsUrlIsReachable(chrome::kShoppingSubPage);
   } else {
     VerifySettingsUrlIsReachable(chrome::kAutofillAiSubPage);
   }
