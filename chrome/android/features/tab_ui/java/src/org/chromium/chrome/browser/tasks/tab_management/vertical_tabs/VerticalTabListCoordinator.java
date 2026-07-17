@@ -370,7 +370,7 @@ public class VerticalTabListCoordinator {
                         .with(
                                 VerticalTabListProperties.ON_SEARCH_CLICK_LISTENER,
                                 v -> {
-                                    if (ChromeFeatureList.sTabSearchForAL.isEnabled()) {
+                                    if (ChromeFeatureList.sTabSearchForDesktop.isEnabled()) {
                                         verticalTabsActionDelegate.openTabSearch();
                                     } else {
                                         verticalTabsActionDelegate.openHubPane(PaneId.TAB_SWITCHER);

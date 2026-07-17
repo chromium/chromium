@@ -2319,7 +2319,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mSecondaryUiContainerMarginAdjuster = new ViewMarginAdjusterForSideUi(secondaryUiContainer);
         mSideUiCoordinator.addObserver(mSecondaryUiContainerMarginAdjuster);
 
-        if (ChromeFeatureList.sTabSearchForAL.isEnabled()) {
+        if (ChromeFeatureList.sTabSearchForDesktop.isEnabled()) {
             mTabSearchOverlayCoordinator =
                     new TabSearchOverlayCoordinator(
                             mActivity,

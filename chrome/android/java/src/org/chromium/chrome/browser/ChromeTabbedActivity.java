@@ -4629,6 +4629,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             getCurrentTabModel().isIncognito());
             RecordUserAction.record("MobileMenuHomepage");
         } else if (id == R.id.tab_search) {
+            // Trigger tab search (known as hub search on mobile).
             mHubSearchClient.requestOmniboxForResult(
                     mHubSearchClient
                             .newIntentBuilder()
@@ -4637,6 +4638,11 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             .setResolutionType(ResolutionType.OPEN_IN_CHROME)
                             .build());
             RecordUserAction.record("MobileMenuTabSearch");
+        } else if (id == R.id.tab_search_side_ui) {
+            // Trigger the start anchored tab search side UI for Desktop.
+            if (mRootUiCoordinator != null) {
+                ((TabbedRootUiCoordinator) mRootUiCoordinator).showTabSearchOverlay();
+            }
         } else if (id == R.id.toggle_tab_layout_menu_id) {
             if (fromMenu) {
                 RecordUserAction.record("MobileMenuToggleTabLayout");

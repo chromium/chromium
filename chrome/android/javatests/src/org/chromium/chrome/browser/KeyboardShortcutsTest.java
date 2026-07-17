@@ -582,6 +582,27 @@ public class KeyboardShortcutsTest {
 
     @Test
     @SmallTest
+    @Features.DisableFeatures({ChromeFeatureList.TAB_SEARCH_FOR_DESKTOP})
+    public void testTabSearchSideUI_disabled() {
+        assertTrue(
+                keyDown(KeyEvent.KEYCODE_A, KeyEvent.META_ALT_ON | KeyEvent.META_SHIFT_ON, true));
+        verify(mMenuOrKeyboardActionController, times(1))
+                .onMenuOrKeyboardAction(/* id= */ eq(R.id.tab_search), /* fromMenu= */ eq(false));
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures({ChromeFeatureList.TAB_SEARCH_FOR_DESKTOP})
+    public void testTabSearchSideUI_enabled() {
+        assertTrue(
+                keyDown(KeyEvent.KEYCODE_A, KeyEvent.META_ALT_ON | KeyEvent.META_SHIFT_ON, true));
+        verify(mMenuOrKeyboardActionController, times(1))
+                .onMenuOrKeyboardAction(
+                        /* id= */ eq(R.id.tab_search_side_ui), /* fromMenu= */ eq(false));
+    }
+
+    @Test
+    @SmallTest
     public void testOpenStripContextMenu() {
         keyDown(KeyEvent.KEYCODE_F10, KeyEvent.META_SHIFT_ON, true);
         verify(mMenuOrKeyboardActionController, times(1))

@@ -279,7 +279,7 @@ BASE_DECLARE_FEATURE(kTabAndroidGracefulShutdown);
 BASE_DECLARE_FEATURE(kTabBottomSheet);
 BASE_DECLARE_FEATURE(kTabBottomSheetResizeWebview);
 BASE_DECLARE_FEATURE(kTabClosureMethodRefactor);
-BASE_DECLARE_FEATURE(kTabSearchForAL);
+BASE_DECLARE_FEATURE(kTabSearchForDesktop);
 BASE_DECLARE_FEATURE(kTabSharingToolbarAndroid);
 BASE_DECLARE_FEATURE(kTabStorageSqlitePrototype);
 BASE_DECLARE_FEATURE(kTabStripAutoSelectOnCloseChange);

@@ -812,7 +812,9 @@ public class StripLayoutHelper
         Resources res = context.getResources();
         // Set tab search button background resource.
         mTabSearchButtonWidth =
-                ChromeFeatureList.sTabSearchForAL.isEnabled() ? BUTTON_BACKGROUND_SIZE_DP : 0.f;
+                ChromeFeatureList.sTabSearchForDesktop.isEnabled()
+                        ? BUTTON_BACKGROUND_SIZE_DP
+                        : 0.f;
         mTabSearchButton = createTabSearchButton(context, incognito, res);
 
         // Use toolbar menu button padding to align NTB with menu button.
@@ -965,7 +967,7 @@ public class StripLayoutHelper
         button.setDrawY(BUTTON_BACKGROUND_Y_OFFSET_DP);
         button.setAccessibilityDescription(
                 res.getString(R.string.accessibility_search_loupe_tooltip_text));
-        button.setVisible(ChromeFeatureList.sTabSearchForAL.isEnabled());
+        button.setVisible(ChromeFeatureList.sTabSearchForDesktop.isEnabled());
         return button;
     }
 

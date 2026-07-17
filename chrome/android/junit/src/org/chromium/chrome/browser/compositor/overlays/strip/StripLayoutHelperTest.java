@@ -1718,7 +1718,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_SEARCH_FOR_AL)
+    @EnableFeatures(ChromeFeatureList.TAB_SEARCH_FOR_DESKTOP)
     public void testTabSearchButtonVisibility_FlagEnabled() {
         initializeTest(false, false, 0, 1);
         mStripLayoutHelper.onSizeChanged(
@@ -1736,7 +1736,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_SEARCH_FOR_AL)
+    @DisableFeatures(ChromeFeatureList.TAB_SEARCH_FOR_DESKTOP)
     public void testTabSearchButtonVisibility_FlagDisabled() {
         initializeTest(false, false, 0, 1);
         mStripLayoutHelper.onSizeChanged(
@@ -1754,7 +1754,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_SEARCH_FOR_AL)
+    @EnableFeatures(ChromeFeatureList.TAB_SEARCH_FOR_DESKTOP)
     public void testTabSearchButtonHoverHighlightProperties() {
         initializeTest(false, false, 0, 1);
         mStripLayoutHelper.onSizeChanged(
@@ -1783,7 +1783,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_SEARCH_FOR_AL)
+    @EnableFeatures(ChromeFeatureList.TAB_SEARCH_FOR_DESKTOP)
     public void testTabSearchButtonHoverHighlightProperties_Incognito() {
         initializeTest(false, /* incognito= */ true, 0, 1);
         mStripLayoutHelper.onSizeChanged(
@@ -1813,7 +1813,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_SEARCH_FOR_AL)
+    @EnableFeatures(ChromeFeatureList.TAB_SEARCH_FOR_DESKTOP)
     public void testSetCompositorButtonsVisible_TabSearchButtonExcluded() {
         initializeTest(false, false, 0, 1);
         mStripLayoutHelper.onSizeChanged(
