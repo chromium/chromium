@@ -8,24 +8,28 @@ found in the LICENSE file.
 
 <histograms>
 
-<!-- TODO (http://crbug.com/526985492): Update the Filter Facet types variants once task taxonomy is finalized. -->
-
 <variants name="MultistepFilterFacetType">
-  <variant name="AGE_CHILD" summary="AGE_CHILD (shared with SEARCH_FLIGHTS)"/>
+  <variant name="AGE_CHILD" summary="AGE_CHILD"/>
+  <variant name="AMENITY_FREE_BREAKFAST" summary="AMENITY_FREE_BREAKFAST"/>
+  <variant name="AMENITY_FREE_WIFI" summary="AMENITY_FREE_WIFI"/>
   <variant name="CABIN_CLASS" summary="CABIN_CLASS"/>
   <variant name="COUNT_ADULT" summary="COUNT_ADULT"/>
-  <variant name="COUNT_ADULTS" summary="COUNT_ADULTS"/>
   <variant name="COUNT_CHILD" summary="COUNT_CHILD"/>
-  <variant name="COUNT_CHILDREN" summary="COUNT_CHILDREN"/>
+  <variant name="COUNT_INFANT" summary="COUNT_INFANT"/>
+  <variant name="COUNT_INFANT_IN_LAP" summary="COUNT_INFANT_IN_LAP"/>
+  <variant name="COUNT_INFANT_IN_SEAT" summary="COUNT_INFANT_IN_SEAT"/>
   <variant name="COUNT_ROOM" summary="COUNT_ROOM"/>
   <variant name="DATE_CHECKIN" summary="DATE_CHECKIN"/>
   <variant name="DATE_CHECKOUT" summary="DATE_CHECKOUT"/>
   <variant name="DATE_INBOUND" summary="DATE_INBOUND"/>
   <variant name="DATE_OUTBOUND" summary="DATE_OUTBOUND"/>
-  <variant name="INFANT_IN_LAP" summary="INFANT_IN_LAP"/>
+  <variant name="LOCATION_DESTINATION" summary="LOCATION_DESTINATION"/>
   <variant name="LOCATION_INBOUND" summary="LOCATION_INBOUND"/>
   <variant name="LOCATION_OUTBOUND" summary="LOCATION_OUTBOUND"/>
-  <variant name="NAME_DESTINATION" summary="NAME_DESTINATION"/>
+  <variant name="POLICY_FREE_CANCELLATION" summary="POLICY_FREE_CANCELLATION"/>
+  <variant name="POLICY_PETS_ALLOWED" summary="POLICY_PETS_ALLOWED"/>
+  <variant name="RATING_REVIEW_MIN" summary="RATING_REVIEW_MIN"/>
+  <variant name="RATING_STAR_MIN" summary="RATING_STAR_MIN"/>
   <variant name="STOPS" summary="STOPS"/>
   <variant name="TRIP_TYPE" summary="TRIP_TYPE"/>
 </variants>
