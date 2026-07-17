@@ -895,7 +895,7 @@ bool IsDisableFeedbackForIneligibleUsersEnabled();
 // Enables the FullscreenRefactoring feature.
 BASE_DECLARE_FEATURE(kFullscreenRefactoring);
 
-// Returns true if the FullscreenRefactoring feature is enabled.
+// Returns true if the FullscreenRefactoring feature or ChromeNext is enabled.
 bool IsFullscreenRefactoringEnabled();
 
 // Enables the AskAboutThisPage feature.

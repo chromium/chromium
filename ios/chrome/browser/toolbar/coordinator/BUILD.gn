@@ -107,6 +107,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/banner_promo/model",
     "//ios/chrome/browser/banner_promo/model:test_support",
     "//ios/chrome/browser/default_browser/model",
+    "//ios/chrome/browser/fullscreen/model",
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/fullscreen/ui_bundled/test",
     "//ios/chrome/browser/infobars/model",

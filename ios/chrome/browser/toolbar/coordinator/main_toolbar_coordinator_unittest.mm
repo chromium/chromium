@@ -7,6 +7,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
@@ -32,6 +33,7 @@
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
+#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
@@ -192,12 +194,19 @@ class MainToolbarCoordinatorTest : public PlatformTest {
         startDispatchingToTarget:mock_browser_coordinator_commands
                      forProtocol:@protocol(BrowserCoordinatorCommands)];
 
+    id mock_fullscreen_commands =
+        OCMProtocolMock(@protocol(FullscreenCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_fullscreen_commands
+                     forProtocol:@protocol(FullscreenCommands)];
+
     OmniboxFocusBrowserAgent::CreateForBrowser(browser_.get());
     AutocompleteBrowserAgent::CreateForBrowser(browser_.get());
     // FullscreenController depends on ToolbarsSizeBrowserAgent, so the agent
     // must be created first. Please maintain this order.
     ToolbarsSizeBrowserAgent::CreateForBrowser(browser_.get());
     FullscreenController::CreateForBrowser(browser_.get());
+    FullscreenBrowserAgent::CreateForBrowser(browser_.get());
   }
 
   ~MainToolbarCoordinatorTest() override {}
@@ -212,6 +221,9 @@ class MainToolbarCoordinatorTest : public PlatformTest {
     coordinator_ =
         [[MainToolbarCoordinator alloc] initWithBrowser:browser_.get()];
     [coordinator_ start];
+    UIWindow* window = [[UIWindow alloc]
+        initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
+    window.rootViewController = coordinator_.primaryToolbarViewController;
     EXPECT_FALSE(observer.positionChangedCalled);
     EXPECT_EQ(layoutState.toolbarPosition, ToolbarPosition::kTop);
 

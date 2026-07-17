@@ -22,6 +22,7 @@
 #import "components/signin/public/identity_manager/primary_account_change_event.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
@@ -106,6 +107,7 @@ class GeminiBrowserAgentTest : public PlatformTest {
                    PageContextExtractorJavaScriptFeature::GetInstance()});
     SceneState* scene_state = [[SceneState alloc] initWithAppState:nil];
     browser_ = std::make_unique<TestBrowser>(profile_, scene_state);
+    FullscreenBrowserAgent::CreateForBrowser(browser_.get());
     GeminiBrowserAgent::CreateForBrowser(browser_.get());
     gemini_browser_agent_ = GeminiBrowserAgent::FromBrowser(browser_.get());
 
@@ -120,6 +122,28 @@ class GeminiBrowserAgentTest : public PlatformTest {
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_gemini_handler_
                      forProtocol:@protocol(GeminiCommands)];
+
+    // TODO(crbug.com/535867411): Replace legacy FullscreenController in
+    // GeminiBrowserAgentTest.
+    mock_fullscreen_handler_ = OCMProtocolMock(@protocol(FullscreenCommands));
+    OCMStub([mock_fullscreen_handler_ disableFullscreenAnimated:YES])
+        .andDo(^(NSInvocation*) {
+          FullscreenController::FromBrowser(browser_.get())
+              ->IncrementDisabledCounter();
+        });
+    OCMStub([mock_fullscreen_handler_ disableFullscreenAnimated:NO])
+        .andDo(^(NSInvocation*) {
+          FullscreenController::FromBrowser(browser_.get())
+              ->IncrementDisabledCounter();
+        });
+    OCMStub([mock_fullscreen_handler_ reenableFullscreen])
+        .andDo(^(NSInvocation*) {
+          FullscreenController::FromBrowser(browser_.get())
+              ->DecrementDisabledCounter();
+        });
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_fullscreen_handler_
+                     forProtocol:@protocol(FullscreenCommands)];
 
     std::unique_ptr<web::FakeWebState> web_state =
         std::make_unique<web::FakeWebState>();
@@ -180,6 +204,7 @@ class GeminiBrowserAgentTest : public PlatformTest {
     optimization_guide_service_ = nullptr;
     mock_settings_handler_ = nullptr;
     mock_gemini_handler_ = nullptr;
+    mock_fullscreen_handler_ = nullptr;
     fake_snapshot_delegate_ = nullptr;
     browser_.reset();
     profile_manager_.PrepareForDestruction();
@@ -298,6 +323,7 @@ class GeminiBrowserAgentTest : public PlatformTest {
   raw_ptr<web::FakeWebFrame> fake_main_frame_;
   id mock_settings_handler_;
   id mock_gemini_handler_;
+  id mock_fullscreen_handler_;
   FakeSnapshotGeneratorDelegate* fake_snapshot_delegate_;
   raw_ptr<feature_engagement::test::MockTracker> mock_tracker_;
 };
@@ -919,10 +945,6 @@ TEST_F(GeminiBrowserAgentTest, TestOnProcessingStatusChangedLiveDormant) {
   [browser_->GetCommandDispatcher()
       startDispatchingToTarget:mock_snackbar_handler
                    forProtocol:@protocol(SnackbarCommands)];
-  id mock_fullscreen_handler = OCMProtocolMock(@protocol(FullscreenCommands));
-  [browser_->GetCommandDispatcher()
-      startDispatchingToTarget:mock_fullscreen_handler
-                   forProtocol:@protocol(FullscreenCommands)];
 
   SetIsFloatyInvoked(true);
   web_state_->SetCurrentURL(GURL("https://example.com"));
@@ -957,10 +979,6 @@ TEST_F(GeminiBrowserAgentTest,
   [browser_->GetCommandDispatcher()
       startDispatchingToTarget:mock_snackbar_handler
                    forProtocol:@protocol(SnackbarCommands)];
-  id mock_fullscreen_handler = OCMProtocolMock(@protocol(FullscreenCommands));
-  [browser_->GetCommandDispatcher()
-      startDispatchingToTarget:mock_fullscreen_handler
-                   forProtocol:@protocol(FullscreenCommands)];
 
   SetIsFloatyInvoked(true);
   web_state_->SetCurrentURL(GURL("https://example.com"));
@@ -1004,10 +1022,6 @@ TEST_F(GeminiBrowserAgentTest,
   [browser_->GetCommandDispatcher()
       startDispatchingToTarget:mock_snackbar_handler
                    forProtocol:@protocol(SnackbarCommands)];
-  id mock_fullscreen_handler = OCMProtocolMock(@protocol(FullscreenCommands));
-  [browser_->GetCommandDispatcher()
-      startDispatchingToTarget:mock_fullscreen_handler
-                   forProtocol:@protocol(FullscreenCommands)];
 
   SetIsFloatyInvoked(true);
   web_state_->SetCurrentURL(GURL("https://example.com"));
@@ -1053,10 +1067,6 @@ TEST_F(GeminiBrowserAgentTest,
   [browser_->GetCommandDispatcher()
       startDispatchingToTarget:mock_snackbar_handler
                    forProtocol:@protocol(SnackbarCommands)];
-  id mock_fullscreen_handler = OCMProtocolMock(@protocol(FullscreenCommands));
-  [browser_->GetCommandDispatcher()
-      startDispatchingToTarget:mock_fullscreen_handler
-                   forProtocol:@protocol(FullscreenCommands)];
 
   SetIsFloatyInvoked(true);
   web_state_->SetCurrentURL(GURL("https://example.com"));
@@ -1240,10 +1250,6 @@ TEST_F(GeminiBrowserAgentTest, TestSwitchFromLiveToChatEligible) {
   [browser_->GetCommandDispatcher()
       startDispatchingToTarget:mock_snackbar_handler
                    forProtocol:@protocol(SnackbarCommands)];
-  id mock_fullscreen_handler = OCMProtocolMock(@protocol(FullscreenCommands));
-  [browser_->GetCommandDispatcher()
-      startDispatchingToTarget:mock_fullscreen_handler
-                   forProtocol:@protocol(FullscreenCommands)];
 
   SetIsFloatyInvoked(true);
   web_state_->SetCurrentURL(GURL("https://example.com"));

@@ -11,6 +11,7 @@
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_container_view_controller.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
@@ -21,6 +22,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
@@ -73,6 +75,8 @@ class AppBarCoordinatorTest : public PlatformTest {
 
     TestFullscreenController::CreateForBrowser(regular_browser_.get());
     TestFullscreenController::CreateForBrowser(incognito_browser_.get());
+    FullscreenBrowserAgent::CreateForBrowser(regular_browser_.get());
+    FullscreenBrowserAgent::CreateForBrowser(incognito_browser_.get());
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(regular_browser_.get());
     FakeUrlLoadingBrowserAgent::InjectForBrowser(regular_browser_.get());
 
@@ -138,6 +142,14 @@ class AppBarCoordinatorTest : public PlatformTest {
     [incognito_browser_->GetCommandDispatcher()
         startDispatchingToTarget:lens_handler_
                      forProtocol:@protocol(LensCommands)];
+
+    fullscreen_handler_ = OCMProtocolMock(@protocol(FullscreenCommands));
+    [regular_browser_->GetCommandDispatcher()
+        startDispatchingToTarget:fullscreen_handler_
+                     forProtocol:@protocol(FullscreenCommands)];
+    [incognito_browser_->GetCommandDispatcher()
+        startDispatchingToTarget:fullscreen_handler_
+                     forProtocol:@protocol(FullscreenCommands)];
   }
 
   ~AppBarCoordinatorTest() override { [coordinator_ stop]; }
@@ -159,6 +171,7 @@ class AppBarCoordinatorTest : public PlatformTest {
   id browser_coordinator_handler_;
   id qr_scanner_handler_;
   id lens_handler_;
+  id fullscreen_handler_;
 };
 
 // Tests that the coordinator creates a view controller when started.
