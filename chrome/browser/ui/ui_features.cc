@@ -545,13 +545,13 @@ BASE_FEATURE_PARAM(bool,
                    "vertical_tab_grab_handle_remove_always",
                    true);
 
-BASE_FEATURE(kOmniboxResizingPrioritization, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kOmniboxResizingPrioritization, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kToolbarAppMenuLabelResizing, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kToolbarAppMenuLabelResizing, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kToolbarProfileChipResizing, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kToolbarProfileChipResizing, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kToolbarGlicButtonResizing, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kToolbarGlicButtonResizing, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOSCryptAsyncAvailabilityInfoBar,
 #if BUILDFLAG(IS_MAC)

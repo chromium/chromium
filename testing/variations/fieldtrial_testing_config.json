@@ -25858,6 +25858,25 @@
             ]
         }
     ],
+    "VerticalTabs": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "VerticalTabs",
+                        "VerticalTabsPreviewBadge"
+                    ]
+                }
+            ]
+        }
+    ],
     "VerticalTabsExpandOnHover": [
         {
             "platforms": [
@@ -25890,7 +25909,10 @@
     "VerticalTabsLaunch": [
         {
             "platforms": [
-                "chromeos"
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
