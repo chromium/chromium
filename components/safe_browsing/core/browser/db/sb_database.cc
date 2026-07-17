@@ -97,22 +97,12 @@ DbLookupResult CheckStores(
   lookup_result.db_thread_start_time = db_thread_start_time;
 
   for (const auto& store : stores) {
-    base::TimeTicks start = base::TimeTicks::Now();
     for (const auto& full_hash : full_hashes) {
       HashPrefixStr hash_prefix =
           store.second->GetMatchingHashPrefix(full_hash);
       if (!hash_prefix.empty()) {
         lookup_result.results[full_hash].emplace_back(store.first, hash_prefix);
       }
-    }
-    if (store.first.threat_type() == ThreatType::HIGH_CONFIDENCE_ALLOWLIST) {
-      // Logs
-      // SafeBrowsing.V4Store.DbThread.CheckHighConfidenceAllowlistStoreDuration
-      base::UmaHistogramTimes(
-          GetMetricName(
-              "SafeBrowsing.",
-              "Store.DbThread.CheckHighConfidenceAllowlistStoreDuration"),
-          base::TimeTicks::Now() - start);
     }
   }
 
