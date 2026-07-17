@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListL
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarExplicitTrigger;
 import org.chromium.chrome.tab_ui.R;
@@ -340,8 +341,8 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                     }
 
                     @Override
-                    public @Nullable NonNullObservableSupplier<Boolean>
-                            getIsRailCollapsedSupplier() {
+                    public @Nullable NonNullObservableSupplier<@RailCollapseState Integer>
+                            getRailCollapseStateSupplier() {
                         return null;
                     }
                 };

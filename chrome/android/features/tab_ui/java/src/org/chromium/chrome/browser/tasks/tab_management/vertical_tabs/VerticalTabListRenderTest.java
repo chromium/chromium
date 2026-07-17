@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -529,7 +530,9 @@ public class VerticalTabListRenderTest {
 
                     PropertyModel containerModel =
                             new PropertyModel.Builder(VerticalTabListProperties.ALL_KEYS)
-                                    .with(VerticalTabListProperties.IS_COLLAPSED, true)
+                                    .with(
+                                            VerticalTabListProperties.COLLAPSE_STATE,
+                                            RailCollapseState.COLLAPSED)
                                     .build();
                     PropertyModelChangeProcessor.create(
                             containerModel, container, VerticalTabListViewBinder::bind);
@@ -551,7 +554,9 @@ public class VerticalTabListRenderTest {
                     PropertyModel pinnedTabModel =
                             createTabListItemModelBuilder("Pinned Tab", /* groupId= */ null)
                                     .with(TabProperties.IS_PINNED, true)
-                                    .with(TabProperties.IS_RAIL_COLLAPSED, true)
+                                    .with(
+                                            TabProperties.RAIL_COLLAPSE_STATE,
+                                            RailCollapseState.COLLAPSED)
                                     .build();
                     pinnedTabsModel.add(
                             new MVCListAdapter.ListItem(UiType.PINNED_TAB, pinnedTabModel));
@@ -576,7 +581,9 @@ public class VerticalTabListRenderTest {
                     addTabListItem(
                             tabListModel,
                             createTabListItemModelBuilder("Normal Tab", /* groupId= */ null)
-                                    .with(TabProperties.IS_RAIL_COLLAPSED, true)
+                                    .with(
+                                            TabProperties.RAIL_COLLAPSE_STATE,
+                                            RailCollapseState.COLLAPSED)
                                     .build());
 
                     // Tab Group Header and Nesting Tabs
@@ -591,19 +598,25 @@ public class VerticalTabListRenderTest {
                                             groupId,
                                             TabGroupColorId.BLUE,
                                             /* isCollapsed= */ false)
-                                    .with(TabProperties.IS_RAIL_COLLAPSED, true)
+                                    .with(
+                                            TabProperties.RAIL_COLLAPSE_STATE,
+                                            RailCollapseState.COLLAPSED)
                                     .build());
 
                     addTabListItem(
                             tabListModel,
                             createTabListItemModelBuilder("Nested Tab 1", groupId)
-                                    .with(TabProperties.IS_RAIL_COLLAPSED, true)
+                                    .with(
+                                            TabProperties.RAIL_COLLAPSE_STATE,
+                                            RailCollapseState.COLLAPSED)
                                     .build());
 
                     addTabListItem(
                             tabListModel,
                             createTabListItemModelBuilder("Nested Tab 2", groupId)
-                                    .with(TabProperties.IS_RAIL_COLLAPSED, true)
+                                    .with(
+                                            TabProperties.RAIL_COLLAPSE_STATE,
+                                            RailCollapseState.COLLAPSED)
                                     .build());
 
                     view[0] = container;

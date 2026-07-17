@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabA
 import org.chromium.chrome.browser.tasks.tab_management.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.util.TextResolver;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -844,10 +845,10 @@ public class TabVerticalViewBinderUnitTest {
         mModel.set(TabProperties.TITLE, "Google");
         TextResolver resolver = context -> "Google";
         mModel.set(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER, resolver);
-        mModel.set(TabProperties.IS_RAIL_COLLAPSED, true);
+        mModel.set(TabProperties.RAIL_COLLAPSE_STATE, RailCollapseState.COLLAPSED);
         mModel.set(TabProperties.TAB_GROUP_ID, new Token(1L, 2L)); // In group
 
-        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_RAIL_COLLAPSED);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.RAIL_COLLAPSE_STATE);
 
         int expectedSize =
                 mItemView
@@ -879,14 +880,14 @@ public class TabVerticalViewBinderUnitTest {
                 new ViewGroup.MarginLayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         mModel.set(TabProperties.TITLE, "Google");
-        mModel.set(TabProperties.IS_RAIL_COLLAPSED, false);
+        mModel.set(TabProperties.RAIL_COLLAPSE_STATE, RailCollapseState.EXPANDED);
         mModel.set(TabProperties.IS_SELECTED, true);
         mModel.set(TabProperties.TAB_GROUP_ID, new Token(1L, 2L)); // In group
         mModel.set(
                 TabProperties.TAB_ACTION_BUTTON_DATA,
                 new TabActionButtonData(TabActionButtonType.CLOSE, mCloseListener));
 
-        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_RAIL_COLLAPSED);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.RAIL_COLLAPSE_STATE);
 
         assertEquals(ViewGroup.LayoutParams.MATCH_PARENT, mItemView.getLayoutParams().width);
         assertEquals(ViewGroup.LayoutParams.WRAP_CONTENT, mItemView.getLayoutParams().height);
@@ -916,9 +917,9 @@ public class TabVerticalViewBinderUnitTest {
                 new ViewGroup.MarginLayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        mModel.set(TabProperties.IS_RAIL_COLLAPSED, true);
+        mModel.set(TabProperties.RAIL_COLLAPSE_STATE, RailCollapseState.COLLAPSED);
 
-        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.IS_RAIL_COLLAPSED);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.RAIL_COLLAPSE_STATE);
 
         int expectedSize =
                 pinnedView
@@ -948,9 +949,9 @@ public class TabVerticalViewBinderUnitTest {
                 new ViewGroup.MarginLayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        mModel.set(TabProperties.IS_RAIL_COLLAPSED, false);
+        mModel.set(TabProperties.RAIL_COLLAPSE_STATE, RailCollapseState.EXPANDED);
 
-        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.IS_RAIL_COLLAPSED);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.RAIL_COLLAPSE_STATE);
 
         int expectedWidth =
                 pinnedView
@@ -982,10 +983,10 @@ public class TabVerticalViewBinderUnitTest {
         TextView titleView = headerView.findViewById(R.id.group_title);
 
         mModel.set(TabProperties.TITLE, "My Group");
-        mModel.set(TabProperties.IS_RAIL_COLLAPSED, true);
+        mModel.set(TabProperties.RAIL_COLLAPSE_STATE, RailCollapseState.COLLAPSED);
 
         TabVerticalViewBinder.bindTabGroupHeader(
-                mModel, headerView, TabProperties.IS_RAIL_COLLAPSED);
+                mModel, headerView, TabProperties.RAIL_COLLAPSE_STATE);
 
         int expectedSize =
                 headerView
@@ -1018,10 +1019,10 @@ public class TabVerticalViewBinderUnitTest {
         TextView titleView = headerView.findViewById(R.id.group_title);
 
         mModel.set(TabProperties.TITLE, "My Group");
-        mModel.set(TabProperties.IS_RAIL_COLLAPSED, false);
+        mModel.set(TabProperties.RAIL_COLLAPSE_STATE, RailCollapseState.EXPANDED);
 
         TabVerticalViewBinder.bindTabGroupHeader(
-                mModel, headerView, TabProperties.IS_RAIL_COLLAPSED);
+                mModel, headerView, TabProperties.RAIL_COLLAPSE_STATE);
 
         assertEquals(ViewGroup.LayoutParams.MATCH_PARENT, headerView.getLayoutParams().width);
         assertEquals(ViewGroup.LayoutParams.WRAP_CONTENT, headerView.getLayoutParams().height);
@@ -1050,10 +1051,10 @@ public class TabVerticalViewBinderUnitTest {
                 new TabActionButtonData(TabActionButtonType.CLOSE, mCloseListener);
         mModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, actionButtonData);
         mModel.set(TabProperties.IS_SELECTED, true);
-        mModel.set(TabProperties.IS_RAIL_COLLAPSED, true);
+        mModel.set(TabProperties.RAIL_COLLAPSE_STATE, RailCollapseState.COLLAPSED);
 
         // Bind all properties
-        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_RAIL_COLLAPSED);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.RAIL_COLLAPSE_STATE);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.FAVICON_FETCHER);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_LOADING);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.MEDIA_INDICATOR);

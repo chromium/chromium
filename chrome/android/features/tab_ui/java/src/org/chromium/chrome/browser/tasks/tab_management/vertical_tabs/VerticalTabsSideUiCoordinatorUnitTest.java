@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -45,6 +46,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListCoordinator.RailCollapseListener;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
@@ -185,6 +187,8 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         assertNotNull(listener);
 
         // Initial state: expanded
+        assertEquals(
+                RailCollapseState.EXPANDED, mCoordinator.getRailCollapseStateByUserForTesting());
         @Px int expandedWidth = ViewUtils.dpToPx(mActivity, VIEW_WIDTH_DP);
         assertEquals(
                 expandedWidth,
@@ -194,7 +198,9 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
                         .width);
 
         // Collapse requested
-        listener.onRailCollapseRequested(true);
+        listener.onRailCollapseStateChangeRequested(RailCollapseState.COLLAPSED);
+        assertEquals(
+                RailCollapseState.COLLAPSED, mCoordinator.getRailCollapseStateByUserForTesting());
         @Px
         int collapsedWidth =
                 ViewUtils.dpToPx(mActivity, VerticalTabsSideUiCoordinator.COLLAPSED_WIDTH_DP);
@@ -207,7 +213,9 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         verify(mMockSideUiCoordinator).updateUi(any(SideUiCoordinator.UiUpdateRequest.class));
 
         // Expand again
-        listener.onRailCollapseRequested(false);
+        listener.onRailCollapseStateChangeRequested(RailCollapseState.EXPANDED);
+        assertEquals(
+                RailCollapseState.EXPANDED, mCoordinator.getRailCollapseStateByUserForTesting());
         assertEquals(
                 expandedWidth,
                 mCoordinator.determineShowableSize(
@@ -272,40 +280,21 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    public void testDeferredStateApplication_OnTransitionBegun() {
-        verify(mMockTabListCoordinator).setCollapseListener(mCollapseListenerCaptor.capture());
-        RailCollapseListener listener = mCollapseListenerCaptor.getValue();
-
-        // Trigger collapse request
-        listener.onRailCollapseRequested(true);
-
-        // Verify setCollapsed is NOT called immediately
-        verify(mMockTabListCoordinator, never()).setCollapsed(any(Boolean.class));
-
-        // Trigger transition begun
-        mCoordinator.onTransitionBegun(new SideUiSpecs(0, 0));
-
-        // Verify setCollapsed is now called with true
-        verify(mMockTabListCoordinator).setCollapsed(true);
-    }
-
-    @Test
-    @SmallTest
     public void testDeferredStateApplication_OnSideUiSpecsChanged() {
         verify(mMockTabListCoordinator).setCollapseListener(mCollapseListenerCaptor.capture());
         RailCollapseListener listener = mCollapseListenerCaptor.getValue();
 
         // Trigger collapse request
-        listener.onRailCollapseRequested(true);
+        listener.onRailCollapseStateChangeRequested(RailCollapseState.COLLAPSED);
 
-        // Verify setCollapsed is NOT called immediately
-        verify(mMockTabListCoordinator, never()).setCollapsed(any(Boolean.class));
+        // Verify setRailCollapseState is NOT called immediately
+        verify(mMockTabListCoordinator, never()).setRailCollapseState(anyInt());
 
         // Trigger specs changed (static resize case)
         mCoordinator.onSideUiSpecsChanged(new SideUiSpecs(0, 0));
 
-        // Verify setCollapsed is now called with true
-        verify(mMockTabListCoordinator).setCollapsed(true);
+        // Verify setRailCollapseState is now called with COLLAPSED
+        verify(mMockTabListCoordinator).setRailCollapseState(RailCollapseState.COLLAPSED);
     }
 
     @Test
@@ -328,7 +317,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
         // onSideUiSpecsChanged should auto-collapse and disable collapse button
         mCoordinator.onSideUiSpecsChanged(new SideUiSpecs(collapsedWidth, 0));
-        verify(mMockTabListCoordinator).setCollapsed(true);
+        verify(mMockTabListCoordinator).setRailCollapseState(RailCollapseState.COLLAPSED);
         verify(mMockTabListCoordinator).setCollapseButtonEnabled(false);
 
         // When window is wide (>= 652dp), determineShowableSize returns expanded width
@@ -342,7 +331,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
         // onSideUiSpecsChanged should restore expanded state and re-enable collapse button
         mCoordinator.onSideUiSpecsChanged(new SideUiSpecs(expandedWidth, 0));
-        verify(mMockTabListCoordinator).setCollapsed(false);
+        verify(mMockTabListCoordinator).setRailCollapseState(RailCollapseState.EXPANDED);
         verify(mMockTabListCoordinator).setCollapseButtonEnabled(true);
     }
 

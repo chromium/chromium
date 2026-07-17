@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import androidx.appcompat.widget.TooltipCompat;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -60,23 +61,26 @@ public class VerticalTabListViewBinder {
                     VerticalTabUtils.getFloatResource(
                             view.getContext(), org.chromium.ui.R.dimen.default_disabled_alpha);
             collapseButton.setAlpha(enabled ? 1.0f : disabledAlpha);
-        } else if (VerticalTabListProperties.IS_COLLAPSED == propertyKey) {
-            updateCollapsedState(model.get(VerticalTabListProperties.IS_COLLAPSED), view);
+        } else if (VerticalTabListProperties.COLLAPSE_STATE == propertyKey) {
+            updateCollapsedState(model.get(VerticalTabListProperties.COLLAPSE_STATE), view);
         }
     }
 
-    private static void updateCollapsedState(boolean isCollapsed, View view) {
+    private static void updateCollapsedState(@RailCollapseState int railCollapseState, View view) {
+        boolean isCollapsed = railCollapseState == RailCollapseState.COLLAPSED;
+        boolean isManuallyExpanded = railCollapseState == RailCollapseState.EXPANDED;
+
         View collapseButton = view.findViewById(R.id.collapse_button);
         assert collapseButton != null;
         if (collapseButton instanceof ImageView imageView) {
             imageView.setImageResource(
-                    isCollapsed
-                            ? R.drawable.vertical_tabs_menu_expand
-                            : R.drawable.vertical_tabs_menu_collapse);
+                    isManuallyExpanded
+                            ? R.drawable.vertical_tabs_menu_collapse
+                            : R.drawable.vertical_tabs_menu_expand);
             int resId =
-                    isCollapsed
-                            ? R.string.accessibility_expand_vertical_tabs
-                            : R.string.accessibility_collapse_vertical_tabs;
+                    isManuallyExpanded
+                            ? R.string.accessibility_collapse_vertical_tabs
+                            : R.string.accessibility_expand_vertical_tabs;
             String tooltipText = view.getContext().getString(resId);
             imageView.setContentDescription(tooltipText);
             TooltipCompat.setTooltipText(imageView, tooltipText);

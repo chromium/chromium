@@ -108,6 +108,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionS
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorActionMetricGroups;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarExplicitTrigger;
@@ -290,7 +291,8 @@ public class TabListMediator implements TabListNotificationHandler {
         boolean supportsMessageCards();
 
         /** Returns a supplier for the rail collapsed state, if applicable. */
-        @Nullable NonNullObservableSupplier<Boolean> getIsRailCollapsedSupplier();
+        @Nullable NonNullObservableSupplier<@RailCollapseState Integer>
+                getRailCollapseStateSupplier();
     }
 
     /** Interface for toggling whether item animations will run on the recycler view. */
@@ -400,8 +402,9 @@ public class TabListMediator implements TabListNotificationHandler {
     private final TabGridItemTouchHelperCallback mTabGridItemTouchHelperCallback;
     private final @Nullable UndoBarExplicitTrigger mUndoBarExplicitTrigger;
     private final @Nullable SnackbarManager mSnackbarManager;
-    private final @Nullable NonNullObservableSupplier<Boolean> mIsRailCollapsedSupplier;
-    private final @Nullable Callback<Boolean> mIsRailCollapsedObserver;
+    private final @Nullable NonNullObservableSupplier<@RailCollapseState Integer>
+            mRailCollapseStateSupplier;
+    private final @Nullable Callback<@RailCollapseState Integer> mRailCollapseStateObserver;
     private final int mAllowedSelectionCount;
     private final boolean mIsSingleContextMode;
     private final @TabListLayoutType int mLayoutType;
@@ -1389,12 +1392,12 @@ public class TabListMediator implements TabListNotificationHandler {
                         mLayoutType,
                         onDragStateChangedListener);
 
-        mIsRailCollapsedSupplier = tabListConfigDelegate.getIsRailCollapsedSupplier();
-        if (mIsRailCollapsedSupplier != null) {
-            mIsRailCollapsedObserver = this::onRailCollapsedChanged;
-            mIsRailCollapsedSupplier.addSyncObserver(mIsRailCollapsedObserver);
+        mRailCollapseStateSupplier = tabListConfigDelegate.getRailCollapseStateSupplier();
+        if (mRailCollapseStateSupplier != null) {
+            mRailCollapseStateObserver = this::onRailCollapseStateChanged;
+            mRailCollapseStateSupplier.addSyncObserverAndCallIfNonNull(mRailCollapseStateObserver);
         } else {
-            mIsRailCollapsedObserver = null;
+            mRailCollapseStateObserver = null;
         }
     }
 
@@ -2033,8 +2036,8 @@ public class TabListMediator implements TabListNotificationHandler {
             mActivity.unregisterComponentCallbacks(mComponentCallbacks);
         }
 
-        if (mIsRailCollapsedSupplier != null && mIsRailCollapsedObserver != null) {
-            mIsRailCollapsedSupplier.removeObserver(mIsRailCollapsedObserver);
+        if (mRailCollapseStateSupplier != null && mRailCollapseStateObserver != null) {
+            mRailCollapseStateSupplier.removeObserver(mRailCollapseStateObserver);
         }
     }
 
@@ -2299,8 +2302,8 @@ public class TabListMediator implements TabListNotificationHandler {
             tabInfo.set(TabProperties.IS_COLLAPSED, true);
         }
 
-        if (mIsRailCollapsedSupplier != null) {
-            tabInfo.set(TabProperties.IS_RAIL_COLLAPSED, mIsRailCollapsedSupplier.get());
+        if (mRailCollapseStateSupplier != null) {
+            tabInfo.set(TabProperties.RAIL_COLLAPSE_STATE, mRailCollapseStateSupplier.get());
         }
 
         @UiType int tabUiType = mMode == TabListMode.BOTTOM_STRIP ? UiType.STRIP : UiType.TAB;
@@ -3769,10 +3772,10 @@ public class TabListMediator implements TabListNotificationHandler {
         }
     }
 
-    private void onRailCollapsedChanged(boolean isCollapsed) {
+    private void onRailCollapseStateChanged(@RailCollapseState int railCollapseState) {
         for (ListItem item : mModelList) {
             if (TabProperties.isTabOrTabGroup(item.model)) {
-                item.model.set(TabProperties.IS_RAIL_COLLAPSED, isCollapsed);
+                item.model.set(TabProperties.RAIL_COLLAPSE_STATE, railCollapseState);
             }
         }
     }

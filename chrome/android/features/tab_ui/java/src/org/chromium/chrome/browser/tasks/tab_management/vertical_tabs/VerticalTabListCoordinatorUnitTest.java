@@ -89,6 +89,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListCoordinator.RailCollapseListener;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -1039,64 +1040,77 @@ public class VerticalTabListCoordinatorUnitTest {
         assertEquals(View.VISIBLE, collapseButton.getVisibility());
 
         // Initially expanded
-        assertFalse(
+        assertEquals(
+                RailCollapseState.EXPANDED,
                 mCoordinator
                         .getContainerModelForTesting()
-                        .get(VerticalTabListProperties.IS_COLLAPSED));
+                        .get(VerticalTabListProperties.COLLAPSE_STATE));
         assertEquals(4, mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount());
 
         // Click collapse
         collapseButton.performClick();
 
         // Verify listener requested collapse, but model is NOT updated yet (deferred)
-        verify(mMockRailCollapseListener).onRailCollapseRequested(true);
-        assertFalse(
+        verify(mMockRailCollapseListener)
+                .onRailCollapseStateChangeRequested(RailCollapseState.COLLAPSED);
+        assertEquals(
+                RailCollapseState.EXPANDED,
                 mCoordinator
                         .getContainerModelForTesting()
-                        .get(VerticalTabListProperties.IS_COLLAPSED));
+                        .get(VerticalTabListProperties.COLLAPSE_STATE));
 
         // Apply the collapsed state manually (simulating the SideUiCoordinator transition flow)
-        mCoordinator.setCollapsed(true);
+        mCoordinator.setRailCollapseState(RailCollapseState.COLLAPSED);
 
         // Verify model is now updated
-        assertTrue(
+        assertEquals(
+                RailCollapseState.COLLAPSED,
                 mCoordinator
                         .getContainerModelForTesting()
-                        .get(VerticalTabListProperties.IS_COLLAPSED));
+                        .get(VerticalTabListProperties.COLLAPSE_STATE));
         assertEquals(1, mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount());
 
         // Click again to expand
         collapseButton.performClick();
 
         // Verify listener requested expand, but model is still collapsed
-        verify(mMockRailCollapseListener).onRailCollapseRequested(false);
-        assertTrue(
+        verify(mMockRailCollapseListener)
+                .onRailCollapseStateChangeRequested(RailCollapseState.EXPANDED);
+        assertEquals(
+                RailCollapseState.COLLAPSED,
                 mCoordinator
                         .getContainerModelForTesting()
-                        .get(VerticalTabListProperties.IS_COLLAPSED));
+                        .get(VerticalTabListProperties.COLLAPSE_STATE));
 
         // Apply the expanded state manually
-        mCoordinator.setCollapsed(false);
+        mCoordinator.setRailCollapseState(RailCollapseState.EXPANDED);
 
         // Verify model is now expanded
-        assertFalse(
+        assertEquals(
+                RailCollapseState.EXPANDED,
                 mCoordinator
                         .getContainerModelForTesting()
-                        .get(VerticalTabListProperties.IS_COLLAPSED));
+                        .get(VerticalTabListProperties.COLLAPSE_STATE));
         assertEquals(4, mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount());
     }
 
     @Test
     @SmallTest
-    public void testSetCollapsed_updatesRailCollapsedSupplier() {
+    public void testSetRailCollapseState_updatesRailCollapseStateSupplier() {
         createCoordinator();
-        assertFalse(mCoordinator.getIsRailCollapsedSupplierForTesting().get());
+        assertEquals(
+                RailCollapseState.EXPANDED,
+                (int) mCoordinator.getRailCollapseStateSupplierForTesting().get());
 
-        mCoordinator.setCollapsed(true);
-        assertTrue(mCoordinator.getIsRailCollapsedSupplierForTesting().get());
+        mCoordinator.setRailCollapseState(RailCollapseState.COLLAPSED);
+        assertEquals(
+                RailCollapseState.COLLAPSED,
+                (int) mCoordinator.getRailCollapseStateSupplierForTesting().get());
 
-        mCoordinator.setCollapsed(false);
-        assertFalse(mCoordinator.getIsRailCollapsedSupplierForTesting().get());
+        mCoordinator.setRailCollapseState(RailCollapseState.EXPANDED);
+        assertEquals(
+                RailCollapseState.EXPANDED,
+                (int) mCoordinator.getRailCollapseStateSupplierForTesting().get());
     }
 
     @Test
@@ -1121,7 +1135,7 @@ public class VerticalTabListCoordinatorUnitTest {
 
         // Attempting click when disabled should be ignored
         collapseButton.performClick();
-        verify(mMockRailCollapseListener, never()).onRailCollapseRequested(anyBoolean());
+        verify(mMockRailCollapseListener, never()).onRailCollapseStateChangeRequested(anyInt());
 
         mCoordinator.setCollapseButtonEnabled(true);
         assertTrue(

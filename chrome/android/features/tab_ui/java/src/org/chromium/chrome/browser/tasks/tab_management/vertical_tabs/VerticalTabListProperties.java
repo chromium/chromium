@@ -6,15 +6,41 @@ package org.chromium.chrome.browser.tasks.tab_management.vertical_tabs;
 
 import android.view.View;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /** Properties for the Vertical Tab List. */
 @NullMarked
 public class VerticalTabListProperties {
-    public static final PropertyModel.WritableBooleanPropertyKey IS_COLLAPSED =
-            new PropertyModel.WritableBooleanPropertyKey();
+    /** State of the Vertical Tab Rail layout. */
+    @IntDef({
+        RailCollapseState.EXPANDED,
+        RailCollapseState.COLLAPSED,
+        RailCollapseState.EXPANDED_FOR_HOVERING
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @Target({ElementType.TYPE_USE})
+    public @interface RailCollapseState {
+        /** The rail is fully expanded, showing tab favicons and titles. */
+        int EXPANDED = 0;
+
+        /** The rail is collapsed, showing only tab favicons. */
+        int COLLAPSED = 1;
+
+        /** The rail is temporarily expanded (e.g. during hover), overlaying content. */
+        int EXPANDED_FOR_HOVERING = 2;
+    }
+
+    public static final PropertyModel.WritableIntPropertyKey COLLAPSE_STATE =
+            new PropertyModel.WritableIntPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey IS_COLLAPSE_BUTTON_ENABLED =
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
@@ -25,10 +51,9 @@ public class VerticalTabListProperties {
             ON_NEW_TAB_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
             ON_COLLAPSE_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
-
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                IS_COLLAPSED,
+                COLLAPSE_STATE,
                 IS_COLLAPSE_BUTTON_ENABLED,
                 ON_GRID_CLICK_LISTENER,
                 ON_SEARCH_CLICK_LISTENER,

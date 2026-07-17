@@ -131,8 +131,7 @@ public class TabProperties {
 
     public static final WritableBooleanPropertyKey IS_COLLAPSED = new WritableBooleanPropertyKey();
 
-    public static final WritableBooleanPropertyKey IS_RAIL_COLLAPSED =
-            new WritableBooleanPropertyKey();
+    public static final WritableIntPropertyKey RAIL_COLLAPSE_STATE = new WritableIntPropertyKey();
 
     public static final WritableObjectPropertyKey<Float> DRAGGING_Y =
             new WritableObjectPropertyKey<>();
@@ -266,7 +265,7 @@ public class TabProperties {
                 VISIBILITY,
                 USE_SHRINK_CLOSE_ANIMATION,
                 ACTOR_UI_STATE,
-                IS_RAIL_COLLAPSED
+                RAIL_COLLAPSE_STATE
             };
 
     // TAB_ACTION_STATE must always be the first property as keys are iterated in order. TAB_ID must
@@ -335,9 +334,9 @@ public class TabProperties {
                 IS_INCOGNITO,
                 IS_LOADING,
                 IS_PINNED,
-                IS_RAIL_COLLAPSED,
                 IS_SELECTED,
                 MEDIA_INDICATOR,
+                RAIL_COLLAPSE_STATE,
                 TAB_ACTION_BUTTON_DATA,
                 TAB_CLICK_LISTENER,
                 TAB_CONTEXT_CLICK_LISTENER,
