@@ -1313,8 +1313,9 @@ export const ComposeboxEmbedderMixin =
         }
 
         async keepMenuOpenForMultiSelection() {
-          // Conditionally keep menu open only if context management is enabled.
-          // Otherwise, always keep menu open.
+          // When context management is enabled, selecting a tab closes the menu
+          // unless `keepMenuOpenOnTabSelect` is enabled.
+          // When context management is disabled, always keep the menu open.
           if (this.contextManagementInComposeboxEnabled &&
               !this.keepMenuOpenOnTabSelect) {
             return;

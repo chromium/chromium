@@ -1627,6 +1627,10 @@ suite('ComposeboxMixinTest', () => {
         assertFalse(element.hasCachedSubmittedTabsThisTurn);
       });
 
+  test('Omnibox keepMenuOpenOnTabSelect returns false by default', () => {
+    assertFalse(element.keepMenuOpenOnTabSelect);
+  });
+
   test(
       'keepMenuOpenForMultiSelection is gated by keepMenuOpenOnTabSelect',
       async () => {
@@ -1653,6 +1657,17 @@ suite('ComposeboxMixinTest', () => {
           get: () => true,
           configurable: true,
         });
+        await element.keepMenuOpenForMultiSelection();
+        assertTrue(openMenuCalled);
+
+        // Context management disabled: always keeps menu open regardless of
+        // gating flag
+        element.contextManagementInComposeboxEnabled = false;
+        Object.defineProperty(element, 'keepMenuOpenOnTabSelect', {
+          get: () => false,
+          configurable: true,
+        });
+        openMenuCalled = false;
         await element.keepMenuOpenForMultiSelection();
         assertTrue(openMenuCalled);
       });
