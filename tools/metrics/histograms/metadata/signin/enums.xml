@@ -723,6 +723,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ios/chrome/browser/signin/model/authentication_service.h:IOSProfileInitializationOutcome) -->
 
+<!-- LINT.IfChange(LaunchWebAuthFlowResult) -->
+
 <enum name="LaunchWebAuthFlowResult">
   <int value="0" label="Success"/>
   <int value="1" label="kOffTheRecord"/>
@@ -734,7 +736,10 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="kCannotCreateWindow"/>
   <int value="8" label="kInvalidURLScheme"/>
   <int value="9" label="kBrowserContextShutDown"/>
+  <int value="10" label="kWebAuthFlowInProgress"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/extensions/api/identity/identity_launch_web_auth_flow_function.h:LaunchWebAuthFlowResult) -->
 
 <!-- LINT.IfChange(MirrorHeaderEvent) -->
 

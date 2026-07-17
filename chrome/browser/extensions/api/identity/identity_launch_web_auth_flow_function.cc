@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "chrome/browser/extensions/api/identity/identity_api.h"
 #include "chrome/browser/extensions/api/identity/identity_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/identity.h"
@@ -76,6 +77,8 @@ std::string ErrorToString(IdentityLaunchWebAuthFlowFunction::Error error) {
       return identity_constants::kInvalidURLScheme;
     case IdentityLaunchWebAuthFlowFunction::Error::kBrowserContextShutDown:
       return identity_constants::kBrowserContextShutDown;
+    case IdentityLaunchWebAuthFlowFunction::Error::kWebAuthFlowInProgress:
+      return identity_constants::kWebAuthFlowInProgress;
   }
 }
 
@@ -144,6 +147,16 @@ ExtensionFunction::ResponseAction IdentityLaunchWebAuthFlowFunction::Run() {
           ->GetPrefs()
           ->GetDict(extensions::pref_names::kOAuthRedirectUrls)
           .FindList(extension()->id()));
+
+  auto* id_api = IdentityAPI::GetFactoryInstance()->Get(browser_context());
+  if (mode == WebAuthFlow::INTERACTIVE) {
+    auth_flow_tracker_ = id_api->StartTrackingWebAuthFlow(extension()->id());
+    if (!auth_flow_tracker_) {
+      RecordHistogramFunctionResult(Error::kWebAuthFlowInProgress);
+      return RespondNow(ExtensionFunction::Error(
+          ErrorToString(Error::kWebAuthFlowInProgress)));
+    }
+  }
 
   AddRef();  // Balanced in OnAuthFlowSuccess/Failure.
 

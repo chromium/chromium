@@ -8,9 +8,7 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
-namespace extensions {
-
-namespace identity_constants {
+namespace extensions::identity_constants {
 const char kInvalidClientId[] = "Invalid OAuth2 Client ID.";
 const char kInvalidScopes[] = "Invalid OAuth2 scopes.";
 const char kAuthFailure[] = "OAuth2 request failed: ";
@@ -39,8 +37,8 @@ const char kInvalidURLScheme[] =
     "The auth url has an invalid scheme. Only http:// and https:// schemes are "
     "allowed.";
 const char kBrowserContextShutDown[] = "The browser context has been shut down";
+const char kWebAuthFlowInProgress[] =
+    "Only one web auth flow is allowed at a time.";
 
 const int kCachedRemoteConsentTTLSeconds = 1;
-}  // namespace identity_constants
-
-}  // namespace extensions
+}  // namespace extensions::identity_constants

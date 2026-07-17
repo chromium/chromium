@@ -13,6 +13,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -111,6 +113,21 @@ void IdentityAPI::EraseStaleGaiaIdsForAllExtensions() {
       EraseGaiaIdForExtension(extension_id);
     }
   }
+}
+
+base::ScopedClosureRunner IdentityAPI::StartTrackingWebAuthFlow(
+    const extensions::ExtensionId& extension_id) {
+  if (active_web_auth_flows_.insert(extension_id).second) {
+    return base::ScopedClosureRunner(
+        base::BindOnce(&IdentityAPI::StopTrackingWebAuthFlow,
+                       weak_ptr_factory_.GetWeakPtr(), extension_id));
+  }
+  return base::ScopedClosureRunner();
+}
+
+void IdentityAPI::StopTrackingWebAuthFlow(
+    const extensions::ExtensionId& extension_id) {
+  active_web_auth_flows_.erase(extension_id);
 }
 
 void IdentityAPI::Shutdown() {

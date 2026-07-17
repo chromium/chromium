@@ -135,9 +135,12 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
-using extensions::ExtensionsAPIClient;
-using testing::_;
-using testing::Return;
+using ::base::Bucket;
+using ::base::BucketsAre;
+using ::extensions::ExtensionsAPIClient;
+using ::testing::_;
+using ::testing::HasSubstr;
+using ::testing::Return;
 
 namespace extensions {
 
@@ -4096,55 +4099,67 @@ INSTANTIATE_TEST_SUITE_P(
                               .redirect_url = "https://example.com/ab",
                               .expect_allowed = false}));
 
-// TODO(crbug.com/40259192): This test should be adapted after the
-// implementation of the bug. Multiple TODOs in the test to fix.
 IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTestWithBrowserTab,
-                       SimilarExtensionAndArgsShouldGenerateSameFlow) {
+                       ConcurrentCallsFromSameExtensionShouldFail) {
   std::unique_ptr<net::EmbeddedTestServer> https_server = LaunchHttpsServer();
   scoped_refptr<IdentityLaunchWebAuthFlowFunction> function1 =
       CreateLaunchWebAuthFlowFunction();
   scoped_refptr<IdentityLaunchWebAuthFlowFunction> function2 =
       CreateLaunchWebAuthFlowFunction();
+  scoped_refptr<IdentityLaunchWebAuthFlowFunction> function3 =
+      CreateLaunchWebAuthFlowFunction();
 
   const std::string extension_id("final_url");
   function1->InitFinalRedirectUrlsForTest(extension_id);
   function2->InitFinalRedirectUrlsForTest(extension_id);
+  function3->InitFinalRedirectUrlsForTest(extension_id);
 
   const GURL auth_url(https_server->GetURL("/consent_page.html"));
   const GURL final_url("https://" + extension_id + ".chromiumapp.org/");
 
-  // Same args used in both functions.
-  const std::string args =
+  const std::string interactive_args =
       "[{\"interactive\": true, \"url\": \"" + auth_url.spec() + "\"}]";
 
-  // Activate function1.
-  RunFunctionAndWaitForNavigation(function1.get(), auth_url, args);
-  // Activate function2.
-  RunFunctionAndWaitForNavigation(function2.get(), auth_url, args);
+  const GURL silent_auth_url(
+      https_server->GetURL("/interaction_required.html"));
+  const std::string silent_args =
+      "[{\"interactive\": false, \"url\": \"" + silent_auth_url.spec() + "\"}]";
+
+  // Activate function1. This will open the auth flow window.
+  RunFunctionAndWaitForNavigation(function1.get(), auth_url, interactive_args);
+
+  // Activate function2. This should fail because function1's flow is still
+  // active. RunFunctionAsync is used because no new window is expected.
+  RunFunctionAsync(function2.get(), interactive_args);
+  EXPECT_EQ(std::string(errors::kWebAuthFlowInProgress),
+            WaitForError(function2.get()));
+
+  // Activate function3 (silent). This should not fail with
+  // kWebAuthFlowInProgress, even though function1 is still active.
+  RunFunctionAsync(function3.get(), silent_args);
+  EXPECT_EQ(std::string(errors::kInteractionRequired),
+            WaitForError(function3.get()));
 
   content::WebContents* consent_web_contents1 =
       function1->GetWebAuthFlowForTesting()->web_contents();
-  content::WebContents* consent_web_contents2 =
-      function2->GetWebAuthFlowForTesting()->web_contents();
-  // TODO(crbug.com/40259192): These two should be equal, EXPECT_EQ.
-  EXPECT_NE(consent_web_contents1, consent_web_contents2);
 
-  // `SimulateUrlRedirect()` on first action should not affect the second
-  // function.
+  // `SimulateUrlRedirect()` on first action should complete the first function.
   SimulateUrlRedirect(extension_id, consent_web_contents1);
 
   base::Value output1;
   WaitForOneResult(function1.get(), &output1);
   EXPECT_FALSE(function1->GetWebAuthFlowForTesting());
-  // TODO(crbug.com/40259192): This should be EXPECT_FALSE.
-  EXPECT_TRUE(function2->GetWebAuthFlowForTesting());
-  EXPECT_TRUE(output1.GetString().find(final_url.spec()) != std::string::npos);
-  EXPECT_TRUE(output1.GetString().find("#access_token="));
+  EXPECT_THAT(output1.GetString(), HasSubstr(final_url.spec()));
 
-  // TODO(crbug.com/40259192): 2 samples should be recorded instead of 1.
-  histogram_tester()->ExpectUniqueSample(
-      kLaunchWebAuthFlowResultHistogramName,
-      IdentityLaunchWebAuthFlowFunction::Error::kNone, 1);
+  EXPECT_THAT(
+      histogram_tester()->GetAllSamples(kLaunchWebAuthFlowResultHistogramName),
+      BucketsAre(
+          Bucket(IdentityLaunchWebAuthFlowFunction::Error::kNone, 1),
+          Bucket(
+              IdentityLaunchWebAuthFlowFunction::Error::kWebAuthFlowInProgress,
+              1),
+          Bucket(IdentityLaunchWebAuthFlowFunction::Error::kInteractionRequired,
+                 1)));
 }
 
 IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTestWithBrowserTab,
@@ -4152,8 +4167,8 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTestWithBrowserTab,
   std::unique_ptr<net::EmbeddedTestServer> https_server = LaunchHttpsServer();
   scoped_refptr<IdentityLaunchWebAuthFlowFunction> function1 =
       CreateLaunchWebAuthFlowFunction();
-  scoped_refptr<IdentityLaunchWebAuthFlowFunction> function2 =
-      CreateLaunchWebAuthFlowFunction();
+  auto function2 = base::MakeRefCounted<IdentityLaunchWebAuthFlowFunction>();
+  function2->set_extension(ExtensionBuilder("Test2").Build());
 
   const std::string extension_id1("extension1");
   function1->InitFinalRedirectUrlsForTest(extension_id1);
@@ -4189,74 +4204,20 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTestWithBrowserTab,
   // `function2` state should remain.
   EXPECT_EQ(current_consent_url2, consent_web_contents2->GetURL().spec());
   EXPECT_FALSE(function1->GetWebAuthFlowForTesting());
-  EXPECT_TRUE(output1.GetString().find(final_url1.spec()) != std::string::npos);
+  EXPECT_THAT(output1.GetString(), HasSubstr(final_url1.spec()));
 
   SimulateUrlRedirect(extension_id2, consent_web_contents2);
 
   base::Value output2;
   WaitForOneResult(function2.get(), &output2);
   EXPECT_FALSE(function2->GetWebAuthFlowForTesting());
-  EXPECT_TRUE(output2.GetString().find(final_url2.spec()) != std::string::npos);
+  EXPECT_THAT(output2.GetString(), HasSubstr(final_url2.spec()));
 
   histogram_tester()->ExpectUniqueSample(
       kLaunchWebAuthFlowResultHistogramName,
       IdentityLaunchWebAuthFlowFunction::Error::kNone, 2);
 }
 
-// TODO(crbug.com/40259192): This test should be adapted after the
-// implementation of the bug.
-IN_PROC_BROWSER_TEST_F(
-    LaunchWebAuthFlowFunctionTestWithBrowserTab,
-    ExtensionWithDifferentArgsShouldGenerateDifferentFlowsInAQueue) {
-  std::unique_ptr<net::EmbeddedTestServer> https_server = LaunchHttpsServer();
-  scoped_refptr<IdentityLaunchWebAuthFlowFunction> function1 =
-      CreateLaunchWebAuthFlowFunction();
-  scoped_refptr<IdentityLaunchWebAuthFlowFunction> function2 =
-      CreateLaunchWebAuthFlowFunction();
-
-  const std::string extension_id("extension");
-  function1->InitFinalRedirectUrlsForTest(extension_id);
-
-  const GURL auth_url1(https_server->GetURL("/consent_page.html"));
-  const GURL auth_url2(https_server->GetURL("/interaction_required.html"));
-  const GURL final_url("https://" + extension_id + ".chromiumapp.org/");
-
-  const std::string args1 =
-      "[{\"interactive\": true, \"url\": \"" + auth_url1.spec() + "\"}]";
-  const std::string args2 =
-      "[{\"interactive\": true, \"url\": \"" + auth_url2.spec() + "\"}]";
-
-  RunFunctionAndWaitForNavigation(function1.get(), auth_url1, args1);
-  RunFunctionAndWaitForNavigation(function2.get(), auth_url2, args2);
-
-  content::WebContents* consent_web_contents1 =
-      function1->GetWebAuthFlowForTesting()->web_contents();
-  content::WebContents* consent_web_contents2 =
-      function2->GetWebAuthFlowForTesting()->web_contents();
-  // TODO(crbug.com/40259192): `function2->GetWebAuthFlowForTesting()` should be
-  // null after the changes since it would be in a queue.
-  EXPECT_NE(consent_web_contents1, consent_web_contents2);
-
-  const std::string& current_consent_url2 =
-      consent_web_contents2->GetURL().spec();
-
-  // SimulateConsent on first action should not affect the second function.
-  SimulateUrlRedirect(extension_id, consent_web_contents1);
-
-  base::Value output1;
-  WaitForOneResult(function1.get(), &output1);
-  // `function2` state should remain.
-  EXPECT_EQ(current_consent_url2, consent_web_contents2->GetURL().spec());
-  EXPECT_FALSE(function1->GetWebAuthFlowForTesting());
-  EXPECT_TRUE(output1.GetString().find(final_url.spec()) != std::string::npos);
-
-  // TODO(crbug.com/40259192): function2 should now run, check for that once the
-  // queue is implemented.
-
-  histogram_tester()->ExpectUniqueSample(
-      kLaunchWebAuthFlowResultHistogramName,
-      IdentityLaunchWebAuthFlowFunction::Error::kNone, 1);
-}
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 class ClearAllCachedAuthTokensFunctionTest : public AsyncExtensionBrowserTest {

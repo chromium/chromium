@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/extensions/api/identity/launch_web_auth_flow_delegate.h"
 #include "chrome/browser/extensions/api/identity/web_auth_flow.h"
 #include "extensions/browser/extension_function.h"
@@ -27,6 +28,7 @@ class IdentityLaunchWebAuthFlowFunction : public ExtensionFunction,
   // exposure.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  // LINT.IfChange(LaunchWebAuthFlowResult)
   enum class Error {
     kNone = 0,
     kOffTheRecord = 1,
@@ -38,8 +40,10 @@ class IdentityLaunchWebAuthFlowFunction : public ExtensionFunction,
     kCannotCreateWindow = 7,
     kInvalidURLScheme = 8,
     kBrowserContextShutDown = 9,
-    kMaxValue = kBrowserContextShutDown,
+    kWebAuthFlowInProgress = 10,
+    kMaxValue = kWebAuthFlowInProgress,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:LaunchWebAuthFlowResult)
 
   IdentityLaunchWebAuthFlowFunction();
 
@@ -83,6 +87,7 @@ class IdentityLaunchWebAuthFlowFunction : public ExtensionFunction,
   GURL default_origin_;
   std::vector<GURL> final_redirect_urls_;
   std::unique_ptr<LaunchWebAuthFlowDelegate> delegate_;
+  base::ScopedClosureRunner auth_flow_tracker_;
 };
 
 }  // namespace extensions

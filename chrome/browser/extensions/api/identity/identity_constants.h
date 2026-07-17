@@ -9,9 +9,7 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
-namespace extensions {
-
-namespace identity_constants {
+namespace extensions::identity_constants {
 extern const char kInvalidClientId[];
 extern const char kInvalidScopes[];
 extern const char kAuthFailure[];
@@ -31,10 +29,9 @@ extern const char kCannotSetRemoteConsentResolutionCookies[];
 extern const char kCannotCreateWindow[];
 extern const char kInvalidURLScheme[];
 extern const char kBrowserContextShutDown[];
+extern const char kWebAuthFlowInProgress[];
 
 extern const int kCachedRemoteConsentTTLSeconds;
-}  // namespace identity_constants
-
-}  // namespace extensions
+}  // namespace extensions::identity_constants
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_IDENTITY_IDENTITY_CONSTANTS_H_
