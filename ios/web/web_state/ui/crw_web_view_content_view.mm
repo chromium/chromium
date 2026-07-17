@@ -204,20 +204,39 @@ NSString* const kPDFMimeType = @"application/pdf";
 }
 
 - (void)setObscuredInsets:(UIEdgeInsets)obscuredInsets {
-  if (UIEdgeInsetsEqualToEdgeInsets(_obscuredInsets, obscuredInsets)) {
+  BOOL insetsEqual =
+      UIEdgeInsetsEqualToEdgeInsets(_obscuredInsets, obscuredInsets);
+  BOOL scrollInsetsEqual = YES;
+  if (self.webViewResizingType == WebViewResizingType::kContentInset) {
+    scrollInsetsEqual =
+        UIEdgeInsetsEqualToEdgeInsets(_scrollView.contentInset, obscuredInsets);
+  }
+  if (insetsEqual && scrollInsetsEqual) {
     return;
   }
   switch (self.webViewResizingType) {
-    case WebViewResizingType::kContentInset:
+    case WebViewResizingType::kContentInset: {
+      UIEdgeInsets oldInsets = _scrollView.contentInset;
       _scrollView.contentInsetAdjustmentBehavior =
           UIScrollViewContentInsetAdjustmentNever;
       _scrollView.contentInset = obscuredInsets;
+      CGFloat topDelta = obscuredInsets.top - oldInsets.top;
+      // If the top inset changed, and the scroll view was scrolled to the very
+      // top, adjust the contentOffset to the new top boundary to prevent the
+      // page from appearing pre-scrolled.
+      if (![self.mimeType isEqualToString:kPDFMimeType] && topDelta != 0 &&
+          fabs(_scrollView.contentOffset.y - (-oldInsets.top)) < 0.1) {
+        CGPoint offset = _scrollView.contentOffset;
+        offset.y = -obscuredInsets.top;
+        _scrollView.contentOffset = offset;
+      }
       if (@available(iOS 26, *)) {
         [_webView setObscuredContentInsets:obscuredInsets];
       } else {
         NOTREACHED();
       }
       break;
+    }
     case WebViewResizingType::kFrame:
       if ([self.mimeType isEqualToString:kPDFMimeType]) {
         _scrollView.contentInsetAdjustmentBehavior =
