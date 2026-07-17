@@ -356,7 +356,7 @@ TEST_F(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Blocked) {
   base::RunLoop run_loop;
   validator.SetDoneClosure(run_loop.QuitClosure());
 
-    validator.ExpectProtoBasedUrlFilteringInterstitialEvent(expected_event);
+  validator.ExpectUrlFilteringInterstitialEvent(expected_event);
 
   safe_browsing::RTLookupResponse response;
   auto* threat_info = response.add_threat_info();
@@ -401,7 +401,7 @@ TEST_F(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Warned) {
   base::RunLoop run_loop;
   validator.SetDoneClosure(run_loop.QuitClosure());
 
-    validator.ExpectProtoBasedUrlFilteringInterstitialEvent(expected_event);
+  validator.ExpectUrlFilteringInterstitialEvent(expected_event);
 
   safe_browsing::RTLookupResponse response;
   auto* threat_info = response.add_threat_info();
@@ -447,7 +447,7 @@ TEST_F(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Bypassed) {
   base::RunLoop run_loop;
   validator.SetDoneClosure(run_loop.QuitClosure());
 
-    validator.ExpectProtoBasedUrlFilteringInterstitialEvent(expected_event);
+  validator.ExpectUrlFilteringInterstitialEvent(expected_event);
 
   safe_browsing::RTLookupResponse response;
   auto* threat_info = response.add_threat_info();
@@ -491,7 +491,7 @@ TEST_F(IOSReportingEventRouterTest,
   base::RunLoop run_loop;
   validator.SetDoneClosure(run_loop.QuitClosure());
 
-    validator.ExpectProtoBasedUrlFilteringInterstitialEvent(expected_event);
+  validator.ExpectUrlFilteringInterstitialEvent(expected_event);
 
   safe_browsing::RTLookupResponse response;
   auto* threat_info = response.add_threat_info();

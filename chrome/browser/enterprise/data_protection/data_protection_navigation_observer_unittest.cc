@@ -300,7 +300,7 @@ TEST_F(DataProtectionNavigationObserverTest, MatchedAuditRuleHasEvent) {
   base::RunLoop run_loop;
   validator.SetDoneClosure(run_loop.QuitClosure());
 
-  validator.ExpectProtoBasedUrlFilteringInterstitialEvent(expected_event);
+  validator.ExpectUrlFilteringInterstitialEvent(expected_event);
 
   lookup_service_.SetShouldHaveMatchedRule(true);
   lookup_service_.SetWatermarkTextForURL(GURL("https://example.com/"),
@@ -1051,7 +1051,7 @@ TEST_P(OrderedDataProtectionNavigationObserverTest, TestWatermarkTextUpdated) {
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   base::RunLoop run_loop;
   validator.SetDoneClosure(run_loop.QuitClosure());
-  validator.ExpectProtoBasedUrlFilteringInterstitialEvent(expected_event);
+  validator.ExpectUrlFilteringInterstitialEvent(expected_event);
 
   base::test::TestFuture<const UrlSettings&> future;
   FakeDataProtectionNavigationController controller(

@@ -365,7 +365,7 @@ TEST_F(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Blocked) {
   *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
   expected_event.set_web_app_signed_in_account(kFakeActiveUserEmail);
 
-    validator.ExpectProtoBasedUrlFilteringInterstitialEvent(expected_event);
+  validator.ExpectUrlFilteringInterstitialEvent(expected_event);
 
   safe_browsing::RTLookupResponse response;
   auto* threat_info = response.add_threat_info();
@@ -410,7 +410,7 @@ TEST_F(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Warned) {
   *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
   expected_event.set_web_app_signed_in_account(kFakeActiveUserEmail);
 
-    validator.ExpectProtoBasedUrlFilteringInterstitialEvent(expected_event);
+  validator.ExpectUrlFilteringInterstitialEvent(expected_event);
 
   safe_browsing::RTLookupResponse response;
   auto* threat_info = response.add_threat_info();
@@ -458,7 +458,7 @@ TEST_F(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Bypassed) {
   *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
   expected_event.set_web_app_signed_in_account(kFakeActiveUserEmail);
 
-    validator.ExpectProtoBasedUrlFilteringInterstitialEvent(expected_event);
+  validator.ExpectUrlFilteringInterstitialEvent(expected_event);
 
   safe_browsing::RTLookupResponse response;
   auto* threat_info = response.add_threat_info();
@@ -506,7 +506,7 @@ TEST_F(ReportingEventRouterTest,
   *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
   expected_event.set_web_app_signed_in_account(kFakeActiveUserEmail);
 
-    validator.ExpectProtoBasedUrlFilteringInterstitialEvent(expected_event);
+  validator.ExpectUrlFilteringInterstitialEvent(expected_event);
 
   safe_browsing::RTLookupResponse response;
   auto* threat_info = response.add_threat_info();

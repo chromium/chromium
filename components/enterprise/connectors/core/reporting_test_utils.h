@@ -17,10 +17,6 @@
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 
-#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
-#include "components/enterprise/data_controls/core/browser/verdict.h"
-#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
-
 class PrefService;
 
 namespace policy {
@@ -39,28 +35,9 @@ class EventReportValidatorBase {
 
   void ExpectNoReport();
 
-  // TODO(crbug.com/396439420): Rename this method and delete the other two url
-  // filtering event validation methods
-  void ExpectProtoBasedUrlFilteringInterstitialEvent(
+  void ExpectUrlFilteringInterstitialEvent(
       chrome::cros::reporting::proto::UrlFilteringInterstitialEvent
           expected_urlf_event);
-
-  void ExpectURLFilteringInterstitialEvent(
-      chrome::cros::reporting::proto::UrlFilteringInterstitialEvent
-          expected_urlf_event);
-
-  void ExpectURLFilteringInterstitialEventWithReferrers(
-      chrome::cros::reporting::proto::UrlFilteringInterstitialEvent
-          expected_urlf_event);
-
-  // TODO(crbug.com/396438091): Delete this method once proto migration is
-  // complete.
-  void ExpectLoginEvent(const std::string& expected_url,
-                        const bool expected_is_federated,
-                        const std::string& expected_federated_origin,
-                        const std::string& expected_profile_username,
-                        const std::string& expected_profile_identifier,
-                        const std::u16string& expected_login_username);
 
   void ExpectLoginEvent(
       chrome::cros::reporting::proto::LoginEvent expected_login_event);
@@ -69,69 +46,17 @@ class EventReportValidatorBase {
       chrome::cros::reporting::proto::PasswordBreachEvent
           expected_password_breach_event);
 
-  // TODO(crbug.com/396436374): Delete this method once proto migration is
-  // complete.
-  void ExpectPasswordBreachEvent(
-      const std::string& expected_trigger,
-      const std::vector<std::pair<std::string, std::u16string>>&
-          expected_identities,
-      const std::string& expected_profile_username,
-      const std::string& expected_profile_identifier);
-
   void ExpectPasswordReuseEvent(
       chrome::cros::reporting::proto::SafeBrowsingPasswordReuseEvent
           expected_password_reuse_event);
-
-  // TODO(crbug.com/396437152): Delete this method once proto migration is
-  // complete.
-  void ExpectPasswordReuseEvent(const std::string& expected_url,
-                                const std::string& expected_username,
-                                bool expected_is_phishing_url,
-                                const std::string& event_result,
-                                const std::string& expected_profile_username,
-                                const std::string& expected_profile_identifier);
 
   void ExpectPasswordChangedEvent(
       chrome::cros::reporting::proto::SafeBrowsingPasswordChangedEvent
           expected_password_changed_event);
 
-  // TODO(crbug.com/396437063): Delete this method once proto migration is
-  // complete.
-  void ExpectPassowrdChangedEvent(
-      const std::string& expected_username,
-      const std::string& expected_profile_username,
-      const std::string& expected_profile_identifier);
-
   void ExpectSecurityInterstitialEvent(
       chrome::cros::reporting::proto::SafeBrowsingInterstitialEvent
           expected_interstitial_event);
-
-  // TODO(crbug.com/396437371):  Delete this method once proto migration is
-  // complete.
-  void ExpectSecurityInterstitialEventWithReferrers(
-      const std::string& expected_url,
-      const std::string& expected_reason,
-      const std::string& expected_profile_username,
-      const std::string& expected_profile_identifier,
-      const std::string& result,
-      const bool expected_click_through,
-      int expected_net_error_code,
-      const ::chrome::cros::reporting::proto::UrlInfo& expected_referrers);
-
-#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
-  void ExpectDataControlsSensitiveDataEvent(
-      const std::string& expected_url,
-      const std::string& expected_tab_url,
-      const std::string& expected_source,
-      const std::string& expected_destination,
-      const std::set<std::string>* expected_mimetypes,
-      const std::string& expected_trigger,
-      const data_controls::Verdict::TriggeredRules& triggered_rules,
-      const std::string& expected_result,
-      const std::string& expected_profile_username,
-      const std::string& expected_profile_identifier,
-      int64_t expected_content_size);
-#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
   void ExpectSensitiveDataEvent(
       chrome::cros::reporting::proto::DlpSensitiveDataEvent
@@ -159,27 +84,6 @@ class EventReportValidatorBase {
   void ValidateField(const base::DictValue* value,
                      const std::string& field_key,
                      int64_t expected_value);
-  void ValidateThreatInfo(
-      const base::DictValue* value,
-      const chrome::cros::reporting::proto::TriggeredRuleInfo
-          expected_rule_info);
-  void ValidateReferrer(
-      const base::DictValue* value,
-      const chrome::cros::reporting::proto::UrlInfo expected_referrer);
-  void ValidateFederatedOrigin(const base::DictValue* value,
-                               const std::string& expected_federated_origin);
-  void ValidateIdentities(
-      const base::DictValue* value,
-      const std::vector<std::pair<std::string, std::u16string>>&
-          expected_identities);
-  void ValidateMimeType(const base::DictValue* value,
-                        const std::set<std::string>* expected_mimetypes);
-
-#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
-  void ValidateDataControlsTriggerdRules(
-      const base::DictValue* value,
-      const data_controls::Verdict::TriggeredRules& expected_triggered_rules);
-#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
   raw_ptr<policy::MockCloudPolicyClient> client_;
   base::RepeatingClosure done_closure_;
