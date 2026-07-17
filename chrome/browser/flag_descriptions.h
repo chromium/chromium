@@ -8527,6 +8527,10 @@ inline constexpr char kGlicHotkeyLocalScopeName[] = "Glic Hotkey Local Scope";
 inline constexpr char kGlicHotkeyLocalScopeDescription[] =
     "Limits the Glic global hotkey to local scope (active browser window).";
 
+inline constexpr char kGlicTabGroupsName[] = "Glic Tab Groups";
+inline constexpr char kGlicTabGroupsDescription[] =
+    "Enables Glic to integrate with tab groups.";
+
 inline constexpr char kEnableGenericOidcAuthProfileManagementName[] =
     "Enable generic OIDC profile management";
 inline constexpr char kEnableGenericOidcAuthProfileManagementDescription[] =

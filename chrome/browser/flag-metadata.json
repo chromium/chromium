@@ -5640,6 +5640,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "glic-tab-groups",
+    "owners": [
+      "bryantchandler@chromium.org",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "glic-toolbar-button-location",
     "owners": [
       "lugli@google.com",

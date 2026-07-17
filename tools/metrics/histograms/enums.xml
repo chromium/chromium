@@ -17801,6 +17801,7 @@ from previous Chrome versions.
   <int value="1023777155" label="AutocorrectParamsTuning:enabled"/>
   <int value="1023849676" label="SmdsDbusMigration:enabled"/>
   <int value="1024560563" label="EnableFuzzyAppSearch:enabled"/>
+  <int value="1025089469" label="GlicTabGroups:disabled"/>
   <int value="1025383624" label="FilesLocalImageSearch:enabled"/>
   <int value="1026169964" label="MicMuteNotifications:enabled"/>
   <int value="1026981579" label="TLS13HardeningForLocalAnchors:enabled"/>
@@ -18985,6 +18986,7 @@ from previous Chrome versions.
   <int value="1392400382" label="EnableAIRewriterAPI:disabled"/>
   <int value="1392836587" label="DesktopPWAsElidedExtensionsMenu:disabled"/>
   <int value="1392935139" label="KidsManagementUrlClassification:enabled"/>
+  <int value="1392999416" label="GlicTabGroups:enabled"/>
   <int value="1393413889" label="SeparatePointingStickSettings:disabled"/>
   <int value="1393500952" label="EnableVirtualKeyboardUkm:disabled"/>
   <int value="1393722373" label="SaveEditedPDFForm:disabled"/>
