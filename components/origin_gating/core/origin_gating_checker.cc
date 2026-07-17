@@ -16,6 +16,7 @@
 #include "base/thread_annotations.h"
 #include "components/origin_gating/core/origin_gating_cache.h"
 #include "components/origin_gating/core/types.h"
+#include "net/base/url_util.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -41,6 +42,17 @@ Decision EvaluateAllowSameOrigin(const url::Origin& source,
                                  const url::Origin& destination) {
   return source.IsSameOriginWith(destination) ? Decision::kAllowed
                                               : Decision::kNoDecision;
+}
+
+Decision EvaluateAllowHttpLocalhost(const GURL& destination) {
+  return net::IsLocalhost(destination) && destination.SchemeIsHTTPOrHTTPS()
+             ? Decision::kAllowed
+             : Decision::kNoDecision;
+}
+
+Decision EvaluateAllowAboutBlank(const GURL& destination) {
+  return destination.IsAboutBlank() ? Decision::kAllowed
+                                    : Decision::kNoDecision;
 }
 
 Decision EvaluateForbidIpAddress(const GURL& destination) {
@@ -134,6 +146,23 @@ void OriginGatingChecker::RunNextPredicate(
               case DecisionSource::kAllowSameOrigin: {
                 Decision decision = EvaluateAllowSameOrigin(
                     input.source_origin, input.destination_origin);
+                OnPredicateVerdict(std::move(context), remaining_predicates,
+                                   DecisionAttribution(source_enum),
+                                   std::move(input), std::move(callback),
+                                   decision);
+                break;
+              }
+              case DecisionSource::kAllowHttpLocalhost: {
+                Decision decision =
+                    EvaluateAllowHttpLocalhost(input.destination);
+                OnPredicateVerdict(std::move(context), remaining_predicates,
+                                   DecisionAttribution(source_enum),
+                                   std::move(input), std::move(callback),
+                                   decision);
+                break;
+              }
+              case DecisionSource::kAllowAboutBlank: {
+                Decision decision = EvaluateAllowAboutBlank(input.destination);
                 OnPredicateVerdict(std::move(context), remaining_predicates,
                                    DecisionAttribution(source_enum),
                                    std::move(input), std::move(callback),

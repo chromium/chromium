@@ -408,6 +408,117 @@ TEST_F(OriginGatingCheckerTest,
   EXPECT_EQ(decision.attribution, DecisionSource::kRequireHttpsOrHttp);
 }
 
+TEST_F(OriginGatingCheckerTest,
+       BuiltInPredicate_AllowHttpLocalhost_HttpLocalhostAllowed) {
+  OriginGatingChecker checker(
+      delegate_,
+      OriginGatingConfiguration(
+          {{DecisionSource::kAllowHttpLocalhost, GateableEventSet::All()}},
+          /*use_site_keyed_cache=*/false));
+
+  GURL source("https://example.com");
+  GURL destination("http://localhost/path");
+
+  EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(_, _, _, _, _))
+      .Times(0);
+  EXPECT_CALL(delegate_, OnNoVerdict(_, _, _, _, _, _)).Times(0);
+
+  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
+      checker, nullptr, source, destination);
+
+  EXPECT_TRUE(decision.is_allowed);
+  EXPECT_EQ(decision.attribution, DecisionSource::kAllowHttpLocalhost);
+}
+
+TEST_F(OriginGatingCheckerTest,
+       BuiltInPredicate_AllowHttpLocalhost_NonHttpSchemeFallsBack) {
+  OriginGatingChecker checker(
+      delegate_,
+      OriginGatingConfiguration(
+          {{DecisionSource::kAllowHttpLocalhost, GateableEventSet::All()}},
+          /*use_site_keyed_cache=*/false));
+
+  GURL source("https://example.com");
+  GURL destination("ws://localhost/path");
+
+  SetUpDelegateExpectations(source, destination,
+                            /*requires_user_confirmation=*/false,
+                            /*is_allowed=*/true,
+                            /*did_prompt_user=*/false);
+
+  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
+      checker, nullptr, source, destination);
+
+  EXPECT_TRUE(decision.is_allowed);
+  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+}
+
+TEST_F(OriginGatingCheckerTest,
+       BuiltInPredicate_AllowHttpLocalhost_NonLocalhostFallsBack) {
+  OriginGatingChecker checker(
+      delegate_,
+      OriginGatingConfiguration(
+          {{DecisionSource::kAllowHttpLocalhost, GateableEventSet::All()}},
+          /*use_site_keyed_cache=*/false));
+
+  GURL source("https://example.com");
+  GURL destination("http://foo.com/path");
+
+  SetUpDelegateExpectations(source, destination,
+                            /*requires_user_confirmation=*/false,
+                            /*is_allowed=*/true,
+                            /*did_prompt_user=*/false);
+
+  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
+      checker, nullptr, source, destination);
+
+  EXPECT_TRUE(decision.is_allowed);
+  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+}
+
+TEST_F(OriginGatingCheckerTest,
+       BuiltInPredicate_AllowAboutBlank_AboutBlankAllowed) {
+  OriginGatingChecker checker(
+      delegate_, OriginGatingConfiguration({{DecisionSource::kAllowAboutBlank,
+                                             GateableEventSet::All()}},
+                                           /*use_site_keyed_cache=*/false));
+
+  GURL source("https://example.com");
+  GURL destination("about:blank");
+
+  EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(_, _, _, _, _))
+      .Times(0);
+  EXPECT_CALL(delegate_, OnNoVerdict(_, _, _, _, _, _)).Times(0);
+
+  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
+      checker, nullptr, source, destination);
+
+  EXPECT_TRUE(decision.is_allowed);
+  EXPECT_EQ(decision.attribution, DecisionSource::kAllowAboutBlank);
+}
+
+TEST_F(OriginGatingCheckerTest,
+       BuiltInPredicate_AllowAboutBlank_NonBlankFallsBack) {
+  OriginGatingChecker checker(
+      delegate_, OriginGatingConfiguration({{DecisionSource::kAllowAboutBlank,
+                                             GateableEventSet::All()}},
+                                           /*use_site_keyed_cache=*/false));
+
+  GURL source("https://example.com");
+  GURL destination("https://foo.com");
+
+  SetUpDelegateExpectations(source, destination,
+                            /*requires_user_confirmation=*/false,
+                            /*is_allowed=*/true,
+                            /*did_prompt_user=*/false);
+
+  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
+      checker, nullptr, source, destination);
+
+  EXPECT_TRUE(decision.is_allowed);
+  EXPECT_EQ(decision.attribution, DecisionSource::kNoVerdict);
+}
+
 TEST_F(OriginGatingCheckerTest, BuiltInPredicate_EnterprisePolicy_Allowed) {
   OriginGatingChecker checker(
       delegate_, OriginGatingConfiguration({{DecisionSource::kEnterprisePolicy,

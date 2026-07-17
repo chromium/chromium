@@ -344,6 +344,8 @@ ExecutionEngine::GatingDecision MapGatingDecisionToEngineDecision(
         case origin_gating::DecisionSource::kCacheWithoutUserConfirmation:
         case origin_gating::DecisionSource::kNoVerdict:
           return ExecutionEngine::GatingDecision::kNeedsAsyncCheck;
+        case origin_gating::DecisionSource::kAllowHttpLocalhost:
+        case origin_gating::DecisionSource::kAllowAboutBlank:
         case origin_gating::DecisionSource::kEnterprisePolicy:
         case origin_gating::DecisionSource::kForbidIpAddress:
         case origin_gating::DecisionSource::kRequireHttps:
@@ -488,6 +490,12 @@ ExecutionEngine::ExecutionEngine(
           *this,
           origin_gating::OriginGatingConfiguration(
               {
+                  {origin_gating::DecisionSource::kAllowHttpLocalhost,
+                   {origin_gating::GateableEvent::kNavigationRequest,
+                    origin_gating::GateableEvent::kPageAction}},
+                  {origin_gating::DecisionSource::kAllowAboutBlank,
+                   {origin_gating::GateableEvent::kNavigationRequest,
+                    origin_gating::GateableEvent::kPageAction}},
                   // Allow insecure HTTP for navigation requests, as in
                   // practice sites may have HTTP links that will get upgraded.
                   // Rejecting HTTP URLs before this can happen would be too

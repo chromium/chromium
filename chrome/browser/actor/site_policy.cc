@@ -27,7 +27,6 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
-#include "net/base/url_util.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -91,13 +90,6 @@ void MayActOnUrlInternal(const GURL& url,
                          NoVerdictContinuation resolve_no_verdict,
                          std::unique_ptr<DecisionWrapper> decision_wrapper) {
   CHECK(resolve_no_verdict);
-
-  if ((net::IsLocalhost(url) && url.SchemeIsHTTPOrHTTPS()) ||
-      url.IsAboutBlank()) {
-    decision_wrapper->Accept();
-    return;
-  }
-
   std::move(resolve_no_verdict)
       .Run(url,
            base::BindOnce(

@@ -48,6 +48,11 @@ enum class DecisionSource {
   // Predicate that allows if the origins in question are same-origin with each
   // other.
   kAllowSameOrigin,
+  // Predicate that allows if the destination is a localhost URL with an http or
+  // https scheme.
+  kAllowHttpLocalhost,
+  // Predicate that allows if the destination is about:blank.
+  kAllowAboutBlank,
   // Predicate that allows if the user has already confirmed the origin in
   // question.
   kCacheWithUserConfirmation,
