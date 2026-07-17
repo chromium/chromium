@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 // <if expr="_google_chrome">
 import './internal/icons.html.js';
-
 // </if>
 
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+
+import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assertNotReachedCase} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
@@ -23,6 +24,12 @@ import {getCss} from './toolbar_button.css.js';
 import {getContextMenuPosition, getContextMenuSourceType, HelpBubbleAnchorMixin, setHasHelpBubble} from './toolbar_button.js';
 
 const PinnedToolbarActionElementBase = HelpBubbleAnchorMixin(CrLitElement);
+
+export interface PinnedToolbarActionElement {
+  $: {
+    button: CrIconButtonElement,
+  };
+}
 
 export class PinnedToolbarActionElement extends PinnedToolbarActionElementBase {
   static get is() {
@@ -153,10 +160,7 @@ export class PinnedToolbarActionElement extends PinnedToolbarActionElementBase {
   // automatically delegate focus to their shadow DOM content unless configured
   // with delegatesFocus, which Lit doesn't do by default for wrapper elements.
   override focus() {
-    const button = this.shadowRoot.querySelector('cr-icon-button');
-    if (button) {
-      button.focus();
-    }
+    this.$.button.focus();
   }
 
   protected onDragstart_(e: DragEvent) {
