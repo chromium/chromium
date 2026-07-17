@@ -8,6 +8,7 @@ use core::cell::UnsafeCell;
 use core::cmp::Ordering;
 use core::ffi::{CStr, c_char};
 use core::fmt::{self, Debug, Display};
+use core::panic::RefUnwindSafe;
 use core::hash::{Hash, Hasher};
 use core::marker::{PhantomData, PhantomPinned};
 use core::mem::MaybeUninit;
@@ -308,6 +309,7 @@ pub struct StackString {
 }
 
 unsafe impl Sync for StackString {}
+impl RefUnwindSafe for StackString {}
 
 impl StackString {
     pub fn new() -> Self {

@@ -13,7 +13,7 @@
 edition = "2024"
 rust-version = "1.85"
 name = "cxxbridge-cmd"
-version = "1.0.196"
+version = "1.0.197"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = false
 exclude = ["build.rs"]

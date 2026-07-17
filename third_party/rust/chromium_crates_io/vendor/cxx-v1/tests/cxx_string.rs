@@ -7,7 +7,7 @@
 
 use cxx::{CxxString, let_cxx_string};
 use std::fmt::Write as _;
-use std::panic;
+use std::panic::{self, RefUnwindSafe};
 
 #[test]
 fn test_async_cxx_string() {
@@ -19,8 +19,14 @@ fn test_async_cxx_string() {
     }
 
     // https://github.com/dtolnay/cxx/issues/693
-    fn assert_send(_: impl Send + Sync) {}
+    fn assert_send(_: impl Send) {}
     assert_send(f());
+
+    fn assert_sync(_: impl Sync) {}
+    assert_sync(f());
+
+    fn assert_ref_unwind_safe(_: impl RefUnwindSafe) {}
+    assert_ref_unwind_safe(f());
 }
 
 #[test]
