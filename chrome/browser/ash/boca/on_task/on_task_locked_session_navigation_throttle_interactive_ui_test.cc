@@ -843,6 +843,46 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
+                       RejectNonHttpOauthLoginSpoofing) {
+  // Launch OnTask SWA.
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager()->LaunchSystemWebAppAsync(
+      launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(boca::OnTaskLockedController::From(boca_app_browser)
+                  ->is_locked_for_on_task());
+
+  // Set up window tracker to track the app window.
+  const SessionID window_id = boca_app_browser->session_id();
+  ASSERT_TRUE(window_id.is_valid());
+  system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
+      window_id, /*observers=*/{});
+  system_web_app_manager()->SetPinStateForSystemWebAppWindow(/*pinned=*/true,
+                                                             window_id);
+  ASSERT_TRUE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
+
+  auto* const window_tracker =
+      LockedSessionWindowTrackerFactory::GetInstance()->GetForBrowserContext(
+          profile());
+
+  // Navigate to a URL that has client_id but uses a non-HTTP scheme
+  // (e.g. data:). It should NOT be recognized as OAuth start and should not
+  // trigger oauth_in_progress.
+  content::TestNavigationObserver nav_observer(
+      boca_app_browser->tab_strip_model()->GetActiveWebContents(), 1);
+
+  ASSERT_TRUE(content::ExecJs(
+      boca_app_browser->tab_strip_model()->GetActiveWebContents(),
+      "window.location.href = 'data:text/html,hello?client_id=123';"));
+
+  nav_observer.Wait();
+
+  EXPECT_FALSE(window_tracker->oauth_in_progress());
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
                        AllowOauthPopups) {
   // Launch OnTask SWA.
   base::test::TestFuture<bool> launch_future;
@@ -896,8 +936,9 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
   ASSERT_TRUE(window_tracker->CanOpenNewPopup());
   NavigateParams navigate_params(
       boca_app_browser,
-      embedded_test_server()->GetURL(kTabUrlRedirectHost,
-                                     "/authenticate?client_id=123"),
+      embedded_test_server()->GetURL(
+          kTabUrlRedirectHost,
+          "/authenticate?client_id=123&response_type=code"),
       ui::PAGE_TRANSITION_LINK);
   navigate_params.disposition = WindowOpenDisposition::NEW_POPUP;
   navigate_params.window_action = NavigateParams::WindowAction::kShowWindow;
@@ -1098,8 +1139,9 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
   ASSERT_TRUE(window_tracker->CanOpenNewPopup());
   NavigateParams navigate_params(
       boca_app_browser,
-      embedded_test_server()->GetURL(kTabUrlRedirectHost,
-                                     "/authenticate?client_id=123"),
+      embedded_test_server()->GetURL(
+          kTabUrlRedirectHost,
+          "/authenticate?client_id=123&response_type=code"),
       ui::PAGE_TRANSITION_LINK);
   navigate_params.disposition = WindowOpenDisposition::NEW_POPUP;
   navigate_params.window_action = NavigateParams::WindowAction::kShowWindow;
@@ -1178,8 +1220,9 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
 
   NavigateParams navigate_params(
       boca_app_browser,
-      embedded_test_server()->GetURL(kTabUrlRedirectHost,
-                                     "/authenticate?client_id=123"),
+      embedded_test_server()->GetURL(
+          kTabUrlRedirectHost,
+          "/authenticate?client_id=123&response_type=code"),
       ui::PAGE_TRANSITION_LINK);
   navigate_params.disposition = WindowOpenDisposition::NEW_POPUP;
   navigate_params.window_action = NavigateParams::WindowAction::kShowWindow;
@@ -1283,8 +1326,9 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
       GlobalBrowserCollection::GetInstance()->GetSize();
   NavigateParams navigate_params(
       boca_app_browser,
-      embedded_test_server()->GetURL(kTabUrlRedirectHost,
-                                     "/authenticate?client_id=123"),
+      embedded_test_server()->GetURL(
+          kTabUrlRedirectHost,
+          "/authenticate?client_id=123&response_type=code"),
       ui::PAGE_TRANSITION_LINK);
   navigate_params.disposition = WindowOpenDisposition::NEW_POPUP;
   navigate_params.window_action = NavigateParams::WindowAction::kShowWindow;

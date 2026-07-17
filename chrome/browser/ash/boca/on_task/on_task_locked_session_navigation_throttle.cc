@@ -53,7 +53,8 @@ bool DoAllQueryParamsExist(const std::set<std::string>& request_params,
 
 // Returns whether the url is the start of an Oauth login.
 bool IsOauthLoginStart(const GURL& url) {
-  return DoAllQueryParamsExist(login_detection::GetOAuthLoginStartQueryParams(),
+  return url.SchemeIsHTTPOrHTTPS() &&
+         DoAllQueryParamsExist(login_detection::GetOAuthLoginStartQueryParams(),
                                url);
 }
 
