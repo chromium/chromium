@@ -434,6 +434,7 @@ bool ReadAnythingUntrustedPageHandler::AreInnerContentsPdfContent(
 
 void ReadAnythingUntrustedPageHandler::WebContentsDestroyed() {
   translate_observation_.Reset();
+  audible_closure_.RunAndReset();
 }
 
 void ReadAnythingUntrustedPageHandler::AccessibilityEventReceived(
