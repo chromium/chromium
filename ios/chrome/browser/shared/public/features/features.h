@@ -1077,4 +1077,10 @@ BASE_DECLARE_FEATURE(kAppBarHideInFullscreen);
 // Returns true if the App Bar should be completely hidden when in fullscreen.
 bool IsAppBarHiddenInFullscreen();
 
+// Enables the FixOmniboxInitialPositionStartup feature.
+BASE_DECLARE_FEATURE(kFixOmniboxInitialPositionStartup);
+
+// Returns true if the FixOmniboxInitialPositionStartup feature is enabled.
+bool IsFixOmniboxInitialPositionStartupEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_
