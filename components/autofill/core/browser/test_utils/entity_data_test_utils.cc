@@ -161,6 +161,13 @@ EntityInstance GetKnownTravelerNumberInstance(
   return GetEntityInstance(std::move(attributes), ToEntityOptions(options));
 }
 
+EntityInstance GetKnownTravelerNumberInstanceWithRandomGuid(
+    KnownTravelerNumberOptions options) {
+  base::Uuid guid = base::Uuid::GenerateRandomV4();
+  options.guid = guid.AsLowercaseString();
+  return GetKnownTravelerNumberInstance(options);
+}
+
 EntityInstance GetRedressNumberEntityInstance(RedressNumberOptions options) {
   using enum AttributeTypeName;
   std::vector<AttributeInstance> attributes;

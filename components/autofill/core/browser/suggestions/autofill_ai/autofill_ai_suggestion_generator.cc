@@ -25,7 +25,7 @@
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
-#include "base/functional/function_ref.h"
+#include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ref.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
@@ -553,6 +553,82 @@ Suggestion GetSuggestionForEntity(
   return suggestion;
 }
 
+// Compares two entities of the same type and record type.
+//
+// Personal Context entities are sorted by entity-type-specific
+// attributes, preferring entities that have the attribute.
+// Other record types are sorted by `FrecencyOrder`.
+bool CompareSameTypeEntities(const EntityInstance& lhs,
+                             const EntityInstance& rhs) {
+  const EntityInstance::FrecencyOrder frecency_order(base::Time::Now());
+
+  if (lhs.record_type() != EntityInstance::RecordType::kPersonalContext) {
+    return frecency_order(lhs, rhs);
+  }
+
+  auto get_attr_value =
+      [](const EntityInstance& entity,
+         AttributeTypeName attr) -> std::optional<std::u16string> {
+    if (base::optional_ref<const AttributeInstance> attr_inst =
+            entity.attribute(AttributeType(attr))) {
+      return attr_inst->GetRawInfo(attr_inst->type().field_type());
+    }
+    return std::nullopt;
+  };
+
+  auto compare_by_attribute = [&frecency_order, &lhs, &rhs, &get_attr_value](
+                                  AttributeTypeName attr_name,
+                                  auto string_comp) -> bool {
+    const std::optional<std::u16string> lhs_val =
+        get_attr_value(lhs, attr_name);
+    const std::optional<std::u16string> rhs_val =
+        get_attr_value(rhs, attr_name);
+    if (lhs_val.has_value() != rhs_val.has_value()) {
+      return lhs_val.has_value();
+    }
+    if (lhs_val.has_value() && *lhs_val != *rhs_val) {
+      return string_comp(*lhs_val, *rhs_val);
+    }
+    return frecency_order(lhs, rhs);
+  };
+
+  auto compare_less = [&compare_by_attribute](AttributeTypeName attr_name) {
+    return compare_by_attribute(attr_name, std::less<std::u16string>());
+  };
+
+  auto compare_greater = [&compare_by_attribute](AttributeTypeName attr_name) {
+    return compare_by_attribute(attr_name, std::greater<std::u16string>());
+  };
+
+  auto compare_less_case_insensitive =
+      [&compare_by_attribute](AttributeTypeName attr_name) {
+        return compare_by_attribute(
+            attr_name, [](const std::u16string& a, const std::u16string& b) {
+              return base::i18n::FoldCase(a) < base::i18n::FoldCase(b);
+            });
+      };
+
+  switch (lhs.type().name()) {
+    case EntityTypeName::kPassport:
+      return compare_less(AttributeTypeName::kPassportExpirationDate);
+    case EntityTypeName::kDriversLicense:
+      return compare_less(AttributeTypeName::kDriversLicenseExpirationDate);
+    case EntityTypeName::kNationalIdCard:
+      return compare_less(AttributeTypeName::kNationalIdCardExpirationDate);
+    case EntityTypeName::kFlightReservation:
+      return compare_less(AttributeTypeName::kFlightReservationDepartureDate);
+    case EntityTypeName::kVehicle:
+      return compare_less_case_insensitive(
+          AttributeTypeName::kVehiclePlateNumber);
+    case EntityTypeName::kOrder:
+      return compare_greater(AttributeTypeName::kOrderDate);
+    case EntityTypeName::kShipment:
+      return compare_greater(AttributeTypeName::kShipmentShippedDate);
+    case EntityTypeName::kKnownTravelerNumber:
+    case EntityTypeName::kRedressNumber:
+      return frecency_order(lhs, rhs);
+  }
+}
 // The desired ordering criteria are the following:
 // - Entities are first partitioned into groups sorted by their record type
 //   priority.
@@ -597,7 +673,7 @@ std::vector<const EntityInstance*> OrderedEntitiesForSuggestion(
           return frecency_order(*lhs_best, *rhs_best);
         }
 
-        return frecency_order(*lhs, *rhs);
+        return CompareSameTypeEntities(*lhs, *rhs);
       });
 
   return entities;

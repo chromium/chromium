@@ -132,6 +132,9 @@ using KnownTravelerNumberOptions = KnownTravelerNumberOptionsT<>;
 EntityInstance GetKnownTravelerNumberInstance(
     KnownTravelerNumberOptions options = {});
 
+EntityInstance GetKnownTravelerNumberInstanceWithRandomGuid(
+    KnownTravelerNumberOptions options = {});
+
 template <typename = void>
 struct RedressNumberOptionsT {
   const char16_t* name = u"Name";

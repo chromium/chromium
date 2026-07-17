@@ -972,6 +972,173 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
                      HasMainText(GetPassportName(passport2))));
 }
 
+// Test that PersonalContext Passport entities are sorted ascending by
+// expiration date, even if the one expiring later has higher frecency.
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       GetFillingSuggestion_PersonalContextOrdering_PassportExpirationDate) {
+  EntityInstance passport_sooner = GetPassportEntityInstanceWithRandomGuid(
+      {.name = u"Bruno",
+       .number = u"11111",
+       .expiry_date = u"2026-08-01",
+       .use_date = test::kJune2017 - base::Days(10),
+       .record_type = EntityInstance::RecordType::kPersonalContext});
+  EntityInstance passport_later = GetPassportEntityInstanceWithRandomGuid(
+      {.name = u"Jon Doe",
+       .number = u"22222",
+       .expiry_date = u"2029-08-01",
+       .use_date = test::kJune2017,
+       .record_type = EntityInstance::RecordType::kPersonalContext});
+
+  SetEntities({passport_later, passport_sooner});
+  SetForm({NAME_FULL, PASSPORT_NUMBER});
+
+  std::vector<Suggestion> res = CreateAutofillAiFillingSuggestions(field(0));
+  EXPECT_THAT(res,
+              SuggestionsAre(HasMainText(GetPassportName(passport_sooner)),
+                             HasMainText(GetPassportName(passport_later))));
+}
+
+// Test that PersonalContext Vehicle entities are sorted by plate number
+// alphanumerically (case-insensitive), even if the one with a later plate
+// number has higher frecency.
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       GetFillingSuggestion_PersonalContextOrdering_VehiclePlateNumber) {
+  EntityInstance vehicle_a = test::GetVehicleEntityInstanceWithRandomGuid(
+      {.plate = u"abc-123",
+       .number = u"11111",
+       .use_date = test::kJune2017 - base::Days(10),
+       .record_type = EntityInstance::RecordType::kPersonalContext});
+  EntityInstance vehicle_z = test::GetVehicleEntityInstanceWithRandomGuid(
+      {.plate = u"XYZ-999",
+       .number = u"22222",
+       .use_date = test::kJune2017,
+       .record_type = EntityInstance::RecordType::kPersonalContext});
+
+  SetEntities({vehicle_z, vehicle_a});
+  SetForm({VEHICLE_LICENSE_PLATE, VEHICLE_VIN});
+
+  std::vector<Suggestion> res = CreateAutofillAiFillingSuggestions(field(0));
+  EXPECT_THAT(res,
+              SuggestionsAre(HasMainText(u"abc-123"), HasMainText(u"XYZ-999")));
+}
+
+// Test that when sorting PersonalContext entities of the same type, an entity
+// with the sorting attribute present comes before one without it, even
+// if the entity without the attribute has higher frecency.
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       GetFillingSuggestion_PersonalContextOrdering_PresentVsMissingAttribute) {
+  EntityInstance passport_with_expiry = GetPassportEntityInstanceWithRandomGuid(
+      {.name = u"Bruno",
+       .number = u"11111",
+       .expiry_date = u"2026-08-01",
+       .use_date = test::kJune2017 - base::Days(10),
+       .record_type = EntityInstance::RecordType::kPersonalContext});
+  EntityInstance passport_without_expiry =
+      GetPassportEntityInstanceWithRandomGuid(
+          {.name = u"Jon Doe",
+           .number = u"22222",
+           .expiry_date = nullptr,
+           .use_date = test::kJune2017,
+           .record_type = EntityInstance::RecordType::kPersonalContext});
+
+  SetEntities({passport_without_expiry, passport_with_expiry});
+  SetForm({NAME_FULL, PASSPORT_NUMBER});
+
+  std::vector<Suggestion> res = CreateAutofillAiFillingSuggestions(field(0));
+  EXPECT_THAT(res, SuggestionsAre(
+                       HasMainText(GetPassportName(passport_with_expiry)),
+                       HasMainText(GetPassportName(passport_without_expiry))));
+}
+
+// Test that when two PersonalContext entities of the same type have tied
+// sorting attribute values (e.g. same expiration date), the comparison falls
+// back to FrecencyOrder.
+TEST_F(
+    AutofillAiSuggestionGeneratorTest,
+    GetFillingSuggestion_PersonalContextOrdering_TiedAttribute_FallsBackToFrecency) {
+  EntityInstance passport_frecent = GetPassportEntityInstanceWithRandomGuid(
+      {.name = u"Bruno",
+       .number = u"11111",
+       .expiry_date = u"2027-08-01",
+       .use_date = test::kJune2017,
+       .record_type = EntityInstance::RecordType::kPersonalContext});
+  EntityInstance passport_less_frecent =
+      GetPassportEntityInstanceWithRandomGuid(
+          {.name = u"Jon Doe",
+           .number = u"22222",
+           .expiry_date = u"2027-08-01",
+           .use_date = test::kJune2017 - base::Days(10),
+           .record_type = EntityInstance::RecordType::kPersonalContext});
+
+  SetEntities({passport_less_frecent, passport_frecent});
+  SetForm({NAME_FULL, PASSPORT_NUMBER});
+
+  std::vector<Suggestion> res = CreateAutofillAiFillingSuggestions(field(0));
+  EXPECT_THAT(
+      res, SuggestionsAre(HasMainText(GetPassportName(passport_frecent)),
+                          HasMainText(GetPassportName(passport_less_frecent))));
+}
+
+// Test that when two PersonalContext entities of the same type both lack the
+// sorting attribute (e.g. both have missing expiration dates), the comparison
+// falls back to FrecencyOrder.
+TEST_F(
+    AutofillAiSuggestionGeneratorTest,
+    GetFillingSuggestion_PersonalContextOrdering_BothMissingAttribute_FallsBackToFrecency) {
+  EntityInstance passport_frecent_no_expiry =
+      GetPassportEntityInstanceWithRandomGuid(
+          {.name = u"Bruno",
+           .number = u"11111",
+           .expiry_date = nullptr,
+           .use_date = test::kJune2017,
+           .record_type = EntityInstance::RecordType::kPersonalContext});
+  EntityInstance passport_less_frecent_no_expiry =
+      GetPassportEntityInstanceWithRandomGuid(
+          {.name = u"Jon Doe",
+           .number = u"22222",
+           .expiry_date = nullptr,
+           .use_date = test::kJune2017 - base::Days(10),
+           .record_type = EntityInstance::RecordType::kPersonalContext});
+
+  SetEntities({passport_less_frecent_no_expiry, passport_frecent_no_expiry});
+  SetForm({NAME_FULL, PASSPORT_NUMBER});
+
+  std::vector<Suggestion> res = CreateAutofillAiFillingSuggestions(field(0));
+  EXPECT_THAT(
+      res, SuggestionsAre(
+               HasMainText(GetPassportName(passport_frecent_no_expiry)),
+               HasMainText(GetPassportName(passport_less_frecent_no_expiry))));
+}
+
+// Test that when sorting PersonalContext entities of entity types without
+// sorting rules (e.g. KnownTravelerNumber), the comparison falls back to
+// FrecencyOrder.
+TEST_F(
+    AutofillAiSuggestionGeneratorTest,
+    GetFillingSuggestion_PersonalContextOrdering_OtherEntityType_FallsBackToFrecency) {
+  EntityInstance ktn_frecent =
+      test::GetKnownTravelerNumberInstanceWithRandomGuid(
+          {.name = u"Bruno",
+           .number = u"11111",
+           .use_date = test::kJune2017,
+           .record_type = EntityInstance::RecordType::kPersonalContext});
+  EntityInstance ktn_less_frecent =
+      test::GetKnownTravelerNumberInstanceWithRandomGuid(
+          {.name = u"Jon Doe",
+           .number = u"22222",
+           .use_date = test::kJune2017 - base::Days(10),
+           .record_type = EntityInstance::RecordType::kPersonalContext});
+
+  SetEntities({ktn_less_frecent, ktn_frecent});
+  SetForm({KNOWN_TRAVELER_NUMBER});
+
+  std::vector<Suggestion> res = CreateAutofillAiFillingSuggestions(field(0));
+  EXPECT_THAT(res, SuggestionsAre(HasMainText(GetObfuscatedValue(
+                                      u"11111", /*visible_suffix_length=*/4)),
+                                  HasMainText(GetObfuscatedValue(
+                                      u"22222", /*visible_suffix_length=*/4))));
+}
+
 // Tests that a kPersonalContextNotice suggestion is appended if the trigger
 // field contains a personal context entity and the notice should be shown.
 TEST_F(AutofillAiSuggestionGeneratorTest,
@@ -1529,6 +1696,61 @@ TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
   // random.com.
   EXPECT_THAT(suggestions3, SuggestionsAre(EqualsSuggestion(
                                 SuggestionType::kAutofillAiOtherShipments)));
+}
+
+// Test that PersonalContext Order entities are sorted descending by order date,
+// even if the older order has higher frecency.
+TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
+       GetFillingSuggestions_PersonalContextOrdering_OrderDate) {
+  client().set_last_committed_primary_main_frame_url(
+      GURL("https://example.com"));
+  EntityInstance order_recent = test::GetOrderEntityInstanceWithRandomGuid(
+      {.id = u"ORD_RECENT",
+       .date = u"2026-07-01",
+       .merchant_domain = u"example.com",
+       .use_date = test::kJune2017 - base::Days(10),
+       .record_type = EntityInstance::RecordType::kPersonalContext});
+  EntityInstance order_old = test::GetOrderEntityInstanceWithRandomGuid(
+      {.id = u"ORD_OLD",
+       .date = u"2025-01-01",
+       .merchant_domain = u"example.com",
+       .use_date = test::kJune2017,
+       .record_type = EntityInstance::RecordType::kPersonalContext});
+
+  SetEntities({order_old, order_recent});
+  SetForm({ORDER_ID});
+
+  std::vector<Suggestion> res = CreateAutofillAiFillingSuggestions(field(0));
+  EXPECT_THAT(
+      res, SuggestionsAre(HasMainText(u"ORD_RECENT"), HasMainText(u"ORD_OLD")));
+}
+
+// Test that PersonalContext Shipment entities are sorted descending by shipped
+// date, even if the older shipment has higher frecency.
+TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
+       GetFillingSuggestions_PersonalContextOrdering_ShippedDate) {
+  client().set_last_committed_primary_main_frame_url(
+      GURL("https://carrier.com"));
+  EntityInstance shipment_recent =
+      test::GetShipmentEntityInstanceWithRandomGuid(
+          {.tracking_number = u"TR_RECENT",
+           .carrier_domain = u"carrier.com",
+           .shipped_date = u"2026-07-01",
+           .use_date = test::kJune2017 - base::Days(10),
+           .record_type = EntityInstance::RecordType::kPersonalContext});
+  EntityInstance shipment_old = test::GetShipmentEntityInstanceWithRandomGuid(
+      {.tracking_number = u"TR_OLD",
+       .carrier_domain = u"carrier.com",
+       .shipped_date = u"2025-01-01",
+       .use_date = test::kJune2017,
+       .record_type = EntityInstance::RecordType::kPersonalContext});
+
+  SetEntities({shipment_old, shipment_recent});
+  SetForm({SHIPMENT_TRACKING_NUMBER});
+
+  std::vector<Suggestion> res = CreateAutofillAiFillingSuggestions(field(0));
+  EXPECT_THAT(
+      res, SuggestionsAre(HasMainText(u"TR_RECENT"), HasMainText(u"TR_OLD")));
 }
 
 class AutofillAiSuggestionGeneratorSplitManageSuggestionTest
