@@ -104,8 +104,7 @@ void LoadingPredictorPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
   if (record_histogram_preconnectable_) {
     base::TimeDelta corrected =
         page_load_metrics::CorrectEventAsNavigationOrActivationOrigined(
-            GetDelegate(), timing,
-            timing.paint_timing->first_contentful_paint.value());
+            GetDelegate(), timing.paint_timing->first_contentful_paint.value());
     PAGE_LOAD_HISTOGRAM(
         internal::kHistogramLoadingPredictorFirstContentfulPaintPreconnectable,
         corrected);
@@ -118,8 +117,7 @@ void LoadingPredictorPageLoadMetricsObserver::
   if (record_histogram_preconnectable_) {
     base::TimeDelta corrected =
         page_load_metrics::CorrectEventAsNavigationOrActivationOrigined(
-            GetDelegate(), timing,
-            timing.paint_timing->first_meaningful_paint.value());
+            GetDelegate(), timing.paint_timing->first_meaningful_paint.value());
     PAGE_LOAD_HISTOGRAM(
         internal::kHistogramLoadingPredictorFirstMeaningfulPaintPreconnectable,
         corrected);

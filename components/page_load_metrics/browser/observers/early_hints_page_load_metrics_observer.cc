@@ -84,12 +84,10 @@ void EarlyHintsPageLoadMetricsObserver::RecordHistograms(
 
   if (timing.paint_timing->first_contentful_paint.has_value() &&
       page_load_metrics::EventOccurredBeforeNonPrerenderingBackgroundStart(
-          GetDelegate(), timing,
-          timing.paint_timing->first_contentful_paint.value())) {
+          GetDelegate(), timing.paint_timing->first_contentful_paint.value())) {
     base::TimeDelta corrected =
         page_load_metrics::CorrectEventAsNavigationOrActivationOrigined(
-            GetDelegate(), timing,
-            timing.paint_timing->first_contentful_paint.value());
+            GetDelegate(), timing.paint_timing->first_contentful_paint.value());
     PAGE_LOAD_HISTOGRAM(
         internal::kHistogramEarlyHintsPreloadFirstContentfulPaint, corrected);
   }
@@ -100,17 +98,17 @@ void EarlyHintsPageLoadMetricsObserver::RecordHistograms(
           .MainFrameLargestContentfulPaint();
   if (largest_contentful_paint.ContainsValidTime() &&
       page_load_metrics::EventOccurredBeforeNonPrerenderingBackgroundStart(
-          GetDelegate(), timing, largest_contentful_paint.Time().value())) {
+          GetDelegate(), largest_contentful_paint.Time().value())) {
     base::TimeDelta corrected =
         page_load_metrics::CorrectEventAsNavigationOrActivationOrigined(
-            GetDelegate(), timing, largest_contentful_paint.Time().value());
+            GetDelegate(), largest_contentful_paint.Time().value());
     PAGE_LOAD_HISTOGRAM(
         internal::kHistogramEarlyHintsPreloadLargestContentfulPaint, corrected);
   }
 
   if (timing.interactive_timing->first_input_delay.has_value() &&
       page_load_metrics::EventOccurredBeforeNonPrerenderingBackgroundStart(
-          GetDelegate(), timing,
+          GetDelegate(),
           timing.interactive_timing->first_input_delay.value())) {
     base::UmaHistogramCustomTimes(
         internal::kHistogramEarlyHintsPreloadFirstInputDelay,

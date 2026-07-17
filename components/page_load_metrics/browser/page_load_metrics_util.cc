@@ -212,16 +212,6 @@ bool EventOccurredBeforeNonPrerenderingBackgroundStart(
   return event < bg_start;
 }
 
-// Currently, multiple implementations of PageLoadMetricsObserver is ongoing.
-// We'll left the old version for a while.
-// TODO(crbug.com/40222513): Use the above version and delete this.
-bool EventOccurredBeforeNonPrerenderingBackgroundStart(
-    const PageLoadMetricsObserverDelegate& delegate,
-    const page_load_metrics::mojom::PageLoadTiming& timing,
-    const base::TimeDelta& event) {
-  return EventOccurredBeforeNonPrerenderingBackgroundStart(delegate, event);
-}
-
 base::TimeDelta CorrectEventAsNavigationOrActivationOrigined(
     const PageLoadMetricsObserverDelegate& delegate,
     const base::TimeDelta& event) {
@@ -239,16 +229,6 @@ base::TimeDelta CorrectEventAsNavigationOrActivationOrigined(
       return std::max(corrected, zero);
     }
   }
-}
-
-// Currently, multiple implementations of PageLoadMetricsObserver is ongoing.
-// We'll left the old version for a while.
-// TODO(crbug.com/40222513): Use the above version and delete this.
-base::TimeDelta CorrectEventAsNavigationOrActivationOrigined(
-    const PageLoadMetricsObserverDelegate& delegate,
-    const page_load_metrics::mojom::PageLoadTiming& timing,
-    const base::TimeDelta& event) {
-  return CorrectEventAsNavigationOrActivationOrigined(delegate, event);
 }
 
 PageAbortInfo GetPageAbortInfo(

@@ -185,10 +185,6 @@ std::optional<base::TimeDelta> GetNonPrerenderingBackgroundStartTiming(
 bool EventOccurredBeforeNonPrerenderingBackgroundStart(
     const PageLoadMetricsObserverDelegate& delegate,
     const base::TimeDelta& event);
-bool EventOccurredBeforeNonPrerenderingBackgroundStart(
-    const PageLoadMetricsObserverDelegate& delegate,
-    const page_load_metrics::mojom::PageLoadTiming& timing,
-    const base::TimeDelta& event);
 
 // Corrects an event with navigation start origin as navigation/activation
 // start origin.
@@ -198,10 +194,6 @@ bool EventOccurredBeforeNonPrerenderingBackgroundStart(
 // are truncated as zero.
 base::TimeDelta CorrectEventAsNavigationOrActivationOrigined(
     const PageLoadMetricsObserverDelegate& delegate,
-    const base::TimeDelta& event);
-base::TimeDelta CorrectEventAsNavigationOrActivationOrigined(
-    const PageLoadMetricsObserverDelegate& delegate,
-    const page_load_metrics::mojom::PageLoadTiming& timing,
     const base::TimeDelta& event);
 
 PageAbortInfo GetPageAbortInfo(const PageLoadMetricsObserverDelegate& delegate);
