@@ -9,7 +9,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -33,6 +35,9 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.feedback.FeedbackPolicyManager;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.glic.GlicPrefNames;
@@ -67,7 +72,11 @@ import java.util.Collections;
 /** Unit tests for {@link TabStripContextMenuCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@DisableFeatures({ChromeFeatureList.GLIC, ChromeFeatureList.TASK_MANAGER_CLANK})
+@DisableFeatures({
+    ChromeFeatureList.GLIC,
+    ChromeFeatureList.TASK_MANAGER_CLANK,
+    ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING
+})
 public class TabStripContextMenuCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -81,6 +90,8 @@ public class TabStripContextMenuCoordinatorUnitTest {
     @Mock private PrefService mPrefService;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private TaskManager mTaskManager;
+    @Mock private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
+    @Mock private FeedbackPolicyManager mFeedbackPolicyManager;
 
     private Activity mActivity;
     private TabStripContextMenuCoordinator mCoordinator;
@@ -114,6 +125,9 @@ public class TabStripContextMenuCoordinatorUnitTest {
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
         TaskManagerFactory.setInstanceForTesting(mTaskManager);
+        HelpAndFeedbackLauncherFactory.setInstanceForTesting(mHelpAndFeedbackLauncher);
+        FeedbackPolicyManager.setInstanceForTesting(mFeedbackPolicyManager);
+        when(mFeedbackPolicyManager.isUserFeedbackAllowed()).thenReturn(true);
 
         when(mRectProvider.getRect())
                 .thenReturn(new Rect(10, 10, mActivity.getWindow().getDecorView().getWidth(), 50));
@@ -132,8 +146,8 @@ public class TabStripContextMenuCoordinatorUnitTest {
         // Act.
         mCoordinator.showMenu(mRectProvider, false, mActivity);
 
-        // Verify: Baseline items (4) + divider (1) + toggle item (1) = 6 items.
-        verifyMenuState(/* expectedNumItems= */ 6);
+        // Verify: Baseline items (4) + divider (1) + toggle item (1) + feedback (1) = 7 items.
+        verifyMenuState(/* expectedNumItems= */ 7);
 
         // Index 4 is the divider.
         ListItem dividerItem = (ListItem) mListView.getAdapter().getItem(4);
@@ -145,6 +159,15 @@ public class TabStripContextMenuCoordinatorUnitTest {
                 R.id.toggle_tab_layout_menu_id,
                 toggleLayoutItemModel.get(ListMenuItemProperties.MENU_ITEM_ID));
         assertEquals(expectedTitleRes, toggleLayoutItemModel.get(ListMenuItemProperties.TITLE_ID));
+
+        // Index 6 is the feedback entry point.
+        PropertyModel feedbackItemModel = getItemModelAtPosition(6);
+        assertEquals(
+                R.id.send_feedback_about_tab_strip_menu_id,
+                feedbackItemModel.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(
+                R.string.send_feedback_about_tab_strip,
+                feedbackItemModel.get(ListMenuItemProperties.TITLE_ID));
 
         // Act: Select the toggle option.
         mCoordinator
@@ -183,7 +206,7 @@ public class TabStripContextMenuCoordinatorUnitTest {
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
 
         mCoordinator.showMenu(mRectProvider, false, mActivity);
-        verifyMenuState(/* expectedNumItems= */ 6);
+        verifyMenuState(/* expectedNumItems= */ 7);
 
         PropertyModel toggleLayoutItemModel = getItemModelAtPosition(5);
         assertEquals(
@@ -392,6 +415,65 @@ public class TabStripContextMenuCoordinatorUnitTest {
         assertFalse(mMenuWindow.isShowing());
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
+    @Config(qualifiers = "sw600dp")
+    public void showMenu_verifySendFeedbackOption() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        mCoordinator.showMenu(mRectProvider, false, mActivity);
+
+        // Verify: expected 7 items.
+        verifyMenuState(/* expectedNumItems= */ 7);
+
+        // Index 6 is feedback option.
+        PropertyModel feedbackItemModel = getItemModelAtPosition(6);
+        assertEquals(
+                R.id.send_feedback_about_tab_strip_menu_id,
+                feedbackItemModel.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // Act: Click the feedback option.
+        mCoordinator.getListMenuDelegate(mContentView).onItemSelected(feedbackItemModel, mListView);
+
+        // Verify: The popup window was dismissed and showFeedback was called with category tag.
+        verify(mHelpAndFeedbackLauncher)
+                .showFeedback(eq(mActivity), eq(null), eq(mCoordinator.getFeedbackCategoryTag()));
+        assertFalse(mMenuWindow.isShowing());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
+    @Config(qualifiers = "sw600dp")
+    public void showMenu_verifySendFeedbackOption_Incognito() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        // Setup Incognito profile and tab model.
+        Profile incognitoProfile = mock(Profile.class);
+        when(incognitoProfile.isOffTheRecord()).thenReturn(true);
+        when(incognitoProfile.getOriginalProfile()).thenReturn(mProfile);
+        when(mTabModel.getProfile()).thenReturn(incognitoProfile);
+        when(mTabModel.getMostRecentlyClosedEntryType()).thenReturn(RecentlyClosedEntryType.NONE);
+
+        // Act.
+        mCoordinator.showMenu(mRectProvider, true, mActivity);
+
+        // Verify: Expected items: New tab, Name window, divider, layout option, Send feedback.
+        verifyMenuState(/* expectedNumItems= */ 5);
+
+        // Index 4 is feedback option.
+        PropertyModel feedbackItemModel = getItemModelAtPosition(4);
+        assertEquals(
+                R.id.send_feedback_about_tab_strip_menu_id,
+                feedbackItemModel.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // Act: Click the feedback option.
+        mCoordinator.getListMenuDelegate(mContentView).onItemSelected(feedbackItemModel, mListView);
+
+        // Verify: The popup window was dismissed and showFeedback was called with a null URL and
+        // category tag.
+        verify(mHelpAndFeedbackLauncher)
+                .showFeedback(eq(mActivity), eq(null), eq(mCoordinator.getFeedbackCategoryTag()));
+        assertFalse(mMenuWindow.isShowing());
+    }
+
     private void verifyMenuState(int expectedNumItems) {
         mMenuWindow = mCoordinator.getPopupWindow();
         if (expectedNumItems > 0) {
@@ -404,6 +486,30 @@ public class TabStripContextMenuCoordinatorUnitTest {
         } else {
             assertNull(mMenuWindow);
         }
+    }
+
+    @Test
+    public void showMenu_verifyMenuWidthSizing() {
+        // Set a small anchor rect width (100px, which is less than min_width).
+        when(mRectProvider.getRect()).thenReturn(new Rect(10, 10, 110, 50));
+
+        // Act.
+        mCoordinator.showMenu(mRectProvider, false, mActivity);
+
+        // Verify popup window is created and showing.
+        assertNotNull(mCoordinator.getPopupWindow());
+        assertTrue(mCoordinator.getPopupWindow().isShowing());
+
+        // Verify that the content view is measured at or above min_width, rather than being
+        // restricted to 100px.
+        View contentView = mCoordinator.getPopupWindow().getContentView();
+        assertNotNull(contentView);
+        assertTrue(
+                "Content view width should be at least min_width.",
+                contentView.getMeasuredWidth()
+                        >= mActivity
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.tab_strip_context_menu_min_width));
     }
 
     private PropertyModel getItemModelAtPosition(int position) {

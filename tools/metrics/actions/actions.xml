@@ -5143,6 +5143,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Android.TabStripMenu.SendFeedback">
+  <owner>mwoj@google.com</owner>
+  <owner>cros-ui-foundations@google.com</owner>
+  <description>
+    User tapped 'Send feedback' on the tab strip context menu to send feedback.
+  </description>
+</action>
+
 <action name="Android.TabStripMenu.TaskManager">
   <owner>mwoj@google.com</owner>
   <owner>cros-ui-foundations@google.com</owner>
