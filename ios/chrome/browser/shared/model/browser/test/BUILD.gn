@@ -7,6 +7,10 @@ source_set("test_support") {
   sources = [
     "fake_browser_observer.h",
     "fake_browser_observer.mm",
+    "fake_browser_provider.h",
+    "fake_browser_provider.mm",
+    "fake_browser_provider_interface.h",
+    "fake_browser_provider_interface.mm",
     "test_browser.h",
     "test_browser.mm",
     "test_browser_list_observer.h",
