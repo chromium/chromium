@@ -8,7 +8,6 @@
 
 #include "base/auto_reset.h"
 #include "base/callback_list.h"
-#include "base/cancelable_callback.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -1169,26 +1168,22 @@ class PromoStateProviderCoordinator
       waiting_sync_active_for_promo_computation_ = false;
     }
 
-    promo_request_cancelable_callback_.Reset(
+    signin::ComputeProfileMenuAvatarButtonPromoInfo(
+        profile_.get(),
         base::BindOnce(&PromoStateProviderCoordinator::OnPromoTypeResult,
                        base::Unretained(this)));
-    signin::ComputeProfileMenuAvatarButtonPromoInfo(
-        profile_.get(), promo_request_cancelable_callback_.callback());
   }
 
   void OnPromoTypeResult(signin::ProfileMenuAvatarButtonPromoInfo promo_info) {
-    std::optional<signin::ProfileMenuAvatarButtonPromoInfo::Type>
-        old_promo_type = promo_type_;
-
     promo_type_.reset();
-    if (promo_info.type.has_value() &&
-        promo_manager_.ShouldShowPromo(*promo_info.type)) {
-      promo_type_ = promo_info.type;
+    if (!promo_info.type.has_value()) {
+      return;
     }
-
-    if (old_promo_type != promo_type_) {
-      promo_type_changed_callbacks_.Notify();
+    if (!promo_manager_.ShouldShowPromo(promo_info.type.value())) {
+      return;
     }
+    promo_type_ = promo_info.type;
+    promo_type_changed_callbacks_.Notify();
   }
 
   void Collapse() {
@@ -1232,11 +1227,11 @@ class PromoStateProviderCoordinator
     // state changes that occurred. This would allow to have a better
     // consistency between the promo showing and the subsequent ProfileMenu
     // opening in case of state changes that lead to a different promo result.
-    promo_validation_cancelable_callback_.Reset(base::BindOnce(
-        &PromoStateProviderCoordinator::MaybeCollapsePromoAfterValidation,
-        base::Unretained(this)));
     signin::ComputeProfileMenuAvatarButtonPromoInfo(
-        profile_.get(), promo_validation_cancelable_callback_.callback());
+        profile_.get(),
+        base::BindOnce(
+            &PromoStateProviderCoordinator::MaybeCollapsePromoAfterValidation,
+            base::Unretained(this)));
   }
 
   // Callback to the validation promo calculation.
@@ -1285,11 +1280,6 @@ class PromoStateProviderCoordinator
       identity_manager_observation_{this};
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observation_{this};
-
-  base::CancelableOnceCallback<void(signin::ProfileMenuAvatarButtonPromoInfo)>
-      promo_request_cancelable_callback_;
-  base::CancelableOnceCallback<void(signin::ProfileMenuAvatarButtonPromoInfo)>
-      promo_validation_cancelable_callback_;
 };
 
 // Check `signin::ComputeProfileMenuAvatarButtonPromoType()` for promo priority
