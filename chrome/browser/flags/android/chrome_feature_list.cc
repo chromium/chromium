@@ -172,7 +172,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &download::features::kDownloadNotificationServiceUnifiedAPI,
     &download::features::kEnableSavePackageForOffTheRecord,
     &download::features::kOpenDownloadInFilesAppIfNoHandlerFound,
-    &download::features::kOpenDownloadInNewTab,
     &download::features::kShowBlockedSensitiveDownload,
     &download::features::kShowDownloadScanningState,
     &download::features::kSmartSuggestionForLargeDownloads,
