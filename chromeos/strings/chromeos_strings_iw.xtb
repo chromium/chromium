@@ -142,7 +142,7 @@
           כדי לקבל אפשרויות ייחודיות ומגוונות יותר לתמונות ה-AI, בוחרים באפשרות "אני רוצה לקבל השראה".
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          כשיוצרים באמצעות AI, ההנחיה נשלחת לשרתים של AI‏ מבית Google כדי ליצור תמונות ולשפר את המוצר, בכפוף ל<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />מדיניות הפרטיות של Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          כשיוצרים באמצעות AI, הפרומפט נשלח לשרתים של AI‏ מבית Google כדי ליצור תמונות ולשפר את המוצר, בכפוף ל<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />מדיניות הפרטיות של Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
           ה-AI הגנרטיבי הוא מערכת ניסיונית שנמצאת בשלבי פיתוח ראשוניים וכרגע הזמינות שלה מוגבלת.</translation>
@@ -219,7 +219,7 @@
 <translation id="1801418420130173017">השבתת העיצוב הכהה</translation>
 <translation id="1807246157184219062">בהיר</translation>
 <translation id="1808803439260407870">אומנות קלאסית</translation>
-<translation id="181434555916624618">כרגע, תוצאות עם אנשים לא יוצגו. אפשר לנסות הנחיה אחרת.</translation>
+<translation id="181434555916624618">כרגע, תוצאות עם אנשים לא יוצגו. אפשר לנסות פרומפט אחר.</translation>
 <translation id="1815850098929213707">המקש שנבחר הוא <ph name="KEYS" />. כדי לערוך את הרכיב האינטראקטיבי, צריך ללחוץ על הכפתור</translation>
 <translation id="1818174214124933000">‏אחרי הבחירה באפשרות "שליחה", המשוב והתוכן שלך (שמוצגים למטה) יישלחו אל Google, ייבדקו על ידי בודקים אנושיים וישמשו לאימון או לשיפור המוצרים והשירותים שלנו בכפוף ל<ph name="LINK_POLICY_BEGIN" />מדיניות הפרטיות<ph name="LINK_POLICY_END" /> ו<ph name="LINK_TERMS_OF_SERVICE_BEGIN" />לתנאים וההגבלות של Google<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
 <translation id="1823120442877418684">דימויים</translation>
@@ -698,7 +698,7 @@
 <translation id="4113067922640381334">יש לך עכשיו גישה ל<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />טפטים<ph name="END_LINK_WALLPAPER_SUBPAGE" /> חדשים</translation>
 <translation id="4117637339509843559">מצב כהה</translation>
 <translation id="4126551873361000548">חזרה של 10 שניות אחורה</translation>
-<translation id="4128271910628504223">אפשר להזין הנחיה כמו "אני רוצה לצייר יער ערפילי"</translation>
+<translation id="4128271910628504223">אפשר לכתוב פרומפט כמו "אני רוצה לצייר יער ערפילי"</translation>
 <translation id="4130035430755296270">כשמציבים את העכבר מעל אפשרויות הפריסה אפשר לראות עוד אפשרויות</translation>
 <translation id="4131410914670010031">שחור ולבן</translation>
 <translation id="4137700675046373159">ביום שבת</translation>
@@ -732,13 +732,13 @@
 <translation id="4249717042534905822">ביום ראשון</translation>
 <translation id="4250229828105606438">צילום מסך</translation>
 <translation id="4251839292699800785">משרד אופנתי</translation>
-<translation id="4252261480746798874">‏כשבוחרים באפשרות "יצירת עיצוב משלך", אפשר לכתוב הנחיה מותאמת אישית. אפשר גם לבחור באפשרות "בחירת עיצוב" ואז לבחור את המילים שמסומנות בקו תחתון כדי להתאים אישית את הטפט מבוסס ה-AI.
+<translation id="4252261480746798874">‏כשבוחרים באפשרות "יצירת עיצוב משלך", אפשר לכתוב פרומפט מותאם אישית. אפשר גם לבחור באפשרות "בחירת עיצוב" ואז לבחור את המילים שמסומנות בקו תחתון כדי להתאים אישית את הטפט מבוסס ה-AI.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
           כדי לקבל אפשרויות ייחודיות ומגוונות יותר לתמונות ה-AI, בוחרים באפשרות "אני רוצה לקבל השראה".
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          כשיוצרים טפט בעיצוב אישי, נשלחת לשרתים של Google הנחיה ליצור תמונות ולשפר את המוצר, בכפוף <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />לתנאים ולהגבלות ולמדיניות הפרטיות של Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. חשוב לא לכלול מידע אישי, רגיש או סודי.
+          כשיוצרים טפט בעיצוב אישי, נשלח לשרתים של Google פרומפט שמבקש ליצור תמונות ולשפר את המוצר, בכפוף <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />לתנאים ולהגבלות ולמדיניות הפרטיות של Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. חשוב לא לכלול מידע אישי, רגיש או סודי.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
           בינה מלאכותית גנרטיבית עלולה לטעות, גם לגבי אנשים, אז כדאי לבדוק היטב את התשובות. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />מידע נוסף<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>

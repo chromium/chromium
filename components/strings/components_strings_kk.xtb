@@ -410,7 +410,7 @@
 <translation id="1634828734222219955">Барлығы</translation>
 <translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> топқа қосылды.</translation>
 <translation id="163826442096818926">Қысқарту</translation>
-<translation id="1639239467298939599">Жүктелуде</translation>
+<translation id="1639239467298939599">Жүктеліп жатыр</translation>
 <translation id="1640180200866533862">Пайдаланушы саясаттары</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />Сайттың негізгі бетіне кіріп<ph name="END_LINK" /> көріңіз.</translation>
 <translation id="1640283014264083726">RSA шифрлауына ие PKCS #1 MD4</translation>
@@ -1729,7 +1729,7 @@
 <translation id="3701900332588705891">Әдетте <ph name="LOW_PRICE" />–<ph name="HIGH_PRICE" /></translation>
 <translation id="3704162925118123524">Пайдаланып жатқан желі өзінің кіру бетіне өтуіңізді талап етуі мүмкін.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="370665806235115550">Жүктелуде…</translation>
+<translation id="370665806235115550">Жүктеліп жатыр…</translation>
 <translation id="3709599264800900598">Көшірілген мәтін</translation>
 <translation id="3709837451557142236">Тауарлар мен фьючерс саудасы</translation>
 <translation id="3711430313228789376">Chrome құпия сөздерді көрсеткелі жатыр.</translation>

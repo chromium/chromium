@@ -5960,7 +5960,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="5299109548848736476">No rastregis</translation>
 <translation id="5299558715747014286">Veure i gestionar els teus grups de pestanyes</translation>
 <translation id="5301398529256275325">Prova de demanar coses com ara "resumeix aquesta pàgina" o fes la teva pròpia pregunta.</translation>
-<translation id="5301954838959518834">D'acord</translation>
+<translation id="5301954838959518834">D'acord, entesos</translation>
 <translation id="5302032366299160685">Espera que el fitxer s'obri abans de tornar-ho a provar</translation>
 <translation id="5302048478445481009">Idioma</translation>
 <translation id="5302435492906794790">S'estan cercant dispositius detectables a prop...</translation>
@@ -6698,7 +6698,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5868434909835797817">El micròfon està desactivat al dispositiu</translation>
 <translation id="5868479397518301468">S'ha esgotat el temps d'espera per iniciar la sessió</translation>
 <translation id="5868822853313956582">Segueix els colors del dispositiu</translation>
-<translation id="5869029295770560994">D'acord</translation>
+<translation id="5869029295770560994">D'acord, entesos</translation>
 <translation id="5869522115854928033">Contrasenyes desades</translation>
 <translation id="5870086504539785141">Tanca el menú d'accessibilitat</translation>
 <translation id="5870155679953074650">Errors greus</translation>
@@ -7133,7 +7133,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6206199626856438589">Se't tancarà la sessió dels llocs web que es mostren, també de les pestanyes obertes</translation>
 <translation id="6206311232642889873">Cop&amp;ia la imatge</translation>
 <translation id="6207200176136643843">Restableix el nivell de zoom predeterminat</translation>
-<translation id="6207795130974856324">En espera de la teva ajuda</translation>
+<translation id="6207795130974856324">S'està esperant la teva ajuda</translation>
 <translation id="6207937957461833379">País/Regió</translation>
 <translation id="6208521041562685716">S'estan activant les dades mòbils</translation>
 <translation id="6209589022625766110">La contrasenya ha de tenir com a mínim 8 caràcters i incloure almenys dos dels elements següents: lletres majúscules, lletres minúscules, números o símbols. No ha de tenir caràcters repetits ni seqüències de 4 o més.</translation>
@@ -8677,7 +8677,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7343372807593926528">Descriu el problema abans d'enviar suggeriments.</translation>
 <translation id="7344585835349671209">Gestiona els certificats HTTPS/SSL al dispositiu</translation>
 <translation id="7345706641791090287">Confirma la contrasenya</translation>
-<translation id="7346909386216857016">D'acord</translation>
+<translation id="7346909386216857016">D'acord, entesos</translation>
 <translation id="7347751611463936647">Per utilitzar aquesta extensió, escriviu "<ph name="EXTENSION_KEYWORD" />", premeu la tecla de tabulació i indiqueu l'ordre o la cerca.</translation>
 <translation id="7347943691222276892">Fes clic per abandonar <ph name="SUBPAGE_TITLE" />.</translation>
 <translation id="7348093485538360975">Teclat en pantalla</translation>
@@ -8928,7 +8928,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">Av Pàg</translation>
 <translation id="7516981202574715431"><ph name="APP_NAME" /> està en pausa</translation>
-<translation id="7517292544534877198">Utilitza l'encriptació predeterminada de Google per a les contrasenyes del teu Compte de Google</translation>
+<translation id="7517292544534877198">Utilitza l'encriptació predeterminada de Google per a les contrasenyes del meu Compte de Google</translation>
 <translation id="7517959947270534934">El membre de la teva família no pot rebre contrasenyes en aquest moment. Demana-li que actualitzi Chrome i que sincronitzi les seves contrasenyes.</translation>
 <translation id="7518079994230200553">Aquesta opció no està disponible en aquests moments.</translation>
 <translation id="7520766081042531487">Portal d'incògnit: <ph name="SUBFRAME_SITE" /></translation>

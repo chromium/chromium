@@ -167,7 +167,7 @@
 <translation id="1622402072367425417">жылтыраған көпіршіктер</translation>
 <translation id="1626590945318984973">Пернелер тіркесімі қолжетімді емес. Функциялық және <ph name="META_KEY" /> пернелерін пайдаланбай, жаңа пернелер тіркесімін басыңыз.</translation>
 <translation id="163774412591892664">Әкімшіңіз құрылғыңызды өшірді және оның локациясын пайдалана алады.</translation>
-<translation id="1639239467298939599">Жүктелуде</translation>
+<translation id="1639239467298939599">Жүктеліп жатыр</translation>
 <translation id="1641857168437328880">Құжат беруші (бір жақты)</translation>
 <translation id="1642396894598555413">велосипедтер</translation>
 <translation id="1643449475550628585">Тұсқағаз суретін күн сайын өзгерту</translation>
@@ -605,7 +605,7 @@
 <translation id="3668570675727296296">Тіл параметрлері</translation>
 <translation id="3675132884790542448">шошқалар</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> тексерісі</translation>
-<translation id="370665806235115550">Жүктелуде…</translation>
+<translation id="370665806235115550">Жүктеліп жатыр…</translation>
 <translation id="3708186454126126312">Бұған дейін жалғанғандар</translation>
 <translation id="3715651196924935218">Қалқыма күйден шығу</translation>
 <translation id="3716250181321371108">Басқару элементін жасау</translation>
@@ -1299,7 +1299,7 @@
 <translation id="6723839937902243910">Күш</translation>
 <translation id="6723847290197874913">Пернетақта жарығы</translation>
 <translation id="672609503628871915">Жаңалықтарды қарау</translation>
-<translation id="6738867403308150051">Жүктелуде…</translation>
+<translation id="6738867403308150051">Жүктеп алынып жатыр…</translation>
 <translation id="6740695858234317715">ақшыл сары және қызғылт сары</translation>
 <translation id="6741823073189174383">қайық</translation>
 <translation id="6744441848304920043">джунгли</translation>

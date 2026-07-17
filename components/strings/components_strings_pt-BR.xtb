@@ -384,7 +384,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="159274626729231974">Festivais de filmes</translation>
 <translation id="1593359183944365958">270 graus</translation>
 <translation id="1594030484168838125">Escolher</translation>
-<translation id="1595731774593926493">Excluir número de reparação</translation>
+<translation id="1595731774593926493">Excluir número de retificação</translation>
 <translation id="1597307423671074806">Vídeo WebM</translation>
 <translation id="159800670740560023">Link da dica do Chrome, pressione Enter para <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /></translation>
 <translation id="1599199147673445968">Novo cartão? <ph name="BEGIN_LINK" />Insira os detalhes dele<ph name="END_LINK" /></translation>
@@ -800,7 +800,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2233745931693710080">Disco compacto</translation>
 <translation id="2236949375853147973">Minha atividade</translation>
 <translation id="2239100178324503013">Enviar agora</translation>
-<translation id="224130779555573777">Adicionar número de reparação</translation>
+<translation id="224130779555573777">Adicionar número de retificação</translation>
 <translation id="2241693394036365668">Um arquivo é baixado</translation>
 <translation id="2242389809734574253">A página "Salvar IBAN" foi fechada.</translation>
 <translation id="2246264294482514010">10 x 12 pol.</translation>
@@ -1364,7 +1364,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="3121994479408824897">Ir para <ph name="DOMAIN" /></translation>
 <translation id="3122696783148405307">Mostrar resultados dos últimos 30 dias</translation>
 <translation id="3126023634486644099">Rótulos (permanentes)</translation>
-<translation id="3132345256151444894">Salvar número de reparação</translation>
+<translation id="3132345256151444894">Salvar número de retificação</translation>
 <translation id="3133565499688974786">Agora <ph name="SEARCH_ENGINE_NAME" /> é seu mecanismo de pesquisa padrão</translation>
 <translation id="3134859781443140237">Rede local</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" />: pesquisar <ph name="KEYWORD_SHORT_NAME" /></translation>
@@ -2967,7 +2967,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5629630648637658800">Falha ao carregar as configurações da política</translation>
 <translation id="5630981295558454585">Botão "Perguntar ao Google sobre esta página". Ative para fazer uma pergunta</translation>
 <translation id="5631439013527180824">Token de gerenciamento de dispositivo inválido</translation>
-<translation id="5632485077360054581">Saiba como</translation>
+<translation id="5632485077360054581">Veja como ativar</translation>
 <translation id="563324245173044180">Conteúdo enganoso bloqueado.</translation>
 <translation id="563371367637259496">Celular</translation>
 <translation id="5635478143789726479">Termos e Condições do vendedor</translation>
@@ -4780,7 +4780,7 @@ Mais detalhes:
 <translation id="8456775115498700722">Agora, você pode preencher automaticamente seus cartões do <ph name="CARD_ISSUER_NAME" /> porque sua conta do <ph name="CARD_ISSUER_NAME" /> está vinculada ao Google Pay.</translation>
 <translation id="8457125768502047971">Indefinida</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8461289985785035071">Editar número de reparação</translation>
+<translation id="8461289985785035071">Editar número de retificação</translation>
 <translation id="8461694314515752532">Criptografar dados sincronizados com sua própria senha longa de sincronização</translation>
 <translation id="8461973047386722744">Nenhuma senha encontrada</translation>
 <translation id="8467494337615822642">Acesse a página de confirmação de segurança do Chrome nas configurações</translation>
