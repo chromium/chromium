@@ -466,7 +466,22 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   TRACE_EVENT1("media", "OpenH264::EncodeFrame", "timestamp",
                frame->timestamp());
   const bool supported_format = frame->format() == PIXEL_FORMAT_NV12 ||
+                                frame->format() == PIXEL_FORMAT_NV12A ||
                                 frame->format() == PIXEL_FORMAT_I420 ||
+                                frame->format() == PIXEL_FORMAT_I420A ||
+                                frame->format() == PIXEL_FORMAT_I422 ||
+                                frame->format() == PIXEL_FORMAT_I422A ||
+                                frame->format() == PIXEL_FORMAT_I444 ||
+                                frame->format() == PIXEL_FORMAT_I444A ||
+                                frame->format() == PIXEL_FORMAT_YUV420P10 ||
+                                frame->format() == PIXEL_FORMAT_YUV422P10 ||
+                                frame->format() == PIXEL_FORMAT_YUV444P10 ||
+                                frame->format() == PIXEL_FORMAT_YUV420P12 ||
+                                frame->format() == PIXEL_FORMAT_YUV422P12 ||
+                                frame->format() == PIXEL_FORMAT_YUV444P12 ||
+                                frame->format() == PIXEL_FORMAT_YUV420AP10 ||
+                                frame->format() == PIXEL_FORMAT_YUV422AP10 ||
+                                frame->format() == PIXEL_FORMAT_YUV444AP10 ||
                                 frame->format() == PIXEL_FORMAT_XBGR ||
                                 frame->format() == PIXEL_FORMAT_XRGB ||
                                 frame->format() == PIXEL_FORMAT_ABGR ||

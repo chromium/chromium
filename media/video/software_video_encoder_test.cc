@@ -283,6 +283,30 @@ class SoftwareVideoEncoderTest
     return default_options;
   }
 
+  int GetTolerance(VideoPixelFormat format) const {
+    // Tolerance scales with the sample value range of the pixel format:
+    // 8-bit (range 0..255): tolerance = 10 (~3.9% relative error)
+    // 10-bit (range 0..1023): tolerance = 35 (~3.4% relative error)
+    // 12-bit (range 0..4095): tolerance = 140 (~3.4% relative error)
+    if (format == PIXEL_FORMAT_YUV420P10 || format == PIXEL_FORMAT_YUV422P10 ||
+        format == PIXEL_FORMAT_YUV444P10 || format == PIXEL_FORMAT_YUV420AP10) {
+      return 35;
+    }
+    if (format == PIXEL_FORMAT_YUV420P12 || format == PIXEL_FORMAT_YUV422P12 ||
+        format == PIXEL_FORMAT_YUV444P12) {
+      return 140;
+    }
+    return 10;
+  }
+
+  int GetMaxDiffPixels(const VideoFrame& frame) const {
+    // Scale allowed differing pixel count by the inverse chroma subsampling
+    // area.
+    return frame.visible_rect().width() * 4 /
+           VideoFrame::SampleSize(frame.format(), VideoFrame::Plane::kU)
+               .GetArea();
+  }
+
   int AssignNextTemporalId(int frame_index, int number_temporal_layers) {
     if (number_temporal_layers <= 1) {
       return 0;
@@ -561,8 +585,10 @@ TEST_P(SoftwareVideoEncoderTest, EncodeAndDecode) {
         EXPECT_EQ(decoded_frame->format(),
                   GetExpectedOutputPixelFormat(profile_));
         if (decoded_frame->format() == original_frame->format()) {
-          EXPECT_LE(CountDifferentPixels(*decoded_frame, *original_frame, 10),
-                    original_frame->visible_rect().width());
+          EXPECT_LE(
+              CountDifferentPixels(*decoded_frame, *original_frame,
+                                   GetTolerance(original_frame->format())),
+              GetMaxDiffPixels(*original_frame));
         }
         ++total_decoded_frames;
       });
@@ -692,8 +718,10 @@ TEST_P(SoftwareVideoEncoderTest, EncodeAndDecodeWithEnablingDrop) {
         EXPECT_EQ(decoded_frame->format(),
                   GetExpectedOutputPixelFormat(profile_));
         if (decoded_frame->format() == original_frame->format()) {
-          EXPECT_LE(CountDifferentPixels(*decoded_frame, *original_frame, 10),
-                    original_frame->visible_rect().width());
+          EXPECT_LE(
+              CountDifferentPixels(*decoded_frame, *original_frame,
+                                   GetTolerance(original_frame->format())),
+              GetMaxDiffPixels(*original_frame));
         }
         ++total_decoded_frames;
       });
@@ -1579,6 +1607,11 @@ std::string PrintTestParams(
 SwVideoTestParams kH264Params[] = {
     {VideoCodec::kH264, H264PROFILE_BASELINE, PIXEL_FORMAT_I420},
     {VideoCodec::kH264, H264PROFILE_BASELINE, PIXEL_FORMAT_XRGB},
+    {VideoCodec::kH264, H264PROFILE_BASELINE, PIXEL_FORMAT_YUV420P10},
+    {VideoCodec::kH264, H264PROFILE_BASELINE, PIXEL_FORMAT_YUV422P10},
+    {VideoCodec::kH264, H264PROFILE_BASELINE, PIXEL_FORMAT_YUV444P10},
+    {VideoCodec::kH264, H264PROFILE_BASELINE, PIXEL_FORMAT_YUV420P12},
+    {VideoCodec::kH264, H264PROFILE_BASELINE, PIXEL_FORMAT_YUV420AP10},
     {VideoCodec::kH264, H264PROFILE_MAIN, PIXEL_FORMAT_I420},
     {VideoCodec::kH264, H264PROFILE_HIGH, PIXEL_FORMAT_I420},
 };
@@ -1624,17 +1657,26 @@ SwVideoTestParams kVpxParams[] = {
     {VideoCodec::kVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_I420},
     {VideoCodec::kVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_NV12},
     {VideoCodec::kVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_XRGB},
+    {VideoCodec::kVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_YUV420P10},
+    {VideoCodec::kVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_YUV422P10},
+    {VideoCodec::kVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_YUV444P10},
     {VideoCodec::kVP9, VP9PROFILE_PROFILE1, PIXEL_FORMAT_I444},
     {VideoCodec::kVP9, VP9PROFILE_PROFILE1, PIXEL_FORMAT_NV12},
     {VideoCodec::kVP9, VP9PROFILE_PROFILE1, PIXEL_FORMAT_XRGB},
+    {VideoCodec::kVP9, VP9PROFILE_PROFILE1, PIXEL_FORMAT_YUV420P10},
+    {VideoCodec::kVP9, VP9PROFILE_PROFILE1, PIXEL_FORMAT_YUV444P10},
     {VideoCodec::kVP9, VP9PROFILE_PROFILE2, PIXEL_FORMAT_I420},
     {VideoCodec::kVP9, VP9PROFILE_PROFILE2, PIXEL_FORMAT_NV12},
     {VideoCodec::kVP9, VP9PROFILE_PROFILE2, PIXEL_FORMAT_XRGB},
+    {VideoCodec::kVP9, VP9PROFILE_PROFILE2, PIXEL_FORMAT_YUV420P10},
+    {VideoCodec::kVP9, VP9PROFILE_PROFILE2, PIXEL_FORMAT_YUV420P12},
     {VideoCodec::kVP9, VP9PROFILE_PROFILE3, PIXEL_FORMAT_I444},
     {VideoCodec::kVP9, VP9PROFILE_PROFILE3, PIXEL_FORMAT_NV12},
     {VideoCodec::kVP9, VP9PROFILE_PROFILE3, PIXEL_FORMAT_XRGB},
+    {VideoCodec::kVP9, VP9PROFILE_PROFILE3, PIXEL_FORMAT_YUV444P10},
     {VideoCodec::kVP8, VP8PROFILE_ANY, PIXEL_FORMAT_I420},
-    {VideoCodec::kVP8, VP8PROFILE_ANY, PIXEL_FORMAT_XRGB}};
+    {VideoCodec::kVP8, VP8PROFILE_ANY, PIXEL_FORMAT_XRGB},
+    {VideoCodec::kVP8, VP8PROFILE_ANY, PIXEL_FORMAT_YUV420P10}};
 
 INSTANTIATE_TEST_SUITE_P(VpxGeneric,
                          SoftwareVideoEncoderTest,
@@ -1643,7 +1685,9 @@ INSTANTIATE_TEST_SUITE_P(VpxGeneric,
 
 SwVideoTestParams kVpx10BitParams[] = {
     {VideoCodec::kVP9, VP9PROFILE_PROFILE2, PIXEL_FORMAT_I420},
-    {VideoCodec::kVP9, VP9PROFILE_PROFILE3, PIXEL_FORMAT_I420}};
+    {VideoCodec::kVP9, VP9PROFILE_PROFILE2, PIXEL_FORMAT_YUV420P10},
+    {VideoCodec::kVP9, VP9PROFILE_PROFILE3, PIXEL_FORMAT_I420},
+    {VideoCodec::kVP9, VP9PROFILE_PROFILE3, PIXEL_FORMAT_YUV444P10}};
 
 INSTANTIATE_TEST_SUITE_P(Vpx10BitSpecific,
                          Vpx10BitVideoEncoderTest,
@@ -1688,9 +1732,13 @@ SwVideoTestParams kAv1Params[] = {
     {VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_I420},
     {VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_NV12},
     {VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_XRGB},
+    {VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_YUV420P10},
+    {VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_YUV422P10},
+    {VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_YUV444P10},
     {VideoCodec::kAV1, AV1PROFILE_PROFILE_HIGH, PIXEL_FORMAT_I444},
     {VideoCodec::kAV1, AV1PROFILE_PROFILE_HIGH, PIXEL_FORMAT_NV12},
-    {VideoCodec::kAV1, AV1PROFILE_PROFILE_HIGH, PIXEL_FORMAT_XRGB}};
+    {VideoCodec::kAV1, AV1PROFILE_PROFILE_HIGH, PIXEL_FORMAT_XRGB},
+    {VideoCodec::kAV1, AV1PROFILE_PROFILE_HIGH, PIXEL_FORMAT_YUV444P10}};
 
 INSTANTIATE_TEST_SUITE_P(Av1Generic,
                          SoftwareVideoEncoderTest,
