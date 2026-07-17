@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<script src="../resources/runner.js"></script>
+
+<!-- Hidden: this measures Range boundary setting (a DOM operation) -->
+<div id="container" style="display:none"></div>
+<script>
+'use strict';
+
+// Build a long list of sibling elements once.
+const container = document.getElementById('container');
+const kNodeCount = 20000;
+const frag = document.createDocumentFragment();
+for (let i = 0; i < kNodeCount; i++) {
+  const span = document.createElement('span');
+  span.textContent = String(i).padStart(10, 'X');
+  frag.appendChild(span);
+  frag.appendChild(document.createElement('br'));
+}
+container.appendChild(frag);
+const spans = container.querySelectorAll('span');
+
+PerfTestRunner.measureTime({
+  description: 'Selects each of ' + kNodeCount + ' sibling elements using a ' +
+               'separate Range via Range.selectNode().',
+  setup: () => {
+    getSelection().removeAllRanges();
+  },
+  run: () => {
+    const selection = getSelection();
+    for (let i = 0; i < spans.length; i++) {
+      const range = document.createRange();
+      range.selectNode(spans[i]);
+      selection.addRange(range);
+    }
+  },
+});
+</script>

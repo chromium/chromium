@@ -55,6 +55,7 @@ class RangeBoundaryPoint {
   void SetOffset(unsigned);
 
   void SetToBeforeChild(Node&);
+  void SetToAfterChild(Node&);
   void SetToStartOfNode(Node&);
   void SetToEndOfNode(Node&);
 
@@ -167,6 +168,16 @@ inline void RangeBoundaryPoint::SetToBeforeChild(Node& child) {
   child_before_boundary_ = child.previousSibling();
   container_node_ = child.parentNode();
   offset_in_container_ = child_before_boundary_ ? kInvalidOffset : 0;
+  MarkValid();
+}
+
+inline void RangeBoundaryPoint::SetToAfterChild(Node& child) {
+  DCHECK(child.parentNode());
+  container_node_ = child.parentNode();
+  child_before_boundary_ = &child;
+  // The integer offset (child.NodeIndex() + 1) is computed lazily by
+  // EnsureOffsetIsValid().
+  offset_in_container_ = kInvalidOffset;
   MarkValid();
 }
 
