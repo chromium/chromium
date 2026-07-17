@@ -855,8 +855,7 @@ void Canvas2DRecorderContext::reset() {
 RespectImageOrientationEnum
 Canvas2DRecorderContext::RespectImageOrientationInternal(
     CanvasImageSource* image_source) {
-  if ((image_source->IsImageBitmap() || image_source->IsImageElement()) &&
-      image_source->WouldTaintOrigin()) {
+  if (image_source->WouldTaintOrigin()) {
     return kRespectImageOrientation;
   }
   return RespectImageOrientation();
