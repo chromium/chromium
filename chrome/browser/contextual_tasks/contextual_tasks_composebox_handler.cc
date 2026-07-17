@@ -486,6 +486,7 @@ void ContextualTasksComposeboxHandler::UpdateStateFromUrl(const GURL& url) {
 
 void ContextualTasksComposeboxHandler::OnTaskChanged() {
   ClearFiles(/*should_block_auto_suggested_tabs=*/false);
+  SetSmartTabSharingActive(false);
   // Maybe trigger lens overlay when Side Panel is done with navigation
   // which triggers OnTaskChanged().
   MaybeTriggerLens();
