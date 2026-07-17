@@ -1740,6 +1740,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
   uploading_info.mime_type = lens::MimeType::kPdf;
   uploading_info.tab_session_id =
       sessions::SessionTabHelper::IdForTab(active_tab->GetContents());
+  uploading_info.request_id = lens::LensOverlayRequestId();
   EXPECT_CALL(*mock_controller_, GetFileInfo(token))
       .WillRepeatedly(testing::Return(&uploading_info));
   // Do not submit request to server yet.
@@ -1980,6 +1981,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
   uploading_info.mime_type = lens::MimeType::kPdf;
   uploading_info.tab_session_id =
       sessions::SessionTabHelper::IdForTab(active_tab->GetContents());
+  uploading_info.request_id = lens::LensOverlayRequestId();
   EXPECT_CALL(*mock_controller_, GetFileInfo(token))
       .WillRepeatedly(testing::Return(&uploading_info));
   // Do not submit request to server yet.
@@ -2075,6 +2077,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
   uploading_info.mime_type = lens::MimeType::kPdf;
   uploading_info.tab_session_id =
       sessions::SessionTabHelper::IdForTab(active_tab->GetContents());
+  uploading_info.request_id = lens::LensOverlayRequestId();
   EXPECT_CALL(*mock_controller_, GetFileInfo(token))
       .WillRepeatedly(testing::Return(&uploading_info));
   // Do not submit request to server yet.
@@ -2192,6 +2195,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
       contextual_search::ContextUploadStatus::kProcessing;
   uploading_info.tab_session_id =
       sessions::SessionTabHelper::IdForTab(active_tab->GetContents());
+  uploading_info.request_id = lens::LensOverlayRequestId();
 
   EXPECT_CALL(*mock_controller_, GetFileInfo(testing::_))
       .WillRepeatedly(testing::Return(&uploading_info));
@@ -2272,6 +2276,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
       contextual_search::ContextUploadStatus::kProcessing;
   uploading_info.tab_session_id =
       sessions::SessionTabHelper::IdForTab(active_tab->GetContents());
+  uploading_info.request_id = lens::LensOverlayRequestId();
   EXPECT_CALL(*mock_controller_, GetFileInfo(*current_token))
       .WillRepeatedly(testing::Return(&uploading_info));
 
@@ -2409,6 +2414,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
   info_processing.upload_status =
       contextual_search::ContextUploadStatus::kProcessing;
   info_processing.tab_session_id = session_id;
+  info_processing.request_id = lens::LensOverlayRequestId();
   EXPECT_CALL(*mock_controller_, GetFileInfo(testing::_))
       .WillRepeatedly(testing::Return(&info_processing));
 
@@ -2607,6 +2613,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
   file_info_rB.upload_status =
       contextual_search::ContextUploadStatus::kProcessing;
   file_info_rB.tab_session_id = session_id;
+  file_info_rB.request_id = lens::LensOverlayRequestId();
   EXPECT_CALL(*mock_controller_, GetFileInfo(testing::_))
       .WillRepeatedly(testing::Return(&file_info_rB));
 

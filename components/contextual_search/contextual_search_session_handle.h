@@ -255,6 +255,12 @@ class ContextualSearchSessionHandle {
     return IsTabToken(token);
   }
 
+  // Returns the active token for a tab, for testing.
+  base::UnguessableToken GetActiveTokenForTabForTesting(
+      SessionID tab_session_id) const {
+    return GetActiveTokenForTab(tab_session_id);
+  }
+
   // Returns the list of submitted context tokens for this particular instance
   // of the session. These are uploaded and submitted, but we have not received
   // confirmation that they are available on the server.
@@ -316,6 +322,9 @@ class ContextualSearchSessionHandle {
   // Returns the active (non-superceded) token for the given tab session ID,
   // or an empty token if not found.
   base::UnguessableToken GetActiveTokenForTab(SessionID tab_session_id) const;
+
+  // Tracks a submitted tab if it is not superceded, deduplicating history.
+  void MaybeAddTabToSubmittedTabs(const base::UnguessableToken& token);
 
   // Returns true if the token corresponds to a tab context.
   bool IsTabToken(const base::UnguessableToken& token) const;
