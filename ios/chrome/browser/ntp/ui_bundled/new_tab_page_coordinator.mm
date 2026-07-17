@@ -1066,6 +1066,10 @@
 
 - (void)toolsMenuWasTapped:(UIView*)toolsMenu {
   CHECK(IsChromeNextIaEnabled());
+  base::RecordAction(base::UserMetricsAction("MobileToolbarShowMenuOnNTP"));
+  base::RecordAction(
+      base::UserMetricsAction("MobileToolbarNTPEntrypointShowMenu"));
+
   id<PopupMenuCommands> popupMenuHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), PopupMenuCommands);
   [popupMenuHandler showToolsMenuPopup];

@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/cancelable_callback.h"
 #import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/notimplemented.h"
 #import "base/notreached.h"
 #import "base/task/sequenced_task_runner.h"
@@ -770,6 +771,8 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
                     previewProvider:nil
                      actionProvider:^UIMenu*(
                          NSArray<UIMenuElement*>* suggestedActions) {
+                       base::RecordAction(base::UserMetricsAction(
+                           "MobileMenuToolbarMenuTriggered"));
                        return menu;
                      }];
   }
@@ -1126,6 +1129,8 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
                   action:@selector(backButtonTapped)
         forControlEvents:UIControlEventTouchUpInside];
   [_backButton addAction:[UIAction actionWithHandler:^(UIAction*) {
+                 base::RecordAction(
+                     base::UserMetricsAction("MobileMenuToolbarMenuTriggered"));
                  TriggerHapticFeedbackForImpact(UIImpactFeedbackStyleHeavy);
                }]
         forControlEvents:UIControlEventMenuActionTriggered];
@@ -1135,6 +1140,8 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
                      action:@selector(forwardButtonTapped)
            forControlEvents:UIControlEventTouchUpInside];
   [_forwardButton addAction:[UIAction actionWithHandler:^(UIAction*) {
+                    base::RecordAction(base::UserMetricsAction(
+                        "MobileMenuToolbarMenuTriggered"));
                     TriggerHapticFeedbackForImpact(UIImpactFeedbackStyleHeavy);
                   }]
            forControlEvents:UIControlEventMenuActionTriggered];
