@@ -378,11 +378,9 @@ public class AccessibilityTestService extends AccessibilityService {
                 if (start != null) {
                     if (node.equals(start.getNode())) {
                         builder.append(" extendedSelectionStart:")
-                                .append(start.getOffset())
                                 .append(
-                                        startOffsetType == OFFSET_TYPE_TEXT
-                                                ? " (text)"
-                                                : " (child)");
+                                        getExtendedSelectionString(
+                                                start.getOffset(), startOffsetType));
                         addedSelectionInfo = true;
                     }
                 }
@@ -391,8 +389,7 @@ public class AccessibilityTestService extends AccessibilityService {
                 if (end != null) {
                     if (node.equals(end.getNode())) {
                         builder.append(" extendedSelectionEnd:")
-                                .append(end.getOffset())
-                                .append(endOffsetType == OFFSET_TYPE_TEXT ? " (text)" : " (child)");
+                                .append(getExtendedSelectionString(end.getOffset(), endOffsetType));
                         addedSelectionInfo = true;
                     }
                 }
@@ -483,4 +480,8 @@ public class AccessibilityTestService extends AccessibilityService {
 
     @Override
     public void onInterrupt() {}
+
+    private static String getExtendedSelectionString(int offset, int offsetType) {
+        return "{" + offset + ", " + (offsetType == OFFSET_TYPE_TEXT ? "text" : "child") + "}";
+    }
 }

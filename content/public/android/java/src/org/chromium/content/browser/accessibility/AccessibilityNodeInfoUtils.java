@@ -103,11 +103,7 @@ public final class AccessibilityNodeInfoUtils {
                 assert startOffsetType == OFFSET_TYPE_TEXT
                         || startOffsetType == AccessibilityNodeInfoBuilder.OFFSET_TYPE_CHILD;
                 builder.append(" extendedSelectionStart:")
-                        .append(startOffset)
-                        .append(
-                                startOffsetType == AccessibilityNodeInfoBuilder.OFFSET_TYPE_TEXT
-                                        ? " (text)"
-                                        : " (child)");
+                        .append(getExtendedSelectionString(startOffset, startOffsetType));
             }
             if (endNode != null && endNode.equals(node)) {
                 int endOffset = (int) selection[WebContentsAccessibilityImpl.EXT_SEL_END_OFFSET];
@@ -116,12 +112,15 @@ public final class AccessibilityNodeInfoUtils {
                 assert endOffsetType == OFFSET_TYPE_TEXT
                         || endOffsetType == AccessibilityNodeInfoBuilder.OFFSET_TYPE_CHILD;
                 builder.append(" extendedSelectionEnd:")
-                        .append(endOffset)
-                        .append(endOffsetType == OFFSET_TYPE_TEXT ? " (text)" : " (child)");
+                        .append(getExtendedSelectionString(endOffset, endOffsetType));
             }
         }
 
         return builder.toString();
+    }
+
+    private static String getExtendedSelectionString(int offset, int offsetType) {
+        return "{" + offset + ", " + (offsetType == OFFSET_TYPE_TEXT ? "text" : "child") + "}";
     }
 
     /**
