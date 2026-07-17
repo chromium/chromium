@@ -12,7 +12,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -24,42 +23,18 @@
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_mac_utils.h"
-#endif
-
 OmniboxEverywhereService::OmniboxEverywhereService(Profile* profile)
-    : profile_(profile) {
-  if (base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhere) &&
-      ui::GlobalAcceleratorListener::GetInstance()) {
-    ui::GlobalAcceleratorListener::GetInstance()->RegisterAccelerator(
-        ui::Accelerator(ui::VKEY_SPACE,
-                        ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR),
-        this);
-  }
-}
+    : profile_(profile) {}
 
 OmniboxEverywhereService::~OmniboxEverywhereService() {
   Shutdown();
 }
 
 void OmniboxEverywhereService::Shutdown() {
-  if (ui::GlobalAcceleratorListener::GetInstance()) {
-    ui::GlobalAcceleratorListener::GetInstance()->UnregisterAccelerators(this);
-  }
   auto* controller =
       g_browser_process->GetFeatures()->omnibox_everywhere_controller();
   if (controller) {
     controller->ShutdownForProfile(profile_);
-  }
-}
-
-void OmniboxEverywhereService::TogglePopup() {
-  auto* controller =
-      g_browser_process->GetFeatures()->omnibox_everywhere_controller();
-  if (controller) {
-    controller->OnInvoke(omnibox_everywhere::InvocationSource::kGlobalHotkey,
-                         profile_);
   }
 }
 
@@ -76,49 +51,6 @@ bool OmniboxEverywhereService::IsPopupVisible() const {
       g_browser_process->GetFeatures()->omnibox_everywhere_controller();
   return controller && controller->IsVisible();
 }
-
-void OmniboxEverywhereService::OnKeyPressed(
-    const ui::Accelerator& accelerator) {
-  base::TimeTicks now = base::TimeTicks::Now();
-  if (!last_key_press_time_.is_null() &&
-      (now - last_key_press_time_) < base::Milliseconds(300)) {
-    return;
-  }
-  last_key_press_time_ = now;
-
-  // Only trigger for the last active profile or last used profile.
-  BrowserWindowInterface* active_bwi =
-      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
-  Browser* browser =
-      active_bwi ? active_bwi->GetBrowserForMigrationOnly() : nullptr;
-  Profile* target_profile = browser ? browser->GetProfile() : nullptr;
-  if (!target_profile && g_browser_process->profile_manager()) {
-    const std::vector<Profile*>& profiles =
-        g_browser_process->profile_manager()->GetLoadedProfiles();
-    if (!profiles.empty()) {
-      target_profile = profiles[0];
-    }
-  }
-
-  if (target_profile) {
-    auto* service =
-        OmniboxEverywhereServiceFactory::GetForProfile(target_profile);
-    if (service != this) {
-      return;
-    }
-#if BUILDFLAG(IS_MAC)
-    service->SetWasActiveBeforePopup(omnibox_everywhere::IsAppActiveOnMac());
-#else
-    service->SetWasActiveBeforePopup(true);
-#endif
-    service->SetIsNavigating(false);
-    service->TogglePopup();
-  }
-}
-
-void OmniboxEverywhereService::ExecuteCommand(
-    const std::string& accelerator_group_id,
-    const std::string& command_id) {}
 
 void OmniboxEverywhereService::SetIsNavigating(bool is_navigating) {
   auto* controller =

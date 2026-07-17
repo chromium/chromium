@@ -6,22 +6,44 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_ui_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "content/public/test/browser_task_environment.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class OmniboxEverywhereControllerTest : public testing::Test {
+namespace {
+
+class TestWebUIContentsWrapper : public WebUIContentsWrapper {
+ public:
+  explicit TestWebUIContentsWrapper(Profile* profile)
+      : WebUIContentsWrapper(GURL(""), profile, 0, true, true, true, "Test") {}
+  ~TestWebUIContentsWrapper() override = default;
+
+  void ReloadWebContents() override {}
+
+  base::WeakPtr<WebUIContentsWrapper> GetWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<TestWebUIContentsWrapper> weak_ptr_factory_{this};
+};
+
+}  // namespace
+
+class OmniboxEverywhereControllerTest : public ChromeViewsTestBase {
  public:
   void TearDown() override {
     TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
+    ChromeViewsTestBase::TearDown();
   }
 
  protected:
-  // Must be initialized before `task_environment_` to ensure feature overrides
-  // are registered before background threads are started.
   base::test::ScopedFeatureList feature_list_{omnibox::kOmniboxEverywhere};
-  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile_;
 };
 
 TEST_F(OmniboxEverywhereControllerTest, EnabledFeatureInstantiatesController) {
@@ -31,4 +53,22 @@ TEST_F(OmniboxEverywhereControllerTest, EnabledFeatureInstantiatesController) {
   GlobalFeatures* features = TestingBrowserProcess::GetGlobal()->GetFeatures();
   ASSERT_TRUE(features);
   EXPECT_TRUE(features->omnibox_everywhere_controller());
+}
+
+TEST_F(OmniboxEverywhereControllerTest, OnInvokeControlsWidget) {
+  omnibox_everywhere::OmniboxEverywhereController controller(
+      base::BindRepeating(
+          [](Profile* profile) -> std::unique_ptr<WebUIContentsWrapper> {
+            return std::make_unique<TestWebUIContentsWrapper>(profile);
+          }));
+
+  EXPECT_FALSE(controller.IsVisible());
+
+  controller.OnInvoke(omnibox_everywhere::InvocationSource::kGlobalHotkey,
+                      &profile_, GetContext());
+  EXPECT_TRUE(controller.IsVisible());
+
+  controller.OnInvoke(omnibox_everywhere::InvocationSource::kGlobalHotkey,
+                      &profile_, GetContext());
+  EXPECT_FALSE(controller.IsVisible());
 }

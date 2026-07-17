@@ -4,29 +4,23 @@
 
 #ifndef CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_EVERYWHERE_SERVICE_H_
 #define CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_EVERYWHERE_SERVICE_H_
-#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 class Profile;
 
-class OmniboxEverywhereService
-    : public KeyedService,
-      public ui::GlobalAcceleratorListener::Observer {
+class OmniboxEverywhereService : public KeyedService {
  public:
   explicit OmniboxEverywhereService(Profile* profile);
   OmniboxEverywhereService(const OmniboxEverywhereService&) = delete;
   OmniboxEverywhereService& operator=(const OmniboxEverywhereService&) = delete;
   ~OmniboxEverywhereService() override;
 
-  void TogglePopup();
   void HidePopup();
   bool IsPopupVisible() const;
   void OpenUrl(const GURL& url,
@@ -36,17 +30,11 @@ class OmniboxEverywhereService
   // KeyedService:
   void Shutdown() override;
 
-  // ui::GlobalAcceleratorListener::Observer:
-  void OnKeyPressed(const ui::Accelerator& accelerator) override;
-  void ExecuteCommand(const std::string& accelerator_group_id,
-                      const std::string& command_id) override;
-
   void SetIsNavigating(bool is_navigating);
   void SetWasActiveBeforePopup(bool was_active);
 
  private:
   raw_ptr<Profile> profile_;
-  base::TimeTicks last_key_press_time_;
 
   base::WeakPtrFactory<OmniboxEverywhereService> weak_factory_{this};
 };

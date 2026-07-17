@@ -26,10 +26,12 @@ source_set("omnibox_everywhere") {
   public_deps = [ "//base" ]
   deps = [
     "//chrome/browser:file_select_helper",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/webui/omnibox_everywhere",
     "//chrome/browser/ui/webui/omnibox_popup",
     "//components/omnibox/common:features",
+    "//ui/base/accelerators/global_accelerator_listener",
     "//ui/gfx",
     "//ui/views",
     "//ui/views/controls/webview",

@@ -4,23 +4,57 @@
 
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_controller.h"
 
+#include <vector>
+
+#include "base/feature_list.h"
+#include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_ui_manager.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "ui/base/accelerators/accelerator.h"
+#include "ui/base/base_window.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_mac_utils.h"
+#endif
 
 namespace omnibox_everywhere {
 
-OmniboxEverywhereController::OmniboxEverywhereController()
-    : ui_manager_(std::make_unique<OmniboxEverywhereUIManager>()) {}
+OmniboxEverywhereController::OmniboxEverywhereController(
+    OmniboxEverywhereUIManager::ContentsWrapperFactory contents_wrapper_factory)
+    : ui_manager_(std::make_unique<OmniboxEverywhereUIManager>(
+          std::move(contents_wrapper_factory))) {
+  if (base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhere)) {
+    if (auto* listener = ui::GlobalAcceleratorListener::GetInstance()) {
+      listener->RegisterAccelerator(
+          ui::Accelerator(ui::VKEY_SPACE,
+                          ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR),
+          this);
+    }
+  }
+}
 
-OmniboxEverywhereController::~OmniboxEverywhereController() = default;
+OmniboxEverywhereController::~OmniboxEverywhereController() {
+  if (auto* listener = ui::GlobalAcceleratorListener::GetInstance()) {
+    listener->UnregisterAccelerators(this);
+  }
+}
 
 void OmniboxEverywhereController::OnInvoke(InvocationSource source,
-                                           Profile* profile) {
+                                           Profile* profile,
+                                           gfx::NativeWindow context) {
   switch (source) {
     case InvocationSource::kGlobalHotkey:
       if (IsVisible() && ui_manager_->profile() == profile) {
         Close();
       } else {
-        ui_manager_->ShowForProfile(profile);
+        ui_manager_->ShowForProfile(profile, context);
       }
       break;
   }
@@ -39,5 +73,44 @@ void OmniboxEverywhereController::ShutdownForProfile(Profile* profile) {
     ui_manager_->Shutdown();
   }
 }
+
+// TODO(crbug.com/527183107): Implement a better profile selection heuristic.
+Profile* OmniboxEverywhereController::GetTargetProfile() {
+  BrowserWindowInterface* active_bwi =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
+  Profile* target_profile = active_bwi ? active_bwi->GetProfile() : nullptr;
+
+  // Only use the profile of the last active browser window. If no browser
+  // window is active (e.g. on the profile selection screen), return nullptr.
+  // Also check that the profile has the required service (e.g. it is not OTR).
+  if (target_profile &&
+      !OmniboxEverywhereServiceFactory::GetForProfile(target_profile)) {
+    target_profile = nullptr;
+  }
+  return target_profile;
+}
+
+void OmniboxEverywhereController::OnKeyPressed(
+    const ui::Accelerator& accelerator) {
+  BrowserWindowInterface* active_bwi =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
+  Profile* target_profile = GetTargetProfile();
+  if (target_profile) {
+    gfx::NativeWindow context = active_bwi && active_bwi->GetWindow()
+                                    ? active_bwi->GetWindow()->GetNativeWindow()
+                                    : gfx::NativeWindow();
+#if BUILDFLAG(IS_MAC)
+    ui_manager_->SetWasActiveBeforePopup(IsAppActiveOnMac());
+#else
+    ui_manager_->SetWasActiveBeforePopup(true);
+#endif
+    ui_manager_->SetIsNavigating(false);
+    OnInvoke(InvocationSource::kGlobalHotkey, target_profile, context);
+  }
+}
+
+void OmniboxEverywhereController::ExecuteCommand(
+    const std::string& accelerator_group_id,
+    const std::string& command_id) {}
 
 }  // namespace omnibox_everywhere

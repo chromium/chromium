@@ -6,12 +6,15 @@
 #define CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_EVERYWHERE_OMNIBOX_EVERYWHERE_CONTROLLER_H_
 
 #include <memory>
+#include <string>
+
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_ui_manager.h"
+#include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
+#include "ui/gfx/native_ui_types.h"
 
 class Profile;
 
 namespace omnibox_everywhere {
-
-class OmniboxEverywhereUIManager;
 
 // The source of the Omnibox Everywhere invocation.
 enum class InvocationSource {
@@ -21,16 +24,21 @@ enum class InvocationSource {
 
 // Coordinator class that manages the Omnibox Everywhere desktop feature.
 // Exists as a process-global singleton owned by GlobalFeatures.
-class OmniboxEverywhereController {
+class OmniboxEverywhereController
+    : public ui::GlobalAcceleratorListener::Observer {
  public:
-  OmniboxEverywhereController();
+  explicit OmniboxEverywhereController(
+      OmniboxEverywhereUIManager::ContentsWrapperFactory
+          contents_wrapper_factory = {});
   OmniboxEverywhereController(const OmniboxEverywhereController&) = delete;
   OmniboxEverywhereController& operator=(const OmniboxEverywhereController&) =
       delete;
-  ~OmniboxEverywhereController();
+  ~OmniboxEverywhereController() override;
 
   // Called when the Omnibox Everywhere is invoked via one of the entry points.
-  void OnInvoke(InvocationSource source, Profile* profile);
+  void OnInvoke(InvocationSource source,
+                Profile* profile,
+                gfx::NativeWindow context = gfx::NativeWindow());
 
   OmniboxEverywhereUIManager* ui_manager() { return ui_manager_.get(); }
   const OmniboxEverywhereUIManager* ui_manager() const {
@@ -46,7 +54,16 @@ class OmniboxEverywhereController {
   // Called during profile teardown to synchronously close the widget.
   void ShutdownForProfile(Profile* profile);
 
+  // ui::GlobalAcceleratorListener::Observer:
+  void OnKeyPressed(const ui::Accelerator& accelerator) override;
+  void ExecuteCommand(const std::string& accelerator_group_id,
+                      const std::string& command_id) override;
+
  private:
+  // Resolves the target profile for the Omnibox Everywhere invocation.
+  // TODO(crbug.com/527183107): Implement a better profile selection heuristic.
+  Profile* GetTargetProfile();
+
   std::unique_ptr<OmniboxEverywhereUIManager> ui_manager_;
 };
 
