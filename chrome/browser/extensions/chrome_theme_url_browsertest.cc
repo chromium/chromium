@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/theme_source.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -12,6 +15,8 @@ namespace extensions {
 // Tests that chrome://theme/ URLs are only accessible to component extensions.
 IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
                        OnlyComponentExtensionsCanAccessChromeThemeUrls) {
+  content::URLDataSource::Add(profile(),
+                              std::make_unique<ThemeSource>(profile()));
   const base::FilePath extension_path(
       test_data_dir_.AppendASCII("browsertest")
                     .AppendASCII("chrome_theme_url"));
