@@ -10,28 +10,45 @@
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions::identity_constants {
-extern const char kInvalidClientId[];
-extern const char kInvalidScopes[];
-extern const char kAuthFailure[];
-extern const char kNoGrant[];
-extern const char kUserRejected[];
-extern const char kUserNotSignedIn[];
-extern const char kUserNonPrimary[];
-extern const char kBrowserSigninNotAllowed[];
-extern const char kInteractionRequired[];
-extern const char kGetAuthTokenInteractivityDeniedError[];
-extern const char kInvalidRedirect[];
-extern const char kOffTheRecord[];
-extern const char kPageLoadFailure[];
-extern const char kPageLoadTimedOut[];
-extern const char kInvalidConsentResult[];
-extern const char kCannotSetRemoteConsentResolutionCookies[];
-extern const char kCannotCreateWindow[];
-extern const char kInvalidURLScheme[];
-extern const char kBrowserContextShutDown[];
-extern const char kWebAuthFlowInProgress[];
+inline constexpr char kInvalidClientId[] = "Invalid OAuth2 Client ID.";
+inline constexpr char kInvalidScopes[] = "Invalid OAuth2 scopes.";
+inline constexpr char kAuthFailure[] = "OAuth2 request failed: ";
+inline constexpr char kNoGrant[] = "OAuth2 not granted or revoked.";
+inline constexpr char kUserRejected[] = "The user did not approve access.";
+inline constexpr char kUserNotSignedIn[] = "The user is not signed in.";
+inline constexpr char kUserNonPrimary[] =
+    "Only the primary user account is allowed";
+inline constexpr char kBrowserSigninNotAllowed[] =
+    "The user turned off browser signin";
+inline constexpr char kInteractionRequired[] =
+    "User interaction required. Try setting `abortOnLoadForNonInteractive` and "
+    "`timeoutMsForNonInteractive` if multiple navigations are required, or if "
+    "code is used for redirects in the authorization page after it's loaded.";
+inline constexpr char kGetAuthTokenInteractivityDeniedError[] =
+    "User interaction blocked due to user inactivity.";
+inline constexpr char kInvalidRedirect[] = "Did not redirect to the right URL.";
+inline constexpr char kOffTheRecord[] =
+    "Identity API is disabled in incognito windows.";
+inline constexpr char kPageLoadFailure[] =
+    "Authorization page could not be loaded.";
+inline constexpr char kPageLoadTimedOut[] =
+    "Authorization page load timed out.";
+inline constexpr char kInvalidConsentResult[] =
+    "Returned an invalid consent result.";
+inline constexpr char kCannotSetRemoteConsentResolutionCookies[] =
+    "Couldn't set up remote consent resolution cookies to display an "
+    "authorization page";
+inline constexpr char kCannotCreateWindow[] =
+    "Couldn't create a browser window to display an authorization page.";
+inline constexpr char kInvalidURLScheme[] =
+    "The auth url has an invalid scheme. Only http:// and https:// schemes are "
+    "allowed.";
+inline constexpr char kBrowserContextShutDown[] =
+    "The browser context has been shut down";
+inline constexpr char kWebAuthFlowInProgress[] =
+    "Only one web auth flow is allowed at a time.";
 
-extern const int kCachedRemoteConsentTTLSeconds;
+inline constexpr int kCachedRemoteConsentTTLSeconds = 1;
 }  // namespace extensions::identity_constants
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_IDENTITY_IDENTITY_CONSTANTS_H_
