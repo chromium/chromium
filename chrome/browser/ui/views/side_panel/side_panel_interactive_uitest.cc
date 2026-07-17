@@ -688,6 +688,35 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest, CloseSidePanel) {
       WaitForHide(kSidePanelElementId));
 }
 
+IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest, CloseRestoresFocus) {
+  auto disable_rich_animation =
+      gfx::AnimationTestApi::SetRichAnimationRenderMode(
+          gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+
+  RunTestSequence(
+      EnsureNotPresent(kSidePanelElementId), OpenBookmarksSidePanel(),
+      WaitForShow(kSidePanelElementId),
+      WaitForShow(kSidePanelCloseButtonElementId),
+      FocusElement(kSidePanelCloseButtonElementId),
+      // Ensure the close button has focus.
+      CheckView(kSidePanelCloseButtonElementId,
+                [](views::View* view) { return view->HasFocus(); }),
+      PressButton(kSidePanelCloseButtonElementId),
+      WaitForHide(kSidePanelElementId),
+      // Verify the focus is no longer on the side panel after close.
+      CheckResult(
+          [this]() {
+            views::FocusManager* focus_manager =
+                BrowserView::GetBrowserViewForBrowser(browser())
+                    ->GetFocusManager();
+            SidePanel* side_panel =
+                BrowserView::GetBrowserViewForBrowser(browser())->side_panel();
+            views::View* focused_view = focus_manager->GetStoredFocusView();
+            return focused_view && !side_panel->Contains(focused_view);
+          },
+          true));
+}
+
 class SidePanelAnimationPerfUiTest : public SidePanelInteractiveTest {
  public:
   SidePanelAnimationPerfUiTest() = default;
