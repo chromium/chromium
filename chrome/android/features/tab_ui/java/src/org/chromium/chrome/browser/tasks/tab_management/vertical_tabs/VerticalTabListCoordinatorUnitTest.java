@@ -273,6 +273,20 @@ public class VerticalTabListCoordinatorUnitTest {
         return spy(realRecyclerView);
     }
 
+    private void assertEmptySpaceContextMenuRightClick(View targetView) {
+        assertNotNull("Target view for context click must not be null.", targetView);
+        assertNull(
+                "Context menu coordinator should start as null.",
+                mCoordinator.getTabStripContextMenuCoordinatorForTesting());
+
+        // Simulate a right-click context interaction.
+        targetView.performContextClick();
+
+        assertNotNull(
+                "Right click should instantiate the context menu coordinator.",
+                mCoordinator.getTabStripContextMenuCoordinatorForTesting());
+    }
+
     @Test
     @SmallTest
     public void testConstructor() {
@@ -440,20 +454,49 @@ public class VerticalTabListCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    public void testVTEmptySpaceRightClick_LaunchesContextMenu() {
+    public void testVTTabListRecyclerView_EmptySpaceRightClick_LaunchesContextMenu() {
         createCoordinator();
         TabListRecyclerView recyclerView =
                 mCoordinator.getView().findViewById(R.id.tab_list_recycler_view);
 
-        assertNotNull(recyclerView);
+        assertEmptySpaceContextMenuRightClick(recyclerView);
+    }
+
+    @Test
+    @SmallTest
+    public void testVTHeaderContainerLongPress_LaunchesEmptySpaceContextMenu() {
+        createCoordinator();
+        // vertical_tab_rail_container.
+        ViewGroup container = (ViewGroup) mCoordinator.getView();
+        View headerContainer = container.findViewById(R.id.vertical_tab_header_container);
+
+        assertNotNull("Header container should exist in the layout.", headerContainer);
+
+        // Ensure the context menu coordinator reference starts fresh as null.
         assertNull(mCoordinator.getTabStripContextMenuCoordinatorForTesting());
 
-        // Simulate a mouse right-click.
-        recyclerView.performContextClick();
+        // Simulate touch down at coordinates (50, 20) inside the header container.
+        MotionEvent downEvent = obtainMotionEvent(MotionEvent.ACTION_DOWN, 50f, 20f);
+        // To simulate a touch on a normal view (not recycler view) so that its OnTouchListener
+        // triggers, we call dispatchTouchEvent(downEvent).
+        headerContainer.dispatchTouchEvent(downEvent);
+
+        // Advance Robolectric's clock by 500ms to trigger the long-press gesture.
+        ShadowLooper.idleMainLooper(500, TimeUnit.MILLISECONDS);
 
         assertNotNull(
-                "Right click on empty space should instantiate the context menu coordinator.",
+                "Long press on header container should instantiate the context menu coordinator.",
                 mCoordinator.getTabStripContextMenuCoordinatorForTesting());
+    }
+
+    @Test
+    @SmallTest
+    public void testVTHeaderContainerRightClick_LaunchesEmptySpaceContextMenu() {
+        createCoordinator();
+        ViewGroup container = (ViewGroup) mCoordinator.getView();
+        View headerContainer = container.findViewById(R.id.vertical_tab_header_container);
+
+        assertEmptySpaceContextMenuRightClick(headerContainer);
     }
 
     @Test

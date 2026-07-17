@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management.vertical_tabs;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Point;
@@ -191,6 +192,7 @@ public class VerticalTabListCoordinator {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     public VerticalTabListCoordinator(
             Activity activity,
             TabModelSelector tabModelSelector,
@@ -274,40 +276,12 @@ public class VerticalTabListCoordinator {
         recyclerView.setupCustomItemAnimator(/* useClipAnimations= */ true);
         recyclerView.setVisibility(View.VISIBLE);
 
-        // Create the gesture detector to catch long-presses on VT empty space.
+        // Create the gesture detector to catch long-presses on VT empty space for the tab list
+        // recycler view.
         GestureDetector gestureDetector =
                 new GestureDetector(
                         activity,
-                        new GestureDetector.SimpleOnGestureListener() {
-                            @Override
-                            public boolean onDown(MotionEvent e) {
-                                // Turns on the gesture engine's internal stopwatch to calculate the
-                                // long-press.
-                                return true;
-                            }
-
-                            @Override
-                            public void onLongPress(MotionEvent e) {
-                                // Ignore long-press actions if a secondary button modifier
-                                // (right-click) is active. Right-clicks are already handled by
-                                // setOnContextClickListener; allowing this to proceed causes
-                                // double-rendering on desktop workspaces where trackpad taps are
-                                // emulated via TOOL_TYPE_FINGER (instead of TOOL_TYPE_MOUSE).
-                                if ((e.getButtonState() & MotionEvent.BUTTON_SECONDARY) != 0) {
-                                    return;
-                                }
-
-                                View childView =
-                                        recyclerView.findChildViewUnder(e.getX(), e.getY());
-                                if (childView != null) {
-                                    // Allow ItemTouchHelper2 + Orchestrator to manage it instead.
-                                    return;
-                                }
-
-                                handleContextMenuInteraction(
-                                        activity, recyclerView, e.getX(), e.getY());
-                            }
-                        });
+                        createEmptySpaceGestureListener(activity, recyclerView, recyclerView));
 
         // Item Touch Listeners intercept all incoming window events before they are sent down to
         // the child views.
@@ -352,11 +326,36 @@ public class VerticalTabListCoordinator {
                     }
                 });
 
-        // Handles right-click for empty space context menu.
+        // Handles right-click for empty space context menu on tab_list_recycler_view.
         recyclerView.setOnContextClickListener(
-                v ->
-                        handleContextMenuInteraction(
-                                activity, recyclerView, mLastTouchPoint.x, mLastTouchPoint.y));
+                createEmptySpaceContextClickListener(activity, recyclerView));
+
+        // Set up empty space context menu handlers for the header container.
+        View headerContainer = mContainerView.findViewById(R.id.vertical_tab_header_container);
+        if (headerContainer != null) {
+            GestureDetector headerGestureDetector =
+                    new GestureDetector(
+                            activity,
+                            createEmptySpaceGestureListener(
+                                    activity, headerContainer, mRecyclerView));
+
+            headerContainer.setOnTouchListener(
+                    (v, event) -> {
+                        if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                            mLastTouchPoint.set((int) event.getX(), (int) event.getY());
+                        }
+                        headerGestureDetector.onTouchEvent(event);
+                        return false;
+                    });
+
+            headerContainer.setOnContextClickListener(
+                    v -> {
+                        // Handles right-click for empty space context menu on
+                        // vertical_tab_header_container.
+                        return createEmptySpaceContextClickListener(activity, headerContainer)
+                                .onContextClick(v);
+                    });
+        }
 
         mTabListFaviconProvider =
                 new TabListFaviconProvider(
@@ -989,9 +988,8 @@ public class VerticalTabListCoordinator {
     }
 
     private void showEmptySpaceContextMenu(
-            Activity activity, RecyclerView recyclerView, float localX, float localY) {
-        RectProvider rectProvider = calculateTouchAnchor(recyclerView, localX, localY);
-
+            Activity activity, View targetView, float localX, float localY) {
+        RectProvider rectProvider = calculateTouchAnchor(targetView, localX, localY);
         if (mTabStripContextMenuCoordinator == null) {
             mTabStripContextMenuCoordinator =
                     TabStripContextMenuCoordinator.createContextMenuCoordinator(
@@ -1024,24 +1022,88 @@ public class VerticalTabListCoordinator {
         return new RectProvider(anchorRect);
     }
 
-    private RectProvider calculateTouchAnchor(
-            RecyclerView recyclerView, float localX, float localY) {
-        // Get the top-left edge pos of the scrollable recycler view relative to the Android
+    private RectProvider calculateTouchAnchor(View targetView, float localX, float localY) {
+        // Get the top-left edge pos of the touched view relative to the Android
         // application window screen.
-        int[] recyclerViewPos = new int[2];
-        recyclerView.getLocationInWindow(recyclerViewPos);
+        int[] viewPos = new int[2];
+        targetView.getLocationInWindow(viewPos);
 
         // Calculate window-relative anchor coordinates, where localX and localY are relative to the
-        // recycler view.
-        int windowX = recyclerViewPos[0] + (int) localX;
-        int windowY = recyclerViewPos[1] + (int) localY;
+        // target view.
+        int windowX = viewPos[0] + (int) localX;
+        int windowY = viewPos[1] + (int) localY;
 
         // Build a precise 1x1 bounding box right under the cursor/pointer.
         Rect anchorRect = new Rect(windowX, windowY, windowX + 1, windowY + 1);
         return new RectProvider(anchorRect);
     }
 
-    void dismissActiveContextMenus() {
+    /**
+     * Creates a reusable SimpleOnGestureListener for empty space long-presses.
+     *
+     * @param activity The active context.
+     * @param targetView The view receiving the touch events.
+     * @param targetRecyclerView The RecyclerView containing list items to evaluate (if targetView
+     *     is a RecyclerView).
+     */
+    private GestureDetector.SimpleOnGestureListener createEmptySpaceGestureListener(
+            Activity activity, View targetView, RecyclerView targetRecyclerView) {
+        return new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onDown(MotionEvent e) {
+                // Turns on the gesture engine's internal stopwatch to calculate the
+                // long-press.
+                return true;
+            }
+
+            @Override
+            public void onLongPress(MotionEvent e) {
+                // Ignore long-press actions if a secondary button modifier
+                // (right-click) is active. Right-clicks are already handled by
+                // setOnContextClickListener; allowing this to proceed causes
+                // double-rendering on desktop workspaces where trackpad taps are
+                // emulated via TOOL_TYPE_FINGER (instead of TOOL_TYPE_MOUSE).
+                if ((e.getButtonState() & MotionEvent.BUTTON_SECONDARY) != 0) {
+                    return;
+                }
+
+                // If this is a RecyclerView, ensure we didn't long-press an actual child item.
+                if (targetView instanceof RecyclerView rv) {
+                    View childView = rv.findChildViewUnder(e.getX(), e.getY());
+                    if (childView != null) {
+                        // Allow ItemTouchHelper2 + Orchestrator to manage it instead.
+                        return;
+                    }
+                    handleContextMenuInteraction(activity, targetRecyclerView, e.getX(), e.getY());
+                } else {
+                    // For the header view (or non-lists), directly show the empty space menu.
+                    showEmptySpaceContextMenu(activity, targetView, e.getX(), e.getY());
+                }
+            }
+        };
+    }
+
+    /**
+     * Creates a reusable OnContextClickListener for empty space right-clicks.
+     *
+     * @param activity The active context.
+     * @param targetView The view receiving the click.
+     */
+    private View.OnContextClickListener createEmptySpaceContextClickListener(
+            Activity activity, View targetView) {
+        return v -> {
+            if (targetView instanceof RecyclerView rv) {
+                return handleContextMenuInteraction(
+                        activity, rv, mLastTouchPoint.x, mLastTouchPoint.y);
+            } else {
+                showEmptySpaceContextMenu(
+                        activity, targetView, mLastTouchPoint.x, mLastTouchPoint.y);
+                return true;
+            }
+        };
+    }
+
+    private void dismissActiveContextMenus() {
         if (mTabStripContextMenuCoordinator != null) mTabStripContextMenuCoordinator.dismiss();
         if (mTabContextMenuCoordinator != null) mTabContextMenuCoordinator.dismiss();
         if (mTabGroupContextMenuCoordinator != null) mTabGroupContextMenuCoordinator.dismiss();
