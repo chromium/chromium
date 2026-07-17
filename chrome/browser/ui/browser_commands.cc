@@ -1290,12 +1290,7 @@ content::WebContents& NewTab(BrowserWindowInterface* browser,
 
   if (browser->GetBrowserForMigrationOnly()->SupportsWindowFeature(
           Browser::WindowFeature::kFeatureTabStrip)) {
-    std::optional<tab_groups::TabGroupId> group_id;
-    if (features::IsNewTabAddsToActiveGroupEnabled()) {
-      group_id = active_tab_group_id;
-    }
-
-    return *AddAndReturnTabAt(browser, GURL(), -1, true, group_id);
+    return *AddAndReturnTabAt(browser, GURL(), -1, true, std::nullopt);
   }
 
   ScopedTabbedBrowserDisplayer displayer(browser->GetProfile());
