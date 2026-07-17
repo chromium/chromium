@@ -118,6 +118,7 @@ class MockDelegate : public MetricReportingManager::Delegate {
 class MetricReportingManagerForTest : public MetricReportingManager {
  public:
   static std::unique_ptr<MetricReportingManagerForTest> Create(
+      ::network::NetworkQualityTracker* network_quality_tracker,
       std::unique_ptr<Delegate> delegate,
       policy::ManagedSessionService* managed_session_service);
 
@@ -136,7 +137,9 @@ class MetricReportingManagerForTest : public MetricReportingManager {
   FakeMetricReportQueue* kiosk_heartbeat_telemetry_queue() const;
 
  private:
-  explicit MetricReportingManagerForTest(std::unique_ptr<Delegate> delegate);
+  MetricReportingManagerForTest(
+      ::network::NetworkQualityTracker* network_quality_tracker,
+      std::unique_ptr<Delegate> delegate);
 };
 }  // namespace reporting::test
 

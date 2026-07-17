@@ -197,6 +197,11 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
     ash::InstallAttributes* install_attributes) {
   CHECK(!service());
 
+  // TODO(crbug.com/404133022): Inject NetworkQualityTracker to this class.
+  // Since NetworkQualityTracker is created after DeviceCommandsFactoryAsh, it
+  // should be injected via StartConnection or a dedicated call.
+  auto* network_quality_tracker = g_browser_process->network_quality_tracker();
+
   // If supported, set state keys here so the first policy fetch submits them to
   // the server.
   if (AutoEnrollmentTypeChecker::AreFREStateKeysSupported()) {
@@ -274,7 +279,7 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
                                                     task_runner_),
         task_runner_, GetSystemLogUploadUrl());
     metric_reporting_manager_ = reporting::MetricReportingManager::Create(
-        managed_session_service_.get());
+        network_quality_tracker, managed_session_service_.get());
     os_updates_reporter_ = reporting::OsUpdatesReporter::Create();
     event_based_log_manager_ =
         std::make_unique<EventBasedLogManager>(local_state_, this);

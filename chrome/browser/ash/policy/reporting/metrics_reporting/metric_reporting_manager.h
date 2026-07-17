@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -30,6 +31,10 @@
 #include "components/reporting/metrics/event_driven_telemetry_collector_pool.h"
 #include "components/reporting/metrics/periodic_event_collector.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
+
+namespace network {
+class NetworkQualityTracker;
+}  // namespace network
 
 namespace reporting {
 
@@ -76,7 +81,10 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
     virtual bool IsAppServiceAvailableForProfile(Profile* profile) const;
   };
 
+  // `network_quality_tracker` must be non-null and must outlive the returned
+  // object.
   static std::unique_ptr<MetricReportingManager> Create(
+      ::network::NetworkQualityTracker* network_quality_tracker,
       policy::ManagedSessionService* managed_session_service);
 
   ~MetricReportingManager() override;
@@ -98,8 +106,10 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
   Delegate* delegate() const;
 
  protected:
-  // Constructor is overridden for testing.
-  explicit MetricReportingManager(std::unique_ptr<Delegate> delegate);
+  // `network_quality_tracker` must be non-null and must outlive `this`.
+  MetricReportingManager(
+      ::network::NetworkQualityTracker* network_quality_tracker,
+      std::unique_ptr<Delegate> delegate);
 
   // Init collectors that need to start on startup after a delay, should
   // only be scheduled once on construction.
@@ -310,6 +320,8 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
 
   std::vector<raw_ptr<CollectorBase, VectorExperimental>>
   GetTelemetryCollectorsFromSetting(std::string_view setting_name);
+
+  const raw_ref<::network::NetworkQualityTracker> network_quality_tracker_;
 
   CrosReportingSettings reporting_settings_;
   LocalStateReportingSettings local_state_reporting_settings_;

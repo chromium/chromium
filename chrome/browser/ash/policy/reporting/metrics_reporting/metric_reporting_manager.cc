@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -52,7 +53,6 @@
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "chrome/browser/chromeos/reporting/metric_reporting_prefs.h"
 #include "chrome/browser/chromeos/reporting/network/network_bandwidth_sampler.h"
@@ -140,9 +140,10 @@ bool MetricReportingManager::Delegate::IsAppServiceAvailableForProfile(
 
 // static
 std::unique_ptr<MetricReportingManager> MetricReportingManager::Create(
+    ::network::NetworkQualityTracker* network_quality_tracker,
     policy::ManagedSessionService* managed_session_service) {
-  auto manager = base::WrapUnique(
-      new MetricReportingManager(std::make_unique<Delegate>()));
+  auto manager = base::WrapUnique(new MetricReportingManager(
+      network_quality_tracker, std::make_unique<Delegate>()));
   manager->DelayedInit(managed_session_service);
   return manager;
 }
@@ -235,8 +236,10 @@ MetricReportingManager::GetTelemetryCollectors(MetricEventType event_type) {
 }
 
 MetricReportingManager::MetricReportingManager(
+    ::network::NetworkQualityTracker* network_quality_tracker,
     std::unique_ptr<Delegate> delegate)
-    : delegate_(std::move(delegate)) {}
+    : network_quality_tracker_(CHECK_DEREF(network_quality_tracker)),
+      delegate_(std::move(delegate)) {}
 
 void MetricReportingManager::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -562,7 +565,7 @@ void MetricReportingManager::InitNetworkCollectors(Profile* profile) {
 
   // Network bandwidth telemetry.
   auto network_bandwidth_sampler = std::make_unique<NetworkBandwidthSampler>(
-      g_browser_process->network_quality_tracker(), profile->GetWeakPtr());
+      &network_quality_tracker_.get(), profile->GetWeakPtr());
   network_bandwidth_collector_ = delegate_->CreatePeriodicCollector(
       network_bandwidth_sampler.get(), user_telemetry_report_queue_.get(),
       &reporting_settings_,

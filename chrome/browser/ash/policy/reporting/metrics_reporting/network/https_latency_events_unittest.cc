@@ -214,8 +214,9 @@ TEST_F(HttpsLatencyEventsTest, RoutineVerdictProblem) {
   diagnostics.SetResultNoProblem(latency_ms);
   auto init_delay = delegate->GetInitDelay();
 
-  auto metric_reporting_manager =
-      test::MetricReportingManagerForTest::Create(std::move(delegate), nullptr);
+  auto metric_reporting_manager = test::MetricReportingManagerForTest::Create(
+      TestingBrowserProcess::GetGlobal()->network_quality_tracker(),
+      std::move(delegate), nullptr);
 
   metric_reporting_manager->OnLogin(profile_.get());
 
@@ -321,8 +322,9 @@ TEST_F(HttpsLatencyEventsTest, ReportDeviceNetworkStatusDisabled) {
       std::make_unique<::testing::NiceMock<FakeMetricReportingManagerDelegate>>(
           &diagnostics);
 
-  auto metric_reporting_manager =
-      test::MetricReportingManagerForTest::Create(std::move(delegate), nullptr);
+  auto metric_reporting_manager = test::MetricReportingManagerForTest::Create(
+      TestingBrowserProcess::GetGlobal()->network_quality_tracker(),
+      std::move(delegate), nullptr);
   metric_reporting_manager->OnLogin(profile_.get());
 
   HttpsLatencyTestReportQueue* const fake_event_queue =
@@ -342,8 +344,9 @@ TEST_F(HttpsLatencyEventsTest, ReportDeviceNetworkStatusUnaffiliatedUser) {
   auto delegate =
       std::make_unique<::testing::NiceMock<FakeMetricReportingManagerDelegate>>(
           &diagnostics);
-  auto metric_reporting_manager =
-      test::MetricReportingManagerForTest::Create(std::move(delegate), nullptr);
+  auto metric_reporting_manager = test::MetricReportingManagerForTest::Create(
+      TestingBrowserProcess::GetGlobal()->network_quality_tracker(),
+      std::move(delegate), nullptr);
   metric_reporting_manager->OnLogin(profile_.get());
 
   HttpsLatencyTestReportQueue* const fake_event_queue =
@@ -373,8 +376,9 @@ TEST_F(HttpsLatencyEventsTest, EventCheckingRateSet) {
       std::make_unique<::testing::NiceMock<FakeMetricReportingManagerDelegate>>(
           &diagnostics);
   auto init_delay = delegate->GetInitDelay();
-  auto metric_reporting_manager =
-      test::MetricReportingManagerForTest::Create(std::move(delegate), nullptr);
+  auto metric_reporting_manager = test::MetricReportingManagerForTest::Create(
+      TestingBrowserProcess::GetGlobal()->network_quality_tracker(),
+      std::move(delegate), nullptr);
   metric_reporting_manager->OnLogin(profile_.get());
 
   HttpsLatencyTestReportQueue* const fake_event_queue =
