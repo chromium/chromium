@@ -159,20 +159,14 @@ public class SettingsPageFragmentDelegateImplTest {
         verify(mFragmentManager, atLeastOnce())
                 .registerFragmentLifecycleCallbacks(callbackCaptor.capture(), eq(true));
         boolean foundDependencyProvider = false;
-        boolean foundWideDisplayPaddingApplier = false;
         for (FragmentManager.FragmentLifecycleCallbacks callback : callbackCaptor.getAllValues()) {
             if (callback instanceof FragmentDependencyProvider) {
                 foundDependencyProvider = true;
-            } else if (callback instanceof WideDisplayPaddingApplier) {
-                foundWideDisplayPaddingApplier = true;
             }
         }
         assertTrue(
                 "Lifecycle callbacks should include FragmentDependencyProvider",
                 foundDependencyProvider);
-        assertTrue(
-                "Lifecycle callbacks should include WideDisplayPaddingApplier",
-                foundWideDisplayPaddingApplier);
 
         // Verify fragment creation and addition.
         verify(mFragmentTransaction)

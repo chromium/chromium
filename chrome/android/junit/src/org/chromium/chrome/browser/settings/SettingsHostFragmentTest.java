@@ -12,10 +12,13 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.fragment.app.Fragment;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceScreen;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -29,6 +32,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.browser_ui.settings.PaddedItemDecorationWithDivider;
 import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link SettingsHostFragment}. */
@@ -208,6 +212,44 @@ public class SettingsHostFragmentTest {
                 .commitNow();
 
         assertNotNull(fragment.getChildFragmentManager());
+    }
+
+    @Test
+    public void testOnAttach_registersWideDisplayPaddingApplier() {
+        attachHostFragment();
+        TestPreferenceFragment fragment = new TestPreferenceFragment();
+        mSettingsHostFragment.showFragment(fragment, /* addToBackStack= */ false, /* tag= */ null);
+        mSettingsHostFragment.getChildFragmentManager().executePendingTransactions();
+
+        View view = fragment.getView();
+        assertNotNull(view);
+        RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
+        assertNotNull(recyclerView);
+
+        // Trigger global layout to execute WideDisplayPadding.apply()
+        view.getViewTreeObserver().dispatchOnGlobalLayout();
+
+        // WideDisplayPadding.apply should have added PaddedItemDecorationWithDivider
+        boolean hasPaddedDecoration = false;
+        for (int i = 0; i < recyclerView.getItemDecorationCount(); i++) {
+            if (recyclerView.getItemDecorationAt(i) instanceof PaddedItemDecorationWithDivider) {
+                hasPaddedDecoration = true;
+                break;
+            }
+        }
+        assertTrue(
+                "WideDisplayPadding should add PaddedItemDecorationWithDivider",
+                hasPaddedDecoration);
+    }
+
+    /** A test PreferenceFragmentCompat subclass. */
+    public static class TestPreferenceFragment extends PreferenceFragmentCompat {
+        @Override
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+            Context context = getPreferenceManager().getContext();
+            PreferenceScreen screen = getPreferenceManager().createPreferenceScreen(context);
+            setPreferenceScreen(screen);
+        }
     }
 
     /** Fake settings fragment for testing. */

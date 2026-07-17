@@ -70,7 +70,6 @@ public class SettingsPageFragmentDelegateImpl
     private @Nullable SettingsHostFragment mSettingsHostFragment;
     private @Nullable FragmentDependencyProvider mDependencyProvider;
     private FragmentManager.@Nullable FragmentLifecycleCallbacks mTitleUpdaterLifecycleCallbacks;
-    private FragmentManager.@Nullable FragmentLifecycleCallbacks mWideDisplayPaddingApplier;
     private FragmentManager.@Nullable FragmentLifecycleCallbacks mSettingsMetricsReporter;
     private @Nullable Toolbar mToolbar;
     private @Nullable MultiColumnTitleUpdater mMultiColumnTitleUpdater;
@@ -152,12 +151,6 @@ public class SettingsPageFragmentDelegateImpl
         // new activity, where we want to apply padding and record histograms. Sort out if
         // there are any such fragment left and provide a non-null tag here if so.
         @Nullable String mainFragmentTag = null;
-
-        mWideDisplayPaddingApplier =
-                new WideDisplayPaddingApplier(
-                        mActivity, this::isTwoColumnSettingsVisible, mainFragmentTag);
-        fragmentManager.registerFragmentLifecycleCallbacks(
-                mWideDisplayPaddingApplier, /* recursive= */ true);
 
         mSettingsMetricsReporter = new SettingsMetricsReporter(mainFragmentTag);
         fragmentManager.registerFragmentLifecycleCallbacks(
@@ -249,10 +242,6 @@ public class SettingsPageFragmentDelegateImpl
             fragmentManager.unregisterFragmentLifecycleCallbacks(mTitleUpdaterLifecycleCallbacks);
             mTitleUpdaterLifecycleCallbacks = null;
         }
-
-        assumeNonNull(mWideDisplayPaddingApplier);
-        fragmentManager.unregisterFragmentLifecycleCallbacks(mWideDisplayPaddingApplier);
-        mWideDisplayPaddingApplier = null;
 
         assumeNonNull(mSettingsMetricsReporter);
         fragmentManager.unregisterFragmentLifecycleCallbacks(mSettingsMetricsReporter);

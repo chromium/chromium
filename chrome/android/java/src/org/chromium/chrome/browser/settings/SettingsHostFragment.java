@@ -55,6 +55,7 @@ public class SettingsHostFragment extends Fragment
     private @Nullable WeakReference<Fragment> mFinishedMainFragment;
     private @Nullable FragmentDependencyProvider mDependencyProvider;
     private @Nullable ContainmentHelper mContainmentHelper;
+    private @Nullable WideDisplayPaddingApplier mWideDisplayPaddingApplier;
     private int mPendingPopBackCount;
 
     /** Public constructor needed for Fragment re-instantiation. */
@@ -142,6 +143,17 @@ public class SettingsHostFragment extends Fragment
         mContainmentHelper = new ContainmentHelper(mThemedContext, this);
         mContainmentHelper.registerCallbacks(getChildFragmentManager());
 
+        // Ensure wide display padding is applied and dividers are removed from child fragments
+        // (e.g. during activity restart after dark/light theme changes).
+        mWideDisplayPaddingApplier =
+                new WideDisplayPaddingApplier(
+                        mThemedContext,
+                        this::isTwoColumnSettingsVisible,
+                        /* mainFragmentTag= */ null);
+        getChildFragmentManager()
+                .registerFragmentLifecycleCallbacks(
+                        mWideDisplayPaddingApplier, /* recursive= */ true);
+
         // Optionally create a temporary dependency provider for the current activity. This is only
         // called when the fragment is attached to an activity and the dependency provider has not
         // been set yet, for example during dark/light theme changes.
@@ -154,6 +166,20 @@ public class SettingsHostFragment extends Fragment
             getChildFragmentManager()
                     .registerFragmentLifecycleCallbacks(mDependencyProvider, /* recursive= */ true);
         }
+    }
+
+    @Override
+    public void onDetach() {
+        if (mWideDisplayPaddingApplier != null) {
+            getChildFragmentManager()
+                    .unregisterFragmentLifecycleCallbacks(mWideDisplayPaddingApplier);
+            mWideDisplayPaddingApplier = null;
+        }
+        if (mContainmentHelper != null) {
+            mContainmentHelper.unregisterCallbacks(getChildFragmentManager());
+            mContainmentHelper = null;
+        }
+        super.onDetach();
     }
 
     /**
