@@ -67,6 +67,15 @@ const CGFloat kFavIconContainerCornerRadius = 7.0;
 // Gesture constants.
 const CGFloat kChangeInPositionForDismissal = -15.0;
 constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
+
+// Revamp container stack constants.
+const CGFloat kRevampContainerStackSpacing = 12.0;
+
+// Revamp labels stack constants.
+const CGFloat kRevampLabelsStackViewVerticalSpacing = 3.0;
+
+// Revamp button constants.
+const CGFloat kRevampButtonMaxFontSize = 20;
 }  // namespace
 
 @interface InfobarBannerViewController ()
@@ -148,7 +157,11 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
   self.view.accessibilityIdentifier = kInfobarBannerViewIdentifier;
   self.view.accessibilityCustomActions = [self accessibilityActions];
 
-  [self setupLegacyBanner];
+  if (IsInfobarBannerRevampEnabled()) {
+    [self setupRevampedBanner];
+  } else {
+    [self setupLegacyBanner];
+  }
 
   // Gestures setup.
   UIPanGestureRecognizer* panGestureRecognizer =
@@ -185,24 +198,13 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
   [self.view.layer setShadowOffset:CGSizeMake(0.0, kBannerViewYShadowOffset)];
   [self.view.layer setShadowRadius:kBannerViewShadowRadius];
   [self.view.layer setShadowOpacity:kBannerViewShadowOpacity];
-  // If dark mode is set when the banner is presented, the semantic color will
-  // need to be set here.
   [self.traitCollection performAsCurrentTraitCollection:^{
     [self.view.layer
         setShadowColor:[UIColor colorNamed:kToolbarShadowColor].CGColor];
   }];
 
   // Icon setup.
-  UIView* iconContainerView = nil;
-  if (self.faviconImage) {
-    iconContainerView = [self configureFaviconImageContainer];
-  }
-  if (self.iconImage) {
-    iconContainerView = [self configureIconImageContainer];
-  }
-  if (self.customView) {
-    iconContainerView = [self configureCustomViewContainer];
-  }
+  UIView* iconContainerView = [self configureIconContainer];
 
   // Labels setup.
   self.titleLabel = [[UILabel alloc] init];
@@ -224,9 +226,6 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
   self.subTitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   self.subTitleLabel.numberOfLines = _subtitleNumberOfLines;
   self.subTitleLabel.lineBreakMode = _subtitleLineBreakMode;
-
-  // If `self.subTitleText` hasn't been set or is empty, hide the label to keep
-  // the title label centered in the Y axis.
   self.subTitleLabel.hidden = !self.subtitleText.length;
 
   UIStackView* labelsStackView = [[UIStackView alloc]
@@ -286,33 +285,8 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
   // Add labels.
   [containerStack addArrangedSubview:labelsStackView];
   // Open Modal Button setup.
-  self.openModalButton =
-      [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
-  UIImage* gearImage = DefaultSymbolWithPointSize(kSettingsFilledSymbol,
-                                                  kInfobarSymbolPointSize);
-
-  [self.openModalButton setImage:gearImage forState:UIControlStateNormal];
-  self.openModalButton.tintColor = [UIColor colorNamed:kTextSecondaryColor];
-  [self.openModalButton addTarget:self
-                           action:@selector(animateBannerTappedAndPresentModal)
-                 forControlEvents:UIControlEventTouchUpInside];
-  [self.openModalButton
-      setContentHuggingPriority:UILayoutPriorityDefaultHigh
-                        forAxis:UILayoutConstraintAxisHorizontal];
-  [self.openModalButton
-      setContentCompressionResistancePriority:UILayoutPriorityRequired
-                                      forAxis:UILayoutConstraintAxisHorizontal];
-  self.openModalButton.accessibilityIdentifier =
-      kInfobarBannerOpenModalButtonIdentifier;
-  self.openModalButton.accessibilityLabel =
-      l10n_util::GetNSString(IDS_IOS_INFOBAR_BANNER_OPTIONS_HINT);
+  self.openModalButton = [self createOpenModalButton];
   [containerStack addArrangedSubview:self.openModalButton];
-  // Hide open modal button if user shouldn't be allowed to open the modal.
-  self.openModalButton.hidden = !self.presentsModal;
-  self.openModalButton.pointerInteractionEnabled = YES;
-  self.openModalButton.layer.cornerRadius = gearImage.size.width / 2;
-  self.openModalButton.pointerStyleProvider =
-      CreateDefaultEffectCirclePointerStyleProvider();
 
   // Add accept button.
   [containerStack addArrangedSubview:buttonSeparator];
@@ -359,6 +333,175 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
                                  attribute:NSLayoutAttributeWidth
                                 multiplier:1
                                   constant:0],
+  ]];
+}
+
+// Configures the revamped banner view.
+- (void)setupRevampedBanner {
+  // BannerView setup.
+  self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  CALayer* viewLayer = self.view.layer;
+  viewLayer.cornerRadius = kInfobarBannerRevampCornerRadius;
+  viewLayer.shadowOffset =
+      CGSizeMake(0.0, kInfobarBannerRevampContainerShadowYOffset);
+  viewLayer.shadowRadius = kInfobarBannerRevampContainerShadowRadius;
+  viewLayer.shadowOpacity = kInfobarBannerRevampContainerShadowOpacity;
+  [self.traitCollection performAsCurrentTraitCollection:^{
+    viewLayer.shadowColor = [UIColor colorNamed:kToolbarShadowColor].CGColor;
+  }];
+
+  // Icon setup.
+  UIView* iconContainerView = [self configureIconContainer];
+
+  // Labels setup.
+  UIFont* headlineFont = [[UIFontMetrics defaultMetrics]
+      scaledFontForFont:[UIFont
+                            preferredFontForTextStyle:UIFontTextStyleHeadline]
+       maximumPointSize:kRevampButtonMaxFontSize];
+  UILabel* titleLabel = [[UILabel alloc] init];
+  titleLabel.text = self.titleText;
+  titleLabel.font = headlineFont;
+  titleLabel.adjustsFontForContentSizeCategory = YES;
+  titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  titleLabel.numberOfLines =
+      _titleNumberOfLines > 0 ? MIN(_titleNumberOfLines, 2) : 2;
+  titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+  titleLabel.baselineAdjustment = UIBaselineAdjustmentAlignCenters;
+  [titleLabel
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisVertical];
+  self.titleLabel = titleLabel;
+
+  UILabel* subTitleLabel = [[UILabel alloc] init];
+  subTitleLabel.text = self.subtitleText;
+  subTitleLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  subTitleLabel.adjustsFontForContentSizeCategory = YES;
+  subTitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  subTitleLabel.numberOfLines = _subtitleNumberOfLines;
+  subTitleLabel.lineBreakMode = _subtitleLineBreakMode;
+  subTitleLabel.hidden = (self.subtitleText.length == 0);
+  self.subTitleLabel = subTitleLabel;
+
+  UIStackView* labelsStackView = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ titleLabel, subTitleLabel ]];
+  labelsStackView.axis = UILayoutConstraintAxisVertical;
+  labelsStackView.spacing = kRevampLabelsStackViewVerticalSpacing;
+  labelsStackView.insetsLayoutMarginsFromSafeArea = NO;
+  labelsStackView.layoutMarginsRelativeArrangement = YES;
+  labelsStackView.directionalLayoutMargins =
+      NSDirectionalEdgeInsetsMake(kInfobarBannerRevampVerticalPadding, 0,
+                                  kInfobarBannerRevampVerticalPadding, 0);
+  labelsStackView.isAccessibilityElement = YES;
+  labelsStackView.accessibilityIdentifier =
+      kInfobarBannerLabelsStackViewIdentifier;
+  labelsStackView.accessibilityLabel = [self accessibilityLabel];
+  [labelsStackView setContentHuggingPriority:UILayoutPriorityDefaultLow
+                                     forAxis:UILayoutConstraintAxisHorizontal];
+  [labelsStackView.heightAnchor
+      constraintGreaterThanOrEqualToConstant:
+          kInfobarBannerRevampButtonMaxHeight +
+          (2 * kInfobarBannerRevampMinimumButtonVerticalBreathingRoom)]
+      .active = YES;
+
+  // Button setup.
+  UIButton* actionButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  UIButtonConfiguration* buttonConfig =
+      [UIButtonConfiguration filledButtonConfiguration];
+  buttonConfig.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+  buttonConfig.baseBackgroundColor = [UIColor colorNamed:kBlueColor];
+  buttonConfig.baseForegroundColor = [UIColor colorNamed:kSolidButtonTextColor];
+  buttonConfig.contentInsets = NSDirectionalEdgeInsetsMake(
+      0, kInfobarBannerRevampButtonHorizontalPadding, 0,
+      kInfobarBannerRevampButtonHorizontalPadding);
+  NSDictionary<NSAttributedStringKey, id>* titleAttributes =
+      @{NSFontAttributeName : headlineFont};
+  buttonConfig.attributedTitle =
+      [[NSAttributedString alloc] initWithString:self.buttonText ?: @""
+                                      attributes:titleAttributes];
+  actionButton.configuration = buttonConfig;
+
+  actionButton.titleLabel.adjustsFontForContentSizeCategory = YES;
+  actionButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+  actionButton.titleLabel.numberOfLines = 1;
+  actionButton.accessibilityIdentifier = kInfobarBannerAcceptButtonIdentifier;
+  actionButton.pointerInteractionEnabled = YES;
+  actionButton.clipsToBounds = NO;
+  [actionButton addTarget:self
+                   action:@selector(bannerInfobarButtonWasPressed:)
+         forControlEvents:UIControlEventTouchUpInside];
+  [actionButton setContentHuggingPriority:UILayoutPriorityRequired
+                                  forAxis:UILayoutConstraintAxisHorizontal];
+  [actionButton
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisHorizontal];
+
+  CALayer* buttonLayer = actionButton.layer;
+  buttonLayer.shadowOffset =
+      CGSizeMake(0.0, kInfobarBannerRevampButtonShadowYOffset);
+  buttonLayer.shadowRadius = kInfobarBannerRevampButtonShadowRadius;
+  buttonLayer.shadowOpacity = kInfobarBannerRevampButtonShadowOpacity;
+  [self.traitCollection performAsCurrentTraitCollection:^{
+    buttonLayer.shadowColor = [UIColor colorNamed:kBlueColor].CGColor;
+  }];
+  actionButton.pointerStyleProvider =
+      ^UIPointerStyle*(UIButton* button, UIPointerEffect* proposedEffect,
+                       UIPointerShape* proposedShape) {
+        UIPointerShape* shape =
+            [UIPointerShape shapeWithRoundedRect:button.frame
+                                    cornerRadius:button.bounds.size.height / 2];
+        return [UIPointerStyle styleWithEffect:proposedEffect shape:shape];
+      };
+  self.infobarButton = actionButton;
+
+  // Open Modal Button setup.
+  ExtendedTouchTargetButton* modalButton = [self createOpenModalButton];
+  self.openModalButton = modalButton;
+
+  // Container Stack setup.
+  UIStackView* containerStack = [[UIStackView alloc] init];
+  if (iconContainerView) {
+    [containerStack addArrangedSubview:iconContainerView];
+    [containerStack setCustomSpacing:kInfobarBannerRevampSpacingAfterIcon
+                           afterView:iconContainerView];
+  }
+  [containerStack addArrangedSubview:labelsStackView];
+  [containerStack addArrangedSubview:modalButton];
+  CGFloat gearButtonSafeGap = (kInfobarBannerRevampGearButtonMinSafeGap +
+                               kInfobarBannerRevampGearButtonMaxSafeGap) /
+                              2.0;
+  [containerStack setCustomSpacing:gearButtonSafeGap afterView:modalButton];
+  [containerStack addArrangedSubview:actionButton];
+
+  containerStack.axis = UILayoutConstraintAxisHorizontal;
+  containerStack.spacing = kRevampContainerStackSpacing;
+  containerStack.distribution = UIStackViewDistributionFill;
+  containerStack.alignment = UIStackViewAlignmentCenter;
+  containerStack.translatesAutoresizingMaskIntoConstraints = NO;
+  containerStack.insetsLayoutMarginsFromSafeArea = NO;
+  [self.view addSubview:containerStack];
+
+  // Constraints setup.
+  [NSLayoutConstraint activateConstraints:@[
+    [containerStack.leadingAnchor
+        constraintEqualToAnchor:self.view.leadingAnchor
+                       constant:kInfobarBannerRevampHorizontalEdgePadding],
+    [containerStack.trailingAnchor
+        constraintEqualToAnchor:self.view.trailingAnchor
+                       constant:-kInfobarBannerRevampHorizontalEdgePadding],
+    [containerStack.topAnchor constraintEqualToAnchor:self.view.topAnchor],
+    [containerStack.bottomAnchor
+        constraintEqualToAnchor:self.view.bottomAnchor],
+    [self.view.heightAnchor constraintGreaterThanOrEqualToConstant:
+                                kInfobarBannerRevampButtonMaxHeight +
+                                (2 * kInfobarBannerRevampVerticalPadding)],
+    [actionButton.heightAnchor constraintGreaterThanOrEqualToConstant:
+                                   kInfobarBannerRevampMinimumTapTargetSize],
+    [actionButton.heightAnchor constraintLessThanOrEqualToConstant:
+                                   kInfobarBannerRevampButtonMaxHeight],
+    [modalButton.widthAnchor constraintGreaterThanOrEqualToConstant:
+                                 kInfobarBannerRevampMinimumTapTargetSize],
+    [modalButton.heightAnchor constraintEqualToAnchor:modalButton.widthAnchor],
   ]];
 }
 
@@ -462,6 +605,52 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
 }
 
 #pragma mark - Private Methods
+
+// Configures and returns the appropriate icon container based on properties and
+// flags.
+- (UIView*)configureIconContainer {
+  if (self.faviconImage) {
+    return [self configureFaviconImageContainer];
+  }
+  if (self.iconImage) {
+    if (IsInfobarBannerRevampEnabled()) {
+      self.useIconBackgroundTint = NO;
+      return [self configureRevampedIconImageContainer];
+    }
+    return [self configureIconImageContainer];
+  }
+  if (self.customView) {
+    return [self configureCustomViewContainer];
+  }
+  return nil;
+}
+
+// Creates and configures the gear button used to present the modal options.
+- (ExtendedTouchTargetButton*)createOpenModalButton {
+  ExtendedTouchTargetButton* modalButton =
+      [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
+  UIImage* gearImage = DefaultSymbolWithPointSize(kSettingsFilledSymbol,
+                                                  kInfobarSymbolPointSize);
+  [modalButton setImage:gearImage forState:UIControlStateNormal];
+  modalButton.tintColor = [UIColor colorNamed:kTextSecondaryColor];
+  modalButton.hidden = !self.presentsModal;
+  modalButton.accessibilityIdentifier = kInfobarBannerOpenModalButtonIdentifier;
+  modalButton.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_INFOBAR_BANNER_OPTIONS_HINT);
+  modalButton.pointerInteractionEnabled = YES;
+  modalButton.layer.cornerRadius = gearImage.size.width / 2.0;
+  modalButton.pointerStyleProvider =
+      CreateDefaultEffectCirclePointerStyleProvider();
+  [modalButton addTarget:self
+                  action:@selector(animateBannerTappedAndPresentModal)
+        forControlEvents:UIControlEventTouchUpInside];
+  [modalButton setContentHuggingPriority:UILayoutPriorityDefaultHigh
+                                 forAxis:UILayoutConstraintAxisHorizontal];
+  [modalButton
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisHorizontal];
+  return modalButton;
+}
 
 // Configures and returns the UIView that contains the `faviconImage`.
 - (UIView*)configureFaviconImageContainer {
@@ -616,52 +805,59 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
 - (void)handleGestures:(UILongPressGestureRecognizer*)gesture {
   CGPoint touchLocation = [gesture locationInView:self.view];
 
-  if (gesture.state == UIGestureRecognizerStateBegan) {
-    [self.interactionDelegate infobarBannerStartedInteraction];
-    [self.metricsRecorder recordBannerEvent:MobileMessagesBannerEvent::Handled];
-    self.originalCenter = self.view.center;
-    self.touchInProgress = YES;
-    self.startingTouch = touchLocation;
-    [self animateBannerToScaleUpState];
-  } else if (gesture.state == UIGestureRecognizerStateChanged) {
-    // Don't allow the banner to be dragged down past its original position.
-    CGFloat newYPosition =
-        self.view.center.y + touchLocation.y - self.startingTouch.y;
-    if (newYPosition < self.originalCenter.y) {
-      self.view.center = CGPointMake(self.view.center.x, newYPosition);
+  switch (gesture.state) {
+    case UIGestureRecognizerStateBegan:
+      [self.interactionDelegate infobarBannerStartedInteraction];
+      [self.metricsRecorder
+          recordBannerEvent:MobileMessagesBannerEvent::Handled];
+      self.originalCenter = self.view.center;
+      self.touchInProgress = YES;
+      self.startingTouch = touchLocation;
+      [self animateBannerToScaleUpState];
+      break;
+    case UIGestureRecognizerStateChanged: {
+      // Don't allow the banner to be dragged down past its original position.
+      CGFloat newYPosition =
+          self.view.center.y + touchLocation.y - self.startingTouch.y;
+      if (newYPosition < self.originalCenter.y) {
+        self.view.center = CGPointMake(self.view.center.x, newYPosition);
+      }
+      break;
     }
-  }
-
-  if (gesture.state == UIGestureRecognizerStateEnded) {
-    [self
-        animateBannerToOriginalStateWithDuration:kSelectBannerAnimationDuration
-                                      completion:nil];
-    // If dragged up by more than kChangeInPositionForDismissal at the time
-    // the gesture ended, OR `self.shouldDismissAfterTouchesEnded` is YES.
-    // Dismiss the banner.
-    BOOL dragUpExceededThreshold = (self.view.center.y - self.originalCenter.y -
-                                        kChangeInPositionForDismissal <
-                                    0);
-    if (dragUpExceededThreshold || self.shouldDismissAfterTouchesEnded) {
-      if (dragUpExceededThreshold) {
-        [self.metricsRecorder
-            recordBannerDismissType:MobileMessagesBannerDismissType::SwipedUp];
-        [self.delegate dismissInfobarBannerForUserInteraction:YES];
+    case UIGestureRecognizerStateEnded: {
+      [self animateBannerToOriginalStateWithDuration:
+                kSelectBannerAnimationDuration
+                                          completion:nil];
+      // If dragged up by more than kChangeInPositionForDismissal at the time
+      // the gesture ended, OR `self.shouldDismissAfterTouchesEnded` is YES.
+      // Dismiss the banner.
+      BOOL dragUpExceededThreshold =
+          (self.view.center.y - self.originalCenter.y -
+               kChangeInPositionForDismissal <
+           0);
+      if (dragUpExceededThreshold || self.shouldDismissAfterTouchesEnded) {
+        if (dragUpExceededThreshold) {
+          [self.metricsRecorder recordBannerDismissType:
+                                    MobileMessagesBannerDismissType::SwipedUp];
+          [self.delegate dismissInfobarBannerForUserInteraction:YES];
+        } else {
+          [self.metricsRecorder recordBannerDismissType:
+                                    MobileMessagesBannerDismissType::TimedOut];
+          [self.delegate dismissInfobarBannerForUserInteraction:NO];
+        }
       } else {
         [self.metricsRecorder
-            recordBannerDismissType:MobileMessagesBannerDismissType::TimedOut];
-        [self.delegate dismissInfobarBannerForUserInteraction:NO];
+            recordBannerEvent:MobileMessagesBannerEvent::ReturnedToOrigin];
+        [self animateBannerToOriginalPosition];
       }
-    } else {
-      [self.metricsRecorder
-          recordBannerEvent:MobileMessagesBannerEvent::ReturnedToOrigin];
-      [self animateBannerToOriginalPosition];
+      break;
     }
-  }
-
-  if (gesture.state == UIGestureRecognizerStateCancelled) {
-    // Reset the superview transform so its frame is valid again.
-    self.view.superview.transform = CGAffineTransformIdentity;
+    case UIGestureRecognizerStateCancelled:
+      // Reset the superview transform so its frame is valid again.
+      self.view.superview.transform = CGAffineTransformIdentity;
+      break;
+    default:
+      break;
   }
 }
 
@@ -671,10 +867,8 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
                    animations:^{
                      self.view.superview.transform = CGAffineTransformMakeScale(
                          kSelectedBannerViewScale, kSelectedBannerViewScale);
-                     [self.view.layer
-                         setShadowOffset:CGSizeMake(
-                                             0.0,
-                                             [self elevatedShadowYOffset])];
+                     self.view.layer.shadowOffset =
+                         CGSizeMake(0.0, [self elevatedShadowYOffset]);
                    }
                    completion:nil];
 }
@@ -685,8 +879,8 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
   [UIView animateWithDuration:duration.InSecondsF()
       animations:^{
         self.view.superview.transform = CGAffineTransformIdentity;
-        [self.view.layer
-            setShadowOffset:CGSizeMake(0.0, [self restingShadowYOffset])];
+        self.view.layer.shadowOffset =
+            CGSizeMake(0.0, [self restingShadowYOffset]);
       }
       completion:^(BOOL finished) {
         if (completion) {
@@ -716,8 +910,8 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
       animations:^{
         self.view.superview.transform = CGAffineTransformMakeScale(
             kTappedBannerViewScale, kTappedBannerViewScale);
-        [self.view.layer
-            setShadowOffset:CGSizeMake(0.0, [self elevatedShadowYOffset])];
+        self.view.layer.shadowOffset =
+            CGSizeMake(0.0, [self elevatedShadowYOffset]);
       }
       completion:^(BOOL finished) {
         [self
@@ -772,11 +966,11 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
   if ([self.traitCollection
           hasDifferentColorAppearanceComparedToTraitCollection:
               previousTraitCollection]) {
-    [self.view.layer
-        setShadowColor:[UIColor colorNamed:kToolbarShadowColor].CGColor];
+    self.view.layer.shadowColor =
+        [UIColor colorNamed:kToolbarShadowColor].CGColor;
     if (IsInfobarBannerRevampEnabled()) {
-      [self.infobarButton.layer
-          setShadowColor:[UIColor colorNamed:kBlueColor].CGColor];
+      self.infobarButton.layer.shadowColor =
+          [UIColor colorNamed:kBlueColor].CGColor;
     }
   }
 }
@@ -797,9 +991,6 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
                 target:self
               selector:@selector(dismiss)];
 
-  NSMutableArray* accessibilityActions =
-      [@[ acceptAction, dismissAction ] mutableCopy];
-
   if (self.presentsModal) {
     UIAccessibilityCustomAction* modalAction =
         [[UIAccessibilityCustomAction alloc]
@@ -807,10 +998,10 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
                              IDS_IOS_INFOBAR_BANNER_OPTIONS_HINT)
                   target:self
                 selector:@selector(triggerInfobarModal)];
-    [accessibilityActions addObject:modalAction];
+    return @[ acceptAction, dismissAction, modalAction ];
   }
 
-  return accessibilityActions;
+  return @[ acceptAction, dismissAction ];
 }
 
 // A11y Custom actions selectors need to return a BOOL.
