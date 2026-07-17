@@ -392,6 +392,8 @@ source_set("impl") {
     "service/glic_onboarding_status.h",
     "service/glic_onboarding_tracker.cc",
     "service/glic_onboarding_tracker.h",
+    "service/glic_tab_contents_swapper.cc",
+    "service/glic_tab_contents_swapper.h",
     "service/glic_ui_embedder.h",
     "service/glic_ui_types.cc",
     "service/metrics/glic_instance_coordinator_metrics.cc",
@@ -402,6 +404,10 @@ source_set("impl") {
     "widget/browser_conditions.h",
     "widget/conversions.cc",
     "widget/conversions.h",
+    "widget/glic_inactive_tab_ui.cc",
+    "widget/glic_inactive_tab_ui.h",
+    "widget/glic_tab_ui.cc",
+    "widget/glic_tab_ui.h",
   ]
 
   public_deps = [
@@ -425,6 +431,7 @@ source_set("impl") {
     "//chrome/browser/glic/common",
     "//chrome/browser/glic/media",
     "//chrome/browser/glic/suggestions",
+    "//chrome/browser/lifetime",
     "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/media",
     "//chrome/browser/media/webrtc",

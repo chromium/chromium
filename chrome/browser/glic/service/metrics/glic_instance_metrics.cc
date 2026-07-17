@@ -54,7 +54,10 @@ namespace {
 
 SafeEmbedderKey ToSafeKey(const EmbedderKey& key) {
   return std::visit(
-      absl::Overload{[](const SidePanelEmbedderKey& key) -> SafeEmbedderKey {
+      absl::Overload{[](const TabEmbedderKey& key) -> SafeEmbedderKey {
+                       return SafeEmbedderKey(key);
+                     },
+                     [](const SidePanelEmbedderKey& key) -> SafeEmbedderKey {
                        return SafeEmbedderKey(key.tab->GetHandle());
                      },
                      [](const FloatingEmbedderKey& key) -> SafeEmbedderKey {
@@ -83,7 +86,9 @@ enum class GlicTurnSource {
   kSidePanelAudio = 2,
   kFloatyText = 3,
   kFloatyAudio = 4,
-  kMaxValue = kFloatyAudio,
+  kTabText = 5,
+  kTabAudio = 6,
+  kMaxValue = kTabAudio,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicTurnSource)
 
@@ -1158,6 +1163,19 @@ void GlicInstanceMetrics::OnResponseStopped(mojom::ResponseStopCause cause) {
           break;
         case mojom::WebClientMode::kAudio:
           turn_source = GlicTurnSource::kFloatyAudio;
+          break;
+        case mojom::WebClientMode::kUnknown:
+          turn_source = GlicTurnSource::kUnknown;
+          break;
+      }
+      break;
+    case EmbedderType::kTab:
+      switch (turn_.input_mode_) {
+        case mojom::WebClientMode::kText:
+          turn_source = GlicTurnSource::kTabText;
+          break;
+        case mojom::WebClientMode::kAudio:
+          turn_source = GlicTurnSource::kTabAudio;
           break;
         case mojom::WebClientMode::kUnknown:
           turn_source = GlicTurnSource::kUnknown;

@@ -15,16 +15,17 @@
 namespace glic {
 
 std::string DescribeEmbedderKeyForTesting(const EmbedderKey& key) {
-  return std::visit(absl::Overload(
-                        [](const SidePanelEmbedderKey& key) {
-                          return base::StringPrintf(
-                              "SidePanel: %i",
-                              key.tab->GetHandle().raw_value());
-                        },
-                        [](const FloatingEmbedderKey& key) {
-                          return std::string("Floating");
-                        }),
-                    key);
+  return std::visit(
+      absl::Overload(
+          [](const TabEmbedderKey& key) { return std::string("Tab"); },
+          [](const SidePanelEmbedderKey& key) {
+            return base::StringPrintf("SidePanel: %i",
+                                      key.tab->GetHandle().raw_value());
+          },
+          [](const FloatingEmbedderKey& key) {
+            return std::string("Floating");
+          }),
+      key);
 }
 
 ShowOptions::ShowOptions(EmbedderOptions embedder_options_in)
@@ -85,6 +86,10 @@ ShowOptions ShowOptions::ForSidePanel(
   return ShowOptions{side_panel_options, invocation_source};
 }
 
+ShowOptions ShowOptions::ForTab(tabs::TabInterface& bound_tab) {
+  return ShowOptions{TabShowOptions{bound_tab}};
+}
+
 // end static
 
 SidePanelShowOptions::SidePanelShowOptions(tabs::TabInterface& bound_tab)
@@ -95,5 +100,12 @@ SidePanelShowOptions::SidePanelShowOptions(SidePanelShowOptions&&) = default;
 SidePanelShowOptions& SidePanelShowOptions::operator=(
     const SidePanelShowOptions&) = default;
 SidePanelShowOptions::~SidePanelShowOptions() = default;
+
+TabShowOptions::TabShowOptions(tabs::TabInterface& bound_tab)
+    : tab(&bound_tab) {}
+TabShowOptions::TabShowOptions(const TabShowOptions&) = default;
+TabShowOptions::TabShowOptions(TabShowOptions&&) = default;
+TabShowOptions& TabShowOptions::operator=(const TabShowOptions&) = default;
+TabShowOptions::~TabShowOptions() = default;
 
 }  // namespace glic

@@ -51,7 +51,8 @@ namespace glic {
 class GlicSharingManagerInternal;
 struct ShowOptions;
 
-using SafeEmbedderKey = std::variant<tabs::TabHandle, FloatingEmbedderKey>;
+using SafeEmbedderKey =
+    std::variant<tabs::TabHandle, FloatingEmbedderKey, TabEmbedderKey>;
 
 // Tracks and logs lifecycle events for a single GlicInstance.
 class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
@@ -60,6 +61,7 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
     kUnknown,
     kSidePanel,
     kFloaty,
+    kTab,
   };
 
   explicit GlicInstanceMetrics(

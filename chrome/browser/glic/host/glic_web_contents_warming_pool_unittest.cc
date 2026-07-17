@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 
 #include "base/memory_coordinator/memory_coordinator_features.h"
+#include "base/notreached.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
@@ -32,6 +33,13 @@ class FakeWebUIContentsContainer : public WebUIContentsContainer {
   void SetVisibility(content::Visibility visibility) override {}
   void OnActuatingChanged(bool actuating) override {}
   void OnTaskTabsVisibilityChanged(bool has_visible_tab) override {}
+  std::unique_ptr<content::WebContents> ReleaseWebContents() override {
+    NOTREACHED();
+  }
+  void ReclaimWebContents(
+      std::unique_ptr<content::WebContents> web_contents) override {
+    NOTREACHED();
+  }
   content::WebContents* web_contents() const override { return web_contents_; }
 
  private:

@@ -1114,6 +1114,8 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Side Panel Audio"/>
   <int value="3" label="Floaty Text"/>
   <int value="4" label="Floaty Audio"/>
+  <int value="5" label="Tab Text"/>
+  <int value="6" label="Tab Audio"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/glic_instance_metrics.cc:GlicTurnSource) -->
