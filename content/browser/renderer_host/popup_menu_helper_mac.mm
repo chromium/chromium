@@ -56,7 +56,7 @@ void PopupMenuHelper::ShowPopupMenu(
   if (!g_allow_showing_popup_menus)
     return;
 
-  RenderWidgetHostViewMac* rwhvm = GetRenderWidgetHostView();
+  RenderWidgetHostViewMac* rwhvm = GetRootRenderWidgetHostView();
   auto* web_contents = rwhvm->GetWebContents();
 
   // Convert element_bounds to be in screen.
@@ -94,9 +94,11 @@ void PopupMenuHelper::Hide() {
   popup_client_.reset();
 }
 
-RenderWidgetHostViewMac* PopupMenuHelper::GetRenderWidgetHostView() const {
-  return static_cast<RenderWidgetHostViewMac*>(
-      render_frame_host_->GetOutermostMainFrameOrEmbedder()->GetView());
+RenderWidgetHostViewMac* PopupMenuHelper::GetRootRenderWidgetHostView() const {
+  RenderWidgetHostViewBase* root_view =
+      render_frame_host_->GetView()->GetRootView();
+  CHECK(!root_view->IsRenderWidgetHostViewChildFrame());
+  return static_cast<RenderWidgetHostViewMac*>(root_view);
 }
 
 void PopupMenuHelper::RenderWidgetHostVisibilityChanged(

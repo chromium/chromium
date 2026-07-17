@@ -64,7 +64,7 @@ class PopupMenuHelper : public RenderWidgetHostObserver {
 
   void PopupMenuClosed(std::optional<uint32_t> selected_item);
 
-  RenderWidgetHostViewMac* GetRenderWidgetHostView() const;
+  RenderWidgetHostViewMac* GetRootRenderWidgetHostView() const;
 
   raw_ptr<Delegate> delegate_;  // Weak. Owns |this|.
 
