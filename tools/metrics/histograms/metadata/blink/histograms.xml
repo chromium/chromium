@@ -4826,12 +4826,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.ResourceRequest.CompletionTimeOutOfRange"
-    enum="BooleanHit" expires_after="2025-12-06">
+    enum="BooleanHit" expires_after="2027-07-01">
   <owner>suzukikeita@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
     Whether the completion time of a resource request is out of range. Emitted
     for every resource request when TimeTicks is consistent across processes.
+
+    This histogram has been expired between 2025-12-06 and 2026-07-01, thus does
+    not contain data for this period.
   </summary>
 </histogram>
 

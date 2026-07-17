@@ -1453,7 +1453,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleHomepage.DomainLookupTiming.NavigationToDomainLookupEnd.{NavigationCountType}{BrowserInitializationStatus}"
-    units="ms" expires_after="2026-05-17">
+    units="ms" expires_after="2027-07-01">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -1466,6 +1466,9 @@ chromium-metrics-reviews@google.com.
 
     In cases where navigation start occurs after connect start (e.g. pre-fetch,
     pre-connect), this metric will contain zero.
+
+    This histogram has been expired between 2026-05-17 and 2026-07-01, thus does
+    not contain data for this period.
   </summary>
   <token key="NavigationCountType" variants="NavigationCountType"/>
   <token key="BrowserInitializationStatus"
@@ -1495,7 +1498,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleHomepage.NavigationTiming.NavigationToConnectStart.{NavigationCountType}{BrowserInitializationStatus}"
-    units="ms" expires_after="2026-09-20">
+    units="ms" expires_after="2027-09-20">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -4062,7 +4065,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.ConnectTiming.FirstRequestSslDelay" units="ms"
-    expires_after="2026-05-03">
+    expires_after="2027-07-01">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -4071,6 +4074,9 @@ chromium-metrics-reviews@google.com.
     for the main resource of a main frame navigation. Only recorded for
     navigations that happen entirely in the foreground. The metric is emitted
     when the navigation is completed or the app is backgrounded on Android.
+
+    This histogram has been expired between 2026-05-03 and 2026-07-01, thus does
+    not contain data for this period.
   </summary>
 </histogram>
 
