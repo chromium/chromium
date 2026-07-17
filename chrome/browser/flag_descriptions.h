@@ -4452,6 +4452,12 @@ inline constexpr char kPwaNavigationCapturingDescription[] =
     "Enables opening links from Chrome in an installed PWA. Currently under "
     "reimplementation.";
 
+inline constexpr char kPwaNavigationCapturingNameTesting[] =
+    "Desktop PWA Link Capturing Default On For Testing";
+inline constexpr char kPwaNavigationCapturingDescriptionTesting[] =
+    "Enables opening links from Chrome in an installed PWA by default for "
+    "testing.";
+
 inline constexpr char kIsolateOriginsName[] = "Isolate additional origins";
 inline constexpr char kIsolateOriginsDescription[] =
     "Requires dedicated processes for an additional set of origins, "

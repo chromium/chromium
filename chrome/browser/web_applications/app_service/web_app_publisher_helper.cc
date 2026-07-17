@@ -538,7 +538,7 @@ MigrationState GetTargetMigrationState() {
   if (!base::FeatureList::IsEnabled(::features::kPwaNavigationCapturing)) {
     return MigrationState::kDefaultOff;
   }
-  switch (::features::kNavigationCapturingDefaultState.Get()) {
+  switch (apps::features::GetNavigationCapturingDefaultState()) {
     case ::features::CapturingState::kReimplDefaultOn:
       return MigrationState::kDefaultOn;
     case ::features::CapturingState::kReimplOnViaClientMode:
@@ -1453,33 +1453,34 @@ void WebAppPublisherHelper::MaybeSetSupportedLinksPreference(
     return;
   }
 
-  // PWAs
-  if (apps::features::IsNavigationCapturingOnByDefault()) {
-    bool should_capture_links = false;
-    switch (features::kNavigationCapturingDefaultState.Get()) {
-      case features::CapturingState::kReimplDefaultOn:
-        should_capture_links = true;
-        break;
-      case features::CapturingState::kReimplOnViaClientMode:
-        should_capture_links = web_app->launch_handler()
-                                   .value_or(LaunchHandler())
-                                   .client_mode_valid_and_specified();
-        break;
-      default:
-        break;
-    }
+  if (!apps::features::IsNavigationCapturingOnByDefault()) {
+    return;
+  }
 
-    if (!should_capture_links) {
-      return;
-    }
+  bool should_capture_links = false;
+  switch (apps::features::GetNavigationCapturingDefaultState()) {
+    case features::CapturingState::kReimplDefaultOn:
+      should_capture_links = true;
+      break;
+    case features::CapturingState::kReimplOnViaClientMode:
+      should_capture_links = web_app->launch_handler()
+                                 .value_or(LaunchHandler())
+                                 .client_mode_valid_and_specified();
+      break;
+    default:
+      break;
+  }
 
-    if (AreOtherAppsPreferredForLinks(proxy, app_id, intent_filters)) {
-      return;
-    }
-    if (proxy->PreferredAppsList().IsPreferredAppForSupportedLinks(app_id) ||
-        !app_had_supported_links) {
-      proxy->SetSupportedLinksPreference(app_id);
-    }
+  if (!should_capture_links) {
+    return;
+  }
+
+  if (AreOtherAppsPreferredForLinks(proxy, app_id, intent_filters)) {
+    return;
+  }
+  if (proxy->PreferredAppsList().IsPreferredAppForSupportedLinks(app_id) ||
+      !app_had_supported_links) {
+    proxy->SetSupportedLinksPreference(app_id);
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

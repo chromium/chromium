@@ -1042,6 +1042,7 @@ source_set("web_applications_unit_tests") {
     "jobs/manifest_to_web_app_install_info_job_unittest.cc",
     "jobs/migration_target_install_job_unittest.cc",
     "jobs/uninstall/web_app_uninstall_and_replace_job_unittest.cc",
+    "link_capturing_features_unittest.cc",
     "locks/web_app_lock_manager_unittest.cc",
     "os_integration/file_handling_sub_manager_unittest.cc",
     "os_integration/file_handling_utils_unittest.cc",
@@ -1137,6 +1138,7 @@ source_set("web_applications_unit_tests") {
   }
 
   deps = [
+    ":features",
     ":web_app_test",
     ":web_applications",
     ":web_applications_test_support",

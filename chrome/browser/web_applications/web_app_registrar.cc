@@ -35,6 +35,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/web_applications/commands/manifest_silent_update_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
@@ -111,7 +112,7 @@ bool IsNavigationCapturingSettingOffByDefault(
     return false;
   }
 
-  switch (features::kNavigationCapturingDefaultState.Get()) {
+  switch (apps::features::GetNavigationCapturingDefaultState()) {
     case features::CapturingState::kReimplDefaultOff:
       return true;
     case features::CapturingState::kReimplDefaultOn:

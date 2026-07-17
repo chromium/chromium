@@ -8797,6 +8797,8 @@ from previous Chrome versions.
       label="enable-loading-ipc-optimization-for-small-resources"/>
   <int value="-1847775690"
       label="DiacriticsOnPhysicalKeyboardLongpress:disabled"/>
+  <int value="-1847247914"
+      label="PwaNavigationCapturingTestingOverride:enabled"/>
   <int value="-1846680525" label="WebUIA11yEnhancements:enabled"/>
   <int value="-1846471618"
       label="enable-experimental-accessibility-switch-access-text"/>
@@ -17474,6 +17476,8 @@ from previous Chrome versions.
   <int value="915272476" label="Apb144Patch3:enabled"/>
   <int value="915402820" label="RequestDesktopSiteExceptions:disabled"/>
   <int value="916316159" label="disable-new-app-list-mixer"/>
+  <int value="916807839"
+      label="PwaNavigationCapturingTestingOverride:disabled"/>
   <int value="916841877" label="OmniboxMostVisitedTilesFadingOnTablet:enabled"/>
   <int value="917180139" label="AutofillUnmaskCardRequestTimeout:disabled"/>
   <int value="917285134" label="AutofillAddressProfileSavePrompt:enabled"/>

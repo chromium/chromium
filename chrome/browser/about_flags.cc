@@ -3313,6 +3313,12 @@ const flags_ui::FeatureEntry::FeatureVariation
          nullptr},
         {"V2, On by app client_mode",
          kPwaNavigationCapturingReimplOnViaClientMode, nullptr}};
+
+const flags_ui::FeatureEntry::FeatureVariation
+    kPwaNavigationCapturingVariationsForTesting[] = {
+        {"V2, On by default", kPwaNavigationCapturingReimplDefaultOn, nullptr},
+        {"V2, On by app client_mode",
+         kPwaNavigationCapturingReimplOnViaClientMode, nullptr}};
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_CHROMEOS)
 
@@ -9827,6 +9833,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kPwaNavigationCapturing,
                                     kPwaNavigationCapturingVariations,
                                     "PwaNavigationCapturing")},
+    {"enable-user-navigation-capturing-pwa-testing-override",
+     flag_descriptions::kPwaNavigationCapturingNameTesting,
+     flag_descriptions::kPwaNavigationCapturingDescriptionTesting,
+     kOsLinux | kOsMac | kOsWin | kOsCrOS,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         apps::features::kPwaNavigationCapturingTestingOverride,
+         kPwaNavigationCapturingVariationsForTesting,
+         "PwaNavigationCapturingTestingOverride")},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_CHROMEOS)
 
