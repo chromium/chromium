@@ -11,7 +11,10 @@ export function getHtml(this: BannerPromoElement) {
     <div id="container">
       <div class="content-wrapper">
         <div class="header">
-          <cr-icon icon="contextual_tasks:screensaver-auto"></cr-icon>
+          <cr-icon
+              icon="${this.webuiRoundedIconsEnabled_
+                  ? 'contextual_tasks:screensaver-auto'
+                  : 'contextual_tasks:screensaver-auto-old'}"></cr-icon>
           <slot name="header"></slot>
         </div>
         <div class="body"><slot name="body"></slot></div>

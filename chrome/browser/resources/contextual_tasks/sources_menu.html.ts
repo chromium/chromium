@@ -24,7 +24,10 @@ export function getHtml(this: SourcesMenuElement) {
           <cr-url-list-item class="dropdown-item" data-index="${index}"
               @click="${this.onFileClick_}"
               .url="${item.file.url}" .title="${item.file.title}">
-            <cr-icon slot="customIcon" icon="contextual_tasks:pdf"
+            <cr-icon slot="customIcon"
+                icon="${this.webuiRoundedIconsEnabled_
+                    ? 'contextual_tasks:drive-pdf-filled'
+                    : 'contextual_tasks:pdf-old'}"
                 class="file-icon">
             </cr-icon>
           </cr-url-list-item>
@@ -33,7 +36,10 @@ export function getHtml(this: SourcesMenuElement) {
           <cr-url-list-item class="dropdown-item" data-index="${index}"
               @click="${this.onImageClick_}"
               .title="${item.image.title}">
-            <cr-icon slot="customIcon" icon="contextual_tasks:img_icon">
+            <cr-icon slot="customIcon"
+                icon="${this.webuiRoundedIconsEnabled_
+                    ? 'contextual_tasks:image'
+                    : 'contextual_tasks:img_icon-old'}">
             </cr-icon>
           </cr-url-list-item>
         ` : ''}

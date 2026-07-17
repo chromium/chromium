@@ -5,6 +5,7 @@
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './banner_promo.css.js';
@@ -27,11 +28,14 @@ export class BannerPromoElement extends CrLitElement {
     return {
       acceptButtonText: {type: String},
       dismissButtonText: {type: String},
+      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
   accessor acceptButtonText: string = '';
   accessor dismissButtonText: string = '';
+  protected accessor webuiRoundedIconsEnabled_: boolean =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   protected onNotNowClick_() {
     this.fire('dismiss');

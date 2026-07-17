@@ -15,11 +15,17 @@ export function getHtml(this: ContextualTasksFaviconGroupElement) {
           this.getFaviconUrl_(item.tab.url)}"></div>
     ` : ''}
     ${item.file && !item.tab ? html`
-      <cr-icon icon="contextual_tasks:pdf" class="favicon-item file-icon">
+      <cr-icon
+          icon="${this.webuiRoundedIconsEnabled_
+              ? 'contextual_tasks:drive-pdf-filled'
+              : 'contextual_tasks:pdf-old'}" class="favicon-item file-icon">
       </cr-icon>
     ` : ''}
     ${item.image && !item.tab && !item.file ? html`
-      <cr-icon icon="contextual_tasks:img_icon" class="favicon-item">
+      <cr-icon
+          icon="${this.webuiRoundedIconsEnabled_
+              ? 'contextual_tasks:image'
+              : 'contextual_tasks:img_icon-old'}" class="favicon-item">
       </cr-icon>
     ` : ''}
   `)}

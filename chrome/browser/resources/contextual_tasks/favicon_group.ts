@@ -7,6 +7,7 @@ import '//resources/cr_elements/cr_icon/cr_icon.js';
 
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {ContextInfo} from './contextual_tasks.mojom-webui.js';
@@ -33,12 +34,15 @@ export class ContextualTasksFaviconGroupElement extends CrLitElement {
       contextInfos: {type: Array},
       visibleItems_: {type: Array},
       remainingCount_: {type: Number},
+      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
   accessor contextInfos: ContextInfo[] = [];
   protected accessor visibleItems_: ContextInfo[] = [];
   protected accessor remainingCount_: number = 0;
+  protected accessor webuiRoundedIconsEnabled_: boolean =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

@@ -33,6 +33,7 @@ suite('OverflowMenuTest', () => {
       isUserFeedbackAllowed: true,
       contextualTasksEnableSpatialModelToolbarLayout: false,
       contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow: false,
+      webuiRoundedIconsEnabled: false,
     });
 
     overflowMenu = document.createElement('contextual-tasks-overflow-menu');
@@ -124,7 +125,9 @@ suite('OverflowMenuTest', () => {
         isAiPage: false,
         isUserFeedbackAllowed: false,
         contextualTasksEnableSpatialModelToolbarLayout: false,
-        contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow: false,
+        contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow:
+            false,
+        webuiRoundedIconsEnabled: false,
       });
       overflowMenu = document.createElement('contextual-tasks-overflow-menu');
       document.body.appendChild(overflowMenu);
@@ -134,8 +137,11 @@ suite('OverflowMenuTest', () => {
     test('hides feedback button', () => {
       const buttons = overflowMenu.shadowRoot.querySelectorAll('button');
       assertEquals(2, buttons.length);
+      const iconName = loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'contextual_tasks:feedback' :
+          'contextual_tasks:feedback-old';
       const feedbackIcon = overflowMenu.shadowRoot.querySelector(
-          'button cr-icon[icon="contextual_tasks:feedback"]');
+          `button cr-icon[icon="${iconName}"]`);
       assertFalse(!!feedbackIcon);
     });
 
@@ -145,8 +151,11 @@ suite('OverflowMenuTest', () => {
 
       const buttons = overflowMenu.shadowRoot.querySelectorAll('button');
       assertEquals(2, buttons.length);
+      const iconName = loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'contextual_tasks:feedback' :
+          'contextual_tasks:feedback-old';
       const feedbackIcon = overflowMenu.shadowRoot.querySelector(
-          'button cr-icon[icon="contextual_tasks:feedback"]');
+          `button cr-icon[icon="${iconName}"]`);
       assertFalse(!!feedbackIcon);
     });
   });
@@ -166,7 +175,9 @@ suite('OverflowMenuTest', () => {
         pinTooltip: 'Pin',
         unpinTooltip: 'Unpin',
         contextualTasksEnableSpatialModelToolbarLayout: false,
-        contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow: false,
+        contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow:
+            false,
+        webuiRoundedIconsEnabled: false,
       });
       overflowMenu = document.createElement('contextual-tasks-overflow-menu');
       document.body.appendChild(overflowMenu);
@@ -229,7 +240,9 @@ suite('OverflowMenuTest', () => {
         isAiPage: true,
         isUserFeedbackAllowed: true,
         contextualTasksEnableSpatialModelToolbarLayout: true,
-        contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow: false,
+        contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow:
+            false,
+        webuiRoundedIconsEnabled: false,
       });
       overflowMenu = document.createElement('contextual-tasks-overflow-menu');
       document.body.appendChild(overflowMenu);
@@ -251,7 +264,9 @@ suite('OverflowMenuTest', () => {
       const historyIcon = threadHistoryButton.querySelector('cr-icon');
       assertTrue(!!historyIcon);
       assertEquals(
-          'contextual_tasks:notes_spark',
+          loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+              'contextual_tasks:notes-spark' :
+              'contextual_tasks:notes_spark-old',
           historyIcon.getAttribute('icon'));
     });
 
@@ -294,6 +309,7 @@ suite('OverflowMenuTest', () => {
           contextualTasksEnableSpatialModelToolbarLayout: true,
           contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow:
               true,
+          webuiRoundedIconsEnabled: false,
         });
         overflowMenu = document.createElement('contextual-tasks-overflow-menu');
         overflowMenu.isAimEligible = true;
@@ -320,7 +336,9 @@ suite('OverflowMenuTest', () => {
             const newThreadIcon = newThreadButton.querySelector('cr-icon');
             assertTrue(!!newThreadIcon);
             assertEquals(
-                'contextual_tasks:edit_square',
+                loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+                    'contextual_tasks:edit-square' :
+                    'contextual_tasks:edit_square-old',
                 newThreadIcon.getAttribute('icon'));
 
             let clickEventFired = false;
@@ -338,14 +356,20 @@ suite('OverflowMenuTest', () => {
   });
 
   suite('SpatialModelOpenInNewTabSuppression', () => {
+    function getOpenInNewTabButton() {
+      const iconName = loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'contextual_tasks:open-in-full' :
+          'contextual_tasks:open_in_full_tab-old';
+      return overflowMenu.shadowRoot.querySelector(
+          `button cr-icon[icon="${iconName}"]`);
+    }
+
     test('shown when both spatial model flags are false', async () => {
       overflowMenu.contextualTasksEnableSpatialModelToolbarLayout = false;
       overflowMenu.contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow = false;
       await microtasksFinished();
 
-      const openInNewTabButton = overflowMenu.shadowRoot.querySelector(
-          'button cr-icon[icon="contextual_tasks:open_in_full_tab"]');
-      assertTrue(!!openInNewTabButton);
+      assertTrue(!!getOpenInNewTabButton());
     });
 
     test('hidden when contextualTasksEnableSpatialModelToolbarLayout is true', async () => {
@@ -353,9 +377,7 @@ suite('OverflowMenuTest', () => {
       overflowMenu.contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow = false;
       await microtasksFinished();
 
-      const openInNewTabButton = overflowMenu.shadowRoot.querySelector(
-          'button cr-icon[icon="contextual_tasks:open_in_full_tab"]');
-      assertFalse(!!openInNewTabButton);
+      assertFalse(!!getOpenInNewTabButton());
     });
 
     test('hidden when contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow is true', async () => {
@@ -363,9 +385,7 @@ suite('OverflowMenuTest', () => {
       overflowMenu.contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow = true;
       await microtasksFinished();
 
-      const openInNewTabButton = overflowMenu.shadowRoot.querySelector(
-          'button cr-icon[icon="contextual_tasks:open_in_full_tab"]');
-      assertFalse(!!openInNewTabButton);
+      assertFalse(!!getOpenInNewTabButton());
     });
   });
 });

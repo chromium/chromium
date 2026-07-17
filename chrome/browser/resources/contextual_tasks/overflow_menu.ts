@@ -58,6 +58,7 @@ export class OverflowMenuElement extends OverflowMenuElementBase {
       contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow:
           {type: Boolean},
       isAimEligible: {type: Boolean},
+      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -78,6 +79,9 @@ export class OverflowMenuElement extends OverflowMenuElementBase {
       boolean = loadTimeData.getBoolean(
           'contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow');
   accessor isAimEligible: boolean = false;
+
+  protected accessor webuiRoundedIconsEnabled_: boolean =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
   private listenerIds_: number[] = [];
 // <if expr="not is_android">

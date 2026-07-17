@@ -41,9 +41,13 @@ export class SourcesMenuElement extends CrLitElement {
   static override get properties() {
     return {
       contextInfos: {type: Array},
+      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
   accessor contextInfos: ContextInfo[] = [];
+
+  protected accessor webuiRoundedIconsEnabled_: boolean =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   private get isUnboundedMenuEnabled_(): boolean {

@@ -35,7 +35,9 @@ export function getHtml(this: TopToolbarElement) {
   <div class="top-toolbar-action-buttons">
     <cr-icon-button id="newThreadButton"
         @click="${this.onNewThreadClick_}"
-        iron-icon="contextual_tasks:edit_square"
+        iron-icon="${this.webuiRoundedIconsEnabled_
+            ? 'contextual_tasks:edit-square'
+            : 'contextual_tasks:edit_square-old'}"
         class="no-overlap" title="$i18n{newThreadTooltip}"
         aria-label="$i18n{newThreadTooltip}"
         ?hidden="${!this.isAimEligible ||
@@ -44,7 +46,9 @@ export function getHtml(this: TopToolbarElement) {
     </cr-icon-button>
     <cr-icon-button id="threadHistoryButton"
         @click="${this.onThreadHistoryClick_}"
-        iron-icon="contextual_tasks:notes_spark"
+        iron-icon="${this.webuiRoundedIconsEnabled_
+            ? 'contextual_tasks:notes-spark'
+            : 'contextual_tasks:notes_spark-old'}"
         class="no-overlap" title="$i18n{threadHistoryTooltip}"
         aria-label="$i18n{threadHistoryTooltip}"
         ?hidden="${!this.isAiPage || !this.isUserSignedIn ||
@@ -61,7 +65,9 @@ export function getHtml(this: TopToolbarElement) {
     </contextual-tasks-favicon-group>` : ''}
     ${this.isExpandButtonEnabled ? html`
       <cr-icon-button id="openInNewTabButton"
-        iron-icon="contextual_tasks:open_in_full_tab"
+        iron-icon="${this.webuiRoundedIconsEnabled_
+            ? 'contextual_tasks:open-in-full'
+            : 'contextual_tasks:open_in_full_tab-old'}"
         class="no-overlap" title="$i18n{openInNewTab}"
         aria-label="$i18n{openInNewTab}"
         @click="${this.onOpenInNewTabClick_}"

@@ -95,6 +95,7 @@ export class TopToolbarElement extends TopToolbarElementBase {
           {type: Boolean},
       overflowMenuOpen_: {type: Boolean},
       isSidePanelRearchitectureEnabled_: {type: Boolean},
+      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -130,6 +131,8 @@ export class TopToolbarElement extends TopToolbarElementBase {
   protected accessor contextManagementInComposeboxEnabled_: boolean =
       loadTimeData.getBoolean('contextManagementInComposeboxEnabled');
   protected accessor overflowMenuOpen_: boolean = false;
+  protected accessor webuiRoundedIconsEnabled_: boolean =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   override connectedCallback() {
     super.connectedCallback();

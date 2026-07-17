@@ -664,14 +664,22 @@ suite('TopToolbarTest', () => {
     assertTrue(item2.classList.contains('favicon-item'));
     assertTrue(item2.classList.contains('file-icon'));
     assertEquals(item2.tagName, 'CR-ICON');
-    assertEquals((item2 as CrIconElement).icon, 'contextual_tasks:pdf');
+    assertEquals(
+        (item2 as CrIconElement).icon,
+        loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'contextual_tasks:drive-pdf-filled' :
+            'contextual_tasks:pdf-old');
 
     // Check item 3 (image).
     const item3 = items[2];
     assertHTMLElement(item3);  // Assert first
     assertTrue(item3.classList.contains('favicon-item'));
     assertEquals(item3.tagName, 'CR-ICON');
-    assertEquals((item3 as CrIconElement).icon, 'contextual_tasks:img_icon');
+    assertEquals(
+        (item3 as CrIconElement).icon,
+        loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+            'contextual_tasks:image' :
+            'contextual_tasks:img_icon-old');
 
     const moreItems =
         sourcesButton.shadowRoot.querySelector<HTMLElement>('#more-items');
