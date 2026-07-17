@@ -1824,6 +1824,28 @@ const PaintLayer* LayoutObject::ContainingScrollContainerLayer(
   return nullptr;
 }
 
+const PaintLayer* LayoutObject::ContainingScrollContainerLayer(
+    PhysicalAxis axis,
+    bool ignore_layout_view_for_fixed_pos) const {
+  NOT_DESTROYED();
+  // Walk the chain of nearest scroll containers, skipping those not
+  // scrollable in the `axis`.
+  const PaintLayer* container =
+      ContainingScrollContainerLayer(ignore_layout_view_for_fixed_pos);
+  while (container) {
+    const auto& style = container->GetLayoutObject().StyleRef();
+    if ((axis == PhysicalAxis::kVertical &&
+         style.IsOverflowValueScrollableY()) ||
+        ((axis == PhysicalAxis::kHorizontal &&
+          style.IsOverflowValueScrollableX()))) {
+      return container;
+    }
+    container = container->GetLayoutObject().ContainingScrollContainerLayer(
+        ignore_layout_view_for_fixed_pos);
+  }
+  return nullptr;
+}
+
 const LayoutBox* LayoutObject::ContainingScrollContainer(
     bool ignore_layout_view_for_fixed_pos) const {
   NOT_DESTROYED();
@@ -1837,15 +1859,9 @@ const LayoutBox* LayoutObject::ContainingScrollContainer(
 const LayoutBox* LayoutObject::ContainingScrollContainer(
     PhysicalAxis axis) const {
   NOT_DESTROYED();
-  const LayoutObject* current = this;
-  while (const LayoutBox* container = current->ContainingScrollContainer()) {
-    const ComputedStyle& style = container->StyleRef();
-    if (axis == PhysicalAxis::kHorizontal
-            ? style.IsOverflowValueScrollableX()
-            : style.IsOverflowValueScrollableY()) {
-      return container;
-    }
-    current = container;
+  if (const PaintLayer* scroll_container_layer =
+          ContainingScrollContainerLayer(axis)) {
+    return scroll_container_layer->GetLayoutBox();
   }
   return nullptr;
 }

@@ -276,14 +276,17 @@ const LayoutObject* AnchorEvaluatorImpl::DefaultAnchor(
 }
 
 const PaintLayer* AnchorEvaluatorImpl::DefaultAnchorScrollContainerLayer(
+    PhysicalAxis axis,
     const DefaultAnchorData& default_anchor_data) const {
-  return cached_default_anchor_scroll_container_layer_.Get(
-      default_anchor_data, [&]() {
-        const auto* default_anchor = DefaultAnchor(default_anchor_data);
-        return default_anchor ? default_anchor->ContainingScrollContainerLayer(
-                                    true /*ignore_layout_view_for_fixed_pos*/)
-                              : nullptr;
-      });
+  auto& cache = (axis == PhysicalAxis::kVertical)
+                    ? cached_default_anchor_scroll_container_layer_y_
+                    : cached_default_anchor_scroll_container_layer_x_;
+  return cache.Get(default_anchor_data, [&]() {
+    const auto* default_anchor = DefaultAnchor(default_anchor_data);
+    return default_anchor ? default_anchor->ContainingScrollContainerLayer(
+                                axis, /*ignore_layout_view_for_fixed_pos=*/true)
+                          : nullptr;
+  });
 }
 
 bool AnchorEvaluatorImpl::AllowAnchor() const {
@@ -325,6 +328,7 @@ bool AnchorEvaluatorImpl::IsRightOrBottom() const {
 
 bool AnchorEvaluatorImpl::ShouldUseScrollAdjustmentFor(
     const LayoutObject* anchor,
+    PhysicalAxis axis,
     const DefaultAnchorData& default_anchor_data) const {
   if (!anchor) {
     return false;
@@ -333,8 +337,8 @@ bool AnchorEvaluatorImpl::ShouldUseScrollAdjustmentFor(
     return true;
   }
   return anchor->ContainingScrollContainerLayer(
-             true /*ignore_layout_view_for_fixed_pos*/) ==
-         DefaultAnchorScrollContainerLayer(default_anchor_data);
+             axis, /*ignore_layout_view_for_fixed_pos=*/true) ==
+         DefaultAnchorScrollContainerLayer(axis, default_anchor_data);
 }
 
 std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchor(
@@ -372,8 +376,10 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchor(
     bool& needs_scroll_adjustment = is_y_axis ? needs_scroll_adjustment_in_y_
                                               : needs_scroll_adjustment_in_x_;
     if (!needs_scroll_adjustment &&
-        ShouldUseScrollAdjustmentFor(anchor_reference->GetLayoutObject(),
-                                     default_anchor_data)) {
+        ShouldUseScrollAdjustmentFor(
+            anchor_reference->GetLayoutObject(),
+            is_y_axis ? PhysicalAxis::kVertical : PhysicalAxis::kHorizontal,
+            default_anchor_data)) {
       needs_scroll_adjustment = true;
     }
     return result;

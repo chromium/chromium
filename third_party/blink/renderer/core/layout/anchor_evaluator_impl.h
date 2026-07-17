@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/css/anchor_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_anchor_query_enums.h"
 #include "third_party/blink/renderer/core/css/out_of_flow_data.h"
+#include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/style/style_position_anchor.h"
 #include "third_party/blink/renderer/platform/geometry/physical_offset.h"
@@ -57,8 +58,8 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   }
 
   // Returns true if any anchor reference in the axis is in the same scroll
-  // container as the default anchor, in which case we need scroll adjustment in
-  // the axis after layout.
+  // container for that axis as the default anchor, in which case we need scroll
+  // adjustment in the axis after layout.
   bool NeedsScrollAdjustmentInX() const {
     return needs_scroll_adjustment_in_x_;
   }
@@ -119,8 +120,10 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
       const AnchorSpecifierValue& anchor_specifier,
       const DefaultAnchorData&) const;
 
-  bool ShouldUseScrollAdjustmentFor(const LayoutObject* anchor,
-                                    const DefaultAnchorData&) const;
+  bool ShouldUseScrollAdjustmentFor(
+      const LayoutObject* anchor,
+      PhysicalAxis axis,
+      const DefaultAnchorData& default_anchor_data) const;
 
   std::optional<LayoutUnit> EvaluateAnchor(
       const AnchorSpecifierValue& anchor_specifier,
@@ -141,6 +144,7 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   void UpdateAccessibilityAnchor(const LayoutObject* anchor);
 
   const PaintLayer* DefaultAnchorScrollContainerLayer(
+      PhysicalAxis axis,
       const DefaultAnchorData&) const;
 
   bool AllowAnchor() const;
@@ -208,7 +212,9 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
 
   // Caches most recent result of DefaultAnchorScrollContainerLayer.
   mutable CachedValue<DefaultAnchorData, const PaintLayer*>
-      cached_default_anchor_scroll_container_layer_;
+      cached_default_anchor_scroll_container_layer_x_;
+  mutable CachedValue<DefaultAnchorData, const PaintLayer*>
+      cached_default_anchor_scroll_container_layer_y_;
 
   bool needs_scroll_adjustment_in_x_ = false;
   bool needs_scroll_adjustment_in_y_ = false;

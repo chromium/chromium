@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
+#include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
@@ -1818,6 +1819,25 @@ TEST_F(LayoutObjectTest, ContainingScrollContainer) {
       GetLayoutObjectByElementId("absolute")->ContainingScrollContainer());
   EXPECT_EQ(scroller1, GetLayoutObjectByElementId("under-absolute")
                            ->ContainingScrollContainer());
+}
+
+TEST_F(LayoutObjectTest, ContainingScrollContainerSingleAxis) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="scroller"
+         style="overflow: scroll clip; width: 100px; height: 100px">
+      <div id="child"></div>
+    </div>
+  )HTML");
+
+  const LayoutObject* scroller = GetLayoutObjectByElementId("scroller");
+  const LayoutObject* child = GetLayoutObjectByElementId("child");
+  ASSERT_TRUE(scroller);
+  ASSERT_TRUE(child);
+
+  EXPECT_EQ(scroller,
+            child->ContainingScrollContainer(PhysicalAxis::kHorizontal));
+  EXPECT_EQ(&GetLayoutView(),
+            child->ContainingScrollContainer(PhysicalAxis::kVertical));
 }
 
 TEST_F(LayoutObjectTest, ScrollOffsetMapping) {

@@ -2265,7 +2265,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   LayoutBlock* InclusiveContainingBlock(AncestorSkipInfo* = nullptr);
 
-  // Returns the nearest ancestor scroll container.
+  // Returns the nearest ancestor scroll container in any axis.
   const LayoutBox* ContainingScrollContainer(
       bool ignore_layout_view_for_fixed_pos = false) const;
 
@@ -2273,7 +2273,15 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // value in the given axis.
   const LayoutBox* ContainingScrollContainer(PhysicalAxis axis) const;
 
+  // Returns the nearest ancestor that is a scroll container in any axis.
   const PaintLayer* ContainingScrollContainerLayer(
+      bool ignore_layout_view_for_fixed_pos = false) const;
+
+  // Returns the nearest ancestor that is a scroll container for the given axis,
+  // which with single-axis scroll containers may be a further ancestor than the
+  // nearest scroll container.
+  const PaintLayer* ContainingScrollContainerLayer(
+      PhysicalAxis axis,
       bool ignore_layout_view_for_fixed_pos = false) const;
 
   bool CanContainAbsolutePositionObjects() const {
