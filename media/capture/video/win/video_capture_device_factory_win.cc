@@ -126,38 +126,48 @@ static_assert(std::size(kBlockedCameraNames) == BLOCKED_CAMERA_MAX + 1,
 
 // Use this list only for USB webcams.
 constexpr auto kModelIdsBlockedForMediaFoundation =
-    base::MakeFixedFlatSet<std::string_view>(
-        {// Devices using Empia 2860 or 2820 chips, see
-         // https://crbug.com/849636.
-         "eb1a:2860", "eb1a:2820", "1ce6:2820",
-         // Elgato HD60 Pro
-         "12ab:0380",
-         // Sensoray 2253
-         "1943:2253",
-         // Dell E5440
-         "0c45:64d0", "0c45:64d2",
-         // Dell E7440
-         "1bcf:2985",
-         // Lenovo Thinkpad Model 20CG0006FMZ front and rear cameras, see
-         // also https://crbug.com/924528.
-         "04ca:7047", "04ca:7048",
-         // HP Elitebook 840 G1
-         "04f2:b3ed", "04f2:b3ca", "05c8:035d", "05c8:0369",
-         // HP HD Camera. See https://crbug.com/1011888.
-         "04ca:7095",
-         // RBG/IR camera for Windows Hello Face Auth. See
-         // https://crbug.com/984864.
-         "13d3:5257",
-         // Acer Aspire f5-573g. See https://crbug.com/1034644.
-         "0bda:57f2",
-         // Elgato Camlink 4k
-         "0fd9:0066",
-         // ACER Aspire VN7-571G. See https://crbug.com/1327948.
-         "04f2:b469",
-         // Hauppauge USB-Live2. See https://crbug.com/1447113.
-         "2040:c200",
-         // TOSHIBA Web Camera - HD. See https://crbug.com/420284824.
-         "04f2:b7a3"});
+    base::MakeFixedFlatSet<std::string_view>({
+        // Devices using Empia 2860 or 2820 chips, see
+        // https://crbug.com/849636.
+        "eb1a:2860",
+        "eb1a:2820",
+        "1ce6:2820",
+        // Elgato HD60 Pro
+        "12ab:0380",
+        // Sensoray 2253
+        "1943:2253",
+        // Dell E5440
+        "0c45:64d0",
+        "0c45:64d2",
+        // Dell E7440
+        "1bcf:2985",
+        // Lenovo Thinkpad Model 20CG0006FMZ front and rear cameras, see
+        // also https://crbug.com/924528.
+        "04ca:7047",
+        "04ca:7048",
+        // HP Elitebook 840 G1
+        "04f2:b3ed",
+        "04f2:b3ca",
+        "05c8:035d",
+        "05c8:0369",
+        // HP HD Camera. See https://crbug.com/1011888.
+        "04ca:7095",
+        // RBG/IR camera for Windows Hello Face Auth. See
+        // https://crbug.com/984864.
+        "13d3:5257",
+        // Acer Aspire f5-573g. See https://crbug.com/1034644.
+        "0bda:57f2",
+        // Elgato Camlink 4k
+        "0fd9:0066",
+        // ACER Aspire VN7-571G. See https://crbug.com/1327948.
+        "04f2:b469",
+        // Hauppauge USB-Live2. See https://crbug.com/1447113.
+        "2040:c200",
+        // TOSHIBA Web Camera - HD. See https://crbug.com/420284824.
+        "04f2:b7a3",
+        // Microsoft LifeCam Studio. See https://crbug.com/535635412
+        "045e:0772",
+    });
 
 // Use this list only for USB webcams.
 constexpr auto kModelIdsBlockedForMediaFoundationD3D11VideoCapture =
