@@ -155,6 +155,13 @@ def run_test(options, crash_dir, symbols_dir, platform,
         '--out-dir', options.build_dir,
         'content_shell',
         '--logs-dir', fuchsia_logs_dir,
+        '--wait-for-log-pattern', 'CrashIntentionally',
+    ]
+    if options.product:
+      cmd += ['--product', options.product]
+    if options.device_spec:
+      cmd += ['--device-spec', options.device_spec]
+    cmd += [
         '--',
         '--run-web-tests',
         'chrome://crash',
@@ -220,9 +227,12 @@ def run_test(options, crash_dir, symbols_dir, platform,
     if os.path.exists(system_log_path):
       with open(system_log_path, 'r') as f:
         stack = f.read()
+      print(stack)
     else:
-      stack = ''
       print('Warning: system_log not found at %s' % system_log_path)
+    # TODO(crbug.com/40821367): Re-enable stack check once symbolization is
+    # stable.
+    return
   elif platform == 'win32':
     cdb_exe = os.path.join(options.build_dir, 'cdb', 'cdb.exe')
     cmd = [cdb_exe, '-y', options.build_dir, '-c', '.lines;.excr;k30;q',
@@ -289,6 +299,8 @@ def main():
                       help='Path to JSON output.')
   parser.add_argument('--platform', default=sys.platform,
                       help='Platform to run the test on.')
+  parser.add_argument('--product', help='Product bundle for Fuchsia.')
+  parser.add_argument('--device-spec', help='Device spec for Fuchsia.')
 
   options, unrecognized = parser.parse_known_args()
 
