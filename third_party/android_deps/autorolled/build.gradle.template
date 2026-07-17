@@ -35,8 +35,9 @@ dependencies {
     compileLatest 'com.google.android.play:feature-delivery:+'
     compileLatest 'com.google.android.play:review:+'
     compileLatest 'com.google.mlkit:common:+'
-    compileLatest 'com.google.mlkit:genai-common:+'
-    compileLatest 'com.google.mlkit:genai-prompt:+'
+    // Pinned to avoid R8 ServiceLoader inlining warnings and size increase.
+    compileLatest 'com.google.mlkit:genai-common:1.0.0-beta3'
+    compileLatest 'com.google.mlkit:genai-prompt:1.0.0-beta2'
     androidTestCompileLatest 'com.google.truth:truth:+'
 
     // A dependency of androidx.xr.runtime:runtime, but must be listed here in
