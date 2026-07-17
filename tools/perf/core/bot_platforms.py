@@ -1022,7 +1022,7 @@ PLATFORM_INFO = {
     },
     'android-go-wembley-perf': {
         'description': 'Android U',
-        'num_shards': 11,
+        'num_shards': 5,
         'platform_os': 'android',
         'is_fyi': False
     },
