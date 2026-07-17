@@ -16,6 +16,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/scheme_host_port.h"
 
 namespace affiliations {
 
@@ -139,6 +140,40 @@ TEST_F(DomainRelationCheckerTest, AffiliatedMatch_CacheHit) {
                  future.GetCallback());
 
   EXPECT_EQ(future.Get(), MatchType::kAffiliated);
+}
+
+TEST_F(DomainRelationCheckerTest, SchemeHostPortOverload) {
+  AffiliatedFacets group = {
+      Facet(FacetURI::FromCanonicalSpec("https://example.com")),
+      Facet(FacetURI::FromCanonicalSpec("https://affiliated.com"))};
+  fake_affiliation_service_.AddAffiliationGroup(group);
+  base::test::TestFuture<std::optional<MatchType>> future;
+
+  checker_.Check(url::SchemeHostPort(GURL("https://example.com")),
+                 url::SchemeHostPort(GURL("https://affiliated.com")),
+                 future.GetCallback());
+
+  EXPECT_EQ(future.Get(), MatchType::kAffiliated);
+}
+
+TEST_F(DomainRelationCheckerTest, SchemeHostPortOverload_ExactMatch) {
+  base::test::TestFuture<std::optional<MatchType>> future;
+
+  checker_.Check(url::SchemeHostPort(GURL("https://example.com/page1")),
+                 url::SchemeHostPort(GURL("https://example.com/page2")),
+                 future.GetCallback());
+
+  EXPECT_EQ(future.Get(), MatchType::kExact);
+}
+
+TEST_F(DomainRelationCheckerTest, OpaqueOriginMismatch) {
+  base::test::TestFuture<std::optional<MatchType>> future;
+
+  checker_.Check(url::Origin(),
+                 url::Origin::Create(GURL("https://example.com")),
+                 future.GetCallback());
+
+  EXPECT_EQ(future.Get(), std::nullopt);
 }
 
 }  // namespace

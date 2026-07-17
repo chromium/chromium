@@ -14,6 +14,7 @@
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/affiliations/core/browser/match_type.h"
 #include "url/origin.h"
+#include "url/scheme_host_port.h"
 
 namespace affiliations {
 
@@ -30,9 +31,9 @@ class DomainRelationChecker {
 
   // Asynchronously checks the relationship between `origin_1` and `origin_2`.
   //
-  // Note: This method will issue live requests to `AffiliationService`, meaning
-  // the user should be mindful about QPS increase and do their own
-  // calculations.
+  // Note: This method might issue live requests to `AffiliationService` for
+  // `origin_1` if it's not in the cache, meaning the user should be mindful
+  // about QPS increase and do their own calculations.
   //
   // The `result_cb` will be run with the check result or `nullopt` if there is
   // no relation.
@@ -40,18 +41,36 @@ class DomainRelationChecker {
              const url::Origin& origin_2,
              base::OnceCallback<void(std::optional<MatchType>)> result_cb);
 
+  // Overload for when comparators are `SchemeHostPort` tuples rather than
+  // security origins (e.g., when checking external links or email domains where
+  // paths and runtime origin metadata like sandboxing are not applicable).
+  // The only tangible difference is checking for an exact match, where the
+  // `url::Origin` method provides strong security guarantees.
+  //
+  // Note: This method might issue live requests to `AffiliationService` for
+  // `tuple_1` if it's not already in the cache, meaning users should be
+  // mindful about QPS increase and do their own calculations.
+  void Check(const url::SchemeHostPort& tuple_1,
+             const url::SchemeHostPort& tuple_2,
+             base::OnceCallback<void(std::optional<MatchType>)> result_cb);
+
  private:
+  void CheckAffiliations(
+      const url::SchemeHostPort& tuple_1,
+      const url::SchemeHostPort& tuple_2,
+      base::OnceCallback<void(std::optional<MatchType>)> result_cb);
+
   // Callback run when the affiliations cache has been updated for both origins.
   void OnCacheUpdated(
-      const url::Origin& origin_1,
-      const url::Origin& origin_2,
+      const url::SchemeHostPort& tuple_1,
+      const url::SchemeHostPort& tuple_2,
       std::optional<AffiliatedFacets> origin_1_affiliations,
       base::OnceCallback<void(std::optional<MatchType>)> result_cb);
 
   // Callback run after checking if affiliations are available in the cache.
   void OnAffiliationsAvailabilityChecked(
-      const url::Origin& origin_1,
-      const url::Origin& origin_2,
+      const url::SchemeHostPort& tuple_1,
+      const url::SchemeHostPort& tuple_2,
       base::OnceCallback<void(std::optional<MatchType>)> result_cb,
       const AffiliatedFacets& origin_1_affiliations,
       bool success);
@@ -59,21 +78,21 @@ class DomainRelationChecker {
   // Callback run when the affiliation service returns the list of affiliated
   // facets.
   void OnAffiliationsRetrieved(
-      const url::Origin& origin_2,
+      const url::SchemeHostPort& tuple_2,
       base::OnceCallback<void(std::optional<MatchType>)> callback,
       const AffiliatedFacets& origin_1_affiliations,
       bool success);
 
   // Callback run when the affiliation service returns the PSL extension list.
   void OnPSLExtensionsRetrieved(
-      const url::Origin& origin_1,
-      const url::Origin& origin_2,
+      const url::SchemeHostPort& tuple_1,
+      const url::SchemeHostPort& tuple_2,
       base::OnceCallback<void(std::optional<MatchType>)> callback,
       std::vector<std::string> psl_extensions);
 
   // Callback run when the affiliation service returns the grouping info.
   void OnGroupingInfoRetrieved(
-      const url::Origin& origin_2,
+      const url::SchemeHostPort& tuple_2,
       base::OnceCallback<void(std::optional<MatchType>)> callback,
       const std::vector<GroupedFacets>& origin_1_groups);
 

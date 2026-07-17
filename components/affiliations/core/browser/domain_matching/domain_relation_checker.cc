@@ -51,68 +51,94 @@ void DomainRelationChecker::Check(
         FROM_HERE, base::BindOnce(std::move(result_cb), MatchType::kExact));
     return;
   }
+  if (origin_1.opaque() || origin_2.opaque()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(result_cb), std::nullopt));
+    return;
+  }
+  CheckAffiliations(origin_1.GetTupleOrPrecursorTupleIfOpaque(),
+                    origin_2.GetTupleOrPrecursorTupleIfOpaque(),
+                    std::move(result_cb));
+}
+
+void DomainRelationChecker::Check(
+    const url::SchemeHostPort& tuple_1,
+    const url::SchemeHostPort& tuple_2,
+    base::OnceCallback<void(std::optional<MatchType>)> result_cb) {
+  if (tuple_1 == tuple_2) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(result_cb), MatchType::kExact));
+    return;
+  }
+  CheckAffiliations(tuple_1, tuple_2, std::move(result_cb));
+}
+
+void DomainRelationChecker::CheckAffiliations(
+    const url::SchemeHostPort& tuple_1,
+    const url::SchemeHostPort& tuple_2,
+    base::OnceCallback<void(std::optional<MatchType>)> result_cb) {
   affiliation_service_->GetAffiliationsAndBranding(
-      FacetURI::FromPotentiallyInvalidSpec(origin_1.Serialize()),
+      FacetURI::FromPotentiallyInvalidSpec(tuple_1.Serialize()),
       base::BindOnce(&DomainRelationChecker::OnAffiliationsAvailabilityChecked,
-                     weak_ptr_factory_.GetWeakPtr(), origin_1, origin_2,
+                     weak_ptr_factory_.GetWeakPtr(), tuple_1, tuple_2,
                      std::move(result_cb)));
 }
 
 void DomainRelationChecker::OnAffiliationsAvailabilityChecked(
-    const url::Origin& origin_1,
-    const url::Origin& origin_2,
+    const url::SchemeHostPort& tuple_1,
+    const url::SchemeHostPort& tuple_2,
     base::OnceCallback<void(std::optional<MatchType>)> result_cb,
     const AffiliatedFacets& origin_1_affiliations,
     bool success) {
   if (success) {
-    OnCacheUpdated(origin_1, origin_2, origin_1_affiliations,
+    OnCacheUpdated(tuple_1, tuple_2, origin_1_affiliations,
                    std::move(result_cb));
     return;
   }
 
   std::vector<FacetURI> facets = {
-      FacetURI::FromPotentiallyInvalidSpec(origin_1.Serialize()),
-      FacetURI::FromPotentiallyInvalidSpec(origin_2.Serialize())};
+      FacetURI::FromPotentiallyInvalidSpec(tuple_1.Serialize()),
+      FacetURI::FromPotentiallyInvalidSpec(tuple_2.Serialize())};
 
   affiliation_service_->UpdateAffiliationsAndBranding(
       facets, base::BindOnce(&DomainRelationChecker::OnCacheUpdated,
-                             weak_ptr_factory_.GetWeakPtr(), origin_1, origin_2,
+                             weak_ptr_factory_.GetWeakPtr(), tuple_1, tuple_2,
                              /*origin_1_affiliations=*/std::nullopt,
                              std::move(result_cb)));
 }
 
 void DomainRelationChecker::OnCacheUpdated(
-    const url::Origin& origin_1,
-    const url::Origin& origin_2,
+    const url::SchemeHostPort& tuple_1,
+    const url::SchemeHostPort& tuple_2,
     std::optional<AffiliatedFacets> origin_1_affiliations,
     base::OnceCallback<void(std::optional<MatchType>)> result_cb) {
   auto barrier_callback = base::BarrierCallback<std::optional<MatchType>>(
       3, base::BindOnce(&CombineMatches).Then(std::move(result_cb)));
 
   if (origin_1_affiliations.has_value()) {
-    OnAffiliationsRetrieved(origin_2, barrier_callback, *origin_1_affiliations,
+    OnAffiliationsRetrieved(tuple_2, barrier_callback, *origin_1_affiliations,
                             /*success=*/true);
   } else {
     affiliation_service_->GetAffiliationsAndBranding(
-        FacetURI::FromPotentiallyInvalidSpec(origin_1.Serialize()),
+        FacetURI::FromPotentiallyInvalidSpec(tuple_1.Serialize()),
         base::BindOnce(&DomainRelationChecker::OnAffiliationsRetrieved,
-                       weak_ptr_factory_.GetWeakPtr(), origin_2,
+                       weak_ptr_factory_.GetWeakPtr(), tuple_2,
                        barrier_callback));
   }
 
   affiliation_service_->GetPSLExtensions(base::BindOnce(
       &DomainRelationChecker::OnPSLExtensionsRetrieved,
-      weak_ptr_factory_.GetWeakPtr(), origin_1, origin_2, barrier_callback));
+      weak_ptr_factory_.GetWeakPtr(), tuple_1, tuple_2, barrier_callback));
 
   affiliation_service_->GetGroupingInfo(
-      {FacetURI::FromPotentiallyInvalidSpec(origin_1.Serialize())},
+      {FacetURI::FromPotentiallyInvalidSpec(tuple_1.Serialize())},
       base::BindOnce(&DomainRelationChecker::OnGroupingInfoRetrieved,
-                     weak_ptr_factory_.GetWeakPtr(), origin_2,
+                     weak_ptr_factory_.GetWeakPtr(), tuple_2,
                      barrier_callback));
 }
 
 void DomainRelationChecker::OnAffiliationsRetrieved(
-    const url::Origin& origin_2,
+    const url::SchemeHostPort& tuple_2,
     base::OnceCallback<void(std::optional<MatchType>)> callback,
     const AffiliatedFacets& origin_1_affiliations,
     bool success) {
@@ -122,7 +148,7 @@ void DomainRelationChecker::OnAffiliationsRetrieved(
   }
 
   FacetURI target_uri =
-      FacetURI::FromPotentiallyInvalidSpec(origin_2.Serialize());
+      FacetURI::FromPotentiallyInvalidSpec(tuple_2.Serialize());
   bool is_affiliated = std::ranges::any_of(
       origin_1_affiliations,
       [&](const Facet& facet) { return facet.uri == target_uri; });
@@ -132,26 +158,26 @@ void DomainRelationChecker::OnAffiliationsRetrieved(
 }
 
 void DomainRelationChecker::OnPSLExtensionsRetrieved(
-    const url::Origin& origin_1,
-    const url::Origin& origin_2,
+    const url::SchemeHostPort& tuple_1,
+    const url::SchemeHostPort& tuple_2,
     base::OnceCallback<void(std::optional<MatchType>)> callback,
     std::vector<std::string> psl_extensions) {
   base::flat_set<std::string> psl_extensions_set(std::move(psl_extensions));
   bool psl_match = IsExtendedPublicSuffixDomainMatch(
-      origin_1.GetURL(), origin_2.GetURL(), psl_extensions_set);
+      tuple_1.GetURL(), tuple_2.GetURL(), psl_extensions_set);
   std::move(callback).Run(psl_match ? std::make_optional(MatchType::kPSL)
                                     : std::nullopt);
 }
 
 void DomainRelationChecker::OnGroupingInfoRetrieved(
-    const url::Origin& origin_2,
+    const url::SchemeHostPort& tuple_2,
     base::OnceCallback<void(std::optional<MatchType>)> callback,
     const std::vector<GroupedFacets>& origin_1_groups) {
   // Since grouping info was requested for exactly one facet, the service must
   // return exactly one group.
   CHECK_EQ(1u, origin_1_groups.size());
   FacetURI target_uri =
-      FacetURI::FromPotentiallyInvalidSpec(origin_2.Serialize());
+      FacetURI::FromPotentiallyInvalidSpec(tuple_2.Serialize());
   bool is_grouped = std::ranges::any_of(
       origin_1_groups[0].facets,
       [&](const Facet& facet) { return facet.uri == target_uri; });
