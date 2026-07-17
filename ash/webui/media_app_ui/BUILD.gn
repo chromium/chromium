@@ -68,13 +68,12 @@ source_set("browser_test_support") {
     ":media_app_ui",
     ":test_build_ts",
     "//ash/public/cpp",
-    "//ash/webui/system_apps/public/js:dom_testing_helpers",
     "//ash/webui/web_applications/test:test_support",
     "//chrome/test:test_support_ui",
   ]
 
   data = [
-    "$target_gen_dir/dom_testing_helpers.js",
+    "//ash/webui/system_apps/public/js/dom_testing_helpers.js",
     "$target_gen_dir/driver.js",
     "$target_gen_dir/guest_query_receiver.js",
     "$target_gen_dir/media_app_guest_ui_browsertest.js",
@@ -170,13 +169,12 @@ ts_library("test_build_ts") {
   tsconfig_base = "tsconfig_base.json"
   root_dir = ts_root_dir
   testonly = true
-  in_files = media_app_test_ts + [ "dom_testing_helpers.js" ]
+  in_files = media_app_test_ts
   definitions =
       media_app_definitions_staged + media_app_test_definitions_staged +
       [ "//tools/typescript/definitions/strings.d.ts" ]
   deps = [
     ":build_ts",
-    "//ash/webui/system_apps/public/js:dom_testing_helpers",
     "//chrome/test/data/webui:build_ts",
   ]
   extra_deps = [
@@ -185,14 +183,9 @@ ts_library("test_build_ts") {
     "//ash/webui/media_app_ui/test:stage_for_test_tsc",
   ]
 
-  path_mappings = [
-    "chrome://webui-test/*|" +
-        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
-                    target_gen_dir),
-    "//system_apps/*|" +
-        rebase_path("$root_gen_dir/ash/webui/system_apps/public/js/*",
-                    target_gen_dir),
-  ]
+  path_mappings = [ "chrome://webui-test/*|" +
+                    rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                                target_gen_dir) ]
 }
 
 # Used to turn off tests that only work with our CIPD package e.g. loading ink.

@@ -1,4 +1,4 @@
-// Copyright 2026 The Chromium Authors
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@ const parentMessagePipe =
  * requires the test handler that receives the signal to be set up. The order
  * that this occurs can not be guaranteed. So this function retries until the
  * signal is handled, which requires the 'test-handlers-ready' handler to be
- * registered in message_pipe_browsertest_trusted.ts.
+ * registered in message_pipe_browsertest_trusted.js.
  */
 async function signalTestHandlersReady() {
   const EXPECTED_ERROR =
@@ -22,8 +22,8 @@ async function signalTestHandlersReady() {
     try {
       await parentMessagePipe.sendMessage('test-handlers-ready', {});
       return;
-    } catch (e) {
-      if ((e as Error).message !== EXPECTED_ERROR) {
+    } catch (/** @type {{message: string}} */ e) {
+      if (e.message !== EXPECTED_ERROR) {
         console.error('Unexpected error in signalTestHandlersReady', e);
         return;
       }

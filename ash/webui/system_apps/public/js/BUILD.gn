@@ -3,59 +3,66 @@
 # found in the LICENSE file.
 
 import("//ash/webui/web_applications/system_apps.gni")
+import("//chrome/test/base/ash/js2gtest.gni")
+import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/typescript/ts_library.gni")
 
 assert(is_chromeos)
 
 ts_library("build_ts") {
   composite = true
-  in_files = [
-    "message_pipe.ts",
-    "sandboxed_load_time_data.ts",
-  ]
+  in_files = [ "message_pipe.ts" ]
 }
 
-ts_library("test_build_ts") {
+js_library("sandboxed_load_time_data") {
+}
+
+js_library("dom_testing_helpers") {
   testonly = true
-  tsconfig_base = "//chrome/test/data/webui/tsconfig_base.json"
-  in_files = [
-    "message_pipe_test.ts",
-    "test_data/message_pipe_browsertest_trusted.ts",
-    "test_data/message_pipe_browsertest_untrusted.ts",
-  ]
-  path_mappings = [ "chrome://webui-test/*|" +
-                    rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
-                                target_gen_dir) ]
+}
+
+js2gtest("browser_tests_js") {
+  test_type = "mojo_lite_webui"
+
+  sources = [ "message_pipe_browsertest.js" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
   deps = [
     ":build_ts",
-    "//chrome/test/data/webui:build_ts",
-  ]
-}
-
-ts_library("dom_testing_helpers") {
-  composite = true
-  testonly = true
-  in_files = [ "dom_testing_helpers.ts" ]
-}
-
-source_set("browser_test_support") {
-  testonly = true
-  sources = [ "message_pipe_browsertest.cc" ]
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  deps = [
-    ":dom_testing_helpers",
-    ":test_build_ts",
     "//ash/webui/web_applications/test:test_support",
-    "//chrome/test:test_support",
-    "//chrome/test:test_support_ui",
   ]
+
   data = [
-    "$target_gen_dir/dom_testing_helpers.js",
     "$target_gen_dir/message_pipe.js",
-    "$target_gen_dir/message_pipe_test.js",
-    "$target_gen_dir/test_data/message_pipe_browsertest_trusted.js",
-    "$target_gen_dir/test_data/message_pipe_browsertest_untrusted.js",
     "test_data/message_pipe_browsertest_trusted.html",
+    "test_data/message_pipe_browsertest_trusted.js",
     "test_data/message_pipe_browsertest_untrusted.html",
+    "test_data/message_pipe_browsertest_untrusted.js",
+  ]
+}
+
+group("closure_compile") {
+  testonly = true
+  deps = [ ":closure_compile_message_pipe_browsertest_js" ]
+}
+
+js_type_check("closure_compile_message_pipe_browsertest_js") {
+  testonly = true
+  closure_flags = system_app_closure_flags
+  deps = [ ":message_pipe_browsertest_js" ]
+}
+
+js_library("message_pipe_browsertest_js") {
+  testonly = true
+  sources = [
+    "message_pipe_browsertest.js",
+    "test_data/message_pipe_browsertest_trusted.js",
+    "test_data/message_pipe_browsertest_untrusted.js",
+  ]
+  externs_list = [
+    "//ash/webui/system_apps/public/js/message_pipe.externs.js",
+    "//ash/webui/web_applications/js2gtest_support.externs.js",
+    "//third_party/closure_compiler/externs/chai-3.5.js",
   ]
 }

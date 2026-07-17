@@ -17,7 +17,8 @@ stage_folder = "$root_gen_dir/ash/webui/media_app_ui/stage_rollup"
 # JS bundling with rollup.
 # This is for files direct from the src/:  input_folder="./".
 copy("stage_static") {
-  sources = media_app_unconverted_js_sources
+  sources = media_app_unconverted_js_sources +
+            [ "//ash/webui/system_apps/public/js/sandboxed_load_time_data.js" ]
   outputs = [ stage_folder + "/{{source_file_part}}" ]
 }
 
@@ -25,7 +26,6 @@ copy("stage_static") {
 copy("stage_generated") {
   sources = [
     "$root_gen_dir/ash/webui/media_app_ui/media_app_ui.mojom-lite.js",
-    "$root_gen_dir/ash/webui/system_apps/public/js/sandboxed_load_time_data.js",
     "$root_gen_dir/mojo/public/mojom/base/big_buffer.mojom-lite.js",
     "$root_gen_dir/mojo/public/mojom/base/unguessable_token.mojom-lite.js",
     "$root_gen_dir/skia/public/mojom/bitmap.mojom-lite.js",
@@ -39,7 +39,6 @@ copy("stage_generated") {
 
   deps = [
     "//ash/webui/media_app_ui:mojo_bindings_js",
-    "//ash/webui/system_apps/public/js:build_ts",
     "//third_party/blink/public/mojom:mojom_platform_js",
     "//url/mojom:url_mojom_gurl_js",
   ]

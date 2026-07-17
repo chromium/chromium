@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/test/base/ash/js2gtest.gni")
+
 assert(is_chromeos)
 
 source_set("test_support") {
@@ -12,6 +14,8 @@ source_set("test_support") {
     "sandboxed_web_ui_test_base.cc",
     "sandboxed_web_ui_test_base.h",
   ]
+
+  data = js2gtest_js_libraries
 
   deps = [
     "//ash/webui/common:trusted_types_test_util",

@@ -204,18 +204,10 @@ std::string SandboxedWebUiAppTestBase::LoadJsTestLibrary(
   base::FilePath source_root;
   EXPECT_TRUE(
       base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root));
-  auto full_script_path =
+  const auto full_script_path =
       script_path.IsAbsolute() ? script_path : source_root.Append(script_path);
 
   base::ScopedAllowBlockingForTesting allow_blocking;
-  if (!base::PathExists(full_script_path)) {
-    base::FilePath gen_root;
-    EXPECT_TRUE(
-        base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &gen_root));
-    full_script_path =
-        script_path.IsAbsolute() ? script_path : gen_root.Append(script_path);
-  }
-
   std::string injected_content;
   EXPECT_TRUE(base::ReadFileToString(full_script_path, &injected_content));
   return injected_content;
@@ -224,7 +216,6 @@ std::string SandboxedWebUiAppTestBase::LoadJsTestLibrary(
 // static
 content::RenderFrameHost* SandboxedWebUiAppTestBase::GetAppFrame(
     content::WebContents* web_ui) {
-  content::WaitForLoadStop(web_ui);
   // Assume the first subframe is the app.
   content::RenderFrameHost* subframe = ChildFrameAt(web_ui, 0);
   EXPECT_TRUE(subframe) << web_ui->GetVisibleURL();

@@ -3762,6 +3762,7 @@ if (!is_android) {
     if (is_chromeos && include_js2gtest_tests) {
       deps += [
         "//ash/webui/eche_app_ui:browser_tests_js",
+        "//ash/webui/system_apps:browser_tests",
         "//chrome/test/data/webui/chromeos:browser_tests_js_webui",
       ]
 
@@ -4248,7 +4249,6 @@ if (!is_android) {
         "//ash/webui/shortcut_customization_ui",
         "//ash/webui/shortcut_customization_ui/backend",
         "//ash/webui/shortcut_customization_ui/backend/search:mojo_bindings",
-        "//ash/webui/system_apps:browser_tests",
         "//ash/webui/web_applications/test:test_support",
         "//chrome/browser:cloud_identifier_util_ash",
         "//chrome/browser/accessibility/media_app:browser_tests",

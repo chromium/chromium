@@ -1,5 +1,0 @@
-specific_include_rules = {
-  "message_pipe_browsertest\\.cc": [
-    "+chrome/test/base",
-  ],
-}

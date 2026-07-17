@@ -1,4 +1,4 @@
-// Copyright 2026 The Chromium Authors
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,41 +12,26 @@
  * API.
  */
 
-interface LoadTimeDataRaw {
-  [key: string]: any;
-}
-
-class LoadTimeData {
-  private data_: LoadTimeDataRaw = {};
-
+const impl = {
   /**
    * Needs to be separate from data since some tast tests expect a data_ field.
    * TODO(b/192977700): Remove this.
+   * @type {!Object}
    */
-  set data(value: LoadTimeDataRaw) {
-    this.data_ = value;
-  }
-
-  getValue(id: string): any {
-    return this.data_[id];
-  }
-
-  getString(id: string): string {
-    return this.data_[id];
-  }
-
-  getBoolean(id: string): boolean {
-    return this.data_[id];
-  }
-
-  getInteger(id: string): number {
-    return this.data_[id];
-  }
-
-  valueExists(id: string): boolean {
-    return this.data_[id] !== undefined;
-  }
-}
-
-const loadTimeData = new LoadTimeData();
-(window as any).loadTimeData = loadTimeData;
+  data_: {},
+  /**
+   * Used by strings.js to populate loadTimeData.
+   * Note we don't provide a getter since the original load_time_data object
+   * interface explicitly disallows reading the data object directly.
+   * @param {!Object} value
+   */
+  set data(value) {
+    impl.data_ = value;
+  },
+  getValue: (id) => impl.data_[id],
+  getString: (id) => /** @type{string} */ (impl.data_[id]),
+  getBoolean: (id) => /** @type{boolean} */ (impl.data_[id]),
+  getInteger: (id) => /** @type{number} */ (impl.data_[id]),
+  valueExists: (id) => impl.data_[id] !== undefined,
+};
+window['loadTimeData'] = impl;
