@@ -5,13 +5,6 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_GPU_PERSISTENT_CACHE_H_
 #define GPU_COMMAND_BUFFER_SERVICE_GPU_PERSISTENT_CACHE_H_
 
-// TODO(503801946): Remove this Clang suppression once we remove the old Dawn
-// caching APIs that are causing the overload conflicts.
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Woverloaded-virtual"
-#endif
-
 #include <atomic>
 #include <map>
 #include <memory>
