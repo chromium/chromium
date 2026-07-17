@@ -4258,6 +4258,61 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonGradientRingBrowserTest,
   EXPECT_EQ(standard_insets, current_insets);
 }
 
+// Regression test for crbug.com/533663292
+class AvatarToolbarButtonAsyncPromoRaceRegressionTest
+    : public AvatarToolbarButtonBrowserTestBase {
+ public:
+  AvatarToolbarButtonAsyncPromoRaceRegressionTest() {
+    scoped_feature_list_.InitWithFeatures({}, {features::kWebUIAvatarButton});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_F,
+                             AvatarToolbarButtonAsyncPromoRaceRegressionTest,
+                             CrashOnPromoStateCollapseRegressionTest) {
+  AvatarToolbarButtonTestAccessor avatar_accessor(browser());
+
+  // Wait for the identity name to show up and then clear it, since its higher
+  // priority prevents the promo from displaying and making the test timeout.
+  ASSERT_TRUE(avatar_accessor.WaitForTextNotEqual(std::u16string()));
+  AvatarToolbarButtonInterface* avatar =
+      GetAvatarToolbarButtonInterface(browser());
+  avatar->ClearActiveStateForTesting();
+  ASSERT_TRUE(avatar_accessor.WaitForText(std::u16string()));
+
+  // Specifically enable BatchUploadPromo conditions and disable
+  // HistorySyncPromo
+  SetHistoryAndTabsSyncingPreference(true);
+  batch_upload_test_helper().SetLocalDataDescriptionForAllAvailableTypes();
+  batch_upload_test_helper().SetReturnDescriptionOnRequest(true);
+
+  // Manually set some delay to be sure tests don't timeout/fail from instant
+  // collapse
+  SetInfiniteAvatarDelay(AvatarDelayType::kPromo);
+
+  // Trigger both fetches.
+  avatar->ForceShowingPromoForTesting();
+  avatar->ForceShowingPromoForTesting();
+
+  // The first request will be implicitly cancelled by the second request
+  // starting. We fire it, and it should silently drop. (In the buggy code, it
+  // would be processed and start the promo).
+  batch_upload_test_helper().FireReturnDescriptionRequest();
+
+  // Fire second request, it resolves to NO promo.
+  // In the buggy code, this would collapse the underlying state but leaves the
+  // UI showing the promo, leading to a crash on click.
+  // With the fix, the UI never showed a promo so it's a no-op.
+  batch_upload_test_helper().ClearReturnDescriptions();
+  batch_upload_test_helper().FireReturnDescriptionRequest();
+
+  // Click the button to trigger a crash in the original code.
+  avatar_accessor.Click();
+}
+
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 INSTANTIATE_TEST_SUITE_P(All, AvatarToolbarButtonBrowserTest, testing::Bool());
