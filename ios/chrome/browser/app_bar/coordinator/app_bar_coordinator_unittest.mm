@@ -24,7 +24,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
-#import "ios/chrome/browser/shared/public/commands/lens_commands.h"
+#import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -135,13 +135,13 @@ class AppBarCoordinatorTest : public PlatformTest {
         startDispatchingToTarget:qr_scanner_handler_
                      forProtocol:@protocol(QRScannerCommands)];
 
-    lens_handler_ = OCMProtocolMock(@protocol(LensCommands));
+    lens_handler_ = OCMProtocolMock(@protocol(LensOverlayCommands));
     [regular_browser_->GetCommandDispatcher()
         startDispatchingToTarget:lens_handler_
-                     forProtocol:@protocol(LensCommands)];
+                     forProtocol:@protocol(LensOverlayCommands)];
     [incognito_browser_->GetCommandDispatcher()
         startDispatchingToTarget:lens_handler_
-                     forProtocol:@protocol(LensCommands)];
+                     forProtocol:@protocol(LensOverlayCommands)];
 
     fullscreen_handler_ = OCMProtocolMock(@protocol(FullscreenCommands));
     [regular_browser_->GetCommandDispatcher()

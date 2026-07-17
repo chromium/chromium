@@ -31,7 +31,7 @@
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/guided_tour_commands.h"
-#import "ios/chrome/browser/shared/public/commands/lens_commands.h"
+#import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
@@ -152,7 +152,8 @@
              lensOverlayStateNotifier:sceneState.lensOverlayStateNotifier];
   _mediator.layoutState = sceneState.layoutState;
   _mediator.sceneHandler = sceneHandler;
-  _mediator.lensHandler = HandlerForProtocol(regularDispatcher, LensCommands);
+  _mediator.lensOverlayHandler =
+      HandlerForProtocol(regularDispatcher, LensOverlayCommands);
   _mediator.delegate = self;
   _mediator.tabGridHandler = tabGridHandler;
   _mediator.settingsHandler =

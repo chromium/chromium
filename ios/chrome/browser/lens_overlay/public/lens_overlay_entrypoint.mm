@@ -20,6 +20,7 @@ bool EntrypointRequiresUserConsent(LensOverlayEntrypoint entrypoint) {
     case LensOverlayEntrypoint::kLocationBar:
     case LensOverlayEntrypoint::kOverflowMenu:
     case LensOverlayEntrypoint::kAIHub:
+    case LensOverlayEntrypoint::kAppBar:
       return true;
     case LensOverlayEntrypoint::kSearchImageContextMenu:
     case LensOverlayEntrypoint::kLVFImagePicker:
@@ -46,6 +47,8 @@ LensOverlayInvocationSource InvocationSourceFromEntrypoint(
       return LensOverlayInvocationSource::kAIHub;
     case LensOverlayEntrypoint::kFREPromo:
       return LensOverlayInvocationSource::kFREPromo;
+    case LensOverlayEntrypoint::kAppBar:
+      return LensOverlayInvocationSource::kAppMenu;
   }
 }
 

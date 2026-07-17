@@ -33,6 +33,8 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
       return LensEntrypoint::LensOverlayAIHub;
     case LensOverlayEntrypoint::kFREPromo:
       return LensEntrypoint::LensOverlayFREPromo;
+    case LensOverlayEntrypoint::kAppBar:
+      return LensEntrypoint::AppBar;
   }
 }
 

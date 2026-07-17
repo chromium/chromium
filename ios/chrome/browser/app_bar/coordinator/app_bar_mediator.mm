@@ -44,6 +44,8 @@
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
+#import "ios/chrome/browser/lens_overlay/public/lens_overlay_availability_utils.h"
+#import "ios/chrome/browser/lens_overlay/public/lens_overlay_entrypoint.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -61,8 +63,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
-#import "ios/chrome/browser/shared/public/commands/lens_commands.h"
-#import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
+#import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -368,7 +369,7 @@ inline LayoutStateAssistantPassKey PassKey() {
   _incognitoFullscreenBrowserAgent = nullptr;
   _regularFullscreenHandler = nil;
   _incognitoFullscreenHandler = nil;
-  _lensHandler = nil;
+  _lensOverlayHandler = nil;
   [_tabGridState removeObserver:self];
   [_incognitoState removeObserver:self];
   [_lensOverlayState removeObserver:self];
@@ -607,13 +608,10 @@ inline LayoutStateAssistantPassKey PassKey() {
       break;
     }
     case AppBarAssistantButtonState::kLens: {
-      OpenLensInputSelectionCommand* command =
-          [[OpenLensInputSelectionCommand alloc]
-                  initWithEntryPoint:LensEntrypoint::AppBar
-                   presentationStyle:LensInputSelectionPresentationStyle::
-                                         SlideFromRight
-              presentationCompletion:nil];
-      [self.lensHandler openLensInputSelection:command];
+      [self.lensOverlayHandler
+          createAndShowLensUI:YES
+                   entrypoint:LensOverlayEntrypoint::kAppBar
+                   completion:nil];
       break;
     }
     case AppBarAssistantButtonState::kAccount:
@@ -865,9 +863,14 @@ inline LayoutStateAssistantPassKey PassKey() {
   if (_overrideLensAvailabilityForTesting) {
     return YES;
   }
-  return lens_availability::CheckAvailabilityForLensEntryPoint(
-      LensEntrypoint::AppBar,
-      search::DefaultSearchProviderIsGoogle(_templateURLService));
+
+  if (!self.currentWebStateList) {
+    return NO;
+  }
+
+  return IsLensOverlayEntrypointAvailable(
+      LensOverlayEntrypoint::kAppBar, _prefService, _templateURLService,
+      self.currentWebStateList->GetActiveWebState());
 }
 
 // Returns whether the Lens overlay is currently visible.
@@ -921,7 +924,11 @@ inline LayoutStateAssistantPassKey PassKey() {
       avatar = [self avatarForPrimaryIdentity];
       break;
     case AppBarAssistantButtonState::kAIM:
+      break;
     case AppBarAssistantButtonState::kLens:
+      if (_tabGridState.tabGridVisible) {
+        enabled = NO;
+      }
       break;
   }
 

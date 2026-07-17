@@ -79,6 +79,8 @@ bool IsLensOverlayEntrypointAvailable(LensOverlayEntrypoint entrypoint,
           IsLensOverlayLandscapeOrientationEnabled(profile_prefs);
       return is_portrait || portrait_override;
     }
+    case LensOverlayEntrypoint::kAppBar:
+      return true;
     case LensOverlayEntrypoint::kSearchImageContextMenu:
     case LensOverlayEntrypoint::kLVFCameraCapture:
     case LensOverlayEntrypoint::kLVFImagePicker:

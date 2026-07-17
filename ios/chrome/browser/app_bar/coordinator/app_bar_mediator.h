@@ -26,7 +26,7 @@ class GeminiBrowserAgent;
 class GeminiService;
 @class IncognitoState;
 @class LayoutState;
-@protocol LensCommands;
+@protocol LensOverlayCommands;
 @class LensOverlayStateNotifier;
 class PrefService;
 @protocol SceneCommands;
@@ -75,8 +75,8 @@ class WebStateList;
 // Handler for the Gemini commands.
 @property(nonatomic, weak) id<GeminiCommands> geminiHandler;
 
-// Handler for the lens commands.
-@property(nonatomic, weak) id<LensCommands> lensHandler;
+// Handler for the lens overlay commands.
+@property(nonatomic, weak) id<LensOverlayCommands> lensOverlayHandler;
 
 // The layout state of the scene.
 @property(nonatomic, strong) LayoutState* layoutState;

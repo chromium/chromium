@@ -23,6 +23,8 @@ enum class LensOverlayEntrypoint {
   kAIHub,
   // The Interactive Lens screen in the First Run Experience.
   kFREPromo,
+  // The App Bar Lens button.
+  kAppBar,
 };
 
 namespace lens {

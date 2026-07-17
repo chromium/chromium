@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/lens_overlay/public/lens_overlay_availability.h"
+#import "ios/chrome/browser/lens_overlay/public/lens_overlay_entrypoint.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
@@ -58,8 +59,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
-#import "ios/chrome/browser/shared/public/commands/lens_commands.h"
-#import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
+#import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -262,14 +262,15 @@ class AppBarMediatorTest : public PlatformTest {
     mediator_.sceneHandler = mock_scene_handler_;
     mock_settings_handler_ = OCMProtocolMock(@protocol(SettingsCommands));
     mediator_.settingsHandler = mock_settings_handler_;
-    mock_lens_handler_ = OCMProtocolMock(@protocol(LensCommands));
+    mock_lens_overlay_handler_ =
+        OCMProtocolMock(@protocol(LensOverlayCommands));
     [regular_browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mock_lens_handler_
-                     forProtocol:@protocol(LensCommands)];
+        startDispatchingToTarget:mock_lens_overlay_handler_
+                     forProtocol:@protocol(LensOverlayCommands)];
     [incognito_browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mock_lens_handler_
-                     forProtocol:@protocol(LensCommands)];
-    mediator_.lensHandler = mock_lens_handler_;
+        startDispatchingToTarget:mock_lens_overlay_handler_
+                     forProtocol:@protocol(LensOverlayCommands)];
+    mediator_.lensOverlayHandler = mock_lens_overlay_handler_;
     mock_gemini_handler_ = OCMProtocolMock(@protocol(GeminiCommands));
     mediator_.geminiHandler = mock_gemini_handler_;
     mock_tab_groups_handler_ = OCMProtocolMock(@protocol(TabGroupsCommands));
@@ -357,7 +358,7 @@ class AppBarMediatorTest : public PlatformTest {
   id mock_settings_handler_;
   id mock_gemini_handler_;
   id mock_tab_groups_handler_;
-  id mock_lens_handler_;
+  id mock_lens_overlay_handler_;
 };
 
 // Tests that the consumer is updated when a web state is added.
@@ -1072,7 +1073,7 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateLensWhenIneligibleSignedIn) {
   mediator_.consumer = consumer_;
   mediator_.sceneHandler = mock_scene_handler_;
   mediator_.settingsHandler = mock_settings_handler_;
-  mediator_.lensHandler = mock_lens_handler_;
+  mediator_.lensOverlayHandler = mock_lens_overlay_handler_;
 
   mediator_.overrideLensAvailabilityForTesting = YES;
 
@@ -1086,18 +1087,15 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateLensWhenIneligibleSignedIn) {
 }
 
 // Tests that tapping the assistant button in the kLens state dispatches
-// the Lens command.
+// the Lens Overlay command.
 TEST_F(AppBarMediatorTest, TestAssistantButtonTappedLens) {
-  OCMExpect([mock_lens_handler_
-      openLensInputSelection:[OCMArg
-                                 checkWithBlock:^BOOL(
-                                     OpenLensInputSelectionCommand* command) {
-                                   return command.entryPoint ==
-                                          LensEntrypoint::AppBar;
-                                 }]]);
+  OCMExpect([mock_lens_overlay_handler_
+      createAndShowLensUI:YES
+               entrypoint:LensOverlayEntrypoint::kAppBar
+               completion:[OCMArg any]]);
   [mediator_ assistantButtonTappedWithState:AppBarAssistantButtonState::kLens
                                    fromView:nil];
-  EXPECT_OCMOCK_VERIFY(mock_lens_handler_);
+  EXPECT_OCMOCK_VERIFY(mock_lens_overlay_handler_);
   histogram_tester_.ExpectUniqueSample(kAppBarAssistantButtonTappedHistogram,
                                        AppBarAssistantButtonState::kLens, 1);
 }
