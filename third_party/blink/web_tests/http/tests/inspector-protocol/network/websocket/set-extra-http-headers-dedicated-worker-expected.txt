@@ -1,0 +1,5 @@
+Tests that Network.setExtraHTTPHeaders adds headers to WebSocket handshake requests created from a dedicated worker.
+X-DevTools-Frame: frame
+X-DevTools-Worker: worker
+X-DevTools-Shared: from-worker
+

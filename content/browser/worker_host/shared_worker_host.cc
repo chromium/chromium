@@ -707,7 +707,8 @@ void SharedWorkerHost::CreateWebSocketConnector(
                                   IPC::mojom::kRoutingIdNone),
           WeakDocumentPtr(), storage_key.origin(),
           ComputeIsolationInfoForWebSocket(),
-          worker_client_security_state_->Clone(), network_restrictions_id_),
+          worker_client_security_state_->Clone(), network_restrictions_id_,
+          GetDevToolsToken()),
       std::move(receiver));
 }
 

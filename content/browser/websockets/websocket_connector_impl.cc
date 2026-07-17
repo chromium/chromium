@@ -72,13 +72,15 @@ WebSocketConnectorImpl::WebSocketConnectorImpl(
     const url::Origin& origin,
     const net::IsolationInfo& isolation_info,
     network::mojom::ClientSecurityStatePtr client_security_state,
-    const base::UnguessableToken& network_restrictions_id)
+    const base::UnguessableToken& network_restrictions_id,
+    std::optional<base::UnguessableToken> devtools_worker_token)
     : frame_id_(frame_id),
       weak_document_(std::move(weak_document)),
       origin_(MaybeTreatLocalOriginAsOpaque(origin)),
       isolation_info_(isolation_info),
       client_security_state_(std::move(client_security_state)),
-      network_restrictions_id_(network_restrictions_id) {
+      network_restrictions_id_(network_restrictions_id),
+      devtools_worker_token_(std::move(devtools_worker_token)) {
   CHECK(!network_restrictions_id.is_empty(), base::NotFatalUntil::M165);
 }
 
@@ -123,9 +125,10 @@ void WebSocketConnectorImpl::Connect(
 
   content::ContentBrowserClient::WebSocketFactory factory = base::BindOnce(
       ConnectCalledByContentBrowserClient, requested_protocols,
-      storage_access_api_status, isolation_info_, frame_id_, origin_,
-      client_security_state_->Clone(), options.options,
-      std::move(throttling_profile_id), network_restrictions_id_);
+      storage_access_api_status, isolation_info_, frame_id_,
+      devtools_worker_token_, origin_, client_security_state_->Clone(),
+      options.options, std::move(throttling_profile_id),
+      network_restrictions_id_);
 
   if (GetContentClient()->browser()->WillInterceptWebSocket(frame)) {
     GetContentClient()->browser()->CreateWebSocket(
@@ -138,7 +141,8 @@ void WebSocketConnectorImpl::Connect(
   if (user_agent) {
     headers.SetHeader(net::HttpRequestHeaders::kUserAgent, *user_agent);
   }
-  devtools_instrumentation::ApplyExtraHeadersForWebSocket(frame_id_, &headers);
+  devtools_instrumentation::ApplyExtraHeadersForWebSocket(
+      frame_id_, devtools_worker_token_, &headers);
 
   std::vector<network::mojom::HttpHeaderPtr> additional_headers;
   for (net::HttpRequestHeaders::Iterator it(headers); it.GetNext();) {
@@ -156,6 +160,7 @@ void WebSocketConnectorImpl::ConnectCalledByContentBrowserClient(
     net::StorageAccessApiStatus storage_access_api_status,
     const net::IsolationInfo& isolation_info,
     const content::GlobalRenderFrameHostId& frame_id,
+    std::optional<base::UnguessableToken> devtools_worker_token,
     const url::Origin& origin,
     network::mojom::ClientSecurityStatePtr client_security_state,
     uint32_t options,
@@ -176,8 +181,8 @@ void WebSocketConnectorImpl::ConnectCalledByContentBrowserClient(
   }
 
   net::HttpRequestHeaders extra_headers;
-  devtools_instrumentation::ApplyExtraHeadersForWebSocket(frame_id,
-                                                          &extra_headers);
+  devtools_instrumentation::ApplyExtraHeadersForWebSocket(
+      frame_id, devtools_worker_token, &extra_headers);
   std::erase_if(additional_headers, [&](const auto& header) {
     return extra_headers.HasHeader(header->name);
   });

@@ -12,6 +12,7 @@
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/traced_value.h"
+#include "base/unguessable_token.h"
 #include "components/download/public/common/download_create_info.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_url_parameters.h"
@@ -1597,29 +1598,30 @@ void ApplyNetworkRequestOverrides(
 
 }  // namespace
 
-void ApplyExtraHeadersForWebSocket(const GlobalRenderFrameHostId& frame_id,
-                                   net::HttpRequestHeaders* headers) {
-  auto* frame = RenderFrameHostImpl::FromID(frame_id);
-  if (!frame) {
-    return;
+void ApplyExtraHeadersForWebSocket(
+    const GlobalRenderFrameHostId& frame_id,
+    const std::optional<base::UnguessableToken>& devtools_worker_token,
+    net::HttpRequestHeaders* headers) {
+  auto apply_overrides = [headers](DevToolsAgentHostImpl* agent_host) {
+    if (!agent_host) {
+      return;
+    }
+    bool disable_cache = false;
+    bool skip_service_worker = false;
+    ApplyNetworkRequestOverrides(agent_host, headers, &disable_cache, nullptr,
+                                 &skip_service_worker, nullptr, nullptr,
+                                 nullptr, nullptr);
+  };
+  if (RenderFrameHostImpl* frame = RenderFrameHostImpl::FromID(frame_id)) {
+    if (FrameTreeNode* ftn = frame->frame_tree_node()) {
+      apply_overrides(GetDevToolsAgentHostForNetworkOverrides(ftn));
+    }
   }
-
-  FrameTreeNode* ftn = frame->frame_tree_node();
-  if (!ftn) {
-    return;
+  if (devtools_worker_token && !devtools_worker_token->is_empty()) {
+    scoped_refptr<DevToolsAgentHostImpl> worker_agent_host =
+        DevToolsAgentHostImpl::GetForId(devtools_worker_token->ToString());
+    apply_overrides(worker_agent_host.get());
   }
-
-  DevToolsAgentHostImpl* agent_host =
-      GetDevToolsAgentHostForNetworkOverrides(ftn);
-  if (!agent_host) {
-    return;
-  }
-
-  bool disable_cache = false;
-  bool skip_service_worker = false;
-  ApplyNetworkRequestOverrides(agent_host, headers, &disable_cache, nullptr,
-                               &skip_service_worker, nullptr, nullptr, nullptr,
-                               nullptr);
 }
 
 void ApplyAuctionNetworkRequestOverrides(

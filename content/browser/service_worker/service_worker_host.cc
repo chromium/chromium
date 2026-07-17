@@ -15,6 +15,7 @@
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
+#include "content/browser/service_worker/embedded_worker_instance.h"
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -111,7 +112,8 @@ void ServiceWorkerHost::CreateWebSocketConnector(
           WeakDocumentPtr(), storage_key.origin(),
           storage_key.ToPartialNetIsolationInfo(),
           version_->BuildClientSecurityState()->Clone(),
-          version_->network_restrictions_id()),
+          version_->network_restrictions_id(),
+          version_->embedded_worker()->WorkerDevtoolsId()),
       std::move(receiver));
 }
 

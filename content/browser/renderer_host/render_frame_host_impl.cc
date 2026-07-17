@@ -14837,7 +14837,8 @@ void RenderFrameHostImpl::CreateWebSocketConnector(
       std::make_unique<WebSocketConnectorImpl>(
           GlobalRenderFrameHostId(GetProcess()->GetID(), routing_id_),
           GetWeakDocumentPtr(), last_committed_origin_, isolation_info_,
-          BuildClientSecurityState(), GetNetworkRestrictionsID()),
+          BuildClientSecurityState(), GetNetworkRestrictionsID(),
+          /*devtools_worker_token=*/std::nullopt),
       std::move(receiver));
 }
 

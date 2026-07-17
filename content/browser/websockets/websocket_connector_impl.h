@@ -41,7 +41,8 @@ class WebSocketConnectorImpl final : public blink::mojom::WebSocketConnector {
       const url::Origin& origin,
       const net::IsolationInfo& isolation_info,
       network::mojom::ClientSecurityStatePtr client_security_state,
-      const base::UnguessableToken& network_restrictions_id);
+      const base::UnguessableToken& network_restrictions_id,
+      std::optional<base::UnguessableToken> devtools_worker_token);
   ~WebSocketConnectorImpl() override;
 
   // WebSocketConnector implementation
@@ -60,6 +61,7 @@ class WebSocketConnectorImpl final : public blink::mojom::WebSocketConnector {
       net::StorageAccessApiStatus storage_access_api_status,
       const net::IsolationInfo& isolation_info,
       const content::GlobalRenderFrameHostId& frame_id,
+      std::optional<base::UnguessableToken> devtools_worker_token,
       const url::Origin& origin,
       network::mojom::ClientSecurityStatePtr client_security_state,
       uint32_t options,
@@ -80,6 +82,7 @@ class WebSocketConnectorImpl final : public blink::mojom::WebSocketConnector {
   const net::IsolationInfo isolation_info_;
   const network::mojom::ClientSecurityStatePtr client_security_state_;
   const base::UnguessableToken network_restrictions_id_;
+  const std::optional<base::UnguessableToken> devtools_worker_token_;
 };
 
 }  // namespace content

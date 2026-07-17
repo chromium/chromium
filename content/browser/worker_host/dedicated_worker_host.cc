@@ -5,6 +5,7 @@
 #include "content/browser/worker_host/dedicated_worker_host.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <variant>
@@ -813,7 +814,8 @@ void DedicatedWorkerHost::CreateWebSocketConnector(
           ancestor_render_frame_host->GetGlobalId(), ancestor_document_,
           GetWorkerStorageKey().origin(),
           ancestor_render_frame_host->GetIsolationInfoForSubresources(),
-          worker_client_security_state_->Clone(), network_restrictions_id_),
+          worker_client_security_state_->Clone(), network_restrictions_id_,
+          GetToken().value()),
       std::move(receiver));
 }
 
