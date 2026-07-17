@@ -6928,7 +6928,7 @@ TEST_P(SSLClientSocketAlpsTest, UnusedProtocols) {
             // The comment of `SSL_early_callback_ctx_extension_get` says that
             // `data` is set to extension contents, and `len` is the
             // length of the extension contents.
-            UNSAFE_BUFFERS(base::span(data, data + len)), base::span(expected));
+            UNSAFE_BUFFERS(base::span(data, len)), base::span(expected));
         return true;
       });
   ASSERT_TRUE(

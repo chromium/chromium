@@ -378,7 +378,7 @@ SocketBIOAdapter* SocketBIOAdapter::GetAdapter(BIO* bio) {
   return adapter;
 }
 
-// TODO(tsepez): should be declared UNSAFE_BUFFER_USAGE in header.
+UNSAFE_BUFFER_USAGE
 int SocketBIOAdapter::BIOWriteWrapper(BIO* bio, const char* in, int len) {
   BIO_clear_retry_flags(bio);
 
@@ -388,13 +388,13 @@ int SocketBIOAdapter::BIOWriteWrapper(BIO* bio, const char* in, int len) {
     return -1;
   }
 
+  // SAFETY: BoringSSL calls this method with a valid pointer `in` and
+  // corresponding length `len`.
   return adapter->BIOWrite(base::as_bytes(
-      // SAFETY: The caller must ensure `in` points to `len` bytes.
-      // TODO(crbug.com/354307327): Spanify this method.
-      UNSAFE_TODO(base::span(in, base::checked_cast<size_t>(len)))));
+      UNSAFE_BUFFERS(base::span(in, base::checked_cast<size_t>(len)))));
 }
 
-// TODO(tsepez): should be declared UNSAFE_BUFFER_USAGE in header.
+UNSAFE_BUFFER_USAGE
 int SocketBIOAdapter::BIOReadWrapper(BIO* bio, char* out, int len) {
   BIO_clear_retry_flags(bio);
 
@@ -404,10 +404,10 @@ int SocketBIOAdapter::BIOReadWrapper(BIO* bio, char* out, int len) {
     return -1;
   }
 
+  // SAFETY: BoringSSL calls this method with a valid pointer `out` and
+  // corresponding length `len`.
   return adapter->BIORead(base::as_writable_bytes(
-      // SAFETY: The caller must ensure `out` points to `len` bytes.
-      // TODO(crbug.com/354307327): Spanify this method.
-      UNSAFE_TODO(base::span(out, base::checked_cast<size_t>(len)))));
+      UNSAFE_BUFFERS(base::span(out, base::checked_cast<size_t>(len)))));
 }
 
 long SocketBIOAdapter::BIOCtrlWrapper(BIO* bio,

@@ -5,6 +5,7 @@
 #ifndef NET_SOCKET_SOCKET_BIO_ADAPTER_H_
 #define NET_SOCKET_SOCKET_BIO_ADAPTER_H_
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -102,7 +103,9 @@ class NET_EXPORT_PRIVATE SocketBIOAdapter {
   void CallOnReadReady();
 
   static SocketBIOAdapter* GetAdapter(BIO* bio);
+  UNSAFE_BUFFER_USAGE
   static int BIOReadWrapper(BIO* bio, char* out, int len);
+  UNSAFE_BUFFER_USAGE
   static int BIOWriteWrapper(BIO* bio, const char* in, int len);
   static long BIOCtrlWrapper(BIO* bio, int cmd, long larg, void* parg);
 

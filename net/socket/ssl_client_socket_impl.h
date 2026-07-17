@@ -193,8 +193,7 @@ class NET_EXPORT_PRIVATE SSLClientSocketImpl
   // Called whenever BoringSSL processes a protocol message.
   void MessageCallback(int is_write,
                        int content_type,
-                       const void* buf,
-                       size_t len);
+                       base::span<const uint8_t> bytes);
 
   void LogConnectEndEvent(int rv);
 

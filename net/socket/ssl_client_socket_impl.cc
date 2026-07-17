@@ -117,22 +117,23 @@ base::DictValue NetLogSSLInfoParams(SSLClientSocketImpl* socket) {
       .Set("received_server_padding", ssl_info.server_padding_received);
 }
 
-base::DictValue NetLogSSLAlertParams(const void* bytes, size_t len) {
-  return base::DictValue().Set("bytes", NetLogBinaryValue(bytes, len));
+base::DictValue NetLogSSLAlertParams(base::span<const uint8_t> bytes) {
+  base::DictValue dict;
+  dict.Set("bytes", NetLogBinaryValue(bytes));
+  return dict;
 }
 
 base::DictValue NetLogSSLMessageParams(bool is_write,
-                                       const void* bytes,
-                                       size_t len,
+                                       base::span<const uint8_t> bytes,
                                        NetLogCaptureMode capture_mode) {
-  if (len == 0) {
+  if (bytes.empty()) {
     NOTREACHED();
   }
 
   base::DictValue dict;
   // The handshake message type is the first byte. Include it so elided messages
   // still report their type.
-  uint8_t type = reinterpret_cast<const uint8_t*>(bytes)[0];
+  uint8_t type = bytes[0];
   dict.Set("type", type);
 
   // Elide client certificate messages unless logging socket bytes. The client
@@ -141,7 +142,7 @@ base::DictValue NetLogSSLMessageParams(bool is_write,
   // information on the user's identity.
   if (!is_write || type != SSL3_MT_CERTIFICATE ||
       NetLogCaptureIncludesSocketBytes(capture_mode)) {
-    dict.Set("bytes", NetLogBinaryValue(bytes, len));
+    dict.Set("bytes", NetLogBinaryValue(bytes));
   }
 
   return dict;
@@ -268,7 +269,11 @@ class SSLClientSocketImpl::SSLContext {
                               SSL* ssl,
                               void* arg) {
     SSLClientSocketImpl* socket = GetInstance()->GetClientSocketFromSSL(ssl);
-    return socket->MessageCallback(is_write, content_type, buf, len);
+    // SAFETY: BoringSSL calls this method with a valid pointer `buf` and
+    // corresponding length `len`.
+    return socket->MessageCallback(
+        is_write, content_type,
+        UNSAFE_BUFFERS(base::span(static_cast<const uint8_t*>(buf), len)));
   }
 
   // This is the index used with SSL_get_ex_data to retrieve the owner
@@ -318,8 +323,8 @@ std::vector<uint8_t> SSLClientSocketImpl::GetECHRetryConfigs() {
   // https://commondatastorage.googleapis.com/chromium-boringssl-docs/ssl.h.html#SSL_get0_ech_retry_configs
   // says `retry_configs` and `retry_configs_len` define a buffer containing a
   // serialized ECHConfigList.
-  return UNSAFE_BUFFERS(
-      std::vector<uint8_t>(retry_configs, retry_configs + retry_configs_len));
+  return base::ToVector(
+      UNSAFE_BUFFERS(base::span(retry_configs, retry_configs_len)));
 }
 
 std::vector<std::vector<uint8_t>>
@@ -333,8 +338,9 @@ SSLClientSocketImpl::GetServerTrustAnchorIDs() {
   // says `available_trust_anchor_ids` and `available_trust_anchor_ids_len`
   // define a buffer containing a list of Trust Anchor IDs in wire format
   // (length-prefixed non-empty strings);
-  base::span<const uint8_t> wire_ids(UNSAFE_BUFFERS(base::span<const uint8_t>(
-      available_trust_anchor_ids, available_trust_anchor_ids_len)));
+  base::span<const uint8_t> wire_ids =
+      UNSAFE_BUFFERS(base::span(available_trust_anchor_ids,
+                                available_trust_anchor_ids_len));
   return x509_util::ParseTlsTrustAnchorIDs(wire_ids);
 }
 
@@ -577,8 +583,8 @@ void SSLClientSocketImpl::GetSSLCertRequestInfo(
   // SAFETY: The comment of `SSL_get0_peer_verify_algorithms` says that
   // `algorithms` is set to an array, and its return value is the length of the
   // array.
-  UNSAFE_BUFFERS(cert_request_info->signature_algorithms.assign(
-      algorithms, algorithms + num_algorithms));
+  cert_request_info->signature_algorithms = base::ToVector(
+      UNSAFE_BUFFERS(base::span(algorithms, num_algorithms)));
 }
 
 void SSLClientSocketImpl::ApplySocketTag(const SocketTag& tag) {
@@ -1747,27 +1753,26 @@ void SSLClientSocketImpl::OnPrivateKeyComplete(
 
 void SSLClientSocketImpl::MessageCallback(int is_write,
                                           int content_type,
-                                          const void* buf,
-                                          size_t len) {
+                                          base::span<const uint8_t> bytes) {
   switch (content_type) {
     case SSL3_RT_ALERT:
       net_log_.AddEvent(is_write ? NetLogEventType::SSL_ALERT_SENT
                                  : NetLogEventType::SSL_ALERT_RECEIVED,
-                        [&] { return NetLogSSLAlertParams(buf, len); });
+                        [&] { return NetLogSSLAlertParams(bytes); });
       break;
     case SSL3_RT_HANDSHAKE:
       net_log_.AddEvent(
           is_write ? NetLogEventType::SSL_HANDSHAKE_MESSAGE_SENT
                    : NetLogEventType::SSL_HANDSHAKE_MESSAGE_RECEIVED,
           [&](NetLogCaptureMode capture_mode) {
-            return NetLogSSLMessageParams(!!is_write, buf, len, capture_mode);
+            return NetLogSSLMessageParams(!!is_write, bytes, capture_mode);
           });
       break;
     case SSL3_RT_CLIENT_HELLO_INNER:
       DCHECK(is_write);
       net_log_.AddEvent(NetLogEventType::SSL_ENCRYPTED_CLIENT_HELLO,
                         [&](NetLogCaptureMode capture_mode) {
-                          return NetLogSSLMessageParams(!!is_write, buf, len,
+                          return NetLogSSLMessageParams(!!is_write, bytes,
                                                         capture_mode);
                         });
       break;
