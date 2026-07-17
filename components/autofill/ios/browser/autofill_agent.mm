@@ -408,9 +408,11 @@ bool HasGuid(const Suggestion::Payload& payload) {
           SysNSStringToUTF16(suggestion.value);
       autofill_suggestion.field_by_field_filling_type_used =
           suggestion.fieldByFieldFillingTypeUsed;
-      autofill_suggestion.payload = HasGuid(suggestion.payload)
-                                        ? suggestion.payload
-                                        : Suggestion::Payload();
+      autofill_suggestion.payload =
+          base::FeatureList::IsEnabled(autofill::features::kAutofillUseOriginalPayloadIos) ||
+                  HasGuid(suggestion.payload)
+              ? suggestion.payload
+              : Suggestion::Payload();
 
       _suggestionDelegate->DidAcceptSuggestion(autofill_suggestion,
                                                {static_cast<int>(index), 0});
