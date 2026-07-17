@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 
+#include "build/branding_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
-#include "chrome/browser/ui/profiles/profile_view_avatar_decoration_specs.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/url_constants.h"
@@ -42,6 +42,12 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/text_elider.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/internal/profiles/profile_view_avatar_decoration_specs_branded.h"
+#else
+#include "chrome/browser/ui/profiles/profile_view_avatar_decoration_specs.h"
+#endif
 
 void NavigateToGoogleAccountPage(Profile* profile, const std::string& email) {
   // Create a URL so that the account chooser is shown if the account with

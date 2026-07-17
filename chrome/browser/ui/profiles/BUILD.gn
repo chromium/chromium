@@ -11,13 +11,20 @@ source_set("profiles") {
   if (!is_android) {
     sources += [
       "profile_colors_util.h",
-      "profile_view_avatar_decoration_specs.h",
       "profile_view_utils.h",
     ]
 
+    if (is_chrome_branded) {
+      sources += [ "//chrome/browser/internal/profiles/profile_view_avatar_decoration_specs_branded.h" ]
+    } else {
+      sources += [ "profile_view_avatar_decoration_specs.h" ]
+    }
+
     public_deps += [
       "//base",
+      "//build:branding_buildflags",
       "//chrome/browser/profiles:profile_util",
+      "//chrome/browser/ui/color:color_headers",
       "//skia",
     ]
   }
