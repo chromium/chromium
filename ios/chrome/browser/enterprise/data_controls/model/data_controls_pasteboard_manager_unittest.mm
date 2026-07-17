@@ -5,8 +5,10 @@
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_pasteboard_manager.h"
 
 #import <UIKit/UIKit.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import "base/memory/raw_ptr.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
@@ -22,6 +24,7 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "ui/base/test/ios/ui_image_test_utils.h"
 #import "url/gurl.h"
 
 using base::test::ios::kWaitForUIElementTimeout;
@@ -370,6 +373,199 @@ TEST_F(DataControlsPasteboardManagerTest, MultipleObserversNotified) {
 
   manager_->RemoveObserver(&observer1);
   manager_->RemoveObserver(&observer2);
+}
+
+// Tests that GetPasteboardTextAndImage invokes the callback with two empty
+// strings if the pasteboard is empty.
+TEST_F(DataControlsPasteboardManagerTest, GetEmptyStringFromEmptyPasteboard) {
+  // Clear the pasteboard.
+  UIPasteboard.generalPasteboard.items = @[];
+  base::test::TestFuture<std::optional<PasteboardContentDLP>> future;
+
+  manager_->GetPasteboardTextAndImage(future.GetCallback());
+  std::optional<PasteboardContentDLP> result = future.Take();
+
+  ASSERT_TRUE(result.has_value());
+  EXPECT_TRUE(result->text.empty());
+  EXPECT_TRUE(result->image.empty());
+}
+
+// Tests that GetPasteboardTextAndImage invokes the callback with the correct
+// text string and empty image string.
+TEST_F(DataControlsPasteboardManagerTest, GetPasteboardText) {
+  base::test::TestFuture<std::optional<PasteboardContentDLP>> future;
+
+  // Set the pasteboard string.
+  UIPasteboard.generalPasteboard.string = @(kPasteboardString);
+
+  manager_->GetPasteboardTextAndImage(future.GetCallback());
+  std::optional<PasteboardContentDLP> result = future.Take();
+
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->text, kPasteboardString);
+  EXPECT_TRUE(result->image.empty());
+}
+
+// Tests that GetPasteboardTextAndImage invokes the callback with the actual
+// copied text string if the pasteboard is replaced with placeholder.
+TEST_F(DataControlsPasteboardManagerTest,
+       GetCorrectPasteboardTextWhenReplacedWithPlaceholder) {
+  // Clear the pasteboard.
+  UIPasteboard.generalPasteboard.items = @[];
+  base::test::TestFuture<std::optional<PasteboardContentDLP>> future;
+
+  GURL source_url(kSourceURL);
+  manager_->SetNextPasteboardItemsSource(source_url, profile_,
+                                         /* os_clipboard_allowed= */ false);
+  UIPasteboard.generalPasteboard.string = @(kPasteboardString);
+
+  // Wait until the internal state settles.
+  EXPECT_TRUE(WaitForKnownPasteboardSource());
+
+  manager_->GetPasteboardTextAndImage(future.GetCallback());
+  std::optional<PasteboardContentDLP> result = future.Take();
+
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->text, kPasteboardString);
+  EXPECT_TRUE(result->image.empty());
+}
+
+// Tests that GetPasteboardTextAndImage invokes the callback with empty text
+// string and correct the Base64 encoded image string if pasteboard only has one
+// image.
+TEST_F(DataControlsPasteboardManagerTest, GetPasteboardImage) {
+  // Clear the pasteboard.
+  UIPasteboard.generalPasteboard.items = @[];
+  base::test::TestFuture<std::optional<PasteboardContentDLP>> future;
+
+  UIImage* test_image = ui::test::uiimage_utils::UIImageWithSizeAndSolidColor(
+      CGSizeMake(10, 10), [UIColor greenColor]);
+  UIPasteboard.generalPasteboard.image = test_image;
+
+  NSData* image_data = UIImagePNGRepresentation(test_image);
+  NSString* image_string =
+      [image_data base64EncodedStringWithOptions:/*No Formatting*/ 0];
+  std::string expected_image = base::SysNSStringToUTF8(image_string);
+
+  manager_->GetPasteboardTextAndImage(future.GetCallback());
+  std::optional<PasteboardContentDLP> result = future.Take();
+
+  ASSERT_TRUE(result.has_value());
+  EXPECT_TRUE(result->text.empty());
+  EXPECT_EQ(result->image, expected_image);
+}
+
+// Tests that GetPasteboardTextAndImage invokes the callback with the correct
+// concatenated text string if multiple text items and an image item exist in
+// the pasteboard at the same time.
+TEST_F(DataControlsPasteboardManagerTest, GetPasteboardMultiTextAndImage) {
+  // Clear the pasteboard.
+  UIPasteboard.generalPasteboard.items = @[];
+  base::test::TestFuture<std::optional<PasteboardContentDLP>> future;
+
+  UIImage* test_image = ui::test::uiimage_utils::UIImageWithSizeAndSolidColor(
+      CGSizeMake(10, 10), [UIColor greenColor]);
+
+  UIPasteboard.generalPasteboard.items = @[
+    @{UTTypeUTF8PlainText.identifier : @(kPasteboardString)},
+    @{UTTypeUTF8PlainText.identifier : @(kNewPasteboardString)},
+    @{UTTypePNG.identifier : test_image}
+  ];
+
+  NSData* image_data = UIImagePNGRepresentation(test_image);
+  NSString* image_string =
+      [image_data base64EncodedStringWithOptions:/*No Formatting*/ 0];
+  std::string expected_image = base::SysNSStringToUTF8(image_string);
+
+  manager_->GetPasteboardTextAndImage(future.GetCallback());
+  std::optional<PasteboardContentDLP> result = future.Take();
+
+  ASSERT_TRUE(result.has_value());
+  std::string expected_text =
+      std::string(kPasteboardString).append(kNewPasteboardString);
+  EXPECT_EQ(result->text, expected_text);
+  EXPECT_EQ(result->image, expected_image);
+}
+
+// Tests that GetPasteboardTextAndImage invokes the callback with only the first
+// image string if there are multiple image items in the pasteboard.
+TEST_F(DataControlsPasteboardManagerTest, GetCorrectPasteboardFirstImageOnly) {
+  // Clear the pasteboard.
+  UIPasteboard.generalPasteboard.items = @[];
+  base::test::TestFuture<std::optional<PasteboardContentDLP>> future;
+
+  UIImage* test_image_green =
+      ui::test::uiimage_utils::UIImageWithSizeAndSolidColor(
+          CGSizeMake(10, 10), [UIColor greenColor]);
+  UIImage* test_image_blue =
+      ui::test::uiimage_utils::UIImageWithSizeAndSolidColor(
+          CGSizeMake(10, 10), [UIColor blueColor]);
+
+  UIPasteboard.generalPasteboard.items = @[
+    @{UTTypePNG.identifier : test_image_green},
+    @{UTTypePNG.identifier : test_image_blue}
+  ];
+
+  NSData* image_data_green = UIImagePNGRepresentation(test_image_green);
+  NSString* image_string_green =
+      [image_data_green base64EncodedStringWithOptions:/*No Formatting*/ 0];
+  std::string expected_image_green =
+      base::SysNSStringToUTF8(image_string_green);
+
+  NSData* image_data_blue = UIImagePNGRepresentation(test_image_blue);
+  NSString* image_string_blue =
+      [image_data_blue base64EncodedStringWithOptions:/*No Formatting*/ 0];
+  std::string expected_image_blue = base::SysNSStringToUTF8(image_string_blue);
+
+  manager_->GetPasteboardTextAndImage(future.GetCallback());
+  std::optional<PasteboardContentDLP> result = future.Take();
+
+  ASSERT_TRUE(result.has_value());
+  EXPECT_TRUE(result->text.empty());
+  EXPECT_EQ(result->image, expected_image_green);
+  EXPECT_NE(result->image, expected_image_blue);
+}
+
+// Tests that GetPasteboardTextAndImage invokes the callback with std::nullopt
+// when the pasteboard image content is larger than
+// kMaxPasteboardContentSizeToProcess.
+TEST_F(DataControlsPasteboardManagerTest,
+       GetPasteboardExceedsLimitReturnsNullopt) {
+  // Clear the pasteboard.
+  UIPasteboard.generalPasteboard.items = @[];
+  base::test::TestFuture<std::optional<PasteboardContentDLP>> future;
+
+  NSData* large_image_data =
+      [NSMutableData dataWithLength:kMaxPasteboardContentSizeToProcess + 1];
+
+  UIPasteboard.generalPasteboard.items =
+      @[ @{UTTypePNG.identifier : large_image_data} ];
+
+  manager_->GetPasteboardTextAndImage(future.GetCallback());
+  std::optional<PasteboardContentDLP> result = future.Take();
+
+  EXPECT_FALSE(result.has_value());
+}
+
+// Tests that GetPasteboardTextAndImage invokes the callback with std::nullopt
+// when the pasteboard text content is larger than
+// kMaxPasteboardContentSizeToProcess.
+TEST_F(DataControlsPasteboardManagerTest,
+       GetPasteboardTextExceedsLimitReturnsNullopt) {
+  // Clear the pasteboard.
+  UIPasteboard.generalPasteboard.items = @[];
+  base::test::TestFuture<std::optional<PasteboardContentDLP>> future;
+
+  std::string large_string(kMaxPasteboardContentSizeToProcess + 1, 'a');
+  NSString* large_nsstring = base::SysUTF8ToNSString(large_string);
+
+  UIPasteboard.generalPasteboard.items =
+      @[ @{UTTypeUTF8PlainText.identifier : large_nsstring} ];
+
+  manager_->GetPasteboardTextAndImage(future.GetCallback());
+  std::optional<PasteboardContentDLP> result = future.Take();
+
+  EXPECT_FALSE(result.has_value());
 }
 
 }  // namespace data_controls

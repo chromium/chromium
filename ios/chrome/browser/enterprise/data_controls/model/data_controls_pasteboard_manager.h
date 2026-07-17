@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import <optional>
+
 #import "base/functional/callback_forward.h"
 #import "base/memory/raw_ptr.h"
 #import "base/no_destructor.h"
@@ -21,6 +23,11 @@ class ProfileIOS;
 
 namespace data_controls {
 
+// An iOS specific pasteboard content size limit to avoid consuming too much
+// memory while trying to process the Pasted Content DLP Scan.
+constexpr size_t kMaxPasteboardContentSizeToProcess =
+    100 * 1024 * 1024;  // 100 MB
+
 class DataControlsPasteboardManagerObserver;
 
 // Source of the data on the pasteboard, used for evaluating Data Controls
@@ -32,6 +39,18 @@ struct PasteboardSource {
   // Non-owning pointer to the ProfileIOS owning the tab the pasteboard content
   // originated from.
   raw_ptr<ProfileIOS> source_profile;
+};
+
+// The Pasteboard content that will be sent to WebProtect to perform scanning
+// for the Pasted Content Data Leak Prevention.
+struct PasteboardContentDLP {
+  // All the text representations in the pasteboard concatenated together along
+  // with any custom data interpreted as string.
+  std::string text;
+
+  // Base64 encoded string of the first copied image in the pasteboard if it
+  // exists.
+  std::string image;
 };
 
 // Manages pasteboard source for Data Controls policies.
@@ -99,6 +118,16 @@ class DataControlsPasteboardManager {
   // Replaces the items in the general Pasteboard if `pasteboard_state_`
   // indicates that the items can't remain in the general Pasteboard.
   void RestorePlaceholderToGeneralPasteboardIfNeeded();
+
+  // Get the texts and the first image as separate strings from the general
+  // Pasteboard. If the pasteboard is replaced with placeholder, get the
+  // original copied texts/image from the `pasteboard_state_`. An empty string
+  // will be provided if there is no text or image copied.
+  // Returns std::nullopt if the pasteboard content size exceeds
+  // `kMaxPasteboardContentSizeToProcess`.
+  void GetPasteboardTextAndImage(
+      base::OnceCallback<void(std::optional<PasteboardContentDLP>)>
+          content_callback);
 
   // Add and remove observer for pasteboard content change.
   void AddObserver(DataControlsPasteboardManagerObserver* observer);
