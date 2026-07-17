@@ -23,6 +23,9 @@ import org.chromium.build.annotations.Nullable;
 @JNINamespace("base::android")
 @DoNotMock("This is a simple value object.")
 public final class Token extends TokenBase {
+    /** Reusable global empty token instance representing a zero (0, 0) token. */
+    public static final Token EMPTY = new Token(0, 0);
+
     private static final String KEY_LOW = "low";
     private static final String KEY_HIGH = "high";
 
@@ -82,7 +85,10 @@ public final class Token extends TokenBase {
     public static @Nullable Token maybeCreateFromBundle(@Nullable Bundle bundle) {
         if (bundle == null) return null;
         if (!bundle.containsKey(KEY_HIGH) || !bundle.containsKey(KEY_LOW)) return null;
-        return new Token(bundle.getLong(KEY_HIGH), bundle.getLong(KEY_LOW));
+        long high = bundle.getLong(KEY_HIGH);
+        long low = bundle.getLong(KEY_LOW);
+        if (high == 0 && low == 0) return EMPTY;
+        return new Token(high, low);
     }
 
     @NativeMethods

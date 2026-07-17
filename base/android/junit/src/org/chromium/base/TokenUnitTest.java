@@ -29,6 +29,15 @@ public class TokenUnitTest {
     }
 
     @Test
+    public void testEmptyToken() {
+        Token token = Token.EMPTY;
+        assertEquals(0L, token.getHigh());
+        assertEquals(0L, token.getLow());
+        assertTrue(token.isZero());
+        checkEquals(token, new Token(0L, 0L));
+    }
+
+    @Test
     public void testExplicitValueToken() {
         Token token = new Token(1234L, 5678L);
         assertEquals(1234L, token.getHigh());

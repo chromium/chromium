@@ -162,7 +162,7 @@ public class TabModelMultiWindowTest {
         createTabGroup(2, tabModel);
 
         // Create an invalid group ID.
-        Token invalidGroupId = new Token(0, 0);
+        Token invalidGroupId = Token.EMPTY;
 
         // Create a new window.
         ChromeTabbedActivity activity2 = createNewWindow(activity1);

@@ -157,25 +157,63 @@ public class TabStateFileManager {
      */
     public static @Nullable TabState restoreTabState(
             File stateFolder, int id, CipherFactory cipherFactory) {
-        recordTabStateMigrationStatus(stateFolder, id);
-        // Try to restore using FlatBuffer file first.
+        File flatBufferRegular = getTabStateFile(stateFolder, id, false, true);
+        File flatBufferEncrypted = getTabStateFile(stateFolder, id, true, true);
+        File legacyRegular = getTabStateFile(stateFolder, id, false, false);
+        File legacyEncrypted = getTabStateFile(stateFolder, id, true, false);
+
+        boolean flatBufferRegularExists = flatBufferRegular.exists();
+        boolean flatBufferEncryptedExists = flatBufferEncrypted.exists();
+        boolean legacyRegularExists = legacyRegular.exists();
+        boolean legacyEncryptedExists = legacyEncrypted.exists();
+
+        recordTabStateMigrationStatus(
+                flatBufferRegularExists,
+                flatBufferEncryptedExists,
+                legacyRegularExists,
+                legacyEncryptedExists);
+
         TabState tabState = null;
-        try {
-            tabState = restoreTabState(stateFolder, id, cipherFactory, true);
-        } catch (Exception e) {
-            // TODO(crbug.com/341122002) Add in metrics
-            Log.d(TAG, "Error restoring TabState using FlatBuffer", e);
+        if (flatBufferRegularExists || flatBufferEncryptedExists) {
+            try {
+                boolean isEncrypted = flatBufferEncryptedExists;
+                File targetFile = isEncrypted ? flatBufferEncrypted : flatBufferRegular;
+                File legacyFileToDelete =
+                        legacyRegularExists
+                                ? legacyRegular
+                                : (legacyEncryptedExists ? legacyEncrypted : null);
+
+                long startTime = SystemClock.elapsedRealtime();
+                tabState = restoreTabStateInternal(targetFile, isEncrypted, cipherFactory);
+                if (tabState != null) {
+                    RecordHistogram.recordTimesHistogram(
+                            "Tabs.TabState.LoadTime", SystemClock.elapsedRealtime() - startTime);
+                    tabState.legacyFileToDelete = legacyFileToDelete;
+                }
+            } catch (Exception e) {
+                Log.d(TAG, "Error restoring TabState using FlatBuffer", e);
+            }
+            if (tabState != null) {
+                RecordHistogram.recordEnumeratedHistogram(
+                        "Tabs.TabState.RestoreMethod",
+                        TabStateRestoreMethod.FLATBUFFER,
+                        TabStateRestoreMethod.NUM_ENTRIES);
+                return tabState;
+            }
         }
-        if (tabState != null) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    "Tabs.TabState.RestoreMethod",
-                    TabStateRestoreMethod.FLATBUFFER,
-                    TabStateRestoreMethod.NUM_ENTRIES);
-            return tabState;
+
+        if (legacyRegularExists || legacyEncryptedExists) {
+            boolean isEncrypted = legacyEncryptedExists;
+            File targetFile = isEncrypted ? legacyEncrypted : legacyRegular;
+
+            long startTime = SystemClock.elapsedRealtime();
+            tabState = restoreTabStateInternal(targetFile, isEncrypted, cipherFactory);
+            if (tabState != null) {
+                RecordHistogram.recordTimesHistogram(
+                        "Tabs.TabState.LoadTime", SystemClock.elapsedRealtime() - startTime);
+            }
         }
-        // If we couldn't restore using the FlatBuffer file it's possible we need to
-        // restore the legacy TabState file (i.e. the Tab has not been migrated yet).
-        tabState = restoreTabState(stateFolder, id, cipherFactory, false);
+
         if (tabState == null) {
             RecordHistogram.recordEnumeratedHistogram(
                     "Tabs.TabState.RestoreMethod",
@@ -192,28 +230,48 @@ public class TabStateFileManager {
 
     @VisibleForTesting
     public static void recordTabStateMigrationStatus(File stateFolder, int id) {
-        for (boolean encrypted : new boolean[] {false, true}) {
-            boolean legacyFileExists =
-                    getTabStateFile(stateFolder, id, encrypted, /* isFlatbuffer= */ false).exists();
-            boolean flatBufferFileExists =
-                    getTabStateFile(stateFolder, id, encrypted, /* isFlatbuffer= */ true).exists();
+        boolean flatBufferRegularExists =
+                getTabStateFile(stateFolder, id, false, /* isFlatbuffer= */ true).exists();
+        boolean flatBufferEncryptedExists =
+                getTabStateFile(stateFolder, id, true, /* isFlatbuffer= */ true).exists();
+        boolean legacyRegularExists =
+                getTabStateFile(stateFolder, id, false, /* isFlatbuffer= */ false).exists();
+        boolean legacyEncryptedExists =
+                getTabStateFile(stateFolder, id, true, /* isFlatbuffer= */ false).exists();
 
-            if (legacyFileExists && flatBufferFileExists) {
-                RecordHistogram.recordEnumeratedHistogram(
-                        "Tabs.TabState.MigrationStatus",
-                        TabStateMigrationStatus.FLATBUFFER_AND_LEGACY_HAND_WRITTEN,
-                        TabStateMigrationStatus.NUM_ENTRIES);
-            } else if (legacyFileExists) {
-                RecordHistogram.recordEnumeratedHistogram(
-                        "Tabs.TabState.MigrationStatus",
-                        TabStateMigrationStatus.LEGACY_HAND_WRITTEN,
-                        TabStateMigrationStatus.NUM_ENTRIES);
-            } else if (flatBufferFileExists) {
-                RecordHistogram.recordEnumeratedHistogram(
-                        "Tabs.TabState.MigrationStatus",
-                        TabStateMigrationStatus.FLATBUFFER,
-                        TabStateMigrationStatus.NUM_ENTRIES);
-            }
+        recordTabStateMigrationStatus(
+                flatBufferRegularExists,
+                flatBufferEncryptedExists,
+                legacyRegularExists,
+                legacyEncryptedExists);
+    }
+
+    private static void recordTabStateMigrationStatus(
+            boolean flatBufferRegularExists,
+            boolean flatBufferEncryptedExists,
+            boolean legacyRegularExists,
+            boolean legacyEncryptedExists) {
+        recordMigrationStatusPair(legacyRegularExists, flatBufferRegularExists);
+        recordMigrationStatusPair(legacyEncryptedExists, flatBufferEncryptedExists);
+    }
+
+    private static void recordMigrationStatusPair(
+            boolean legacyFileExists, boolean flatBufferFileExists) {
+        if (legacyFileExists && flatBufferFileExists) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Tabs.TabState.MigrationStatus",
+                    TabStateMigrationStatus.FLATBUFFER_AND_LEGACY_HAND_WRITTEN,
+                    TabStateMigrationStatus.NUM_ENTRIES);
+        } else if (legacyFileExists) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Tabs.TabState.MigrationStatus",
+                    TabStateMigrationStatus.LEGACY_HAND_WRITTEN,
+                    TabStateMigrationStatus.NUM_ENTRIES);
+        } else if (flatBufferFileExists) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Tabs.TabState.MigrationStatus",
+                    TabStateMigrationStatus.FLATBUFFER,
+                    TabStateMigrationStatus.NUM_ENTRIES);
         }
     }
 
@@ -466,8 +524,11 @@ public class TabStateFileManager {
             try {
                 long tokenHigh = stream.readLong();
                 long tokenLow = stream.readLong();
-                Token tabGroupId = new Token(tokenHigh, tokenLow);
-                tabState.tabGroupId = tabGroupId.isZero() ? null : tabGroupId;
+                if (tokenHigh == 0 && tokenLow == 0) {
+                    tabState.tabGroupId = null;
+                } else {
+                    tabState.tabGroupId = new Token(tokenHigh, tokenLow);
+                }
             } catch (EOFException eof) {
                 tabState.tabGroupId = null;
                 Log.w(
