@@ -206,7 +206,7 @@ class TelemetryLogger
             .Then(std::move(callback)));
   }
 
-  bool ShouldDeleteUploadQueue(std::optional<int> http_status) const {
+  constexpr bool ShouldDeleteUploadQueue(std::optional<int> http_status) const {
     if (!http_status) {
       return false;
     }

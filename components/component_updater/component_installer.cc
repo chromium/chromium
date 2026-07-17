@@ -47,7 +47,7 @@
 
 namespace component_updater {
 
-const char kNullVersion[] = "0.0.0.0";
+constexpr char kNullVersion[] = "0.0.0.0";
 
 namespace {
 using Result = ::update_client::CrxInstaller::Result;

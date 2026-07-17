@@ -555,7 +555,7 @@ ErrorCode ParseAppInstallerDataArgs(std::string_view app_installer_data_args,
 }
 
 // Checks that |args| does not contain |kDisallowedCharInTag|.
-bool IsValidArgs(std::string_view args) {
+constexpr bool IsValidArgs(std::string_view args) {
   return !args.contains(kDisallowedCharInTag);
 }
 

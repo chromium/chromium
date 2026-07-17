@@ -38,7 +38,7 @@ static void ConvertHexadecimalToIDAlphabet(std::string* id) {
 namespace crx_file::id_util {
 
 // First 16 bytes of SHA256 hashed public key.
-const size_t kIdSize = 16;
+constexpr size_t kIdSize = 16;
 
 std::string GenerateId(std::string_view input) {
   return GenerateId(base::as_byte_span(input));

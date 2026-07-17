@@ -8,7 +8,7 @@
 
 namespace updater {
 
-const char kUpdaterName[] = PRODUCT_FULLNAME_STRING;
-const char kPrivilegedHelperName[] = PRIVILEGED_HELPER_NAME;
+constexpr char kUpdaterName[] = PRODUCT_FULLNAME_STRING;
+constexpr char kPrivilegedHelperName[] = PRIVILEGED_HELPER_NAME;
 
 }  // namespace updater

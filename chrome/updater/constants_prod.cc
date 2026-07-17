@@ -6,6 +6,6 @@
 
 namespace updater {
 
-const char kExecutableSuffix[] = "";
+constexpr char kExecutableSuffix[] = "";
 
 }  // namespace updater

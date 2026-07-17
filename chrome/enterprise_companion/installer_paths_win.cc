@@ -17,7 +17,7 @@
 
 namespace enterprise_companion {
 
-const char kExecutableName[] = "enterprise_companion.exe";
+constexpr char kExecutableName[] = "enterprise_companion.exe";
 
 std::optional<base::FilePath> GetInstallDirectory() {
   base::FilePath program_files_dir;

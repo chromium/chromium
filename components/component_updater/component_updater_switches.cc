@@ -8,21 +8,21 @@ namespace switches {
 
 // Comma-separated options to troubleshoot the component updater. Only valid
 // for the browser process.
-const char kComponentUpdater[] = "component-updater";
+constexpr char kComponentUpdater[] = "component-updater";
 
 // Optional testing override of the Trust Tokens key commitment component's
 // path.
-const char kComponentUpdaterTrustTokensComponentPath[] =
+constexpr char kComponentUpdaterTrustTokensComponentPath[] =
     "component-updater-trust-tokens-component-path";
 
 // Switch to control which serving campaigns file versions to select in test
 // cohort. Example: `--campaigns-test-tag=dev1` will select test cohort which
 // tag matches dev1.
-const char kCampaignsTestTag[] = "campaigns-test-tag";
+constexpr char kCampaignsTestTag[] = "campaigns-test-tag";
 
 // Switch to control which serving demo mode app versions to select in test
 // cohort. Example: `--demo-app-test-tag=dev1` will select test cohort which tag
 // matches dev1.
-const char kDemoModeTestTag[] = "demo-app-test-tag";
+constexpr char kDemoModeTestTag[] = "demo-app-test-tag";
 
 }  // namespace switches

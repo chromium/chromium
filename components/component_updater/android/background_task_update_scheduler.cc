@@ -17,7 +17,7 @@ namespace {
 
 // Delay of running component updates after the background task fires to give
 // enough time for async component registration.
-const base::TimeDelta kOnStartTaskDelay = base::Seconds(2);
+constexpr base::TimeDelta kOnStartTaskDelay = base::Seconds(2);
 
 }  // namespace
 

@@ -28,18 +28,19 @@
 
 namespace enterprise_companion {
 
-const char kCompanionAppId[] = ENTERPRISE_COMPANION_APPID;
+constexpr char kCompanionAppId[] = ENTERPRISE_COMPANION_APPID;
 
 // Overrides JSON keys.
-const char kCrashUploadUrlKey[] = "crash_upload_url";
-const char kDMEncryptedReportingUrlKey[] = "dm_encrypted_reporting_url";
-const char kDMRealtimeReportingUrlKey[] = "dm_realtime_reporting_url";
-const char kDMServerUrlKey[] = "dm_server_url";
-const char kEventLoggingUrlKey[] = "event_logging_url";
+constexpr char kCrashUploadUrlKey[] = "crash_upload_url";
+constexpr char kDMEncryptedReportingUrlKey[] = "dm_encrypted_reporting_url";
+constexpr char kDMRealtimeReportingUrlKey[] = "dm_realtime_reporting_url";
+constexpr char kDMServerUrlKey[] = "dm_server_url";
+constexpr char kEventLoggingUrlKey[] = "event_logging_url";
 extern const char kEventLoggerMinTimeoutSecKey[] =
     "event-logger-min-timeout-sec";
 #if BUILDFLAG(IS_WIN)
-const char kNamedPipeSecurityDescriptorKey[] = "named-pipe-security-descriptor";
+constexpr char kNamedPipeSecurityDescriptorKey[] =
+    "named-pipe-security-descriptor";
 #endif
 
 namespace {

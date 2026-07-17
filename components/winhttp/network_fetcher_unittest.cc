@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/files/file.h"
 #include "base/functional/bind.h"
@@ -100,7 +101,7 @@ TEST(WinHttpNetworkFetcher, NullSession) {
 }
 
 TEST(WinHttpNetworkFetcher, GZip) {
-  static const std::string kResponse = "hello response";
+  static constexpr std::string_view kResponse = "hello response";
   net::EmbeddedTestServer test_server;
   test_server.RegisterRequestHandler(base::BindRepeating(
       [](const net::test_server::HttpRequest& request)

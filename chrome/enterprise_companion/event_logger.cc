@@ -451,8 +451,8 @@ class EnterpriseCompanionEventLoggerImpl
 
 }  // namespace
 
-const char kLoggingCookieName[] = "NID";
-const char kLoggingCookieDefaultValue[] = "\"\"";
+constexpr char kLoggingCookieName[] = "NID";
+constexpr char kLoggingCookieDefaultValue[] = "\"\"";
 
 std::optional<base::File> OpenDefaultEventLoggerCookieFile() {
   std::optional<base::FilePath> install_dir = GetInstallDirectory();
