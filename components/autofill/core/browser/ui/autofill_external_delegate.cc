@@ -379,6 +379,13 @@ void AutofillExternalDelegate::OnQuery(
     const FormFieldData& field,
     const gfx::Rect& caret_bounds,
     AutofillSuggestionTriggerSource trigger_source) {
+  if ((last_query_.form_id || last_query_.field_id) &&
+      (last_query_.form_id != form.global_id() ||
+       last_query_.field_id != field.global_id())) {
+    manager_->client().HideSuggestions(SuggestionHidingReason::kStaleData,
+                                       /*product=*/std::nullopt);
+  }
+
   last_query_ = {.form_id = form.global_id(),
                  .field_id = field.global_id(),
                  .field_datalist_options = field.datalist_options()};
