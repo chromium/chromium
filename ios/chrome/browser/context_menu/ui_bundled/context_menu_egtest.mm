@@ -747,20 +747,12 @@ void RelaunchApp() {
   const GURL imageURL = self.testServer->GetURL(kLogoPageImageSourcePath);
   [ChromeEarlGrey loadURL:imageURL];
 
-  // Calculate a point inside the displayed image.
-  CGFloat topInset = 0.0;
-  if ([ChromeEarlGrey webStateWebViewUsesContentInset]) {
-    topInset = [FullscreenAppInterface currentViewportInsets].top;
-  }
-  CGPoint pointOnImage = CGPointZero;
-  // Offset by at least status bar height.
-  pointOnImage.y = topInset + 25.0;
-  pointOnImage.x = [ChromeEarlGrey webStateWebViewSize].width / 2.0;
+  [ChromeEarlGrey
+      waitForWebStateContainingElement:ElementSelectorToLongPressImage()];
+  [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
-  // Duration should match `kContextMenuLongPressDuration` as defined in
-  // web_view_actions.mm.
-  [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:grey_longPressAtPointWithDuration(pointOnImage, 1.0)];
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:ElementSelectorToLongPressImage()];
 
   TapOnContextMenuButton(OpenImageInNewTabButton());
   [ChromeEarlGrey waitForMainTabCount:2];
@@ -1261,14 +1253,21 @@ void RelaunchApp() {
   [ChromeEarlGrey waitForForegroundWindowCount:1];
   [[EarlGrey selectElementWithMatcher:grey_text(kShortImgTitle)]
       assertWithMatcher:grey_notNil()];
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
-                      grey_accessibilityID(
-                          kContextMenuImagePreviewAccessibilityIdentifier)];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kContextMenuImagePreviewAccessibilityIdentifier),
+                     grey_hidden(NO), nil)];
 
-  // On iOS 26, the name of the image (chromium_logo.png in this case) is used
-  // as a page title instead of "Image".
-  NSString* pageTitle =
-      base::ios::IsRunningOnIOS26OrLater() ? @"chromium_logo" : @"Image";
+  // On iOS 27, the image's alt text is used as a page title. On iOS 26, the
+  // name of the image (chromium_logo.png in this case) is used instead of
+  // "Image".
+  NSString* pageTitle = @"Image";
+  if (base::ios::IsRunningOnIOS27OrLater()) {
+    pageTitle = kShortImgTitle;
+  } else if (base::ios::IsRunningOnIOS26OrLater()) {
+    pageTitle = @"chromium_logo";
+  }
   [ChromeEarlGrey verifyShareActionWithURL:shortTitleURL pageTitle:pageTitle];
   // Ensure that UMA was logged correctly.
   NSError* error = [MetricsAppInterface
