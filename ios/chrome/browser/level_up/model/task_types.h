@@ -45,8 +45,8 @@ enum class LevelUpTaskStatType {
   kTypingSaved,
   // Passwords verified by checkup.
   kPasswordsVerified,
-  // Manual queries skipped by Lens.
-  kSearchesSkipped,
+  // Photos/camera searches performed using Lens.
+  kPhotoSearchesPerformed,
 };
 
 #endif  // IOS_CHROME_BROWSER_LEVEL_UP_MODEL_TASK_TYPES_H_

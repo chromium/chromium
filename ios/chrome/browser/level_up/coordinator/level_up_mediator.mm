@@ -239,11 +239,11 @@
       l10n_util::GetPluralNSStringF(IDS_IOS_LEVEL_UP_STAT_SEARCHES_SKIPPED, 3);
   NSString* subtitle4 =
       l10n_util::GetNSString(IDS_IOS_LEVEL_UP_STAT_SUBTITLE_SEARCHES_SKIPPED);
-  LevelUpStat* stat4 =
-      [[LevelUpStat alloc] initWithTitle:title4
-                                subtitle:subtitle4
-                         imageLottieName:@"searches_skipped"
-                                    type:LevelUpTaskStatType::kSearchesSkipped];
+  LevelUpStat* stat4 = [[LevelUpStat alloc]
+        initWithTitle:title4
+             subtitle:subtitle4
+      imageLottieName:@"searches_skipped"
+                 type:LevelUpTaskStatType::kPhotoSearchesPerformed];
   [stats addObject:stat4];
 
   if ([self.consumer respondsToSelector:@selector(setStats:)]) {
