@@ -25,16 +25,16 @@ source_set("impl") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/fullscreen",
+    "//chrome/browser/ui/views/exclusive_access",
     "//content/public/browser",
     "//ui/events",
     "//ui/views",
   ]
 
   # fullscreen_control_host.cc includes
-  # chrome/browser/ui/views/frame/browser_view.h and
-  # chrome/browser/ui/views/exclusive_access_bubble_views.h, both still compiled
-  # in //chrome/browser/ui:ui with no BrowserWindowInterface accessor yet. Reach
-  # them via browser_public_dependencies; the reverse edge is the
+  # chrome/browser/ui/views/frame/browser_view.h, still compiled in
+  # //chrome/browser/ui:ui with no BrowserWindowInterface accessor yet. Reach
+  # it via browser_public_dependencies; the reverse edge is the
   # allow_circular_includes_from entry on //chrome/browser/ui:ui.
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }

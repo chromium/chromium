@@ -95,6 +95,7 @@ if (!is_android) {
       "//chrome/test:test_support_ui",
       "//content/test:test_support",
     ]
+    deps = [ "//chrome/browser/ui/views/exclusive_access" ]
     if (!is_chromeos) {
       public_deps += [ "//chrome/browser:fullscreen" ]
     }

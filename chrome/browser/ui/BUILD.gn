@@ -3966,9 +3966,6 @@ static_library("ui") {
       "views/dotted_icon.h",
       "views/elevation_icon_setter.cc",
       "views/elevation_icon_setter.h",
-      "views/exclusive_access/exclusive_access_bubble_views.cc",
-      "views/exclusive_access/exclusive_access_bubble_views.h",
-      "views/exclusive_access/exclusive_access_bubble_views_context.h",
       "views/extensions/chooser_dialog_view.cc",
       "views/extensions/chooser_dialog_view.h",
       "views/extensions/expandable_container_view.cc",
@@ -4634,6 +4631,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/dictation",
       "//chrome/browser/ui/views/digital_credentials",
       "//chrome/browser/ui/views/download",
+      "//chrome/browser/ui/views/exclusive_access",
+      "//chrome/browser/ui/views/exclusive_access:impl",
       "//chrome/browser/ui/views/extensions:security_dialog_tracker",
       "//chrome/browser/ui/views/frame",
       "//chrome/browser/ui/views/frame:shadow",
@@ -4814,10 +4813,14 @@ static_library("ui") {
       "//chrome/browser/ui/views/storage:impl",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when the
-      # following headers get componentized:
-      # c/b/ui/views/exclusive_access_bubble_views.h
+      # following header gets componentized:
       # c/b/ui/views/frame/browser_view.h
       "//chrome/browser/ui/views/fullscreen_control:impl",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when the
+      # following header gets componentized:
+      # c/b/ui/views/frame/top_container_view.h
+      "//chrome/browser/ui/views/exclusive_access:impl",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when the
       # following header gets componentized:
