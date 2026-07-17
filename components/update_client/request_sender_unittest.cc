@@ -105,12 +105,9 @@ void RequestSenderTest::SetUp() {
   request_sender_ =
       base::MakeRefCounted<RequestSender>(config_->GetNetworkFetcherFactory());
 
-  std::vector<GURL> urls;
-  urls.push_back(GURL(kUrl1));
-  urls.push_back(GURL(kUrl2));
-
   post_interceptor_ = std::make_unique<URLLoaderPostInterceptor>(
-      urls, config_->test_url_loader_factory());
+      std::vector<GURL>{GURL(kUrl1), GURL(kUrl2)},
+      config_->test_url_loader_factory());
   EXPECT_TRUE(post_interceptor_);
 }
 
@@ -225,11 +222,10 @@ TEST_P(RequestSenderTest, RequestSendFailed) {
   EXPECT_TRUE(post_interceptor_->ExpectRequest(
       std::make_unique<PartialMatch>("test"), net::HTTP_FORBIDDEN));
 
-  const std::vector<GURL> urls = {GURL(kUrl1), GURL(kUrl2)};
   request_sender_ =
       base::MakeRefCounted<RequestSender>(config_->GetNetworkFetcherFactory());
   request_sender_->Send(
-      urls, {}, "test", false,
+      {GURL(kUrl1), GURL(kUrl2)}, {}, "test", false,
       base::BindOnce(&RequestSenderTest::RequestSenderComplete,
                      base::Unretained(this)));
   RunThreads();
@@ -250,11 +246,10 @@ TEST_P(RequestSenderTest, RequestSendFailed) {
 
 // Tests that the request fails when no urls are provided.
 TEST_P(RequestSenderTest, RequestSendFailedNoUrls) {
-  std::vector<GURL> urls;
   request_sender_ =
       base::MakeRefCounted<RequestSender>(config_->GetNetworkFetcherFactory());
   request_sender_->Send(
-      urls, {}, "test", false,
+      {}, {}, "test", false,
       base::BindOnce(&RequestSenderTest::RequestSenderComplete,
                      base::Unretained(this)));
   RunThreads();
@@ -268,11 +263,10 @@ TEST_P(RequestSenderTest, RequestSendCupError) {
       std::make_unique<PartialMatch>("test"),
       GetTestFilePath("updatecheck_reply_1.json")));
 
-  const std::vector<GURL> urls = {GURL(kUrl1)};
   request_sender_ =
       base::MakeRefCounted<RequestSender>(config_->GetNetworkFetcherFactory());
   request_sender_->Send(
-      urls, {}, "test", true,
+      {GURL(kUrl1)}, {}, "test", true,
       base::BindOnce(&RequestSenderTest::RequestSenderComplete,
                      base::Unretained(this)));
   RunThreads();
@@ -293,11 +287,10 @@ TEST_P(RequestSenderTest, RetryAfterSecClamped) {
       GetTestFilePath("updatecheck_reply_1.json"),
       {{"X-Retry-After", "100000"}}));  // > 24 hours (86400)
 
-  const std::vector<GURL> urls = {GURL(kUrl1)};
   request_sender_ =
       base::MakeRefCounted<RequestSender>(config_->GetNetworkFetcherFactory());
   request_sender_->Send(
-      urls, {}, "test", true,
+      {GURL(kUrl1)}, {}, "test", true,
       base::BindOnce(&RequestSenderTest::RequestSenderComplete,
                      base::Unretained(this)));
   RunThreads();
@@ -335,11 +328,10 @@ TEST_P(RequestSenderTest, CupKeySelection) {
   EXPECT_TRUE(
       post_interceptor_->ExpectRequest(std::make_unique<PartialMatch>("test")));
 
-  const std::vector<GURL> urls = {GURL(kUrl1)};
   request_sender_ =
       base::MakeRefCounted<RequestSender>(config_->GetNetworkFetcherFactory());
   request_sender_->Send(
-      urls, {}, "test", true,
+      {GURL(kUrl1)}, {}, "test", true,
       base::BindOnce(&RequestSenderTest::RequestSenderComplete,
                      base::Unretained(this)));
   RunThreads();
