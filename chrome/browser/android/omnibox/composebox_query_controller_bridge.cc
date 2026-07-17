@@ -353,9 +353,7 @@ ComposeboxQueryControllerBridge::AddTabContextFromCache(JNIEnv* env,
 }
 
 std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
-ComposeboxQueryControllerBridge::CreateSearchUrlRequestInfoFromUrl(
-    GURL url,
-    const std::string& query_text) {
+ComposeboxQueryControllerBridge::CreateSearchUrlRequestInfoFromUrl(GURL url) {
   std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
       search_url_request_info = std::make_unique<
           ComposeboxQueryController::CreateSearchUrlRequestInfo>();
@@ -397,20 +395,17 @@ void ComposeboxQueryControllerBridge::ContextualizeAndCreateSearchUrl(
 void ComposeboxQueryControllerBridge::GetAimUrl(
     JNIEnv* env,
     GURL url,
-    const std::string& query_text,
     const base::android::JavaRef<jobject>& j_callback) {
   ContextualizeAndCreateSearchUrl(
-      CreateSearchUrlRequestInfoFromUrl(std::move(url), query_text),
-      j_callback);
+      CreateSearchUrlRequestInfoFromUrl(std::move(url)), j_callback);
 }
 
 void ComposeboxQueryControllerBridge::GetImageGenerationUrl(
     JNIEnv* env,
     GURL url,
-    const std::string& query_text,
     const base::android::JavaRef<jobject>& j_callback) {
   auto search_url_request_info =
-      CreateSearchUrlRequestInfoFromUrl(std::move(url), query_text);
+      CreateSearchUrlRequestInfoFromUrl(std::move(url));
   search_url_request_info->additional_params["imgn"] = "1";
   ContextualizeAndCreateSearchUrl(std::move(search_url_request_info),
                                   j_callback);
@@ -419,10 +414,9 @@ void ComposeboxQueryControllerBridge::GetImageGenerationUrl(
 void ComposeboxQueryControllerBridge::GetAimUrlFromInputState(
     JNIEnv* env,
     GURL url,
-    const std::string& query_text,
     const base::android::JavaRef<jobject>& j_callback) {
   auto search_url_request_info =
-      CreateSearchUrlRequestInfoFromUrl(std::move(url), query_text);
+      CreateSearchUrlRequestInfoFromUrl(std::move(url));
 
   if (input_state_model_) {
     for (const auto& [key, value] :

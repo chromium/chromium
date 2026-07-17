@@ -1527,12 +1527,7 @@ class AutocompleteMediator
                                 finalTransition);
                     };
 
-            // The url's q= parameter may strip certain useful characters, like '://' in https://
-            // This string should maintain those characters, allowing the url to be properly
-            // contextualized in the AIM chat.
-            String suggestionDisplayText = suggestion.getDisplayText();
-
-            adjustGurlForRequestType(url, suggestionDisplayText, onUrlReady);
+            adjustGurlForRequestType(url, onUrlReady);
         }
     }
 
@@ -1549,7 +1544,7 @@ class AutocompleteMediator
                                     .build());
                     mHandler.post(this::finishInteraction);
                 };
-        adjustGurlForRequestType(GURL.emptyGURL(), "", onUrlReady);
+        adjustGurlForRequestType(GURL.emptyGURL(), onUrlReady);
     }
 
     /**
@@ -1557,13 +1552,10 @@ class AutocompleteMediator
      * Generation) and model picker flag, and invoke the callback with that URL.
      *
      * @param url The base {@link GURL} to potentially be adjusted.
-     * @param queryText The query text for the request. May be used by the bridge to help generate
-     *     the adjusted URL.
      * @param callback The callback to be invoked with the potentially adjusted URL.
      */
     @VisibleForTesting
-    /* package */ void adjustGurlForRequestType(
-            GURL url, String queryText, Callback<GURL> callback) {
+    /* package */ void adjustGurlForRequestType(GURL url, Callback<GURL> callback) {
         if (!isInInputSession()) {
             callback.onResult(url);
             return;
@@ -1579,12 +1571,12 @@ class AutocompleteMediator
         }
 
         if (OmniboxFeatures.sShowModelPicker.getValue()) {
-            bridge.getAimUrlFromInputState(url, queryText, callback);
+            bridge.getAimUrlFromInputState(url, callback);
         } else {
             switch (requestType) {
-                case AutocompleteRequestType.AI_MODE -> bridge.getAimUrl(url, queryText, callback);
+                case AutocompleteRequestType.AI_MODE -> bridge.getAimUrl(url, callback);
                 case AutocompleteRequestType.IMAGE_GENERATION ->
-                        bridge.getImageGenerationUrl(url, queryText, callback);
+                        bridge.getImageGenerationUrl(url, callback);
                 default -> callback.onResult(url);
             }
         }
@@ -1652,7 +1644,7 @@ class AutocompleteMediator
             url = match.getUrl();
         }
 
-        adjustGurlForRequestType(url, query, this::finishLoadUrlFromVoice);
+        adjustGurlForRequestType(url, this::finishLoadUrlFromVoice);
     }
 
     private void finishLoadUrlFromVoice(GURL url) {
