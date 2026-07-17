@@ -153,6 +153,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   <token key="FeatureName">
     <variant name="Compare"/>
     <variant name="Compose"/>
+    <variant name="GoogleSearchAiModeWorkspace"/>
     <variant name="HistorySearch"/>
     <variant name="Indigo"/>
     <variant name="PasswordChange"/>

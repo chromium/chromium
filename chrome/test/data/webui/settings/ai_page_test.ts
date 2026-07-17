@@ -89,7 +89,7 @@ suite('AiPage', function() {
     resetRouterForTesting();
     await createPage();
 
-    assertEquals(5, metricsBrowserProxy.getCallCount('recordBooleanHistogram'));
+    assertEquals(6, metricsBrowserProxy.getCallCount('recordBooleanHistogram'));
 
     assertFalse(isChildVisible(page, '#historySearchRowV2'));
     await verifyFeatureVisibilityMetrics(
@@ -109,6 +109,8 @@ suite('AiPage', function() {
 
     assertTrue(isChildVisible(page, '#skillsRow'));
     assertTrue(isChildVisible(page, '#googleSearchAiModeWorkspaceRow'));
+    await verifyFeatureVisibilityMetrics(
+        'Settings.AiPage.ElementVisibility.GoogleSearchAiModeWorkspace', true);
 
     assertFalse(isChildVisible(page, '#indigoRow'));
     await verifyFeatureVisibilityMetrics(
@@ -132,7 +134,7 @@ suite('AiPage', function() {
     });
     resetRouterForTesting();
     await createPage();
-    assertEquals(5, metricsBrowserProxy.getCallCount('recordBooleanHistogram'));
+    assertEquals(6, metricsBrowserProxy.getCallCount('recordBooleanHistogram'));
 
     assertTrue(isChildVisible(page, '#historySearchRowV2'));
     await verifyFeatureVisibilityMetrics(
@@ -152,6 +154,8 @@ suite('AiPage', function() {
 
     assertFalse(isChildVisible(page, '#skillsRow'));
     assertFalse(isChildVisible(page, '#googleSearchAiModeWorkspaceRow'));
+    await verifyFeatureVisibilityMetrics(
+        'Settings.AiPage.ElementVisibility.GoogleSearchAiModeWorkspace', false);
 
     assertTrue(isChildVisible(page, '#indigoRow'));
     await verifyFeatureVisibilityMetrics(
@@ -344,6 +348,9 @@ suite('AiPage', function() {
     assertTrue(isVisible(row));
 
     row.click();
+    await verifyFeatureInteractionMetrics(
+        AiPageInteractions.GOOGLE_SEARCH_AI_MODE_WORKSPACE_CLICK,
+        'Settings.AiPage.GoogleSearchAiModeWorkspaceEntryPointClick');
 
     const url = await openWindowProxy.whenCalled('openUrl');
     assertEquals(loadTimeData.getString('googleSearchAiModeWorkspaceUrl'), url);

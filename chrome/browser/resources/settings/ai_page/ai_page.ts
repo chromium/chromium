@@ -108,6 +108,9 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
         this.showAiSuggestionsControl_);
     this.metricsBrowserProxy_.recordBooleanHistogram(
         'Settings.AiPage.ElementVisibility.Indigo', this.showIndigoControl_);
+    this.metricsBrowserProxy_.recordBooleanHistogram(
+        'Settings.AiPage.ElementVisibility.GoogleSearchAiModeWorkspace',
+        this.showGoogleSearchAiModeWorkspaceControl_);
   }
 
   private onHistorySearchRowClick_() {
@@ -165,6 +168,10 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   }
 
   private onGoogleSearchAiModeWorkspaceRowClick_() {
+    this.recordInteractionMetrics_(
+        AiPageInteractions.GOOGLE_SEARCH_AI_MODE_WORKSPACE_CLICK,
+        'Settings.AiPage.GoogleSearchAiModeWorkspaceEntryPointClick');
+
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('googleSearchAiModeWorkspaceUrl'));
   }
