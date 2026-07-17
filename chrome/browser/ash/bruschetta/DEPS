@@ -32,4 +32,7 @@ specific_include_rules = {
   "bruschetta_download_browsertest\\.cc": [
     "+chrome/browser/browser_process.h",
   ],
+  "bruschetta_service_factory\\.cc": [
+    "+chrome/browser/browser_process.h",
+  ],
 }

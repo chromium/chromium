@@ -8,6 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 
@@ -44,7 +45,8 @@ std::unique_ptr<KeyedService>
 BruschettaServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   auto* profile = Profile::FromBrowserContext(context);
-  return std::make_unique<BruschettaService>(profile);
+  return std::make_unique<BruschettaService>(g_browser_process->local_state(),
+                                             profile);
 }
 
 // Force BruschettaService to be set up when a BrowserContext is

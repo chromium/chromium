@@ -17,8 +17,12 @@ constexpr uint32_t kVsockPort = 7780;
 
 }  // namespace
 
-ArcMountProvider::ArcMountProvider(Profile* profile, int cid)
-    : profile_(profile), cid_(cid) {}
+ArcMountProvider::ArcMountProvider(PrefService* local_state,
+                                   Profile* profile,
+                                   int cid)
+    : guest_os::GuestOsMountProvider(local_state),
+      profile_(profile),
+      cid_(cid) {}
 
 ArcMountProvider::~ArcMountProvider() = default;
 

@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
@@ -21,6 +22,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 
+class PrefService;
 class Profile;
 
 namespace bruschetta {
@@ -33,7 +35,8 @@ class BruschettaLauncher;
 class BruschettaService : public KeyedService,
                           public ash::ConciergeClient::VmObserver {
  public:
-  explicit BruschettaService(Profile* profile);
+  // `local_state` must be non-null and must outlive `this`.
+  BruschettaService(PrefService* local_state, Profile* profile);
   ~BruschettaService() override;
 
   // Register an existing bruschetta instance with the terminal app.
@@ -76,6 +79,8 @@ class BruschettaService : public KeyedService,
   void StopRunningVms();
 
  private:
+  const raw_ref<PrefService> local_state_;
+
   struct VmRegistration {
     std::unique_ptr<BruschettaLauncher> launcher;
     guest_os::GuestOsMountProviderRegistry::Id mount_id;

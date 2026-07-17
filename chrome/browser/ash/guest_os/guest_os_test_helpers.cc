@@ -9,12 +9,17 @@
 
 namespace guest_os {
 
-MockMountProvider::MockMountProvider()
-    : profile_(nullptr), container_id_(crostini::DefaultContainerId()) {}
+MockMountProvider::MockMountProvider(PrefService* local_state)
+    : guest_os::GuestOsMountProvider(local_state),
+      profile_(nullptr),
+      container_id_(crostini::DefaultContainerId()) {}
 
-MockMountProvider::MockMountProvider(Profile* profile,
+MockMountProvider::MockMountProvider(PrefService* local_state,
+                                     Profile* profile,
                                      guest_os::GuestId container_id)
-    : profile_(profile), container_id_(container_id) {}
+    : guest_os::GuestOsMountProvider(local_state),
+      profile_(profile),
+      container_id_(container_id) {}
 
 std::string MockMountProvider::DisplayName() {
   return "Ptery";

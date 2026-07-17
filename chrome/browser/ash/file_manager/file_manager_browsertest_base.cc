@@ -2181,7 +2181,9 @@ class MockGuestOsMountProvider : public guest_os::GuestOsMountProvider {
   MockGuestOsMountProvider(Profile* profile,
                            std::string name,
                            std::string vm_type)
-      : profile_(profile), name_(name) {
+      : guest_os::GuestOsMountProvider(g_browser_process->local_state()),
+        profile_(profile),
+        name_(name) {
     if (vm_type == "bruschetta") {
       vm_type_ = guest_os::VmType::BRUSCHETTA;
     } else if (vm_type == "termina") {

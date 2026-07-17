@@ -1180,7 +1180,8 @@ void ArcSessionManager::OnVmStarted(
             guest_os::GuestOsServiceFactory::GetForProfile(profile())
                 ->MountProviderRegistry()
                 ->Register(std::make_unique<ArcMountProvider>(
-                    profile(), vm_signal.vm_info().cid())));
+                    &local_state_.get(), profile(),
+                    vm_signal.vm_info().cid())));
   }
 }
 

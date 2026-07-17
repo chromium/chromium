@@ -17,9 +17,12 @@
 
 namespace bruschetta {
 
-BruschettaMountProvider::BruschettaMountProvider(Profile* profile,
+BruschettaMountProvider::BruschettaMountProvider(PrefService* local_state,
+                                                 Profile* profile,
                                                  guest_os::GuestId guest_id)
-    : profile_(profile), guest_id_(guest_id) {}
+    : guest_os::GuestOsMountProvider(local_state),
+      profile_(profile),
+      guest_id_(guest_id) {}
 BruschettaMountProvider::~BruschettaMountProvider() = default;
 
 // guest_os::GuestOsMountProvider overrides.

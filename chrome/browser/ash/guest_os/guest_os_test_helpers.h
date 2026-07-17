@@ -10,11 +10,16 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 
+class PrefService;
+
 namespace guest_os {
 class MockMountProvider : public GuestOsMountProvider {
  public:
-  MockMountProvider();
-  MockMountProvider(Profile* profile, guest_os::GuestId container_id);
+  // `local_state` must be non-null and must outlive `this`.
+  explicit MockMountProvider(PrefService* local_state);
+  MockMountProvider(PrefService* local_state,
+                    Profile* profile,
+                    guest_os::GuestId container_id);
 
   std::string DisplayName() override;
   Profile* profile() override;

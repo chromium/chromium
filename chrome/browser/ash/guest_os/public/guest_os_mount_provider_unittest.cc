@@ -69,7 +69,9 @@ class GuestOsMountProviderTest : public testing::Test {
     // DiskMountManager::InitializeForTesting takes ownership and works with
     // a raw pointer, hence the new with no matching delete.
     disk_manager_ = new ash::disks::MockDiskMountManager;
-    provider_ = std::make_unique<MockMountProvider>(profile_.get(), kGuestId);
+    provider_ = std::make_unique<MockMountProvider>(
+        TestingBrowserProcess::GetGlobal()->local_state(), profile_.get(),
+        kGuestId);
     file_manager::VolumeManagerFactory::GetInstance()->SetTestingFactory(
         profile_.get(), base::BindRepeating(&BuildVolumeManager));
 
@@ -213,15 +215,19 @@ TEST_F(GuestOsMountProviderTest, CanRemountAfterUnmount) {
 
 class FailMountProvider : public MockMountProvider {
  public:
-  FailMountProvider(Profile* profile, guest_os::GuestId guest_id)
-      : MockMountProvider(profile, guest_id) {}
+  FailMountProvider(PrefService* local_state,
+                    Profile* profile,
+                    guest_os::GuestId guest_id)
+      : MockMountProvider(local_state, profile, guest_id) {}
   void Prepare(PrepareCallback callback) override {
     std::move(callback).Run(false, 0, 0, base::FilePath());
   }
 };
 
 TEST_F(GuestOsMountProviderTest, PrepareFailureFailsMounting) {
-  auto fail_provider = FailMountProvider(profile_.get(), kGuestId);
+  auto fail_provider =
+      FailMountProvider(TestingBrowserProcess::GetGlobal()->local_state(),
+                        profile_.get(), kGuestId);
   ExpectMountCalls(0);
   bool result = true;
 

@@ -9,11 +9,13 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_file_watcher.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 
+class PrefService;
 class Profile;
 
 namespace guest_os {
@@ -23,7 +25,8 @@ class GuestOsMountProvider {
  public:
   using PrepareCallback = base::OnceCallback<
       void(bool success, int cid, int port, base::FilePath homedir)>;
-  GuestOsMountProvider();
+  // `local_state` must be non-null and must outlive `this`.
+  explicit GuestOsMountProvider(PrefService* local_state);
   virtual ~GuestOsMountProvider();
 
   GuestOsMountProvider(const GuestOsMountProvider&) = delete;
@@ -67,6 +70,8 @@ class GuestOsMountProvider {
   virtual void Prepare(PrepareCallback callback) = 0;
 
  private:
+  const raw_ref<PrefService> local_state_;
+
   std::unique_ptr<GuestOsMountProviderInner> callback_;
   base::WeakPtrFactory<GuestOsMountProvider> weak_ptr_factory_{this};
 };

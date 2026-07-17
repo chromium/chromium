@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,7 +25,8 @@ namespace bruschetta {
 class BruschettaMountProviderTest : public testing::Test {
  protected:
   BruschettaMountProviderTest() {
-    BruschettaMountProvider provider{&profile_, id_};
+    BruschettaMountProvider provider{
+        TestingBrowserProcess::GetGlobal()->local_state(), &profile_, id_};
 
     guest_os::GuestOsSessionTrackerFactory::GetForProfile(&profile_)
         ->AddGuestForTesting(id_, info_);
@@ -41,7 +43,8 @@ class BruschettaMountProviderTest : public testing::Test {
   guest_os::GuestInfo info_{id_, 32, "username", base::FilePath("/home/dir"),
                             "",  123};
   raw_ptr<FakeBruschettaLauncher> launcher_;
-  BruschettaMountProvider provider_{&profile_, id_};
+  BruschettaMountProvider provider_{
+      TestingBrowserProcess::GetGlobal()->local_state(), &profile_, id_};
 };
 
 TEST_F(BruschettaMountProviderTest, TestPrepareLaunchFailure) {

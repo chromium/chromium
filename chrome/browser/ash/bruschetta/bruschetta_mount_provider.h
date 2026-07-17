@@ -11,13 +11,17 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_launcher.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
 
+class PrefService;
 class Profile;
 
 namespace bruschetta {
 
 class BruschettaMountProvider : public guest_os::GuestOsMountProvider {
  public:
-  BruschettaMountProvider(Profile* profile, guest_os::GuestId guest_id);
+  // `local_state` must be non-null and must outlive `this`.
+  BruschettaMountProvider(PrefService* local_state,
+                          Profile* profile,
+                          guest_os::GuestId guest_id);
   ~BruschettaMountProvider() override;
 
   // guest_os::GuestOsMountProvider overrides.

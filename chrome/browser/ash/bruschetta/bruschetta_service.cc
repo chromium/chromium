@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -46,7 +47,8 @@ BruschettaService::VmRegistration& BruschettaService::VmRegistration::operator=(
     BruschettaService::VmRegistration&&) = default;
 BruschettaService::VmRegistration::~VmRegistration() = default;
 
-BruschettaService::BruschettaService(Profile* profile) : profile_(profile) {
+BruschettaService::BruschettaService(PrefService* local_state, Profile* profile)
+    : local_state_(CHECK_DEREF(local_state)), profile_(profile) {
   if (auto* concierge = ash::ConciergeClient::Get(); concierge) {
     concierge->AddVmObserver(this);
   }
@@ -167,7 +169,7 @@ void BruschettaService::AllowLaunch(guest_os::GuestId guest_id) {
   auto mount_id = guest_os::GuestOsServiceFactory::GetForProfile(profile_)
                       ->MountProviderRegistry()
                       ->Register(std::make_unique<BruschettaMountProvider>(
-                          profile_, std::move(guest_id)));
+                          &local_state_.get(), profile_, std::move(guest_id)));
 
   runnable_vms_.insert(
       {std::move(vm_name), VmRegistration{std::move(launcher), mount_id}});
