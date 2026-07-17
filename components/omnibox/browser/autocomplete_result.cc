@@ -475,6 +475,23 @@ void AutocompleteResult::SortAndCull(
                omnibox::IsAndroidWidget(page_classification)) {
       sections.push_back(
           std::make_unique<AndroidWebZpsSection>(suggestion_groups_map_));
+    } else if (is_android_any && omnibox::IsComposebox(page_classification)) {
+      auto composebox_suggestion_limit_config =
+          omnibox_feature_configs::ComposeboxSuggestionLimit::Get();
+      size_t composebox_max_suggestions = 15u;
+      size_t max_aim_suggestions = 15u;
+      size_t max_contextual_suggestions = 15u;
+      if (composebox_suggestion_limit_config.enabled) {
+        composebox_max_suggestions =
+            composebox_suggestion_limit_config.max_suggestions;
+        max_aim_suggestions =
+            composebox_suggestion_limit_config.max_aim_suggestions;
+        max_contextual_suggestions =
+            composebox_suggestion_limit_config.max_contextual_suggestions;
+      }
+      sections.push_back(std::make_unique<AndroidComposeboxZpsSection>(
+          suggestion_groups_map_, composebox_max_suggestions,
+          max_aim_suggestions, max_contextual_suggestions));
     } else if constexpr (is_android_mobile) {
       if (omnibox::IsNTPPage(page_classification)) {
         sections.push_back(std::make_unique<AndroidNTPZpsSection>(
@@ -482,23 +499,6 @@ void AutocompleteResult::SortAndCull(
       } else if (omnibox::IsSearchResultsPage(page_classification)) {
         sections.push_back(
             std::make_unique<AndroidSRPZpsSection>(suggestion_groups_map_));
-      } else if (omnibox::IsComposebox(page_classification)) {
-        auto composebox_suggestion_limit_config =
-            omnibox_feature_configs::ComposeboxSuggestionLimit::Get();
-        size_t composebox_max_suggestions = 15u;
-        size_t max_aim_suggestions = 15u;
-        size_t max_contextual_suggestions = 15u;
-        if (composebox_suggestion_limit_config.enabled) {
-          composebox_max_suggestions =
-              composebox_suggestion_limit_config.max_suggestions;
-          max_aim_suggestions =
-              composebox_suggestion_limit_config.max_aim_suggestions;
-          max_contextual_suggestions =
-              composebox_suggestion_limit_config.max_contextual_suggestions;
-        }
-        sections.push_back(std::make_unique<AndroidComposeboxZpsSection>(
-            suggestion_groups_map_, composebox_max_suggestions,
-            max_aim_suggestions, max_contextual_suggestions));
       } else {
         sections.push_back(
             std::make_unique<AndroidWebZpsSection>(suggestion_groups_map_));
