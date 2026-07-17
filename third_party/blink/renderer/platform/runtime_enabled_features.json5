@@ -774,6 +774,10 @@
       base_feature: "none",
     },
     {
+      name: "AutoDarkModeSVGSizeThreshold",
+      status: "stable",
+    },
+    {
       name: "Autofill",
       public: true,
       status: "test",

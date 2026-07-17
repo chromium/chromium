@@ -237,9 +237,7 @@ class PLATFORM_EXPORT GraphicsContext {
   // Nested scopes can override the pause state of their ancestors: the pushed
   // state applies until it is popped, after which the previous state takes
   // effect again. Use ScopedAutoDarkModeState to manage the states.
-  bool IsAutoDarkModePaused() const {
-    return !auto_dark_mode_states_.empty() && auto_dark_mode_states_.back();
-  }
+  bool IsAutoDarkModePaused() const;
 
   void SetDarkModeFilterForTest(std::unique_ptr<DarkModeFilter>);
 

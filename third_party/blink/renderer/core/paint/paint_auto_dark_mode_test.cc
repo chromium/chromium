@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -172,29 +173,45 @@ TEST_F(PaintAutoDarkModeTest,
 }
 
 TEST_F(PaintAutoDarkModeTest, SVGDocumentImage) {
-  // Both dimensions are at or below the icon threshold (kMaxImageLength == 64).
-  EXPECT_EQ(DarkModeFilter::ImageType::kIcon,
-            GetSVGDocumentType(1.0f, gfx::Rect(50, 50)));
+  {
+    ScopedAutoDarkModeSVGSizeThresholdForTest size_threshold(true);
 
-  // Either dimension above the threshold classifies the document as a photo.
-  EXPECT_EQ(DarkModeFilter::ImageType::kPhoto,
-            GetSVGDocumentType(1.0f, gfx::Rect(200, 200)));
-  // Only the width exceeds the threshold.
-  EXPECT_EQ(DarkModeFilter::ImageType::kPhoto,
-            GetSVGDocumentType(1.0f, gfx::Rect(100, 50)));
-  // Only the height exceeds the threshold.
-  EXPECT_EQ(DarkModeFilter::ImageType::kPhoto,
-            GetSVGDocumentType(1.0f, gfx::Rect(50, 100)));
+    // Both dimensions are at or below the icon threshold (kMaxImageLength ==
+    // 64).
+    EXPECT_EQ(DarkModeFilter::ImageType::kIcon,
+              GetSVGDocumentType(1.0f, gfx::Rect(50, 50)));
 
-  // A 40x40 CSS-sized SVG scaled up by a 5x layout zoom is still an icon after
-  // the zoom is undone.
-  EXPECT_EQ(DarkModeFilter::ImageType::kIcon,
-            GetSVGDocumentType(5.0f, gfx::Rect(200, 200)));
+    // Either dimension above the threshold classifies the document as a photo.
+    EXPECT_EQ(DarkModeFilter::ImageType::kPhoto,
+              GetSVGDocumentType(1.0f, gfx::Rect(200, 200)));
+    // Only the width exceeds the threshold.
+    EXPECT_EQ(DarkModeFilter::ImageType::kPhoto,
+              GetSVGDocumentType(1.0f, gfx::Rect(100, 50)));
+    // Only the height exceeds the threshold.
+    EXPECT_EQ(DarkModeFilter::ImageType::kPhoto,
+              GetSVGDocumentType(1.0f, gfx::Rect(50, 100)));
 
-  // A 400x400 CSS-sized SVG scaled down by a 0.25x layout zoom is still a photo
-  // after the zoom is undone.
-  EXPECT_EQ(DarkModeFilter::ImageType::kPhoto,
-            GetSVGDocumentType(0.25f, gfx::Rect(100, 100)));
+    // A 40x40 CSS-sized SVG scaled up by a 5x layout zoom is still an icon
+    // after the zoom is undone.
+    EXPECT_EQ(DarkModeFilter::ImageType::kIcon,
+              GetSVGDocumentType(5.0f, gfx::Rect(200, 200)));
+
+    // A 400x400 CSS-sized SVG scaled down by a 0.25x layout zoom is still a
+    // photo after the zoom is undone.
+    EXPECT_EQ(DarkModeFilter::ImageType::kPhoto,
+              GetSVGDocumentType(0.25f, gfx::Rect(100, 100)));
+  }
+
+  {
+    ScopedAutoDarkModeSVGSizeThresholdForTest size_threshold(false);
+
+    // When AutoDarkModeSVGSizeThreshold is disabled, all SVG documents are
+    // classified as icons so that auto dark mode inversion is not paused.
+    EXPECT_EQ(DarkModeFilter::ImageType::kIcon,
+              GetSVGDocumentType(1.0f, gfx::Rect(50, 50)));
+    EXPECT_EQ(DarkModeFilter::ImageType::kIcon,
+              GetSVGDocumentType(1.0f, gfx::Rect(200, 200)));
+  }
 }
 
 }  // namespace blink

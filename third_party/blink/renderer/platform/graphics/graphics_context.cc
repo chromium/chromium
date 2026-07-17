@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/platform/graphics/platform_focus_ring.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -255,6 +256,13 @@ DarkModeFilter* GraphicsContext::GetDarkModeFilterForImage(
   if (!dark_mode_filter->ShouldApplyFilterToImage(auto_dark_mode.image_type))
     return nullptr;
   return dark_mode_filter;
+}
+
+bool GraphicsContext::IsAutoDarkModePaused() const {
+  if (!RuntimeEnabledFeatures::AutoDarkModeSVGSizeThresholdEnabled()) {
+    return false;
+  }
+  return !auto_dark_mode_states_.empty() && auto_dark_mode_states_.back();
 }
 
 void GraphicsContext::SetDarkModeFilterForTest(

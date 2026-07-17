@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -73,6 +74,10 @@ ImageAutoDarkMode ImageClassifierHelper::GetImageAutoDarkMode(
 DarkModeFilter::ImageType ImageClassifierHelper::GetSVGDocumentType(
     LocalFrame& local_frame,
     const gfx::Rect& size) {
+  if (!RuntimeEnabledFeatures::AutoDarkModeSVGSizeThresholdEnabled()) {
+    return DarkModeFilter::ImageType::kIcon;
+  }
+
   // |size| includes the layout zoom factor (page zoom and DSF). Undo it so the
   // size threshold matches bitmap images, whose classification is unaffected by
   // page zoom and DSF.
