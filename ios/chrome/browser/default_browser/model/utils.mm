@@ -171,6 +171,17 @@ void SetObjectIntoStorageForKey(NSString* key, NSObject* data) {
 }
 
 void LogOpenHTTPURLFromExternalURL() {
+  base::UmaHistogramBoolean("IOS.DefaultBrowser.Conversion7",
+                            !IsChromeLikelyDefaultBrowserXDays(7));
+  base::UmaHistogramBoolean("IOS.DefaultBrowser.Conversion14",
+                            !IsChromeLikelyDefaultBrowserXDays(14));
+  base::UmaHistogramBoolean("IOS.DefaultBrowser.Conversion28",
+                            !IsChromeLikelyDefaultBrowserXDays(28));
+  base::UmaHistogramBoolean("IOS.DefaultBrowser.Conversion90",
+                            !IsChromeLikelyDefaultBrowserXDays(90));
+  base::UmaHistogramBoolean("IOS.DefaultBrowser.Conversion180",
+                            !IsChromeLikelyDefaultBrowserXDays(180));
+
   SetObjectIntoStorageForKey(kLastHTTPURLOpenTime, [NSDate date]);
 }
 

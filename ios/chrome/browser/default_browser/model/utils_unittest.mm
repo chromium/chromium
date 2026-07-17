@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/default_browser/model/utils.h"
 
 #import "base/ios/ios_util.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "components/feature_engagement/public/feature_constants.h"
@@ -314,5 +315,78 @@ TEST_F(DefaultBrowserUtilsTest,
 
   // Check that it got reset.
   EXPECT_FALSE(HasDefaultBrowserBlueDotDisplayTimestamp());
+}
+
+// Test LogOpenHTTPURLFromExternalURL conversion metric logging.
+TEST_F(DefaultBrowserUtilsTest,
+       TestLogOpenHTTPURLFromExternalURLConversionMetrics) {
+  // When user opens a link for the first time ever, all conversion
+  // histograms should record true.
+  {
+    base::HistogramTester histogram_tester;
+    LogOpenHTTPURLFromExternalURL();
+    histogram_tester.ExpectBucketCount("IOS.DefaultBrowser.Conversion7", true,
+                                       1);
+    histogram_tester.ExpectBucketCount("IOS.DefaultBrowser.Conversion14", true,
+                                       1);
+    histogram_tester.ExpectBucketCount("IOS.DefaultBrowser.Conversion28", true,
+                                       1);
+    histogram_tester.ExpectBucketCount("IOS.DefaultBrowser.Conversion90", true,
+                                       1);
+    histogram_tester.ExpectBucketCount("IOS.DefaultBrowser.Conversion180", true,
+                                       1);
+  }
+
+  // Opening again immediately should record false for all histograms.
+  {
+    base::HistogramTester histogram_tester;
+    LogOpenHTTPURLFromExternalURL();
+    histogram_tester.ExpectBucketCount("IOS.DefaultBrowser.Conversion7", false,
+                                       1);
+    histogram_tester.ExpectBucketCount("IOS.DefaultBrowser.Conversion14", false,
+                                       1);
+    histogram_tester.ExpectBucketCount("IOS.DefaultBrowser.Conversion28", false,
+                                       1);
+    histogram_tester.ExpectBucketCount("IOS.DefaultBrowser.Conversion90", false,
+                                       1);
+    histogram_tester.ExpectBucketCount("IOS.DefaultBrowser.Conversion180",
+                                       false, 1);
+  }
+
+  // Simulate opening a link after 30 days.
+  SetObjectIntoStorageForKey(kLastHTTPURLOpenTime,
+                             (base::Time::Now() - base::Days(30)).ToNSDate());
+  {
+    base::HistogramTester histogram_tester;
+    LogOpenHTTPURLFromExternalURL();
+    histogram_tester.ExpectBucketCount("IOS.DefaultBrowser.Conversion7", true,
+                                       1);
+    histogram_tester.ExpectBucketCount("IOS.DefaultBrowser.Conversion14", true,
+                                       1);
+    histogram_tester.ExpectBucketCount("IOS.DefaultBrowser.Conversion28", true,
+                                       1);
+    histogram_tester.ExpectBucketCount("IOS.DefaultBrowser.Conversion90", false,
+                                       1);
+    histogram_tester.ExpectBucketCount("IOS.DefaultBrowser.Conversion180",
+                                       false, 1);
+  }
+
+  // Simulate opening a link after 100 days.
+  SetObjectIntoStorageForKey(kLastHTTPURLOpenTime,
+                             (base::Time::Now() - base::Days(100)).ToNSDate());
+  {
+    base::HistogramTester histogram_tester;
+    LogOpenHTTPURLFromExternalURL();
+    histogram_tester.ExpectBucketCount("IOS.DefaultBrowser.Conversion7", true,
+                                       1);
+    histogram_tester.ExpectBucketCount("IOS.DefaultBrowser.Conversion14", true,
+                                       1);
+    histogram_tester.ExpectBucketCount("IOS.DefaultBrowser.Conversion28", true,
+                                       1);
+    histogram_tester.ExpectBucketCount("IOS.DefaultBrowser.Conversion90", true,
+                                       1);
+    histogram_tester.ExpectBucketCount("IOS.DefaultBrowser.Conversion180",
+                                       false, 1);
+  }
 }
 }  // namespace

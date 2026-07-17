@@ -1326,6 +1326,26 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IOS.DefaultBrowser.Conversion{NumberOfDays}" enum="Boolean"
+    expires_after="2027-07-16">
+  <owner>gujen@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records true the first time Chrome becomes the default browser after not
+    being the default browser for at least {NumberOfDays}, according to the
+    default browser heuristic. Records false if Chrome was likely the default
+    browser within the last {NumberOfDays} days. Recorded when a default link is
+    opened.
+  </summary>
+  <token key="NumberOfDays">
+    <variant name="7"/>
+    <variant name="14"/>
+    <variant name="28"/>
+    <variant name="90"/>
+    <variant name="180"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.DefaultBrowserAbandonment{PeriodConsidered}"
     enum="Boolean" expires_after="2026-11-29">
   <owner>gujen@google.com</owner>
