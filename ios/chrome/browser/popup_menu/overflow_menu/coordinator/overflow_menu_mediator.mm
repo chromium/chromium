@@ -447,7 +447,7 @@ void GetPresetNTPBackgroundPreview(
   }
   _baseViewController = baseViewController;
 
-  if (IsOverflowMenuHomeCustomizationEntrypointEnabled()) {
+  if (IsOverflowMenuHomeCustomizationEntrypointEnabled() && !self.incognito) {
     // Ensures the colors in the background preview are updated when
     // transitioning to light/dark mode.
     [_baseViewController
@@ -1992,6 +1992,7 @@ void GetPresetNTPBackgroundPreview(
 // background to be shown in the action to show the home customization menu.
 - (void)configureThemePreviewForCustomizeHomepageAction {
   CHECK(IsOverflowMenuHomeCustomizationEntrypointEnabled());
+  CHECK(!self.incognito);
   if (!self.backgroundCustomizationService) {
     // Do not show a preview for the current background.
     _customizeHomepageAction.previewImage = nil;

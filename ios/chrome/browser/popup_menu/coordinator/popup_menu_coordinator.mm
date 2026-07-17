@@ -321,10 +321,6 @@ NSString* const kPreferredContentSizeKey = @"preferredContentSize";
       HandlerForProtocol(dispatcher, QuickDeleteCommands);
   mediator.whatsNewHandler = HandlerForProtocol(dispatcher, WhatsNewCommands);
   mediator.levelUpHandler = HandlerForProtocol(dispatcher, LevelUpCommands);
-  if (IsOverflowMenuHomeCustomizationEntrypointEnabled()) {
-    mediator.NTPCommandHandler =
-        HandlerForProtocol(dispatcher, NewTabPageCommands);
-  }
   mediator.webStateList = browser->GetWebStateList();
   mediator.navigationAgent = WebNavigationBrowserAgent::FromBrowser(browser);
   mediator.baseViewController = self.baseViewController;
@@ -336,7 +332,9 @@ NSString* const kPreferredContentSizeKey = @"preferredContentSize";
   mediator.browserPolicyConnector =
       GetApplicationContext()->GetBrowserPolicyConnector();
   mediator.syncService = SyncServiceFactory::GetForProfile(profile);
-  if (IsOverflowMenuHomeCustomizationEntrypointEnabled()) {
+  if (IsOverflowMenuHomeCustomizationEntrypointEnabled() && !incognito) {
+    mediator.NTPCommandHandler =
+        HandlerForProtocol(dispatcher, NewTabPageCommands);
     mediator.backgroundCustomizationService =
         HomeBackgroundCustomizationServiceFactory::GetForProfile(profile);
     mediator.userUploadedImageManager =
