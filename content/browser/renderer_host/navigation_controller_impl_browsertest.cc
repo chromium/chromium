@@ -15269,6 +15269,22 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // Verify the Origin and Referer headers.
   EXPECT_THAT(headers, ::testing::HasSubstr("Origin: null"));
   EXPECT_THAT(headers, ::testing::ContainsRegex("Referer: http://a.com:.*/"));
+
+  // Ensure the POST submission was present.
+  std::string request_body =
+      EvalJs(shell(), "document.getElementsByTagName('pre')[0].innerText")
+          .ExtractString();
+  EXPECT_THAT(request_body, ::testing::HasSubstr("text=value"));
+
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+
+  // Check the FrameNavigationEntry's post data still exists as well.
+  NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
+  scoped_refptr<FrameNavigationEntry> frame_entry =
+      entry->root_node()->frame_entry.get();
+  std::string content_type;
+  EXPECT_NE(frame_entry->GetPostData(&content_type), nullptr);
 }
 
 // Test that verifies that Content-Type http header is correctly sent

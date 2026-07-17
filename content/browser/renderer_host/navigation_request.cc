@@ -3652,6 +3652,14 @@ void NavigationRequest::ResetStateForSiteInstanceChange() {
 
   // Clear any state specific to the origin, such as ISNs and DSNs.
   origin_related_state_.reset();
+
+  // If this was not a redirect that preserves POST submissions (e.g., 307), or
+  // if this will be an error page that may end up in another process, then
+  // clear the post_data as well to prevent leaking file references to a
+  // different SiteInstance.
+  if (!IsPost() || DidEncounterError()) {
+    common_params_->post_data.reset();
+  }
 }
 
 void NavigationRequest::RegisterSubresourceOverride(
@@ -4011,10 +4019,10 @@ void NavigationRequest::OnRequestRedirected(
     return;
   }
 
-  // For now, DevTools needs the POST data sent to the renderer process even if
-  // it is no longer a POST after the redirect.
-  if (redirect_info.new_method != "POST")
+  // If the navigation is no longer a POST, the POST data should be reset.
+  if (redirect_info.new_method != "POST") {
     common_params_->post_data.reset();
+  }
 
   const bool is_first_response = commit_params_->redirects.empty();
   UpdateNavigationHandleTimingsOnResponseReceived(/*is_redirect=*/true,
