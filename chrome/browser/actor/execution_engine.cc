@@ -96,6 +96,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/user_interaction_observer.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #endif
 
@@ -120,6 +121,10 @@ constexpr char kSafeBrowsingPredicateName[] =
     "actor_safe_browsing_enabled_check";
 constexpr char kSafetyChecksDisabledPredicateName[] =
     "actor_safety_checks_disabled";
+constexpr char kTabErrorDocumentPredicateName[] =
+    "actor_tab_error_document_check";
+constexpr char kTabSafeBrowsingObserverPredicateName[] =
+    "actor_tab_safe_browsing_observer_check";
 
 struct ActorGatingContext : public origin_gating::GatingDecisionContext {
   ActorGatingContext(ukm::SourceId ukm_id,
@@ -134,6 +139,53 @@ struct ActorGatingContext : public origin_gating::GatingDecisionContext {
   bool skip_prompt;
   base::ScopedUmaHistogramTimer timer;
 };
+
+// Context for page-action gating. Carries the tab's WebContents so that the
+// tab-specific predicates (error document, SafeBrowsing observer) can inspect
+// it.
+struct PageActionGatingContext : public origin_gating::GatingDecisionContext {
+  explicit PageActionGatingContext(
+      base::WeakPtr<content::WebContents> web_contents)
+      : web_contents(std::move(web_contents)) {}
+  ~PageActionGatingContext() override = default;
+
+  base::WeakPtr<content::WebContents> web_contents;
+};
+
+// Blocks acting on a tab whose primary main frame is showing an error document.
+origin_gating::Decision EvaluateTabErrorDocument(
+    const origin_gating::GatingDecisionContext* context,
+    origin_gating::GateableEvent event,
+    const GURL& source,
+    const GURL& destination) {
+  content::WebContents* web_contents =
+      static_cast<const PageActionGatingContext*>(context)->web_contents.get();
+  if (web_contents && web_contents->GetPrimaryMainFrame()->IsErrorDocument()) {
+    return origin_gating::Decision::kBlocked;
+  }
+  return origin_gating::Decision::kNoDecision;
+}
+
+// Blocks acting on a tab that has a pending SafeBrowsing delayed warning. The
+// SafeBrowsing Delayed Warnings experiment can delay some SafeBrowsing warnings
+// until user interaction; such a page has a user interaction observer attached.
+origin_gating::Decision EvaluateTabSafeBrowsingObserver(
+    const origin_gating::GatingDecisionContext* context,
+    origin_gating::GateableEvent event,
+    const GURL& source,
+    const GURL& destination) {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  content::WebContents* web_contents =
+      static_cast<const PageActionGatingContext*>(context)->web_contents.get();
+  if (web_contents &&
+      safe_browsing::SafeBrowsingUserInteractionObserver::FromWebContents(
+          web_contents) &&
+      !IsActorSafetyCheckDisabled()) {
+    return origin_gating::Decision::kBlocked;
+  }
+#endif
+  return origin_gating::Decision::kNoDecision;
+}
 
 origin_gating::CustomPredicate CreateSafetyListPredicate() {
   return origin_gating::CustomPredicate(
@@ -401,6 +453,14 @@ MayActOnUrlBlockResult MapGatingDecisionToBlockResult(
         return {"Safebrowsing unavailable",
                 MayActOnUrlBlockReason::kSafeBrowsing};
       }
+      if (decision.attribution == kTabErrorDocumentPredicateName) {
+        return {"Tab is an error document",
+                MayActOnUrlBlockReason::kTabIsErrorDocument};
+      }
+      if (decision.attribution == kTabSafeBrowsingObserverPredicateName) {
+        return {"Blocked by safebrowsing",
+                MayActOnUrlBlockReason::kSafeBrowsing};
+      }
       NOTREACHED() << "Unrecognized custom predicate attribution: "
                    << decision.attribution.CustomPredicateName();
   }
@@ -490,6 +550,14 @@ ExecutionEngine::ExecutionEngine(
           *this,
           origin_gating::OriginGatingConfiguration(
               {
+                  {origin_gating::CustomPredicate(
+                       base::BindRepeating(&EvaluateTabErrorDocument),
+                       kTabErrorDocumentPredicateName),
+                   {origin_gating::GateableEvent::kPageAction}},
+                  {origin_gating::CustomPredicate(
+                       base::BindRepeating(&EvaluateTabSafeBrowsingObserver),
+                       kTabSafeBrowsingObserverPredicateName),
+                   {origin_gating::GateableEvent::kPageAction}},
                   {origin_gating::DecisionSource::kAllowHttpLocalhost,
                    {origin_gating::GateableEvent::kNavigationRequest,
                     origin_gating::GateableEvent::kPageAction}},
@@ -854,7 +922,8 @@ void ExecutionEngine::MayActOnTab(const tabs::TabInterface& tab,
                                   DecisionCallbackWithReason callback) {
   actor::MayActOnTab(
       tab, journal, task_id,
-      base::BindOnce(&ExecutionEngine::ShouldAllowPageAction, GetWeakPtr()),
+      base::BindOnce(&ExecutionEngine::ShouldAllowPageAction, GetWeakPtr(),
+                     tab.GetContents()->GetWeakPtr()),
       std::move(callback));
 }
 
@@ -869,10 +938,12 @@ void ExecutionEngine::ShouldAllowNavigationDestination(
 }
 
 void ExecutionEngine::ShouldAllowPageAction(
+    base::WeakPtr<content::WebContents> web_contents,
     const GURL& url,
     NoVerdictResultCallback result_callback) {
   origin_gating_checker_.ComputeGatingDecision(
-      /*context=*/nullptr, origin_gating::GateableEvent::kPageAction,
+      std::make_unique<PageActionGatingContext>(std::move(web_contents)),
+      origin_gating::GateableEvent::kPageAction,
       /*source=*/GURL(), url,
       base::BindOnce(&ExecutionEngine::OnShouldAllowUrlDecision,
                      GetActionSequenceWeakPtr(), std::move(result_callback),
@@ -1256,7 +1327,8 @@ void ExecutionEngine::SafetyChecksForNextAction() {
   actor::MayActOnTab(
       *tab, *journal_, task_->id(),
       base::BindOnce(&ExecutionEngine::ShouldAllowPageAction,
-                     GetActionSequenceWeakPtr()),
+                     GetActionSequenceWeakPtr(),
+                     tab->GetContents()->GetWeakPtr()),
       base::BindOnce(
           &ExecutionEngine::OnMayActOnTabDecision, GetActionSequenceWeakPtr(),
           tab->GetContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin()));

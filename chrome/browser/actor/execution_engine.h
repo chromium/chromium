@@ -56,6 +56,7 @@ class ScopedUmaHistogramTimer;
 
 namespace content {
 class NavigationHandle;
+class WebContents;
 }
 
 namespace url {
@@ -420,7 +421,8 @@ class ExecutionEngine : public ToolDelegate,
   void ShouldAllowNavigationDestination(
       const GURL& url,
       NoVerdictResultCallback result_callback);
-  void ShouldAllowPageAction(const GURL& url,
+  void ShouldAllowPageAction(base::WeakPtr<content::WebContents> web_contents,
+                             const GURL& url,
                              NoVerdictResultCallback result_callback);
   void OnShouldAllowUrlDecision(
       NoVerdictResultCallback result_callback,

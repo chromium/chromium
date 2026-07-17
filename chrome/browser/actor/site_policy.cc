@@ -16,7 +16,6 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/actor/core/actor_features.h"
-#include "components/actor/core/actor_util.h"
 #include "components/actor/core/aggregated_journal.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
@@ -24,14 +23,9 @@
 #include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/hints.pb.h"
-#include "components/safe_browsing/buildflags.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-#include "chrome/browser/safe_browsing/user_interaction_observer.h"
-#endif
 
 namespace actor {
 
@@ -129,26 +123,6 @@ void MayActOnTab(const tabs::TabInterface& tab,
   std::unique_ptr<DecisionWrapper> decision_wrapper =
       std::make_unique<DecisionWrapper>(journal, url, task_id, "MayActOnTab",
                                         std::move(callback));
-
-  if (web_contents.GetPrimaryMainFrame()->IsErrorDocument()) {
-    decision_wrapper->Reject("Tab is an error document",
-                             MayActOnUrlBlockReason::kTabIsErrorDocument);
-    return;
-  }
-
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  // SafeBrowsing Delayed Warnings experiment can delay some SafeBrowsing
-  // warnings until user interaction. If the current page has a delayed warning,
-  // it'll have a user interaction observer attached.
-  // Do not act on such a page.
-  if (safe_browsing::SafeBrowsingUserInteractionObserver::FromWebContents(
-          &web_contents) &&
-      !IsActorSafetyCheckDisabled()) {
-    decision_wrapper->Reject("Blocked by safebrowsing",
-                             MayActOnUrlBlockReason::kSafeBrowsing);
-    return;
-  }
-#endif
 
   MayActOnUrlInternal(url, std::move(resolve_no_verdict),
                       std::move(decision_wrapper));
