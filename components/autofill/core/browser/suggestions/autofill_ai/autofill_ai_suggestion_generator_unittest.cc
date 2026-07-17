@@ -837,6 +837,110 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
                        HasMainText(GetDriversLicenseName(drivers_license2))));
 }
 
+// Test that within the same entity type, PersonalContext entities are ordered
+// after non-PersonalContext entities, even if they have higher frecency.
+TEST_F(
+    AutofillAiSuggestionGeneratorTest,
+    GetFillingSuggestion_OrderPersonalContextAfterOtherEntityTypes_SameType) {
+  EntityInstance passport_local_1 = GetPassportEntityInstanceWithRandomGuid(
+      {.name = u"Bruno",
+       .number = u"11111",
+       .use_date = test::kJune2017 - base::Days(1),
+       .record_type = EntityInstance::RecordType::kLocal});
+  EntityInstance passport_local_2 = GetPassportEntityInstanceWithRandomGuid(
+      {.name = u"Alice",
+       .number = u"22222",
+       .use_date = test::kJune2017 - base::Days(2),
+       .record_type = EntityInstance::RecordType::kLocal});
+  EntityInstance passport_pc = GetPassportEntityInstanceWithRandomGuid(
+      {.name = u"Jon Doe",
+       .number = u"33333",
+       .use_date = test::kJune2017,
+       .record_type = EntityInstance::RecordType::kPersonalContext});
+
+  SetEntities({passport_local_1, passport_local_2, passport_pc});
+  SetForm({NAME_FULL, PASSPORT_NUMBER});
+
+  std::vector<Suggestion> res = CreateAutofillAiFillingSuggestions(field(0));
+
+  EXPECT_THAT(res,
+              SuggestionsAre(HasMainText(GetPassportName(passport_local_1)),
+                             HasMainText(GetPassportName(passport_local_2)),
+                             HasMainText(GetPassportName(passport_pc))));
+}
+
+// Test that across different entity types, PersonalContext entities are ordered
+// after non-PersonalContext entities of other types, even if they have higher
+// frecency.
+TEST_F(
+    AutofillAiSuggestionGeneratorTest,
+    GetFillingSuggestion_OrderPersonalContextAfterOtherEntityTypes_DifferentTypes) {
+  EntityInstance passport_pc = GetPassportEntityInstanceWithRandomGuid(
+      {.name = u"Jon Doe",
+       .number = u"33333",
+       .use_date = test::kJune2017,
+       .record_type = EntityInstance::RecordType::kPersonalContext});
+  EntityInstance drivers_license_local =
+      test::GetDriversLicenseEntityInstanceWithRandomGuid(
+          {.name = u"Mr Pink",
+           .number = u"44444",
+           .use_date = test::kJune2017 - base::Days(10),
+           .record_type = EntityInstance::RecordType::kLocal});
+
+  SetEntities({passport_pc, drivers_license_local});
+  SetForm({NAME_FULL, PASSPORT_NUMBER, DRIVERS_LICENSE_NUMBER});
+
+  std::vector<Suggestion> res = CreateAutofillAiFillingSuggestions(field(0));
+
+  EXPECT_THAT(
+      res,
+      SuggestionsAre(HasMainText(GetDriversLicenseName(drivers_license_local)),
+                     HasMainText(GetPassportName(passport_pc))));
+}
+
+// Test that entities are first partitioned by RecordType (non-PersonalContext
+// before PersonalContext), and then within each partition, grouped by
+// EntityType and sorted by frecency.
+TEST_F(
+    AutofillAiSuggestionGeneratorTest,
+    GetFillingSuggestion_OrderPersonalContextAfterOtherEntityTypes_RecordTypeBeforeEntityType) {
+  EntityInstance passport_local = GetPassportEntityInstanceWithRandomGuid(
+      {.name = u"Bruno",
+       .number = u"11111",
+       .use_date = test::kJune2017 - base::Days(1),
+       .record_type = EntityInstance::RecordType::kLocal});
+  EntityInstance passport_pc = GetPassportEntityInstanceWithRandomGuid(
+      {.name = u"Jon Doe",
+       .number = u"22222",
+       .use_date = test::kJune2017,
+       .record_type = EntityInstance::RecordType::kPersonalContext});
+  EntityInstance drivers_license_local =
+      test::GetDriversLicenseEntityInstanceWithRandomGuid(
+          {.name = u"Mr Pink",
+           .number = u"33333",
+           .use_date = test::kJune2017 - base::Days(2),
+           .record_type = EntityInstance::RecordType::kLocal});
+  EntityInstance drivers_license_pc =
+      test::GetDriversLicenseEntityInstanceWithRandomGuid(
+          {.name = u"White",
+           .number = u"44444",
+           .use_date = test::kJune2017 - base::Days(2),
+           .record_type = EntityInstance::RecordType::kPersonalContext});
+
+  SetEntities(
+      {passport_local, passport_pc, drivers_license_local, drivers_license_pc});
+  SetForm({NAME_FULL, PASSPORT_NUMBER, DRIVERS_LICENSE_NUMBER});
+
+  std::vector<Suggestion> res = CreateAutofillAiFillingSuggestions(field(0));
+
+  EXPECT_THAT(
+      res,
+      SuggestionsAre(HasMainText(GetPassportName(passport_local)),
+                     HasMainText(GetDriversLicenseName(drivers_license_local)),
+                     HasMainText(GetPassportName(passport_pc)),
+                     HasMainText(GetDriversLicenseName(drivers_license_pc))));
+}
+
 TEST_F(AutofillAiSuggestionGeneratorTest,
        GetFillingSuggestion_CustomOrderingForFlightReservation) {
   EntityInstance passport1 = GetPassportEntityInstanceWithRandomGuid(

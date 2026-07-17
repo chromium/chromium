@@ -70,6 +70,18 @@
 namespace autofill {
 namespace {
 
+int GetRecordTypePriority(EntityInstance::RecordType record_type) {
+  switch (record_type) {
+    case EntityInstance::RecordType::kServerWallet:
+      return 2;
+    case EntityInstance::RecordType::kLocal:
+      return 1;
+    case EntityInstance::RecordType::kPersonalContext:
+      return 0;
+  }
+  NOTREACHED();
+}
+
 // Represents all the different UI sections for autofill ai data in Chrome
 // Settings.
 enum class AutofillAiUiSection {
@@ -345,17 +357,6 @@ std::vector<const EntityInstance*> DedupedEntitiesForSuggestions(
     }
   }
 
-  auto get_record_type_priority = [](EntityInstance::RecordType record_type) {
-    switch (record_type) {
-      case EntityInstance::RecordType::kServerWallet:
-        return 2;
-      case EntityInstance::RecordType::kLocal:
-        return 1;
-      case EntityInstance::RecordType::kPersonalContext:
-        return 0;
-    }
-    NOTREACHED();
-  };
   std::vector<const EntityInstance*> deduped_entities;
   for (size_t i = 0; i < entities.size(); ++i) {
     bool erase_i = false;
@@ -373,10 +374,8 @@ std::vector<const EntityInstance*> DedupedEntitiesForSuggestions(
       // - `i` is equal to `j` and they have the same priority, but `j`
       //   appears earlier in the list (higher frecency).
       const bool i_is_proper_subset_of_j = j_includes_i && !j_equals_i;
-      const int i_priority =
-          get_record_type_priority(entities[i]->record_type());
-      const int j_priority =
-          get_record_type_priority(entities[j]->record_type());
+      const int i_priority = GetRecordTypePriority(entities[i]->record_type());
+      const int j_priority = GetRecordTypePriority(entities[j]->record_type());
       if (i_is_proper_subset_of_j ||
           (j_equals_i &&
            (j_priority > i_priority || (j_priority == i_priority && i > j)))) {
@@ -555,41 +554,53 @@ Suggestion GetSuggestionForEntity(
 }
 
 // The desired ordering criteria are the following:
-// - Entities of the same type should appear together.
-// - Entities of type A should appear before entities of type B if the most
-//   "frecent" entity of type A is more frecent than the most frecent entity
-//   of type B.
+// - Entities are first partitioned into groups sorted by their record type
+//   priority.
+// - Within each partition, entities of the same type appear together.
+// - Within each partition, entities of type A appear before entities of type B
+//   if the most "frecent" entity of type A is more frecent than the most
+//   frecent entity of type B.
 //
-// In other terms, entities are grouped so that the most “frecent” suggestion
-// will be shown first, then all suggestions of the same type, then the next
-// most “frecent” suggestion, and so on.
+// In other terms, entities are grouped by record type priority and then entity
+// type so that the most “frecent” suggestion in each partition is shown first,
+// followed by all suggestions of the same type, then the next most “frecent”
+// suggestion, and so on.
 std::vector<const EntityInstance*> OrderedEntitiesForSuggestion(
     std::vector<const EntityInstance*> entities) {
-  // Sort entities based on their frecency.
-  std::ranges::sort(entities,
-                    [comp = EntityInstance::FrecencyOrder(base::Time::Now())](
-                        const EntityInstance* lhs, const EntityInstance* rhs) {
-                      return comp(*lhs, *rhs);
-                    });
-  // Group entities based on their entity type. Note that by doing so after the
-  // first sorting step, it is guaranteed that each individual vector in the map
-  // is also sorted accordingly.
-  std::map<EntityType, std::vector<const EntityInstance*>>
-      sorted_entities_by_type;
-  for (const EntityInstance* entity : entities) {
-    sorted_entities_by_type[entity->type()].push_back(entity);
+  if (entities.empty()) {
+    return entities;
   }
 
-  std::vector<const EntityInstance*> sorted_entities;
-  sorted_entities.reserve(entities.size());
-  // By iterating over `entities`, sorted by frecency, the desired ordering is
-  // achieved.
+  const EntityInstance::FrecencyOrder frecency_order(base::Time::Now());
+  using EntityGroup = std::pair<EntityInstance::RecordType, EntityType>;
+  std::map<EntityGroup, const EntityInstance*> most_frecent_per_group;
   for (const EntityInstance* entity : entities) {
-    base::Extend(sorted_entities,
-                 std::move(sorted_entities_by_type[entity->type()]));
-    sorted_entities_by_type[entity->type()].clear();
+    const EntityGroup key = {entity->record_type(), entity->type()};
+    const EntityInstance* best = most_frecent_per_group[key];
+    if (!best || frecency_order(*entity, *best)) {
+      most_frecent_per_group[key] = entity;
+    }
   }
-  return sorted_entities;
+  std::ranges::sort(
+      entities, [&frecency_order, &most_frecent_per_group](
+                    const EntityInstance* lhs, const EntityInstance* rhs) {
+        if (lhs->record_type() != rhs->record_type()) {
+          return GetRecordTypePriority(lhs->record_type()) >
+                 GetRecordTypePriority(rhs->record_type());
+        }
+
+        if (lhs->type() != rhs->type()) {
+          const EntityInstance* lhs_best =
+              most_frecent_per_group.at({lhs->record_type(), lhs->type()});
+          const EntityInstance* rhs_best =
+              most_frecent_per_group.at({rhs->record_type(), rhs->type()});
+          return frecency_order(*lhs_best, *rhs_best);
+        }
+
+        return frecency_order(*lhs, *rhs);
+      });
+
+  return entities;
 }
 
 // Returns a valid GURL parsed from a domain string. If no scheme is present in
