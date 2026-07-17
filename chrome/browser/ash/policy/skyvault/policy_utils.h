@@ -124,7 +124,7 @@ bool LocalUserFilesAllowed(const PrefService& local_state);
 // Returns the `MigrationDestination` indicating where local files should be
 // moved, or that they should be deleted. Returns `kNotSpecified` if the
 // migration policy is unset or explicitly set to "read-only".
-MigrationDestination GetMigrationDestination();
+MigrationDestination GetMigrationDestination(const PrefService& local_state);
 
 // Returns true if `destination` is set to a cloud location.
 bool IsCloudDestination(MigrationDestination destination);

@@ -14,8 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/skyvault/file_location_utils.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
 
@@ -63,14 +62,14 @@ bool LocalUserFilesAllowed(const PrefService& local_state) {
   return local_state.GetBoolean(ash::prefs::kLocalUserFilesAllowed);
 }
 
-MigrationDestination GetMigrationDestination() {
+MigrationDestination GetMigrationDestination(const PrefService& local_state) {
   if (!base::FeatureList::IsEnabled(features::kSkyVault) ||
       !base::FeatureList::IsEnabled(ash::features::kSkyVaultV2)) {
     return MigrationDestination::kNotSpecified;
   }
 
-  const std::string destination = g_browser_process->local_state()->GetString(
-      ash::prefs::kLocalUserFilesMigrationDestination);
+  const std::string destination =
+      local_state.GetString(ash::prefs::kLocalUserFilesMigrationDestination);
 
   if (destination == kMigrationDestinationGoogleDrive) {
     return MigrationDestination::kGoogleDrive;

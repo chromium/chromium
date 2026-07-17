@@ -268,7 +268,7 @@ api::file_manager_private::MigrationDestination GetSkyVaultMigrationDestination(
   }
 
   const auto migration_destination =
-      policy::local_user_files::GetMigrationDestination();
+      policy::local_user_files::GetMigrationDestination(local_state);
   switch (migration_destination) {
     case policy::local_user_files::MigrationDestination::kNotSpecified:
       return api::file_manager_private::MigrationDestination::kNotSpecified;
@@ -291,7 +291,7 @@ std::optional<std::string> GetSkyVaultMigrationStartTime(
   }
 
   const auto migration_destination =
-      policy::local_user_files::GetMigrationDestination();
+      policy::local_user_files::GetMigrationDestination(local_state);
   if (migration_destination !=
       policy::local_user_files::MigrationDestination::kDelete) {
     return std::nullopt;
