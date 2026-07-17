@@ -28,7 +28,7 @@ struct LineClampData {
 
   CORE_EXPORT LineClampData& operator=(const LineClampData&);
 
-  enum State {
+  enum class State : uint8_t {
     kDisabled,
 
     // Clamps after a given number of lines.
@@ -52,22 +52,24 @@ struct LineClampData {
     kClampByLinesWithBfcOffset,
   };
 
-  bool IsLineClampContext() const { return state != kDisabled; }
+  bool IsLineClampContext() const { return state != State::kDisabled; }
 
   // Returns true if we're clamping after a given number of lines.
   bool IsClampByLines() const {
-    return state == kClampByLines || state == kClampByLinesWithBfcOffset;
+    return state == State::kClampByLines ||
+           state == State::kClampByLinesWithBfcOffset;
   }
 
   // Returns true if we're measuring the BFC offset to relayout there.
   bool IsMeasureUntilBfcOffset() const {
-    return state == kMeasureLinesUntilBfcOffset ||
-           state == kClampByLinesWithBfcOffset;
+    return state == State::kMeasureLinesUntilBfcOffset ||
+           state == State::kClampByLinesWithBfcOffset;
   }
 
   // Returns true if we're counting the number of lines in this box upwards.
   bool IsCountLines() const {
-    return state == kMeasureLinesUntilBfcOffset || state == kCountLines;
+    return state == State::kMeasureLinesUntilBfcOffset ||
+           state == State::kCountLines;
   }
 
   // If we're clamping by lines, returns the number of lines until clamp.
@@ -97,13 +99,13 @@ struct LineClampData {
       return false;
     }
     switch (state) {
-      case kClampByLines:
-      case kCountLines:
+      case State::kClampByLines:
+      case State::kCountLines:
         return lines_until_clamp == other.lines_until_clamp;
-      case kClampAfterLayoutObject:
+      case State::kClampAfterLayoutObject:
         return clamp_after_layout_object == other.clamp_after_layout_object;
-      case kMeasureLinesUntilBfcOffset:
-      case kClampByLinesWithBfcOffset:
+      case State::kMeasureLinesUntilBfcOffset:
+      case State::kClampByLinesWithBfcOffset:
         return lines_until_clamp == other.lines_until_clamp &&
                clamp_bfc_offset == other.clamp_bfc_offset;
       default:
@@ -136,7 +138,7 @@ struct LineClampData {
   // Only valid when `state == kClampAfterLayoutObject`.
   UntracedMember<const LayoutObject> clamp_after_layout_object;
 
-  State state = kDisabled;
+  State state = State::kDisabled;
 
   // When the `CSSLineClamp` runtime flag is disabled, whether to ellipsize the
   // line before clamp. When that flag is enabled, use the `block-ellipsis`

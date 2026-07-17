@@ -343,23 +343,23 @@ void BlockLayoutAlgorithm::SetupRelayoutData(
   column_spanner_path_ = previous.column_spanner_path_;
 
   if (relayout_type == kRelayoutIgnoringLineClamp) {
-    line_clamp_data_.data.state = LineClampData::kDisabled;
+    line_clamp_data_.data.state = LineClampData::State::kDisabled;
     line_clamp_data_.ignore_line_clamp = true;
   } else if (relayout_type == kRelayoutClampingByLines) {
-    line_clamp_data_.data.state = LineClampData::kClampByLines;
+    line_clamp_data_.data.state = LineClampData::State::kClampByLines;
     line_clamp_data_.data.lines_until_clamp =
         line_clamp_data_.initial_lines_until_clamp =
             previous.line_clamp_data_.data.lines_until_clamp;
     line_clamp_data_.data.block_ellipsis =
         previous.line_clamp_data_.data.block_ellipsis;
   } else if (relayout_type == kRelayoutClampingAfterLayoutObject) {
-    line_clamp_data_.data.state = LineClampData::kClampAfterLayoutObject;
+    line_clamp_data_.data.state = LineClampData::State::kClampAfterLayoutObject;
     line_clamp_data_.data.clamp_after_layout_object =
         previous.line_clamp_data_.last_layout_object;
     line_clamp_data_.data.block_ellipsis =
         previous.line_clamp_data_.data.block_ellipsis;
   } else if (previous.line_clamp_data_.data.IsClampByLines()) {
-    line_clamp_data_.data.state = LineClampData::kClampByLines;
+    line_clamp_data_.data.state = LineClampData::State::kClampByLines;
     line_clamp_data_.data.lines_until_clamp =
         line_clamp_data_.initial_lines_until_clamp =
             previous.line_clamp_data_.initial_lines_until_clamp;
@@ -4197,7 +4197,7 @@ NOINLINE void BlockLayoutAlgorithm::SetupLineClamp() {
         // If the block size is fixed, we won't ever clamp inside this box,
         // since that couldnt possibly reduce the line-clamp container's height.
         // But our ancestors still need to know the number of lines in the box.
-        line_clamp_data_.data.state = LineClampData::kCountLines;
+        line_clamp_data_.data.state = LineClampData::State::kCountLines;
       } else {
         DCHECK(constraint_space.GetLineClampAncestorChain());
         LayoutUnit end_margin =
@@ -4216,26 +4216,26 @@ void BlockLineClampData::UpdateFromStyle(int lines_until_clamp,
                                          LayoutUnit clamp_bfc_offset,
                                          LayoutUnit end_border_padding) {
   if (ignore_line_clamp) {
-    DCHECK_EQ(data.state, LineClampData::kDisabled);
+    DCHECK_EQ(data.state, LineClampData::State::kDisabled);
     return;
   }
 
-  DCHECK_EQ(data.state, LineClampData::kDisabled);
+  DCHECK_EQ(data.state, LineClampData::State::kDisabled);
   DCHECK_GE(lines_until_clamp, 0);
   if (!lines_until_clamp) {
     if (clamp_bfc_offset == kIndefiniteSize) {
-      data.state = LineClampData::kDisabled;
+      data.state = LineClampData::State::kDisabled;
     } else {
-      data.state = LineClampData::kMeasureLinesUntilBfcOffset;
+      data.state = LineClampData::State::kMeasureLinesUntilBfcOffset;
       data.lines_until_clamp = 0;
       data.clamp_bfc_offset = clamp_bfc_offset;
     }
   } else {
     if (clamp_bfc_offset == kIndefiniteSize) {
-      data.state = LineClampData::kClampByLines;
+      data.state = LineClampData::State::kClampByLines;
       data.lines_until_clamp = lines_until_clamp;
     } else {
-      data.state = LineClampData::kClampByLinesWithBfcOffset;
+      data.state = LineClampData::State::kClampByLinesWithBfcOffset;
       data.lines_until_clamp = lines_until_clamp;
       data.clamp_bfc_offset = clamp_bfc_offset;
     }
@@ -4339,11 +4339,11 @@ bool BlockLineClampData::UpdateAfterLayout(
   // With kClampAfterLayoutObject, if we've found the layout object, then we
   // switch states to kClampByLines with negative lines. If the child layout
   // result has negative lines, then the layout object was found there.
-  if (data.state == LineClampData::kClampAfterLayoutObject &&
+  if (data.state == LineClampData::State::kClampAfterLayoutObject &&
       (layout_result->LinesUntilClamp() < 0 ||
        data.clamp_after_layout_object == fragment.GetLayoutObject())) {
     DCHECK(!previous_inflow_position_when_clamped);
-    data.state = LineClampData::kClampByLines;
+    data.state = LineClampData::State::kClampByLines;
     data.lines_until_clamp = -1;
     previous_inflow_position_when_clamped = previous_inflow_position;
   }

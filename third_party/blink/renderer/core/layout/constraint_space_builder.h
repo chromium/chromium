@@ -574,7 +574,7 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
     is_line_clamp_data_set_ = true;
 #endif
     DCHECK(!is_new_fc_);
-    if (data.state != LineClampData::kDisabled) {
+    if (data.IsLineClampContext()) {
       EnsureRareData()->SetLineClampData(data);
     }
   }

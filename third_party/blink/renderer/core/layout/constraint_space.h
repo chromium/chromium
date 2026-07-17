@@ -1406,7 +1406,7 @@ class CORE_EXPORT ConstraintSpace final {
       }
 
       bool IsInitialForMaySkipLayout() const {
-        return line_clamp_data.state == LineClampData::kDisabled &&
+        return line_clamp_data.state == LineClampData::State::kDisabled &&
                previous_sibling_block_end_annotation_space == LayoutUnit();
       }
 
@@ -1414,8 +1414,8 @@ class CORE_EXPORT ConstraintSpace final {
       std::optional<LayoutUnit> optimistic_bfc_block_offset;
       std::optional<LayoutUnit> forced_bfc_block_offset;
       LayoutUnit clearance_offset = LayoutUnit::Min();
-      LineClampData line_clamp_data;
       LayoutUnit previous_sibling_block_end_annotation_space;
+      LineClampData line_clamp_data;
     };
 
     struct TableCellData {

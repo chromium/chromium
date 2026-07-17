@@ -15,8 +15,7 @@ struct SameSizeAsLineClampData {
   int lines_until_clamp;
   LayoutUnit clamp_bfc_offset;
   UntracedMember<const LayoutObject> clamp_after_layout_object;
-  int state;
-  EBlockEllipsis block_ellipsis_state;
+  uint8_t states[2];
 };
 
 ASSERT_SIZE(LineClampData, SameSizeAsLineClampData);
@@ -26,17 +25,17 @@ ASSERT_SIZE(LineClampData, SameSizeAsLineClampData);
 CORE_EXPORT LineClampData::LineClampData(const LineClampData& o)
     : state(o.state) {
   switch (state) {
-    case kDisabled:
+    case State::kDisabled:
       break;
-    case kClampByLines:
-    case kCountLines:
+    case State::kClampByLines:
+    case State::kCountLines:
       lines_until_clamp = o.lines_until_clamp;
       break;
-    case kClampAfterLayoutObject:
+    case State::kClampAfterLayoutObject:
       clamp_after_layout_object = o.clamp_after_layout_object;
       break;
-    case kMeasureLinesUntilBfcOffset:
-    case kClampByLinesWithBfcOffset:
+    case State::kMeasureLinesUntilBfcOffset:
+    case State::kClampByLinesWithBfcOffset:
       lines_until_clamp = o.lines_until_clamp;
       clamp_bfc_offset = o.clamp_bfc_offset;
       break;
@@ -45,22 +44,23 @@ CORE_EXPORT LineClampData::LineClampData(const LineClampData& o)
 }
 
 CORE_EXPORT LineClampData& LineClampData::operator=(const LineClampData& o) {
-  if (state == kClampAfterLayoutObject && o.state != kClampAfterLayoutObject) {
+  if (state == State::kClampAfterLayoutObject &&
+      o.state != State::kClampAfterLayoutObject) {
     clamp_after_layout_object.Clear();
   }
   state = o.state;
   switch (state) {
-    case kDisabled:
+    case State::kDisabled:
       break;
-    case kClampByLines:
-    case kCountLines:
+    case State::kClampByLines:
+    case State::kCountLines:
       lines_until_clamp = o.lines_until_clamp;
       break;
-    case kClampAfterLayoutObject:
+    case State::kClampAfterLayoutObject:
       clamp_after_layout_object = o.clamp_after_layout_object;
       break;
-    case kMeasureLinesUntilBfcOffset:
-    case kClampByLinesWithBfcOffset:
+    case State::kMeasureLinesUntilBfcOffset:
+    case State::kClampByLinesWithBfcOffset:
       lines_until_clamp = o.lines_until_clamp;
       clamp_bfc_offset = o.clamp_bfc_offset;
       break;
