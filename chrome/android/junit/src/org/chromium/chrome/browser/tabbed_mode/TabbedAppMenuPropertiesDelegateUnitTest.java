@@ -159,6 +159,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.AppBannerManagerJni;
+import org.chromium.components.webapps.WebappsUtils;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
@@ -468,6 +469,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     public void tearDown() {
         AccessibilityState.setIsKnownScreenReaderEnabledForTesting(false);
         BookmarkUtils.setReadingListSupportedForTesting(null);
+        WebappsUtils.setAddToHomeIntentSupportedForTesting(null);
     }
 
     @Nullable
@@ -1240,14 +1242,12 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         R.id.save_and_share_parent_menu_id,
                         item(R.id.share_menu_id),
                         item(R.id.copy_link_menu_id),
-                        item(R.id.send_to_devices_menu_id),
                         item(R.id.qr_code_menu_id)));
         expectedTitles.add(
                 item(
                         R.string.menu_save_and_share,
                         item(R.string.menu_share_page),
                         item(R.string.menu_copy_link),
-                        item(R.string.menu_send_to_devices),
                         item(R.string.menu_qr_code)));
 
         expectedItems.add(item(R.id.find_in_page_id));
@@ -2528,6 +2528,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Test
     public void testNewIncognitoTabOption_WithReauthInProgress() {
         setUpMocksForPageMenu();
+        when(mTab.isIncognito()).thenReturn(true);
         setMenuOptions(
                 new MenuOptions()
                         .withShowTranslate()
@@ -4074,6 +4075,54 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         assertEquals(
                 R.string.menu_add_tab_to_new_group,
                 mTabbedAppMenuPropertiesDelegate.getAddToGroupMenuItemString(null));
+    }
+
+    @Test
+    public void testSaveAndShareModel_NonIncognito() {
+        setUpMocksForPageMenu();
+        when(mTab.isIncognito()).thenReturn(false);
+        WebappsUtils.setAddToHomeIntentSupportedForTesting(false);
+        doReturn(false)
+                .when(mSaveAndShareItemBuilder)
+                .shouldShowPaintPreview(anyBoolean(), any(Tab.class));
+
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ListItem saveAndShareItem = findItemById(modelList, R.id.save_and_share_parent_menu_id);
+        assertNotNull(saveAndShareItem);
+
+        MenuItem expected =
+                item(
+                        R.id.save_and_share_parent_menu_id,
+                        item(R.id.share_menu_id),
+                        item(R.id.copy_link_menu_id),
+                        item(R.id.send_to_devices_menu_id),
+                        item(R.id.qr_code_menu_id));
+
+        assertMenuItemsAreEqual(Arrays.asList(saveAndShareItem), Arrays.asList(expected));
+    }
+
+    @Test
+    public void testSaveAndShareModel_Incognito() {
+        setUpMocksForPageMenu();
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mIncognitoTabModel);
+        when(mTab.isIncognito()).thenReturn(true);
+        WebappsUtils.setAddToHomeIntentSupportedForTesting(false);
+        doReturn(false)
+                .when(mSaveAndShareItemBuilder)
+                .shouldShowPaintPreview(anyBoolean(), any(Tab.class));
+
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ListItem saveAndShareItem = findItemById(modelList, R.id.save_and_share_parent_menu_id);
+        assertNotNull(saveAndShareItem);
+
+        MenuItem expected =
+                item(
+                        R.id.save_and_share_parent_menu_id,
+                        item(R.id.share_menu_id),
+                        item(R.id.copy_link_menu_id),
+                        item(R.id.qr_code_menu_id));
+
+        assertMenuItemsAreEqual(Arrays.asList(saveAndShareItem), Arrays.asList(expected));
     }
 
     private MenuItem getExpectedBookmarksParentMenuItem() {

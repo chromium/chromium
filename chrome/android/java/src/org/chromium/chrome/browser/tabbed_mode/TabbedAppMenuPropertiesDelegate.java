@@ -666,10 +666,10 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         }
 
         // Save and share
-        if (shouldShowSaveAndPrintParentItem(
+        if (shouldShowSaveAndShareItem(
                 currentTab, isNativePage, isFileScheme, isContentScheme, url)) {
             modelList.add(
-                    buildSaveAndPrintParentItem(
+                    buildSaveAndShareItem(
                             currentTab, isNativePage, isFileScheme, isContentScheme, url));
         }
 
@@ -1113,7 +1113,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                 /* showIcon= */ false);
     }
 
-    private boolean shouldShowSaveAndPrintParentItem(
+    private boolean shouldShowSaveAndShareItem(
             @Nullable Tab currentTab,
             boolean isNativePage,
             boolean isFileScheme,
@@ -1143,13 +1143,13 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         return false;
     }
 
-    private ListItem buildSaveAndPrintParentItem(
+    private ListItem buildSaveAndShareItem(
             @Nullable Tab currentTab,
             boolean isNativePage,
             boolean isFileScheme,
             boolean isContentScheme,
             GURL url) {
-        assert shouldShowSaveAndPrintParentItem(
+        assert shouldShowSaveAndShareItem(
                 currentTab, isNativePage, isFileScheme, isContentScheme, url);
 
         List<ListItem> submenuItems = new ArrayList<>();
@@ -1157,7 +1157,9 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         if (ShareUtils.shouldEnableShare(currentTab)) {
             submenuItems.add(buildShareListItem(/* showIcon= */ false));
             submenuItems.add(mSaveAndShareItemBuilder.buildCopyLinkItem());
-            submenuItems.add(mSaveAndShareItemBuilder.buildSendToDevicesItem());
+            if (currentTab != null && !currentTab.isIncognito()) {
+                submenuItems.add(mSaveAndShareItemBuilder.buildSendToDevicesItem());
+            }
             submenuItems.add(mSaveAndShareItemBuilder.buildShareQrCodeItem());
         }
 

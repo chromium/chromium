@@ -64,6 +64,7 @@ public class SaveAndShareItemBuilder {
 
     /** Builds the "Send to devices" menu item. */
     public ListItem buildSendToDevicesItem() {
+        assert !isIncognitoShowing();
         return AppMenuItemUtils.createStandardListItem(
                 AppMenuItemUtils.buildModelForStandardMenuItem(
                         mContext,
