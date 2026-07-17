@@ -3764,15 +3764,15 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4Database.UpdateLatency" units="ms"
-    expires_after="2026-03-01">
-  <owner>skrakowi@chromium.org</owner>
+    expires_after="2027-07-17">
+  <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The latency of updating the SafeBrowsing database. This measures the time
     difference between calls to update the SafeBrowsing V4 database. This gets
     logged after every call for an update to the database, except for the first
-    one. Warning: this histogram was expired from 2024-03-04 to 2024-04-17; data
-    may be missing.
+    one. Warning: this histogram was expired from 2024-03-04 to 2024-04-17, and
+    from 2026-03-01 to 2026-07-17; data may be missing.
   </summary>
 </histogram>
 
