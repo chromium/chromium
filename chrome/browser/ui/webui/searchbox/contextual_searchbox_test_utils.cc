@@ -134,11 +134,15 @@ void MockQueryController::FakeCreateSearchUrl(
   std::move(callback).Run(result_url);
 }
 
+TestWebContentsDelegate::TestWebContentsDelegate() = default;
+TestWebContentsDelegate::~TestWebContentsDelegate() = default;
+
 content::WebContents* TestWebContentsDelegate::OpenURLFromTab(
     content::WebContents* source,
     const content::OpenURLParams& params,
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
+  callback_ = std::move(navigation_handle_callback);
   source->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(params));
   return source;

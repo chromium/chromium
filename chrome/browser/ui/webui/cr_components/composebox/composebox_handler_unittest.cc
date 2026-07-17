@@ -127,6 +127,10 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
     auto navigation = content::NavigationSimulator::CreateFromPending(
         web_contents()->GetController());
     ASSERT_TRUE(navigation);
+    auto callback = delegate_.TakeCallback();
+    if (callback) {
+      std::move(callback).Run(*(navigation->GetNavigationHandle()));
+    }
     navigation->Commit();
     navigation_observer.Wait();
   }
@@ -139,6 +143,7 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
     // Service is owned by the profile, so we don't need to reset it here,
     // but we should clear the pointer.
     service_ = nullptr;
+    delegate_.ClearCallback();
     ContextualSearchboxHandlerTestHarness::TearDown();
   }
 
