@@ -71,7 +71,6 @@ class ChildAccountServiceTest : public ::testing::Test {
 
     child_account_service_ = std::make_unique<ChildAccountService>(
         syncable_pref_service_, identity_test_environment_->identity_manager(),
-        weak_wrapped_subresource_loader_factory,
         /*check_user_child_status_callback=*/base::DoNothing(),
         *list_family_members_service_.get());
 
@@ -105,7 +104,6 @@ class ChildAccountServiceTest : public ::testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  network::TestURLLoaderFactory test_url_loader_factory_;
   sync_preferences::TestingPrefServiceSyncable syncable_pref_service_;
   syncer::MockSyncService sync_service_;
   FamilyLinkSettingsService family_link_settings_service_;

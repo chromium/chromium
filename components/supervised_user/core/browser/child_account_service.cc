@@ -39,12 +39,10 @@ using ::base::BindRepeating;
 ChildAccountService::ChildAccountService(
     PrefService& user_prefs,
     signin::IdentityManager* identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     base::OnceCallback<void(bool)> check_user_child_status_callback,
     ListFamilyMembersService& list_family_members_service)
     : identity_manager_(identity_manager),
       user_prefs_(user_prefs),
-      url_loader_factory_(url_loader_factory),
       check_user_child_status_callback_(
           std::move(check_user_child_status_callback)) {
   set_custodian_prefs_subscription_ =

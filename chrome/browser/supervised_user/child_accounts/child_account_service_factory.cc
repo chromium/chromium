@@ -54,7 +54,6 @@ ChildAccountServiceFactory::BuildServiceInstanceForBrowserContext(
 
   return std::make_unique<supervised_user::ChildAccountService>(
       *profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
-      profile->GetURLLoaderFactory(),
       base::BindOnce(&supervised_user::AssertChildStatusOfTheUser, profile),
       *ListFamilyMembersServiceFactory::GetForProfile(profile));
 }

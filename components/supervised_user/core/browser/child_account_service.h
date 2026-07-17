@@ -80,7 +80,6 @@ class ChildAccountService : public KeyedService,
   ChildAccountService(
       PrefService& user_prefs,
       signin::IdentityManager* identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       base::OnceCallback<void(bool)> check_user_child_status_callback,
       ListFamilyMembersService& list_family_members_service);
 
@@ -115,8 +114,6 @@ class ChildAccountService : public KeyedService,
   const raw_ptr<signin::IdentityManager> identity_manager_;
 
   const raw_ref<PrefService> user_prefs_;
-
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   base::RepeatingClosureList google_auth_state_observers_;
 

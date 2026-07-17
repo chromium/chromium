@@ -40,7 +40,6 @@ ChildAccountServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
   return std::make_unique<supervised_user::ChildAccountService>(
       CHECK_DEREF(profile->GetPrefs()),
       IdentityManagerFactory::GetForProfile(profile),
-      profile->GetSharedURLLoaderFactory(),
       // Callback relevant only for Chrome OS.
       /*check_user_child_status_callback=*/base::DoNothing(),
       CHECK_DEREF(ListFamilyMembersServiceFactory::GetForProfile(profile)));
