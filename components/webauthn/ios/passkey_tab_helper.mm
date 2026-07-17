@@ -5,6 +5,7 @@
 #import "components/webauthn/ios/passkey_tab_helper.h"
 
 #import "base/check_deref.h"
+#import "base/containers/span.h"
 #import "base/debug/dump_without_crashing.h"
 #import "base/functional/callback.h"
 #import "base/logging.h"
@@ -391,6 +392,48 @@ void PasskeyTabHelper::HandleSignalUnknownCredentialEvent(
   passkey_model_->HidePasskey(credential_id, base::Time::Now());
   quota_tracker->TrackChange(origin);
   // TODO(crbug.com/460487030): Display UI confirmation.
+  // TODO(crbug.com/460487030): Log metrics.
+}
+
+void PasskeyTabHelper::HandleSignalCurrentUserDetailsEvent(
+    const url::Origin& origin,
+    SignalCurrentUserDetailsParams params) {
+  if (OriginAllowedToMakeWebAuthnRequests(origin) !=
+      ValidationStatus::kSuccess) {
+    return;
+  }
+
+  if (!OriginIsAllowedToClaimRelyingPartyId(params.rp_id, origin)) {
+    // TODO(crbug.com/460487030): Perform remote RP ID validation.
+    return;
+  }
+
+  PasskeyChangeQuotaTracker* quota_tracker =
+      PasskeyChangeQuotaTracker::GetInstance();
+  if (!quota_tracker->CanMakeChange(origin)) {
+    return;
+  }
+
+  bool passkey_updated = false;
+  for (const auto& passkey : passkey_model_->GetPasskeys(
+           params.rp_id,
+           webauthn::PasskeyModel::ShadowedCredentials::kExclude)) {
+    if (base::as_byte_span(passkey.user_id()) == params.user_id &&
+        (passkey.user_name() != params.name ||
+         passkey.user_display_name() != params.display_name)) {
+      if (passkey_model_->UpdatePasskey(
+              passkey.credential_id(),
+              {.user_name = params.name,
+               .user_display_name = params.display_name},
+              /*updated_by_user=*/false)) {
+        passkey_updated = true;
+      }
+    }
+  }
+
+  if (passkey_updated) {
+    quota_tracker->TrackChange(origin);
+  }
   // TODO(crbug.com/460487030): Log metrics.
 }
 

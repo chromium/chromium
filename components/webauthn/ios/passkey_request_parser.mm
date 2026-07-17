@@ -27,11 +27,13 @@ constexpr char kLogCreateRequest[] = "logCreateRequest";
 constexpr char kLogGetResolved[] = "logGetResolved";
 constexpr char kLogCreateResolved[] = "logCreateResolved";
 constexpr char kSignalUnknownCredential[] = "signalUnknownCredential";
+constexpr char kSignalCurrentUserDetails[] = "signalCurrentUserDetails";
 
 // Parameters for logging events.
 constexpr char kCredentialId[] = "credentialId";
 constexpr char kRpId[] = "rpId";
 constexpr char kIsGpm[] = "isGpm";
+constexpr char kUserId[] = "userId";
 
 // Request ID associated with deferred promises.
 constexpr char kRequestId[] = "requestId";
@@ -556,6 +558,25 @@ std::optional<SignalUnknownCredentialParams> BuildSignalUnknownCredentialParams(
   return SignalUnknownCredentialParams{*rp_id, *std::move(credential_id)};
 }
 
+std::optional<SignalCurrentUserDetailsParams>
+BuildSignalCurrentUserDetailsParams(const base::DictValue& dict) {
+  const std::string* rp_id = dict.FindString(kRpId);
+  const std::string* user_id_base64 = dict.FindString(kUserId);
+  const std::string* name = dict.FindString(kName);
+  const std::string* display_name = dict.FindString(kDisplayName);
+  if (!rp_id || rp_id->empty() || !user_id_base64 || user_id_base64->empty() ||
+      !name || !display_name) {
+    return std::nullopt;
+  }
+  std::optional<std::vector<uint8_t>> user_id =
+      Base64UrlDecode(*user_id_base64);
+  if (!user_id.has_value()) {
+    return std::nullopt;
+  }
+  return SignalCurrentUserDetailsParams{*rp_id, *std::move(user_id), *name,
+                                        *display_name};
+}
+
 std::optional<PasskeyScriptEvent> ParsePasskeyScriptEvent(
     const base::DictValue& dict,
     const url::Origin& caller_origin,
@@ -582,6 +603,9 @@ std::optional<PasskeyScriptEvent> ParsePasskeyScriptEvent(
   }
   if (*event_string == kSignalUnknownCredential) {
     return PasskeyScriptEvent::kSignalUnknownCredential;
+  }
+  if (*event_string == kSignalCurrentUserDetails) {
+    return PasskeyScriptEvent::kSignalCurrentUserDetails;
   }
 
   bool is_log_get_resolved = (*event_string == kLogGetResolved);

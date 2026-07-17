@@ -885,4 +885,28 @@ TEST_F(PasskeyRequestParserTest, BuildSignalUnknownCredentialParamsInvalid) {
   EXPECT_FALSE(BuildSignalUnknownCredentialParams(dict).has_value());
 }
 
+TEST_F(PasskeyRequestParserTest, BuildSignalCurrentUserDetailsParamsSuccess) {
+  base::DictValue dict;
+  dict.Set(kRpId, kExampleRpId);
+  dict.Set("userId", kBase64url);
+  dict.Set("name", "user@example.com");
+  dict.Set("displayName", "User Name");
+
+  auto result = BuildSignalCurrentUserDetailsParams(dict);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->rp_id, kExampleRpId);
+  EXPECT_EQ(result->user_id, Base64UrlDecode(kBase64url));
+  EXPECT_EQ(result->name, "user@example.com");
+  EXPECT_EQ(result->display_name, "User Name");
+}
+
+TEST_F(PasskeyRequestParserTest, BuildSignalCurrentUserDetailsParamsInvalid) {
+  base::DictValue dict;
+  dict.Set(kRpId, kExampleRpId);
+  dict.Set("userId", kBase64url);
+  dict.Set("name", "user@example.com");
+  // Missing displayName.
+  EXPECT_FALSE(BuildSignalCurrentUserDetailsParams(dict).has_value());
+}
+
 }  // namespace webauthn

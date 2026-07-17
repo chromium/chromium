@@ -158,6 +158,14 @@ struct SignalUnknownCredentialParams {
   std::vector<uint8_t> credential_id;
 };
 
+// Parameters for PublicKeyCredential.signalCurrentUserDetails.
+struct SignalCurrentUserDetailsParams {
+  std::string rp_id;
+  std::vector<uint8_t> user_id;
+  std::string name;
+  std::string display_name;
+};
+
 }  // namespace webauthn
 
 #endif  // COMPONENTS_WEBAUTHN_IOS_PASSKEY_REQUEST_PARAMS_H_

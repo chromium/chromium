@@ -59,7 +59,8 @@ class PasskeyTabHelper : public web::WebStateObserver,
     kIncognitoInterstitialShown,
     kCancelRequested,
     kSignalUnknownCredentialRequested,
-    kMaxValue = kSignalUnknownCredentialRequested,
+    kSignalCurrentUserDetailsRequested,
+    kMaxValue = kSignalCurrentUserDetailsRequested,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml)
 
@@ -84,6 +85,11 @@ class PasskeyTabHelper : public web::WebStateObserver,
   // Handles PublicKeyCredential.signalUnknownCredential request.
   void HandleSignalUnknownCredentialEvent(const url::Origin& origin,
                                           SignalUnknownCredentialParams params);
+
+  // Handles PublicKeyCredential.signalCurrentUserDetails request.
+  void HandleSignalCurrentUserDetailsEvent(
+      const url::Origin& origin,
+      SignalCurrentUserDetailsParams params);
 
   // Returns whether the tab helper's passkey model contains a passkey matching
   // the provided rp id and credential id.

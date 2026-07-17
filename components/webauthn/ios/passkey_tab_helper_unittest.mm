@@ -1192,4 +1192,86 @@ TEST_F(PasskeyTabHelperTest, HandleSignalUnknownCredentialEventQuotaExceeded) {
   EXPECT_FALSE(GetPasskey(kCredentialId).hidden());
 }
 
+// Tests that HandleSignalCurrentUserDetailsEvent updates matching passkey user
+// details in the model when the origin is valid.
+TEST_F(PasskeyTabHelperTest, HandleSignalCurrentUserDetailsEventSuccess) {
+  SetUpWebFramesManagerAndWebFrame(GURL(kOriginURL));
+
+  sync_pb::WebauthnCredentialSpecifics passkey = GetTestPasskey(kCredentialId);
+  static_cast<TestPasskeyModel*>(passkey_model_.get())
+      ->AddNewPasskeyForTesting(passkey);
+
+  const std::vector<uint8_t> user_id(passkey.user_id().begin(),
+                                     passkey.user_id().end());
+  SignalCurrentUserDetailsParams params{kRpId, user_id, "newname@example.com",
+                                        "New Display Name"};
+
+  passkey_tab_helper()->HandleSignalCurrentUserDetailsEvent(
+      url::Origin::Create(GURL(kOriginURL)), std::move(params));
+
+  // The passkey user details should now be updated in the model.
+  sync_pb::WebauthnCredentialSpecifics updated_passkey =
+      GetPasskey(kCredentialId);
+  EXPECT_EQ(updated_passkey.user_name(), "newname@example.com");
+  EXPECT_EQ(updated_passkey.user_display_name(), "New Display Name");
+}
+
+// Tests that HandleSignalCurrentUserDetailsEvent drops requests with invalid
+// origins.
+TEST_F(PasskeyTabHelperTest, HandleSignalCurrentUserDetailsEventInvalidOrigin) {
+  SetUpWebFramesManagerAndWebFrame(GURL(kOriginURL));
+
+  sync_pb::WebauthnCredentialSpecifics passkey = GetTestPasskey(kCredentialId);
+  static_cast<TestPasskeyModel*>(passkey_model_.get())
+      ->AddNewPasskeyForTesting(passkey);
+
+  const std::vector<uint8_t> user_id(passkey.user_id().begin(),
+                                     passkey.user_id().end());
+  // Mismatched relying party ID / origin.
+  SignalCurrentUserDetailsParams params{
+      "otherdomain.com", user_id, "newname@example.com", "New Display Name"};
+
+  passkey_tab_helper()->HandleSignalCurrentUserDetailsEvent(
+      url::Origin::Create(GURL(kOriginURL)), std::move(params));
+
+  // The passkey user details should remain unchanged.
+  sync_pb::WebauthnCredentialSpecifics unchanged_passkey =
+      GetPasskey(kCredentialId);
+  EXPECT_NE(unchanged_passkey.user_name(), "newname@example.com");
+  EXPECT_NE(unchanged_passkey.user_display_name(), "New Display Name");
+}
+
+// Tests that HandleSignalCurrentUserDetailsEvent ignores requests when quota is
+// exceeded.
+TEST_F(PasskeyTabHelperTest, HandleSignalCurrentUserDetailsEventQuotaExceeded) {
+  SetUpWebFramesManagerAndWebFrame(GURL(kOriginURL));
+
+  sync_pb::WebauthnCredentialSpecifics passkey = GetTestPasskey(kCredentialId);
+  static_cast<TestPasskeyModel*>(passkey_model_.get())
+      ->AddNewPasskeyForTesting(passkey);
+
+  const url::Origin origin = url::Origin::Create(GURL(kOriginURL));
+  const std::vector<uint8_t> user_id(passkey.user_id().begin(),
+                                     passkey.user_id().end());
+
+  for (int i = 0; i < PasskeyChangeQuotaTracker::kMaxTokensPerRP; ++i) {
+    SignalCurrentUserDetailsParams params{
+        kRpId, user_id, base::NumberToString(i), base::NumberToString(i)};
+    passkey_tab_helper()->HandleSignalCurrentUserDetailsEvent(
+        origin, std::move(params));
+  }
+
+  // Quota is now exhausted. Subsequent call should be ignored and passkey
+  // details remain unchanged from previous iteration.
+  SignalCurrentUserDetailsParams params{kRpId, user_id, "exhausted@example.com",
+                                        "Exhausted"};
+  passkey_tab_helper()->HandleSignalCurrentUserDetailsEvent(origin,
+                                                            std::move(params));
+
+  sync_pb::WebauthnCredentialSpecifics final_passkey =
+      GetPasskey(kCredentialId);
+  EXPECT_NE(final_passkey.user_name(), "exhausted@example.com");
+  EXPECT_NE(final_passkey.user_display_name(), "Exhausted");
+}
+
 }  // namespace webauthn

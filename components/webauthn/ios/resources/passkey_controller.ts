@@ -121,6 +121,14 @@ interface UnknownCredentialOptions {
   credentialId: string;
 }
 
+// Options passed to PublicKeyCredential.signalCurrentUserDetails.
+interface CurrentUserDetailsOptions {
+  rpId: string;
+  userId: string;
+  name: string;
+  displayName: string;
+}
+
 // Class to backup and override PublicKeyCredential methods.
 class PublicKeyCredentialOverrider {
   private static readonly IS_UVPAA =
@@ -140,6 +148,10 @@ class PublicKeyCredentialOverrider {
   // PublicKeyCredential.signalUnknownCredential.
   private originalSignalUnknownCredential:
       ((options: UnknownCredentialOptions) => Promise<void>)|undefined;
+
+  // PublicKeyCredential.signalCurrentUserDetails.
+  private originalSignalCurrentUserDetails:
+      ((options: CurrentUserDetailsOptions) => Promise<void>)|undefined;
 
   constructor() {
     // PublicKeyCredential can be undefined.
@@ -168,6 +180,12 @@ class PublicKeyCredentialOverrider {
     if (PublicKeyCredential.signalUnknownCredential) {
       this.originalSignalUnknownCredential =
           PublicKeyCredential.signalUnknownCredential.bind(PublicKeyCredential);
+    }
+
+    if (PublicKeyCredential.signalCurrentUserDetails) {
+      this.originalSignalCurrentUserDetails =
+          PublicKeyCredential.signalCurrentUserDetails.bind(
+              PublicKeyCredential);
     }
   }
 
@@ -214,6 +232,13 @@ class PublicKeyCredentialOverrider {
       Object.defineProperty(PublicKeyCredential, 'signalUnknownCredential', {
         value: (options: UnknownCredentialOptions) =>
             signalUnknownCredential(options),
+        writable: true,
+        configurable: true,
+      });
+
+      Object.defineProperty(PublicKeyCredential, 'signalCurrentUserDetails', {
+        value: (options: CurrentUserDetailsOptions) =>
+            signalCurrentUserDetails(options),
         writable: true,
         configurable: true,
       });
@@ -299,6 +324,16 @@ class PublicKeyCredentialOverrider {
       Promise<void> {
     if (this.originalSignalUnknownCredential) {
       return this.originalSignalUnknownCredential(options);
+    }
+    return Promise.resolve();
+  }
+
+  // Invokes the original WebKit implementation of
+  // PublicKeyCredential.signalCurrentUserDetails().
+  passthroughSignalCurrentUserDetails(options: CurrentUserDetailsOptions):
+      Promise<void> {
+    if (this.originalSignalCurrentUserDetails) {
+      return this.originalSignalCurrentUserDetails(options);
     }
     return Promise.resolve();
   }
@@ -814,7 +849,7 @@ class DeferredPublicKeyCredentialPromise {
 // by invoking WebKit's native implementation first, and notifying the browser
 // C++ layer only upon successful resolution.
 // TODO(crbug.com/460487030): Confirm that this is the intended behavior (WK
-// first, then browser on success).
+// first, then browser on success), same for other signal functions.
 function signalUnknownCredential(options: UnknownCredentialOptions):
     Promise<void> {
   return publicKeyCredentialOverrider
@@ -826,6 +861,29 @@ function signalUnknownCredential(options: UnknownCredentialOptions):
             'event': 'signalUnknownCredential',
             'rpId': options.rpId,
             'credentialId': options.credentialId,
+          });
+        }
+      });
+}
+
+// Handles PublicKeyCredential.signalCurrentUserDetails calls from the webpage
+// by invoking WebKit's native implementation first, and notifying the browser
+// C++ layer only upon successful resolution.
+function signalCurrentUserDetails(options: CurrentUserDetailsOptions):
+    Promise<void> {
+  return publicKeyCredentialOverrider
+      .passthroughSignalCurrentUserDetails(options)
+      .then(() => {
+        if (options && typeof options.rpId === 'string' &&
+            typeof options.userId === 'string' &&
+            typeof options.name === 'string' &&
+            typeof options.displayName === 'string') {
+          sendWebKitMessage(HANDLER_NAME, {
+            'event': 'signalCurrentUserDetails',
+            'rpId': options.rpId,
+            'userId': options.userId,
+            'name': options.name,
+            'displayName': options.displayName,
           });
         }
       });

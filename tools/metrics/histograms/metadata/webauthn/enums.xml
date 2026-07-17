@@ -589,6 +589,9 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="SignalUnknownCredentialRequested">
     Page requested a WebAuthn signalUnknownCredential call.
   </int>
+  <int value="9" label="SignalCurrentUserDetailsRequested">
+    Page requested a WebAuthn signalCurrentUserDetails call.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//components/webauthn/ios/passkey_tab_helper.h) -->
