@@ -14335,6 +14335,8 @@ from previous Chrome versions.
   <int value="-75396730" label="UseAlternateHistorySyncIllustration:disabled"/>
   <int value="-74964571" label="EcheCustomWidget:enabled"/>
   <int value="-74808314" label="WebRtcWgcRequireBorder:enabled"/>
+  <int value="-74623683"
+      label="PopulateDOMNodeIdInFocusedNodeDetails:disabled"/>
   <int value="-73282711" label="EnableAppListSearchAutocomplete:enabled"/>
   <int value="-73203893" label="FedCmIframeOrigin:enabled"/>
   <int value="-72904030" label="ChromeRefresh2023:enabled"/>
@@ -21156,6 +21158,8 @@ from previous Chrome versions.
   <int value="2114894984" label="DelayCompetingLowPriorityRequests:enabled"/>
   <int value="2115100351"
       label="NtpMostRelevantTabResumptionModuleFallbackToHost:disabled"/>
+  <int value="2115389844"
+      label="PopulateDOMNodeIdInFocusedNodeDetails:enabled"/>
   <int value="2116535245" label="PasswordEditDialogWithDetails:disabled"/>
   <int value="2117485960" label="SupportPepperVideoDecoderDevAPI:disabled"/>
   <int value="2118287149" label="HelpAppSearchServiceIntegration:enabled"/>
