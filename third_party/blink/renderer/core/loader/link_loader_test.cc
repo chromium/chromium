@@ -465,28 +465,51 @@ struct ModulePreloadTestParams {
   const char* href;
   const char* nonce;
   const char* integrity;
+  const char* fetch_priority_hint;
   CrossOriginAttributeValue cross_origin;
   network::mojom::ReferrerPolicy referrer_policy;
   bool expecting_load;
   network::mojom::CredentialsMode expected_credentials_mode;
+  mojom::blink::FetchPriorityHint expected_fetch_priority_hint;
 };
 
 constexpr ModulePreloadTestParams kModulePreloadTestParams[] = {
-    {"", nullptr, nullptr, kCrossOriginAttributeNotSet,
+    {"", nullptr, nullptr, nullptr, kCrossOriginAttributeNotSet,
      network::mojom::ReferrerPolicy::kDefault, false,
-     network::mojom::CredentialsMode::kSameOrigin},
-    {"http://example.test/cat.js", nullptr, nullptr,
+     network::mojom::CredentialsMode::kSameOrigin,
+     mojom::blink::FetchPriorityHint::kAuto},
+    {"http://example.test/cat.js", nullptr, nullptr, nullptr,
      kCrossOriginAttributeNotSet, network::mojom::ReferrerPolicy::kDefault,
-     true, network::mojom::CredentialsMode::kSameOrigin},
-    {"http://example.test/cat.js", nullptr, nullptr,
+     true, network::mojom::CredentialsMode::kSameOrigin,
+     mojom::blink::FetchPriorityHint::kAuto},
+    {"http://example.test/cat.js", nullptr, nullptr, nullptr,
      kCrossOriginAttributeAnonymous, network::mojom::ReferrerPolicy::kDefault,
-     true, network::mojom::CredentialsMode::kSameOrigin},
-    {"http://example.test/cat.js", "nonce", nullptr,
+     true, network::mojom::CredentialsMode::kSameOrigin,
+     mojom::blink::FetchPriorityHint::kAuto},
+    {"http://example.test/cat.js", "nonce", nullptr, nullptr,
      kCrossOriginAttributeNotSet, network::mojom::ReferrerPolicy::kNever, true,
-     network::mojom::CredentialsMode::kSameOrigin},
-    {"http://example.test/cat.js", nullptr, "sha384-abc",
+     network::mojom::CredentialsMode::kSameOrigin,
+     mojom::blink::FetchPriorityHint::kAuto},
+    {"http://example.test/cat.js", nullptr, "sha384-abc", nullptr,
      kCrossOriginAttributeNotSet, network::mojom::ReferrerPolicy::kDefault,
-     true, network::mojom::CredentialsMode::kSameOrigin}};
+     true, network::mojom::CredentialsMode::kSameOrigin,
+     mojom::blink::FetchPriorityHint::kAuto},
+    {"http://example.test/cat.js", nullptr, nullptr, "auto",
+     kCrossOriginAttributeNotSet, network::mojom::ReferrerPolicy::kDefault,
+     true, network::mojom::CredentialsMode::kSameOrigin,
+     mojom::blink::FetchPriorityHint::kAuto},
+    {"http://example.test/cat.js", nullptr, nullptr, "low",
+     kCrossOriginAttributeNotSet, network::mojom::ReferrerPolicy::kDefault,
+     true, network::mojom::CredentialsMode::kSameOrigin,
+     mojom::blink::FetchPriorityHint::kLow},
+    {"http://example.test/cat.js", nullptr, nullptr, "high",
+     kCrossOriginAttributeNotSet, network::mojom::ReferrerPolicy::kDefault,
+     true, network::mojom::CredentialsMode::kSameOrigin,
+     mojom::blink::FetchPriorityHint::kHigh},
+    {"http://example.test/cat.js", nullptr, nullptr, "invalid",
+     kCrossOriginAttributeNotSet, network::mojom::ReferrerPolicy::kDefault,
+     true, network::mojom::CredentialsMode::kSameOrigin,
+     mojom::blink::FetchPriorityHint::kAuto}};
 
 class LinkLoaderModulePreloadTest
     : public testing::TestWithParam<ModulePreloadTestParams>,
@@ -497,7 +520,7 @@ class LinkLoaderModulePreloadTest
 
 class ModulePreloadTestModulator final : public DummyModulator {
  public:
-  ModulePreloadTestModulator(const ModulePreloadTestParams* params)
+  explicit ModulePreloadTestModulator(const ModulePreloadTestParams* params)
       : params_(params), fetched_(false) {}
 
   void FetchSingle(const ModuleScriptFetchRequest& request,
@@ -516,6 +539,8 @@ class ModulePreloadTestModulator final : public DummyModulator {
     EXPECT_EQ(params_->referrer_policy, request.Options().GetReferrerPolicy());
     EXPECT_EQ(params_->integrity,
               request.Options().GetIntegrityAttributeValue());
+    EXPECT_EQ(params_->expected_fetch_priority_hint,
+              request.Options().FetchPriorityHint());
     EXPECT_EQ(ModuleScriptCustomFetchType::kNone, custom_fetch_type);
   }
 
@@ -541,9 +566,9 @@ TEST_P(LinkLoaderModulePreloadTest, ModulePreload) {
   LinkLoadParameters params(
       LinkRelAttribute("modulepreload"), test_case.cross_origin,
       String() /* type */, String() /* as */, String() /* media */,
-      test_case.nonce, test_case.integrity, String(), test_case.referrer_policy,
-      href_url, String() /* image_srcset */, String() /* image_sizes */,
-      String() /* blocking */);
+      test_case.nonce, test_case.integrity, test_case.fetch_priority_hint,
+      test_case.referrer_policy, href_url, String() /* image_srcset */,
+      String() /* image_sizes */, String() /* blocking */);
   loader->LoadLink(params, dummy_page_holder->GetDocument());
   ASSERT_EQ(test_case.expecting_load, modulator->fetched());
 }

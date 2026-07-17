@@ -157,6 +157,12 @@ struct SingleTestCase {
      "preload", "", "", "low"},
     {"<simple.css>; rel=preload; fetchpriority=high", true, "simple.css",
      "preload", "", "", "high"},
+    {"<simple.js>; rel=modulepreload; fetchpriority=auto", true, "simple.js",
+     "modulepreload", "", "", "auto"},
+    {"<simple.js>; rel=modulepreload; fetchpriority=low", true, "simple.js",
+     "modulepreload", "", "", "low"},
+    {"<simple.js>; rel=modulepreload; fetchpriority=high", true, "simple.js",
+     "modulepreload", "", "", "high"},
 };
 
 void PrintTo(const SingleTestCase& test, std::ostream* os) {
