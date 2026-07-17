@@ -8,8 +8,8 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <vector>
 
-#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
@@ -32,7 +32,7 @@ struct ModelInfo {
       const base::FilePath::StringType& base_name) const;
 
   base::FilePath model_file_path;
-  base::flat_set<base::FilePath> additional_files;
+  std::vector<base::FilePath> additional_files;
   int64_t version;
   std::optional<proto::Any> model_metadata;
 };

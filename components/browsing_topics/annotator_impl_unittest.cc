@@ -4,6 +4,8 @@
 
 #include "components/browsing_topics/annotator_impl.h"
 
+#include <vector>
+
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -517,7 +519,7 @@ class BrowsingTopicsAnnotatorOverrideListTest
   }
 
   void SendModelWithAdditionalFilesToAnnotator(
-      const base::flat_set<base::FilePath>& additional_files) {
+      const std::vector<base::FilePath>& additional_files) {
     optimization_guide::proto::PageTopicsModelMetadata model_metadata;
     model_metadata.set_version(123);
     model_metadata.set_taxonomy_version(kTaxonomyVersionV2);

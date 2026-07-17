@@ -5,6 +5,7 @@
 #include "components/omnibox/browser/on_device_head_provider.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -74,8 +75,7 @@ class OnDeviceHeadProviderTest : public testing::Test,
     vocab_path = dir_path.AppendASCII("vocab_test.txt");
     ASSERT_TRUE(base::PathExists(vocab_path));
 
-    base::flat_set<base::FilePath> additional_files;
-    additional_files.insert(vocab_path);
+    std::vector<base::FilePath> additional_files = {vocab_path};
 
     OnDeviceTailModelExecutor::ModelMetadata metadata;
     metadata.mutable_lstm_model_params()->set_num_layer(1);

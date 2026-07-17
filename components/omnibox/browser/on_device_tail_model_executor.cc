@@ -220,7 +220,7 @@ bool OnDeviceTailModelExecutor::Init() {
 
 bool OnDeviceTailModelExecutor::Init(
     const base::FilePath& model_filepath,
-    const base::flat_set<base::FilePath>& additional_files,
+    const std::vector<base::FilePath>& additional_files,
     const ModelMetadata& metadata) {
   base::FilePath vocab_filepath, badword_hashes_filepath,
       bad_substrings_filepath;

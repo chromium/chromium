@@ -5,6 +5,7 @@
 #include "components/safe_browsing/core/browser/client_side_detection_service_base.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -61,7 +62,7 @@ class ClientSidePhishingModelObserverTracker
   void NotifyModelFileUpdate(
       optimization_guide::proto::OptimizationTarget optimization_target,
       const base::FilePath& model_file_path,
-      const base::flat_set<base::FilePath>& additional_files_path) {
+      const std::vector<base::FilePath>& additional_files_path) {
     if (optimization_target ==
         optimization_guide::proto::OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING) {
       auto model_metadata = optimization_guide::TestModelInfoBuilder()
@@ -91,9 +92,8 @@ class ClientSideDetectionServiceBaseTest : public testing::Test {
         std::make_unique<ClientSidePhishingModelObserverTracker>();
   }
 
-  void ValidateModel(
-      const base::FilePath& model_file_path,
-      const base::flat_set<base::FilePath>& additional_file_path) {
+  void ValidateModel(const base::FilePath& model_file_path,
+                     const std::vector<base::FilePath>& additional_file_path) {
     model_observer_tracker_->NotifyModelFileUpdate(
         optimization_guide::proto::OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING,
         model_file_path, additional_file_path);

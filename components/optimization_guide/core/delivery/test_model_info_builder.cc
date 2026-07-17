@@ -5,6 +5,7 @@
 #include "components/optimization_guide/core/delivery/test_model_info_builder.h"
 
 #include <utility>
+#include <vector>
 
 #include "build/build_config.h"
 
@@ -38,14 +39,14 @@ TestModelInfoBuilder& TestModelInfoBuilder::SetModelFilePath(
 }
 
 TestModelInfoBuilder& TestModelInfoBuilder::SetAdditionalFiles(
-    const base::flat_set<base::FilePath>& additional_files) {
-  additional_files_ = additional_files;
+    std::vector<base::FilePath> additional_files) {
+  additional_files_ = std::move(additional_files);
   return *this;
 }
 
 TestModelInfoBuilder& TestModelInfoBuilder::RemoveAdditionalFileWithBasename(
     const base::FilePath::StringType& base_name) {
-  base::EraseIf(additional_files_, [&](const base::FilePath& path) {
+  std::erase_if(additional_files_, [&](const base::FilePath& path) {
     return path.BaseName().value() == base_name;
   });
   return *this;

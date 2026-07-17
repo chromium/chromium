@@ -7,6 +7,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -78,7 +79,7 @@ class ClientSidePhishingModelObserverTracker
   void NotifyModelFileUpdate(
       optimization_guide::proto::OptimizationTarget optimization_target,
       const base::FilePath& model_file_path,
-      const base::flat_set<base::FilePath>& additional_files_path) {
+      const std::vector<base::FilePath>& additional_files_path) {
     if (optimization_target ==
         optimization_guide::proto::OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING) {
       optimization_guide::proto::ClientSidePhishingModelMetadata
@@ -151,9 +152,8 @@ class ClientSidePhishingModelTest : public testing::Test {
     }
   }
 
-  void ValidateModel(
-      const base::FilePath& model_file_path,
-      const base::flat_set<base::FilePath>& additional_file_path) {
+  void ValidateModel(const base::FilePath& model_file_path,
+                     const std::vector<base::FilePath>& additional_file_path) {
     bool done = false;
     service()->SetModelDoneCallbackForTesting(
         base::BindOnce([](bool* done) { *done = true; }, &done));
@@ -165,7 +165,7 @@ class ClientSidePhishingModelTest : public testing::Test {
 
   void ValidateImageEmbeddingModel(
       const base::FilePath& image_embedding_model_file_path,
-      const base::flat_set<base::FilePath>& additional_file_path = {}) {
+      const std::vector<base::FilePath>& additional_file_path = {}) {
     bool done = false;
     service()->SetModelDoneCallbackForTesting(
         base::BindOnce([](bool* done) { *done = true; }, &done));

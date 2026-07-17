@@ -6,9 +6,9 @@
 
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -51,7 +51,7 @@ constexpr base::MemoryConsumerTraits kMemoryConsumerTraits(
 void InitializeTailModelExecutor(
     OnDeviceTailModelExecutor* executor,
     const base::FilePath& model_file,
-    const base::flat_set<base::FilePath>& additional_files,
+    const std::vector<base::FilePath>& additional_files,
     const optimization_guide::proto::OnDeviceTailSuggestModelMetadata&
         metadata) {
   if (executor == nullptr) {

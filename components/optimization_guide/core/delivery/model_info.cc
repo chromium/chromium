@@ -5,6 +5,7 @@
 #include "components/optimization_guide/core/delivery/model_info.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
@@ -26,7 +27,8 @@ std::optional<ModelInfo> ModelInfo::CreateFromProto(
     return std::nullopt;
   }
 
-  base::flat_set<base::FilePath> additional_files;
+  std::vector<base::FilePath> additional_files;
+  additional_files.reserve(model.model_info().additional_files_size());
   for (const proto::AdditionalModelFile& additional_file :
        model.model_info().additional_files()) {
     std::optional<base::FilePath> additional_file_path =
@@ -37,7 +39,7 @@ std::optional<ModelInfo> ModelInfo::CreateFromProto(
     if (!additional_file_path->IsAbsolute()) {
       NOTREACHED() << FilePathToString(*additional_file_path);
     }
-    additional_files.insert(std::move(*additional_file_path));
+    additional_files.push_back(std::move(*additional_file_path));
   }
 
   std::optional<proto::Any> model_metadata;

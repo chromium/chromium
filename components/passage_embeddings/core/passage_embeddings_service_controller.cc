@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -119,7 +120,7 @@ bool PassageEmbeddingsServiceController::MaybeUpdateModelInfo(
   }
 
   // The only additional file should be the sentencepiece model.
-  const base::flat_set<base::FilePath>& additional_files =
+  const std::vector<base::FilePath>& additional_files =
       model_info->additional_files;
   if (additional_files.size() != 1u) {
     logger.set_status(EmbeddingsModelInfoStatus::kInvalidAdditionalFiles);
@@ -144,7 +145,7 @@ bool PassageEmbeddingsServiceController::MaybeUpdateModelInfo(
   model_version_ = model_info->version;
   model_metadata_ = embeddings_metadata;
   embeddings_model_path_ = model_info->model_file_path;
-  sp_model_path_ = *(additional_files.begin());
+  sp_model_path_ = additional_files[0];
 
   CHECK(IsModelAvailable());
   logger.set_status(EmbeddingsModelInfoStatus::kValid);

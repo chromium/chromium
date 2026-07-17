@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -95,7 +96,7 @@ base::File LoadImageEmbeddingModelFile(const base::FilePath& model_file_path) {
 std::pair<base::File, std::optional<EmbeddingList>>
 LoadImageEmbeddingModelFileAndEmbeddingList(
     const base::FilePath& model_file_path,
-    base::flat_set<base::FilePath> additional_files) {
+    const std::vector<base::FilePath>& additional_files) {
   base::File image_embedding_file =
       LoadImageEmbeddingModelFile(model_file_path);
   // No need to attempt loading |additional_files| with no image embedding file.
@@ -108,7 +109,7 @@ LoadImageEmbeddingModelFileAndEmbeddingList(
     return {std::move(image_embedding_file), std::nullopt};
   }
   // There should only be one additional file.
-  const base::FilePath& target_list_file_path = *additional_files.begin();
+  const base::FilePath& target_list_file_path = additional_files[0];
 
   // Read the file in.
   std::string file_content;
@@ -138,7 +139,7 @@ LoadImageEmbeddingModelFileAndEmbeddingList(
 // Load the model file at the provided file path.
 std::pair<std::string, base::File> LoadModelAndVisualTfLiteFile(
     const base::FilePath& model_file_path,
-    base::flat_set<base::FilePath> additional_files) {
+    const std::vector<base::FilePath>& additional_files) {
   if (!base::PathExists(model_file_path)) {
     VLOG(0) << "Model path does not exist. Returning empty pair. Given path is "
             << model_file_path;
@@ -153,17 +154,12 @@ std::pair<std::string, base::File> LoadModelAndVisualTfLiteFile(
     return std::pair<std::string, base::File>();
   }
 
-  std::optional<base::FilePath> visual_tflite_path = std::nullopt;
-
-  for (const base::FilePath& path : additional_files) {
-    // There should only be one loop after above check
-    DCHECK(path.IsAbsolute());
-    visual_tflite_path = path;
-  }
+  const base::FilePath& visual_tflite_path = additional_files[0];
+  DCHECK(visual_tflite_path.IsAbsolute());
 
   base::File model(model_file_path,
                    base::File::FLAG_OPEN | base::File::FLAG_READ);
-  base::File tf_lite(*visual_tflite_path,
+  base::File tf_lite(visual_tflite_path,
                      base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!model.IsValid() || !tf_lite.IsValid()) {
     VLOG(2) << "Failed to override the model and/or tf_lite file.";
@@ -867,12 +863,10 @@ void ClientSidePhishingModel::SetModelAndVisualTfLiteForTesting(
     const base::FilePath& model_file_path,
     const base::FilePath& visual_tf_lite_model_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::flat_set<base::FilePath> additional_files;
-  additional_files.insert(visual_tf_lite_model_path);
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&LoadModelAndVisualTfLiteFile, model_file_path,
-                     additional_files),
+                     std::vector<base::FilePath>{visual_tf_lite_model_path}),
       base::BindOnce(&ClientSidePhishingModel::OnModelAndVisualTfLiteFileLoaded,
                      weak_ptr_factory_.GetWeakPtr(), std::nullopt));
 }

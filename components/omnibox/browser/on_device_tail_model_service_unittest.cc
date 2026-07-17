@@ -5,8 +5,8 @@
 #include "components/omnibox/browser/on_device_tail_model_service.h"
 
 #include <optional>
+#include <vector>
 
-#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory_coordinator/test_memory_consumer_registry.h"
@@ -51,8 +51,8 @@ class OnDeviceTailModelServiceTest : public ::testing::Test {
     base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir);
     test_data_dir = test_data_dir.AppendASCII("components/test/data/omnibox");
 
-    base::flat_set<base::FilePath> additional_files;
-    additional_files.insert(test_data_dir.AppendASCII(kVocabFilename));
+    std::vector<base::FilePath> additional_files = {
+        test_data_dir.AppendASCII(kVocabFilename)};
 
     optimization_guide::proto::OnDeviceTailSuggestModelMetadata metadata;
     metadata.mutable_lstm_model_params()->set_num_layer(kNumLayer);

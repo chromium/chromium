@@ -6,8 +6,8 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_DELIVERY_TEST_MODEL_INFO_BUILDER_H_
 
 #include <optional>
+#include <vector>
 
-#include "base/containers/flat_set.h"
 #include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 
@@ -32,7 +32,7 @@ class TestModelInfoBuilder {
   TestModelInfoBuilder& SetModelFilePath(const base::FilePath& file_path);
 
   TestModelInfoBuilder& SetAdditionalFiles(
-      const base::flat_set<base::FilePath>& additional_files);
+      std::vector<base::FilePath> additional_files);
 
   TestModelInfoBuilder& RemoveAdditionalFileWithBasename(
       const base::FilePath::StringType& base_name);
@@ -46,7 +46,7 @@ class TestModelInfoBuilder {
 
  private:
   base::FilePath model_file_path_;
-  base::flat_set<base::FilePath> additional_files_;
+  std::vector<base::FilePath> additional_files_;
   int64_t version_;
   std::optional<proto::Any> model_metadata_;
 };

@@ -58,7 +58,7 @@ class OnDeviceTailModelExecutor {
   // Initializes the model executor.
   bool Init();
   bool Init(const base::FilePath& model_filepath,
-            const base::flat_set<base::FilePath>& additional_files,
+            const std::vector<base::FilePath>& additional_files,
             const ModelMetadata& metadata);
 
   // Returns whether the executor is initialized.

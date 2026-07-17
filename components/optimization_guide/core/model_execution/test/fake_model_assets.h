@@ -7,8 +7,8 @@
 
 #include <cstdint>
 #include <memory>
+#include <vector>
 
-#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/values.h"
@@ -132,7 +132,7 @@ class FakeSafetyModelAsset {
 
   const ModelInfo& model_info() const { return model_info_; }
 
-  base::flat_set<base::FilePath> AdditionalFiles() const {
+  const std::vector<base::FilePath>& AdditionalFiles() const {
     return model_info_.additional_files;
   }
 
