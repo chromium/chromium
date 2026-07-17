@@ -8,26 +8,8 @@
 
 namespace syncer {
 
-namespace {
-constexpr bool IS_AUTOFILL_AI_PLATFORM = BUILDFLAG(IS_CHROMEOS) ||
-                                         BUILDFLAG(IS_LINUX) ||
-                                         BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN);
-}  // namespace
-
 BASE_FEATURE(kDeferredSyncStartupCustomDelay,
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSyncAccountSettings,
-             IS_AUTOFILL_AI_PLATFORM ? base::FEATURE_ENABLED_BY_DEFAULT
-                                     : base::FEATURE_DISABLED_BY_DEFAULT);
-
-#if BUILDFLAG(IS_IOS)
-BASE_FEATURE(kSyncAutofillValuable, base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
-BASE_FEATURE(kSyncAutofillValuableMetadata,
-             IS_AUTOFILL_AI_PLATFORM ? base::FEATURE_ENABLED_BY_DEFAULT
-                                     : base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSyncSharedTabGroupAccountData, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -108,14 +90,29 @@ bool IsReplaceSyncPromosWithSignInPromosEnabled() {
              kReplaceSyncPromosWithSigninPromosNewSignin);
 }
 
+// Like DECLARE_SYNC_AUTOFILL_AI_FEATURE but for the definition.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#define DEFINE_SYNC_AUTOFILL_AI_FEATURE(feature_name) \
+  BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(             \
+      feature_name, base::FEATURE_ENABLED_FOR_COUNTRIES, "us")
+#else
+#define DEFINE_SYNC_AUTOFILL_AI_FEATURE(feature_name) \
+  BASE_FEATURE(feature_name, base::FEATURE_ENABLED_BY_DEFAULT)
+#endif
 
-BASE_FEATURE(kSyncWalletFlightReservations,
-             IS_AUTOFILL_AI_PLATFORM ? base::FEATURE_ENABLED_BY_DEFAULT
-                                     : base::FEATURE_DISABLED_BY_DEFAULT);
+DEFINE_SYNC_AUTOFILL_AI_FEATURE(kSyncAccountSettings);
 
-BASE_FEATURE(kSyncWalletVehicleRegistrations,
-             IS_AUTOFILL_AI_PLATFORM ? base::FEATURE_ENABLED_BY_DEFAULT
-                                     : base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_IOS)
+DEFINE_SYNC_AUTOFILL_AI_FEATURE(kSyncAutofillValuable);
+#endif
+
+DEFINE_SYNC_AUTOFILL_AI_FEATURE(kSyncAutofillValuableMetadata);
+
+DEFINE_SYNC_AUTOFILL_AI_FEATURE(kSyncWalletFlightReservations);
+
+DEFINE_SYNC_AUTOFILL_AI_FEATURE(kSyncWalletVehicleRegistrations);
+
+#undef DEFINE_SYNC_AUTOFILL_AI_FEATURE
 
 BASE_FEATURE(kSpellcheckSeparateLocalAndAccountDictionaries,
              base::FEATURE_DISABLED_BY_DEFAULT);

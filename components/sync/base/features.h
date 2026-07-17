@@ -21,17 +21,6 @@ inline constexpr base::FeatureParam<int>
         &kDeferredSyncStartupCustomDelay,
         "DeferredSyncStartupCustomDelayInSeconds", 1};
 
-// Enables syncing of settings from the user's account.
-BASE_DECLARE_FEATURE(kSyncAccountSettings);
-
-// Enables syncing of valuables from the user's account.
-#if BUILDFLAG(IS_IOS)
-BASE_DECLARE_FEATURE(kSyncAutofillValuable);
-#endif
-
-// Enables syncing of usage metadata from Google Wallet passes.
-BASE_DECLARE_FEATURE(kSyncAutofillValuableMetadata);
-
 // Enables syncing account-local metadata for shared tab groups.
 BASE_DECLARE_FEATURE(kSyncSharedTabGroupAccountData);
 
@@ -100,11 +89,34 @@ BASE_DECLARE_FEATURE(kReplaceSyncPromosWithSigninPromosNewSignin);
 // prefer using this function over checking the feature flags directly.
 bool IsReplaceSyncPromosWithSignInPromosEnabled();
 
+// AutofillAi is launched globally on desktop, but restricted to certain
+// countries on mobile.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#define DECLARE_SYNC_AUTOFILL_AI_FEATURE(feature_name) \
+  BASE_DECLARE_FEATURE_WITH_COUNTRY_RESTRICTIONS(feature_name)
+#else
+#define DECLARE_SYNC_AUTOFILL_AI_FEATURE(feature_name) \
+  BASE_DECLARE_FEATURE(feature_name)
+#endif
+
+// Enables syncing of settings from the user's account.
+DECLARE_SYNC_AUTOFILL_AI_FEATURE(kSyncAccountSettings);
+
+// Enables syncing of valuables from the user's account.
+#if BUILDFLAG(IS_IOS)
+DECLARE_SYNC_AUTOFILL_AI_FEATURE(kSyncAutofillValuable);
+#endif
+
+// Enables syncing of usage metadata from Google Wallet passes.
+DECLARE_SYNC_AUTOFILL_AI_FEATURE(kSyncAutofillValuableMetadata);
+
 // Enables syncing of flight reservations coming from Google Wallet.
-BASE_DECLARE_FEATURE(kSyncWalletFlightReservations);
+DECLARE_SYNC_AUTOFILL_AI_FEATURE(kSyncWalletFlightReservations);
 
 // Enables syncing of vehicle registrations coming from Google Wallet.
-BASE_DECLARE_FEATURE(kSyncWalletVehicleRegistrations);
+DECLARE_SYNC_AUTOFILL_AI_FEATURE(kSyncWalletVehicleRegistrations);
+
+#undef DECLARE_SYNC_AUTOFILL_AI_FEATURE
 
 // If enabled, the spellcheck custom dictionary will keep the account dictionary
 // separate from the local dictionary.

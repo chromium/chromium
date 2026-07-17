@@ -8,24 +8,23 @@
 
 namespace autofill::features {
 
-namespace {
+// The Wallet private passes integration is only launched in these countries.
+#define WALLET_SUPPORTED_COUNTRIES "us"
 
-constexpr bool IS_AUTOFILL_AI_PLATFORM = BUILDFLAG(IS_CHROMEOS) ||
-                                         BUILDFLAG(IS_LINUX) ||
-                                         BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN);
-
-// Like DECLARE_WALLET_FEATURE(), but for the definition.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN)
-#define DEFINE_WALLET_FEATURE(feature_name) \
-  BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(   \
-      feature_name, base::FEATURE_ENABLED_FOR_COUNTRIES, "us")
+// Like DECLARE_FEATURE_WITH_MOBILE_COUNTRY_RESTRICTION but for the definition.
+// Used for certain AutofillAi features, which are launched globally on desktop
+// but only in WALLET_SUPPORTED_COUNTRIES on mobile.
+// Note that even on desktop, the Wallet private passes integration is only
+// launched in WALLET_SUPPORTED_COUNTRIES.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#define DEFINE_FEATURE_WITH_MOBILE_COUNTRY_RESTRICTION(feature_name)          \
+  BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(feature_name,                        \
+                                         base::FEATURE_ENABLED_FOR_COUNTRIES, \
+                                         WALLET_SUPPORTED_COUNTRIES)
 #else
-#define DEFINE_WALLET_FEATURE(feature_name) \
-  BASE_FEATURE(feature_name, base::FEATURE_DISABLED_BY_DEFAULT)
+#define DEFINE_FEATURE_WITH_MOBILE_COUNTRY_RESTRICTION(feature_name) \
+  BASE_FEATURE(feature_name, base::FEATURE_ENABLED_BY_DEFAULT)
 #endif
-
-}  // namespace
 
 BASE_FEATURE(kActorFormFillingServiceEnableAddress,
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -171,14 +170,10 @@ BASE_FEATURE(kAutofillAiAlwaysTriggerServerModel,
 // If enabled Autofill AI becomes available by default and the previous enable
 // toggle controls whether online model runs and MQLS logging are allowed.
 // TODO(crbug.com/440488776): Remove once clean up happens.
-BASE_FEATURE(kAutofillAiAvailableByDefault,
-             IS_AUTOFILL_AI_PLATFORM ? base::FEATURE_ENABLED_BY_DEFAULT
-                                     : base::FEATURE_DISABLED_BY_DEFAULT);
+DEFINE_FEATURE_WITH_MOBILE_COUNTRY_RESTRICTION(kAutofillAiAvailableByDefault);
 
 // If enabled, AutofillAi entities will be deduped on every major milestone.
-BASE_FEATURE(kAutofillAiDedupeEntities,
-             IS_AUTOFILL_AI_PLATFORM ? base::FEATURE_ENABLED_BY_DEFAULT
-                                     : base::FEATURE_DISABLED_BY_DEFAULT);
+DEFINE_FEATURE_WITH_MOBILE_COUNTRY_RESTRICTION(kAutofillAiDedupeEntities);
 
 #if BUILDFLAG(IS_ANDROID)
 // When enabled, the entity save/update prompt displays an edit button that
@@ -221,7 +216,9 @@ BASE_FEATURE_PARAM(std::string,
 
 // If enabled, Autofill AI will use a new update prompt on Desktop that shows
 // both the previous and the new value of an updated entity attribute.
-DEFINE_WALLET_FEATURE(kAutofillAiNewUpdatePrompt);
+BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(kAutofillAiNewUpdatePrompt,
+                                       base::FEATURE_ENABLED_FOR_COUNTRIES,
+                                       WALLET_SUPPORTED_COUNTRIES);
 
 // If enabled, Autofill AI filling suggestion do not have an icon.
 BASE_FEATURE(kAutofillAiNoFillingIconsExperiment,
@@ -246,9 +243,7 @@ BASE_FEATURE(kAutofillAiPrivateAiShadowMetric,
 // fields. As part of this feature sensitive fields are also obfuscated during
 // suggestion generation time.
 // TODO(crbug.com/468236932): Remove once feature is launched.
-BASE_FEATURE(kAutofillAiReauthRequired,
-             IS_AUTOFILL_AI_PLATFORM ? base::FEATURE_ENABLED_BY_DEFAULT
-                                     : base::FEATURE_DISABLED_BY_DEFAULT);
+DEFINE_FEATURE_WITH_MOBILE_COUNTRY_RESTRICTION(kAutofillAiReauthRequired);
 
 // When enabled, a HaTS survey is shown after the save prompt for a walletable
 // entity was interacted with.
@@ -268,9 +263,7 @@ BASE_FEATURE_PARAM(
 
 // If enabled, the client may trigger the server model for AutofillAI type
 // predictions.
-BASE_FEATURE(kAutofillAiServerModel,
-             IS_AUTOFILL_AI_PLATFORM ? base::FEATURE_ENABLED_BY_DEFAULT
-                                     : base::FEATURE_DISABLED_BY_DEFAULT);
+DEFINE_FEATURE_WITH_MOBILE_COUNTRY_RESTRICTION(kAutofillAiServerModel);
 
 // The maximum duration for which an AutofillAI server model response is kept in
 // the local cache. NOTE: It is advisable to choose a value that is at least as
@@ -341,22 +334,22 @@ BASE_FEATURE(kAutofillAiUsePrivateAi, base::FEATURE_DISABLED_BY_DEFAULT);
 // If enabled, votes for the format of flight number fields are uploaded. For
 // example, if there is a flight number "LH89" on file, a submitted value of
 // "89" on a field with type `FLIGHT_RESERVATION_FLIGHT_NUMBER` uploads "N".
-BASE_FEATURE(kAutofillAiVoteForFormatStringsForFlightNumbers,
-             IS_AUTOFILL_AI_PLATFORM ? base::FEATURE_ENABLED_BY_DEFAULT
-                                     : base::FEATURE_DISABLED_BY_DEFAULT);
+DEFINE_FEATURE_WITH_MOBILE_COUNTRY_RESTRICTION(
+    kAutofillAiVoteForFormatStringsForFlightNumbers);
 
 // If enabled, AutofillAi supports flight reservation entities from Google
 // Wallet.
-BASE_FEATURE(kAutofillAiWalletFlightReservation,
-             IS_AUTOFILL_AI_PLATFORM ? base::FEATURE_ENABLED_BY_DEFAULT
-                                     : base::FEATURE_DISABLED_BY_DEFAULT);
+DEFINE_FEATURE_WITH_MOBILE_COUNTRY_RESTRICTION(
+    kAutofillAiWalletFlightReservation);
 
 // Enables the 2026 Autofill AI Wallet Pass Branding Updates.
 BASE_FEATURE(kAutofillAiWalletPassBranding2026,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, AutofillAi supports private passes entities from Google Wallet.
-DEFINE_WALLET_FEATURE(kAutofillAiWalletPrivatePasses);
+BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(kAutofillAiWalletPrivatePasses,
+                                       base::FEATURE_ENABLED_FOR_COUNTRIES,
+                                       WALLET_SUPPORTED_COUNTRIES);
 
 // When enabled, account-related eligibility criteria (minor status, location)
 // are determined based on a capability, rather than approximated through
@@ -367,21 +360,20 @@ BASE_FEATURE(kAutofillAiWalletPrivatePassesCapability,
 
 // If enabled, Wallet private pass entries in settings link to their pass
 // details page rather than the generic pass overview page.
-DEFINE_WALLET_FEATURE(kAutofillAiWalletPrivatePassesDeepLink);
+BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(kAutofillAiWalletPrivatePassesDeepLink,
+                                       base::FEATURE_ENABLED_FOR_COUNTRIES,
+                                       WALLET_SUPPORTED_COUNTRIES);
 
 // If enabled, Autofill AI Shopping entities are surfaced from Google Wallet.
 BASE_FEATURE(kAutofillAiWalletShopping, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, AutofillAi supports vehicle registration entities from Google
 // Wallet.
-BASE_FEATURE(kAutofillAiWalletVehicleRegistration,
-             IS_AUTOFILL_AI_PLATFORM ? base::FEATURE_ENABLED_BY_DEFAULT
-                                     : base::FEATURE_DISABLED_BY_DEFAULT);
+DEFINE_FEATURE_WITH_MOBILE_COUNTRY_RESTRICTION(
+    kAutofillAiWalletVehicleRegistration);
 
 // Enables the second iteration AutofillAI.
-BASE_FEATURE(kAutofillAiWithDataSchema,
-             IS_AUTOFILL_AI_PLATFORM ? base::FEATURE_ENABLED_BY_DEFAULT
-                                     : base::FEATURE_DISABLED_BY_DEFAULT);
+DEFINE_FEATURE_WITH_MOBILE_COUNTRY_RESTRICTION(kAutofillAiWithDataSchema);
 
 // When enabled, autofill will fill not skip filling fields that had an initial
 // value which was modified.
@@ -1047,7 +1039,10 @@ BASE_FEATURE(kShowSugesstionsOnAlreadyAutofilledUnrecognized,
 // When enabled, "Manage information" menu item for enhanced autofill will
 // redirect user either to "/travel" or "/identityDocs" pages instead of
 // "/yourSavedInfo" always.
-DEFINE_WALLET_FEATURE(kSuggestionManageButtonSplitForEnhancedAutofill);
+BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(
+    kSuggestionManageButtonSplitForEnhancedAutofill,
+    base::FEATURE_ENABLED_FOR_COUNTRIES,
+    WALLET_SUPPORTED_COUNTRIES);
 
 // When enabled, the address add/edit editor in the payments request would be
 // removed and instead, the address editor from the settings will be used.
@@ -1059,5 +1054,7 @@ BASE_FEATURE(kUseSettingsAddressEditorInPaymentsRequest,
 // settings.
 BASE_FEATURE(kYourSavedInfoSettingsPage, base::FEATURE_ENABLED_BY_DEFAULT);
 
-#undef DEFINE_WALLET_FEATURE
+#undef WALLET_SUPPORTED_COUNTRIES
+#undef DEFINE_FEATURE_WITH_MOBILE_COUNTRY_RESTRICTION
+
 }  // namespace autofill::features

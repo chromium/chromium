@@ -81,7 +81,7 @@ BASE_DECLARE_FEATURE(kAutofillReportFormSubmissionErrors);
 BASE_DECLARE_FEATURE(kAutofillStickyInfobarIos);
 
 // Enables support for <input type="date"> fields in Autofill.
-BASE_DECLARE_FEATURE(kAutofillSupportDateInput);
+BASE_DECLARE_FEATURE_WITH_COUNTRY_RESTRICTIONS(kAutofillSupportDateInput);
 
 // Throttles the document form scanning done for taking recurrent snapshots of
 // the forms in the renderer by using scheduled batches. This doesn't throttle
