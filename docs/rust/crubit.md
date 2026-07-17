@@ -11,8 +11,9 @@ following caveats:
 
 *   **Some directories cannot use Crubit:** The Android project's build system
     does not support Crubit at this point. Consequently, Crubit cannot be
-    used in `//base`, `//net`, or other directories that
-    [Cronet](../../components/cronet/README.md) depends on.
+    used in `//base`, `//net`, or
+    [other directories](https://source.chromium.org/chromium/chromium/src/+/main:components/cronet/android/dependencies.txt)
+    that [Cronet](../../components/cronet/README.md) depends on.
     See also https://crbug.com/535682335
 *   **2nd-party project limitations:** Projects like PDFium or V8 currently
     support non-Chromium clients and alternative toolchains that may lack
