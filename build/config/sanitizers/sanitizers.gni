@@ -226,6 +226,8 @@ if (!is_a_target_toolchain || toolchain_for_rust_host_build_tools) {
   is_ubsan_any = false
   msan_track_origins = 0
   sanitizer_coverage_flags = ""
+  sanitizer_coverage_allowlist = ""
+  sanitizer_coverage_ignorelist = ""
   use_centipede = false
   use_cfi_diag = false
   use_cfi_recover = false
