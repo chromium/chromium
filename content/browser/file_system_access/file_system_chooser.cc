@@ -388,12 +388,14 @@ bool FileSystemChooser::IsShellIntegratedExtension(
   // https://crbug.com/1227995, respectively). '.local' files are used by
   // Windows to determine which DLLs to load for an application. '.url' files
   // can be used to read arbirtary files (see https://crbug.com/1307930).
+  // LINT.IfChange(ShellIntegratedExtensions)
   if ((extension_lower == FILE_PATH_LITERAL("lnk")) ||
       (extension_lower == FILE_PATH_LITERAL("local")) ||
       (extension_lower == FILE_PATH_LITERAL("scf")) ||
       (extension_lower == FILE_PATH_LITERAL("url"))) {
     return true;
   }
+  // LINT.ThenChange(//net/base/filename_util_internal.cc:ShellIntegratedExtensions)
 
   // Setting a file's extension to a CLSID may conceal its actual file type on
   // some Windows versions (see https://nvd.nist.gov/vuln/detail/CVE-2004-0420).

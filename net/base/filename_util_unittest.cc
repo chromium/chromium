@@ -109,6 +109,8 @@ constexpr const base::FilePath::CharType* kUnsafePortableBasenames[] = {
     FILE_PATH_LITERAL(" Computer"),
     FILE_PATH_LITERAL("My Computer.{a}"),
     FILE_PATH_LITERAL("My Computer.{20D04FE0-3AEA-1069-A2D8-08002B30309D}"),
+    FILE_PATH_LITERAL("harmless.scf"),
+    FILE_PATH_LITERAL("harmless.url"),
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     FILE_PATH_LITERAL("a\\a"),
 #endif
@@ -355,41 +357,45 @@ TEST(FilenameUtilTest, GenerateSafeFileName) {
     const char* filename;
     const char* expected_filename;
   } safe_tests[] = {
-    {__LINE__, "text/html", "bar.htm", "bar.htm"},
-    {__LINE__, "text/html", "bar.html", "bar.html"},
-    {__LINE__, "application/x-chrome-extension", "bar", "bar.crx"},
-    {__LINE__, "image/png", "bar.html", "bar.html"},
-    {__LINE__, "text/html", "bar.exe", "bar.exe"},
-    {__LINE__, "image/gif", "bar.exe", "bar.exe"},
-    {__LINE__, "text/html", "google.com", "google.com"},
-    // Allow extension synonyms.
-    {__LINE__, "image/jpeg", "bar.jpg", "bar.jpg"},
-    {__LINE__, "image/jpeg", "bar.jpeg", "bar.jpeg"},
+      {__LINE__, "text/html", "bar.htm", "bar.htm"},
+      {__LINE__, "text/html", "bar.html", "bar.html"},
+      {__LINE__, "application/x-chrome-extension", "bar", "bar.crx"},
+      {__LINE__, "image/png", "bar.html", "bar.html"},
+      {__LINE__, "text/html", "bar.exe", "bar.exe"},
+      {__LINE__, "image/gif", "bar.exe", "bar.exe"},
+      {__LINE__, "text/html", "google.com", "google.com"},
+      // Allow extension synonyms.
+      {__LINE__, "image/jpeg", "bar.jpg", "bar.jpg"},
+      {__LINE__, "image/jpeg", "bar.jpeg", "bar.jpeg"},
 
 #if BUILDFLAG(IS_WIN)
-    // Device names
-    {__LINE__, "text/html", "con.htm", "_con.htm"},
-    {__LINE__, "text/html", "lpt1.htm", "_lpt1.htm"},
-    {__LINE__, "application/x-chrome-extension", "con", "_con.crx"},
+      // Device names
+      {__LINE__, "text/html", "con.htm", "_con.htm"},
+      {__LINE__, "text/html", "lpt1.htm", "_lpt1.htm"},
+      {__LINE__, "application/x-chrome-extension", "con", "_con.crx"},
 
-    // Looks like foo.{GUID} which get treated as namespace mounts on Windows.
-    {__LINE__, "text/html", "harmless.{not-really-this-may-be-a-guid}",
-     "harmless.download"},
-    {__LINE__, "text/html", "harmless.{mismatched-", "harmless.{mismatched-"},
+      // Looks like foo.{GUID} which get treated as namespace mounts on Windows.
+      {__LINE__, "text/html", "harmless.{not-really-this-may-be-a-guid}",
+       "harmless.download"},
+      {__LINE__, "text/html", "harmless.{mismatched-", "harmless.{mismatched-"},
 
-    // Dangerous extensions
-    {__LINE__, "text/html", "harmless.local", "harmless.download"},
-    {__LINE__, "text/html", "harmless.lnk", "harmless.download"},
+      // Dangerous extensions
+      {__LINE__, "text/html", "harmless.local", "harmless.download"},
+      {__LINE__, "text/html", "harmless.lnk", "harmless.download"},
+      {__LINE__, "text/html", "harmless.scf", "harmless.download"},
+      {__LINE__, "text/html", "harmless.url", "harmless.download"},
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-    // On Posix, none of the above set is particularly dangerous.
-    {__LINE__, "text/html", "con.htm", "con.htm"},
-    {__LINE__, "text/html", "lpt1.htm", "lpt1.htm"},
-    {__LINE__, "application/x-chrome-extension", "con", "con.crx"},
-    {__LINE__, "text/html", "harmless.{not-really-this-may-be-a-guid}",
-     "harmless.{not-really-this-may-be-a-guid}"},
-    {__LINE__, "text/html", "harmless.{mismatched-", "harmless.{mismatched-"},
-    {__LINE__, "text/html", "harmless.local", "harmless.local"},
-    {__LINE__, "text/html", "harmless.lnk", "harmless.lnk"},
+      // On Posix, none of the above set is particularly dangerous.
+      {__LINE__, "text/html", "con.htm", "con.htm"},
+      {__LINE__, "text/html", "lpt1.htm", "lpt1.htm"},
+      {__LINE__, "application/x-chrome-extension", "con", "con.crx"},
+      {__LINE__, "text/html", "harmless.{not-really-this-may-be-a-guid}",
+       "harmless.{not-really-this-may-be-a-guid}"},
+      {__LINE__, "text/html", "harmless.{mismatched-", "harmless.{mismatched-"},
+      {__LINE__, "text/html", "harmless.local", "harmless.local"},
+      {__LINE__, "text/html", "harmless.lnk", "harmless.lnk"},
+      {__LINE__, "text/html", "harmless.scf", "harmless.scf"},
+      {__LINE__, "text/html", "harmless.url", "harmless.url"},
 #endif  // BUILDFLAG(IS_WIN)
   };
 

@@ -155,12 +155,20 @@ std::string GetFileNameFromURL(const GURL& url,
 bool IsShellIntegratedExtension(const base::FilePath::StringType& extension) {
   base::FilePath::StringType extension_lower = base::ToLowerASCII(extension);
 
-  // .lnk files may be used to execute arbitrary code (see
-  // https://nvd.nist.gov/vuln/detail/CVE-2010-2568). .local files are used by
-  // Windows to determine which DLLs to load for an application.
+  // .lnk and .scf files may be used to execute arbitrary code (see
+  // https://nvd.nist.gov/vuln/detail/CVE-2010-2568 and
+  // https://crbug.com/1227995, respectively). .local files are used by
+  // Windows to determine which DLLs to load for an application. .url files
+  // can be used to leak credentials or read arbitrary files (see
+  // https://crbug.com/1307930).
+  // LINT.IfChange(ShellIntegratedExtensions)
   if ((extension_lower == FILE_PATH_LITERAL("local")) ||
-      (extension_lower == FILE_PATH_LITERAL("lnk")))
+      (extension_lower == FILE_PATH_LITERAL("lnk")) ||
+      (extension_lower == FILE_PATH_LITERAL("scf")) ||
+      (extension_lower == FILE_PATH_LITERAL("url"))) {
     return true;
+  }
+  // LINT.ThenChange(//content/browser/file_system_access/file_system_chooser.cc:ShellIntegratedExtensions)
 
   // Setting a file's extension to a CLSID may conceal its actual file type on
   // some Windows versions (see https://nvd.nist.gov/vuln/detail/CVE-2004-0420).

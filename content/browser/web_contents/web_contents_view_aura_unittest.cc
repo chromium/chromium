@@ -711,7 +711,7 @@ TEST_F(WebContentsViewAuraTest, DragDropUrlData) {
       data->GetVirtualFilenames();
   ASSERT_TRUE(file_infos.has_value());
   ASSERT_EQ(1ULL, file_infos.value().size());
-  EXPECT_EQ(base::FilePath(base::UTF16ToWide(url_title) + L".url"),
+  EXPECT_EQ(base::FilePath(base::UTF16ToWide(url_title) + L".download"),
             file_infos.value()[0].display_name);
 
   ui::DropTargetEvent event(*data.get(), kClientPt, kScreenPt,
