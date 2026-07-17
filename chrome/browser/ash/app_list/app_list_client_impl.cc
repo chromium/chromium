@@ -48,7 +48,6 @@
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/browser_delegate/browser_type.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -161,8 +160,10 @@ bool IsPrimaryProfile(user_manager::UserManager& user_manager,
 
 }  // namespace
 
-AppListClientImpl::AppListClientImpl(user_manager::UserManager* user_manager)
-    : user_manager_(CHECK_DEREF(user_manager)),
+AppListClientImpl::AppListClientImpl(PrefService* local_state,
+                                     user_manager::UserManager* user_manager)
+    : local_state_(CHECK_DEREF(local_state)),
+      user_manager_(CHECK_DEREF(user_manager)),
       app_list_controller_(ash::AppListController::Get()) {
   user_manager_observation_.Observe(user_manager);
 
@@ -554,9 +555,8 @@ void AppListClientImpl::SetProfile(Profile* new_profile) {
 }
 
 void AppListClientImpl::SetUpSearchUI() {
-  // TODO(crbug.com/404129453): Avoid using g_browser_process.
   search_controller_ = app_list::CreateSearchController(
-      g_browser_process->local_state(), profile_, current_model_updater_, this,
+      &local_state_.get(), profile_, current_model_updater_, this,
       GetNotifier());
 
   // Refresh the results used for the suggestion chips with empty query.

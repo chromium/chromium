@@ -43,9 +43,10 @@ class SearchController;
 }  // namespace app_list
 
 class AppListClientWithProfileTest;
-class AppListNotifier;
 class AppListModelUpdater;
+class AppListNotifier;
 class AppSyncUIStateWatcher;
+class PrefService;
 class Profile;
 
 class AppListClientImpl
@@ -58,8 +59,9 @@ class AppListClientImpl
       public web_modal::ModalDialogHost,
       public aura::WindowObserver {
  public:
-  // `user_manage` must be non-null and must outlive `this`.
-  explicit AppListClientImpl(user_manager::UserManager* user_manager);
+  // `local_state` and `user_manager` must be non-null and must outlive `this`.
+  AppListClientImpl(PrefService* local_state,
+                    user_manager::UserManager* user_manager);
   AppListClientImpl(const AppListClientImpl&) = delete;
   AppListClientImpl& operator=(const AppListClientImpl&) = delete;
   ~AppListClientImpl() override;
@@ -228,6 +230,7 @@ class AppListClientImpl
       ash::AppListLaunchedFrom launched_from,
       bool is_app_above_the_fold);
 
+  const raw_ref<PrefService> local_state_;
   const raw_ref<user_manager::UserManager> user_manager_;
 
   // Unowned pointer to the associated profile. May change if SetProfile is

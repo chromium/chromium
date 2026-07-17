@@ -34,7 +34,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "quick_insert_client_impl\\.cc": [
+  "quick_insert_accessibility_browsertest\\.cc": [
     "+chrome/browser/browser_process.h",
   ],
 }

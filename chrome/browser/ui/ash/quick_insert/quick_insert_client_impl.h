@@ -24,6 +24,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/ime/text_input_client.h"
 
+class PrefService;
 class Profile;
 class ChromeSearchResult;
 class QuickInsertFileSuggester;
@@ -50,8 +51,10 @@ class QuickInsertClientImpl
   // Sets this instance as the client of `controller`.
   // Automatically unsets the client when this instance is destroyed.
   // `manager` needs to outlive this class.
-  explicit QuickInsertClientImpl(ash::QuickInsertController* controller,
-                                 user_manager::UserManager* user_manager);
+  // `local_state` must be non-null and must outlive `this`.
+  QuickInsertClientImpl(PrefService* local_state,
+                        ash::QuickInsertController* controller,
+                        user_manager::UserManager* user_manager);
   QuickInsertClientImpl(const QuickInsertClientImpl&) = delete;
   QuickInsertClientImpl& operator=(const QuickInsertClientImpl&) = delete;
   ~QuickInsertClientImpl() override;
@@ -112,6 +115,7 @@ class QuickInsertClientImpl
 
   void ShowLobster(std::optional<std::string> query);
 
+  const raw_ref<PrefService> local_state_;
   ash::input_method::EditorLiveRegionAnnouncer announcer_;
 
   raw_ptr<ash::QuickInsertController> controller_ = nullptr;

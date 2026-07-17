@@ -34,6 +34,7 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/chromevox_test_utils.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/quick_insert/quick_insert_client_impl.h"
 #include "chrome/browser/ui/browser.h"
@@ -939,7 +940,8 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
 IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
                        InsertingAnnouncesInsertionBeforeTextfieldRefocus) {
   ash::QuickInsertController controller;
-  QuickInsertClientImpl client(&controller, user_manager::UserManager::Get());
+  QuickInsertClientImpl client(g_browser_process->local_state(), &controller,
+                               user_manager::UserManager::Get());
   std::unique_ptr<views::Widget> textfield_widget =
       views::test::TestWidgetBuilder()
           .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)

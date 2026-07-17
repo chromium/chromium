@@ -118,7 +118,6 @@ specific_include_rules = {
   ],
 
   "app_list_client_impl\\.cc": [
-    "+chrome/browser/browser_process.h",
     "+chrome/grit",
   ],
 

@@ -44,7 +44,6 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ash/lobster/lobster_service_provider.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -161,11 +160,10 @@ std::unique_ptr<app_list::SearchProvider> CreateDriveSearchProvider(
 }
 
 std::unique_ptr<app_list::SearchProvider> CreateFileSearchProvider(
+    PrefService* local_state,
     Profile* profile) {
-  // TODO(crbug.com/393260137): Avoid using g_browser_process.
   return std::make_unique<app_list::FileSearchProvider>(
-      g_browser_process->local_state(), profile,
-      base::FileEnumerator::FileType::FILES,
+      local_state, profile, base::FileEnumerator::FileType::FILES,
       std::vector<std::string>{".jpg", ".jpeg", ".png", ".gif", ".webp"});
 }
 
@@ -245,9 +243,12 @@ std::vector<ash::QuickInsertSearchResult> GetEditorResultsFromEditorContext(
 }  // namespace
 
 QuickInsertClientImpl::QuickInsertClientImpl(
+    PrefService* local_state,
     ash::QuickInsertController* controller,
     user_manager::UserManager* user_manager)
-    : announcer_(kAnnouncementViewName), controller_(controller) {
+    : local_state_(CHECK_DEREF(local_state)),
+      announcer_(kAnnouncementViewName),
+      controller_(controller) {
   controller_->SetClient(this);
 
   // As `QuickInsertClientImpl` is initialised in
@@ -537,7 +538,8 @@ void QuickInsertClientImpl::SetProfile(Profile* profile) {
   search_engine_ = std::make_unique<app_list::SearchEngine>(profile_);
   search_engine_->AddProvider(CreateOmniboxProvider(
       /*bookmarks=*/true, /*history=*/true, /*open_tabs=*/true));
-  search_engine_->AddProvider(CreateFileSearchProvider(profile_));
+  search_engine_->AddProvider(
+      CreateFileSearchProvider(&local_state_.get(), profile_));
   search_engine_->AddProvider(CreateDriveSearchProvider(profile_));
   filtered_search_engine_ = nullptr;
   current_filter_category_ = std::nullopt;
@@ -586,7 +588,7 @@ QuickInsertClientImpl::CreateSearchProviderForCategory(
     case ash::QuickInsertCategory::kDriveFiles:
       return CreateDriveSearchProvider(profile_);
     case ash::QuickInsertCategory::kLocalFiles:
-      return CreateFileSearchProvider(profile_);
+      return CreateFileSearchProvider(&local_state_.get(), profile_);
   }
 }
 
