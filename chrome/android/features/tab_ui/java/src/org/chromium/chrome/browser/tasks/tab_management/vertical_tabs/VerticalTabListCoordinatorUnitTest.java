@@ -151,6 +151,7 @@ public class VerticalTabListCoordinatorUnitTest {
     @Mock private DataSharingTabManager mDataSharingTabManager;
     @Mock private TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
     @Mock private KeyboardVisibilityDelegate mKeyboardDelegate;
+    @Mock private RailCollapseListener mMockRailCollapseListener;
 
     private Activity mActivity;
     private final SettableMonotonicObservableSupplier<ShareDelegate> mShareDelegateSupplier =
@@ -1030,8 +1031,7 @@ public class VerticalTabListCoordinatorUnitTest {
         createCoordinator();
 
         // Mock listener
-        RailCollapseListener mockListener = mock(RailCollapseListener.class);
-        mCoordinator.setCollapseListener(mockListener);
+        mCoordinator.setCollapseListener(mMockRailCollapseListener);
 
         ViewGroup view = (ViewGroup) mCoordinator.getView();
         View collapseButton = view.findViewById(R.id.collapse_button);
@@ -1049,7 +1049,7 @@ public class VerticalTabListCoordinatorUnitTest {
         collapseButton.performClick();
 
         // Verify listener requested collapse, but model is NOT updated yet (deferred)
-        verify(mockListener).onRailCollapseRequested(true);
+        verify(mMockRailCollapseListener).onRailCollapseRequested(true);
         assertFalse(
                 mCoordinator
                         .getContainerModelForTesting()
@@ -1069,7 +1069,7 @@ public class VerticalTabListCoordinatorUnitTest {
         collapseButton.performClick();
 
         // Verify listener requested expand, but model is still collapsed
-        verify(mockListener).onRailCollapseRequested(false);
+        verify(mMockRailCollapseListener).onRailCollapseRequested(false);
         assertTrue(
                 mCoordinator
                         .getContainerModelForTesting()
@@ -1097,5 +1097,38 @@ public class VerticalTabListCoordinatorUnitTest {
 
         mCoordinator.setCollapsed(false);
         assertFalse(mCoordinator.getIsRailCollapsedSupplierForTesting().get());
+    }
+
+    @Test
+    @SmallTest
+    public void testSetCollapseButtonEnabled() {
+        createCoordinator();
+        mCoordinator.setCollapseListener(mMockRailCollapseListener);
+
+        View collapseButton = mCoordinator.getView().findViewById(R.id.collapse_button);
+        assertTrue(
+                mCoordinator
+                        .getContainerModelForTesting()
+                        .get(VerticalTabListProperties.IS_COLLAPSE_BUTTON_ENABLED));
+
+        mCoordinator.setCollapseButtonEnabled(false);
+        assertFalse(
+                mCoordinator
+                        .getContainerModelForTesting()
+                        .get(VerticalTabListProperties.IS_COLLAPSE_BUTTON_ENABLED));
+        assertFalse(collapseButton.isEnabled());
+        assertTrue(collapseButton.getAlpha() < 1.0f);
+
+        // Attempting click when disabled should be ignored
+        collapseButton.performClick();
+        verify(mMockRailCollapseListener, never()).onRailCollapseRequested(anyBoolean());
+
+        mCoordinator.setCollapseButtonEnabled(true);
+        assertTrue(
+                mCoordinator
+                        .getContainerModelForTesting()
+                        .get(VerticalTabListProperties.IS_COLLAPSE_BUTTON_ENABLED));
+        assertTrue(collapseButton.isEnabled());
+        assertEquals(1.0f, collapseButton.getAlpha(), 0.01f);
     }
 }

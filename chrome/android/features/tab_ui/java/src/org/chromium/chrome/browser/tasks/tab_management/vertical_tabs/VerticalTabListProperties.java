@@ -15,6 +15,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class VerticalTabListProperties {
     public static final PropertyModel.WritableBooleanPropertyKey IS_COLLAPSED =
             new PropertyModel.WritableBooleanPropertyKey();
+    public static final PropertyModel.WritableBooleanPropertyKey IS_COLLAPSE_BUTTON_ENABLED =
+            new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
             ON_GRID_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
@@ -27,6 +29,7 @@ public class VerticalTabListProperties {
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 IS_COLLAPSED,
+                IS_COLLAPSE_BUTTON_ENABLED,
                 ON_GRID_CLICK_LISTENER,
                 ON_SEARCH_CLICK_LISTENER,
                 ON_NEW_TAB_CLICK_LISTENER,

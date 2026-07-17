@@ -418,6 +418,7 @@ public class VerticalTabListCoordinator {
                                 VerticalTabListProperties.ON_COLLAPSE_CLICK_LISTENER,
                                 v -> toggleCollapseState())
                         .with(VerticalTabListProperties.IS_COLLAPSED, false)
+                        .with(VerticalTabListProperties.IS_COLLAPSE_BUTTON_ENABLED, true)
                         .build();
         PropertyModelChangeProcessor.create(
                 mContainerModel, mContainerView, VerticalTabListViewBinder::bind);
@@ -639,6 +640,15 @@ public class VerticalTabListCoordinator {
         mIsRailCollapsedSupplier.set(collapsed);
     }
 
+    /**
+     * Sets whether the rail collapse button is enabled.
+     *
+     * @param enabled True if the collapse button should be enabled, false otherwise.
+     */
+    void setCollapseButtonEnabled(boolean enabled) {
+        mContainerModel.set(VerticalTabListProperties.IS_COLLAPSE_BUTTON_ENABLED, enabled);
+    }
+
     private void setActive(boolean isActive) {
         mIsActive = isActive;
         if (mIsActive) {
@@ -739,6 +749,9 @@ public class VerticalTabListCoordinator {
     }
 
     private void toggleCollapseState() {
+        if (!mContainerModel.get(VerticalTabListProperties.IS_COLLAPSE_BUTTON_ENABLED)) {
+            return;
+        }
         boolean isCollapsed = mContainerModel.get(VerticalTabListProperties.IS_COLLAPSED);
         boolean newCollapsedState = !isCollapsed;
         if (mRailCollapseListener != null) {

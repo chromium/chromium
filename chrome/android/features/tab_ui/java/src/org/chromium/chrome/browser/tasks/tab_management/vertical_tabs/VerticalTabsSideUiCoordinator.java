@@ -49,8 +49,7 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
     private final @Px int mExpandedViewWidth;
     private final @Px int mCollapsedViewWidth;
     private final SettableNonNullObservableSupplier<Boolean> mIsVerticalTabsActiveSupplier;
-    private @Nullable Boolean mPendingCollapsedState;
-    private boolean mIsCollapsed;
+    private boolean mIsCollapsedByUser;
 
     // Whether the vertical tab is automatically hidden due to run-time conditions.
     // TODO(crbug.com/513622986): Handle auto-hide logic when screen size goes below threshold.
@@ -112,7 +111,7 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
     @Override
     public SideUiSize determineShowableSize(@Px int availableWidth, @Px int windowWidth) {
         // TODO(crbug.com/509226293): Implement layout threshold negotiation to auto-hide rail.
-        int targetWidth = mIsCollapsed ? mCollapsedViewWidth : mExpandedViewWidth;
+        int targetWidth = shouldBeCollapsed() ? mCollapsedViewWidth : mExpandedViewWidth;
         boolean shouldHide = availableWidth < targetWidth;
         return shouldHide
                 ? new SideUiSize(0, HeightType.NOT_APPLICABLE)
@@ -179,16 +178,22 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
 
     @Override
     public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs) {
-        if (mPendingCollapsedState != null) {
-            mTabListCoordinator.setCollapsed(mPendingCollapsedState);
-            mPendingCollapsedState = null;
-        }
+        mTabListCoordinator.setCollapsed(shouldBeCollapsed());
+        mTabListCoordinator.setCollapseButtonEnabled(!isCurrentWindowNarrow());
     }
 
     private void onCollapseRequested(boolean isCollapsed) {
-        mIsCollapsed = isCollapsed;
-        mPendingCollapsedState = isCollapsed;
+        mIsCollapsedByUser = isCollapsed;
         mSideUiCoordinator.updateUi(
                 new UiUpdateRequest(getSideUiId(), /* suppressAnimations= */ false));
+    }
+
+    private boolean shouldBeCollapsed() {
+        return mIsCollapsedByUser || isCurrentWindowNarrow();
+    }
+
+    private boolean isCurrentWindowNarrow() {
+        return mRootView.getContext().getResources().getConfiguration().screenWidthDp
+                < VerticalTabUtils.MIN_EXPAND_WINDOW_WIDTH_DP;
     }
 }

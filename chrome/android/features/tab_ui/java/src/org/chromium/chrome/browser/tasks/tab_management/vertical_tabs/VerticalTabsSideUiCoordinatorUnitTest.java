@@ -17,6 +17,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabsSideUiCoordinator.VIEW_WIDTH_DP;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.transition.TransitionSet;
@@ -38,6 +39,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.android.controller.ActivityController;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -63,13 +65,18 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     @Captor private ArgumentCaptor<RailCollapseListener> mCollapseListenerCaptor;
 
     private VerticalTabsSideUiCoordinator mCoordinator;
+    private ActivityController<Activity> mActivityController;
     private Activity mActivity;
+    private @Px int mWideWindowWidth;
     private final SettableNonNullObservableSupplier<Boolean> mIsVerticalTabsActiveSupplier =
             ObservableSuppliers.createNonNull(false);
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mActivityController = Robolectric.buildActivity(Activity.class).setup();
+        mActivity = mActivityController.get();
+        mWideWindowWidth = ViewUtils.dpToPx(mActivity, 800);
+        setWindowWidthPx(mWideWindowWidth);
         View mockView = new View(mActivity);
         when(mMockTabListCoordinator.getView()).thenReturn(mockView);
         when(mMockTabListCoordinator.getViewsForResizeAnimation()).thenReturn(List.of(mockView));
@@ -126,11 +133,11 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         assertEquals(
                 new SideUiSize(0, HeightType.NOT_APPLICABLE),
                 mCoordinator.determineShowableSize(
-                        /* availableWidth= */ viewWidth - 1, /* windowWidth= */ viewWidth + 100));
+                        /* availableWidth= */ viewWidth - 1, /* windowWidth= */ mWideWindowWidth));
         assertEquals(
                 new SideUiSize(viewWidth, HeightType.TOOLBAR),
                 mCoordinator.determineShowableSize(
-                        /* availableWidth= */ viewWidth, /* windowWidth= */ viewWidth + 100));
+                        /* availableWidth= */ viewWidth, /* windowWidth= */ mWideWindowWidth));
     }
 
     @Test
@@ -183,7 +190,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
                 expandedWidth,
                 mCoordinator.determineShowableSize(
                                 /* availableWidth= */ expandedWidth,
-                                /* windowWidth= */ expandedWidth + 100)
+                                /* windowWidth= */ mWideWindowWidth)
                         .width);
 
         // Collapse requested
@@ -195,7 +202,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
                 collapsedWidth,
                 mCoordinator.determineShowableSize(
                                 /* availableWidth= */ collapsedWidth,
-                                /* windowWidth= */ collapsedWidth + 100)
+                                /* windowWidth= */ mWideWindowWidth)
                         .width);
         verify(mMockSideUiCoordinator).updateUi(any(SideUiCoordinator.UiUpdateRequest.class));
 
@@ -205,7 +212,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
                 expandedWidth,
                 mCoordinator.determineShowableSize(
                                 /* availableWidth= */ expandedWidth,
-                                /* windowWidth= */ expandedWidth + 100)
+                                /* windowWidth= */ mWideWindowWidth)
                         .width);
     }
 
@@ -299,5 +306,49 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
         // Verify setCollapsed is now called with true
         verify(mMockTabListCoordinator).setCollapsed(true);
+    }
+
+    @Test
+    @SmallTest
+    public void testNarrowWindow_AutoCollapsesAndDisablesButton() {
+        @Px int narrowWindowWidth = ViewUtils.dpToPx(mActivity, 600);
+        @Px int expandedWidth = ViewUtils.dpToPx(mActivity, VIEW_WIDTH_DP);
+        @Px
+        int collapsedWidth =
+                ViewUtils.dpToPx(mActivity, VerticalTabsSideUiCoordinator.COLLAPSED_WIDTH_DP);
+
+        // When window is narrow (< 652dp), determineShowableSize returns collapsed width
+        setWindowWidthPx(narrowWindowWidth);
+        assertEquals(
+                collapsedWidth,
+                mCoordinator.determineShowableSize(
+                                /* availableWidth= */ expandedWidth,
+                                /* windowWidth= */ narrowWindowWidth)
+                        .width);
+
+        // onSideUiSpecsChanged should auto-collapse and disable collapse button
+        mCoordinator.onSideUiSpecsChanged(new SideUiSpecs(collapsedWidth, 0));
+        verify(mMockTabListCoordinator).setCollapsed(true);
+        verify(mMockTabListCoordinator).setCollapseButtonEnabled(false);
+
+        // When window is wide (>= 652dp), determineShowableSize returns expanded width
+        setWindowWidthPx(mWideWindowWidth);
+        assertEquals(
+                expandedWidth,
+                mCoordinator.determineShowableSize(
+                                /* availableWidth= */ expandedWidth,
+                                /* windowWidth= */ mWideWindowWidth)
+                        .width);
+
+        // onSideUiSpecsChanged should restore expanded state and re-enable collapse button
+        mCoordinator.onSideUiSpecsChanged(new SideUiSpecs(expandedWidth, 0));
+        verify(mMockTabListCoordinator).setCollapsed(false);
+        verify(mMockTabListCoordinator).setCollapseButtonEnabled(true);
+    }
+
+    private void setWindowWidthPx(@Px int widthPx) {
+        Configuration config = new Configuration(mActivity.getResources().getConfiguration());
+        config.screenWidthDp = ViewUtils.pxToDp(mActivity, widthPx);
+        mActivityController.configurationChange(config);
     }
 }
