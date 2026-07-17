@@ -19,6 +19,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/access_token.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/security_descriptor.h"
+#include "base/win/sid.h"
 #include "base/win/windows_version.h"
 
 namespace mojo {
@@ -34,6 +36,17 @@ namespace {
 constexpr wchar_t kDefaultSecurityDescriptor[] =
     L"D:(A;;GA;;;SY)(A;;GA;;;BA)(A;;GA;;;OW)";
 
+bool IsPrivilegedPipeOwner(HANDLE pipe_handle) {
+  auto sd = base::win::SecurityDescriptor::FromHandle(
+      pipe_handle, base::win::SecurityObjectType::kFile,
+      OWNER_SECURITY_INFORMATION);
+  return sd && sd->owner() &&
+         (*sd->owner() ==
+              base::win::Sid(base::win::WellKnownSid::kLocalSystem) ||
+          *sd->owner() ==
+              base::win::Sid(base::win::WellKnownSid::kBuiltinAdministrators));
+}
+
 bool VerifyServerPrivilege(HANDLE pipe_handle) {
   DWORD pid = 0;
   if (!GetNamedPipeServerProcessId(pipe_handle, &pid)) {
@@ -43,7 +56,10 @@ bool VerifyServerPrivilege(HANDLE pipe_handle) {
   base::win::ScopedHandle process(
       OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid));
   if (!process.is_valid()) {
-    return false;
+    // A medium-integrity client can't OpenProcess a SYSTEM server
+    // (ERROR_ACCESS_DENIED). Fall back to verify if the pipe's owner is
+    // privileged.
+    return IsPrivilegedPipeOwner(pipe_handle);
   }
 
   auto server_token = base::win::AccessToken::FromProcess(process.get());
