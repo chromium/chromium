@@ -1,32 +1,31 @@
 # `cpp_api_from_rust`
 
+`cpp_api_from_rust` (aka `cc_bindings_from_rs`) is a Crubit tool that takes
+a Rust crate as input and generates C++ APIs (a `.h` header) as output,
+enabling C++ to call Rust.
+
 ## Availability
 
-### Experimental support in Chromium
+`cpp_api_from_rust` is fully supported by the Rust in Chrome team, with the
+following caveats:
 
-`cpp_api_from_rust` support is currently considered experimental and unstable.
+*   **Some directories cannot use Crubit:** The Android project's build system
+    does not support Crubit at this point. Consequently, Crubit cannot be
+    used in `//base`, `//net`, or other directories that
+    [Cronet](../../components/cronet/README.md) depends on.
+    See also https://crbug.com/535682335
+*   **2nd-party project limitations:** Projects like PDFium or V8 currently
+    support non-Chromium clients and alternative toolchains that may lack
+    Crubit support. Adopting Crubit in these projects requires either helping
+    their clients adopt Crubit, or making a policy decision to only support
+    clients that have Crubit available.
 
-TODO(https://crbug.com/470466915): Edit this section once we officially declare
-and announce support for using `cpp_api_from_rust` for some Rust libraries.
-("some" because of toolchain availability caveats in the other section below.)
+Other notes:
 
-### Toolchain availability outside of Chromium
-
-Chromium's `//third_party/rust-toolchain` includes `cpp_api_from_rust`, but
-other projects may not.
-This means that Chromium code that is built in such other projects should
-not depend on `cpp_api_from_rust`.  Examples of code that should not
-depend on `cpp_api_from_rust`:
-
-* `//base`, `//net` and other [Cronet](../../components/cronet/README.md)
-  dependencies.
-  (This restriction should go away when/if Android support for
-  `cpp_api_from_rust` hopefully comes later in 2026.)
-* 2nd-party projects like
-    - ANGLE (TODO: more details - something about being used by Apple?)
-    - Skia (no `cpp_api_from_rust` support in Bazel)
-    - V8 (TODO: more details - probably need Crubit support for official
-      releases of Rust toolchain)
+*   `cxx` remains fully supported; there are no plans to migrate existing
+    `cxx::bridge` code to Crubit.
+*   `rust_api_from_cpp` (calling C++ from Rust) is not yet supported, but
+    integration work is ongoing.
 
 ## Other docs
 

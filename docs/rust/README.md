@@ -63,11 +63,13 @@ Rust:
     see [below](#build-system-setup) for information about getting your files
     hooked into the build system.
 * Q: How do I interoperate with C++ code?
-  * A: If you want to call C++ functions directly from Rust, or vice-versa, our
-    standard tool is [cxx](https://cxx.rs/). An alternative if you're
-    implementing a service in Rust is to use [Mojo](/docs/mojo_and_services.md)
-    as a communication method, which avoids the need for direct interop. See
-    [//docs/rust/ffi.md](/docs/rust/ffi.md) for more information.
+  * A: Our standard tool is [cxx](https://cxx.rs/). We also support
+    [Crubit](https://crubit.rs/) for calling Rust from C++ (with some
+    limitations; see [`crubit.md`](./crubit.md) for details).
+    An alternative if you're implementing a service in Rust is to use
+    [Mojo](/docs/mojo_and_services.md) as a communication method, which avoids
+    the need for direct interop. See [//docs/rust/ffi.md](/docs/rust/ffi.md)
+    for more information.
 * Q: How should I test my code?
   * A: Chromium uses `gtest` for Rust code, using the
   [`//testing/rust_gtest_interop`](/testing/rust_gtest_interop/README.md)

@@ -23,11 +23,13 @@ For documentation of various options, see `//build/rust/rust_bindgen.gni`.
 Bindgen can also be used to import C++ headers, but it only supports a limited
 subset of the language.
 
-**In the future**, we intend to shift from `cxx` to
-[Crubit](https://github.com/google/crubit/) (tracked in <https://crbug.com/470466915>). However, Crubit is still transitioning to open-source, and is not
-yet officially supported in Chromium.
-See [`crubit.md`](crubit.md) for some in-progress notes on the current
-implementation and how to use it.
+**In the future**, we intend to recommend [Crubit](https://crubit.rs) for new
+code (tracked in <https://crbug.com/351793625>). Chromium now supports
+`cc_bindings_from_rs` (aka `cpp_api_from_rust`) for calling Rust from C++.
+However, because the Android build system does not yet support Crubit, it cannot be used in
+`//base`, `//net`, or other dependencies of Cronet (see https://crbug.com/535682335).
+The reverse direction (Rust calling C++) is not yet supported, but integration
+is underway. See [`crubit.md`](crubit.md) for details.
 
 Chromium **does not support any other FFI tools** (e.g.
 [`cbindgen`](https://github.com/mozilla/cbindgen) or
