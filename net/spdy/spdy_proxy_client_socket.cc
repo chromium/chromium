@@ -191,7 +191,13 @@ void SpdyProxyClientSocket::ApplySocketTag(const SocketTag& tag) {
 int SpdyProxyClientSocket::Read(IOBuffer* buf,
                                 int buf_len,
                                 CompletionOnceCallback callback) {
+  // ReadIfReady() can fire consume callbacks that trigger session
+  // teardown and destroy `this`.
+  base::WeakPtr<SpdyProxyClientSocket> self = weak_factory_.GetWeakPtr();
   int rv = ReadIfReady(buf, buf_len, std::move(callback));
+  if (!self) {
+    return ERR_CONNECTION_CLOSED;
+  }
   if (rv == ERR_IO_PENDING) {
     user_buffer_ = buf;
     user_buffer_len_ = static_cast<size_t>(buf_len);
@@ -214,7 +220,13 @@ int SpdyProxyClientSocket::ReadIfReady(IOBuffer* buf,
 
   DCHECK(next_state_ == STATE_OPEN || next_state_ == STATE_CLOSED);
   DCHECK(buf);
+  // PopulateUserReadBuffer() can fire consume callbacks that trigger session
+  // teardown and destroy `this`.
+  base::WeakPtr<SpdyProxyClientSocket> self = weak_factory_.GetWeakPtr();
   size_t result = PopulateUserReadBuffer(buf->first(buf_len));
+  if (!self) {
+    return ERR_CONNECTION_CLOSED;
+  }
   if (result == 0) {
     read_callback_ = std::move(callback);
     return ERR_IO_PENDING;
@@ -575,7 +587,13 @@ void SpdyProxyClientSocket::OnDataReceived(std::unique_ptr<SpdyBuffer> buffer) {
 
   if (read_callback_) {
     if (user_buffer_) {
+      // PopulateUserReadBuffer() can fire consume callbacks that trigger
+      // session teardown and destroy `this`.
+      base::WeakPtr<SpdyProxyClientSocket> self = weak_factory_.GetWeakPtr();
       int rv = PopulateUserReadBuffer(user_buffer_->first(user_buffer_len_));
+      if (!self) {
+        return;
+      }
       user_buffer_ = nullptr;
       user_buffer_len_ = 0;
       std::move(read_callback_).Run(rv);
