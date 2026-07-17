@@ -72,6 +72,7 @@ class PLATFORM_EXPORT NonMainThreadSchedulerBase : public ThreadSchedulerBase {
       TaskType default_task_type);
 
   friend class WorkerSchedulerImpl;
+  friend class NonMainThreadImpl;
 
   NonMainThreadSchedulerHelper& GetHelper() override { return helper_; }
 

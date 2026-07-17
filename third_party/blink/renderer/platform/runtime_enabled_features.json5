@@ -3965,6 +3965,14 @@
       status: "experimental",
     },
     {
+      // Extends the Long Animation Frame (LoAF) API to Web Workers. Reports a
+      // long task blocking a worker's event loop as a "long-animation-frame"
+      // entry, observable from inside the worker. See the loaf-congested-moments
+      // explainer: https://github.com/WICG/delayed-message-timing
+      name: "LongAnimationFrameWorker",
+      status: "test",
+    },
+    {
       // Long press on a link selects the link text instead of bringing up
       // context menu. Enabled only on Android AuthView.
       name: "LongPressLinkSelectText",

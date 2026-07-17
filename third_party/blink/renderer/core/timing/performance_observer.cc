@@ -71,6 +71,15 @@ PerformanceEntryType PerformanceObserver::supportedEntryTypeMask(
   auto* execution_context = ExecutionContext::From(script_state);
 
   if (!execution_context->IsWindow()) {
+    // Long Animation Frames are extended to workers to report a long task
+    // blocking the worker's event loop when the feature is enabled. Dedicated
+    // workers are supported first to validate
+    // the congested-moment reporting; shared and service workers will follow.
+    if (execution_context->IsDedicatedWorkerGlobalScope() &&
+        RuntimeEnabledFeatures::LongAnimationFrameWorkerEnabled(
+            execution_context)) {
+      return types_always_supported | PerformanceEntry::kLongAnimationFrame;
+    }
     return types_always_supported;
   }
 

@@ -17,29 +17,33 @@ namespace blink {
 using PerformanceScriptVector = HeapVector<Member<PerformanceScriptTiming>>;
 using PerformanceEntryVector = HeapVector<Member<PerformanceEntry>>;
 
+class ExecutionContext;
+class SecurityOrigin;
+
 class PerformanceLongAnimationFrameTiming final : public PerformanceEntry {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   // This constructor uses int for |duration| to coarsen it in advance.
   // LongAnimationFrameTiming is always at 1-ms granularity.
-
   static PerformanceLongAnimationFrameTiming* Create(
       AnimationFrameTimingInfo* info,
       base::TimeTicks time_origin,
       bool cross_origin_isolated_capability,
-      DOMWindow*,
+      ExecutionContext* execution_context,
       const std::optional<DOMPaintTimingInfo>&,
       uint64_t navigation_id);
   ~PerformanceLongAnimationFrameTiming() override;
 
-  PerformanceLongAnimationFrameTiming(double duration,
-                                      DOMHighResTimeStamp startTime,
-                                      AnimationFrameTimingInfo* info,
-                                      base::TimeTicks time_origin,
-                                      bool cross_origin_isolated_capability,
-                                      DOMWindow*,
-                                      uint64_t navigation_id);
+  PerformanceLongAnimationFrameTiming(
+      double duration,
+      DOMHighResTimeStamp startTime,
+      AnimationFrameTimingInfo* info,
+      base::TimeTicks time_origin,
+      bool cross_origin_isolated_capability,
+      DOMWindow* source,
+      const SecurityOrigin* observer_security_origin,
+      uint64_t navigation_id);
 
   const AtomicString& entryType() const override;
   PerformanceEntryType EntryTypeEnum() const override;

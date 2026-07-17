@@ -38,6 +38,7 @@
 
 namespace blink {
 
+class AnimationFrameTimingInfo;
 class ExecutionContext;
 class WorkerGlobalScope;
 
@@ -49,6 +50,10 @@ class WorkerPerformance final : public Performance {
     return execution_context_.Get();
   }
   uint64_t interactionCount() const override { return 0; }
+
+  // Queues a long-animation-frame entry (a worker congested moment) produced by
+  // the worker's AnimationFrameTimingMonitor onto this performance timeline.
+  void QueueLongAnimationFrameTiming(AnimationFrameTimingInfo*);
 
   void Trace(Visitor*) const override;
 

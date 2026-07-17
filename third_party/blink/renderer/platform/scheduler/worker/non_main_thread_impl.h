@@ -60,6 +60,14 @@ class PLATFORM_EXPORT NonMainThreadImpl : public NonMainThread {
   // WorkerBackingThread::ShutdownOnBackingThread().
   void ShutdownOnThread() override;
 
+  // These allow observers such as
+  // AnimationFrameTimingMonitor to watch the worker thread's task loop, which
+  // is how Long Animation Frame (LoAF) reporting is extended to Web Workers.
+  void AddTaskTimeObserver(
+      base::sequence_manager::TaskTimeObserver* task_time_observer) override;
+  void RemoveTaskTimeObserver(
+      base::sequence_manager::TaskTimeObserver* task_time_observer) override;
+
  protected:
   virtual std::unique_ptr<NonMainThreadSchedulerBase>
   CreateNonMainThreadScheduler(

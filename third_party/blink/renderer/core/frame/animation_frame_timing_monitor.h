@@ -32,9 +32,14 @@ CORE_EXPORT BASE_DECLARE_FEATURE(kAlwaysLogLOAFURL);
 class LocalFrame;
 
 // Monitors long-animation-frame timing (LoAF).
-// This object is a supplement to a WebFrameWidgetImpl. It handles the state
-// machine related to capturing the timing for long animation frames, and
-// reporting them back to the frames that observe it.
+// On the main thread, this object is owned by a WebFrameWidgetImpl (which also
+// acts as its Client). It handles the state machine related to capturing the
+// timing for long animation frames, and reporting them back to the frames that
+// observe it.
+// In worker mode (owned by WorkerGlobalScope, which also acts as its Client,
+// for a dedicated worker) it has no rendering lifecycle; instead it observes
+// the worker's task loop and reports a long task blocking the event loop as a
+// congested moment via Client::ReportCongestedMoment().
 class CORE_EXPORT AnimationFrameTimingMonitor final
     : public GarbageCollected<AnimationFrameTimingMonitor>,
       public base::sequence_manager::TaskTimeObserver {
@@ -44,6 +49,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
     virtual void ReportLongTaskTiming(base::TimeTicks start,
                                       base::TimeTicks end,
                                       ExecutionContext* context) = 0;
+    virtual void ReportCongestedMoment(AnimationFrameTimingInfo*) {}
     virtual bool ShouldReportLongAnimationFrameTiming() const = 0;
     virtual bool RequestedMainFramePending() = 0;
     virtual ukm::UkmRecorder* MainFrameUkmRecorder() = 0;
@@ -66,17 +72,15 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   AnimationFrameTimingInfo* RecordRenderingUpdateEndTime(
       LocalDOMWindow& local_root_window,
       base::TimeTicks);
-  void OnTaskCompleted(base::TimeTicks start_time,
-                       base::TimeTicks end_time,
-                       LocalFrame* frame);
+  void OnMainThreadTaskCompleted(base::TimeTicks start_time,
+                                 base::TimeTicks end_time,
+                                 LocalFrame* frame);
 
   // TaskTimeObserver
   void WillProcessTask(base::TimeTicks start_time) override;
 
   void DidProcessTask(base::TimeTicks start_time,
-                      base::TimeTicks end_time) override {
-    OnTaskCompleted(start_time, end_time, /*frame=*/nullptr);
-  }
+                      base::TimeTicks end_time) override;
 
   // probes
   void WillHandlePromise(ScriptState*,
@@ -149,6 +153,9 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
       const PendingScriptInfo& script_info);
 
   bool PushScriptEntryPoint(ScriptState*);
+
+  void OnWorkerTaskCompleted(base::TimeTicks start_time,
+                             base::TimeTicks end_time);
 
   void RecordLongAnimationFrameUKMAndTrace(const AnimationFrameTimingInfo&,
                                            LocalDOMWindow& window);

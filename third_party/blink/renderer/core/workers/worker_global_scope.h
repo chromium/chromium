@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/frame_request_callback_collection.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/animation_frame_timing_monitor.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/policy_container.h"
 #include "third_party/blink/renderer/core/frame/universal_global_scope.h"
@@ -82,7 +83,8 @@ class CORE_EXPORT WorkerGlobalScope
       public WindowOrWorkerGlobalScope,
       public UniversalGlobalScope,
       public Supplementable<WorkerGlobalScope>,
-      public DOMOriginUtils {
+      public DOMOriginUtils,
+      public AnimationFrameTimingMonitor::Client {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -229,6 +231,21 @@ class CORE_EXPORT WorkerGlobalScope
   base::TimeTicks TimeOrigin() const { return time_origin_; }
   WorkerSettings* GetWorkerSettings() const { return worker_settings_.get(); }
 
+  // AnimationFrameTimingMonitor::Client overrides. A worker has no rendering
+  // frame, so only congested-moment reporting is used.
+  void ReportLongTaskTiming(base::TimeTicks start,
+                            base::TimeTicks end,
+                            ExecutionContext* context) override {}
+  void ReportCongestedMoment(AnimationFrameTimingInfo*) override;
+  bool ShouldReportLongAnimationFrameTiming() const override { return true; }
+  bool RequestedMainFramePending() override { return false; }
+  ukm::UkmRecorder* MainFrameUkmRecorder() override { return nullptr; }
+  ukm::SourceId MainFrameUkmSourceId() override {
+    return ukm::kInvalidSourceId;
+  }
+
+  void CreateAnimationFrameTimingMonitor();
+
   void Trace(Visitor*) const override;
 
   virtual InstalledScriptsManager* GetInstalledScriptsManager() {
@@ -347,6 +364,8 @@ class CORE_EXPORT WorkerGlobalScope
   int last_pending_error_event_id_ = 0;
 
   Member<OffscreenFontSelector> font_selector_;
+
+  Member<AnimationFrameTimingMonitor> animation_frame_timing_monitor_;
 
   blink::BrowserInterfaceBrokerProxyImpl browser_interface_broker_proxy_;
 

@@ -32,8 +32,11 @@
 
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/core/timing/animation_frame_timing_info.h"
+#include "third_party/blink/renderer/core/timing/performance_long_animation_frame_timing.h"
 #include "third_party/blink/renderer/core/workers/dedicated_worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 
@@ -45,6 +48,20 @@ WorkerPerformance::WorkerPerformance(WorkerGlobalScope* context)
                   context->GetTaskRunner(TaskType::kPerformanceTimeline),
                   context),
       execution_context_(context) {}
+
+void WorkerPerformance::QueueLongAnimationFrameTiming(
+    AnimationFrameTimingInfo* info) {
+  CHECK(RuntimeEnabledFeatures::LongAnimationFrameWorkerEnabled());
+  PerformanceLongAnimationFrameTiming* entry =
+      PerformanceLongAnimationFrameTiming::Create(
+          info, time_origin_, cross_origin_isolated_capability_,
+          execution_context_, /*paint_timing_info=*/std::nullopt,
+          /*navigation_id=*/0);
+  if (!IsLongAnimationFrameBufferFull()) {
+    InsertEntryIntoSortedBuffer(long_animation_frame_buffer_, *entry);
+  }
+  NotifyObserversOfEntry(*entry);
+}
 
 void WorkerPerformance::Trace(Visitor* visitor) const {
   visitor->Trace(execution_context_);

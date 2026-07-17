@@ -98,6 +98,18 @@ void NonMainThreadImpl::ShutdownOnThread() {
   Scheduler()->Shutdown();
 }
 
+void NonMainThreadImpl::AddTaskTimeObserver(
+    base::sequence_manager::TaskTimeObserver* task_time_observer) {
+  GetNonMainThreadScheduler()->GetHelper().AddTaskTimeObserver(
+      task_time_observer);
+}
+
+void NonMainThreadImpl::RemoveTaskTimeObserver(
+    base::sequence_manager::TaskTimeObserver* task_time_observer) {
+  GetNonMainThreadScheduler()->GetHelper().RemoveTaskTimeObserver(
+      task_time_observer);
+}
+
 NonMainThreadImpl::SimpleThreadImpl::SimpleThreadImpl(
     const String& name_prefix,
     const base::SimpleThread ::Options& options,

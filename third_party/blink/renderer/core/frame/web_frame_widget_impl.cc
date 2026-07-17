@@ -1784,8 +1784,8 @@ void WebFrameWidgetImpl::OnTaskCompletedForFrame(
     base::TimeTicks end_time,
     LocalFrame* frame) {
   if (animation_frame_timing_monitor_) {
-    animation_frame_timing_monitor_->OnTaskCompleted(start_time, end_time,
-                                                     frame);
+    animation_frame_timing_monitor_->OnMainThreadTaskCompleted(start_time,
+                                                               end_time, frame);
   }
 }
 

@@ -4,6 +4,9 @@
 
 // https://w3c.github.io/paint-timing/#PaintTimingMixin
 interface mixin PaintTimingMixin {
-    readonly attribute DOMHighResTimeStamp paintTime;
-    readonly attribute DOMHighResTimeStamp? presentationTime;
+    // Paint timing only applies to document (Window) contexts. Scoping the
+    // members to Window keeps the properties below out of
+    // PerformanceLongAnimationFrameTiming when it is exposed to web workers.
+    [Exposed=Window] readonly attribute DOMHighResTimeStamp paintTime;
+    [Exposed=Window] readonly attribute DOMHighResTimeStamp? presentationTime;
 };

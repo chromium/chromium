@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
@@ -18,6 +19,7 @@
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
@@ -26,13 +28,19 @@ PerformanceLongAnimationFrameTiming::Create(
     AnimationFrameTimingInfo* info,
     base::TimeTicks time_origin,
     bool cross_origin_isolated_capability,
-    DOMWindow* source,
+    ExecutionContext* execution_context,
     const std::optional<DOMPaintTimingInfo>& paint_timing_info,
     uint64_t navigation_id) {
-  Performance* performance =
-      DOMWindowPerformance::performance(*source->ToLocalDOMWindow());
+  // Worker contexts have no window, so `source` is nullptr there. The observer
+  // security origin filters which scripts may expose their source attribution.
+  DOMWindow* source = DynamicTo<LocalDOMWindow>(execution_context);
+  const SecurityOrigin* observer_security_origin =
+      execution_context ? execution_context->GetSecurityOrigin() : nullptr;
+
   DOMHighResTimeStamp startTime =
-      performance->MonotonicTimeToDOMHighResTimeStamp(info->FrameStartTime());
+      Performance::MonotonicTimeToDOMHighResTimeStamp(
+          time_origin, info->FrameStartTime(),
+          /*allow_negative_value=*/false, cross_origin_isolated_capability);
   double duration =
       paint_timing_info
           ? (paint_timing_info->paint_time - startTime)
@@ -41,7 +49,8 @@ PerformanceLongAnimationFrameTiming::Create(
   PerformanceLongAnimationFrameTiming* entry =
       MakeGarbageCollected<PerformanceLongAnimationFrameTiming>(
           duration, startTime, info, time_origin,
-          cross_origin_isolated_capability, source, navigation_id);
+          cross_origin_isolated_capability, source, observer_security_origin,
+          navigation_id);
   if (paint_timing_info.has_value()) {
     entry->SetPaintTimingInfo(*paint_timing_info);
   }
@@ -55,6 +64,7 @@ PerformanceLongAnimationFrameTiming::PerformanceLongAnimationFrameTiming(
     base::TimeTicks time_origin,
     bool cross_origin_isolated_capability,
     DOMWindow* source,
+    const SecurityOrigin* observer_security_origin,
     uint64_t navigation_id)
     : PerformanceEntry(duration,
                        AtomicString("long-animation-frame"),
@@ -85,13 +95,9 @@ PerformanceLongAnimationFrameTiming::PerformanceLongAnimationFrameTiming(
       layout_duration_(
           Performance::ClampTimeResolution(info->LayoutDuration(),
                                            cross_origin_isolated_capability)) {
-  CHECK(source->ToLocalDOMWindow());
-  const SecurityOrigin* security_origin =
-      source->ToLocalDOMWindow()->GetSecurityOrigin();
-  CHECK(security_origin);
-
   for (ScriptTimingInfo* script : info->Scripts()) {
-    if (security_origin->CanAccess(script->GetSecurityOrigin())) {
+    if (!observer_security_origin ||
+        observer_security_origin->CanAccess(script->GetSecurityOrigin())) {
       scripts_.push_back(MakeGarbageCollected<PerformanceScriptTiming>(
           script, time_origin, cross_origin_isolated_capability, source,
           navigation_id));
