@@ -487,7 +487,7 @@ void CdmAdapter::Decrypt(StreamType stream_type,
 
   cdm::InputBuffer_2 input_buffer = {};
   std::vector<cdm::SubsampleEntry> subsamples;
-  std::unique_ptr<DecryptedBlockImpl> decrypted_block(new DecryptedBlockImpl());
+  auto decrypted_block = std::make_unique<DecryptedBlockImpl>();
 
   TRACE_EVENT_BEGIN("media", "CdmAdapter::Decrypt", "stream_type", stream_type);
   ToCdmInputBuffer(*encrypted, &subsamples, &input_buffer);
@@ -605,7 +605,7 @@ void CdmAdapter::DecryptAndDecodeAudio(scoped_refptr<DecoderBuffer> encrypted,
 
   cdm::InputBuffer_2 input_buffer = {};
   std::vector<cdm::SubsampleEntry> subsamples;
-  std::unique_ptr<AudioFramesImpl> audio_frames(new AudioFramesImpl());
+  auto audio_frames = std::make_unique<AudioFramesImpl>();
 
   TRACE_EVENT_BEGIN("media", "CdmAdapter::DecryptAndDecodeAudio");
   ToCdmInputBuffer(*encrypted, &subsamples, &input_buffer);

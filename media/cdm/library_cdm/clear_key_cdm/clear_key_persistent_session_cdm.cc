@@ -146,7 +146,7 @@ void ClearKeyPersistentSessionCdm::LoadSession(
   DCHECK_EQ(CdmSessionType::kPersistentLicense, session_type);
 
   // Load the saved state for |session_id| and then create the session.
-  std::unique_ptr<CdmFileAdapter> file(new CdmFileAdapter(cdm_host_proxy_));
+  auto file = std::make_unique<CdmFileAdapter>(cdm_host_proxy_);
   CdmFileAdapter* file_ref = file.get();
   file_ref->Open(
       session_id,
@@ -209,8 +209,8 @@ void ClearKeyPersistentSessionCdm::OnFileReadForLoadSession(
   }
 
   // FinishUpdate() needs a SimpleCdmPromise, so create a wrapper promise.
-  std::unique_ptr<SimpleCdmPromise> simple_promise(
-      new FinishLoadCdmPromise(session_id, std::move(promise)));
+  auto simple_promise =
+      std::make_unique<FinishLoadCdmPromise>(session_id, std::move(promise));
   cdm_->FinishUpdate(session_id, key_added, std::move(simple_promise));
 }
 
@@ -238,7 +238,7 @@ void ClearKeyPersistentSessionCdm::UpdateSession(
   }
 
   // Persistent session has been updated, so save the current state.
-  std::unique_ptr<CdmFileAdapter> file(new CdmFileAdapter(cdm_host_proxy_));
+  auto file = std::make_unique<CdmFileAdapter>(cdm_host_proxy_);
   CdmFileAdapter* file_ref = file.get();
   file_ref->Open(
       session_id,
@@ -305,7 +305,7 @@ void ClearKeyPersistentSessionCdm::RemoveSession(
   }
 
   // Remove the saved state for |session_id| first.
-  std::unique_ptr<CdmFileAdapter> file(new CdmFileAdapter(cdm_host_proxy_));
+  auto file = std::make_unique<CdmFileAdapter>(cdm_host_proxy_);
   CdmFileAdapter* file_ref = file.get();
   file_ref->Open(
       session_id,
