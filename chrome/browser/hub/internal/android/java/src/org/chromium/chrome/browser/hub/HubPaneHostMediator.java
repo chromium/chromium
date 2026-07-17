@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.hub;
 
+import static org.chromium.chrome.browser.hub.HubPaneHostProperties.INTERACTIVE_ELEMENT_CHECKER;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.PANE_ROOT_VIEW;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.SLIDE_ANIMATE_LEFT_TO_RIGHT;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.SNACKBAR_CONTAINER_CALLBACK;
@@ -60,6 +61,7 @@ public class HubPaneHostMediator {
     /** Cleans up observers. */
     public void destroy() {
         mPropertyModel.set(PANE_ROOT_VIEW, null);
+        mPropertyModel.set(INTERACTIVE_ELEMENT_CHECKER, null);
         mPaneSupplier.removeObserver(mOnPaneChangeCallback);
     }
 
@@ -85,6 +87,7 @@ public class HubPaneHostMediator {
         mCurrentPaneId = newPaneId;
 
         mPropertyModel.set(SLIDE_ANIMATE_LEFT_TO_RIGHT, slideLeftToRight);
+        mPropertyModel.set(INTERACTIVE_ELEMENT_CHECKER, pane::isTouchOnInteractiveElement);
         mPropertyModel.set(PANE_ROOT_VIEW, view);
     }
 

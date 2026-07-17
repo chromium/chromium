@@ -18,6 +18,9 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /** Implementation of {@link PaneManager} for managing {@link Pane}s. */
 @NullMarked
 public class PaneManagerImpl implements PaneManager {
@@ -66,6 +69,18 @@ public class PaneManagerImpl implements PaneManager {
     @Override
     public PaneOrderController getPaneOrderController() {
         return mPaneOrderController;
+    }
+
+    @Override
+    public List<Integer> getActivePaneOrder() {
+        List<Integer> activePaneIds = new ArrayList<>();
+        for (int id : mPaneOrderController.getPaneOrder()) {
+            Pane pane = getPaneForId(id);
+            if (pane != null && pane.getReferenceButtonDataSupplier().get() != null) {
+                activePaneIds.add(id);
+            }
+        }
+        return activePaneIds;
     }
 
     @Override

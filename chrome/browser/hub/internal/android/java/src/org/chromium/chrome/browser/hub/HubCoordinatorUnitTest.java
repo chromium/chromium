@@ -442,7 +442,7 @@ public class HubCoordinatorUnitTest {
     }
 
     @Test
-    public void onPaneSwipe_recordsHistograms() {
+    public void onSwipeSwitchComplete_recordsHistograms() {
         var leftSwipeWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord("Android.Hub.PaneSwiped.Left", PaneId.TAB_SWITCHER)
@@ -462,22 +462,31 @@ public class HubCoordinatorUnitTest {
     }
 
     @Test
-    public void onPaneSwipe_cyclesToNextPane() {
+    public void onSwipeSwitchComplete_cyclesToNextPane() {
         mHubCoordinator.onSwipeSwitchComplete(true);
         verify(mPaneManager).focusPane(PaneId.INCOGNITO_TAB_SWITCHER);
     }
 
     @Test
-    public void onPaneSwipe_cyclesToPreviousPane() {
+    public void onSwipeSwitchComplete_cyclesToPreviousPane() {
         mHubCoordinator.onSwipeSwitchComplete(false);
         verify(mPaneManager).focusPane(PaneId.INCOGNITO_TAB_SWITCHER);
     }
 
     @Test
-    public void onPaneSwipe_wrapsAroundFromLastPane() {
+    public void onSwipeSwitchComplete_wrapsAroundFromLastPane() {
         reset(mPaneManager);
         assertTrue(mPaneManager.focusPane(PaneId.INCOGNITO_TAB_SWITCHER));
         mHubCoordinator.onSwipeSwitchComplete(true);
         verify(mPaneManager).focusPane(PaneId.TAB_SWITCHER);
+    }
+
+    @Test
+    public void onSwipeSwitchCancel_setsLoadHintToWarm() {
+        mHubCoordinator.onSwipeSwitchCancel(true);
+        verify(mIncognitoTabSwitcherPane).notifyLoadHint(LoadHint.WARM);
+
+        mHubCoordinator.onSwipeSwitchCancel(false);
+        verify(mIncognitoTabSwitcherPane, times(2)).notifyLoadHint(LoadHint.WARM);
     }
 }

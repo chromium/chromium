@@ -233,6 +233,32 @@ public class HubToolbarViewUnitTest {
     }
 
     @Test
+    public void testPaneSwitcherScrollPosition() {
+        HubToolbarView hubToolbarView = mToolbarContainer.findViewById(R.id.hub_toolbar);
+        // Verify setPaneSwitcherScrollPosition executes cleanly without crash.
+        hubToolbarView.setPaneSwitcherScrollPosition(0, 0.5f);
+    }
+
+    @Test
+    public void testPaneSwitcherBlockTabSelectionCallback() {
+        FullButtonData fullButtonData = makeTestButtonData();
+        mPropertyModel.set(
+                PANE_SWITCHER_BUTTON_DATA, Arrays.asList(fullButtonData, fullButtonData));
+        HubToolbarView hubToolbarView = mToolbarContainer.findViewById(R.id.hub_toolbar);
+
+        // When tab selection callback is blocked, tab.select() on an unselected tab should not
+        // trigger onPress.
+        hubToolbarView.setBlockTabSelectionCallback(true);
+        mPaneSwitcher.getTabAt(0).select();
+        assertEquals(0, mOnButtonHelper.getCallCount());
+
+        // When unblocked, selecting tab triggers onPress normally.
+        hubToolbarView.setBlockTabSelectionCallback(false);
+        mPaneSwitcher.getTabAt(1).select();
+        assertEquals(1, mOnButtonHelper.getCallCount());
+    }
+
+    @Test
     public void testPaneSwitcherContentDescription() {
         FullButtonData fullButtonData = makeTestButtonData();
         mPropertyModel.set(

@@ -14,6 +14,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
@@ -116,6 +117,25 @@ public class HubToolbarView extends LinearLayout {
 
     void setMenuButtonVisible(boolean visible) {
         mMenuButtonWrapper.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+    }
+
+    void setPaneSwitcherScrollPosition(int position, float positionOffset) {
+        mPaneSwitcher.setScrollPosition(
+                position,
+                positionOffset,
+                /* updateSelectedTabView= */ false,
+                /* updateIndicatorPosition= */ true);
+    }
+
+    /**
+     * Blocks or unblocks tab selection callbacks during active swipe-to-switch gestures to prevent
+     * intermediate scroll position changes or simultaneous taps from firing extra pane selection
+     * events while a gesture is active.
+     */
+    @SuppressLint("ClickableViewAccessibility") // Intentionally swallows touches mid-swipe.
+    void setBlockTabSelectionCallback(boolean block) {
+        mBlockTabSelectionCallback = block;
+        mPaneSwitcher.setOnTouchListener(block ? (v, event) -> true : null);
     }
 
     void setPaneSwitcherButtonData(

@@ -583,6 +583,19 @@ public abstract class TabSwitcherPaneBase extends PaneBase
     }
 
     /**
+     * Delegates touch point hit testing to {@link TabSwitcherPaneCoordinator}. Ensures touches on
+     * interactive elements (such as tab cards in the RecyclerView) are preserved for tab
+     * interactions (like swipe-to-close) rather than intercepted as Hub pane swipes.
+     */
+    @Override
+    public boolean isTouchOnInteractiveElement(float x, float y) {
+        @Nullable TabSwitcherPaneCoordinator coordinator =
+                mTabSwitcherPaneCoordinatorSupplier.get();
+        if (coordinator == null) return false;
+        return coordinator.isTouchOnInteractiveElement(x, y);
+    }
+
+    /**
      * Request to show all the tabs in the pane. Subclasses should override this method to invoke
      * {@link TabSwitcherResetHandler#resetWithListOfTabs} with their available tabs.
      */

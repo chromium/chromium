@@ -137,6 +137,20 @@ public class HubToolbarCoordinator {
         return mMediator.getButton(paneId);
     }
 
+    /** Set the scroll position and offset of the pane switcher. */
+    public void setPaneSwitcherScrollPosition(int position, float positionOffset) {
+        mHubToolbarView.setPaneSwitcherScrollPosition(position, positionOffset);
+    }
+
+    /**
+     * Blocks or unblocks tab selection callbacks during active swipe-to-switch gestures to prevent
+     * intermediate scroll position changes or simultaneous taps from firing extra pane selection
+     * events while a gesture is active.
+     */
+    public void setBlockTabSelectionCallback(boolean block) {
+        mHubToolbarView.setBlockTabSelectionCallback(block);
+    }
+
     /** Returns whether the search box view is currently visible. */
     public boolean isSearchBoxVisible() {
         return mSearchBoxView.getVisibility() == View.VISIBLE;

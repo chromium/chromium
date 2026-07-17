@@ -35,11 +35,15 @@ class HubPaneHostProperties {
     public static final WritableObjectPropertyKey<PaneViewProvider> PANE_VIEW_PROVIDER =
             new WritableObjectPropertyKey<>();
 
+    public static final WritableObjectPropertyKey<HubPaneHostView.InteractiveElementChecker>
+            INTERACTIVE_ELEMENT_CHECKER = new WritableObjectPropertyKey<>();
+
     static final PropertyKey[] ALL_KEYS = {
         PANE_ROOT_VIEW,
         COLOR_MIXER,
         SNACKBAR_CONTAINER_CALLBACK,
         SLIDE_ANIMATE_LEFT_TO_RIGHT,
+        INTERACTIVE_ELEMENT_CHECKER,
         PANE_VIEW_PROVIDER
     };
 }

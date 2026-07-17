@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.hub;
 
 import static org.chromium.chrome.browser.hub.HubColorMixer.COLOR_MIXER;
+import static org.chromium.chrome.browser.hub.HubPaneHostProperties.INTERACTIVE_ELEMENT_CHECKER;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.PANE_ROOT_VIEW;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.PANE_VIEW_PROVIDER;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.SLIDE_ANIMATE_LEFT_TO_RIGHT;
@@ -25,6 +26,8 @@ public class HubPaneHostViewBinder {
             view.setColorMixer(model.get(COLOR_MIXER));
         } else if (key == SNACKBAR_CONTAINER_CALLBACK) {
             view.setSnackbarContainerConsumer(model.get(SNACKBAR_CONTAINER_CALLBACK));
+        } else if (key == INTERACTIVE_ELEMENT_CHECKER) {
+            view.setInteractiveElementChecker(model.get(INTERACTIVE_ELEMENT_CHECKER));
         } else if (key == PANE_VIEW_PROVIDER) {
             view.setPaneViewProvider(model.get(PANE_VIEW_PROVIDER));
         }

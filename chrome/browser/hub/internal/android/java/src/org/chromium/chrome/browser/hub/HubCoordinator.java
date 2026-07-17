@@ -328,9 +328,45 @@ public class HubCoordinator implements PaneHubController, BackPressHandler, Pane
                     "Android.Hub.PaneSwiped." + direction, currentPane.getPaneId(), PaneId.COUNT);
         }
 
+        mHubToolbarCoordinator.setBlockTabSelectionCallback(false);
+
         Pane nextPane = getAdjacentPane(isSwipeLeft);
         if (nextPane != null) {
             mPaneManager.focusPane(nextPane.getPaneId());
+        }
+    }
+
+    @Override
+    public void onSwipeSwitchCancel(boolean isSwipeLeft) {
+        Pane nextPane = getAdjacentPane(isSwipeLeft);
+        if (nextPane != null) {
+            nextPane.notifyLoadHint(LoadHint.WARM);
+        }
+        mHubToolbarCoordinator.setBlockTabSelectionCallback(false);
+    }
+
+    @Override
+    public void onSwipeDragProgress(float progress, boolean isSwipeLeft) {
+        Pane currentPane = getFocusedPane();
+        Pane nextPane = getAdjacentPane(isSwipeLeft);
+        if (currentPane == null || nextPane == null) return;
+
+        mHubToolbarCoordinator.setBlockTabSelectionCallback(true);
+
+        List<Integer> activePaneIds = mPaneManager.getActivePaneOrder();
+        int currentActiveIndex = activePaneIds.indexOf(currentPane.getPaneId());
+        int nextActiveIndex = activePaneIds.indexOf(nextPane.getPaneId());
+        if (currentActiveIndex == INVALID_PANE_SWITCHER_INDEX
+                || nextActiveIndex == INVALID_PANE_SWITCHER_INDEX) {
+            return;
+        }
+
+        int targetActiveIndex = currentActiveIndex + (isSwipeLeft ? 1 : -1);
+        if (nextActiveIndex == targetActiveIndex) {
+            float absoluteScroll = currentActiveIndex + (isSwipeLeft ? progress : -progress);
+            int scrollPosition = (int) absoluteScroll;
+            float scrollOffset = absoluteScroll - scrollPosition;
+            mHubToolbarCoordinator.setPaneSwitcherScrollPosition(scrollPosition, scrollOffset);
         }
     }
 

@@ -1397,4 +1397,17 @@ public class TabSwitcherPaneUnitTest {
         mTabSwitcherPane.setPaneHubController(mPaneHubController);
         assertFalse(mTabSwitcherPane.getHubSearchBoxVisibilitySupplier().get());
     }
+
+    @Test
+    public void testIsTouchOnInteractiveElement() {
+        assertFalse(mTabSwitcherPane.isTouchOnInteractiveElement(100f, 100f));
+
+        mTabSwitcherPane.createTabSwitcherPaneCoordinator();
+
+        when(mTabSwitcherPaneCoordinator.isTouchOnInteractiveElement(100f, 100f)).thenReturn(true);
+        assertTrue(mTabSwitcherPane.isTouchOnInteractiveElement(100f, 100f));
+
+        when(mTabSwitcherPaneCoordinator.isTouchOnInteractiveElement(100f, 100f)).thenReturn(false);
+        assertFalse(mTabSwitcherPane.isTouchOnInteractiveElement(100f, 100f));
+    }
 }

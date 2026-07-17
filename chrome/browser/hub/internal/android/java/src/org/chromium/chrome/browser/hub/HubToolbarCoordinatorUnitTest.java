@@ -143,4 +143,19 @@ public class HubToolbarCoordinatorUnitTest {
         // Verify that observer was removed from the bottom toolbar visibility supplier
         assertFalse(mBottomToolbarVisibilitySupplier.hasObservers());
     }
+
+    @Test
+    public void testSetPaneSwitcherScrollPosition() {
+        mCoordinator.setPaneSwitcherScrollPosition(1, 0.5f);
+        verify(mHubToolbarView).setPaneSwitcherScrollPosition(1, 0.5f);
+    }
+
+    @Test
+    public void testSetBlockTabSelectionCallback() {
+        mCoordinator.setBlockTabSelectionCallback(true);
+        verify(mHubToolbarView).setBlockTabSelectionCallback(true);
+
+        mCoordinator.setBlockTabSelectionCallback(false);
+        verify(mHubToolbarView).setBlockTabSelectionCallback(false);
+    }
 }
