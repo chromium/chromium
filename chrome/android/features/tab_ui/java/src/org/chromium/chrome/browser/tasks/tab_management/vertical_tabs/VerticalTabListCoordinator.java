@@ -288,45 +288,7 @@ public class VerticalTabListCoordinator {
         // Item Touch Listeners intercept all incoming window events before they are sent down to
         // the child views.
         recyclerView.addOnItemTouchListener(
-                new RecyclerView.SimpleOnItemTouchListener() {
-                    @Override
-                    public boolean onInterceptTouchEvent(RecyclerView recyclerView, MotionEvent e) {
-                        // Save the coordinates in mLastTouchPoint the moment a finger or mouse
-                        // pointer hits the view surface.
-                        if (e.getActionMasked() == MotionEvent.ACTION_DOWN) {
-                            mLastTouchPoint.set((int) e.getX(), (int) e.getY());
-                        }
-
-                        // Intercept mouse right-clicks. While setOnContextClickListener works for
-                        // empty background space (where no child views capture the event), actual
-                        // tab row child views swallow right-clicks internally without bubbling them
-                        // up to the parent (recyclerView), causing
-                        // recyclerView.setOnContextClickListener to be skipped.
-                        if ((e.getButtonState() & MotionEvent.BUTTON_SECONDARY) != 0) {
-                            View childView = recyclerView.findChildViewUnder(e.getX(), e.getY());
-
-                            if (childView != null) {
-                                handleContextMenuInteraction(
-                                        activity, recyclerView, e.getX(), e.getY());
-                                return true;
-                            }
-                            // For empty space context menus, we let
-                            // recyclerView.setOnContextClickListener call
-                            // #handleContextMenuInteraction instead of calling it here.
-                            return false;
-                        }
-
-                        // Feed all touch events to the detector. ACTION_DOWN schedules a long-press
-                        // timeout (~500ms). Trailing events (ACTION_MOVE, ACTION_UP) are processed
-                        // to either cancel the timeout if the finger drags too far, or reset the
-                        // tracking state engine when lifted.
-                        gestureDetector.onTouchEvent(e);
-
-                        // Return false to keep our tracking passive. If we return true, subsequent
-                        // events (ACTION_UP, ACTION_MOVE, etc.) bypass this intercept method.
-                        return false;
-                    }
-                });
+                createRecyclerViewItemTouchListener(activity, gestureDetector));
 
         // Handles right-click for empty space context menu on tab_list_recycler_view.
         recyclerView.setOnContextClickListener(
@@ -482,21 +444,22 @@ public class VerticalTabListCoordinator {
         mPinnedLayoutManager = new GridLayoutManager(activity, getSpanCount());
         pinnedTabsRecyclerView.setLayoutManager(mPinnedLayoutManager);
 
-        pinnedTabsRecyclerView.addOnItemTouchListener(
-                new RecyclerView.SimpleOnItemTouchListener() {
-                    @Override
-                    public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-                        if (e.getActionMasked() == MotionEvent.ACTION_DOWN) {
-                            mLastTouchPoint.set((int) e.getX(), (int) e.getY());
-                        }
+        // Create a gesture detector to catch long-presses on the pinned tabs rv empty background
+        // area.
+        GestureDetector pinnedSpaceGestureDetector =
+                new GestureDetector(
+                        activity,
+                        createEmptySpaceGestureListener(
+                                activity, pinnedTabsRecyclerView, pinnedTabsRecyclerView));
 
-                        if ((e.getButtonState() & MotionEvent.BUTTON_SECONDARY) != 0) {
-                            handleContextMenuInteraction(activity, rv, e.getX(), e.getY());
-                            return true;
-                        }
-                        return false;
-                    }
-                });
+        pinnedTabsRecyclerView.addOnItemTouchListener(
+                createRecyclerViewItemTouchListener(activity, pinnedSpaceGestureDetector));
+
+        // While it is possible to handle recycler view right-clicks using
+        // ItemTouchListener#onInterceptTouch, onContextClickListeners are needed to avoid the
+        // "page" context menu from showing when a web page is open behind the vt.
+        pinnedTabsRecyclerView.setOnContextClickListener(
+                createEmptySpaceContextClickListener(activity, pinnedTabsRecyclerView));
 
         // TODO(crbug.com/509226293): Create a lightweight touch helper for pinned tabs if needed.
         // Setup drag-and-drop reordering. Reuses the vertical tab touch helper since pinned tabs
@@ -1063,6 +1026,54 @@ public class VerticalTabListCoordinator {
         // Build a precise 1x1 bounding box right under the cursor/pointer.
         Rect anchorRect = new Rect(windowX, windowY, windowX + 1, windowY + 1);
         return new RectProvider(anchorRect);
+    }
+
+    /**
+     * Creates a unified SimpleOnItemTouchListener for RecyclerView surfaces to passively track
+     * touch coordinates, capture tab item right-clicks, and delegate empty space long-presses.
+     *
+     * @param activity The active context.
+     * @param gestureDetector The companion GestureDetector built for this specific list surface.
+     */
+    private RecyclerView.OnItemTouchListener createRecyclerViewItemTouchListener(
+            Activity activity, GestureDetector gestureDetector) {
+        return new RecyclerView.SimpleOnItemTouchListener() {
+            @Override
+            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+                // Save the coordinates in mLastTouchPoint the moment a finger or mouse
+                // pointer hits the view surface.
+                if (e.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                    mLastTouchPoint.set((int) e.getX(), (int) e.getY());
+                }
+
+                // Intercept mouse right-clicks. While setOnContextClickListener works for
+                // empty background space (where no child views capture the event), actual
+                // tab row child views swallow right-clicks internally without bubbling them
+                // up to the parent (recyclerView), causing
+                // recyclerView.setOnContextClickListener to be skipped.
+                if ((e.getButtonState() & MotionEvent.BUTTON_SECONDARY) != 0) {
+                    View childView = rv.findChildViewUnder(e.getX(), e.getY());
+                    if (childView != null) {
+                        handleContextMenuInteraction(activity, rv, e.getX(), e.getY());
+                        return true;
+                    }
+                    // For empty space context menus, we let
+                    // recyclerView.setOnContextClickListener call
+                    // #handleContextMenuInteraction instead of calling it here.
+                    return false;
+                }
+
+                // Feed all touch events to the detector. ACTION_DOWN schedules a long-press
+                // timeout (~500ms). Trailing events (ACTION_MOVE, ACTION_UP) are processed
+                // to either cancel the timeout if the finger drags too far, or reset the
+                // tracking state engine when lifted.
+                gestureDetector.onTouchEvent(e);
+
+                // Return false to keep our tracking passive. If we return true, subsequent
+                // events (ACTION_UP, ACTION_MOVE, etc.) bypass this intercept method.
+                return false;
+            }
+        };
     }
 
     /**

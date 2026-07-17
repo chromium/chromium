@@ -33,6 +33,7 @@ import android.widget.ImageButton;
 
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -289,6 +290,27 @@ public class VerticalTabListCoordinatorUnitTest {
                 mCoordinator.getTabStripContextMenuCoordinatorForTesting());
     }
 
+    private void assertRecyclerViewLongPressLaunchesEmptySpaceContextMenu(
+            RecyclerView recyclerView) {
+        assertNotNull("RecyclerView target for long press must not be null.", recyclerView);
+
+        // Ensure the context menu coordinator reference starts fresh as null.
+        assertNull(
+                "Tab Strip Context menu coordinator should start as null.",
+                mCoordinator.getTabStripContextMenuCoordinatorForTesting());
+
+        // Simulate an action down at coordinates (250, 400).
+        MotionEvent downEvent = obtainMotionEvent(MotionEvent.ACTION_DOWN, 250f, 400f);
+        recyclerView.onInterceptTouchEvent(downEvent);
+
+        // Advance Robolectric's clock by 500ms to trigger the long-press timeout.
+        // This triggers the gestureDetector's long-press callback that we overrode.
+        ShadowLooper.idleMainLooper(500, TimeUnit.MILLISECONDS);
+        assertNotNull(
+                "Long press on empty space should instantiate the context menu coordinator.",
+                mCoordinator.getTabStripContextMenuCoordinatorForTesting());
+    }
+
     @Test
     @SmallTest
     public void testConstructor() {
@@ -437,21 +459,7 @@ public class VerticalTabListCoordinatorUnitTest {
         TabListRecyclerView recyclerView =
                 mCoordinator.getView().findViewById(R.id.tab_list_recycler_view);
 
-        assertNotNull(recyclerView);
-
-        // Ensure the context menu coordinator reference starts fresh as null.
-        assertNull(mCoordinator.getTabStripContextMenuCoordinatorForTesting());
-
-        // Simulate an action down at coordinates (250, 400).
-        MotionEvent downEvent = obtainMotionEvent(MotionEvent.ACTION_DOWN, 250f, 400f);
-        recyclerView.onInterceptTouchEvent(downEvent);
-
-        // Advance Robolectric's clock by 500ms to trigger the long-press timeout.
-        // This triggers the gestureDetector's long-press callback that we overrode.
-        ShadowLooper.idleMainLooper(500, TimeUnit.MILLISECONDS);
-        assertNotNull(
-                "Long press on empty space should instantiate the context menu coordinator.",
-                mCoordinator.getTabStripContextMenuCoordinatorForTesting());
+        assertRecyclerViewLongPressLaunchesEmptySpaceContextMenu(recyclerView);
     }
 
     @Test
@@ -499,6 +507,26 @@ public class VerticalTabListCoordinatorUnitTest {
         View headerContainer = container.findViewById(R.id.vertical_tab_header_container);
 
         assertEmptySpaceContextMenuRightClick(headerContainer);
+    }
+
+    @Test
+    @SmallTest
+    public void testVTPinnedTabsEmptySpaceLongPress_LaunchesEmptySpaceContextMenu() {
+        createCoordinator();
+        ViewGroup container = (ViewGroup) mCoordinator.getView();
+        TabListRecyclerView pinnedRecyclerView =
+                container.findViewById(R.id.pinned_tabs_recycler_view);
+        assertRecyclerViewLongPressLaunchesEmptySpaceContextMenu(pinnedRecyclerView);
+    }
+
+    @Test
+    @SmallTest
+    public void testVTPinnedTabsEmptySpaceRightClick_LaunchesEmptySpaceContextMenu() {
+        createCoordinator();
+        TabListRecyclerView pinnedRecyclerView =
+                mCoordinator.getView().findViewById(R.id.pinned_tabs_recycler_view);
+
+        assertEmptySpaceContextMenuRightClick(pinnedRecyclerView);
     }
 
     @Test
