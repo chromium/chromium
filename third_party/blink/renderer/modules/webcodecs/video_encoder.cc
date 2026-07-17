@@ -1117,9 +1117,11 @@ void VideoEncoder::ProcessEncode(Request* request) {
     // resolve synchronously.
     blocking_request_in_progress_ = request;
 
-    auto readback_done_callback = blink::BindOnce(
-        &VideoEncoder::OnReadbackDone, WrapWeakPersistent(this),
-        WrapPersistent(request), frame, std::move(encode_done_callback));
+    auto readback_done_callback =
+        blink::BindOnce(&VideoEncoder::OnReadbackDone,
+                        MakeUnwrappingCrossThreadWeakHandle(this),
+                        MakeUnwrappingCrossThreadHandle(request), frame,
+                        std::move(encode_done_callback));
 
     if (StartReadback(std::move(frame), std::move(readback_done_callback))) {
       request->input->close();
@@ -1757,7 +1759,8 @@ ScriptPromise<VideoEncoderSupport> VideoEncoder::isConfigSupported(
           script_state);
   auto promise = resolver->Promise();
   auto find_any_callback = HeapBarrierCallback<VideoEncoderSupport>(
-      num_callbacks, BindOnce(&FindAnySupported, WrapPersistent(resolver)));
+      num_callbacks,
+      BindOnce(&FindAnySupported, MakeUnwrappingCrossThreadHandle(resolver)));
 
   if (parsed_config->hw_pref != HardwarePreference::kPreferSoftware ||
       media::MayHaveAndAllowSelectOSSoftwareEncoder(parsed_config->codec)) {

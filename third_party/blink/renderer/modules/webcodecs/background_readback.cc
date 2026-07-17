@@ -198,8 +198,8 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToMemory(
       texture_size, src_point, info, base::saturated_cast<GLuint>(rgba_stide),
       dst_pixels,
       blink::BindOnce(&BackgroundReadback::OnARGBPixelsFrameReadCompleted,
-                      WrapWeakPersistent(this), std::move(result_cb), txt_frame,
-                      std::move(result)));
+                      MakeUnwrappingCrossThreadWeakHandle(this),
+                      std::move(result_cb), txt_frame, std::move(result)));
   media::WaitAndReplaceSyncTokenClient client(ri, std::move(ri_access));
   txt_frame->UpdateReleaseSyncToken(&client);
 }
@@ -271,8 +271,9 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToBuffer(
       texture_size, src_point, info, base::saturated_cast<GLuint>(stride),
       dst_pixels,
       blink::BindOnce(&BackgroundReadback::OnARGBPixelsBufferReadCompleted,
-                      WrapWeakPersistent(this), std::move(txt_frame), src_rect,
-                      dest_layout, dest_buffer, std::move(done_cb)));
+                      MakeUnwrappingCrossThreadWeakHandle(this),
+                      std::move(txt_frame), src_rect, dest_layout, dest_buffer,
+                      std::move(done_cb)));
   gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
 }
 
