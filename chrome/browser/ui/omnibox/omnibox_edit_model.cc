@@ -724,44 +724,18 @@ void OmniboxEditModel::StartAutocomplete(bool prevent_inline_autocomplete) {
 }
 
 bool OmniboxEditModel::CanPasteAndGo(const std::u16string& text) const {
-  if (!controller_->client()->IsPasteAndGoEnabled()) {
-    return false;
-  }
-
-  AutocompleteMatch match;
-  ClassifyString(text, &match, nullptr);
-  return match.destination_url.is_valid();
+  return searchbox::CanPasteAndGo(controller_->client(), text);
 }
 
 void OmniboxEditModel::PasteAndGo(const std::u16string& text,
                                   base::TimeTicks match_selection_timestamp) {
-  DCHECK(CanPasteAndGo(text));
-
   if (view_) {
     view_->RevertAll();
   }
-  AutocompleteMatch match;
-  GURL alternate_nav_url;
-  ClassifyString(text, &match, &alternate_nav_url);
 
-  GURL upgraded_url;
-  if (match.type == AutocompleteMatchType::URL_WHAT_YOU_TYPED &&
-      controller_->client()->ShouldDefaultTypedNavigationsToHttps() &&
-      AutocompleteInput::ShouldUpgradeToHttps(
-          text, match.destination_url,
-          controller_->client()->GetHttpsPortForTesting(),
-          controller_->client()->IsUsingFakeHttpsForHttpsUpgradeTesting(),
-          &upgraded_url)) {
-    input_.set_added_default_scheme_to_typed_url(true);
-    DCHECK(upgraded_url.is_valid());
-    match.destination_url = upgraded_url;
-  } else {
-    input_.set_added_default_scheme_to_typed_url(false);
-  }
-
-  OpenMatch(OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch), match,
-            WindowOpenDisposition::CURRENT_TAB, alternate_nav_url, text,
-            match_selection_timestamp);
+  searchbox::PasteAndGo(autocomplete_controller(), controller_->client(), text,
+                        last_omnibox_focus_, time_user_first_modified_omnibox_,
+                        match_selection_timestamp);
 }
 
 void OmniboxEditModel::EnterKeywordMode(

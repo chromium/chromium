@@ -1229,10 +1229,12 @@ void SearchboxHandler::OpenMatch(OmniboxPopupSelection selection,
       autocomplete_controller()->last_time_default_match_changed();
   const base::TimeTicks first_modification_timestamp =
       searchbox_focused_timestamp;
-  searchbox::OpenMatch(autocomplete_controller(), client(), selection, match,
+  // TODO(crbug.com/530254690): Associate inputs and results for match.
+  searchbox::OpenMatch(autocomplete_controller(), client(),
+                       autocomplete_controller()->input(), selection, match,
                        disposition, searchbox_focused_timestamp,
                        first_modification_timestamp, match_selection_timestamp,
-                       metrics::OmniboxEventProto::INVALID);
+                       metrics::OmniboxEventProto::INVALID, u"");
 }
 
 void SearchboxHandler::OpenAutocompleteMatch(uint8_t line,
