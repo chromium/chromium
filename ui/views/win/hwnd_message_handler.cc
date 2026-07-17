@@ -1310,6 +1310,10 @@ LRESULT HWNDMessageHandler::HandleMouseMessage(unsigned int message,
                                                WPARAM w_param,
                                                LPARAM l_param,
                                                bool* handled) {
+  if (!delegate_) {
+    *handled = false;
+    return 0;
+  }
   // Don't track forwarded mouse messages. We expect the caller to track the
   // mouse.
   base::WeakPtr<HWNDMessageHandler> ref(msg_handler_weak_factory_.GetWeakPtr());
@@ -1322,6 +1326,10 @@ LRESULT HWNDMessageHandler::HandleKeyboardMessage(unsigned int message,
                                                   WPARAM w_param,
                                                   LPARAM l_param,
                                                   bool* handled) {
+  if (!delegate_) {
+    *handled = false;
+    return 0;
+  }
   base::WeakPtr<HWNDMessageHandler> ref(msg_handler_weak_factory_.GetWeakPtr());
   LRESULT ret = 0;
   if ((message == WM_CHAR) || (message == WM_SYSCHAR)) {
@@ -1337,6 +1345,10 @@ LRESULT HWNDMessageHandler::HandleTouchMessage(unsigned int message,
                                                WPARAM w_param,
                                                LPARAM l_param,
                                                bool* handled) {
+  if (!delegate_) {
+    *handled = false;
+    return 0;
+  }
   base::WeakPtr<HWNDMessageHandler> ref(msg_handler_weak_factory_.GetWeakPtr());
   LRESULT ret = OnTouchEvent(message, w_param, l_param);
   *handled = IsDestroyed(ref) || msg_handled_;
@@ -1347,6 +1359,10 @@ LRESULT HWNDMessageHandler::HandlePointerMessage(unsigned int message,
                                                  WPARAM w_param,
                                                  LPARAM l_param,
                                                  bool* handled) {
+  if (!delegate_) {
+    *handled = false;
+    return 0;
+  }
   base::WeakPtr<HWNDMessageHandler> ref(msg_handler_weak_factory_.GetWeakPtr());
   LRESULT ret = OnPointerEvent(message, w_param, l_param);
   *handled = IsDestroyed(ref) || msg_handled_;
@@ -1357,6 +1373,10 @@ LRESULT HWNDMessageHandler::HandleInputMessage(unsigned int message,
                                                WPARAM w_param,
                                                LPARAM l_param,
                                                bool* handled) {
+  if (!delegate_) {
+    *handled = false;
+    return 0;
+  }
   base::WeakPtr<HWNDMessageHandler> ref(msg_handler_weak_factory_.GetWeakPtr());
   LRESULT ret = OnInputEvent(message, w_param, l_param);
   *handled = IsDestroyed(ref) || msg_handled_;
@@ -1367,6 +1387,10 @@ LRESULT HWNDMessageHandler::HandleScrollMessage(unsigned int message,
                                                 WPARAM w_param,
                                                 LPARAM l_param,
                                                 bool* handled) {
+  if (!delegate_) {
+    *handled = false;
+    return 0;
+  }
   base::WeakPtr<HWNDMessageHandler> ref(msg_handler_weak_factory_.GetWeakPtr());
   LRESULT ret = OnScrollMessage(message, w_param, l_param);
   *handled = IsDestroyed(ref) || msg_handled_;
@@ -1377,6 +1401,10 @@ LRESULT HWNDMessageHandler::HandleNcHitTestMessage(unsigned int message,
                                                    WPARAM w_param,
                                                    LPARAM l_param,
                                                    bool* handled) {
+  if (!delegate_) {
+    *handled = false;
+    return 0;
+  }
   base::WeakPtr<HWNDMessageHandler> ref(msg_handler_weak_factory_.GetWeakPtr());
   LRESULT ret = OnNCHitTest(
       gfx::Point(CR_GET_X_LPARAM(l_param), CR_GET_Y_LPARAM(l_param)));
@@ -1385,6 +1413,9 @@ LRESULT HWNDMessageHandler::HandleNcHitTestMessage(unsigned int message,
 }
 
 void HWNDMessageHandler::ApplyPinchZoomScale(float scale) {
+  if (!delegate_) {
+    return;
+  }
   POINT cursor_pos = GetCursorPos();
   ::ScreenToClient(hwnd(), &cursor_pos);
 
@@ -1398,6 +1429,9 @@ void HWNDMessageHandler::ApplyPinchZoomScale(float scale) {
 }
 
 void HWNDMessageHandler::ApplyPinchZoomBegin() {
+  if (!delegate_) {
+    return;
+  }
   POINT cursor_pos = GetCursorPos();
   ::ScreenToClient(hwnd(), &cursor_pos);
 
@@ -1410,6 +1444,9 @@ void HWNDMessageHandler::ApplyPinchZoomBegin() {
 }
 
 void HWNDMessageHandler::ApplyPinchZoomEnd() {
+  if (!delegate_) {
+    return;
+  }
   POINT cursor_pos = GetCursorPos();
   ::ScreenToClient(hwnd(), &cursor_pos);
 
@@ -1426,6 +1463,9 @@ void HWNDMessageHandler::ApplyPanGestureEvent(
     int scroll_y,
     ui::EventMomentumPhase momentum_phase,
     ui::ScrollEventPhase phase) {
+  if (!delegate_) {
+    return;
+  }
   gfx::Vector2d offset{scroll_x, scroll_y};
 
   POINT root_location = GetCursorPos();
