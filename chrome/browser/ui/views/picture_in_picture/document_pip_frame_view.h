@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PICTURE_IN_PICTURE_DOCUMENT_PIP_FRAME_VIEW_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -14,7 +15,9 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_view_delegate.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
+#include "chrome/browser/ui/views/picture_in_picture/pip_top_bar_animation_controller.h"
 #include "components/security_state/core/security_state.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/frame_view.h"
@@ -22,6 +25,10 @@
 namespace content {
 class WebContents;
 }  // namespace content
+
+namespace ui {
+class ColorProvider;
+}  // namespace ui
 
 namespace views {
 class FlexLayoutView;
@@ -84,7 +91,8 @@ class LocationBarModelImpl;
 class DocumentPipFrameView : public views::FrameView,
                              public views::WidgetObserver,
                              public IconLabelBubbleView::Delegate,
-                             public ContentSettingImageViewDelegate {
+                             public ContentSettingImageViewDelegate,
+                             public PipTopBarAnimationController::Delegate {
   METADATA_HEADER(DocumentPipFrameView, views::FrameView)
 
  public:
@@ -132,6 +140,10 @@ class DocumentPipFrameView : public views::FrameView,
   ContentSettingBubbleModelDelegate* GetContentSettingBubbleModelDelegate()
       override;
 
+  // PipTopBarAnimationController::Delegate:
+  void ApplyTopBarForegroundColor(SkColor color) override;
+  const ui::ColorProvider* GetTopBarColorProvider() const override;
+
   // Updates the state of the camera/microphone content-setting icons from the
   // opener WebContents. Called by the host when media-capture state changes.
   void UpdateContentSettingsIcons();
@@ -177,10 +189,6 @@ class DocumentPipFrameView : public views::FrameView,
   // its scheme-dependent elision direction, and the chip's security icon and
   // security chip text.
   void UpdateOriginAndSecurity();
-
-  // Updates the top bar foreground colors based on whether the user is
-  // interacting with the window (active) or not (inactive).
-  void UpdateTopBarView(bool render_active);
 
   // Called when mouse entered or exited the PiP window.
   void OnMouseEnteredOrExitedWindow(bool entered);
@@ -246,11 +254,15 @@ class DocumentPipFrameView : public views::FrameView,
   // never animates (there is no prior state to transition from).
   bool security_text_initialized_ = false;
 
-  // When the window is created and shown for the first time, we render the
-  // active window state even if the mouse is not inside it.
-  bool render_active_ = true;
-
   bool mouse_inside_window_ = false;
+
+  // Owns and drives the top-bar hover animations (the active/inactive color
+  // fade, the window-control button opacity fades, and the camera-icon slide)
+  // and holds the top bar's active/inactive state. Constructed after the
+  // top-bar views exist and declared after them so it is destroyed first,
+  // keeping its raw_ptrs to those views valid for its whole lifetime. This
+  // frame view implements its Delegate.
+  std::unique_ptr<PipTopBarAnimationController> animation_controller_;
 
   // Used to monitor key and mouse events from the native window.
   std::unique_ptr<WindowEventObserver> window_event_observer_;

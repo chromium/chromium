@@ -9,10 +9,14 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
@@ -20,6 +24,8 @@
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_widget_delegate.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/permissions/permission_recovery_success_rate_tracker.h"
 #include "components/security_state/content/security_state_tab_helper.h"
 #include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
@@ -30,7 +36,10 @@
 #include "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/animation/animation_test_api.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -39,6 +48,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
 #include "url/gurl.h"
@@ -190,7 +200,7 @@ class DocumentPipFrameViewTest : public ChromeViewsTestBase {
   }
 
   bool GetRenderActive(DocumentPipFrameView* frame_view) {
-    return frame_view->render_active_;
+    return frame_view->animation_controller_->is_top_bar_active();
   }
 
   views::FlexLayoutView* GetButtonContainer(DocumentPipFrameView* frame_view) {
@@ -202,6 +212,28 @@ class DocumentPipFrameViewTest : public ChromeViewsTestBase {
     return frame_view->content_setting_views_;
   }
 
+  // Whether the "fade all buttons together" animation (used when no content-
+  // setting icon is visible) is currently running.
+  bool AllButtonsAnimationRunning(DocumentPipFrameView* frame_view) {
+    return frame_view->animation_controller_->show_all_buttons_animation_
+               .is_animating() ||
+           frame_view->animation_controller_->hide_all_buttons_animation_
+               .is_animating();
+  }
+
+  // Whether the per-button fade animations (used when a content-setting icon is
+  // visible, so the camera can slide into the freed space) are running.
+  bool PerButtonAnimationsRunning(DocumentPipFrameView* frame_view) {
+    return frame_view->animation_controller_->show_back_to_tab_button_animation_
+               .is_animating() ||
+           frame_view->animation_controller_->hide_back_to_tab_button_animation_
+               .is_animating() ||
+           frame_view->animation_controller_->show_close_button_animation_
+               .is_animating() ||
+           frame_view->animation_controller_->hide_close_button_animation_
+               .is_animating();
+  }
+
   bool ShowPageInfo(DocumentPipFrameView* frame_view) {
     return frame_view->ShowPageInfo();
   }
@@ -209,6 +241,44 @@ class DocumentPipFrameViewTest : public ChromeViewsTestBase {
   void OnMouseEnteredOrExitedWindow(DocumentPipFrameView* frame_view,
                                     bool entered) {
     frame_view->OnMouseEnteredOrExitedWindow(entered);
+  }
+
+  // Drives every running top-bar animation on `frame_view` straight to its end
+  // via gfx::AnimationTestApi, so the button opacities and foreground color
+  // settle deterministically without a live compositor. Reaches the private
+  // animation members on the frame view's PipTopBarAnimationController through
+  // the test's friendship with both classes.
+  void StepTopBarAnimationsToEnd(DocumentPipFrameView* frame_view) {
+    std::vector<gfx::Animation*> animations = {
+        &frame_view->animation_controller_->top_bar_color_animation_,
+        &frame_view->animation_controller_
+             ->move_camera_button_to_left_animation_,
+        &frame_view->animation_controller_
+             ->move_camera_button_to_right_animation_,
+        &frame_view->animation_controller_->show_all_buttons_animation_,
+        &frame_view->animation_controller_->hide_all_buttons_animation_,
+    };
+    if (frame_view->back_to_tab_button_) {
+      animations.push_back(&frame_view->animation_controller_
+                                ->show_back_to_tab_button_animation_);
+      animations.push_back(&frame_view->animation_controller_
+                                ->hide_back_to_tab_button_animation_);
+      animations.push_back(
+          &frame_view->animation_controller_->show_close_button_animation_);
+      animations.push_back(
+          &frame_view->animation_controller_->hide_close_button_animation_);
+    }
+    const base::TimeTicks now = base::TimeTicks::Now();
+    for (gfx::Animation* animation : animations) {
+      if (!animation->is_animating()) {
+        continue;
+      }
+      gfx::AnimationTestApi api(animation);
+      api.SetStartTime(now);
+      // Step well past the total 250ms animation duration to guarantee every
+      // part of the multi-part button animations completes.
+      api.Step(now + base::Milliseconds(500));
+    }
   }
 
   // Replaces the opener's SecurityStateTabHelper with a fake reporting the
@@ -743,10 +813,12 @@ TEST_F(DocumentPipFrameViewTest, ContentSettingDelegateUsesOpener) {
   EXPECT_FALSE(frame_view->ShouldHideContentSettingImage());
 }
 
-// Deactivating the window hides the window-control buttons (matching the
-// browser-backed frame, which keeps their space reserved but hides them while
-// inactive). Reactivating restores them.
-TEST_F(DocumentPipFrameViewTest, InactiveHidesWindowControlButtons) {
+// Deactivating the window fades the window-control buttons out (opacity 0)
+// while keeping them laid out (their fixed-size wrappers reserve the space),
+// and reactivating fades them back in. Mirrors
+// PictureInPictureBrowserFrameView, which animates opacity rather than toggling
+// visibility.
+TEST_F(DocumentPipFrameViewTest, InactiveFadesOutWindowControlButtons) {
   auto* frame_view =
       CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
 
@@ -754,21 +826,169 @@ TEST_F(DocumentPipFrameViewTest, InactiveHidesWindowControlButtons) {
   views::ImageButton* back_btn = GetBackToTabButton(frame_view);
   ASSERT_TRUE(close_btn);
   ASSERT_TRUE(back_btn);
-  EXPECT_TRUE(close_btn->GetVisible());
-  EXPECT_TRUE(back_btn->GetVisible());
+  // The buttons paint to layers so their opacity can be animated.
+  ASSERT_TRUE(close_btn->layer());
+  ASSERT_TRUE(back_btn->layer());
 
+  // Deactivating fades the buttons to opacity 0; they stay laid out/visible.
   frame_view->OnWidgetActivationChanged(frame_view->GetWidget(),
                                         /*active=*/false);
-  EXPECT_FALSE(close_btn->GetVisible());
-  EXPECT_FALSE(back_btn->GetVisible());
-
-  frame_view->OnWidgetActivationChanged(frame_view->GetWidget(),
-                                        /*active=*/true);
+  StepTopBarAnimationsToEnd(frame_view);
+  EXPECT_EQ(0.0f, close_btn->layer()->opacity());
+  EXPECT_EQ(0.0f, back_btn->layer()->opacity());
   EXPECT_TRUE(close_btn->GetVisible());
   EXPECT_TRUE(back_btn->GetVisible());
+
+  // Reactivating fades them back in to opacity 1.
+  frame_view->OnWidgetActivationChanged(frame_view->GetWidget(),
+                                        /*active=*/true);
+  StepTopBarAnimationsToEnd(frame_view);
+  EXPECT_EQ(1.0f, close_btn->layer()->opacity());
+  EXPECT_EQ(1.0f, back_btn->layer()->opacity());
 }
 
-// While inactive the window-control buttons are hidden, so NonClientHitTest
+// The top-bar foreground color fades between the active and inactive colors as
+// the window activation state changes. Once an animation settles, the
+// steady-state color surfaced to the origin chip matches the active/inactive
+// state.
+TEST_F(DocumentPipFrameViewTest, TopBarForegroundColorTracksActiveState) {
+  auto* frame_view =
+      CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
+  auto* widget = frame_view->GetWidget();
+  const auto* color_provider = widget->GetColorProvider();
+  const SkColor active = color_provider->GetColor(kColorPipWindowForeground);
+  const SkColor inactive =
+      color_provider->GetColor(kColorPipWindowForegroundInactive);
+  ASSERT_NE(active, inactive);
+
+  // Active by default.
+  EXPECT_EQ(active, frame_view->GetIconLabelBubbleSurroundingForegroundColor());
+
+  // Deactivating settles on the inactive foreground.
+  frame_view->OnWidgetActivationChanged(widget, /*active=*/false);
+  StepTopBarAnimationsToEnd(frame_view);
+  EXPECT_EQ(inactive,
+            frame_view->GetIconLabelBubbleSurroundingForegroundColor());
+
+  // Reactivating settles back on the active foreground.
+  frame_view->OnWidgetActivationChanged(widget, /*active=*/true);
+  StepTopBarAnimationsToEnd(frame_view);
+  EXPECT_EQ(active, frame_view->GetIconLabelBubbleSurroundingForegroundColor());
+}
+
+// With no active media capture the content-setting icon is hidden, so the
+// button container carries the symmetric "no camera" horizontal margin that
+// keeps the window controls spaced consistently. Mirrors
+// PictureInPictureBrowserFrameView::UpdateContentSettingsIcons.
+TEST_F(DocumentPipFrameViewTest, ContentSettingsMarginWhenIconHidden) {
+  auto* frame_view =
+      CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
+
+  const auto& content_setting_views = GetContentSettingViews(frame_view);
+  ASSERT_EQ(1u, content_setting_views.size());
+  ASSERT_FALSE(content_setting_views[0]->GetVisible());
+
+  const gfx::Insets* margins =
+      GetButtonContainer(frame_view)->GetProperty(views::kMarginsKey);
+  ASSERT_TRUE(margins);
+  EXPECT_EQ(gfx::Insets::VH(
+                0, GetLayoutConstant(LayoutConstant::kTabAfterTitlePadding)),
+            *margins);
+}
+
+// When a content-setting (camera) icon is visible, the button container carries
+// the asymmetric "with camera" margin, and activation changes drive the
+// per-button fade animations (plus the camera slide) rather than the
+// fade-all-buttons path used when no content-setting icon is shown. Mirrors
+// PictureInPictureBrowserFrameView.
+TEST_F(DocumentPipFrameViewTest,
+       ContentSettingVisibleUsesPerButtonAnimationsAndMargin) {
+  // Register PageSpecificContentSettings before navigating so it attaches to
+  // the committed page, then seed active camera capture on the opener. This is
+  // the only way to make the media content-setting icon visible in a unit test
+  // (standalone PiP cannot grant media permissions itself yet).
+  content_settings::PageSpecificContentSettings::CreateForWebContents(
+      opener(),
+      std::make_unique<PageSpecificContentSettingsDelegate>(opener()));
+  // The delegate's UpdateLocationBar() records usage through this tracker, so
+  // it must exist on the opener before any media-stream permission is set.
+  permissions::PermissionRecoverySuccessRateTracker::CreateForWebContents(
+      opener());
+  content::WebContentsTester::For(opener())->NavigateAndCommit(
+      GURL("https://www.example.com/"));
+
+  auto* frame_view =
+      CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
+
+  content_settings::PageSpecificContentSettings* pscs =
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          opener()->GetPrimaryMainFrame());
+  ASSERT_TRUE(pscs);
+  // Seed camera access that is also blocked at the site level. This test only
+  // needs the icon to be visible so it can exercise the per-button animation +
+  // margin path; it does not care whether the camera was allowed or blocked.
+  //
+  // Both flags are required, and they play different roles in
+  // ContentSettingMediaImageModel::UpdateAndGetVisibility():
+  //   - kCameraAccessed is the gate: the model only enters its camera display
+  //     branch when IsCamAccessed() is true, so without it the icon stays
+  //     hidden no matter what else is set.
+  //   - kCameraBlocked is what makes visibility deterministic on macOS. There
+  //     the system-level camera permission is kNotDetermined in unit tests,
+  //     and an accessed-but-not-blocked camera is treated as a pending system
+  //     prompt and hidden (IsCameraAccessPendingOnSystemLevelPrompt(), which
+  //     fires only when the camera is *not* blocked at the site level). Adding
+  //     kCameraBlocked sidesteps that macOS-only gate.
+  pscs->OnMediaStreamPermissionSet(
+      GURL("https://www.example.com/"),
+      {content_settings::PageSpecificContentSettings::kCameraAccessed,
+       content_settings::PageSpecificContentSettings::kCameraBlocked});
+
+  // Refresh the icons now that camera capture is active; the icon becomes
+  // visible and the button container adopts the "with camera" margin.
+  frame_view->UpdateContentSettingsIcons();
+
+  const auto& content_setting_views = GetContentSettingViews(frame_view);
+  ASSERT_EQ(1u, content_setting_views.size());
+  ASSERT_TRUE(content_setting_views[0]->GetVisible());
+
+  const gfx::Insets* margins =
+      GetButtonContainer(frame_view)->GetProperty(views::kMarginsKey);
+  ASSERT_TRUE(margins);
+  EXPECT_EQ(
+      gfx::Insets::TLBR(
+          0, 0, 0, GetLayoutConstant(LayoutConstant::kTabAfterTitlePadding)),
+      *margins);
+
+  views::ImageButton* close_btn = GetCloseButton(frame_view);
+  views::ImageButton* back_btn = GetBackToTabButton(frame_view);
+  ASSERT_TRUE(close_btn->layer());
+  ASSERT_TRUE(back_btn->layer());
+
+  // Deactivating drives the per-button hide animations (not the fade-all path),
+  // because a content-setting icon is visible.
+  frame_view->OnWidgetActivationChanged(frame_view->GetWidget(),
+                                        /*active=*/false);
+  EXPECT_FALSE(AllButtonsAnimationRunning(frame_view));
+  EXPECT_TRUE(PerButtonAnimationsRunning(frame_view));
+  StepTopBarAnimationsToEnd(frame_view);
+  EXPECT_EQ(0.0f, close_btn->layer()->opacity());
+  EXPECT_EQ(0.0f, back_btn->layer()->opacity());
+  // The camera icon slid right into the space vacated by the hidden buttons.
+  EXPECT_GT(content_setting_views[0]->x(), 0);
+
+  // Reactivating drives the per-button show animations and slides the camera
+  // icon back to its resting position.
+  frame_view->OnWidgetActivationChanged(frame_view->GetWidget(),
+                                        /*active=*/true);
+  EXPECT_FALSE(AllButtonsAnimationRunning(frame_view));
+  EXPECT_TRUE(PerButtonAnimationsRunning(frame_view));
+  StepTopBarAnimationsToEnd(frame_view);
+  EXPECT_EQ(1.0f, close_btn->layer()->opacity());
+  EXPECT_EQ(1.0f, back_btn->layer()->opacity());
+  EXPECT_EQ(0, content_setting_views[0]->x());
+}
+
 // must not report HTCLIENT over their (now hidden) bounds; the area falls
 // through to the draggable caption instead.
 TEST_F(DocumentPipFrameViewTest, HitTestCloseButton_InactiveReturnsCaption) {

@@ -16,12 +16,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/toolbar/chrome_location_bar_model_delegate.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
@@ -29,6 +31,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_bubble_specification.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_host.h"
+#include "chrome/browser/ui/views/picture_in_picture/pip_top_bar_animation_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
 #include "components/security_state/core/security_state.h"
@@ -147,6 +150,10 @@ class OriginChipView : public IconLabelBubbleView {
   // Sets the security (lock) icon. Exposes the protected SetImageModel().
   void SetSecurityImage(const ui::ImageModel& image) { SetImageModel(image); }
 
+  // Re-applies the label/background colors from the delegate. Used to make the
+  // chip label track the top-bar active/inactive color fade.
+  void RefreshForegroundColor() { UpdateLabelColors(); }
+
   // Sets the security chip text, sliding it in/out when `animate` is true and
   // updating it instantly otherwise (e.g. on the first update or a theme
   // change). Mirrors LocationIconView::UpdateTextVisibility(), but takes the
@@ -233,7 +240,8 @@ class DocumentPipFrameView::WindowEventObserver : public ui::EventObserver {
 
   void OnEvent(const ui::Event& event) override {
     if (event.IsKeyEvent()) {
-      frame_view_->UpdateTopBarView(/*render_active=*/true);
+      frame_view_->animation_controller_->SetTopBarActiveStatus(
+          /*active=*/true);
       return;
     }
 
@@ -427,6 +435,13 @@ DocumentPipFrameView::DocumentPipFrameView(DocumentPipHost* host)
   close_wrapper->SetPreferredSize(close_image_button_->GetPreferredSize());
   button_container_view_->AddChildView(std::move(close_wrapper));
 
+  // Create the controller that owns and drives the top-bar hover animations,
+  // now that the buttons and content-setting views it references exist. It
+  // paints the window-control buttons to layers so their opacity can be
+  // animated, and starts in the active state.
+  animation_controller_ = std::make_unique<PipTopBarAnimationController>(
+      this, back_to_tab_button_, close_image_button_, content_setting_views_);
+
   // If the window manager wants us to display an overlay, get it. In practice
   // this is the auto-PiP Allow / Block content-setting UI, shown when a site
   // enters PiP via the Auto Picture-in-Picture path. GetOverlayView() returns
@@ -504,12 +519,14 @@ int DocumentPipFrameView::NonClientHitTest(const gfx::Point& point) {
   // parent's coordinate space and converted to frame-view coordinates so the
   // hit-test comparisons share a coordinate space. The buttons stay laid out
   // while inactive (their fixed-size wrappers reserve the space) and are only
-  // hidden, so gate on render_active_ to avoid hit-testing the hidden buttons.
-  if (back_to_tab_button_ && render_active_ &&
+  // hidden, so gate on the top bar's active state to avoid hit-testing the
+  // hidden buttons.
+  const bool top_bar_active = animation_controller_->is_top_bar_active();
+  if (back_to_tab_button_ && top_bar_active &&
       ConvertControlBoundsToFrame(back_to_tab_button_).Contains(point)) {
     return HTCLIENT;
   }
-  if (render_active_ &&
+  if (top_bar_active &&
       ConvertControlBoundsToFrame(close_image_button_).Contains(point)) {
     return HTCLIENT;
   }
@@ -587,6 +604,11 @@ void DocumentPipFrameView::AddedToWidget() {
   // widget. Teardown is intentionally handled in OnWidgetDestroying rather
   // than in a symmetric RemovedFromWidget; see the comment there.
   window_event_observer_ = std::make_unique<WindowEventObserver>(this);
+
+  // Attach the top-bar animations to a compositor-backed container so they
+  // update together and in sync with the display. Requires the Widget, so it
+  // is deferred from the ctor to here.
+  animation_controller_->SetUpAnimationContainer(GetWidget());
 
   // Seed the content-setting icons now that the Widget (and thus a
   // ColorProvider) exists. This is intentionally deferred from the ctor:
@@ -666,6 +688,15 @@ void DocumentPipFrameView::UpdateWindowBoundsForRequestedInnerSize() {
 
 void DocumentPipFrameView::OnThemeChanged() {
   UpdateOriginAndSecurity();
+  // Apply the steady-state foreground to the content-setting icons so they
+  // match the (possibly inactive) top bar after a theme change.
+  const SkColor foreground =
+      GetColorProvider()->GetColor(animation_controller_->is_top_bar_active()
+                                       ? kColorPipWindowForeground
+                                       : kColorPipWindowForegroundInactive);
+  for (ContentSettingImageView* view : content_setting_views_) {
+    view->SetIconColor(foreground);
+  }
   views::FrameView::OnThemeChanged();
 }
 
@@ -674,7 +705,8 @@ void DocumentPipFrameView::OnThemeChanged() {
 
 void DocumentPipFrameView::OnWidgetActivationChanged(views::Widget* widget,
                                                      bool active) {
-  UpdateTopBarView(active || mouse_inside_window_ || IsOverlayViewVisible());
+  animation_controller_->SetTopBarActiveStatus(active || mouse_inside_window_ ||
+                                               IsOverlayViewVisible());
 }
 
 void DocumentPipFrameView::OnWidgetDestroying(views::Widget* widget) {
@@ -744,8 +776,9 @@ void DocumentPipFrameView::UpdateOriginAndSecurity() {
   const security_state::SecurityLevel security_level =
       location_bar_model_->GetSecurityLevel();
   const ui::ColorId foreground_color_id =
-      render_active_ ? kColorPipWindowForeground
-                     : kColorPipWindowForegroundInactive;
+      animation_controller_->is_top_bar_active()
+          ? kColorPipWindowForeground
+          : kColorPipWindowForegroundInactive;
 
   auto* const chip = views::AsViewClass<OriginChipView>(origin_chip_);
   chip->SetSecurityImage(ui::ImageModel::FromVectorIcon(
@@ -767,41 +800,30 @@ void DocumentPipFrameView::UpdateOriginAndSecurity() {
   security_text_initialized_ = true;
 }
 
-void DocumentPipFrameView::UpdateTopBarView(bool render_active) {
-  if (render_active_ == render_active) {
-    return;
+void DocumentPipFrameView::ApplyTopBarForegroundColor(SkColor color) {
+  window_title_->SetEnabledColor(color);
+  for (ContentSettingImageView* view : content_setting_views_) {
+    view->SetIconColor(color);
   }
-  render_active_ = render_active;
+  auto* const chip = views::AsViewClass<OriginChipView>(origin_chip_);
+  chip->SetSecurityImage(ui::ImageModel::FromVectorIcon(
+      location_bar_model_->GetVectorIcon(), color, kSecurityIconImageSize));
+  // The chip label reads the color from
+  // GetIconLabelBubbleSurroundingForegroundColor(), which returns the
+  // controller's current foreground color; the controller sets it before
+  // calling here.
+  chip->RefreshForegroundColor();
+}
 
-  // Browser-backed PiP keeps the window-control buttons laid out while
-  // inactive (reserving their space) and only hides them. Each button lives in
-  // a fixed-size wrapper that holds its space, so toggling the button's own
-  // visibility keeps the origin/title labels from growing to fill the buttons'
-  // space.
-  if (back_to_tab_button_) {
-    back_to_tab_button_->SetVisible(render_active_);
-  }
-  close_image_button_->SetVisible(render_active_);
-
-  // TODO(crbug.com/515252142): Port the top-bar animations from
-  // PictureInPictureBrowserFrameView::UpdateTopBarView (top-bar color fade,
-  // camera-slide, and show/hide of the window-control buttons) for visual
-  // parity. This currently applies the active/inactive color instantly instead
-  // of animating. The animations are Browser-free, so porting them does not
-  // reintroduce the //chrome/browser/ui monolith.
-  const auto* color_provider = GetColorProvider();
-  const SkColor foreground = color_provider->GetColor(
-      render_active_ ? kColorPipWindowForeground
-                     : kColorPipWindowForegroundInactive);
-  window_title_->SetEnabledColor(foreground);
-  UpdateOriginAndSecurity();
+const ui::ColorProvider* DocumentPipFrameView::GetTopBarColorProvider() const {
+  return GetColorProvider();
 }
 
 void DocumentPipFrameView::OnMouseEnteredOrExitedWindow(bool entered) {
   mouse_inside_window_ = entered;
-  UpdateTopBarView(mouse_inside_window_ ||
-                   (GetWidget() && GetWidget()->IsActive()) ||
-                   IsOverlayViewVisible());
+  animation_controller_->SetTopBarActiveStatus(
+      mouse_inside_window_ || (GetWidget() && GetWidget()->IsActive()) ||
+      IsOverlayViewVisible());
 }
 
 void DocumentPipFrameView::ShowOverlayIfNeeded() {
@@ -849,7 +871,16 @@ bool DocumentPipFrameView::ShowPageInfo() {
 
 SkColor DocumentPipFrameView::GetIconLabelBubbleSurroundingForegroundColor()
     const {
-  return GetColorProvider()->GetColor(kColorPipWindowForeground);
+  // During the active/inactive color fade the interpolated color is used so the
+  // origin chip label tracks the animation; otherwise use the steady-state
+  // active/inactive foreground.
+  if (std::optional<SkColor> color =
+          animation_controller_->current_foreground_color()) {
+    return *color;
+  }
+  return GetColorProvider()->GetColor(animation_controller_->is_top_bar_active()
+                                          ? kColorPipWindowForeground
+                                          : kColorPipWindowForegroundInactive);
 }
 
 SkColor DocumentPipFrameView::GetIconLabelBubbleBackgroundColor() const {
@@ -883,14 +914,21 @@ DocumentPipFrameView::GetContentSettingBubbleModelDelegate() {
 }
 
 void DocumentPipFrameView::UpdateContentSettingsIcons() {
-  // TODO(crbug.com/515252142): For parity with
-  // PictureInPictureBrowserFrameView::UpdateContentSettingsIcons, re-apply a
-  // visibility-dependent margin on `button_container_view_` so the spacing
-  // between the content-setting icons and the window controls stays consistent
-  // when the camera/mic icon appears or disappears (coupled to the camera-slide
-  // animation).
+  // Add margin insets to the button container based on the content-setting
+  // icon's visibility so the spacing between the icons and the window controls
+  // stays consistent when the camera/mic icon appears or disappears, mirroring
+  // PictureInPictureBrowserFrameView::UpdateContentSettingsIcons.
+  const auto kButtonContainerViewWithCameraButtonInsets = gfx::Insets::TLBR(
+      0, 0, 0, GetLayoutConstant(LayoutConstant::kTabAfterTitlePadding));
+  const auto kButtonContainerViewInsets = gfx::Insets::VH(
+      0, GetLayoutConstant(LayoutConstant::kTabAfterTitlePadding));
+
   for (ContentSettingImageView* view : content_setting_views_) {
     view->Update();
+    button_container_view_->SetProperty(
+        views::kMarginsKey,
+        (view->GetVisible() ? kButtonContainerViewWithCameraButtonInsets
+                            : kButtonContainerViewInsets));
   }
 }
 
