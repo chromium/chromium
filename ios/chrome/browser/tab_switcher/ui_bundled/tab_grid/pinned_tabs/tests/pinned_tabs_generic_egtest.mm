@@ -310,12 +310,16 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
                            @"supported on iPhone.");
   }
 
-  // Create tabs.
-  CreatePinnedTabs(2, self.testServer);
-  CreateRegularTabs(1, self.testServer);
+  // Consume the initial cold startup NTP for `PinnedTab0` directly right before
+  // opening extra tabs. This completely avoids overlapping NTP animations right
+  // under `kChromeNextIa` on iOS 27 and removes leftover NTP cleanup step.
+  [ChromeEarlGrey loadURL:GetURLForTitle(self.testServer, @"PinnedTab0")];
+  [ChromeEarlGrey pinCurrentTab];
 
-  // Close NTP tab.
-  [ChromeEarlGrey closeTabAtIndex:2];
+  // Create second pinned tab and one regular tab cleanly right after.
+  CreateRegularTab(self.testServer, @"PinnedTab1");
+  [ChromeEarlGrey pinCurrentTab];
+  CreateRegularTab(self.testServer, @"RegularTab0");
 
   // Open the Tab Grid.
   [ChromeEarlGreyUI openTabGrid];
@@ -401,12 +405,16 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
                            @"supported on iPhone.");
   }
 
-  // Create tabs.
-  CreatePinnedTabs(2, self.testServer);
-  CreateRegularTabs(1, self.testServer);
+  // Consume the initial cold startup NTP for `PinnedTab0` directly right before
+  // opening extra tabs. This completely avoids overlapping NTP animations right
+  // under `kChromeNextIa` on iOS 27 and removes leftover NTP cleanup step.
+  [ChromeEarlGrey loadURL:GetURLForTitle(self.testServer, @"PinnedTab0")];
+  [ChromeEarlGrey pinCurrentTab];
 
-  // Close NTP tab.
-  [ChromeEarlGrey closeTabAtIndex:2];
+  // Create second pinned tab and one regular tab cleanly right after.
+  CreateRegularTab(self.testServer, @"PinnedTab1");
+  [ChromeEarlGrey pinCurrentTab];
+  CreateRegularTab(self.testServer, @"RegularTab0");
 
   // Open the Tab Grid.
   [ChromeEarlGreyUI openTabGrid];
