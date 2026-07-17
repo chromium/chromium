@@ -3811,6 +3811,16 @@ shown properly on the user-facing crash UI.
 
 <!-- LINT.ThenChange(//components/enterprise/net/core/enterprise_network_auth_service.h:TokenFetchError) -->
 
+<!-- LINT.IfChange(EnterpriseProvisioningDomainClientFetchResult) -->
+
+<enum name="EnterpriseProvisioningDomainClientFetchResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Net Error"/>
+  <int value="2" label="HTTP Error"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/enterprise/net/core/provisioning_domain_client.h:ProvisioningDomainClientFetchResultStatus) -->
+
 <enum name="ExtensionInProgressRequestState">
   <int value="0" label="In progress"/>
   <int value="1" label="In progress, but the final response has arrived"/>

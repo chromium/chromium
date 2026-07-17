@@ -5,19 +5,30 @@
 #ifndef COMPONENTS_ENTERPRISE_NET_CORE_FEATURES_H_
 #define COMPONENTS_ENTERPRISE_NET_CORE_FEATURES_H_
 
+#include <cstddef>
+
 #include "components/enterprise/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENTERPRISE_PROXY)
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace enterprise_net {
 
 // Controls whether dynamic route fetching is enabled.
 BASE_DECLARE_FEATURE(kEnableDynamicRouteFetching);
 
+// Feature param for the maximum size limit (in bytes) for Provisioning Domain
+// configuration downloads. Defaults to 3 MiB.
+extern const base::FeatureParam<int> kPvdConfigMaxSizeBytesParam;
+
 // Return true if dynamic route fetching is enabled.
 bool IsDynamicRouteFetchingEnabled();
+
+// Returns the maximum allowed size in bytes for Provisioning Domain
+// configuration downloads.
+size_t GetPvdConfigMaxSizeBytes();
 
 }  // namespace enterprise_net
 

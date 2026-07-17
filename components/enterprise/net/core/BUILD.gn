@@ -22,12 +22,14 @@ static_library("core") {
     public += [
       "enterprise_network_auth_service.h",
       "enterprise_proxy_service.h",
+      "provisioning_domain_client.h",
       "types.h",
       "utils.h",
     ]
     sources += [
       "enterprise_network_auth_service.cc",
       "enterprise_proxy_service.cc",
+      "provisioning_domain_client.cc",
       "types.cc",
       "utils.cc",
     ]
@@ -49,6 +51,7 @@ source_set("unit_tests") {
     sources += [
       "enterprise_network_auth_service_unittest.cc",
       "enterprise_proxy_service_unittest.cc",
+      "provisioning_domain_client_unittest.cc",
       "utils_unittest.cc",
     ]
     deps += [

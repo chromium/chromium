@@ -3784,6 +3784,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.ProvisioningDomainClient.FetchResult"
+    enum="EnterpriseProvisioningDomainClientFetchResult"
+    expires_after="2027-07-01">
+  <owner>xzonghan@google.com</owner>
+  <owner>chrome-enterprise-networking-core@google.com</owner>
+  <summary>
+    Recorded the result of a Provisioning Domain (PvD) JSON configuration fetch.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.ProvisioningDomainClient.HttpResponseCode"
+    enum="HttpResponseCode" expires_after="2027-07-01">
+  <owner>xzonghan@google.com</owner>
+  <owner>chrome-enterprise-networking-core@google.com</owner>
+  <summary>
+    Recorded when a Provisioning Domain fetch completes with an HTTP error code.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.ProvisioningDomainClient.NetError"
+    enum="NetErrorCodes" expires_after="2027-07-01">
+  <owner>xzonghan@google.com</owner>
+  <owner>chrome-enterprise-networking-core@google.com</owner>
+  <summary>
+    Recorded when a Provisioning Domain fetch fails due to a network error.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.PublicSession.SessionLength" units="minutes"
     expires_after="2026-12-16">
   <owner>bfranz@chromium.org</owner>
