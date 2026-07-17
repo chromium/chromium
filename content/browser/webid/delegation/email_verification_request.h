@@ -65,15 +65,13 @@ class CONTENT_EXPORT EmailVerificationRequest {
   class Observer : public base::CheckedObserver {
    public:
     ~Observer() override = default;
-    virtual void OnIsVerifiableStart(EmailVerificationRequest* request) {}
+    virtual void OnIsVerifiableStart() {}
     virtual void OnIsVerifiableComplete(
-        EmailVerificationRequest* request,
         blink::mojom::EmailVerificationRequestResult status) = 0;
-    virtual void OnVerifyStart(EmailVerificationRequest* request) {}
+    virtual void OnVerifyStart() {}
     virtual void OnVerifyComplete(
-        EmailVerificationRequest* request,
         blink::mojom::EmailVerificationRequestResult status) = 0;
-    virtual void OnRequestDestroyed(EmailVerificationRequest* request) {}
+    virtual void OnRequestDestroyed() {}
   };
 
   explicit EmailVerificationRequest(RenderFrameHostImpl& render_frame_host);
