@@ -163,9 +163,12 @@ void OutOfProcessPolicyFetcher::OnPoliciesFetched(
   } else {
     int result = kErrorPolicyFetchFailed;
     if (mojom_status->space == enterprise_companion::kStatusApplicationError &&
-        mojom_status->code ==
-            std::to_underlying(enterprise_companion::ApplicationError::
-                                   kRegistrationPreconditionFailed)) {
+        (mojom_status->code ==
+             std::to_underlying(enterprise_companion::ApplicationError::
+                                    kRegistrationPreconditionFailed) ||
+         mojom_status->code ==
+             std::to_underlying(
+                 enterprise_companion::ApplicationError::kEnrollmentBlocked))) {
       scoped_refptr<device_management_storage::DMStorage> dm_storage =
           device_management_storage::GetDefaultDMStorage();
       result = (dm_storage && dm_storage->IsEnrollmentMandatory())
