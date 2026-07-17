@@ -177,8 +177,9 @@ void BeginHandlingWebAuthenticationSessionRequestWithProfile(
     ASWebAuthenticationSessionRequest* request,
     Profile* profile) {
   NSUUID* key = request.UUID;
-  if (![GetPendingWebAuthRequests() objectForKey:key])
+  if (![GetPendingWebAuthRequests() objectForKey:key]) {
     return;  // The request has been canceled, do not start the session.
+  }
 
   [GetPendingWebAuthRequests() removeObjectForKey:key];
 
@@ -2504,7 +2505,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
 
 - (void)beginHandlingWebAuthenticationSessionRequest:
     (ASWebAuthenticationSessionRequest*)request {
-  dispatch_async(dispatch_get_main_queue(), ^(void) {
+  dispatch_async(dispatch_get_main_queue(), ^{
     // Start tracking the pending request, so it's possible to cancel it before
     // the session actually starts.
     NSUUID* key = request.UUID;
@@ -2521,23 +2522,20 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
 
 - (void)cancelWebAuthenticationSessionRequest:
     (ASWebAuthenticationSessionRequest*)request {
-  dispatch_async(dispatch_get_main_queue(), ^(void) {
-    NSUUID* key = request.UUID;
-    if ([GetPendingWebAuthRequests() objectForKey:key]) {
-      // Remove the pending request: for the case when the session is not
-      // started.
+  dispatch_async(dispatch_get_main_queue(), ^{
+    if (NSUUID* key = request.UUID;
+        [GetPendingWebAuthRequests() objectForKey:key]) {
+      // If the web authentication request is still pending, remove it from the
+      // list of pending requests and notify the OS that it was successfully
+      // canceled.
       [GetPendingWebAuthRequests() removeObjectForKey:key];
-
-      // Take care of the undocumented requirement (https://crbug.com/40250389)
-      // that -[ASWebAuthenticationSessionRequest cancelWithError:] be called
-      // for authentication sessions canceled by the OS.
       NSError* error = [NSError
           errorWithDomain:ASWebAuthenticationSessionErrorDomain
                      code:ASWebAuthenticationSessionErrorCodeCanceledLogin
                  userInfo:nil];
       [request cancelWithError:error];
     } else {
-      // Cancel the session: for the case when it was already started.
+      // Otherwise, tell the web authentication request to cancel itself.
       AuthSessionRequest::CancelAuthSession(request);
     }
   });

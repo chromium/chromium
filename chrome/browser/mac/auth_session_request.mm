@@ -372,8 +372,6 @@ void AuthSessionRequest::WebContentsDestroyed() {
   //   triggered above in `CancelAuthSession()`.
   //
   // In both cancellation cases, the OS must receive a cancellation callback.
-  // (This is an undocumented requirement in the case that the OS asked for the
-  // cancellation; see https://crbug.com/40250389.)
 
   if (perform_cancellation_callback_) {
     NSError* error = [NSError
