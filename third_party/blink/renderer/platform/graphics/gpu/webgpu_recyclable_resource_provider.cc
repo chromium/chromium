@@ -276,7 +276,7 @@ void WebGpuRecyclableResourceProvider::DoExternalOverdraw(
             ? context_provider.ImageDecodeCache(kRGBA_F16_SkColorType)
             : nullptr,
         GetColorSpace(), GetSharedImageFormat(),
-        cc::PlaybackImageProvider::RasterMode::kGpu);
+        cc::PlaybackImageProvider::RasterMode::kGpu, context_provider_wrapper_);
 
     ri->RasterCHROMIUM(
         list.get(), &image_provider, size, full_raster_rect, playback_rect,
@@ -383,10 +383,6 @@ gpu::SyncToken WebGpuRecyclableResourceProvider::GetSyncToken() const {
   }
   return shared_image_ ? release_sync_token_ : gpu::SyncToken();
 }
-
-
-
-
 
 base::ByteSize WebGpuRecyclableResourceProvider::EstimatedSizeInBytes() const {
   base::ByteSize result;

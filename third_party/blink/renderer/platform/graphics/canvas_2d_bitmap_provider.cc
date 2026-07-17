@@ -24,6 +24,7 @@
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_image_provider.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/instrumentation/canvas_memory_dump_provider.h"
@@ -46,7 +47,6 @@ Canvas2DBitmapProvider::Canvas2DBitmapProvider(
       format_(format),
       alpha_type_(alpha_type),
       color_space_(color_space),
-      hdr_metadata_(hdr_metadata),
       delegate_(delegate),
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()) {
   max_recorded_op_bytes_ = static_cast<size_t>(kMaxRecordedOpKB.Get()) * 1024;
@@ -57,6 +57,9 @@ Canvas2DBitmapProvider::Canvas2DBitmapProvider(
 
 Canvas2DBitmapProvider::~Canvas2DBitmapProvider() {
   CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
+  if (context_provider_wrapper_) {
+    context_provider_wrapper_->RemoveObserver(this);
+  }
 }
 
 bool Canvas2DBitmapProvider::IsPrinting() const {
@@ -113,6 +116,11 @@ void Canvas2DBitmapProvider::RecordingCleared() {
   clear_frame_ = true;
 }
 
+void Canvas2DBitmapProvider::OnContextDestroyed() {
+  skia_canvas_.reset();
+  canvas_image_provider_ = nullptr;
+}
+
 CanvasImageProvider*
 Canvas2DBitmapProvider::GetOrCreateSWCanvasImageProvider() {
   if (canvas_image_provider_) {
@@ -127,9 +135,16 @@ Canvas2DBitmapProvider::GetOrCreateSWCanvasImageProvider() {
   cc::ImageDecodeCache* cache_rgba8 =
       &Image::SharedCCDecodeCache(kN32_SkColorType);
 
+  if (!context_provider_wrapper_) {
+    context_provider_wrapper_ = SharedGpuContext::ContextProviderWrapper();
+    if (context_provider_wrapper_) {
+      context_provider_wrapper_->AddObserver(this);
+    }
+  }
   canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
       cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
-      cc::PlaybackImageProvider::RasterMode::kSoftware);
+      cc::PlaybackImageProvider::RasterMode::kSoftware,
+      context_provider_wrapper_);
 
   return canvas_image_provider_.get();
 }

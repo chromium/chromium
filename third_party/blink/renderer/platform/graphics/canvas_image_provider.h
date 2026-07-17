@@ -26,6 +26,7 @@ class ColorSpace;
 }
 
 namespace blink {
+class WebGraphicsContext3DProviderWrapper;
 
 class PLATFORM_EXPORT CanvasImageProvider : public cc::ImageProvider {
  public:
@@ -33,7 +34,9 @@ class PLATFORM_EXPORT CanvasImageProvider : public cc::ImageProvider {
                       cc::ImageDecodeCache* cache_f16,
                       const gfx::ColorSpace& target_color_space,
                       viz::SharedImageFormat canvas_format,
-                      cc::PlaybackImageProvider::RasterMode raster_mode);
+                      cc::PlaybackImageProvider::RasterMode raster_mode,
+                      base::WeakPtr<WebGraphicsContext3DProviderWrapper>
+                          context_provider_wrapper);
   CanvasImageProvider(const CanvasImageProvider&) = delete;
   CanvasImageProvider& operator=(const CanvasImageProvider&) = delete;
   ~CanvasImageProvider() override;
@@ -58,6 +61,7 @@ class PLATFORM_EXPORT CanvasImageProvider : public cc::ImageProvider {
   Vector<cc::PaintImage> bound_texture_backed_images_;
   std::optional<cc::PlaybackImageProvider> playback_image_provider_n32_;
   std::optional<cc::PlaybackImageProvider> playback_image_provider_f16_;
+  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
 
   base::WeakPtrFactory<CanvasImageProvider> weak_factory_{this};
 };

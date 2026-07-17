@@ -800,6 +800,12 @@ scoped_refptr<StaticBitmapImage> CanvasNon2DResourceProvider::Snapshot(
 
 CanvasImageProvider* CanvasNon2DResourceProvider::GetOrCreateImageProvider() {
   if (!canvas_image_provider_) {
+    if (!context_provider_wrapper_) {
+      context_provider_wrapper_ = SharedGpuContext::ContextProviderWrapper();
+      if (context_provider_wrapper_) {
+        context_provider_wrapper_->AddObserver(this);
+      }
+    }
     if (!is_software_) {
       if (!IsGpuContextLost()) {
         // Create an ImageDecodeCache for half float images only if the canvas
@@ -817,7 +823,8 @@ CanvasImageProvider* CanvasNon2DResourceProvider::GetOrCreateImageProvider() {
 
         canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
             cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
-            cc::PlaybackImageProvider::RasterMode::kGpu);
+            cc::PlaybackImageProvider::RasterMode::kGpu,
+            context_provider_wrapper_);
       }
     } else {
       // Create an ImageDecodeCache for half float images only if the canvas
@@ -832,7 +839,8 @@ CanvasImageProvider* CanvasNon2DResourceProvider::GetOrCreateImageProvider() {
 
       canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
           cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
-          cc::PlaybackImageProvider::RasterMode::kSoftware);
+          cc::PlaybackImageProvider::RasterMode::kSoftware,
+          context_provider_wrapper_);
     }
   }
   return canvas_image_provider_.get();
