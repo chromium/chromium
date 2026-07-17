@@ -7,13 +7,16 @@ package org.chromium.chrome.browser.settings;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
-import org.chromium.base.Log;
+import org.chromium.base.IntentUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
+import org.chromium.components.embedder_support.util.UrlConstants;
 
 @NullMarked
 public class SettingsIntentUtil {
@@ -70,21 +73,28 @@ public class SettingsIntentUtil {
             @Nullable Bundle fragmentArgs,
             boolean addToBackStack,
             @Nullable String tag) {
-        // TODO(crbug.com/521895796): Once all settings-in-a-tab subpages are fixed to open inside
-        // the page, promote this to an assert that the feature is off.
-        if (SettingsInTab.isEnabled()) {
-            Log.w(TAG, "SettingsInTab is enabled, but creating a SettingsActivity intent.");
-        }
         Intent intent = new Intent();
-        intent.setClass(context, SettingsActivity.class);
-        if (isStandaloneFragment(context, fragmentName)) {
-            intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_STANDALONE, true);
-        } else if (ChromeFeatureList.sSettingsSingleActivity.isEnabled()) {
-            // Note that this intent will be delivered to an existing settings activity (if it
-            // exists) even if it is hosting a standalone fragment. In this case, the activity will
-            // resend the intent without the flag to start a new activity. See
-            // SettingsActivity#onNewIntent.
-            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        boolean isStandaloneFragment = isStandaloneFragment(context, fragmentName);
+        if (SettingsInTab.isEnabled() && !isStandaloneFragment) {
+            intent.setAction(Intent.ACTION_VIEW);
+            // TODO(crbug.com/521895796): When URLs for settings subpages exist (e.g.
+            // chrome://settings/appearance) use them and stop adding fragment information
+            // below.
+            intent.setData(Uri.parse(UrlConstants.SETTINGS_URL));
+            intent.setClass(context, ChromeLauncherActivity.class);
+            // Internal chrome URLs require trusted intents.
+            IntentUtils.addTrustedIntentExtras(intent);
+        } else {
+            intent.setClass(context, SettingsActivity.class);
+            if (isStandaloneFragment) {
+                intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_STANDALONE, true);
+            } else if (ChromeFeatureList.sSettingsSingleActivity.isEnabled()) {
+                // Note that this intent will be delivered to an existing settings activity (if it
+                // exists) even if it is hosting a standalone fragment. In this case, the activity
+                // will resend the intent without the flag to start a new activity. See
+                // SettingsActivity#onNewIntent.
+                intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            }
         }
         if (!(context instanceof Activity)) {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

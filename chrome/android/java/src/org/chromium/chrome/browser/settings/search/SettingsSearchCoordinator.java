@@ -165,6 +165,9 @@ public class SettingsSearchCoordinator
     // should remain hidden across configuration changes.
     private boolean mSuppressUi;
 
+    // Whether destroy() has been called on this object.
+    private boolean mIsDestroyed;
+
     // Used for histogram that logs the user behavior for search.
     // LINT.IfChange(ExitReason)
     @IntDef({
@@ -402,7 +405,7 @@ public class SettingsSearchCoordinator
     public void onAccessibilityStateChanged(
             AccessibilityState.State oldAccessibilityState,
             AccessibilityState.State newAccessibilityState) {
-        if (mActivity.isFinishing() || mActivity.isDestroyed()) return;
+        if (mActivity.isFinishing() || mActivity.isDestroyed() || mIsDestroyed) return;
 
         // If #onSaveInstance has already been called, we cannot commit Fragment transactions. The
         // UI update is safe to skip since the user cannot see the search view in this state.
@@ -936,6 +939,9 @@ public class SettingsSearchCoordinator
     }
 
     private FragmentManager getSettingsFragmentManager() {
+        // NOTE: Calling getChildFragmentManager() on a Fragment that is not currently attached to
+        // a FragmentManager may throw an IllegalStateException. We might want an isAdded() check
+        // here.
         if (mMultiColumnSettings != null) {
             return mMultiColumnSettings.getChildFragmentManager();
         } else {
@@ -1722,6 +1728,7 @@ public class SettingsSearchCoordinator
         if (mFragmentState != FS_SETTINGS) {
             logExitReason();
         }
+        mIsDestroyed = true;
     }
 
     private void restoreRecentSearches() {
