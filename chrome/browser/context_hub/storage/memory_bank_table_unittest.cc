@@ -32,6 +32,8 @@ class MemoryBankTableTest : public testing::Test {
 };
 
 TEST_F(MemoryBankTableTest, AddAndGetEntry) {
+  EXPECT_EQ(0u, table_.GetEntryCount());
+
   MemoryBankEntry entry;
   entry.type = MemoryBankType::kTab;
   entry.timestamp = base::Time::FromSecondsSinceUnixEpoch(1000);
@@ -41,6 +43,7 @@ TEST_F(MemoryBankTableTest, AddAndGetEntry) {
   entry.tags = {"tag1", "tag2"};
 
   EXPECT_TRUE(table_.AddOrUpdateEntry(entry));
+  EXPECT_EQ(1u, table_.GetEntryCount());
 
   std::vector<MemoryBankEntry> entries = table_.GetAllEntries();
   ASSERT_EQ(1u, entries.size());
@@ -80,6 +83,7 @@ TEST_F(MemoryBankTableTest, UpdateExistingEntry) {
   updated_entry.tags = {"updated"};
 
   EXPECT_TRUE(table_.AddOrUpdateEntry(updated_entry));
+  EXPECT_EQ(1u, table_.GetEntryCount());
 
   auto fetched_entry = table_.GetEntry(updated_entry.id);
   ASSERT_TRUE(fetched_entry.has_value());
@@ -128,6 +132,7 @@ TEST_F(MemoryBankTableTest, DeleteEntries) {
 
   EXPECT_TRUE(table_.AddOrUpdateEntry(entry1));
   EXPECT_TRUE(table_.AddOrUpdateEntry(entry2));
+  EXPECT_EQ(2u, table_.GetEntryCount());
 
   std::vector<MemoryBankEntry> entries = table_.GetAllEntries();
   ASSERT_EQ(2u, entries.size());
@@ -135,6 +140,7 @@ TEST_F(MemoryBankTableTest, DeleteEntries) {
   int64_t id_to_delete = entries[0].id;
   std::vector<int64_t> ids_to_delete = {id_to_delete};
   EXPECT_TRUE(table_.DeleteEntries(ids_to_delete));
+  EXPECT_EQ(1u, table_.GetEntryCount());
 
   std::vector<MemoryBankEntry> remaining = table_.GetAllEntries();
   ASSERT_EQ(1u, remaining.size());

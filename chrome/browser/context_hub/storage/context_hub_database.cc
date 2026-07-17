@@ -11,6 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
+#include "chrome/browser/context_hub/features.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -101,6 +102,13 @@ bool ContextHubDatabase::AddOrUpdateMemoryBankEntry(
   if (!db_ || !db_->is_open()) {
     return false;
   }
+
+  size_t max_entries = features::kMaxMemoryBankEntries.Get();
+  // If adding a new entry and the max entries limit is reached, reject.
+  if (entry.id == 0 && memory_bank_table_.GetEntryCount() >= max_entries) {
+    return false;
+  }
+
   return memory_bank_table_.AddOrUpdateEntry(entry);
 }
 

@@ -18,4 +18,10 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 
 BASE_FEATURE(kMemoryBanks, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE_PARAM(size_t,
+                   kMaxMemoryBankEntries,
+                   &kMemoryBanks,
+                   "max_memory_bank_entries",
+                   100);
+
 }  // namespace context_hub::features

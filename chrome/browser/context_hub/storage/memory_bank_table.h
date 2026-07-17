@@ -66,6 +66,9 @@ class MemoryBankTable {
   // Retrieves all entries from memory_bank_entries ordered by timestamp DESC.
   std::vector<MemoryBankEntry> GetAllEntries();
 
+  // Returns the total number of entries in memory_bank_entries.
+  size_t GetEntryCount();
+
   // Deletes records by IDs. Returns true on success.
   bool DeleteEntries(base::span<const int64_t> ids);
 

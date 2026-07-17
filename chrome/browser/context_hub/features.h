@@ -20,6 +20,9 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kAutoTodosTimeoutSeconds);
 // The feature flag for the Memory Banks feature in Context Hub.
 BASE_DECLARE_FEATURE(kMemoryBanks);
 
+// The maximum number of entries to keep in Memory Banks storage.
+BASE_DECLARE_FEATURE_PARAM(size_t, kMaxMemoryBankEntries);
+
 }  // namespace context_hub::features
 
 #endif  // CHROME_BROWSER_CONTEXT_HUB_FEATURES_H_
