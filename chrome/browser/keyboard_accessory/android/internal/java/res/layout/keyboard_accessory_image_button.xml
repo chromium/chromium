@@ -7,8 +7,9 @@ found in the LICENSE file.
 <ImageButton
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:background="?attr/selectableItemBackgroundBorderless"
+    android:layout_width="@dimen/keyboard_accessory_tab_icon_size"
+    android:layout_height="@dimen/keyboard_accessory_tab_icon_size"
+    android:background="@drawable/default_icon_background"
+    android:scaleType="center"
     android:tint="@macro/default_icon_color"
     tools:ignore="ContentDescription" />

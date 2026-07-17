@@ -1043,40 +1043,22 @@ public class KeyboardAccessoryViewTest {
 
     @Test
     @MediumTest
-    public void testAccessoryButtonsHaveCorrectSpacing() throws InterruptedException {
+    public void testAccessoryButtonsHaveCorrectSizes() throws InterruptedException {
         KeyboardAccessoryButtonGroupView buttonGroupView = setupButtonsAndGetGroup();
         ArrayList<ImageButton> buttons = buttonGroupView.getButtons();
         assertEquals("Expected three buttons to be present.", 3, buttons.size());
 
-        ImageButton button1 = buttons.get(0);
-        ImageButton button2 = buttons.get(1);
-        ImageButton button3 = buttons.get(2);
-
-        // Check spacing.
-        ViewGroup.MarginLayoutParams params1 =
-                (ViewGroup.MarginLayoutParams) button1.getLayoutParams();
-        ViewGroup.MarginLayoutParams params2 =
-                (ViewGroup.MarginLayoutParams) button2.getLayoutParams();
-        ViewGroup.MarginLayoutParams params3 =
-                (ViewGroup.MarginLayoutParams) button3.getLayoutParams();
-
-        int expectedMargin =
+        int expectedSize =
                 buttonGroupView
                         .getResources()
-                        .getDimensionPixelSize(R.dimen.keyboard_accessory_tab_icon_spacing);
+                        .getDimensionPixelSize(R.dimen.keyboard_accessory_tab_icon_size);
 
-        assertEquals(
-                "First button's left margin is incorrect.", expectedMargin, params1.leftMargin);
-        assertEquals(
-                "First button's right margin is incorrect.", expectedMargin, params1.rightMargin);
-        assertEquals(
-                "Second button's left margin is incorrect.", expectedMargin, params2.leftMargin);
-        assertEquals(
-                "Second button's right margin is incorrect.", expectedMargin, params2.rightMargin);
-        assertEquals(
-                "Third button's left margin is incorrect.", expectedMargin, params3.leftMargin);
-        assertEquals(
-                "Third button's right margin is incorrect.", expectedMargin, params3.rightMargin);
+        for (int i = 0; i < buttons.size(); i++) {
+            ImageButton button = buttons.get(i);
+            ViewGroup.LayoutParams params = button.getLayoutParams();
+            assertEquals("Button " + i + " width is incorrect.", expectedSize, params.width);
+            assertEquals("Button " + i + " height is incorrect.", expectedSize, params.height);
+        }
     }
 
     @Test

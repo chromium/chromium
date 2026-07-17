@@ -145,7 +145,7 @@ class KeyboardAccessoryView extends LinearLayout {
             return ((ViewGroup) view).getChildCount()
                     * getContext()
                             .getResources()
-                            .getDimensionPixelSize(R.dimen.keyboard_accessory_tab_icon_width);
+                            .getDimensionPixelSize(R.dimen.keyboard_accessory_tab_icon_size);
         }
 
         private int getOccupiedSpaceByChildren(RecyclerView parent) {

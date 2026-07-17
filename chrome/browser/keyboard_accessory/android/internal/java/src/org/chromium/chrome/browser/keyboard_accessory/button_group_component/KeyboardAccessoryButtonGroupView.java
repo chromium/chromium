@@ -8,7 +8,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
@@ -88,14 +87,6 @@ public class KeyboardAccessoryButtonGroupView extends LinearLayout {
         button.setImageResource(iconId);
         button.setContentDescription(contentDescription);
         button.setEnabled(isEnabled());
-        // Add a spacing between buttons in the group.
-        ViewGroup.MarginLayoutParams marginParams =
-                (ViewGroup.MarginLayoutParams) button.getLayoutParams();
-        int spacing =
-                getResources().getDimensionPixelSize(R.dimen.keyboard_accessory_tab_icon_spacing);
-        marginParams.leftMargin = spacing;
-        marginParams.rightMargin = spacing;
-        button.setLayoutParams(marginParams);
         return button;
     }
 
