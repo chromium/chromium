@@ -174,8 +174,6 @@ void DictationKeyedService::ContextMenuHandler(
     return;
   }
 
-  // TODO(crbug.com/525856380): Handle changes to the focused element. Identify
-  // the targeted element for the dictation Target.
   StartSession(*tab, target_id, DictationSessionEntryPoint::kContextMenu);
 }
 

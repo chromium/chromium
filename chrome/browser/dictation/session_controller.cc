@@ -90,6 +90,15 @@ void SessionController::StartDictationStream(
 
 void SessionController::OnFocusChangedInPage(
     const content::FocusedNodeDetails& details) {
+  if (attached_stream_provider_ && attached_stream_provider_->GetTarget()) {
+    attached_stream_provider_->GetTarget()->OnFocusChanged(details);
+  }
+  for (auto& provider : finalizing_stream_providers_) {
+    if (provider->GetTarget()) {
+      provider->GetTarget()->OnFocusChanged(details);
+    }
+  }
+
   if (details.focus_type == blink::mojom::FocusType::kNone ||
       details.focus_type == blink::mojom::FocusType::kScript) {
     return;

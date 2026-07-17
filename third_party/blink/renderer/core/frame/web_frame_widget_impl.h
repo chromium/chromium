@@ -31,6 +31,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_WEB_FRAME_WIDGET_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_WEB_FRAME_WIDGET_IMPL_H_
 
+#include <optional>
+
 #include "base/functional/function_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -305,11 +307,13 @@ class CORE_EXPORT WebFrameWidgetImpl
                       const gfx::Range& replacement_range,
                       int selection_start,
                       int selection_end,
-                      mojom::blink::ImeState ime_state) override;
+                      mojom::blink::ImeState ime_state,
+                      DOMNodeIdType target_dom_node_id) override;
   void CommitText(const String& text,
                   const Vector<ui::ImeTextSpan>& ime_text_spans,
                   const gfx::Range& replacement_range,
-                  int relative_cursor_pos) override;
+                  int relative_cursor_pos,
+                  DOMNodeIdType target_dom_node_id) override;
   void FinishComposingText(bool keep_selection) override;
   bool IsProvisional() override;
   cc::ElementId GetScrollableContainerIdAt(const gfx::PointF& point) override;

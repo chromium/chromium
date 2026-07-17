@@ -11,6 +11,7 @@ import "cc/mojom/touch_action.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "third_party/blink/public/mojom/dom/dom_node_id.mojom";
 import "third_party/blink/public/mojom/input/gesture_event.mojom";
 import "third_party/blink/public/mojom/input/handwriting_gesture_result.mojom";
 import "third_party/blink/public/mojom/input/input_event.mojom";
@@ -494,21 +495,29 @@ interface WidgetInputHandler {
   CursorVisibilityChanged(bool visible);
 
   // This message sends a string being composed with an input method.
+  // `target_dom_node_id`, if not a null value, will target composition to the
+  // specified node, adjusting and restoring focus if necessary.
+  // TODO(crbug.com/535826288): Use `DOMNodeId?`.
   // Note, the response is specifically for Devtools to learn about completion
   ImeSetComposition(mojo_base.mojom.String16 text,
                     array<ui.mojom.ImeTextSpan> ime_text_spans,
                     gfx.mojom.Range range,
                     int32 start,
                     int32 end,
-                    ImeState ime_state) => ();
+                    ImeState ime_state,
+                    blink.mojom.DOMNodeId target_dom_node_id) => ();
 
   // This message deletes the current composition, inserts specified text, and
   // moves the cursor.
+  // `target_dom_node_id`, if not a null value, will target the text commit to
+  // the specified node, adjusting and restoring focus if necessary.
+  // TODO(crbug.com/535826288): Use `DOMNodeId?`.
   // Note, the response is specifically for Devtools to learn about completion
   ImeCommitText(mojo_base.mojom.String16 text,
                 array<ui.mojom.ImeTextSpan> ime_text_spans,
                 gfx.mojom.Range range,
-                int32 relative_cursor_position) => ();
+                int32 relative_cursor_position,
+                blink.mojom.DOMNodeId target_dom_node_id) => ();
 
   // This message inserts the ongoing composition.
   ImeFinishComposingText(bool keep_selection);

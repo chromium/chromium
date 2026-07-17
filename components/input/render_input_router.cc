@@ -30,6 +30,7 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/latency/latency_info.h"
@@ -63,6 +64,7 @@ class UnboundWidgetInputHandler : public blink::mojom::WidgetInputHandler {
                          int32_t start,
                          int32_t end,
                          blink::mojom::ImeState ime_state,
+                         const blink::DOMNodeIdType& target_dom_node_id,
                          ImeSetCompositionCallback callback) override {
     DLOG(WARNING) << "Input request on unbound interface";
   }
@@ -70,6 +72,7 @@ class UnboundWidgetInputHandler : public blink::mojom::WidgetInputHandler {
                      const std::vector<ui::ImeTextSpan>& ime_text_spans,
                      const gfx::Range& range,
                      int32_t relative_cursor_position,
+                     const blink::DOMNodeIdType& target_dom_node_id,
                      ImeCommitTextCallback callback) override {
     DLOG(WARNING) << "Input request on unbound interface";
   }

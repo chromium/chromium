@@ -44,6 +44,7 @@
 #include "content/browser/site_instance_group.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/content_constants_internal.h"
+#include "content/public/browser/global_dom_node_id.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -65,6 +66,7 @@
 #include "skia/ext/skia_utils_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
@@ -2721,11 +2723,13 @@ TEST_F(RenderWidgetHostTest, AddAndRemoveImeInputEventObserver) {
 TEST_F(RenderWidgetHostTest, SetAndCommitExternallySourcedComposition) {
   std::u16string text = u"hello";
   int length = text.length();
+  GlobalDOMNodeId node_id;
+  node_id.target_element_dom_id = blink::DOMNodeIdType(123);
 
   ui::ImeTextSpan ime_text_span;
   ime_text_span.end_offset = length;
   ime_text_span.underline_style = ui::ImeTextSpan::UnderlineStyle::kDot;
-  host_->SetExternallySourcedComposition(text, {ime_text_span});
+  host_->SetExternallySourcedComposition(text, {ime_text_span}, node_id);
 
   {
     MockWidgetInputHandler::MessageVector dispatched_messages =
@@ -2735,12 +2739,12 @@ TEST_F(RenderWidgetHostTest, SetAndCommitExternallySourcedComposition) {
         dispatched_messages[0]->ToIME();
     ASSERT_TRUE(ime_message);
     EXPECT_EQ("SetComposition", ime_message->name());
-    EXPECT_TRUE(ime_message->Matches(text, {ime_text_span},
-                                     gfx::Range::InvalidRange(), length, length,
-                                     blink::mojom::ImeState::kNone));
+    EXPECT_TRUE(ime_message->Matches(
+        text, {ime_text_span}, gfx::Range::InvalidRange(), length, length,
+        blink::mojom::ImeState::kNone, node_id.target_element_dom_id));
   }
 
-  host_->CommitExternallySourcedComposition(text);
+  host_->CommitExternallySourcedComposition(text, node_id);
 
   {
     MockWidgetInputHandler::MessageVector dispatched_messages =
@@ -2750,9 +2754,9 @@ TEST_F(RenderWidgetHostTest, SetAndCommitExternallySourcedComposition) {
         dispatched_messages[0]->ToIME();
     ASSERT_TRUE(ime_message);
     EXPECT_EQ("CommitText", ime_message->name());
-    EXPECT_TRUE(ime_message->Matches(text, std::vector<ui::ImeTextSpan>(),
-                                     gfx::Range::InvalidRange(), 0, 0,
-                                     blink::mojom::ImeState::kNone));
+    EXPECT_TRUE(ime_message->Matches(
+        text, std::vector<ui::ImeTextSpan>(), gfx::Range::InvalidRange(), 0, 0,
+        blink::mojom::ImeState::kNone, node_id.target_element_dom_id));
   }
 }
 

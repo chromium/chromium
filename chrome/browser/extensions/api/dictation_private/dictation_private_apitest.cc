@@ -106,6 +106,7 @@ class ExtensionApiTestStreamProvider : public dictation::StreamProvider {
                : state_changes_.back();
   }
 
+  dictation::Target* GetTarget() override { return target_.get(); }
   const dictation::Target* GetTarget() const override { return target_.get(); }
 
   struct TranscriptionUpdate {

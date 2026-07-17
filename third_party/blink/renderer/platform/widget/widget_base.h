@@ -298,11 +298,13 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
                          const gfx::Range& replacement_range,
                          int selection_start,
                          int selection_end,
-                         mojom::blink::ImeState ime_state);
+                         mojom::blink::ImeState ime_state,
+                         DOMNodeIdType target_dom_node_id);
   void ImeCommitText(const String& text,
                      const Vector<ui::ImeTextSpan>& ime_text_spans,
                      const gfx::Range& replacement_range,
-                     int relative_cursor_pos);
+                     int relative_cursor_pos,
+                     DOMNodeIdType target_dom_node_id);
   void ImeFinishComposingText(bool keep_selection);
   bool IsForProvisionalFrame();
   void FlushInputProcessedCallback();

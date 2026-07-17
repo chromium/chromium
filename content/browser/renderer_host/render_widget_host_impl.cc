@@ -96,6 +96,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/disallow_activation_reason.h"
+#include "content/public/browser/global_dom_node_id.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/peak_gpu_memory_tracker_factory.h"
@@ -2426,7 +2427,8 @@ void RenderWidgetHostImpl::ImeSetComposition(
   // Passing null callback since it is only needed for Devtools
   GetWidgetInputHandler()->ImeSetComposition(
       text, ime_text_spans, replacement_range, selection_start, selection_end,
-      ime_state, base::OnceClosure());
+      ime_state, /*target_dom_node_id=*/blink::DOMNodeIdType(),
+      base::OnceClosure());
 #if BUILDFLAG(IS_ANDROID)
   for (auto& observer : ime_input_event_observers_) {
     observer.OnImeSetComposingTextEvent(text);
@@ -2440,9 +2442,9 @@ void RenderWidgetHostImpl::ImeCommitText(
     const gfx::Range& replacement_range,
     int relative_cursor_pos) {
   // Passing null callback since it is only needed for Devtools
-  GetWidgetInputHandler()->ImeCommitText(text, ime_text_spans,
-                                         replacement_range, relative_cursor_pos,
-                                         base::OnceClosure());
+  GetWidgetInputHandler()->ImeCommitText(
+      text, ime_text_spans, replacement_range, relative_cursor_pos,
+      /*target_dom_node_id=*/blink::DOMNodeIdType(), base::OnceClosure());
 #if BUILDFLAG(IS_ANDROID)
   for (auto& observer : ime_input_event_observers_) {
     observer.OnImeTextCommittedEvent(text);
@@ -2464,23 +2466,26 @@ void RenderWidgetHostImpl::ImeCancelComposition() {
   GetWidgetInputHandler()->ImeSetComposition(
       std::u16string(), std::vector<ui::ImeTextSpan>(),
       gfx::Range::InvalidRange(), 0, 0, blink::mojom::ImeState::kNone,
-      base::OnceClosure());
+      /*target_dom_node_id=*/blink::DOMNodeIdType(), base::OnceClosure());
 }
 
 void RenderWidgetHostImpl::SetExternallySourcedComposition(
     const std::u16string& text,
-    const std::vector<ui::ImeTextSpan>& ime_text_spans) {
+    const std::vector<ui::ImeTextSpan>& ime_text_spans,
+    const GlobalDOMNodeId& target_dom_node_id) {
   int length = text.length();
   GetWidgetInputHandler()->ImeSetComposition(
       text, ime_text_spans, gfx::Range::InvalidRange(), length, length,
-      blink::mojom::ImeState::kNone, base::OnceClosure());
+      blink::mojom::ImeState::kNone, target_dom_node_id.target_element_dom_id,
+      base::OnceClosure());
 }
 
 void RenderWidgetHostImpl::CommitExternallySourcedComposition(
-    const std::u16string& text) {
-  GetWidgetInputHandler()->ImeCommitText(text, std::vector<ui::ImeTextSpan>(),
-                                         gfx::Range::InvalidRange(), 0,
-                                         base::OnceClosure());
+    const std::u16string& text,
+    const GlobalDOMNodeId& target_dom_node_id) {
+  GetWidgetInputHandler()->ImeCommitText(
+      text, std::vector<ui::ImeTextSpan>(), gfx::Range::InvalidRange(), 0,
+      target_dom_node_id.target_element_dom_id, base::OnceClosure());
 }
 
 void RenderWidgetHostImpl::RejectPointerLockOrUnlockIfNecessary(

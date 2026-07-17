@@ -10,6 +10,7 @@
 #include "content/public/test/fake_render_widget_host.h"
 #include "content/public/test/render_view_test.h"
 #include "content/renderer/render_thread_impl.h"
+#include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/public/common/widget/visual_properties.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/web/web_element.h"
@@ -39,7 +40,8 @@ class RenderWidgetTest : public RenderViewTest {
   void CommitText(std::string text) {
     render_widget_host_->GetWidgetInputHandler()->ImeCommitText(
         base::UTF8ToUTF16(text), std::vector<ui::ImeTextSpan>(),
-        gfx::Range::InvalidRange(), 0, base::DoNothing());
+        gfx::Range::InvalidRange(), 0,
+        /*target_dom_node_id=*/blink::DOMNodeIdType(), base::DoNothing());
     base::RunLoop().RunUntilIdle();
   }
 

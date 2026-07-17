@@ -1619,9 +1619,13 @@ void WidgetBase::ImeSetComposition(
     const gfx::Range& replacement_range,
     int selection_start,
     int selection_end,
-    mojom::blink::ImeState ime_state) {
-  if (!ShouldHandleImeEvents())
+    mojom::blink::ImeState ime_state,
+    DOMNodeIdType target_dom_node_id) {
+  // If the browser is setting a targeted composition, ignore normal IME focus
+  // requirements.
+  if (target_dom_node_id.is_null() && !ShouldHandleImeEvents()) {
     return;
+  }
 
   FrameWidget* frame_widget = client_->FrameWidget();
   if (!frame_widget)
@@ -1634,9 +1638,9 @@ void WidgetBase::ImeSetComposition(
   }
 
   ImeEventGuard guard(weak_ptr_factory_.GetWeakPtr());
-  bool success =
-      frame_widget->SetComposition(text, ime_text_spans, replacement_range,
-                                   selection_start, selection_end, ime_state);
+  bool success = frame_widget->SetComposition(
+      text, ime_text_spans, replacement_range, selection_start, selection_end,
+      ime_state, target_dom_node_id);
   if (!guard.IsValid()) {
     return;
   }
@@ -1655,9 +1659,13 @@ void WidgetBase::ImeSetComposition(
 void WidgetBase::ImeCommitText(const String& text,
                                const Vector<ui::ImeTextSpan>& ime_text_spans,
                                const gfx::Range& replacement_range,
-                               int relative_cursor_pos) {
-  if (!ShouldHandleImeEvents())
+                               int relative_cursor_pos,
+                               DOMNodeIdType target_dom_node_id) {
+  // If the browser is setting a targeted composition, ignore normal IME focus
+  // requirements.
+  if (target_dom_node_id.is_null() && !ShouldHandleImeEvents()) {
     return;
+  }
 
   FrameWidget* frame_widget = client_->FrameWidget();
   if (!frame_widget)
@@ -1671,7 +1679,7 @@ void WidgetBase::ImeCommitText(const String& text,
   ImeEventGuard guard(weak_ptr_factory_.GetWeakPtr());
   input_handler_.set_handling_input_event(true);
   frame_widget->CommitText(text, ime_text_spans, replacement_range,
-                           relative_cursor_pos);
+                           relative_cursor_pos, target_dom_node_id);
   if (!guard.IsValid()) {
     return;
   }
