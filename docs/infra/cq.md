@@ -283,7 +283,7 @@ There are several requirements for a builder to be added to the Commit Queue.
   If a configuration only fails once every couple of weeks on the waterfalls,
   then it's probably not worth adding it to the commit queue.
 
-Please email estaab@chromium.org, who will approve new build configurations.
+Please email bpastene@chromium.org, who will approve new build configurations.
 
 ### How do I ensure a trybot runs on all changes to a specific directory?
 
