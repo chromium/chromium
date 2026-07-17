@@ -436,6 +436,9 @@ MediaStreamConstraints* ToMediaStreamConstraints(
   if (source->hasMonitorTypeSurfaces()) {
     constraints->setMonitorTypeSurfaces(source->monitorTypeSurfaces());
   }
+  if (source->hasAudioSelection()) {
+    constraints->setAudioSelection(source->audioSelection());
+  }
   return constraints;
 }
 

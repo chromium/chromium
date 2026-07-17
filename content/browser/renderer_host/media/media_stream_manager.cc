@@ -626,6 +626,8 @@ class MediaStreamManager::DeviceRequest {
         stream_controls_.preferred_display_surface;
     ui_request_->exclude_monitor_type_surfaces =
         stream_controls_.exclude_monitor_type_surfaces;
+    ui_request_->audio_selection_preferred =
+        stream_controls_.audio_selection_preferred;
   }
 
   // Creates a tab capture specific MediaStreamRequest object that is used by
@@ -646,6 +648,8 @@ class MediaStreamManager::DeviceRequest {
     ui_request_->exclude_system_audio = stream_controls_.exclude_system_audio;
     ui_request_->window_audio_preference =
         stream_controls_.window_audio_preference;
+    ui_request_->audio_selection_preferred =
+        stream_controls_.audio_selection_preferred;
   }
 
   bool HasUIRequest() const { return ui_request_.get() != nullptr; }

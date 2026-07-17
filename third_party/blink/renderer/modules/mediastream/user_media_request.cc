@@ -651,6 +651,14 @@ UserMediaRequest* UserMediaRequest::Create(
         "Media.GetDisplayMedia.Constraints.MonitorTypeSurfaces");
   }
 
+  result->set_audio_selection_preferred(options->hasAudioSelection());
+  if (media_type == UserMediaRequestType::kDisplayMedia) {
+    RecordBooleanConstraintUma(
+        result->audio_selection_preferred() ? std::make_optional(true)
+                                            : std::nullopt,
+        "Media.GetDisplayMedia.Constraints.AudioSelection");
+  }
+
   result->set_suppress_local_audio_playback(
       suppress_local_audio_playback.value_or(false));
   if (media_type == UserMediaRequestType::kDisplayMedia) {

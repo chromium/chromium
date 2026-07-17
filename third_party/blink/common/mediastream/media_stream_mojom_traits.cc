@@ -114,6 +114,7 @@ bool StructTraits<blink::mojom::StreamControlsDataView, blink::StreamControls>::
   out->dynamic_surface_switching_requested =
       input.dynamic_surface_switching_requested();
   out->exclude_monitor_type_surfaces = input.exclude_monitor_type_surfaces();
+  out->audio_selection_preferred = input.audio_selection_preferred();
   return true;
 }
 

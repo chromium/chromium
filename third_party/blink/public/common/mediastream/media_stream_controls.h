@@ -67,6 +67,7 @@ struct BLINK_COMMON_EXPORT StreamControls {
   // the target of the tab-capture to the other tab.
   bool dynamic_surface_switching_requested = true;
   bool exclude_monitor_type_surfaces = false;
+  bool audio_selection_preferred = false;
 };
 
 }  // namespace blink

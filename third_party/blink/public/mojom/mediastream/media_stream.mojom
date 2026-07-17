@@ -203,6 +203,7 @@ struct StreamControls {
   PreferredDisplaySurface preferred_display_surface;
   bool dynamic_surface_switching_requested;
   bool exclude_monitor_type_surfaces;
+  bool audio_selection_preferred;
 };
 
 // Results returned by a successful GetOpenDevice call.

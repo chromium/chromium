@@ -4,6 +4,7 @@
 
 enum DisplayMediaIncludeOrExclude { "include", "exclude" };
 enum DisplayMediaSystemWindowOrExclude { "system", "window", "exclude" };
+enum AudioSelectionPreferenceEnum { "preferred" };
 
 typedef DisplayMediaIncludeOrExclude SystemAudioPreferenceEnum;
 typedef DisplayMediaSystemWindowOrExclude WindowAudioPreferenceEnum;
@@ -39,6 +40,7 @@ dictionary DisplayMediaStreamOptions {
         WindowAudioPreferenceEnum windowAudio;
     SurfaceSwitchingPreferenceEnum surfaceSwitching;
     MonitorTypeSurfacesEnum monitorTypeSurfaces;
+    [RuntimeEnabled=GetDisplayMediaAudioSelection] AudioSelectionPreferenceEnum audioSelection;
 };
 
 // This dictionnary is used internally to hold all members from
@@ -57,6 +59,7 @@ dictionary MediaStreamConstraints {
         WindowAudioPreferenceEnum windowAudio;
     SurfaceSwitchingPreferenceEnum surfaceSwitching;
     MonitorTypeSurfacesEnum monitorTypeSurfaces;
+    [RuntimeEnabled=GetDisplayMediaAudioSelection] AudioSelectionPreferenceEnum audioSelection;
 };
 
 dictionary AudioOutputOptions {

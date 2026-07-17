@@ -196,6 +196,11 @@ class MODULES_EXPORT UserMediaRequest final
     return exclude_monitor_type_surfaces_;
   }
 
+  void set_audio_selection_preferred(bool value) {
+    audio_selection_preferred_ = value;
+  }
+  bool audio_selection_preferred() const { return audio_selection_preferred_; }
+
   void set_suppress_local_audio_playback(bool value) {
     suppress_local_audio_playback_ = value;
   }
@@ -248,6 +253,7 @@ class MODULES_EXPORT UserMediaRequest final
   bool exclude_monitor_type_surfaces_ = false;
   bool suppress_local_audio_playback_ = false;
   bool restrict_own_audio_ = false;
+  bool audio_selection_preferred_ = false;
   const bool auto_select_all_screens_ = false;
   bool has_transient_user_activation_ = false;
   int32_t request_id_ = -1;

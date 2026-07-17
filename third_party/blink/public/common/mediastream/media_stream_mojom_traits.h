@@ -149,6 +149,10 @@ struct BLINK_COMMON_EXPORT
     return controls.exclude_monitor_type_surfaces;
   }
 
+  static bool audio_selection_preferred(const blink::StreamControls& controls) {
+    return controls.audio_selection_preferred;
+  }
+
   static bool Read(blink::mojom::StreamControlsDataView input,
                    blink::StreamControls* out);
 };

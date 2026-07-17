@@ -128,6 +128,9 @@ struct CONTENT_EXPORT MediaStreamRequest {
   // have previously been used on the capture-session associated with this
   // request. This is only relevant for tab-sharing sessions.
   bool captured_surface_control_active;
+
+  // True if getDisplayMedia requested audioSelection='preferred'.
+  bool audio_selection_preferred = false;
 };
 
 // Interface used by the content layer to notify chrome about changes in the
