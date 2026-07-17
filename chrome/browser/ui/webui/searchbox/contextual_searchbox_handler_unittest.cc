@@ -26,6 +26,7 @@
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
+#include "chrome/browser/contextual_tasks/active_task_context_provider_impl.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
@@ -2349,6 +2350,14 @@ class ContextualSearchboxHandlerTestTabsTest
 
   void SetUp() override {
     ContextualSearchboxHandlerTest::SetUp();
+    contextual_tasks::ContextualTasksServiceFactory::GetInstance()
+        ->SetTestingFactory(
+            profile(),
+            base::BindRepeating([](content::BrowserContext* context)
+                                    -> std::unique_ptr<KeyedService> {
+              return std::make_unique<testing::NiceMock<
+                  contextual_tasks::MockContextualTasksService>>();
+            }));
     tab_list_ = std::make_unique<testing::NiceMock<MockTabListInterface>>();
     tab_list_registration_ =
         std::make_unique<ui::ScopedUnownedUserData<TabListInterface>>(
@@ -2928,6 +2937,154 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, TabContextAddedMetric) {
       "ContextualSearch.TabContextAdded.V2.NewTabPage", 1, 1);
   histogram_tester().ExpectUniqueSample(
       "ContextualSearch.TabWithDuplicateTitleClicked.V2.NewTabPage", 0, 1);
+}
+
+TEST_F(ContextualSearchboxHandlerTestTabsTest,
+       OnContextUploadStatusChanged_TerminalFailureRemovesUnderline) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kContextManagementInComposebox);
+
+  auto* contextual_tasks_service =
+      static_cast<contextual_tasks::MockContextualTasksService*>(
+          contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
+              profile()));
+  ASSERT_TRUE(contextual_tasks_service);
+
+  auto active_task_context_provider =
+      std::make_unique<contextual_tasks::ActiveTaskContextProviderImpl>(
+          browser_window_interface(), contextual_tasks_service);
+
+  base::UnguessableToken context_token = base::UnguessableToken::Create();
+  int32_t tab_id = 456;
+
+  struct TestObserver
+      : public contextual_tasks::ActiveTaskContextProvider::Observer {
+    void OnContextTabsChanged(
+        const std::set<tabs::TabHandle>& context_tabs) override {
+      context_tabs_ = context_tabs;
+    }
+    std::set<tabs::TabHandle> context_tabs_;
+  } observer;
+  active_task_context_provider->AddObserver(&observer);
+
+  handler().selected_tabs[context_token] = tab_id;
+  active_task_context_provider->AddLocalTabUnderline(tabs::TabHandle(tab_id));
+
+  // Verify that the underline is initially added.
+  EXPECT_FALSE(observer.context_tabs_.find(tabs::TabHandle(tab_id)) ==
+               observer.context_tabs_.end());
+
+  handler().OnContextUploadStatusChanged(
+      context_token, lens::MimeType::kUnknown,
+      contextual_search::ContextUploadStatus::kValidationFailed,
+      contextual_search::ContextUploadErrorType::kImageProcessingError);
+
+  EXPECT_TRUE(handler().selected_tabs.find(context_token) ==
+              handler().selected_tabs.end());
+  EXPECT_TRUE(observer.context_tabs_.find(tabs::TabHandle(tab_id)) ==
+              observer.context_tabs_.end());
+
+  active_task_context_provider->RemoveObserver(&observer);
+}
+
+TEST_F(ContextualSearchboxHandlerTestTabsTest,
+       OnContextUploadStatusChanged_SuccessDoesNotRemoveUnderline) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kContextManagementInComposebox);
+
+  auto* contextual_tasks_service =
+      static_cast<contextual_tasks::MockContextualTasksService*>(
+          contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
+              profile()));
+  ASSERT_TRUE(contextual_tasks_service);
+
+  auto active_task_context_provider =
+      std::make_unique<contextual_tasks::ActiveTaskContextProviderImpl>(
+          browser_window_interface(), contextual_tasks_service);
+
+  base::UnguessableToken context_token = base::UnguessableToken::Create();
+  int32_t tab_id = 456;
+
+  struct TestObserver
+      : public contextual_tasks::ActiveTaskContextProvider::Observer {
+    void OnContextTabsChanged(
+        const std::set<tabs::TabHandle>& context_tabs) override {
+      context_tabs_ = context_tabs;
+    }
+    std::set<tabs::TabHandle> context_tabs_;
+  } observer;
+  active_task_context_provider->AddObserver(&observer);
+
+  handler().selected_tabs[context_token] = tab_id;
+  active_task_context_provider->AddLocalTabUnderline(tabs::TabHandle(tab_id));
+
+  // Verify that the underline is initially added.
+  EXPECT_FALSE(observer.context_tabs_.find(tabs::TabHandle(tab_id)) ==
+               observer.context_tabs_.end());
+
+  handler().OnContextUploadStatusChanged(
+      context_token, lens::MimeType::kUnknown,
+      contextual_search::ContextUploadStatus::kUploadSuccessful, std::nullopt);
+
+  EXPECT_FALSE(handler().selected_tabs.find(context_token) ==
+               handler().selected_tabs.end());
+  EXPECT_FALSE(observer.context_tabs_.find(tabs::TabHandle(tab_id)) ==
+               observer.context_tabs_.end());
+
+  active_task_context_provider->RemoveObserver(&observer);
+}
+
+TEST_F(ContextualSearchboxHandlerTestTabsTest,
+       OnContextUploadStatusChanged_MissingTokenDoesNotAffectOtherUnderlines) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kContextManagementInComposebox);
+
+  auto* contextual_tasks_service =
+      static_cast<contextual_tasks::MockContextualTasksService*>(
+          contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
+              profile()));
+  ASSERT_TRUE(contextual_tasks_service);
+
+  auto active_task_context_provider =
+      std::make_unique<contextual_tasks::ActiveTaskContextProviderImpl>(
+          browser_window_interface(), contextual_tasks_service);
+
+  base::UnguessableToken context_token1 = base::UnguessableToken::Create();
+  base::UnguessableToken context_token2 = base::UnguessableToken::Create();
+  int32_t tab_id1 = 456;
+  int32_t tab_id2 = 789;
+
+  struct TestObserver
+      : public contextual_tasks::ActiveTaskContextProvider::Observer {
+    void OnContextTabsChanged(
+        const std::set<tabs::TabHandle>& context_tabs) override {
+      context_tabs_ = context_tabs;
+    }
+    std::set<tabs::TabHandle> context_tabs_;
+  } observer;
+  active_task_context_provider->AddObserver(&observer);
+
+  handler().selected_tabs[context_token1] = tab_id1;
+  active_task_context_provider->AddLocalTabUnderline(tabs::TabHandle(tab_id1));
+  active_task_context_provider->AddLocalTabUnderline(tabs::TabHandle(tab_id2));
+
+  // Verify both underlines are initially added.
+  EXPECT_FALSE(observer.context_tabs_.find(tabs::TabHandle(tab_id1)) ==
+               observer.context_tabs_.end());
+  EXPECT_FALSE(observer.context_tabs_.find(tabs::TabHandle(tab_id2)) ==
+               observer.context_tabs_.end());
+
+  handler().OnContextUploadStatusChanged(
+      context_token2, lens::MimeType::kUnknown,
+      contextual_search::ContextUploadStatus::kValidationFailed,
+      contextual_search::ContextUploadErrorType::kImageProcessingError);
+
+  EXPECT_FALSE(observer.context_tabs_.find(tabs::TabHandle(tab_id1)) ==
+               observer.context_tabs_.end());
+  EXPECT_FALSE(observer.context_tabs_.find(tabs::TabHandle(tab_id2)) ==
+               observer.context_tabs_.end());
+
+  active_task_context_provider->RemoveObserver(&observer);
 }
 
 TEST_F(ContextualSearchboxHandlerTestTabsTest,

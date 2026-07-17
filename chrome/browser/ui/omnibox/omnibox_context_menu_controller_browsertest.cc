@@ -80,6 +80,38 @@ void OpenClassicPopup(Profile* profile, OmniboxController* omnibox_controller) {
   omnibox_controller->StartAutocomplete(input);
 }
 
+// Dummy bytes representing tab contextual input data in tests.
+constexpr uint8_t kDummyTabContextBytes[] = {1, 2, 3};
+
+ui::UserDataFactory::ScopedOverride
+CreateMockTabContextualizationControllerOverride() {
+  return tabs::TabFeatures::GetUserDataFactoryForTesting()
+      .AddOverrideForTesting(base::BindRepeating(
+          [](tabs::TabInterface& tab)
+              -> std::unique_ptr<lens::TabContextualizationController> {
+            auto mock =
+                std::make_unique<MockTabContextualizationController>(&tab);
+            EXPECT_CALL(*mock, GetPageContext)
+                .WillRepeatedly([&tab](lens::TabContextualizationController::
+                                           GetPageContextCallback callback) {
+                  auto data = std::make_unique<lens::ContextualInputData>();
+                  data->is_page_context_eligible = true;
+                  data->page_url = tab.GetContents()->GetLastCommittedURL();
+                  data->page_title = "Title";
+                  data->primary_content_type =
+                      lens::MimeType::kAnnotatedPageContent;
+                  std::vector<lens::ContextualInput> inputs;
+                  inputs.emplace_back(
+                      std::vector<uint8_t>(std::begin(kDummyTabContextBytes),
+                                           std::end(kDummyTabContextBytes)),
+                      lens::MimeType::kAnnotatedPageContent);
+                  data->context_input = std::move(inputs);
+                  std::move(callback).Run(std::move(data));
+                });
+            return mock;
+          }));
+}
+
 }  // namespace
 
 class OmniboxContextMenuControllerBrowserTest : public InProcessBrowserTest {
@@ -118,6 +150,32 @@ class OmniboxContextMenuControllerBrowserTest : public InProcessBrowserTest {
 
   content::WebContents* GetWebContents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  tabs::TabInterface* AddTabToBrowser(int index, const GURL& url) {
+    if (!AddTabAtIndexToBrowser(browser(), index, url,
+                                ui::PAGE_TRANSITION_TYPED,
+                                /*check_navigation_success=*/false)) {
+      return nullptr;
+    }
+    return browser()->tab_strip_model()->GetTabAtIndex(index);
+  }
+
+  base::TimeTicks ActivateTabAndGetRecentTime(
+      tabs::TabInterface* tab,
+      base::TimeTicks previous_time = base::TimeTicks()) {
+    int index = browser()->tab_strip_model()->GetIndexOfTab(tab);
+    browser()->tab_strip_model()->ActivateTabAt(index);
+    auto get_last_active_time = [](tabs::TabInterface* t) {
+      content::WebContents* wc = t->GetContents();
+      return std::max(wc->GetLastActiveTimeTicks(),
+                      wc->GetLastInteractionTimeTicks());
+    };
+    if (previous_time != base::TimeTicks()) {
+      EXPECT_TRUE(base::test::RunUntil(
+          [&]() { return get_last_active_time(tab) > previous_time; }));
+    }
+    return get_last_active_time(tab);
   }
 
  private:
@@ -1040,31 +1098,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
   // Set up an override to construct `MockTabContextualizationController`
   // to mock the context of the tab.
   ui::UserDataFactory::ScopedOverride controller_override =
-      tabs::TabFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
-          base::BindRepeating(
-              [](GURL url, tabs::TabInterface& tab)
-                  -> std::unique_ptr<lens::TabContextualizationController> {
-                auto mock =
-                    std::make_unique<MockTabContextualizationController>(&tab);
-                EXPECT_CALL(*mock, GetPageContext)
-                    .WillOnce([url](lens::TabContextualizationController::
-                                        GetPageContextCallback callback) {
-                      auto data = std::make_unique<lens::ContextualInputData>();
-                      data->is_page_context_eligible = true;
-                      data->page_url = url;
-                      data->page_title = "Title 1";
-                      data->primary_content_type =
-                          lens::MimeType::kAnnotatedPageContent;
-                      std::move(callback).Run(std::move(data));
-                    });
-                return mock;
-              },
-              url));
+      CreateMockTabContextualizationControllerOverride();
 
   // Add a recent tab (created with the mock controller) in the background.
-  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1, url,
-                                     ui::PAGE_TRANSITION_TYPED,
-                                     /*check_navigation_success=*/false));
+  ASSERT_TRUE(AddTabToBrowser(1, url));
 
   auto owning_window = browser()->GetWindow()->GetNativeWindow();
   auto omnibox_popup_file_selector =
@@ -1185,52 +1222,24 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
   // Set up an override to construct `MockTabContextualizationController`
   // for all tabs in this test.
   ui::UserDataFactory::ScopedOverride controller_override =
-      tabs::TabFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
-          base::BindRepeating(
-              [](tabs::TabInterface& tab)
-                  -> std::unique_ptr<lens::TabContextualizationController> {
-                auto mock =
-                    std::make_unique<MockTabContextualizationController>(&tab);
-                EXPECT_CALL(*mock, GetPageContext)
-                    .WillRepeatedly([&tab](
-                                        lens::TabContextualizationController::
-                                            GetPageContextCallback callback) {
-                      auto data = std::make_unique<lens::ContextualInputData>();
-                      data->is_page_context_eligible = true;
-                      data->page_url = tab.GetContents()->GetLastCommittedURL();
-                      data->page_title = "Title";
-                      data->primary_content_type =
-                          lens::MimeType::kAnnotatedPageContent;
-                      std::move(callback).Run(std::move(data));
-                    });
-                return mock;
-              }));
+      CreateMockTabContextualizationControllerOverride();
 
   // Add three tabs.
-  GURL url1(embedded_test_server()->GetURL("/title2.html"));
-  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1, url1,
-                                     ui::PAGE_TRANSITION_TYPED,
-                                     /*check_navigation_success=*/false));
-
-  GURL url2(embedded_test_server()->GetURL("/title3.html"));
-  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 2, url2,
-                                     ui::PAGE_TRANSITION_TYPED,
-                                     /*check_navigation_success=*/false));
-
-  GURL url3(embedded_test_server()->GetURL("/simple.html"));
-  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 3, url3,
-                                     ui::PAGE_TRANSITION_TYPED,
-                                     /*check_navigation_success=*/false));
+  tabs::TabInterface* tab1 =
+      AddTabToBrowser(1, embedded_test_server()->GetURL("/title2.html"));
+  tabs::TabInterface* tab2 =
+      AddTabToBrowser(2, embedded_test_server()->GetURL("/title3.html"));
+  tabs::TabInterface* tab3 =
+      AddTabToBrowser(3, embedded_test_server()->GetURL("/simple.html"));
+  ASSERT_TRUE(tab1 && tab2 && tab3);
 
   // Order of activation/recency: 3, then 2, then 1 (making 1 active/most
   // recent).
-  browser()->tab_strip_model()->ActivateTabAt(3);
-  browser()->tab_strip_model()->ActivateTabAt(2);
-  browser()->tab_strip_model()->ActivateTabAt(1);
+  base::TimeTicks t3 = ActivateTabAndGetRecentTime(tab3);
+  base::TimeTicks t2 = ActivateTabAndGetRecentTime(tab2, t3);
+  ActivateTabAndGetRecentTime(tab1, t2);
 
-  tabs::TabInterface* tab2 = browser()->tab_strip_model()->GetTabAtIndex(2);
   int32_t tab2_id = tab2->GetHandle().raw_value();
-  tabs::TabInterface* tab3 = browser()->tab_strip_model()->GetTabAtIndex(3);
   int32_t tab3_id = tab3->GetHandle().raw_value();
 
   auto owning_window = browser()->GetWindow()->GetNativeWindow();
@@ -1523,41 +1532,16 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerContextManagementBrowserTest,
   // Set up an override to construct `MockTabContextualizationController`
   // for all tabs in this test.
   ui::UserDataFactory::ScopedOverride controller_override =
-      tabs::TabFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
-          base::BindRepeating(
-              [](tabs::TabInterface& tab)
-                  -> std::unique_ptr<lens::TabContextualizationController> {
-                auto mock =
-                    std::make_unique<MockTabContextualizationController>(&tab);
-                EXPECT_CALL(*mock, GetPageContext)
-                    .WillRepeatedly([&tab](
-                                        lens::TabContextualizationController::
-                                            GetPageContextCallback callback) {
-                      auto data = std::make_unique<lens::ContextualInputData>();
-                      data->is_page_context_eligible = true;
-                      data->page_url = tab.GetContents()->GetLastCommittedURL();
-                      data->page_title = "Title";
-                      data->primary_content_type =
-                          lens::MimeType::kAnnotatedPageContent;
-                      std::move(callback).Run(std::move(data));
-                    });
-                return mock;
-              }));
+      CreateMockTabContextualizationControllerOverride();
 
   // Add two tabs.
-  GURL url1(embedded_test_server()->GetURL("/title2.html"));
-  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1, url1,
-                                     ui::PAGE_TRANSITION_TYPED,
-                                     /*check_navigation_success=*/false));
+  tabs::TabInterface* tab1 =
+      AddTabToBrowser(1, embedded_test_server()->GetURL("/title2.html"));
+  tabs::TabInterface* tab2 =
+      AddTabToBrowser(2, embedded_test_server()->GetURL("/title3.html"));
+  ASSERT_TRUE(tab1 && tab2);
 
-  GURL url2(embedded_test_server()->GetURL("/title3.html"));
-  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 2, url2,
-                                     ui::PAGE_TRANSITION_TYPED,
-                                     /*check_navigation_success=*/false));
-
-  tabs::TabInterface* tab1 = browser()->tab_strip_model()->GetTabAtIndex(1);
   int32_t tab1_id = tab1->GetHandle().raw_value();
-  tabs::TabInterface* tab2 = browser()->tab_strip_model()->GetTabAtIndex(2);
   int32_t tab2_id = tab2->GetHandle().raw_value();
 
   auto owning_window = browser()->GetWindow()->GetNativeWindow();

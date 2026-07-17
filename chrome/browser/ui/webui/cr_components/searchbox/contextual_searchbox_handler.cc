@@ -1782,7 +1782,21 @@ void ContextualSearchboxHandler::OnContextUploadStatusChanged(
   page_->OnContextualInputStatusChanged(context_token, context_upload_status,
                                         error_type);
 
-  // Ensure `input_state_model_` is updated when file is uploaded.
+  if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox) &&
+      contextual_search::IsTerminalContextStatus(context_upload_status) &&
+      context_upload_status !=
+          contextual_search::ContextUploadStatus::kUploadSuccessful) {
+    if (auto node = selected_tabs.extract(context_token)) {
+      int32_t tab_id = node.mapped();
+      if (auto* active_task_context_provider = GetActiveTaskContextProvider();
+          active_task_context_provider != nullptr) {
+        active_task_context_provider->RemoveLocalTabUnderline(
+            tabs::TabHandle(tab_id));
+      }
+    }
+  }
+
+  // Ensure `input_state_model_` is updated when context status changes.
   if (input_state_model_) {
     input_state_model_->OnContextChanged();
   }
