@@ -1637,10 +1637,15 @@ void ManagePasswordsUIController::OnErrorStateChanged(
         new_state == password_manager::ActionableError::kNoError) {
       SavePasswordAfterTrustedVaultErrorResolution();
     }
-    // If the error state of the store changed, the safest option is to hide the
-    // bubble to avoid showing stale UI.
     if (IsShowingBubble()) {
-      HideBubble(/*initiated_by_bubble_manager=*/false);
+      // If the error state of the store changed, the safest option is to hide
+      // the password save / update bubble to avoid showing stale UI.
+      using password_manager::ui::State;
+      const State state = GetState();
+      if (state == State::PENDING_PASSWORD_STATE ||
+          state == State::PENDING_PASSWORD_UPDATE_STATE) {
+        HideBubble(/*initiated_by_bubble_manager=*/false);
+      }
     }
   }
 }

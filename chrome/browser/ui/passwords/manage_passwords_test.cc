@@ -17,6 +17,7 @@
 #include "chrome/browser/actor/ui/test_support/mock_actor_ui_state_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/password_manager/factories/account_password_store_factory.h"
 #include "chrome/browser/password_manager/factories/profile_password_store_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
 #include "chrome/browser/profiles/profile.h"
@@ -102,6 +103,14 @@ void ManagePasswordsTest::SetUpInProcessBrowserTestFixture() {
                     base::BindRepeating(&password_manager::BuildPasswordStore<
                                         content::BrowserContext,
                                         password_manager::TestPasswordStore>));
+
+                AccountPasswordStoreFactory::GetInstance()->SetTestingFactory(
+                    context, base::BindRepeating(
+                                 &password_manager::BuildPasswordStoreWithArgs<
+                                     content::BrowserContext,
+                                     password_manager::TestPasswordStore,
+                                     password_manager::IsAccountStore>,
+                                 password_manager::IsAccountStore(true)));
 
                 SyncServiceFactory::GetInstance()->SetTestingFactory(
                     context,
@@ -278,6 +287,14 @@ std::unique_ptr<base::HistogramSamples> ManagePasswordsTest::GetSamples(
 ManagePasswordsUIController* ManagePasswordsTest::GetController() {
   return ManagePasswordsUIController::FromWebContents(
       browser()->tab_strip_model()->GetActiveWebContents());
+}
+
+password_manager::TestPasswordStore*
+ManagePasswordsTest::GetAccountPasswordStore() {
+  return static_cast<password_manager::TestPasswordStore*>(
+      AccountPasswordStoreFactory::GetForProfile(
+          browser()->GetProfile(), ServiceAccessType::EXPLICIT_ACCESS)
+          .get());
 }
 
 std::unique_ptr<PasswordFormManager> ManagePasswordsTest::CreateFormManager(

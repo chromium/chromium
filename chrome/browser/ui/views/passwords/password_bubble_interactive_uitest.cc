@@ -49,8 +49,10 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/signin/public/base/signin_prefs.h"
@@ -1679,6 +1681,75 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleWithUnifiedUiDisabledInteractiveUiTest,
   // Wait until the auto-signin bubble has disappeared, which should happen
   // after its timeout.
   EXPECT_TRUE(base::test::RunUntil([&] { return !IsBubbleShowing(); }));
+}
+
+class PasswordBubbleWithInContextErrorResolutionInteractiveUiTest
+    : public PasswordBubbleInteractiveUiTestBase {
+ public:
+  PasswordBubbleWithInContextErrorResolutionInteractiveUiTest() {
+    InitializeFeatures(
+        /*enabled_features=*/{
+            {password_manager::features::kPasswordSaveInContextErrorResolution,
+             {}}});
+  }
+
+  ~PasswordBubbleWithInContextErrorResolutionInteractiveUiTest() override =
+      default;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    PasswordBubbleWithInContextErrorResolutionInteractiveUiTest,
+    BubbleWithPendingPasswordHiddenAfterTrustedVaultError) {
+  GetController()->OnPasswordSubmitted(
+      CreateFormManager(/*profile_store=*/nullptr, GetAccountPasswordStore()));
+
+  RunTestSequence(
+      EnsurePresent(PasswordSaveUpdateView::kPasswordBubbleElementId),
+      CheckResult([this]() { return GetController()->GetState(); },
+                  password_manager::ui::PENDING_PASSWORD_STATE),
+      Do([&]() {
+        GetAccountPasswordStore()->SetError(
+            password_manager::ActionableError::kTrustedVaultKeyNeeded);
+        GetAccountPasswordStore()->NotifyAboutError();
+      }),
+      EnsureNotPresent(PasswordSaveUpdateView::kPasswordBubbleElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PasswordBubbleWithInContextErrorResolutionInteractiveUiTest,
+    BubbleWithPendingPasswordUpdateHiddenAfterTrustedVaultError) {
+  GetController()->OnUpdatePasswordSubmitted(
+      CreateFormManager(/*profile_store=*/nullptr, GetAccountPasswordStore()));
+
+  RunTestSequence(
+      EnsurePresent(PasswordSaveUpdateView::kPasswordBubbleElementId),
+      CheckResult([this]() { return GetController()->GetState(); },
+                  password_manager::ui::PENDING_PASSWORD_UPDATE_STATE),
+      Do([&]() {
+        GetAccountPasswordStore()->SetError(
+            password_manager::ActionableError::kTrustedVaultKeyNeeded);
+        GetAccountPasswordStore()->NotifyAboutError();
+      }),
+      EnsureNotPresent(PasswordSaveUpdateView::kPasswordBubbleElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PasswordBubbleWithInContextErrorResolutionInteractiveUiTest,
+    BubbleWithPasskeyConfirmationNotHiddenAfterTrustedVaultError) {
+  GetController()->OnPasskeyUpdated("example.com");
+
+  RunTestSequence(
+      CheckResult([this]() { return GetController()->IsShowingBubble(); },
+                  true),
+      CheckResult([this]() { return GetController()->GetState(); },
+                  password_manager::ui::PASSKEY_UPDATED_CONFIRMATION_STATE),
+      Do([&]() {
+        GetAccountPasswordStore()->SetError(
+            password_manager::ActionableError::kTrustedVaultKeyNeeded);
+        GetAccountPasswordStore()->NotifyAboutError();
+      }),
+      CheckResult([this]() { return GetController()->IsShowingBubble(); },
+                  true));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

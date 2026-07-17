@@ -22,6 +22,9 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+namespace password_manager {
+class TestPasswordStore;
+}
 class ManagePasswordsUIController;
 
 enum class SyncConfiguration {
@@ -91,6 +94,8 @@ class ManagePasswordsTest : public InteractiveBrowserTest {
 
   // Get the UI controller for the current WebContents.
   ManagePasswordsUIController* GetController();
+
+  password_manager::TestPasswordStore* GetAccountPasswordStore();
 
  protected:
   // Creates a form manager using the given password password stores.
