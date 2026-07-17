@@ -104,6 +104,16 @@ std::string Base64UrlEncode(base::span<const uint8_t> input) {
   return output;
 }
 
+// Decodes a base 64 URL encoded string to byte vector.
+std::vector<uint8_t> Base64UrlDecode(std::string_view input) {
+  std::string output;
+  if (!base::Base64UrlDecode(input, base::Base64UrlDecodePolicy::IGNORE_PADDING,
+                             &output)) {
+    return {};
+  }
+  return std::vector<uint8_t>(output.begin(), output.end());
+}
+
 base::DictValue BuildRequestInfoDict(
     const std::string* frame_id,
     const std::string* request_id,
@@ -855,6 +865,24 @@ TEST_F(PasskeyRequestParserTest, ParseEventOriginMismatch) {
   // GetDefaultOrigin() (example.com).
   EXPECT_FALSE(ParsePasskeyScriptEvent(dict, GetDefaultOrigin(), &IsGpmPasskey)
                    .has_value());
+}
+
+TEST_F(PasskeyRequestParserTest, BuildSignalUnknownCredentialParamsSuccess) {
+  base::DictValue dict;
+  dict.Set(kRpId, kExampleRpId);
+  dict.Set(kCredentialId, kBase64url);
+
+  auto result = BuildSignalUnknownCredentialParams(dict);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->rp_id, kExampleRpId);
+  EXPECT_EQ(result->credential_id, Base64UrlDecode(kBase64url));
+}
+
+TEST_F(PasskeyRequestParserTest, BuildSignalUnknownCredentialParamsInvalid) {
+  base::DictValue dict;
+  dict.Set(kRpId, kExampleRpId);
+  // Missing credentialId.
+  EXPECT_FALSE(BuildSignalUnknownCredentialParams(dict).has_value());
 }
 
 }  // namespace webauthn

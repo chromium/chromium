@@ -125,6 +125,9 @@ WebAuthenticationIOSContentAreaEvent ToWebAuthenticationIOSContentAreaEvent(
       return WebAuthenticationIOSContentAreaEvent::kCreateResolvedNonGpm;
     case PasskeyScriptEvent::kCancelRequest:
       return WebAuthenticationIOSContentAreaEvent::kCancelRequested;
+    case PasskeyScriptEvent::kSignalUnknownCredential:
+      return WebAuthenticationIOSContentAreaEvent::
+          kSignalUnknownCredentialRequested;
   }
 }
 
@@ -288,15 +291,25 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
   bool is_handle_create_request_event =
       (*event == PasskeyScriptEvent::kHandleCreateRequest);
   bool is_cancel_request_event = (*event == PasskeyScriptEvent::kCancelRequest);
+  bool is_signal_unknown_credential_event =
+      (*event == PasskeyScriptEvent::kSignalUnknownCredential);
 
   if (!is_handle_get_request_event && !is_handle_create_request_event &&
-      !is_cancel_request_event) {
+      !is_cancel_request_event && !is_signal_unknown_credential_event) {
     return;
   }
 
   if (!base::FeatureList::IsEnabled(kIOSPasskeyModalLoginWithShim) &&
       !base::FeatureList::IsEnabled(kIOSPasskeyConditionalLoginWithShim)) {
     // TODO(crbug.com/369629469): Log metrics for unexpected events.
+    return;
+  }
+
+  if (is_signal_unknown_credential_event) {
+    if (auto params = BuildSignalUnknownCredentialParams(dict)) {
+      passkey_tab_helper->HandleSignalUnknownCredentialEvent(
+          *std::move(params));
+    }
     return;
   }
 

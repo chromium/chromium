@@ -586,6 +586,9 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="CancelRequested">
     Page cancelled a WebAuthn credential request via an AbortSignal.
   </int>
+  <int value="8" label="SignalUnknownCredentialRequested">
+    Page requested a WebAuthn signalUnknownCredential call.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//components/webauthn/ios/passkey_tab_helper.h) -->

@@ -26,6 +26,7 @@ constexpr char kLogGetRequest[] = "logGetRequest";
 constexpr char kLogCreateRequest[] = "logCreateRequest";
 constexpr char kLogGetResolved[] = "logGetResolved";
 constexpr char kLogCreateResolved[] = "logCreateResolved";
+constexpr char kSignalUnknownCredential[] = "signalUnknownCredential";
 
 // Parameters for logging events.
 constexpr char kCredentialId[] = "credentialId";
@@ -539,6 +540,22 @@ base::DictValue ToAuthenticationExtensionsClientOutputsJSON(
   return extensions_dict;
 }
 
+std::optional<SignalUnknownCredentialParams> BuildSignalUnknownCredentialParams(
+    const base::DictValue& dict) {
+  const std::string* rp_id = dict.FindString(kRpId);
+  const std::string* credential_id_base64 = dict.FindString(kCredentialId);
+  if (!rp_id || rp_id->empty() || !credential_id_base64 ||
+      credential_id_base64->empty()) {
+    return std::nullopt;
+  }
+  std::optional<std::vector<uint8_t>> credential_id =
+      Base64UrlDecode(*credential_id_base64);
+  if (!credential_id.has_value()) {
+    return std::nullopt;
+  }
+  return SignalUnknownCredentialParams{*rp_id, *std::move(credential_id)};
+}
+
 std::optional<PasskeyScriptEvent> ParsePasskeyScriptEvent(
     const base::DictValue& dict,
     const url::Origin& caller_origin,
@@ -562,6 +579,9 @@ std::optional<PasskeyScriptEvent> ParsePasskeyScriptEvent(
   }
   if (*event_string == kLogCreateRequest) {
     return PasskeyScriptEvent::kLogCreateRequest;
+  }
+  if (*event_string == kSignalUnknownCredential) {
+    return PasskeyScriptEvent::kSignalUnknownCredential;
   }
 
   bool is_log_get_resolved = (*event_string == kLogGetResolved);

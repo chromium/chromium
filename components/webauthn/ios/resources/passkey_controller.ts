@@ -115,6 +115,12 @@ interface PublicKeyCredentialClientCapabilities {
   userVerifyingPlatformAuthenticator?: boolean;
 }
 
+// Options passed to PublicKeyCredential.signalUnknownCredential.
+interface UnknownCredentialOptions {
+  rpId: string;
+  credentialId: string;
+}
+
 // Class to backup and override PublicKeyCredential methods.
 class PublicKeyCredentialOverrider {
   private static readonly IS_UVPAA =
@@ -130,6 +136,10 @@ class PublicKeyCredentialOverrider {
 
   // PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable.
   private originalIsUVPAA: (() => Promise<boolean>)|undefined;
+
+  // PublicKeyCredential.signalUnknownCredential.
+  private originalSignalUnknownCredential:
+      ((options: UnknownCredentialOptions) => Promise<void>)|undefined;
 
   constructor() {
     // PublicKeyCredential can be undefined.
@@ -153,6 +163,11 @@ class PublicKeyCredentialOverrider {
       this.originalIsUVPAA =
           PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable
               .bind(PublicKeyCredential);
+    }
+
+    if (PublicKeyCredential.signalUnknownCredential) {
+      this.originalSignalUnknownCredential =
+          PublicKeyCredential.signalUnknownCredential.bind(PublicKeyCredential);
     }
   }
 
@@ -194,6 +209,13 @@ class PublicKeyCredentialOverrider {
           capabilities.userVerifyingPlatformAuthenticator = true;
           return capabilities;
         },
+      });
+
+      Object.defineProperty(PublicKeyCredential, 'signalUnknownCredential', {
+        value: (options: UnknownCredentialOptions) =>
+            signalUnknownCredential(options),
+        writable: true,
+        configurable: true,
       });
     } else if (shouldShimIsUVPAA()) {
       Object.defineProperty(
@@ -269,6 +291,16 @@ class PublicKeyCredentialOverrider {
   // Returns whether conditional create was originally supported.
   async checkOriginalConditionalCreateCapability(): Promise<boolean> {
     return this.checkOriginalCapability('conditionalCreate');
+  }
+
+  // Invokes the original WebKit implementation of
+  // PublicKeyCredential.signalUnknownCredential().
+  passthroughSignalUnknownCredential(options: UnknownCredentialOptions):
+      Promise<void> {
+    if (this.originalSignalUnknownCredential) {
+      return this.originalSignalUnknownCredential(options);
+    }
+    return Promise.resolve();
   }
 }
 
@@ -776,6 +808,27 @@ class DeferredPublicKeyCredentialPromise {
   static reject(id: string, reason?: DOMException|string): void {
     DeferredPublicKeyCredentialPromise.ongoingPromises.get(id)?.reject(reason);
   }
+}
+
+// Handles PublicKeyCredential.signalUnknownCredential calls from the webpage
+// by invoking WebKit's native implementation first, and notifying the browser
+// C++ layer only upon successful resolution.
+// TODO(crbug.com/460487030): Confirm that this is the intended behavior (WK
+// first, then browser on success).
+function signalUnknownCredential(options: UnknownCredentialOptions):
+    Promise<void> {
+  return publicKeyCredentialOverrider
+      .passthroughSignalUnknownCredential(options)
+      .then(() => {
+        if (options && typeof options.rpId === 'string' &&
+            typeof options.credentialId === 'string') {
+          sendWebKitMessage(HANDLER_NAME, {
+            'event': 'signalUnknownCredential',
+            'rpId': options.rpId,
+            'credentialId': options.credentialId,
+          });
+        }
+      });
 }
 
 // Creates a passthrough registration request from the provided parameters.

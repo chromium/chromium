@@ -358,6 +358,12 @@ void PasskeyTabHelper::HandleCreateRequestedEvent(
   HandleCreateRequestedEvent(web_frame, std::move(params));
 }
 
+void PasskeyTabHelper::HandleSignalUnknownCredentialEvent(
+    SignalUnknownCredentialParams params) {
+  // TODO(crbug.com/460487030): Implement browser-layer logic.
+  return;
+}
+
 void PasskeyTabHelper::HandleCreateRequestedEvent(
     web::WebFrame* web_frame,
     RegistrationRequestParams params) {

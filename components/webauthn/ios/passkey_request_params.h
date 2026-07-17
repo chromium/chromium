@@ -152,6 +152,12 @@ class RegistrationRequestParams : public PasskeyRequestParams {
   const std::vector<device::PublicKeyCredentialDescriptor> exclude_credentials_;
 };
 
+// Parameters for PublicKeyCredential.signalUnknownCredential.
+struct SignalUnknownCredentialParams {
+  std::string rp_id;
+  std::vector<uint8_t> credential_id;
+};
+
 }  // namespace webauthn
 
 #endif  // COMPONENTS_WEBAUTHN_IOS_PASSKEY_REQUEST_PARAMS_H_

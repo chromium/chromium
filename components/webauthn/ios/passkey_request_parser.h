@@ -24,6 +24,7 @@ enum class PasskeyScriptEvent {
   kLogGetResolvedNonGpm,
   kLogCreateResolvedGpm,
   kLogCreateResolvedNonGpm,
+  kSignalUnknownCredential,
 };
 
 // Function to check if a credential exists in GPM.
@@ -89,6 +90,11 @@ BuildRegistrationRequestParams(IOSPasskeyClient::RequestInfo request_info,
 // passkey_controller.ts.
 base::DictValue ToAuthenticationExtensionsClientOutputsJSON(
     passkey_model_utils::ExtensionOutputData extension_output_data);
+
+// Builds a SignalUnknownCredentialParams object from the parameters contained
+// in the provided dictionary.
+std::optional<SignalUnknownCredentialParams> BuildSignalUnknownCredentialParams(
+    const base::DictValue& dict);
 
 // Parses the event string into a strongly typed enum.
 std::optional<PasskeyScriptEvent> ParsePasskeyScriptEvent(
