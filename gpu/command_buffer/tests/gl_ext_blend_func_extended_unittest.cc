@@ -523,15 +523,6 @@ TEST_P(EXTBlendFuncExtendedES3DrawTest, ES3GettersArray) {
   if (!IsApplicable())
     return;
 
-  // TODO(zmo): Figure out why this fails on AMD. crbug.com/585132.
-  // Also fails on the Intel Mesa driver, see
-  // https://bugs.freedesktop.org/show_bug.cgi?id=96765
-  // TODO(crbug.com/517359779): Revert suppression.
-  gpu::GPUTestBotConfig bot_config;
-  if (bot_config.LoadCurrentConfig(nullptr)) {
-    return;
-  }
-
   const GLint kTestArraySize = 2;
   const GLint kFragData0Location = 2;
   const GLint kFragData1Location = 1;
@@ -669,12 +660,6 @@ TEST_P(EXTBlendFuncExtendedES3DrawTest, ES3Conflicts) {
 // Test that tests glBindFragDataLocationEXT conflicts
 // with GLSL array output variables.
 TEST_P(EXTBlendFuncExtendedES3DrawTest, ES3ConflictsArray) {
-  // TODO(crbug.com/517359779): Revert suppression.
-  gpu::GPUTestBotConfig bot_config;
-  if (bot_config.LoadCurrentConfig(nullptr)) {
-    return;
-  }
-
   if (!IsApplicable())
     return;
   const GLint kTestArraySize = 2;
