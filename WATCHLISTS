@@ -90,8 +90,8 @@
     },
     'android_accessibility_ui': {
       'filepath': 'AccessibilityState' \
-                  'AccessibilitySettings' \
-                  'PageZoom' \
+                  '|AccessibilitySettings' \
+                  '|PageZoom' \
                   '|components/browser_ui/accessibility/android/' \
                   '|ui/accessibility/android/java/src/org/chromium/ui/accessibility/' \
                   '|ui/accessibility/android/' \
@@ -1882,10 +1882,10 @@
     },
     'page_zoom': {
       'filepath': 'host_zoom' \
-                  'HostZoom' \
-                  'page_zoom' \
-                  'PageZoom' \
-                  'zoom'
+                  '|HostZoom' \
+                  '|page_zoom' \
+                  '|PageZoom' \
+                  '|zoom'
     },
     'panels': {
       'filepath': 'chrome/browser/ui/panels'\
