@@ -4130,17 +4130,17 @@ LayoutUnit BlockLayoutAlgorithm::ComputeInitialBlockStartAnnotationSpace()
   LayoutUnit padding_start = container_builder_.Padding().block_start;
   // Allow ruby annotations to overflow to the block-start margin if the
   // container has no block-start border.
-  // TODO(crbug.com/445727139): We'd like to add block-end annotation space of
-  // the previous sibling IFC.
   if (RuntimeEnabledFeatures::AnnotationSpaceOnStartEnabled() &&
+      GetConstraintSpace().ContainsAnnotations() &&
       !GetConstraintSpace().IsNewFormattingContext() &&
-      Borders().block_start == 0 &&
-      Style().OverflowBlockDirection() == EOverflow::kVisible) {
+      !GetConstraintSpace().IsInsideBalancedColumns() &&
+      Borders().block_start == 0) {
     MarginStrut margin_strut = GetConstraintSpace().GetMarginStrut();
     margin_strut.Append(
         ComputeMarginsForSelf(GetConstraintSpace(), Style()).block_start,
         Style().HasMarginBlockStartQuirk());
-    return margin_strut.Sum() + padding_start;
+    return margin_strut.Sum() + padding_start +
+           GetConstraintSpace().PreviousSiblingBlockEndAnnotationSpace();
   }
   return padding_start;
 }
