@@ -1669,7 +1669,8 @@ class MetaBuildWrapper:
     else:
       bot_mode = ()
 
-    if test_type == 'generated_script' or is_ios:
+    if test_type == 'generated_script' or (is_ios and test_type
+                                           not in ('script', 'raw')):
       assert 'script' not in isolate_map[target], (
           'generated_scripts can no longer customize the script path')
       if is_win:
