@@ -902,6 +902,10 @@ bool TabView::IsValidHoverCardTarget() const {
 }
 
 views::BubbleBorder::Arrow TabView::GetAnchorPosition() const {
+  if (collection_node_ &&
+      collection_node_->orientation() == TabStripOrientation::kHorizontal) {
+    return views::BubbleBorder::Arrow::TOP_LEFT;
+  }
   if (pinned_ && !collapsed_) {
     return views::BubbleBorder::Arrow::TOP_LEFT;
   }
