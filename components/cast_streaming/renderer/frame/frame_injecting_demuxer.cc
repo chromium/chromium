@@ -416,7 +416,9 @@ void FrameInjectingDemuxer::AbortPendingReads() {
   DVLOG(2) << __func__;
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
-  timestamp_tracker_->ResetPosition();
+  if (timestamp_tracker_) {
+    timestamp_tracker_->ResetPosition();
+  }
 
   if (audio_stream_) {
     audio_stream_->AbortPendingRead();
@@ -435,7 +437,9 @@ void FrameInjectingDemuxer::CancelPendingSeek(base::TimeDelta seek_time) {}
 // Not supported.
 void FrameInjectingDemuxer::Seek(base::TimeDelta time,
                                  media::PipelineStatusCallback status_cb) {
-  timestamp_tracker_->ResetPosition();
+  if (timestamp_tracker_) {
+    timestamp_tracker_->ResetPosition();
+  }
   std::move(status_cb).Run(media::PIPELINE_OK);
 }
 
@@ -453,6 +457,7 @@ void FrameInjectingDemuxer::Stop() {
   if (video_stream_) {
     video_stream_.reset();
   }
+  weak_factory_.InvalidateWeakPtrs();
 }
 
 base::TimeDelta FrameInjectingDemuxer::GetStartTime() const {

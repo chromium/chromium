@@ -25,3 +25,18 @@ source_set("frame") {
     "//mojo/public/cpp/bindings",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  visibility += [ "//components/cast_streaming/renderer:unit_tests" ]
+  sources = [ "frame_injecting_demuxer_unittest.cc" ]
+  deps = [
+    ":frame",
+    "//base",
+    "//base/test:test_support",
+    "//media",
+    "//media:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

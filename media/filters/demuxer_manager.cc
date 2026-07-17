@@ -80,9 +80,10 @@ DemuxerManager::DemuxerManager(
 }
 
 DemuxerManager::~DemuxerManager() {
-  // ManifestDemuxer has multiple outstanding weak pointers bound to the media
-  // thread, and needs to be deleted there.
-  if (GetDemuxerType() == DemuxerType::kManifestDemuxer) {
+  // ManifestDemuxer and FrameInjectingDemuxer have multiple outstanding weak
+  // pointers bound to the media thread, and need to be deleted there.
+  if (GetDemuxerType() == DemuxerType::kManifestDemuxer ||
+      GetDemuxerType() == DemuxerType::kFrameInjectingDemuxer) {
     media_task_runner_->DeleteSoon(FROM_HERE, std::move(demuxer_));
   }
 }

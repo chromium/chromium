@@ -72,6 +72,7 @@ source_set("unit_tests") {
   deps = [
     "//components/cast_streaming/renderer/common:unit_tests",
     "//components/cast_streaming/renderer/control:unit_tests",
+    "//components/cast_streaming/renderer/frame:unit_tests",
     "//components/cast_streaming/renderer/web_codecs:unit_tests",
   ]
 

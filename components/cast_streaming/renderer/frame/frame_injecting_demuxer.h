@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/cast_streaming/common/public/mojom/demuxer_connector.mojom.h"
+#include "components/cast_streaming/renderer/frame/demuxer_connector.h"
 #include "media/base/demuxer.h"
 
 namespace cast_streaming {
