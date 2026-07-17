@@ -61,6 +61,7 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
     private final TouchToFillPaymentMethodMediator mMediator =
             new TouchToFillPaymentMethodMediator();
     private PropertyModel mTouchToFillPaymentMethodModel;
+    private TouchToFillPaymentMethodView mView;
 
     @Override
     public void initialize(
@@ -78,9 +79,10 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
                 delegate,
                 mTouchToFillPaymentMethodModel,
                 bottomSheetFocusHelper);
+        mView = new TouchToFillPaymentMethodView(context, sheetController);
         setUpModelChangeProcessors(
                 mTouchToFillPaymentMethodModel,
-                new TouchToFillPaymentMethodView(context, sheetController));
+                mView);
     }
 
     @Override
@@ -259,5 +261,9 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
 
     TouchToFillPaymentMethodMediator getMediatorForTesting() {
         return mMediator;
+    }
+
+    TouchToFillPaymentMethodView getViewForTesting() {
+        return mView;
     }
 }

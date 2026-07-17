@@ -485,6 +485,7 @@ public class TouchToFillPaymentMethodRenderTest {
                             mBottomSheetController,
                             mDelegateMock,
                             mBottomSheetFocusHelper);
+                    mCoordinator.getViewForTesting().applyRtlLayoutForTesting();
                 });
     }
 

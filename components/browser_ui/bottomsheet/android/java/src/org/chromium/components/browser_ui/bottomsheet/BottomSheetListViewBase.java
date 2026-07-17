@@ -173,13 +173,6 @@ public abstract class BottomSheetListViewBase implements BottomSheetContent {
 
         mScrollListener = new BottomSheetRecyclerScrollListener(mBottomSheetController);
         mSuppressCollectionA11y = suppressCollectionA11y;
-
-        // Apply RTL layout changes.
-        int layoutDirection =
-                LocalizationUtils.isLayoutRtl()
-                        ? View.LAYOUT_DIRECTION_RTL
-                        : View.LAYOUT_DIRECTION_LTR;
-        mContentView.setLayoutDirection(layoutDirection);
     }
 
     @Override
@@ -432,6 +425,21 @@ public abstract class BottomSheetListViewBase implements BottomSheetContent {
         // sheet resizes.
         assumeNonNull(mSheetItemListView);
         mSheetItemListView.post(() -> mBottomSheetController.expandSheet());
+    }
+
+    /**
+     * Applies RTL layout changes to the content view for testing purposes.
+     *
+     * <p>In production code, layout direction is set naturally by the system or parent view. In
+     * render tests, this method can be called to explicitly set the layout direction based on
+     * {@link LocalizationUtils#isLayoutRtl()}.
+     */
+    public void applyRtlLayoutForTesting() {
+        int layoutDirection =
+                LocalizationUtils.isLayoutRtl()
+                        ? View.LAYOUT_DIRECTION_RTL
+                        : View.LAYOUT_DIRECTION_LTR;
+        mContentView.setLayoutDirection(layoutDirection);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)

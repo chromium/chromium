@@ -168,6 +168,7 @@ public class TouchToFillPasswordManagerRenderTest {
                     mTouchToFillView =
                             new TouchToFillPasswordManagerView(
                                     mActivityTestRule.getActivity(), mBottomSheetController);
+                    mTouchToFillView.applyRtlLayoutForTesting();
                     TouchToFillPasswordManagerCoordinator.setUpModelChangeProcessors(
                             mModel, mTouchToFillView);
                 });
