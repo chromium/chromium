@@ -25,14 +25,9 @@ import org.chromium.components.browser_ui.widget.containment.ContainmentItemDeco
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Helper class to manage containment styling for settings fragments.
- *
- * <p>TODO(crbug.com/521895796): Move this class to
- * org.chromium.components.browser_ui.widget.containment.
- */
+/** Helper class to manage containment styling for settings fragments. */
 @NullMarked
-class ContainmentHelper {
+class SettingsContainmentHelper {
     /**
      * Delegate interface implemented by the user of this helper. Allows access to data owned by
      * {@link SettingsActivity} or {@link SettingsPageFragmentDelegateImpl} respectively.
@@ -59,7 +54,7 @@ class ContainmentHelper {
             mGlobalLayoutListeners = new HashMap<>();
     private FragmentManager.@Nullable FragmentLifecycleCallbacks mCallbacks;
 
-    ContainmentHelper(Context context, Delegate delegate) {
+    SettingsContainmentHelper(Context context, Delegate delegate) {
         mContext = context;
         mDelegate = delegate;
     }
@@ -103,7 +98,7 @@ class ContainmentHelper {
                     @Override
                     public void onFragmentViewDestroyed(FragmentManager fm, Fragment f) {
                         if (f instanceof PreferenceFragmentCompat preferenceFragmentCompat) {
-                            ContainmentHelper.this.onFragmentViewDestroyed(
+                            SettingsContainmentHelper.this.onFragmentViewDestroyed(
                                     preferenceFragmentCompat);
                         }
                     }

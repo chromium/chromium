@@ -132,7 +132,7 @@ public class SettingsPageFragmentDelegateImplTest {
         when(mActivity.getDrawable(anyInt()))
                 .thenAnswer(invocation -> context.getDrawable(invocation.getArgument(0)));
 
-        ContainmentHelper mockContainmentHelper = mock(ContainmentHelper.class);
+        SettingsContainmentHelper mockContainmentHelper = mock(SettingsContainmentHelper.class);
         when(mMockSettingsHostFragment.getContainmentHelper()).thenReturn(mockContainmentHelper);
 
         mDelegate =

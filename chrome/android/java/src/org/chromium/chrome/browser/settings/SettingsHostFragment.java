@@ -45,7 +45,7 @@ import java.lang.ref.WeakReference;
 public class SettingsHostFragment extends Fragment
         implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback,
                 PreferenceUpdateObserver,
-                ContainmentHelper.Delegate {
+                SettingsContainmentHelper.Delegate {
 
     public static final String SETTINGS_NATIVE_PAGE_TAG = "settings_native_page";
 
@@ -54,7 +54,7 @@ public class SettingsHostFragment extends Fragment
     private @Nullable Context mThemedContext;
     private @Nullable WeakReference<Fragment> mFinishedMainFragment;
     private @Nullable FragmentDependencyProvider mDependencyProvider;
-    private @Nullable ContainmentHelper mContainmentHelper;
+    private @Nullable SettingsContainmentHelper mContainmentHelper;
     private @Nullable WideDisplayPaddingApplier mWideDisplayPaddingApplier;
     private int mPendingPopBackCount;
 
@@ -103,7 +103,7 @@ public class SettingsHostFragment extends Fragment
         }
     }
 
-    public @Nullable ContainmentHelper getContainmentHelper() {
+    public @Nullable SettingsContainmentHelper getContainmentHelper() {
         return mContainmentHelper;
     }
 
@@ -140,7 +140,7 @@ public class SettingsHostFragment extends Fragment
         mThemedContext = new ContextThemeWrapper(context, R.style.Theme_Chromium_Settings);
         super.onAttach(mThemedContext);
 
-        mContainmentHelper = new ContainmentHelper(mThemedContext, this);
+        mContainmentHelper = new SettingsContainmentHelper(mThemedContext, this);
         mContainmentHelper.registerCallbacks(getChildFragmentManager());
 
         // Ensure wide display padding is applied and dividers are removed from child fragments

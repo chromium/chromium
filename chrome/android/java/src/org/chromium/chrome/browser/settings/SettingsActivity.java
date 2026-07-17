@@ -122,7 +122,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                 AppHeaderObserver,
                 PreferenceUpdateObserver,
                 SettingsMenuHelper.Delegate,
-                ContainmentHelper.Delegate {
+                SettingsContainmentHelper.Delegate {
     private static final String TAG = "SettingsActivity";
 
     // Key used to store activity start time in the Bundle to have it survive activity re-creation.
@@ -184,7 +184,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     private static final String MAIN_FRAGMENT_TAG = "settings_main";
     public static final String MULTI_COLUMN_FRAGMENT_TAG = "multi_column_settings";
 
-    private final ContainmentHelper mContainmentHelper = new ContainmentHelper(this, this);
+    private final SettingsContainmentHelper mContainmentHelper =
+            new SettingsContainmentHelper(this, this);
 
     private @Nullable SettingsSearchCoordinator mSearchCoordinator;
 

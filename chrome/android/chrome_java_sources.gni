@@ -1064,8 +1064,8 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/services/gcm/GCMBackgroundServiceImpl.java",
   "java/src/org/chromium/chrome/browser/services/gcm/GCMNativeBackgroundTask.java",
   "java/src/org/chromium/chrome/browser/services/gcm/GcmUma.java",
-  "java/src/org/chromium/chrome/browser/settings/ContainmentHelper.java",
   "java/src/org/chromium/chrome/browser/settings/FragmentDependencyProvider.java",
+  "java/src/org/chromium/chrome/browser/settings/SettingsContainmentHelper.java",
 
   # LINT.IfChange(MainSettingsBuildRule)
   "java/src/org/chromium/chrome/browser/settings/MainSettings.java",

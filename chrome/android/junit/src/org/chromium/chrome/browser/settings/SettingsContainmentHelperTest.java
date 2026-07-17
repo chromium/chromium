@@ -39,12 +39,12 @@ import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.settings.PreferenceUpdateObserver;
 import org.chromium.components.browser_ui.widget.containment.ContainmentItemDecoration;
 
-/** Unit tests for {@link ContainmentHelper}. */
+/** Unit tests for {@link SettingsContainmentHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class ContainmentHelperTest {
+public class SettingsContainmentHelperTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private ContainmentHelper.Delegate mDelegate;
+    @Mock private SettingsContainmentHelper.Delegate mDelegate;
     @Mock private FragmentManager mFragmentManager;
     @Mock private PreferenceUpdateObserver mObserver;
 
@@ -53,7 +53,7 @@ public class ContainmentHelperTest {
     @Mock private ViewTreeObserver mViewTreeObserver;
 
     private Context mContext;
-    private ContainmentHelper mContainmentHelper;
+    private SettingsContainmentHelper mContainmentHelper;
 
     private static class TestProviderFragment extends Fragment
             implements PreferenceUpdateObserver.Provider {
@@ -75,7 +75,7 @@ public class ContainmentHelperTest {
         mContext = ApplicationProvider.getApplicationContext();
         mContext.setTheme(R.style.Theme_Chromium_Settings);
         when(mDelegate.getPreferenceUpdateObserver()).thenReturn(mObserver);
-        mContainmentHelper = new ContainmentHelper(mContext, mDelegate);
+        mContainmentHelper = new SettingsContainmentHelper(mContext, mDelegate);
     }
 
     @Test

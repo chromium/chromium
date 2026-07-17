@@ -374,7 +374,7 @@ public class SettingsPageFragmentDelegateImpl
         assert mSearchCoordinator == null;
         assert mToolbar != null;
         assert mSettingsHostFragment != null;
-        ContainmentHelper containmentHelper = mSettingsHostFragment.getContainmentHelper();
+        SettingsContainmentHelper containmentHelper = mSettingsHostFragment.getContainmentHelper();
         assert containmentHelper != null;
 
         mSearchCoordinator =
