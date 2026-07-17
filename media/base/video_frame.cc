@@ -184,6 +184,16 @@ static bool AreValidPixelFormatsForWrap(VideoPixelFormat source_format,
   return source_format == target_format ||
          (source_format == PIXEL_FORMAT_I420A &&
           target_format == PIXEL_FORMAT_I420) ||
+         (source_format == PIXEL_FORMAT_I422A &&
+          target_format == PIXEL_FORMAT_I422) ||
+         (source_format == PIXEL_FORMAT_I444A &&
+          target_format == PIXEL_FORMAT_I444) ||
+         (source_format == PIXEL_FORMAT_YUV420AP10 &&
+          target_format == PIXEL_FORMAT_YUV420P10) ||
+         (source_format == PIXEL_FORMAT_YUV422AP10 &&
+          target_format == PIXEL_FORMAT_YUV422P10) ||
+         (source_format == PIXEL_FORMAT_YUV444AP10 &&
+          target_format == PIXEL_FORMAT_YUV444P10) ||
          (source_format == PIXEL_FORMAT_ARGB &&
           target_format == PIXEL_FORMAT_XRGB) ||
          (source_format == PIXEL_FORMAT_ABGR &&
