@@ -1034,16 +1034,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UMA.TPMMetricsProvider.ReadSuccess" enum="Boolean"
-    expires_after="2026-05-24">
-  <owner>psarouthakis@google.com</owner>
-  <owner>kristianm@google.com</owner>
-  <summary>
-    Records if Chrome was able to read the manufacturer ID on the devices TPM.
-    This is recorded once during metrics initialization.
-  </summary>
-</histogram>
-
 <histogram name="UMA.TPMMetricsProvider.UnknownID" enum="Boolean"
     expires_after="2026-11-29">
   <owner>psarouthakis@google.com</owner>

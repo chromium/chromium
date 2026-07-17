@@ -52,8 +52,6 @@ std::optional<TpmIdentifier> GetTpmIdentifier() {
 
   bool manufacturer_id_read_success =
       (manufacturer_id && manufacturer_id(&id) == 0);
-  base::UmaHistogramBoolean("UMA.TPMMetricsProvider.ReadSuccess",
-                            manufacturer_id_read_success);
   if (!manufacturer_id_read_success) {
     return tpm_identifier;
   }
