@@ -22,6 +22,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.ImportantFormFactors;
@@ -50,22 +51,26 @@ import org.chromium.ui.test.util.DeviceRestriction;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 // TODO(crbug.com/419289558): Re-enable color surface feature flags
-@DisableFeatures({
+@Features.DisableFeatures({
     ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
     ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
-    ChromeFeatureList.ANDROID_THEME_MODULE,
-    ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW
+    ChromeFeatureList.ANDROID_THEME_MODULE
 })
-@EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2 + ":show_tip_bottom_sheet/false")
 @Batch(Batch.PER_CLASS)
 @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288348
 public class TabGroupListBottomSheetTest {
     @Rule
     public AutoResetCtaTransitTestRule mCtaTestRule =
-            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
+            ChromeTransitTestRules.autoResetCtaActivityRule();
 
     @Test
     @MediumTest
+    @EnableFeatures(
+            ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2 + ":show_tip_bottom_sheet/false")
+    @DisableFeatures({
+        ChromeFeatureList.SUBMENUS_IN_APP_MENU,
+        ChromeFeatureList.SUBMENUS_IN_APP_MENU_LFF
+    })
     public void testNewGroup_RegularNewTabPageStation() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         WebPageStation pageStation =
@@ -91,6 +96,10 @@ public class TabGroupListBottomSheetTest {
 
     @Test
     @MediumTest
+    @DisableFeatures({
+        ChromeFeatureList.SUBMENUS_IN_APP_MENU,
+        ChromeFeatureList.SUBMENUS_IN_APP_MENU_LFF
+    })
     public void testNewGroup_RegularWebPageStation() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         WebPageStation pageStation =
@@ -118,6 +127,7 @@ public class TabGroupListBottomSheetTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.PHONE)
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testNewGroup_IncognitoNewTabPageStation_Phone() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         WebPageStation pageStation =
@@ -184,6 +194,7 @@ public class TabGroupListBottomSheetTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.PHONE)
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testNewGroup_IncognitoWebPageStation_Phone() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         WebPageStation pageStation =
