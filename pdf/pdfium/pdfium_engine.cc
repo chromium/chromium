@@ -624,6 +624,8 @@ PDFiumEngine::PDFiumEngine(PDFiumEngineClient* client,
 }
 
 PDFiumEngine::~PDFiumEngine() {
+  in_dtor_ = true;
+
   if (!client_->IsPrintPreview()) {
     base::UmaHistogramLongTimes("PDF.EngineLifetime",
                                 base::TimeTicks::Now() - engine_creation_time_);
