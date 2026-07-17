@@ -3048,6 +3048,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> gailu honetako <ph name="WINDOW_COUNT" /></translation>
 <translation id="5716325061445053985">Fitxa telefonoan irekitzeko, sakatu hau</translation>
 <translation id="5717509257172454543">Izotz gaineko patinajea</translation>
+<translation id="5718326209176373202">Gehitu testuzko oharpenak</translation>
 <translation id="5718601519531438273">Pasaporteak, gidabaimenak eta antzeko dokumentuak sartzen dira</translation>
 <translation id="5720705177508910913">Oraingo erabiltzailea</translation>
 <translation id="5720895412771013401">Mahaigaineko ordenagailuak</translation>
@@ -5302,6 +5303,7 @@ Xehetasun gehiago:
 <translation id="949314938206378263">Webgune hau bisitatzeko baimena eskatu duzu. Zure gurasoak Family Link-en erantzun dezake.</translation>
 <translation id="950736567201356821">Hiru zulo goian</translation>
 <translation id="950926967802086924">Sarbide-gakoa • Google Password Manager</translation>
+<translation id="952165179818196872">Gehitu <ph name="PROVIDER" /> aplikazioz aldatu gabe ordaintzeko</translation>
 <translation id="955429569736351433">EBa erabil daiteke</translation>
 <translation id="955627189349169688">Gidalerro honi lotuta ez egotea aukeratu nahi baduzu, joan <ph name="BEGIN_LINK" />Chrome-ren sinkronizazioaren ezarpenetara<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Horia</translation>

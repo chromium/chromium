@@ -5339,6 +5339,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5096775069898886423">For sites that don't support secure connections, get warned before visiting the site</translation>
 <translation id="5097002363526479830">Failed to connect to the network '<ph name="NAME" />': <ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">Sites that you visit can determine what you like and then suggest ads as you continue browsing</translation>
+<translation id="5097472729724586429">Add text annotations with the new 'Add text annotations' tool</translation>
 <translation id="5097649414558628673">Tool: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Automatically click when the cursor stops</translation>
 <translation id="5098963855433723436">Opens in a separate application</translation>
@@ -5403,6 +5404,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5146235736676876345">Choose your own</translation>
 <translation id="5146896637028965135">System voice</translation>
 <translation id="5147113439721488265">Recommendation</translation>
+<translation id="5148020348702787234">To send links, verify that it's you. You can send links when you're signed in to the same Google Account on both devices.</translation>
 <translation id="5148285448107770349">Password must be at least 8 characters</translation>
 <translation id="5149602533174716626">Copy Video Frame</translation>
 <translation id="5150254825601720210">Netscape Certificate SSL Server Name</translation>
@@ -10269,6 +10271,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="8967427617812342790">Add to reading list</translation>
 <translation id="8968527460726243404">ChromeOS System Image Writer</translation>
 <translation id="8968766641738584599">Save card</translation>
+<translation id="8970232194848546151">Send a link to another device</translation>
 <translation id="8970887620466824814">Something went wrong.</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">Please check with your network administrator to make sure that the firewall is not blocking downloads from Google servers.</translation>
@@ -10535,6 +10538,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="9151906066336345901">end</translation>
 <translation id="9152503903192861480">Open in AI Mode</translation>
 <translation id="9153367754133725216">See suggestions for new apps and web content in Launcher and search results. Sends statistics to improve suggestions only if you have chosen to send crash reports and diagnostics and usage data to ChromeOS.</translation>
+<translation id="9153451439615847952">Reduce background audio for notifications and alerts</translation>
 <translation id="9154194610265714752">Updated</translation>
 <translation id="915485121129452731">Pen tablet</translation>
 <translation id="9155344700756733162">Unselect colour</translation>

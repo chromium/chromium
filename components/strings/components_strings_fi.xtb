@@ -3053,6 +3053,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> (<ph name="WINDOW_COUNT" />) tällä laitteella</translation>
 <translation id="5716325061445053985">Napauta avataksesi välilehden puhelimella</translation>
 <translation id="5717509257172454543">Luistelu</translation>
+<translation id="5718326209176373202">Lisätä tekstimerkintöjä</translation>
 <translation id="5718601519531438273">Sisältää tietoja, kuten passit ja ajokortit</translation>
 <translation id="5720705177508910913">Nykyinen käyttäjä</translation>
 <translation id="5720895412771013401">Pöytätietokoneet</translation>
@@ -5311,6 +5312,7 @@ Lisätietoja:
 <translation id="949314938206378263">Pyysit pääsyä tälle sivustolle. Vanhempasi voi vastata Family Linkissä.</translation>
 <translation id="950736567201356821">Kolme reikää yläreunassa</translation>
 <translation id="950926967802086924">Avainkoodi • Google Salasanat</translation>
+<translation id="952165179818196872">Lisää <ph name="PROVIDER" />, niin voit maksaa vaihtamatta sovellusta</translation>
 <translation id="955429569736351433">VR sallittu</translation>
 <translation id="955627189349169688">Voit poistaa tämän käytännön käytöstä <ph name="BEGIN_LINK" />Chromen synkronointiasetuksista<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Keltainen 2</translation>

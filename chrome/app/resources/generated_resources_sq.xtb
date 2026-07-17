@@ -5325,6 +5325,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5096775069898886423">Për sajtet që nuk i mbështesin lidhjet e sigurta, merr paralajmërime para se të vizitosh sajtin</translation>
 <translation id="5097002363526479830">Dështoi lidhja me rrjetin "<ph name="NAME" />": <ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">Sajtet që viziton mund të përcaktojnë se çfarë të pëlqen dhe më pas të sugjerojnë reklama ndërkohë që ti vazhdon të shfletosh</translation>
+<translation id="5097472729724586429">Shto shënime me tekst me veglën e re "Shto shënime me tekst"</translation>
 <translation id="5097649414558628673">Vegla: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Kliko automatikisht kur të ndalojë kursori</translation>
 <translation id="5098963855433723436">Hapet në një aplikacion të veçantë</translation>
@@ -5389,6 +5390,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5146235736676876345">Zgjidh tëndin</translation>
 <translation id="5146896637028965135">Zëri i sistemit</translation>
 <translation id="5147113439721488265">Rekomandim</translation>
+<translation id="5148020348702787234">Për të dërguar lidhje, verifiko që je ti. Mund të dërgosh lidhje kur je identifikuar në të njëjtën "Llogari të Google" në të dyja pajisjet.</translation>
 <translation id="5148285448107770349">Fjalëkalimi duhet të ketë të paktën 8 karaktere</translation>
 <translation id="5149602533174716626">Kopj&amp;o kuadrin e videos</translation>
 <translation id="5150254825601720210">Emri i serverit SSL të certifikatës së Netscape</translation>
@@ -10253,6 +10255,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="8967427617812342790">Shto te lista e leximit</translation>
 <translation id="8968527460726243404">Shkruesi i imazheve të sistemit të ChromeOS</translation>
 <translation id="8968766641738584599">Ruaj kartën</translation>
+<translation id="8970232194848546151">Dërgo një lidhje në një pajisje tjetër</translation>
 <translation id="8970887620466824814">Ndodhi një gabim.</translation>
 <translation id="89720367119469899">Largohu</translation>
 <translation id="8972513834460200407">Kontrollo me administratorin e rrjetit tënd për t'u siguruar se muri mbrojtës nuk po bllokon shkarkimet nga serverët e Google.</translation>
@@ -10519,6 +10522,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="9151906066336345901">tasti End</translation>
 <translation id="9152503903192861480">Hap në "Modalitetin e IA-së"</translation>
 <translation id="9153367754133725216">Shiko sugjerimet për aplikacione dhe përmbajtje uebi të reja te "Nisësi" dhe kërko rezultatet. Dërgo statistika për të përmirësuar sugjerimet vetëm nëse ke zgjedhur të dërgosh raporte të ndërprerjeve aksidentale dhe të dhëna diagnostikuese e të përdorimit te ChromeOS.</translation>
+<translation id="9153451439615847952">Redukto audion në sfond për njoftimet dhe sinjalizimet</translation>
 <translation id="9154194610265714752">I përditësuar</translation>
 <translation id="915485121129452731">Tablet me stilolaps</translation>
 <translation id="9155344700756733162">Anulo zgjedhjen e ngjyrës</translation>

@@ -5325,6 +5325,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5096775069898886423">Za web-lokacije koje ne podržavaju sigurne veze dobit ćete upozorenje prije nego što ih posjetite</translation>
 <translation id="5097002363526479830">Neuspješno povezivanje s mrežom "<ph name="NAME" />": <ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">Web-lokacije koje posjećujete mogu utvrditi što vam se sviđa, a zatim predlagati oglase dok pregledavate</translation>
+<translation id="5097472729724586429">Dodajte tekstne napomene pomoću novog alata Dodajte tekstne napomene</translation>
 <translation id="5097649414558628673">Alat: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Automatski klik prilikom zaustavljanja pokazivača</translation>
 <translation id="5098963855433723436">Otvara se u zasebnoj aplikaciji</translation>
@@ -5389,6 +5390,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5146235736676876345">Odaberite vlastitu</translation>
 <translation id="5146896637028965135">Glas sustava</translation>
 <translation id="5147113439721488265">Preporuka</translation>
+<translation id="5148020348702787234">Da biste slali veze, potvrdite svoj identitet. Veze možete slati ako ste na oba uređaja prijavljeni istim Google računom.</translation>
 <translation id="5148285448107770349">Zaporka mora imati barem 8 znakova</translation>
 <translation id="5149602533174716626">Kopira&amp;j kadar videozapisa</translation>
 <translation id="5150254825601720210">Naziv certifikata SSL poslužitelja za Netscape</translation>
@@ -10255,6 +10257,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="8967427617812342790">Dodaj na popis za čitanje</translation>
 <translation id="8968527460726243404">Zapisivanje slike OS-a Chrome</translation>
 <translation id="8968766641738584599">Spremanje kartice</translation>
+<translation id="8970232194848546151">Pošaljite vezu na drugi uređaj</translation>
 <translation id="8970887620466824814">Nešto nije u redu.</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">Obratite se administratoru mreže i provjerite blokira li vatrozid preuzimanja s Googleovih poslužitelja.</translation>
@@ -10521,6 +10524,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="9151906066336345901">kraj</translation>
 <translation id="9152503903192861480">Otvori u AI načinu</translation>
 <translation id="9153367754133725216">Pogledajte prijedloge za nove aplikacije i web-sadržaj u Pokretaču i rezultatima pretraživanja. Šalje statistiku radi poboljšanja prijedloga samo ako ste odabrali slanje izvješća o rušenju te dijagnostičkih podataka i podataka o upotrebi ChromeOS-u.</translation>
+<translation id="9153451439615847952">Smanji glasnoću pozadinskog zvuka za obavijesti i upozorenja</translation>
 <translation id="9154194610265714752">Ažurirano</translation>
 <translation id="915485121129452731">Grafički tablet</translation>
 <translation id="9155344700756733162">Poništi odabir boje</translation>

@@ -3052,6 +3052,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> selle seadme <ph name="WINDOW_COUNT" /></translation>
 <translation id="5716325061445053985">Puudutage vahelehe avamiseks oma telefonis</translation>
 <translation id="5717509257172454543">Uisutamine</translation>
+<translation id="5718326209176373202">Tekstimärkuste lisamine</translation>
 <translation id="5718601519531438273">Hõlmab sellist teavet nagu passid ja juhiload.</translation>
 <translation id="5720705177508910913">Praegune kasutaja</translation>
 <translation id="5720895412771013401">Lauaarvutid</translation>
@@ -5309,6 +5310,7 @@ Lisateave:
 <translation id="949314938206378263">Küsisid selle saidi külastamiseks luba. Sinu vanem saab Family Linkis vastata.</translation>
 <translation id="950736567201356821">Kolm auku ülal</translation>
 <translation id="950926967802086924">Pääsuvõti • Google'i paroolihaldur</translation>
+<translation id="952165179818196872">Lisage <ph name="PROVIDER" />, et maksta ilma rakendust vahetamata.</translation>
 <translation id="955429569736351433">VR on lubatud</translation>
 <translation id="955627189349169688">Saate sellest reeglist loobuda <ph name="BEGIN_LINK" />Chrome'i sünkroonimisseadetes<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Kollane 2</translation>

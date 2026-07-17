@@ -5324,6 +5324,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5096775069898886423">Ricevi un avviso prima di visitare i siti che non supportano le connessioni sicure</translation>
 <translation id="5097002363526479830">Connessione alla rete "<ph name="NAME" />" non riuscita: <ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">I siti che visiti possono stabilire i tuoi interessi e poi suggerire annunci mentre continui a navigare</translation>
+<translation id="5097472729724586429">Aggiungi annotazioni di testo con il nuovo strumento "Aggiungi annotazioni di testo"</translation>
 <translation id="5097649414558628673">Strumento: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Fare clic automaticamente quando il puntatore si ferma</translation>
 <translation id="5098963855433723436">Si apre in un'applicazione separata</translation>
@@ -5388,6 +5389,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5146235736676876345">Scegli la tua password</translation>
 <translation id="5146896637028965135">Voce di sistema</translation>
 <translation id="5147113439721488265">Consiglio</translation>
+<translation id="5148020348702787234">Per inviare link, verifica la tua identità. Puoi inviare link quando hai fatto l'accesso allo stesso Account Google su entrambi i dispositivi.</translation>
 <translation id="5148285448107770349">La password deve avere almeno 8 caratteri</translation>
 <translation id="5149602533174716626">Copia frame</translation>
 <translation id="5150254825601720210">Nome server SSL certificato Netscape</translation>
@@ -10251,6 +10253,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="8967427617812342790">Aggiungi all'elenco di lettura</translation>
 <translation id="8968527460726243404">ChromeOS System Image Writer</translation>
 <translation id="8968766641738584599">Salva carta</translation>
+<translation id="8970232194848546151">Invia un link a un altro dispositivo</translation>
 <translation id="8970887620466824814">C'è stato un problema.</translation>
 <translation id="89720367119469899">Esc</translation>
 <translation id="8972513834460200407">Rivolgiti al tuo amministratore di rete per verificare che il firewall non blocchi i download dai server di Google.</translation>
@@ -10517,6 +10520,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="9151906066336345901">fine</translation>
 <translation id="9152503903192861480">Apri in AI Mode</translation>
 <translation id="9153367754133725216">Ricevi suggerimenti relativi a nuove app e contenuti web in Avvio app e nei risultati di ricerca. Invia statistiche per migliorare i suggerimenti solo se hai scelto di inviare a ChromeOS report sugli arresti anomali e dati diagnostici e sull'utilizzo.</translation>
+<translation id="9153451439615847952">Attenua l'audio in background per notifiche e avvisi</translation>
 <translation id="9154194610265714752">Aggiornato</translation>
 <translation id="915485121129452731">Tablet con penna</translation>
 <translation id="9155344700756733162">Deseleziona colore</translation>

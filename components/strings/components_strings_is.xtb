@@ -3052,6 +3052,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> frá <ph name="WINDOW_COUNT" /> í þessu tæki</translation>
 <translation id="5716325061445053985">Ýttu til að opna flipann í símanum þínum</translation>
 <translation id="5717509257172454543">Ísskautar</translation>
+<translation id="5718326209176373202">Bæta textaskýringum við</translation>
 <translation id="5718601519531438273">Inniheldur upplýsingar á borð við vegabréf og ökuskírteini</translation>
 <translation id="5720705177508910913">Núverandi notandi</translation>
 <translation id="5720895412771013401">Borðtölvur</translation>
@@ -5308,6 +5309,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="949314938206378263">Þú baðst um að opna þetta vefsvæði. Foreldri þitt getur svarað í Family Link.</translation>
 <translation id="950736567201356821">Þrjú göt efst</translation>
 <translation id="950926967802086924">Aðgangslykill • Google-aðgangsorðastjórnun</translation>
+<translation id="952165179818196872">Bættu <ph name="PROVIDER" /> við til að greiða án þess að skipta um forrit</translation>
 <translation id="955429569736351433">Sýndarveruleiki leyfður</translation>
 <translation id="955627189349169688">Þú getur afþakkað þessa reglu í <ph name="BEGIN_LINK" />stillingum Chrome-samstillinga<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Gulur 2</translation>

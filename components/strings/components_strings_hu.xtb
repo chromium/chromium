@@ -3049,6 +3049,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="5715918316982363436"><ph name="WINDOW_COUNT" />/<ph name="TAB_COUNT" /> ezen az eszközön</translation>
 <translation id="5716325061445053985">Koppintson rá a lap telefonon való megnyitásához</translation>
 <translation id="5717509257172454543">Jégkorcsolyázás</translation>
+<translation id="5718326209176373202">Szöveges jelölések hozzáadása</translation>
 <translation id="5718601519531438273">Olyan információkat tartalmaz, mint az útlevelek és a vezetői engedélyek</translation>
 <translation id="5720705177508910913">Jelenlegi felhasználó</translation>
 <translation id="5720895412771013401">Asztali számítógépek</translation>
@@ -5308,6 +5309,7 @@ További részletek:
 <translation id="949314938206378263">A webhely felkeresését kérelmezted. Szülőd a Family Linkben reagálhat rá.</translation>
 <translation id="950736567201356821">Három lyuk felül</translation>
 <translation id="950926967802086924">Azonosítókulcs • Google Jelszókezelő</translation>
+<translation id="952165179818196872">Adja hozzá a(z) <ph name="PROVIDER" /> szolgáltatást, hogy alkalmazásváltás nélkül fizethessen</translation>
 <translation id="955429569736351433">VR engedélyezve</translation>
 <translation id="955627189349169688">A <ph name="BEGIN_LINK" />Chrome-szinkronizálás beállításaiban<ph name="END_LINK" /> leiratkozhat erről a házirendről.</translation>
 <translation id="95721182352849470">Sárga 2</translation>

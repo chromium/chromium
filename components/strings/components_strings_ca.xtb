@@ -3052,6 +3052,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> de <ph name="WINDOW_COUNT" /> en aquest dispositiu</translation>
 <translation id="5716325061445053985">Toca per obrir la pestanya al teu telèfon</translation>
 <translation id="5717509257172454543">Patinatge sobre gel</translation>
+<translation id="5718326209176373202">Afegeix anotacions de text</translation>
 <translation id="5718601519531438273">Inclou informació com ara passaports i permisos de conduir</translation>
 <translation id="5720705177508910913">Usuari actual</translation>
 <translation id="5720895412771013401">Ordinadors</translation>
@@ -5308,6 +5309,7 @@ Detalls addicionals:
 <translation id="949314938206378263">Has demanat visitar aquest lloc web. El teu pare o mare pot respondre a Family Link.</translation>
 <translation id="950736567201356821">Encunyació triple a la part superior</translation>
 <translation id="950926967802086924">Clau d'accés • Gestor de contrasenyes de Google</translation>
+<translation id="952165179818196872">Afegeix <ph name="PROVIDER" /> per pagar sense canviar d'aplicació</translation>
 <translation id="955429569736351433">S'ha permès la RV</translation>
 <translation id="955627189349169688">Pots desactivar aquesta política a la <ph name="BEGIN_LINK" />configuració de Sincronització de Chrome<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Groc 2</translation>

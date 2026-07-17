@@ -5322,6 +5322,7 @@
 <translation id="5096775069898886423">在您访问不支持安全连接的网站前，系统会发出警告</translation>
 <translation id="5097002363526479830">无法连接到网络“<ph name="NAME" />”：<ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">您访问的网站能判断您的喜好，然后在您继续浏览时向您展示建议的广告</translation>
+<translation id="5097472729724586429">使用新的“添加文字注释”工具添加文字注释</translation>
 <translation id="5097649414558628673">工具：<ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">光标停止移动时自动点击</translation>
 <translation id="5098963855433723436">在单独的应用中打开</translation>
@@ -5386,6 +5387,7 @@
 <translation id="5146235736676876345">自行选择</translation>
 <translation id="5146896637028965135">系统语音</translation>
 <translation id="5147113439721488265">建议</translation>
+<translation id="5148020348702787234">如需发送链接，请验证您的身份。只要在两部设备上登录同一个 Google 账号，即可发送链接。</translation>
 <translation id="5148285448107770349">密码必须包含至少 8 个字符。</translation>
 <translation id="5149602533174716626">复制视频帧(&amp;Y)</translation>
 <translation id="5150254825601720210">Netscape 证书 SSL 服务器名称</translation>
@@ -10248,6 +10250,7 @@
 <translation id="8967427617812342790">添加到阅读清单</translation>
 <translation id="8968527460726243404">Chrome 操作系统映像写入工具</translation>
 <translation id="8968766641738584599">保存银行卡</translation>
+<translation id="8970232194848546151">将链接发送到另一部设备</translation>
 <translation id="8970887620466824814">出了点问题。</translation>
 <translation id="89720367119469899">转义</translation>
 <translation id="8972513834460200407">请与您的网络管理员联系，确保防火墙没有阻止系统从 Google 服务器下载内容。</translation>
@@ -10514,6 +10517,7 @@
 <translation id="9151906066336345901">光标移至行尾</translation>
 <translation id="9152503903192861480">在 AI 模式下打开</translation>
 <translation id="9153367754133725216">在启动器和搜索结果中查看针对新应用和新 Web 内容的建议。仅当您已选择向 ChromeOS 发送崩溃报告以及诊断信息和使用情况数据时，才会发送统计信息以优化建议。</translation>
+<translation id="9153451439615847952">降低通知和提醒的背景音量</translation>
 <translation id="9154194610265714752">已更新</translation>
 <translation id="915485121129452731">手写板</translation>
 <translation id="9155344700756733162">取消选择颜色</translation>

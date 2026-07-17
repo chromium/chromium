@@ -5329,6 +5329,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5096775069898886423">Recibe un aviso antes de visitar sitios que non admitan conexións seguras</translation>
 <translation id="5097002363526479830">Erro ao conectar coa rede "<ph name="NAME" />": <ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">Os sitios que visites poden determinar o que che gusta e suxerirche anuncios a medida que navegues pola Web</translation>
+<translation id="5097472729724586429">Engade anotacións de texto coa nova ferramenta deseñada para iso</translation>
 <translation id="5097649414558628673">Ferramenta: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Facer clic automaticamente cando se detén o cursor</translation>
 <translation id="5098963855433723436">Abrirase nunha aplicación separada</translation>
@@ -5393,6 +5394,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5146235736676876345">Escoller o teu propio contrasinal</translation>
 <translation id="5146896637028965135">Voz do sistema</translation>
 <translation id="5147113439721488265">Recomendación</translation>
+<translation id="5148020348702787234">Para enviar ligazóns, verifica a túa identidade. Podes enviar ligazóns cando tes a sesión iniciada na mesma Conta de Google en ambos os dispositivos.</translation>
 <translation id="5148285448107770349">O contrasinal debe ter, como mínimo, 8 caracteres</translation>
 <translation id="5149602533174716626">Copia&amp;r fotograma de vídeo</translation>
 <translation id="5150254825601720210">Nome do servidor SSL de certificados Netscape</translation>
@@ -10255,6 +10257,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="8967427617812342790">Engadir á lista de lectura</translation>
 <translation id="8968527460726243404">Escritor de imaxes do sistema ChromeOS</translation>
 <translation id="8968766641738584599">Gardar tarxeta</translation>
+<translation id="8970232194848546151">Enviar unha ligazón a outro dispositivo</translation>
 <translation id="8970887620466824814">Produciuse un erro.</translation>
 <translation id="89720367119469899">Esc</translation>
 <translation id="8972513834460200407">Consulta ao administrador da rede para asegurarte de que o firewall non estea bloqueando as descargas dos servidores de Google.</translation>
@@ -10521,6 +10524,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="9151906066336345901">fin</translation>
 <translation id="9152503903192861480">Abrir no modo IA</translation>
 <translation id="9153367754133725216">Móstranse suxestións de aplicacións novas e contido web no menú de aplicacións e nos resultados de busca. Mandaranse estatísticas para mellorar as suxestións só se tes activada a opción de enviar informes de fallos e datos de uso e diagnóstico a ChromeOS.</translation>
+<translation id="9153451439615847952">Reduce o audio de fondo para as notificacións e as alertas</translation>
 <translation id="9154194610265714752">Actualizado</translation>
 <translation id="915485121129452731">Lapis da tableta</translation>
 <translation id="9155344700756733162">Anular a selección de cor</translation>

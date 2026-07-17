@@ -5322,6 +5322,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5096775069898886423">Konexio seguruak onartzen ez dituzten webguneetan, abisu bat ikusiko duzu webgunea bisitatu aurretik</translation>
 <translation id="5097002363526479830">Ezin izan da "<ph name="NAME" />" sarera konektatu: <ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">Bisitatzen dituzun webguneek zer gustatzen zaizun zehatz dezakete, eta, arakatzen jarraitzen duzunean, iragarkiak iradoki</translation>
+<translation id="5097472729724586429">Gehitu testuzko oharpenak "Gehitu testuzko oharpenak" tresna berriarekin</translation>
 <translation id="5097649414558628673">Tresna: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Sakatu automatikoki kurtsorea gelditzen denean</translation>
 <translation id="5098963855433723436">Beste aplikazio batean irekiko da</translation>
@@ -5386,6 +5387,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5146235736676876345">Aukeratu zeurea</translation>
 <translation id="5146896637028965135">Sistemaren ahotsa</translation>
 <translation id="5147113439721488265">Gomendioa</translation>
+<translation id="5148020348702787234">Estekak bidaltzeko, egiaztatu zeu zarela. 2 gailuetan Google-ko kontu berarekin saioa hasita daukazunean bidal ditzakezu estekak.</translation>
 <translation id="5148285448107770349">Pasahitzak gutxienez 8 karaktere izan behar ditu</translation>
 <translation id="5149602533174716626">Kop&amp;iatu bideo-fotograma</translation>
 <translation id="5150254825601720210">Netscape ziurtagiriaren SSL zerbitzariaren izena</translation>
@@ -10246,6 +10248,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari, sistema e
 <translation id="8967427617812342790">Gehitu zerrendan</translation>
 <translation id="8968527460726243404">ChromeOS sistemako irudi-idazlea</translation>
 <translation id="8968766641738584599">Gorde txartela</translation>
+<translation id="8970232194848546151">Bidali esteka bat beste gailu batera</translation>
 <translation id="8970887620466824814">Arazoren bat izan da.</translation>
 <translation id="89720367119469899">Ihes-tekla</translation>
 <translation id="8972513834460200407">Galdetu sarearen administratzaileari suebakia Google-ren zerbitzariaren deskargak blokeatzen ari den.</translation>
@@ -10512,6 +10515,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari, sistema e
 <translation id="9151906066336345901">amaiera tekla</translation>
 <translation id="9152503903192861480">Ireki AA moduan</translation>
 <translation id="9153367754133725216">Ikusi aplikazio eta sareko eduki berrien iradokizunak exekutatzeko tresnan eta bilaketa-emaitzetan. Hutsegite-txostenak, eta diagnostiko- eta erabilera-datuak ChromeOS-era bidaltzea aukeratu baduzu soilik bidaliko dira iradokizunak hobetzeko balio duten estatistikak.</translation>
+<translation id="9153451439615847952">Murriztu jakinarazpen eta alerten atzeko planoko audioa</translation>
 <translation id="9154194610265714752">Eguneratuta</translation>
 <translation id="915485121129452731">Arkatza duen tableta</translation>
 <translation id="9155344700756733162">Desautatu kolorea</translation>

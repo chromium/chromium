@@ -327,8 +327,8 @@
         <ph name="BEGIN_LIST" />
         <ph name="LIST_ITEM" />確認裝置具備運作正常的內部儲存空間，例如 HDD、SSD 或 eMMC
         <ph name="LIST_ITEM" />確認內部儲存裝置大於 16 GB
-        <ph name="LIST_ITEM" />檢查內部儲存空間的連線 (如可實際存取)
-        <ph name="LIST_ITEM" />確認使用的是認證型號，並檢查安裝注意事項
+        <ph name="LIST_ITEM" />確認內部儲存空間正確連線 (如果能實際檢查硬體裝置)
+        <ph name="LIST_ITEM" />確認使用的是經認證的型號，並檢查安裝注意事項
         <ph name="END_LIST" />
         <ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />如需詳細說明，請前往：g.co/flex/InstallErrors。<ph name="END_PARAGRAPH2" /></translation>

@@ -379,7 +379,7 @@
 <translation id="2196428379625389579">ウェブで検索</translation>
 <translation id="2199562093267256223"><ph name="USER_EMAIL" /> にログインしているすべてのデバイスからグループを削除します。</translation>
 <translation id="2202084845446535117">メール アカウントがありません</translation>
-<translation id="2214453882118345682">カメラを使って、写っているものを購入、翻訳、特定できます。</translation>
+<translation id="2214453882118345682">カメラを使って、見たものを購入、翻訳、特定できます。</translation>
 <translation id="2216366330550244277">商品のページに移動します</translation>
 <translation id="2219935992754556187">Chrome で Face ID を使用してセンシティブ データを保護します</translation>
 <translation id="2220529011494928058">問題を報告</translation>
@@ -1140,7 +1140,7 @@
 <translation id="4854068532375923088">「Gemini」にカメラの使用を許可する</translation>
 <translation id="4860895144060829044">通話</translation>
 <translation id="4861953997778766866">共有タブグループは誰でも変更できます</translation>
-<translation id="4865063548323785458">パスワードを保存し、サイトやアプリに自動入力して簡単にログインできます</translation>
+<translation id="4865063548323785458">パスワードを保存し、サイトやアプリに自動入力して簡単にログインできます。</translation>
 <translation id="4867608294647017606">検索から画像を削除</translation>
 <translation id="4869146460927742717">アドレスバーの位置</translation>
 <translation id="4870911314065352661">タブをすべて閉じますか？</translation>
@@ -1884,7 +1884,7 @@
 <translation id="7280980607183752256">このファイルはインポートできません</translation>
 <translation id="7282197670900591579">シトロンのテーマ</translation>
 <translation id="7293429513719260019">言語を選択</translation>
-<translation id="7300448350764260141">オンラインの脅威に対する保護を強化できます。</translation>
+<translation id="7300448350764260141">オンラインの脅威に対する保護を強化しましょう。</translation>
 <translation id="7311244614769792472">一致する結果は見つかりませんでした</translation>
 <translation id="7312823817809783355">タスク</translation>
 <translation id="7313347584264171202">シークレット タブはここに表示されます</translation>
@@ -2365,7 +2365,7 @@
 <translation id="8814719628147284151">続行</translation>
 <translation id="881559332211266856">Redress 番号を更新</translation>
 <translation id="8817524703470045896">価格をトラッキングしたり、サイトで値下げがあった場合に通知を受け取ったりできます</translation>
-<translation id="8819155700324279105">オンラインの脅威からの保護を強化します</translation>
+<translation id="8819155700324279105">オンラインの脅威からの保護を強化します。</translation>
 <translation id="8820817407110198400">ブックマーク</translation>
 <translation id="8822421075653507124">デバイスを安全に使用できるようにするため、組織で必要に応じてオペレーティング システム、ブラウザ、設定、デバイスにインストールされているソフトウェアに関する情報を確認する場合があります。</translation>
 <translation id="882557203579758546">ページ内を検索…</translation>

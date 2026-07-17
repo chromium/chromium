@@ -3052,6 +3052,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> từ <ph name="WINDOW_COUNT" /> trên thiết bị này</translation>
 <translation id="5716325061445053985">Nhấn để mở thẻ trên điện thoại của bạn</translation>
 <translation id="5717509257172454543">Trượt băng</translation>
+<translation id="5718326209176373202">Thêm chú thích văn bản</translation>
 <translation id="5718601519531438273">Bao gồm thông tin như hộ chiếu và giấy phép lái xe</translation>
 <translation id="5720705177508910913">Người dùng hiện tại</translation>
 <translation id="5720895412771013401">Máy tính để bàn</translation>
@@ -5310,6 +5311,7 @@ Thông tin chi tiết bổ sung:
 <translation id="949314938206378263">Bạn đã xin phép truy cập trang web này. Cha mẹ bạn có thể trả lời trong Family Link.</translation>
 <translation id="950736567201356821">Đục 3 lỗ trên cùng</translation>
 <translation id="950926967802086924">Khoá truy cập • Trình quản lý mật khẩu của Google</translation>
+<translation id="952165179818196872">Thêm <ph name="PROVIDER" /> để thanh toán mà không cần chuyển sang ứng dụng khác</translation>
 <translation id="955429569736351433">Cho phép sử dụng thực tế ảo</translation>
 <translation id="955627189349169688">Bạn có thể chọn không áp dụng chính sách này trong phần <ph name="BEGIN_LINK" />cài đặt tính năng Đồng bộ hoá Chrome<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Vàng 2</translation>

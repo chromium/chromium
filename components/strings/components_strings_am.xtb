@@ -3051,6 +3051,7 @@
 <translation id="5715918316982363436">በዚህ መሣሪያ ላይ <ph name="TAB_COUNT" /> ከ<ph name="WINDOW_COUNT" /></translation>
 <translation id="5716325061445053985">ትሩን በስልክዎ ላይ ለመክፈት መታ ያድርጉ</translation>
 <translation id="5717509257172454543">በበረዶ ላይ መንሸራተት</translation>
+<translation id="5718326209176373202">የጽሑፍ ማብራሪያዎችን ያክሉ</translation>
 <translation id="5718601519531438273">እንደ ፓስፖርቶች እና የመንጃ ፈቃዶች ያሉ መረጃዎችን ያካትታል</translation>
 <translation id="5720705177508910913">የአሁኑ ተጠቃሚ</translation>
 <translation id="5720895412771013401">የዴስክቶፕ ኮምፒውተሮች</translation>
@@ -5309,6 +5310,7 @@
 <translation id="949314938206378263">ይህን ጣቢያ ለመጎብኘት ጠይቀዋል። የእርስዎ ወላጅ በFamily Link ውስጥ ምላሽ መስጠት ይችላሉ።</translation>
 <translation id="950736567201356821">ሦስቴ ከላይ ብሳ</translation>
 <translation id="950926967802086924">የይለፍ ቁልፍ • Google የይለፍ ቃል አስተዳዳሪ</translation>
+<translation id="952165179818196872">መተግበሪያዎችን ሳይቀይሩ ለመክፈል <ph name="PROVIDER" /> ያክሉ</translation>
 <translation id="955429569736351433">ምናባዊ እውነታ ተፈቅዷል</translation>
 <translation id="955627189349169688"><ph name="BEGIN_LINK" />Chrome ሥምረት ቅንብሮች<ph name="END_LINK" /> ውስጥ ከዚህ መመሪያ መርጠው መውጣት ይችላሉ።</translation>
 <translation id="95721182352849470">ቢጫ 2</translation>

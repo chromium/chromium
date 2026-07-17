@@ -5322,6 +5322,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="5096775069898886423">Per als llocs web que no admeten connexions segures, reps un advertiment abans de visitar-los.</translation>
 <translation id="5097002363526479830">Hi ha hagut un error en connectar amb la xarxa "<ph name="NAME" />": <ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">Els llocs web que visites poden determinar què t'agrada i, després, suggerir-te anuncis mentre continues navegant</translation>
+<translation id="5097472729724586429">Afegeix anotacions de text amb la nova eina Afegeix anotacions de text</translation>
 <translation id="5097649414558628673">Eina: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Fes clic automàticament quan el cursor s'aturi</translation>
 <translation id="5098963855433723436">S'obre en una altra aplicació</translation>
@@ -5386,6 +5387,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="5146235736676876345">Tria la teva</translation>
 <translation id="5146896637028965135">Veu del sistema</translation>
 <translation id="5147113439721488265">Recomanació</translation>
+<translation id="5148020348702787234">Per enviar enllaços, verifica la teva identitat. Pots enviar enllaços quan tinguis la sessió iniciada al mateix Compte de Google en tots dos dispositius.</translation>
 <translation id="5148285448107770349">La contrasenya ha de tenir 8 caràcters com a mínim</translation>
 <translation id="5149602533174716626">Copia&amp; el fotograma</translation>
 <translation id="5150254825601720210">Nom del servidor SSL de certificats de Netscape</translation>
@@ -5584,7 +5586,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="5299109548848736476">No rastregis</translation>
 <translation id="5299558715747014286">Veure i gestionar els teus grups de pestanyes</translation>
 <translation id="5301398529256275325">Prova de demanar coses com ara "resumeix aquesta pàgina" o fes la teva pròpia pregunta.</translation>
-<translation id="5301954838959518834">D'acord</translation>
+<translation id="5301954838959518834">D'acord, entesos</translation>
 <translation id="5302032366299160685">Espera que el fitxer s'obri abans de tornar-ho a provar</translation>
 <translation id="5302048478445481009">Idioma</translation>
 <translation id="5302435492906794790">S'estan cercant dispositius detectables a prop...</translation>
@@ -6276,7 +6278,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5868434909835797817">El micròfon està desactivat al dispositiu</translation>
 <translation id="5868479397518301468">S'ha esgotat el temps d'espera per iniciar la sessió</translation>
 <translation id="5868822853313956582">Segueix els colors del dispositiu</translation>
-<translation id="5869029295770560994">D'acord</translation>
+<translation id="5869029295770560994">D'acord, entesos</translation>
 <translation id="5869522115854928033">Contrasenyes desades</translation>
 <translation id="5870155679953074650">Errors greus</translation>
 <translation id="587234395549708302">Vols eliminar les adreces d'interès?</translation>
@@ -8143,7 +8145,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7343372807593926528">Descriu el problema abans d'enviar suggeriments.</translation>
 <translation id="7344585835349671209">Gestiona els certificats HTTPS/SSL al dispositiu</translation>
 <translation id="7345706641791090287">Confirma la contrasenya</translation>
-<translation id="7346909386216857016">D'acord</translation>
+<translation id="7346909386216857016">D'acord, entesos</translation>
 <translation id="7347751611463936647">Per utilitzar aquesta extensió, escriviu "<ph name="EXTENSION_KEYWORD" />", premeu la tecla de tabulació i indiqueu l'ordre o la cerca.</translation>
 <translation id="7347943691222276892">Fes clic per abandonar <ph name="SUBPAGE_TITLE" />.</translation>
 <translation id="7348093485538360975">Teclat en pantalla</translation>
@@ -10250,6 +10252,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="8967427617812342790">Afegeix a la llista de lectura</translation>
 <translation id="8968527460726243404">Escriptor d'imatges del sistema ChromeOS</translation>
 <translation id="8968766641738584599">Desa la targeta</translation>
+<translation id="8970232194848546151">Envia un enllaç a un altre dispositiu</translation>
 <translation id="8970887620466824814">Hi ha hagut un error.</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">Consulteu amb l'administrador de xarxa per assegurar-vos que el tallafoc no estigui bloquejant les baixades dels servidors de Google.</translation>
@@ -10516,6 +10519,7 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="9151906066336345901">Fi</translation>
 <translation id="9152503903192861480">Obre en el mode IA</translation>
 <translation id="9153367754133725216">Consulta suggeriments d'aplicacions i de contingut web nous al menú d'aplicacions i als resultats de la cerca. Només envia les estadístiques per millorar els suggeriments si has triat enviar informes d'error i dades d'ús i de diagnòstic a ChromeOS.</translation>
+<translation id="9153451439615847952">Abaixa el volum de l'àudio de fons en rebre notificacions i alertes</translation>
 <translation id="9154194610265714752">S'ha actualitzat.</translation>
 <translation id="915485121129452731">Tauleta amb llapis</translation>
 <translation id="9155344700756733162">Desselecciona el color</translation>

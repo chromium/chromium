@@ -3052,6 +3052,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> fra <ph name="WINDOW_COUNT" /> på denne enheten</translation>
 <translation id="5716325061445053985">Trykk for å åpne fanen på telefonen</translation>
 <translation id="5717509257172454543">Skøyteløp</translation>
+<translation id="5718326209176373202">Legg til tekstmerknader</translation>
 <translation id="5718601519531438273">Inkluderer informasjon som pass og førerkort</translation>
 <translation id="5720705177508910913">Gjeldende bruker</translation>
 <translation id="5720895412771013401">Stasjonære datamaskiner</translation>
@@ -5308,6 +5309,7 @@ Mer informasjon:
 <translation id="949314938206378263">Du ba om å få besøke dette nettstedet. Forelderen din kan svare i Family Link.</translation>
 <translation id="950736567201356821">Tre hull topp</translation>
 <translation id="950926967802086924">Passnøkkel • Google Passordlagring</translation>
+<translation id="952165179818196872">Legg til <ph name="PROVIDER" /> for å betale uten å bytte app</translation>
 <translation id="955429569736351433">VR er tillatt</translation>
 <translation id="955627189349169688">Du kan velge bort denne regelen i <ph name="BEGIN_LINK" />innstillingene for Chrome-synkronisering<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Gul 2</translation>

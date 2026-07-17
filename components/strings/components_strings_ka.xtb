@@ -3052,6 +3052,7 @@
 <translation id="5715918316982363436"><ph name="WINDOW_COUNT" />-დან <ph name="TAB_COUNT" /> ამ მოწყობილობაზე</translation>
 <translation id="5716325061445053985">შეეხეთ ჩანართის თქვენს ტელეფონში გასახსნელად</translation>
 <translation id="5717509257172454543">ციგურებით სრიალი</translation>
+<translation id="5718326209176373202">ტექსტური ანოტაციების დამატება</translation>
 <translation id="5718601519531438273">შეიცავს ისეთ ინფორმაციას, როგორიცაა პასპორტები და მართვის მოწმობები</translation>
 <translation id="5720705177508910913">მიმდინარე მომხმარებელი</translation>
 <translation id="5720895412771013401">სამაგიდო კომპიუტერები</translation>
@@ -5308,6 +5309,7 @@
 <translation id="949314938206378263">თქვენ მოითხოვეთ ამ საიტის მონახულება. თქვენს მშობელს გამოხმაურება შეუძლია Family Link-იდან.</translation>
 <translation id="950736567201356821">სამმაგად გახვრეტა ზემოთ</translation>
 <translation id="950926967802086924">წვდომის გასაღები • Google პაროლების მმართველი</translation>
+<translation id="952165179818196872">დაამატეთ <ph name="PROVIDER" />, რომ აპების გადართვის გარეშე გადაიხადოთ</translation>
 <translation id="955429569736351433">VR ნებადართულია</translation>
 <translation id="955627189349169688">ამ წესებზე უარის თქმა შეგიძლიათ <ph name="BEGIN_LINK" />Chrome სინქის პარამეტრებში<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">ყვითელი 2</translation>

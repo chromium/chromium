@@ -5318,6 +5318,7 @@
 <translation id="5096775069898886423">如果網站不支援安全連線，系統會在造訪前發出警告</translation>
 <translation id="5097002363526479830">無法連線至「<ph name="NAME" />」：<ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">你造訪的網站可以判斷你喜愛的內容，並在接下來的瀏覽過程中顯示建議廣告</translation>
+<translation id="5097472729724586429">使用全新的「新增文字註解」工具，在文件中加入文字註解</translation>
 <translation id="5097649414558628673">工具：<ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">游標停止時自動點擊</translation>
 <translation id="5098963855433723436">在其他應用程式中開啟</translation>
@@ -5382,6 +5383,7 @@
 <translation id="5146235736676876345">自行選擇</translation>
 <translation id="5146896637028965135">系統語音</translation>
 <translation id="5147113439721488265">建議</translation>
+<translation id="5148020348702787234">如要傳送連結，請先驗證身分。只要在兩部裝置上登入同一個 Google 帳戶，即可傳送連結。</translation>
 <translation id="5148285448107770349">密碼至少要有 8 個半形字元</translation>
 <translation id="5149602533174716626">複製影片影格(&amp;Y)</translation>
 <translation id="5150254825601720210">Netscape 憑證 SSL 伺服器名稱</translation>
@@ -10243,6 +10245,7 @@
 <translation id="8967427617812342790">加入閱讀清單</translation>
 <translation id="8968527460726243404">Chrome 作業系統映像檔寫入工具</translation>
 <translation id="8968766641738584599">儲存卡片</translation>
+<translation id="8970232194848546151">將連結傳送至其他裝置</translation>
 <translation id="8970887620466824814">發生錯誤。</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">請與網路管理員聯絡，確認防火牆並未封鎖從 Google 伺服器下載的內容。</translation>
@@ -10509,6 +10512,7 @@
 <translation id="9151906066336345901">end 鍵</translation>
 <translation id="9152503903192861480">以 AI 模式開啟</translation>
 <translation id="9153367754133725216">在啟動器和搜尋結果中顯示新應用程式和網路內容的建議。只有在你選擇將當機報告和診斷與使用資料傳送到 ChromeOS 時，系統才會傳送統計資料以改善建議。</translation>
+<translation id="9153451439615847952">收到通知和快訊時降低背景音量</translation>
 <translation id="9154194610265714752">已更新</translation>
 <translation id="915485121129452731">繪圖板</translation>
 <translation id="9155344700756733162">取消選取顏色</translation>

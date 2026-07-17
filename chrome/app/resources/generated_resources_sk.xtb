@@ -5325,6 +5325,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5096775069898886423">V prípade webov, ktoré nepodporujú zabezpečené pripojenia, sa pred ich návštevou zobrazí upozornenie</translation>
 <translation id="5097002363526479830">K sieti „<ph name="NAME" />“ sa nepodarilo pripojiť: <ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">Weby, ktoré navštevujete, môžu určiť, čo sa vám páči, a na základe toho navrhovať počas vášho prehliadania reklamy</translation>
+<translation id="5097472729724586429">Pridávajte textové poznámky pomocou nového nástroja Pridať textové poznámky</translation>
 <translation id="5097649414558628673">Nástroj: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Automaticky kliknúť po zastavení kurzora</translation>
 <translation id="5098963855433723436">Otvorí sa v samostatnej aplikácii</translation>
@@ -5389,6 +5390,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5146235736676876345">Vybrať vlastné</translation>
 <translation id="5146896637028965135">Hlas systému</translation>
 <translation id="5147113439721488265">Odporúčanie</translation>
+<translation id="5148020348702787234">Ak chcete posielať odkazy, overte svoju totožnosť. Odkazy môžete posielať, keď sa v oboch zariadeniach prihlásite do rovnakého účtu Google.</translation>
 <translation id="5148285448107770349">Heslo musí obsahovať aspoň osem znakov</translation>
 <translation id="5149602533174716626">Kopírovať snímku videa</translation>
 <translation id="5150254825601720210">Netscape – názov servera SSL certifikátu</translation>
@@ -10257,6 +10259,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="8967427617812342790">Pridať do čitateľského zoznamu</translation>
 <translation id="8968527460726243404">ChromeOS System Image Writer</translation>
 <translation id="8968766641738584599">Uložiť kartu</translation>
+<translation id="8970232194848546151">Pošlite odkaz do iného zariadenia</translation>
 <translation id="8970887620466824814">Niečo sa pokazilo.</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">Kontaktujte správcu siete a uistite sa, že brána firewall neblokuje sťahovanie súborov zo serverov Google.</translation>
@@ -10523,6 +10526,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="9151906066336345901">end (na koniec)</translation>
 <translation id="9152503903192861480">Otvoriť v režime AI</translation>
 <translation id="9153367754133725216">Zobrazujte si návrhy nových aplikácií a webového obsahu v Spúšťači aj výsledkoch vyhľadávania. Odosiela štatistiky na zlepšovanie návrhov iba vtedy, keď ste vybrali odosielanie reportov pádov aj údajov o využití a diagnostike systému ChromeOS.</translation>
+<translation id="9153451439615847952">Znížiť hlasitosť zvuku na pozadí pri upozorneniach</translation>
 <translation id="9154194610265714752">Aktualizované</translation>
 <translation id="915485121129452731">Grafický tablet</translation>
 <translation id="9155344700756733162">Zrušiť výber farby</translation>
