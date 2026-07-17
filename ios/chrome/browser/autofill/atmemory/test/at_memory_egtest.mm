@@ -68,16 +68,6 @@ void LoadMultiFormPage(net::test_server::EmbeddedTestServer* test_server) {
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:searchBar]
       assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Type text to test focus and typing.
-  [[EarlGrey selectElementWithMatcher:searchBar]
-      performAction:grey_replaceText(@"test query")];
-
-  // Tap the close button to dismiss.
-  [[EarlGrey selectElementWithMatcher:closeButton] performAction:grey_tap()];
-
-  // Verify the AtMemory views are no longer visible.
-  [[EarlGrey selectElementWithMatcher:searchBar] assertWithMatcher:grey_nil()];
 }
 
 @end

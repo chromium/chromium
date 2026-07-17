@@ -9,3 +9,6 @@ NSString* const kAtMemoryCloseButtonAccessibilityIdentifier =
 
 NSString* const kAtMemorySearchBarAccessibilityIdentifier =
     @"AtMemorySearchBar";
+
+NSString* const kAtMemoryBackButtonAccessibilityIdentifier =
+    @"AtMemoryBackButton";

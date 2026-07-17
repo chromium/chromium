@@ -7,14 +7,17 @@
 
 #import <Foundation/Foundation.h>
 
-namespace at_memory {
+namespace autofill {
 
-// Represents the different content states of the AtMemory screen.
-enum class AtMemoryContentState {
+// Represents the different view states of the AtMemory screen.
+enum class AtMemoryViewState {
   // Shows the empty state view.
   kEmpty,
   // Shows previously filled items.
-  kPreviouslyFilled,
+  kRecentFills,
+  // Shows the details page of a selected item, allowing the user to tap and
+  // fill individual attributes.
+  kGranularFill,
   // Shows search cell (including loading state).
   kSearch,
   // Shows search results.
@@ -25,13 +28,32 @@ enum class AtMemoryContentState {
   kNoData,
 };
 
-}  // namespace at_memory
+}  // namespace autofill
+
+@class AtMemoryGranularFillItem;
+@class AtMemorySearchItem;
+@class AtMemorySearchResultItem;
 
 // Consumer for AtMemory.
 @protocol AtMemoryConsumer <NSObject>
 
-// Sets the current content state of the AtMemory screen.
-- (void)setContentState:(at_memory::AtMemoryContentState)contentState;
+// Sets the current view state of the AtMemory screen.
+- (void)setViewState:(autofill::AtMemoryViewState)viewState;
+
+// Sets the recent fills.
+- (void)setRecentFills:(NSArray<AtMemorySearchItem*>*)recentFills;
+
+// Sets the granular fill items.
+- (void)setGranularFillItems:(NSArray<AtMemoryGranularFillItem*>*)items;
+
+// Sets the current search query.
+- (void)setSearchQuery:(NSString*)query;
+
+// Sets whether the search is loading.
+- (void)setSearchLoading:(BOOL)loading;
+
+// Sets the search results.
+- (void)setSearchResults:(NSArray<AtMemorySearchResultItem*>*)results;
 
 @end
 

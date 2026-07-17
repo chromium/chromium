@@ -11,8 +11,31 @@
 
 @protocol AtMemoryCommands;
 
+@class AtMemoryViewController;
+
+@protocol AtMemoryViewControllerDelegate <NSObject>
+// Notifies that the user changed the search text.
+- (void)atMemoryViewController:(AtMemoryViewController*)viewController
+           didChangeSearchText:(NSString*)searchText;
+
+// Notifies that the user triggered search by tapping the search cell.
+- (void)atMemoryViewControllerDidTapSearch:
+    (AtMemoryViewController*)viewController;
+
+// Notifies that the user tapped the info button on search result.
+- (void)atMemoryViewControllerDidTapSearchResultInfo:
+    (AtMemoryViewController*)viewController;
+
+// Notifies that the user selected content.
+- (void)atMemoryViewController:(AtMemoryViewController*)viewController
+              didSelectContent:(NSString*)content;
+@end
+
 // View controller for the AtMemory screen.
 @interface AtMemoryViewController : UIViewController <AtMemoryConsumer>
+
+// The delegate for this view controller.
+@property(nonatomic, weak) id<AtMemoryViewControllerDelegate> delegate;
 
 // The handler for AtMemory commands.
 @property(nonatomic, weak) id<AtMemoryCommands> atMemoryHandler;

@@ -646,6 +646,9 @@
       <message name="IDS_IOS_AUTOFILL_AI_CONTEXT_MENU_PERSONAL_CONTEXT_DESCRIPTION" desc="Description text displayed at the top of the context menu for Autofill AI suggestions that are from personal context. [iOS only]">
         Suggested by Gemini. Manage enhanced autofill in settings.
       </message>
+      <message name="IDS_IOS_AUTOFILL_AI_FIND_AND_FILL_TITLE" desc="Title for the Autofill AI suggestions popup. [iOS only]">
+        Find and fill
+      </message>
       <message name="IDS_IOS_AUTOFILL_AI_FOOTER_SAVE_TO_DEVICE" desc="Footer text in the save/update dialog indicating that the entity data will be saved locally on the device. [iOS only]">
       Your info is saved to your device.
       </message>
@@ -657,6 +660,9 @@
      </message>
       <message name="IDS_IOS_AUTOFILL_AI_OTHER_TITLE" desc="Title for the other section in Addresses and more page for entities that are not identity docs, nor travel docs. [iOS only]">
         Other
+      </message>
+      <message name="IDS_IOS_AUTOFILL_AI_PREVIOUSLY_FILLED_SECTION_TITLE" desc="Title for the previously filled section in the Autofill AI suggestions popup. [iOS only]">
+        Previously filled
       </message>
       <message name="IDS_IOS_AUTOFILL_AI_SAVED_LOCALLY_FOOTER" desc="The notice text displayed in the footer when the Autofill AI entity (ex. Passport, Vehicle info etc.) is saved locally. [iOS only]">
           Your info is saved to your device

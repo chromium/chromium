@@ -7,5 +7,9 @@ source_set("utils") {
     "atmemory_ui_util.h",
     "atmemory_ui_util.mm",
   ]
-  deps = [ "//ios/chrome/common/ui/colors" ]
+  deps = [
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view/content_configuration",
+    "//ios/chrome/common/ui/colors",
+  ]
 }
