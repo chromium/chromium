@@ -6,6 +6,7 @@
 
 #include "base/containers/to_vector.h"
 #include "base/i18n/time_formatting.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -126,10 +127,10 @@ TEST_P(PaymentsDataCleanerTest,
   CreditCard credit_card3(base::Uuid::GenerateRandomV4().AsLowercaseString(),
                           test::kEmptyOrigin);
   const base::Time expiry_date = now - base::Days(32);
-  const std::string month = base::UnlocalizedTimeFormatWithPattern(
-      expiry_date, "MM", icu::TimeZone::getGMT());
-  const std::string year = base::UnlocalizedTimeFormatWithPattern(
-      expiry_date, "yyyy", icu::TimeZone::getGMT());
+  base::Time::Exploded exploded;
+  expiry_date.UTCExplode(&exploded);
+  const std::string month = base::StringPrintf("%02d", exploded.month);
+  const std::string year = base::StringPrintf("%04d", exploded.year);
   test::SetCreditCardInfo(&credit_card3, "Clyde", "4111111111111111" /* Visa */,
                           month.c_str(), year.c_str(), "1");
   credit_card3.usage_history().set_use_date(now - base::Days(400));

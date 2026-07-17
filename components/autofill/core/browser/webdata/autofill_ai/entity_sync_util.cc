@@ -241,11 +241,12 @@ GetFlightReservationAttributesFromSpecifics(
 
     // Departure date is stored in this format to be consistent with how
     // other dates are stored.
-    AddAttribute(
-        kFlightReservationDepartureDate,
-        base::UnlocalizedTimeFormatWithPattern(
-            offsetted_departure_time, "yyyy-MM-dd", icu::TimeZone::getGMT()),
-        attributes);
+    base::Time::Exploded exploded;
+    offsetted_departure_time.UTCExplode(&exploded);
+    AddAttribute(kFlightReservationDepartureDate,
+                 base::StringPrintf("%04d-%02d-%02d", exploded.year,
+                                    exploded.month, exploded.day_of_month),
+                 attributes);
   }
 
   FinalizeEntityAttributes(EntityType(EntityTypeName::kFlightReservation),

@@ -5,9 +5,9 @@
 #import <memory>
 
 #import "base/base_paths.h"
-#import "base/i18n/time_formatting.h"
 #import "base/ios/ios_util.h"
 #import "base/path_service.h"
+#import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -216,9 +216,10 @@ void FillAndSubmitXframeCreditCardForm() {
 
   // Fill the credit card fields that are hosting in iframes.
   // Set the year to fill as 4 years from now.
+  base::Time::Exploded exploded;
+  (base::Time::Now() + base::Days(366 * 4)).LocalExplode(&exploded);
   NSString* year_to_fill =
-      base::SysUTF8ToNSString(base::UnlocalizedTimeFormatWithPattern(
-          base::Time::Now() + base::Days(366 * 4), "yyyy"));
+      base::SysUTF8ToNSString(base::StringPrintf("%04d", exploded.year));
   std::vector<std::tuple<NSString*, NSString*, NSString*>> typingInstructions =
       {std::make_tuple(@"cc-number-frame", @"CCNo", @"5454545454545454"),
        std::make_tuple(@"cc-exp-frame", @"CCExpiresMonth", @"12"),

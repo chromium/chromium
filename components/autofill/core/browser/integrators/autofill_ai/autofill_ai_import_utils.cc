@@ -19,6 +19,8 @@
 #include "base/containers/flat_tree.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/i18n/icubridge/date_time_formatter.h"
+#include "base/i18n/icubridge/icu_bridge.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -261,7 +263,8 @@ std::optional<std::u16string> MaybeGetLocalizedDate(
   if (!success) {
     return std::nullopt;
   }
-  return base::LocalizedTimeFormatWithPattern(time, "yMMMd");
+  return base::i18n::IcuBridge::GetInstance().date_time_formatter().Format(
+      time, base::i18n::datetime_options::YMD::Medium());
 }
 
 }  // namespace autofill

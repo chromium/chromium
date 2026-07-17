@@ -473,7 +473,7 @@ TEST_F(AutofillAiImportUtilsTest, MaybeGetLocalizedDate) {
     base::i18n::SetICUDefaultLocale("en_GB");
     EXPECT_THAT(MaybeGetLocalizedDate(a), optional(u"30 Dec 2025"));
     base::i18n::SetICUDefaultLocale("de_DE");
-    EXPECT_THAT(MaybeGetLocalizedDate(a), optional(u"30. Dez. 2025"));
+    EXPECT_THAT(MaybeGetLocalizedDate(a), optional(u"30.12.2025"));
     base::i18n::SetICUDefaultLocale("fr_FR");
     EXPECT_THAT(MaybeGetLocalizedDate(a), optional(u"30 déc. 2025"));
   }
