@@ -1292,13 +1292,7 @@ void WebContentsViewAura::StartDragging(
     }
     // Make sure event is within the web contents, and the web contents are
     // visible.
-    if (
-#if !BUILDFLAG(IS_CHROMEOS)
-        // TODO(https://crbug.com/454552204): Remove #if when either ChromeOS
-        // fixes split screen mode web ui tab strip drag, or web ui tab strip is
-        // fully deprecated.
-        !content_native_view->GetBoundsInScreen().Contains(trusted_location) ||
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+    if (!content_native_view->GetBoundsInScreen().Contains(trusted_location) ||
         !content_native_view->IsVisible()) {
       web_contents_->SystemDragEnded(source_rwh);
       return;
