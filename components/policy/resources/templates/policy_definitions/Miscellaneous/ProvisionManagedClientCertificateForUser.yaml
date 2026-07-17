@@ -11,10 +11,9 @@ supported_on:
 - chrome.win:126-
 - chrome.mac:126-
 - chrome.linux:128-
+- chrome_os:152-
 - android:143-
 - ios:147-
-future_on:
-- chrome_os
 features:
   dynamic_refresh: true
   per_profile: true
