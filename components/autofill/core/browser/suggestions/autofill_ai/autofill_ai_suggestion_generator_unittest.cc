@@ -951,28 +951,33 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
       GetFlightReservationEntityInstanceWithRandomGuid(
           {.name = u"Peter",
            .departure_time = base::Time::UnixEpoch(),
-           .use_count = 10});
+           .use_date = test::kJune2017,
+           .record_type = EntityInstance::RecordType::kPersonalContext,
+           .use_count = 15});
   EntityInstance flight_reservation2 =
       GetFlightReservationEntityInstanceWithRandomGuid(
           {.name = u"Jacob",
            .departure_time = base::Time::UnixEpoch() + base::Days(1),
-           .use_count = 12});
+           .use_date = test::kJune2017 - base::Days(10),
+           .record_type = EntityInstance::RecordType::kPersonalContext,
+           .use_count = 10});
   SetEntities({passport1, passport2, flight_reservation1, flight_reservation2});
   SetForm({NAME_FULL, PASSPORT_NUMBER, FLIGHT_RESERVATION_FLIGHT_NUMBER});
 
-  // Flight reservation entities come before Passport entities, because they
-  // have frecency_override set. `flight_reservation1` comes before
-  // `flight_reservation2` since the entities are sorted by departure date.
+  // Passport entities come before Flight reservation, because flights
+  // come from personal context. `flight_reservation2` comes before
+  // `flight_reservation1` since the entities are sorted descending by departure
+  // date.
   std::vector<Suggestion> res = CreateAutofillAiFillingSuggestions(field(0));
-  EXPECT_THAT(
-      res,
-      SuggestionsAre(HasMainText(GetFlightReservationName(flight_reservation1)),
-                     HasMainText(GetFlightReservationName(flight_reservation2)),
-                     HasMainText(GetPassportName(passport1)),
-                     HasMainText(GetPassportName(passport2))));
+  EXPECT_THAT(res,
+              SuggestionsAre(
+                  HasMainText(GetPassportName(passport1)),
+                  HasMainText(GetPassportName(passport2)),
+                  HasMainText(GetFlightReservationName(flight_reservation2)),
+                  HasMainText(GetFlightReservationName(flight_reservation1))));
 }
 
-// Test that PersonalContext Passport entities are sorted ascending by
+// Test that PersonalContext Passport entities are sorted descending by
 // expiration date, even if the one expiring later has higher frecency.
 TEST_F(AutofillAiSuggestionGeneratorTest,
        GetFillingSuggestion_PersonalContextOrdering_PassportExpirationDate) {
@@ -980,22 +985,54 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
       {.name = u"Bruno",
        .number = u"11111",
        .expiry_date = u"2026-08-01",
-       .use_date = test::kJune2017 - base::Days(10),
-       .record_type = EntityInstance::RecordType::kPersonalContext});
+       .use_date = test::kJune2017,
+       .record_type = EntityInstance::RecordType::kPersonalContext,
+       .use_count = 15});
   EntityInstance passport_later = GetPassportEntityInstanceWithRandomGuid(
       {.name = u"Jon Doe",
        .number = u"22222",
        .expiry_date = u"2029-08-01",
-       .use_date = test::kJune2017,
-       .record_type = EntityInstance::RecordType::kPersonalContext});
+       .use_date = test::kJune2017 - base::Days(10),
+       .record_type = EntityInstance::RecordType::kPersonalContext,
+       .use_count = 10});
 
   SetEntities({passport_later, passport_sooner});
   SetForm({NAME_FULL, PASSPORT_NUMBER});
 
   std::vector<Suggestion> res = CreateAutofillAiFillingSuggestions(field(0));
   EXPECT_THAT(res,
-              SuggestionsAre(HasMainText(GetPassportName(passport_sooner)),
-                             HasMainText(GetPassportName(passport_later))));
+              SuggestionsAre(HasMainText(GetPassportName(passport_later)),
+                             HasMainText(GetPassportName(passport_sooner))));
+}
+
+// Test that PersonalContext DriversLicense entities are sorted descending by
+// expiration date.
+TEST_F(
+    AutofillAiSuggestionGeneratorTest,
+    GetFillingSuggestion_PersonalContextOrdering_DriversLicenseExpirationDate) {
+  EntityInstance drivers_license_sooner =
+      test::GetDriversLicenseEntityInstanceWithRandomGuid(
+          {.name = u"Mr Sooner",
+           .expiration_date = u"2026-08-01",
+           .use_date = test::kJune2017,
+           .record_type = EntityInstance::RecordType::kPersonalContext,
+           .use_count = 15});
+  EntityInstance drivers_license_later =
+      test::GetDriversLicenseEntityInstanceWithRandomGuid(
+          {.name = u"Mr Later",
+           .expiration_date = u"2029-08-01",
+           .use_date = test::kJune2017 - base::Days(10),
+           .record_type = EntityInstance::RecordType::kPersonalContext,
+           .use_count = 10});
+
+  SetEntities({drivers_license_later, drivers_license_sooner});
+  SetForm({NAME_FULL, DRIVERS_LICENSE_NUMBER});
+
+  std::vector<Suggestion> res = CreateAutofillAiFillingSuggestions(field(0));
+  EXPECT_THAT(res,
+              SuggestionsAre(
+                  HasMainText(GetDriversLicenseName(drivers_license_later)),
+                  HasMainText(GetDriversLicenseName(drivers_license_sooner))));
 }
 
 // Test that PersonalContext Vehicle entities are sorted by plate number

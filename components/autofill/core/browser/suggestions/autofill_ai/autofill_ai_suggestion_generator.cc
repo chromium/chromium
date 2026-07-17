@@ -592,9 +592,6 @@ bool CompareSameTypeEntities(const EntityInstance& lhs,
     return frecency_order(lhs, rhs);
   };
 
-  auto compare_less = [&compare_by_attribute](AttributeTypeName attr_name) {
-    return compare_by_attribute(attr_name, std::less<std::u16string>());
-  };
 
   auto compare_greater = [&compare_by_attribute](AttributeTypeName attr_name) {
     return compare_by_attribute(attr_name, std::greater<std::u16string>());
@@ -610,13 +607,14 @@ bool CompareSameTypeEntities(const EntityInstance& lhs,
 
   switch (lhs.type().name()) {
     case EntityTypeName::kPassport:
-      return compare_less(AttributeTypeName::kPassportExpirationDate);
+      return compare_greater(AttributeTypeName::kPassportExpirationDate);
     case EntityTypeName::kDriversLicense:
-      return compare_less(AttributeTypeName::kDriversLicenseExpirationDate);
+      return compare_greater(AttributeTypeName::kDriversLicenseExpirationDate);
     case EntityTypeName::kNationalIdCard:
-      return compare_less(AttributeTypeName::kNationalIdCardExpirationDate);
+      return compare_greater(AttributeTypeName::kNationalIdCardExpirationDate);
     case EntityTypeName::kFlightReservation:
-      return compare_less(AttributeTypeName::kFlightReservationDepartureDate);
+      return compare_greater(
+          AttributeTypeName::kFlightReservationDepartureDate);
     case EntityTypeName::kVehicle:
       return compare_less_case_insensitive(
           AttributeTypeName::kVehiclePlateNumber);
