@@ -86,6 +86,8 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
     private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private final TopInsetProvider mTopInsetProvider;
+    private final OneshotSupplier<org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider>
+            mSideUiStateProviderSupplier;
     private final StartupMetricsTracker mStartupMetricsTracker;
     private final @Nullable ExclusiveAccessManager mExclusiveAccessManager;
     private @Nullable NativePageFactory mNativePageFactory;
@@ -118,6 +120,8 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
             OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
             MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             TopInsetProvider topInsetProvider,
+            OneshotSupplier<org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider>
+                    sideUiStateProviderSupplier,
             StartupMetricsTracker startupMetricsTracker,
             @Nullable ExclusiveAccessManager exclusiveAccessManager,
             BackPressManager backPressManager,
@@ -147,6 +151,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
         mModuleRegistrySupplier = moduleRegistrySupplier;
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
         mTopInsetProvider = topInsetProvider;
+        mSideUiStateProviderSupplier = sideUiStateProviderSupplier;
         mStartupMetricsTracker = startupMetricsTracker;
         mExclusiveAccessManager = exclusiveAccessManager;
         mBackPressManager = backPressManager;
@@ -222,6 +227,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
                             mModuleRegistrySupplier,
                             mEdgeToEdgeControllerSupplier,
                             mTopInsetProvider,
+                            mSideUiStateProviderSupplier,
                             mStartupMetricsTracker,
                             mBackPressManager,
                             mRecentlyClosedEntriesManager);

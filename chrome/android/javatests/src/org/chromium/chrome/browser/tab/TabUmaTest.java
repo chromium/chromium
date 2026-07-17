@@ -96,6 +96,7 @@ public class TabUmaTest {
                 new OneshotSupplierImpl<>(),
                 ObservableSuppliers.alwaysNull(),
                 new NoOpTopInsetProvider(),
+                new OneshotSupplierImpl<>(),
                 cta.getStartupMetricsTracker(),
                 /* exclusiveAccessManager= */ null,
                 /* backPressManager= */ null,

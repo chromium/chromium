@@ -416,6 +416,7 @@ public class NewTabPageCoordinatorUnitTest {
                         mSnackbarManager,
                         /* isLff= */ false,
                         mTabStripHeightSupplier,
+                        new OneshotSupplierImpl<>(),
                         mHomeSurfaceTracker,
                         mBackPressManager);
 

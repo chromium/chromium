@@ -84,6 +84,10 @@ import org.chromium.chrome.browser.tasks.HomeSurfaceTracker;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
+import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
+import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.chrome.browser.ui.signin.signin_promo.NtpSigninPromoCoordinator;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
@@ -139,6 +143,8 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     private final SnackbarManager mSnackbarManager;
     private final boolean mIsLff;
     private final Supplier<Integer> mTabStripHeightSupplier;
+    private final OneshotSupplier<SideUiStateProvider> mSideUiStateProviderSupplier;
+    private final SideUiObserver mSideUiObserver;
     private final SearchEngineService mSearchEngineService;
     private final BackPressManager mBackPressManager;
     private final int mNtpSearchBoxTransitionStartOffset;
@@ -160,6 +166,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     private SetupListManager.@Nullable Observer mSetupListObserver;
     private @Nullable Point mContextMenuStartPosition;
     private @Nullable NtpCustomizationCoordinator mNtpCustomizationCoordinator;
+    private @Nullable SideUiStateProvider mSideUiStateProvider;
 
     /**
      * Whether the tiles shown in the layout have finished loading. With {@link #mHasShownView},
@@ -235,6 +242,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
      * @param snackbarManager Manages snackbars shown in the app.
      * @param isLff {@code true} if the NTP surface is on a large form factor (LFF) device.
      * @param tabStripHeightSupplier Supplier of the tab strip height.
+     * @param sideUiStateProviderSupplier Supplier for the {@link SideUiStateProvider}.
      * @param homeSurfaceTracker Used to decide whether we are the home surface.
      * @param backPressManager Manages back press dispatching.
      */
@@ -253,6 +261,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
             SnackbarManager snackbarManager,
             boolean isLff,
             Supplier<Integer> tabStripHeightSupplier,
+            OneshotSupplier<SideUiStateProvider> sideUiStateProviderSupplier,
             @Nullable HomeSurfaceTracker homeSurfaceTracker,
             BackPressManager backPressManager) {
         mBackPressManager = backPressManager;
@@ -271,6 +280,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         mSnackbarManager = snackbarManager;
         mIsLff = isLff;
         mTabStripHeightSupplier = tabStripHeightSupplier;
+        mSideUiStateProviderSupplier = sideUiStateProviderSupplier;
         mSearchEngineService = SearchEngineService.getForProfile(mProfile);
 
         Resources resources = mActivity.getResources();
@@ -305,6 +315,21 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         mModel.set(NewTabPageLayoutProperties.DELEGATE, mLayoutDelegate);
         sCount++;
 
+        // TODO(crbug.com/517393491): Refactor to a reusable component to apply to other UiConfigs.
+        mSideUiObserver =
+                sideUiSpecs -> {
+                    if (mUiConfig != null) {
+                        mUiConfig.setHorizontalInset(getSideUiWidthDp(sideUiSpecs));
+                    }
+                };
+        mSideUiStateProviderSupplier.onAvailable(
+                mCallbackController.makeCancelable(
+                        provider -> {
+                            mSideUiStateProvider = provider;
+                            provider.addObserver(mSideUiObserver);
+                            mSideUiObserver.onSideUiSpecsChanged(provider.getCurrentSideUiSpecs());
+                        }));
+
         NtpCustomizationPromoManager.maybeShowHomepageCustomizationSnackbarOnRecreate(
                 mActivity, mSnackbarManager, ApplicationStatus.getTaskId(mActivity));
     }
@@ -319,7 +344,8 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
      * @param scrollDelegate The delegate used to obtain information about scroll state.
      * @param touchEnabledDelegate The {@link TouchEnabledDelegate} for handling whether touch
      *     events are allowed.
-     * @param uiConfig UiConfig that provides display information about this view.
+     * @param uiConfig UiConfig that will provide the preferred display style for NTP based on the
+     *     available space.
      * @param lifecycleDispatcher Activity lifecycle dispatcher.
      */
     @Initializer
@@ -335,6 +361,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         TraceEvent.begin(TAG + ".initialize()");
         mScrollDelegate = scrollDelegate;
         mUiConfig = uiConfig;
+        mUiConfig.setHorizontalInset(getSideUiWidthDp());
         mComposeplateUrlSupplier = composeplateUrlSupplier;
 
         mContextMenuStartPosition =
@@ -1362,6 +1389,11 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         }
         mUiConfig = null;
 
+        if (mSideUiStateProvider != null) {
+            mSideUiStateProvider.removeObserver(mSideUiObserver);
+            mSideUiStateProvider = null;
+        }
+
         mModel.set(NewTabPageLayoutProperties.DELEGATE, null);
 
         mSearchBoxScrollListener = null;
@@ -1426,6 +1458,18 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         // Request a layout pass to trigger onMeasure(), which acts as the single source of
         // truth to calculate and uniformly apply the bounded widths to all NTP elements.
         ViewUtils.requestLayout(mNewTabPageLayout, "NewTabPageCoordinator.onDisplayStyleChanged");
+    }
+
+    private int getSideUiWidthDp() {
+        if (mSideUiStateProvider == null) return 0;
+        return getSideUiWidthDp(mSideUiStateProvider.getCurrentSideUiSpecs());
+    }
+
+    private int getSideUiWidthDp(SideUiSpecs sideUiSpecs) {
+        int sideUiWidthPx =
+                sideUiSpecs.getWidth(AnchorSide.LEFT) + sideUiSpecs.getWidth(AnchorSide.RIGHT);
+        float density = mActivity.getResources().getDisplayMetrics().density;
+        return Math.round(sideUiWidthPx / density);
     }
 
     /**

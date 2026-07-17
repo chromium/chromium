@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage.NativePageType;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
+import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -103,6 +104,7 @@ public class NativePageFactory {
     private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
     private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private final TopInsetProvider mTopInsetProvider;
+    private final OneshotSupplier<SideUiStateProvider> mSideUiStateProviderSupplier;
     private final StartupMetricsTracker mStartupMetricsTracker;
     private @Nullable NewTabPageCreationTracker mNewTabPageCreationTracker;
 
@@ -130,6 +132,7 @@ public class NativePageFactory {
             OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
             MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             TopInsetProvider topInsetProvider,
+            OneshotSupplier<SideUiStateProvider> sideUiStateProviderSupplier,
             StartupMetricsTracker startupMetricsTracker,
             BackPressManager backPressManager,
             RecentlyClosedEntriesManager recentlyClosedEntriesManager) {
@@ -150,6 +153,7 @@ public class NativePageFactory {
         mModuleRegistrySupplier = moduleRegistrySupplier;
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
         mTopInsetProvider = topInsetProvider;
+        mSideUiStateProviderSupplier = sideUiStateProviderSupplier;
         mStartupMetricsTracker = startupMetricsTracker;
         mBackPressManager = backPressManager;
         mRecentlyClosedEntriesManager = recentlyClosedEntriesManager;
@@ -177,6 +181,7 @@ public class NativePageFactory {
                             mModuleRegistrySupplier,
                             mEdgeToEdgeControllerSupplier,
                             mTopInsetProvider,
+                            mSideUiStateProviderSupplier,
                             mStartupMetricsTracker,
                             mBackPressManager,
                             mRecentlyClosedEntriesManager);
@@ -213,6 +218,7 @@ public class NativePageFactory {
         private final MonotonicObservableSupplier<EdgeToEdgeController>
                 mEdgeToEdgeControllerSupplier;
         private final TopInsetProvider mTopInsetProvider;
+        private final OneshotSupplier<SideUiStateProvider> mSideUiStateProviderSupplier;
         private final StartupMetricsTracker mStartupMetricsTracker;
         private final BackPressManager mBackPressManager;
         private final RecentlyClosedEntriesManager mRecentlyClosedEntriesManager;
@@ -236,6 +242,7 @@ public class NativePageFactory {
                 OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
                 MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
                 TopInsetProvider topInsetProvider,
+                OneshotSupplier<SideUiStateProvider> sideUiStateProviderSupplier,
                 StartupMetricsTracker startupMetricsTracker,
                 BackPressManager backPressManager,
                 RecentlyClosedEntriesManager recentlyClosedEntriesManager) {
@@ -257,6 +264,7 @@ public class NativePageFactory {
             mModuleRegistrySupplier = moduleRegistrySupplier;
             mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
             mTopInsetProvider = topInsetProvider;
+            mSideUiStateProviderSupplier = sideUiStateProviderSupplier;
             mStartupMetricsTracker = startupMetricsTracker;
             mBackPressManager = backPressManager;
             mRecentlyClosedEntriesManager = recentlyClosedEntriesManager;
@@ -298,6 +306,7 @@ public class NativePageFactory {
                     mModuleRegistrySupplier,
                     mEdgeToEdgeControllerSupplier,
                     mTopInsetProvider,
+                    mSideUiStateProviderSupplier,
                     mStartupMetricsTracker,
                     mBackPressManager);
         }

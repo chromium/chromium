@@ -98,6 +98,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
+import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
@@ -405,6 +406,7 @@ public class NewTabPage
      * @param moduleRegistrySupplier Supplier for the {@link ModuleRegistry}.
      * @param edgeToEdgeControllerSupplier Supplier for the {@link EdgeToEdgeController}.
      * @param topInsetProvider Provider for top insets.
+     * @param sideUiStateProviderSupplier Supplies the {@link SideUiStateProvider}.
      * @param startupMetricsTracker Used to record NTP startup metric.
      * @param backPressManager Manages back press dispatching.
      */
@@ -432,6 +434,7 @@ public class NewTabPage
             OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
             MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             TopInsetProvider topInsetProvider,
+            OneshotSupplier<SideUiStateProvider> sideUiStateProviderSupplier,
             StartupMetricsTracker startupMetricsTracker,
             BackPressManager backPressManager) {
         mConstructedTimeNs = System.nanoTime();
@@ -530,8 +533,9 @@ public class NewTabPage
                         bottomSheetController,
                         modalDialogManager,
                         snackbarManager,
-                        mIsLff,
+                        isLff,
                         mTabStripHeightSupplier,
+                        sideUiStateProviderSupplier,
                         homeSurfaceTracker,
                         backPressManager);
 

@@ -3868,6 +3868,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             mModuleRegistrySupplier,
                             mEdgeToEdgeControllerSupplier,
                             mTransitiveTopInsetProvider,
+                            ((TabbedRootUiCoordinator) mRootUiCoordinator)
+                                    .getSideUiStateProviderSupplier(),
                             getStartupMetricsTracker(),
                             mRootUiCoordinator.getExclusiveAccessManager(),
                             mBackPressManager,
