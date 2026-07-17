@@ -298,3 +298,31 @@ TEST_F(GeminiFirstRunCoordinatorTest, TestLiveFirstRunStarts) {
 
   [coordinator_ stop];
 }
+
+// Tests that stopping the coordinator with a completion handler that
+// deallocates the coordinator synchronously does not crash.
+TEST_F(GeminiFirstRunCoordinatorTest, SynchronousDeallocOnStopDoesNotCrash) {
+  base_view_controller_ = [[UIViewController alloc] init];
+  scoped_window_ = std::make_unique<ScopedKeyWindow>();
+  [scoped_window_->Get() setRootViewController:base_view_controller_];
+  [scoped_window_->Get() makeKeyAndVisible];
+
+  __block GeminiFirstRunCoordinator* localCoordinator =
+      [[GeminiFirstRunCoordinator alloc]
+          initWithBaseViewController:base_view_controller_
+                             browser:browser_.get()
+                      fromEntryPoint:gemini::EntryPoint::AIHub
+                        firstRunType:GeminiFirstRunType::kNewUser
+                   completionHandler:^(BOOL success) {
+                     localCoordinator = nil;
+                   }];
+  [localCoordinator start];
+
+  EXPECT_TRUE(
+      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(5), ^bool {
+        return base_view_controller_.presentedViewController != nil;
+      }));
+
+  [localCoordinator stopWithCompletion:nil];
+  EXPECT_EQ(localCoordinator, nil);
+}

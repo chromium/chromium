@@ -151,12 +151,14 @@
 #pragma mark - Public
 
 - (void)stopWithCompletion:(ProceduralBlock)completion {
-  GeminiTabHelper* geminiTabHelper = [self activeWebStateGeminiTabHelper];
+  // Retain self to survive synchronous teardown from the completion block.
+  __strong __typeof(self) strongSelf = self;
+  GeminiTabHelper* geminiTabHelper = [strongSelf activeWebStateGeminiTabHelper];
   if (geminiTabHelper) {
     geminiTabHelper->SetPreventContextualPanelEntryPoint(NO);
   }
 
-  [self presentPageActionMenuIPH];
+  [strongSelf presentPageActionMenuIPH];
   _viewController = nil;
   _geminiHandler = nil;
   _helpCommandsHandler = nil;
@@ -166,7 +168,7 @@
   _tracker = nil;
   _completion = nil;
   if (!_consentCompletion) {
-    [self dismissPresentedViewWithCompletion:completion];
+    [strongSelf dismissPresentedViewWithCompletion:completion];
   }
   [super stop];
 }
