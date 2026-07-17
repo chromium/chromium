@@ -65,7 +65,8 @@ GlyphDataRange GlyphDataRange::FindGlyphDataRange(
     const HarfBuzzRunGlyphData* start_glyph =
         std::lower_bound(begin(), end(), start_character_index, comparer);
     if (start_glyph == end()) [[unlikely]] {
-      return GlyphDataRange();
+      // No glyph matches; an empty range that still keeps the run.
+      return {*this, start_glyph, start_glyph};
     }
     const HarfBuzzRunGlyphData* end_glyph =
         std::lower_bound(start_glyph, end(), end_character_index, comparer);
@@ -79,7 +80,8 @@ GlyphDataRange GlyphDataRange::FindGlyphDataRange(
   const auto start_glyph_it =
       std::lower_bound(rbegin, rend, start_character_index, comparer);
   if (start_glyph_it == rend) [[unlikely]] {
-    return GlyphDataRange();
+    // No glyph matches; an empty range that still keeps the run.
+    return {*this, begin(), begin()};
   }
   const auto end_glyph_it =
       std::lower_bound(start_glyph_it, rend, end_character_index, comparer);

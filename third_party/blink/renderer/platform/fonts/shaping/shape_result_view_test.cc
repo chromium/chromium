@@ -522,4 +522,47 @@ TEST_F(ShapeResultViewTest, PreviousSafeOffsetInsideView) {
   EXPECT_EQ(view2->PreviousSafeToBreakOffset(24), 24u);
 }
 
+// https://issues.chromium.org/issues/531062336
+// A ShapeResultView part can cover characters that map to no glyphs (e.g. the
+// trailing characters of a ligature). FindGlyphDataRange then returns an empty
+// GlyphDataRange, and because RunInfoPart derives its run from that range, the
+// run must be preserved even when the range is empty.
+TEST_F(ShapeResultViewTest, EmptyGlyphRangePreservesRun) {
+  FontDescription::VariantLigatures ligatures(
+      FontDescription::kEnabledLigaturesState);
+  Font* font = test::CreateTestFont(
+      AtomicString("roboto"),
+      test::PlatformTestDataPath("third_party/Roboto/roboto-regular.woff2"),
+      100, &ligatures);
+
+  // "ffi" shapes to a single ligature glyph at character index 0, so the
+  // trailing characters 1 and 2 have no glyph of their own.
+  HarfBuzzShaper shaper(String("ffi"));
+  const ShapeResult* result = shaper.Shape(font, TextDirection::kLtr);
+  ASSERT_EQ(result->NumGlyphs(), 1u) << "Expected the 'ffi' ligature.";
+
+  // A view over the trailing characters [1, 3) therefore contains no glyphs,
+  // but still spans those two characters.
+  const ShapeResultView* view = ShapeResultView::Create(result, 1, 3);
+  EXPECT_EQ(view->NumCharacters(), 2u);
+  EXPECT_EQ(view->NumGlyphs(), 0u);
+  EXPECT_EQ(view->Width(), 0.0f);
+
+  // The run is preserved, so operations over the empty view produce empty
+  // results rather than dereferencing a null run. The ink bounds are empty
+  // because there are no glyphs.
+  EXPECT_TRUE(view->ComputeInkBounds().IsEmpty());
+
+  const ShapeResult* sub_result = view->CreateShapeResult();
+  EXPECT_EQ(sub_result->NumCharacters(), 2u);
+  EXPECT_EQ(sub_result->NumGlyphs(), 0u);
+
+  // The preserved run's font is still reachable through the empty part.
+  EXPECT_EQ(view->UsedFonts().size(), 1u);
+
+  Vector<ShapeResultTestGlyphInfo> glyphs;
+  view->ForEachGlyph(0, AddGlyphInfo, static_cast<void*>(&glyphs));
+  EXPECT_TRUE(glyphs.empty());
+}
+
 }  // namespace blink

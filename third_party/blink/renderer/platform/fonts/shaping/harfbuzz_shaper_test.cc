@@ -1034,6 +1034,32 @@ TEST_P(GlyphDataRangeTest, Data) {
   EXPECT_EQ(data.end_glyph, end_glyph);
 }
 
+TEST_F(HarfBuzzShaperTest, FindGlyphDataRangeEmptyKeepsRun) {
+  Font* font = MakeGarbageCollected<Font>(font_description);
+
+  // LTR: a character range past the last glyph exercises the forward path.
+  {
+    HarfBuzzShaper shaper(String("abc"));
+    const ShapeResult* result = shaper.Shape(font, TextDirection::kLtr);
+    const auto& run = TestInfo(result)->RunInfoForTesting(0);
+    GlyphDataRange empty = run.FindGlyphDataRange(100, 101);
+    EXPECT_EQ(empty.size(), 0u);
+    EXPECT_EQ(empty.GetRun(), &run);
+  }
+
+  // RTL: the two code points form one cluster (both glyphs at character index
+  // 0), so a range starting at character index 1 matches no glyph and exercises
+  // the reverse path.
+  {
+    HarfBuzzShaper shaper(String(u"\u05E9\u05B0"));
+    const ShapeResult* result = shaper.Shape(font, TextDirection::kRtl);
+    const auto& run = TestInfo(result)->RunInfoForTesting(0);
+    GlyphDataRange empty = run.FindGlyphDataRange(1, 2);
+    EXPECT_EQ(empty.size(), 0u);
+    EXPECT_EQ(empty.GetRun(), &run);
+  }
+}
+
 static struct OffsetForPositionTestData {
   float position;
   unsigned offset_ltr;
