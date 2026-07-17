@@ -585,7 +585,8 @@ export class OmniboxPopupSearchboxElement extends
     const isOutside = !this.getWrapperElement().contains(newlyFocusedEl);
 
     if (isOutside) {
-      this.$.input.blur();
+      this.getInputElement().setSelectionRange(0, 0);
+      this.getInputElement().blur();
       // Clear autocomplete results so clicking into omnibox_view_views
       // registers that the popup is closed. This enables
       // select_all_on_mouse_release_ (in omnibox_view_views) to be set to the
