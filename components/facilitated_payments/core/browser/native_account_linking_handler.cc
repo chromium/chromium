@@ -147,6 +147,7 @@ void NativeAccountLinkingHandler::
 }
 
 void NativeAccountLinkingHandler::OnAccepted() {
+  DoOnAccepted();
   DismissPrompt();
   if (action_token_.empty()) {
     LogAccountLinkingFlowExitedReason(
@@ -166,6 +167,7 @@ void NativeAccountLinkingHandler::OnAccepted() {
 }
 
 void NativeAccountLinkingHandler::OnDeclined() {
+  DoOnDeclined();
   DismissPrompt();
   OnAccountLinkingResult(AccountLinkingResult{
       false, 0, AccountLinkingResultCode::kResultCanceled});

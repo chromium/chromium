@@ -51,6 +51,8 @@ class PixAccountLinkingManager : public NativeAccountLinkingHandler {
       const std::vector<uint8_t>& client_token) override;
   void DoOnGetDetailsForCreatePaymentInstrumentResponse(
       bool is_eligible) override;
+  void DoOnAccepted() override;
+  void DoOnDeclined() override;
   void DoOnAccountLinkingResult(AccountLinkingResult result) override;
 
  private:
@@ -65,10 +67,6 @@ class PixAccountLinkingManager : public NativeAccountLinkingHandler {
   // Shows the Pix account linking prompt to user after the predefined wait
   // time.
   void ShowPixAccountLinkingPromptAfterDelay();
-
-  void OnAccepted();
-
-  void OnDeclined();
 
   // Called by the view to communicate UI events.
   void OnUiScreenEvent(UiEvent ui_event_type);

@@ -55,6 +55,11 @@ class NativeAccountLinkingHandler {
   virtual void DoOnGetDetailsForCreatePaymentInstrumentResponse(
       bool is_eligible) {}
 
+  // Virtual hooks for subclass-specific prompt acceptance and decline
+  // side-effects.
+  virtual void DoOnAccepted() {}
+  virtual void DoOnDeclined() {}
+
   // Virtual hook to handle subclass-specific UI updates on completion.
   virtual void DoOnAccountLinkingResult(AccountLinkingResult result) = 0;
 

@@ -177,26 +177,16 @@ void PixAccountLinkingManager::DismissPrompt() {
   NativeAccountLinkingHandler::DismissPrompt();
 }
 
-void PixAccountLinkingManager::OnAccepted() {
-  LogPixAccountLinkingPromptAccepted();
-  DismissPrompt();
+void PixAccountLinkingManager::DoOnAccepted() {
   // Clear strikes when user accepts the prompt.
   if (auto* strike_database = GetOrCreateStrikeDatabase()) {
     strike_database->ClearStrikes();
   }
-  auto account_info =
-      client()->GetPaymentsDataManager()->GetAccountInfoForPaymentsServer();
-  if (!account_info.IsEmpty() && !account_info.email.empty()) {
-    client()->GetDeviceDelegate()->LaunchPixAccountLinkingPage(
-        account_info.email);
-  }
 }
 
-void PixAccountLinkingManager::OnDeclined() {
+void PixAccountLinkingManager::DoOnDeclined() {
   LogAccountLinkingFlowExitedReason(
       kPixFopSuffix, AccountLinkingFlowExitedReason::kUserDeclined);
-  DismissPrompt();
-
   if (auto* strike_database = GetOrCreateStrikeDatabase()) {
     strike_database->AddStrike();
   }
