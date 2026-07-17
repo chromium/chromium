@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "media/base/audio_parameters.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
 #include "third_party/blink/renderer/modules/breakout_box/frame_queue_underlying_source.h"
@@ -21,7 +22,6 @@ namespace blink {
 MODULES_EXPORT BASE_DECLARE_FEATURE(
     kBreakoutBoxExposePageRelativeAudioCaptureTime);
 
-class ExecutionContext;
 class MediaStreamComponent;
 class Performance;
 class ReadableStreamTransferringOptimizer;
@@ -33,7 +33,6 @@ class MODULES_EXPORT MediaStreamAudioTrackUnderlyingSource
                       DisconnectFromTrack);
 
  public:
-  static Performance* GetPerformanceFromExecutionContext(ExecutionContext*);
   // Public interface for unit testing purposes.
   class AudioBufferPool {
    public:
@@ -44,6 +43,8 @@ class MODULES_EXPORT MediaStreamAudioTrackUnderlyingSource
     virtual scoped_refptr<media::AudioBuffer> CopyIntoAudioBuffer(
         const media::AudioBus& audio_bus,
         base::TimeTicks capture_time) = 0;
+    virtual void UpdateRealmInfo(base::TimeTicks time_origin,
+                                 bool is_cross_origin_isolated) = 0;
 
     virtual int GetSizeForTesting() = 0;
   };
@@ -71,6 +72,10 @@ class MODULES_EXPORT MediaStreamAudioTrackUnderlyingSource
   void ContextDestroyed() override;
   void Trace(Visitor*) const override;
 
+  // FrameQueueUnderlyingSource implementation.
+  void UpdateRealmInfo(base::TimeTicks time_origin,
+                       bool is_cross_origin_isolated) override;
+
   AudioBufferPool* GetAudioBufferPoolForTesting();
 
  private:
@@ -81,7 +86,9 @@ class MODULES_EXPORT MediaStreamAudioTrackUnderlyingSource
   void DisconnectFromTrack();
   void OnSourceTransferStarted(
       scoped_refptr<base::SequencedTaskRunner> transferred_runner,
-      CrossThreadPersistent<TransferredAudioDataQueueUnderlyingSource> source);
+      CrossThreadPersistent<TransferredAudioDataQueueUnderlyingSource> source,
+      base::TimeTicks time_origin,
+      bool is_cross_origin_isolated);
 
   // Only used to prevent the gargabe collector from reclaiming the media
   // stream track processor that created |this|.

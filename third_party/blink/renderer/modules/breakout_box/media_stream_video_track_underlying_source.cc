@@ -82,9 +82,11 @@ MediaStreamVideoTrackUnderlyingSource::GetStreamTransferOptimizer() {
 
 void MediaStreamVideoTrackUnderlyingSource::OnSourceTransferStarted(
     scoped_refptr<base::SequencedTaskRunner> transferred_runner,
-    CrossThreadPersistent<TransferredVideoFrameQueueUnderlyingSource> source) {
+    CrossThreadPersistent<TransferredVideoFrameQueueUnderlyingSource> source,
+    base::TimeTicks time_origin,
+    bool is_cross_origin_isolated) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TransferSource(std::move(source));
+  TransferSource(std::move(source), time_origin, is_cross_origin_isolated);
   RecordBreakoutBoxUsage(BreakoutBoxUsage::kReadableVideoWorker);
 }
 

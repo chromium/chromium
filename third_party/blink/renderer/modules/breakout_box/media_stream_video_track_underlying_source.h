@@ -8,6 +8,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/modules/breakout_box/frame_queue_underlying_source.h"
@@ -61,7 +62,9 @@ class MODULES_EXPORT MediaStreamVideoTrackUnderlyingSource
 
   void OnSourceTransferStarted(
       scoped_refptr<base::SequencedTaskRunner>,
-      CrossThreadPersistent<TransferredVideoFrameQueueUnderlyingSource>);
+      CrossThreadPersistent<TransferredVideoFrameQueueUnderlyingSource>,
+      base::TimeTicks time_origin,
+      bool is_cross_origin_isolated);
 
   void OnFrameFromTrack(
       scoped_refptr<media::VideoFrame> media_frame,

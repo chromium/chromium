@@ -4,11 +4,13 @@
 
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_audio_track_underlying_sink.h"
 
+#include "base/feature_list.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
+#include "third_party/blink/renderer/modules/breakout_box/breakout_box_util.h"
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_audio_track_underlying_source.h"
 #include "third_party/blink/renderer/modules/breakout_box/metrics.h"
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_audio_source.h"
@@ -43,8 +45,7 @@ class TransferringOptimizer : public WritableStreamTransferringOptimizer {
 
 base::TimeTicks GetTimeOrigin(ScriptState* script_state) {
   Performance* performance =
-      MediaStreamAudioTrackUnderlyingSource::GetPerformanceFromExecutionContext(
-          ExecutionContext::From(script_state));
+      GetPerformanceFromExecutionContext(ExecutionContext::From(script_state));
   return performance ? performance->GetTimeOriginInternal() : base::TimeTicks();
 }
 

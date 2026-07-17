@@ -336,8 +336,11 @@ double FrameQueueUnderlyingSource<NativeFrameType>::DesiredSizeForTesting()
 template <typename NativeFrameType>
 void FrameQueueUnderlyingSource<NativeFrameType>::TransferSource(
     CrossThreadPersistent<FrameQueueUnderlyingSource<NativeFrameType>>
-        transferred_source) {
+        transferred_source,
+    base::TimeTicks time_origin,
+    bool is_cross_origin_isolated) {
   DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
+  UpdateRealmInfo(time_origin, is_cross_origin_isolated);
   base::AutoLock locker(lock_);
   DCHECK(!transferred_source_);
   transferred_source_ = std::move(transferred_source);

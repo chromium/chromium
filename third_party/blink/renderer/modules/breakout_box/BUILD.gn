@@ -6,6 +6,8 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("breakout_box") {
   sources = [
+    "breakout_box_util.cc",
+    "breakout_box_util.h",
     "frame_queue.h",
     "frame_queue_transferring_optimizer.cc",
     "frame_queue_transferring_optimizer.h",

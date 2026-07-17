@@ -10,6 +10,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/video_frame.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
@@ -68,6 +69,8 @@ class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
   // Must be called on |realm_task_runner_|.
   virtual bool StartFrameDelivery() = 0;
   virtual void StopFrameDelivery() = 0;
+  virtual void UpdateRealmInfo(base::TimeTicks time_origin,
+                               bool is_cross_origin_isolated) {}
 
   // Delivers a new frame to this source.
   void QueueFrame(NativeFrameType);
@@ -107,7 +110,9 @@ class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
   // queue. Must be called on |realm_task_runner_|.
   void TransferSource(
       CrossThreadPersistent<FrameQueueUnderlyingSource<NativeFrameType>>
-          transferred_source);
+          transferred_source,
+      base::TimeTicks time_origin = base::TimeTicks(),
+      bool is_cross_origin_isolated = false);
 
   // Due to a potential race condition between |transferred_source_|'s heap
   // being destroyed and the Close() method being called, we need to explicitly

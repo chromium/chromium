@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/streams/writable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/workers/worker_thread_test_helper.h"
+#include "third_party/blink/renderer/modules/breakout_box/breakout_box_util.h"
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_audio_track_underlying_source.h"
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_audio_source.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_audio_sink.h"
@@ -126,7 +127,7 @@ class MediaStreamAudioTrackUnderlyingSinkTest : public testing::Test {
 
     CreateTrackAndConnectToSource();
 
-    Performance* performance = MediaStreamAudioTrackUnderlyingSource::
+    Performance* performance =
         GetPerformanceFromExecutionContext(v8_scope.GetExecutionContext());
     ASSERT_TRUE(performance);
     base::TimeTicks time_origin = performance->GetTimeOriginInternal();

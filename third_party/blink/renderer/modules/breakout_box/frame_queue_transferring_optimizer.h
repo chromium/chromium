@@ -7,6 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/modules/breakout_box/frame_queue_underlying_source.h"
 #include "third_party/blink/renderer/modules/breakout_box/transferred_frame_queue_underlying_source.h"
@@ -26,7 +27,9 @@ class FrameQueueTransferringOptimizer final
   using ConnectHostCallback = CrossThreadOnceFunction<void(
       scoped_refptr<base::SequencedTaskRunner>,
       CrossThreadPersistent<
-          TransferredFrameQueueUnderlyingSource<NativeFrameType>>)>;
+          TransferredFrameQueueUnderlyingSource<NativeFrameType>>,
+      base::TimeTicks time_origin,
+      bool is_cross_origin_isolated)>;
 
   FrameQueueTransferringOptimizer(
       FrameQueueHost*,

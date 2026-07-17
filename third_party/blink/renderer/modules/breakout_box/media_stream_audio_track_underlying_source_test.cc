@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/worker_global_scope_performance.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
+#include "third_party/blink/renderer/modules/breakout_box/breakout_box_util.h"
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_audio_source.h"
 #include "third_party/blink/renderer/modules/breakout_box/stream_test_utils.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
@@ -250,8 +251,7 @@ TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
   auto* reader =
       stream->GetDefaultReaderForTesting(script_state, exception_state);
   Performance* performance =
-      MediaStreamAudioTrackUnderlyingSource::GetPerformanceFromExecutionContext(
-          v8_scope.GetExecutionContext());
+      GetPerformanceFromExecutionContext(v8_scope.GetExecutionContext());
   ASSERT_TRUE(performance);
   base::TimeTicks time_origin = performance->GetTimeOriginInternal();
   bool cross_origin_isolated = performance->CrossOriginIsolatedCapability();
@@ -333,8 +333,7 @@ TEST_F(MediaStreamAudioTrackUnderlyingSourceTest, BufferPooling_Simple) {
 
   // Verify that the timestamp is page-relative.
   Performance* performance =
-      MediaStreamAudioTrackUnderlyingSource::GetPerformanceFromExecutionContext(
-          v8_scope.GetExecutionContext());
+      GetPerformanceFromExecutionContext(v8_scope.GetExecutionContext());
   ASSERT_TRUE(performance);
   DOMHighResTimeStamp expected_rtc_timestamp =
       Performance::MonotonicTimeToDOMHighResTimeStamp(
@@ -558,8 +557,7 @@ TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
 
   // Verify that timestamp is page-relative capture time in microseconds.
   Performance* performance =
-      MediaStreamAudioTrackUnderlyingSource::GetPerformanceFromExecutionContext(
-          v8_scope.GetExecutionContext());
+      GetPerformanceFromExecutionContext(v8_scope.GetExecutionContext());
   ASSERT_TRUE(performance);
   DOMHighResTimeStamp expected_capture_time_ms1 =
       Performance::MonotonicTimeToDOMHighResTimeStamp(
@@ -633,6 +631,53 @@ TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
 
   source->Close();
   track->stopTrack(scope.GetExecutionContext());
+}
+
+TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
+       UpdateRealmInfoUpdatesAudioTimestamp) {
+  V8TestingScope v8_scope;
+  MediaStreamTrack* track = CreateTrack(v8_scope.GetExecutionContext());
+  MediaStreamAudioTrackUnderlyingSource* source =
+      CreateSource(v8_scope.GetScriptState(), track, 0u);
+  MediaStreamAudioTrackUnderlyingSource::AudioBufferPool* buffer_pool =
+      source->GetAudioBufferPoolForTesting();
+
+  buffer_pool->SetFormat(kStereoParams);
+  std::unique_ptr<media::AudioBus> audio_bus =
+      CreateTestData(kStereoParams, 0.25);
+  base::TimeTicks capture_time = base::TimeTicks::Now();
+
+  Performance* performance =
+      GetPerformanceFromExecutionContext(v8_scope.GetExecutionContext());
+  ASSERT_TRUE(performance);
+  base::TimeTicks initial_time_origin = performance->GetTimeOriginInternal();
+  bool initial_cross_origin_isolated =
+      performance->CrossOriginIsolatedCapability();
+
+  scoped_refptr<media::AudioBuffer> buffer_initial =
+      buffer_pool->CopyIntoAudioBuffer(*audio_bus, capture_time);
+  DOMHighResTimeStamp expected_initial_timestamp =
+      Performance::MonotonicTimeToDOMHighResTimeStamp(
+          initial_time_origin, capture_time, /*allow_negative_value=*/true,
+          initial_cross_origin_isolated);
+  EXPECT_EQ(buffer_initial->timestamp(),
+            base::Milliseconds(expected_initial_timestamp));
+
+  base::TimeTicks new_time_origin = initial_time_origin - base::Seconds(1);
+  source->UpdateRealmInfo(new_time_origin, /*is_cross_origin_isolated=*/true);
+
+  scoped_refptr<media::AudioBuffer> buffer_updated =
+      buffer_pool->CopyIntoAudioBuffer(*audio_bus, capture_time);
+  DOMHighResTimeStamp expected_updated_timestamp =
+      Performance::MonotonicTimeToDOMHighResTimeStamp(
+          new_time_origin, capture_time, /*allow_negative_value=*/true,
+          /*cross_origin_isolated_capability=*/true);
+  EXPECT_EQ(buffer_updated->timestamp(),
+            base::Milliseconds(expected_updated_timestamp));
+  EXPECT_NE(buffer_initial->timestamp(), buffer_updated->timestamp());
+
+  source->Close();
+  track->stopTrack(v8_scope.GetExecutionContext());
 }
 
 }  // namespace blink
