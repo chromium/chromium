@@ -22,6 +22,10 @@ typedef NS_ENUM(NSInteger, FeedLayoutUpdateType);
 // Presents an IPH bubble to highlight the Lens icon in the NTP Fakebox.
 - (void)presentLensIconBubble;
 
+// Navigates to the NTP if needed and presents an IPH bubble to highlight the
+// AI Mode button.
+- (void)presentAIModeBubble;
+
 // Presents an IPH bubble to highlight scrolling on the feed.
 - (void)presentFeedSwipeFirstRunBubble;
 

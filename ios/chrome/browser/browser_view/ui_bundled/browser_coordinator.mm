@@ -5179,6 +5179,16 @@ const char kChromeAppStoreUrl[] =
                                       }];
 }
 
+- (void)presentAIModeBubble {
+  __weak NewTabPageCoordinator* weakNTPCoordinator = _NTPCoordinator;
+  [HandlerForProtocol(self.dispatcher, SceneCommands)
+      prepareToPresentModalWithSnackbarDismissal:YES
+                                      completion:^{
+                                        [weakNTPCoordinator
+                                            presentAIModeBubble];
+                                      }];
+}
+
 - (void)presentFeedSwipeFirstRunBubble {
   if ([_NTPCoordinator isFeedVisible] &&
       GetFeedSwipeIPHVariation() == FeedSwipeIPHVariation::kStaticAfterFRE) {

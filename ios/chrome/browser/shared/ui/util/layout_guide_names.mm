@@ -30,6 +30,7 @@ GuideName* const kLensKeyboardButtonGuide = @"kLensKeyboardButtonGuide";
 GuideName* const kMagicStackGuide = @"kMagicStackGuide";
 GuideName* const kContextualPanelLargeEntrypointGuide =
     @"kContextualPanelLargeEntrypointGuide";
+GuideName* const kNTPAIMButtonGuide = @"kNTPAIMButtonGuide";
 GuideName* const kFakeboxLensIconGuide = @"kFakeboxLensIconGuide";
 GuideName* const kLensOverlayEntrypointGuide = @"kLensOverlayEntrypointGuide";
 GuideName* const kPageActionMenuEntrypointGuide =

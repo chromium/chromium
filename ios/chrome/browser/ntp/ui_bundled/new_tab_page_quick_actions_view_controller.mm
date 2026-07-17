@@ -14,7 +14,9 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_utils.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -70,6 +72,8 @@ UIColor* ButtonBackgroundColor(NewTabPageColorPalette* colorPalette) {
                                    title:l10n_util::GetNSString(
                                              IDS_IOS_NTP_QUICK_ACTIONS_AIM)];
     [_buttonStackView addArrangedSubview:_aimButton];
+    [self.layoutGuideCenter referenceView:_aimButton
+                                underName:kNTPAIMButtonGuide];
   }
 
   _incognitoButton = [self
@@ -163,6 +167,13 @@ UIColor* ButtonBackgroundColor(NewTabPageColorPalette* colorPalette) {
 
 - (void)openAIM {
   [self.NTPShortcutsHandler openAIM];
+}
+
+- (void)setLayoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter {
+  _layoutGuideCenter = layoutGuideCenter;
+  if (_aimButton) {
+    [_layoutGuideCenter referenceView:_aimButton underName:kNTPAIMButtonGuide];
+  }
 }
 
 @end

@@ -70,6 +70,9 @@ extern GuideName* const kMagicStackGuide;
 // A guide that is constrained to match the frame of the Contextual Panel's
 // entrypoint when it is large, otherwise this stays nil.
 extern GuideName* const kContextualPanelLargeEntrypointGuide;
+// A guide that is constrained to match the frame of the AI Mode button on the
+// New Tab page.
+extern GuideName* const kNTPAIMButtonGuide;
 // A guide that is constrained to match the frame of the Lens icon in the NTP's
 // Fakebox.
 extern GuideName* const kFakeboxLensIconGuide;

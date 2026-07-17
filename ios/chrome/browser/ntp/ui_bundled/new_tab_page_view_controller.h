@@ -17,6 +17,7 @@
 @class FeedWrapperViewController;
 typedef NS_ENUM(NSInteger, FeedLayoutUpdateType);
 @protocol HelpCommands;
+@class LayoutGuideCenter;
 @class MagicStackCollectionViewController;
 @protocol NewTabPageCommands;
 @protocol NewTabPageContentDelegate;
@@ -94,6 +95,9 @@ typedef NS_ENUM(NSInteger, FeedLayoutUpdateType);
 
 // Whether incognito is disabled (e.g. by privacy policy).
 @property(nonatomic, assign) BOOL incognitoDisabled;
+
+// The layout guide center for referencing views.
+@property(nonatomic, weak) LayoutGuideCenter* layoutGuideCenter;
 
 // Initializes the new tab page view controller.
 - (instancetype)init NS_DESIGNATED_INITIALIZER;

@@ -94,6 +94,10 @@ class WebState;
 // Presents an IPH bubble to highlight the Lens icon in the NTP Fakebox.
 - (void)presentLensIconBubble;
 
+// Navigates to the NTP if needed and presents an IPH bubble to highlight the
+// AI Mode button.
+- (void)presentAIModeBubble;
+
 // Shows the Home Background Customization promo.
 - (void)showHomeBackgroundCustomizationPromoWithUIHandler:
     (id<PromosManagerUIHandler>)uiHandler;

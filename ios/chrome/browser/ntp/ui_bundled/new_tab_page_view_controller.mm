@@ -227,6 +227,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 
   _quickActionsViewController =
       [[NewTabPageQuickActionsViewController alloc] init];
+  _quickActionsViewController.layoutGuideCenter = self.layoutGuideCenter;
   _quickActionsViewController.NTPShortcutsHandler = self.NTPShortcutsHandler;
 
   // TODO(crbug.com/40799579): Remove this when bug is fixed.
@@ -1116,6 +1117,11 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
     (id<NewTabPageShortcutsHandler>)NTPShortcutsHandler {
   _NTPShortcutsHandler = NTPShortcutsHandler;
   _quickActionsViewController.NTPShortcutsHandler = NTPShortcutsHandler;
+}
+
+- (void)setLayoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter {
+  _layoutGuideCenter = layoutGuideCenter;
+  _quickActionsViewController.layoutGuideCenter = layoutGuideCenter;
 }
 
 // Whether the quick actions button row is visible.
