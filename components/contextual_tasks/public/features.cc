@@ -4,6 +4,7 @@
 
 #include "components/contextual_tasks/public/features.h"
 
+#include <limits>
 #include <optional>
 #include <string>
 #include <vector>
@@ -78,6 +79,10 @@ BASE_FEATURE(kContextualTasksSuggestionsEnabled,
 
 BASE_FEATURE(kContextualTasksShowOnboardingTooltip,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Bypasses the dismissed cap for contextual tasks.
+BASE_FEATURE(kContextualTasksBypassDismissedCap,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Overrides the value of EntryPointEligibilitymanager::IsEligible to true.
 BASE_FEATURE(kContextualTasksForceEntryPointEligibility,
@@ -558,12 +563,18 @@ int GetContextualTasksOnboardingTooltipDismissedCap() {
   if (!base::FeatureList::IsEnabled(kContextualTasksShowOnboardingTooltip)) {
     return 0;
   }
+  if (base::FeatureList::IsEnabled(kContextualTasksBypassDismissedCap)) {
+    return std::numeric_limits<int>::max();
+  }
   return kContextualTasksOnboardingTooltipDismissedCap.Get();
 }
 
 int GetContextualTasksLensSearchTooltipDismissedCap() {
   if (!base::FeatureList::IsEnabled(kContextualTasksShowOnboardingTooltip)) {
     return 0;
+  }
+  if (base::FeatureList::IsEnabled(kContextualTasksBypassDismissedCap)) {
+    return std::numeric_limits<int>::max();
   }
   return kContextualTasksLensSearchTooltipDismissedCap.Get();
 }
@@ -882,6 +893,13 @@ const char kContextualTasksSidePanelRearchitectureName[] =
     "Contextual Tasks Side Panel Rearchitecture";
 const char kContextualTasksSidePanelRearchitectureDescription[] =
     "Enables the side panel rearchitecture for contextual tasks.";
+
+const char kContextualTasksBypassDismissedCapName[] =
+    "Contextual Tasks Bypass Dismissed Cap";
+const char kContextualTasksBypassDismissedCapDescription[] =
+    "Debugging flag that bypasses the dismissal count limit for contextual "
+    "tasks tooltips, allowing them to be shown even after the user has "
+    "dismissed them.";
 
 }  // namespace flag_descriptions
 

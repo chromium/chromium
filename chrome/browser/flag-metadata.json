@@ -2036,6 +2036,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "contextual-tasks-bypass-dismissed-cap",
+    "owners": [ "dianaou@google.com", "chrome-contextual-tasks-eng@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "contextual-tasks-context",
     "owners": ["sophiechang@chromium.org", "chrome-contextual-tasks-eng@google.com"],
     "expiry_milestone": 155

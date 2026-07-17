@@ -8421,6 +8421,7 @@ from previous Chrome versions.
   <int value="-1971490389" label="UachOverrideBlank:disabled"/>
   <int value="-1971086581" label="print-scaling"/>
   <int value="-1970672551" label="CanvasContextLostInBackground:disabled"/>
+  <int value="-1969944335" label="ContextualTasksBypassDismissedCap:disabled"/>
   <int value="-1969636234" label="OmniboxRefinedFocusState:disabled"/>
   <int value="-1969627578" label="EnableVariableRefreshRateAlwaysOn:disabled"/>
   <int value="-1969569529" label="FedCmWebIdentitySubdomain:disabled"/>
@@ -13115,6 +13116,7 @@ from previous Chrome versions.
       label="OmniboxHistoryQuickProviderAllowMidwordContinuations:disabled"/>
   <int value="-482259889" label="MacMDDownloadShelf:disabled"/>
   <int value="-482188490" label="ImpulseScrollAnimations:disabled"/>
+  <int value="-481820874" label="ContextualTasksBypassDismissedCap:enabled"/>
   <int value="-481626345" label="WebAppEnableScopeExtensions:enabled"/>
   <int value="-481238673" label="EnableAndroidGamepadVibration:disabled"/>
   <int value="-480376207" label="OmniboxMiaZPS:enabled"/>

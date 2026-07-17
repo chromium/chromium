@@ -27,6 +27,9 @@ BASE_DECLARE_FEATURE(kContextualTasksContextLibrary);
 BASE_DECLARE_FEATURE(kContextualTasksContextLogging);
 BASE_DECLARE_FEATURE(kContextualTasksShowOnboardingTooltip);
 
+// Bypasses the dismissed cap for contextual tasks tooltips.
+BASE_DECLARE_FEATURE(kContextualTasksBypassDismissedCap);
+
 // Enables prefetching of cookies for contextual tasks.
 BASE_DECLARE_FEATURE(kContextualTasksCookiePrefetch);
 
@@ -488,6 +491,8 @@ extern const char kContextualTasksEphemeralBrandedEntryPointName[];
 extern const char kContextualTasksEphemeralBrandedEntryPointDescription[];
 extern const char kContextualTasksSidePanelRearchitectureName[];
 extern const char kContextualTasksSidePanelRearchitectureDescription[];
+extern const char kContextualTasksBypassDismissedCapName[];
+extern const char kContextualTasksBypassDismissedCapDescription[];
 
 }  // namespace flag_descriptions
 
