@@ -104,6 +104,11 @@ TabContextContainerSyncBridge::GetEncryptionKeyForContainer(
   return base::FindPtrOrNull(entries_, container_id);
 }
 
+bool TabContextContainerSyncBridge::IsTrackingMetadataForTesting() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return change_processor()->IsTrackingMetadata();
+}
+
 std::unique_ptr<syncer::MetadataChangeList>
 TabContextContainerSyncBridge::CreateMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

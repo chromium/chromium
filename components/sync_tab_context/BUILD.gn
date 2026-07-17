@@ -5,6 +5,7 @@
 static_library("sync_tab_context") {
   sources = [
     "container_id.h",
+    "ephemeral_key_fetcher.h",
     "tab_context_container_sync_bridge.cc",
     "tab_context_container_sync_bridge.h",
     "tab_context_data_type_controller.cc",
@@ -20,6 +21,7 @@ static_library("sync_tab_context") {
   public_deps = [
     "//base",
     "//components/keyed_service/core",
+    "//components/sync_tab_context/proto",
   ]
 
   deps = [
@@ -38,6 +40,7 @@ source_set("unit_tests") {
     "tab_context_container_sync_bridge_unittest.cc",
     "tab_context_data_type_controller_unittest.cc",
     "tab_context_item_sync_bridge_unittest.cc",
+    "tab_context_sync_service_impl_unittest.cc",
   ]
 
   deps = [

@@ -12,6 +12,7 @@
 
 #include "components/sync/base/storage_type.h"
 #include "components/sync/model/data_type_store.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {
@@ -57,6 +58,15 @@ class DataTypeStoreTestUtil {
     }
     return result;
   }
+
+  // Synchronously writes `data_type_state` to the `store`.
+  static void WriteDataTypeStateAndWait(
+      DataTypeStore& store,
+      const sync_pb::DataTypeState& data_type_state);
+
+  // Synchronously writes a DataTypeState with initial_sync_state set to
+  // INITIAL_SYNC_DONE to the `store`, with all other fields unset.
+  static void WriteInitialSyncDoneAndWait(DataTypeStore& store);
 };
 
 }  // namespace syncer

@@ -24,6 +24,7 @@ std::unique_ptr<KeyedService> BuildServiceInstance(
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<sync_tab_context::TabContextSyncServiceImpl>(
       DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
+      /*ephemeral_key_fetcher=*/nullptr,
       base::BindRepeating(&syncer::ReportUnrecoverableError,
                           chrome::GetChannel()));
 }

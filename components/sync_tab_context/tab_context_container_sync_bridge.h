@@ -51,6 +51,10 @@ class TabContextContainerSyncBridge : public syncer::DataTypeSyncBridge {
   const syncer::AgileSymmetricKeySet* GetEncryptionKeyForContainer(
       const ContainerId& container_id) const;
 
+  // Returns true if the change processor is tracking metadata (i.e., local data
+  // has loaded and sync is ready).
+  bool IsTrackingMetadataForTesting() const;
+
   // syncer::DataTypeSyncBridge implementation.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;

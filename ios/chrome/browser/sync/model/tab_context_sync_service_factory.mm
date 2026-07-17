@@ -45,5 +45,6 @@ TabContextSyncServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
   return std::make_unique<sync_tab_context::TabContextSyncServiceImpl>(
       DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
+      /*ephemeral_key_fetcher=*/nullptr,
       base::BindRepeating(&syncer::ReportUnrecoverableError, ::GetChannel()));
 }

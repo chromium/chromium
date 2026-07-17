@@ -1,0 +1,20 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync_tab_context.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_tab_context;
+
+// Access token wrapping an encrypted container key and server token.
+message TabContextContainerAccessToken {
+  optional bytes server_token = 1;
+  optional bytes encrypted_container_key = 2;
+  // TODO(crbug.com/535450467): Consider adding additional fields such as
+  // expiration time.
+}

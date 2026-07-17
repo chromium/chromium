@@ -18,6 +18,7 @@
 #include "components/sync/model/blocking_data_type_store_impl.h"
 #include "components/sync/model/data_type_store_backend.h"
 #include "components/sync/model/data_type_store_impl.h"
+#include "components/sync/model/metadata_change_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {
@@ -154,6 +155,32 @@ DataTypeStore::RecordList DataTypeStoreTestUtil::ReadAllDataAndWait(
       }));
   loop.Run();
   return result;
+}
+
+// static
+void DataTypeStoreTestUtil::WriteDataTypeStateAndWait(
+    DataTypeStore& store,
+    const sync_pb::DataTypeState& data_type_state) {
+  std::unique_ptr<DataTypeStore::WriteBatch> batch = store.CreateWriteBatch();
+  batch->GetMetadataChangeList()->UpdateDataTypeState(data_type_state);
+  base::RunLoop run_loop;
+  store.CommitWriteBatch(
+      std::move(batch),
+      base::BindLambdaForTesting([&](const std::optional<ModelError>& error) {
+        if (error.has_value()) {
+          ADD_FAILURE() << error->ToString();
+        }
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+// static
+void DataTypeStoreTestUtil::WriteInitialSyncDoneAndWait(DataTypeStore& store) {
+  sync_pb::DataTypeState data_type_state;
+  data_type_state.set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  WriteDataTypeStateAndWait(store, data_type_state);
 }
 
 }  // namespace syncer

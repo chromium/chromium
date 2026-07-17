@@ -54,6 +54,10 @@ class TabContextSyncService : public KeyedService {
   GetSyncControllerDelegateForContainer() = 0;
   virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetSyncControllerDelegateForItem() = 0;
+
+  // Returns true if the service's underlying bridges are ready and tracking
+  // sync metadata. Intended for test synchronization.
+  virtual bool IsActiveForTesting() const = 0;
 };
 
 }  // namespace sync_tab_context
