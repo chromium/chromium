@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -70,6 +71,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     private ActivityController<Activity> mActivityController;
     private Activity mActivity;
     private @Px int mWideWindowWidth;
+    private @Px int mNarrowWindowWidth;
     private final SettableNonNullObservableSupplier<Boolean> mIsVerticalTabsActiveSupplier =
             ObservableSuppliers.createNonNull(false);
 
@@ -78,6 +80,9 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         mActivityController = Robolectric.buildActivity(Activity.class).setup();
         mActivity = mActivityController.get();
         mWideWindowWidth = ViewUtils.dpToPx(mActivity, 800);
+        mNarrowWindowWidth = ViewUtils.dpToPx(mActivity, 600);
+        // Initialize window width to wide before mCoordinator creation to avoid
+        // triggering a layout change event during constructor setup.
         setWindowWidthPx(mWideWindowWidth);
         View mockView = new View(mActivity);
         when(mMockTabListCoordinator.getView()).thenReturn(mockView);
@@ -300,27 +305,25 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testNarrowWindow_AutoCollapsesAndDisablesButton() {
-        @Px int narrowWindowWidth = ViewUtils.dpToPx(mActivity, 600);
         @Px int expandedWidth = ViewUtils.dpToPx(mActivity, VIEW_WIDTH_DP);
         @Px
         int collapsedWidth =
                 ViewUtils.dpToPx(mActivity, VerticalTabsSideUiCoordinator.COLLAPSED_WIDTH_DP);
 
-        // When window is narrow (< 652dp), determineShowableSize returns collapsed width
-        setWindowWidthPx(narrowWindowWidth);
+        // When window is narrow (< 652dp), determineShowableSize returns collapsed width.
+        setWindowWidthPx(mNarrowWindowWidth);
         assertEquals(
                 collapsedWidth,
                 mCoordinator.determineShowableSize(
                                 /* availableWidth= */ expandedWidth,
-                                /* windowWidth= */ narrowWindowWidth)
+                                /* windowWidth= */ mNarrowWindowWidth)
                         .width);
 
-        // onSideUiSpecsChanged should auto-collapse and disable collapse button
-        mCoordinator.onSideUiSpecsChanged(new SideUiSpecs(collapsedWidth, 0));
+        // layout change in setWindowWidthPx() should auto-collapse and disable collapse button.
         verify(mMockTabListCoordinator).setRailCollapseState(RailCollapseState.COLLAPSED);
         verify(mMockTabListCoordinator).setCollapseButtonEnabled(false);
 
-        // When window is wide (>= 652dp), determineShowableSize returns expanded width
+        // When window is wide (>= 652dp), determineShowableSize returns expanded width.
         setWindowWidthPx(mWideWindowWidth);
         assertEquals(
                 expandedWidth,
@@ -329,9 +332,48 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
                                 /* windowWidth= */ mWideWindowWidth)
                         .width);
 
-        // onSideUiSpecsChanged should restore expanded state and re-enable collapse button
-        mCoordinator.onSideUiSpecsChanged(new SideUiSpecs(expandedWidth, 0));
+        // layout change in setWindowWidthPx() should restore expanded state and re-enable collapse
+        // button.
         verify(mMockTabListCoordinator).setRailCollapseState(RailCollapseState.EXPANDED);
+        verify(mMockTabListCoordinator).setCollapseButtonEnabled(true);
+    }
+
+    @Test
+    @SmallTest
+    public void testNarrowWindow_AlreadyCollapsed_ReenablesButtonOnWindowExpanded() {
+        @Px int expandedWidth = ViewUtils.dpToPx(mActivity, VIEW_WIDTH_DP);
+        @Px
+        int collapsedWidth =
+                ViewUtils.dpToPx(mActivity, VerticalTabsSideUiCoordinator.COLLAPSED_WIDTH_DP);
+
+        verify(mMockTabListCoordinator).setCollapseListener(mCollapseListenerCaptor.capture());
+        RailCollapseListener listener = mCollapseListenerCaptor.getValue();
+
+        // Collapse rail manually while in wide window.
+        listener.onRailCollapseStateChangeRequested(RailCollapseState.COLLAPSED);
+
+        // Shrink window to narrow (< 652dp). Layout listener fires and disables button.
+        setWindowWidthPx(mNarrowWindowWidth);
+        assertEquals(
+                collapsedWidth,
+                mCoordinator.determineShowableSize(
+                                /* availableWidth= */ expandedWidth,
+                                /* windowWidth= */ mNarrowWindowWidth)
+                        .width);
+        verify(mMockTabListCoordinator).setRailCollapseState(RailCollapseState.COLLAPSED);
+        verify(mMockTabListCoordinator).setCollapseButtonEnabled(false);
+
+        // Expand window back to wide (>= 652dp). Specs diff is empty (74dp -> 74dp),
+        // but determineShowableSize still returns collapsedWidth, and layout listener fires and
+        // re-enables button.
+        setWindowWidthPx(mWideWindowWidth);
+        assertEquals(
+                collapsedWidth,
+                mCoordinator.determineShowableSize(
+                                /* availableWidth= */ expandedWidth,
+                                /* windowWidth= */ mWideWindowWidth)
+                        .width);
+        verify(mMockTabListCoordinator, times(2)).setRailCollapseState(RailCollapseState.COLLAPSED);
         verify(mMockTabListCoordinator).setCollapseButtonEnabled(true);
     }
 
@@ -339,5 +381,8 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         Configuration config = new Configuration(mActivity.getResources().getConfiguration());
         config.screenWidthDp = ViewUtils.pxToDp(mActivity, widthPx);
         mActivityController.configurationChange(config);
+        if (mCoordinator != null) {
+            mCoordinator.getView().layout(0, 0, widthPx, 1000);
+        }
     }
 }

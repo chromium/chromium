@@ -39,7 +39,8 @@ import java.util.List;
  * separating container-level layout and sizing concerns from the tab list itself.
  */
 @NullMarked
-public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObserver {
+public class VerticalTabsSideUiCoordinator
+        implements SideUiContainer, SideUiObserver, View.OnLayoutChangeListener {
     static final int VIEW_WIDTH_DP = VerticalTabUtils.SIDE_UI_CONTAINER_WIDTH_DP;
     static final int COLLAPSED_WIDTH_DP = VerticalTabUtils.SIDE_UI_CONTAINER_COLLAPSED_WIDTH_DP;
 
@@ -60,6 +61,8 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
     // Whether the vertical tab is set to visible via UI. Remains true even if it is temporarily
     // hidden by other conditions such as narrow window i.e. |mIsAutoHidden| is true.
     private boolean mManualVisible;
+
+    private boolean mWasNarrow;
 
     public VerticalTabsSideUiCoordinator(
             Activity activity,
@@ -82,6 +85,8 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
         mExpandedViewWidth = ViewUtils.dpToPx(activity, VIEW_WIDTH_DP);
         mCollapsedViewWidth = ViewUtils.dpToPx(activity, COLLAPSED_WIDTH_DP);
         mTabListCoordinator.setCollapseListener(this::onRailCollapseStateChangeRequested);
+        mWasNarrow = isCurrentWindowNarrow();
+        mRootView.addOnLayoutChangeListener(this);
     }
 
     public void setVisible(boolean show, boolean suppressAnimations) {
@@ -90,6 +95,7 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
     }
 
     public void destroy() {
+        mRootView.removeOnLayoutChangeListener(this);
         mSideUiCoordinator.removeObserver(this);
         mTabListCoordinator.setCollapseListener(null);
         mTabListCoordinator.destroy();
@@ -109,7 +115,10 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
     @Override
     public SideUiSize determineShowableSize(@Px int availableWidth, @Px int windowWidth) {
         // TODO(crbug.com/509226293): Implement layout threshold negotiation to auto-hide rail.
-        int targetWidth = shouldBeCollapsed() ? mCollapsedViewWidth : mExpandedViewWidth;
+        int targetWidth =
+                getRailCollapseState(isCurrentWindowNarrow()) == RailCollapseState.COLLAPSED
+                        ? mCollapsedViewWidth
+                        : mExpandedViewWidth;
         boolean shouldHide = availableWidth < targetWidth;
         return shouldHide
                 ? new SideUiSize(0, HeightType.NOT_APPLICABLE)
@@ -175,10 +184,33 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
 
     @Override
     public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs) {
-        mTabListCoordinator.setRailCollapseState(getRailCollapseState());
-        mTabListCoordinator.setCollapseButtonEnabled(!isCurrentWindowNarrow());
+        updateCollapseButtonAndRailState(isCurrentWindowNarrow());
     }
 
+    // View.OnLayoutChangeListener implementation:
+    @Override
+    public void onLayoutChange(
+            View v,
+            int left,
+            int top,
+            int right,
+            int bottom,
+            int oldLeft,
+            int oldTop,
+            int oldRight,
+            int oldBottom) {
+        boolean isNarrow = isCurrentWindowNarrow();
+        if (isNarrow != mWasNarrow) {
+            updateCollapseButtonAndRailState(isNarrow);
+        }
+    }
+
+    // Sequence when user requests state change:
+    // 1. onRailCollapseStateChangeRequested: updates mRailCollapseStateByUser & triggers Side UI
+    // update.
+    // 2. determineShowableSize: SideUiCoordinator queries target width for transition bounds.
+    // 3. onSideUiSpecsChanged: fired post-specs change (only if width/specs changed) to sync button
+    // and rail model state.
     private void onRailCollapseStateChangeRequested(@RailCollapseState int newState) {
         if (mRailCollapseStateByUser == newState) return;
         mRailCollapseStateByUser = newState;
@@ -186,12 +218,14 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
                 new UiUpdateRequest(getSideUiId(), /* suppressAnimations= */ false));
     }
 
-    private boolean shouldBeCollapsed() {
-        return getRailCollapseState() == RailCollapseState.COLLAPSED;
+    private void updateCollapseButtonAndRailState(boolean isNarrow) {
+        mWasNarrow = isNarrow;
+        mTabListCoordinator.setRailCollapseState(getRailCollapseState(isNarrow));
+        mTabListCoordinator.setCollapseButtonEnabled(!isNarrow);
     }
 
-    private @RailCollapseState int getRailCollapseState() {
-        return isCurrentWindowNarrow() ? RailCollapseState.COLLAPSED : mRailCollapseStateByUser;
+    private @RailCollapseState int getRailCollapseState(boolean isNarrow) {
+        return isNarrow ? RailCollapseState.COLLAPSED : mRailCollapseStateByUser;
     }
 
     private boolean isCurrentWindowNarrow() {
