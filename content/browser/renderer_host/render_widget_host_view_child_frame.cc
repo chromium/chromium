@@ -401,9 +401,10 @@ void RenderWidgetHostViewChildFrame::UpdateBackgroundColor() {
   CHECK(GetBackgroundColor(), base::NotFatalUntil::M152);
 
   SkColor color = *GetBackgroundColor();
-  CHECK(SkColorGetA(color) == SK_AlphaOPAQUE ||
-            SkColorGetA(color) == SK_AlphaTRANSPARENT,
-        base::NotFatalUntil::M152);
+  // TODO(crbug.com/535539883): CHECK-exclusion: Convert to a CHECK once we
+  // are confident it won't be triggered.
+  DCHECK(SkColorGetA(color) == SK_AlphaOPAQUE ||
+         SkColorGetA(color) == SK_AlphaTRANSPARENT);
   if (host()->owner_delegate()) {
     host()->owner_delegate()->SetBackgroundOpaque(SkColorGetA(color) ==
                                                   SK_AlphaOPAQUE);
