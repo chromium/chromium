@@ -111,6 +111,9 @@ declare namespace chrome {
     // Whether the Improved Read Aloud feature flag is enabled.
     let isImprovedReadAloudEnabled: boolean;
 
+    // Whether the Read Anything Improved UI feature flag is enabled.
+    let isReadAnythingImprovedUiEnabled: boolean;
+
     // Whether the Read Anything Translate Entry Point feature flag is enabled.
     let isReadAnythingTranslateEntryPointEnabled: boolean;
 

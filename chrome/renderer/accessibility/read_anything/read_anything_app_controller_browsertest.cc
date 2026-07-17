@@ -926,6 +926,16 @@ TEST_F(ReadAnythingAppControllerTest, IsImprovedReadAloudEnabled) {
   EXPECT_FALSE(controller().IsImprovedReadAloudEnabled());
 }
 
+TEST_F(ReadAnythingAppControllerTest, IsReadAnythingImprovedUiEnabled) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeature(features::kReadAnythingImprovedUi);
+  EXPECT_TRUE(controller().IsReadAnythingImprovedUiEnabled());
+
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndDisableFeature(features::kReadAnythingImprovedUi);
+  EXPECT_FALSE(controller().IsReadAnythingImprovedUiEnabled());
+}
+
 TEST_F(ReadAnythingAppControllerTest, OnLanguagePrefChange) {
   std::string enabled_lang = "ja-jp";
   std::string disabled_lang = "en-us";

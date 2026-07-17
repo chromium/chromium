@@ -1462,6 +1462,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                    &ReadAnythingAppController::IsImmersiveEnabled)
       .SetProperty("isImprovedReadAloudEnabled",
                    &ReadAnythingAppController::IsImprovedReadAloudEnabled)
+      .SetProperty("isReadAnythingImprovedUiEnabled",
+                   &ReadAnythingAppController::IsReadAnythingImprovedUiEnabled)
       .SetProperty(
           "isReadAnythingTranslateEntryPointEnabled",
           &ReadAnythingAppController::IsReadAnythingTranslateEntryPointEnabled)
@@ -2185,6 +2187,10 @@ bool ReadAnythingAppController::IsImmersiveEnabled() const {
 
 bool ReadAnythingAppController::IsImprovedReadAloudEnabled() const {
   return features::IsImprovedReadAloudEnabled();
+}
+
+bool ReadAnythingAppController::IsReadAnythingImprovedUiEnabled() const {
+  return features::IsReadAnythingImprovedUiEnabled();
 }
 
 bool ReadAnythingAppController::IsReadAnythingTranslateEntryPointEnabled()

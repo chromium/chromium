@@ -384,6 +384,11 @@ bool IsImprovedReadAloudEnabled() {
   return base::FeatureList::IsEnabled(::features::kImprovedReadAloud);
 }
 
+BASE_FEATURE(kReadAnythingImprovedUi, base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsReadAnythingImprovedUiEnabled() {
+  return base::FeatureList::IsEnabled(::features::kReadAnythingImprovedUi);
+}
+
 BASE_FEATURE(kPdfAccessibilityHeuristicEnhancements,
              base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsPdfAccessibilityHeuristicEnhancementsEnabled() {

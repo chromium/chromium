@@ -329,6 +329,7 @@ class ReadAnythingAppController
   bool IsPdf() const;
   bool IsImmersiveEnabled() const;
   bool IsImprovedReadAloudEnabled() const;
+  bool IsReadAnythingImprovedUiEnabled() const;
   bool IsReadAnythingTranslateEntryPointEnabled() const;
   bool IsTsTextSegmentationEnabled() const;
   bool IsReadabilityEnabled() const;
