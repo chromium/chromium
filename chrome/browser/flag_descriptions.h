@@ -5696,11 +5696,6 @@ inline constexpr char kCCTAuthTabDisableAllExternalIntentsName[] =
 inline constexpr char kCCTAuthTabDisableAllExternalIntentsDescription[] =
     "Disables all external intents in Auth Tab";
 
-inline constexpr char kCCTAuthTabEnableHttpsRedirectsName[] =
-    "Enable HTTPS redirect scheme in Auth Tab";
-inline constexpr char kCCTAuthTabEnableHttpsRedirectsDescription[] =
-    "Enables HTTPS redirect scheme in Auth Tab";
-
 inline constexpr char kCCTContextualMenuItemsName[] =
     "Enable Contextual Menu Items in CCT";
 inline constexpr char kCCTContextualMenuItemsDescription[] =

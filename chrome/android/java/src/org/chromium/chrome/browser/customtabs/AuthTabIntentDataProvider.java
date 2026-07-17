@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.CustomTabProfileType;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -77,17 +76,10 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
         // might want to disallow more.
         mRedirectScheme =
                 IntentUtils.safeGetStringExtra(intent, AuthTabIntent.EXTRA_REDIRECT_SCHEME);
-        boolean httpsEnabled = ChromeFeatureList.sCctAuthTabEnableHttpsRedirects.isEnabled();
         String host =
-                httpsEnabled
-                        ? IntentUtils.safeGetStringExtra(
-                                intent, AuthTabIntent.EXTRA_HTTPS_REDIRECT_HOST)
-                        : null;
+                IntentUtils.safeGetStringExtra(intent, AuthTabIntent.EXTRA_HTTPS_REDIRECT_HOST);
         String path =
-                httpsEnabled
-                        ? IntentUtils.safeGetStringExtra(
-                                intent, AuthTabIntent.EXTRA_HTTPS_REDIRECT_PATH)
-                        : null;
+                IntentUtils.safeGetStringExtra(intent, AuthTabIntent.EXTRA_HTTPS_REDIRECT_PATH);
         GURL redirectUrl = new GURL(UrlConstants.HTTPS_URL_PREFIX + host + path);
         mRedirectHost = redirectUrl.getHost();
         mRedirectPath = redirectUrl.getPath();

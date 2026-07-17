@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVeri
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactory;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
@@ -55,6 +54,8 @@ import java.util.Map;
  */
 @NullMarked
 public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
+    public static final int VERIFICATION_TIMEOUT_MS = 10000;
+
     private static boolean sDelayVerificationForTesting;
 
     private final Activity mActivity;
@@ -240,8 +241,7 @@ public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
             PostTask.postDelayedTask(
                     TaskTraits.UI_DEFAULT,
                     mCallbackController.makeCancelable(this::returnTimeoutAsActivityResult),
-                    ChromeFeatureList.sCctAuthTabEnableHttpsRedirectsVerificationTimeoutMs
-                            .getValue());
+                    VERIFICATION_TIMEOUT_MS);
         }
     }
 
