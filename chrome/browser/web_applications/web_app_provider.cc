@@ -264,6 +264,11 @@ IsolatedWebAppPolicyManager& WebAppProvider::isolated_web_app_policy_manager() {
   return *isolated_web_app_policy_manager_;
 }
 
+WebAppIsolationDelegate& WebAppProvider::isolation_delegate() {
+  CheckIsConnected();
+  return *isolation_delegate_;
+}
+
 WebAppUiManager& WebAppProvider::ui_manager() {
   CheckIsConnected();
   return *ui_manager_;
@@ -386,6 +391,8 @@ void WebAppProvider::StartImpl() {
 
 void WebAppProvider::CreateSubsystems(Profile* profile) {
   audio_focus_id_map_ = std::make_unique<WebAppAudioFocusIdMap>();
+  isolation_delegate_ =
+      WebAppIsolationDelegate::Create(base::PassKey<WebAppProvider>(), profile);
   ui_manager_ = WebAppUiManager::Create(profile);
   install_manager_ =
       std::make_unique<WebAppInstallManager>(profile->GetPrefs());

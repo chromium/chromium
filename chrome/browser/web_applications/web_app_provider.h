@@ -14,6 +14,7 @@
 #include "base/one_shot_event.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
+#include "chrome/browser/web_applications/web_app_isolation_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/webapps/common/manifest_id_constants.h"
 #include "components/webapps/common/web_app_id.h"
@@ -196,6 +197,7 @@ class WebAppProvider : public KeyedService {
 #endif
 
   IsolatedWebAppPolicyManager& isolated_web_app_policy_manager();
+  WebAppIsolationDelegate& isolation_delegate();
 
   WebAppUiManager& ui_manager();
 
@@ -314,6 +316,7 @@ class WebAppProvider : public KeyedService {
   std::unique_ptr<IsolatedWebAppUserInstalledManager>
       isolated_web_app_user_installed_manager_;
   std::unique_ptr<IsolatedWebAppPolicyManager> isolated_web_app_policy_manager_;
+  std::unique_ptr<WebAppIsolationDelegate> isolation_delegate_;
 #if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<IwaBundleCacheManager> isolated_web_app_cache_manager_;
   std::unique_ptr<WebAppRunOnOsLoginManager> web_app_run_on_os_login_manager_;

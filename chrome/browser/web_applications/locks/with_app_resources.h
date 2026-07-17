@@ -19,6 +19,7 @@ class WebAppRegistrar;
 class WebAppSyncBridge;
 class WebAppTranslationManager;
 class WebAppUiManager;
+class WebAppIsolationDelegate;
 
 // A mixin class that provides access to web app components that allow
 // read/write access to web app data. A lock class that needs this kind of
@@ -49,6 +50,8 @@ class WithAppResources {
   WebAppTranslationManager& translation_manager();
   // Will CHECK-fail if accessed before the lock is granted.
   WebAppUiManager& ui_manager();
+  // Will CHECK-fail if accessed before the lock is granted.
+  WebAppIsolationDelegate& isolation_delegate();
 
  protected:
   WithAppResources();

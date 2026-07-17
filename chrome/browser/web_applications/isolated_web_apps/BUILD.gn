@@ -94,6 +94,8 @@ source_set("isolated_web_apps") {
     "iwa_permissions_policy_cache.h",
     "runtime_init.cc",
     "runtime_init.h",
+    "web_app_isolation_delegate_impl.cc",
+    "web_app_isolation_delegate_impl.h",
   ]
 
   public_deps = [

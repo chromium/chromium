@@ -25,7 +25,6 @@
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
-#include "chrome/browser/web_applications/isolated_web_apps/remove_isolated_web_app_data.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_install_source_job.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -271,22 +270,12 @@ void RemoveWebAppJob::Start(AllAppsLock& lock, Callback callback) {
   // - Clears data on StoragePartitions to prevent data leak on reinstall
   // before GC.
   if (app->isolation_data().has_value()) {
-    profile_->GetPrefs()->SetBoolean(
-        prefs::kShouldGarbageCollectStoragePartitions, true);
-
-    url::Origin iwa_origin = url::Origin::Create(app->scope());
-    web_app::RemoveIsolatedWebAppBrowsingData(
-        &profile_.get(), iwa_origin,
+    lock_->isolation_delegate().ClearAppResourcesOnUninstall(
+        app_id_,
         base::BindOnce(
-            GetLogCallback("isolated_web_app_browsing_data_cleared_success",
+            GetLogCallback("isolated_web_app_resources_cleared_success",
                            concurrent.CreateCallback()),
             true));
-
-    web_app::CloseAndDeleteBundle(
-        &profile_.get(), app->isolation_data()->location(),
-        base::BindOnce(GetLogCallback("isolated_web_app_bundle_deleted_success",
-                                      concurrent.CreateCallback()),
-                       true));
   }
   lock_->os_integration_manager().Synchronize(
       app_id_, base::BindOnce(&RemoveWebAppJob::SynchronizeAndUninstallOsHooks,
