@@ -132,6 +132,9 @@ void OmniboxEverywhereUIManager::ShowForProfile(Profile* profile,
     params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
     params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
     params.activatable = views::Widget::InitParams::Activatable::kYes;
+  #if BUILDFLAG(IS_WIN)
+    params.dont_show_in_taskbar = true;
+  #endif // BUILDFLAG(IS_WIN)
     widget_delegate_ = std::make_unique<OmniboxEverywhereWidgetDelegate>();
     params.delegate = widget_delegate_.get();
     params.z_order = ui::ZOrderLevel::kFloatingUIElement;
