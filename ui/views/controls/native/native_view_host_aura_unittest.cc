@@ -130,10 +130,10 @@ class NativeViewHostAuraTest : public test::NativeViewHostTestBase {
 
   aura::WindowObserver* GetWindowObserver() {
     if (base::FeatureList::IsEnabled(
-            views::features::kUseNativeViewHostAuraWithClipWindow)) {
-      return static_cast<NativeViewHostAuraWithClipWindow*>(GetNativeWrapper());
+            views::features::kNativeViewHostManagesLayers)) {
+      return static_cast<NativeViewHostAura*>(GetNativeWrapper());
     }
-    return static_cast<NativeViewHostAura*>(GetNativeWrapper());
+    return static_cast<NativeViewHostAuraWithClipWindow*>(GetNativeWrapper());
   }
 
   void CreateHost() {
@@ -168,12 +168,11 @@ TEST_F(NativeViewHostAuraTest, StopObservingNativeViewOnDestruct) {
 // (layer managed by parent window).
 TEST_F(NativeViewHostAuraTest, HostViewPropertyKeyLegacy) {
   if (base::FeatureList::IsEnabled(
-          views::features::kUseNativeViewHostAuraWithClipWindow)) {
+          views::features::kNativeViewHostManagesLayers)) {
     GTEST_SKIP();
   }
   CreateTopLevel();
   CreateTestingHost();
-  host()->SetLayerManagedByViews(false);
 
   child_ = CreateChildForHost(toplevel()->GetNativeView(),
                               toplevel()->client_view(), new View, host());
@@ -197,14 +196,13 @@ TEST_F(NativeViewHostAuraTest, HostViewPropertyKeyLegacy) {
 // Tests that the kHostViewKey is NOT set in default mode (layer managed by
 // views).
 TEST_F(NativeViewHostAuraTest, HostViewPropertyKeyManaged) {
-  if (base::FeatureList::IsEnabled(
-          views::features::kUseNativeViewHostAuraWithClipWindow)) {
+  if (!base::FeatureList::IsEnabled(
+          views::features::kNativeViewHostManagesLayers)) {
     GTEST_SKIP();
   }
 
   CreateTopLevel();
   CreateTestingHost();
-  host()->SetLayerManagedByViews(true);
 
   child_ = CreateChildForHost(toplevel()->GetNativeView(),
                               toplevel()->client_view(), new View, host());
@@ -252,8 +250,8 @@ TEST_F(NativeViewHostAuraTest, DestroyWidget) {
 // Test that the fast resize path places the clipping and content windows were
 // they are supposed to be.
 TEST_F(NativeViewHostAuraTest, FastResizePath) {
-  if (base::FeatureList::IsEnabled(
-          views::features::kUseNativeViewHostAuraWithClipWindow)) {
+  if (!base::FeatureList::IsEnabled(
+          views::features::kNativeViewHostManagesLayers)) {
     GTEST_SKIP();
   }
   CreateHost();
@@ -290,8 +288,8 @@ TEST_F(NativeViewHostAuraTest, FastResizePath) {
 // values while the native size is not equal to the View size. During fast
 // resize, the size and transform of the NativeView should not be modified.
 TEST_F(NativeViewHostAuraTest, BoundsWhileScaling) {
-  if (base::FeatureList::IsEnabled(
-          views::features::kUseNativeViewHostAuraWithClipWindow)) {
+  if (!base::FeatureList::IsEnabled(
+          views::features::kNativeViewHostManagesLayers)) {
     GTEST_SKIP();
   }
   CreateHost();
@@ -340,8 +338,8 @@ TEST_F(NativeViewHostAuraTest, BoundsWhileScaling) {
 
 // Test installing and uninstalling a clip.
 TEST_F(NativeViewHostAuraTest, InstallClip) {
-  if (!base::FeatureList::IsEnabled(
-          views::features::kUseNativeViewHostAuraWithClipWindow)) {
+  if (base::FeatureList::IsEnabled(
+          views::features::kNativeViewHostManagesLayers)) {
     GTEST_SKIP();
   }
   CreateHost();
@@ -402,8 +400,8 @@ class NativeViewHostAuraClipTest : public NativeViewHostAuraTest,
 INSTANTIATE_TEST_SUITE_P(All, NativeViewHostAuraClipTest, testing::Bool());
 
 TEST_P(NativeViewHostAuraClipTest, ClipByParent) {
-  if (base::FeatureList::IsEnabled(
-          views::features::kUseNativeViewHostAuraWithClipWindow)) {
+  if (!base::FeatureList::IsEnabled(
+          views::features::kNativeViewHostManagesLayers)) {
     GTEST_SKIP();
   }
   CreateHost();
@@ -513,8 +511,8 @@ TEST_P(NativeViewHostAuraClipTest, ClipByParent) {
 }
 
 TEST_P(NativeViewHostAuraClipTest, ClipByParentRTL) {
-  if (base::FeatureList::IsEnabled(
-          views::features::kUseNativeViewHostAuraWithClipWindow)) {
+  if (!base::FeatureList::IsEnabled(
+          views::features::kNativeViewHostManagesLayers)) {
     GTEST_SKIP();
   }
   base::test::ScopedRestoreICUDefaultLocale scoped_locale_("he");
@@ -667,8 +665,8 @@ TEST_F(NativeViewHostAuraTest, ParentAfterDetach) {
 // Ensure the clipping window is hidden before any other operations.
 // This is a regression test for http://crbug.com/388699.
 TEST_F(NativeViewHostAuraTest, RemoveClippingWindowOrder) {
-  if (!base::FeatureList::IsEnabled(
-          views::features::kUseNativeViewHostAuraWithClipWindow)) {
+  if (base::FeatureList::IsEnabled(
+          views::features::kNativeViewHostManagesLayers)) {
     GTEST_SKIP();
   }
   CreateHost();
@@ -697,8 +695,8 @@ TEST_F(NativeViewHostAuraTest, RemoveClippingWindowOrder) {
 // Ensure the native view receives the correct bounds notification when it is
 // attached. This is a regression test for https://crbug.com/399420.
 TEST_F(NativeViewHostAuraTest, Attach) {
-  if (base::FeatureList::IsEnabled(
-          views::features::kUseNativeViewHostAuraWithClipWindow)) {
+  if (!base::FeatureList::IsEnabled(
+          views::features::kNativeViewHostManagesLayers)) {
     GTEST_SKIP();
   }
   CreateHost();
@@ -856,11 +854,11 @@ class NativeViewHostAuraTopInsetsTest
 
   void SetUp() override {
     if (use_clip_window) {
-      feature_list_.InitAndEnableFeature(
-          views::features::kUseNativeViewHostAuraWithClipWindow);
-    } else {
       feature_list_.InitAndDisableFeature(
-          views::features::kUseNativeViewHostAuraWithClipWindow);
+          views::features::kNativeViewHostManagesLayers);
+    } else {
+      feature_list_.InitAndEnableFeature(
+          views::features::kNativeViewHostManagesLayers);
     }
     NativeViewHostAuraTest::SetUp();
   }
@@ -1146,34 +1144,33 @@ TEST_F(NativeViewHostAuraTest, ShouldDescendIntoChildForEventHandling) {
 }
 
 TEST(NativeViewHostFeatureTest, FeatureFlagControlsDefault) {
-  // When feature is disabled, default should be true (since flipped).
+  // When feature is disabled, default should be false.
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndDisableFeature(
-        views::features::kUseNativeViewHostAuraWithClipWindow);
+        views::features::kNativeViewHostManagesLayers);
     NativeViewHost host;
-    EXPECT_TRUE(host.layer_managed_by_views());
+    EXPECT_FALSE(host.layer_managed_by_views());
   }
 
-  // When feature is enabled, default should be false.
+  // When feature is enabled, default should be true.
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeature(
-        views::features::kUseNativeViewHostAuraWithClipWindow);
+        views::features::kNativeViewHostManagesLayers);
     NativeViewHost host;
-    EXPECT_FALSE(host.layer_managed_by_views());
+    EXPECT_TRUE(host.layer_managed_by_views());
   }
 }
 
 TEST_F(NativeViewHostAuraTest, LayerHierarchyManaged) {
-  if (base::FeatureList::IsEnabled(
-          views::features::kUseNativeViewHostAuraWithClipWindow)) {
+  if (!base::FeatureList::IsEnabled(
+          views::features::kNativeViewHostManagesLayers)) {
     GTEST_SKIP();
   }
 
   CreateTopLevel();
   CreateTestingHost();
-  host()->SetLayerManagedByViews(true);
 
   child_ = CreateChildForHost(toplevel()->GetNativeView(),
                               toplevel()->client_view(), new View, host());
@@ -1200,13 +1197,12 @@ TEST_F(NativeViewHostAuraTest, LayerHierarchyManaged) {
 
 TEST_F(NativeViewHostAuraTest, LayerHierarchyLegacy) {
   if (base::FeatureList::IsEnabled(
-          views::features::kUseNativeViewHostAuraWithClipWindow)) {
+          views::features::kNativeViewHostManagesLayers)) {
     GTEST_SKIP();
   }
 
   CreateTopLevel();
   CreateTestingHost();
-  host()->SetLayerManagedByViews(false);
 
   child_ = CreateChildForHost(toplevel()->GetNativeView(),
                               toplevel()->client_view(), new View, host());
@@ -1214,10 +1210,12 @@ TEST_F(NativeViewHostAuraTest, LayerHierarchyLegacy) {
   EXPECT_FALSE(host()->layer());
 
   aura::Window* child_win = child_widget()->GetNativeView();
+
   ui::Layer* child_layer = child_win->layer();
   aura::Window* parent_win = toplevel()->GetNativeView();
 
-  EXPECT_EQ(parent_win->layer(), child_layer->parent());
+  // Window Hierarchy: parent_win->clip_widow->child_win;
+  EXPECT_EQ(parent_win->layer(), child_layer->parent()->parent());
 
   host()->Detach();
   EXPECT_FALSE(host()->layer());
@@ -1227,14 +1225,14 @@ TEST_F(NativeViewHostAuraTest, LayerHierarchyLegacy) {
 
   host()->Attach(child_win);
   EXPECT_FALSE(host()->layer());
-  EXPECT_EQ(parent_win->layer(), child_layer->parent());
+  EXPECT_EQ(parent_win->layer(), child_layer->parent()->parent());
 
   DestroyHost();
 }
 
 TEST_F(NativeViewHostAuraTest, NestedLayerHierarchy) {
-  if (base::FeatureList::IsEnabled(
-          views::features::kUseNativeViewHostAuraWithClipWindow)) {
+  if (!base::FeatureList::IsEnabled(
+          views::features::kNativeViewHostManagesLayers)) {
     GTEST_SKIP();
   }
 
@@ -1248,7 +1246,6 @@ TEST_F(NativeViewHostAuraTest, NestedLayerHierarchy) {
   parent_view->SetBounds(10, 10, 100, 100);
 
   CreateTestingHost();
-  host()->SetLayerManagedByViews(true);
 
   child_ = CreateChildForHost(toplevel()->GetNativeView(), parent_view,
                               new View, host());

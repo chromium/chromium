@@ -27,8 +27,8 @@ namespace views {
 // NativeViewHost, public:
 
 NativeViewHost::NativeViewHost()
-    : layer_managed_by_views_(!base::FeatureList::IsEnabled(
-          views::features::kUseNativeViewHostAuraWithClipWindow)) {
+    : layer_managed_by_views_(base::FeatureList::IsEnabled(
+          views::features::kNativeViewHostManagesLayers)) {
   set_suppress_default_focus_handling();
 }
 
@@ -110,8 +110,8 @@ void NativeViewHost::SetLayerManagedByViews(bool managed) {
     return;
   }
 
-  CHECK(!managed || !base::FeatureList::IsEnabled(
-                        views::features::kUseNativeViewHostAuraWithClipWindow));
+  CHECK(!managed || base::FeatureList::IsEnabled(
+                        views::features::kNativeViewHostManagesLayers));
 
   layer_managed_by_views_ = managed;
   DCHECK(!native_view_);

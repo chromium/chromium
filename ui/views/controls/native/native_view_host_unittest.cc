@@ -104,8 +104,8 @@ END_METADATA
 
 // Verifies NativeViewHierarchyChanged is sent.
 TEST_F(NativeViewHostTest, NativeViewHierarchyChanged) {
-  if (base::FeatureList::IsEnabled(
-          views::features::kUseNativeViewHostAuraWithClipWindow)) {
+  if (!base::FeatureList::IsEnabled(
+          views::features::kNativeViewHostManagesLayers)) {
     GTEST_SKIP();
   }
   // Create a child widget.
@@ -114,8 +114,8 @@ TEST_F(NativeViewHostTest, NativeViewHierarchyChanged) {
   NativeViewHost* host = new NativeViewHost;
   std::unique_ptr<Widget> child = CreateChildForHost(
       toplevel()->GetNativeView(), toplevel()->GetRootView(), test_view, host);
-  if (base::FeatureList::IsEnabled(
-          views::features::kUseNativeViewHostAuraWithClipWindow)) {
+  if (!base::FeatureList::IsEnabled(
+          views::features::kNativeViewHostManagesLayers)) {
     // Two notifications are generated from inserting the native view into the
     // clipping window and then inserting the clipping window into the root
     // window.
@@ -128,8 +128,8 @@ TEST_F(NativeViewHostTest, NativeViewHierarchyChanged) {
   // Detaching should send a NativeViewHierarchyChanged() notification and
   // change the parent.
   host->Detach();
-  if (base::FeatureList::IsEnabled(
-          views::features::kUseNativeViewHostAuraWithClipWindow)) {
+  if (!base::FeatureList::IsEnabled(
+          views::features::kNativeViewHostManagesLayers)) {
     // Two notifications are generated from removing the native view from the
     // clipping window and then reparenting it to the root window.
     EXPECT_EQ(2, test_view->notification_count());
@@ -143,8 +143,8 @@ TEST_F(NativeViewHostTest, NativeViewHierarchyChanged) {
   // Attaching should send a NativeViewHierarchyChanged() notification and
   // reset the parent.
   host->Attach(child->GetNativeView());
-  if (base::FeatureList::IsEnabled(
-          views::features::kUseNativeViewHostAuraWithClipWindow)) {
+  if (!base::FeatureList::IsEnabled(
+          views::features::kNativeViewHostManagesLayers)) {
     // There is a clipping window inserted above the native view that needs to
     // be accounted for when looking at the relationship between the native
     // views.

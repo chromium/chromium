@@ -292,11 +292,10 @@ void NativeViewHostAura::OnWindowDestroyed(aura::Window* window) {
 // static
 NativeViewHostWrapper* NativeViewHostWrapper::CreateWrapper(
     NativeViewHost* host) {
-  if (base::FeatureList::IsEnabled(
-          views::features::kUseNativeViewHostAuraWithClipWindow)) {
-    return new NativeViewHostAuraWithClipWindow(host);
+  if (host->layer_managed_by_views()) {
+    return new NativeViewHostAura(host);
   }
-  return new NativeViewHostAura(host);
+  return new NativeViewHostAuraWithClipWindow(host);
 }
 
 void NativeViewHostAura::ApplyRoundedCorners() {

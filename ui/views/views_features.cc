@@ -49,13 +49,11 @@ BASE_FEATURE(kEnableTouchDragCursorSync, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kKeyboardAccessibleTooltipInViews,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Uses NativeViewHostAuraWithClipWindow instead of NativeViewHostAura.
+// If enabled, NativeViewHost controls the layers of the native view.
 #if BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kUseNativeViewHostAuraWithClipWindow,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNativeViewHostManagesLayers, base::FEATURE_ENABLED_BY_DEFAULT);
 #else
-BASE_FEATURE(kUseNativeViewHostAuraWithClipWindow,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kNativeViewHostManagesLayers, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 }  // namespace views::features
