@@ -83,15 +83,6 @@ interface ScreensFactory {
 
   // ash.screens_login.mojom
 
-  // Establish a ArcVmDataMigrationScreen pipe for handling the communication
-  // for the ArcVmDataMigrationPageHandler and the ArcVmDataMigrationPage
-  // component.
-  EstablishArcVmDataMigrationScreenPipe(
-      pending_receiver<ash.screens_login.mojom.ArcVmDataMigrationPageHandler>
-          handler)
-      => (pending_receiver<ash.screens_login.mojom.ArcVmDataMigrationPage>
-              pending);
-
   // Establish a EncryptionMigrationScreen pipe for handling the communication
   // for the EncryptionMigrationPageHandler and the EncryptionMigrationPage component.
   EstablishEncryptionMigrationScreenPipe(

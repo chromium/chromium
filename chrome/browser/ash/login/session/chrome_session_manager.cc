@@ -42,7 +42,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/login/login_display_host_webui.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/arc_vm_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/shimless_rma_dialog/shimless_rma_dialog.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
@@ -363,27 +362,6 @@ void OnRmaIsRequiredResponse() {
   }
 }
 
-bool MaybeStartArcVmDataMigration(user_manager::UserManager* user_manager,
-                                  Profile* profile) {
-  // Migration should be performed only when the session is restarted with the
-  // primary user.
-  user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
-  if (user && user_manager->GetPrimaryUser() == user) {
-    arc::ArcVmDataMigrationStatus data_migration_status =
-        arc::GetArcVmDataMigrationStatus(profile->GetPrefs());
-    // NOTE: We are in the process of deprecating the ARCVM data migrator.
-    // kConfirmed is deliberately ignored here to prevent the migration screen
-    // from showing to users who clicked restart before we disabled the prompt,
-    // effectively stopping new migrations.
-    // TODO(b/465619720): Fully remove this function.
-    if (data_migration_status == arc::ArcVmDataMigrationStatus::kStarted) {
-      ShowLoginWizard(ArcVmDataMigrationScreenView::kScreenId);
-      return true;
-    }
-  }
-  return false;
-}
-
 // NOTE: This has to be called before profile is initialized - so it is set up
 // when extension are loaded during profile initialization.
 void InitFeaturesSessionType(const user_manager::User* user) {
@@ -491,11 +469,6 @@ void ChromeSessionManager::Initialize(
         base::BindOnce(&OnRmaIsRequiredResponse));
   } else {
     VLOG(1) << "ChromeSessionManager::Initialize Shimless RMA is not allowed";
-  }
-
-  if (base::FeatureList::IsEnabled(arc::kEnableArcVmDataMigration) &&
-      MaybeStartArcVmDataMigration(user_manager_, profile)) {
-    return;
   }
 
   // Tests should be able to tune login manager before showing it. Thus only

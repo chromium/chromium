@@ -19,8 +19,6 @@ static_library("login") {
     "app_downloading_screen_handler.h",
     "app_launch_splash_screen_handler.cc",
     "app_launch_splash_screen_handler.h",
-    "arc_vm_data_migration_screen_handler.cc",
-    "arc_vm_data_migration_screen_handler.h",
     "auto_enrollment_check_screen_handler.cc",
     "auto_enrollment_check_screen_handler.h",
     "base_screen_handler.cc",

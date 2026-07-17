@@ -19,8 +19,6 @@ static_library("screens") {
     "app_downloading_screen.h",
     "app_launch_splash_screen.cc",
     "app_launch_splash_screen.h",
-    "arc_vm_data_migration_screen.cc",
-    "arc_vm_data_migration_screen.h",
     "base_screen.cc",
     "base_screen.h",
     "categories_selection_screen.cc",
@@ -616,7 +614,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "arc_vm_data_migration_screen_unittest.cc",
     "network_screen_unittest.cc",
     "reset_screen_unittest.cc",
     "update_required_screen_unittest.cc",
