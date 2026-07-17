@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
+#include "chrome/browser/ui/profiles/profile_view_avatar_decoration_specs.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/url_constants.h"
@@ -196,15 +197,10 @@ gfx::ImageSkia AddLinearGradientRingToAvatar(
     int avatar_size,
     int gap_width,
     int ring_thickness) {
-  // Gradient stops corresponding to SVG:
-  // 1) 0 to 85%: Solid start_color
-  // 2) 85% to 99.6%: Linear transition between start and end color.
-  // 3) 99.6% to 100%: Solid end_color.
-  constexpr float kPositions[] = {0.0f, 0.85f, 0.995943f, 1.0f};
-
   return profiles::AddLinearGradientRingToAvatar(
       avatar_image, color_provider,
-      color_provider.GetColor(kColorAvatarRingGradientStart),
-      color_provider.GetColor(kColorAvatarRingGradientEnd), kPositions,
-      avatar_size, gap_width, ring_thickness);
+      color_provider.GetColor(kAvatarRingGradientStartColorId),
+      color_provider.GetColor(kAvatarRingGradientEndColorId),
+      kAvatarRingGradientPositions, kAvatarRingGradientP1Normalized,
+      kAvatarRingGradientP2Normalized, avatar_size, gap_width, ring_thickness);
 }

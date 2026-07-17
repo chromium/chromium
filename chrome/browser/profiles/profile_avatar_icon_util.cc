@@ -297,8 +297,8 @@ class ImageWithBackgroundSource : public gfx::CanvasImageSource {
 };
 
 #if !BUILDFLAG(IS_ANDROID)
-struct AiSubscriptionRingGeometry {
-  AiSubscriptionRingGeometry(int avatar_size, int gap_width, int ring_thickness)
+struct AvatarRingGeometry {
+  AvatarRingGeometry(int avatar_size, int gap_width, int ring_thickness)
       : total_size(avatar_size + 2 * (gap_width + ring_thickness)),
         avatar_size(avatar_size),
         gap_width(gap_width),
@@ -314,8 +314,8 @@ struct AiSubscriptionRingGeometry {
   const int outer_radius;
 };
 
-SkPath GetAiSubscriptionRingPath(const AiSubscriptionRingGeometry& geom,
-                                 const gfx::PointF& center) {
+SkPath GetAvatarRingPath(const AvatarRingGeometry& geom,
+                         const gfx::PointF& center) {
   SkPathBuilder path_builder;
   path_builder.setFillType(SkPathFillType::kEvenOdd);
   path_builder.addCircle(center.x(), center.y(), geom.outer_radius);
@@ -359,23 +359,17 @@ class ImageWithDottedCircleSource : public gfx::CanvasImageSource {
   const SkColor ring_color_;
 };
 
-// TODO(crbug.com/516797074): Consider exposing this method if other platforms
-// can also consume this gradient.
-sk_sp<cc::PaintShader> CreateAiSubscriptionRingShader(
+sk_sp<cc::PaintShader> CreateLinearGradientRingShader(
     int size,
     SkColor start_color,
     SkColor end_color,
-    base::span<const float, 4> positions) {
+    base::span<const float, 4> positions,
+    base::span<const float, 2> p1_normalized,
+    base::span<const float, 2> p2_normalized) {
   const float size_f = static_cast<float>(size);
-
-  // Scaled points from the SVG spec (defined on a 110x110 canvas).
-  // P1 (25.5333, 97.7556) and P2 (86.7778, 12.8222) define the start and end
-  // points of the linear gradient vector.
-  // This vector points from bottom-left to top-right at an angle of ~36 degrees
-  // (CSS angle), placing the highlight at the top-right of the avatar ring.
   SkPoint points[2] = {
-      SkPoint::Make(size_f * (25.5333f / 110.0f), size_f * (97.7556f / 110.0f)),
-      SkPoint::Make(size_f * (86.7778f / 110.0f), size_f * (12.8222f / 110.0f))};
+      SkPoint::Make(size_f * p1_normalized[0], size_f * p1_normalized[1]),
+      SkPoint::Make(size_f * p2_normalized[0], size_f * p2_normalized[1])};
 
   SkColor4f colors[4] = {
       SkColor4f::FromColor(start_color), SkColor4f::FromColor(start_color),
@@ -388,7 +382,7 @@ sk_sp<cc::PaintShader> CreateAiSubscriptionRingShader(
 class AvatarWithProjectedRingSource : public gfx::CanvasImageSource {
  public:
   AvatarWithProjectedRingSource(const gfx::ImageSkia& avatar,
-                                const AiSubscriptionRingGeometry& geom,
+                                const AvatarRingGeometry& geom,
                                 sk_sp<cc::PaintShader> shader)
       : gfx::CanvasImageSource(gfx::Size(geom.total_size, geom.total_size)),
         avatar_(avatar),
@@ -410,7 +404,7 @@ class AvatarWithProjectedRingSource : public gfx::CanvasImageSource {
 
     // 1. Clip to the ring shape.
     // Subsequent drawing is restricted to the area inside this path.
-    SkPath ring_path = GetAiSubscriptionRingPath(geom_, center);
+    SkPath ring_path = GetAvatarRingPath(geom_, center);
     canvas->ClipPath(ring_path, true);
 
     // 2. Draw the gradient.
@@ -438,7 +432,7 @@ class AvatarWithProjectedRingSource : public gfx::CanvasImageSource {
 
  private:
   const gfx::ImageSkia avatar_;
-  const AiSubscriptionRingGeometry geom_;
+  const AvatarRingGeometry geom_;
   const sk_sp<cc::PaintShader> shader_;
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -1241,23 +1235,24 @@ gfx::ImageSkia AddLinearGradientRingToAvatar(
     SkColor start_color,
     SkColor end_color,
     base::span<const float, 4> positions,
+    base::span<const float, 2> p1_normalized,
+    base::span<const float, 2> p2_normalized,
     int avatar_size,
     int gap_width,
     int ring_thickness) {
   DCHECK(!avatar_image.IsEmpty());
 
-  AiSubscriptionRingGeometry geom(avatar_size, gap_width, ring_thickness);
+  AvatarRingGeometry geom(avatar_size, gap_width, ring_thickness);
 
-  // Resize the avatar to the target avatar_size.
   gfx::ImageSkia sized_avatar_image =
       GetSizedAvatarImageModel(avatar_image, geom.avatar_size)
           .Rasterize(&color_provider);
   sized_avatar_image = CircleImageSource::CropCircle(sized_avatar_image);
 
-  auto shader = CreateAiSubscriptionRingShader(geom.total_size, start_color,
-                                               end_color, positions);
+  auto shader =
+      CreateLinearGradientRingShader(geom.total_size, start_color, end_color,
+                                     positions, p1_normalized, p2_normalized);
 
-  // Create the composite image with the linear gradient ring.
   return gfx::ImageSkia(std::make_unique<AvatarWithProjectedRingSource>(
                             sized_avatar_image, geom, std::move(shader)),
                         gfx::Size(geom.total_size, geom.total_size));

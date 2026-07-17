@@ -278,6 +278,8 @@ gfx::ImageSkia AddLinearGradientRingToAvatar(
     SkColor start_color,
     SkColor end_color,
     base::span<const float, 4> positions,
+    base::span<const float, 2> p1_normalized,
+    base::span<const float, 2> p2_normalized,
     int avatar_size,
     int gap_width,
     int ring_thickness);

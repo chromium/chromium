@@ -24,7 +24,10 @@ class ImageModel;
 }  // namespace ui
 
 // LINT.IfChange(AvatarRingSpecs)
+// Gap in DIPs between the circular avatar icon and the surrounding ring.
 inline constexpr int kAvatarRingGapDip = 2;
+
+// Thickness in DIPs of the surrounding gradient ring.
 inline constexpr int kAvatarRingThicknessDip = 3;
 // LINT.ThenChange(//chrome/browser/resources/signin/profile_picker/profile_picker_shared.css:AvatarRingSpecs,
 // //chrome/browser/resources/webui_toolbar/avatar_button.css:AvatarRingSpecs)

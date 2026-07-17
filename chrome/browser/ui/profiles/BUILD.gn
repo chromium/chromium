@@ -11,6 +11,7 @@ source_set("profiles") {
   if (!is_android) {
     sources += [
       "profile_colors_util.h",
+      "profile_view_avatar_decoration_specs.h",
       "profile_view_utils.h",
     ]
 
