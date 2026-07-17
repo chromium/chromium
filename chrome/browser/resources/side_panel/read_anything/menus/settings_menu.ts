@@ -22,6 +22,8 @@ import {isActivationKey, isBackwardArrow, isForwardArrow, isVerticalArrow} from 
 import {ReadAnythingSettingsAction, ReadAnythingSettingsChange} from '../shared/metrics_browser_proxy.js';
 import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
+import {SettingsItemType} from './menu_util.js';
+import type {SettingsItem} from './menu_util.js';
 import {getCss} from './settings_menu.css.js';
 import {getHtml} from './settings_menu.html.js';
 
@@ -32,26 +34,6 @@ export const MENU_SHOW_DELAY_MS = 400;
 // trigger opening another submenu. This is used to prevent accidental
 // opens of submenus.
 export const SUBMENU_SHOW_DELAY_MS = 800;
-
-export enum SettingsItemType {
-  MENU = 1,
-  TOGGLE = 2,
-  ACTION = 3,
-}
-
-interface SettingsItem {
-  id: SettingsOption;
-  icon: string;
-  title: string;
-  itemType: SettingsItemType;
-  // Whether the toggle is checked. Only used when itemType is TOGGLE
-  checked?: boolean;
-  // Whether the toggle is disabled. Only used when itemType is TOGGLE
-  disabled?: boolean;
-  // Needed when the aria label should be different from the title
-  ariaLabel?: string;
-  showSeparator?: boolean;
-}
 
 const MENU_ITEM_DATA: Record<SettingsOption, SettingsItem> = {
   [SettingsOption.APPEARANCE]: {

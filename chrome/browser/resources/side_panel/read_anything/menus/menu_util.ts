@@ -2,7 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ShowAtConfigPrefs} from '../content/read_anything_types.js';
+import type {SettingsOption, ShowAtConfigPrefs} from '../content/read_anything_types.js';
+
+export enum SettingsItemType {
+  MENU = 1,
+  TOGGLE = 2,
+  ACTION = 3,
+}
+
+// Represents top-level items of the settings menu. Also used for toggle items
+// in a dropdown menu.
+export interface SettingsItem {
+  id: SettingsOption;
+  icon: string;
+  title: string;
+  itemType: SettingsItemType;
+  // Whether the toggle is checked. Only used when itemType is TOGGLE
+  checked?: boolean;
+  // Whether the toggle is disabled. Only used when itemType is TOGGLE
+  disabled?: boolean;
+  // Needed when the aria label should be different from the title
+  ariaLabel?: string;
+  showSeparator?: boolean;
+}
 
 // Represents a single menu item in a dropown menu in the toolbar.
 export interface MenuStateItem<T> {
