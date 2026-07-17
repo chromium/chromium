@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -288,16 +289,15 @@ TEST(PhoneCombineHelperTest, SetInfoAndParseNumber) {
 
   // Ensure parsing is possible when falling back to detecting the country code
   // based on the app locale.
-  std::u16string parsed_phone;
-  PhoneNumber::PhoneCombineHelper number2;
-  number2.SetInfo(PHONE_HOME_CITY_CODE, u"650");
-  number2.SetInfo(PHONE_HOME_NUMBER_PREFIX, u"234");
-  number2.SetInfo(PHONE_HOME_NUMBER_SUFFIX, u"5682");
-  EXPECT_TRUE(number2.ParseNumber(
-      // No country code is specified here:
-      AutofillProfile(i18n_model_definition::kLegacyHierarchyCountryCode),
-      kLocale, &parsed_phone));
-  EXPECT_EQ(u"(650) 234-5682", parsed_phone);
+  PhoneNumber::PhoneCombineHelper helper;
+  helper.SetInfo(PHONE_HOME_CITY_CODE, u"650");
+  helper.SetInfo(PHONE_HOME_NUMBER_PREFIX, u"234");
+  helper.SetInfo(PHONE_HOME_NUMBER_SUFFIX, u"5682");
+
+  std::optional<std::u16string> parsed_phone =
+      helper.ParseNumber(AutofillCountry::CountryCodeForLocale(kLocale));
+  ASSERT_TRUE(parsed_phone);
+  EXPECT_EQ(*parsed_phone, u"(650) 234-5682");
 }
 
 // Tests the construction of a `PhoneCombineHelper` instance from a collection
@@ -314,11 +314,10 @@ TEST(PhoneCombineHelperTest, FromObservedValues) {
   const PhoneNumber::PhoneCombineHelper helper =
       PhoneNumber::PhoneCombineHelper::FromObservedValues(observed_values);
 
-  std::u16string parsed_phone;
-  EXPECT_TRUE(helper.ParseNumber(
-      AutofillProfile(i18n_model_definition::kLegacyHierarchyCountryCode),
-      kLocale, &parsed_phone));
-  EXPECT_EQ(u"(650) 234-5682", parsed_phone);
+  std::optional<std::u16string> parsed_phone =
+      helper.ParseNumber(AutofillCountry::CountryCodeForLocale(kLocale));
+  ASSERT_TRUE(parsed_phone);
+  EXPECT_EQ(*parsed_phone, u"(650) 234-5682");
 }
 
 // Tests that `PhoneCombineHelper` can handle all types of phone fields.

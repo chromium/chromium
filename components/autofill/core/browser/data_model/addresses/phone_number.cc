@@ -387,20 +387,21 @@ void PhoneNumber::PhoneCombineHelper::SetInfo(FieldType field_type,
   }
 }
 
-bool PhoneNumber::PhoneCombineHelper::ParseNumber(
-    const AutofillProfile& profile,
-    std::string_view app_locale,
-    std::u16string* value) const {
-  if (IsEmpty())
-    return false;
-
-  if (!whole_number_.empty()) {
-    *value = whole_number_;
-    return true;
+std::optional<std::u16string> PhoneNumber::PhoneCombineHelper::ParseNumber(
+    const std::string& region) const {
+  if (IsEmpty()) {
+    return std::nullopt;
   }
 
-  return i18n::ConstructPhoneNumber(base::StrCat({country_, city_, phone_}),
-                                    GetRegion(profile, app_locale), value);
+  if (!whole_number_.empty()) {
+    return whole_number_;
+  }
+
+  if (std::u16string result; i18n::ConstructPhoneNumber(
+          base::StrCat({country_, city_, phone_}), region, &result)) {
+    return result;
+  }
+  return std::nullopt;
 }
 
 std::optional<std::u16string> PhoneNumber::PhoneCombineHelper::GetRegionCode()
@@ -437,16 +438,16 @@ bool PhoneNumber::ImportPhoneNumberToProfile(
     const PhoneNumber::PhoneCombineHelper& combined_phone,
     std::string_view app_locale,
     AutofillProfile& profile) {
-  std::u16string constructed_number;
   // If the phone number only consists of a single component, the
   // `PhoneCombineHelper` won't try to parse it. This happens during `SetInfo()`
   // in this case.
-  bool parsed_successfully =
-      combined_phone.ParseNumber(profile, app_locale, &constructed_number) &&
-      profile.SetInfoWithVerificationStatus(PHONE_HOME_WHOLE_NUMBER,
-                                            constructed_number, app_locale,
-                                            VerificationStatus::kObserved);
-  return parsed_successfully;
+  if (std::optional<std::u16string> constructed_number =
+          combined_phone.ParseNumber(GetRegion(profile, app_locale))) {
+    return profile.SetInfoWithVerificationStatus(
+        PHONE_HOME_WHOLE_NUMBER, *constructed_number, app_locale,
+        VerificationStatus::kObserved);
+  }
+  return false;
 }
 
 bool PhoneNumber::PhoneCombineHelper::IsEmpty() const {

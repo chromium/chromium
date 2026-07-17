@@ -93,13 +93,11 @@ class PhoneNumber : public FormGroup {
     // Processes the `value` accordingly given a phone number `field_type`.
     void SetInfo(FieldType field_type, std::u16string_view value);
 
-    // Parses the number built up from pieces stored via SetInfo() according to
-    // the specified `profile`'s country code, falling back to the given
-    // `app_locale` if the `profile` has no associated country code.  Returns
-    // true if parsing was successful, false otherwise.
-    bool ParseNumber(const AutofillProfile& profile,
-                     std::string_view app_locale,
-                     std::u16string* value) const;
+    // Parses the number built up from pieces stored via `SetInfo()` according
+    // to the given two-letter region code and returns it as a string in
+    // international format if it is a valid phone number. The region code
+    // should be one of the values returned by `autofill::GetCountryCodes()`.
+    std::optional<std::u16string> ParseNumber(const std::string& region) const;
 
     // Parses the combined phone number and returns the region to which it
     // belongs.
