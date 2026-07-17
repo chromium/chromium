@@ -580,7 +580,9 @@ ThrottleCheckResult ChromeOsReimplNavigationCapturingThrottle::HandleRequest() {
   // Close existing web contents if it is around.
   std::unique_ptr<ScopedKeepAlive> browser_keep_alive;
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive;
-  bool closed_web_contents = false;
+  bool closed_web_contents = IsEmptyDanglingWebContentsAfterLinkCapture();
+  debug_data->Set("closed_web_contents", closed_web_contents);
+  debug_data->Set("!result", "launched");
   if (IsEmptyDanglingWebContentsAfterLinkCapture()) {
     browser_keep_alive = std::make_unique<ScopedKeepAlive>(
         KeepAliveOrigin::APP_LAUNCH, KeepAliveRestartOption::ENABLED);
@@ -588,10 +590,12 @@ ThrottleCheckResult ChromeOsReimplNavigationCapturingThrottle::HandleRequest() {
       profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
           &profile_.get(), ProfileKeepAliveOrigin::kAppWindow);
     }
+    auto weak_this = weak_ptr_factory_.GetWeakPtr();
     handle->GetWebContents()->ClosePage();
-    closed_web_contents = true;
+    if (!weak_this) {
+      return content::NavigationThrottle::CANCEL_AND_IGNORE;
+    }
   }
-  debug_data->Set("closed_web_contents", closed_web_contents);
   base::OnceClosure launch_callback = base::BindOnce(
       [](std::unique_ptr<ScopedKeepAlive> browser_keep_alive,
          std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
@@ -608,7 +612,6 @@ ThrottleCheckResult ChromeOsReimplNavigationCapturingThrottle::HandleRequest() {
       std::move(browser_keep_alive), std::move(profile_keep_alive),
       closed_web_contents);
 
-  debug_data->Set("!result", "launched");
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&LaunchApp, proxy->GetWeakPtr(), launch_app_id,
