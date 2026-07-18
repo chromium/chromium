@@ -10,8 +10,12 @@ import android.content.Intent;
 import androidx.core.app.ServiceCompat;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -19,17 +23,23 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 
 /** Unit tests for {@link ActorForegroundServiceImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @DisableFeatures(ChromeFeatureList.GLIC_BACKGROUND_TRIGGERING)
 public class ActorForegroundServiceImplTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private ChromeBrowserInitializer mChromeBrowserInitializer;
+
     private ActorForegroundServiceImpl mServiceImpl;
     private Notification mNotification;
 
     @Before
     public void setUp() {
+        ChromeBrowserInitializer.setForTesting(mChromeBrowserInitializer);
         mServiceImpl = new ActorForegroundServiceImpl();
         mServiceImpl.setServiceForTesting(new ActorForegroundService());
         mNotification = new Notification();
