@@ -378,12 +378,6 @@ function setUpDownload(moduleName: string) {
     window.URL.revokeObjectURL(url);
     a.remove();
   });
-  // <if expr="is_ios">
-  // Hide this until downloading a file works on iOS, see
-  // https://bugs.webkit.org/show_bug.cgi?id=167341
-  // https://bugs.chromium.org/p/chromium/issues/detail?id=1252380
-  downloadFakeButton.style.display = 'none';
-  // </if>
 }
 
 interface SubmittedFormTopLevelData {
@@ -529,12 +523,6 @@ function setUpSubmittedFormsJSONDataDownload() {
     a.click();
     a.remove();
   });
-  // <if expr="is_ios">
-  // Hide this until downloading a file works on iOS, see
-  // https://bugs.webkit.org/show_bug.cgi?id=167341
-  // https://bugs.chromium.org/p/chromium/issues/detail?id=1252380
-  downloadSubmittedFormJSONDataButton.style.display = 'none';
-  // </if>
 }
 
 function setUpCheckAutofillAiPermissions() {
