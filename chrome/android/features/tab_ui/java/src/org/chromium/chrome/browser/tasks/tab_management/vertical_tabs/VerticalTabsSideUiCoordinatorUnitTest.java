@@ -113,9 +113,13 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testDestroy() {
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
+        assertTrue(mIsVerticalTabsActiveSupplier.get());
+
         mCoordinator.destroy();
         verify(mMockSideUiCoordinator).removeObserver(mCoordinator);
         verify(mMockTabListCoordinator).destroy();
+        assertFalse(mIsVerticalTabsActiveSupplier.get());
     }
 
     @Test
@@ -169,6 +173,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testOnUiUpdateCompleted() {
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
         mCoordinator.onUiUpdateCompleted(
                 /* oldWidth= */ 0,
                 /* newWidth= */ 100,
@@ -176,12 +181,31 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
                 HeightType.TOOLBAR);
         assertTrue(mIsVerticalTabsActiveSupplier.get());
 
+        mCoordinator.setVisible(/* show= */ false, /* suppressAnimations= */ false);
         mCoordinator.onUiUpdateCompleted(
                 /* oldWidth= */ 100,
                 /* newWidth= */ 0,
                 HeightType.TOOLBAR,
                 HeightType.NOT_APPLICABLE);
         assertFalse(mIsVerticalTabsActiveSupplier.get());
+    }
+
+    @Test
+    @SmallTest
+    public void testActiveSupplierRemainsTrueWhenAutoHidden() {
+        // Enable Vertical Tabs.
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
+        assertTrue(mIsVerticalTabsActiveSupplier.get());
+
+        // Simulate auto-hide during narrow window resize (newWidth = 0).
+        mCoordinator.onUiUpdateCompleted(
+                /* oldWidth= */ 100,
+                /* newWidth= */ 0,
+                HeightType.TOOLBAR,
+                HeightType.NOT_APPLICABLE);
+
+        // Supplier must remain true when auto-hidden to prevent Horizontal Tab Strip popup.
+        assertTrue(mIsVerticalTabsActiveSupplier.get());
     }
 
     @Test

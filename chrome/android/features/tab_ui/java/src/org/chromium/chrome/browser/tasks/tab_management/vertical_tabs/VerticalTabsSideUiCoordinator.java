@@ -91,6 +91,7 @@ public class VerticalTabsSideUiCoordinator
 
     public void setVisible(boolean show, boolean suppressAnimations) {
         mManualVisible = show;
+        mIsVerticalTabsActiveSupplier.set(show);
         mSideUiCoordinator.updateUi(new UiUpdateRequest(getSideUiId(), suppressAnimations));
     }
 
@@ -99,6 +100,7 @@ public class VerticalTabsSideUiCoordinator
         mSideUiCoordinator.removeObserver(this);
         mTabListCoordinator.setCollapseListener(null);
         mTabListCoordinator.destroy();
+        mIsVerticalTabsActiveSupplier.set(false);
     }
 
     // SideUiContainer implementation:
@@ -114,7 +116,6 @@ public class VerticalTabsSideUiCoordinator
 
     @Override
     public SideUiSize determineShowableSize(@Px int availableWidth, @Px int windowWidth) {
-        // TODO(crbug.com/509226293): Implement layout threshold negotiation to auto-hide rail.
         int targetWidth =
                 getRailCollapseState(isCurrentWindowNarrow()) == RailCollapseState.COLLAPSED
                         ? mCollapsedViewWidth
@@ -158,7 +159,7 @@ public class VerticalTabsSideUiCoordinator
             @Px int newWidth,
             @HeightType int oldHeightType,
             @HeightType int newHeightType) {
-        mIsVerticalTabsActiveSupplier.set(newWidth > 0);
+        mIsVerticalTabsActiveSupplier.set(mManualVisible);
     }
 
     // SideUiObserver implementation:
