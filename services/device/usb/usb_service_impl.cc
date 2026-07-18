@@ -14,6 +14,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -67,8 +68,14 @@ std::optional<std::vector<ScopedLibusbDeviceRef>> GetDeviceListBlocking(
 
   std::vector<ScopedLibusbDeviceRef> scoped_devices;
   scoped_devices.reserve(device_count);
-  for (ssize_t i = 0; i < device_count; ++i)
-    scoped_devices.emplace_back(UNSAFE_TODO(platform_devices[i]), usb_context);
+  // SAFETY: `platform_devices` is a raw pointer to a NULL-terminated array of
+  // device pointers returned by `libusb_get_device_list`. libusb guarantees
+  // that this array is of size `device_count` + 1.
+  auto devices_span = UNSAFE_BUFFERS(
+      base::span(platform_devices, static_cast<size_t>(device_count)));
+  for (libusb_device* device : devices_span) {
+    scoped_devices.emplace_back(device, usb_context);
+  }
 
   // Free the list but don't unref the devices because ownership has been
   // been transfered to the elements of |scoped_devices|.

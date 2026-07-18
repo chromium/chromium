@@ -442,9 +442,9 @@ class USBDeviceImplTest : public testing::Test {
     ASSERT_GE(mock_outbound_data_.size(), 1u);
     const std::vector<uint8_t>& bytes = mock_outbound_data_.front();
     ASSERT_EQ(bytes.size(), buffer->size());
+    auto buffer_span = base::span<const uint8_t>(*buffer);
     for (size_t i = 0; i < bytes.size(); ++i) {
-      UNSAFE_TODO(EXPECT_EQ(bytes[i], buffer->front()[i]))
-          << "Contents differ at index: " << i;
+      EXPECT_EQ(bytes[i], buffer_span[i]) << "Contents differ at index: " << i;
     }
     mock_outbound_data_.pop();
     std::move(callback).Run(UsbTransferStatus::COMPLETED, buffer,
@@ -512,9 +512,9 @@ class USBDeviceImplTest : public testing::Test {
     ASSERT_FALSE(mock_outbound_data_.empty());
     const std::vector<uint8_t>& bytes = mock_outbound_data_.front();
     ASSERT_EQ(buffer->size(), bytes.size());
+    auto buffer_span = base::span<const uint8_t>(*buffer);
     for (size_t i = 0; i < bytes.size(); ++i) {
-      UNSAFE_TODO(EXPECT_EQ(bytes[i], buffer->front()[i]))
-          << "Contents differ at index: " << i;
+      EXPECT_EQ(bytes[i], buffer_span[i]) << "Contents differ at index: " << i;
     }
     mock_outbound_data_.pop();
 
@@ -2830,11 +2830,9 @@ TEST_P(USBDeviceImplSecurityKeyTest, SecurityKeyControlTransferBlocked) {
     loop.Run();
   }
 
-  const char* data_str = mojom::UsbControlTransferParams::kSecurityKeyAOAModel;
-  const std::vector<uint8_t> data(
-      reinterpret_cast<const uint8_t*>(data_str),
-      UNSAFE_TODO(reinterpret_cast<const uint8_t*>(data_str) +
-                  strlen(data_str)));
+  auto data_span = base::byte_span_from_cstring(
+      mojom::UsbControlTransferParams::kSecurityKeyAOAModel);
+  const std::vector<uint8_t> data(data_span.begin(), data_span.end());
 
   if (allow_security_key_requests) {
     AddMockOutboundData(data);

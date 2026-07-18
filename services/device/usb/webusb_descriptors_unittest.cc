@@ -12,6 +12,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/auto_spanification_helper.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "services/device/usb/mock_usb_device_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -55,11 +56,10 @@ const auto kExampleUrlDescriptor255 = std::to_array<uint8_t>({
     'a',  'm',  'p',  'l', 'e', '.', 'h', 't', 'm', 'l',
 });
 
-ACTION_P2(InvokeCallback, data, length) {
-  size_t transferred_length = std::min(length, arg6->size());
+ACTION_P(InvokeCallback, data_span) {
+  size_t transferred_length = std::min(data_span.size(), arg6->size());
   base::span(arg6->as_vector())
-      .copy_prefix_from(
-          UNSAFE_TODO(base::span(data, length)).first(transferred_length));
+      .copy_prefix_from(data_span.first(transferred_length));
   std::move(arg8).Run(UsbTransferStatus::COMPLETED, arg6, transferred_length);
 }
 
@@ -261,15 +261,13 @@ TEST_F(WebUsbDescriptorsTest, ReadDescriptors) {
                                       UsbControlTransferRecipient::DEVICE, 0x06,
                                       0x0F00, 0x0000, _, _, _))
       .Times(2)
-      .WillRepeatedly(
-          InvokeCallback(kExampleBosDescriptor, sizeof(kExampleBosDescriptor)));
+      .WillRepeatedly(InvokeCallback(base::span(kExampleBosDescriptor)));
   EXPECT_CALL(*device_handle,
               ControlTransferInternal(UsbTransferDirection::INBOUND,
                                       UsbControlTransferType::VENDOR,
                                       UsbControlTransferRecipient::DEVICE, 0x42,
                                       0x0001, 0x0002, _, _, _))
-      .WillOnce(InvokeCallback(kExampleUrlDescriptor1,
-                               sizeof(kExampleUrlDescriptor1)));
+      .WillOnce(InvokeCallback(base::span(kExampleUrlDescriptor1)));
 
   ReadWebUsbDescriptors(device_handle, base::BindOnce(&ExpectLandingPage));
 }

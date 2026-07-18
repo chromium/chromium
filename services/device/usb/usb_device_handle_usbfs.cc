@@ -15,6 +15,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -188,6 +189,15 @@ struct UsbDeviceHandleUsbfs::Transfer final {
   void* operator new(std::size_t size, size_t number_of_iso_packets);
   void RunCallback(UsbTransferStatus status, size_t bytes_transferred);
   void RunIsochronousCallback(std::vector<UsbIsochronousPacketPtr> packets);
+
+  // SAFETY: `urb` is an instance of `usbdevfs_urb`, which is a Linux kernel
+  // UAPI struct that ends with a flexible array member `iso_frame_desc`.
+  // The overridden `operator new` guarantees that this array is of size
+  // `number_of_packets`.
+  base::span<usbdevfs_iso_packet_desc> IsoFrameDesc() {
+    return UNSAFE_BUFFERS(base::span(
+        urb.iso_frame_desc, static_cast<size_t>(urb.number_of_packets)));
+  }
 
   scoped_refptr<base::RefCountedBytes> control_transfer_buffer;
   scoped_refptr<base::RefCountedBytes> buffer;
@@ -496,7 +506,13 @@ void* UsbDeviceHandleUsbfs::Transfer::operator new(
           .ValueOrDie();
   void* p = ::operator new(total_size);
   Transfer* transfer = static_cast<Transfer*>(p);
-  UNSAFE_TODO(memset(
+  // SAFETY: The memset is safe because the memory was allocated with
+  // `total_size` which is
+  // `sizeof(Transfer) + sizeof(urb.iso_frame_desc[0]) * number_of_iso_packets`.
+  // Since `urb` is the last member of `Transfer`, the allocated space after
+  // `&transfer->urb` is exactly the size of `urb` plus the size of the
+  // descriptor array which matches the size passed to memset.
+  UNSAFE_BUFFERS(memset(
       &transfer->urb, 0,
       sizeof(urb) + sizeof(urb.iso_frame_desc[0]) * number_of_iso_packets));
   transfer->urb.number_of_packets = number_of_iso_packets;
@@ -1023,8 +1039,9 @@ void UsbDeviceHandleUsbfs::IsochronousTransferInternal(
   transfer->urb.endpoint = endpoint_address;
   transfer->urb.buffer_length = total_length;
 
+  auto iso_frame_desc = transfer->IsoFrameDesc();
   for (size_t i = 0; i < packet_lengths.size(); ++i) {
-    UNSAFE_TODO(transfer->urb.iso_frame_desc[i]).length = packet_lengths[i];
+    iso_frame_desc[i].length = packet_lengths[i];
   }
 
   // USBDEVFS_SUBMITURB appears to be non-blocking as completion is reported
@@ -1074,15 +1091,14 @@ void UsbDeviceHandleUsbfs::TransferComplete(
   if (transfer->urb.type == USBDEVFS_URB_TYPE_ISO) {
     std::vector<UsbIsochronousPacketPtr> packets(
         transfer->urb.number_of_packets);
+    auto iso_frame_desc = transfer->IsoFrameDesc();
     for (size_t i = 0; i < packets.size(); ++i) {
       packets[i] = mojom::UsbIsochronousPacket::New();
-      packets[i]->length = UNSAFE_TODO(transfer->urb.iso_frame_desc[i]).length;
-      packets[i]->transferred_length =
-          UNSAFE_TODO(transfer->urb.iso_frame_desc[i]).actual_length;
-      packets[i]->status = ConvertTransferResult(
-          transfer->urb.status == 0
-              ? UNSAFE_TODO(transfer->urb.iso_frame_desc[i]).status
-              : transfer->urb.status);
+      packets[i]->length = iso_frame_desc[i].length;
+      packets[i]->transferred_length = iso_frame_desc[i].actual_length;
+      packets[i]->status = ConvertTransferResult(transfer->urb.status == 0
+                                                     ? iso_frame_desc[i].status
+                                                     : transfer->urb.status);
     }
 
     transfer->RunIsochronousCallback(std::move(packets));
@@ -1196,9 +1212,10 @@ void UsbDeviceHandleUsbfs::CancelTransfer(Transfer* transfer,
   if (transfer->urb.type == USBDEVFS_URB_TYPE_ISO) {
     std::vector<UsbIsochronousPacketPtr> packets(
         transfer->urb.number_of_packets);
+    auto iso_frame_desc = transfer->IsoFrameDesc();
     for (size_t i = 0; i < packets.size(); ++i) {
       packets[i] = mojom::UsbIsochronousPacket::New();
-      packets[i]->length = UNSAFE_TODO(transfer->urb.iso_frame_desc[i]).length;
+      packets[i]->length = iso_frame_desc[i].length;
       packets[i]->transferred_length = 0;
       packets[i]->status = status;
     }

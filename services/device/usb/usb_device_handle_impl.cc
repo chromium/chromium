@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -237,6 +238,16 @@ class UsbDeviceHandleImpl::Transfer {
 
   void IsochronousTransferComplete();
 
+  // SAFETY: `platform_transfer_` is an instance of `libusb_transfer`, which is
+  // a C struct from libusb that ends with a flexible array member
+  // `iso_packet_desc`. libusb guarantees that this array is of size
+  // `num_iso_packets`.
+  base::span<libusb_iso_packet_descriptor> IsoPackets() {
+    return UNSAFE_BUFFERS(
+        base::span(platform_transfer_->iso_packet_desc,
+                   static_cast<size_t>(platform_transfer_->num_iso_packets)));
+  }
+
   UsbTransferType transfer_type_;
   scoped_refptr<UsbDeviceHandleImpl> device_handle_;
   PlatformUsbTransferHandle platform_transfer_ = nullptr;
@@ -368,9 +379,10 @@ UsbDeviceHandleImpl::Transfer::CreateIsochronousTransfer(
       buffer->as_vector().data(), static_cast<int>(length), num_packets,
       &Transfer::PlatformCallback, transfer.get(), timeout);
 
-  for (size_t i = 0; i < packet_lengths.size(); ++i)
-    UNSAFE_TODO(transfer->platform_transfer_->iso_packet_desc[i]).length =
-        packet_lengths[i];
+  auto iso_packet_desc = transfer->IsoPackets();
+  for (size_t i = 0; i < packet_lengths.size(); ++i) {
+    iso_packet_desc[i].length = packet_lengths[i];
+  }
 
   return transfer;
 }
@@ -487,10 +499,10 @@ void UsbDeviceHandleImpl::Transfer::TransferComplete(UsbTransferStatus status,
     DCHECK_NE(LIBUSB_TRANSFER_COMPLETED, platform_transfer_->status);
     std::vector<UsbIsochronousPacketPtr> packets(
         platform_transfer_->num_iso_packets);
+    auto iso_packet_desc = IsoPackets();
     for (size_t i = 0; i < packets.size(); ++i) {
       packets[i] = mojom::UsbIsochronousPacket::New();
-      packets[i]->length =
-          UNSAFE_TODO(platform_transfer_->iso_packet_desc[i]).length;
+      packets[i]->length = iso_packet_desc[i].length;
       packets[i]->transferred_length = 0;
       packets[i]->status = status;
     }
@@ -509,14 +521,12 @@ void UsbDeviceHandleImpl::Transfer::TransferComplete(UsbTransferStatus status,
 void UsbDeviceHandleImpl::Transfer::IsochronousTransferComplete() {
   std::vector<UsbIsochronousPacketPtr> packets(
       platform_transfer_->num_iso_packets);
+  auto iso_packet_desc = IsoPackets();
   for (size_t i = 0; i < packets.size(); ++i) {
     packets[i] = mojom::UsbIsochronousPacket::New();
-    packets[i]->length =
-        UNSAFE_TODO(platform_transfer_->iso_packet_desc[i]).length;
-    packets[i]->transferred_length =
-        UNSAFE_TODO(platform_transfer_->iso_packet_desc[i]).actual_length;
-    packets[i]->status = ConvertTransferStatus(
-        UNSAFE_TODO(platform_transfer_->iso_packet_desc[i]).status);
+    packets[i]->length = iso_packet_desc[i].length;
+    packets[i]->transferred_length = iso_packet_desc[i].actual_length;
+    packets[i]->status = ConvertTransferStatus(iso_packet_desc[i].status);
   }
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&UsbDeviceHandleImpl::TransferComplete,

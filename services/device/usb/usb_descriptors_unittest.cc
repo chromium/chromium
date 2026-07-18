@@ -7,11 +7,13 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <iterator>
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "services/device/usb/mock_usb_device_handle.h"
@@ -31,11 +33,10 @@ using mojom::UsbUsageType;
 
 namespace {
 
-ACTION_P2(InvokeCallback, data, length) {
-  size_t transferred_length = std::min(length, arg6->size());
+ACTION_P(InvokeCallback, data_span) {
+  size_t transferred_length = std::min(data_span.size(), arg6->size());
   base::span(arg6->as_vector())
-      .copy_prefix_from(
-          UNSAFE_TODO(base::span(data, length)).first(transferred_length));
+      .copy_prefix_from(data_span.first(transferred_length));
   std::move(arg8).Run(UsbTransferStatus::COMPLETED, arg6, transferred_length);
 }
 
@@ -219,12 +220,12 @@ class UsbDescriptorsTest : public ::testing::Test {};
 
 TEST_F(UsbDescriptorsTest, ParseDescriptor) {
   std::vector<uint8_t> buffer;
-  buffer.insert(buffer.end(), kDeviceDescriptor,
-                UNSAFE_TODO(kDeviceDescriptor + sizeof(kDeviceDescriptor)));
-  buffer.insert(buffer.end(), kConfig1Descriptor,
-                UNSAFE_TODO(kConfig1Descriptor + sizeof(kConfig1Descriptor)));
-  buffer.insert(buffer.end(), kConfig2Descriptor,
-                UNSAFE_TODO(kConfig2Descriptor + sizeof(kConfig2Descriptor)));
+  buffer.insert(buffer.end(), std::begin(kDeviceDescriptor),
+                std::end(kDeviceDescriptor));
+  buffer.insert(buffer.end(), std::begin(kConfig1Descriptor),
+                std::end(kConfig1Descriptor));
+  buffer.insert(buffer.end(), std::begin(kConfig2Descriptor),
+                std::end(kConfig2Descriptor));
 
   UsbDeviceDescriptor descriptor;
   ASSERT_TRUE(descriptor.Parse(buffer));
@@ -239,23 +240,21 @@ TEST_F(UsbDescriptorsTest, ReadDescriptors) {
                                       UsbControlTransferType::STANDARD,
                                       UsbControlTransferRecipient::DEVICE, 0x06,
                                       0x0100, 0x0000, _, _, _))
-      .WillOnce(InvokeCallback(kDeviceDescriptor, sizeof(kDeviceDescriptor)));
+      .WillOnce(InvokeCallback(base::span(kDeviceDescriptor)));
   EXPECT_CALL(*device_handle,
               ControlTransferInternal(UsbTransferDirection::INBOUND,
                                       UsbControlTransferType::STANDARD,
                                       UsbControlTransferRecipient::DEVICE, 0x06,
                                       0x0200, 0x0000, _, _, _))
       .Times(2)
-      .WillRepeatedly(
-          InvokeCallback(kConfig1Descriptor, sizeof(kConfig1Descriptor)));
+      .WillRepeatedly(InvokeCallback(base::span(kConfig1Descriptor)));
   EXPECT_CALL(*device_handle,
               ControlTransferInternal(UsbTransferDirection::INBOUND,
                                       UsbControlTransferType::STANDARD,
                                       UsbControlTransferRecipient::DEVICE, 0x06,
                                       0x0201, 0x0000, _, _, _))
       .Times(2)
-      .WillRepeatedly(
-          InvokeCallback(kConfig2Descriptor, sizeof(kConfig2Descriptor)));
+      .WillRepeatedly(InvokeCallback(base::span(kConfig2Descriptor)));
 
   ReadUsbDescriptors(device_handle, base::BindOnce(&OnReadDescriptors));
 }
@@ -289,22 +288,20 @@ TEST_F(UsbDescriptorsTest, InterfaceAssociations) {
 
   mojom::UsbConfigurationInfoPtr config =
       BuildUsbConfigurationInfoPtr(1, false, false, 0);
-  config->extra_data.assign(kIAD1, UNSAFE_TODO(kIAD1 + sizeof(kIAD1)));
-  config->extra_data.insert(config->extra_data.end(), kIAD2,
-                            UNSAFE_TODO(kIAD2 + sizeof(kIAD2)));
+  config->extra_data.assign(std::begin(kIAD1), std::end(kIAD1));
+  config->extra_data.insert(config->extra_data.end(), std::begin(kIAD2),
+                            std::end(kIAD2));
   config->interfaces.push_back(BuildUsbInterfaceInfoPtr(0, 0, 255, 255, 255));
   config->interfaces.push_back(BuildUsbInterfaceInfoPtr(1, 0, 255, 255, 255));
   mojom::UsbInterfaceInfoPtr iface1a =
       BuildUsbInterfaceInfoPtr(1, 1, 255, 255, 255);
-  iface1a->alternates[0]->extra_data.assign(kIAD3,
-                                            UNSAFE_TODO(kIAD3 + sizeof(kIAD3)));
+  iface1a->alternates[0]->extra_data.assign(std::begin(kIAD3), std::end(kIAD3));
   config->interfaces.push_back(std::move(iface1a));
   config->interfaces.push_back(BuildUsbInterfaceInfoPtr(2, 0, 255, 255, 255));
   config->interfaces.push_back(BuildUsbInterfaceInfoPtr(3, 0, 255, 255, 255));
   mojom::UsbInterfaceInfoPtr iface4 =
       BuildUsbInterfaceInfoPtr(4, 0, 255, 255, 255);
-  iface4->alternates[0]->extra_data.assign(kIAD4,
-                                           UNSAFE_TODO(kIAD4 + sizeof(kIAD4)));
+  iface4->alternates[0]->extra_data.assign(std::begin(kIAD4), std::end(kIAD4));
   config->interfaces.push_back(std::move(iface4));
   config->interfaces.push_back(BuildUsbInterfaceInfoPtr(5, 0, 255, 255, 255));
   AssignFirstInterfaceNumbers(config.get());
@@ -336,7 +333,7 @@ TEST_F(UsbDescriptorsTest, CorruptInterfaceAssociations) {
     static const uint8_t kIAD[] = {0x01};
     mojom::UsbConfigurationInfoPtr config =
         BuildUsbConfigurationInfoPtr(1, false, false, 0);
-    config->extra_data.assign(kIAD, UNSAFE_TODO(kIAD + sizeof(kIAD)));
+    config->extra_data.assign(std::begin(kIAD), std::end(kIAD));
     AssignFirstInterfaceNumbers(config.get());
   }
   {
@@ -345,7 +342,7 @@ TEST_F(UsbDescriptorsTest, CorruptInterfaceAssociations) {
                                    0x00, 0x00, 0x00, 0x00};
     mojom::UsbConfigurationInfoPtr config =
         BuildUsbConfigurationInfoPtr(1, false, false, 0);
-    config->extra_data.assign(kIAD, UNSAFE_TODO(kIAD + sizeof(kIAD)));
+    config->extra_data.assign(std::begin(kIAD), std::end(kIAD));
     AssignFirstInterfaceNumbers(config.get());
   }
   {
@@ -355,7 +352,7 @@ TEST_F(UsbDescriptorsTest, CorruptInterfaceAssociations) {
     mojom::UsbConfigurationInfoPtr config =
         BuildUsbConfigurationInfoPtr(1, false, false, 0);
     config->interfaces.push_back(BuildUsbInterfaceInfoPtr(0, 0, 255, 255, 255));
-    config->extra_data.assign(kIAD, UNSAFE_TODO(kIAD + sizeof(kIAD)));
+    config->extra_data.assign(std::begin(kIAD), std::end(kIAD));
     AssignFirstInterfaceNumbers(config.get());
 
     EXPECT_EQ(0, config->interfaces[0]->interface_number);
@@ -426,7 +423,7 @@ TEST_F(UsbDescriptorsTest, ReadStringDescriptors) {
                                       UsbControlTransferType::STANDARD,
                                       UsbControlTransferRecipient::DEVICE, 0x06,
                                       0x0300, 0x0000, _, _, _))
-      .WillOnce(InvokeCallback(kStringDescriptor0, sizeof(kStringDescriptor0)));
+      .WillOnce(InvokeCallback(base::span(kStringDescriptor0)));
   static const uint8_t kStringDescriptor1[] = {0x12, 0x03, 'S', 0, 't', 0,
                                                'r',  0,    'i', 0, 'n', 0,
                                                'g',  0,    ' ', 0, '1', 0};
@@ -435,7 +432,7 @@ TEST_F(UsbDescriptorsTest, ReadStringDescriptors) {
                                       UsbControlTransferType::STANDARD,
                                       UsbControlTransferRecipient::DEVICE, 0x06,
                                       0x0301, 0x4321, _, _, _))
-      .WillOnce(InvokeCallback(kStringDescriptor1, sizeof(kStringDescriptor1)));
+      .WillOnce(InvokeCallback(base::span(kStringDescriptor1)));
   static const uint8_t kStringDescriptor2[] = {0x12, 0x03, 'S', 0, 't', 0,
                                                'r',  0,    'i', 0, 'n', 0,
                                                'g',  0,    ' ', 0, '2', 0};
@@ -444,7 +441,7 @@ TEST_F(UsbDescriptorsTest, ReadStringDescriptors) {
                                       UsbControlTransferType::STANDARD,
                                       UsbControlTransferRecipient::DEVICE, 0x06,
                                       0x0302, 0x4321, _, _, _))
-      .WillOnce(InvokeCallback(kStringDescriptor2, sizeof(kStringDescriptor2)));
+      .WillOnce(InvokeCallback(base::span(kStringDescriptor2)));
   static const uint8_t kStringDescriptor3[] = {0x12, 0x03, 'S', 0, 't', 0,
                                                'r',  0,    'i', 0, 'n', 0,
                                                'g',  0,    ' ', 0, '3', 0};
@@ -453,7 +450,7 @@ TEST_F(UsbDescriptorsTest, ReadStringDescriptors) {
                                       UsbControlTransferType::STANDARD,
                                       UsbControlTransferRecipient::DEVICE, 0x06,
                                       0x0303, 0x4321, _, _, _))
-      .WillOnce(InvokeCallback(kStringDescriptor3, sizeof(kStringDescriptor3)));
+      .WillOnce(InvokeCallback(base::span(kStringDescriptor3)));
 
   ReadUsbStringDescriptors(device_handle, std::move(string_map),
                            base::BindOnce(&ExpectStringDescriptors));
