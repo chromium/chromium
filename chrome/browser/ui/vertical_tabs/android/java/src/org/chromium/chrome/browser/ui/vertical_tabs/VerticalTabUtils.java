@@ -20,7 +20,7 @@ public class VerticalTabUtils {
     public static final int SIDE_UI_CONTAINER_WIDTH_DP = 240;
 
     /** The width of the collapsed vertical tabs SideUiContainer in dp. */
-    public static final int SIDE_UI_CONTAINER_COLLAPSED_WIDTH_DP = 74;
+    public static final int SIDE_UI_CONTAINER_COLLAPSED_WIDTH_DP = 76;
 
     /**
      * Minimum window width threshold in dp required to allow expanding vertical tabs rail and

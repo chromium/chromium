@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -84,7 +85,8 @@ import java.util.List;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class VerticalTabListRenderTest {
-    private static final int COLLAPSED_RAIL_WIDTH_DP = 74;
+    private static final int COLLAPSED_RAIL_WIDTH_DP =
+            VerticalTabUtils.SIDE_UI_CONTAINER_COLLAPSED_WIDTH_DP;
     private static final int EXPANDED_RAIL_WIDTH_DP = 206;
     private static final int RAIL_TEST_HEIGHT_DP = 400;
 
