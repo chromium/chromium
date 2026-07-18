@@ -15879,6 +15879,7 @@ from previous Chrome versions.
   <int value="397275669" label="QuickCommands:disabled"/>
   <int value="397422144" label="autofill-ai-wallet-pass-branding-2026:enabled"/>
   <int value="398220251" label="OmniboxFuseboxAsyncInflation:enabled"/>
+  <int value="398469223" label="CameraAndMicrophoneElements:enabled"/>
   <int value="398903399" label="GenericSensorExtraClasses:disabled"/>
   <int value="399015470" label="SkiaGraphitePrecompilation:enabled"/>
   <int value="399039205" label="enable-webrtc-hw-vp9-encoding"/>
@@ -21212,6 +21213,7 @@ from previous Chrome versions.
       label="MigrateDefaultChromeAppToWebAppsGSuite:disabled"/>
   <int value="2092399275" label="FastDrmMasterDrop:enabled"/>
   <int value="2092538671" label="UseStorkSmdsServerAddress:disabled"/>
+  <int value="2092568904" label="CameraAndMicrophoneElements:disabled"/>
   <int value="2092605092" label="ChromeHomeShowGoogleGWhenUrlCleared:disabled"/>
   <int value="2092968851" label="SharingSendViaSync:enabled"/>
   <int value="2093235103" label="default-tile-width"/>

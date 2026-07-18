@@ -96,6 +96,12 @@ inline constexpr char kAimServerEligibilityIncludeClientLocaleDescription[] =
     "Configures whether to include the client locale in the AIM eligibility "
     "request.";
 
+inline constexpr char kCameraAndMicrophoneElementsName[] =
+    "Camera and Microphone elements";
+inline constexpr char kCameraAndMicrophoneElementsDescription[] =
+    "Enables the <camera> and <microphone> elements, allowing sites to embed "
+    "camera and microphone permission request controls directly in the page.";
+
 inline constexpr char kCanvasHibernationName[] = "Hibernation for 2D canvas";
 inline constexpr char kCanvasHibernationDescription[] =
     "Enables canvas hibernation for 2D canvas.";
