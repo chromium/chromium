@@ -321,6 +321,27 @@ public class VerticalTabListCoordinator {
                     });
         }
 
+        // Create a gesture detector to catch long-presses on any raw root container background
+        // space.
+        GestureDetector rootSpaceGestureDetector =
+                new GestureDetector(
+                        activity,
+                        createEmptySpaceGestureListener(activity, mContainerView, mRecyclerView));
+
+        mContainerView.setOnTouchListener(
+                (v, event) -> {
+                    if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                        mLastTouchPoint.set((int) event.getX(), (int) event.getY());
+                    }
+                    rootSpaceGestureDetector.onTouchEvent(event);
+                    // Return false so interactive child views still get touched.
+                    return false;
+                });
+
+        // Handle right-clicks on the root background space and fully consume the window event.
+        mContainerView.setOnContextClickListener(
+                createEmptySpaceContextClickListener(activity, mContainerView));
+
         mTabListFaviconProvider =
                 new TabListFaviconProvider(
                         activity,

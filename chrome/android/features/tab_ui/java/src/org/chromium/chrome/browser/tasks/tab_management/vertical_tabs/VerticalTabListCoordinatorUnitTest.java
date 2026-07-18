@@ -290,6 +290,28 @@ public class VerticalTabListCoordinatorUnitTest {
                 mCoordinator.getTabStripContextMenuCoordinatorForTesting());
     }
 
+    private void assertStandardViewLongPressLaunchesMenu(View targetView) {
+        // Ensure the context menu coordinator reference starts fresh as null.
+        assertNotNull("Target view for long press must not be null.", targetView);
+        assertNull(
+                "Context menu coordinator should start as null.",
+                mCoordinator.getTabStripContextMenuCoordinatorForTesting());
+
+        // Simulate touch down at coordinates (10, 10) inside the header container.
+        MotionEvent downEvent = obtainMotionEvent(MotionEvent.ACTION_DOWN, 10f, 10f);
+
+        // To simulate a touch on a normal view (not recycler view) so that its OnTouchListener
+        // triggers, we call dispatchTouchEvent(downEvent).
+        targetView.dispatchTouchEvent(downEvent);
+
+        // Advance Robolectric's clock by 500ms to trigger the long-press gesture.
+        ShadowLooper.idleMainLooper(500, TimeUnit.MILLISECONDS);
+
+        assertNotNull(
+                "Long press should instantiate the empty space context menu coordinator.",
+                mCoordinator.getTabStripContextMenuCoordinatorForTesting());
+    }
+
     private void assertRecyclerViewLongPressLaunchesEmptySpaceContextMenu(
             RecyclerView recyclerView) {
         assertNotNull("RecyclerView target for long press must not be null.", recyclerView);
@@ -479,24 +501,7 @@ public class VerticalTabListCoordinatorUnitTest {
         // vertical_tab_rail_container.
         ViewGroup container = (ViewGroup) mCoordinator.getView();
         View headerContainer = container.findViewById(R.id.vertical_tab_header_container);
-
-        assertNotNull("Header container should exist in the layout.", headerContainer);
-
-        // Ensure the context menu coordinator reference starts fresh as null.
-        assertNull(mCoordinator.getTabStripContextMenuCoordinatorForTesting());
-
-        // Simulate touch down at coordinates (50, 20) inside the header container.
-        MotionEvent downEvent = obtainMotionEvent(MotionEvent.ACTION_DOWN, 50f, 20f);
-        // To simulate a touch on a normal view (not recycler view) so that its OnTouchListener
-        // triggers, we call dispatchTouchEvent(downEvent).
-        headerContainer.dispatchTouchEvent(downEvent);
-
-        // Advance Robolectric's clock by 500ms to trigger the long-press gesture.
-        ShadowLooper.idleMainLooper(500, TimeUnit.MILLISECONDS);
-
-        assertNotNull(
-                "Long press on header container should instantiate the context menu coordinator.",
-                mCoordinator.getTabStripContextMenuCoordinatorForTesting());
+        assertStandardViewLongPressLaunchesMenu(headerContainer);
     }
 
     @Test
@@ -527,6 +532,22 @@ public class VerticalTabListCoordinatorUnitTest {
                 mCoordinator.getView().findViewById(R.id.pinned_tabs_recycler_view);
 
         assertEmptySpaceContextMenuRightClick(pinnedRecyclerView);
+    }
+
+    @Test
+    @SmallTest
+    public void testVTRootContainerLongPress_LaunchesEmptySpaceContextMenu() {
+        createCoordinator();
+        ViewGroup container = (ViewGroup) mCoordinator.getView();
+        assertStandardViewLongPressLaunchesMenu(container);
+    }
+
+    @Test
+    @SmallTest
+    public void testVTRootContainerRightClick_LaunchesContextMenu() {
+        createCoordinator();
+        ViewGroup container = (ViewGroup) mCoordinator.getView();
+        assertEmptySpaceContextMenuRightClick(container);
     }
 
     @Test
