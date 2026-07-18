@@ -132,6 +132,7 @@ Lưu ý: Hãy đọc thêm về chính sách giảm thiểu quy trình (https://
 <translation id="1076751984131277498">Danh sách thiết bị USB được phép tháo</translation>
 <translation id="1077675271127011209">Tắt tính năng báo cáo về hoạt động sử dụng và dữ liệu liên quan đến sự cố</translation>
 <translation id="1079498696402787191">Sử dụng giá trị mặc định cho các hàm băm được phép trong quá trình giao tiếp qua TLS.</translation>
+<translation id="1079801999187584280">Không cho phép sử dụng Công cụ dành cho nhà phát triển</translation>
 <translation id="1081263326166769685">Nếu bạn đặt chính sách này thành Bật, <ph name="PRODUCT_OS_NAME" /> sẽ báo cáo lại cho Google chỉ số sử dụng và dữ liệu chẩn đoán, bao gồm cả báo cáo sự cố. Nếu bạn đặt chính sách này thành Tắt, tính năng báo cáo chỉ số và dữ liệu chẩn đoán sẽ tắt.
 
 Đối với các thiết bị được quản lý, chính sách này sẽ bật theo mặc định và gửi các chỉ số cho Google.
@@ -1811,6 +1812,21 @@ Chính sách này chỉ là biện pháp tạm thời và sẽ bị xoá sau phi
 <translation id="2180958780733364832">Kiểm soát việc sử dụng Chế độ không có giao diện người dùng</translation>
 <translation id="2182291258410176649">Người dùng sẽ quyết định có bật tính năng sao lưu và khôi phục hay không</translation>
 <translation id="2183338188392346527">Không báo cáo bộ đếm thời gian chạy của thiết bị</translation>
+<translation id="2183838844225082873">Nếu đặt chính sách này thành 0 (giá trị mặc định) thì bạn có thể truy cập vào công cụ cho nhà phát triển và Bảng điều khiển JavaScript, ngoại trừ trường hợp tiện ích được cài đặt theo chính sách doanh nghiệp hoặc (từ phiên bản 114 trở đi và nếu người dùng là người dùng được quản lý) tiện ích được tích hợp vào trình duyệt. Nếu đặt giá trị chính sách này thành 1 thì bạn có thể truy cập vào các công cụ cho nhà phát triển và Bảng điều khiển JavaScript trong mọi trường hợp, kể cả trường hợp tiện ích được cài đặt theo chính sách doanh nghiệp. Nếu đặt giá trị chính sách này thành 2 thì bạn không thể truy cập vào các công cụ cho nhà phát triển và không thể kiểm tra các thành phần của trang web.
+
+Chế độ cài đặt này cũng tắt các phím tắt và mục truy cập trên trình đơn hoặc trình đơn theo bối cảnh dùng để mở các công cụ cho nhà phát triển hoặc Bảng điều khiển JavaScript.
+
+Kể từ phiên bản <ph name="PRODUCT_NAME" /> 99, chế độ cài đặt này cũng kiểm soát điểm truy cập cho tính năng "Xem nguồn trang". Nếu bạn đặt giá trị chính sách này thành "DeveloperToolsDisallowed" (giá trị 2) thì người dùng sẽ không truy cập được chế độ xem nguồn thông qua phím tắt hay trình đơn theo bối cảnh. Để chặn hoàn toàn chế độ xem nguồn, bạn cũng phải thêm "view-source:*" vào chính sách <ph name="URL_BLOCKLIST_POLICY_NAME" />.
+
+Kể từ phiên bản <ph name="PRODUCT_NAME" /> 119, chế độ cài đặt này cũng kiểm soát việc có thể kích hoạt và sử dụng chế độ nhà phát triển dành cho các Ứng dụng web tách biệt hay không.
+
+Kể từ phiên bản <ph name="PRODUCT_NAME" /> 128, nếu bạn đặt chính sách <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> thì chế độ cài đặt này sẽ không kiểm soát chế độ nhà phát triển trên trang tiện ích.
+
+Khả năng sử dụng Công cụ cho nhà phát triển được xác định theo thứ tự ưu tiên sau:
+1. Nếu một URL khớp với một mẫu trong chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> thì người dùng sẽ được phép sử dụng Công cụ cho nhà phát triển.
+2. Nếu bạn đặt <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> nhưng không đặt <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> thì mọi URL không có trong danh sách cho phép sẽ bị chặn.
+3. Nếu một URL khớp với một mẫu trong chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> thì Công cụ cho nhà phát triển sẽ bị chặn.
+4. Nếu một URL không thuộc danh sách cho phép và cũng không thuộc danh sách chặn thì chính sách này (<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />) sẽ là chính sách dự phòng.</translation>
 <translation id="2187361040843865450">Chấp nhận yêu cầu ghép nối Bluetooth "Just Works"</translation>
 <translation id="2187372280917024033">Mẫu URI của trình phân giải DNS-over-HTTPS mà bạn muốn. Để chỉ định nhiều trình phân giải DNS-over-HTTPS, hãy phân tách các mẫu URI tương ứng bằng dấu cách. Chính sách này rất giống với <ph name="DOH_TEMPLATES_POLICY_NAME" /> (sẽ bị chính sách này ghi đè nếu được chỉ định).
 Trái ngược với chính sách <ph name="DOH_TEMPLATES_POLICY_NAME" />, chính sách này hỗ trợ việc chỉ định thông tin nhận dạng.
@@ -2265,7 +2281,6 @@ Nếu bạn đặt chính sách này thành <ph name="POLICY_VALUE_VISIBLE" />, 
 
 Nếu bạn chưa đặt chính sách này, thì <ph name="POLICY_VALUE_VISIBLE" /> sẽ là lựa chọn mặc định.</translation>
 <translation id="2488455166114458307">Cho phép sử dụng Device Attributes API trên các trang web này</translation>
-<translation id="2489454942579368665">Hoàn toàn không cho phép sử dụng Công cụ cho nhà phát triển</translation>
 <translation id="2489558694350871332">Cho phép thiết bị chạy máy ảo</translation>
 <translation id="2492240920793040106">Bật tính năng báo cáo thông tin hệ thống và nội dung trang để giúp cải thiện tính năng Duyệt web an toàn</translation>
 <translation id="2496180316473517155">Nhật ký duyệt web</translation>
@@ -2702,7 +2717,6 @@ Nếu bạn đặt chính sách này thành 2 – "Đã tắt", thì bạn sẽ 
 <translation id="2707733461906745082">Phân tách hồ sơ</translation>
 <translation id="2707873794476722903">Tính năng Duyệt web an toàn đang hoạt động ở chế độ chuẩn.</translation>
 <translation id="2709516037105925701">Tự động điền</translation>
-<translation id="2712089199157322391">Cho phép sử dụng Công cụ cho nhà phát triển khi duyệt web thông thường, nhưng hạn chế việc sử dụng này đối với các tiện ích do doanh nghiệp cài đặt và các tiện ích tích hợp sẵn dành cho người dùng được quản lý (công cụ sẽ bị chặn trên những trang nhúng các tiện ích này kể từ phiên bản M150, ngoại trừ trình xem PDF tích hợp sẵn).</translation>
 <translation id="2713913573196284609">Kể từ M121, giá trị này sẽ không được dùng nữa. Kể từ M121 trở đi, các giá trị sẽ được coi là EnabledBelowThreshold.</translation>
 <translation id="2713977837384407666">Luôn gửi các chỉ số cho Google</translation>
 <translation id="2714359695399346815">Việc đặt thành Bật hoặc không đặt chính sách này sẽ cho phép việc sử dụng các máy chủ STUN. Qua đó, máy khách từ xa có thể phát hiện và kết nối với máy này, ngay cả khi bị phân cách bằng tường lửa.
@@ -5532,6 +5546,7 @@ Các mẫu URL không được xung đột với <ph name="CONTROLLED_FRAME_BLOC
 <translation id="4561940244682063697">Không cho phép các trang web nhắc người dùng chia sẻ luồng video màn hình</translation>
 <translation id="4562165737444703281">Cho phép người dùng [bật/định cấu hình] dịch vụ chuyển tiếp cổng vào Crostini</translation>
 <translation id="456450545863578630">Bật chức năng chuyển tệp trong các kết nối hỗ trợ từ xa từ quản trị viên doanh nghiệp</translation>
+<translation id="4567137030726189378">Cho phép sử dụng Công cụ dành cho nhà phát triển</translation>
 <translation id="4570859815763368584">Không còn dùng trong M68. Hãy sử dụng lựa chọn DefaultPopupsSetting để thay thế.
 
       Để biết thông tin giải thích đầy đủ, hãy truy cập https://www.chromestatus.com/feature/5675755719622656.
@@ -6825,7 +6840,6 @@ Lưu ý: Chính sách này không áp dụng cho bản nâng cấp HSTS.</transl
       Nếu bạn không đặt chính sách này, người dùng sử dụng tính năng mở khóa nhanh sẽ phải nhập mật khẩu hằng ngày trên màn hình khóa.</translation>
 <translation id="5306186200045823863">Cho phép tin cậy Cơ sở hạ tầng khóa công khai (PKI) cũ của Symantec Corporation</translation>
 <translation id="5307432759655324440">Tính khả dụng của chế độ ẩn danh</translation>
-<translation id="5308289216279695777">Cho phép sử dụng Công cụ cho nhà phát triển trong mọi ngữ cảnh, bao gồm cả trong các tiện ích theo chính sách doanh nghiệp</translation>
 <translation id="5308551343115571396">Sau khi <ph name="LACROS_NAME" /> tắt, chúng tôi sẽ cố gắng giữ lại nhiều dữ liệu người dùng nhất có thể trong khi xoá tất cả dữ liệu của trình duyệt.</translation>
 <translation id="53086358353377307">Cho phép bạn thiết lập danh sách mẫu URL để chỉ định trang web được phép đặt cookie.
 
@@ -11732,6 +11746,7 @@ Có nhiều chính sách liệt kê những nguồn gốc ảnh hưởng đến 
 
           Nếu không thiết lập chính sách này, 'BlockKeygen' sẽ được sử dụng và người dùng có thể thay đổi cài đặt này.</translation>
 <translation id="8314214821702356835">Cho phép người dùng phát nội dung đa phương tiện khi thiết bị đang khóa</translation>
+<translation id="8314308739926578606">Không cho phép sử dụng Công cụ cho nhà phát triển trên các ứng dụng và tiện ích được cài đặt theo chính sách doanh nghiệp hoặc từ phiên bản 114 trở đi. Nếu bạn là người dùng được quản lý, các tiện ích được tích hợp vào trình duyệt. Cho phép sử dụng Công cụ cho nhà phát triển trong các ngữ cảnh khác</translation>
 <translation id="8316940611391250886">Không cho phép các chứng chỉ thiếu tiện ích subjectAlternativeName</translation>
 <translation id="8319678975002906774">Đặt giá trị của cấu hình được quản lý cho các trang web tương ứng với các nguồn gốc cụ thể</translation>
 <translation id="8320149248919453401">Chế độ sạc pin</translation>
@@ -12600,25 +12615,6 @@ Những nguồn gốc không được chính sách hay chế độ cài đặt c
 <translation id="8892286064305622118">Dung lượng ổ đĩa trống cần có cho <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="8892771980172542172">Tên kênh cập nhật/phát hành của IWA. Giá trị này có thể là chuỗi bất kỳ; không áp dụng các hạn chế. Nếu người dùng không cung cấp giá trị thì kênh "default" sẽ được sử dụng.</translation>
 <translation id="8892783613915541293">Số lần trì hoãn và các hành động cần thực hiện khi thiết bị ở trạng thái rảnh và chạy bằng nguồn điện AC</translation>
-<translation id="8895045875428227171">Cài đặt 0 (Mặc định): Công cụ cho nhà phát triển được cung cấp cho việc duyệt web thông thường, nhưng bị hạn chế đối với các tiện ích do doanh nghiệp cài đặt và các tiện ích tích hợp sẵn dành cho người dùng được quản lý. Bắt đầu từ phiên bản M150, công cụ cho nhà phát triển cũng bị chặn trên mọi trang nhúng các tiện ích này, ngoại trừ trường hợp duy nhất là trình xem PDF tích hợp sẵn.
-
-Cài đặt 1: Các công cụ cho nhà phát triển và bảng điều khiển được mở khoá hoàn toàn và có thể truy cập trong mọi ngữ cảnh, kể cả trong các tiện ích theo chính sách doanh nghiệp.
-
-Cài đặt 2: Các công cụ cho nhà phát triển và tính năng kiểm tra phần tử bị vô hiệu hoá hoàn toàn trên toàn trình duyệt.
-
-Chế độ cài đặt này cũng tắt các phím tắt và mục truy cập trên trình đơn hoặc trình đơn theo bối cảnh dùng để mở các công cụ cho nhà phát triển hoặc Bảng điều khiển JavaScript.
-
-Kể từ phiên bản <ph name="PRODUCT_NAME" /> 99, chế độ cài đặt này cũng kiểm soát điểm truy cập cho tính năng "Xem nguồn trang". Nếu bạn đặt giá trị chính sách này thành "DeveloperToolsDisallowed" (giá trị 2), thì người dùng sẽ không truy cập được chế độ xem nguồn thông qua phím tắt hay trình đơn theo bối cảnh. Để chặn hoàn toàn chế độ xem nguồn, bạn cũng phải thêm "view-source:*" vào chính sách <ph name="URL_BLOCKLIST_POLICY_NAME" />.
-
-Kể từ phiên bản <ph name="PRODUCT_NAME" /> 119, chế độ cài đặt này cũng kiểm soát việc có thể kích hoạt và sử dụng chế độ nhà phát triển dành cho các Ứng dụng web tách biệt hay không.
-
-Kể từ phiên bản <ph name="PRODUCT_NAME" /> 128, nếu bạn đặt chính sách <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> thì chế độ cài đặt này sẽ không kiểm soát chế độ nhà phát triển trên trang tiện ích.
-
-Khả năng sử dụng Công cụ cho nhà phát triển được xác định theo thứ tự ưu tiên sau đây:
-1. Nếu một URL khớp với một mẫu trong chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> thì người dùng sẽ được phép sử dụng Công cụ cho nhà phát triển.
-2. Nếu bạn đặt <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> nhưng không đặt <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> thì mọi URL không có trong danh sách cho phép sẽ bị chặn.
-3. Nếu một URL khớp với một mẫu trong chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> thì Công cụ cho nhà phát triển sẽ bị chặn.
-4. Nếu một URL không thuộc danh sách cho phép và cũng không thuộc danh sách chặn thì chính sách này (<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />) sẽ là chính sách dự phòng.</translation>
 <translation id="8897796778265450949">Giới hạn thời gian mà một người dùng được xác thực qua GAIA khi không có SAML có thể đăng nhập ở chế độ ngoại tuyến</translation>
 <translation id="889814528399907891">Cho phép người dùng bật <ph name="LACROS_NAME" /> và đặt trình duyệt này làm trình duyệt chính</translation>
 <translation id="8900312706328930425">Tần suất báo cáo trên đám mây tính theo giờ</translation>

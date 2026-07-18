@@ -394,6 +394,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1272508081857842302">Opening <ph name="BEGIN_LINK" />supported links<ph name="END_LINK" /></translation>
 <translation id="1272978324304772054">This user account does not belong to the domain that the device is enrolled to.  If you want to enrol to a different domain you need to go through device recovery first.</translation>
 <translation id="1273937721055267968">Block <ph name="DOMAIN" /></translation>
+<translation id="1274721046703404848">Manage the connection between Search services and Google Workspace apps, like Google Drive</translation>
 <translation id="1274997165432133392">Cookies and other site data</translation>
 <translation id="1275936815032730048">launcher + right arrow</translation>
 <translation id="1275963833368139883">When you search your browsing history, answers and search results are based on the content of a page. This gives you improved results</translation>
@@ -10212,6 +10213,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8619803522055190423">Drop shadow</translation>
 <translation id="8620206585293032550">Inactive tabs appearance</translation>
 <translation id="8621979332865976405">Share your entire screen</translation>
+<translation id="8622145666696249878">Google Search AI Mode and connected apps</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="8625124982056504555">Read ChromeOS device and component serial numbers</translation>
 <translation id="862542460444371744">&amp;Extensions</translation>

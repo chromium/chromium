@@ -394,6 +394,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />Unterstützte Links<ph name="END_LINK" /> öffnen</translation>
 <translation id="1272978324304772054">Dieses Nutzerkonto gehört nicht zu der Domain, in der das Gerät angemeldet ist. Wenn du dich in einer anderen Domain anmelden möchten, musst du zunächst eine Gerätewiederherstellung durchführen.</translation>
 <translation id="1273937721055267968"><ph name="DOMAIN" /> blockieren</translation>
+<translation id="1274721046703404848">Verbindung zwischen Suchdiensten und Google Workspace-Apps wie Google Drive verwalten</translation>
 <translation id="1274997165432133392">Cookies und andere Websitedaten</translation>
 <translation id="1275936815032730048">Launcher-Taste + Rechtspfeil</translation>
 <translation id="1275963833368139883">Wenn du in deinem Browserverlauf suchst, basieren Antworten und Suchergebnisse auf dem Inhalt einer Seite. Dadurch werden die Ergebnisse verbessert.</translation>
@@ -10192,6 +10193,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8619803522055190423">Schlagschatten</translation>
 <translation id="8620206585293032550">Darstellung inaktiver Tabs</translation>
 <translation id="8621979332865976405">Gesamten Bildschirm teilen</translation>
+<translation id="8622145666696249878">KI-Modus der Google Suche und verbundene Apps</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="8625124982056504555">Seriennummern von ChromeOS-Geräten und -Komponenten lesen</translation>
 <translation id="862542460444371744">&amp;Erweiterungen</translation>

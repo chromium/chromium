@@ -394,6 +394,7 @@
 <translation id="1272508081857842302">باز کردن <ph name="BEGIN_LINK" />پیوندهای پشتیبانی‌شده<ph name="END_LINK" /></translation>
 <translation id="1272978324304772054">این حساب کاربری متعلق به دامنه‌ای که دستگاه در آن ثبت‌ شده است، نیست. اگر می‌خواهید در دامنه دیگری ثبت‌نام کنید ابتدا باید دستگاه را بازیابی کنید.</translation>
 <translation id="1273937721055267968">مسدود کردن <ph name="DOMAIN" /></translation>
+<translation id="1274721046703404848">‏مدیریت کردن اتصال بین سرویس‌های «جستجو» و برنامه‌های Google Workspace، مثل Google Drive</translation>
 <translation id="1274997165432133392">کوکی‌ها و دیگر داده‌های سایت</translation>
 <translation id="1275936815032730048">راه‌انداز + راست‌بَر</translation>
 <translation id="1275963833368139883">وقتی سابقه مرورتان را جستجو می‌کنید، پاسخ‌ها و نتایج جستجو براساس محتوای صفحه ارائه می‌شوند. با این روش نتایج بهتری دریافت خواهید کرد</translation>
@@ -4619,7 +4620,7 @@
 <translation id="4393102500004843976">جستجو + تبدیل + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="4393713825278446281">دستگاه‌های «جفت‌سازی سریع» ذخیره‌شده در <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4394049700291259645">غیر فعال کردن</translation>
-<translation id="4395129973926795186"><ph name="START_DATE" /> تا <ph name="END_DATE" /></translation>
+<translation id="4395129973926795186">‫<ph name="START_DATE" /> تا <ph name="END_DATE" /></translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{باز کردن همه}=1{باز کردن نشانک}one{باز کردن همه ({COUNT})}other{باز کردن همه ({COUNT})}}</translation>
 <translation id="4397372003838952832">لازم نیست این گذرواژه را به‌خاطر بسپارید. این گذرواژه در <ph name="GOOGLE_PASSWORD_MANAGER" /> برای <ph name="EMAIL" /> ذخیره خواهد شد.</translation>
 <translation id="4397844455100743910">درباره درخواست‌های دسترسی بیشتر بدانید.</translation>
@@ -10213,6 +10214,7 @@
 <translation id="8619803522055190423">سایه‌دار</translation>
 <translation id="8620206585293032550">ظاهر برگه‌های غیرفعال</translation>
 <translation id="8621979332865976405">هم‌رسانی کل صفحه‌نمایش</translation>
+<translation id="8622145666696249878">‏«حالت هوشواره‌ای جستجوی Google» و برنامه‌های متصل‌شده</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="8625124982056504555">‏خواندن شماره‌های سریال عنصر و دستگاه ChromeOS</translation>
 <translation id="862542460444371744">&amp;برنامه های افزودنی</translation>

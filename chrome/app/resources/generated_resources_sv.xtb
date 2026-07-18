@@ -394,6 +394,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1272508081857842302">Öppnar <ph name="BEGIN_LINK" />länkar som stöds<ph name="END_LINK" /></translation>
 <translation id="1272978324304772054">Det här användarkontot hör inte till den domän som enheten är registrerad för. Om du vill registrera enheten för en annan domän måste du återställa den först.</translation>
 <translation id="1273937721055267968">Blockera <ph name="DOMAIN" /></translation>
+<translation id="1274721046703404848">Hantera anslutningen mellan söktjänster och Google Workspace-appar, till exempel Google Drive</translation>
 <translation id="1274997165432133392">Cookies och annan webbplatsdata</translation>
 <translation id="1275936815032730048">Appstartaren + högerpil</translation>
 <translation id="1275963833368139883">När du söker i webbhistoriken baseras svaren och sökresultaten på innehållet på en sida. Detta ger dig bättre resultat</translation>
@@ -10212,6 +10213,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8619803522055190423">Skugga</translation>
 <translation id="8620206585293032550">Inaktiva flikars utseende</translation>
 <translation id="8621979332865976405">Dela hela skärmen</translation>
+<translation id="8622145666696249878">AI-läget i Google Sök och anslutna appar</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="8625124982056504555">Läsa serienummer för ChromeOS-enheter och komponenter</translation>
 <translation id="862542460444371744">&amp;Tillägg</translation>

@@ -394,6 +394,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1272508081857842302">Pagbubukas ng <ph name="BEGIN_LINK" />mga sinusuportahang link<ph name="END_LINK" /></translation>
 <translation id="1272978324304772054">Ang user account na ito ay hindi pagmamay-ari ng domain kung saan nakatala ang device.  Kung nais mong magpatala sa ibang domain, kailangan mo munang sumailalim sa pagbawi ng device.</translation>
 <translation id="1273937721055267968">I-block ang <ph name="DOMAIN" /></translation>
+<translation id="1274721046703404848">Pamahalaan ang koneksyon sa pagitan ng mga serbisyo ng Search at mga Google Workspace app, tulad ng Google Drive</translation>
 <translation id="1274997165432133392">Cookies at iba pang data ng site</translation>
 <translation id="1275936815032730048">launcher + pakanang arrow</translation>
 <translation id="1275963833368139883">Kapag naghanap ka sa iyong history ng pag-browse, nakabatay sa content ng page ang mga sagot at resulta ng paghahanap. Nagbibigay ito sa iyo ng mas magagandang resulta</translation>
@@ -10215,6 +10216,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8619803522055190423">Drop shadow</translation>
 <translation id="8620206585293032550">Hitsura ng mga hindi aktibong tab</translation>
 <translation id="8621979332865976405">Ibahagi ang iyong buong screen</translation>
+<translation id="8622145666696249878">Google Search AI Mode at mga nakakonektang app</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="8625124982056504555">Basahin ang mga serial number ng ChromeOS device at bahagi</translation>
 <translation id="862542460444371744">&amp;Mga Extension</translation>

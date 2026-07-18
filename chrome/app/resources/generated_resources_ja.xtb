@@ -394,6 +394,7 @@
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />対応リンク<ph name="END_LINK" />を開く</translation>
 <translation id="1272978324304772054">このユーザー アカウントは、デバイスが登録されているドメインに属していません。別のドメインに登録する場合は、まず、デバイス リカバリ操作を行う必要があります。</translation>
 <translation id="1273937721055267968"><ph name="DOMAIN" /> をブロック</translation>
+<translation id="1274721046703404848">検索サービスと Google Workspace アプリ（Google ドライブなど）の接続を管理します</translation>
 <translation id="1274997165432133392">Cookie と他のサイトデータ</translation>
 <translation id="1275936815032730048">ランチャー+右矢印</translation>
 <translation id="1275963833368139883">閲覧履歴を検索すると、ページのコンテンツに基づく回答と検索結果が表示され、探している情報を簡単に見つけられます</translation>
@@ -10183,6 +10184,7 @@
 <translation id="8619803522055190423">ドロップ シャドウ</translation>
 <translation id="8620206585293032550">アクティブでないタブのデザイン</translation>
 <translation id="8621979332865976405">画面全体の共有</translation>
+<translation id="8622145666696249878">Google 検索の AI モードと接続されたアプリ</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="8625124982056504555">ChromeOS デバイスとコンポーネントのシリアル番号を読み取る</translation>
 <translation id="862542460444371744">拡張機能(&amp;E)</translation>

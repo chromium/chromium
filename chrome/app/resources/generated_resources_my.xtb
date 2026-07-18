@@ -394,6 +394,7 @@
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />ပံ့ပိုးထားသော လင့်ခ်များ<ph name="END_LINK" /> ဖွင့်နေသည်</translation>
 <translation id="1272978324304772054">စက်ပစ္စည်းမှ စာရင်းသွင်းထားသည့် ဒိုမိန်းသို့ ဤအသုံးပြုသူ အကောင့်သည် သက်ဆိုင်မှု မရှိပါ။ အကယ်၍ သင်အခြားဒိုမိန်းသို့ စာရင်းပေးသွင်းလိုလျှင် စက်ပစ္စည်းရှာဖွေမှုသို့ ဦးစွာ ဖြတ်သွားရမည်။</translation>
 <translation id="1273937721055267968"><ph name="DOMAIN" /> ကို ပိတ်ထားရန်</translation>
+<translation id="1274721046703404848">Google Drive ကဲ့သို့သော Google Workspace အက်ပ်များနှင့် Search ဝန်ဆောင်မှုများကြား ချိတ်ဆက်မှုကို စီမံနိုင်သည်</translation>
 <translation id="1274997165432133392">ကူကီးနှင့် အခြား ဆိုက်ဒ် အချက်အလက်များ</translation>
 <translation id="1275936815032730048">Launcher + ညာညွှန်မြား</translation>
 <translation id="1275963833368139883">ကြည့်ရှုမှုမှတ်တမ်းကို ရှာဖွေသောအခါ အဖြေနှင့် ရှာဖွေမှုရလဒ်များသည် စာမျက်နှာ၏ အကြောင်းအရာအပေါ် အခြေခံသည်။ ၎င်းသည် ပိုကောင်းသည့်ရလဒ်များ ပေးသည်</translation>
@@ -10209,6 +10210,7 @@
 <translation id="8619803522055190423">အရိပ်ထည့်ခြင်း</translation>
 <translation id="8620206585293032550">အသုံးမပြုသော တဘ်များ၏ အသွင်အပြင်</translation>
 <translation id="8621979332865976405">သင့်ဖန်သားပြင် တစ်ခုလုံး မျှဝေခြင်း</translation>
+<translation id="8622145666696249878">Google Search AI မုဒ်နှင့် ချိတ်ဆက်အက်ပ်များ</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />- <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="8625124982056504555">ChromeOS စက်ပစ္စည်းနှင့် အစိတ်အပိုင်း နံပါတ်စဉ်များကို ဖတ်နိုင်သည်</translation>
 <translation id="862542460444371744">&amp;တိုးချဲ့မှုများ</translation>

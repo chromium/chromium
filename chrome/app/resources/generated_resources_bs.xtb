@@ -394,6 +394,7 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="1272508081857842302">Otvaranje <ph name="BEGIN_LINK" />podržanih linkova<ph name="END_LINK" /></translation>
 <translation id="1272978324304772054">Ovaj korisnički račun ne pripada domeni u koju je uređaj prijavljen.  Ako se želite prijaviti u drugu domenu, morate prvo proći kroz oporavak uređaja.</translation>
 <translation id="1273937721055267968">Blokiranje web lokacije <ph name="DOMAIN" /></translation>
+<translation id="1274721046703404848">Upravljajte vezom između usluga pretraživanja i aplikacija Google Workspacea, kao što je Google Disk</translation>
 <translation id="1274997165432133392">Kolačići i drugi podaci o web lokaciji</translation>
 <translation id="1275936815032730048">pokretač + strelica udesno</translation>
 <translation id="1275963833368139883">Kada pretražujete historiju pregledanja, odgovori i rezultati pretraživanja se zasnivaju na sadržaju stranice. Ovako ćete dobiti poboljšane rezultate</translation>
@@ -10213,6 +10214,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8619803522055190423">Padajuća sjenka</translation>
 <translation id="8620206585293032550">Izgled neaktivnih kartica</translation>
 <translation id="8621979332865976405">Dijelite cijeli ekran</translation>
+<translation id="8622145666696249878">AI način rada Google Pretraživanja i povezane aplikacije</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="8625124982056504555">Očitavanje serijskih brojeva ChromeOS uređaja i komponenti</translation>
 <translation id="862542460444371744">&amp;Ekstenzije</translation>

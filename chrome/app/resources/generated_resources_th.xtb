@@ -394,6 +394,7 @@
 <translation id="1272508081857842302">การเปิด<ph name="BEGIN_LINK" />ลิงก์ที่รองรับ<ph name="END_LINK" /></translation>
 <translation id="1272978324304772054">บัญชีผู้ใช้นี้ไม่ได้อยู่ในโดเมนที่ลงทะเบียนอุปกรณ์ ถ้าคุณต้องการลงทะเบียนไปยังโดเมนอื่น คุณจะต้องกู้คืนอุปกรณ์ก่อน</translation>
 <translation id="1273937721055267968">บล็อก <ph name="DOMAIN" /></translation>
+<translation id="1274721046703404848">จัดการการเชื่อมต่อระหว่างบริการ Search กับแอป Google Workspace เช่น Google ไดรฟ์</translation>
 <translation id="1274997165432133392">คุกกี้และข้อมูลอื่นของเว็บไซต์</translation>
 <translation id="1275936815032730048">Launcher + ลูกศรขวา</translation>
 <translation id="1275963833368139883">เมื่อคุณค้นหาประวัติการท่องเว็บ คำตอบและผลการค้นหาจะอิงตามเนื้อหาของหน้า การดำเนินการนี้จะช่วยให้คุณได้ผลลัพธ์ที่ดีขึ้น</translation>
@@ -10191,6 +10192,7 @@
 <translation id="8619803522055190423">เงาตกกระทบ</translation>
 <translation id="8620206585293032550">ลักษณะของแท็บที่ไม่ได้ใช้งาน</translation>
 <translation id="8621979332865976405">แชร์ทั้งหน้าจอ</translation>
+<translation id="8622145666696249878">โหมด AI ของ Google Search และแอปที่เชื่อมต่อ</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="8625124982056504555">อ่านหมายเลขซีเรียลของอุปกรณ์และคอมโพเนนต์ ChromeOS</translation>
 <translation id="862542460444371744">&amp;ส่วนขยาย</translation>

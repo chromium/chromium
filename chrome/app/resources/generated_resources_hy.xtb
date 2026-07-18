@@ -394,6 +394,7 @@
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />Աջակցվող հղումների<ph name="END_LINK" /> բացում</translation>
 <translation id="1272978324304772054">Օգտատիրոջ այս հաշիվը չի պատկանում տիրույթին, որտեղ գրանցված է սարքը: Եթե ցանկանում եք գրանցվել այլ տիրույթում, նախ պետք է վերականգնեք սարքը:</translation>
 <translation id="1273937721055267968">Արգելափակել <ph name="DOMAIN" /> տիրույթը</translation>
+<translation id="1274721046703404848">Կառավարել Որոնման ծառայությունների և Google Workspace հավելվածների, օրինակ՝ Google Drive-ի միջև կապը</translation>
 <translation id="1274997165432133392">Cookie ֆայլեր և կայքի այլ տվյալներ</translation>
 <translation id="1275936815032730048">գործարկիչ + աջ սլաք</translation>
 <translation id="1275963833368139883">Երբ որոնում եք ձեր այցելությունների պատմության մեջ, պատասխաններն ու որոնման արդյունքները հիմնվում են էջի բովանդակության վրա։ Դա բարելավում է արդյունքները</translation>
@@ -10192,6 +10193,7 @@
 <translation id="8619803522055190423">Հեռացնել ստվերը</translation>
 <translation id="8620206585293032550">Ոչ ակտիվ ներդիրների տեսքը</translation>
 <translation id="8621979332865976405">Կիսվեք ձեր ամբողջ էկրանով</translation>
+<translation id="8622145666696249878">Google Որոնման ԱԲ ռեժիմ և կապված հավելվածներ</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />՝ <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="8625124982056504555">Կարդալ ChromeOS սարքի և բաղադրիչների սերիական համարները</translation>
 <translation id="862542460444371744">&amp;Ընդլայնումներ</translation>

@@ -394,6 +394,7 @@
 <translation id="1272508081857842302">ກຳລັງເປີດ <ph name="BEGIN_LINK" />ລິ້ງຊ່ວຍເຫຼືອ<ph name="END_LINK" /></translation>
 <translation id="1272978324304772054">ບັນຊີຜູ້ໃຊ້ບໍ່ເປັນຂອງໂດເມນທີ່ອຸປະກອນໄດ້ລົງທະບຽນໃສ່. ຖ້າທ່ານຕ້ອງການລົງທະບຽນເປັນໂດເມນອື່ນ ທ່ານຕ້ອງໄປຜ່ານການກູ້ຄືນອຸປະກອນກ່ອນ.</translation>
 <translation id="1273937721055267968">ບລັອກ <ph name="DOMAIN" /></translation>
+<translation id="1274721046703404848">ຈັດການການເຊື່ອມຕໍ່ລະຫວ່າງບໍລິການຊອກຫາ ແລະ ແອັບ Google Workspace ເຊັ່ນ: Google Drive</translation>
 <translation id="1274997165432133392">ສະແດງຄຸກກີ້ ແລະຂໍ້ມູນເວັບໄຊທ໌ອື່ນ...</translation>
 <translation id="1275936815032730048">ຕົວເປີດໃຊ້ + ລູກສອນຂວາ</translation>
 <translation id="1275963833368139883">ເມື່ອທ່ານຊອກຫາປະຫວັດການທ່ອງເວັບຂອງທ່ານ, ຄໍາຕອບ ແລະ ຜົນການຊອກຫາແມ່ນອີງໃສ່ເນື້ອຫາຂອງໜ້າໃດໜຶ່ງ. ສິ່ງນີ້ເຮັດໃຫ້ທ່ານໄດ້ຮັບຜົນຮັບທີ່ປັບປຸງແລ້ວ</translation>
@@ -10208,6 +10209,7 @@
 <translation id="8619803522055190423">ເງົາ</translation>
 <translation id="8620206585293032550">ລັກສະນະຂອງແຖບທີ່ບໍ່ໄດ້ນຳໃຊ້</translation>
 <translation id="8621979332865976405">ແບ່ງປັນທັງໝົດໜ້າຈໍຂອງທ່ານ</translation>
+<translation id="8622145666696249878">ໂໝດ AI ຂອງ Google ຊອກຫາ ແລະ ແອັບທີ່ເຊື່ອມຕໍ່</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="8625124982056504555">ອ່ານອຸປະກອນ ChromeOS ແລະ ໝາຍເລກຊີຣຽວສ່ວນປະກອບ</translation>
 <translation id="862542460444371744">ສ່ວນຂະຫຍາຍ</translation>

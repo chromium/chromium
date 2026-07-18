@@ -394,6 +394,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />Dəstəklənən keçidlərin<ph name="END_LINK" /> açılması</translation>
 <translation id="1272978324304772054">Bu hesab cihazın qeyd olduğu domenə aid deyil. Başqa domenə qeyd etmək istəyirsinizsə, ilk öncə cihazı bərpa etməlisiniz.</translation>
 <translation id="1273937721055267968"><ph name="DOMAIN" /> adlı tətbiqi blok edin</translation>
+<translation id="1274721046703404848">Axtarış xidmətləri və Google Disk kimi Google Workspace tətbiqləri arasındakı əlaqəni idarə edin</translation>
 <translation id="1274997165432133392">Kukilər və sayt datası</translation>
 <translation id="1275936815032730048">başladıcı + sağ ox</translation>
 <translation id="1275963833368139883">Brauzer tarixçənizi axtardığınız zaman cavablar və axtarış nəticələri səhifənin kontentinə əsaslanır. Bununla daha yaxşı nəticələr təmin edilir</translation>
@@ -10199,6 +10200,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8619803522055190423">Düşən kölgə</translation>
 <translation id="8620206585293032550">Qeyri-aktiv tabların görünüşü</translation>
 <translation id="8621979332865976405">Tam ekranı paylaşın</translation>
+<translation id="8622145666696249878">Google Axtarış Sİ rejimi və birləşdirilmiş tətbiqlər</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="8625124982056504555">ChromeOS cihazı və komponentinin seriya nömrələrini oxumaq</translation>
 <translation id="862542460444371744">Artırmalar</translation>

@@ -394,6 +394,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1272508081857842302">Deschiderea <ph name="BEGIN_LINK" />linkurilor acceptate<ph name="END_LINK" /></translation>
 <translation id="1272978324304772054">Acest cont de utilizator nu aparține domeniului pe care este înscris dispozitivul. Dacă doriți să vă înscrieți pe un alt domeniu, trebuie să parcurgeți mai întâi procesul de recuperare a dispozitivului.</translation>
 <translation id="1273937721055267968">Blochează <ph name="DOMAIN" /></translation>
+<translation id="1274721046703404848">Gestionează conexiunea dintre serviciile de Căutare și aplicațiile Google Workspace, cum ar fi Google Drive</translation>
 <translation id="1274997165432133392">Cookie-urile și alte date privind site-urile</translation>
 <translation id="1275936815032730048">Lansator + săgeată spre dreapta</translation>
 <translation id="1275963833368139883">Când cauți în istoricul de navigare, răspunsurile și rezultatele căutării se bazează pe conținutul unei pagini. Astfel, vei obține rezultate îmbunătățite</translation>
@@ -10198,6 +10199,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8619803522055190423">Proiectare umbră</translation>
 <translation id="8620206585293032550">Aspect de file inactive</translation>
 <translation id="8621979332865976405">Arată întregul ecran</translation>
+<translation id="8622145666696249878">Modul AI din Căutarea Google și aplicațiile conectate</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="8625124982056504555">Citește numerele de serie ale dispozitivului ChromeOS și ale componentelor</translation>
 <translation id="862542460444371744">&amp;Extensii</translation>

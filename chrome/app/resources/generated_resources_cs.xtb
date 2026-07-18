@@ -394,6 +394,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1272508081857842302">Otevírání <ph name="BEGIN_LINK" />podporovaných odkazů<ph name="END_LINK" /></translation>
 <translation id="1272978324304772054">Tento uživatelský účet nepatří do domény, do které je zaregistrováno toto zařízení. Chcete-li se zaregistrovat do jiné domény, je nutné nejdříve provést obnovení zařízení.</translation>
 <translation id="1273937721055267968">Blokovat doménu <ph name="DOMAIN" /></translation>
+<translation id="1274721046703404848">Spravovat propojení mezi vyhledávacími službami a aplikacemi Google Workspace, jako je Disk Google</translation>
 <translation id="1274997165432133392">Soubory cookie a jiná data webů</translation>
 <translation id="1275936815032730048">spouštěč + šipka vpravo</translation>
 <translation id="1275963833368139883">Když vyhledáváte v historii prohlížení, odpovědi a výsledky vyhledávání vychází z obsahu stránek. Získáte tak lepší výsledky</translation>
@@ -10194,6 +10195,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8619803522055190423">Stín</translation>
 <translation id="8620206585293032550">Vzhled neaktivních karet</translation>
 <translation id="8621979332865976405">Sdílet celou obrazovku</translation>
+<translation id="8622145666696249878">Režim AI ve Vyhledávání Google a připojené aplikace</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="8625124982056504555">Číst sériová čísla zařízení se systémem ChromeOS a komponent</translation>
 <translation id="862542460444371744">Rozšíř&amp;ení</translation>

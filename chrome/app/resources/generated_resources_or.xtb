@@ -394,6 +394,7 @@
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />ସମର୍ଥିତ ଲିଙ୍କଗୁଡ଼ିକୁ<ph name="END_LINK" /> ଖୋଲିବା</translation>
 <translation id="1272978324304772054">ଏହି ୟୁଜର ଆକାଉଣ୍ଟ ଡିଭାଇସ ପଞ୍ଜିକୃତ ହୋଇଥିବା ଡୋମେନ ସହ ସମ୍ପୃକ୍ତ ନୁହେଁ। ଯଦି ଆପଣ ଏକ ଭିନ୍ନ ଡୋମେନରେ ପଞ୍ଜିକୃତ କରିବାକୁ ଚାହୁଁଛନ୍ତି ତେବେ ଆପଣଙ୍କୁ ପ୍ରଥମେ ଡିଭାଇସ ରିକଭରି ପ୍ରକ୍ରିୟା ଦେଇ ଯିବାକୁ ହେବ।</translation>
 <translation id="1273937721055267968"><ph name="DOMAIN" />କୁ ବ୍ଲକ କରନ୍ତୁ</translation>
+<translation id="1274721046703404848">Google Drive ପରି ସର୍ଚ୍ଚ ସର୍ଭିସେସ ଏବଂ Google Workspace ଆପ୍ସ ମଧ୍ୟରେ କନେକ୍ସନକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="1274997165432133392">କୁକୀ ଏବଂ ଅନ୍ୟ ସାଇଟ୍‍ ଡାଟା</translation>
 <translation id="1275936815032730048">ଲଞ୍ଚର + ଡାହାଣ ତୀର</translation>
 <translation id="1275963833368139883">ଆପଣ ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଇତିହାସ ସର୍ଚ୍ଚ କଲେ, ଉତ୍ତର ଏବଂ ସର୍ଚ୍ଚ ଫଳାଫଳ ଏକ ପୃଷ୍ଠାର ବିଷୟବସ୍ତୁ ଉପରେ ଆଧାରିତ ହୋଇଥାଏ। ଏହା ଆପଣଙ୍କୁ ଉନ୍ନତ ଫଳାଫଳ ଦେଇଥାଏ</translation>
@@ -10196,6 +10197,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8619803522055190423">ଡ୍ରପ୍ ଶାଡୋ</translation>
 <translation id="8620206585293032550">ନିଷ୍କ୍ରିୟ ଟାବ ଏପିଏରେନ୍ସ</translation>
 <translation id="8621979332865976405">ଆପଣଙ୍କର ସମ୍ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍ ସେୟାର୍ କରନ୍ତୁ</translation>
+<translation id="8622145666696249878">Google Search AI ମୋଡ ଏବଂ କନେକ୍ଟ ହୋଇଥିବା ଆପ୍ସ</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="8625124982056504555">ChromeOS ଡିଭାଇସ ଏବଂ କମ୍ପୋନେଣ୍ଟର କ୍ରମିକ ସଂଖ୍ୟା ପଢ଼ନ୍ତୁ</translation>
 <translation id="862542460444371744">&amp;ଏକ୍ସଟେନ୍‍ସନ୍‍</translation>

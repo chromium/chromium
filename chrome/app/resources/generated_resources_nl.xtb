@@ -394,6 +394,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />Ondersteunde links<ph name="END_LINK" /> openen</translation>
 <translation id="1272978324304772054">Dit gebruikersaccount hoort niet bij het domein waarbij het apparaat is geregistreerd. Als je het apparaat wilt registreren bij een ander domein, moet je eerst apparaatherstel uitvoeren.</translation>
 <translation id="1273937721055267968"><ph name="DOMAIN" /> blokkeren</translation>
+<translation id="1274721046703404848">De koppeling tussen Zoeken-services en Google Workspace-apps, zoals Google Drive, beheren</translation>
 <translation id="1274997165432133392">Cookies en andere sitegegevens</translation>
 <translation id="1275936815032730048">Launcher + pijl-rechts</translation>
 <translation id="1275963833368139883">Als je in je browsegeschiedenis zoekt, zijn antwoorden en zoekresultaten gebaseerd op de content van een pagina. Hierdoor krijg je betere resultaten.</translation>
@@ -10190,6 +10191,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8619803522055190423">Slagschaduw</translation>
 <translation id="8620206585293032550">Uiterlijk van inactieve tabbladen</translation>
 <translation id="8621979332865976405">Je volledige scherm delen</translation>
+<translation id="8622145666696249878">AI-modus van Google Zoeken en gekoppelde apps</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="8625124982056504555">Serienummers van ChromeOS-apparaat en component lezen</translation>
 <translation id="862542460444371744">&amp;Extensies</translation>

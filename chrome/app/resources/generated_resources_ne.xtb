@@ -394,6 +394,7 @@
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />खोल्न मिल्ने लिंकहरू<ph name="END_LINK" /> खोल्ने तरिका</translation>
 <translation id="1272978324304772054">यो प्रयोगकर्ता खाता साधन भर्ना भएको डोमेनमा पर्दैन । यदि तपाईं फरक डोमेनमा भर्ना हुन चाहनुहुन्छ भने, तपाईं पहिले डिभाइस रिकभरीमार्फत जानुपर्छ ।</translation>
 <translation id="1273937721055267968"><ph name="DOMAIN" /> ब्लक गर्नुहोस्</translation>
+<translation id="1274721046703404848">Search का सेवा र Google Drive जस्ता Google Workspace का एपहरूका बिचमा भएको कनेक्सन व्यवस्थापन गर्नुहोस्</translation>
 <translation id="1274997165432133392">कुकीहरू र अन्य साइट लगत</translation>
 <translation id="1275936815032730048">लन्चर + राइट एरो</translation>
 <translation id="1275963833368139883">तपाईंले आफ्नो ब्राउजिङ हिस्ट्री खोज्नुभयो भने तपाईंलाई पेजको सामग्रीका आधारमा जवाफ र खोज परिणामहरू देखाइन्छन्। यसले तपाईंलाई अझ राम्रा परिणामहरू उपलब्ध गराउँछ</translation>
@@ -10194,6 +10195,7 @@
 <translation id="8619803522055190423">ड्रप स्याडो</translation>
 <translation id="8620206585293032550">निष्क्रिय ट्याबहरूको स्वरूप</translation>
 <translation id="8621979332865976405">आफ्नो पूरै स्क्रिन सेयर गर्नुहोस्</translation>
+<translation id="8622145666696249878">Google Search AI मोड र कनेक्ट गरिएका एपहरू</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="8625124982056504555">ChromeOS चल्ने डिभाइस र त्यसका कम्पोनेन्टका क्रम सङ्ख्या रिड गर्ने</translation>
 <translation id="862542460444371744">&amp;विस्तारहरू</translation>

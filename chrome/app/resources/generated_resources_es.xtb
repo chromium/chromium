@@ -394,6 +394,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1272508081857842302">Al abrir <ph name="BEGIN_LINK" />enlaces compatibles<ph name="END_LINK" /></translation>
 <translation id="1272978324304772054">Esta cuenta de usuario no pertenece al dominio en el que se ha registrado el dispositivo. Si quieres registrarlo en un dominio diferente, primero debes llevar a cabo el proceso de recuperación de dispositivo.</translation>
 <translation id="1273937721055267968">Bloquear <ph name="DOMAIN" /></translation>
+<translation id="1274721046703404848">Gestiona la conexión entre los servicios de la Búsqueda y las aplicaciones de Google Workspace, como Google Drive</translation>
 <translation id="1274997165432133392">Cookies y otros datos de sitios</translation>
 <translation id="1275936815032730048">Tecla del menú de aplicaciones + flecha hacia la derecha</translation>
 <translation id="1275963833368139883">Cuando buscas en tu historial de navegación, las respuestas y los resultados de búsqueda se basan en el contenido de una página. Así, obtendrás mejores resultados.</translation>
@@ -10197,6 +10198,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8619803522055190423">Sombra paralela</translation>
 <translation id="8620206585293032550">Aspecto de las pestañas inactivas</translation>
 <translation id="8621979332865976405">Compartir toda la pantalla</translation>
+<translation id="8622145666696249878">Modo IA de la Búsqueda de Google y aplicaciones conectadas</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="8625124982056504555">Leer los números de serie del dispositivo ChromeOS y de los componentes</translation>
 <translation id="862542460444371744">&amp;Extensiones</translation>

@@ -134,6 +134,7 @@ Nota: Obtén más información sobre las políticas de mitigación de procesos (
 <translation id="1076751984131277498">Lista de dispositivos USB que se pueden desconectar permitidos</translation>
 <translation id="1077675271127011209">Inhabilitar informes de uso y datos relacionados con fallas</translation>
 <translation id="1079498696402787191">Usar el valor predeterminado para los hashes permitidos en los protocolos de enlace TLS</translation>
+<translation id="1079801999187584280">No permitir el uso de las Herramientas para desarrolladores</translation>
 <translation id="1081263326166769685">Si habilitas la política, <ph name="PRODUCT_OS_NAME" /> informará a Google sobre las métricas de uso y los datos de diagnóstico, incluidos los informes de fallas. Si inhabilitas la política, se desactivarán los informes sobre datos de diagnóstico y métricas.
 
 Para dispositivos administrados, esta política está habilitada de forma predeterminada y envía métricas a Google.
@@ -1858,6 +1859,21 @@ Esta política es una medida temporal y se quitará después de la versión 145 
 <translation id="2180958780733364832">Controlar el uso del modo sin interfaz gráfica</translation>
 <translation id="2182291258410176649">El usuario decide si habilita la copia de seguridad y el restablecimiento</translation>
 <translation id="2183338188392346527">No informar los contadores de tiempo de ejecución del dispositivo</translation>
+<translation id="2183838844225082873">Si le asignas a la política el valor "0" (la opción predeterminada), podrás acceder a las herramientas para desarrolladores y la Consola de JavaScript. No obstante, no podrás hacerlo en el contexto de extensiones instaladas por una política empresarial ni, a partir de la versión 114 y si es un usuario administrado, de extensiones integradas en el navegador. Si le asignas a la política el valor "1", podrás acceder a las herramientas para desarrolladores y la Consola de JavaScript en todos los contextos, incluido el de extensiones instaladas por una política empresarial. Si le asignas a la política el valor "2", no podrás acceder a las herramientas para desarrolladores ni inspeccionar elementos de sitios web.
+
+Esta configuración también desactivará las combinaciones de teclas y las entradas del menú contextual o de cualquier menú que permiten abrir las herramientas para desarrolladores o la Consola de JavaScript.
+
+A partir de la versión 99 de <ph name="PRODUCT_NAME" />, esta configuración controla los puntos de entrada de la función "Ver el código fuente de la página". Si estableces esta política como "DeveloperToolsDisallowed" (valor 2), los usuarios no podrán ver los códigos fuente de las páginas mediante una combinación de teclas ni el menú contextual. Para bloquear la vista de los códigos fuente, debes agregar "view-source:*" a la política <ph name="URL_BLOCKLIST_POLICY_NAME" />.
+
+A partir de la versión 119 de <ph name="PRODUCT_NAME" />, este parámetro de configuración también controla si se puede activar y usar el modo de desarrollador para apps web aisladas.
+
+A partir de la versión 128 de <ph name="PRODUCT_NAME" />, este parámetro de configuración no controla el modo de desarrollador en la página de extensiones si se establece la política <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />.
+
+La disponibilidad de las herramientas para desarrolladores se determina en el siguiente orden de prioridad:
+1. Si una URL coincide con un patrón de la política <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" />, se permiten las Herramientas para desarrolladores.
+2. Si se establece <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> y no se establece <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />, se bloquea cualquier URL que no esté en la lista de direcciones permitidas.
+3. Si una URL coincide con un patrón de la política <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />, se bloquearán las Herramientas para desarrolladores.
+4. Si una URL no está incluida en la lista de direcciones permitidas ni en la lista de direcciones bloqueadas, esta política (<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />) será la alternativa.</translation>
 <translation id="2187361040843865450">Aceptar solicitudes de vinculación de Bluetooth "Just Works"</translation>
 <translation id="2187372280917024033">La plantilla de URI del agente de resolución de DNS-over-HTTPS deseado. Si quieres especificar varios agentes de resolución de DNS-over-HTTPS, separa las plantillas de URI correspondientes con espacios. Esta política es muy similar a <ph name="DOH_TEMPLATES_POLICY_NAME" /> y, si la especificas, se anulará.
 A diferencia de la política <ph name="DOH_TEMPLATES_POLICY_NAME" />, esta política permite especificar la información de identidad.
@@ -2346,7 +2362,6 @@ sin conexión. El usuario aún puede hacer que los elementos estén disponibles 
 Si no estableces la política, <ph name="POLICY_VALUE_VISIBLE" /> es la
 selección predeterminada.</translation>
 <translation id="2488455166114458307">Permitir la API de Device Attributes en estos sitios</translation>
-<translation id="2489454942579368665">No permitir el uso de las Herramientas para desarrolladores</translation>
 <translation id="2489558694350871332">Permitir que el dispositivo ejecute máquinas virtuales</translation>
 <translation id="2492240920793040106">Habilitar los informes de información del sistema y el contenido de la página para ayudar a mejorar la Navegación segura</translation>
 <translation id="2496180316473517155">Historial de navegación</translation>
@@ -2799,7 +2814,6 @@ Si estableces la política en 2 - "Inhabilitada", no se permitirá la integraci�
 <translation id="2707733461906745082">Separación de perfiles</translation>
 <translation id="2707873794476722903">Se activó la Navegación segura en el modo estándar.</translation>
 <translation id="2709516037105925701">Autocompletar</translation>
-<translation id="2712089199157322391">Permitir las Herramientas para desarrolladores para la navegación web estándar, pero restringirlas para las extensiones instaladas por la empresa y las extensiones integradas del usuario administrado (bloqueadas en las páginas que incorporan estas extensiones desde la versión M150, excepto para el lector de PDF integrado).</translation>
 <translation id="2713913573196284609">Este valor deja de estar disponible a partir de M121. A partir de M121, los valores se tratarán como EnabledBelowThreshold.</translation>
 <translation id="2713977837384407666">Enviar siempre las métricas a Google</translation>
 <translation id="2714359695399346815">Si habilitas la política o no la estableces, se permitirá el uso de servidores STUN, lo que posibilitará que los clientes remotos descubran este equipo y se conecten con él aunque haya un firewall.
@@ -5653,6 +5667,7 @@ Para obtener información detallada sobre los patrones de URL válidos, consulta
 <translation id="4561940244682063697">No permitir que los sitios soliciten que el usuario comparta una transmisión de video por Internet de su pantalla</translation>
 <translation id="4562165737444703281">Permite que los usuarios habiliten o configuren la redirección de puertos de Crostini</translation>
 <translation id="456450545863578630">Habilitar la transferencia de archivos en conexiones de asistencia remota por parte de administradores empresariales</translation>
+<translation id="4567137030726189378">Permitir el uso de las Herramientas para desarrolladores</translation>
 <translation id="4570859815763368584">Dejó de estar disponible en M68. En su lugar, usa DefaultPopupsSetting.
 
       Para obtener una explicación completa, consulta https://www.chromestatus.com/feature/5675755719622656.
@@ -6974,7 +6989,6 @@ Nota: Esta política no se aplica a las actualizaciones de HSTS.</translation>
       Si no estableces la política, los usuarios que utilizan el desbloqueo rápido ingresarán sus contraseñas en la pantalla de bloqueo una vez al día.</translation>
 <translation id="5306186200045823863">Habilitar la confianza en la infraestructura de PKI heredada de Symantec Corporation</translation>
 <translation id="5307432759655324440">Disponibilidad del modo incógnito</translation>
-<translation id="5308289216279695777">Permitir el uso de las Herramientas para desarrolladores en todos los contextos, incluso en las extensiones de políticas empresariales</translation>
 <translation id="5308551343115571396">Después de inhabilitar <ph name="LACROS_NAME" />, intentaremos conservar la mayor cantidad de datos del usuario posible y quitar todos los datos de navegación.</translation>
 <translation id="53086358353377307">Te permite configurar una lista de patrones de URL donde se indiquen los sitios autorizados a configurar cookies.
 
@@ -12023,6 +12037,7 @@ Hay varias políticas que enumeran los orígenes que afectan las solicitudes a l
 
           Si esta política no se configura, se usará "BlockKeygen" y el usuario podrá cambiarla.</translation>
 <translation id="8314214821702356835">Permite que los usuarios reproduzcan contenido multimedia cuando está bloqueado el dispositivo</translation>
+<translation id="8314308739926578606">No permitir el uso de las Herramientas para desarrolladores en extensiones y apps instaladas por una política empresarial ni, a partir de la versión 114 y si es un usuario administrado, extensiones integradas en el navegador. Permitir el uso de las Herramientas para desarrolladores en otros contextos</translation>
 <translation id="8316940611391250886">No permitir certificados que carezcan de una extensión subjectAlternativeName</translation>
 <translation id="8319678975002906774">Establece los valores de la configuración administrada como los sitios web de orígenes específicos</translation>
 <translation id="8320149248919453401">Modo de carga de la batería</translation>
@@ -12945,25 +12960,6 @@ para llamar a esta API.</translation>
 <translation id="8892286064305622118">Espacio libre en disco que se requiere para <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="8892771980172542172">El nombre del canal de versiones/actualizaciones de IWA. Este valor puede ser cualquier cadena; no se imponen restricciones. Si no se proporciona ningún valor, se usará el canal "default".</translation>
 <translation id="8892783613915541293">Retrasos y acciones que se deben tomar cuando el dispositivo esté inactivo y funcionando con CA.</translation>
-<translation id="8895045875428227171">Configuración 0 (predeterminada): Las Herramientas para desarrolladores están disponibles para la navegación web estándar, pero restringidas para las extensiones instaladas por la empresa y las extensiones integradas del usuario administrado. A partir de la versión M150, también se bloquean en cualquier página que incorpore estas extensiones, con la única excepción del lector de PDF integrado.
-
-Parámetro de configuración 1: Las Herramientas para desarrolladores y la consola están completamente desbloqueadas y son accesibles en todos los contextos, incluso en las extensiones de políticas empresariales.
-
-Parámetro de configuración 2: Las Herramientas para desarrolladores y la inspección de elementos están completamente inhabilitadas en todo el navegador.
-
-Este parámetro de configuración también desactivará las combinaciones de teclas y las entradas del menú contextual o de cualquier menú que permiten abrir las herramientas para desarrolladores o la Consola de JavaScript.
-
-A partir de la versión 99 de <ph name="PRODUCT_NAME" />, este parámetro de configuración controla los puntos de entrada de la función "Ver el código fuente de la página". Si estableces esta política como "DeveloperToolsDisallowed" (valor 2), los usuarios no podrán ver los códigos fuente de las páginas mediante una combinación de teclas ni el menú contextual. Para bloquear la vista de los códigos fuente, debes agregar "view-source:*" a la política <ph name="URL_BLOCKLIST_POLICY_NAME" />.
-
-A partir de la versión 119 de <ph name="PRODUCT_NAME" />, este parámetro de configuración también controla si se puede activar y usar el modo de desarrollador para apps web aisladas.
-
-A partir de la versión 128 de <ph name="PRODUCT_NAME" />, este parámetro de configuración no controla el modo de desarrollador en la página de extensiones si se establece la política <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />.
-
-La disponibilidad de las Herramientas para desarrolladores se determina en el siguiente orden de prioridad:
-1. Si una URL coincide con un patrón de la política <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" />, se permiten las Herramientas para desarrolladores.
-2. Si se establece <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> y no se establece <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />, se bloquea cualquier URL que no esté en la lista de direcciones permitidas.
-3. Si una URL coincide con un patrón de la política <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />, se bloquearán las Herramientas para desarrolladores.
-4. Si una URL no está incluida en la lista de direcciones permitidas ni en la lista de direcciones bloqueadas, esta política (<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />) será la alternativa.</translation>
 <translation id="8897796778265450949">Limita el tiempo durante el cual puede acceder sin conexión un usuario que se autenticó mediante GAIA sin SAML</translation>
 <translation id="889814528399907891">Permitir que los usuarios habiliten <ph name="LACROS_NAME" /> y lo seleccionen como el navegador principal</translation>
 <translation id="8900312706328930425">Frecuencia de informes en la nube en horas</translation>

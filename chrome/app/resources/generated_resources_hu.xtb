@@ -394,6 +394,7 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1272508081857842302">A <ph name="BEGIN_LINK" />támogatott linkek<ph name="END_LINK" /> megnyitása</translation>
 <translation id="1272978324304772054">Ez a felhasználói fiók nem ahhoz a domainhez tartozik, amelyhez az eszköz. Ha másik domainen kívánja regisztrálni azt, először vissza kell állítania az eszköz beállításait.</translation>
 <translation id="1273937721055267968">A(z) <ph name="DOMAIN" /> letiltása</translation>
+<translation id="1274721046703404848">A Keresési szolgáltatások és a Google Workspace-alkalmazások (például a Google Drive) közötti kapcsolat kezelése</translation>
 <translation id="1274997165432133392">Cookie-k és egyéb webhelyadatok</translation>
 <translation id="1275936815032730048">indító + jobbra nyíl</translation>
 <translation id="1275963833368139883">A böngészési előzmények közötti kereséskor a válaszok és a keresési eredmények az oldal tartalmán alapulnak. Ezzel jobb eredményeket érhet el.</translation>
@@ -10209,6 +10210,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8619803522055190423">Árnyékvetés</translation>
 <translation id="8620206585293032550">Inaktív lapok megjelenése</translation>
 <translation id="8621979332865976405">Teljes képernyő megosztása</translation>
+<translation id="8622145666696249878">A Google Kereső AI-módja és az összekapcsolt alkalmazások</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="8625124982056504555">A ChromeOS-eszköz és az összetevő sorozatszámának olvasása</translation>
 <translation id="862542460444371744">Bővítménye&amp;k</translation>

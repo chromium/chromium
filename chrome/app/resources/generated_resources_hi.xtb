@@ -394,6 +394,7 @@
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />सहायता लिंक<ph name="END_LINK" /> खोले जा रहे हैं</translation>
 <translation id="1272978324304772054">यह उपयोगकर्ता खाता उस डोमेन से संबंधित नहीं है जिसमें डिवाइस का नाम दर्ज है.  अगर आप किसी दूसरे डोमेन में नाम दर्ज करना चाहते हैं तो, आपको पहले डिवाइस बहाल करना होगा.</translation>
 <translation id="1273937721055267968"><ph name="DOMAIN" /> को ब्लॉक करें</translation>
+<translation id="1274721046703404848">Search की सेवाओं और Google Workspace के ऐप्लिकेशन, जैसे कि Google Drive के बीच कनेक्शन मैनेज करें</translation>
 <translation id="1274997165432133392">कुकी और साइट का अन्य डेटा</translation>
 <translation id="1275936815032730048">लॉन्चर + राइट ऐरो</translation>
 <translation id="1275963833368139883">ब्राउज़िंग इतिहास खोजने पर, जवाब और खोज के नतीजे, पेज के कॉन्टेंट के आधार पर दिखाए जाते हैं. इससे आपको बेहतर नतीजे मिलते हैं</translation>
@@ -10210,6 +10211,7 @@
 <translation id="8619803522055190423">ड्रॉप शैडो</translation>
 <translation id="8620206585293032550">इस्तेमाल नहीं किए जा रहे टैब के दिखने का तरीका</translation>
 <translation id="8621979332865976405">अपनी पूरी स्क्रीन शेयर करें</translation>
+<translation id="8622145666696249878">Google Search का एआई मोड और कनेक्ट किए गए ऐप्लिकेशन</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="8625124982056504555">ChromeOS वाले डिवाइस और उसके कॉम्पोनेंट के सीरियल नंबर पढ़ता है</translation>
 <translation id="862542460444371744">&amp;एक्‍सटेंशन</translation>
