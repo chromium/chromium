@@ -321,6 +321,7 @@ if (!is_android) {
       "//base/test:test_support",
       "//chrome/browser/autocomplete",
       "//chrome/browser/contextual_search",
+      "//chrome/browser/contextual_tasks",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/search_engines",
       "//chrome/browser/ui:ui_features",
