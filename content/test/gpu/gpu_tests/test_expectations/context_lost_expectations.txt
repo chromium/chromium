@@ -237,6 +237,8 @@ crbug.com/365565140 [ angle-metal asan graphite-enabled intel-0x3e9b arch-x86_64
 crbug.com/338574390 [ amd-0x7340 angle-metal debug graphite-enabled mac no-clang-coverage ] ContextLost_WebGPUBlockedAfterJSNavigation [ Failure ]
 crbug.com/380088337 [ angle-metal asan graphite-enabled intel-0x3e9b sonoma ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ Failure ]
 
+crbug.com/536066868 [ mac apple-angle-metal-renderer:-apple-m2 asan ] * [ RetryOnFailure ]
+
 ###############################
 # Permanent Slow Expectations #
 ###############################
