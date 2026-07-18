@@ -417,6 +417,9 @@ public class BookmarkBarCoordinator
         mShouldBookmarkBarBeShown = isVisible;
         updateSceneLayerVisibility();
         updateAndroidWidgetVisibility();
+        if (mTopControlsStacker != null) {
+            mTopControlsStacker.requestLayerUpdateSync(false);
+        }
 
         if (!isVisible) {
             unregisterResource();
@@ -655,6 +658,9 @@ public class BookmarkBarCoordinator
             mIsInFullscreenMode = true;
             updateSceneLayerVisibility();
             updateAndroidWidgetVisibility();
+            if (mTopControlsStacker != null) {
+                mTopControlsStacker.requestLayerUpdateSync(false);
+            }
         }
     }
 
@@ -676,6 +682,9 @@ public class BookmarkBarCoordinator
         mIsInFullscreenMode = false;
         updateSceneLayerVisibility();
         updateAndroidWidgetVisibility();
+        if (mTopControlsStacker != null) {
+            mTopControlsStacker.requestLayerUpdateSync(false);
+        }
     }
 
     // TopResumedActivityChangedObserver implementation:
@@ -752,6 +761,14 @@ public class BookmarkBarCoordinator
 
         // The SceneLayer should never be visible when in full screen mode.
         if (mIsInFullscreenMode) {
+            mBookmarkBarSceneLayer.setVisibility(false);
+            return;
+        }
+
+        // If the Android controls are fully invisible (e.g. completely scrolled off screen), we do
+        // not need the SceneLayer to be visible. Hiding it here prevents single-frame flashes when
+        // height recalculations mismatch the CC offset.
+        if (mBrowserControlsStateProvider.getAndroidControlsVisibility() == INVISIBLE) {
             mBookmarkBarSceneLayer.setVisibility(false);
             return;
         }
