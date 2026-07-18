@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -63,7 +62,6 @@ class WebrtcVideoStream : public VideoStream, public VideoChannelStateObserver {
   void SetEventTimestampsSource(scoped_refptr<InputEventTimestampsSource>
                                     event_timestamps_source) override;
   void Pause(bool pause) override;
-  void SetObserver(Observer* observer) override;
   void SelectSource(webrtc::ScreenId id) override;
   void SetComposeEnabled(bool enabled) override;
   void SetMouseCursor(
@@ -91,8 +89,6 @@ class WebrtcVideoStream : public VideoStream, public VideoChannelStateObserver {
   void OnSinkAddedOrUpdated(const webrtc::VideoSinkWants& wants);
 
   // Called from |core_|.
-  void OnVideoSizeChanged(webrtc::DesktopSize frame_size,
-                          webrtc::DesktopVector frame_dpi);
   void SendCapturedFrame(
       std::unique_ptr<webrtc::DesktopFrame> desktop_frame,
       std::unique_ptr<WebrtcVideoEncoder::FrameStats> frame_stats);
@@ -110,8 +106,6 @@ class WebrtcVideoStream : public VideoStream, public VideoChannelStateObserver {
   scoped_refptr<webrtc::PeerConnectionInterface> peer_connection_;
 
   base::WeakPtr<HostVideoStatsDispatcher> video_stats_dispatcher_;
-
-  raw_ptr<Observer> observer_ = nullptr;
 
   const SessionOptions session_options_;
 

@@ -9,7 +9,6 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
 namespace webrtc {
-class DesktopSize;
 class DesktopVector;
 class MouseCursor;
 }  // namespace webrtc
@@ -18,15 +17,6 @@ namespace remoting::protocol {
 
 class VideoStream {
  public:
-  class Observer {
-   public:
-    // Called to notify about screen size changes. The size is specified in
-    // physical pixels.
-    virtual void OnVideoSizeChanged(VideoStream* stream,
-                                    const webrtc::DesktopSize& size,
-                                    const webrtc::DesktopVector& dpi) = 0;
-  };
-
   VideoStream() = default;
   virtual ~VideoStream() = default;
 
@@ -44,9 +34,6 @@ class VideoStream {
       std::unique_ptr<webrtc::MouseCursor> mouse_cursor) = 0;
   virtual void SetMouseCursorPosition(
       const webrtc::DesktopVector& position) = 0;
-
-  // Sets stream observer.
-  virtual void SetObserver(Observer* observer) = 0;
 
   // Selects the current desktop display (if multiple displays).
   virtual void SelectSource(webrtc::ScreenId id) = 0;

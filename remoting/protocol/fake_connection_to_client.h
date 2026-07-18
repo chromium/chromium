@@ -32,7 +32,6 @@ class FakeVideoStream : public protocol::VideoStream {
   void SetEventTimestampsSource(scoped_refptr<InputEventTimestampsSource>
                                     event_timestamps_source) override;
   void Pause(bool pause) override;
-  void SetObserver(Observer* observer) override;
   void SelectSource(webrtc::ScreenId id) override;
   void SetComposeEnabled(bool enabled) override;
   void SetMouseCursor(
@@ -42,13 +41,9 @@ class FakeVideoStream : public protocol::VideoStream {
 
   webrtc::ScreenId selected_source() const;
 
-  Observer* observer() { return observer_; }
-
   base::WeakPtr<FakeVideoStream> GetWeakPtr();
 
  private:
-  raw_ptr<Observer> observer_ = nullptr;
-
   webrtc::ScreenId selected_source_ = -200;
 
   base::WeakPtrFactory<FakeVideoStream> weak_factory_{this};

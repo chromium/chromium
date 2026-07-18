@@ -23,10 +23,6 @@ void FakeVideoStream::SetEventTimestampsSource(
 
 void FakeVideoStream::Pause(bool pause) {}
 
-void FakeVideoStream::SetObserver(Observer* observer) {
-  observer_ = observer;
-}
-
 void FakeVideoStream::SelectSource(webrtc::ScreenId id) {
   selected_source_ = id;
 }
