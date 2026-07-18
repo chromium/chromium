@@ -312,6 +312,9 @@ TEST_F(ContextualSearchSessionHandleTest,
 
   local_handle->CreateClientToAimRequest(std::move(request_info2));
 
+  // Verify removed_contexts includes the request ID for the deleted tab.
+  // Note: `submitted_tabs_` must NOT be erased during `DeleteFile` so its
+  // `request_id` remains available here for `removed_contexts`.
   ASSERT_TRUE(captured_info);
   ASSERT_EQ(captured_info->removed_contexts.size(), 1u);
   EXPECT_EQ(captured_info->removed_contexts[0].uuid(), 12345u);
@@ -558,8 +561,8 @@ TEST_F(ContextualSearchSessionHandleTest,
 
 TEST_F(
     ContextualSearchSessionHandleTest,
-    CreateClientToAimRequest_Recontextualization_DoesNotDeleteOldInRemovedContexts) {
-  // Enable the feature to keep tabs in `uploaded_context_tokens_` across turns.
+    CreateClientToAimRequest_Recontextualization_DeletesOldTokensButDoesNotDeleteTabInServer) {
+  // Enable the feature to keep tabs in uploaded_context_tokens_ across turns.
   base::test::ScopedFeatureList local_feature_list;
   local_feature_list.InitWithFeatures(
       {omnibox::kContextManagementInComposebox,
@@ -656,14 +659,15 @@ TEST_F(
   EXPECT_TRUE(captured_info->removed_contexts.empty());
 
   // Verify that the navigated `tab_token1` is removed, and only `tab_token2`
-  // remains in `submitted_tabs_` and `uploaded_context_tokens_`.
+  // remains in `submitted_tabs_` and `uploaded_context_tokens_` and
+  // `submitted_context_tokens`.
   const auto& submitted_tabs = local_handle->submitted_tabs();
   EXPECT_EQ(submitted_tabs.size(), 1u);
   auto it = submitted_tabs.find(SessionID::FromSerializedValue(1));
   ASSERT_NE(it, submitted_tabs.end());
   EXPECT_EQ(it->second.first, tab_token2);
   EXPECT_THAT(local_handle->GetSubmittedContextTokens(),
-              testing::UnorderedElementsAre(tab_token1, tab_token2));
+              testing::UnorderedElementsAre(tab_token2));
 }
 
 TEST_F(ContextualSearchSessionHandleTest,
@@ -1336,6 +1340,90 @@ TEST_F(ContextualSearchSessionHandleTest,
   ASSERT_TRUE(captured_info);
   ASSERT_EQ(captured_info->removed_contexts.size(), 1u);
   EXPECT_EQ(captured_info->removed_contexts[0].uuid(), 12345u);
+}
+
+TEST_F(ContextualSearchSessionHandleTest,
+       DeleteFile_RecontextualizedTab_RemovesAllTokens) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kContextManagementInComposebox,
+      {{"enable_tab_deselection", "true"}});
+
+  auto mock_controller =
+      std::make_unique<MockContextualSearchContextController>();
+  MockContextualSearchContextController* mock_controller_ptr =
+      mock_controller.get();
+
+  auto local_handle =
+      service_->CreateSessionForTesting(std::move(mock_controller), nullptr);
+  local_handle->CheckSearchContentSharingSettings(&prefs_);
+
+  // Submit Turn 1: Tab A (creating token 1).
+  base::UnguessableToken tab_token1 = local_handle->CreateContextToken();
+  FileInfo tab_info1;
+  tab_info1.file_token = tab_token1;
+  tab_info1.tab_session_id = SessionID::FromSerializedValue(1);
+  tab_info1.request_id = lens::LensOverlayRequestId();
+
+  EXPECT_CALL(*mock_controller_ptr, GetFileInfo(tab_token1))
+      .WillRepeatedly(testing::Return(&tab_info1));
+
+  auto request_info1 = std::make_unique<
+      ContextualSearchContextController::CreateClientToAimRequestInfo>();
+  EXPECT_CALL(*mock_controller_ptr, CreateClientToAimRequest(_))
+      .WillOnce(testing::Return(lens::ClientToAimMessage()));
+  local_handle->CreateClientToAimRequest(std::move(request_info1));
+
+  // Turn 2: Re-contextualize Tab A (thus adding token 2 (new navigated page)
+  // for tab A).
+  base::UnguessableToken tab_token2 = local_handle->CreateContextToken();
+  FileInfo tab_info2;
+  tab_info2.file_token = tab_token2;
+  tab_info2.tab_session_id = SessionID::FromSerializedValue(1);
+  tab_info2.request_id = lens::LensOverlayRequestId();
+
+  EXPECT_CALL(*mock_controller_ptr, GetFileInfo(tab_token2))
+      .WillRepeatedly(testing::Return(&tab_info2));
+
+  // User explicitly deletes Tab A (deleting active token 2).
+  // When deleting tab, Token 2 (unsubmitted) is deleted from
+  // controller since that token was never submitted. Token 1
+  // (which was submitted) is removed from `submitted_context_tokens_`
+  // but retained in controller for metadata. `submitted_tabs_` is retained
+  // until CreateClientToAimRequest extracts request_id for removed_contexts.
+  EXPECT_CALL(*mock_controller_ptr, DeleteFile(tab_token2))
+      .WillOnce(testing::Return(true));
+
+  EXPECT_TRUE(local_handle->DeleteFile(tab_token2));
+
+  // Verify associated tokens are cleared due to deleted tab.
+  EXPECT_FALSE(local_handle->submitted_tabs().empty());
+  EXPECT_TRUE(local_handle->GetUploadedContextTokens().empty());
+  EXPECT_TRUE(local_handle->GetSubmittedContextTokens().empty());
+  EXPECT_FALSE(
+      local_handle->IsTabInContext(SessionID::FromSerializedValue(1)));
+
+  // Turn 2: Create request to send deletion signal to server.
+  auto request_info2 = std::make_unique<
+      ContextualSearchContextController::CreateClientToAimRequestInfo>();
+  std::unique_ptr<
+      ContextualSearchContextController::CreateClientToAimRequestInfo>
+      captured_info;
+  EXPECT_CALL(*mock_controller_ptr, CreateClientToAimRequest(_))
+      .WillOnce(
+          [&](std::unique_ptr<
+              ContextualSearchContextController::CreateClientToAimRequestInfo>
+                  info) {
+            captured_info = std::move(info);
+            return lens::ClientToAimMessage();
+          });
+
+  local_handle->CreateClientToAimRequest(std::move(request_info2));
+
+  // Verify submitted_tabs is now cleared and request_id was sent in removed_contexts.
+  ASSERT_TRUE(captured_info);
+  ASSERT_EQ(captured_info->removed_contexts.size(), 1u);
+  EXPECT_TRUE(local_handle->submitted_tabs().empty());
 }
 
 TEST_F(ContextualSearchSessionHandleTest,
