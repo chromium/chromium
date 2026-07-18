@@ -21,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.appcompat.widget.TooltipCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -328,6 +329,24 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
 
         float scaleX = LocalizationUtils.isLayoutRtl() ? -1f : 1f;
 
+        if (SettingsInTab.isEnabled() && titles.size() > 1) {
+            // Set up a back button to go to the section for the previous title.
+            int prevIndex = titles.size() - 2;
+            var prevTitle = titles.get(prevIndex);
+            var backButton = new ImageView(mContext);
+            backButton.setImageResource(R.drawable.ic_arrow_back_24dp);
+            // Ensure size is large enough for touch accessibility.
+            int minTouchTargetPx = getDimenPx(R.dimen.min_touch_target_size);
+            backButton.setMinimumWidth(minTouchTargetPx);
+            backButton.setMinimumHeight(minTouchTargetPx);
+            backButton.setPaddingRelative(0, 0, paddingPx, 0);
+            backButton.setLayoutParams(new LinearLayout.LayoutParams(LAYOUT_CENTER_VERTICAL));
+            backButton.setOnClickListener(v -> navigateToTitle(prevTitle, prevIndex));
+            // Set both accessibility content description and tooltip.
+            TooltipCompat.setTooltipText(backButton, mContext.getString(R.string.back));
+            mContainer.addView(backButton);
+        }
+
         for (int i = 0; i < titles.size(); ++i) {
             if (i < mFirstVisibleTitleIndex) continue;
 
@@ -349,43 +368,39 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
             view.setLayoutParams(new LinearLayout.LayoutParams(LAYOUT_CENTER_VERTICAL));
             view.setBreakStrategy(LineBreaker.BREAK_STRATEGY_BALANCED);
 
-            final int backStackCount = title.backStackCount;
             final int finalIndex = i;
-            view.setOnClickListener(
-                    (View v) -> {
-                        assert mMultiColumnSettings != null;
-                        // Note: The current getBackStackEntryCount and recorded backStackCount
-                        // can be same, e.g., if the user tabs the last component of the
-                        // detailed title.
-                        if (backStackCount >= 0) {
-                            if (mMultiColumnSettings
-                                            .getChildFragmentManager()
-                                            .getBackStackEntryCount()
-                                    > backStackCount) {
-                                var entry =
-                                        mMultiColumnSettings
-                                                .getChildFragmentManager()
-                                                .getBackStackEntryAt(backStackCount);
-                                mMultiColumnSettings
-                                        .getChildFragmentManager()
-                                        .popBackStack(
-                                                entry.getId(),
-                                                FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                                mTitleTapCallback.onResult(entry.getName());
-                            }
-                        } else {
-                            if (mCachedDeepLinkPath != null) {
-                                SettingsIndexData.Entry entry = mCachedDeepLinkPath.get(finalIndex);
-                                launchFragment(entry);
-                            }
-                        }
-                    });
+            view.setOnClickListener((View v) -> navigateToTitle(title, finalIndex));
             mContainer.addView(view);
         }
 
         // Make the last-added/tapped one visible after adding titles.
         if (mContainer.getParent() instanceof HorizontalScrollView scrollView) {
             scrollView.post(() -> scrollView.fullScroll(HorizontalScrollView.FOCUS_RIGHT));
+        }
+    }
+
+    private void navigateToTitle(MultiColumnSettings.Title title, int index) {
+        assert mMultiColumnSettings != null;
+        // Note: The current getBackStackEntryCount and recorded backStackCount
+        // can be same, e.g., if the user tabs the last component of the
+        // detailed title.
+        if (title.backStackCount >= 0) {
+            if (mMultiColumnSettings.getChildFragmentManager().getBackStackEntryCount()
+                    > title.backStackCount) {
+                var entry =
+                        mMultiColumnSettings
+                                .getChildFragmentManager()
+                                .getBackStackEntryAt(title.backStackCount);
+                mMultiColumnSettings
+                        .getChildFragmentManager()
+                        .popBackStack(entry.getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                mTitleTapCallback.onResult(entry.getName());
+            }
+        } else {
+            if (mCachedDeepLinkPath != null) {
+                SettingsIndexData.Entry entry = mCachedDeepLinkPath.get(index);
+                launchFragment(entry);
+            }
         }
     }
 
