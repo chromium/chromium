@@ -4,5 +4,5 @@
 per-file direct_write*=etienneb@chromium.org
 
 # Direct3D related classes.
-per-file d3d_*=sunnyps@chromium.org
+per-file d3d_*=vasilyt@chromium.org
 per-file d3d_*=rafael.cintron@microsoft.com

@@ -17,7 +17,7 @@ zork@chromium.org
 ccameron@chromium.org
 
 # scheduling / begin frames
-sunnyps@chromium.org
+jonross@chromium.org
 szager@chromium.org
 
 # tiles, tile management, and raster work
@@ -25,7 +25,7 @@ vmiura@chromium.org
 vmpstr@chromium.org
 
 # texture uploading
-sunnyps@chromium.org
+vasilyt@chromium.org
 
 # math / geometry
 dbaron@chromium.org
@@ -58,7 +58,6 @@ gaiko@google.com
 petrcermak@chromium.org
 
 # paint
-sunnyps@chromium.org
 vasilyt@chromium.org
 fmalita@chromium.org
 
