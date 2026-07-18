@@ -765,7 +765,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="GPU.DirectComposition.CompositionMode2.VideoOrCanvas"
     enum="DxgiFramePresentationMode" expires_after="2025-02-04">
-  <owner>sunnyps@chromium.org</owner>
+  <owner>magchen@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     How the Desktop Window Manager presented Chrome's DirectComposition layers
@@ -788,7 +788,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="GPU.DirectComposition.DCLayerResult.Texture"
     enum="DCLayerResult" expires_after="2026-11-29">
-  <owner>sunnyps@chromium.org</owner>
+  <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -848,7 +848,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="GPU.DirectComposition.OverlayFormatUsed3" enum="DXGI_FORMAT"
     expires_after="2024-07-21">
-  <owner>sunnyps@chromium.org</owner>
+  <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <owner>magchen@chromium.org</owner>
   <summary>
@@ -861,7 +861,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="GPU.DirectComposition.OverlaysSupported"
     enum="BooleanOverlaySupported" expires_after="2026-11-15">
-  <owner>sunnyps@chromium.org</owner>
+  <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <owner>magchen@chromium.org</owner>
   <summary>
@@ -911,7 +911,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="GPU.DirectComposition.SwapChainFormat3" enum="DXGI_FORMAT"
     expires_after="2024-01-14">
-  <owner>sunnyps@chromium.org</owner>
+  <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <owner>magchen@chromium.org</owner>
   <summary>
@@ -923,7 +923,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="GPU.DirectComposition.VideoPresentationMode"
     enum="DirectCompositionVideoPresentationMode" expires_after="2025-04-27">
-  <owner>sunnyps@chromium.org</owner>
+  <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <owner>magchen@chromium.org</owner>
   <summary>
@@ -1134,7 +1134,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="GPU.FenceSyncRelease.GraphValidation.ForceReleaseNamespace"
     enum="CommandBufferNamespace" expires_after="2027-01-18">
   <owner>vasilyt@chromium.org</owner>
-  <owner>sunnyps@chromium.org</owner>
   <owner>yzshen@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -1146,7 +1145,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="GPU.FenceSyncRelease.{TaskGraphValidationType}.Cause"
     enum="ReleaseCause" expires_after="2027-01-18">
   <owner>vasilyt@chromium.org</owner>
-  <owner>sunnyps@chromium.org</owner>
   <owner>yzshen@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -1247,7 +1245,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Gpu.Graphite.GraphiteImageProviderAccessHitInCache"
     enum="Boolean" expires_after="2026-03-22">
   <owner>blundell@chromium.org</owner>
-  <owner>sunnyps@chromium.org</owner>
+  <owner>kylechar@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     For each request of an image from GraphiteImageProvider, records whether the
@@ -1257,7 +1255,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Gpu.Graphite.InsertRecordingStatus"
     enum="GraphiteInsertRecordingStatus" expires_after="2026-04-30">
-  <owner>sunnyps@chromium.org</owner>
+  <owner>kylechar@chromium.org</owner>
   <owner>michaelludwig@google.com</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -1267,7 +1265,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Gpu.GraphiteSharedContext.LockAcquireTimeUs"
     units="microseconds" expires_after="2026-12-27">
-  <owner>sunnyps@chromium.org</owner>
   <owner>magchen@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -1281,7 +1278,6 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Gpu.GraphiteSharedContext.LockAcquireTimeUs.LockedThreadInInsertRecording"
     units="microseconds" expires_after="2026-12-27">
-  <owner>sunnyps@chromium.org</owner>
   <owner>magchen@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -1296,7 +1292,6 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Gpu.GraphiteSharedContext.LockAcquireTimeUs.LockedThreadInSubmit"
     units="microseconds" expires_after="2026-12-27">
-  <owner>sunnyps@chromium.org</owner>
   <owner>magchen@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -1311,7 +1306,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="GPU.GraphValidation.Duration" units="ms"
     expires_after="2025-11-15">
   <owner>vasilyt@chromium.org</owner>
-  <owner>sunnyps@chromium.org</owner>
   <owner>yzshen@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -1323,7 +1317,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="GPU.GraphValidation.NeedsForceRelease" enum="Boolean"
     expires_after="2025-11-15">
   <owner>vasilyt@chromium.org</owner>
-  <owner>sunnyps@chromium.org</owner>
   <owner>yzshen@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -1431,7 +1424,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="GPU.IntelGpuSeriesType" enum="IntelGpuSeriesType"
     expires_after="2025-12-14">
-  <owner>sunnyps@chromium.org</owner>
+  <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
     Records user device's GPU series type. Only recorded on Windows platform at
@@ -1441,7 +1434,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="GPU.IOSurface.CreationTimeUs" units="microseconds"
     expires_after="2026-01-18">
-  <owner>sunnyps@chromium.org</owner>
+  <owner>vasilyt@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     The time that it took to create an IOSurface. Recorded for every IOSurface
@@ -1785,7 +1778,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="GPU.RasterDecoder.TimeToFlush" units="microseconds"
     expires_after="2024-04-28">
-  <owner>sunnyps@chromium.org</owner>
+  <owner>vasilyt@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Time it takes for RasterDecoderImpl::FlushSurfaces() to complete. Recorded
