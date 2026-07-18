@@ -461,6 +461,41 @@ public class TabVerticalViewBinderUnitTest {
 
     @Test
     @SmallTest
+    public void testActionButtonHover_EnterAndMove_HighlightsRowBackground() {
+        TabActionButtonData actionButtonData =
+                new TabActionButtonData(TabActionButtonType.CLOSE, mCloseListener);
+        mModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, actionButtonData);
+        mModel.set(TabProperties.IS_SELECTED, false);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_SELECTED);
+
+        // Directly enter hover on close button without triggering enter on row
+        MotionEvent hoverEnterEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 0f, 0f, 0);
+        hoverEnterEvent.setSource(InputDevice.SOURCE_MOUSE);
+        mCloseButton.dispatchGenericMotionEvent(hoverEnterEvent);
+
+        ColorStateList hoveredTint = mItemView.getBackgroundTintList();
+        assertNotNull(hoveredTint);
+        assertEquals(
+                TabUiThemeUtil.getHoveredTabContainerColor(
+                        mItemView.getContext(), /* isIncognito= */ false),
+                hoveredTint.getDefaultColor());
+        assertEquals(View.VISIBLE, mCloseButton.getVisibility());
+
+        // Dispatch hover move on close button
+        MotionEvent hoverMoveEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_MOVE, 0f, 0f, 0);
+        hoverMoveEvent.setSource(InputDevice.SOURCE_MOUSE);
+        mCloseButton.dispatchGenericMotionEvent(hoverMoveEvent);
+
+        ColorStateList tintAfterMove = mItemView.getBackgroundTintList();
+        assertNotNull(tintAfterMove);
+        assertEquals(hoveredTint.getDefaultColor(), tintAfterMove.getDefaultColor());
+        assertEquals(View.VISIBLE, mCloseButton.getVisibility());
+    }
+
+    @Test
+    @SmallTest
     public void testBindPinnedTab_FaviconAndClick() {
         ViewGroup pinnedView =
                 (ViewGroup)

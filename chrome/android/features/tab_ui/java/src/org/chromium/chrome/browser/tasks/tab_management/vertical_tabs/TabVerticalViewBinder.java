@@ -722,7 +722,19 @@ class TabVerticalViewBinder {
         if (actionButton != null) {
             actionButton.setOnHoverListener(
                     (v, motionEvent) -> {
-                        if (motionEvent.getAction() == MotionEvent.ACTION_HOVER_EXIT) {
+                        int action = motionEvent.getAction();
+                        if (action == MotionEvent.ACTION_HOVER_ENTER
+                                || action == MotionEvent.ACTION_HOVER_MOVE) {
+                            if (!model.get(TabProperties.IS_SELECTED)) {
+                                ViewCompat.setBackgroundTintList(
+                                        view,
+                                        ColorStateList.valueOf(
+                                                TabUiThemeUtil.getHoveredTabContainerColor(
+                                                        view.getContext(),
+                                                        /* isIncognito= */ false)));
+                            }
+                            updateIcons(model, view, /* isHovered= */ true);
+                        } else if (action == MotionEvent.ACTION_HOVER_EXIT) {
                             float xInView = v.getLeft() + motionEvent.getX();
                             float yInView = v.getTop() + motionEvent.getY();
                             if (xInView < 0
