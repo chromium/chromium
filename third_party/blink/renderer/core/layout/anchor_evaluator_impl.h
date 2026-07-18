@@ -12,6 +12,8 @@
 #include "third_party/blink/renderer/core/css/css_anchor_query_enums.h"
 #include "third_party/blink/renderer/core/css/out_of_flow_data.h"
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
+#include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
+#include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/style/style_position_anchor.h"
 #include "third_party/blink/renderer/platform/geometry/physical_offset.h"
@@ -37,13 +39,15 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
                       const LayoutObject* implicit_anchor,
                       const LayoutObject* css_containing_block,
                       WritingDirectionMode container_writing_direction,
-                      const PhysicalRect& container_rect,
-                      const std::optional<PhysicalRect>& scroll_rect)
+                      const LogicalSize& container_size,
+                      const LogicalRect& container_rect,
+                      const std::optional<LogicalRect>& scroll_rect)
       : query_box_(&query_box),
         anchor_map_(anchor_map),
         implicit_anchor_(implicit_anchor),
         query_box_actual_containing_block_(css_containing_block),
         container_writing_direction_(container_writing_direction),
+        container_size_(container_size),
         container_rect_(container_rect),
         scroll_rect_(scroll_rect) {}
 
@@ -78,6 +82,12 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
 
   // Given the computed value of `position-anchor`, returns the default anchor.
   const LayoutObject* DefaultAnchor(const DefaultAnchorData&) const;
+
+  // Returns the containing-block rect, adjusted by the position-area insets.
+  // See: https://drafts.csswg.org/css-position/#original-cb
+  LogicalRect AdjustedContainingBlockRect(
+      const std::optional<PositionAreaOffsets>&,
+      bool has_default_anchor) const;
 
   // Returns the most recent anchor evaluated. If more than one anchor has been
   // evaluated so far, nullptr is returned. This is done to avoid extra noise
@@ -142,18 +152,6 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   bool IsYAxis() const;
   bool IsRightOrBottom() const;
 
-  LayoutUnit AvailableSizeAlongAxis(
-      const PhysicalRect& position_area_modified_containing_block_rect) const {
-    return IsYAxis() ? position_area_modified_containing_block_rect.Height()
-                     : position_area_modified_containing_block_rect.Width();
-  }
-
-  // Returns the containing block, further constrained by the position-area.
-  // Not to be confused with the inset-modified containing block.
-  PhysicalRect PositionAreaModifiedContainingBlock(
-      const std::optional<PositionAreaOffsets>&,
-      bool has_default_anchor) const;
-
   const LayoutBox* query_box_ = nullptr;
   const AnchorMap* anchor_map_ = nullptr;
   const LayoutObject* implicit_anchor_ = nullptr;
@@ -167,10 +165,11 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
 
   WritingDirectionMode container_writing_direction_{WritingMode::kHorizontalTb,
                                                     TextDirection::kLtr};
+  const LogicalSize container_size_;
 
   // Either width or height will be used, depending on IsYAxis().
-  const PhysicalRect container_rect_;
-  const std::optional<PhysicalRect> scroll_rect_;
+  const LogicalRect container_rect_;
+  const std::optional<LogicalRect> scroll_rect_;
 
   // A single-value cache. If a call to Get has the same key as the last call,
   // then the cached result it returned. Otherwise, the value is created using

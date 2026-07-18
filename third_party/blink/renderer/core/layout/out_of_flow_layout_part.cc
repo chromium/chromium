@@ -1794,16 +1794,9 @@ AnchorEvaluatorImpl OutOfFlowLayoutPart::CreateAnchorEvaluator(
     }
   }
 
-  const WritingModeConverter container_converter(
-      container_info.writing_direction,
-      container_builder_->SizeForAnchorQueries());
-  PhysicalRect container_rect =
-      container_converter.ToPhysical(container_info.rect);
-  std::optional<PhysicalRect> scroll_rect =
-      container_info.scroll_rect
-          ? std::make_optional(
-                container_converter.ToPhysical(*container_info.scroll_rect))
-          : std::nullopt;
+  LogicalSize container_size = container_builder_->SizeForAnchorQueries();
+  LogicalRect container_rect = container_info.rect;
+  std::optional<LogicalRect> scroll_rect = container_info.scroll_rect;
 
   const AnchorMap* anchor_map = nullptr;
   const LayoutObject* actual_containing_block = nullptr;
@@ -1833,11 +1826,8 @@ AnchorEvaluatorImpl OutOfFlowLayoutPart::CreateAnchorEvaluator(
       stitched_container_size.block_size += logical_fragment.BlockSize();
     }
 
-    // Reconvert `container_rect`, this time based on the correct block-size.
-    const WritingModeConverter modified_container_converter(
-        container_info.writing_direction, stitched_container_size);
-    container_rect =
-        modified_container_converter.ToPhysical(container_info.rect);
+    // Update our container-size now that we know it.
+    container_size = stitched_container_size;
 
     // Scrollable containers are monolithic, so don't have a `scroll_rect`.
     scroll_rect = std::nullopt;
@@ -1881,8 +1871,8 @@ AnchorEvaluatorImpl OutOfFlowLayoutPart::CreateAnchorEvaluator(
 
   return AnchorEvaluatorImpl(candidate_layout_box, anchor_map, implicit_anchor,
                              actual_containing_block,
-                             container_info.writing_direction, container_rect,
-                             scroll_rect);
+                             container_info.writing_direction, container_size,
+                             container_rect, scroll_rect);
 }
 
 OutOfFlowLayoutPart::NodeInfo OutOfFlowLayoutPart::SetupNodeInfo(
@@ -2366,18 +2356,9 @@ OutOfFlowLayoutPart::TryCalculateOffset(
       candidate_style.GetWritingDirection();
   const auto container_writing_direction = container_info.writing_direction;
 
-  // Contract the container-rect based on the position-area if needed.
-  const LogicalRect container_rect = ([&]() {
-    if (const auto& offsets = candidate_style.PositionAreaOffsets()) {
-      const BoxStrut insets =
-          offsets->insets.ConvertToLogical(container_writing_direction);
-      LogicalRect rect = base_rect;
-      rect.ContractEdges(insets.block_start, insets.inline_end,
-                         insets.block_end, insets.inline_start);
-      return rect;
-    }
-    return base_rect;
-  })();
+  const LogicalRect container_rect =
+      anchor_evaluator.AdjustedContainingBlockRect(
+          candidate_style.PositionAreaOffsets(), has_default_anchor);
 
   const PhysicalSize container_physical_content_size =
       ToPhysicalSize(container_rect.size,

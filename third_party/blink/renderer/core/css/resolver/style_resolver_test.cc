@@ -4132,7 +4132,8 @@ TEST_F(StyleResolverTest, TryTacticsSet_Flip) {
       /*implicit_anchor=*/nullptr,
       /*css_containing_block=*/nullptr,
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      /*container_rect=*/PhysicalRect(),
+      /*container_size=*/LogicalSize(),
+      /*container_rect=*/LogicalRect(),
       /*scroll_rect=*/std::nullopt);
   const ComputedStyle* try_style = StyleForId(
       "div", StyleRecalcContext{.anchor_evaluator = &anchor_evaluator,

@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/css/anchor_query.h"
 #include "third_party/blink/renderer/core/layout/anchor_map.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
+#include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/style/anchor_specifier_value.h"
 #include "third_party/blink/renderer/core/style/position_area.h"
@@ -358,21 +359,22 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchor(
   }
 
   const bool has_default_anchor = DefaultAnchor(default_anchor_data);
-  const PhysicalRect position_area_modified_containing_block_rect =
-      PositionAreaModifiedContainingBlock(position_area_offsets,
-                                          has_default_anchor);
+  const PhysicalRect containing_block_rect =
+      WritingModeConverter(container_writing_direction_, container_size_)
+          .ToPhysical(AdjustedContainingBlockRect(position_area_offsets,
+                                                  has_default_anchor));
 
   const bool is_y_axis = IsYAxis();
+  const LayoutUnit axis_size = is_y_axis ? containing_block_rect.Height()
+                                         : containing_block_rect.Width();
 
-  PhysicalRect anchor_rect =
+  const PhysicalRect anchor_rect =
       CalculateAnchorRectWithScrollOffset(*anchor_reference);
   if (std::optional<LayoutUnit> result = ResolveAnchorValue(
-          anchor_rect, anchor_value, percentage,
-          AvailableSizeAlongAxis(position_area_modified_containing_block_rect),
+          anchor_rect, anchor_value, percentage, axis_size,
           container_writing_direction_,
           query_box_->StyleRef().GetWritingDirection(),
-          position_area_modified_containing_block_rect.offset, is_y_axis,
-          IsRightOrBottom())) {
+          containing_block_rect.offset, is_y_axis, IsRightOrBottom())) {
     bool& needs_scroll_adjustment = is_y_axis ? needs_scroll_adjustment_in_y_
                                               : needs_scroll_adjustment_in_x_;
     if (!needs_scroll_adjustment &&
@@ -649,19 +651,20 @@ AnchorEvaluatorImpl::ComputePositionAreaOffsetsForLayout(
   return PositionAreaOffsets(offsets, behaves_as_auto);
 }
 
-PhysicalRect AnchorEvaluatorImpl::PositionAreaModifiedContainingBlock(
+LogicalRect AnchorEvaluatorImpl::AdjustedContainingBlockRect(
     const std::optional<PositionAreaOffsets>& position_area_offsets,
     bool has_default_anchor) const {
-  PhysicalRect rect =
+  LogicalRect rect =
       has_default_anchor && scroll_rect_ ? *scroll_rect_ : container_rect_;
 
-  // If calculated, reduce the containing-block rect based on the position-area.
+  // If present, reduce the containing-block rect based on the position-area.
   if (position_area_offsets) {
-    rect.Contract(position_area_offsets->insets);
+    rect.Contract(position_area_offsets->insets.ConvertToLogical(
+        container_writing_direction_));
   }
 
-  DCHECK_GE(rect.size.width, LayoutUnit());
-  DCHECK_GE(rect.size.height, LayoutUnit());
+  DCHECK_GE(rect.size.inline_size, LayoutUnit());
+  DCHECK_GE(rect.size.block_size, LayoutUnit());
   return rect;
 }
 
