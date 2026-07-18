@@ -601,6 +601,10 @@ source_set("impl") {
     ]
   }
 
+  if (!is_android || enable_extensions_core) {
+    deps += [ "//chrome/browser/ui/webui:theme_source" ]
+  }
+
   if (enable_guest_view) {
     deps += [ "//components/guest_view/browser" ]
 

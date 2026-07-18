@@ -425,7 +425,7 @@ source_set("current_channel_logo") {
   ]
 }
 
-if (!is_android || enable_webui_ntp) {
+if (!is_android || enable_extensions_core) {
   source_set("theme_source") {
     sources = [ "theme_source.cc" ]
     public = [ "theme_source.h" ]
