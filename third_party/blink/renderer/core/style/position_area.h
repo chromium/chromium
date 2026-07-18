@@ -122,12 +122,6 @@ class CORE_EXPORT PositionArea {
   AlignJustifySelfFromPhysical(
       WritingDirectionMode container_writing_direction) const;
 
-  // Made public because they are used in unit test expectations.
-  static AnchorQuery AnchorTop();
-  static AnchorQuery AnchorBottom();
-  static AnchorQuery AnchorLeft();
-  static AnchorQuery AnchorRight();
-
  private:
   bool IsAmbiguousSelfReferenceBox() const;
 

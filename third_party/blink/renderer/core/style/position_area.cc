@@ -284,28 +284,4 @@ PositionArea::AlignJustifySelfFromPhysical(
                                  OverflowAlignment::kDefault)};
 }
 
-AnchorQuery PositionArea::AnchorTop() {
-  return AnchorQuery(CSSAnchorQueryType::kAnchor,
-                     AnchorSpecifierValue::Default(), /* percentage */ 0,
-                     CSSAnchorValue::kTop);
-}
-
-AnchorQuery PositionArea::AnchorBottom() {
-  return AnchorQuery(CSSAnchorQueryType::kAnchor,
-                     AnchorSpecifierValue::Default(), /* percentage */ 0,
-                     CSSAnchorValue::kBottom);
-}
-
-AnchorQuery PositionArea::AnchorLeft() {
-  return AnchorQuery(CSSAnchorQueryType::kAnchor,
-                     AnchorSpecifierValue::Default(), /* percentage */ 0,
-                     CSSAnchorValue::kLeft);
-}
-
-AnchorQuery PositionArea::AnchorRight() {
-  return AnchorQuery(CSSAnchorQueryType::kAnchor,
-                     AnchorSpecifierValue::Default(), /* percentage */ 0,
-                     CSSAnchorValue::kRight);
-}
-
 }  // namespace blink

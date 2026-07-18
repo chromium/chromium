@@ -572,12 +572,13 @@ AnchorEvaluatorImpl::ComputePositionAreaOffsetsForLayout(
       return LayoutUnit();
     }
     behaves_as_auto.top = (area == PositionAreaRegion::kTop);
-    const AnchorQuery query = (area == PositionAreaRegion::kBottom)
-                                  ? PositionArea::AnchorBottom()
-                                  : PositionArea::AnchorTop();
+    const CSSAnchorValue side = (area == PositionAreaRegion::kBottom)
+                                    ? CSSAnchorValue::kBottom
+                                    : CSSAnchorValue::kTop;
     AnchorScope anchor_scope(AnchorScope::Mode::kTop, this);
-    if (const std::optional<LayoutUnit> value =
-            Evaluate(query, default_anchor_data, std::nullopt)) {
+    if (const std::optional<LayoutUnit> value = EvaluateAnchor(
+            *AnchorSpecifierValue::Default(), side, /*percentage=*/0.f,
+            default_anchor_data, std::nullopt)) {
       return (area == PositionAreaRegion::kTop && *value > LayoutUnit())
                  ? LayoutUnit()
                  : *value;
@@ -591,12 +592,13 @@ AnchorEvaluatorImpl::ComputePositionAreaOffsetsForLayout(
       return LayoutUnit();
     }
     behaves_as_auto.bottom = (area == PositionAreaRegion::kBottom);
-    const AnchorQuery query = (area == PositionAreaRegion::kTop)
-                                  ? PositionArea::AnchorTop()
-                                  : PositionArea::AnchorBottom();
+    const CSSAnchorValue side = (area == PositionAreaRegion::kTop)
+                                    ? CSSAnchorValue::kTop
+                                    : CSSAnchorValue::kBottom;
     AnchorScope anchor_scope(AnchorScope::Mode::kBottom, this);
-    if (const std::optional<LayoutUnit> value =
-            Evaluate(query, default_anchor_data, std::nullopt)) {
+    if (const std::optional<LayoutUnit> value = EvaluateAnchor(
+            *AnchorSpecifierValue::Default(), side, /*percentage=*/0.f,
+            default_anchor_data, std::nullopt)) {
       return (area == PositionAreaRegion::kBottom && *value > LayoutUnit())
                  ? LayoutUnit()
                  : *value;
@@ -610,12 +612,13 @@ AnchorEvaluatorImpl::ComputePositionAreaOffsetsForLayout(
       return LayoutUnit();
     }
     behaves_as_auto.left = (area == PositionAreaRegion::kLeft);
-    const AnchorQuery query = (area == PositionAreaRegion::kRight)
-                                  ? PositionArea::AnchorRight()
-                                  : PositionArea::AnchorLeft();
+    const CSSAnchorValue side = (area == PositionAreaRegion::kRight)
+                                    ? CSSAnchorValue::kRight
+                                    : CSSAnchorValue::kLeft;
     AnchorScope anchor_scope(AnchorScope::Mode::kLeft, this);
-    if (const std::optional<LayoutUnit> value =
-            Evaluate(query, default_anchor_data, std::nullopt)) {
+    if (const std::optional<LayoutUnit> value = EvaluateAnchor(
+            *AnchorSpecifierValue::Default(), side, /*percentage=*/0.f,
+            default_anchor_data, std::nullopt)) {
       return (area == PositionAreaRegion::kLeft && *value > LayoutUnit())
                  ? LayoutUnit()
                  : *value;
@@ -629,12 +632,13 @@ AnchorEvaluatorImpl::ComputePositionAreaOffsetsForLayout(
       return LayoutUnit();
     }
     behaves_as_auto.right = (area == PositionAreaRegion::kRight);
-    const AnchorQuery query = (area == PositionAreaRegion::kLeft)
-                                  ? PositionArea::AnchorLeft()
-                                  : PositionArea::AnchorRight();
+    const CSSAnchorValue side = (area == PositionAreaRegion::kLeft)
+                                    ? CSSAnchorValue::kLeft
+                                    : CSSAnchorValue::kRight;
     AnchorScope anchor_scope(AnchorScope::Mode::kRight, this);
-    if (const std::optional<LayoutUnit> value =
-            Evaluate(query, default_anchor_data, std::nullopt)) {
+    if (const std::optional<LayoutUnit> value = EvaluateAnchor(
+            *AnchorSpecifierValue::Default(), side, /*percentage=*/0.f,
+            default_anchor_data, std::nullopt)) {
       return (area == PositionAreaRegion::kRight && *value > LayoutUnit())
                  ? LayoutUnit()
                  : *value;
