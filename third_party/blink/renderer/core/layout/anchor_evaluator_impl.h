@@ -32,30 +32,20 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   STACK_ALLOCATED();
 
  public:
-  // An empty evaluator that always return `nullopt`. This instance can still
-  // compute `HasAnchorFunctions()` and is used to keep the container's
-  // writing-direction for logical flip-* operations.
-  explicit AnchorEvaluatorImpl(WritingDirectionMode container_writing_direction)
-      : container_writing_direction_(container_writing_direction) {}
-
   AnchorEvaluatorImpl(const LayoutBox& query_box,
-                      const AnchorMap& anchor_map,
+                      const AnchorMap* anchor_map,
                       const LayoutObject* implicit_anchor,
                       const LayoutObject* css_containing_block,
                       WritingDirectionMode container_writing_direction,
                       const PhysicalRect& container_rect,
                       const std::optional<PhysicalRect>& scroll_rect)
       : query_box_(&query_box),
-        anchor_map_(&anchor_map),
+        anchor_map_(anchor_map),
         implicit_anchor_(implicit_anchor),
         query_box_actual_containing_block_(css_containing_block),
         container_writing_direction_(container_writing_direction),
         container_rect_(container_rect),
-        scroll_rect_(scroll_rect),
-        display_locks_affected_by_anchors_(
-            MakeGarbageCollected<GCedHeapHashSet<Member<Element>>>()) {
-    DCHECK(anchor_map_);
-  }
+        scroll_rect_(scroll_rect) {}
 
   // Returns true if any anchor reference in the axis is in the same scroll
   // container for that axis as the default anchor, in which case we need scroll

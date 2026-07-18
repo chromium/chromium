@@ -1808,10 +1808,7 @@ AnchorEvaluatorImpl OutOfFlowLayoutPart::CreateAnchorEvaluator(
   const AnchorMap* anchor_map = nullptr;
   const LayoutObject* actual_containing_block = nullptr;
   if (is_inside_fragmentation_context &&
-      RuntimeEnabledFeatures::FragmentedOofInCbEnabled()) {
-    // TODO(crbug.com/40267498): Implement this.
-    return AnchorEvaluatorImpl(container_info.writing_direction);
-  } else if (is_inside_fragmentation_context) {
+      !RuntimeEnabledFeatures::FragmentedOofInCbEnabled()) {
     // The containing block of the OOF is part of the fragmentation context
     // established by this container. Imagine that fragmentainers are stitched
     // together, for the purpose of calculating the bounding box of anchors.
@@ -1882,13 +1879,10 @@ AnchorEvaluatorImpl OutOfFlowLayoutPart::CreateAnchorEvaluator(
     anchor_map = container_builder_->GetAnchorMap();
   }
 
-  if (anchor_map) {
-    return AnchorEvaluatorImpl(candidate_layout_box, *anchor_map,
-                               implicit_anchor, actual_containing_block,
-                               container_info.writing_direction, container_rect,
-                               scroll_rect);
-  }
-  return AnchorEvaluatorImpl(container_info.writing_direction);
+  return AnchorEvaluatorImpl(candidate_layout_box, anchor_map, implicit_anchor,
+                             actual_containing_block,
+                             container_info.writing_direction, container_rect,
+                             scroll_rect);
 }
 
 OutOfFlowLayoutPart::NodeInfo OutOfFlowLayoutPart::SetupNodeInfo(

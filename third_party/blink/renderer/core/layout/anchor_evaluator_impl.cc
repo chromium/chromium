@@ -428,6 +428,10 @@ const PhysicalAnchorReference* AnchorEvaluatorImpl::ResolveAnchorForEvaluation(
   UpdateAccessibilityAnchor(anchor_reference->GetLayoutObject());
 
   if (anchor_reference->GetDisplayLocks()) {
+    if (!display_locks_affected_by_anchors_) {
+      display_locks_affected_by_anchors_ =
+          MakeGarbageCollected<GCedHeapHashSet<Member<Element>>>();
+    }
     for (auto& display_lock : *anchor_reference->GetDisplayLocks()) {
       display_locks_affected_by_anchors_->insert(display_lock);
     }
