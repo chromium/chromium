@@ -16,6 +16,8 @@ test_harness_script = r"""
   };
 """
 
+ASAN_TEST_TIMEOUT_MULTIPLIER = 3
+
 
 def safe_feature_name(feature: str) -> str:
   return feature.lower().replace(' ', '_')
@@ -45,6 +47,12 @@ class HardwareAcceleratedFeatureIntegrationTest(
     self.tab.action_runner.Navigate(
         url, script_to_evaluate_on_commit=test_harness_script)
 
+  def _GetTestTimeout(self):
+    timeout = 30
+    if self._is_asan:
+      timeout *= ASAN_TEST_TIMEOUT_MULTIPLIER
+    return timeout
+
   @classmethod
   def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
     tests = ('webgl', '2d_canvas')
@@ -57,7 +65,8 @@ class HardwareAcceleratedFeatureIntegrationTest(
     feature = args[0]
     self._Navigate(test_path)
     tab = self.tab
-    tab.WaitForJavaScriptCondition('window.gpuPagePopulated', timeout=30)
+    tab.WaitForJavaScriptCondition('window.gpuPagePopulated',
+                                   timeout=self._GetTestTimeout())
     if not tab.EvaluateJavaScript(
         'VerifyHardwareAccelerated({{ feature }})', feature=feature):
       print('Test failed. Printing page contents:')
