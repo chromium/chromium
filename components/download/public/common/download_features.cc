@@ -86,6 +86,9 @@ BASE_FEATURE(kOpenDownloadInFilesAppIfNoHandlerFound,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
 );
+
+BASE_FEATURE(kEnableDownloadSaveAsContextMenu,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kDeferredDownloadHistoryLoading,

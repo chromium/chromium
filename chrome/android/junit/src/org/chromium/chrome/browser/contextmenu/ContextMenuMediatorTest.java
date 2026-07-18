@@ -37,9 +37,12 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ContextMenuItemType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.listmenu.ListItemType;
@@ -56,6 +59,7 @@ import java.util.List;
 /** Unit tests for the context menu mediator. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(UNIT_TESTS)
+@DisableFeatures({ChromeFeatureList.ENABLE_DOWNLOAD_SAVE_AS_CONTEXT_MENU})
 public class ContextMenuMediatorTest {
 
     // For submenu navigation tests
@@ -89,6 +93,7 @@ public class ContextMenuMediatorTest {
 
     @Before
     public void setup() {
+        FeatureList.setDisableNativeForTesting(true);
         mMediator =
                 new ContextMenuMediator(
                         mActivity,

@@ -324,6 +324,7 @@ public class DownloadLocationDialogCoordinator
                         DownloadUtils.getStringForBytes(mContext, mTotalBytes));
                 builder.with(DownloadLocationDialogProperties.SHOW_SUBTITLE, false);
                 break;
+            case DownloadLocationDialogType.FORCE_PROMPT:
             case DownloadLocationDialogType.DEFAULT:
                 builder.with(DownloadLocationDialogProperties.TITLE, getDefaultTitle());
 

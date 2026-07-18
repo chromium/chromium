@@ -4,6 +4,7 @@
 
 #include "components/download/content/public/context_menu_download.h"
 
+#include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/context_menu_params.h"
@@ -41,7 +42,8 @@ void CreateContextMenuDownload(const GURL& url,
   if (is_media) {
     dl_params->set_prefer_cache(true);
   }
-  dl_params->set_prompt(false);
+  dl_params->set_prompt(base::FeatureList::IsEnabled(
+      download::features::kEnableDownloadSaveAsContextMenu));
   dl_params->set_request_origin(origin);
   dl_params->set_suggested_name(params.suggested_filename);
   dl_params->set_download_source(download::DownloadSource::CONTEXT_MENU);
