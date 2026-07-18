@@ -2294,7 +2294,7 @@
     },
     {
       name: "DeviceOrientationRequestPermission",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "DevicePosture",

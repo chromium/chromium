@@ -71,11 +71,6 @@ constexpr std::string_view kDeviceOrientationAbsoluteScript = R"(
 
 class DeviceSensorPermissionBrowserTest : public InProcessBrowserTest {
  public:
-  DeviceSensorPermissionBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kDeviceOrientationRequestPermission);
-  }
-
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -85,9 +80,6 @@ class DeviceSensorPermissionBrowserTest : public InProcessBrowserTest {
     return HostContentSettingsMapFactory::GetForProfile(
         browser()->GetProfile());
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(DeviceSensorPermissionBrowserTest,
