@@ -6,9 +6,11 @@
 
 #import <set>
 
+#import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_picker_commands.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
+#import "ios/chrome/browser/tab_picker/public/tab_picker_logger.h"
 #import "ios/chrome/browser/tab_picker/public/tab_picker_snackbar_presenter.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -20,7 +22,8 @@ constexpr NSUInteger kMaxTabAttachmentCount = 10;
 
 }  // namespace
 
-@interface GeminiTabPickerHandler () <TabPickerSnackbarPresenter>
+@interface GeminiTabPickerHandler () <TabPickerSnackbarPresenter,
+                                      TabPickerLogger>
 @end
 
 @implementation GeminiTabPickerHandler
@@ -33,6 +36,7 @@ constexpr NSUInteger kMaxTabAttachmentCount = 10;
       [[TabPickerParams alloc] initWithSnackbarPresenter:self];
   params.baseViewController = presentingViewController;
   params.maxTabAttachmentCount = kMaxTabAttachmentCount;
+  params.logger = self;
   if (self.selectedTabsProvider) {
     params.preselectedWebStateIDs = self.selectedTabsProvider();
   }
@@ -48,6 +52,16 @@ constexpr NSUInteger kMaxTabAttachmentCount = 10;
 
   [self.tabPickerHandler showTabPickerWithParams:params
                                       completion:completionBlock];
+}
+
+#pragma mark - TabPickerLogger
+
+- (void)logTabPickerShown {
+  RecordGeminiTabPickerOpened();
+}
+
+- (void)logTabPickerHidden {
+  RecordGeminiTabPickerDismissed();
 }
 
 #pragma mark - TabPickerSnackbarPresenter

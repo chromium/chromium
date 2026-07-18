@@ -45,6 +45,12 @@ typedef void (^GeminiTabDetachRequestCallback)(NSString* tabID);
 // Whether the current session is the first session.
 @property(nonatomic, assign) BOOL isFirstSession;
 
+// Provider for the number of attached tabs.
+@property(nonatomic, copy) NSUInteger (^attachedTabsCountProvider)(void);
+
+// Provider for whether a multi-tab prompt was used.
+@property(nonatomic, copy) BOOL (^isMultiTabUsedProvider)(void);
+
 // Callback invoked when the user requests to detach a tab from the floaty.
 @property(nonatomic, copy)
     GeminiTabDetachRequestCallback tabDetachRequestCallback;
