@@ -127,32 +127,22 @@ bool ShaderTranslator::Init(GLenum shader_type,
   compile_options_.clampIndirectArrayBounds = true;
   compile_options_.emulateGLDrawID = true;
   compile_options_.emulateGLBaseVertexBaseInstance = true;
+  compile_options_.initOutputVariables = true;
 
   std::string compile_options_string =
       "objectCode:"
       "limitExpressionComplexity:limitCallStackDepth:clampIndirectArrayBounds:"
-      "emulateGLDrawID:emulateGLBaseVertexBaseInstance";
+      "emulateGLDrawID:emulateGLBaseVertexBaseInstance:initOutputVariables";
 
   if (gl_shader_interm_output) {
     compile_options_.intermediateTree = true;
     compile_options_string += ":intermediateTree";
   }
 
-  switch (shader_spec) {
-    case SH_WEBGL_SPEC:
-    case SH_WEBGL2_SPEC:
-      compile_options_.initOutputVariables = true;
-      break;
-    default:
-      break;
-  }
-
   // Build the options string for additional features that may be set by the
   // caller.  Note that this code is used by the validating command decoder,
   // which is deprecated.  No new features are expected to be enabled, neither
   // is it expected for there to be new users of this code.
-  if (compile_options_.initOutputVariables)
-    compile_options_string += ":initOutputVariables";
   if (compile_options_.initGLPosition)
     compile_options_string += ":initGLPosition";
   if (compile_options_.unfoldShortCircuit)

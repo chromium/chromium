@@ -389,6 +389,22 @@ TEST_F(ES3ShaderTranslatorTest, GetInterfaceBlocks) {
   EXPECT_TRUE(iter != interface_block_map.end());
 }
 
+TEST_F(ShaderTranslatorTest, OutputVariablesInitializedForAllSpecs) {
+  ShBuiltInResources resources;
+  sh::InitBuiltInResources(&resources);
+
+  for (ShShaderSpec spec :
+       {SH_GLES2_SPEC, SH_GLES3_SPEC, SH_WEBGL_SPEC, SH_WEBGL2_SPEC}) {
+    scoped_refptr<ShaderTranslator> translator = new ShaderTranslator();
+    ASSERT_TRUE(translator->Init(GL_FRAGMENT_SHADER, spec, &resources,
+                                 SH_ESSL_OUTPUT, {}, false));
+    std::string options(
+        translator->GetStringForOptionsThatWouldAffectCompilation()->data);
+    EXPECT_NE(options.find("initOutputVariables"), std::string::npos)
+        << "spec=" << spec;
+  }
+}
+
 TEST_F(ShaderTranslatorTest, OptionsString) {
   scoped_refptr<ShaderTranslator> translator_1 = new ShaderTranslator();
   scoped_refptr<ShaderTranslator> translator_2 = new ShaderTranslator();
@@ -397,14 +413,14 @@ TEST_F(ShaderTranslatorTest, OptionsString) {
   ShBuiltInResources resources;
   sh::InitBuiltInResources(&resources);
 
-  ShCompileOptions with_init_output_variables{};
-  with_init_output_variables.initOutputVariables = true;
+  ShCompileOptions with_init_gl_position{};
+  with_init_gl_position.initGLPosition = true;
 
   ASSERT_TRUE(translator_1->Init(GL_VERTEX_SHADER, SH_GLES2_SPEC, &resources,
                                  SH_GLSL_150_CORE_OUTPUT, {}, false));
   ASSERT_TRUE(translator_2->Init(GL_FRAGMENT_SHADER, SH_GLES2_SPEC, &resources,
-                                 SH_GLSL_150_CORE_OUTPUT,
-                                 with_init_output_variables, false));
+                                 SH_GLSL_150_CORE_OUTPUT, with_init_gl_position,
+                                 false));
   resources.EXT_draw_buffers = 1;
   ASSERT_TRUE(translator_3->Init(GL_VERTEX_SHADER, SH_GLES2_SPEC, &resources,
                                  SH_GLSL_150_CORE_OUTPUT, {}, false));

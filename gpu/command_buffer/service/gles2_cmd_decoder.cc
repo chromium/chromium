@@ -3719,7 +3719,9 @@ bool GLES2DecoderImpl::InitializeShaderTranslator() {
               : 0;
       break;
     case CONTEXT_TYPE_OPENGLES2:
-      shader_spec = SH_GLES2_SPEC;
+      // Map OpenGLES contexts to WebGL shader specs to enforce WebGL-specific
+      // safety mitigations and shader sanitization.
+      shader_spec = SH_WEBGL_SPEC;
       resources.OES_standard_derivatives =
           features().oes_standard_derivatives ? 1 : 0;
       resources.ARB_texture_rectangle =
@@ -3740,7 +3742,9 @@ bool GLES2DecoderImpl::InitializeShaderTranslator() {
           features().ext_blend_func_extended ? 1 : 0;
       break;
     case CONTEXT_TYPE_OPENGLES3:
-      shader_spec = SH_GLES3_SPEC;
+      // Map OpenGLES contexts to WebGL shader specs to enforce WebGL-specific
+      // safety mitigations and shader sanitization.
+      shader_spec = SH_WEBGL2_SPEC;
       resources.ARB_texture_rectangle =
           features().arb_texture_rectangle ? 1 : 0;
       resources.OES_EGL_image_external =
@@ -3754,12 +3758,12 @@ bool GLES2DecoderImpl::InitializeShaderTranslator() {
       NOTREACHED();
   }
 
-  if (shader_spec == SH_WEBGL_SPEC || shader_spec == SH_WEBGL2_SPEC) {
+  if (feature_info_->IsWebGLContext()) {
     resources.ANGLE_multi_draw =
         multi_draw_explicitly_enabled_ && features().webgl_multi_draw;
   }
 
-  if (shader_spec == SH_WEBGL2_SPEC) {
+  if (feature_info_->context_type() == CONTEXT_TYPE_WEBGL2) {
     // The gl_BaseVertex/BaseInstance shader builtins is disabled in ANGLE for
     // WebGL As they are removed in
     // https://github.com/KhronosGroup/WebGL/pull/3278
@@ -3773,7 +3777,7 @@ bool GLES2DecoderImpl::InitializeShaderTranslator() {
          features().webgl_multi_draw_instanced_base_vertex_base_instance);
   }
 
-  if (((shader_spec == SH_WEBGL_SPEC || shader_spec == SH_WEBGL2_SPEC) &&
+  if ((feature_info_->IsWebGLContext() &&
        features().enable_shader_name_hashing) ||
       force_shader_name_hashing_for_test) {
     // TODO(crbug.com/40601370): In theory, it should be OK to change this
