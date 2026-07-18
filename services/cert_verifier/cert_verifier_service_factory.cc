@@ -66,6 +66,15 @@ class ChromeRootStoreData;
 namespace cert_verifier {
 namespace {
 
+// The maximum uncertainty for network time that is considered acceptable. This
+// value is used to determine whether the network time update should be used to
+// update the CertVerifierService's time tracker.
+//
+// This is derived from the 99th percentile of observed network time tracker
+// uncertainty in June 2026, plus a comfortable margin. It is still well below
+// the maximum uncertainty allowed by the network time service's timeout.
+constexpr base::TimeDelta kMaxUncertaintyForNetworkTime = base::Seconds(45);
+
 internal::CertVerifierServiceImpl* GetNewCertVerifierImpl(
     mojo::PendingReceiver<mojom::CertVerifierService> service_receiver,
     mojo::PendingReceiver<mojom::CertVerifierServiceUpdater> updater_receiver,
@@ -569,7 +578,10 @@ void CertVerifierServiceFactoryImpl::UpdateNetworkTime(
     base::TimeTicks system_ticks,
     base::Time current_time,
     base::TimeDelta uncertainty) {
-  // TODO: crbug.com/502082953 - Consider what to do if the uncertainty is high.
+  // Ignore network time updates having excessive uncertainty.
+  if (uncertainty > kMaxUncertaintyForNetworkTime) {
+    return;
+  }
   proc_params_.time_tracker.emplace(system_time, system_ticks, current_time,
                                     uncertainty);
   UpdateVerifierServices();
