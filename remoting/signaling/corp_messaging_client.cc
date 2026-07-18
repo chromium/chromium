@@ -25,7 +25,6 @@
 #include "remoting/base/protobuf_http_stream_request.h"
 #include "remoting/base/service_urls.h"
 #include "remoting/signaling/corp_message_channel_strategy.h"
-#include "remoting/signaling/jingle_message_xml_converter.h"
 #include "remoting/signaling/message_channel.h"
 #include "remoting/signaling/signal_strategy.h"
 #include "remoting/signaling/signaling_address.h"

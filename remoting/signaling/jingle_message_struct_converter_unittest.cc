@@ -9,7 +9,6 @@
 
 #include "remoting/signaling/jingle_data_structures.h"
 #include "remoting/signaling/signaling_address.h"
-#include "remoting/signaling/xmpp_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -85,7 +84,6 @@ TEST(JingleMessageStructConverterTest, JingleMessageConversion) {
   EXPECT_EQ(stanza.id, "test_msg_id");
   EXPECT_EQ(stanza.sender.local_part, "from");
   EXPECT_EQ(stanza.receiver.local_part, "to");
-  EXPECT_THAT(stanza.xml, testing::HasSubstr("sid=\"test_sid\""));
 
   JingleMessage message2;
   std::string error;
@@ -108,7 +106,6 @@ TEST(JingleMessageStructConverterTest, JingleMessageReplyConversion) {
   EXPECT_EQ(stanza.id, "reply_id");
   EXPECT_EQ(stanza.sender.local_part, "from");
   EXPECT_EQ(stanza.receiver.local_part, "to");
-  EXPECT_THAT(stanza.xml, HasSubstr("type=\"result\""));
 
   JingleMessageReply reply2;
   ASSERT_TRUE(JingleMessageReplyFromStruct(stanza, &reply2));
@@ -362,56 +359,6 @@ TEST(JingleMessageStructConverterTest, HostAttributesAttachmentConversion) {
               testing::ElementsAre("attr1", "attr2"));
 }
 
-TEST(JingleMessageStructConverterTest, FallbackToXmlParsing) {
-  internal::IqStanzaStruct stanza;
-  stanza.id = "xml_id";
-  // Raw XML for a basic SessionInfo message.
-  stanza.xml =
-      "<iq xmlns=\"jabber:client\" id=\"xml_id\" type=\"set\" "
-      "from=\"from@domain.com\" to=\"to@domain.com\">"
-      "<jingle xmlns=\"urn:xmpp:jingle:1\" action=\"session-info\" "
-      "sid=\"xml_sid\"/></iq>";
-  // payload is std::monostate by default.
-
-  JingleMessage message;
-  std::string error;
-  ASSERT_TRUE(JingleMessageFromStruct(stanza, &message, &error)) << error;
-  EXPECT_EQ(message.message_id, "xml_id");
-  EXPECT_EQ(message.sid, "xml_sid");
-  EXPECT_TRUE(std::holds_alternative<SessionInfo>(message.payload()));
-}
-
-TEST(JingleMessageStructConverterTest, RejectDtdInXmlFallback) {
-  internal::IqStanzaStruct stanza;
-  stanza.xml = "<!DOCTYPE iq><iq/>";
-  JingleMessage message;
-  std::string error;
-  EXPECT_FALSE(JingleMessageFromStruct(stanza, &message, &error));
-  EXPECT_THAT(error, testing::HasSubstr("Rejecting XML with DTD"));
-}
-
-TEST(JingleMessageStructConverterTest, RejectLargeXmlFallback) {
-  internal::IqStanzaStruct stanza;
-  stanza.xml = std::string(kMaxStanzaSize + 1, ' ');
-  JingleMessage message;
-  std::string error;
-  EXPECT_FALSE(JingleMessageFromStruct(stanza, &message, &error));
-  EXPECT_THAT(error, testing::HasSubstr("length exceeds limit"));
-}
-
-TEST(JingleMessageStructConverterTest, Reply_RejectDtdInXmlFallback) {
-  internal::IqStanzaStruct stanza;
-  stanza.xml = "<!DOCTYPE iq><iq/>";
-  JingleMessageReply reply;
-  EXPECT_FALSE(JingleMessageReplyFromStruct(stanza, &reply));
-}
-
-TEST(JingleMessageStructConverterTest, Reply_RejectLargeXmlFallback) {
-  internal::IqStanzaStruct stanza;
-  stanza.xml = std::string(kMaxStanzaSize + 1, ' ');
-  JingleMessageReply reply;
-  EXPECT_FALSE(JingleMessageReplyFromStruct(stanza, &reply));
-}
 
 }  // namespace
 }  // namespace remoting
