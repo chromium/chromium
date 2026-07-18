@@ -2,10 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/test/base/ash/js2gtest.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_chromeos, "Eche App is ChromeOS only")
@@ -140,6 +140,7 @@ static_library("eche_app_ui") {
     "//ash/webui/resources:eche_app_resources",
     "//ash/webui/resources:eche_bundle_resources",
     "//ash/webui/system_apps/public:system_web_app_config",
+    "//ash/webui/web_applications",
     "//chromeos/ash/components/multidevice",
     "//chromeos/ash/components/multidevice/logging",
     "//chromeos/ash/components/phonehub",
@@ -277,10 +278,39 @@ js_library("message_pipe") {
   sources = [ "resources/message_pipe.js" ]
 }
 
-js2gtest("browser_tests_js") {
-  test_type = "mojo_lite_webui"
-  sources = [ "test/eche_app_ui_browsertest.js" ]
+ts_library("test_build_ts") {
+  testonly = true
+  tsconfig_base = "//chrome/test/data/webui/tsconfig_base.json"
+  root_dir = "test"
+  out_dir = "$target_gen_dir/test"
+  in_files = [ "eche_app_ui_browsertest.ts" ]
+
+  path_mappings = [ "chrome://webui-test/*|" +
+                    rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                                target_gen_dir) ]
+
+  deps = [ "//chrome/test/data/webui:build_ts" ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  sources = [ "test/eche_app_ui_browsertest.cc" ]
+
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    ":eche_app_ui",
+    ":test_build_ts",
+    "//ash/constants",
+    "//ash/webui/web_applications/test:test_support",
+    "//build/config/coverage:buildflags",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+  ]
+
+  data = [ "$target_gen_dir/test/eche_app_ui_browsertest.js" ]
 }
 
 generate_grd("build_grd") {
