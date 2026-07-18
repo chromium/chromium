@@ -117,6 +117,7 @@ class MockSessionUi : public SessionUi {
   ~MockSessionUi() override;
 
   MOCK_METHOD(void, OnError, (StreamType stream_type), (override));
+  MOCK_METHOD(void, OnStopped, (), (override));
 };
 
 class MockSessionControllerDelegate : public SessionControllerDelegate {

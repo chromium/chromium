@@ -60,6 +60,7 @@ class SessionController : public SessionUiDelegate,
   // content::WebContentsObserver:
   void OnFocusChangedInPage(
       const content::FocusedNodeDetails& details) override;
+  void PrimaryPageChanged(content::Page& page) override;
 
   // Starts a new dictation stream by creating and attaching a new stream
   // provider. An existing stream must have been detached before calling this

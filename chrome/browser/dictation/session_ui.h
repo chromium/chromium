@@ -16,6 +16,9 @@ class SessionUi {
 
   // Called when a stream encounters an error.
   virtual void OnError(StreamType stream_type) = 0;
+
+  // Called when the dictation session has stopped.
+  virtual void OnStopped() = 0;
 };
 
 }  // namespace dictation

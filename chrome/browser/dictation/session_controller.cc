@@ -129,6 +129,15 @@ void SessionController::OnFocusChangedInPage(
   }
 }
 
+void SessionController::PrimaryPageChanged(content::Page& page) {
+  // Shut down the whole session immediately upon navigating away from the page
+  // associated with the session (closes bubble and stops typing).
+  if (ui_) {
+    ui_->OnStopped();
+  }
+  EndSessionAsynchronously();
+}
+
 void SessionController::EndDictationStream() {
   VT_LOG() << __func__;
   CHECK(attached_stream_provider_);
