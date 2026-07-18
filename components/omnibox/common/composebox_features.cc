@@ -11,6 +11,12 @@ BASE_FEATURE(kContextMenuToolTips, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kTabFaviconChipsToCoins, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kContextManagementInOmnibox, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kContextMenuAnimationLimiting, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kComposeboxSkillsContextualTasks,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kComposeboxSkillsNtp, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kComposeboxSkillsOmniboxEverywhere,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kComposeboxSkillsOmniboxPopup, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kKeepMenuOpenOnTabSelectForRealbox(
     &kContextManagementInComposebox,
     "KeepMenuOpenOnTabSelectForRealboxComposebox",
