@@ -1184,7 +1184,6 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="1910721550319506122">Dobro došli!</translation>
 <translation id="1910736334623230603">Nije moguće pretraživati više slika odjednom. Dodajte jednu po jednu sliku.</translation>
 <translation id="1910908536872421421">Chrome za testiranje v<ph name="BROWSER_VERSION" /> je namijenjen samo za automatsko testiranje. Za obično pregledanje koristite standardnu verziju Chromea koja se automatski ažurira.</translation>
-<translation id="1912867150686509584">Prikaz više sastanaka na Kalendaru</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Pauzirajte karticu koja usporava preglednik}one{Pauzirajte kartice koje usporavaju preglednik}few{Pauzirajte kartice koje usporavaju preglednik}other{Pauzirajte kartice koje usporavaju preglednik}}</translation>
 <translation id="1913749768968678106">Emitiraj, sačuvaj i dijeli</translation>
 <translation id="19147273405311768">Vraćanje alatne trake na zadane postavke</translation>
@@ -4269,6 +4268,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="4274673989874969668">Nakon što napustite web lokaciju, sinhronizacija se može nastaviti da se završe zadaci, kao što je otpremanje fotografija ili slanje poruke chata</translation>
 <translation id="4275291496240508082">Zvuk prilikom pokretanja</translation>
 <translation id="4275397969489577657">Omogući zapisivanje prenosa događaja</translation>
+<translation id="4275663329226226506">Mediji</translation>
 <translation id="4275788652681621337">Zatvori bočnu ploču</translation>
 <translation id="4275830172053184480">Ponovo pokrenite uređaj</translation>
 <translation id="4276390967705106170">Otvori na novoj kartici preglednika</translation>
@@ -9924,7 +9924,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8693862390730570097">Nemojte dozvoliti da se "Pomoć u pisanju" automatski otvara</translation>
 <translation id="8694596275649352090">Zaključaj kada je u stanju mirovanja ili se poklopac zatvori</translation>
 <translation id="8695825812785969222">Otvori &amp;lokaciju...</translation>
-<translation id="8696297579102085705">Pošaljite na uređaj</translation>
 <translation id="869884720829132584">Meni aplikacija</translation>
 <translation id="869891660844655955">Datum isteka</translation>
 <translation id="8699296325072357994">Sadržaj sa stranica lozinki i povezane informacije se šalju Googleu i ručno pregledaju. Lozinka je šifrirana i nikada nije vidljiva drugima. <ph name="PASSWORD_CHANGE" /></translation>

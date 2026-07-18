@@ -565,6 +565,7 @@
 <translation id="1855370856221982654">ቦክስ</translation>
 <translation id="1862788842908766795">የአስፈጻሚ እና አስተዳደር ስራዎች</translation>
 <translation id="1863257867908022953">መሳቢያ 12</translation>
+<translation id="1863374797460198869">ውይይት ተደብቋል</translation>
 <translation id="186539747722034544">የኬብል እና ሳተላይት አቅራቢዎች</translation>
 <translation id="1870473978371099486">የግል አጋዥ አገልግሎቶች</translation>
 <translation id="1871208020102129563">የ.pac ስክሪፕት ዩአርኤል ሳይሆን ተኪ አገልጋዮችን እንዲጠቀም ነው ተኪ የተዋቀረው።</translation>
@@ -1425,7 +1426,6 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ በChrome ቅንብሮች ውስጥ ምን መረጃ እንደሚያሰምሩ ለማቀናበር ትርን ከዚያ አስገባን ይጫኑ</translation>
 <translation id="3203025201812691413">ዩአርኤል ባዶ ሊሆን አይችልም</translation>
 <translation id="320323717674993345">ክፍያን ሰርዝ</translation>
-<translation id="3204534477198689393">ጥቆማዎችን ለማሻሻል እና ቅጾችን በፍጥነት ለመሙላት፣ የሚጎበኟቸው ገጾች ይዘት እና ዩአርኤሎች በደመና ውስጥ ባለ የግል ቦታ ውስጥ ማሰናዳት ይችላሉ።</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> የአዋቂ ይዘት ሊኖረው ይችላል</translation>
 <translation id="3207960819495026254">ዕልባት ተደርጎበታል</translation>
 <translation id="3208701679386778924">ተጨማሪ የChromeOS ዝመናዎችን ማሻሻል እንድንችል እባክዎ ሪፖርት ይላኩ።</translation>
@@ -4529,6 +4529,7 @@
 <translation id="7972714317346275248">PKCS #1 SHA-384 ከRSA ምስጠራ ጋር</translation>
 <translation id="7976053965094442846">አሁን ይግዙ፣ በኋላ ይክፈሉ ሰጪዎች ለክፍያ በትርፍ ሰዓት ይገኛሉ። ቁልፍ ሰሌዳ ተደብቋል።</translation>
 <translation id="7976214039405368314">በጣም ብዙ ጥያቄዎች</translation>
+<translation id="7977029776654598145">ጥቅም ላይ በሚውልበት ጊዜ</translation>
 <translation id="7977538094055660992">የውጽዓት መሣሪያ</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{ከ<ph name="TIME_COUNT" />ደ በፊት}=1{ከ<ph name="TIME_COUNT" />ሰ በፊት}one{ከ<ph name="TIME_COUNT" />ቀ በፊት}other{ከ<ph name="TIME_COUNT" />ቀ በፊት}}</translation>
 <translation id="7979595116210197019">የምግብ አገልግሎት</translation>
@@ -4623,7 +4624,6 @@
 <translation id="8134058435519644366">ምልመላ እና የሰው ኃይል ምደባ</translation>
 <translation id="8135546115396015134">የግራ ቁልፍ</translation>
 <translation id="8137456439814903304">ኃይል እና መገልገያዎች</translation>
-<translation id="8138591088112729119">በግል ብልሃት የተጎላበተ</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{ከ1 ወር በፊት የተፈጠረ}one{ከ{NUM_MONTHS} ወር በፊት የተፈጠረ}other{ከ{NUM_MONTHS} ወሮች በፊት የተፈጠረ}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />፣ አሁን ያለ ነባሪ። <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">የPDF ስሪት፦</translation>
@@ -4957,6 +4957,7 @@
 <translation id="8688672835843460752">ይገኛል</translation>
 <translation id="868922510921656628">ገጾች በስብስብብ</translation>
 <translation id="8694684557210599098">ተሽከርካሪ ያክሉ</translation>
+<translation id="8696297579102085705">ወደ የእርስዎ መሣሪያ ይላኩ</translation>
 <translation id="8698428283892912525">Chrome እያሰሱ ሳለ እርስዎን ለመጠበቅ ለመጎብኘት በሞከሩበት ጣቢያ ላይ እንደ የGoogle ጥንቃቄ አሰሳ ያሉ — በቅርብ ጊዜ <ph name="BEGIN_LINK" />ጎጂ ሶፍትዌር ያገኙ<ph name="END_LINK" /> ደህንነታቸው የተጠበቀ አብሮገነብ ባህሪያት አሉት።</translation>
 <translation id="869891660844655955">የሚያበቀበት ጊዜ</translation>
 <translation id="8699041776323235191">የHID መሣሪያ</translation>

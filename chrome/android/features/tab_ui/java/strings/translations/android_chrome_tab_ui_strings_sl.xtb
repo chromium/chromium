@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Razdruži zavihek}one{Razdruži zavihke}two{Razdruži zavihke}few{Razdruži zavihke}other{Razdruži zavihke}}</translation>
 <translation id="2271452184061378400">Skupine zavihkov so shranjene tukaj</translation>
 <translation id="2277224997687551299">Urejanje imena skupine</translation>
+<translation id="2289567621059034186">Nov zavihek spodaj</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Dodaj zavihek med zaznamke}one{Dodaj zavihke med zaznamke}two{Dodaj zavihke med zaznamke}few{Dodaj zavihke med zaznamke}other{Dodaj zavihke med zaznamke}}</translation>
 <translation id="2359808026110333948">Naprej</translation>
 <translation id="2371084566192454134">Zavihki in skupine zavihkov</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">Prikaži zavihke vodoravno</translation>
 <translation id="31806439105337256">Prikaži zavihke navpično</translation>
 <translation id="3194464645767632461">ocena</translation>
+<translation id="3228962656492373217">Zapri spodnje zavihke</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Dodaj <ph name="TABS_COUNT_ONE" /> zavihek skupini}one{Dodaj <ph name="TABS_COUNT_MANY" /> zavihek skupini}two{Dodaj <ph name="TABS_COUNT_MANY" /> zavihka skupini}few{Dodaj <ph name="TABS_COUNT_MANY" /> zavihke skupini}other{Dodaj <ph name="TABS_COUNT_MANY" /> zavihkov skupini}}</translation>
 <translation id="3328308545011660196">Predlog: Videti je, da je toliko sorodnih zavihkov: <ph name="NUMBER_OF_TABS" />. Jih želite uvrstiti v skupino?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Po 1 dnevu neaktivnosti}one{Po <ph name="DAY_COUNT_MANY" /> dnevu neaktivnosti}two{Po <ph name="DAY_COUNT_MANY" /> dnevih neaktivnosti}few{Po <ph name="DAY_COUNT_MANY" /> dnevih neaktivnosti}other{Po <ph name="DAY_COUNT_MANY" /> dnevih neaktivnosti}}</translation>

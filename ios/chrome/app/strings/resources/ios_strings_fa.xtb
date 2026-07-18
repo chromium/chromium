@@ -281,7 +281,7 @@
 <translation id="1869050523388525800">‏«جستجوی صفحه» فقط زمانی دردسترس است که Google به‌عنوان موتور جستجوی پیش‌فرض تنظیم شده باشد. می‌توانید موتور جستجوی پیش‌فرض را در <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> تغییر دهید.</translation>
 <translation id="1872096359983322073">چراغ‌قوه</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
-<translation id="1876230899304059090">‏‫Gemini در Chrome چه کارهایی می‌تواند انجام دهد؟</translation>
+<translation id="1876230899304059090">‏‫Gemini چه کارهایی می‌تواند در Chrome انجام دهد؟</translation>
 <translation id="1881621406744213161">دعوت از اعضای خانواده</translation>
 <translation id="188177382966899059">Deep Search</translation>
 <translation id="188237709236611317">مرتب کردن هوشمند نوار منو</translation>
@@ -503,7 +503,7 @@
 <translation id="2623536180761008356">پنهان کردن «بررسی ایمنی»</translation>
 <translation id="2625189173221582860">گذرواژه کپی شد</translation>
 <translation id="2626236249646841566">اتصال خود را بررسی کنید و دوباره به سیستم وارد شوید.</translation>
-<translation id="2629543259235506452">بااستفاده از اطلاعات این صفحه و وب‌سایت‌های مشابه، پرسشگان کوتاهی برای این موضوع بساز</translation>
+<translation id="2629543259235506452">بااستفاده از اطلاعات این صفحه و وب‌سایت‌های مشابه، «پرسشگان» کوتاهی برای این موضوع بساز</translation>
 <translation id="2635918910848538771">‏تکمیل خودکار کد تأیید کارت (CVC)</translation>
 <translation id="2640733327287333451">بدون نام کاربری ••••••</translation>
 <translation id="264215785133931186">آخرین بررسی: همین‌حالا</translation>
@@ -2323,7 +2323,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8692689525339542358">از خودتان دربرابر سایت‌ها، بارگیری‌ها، و افزونه‌های خطرناک محافظت کنید.</translation>
 <translation id="8692897097252418799">داده‌های موردنظرتان را برای صادر کردن انتخاب کنید</translation>
 <translation id="8694281486652655615">این مورد را نشان می‌دهد</translation>
-<translation id="8696297579102085705">ارسال کردن به دستگاه شما</translation>
 <translation id="8697136149718343437">انتقال نوار نشانی به پایین صفحه</translation>
 <translation id="869891660844655955">تاریخ انقضا</translation>
 <translation id="8706253136355675497">دما</translation>
@@ -2352,7 +2351,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8766790350274092814">گذرواژه‌های <ph name="WEBSITE" /> و <ph name="SECOND_WEBSITE" /> حذف خواهد شد. حساب‌هایتان حذف نخواهد شد.</translation>
 <translation id="8775144690796719618">نشانی وب نامعتبر</translation>
 <translation id="8781834595282316166">برگه جدید در گروه</translation>
-<translation id="8783445328207519872">ایجاد پرسشگان درباره این موضوع</translation>
+<translation id="8783445328207519872">ایجاد کردن «پرسشگان» درباره این موضوع</translation>
 <translation id="8784653774976848206">انتخاب کردن فایل‌ها</translation>
 <translation id="8786100550345425552">ویرایش کردن اجازه‌ها</translation>
 <translation id="878871978861915380">پنهان کردن «ردگیری قیمت»</translation>

@@ -565,6 +565,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1855370856221982654">Box</translation>
 <translation id="1862788842908766795">Stjórnunar- og umsjónarstörf</translation>
 <translation id="1863257867908022953">Bakki 12</translation>
+<translation id="1863374797460198869">Spjall falið</translation>
 <translation id="186539747722034544">Kapal- og gervihnattarþjónusta</translation>
 <translation id="1870473978371099486">Einkakennsla</translation>
 <translation id="1871208020102129563">Proxy er stillt á að nota fasta proxy-þjóna en ekki vefslóð á .pac-skriftu.</translation>
@@ -1426,7 +1427,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á dálkalykilinn (Tab) og svo „Enter“ til að opna stillingar Chrome og stjórna því hvaða upplýsingar þú samstillir</translation>
 <translation id="3203025201812691413">Vefslóðin má ekki vera tóm</translation>
 <translation id="320323717674993345">Hætta við greiðslu</translation>
-<translation id="3204534477198689393">Til að bæta tillögur og fylla út eyðublöð hraðar er hægt að vinna úr efninu og vefslóðum síðnanna sem þú heimsækir í lokuðu rými í skýinu.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> gæti innihaldið efni fyrir fullorðna</translation>
 <translation id="3207960819495026254">Í bókamerkjum</translation>
 <translation id="3208701679386778924">Sendu okkur skýrslu svo við getum gert ChromeOS-uppfærslur enn betri.</translation>
@@ -4529,6 +4529,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="7972714317346275248">PKCS #1 SHA-384 með RSA-dulkóðun</translation>
 <translation id="7976053965094442846">Útgefendur „kauptu núna, borgaðu síðar“ fyrir raðgreiðslur. Lyklaborð er falið.</translation>
 <translation id="7976214039405368314">Of margar beiðnir</translation>
+<translation id="7977029776654598145">Þegar í notkun</translation>
 <translation id="7977538094055660992">Úttakstæki</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Fyrir <ph name="TIME_COUNT" /> mín.}=1{Fyrir <ph name="TIME_COUNT" /> klst.}one{Fyrir <ph name="TIME_COUNT" /> degi}other{Fyrir <ph name="TIME_COUNT" /> dögum}}</translation>
 <translation id="7979595116210197019">Matarþjónusta</translation>
@@ -4623,7 +4624,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="8134058435519644366">Ráðningar og starfsmannamál</translation>
 <translation id="8135546115396015134">vinstri lykill</translation>
 <translation id="8137456439814903304">Orka og orkufyrirtæki</translation>
-<translation id="8138591088112729119">Knúið af persónulegri greind</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Búinn til fyrir 1 mánuði}one{Búinn til fyrir {NUM_MONTHS} mánuði}other{Búinn til fyrir {NUM_MONTHS} mánuðum}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, núverandi sjálfgefið forrit. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF-útgáfa:</translation>
@@ -4956,6 +4956,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="8688672835843460752">Laust</translation>
 <translation id="868922510921656628">Síður í setti</translation>
 <translation id="8694684557210599098">Bættu bíl við</translation>
+<translation id="8696297579102085705">Senda í tækið þitt</translation>
 <translation id="8698428283892912525">Chrome er með innbyggða öryggiseiginleika sem vernda þig þegar þú skoðar vefinn, t.d. örugg vefskoðun Google sem <ph name="BEGIN_LINK" />greindi nýlega skaðlegan hugbúnað<ph name="END_LINK" /> á vefsvæðinu sem þú reyndir að opna.</translation>
 <translation id="869891660844655955">Lokadagsetning</translation>
 <translation id="8699041776323235191">HID-tæki</translation>

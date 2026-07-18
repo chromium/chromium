@@ -566,6 +566,7 @@
 <translation id="1855370856221982654">मुक्केबाज़ी</translation>
 <translation id="1862788842908766795">एक्ज़ीक्यूटिव और मैनेजमेंट सेक्टर की नौकरियां</translation>
 <translation id="1863257867908022953">ट्रे 12</translation>
+<translation id="1863374797460198869">चैट छिपी हुई है</translation>
 <translation id="186539747722034544">केबल और सैटलाइट की सुविधा देने वाली कंपनियां</translation>
 <translation id="1870473978371099486">निजी ट्यूशन सेवाएं</translation>
 <translation id="1871208020102129563">प्रॉक्‍सी की सेटिंग इस तरह से की गई है कि वह फ़िक्‍स्‍ड प्रॉक्‍सी सर्वर इस्तेमाल करे, न कि .pac स्‍क्रिप्‍ट यूआरअल.</translation>
@@ -1426,7 +1427,6 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग में, आपने जो जानकारी सिंक की है उसे मैनेज करने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="3203025201812691413">यूआरएल वाला फ़ील्ड खाली नहीं छोड़ा जा सकता</translation>
 <translation id="320323717674993345">भुगतान रद्द करें</translation>
-<translation id="3204534477198689393">बेहतर सुझाव देने और फ़ॉर्म तेज़ी से भरने के लिए, आपके विज़िट किए गए पेजों के कॉन्टेंट और यूआरएल को क्लाउड में एक प्राइवेट स्पेस में प्रोसेस किया जा सकता है.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> में वयस्कों के लिए बना कॉन्टेंट मौजूद हो सकता है</translation>
 <translation id="3207960819495026254">बुकमार्क किया गया</translation>
 <translation id="3208701679386778924">कृपया एक रिपोर्ट भेजें, ताकि हम ChromeOS के आने वाले अपडेट में सुधार कर सकें.</translation>
@@ -4530,6 +4530,7 @@
 <translation id="7972714317346275248">RSA सुरक्षित करने के तरीके के साथ PKCS #1 SHA-512</translation>
 <translation id="7976053965094442846">'अभी खरीदें, बाद में पेमेंट करें' सुविधा देने वाली कंपनियां, जो किस्तों में पेमेंट करने की सुविधा देती हैं. कीबोर्ड छिपा हुआ है.</translation>
 <translation id="7976214039405368314">बहुत सारे अनुरोध</translation>
+<translation id="7977029776654598145">इस्तेमाल करने पर</translation>
 <translation id="7977538094055660992">आउटपुट डिवाइस</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> मिनट पहले}=1{<ph name="TIME_COUNT" /> घंटा पहले}one{<ph name="TIME_COUNT" /> दिन पहले}other{<ph name="TIME_COUNT" /> दिन पहले}}</translation>
 <translation id="7979595116210197019">खान-पान से जुड़ी सेवा</translation>
@@ -4624,7 +4625,6 @@
 <translation id="8134058435519644366">रिक्रूटमेंट और स्टाफ़िंग</translation>
 <translation id="8135546115396015134">बाईं ओर मौजूद बटन</translation>
 <translation id="8137456439814903304">ऊर्जा और बिजली, पानी जैसी सुविधाएं</translation>
-<translation id="8138591088112729119">यह पर्सनल इंटेलिजेंस की सुविधा की मदद से काम करता है</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 महीने पहले बनाया गया}one{{NUM_MONTHS} महीने पहले बनाया गया}other{{NUM_MONTHS} महीने पहले बनाया गया}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, मौजूदा डिफ़ॉल्ट सर्च इंजन. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">पीडीएफ़ का वर्शन:</translation>
@@ -4958,6 +4958,7 @@
 <translation id="8688672835843460752">उपलब्ध</translation>
 <translation id="868922510921656628">हर सेट पर मौजूद पेजों की संख्या</translation>
 <translation id="8694684557210599098">वाहन की जानकारी जोड़ें</translation>
+<translation id="8696297579102085705">अपने डिवाइस पर भेजें</translation>
 <translation id="8698428283892912525">ब्राउज़ करते समय आपको सुरक्षित रखने के लिए, Chrome में सुरक्षा से जुड़ी सुविधाएं पहले से ही मौजूद हैं. उदाहरण के लिए, Google सुरक्षित ब्राउज़िंग. इसने उस साइट पर हाल ही में <ph name="BEGIN_LINK" />नुकसान पहुंचाने वाले सॉफ़्टवेयर का पता लगाया है<ph name="END_LINK" /> जिस पर आपने जाने की कोशिश है.</translation>
 <translation id="869891660844655955">खत्म होने की तारीख</translation>
 <translation id="8699041776323235191">एचआईडी डिवाइस</translation>

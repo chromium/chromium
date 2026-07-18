@@ -565,6 +565,7 @@
 <translation id="1855370856221982654">มวย</translation>
 <translation id="1862788842908766795">งานบริหารและจัดการ</translation>
 <translation id="1863257867908022953">ถาด 12</translation>
+<translation id="1863374797460198869">แชทถูกซ่อน</translation>
 <translation id="186539747722034544">ผู้ให้บริการเคเบิลและดาวเทียม</translation>
 <translation id="1870473978371099486">บริการติวส่วนตัว</translation>
 <translation id="1871208020102129563">พร็อกซีถูกตั้งค่าให้ใช้พร็อกซีเซิร์ฟเวอร์แบบคงที่ ไม่ใช่ URL สคริปต์ .pac</translation>
@@ -1426,7 +1427,6 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อจัดการข้อมูลที่คุณซิงค์ในการตั้งค่า Chrome</translation>
 <translation id="3203025201812691413">ต้องระบุ URL</translation>
 <translation id="320323717674993345">ยกเลิกการชำระเงิน</translation>
-<translation id="3204534477198689393">ระบบจะประมวลผลเนื้อหาและ URL ของหน้าเว็บที่คุณเข้าชมในพื้นที่ส่วนตัวในระบบคลาวด์เพื่อปรับปรุงคำแนะนำและกรอกแบบฟอร์มได้เร็วขึ้น</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> อาจมีเนื้อหาสำหรับผู้ใหญ่</translation>
 <translation id="3207960819495026254">บุ๊กมาร์กแล้ว</translation>
 <translation id="3208701679386778924">โปรดส่งรายงานเพื่อให้เราปรับปรุงการอัปเดต ChromeOS เพิ่มเติมได้</translation>
@@ -4529,6 +4529,7 @@
 <translation id="7972714317346275248">PKCS #1 SHA-384 พร้อมการเข้ารหัส RSA</translation>
 <translation id="7976053965094442846">ผู้ออกบริการ "ซื้อก่อน จ่ายทีหลัง" ที่พร้อมให้ผ่อนชำระ แป้นพิมพ์ซ่อนอยู่</translation>
 <translation id="7976214039405368314">มีคำขอมากเกินไป</translation>
+<translation id="7977029776654598145">เมื่อใช้</translation>
 <translation id="7977538094055660992">อุปกรณ์กระดาษออก</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> นาทีที่ผ่านมา}=1{<ph name="TIME_COUNT" /> ชม. ที่ผ่านมา}other{<ph name="TIME_COUNT" /> วันที่ผ่านมา}}</translation>
 <translation id="7979595116210197019">บริการด้านอาหาร</translation>
@@ -4623,7 +4624,6 @@
 <translation id="8134058435519644366">การรับสมัครงาน</translation>
 <translation id="8135546115396015134">ปุ่มซ้าย</translation>
 <translation id="8137456439814903304">พลังงานและสาธารณูปโภค</translation>
-<translation id="8138591088112729119">ขับเคลื่อนโดย Personal Intelligence</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{สร้างเมื่อ 1 เดือนที่ผ่านมา}other{สร้างเมื่อ {NUM_MONTHS} เดือนที่ผ่านมา}}</translation>
 <translation id="8147389370274164212">เครื่องมือค้นหาเริ่มต้นปัจจุบันคือ <ph name="SEARCH_ENGINE_NAME" /> <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">เวอร์ชัน PDF:</translation>
@@ -4957,6 +4957,7 @@
 <translation id="8688672835843460752">มีอยู่</translation>
 <translation id="868922510921656628">จำนวนหน้าต่อชุด</translation>
 <translation id="8694684557210599098">เพิ่มยานพาหนะ</translation>
+<translation id="8696297579102085705">ส่งไปที่อุปกรณ์</translation>
 <translation id="8698428283892912525">Chrome มีฟีเจอร์ความปลอดภัยในตัวเพื่อปกป้องคุณขณะท่องเว็บ เช่น Google Safe Browsing ที่<ph name="BEGIN_LINK" />พบซอฟต์แวร์ที่เป็นอันตราย<ph name="END_LINK" />ในเว็บไซต์ที่คุณพยายามเข้าชมเมื่อเร็วๆ นี้</translation>
 <translation id="869891660844655955">วันหมดอายุ</translation>
 <translation id="8699041776323235191">อุปกรณ์ HID</translation>

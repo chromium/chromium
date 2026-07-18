@@ -565,6 +565,7 @@
 <translation id="1855370856221982654">אגרוף</translation>
 <translation id="1862788842908766795">משרות ניהול בכירות</translation>
 <translation id="1863257867908022953">מגש 12</translation>
+<translation id="1863374797460198869">הצ'אט מוסתר</translation>
 <translation id="186539747722034544">ספקי טלוויזיה בכבלים ובלוויין</translation>
 <translation id="1870473978371099486">שירותי שיעורים פרטיים</translation>
 <translation id="1871208020102129563">‏שרת ה-Proxy מוגדר להשתמש בשרתי Proxy קבועים, לא בכתובת אתר של סקריפט ‎.Pac</translation>
@@ -1426,7 +1427,6 @@
 <translation id="3202497928925179914">‏<ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, יש להקיש על Tab ואז על Enter כדי לקבוע איזה מידע יסונכרן בהגדרות Chrome</translation>
 <translation id="3203025201812691413">‏כתובת ה-URL לא יכולה להיות ריקה</translation>
 <translation id="320323717674993345">ביטול תשלום</translation>
-<translation id="3204534477198689393">‏כדי לשפר את ההצעות ולמלא טפסים מהר יותר, יש לך אפשרות לעבד את התוכן וכתובות ה-URL של הדפים שבהם ביקרת במרחב הפרטי בענן.</translation>
 <translation id="3207830513221832868">יכול להיות שהתוכן בכתובת <ph name="BLOCKED_URL" /> הוא למבוגרים בלבד</translation>
 <translation id="3207960819495026254">מסומן בסימנייה</translation>
 <translation id="3208701679386778924">‏יש לשלוח דוח כדי שנוכל להמשיך לשפר את העדכונים של ChromeOS.</translation>
@@ -4534,6 +4534,7 @@ Del</translation>
 <translation id="7972714317346275248">‏PKCS #1 SHA-384 עם הצפנת RSA</translation>
 <translation id="7976053965094442846">‏מנפיקים של האפשרות "קונים עכשיו, משלמים אחר כך (BNPL)" שזמינים כדי לשלם בתשלומים. המקלדת מוסתרת.</translation>
 <translation id="7976214039405368314">יותר מדי בקשות</translation>
+<translation id="7977029776654598145">כשמשתמשים בתכונה</translation>
 <translation id="7977538094055660992">מכשיר פלט</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{לפני <ph name="TIME_COUNT" /> דק‘}=1{לפני שעה (<ph name="TIME_COUNT" />)}one{לפני יום אחד (<ph name="TIME_COUNT" />)}two{לפני יומיים (<ph name="TIME_COUNT" />)}other{לפני <ph name="TIME_COUNT" /> ימים}}</translation>
 <translation id="7979595116210197019">שירות מזון</translation>
@@ -4960,6 +4961,7 @@ Del</translation>
 <translation id="8688672835843460752">זמינות</translation>
 <translation id="868922510921656628">דפים בכל קבוצה</translation>
 <translation id="8694684557210599098">הוספת רכב</translation>
+<translation id="8696297579102085705">שליחה למכשיר שלך</translation>
 <translation id="8698428283892912525">‏ב-Chrome יש תכונות בטיחות מובנות שנועדו להגן עליך במהלך הגלישה, למשל הגלישה הבטוחה של Google, ש<ph name="BEGIN_LINK" />מצאה לאחרונה תוכנה מזיקה<ph name="END_LINK" /> באתר שבו ניסית לבקר.</translation>
 <translation id="869891660844655955">תאריך תפוגה</translation>
 <translation id="8699041776323235191">‏התקן HID</translation>

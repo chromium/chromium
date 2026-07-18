@@ -565,6 +565,7 @@
 <translation id="1855370856221982654">ବକ୍ସିଂ</translation>
 <translation id="1862788842908766795">ଏକଜିକ୍ୟୁଟିଭ ଏବଂ ମେନେଜମେଣ୍ଟ ଚାକିରି</translation>
 <translation id="1863257867908022953">ଟ୍ରେ 12</translation>
+<translation id="1863374797460198869">ଚାଟ ଲୁକ୍କାୟିତ ଅଛି</translation>
 <translation id="186539747722034544">କେବୁଲ ଏବଂ ସାଟେଲାଇଟ ପ୍ରଦାନକାରୀ</translation>
 <translation id="1870473978371099486">ବ୍ୟକ୍ତିଗତ ଟ୍ୟୁଟୋରିଂ ସେବା</translation>
 <translation id="1871208020102129563">ପ୍ରକ୍ସି ନିର୍ଦ୍ଦିଷ୍ଟ କରାଯାଇଥିବା ପ୍ରକ୍ସି ସର୍ଭର୍‌ଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବାକୁ ସେଟ୍ କରାଯାଇଛି, ଏକ .pac ସ୍କ୍ରିପ୍ଟ URLକୁ ନୁହେଁ।</translation>
@@ -1424,7 +1425,6 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ସେଟିଂସରେ ଆପଣ କେଉଁ ସୂଚନା ସିଙ୍କ୍ କରନ୍ତି ତାହା ପରିଚାଳନା କରିବାକୁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
 <translation id="3203025201812691413">URL ଖାଲି ରହିପାରିବ ନାହିଁ</translation>
 <translation id="320323717674993345">ପେମେଣ୍ଟ ବାତିଲ୍ କରନ୍ତୁ</translation>
-<translation id="3204534477198689393">ପରାମର୍ଶଗୁଡ଼ିକୁ ଉନ୍ନତ କରିବା ଏବଂ ଫର୍ମଗୁଡ଼ିକୁ ଶୀଘ୍ର ପୂରଣ କରିବା ପାଇଁ ଆପଣ ଭିଜିଟ କରୁଥିବା ପୃଷ୍ଠାଗୁଡ଼ିକର ବିଷୟବସ୍ତୁ ଏବଂ URLଗୁଡ଼ିକୁ କ୍ଲାଉଡରେ ଏକ ପ୍ରାଇଭେଟ ସ୍ପେସରେ ପ୍ରକ୍ରିୟାନ୍ୱିତ କରାଯାଇପାରିବ।</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" />ରେ ପ୍ରାପ୍ତ ବୟସ୍କଙ୍କ ପାଇଁ ବିଷୟବସ୍ତୁ ଥାଇପାରେ</translation>
 <translation id="3207960819495026254">ବୁକ୍‍ମାର୍କ କରାଯାଇଛି</translation>
 <translation id="3208701679386778924">ଦୟାକରି ଏକ ରିପୋର୍ଟ ପଠାନ୍ତୁ, ଫଳରେ ଆମେ ପରବର୍ତ୍ତୀ ChromeOS ଅପଡେଟଗୁଡ଼ିକୁ ଉନ୍ନତ କରିପାରିବୁ।</translation>
@@ -4525,6 +4525,7 @@
 <translation id="7972714317346275248">RSA ଏନ୍‍କ୍ରିପ୍‌ସନ୍ ସହିତ PKCS #1 SHA-384</translation>
 <translation id="7976053965094442846">ସମୟ ଅନୁସାରେ ପେମେଣ୍ଟ କରିବା ପାଇଁ ଉପଲବ୍ଧ 'ବର୍ତ୍ତମାନ କିଣନ୍ତୁ, ପରେ ପେମେଣ୍ଟ କରନ୍ତୁ' ଇସ୍ୟୁଅର। କୀବୋର୍ଡ ଲୁଚାଯାଇଛି।</translation>
 <translation id="7976214039405368314">ଅନେକଗୁଡ଼ିଏ ଅନୁରୋଧ</translation>
+<translation id="7977029776654598145">ବ୍ୟବହାର କରାଗଲେ</translation>
 <translation id="7977538094055660992">ଆଉଟପୁଟ୍ ଡିଭାଇସ୍</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> ମିନିଟ ପୂର୍ବେ}=1{<ph name="TIME_COUNT" /> ଘଣ୍ଟା ପୂର୍ବେ}other{<ph name="TIME_COUNT" /> ଦିନ ପୂର୍ବେ}}</translation>
 <translation id="7979595116210197019">ଖାଦ୍ୟ ସେବା</translation>
@@ -4619,7 +4620,6 @@
 <translation id="8134058435519644366">ନିଯୁକ୍ତି ଓ କର୍ମଚାରୀ</translation>
 <translation id="8135546115396015134">ବାମ କୀ</translation>
 <translation id="8137456439814903304">ଏନର୍ଜି ଏବଂ ୟୁଟିଲିଟିଗୁଡ଼ିକ</translation>
-<translation id="8138591088112729119">ପର୍ସନାଲ ଇଣ୍ଟେଲିଜେନ୍ସ ଦ୍ୱାରା ପରିଚାଳିତ</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 ମାସ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}other{{NUM_MONTHS} ମାସ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, ବର୍ତ୍ତମାନର ଡିଫଲ୍ଟ। <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF ସଂସ୍କରଣ:</translation>
@@ -4952,6 +4952,7 @@
 <translation id="8688672835843460752">ଉପଲବ୍ଧ</translation>
 <translation id="868922510921656628">ପ୍ରତି ସେଟ୍ ପୃଷ୍ଠାଗୁଡ଼ିକ</translation>
 <translation id="8694684557210599098">ଗାଡ଼ିର ସୂଚନା ଯୋଗ କରନ୍ତୁ</translation>
+<translation id="8696297579102085705">ଆପଣଙ୍କ ଡିଭାଇସକୁ ପଠାନ୍ତୁ</translation>
 <translation id="8698428283892912525">ଆପଣ ବ୍ରାଉଜ କରିବା ସମୟରେ ଆପଣଙ୍କୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ Chromeରେ Google ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂ ପରି — ବିଲ୍ଟ-ଇନ ସୁରକ୍ଷା ଫିଚରଗୁଡ଼ିକ ଅଛି, ଯାହା ଆପଣ ଭିଜିଟ କରିବାକୁ ଚେଷ୍ଟା କରିଥିବା ସାଇଟରେ <ph name="BEGIN_LINK" />ବର୍ତ୍ତମାନ କ୍ଷତିକାରକ ସଫ୍ଟୱେର ପାଇଛି<ph name="END_LINK" />।</translation>
 <translation id="869891660844655955">ମିଆଦ ଶେଷ ହେଉଥିବା ତାରିଖ</translation>
 <translation id="8699041776323235191">HID ଡିଭାଇସ୍</translation>

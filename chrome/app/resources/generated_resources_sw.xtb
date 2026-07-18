@@ -1186,7 +1186,6 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1910721550319506122">Karibu!</translation>
 <translation id="1910736334623230603">Imeshindwa kutafuta picha nyingi. Weka picha moja baada ya nyingine.</translation>
 <translation id="1910908536872421421">Chrome ya Kujaribu toleo la <ph name="BROWSER_VERSION" /> ni ya majaribio ya kiotomatiki pekee. Ili uvinjari kwa kawaida, tumia toleo la kawaida la Chrome ambalo husasishwa kiotomatiki.</translation>
-<translation id="1912867150686509584">Angalia mikutano zaidi kwenye Kalenda yako</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Sitisha Kichupo Kinachopunguza Kasi ya Kivinjari Chako}other{Sitisha Vichupo Vinavyopunguza Kasi ya Kivinjari Chako}}</translation>
 <translation id="1913749768968678106">Tuma, hifadhi na uruhusu kifikiwe</translation>
 <translation id="19147273405311768">Badilisha utumie mipangilio chaguomsingi ya upau wa vidhibiti</translation>
@@ -4269,6 +4268,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4274673989874969668">Ukifunga tovuti, inaweza kuendelea kusawazisha ili kukamilisha majukumu, kama vile kupakia picha au kutuma ujumbe kwenye gumzo</translation>
 <translation id="4275291496240508082">Sauti ya kufunguka</translation>
 <translation id="4275397969489577657">Washa kumbukumbu za mtiririko wa tukio</translation>
+<translation id="4275663329226226506">Vyombo vya Habari</translation>
 <translation id="4275788652681621337">Funga kidirisha cha pembeni</translation>
 <translation id="4275830172053184480">Washa upya kifaa chako</translation>
 <translation id="4276390967705106170">Fungua katika kichupo kipya cha kivinjari</translation>
@@ -9920,7 +9920,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8693862390730570097">Usiruhusu kipengele cha "Nisaidie kuandika" kifunguliwe kiotomatiki</translation>
 <translation id="8694596275649352090">Skrini ijifunge kifaa kinapokuwa katika hali tuli au kifuniko kinapofungwa</translation>
 <translation id="8695825812785969222">Fungua Eneo...</translation>
-<translation id="8696297579102085705">Tuma kwenye kifaa chako</translation>
 <translation id="869884720829132584">Menyu ya programu</translation>
 <translation id="869891660844655955">Muda wake unakwisha tarehe</translation>
 <translation id="8699296325072357994">Maudhui kutoka kwenye kurasa za manenosiri na maelezo yanayohusiana hutumwa kwa Google na huhakikiwa na wanadamu. Nenosiri lako husimbwa kwa njia fiche na halitawahi kuonekana kwa mtu yeyote. <ph name="PASSWORD_CHANGE" /></translation>

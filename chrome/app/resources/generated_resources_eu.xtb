@@ -1176,7 +1176,6 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1910721550319506122">Ongi etorri!</translation>
 <translation id="1910736334623230603">Ezin dira bilatu irudi bat baino gehiago. Gehitu irudiak banaka.</translation>
 <translation id="1910908536872421421">Chrome for Testing-en <ph name="BROWSER_VERSION" /> bertsioak proba automatizatuetarako soilik balio du. Sarea ohi bezala arakatzeko, erabili automatikoki eguneratzen den Chrome-ren bertsio arrunt bat.</translation>
-<translation id="1912867150686509584">Ikusi bilera gehiago Calendar-en</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Pausatu arakatzailea mantsotzen duen fitxa}other{Pausatu arakatzailea mantsotzen duten fitxak}}</translation>
 <translation id="1913749768968678106">Igorri, gorde eta partekatu</translation>
 <translation id="19147273405311768">Berrezarri tresna-barraren ezarpen lehenetsiak</translation>
@@ -4256,6 +4255,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="4274673989874969668">Webgune batetik irteten zarenean, webguneak sinkronizatzen jarrai dezake zereginak amaitzeko, hala nola argazkiak kargatzeko edo txat-mezuak bidaltzeko</translation>
 <translation id="4275291496240508082">Abiarazte-soinua</translation>
 <translation id="4275397969489577657">Gaitu gertaeren jarioa erregistratzeko aukera</translation>
+<translation id="4275663329226226506">Multimedia-edukia</translation>
 <translation id="4275788652681621337">Itxi alboko panela</translation>
 <translation id="4275830172053184480">Berrabiarazi gailua</translation>
 <translation id="4276390967705106170">Ireki arakatzaileko beste fitxa batean</translation>
@@ -9900,7 +9900,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8693862390730570097">Ez eman Idazteko laguntza automatikoki irekitzeko baimenik</translation>
 <translation id="8694596275649352090">Blokeatu inaktibo dagoenean edo estalkia itxita dagoenean</translation>
 <translation id="8695825812785969222">Ireki &amp;kokapena…</translation>
-<translation id="8696297579102085705">Bidali zure gailura</translation>
 <translation id="869884720829132584">Aplikazioen menua</translation>
 <translation id="869891660844655955">Iraungitze-data</translation>
 <translation id="8699296325072357994">Pasahitzak idazteko orrien edukia eta erlazionatutako informazioa Google-ri bidaltzen zaizkio, eta gizakiek berrikusten dituzte. Pasahitza enkriptatuta dago, eta inork ez du inoiz ikusten. <ph name="PASSWORD_CHANGE" /></translation>

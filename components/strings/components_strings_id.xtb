@@ -566,6 +566,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="1855370856221982654">Tinju</translation>
 <translation id="1862788842908766795">Pekerjaan Eksekutif &amp; Manajemen</translation>
 <translation id="1863257867908022953">Baki 12</translation>
+<translation id="1863374797460198869">Percakapan disembunyikan</translation>
 <translation id="186539747722034544">Penyedia Satelit &amp; Kabel</translation>
 <translation id="1870473978371099486">Jasa Bimbingan Belajar Pribadi</translation>
 <translation id="1871208020102129563">Proxy disetel untuk menggunakan server proxy tetap, bukan URL skrip .pac.</translation>
@@ -1427,7 +1428,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk mengelola info apa saja yang Anda sinkronkan di setelan Chrome</translation>
 <translation id="3203025201812691413">URL harus diisi</translation>
 <translation id="320323717674993345">Batalkan Pembayaran</translation>
-<translation id="3204534477198689393">Untuk meningkatkan kualitas saran dan mengisi formulir lebih cepat, konten serta URL halaman yang Anda kunjungi dapat diproses di ruang privasi di cloud.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> mungkin mengandung konten dewasa</translation>
 <translation id="3207960819495026254">Diberi bookmark</translation>
 <translation id="3208701679386778924">Kirim laporan agar kami dapat meningkatkan update ChromeOS lebih lanjut.</translation>
@@ -4528,6 +4528,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7972714317346275248">PKCS #1 SHA-384 Dengan Enkripsi RSA</translation>
 <translation id="7976053965094442846">Penerbit Beli Sekarang Bayar Nanti tersedia untuk opsi pembayaran dengan cicilan. Keyboard disembunyikan.</translation>
 <translation id="7976214039405368314">Terlalu banyak permintaan</translation>
+<translation id="7977029776654598145">Saat digunakan</translation>
 <translation id="7977538094055660992">Perangkat keluaran</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> menit lalu}=1{<ph name="TIME_COUNT" /> jam lalu}other{<ph name="TIME_COUNT" /> hari lalu}}</translation>
 <translation id="7979595116210197019">Layanan Makanan</translation>
@@ -4622,7 +4623,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8134058435519644366">Perekrutan &amp; Ketenagakerjaan</translation>
 <translation id="8135546115396015134">tombol kiri</translation>
 <translation id="8137456439814903304">Energi, Gas &amp; Air</translation>
-<translation id="8138591088112729119">Didukung oleh Kecerdasan Personal</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Dibuat 1 bulan lalu}other{Dibuat {NUM_MONTHS} bulan lalu}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, default saat ini. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Versi PDF:</translation>
@@ -4953,6 +4953,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8688672835843460752">Tersedia</translation>
 <translation id="868922510921656628">Halaman per set</translation>
 <translation id="8694684557210599098">Tambahkan kendaraan</translation>
+<translation id="8696297579102085705">Kirim ke perangkat Anda</translation>
 <translation id="8698428283892912525">Chrome memiliki fitur keamanan bawaan untuk melindungi Anda saat menjelajah — seperti Google Safe Browsing, yang baru-baru ini <ph name="BEGIN_LINK" />menemukan software berbahaya<ph name="END_LINK" /> di situs yang Anda coba kunjungi.</translation>
 <translation id="869891660844655955">Berlaku hingga</translation>
 <translation id="8699041776323235191">Perangkat HID</translation>

@@ -1187,7 +1187,6 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1910721550319506122">Welkom!</translation>
 <translation id="1910736334623230603">Kan nie veelvuldige prente soek nie. Voeg een prent op ’n slag by.</translation>
 <translation id="1910908536872421421">Chrome vir Toetse v<ph name="BROWSER_VERSION" /> is net vir geoutomatiseerde toetse. Gebruik ’n standaardweergawe van Chrome wat outomaties opdateer vir gewone blaai-aktiwiteit.</translation>
-<translation id="1912867150686509584">Sien meer vergaderings op jou Kalender</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Onderbreek die oortjie wat jou blaaier stadig maak}other{Onderbreek die oortjies wat jou blaaier stadig maak}}</translation>
 <translation id="1913749768968678106">Saai uit, stoor en deel</translation>
 <translation id="19147273405311768">Stel nutsbalk terug na verstekinstellings</translation>
@@ -4272,6 +4271,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="4274673989874969668">Nadat jy 'n werf verlaat het, kan dit aanhou sinkroniseer om take soos oplaai van foto's of stuur van kletsboodskappe te voltooi</translation>
 <translation id="4275291496240508082">Afskopklank</translation>
 <translation id="4275397969489577657">Aktiveer geleentheidstroomloginskrywings</translation>
+<translation id="4275663329226226506">Media</translation>
 <translation id="4275788652681621337">Maak kantpaneel toe</translation>
 <translation id="4275830172053184480">Herbegin jou toestel</translation>
 <translation id="4276390967705106170">Maak in ’n nuwe blaaieroortjie oop</translation>
@@ -9923,7 +9923,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8693862390730570097">Moenie “Help My Skryf” in staat stel om outomaties oop te maak nie</translation>
 <translation id="8694596275649352090">Sluit wanneer dit gaan slaap of deksel toegemaak word</translation>
 <translation id="8695825812785969222">Maak ligging oop …</translation>
-<translation id="8696297579102085705">Stuur na jou toestel toe</translation>
 <translation id="869884720829132584">Programmekieslys</translation>
 <translation id="869891660844655955">Vervaldatum</translation>
 <translation id="8699296325072357994">Inhoud vanaf wagwoordbladsye en verwante inligting word na Google toe gestuur en deur mense gekontroleer. Jou wagwoord word geënkripteer en niemand sal dit ooit sien nie. <ph name="PASSWORD_CHANGE" /></translation>

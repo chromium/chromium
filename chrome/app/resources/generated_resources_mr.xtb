@@ -699,6 +699,7 @@
 <translation id="1542137295869176367">तुमचा साइन इन डेटा अपडेट केला जाऊ शकला नाही</translation>
 <translation id="1543284117603151572">Edge वरून इंपोर्ट केले</translation>
 <translation id="1543538514740974167">येथे आणखी झटपट जा</translation>
+<translation id="1544026754762189866">तुमची संस्था हा आशय कॉपी न करण्याचा सल्ला देते</translation>
 <translation id="1544588554445317666">लहान फाइल नाव वापरून पहा किंवा वेगळ्या फोल्डरमध्ये सेव्ह करा</translation>
 <translation id="1545749641540134597">QR कोड स्कॅन करा</translation>
 <translation id="1545775234664667895">"<ph name="THEME_NAME" />" थीम इंस्टॉल केली</translation>
@@ -1187,7 +1188,6 @@
 <translation id="1910721550319506122">सुस्वागतम!</translation>
 <translation id="1910736334623230603">एकाहून अधिक इमेज शोधू शकत नाही. एका वेळी एक इमेज जोडा.</translation>
 <translation id="1910908536872421421">चाचणी v<ph name="BROWSER_VERSION" /> साठी Chrome हे फक्त ऑटोमेटेड चाचणीसाठी आहे. नियमित ब्राउझिंगसाठी, आपोआप अपडेट होणारी Chrome ची साधारण आवृत्ती वापरा.</translation>
-<translation id="1912867150686509584">तुमच्या Calendar वर आणखी मीटिंग पहा</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{तुमच्या ब्राउझर चा वेग कमी करणारा टॅब थांबवा}other{तुमच्या ब्राउझर चा वेग कमी करणारे टॅब थांबवा}}</translation>
 <translation id="1913749768968678106">कास्ट करा, सेव्ह करा आणि शेअर करा</translation>
 <translation id="19147273405311768">टूलबार डीफॉल्ट सेटिंग्जवर रीसेट करा</translation>
@@ -1511,6 +1511,7 @@
 <translation id="2166369534954157698">चपळ तपकिरी कोल्ह्याने आळशी कुत्र्यावर उडी मारली</translation>
 <translation id="2168036794078614559">अहवाल पाठवला</translation>
 <translation id="2169062631698640254">तरीही साइन इन करा</translation>
+<translation id="217120844667431680">AI मोड वापरून आणखी बरेच काही करा</translation>
 <translation id="2173302385160625112">तुमचे इंटरनेट कनेक्शन तपासा</translation>
 <translation id="2175384018164129879">शोध इंजीन आणि साइट शोध व्यवस्थापित करा</translation>
 <translation id="2175526076681939329">प्राथमिक की वापरा</translation>
@@ -1826,6 +1827,7 @@
 <translation id="2424424966051154874">{0,plural, =1{अतिथी}other{अतिथी (#)}}</translation>
 <translation id="2426805022920575512">दुसरे खाते निवडा</translation>
 <translation id="2427507373259914951">लेफ्ट क्लिक करा</translation>
+<translation id="2428120669821109648">टॅब स्टायलिंग</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> १ खाते, पासवर्ड फक्त या डिव्हाइसवर सेव्ह केले आहे. अधिक तपशील}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} खाते, पासवर्ड सेव्ह केले आहेत. अधिक तपशील}}</translation>
 <translation id="2428510569851653187">टॅब क्रॅश झाला तेव्हा तुम्ही नेमके काय करत होता ते सांगा</translation>
 <translation id="2428939361789119025">वाय-फाय बंद करा</translation>
@@ -3512,6 +3514,7 @@
 <translation id="3700993174159313525">साइटना तुमच्या कॅमेराच्या स्थानाचा माग ठेवण्याची अनुमती देऊ नका</translation>
 <translation id="3701167022068948696">आता निराकरण करा</translation>
 <translation id="3701515417135397388">डेटा भंगामध्ये पासवर्ड धोक्यात आला असल्यास, तुम्हाला चेतावणी दिली जावी</translation>
+<translation id="3701778844313851487">एक्स्टेंशनवर जा</translation>
 <translation id="3703166520839776970">ही समस्या येत राहिल्यास, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> कडून अधिक माहिती मिळवण्यासाठी खाली "आणखी तपशील" निवडा.</translation>
 <translation id="3703699162703116302">तिकीट रिफ्रेश केले आहे</translation>
 <translation id="370415077757856453">JavaScript ब्लॉक केले</translation>
@@ -4270,6 +4273,7 @@
 <translation id="4274673989874969668">तुम्ही साइट बंद केल्यानंतर ती फोटो अपलोड करणे किंवा चॅट मेसेज पाठवणे यांसारख्या टास्क पूर्ण करण्यासाठी सिंक करणे सुरू ठेवू शकते</translation>
 <translation id="4275291496240508082">स्टार्टअप आवाज</translation>
 <translation id="4275397969489577657">इव्हेंट स्ट्रीम लॉगिंग सुरू करा</translation>
+<translation id="4275663329226226506">माध्यम</translation>
 <translation id="4275788652681621337">साइड पॅनल बंद करा</translation>
 <translation id="4275830172053184480">तुमचा डिव्हाइस रीस्टार्ट करा</translation>
 <translation id="4276390967705106170">नवीन ब्राउझर टॅबमध्ये उघडा</translation>
@@ -4588,6 +4592,7 @@
 <translation id="4523876148417776526">XML साइटच्या सूची अद्याप मिळालेल्या नाहीत.</translation>
 <translation id="4526051299161934899">लपवलेले सेव्ह केलेले टॅब गट</translation>
 <translation id="452750746583162491">तुमच्या सिंक केलेल्या डेटाचे पुनरावलोकन करा</translation>
+<translation id="4528216716764031072">आधुनिक (पारदर्शक)</translation>
 <translation id="4528494169189661126">भाषांतर सूचना</translation>
 <translation id="4529455689802245339">Chrome लाइव्ह कॅप्शन कदाचित काम करणार नाही</translation>
 <translation id="4531451811601110068">तुम्ही पुन्हा प्रयत्न करू शकता किंवा मदतीसाठी तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधू शकता</translation>
@@ -4741,6 +4746,7 @@
 <translation id="4645575059429386691">आपल्या पालकांद्वारे व्यवस्थापित करण्यात आले</translation>
 <translation id="4645676300727003670">&amp;ठेवा</translation>
 <translation id="4646675363240786305">पोर्ट</translation>
+<translation id="4646859937978908916">नवीन जोडलेली एक्स्टेंशन आपोआप पिन केली जातात. हे एक्स्टेंशन पेजवर बदला.</translation>
 <translation id="4647025838970719122">हे सेटिंग तुमच्या संस्थेने व्यवस्थापित केलेले आहे</translation>
 <translation id="4647090755847581616">टॅब &amp;बंद करा</translation>
 <translation id="4647283074445570750"><ph name="TOTAL_STEPS" /> पैकी <ph name="CURRENT_STEP" /> पायरी</translation>
@@ -8317,6 +8323,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7446716846072322308">यामुळे <ph name="SITE_NAME" /> आणि संबंधित साइटनी स्टोअर केलेला <ph name="TOTAL_USAGE" /> डेटा हटवला जाईल</translation>
 <translation id="7448430327655618736">अ‍ॅप्स आपोआप इंस्टॉल करा</translation>
 <translation id="7448664748118305024">तुम्ही सर्व विंडो बंद करता, तेव्हा साइटनी तुमच्या डिव्हाइसवर सेव्ह केलेला डेटा हटवा</translation>
+<translation id="7449806939046594699">तुमच्या संस्थेने हा आशय कॉपी करणे ब्लॉक केले आहे</translation>
 <translation id="7450761244949417357">आता <ph name="ALTERNATIVE_BROWSER_NAME" /> मध्ये उघडत आहे</translation>
 <translation id="7450926666485653189">तुमचा आयपी अ‍ॅड्रेस लपवणार्‍या गोपनीयता सर्व्हरद्वारे URL चा क्लिष्ट भाग Google ला पाठवते</translation>
 <translation id="7453008956351770337">हा प्रिंटर निवडून, तुम्ही खालील एक्स्टेंशनला तुमच्या प्रिंटरमध्‍ये ॲक्सेस करण्‍याची परवानगी देत आहात:</translation>
@@ -8824,6 +8831,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7849264908733290972">नवीन टॅबमध्ये &amp;प्रतिमा उघडा</translation>
 <translation id="784934925303690534">वेळ वर्गवारी</translation>
 <translation id="7850320739366109486">व्यत्यय आणू नका</translation>
+<translation id="7851303446278533774">तयार करा, प्लॅन करा, सारांश द्या</translation>
 <translation id="7851716364080026749">नेहमी कॅमेरा आणि मायक्रोफोन ॲक्सेस ब्लॉक करा</translation>
 <translation id="78526636422538552">आणखी Google खाती जोडणे बंद केले आहे</translation>
 <translation id="7853747251428735">अधिक साध&amp;ने</translation>
@@ -9923,7 +9931,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8693862390730570097">"मला लिहिण्यात मदत करा" ला अपोआप उघडण्याची अनुमती देऊ नका</translation>
 <translation id="8694596275649352090">स्लीप मोडमध्ये किंवा लिड बंद केलेली असताना लॉक करा</translation>
 <translation id="8695825812785969222">&amp;स्थान उघडा...</translation>
-<translation id="8696297579102085705">तुमच्या डिव्हाइसवर पाठवा</translation>
 <translation id="869884720829132584">ॲप्लिकेशन मेनू</translation>
 <translation id="869891660844655955">कालावधी समाप्ती तारीख</translation>
 <translation id="8699296325072357994">पासवर्ड पेजवरील आशय आणि संबंधित माहिती Google ला पाठवली जाते आणि त्याचे माणसांकडून पुनरावलोकन केले जाते. तुमचा पासवर्ड एन्क्रिप्ट केलेला आहे आणि तो कधीच कोणालाही दिसत नाही. <ph name="PASSWORD_CHANGE" /></translation>

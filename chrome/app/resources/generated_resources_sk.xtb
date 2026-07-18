@@ -1177,7 +1177,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1910721550319506122">Vitajte!</translation>
 <translation id="1910736334623230603">Nie je možné hľadať viaceré obrázky. Pridávajte obrázky po jednom.</translation>
 <translation id="1910908536872421421">Chrome na testovanie verzie <ph name="BROWSER_VERSION" /> je určený iba na automatické testovanie. Na bežné prehliadanie používajte štandardnú verziu Chromu, ktorá sa automaticky aktualizuje.</translation>
-<translation id="1912867150686509584">Zobrazte si v Kalendári ďalšie stretnutia</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Pozastavte kartu, ktorá spomaľuje váš prehliadač}few{Pozastavte karty, ktoré spomaľujú váš prehliadač}many{Pause the Tabs Slowing Your Browser}other{Pozastavte karty, ktoré spomaľujú váš prehliadač}}</translation>
 <translation id="1913749768968678106">Preniesť, uložiť a zdieľať</translation>
 <translation id="19147273405311768">Obnoviť predvolené nastavenia panela s nástrojmi</translation>
@@ -4259,6 +4258,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4274673989874969668">Keď web opustíte, môže naďalej synchronizovať dokončenie úloh, napríklad nahrávanie fotiek alebo odoslanie četovej správy</translation>
 <translation id="4275291496240508082">Zvuk pri spustení</translation>
 <translation id="4275397969489577657">Povoliť zápis streamovania udalosti do denníka</translation>
+<translation id="4275663329226226506">Médiá</translation>
 <translation id="4275788652681621337">Zavrieť bočný panel</translation>
 <translation id="4275830172053184480">Reštart zariadenia</translation>
 <translation id="4276390967705106170">Otvoriť na novej karte prehliadača</translation>
@@ -9911,7 +9911,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8693862390730570097">Nepovoliť automatické otváranie asistenta pri písaní</translation>
 <translation id="8694596275649352090">Uzamykať počas spánku alebo keď je kryt zavretý</translation>
 <translation id="8695825812785969222">Otvoriť &amp;umiestnenie...</translation>
-<translation id="8696297579102085705">Odoslať do zariadenia</translation>
 <translation id="869884720829132584">Ponuka Aplikácie</translation>
 <translation id="869891660844655955">Koniec platnosti</translation>
 <translation id="8699296325072357994">Obsah zo stránok s heslami a súvisiace informácie sa odosielajú Googlu a kontrolujú ich ľudia. Vaše heslo je šifrované a nikomu sa nikdy nezobrazí. <ph name="PASSWORD_CHANGE" /></translation>

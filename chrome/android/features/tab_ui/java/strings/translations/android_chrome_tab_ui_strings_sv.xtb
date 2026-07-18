@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Dela upp flik}other{Dela upp flikar}}</translation>
 <translation id="2271452184061378400">Dina flikgrupper sparas här</translation>
 <translation id="2277224997687551299">Redigera gruppnamn</translation>
+<translation id="2289567621059034186">Ny flik nedan</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Infoga bokmärke för flik}other{Infoga bokmärken för flikar}}</translation>
 <translation id="2359808026110333948">Fortsätt</translation>
 <translation id="2371084566192454134">Flikar och flikgrupper</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">Visa flikar horisontellt</translation>
 <translation id="31806439105337256">Visa flikar vertikalt</translation>
 <translation id="3194464645767632461">betyg</translation>
+<translation id="3228962656492373217">Stäng flikarna nedan</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Lägg till <ph name="TABS_COUNT_ONE" /> flik i gruppen}other{Lägg till <ph name="TABS_COUNT_MANY" /> flikar i gruppen}}</translation>
 <translation id="3328308545011660196">Förslag: <ph name="NUMBER_OF_TABS" /> flikar verkar höra ihop. Vill du gruppera dem?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Efter en dag utan aktivitet}other{Efter <ph name="DAY_COUNT_MANY" /> dagar utan aktivitet}}</translation>

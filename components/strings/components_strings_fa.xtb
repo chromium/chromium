@@ -506,7 +506,7 @@
 <translation id="175656076281618225">تردستی</translation>
 <translation id="1757773103848038814">قلم تک‌فاصله</translation>
 <translation id="1757935267918149452">‏دکمه تغییر گذرواژه Google؛ برای تغییر گذرواژه «حساب Google»، آن را فعال کنید</translation>
-<translation id="1759776526873274358">‏تکمیل خودکار کدهای درستی‌سنجی که سایت‌ها برای بهبود امنیت شما استفاده می‌کنند. ‫Chrome می‌تواند این کدها را از Gmail شما دریافت کند. <ph name="BEGIN_LINK" />درباره این ویژگی بیشتر بدانید<ph name="LINK_END" /></translation>
+<translation id="1759776526873274358">‏تکمیل خودکار کدهای درستی‌سنجی‌ای که سایت‌ها برای بهبود امنیت شما استفاده می‌کنند. Chrome می‌تواند این کدها را از Gmail شما دریافت کند. <ph name="BEGIN_LINK" />درباره این ویژگی بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="1763864636252898013">این سرور نتوانست اثبات کند که این <ph name="DOMAIN" /> است؛ گواهی امنیتی آن مورداعتماد سیستم‌عامل دستگاه شما نیست. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجی اتصال شما را قطع کرده است.</translation>
 <translation id="1768211456781949159">‏<ph name="BEGIN_LINK" />Windows Network Diagnostics را اجرا کنید<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">عکس (آرشیوی)</translation>
@@ -565,6 +565,7 @@
 <translation id="1855370856221982654">بوکس</translation>
 <translation id="1862788842908766795">مشاغل اجرایی و مدیریتی</translation>
 <translation id="1863257867908022953">سینی ۱۲</translation>
+<translation id="1863374797460198869">گپ پنهان شد</translation>
 <translation id="186539747722034544">ارائه‌دهندگان تلویزیون کابلی و ماهواره‌ای</translation>
 <translation id="1870473978371099486">خدمات تدریس خصوصی</translation>
 <translation id="1871208020102129563">‏تنظیم پروکسی به گونه‌ای است که از سرورهای ثابت پروکسی استفاده کند و از آدرس اسکریپت pac. استفاده نکند.</translation>
@@ -1427,7 +1428,6 @@
 <translation id="3202497928925179914">‏<ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />، کلید «جهش» و سپس «ورود» را فشار دهید تا اطلاعاتی را که همگام‌سازی می‌کنید در تنظیمات Chrome مدیریت کنید</translation>
 <translation id="3203025201812691413">نشانی وب نباید خالی باشد</translation>
 <translation id="320323717674993345">لغو پرداخت</translation>
-<translation id="3204534477198689393">برای بهبود پیشنهادها و پر کردن سریع‌تر فرم‌ها، محتوا و نشانی‌های وب صفحه‌هایی که بازدید می‌کنید می‌توانند در یک فضای ابری خصوصی پردازش شوند.</translation>
 <translation id="3207830513221832868">ممکن است <ph name="BLOCKED_URL" /> محتوای مناسب بزرگسالان داشته باشد</translation>
 <translation id="3207960819495026254">نشانک‌گذاری شده</translation>
 <translation id="3208701679386778924">‏لطفاً گزارشی ارسال کنید تا بتوانیم به‌روزرسانی‌های بعدی ChromeOS را بهبود ببخشیم.</translation>
@@ -4527,10 +4527,11 @@
 <translation id="7967973398323409409">اطلاعاتی که به‌طور خودکار تکمیل می‌کنید هرگز برای کسی قابل‌مشاهده نیست</translation>
 <translation id="79682505114836835">‏مقدار «<ph name="VALUE" />» رنگ hex نامعتبر است.</translation>
 <translation id="7968982339740310781">مشاهدهٔ جزئیات</translation>
-<translation id="7971403153351954587">سازمانتان بر کپی کردن نظارت می‌کند</translation>
+<translation id="7971403153351954587">سازمانتان کپی کردن را پایش می‌کند</translation>
 <translation id="7972714317346275248">‏PKCS #1 SHA-384 با رمزگذاری RSA</translation>
 <translation id="7976053965094442846">فهرست صادرکنندگان «الآن خریدن، پراخت بعداً» موجود برای پرداخت قسطی. صفحه‌کلید پنهان است.</translation>
 <translation id="7976214039405368314">تعداد درخواست‌ها بیش از حد است</translation>
+<translation id="7977029776654598145">هنگام استفاده</translation>
 <translation id="7977538094055660992">دستگاه خروجی</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{‫<ph name="TIME_COUNT" /> دقیقه پیش}=1{‫<ph name="TIME_COUNT" /> ساعت پیش}one{‫<ph name="TIME_COUNT" /> روز پیش}other{‫<ph name="TIME_COUNT" /> روز پیش}}</translation>
 <translation id="7979595116210197019">خدمات غذایی</translation>
@@ -4625,7 +4626,6 @@
 <translation id="8134058435519644366">استخدام و تأمین نیرو</translation>
 <translation id="8135546115396015134">کلید چپ</translation>
 <translation id="8137456439814903304">انرژی و تأسیسات</translation>
-<translation id="8138591088112729119">پشتیبانی شده توسط «هوش شخصی‌سازی‌شده»</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{‫۱ ماه پیش ایجاد شده است}one{‫{NUM_MONTHS} ماه پیش ایجاد شده است}other{‫{NUM_MONTHS} ماه پیش ایجاد شده است}}</translation>
 <translation id="8147389370274164212">‫<ph name="SEARCH_ENGINE_NAME" />، برنامه پیش‌فرض فعلی. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">‏نسخه PDF:</translation>
@@ -4958,6 +4958,7 @@
 <translation id="8688672835843460752">دردسترس</translation>
 <translation id="868922510921656628">صفحه‌های هر مجموعه</translation>
 <translation id="8694684557210599098">افزودن وسیله نقلیه</translation>
+<translation id="8696297579102085705">ارسال کردن به دستگاه شما</translation>
 <translation id="8698428283892912525">‏‫Chrome دارای ویژگی‌های ایمنی داخلی است که از شما درحین مرور محافظت می‌کند — مثل «مرور ایمن Google»، که اخیراً در سایتی که می‌خواستید بازدید کنید <ph name="BEGIN_LINK" />نرم‌افزار مخرب پیدا کرده است<ph name="END_LINK" />.</translation>
 <translation id="869891660844655955">تاریخ انقضا</translation>
 <translation id="8699041776323235191">‏دستگاه HID</translation>

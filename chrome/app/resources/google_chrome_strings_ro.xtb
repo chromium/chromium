@@ -237,7 +237,6 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="3282568296779691940">Conectează-te la Chrome</translation>
 <translation id="3286538390144397061">Repornește acum</translation>
 <translation id="3292333338048274092">Apoi va trebui să repornești Chrome.</translation>
-<translation id="3324218984287646518">Întreabă Google Lens despre acest videoclip</translation>
 <translation id="3327226547491422998">Ulterior, Chrome te poate întreba dacă vrei să folosești informațiile salvate pentru a completa automat formulare</translation>
 <translation id="3352986031709923790">colțul din dreapta sus al zonei de căutare: dreapta <ph name="RIGHT" /> %, sus <ph name="TOP" /> %</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
@@ -258,8 +257,6 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="3576528680708590453">Administratorul sistemului a configurat Google Chrome astfel încât să deschidă un browser secundar pentru a accesa <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Sincronizează și personalizează Chrome pe toate dispozitivele</translation>
 <translation id="3583751698304738917">Te-ai conectat deja ca <ph name="USER_EMAIL_ADDRESS" /> în alt profil Chrome</translation>
-<translation id="358381413217813387">Caută această pagină cu Google Lens</translation>
-<translation id="3589519427766620380">Întreabă Google Lens despre această pagină</translation>
 <translation id="3595784445906693824">Te conectezi la Chrome într-un profil nou?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Administratorul solicită să relansezi Chrome pentru a aplica o actualizare}=1{Administratorul solicită să relansezi Chrome pentru a aplica o actualizare. Fereastra incognito nu se va mai deschide.}few{Administratorul solicită să relansezi Chrome pentru a aplica o actualizare. Cele # ferestre incognito nu se vor mai deschide.}other{Administratorul solicită să relansezi Chrome pentru a aplica o actualizare. Cele # de ferestre incognito nu se vor mai deschide.}}</translation>
 <translation id="3597003331831379823">Nu s-a putut rula configurarea cu privilegii de nivel superior. <ph name="METAINSTALLER_ERROR" /></translation>
@@ -354,7 +351,6 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="4501471624619070934">Instalarea nu a reușit deoarece accesul este restricționat în această țară.</translation>
 <translation id="4571503333518166079">Accesează setările pentru notificări Chrome</translation>
 <translation id="4580939929828762295">Rămâi în siguranță cu Managerul de parole Google</translation>
-<translation id="4592634244097223647">Întreabă Google despre această imagine</translation>
 <translation id="459622048091363950">Odată ce Chrome are acces, site-urile web îți vor putea solicita accesul.</translation>
 <translation id="4598116752460667024">Caută orice proces din listă.</translation>
 <translation id="4600710005438004015">Chrome nu s-a putut actualiza la cea mai recentă versiune. Astfel, pierzi noi funcții și remedieri de securitate.</translation>
@@ -654,7 +650,6 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="7572537927358445944">Dezactivată • Chrome nu poate verifica de unde provine această extensie</translation>
 <translation id="7583399374488819119">Program de instalare <ph name="COMPANY_NAME" /></translation>
 <translation id="7596160425942761210">Poți folosi Chrome oricând dai clic pe linkuri în mesaje, documente și alte aplicații</translation>
-<translation id="7602868996817972616">Întreabă Google despre această pagină</translation>
 <translation id="7606334485649076285">Sistemul de operare Google Chrome Flex</translation>
 <translation id="7627609214560473136">Pentru a-ți proteja datele, permite browserului Chrome să elimine permisiunile de pe site-urile pe care nu le-ai accesat recent.</translation>
 <translation id="7629695634924605473">Chrome te anunță dacă parolele tale sunt compromise</translation>
@@ -779,7 +774,6 @@ Nu poți salva marcaje noi în cont până când nu ștergi câteva. Dacă te de
 <translation id="8712637175834984815">Am înțeles</translation>
 <translation id="8712767363896337380">Actualizarea este aproape gata! Relansează Chrome pentru a finaliza actualizarea.</translation>
 <translation id="8718062187489036808">Deconectează-te de la Chrome</translation>
-<translation id="8725440680697264016">Întreabă Google despre acest videoclip</translation>
 <translation id="873133009373065397">Google Chrome nu poate determina sau seta browserul prestabilit</translation>
 <translation id="8747073452963259673">colțul din stânga jos al zonei de căutare: stânga <ph name="LEFT" /> %, jos <ph name="BOTTOM" /> %</translation>
 <translation id="8748735421235723888">Chrome eliberează memoria din filele inactive. Astfel, filele active și alte aplicații beneficiază de mai multe resurse ale computerului și Chrome funcționează rapid. Filele inactive se reactivează automat când revii la ele. <ph name="BEGIN_LINK" />Află mai multe despre Economisirea memoriei<ph name="END_LINK" /></translation>
@@ -795,7 +789,6 @@ Nu poți salva marcaje noi în cont până când nu ștergi câteva. Dacă te de
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome recomandă să o elimini}few{Chrome recomandă să le elimini}other{Chrome recomandă să le elimini}}</translation>
 <translation id="8862326446509486874">Nu ai drepturile adecvate pentru instalarea la nivel de sistem. Încearcă să rulezi din nou programul de instalare ca Administrator.</translation>
 <translation id="8865415417596392024">Datele Chrome din cont</translation>
-<translation id="8883862939660515976">Întreabă Google Lens despre această imagine</translation>
 <translation id="8914504000324227558">Relansați Chrome</translation>
 <translation id="8920304659326707347">Reia activitatea de unde ai rămas cu Chrome pe iOS.</translation>
 <translation id="8922998289262614701">Elimină datele aplicației din Chrome</translation>

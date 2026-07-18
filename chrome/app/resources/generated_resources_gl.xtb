@@ -1177,7 +1177,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1910721550319506122">Dámosche a benvida.</translation>
 <translation id="1910736334623230603">Non se poden buscar varias imaxes. Engade unha imaxe de cada vez.</translation>
 <translation id="1910908536872421421">Chrome for Testing (versión <ph name="BROWSER_VERSION" />) destínase só para probas automatizadas. Para navegar de forma normal, usa unha versión estándar de Chrome que se actualiza automaticamente.</translation>
-<translation id="1912867150686509584">Ver máis reunións en Calendar</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Pon en pausa a pestana que fai que o navegador vaia máis lento}other{Pon en pausa as pestanas que fan que o navegador vaia máis lento}}</translation>
 <translation id="1913749768968678106">Emitir, gardar e compartir</translation>
 <translation id="19147273405311768">Restablecer a barra de ferramentas á configuración predeterminada</translation>
@@ -4262,6 +4261,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4274673989874969668">Unha vez que saes dun sitio, este pode seguir sincronizando datos para finalizar tarefas (por exemplo, cargar fotos ou enviar mensaxes de chat)</translation>
 <translation id="4275291496240508082">Son de inicio</translation>
 <translation id="4275397969489577657">Activar rexistro de emisión de eventos</translation>
+<translation id="4275663329226226506">Multimedia</translation>
 <translation id="4275788652681621337">Pechar o panel lateral</translation>
 <translation id="4275830172053184480">Reinicia o dispositivo</translation>
 <translation id="4276390967705106170">Abrir nunha pestana do navegador nova</translation>
@@ -9909,7 +9909,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8693862390730570097">Non se permite que a función Axúdame a escribir se abra automaticamente</translation>
 <translation id="8694596275649352090">Bloquear cando estea en suspensión ou cando se peche a tapa</translation>
 <translation id="8695825812785969222">Abrir &amp;localización...</translation>
-<translation id="8696297579102085705">Enviar ao teu dispositivo</translation>
 <translation id="869884720829132584">Menú de aplicacións</translation>
 <translation id="869891660844655955">Data de vencemento</translation>
 <translation id="8699296325072357994">O contido das páxinas de contrasinais e a información relacionada envíanse a Google e sométense a un proceso de revisión manual. O teu contrasinal está encriptado e ninguén o pode ver. <ph name="PASSWORD_CHANGE" /></translation>

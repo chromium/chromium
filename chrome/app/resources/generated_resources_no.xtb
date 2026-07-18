@@ -1184,7 +1184,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1910721550319506122">Velkommen!</translation>
 <translation id="1910736334623230603">Kan ikke søke etter flere bilder. Legg til ett bilde om gangen.</translation>
 <translation id="1910908536872421421">Chrome for Testing, versjon <ph name="BROWSER_VERSION" />, er bare ment for automatisk testing. Til vanlig surfing på nettet må du bruke en standardversjon av Chrome som oppdateres automatisk.</translation>
-<translation id="1912867150686509584">Se flere møter i kalenderen din</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Sett fanen som gjør nettleseren treg, på pause}other{Sett fanene som gjør nettleseren treg, på pause}}</translation>
 <translation id="1913749768968678106">Cast, lagre og del</translation>
 <translation id="19147273405311768">Tilbakestill verktøylinjen til standardinnstillingene</translation>
@@ -4267,6 +4266,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4274673989874969668">Når du forlater nettsteder, kan de fortsette å synkronisere for å fullføre oppgaver, som å laste opp bilder eller sende chatmeldinger</translation>
 <translation id="4275291496240508082">Oppstartslyd</translation>
 <translation id="4275397969489577657">Slå på loggføring av aktivitetsstrømmer</translation>
+<translation id="4275663329226226506">Medier</translation>
 <translation id="4275788652681621337">Lukk sidepanelet</translation>
 <translation id="4275830172053184480">Start enheten din på nytt</translation>
 <translation id="4276390967705106170">Åpne i en ny nettleserfane</translation>
@@ -9915,7 +9915,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8693862390730570097">Ikke tillat at «Hjelp meg å skrive» åpnes automatisk</translation>
 <translation id="8694596275649352090">Lås når enheten er i hvilemodus eller lokket lukkes</translation>
 <translation id="8695825812785969222">Åpne p&amp;lassering ...</translation>
-<translation id="8696297579102085705">Send til enheten din</translation>
 <translation id="869884720829132584">Programmeny</translation>
 <translation id="869891660844655955">Utløpsdato</translation>
 <translation id="8699296325072357994">Innhold fra passordsider og relatert informasjon sendes til Google og gjennomgås av mennesker. Passordet ditt er kryptert og blir aldri sett av noen. <ph name="PASSWORD_CHANGE" /></translation>

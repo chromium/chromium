@@ -1972,13 +1972,6 @@ Si se inhabilita esta política o no se establece, los usuarios podrán transfer
       Los usuarios no podrán modificar ni anular este ajuste.
 
       Nota: Esta política provoca que el encabezado X-GoogApps-Allowed-Domains se añada a todas las solicitudes HTTP y HTTPS en todos los dominios de google.com, como se describe en https://support.google.com/a/answer/1668854.</translation>
-<translation id="2287414160388710497">Permite a los administradores personalizar el aspecto de las marcas de agua aplicadas por las reglas de Prevención de la pérdida de datos (DLP). Esto incluye establecer la opacidad del relleno o del contorno y el tamaño de la fuente.
-Si no se define esta política o algunos valores, Chrome usará su comportamiento predeterminado para las marcas de agua.
-Los valores predeterminados son: opacidad del relleno 4, opacidad del contorno 6 y tamaño de la fuente 24.
-
-La opacidad del relleno es un porcentaje que va del 0 (totalmente transparente) al 100 (totalmente opaco).
-La opacidad del contorno es un porcentaje que va del 0 (totalmente transparente) al 100 (totalmente opaco).
-El tamaño de la fuente se especifica en puntos.</translation>
 <translation id="2288506601233091655">No permitir que se elimine el historial de trabajos de impresión</translation>
 <translation id="2289688405312849186">Cuenta principal del usuario: "usuario@dominio". El marcador de posición <ph name="LOGIN_ID_PLACEHOLDER" /> se reemplazará por el nombre de usuario "usuario". El marcador de posición <ph name="LOGIN_EMAIL_PLACEHOLDER" /> se reemplazará por la cuenta principal completa "usuario@dominio".</translation>
 <translation id="2290270645214705008">Si se inhabilita esta política, el servicio de host de acceso remoto no se podrá iniciar ni configurar para que acepte conexiones entrantes.  Esta política no afecta a las situaciones de asistencia remota.
@@ -2246,15 +2239,6 @@ Para obtener más información sobre el tratamiento de datos en las funciones de
 <translation id="2479760962196319822">Esta política controla si los usuarios de <ph name="PRODUCT_OS_NAME" /> pueden almacenar datos de forma local o no.
       Si se asigna el valor False a esta política, se bloqueará el almacenamiento local en <ph name="PRODUCT_OS_NAME" /> y los usuarios no podrán almacenar ningún dato de forma local ni acceder a ningún directorio local.
       Si se asigna el valor True a esta política o no se define, se permitirá el almacenamiento local en <ph name="PRODUCT_OS_NAME" /> y no habrá restricciones sobre dónde pueden almacenar datos los usuarios ni a qué directorios pueden acceder.</translation>
-<translation id="2480971699591919564">Habilita la función Clic de llamada, que permite a los usuarios enviar números de teléfono desde Chrome para ordenador a un dispositivo Android si el usuario ha iniciado sesión. Puedes consultar más información en este artículo del Centro de Ayuda: https://support.google.com/chrome/answer/9430554?hl=es
-
-      Si se habilita esta política, el usuario de Chrome podrá enviar números de teléfono a dispositivos Android.
-
-      Si no se habilita esta política, el usuario de Chrome no podrá enviar números de teléfono a dispositivos Android.
-
-      Si estableces esta política, los usuarios no podrán cambiarla ni anularla.
-
-      Si no se establece esta política, la función Clic de llamada se habilitará de forma predeterminada.</translation>
 <translation id="2482676533225429905">Mensajería nativa</translation>
 <translation id="2483146640187052324">Predecir las acciones de red en cualquier conexión de red</translation>
 <translation id="2487495476672607707">La función Sincronización de archivos de <ph name="PRODUCT_OS_NAME" /> permite que los archivos de <ph name="GOOGLE_DRIVE_NAME" /> incluidos en la sección "Mi unidad" del usuario estén disponibles automáticamente sin conexión (si hay espacio) en dispositivos <ph name="CHROMEBOOK_PLUS_NAME" />.

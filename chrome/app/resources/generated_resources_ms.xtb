@@ -1187,7 +1187,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1910721550319506122">Selamat datang!</translation>
 <translation id="1910736334623230603">Tidak dapat mencari berbilang imej. Tambahkan satu imej pada satu masa.</translation>
 <translation id="1910908536872421421">Chrome untuk Menguji v<ph name="BROWSER_VERSION" /> adalah untuk ujian automatik sahaja. Untuk penyemakan imbas biasa, gunakan versi standard Chrome yang mengemas kinikan secara automatik.</translation>
-<translation id="1912867150686509584">Lihat lebih banyak mesyuarat dalam Kalendar anda</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Jeda Tab yang Memperlahankan Penyemak Imbas Anda}other{Jeda Tab yang Memperlahankan Penyemak Imbas Anda}}</translation>
 <translation id="1913749768968678106">Hantar, simpan dan kongsi</translation>
 <translation id="19147273405311768">Tetapkan semula bar alat kepada tetapan lalai</translation>
@@ -4272,6 +4271,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4274673989874969668">Laman boleh terus menjalankan penyegerakan untuk menyelesaikan tugas, seperti memuat naik foto atau menghantar mesej sembang selepas anda meninggalkan laman itu.</translation>
 <translation id="4275291496240508082">Bunyi permulaan</translation>
 <translation id="4275397969489577657">Dayakan pengelogan strim acara</translation>
+<translation id="4275663329226226506">Media</translation>
 <translation id="4275788652681621337">Tutup panel sisi</translation>
 <translation id="4275830172053184480">Mulakan semula peranti anda</translation>
 <translation id="4276390967705106170">Buka dalam tab penyemak imbas baharu</translation>
@@ -9924,7 +9924,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8693862390730570097">Jangan benarkan "Bantu saya tulis" untuk dibuka secara automatik</translation>
 <translation id="8694596275649352090">Kunci apabila tidur atau penutup ditutup</translation>
 <translation id="8695825812785969222">Buka &amp;Lokasi...</translation>
-<translation id="8696297579102085705">Hantar kepada peranti anda</translation>
 <translation id="869884720829132584">Menu aplikasi</translation>
 <translation id="869891660844655955">Tarikh tamat tempoh</translation>
 <translation id="8699296325072357994">Kandungan daripada halaman kata laluan dan maklumat berkaitan dihantar kepada Google dan disemak oleh jurusemak. Kata laluan anda disulitkan dan tidak akan dilihat oleh sesiapa. <ph name="PASSWORD_CHANGE" /></translation>

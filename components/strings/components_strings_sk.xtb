@@ -565,6 +565,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1855370856221982654">Box</translation>
 <translation id="1862788842908766795">Práca v oblasti riadenia a manažmentu</translation>
 <translation id="1863257867908022953">Zásobník č. 12</translation>
+<translation id="1863374797460198869">Čet je skrytý</translation>
 <translation id="186539747722034544">Poskytovatelia káblovej a satelitnej televízie</translation>
 <translation id="1870473978371099486">Súkromné vyučovanie</translation>
 <translation id="1871208020102129563">Proxy je nastavené na použitie pevne daných serverov proxy, nie skriptov PAC webovej adresy.</translation>
@@ -1423,7 +1424,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, postupným stlačením klávesov Tab a Enter môžete v nastaveniach Chromu spravovať, aké údaje sa synchronizujú</translation>
 <translation id="3203025201812691413">Webová adresa nemôže byť prázdna</translation>
 <translation id="320323717674993345">Zrušiť platbu</translation>
-<translation id="3204534477198689393">Obsah a webové adresy stránok, ktoré navštívite, sa môžu spracúvať v súkromnom priestore v cloude, s cieľom zlepšiť návrhy a rýchlejšie vypĺňať formuláre.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> môže mať obsah nevhodný pre deti</translation>
 <translation id="3207960819495026254">Pridané medzi záložky</translation>
 <translation id="3208701679386778924">Pošlite nám spätnú väzbu, aby sme mohli aktualizácie systému ChromeOS ďalej zlepšovať.</translation>
@@ -4525,6 +4525,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="7972714317346275248">Štandard PKCS #1 SHA-384 so šifrovaním RSA</translation>
 <translation id="7976053965094442846">Vydavatelia spôsobov platby Kúpte hneď, plaťte neskôr umožňujú platiť priebežne. Klávesnica je skrytá.</translation>
 <translation id="7976214039405368314">Príliš veľa žiadostí</translation>
+<translation id="7977029776654598145">Keď sa používa</translation>
 <translation id="7977538094055660992">Zariadenie výstupu</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Pred <ph name="TIME_COUNT" /> min}=1{Pred <ph name="TIME_COUNT" /> h}few{Pred <ph name="TIME_COUNT" /> d.}many{Pred <ph name="TIME_COUNT" /> d.}other{Pred <ph name="TIME_COUNT" /> d.}}</translation>
 <translation id="7979595116210197019">Stravovacie služby</translation>
@@ -4619,7 +4620,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="8134058435519644366">Nábor a personalistika</translation>
 <translation id="8135546115396015134">ľavý kláves</translation>
 <translation id="8137456439814903304">Energia a služby</translation>
-<translation id="8138591088112729119">Využíva inteligenciu na mieru</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Vytvorená pred 1 mesiacom}few{Vytvorená pred {NUM_MONTHS} mesiacmi}many{Vytvorená pred {NUM_MONTHS} mesiaca}other{Vytvorená pred {NUM_MONTHS} mesiacmi}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, aktuálne predvolený. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Verzia PDF:</translation>
@@ -4953,6 +4953,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="8688672835843460752">K dispozícii</translation>
 <translation id="868922510921656628">Počet strán v súprave</translation>
 <translation id="8694684557210599098">Pridanie vozidla</translation>
+<translation id="8696297579102085705">Odoslať do zariadenia</translation>
 <translation id="8698428283892912525">Chrome má integrované bezpečnostné funkcie na vašu ochranu pri prehliadaní – napríklad Bezpečné prehliadanie Google, ktoré <ph name="BEGIN_LINK" />nedávno našlo škodlivý softvér<ph name="END_LINK" /> na webe, ktorý ste sa pokúsili navštíviť.</translation>
 <translation id="869891660844655955">Koniec platnosti</translation>
 <translation id="8699041776323235191">Zariadenie HID</translation>

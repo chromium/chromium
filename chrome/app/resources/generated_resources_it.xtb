@@ -1176,7 +1176,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1910721550319506122">Ti diamo il benvenuto</translation>
 <translation id="1910736334623230603">Impossibile cercare più immagini. Aggiungi un'immagine alla volta.</translation>
 <translation id="1910908536872421421">Chrome for Testing v<ph name="BROWSER_VERSION" /> è riservato ai test automatici. Per la normale navigazione, usa una versione standard di Chrome che si aggiorna automaticamente.</translation>
-<translation id="1912867150686509584">Vedi altre riunioni nel tuo calendario</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Metti in pausa la scheda che rallenta il browser}other{Metti in pausa le schede che rallentano il browser}}</translation>
 <translation id="1913749768968678106">Trasmetti, salva e condividi</translation>
 <translation id="19147273405311768">Ripristina le impostazioni predefinite della barra degli strumenti</translation>
@@ -4258,6 +4257,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4274673989874969668">Dopo aver chiuso un sito, il sito può continuare la sincronizzazione per terminare attività come il caricamento di foto o l'invio di un messaggio di chat</translation>
 <translation id="4275291496240508082">Suono avvio</translation>
 <translation id="4275397969489577657">Abilita la registrazione del flusso di eventi</translation>
+<translation id="4275663329226226506">Multimediali</translation>
 <translation id="4275788652681621337">Chiudi riquadro laterale</translation>
 <translation id="4275830172053184480">Riavvia il dispositivo</translation>
 <translation id="4276390967705106170">Apri in una nuova scheda del browser</translation>
@@ -9905,7 +9905,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8693862390730570097">Non consentire l'apertura automatica di "Aiutami a scrivere"</translation>
 <translation id="8694596275649352090">Blocca quando sospeso o alla chiusura del coperchio</translation>
 <translation id="8695825812785969222">Apri &amp;percorso...</translation>
-<translation id="8696297579102085705">Invia al tuo dispositivo</translation>
 <translation id="869884720829132584">Menu Applicazioni</translation>
 <translation id="869891660844655955">Data di scadenza</translation>
 <translation id="8699296325072357994">I contenuti delle pagine delle password e le informazioni correlate vengono inviati a Google ed esaminati da revisori. La tua password è criptata e non può essere visualizzata da nessuno. <ph name="PASSWORD_CHANGE" /></translation>

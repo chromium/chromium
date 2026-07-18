@@ -1186,7 +1186,6 @@
 <translation id="1910721550319506122">ברוכים הבאים!</translation>
 <translation id="1910736334623230603">אי אפשר לחפש מספר תמונות. צריך להוסיף תמונה אחת בכל פעם.</translation>
 <translation id="1910908536872421421">‏גרסה <ph name="BROWSER_VERSION" /> של Chrome for Testing מיועדת רק לבדיקות אוטומטיות. לגלישה רגילה, יש להשתמש בגרסה רגילה של Chrome שמתעדכנת באופן אוטומטי.</translation>
-<translation id="1912867150686509584">רוצה לראות עוד פגישות ביומן?</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{השהיית הכרטיסייה שמאטה את הדפדפן}one{השהיית הכרטיסיות שמאטות את הדפדפן}two{השהיית הכרטיסיות שמאטות את הדפדפן}other{השהיית הכרטיסיות שמאטות את הדפדפן}}</translation>
 <translation id="1913749768968678106">‏הפעלת Cast, שמירה ושיתוף</translation>
 <translation id="19147273405311768">איפוס סרגל הכלים להגדרות ברירת המחדל</translation>
@@ -4270,6 +4269,7 @@
 <translation id="4274673989874969668">לאחר יציאה מאתרים, ייתכן שפעולות סנכרון שלהם ימשיכו כדי להשלים משימות, כמו העלאת תמונות או שליחת הודעות צ'אט</translation>
 <translation id="4275291496240508082">הפעלת צליל</translation>
 <translation id="4275397969489577657">הפעלת רישום ביומן של אירועים בסטרימינג</translation>
+<translation id="4275663329226226506">מדיה</translation>
 <translation id="4275788652681621337">סגירת החלונית הצדדית</translation>
 <translation id="4275830172053184480">הפעלת המכשיר מחדש</translation>
 <translation id="4276390967705106170">פתיחה בכרטיסייה חדשה בדפדפן</translation>
@@ -9921,7 +9921,6 @@
 <translation id="8693862390730570097">לא לאפשר לתכונה 'עזרה בכתיבה' להיפתח אוטומטית</translation>
 <translation id="8694596275649352090">נעילה במצב שינה או כשהמכסה סגור</translation>
 <translation id="8695825812785969222">פתיחת &amp;מיקום...</translation>
-<translation id="8696297579102085705">שליחה למכשיר שלך</translation>
 <translation id="869884720829132584">תפריט יישומים</translation>
 <translation id="869891660844655955">תאריך תפוגה</translation>
 <translation id="8699296325072357994">‏תוכן מדפי סיסמאות ומידע קשור נשלחים אל Google ועוברים בדיקה אנושית. הסיסמה שלך מוצפנת ואף אחד לא יכול לראות אותה <ph name="PASSWORD_CHANGE" /></translation>

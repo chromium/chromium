@@ -1187,7 +1187,6 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1910721550319506122">Maligayang pagdating!</translation>
 <translation id="1910736334623230603">Hindi makapaghanap ng maraming larawan. Paisa-isang dagdagan ng larawan.</translation>
 <translation id="1910908536872421421">Ang Chrome for Testing v<ph name="BROWSER_VERSION" /> ay para lang sa naka-automate na pagsubok. Para sa regular na pag-browse, gumamit ng standard na bersyon ng Chrome na awtomatikong nag-a-update.</translation>
-<translation id="1912867150686509584">Tumingin ng higit pang meeting sa iyong Calendar</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{I-pause ang Tab na Nagpapabagal sa Iyong Browser}one{I-pause ang Mga Tab na Nagpapabagal sa Iyong Browser}other{I-pause ang Mga Tab na Nagpapabagal sa Iyong Browser}}</translation>
 <translation id="1913749768968678106">I-cast, i-save, at i-share</translation>
 <translation id="19147273405311768">I-reset ang toolbar sa mga default na setting</translation>
@@ -4272,6 +4271,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="4274673989874969668">Pagkatapos mong umalis sa isang site, puwede itong patuloy na mag-sync para matapos ang mga gawain, tulad ng pag-upload ng mga larawan o pagpapadala ng mensahe sa chat</translation>
 <translation id="4275291496240508082">Tunog sa pag-start up</translation>
 <translation id="4275397969489577657">I-enable ang pag-log ng stream ng event</translation>
+<translation id="4275663329226226506">Media</translation>
 <translation id="4275788652681621337">Isara ang panel sa gilid</translation>
 <translation id="4275830172053184480">I-restart ang iyong device</translation>
 <translation id="4276390967705106170">Buksan sa bagong tab ng browser</translation>
@@ -9926,7 +9926,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8693862390730570097">Huwag payagang awtomatikong bumukas ang "Tulungan akong magsulat"</translation>
 <translation id="8694596275649352090">I-lock kapag naka-sleep o nakasara ang takip</translation>
 <translation id="8695825812785969222">Buksan ang &amp;Lokasyon...</translation>
-<translation id="8696297579102085705">Ipadala sa iyong device</translation>
 <translation id="869884720829132584">Menu ng mga application</translation>
 <translation id="869891660844655955">Expiration date</translation>
 <translation id="8699296325072357994">Ipinapadala sa Google at sinusuri ng mga tao ang content mula sa mga page ng password at nauugnay na impormasyon. Naka-encrypt ang iyong password at hindi ito nakikita ng kahit sino. <ph name="PASSWORD_CHANGE" /></translation>

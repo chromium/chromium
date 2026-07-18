@@ -1187,7 +1187,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1910721550319506122">Welcome!</translation>
 <translation id="1910736334623230603">Can't search multiple images. Add one image at a time.</translation>
 <translation id="1910908536872421421">Chrome for Testing v<ph name="BROWSER_VERSION" /> is only for automated testing. For regular browsing, use a standard version of Chrome that updates automatically.</translation>
-<translation id="1912867150686509584">See more meetings on your Calendar</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Pause the tab that's slowing your browser}other{Pause the tabs that are slowing your browser}}</translation>
 <translation id="1913749768968678106">Cast, save and share</translation>
 <translation id="19147273405311768">Reset toolbar to default settings</translation>
@@ -4272,6 +4271,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4274673989874969668">After you leave a site, it can keep syncing to finish tasks, like uploading photos or sending a chat message</translation>
 <translation id="4275291496240508082">Start-up sound</translation>
 <translation id="4275397969489577657">Enable event stream logging</translation>
+<translation id="4275663329226226506">Media</translation>
 <translation id="4275788652681621337">Close side panel</translation>
 <translation id="4275830172053184480">Restart your device</translation>
 <translation id="4276390967705106170">Open in a new browser tab</translation>
@@ -9923,7 +9923,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8693862390730570097">Don't allow 'Help me write' to automatically open</translation>
 <translation id="8694596275649352090">Lock when sleeping or lid is closed</translation>
 <translation id="8695825812785969222">Open &amp;Location...</translation>
-<translation id="8696297579102085705">Send to your device</translation>
 <translation id="869884720829132584">Applications menu</translation>
 <translation id="869891660844655955">Expiry date</translation>
 <translation id="8699296325072357994">Content from password pages and related info is sent to Google and reviewed by humans. Your password is encrypted and never seen by anyone. <ph name="PASSWORD_CHANGE" /></translation>

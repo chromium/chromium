@@ -565,6 +565,7 @@
 <translation id="1855370856221982654">ملاكمة</translation>
 <translation id="1862788842908766795">وظائف تنفيذية وإدارية</translation>
 <translation id="1863257867908022953">الدُرج 12</translation>
+<translation id="1863374797460198869">المحادثة مخفية</translation>
 <translation id="186539747722034544">مزودو الكابلات والأقمار الصناعية</translation>
 <translation id="1870473978371099486">خدمات تدريس خاص</translation>
 <translation id="1871208020102129563">‏تم ضبط الخادم الوكيل لاستخدام الخوادم الوكيلة الثابتة وليس عنوان URL لنص برمجي pac.</translation>
@@ -1426,7 +1427,6 @@
 <translation id="3202497928925179914">‏<ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح التبويب (Tab) ثم مفتاح Enter لإدارة نوع المعلومات التي تريد مزامنتها من خلال إعدادات متصفّح Chrome.</translation>
 <translation id="3203025201812691413">‏لا يمكن ترك عنوان URL فارغًا.</translation>
 <translation id="320323717674993345">إلغاء الدفع</translation>
-<translation id="3204534477198689393">‏لتحسين الاقتراحات وملء النماذج بشكل أسرع، يمكن معالجة محتوى الصفحات التي تتم زيارتها من جانبك وعناوين URL الخاصة بها في مساحة خاصّة في السحابة الإلكترونية.</translation>
 <translation id="3207830513221832868">قد يتضمّن الموقع الإلكتروني <ph name="BLOCKED_URL" /> محتوى للكبار</translation>
 <translation id="3207960819495026254">تمت إضافتها إلى الإشارات المرجعية.</translation>
 <translation id="3208701679386778924">‏يُرجى إرسال تقرير بشأن عملية التحديث لنتمكّن من تحسين تحديثات ChromeOS القادمة.</translation>
@@ -4530,6 +4530,7 @@
 <translation id="7972714317346275248">‏PKCS #1 SHA-384 مع ترميز RSA</translation>
 <translation id="7976053965094442846">‏يتم عرض قائمة بمقدّمي خدمة "الدفع الآجل" (BNPL) المتاح لديهم إمكانية الدفع على أقساط. لوحة المفاتيح مخفية.</translation>
 <translation id="7976214039405368314">عدد الطلبات كبير جدًا.</translation>
+<translation id="7977029776654598145">عند الاستخدام</translation>
 <translation id="7977538094055660992">جهاز إخراج</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{قبل <ph name="TIME_COUNT" /> دقيقة}=1{قبل ساعة واحدة (<ph name="TIME_COUNT" />)}two{قبل يوميَن (<ph name="TIME_COUNT" />)}few{قبل <ph name="TIME_COUNT" /> أيام}many{قبل <ph name="TIME_COUNT" /> يومًا}other{قبل <ph name="TIME_COUNT" /> يوم}}</translation>
 <translation id="7979595116210197019">خدمات غذائية</translation>
@@ -4624,7 +4625,6 @@
 <translation id="8134058435519644366">توظيف وعمالة</translation>
 <translation id="8135546115396015134">السهم المتجّه لليسار</translation>
 <translation id="8137456439814903304">طاقة وشركات طاقة</translation>
-<translation id="8138591088112729119">مستنِد إلى ميزة "الذكاء المخصّص"</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{تم إنشاء المجموعة قبل شهر واحد}zero{تم إنشاء المجموعة قبل {NUM_MONTHS} شهر}two{تم إنشاء المجموعة قبل شهرَين ({NUM_MONTHS})}few{تم إنشاء المجموعة قبل {NUM_MONTHS} أشهر}many{تم إنشاء المجموعة قبل {NUM_MONTHS} شهرًا}other{تم إنشاء المجموعة قبل {NUM_MONTHS} شهر}}</translation>
 <translation id="8147389370274164212">‫<ph name="SEARCH_ENGINE_NAME" />، محرك البحث التلقائي. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">‏نسخة PDF:</translation>
@@ -4960,6 +4960,7 @@
 <translation id="8688672835843460752">متوفِّر</translation>
 <translation id="868922510921656628">عدد الصفحات في كل مجموعة</translation>
 <translation id="8694684557210599098">إضافة مركبة</translation>
+<translation id="8696297579102085705">الإرسال إلى جهازك</translation>
 <translation id="8698428283892912525">‏يتضمّن متصفِّح Chrome ميزات أمان مدمجة لحمايتك أثناء التصفُّح، مثل ميزة "التصفُّح الآمن من Google" التي <ph name="BEGIN_LINK" />رصدت مؤخرًا برامج ضارّة<ph name="END_LINK" /> على الموقع الإلكتروني الذي حاولت الانتقال إليه.</translation>
 <translation id="869891660844655955">تاريخ انتهاء الصلاحية</translation>
 <translation id="8699041776323235191">‏جهاز HID</translation>

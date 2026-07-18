@@ -1177,7 +1177,6 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1910721550319506122">Xoş gəlmisiniz!</translation>
 <translation id="1910736334623230603">Bir neçə şəkil axtarmaq olmur. Eyni vaxtda bir şəkil əlavə etmək olar.</translation>
 <translation id="1910908536872421421">Test üçün Chrome v<ph name="BROWSER_VERSION" /> yalnız avtomatlaşdırılmış test üçündür. Müntəzəm baxış üçün avtomatik olaraq güncəllənən Chrome'un standart versiyasından istifadə edin</translation>
-<translation id="1912867150686509584">Təqviminizdə digər görüşlərə baxın</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Brauzeri yavaşladan tabı durdurun}other{Brauzeri yavaşladan tabları durdurun}}</translation>
 <translation id="1913749768968678106">Yayımlayın, yadda saxlayın və paylaşın</translation>
 <translation id="19147273405311768">Alətlər panelini defolt ayarlara sıfırlayın</translation>
@@ -4260,6 +4259,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4274673989874969668">Saytdan çıxdıqdan sonra o, fotoların yüklənməsi, yaxud söhbət mesajı göndərmək kimi tapşırıqları tamamlamaq üçün sinxronizasiyanı saxlaya bilər</translation>
 <translation id="4275291496240508082">Başlama səsi</translation>
 <translation id="4275397969489577657">Tədbir yayım girişini aktiv edin</translation>
+<translation id="4275663329226226506">Media</translation>
 <translation id="4275788652681621337">Yan paneli bağlayın</translation>
 <translation id="4275830172053184480">Cihazınızı yenidən başladın</translation>
 <translation id="4276390967705106170">Yeni brauzer tabında açın</translation>
@@ -9910,7 +9910,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8693862390730570097">"Yazmağa kömək et" funksiyasının avtomatik açılmasına icazə verməyin</translation>
 <translation id="8694596275649352090">Yatarkən və ya qapaq bağlı olduqda kilidləyin</translation>
 <translation id="8695825812785969222">Məkan açın...</translation>
-<translation id="8696297579102085705">Cihazınıza göndərin</translation>
 <translation id="869884720829132584">Tətbiqlər menyusu</translation>
 <translation id="869891660844655955">Bitmə tarixi</translation>
 <translation id="8699296325072357994">Parol səhifələrindəki kontent və əlaqəli məlumatlar Google-a göndərilir və insanlar tərəfindən nəzərdən keçirilir. Parolunuz şifrlənib və heç kəs tərəfindən görünmür. <ph name="PASSWORD_CHANGE" /></translation>

@@ -565,6 +565,7 @@
 <translation id="1855370856221982654">Boks</translation>
 <translation id="1862788842908766795">İcra və idarəetmə işləri</translation>
 <translation id="1863257867908022953">Qab 12</translation>
+<translation id="1863374797460198869">Çat gizlədildi</translation>
 <translation id="186539747722034544">Kabel və peyk provayderləri</translation>
 <translation id="1870473978371099486">Fərdi repetitorluq xidmətləri</translation>
 <translation id="1871208020102129563">Proksi .pac skript URL deyil sabit proksi serverlər istifadə etmək üçün ayarlanıb.</translation>
@@ -1424,7 +1425,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarında sinxronlaşdırdığınız məlumatları idarə etmək üçün Tab, sonra Enter düyməsinə basın</translation>
 <translation id="3203025201812691413">URL boş ola bilməz</translation>
 <translation id="320323717674993345">Ödənişi ləğv edin</translation>
-<translation id="3204534477198689393">Təklifləri təkmilləşdirmək və formaları daha tez doldurmaq üçün daxil olduğunuz səhifələrin kontenti və URL-ləri buludda şəxsi sahədə emal edilə bilər.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> saytında böyüklər üçün kontent ola bilər</translation>
 <translation id="3207960819495026254">Əlfəcinlənib</translation>
 <translation id="3208701679386778924">Gələcək ChromeOS güncəllənmələrini təkmilləşdirməyimiz üçün hesabat göndərin.</translation>
@@ -4525,6 +4525,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="7972714317346275248">PKCS #1 SHA-384 RSA Şifrələmə ilə</translation>
 <translation id="7976053965094442846">Hissə-hissə ödəmə üçün əlçatan olan "İndi al, sonra ödə" emitentləri. Klaviatura gizlədilib.</translation>
 <translation id="7976214039405368314">Həddən çox sorğu var</translation>
+<translation id="7977029776654598145">İstifadə edildikdə</translation>
 <translation id="7977538094055660992">Çıxış cihazı</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> dəq əvvəl}=1{<ph name="TIME_COUNT" /> saat əvvəl}other{<ph name="TIME_COUNT" /> gün əvvəl}}</translation>
 <translation id="7979595116210197019">Qida xidməti</translation>
@@ -4619,7 +4620,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="8134058435519644366">İşə qəbul və iş heyəti</translation>
 <translation id="8135546115396015134">sol düymə</translation>
 <translation id="8137456439814903304">Enerji və Kommunal Xidmət</translation>
-<translation id="8138591088112729119">Şəxsi Zəka tərəfindən dəstəklənir</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 ay əvvəl yaradıldı}other{{NUM_MONTHS} ay əvvəl yaradıldı}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, cari defolt. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF versiyası:</translation>
@@ -4952,6 +4952,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="8688672835843460752">Əlçatandır</translation>
 <translation id="868922510921656628">Dəst üzrə səhifələr</translation>
 <translation id="8694684557210599098">Nəqliyyat vasitəsi əlavə edin</translation>
+<translation id="8696297579102085705">Cihazınıza göndərin</translation>
 <translation id="8698428283892912525">Chrome axtarış zamanı sizi qoruyan daxili güvənlik funksiyalarına malikdir. Daxil olmağa cəhd etdiyiniz saytda <ph name="BEGIN_LINK" />bu yaxınlarda zərərli proqram təminatı tapan<ph name="END_LINK" /> Google güvənli baxış buna misaldır.</translation>
 <translation id="869891660844655955">Bitmə tarixi</translation>
 <translation id="8699041776323235191">HID cihazı</translation>

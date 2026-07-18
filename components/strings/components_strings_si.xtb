@@ -565,6 +565,7 @@
 <translation id="1855370856221982654">බොක්සිං</translation>
 <translation id="1862788842908766795">විධායක සහ කළමනාකරණ රැකියා</translation>
 <translation id="1863257867908022953">Tray 12</translation>
+<translation id="1863374797460198869">කතාබහ සැඟවිණි</translation>
 <translation id="186539747722034544">කේබල් සහ චන්ද්‍රිකා සපයන්නන්</translation>
 <translation id="1870473978371099486">පෞද්ගලික ඉගැන්වීමේ සේවා</translation>
 <translation id="1871208020102129563">.pac ස්ක්‍රිප්ට URL එතත් නොව, ස්ථාවර ප්‍රොක්සි සේවාදයක භාවිතා කිරීමට ප්‍රොක්සි සකසා ඇත,</translation>
@@ -1426,7 +1427,6 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome සැකසීම් තුළ ඔබ සමමුහුර්ත කරන තොරතුරු කළමනාකරණය කිරීමට Tab ඔබා﻿ අනතුරුව Enter ඔබන්න</translation>
 <translation id="3203025201812691413">URL හිස් විය නොහැක</translation>
 <translation id="320323717674993345">ගෙවීම අවලංගු කරන්න</translation>
-<translation id="3204534477198689393">යෝජනා වැඩි දියුණු කිරීමට සහ පෝරම වේගයෙන් පිරවීමට, ඔබ පිවිසෙන පිටුවල අන්තර්ගතය සහ URL ක්ලවුඩ් හි පෞද්ගලික අවකාශයක සැකසිය හැක.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> හි වැඩිහිටි අන්තර්ගතයන් තිබිය හැක</translation>
 <translation id="3207960819495026254">පිටුසලකුණු කළ</translation>
 <translation id="3208701679386778924">අපට තවදුරටත් ChromeOS යාවත්කාලීන වැඩි දියුණු කළ හැකි පරිදි වාර්තාවක් එවන්න.</translation>
@@ -4529,6 +4529,7 @@
 <translation id="7972714317346275248">RSA සංකේතනය සහිත PKCS #1 SHA-384</translation>
 <translation id="7976053965094442846">කාලයත් සමග ගෙවීම සඳහා ලබා ගත හැකි දැන් මිල දී ගන්න-පසුව ගෙවන්න නිකුත් කරන්නන් සිටී. යතුරු පුවරුව සැඟවී ඇත.</translation>
 <translation id="7976214039405368314">ඉල්ලීම් ඉතා වැඩිය</translation>
+<translation id="7977029776654598145">භාවිතා කරන විට</translation>
 <translation id="7977538094055660992">ප්‍රතිදාන උපාංගය</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{මිනි <ph name="TIME_COUNT" />කට පෙර}=1{පැය <ph name="TIME_COUNT" />කට පෙර}one{දින <ph name="TIME_COUNT" />කට පෙර}other{දින <ph name="TIME_COUNT" />කට පෙර}}</translation>
 <translation id="7979595116210197019">ආහාර සේවාව</translation>
@@ -4623,7 +4624,6 @@
 <translation id="8134058435519644366">බඳවා ගැනීම් සහ මණ්ඩලීකරණය</translation>
 <translation id="8135546115396015134">වම් යතුර</translation>
 <translation id="8137456439814903304">බලශක්ති සහ උපයෝගිතා</translation>
-<translation id="8138591088112729119">පුද්ගලික බුද්ධිය මගින් බල ගැන්වේ</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{මාස 1කට පෙර තනන ලදි}one{මාස {NUM_MONTHS}කට පෙර තනන ලදි}other{මාස {NUM_MONTHS}කට පෙර තනන ලදි}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, වත්මන් පෙරනිමිය. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF අනුවාදය:</translation>
@@ -4956,6 +4956,7 @@
 <translation id="8688672835843460752">තිබේ</translation>
 <translation id="868922510921656628">කට්ටලයකට පිටු</translation>
 <translation id="8694684557210599098">වාහනය එක් කරන්න</translation>
+<translation id="8696297579102085705">ඔබේ උපාංගය වෙත යවන්න</translation>
 <translation id="8698428283892912525">ඔබ බ්‍රවුස් කරන අතරතුර ඔබව ආරක්‍ෂා කිරීමට Chrome තුළ Google ආරක්ෂිත බ්‍රවුස් කිරීම වැනි තිළැලි ආරක්‍ෂිත විශේෂාංග ඇත — එය ඔබ පිවිසීමට උත්සාහ කළ වෙබ් අඩවියේ මෑතක දී <ph name="BEGIN_LINK" />හානිකර මෘදුකාංග සොයා ගන්නා ලදි<ph name="END_LINK" />.</translation>
 <translation id="869891660844655955">කල් ඉකුත් වීමේ දිනය:</translation>
 <translation id="8699041776323235191">HID උපාංගය</translation>

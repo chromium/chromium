@@ -565,6 +565,7 @@
 <translation id="1855370856221982654">बक्सिङ</translation>
 <translation id="1862788842908766795">कार्यकारी तथा व्यवस्थापक पदका जागिरहरू</translation>
 <translation id="1863257867908022953">ट्रे १२</translation>
+<translation id="1863374797460198869">च्याट लुकाइएको छ</translation>
 <translation id="186539747722034544">केबल तथा स्याटेलाइट प्रदायक</translation>
 <translation id="1870473978371099486">निजी ट्युसन सेवा</translation>
 <translation id="1871208020102129563">प्रोक्सी निश्चित प्रोक्सी सर्भर प्रयोग गर्न सेट गरिएको छ, .pac स्क्रिप्ट युआरएल होइन।</translation>
@@ -1423,7 +1424,6 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome का सेटिङमा गई के कस्ता जानकारी सिंक गर्ने भन्ने कुरा व्यवस्थापन गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="3203025201812691413">URL खाली खाली हुनु हुँदैन</translation>
 <translation id="320323717674993345">भुक्तानी रद्द गर्नुहोस्</translation>
-<translation id="3204534477198689393">सुझावहरूमा सुधार ल्याउन र अझ छिटो फारामहरू भर्न तपाईंले खोल्ने पेजहरूका कन्टेन्ट र URL हरू क्लाउडमा रहेको निजी स्पेसमा प्रोसेस गर्न सकिन्छ।</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> मा वयस्क लक्षित सामग्री हुन सक्छ</translation>
 <translation id="3207960819495026254">बुकमार्क लगाइयो</translation>
 <translation id="3208701679386778924">हामी ChromeOS का अपडेटहरूको गुणस्तर अझ सुधार गर्न सकौँ भन्नाका लागि कृपया रिपोर्ट पेस गर्नुहोस्।</translation>
@@ -4527,6 +4527,7 @@
 <translation id="7972714317346275248">RSA गुप्तिकरणको साथमा PKCS #1 SHA-384</translation>
 <translation id="7976053965094442846">"अहिले किन्नुहोस् पछि तिर्नुहोस्" सुविधा उपलब्ध गराउने संस्थाका सहायताले किस्तामा भुक्तानी गर्नुहोस्। किबोर्ड लुकाइएको छ।</translation>
 <translation id="7976214039405368314">अत्यन्त धेरै पटक अनुरोध गरियो</translation>
+<translation id="7977029776654598145">यो सुविधा प्रयोग गर्दा</translation>
 <translation id="7977538094055660992">आउटपुट यन्त्र</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> मिनेटअघि}=1{<ph name="TIME_COUNT" /> घण्टाअघि}other{<ph name="TIME_COUNT" /> दिनअघि}}</translation>
 <translation id="7979595116210197019">खाद्य सेवा</translation>
@@ -4621,7 +4622,6 @@
 <translation id="8134058435519644366">भर्ती तथा नियक्ति गर्ने सेवा</translation>
 <translation id="8135546115396015134">लेफ्ट की</translation>
 <translation id="8137456439814903304">ऊर्जा तथा युटिलिटीहरू</translation>
-<translation id="8138591088112729119">पर्सनल इन्टेलिजेन्स प्रयोग गरी उपलब्ध गराइएको</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{१ महिनाअघि बनाइएको}other{{NUM_MONTHS} महिनाअघि बनाइएको}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, हालको डिफल्ट सर्च इन्जिन। <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF को संस्करण:</translation>
@@ -4954,6 +4954,7 @@
 <translation id="8688672835843460752">उपलब्ध</translation>
 <translation id="868922510921656628">प्रति समूह पृष्ठको सङ्ख्या</translation>
 <translation id="8694684557210599098">सवारी साधनसम्बन्धी जानकारी हाल्नुहोस्</translation>
+<translation id="8696297579102085705">आफ्नो डिभाइसमा पठाउनुहोस्</translation>
 <translation id="8698428283892912525">तपाईंले ब्राउज गर्दै गर्दा तपाईंलाई सुरक्षित राख्न Chrome मा "Google सुरक्षित ब्राउजिङ" लगायतका सुरक्षासम्बन्धी अन्तर्निर्मित सुविधाहरू उपलब्ध छन्। "Google सुरक्षित ब्राउजिङ" ले हालसालै तपाईंले खोल्न खोज्नुभएको साइटमा <ph name="BEGIN_LINK" />हानिकारक सफ्टवेयर<ph name="END_LINK" /> भेट्टाएको छ।</translation>
 <translation id="869891660844655955">समाप्ति मिति</translation>
 <translation id="8699041776323235191">HID यन्त्र</translation>

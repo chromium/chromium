@@ -1177,7 +1177,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1910721550319506122">Willkommen!</translation>
 <translation id="1910736334623230603">Eine Suche in mehreren Bildern ist nicht möglich. Füge ein Bild nach dem anderen hinzu.</translation>
 <translation id="1910908536872421421">Chrome for Testing v<ph name="BROWSER_VERSION" /> ist nur für automatisierte Tests vorgesehen. Verwende für deine normalen Surfaktivitäten eine Standardversion von Chrome, die automatisch aktualisiert wird.</translation>
-<translation id="1912867150686509584">Mehr Besprechungen in deinem Kalender sehen</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Tab pausieren, der deinen Browser verlangsamt}other{Tabs pausieren, die deinen Browser verlangsamen}}</translation>
 <translation id="1913749768968678106">Streamen, speichern und teilen</translation>
 <translation id="19147273405311768">Symbolleiste auf Standardeinstellungen zurücksetzen</translation>
@@ -1224,6 +1223,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1938351510777341717">Externer Befehl</translation>
 <translation id="1940221956626514677">Symbolleiste anpassen</translation>
 <translation id="1940546824932169984">Verbundene Geräte</translation>
+<translation id="194081218158106711">Geändertes Passwort wird bestätigt…</translation>
 <translation id="1941410638996203291">Startzeit: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Version: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">Der Administrator hat dein Konto so konfiguriert, dass es automatisch mit Microsoft OneDrive verbunden wird, aber es ist ein Fehler aufgetreten.</translation>
@@ -4256,6 +4256,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4274673989874969668">Wenn du eine Website verlässt, kann die Synchronisierung trotzdem fortgesetzt werden, um Aufgaben wie das Hochladen von Fotos oder das Versenden einer Chatnachricht zu beenden</translation>
 <translation id="4275291496240508082">Einschaltton</translation>
 <translation id="4275397969489577657">Ereignisstream-Protokollierung aktivieren</translation>
+<translation id="4275663329226226506">Medien</translation>
 <translation id="4275788652681621337">Seitenleiste schließen</translation>
 <translation id="4275830172053184480">Gerät neu starten</translation>
 <translation id="4276390967705106170">In einem neuen Browsertab öffnen</translation>
@@ -4743,6 +4744,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4657914796247705218">TrackPoint-Geschwindigkeit</translation>
 <translation id="4658648180588730283">Die Anwendung <ph name="APPLICATION_NAME" /> ist offline nicht verfügbar.</translation>
 <translation id="465878909996028221">Nur HTTP-, HTTPS- und Dateiprotokolle werden für Browserweiterleitungen unterstützt.</translation>
+<translation id="4658821552705754298"><ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">Wenn du dich in deinem Google-Konto anmeldest, ist diese Funktion eingeschaltet.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Bild}other{# Bilder}}</translation>
 <translation id="4660540330091848931">Größenanpassung läuft</translation>
@@ -8904,6 +8906,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7933486544522242079">&amp;Speichern und teilen</translation>
 <translation id="7933518760693751884">Klicke auf das Lesezeichen-Symbol, um eine Seite für später zu speichern</translation>
 <translation id="7933634003144813719">Freigegebene Ordner verwalten</translation>
+<translation id="7935072572536724392">Automatische Passwortänderung fehlgeschlagen</translation>
 <translation id="7936195481975600746">Wenn du deinen Bildschirm teilen möchtest, verwende die Bildschirmauswahl des Systems</translation>
 <translation id="7937809006412909895">Diagnosedaten werden erfasst</translation>
 <translation id="7938881824185772026">Labs</translation>
@@ -9041,6 +9044,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Leseliste}=1{Leseliste ({SELECTED_ITEMS})}other{Leseliste ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> – Berechtigung angefordert. Drücke „⌘ + Option + Aufwärtspfeil“, um zu reagieren.</translation>
 <translation id="8030169304546394654">Verbindung getrennt</translation>
+<translation id="8030814978699290230">Anmeldung läuft…</translation>
 <translation id="8030852056903932865">Genehmigen</translation>
 <translation id="8033827949643255796">Ausgewählt</translation>
 <translation id="8033958968890501070">Zeitüberschreitung</translation>
@@ -9454,6 +9458,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8343578633847737325">Letzte Chats und Threads</translation>
 <translation id="8345848587667658367">Du kannst jetzt die neuesten Fotos, Medien, Benachrichtigungen und Apps von deinem Smartphone ansehen</translation>
 <translation id="8347227221149377169">Druckaufträge</translation>
+<translation id="8347728744337089388">An mein &amp;Gerät senden</translation>
 <translation id="8348430946834215779">Nach Möglichkeit HTTPS verwenden und warnen, bevor Websites geladen werden, die das Protokoll nicht unterstützen</translation>
 <translation id="8348896480272971199">Prüfe deine Internetverbindung und versuche es noch einmal.</translation>
 <translation id="8349305172487531364">Lesezeichenleiste</translation>
@@ -9503,6 +9508,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8382197851871630452">Lokales Wetter</translation>
 <translation id="8382913212082956454">E-Mail-Adr&amp;esse kopieren</translation>
 <translation id="8383614331548401927">Willkommen zurück</translation>
+<translation id="8387157483437834731">Passwort geändert</translation>
 <translation id="8387361103813440603">Dürfen meine Standortdaten nicht abrufen</translation>
 <translation id="8389492867173948260">Dieser Erweiterung erlauben, alle meine Daten auf von mir besuchten Websites zu lesen und zu ändern:</translation>
 <translation id="8390449457866780408">Der Server ist nicht verfügbar.</translation>
@@ -9897,7 +9903,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8693862390730570097">Automatisches Öffnen von „Formuliere für mich“ nicht zulassen</translation>
 <translation id="8694596275649352090">Im Ruhemodus oder beim Zuklappen sperren</translation>
 <translation id="8695825812785969222">&amp;Adresse öffnen...</translation>
-<translation id="8696297579102085705">An mein Gerät senden</translation>
 <translation id="869884720829132584">Apps-Menü</translation>
 <translation id="869891660844655955">Ablaufdatum</translation>
 <translation id="8699296325072357994">Inhalte aus Passwortseiten und zugehörige Informationen werden an Google gesendet und von Prüfern angesehen. Dein Passwort ist verschlüsselt und wird von niemandem gesehen. <ph name="PASSWORD_CHANGE" /></translation>
@@ -10590,6 +10595,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9220820413868316583">Finger hochheben und dann Versuch wiederholen.</translation>
 <translation id="922152298093051471">Chrome anpassen</translation>
 <translation id="9222839391870847423">Dauer: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">An mein &amp;Gerät senden</translation>
 <translation id="923467487918828349">Alle anzeigen</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Öffne zum Verwalten „Erweiterungen“}other{Öffne zum Verwalten „Erweiterungen“}}</translation>
 <translation id="924818813611903184">Sprachen in den Chrome OS-Einstellungen verwalten</translation>

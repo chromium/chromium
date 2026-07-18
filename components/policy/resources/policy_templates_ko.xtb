@@ -1991,13 +1991,6 @@ URI 템플릿에 <ph name="HTTP_VARIABLE_DNS" /> 변수가 포함된 경우 리�
       사용자는 이 설정을 변경하거나 재정의할 수 없습니다.
 
       참고: 정책을 사용하면 https://support.google.com/a/answer/1668854에서 설명된 바와 같이 X-GoogApps-Allowed-Domains 헤더가 모든 google.com 도메인에 대한 HTTP 및 HTTPS 요청에 첨부됩니다.</translation>
-<translation id="2287414160388710497">관리자가 데이터 손실 방지(DLP) 규칙에 따라 적용된 워터마크의 모양을 맞춤설정할 수 있습니다. 여기에는 채우기/윤곽선 불투명도 설정 및 글꼴 크기 정의가 포함됩니다.
-정책 또는 일부 값을 설정하지 않으면 Chrome에서 기본 워터마크 동작을 사용합니다.
-기본값은 채우기 불투명도 4, 윤곽선 불투명도 6, 글꼴 크기 24입니다.
-
-'채우기 불투명도'는 0(완전 투명)에서 100(완전 불투명) 사이의 백분율입니다.
-'윤곽선 불투명도'는 0(완전 투명)에서 100(완전 불투명) 사이의 백분율입니다.
-'글꼴 크기'는 포인트 단위로 지정됩니다.</translation>
 <translation id="2288506601233091655">인쇄 작업 내역 삭제 허용 안함</translation>
 <translation id="2289688405312849186">사용자 주 구성원 'user@realm'입니다. <ph name="LOGIN_ID_PLACEHOLDER" /> 자리표시자가 사용자 이름 'user'로 교체됩니다. <ph name="LOGIN_EMAIL_PLACEHOLDER" /> 자리표시자가 전체 주 구성원 'user@realm'으로 교체됩니다.</translation>
 <translation id="2290270645214705008">정책을 사용 안함으로 설정하면 수신되는 연결을 허용하도록 원격 액세스 호스트 서비스를 시작하거나 구성할 수 없습니다.  이 정책은 원격 지원 시나리오에 영향을 주지 않습니다.
@@ -2271,15 +2264,6 @@ ServiceWorkerAutoPreload 기능은 ServiceWorker 부트스트랩 프로세스를
 <translation id="2479760962196319822">이 정책은 <ph name="PRODUCT_OS_NAME" /> 사용자가 데이터를 로컬로 저장할 수 있는지 제어합니다.
       정책을 False로 설정하면 <ph name="PRODUCT_OS_NAME" />에 로컬로 저장이 차단됩니다. 사용자는 데이터를 로컬로 저장할 수 없으며 로컬 디렉터리에 액세스할 수 없습니다.
       정책을 True로 설정하거나 설정하지 않으면 <ph name="PRODUCT_OS_NAME" />에서 로컬 저장이 허용됩니다. 사용자가 데이터를 저장할 수 있는 위치나 액세스할 수 있는 디렉터리에는 제한이 없습니다.</translation>
-<translation id="2480971699591919564">사용자가 로그인되어 있으면 Chrome 데스크톱에서 Android 기기로 전화번호를 전송하도록 허용하는 클릭 투 콜 기능을 사용 설정합니다. 자세한 내용은 고객센터 도움말을 참고하세요. https://support.google.com/chrome/answer/9430554?hl=ko
-
-      이 정책이 사용 설정된 경우 Chrome 사용자가 Android 기기로 전화번호를 전송할 수 있습니다.
-
-      사용 중지된 경우 Chrome 사용자가 Android 기기로 전화번호를 전송할 수 없습니다.
-
-      정책이 설정되면 사용자가 이를 변경하거나 재정의할 수 없습니다.
-
-      정책을 설정하지 않으면 클릭 투 콜 기능이 기본적으로 사용 설정됩니다.</translation>
 <translation id="2482676533225429905">기본 메시지</translation>
 <translation id="2483146640187052324">모든 네트워크 연결의 네트워크 활동 예측</translation>
 <translation id="2487495476672607707"><ph name="PRODUCT_OS_NAME" /> 파일 동기화를 사용하면 자동으로 사용자의 내 드라이브에 있는 <ph name="GOOGLE_DRIVE_NAME" /> 파일을 <ph name="CHROMEBOOK_PLUS_NAME" /> 기기에서 오프라인(공간 허용)으로 사용할 수 있습니다.

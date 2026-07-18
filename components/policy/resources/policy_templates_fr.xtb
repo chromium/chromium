@@ -1970,13 +1970,6 @@ Si cette règle est désactivée ou qu'elle n'est pas configurée, les utilisate
       Les utilisateurs ne peuvent ni modifier, ni ignorer ce paramètre.
 
       Remarque : Cette règle entraîne l'ajout de l'en-tête "X-GoogApps-Allowed-Domains" à toutes les requêtes HTTP et HTTPS sur tous les domaines google.com (comme indiqué sur https://support.google.com/a/answer/1668854).</translation>
-<translation id="2287414160388710497">Permet aux administrateurs de personnaliser l'apparence des filigranes appliqués par les règles de Protection contre la perte de données. Cela inclut la définition de l'opacité du remplissage/du contour et de la taille de la police.
-Si cette règle ou certaines valeurs ne sont pas définies, Chrome utilisera son comportement par défaut pour les filigranes.
-Les valeurs par défaut sont les suivantes : opacité du remplissage à 4, opacité du contour à 6 et taille de police à 24.
-
-L'opacité du remplissage est un pourcentage compris entre 0 (totalement transparent) et 100 (totalement opaque).
-L'opacité du contour est un pourcentage compris entre 0 (totalement transparent) et 100 (totalement opaque).
-La taille de police est indiquée en points.</translation>
 <translation id="2288506601233091655">Ne pas autoriser la suppression de l'historique des tâches d'impression</translation>
 <translation id="2289688405312849186">Compte principal de l'utilisateur "user@realm". L'espace réservé <ph name="LOGIN_ID_PLACEHOLDER" /> est remplacé par le nom d'utilisateur "user". L'espace réservé <ph name="LOGIN_EMAIL_PLACEHOLDER" /> est remplacé par le compte principal complet "user@realm".</translation>
 <translation id="2290270645214705008">Si cette règle est désactivée, le service hôte d'accès à distance ne peut pas être démarré ni configuré pour accepter les connexions entrantes.  Cette règle ne concerne pas les cas d'assistance à distance.
@@ -2244,15 +2237,6 @@ Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA 
 <translation id="2479760962196319822">Cette règle détermine si les utilisateurs de <ph name="PRODUCT_OS_NAME" /> peuvent stocker des données localement ou non.
       Si cette règle est définie sur "False", le stockage local est bloqué sur <ph name="PRODUCT_OS_NAME" /> : les utilisateurs ne peuvent ni stocker des données localement, ni accéder aux répertoires locaux.
       Si elle est définie sur "True" ou n'est pas configurée, le stockage local est autorisé sur <ph name="PRODUCT_OS_NAME" />. Aucune restriction ne s'applique aux emplacements où les utilisateurs peuvent stocker des données, ni aux répertoires auxquels ils peuvent accéder.</translation>
-<translation id="2480971699591919564">Cette règle active la fonctionnalité Click to Call, qui autorise les utilisateurs à envoyer des numéros de téléphone depuis leur ordinateur équipé de Chrome vers un appareil Android lorsqu'ils sont connectés. Pour plus d'informations, consultez cet article du centre d'aide : https://support.google.com/chrome/answer/9430554?hl=fr.
-
-      Si cette règle est activée, la fonctionnalité permettant d'envoyer des numéros de téléphone vers des appareils Android sera activée pour l'utilisateur Chrome.
-
-      Si cette règle est désactivée, la fonctionnalité permettant d'envoyer des numéros de téléphone vers des appareils Android sera désactivée pour l'utilisateur Chrome.
-
-      Si vous configurez cette règle, les utilisateurs ne peuvent ni la modifier, ni l'ignorer.
-
-      Si vous ne définissez pas cette règle, la fonctionnalité Click to Call est activée par défaut.</translation>
 <translation id="2482676533225429905">Messagerie native</translation>
 <translation id="2483146640187052324">Prédire les actions réseau lors d'une connexion au réseau</translation>
 <translation id="2487495476672607707">Sur les appareils <ph name="CHROMEBOOK_PLUS_NAME" />, la synchronisation de fichiers <ph name="PRODUCT_OS_NAME" /> rend automatiquement disponibles hors connexion les fichiers <ph name="GOOGLE_DRIVE_NAME" /> du dossier "Mon Drive" de l'utilisateur (si l'espace le permet).

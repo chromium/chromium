@@ -1176,7 +1176,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1910721550319506122">Mirë se erdhe!</translation>
 <translation id="1910736334623230603">Nuk mund të kërkohet me shumë imazhe. Shtoji imazhet një nga një.</translation>
 <translation id="1910908536872421421">Chrome for Testing v<ph name="BROWSER_VERSION" /> është vetëm për testim të automatizuar. Për shfletimin e zakonshëm, përdor një version standard të Chrome që përditësohet automatikisht.</translation>
-<translation id="1912867150686509584">Shiko më shumë takime te "Kalendari" yt</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Vendos në pauzë skedën që ngadalëson shfletuesin}other{Vendos në pauzë skedat që ngadalësojnë shfletuesin}}</translation>
 <translation id="1913749768968678106">Transmeto, ruaj dhe ndaj</translation>
 <translation id="19147273405311768">Rivendos shiritin e veglave te cilësimet e parazgjedhura</translation>
@@ -4259,6 +4258,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4274673989874969668">Pasi të largohesh nga një sajt, ai mund të vazhdojë të sinkronizojë detyrat, si p.sh. ngarkimin e fotografive ose dërgimin e një mesazhi bisede</translation>
 <translation id="4275291496240508082">Tingulli i nisjes</translation>
 <translation id="4275397969489577657">Aktivizo regjistrimin e rrjedhës së ngjarjeve</translation>
+<translation id="4275663329226226506">Media</translation>
 <translation id="4275788652681621337">Mbyll panelin anësor</translation>
 <translation id="4275830172053184480">Rinise pajisjen</translation>
 <translation id="4276390967705106170">Hap në një skedë të re të shfletuesit</translation>
@@ -9907,7 +9907,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8693862390730570097">Mos lejo hapjen automatike të "Më ndihmo të shkruaj"</translation>
 <translation id="8694596275649352090">Kyçe kur është në gjumë ose kur mbyllet kapaku</translation>
 <translation id="8695825812785969222">Hap &amp;vendndodhjen...</translation>
-<translation id="8696297579102085705">Dërgo te pajisja jote</translation>
 <translation id="869884720829132584">Menyja e aplikacioneve</translation>
 <translation id="869891660844655955">Data e skadimit</translation>
 <translation id="8699296325072357994">Përmbajtjet nga faqet e fjalëkalimeve dhe informacioni përkatës dërgohet te Google dhe shqyrtohen nga njerëz. Fjalëkalimi yt është i enkriptuar dhe nuk është parë asnjëherë nga askush. <ph name="PASSWORD_CHANGE" /></translation>

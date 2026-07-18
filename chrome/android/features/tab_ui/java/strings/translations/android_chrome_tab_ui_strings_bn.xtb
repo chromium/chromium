@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ট্যাব আনগ্রুপ করুন}one{ট্যাব আনগ্রুপ করুন}other{ট্যাব আনগ্রুপ করুন}}</translation>
 <translation id="2271452184061378400">আপনার ট্যাব গ্রুপ এখানে সেভ করা হয়েছে</translation>
 <translation id="2277224997687551299">গ্রুপের নাম এডিট করুন</translation>
+<translation id="2289567621059034186">নিচে নতুন ট্যাব</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{ট্যাব বুকমার্ক করুন}one{ট্যাব বুকমার্ক করুন}other{ট্যাব বুকমার্ক করুন}}</translation>
 <translation id="2359808026110333948">চালিয়ে যান</translation>
 <translation id="2371084566192454134">ট্যাব ও ট্যাব গ্রুপ</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">ট্যাবগুলি অনুভূমিকভাবে দেখুন</translation>
 <translation id="31806439105337256">ট্যাবগুলি উল্লম্বভাবে দেখুন</translation>
 <translation id="3194464645767632461">রেটিং</translation>
+<translation id="3228962656492373217">নিচের ট্যাব বন্ধ করুন</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{গ্রুপে <ph name="TABS_COUNT_ONE" />টি ট্যাব যোগ করুন}one{গ্রুপে <ph name="TABS_COUNT_MANY" />টি ট্যাব যোগ করুন}other{গ্রুপে <ph name="TABS_COUNT_MANY" />টি ট্যাব যোগ করুন}}</translation>
 <translation id="3328308545011660196">সাজেশন: মনে হচ্ছে <ph name="NUMBER_OF_TABS" />টি ট্যাব সম্পর্কযুক্ত। সেগুলি গ্রুপ করতে চান?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{১ দিন ইনঅ্যাক্টিভ থাকার পরে}one{<ph name="DAY_COUNT_MANY" /> দিন ইনঅ্যাক্টিভ থাকার পরে}other{<ph name="DAY_COUNT_MANY" /> দিন ইনঅ্যাক্টিভ থাকার পরে}}</translation>

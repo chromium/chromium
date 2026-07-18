@@ -230,8 +230,8 @@
 <translation id="3547954654003013442">代理设置</translation>
 <translation id="3550915441744863158">Chrome会自动更新，因此您使用的始终都是最新版本</translation>
 <translation id="3559533181353831840">还需大约 <ph name="TIME_LEFT" /></translation>
-<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />为这部正在配置的演示设备输入零售商名称和商店编号*。<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />如果您不知道商店编号，可以输入“0000”以继续安装演示模式。<ph name="END_PARAGRAPH2" />
+<translation id="3567129848895158510"><ph name="BEGIN_PARAGRAPH1" />请为这部正在配置的演示设备输入零售商名称和商店编号*。<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />如果不知道商店编号，可以输入“0000”以继续安装演示模式。<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />*注意：Google 会使用这些信息来确定设备应接收哪个版本的演示模式，以及衡量演示模式的使用情况。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3577473026931028326">出了点问题。请重试。</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> 硬件数据收集</translation>
@@ -447,7 +447,7 @@
 <translation id="5800703268655655701">选择浅色或深色主题</translation>
 <translation id="5804259315582798390">未能启用本地数据恢复功能</translation>
 <translation id="5810809306422959727">此账号无法使用家长控制功能</translation>
-<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />在组织中注册设备后，就可以集中管理设备。您的组织可能会出于多种原因而要求进行注册：<ph name="END_DESCRIPTION" />
+<translation id="5819206523222900309"><ph name="BEGIN_DESCRIPTION" />设备在组织中注册后，即可实现集中管理。您的组织可能会出于多种原因要求您注册设备：<ph name="END_DESCRIPTION" />
         <ph name="BEGIN_SUBTITLE1" /><ph name="BEGIN_BOLD" />增强安全性<ph name="END_BOLD" /><ph name="END_SUBTITLE1" />
         <ph name="BEGIN_DESCRIPTION1" />通过配置额外的安全设置，组织可确保用户和设备数据的安全，还可以执行远程重置或停用丢失的设备等操作。<ph name="END_DESCRIPTION1" />
         <ph name="BEGIN_SUBTITLE2" /><ph name="BEGIN_BOLD" />自定义体验<ph name="END_BOLD" /><ph name="END_SUBTITLE2" />
@@ -455,7 +455,7 @@
         <ph name="BEGIN_SUBTITLE3" /><ph name="BEGIN_BOLD" />提供支持<ph name="END_BOLD" /><ph name="END_SUBTITLE3" />
         <ph name="BEGIN_DESCRIPTION3" />组织可以远程访问设备会话以进行问题排查。<ph name="END_DESCRIPTION3" />
         <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />启用访问权限<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
-        <ph name="BEGIN_DESCRIPTION4" />组织应用、服务和网络可能仅在已注册的设备上提供。<ph name="END_DESCRIPTION4" /></translation>
+        <ph name="BEGIN_DESCRIPTION4" />组织的应用、服务和网络可能仅在已注册的设备上提供。<ph name="END_DESCRIPTION4" /></translation>
 <translation id="5834581999798853053">约剩 <ph name="TIME" /> 分钟</translation>
 <translation id="5852112051279473187">糟糕！系统在注册此设备时遇到了一些严重的问题。请重试或与您的技术支持代表联系。</translation>
 <translation id="5852137567692933493">重新启动，然后执行 Powerwash</translation>

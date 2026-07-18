@@ -55,7 +55,6 @@
 <translation id="1623563412065267963">Aproveite o Google ao máximo com o app Chromium no seu celular</translation>
 <translation id="1625909126243026060">Revise os principais controles de privacidade e segurança no Chromium</translation>
 <translation id="1640672724030957280">Fazendo download...</translation>
-<translation id="1680687534629375545">Pergunte à pesquisa por imagens sobre esta página</translation>
 <translation id="1708414395296835197">Você pode usar o Chromium sempre que clicar em links contidos em mensagens, documentos e outros apps. Ele também será fixado na barra de tarefas.</translation>
 <translation id="1709772298389099340">Fornece privilégios elevados ao <ph name="BROWSER_NAME" />.</translation>
 <translation id="1722488837206509557">Assim, você pode selecionar os dispositivos disponíveis e mostrar conteúdo neles.</translation>
@@ -79,7 +78,6 @@
 <translation id="1880677175115548835">Selecionar texto</translation>
 <translation id="1881322772814446296">Você está fazendo login com uma conta gerenciada e concedendo ao administrador da conta o controle sobre seu perfil do Chromium. Seus dados do Chromium, como aplicativos, favoritos, histórico, senhas e outras configurações serão permanentemente vinculados a <ph name="USER_NAME" />. Você pode excluir esses dados pelo painel das Contas do Google, mas não pode associá-los a outra conta. Você tem a opção de criar um novo perfil para manter seus dados existentes do Chromium separados. <ph name="LEARN_MORE" /></translation>
 <translation id="1896836275755235458">O Chromium economiza energia da bateria limitando atividades em segundo plano e efeitos visuais, como rolagem suave e frame rates de vídeos. <ph name="BEGIN_LINK" />Saiba mais sobre a Economia de energia<ph name="END_LINK" /></translation>
-<translation id="1898804291554630487">Perguntar sobre esta página</translation>
 <translation id="1900969832270057921">Chromium Updater Service</translation>
 <translation id="1911763535808217981">Desative essa opção para fazer login em sites do Google, como o Gmail, sem fazer login no Chromium</translation>
 <translation id="1929939181775079593">O Chromium não está respondendo. Reiniciar agora?</translation>
@@ -223,7 +221,6 @@
 <translation id="3316771292331273802">Sua conta será desconectada da maioria dos sites quando você fechar todas as janelas do Chromium, exceto sua Conta do Google, se tiver feito login no navegador. Para permitir que os sites se lembrem de você, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">canto superior direito da área de pesquisa: <ph name="RIGHT" />% à direita, <ph name="TOP" />% acima</translation>
 <translation id="3366305173356742781">Dados do Chromium na sua conta</translation>
-<translation id="3369405342922656244">Pesquise esta página com a pesquisa por imagens</translation>
 <translation id="3375770072980084583">Use suas senhas com o Chromium no seu celular</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Mudar para perfil existente do Chromium?</translation>
@@ -370,7 +367,6 @@
 <translation id="5231355151045086930">Sair do Chromium</translation>
 <translation id="5234764350956374838">Dispensar</translation>
 <translation id="5249261924633168472">Abrir link na janela anô&amp;nima do Chromium</translation>
-<translation id="5254739261293693943">Faça perguntas sobre este vídeo</translation>
 <translation id="5276305953263010518">Baixe o app Chromium para salvar senhas em qualquer lugar</translation>
 <translation id="5277894862589591112">Para que as alterações sejam aplicadas, reinicie o Chromium</translation>
 <translation id="5286907366254680517">Detectado</translation>
@@ -465,7 +461,6 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="6183079672144801177">Verifique se sua conta está conectada ao Chromium no <ph name="TARGET_DEVICE_NAME" /> e tente fazer o envio novamente.</translation>
 <translation id="6212496753309875659">Este computador já tem uma versão mais recente do Chromium. Se o software não estiver funcionando, desinstale o Chromium e tente novamente.</translation>
 <translation id="6219195342503754812">{0,plural, =0{O Chromium será reiniciado agora}=1{O Chromium será reiniciado em 1 segundo}one{O Chromium será reiniciado em # segundo}other{O Chromium será reiniciado em # segundos}}</translation>
-<translation id="6239161312595354541">Pergunte à pesquisa por imagens sobre este vídeo</translation>
 <translation id="6241367896540709610">O Chromium precisa de acesso ao armazenamento para baixar arquivos</translation>
 <translation id="6245734527075554892">Confere se os URLs estão em uma lista de sites não seguros armazenada no Chromium</translation>
 <translation id="6248213926982192922">Tornar o Chromium o navegador padrão</translation>
@@ -554,7 +549,6 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
             • Redefinir os atalhos do Chromium.
             <ph name="LINE_BREAKS" />
             Os favoritos, o histórico e as senhas salvas não serão afetados.</translation>
-<translation id="6934579572334859869">Pergunte à pesquisa por imagens sobre esta imagem</translation>
 <translation id="6948031725951063910">Você atingiu o limite de <ph name="BOOKMARK_LIMIT" /> favoritos no Chromium. Por isso, alguns favoritos ainda não foram salvos na sua Conta do Google.
 
 Exclua alguns dos favoritos da sua conta para poder salvar novos. Se você sair agora, os favoritos que não foram salvos serão excluídos.</translation>
@@ -643,7 +637,6 @@ Exclua alguns dos favoritos da sua conta para poder salvar novos. Se você sair 
 <translation id="7872446069773932638">Fazendo o download… <ph name="SECONDS" /> segundo(s) restante(s)</translation>
 <translation id="7873537467422636035">Se você esqueceu a senha longa ou quer mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chromium na sua conta<ph name="END_LINK" />.</translation>
 <translation id="7874369989024033742">Abra o Gemini no Chromium com rapidez sempre que precisar</translation>
-<translation id="7877212753140190672">Pergunte sobre esta imagem</translation>
 <translation id="7888981273428720788">Defina o Chromium como o navegador padrão</translation>
 <translation id="7934340546140346950">Quando possível, o Chromium faz upgrade automático de conexões sem segurança para HTTPS</translation>
 <translation id="7937630085815544518">Você fez login no Chromium como <ph name="USER_EMAIL_ADDRESS" />. Use a mesma conta para fazer login novamente.</translation>

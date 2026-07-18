@@ -565,6 +565,7 @@
 <translation id="1855370856221982654">باکسنگ</translation>
 <translation id="1862788842908766795">ایگزیکیٹیو اور نظم و نسق والی جابز</translation>
 <translation id="1863257867908022953">ٹرے 12</translation>
+<translation id="1863374797460198869">چیٹ چھپا دی گئی</translation>
 <translation id="186539747722034544">کیبل اور سٹلائٹ فراہم کنندگان</translation>
 <translation id="1870473978371099486">نجی تدریس کی سروسز</translation>
 <translation id="1871208020102129563">‏پراکسی ایک ‎.pac اسکرپٹ URL نہیں بلکہ مقررہ پراکسی سرورز استعمال کرنے کیلئے سیٹ ہے۔</translation>
@@ -1427,7 +1428,6 @@
 <translation id="3202497928925179914">‏<ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />، آپ Chrome کی ترتیبات میں کن معلومات کو مطابقت پذیر بناتے ہیں ان کا نظم کرنے کے لئے ٹیب پھر اینٹر دبائیں</translation>
 <translation id="3203025201812691413">‏URL خالی نہیں ہو سکتا ہے</translation>
 <translation id="320323717674993345">ادائیگی منسوخ کریں</translation>
-<translation id="3204534477198689393">‏تجاویز کو بہتر بنانے اور فارمز کو تیزی سے پُر کرنے کے لیے، آپ کے ملاحظہ کردہ صفحات کے مواد اور URLs پر کلاؤڈ میں پرائیویٹ اسپیس میں کارروائی کی جا سکتی ہے۔</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> میں بالغانہ مواد ہو سکتا ہے</translation>
 <translation id="3207960819495026254">بُک مارک بنایا ہوا</translation>
 <translation id="3208701679386778924">‏براہ کرم ایک رپورٹ بھیجیں تاکہ ہم مزید ChromeOS اپ ڈیٹس کو بہتر بنا سکیں۔</translation>
@@ -4531,6 +4531,7 @@
 <translation id="7972714317346275248">‏PKCS #1 SHA-384 مع RSA مرموز کاری</translation>
 <translation id="7976053965094442846">ابھی خریدیں، ادائیگی بعد میں کریں جاری کنندگان وقت کے ساتھ ادائیگی کے لیے دستیاب ہیں۔ کی بورڈ پوشیدہ ہے۔</translation>
 <translation id="7976214039405368314">بہت زیادہ درخواستیں</translation>
+<translation id="7977029776654598145">جب استعمال کیا جائے</translation>
 <translation id="7977538094055660992">آؤٹ پٹ آلہ</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{‫<ph name="TIME_COUNT" /> منٹ قبل}=1{‫<ph name="TIME_COUNT" /> گھنٹہ قبل}other{‫<ph name="TIME_COUNT" /> دن قبل}}</translation>
 <translation id="7979595116210197019">غذائی سروس</translation>
@@ -4625,7 +4626,6 @@
 <translation id="8134058435519644366">تقرری اور عملہ سازی</translation>
 <translation id="8135546115396015134">بائیں کلید</translation>
 <translation id="8137456439814903304">توانائی اور یوٹیلیٹیز</translation>
-<translation id="8138591088112729119">ذاتی ذہانت کے ذریعے تقویت یافتہ</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{‫1 ماہ پہلے تخلیق کیا گیا}other{‫{NUM_MONTHS} ماہ پہلے تخلیق کیا گیا}}</translation>
 <translation id="8147389370274164212">‫<ph name="SEARCH_ENGINE_NAME" />، موجودہ ڈیفالٹ۔ <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">‏PDF ورژن:</translation>
@@ -4958,6 +4958,7 @@
 <translation id="8688672835843460752">دستیاب</translation>
 <translation id="868922510921656628">صفحات فی سیٹ</translation>
 <translation id="8694684557210599098">گاڑی کی معلومات شامل کریں</translation>
+<translation id="8696297579102085705">اپنے آلے پر بھیجیں</translation>
 <translation id="8698428283892912525">‏آپ کے براؤز کرتے وقت، Chrome کے پاس آپ کو تحفظ فراہم کرنے کیلئے پہلے سے شامل حفاظتی خصوصیات ہیں، جیسے Google محفوظ براؤزنگ جسے حال ہی میں اس سائٹ پر <ph name="BEGIN_LINK" />نقصان دہ سافٹ ویئر کا پتا چلا ہے<ph name="END_LINK" />، جسے آپ نے ملاحظہ کرنے کی کوشش کی ہے۔</translation>
 <translation id="869891660844655955">میعاد ختم ہونے کی تاریخ</translation>
 <translation id="8699041776323235191">‏HID آلہ</translation>

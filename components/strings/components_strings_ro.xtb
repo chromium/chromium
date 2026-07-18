@@ -565,6 +565,7 @@
 <translation id="1855370856221982654">Box</translation>
 <translation id="1862788842908766795">Locuri de muncă la nivel executiv și de conducere</translation>
 <translation id="1863257867908022953">Tava 12</translation>
+<translation id="1863374797460198869">Chat ascuns</translation>
 <translation id="186539747722034544">Furnizori de servicii prin cablu și satelit</translation>
 <translation id="1870473978371099486">Servicii private de meditații</translation>
 <translation id="1871208020102129563">Configurația proxy este setată să utilizeze servere proxy fixe, și nu o adresă URL pentru scripturi .pac.</translation>
@@ -1426,7 +1427,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a gestiona informațiile de sincronizat din setările Chrome</translation>
 <translation id="3203025201812691413">Adresa URL trebuie completată</translation>
 <translation id="320323717674993345">Anulează plata</translation>
-<translation id="3204534477198689393">Pentru a îmbunătăți sugestiile și a completa mai rapid formularele, conținutul și adresele URL ale paginilor pe care le accesezi pot fi procesate într-un spațiu privat în cloud.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> poate să includă conținut destinat adulților</translation>
 <translation id="3207960819495026254">Marcată</translation>
 <translation id="3208701679386778924">Trimite un raport ca să putem îmbunătăți actualizările ChromeOS pe viitor.</translation>
@@ -4530,6 +4530,7 @@ Detalii suplimentare:
 <translation id="7972714317346275248">PKCS #1 SHA-384 cu criptare RSA</translation>
 <translation id="7976053965094442846">Emitenți de servicii Cumpără acum, plătește mai târziu, disponibili pentru plata în timp. Tastatura este ascunsă.</translation>
 <translation id="7976214039405368314">Prea multe solicitări</translation>
+<translation id="7977029776654598145">Când se folosește</translation>
 <translation id="7977538094055660992">Dispozitiv de ieșire</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Acum <ph name="TIME_COUNT" /> min.}=1{Acum <ph name="TIME_COUNT" /> h}few{Acum <ph name="TIME_COUNT" /> zile}other{Acum <ph name="TIME_COUNT" /> de zile}}</translation>
 <translation id="7979595116210197019">Servicii alimentare</translation>
@@ -4624,7 +4625,6 @@ Detalii suplimentare:
 <translation id="8134058435519644366">Recrutare și personal</translation>
 <translation id="8135546115396015134">tasta săgeată spre stânga</translation>
 <translation id="8137456439814903304">Energie și utilități</translation>
-<translation id="8138591088112729119">Cu Inteligență personalizată</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Creat acum o lună}few{Creat acum {NUM_MONTHS} luni}other{Creat acum {NUM_MONTHS} de luni}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, prestabilit actual. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Versiune PDF:</translation>
@@ -4958,6 +4958,7 @@ Detalii suplimentare:
 <translation id="8688672835843460752">Disponibilă</translation>
 <translation id="868922510921656628">Pagini per set</translation>
 <translation id="8694684557210599098">Adaugă un vehicul</translation>
+<translation id="8696297579102085705">Trimite pe dispozitivul tău</translation>
 <translation id="8698428283892912525">Chrome are funcții de siguranță încorporate pentru a te proteja în timp ce navighezi, cum ar fi Navigarea sigură Google, care <ph name="BEGIN_LINK" />a detectat recent software dăunător<ph name="END_LINK" /> pe site-ul pe care ai încercat să-l accesezi.</translation>
 <translation id="869891660844655955">Dată de expirare</translation>
 <translation id="8699041776323235191">Dispozitiv HID</translation>

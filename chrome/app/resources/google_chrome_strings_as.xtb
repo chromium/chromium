@@ -241,7 +241,6 @@
 <translation id="3282568296779691940">Chromeত ছাইন-ইন কৰক</translation>
 <translation id="3286538390144397061">এতিয়াই ৰিষ্টাৰ্ট কৰক</translation>
 <translation id="3292333338048274092">আপুনি তাৰ পাছত Chrome ৰিষ্টাৰ্ট কৰিব লাগিব।</translation>
-<translation id="3324218984287646518">Google Lensক এই ভিডিঅ’টোৰ বিষয়ে সোধক</translation>
 <translation id="3327226547491422998">পাছত, Chromeএ আপোনাৰ বাবে স্বয়ংক্ৰিয়ভাৱে ফৰ্ম পূৰ কৰিবলৈ আপুনি ছেভ কৰি থোৱা তথ্য ব্যৱহাৰ কৰিব বিচাৰে নেকি সুধিব পাৰে</translation>
 <translation id="3352986031709923790">সন্ধান এলেকাৰ ওপৰৰ সোঁফালৰ কোণ: <ph name="RIGHT" />% সোঁফালে, <ph name="TOP" />% ওপৰলৈ</translation>
 <translation id="3360895254066713204">Chromeৰ সহায়ক</translation>
@@ -262,8 +261,6 @@
 <translation id="3576528680708590453">আপোনাৰ ছিষ্টেমৰ প্ৰশাসকে <ph name="TARGET_URL_HOSTNAME" /> এক্সেছ কৰিবলৈ Google Chromeক এটা বিকল্প ব্ৰাউজাৰ খুলিবলৈ কনফিগাৰ কৰিছে।</translation>
 <translation id="3582972582564653026">আপোনাৰ সমগ্ৰ ডিভাইচতে Chromeক ছিংক কৰি ব্যক্তিকৃত কৰক</translation>
 <translation id="3583751698304738917">আপুনি আন এটা Chrome প্ৰ’ফাইলত ইতিমধ্যে <ph name="USER_EMAIL_ADDRESS" /> হিচাপে ছাইন ইন কৰিছে</translation>
-<translation id="358381413217813387">Google Lensৰ জৰিয়তে এই পৃষ্ঠাখন সন্ধান কৰক</translation>
-<translation id="3589519427766620380">এই পৃষ্ঠাখন সম্পৰ্কে Google Lensক সোধক</translation>
 <translation id="3595784445906693824">এটা নতুন প্ৰ’ফাইলত Chromeত ছাইন ইন কৰক?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{আপোনাৰ প্ৰশাসকে কোনো আপডে’ট প্ৰয়োগ কৰিবলৈ আপুনি Chrome পুনৰ লঞ্চ কৰাটো বিচাৰে}=1{আপোনাৰ প্ৰশাসকে কোনো আপডে’ট প্ৰয়োগ কৰিবলৈ আপুনি Chrome পুনৰ লঞ্চ কৰাটো বিচাৰে। আপোনাৰ.ইনক’গনিট' ৱিণ্ড'খন পুনৰ খুলিব নোৱাৰিব।}one{আপোনাৰ প্ৰশাসকে কোনো আপডে’ট প্ৰয়োগ কৰিবলৈ আপুনি Chrome পুনৰ লঞ্চ কৰাটো বিচাৰে। আপোনাৰ #খন.ইনক’গনিট' ৱিণ্ড' পুনৰ খুলিব নোৱাৰিব।}other{আপোনাৰ প্ৰশাসকে কোনো আপডে’ট প্ৰয়োগ কৰিবলৈ আপুনি Chrome পুনৰ লঞ্চ কৰাটো বিচাৰে। আপোনাৰ #খন.ইনক’গনিট' ৱিণ্ড' পুনৰ খুলিব নোৱাৰিব।}}</translation>
 <translation id="3597003331831379823">উচ্চখাপৰ বিশেষাধিকাৰৰ সৈতে ছেটআপ চলাব কৰিব পৰা নগ’ল। <ph name="METAINSTALLER_ERROR" /></translation>
@@ -358,7 +355,6 @@
 <translation id="4501471624619070934">এই দেশখনত এক্সেছ প্ৰতিবন্ধিত হোৱাৰ বাবে ইনষ্টল কৰাটো বিফল হৈছে।</translation>
 <translation id="4571503333518166079">Chromeৰ জাননী ছেটিংসমূহ-লৈ যাওক</translation>
 <translation id="4580939929828762295">Google Password Managerৰ জৰিয়তে সুৰক্ষিত হৈ থাকক</translation>
-<translation id="4592634244097223647">Googleক এই প্ৰতিচ্ছবিৰ বিষয়ে সোধক</translation>
 <translation id="459622048091363950">Chromeএ এক্সেছ পোৱাৰ পাছতেই ৱেবছাইটসমূহে আপোনাক এক্সেছৰ বাবে অনুমতি বিচাৰিব পাৰিব।</translation>
 <translation id="4598116752460667024">সূচীখনৰ পৰা যিকোনো প্ৰক্ৰিয়া সন্ধান কৰক।</translation>
 <translation id="4600710005438004015">Chromeক শেহতীয়া সংস্কৰণলৈ আপডে'ট কৰিব পৰা নগ'ল, গতিকে আপুনি নতুন সুবিধা আৰু সমস্যা সমাধানৰ উপায়সমূহ লাভ কৰা নাই।</translation>
@@ -662,7 +658,6 @@ Google Chromeএ আপোনাৰ ছেটিংসমূহ পুনৰু�
 <translation id="7572537927358445944">অফ আছে • এই এক্সটেনশ্বনটো ক’ৰ পৰা আহিছে সেয়া Chromeএ সত্যাপন কৰিব নোৱাৰে</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> ইনষ্টলাৰ</translation>
 <translation id="7596160425942761210">আপুনি বাৰ্তা, নথি আৰু অন্য এপ্‌সমূহত থকা কোনো লিংকত ক্লিক কৰি যিকোনো সময়তে Chrome ব্যৱহাৰ কৰিব পাৰে</translation>
-<translation id="7602868996817972616">Googleক এই পৃষ্ঠাখনৰ বিষয়ে সোধক</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7627609214560473136">আপোনাৰ ডেটা সুৰক্ষিত কৰিবলৈ, আপুনি শেহতীয়াকৈ নোচোৱা ছাইটসমূহৰ পৰা Chromeক অনুমতিসমূহ আঁতৰাবলৈ দিয়ক।</translation>
 <translation id="7629695634924605473">Chromeএ আপোনাৰ পাছৱৰ্ডসমূহ কেতিয়াবা হেক কৰা হৈছিল নেকি আপোনাক জানিবলৈ দিয়ে</translation>
@@ -787,7 +782,6 @@ Google Chromeএ আপোনাৰ ছেটিংসমূহ পুনৰু�
 <translation id="8712637175834984815">বুজি পালোঁ</translation>
 <translation id="8712767363896337380">প্ৰায় আপ টু ডে’ট হৈছে! আপডে’ট হোৱাটো সম্পূৰ্ণ কৰিবলৈ Chrome পুনৰ লঞ্চ কৰক।</translation>
 <translation id="8718062187489036808">Chromeৰ পৰা ছাইন আউট কৰক</translation>
-<translation id="8725440680697264016">Googleক এই ভিডিঅ’টোৰ বিষয়ে সোধক</translation>
 <translation id="873133009373065397">Google Chromeএ ডিফ’ল্ট ব্ৰাউজাৰ নির্ধাৰণ বা ছেট কৰিব নোৱাৰে</translation>
 <translation id="8747073452963259673">সন্ধান এলেকাৰ তলৰ বাওঁফালৰ কোণ: <ph name="LEFT" />% বাওঁফালে, <ph name="BOTTOM" />% তললৈ</translation>
 <translation id="8748735421235723888">Chromeএ নিষ্ক্ৰিয় টেবসমূহৰ পৰা মেম’ৰী খালী কৰে। এইটোৱে সক্ৰিয় টেব আৰু অন্য এপক কম্পিউটাৰৰ অধিক সম্পদ দিয়ে আৰু Chromeক দ্ৰুত কৰি ৰাখে। আপুনি নিজৰ নিষ্ক্ৰিয় টেবসমূহলৈ গ’লে সেইবোৰ স্বয়ংক্ৰিয়ভাৱে পুনৰ সক্ৰিয় হয়। <ph name="BEGIN_LINK" />মেম’ৰী সঞ্চয়কাৰীৰ বিষয়ে অধিক জানক<ph name="END_LINK" /></translation>
@@ -803,7 +797,6 @@ Google Chromeএ আপোনাৰ ছেটিংসমূহ পুনৰু�
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chromeএ আপোনাক এইটো আঁতৰাবলৈ চুপাৰিছ কৰে}one{Chromeএ আপোনাক এইসমূহ আঁতৰাবলৈ চুপাৰিছ কৰে}other{Chromeএ আপোনাক এইসমূহ আঁতৰাবলৈ চুপাৰিছ কৰে}}</translation>
 <translation id="8862326446509486874">ছিষ্টেম-পৰ্যায়ৰ ইনষ্টলৰ বাবে আপোনাৰ সঠিক অধিকাৰ নাই। প্রশাসক হিচাপে ইনষ্টলাৰটো পুনৰ চলাই চাওক।</translation>
 <translation id="8865415417596392024">আপোনাৰ একাউণ্টত থকা Chromeৰ ডেটা</translation>
-<translation id="8883862939660515976">Google Lensক এই প্ৰতিচ্ছবিৰ বিষয়ে সোধক</translation>
 <translation id="8914504000324227558">Chrome পুনৰ লঞ্চ কৰক</translation>
 <translation id="8920304659326707347">iOSত Chromeৰ জৰিয়তে আপুনি য’ত এৰিছিল তাৰ পৰাই আৰম্ভ কৰক।</translation>
 <translation id="8922998289262614701">Chromeৰ পৰা এই এপৰ ডেটা আঁতৰাওক</translation>

@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ટૅબ અનગ્રૂપ કરો}one{ટૅબ અનગ્રૂપ કરો}other{ટૅબ અનગ્રૂપ કરો}}</translation>
 <translation id="2271452184061378400">તમારા ટૅબના ગ્રૂપ અહીં સાચવવામાં આવે છે</translation>
 <translation id="2277224997687551299">ગ્રૂપના નામમાં ફેરફાર કરો</translation>
+<translation id="2289567621059034186">નીચે નવું ટૅબ</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{ટૅબને બુકમાર્ક કરો}one{ટૅબને બુકમાર્ક કરો}other{ટૅબને બુકમાર્ક કરો}}</translation>
 <translation id="2359808026110333948">આગળ વધો</translation>
 <translation id="2371084566192454134">ટૅબ અને ટૅબના ગ્રૂપ</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">ટૅબને આડી રીતે બતાવો</translation>
 <translation id="31806439105337256">ટૅબને ઊભી રીતે બતાવો</translation>
 <translation id="3194464645767632461">રેટિંગ</translation>
+<translation id="3228962656492373217">નીચેના ટૅબ બંધ કરો</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ ગ્રૂપમાં ઉમેરો}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ગ્રૂપમાં ઉમેરો}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ગ્રૂપમાં ઉમેરો}}</translation>
 <translation id="3328308545011660196">સૂચન: <ph name="NUMBER_OF_TABS" /> ટૅબ સંબંધિત હોય તેમ જણાય છે. તેમનું ગ્રૂપ બનાવીએ?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{1 દિવસ પછી નિષ્ક્રિય}one{<ph name="DAY_COUNT_MANY" /> દિવસ પછી નિષ્ક્રિય}other{<ph name="DAY_COUNT_MANY" /> દિવસ પછી નિષ્ક્રિય}}</translation>

@@ -237,7 +237,6 @@
 <translation id="3282568296779691940">Chrome में साइन इन करें</translation>
 <translation id="3286538390144397061">अभी फिर से प्रारंभ करें</translation>
 <translation id="3292333338048274092">इसके बाद, आपको Chrome को रीस्टार्ट करना होगा.</translation>
-<translation id="3324218984287646518">Google Lens से इस वीडियो के बारे में पूछें</translation>
 <translation id="3327226547491422998">इसके बाद, Chrome आपसे पूछ सकता है कि क्या आपको सेव की गई जानकारी का इस्तेमाल, फ़ॉर्म को ऑटोमैटिक भरने के लिए करना है</translation>
 <translation id="3352986031709923790">खोज वाली जगह में सबसे ऊपर का दायां कोना: दाईं ओर से <ph name="RIGHT" />%, सबसे ऊपर से <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome सहायक</translation>
@@ -258,8 +257,6 @@
 <translation id="3576528680708590453">आपके सिस्टम एडमिन ने Google Chrome को इस तरह कॉन्फ़िगर किया है कि वह <ph name="TARGET_URL_HOSTNAME" /> को ऐक्सेस करने के लिए कोई दूसरा ब्राउज़र खोले.</translation>
 <translation id="3582972582564653026">Chrome को अपने सभी डिवाइस पर सिंक करें और मनमुताबिक बनाएं</translation>
 <translation id="3583751698304738917">आपने पहले से ही Chrome की किसी दूसरी प्रोफ़ाइल में, <ph name="USER_EMAIL_ADDRESS" /> के तौर पर साइन इन किया हुआ है</translation>
-<translation id="358381413217813387">Google Lens की मदद से इस पेज को खोजें</translation>
-<translation id="3589519427766620380">Google Lens की मदद से, इस पेज के बारे में जानकारी खोजें</translation>
 <translation id="3595784445906693824">क्या आपको Chrome में नई प्रोफ़ाइल बनाकर साइन इन करना है?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{आपका एडमिन चाहता है कि आप अपडेट लागू करने के लिए Chrome को फिर से लॉन्च करें}=1{आपका एडमिन चाहता है कि आप अपडेट लागू करने के लिए Chrome को फिर से लॉन्च करें. आपकी गुप्त विंडो फिर से नहीं खुलेगी.}one{आपका एडमिन चाहता है कि आप अपडेट लागू करने के लिए Chrome को फिर से लॉन्च करें. आपकी # गुप्त विंडो फिर से नहीं खुलेंगी.}other{आपका एडमिन चाहता है कि आप अपडेट लागू करने के लिए Chrome को फिर से लॉन्च करें. आपकी # गुप्त विंडो फिर से नहीं खुलेंगी.}}</translation>
 <translation id="3597003331831379823">खास सुविधाओं का ऐक्सेस होने के बाद भी, सेटअप नहीं किया जा सका. <ph name="METAINSTALLER_ERROR" /></translation>
@@ -353,7 +350,6 @@
 <translation id="4501471624619070934">इंस्टॉल नहीं हो पाया, क्योंकि इस देश में ऐक्सेस करने की अनुमति नहीं है.</translation>
 <translation id="4571503333518166079">Chrome की सूचना सेटिंग पर जाएं</translation>
 <translation id="4580939929828762295">Google Password Manager की मदद से सुरक्षित रहें</translation>
-<translation id="4592634244097223647">Google से इस इमेज के बारे में पूछें</translation>
 <translation id="459622048091363950">Chrome को ऐक्सेस मिलने के बाद, वेबसाइटें आपसे ऐक्सेस मांग सकेंगी.</translation>
 <translation id="4598116752460667024">सूची में से कोई भी प्रोसेस खोजें.</translation>
 <translation id="4600710005438004015">Chrome सबसे नए वर्शन में अपडेट नहीं कर सका, इसलिए आपको नई सुविधाएं और सुरक्षा सुधार नहीं मिल रहे हैं.</translation>
@@ -657,7 +653,6 @@ Google Chrome आपकी सेटिंग बहाल नहीं कर �
 <translation id="7572537927358445944">बंद है • Chrome इस एक्सटेंशन के सोर्स की पुष्टि नहीं कर सकता</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> इंस्टॉलर</translation>
 <translation id="7596160425942761210">मैसेज, दस्तावेज़ों, और अन्य ऐप्लिकेशन में मौजूद लिंक पर क्लिक करके कभी भी Chrome इस्तेमाल करें</translation>
-<translation id="7602868996817972616">Google से इस पेज के बारे में पूछें</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7627609214560473136">अपने डेटा को सुरक्षित रखने के लिए, Chrome को उन साइटों को दी गई अनुमतियां हटाने दें जिन्हें आपने हाल ही में इस्तेमाल नहीं किया है.</translation>
 <translation id="7629695634924605473">Chrome यह बताता है कि कहीं आपके पासवर्ड का गलत इस्तेमाल तो नहीं किया गया है</translation>
@@ -782,7 +777,6 @@ Google Chrome आपकी सेटिंग बहाल नहीं कर �
 <translation id="8712637175834984815">समझ लिया</translation>
 <translation id="8712767363896337380">अपडेट होने ही वाला है! अपडेट पूरा करने के लिए, Chrome को फिर से लॉन्च करें.</translation>
 <translation id="8718062187489036808">Chrome से प्रस्थान करें</translation>
-<translation id="8725440680697264016">Google से इस वीडियो के बारे में पूछें</translation>
 <translation id="873133009373065397">Google Chrome डिफ़ॉल्ट ब्राउज़र तय या सेट नहीं कर सकता</translation>
 <translation id="8747073452963259673">खोज वाली जगह में सबसे नीचे का बायां कोना: बाईं ओर से <ph name="LEFT" />%, सबसे नीचे से <ph name="BOTTOM" />%</translation>
 <translation id="8748735421235723888">इस सेटिंग के चालू होने पर, Chrome ऐसे टैब से मेमोरी खाली करता है जिनका इस्तेमाल नहीं किया जा रहा. इससे, इस्तेमाल किए जा रहे टैब और अन्य ऐप्लिकेशन को ज़्यादा कंप्यूटर रिसॉर्स मिलते हैं और Chrome तेज़ी से काम करता है. इस्तेमाल नहीं किए जा रहे टैब पर वापस जाने से, वे अपने-आप दोबारा ऐक्टिव हो जाते हैं. <ph name="BEGIN_LINK" />मेमोरी सेवर के बारे में ज़्यादा जानें<ph name="END_LINK" /></translation>
@@ -798,7 +792,6 @@ Google Chrome आपकी सेटिंग बहाल नहीं कर �
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome का सुझाव है कि आप इसे हटा दें}one{Chrome का सुझाव है कि आप इसे हटा दें}other{Chrome का सुझाव है कि आप इन्हें हटा दें}}</translation>
 <translation id="8862326446509486874">सिस्टम-स्तर स्थापना के लिए आपके पास उचित अधिकार नहीं हैं. इंस्टॉलर को व्यवस्थापक के रूप में फिर से चलाने का प्रयास करें.</translation>
 <translation id="8865415417596392024">आपके खाते में मौजूद, Chrome का डेटा</translation>
-<translation id="8883862939660515976">Google Lens से इस इमेज के बारे में पूछें</translation>
 <translation id="8914504000324227558">Chrome को फिर से लॉन्‍च करें</translation>
 <translation id="8920304659326707347">iOS पर Chrome का इस्तेमाल करें और वहीं से काम फिर शुरू करें जहां आपने छोड़ा था.</translation>
 <translation id="8922998289262614701">Chrome से इस ऐप्लिकेशन का डेटा हटाएं</translation>

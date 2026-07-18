@@ -2008,13 +2008,6 @@ Se la policy viene disattivata o se non viene configurata, gli utenti potranno t
       Gli utenti non possono modificare o ignorare questa impostazione.
 
       Nota: questa policy comporta l'aggiunta dell'intestazione X-GoogApps-Allowed-Domains a tutte le richieste HTTP e HTTPS inviate a tutti i domini google.com, come descritto all'indirizzo https://support.google.com/a/answer/1668854.</translation>
-<translation id="2287414160388710497">Consente agli amministratori di personalizzare l'aspetto delle filigrane applicate dalle regole di Prevenzione della perdita di dati (DLP). Ciò include l'impostazione dell'opacità del riempimento/contorno e la definizione delle dimensioni del carattere.
-Se questa policy o alcuni valori non vengono configurati, Chrome utilizzerà il comportamento predefinito per le filigrane.
-I valori predefiniti sono: Opacità riempimento a 4, Opacità contorno a 6 e Dimensioni carattere a 24.
-
-"Opacità riempimento" è una percentuale compresa tra 0 (completamente trasparente) e 100 (completamente opaco).
-"Opacità contorno" è una percentuale compresa tra 0 (completamente trasparente) e 100 (completamente opaco).
-"Dimensioni carattere" è specificato in punti.</translation>
 <translation id="2288506601233091655">Non consentire l'eliminazione della cronologia dei processi di stampa</translation>
 <translation id="2289688405312849186">Entità utente "utente@realm". Il segnaposto <ph name="LOGIN_ID_PLACEHOLDER" /> viene sostituito dal nome utente "utente". Il segnaposto <ph name="LOGIN_EMAIL_PLACEHOLDER" /> viene sostituito dall'entità completa "utente@realm".</translation>
 <translation id="2290270645214705008">Se questa policy viene impostata su Disattivata, non è possibile avviare o configurare il servizio host di accesso remoto per accettare le connessioni in arrivo.  Questa policy non influisce sugli scenari di assistenza remota.
@@ -2291,15 +2284,6 @@ Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI ge
 <translation id="2479760962196319822">Questa policy consente di stabilire se gli utenti di <ph name="PRODUCT_OS_NAME" /> possono archiviare i dati localmente o meno.
       Se questa policy viene impostata su False, l'archiviazione locale su <ph name="PRODUCT_OS_NAME" /> viene bloccata: gli utenti non possono archiviare i dati localmente e non possono accedere alle directory locali.
       Se questa policy viene impostata su True o se non viene configurata, l'archiviazione locale su <ph name="PRODUCT_OS_NAME" /> non subisce limitazioni: non esistono limitazioni relative alla posizione in cui gli utenti possono archiviare i dati o alle directory a cui possono accedere.</translation>
-<translation id="2480971699591919564">Consente di attivare la funzionalità Click-to-call che permette agli utenti di inviare numeri di telefono dai computer desktop Chrome ai dispositivi Android se eseguono l'accesso. Per ulteriori informazioni, leggi l'articolo del Centro assistenza all'indirizzo https://support.google.com/chrome/answer/9430554?hl=it.
-
-      Se questa policy viene attivata, la funzionalità di invio di numeri di telefono ai dispositivi Android verrà attivata per gli utenti di Chrome.
-
-      Se questa policy viene disattivata, la funzionalità di invio di numeri di telefono ai dispositivi Android verrà disattivata per gli utenti di Chrome.
-
-      Se imposti questa policy, gli utenti non potranno modificarla o ignorarla.
-
-      Se questa policy non viene impostata, la funzionalità Click-to-call sarà attiva per impostazione predefinita.</translation>
 <translation id="2482676533225429905">Messaggi nativi</translation>
 <translation id="2483146640187052324">Prevedi le azioni di rete su qualsiasi connessione di rete</translation>
 <translation id="2487495476672607707">La funzionalità di sincronizzazione file di <ph name="PRODUCT_OS_NAME" /> rende automaticamente disponibili offline i file di <ph name="GOOGLE_DRIVE_NAME" /> presenti nella sezione "Il mio Drive" di un utente (se lo spazio lo consente) sui dispositivi <ph name="CHROMEBOOK_PLUS_NAME" />.

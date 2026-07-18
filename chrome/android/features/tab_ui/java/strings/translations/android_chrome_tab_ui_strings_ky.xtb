@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Өтмөктү топтон ажыратуу}other{Өтмөктөрдү топтон ажыратуу}}</translation>
 <translation id="2271452184061378400">Өтмөк топтору ушул жерде сакталат</translation>
 <translation id="2277224997687551299">Топтун аталышын өзгөртүү</translation>
+<translation id="2289567621059034186">Төмөндөгү жаңы өтмөк</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Кыстарылган өтмөк}other{Кыстарылган өтмөктөр}}</translation>
 <translation id="2359808026110333948">Улантуу</translation>
 <translation id="2371084566192454134">Өтмөктөр жана өтмөктөр тобу</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">Өтмөктөрдү туурасынан көрсөтүү</translation>
 <translation id="31806439105337256">Өтмөктөрдү тигинен көрсөтүү</translation>
 <translation id="3194464645767632461">рейтинг</translation>
+<translation id="3228962656492373217">Төмөндөгү өтмөктөрдү жабуу</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөктү топко кошуу}other{<ph name="TABS_COUNT_MANY" /> өтмөктү топто кошуу}}</translation>
 <translation id="3328308545011660196">Сунуш: <ph name="NUMBER_OF_TABS" /> өтмөк окшош окшойт. Алар топко бириктирилсинби?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{1 күндөн бери жигерсиз болсо}other{<ph name="DAY_COUNT_MANY" /> күндөн бери жигерсиз болсо}}</translation>

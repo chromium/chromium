@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Atcelt cilnes grupēšanu}zero{Atcelt ciļņu grupēšanu}one{Atcelt ciļņu grupēšanu}other{Atcelt ciļņu grupēšanu}}</translation>
 <translation id="2271452184061378400">Jūsu ciļņu grupas ir saglabātas šeit</translation>
 <translation id="2277224997687551299">Rediģēt grupas nosaukumu</translation>
+<translation id="2289567621059034186">Jauna cilne apakšā</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Saglabāt kā grāmatzīmi}zero{Saglabāt kā grāmatzīmes}one{Saglabāt kā grāmatzīmes}other{Saglabāt kā grāmatzīmes}}</translation>
 <translation id="2359808026110333948">Turpināt</translation>
 <translation id="2371084566192454134">Cilnes un ciļņu grupas</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">Rādīt cilnes horizontāli</translation>
 <translation id="31806439105337256">Rādīt cilnes vertikāli</translation>
 <translation id="3194464645767632461">vērtējums</translation>
+<translation id="3228962656492373217">Aizvērt apakšā esošās cilnes</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Pievienot grupai <ph name="TABS_COUNT_ONE" /> cilni}zero{Pievienot grupai <ph name="TABS_COUNT_MANY" /> cilnes}one{Pievienot grupai <ph name="TABS_COUNT_MANY" /> cilni}other{Pievienot grupai <ph name="TABS_COUNT_MANY" /> cilnes}}</translation>
 <translation id="3328308545011660196">Ieteikums: šķiet, ka <ph name="NUMBER_OF_TABS" /> cilnes ir saistītas. Vai grupēt tās?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Pēc vienas neaktivitātes dienas}zero{Pēc <ph name="DAY_COUNT_MANY" /> neaktivitātes dienām}one{Pēc <ph name="DAY_COUNT_MANY" /> neaktivitātes dienas}other{Pēc <ph name="DAY_COUNT_MANY" /> neaktivitātes dienām}}</translation>

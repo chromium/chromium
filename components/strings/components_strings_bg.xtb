@@ -565,6 +565,7 @@
 <translation id="1855370856221982654">Бокс</translation>
 <translation id="1862788842908766795">Управленски и ръководни длъжности</translation>
 <translation id="1863257867908022953">Тава 12</translation>
+<translation id="1863374797460198869">Чатът е скрит</translation>
 <translation id="186539747722034544">Доставчици на кабелна и сателитна телевизия</translation>
 <translation id="1870473978371099486">Частни уроци</translation>
 <translation id="1871208020102129563">За прокси сървъра е зададено да използва фиксирани прокси сървъри, а не URL адрес на скрипт във формат .pac.</translation>
@@ -1426,7 +1427,6 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да управлявате данните, които да се синхронизират, от настройките на Chrome</translation>
 <translation id="3203025201812691413">URL адресът трябва да се попълни</translation>
 <translation id="320323717674993345">Анулиране на плащането</translation>
-<translation id="3204534477198689393">С цел подобряване на предложенията и по-бързо попълване на формулярите съдържанието и URL адресите на посещаваните от вас страници могат да се обработват в частно пространство в облака.</translation>
 <translation id="3207830513221832868">На адрес <ph name="BLOCKED_URL" /> може да има съдържание за възрастни</translation>
 <translation id="3207960819495026254">С отметка</translation>
 <translation id="3208701679386778924">Моля, изпратете сигнал, за да можем допълнително да подобрим актуализациите за ChromeOS.</translation>
@@ -4530,6 +4530,7 @@
 <translation id="7972714317346275248">PKCS 1 SHA-384 с RSA шифроване</translation>
 <translation id="7976053965094442846">Доставчици на услуги от типа „Купете сега, платете по-късно“, които предлагат разсрочено плащане. Клавиатурата е скрита.</translation>
 <translation id="7976214039405368314">Твърде много заявки</translation>
+<translation id="7977029776654598145">Когато използвате функцията</translation>
 <translation id="7977538094055660992">Изходно устройство</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Преди <ph name="TIME_COUNT" /> мин}=1{Преди <ph name="TIME_COUNT" /> ч}other{Преди <ph name="TIME_COUNT" /> д}}</translation>
 <translation id="7979595116210197019">Обществено хранене</translation>
@@ -4624,7 +4625,6 @@
 <translation id="8134058435519644366">Подбор на персонал и кадрово обезпечение</translation>
 <translation id="8135546115396015134">клавиш със стрелка за наляво</translation>
 <translation id="8137456439814903304">Електроенергия и комунални услуги</translation>
-<translation id="8138591088112729119">Предоставено от Personal Intelligence</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Създадено преди 1 месец}other{Създадено преди {NUM_MONTHS} месеца}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, текуща основна търсеща машина. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF версия:</translation>
@@ -4957,6 +4957,7 @@
 <translation id="8688672835843460752">Свободно място</translation>
 <translation id="868922510921656628">Страници на набор</translation>
 <translation id="8694684557210599098">Добавяне на превозно средство</translation>
+<translation id="8696297579102085705">Изпращане до устройството ви</translation>
 <translation id="8698428283892912525">Chrome има вградени функции за безопасност, които да ви защитават, докато сърфирате. Такава функция е Google Безопасно сърфиране, която наскоро <ph name="BEGIN_LINK" />откри опасен софтуер<ph name="END_LINK" /> на сайта, който опитахте да посетите.</translation>
 <translation id="869891660844655955">Дата на валидност</translation>
 <translation id="8699041776323235191">HID устройство</translation>

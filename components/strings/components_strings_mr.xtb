@@ -565,6 +565,7 @@
 <translation id="1855370856221982654">बॉक्सिंग</translation>
 <translation id="1862788842908766795">कार्यकारी आणि व्यवस्थापन क्षेत्रातील नोकऱ्या</translation>
 <translation id="1863257867908022953">ट्रे १२</translation>
+<translation id="1863374797460198869">चॅट लपवले आहे</translation>
 <translation id="186539747722034544">केबल आणि उपग्रह पुरवठादार</translation>
 <translation id="1870473978371099486">खाजगी शिकवणी सेवा</translation>
 <translation id="1871208020102129563">प्रॉक्सी निश्चित प्रॉक्सी सर्व्हर वापरण्‍यास सेट करण्‍यात आले आहे, .pac स्क्रिप्ट URL नव्हे.</translation>
@@ -1426,7 +1427,6 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome सेटिंग्जमध्ये तुम्ही कोणती माहिती सिंक करता ते व्यवस्थापित करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="3203025201812691413">URL रिकामी असू शकत नाही</translation>
 <translation id="320323717674993345">पेमेंट रद्द करा</translation>
-<translation id="3204534477198689393">सूचनांमध्ये सुधारणा करण्यासाठी आणि फॉर्म जलद भरण्यासाठी, तुम्ही भेट देत असलेल्या पेजवरील आशय आणि URL वर क्लाउडमधील खाजगी स्पेसमध्ये प्रक्रिया केली जाऊ शकते.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> मध्ये प्रौढ आशय असू शकतो</translation>
 <translation id="3207960819495026254">बुकमार्क केलेली</translation>
 <translation id="3208701679386778924">कृपया अहवाल पाठवा, जेणेकरून आम्ही पुढील ChromeOS अपडेटमध्ये सुधारणा करू शकू.</translation>
@@ -2452,6 +2452,7 @@
 <translation id="4786804728079074733">व्हॉलीबॉल</translation>
 <translation id="4787182171088676626">एन्व्हलप (फाइन)</translation>
 <translation id="4791134497475588553">इंस्टॉल केलेली Linux अ‍ॅप्स आणि ती कधी शेवटची वापरली</translation>
+<translation id="4791602164422809437">Gemini सह पर्सनल इंटेलिजन्स द्वारे सक्षम केलेले. पेजची शीर्षके आणि URLs Google ला पाठवल्या जातात व त्यांचे मानवी परीक्षणकर्त्यांद्वारे परिक्षण केले जाऊ शकते. <ph name="BEGIN_LINK" />सेटिंग्ज व्यवस्थापित करणे<ph name="END_LINK" /></translation>
 <translation id="4792686369684665359">तुम्‍ही सबमिट करणार आहात ती माहिती सुरक्षित नाही</translation>
 <translation id="4793219378458250238">११ x १२ इं</translation>
 <translation id="4796594887379589189">जॉब खाते आयडी</translation>
@@ -3028,6 +3029,7 @@
 <translation id="5675809467256309336">नृत्य आणि इलेक्ट्रॉनिक संगीत</translation>
 <translation id="5675959228867414813">तारखेनुसार दाखवा</translation>
 <translation id="567604591393105935">वाणिज्य तळाशी असलेली शीट अर्ध्या उंचीवर उघडली</translation>
+<translation id="5676124785522323481">कनेक्ट केलेली अ‍ॅप्स व्यवस्थापित करा</translation>
 <translation id="5676641328629468296">Google Pay, Pix</translation>
 <translation id="5678007133659493065">फॉइल</translation>
 <translation id="5679086391497468752">घराचा पत्ता</translation>
@@ -3390,6 +3392,7 @@
 <translation id="6240553182907836376">ओळखपत्र अपडेट करा</translation>
 <translation id="6240601837375010619">पासपोर्टसंबंधित माहिती सेव्ह करा</translation>
 <translation id="6240964651812394252">तुमच्या ऑपरेटिंग सिस्टीमसह Google Password Manager वापरण्यासाठी, Chrome पुन्हा लाँच करा आणि तुमच्या कॉंप्युटरच्या पासवर्ड व्यवस्थापकाचा अ‍ॅक्सेस द्या. पुन्हा लाँच केल्यानंतर तुमचे टॅब पुन्हा उघडतील.</translation>
+<translation id="6244366663267187541">Gemini कोणत्या अ‍ॅप्सशी कनेक्ट करायचे हे निवडा</translation>
 <translation id="624499991300733384">प्रिंट कंपोझिटर सेवा</translation>
 <translation id="6246316216123107851"><ph name="NUM_DAYS" /> दिवसांपूर्वी</translation>
 <translation id="6246382863801034910">वाहन</translation>
@@ -4203,6 +4206,7 @@
 <translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> तुमची पात्रता तपासेल (याचा तुमच्या क्रेडिट स्कोअरवर परिणाम होणार नाही). मंजूर झाल्यास, <ph name="BNPL_ISSUER_NAME" /> तुम्हाला निवडण्यासाठी आणि तुमची खरेदी पूर्ण करण्यासाठी पेमेंट प्लॅन पुरवेल.</translation>
 <translation id="7489392576326061356">शँपू आणि कंडिशनर</translation>
 <translation id="7489919936111034362">तुमचे Google Drive स्टोरेज पूर्ण भरले आहे</translation>
+<translation id="7490622939531327327">फॉर्म आणखी चांगल्या प्रकारे समजून घेणे</translation>
 <translation id="7495528107193238112">हा आशय ब्लॉक केला गेला आहे. समस्येचे निराकरण करण्यासाठी साइटच्या मालकाशी संपर्क साधा.</translation>
 <translation id="749865518782565832">प्लंबिंग</translation>
 <translation id="7499188644237027195">तुम्ही Chrome मध्ये खरेदी करता, तेव्हा पर्याय म्हणून ईवॉलेट आणि Pix पहा</translation>
@@ -4530,6 +4534,7 @@
 <translation id="7972714317346275248">PKCS #1 RSA एंक्रिप्शनसह SHA-384</translation>
 <translation id="7976053965094442846">कालांतराने पेमेंट करण्यासाठी उपलब्ध असलेले, आता विकत घेऊन, नंतर पैसे देण्याची सुविधा देणारे जारीकर्ते. कीबोर्ड लपवलेला आहे.</translation>
 <translation id="7976214039405368314">खूप जास्त विनंत्या</translation>
+<translation id="7977029776654598145">वापरले जाते तेव्हा</translation>
 <translation id="7977538094055660992">आउटपुट डिव्हाइस</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" />m ago}=1{<ph name="TIME_COUNT" />तासापूर्वी}other{<ph name="TIME_COUNT" /> दिवसांपूर्वी}}</translation>
 <translation id="7979595116210197019">खाद्यपदर्थांसंबंधित सेवा</translation>
@@ -4624,7 +4629,6 @@
 <translation id="8134058435519644366">भरती आणि कर्मचारी नेमणूक</translation>
 <translation id="8135546115396015134">लेफ्ट की</translation>
 <translation id="8137456439814903304">ऊर्जा आणि सुविधा पुरवठादार</translation>
-<translation id="8138591088112729119">पर्सनल इंटेलिजन्स द्वारे सक्षम केलेले</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{१ महिन्यापूर्वी तयार केला आहे}other{{NUM_MONTHS} महिन्यांपूर्वी तयार केला आहे}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, सद्य डीफॉल्ट. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">पीडीएफ आवृत्ती:</translation>
@@ -4957,6 +4961,7 @@
 <translation id="8688672835843460752">उपलब्ध</translation>
 <translation id="868922510921656628">प्रति संच पेज</translation>
 <translation id="8694684557210599098">वाहनासंबंधित माहिती जोडा</translation>
+<translation id="8696297579102085705">तुमच्या डिव्हाइसवर पाठवा</translation>
 <translation id="8698428283892912525">तुम्ही ब्राउझ करत असताना तुमचे संरक्षण करण्यासाठी Chrome मध्ये बिल्ट-इन सुरक्षितता वैशिष्‍ट्ये आहेत — जसे की Google सुरक्षित ब्राउझिंग, ज्याला तुम्ही भेट देण्याचा प्रयत्न केलेल्या साइटवर <ph name="BEGIN_LINK" />अलीकडे हानिकारक सॉफ्टवेअर आढळले आहे<ph name="END_LINK" />.</translation>
 <translation id="869891660844655955">कालावधी समाप्ती तारीख</translation>
 <translation id="8699041776323235191">HID डिव्हाइस</translation>
@@ -5193,6 +5198,7 @@
 <translation id="9078912659001679888">ब्लेंडर आणि ज्यूसर</translation>
 <translation id="9078964945751709336">अधिक माहिती आवश्यक आहे</translation>
 <translation id="9080712759204168376">मागणी सारांश</translation>
+<translation id="908365381820697818">तुम्ही आता Gmail आणि आणखी बऱ्याच ठिकाणांहून माहिती शोधू व भरू शकता</translation>
 <translation id="9084304544887760521">तुम्ही ट्रॅक करत असलेल्या आयटमची किंमत कोणत्याही साइटवर कमी झाल्यावर <ph name="EMAIL" /> ला पाठवलेली ईमेल मिळवा.</translation>
 <translation id="9089260154716455634">कामाच्या तासानंतरचे धोरण:</translation>
 <translation id="9090218457905363312">रेगे आणि कॅरिबियन संगीत</translation>

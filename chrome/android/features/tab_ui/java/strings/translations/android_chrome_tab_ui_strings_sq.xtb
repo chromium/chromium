@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Anulo grupimin e skedës}other{Anulo grupimin e skedave}}</translation>
 <translation id="2271452184061378400">Grupet e skedave ruhen këtu</translation>
 <translation id="2277224997687551299">Redakto emrin e grupit</translation>
+<translation id="2289567621059034186">Skedë e re më poshtë</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Shto skedën te faqeshënuesit}other{Shto skedat te faqeshënuesit}}</translation>
 <translation id="2359808026110333948">Vazhdo</translation>
 <translation id="2371084566192454134">Skedat dhe grupet e skedave</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">Shfaq skedat horizontalisht</translation>
 <translation id="31806439105337256">Shfaq skedat vertikalisht</translation>
 <translation id="3194464645767632461">vlerësimi</translation>
+<translation id="3228962656492373217">Mbyll skedat më poshtë</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Shto <ph name="TABS_COUNT_ONE" /> skedë te grupi}other{Shto <ph name="TABS_COUNT_MANY" /> skeda te grupi}}</translation>
 <translation id="3328308545011660196">Sugjerim: <ph name="NUMBER_OF_TABS" /> skeda duken të lidhura. Dëshiron t'i gruposh?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Pas 1 dite pa aktivitet}other{Pas <ph name="DAY_COUNT_MANY" /> ditësh pa aktivitet}}</translation>

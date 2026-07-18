@@ -565,6 +565,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1855370856221982654">Boxe</translation>
 <translation id="1862788842908766795">Emplois de cadres</translation>
 <translation id="1863257867908022953">Bac 12</translation>
+<translation id="1863374797460198869">Discussion masquée</translation>
 <translation id="186539747722034544">Fournisseur d'accès au câble et au satellite</translation>
 <translation id="1870473978371099486">Services de cours particuliers</translation>
 <translation id="1871208020102129563">Le proxy est configuré pour utiliser des serveurs proxy déterminés, pas une URL de script .pac.</translation>
@@ -1426,7 +1427,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> : appuyez sur Tabulation, puis sur Entrée pour gérer les infos que vous synchronisez dans les paramètres Chrome</translation>
 <translation id="3203025201812691413">Vous devez saisir une URL</translation>
 <translation id="320323717674993345">Annuler le paiement</translation>
-<translation id="3204534477198689393">Pour améliorer les suggestions et remplir les formulaires plus rapidement, le contenu et les URL des pages que vous consultez peuvent être traités dans un espace privé dans le cloud.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> peut comporter du contenu réservé à un public averti</translation>
 <translation id="3207960819495026254">Favori</translation>
 <translation id="3208701679386778924">Veuillez nous envoyer un rapport pour que nous puissions améliorer les mises à jour de ChromeOS.</translation>
@@ -4531,6 +4531,7 @@ Informations supplémentaires :
 <translation id="7972714317346275248">PKCS #1 SHA-384 avec chiffrement RSA</translation>
 <translation id="7976053965094442846">Émetteurs Acheter maintenant, payer plus tard disponibles pour le paiement échelonné. Clavier masqué.</translation>
 <translation id="7976214039405368314">Trop de demandes</translation>
+<translation id="7977029776654598145">Lorsque la fonctionnalité est utilisée</translation>
 <translation id="7977538094055660992">Périphérique de sortie</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Il y a <ph name="TIME_COUNT" /> min}=1{Il y a <ph name="TIME_COUNT" /> h}one{Il y a <ph name="TIME_COUNT" /> j}other{Il y a <ph name="TIME_COUNT" /> j}}</translation>
 <translation id="7979595116210197019">Industrie de la restauration</translation>
@@ -4625,7 +4626,6 @@ Informations supplémentaires :
 <translation id="8134058435519644366">Recrutement et gestion du personnel</translation>
 <translation id="8135546115396015134">touche gauche</translation>
 <translation id="8137456439814903304">Énergie et services publics</translation>
-<translation id="8138591088112729119">Optimisée par l'Intelligence personnalisée</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Créé il y a 1 mois}one{Créé il y a {NUM_MONTHS} mois}other{Créé il y a {NUM_MONTHS} mois}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, utilisé par défaut. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Version PDF :</translation>
@@ -4958,6 +4958,7 @@ Informations supplémentaires :
 <translation id="8688672835843460752">Disponible</translation>
 <translation id="868922510921656628">Pages par ensemble</translation>
 <translation id="8694684557210599098">Ajouter un véhicule</translation>
+<translation id="8696297579102085705">Envoyer sur votre appareil</translation>
 <translation id="8698428283892912525">Chrome dispose de fonctionnalités de sécurité intégrées pour vous protéger sur Internet, comme la navigation sécurisée Google, qui a récemment <ph name="BEGIN_LINK" />détecté un logiciel malveillant<ph name="END_LINK" /> sur le site que vous avez essayé de consulter.</translation>
 <translation id="869891660844655955">Date d'expiration</translation>
 <translation id="8699041776323235191">Appareil HID</translation>

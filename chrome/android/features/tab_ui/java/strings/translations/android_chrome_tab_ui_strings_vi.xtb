@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Bỏ thẻ khỏi nhóm}other{Bỏ thẻ khỏi nhóm}}</translation>
 <translation id="2271452184061378400">Các nhóm thẻ của bạn được lưu tại đây</translation>
 <translation id="2277224997687551299">Chỉnh sửa tên nhóm</translation>
+<translation id="2289567621059034186">Thêm thẻ mới ở dưới</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Đánh dấu thẻ}other{Đánh dấu các thẻ}}</translation>
 <translation id="2359808026110333948">Tiếp tục</translation>
 <translation id="2371084566192454134">Thẻ và nhóm thẻ</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">Hiện các thẻ theo chiều ngang</translation>
 <translation id="31806439105337256">Hiện các thẻ theo chiều dọc</translation>
 <translation id="3194464645767632461">điểm xếp hạng</translation>
+<translation id="3228962656492373217">Đóng các thẻ bên dưới</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Thêm <ph name="TABS_COUNT_ONE" /> thẻ vào nhóm}other{Thêm <ph name="TABS_COUNT_MANY" /> thẻ vào nhóm}}</translation>
 <translation id="3328308545011660196">Đề xuất: <ph name="NUMBER_OF_TABS" /> thẻ có vẻ liên quan đến nhau. Bạn có muốn nhóm các thẻ đó lại không?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Sau 1 ngày không hoạt động}other{Sau <ph name="DAY_COUNT_MANY" /> ngày không hoạt động}}</translation>

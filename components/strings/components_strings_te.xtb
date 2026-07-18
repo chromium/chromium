@@ -560,6 +560,7 @@
 <translation id="1855370856221982654">బాక్సింగ్</translation>
 <translation id="1862788842908766795">కార్యనిర్వాహక &amp; నిర్వహణ ఉద్యోగాలు</translation>
 <translation id="1863257867908022953">ట్రే 12</translation>
+<translation id="1863374797460198869">చాట్ దాచబడింది</translation>
 <translation id="186539747722034544">కేబుల్ &amp; శాటిలైట్ ప్రొవైడర్‌లు</translation>
 <translation id="1870473978371099486">ప్రైవేట్ ట్యూటరింగ్ సర్వీస్‌లు</translation>
 <translation id="1871208020102129563">.pac స్క్రిప్ట్ URLను కాకుండా, స్థిరమైన ప్రాక్సీ సర్వర్‌లను ఉపయోగించేలా ప్రాక్సీ సెట్ చేయబడింది.</translation>
@@ -1421,7 +1422,6 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome సెట్టింగ్‌లలో మీరు ఏ సమాచారాన్ని సింక్ చేయాలనుకుంటున్నారో మేనేజ్ చేయడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
 <translation id="3203025201812691413">URL ఖాళీగా ఉండకూడదు</translation>
 <translation id="320323717674993345">పేమెంట్‌ను రద్దు చేయండి</translation>
-<translation id="3204534477198689393">మెరుగైన సూచనలను (సజెషన్లను) అందించడానికి, ఫారమ్‌లను మరింత వేగంగా నింపడానికి, మీరు విజిట్ చేసే (సందర్శించే) పేజీల కంటెంట్‌ను, URLలను క్లౌడ్‌లోని ప్రైవేట్ స్పేస్‌లో ప్రాసెస్ చేయవచ్చు.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" />లో పెద్దవారికి మాత్రమే తగిన కంటెంట్ ఉండవచ్చు</translation>
 <translation id="3207960819495026254">బుక్‌మార్క్ చేయబడింది</translation>
 <translation id="3208701679386778924">దయచేసి రిపోర్ట్‌ను పంపండి, తద్వారా మేము మరిన్ని ChromeOS అప్‌డేట్‌లను మెరుగుపరచగలము.</translation>
@@ -2145,7 +2145,7 @@
 <translation id="4297937944457164390"><ph name="ATTRIBUTE_NAME" /> అప్‌డేట్ చేయబడింది</translation>
 <translation id="4298000214066716287">పెట్టుబడి</translation>
 <translation id="4298148761711700950">QR అప్‌లోడ్ లేకుండా ఇన్‌స్టంట్‌గా పేమెంట్ చేయండి</translation>
-<translation id="4298925811540301889">ఈ సైట్‌కు సంబంధించిన కుక్కీలు మీ Chrome OS డివైజ్‌లన్నింటిలో సింక్ అయి ఉంటాయి. మీరు సింక్ చేసిన వాటిని మేనేజ్ చేయడానికి, <ph name="SYNC_SETTINGS" />‌కు వెళ్లండి.</translation>
+<translation id="4298925811540301889">ఈ సైట్‌కు సంబంధించిన కుక్కీలు మీ ChromeOS డివైజ్‌లన్నింటిలో సింక్ అయి ఉంటాయి. మీరు సింక్ చేసిన వాటిని మేనేజ్ చేయడానికి, <ph name="SYNC_SETTINGS" />‌కు వెళ్లండి.</translation>
 <translation id="4299919199185766032">షార్ట్‌కట్ పేరు, గరిష్ఠంగా అనుమతించబడే <ph name="MAX_LENGTH" /> క్యారెక్టర్‌ల పొడవును మించిపోయింది.</translation>
 <translation id="4300272766492248925">యాప్‌ను తెరువు</translation>
 <translation id="4300675098767811073">కుడివైపు అనేక రంధ్రాలు</translation>
@@ -2702,7 +2702,7 @@
 <translation id="519528950056409240">డేటాను షేర్ చేయడానికి Walletను అనుమతించండి</translation>
 <translation id="5200063972779787617">అడ్రస్‌ను ఖాతాలో సేవ్ చేయండి</translation>
 <translation id="5201306358585911203">ఈ పేజీలోని పొందుపరిచిన పేజీ ఇలా చెబుతోంది</translation>
-<translation id="5203716867500274632">మీ అడ్మినిస్ట్రేటర్ మీ Chrome OS డివైజ్‌లో మీ మునుపటి, ప్రస్తుత సెషన్‌ల మధ్య కింది వాటిని సింక్ చేయడాన్ని ఎనేబుల్ చేశారు:</translation>
+<translation id="5203716867500274632">మీ అడ్మినిస్ట్రేటర్ మీ ChromeOS డివైజ్‌లో మీ మునుపటి, ప్రస్తుత సెషన్‌ల మధ్య కింది వాటిని సింక్ చేయడాన్ని ఎనేబుల్ చేశారు:</translation>
 <translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, అందుబాటులో ఉన్న చర్యలను బ్రౌజ్ చేయడానికి ట్యాబ్‌ను నొక్కండి, ఆపై ఎంచుకున్న చర్యను అమలు చేయడానికి ఎంటర్ చేయండి.</translation>
 <translation id="5205222826937269299">పేరు ఆవశ్యకం</translation>
 <translation id="5206392433295093945">పడక గది</translation>
@@ -4525,6 +4525,7 @@
 <translation id="7972714317346275248">RSA ఎన్‌క్రిప్షన్‌తో PKCS #1 SHA-384</translation>
 <translation id="7976053965094442846">కాలానుగుణంగా పేమెంట్ చేయడానికి 'ఇప్పుడు కొనండి, పేమెంట్ తర్వాత చేయండి'ని జారీ చేసే సంస్థలు అందుబాటులో ఉన్నాయి. కీబోర్డ్ దాచబడింది.</translation>
 <translation id="7976214039405368314">చాలా ఎక్కువ రిక్వెస్ట్‌లు</translation>
+<translation id="7977029776654598145">దీన్ని ఉపయోగించడం ద్వారా</translation>
 <translation id="7977538094055660992">అవుట్‌పుట్ పరికరం</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" />ని క్రితం}=1{<ph name="TIME_COUNT" />గం క్రితం}other{<ph name="TIME_COUNT" />రో క్రితం}}</translation>
 <translation id="7979595116210197019">ఫుడ్ సర్వీస్</translation>
@@ -4619,7 +4620,6 @@
 <translation id="8134058435519644366">నియామకాలు &amp; స్టాఫింగ్</translation>
 <translation id="8135546115396015134">ఎడమవైపు కీ</translation>
 <translation id="8137456439814903304">ఎనర్జీ &amp; యుటిలిటీస్</translation>
-<translation id="8138591088112729119">పర్సనల్ ఇంటెలిజెన్స్ అందించినది</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 నెల క్రితం క్రియేట్ చేయడం జరిగింది}other{{NUM_MONTHS} నెలల క్రితం క్రియేట్ చేయడం జరిగింది}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, ప్రస్తుతం ఆటోమేటిక్ సెట్టింగ్‌గా ఉంది. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF వెర్షన్:</translation>
@@ -4952,6 +4952,7 @@
 <translation id="8688672835843460752">అందుబాటులో ఉంది</translation>
 <translation id="868922510921656628">ఒక సెట్‌లో ఉన్న పేజీలు</translation>
 <translation id="8694684557210599098">వెహికల్‌ను జోడించండి</translation>
+<translation id="8696297579102085705">మీ పరికరానికి పంపండి</translation>
 <translation id="8698428283892912525">మీరు బ్రౌజ్ చేస్తున్నప్పుడు మిమ్మల్ని రక్షించడానికి Chromeలో బిల్ట్-ఇన్ సేఫ్టీ ఫీచర్‌లు ఉంటాయి — ఉదాహరణకు, Google సురక్షిత బ్రౌజింగ్ ఫీచర్, ఇది ఇటీవల మీరు బ్రౌజ్ చేయడానికి ట్రై చేసిన వెబ్‌సైట్‌లో <ph name="BEGIN_LINK" />హానికరమైన సాఫ్ట్‌వేర్‌ను కనుగొంది<ph name="END_LINK" />.</translation>
 <translation id="869891660844655955">గడువు తేదీ</translation>
 <translation id="8699041776323235191">HID పరికరం</translation>

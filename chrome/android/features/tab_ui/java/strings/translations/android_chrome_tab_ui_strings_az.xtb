@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Tabı ayırın}other{Tabları ayırın}}</translation>
 <translation id="2271452184061378400">Tab qruplarınız burada yaddaşda saxlanılır</translation>
 <translation id="2277224997687551299">Qrup adına düzəliş edin</translation>
+<translation id="2289567621059034186">Aşağıda yeni tab</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Taba əlfəcin əlavə edin}other{Tablara əlfəcin əlavə edin}}</translation>
 <translation id="2359808026110333948">Davam edin</translation>
 <translation id="2371084566192454134">Tablar və tab qrupları</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">Tabları üfüqi formada göstərin</translation>
 <translation id="31806439105337256">Tabları şaquli formada göstərin</translation>
 <translation id="3194464645767632461">reytinq</translation>
+<translation id="3228962656492373217">Aşağıdakı tabları bağlayın</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabı qrupa əlavə edin}other{<ph name="TABS_COUNT_MANY" /> tabı qrupa əlavə edin}}</translation>
 <translation id="3328308545011660196">Təklif: <ph name="NUMBER_OF_TABS" /> tab əlaqəli görünür. Onlar qruplaşdırılsın?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{1 gün qeyri-aktiv olduqdan sonra}other{<ph name="DAY_COUNT_MANY" /> gün qeyri-aktiv olduqdan sonra}}</translation>

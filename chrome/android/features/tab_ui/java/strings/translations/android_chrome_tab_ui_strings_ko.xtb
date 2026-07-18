@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{탭 그룹 해제}other{탭 그룹 해제}}</translation>
 <translation id="2271452184061378400">탭 그룹이 여기에 저장됩니다.</translation>
 <translation id="2277224997687551299">그룹 이름 수정</translation>
+<translation id="2289567621059034186">아래에 새 탭</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{북마크 탭}other{북마크 탭}}</translation>
 <translation id="2359808026110333948">계속</translation>
 <translation id="2371084566192454134">탭 및 탭 그룹</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">가로로 탭 표시</translation>
 <translation id="31806439105337256">세로로 탭 표시</translation>
 <translation id="3194464645767632461">평점</translation>
+<translation id="3228962656492373217">아래 탭 닫기</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{그룹에 탭 <ph name="TABS_COUNT_ONE" />개 추가}other{그룹에 탭 <ph name="TABS_COUNT_MANY" />개 추가}}</translation>
 <translation id="3328308545011660196">제안: 탭 <ph name="NUMBER_OF_TABS" />개가 서로 관련된 것으로 보입니다. 그룹화할까요?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{1일 동안 비활성 상태인 경우}other{<ph name="DAY_COUNT_MANY" />일 동안 비활성 상태인 경우}}</translation>

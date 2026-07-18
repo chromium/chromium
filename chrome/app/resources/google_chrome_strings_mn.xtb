@@ -241,7 +241,6 @@
 <translation id="3282568296779691940">Chrome руу нэвтрэх</translation>
 <translation id="3286538390144397061">Одоо дахин эхлүүлнэ үү</translation>
 <translation id="3292333338048274092">Та тэгээд Chrome-г дахин эхлүүлэх шаардлагатай болно.</translation>
-<translation id="3324218984287646518">Google Lens-с энэ видеоны тухай асуу</translation>
 <translation id="3327226547491422998">Дараа нь Chrome танаас хадгалсан мэдээллийг танд зориулж маягтыг автоматаар бөглөхөд ашигламаар байгаа эсэхийг асууж болно</translation>
 <translation id="3352986031709923790">хайлтын хэсгийн баруун дээд булан: баруун <ph name="RIGHT" />%, дээд <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
@@ -262,8 +261,6 @@
 <translation id="3576528680708590453">Таны системийн админ Google Chrome-г <ph name="TARGET_URL_HOSTNAME" />-д хандахын тулд өөр хөтөч нээхээр тохируулсан байна.</translation>
 <translation id="3582972582564653026">Төхөөрөмжүүддээ Chrome-г синк хийж, хувийн болгох</translation>
 <translation id="3583751698304738917">Та <ph name="USER_EMAIL_ADDRESS" /> хаягаараа Chrome-н өөр профайлд аль хэдийн нэвтэрсэн байна</translation>
-<translation id="358381413217813387">Google Lens-р энэ хуудаснаас хай</translation>
-<translation id="3589519427766620380">Энэ хуудасны талаар Google Lens-с асуух</translation>
 <translation id="3595784445906693824">Шинэ профайлаар Chrome-д нэвтрэх үү?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Шинэчлэлтийг хэрэгжүүлэхийн тулд Chrome-г дахин ачаалахыг таны администратор танаас шаардаж байна}=1{Шинэчлэлтийг хэрэгжүүлэхийн тулд Chrome-г дахин ачаалахыг таны администратор танаас шаардаж байна. Таны нууцлалтай цонхыг дахин нээхгүй.}other{Шинэчлэлтийг хэрэгжүүлэхийн тулд Chrome-г дахин ачаалахыг таны администратор танаас шаардаж байна. Таны # нууцлалтай цонхыг дахин нээхгүй.}}</translation>
 <translation id="3597003331831379823">Нэмэлт эрхтэйгээр тохируулгыг ажиллуулж чадсангүй. <ph name="METAINSTALLER_ERROR" /></translation>
@@ -358,7 +355,6 @@
 <translation id="4501471624619070934">Энэ улсад хандалтыг хязгаарласан тул суулгаж чадсангүй.</translation>
 <translation id="4571503333518166079">Chrome-н мэдэгдлийн тохиргоо хэсэгт очих</translation>
 <translation id="4580939929828762295">Google Нууц үгний менежерээр аюулгүй байгаарай</translation>
-<translation id="4592634244097223647">Google-с энэ зургийн тухай асуу</translation>
 <translation id="459622048091363950">Chrome-д хандалт олгосны дараа веб сайтууд таны хандалтыг асуух боломжтой болно.</translation>
 <translation id="4598116752460667024">Жагсаалтаас ямар нэг явцыг хайна уу.</translation>
 <translation id="4600710005438004015">Chrome-г хамгийн сүүлийн хувилбарт шинэчлээгүй тул та шинэ онцлог болон аюулгүй байдлын засвар авах боломжгүй байна.</translation>
@@ -662,7 +658,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="7572537927358445944">Унтраалттай • Chrome энэ өргөтгөлийг хаанаас гаралтай болохыг баталгаажуулах боломжгүй</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> суулгагч</translation>
 <translation id="7596160425942761210">Та мессеж, баримт бичиг болон бусад апп дахь холбоосон дээр товших бүрдээ Chrome-г ашиглах боломжтой</translation>
-<translation id="7602868996817972616">Энэ хуудасны тухай Google-с асуух</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7627609214560473136">Өгөгдлөө хамгаалахын тулд Chrome-д таны сүүлийн үед зочлоогүй сайтын зөвшөөрлийг хасахыг зөвшөөрнө үү.</translation>
 <translation id="7629695634924605473">Хэрэв таны нууц үг алдагдсан байвал Chrome танд мэдэгдэнэ</translation>
@@ -785,7 +780,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="8712637175834984815">Ойлголоо</translation>
 <translation id="8712767363896337380">Шинэчилж дуусаж байна! Шинэчилж дуусгахын тулд Chrome-г дахин ачаална уу.</translation>
 <translation id="8718062187489036808">Chrome-с гарах</translation>
-<translation id="8725440680697264016">Google-с энэ видеоны тухай асуу</translation>
 <translation id="873133009373065397">Google Chrome өгөгдмөл хөтчийг тодорхойлох эсвэл тохируулах боломжгүй</translation>
 <translation id="8747073452963259673">хайлтын хэсгийн зүүн доод булан: зүүн <ph name="LEFT" />%, доод <ph name="BOTTOM" />%</translation>
 <translation id="8748735421235723888">Chrome идэвхгүй табуудаас санах ойг суллана. Энэ нь идэвхтэй табууд болон бусад аппад компьютерын илүү их нөөцийг өгч, Chrome-г хурдан байлгана. Таныг идэвхгүй табууд руугаа буцаж очиход тэдгээр таб автоматаар дахин идэвхтэй болно. <ph name="BEGIN_LINK" />Санах ой хэмнэгчийн талаар нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
@@ -801,7 +795,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome танд үүнийг хасахыг зөвлөж байна.}other{Chrome танд тэдгээрийг хасахыг зөвлөж байна.}}</translation>
 <translation id="8862326446509486874">Танд системийн түвшинд суулгах зохих эрх байхгүй байна. Суулгагчийг админы хувиар дахин ажиллуулахыг оролдож үзнэ үү.</translation>
 <translation id="8865415417596392024">Таны бүртгэлийн Chrome-н өгөгдөл</translation>
-<translation id="8883862939660515976">Google Lens-с энэ зургийн тухай асуу</translation>
 <translation id="8914504000324227558">Chrome-г дахин эхлүүлэх</translation>
 <translation id="8920304659326707347">iOS дээрх Chrome-р яг орхисон газраасаа үргэлжлүүлээрэй.</translation>
 <translation id="8922998289262614701">Энэ аппын өгөгдлийг Chrome-с хасах</translation>

@@ -55,7 +55,6 @@
 <translation id="1623563412065267963">Hozza ki a legtöbbet a Google-ból a telefonjára telepített Chromium alkalmazással</translation>
 <translation id="1625909126243026060">A legfontosabb adatvédelmi és biztonsági beállítások áttekintése a Chromiumban</translation>
 <translation id="1640672724030957280">Letöltés...</translation>
-<translation id="1680687534629375545">Kérdés feltevése a Képkeresőnek erről az oldalról</translation>
 <translation id="1708414395296835197">Mostantól bármikor használhatja a Chromiumot, amikor üzenetekben, dokumentumokban és más alkalmazásokban található linkekre kattint. A tálcára is ki lesz tűzve.</translation>
 <translation id="1709772298389099340">Magasabb szintű jogosultságokat biztosít a <ph name="BROWSER_NAME" /> számára.</translation>
 <translation id="1722488837206509557">Ez lehetővé teszi, hogy válasszon a rendelkezésre álló eszközök közül, és tartalmakat jelenítsen meg rajtuk.</translation>
@@ -79,7 +78,6 @@
 <translation id="1880677175115548835">Szöveg kijelölése</translation>
 <translation id="1881322772814446296">Kezelt fiókkal jelentkezik be, és annak adminisztrátora számára hozzáférést biztosít Chromium-profiljához. Chromium-adatait – például alkalmazásait, könyvjelzőit, előzményeit, jelszavait és más beállításait – a rendszer véglegesen társítja a(z) <ph name="USER_NAME" /> fiókhoz. Ezen adatokat a Google-fiók Irányítópultján törölheti, de más fiókhoz nem társíthatja őket. Létrehozhat egy új profilt is meglévő Chromium-adatainak elkülönített tárolásához. <ph name="LEARN_MORE" /></translation>
 <translation id="1896836275755235458">A Chromium kíméli az akkumulátort: korlátozza a háttértevékenységeket és a vizuális effekteket, például a finomgörgetést és a videók képkockasebességét. <ph name="BEGIN_LINK" />További információ az Energiatakarékos módról<ph name="END_LINK" />.</translation>
-<translation id="1898804291554630487">Tegyen fel kérdést az oldalról</translation>
 <translation id="1900969832270057921">Chromium-frissítési szolgáltatás</translation>
 <translation id="1911763535808217981">A beállítás kikapcsolásával anélkül jelentkezhet be a Google-webhelyekre (pl. Gmail), hogy a Chromiumba is bejelentkezne</translation>
 <translation id="1929939181775079593">A Chromium nem válaszol. Újraindítja most?</translation>
@@ -225,7 +223,6 @@
 <translation id="3316771292331273802">Az összes Chromium-ablak bezárásakor a legtöbb webhelyről kijelentkezteti a rendszer, kivéve a Google-fiókját, ha bejelentkezett a Chromiumba. Ha engedélyezni szeretné, hogy a webhelyek emlékezzenek Önre, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">keresési terület jobb felső sarka: jobb <ph name="RIGHT" />%, fent <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">A fiókjában lévő Chromium-adatok</translation>
-<translation id="3369405342922656244">Keresés ezen az oldalon a Képkereső használatával</translation>
 <translation id="3375770072980084583">Jelszavai használata a Chromiummal a telefonján</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Szeretne a meglévő Chromium-profilra váltani?</translation>
@@ -372,7 +369,6 @@
 <translation id="5231355151045086930">Kijelentkezés a Chromiumból</translation>
 <translation id="5234764350956374838">Elvetés</translation>
 <translation id="5249261924633168472">Link megnyitása Chromium-inkognitóablakban</translation>
-<translation id="5254739261293693943">Kérdés feltevése erről a videóról</translation>
 <translation id="5276305953263010518">A Chromium app letöltésével útközben is mentheti jelszavait</translation>
 <translation id="5277894862589591112">A módosítások alkalmazásához indítsa újra a Chromiumot</translation>
 <translation id="5286907366254680517">Észlelve</translation>
@@ -467,7 +463,6 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="6183079672144801177">Ellenőrizze, hogy bejelentkezett-e a Chromiumba <ph name="TARGET_DEVICE_NAME" /> eszközén, majd próbálja meg újraküldeni.</translation>
 <translation id="6212496753309875659">A számítógépen már megtalálható a Chromium újabb verziója. Ha a szoftver nem működik, kérjük, távolítsa el a Chromiumot, majd próbálkozzon újra.</translation>
 <translation id="6219195342503754812">{0,plural, =0{A Chromium most újraindul}=1{A Chromium 1 másodpercen belül újraindul}other{A Chromium # másodpercen belül újraindul}}</translation>
-<translation id="6239161312595354541">Kérdés feltevése a Képkeresőnek erről a videóról</translation>
 <translation id="6241367896540709610">A Chromiumnak tárhelyhozzáférési engedélyre van szüksége a fájlok letöltéséhez</translation>
 <translation id="6245734527075554892">Ellenőrzi az URL-eket a Chromiumban a nem biztonságos webhelyekről tárolt lista alapján.</translation>
 <translation id="6248213926982192922">Legyen a Chromium az alapértelmezett böngészőm</translation>
@@ -556,7 +551,6 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
             • visszaállítja a Chromium-billentyűparancsokat.
             <ph name="LINE_BREAKS" />
             Nem lesz hatással a könyvjelzőkre, az előzményekre és a mentett jelszavakra.</translation>
-<translation id="6934579572334859869">Kérdés feltevése a Képkeresőnek erről a képről</translation>
 <translation id="6948031725951063910">Elérte a Chromium <ph name="BOOKMARK_LIMIT" /> könyvjelzős korlátját, ezért egyes könyvjelzőit még nem mentette a rendszer a Google-fiókjába.
 
 Új könyvjelzőket nem lehet menteni a fiókjába, amíg nem töröl néhányat. Ha most jelentkezik ki, a nem mentett könyvjelzők törlődnek.</translation>
@@ -647,7 +641,6 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="7872446069773932638">Letöltés… <ph name="SECONDS" /> másodperc van hátra</translation>
 <translation id="7873537467422636035">Ha elfelejtette az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chromium-adatokat<ph name="END_LINK" />.</translation>
 <translation id="7874369989024033742">Gyorsan megnyithatja a Gemini a Chromiumban szolgáltatást, amikor szüksége van rá</translation>
-<translation id="7877212753140190672">Kérdés erről a képről</translation>
 <translation id="7888981273428720788">A Chromium beállítása alapértelmezettként</translation>
 <translation id="7934340546140346950">A Chromium automatikusan frissíti a nem biztonságos kapcsolatokat HTTPS-re, amikor lehetséges.</translation>
 <translation id="7937630085815544518"><ph name="USER_EMAIL_ADDRESS" /> néven volt bejelentkezve a Chromiumba. Kérjük, ugyanazzal a fiókkal jelentkezzen be újra.</translation>

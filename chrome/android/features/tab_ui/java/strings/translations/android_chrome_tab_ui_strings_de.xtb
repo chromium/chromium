@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Tab-Gruppierung aufheben}other{Tab-Gruppierung aufheben}}</translation>
 <translation id="2271452184061378400">Hier werden deine Tabgruppen gespeichert</translation>
 <translation id="2277224997687551299">Gruppenname bearbeiten</translation>
+<translation id="2289567621059034186">Neuen Tab unten hinzufügen</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Tab zu Lesezeichen hinzufügen}other{Tabs zu Lesezeichen hinzufügen}}</translation>
 <translation id="2359808026110333948">Weiter</translation>
 <translation id="2371084566192454134">Tabs und Tabgruppen</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">Tabs horizontal anzeigen</translation>
 <translation id="31806439105337256">Tabs vertikal anzeigen</translation>
 <translation id="3194464645767632461">Bewertung</translation>
+<translation id="3228962656492373217">Unten aufgeführte Tabs schließen</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab zu Gruppe hinzufügen}other{<ph name="TABS_COUNT_MANY" /> Tabs zu Gruppe hinzufügen}}</translation>
 <translation id="3328308545011660196">Vorschlag: <ph name="NUMBER_OF_TABS" /> Tabs scheinen zusammenzugehören. Sollen sie gruppiert werden?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Nach 1 Tag Inaktivität}other{Nach <ph name="DAY_COUNT_MANY" /> Tagen Inaktivität}}</translation>

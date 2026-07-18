@@ -1177,7 +1177,6 @@
 <translation id="1910721550319506122">欢迎使用！</translation>
 <translation id="1910736334623230603">无法搜索多张图片。一次只能添加 1 张图片。</translation>
 <translation id="1910908536872421421">Chrome 测试版 v<ph name="BROWSER_VERSION" /> 仅适用于自动测试。若要进行常规浏览，请使用可自动更新的标准版 Chrome。</translation>
-<translation id="1912867150686509584">在您的日历上查看更多会议</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{暂停导致浏览器运行缓慢的标签页}other{暂停导致浏览器运行缓慢的标签页}}</translation>
 <translation id="1913749768968678106">投放、保存和分享</translation>
 <translation id="19147273405311768">将工具栏重置为默认设置</translation>
@@ -2068,7 +2067,7 @@
 <translation id="2613210758071148851">不允许运行 <ph name="RESTRICTED_SITE" /> 的任何扩展程序</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> 将能够修改“<ph name="FILENAME" />”</translation>
 <translation id="2615159404909536465">{FILE_COUNT,plural, =1{在此扩展程序中打开并修改 <ph name="FILE1" />}other{在此应用中打开并修改 <ph name="FILE1" />…}}</translation>
-<translation id="2615836333611528168">Windows 设置窗口将调整大小，以适应此处的显示空间。</translation>
+<translation id="2615836333611528168">Windows 设置窗口将调整大小，以适应此区域。</translation>
 <translation id="2616366145935564096">读取和更改您在 <ph name="WEBSITE_1" /> 上的数据</translation>
 <translation id="2618797463720777311">设置“附近分享”功能</translation>
 <translation id="2619305858360733464"><ph name="SHARED_STATE" /> 未命名分组 - <ph name="OPENED_STATE" /></translation>
@@ -4256,6 +4255,7 @@
 <translation id="4274673989874969668">当您离开网站后，网站可保持同步以完成各项任务（例如上传照片或发送聊天消息）</translation>
 <translation id="4275291496240508082">启动音</translation>
 <translation id="4275397969489577657">启用事件流记录功能</translation>
+<translation id="4275663329226226506">媒体</translation>
 <translation id="4275788652681621337">关闭侧边栏</translation>
 <translation id="4275830172053184480">重启您的设备</translation>
 <translation id="4276390967705106170">在新的浏览器标签页中打开</translation>
@@ -9902,7 +9902,6 @@
 <translation id="8693862390730570097">不允许自动打开“帮我写”功能</translation>
 <translation id="8694596275649352090">在休眠或合盖时锁定</translation>
 <translation id="8695825812785969222">打开位置(&amp;L)...</translation>
-<translation id="8696297579102085705">发送到您的设备</translation>
 <translation id="869884720829132584">应用菜单</translation>
 <translation id="869891660844655955">失效日期</translation>
 <translation id="8699296325072357994">密码页面中的内容和相关信息会发送给 Google，并由人工审核员审核。您的密码已加密，不会向任何人显示。<ph name="PASSWORD_CHANGE" /></translation>

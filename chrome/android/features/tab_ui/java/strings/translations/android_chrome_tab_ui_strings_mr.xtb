@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{टॅब गटामधून काढून टाका}other{टॅब गटामधून काढून टाका}}</translation>
 <translation id="2271452184061378400">तुमचे टॅब गट इथे सेव्ह केलेले आहेत</translation>
 <translation id="2277224997687551299">गटाचे नाव संपादित करा</translation>
+<translation id="2289567621059034186">खाली नवीन टॅब उघडा</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{टॅब बुकमार्क करा}other{टॅब बुकमार्क करा}}</translation>
 <translation id="2359808026110333948">सुरू ठेवा</translation>
 <translation id="2371084566192454134">टॅब आणि टॅब गट</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">टॅब आडव्या पद्धतीने दाखवा</translation>
 <translation id="31806439105337256">टॅब उभ्या पद्धतीने दाखवा</translation>
 <translation id="3194464645767632461">रेटिंग</translation>
+<translation id="3228962656492373217">खालील टॅब बंद करा</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{गटामध्ये <ph name="TABS_COUNT_ONE" /> टॅब जोडा}other{गटामध्ये <ph name="TABS_COUNT_MANY" /> टॅब जोडा}}</translation>
 <translation id="3328308545011660196">सूचना: <ph name="NUMBER_OF_TABS" /> टॅब संबंधित वाटतात. त्यांचा गट बनवायचा का?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{१ दिवस इनॅक्टिव्ह राहिल्यानंतर}other{<ph name="DAY_COUNT_MANY" /> दिवस इनॅक्टिव्ह राहिल्यानंतर}}</translation>

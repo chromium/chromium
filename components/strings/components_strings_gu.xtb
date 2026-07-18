@@ -565,6 +565,7 @@
 <translation id="1855370856221982654">બૉક્સિંગ</translation>
 <translation id="1862788842908766795">એક્ઝિક્યૂટિવ અને મેનેજમેન્ટ ક્ષેત્રમાં નોકરીઓ</translation>
 <translation id="1863257867908022953">ટ્રે 12</translation>
+<translation id="1863374797460198869">ચૅટ છુપાવેલી છે</translation>
 <translation id="186539747722034544">કેબલ અને સૅટલાઇટ પ્રદાતાઓ</translation>
 <translation id="1870473978371099486">ખાનગી ટ્યૂશન સેવાઓ</translation>
 <translation id="1871208020102129563">પ્રૉક્સી નક્કી કરેલા પ્રૉક્સી સર્વરનો ઉપયોગ કરવા માટે સેટ કરેલી છે, .pac સ્ક્રિપ્ટ URL નથી.</translation>
@@ -1426,7 +1427,6 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ટૅબ દબાવો અને પછી Chrome સેટિંગમાં તમે જે માહિતી સિંક કરવા ઇચ્છતા હો, તે મેનેજ કરવા માટે Enter કી દબાવો</translation>
 <translation id="3203025201812691413">URL ખાલી ન હોઈ શકે</translation>
 <translation id="320323717674993345">ચુકવણી રદ કરો</translation>
-<translation id="3204534477198689393">સૂચનોને બહેતર બનાવવા અને ફોર્મ વધુ ઝડપથી ભરવા માટે, તમે મુલાકાત લો છો તે પેજના કન્ટેન્ટ અને URLs પર ક્લાઉડમાં ખાનગી સ્પેસમાં પ્રક્રિયા થઈ શકે છે.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> પર વયસ્ક લોકો માટેનું કન્ટેન્ટ હોઈ શકે છે</translation>
 <translation id="3207960819495026254">બુકમાર્ક કરેલ</translation>
 <translation id="3208701679386778924">કૃપા કરીને રિપોર્ટ મોકલો જેથી અમે ChromeOS અપડેટને વધુ બહેતર બનાવી શકીએ.</translation>
@@ -4530,6 +4530,7 @@
 <translation id="7972714317346275248">RSA એન્ક્રિપ્શનવાળું PKCS #1 SHA-384</translation>
 <translation id="7976053965094442846">સમય જતાં ચુકવણી કરવા માટે ઉપલબ્ધ હમણાં ખરીદો, પછીથી ચુકવો વિકલ્પના જારીકર્તાઓ. કીબોર્ડ છુપાવેલું છે.</translation>
 <translation id="7976214039405368314">ઘણી બધી વિનંતીઓ</translation>
+<translation id="7977029776654598145">ઉપયોગ કરવામાં આવે ત્યારે</translation>
 <translation id="7977538094055660992">આઉટપુટ ડિવાઇસ</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> મિનિટ પહેલાં}=1{<ph name="TIME_COUNT" /> કલાક પહેલાં}one{<ph name="TIME_COUNT" /> દિવસ પહેલાં}other{<ph name="TIME_COUNT" /> દિવસ પહેલાં}}</translation>
 <translation id="7979595116210197019">ભોજન સેવા</translation>
@@ -4624,7 +4625,6 @@
 <translation id="8134058435519644366">ભરતી અને કર્મચારીની નિયુક્તિ</translation>
 <translation id="8135546115396015134">ડાબી કી</translation>
 <translation id="8137456439814903304">ઊર્જા અને યુટિલિટી</translation>
-<translation id="8138591088112729119">પર્સનલ ઇન્ટેલિજન્સ દ્વારા સંચાલિત</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 મહિના પહેલાં બનાવ્યું}one{{NUM_MONTHS} મહિના પહેલાં બનાવ્યું}other{{NUM_MONTHS} મહિના પહેલાં બનાવ્યું}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, હાલનું ડિફૉલ્ટ. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF વર્ઝન:</translation>
@@ -4957,6 +4957,7 @@
 <translation id="8688672835843460752">ઉપલબ્ધ</translation>
 <translation id="868922510921656628">સેટ દીઠ પેજ</translation>
 <translation id="8694684557210599098">વાહનની માહિતી ઉમેરો</translation>
+<translation id="8696297579102085705">તમારા ડિવાઇસ પર મોકલો</translation>
 <translation id="8698428283892912525">તમે બ્રાઉઝ કરી રહ્યાં હો એ દરમિયાન તમને સુરક્ષિત રાખવા માટે Chrome બિલ્ટ ઇન સલામતી સંબંધી સુવિધાઓ ધરાવે છે — જેમ કે Google Safe Browsing, જે સુવિધાએ તાજેતરમાં તમે જેની મુલાકાત લેવાનો પ્રયાસ કર્યો હતો તે સાઇટ પર <ph name="BEGIN_LINK" />હાનિકારક સૉફ્ટવેર શોધ્યું<ph name="END_LINK" /> હતું.</translation>
 <translation id="869891660844655955">સમાપ્તિ તારીખ</translation>
 <translation id="8699041776323235191">HID ડિવાઇસ</translation>

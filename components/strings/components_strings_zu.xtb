@@ -565,6 +565,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="1855370856221982654">Isibhakela</translation>
 <translation id="1862788842908766795">Imisebenzi Ephezulu Neyokuphatha</translation>
 <translation id="1863257867908022953">Ithileyi 12</translation>
+<translation id="1863374797460198869">Ingxoxo ifihliwe</translation>
 <translation id="186539747722034544">Abahlinzeki Bamakhebuli Namasathalayithi</translation>
 <translation id="1870473978371099486">Amasevisi Okufundisa Azimele</translation>
 <translation id="1871208020102129563">Ummeleli usethelwe ukusebenzisa amaseva alibamba agxilile, hhayi i-URL yesikripthi se-.pac</translation>
@@ -1424,7 +1425,6 @@ Ukuze ufihle okungakhethwa kukho kokukhokha kamuva, iya <ph name="BEGIN_LINK" />
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, cindezela u-Tab bese no-Enter ukuze uphathe ukuthi yiluphi ulwazi olivumelanisa kumasethingi we-Chrome</translation>
 <translation id="3203025201812691413">I-URL ayikwazi ukungabi nalutho</translation>
 <translation id="320323717674993345">Khansela inkokhelo</translation>
-<translation id="3204534477198689393">Ukuze uthuthukise iziphakamiso futhi ugcwalise amafomu ngokushesha, ikhontenti nama-URL wamakhasi owavakashelayo zingacutshungulwa endaweni engasese ku-cloud.</translation>
 <translation id="3207830513221832868">I-<ph name="BLOCKED_URL" /> kungenzeka iqukethe okwabantu abadala</translation>
 <translation id="3207960819495026254">Kubekwe uphawu lokubekisa</translation>
 <translation id="3208701679386778924">Sicela uthumele umbiko ukuze sikwazi ukuthuthukisa ezinye izibuyekezo ze-ChromeOS.</translation>
@@ -4526,6 +4526,7 @@ Imininingwane engeziwe:
 <translation id="7972714317346275248">I-PKCS #1 SHA-384 enokubethela kwe-RSA</translation>
 <translation id="7976053965094442846">Ukukhishwa Kokuthenga Manje, Ubuye Ukhokhe okutholakalayo ukukhokhela ngokuhamba kwesikhathi. Ikhibhodi ifihliwe.</translation>
 <translation id="7976214039405368314">Izicelo eziningi kakhulu</translation>
+<translation id="7977029776654598145">Uma kusetshenzisiwe</translation>
 <translation id="7977538094055660992">Idivaysi yokukhishwayo</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Imizuzu engu-<ph name="TIME_COUNT" /> edlule}=1{Amahora angu-<ph name="TIME_COUNT" /> adlule}one{Izinsuku ezingu-<ph name="TIME_COUNT" /> ezidlule}other{Izinsuku ezingu-<ph name="TIME_COUNT" /> ezidlule}}</translation>
 <translation id="7979595116210197019">Isevisi Yokudla</translation>
@@ -4620,7 +4621,6 @@ Imininingwane engeziwe:
 <translation id="8134058435519644366">Ezokuqasha Nabasebenzi</translation>
 <translation id="8135546115396015134">ukhiye okwesobunxele</translation>
 <translation id="8137456439814903304">Amandla Nezinsiza</translation>
-<translation id="8138591088112729119">Inikwe amandla Imisebenzi Yobuhlakani Bomuntu Siqu</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Kusungulwe enyangeni e-1 edlule}one{Kusungulwe ezinyangeni ezingu-{NUM_MONTHS} ezedlule}other{Kusungulwe ezinyangeni ezingu-{NUM_MONTHS} ezedlule}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, okuzenzakalelayo kwamanje<ph name="MARKETING_SNIPPET" />.</translation>
 <translation id="8148608574971654810">Uhlobo lwe-PDF:</translation>
@@ -4953,6 +4953,7 @@ Imininingwane engeziwe:
 <translation id="8688672835843460752">Kuyatholakala</translation>
 <translation id="868922510921656628">Amakhasi ngesethi ngayinye</translation>
 <translation id="8694684557210599098">Engeza imoto</translation>
+<translation id="8696297579102085705">Thumela kudivayisi yakho</translation>
 <translation id="8698428283892912525">IChrome inezakhi zokuphepha ezakhelwe phakathi zokukuvikela ngesikhathi ubhrawuza — njengeGoogle Safe Browsing, esanda <ph name="BEGIN_LINK" />kuthola isofthiwe eyingozi<ph name="END_LINK" /> kusayithi ozame ukuyivakashela.</translation>
 <translation id="869891660844655955">Idethi yokuphelelwa yisikhathi</translation>
 <translation id="8699041776323235191">Idivayisi ye-HID</translation>

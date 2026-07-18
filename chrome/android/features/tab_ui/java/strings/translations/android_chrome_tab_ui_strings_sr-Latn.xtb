@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Opozovi grupisanje kartice}one{Opozovi grupisanje kartica}few{Opozovi grupisanje kartica}other{Opozovi grupisanje kartica}}</translation>
 <translation id="2271452184061378400">Grupe kartica se čuvaju ovde</translation>
 <translation id="2277224997687551299">Izmenite ime grupe</translation>
+<translation id="2289567621059034186">Nova kartica u nastavku</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Obeleži karticu}one{Obeleži kartice}few{Obeleži kartice}other{Obeleži kartice}}</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2371084566192454134">Kartice i grupe kartica</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">Prikaži kartice horizontalno</translation>
 <translation id="31806439105337256">Prikaži kartice vertikalno</translation>
 <translation id="3194464645767632461">ocena</translation>
+<translation id="3228962656492373217">Zatvori kartice u nastavku</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Dodajte <ph name="TABS_COUNT_ONE" /> karticu u grupu}one{Dodajte <ph name="TABS_COUNT_MANY" /> karticu u grupu}few{Dodajte <ph name="TABS_COUNT_MANY" /> kartice u grupu}other{Dodajte <ph name="TABS_COUNT_MANY" /> kartica u grupu}}</translation>
 <translation id="3328308545011660196">Predlog: Kartice (<ph name="NUMBER_OF_TABS" />) deluju povezano. Želite li da ih grupišete?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Posle 1 dana neaktivnosti}one{Posle <ph name="DAY_COUNT_MANY" /> dana neaktivnosti}few{Posle <ph name="DAY_COUNT_MANY" /> dana neaktivnosti}other{Posle <ph name="DAY_COUNT_MANY" /> dana neaktivnosti}}</translation>

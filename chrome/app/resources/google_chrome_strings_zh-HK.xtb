@@ -241,7 +241,6 @@
 <translation id="3282568296779691940">登入 Chrome</translation>
 <translation id="3286538390144397061">立即重新啟動</translation>
 <translation id="3292333338048274092">你將需要重新啟動 Chrome。</translation>
-<translation id="3324218984287646518">問「Google 智能鏡頭」關於此影片的問題</translation>
 <translation id="3327226547491422998">日後 Chrome 可詢問你是否要使用已儲存的資料自動填入表格</translation>
 <translation id="3352986031709923790">搜尋區域嘅右上角：距右側 <ph name="RIGHT" />%，距頂部 <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome 輔助工具</translation>
@@ -262,8 +261,6 @@
 <translation id="3576528680708590453">系統管理員已設定 Google Chrome 開啟替代瀏覽器來存取 <ph name="TARGET_URL_HOSTNAME" />。</translation>
 <translation id="3582972582564653026">在不同裝置上同步和設定個人化的 Chrome</translation>
 <translation id="3583751698304738917">你已在另一個 Chrome 個人檔案中以 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入</translation>
-<translation id="358381413217813387">使用「Google 智能鏡頭」搜尋此頁面</translation>
-<translation id="3589519427766620380">問「Google 智能鏡頭」有關此頁面的資料</translation>
 <translation id="3595784445906693824">要在新個人檔案中登入 Chrome 嗎？</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{管理員要求您重新啟動 Chrome，以套用更新}=1{管理員要求您重新啟動 Chrome，以套用更新。您的無痕式視窗不會重新開啟。}other{管理員要求您重新啟動 Chrome，以套用更新。您的 # 個無痕式視窗不會重新開啟。}}</translation>
 <translation id="3597003331831379823">無法按更高權限執行設定。<ph name="METAINSTALLER_ERROR" /></translation>
@@ -357,7 +354,6 @@
 <translation id="4501471624619070934">由於此國家/地區有存取限制，因此無法安裝。</translation>
 <translation id="4571503333518166079">前往 Chrome 通知設定</translation>
 <translation id="4580939929828762295">「Google 密碼管理工具」為你的安全護航</translation>
-<translation id="4592634244097223647">問　Google 關於此圖片的問題</translation>
 <translation id="459622048091363950">Chrome 獲得存取權後，網站便可向您要求存取權。</translation>
 <translation id="4598116752460667024">搵清單入面嘅任何程序。</translation>
 <translation id="4600710005438004015">由於 Chrome 無法更新至最新版本，因此您無法使用最新功能和安全性修正。</translation>
@@ -564,7 +560,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6539493053177300926">即使 Chrome 最小化，你亦能輕鬆在裝置上使用 Chrome 版 Gemini。</translation>
 <translation id="6585124893636629274">關閉 Chrome 版 Gemini</translation>
 <translation id="659498884637196217">前往此裝置的「Google 密碼管理工具」進行更新</translation>
-<translation id="6613949864921837107">將 Chrome 設定為預設瀏覽器，讓密碼、書籤和記錄在所有裝置上完美同步。</translation>
+<translation id="6613949864921837107">將 Chrome 設定為預設瀏覽器，在所有裝置上同步更新密碼、書籤和記錄。</translation>
 <translation id="6631524303639368205">開啟上次瀏覽的內容：Chrome 已還原上個工作階段的分頁。如要關閉此功能，請前往</translation>
 <translation id="6632473616050862500">ChromeOS Flex 的開發全賴其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟件<ph name="END_LINK_CROS_OSS" />協助才得以面世。</translation>
 <translation id="6634299872736643004">此設定變更會在 Chrome 重新啟動後套用。</translation>
@@ -661,7 +657,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7572537927358445944">已關閉 • Chrome 無法驗證此擴充程式的來源</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> 安裝程式</translation>
 <translation id="7596160425942761210">你可以隨時使用 Chrome 開啟訊息、文件和其他應用程式中的連結</translation>
-<translation id="7602868996817972616">問 Google 關於此頁的問題</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7627609214560473136">為保護你的資料，請讓 Chrome 為你移除最近未瀏覽網站的權限。</translation>
 <translation id="7629695634924605473">Chrome 會通知您密碼是否曾被盜用</translation>
@@ -786,7 +781,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8712637175834984815">我知道了</translation>
 <translation id="8712767363896337380">即將更新至最新版本！重新啟動 Chrome 即可完成更新程序。</translation>
 <translation id="8718062187489036808">登出 Chrome</translation>
-<translation id="8725440680697264016">問　Google 關於此影片的問題</translation>
 <translation id="873133009373065397">Google Chrome 無法偵測或設定預設瀏覽器</translation>
 <translation id="8747073452963259673">搜尋區域嘅左下角：距左側 <ph name="LEFT" />%，距底部 <ph name="BOTTOM" />%</translation>
 <translation id="8748735421235723888">Chrome 會從閒置分頁釋出記憶體，為使用中的分頁和其他應用程式提供更多電腦資源，同時保持 Chrome 的運作速度。閒置分頁會在你使用時自動恢復為「使用中」狀態。<ph name="BEGIN_LINK" />進一步瞭解記憶體節省模式<ph name="END_LINK" /></translation>
@@ -802,7 +796,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome 建議你移除此擴充程式}other{Chrome 建議你移除這些擴充程式}}</translation>
 <translation id="8862326446509486874">您沒有在系統層級進行安裝的權限，請以管理員的身分執行安裝程式。</translation>
 <translation id="8865415417596392024">帳戶中的 Chrome 資料</translation>
-<translation id="8883862939660515976">問「Google 智能鏡頭」關於此圖片的問題</translation>
 <translation id="8914504000324227558">重新啟動 Chrome</translation>
 <translation id="8920304659326707347">使用 iOS 版 Chrome 繼續之前未完成的操作。</translation>
 <translation id="8922998289262614701">從 Chrome 移除此應用程式的資料</translation>

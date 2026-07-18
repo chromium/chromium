@@ -565,6 +565,7 @@
 <translation id="1855370856221982654">Бокс</translation>
 <translation id="1862788842908766795">Удирдах албан тушаалын болон менежментийн ажлын байрууд</translation>
 <translation id="1863257867908022953">Тавиур 12</translation>
+<translation id="1863374797460198869">Чатыг нуусан</translation>
 <translation id="186539747722034544">Кабель болон хиймэл дагуулын үйлчилгээ үзүүлэгчид</translation>
 <translation id="1870473978371099486">Хувийн багшийн үйлчилгээнүүд</translation>
 <translation id="1871208020102129563">Төлөөлөх сервер нь a .pac script URL биш харин тухайлан сонгосон төлөөлөх сервер ашиглах тохиргоотой байдаг.</translation>
@@ -1426,7 +1427,6 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome-н тохиргоонд ямар мэдээлэл синк хийхээ удирдахын тулд Tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="3203025201812691413">URL хоосон байх боломжгүй</translation>
 <translation id="320323717674993345">Төлбөрийг цуцлах</translation>
-<translation id="3204534477198689393">Зөвлөмжийг сайжруулж, маягтыг илүү хурдан бөглөхийн тулд таны зочилсон хуудаснуудын контент, URL-г үүлэн дэх хаалттай орон зайд боловсруулах боломжтой.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" />-д насанд хүрэгчдийн контент байж болзошгүй</translation>
 <translation id="3207960819495026254">Хавчуурга хадгалагдсан</translation>
 <translation id="3208701679386778924">Тайлан илгээснээр бид ChromeOS-н цаашдын шинэчлэлтийг сайжруулах боломжтой.</translation>
@@ -3053,6 +3053,7 @@
 <translation id="5715918316982363436">Энэ төхөөрөмж дээрх <ph name="WINDOW_COUNT" />-ны <ph name="TAB_COUNT" /></translation>
 <translation id="5716325061445053985">Утсан дээрээ тус табыг нээхийн тулд товшино уу</translation>
 <translation id="5717509257172454543">Уран гулгалт</translation>
+<translation id="5718326209176373202">Текстэн тэмдэглэгээ нэмэх</translation>
 <translation id="5718601519531438273">Паспорт, жолооны үнэмлэх зэрэг мэдээлэл багтана</translation>
 <translation id="5720705177508910913">Одоогийн хэрэглэгч</translation>
 <translation id="5720895412771013401">Суурин компьютерууд</translation>
@@ -4528,6 +4529,7 @@
 <translation id="7972714317346275248">RSA шифрлэлттэй PKCS # 1 SHA-384</translation>
 <translation id="7976053965094442846">Цагийн явцад төлөх боломжтой "Одоо ав, дараа төл" төлбөрийн хэрэгсэл гаргагчид. Гарыг нуусан.</translation>
 <translation id="7976214039405368314">Хэт олон хүсэлт</translation>
+<translation id="7977029776654598145">Ашиглахад</translation>
 <translation id="7977538094055660992">Гаралтын төхөөрөмж</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> минутын өмнө}=1{<ph name="TIME_COUNT" /> цагийн өмнө}other{<ph name="TIME_COUNT" /> хоногийн өмнө}}</translation>
 <translation id="7979595116210197019">Хоолны үйлчилгээ</translation>
@@ -4622,7 +4624,6 @@
 <translation id="8134058435519644366">Ажилд авах болон боловсон хүчин</translation>
 <translation id="8135546115396015134">зүүн суман товч</translation>
 <translation id="8137456439814903304">Эрчим хүч, эрчим хүч нийлүүлэгчид</translation>
-<translation id="8138591088112729119">Personal Intelligence-р дэмжсэн</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 сарын өмнө үүсгэсэн}other{{NUM_MONTHS} сарын өмнө үүсгэсэн}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, одоогийн өгөгдмөл. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF хувилбар:</translation>
@@ -4955,6 +4956,7 @@
 <translation id="8688672835843460752">Боломжтой</translation>
 <translation id="868922510921656628">Багц бүрийн хуудас</translation>
 <translation id="8694684557210599098">Тээврийн хэрэгсэл нэмэх</translation>
+<translation id="8696297579102085705">Төхөөрөмж рүүгээ илгээх</translation>
 <translation id="8698428283892912525">Chrome-д Google-н аюулгүй хөтөч зэрэг таныг үзэж байхад хамгаалах аюулгүй байдлын бүрэлдэхүүн онцлогууд байдаг бөгөөд эдгээр онцлог таны зочлохоор оролдсон сайт дээрээс саяхан <ph name="BEGIN_LINK" />аюултай программ хангамж олсон<ph name="END_LINK" />.</translation>
 <translation id="869891660844655955">Дуусах хугацаа</translation>
 <translation id="8699041776323235191">HID төхөөрөмж</translation>
@@ -5308,6 +5310,7 @@
 <translation id="949314938206378263">Та энэ сайтад зочлохыг хүссэн. Таны эцэг эх Family Link-д хариу бичих боломжтой.</translation>
 <translation id="950736567201356821">Баруун дээд буланд гурван нүх цоолох</translation>
 <translation id="950926967802086924">Нэвтрэх түлхүүр • Google Нууц үгний менежер</translation>
+<translation id="952165179818196872">Апп сэлгэхгүй төлбөр төлөхийн тулд <ph name="PROVIDER" />-г нэмнэ үү</translation>
 <translation id="955429569736351433">VR-г ашиглахыг зөвшөөрсөн</translation>
 <translation id="955627189349169688">Та <ph name="BEGIN_LINK" />Chrome Синкийн тохиргооноос<ph name="END_LINK" /> энэ бодлогоос татгалзаж болно.</translation>
 <translation id="95721182352849470">Шар 2</translation>

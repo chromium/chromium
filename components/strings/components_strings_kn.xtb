@@ -564,6 +564,7 @@
 <translation id="1855370856221982654">ಬಾಕ್ಸಿಂಗ್</translation>
 <translation id="1862788842908766795">ಕಾರ್ಯನಿರ್ವಾಹಕ ಮತ್ತು ನಿರ್ವಹಣೆ ಉದ್ಯೋಗಗಳು</translation>
 <translation id="1863257867908022953">ಟ್ರೇ 12</translation>
+<translation id="1863374797460198869">ಚಾಟ್ ಅನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="186539747722034544">ಕೇಬಲ್ ಮತ್ತು ಸ್ಯಾಟಲೈಟ್ ಪೂರೈಕೆದಾರರು</translation>
 <translation id="1870473978371099486">ಖಾಸಗಿ ಬೋಧನಾ ಸೇವೆಗಳು</translation>
 <translation id="1871208020102129563">.pac ಸ್ಕ್ರಿಪ್ಟ್ URL ಅಲ್ಲದೆ, ನಿಗಧಿತ ಪ್ರಾಕ್ಸಿ ಸರ್ವರ್‌ಗಳನ್ನು ಬಳಸಲು ಪ್ರಾಕ್ಸಿಯನ್ನು ಹೊಂದಿಸಲಾಗಿದೆ.</translation>
@@ -1424,7 +1425,6 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನೀವು ಯಾವ ಮಾಹಿತಿಯನ್ನು ಸಿಂಕ್ ಮಾಡುತ್ತೀರಿ ಎಂಬುದನ್ನು ನಿರ್ವಹಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
 <translation id="3203025201812691413">URL ಖಾಲಿ ಇರುವಂತಿಲ್ಲ</translation>
 <translation id="320323717674993345">ಪಾವತಿಯನ್ನು ರದ್ದುಮಾಡಿ</translation>
-<translation id="3204534477198689393">ಸಲಹೆಗಳನ್ನು ಸುಧಾರಿಸಲು ಮತ್ತು ಫಾರ್ಮ್‌ಗಳನ್ನು ವೇಗವಾಗಿ ಭರ್ತಿ ಮಾಡಲು, ನೀವು ಭೇಟಿ ನೀಡುವ ಪುಟಗಳ ಕಂಟೆಂಟ್ ಮತ್ತು URL ಗಳನ್ನು ಕ್ಲೌಡ್‌ನಲ್ಲಿನ ಪ್ರೈವೆಟ್ ಸ್ಪೇಸ್‌ನಲ್ಲಿ ಪ್ರಕ್ರಿಯೆಗೊಳಿಸಬಹುದು.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> ವಯಸ್ಕರರಿಗೆ ಸಂಬಂಧಿಸಿದ ಕಂಟೆಂಟ್ ಅನ್ನು ಹೊಂದಿರಬಹುದು</translation>
 <translation id="3207960819495026254">ಬುಕ್‌ಮಾರ್ಕ್‌ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="3208701679386778924">ವರದಿಯೊಂದನ್ನು ಕಳುಹಿಸಿ ಇದರಿಂದ ನಾವು ಮತ್ತಷ್ಟು ChromeOS ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಸುಧಾರಿಸಬಹುದು.</translation>
@@ -4527,6 +4527,7 @@
 <translation id="7972714317346275248">RSA ಎನ್‌ಕ್ರಿಪ್ಶನ್‌ನೊಂದಿಗೆ PKCS #1 SHA-384</translation>
 <translation id="7976053965094442846">ಕಾಲಾನಂತರದಲ್ಲಿ ಪಾವತಿಸಲು 'ಈಗ ಖರೀದಿಸಿ, ನಂತರ ಪಾವತಿಸಿ' ವಿತರಕರ ಪಟ್ಟಿ ಲಭ್ಯವಿದೆ. ಕೀಬೋರ್ಡ್ ಅನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="7976214039405368314">ಅತೀ ಹೆಚ್ಚು ವಿನಂತಿಗಳು</translation>
+<translation id="7977029776654598145">ಬಳಸಿದಾಗ</translation>
 <translation id="7977538094055660992">ಔಟ್‌ಪುಟ್ ಸಾಧನ</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" />ನಿಮಿಷದ ಹಿಂದೆ}=1{<ph name="TIME_COUNT" />ಗಂಟೆಯ ಹಿಂದೆ}one{<ph name="TIME_COUNT" />ದಿನದ ಹಿಂದೆ}other{<ph name="TIME_COUNT" />ದಿನದ ಹಿಂದೆ}}</translation>
 <translation id="7979595116210197019">ಆಹಾರ ಸೇವೆ</translation>
@@ -4621,7 +4622,6 @@
 <translation id="8134058435519644366">ನೇಮಕಾತಿ ಮತ್ತು ಸಿಬ್ಬಂದಿ ವ್ಯವಸ್ಥೆ</translation>
 <translation id="8135546115396015134">ಎಡ ಕೀ</translation>
 <translation id="8137456439814903304">ಇಂಧನ ಮತ್ತು ಯುಟಿಲಿಟಿಗಳು</translation>
-<translation id="8138591088112729119">ಪರ್ಸನಲ್ ಇಂಟೆಲಿಜೆನ್ಸ್‌ನಿಂದ ಚಾಲಿತವಾಗಿದೆ</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 ತಿಂಗಳ ಹಿಂದೆ ರಚಿಸಲಾಗಿದೆ}one{{NUM_MONTHS} ತಿಂಗಳುಗಳ ಹಿಂದೆ}other{{NUM_MONTHS} ತಿಂಗಳುಗಳ ಹಿಂದೆ}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, ಪ್ರಸ್ತುತ ಡೀಫಾಲ್ಟ್. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF ಆವೃತ್ತಿ:</translation>
@@ -4955,6 +4955,7 @@
 <translation id="8688672835843460752">ಲಭ್ಯವಿದೆ</translation>
 <translation id="868922510921656628">ಪ್ರತಿ ಸೆಟ್‌ಗೆ ಪುಟಗಳು</translation>
 <translation id="8694684557210599098">ವಾಹನ ಮಾಹಿತಿಯನ್ನು ಸೇರಿಸಿ</translation>
+<translation id="8696297579102085705">ನಿಮ್ಮ ಸಾಧನಕ್ಕೆ ಕಳುಹಿಸಿ</translation>
 <translation id="8698428283892912525">ನೀವು ಬ್ರೌಸ್‌ ಮಾಡುವಾಗ ನಿಮ್ಮನ್ನು ರಕ್ಷಿಸಲು Chrome ಬಿಲ್ಟ್-ಇನ್‌ ಸುರಕ್ಷತೆಯ ಫೀಚರ್‌ಗಳನ್ನು ಹೊಂದಿದೆ — Google Safe Browsing ನಂತಹ, ನೀವು ಭೇಟಿ ನೀಡಲು ಪ್ರಯತ್ನಿಸಿದ ಸೈಟ್‌ನಲ್ಲಿ ಇತ್ತೀಚೆಗೆ <ph name="BEGIN_LINK" />ಹಾನಿಕಾರಕ ಸಾಫ್ಟ್‌ವೇರ್‌ ಕಂಡುಬಂದಿದೆ<ph name="END_LINK" />.</translation>
 <translation id="869891660844655955">ಅವಧಿ ಮುಗಿಯುವ ದಿನಾಂಕ</translation>
 <translation id="8699041776323235191">HID ಸಾಧನ</translation>

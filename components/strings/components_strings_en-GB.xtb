@@ -565,6 +565,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1855370856221982654">Boxing</translation>
 <translation id="1862788842908766795">Executive and Management Jobs</translation>
 <translation id="1863257867908022953">Tray 12</translation>
+<translation id="1863374797460198869">Chat hidden</translation>
 <translation id="186539747722034544">Cable and Satellite Providers</translation>
 <translation id="1870473978371099486">Private Tutoring Services</translation>
 <translation id="1871208020102129563">Proxy is set to use fixed proxy servers, not a .pac script URL.</translation>
@@ -1426,7 +1427,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab then Enter to manage what info you sync in Chrome settings</translation>
 <translation id="3203025201812691413">URL can't be empty</translation>
 <translation id="320323717674993345">Cancel payment</translation>
-<translation id="3204534477198689393">To improve suggestions and fill forms faster, the content and URLs of the pages that you visit can be processed in a private space in the cloud.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> may have mature content</translation>
 <translation id="3207960819495026254">Bookmarked</translation>
 <translation id="3208701679386778924">Please send a report so that we can improve further ChromeOS updates.</translation>
@@ -4530,6 +4530,7 @@ Additional details:
 <translation id="7972714317346275248">PKCS #1 SHA-384 With RSA Encryption</translation>
 <translation id="7976053965094442846">Buy-now, pay-later issuers available for pay over time. Keyboard hidden.</translation>
 <translation id="7976214039405368314">Too many requests</translation>
+<translation id="7977029776654598145">When used</translation>
 <translation id="7977538094055660992">Output device</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" />m ago}=1{<ph name="TIME_COUNT" />h ago}other{<ph name="TIME_COUNT" />d ago}}</translation>
 <translation id="7979595116210197019">Food Service</translation>
@@ -4624,7 +4625,6 @@ Additional details:
 <translation id="8134058435519644366">Recruitment and Staffing</translation>
 <translation id="8135546115396015134">left key</translation>
 <translation id="8137456439814903304">Energy and utilities</translation>
-<translation id="8138591088112729119">Powered by Personal Intelligence</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Created 1 month ago}other{Created {NUM_MONTHS} months ago}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, current default. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF version:</translation>
@@ -4957,6 +4957,7 @@ Additional details:
 <translation id="8688672835843460752">Available</translation>
 <translation id="868922510921656628">Pages per set</translation>
 <translation id="8694684557210599098">Add vehicle</translation>
+<translation id="8696297579102085705">Send to your device</translation>
 <translation id="8698428283892912525">Chrome has built-in safety features to protect you while you browse – like Google Safe Browsing, which recently <ph name="BEGIN_LINK" />found harmful software<ph name="END_LINK" /> on the site that you tried visiting.</translation>
 <translation id="869891660844655955">Expiry date</translation>
 <translation id="8699041776323235191">HID device</translation>

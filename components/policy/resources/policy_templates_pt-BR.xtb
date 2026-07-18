@@ -2030,12 +2030,6 @@ Se a política for definida como desativada ou não for definida, o usuário pod
       Os usuários não poderão mudar ou substituir essa configuração.
 
       Observação: essa política faz com que o cabeçalho X-GoogApps-Allowed-Domains seja anexado a todas as solicitações HTTP e HTTPS de todos os domínios google.com, como descrito em https://support.google.com/a/answer/1668854.</translation>
-<translation id="2287414160388710497">Permite que os administradores personalizem a aparência das marcas-d'água aplicadas pelas regras de Prevenção Contra Perda de Dados (DLP). Isso inclui definir a opacidade do preenchimento e contorno e o tamanho da fonte.
-Se a política ou alguns valores não forem definidos, o Chrome vai usar o comportamento padrão de marca-d'água: opacidade do preenchimento em 4, opacidade do contorno em 6 e tamanho da fonte em 24.
-
-A opacidade do preenchimento é uma porcentagem de 0 (totalmente transparente) a 100 (totalmente opaco).
-A opacidade do contorno é uma porcentagem de 0 (totalmente transparente) a 100 (totalmente opaco).
-O tamanho da fonte é especificado em pontos.</translation>
 <translation id="2288506601233091655">Não permitir a exclusão do histórico de trabalhos de impressão</translation>
 <translation id="2289688405312849186">Principal "user@realm" do usuário. O marcador <ph name="LOGIN_ID_PLACEHOLDER" /> é substituído pelo nome de usuário "user". O marcador <ph name="LOGIN_EMAIL_PLACEHOLDER" /> é substituído pelo principal completo "user@realm".</translation>
 <translation id="2290270645214705008">Se esta política for definida como "Desativada", o serviço de host de acesso remoto não poderá ser iniciado nem configurado para aceitar conexões de entrada.  Esta política não afeta situações de suporte remoto.
@@ -2322,15 +2316,6 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
 <translation id="2479760962196319822">Esta política controla se os usuários do <ph name="PRODUCT_OS_NAME" /> podem armazenar dados localmente.
       Se a política for definida como falsa, o armazenamento local no <ph name="PRODUCT_OS_NAME" /> será bloqueado. Os usuários não poderão armazenar dados localmente nem acessar diretórios locais.
       Se a política for definida como verdadeira ou deixada sem definição, o armazenamento local será permitido no <ph name="PRODUCT_OS_NAME" />. Não há restrições sobre onde os usuários podem armazenar dados ou quais diretórios eles podem acessar.</translation>
-<translation id="2480971699591919564">Ativar o recurso "Clique para ligar", que permite que os usuários enviem números de telefone de computadores com Chrome para um dispositivo Android quando o usuário está conectado. Para mais informações, acesse o artigo de Central de Ajuda: https://support.google.com/chrome/answer/9430554?hl=pt-BR.
-
-      Se esta política estiver ativada, a capacidade de enviar números de telefone para dispositivos Android estará ativada para o usuário do Chrome.
-
-      Se esta política estiver desativada, a capacidade de enviar números de telefone para dispositivos Android não estará ativada para o usuário do Chrome.
-
-      Se você definir esta política, o usuário não poderá mudá-la ou substituí-la.
-
-      Se esta política não for definida, o recurso "Clique para ligar" ficará ativado por padrão.</translation>
 <translation id="2482676533225429905">Mensagens nativas</translation>
 <translation id="2483146640187052324">Prever ações da rede em qualquer conexão de rede</translation>
 <translation id="2487495476672607707">A sincronização de arquivos do <ph name="PRODUCT_OS_NAME" /> disponibiliza automaticamente

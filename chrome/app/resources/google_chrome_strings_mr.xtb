@@ -240,7 +240,6 @@
 <translation id="3282568296779691940">Chrome वर साइन इन करा</translation>
 <translation id="3286538390144397061">त्वरित रीस्टार्ट करा</translation>
 <translation id="3292333338048274092">तुम्हाला त्यानंतर Chrome रीस्टार्ट करावे लागले.</translation>
-<translation id="3324218984287646518">Google Lens ला या व्हिडिओबद्दल विचारा</translation>
 <translation id="3327226547491422998">नंतर, तुमच्यासाठी फॉर्म ऑटोफिल करण्यासाठी तुम्हाला सेव्ह केलेली माहिती वापरायची आहे का हे Chrome विचारू शकते</translation>
 <translation id="3352986031709923790">शोध क्षेत्राचा सर्वात वरचा उजवा कोपरा: उजवीकडे <ph name="RIGHT" />%, सर्वात वरती <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome मदतनीस</translation>
@@ -261,8 +260,6 @@
 <translation id="3576528680708590453">तुमच्या सिस्टीम अ‍ॅडमिनिस्ट्रेटरने <ph name="TARGET_URL_HOSTNAME" /> ॲक्‍सेस करण्याकरिता पर्यायी ब्राउझर उघडण्यासाठी Google Chrome कॉन्फिगर केले आहे.</translation>
 <translation id="3582972582564653026">तुमच्या डिव्हाइसवर Chrome सिंक आणि पर्सनलाइझ करा</translation>
 <translation id="3583751698304738917">तुम्ही दुसऱ्या Chrome प्रोफाइलमध्ये आधीच <ph name="USER_EMAIL_ADDRESS" /> म्हणून साइन इन केले आहे</translation>
-<translation id="358381413217813387">Google Lens वापरून हे पेज शोधा</translation>
-<translation id="3589519427766620380">या पेजविषयी Google Lens ला विचारा</translation>
 <translation id="3595784445906693824">नवीन प्रोफाइलमध्ये Chrome मध्ये साइन इन करायचे आहे का?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{अपडेट लागू करता यावे यासाठी तुम्ही Chrome पुन्हा लाँच करण्याची तुमच्या ॲडमिनिस्ट्रेटरला गरज आहे}=1{अपडेट लागू करता यावे यासाठी तुम्ही Chrome पुन्हा लाँच करण्याची तुमच्या ॲडमिनिस्ट्रेटरला गरज आहे. तुमची गुप्त विंडो पुन्हा उघडणार नाही.}other{अपडेट लागू करता यावे यासाठी तुम्ही Chrome पुन्हा लाँच करण्याची तुमच्या ॲडमिनिस्ट्रेटरला गरज आहे. तुमच्या # गुप्त विंडो पुन्हा उघडणार नाहीत.}}</translation>
 <translation id="3597003331831379823">वाढीव विशेषाधिकारांसह सेटअप रन करता आला नाही. <ph name="METAINSTALLER_ERROR" /></translation>
@@ -357,7 +354,6 @@
 <translation id="4501471624619070934">या देशामध्ये अ‍ॅक्सेस प्रतिबंधित असल्यामुळे इंस्टॉलेशन अयशस्वी झाले.</translation>
 <translation id="4571503333518166079">Chrome सूचना सेटिंग्जवर जा</translation>
 <translation id="4580939929828762295">Google Password Manager वापरून सुरक्षित राहा</translation>
-<translation id="4592634244097223647">Google ला इमेजविषयी माहिती विचारा</translation>
 <translation id="459622048091363950">एकदा का Chrome ला ॲक्सेस मिळाला की, वेबसाइट तुम्हाला ॲक्सेससाठी विचारतील.</translation>
 <translation id="4598116752460667024">सूचीमधील कोणतीही प्रक्रिया शोधा.</translation>
 <translation id="4600710005438004015">Chrome नवीनतम आवृत्तीवर अपडेट होऊ शकले नाही, त्यामुळे तुम्ही नवीन वैशिष्ट्ये आणि सुरक्षितता निराकरणे गमावत आहात.</translation>
@@ -660,7 +656,6 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="7572537927358445944">बंद आहे • हे एक्स्टेंशन कुठून आले त्याची Chrome ला पडताळणी करता आली नाही</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> इंस्टॉलर</translation>
 <translation id="7596160425942761210">तुम्ही मेसेज, दस्तऐवज आणि इतर अ‍ॅप्स यांमधील लिंकवर कधीही क्लिक कराल, तेव्हा Chrome वापरू शकता</translation>
-<translation id="7602868996817972616">Google ला या पेजबद्दल विचारा</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7627609214560473136">तुमचा डेटाचे संरक्षण करण्यासाठी, तुम्ही अलीकडील भेट न दिलेल्या साइटवरील परवानग्या Chrome ला काढून टाकू द्या.</translation>
 <translation id="7629695634924605473">तुमचे पासवर्ड कधीही धोक्यात असल्यास, Chrome तुम्हाला कळवते</translation>
@@ -786,7 +781,6 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="8712637175834984815">समजले</translation>
 <translation id="8712767363896337380">जवळजवळ अप टू डेट! अपडेट करणे पूर्ण करण्यासाठी, Chrome पुन्हा लाँच करा.</translation>
 <translation id="8718062187489036808">Chrome मधून साइन आउट करा</translation>
-<translation id="8725440680697264016">Google ला या व्हिडिओबद्दल विचारा</translation>
 <translation id="873133009373065397">Google Chrome डीफॉल्ट ब्राउझर निर्धारित करू शकत नाही किंवा सेट करू शकत नाही</translation>
 <translation id="8747073452963259673">शोध क्षेत्राच्या तळाशी डावा कोपरा: डावीकडे <ph name="LEFT" />%, तळाशी <ph name="BOTTOM" />%</translation>
 <translation id="8748735421235723888">Chrome इनॅक्टिव्ह टॅबमधील मेमरी मोकळी करते. हे अ‍ॅक्टिव्ह टॅब आणि इतर अ‍ॅप्सना आणखी काँप्युटर स्रोत देते आणि Chrome ला जलद ठेवते. तुम्ही तुमच्या इनॅक्टिव्ह टॅबवर परत गेल्यावर ते पुन्हा आपोआप अ‍ॅक्टिव्ह होतात. <ph name="BEGIN_LINK" />मेमरी सेव्हर बद्दल अधिक जाणून घ्या<ph name="END_LINK" /></translation>
@@ -802,7 +796,6 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{तुम्ही ते काढून टाकावे अशी Chrome शिफारस करते}other{तुम्ही ती काढून टाकावीत अशी Chrome शिफारस करते}}</translation>
 <translation id="8862326446509486874">तुमच्याकडे सिस्टीम स्तरावरील इंस्टॉलसाठी योग्य अधिकार नाहीत. अ‍ॅडमिनिस्ट्रेटर म्हणून पुन्हा इंस्टॉलर चालवण्याचा प्रयत्न करा.</translation>
 <translation id="8865415417596392024">तुमच्या खात्यामधील Chrome डेटा</translation>
-<translation id="8883862939660515976">Google Lens ला इमेजविषयी माहिती विचारा</translation>
 <translation id="8914504000324227558">Chrome रीलाँच करा</translation>
 <translation id="8920304659326707347">iOS वर Chrome वापरून तुम्ही जिथे सोडले होते तिथून सुरू करा.</translation>
 <translation id="8922998289262614701">Chrome वरून या ॲपचा डेटा काढून टाका</translation>

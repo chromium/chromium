@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ٹیب کو گروپ سے ہٹا دیں}other{ٹیبز کو گروپ سے ہٹا دیں}}</translation>
 <translation id="2271452184061378400">آپ کے ٹیب گروپس یہاں محفوظ کیے جاتے ہیں</translation>
 <translation id="2277224997687551299">گروپ کے نام میں ترمیم کریں</translation>
+<translation id="2289567621059034186">نیچے نیا ٹیب</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{ٹیب کو بُک مارک کریں}other{ٹیبز کو بُک مارک کریں}}</translation>
 <translation id="2359808026110333948">جاری رکھیں</translation>
 <translation id="2371084566192454134">ٹیبز اور ٹیب گروپس</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">ٹیبز کو افقی طور پر دکھائیں</translation>
 <translation id="31806439105337256">ٹیبز کو عمودی طور پر دکھائیں</translation>
 <translation id="3194464645767632461">درجہ بندی</translation>
+<translation id="3228962656492373217">نیچے کے ٹیبز بند کریں</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{‫<ph name="TABS_COUNT_ONE" /> ٹیب کو گروپ میں شامل کریں}other{‫<ph name="TABS_COUNT_MANY" /> ٹیبز کو گروپ میں شامل کریں}}</translation>
 <translation id="3328308545011660196">تجویز: <ph name="NUMBER_OF_TABS" /> ٹیبز متعلقہ معلوم ہوتے ہیں۔ ان کی گروپ بندی کریں؟</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{‫1 دن غیر فعال ہونے کے بعد}other{‫<ph name="DAY_COUNT_MANY" /> دن غیر فعال ہونے کے بعد}}</translation>

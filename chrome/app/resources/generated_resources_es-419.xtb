@@ -1177,7 +1177,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1910721550319506122">¡Te damos la bienvenida!</translation>
 <translation id="1910736334623230603">No se pueden buscar varias imágenes. Agrega una imagen a la vez.</translation>
 <translation id="1910908536872421421">La versión <ph name="BROWSER_VERSION" /> de Chrome para Pruebas es solo para pruebas automatizadas. Para navegar de manera habitual, usa una versión estándar de Chrome que se actualice de forma automática.</translation>
-<translation id="1912867150686509584">Ver más reuniones en tu Calendario</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Pausar la pestaña que ralentiza tu navegador}other{Pausar las pestañas que ralentizan tu navegador}}</translation>
 <translation id="1913749768968678106">Transmitir, guardar y compartir</translation>
 <translation id="19147273405311768">Restablecer la barra de herramientas a la configuración predeterminada</translation>
@@ -4259,6 +4258,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4274673989874969668">Después de que sales de los sitios, por lo general se siguen sincronizando para completar tareas, como la de subir fotos o enviar un mensaje de chat.</translation>
 <translation id="4275291496240508082">Sonido de inicio</translation>
 <translation id="4275397969489577657">Habilitar el acceso para la transmisión de eventos</translation>
+<translation id="4275663329226226506">Multimedia</translation>
 <translation id="4275788652681621337">Cerrar el panel lateral</translation>
 <translation id="4275830172053184480">Reiniciar tu dispositivo</translation>
 <translation id="4276390967705106170">Abrir en una pestaña nueva del navegador</translation>
@@ -9910,7 +9910,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8693862390730570097">No permitir que se abra automáticamente “Ayúdame a escribir”</translation>
 <translation id="8694596275649352090">Bloquear al cerrar la tapa o en el modo de suspensión</translation>
 <translation id="8695825812785969222">Abrir &amp;ubicación...</translation>
-<translation id="8696297579102085705">Enviar al dispositivo</translation>
 <translation id="869884720829132584">Menú Aplicaciones</translation>
 <translation id="869891660844655955">Fecha de vencimiento</translation>
 <translation id="8699296325072357994">El contenido de las páginas de contraseñas y la información relacionada se envían a Google y los revisan personas. Tu contraseña está encriptada y nadie puede verla. <ph name="PASSWORD_CHANGE" /></translation>

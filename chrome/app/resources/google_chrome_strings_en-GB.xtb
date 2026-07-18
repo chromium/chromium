@@ -241,7 +241,6 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="3282568296779691940">Sign in to Chrome</translation>
 <translation id="3286538390144397061">Restart Now</translation>
 <translation id="3292333338048274092">You'll then need to restart Chrome.</translation>
-<translation id="3324218984287646518">Ask Google Lens about this video</translation>
 <translation id="3327226547491422998">Later, Chrome can ask if you want to use saved info to autofill forms for you</translation>
 <translation id="3352986031709923790">top-right corner of search area: right <ph name="RIGHT" />%, top <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
@@ -262,8 +261,6 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="3576528680708590453">Your system administrator has configured Google Chrome to open an alternative browser to access <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Sync and personalise Chrome across your devices</translation>
 <translation id="3583751698304738917">You're already signed in as <ph name="USER_EMAIL_ADDRESS" /> in another Chrome profile</translation>
-<translation id="358381413217813387">Search this page with Google Lens</translation>
-<translation id="3589519427766620380">Ask Google Lens about this page</translation>
 <translation id="3595784445906693824">Sign in to Chrome in a new profile?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Your administrator requires that you relaunch Chrome to apply an update}=1{Your administrator requires that you relaunch Chrome to apply an update. Your Incognito window won't reopen.}other{Your administrator requires that you relaunch Chrome to apply an update. Your # Incognito windows won't reopen.}}</translation>
 <translation id="3597003331831379823">Failed to run setup with elevated privileges. <ph name="METAINSTALLER_ERROR" /></translation>
@@ -358,7 +355,6 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="4501471624619070934">Installation failed because access is restricted in this country.</translation>
 <translation id="4571503333518166079">Go to Chrome notification settings</translation>
 <translation id="4580939929828762295">Stay safe with Google Password Manager</translation>
-<translation id="4592634244097223647">Ask Google about this image</translation>
 <translation id="459622048091363950">Once Chrome has access, websites will be able to ask you for access.</translation>
 <translation id="4598116752460667024">Search for any process from the list.</translation>
 <translation id="4600710005438004015">Chrome couldn't update to the latest version, so you're missing out on new features and security fixes.</translation>
@@ -662,7 +658,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7572537927358445944">Off • Chrome can't verify where this extension comes from</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> installer</translation>
 <translation id="7596160425942761210">You can use Chrome at any time that you click links in messages, documents and other apps</translation>
-<translation id="7602868996817972616">Ask Google about this page</translation>
 <translation id="7606334485649076285">Google Chrome OS Flex</translation>
 <translation id="7627609214560473136">To protect your data, let Chrome remove permissions from sites that you haven't visited recently.</translation>
 <translation id="7629695634924605473">Chrome lets you know if your passwords are ever compromised</translation>
@@ -787,7 +782,6 @@ New bookmarks can't be saved in your account until you delete some. If you sign 
 <translation id="8712637175834984815">Got it</translation>
 <translation id="8712767363896337380">Nearly up to date! Relaunch Chrome to finish updating.</translation>
 <translation id="8718062187489036808">Sign out of Chrome</translation>
-<translation id="8725440680697264016">Ask Google about this video</translation>
 <translation id="873133009373065397">Google Chrome cannot determine or set the default browser</translation>
 <translation id="8747073452963259673">bottom-left corner of search area: left <ph name="LEFT" />%, bottom <ph name="BOTTOM" />%</translation>
 <translation id="8748735421235723888">Chrome frees up memory from inactive tabs. This gives active tabs and other apps more computer resources and keeps Chrome fast. Your inactive tabs automatically become active again when you go back to them. <ph name="BEGIN_LINK" />Learn more about Memory Saver<ph name="END_LINK" /></translation>
@@ -803,7 +797,6 @@ New bookmarks can't be saved in your account until you delete some. If you sign 
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome recommends that you remove it}other{Chrome recommends that you remove them}}</translation>
 <translation id="8862326446509486874">You do not have appropriate rights for system-level installation. Try running the installer again as Administrator.</translation>
 <translation id="8865415417596392024">Chrome data in your account</translation>
-<translation id="8883862939660515976">Ask Google Lens about this image</translation>
 <translation id="8914504000324227558">Relaunch Chrome</translation>
 <translation id="8920304659326707347">Pick up right where you left off with Chrome on iOS.</translation>
 <translation id="8922998289262614701">Remove this app's data from Chrome</translation>

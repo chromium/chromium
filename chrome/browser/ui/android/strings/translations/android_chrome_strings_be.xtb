@@ -147,6 +147,7 @@
 <translation id="1571041387761170095">Няма слабых або ўжытых раней пароляў</translation>
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{На прыладзе знойдзены 1 раскрыты пароль}one{На прыладзе знойдзены # раскрыты пароль}few{На прыладзе знойдзены # раскрытыя паролі}many{На прыладзе знойдзены # раскрытых пароляў}other{На прыладзе знойдзены # раскрытага пароля}}</translation>
 <translation id="1594635596540195766">У размешчаным ніжэй спісе наступная колькасць прапанаваных элементаў: <ph name="SUGGESTIONS_COUNT" />.</translation>
+<translation id="159689249463841786">Выберыце папку (цяпер выбрана папка "<ph name="FOLDER_NAME" />")</translation>
 <translation id="1598163867407640634">Выкарыстоўвайце вэб-сайт <ph name="SITE_ETLD_PLUS_ONE" /> праз сэрвіс "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />"</translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />, замацаваная ўкладка, на якой ідзе запіс</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, укладка, змесціва якой абагульваецца</translation>
@@ -277,6 +278,7 @@
 <translation id="2190355936436201913">(пуста)</translation>
 <translation id="219283042927675668">Укладкі ў групе</translation>
 <translation id="2194856509914051091">Інфармацыя для разгляду</translation>
+<translation id="2196695604589508993">Адкрыць гісторыю</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, замацаваная ўкладка, змесціва якой абагульваецца</translation>
 <translation id="22091350895006575">Дадаць імя карыстальніка</translation>
 <translation id="221494669172414749">Калі адкрыць Chrome без блакіроўкі профілю, паролі і спосабы аплаты, захаваныя для гэтага аўтамабіля, будуць выдалены. Блакіроўка профілю дазваляе абараніць гэты даныя.</translation>
@@ -1821,6 +1823,7 @@
 <translation id="8317318757008452355">Адкрыць параметры друку</translation>
 <translation id="8320212361750431956">Нядаўнія дзеянні</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Навінка<ph name="END_NEW" /></translation>
+<translation id="8333026248928723981">Закладкі і спісы</translation>
 <translation id="8342727528718219152">Chrome паведаміць вам пра сайты, якія могуць адпраўляць зашмат апавяшчэнняў</translation>
 <translation id="834313815369870491">Ніколі не перакладаць наступныя сайты:</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />, замацаваная ўкладка ў рэжыме інкогніта, на якой ідзе запіс, выбраная разам з іншымі ўкладкамі</translation>
@@ -2062,6 +2065,7 @@
 <translation id="939598580284253335">Увядзіце фразу-пароль</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, замацаваная ўкладка "Відарыс у відарысе" ў рэжыме інкогніта</translation>
 <translation id="945522503751344254">Адправіць водгук</translation>
+<translation id="948276827484905248">Стварыць QR-код</translation>
 <translation id="95817756606698420">Для пошуку ў Кітаі Chrome можа выкарыстоўваць <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />. Гэта можна змяніць у <ph name="BEGIN_LINK" />Наладах<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Выдаліць даныя пра работу ў браўзеры</translation>
 <translation id="963246339335003378">Адкрыць менеджар заданняў</translation>

@@ -55,7 +55,6 @@
 <translation id="1623563412065267963">Få det bedste fra Google med Chromium-appen på din telefon</translation>
 <translation id="1625909126243026060">Gennemgå vigtige privatlivs- og sikkerhedsindstillinger i Chromium</translation>
 <translation id="1640672724030957280">Downloader...</translation>
-<translation id="1680687534629375545">Stil Billedsøgning spørgsmål om denne side</translation>
 <translation id="1708414395296835197">Du kan bruge Chromium, hver gang du klikker på links i beskeder, dokumenter og andre apps. Den fastgøres også til proceslinjen.</translation>
 <translation id="1709772298389099340">Giver udvidede adgangsrettigheder til <ph name="BROWSER_NAME" />.</translation>
 <translation id="1722488837206509557">Dette giver dig mulighed for at vælge mellem tilgængelige enheder og vise indhold på dem.</translation>
@@ -79,7 +78,6 @@
 <translation id="1880677175115548835">Vælg tekst</translation>
 <translation id="1881322772814446296">Du er ved at logge ind med en managerstyret konto og give dens administrator kontrol over din profil i Chromium. Dine Chromium-data, f.eks. dine apps, bogmærker, historikdata, adgangskoder og andre indstillinger, knyttes permanent til <ph name="USER_NAME" />. Du kan slette disse data via kontrolpanelet for Google Konti, men du kan ikke knytte disse data til en anden konto. Du kan eventuelt oprette en ny profil for at holde dine Chromium-data adskilt. <ph name="LEARN_MORE" /></translation>
 <translation id="1896836275755235458">Chromium sparer på batteriet ved at begrænse aktivitet i baggrunden og visuelle effekter, f.eks. smooth scrolling og videobilledfrekvenser. <ph name="BEGIN_LINK" />Få flere oplysninger om Energisparefunktion<ph name="END_LINK" /></translation>
-<translation id="1898804291554630487">Stil spørgsmål om denne side</translation>
 <translation id="1900969832270057921">Chromium Updater Service</translation>
 <translation id="1911763535808217981">Når du deaktiverer denne indstilling, kan du logge ind på Google-websites som f.eks. Gmail uden at logge ind i Chromium</translation>
 <translation id="1929939181775079593">Chromium svarer ikke. Vil du genstarte nu?</translation>
@@ -225,7 +223,6 @@
 <translation id="3316771292331273802">Du logges ud af de fleste websites, når du lukker alle Chromium-vinduer, med undtagelse af din Google-konto, hvis du er logget ind i Chromium. <ph name="SETTINGS_LINK" /> for at give websites tilladelse til at huske dig.</translation>
 <translation id="3352986031709923790">øverste højre hjørne af søgeområdet: højre <ph name="RIGHT" /> %, øverste <ph name="TOP" /> %</translation>
 <translation id="3366305173356742781">Chromium-data på din konto</translation>
-<translation id="3369405342922656244">Søg på denne side med Billedsøgning</translation>
 <translation id="3375770072980084583">Brug dine adgangskoder med Chromium på din telefon</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Vil du skifte til den eksisterende Chromium-profil?</translation>
@@ -372,7 +369,6 @@
 <translation id="5231355151045086930">Log ud af Chromium</translation>
 <translation id="5234764350956374838">Luk</translation>
 <translation id="5249261924633168472">Åbn linket i et inkognitovindue i Chromium</translation>
-<translation id="5254739261293693943">Stil spørgsmål om denne video</translation>
 <translation id="5276305953263010518">Hent Chromium-appen for at gemme adgangskoder på farten</translation>
 <translation id="5277894862589591112">Åbn Chromium igen for at anvende ændringerne</translation>
 <translation id="5286907366254680517">Registreret</translation>
@@ -467,7 +463,6 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="6183079672144801177">Sørg for, at du er logget ind på Chromium på din <ph name="TARGET_DEVICE_NAME" />, og prøv derefter at sende igen.</translation>
 <translation id="6212496753309875659">Computeren har allerede en nyere version af Chromium. Hvis softwaren ikke virker, skal du afinstallere Chromium og prøve igen.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium genstarter nu}=1{Chromium genstarter om 1 sekund}one{Chromium genstarter om # sekund}other{Chromium genstarter om # sekunder}}</translation>
-<translation id="6239161312595354541">Stil Billedsøgning spørgsmål om denne video</translation>
 <translation id="6241367896540709610">Chromium skal have adgangstilladelse til lagerplads for at downloade filer</translation>
 <translation id="6245734527075554892">Webadresser tjekkes i forhold til en liste over usikre websites, der er gemt i Chromium</translation>
 <translation id="6248213926982192922">Gør Chromium til din standardbrowser</translation>
@@ -558,7 +553,6 @@ Visse funktioner kan være utilgængelige. Angiv en anden profilmappe, eller bru
             • Nulstiller Chromium-genveje
             <ph name="LINE_BREAKS" />
             Bogmærker, historik og gemte adgangskoder påvirkes ikke.</translation>
-<translation id="6934579572334859869">Stil Billedsøgning spørgsmål om dette billede</translation>
 <translation id="6948031725951063910">Du har nået Chromiums grænse på <ph name="BOOKMARK_LIMIT" /> bogmærker, så nogle af dine bogmærker er endnu ikke gemt på din Google-konto.
 
 Nye bogmærker kan ikke gemmes på din konto, før du sletter nogle. Hvis du logger ud nu, slettes bogmærker, der ikke er gemt.</translation>
@@ -649,7 +643,6 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="7872446069773932638">Downloader… Der er <ph name="SECONDS" /> sekunder tilbage</translation>
 <translation id="7873537467422636035">Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />slette Chromium-dataene på din konto<ph name="END_LINK" /></translation>
 <translation id="7874369989024033742">Åbn hurtigt Gemini i Chromium, når du har brug for det</translation>
-<translation id="7877212753140190672">Stil spørgsmål om dette billede</translation>
 <translation id="7888981273428720788">Angiv Chromium som standardbrowser</translation>
 <translation id="7934340546140346950">Chromium opgraderer automatisk usikre forbindelser til HTTPS, når det er muligt</translation>
 <translation id="7937630085815544518">Du loggede ind på Chromium som <ph name="USER_EMAIL_ADDRESS" />. Brug den samme konto til at logge ind igen.</translation>

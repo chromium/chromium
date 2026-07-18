@@ -241,7 +241,6 @@
 <translation id="3282568296779691940">Chrome માં સાઇન ઇન કરો</translation>
 <translation id="3286538390144397061">હવે ફરીથી પ્રારંભ કરો</translation>
 <translation id="3292333338048274092">ત્યાર પછી તમારે Chrome ફરી શરૂ કરવું જરૂરી છે.</translation>
-<translation id="3324218984287646518">આ વીડિયો વિશે Google Lensને પૂછો</translation>
 <translation id="3327226547491422998">પછીથી, તમે તમારા માટે ફોર્મ ઑટોમૅટિક રીતે ભરવાની સુવિધા માટે સચવાયેલી માહિતીનો ઉપયોગ કરવા માગો છો કે કેમ તે વિશે Chrome તમને પૂછી શકે છે</translation>
 <translation id="3352986031709923790">શોધ વિસ્તારના સૌથી ઉપર જમણા ખૂણે: જમણી બાજુ <ph name="RIGHT" />%, સૌથી ઉપર <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome સહાયક</translation>
@@ -262,8 +261,6 @@
 <translation id="3576528680708590453">તમારા સિસ્ટમ વ્યવસ્થાપકે <ph name="TARGET_URL_HOSTNAME" />ને ઍક્સેસ કરવા Google Chromeને વૈકલ્પિક બ્રાઉઝર ખોલવા માટે ગોઠવેલું છે.</translation>
 <translation id="3582972582564653026">તમારા બધા ડિવાઇસ પર Chromeને સિંક કરો અને મનગમતું બનાવો</translation>
 <translation id="3583751698304738917">તમે પહેલેથી Chromeની અન્ય પ્રોફાઇલમાં <ph name="USER_EMAIL_ADDRESS" /> તરીકે સાઇન ઇન થયા છો</translation>
-<translation id="358381413217813387">Google Lens વડે આ પેજ શોધો</translation>
-<translation id="3589519427766620380">આ પેજ વિશે Google Lensને પૂછો</translation>
 <translation id="3595784445906693824">નવી પ્રોફાઇલમાં Chromeમાં સાઇન ઇન કરીએ?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{અપડેટ લાગુ કરવા માટે તમે Chromeને ફરીથી લૉન્ચ કરો એવું તમારા વ્યવસ્થાપક ઇચ્છે છે}=1{અપડેટ લાગુ કરવા માટે તમે Chromeને ફરીથી લૉન્ચ કરો એવું તમારા વ્યવસ્થાપક ઇચ્છે છે. તમારી છુપી વિન્ડો ફરીથી ખૂલશે નહીં.}one{અપડેટ લાગુ કરવા માટે તમે Chromeને ફરીથી લૉન્ચ કરો એવું તમારા વ્યવસ્થાપક ઇચ્છે છે. તમારી # છુપી વિન્ડો ફરીથી ખૂલશે નહીં.}other{અપડેટ લાગુ કરવા માટે તમે Chromeને ફરીથી લૉન્ચ કરો એવું તમારા વ્યવસ્થાપક ઇચ્છે છે. તમારી # છુપી વિન્ડો ફરીથી ખૂલશે નહીં.}}</translation>
 <translation id="3597003331831379823">વધારેલા વિશેષાધિકારો સાથે સેટઅપ ચલાવવામાં નિષ્ફળ રહ્યાં. <ph name="METAINSTALLER_ERROR" /></translation>
@@ -358,7 +355,6 @@
 <translation id="4501471624619070934">ઇન્સ્ટૉલેશન નિષ્ફળ ગયું કારણ કે આ દેશમાં ઍક્સેસ પ્રતિબંધિત છે.</translation>
 <translation id="4571503333518166079">Chromeની નોટિફિકેશનની સેટિંગ પર જાઓ</translation>
 <translation id="4580939929828762295">Google Password Manager સાથે સુરક્ષિત રહો</translation>
-<translation id="4592634244097223647">આ છબી વિશે Googleને પૂછો</translation>
 <translation id="459622048091363950">એકવાર Chromeને ઍક્સેસ મળે, તે પછી વેબસાઇટ તમારી પાસે ઍક્સેસ માગી શકશે.</translation>
 <translation id="4598116752460667024">સૂચિમાંથી કોઈપણ પ્રક્રિયા શોધો.</translation>
 <translation id="4600710005438004015">Chromeનું નવું વર્ઝન અપડેટ ન થવાથી, તમે નવી સુવિધાઓ અને સુરક્ષાના સુધારા ચૂકી રહ્યા છો.</translation>
@@ -662,7 +658,6 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="7572537927358445944">બંધ • આ એક્સ્ટેન્શન ક્યાંથી આવે છે તેની ચકાસણી Chrome કરી શકતું નથી</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> ઇન્સ્ટૉલર</translation>
 <translation id="7596160425942761210">જ્યારે પણ તમે મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાંની લિંક પર ક્લિક કરો, ત્યારે તમે Chromeનો ઉપયોગ કરી શકો છો</translation>
-<translation id="7602868996817972616">Googleને આ પેજ વિશે પૂછો</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7627609214560473136">તમારા ડેટાને સુરક્ષિત કરવા માટે, Chromeને તમે તાજેતરમાં મુલાકાત લીધી ન હોય તેવી સાઇટમાંથી પરવાનગીઓ દૂર કરવા દો.</translation>
 <translation id="7629695634924605473">Chrome વડે તમે તમારા પાસવર્ડમાં ક્યારેક ચેડાં થાય તો તેના વિશે જાણકારી મેળવી શકો છો</translation>
@@ -787,7 +782,6 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8712637175834984815">સમજાઈ ગયું</translation>
 <translation id="8712767363896337380">લગભગ અપ ટૂ ડેટ છે! અપડેટ કરવાનું સમાપ્ત કરવા માટે, Chrome ફરીથી લૉન્ચ કરો.</translation>
 <translation id="8718062187489036808">Chrome માંથી સાઇન આઉટ કરો</translation>
-<translation id="8725440680697264016">આ વીડિયો વિશે Googleને પૂછો</translation>
 <translation id="873133009373065397">Google Chrome ડિફૉલ્ટ બ્રાઉઝરને નિર્ધારિત અથવા સેટ કરી શકતું નથી</translation>
 <translation id="8747073452963259673">શોધ વિસ્તારના સૌથી નીચે ડાબા ખૂણે: ડાબી બાજુ <ph name="LEFT" />%, સૌથી નીચે <ph name="BOTTOM" />%</translation>
 <translation id="8748735421235723888">નિષ્ક્રિય ટૅબમાંની મેમરી Chrome દ્વારા ઉપયોગમાં લેવામાં આવે છે. આને કારણે Chrome ટૅબ અને અન્ય ઍપને કમ્પ્યૂટરના વધુ સંસાધનો ફાળવીને પોતાને ઝડપી રાખી શકે છે. જ્યારે તમે તમારા નિષ્ક્રિય ટૅબ પર પાછા ફરો, ત્યારે તે ફરીથી ઑટોમૅટિક રીતે સક્રિય થાય છે. <ph name="BEGIN_LINK" />મેમરી સેવર વિશે વધુ જાણો<ph name="END_LINK" /></translation>
@@ -803,7 +797,6 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome તેને કાઢી નાખવાનો સુઝાવ તમને આપે છે}one{Chrome તેને કાઢી નાખવાનો સુઝાવ તમને આપે છે}other{Chrome તેમને કાઢી નાખવાનો સુઝાવ તમને આપે છે}}</translation>
 <translation id="8862326446509486874">તમારી પાસે સિસ્ટમ-સ્તરનાં ઇન્સ્ટોલ માટે ઉચિત અધિકારો નથી. એડમિન તરીકે ઇન્સ્ટૉલરને ફરીથી ચલાવવનો પ્રયાસ કરો.</translation>
 <translation id="8865415417596392024">તમારા એકાઉન્ટમાંનો Chrome ડેટા</translation>
-<translation id="8883862939660515976">આ છબી વિશે Google Lensને પૂછો</translation>
 <translation id="8914504000324227558">Chrome ફરીથી લોંચ કરો</translation>
 <translation id="8920304659326707347">iOS પર Chrome વડે તમે જ્યાંથી છોડ્યું હતું, ત્યાંથી શરૂ કરો.</translation>
 <translation id="8922998289262614701">Chromeમાંથી આ ઍપનો ડેટા કાઢી નાખો</translation>

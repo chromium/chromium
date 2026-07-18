@@ -565,6 +565,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1855370856221982654">Boxe</translation>
 <translation id="1862788842908766795">Offerte di lavoro executive e gestionali</translation>
 <translation id="1863257867908022953">Vassoio 12</translation>
+<translation id="1863374797460198869">Chat nascosta</translation>
 <translation id="186539747722034544">Provider di servizi via cavo e satellite</translation>
 <translation id="1870473978371099486">Servizi di insegnamento privato</translation>
 <translation id="1871208020102129563">L'impostazione del proxy prevede l'utilizzo di server proxy fissi, non di un URL script .pac.</translation>
@@ -1423,7 +1424,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per gestire le informazioni da sincronizzare nelle impostazioni di Chrome</translation>
 <translation id="3203025201812691413">L'URL non può essere vuoto</translation>
 <translation id="320323717674993345">Annulla pagamento</translation>
-<translation id="3204534477198689393">Per migliorare i suggerimenti e compilare i moduli più velocemente, i contenuti e gli URL delle pagine che visiti possono essere elaborati in uno spazio privato nel cloud.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> potrebbe includere contenuti inappropriati per i minori</translation>
 <translation id="3207960819495026254">Aggiunto ai preferiti</translation>
 <translation id="3208701679386778924">Invia una segnalazione per consentirci di migliorare ulteriori aggiornamenti di ChromeOS.</translation>
@@ -4526,6 +4526,7 @@ Ulteriori dettagli:
 <translation id="7972714317346275248">PKCS #1 SHA-384 con crittografia RSA</translation>
 <translation id="7976053965094442846">Emittenti di Buy now, pay later disponibili per il pagamento dilazionato nel tempo. Tastiera nascosta.</translation>
 <translation id="7976214039405368314">Numero eccessivo di richieste</translation>
+<translation id="7977029776654598145">Quando viene utilizzata</translation>
 <translation id="7977538094055660992">Dispositivo di uscita</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> min fa}=1{<ph name="TIME_COUNT" /> h fa}other{<ph name="TIME_COUNT" /> g fa}}</translation>
 <translation id="7979595116210197019">Servizi alimentari</translation>
@@ -4620,7 +4621,6 @@ Ulteriori dettagli:
 <translation id="8134058435519644366">Selezione e assunzione di personale</translation>
 <translation id="8135546115396015134">tasto sinistro</translation>
 <translation id="8137456439814903304">Energia e servizi pubblici</translation>
-<translation id="8138591088112729119">Con tecnologia Personal Intelligence</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Creato 1 mese fa}other{Creato {NUM_MONTHS} mesi fa}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, valore predefinito corrente. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Versione PDF:</translation>
@@ -4953,6 +4953,7 @@ Ulteriori dettagli:
 <translation id="8688672835843460752">Disponibile</translation>
 <translation id="868922510921656628">Pagine per insieme</translation>
 <translation id="8694684557210599098">Aggiungi veicolo</translation>
+<translation id="8696297579102085705">Invia al tuo dispositivo</translation>
 <translation id="8698428283892912525">Chrome è dotato di funzionalità di sicurezza integrate che ti proteggono durante la navigazione, come Google Navigazione sicura, che di recente <ph name="BEGIN_LINK" />ha rilevato un software dannoso<ph name="END_LINK" /> sul sito che hai cercato di visitare.</translation>
 <translation id="869891660844655955">Data di scadenza</translation>
 <translation id="8699041776323235191">Dispositivo HID</translation>

@@ -2033,13 +2033,6 @@ Jika kebijakan disetel ke Nonaktif atau tidak disetel, pengguna akan dapat mentr
       Pengguna tidak dapat mengubah atau mengganti setelan ini.
 
       Catatan: Kebijakan ini menyebabkan header X-GoogApps-Allowed-Domains ditambahkan ke semua permintaan HTTP dan HTTPS di semua domain google.com, seperti yang dijelaskan di https://support.google.com/a/answer/1668854.</translation>
-<translation id="2287414160388710497">Mengizinkan administrator menyesuaikan tampilan watermark yang diterapkan oleh aturan Pencegahan Kebocoran Data (DLP). Kebijakan ini mencakup menyetel opasitas isian/garis tepi, dan menentukan ukuran font.
-Jika kebijakan ini atau beberapa nilainya tidak disetel, Chrome akan menggunakan perilaku watermark default.
-Nilai default: opasitas isian 4, opasitas garis tepi 6, dan ukuran font 24.
-
-'Opasitas Isian' adalah persentase dari 0 (sepenuhnya transparan) hingga 100 (sepenuhnya buram).
-'Opasitas Garis Tepi' adalah persentase dari 0 (sepenuhnya transparan) hingga 100 (sepenuhnya buram).
-'FontSize' ditentukan dalam satuan poin.</translation>
 <translation id="2288506601233091655">Jangan izinkan histori tugas pencetakan dihapus</translation>
 <translation id="2289688405312849186">Akun utama pengguna 'user@realm'. Placeholder <ph name="LOGIN_ID_PLACEHOLDER" /> diganti dengan nama pengguna 'user'. Placeholder <ph name="LOGIN_EMAIL_PLACEHOLDER" /> diganti dengan akun utama penuh 'user@realm'.</translation>
 <translation id="2290270645214705008">Jika kebijakan ini disetel ke Nonaktif, layanan host akses jarak jauh tidak dapat dimulai atau dikonfigurasi untuk menerima koneksi masuk.  Kebijakan ini tidak memengaruhi skenario dukungan jarak jauh.
@@ -2328,15 +2321,6 @@ Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI g
 <translation id="2479760962196319822">Kebijakan ini mengontrol apakah pengguna <ph name="PRODUCT_OS_NAME" /> dapat menyimpan data secara lokal atau tidak.
       Jika kebijakan ini disetel ke Salah (False), penyimpanan lokal di <ph name="PRODUCT_OS_NAME" /> akan diblokir. Pengguna tidak dapat menyimpan data apa pun secara lokal, dan tidak dapat mengakses direktori lokal.
       Jika kebijakan ini disetel ke Benar (True) atau tidak disetel, penyimpanan lokal di <ph name="PRODUCT_OS_NAME" /> akan diizinkan. Tidak ada batasan terkait tempat pengguna dapat menyimpan data, atau direktori mana yang dapat diakses pengguna.</translation>
-<translation id="2480971699591919564">Aktifkan fitur Click to Call yang memungkinkan pengguna mengirim nomor ponsel dari Desktop Chrome ke perangkat Android saat pengguna Login. Untuk informasi lebih lanjut, lihat artikel pusat bantuan: https://support.google.com/chrome/answer/9430554?hl=id.
-
-      Jika kebijakan ini ditetapkan ke aktif, kemampuan untuk mengirim nomor ponsel ke perangkat Android akan diaktifkan bagi pengguna Chrome.
-
-      Jika kebijakan ini ditetapkan ke nonaktif, kemampuan untuk mengirim nomor ponsel ke perangkat Android akan dinonaktifkan bagi pengguna Chrome.
-
-      Jika kebijakan ini ditetapkan, pengguna tidak dapat mengubah atau menggantinya.
-
-      Jika kebijakan ini tidak ditetapkan, fitur Click to Call akan diaktifkan secara default.</translation>
 <translation id="2482676533225429905">Perpesanan Asli</translation>
 <translation id="2483146640187052324">Prediksi tindakan jaringan di koneksi jaringan apa pun</translation>
 <translation id="2487495476672607707">Sinkronisasi file <ph name="PRODUCT_OS_NAME" /> secara otomatis
@@ -3283,7 +3267,7 @@ Kebijakan ini tidak memengaruhi kebijakan '<ph name="WEB_APP_INSTALL_FORCE_LIST_
 
 Jika kebijakan ini disetel ke 0 (Alur perubahan sandi standar) atau tidak disetel, alur perubahan sandi standar akan dimulai. Pengguna akan diminta untuk memasukkan sandi lamanya untuk memperbarui enkripsi data lokalnya, atau pengguna dapat menggunakan mekanisme pemulihan data lokal lainnya jika tersedia.
 
-Jika kebijakan ini disetel ke 1 (Penghapusan total data lokal otomatis), alur perubahan sandi standar akan dihindari. Setelah mendeteksi ketidakcocokan sandi, data lokal pengguna akan otomatis dihapus total. Hal ini memungkinkan pengguna login dengan lancar menggunakan sandi barunya, tetapi mengakibatkan hilangnya semua data yang disimpan secara lokal dalam profil pengguna (misalnya, Download, setelan yang tidak disinkronkan). Opsi ini ditujukan untuk lingkungan yang penggunanya lebih sering menyimpan data di cloud atau jika sandi diperkirakan akan sering diperbarui.</translation>
+Jika kebijakan ini disetel ke 1 (Penghapusan total data lokal secara otomatis), alur perubahan sandi standar akan dihindari. Setelah mendeteksi ketidakcocokan sandi, data lokal pengguna akan otomatis dihapus total. Hal ini memungkinkan pengguna login dengan lancar menggunakan sandi barunya, tetapi mengakibatkan hilangnya semua data yang disimpan secara lokal dalam profil pengguna (misalnya, Download, setelan yang tidak disinkronkan). Opsi ini ditujukan untuk lingkungan yang penggunanya lebih sering menyimpan data di cloud atau jika sandi diperkirakan akan sering diperbarui.</translation>
 <translation id="300673820739371513">Kebijakan ini menentukan apakah entity teks biasa terdeteksi di halaman web, sehingga pengguna dapat memicu tindakan kontekstual dengan berinteraksi dengan entity tersebut.
 Kebijakan ini memiliki beberapa properti, satu properti untuk setiap jenis entity.
 Jenis entity-nya adalah <ph name="DEFAULT_ENUM_VALUE" />, <ph name="ADDRESS_ENUM_VALUE" />, dll.
@@ -9488,7 +9472,7 @@ mengonfigurasi pintasan.</translation>
 <translation id="6763023079133439068">Izinkan sertifikat yang tidak dilengkapi ekstensi subjectAlternativeName saat dikeluarkan oleh trust anchor lokal</translation>
 <translation id="6766216162565713893">Izinkan situs meminta pengguna memberikan akses ke perangkat Bluetooth di sekitar</translation>
 <translation id="6770454900105963262">Melaporkan informasi tentang sesi kios aktif</translation>
-<translation id="6770703270685871935">Penghapusan total data lokal otomatis</translation>
+<translation id="6770703270685871935">Penghapusan total data lokal secara otomatis</translation>
 <translation id="6774132787348495175">Jangan izinkan pengguna menggunakan mesin virtual yang diperlukan untuk mendukung aplikasi Linux</translation>
 <translation id="6782331708811245959">Aktifkan pelaporan mode booting perangkat</translation>
 <translation id="6783578496154221347">Gunakan WeeklyTimeIntervalInspect dalam kode baru.</translation>

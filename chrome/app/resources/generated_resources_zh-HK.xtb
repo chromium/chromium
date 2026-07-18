@@ -1186,7 +1186,6 @@
 <translation id="1910721550319506122">歡迎！</translation>
 <translation id="1910736334623230603">無法搜尋多張圖片。請每次只搜尋一張圖片。</translation>
 <translation id="1910908536872421421">Chrome for Testing v<ph name="BROWSER_VERSION" /> 只適用於自動測試。如要一般瀏覽，請使用會自動更新的 Chrome 標準版本。</translation>
-<translation id="1912867150686509584">喺「日曆」顯示更多會議</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{暫停導致瀏覽器運作緩慢的分頁}other{暫停導致瀏覽器運作緩慢的分頁}}</translation>
 <translation id="1913749768968678106">投放、儲存和分享</translation>
 <translation id="19147273405311768">將工具列重設為預設設定</translation>
@@ -2080,7 +2079,7 @@
 <translation id="2613210758071148851">不允許 <ph name="RESTRICTED_SITE" /> 的任何擴充程式</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> 將可以編輯「<ph name="FILENAME" />」</translation>
 <translation id="2615159404909536465">{FILE_COUNT,plural, =1{在此擴充程式中開啟並編輯 <ph name="FILE1" />}other{在此應用程式中開啟並編輯 <ph name="FILE1" /> 和其他檔案}}</translation>
-<translation id="2615836333611528168">Windows 設定會調整大小以配合這裡的空間。</translation>
+<translation id="2615836333611528168">Windows 設定會按此空間調整大小。</translation>
 <translation id="2616366145935564096">讀取及變更您在 <ph name="WEBSITE_1" /> 網站上的資料</translation>
 <translation id="2618797463720777311">設定「咫尺共享」</translation>
 <translation id="2619305858360733464"><ph name="SHARED_STATE" />未命名嘅群組 - <ph name="OPENED_STATE" /></translation>
@@ -4269,6 +4268,7 @@
 <translation id="4274673989874969668">在您離開網站後，網站通常會保持同步以完成工作，例如上載相片或傳送即時通訊訊息</translation>
 <translation id="4275291496240508082">啟動音效</translation>
 <translation id="4275397969489577657">啟用活動串流記錄</translation>
+<translation id="4275663329226226506">媒體</translation>
 <translation id="4275788652681621337">關閉側面板</translation>
 <translation id="4275830172053184480">重新啟動裝置</translation>
 <translation id="4276390967705106170">在新的瀏覽器分頁中開啟</translation>
@@ -9912,7 +9912,6 @@
 <translation id="8693862390730570097">不允許「幫我寫」自動開啟</translation>
 <translation id="8694596275649352090">在休眠或蓋上螢幕時鎖定</translation>
 <translation id="8695825812785969222">開啟位置(&amp;L)…</translation>
-<translation id="8696297579102085705">傳送至你的裝置</translation>
 <translation id="869884720829132584">應用程式選單</translation>
 <translation id="869891660844655955">到期日</translation>
 <translation id="8699296325072357994">密碼頁面的內容及相關資料會傳送到 Google 交由人手審核。你的密碼會加密，不會向任何人顯示。<ph name="PASSWORD_CHANGE" /></translation>

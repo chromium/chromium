@@ -565,6 +565,7 @@
 <translation id="1855370856221982654">Πυγμαχία</translation>
 <translation id="1862788842908766795">Θέσεις εργασίας διευθυντικών στελεχών</translation>
 <translation id="1863257867908022953">Τροφοδότης χαρτιού 12</translation>
+<translation id="1863374797460198869">Έγινε απόκρυψη της συνομιλίας</translation>
 <translation id="186539747722034544">Παροχείς καλωδιακής και δορυφορικής τηλεόρασης</translation>
 <translation id="1870473978371099486">Υπηρεσίες ιδιωτικής διδασκαλίας</translation>
 <translation id="1871208020102129563">Ο διακομιστής μεσολάβησης έχει ρυθμιστεί να χρησιμοποιεί διακομιστές μεσολάβησης και όχι μια διεύθυνση URL σεναρίου .pac.</translation>
@@ -1426,7 +1427,6 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και μετά Enter για να διαχειριστείτε τις πληροφορίες που συγχρονίζετε από τις ρυθμίσεις Chrome</translation>
 <translation id="3203025201812691413">Το URL δεν μπορεί να είναι κενό</translation>
 <translation id="320323717674993345">Ακύρωση πληρωμής</translation>
-<translation id="3204534477198689393">Για τη βελτίωση των προτάσεων και την ταχύτερη συμπλήρωση φορμών, το περιεχόμενο και τα URL των σελίδων που επισκέπτεστε μπορούν να υποβληθούν σε επεξεργασία σε έναν ιδιωτικό χώρο στο cloud.</translation>
 <translation id="3207830513221832868">Ο ιστότοπος <ph name="BLOCKED_URL" /> μπορεί να περιέχει περιεχόμενο για ενηλίκους</translation>
 <translation id="3207960819495026254">Προστέθηκε στους σελιδοδείκτες</translation>
 <translation id="3208701679386778924">Στείλτε μια αναφορά για να μπορέσουμε να βελτιώσουμε περισσότερο τις ενημερώσεις του ChromeOS.</translation>
@@ -4532,6 +4532,7 @@
 <translation id="7972714317346275248">PKCS #1 SHA-384 με κρυπτογράφηση RSA</translation>
 <translation id="7976053965094442846">Οι εκδότες που χρησιμοποιούν τον τρόπο πληρωμής Αγοράστε τώρα, πληρώστε αργότερα είναι διαθέσιμοι για πληρωμή με την πάροδο του χρόνου. Το πληκτρολόγιο δεν είναι ορατό.</translation>
 <translation id="7976214039405368314">Πάρα πολλά αιτήματα</translation>
+<translation id="7977029776654598145">Όταν χρησιμοποιείται</translation>
 <translation id="7977538094055660992">Συσκευή εξόδου</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Πριν από <ph name="TIME_COUNT" /> λ.}=1{Πριν από <ph name="TIME_COUNT" /> ω.}other{Πριν από <ph name="TIME_COUNT" /> η.}}</translation>
 <translation id="7979595116210197019">Υπηρεσίες φαγητού</translation>
@@ -4626,7 +4627,6 @@
 <translation id="8134058435519644366">Προσλήψεις και προσωπικό</translation>
 <translation id="8135546115396015134">αριστερό πλήκτρο</translation>
 <translation id="8137456439814903304">Ενέργεια και υπηρεσίες κοινής ωφέλειας</translation>
-<translation id="8138591088112729119">Με την υποστήριξη της Προσωπικής νοημοσύνης</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Δημιουργήθηκε πριν από 1 μήνα}other{Δημιουργήθηκε πριν από {NUM_MONTHS} μήνες}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, τρέχουσα προεπιλογή. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Έκδοση PDF:</translation>
@@ -4960,6 +4960,7 @@
 <translation id="8688672835843460752">Διαθέσιμο</translation>
 <translation id="868922510921656628">Σελίδες ανά δευτερόλεπτο</translation>
 <translation id="8694684557210599098">Προσθήκη οχήματος</translation>
+<translation id="8696297579102085705">Αποστολή στη συσκευή σας</translation>
 <translation id="8698428283892912525">Το Chrome διαθέτει ενσωματωμένες λειτουργίες ασφάλειας για την προστασία σας κατά την περιήγηση, όπως η Ασφαλής περιήγηση Google, η οποία <ph name="BEGIN_LINK" />εντόπισε πρόσφατα επιβλαβές λογισμικό<ph name="END_LINK" /> στον ιστότοπο που προσπαθήσατε να επισκεφτείτε.</translation>
 <translation id="869891660844655955">Ημερομηνία λήξης</translation>
 <translation id="8699041776323235191">Συσκευή HID</translation>

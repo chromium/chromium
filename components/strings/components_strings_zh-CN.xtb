@@ -565,6 +565,7 @@
 <translation id="1855370856221982654">拳击</translation>
 <translation id="1862788842908766795">行政和管理职位</translation>
 <translation id="1863257867908022953">纸匣 12</translation>
+<translation id="1863374797460198869">对话已隐藏</translation>
 <translation id="186539747722034544">有线电视和卫星电视提供商</translation>
 <translation id="1870473978371099486">家教服务</translation>
 <translation id="1871208020102129563">代理已设置为使用固定的代理服务器，而不是 .pac 脚本网址。</translation>
@@ -1424,7 +1425,6 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Chrome 设置中管理您要同步的信息</translation>
 <translation id="3203025201812691413">网址不能为空</translation>
 <translation id="320323717674993345">取消付款</translation>
-<translation id="3204534477198689393">为了改进建议并更快地填写表单，系统可以在云端的私密空间中处理您所访问网页的内容和网址。</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> 可能含有少儿不宜的内容</translation>
 <translation id="3207960819495026254">已加书签</translation>
 <translation id="3208701679386778924">请发送报告，以便我们改进今后的 ChromeOS 更新。</translation>
@@ -4525,6 +4525,7 @@
 <translation id="7972714317346275248">PKCS #1，带有 RSA 加密的 SHA-384</translation>
 <translation id="7976053965094442846">提供分期付款服务的“先买后付”发卡机构。键盘已隐藏。</translation>
 <translation id="7976214039405368314">请求次数过多</translation>
+<translation id="7977029776654598145">用途</translation>
 <translation id="7977538094055660992">输出设备</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> 分钟前}=1{<ph name="TIME_COUNT" /> 小时前}other{<ph name="TIME_COUNT" /> 天前}}</translation>
 <translation id="7979595116210197019">餐饮服务</translation>
@@ -4619,7 +4620,6 @@
 <translation id="8134058435519644366">招聘与人事</translation>
 <translation id="8135546115396015134">向左键</translation>
 <translation id="8137456439814903304">能源与公共事业</translation>
-<translation id="8138591088112729119">由个性化智能服务提供支持</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{创建时间：1 个月前}other{创建时间：{NUM_MONTHS} 个月前}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />，当前默认搜索引擎。<ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF 版本：</translation>
@@ -4953,6 +4953,7 @@
 <translation id="8688672835843460752">可用</translation>
 <translation id="868922510921656628">每组页数</translation>
 <translation id="8694684557210599098">添加车辆</translation>
+<translation id="8696297579102085705">发送到您的设备</translation>
 <translation id="8698428283892912525">Chrome 内置的安全功能可在您浏览网页时为您提供保护，例如 Google 安全浏览功能近期在您尝试访问的网站上<ph name="BEGIN_LINK" />发现了有害软件<ph name="END_LINK" />。</translation>
 <translation id="869891660844655955">失效日期</translation>
 <translation id="8699041776323235191">HID 设备</translation>

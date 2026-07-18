@@ -1916,13 +1916,6 @@ Chrome 政策的優先順序高於這項政策，例如擴充功能是否列在 
       使用者無法變更或覆寫這項設定。
 
       注意：套用這項政策後，傳送給所有 google.com 網域的任何 HTTP 和 HTTPS 要求都會加上 X-GoogApps-Allowed-Domains 標頭。詳情請參閱以下說明文章：https://support.google.com/a/answer/1668854。</translation>
-<translation id="2287414160388710497">允許管理員自訂資料遺失防護 (DLP) 規則套用的浮水印外觀，包括設定填滿/外框不透明度，以及定義字型大小。
-如果未設定這項政策或部分值，Chrome 會採用預設浮水印行為。
-預設值如下：填滿不透明度為 4、外框不透明度為 6，以及字型大小為 24。
-
-「填滿不透明度」是百分比，範圍從 0 (完全透明) 到 100 (完全不透明)。
-「外框不透明度」是百分比，範圍從 0 (完全透明) 到 100 (完全不透明)。
-「FontSize」是以點為設定單位。</translation>
 <translation id="2288506601233091655">不允許刪除列印工作記錄</translation>
 <translation id="2289688405312849186">使用者主體是「user@realm」。<ph name="LOGIN_ID_PLACEHOLDER" /> 預留位置會由使用者名稱「user」取代。<ph name="LOGIN_EMAIL_PLACEHOLDER" /> 預留位置會由完整主體「user@realm」取代。</translation>
 <translation id="2290270645214705008">如果將這項政策設為「停用」，將無法開啟遠端存取主機服務，也無法將該服務設為接受外來連線。這項政策不適用於遠端支援情境。
@@ -2186,15 +2179,6 @@ ServiceWorkerAutoPreload 功能會在開始執行 ServiceWorker 啟動程序時�
 <translation id="2479760962196319822">這項政策可控管 <ph name="PRODUCT_OS_NAME" /> 使用者能否在本機儲存資料。
       如果將這項政策設為 False，<ph name="PRODUCT_OS_NAME" /> 就會封鎖本機儲存空間，使用者將無法在本機儲存資料，也無法存取本機目錄。
       如果將這項政策設為 True 或未設定，<ph name="PRODUCT_OS_NAME" /> 就會啟用本機儲存空間，使用者在儲存資料或存取目錄時將不受任何限制。</translation>
-<translation id="2480971699591919564">啟用「點選通話」功能，讓登入 Google 帳戶的使用者可以將電話號碼從 Chrome 桌面傳送到 Android 裝置。詳情請參閱說明中心文章：https://support.google.com/chrome/answer/9430554?hl=zh-TW。
-
-      如果將這項政策設為啟用，Chrome 使用者便可以將電話號碼傳送到 Android 裝置。
-
-      如果將這項政策設為停用，Chrome 使用者則無法將電話號碼傳送到 Android 裝置。
-
-      設好這項政策後，使用者即無法變更或覆寫設定。
-
-      如果不設定這項政策，系統在預設狀態下會啟用「點選通話」功能。</translation>
 <translation id="2482676533225429905">內建訊息傳遞</translation>
 <translation id="2483146640187052324">無論使用任何網路連線，皆預測網路動作</translation>
 <translation id="2487495476672607707"><ph name="PRODUCT_OS_NAME" /> 同步處理檔案功能可自動讓使用者在 <ph name="CHROMEBOOK_PLUS_NAME" /> 裝置上，離線使用「我的雲端硬碟」中的 <ph name="GOOGLE_DRIVE_NAME" /> 檔案 (在空間允許的前提下)。開啟這項功能後，系統也會自動將所有新檔案設為可離線使用。如果日後儲存空間不足，系統將不再自動將新檔案設為可離線使用。不過，使用者仍可手動將項目設為可離線使用。如果將這項政策設為 <ph name="POLICY_VALUE_VISIBLE" />：在「檔案」應用程式和「設定」中會顯示同步處理檔案功能，且使用者可以開啟或關閉同步處理檔案功能。

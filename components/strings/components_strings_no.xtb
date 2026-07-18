@@ -565,6 +565,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1855370856221982654">Boksing</translation>
 <translation id="1862788842908766795">Leder- og direktørstillinger</translation>
 <translation id="1863257867908022953">Skuff 12</translation>
+<translation id="1863374797460198869">Chatten er skjult</translation>
 <translation id="186539747722034544">Kabel- og satellittleverandører</translation>
 <translation id="1870473978371099486">Privatundervisning</translation>
 <translation id="1871208020102129563">Mellomtjeneren er angitt til å bruke statiske proxytjenere, ikke en nettadresse med .pac-skript.</translation>
@@ -1426,7 +1427,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å administrere hvilken informasjon du synkroniserer, i Chrome-innstillingene</translation>
 <translation id="3203025201812691413">Nettadressen kan ikke være tom</translation>
 <translation id="320323717674993345">Avbryt betalingen</translation>
-<translation id="3204534477198689393">Innholdet og nettadressene til sidene du besøker, kan behandles i et privat område i skyen for å gi bedre forslag og fylle ut skjemaer raskere.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> kan ha innhold for voksne</translation>
 <translation id="3207960819495026254">Bokmerket</translation>
 <translation id="3208701679386778924">Send inn en rapport, slik at vi kan gjøre ChromeOS-oppdateringer enda bedre.</translation>
@@ -4529,6 +4529,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="7972714317346275248">PKCS #1 SHA-384 med RSA-kryptering</translation>
 <translation id="7976053965094442846">Utstedere av «Kjøp nå, betal senere» som er tilgjengelige for betaling over tid. Tastaturet er skjult.</translation>
 <translation id="7976214039405368314">For mange forespørsler</translation>
+<translation id="7977029776654598145">Når den brukes</translation>
 <translation id="7977538094055660992">Utskriftsenhet</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{for <ph name="TIME_COUNT" /> m siden}=1{for <ph name="TIME_COUNT" /> t siden}other{for <ph name="TIME_COUNT" /> d siden}}</translation>
 <translation id="7979595116210197019">Mattjenester</translation>
@@ -4623,7 +4624,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="8134058435519644366">Rekruttering og bemanning</translation>
 <translation id="8135546115396015134">venstretast</translation>
 <translation id="8137456439814903304">Energi og infrastruktur</translation>
-<translation id="8138591088112729119">Basert på personlig tilpasset intelligens</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Opprettet for én måned siden}other{Opprettet for {NUM_MONTHS} måneder siden}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, gjeldende standard. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF-versjon:</translation>
@@ -4956,6 +4956,7 @@ Mer informasjon:
 <translation id="8688672835843460752">Tilgjengelig</translation>
 <translation id="868922510921656628">Sider pr. sett</translation>
 <translation id="8694684557210599098">Legg til et kjøretøy</translation>
+<translation id="8696297579102085705">Send til enheten din</translation>
 <translation id="8698428283892912525">Chrome har innebygde sikkerhetsfunksjoner som beskytter deg når du surfer – for eksempel Google Safe Browsing, som nylig <ph name="BEGIN_LINK" />har funnet skadelig programvare<ph name="END_LINK" /> på nettstedet du prøvde å besøke.</translation>
 <translation id="869891660844655955">Utløpsdato</translation>
 <translation id="8699041776323235191">HID-enhet</translation>

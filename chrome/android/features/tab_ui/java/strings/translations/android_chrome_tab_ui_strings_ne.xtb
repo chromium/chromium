@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{समूहबाट ट्याब हटाउनुहोस्}other{समूहबाट ट्याबहरू हटाउनुहोस्}}</translation>
 <translation id="2271452184061378400">तपाईंका ट्याब समूहहरू यहाँ सेभ गरिएका छन्</translation>
 <translation id="2277224997687551299">समूहको नाम परिवर्तन गर्नुहोस्</translation>
+<translation id="2289567621059034186">तलको नयाँ ट्याब</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{ट्याब बुकमार्क गर्नुहोस्}other{ट्याबहरू बुकमार्क गर्नुहोस्}}</translation>
 <translation id="2359808026110333948">जारी राख्नुहोस्</translation>
 <translation id="2371084566192454134">ट्याब र ट्याब समूहहरू</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">ट्याबहरू तेर्सो रूपमा देखाउनुहोस्</translation>
 <translation id="31806439105337256">ट्याबहरू ठाडो रूपमा देखाउनुहोस्</translation>
 <translation id="3194464645767632461">मूल्याङ्कन</translation>
+<translation id="3228962656492373217">तलका ट्याबहरू बन्द गर्नुहोस्</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{समूहमा <ph name="TABS_COUNT_ONE" /> ट्याब हाल्नुहोस्}other{समूहमा <ph name="TABS_COUNT_MANY" /> वटा ट्याब हाल्नुहोस्}}</translation>
 <translation id="3328308545011660196">सुझाव: <ph name="NUMBER_OF_TABS" /> ट्याबहरू एकअर्कासँग सम्बन्धित देखिन्छन्। यिनलाई एउटै समूहमा राख्ने हो?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{१ दिनदेखि निष्क्रिय भएपछि}other{<ph name="DAY_COUNT_MANY" /> दिनदेखि निष्क्रिय भएपछि}}</translation>

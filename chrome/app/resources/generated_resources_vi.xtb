@@ -1187,7 +1187,6 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1910721550319506122">Chào mừng bạn!</translation>
 <translation id="1910736334623230603">Không tìm được nhiều hình ảnh. Hãy thêm một hình ảnh mỗi lần.</translation>
 <translation id="1910908536872421421">Chrome for Testing v<ph name="BROWSER_VERSION" /> chỉ dành cho kiểm thử tự động. Để duyệt web bình thường, hãy sử dụng phiên bản Chrome chuẩn có thể tự động cập nhật.</translation>
-<translation id="1912867150686509584">Xem thêm cuộc họp trên Lịch</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Tạm dừng thẻ làm chậm trình duyệt của bạn}other{Tạm dừng các thẻ làm chậm trình duyệt của bạn}}</translation>
 <translation id="1913749768968678106">Truyền, lưu và chia sẻ</translation>
 <translation id="19147273405311768">Đặt lại các chế độ cài đặt thanh công cụ về mặc định</translation>
@@ -2081,7 +2080,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2613210758071148851">Không chấp nhận tiện ích nào trên <ph name="RESTRICTED_SITE" /></translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> sẽ chỉnh sửa được <ph name="FILENAME" /></translation>
 <translation id="2615159404909536465">{FILE_COUNT,plural, =1{Mở và chỉnh sửa <ph name="FILE1" /> trong tiện ích này}other{Mở và chỉnh sửa <ph name="FILE1" />, ... trong ứng dụng này}}</translation>
-<translation id="2615836333611528168">Chế độ cài đặt Windows của bạn sẽ được đổi kích thước cho vừa với khu vực này.</translation>
+<translation id="2615836333611528168">Các chế độ cài đặt Windows của bạn sẽ được đổi kích thước để hiển thị vừa vặn ở đây.</translation>
 <translation id="2616366145935564096">Đọc và thay đổi dữ liệu của bạn trên <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Thiết lập tính năng Chia sẻ lân cận</translation>
 <translation id="2619305858360733464">Nhóm chưa có tên – <ph name="SHARED_STATE" /> – <ph name="OPENED_STATE" /></translation>
@@ -4272,6 +4271,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4274673989874969668">Sau khi bạn rời khỏi một trang web, trang web đó có thể tiếp tục đồng bộ hóa để hoàn tất những việc như tải ảnh lên hoặc gửi một tin nhắn trò chuyện</translation>
 <translation id="4275291496240508082">Âm thanh khi khởi động</translation>
 <translation id="4275397969489577657">Bật ghi nhật ký luồng sự kiện</translation>
+<translation id="4275663329226226506">Truyền thông</translation>
 <translation id="4275788652681621337">Đóng bảng điều khiển bên</translation>
 <translation id="4275830172053184480">Khởi động lại thiết bị của bạn</translation>
 <translation id="4276390967705106170">Mở trong thẻ trình duyệt mới</translation>
@@ -9925,7 +9925,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8693862390730570097">Không cho phép tính năng "Giúp tôi viết" tự động mở</translation>
 <translation id="8694596275649352090">Khoá khi ngủ hoặc khi đóng nắp</translation>
 <translation id="8695825812785969222">Mở &amp;vị trí...</translation>
-<translation id="8696297579102085705">Gửi tới thiết bị của bạn</translation>
 <translation id="869884720829132584">Menu ứng dụng</translation>
 <translation id="869891660844655955">Ngày hết hạn</translation>
 <translation id="8699296325072357994">Nội dung trên các trang được bảo vệ bằng mật khẩu và thông tin liên quan sẽ được gửi đến Google và được nhân viên xem xét. Mật khẩu của bạn được mã hoá và không ai có thể nhìn thấy. <ph name="PASSWORD_CHANGE" /></translation>

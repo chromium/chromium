@@ -565,6 +565,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1855370856221982654">Poks</translation>
 <translation id="1862788842908766795">Juhtivad ametikohad</translation>
 <translation id="1863257867908022953">Salv 12</translation>
+<translation id="1863374797460198869">Vestlus on peidetud</translation>
 <translation id="186539747722034544">Kaabel- ja satelliittelevisiooni pakkujad</translation>
 <translation id="1870473978371099486">Koduõppeteenused</translation>
 <translation id="1871208020102129563">Puhverserver on seatud kasutama fikseeritud puhverservereid, mitte pac-skripti URL-i.</translation>
@@ -1426,7 +1427,6 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, vajutage Chrome'i seadetes sünkroonitava teabe haldamiseks tabulaatorit ja seejärel sisestusklahvi</translation>
 <translation id="3203025201812691413">URL ei tohi olla tühi</translation>
 <translation id="320323717674993345">Tühista makse</translation>
-<translation id="3204534477198689393">Soovituste täiustamiseks ja vormide kiiremaks täitmiseks saab teie külastatavate lehtede sisu ja URL-e töödelda privaatses pilveruumis.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> võib sisaldada täiskasvanutele mõeldud sisu</translation>
 <translation id="3207960819495026254">Järjehoidjatesse lisatud</translation>
 <translation id="3208701679386778924">Saatke aruanne, et saaksime ChromeOS-i edasisi värskendusi täiustada.</translation>
@@ -4530,6 +4530,7 @@ Lisateave:
 <translation id="7972714317346275248">PKCS 1 SHA-384 koos RSA krüpteerimisega</translation>
 <translation id="7976053965094442846">Järelmaksu väljaandjad on saadaval järelmaksuga tasumiseks. Klaviatuur on peidetud.</translation>
 <translation id="7976214039405368314">Liiga palju päringuid</translation>
+<translation id="7977029776654598145">Millal kasutada?</translation>
 <translation id="7977538094055660992">Väljundseade</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> min tagasi}=1{<ph name="TIME_COUNT" /> h tagasi}other{<ph name="TIME_COUNT" /> p tagasi}}</translation>
 <translation id="7979595116210197019">Toiduvalmistamistööstus</translation>
@@ -4624,7 +4625,6 @@ Lisateave:
 <translation id="8134058435519644366">Töölevõtmine ja värbamine</translation>
 <translation id="8135546115396015134">vasak klahv</translation>
 <translation id="8137456439814903304">Energia- ja kommunaalteenused</translation>
-<translation id="8138591088112729119">Toimib Personal Intelligence'i platvormil</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Loodud 1 kuu tagasi}other{Loodud {NUM_MONTHS} kuud tagasi}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, praegune vaikeseade. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF-i versioon:</translation>
@@ -4957,6 +4957,7 @@ Lisateave:
 <translation id="8688672835843460752">Saadaval</translation>
 <translation id="868922510921656628">Lehekülgi komplekti kohta</translation>
 <translation id="8694684557210599098">Sõiduki lisamine</translation>
+<translation id="8696297579102085705">Saada seadmesse</translation>
 <translation id="8698428283892912525">Chrome’il on sisseehitatud ohutusfunktsioonid, mis kaitsevad teid sirvimise ajal, näiteks Google’i ohutu sirvimine, mis on hiljuti <ph name="BEGIN_LINK" />tuvastanud kahjulikku tarkvara<ph name="END_LINK" /> saidil, mida proovisite külastada.</translation>
 <translation id="869891660844655955">Aegumiskuupäev</translation>
 <translation id="8699041776323235191">HID-seade</translation>

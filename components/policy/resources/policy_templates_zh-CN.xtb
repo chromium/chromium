@@ -1957,13 +1957,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       用户无法更改或覆盖此设置。
 
       请注意：此政策会致使系统将 X-GoogApps-Allowed-Domains 标头附加到向所有 google.com 网域发送的所有 HTTP 和 HTTPS 请求中，如 https://support.google.com/a/answer/1668854 中所述。</translation>
-<translation id="2287414160388710497">允许管理员自定义数据泄露防护 (DLP) 规则应用的水印外观。这包括设置填充/轮廓不透明度，以及定义字体大小。
-如果未设置此政策或某些值，Chrome 将使用其默认水印行为。
-默认值如下：填充不透明度为 4，轮廓不透明度为 6，字体大小为 24。
-
-“填充不透明度”是介于 0（完全透明）到 100（完全不透明）之间的百分比。
-“轮廓不透明度”是介于 0（完全透明）到 100（完全不透明）之间的百分比。
-“FontSize”以磅为单位。</translation>
 <translation id="2288506601233091655">不允许删除打印任务记录</translation>
 <translation id="2289688405312849186">用户的主账号“user@realm”。占位符 <ph name="LOGIN_ID_PLACEHOLDER" /> 会被用户名“user”取代。占位符 <ph name="LOGIN_EMAIL_PLACEHOLDER" /> 会被完整主账号“user@realm”取代。</translation>
 <translation id="2290270645214705008">如果此政策已停用，系统将无法启动远程访问主机服务，也无法将该服务配置为接受传入连接。此政策不影响远程支持场景。
@@ -2231,15 +2224,6 @@ ServiceWorkerAutoPreload 功能会在 ServiceWorker 引导过程开始的同时�
 <translation id="2479760962196319822">此政策旨在控制 <ph name="PRODUCT_OS_NAME" /> 用户能否在本地存储数据。
       如果此政策设为 False，则系统禁止在 <ph name="PRODUCT_OS_NAME" /> 上进行本地存储，用户将无法在本地存储任何数据，也无法访问任何本地目录。
       如果此政策设为 True 或未设置，则系统允许在 <ph name="PRODUCT_OS_NAME" /> 上进行本地存储，无论用户在何处存储数据或者访问哪些目录，都不会受到任何限制。</translation>
-<translation id="2480971699591919564">启用“点击通话”功能，以允许已登录的 Chrome 用户从桌面设备向 Android 设备发送电话号码。若想了解详情，请参阅这篇帮助中心文章：https://support.google.com/chrome/answer/9430554?hl=zh-CN。
-
-      如果启用了此政策，即意味着允许 Chrome 用户向 Android 设备发送电话号码。
-
-      如果停用了此政策，则意味着禁止 Chrome 用户向 Android 设备发送电话号码。
-
-      如果您设置了此政策，用户将无法更改或覆盖它。
-
-      如果未设置此政策，“点击通话”功能会默认处于启用状态。</translation>
 <translation id="2482676533225429905">本地消息传递</translation>
 <translation id="2483146640187052324">采用任何网络连接时，均预测网络操作</translation>
 <translation id="2487495476672607707">在 <ph name="CHROMEBOOK_PLUS_NAME" /> 设备上，<ph name="PRODUCT_OS_NAME" /> 的文件同步功能会自动将用户的“我的云端硬盘”中的 <ph name="GOOGLE_DRIVE_NAME" />文件设为可离线使用（在空间允许的情况下）。

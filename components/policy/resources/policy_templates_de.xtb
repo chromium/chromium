@@ -1968,13 +1968,6 @@ Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, können Nutzer Date
       Nutzer können diese Einstellung weder ändern noch überschreiben.
 
       Hinweis: Durch diese Richtlinie wird allen HTTP- und HTTPS-Anfragen, die an google.com-Domains gesendet werden, der Header „X-GoogApps-Allowed-Domains“ angehängt (siehe https://support.google.com/a/answer/1668854).</translation>
-<translation id="2287414160388710497">Ermöglicht Administratoren, das Erscheinungsbild von Wasserzeichen anzupassen, die durch Regeln zum Schutz vor Datenverlust (Data Loss Prevention, DLP) angewendet werden. Dazu gehört auch das Festlegen der Deckkraft für Füllung und Kontur sowie der Schriftgröße.
-Wenn diese Richtlinie oder einige Werte nicht konfiguriert sind, verwendet Chrome die Standardwerte für Wasserzeichen.
-Diese sind: Füllungsdeckkraft bei 4, Konturdeckkraft bei 6 und Schriftgröße bei 24.
-
-Die „Füllungsdeckkraft“ ist ein Prozentwert von 0 (völlig durchsichtig) bis 100 (völlig undurchsichtig).
-Die „Konturdeckkraft“ ist ein Prozentwert von 0 (völlig durchsichtig) bis 100 (völlig undurchsichtig).
-Der Wert für „Schriftgröße“ wird in Punkten angegeben.</translation>
 <translation id="2288506601233091655">Der Verlauf der Druckaufträge darf nicht gelöscht werden</translation>
 <translation id="2289688405312849186">Prinzipalname des Nutzers: „nutzer@realm“. Der Platzhalter „<ph name="LOGIN_ID_PLACEHOLDER" />“ wird durch den Nutzernamen „nutzer“ ersetzt. Der Platzhalter „<ph name="LOGIN_EMAIL_PLACEHOLDER" />“ wird durch den vollständigen Prinzipalnamen des Nutzers „nutzer@realm“ ersetzt.</translation>
 <translation id="2290270645214705008">Wenn diese Richtlinie deaktiviert ist, kann der Host für den Remote-Zugriff keine eingehenden Verbindungen annehmen.  Diese Richtlinien wirkt sich nicht auf die Remote-Unterstützung aus.
@@ -2089,6 +2082,7 @@ Ist die Richtlinie deaktiviert, können Nutzer von <ph name="PRODUCT_NAME" />-Va
       Seit Version 91 kann diese Richtlinie nicht mehr auf „tls1“ oder „tls1.1“ gesetzt werden. Das Unterdrücken der TLS 1.0/1.1-Warnung wird nicht mehr unterstützt.</translation>
 <translation id="2364639863953745682">Modus für die Assistant-Einrichtung</translation>
 <translation id="2366301887862414321">Native Nachrichtenhosts sowohl auf Nutzer- als auch auf Systemebene zulassen</translation>
+<translation id="2371015218815226913">Aktive WebSocket-Verbindungen verhindern, dass Seiten im Back-Forward-Cache gespeichert werden.</translation>
 <translation id="2373014700224092497">Zulassen, dass Nutzer Kerberos-Konten hinzufügen</translation>
 <translation id="2376134474855349829">Bildschirmtastatur auf dem Anmeldebildschirm deaktivieren und dem Nutzer erlauben, sie vorübergehend zu aktivieren</translation>
 <translation id="2376151922689284770">Name, der auf der Benutzeroberfläche des Installationsprogramms angezeigt werden soll, z. B. „Happy VM“. Falls nicht konfiguriert, wird ein Fallback-Name angezeigt. Dies ist entweder der (nach Anzeigereihenfolge) erste Eintrag der BruschettaVMConfiguration-Richtlinie oder, falls dieser nicht gefunden wird, ein generischer Name.</translation>
@@ -2241,15 +2235,6 @@ Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden 
 <translation id="2479760962196319822">Mit dieser Richtlinie wird festgelegt, ob <ph name="PRODUCT_OS_NAME" />-Nutzer Daten lokal speichern können.
       Wenn diese Richtlinie auf „False“ gesetzt ist, wird das lokale Speichern unter <ph name="PRODUCT_OS_NAME" /> blockiert. Nutzer können weder Daten lokal speichern noch auf lokale Verzeichnisse zugreifen.
       Wenn diese Richtlinie auf „True“ gesetzt oder nicht konfiguriert ist, wird das lokale Speichern unter <ph name="PRODUCT_OS_NAME" /> zugelassen. Es gibt keine Einschränkungen dafür, wo Nutzer Daten speichern oder auf welche Verzeichnisse sie zugreifen können.</translation>
-<translation id="2480971699591919564">Hiermit wird die Funktion "Zum Anrufen klicken" aktiviert. Mit ihr können Telefonnummern von Chrome-Computern an Android-Geräte gesendet werden, wenn der Nutzer angemeldet ist. Weitere Informationen findest du in diesem Hilfeartikel: https://support.google.com/chrome/answer/9430554?.
-
-      Wenn diese Richtlinie aktiviert ist, können Chrome-Nutzer Telefonnummern an Android-Geräte senden.
-
-      Ist sie deaktiviert, geht dies nicht.
-
-      Wenn du diese Richtlinie konfigurierst, kann sie vom Nutzer nicht geändert oder überschrieben werden.
-
-      Wird sie nicht konfiguriert, ist die Funktion "Zum Anrufen klicken" standardmäßig aktiviert.</translation>
 <translation id="2482676533225429905">Natives Messaging</translation>
 <translation id="2483146640187052324">Netzwerkaktionen über alle Netzwerkverbindungen vervollständigen</translation>
 <translation id="2487495476672607707">Mit der <ph name="PRODUCT_OS_NAME" />-Dateisynchronisierung sind <ph name="GOOGLE_DRIVE_NAME" />-Dateien eines Nutzers auf <ph name="CHROMEBOOK_PLUS_NAME" />-Geräten in „Meine Ablage“ automatisch offline verfügbar (sofern genügend Speicherplatz vorhanden ist).
@@ -7143,6 +7128,27 @@ Weitere Informationen findest du auch unter https://wiki.samba.org/index.php/Sam
 
       Diese Richtlinie wurde eingestellt. Verwende stattdessen „<ph name="PROMOTIONS_ENABLED_POLICY_NAME" />“.</translation>
 <translation id="5556607617517096419">Borealis</translation>
+<translation id="5556933299171172140">Wenn du diese Richtlinie konfigurierst, kannst du angeben, welche Autofill-Datentypen für bestimmte URL-Muster blockiert werden.
+
+Die Richtlinie ist als Liste von Wörterbüchern strukturiert. Jedes Wörterbuch muss Folgendes enthalten:
+* „url_pattern“: Ein URL-Muster für die Inhaltseinstellungen des Hauptframes (z. B. „https://[*.]beispiel.de“).
+* „blocked_types“: Eine Liste von Strings, die die Kategorien von Autofill-Daten darstellen, die blockiert werden sollen.
+
+Die unterstützten Werte für „blocked_types“ sind:
+* „contact_info“: Das Ausfüllen und Speichern von Kontaktdaten wird blockiert.
+* „payments“: Das Ausfüllen und Speichern von Kreditkarten und Zahlungsmethoden wird blockiert.
+* „identity_docs“: Das Ausfüllen und Speichern von Identitätsdokumenten (z. B. Reisepass, Führerschein, Personalausweis) wird blockiert.
+* „travel“: Das Ausfüllen und Speichern von Reiseinformationen (z. B. Flugreservierungen, Fahrzeugkennzeichen) wird blockiert.
+* „shopping“: Das Ausfüllen und Speichern von Shopping-Informationen (z. B. Onlinebestellungen, Sendungen) wird blockiert.
+* „all“: Das Ausfüllen und Speichern aller Autofill-Datentypen wird blockiert.
+
+Wenn ein Datentyp für eine Website blockiert ist, sind sowohl das Erstellen von Vorschlägen als auch die Aufforderung zum Speichern/Importieren neuer Daten dieses Typs auf dieser Website deaktiviert.
+
+Wenn eine URL mit mehreren Mustereinträgen in der Liste übereinstimmt, werden die blockierten Typen aus allen übereinstimmenden Einträgen zusammengeführt. Ungültige URL-Muster in der Liste werden ignoriert.
+
+Wenn diese Richtlinie nicht konfiguriert ist, werden keine Autofill-Datentypen nach Domain blockiert.
+
+Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://chromeenterprise.google/policies/url-patterns. Der Platzhalter * wird unterstützt. Dieses Muster entspricht jeder URL mit beliebigem Schema, Port und Pfad.</translation>
 <translation id="5557753512027261467"><ph name="GOOGLE_DRIVE_NAME" /> als Option anzeigen.</translation>
 <translation id="5558394213067608844">Wilco Diagnostics and Telemetry Controller (DTC) aktivieren</translation>
 <translation id="5559079916187891399">Diese Richtlinie hat keine Auswirkung auf Android-Apps.</translation>
@@ -7468,6 +7474,13 @@ Wenn die Richtlinie aktiviert ist, wird immer adaptives Zwischenspeichern verwen
 
 Ist sie deaktiviert oder nicht konfiguriert, wird über den Funktionseinführungsprozess des Browsers entschieden, ob adaptives Zwischenspeichern verwendet wird.</translation>
 <translation id="5800329278018669527">Eingabeaufforderung zur Netzwerkkonfiguration im Offlinemodus deaktivieren</translation>
+<translation id="5800627752428920394">Mit dieser Richtlinie wird festgelegt, ob aktive WebSocket-Verbindungen getrennt werden, wenn eine Seite im Back-Forward-Cache gespeichert wird. Aktive WebSocket-Verbindungen haben bisher verhindert, dass eine Seite im Back-Forward-Cache gespeichert wird. <ph name="PRODUCT_NAME" /> hat dieses Verhalten jedoch geändert und trennt stattdessen die WebSockets, sodass die Seite im Cache gespeichert und in einem getrennten Zustand wiederhergestellt werden kann.
+
+Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, werden WebSockets getrennt, wenn eine Seite im Back-Forward-Cache gespeichert wird.
+
+Wenn diese Richtlinie deaktiviert ist, werden WebSockets nicht getrennt, wenn eine Seite im Back-Forward-Cache gespeichert wird. Da der Back-Forward-Cache keine aktiven WebSockets unterstützt, werden Seiten mit aktiven WebSockets nicht im Cache gespeichert.
+
+Diese Richtlinie ist vorübergehend und wird zukünftig entfernt.</translation>
 <translation id="5802931736499687181">Verschlüsselte Pipeline für die Berichterstellung deaktivieren</translation>
 <translation id="5803715507113569033">Mit dieser Richtlinie können Administratoren die Bereitstellung von <ph name="MICROSOFT_ONE_DRIVE_NAME" /> konfigurieren.
 
@@ -9492,6 +9505,7 @@ Wenn diese Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtli
 <translation id="7025153290982655996">Altes Verhalten des Cookie-Bereichs wiederherstellen</translation>
 <translation id="7025332601572838001">Konfiguriert die Nutzungsbedingungen während der ersten Ausführung für CCT</translation>
 <translation id="7026351325994257733">Erlauben, dass WLAN-Konfigurationen auf allen <ph name="PRODUCT_OS_NAME" />-Geräten und einem verbundenen Android-Smartphone synchronisiert werden.</translation>
+<translation id="7026488120383693794">Back-Forward-Cache für WebSockets zulassen</translation>
 <translation id="7027057540229843762">Helles Design verwenden</translation>
 <translation id="7027785306666625591">Hiermit wird die Energieverwaltung in <ph name="PRODUCT_OS_NAME" /> konfiguriert.
 
@@ -10744,6 +10758,7 @@ Weitere Informationen zur Richtlinie <ph name="IEEM_SITELIST_POLICY" /> von Inte
 
       Hinweis: Wenn du konfigurieren möchtest, welche Websites <ph name="FLASH_PLUGIN_NAME" /> ausführen dürfen, findest du unter den folgenden Richtlinien weitere Informationen: <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> und <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="7801163363326128751">Einsparungen im Arbeitsspeicher-Sparmodus ändern</translation>
+<translation id="7802903687499576891">Back-Forward-Cache für WebSockets zulassen (Verbindung trennen, wenn eine Seite im Cache gespeichert wird).</translation>
 <translation id="7804859754080118507">Ereignisse zu Netzwerkverbindung und Signalstärke auf registrierten Geräten melden.
 
       Wenn die Richtlinie auf „false“ gesetzt oder nicht konfiguriert ist, werden keine Informationen ausgegeben.

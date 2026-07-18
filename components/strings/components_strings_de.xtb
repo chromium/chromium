@@ -565,6 +565,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1855370856221982654">Boxen</translation>
 <translation id="1862788842908766795">Geschäftsführungs- und Managementtätigkeiten</translation>
 <translation id="1863257867908022953">Fach 12</translation>
+<translation id="1863374797460198869">Chat ausgeblendet</translation>
 <translation id="186539747722034544">Kabel- und Satellitenanbieter</translation>
 <translation id="1870473978371099486">Private Nachhilfe</translation>
 <translation id="1871208020102129563">Der Proxy ist zur Verwendung von festen Proxyservern konfiguriert, nicht zur Verwendung einer PAC-Script-URL.</translation>
@@ -1426,7 +1427,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um in den Chrome-Einstellungen zu verwalten, welche Informationen synchronisiert werden</translation>
 <translation id="3203025201812691413">URL darf nicht leer sein</translation>
 <translation id="320323717674993345">Zahlung abbrechen</translation>
-<translation id="3204534477198689393">Damit du bessere Vorschläge erhalten und Formulare noch schneller ausfüllen kannst, können die Inhalte und URLs der von dir besuchten Seiten in einem privaten Bereich in der Cloud verarbeitet werden.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> enthält möglicherweise nicht jugendfreie Inhalte</translation>
 <translation id="3207960819495026254">Mit einem Lesezeichen versehen</translation>
 <translation id="3208701679386778924">Bitte sende einen Bericht, damit wir ChromeOS-Updates weiter verbessern können.</translation>
@@ -4014,6 +4014,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /> zu diesem Problem.</translation>
 <translation id="7213191991901907140">Teile uns deine Erfahrungen mit</translation>
 <translation id="7219179957768738017">Die Verbindung verwendet <ph name="SSL_VERSION" />.</translation>
+<translation id="7219197639442810756">Von Gemini vorgeschlagen</translation>
 <translation id="7220786058474068424">Verarbeitung läuft</translation>
 <translation id="7221855153210829124">Benachrichtigungen anzeigen</translation>
 <translation id="7222232353993864120">E-Mail-Adresse</translation>
@@ -4527,6 +4528,7 @@ Weitere Details:
 <translation id="7972714317346275248">PKCS #1 SHA-384 mit RSA-Verschlüsselung</translation>
 <translation id="7976053965094442846">Die Liste der Anbieter von „Jetzt kaufen, später bezahlen“, die für Ratenzahlung verfügbar sind. Tastatur ausgeblendet.</translation>
 <translation id="7976214039405368314">Zu viele Anfragen</translation>
+<translation id="7977029776654598145">Bei Verwendung</translation>
 <translation id="7977538094055660992">Ausgabegerät</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Vor <ph name="TIME_COUNT" /> Min.}=1{Vor <ph name="TIME_COUNT" /> Std.}other{Vor <ph name="TIME_COUNT" /> Tagen}}</translation>
 <translation id="7979595116210197019">Gastronomie und Catering</translation>
@@ -4954,6 +4956,7 @@ Weitere Details:
 <translation id="8688672835843460752">Verfügbar</translation>
 <translation id="868922510921656628">Seiten pro Satz</translation>
 <translation id="8694684557210599098">Fahrzeug hinzufügen</translation>
+<translation id="8696297579102085705">An mein Gerät senden</translation>
 <translation id="8698428283892912525">Chrome verfügt über integrierte Sicherheitsfunktionen, die dich beim Surfen schützen. Eine dieser Funktionen, Google Safe Browsing, hat auf dieser Website kürzlich <ph name="BEGIN_LINK" />schädliche Software gefunden<ph name="END_LINK" />.</translation>
 <translation id="869891660844655955">Ablaufdatum</translation>
 <translation id="8699041776323235191">HID-Gerät</translation>

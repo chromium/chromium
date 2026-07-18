@@ -565,6 +565,7 @@
 <translation id="1855370856221982654">Бокс</translation>
 <translation id="1862788842908766795">Атқарушы және басқарушы жұмыс орындары</translation>
 <translation id="1863257867908022953">12-науа</translation>
+<translation id="1863374797460198869">Чат жасырылды</translation>
 <translation id="186539747722034544">Кабельдік және жерсеріктік провайдерлер</translation>
 <translation id="1870473978371099486">Жеке сабақ беру қызметтері</translation>
 <translation id="1871208020102129563">Прокси .pac сценарий URL мекенжайын емес, бекітілген прокси серверлерін пайдалануға орнатылған.</translation>
@@ -1425,7 +1426,6 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome параметрлеріне кіріп, синхрондалатын ақпаратты басқару үшін Tab, сосын Enter пернелерін басыңыз.</translation>
 <translation id="3203025201812691413">URL бос болмауы керек</translation>
 <translation id="320323717674993345">Төлемнен бас тарту</translation>
-<translation id="3204534477198689393">Ұсыныстарды жақсарту және үлгілерді жылдам толтыру үшін сіз кірген беттердің контенті мен URL мекенжайлары бұлттағы құпия кеңістікте өңделуі мүмкін.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> веб-сайтында ересектерге арналған контент болуы мүмкін.</translation>
 <translation id="3207960819495026254">Бетбелгі қойылған</translation>
 <translation id="3208701679386778924">Қосымша ChromeOS жаңартуларын жақсарта алуымыз үшін есеп жіберіңіз.</translation>
@@ -4528,6 +4528,7 @@
 <translation id="7972714317346275248">RSA шифрлауы бар PKCS #1 SHA-384</translation>
 <translation id="7976053965094442846">Бөліп төлеу қызметтері қолжетімді. Пернетақта жасырылды.</translation>
 <translation id="7976214039405368314">Сұраулар саны өте көп.</translation>
+<translation id="7977029776654598145">Қай кезде қолданылады?</translation>
 <translation id="7977538094055660992">Шығару құрылғысы</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> мин бұрын}=1{<ph name="TIME_COUNT" /> сағ бұрын}other{<ph name="TIME_COUNT" /> күн бұрын}}</translation>
 <translation id="7979595116210197019">Тамақтану қызметі</translation>
@@ -4622,7 +4623,6 @@
 <translation id="8134058435519644366">Жұмысқа қабылдау және жұмысқа тұру</translation>
 <translation id="8135546115396015134">сол жақ перне</translation>
 <translation id="8137456439814903304">Қуат және коммуналдық қызметтер</translation>
-<translation id="8138591088112729119">Personal Intelligence функциясымен істейді.</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 ай бұрын жасалды.}other{{NUM_MONTHS} ай бұрын жасалды.}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, қазіргі әдепкі жүйе. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF нұсқасы:</translation>
@@ -4955,6 +4955,7 @@
 <translation id="8688672835843460752">Қолжетімді</translation>
 <translation id="868922510921656628">Әр жиынтықтағы беттер саны</translation>
 <translation id="8694684557210599098">Көлік құралын қосу</translation>
+<translation id="8696297579102085705">Құрылғыға жіберу</translation>
 <translation id="8698428283892912525">Chrome-ның браузерді пайдалану кезінде қорғайтын ендірілген қауіпсіздік мүмкіндіктері бар. Солардың бірі — Google Safe Browsing. Ол сіз кіргіңіз келген сайтта <ph name="BEGIN_LINK" />жақында бір зиянды бағдарламалық құралды анықтады<ph name="END_LINK" />.</translation>
 <translation id="869891660844655955">Аяқталу мерзімі</translation>
 <translation id="8699041776323235191">HID құрылғысы</translation>

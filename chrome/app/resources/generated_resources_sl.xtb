@@ -1186,7 +1186,6 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1910721550319506122">Dobrodošli!</translation>
 <translation id="1910736334623230603">Iskanje več slik ni mogoče. Dodajte sliko po sliko.</translation>
 <translation id="1910908536872421421">Chrome za preizkušanje različice <ph name="BROWSER_VERSION" /> je namenjen samo samodejnemu preizkušanju. Za redno brskanje uporabite standardno različico Chroma, ki se samodejno posodablja.</translation>
-<translation id="1912867150686509584">Oglejte si več sestankov v Koledarju</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Začasno zaustavite zavihek, ki upočasnjuje brskalnik}one{Začasno zaustavite zavihke, ki upočasnjujejo brskalnik}two{Začasno zaustavite zavihke, ki upočasnjujejo brskalnik}few{Začasno zaustavite zavihke, ki upočasnjujejo brskalnik}other{Začasno zaustavite zavihke, ki upočasnjujejo brskalnik}}</translation>
 <translation id="1913749768968678106">Predvajanje, shranjevanje in deljenje</translation>
 <translation id="19147273405311768">Ponastavitev orodne vrstice na privzete nastavitve</translation>
@@ -4271,6 +4270,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="4274673989874969668">Ko zapustite spletno mesto, se ta običajno še naprej sinhronizira, da dokonča opravila, kot je nalaganje fotografij ali pošiljanje sporočila v klepetu.</translation>
 <translation id="4275291496240508082">Zvok ob zagonu</translation>
 <translation id="4275397969489577657">Omogočanje beleženja toka dogodkov</translation>
+<translation id="4275663329226226506">Predstavnost</translation>
 <translation id="4275788652681621337">Zapiranje stranskega podokna</translation>
 <translation id="4275830172053184480">Znova zaženite napravo.</translation>
 <translation id="4276390967705106170">Odpri v novem zavihku brskalnika</translation>
@@ -9929,7 +9929,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8693862390730570097">Ne dovoli samodejnega odpiranja funkcije »Pomagaj mi pisati«</translation>
 <translation id="8694596275649352090">Zakleni v načinu pripravljenosti ali ko je pokrov zaprt</translation>
 <translation id="8695825812785969222">Odpri &amp;mesto ...</translation>
-<translation id="8696297579102085705">Pošlji v napravo</translation>
 <translation id="869884720829132584">Meni programov</translation>
 <translation id="869891660844655955">Datum izteka</translation>
 <translation id="8699296325072357994">Vsebina s strani z gesli in povezani podatki se pošiljajo Googlu in jih pregledajo pregledovalci. Vaše geslo je šifrirano in ga nihče ne vidi. <ph name="PASSWORD_CHANGE" /></translation>

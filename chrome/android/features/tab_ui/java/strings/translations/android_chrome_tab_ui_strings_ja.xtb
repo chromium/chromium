@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{タブのグループ化を解除}other{タブのグループ化を解除}}</translation>
 <translation id="2271452184061378400">タブグループはここに保存されます</translation>
 <translation id="2277224997687551299">グループ名を編集</translation>
+<translation id="2289567621059034186">下の新しいタブ</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{タブをブックマークに追加}other{タブをブックマークに追加}}</translation>
 <translation id="2359808026110333948">続行</translation>
 <translation id="2371084566192454134">タブとタブグループ</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">タブを横方向に表示</translation>
 <translation id="31806439105337256">タブを縦方向に表示</translation>
 <translation id="3194464645767632461">評価</translation>
+<translation id="3228962656492373217">下のタブを閉じる</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個のタブをグループに追加}other{<ph name="TABS_COUNT_MANY" /> 個のタブをグループに追加}}</translation>
 <translation id="3328308545011660196">おすすめ: <ph name="NUMBER_OF_TABS" /> 個のタブは関連しているようです。グループ化しますか？</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{アクティブでない状態で 1 日経過}other{アクティブでない状態で <ph name="DAY_COUNT_MANY" /> 日経過}}</translation>

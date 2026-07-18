@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Одгрупирај ја картичката}one{Одгрупирај ги картичките}other{Одгрупирај ги картичките}}</translation>
 <translation id="2271452184061378400">Вашите групи картички се зачувани овде</translation>
 <translation id="2277224997687551299">Изменете го името на групата</translation>
+<translation id="2289567621059034186">Нова картичка подолу</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Обележи ја картичката}one{Обележи ги картичките}other{Обележи ги картичките}}</translation>
 <translation id="2359808026110333948">Продолжи</translation>
 <translation id="2371084566192454134">Картички и групи картички</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">Прикажи ги картичките хоризонтално</translation>
 <translation id="31806439105337256">Прикажи ги картичките вертикално</translation>
 <translation id="3194464645767632461">оценување</translation>
+<translation id="3228962656492373217">Затвори ги картичките подолу</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Додајте <ph name="TABS_COUNT_ONE" /> картичка во групата}one{Додајте <ph name="TABS_COUNT_MANY" /> картичка во групата}other{Додајте <ph name="TABS_COUNT_MANY" /> картички во групата}}</translation>
 <translation id="3328308545011660196">Предлог: <ph name="NUMBER_OF_TABS" /> картички изгледаат поврзани. Да се групираат?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{По неактивност од 1 ден}one{По неактивност од <ph name="DAY_COUNT_MANY" /> ден}other{По неактивност од <ph name="DAY_COUNT_MANY" /> дена}}</translation>

@@ -506,7 +506,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="175656076281618225">Iluzja</translation>
 <translation id="1757773103848038814">Czcionka o stałej szerokości</translation>
 <translation id="1757935267918149452">Przycisk Zmień hasło do Google; aktywuj, aby zmienić hasło do konta Google</translation>
-<translation id="1759776526873274358">Autouzupełnianie kodów weryfikacyjnych używanych przez witryny w celu poprawienia bezpieczeństwa. Chrome może pobierać te kody z Gmaila. <ph name="BEGIN_LINK" />Dowiedz się więcej o tej funkcji<ph name="LINK_END" /></translation>
+<translation id="1759776526873274358">Autouzupełnianie kodów weryfikacyjnych używanych przez witryny w celu poprawy bezpieczeństwa. Chrome może pobierać te kody z Gmaila. <ph name="BEGIN_LINK" />Dowiedz się więcej o tej funkcji<ph name="LINK_END" /></translation>
 <translation id="1763864636252898013">Ten serwer nie mógł udowodnić, że należy do <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa nie jest zaufany w systemie operacyjnym tego urządzenia. Może to być spowodowane błędną konfiguracją lub przechwyceniem połączenia przez atakującego.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Uruchom Diagnostykę sieci systemu Windows<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Zdjęcie (archiwalne)</translation>
@@ -565,6 +565,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1855370856221982654">Boks</translation>
 <translation id="1862788842908766795">Praca na stanowiskach kierowniczych</translation>
 <translation id="1863257867908022953">Taca 12</translation>
+<translation id="1863374797460198869">Czat jest ukryty</translation>
 <translation id="186539747722034544">Operatorzy kablowi i satelitarni</translation>
 <translation id="1870473978371099486">Korepetycje i prywatne lekcje</translation>
 <translation id="1871208020102129563">Proxy skonfigurowano do używania stałych serwerów proxy, a nie URL-a skryptu PAC.</translation>
@@ -1426,7 +1427,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby zarządzać w ustawieniach Chrome informacjami, które mają być synchronizowane, naciśnij Tab, a potem Enter</translation>
 <translation id="3203025201812691413">URL nie może być pusty</translation>
 <translation id="320323717674993345">Anuluj płatność</translation>
-<translation id="3204534477198689393">Aby ulepszać sugestie i szybciej wypełniać formularze, zawartość i adresy URL odwiedzanych stron mogą być przetwarzane w przestrzeni prywatnej w chmurze.</translation>
 <translation id="3207830513221832868">Strona <ph name="BLOCKED_URL" /> może zawierać treści dla dorosłych</translation>
 <translation id="3207960819495026254">Dodano do zakładek</translation>
 <translation id="3208701679386778924">Prześlij raport, abyśmy mogli ulepszać kolejne aktualizacje ChromeOS.</translation>
@@ -4530,6 +4530,7 @@ Dodatkowe informacje:
 <translation id="7972714317346275248">PKCS #1, SHA-384 z szyfrowaniem RSA</translation>
 <translation id="7976053965094442846">Wydawcy korzystający z opcji „Kup teraz, zapłać później” dostępni w przypadku płatności ratalnych. Klawiatura jest ukryta.</translation>
 <translation id="7976214039405368314">Zbyt wiele żądań</translation>
+<translation id="7977029776654598145">Kiedy jej używasz</translation>
 <translation id="7977538094055660992">Urządzenie wyjściowe</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> min temu}=1{<ph name="TIME_COUNT" /> godz. temu}few{<ph name="TIME_COUNT" /> d temu}many{<ph name="TIME_COUNT" /> d temu}other{<ph name="TIME_COUNT" /> d temu}}</translation>
 <translation id="7979595116210197019">Branża żywieniowa</translation>
@@ -4624,7 +4625,6 @@ Dodatkowe informacje:
 <translation id="8134058435519644366">Rekrutacja i zatrudnianie</translation>
 <translation id="8135546115396015134">lewy klawisz</translation>
 <translation id="8137456439814903304">Energetyka i usługi komunalne</translation>
-<translation id="8138591088112729119">Wykorzystuje spersonalizowaną inteligencję</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Utworzono miesiąc temu}few{Utworzono {NUM_MONTHS} miesiące temu}many{Utworzono {NUM_MONTHS} miesięcy temu}other{Utworzono {NUM_MONTHS} miesiąca temu}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, bieżąca przeglądarka domyślna. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Wersja pliku PDF:</translation>
@@ -4957,6 +4957,7 @@ Dodatkowe informacje:
 <translation id="8688672835843460752">Dostępne</translation>
 <translation id="868922510921656628">Strony na zestaw</translation>
 <translation id="8694684557210599098">Dodaj pojazd</translation>
+<translation id="8696297579102085705">Wyślij na swoje urządzenie</translation>
 <translation id="8698428283892912525">Chrome ma wbudowane zabezpieczenia, które chronią Cię podczas korzystania z przeglądarki, takie jak Bezpieczne przeglądanie Google. Niedawno ta funkcja <ph name="BEGIN_LINK" />wykryła szkodliwe oprogramowanie<ph name="END_LINK" /> na odwiedzonej przez Ciebie stronie.</translation>
 <translation id="869891660844655955">Data wygaśnięcia</translation>
 <translation id="8699041776323235191">Urządzenie HID</translation>

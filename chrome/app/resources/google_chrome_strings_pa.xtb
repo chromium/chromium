@@ -241,7 +241,6 @@
 <translation id="3282568296779691940">Chrome 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="3286538390144397061">ਹੁਣ ਰੀਸਟਾਰਟ ਕਰੋ</translation>
 <translation id="3292333338048274092">ਫਿਰ ਤੁਹਾਨੂੰ Chrome ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਦੀ ਲੋੜ ਪਵੇਗੀ।</translation>
-<translation id="3324218984287646518">ਇਸ ਵੀਡੀਓ ਬਾਰੇ Google Lens ਨੂੰ ਪੁੱਛੋ</translation>
 <translation id="3327226547491422998">ਬਾਅਦ ਵਿੱਚ, Chrome ਤੁਹਾਨੂੰ ਪੁੱਛ ਸਕਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਰੱਖਿਅਤ ਕੀਤੀ ਜਾਣਕਾਰੀ ਨੂੰ ਵਰਤ ਕੇ ਫ਼ਾਰਮਾਂ ਨੂੰ ਆਟੋਫਿਲ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ ਜਾਂ ਨਹੀਂ</translation>
 <translation id="3352986031709923790">ਖੋਜ ਖੇਤਰ ਦਾ ਸਿਖਰਲਾ ਸੱਜਾ ਕੋਨਾ: ਸੱਜੇ ਤੋਂ <ph name="RIGHT" />%, ਸਿਖਰ ਤੋਂ <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome ਸਹਾਇਕ</translation>
@@ -262,8 +261,6 @@
 <translation id="3576528680708590453">ਤੁਹਾਡੇ ਸਿਸਟਮ ਪ੍ਰਸ਼ਾਸਕ ਨੇ <ph name="TARGET_URL_HOSTNAME" /> ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਵਾਸਤੇ ਕੋਈ ਵਿਕਲਪਿਕ ਬ੍ਰਾਊਜ਼ਰ ਖੋਲ੍ਹਣ ਲਈ Google Chrome ਦਾ ਸੰਰੂਪਣ ਕੀਤਾ ਹੈ।</translation>
 <translation id="3582972582564653026">ਸਿੰਕ ਕਰਕੇ ਆਪਣੇ ਡੀਵਾਈਸਾਂ ਵਿਚਾਲੇ Chrome ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਓ</translation>
 <translation id="3583751698304738917">ਤੁਸੀਂ ਪਹਿਲਾਂ ਹੀ ਕਿਸੇ ਹੋਰ Chrome ਪ੍ਰੋਫਾਈਲ ਵਿੱਚ <ph name="USER_EMAIL_ADDRESS" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਹੋਇਆ ਹੈ</translation>
-<translation id="358381413217813387">ਇਸ ਪੰਨੇ ਨੂੰ Google Lens ਨਾਲ ਖੋਜੋ</translation>
-<translation id="3589519427766620380">ਇਸ ਪੰਨੇ ਬਾਰੇ Google Lens ਤੋਂ ਪੁੱਛੋ</translation>
 <translation id="3595784445906693824">ਕੀ Chrome ਦੇ ਅੰਦਰ ਇੱਕ ਨਵੇਂ ਪ੍ਰੋਫਾਈਲ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨਾ ਹੈ?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਚਾਹੁੰਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਅੱਪਡੇਟ ਲਾਗੂ ਕਰਨ ਲਈ Chrome ਨੂੰ ਮੁੜ-ਲਾਂਚ ਕਰੋ}=1{ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਚਾਹੁੰਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਅੱਪਡੇਟ ਲਾਗੂ ਕਰਨ ਲਈ Chrome ਨੂੰ ਮੁੜ-ਲਾਂਚ ਕਰੋ। ਤੁਹਾਡੀ ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਦੁਬਾਰਾ ਨਹੀਂ ਖੁੱਲ੍ਹੇਗੀ।}other{ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਚਾਹੁੰਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਅੱਪਡੇਟ ਲਾਗੂ ਕਰਨ ਲਈ Chrome ਨੂੰ ਮੁੜ-ਲਾਂਚ ਕਰੋ। ਤੁਹਾਡੀਆਂ # ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਦੁਬਾਰਾ ਨਹੀਂ ਖੁੱਲ੍ਹਣਗੀਆਂ।}}</translation>
 <translation id="3597003331831379823">ਐਲੀਵੇਟਿਡ ਵਿਸ਼ੇਸ਼-ਅਧਿਕਾਰਾਂ ਨਾਲ ਸੈੱਟਅੱਪ ਚਲਾਉਣਾ ਅਸਫਲ ਰਿਹਾ। <ph name="METAINSTALLER_ERROR" /></translation>
@@ -358,7 +355,6 @@
 <translation id="4501471624619070934">ਇਸ ਦੇਸ਼ ਵਿੱਚ ਪਹੁੰਚ ਪ੍ਰਤਿਬੰਧਿਤ ਹੋਣ ਕਾਰਨ ਸਥਾਪਤ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ।</translation>
 <translation id="4571503333518166079">Chrome ਸੂਚਨਾ ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
 <translation id="4580939929828762295">Google Password Manager ਨਾਲ ਸੁਰੱਖਿਅਤ ਰਹੋ</translation>
-<translation id="4592634244097223647">ਇਸ ਚਿੱਤਰ ਬਾਰੇ Google ਨੂੰ ਪੁੱਛੋ</translation>
 <translation id="459622048091363950">Chrome ਤੱਕ ਪਹੁੰਚ ਹੋਣ 'ਤੇ, ਵੈੱਬਸਾਈਟਾਂ ਤੁਹਾਨੂੰ ਪਹੁੰਚ ਲਈ ਪੁੱਛ ਸਕਣਗੀਆਂ।</translation>
 <translation id="4598116752460667024">ਸੂਚੀ ਵਿੱਚੋਂ ਕੋਈ ਵੀ ਪ੍ਰਕਿਰਿਆ ਖੋਜੋ।</translation>
 <translation id="4600710005438004015">Chrome ਨਵੀਨਤਮ ਵਰਜਨ 'ਤੇ ਅੱਪਡੇਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ, ਇਸ ਲਈ ਤੁਹਾਨੂੰ ਨਵੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਅਤੇ ਸੁਰੱਖਿਆ ਸਥਿਰ ਨਹੀਂ ਮਿਲ ਰਹੇ ਹਨ।</translation>
@@ -662,7 +658,6 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="7572537927358445944">ਬੰਦ ਹੈ • Chrome ਇਸ ਗੱਲ ਦੀ ਪੁਸ਼ਟੀ ਨਹੀਂ ਕਰ ਸਕਦਾ ਕਿ ਇਹ ਐਕਸਟੈਂਸ਼ਨ ਕਿੱਥੋਂ ਆਉਂਦੀ ਹੈ</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> ਸਥਾਪਨਾਕਾਰ</translation>
 <translation id="7596160425942761210">ਤੁਸੀਂ ਸੁਨੇਹਿਆਂ, ਦਸਤਾਵੇਜ਼ਾਂ ਅਤੇ ਹੋਰ ਐਪਾਂ ਵਿੱਚ ਦਿੱਤੇ ਲਿੰਕਾਂ 'ਤੇ ਕਲਿੱਕ ਕਰ ਕੇ ਕਿਸੇ ਵੀ ਵੇਲੇ Chrome ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੇ ਹੋ</translation>
-<translation id="7602868996817972616">Google ਤੋਂ ਇਸ ਪੰਨੇ ਬਾਰੇ ਪੁੱਛੋ</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7627609214560473136">ਆਪਣੇ ਡਾਟੇ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਲਈ, Chrome ਨੂੰ ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ ਤੋਂ ਇਜਾਜ਼ਤਾਂ ਹਟਾਉਣ ਦਿਓ ਜਿਨ੍ਹਾਂ 'ਤੇ ਤੁਸੀਂ ਹਾਲ ਹੀ ਵਿੱਚ ਨਹੀਂ ਗਏ ਹੋ।</translation>
 <translation id="7629695634924605473">Chrome ਤੁਹਾਨੂੰ ਇਹ ਗੱਲ ਦੱਸਦਾ ਹੈ ਕਿ ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ ਨਾਲ ਪਹਿਲਾਂ ਕਦੇ ਛੇੜਛਾੜ ਹੋਈ ਹੈ ਜਾਂ ਨਹੀਂ</translation>
@@ -787,7 +782,6 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="8712637175834984815">ਸਮਝ ਲਿਆ</translation>
 <translation id="8712767363896337380">ਲਗਭਗ ਅੱਪ-ਟੂ-ਡੇਟ! ਅੱਪਡੇਟ ਨੂੰ ਪੂਰਾ ਕਰਨ ਲਈ Chrome ਨੂੰ ਮੁੜ-ਲਾਂਚ ਕਰੋ।</translation>
 <translation id="8718062187489036808">Chrome ਤੋਂ ਸਾਈਨ ਆਊਟ ਕਰੋ</translation>
-<translation id="8725440680697264016">ਇਸ ਵੀਡੀਓ ਬਾਰੇ Google ਨੂੰ ਪੁੱਛੋ</translation>
 <translation id="873133009373065397">Google Chrome ਪੂਰਵ-ਨਿਰਧਾਰਤ ਬ੍ਰਾਊਜ਼ਰ ਦਾ ਪਤਾ ਨਹੀਂ ਲਗਾ ਸਕਦਾ ਹੈ ਜਾਂ ਉਸਨੂੰ ਸੈੱਟ ਨਹੀਂ ਕਰ ਸਕਦਾ ਹੈ</translation>
 <translation id="8747073452963259673">ਖੋਜ ਖੇਤਰ ਦਾ ਹੇਠਲਾ ਖੱਬਾ ਕੋਨਾ: ਖੱਬੇ ਤੋਂ <ph name="LEFT" />%, ਹੇਠਾਂ ਤੋਂ <ph name="BOTTOM" />%</translation>
 <translation id="8748735421235723888">Chrome ਅਕਿਰਿਆਸ਼ੀਲ ਟੈਬਾਂ ਵਿੱਚੋਂ ਮੈਮੋਰੀ ਖਾਲੀ ਕਰਦਾ ਹੈ। ਇਸ ਨਾਲ ਕਿਰਿਆਸ਼ੀਲ ਟੈਬਾਂ ਅਤੇ ਹੋਰ ਐਪਾਂ ਨੂੰ ਕੰਪਿਊਟਰ ਦੇ ਜ਼ਿਆਦਾ ਸਰੋਤ ਮਿਲਦੇ ਹਨ ਅਤੇ Chrome ਤੇਜ਼ ਚੱਲਦਾ ਰਹਿੰਦਾ ਹੈ। ਜਦੋਂ ਤੁਸੀਂ ਅਕਿਰਿਆਸ਼ੀਲ ਟੈਬਾਂ 'ਤੇ ਵਾਪਸ ਜਾਂਦੇ ਹੋ, ਤਾਂ ਤੁਹਾਡੀਆਂ ਅਕਿਰਿਆਸ਼ੀਲ ਟੈਬਾਂ ਆਪਣੇ ਆਪ ਦੁਬਾਰਾ ਕਿਰਿਆਸ਼ੀਲ ਹੋ ਜਾਂਦੀਆਂ ਹਨ। <ph name="BEGIN_LINK" />ਮੈਮੋਰੀ ਸੇਵਰ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
@@ -803,7 +797,6 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਇਸਨੂੰ ਹਟਾ ਦਿਓ}one{Chrome ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਇਸਨੂੰ ਹਟਾ ਦਿਓ}other{Chrome ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਇਨ੍ਹਾਂ ਨੂੰ ਹਟਾ ਦਿਓ}}</translation>
 <translation id="8862326446509486874">ਤੁਹਾਡੇ ਕੋਲ ਸਿਸਟਮ-ਪੱਧਰ ਸਥਾਪਤ ਕਰਨ ਲਈ ਉਚਿਤ ਅਧਿਕਾਰ ਨਹੀਂ ਹਨ। ਪ੍ਰਬੰਧਕ ਦੇ ਤੌਰ 'ਤੇ ਦੁਬਾਰਾ ਸਥਾਪਨਾਕਾਰ ਚਲਾਉਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="8865415417596392024">ਤੁਹਾਡੇ ਖਾਤੇ ਵਿਚਲਾ Chrome ਡਾਟਾ</translation>
-<translation id="8883862939660515976">ਇਸ ਚਿੱਤਰ ਬਾਰੇ Google Lens ਨੂੰ ਪੁੱਛੋ</translation>
 <translation id="8914504000324227558">Chrome ਨੂੰ ਮੁੜ-ਲਾਂਚ ਕਰੋ</translation>
 <translation id="8920304659326707347">iOS 'ਤੇ Chrome ਨਾਲ ਜਿੱਥੇ ਛੱਡਿਆ ਸੀ, ਉੱਥੋਂ ਹੀ ਦੇਖਣਾ ਸ਼ੁਰੂ ਕਰੋ।</translation>
 <translation id="8922998289262614701">Chrome ਤੋਂ ਇਸ ਐਪ ਦੇ ਡਾਟੇ ਨੂੰ ਹਟਾਓ</translation>

@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{เลิกจัดกลุ่มแท็บ}other{เลิกจัดกลุ่มแท็บ}}</translation>
 <translation id="2271452184061378400">กลุ่มแท็บจะบันทึกไว้ที่นี่</translation>
 <translation id="2277224997687551299">แก้ไขชื่อกลุ่ม</translation>
+<translation id="2289567621059034186">แท็บใหม่ด้านล่าง</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{แท็บบุ๊กมาร์ก}other{แท็บบุ๊กมาร์ก}}</translation>
 <translation id="2359808026110333948">ต่อไป</translation>
 <translation id="2371084566192454134">แท็บและกลุ่มแท็บ</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">แสดงแท็บในแนวนอน</translation>
 <translation id="31806439105337256">แสดงแท็บในแนวตั้ง</translation>
 <translation id="3194464645767632461">การให้คะแนน</translation>
+<translation id="3228962656492373217">ปิดแท็บด้านล่าง</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{เพิ่ม <ph name="TABS_COUNT_ONE" /> แท็บไปยังกลุ่ม}other{เพิ่ม <ph name="TABS_COUNT_MANY" /> แท็บไปยังกลุ่ม}}</translation>
 <translation id="3328308545011660196">คำแนะนำ: ดูเหมือนว่ามีแท็บที่เกี่ยวข้อง <ph name="NUMBER_OF_TABS" /> แท็บ ต้องการจัดกลุ่มแท็บไหม</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{หลังจากไม่มีการใช้งาน 1 วัน}other{หลังจากไม่มีการใช้งาน <ph name="DAY_COUNT_MANY" /> วัน}}</translation>

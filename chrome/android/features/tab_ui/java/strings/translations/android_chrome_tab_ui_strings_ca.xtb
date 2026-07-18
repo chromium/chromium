@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Desagrupa la pestanya}other{Desagrupa les pestanyes}}</translation>
 <translation id="2271452184061378400">Els teus grups de pestanyes es desen aquí</translation>
 <translation id="2277224997687551299">Edita el nom del grup</translation>
+<translation id="2289567621059034186">Pestanya nova a sota</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Pestanya d'adreces d'interès}other{Pestanyes d'adreces d'interès}}</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2371084566192454134">Pestanyes i grups de pestanyes</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">Mostra les pestanyes horitzontalment</translation>
 <translation id="31806439105337256">Mostra les pestanyes verticalment</translation>
 <translation id="3194464645767632461">puntuació</translation>
+<translation id="3228962656492373217">Tanca les pestanyes de sota</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Afegeix <ph name="TABS_COUNT_ONE" /> pestanya al grup}other{Afegeix <ph name="TABS_COUNT_MANY" /> pestanyes al grup}}</translation>
 <translation id="3328308545011660196">Suggeriment: sembla que hi ha <ph name="NUMBER_OF_TABS" /> pestanyes relacionades. Vols agrupar-les?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Després d'1 dia d'inactivitat}other{Després de <ph name="DAY_COUNT_MANY" /> dies d'inactivitat}}</translation>

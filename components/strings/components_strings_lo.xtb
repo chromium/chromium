@@ -565,6 +565,7 @@
 <translation id="1855370856221982654">ຕີມວຍ</translation>
 <translation id="1862788842908766795">ວຽກຜູ້ບໍລິຫານ ແລະ ການຈັດການ</translation>
 <translation id="1863257867908022953">ຖາດ 12</translation>
+<translation id="1863374797460198869">ການສົນທະນາຖືກເຊື່ອງໄວ້</translation>
 <translation id="186539747722034544">ຜູ້ໃຫ້ບໍລິການສາຍເຄເບິ້ນ ແລະ ດາວທຽມ</translation>
 <translation id="1870473978371099486">ບໍລິການສອນພິເສດສ່ວນຕົວ</translation>
 <translation id="1871208020102129563">ພຣັອກຊີໄດ້ຖືກຕັ້ງຂຶ້ນ ເພື່ອໃຊ້ເຊີບເວີພຣັອກຊີທີ່ກໍານົດໄວ້, ບໍ່ແມ່ນ URL ຕົວໜັງສື  .pac.</translation>
@@ -1426,7 +1427,6 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອຈັດການວ່າຂໍ້ມູນໃດທີ່ທ່ານຈະຊິ້ງຂໍ້ມູນໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="3203025201812691413">ຕ້ອງລະບຸ URL</translation>
 <translation id="320323717674993345">ຍົກເລີກການຈ່າຍເງິນ</translation>
-<translation id="3204534477198689393">ເພື່ອປັບປຸງຄຳແນະນຳ ແລະ ຕື່ມຂໍ້ມູນໃສ່ແບບຟອມໄດ້ໄວຂຶ້ນ, ລະບົບຈະປະມວນຜົນເນື້ອຫາ ແລະ URL ຂອງໜ້າເວັບທີ່ທ່ານເຂົ້າເບິ່ງໃນພື້ນທີ່ສ່ວນບຸກຄົນໃນຄລາວ.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> ອາດມີເນື້ອຫາສຳລັບຜູ້ໃຫຍ່</translation>
 <translation id="3207960819495026254">ໃສ່ບຸກ​ມາກ​໌​ແລ້ວ</translation>
 <translation id="3208701679386778924">ກະລຸນາສົ່ງລາຍງານເພື່ອໃຫ້ພວກເຮົາສາມາດປັບປຸງການອັບເດດ ChromeOS ເພີ່ມເຕີມໄດ້.</translation>
@@ -4529,6 +4529,7 @@
 <translation id="7972714317346275248">PKCS #1 SHA-384 ດ້ວຍການໃສ່ລະຫັດ RSA</translation>
 <translation id="7976053965094442846">ຜູ້ອອກບໍລິການຊື້ກ່ອນຈ່າຍນຳຫຼັງທີ່ພ້ອມໃຫ້ຈ່າຍຜ່ອນ. ແປ້ນພິມຖືກເຊື່ອງຢູ່.</translation>
 <translation id="7976214039405368314">ມີການຮ້ອງຂໍຫຼາຍເກີນໄປ</translation>
+<translation id="7977029776654598145">ເມື່ອໃຊ້</translation>
 <translation id="7977538094055660992">ອຸປະກອນເຈ້ຍອອກ</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> ນາທີກ່ອນ}=1{<ph name="TIME_COUNT" /> ຊົ່ວໂມງກ່ອນ}other{<ph name="TIME_COUNT" /> ມື້ກ່ອນ}}</translation>
 <translation id="7979595116210197019">ບໍລິການອາຫານ</translation>
@@ -4623,7 +4624,6 @@
 <translation id="8134058435519644366">ການຈັດຫາ ແລະ ຮັບພະນັກງານ</translation>
 <translation id="8135546115396015134">ປຸ່ມຊ້າຍ</translation>
 <translation id="8137456439814903304">ພະລັງງານ ແລະ ສາທາລະນຸປະໂພກ</translation>
-<translation id="8138591088112729119">ຂັບເຄື່ອນໂດຍ Personal Intelligence</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{ສ້າງເມື່ອ 1 ເດືອນກ່ອນ}other{ສ້າງເມື່ອ {NUM_MONTHS} ເດືອນກ່ອນ}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, ຄ່າເລີ່ມຕົ້ນປັດຈຸບັນ. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">ເວີຊັນ PDF:</translation>
@@ -4956,6 +4956,7 @@
 <translation id="8688672835843460752">ຍັງເຫຼືອ</translation>
 <translation id="868922510921656628">ໜ້າຕໍ່ຊຸດ</translation>
 <translation id="8694684557210599098">ເພີ່ມພາຫະນະ</translation>
+<translation id="8696297579102085705">ສົ່ງຫາອຸປະກອນຂອງທ່ານ</translation>
 <translation id="8698428283892912525">Chrome ມີຄຸນສົມບັດຄວາມປອດໄພໃນຕົວເພື່ອປົກປ້ອງທ່ານໃນລະຫວ່າງທີ່ທ່ານທ່ອງເວັບ — ເຊັ່ນ: Google Safe Browsing, ເຊິ່ງ <ph name="BEGIN_LINK" />ພົບຊອບແວທີ່ເປັນອັນຕະລາຍ<ph name="END_LINK" /> ເມື່ອບໍ່ດົນມານີ້ຢູ່ເວັບໄຊທີ່ທ່ານພະຍາຍາມເຂົ້າເບິ່ງ.</translation>
 <translation id="869891660844655955">ວັນ​ຫມົດ​ອາ​ຍຸ</translation>
 <translation id="8699041776323235191">ອຸປະກອນ HID</translation>

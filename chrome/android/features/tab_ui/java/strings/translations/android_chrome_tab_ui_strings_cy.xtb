@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Dadgrwpio tab}zero{Dadgrwpio tabiau}two{Dadgrwpio tabiau}few{Dadgrwpio tabiau}many{Dadgrwpio tabiau}other{Dadgrwpio tabiau}}</translation>
 <translation id="2271452184061378400">Mae eich grwpiau tabiau yn cael eu cadw yma</translation>
 <translation id="2277224997687551299">Golygu enw'r grŵp</translation>
+<translation id="2289567621059034186">Tab newydd isod</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Rhoi nod tudalen ar y tab}zero{Rhoi nod tudalen ar y tabiau}two{Rhoi nod tudalen ar y tabiau}few{Rhoi nod tudalen ar y tabiau}many{Rhoi nod tudalen ar y tabiau}other{Rhoi nod tudalen ar y tabiau}}</translation>
 <translation id="2359808026110333948">Parhau</translation>
 <translation id="2371084566192454134">Tabiau a grwpiau tabiau</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">Dangos tabiau'n llorweddol</translation>
 <translation id="31806439105337256">Dangos tabiau'n fertigol</translation>
 <translation id="3194464645767632461">sgôr</translation>
+<translation id="3228962656492373217">Cau'r tabiau isod</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Ychwanegu <ph name="TABS_COUNT_ONE" /> tab at grŵp}zero{Ychwanegu <ph name="TABS_COUNT_MANY" /> tab at grŵp}two{Ychwanegu <ph name="TABS_COUNT_MANY" /> dab at grŵp}few{Ychwanegu <ph name="TABS_COUNT_MANY" /> thab at grŵp}many{Ychwanegu <ph name="TABS_COUNT_MANY" /> thab at grŵp}other{Ychwanegu <ph name="TABS_COUNT_MANY" /> tab at grŵp}}</translation>
 <translation id="3328308545011660196">Awgrym: Mae <ph name="NUMBER_OF_TABS" /> o dabiau yn ymddangos yn berthnasol. Grwpio nhw?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Ar ôl 1 diwrnod yn anweithredol}zero{Ar ôl <ph name="DAY_COUNT_MANY" /> diwrnod yn anweithredol}two{Ar ôl <ph name="DAY_COUNT_MANY" /> ddiwrnod yn anweithredol}few{Ar ôl <ph name="DAY_COUNT_MANY" /> diwrnod yn anweithredol}many{Ar ôl <ph name="DAY_COUNT_MANY" /> diwrnod yn anweithredol}other{Ar ôl <ph name="DAY_COUNT_MANY" /> diwrnod yn anweithredol}}</translation>

@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Қойындыны топтан шығару}other{Қойындыларды топтан шығару}}</translation>
 <translation id="2271452184061378400">Қойындылар топтары осы жерде сақталады.</translation>
 <translation id="2277224997687551299">Топтың атауын өзгерту</translation>
+<translation id="2289567621059034186">Төмендегі жаңа қойынды</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Қойындыға бетбелгі қою}other{Қойындыларға бетбелгі қою}}</translation>
 <translation id="2359808026110333948">Жалғастыру</translation>
 <translation id="2371084566192454134">Қойындылар мен қойындылар топтары</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">Қойындыларды көлденеңінен көрсету</translation>
 <translation id="31806439105337256">Қойындыларды тігінен көрсету</translation>
 <translation id="3194464645767632461">бағасы</translation>
+<translation id="3228962656492373217">Төмендегі қойындыларды жабу</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> қойындыны топқа қосу}other{<ph name="TABS_COUNT_MANY" /> қойындыны топқа қосу}}</translation>
 <translation id="3328308545011660196">Ұсыныс: <ph name="NUMBER_OF_TABS" /> қойынды өзара қатысты сияқты. Олар топтастырылсын ба?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{1 күн әрекетсіз болғаннан кейін}other{<ph name="DAY_COUNT_MANY" /> күн әрекетсіз болғаннан кейін}}</translation>

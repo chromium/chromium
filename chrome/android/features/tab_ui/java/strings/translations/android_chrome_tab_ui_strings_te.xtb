@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ట్యాబ్‌ను అన్‌గ్రూప్ చేయండి}other{ట్యాబ్‌లను అన్‌గ్రూప్ చేయండి}}</translation>
 <translation id="2271452184061378400">మీ ట్యాబ్ గ్రూప్‌లు ఇక్కడ సేవ్ చేయబడ్డాయి</translation>
 <translation id="2277224997687551299">గ్రూప్ పేరును ఎడిట్ చేయండి</translation>
+<translation id="2289567621059034186">కింద కొత్త ట్యాబ్</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{ట్యాబ్‌ను బుక్‌మార్క్ చేయండి}other{ట్యాబ్‌లను బుక్‌మార్క్ చేయండి}}</translation>
 <translation id="2359808026110333948">కొనసాగించండి</translation>
 <translation id="2371084566192454134">ట్యాబ్‌లు, ట్యాబ్ గ్రూప్‌లు</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">ట్యాబ్‌లను హారిజాంటల్‌గా చూపండి</translation>
 <translation id="31806439105337256">ట్యాబ్‌లను వర్టికల్‌గా చూపండి</translation>
 <translation id="3194464645767632461">రేటింగ్</translation>
+<translation id="3228962656492373217">కింద ఉన్న ట్యాబ్‌లను మూసివేయండి</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ట్యాబ్‌ను గ్రూప్‌నకు జోడించండి}other{<ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లను గ్రూప్‌నకు జోడించండి}}</translation>
 <translation id="3328308545011660196">సూచన: <ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లు సంబంధించినవిగా అనిపిస్తున్నాయి. వాటిని గ్రూప్ చేయాలా?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{1 రోజు వరకు ఇన్‌యాక్టివ్‌గా ఉన్న తర్వాత}other{<ph name="DAY_COUNT_MANY" /> రోజుల వరకు ఇన్‌యాక్టివ్‌గా ఉన్న తర్వాత}}</translation>

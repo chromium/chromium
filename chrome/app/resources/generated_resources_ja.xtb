@@ -1176,7 +1176,6 @@
 <translation id="1910721550319506122">ようこそ！</translation>
 <translation id="1910736334623230603">複数の画像を検索することはできません。一度につき画像を 1 つだけ追加してください。</translation>
 <translation id="1910908536872421421">Chrome for Testing v<ph name="BROWSER_VERSION" /> は、自動テスト専用です。通常のブラウジングには、自動的に更新される標準版の Chrome をご使用ください。</translation>
-<translation id="1912867150686509584">カレンダーの他の会議を表示</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{ブラウザの動作を遅くしているタブを一時停止}other{ブラウザの動作を遅くしているタブを一時停止}}</translation>
 <translation id="1913749768968678106">キャスト、保存、共有</translation>
 <translation id="19147273405311768">ツールバーをデフォルトの設定にリセット</translation>
@@ -4256,6 +4255,7 @@
 <translation id="4274673989874969668">ユーザーがサイトから離れた後も、サイトは同期を継続して、写真のアップロードやチャット メッセージの送信などのタスクを完了することがあります</translation>
 <translation id="4275291496240508082">起動音</translation>
 <translation id="4275397969489577657">イベント ストリームのログを有効にする</translation>
+<translation id="4275663329226226506">メディア</translation>
 <translation id="4275788652681621337">サイドパネルを閉じる</translation>
 <translation id="4275830172053184480">デバイスの再起動</translation>
 <translation id="4276390967705106170">新しいブラウザタブで開く</translation>
@@ -9902,7 +9902,6 @@
 <translation id="8693862390730570097">「文書作成サポート」を自動的に開くことを許可しない</translation>
 <translation id="8694596275649352090">スリープ状態またはディスプレイを閉じたときにロックする</translation>
 <translation id="8695825812785969222">場所を開く（&amp;L）...</translation>
-<translation id="8696297579102085705">お使いのデバイスに送信</translation>
 <translation id="869884720829132584">アプリケーション メニュー</translation>
 <translation id="869891660844655955">有効期限</translation>
 <translation id="8699296325072357994">パスワード ページのコンテンツと関連情報は Google に送信され、人間のレビュアーによって確認されます。パスワードは暗号化され、人間が見ることはありません。<ph name="PASSWORD_CHANGE" /></translation>

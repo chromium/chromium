@@ -1177,7 +1177,6 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="1910721550319506122">Laipni lūdzam!</translation>
 <translation id="1910736334623230603">Nevar meklēt vairākus attēlus. Pievienojiet attēlus pa vienam.</translation>
 <translation id="1910908536872421421">Chrome for Testing versija <ph name="BROWSER_VERSION" /> ir paredzēta tikai automatizētajai testēšanai. Parastajai pārlūkošanai izmantojiet standarta Chrome versiju, kas tiek atjaunināta automātiski.</translation>
-<translation id="1912867150686509584">Skatīt citas sapulces Kalendārā</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Pārtrauciet tās cilnes darbību, kas palēnina pārlūka darbību}zero{Pārtrauciet to ciļņu darbību, kas palēnina pārlūka darbību}one{Pārtrauciet to ciļņu darbību, kas palēnina pārlūka darbību}other{Pārtrauciet to ciļņu darbību, kas palēnina pārlūka darbību}}</translation>
 <translation id="1913749768968678106">Apraidīt, saglabāt un kopīgot</translation>
 <translation id="19147273405311768">Atiestatīt rīkjoslu uz noklusējuma iestatījumiem</translation>
@@ -4257,6 +4256,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4274673989874969668">Pēc tam, kad aizverat vietni, tajā var tikt turpināta sinhronizācija, lai pabeigtu noteiktus uzdevumus, piemēram, fotoattēlu augšupielādi vai tērzēšanas ziņojuma nosūtīšanu.</translation>
 <translation id="4275291496240508082">Startēšanas skaņa</translation>
 <translation id="4275397969489577657">Iespējot notikumu plūsmas reģistrēšanu</translation>
+<translation id="4275663329226226506">Multivide</translation>
 <translation id="4275788652681621337">Aizvērt sānu paneli</translation>
 <translation id="4275830172053184480">Ierīces restartēšana</translation>
 <translation id="4276390967705106170">Atvērt jaunā pārlūka cilnē</translation>
@@ -9908,7 +9908,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8693862390730570097">Neļaut automātiski atvērt funkciju “Palīdziet man uzrakstīt”</translation>
 <translation id="8694596275649352090">Bloķēt miega režīmā vai kad vāks ir aizvērts</translation>
 <translation id="8695825812785969222">Atvērt atrašanās vietu...</translation>
-<translation id="8696297579102085705">Nosūtīt uz jūsu ierīci</translation>
 <translation id="869884720829132584">Lietojumprogrammu izvēlne</translation>
 <translation id="869891660844655955">Derīguma termiņš</translation>
 <translation id="8699296325072357994">Saturs no paroļu lapām un saistītā informācija tiek sūtīta uzņēmumam Google un manuāli pārskatīta. Jūsu parole ir šifrēta, un neviens to nekad neredzēs. <ph name="PASSWORD_CHANGE" /></translation>

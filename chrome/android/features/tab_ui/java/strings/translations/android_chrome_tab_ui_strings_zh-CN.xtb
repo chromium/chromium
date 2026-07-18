@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{将标签页取消分组}other{将标签页取消分组}}</translation>
 <translation id="2271452184061378400">您的标签页分组会保存在此处</translation>
 <translation id="2277224997687551299">修改组名称</translation>
+<translation id="2289567621059034186">在下方新增标签页</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{为所选标签页添加书签}other{为所选标签页添加书签}}</translation>
 <translation id="2359808026110333948">继续</translation>
 <translation id="2371084566192454134">标签页和标签页分组</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">水平显示标签页</translation>
 <translation id="31806439105337256">垂直显示标签页</translation>
 <translation id="3194464645767632461">评分</translation>
+<translation id="3228962656492373217">关闭下方标签页</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{向分组中添加 <ph name="TABS_COUNT_ONE" /> 个标签页}other{向分组中添加 <ph name="TABS_COUNT_MANY" /> 个标签页}}</translation>
 <translation id="3328308545011660196">建议：有 <ph name="NUMBER_OF_TABS" /> 个标签页似乎彼此相关。为它们建组？</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{闲置 1 天后}other{闲置 <ph name="DAY_COUNT_MANY" /> 天后}}</translation>

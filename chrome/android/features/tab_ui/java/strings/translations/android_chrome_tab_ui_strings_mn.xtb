@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Табыг бүлэглэхээ болих}other{Табуудыг бүлэглэхээ болих}}</translation>
 <translation id="2271452184061378400">Таны табын бүлгийг энд хадгалдаг</translation>
 <translation id="2277224997687551299">Бүлгийн нэрийг засах</translation>
+<translation id="2289567621059034186">Доорх шинэ таб</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Табыг тэмдэглэх}other{Табуудыг тэмдэглэх}}</translation>
 <translation id="2359808026110333948">Цааш</translation>
 <translation id="2371084566192454134">Таб, табын бүлэг</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">Табыг хөндлөнгөөр харуулах</translation>
 <translation id="31806439105337256">Табыг босоогоор харуулах</translation>
 <translation id="3194464645767632461">үнэлгээ</translation>
+<translation id="3228962656492373217">Доорх табуудыг хаах</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> табыг бүлэгт нэмэх}other{<ph name="TABS_COUNT_MANY" /> табыг бүлэгт нэмэх}}</translation>
 <translation id="3328308545011660196">Зөвлөмж: <ph name="NUMBER_OF_TABS" /> таб холбоотой бололтой. Эдгээрийг бүлэглэх үү?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{1 хоног идэвхгүй байсны дараа}other{<ph name="DAY_COUNT_MANY" /> хоног идэвхгүй байсны дараа}}</translation>

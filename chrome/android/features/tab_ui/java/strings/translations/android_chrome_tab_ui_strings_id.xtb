@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Pisahkan tab}other{Pisahkan tab}}</translation>
 <translation id="2271452184061378400">Grup tab Anda disimpan di sini</translation>
 <translation id="2277224997687551299">Edit nama grup</translation>
+<translation id="2289567621059034186">Tab baru di bawah</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Bookmark tab}other{Bookmark tab}}</translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
 <translation id="2371084566192454134">Tab dan grup tab</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">Tampilkan tab secara horizontal</translation>
 <translation id="31806439105337256">Tampilkan tab secara vertikal</translation>
 <translation id="3194464645767632461">rating</translation>
+<translation id="3228962656492373217">Tutup tab di bawah</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Tambahkan <ph name="TABS_COUNT_ONE" /> tab ke grup}other{Tambahkan <ph name="TABS_COUNT_MANY" /> tab ke grup}}</translation>
 <translation id="3328308545011660196">Saran: <ph name="NUMBER_OF_TABS" /> tab sepertinya berkaitan. Masukkan ke grup?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Setelah 1 hari tidak aktif}other{Setelah <ph name="DAY_COUNT_MANY" /> hari tidak aktif}}</translation>

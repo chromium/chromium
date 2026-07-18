@@ -237,7 +237,6 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="3282568296779691940">Acceder a Chrome</translation>
 <translation id="3286538390144397061">Reiniciar ahora</translation>
 <translation id="3292333338048274092">Luego, deberás reiniciar Chrome.</translation>
-<translation id="3324218984287646518">Preguntar a Google Lens acerca de este video</translation>
 <translation id="3327226547491422998">Más adelante, Chrome puede preguntarte si quieres usar la información guardada para completar formularios automáticamente</translation>
 <translation id="3352986031709923790">esquina superior derecha del área de búsqueda: derecha <ph name="RIGHT" />%, superior <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Ayuda de Chrome</translation>
@@ -258,8 +257,6 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="3576528680708590453">El administrador del sistema configuró Google Chrome de manera que se abriera un navegador alternativo para acceder a <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Sincroniza y personaliza Chrome en todos tus dispositivos</translation>
 <translation id="3583751698304738917">Ya accediste como <ph name="USER_EMAIL_ADDRESS" /> en otro perfil de Chrome</translation>
-<translation id="358381413217813387">Buscar esta página con Google Lens</translation>
-<translation id="3589519427766620380">Preguntar a Google Lens acerca de esta página</translation>
 <translation id="3595784445906693824">¿Quieres acceder a Chrome con un perfil nuevo?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{El administrador necesita que reinicies Chrome para aplicar una actualización}=1{El administrador necesita que reinicies Chrome para aplicar una actualización. No se volverá a abrir la ventana de incógnito.}other{El administrador necesita que reinicies Chrome para aplicar una actualización. No se volverán a abrir las # ventanas de incógnito.}}</translation>
 <translation id="3597003331831379823">No se pudo ejecutar la configuración con privilegios elevados. <ph name="METAINSTALLER_ERROR" /></translation>
@@ -354,7 +351,6 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="4501471624619070934">La instalación falló porque el acceso está restringido en este país.</translation>
 <translation id="4571503333518166079">Ir a la configuración de notificaciones de Chrome</translation>
 <translation id="4580939929828762295">Mantén la seguridad con el Administrador de contraseñas de Google</translation>
-<translation id="4592634244097223647">Preguntar a Google acerca de esta imagen</translation>
 <translation id="459622048091363950">Una vez que Chrome tenga acceso, los sitios web podrán solicitarte acceso.</translation>
 <translation id="4598116752460667024">Busca cualquier proceso de la lista.</translation>
 <translation id="4600710005438004015">Chrome no se pudo actualizar a la última versión, por lo que te estás perdiendo las nuevas funciones y correcciones de seguridad.</translation>
@@ -654,7 +650,6 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="7572537927358445944">Desactivada • Chrome no puede verificar de dónde proviene esta extensión</translation>
 <translation id="7583399374488819119">Instalador de <ph name="COMPANY_NAME" /></translation>
 <translation id="7596160425942761210">Puedes usar Chrome cada vez que haces clic en vínculos que aparecen en mensajes, documentos y otras apps</translation>
-<translation id="7602868996817972616">Preguntar a Google acerca de esta página</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7627609214560473136">Para proteger tus datos, permite que Chrome quite permisos de los sitios que no visitaste recientemente.</translation>
 <translation id="7629695634924605473">Chrome te informará si tus contraseñas se ven comprometidas</translation>
@@ -779,7 +774,6 @@ No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si 
 <translation id="8712637175834984815">Entendido</translation>
 <translation id="8712767363896337380">Ya casi completas la actualización. Reinicia Chrome para completar la actualización.</translation>
 <translation id="8718062187489036808">Salir de Chrome</translation>
-<translation id="8725440680697264016">Preguntar a Google acerca de este video</translation>
 <translation id="873133009373065397">Google Chrome no puede determinar ni establecer el navegador predeterminado</translation>
 <translation id="8747073452963259673">esquina inferior izquierda del área de búsqueda: izquierda <ph name="LEFT" />%, inferior <ph name="BOTTOM" />%</translation>
 <translation id="8748735421235723888">Chrome libera memoria de las pestañas inactivas. Esto brinda más recursos informáticos a las pestañas activas y a otras apps, y permite que Chrome siga funcionando rápido. Las pestañas inactivas se vuelven a activar automáticamente cuando regresas a ellas. <ph name="BEGIN_LINK" />Obtén más información sobre el Ahorro de memoria<ph name="END_LINK" /></translation>
@@ -795,7 +789,6 @@ No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si 
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome te recomienda quitarla}other{Chrome te recomienda quitarlas}}</translation>
 <translation id="8862326446509486874">No tienes los derechos que se requieren para realizar la instalación al nivel del sistema. Intenta ejecutar el instalador nuevamente como Administrador.</translation>
 <translation id="8865415417596392024">Datos de Chrome de tu cuenta</translation>
-<translation id="8883862939660515976">Preguntar a Google Lens acerca de esta imagen</translation>
 <translation id="8914504000324227558">Volver a iniciar Chrome</translation>
 <translation id="8920304659326707347">Retoma la sesión justo desde donde la dejaste en Chrome para iOS.</translation>
 <translation id="8922998289262614701">Quitar los datos de esta app de Chrome</translation>

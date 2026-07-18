@@ -1186,7 +1186,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1910721550319506122">Selamat Datang!</translation>
 <translation id="1910736334623230603">Tidak dapat menelusuri beberapa gambar sekaligus. Tambahkan gambar satu per satu.</translation>
 <translation id="1910908536872421421">Chrome untuk Pengujian v<ph name="BROWSER_VERSION" /> hanya untuk pengujian otomatis. Untuk penjelajahan biasa, gunakan Chrome versi standar yang diupdate secara otomatis.</translation>
-<translation id="1912867150686509584">Lihat rapat lainnya di Kalender Anda</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Jeda Tab yang Memperlambat Browser Anda}other{Jeda Tab yang Memperlambat Browser Anda}}</translation>
 <translation id="1913749768968678106">Transmisikan, simpan, dan bagikan</translation>
 <translation id="19147273405311768">Reset toolbar ke setelan default</translation>
@@ -2474,7 +2473,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> tidak dapat berkomunikasi dengan printer ini. Pastikan printer dicolokkan dan coba lagi.</translation>
 <translation id="2902312830803030883">Tindakan lainnya</translation>
 <translation id="2903457445916429186">Buka item yang dipilih</translation>
-<translation id="2903764741244499151">Situs dapat masuk ke mode picture-in-picture secara otomatis. Hal ini memungkinkan Anda terus menonton video, sekaligus mengosongkan ruang di layar untuk melakukan tugas lainnya.</translation>
+<translation id="2903764741244499151">Situs dapat otomatis masuk ke mode picture-in-picture. Hal ini memungkinkan Anda terus menonton video, sekaligus mengosongkan ruang di layar untuk melakukan tugas lainnya.</translation>
 <translation id="2903882649406874750">Selalu blokir <ph name="HOST" /> agar tidak mengakses sensor</translation>
 <translation id="2903925626657991994">Gunakan “,” untuk mengubah pilihan tombol mouse antara tombol kiri, tombol kanan, dan keduanya</translation>
 <translation id="290415756080113152">Situs tidak dapat mencari atau menggunakan printer yang dapat diakses oleh perangkat Anda</translation>
@@ -4271,6 +4270,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4274673989874969668">Setelah Anda menutupnya, situs dapat terus melakukan sinkronisasi untuk menyelesaikan tugas, seperti mengupload foto atau mengirim pesan chat</translation>
 <translation id="4275291496240508082">Suara saat menyala</translation>
 <translation id="4275397969489577657">Aktifkan pencatatan streaming acara</translation>
+<translation id="4275663329226226506">Media</translation>
 <translation id="4275788652681621337">Tutup panel samping</translation>
 <translation id="4275830172053184480">Mulai ulang perangkat Anda</translation>
 <translation id="4276390967705106170">Buka di tab browser baru</translation>
@@ -9921,7 +9921,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8693862390730570097">Jangan izinkan "Bantu tulis" dibuka secara otomatis</translation>
 <translation id="8694596275649352090">Kunci saat dalam mode tidur atau penutup ditutup</translation>
 <translation id="8695825812785969222">Buka &amp;Lokasi...</translation>
-<translation id="8696297579102085705">Kirim ke perangkat Anda</translation>
 <translation id="869884720829132584">Menu aplikasi</translation>
 <translation id="869891660844655955">Berlaku hingga</translation>
 <translation id="8699296325072357994">Konten dari halaman sandi dan info terkait dikirim ke Google dan ditinjau secara manual. Sandi Anda dienkripsi dan tidak akan dilihat oleh siapa pun. <ph name="PASSWORD_CHANGE" /></translation>

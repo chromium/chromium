@@ -1186,7 +1186,6 @@
 <translation id="1910721550319506122">خوش‌آمدید!</translation>
 <translation id="1910736334623230603">نمی‌توانید چند تصویر را به‌طور هم‌زمان جستجو کنید. هربار فقط یک تصویر اضافه کنید.</translation>
 <translation id="1910908536872421421">‏«Chrome ویژه آزمایش» نسخه <ph name="BROWSER_VERSION" /> فقط برای آزمایش خودکار درنظر گرفته است. برای مرور عادی، از نسخه استاندارد Chrome که به‌طور خودکار به‌روزرسانی می‌شود استفاده کنید.</translation>
-<translation id="1912867150686509584">دیدن جلسه‌های بیشتر در «تقویم»</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{زبانه‌ای را که باعث کند شدن مرورگرتان شده است موقتاً متوقف کنید}one{زبانه‌ای را که باعث کند شدن مرورگرتان شده است موقتاً متوقف کنید}other{زبانه‌هایی را که باعث کند شدن مرورگرتان شده است موقتاً متوقف کنید}}</translation>
 <translation id="1913749768968678106">پخش محتوا، ذخیره، و هم‌رسانی</translation>
 <translation id="19147273405311768">بازنشانی نوارابزار به تنظیمات پیش‌فرض</translation>
@@ -2080,7 +2079,7 @@
 <translation id="2613210758071148851">هیچ افزونه‌ای در <ph name="RESTRICTED_SITE" /> مجاز نیست</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> خواهد توانست <ph name="FILENAME" /> را ویرایش کند</translation>
 <translation id="2615159404909536465">{FILE_COUNT,plural, =1{باز کردن و ویرایش <ph name="FILE1" /> در این افزونه}one{باز کردن و ویرایش <ph name="FILE1" />، … در این افزونه}other{باز کردن و ویرایش <ph name="FILE1" />، … در این افزونه}}</translation>
-<translation id="2615836333611528168">اندازه تنظیمات پنجره شما برای جا شدن در اینجا تغییر خواهد کرد.</translation>
+<translation id="2615836333611528168">‏اندازه تنظیمات Windows شما برای جا شدن در اینجا تغییر خواهد کرد.</translation>
 <translation id="2616366145935564096">خواندن و تغییر داده‌هایتان در <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">راه‌اندازی «هم‌رسانی با اطراف»</translation>
 <translation id="2619305858360733464">گروه بدون نام <ph name="SHARED_STATE" /> - <ph name="OPENED_STATE" /></translation>
@@ -2826,7 +2825,7 @@
 <translation id="3166443275568926403">وضعیت باتری و عملکرد</translation>
 <translation id="3167446923957429259">حرکت دادن دهان به‌سمت چپ</translation>
 <translation id="3167562202484086668">حذف همه داده‌های <ph name="BRAND" /></translation>
-<translation id="3169504125849131369">باز کردن تنظیمات پنجره</translation>
+<translation id="3169504125849131369">‏باز کردن تنظیمات Windows</translation>
 <translation id="3175067642577044620">نوشتار اصلی</translation>
 <translation id="3175862692832442091">جنگل</translation>
 <translation id="3176347586396987181">‏از «z» برای فشار دادن و نگه داشتن دکمه موشواره استفاده کنید</translation>
@@ -4271,6 +4270,7 @@
 <translation id="4274673989874969668">بعداز اینکه از سایتی خارج شدید، آن سایت می‌تواند به همگام‌سازی ادامه دهد تا کارها را تکمیل کند، ازجمله تکمیل بارگذاری عکس‌ها یا ارسال پیام گپ</translation>
 <translation id="4275291496240508082">صدای راه‌اندازی دستگاه</translation>
 <translation id="4275397969489577657">فعال کردن گزارش‌گیری از جریان رویداد</translation>
+<translation id="4275663329226226506">رسانه</translation>
 <translation id="4275788652681621337">بستن پانل کناری</translation>
 <translation id="4275830172053184480">راه‌اندازی دستگاه خود</translation>
 <translation id="4276390967705106170">باز کردن در زبانه مرورگر جدید</translation>
@@ -4433,7 +4433,7 @@
 <translation id="4393102500004843976">جستجو + تبدیل + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="4393713825278446281">دستگاه‌های «جفت‌سازی سریع» ذخیره‌شده در <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4394049700291259645">غیر فعال کردن</translation>
-<translation id="4395129973926795186"><ph name="START_DATE" /> تا <ph name="END_DATE" /></translation>
+<translation id="4395129973926795186">‫<ph name="START_DATE" /> تا <ph name="END_DATE" /></translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{باز کردن همه}=1{باز کردن نشانک}one{باز کردن همه ({COUNT})}other{باز کردن همه ({COUNT})}}</translation>
 <translation id="4397372003838952832">لازم نیست این گذرواژه را به‌خاطر بسپارید. این گذرواژه در <ph name="GOOGLE_PASSWORD_MANAGER" /> برای <ph name="EMAIL" /> ذخیره خواهد شد.</translation>
 <translation id="4397844455100743910">درباره درخواست‌های دسترسی بیشتر بدانید.</translation>
@@ -9924,7 +9924,6 @@
 <translation id="8693862390730570097">«کمک گرفتن در نوشتن» اجازه ندارد به‌طور خودکار باز شود</translation>
 <translation id="8694596275649352090">قفل شدن دستگاه وقتی در حالت خواب است یا در آن بسته است</translation>
 <translation id="8695825812785969222">باز کردن &amp;مکان...</translation>
-<translation id="8696297579102085705">ارسال کردن به دستگاه شما</translation>
 <translation id="869884720829132584">منوی برنامه</translation>
 <translation id="869891660844655955">تاریخ انقضا</translation>
 <translation id="8699296325072357994">‏محتوای صفحه‌های گذرواژه و اطلاعات مرتبط به Google ارسال می‌شود و افرادی آن‌ها را بازبینی می‌کنند. گذرواژه شما رمزگذاری شده است و برای هیچ‌کس قابل‌مشاهده نیست. <ph name="PASSWORD_CHANGE" /></translation>

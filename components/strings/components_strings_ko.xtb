@@ -565,6 +565,7 @@
 <translation id="1855370856221982654">복싱</translation>
 <translation id="1862788842908766795">임원 및 관리 직업</translation>
 <translation id="1863257867908022953">트레이 12</translation>
+<translation id="1863374797460198869">채팅 숨김</translation>
 <translation id="186539747722034544">케이블 및 위성 사업자</translation>
 <translation id="1870473978371099486">개인 교습 서비스</translation>
 <translation id="1871208020102129563">프록시가 .pac 스크립트 URL이 아닌 고정 프록시 서버를 사용하도록 설정됩니다.</translation>
@@ -1426,7 +1427,6 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Chrome 설정에서 내가 동기화하는 정보 관리</translation>
 <translation id="3203025201812691413">URL은 비워둘 수 없습니다.</translation>
 <translation id="320323717674993345">결제 취소</translation>
-<translation id="3204534477198689393">추천 기능을 개선하고 양식을 더 빠르게 작성하기 위해 방문하는 페이지의 콘텐츠와 URL이 클라우드의 비공개 스페이스에서 처리될 수 있습니다.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" />에 미성년자 부적합 콘텐츠가 포함되어 있을 수 있습니다</translation>
 <translation id="3207960819495026254">북마크에 추가됨</translation>
 <translation id="3208701679386778924">향후 ChromeOS 업데이트를 개선할 수 있도록 보고서를 보내주세요.</translation>
@@ -4529,6 +4529,7 @@
 <translation id="7972714317346275248">PKCS #1 SHA-384(RSA 암호화 사용)</translation>
 <translation id="7976053965094442846">할부 결제를 지원하는 선구매 후지불 발급기관 목록입니다. 키보드가 숨겨졌습니다.</translation>
 <translation id="7976214039405368314">요청 횟수가 너무 많음</translation>
+<translation id="7977029776654598145">사용 시</translation>
 <translation id="7977538094055660992">출력 기기</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" />분 전}=1{<ph name="TIME_COUNT" />시간 전}other{<ph name="TIME_COUNT" />일 전}}</translation>
 <translation id="7979595116210197019">푸드 서비스</translation>
@@ -4623,7 +4624,6 @@
 <translation id="8134058435519644366">신규모집 및 채용</translation>
 <translation id="8135546115396015134">왼쪽 키</translation>
 <translation id="8137456439814903304">에너지 및 공공사업</translation>
-<translation id="8138591088112729119">개인 인텔리전스 기반</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1개월 전 생성됨}other{{NUM_MONTHS}개월 전 생성됨}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, 현재 기본값. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF 버전:</translation>
@@ -4956,6 +4956,7 @@
 <translation id="8688672835843460752">사용 가능</translation>
 <translation id="868922510921656628">세트당 페이지 수</translation>
 <translation id="8694684557210599098">차량 추가</translation>
+<translation id="8696297579102085705">기기로 보내기</translation>
 <translation id="8698428283892912525">Chrome에는 Google 세이프 브라우징과 같이 인터넷을 사용하는 동안 사용자를 보호해 주는 안전 기능이 내장되어 있으며, 세이프 브라우징에서는 사용자님이 방문하려고 한 사이트에서 최근에 <ph name="BEGIN_LINK" />위험한 소프트웨어를 발견<ph name="END_LINK" />했습니다.</translation>
 <translation id="869891660844655955">유효기간</translation>
 <translation id="8699041776323235191">HID 기기</translation>

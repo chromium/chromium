@@ -1186,7 +1186,6 @@
 <translation id="1910721550319506122">Tervetuloa!</translation>
 <translation id="1910736334623230603">Useita kuvia ei voi hakea samanaikaisesti. Lisää yksi kuva kerrallaan.</translation>
 <translation id="1910908536872421421">Chrome for Testing ‑versio <ph name="BROWSER_VERSION" /> on tarkoitettu vain automaattiseen testaukseen. Käytä tavalliseen selaamiseen Chromen vakioversiota, joka päivittyy automaattisesti.</translation>
-<translation id="1912867150686509584">Näe enemmän kokouksia Kalenterissa</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Selainta hidastavan välilehden keskeyttäminen}other{Selainta hidastavien välilehtien keskeyttäminen}}</translation>
 <translation id="1913749768968678106">Striimaa, tallenna ja jaa</translation>
 <translation id="19147273405311768">Palauta yläpalkin oletusasetukset</translation>
@@ -4268,6 +4267,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4274673989874969668">Kun lähdet sivustolta, se voi jatkaa synkronointia viimeistelläkseen asioita, kuten kuvien latauksen tai chat-viestin lähettämisen</translation>
 <translation id="4275291496240508082">Käynnistymisääni</translation>
 <translation id="4275397969489577657">Ota tapahtumastreamin kirjaaminen käyttöön</translation>
+<translation id="4275663329226226506">Media</translation>
 <translation id="4275788652681621337">Sulje sivupaneeli</translation>
 <translation id="4275830172053184480">Käynnistä laite uudelleen</translation>
 <translation id="4276390967705106170">Avaa uudella selaimen välilehdellä</translation>
@@ -9919,7 +9919,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8693862390730570097">Älä salli Auta minua kirjoittamaan ‐ominaisuuden automaattista avautumista</translation>
 <translation id="8694596275649352090">Lukitse epäaktiivisena tai kannen ollessa suljettuna</translation>
 <translation id="8695825812785969222">&amp;Avaa sijainti...</translation>
-<translation id="8696297579102085705">Lähetä laitteellesi</translation>
 <translation id="869884720829132584">Sovellusvalikko</translation>
 <translation id="869891660844655955">Vanhenemispäivämäärä</translation>
 <translation id="8699296325072357994">Salasanoja sisältävien sivujen sisältö ja niihin liittyvät tiedot lähetetään Googlelle, ja ihmiset tarkastavat ne. Salasana on salattu, eikä kukaan näe sitä. <ph name="PASSWORD_CHANGE" /></translation>

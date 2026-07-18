@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{將分頁移出群組}other{將分頁移出群組}}</translation>
 <translation id="2271452184061378400">你的分頁群組會儲存在這裡</translation>
 <translation id="2277224997687551299">編輯群組名稱</translation>
+<translation id="2289567621059034186">在下方新增分頁</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{將分頁加入書籤}other{將分頁加入書籤}}</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2371084566192454134">分頁和分頁群組</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">水平顯示分頁</translation>
 <translation id="31806439105337256">垂直顯示分頁</translation>
 <translation id="3194464645767632461">評分</translation>
+<translation id="3228962656492373217">關閉下方分頁</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{將 <ph name="TABS_COUNT_ONE" /> 個分頁加入群組}other{將 <ph name="TABS_COUNT_MANY" /> 個分頁加入群組}}</translation>
 <translation id="3328308545011660196">建議：似乎有 <ph name="NUMBER_OF_TABS" /> 個相關的分頁。要將這些分頁加入群組嗎？</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{閒置 1 天後}other{閒置 <ph name="DAY_COUNT_MANY" /> 天後}}</translation>

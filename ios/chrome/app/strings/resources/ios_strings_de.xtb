@@ -245,6 +245,7 @@
 <translation id="1752547299766512813">Passwörter speichern</translation>
 <translation id="1764070164487214210">Route</translation>
 <translation id="1764511703783285459">Der andere Passwortmanager hat keine Passwörter oder Passkeys geteilt</translation>
+<translation id="1765555082983153259">„Chrome“ möchte auf dein Mikrofon zugreifen</translation>
 <translation id="1767766085187034454">Google Übersetzer</translation>
 <translation id="1771016937398045251">Menü „Tools“</translation>
 <translation id="1772468122139624049">Tabs können nicht aktualisiert werden</translation>
@@ -2322,7 +2323,6 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="8692689525339542358">Schütze dich bestmöglich vor schädlichen Websites, Downloads und Erweiterungen.</translation>
 <translation id="8692897097252418799">Wähle die Informationen aus, die du exportieren möchtest</translation>
 <translation id="8694281486652655615">Dieses Element wird angezeigt</translation>
-<translation id="8696297579102085705">An mein Gerät senden</translation>
 <translation id="8697136149718343437">Adressleiste nach unten verschieben</translation>
 <translation id="869891660844655955">Ablaufdatum</translation>
 <translation id="8706253136355675497">Temperatur</translation>
@@ -2465,6 +2465,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="9149866541089851383">Bearbeiten...</translation>
 <translation id="9152637745605628097">Du kannst Designs und Farben auswählen oder ein Bild hochladen</translation>
 <translation id="9159628751968616911">Webseite senden</translation>
+<translation id="9162412286847966593">Die Daten und Aufzeichnungen deiner Organisation werden nicht zur Verbesserung generativer KI-Modelle verwendet. <ph name="BEGIN_LINK" />Datenschutz und Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">Aktiviere die Option zum automatischen Ausfüllen von Passwörtern</translation>
 <translation id="9165320910061267720">Wenn du Benachrichtigungen zu Preisnachlässen erhalten möchtest, musst du Benachrichtigungen in den iOS-Einstellungen aktivieren.</translation>
 <translation id="9179151630575358778">Blendet dieses Element aus</translation>

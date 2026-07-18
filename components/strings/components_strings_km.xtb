@@ -567,6 +567,7 @@
 <translation id="1855370856221982654">ប្រដាល់</translation>
 <translation id="1862788842908766795">ការងារ​ផ្នែកគ្រប់គ្រង និង​នាយកប្រតិបត្តិ</translation>
 <translation id="1863257867908022953">ទម្រទី 12</translation>
+<translation id="1863374797460198869">បានលាក់​ការជជែក</translation>
 <translation id="186539747722034544">ក្រុមហ៊ុន​ទូរទស្សន៍ខ្សែកាប និង​ផ្កាយរណប</translation>
 <translation id="1870473978371099486">សេវាកម្ម​បង្រៀន​បែបឯកជន</translation>
 <translation id="1871208020102129563">ប្រូកស៊ីត្រូវបានកំណត់ដើម្បីប្រើម៉ាស៊ីនមេប្រូកស៊ីថេរ មិនមែន URL ស្គ្រីបផេកទេ។</translation>
@@ -1429,7 +1430,6 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច "Tab" រួចចុច "Enter" ដើម្បីគ្រប់គ្រងថាព័ត៌មានអ្វីដែលអ្នកធ្វើសមកាលកម្មនៅក្នុងការកំណត់ Chrome</translation>
 <translation id="3203025201812691413">URL មិន​អាច​ទទេ​បានទេ</translation>
 <translation id="320323717674993345">បោះបង់ការ​បង់ប្រាក់</translation>
-<translation id="3204534477198689393">ដើម្បីកែលម្អការណែនាំ និងបំពេញទម្រង់បែបបទកាន់តែលឿន ខ្លឹមសារ និង URL នៃទំព័រដែលអ្នកចូលមើលអាចត្រូវបានដំណើរការនៅក្នុងលំហឯកជនលើពពក។</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> អាចមាន​ខ្លឹមសារ​សម្រាប់​មនុស្ស​ពេញវ័យ</translation>
 <translation id="3207960819495026254">បានចំណាំ</translation>
 <translation id="3208701679386778924">សូម​ផ្ញើ​របាយការណ៍​ ដើម្បីឱ្យយើងអាច​កែលម្អ​បច្ចុប្បន្នភាព ChromeOS បន្ថែម​ទៀតបាន។</translation>
@@ -2457,6 +2457,7 @@
 <translation id="4786804728079074733">បាល់​ទះ</translation>
 <translation id="4787182171088676626">ស្រោមសំបុត្រ (គុណភាពខ្ពស់)</translation>
 <translation id="4791134497475588553">កម្មវិធី Linux ដែល​បានដំឡើង និងពេលដែលកម្មវិធី​ទាំងនេះត្រូវបានប្រើ​ចុងក្រោយ</translation>
+<translation id="4791602164422809437">ដំណើរការដោយបញ្ញាផ្ទាល់ខ្លួនតាមរយៈ Gemini។ ចំណងជើង និង URL ទំព័រត្រូវបានបញ្ជូនទៅ Google និងអាចត្រូវបានត្រួតពិនិត្យដោយមនុស្ស។ <ph name="BEGIN_LINK" />គ្រប់គ្រង​ការកំណត់<ph name="END_LINK" /></translation>
 <translation id="4792686369684665359">ព័ត៌មានដែលអ្នកហៀប​នឹងដាក់បញ្ជូនមិនមាន​សុវត្ថិភាពទេ</translation>
 <translation id="4793219378458250238">11 x 12 in</translation>
 <translation id="4796594887379589189">លេខសម្គាល់​គណនីការងារ</translation>
@@ -3033,6 +3034,7 @@
 <translation id="5675809467256309336">តន្ត្រី​រាំ និងអេឡិចត្រូនិក</translation>
 <translation id="5675959228867414813">បង្ហាញតាមកាលបរិច្ឆេទ</translation>
 <translation id="567604591393105935">បានបើក​សន្លឹក​ខាងក្រោម​នៃពាណិជ្ជកម្ម​ពាក់កណ្ដាល​អេក្រង់</translation>
+<translation id="5676124785522323481">គ្រប់គ្រង​កម្មវិធី​តភ្ជាប់</translation>
 <translation id="5676641328629468296">Google Pay, Pix</translation>
 <translation id="5678007133659493065">សន្លឹកអាលុយមីញ៉ូម</translation>
 <translation id="5679086391497468752">អាសយដ្ឋានផ្ទះ</translation>
@@ -3394,6 +3396,7 @@
 <translation id="6240553182907836376">ធ្វើបច្ចុប្បន្នភាព​អត្តសញ្ញាណ​ប័ណ្ណ</translation>
 <translation id="6240601837375010619">រក្សាទុក​លិខិត​ឆ្លងដែន</translation>
 <translation id="6240964651812394252">ដើម្បីប្រើប្រាស់កម្មវិធីគ្រប់គ្រងពាក្យសម្ងាត់ជាមួយនឹងប្រព័ន្ធ​ប្រតិបត្តិការរបស់អ្នក សូមចាប់ផ្ដើម Chrome ឡើងវិញ និងអនុញ្ញាតឱ្យចូលប្រើប្រាស់កម្មវិធីគ្រប់គ្រងពាក្យសម្ងាត់របស់កុំព្យូទ័រអ្នក។ ផ្ទាំង​របស់អ្នក​នឹងបើក​ឡើងវិញ បន្ទាប់ពី​ចាប់ផ្តើម​ឡើងវិញ។</translation>
+<translation id="6244366663267187541">ជ្រើសរើសកម្មវិធីដែល Gemini ភ្ជាប់ជាមួយ</translation>
 <translation id="624499991300733384">សេវាកម្ម​រៀបចំ​បោះពុម្ព</translation>
 <translation id="6246316216123107851"><ph name="NUM_DAYS" /> ថ្ងៃមុន</translation>
 <translation id="6246382863801034910">យានជំនិះ</translation>
@@ -4206,6 +4209,7 @@
 <translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> នឹង​ត្រួតពិនិត្យ​សិទ្ធិទទួលបាន​របស់អ្នក (ការធ្វើបែបនេះ​នឹងមិន​ប៉ះពាល់​ដល់ពិន្ទុ​ឥណទាន​របស់អ្នក​ទេ)។ ប្រសិនបើទទួលបានការយល់ព្រម <ph name="BNPL_ISSUER_NAME" /> នឹងផ្ដល់គម្រោងបង់ប្រាក់សម្រាប់ឱ្យអ្នកជ្រើសរើស និងបញ្ចប់ការទិញរបស់អ្នក។</translation>
 <translation id="7489392576326061356">សាប៊ូ​កក់សក់ និងសាប៊ូកក់​បន្ទន់សក់</translation>
 <translation id="7489919936111034362">ទំហំ​ផ្ទុក Google ថាស​របស់អ្នក​ពេញហើយ</translation>
+<translation id="7490622939531327327">ការយល់ដឹងអំពីទម្រង់បែបបទកាន់តែឆ្លាតវៃ</translation>
 <translation id="7495528107193238112">ខ្លឹមសារ​នេះ​ត្រូវបាន​ទប់ស្កាត់​។ សូមទាក់ទង​ម្ចាស់​គេហទំព័រ ដើម្បី​ដោះស្រាយ​បញ្ហានេះ​។</translation>
 <translation id="749865518782565832">ប្រព័ន្ធទឹក</translation>
 <translation id="7499188644237027195">នៅពេល​អ្នកទិញ​នៅក្នុង Chrome សូមមើល​កាបូប​អេឡិចត្រូនិក និង Pix ជាជម្រើស</translation>
@@ -4534,6 +4538,7 @@
 <translation id="7972714317346275248">PKCS #1 SHA-384 ជាមួយនឹងការអ៊ិនគ្រីប RSA</translation>
 <translation id="7976053965094442846">ស្ថាប័ន​ចេញ​កាត 'ទិញឥឡូវនេះ ទូទាត់ពេលក្រោយ' ដែលមានផ្ដល់ជូនការបង់រំលស់។ បាន​លាក់​ក្ដារចុច។</translation>
 <translation id="7976214039405368314">សំណើច្រើនពេក</translation>
+<translation id="7977029776654598145">នៅពេលប្រើ</translation>
 <translation id="7977538094055660992">ឧបករណ៍នៃធាតុបញ្ចេញ</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> នាទីមុន}=1{<ph name="TIME_COUNT" /> ម៉ោងមុន}other{<ph name="TIME_COUNT" /> ថ្ងៃមុន}}</translation>
 <translation id="7979595116210197019">សេវា​ម្ហូបអាហារ</translation>
@@ -4629,7 +4634,6 @@
 <translation id="8134058435519644366">ការជ្រើសរើស និងរៀបចំបុគ្គលិក</translation>
 <translation id="8135546115396015134">គ្រាប់ចុច​ទៅឆ្វេង</translation>
 <translation id="8137456439814903304">ថាមពល និងក្រុមហ៊ុនផ្គត់ផ្គង់អគ្គិសនី</translation>
-<translation id="8138591088112729119">ដំណើរការដោយបញ្ញាផ្ទាល់ខ្លួន</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{បាន​បង្កើត 1 ខែមុន}other{បានបង្កើត {NUM_MONTHS} ខែមុន}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, លំនាំដើម​បច្ចុប្បន្ន។ <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">កំណែ PDF៖</translation>
@@ -4962,6 +4966,7 @@
 <translation id="8688672835843460752">នៅសល់</translation>
 <translation id="868922510921656628">ទំព័រក្នុង​ការកំណត់មួយលើក</translation>
 <translation id="8694684557210599098">បញ្ចូល​យានជំនិះ</translation>
+<translation id="8696297579102085705">ផ្ញើទៅឧបករណ៍របស់អ្នក</translation>
 <translation id="8698428283892912525">Chrome មាន​មុខងារ​សុវត្ថិភាព​ដែលភ្ជាប់មក​ជាមួយស្រាប់ ដើម្បី​ការពារអ្នក នៅពេល​អ្នករុករក ដូចជាការរុករកដោយសុវត្ថិភាព​នៅលើ Google ដែល<ph name="BEGIN_LINK" />បានរកឃើញកម្មវិធីគ្រោះថ្នាក់<ph name="END_LINK" />នាពេលថ្មីៗនេះនៅលើគេហទំព័រដែលអ្នកបានសាកល្បងចូលមើល។</translation>
 <translation id="869891660844655955">កាលបរិច្ឆេទការផុតកំណត់</translation>
 <translation id="8699041776323235191">ឧបករណ៍ HID</translation>
@@ -5198,6 +5203,7 @@
 <translation id="9078912659001679888">ម៉ាស៊ីន​ក្រឡុក និង​ឧបករណ៍​ច្របាច់ទឹក​ផ្លែឈើ</translation>
 <translation id="9078964945751709336">តម្រូវឲ្យមានព័ត៌មានបន្ថែម</translation>
 <translation id="9080712759204168376">សង្ខេបនៃការបញ្ជាទិញ</translation>
+<translation id="908365381820697818">ឥឡូវនេះ អ្នកអាចស្វែងរក និងបំពេញព័ត៌មានពី Gmail និងអ្វីៗជាច្រើនទៀត</translation>
 <translation id="9084304544887760521">ទទួលបាន​អ៊ីមែល​ដែល​ផ្ញើទៅ <ph name="EMAIL" /> នៅ​ពេល​តម្លៃ​ទំនិញ​ដែល​អ្នក​តាមដាន​ធ្លាក់ចុះ​នៅលើ​គេហទំព័រ​ណា​មួយ។</translation>
 <translation id="9089260154716455634">គោលការណ៍នៅក្រៅម៉ោង​ដាក់កំហិត​៖</translation>
 <translation id="9090218457905363312">តន្ត្រី​រ៉េកហ្គេ និងការីបៀន</translation>

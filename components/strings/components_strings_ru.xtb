@@ -565,6 +565,7 @@
 <translation id="1855370856221982654">Бокс</translation>
 <translation id="1862788842908766795">Вакансии в сфере управления и менеджмента</translation>
 <translation id="1863257867908022953">Лоток 12</translation>
+<translation id="1863374797460198869">Чат скрыт</translation>
 <translation id="186539747722034544">Поставщики кабельного и спутникового телевидения</translation>
 <translation id="1870473978371099486">Услуги репетиторов</translation>
 <translation id="1871208020102129563">Выбрано использование фиксированных прокси-серверов, а не URL PAC-скрипта.</translation>
@@ -1425,7 +1426,6 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем – Ввод, чтобы открыть настройки Chrome и указать, какая информация должна синхронизироваться.</translation>
 <translation id="3203025201812691413">Нужно указать URL.</translation>
 <translation id="320323717674993345">Отменить оплату</translation>
-<translation id="3204534477198689393">Чтобы улучшить подсказки и ускорить заполнение форм, контент и URL посещаемых вами страниц могут обрабатываться в защищенном облачном пространстве.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> может содержать материалы для взрослых.</translation>
 <translation id="3207960819495026254">Добавлено в закладки.</translation>
 <translation id="3208701679386778924">Отправьте отчет, чтобы мы могли улучшать последующие обновления ChromeOS.</translation>
@@ -4529,6 +4529,7 @@
 <translation id="7972714317346275248">PKCS #1 SHA-384 с шифрованием RSA</translation>
 <translation id="7976053965094442846">Доступны сервисы рассрочки. Клавиатура скрыта.</translation>
 <translation id="7976214039405368314">слишком много запросов</translation>
+<translation id="7977029776654598145">Преимущества</translation>
 <translation id="7977538094055660992">Устройство вывода</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> мин. назад}=1{<ph name="TIME_COUNT" /> ч. назад}one{<ph name="TIME_COUNT" /> дн. назад}few{<ph name="TIME_COUNT" /> дн. назад}many{<ph name="TIME_COUNT" /> дн. назад}other{<ph name="TIME_COUNT" /> дн. назад}}</translation>
 <translation id="7979595116210197019">Общественное питание</translation>
@@ -4623,7 +4624,6 @@
 <translation id="8134058435519644366">Набор персонала и трудоустройство</translation>
 <translation id="8135546115396015134">стрелку влево</translation>
 <translation id="8137456439814903304">Энергетика и коммунальные службы</translation>
-<translation id="8138591088112729119">На основе персонального ИИ</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Создано 1 месяц назад}one{Создано {NUM_MONTHS} месяц назад}few{Создано {NUM_MONTHS} месяца назад}many{Создано {NUM_MONTHS} месяцев назад}other{Создано {NUM_MONTHS} месяца назад}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, используется по умолчанию. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Версия PDF:</translation>
@@ -4956,6 +4956,7 @@
 <translation id="8688672835843460752">Свободно</translation>
 <translation id="868922510921656628">Число страниц в наборе</translation>
 <translation id="8694684557210599098">Добавить данные о транспортном средстве</translation>
+<translation id="8696297579102085705">Отправить на свое устройство</translation>
 <translation id="8698428283892912525">В Chrome есть функции, защищающие вас при работе в браузере. К ним относится Google Безопасный просмотр. Недавно он <ph name="BEGIN_LINK" />обнаружил вредоносное ПО<ph name="END_LINK" /> на сайте, который вы попытались открыть.</translation>
 <translation id="869891660844655955">Срок действия</translation>
 <translation id="8699041776323235191">HID-устройство</translation>

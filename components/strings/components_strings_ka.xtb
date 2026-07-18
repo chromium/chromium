@@ -565,6 +565,7 @@
 <translation id="1855370856221982654">კრივი</translation>
 <translation id="1862788842908766795">ვაკანსიები აღმასრულებელ და მართვის სფეროში</translation>
 <translation id="1863257867908022953">ლანგარი 12</translation>
+<translation id="1863374797460198869">ჩეთი დამალულია</translation>
 <translation id="186539747722034544">საკაბელო და თანამგზავრული ტელევიზიის პროვაიდერები</translation>
 <translation id="1870473978371099486">კერძოდ სწავლების მომსახურება</translation>
 <translation id="1871208020102129563">პროქსი შექმნილია ფიქსირებული პროქსის სერვერების გამოსაყენებლად, არა .pac script URL-ის.</translation>
@@ -1426,7 +1427,6 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, თქვენ მიერ სინქრონიზებული ინფორმაციის Chrome-ის პარამეტრებიდან სამართავად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="3203025201812691413">URL არ უნდა იყოს ცარიელი</translation>
 <translation id="320323717674993345">გადახდის გაუქმება</translation>
-<translation id="3204534477198689393">შემოთავაზებების გასაუმჯობესებლად და ფორმების უფრო სწრაფად შესავსებად, თქვენ მიერ მონახულებული გვერდების კონტენტი და URL-ები შეიძლება დამუშავდეს ღრუბელში არსებულ კერძო სივრცეში.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> შეიძლება შეიცავდეს ზრდასრულთა კონტენტს</translation>
 <translation id="3207960819495026254">ჩანიშნულია</translation>
 <translation id="3208701679386778924">გთხოვთ, გამოგვიგზავნოთ ანგარიში, ChromeOS-ის განახლების პროცესი კიდევ უფრო რომ გავაუმჯობესოთ.</translation>
@@ -4529,6 +4529,7 @@
 <translation id="7972714317346275248">PKCS #1 SHA-384 RSA დაშიფვრით</translation>
 <translation id="7976053965094442846">„იყიდეთ ახლა, გადაიხადეთ მოგვიანებით“ გამცემებთან ხელმისაწვდომია დროში განაწილებით გადახდა. კლავიატურა დამალულია.</translation>
 <translation id="7976214039405368314">ზედმეტად ბევრი მოთხოვნაა</translation>
+<translation id="7977029776654598145">გამოყენებისას</translation>
 <translation id="7977538094055660992">გამოტანის მოწყობილობა</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> წთ-ის წინ}=1{<ph name="TIME_COUNT" /> სთ-ის წინ}other{<ph name="TIME_COUNT" /> დღის წინ}}</translation>
 <translation id="7979595116210197019">სასურსათო მომსახურება</translation>
@@ -4623,7 +4624,6 @@
 <translation id="8134058435519644366">დასაქმება და პერსონალი</translation>
 <translation id="8135546115396015134">მარცხენა კლავიში</translation>
 <translation id="8137456439814903304">ენერგომომარაგება და კომუნალური მომსახურებები</translation>
-<translation id="8138591088112729119">უზრუნველყოფს პერსონალური ინტელექტი</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{შეიქმნა 1 თვის წინ}other{შეიქმნა {NUM_MONTHS} თვის წინ}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, მიმდინარე ნაგულისხმევი პარამეტრები. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF ვერსია:</translation>
@@ -4956,6 +4956,7 @@
 <translation id="8688672835843460752">ხელმისაწვდომი</translation>
 <translation id="868922510921656628">გვერდების რაოდენობა ნაკრებში</translation>
 <translation id="8694684557210599098">სატრანსპორტო საშუალების დამატება</translation>
+<translation id="8696297579102085705">თქვენს მოწყობილობებში გაგზავნა</translation>
 <translation id="8698428283892912525">Chrome-ში ჩაშენებულია უსაფრთხოების ფუნქციები, რომლებიც დაგიცავთ ვების დათვალიერებისას — მაგალითად, Google Safe Browsing, რომელმაც ახლახან <ph name="BEGIN_LINK" />აღმოაჩინა პროგრამული უზრუნველყოფა<ph name="END_LINK" /> საიტზე, რომლის მონახულებაც ცადეთ.</translation>
 <translation id="869891660844655955">ვადის გასვლის თარიღი</translation>
 <translation id="8699041776323235191">HID მოწყობილობა</translation>

@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{הסרת הכרטיסייה מהקבוצה}one{הסרת הכרטיסיות מהקבוצה}two{הסרת הכרטיסיות מהקבוצה}other{הסרת הכרטיסיות מהקבוצה}}</translation>
 <translation id="2271452184061378400">קבוצות הכרטיסיות שלך נשמרות כאן</translation>
 <translation id="2277224997687551299">עריכת שם הקבוצה</translation>
+<translation id="2289567621059034186">כרטיסייה חדשה למטה</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{הוספת הכרטיסייה לסימניות}one{הוספת הכרטיסיות לסימניות}two{הוספת הכרטיסיות לסימניות}other{הוספת הכרטיסיות לסימניות}}</translation>
 <translation id="2359808026110333948">המשך</translation>
 <translation id="2371084566192454134">כרטיסיות וקבוצות של כרטיסיות</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">הצגת הכרטיסיות לרוחב</translation>
 <translation id="31806439105337256">הצגת הכרטיסיות לאורך</translation>
 <translation id="3194464645767632461">דירוג</translation>
+<translation id="3228962656492373217">סגירת הכרטיסיות שבהמשך</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{הוספת כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />) לקבוצה}one{הוספת <ph name="TABS_COUNT_MANY" /> כרטיסיות לקבוצה}two{הוספת <ph name="TABS_COUNT_MANY" /> כרטיסיות לקבוצה}other{הוספת <ph name="TABS_COUNT_MANY" /> כרטיסיות לקבוצה}}</translation>
 <translation id="3328308545011660196">הצעה: יש <ph name="NUMBER_OF_TABS" /> כרטיסיות שנראות קשורות. לקבץ אותן?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{אחרי יום אחד ללא פעילות}one{אחרי <ph name="DAY_COUNT_MANY" /> ימים ללא פעילות}two{אחרי יומיים (<ph name="DAY_COUNT_MANY" />) ללא פעילות}other{אחרי <ph name="DAY_COUNT_MANY" /> ימים ללא פעילות}}</translation>

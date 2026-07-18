@@ -565,6 +565,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1855370856221982654">Tinju</translation>
 <translation id="1862788842908766795">Pekerjaan Eksekutif &amp; Pengurusan</translation>
 <translation id="1863257867908022953">Dulang 12</translation>
+<translation id="1863374797460198869">Sembang disembunyikan</translation>
 <translation id="186539747722034544">Penyedia Kabel &amp; Satelit</translation>
 <translation id="1870473978371099486">Perkhidmatan Tutor Peribadi</translation>
 <translation id="1871208020102129563">Proksi ditetapkan untuk menggunakan pelayan proksi tetap, bukannya URL skrip .pac.</translation>
@@ -1426,7 +1427,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk mengurus maklumat yang anda segerakkan dalam tetapan Chrome</translation>
 <translation id="3203025201812691413">URL tidak boleh kosong</translation>
 <translation id="320323717674993345">Batal Pembayaran</translation>
-<translation id="3204534477198689393">Untuk meningkatkan cadangan dan mengisi borang dengan lebih pantas, kandungan dan URL halaman yang anda lawati boleh diproses dalam ruang privasi pada awan.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> mungkin mengandungi kandungan matang</translation>
 <translation id="3207960819495026254">Ditandai halaman</translation>
 <translation id="3208701679386778924">Sila hantar laporan supaya kami boleh meningkatkan lagi kemaskinian ChromeOS.</translation>
@@ -4531,6 +4531,7 @@ Butiran tambahan:
 <translation id="7972714317346275248">PKCS #1 SHA-384 Dengan Penyulitan RSA</translation>
 <translation id="7976053965094442846">Pengeluar Beli Sekarang, Bayar Kemudian yang tersedia untuk bayaran ansuran. Papan kekunci tersembunyi.</translation>
 <translation id="7976214039405368314">Terlalu banyak permintaan</translation>
+<translation id="7977029776654598145">Apabila digunakan</translation>
 <translation id="7977538094055660992">Peranti output</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" />m yang lalu}=1{<ph name="TIME_COUNT" />j yang lalu}other{<ph name="TIME_COUNT" />h yang lalu}}</translation>
 <translation id="7979595116210197019">Perkhidmatan Makanan</translation>
@@ -4625,7 +4626,6 @@ Butiran tambahan:
 <translation id="8134058435519644366">Perekrutan &amp; Pengambilan Pekerja</translation>
 <translation id="8135546115396015134">kekunci kiri</translation>
 <translation id="8137456439814903304">Tenaga &amp; Utiliti</translation>
-<translation id="8138591088112729119">Dikuasakan oleh Kecerdasan Peribadi</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Dibuat 1 bulan yang lalu}other{Dibuat {NUM_MONTHS} bulan yang lalu}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, lalai semasa. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Versi PDF:</translation>
@@ -4959,6 +4959,7 @@ Butiran tambahan:
 <translation id="8688672835843460752">Tersedia</translation>
 <translation id="868922510921656628">Halaman setiap set</translation>
 <translation id="8694684557210599098">Tambahkan kenderaan</translation>
+<translation id="8696297579102085705">Hantar kepada peranti anda</translation>
 <translation id="8698428283892912525">Chrome mengandungi ciri keselamatan terbina dalam untuk melindungi anda semasa menyemak imbas – seperti Penyemakan Imbas Selamat Google yang baru-baru ini <ph name="BEGIN_LINK" />menemukan perisian berbahaya<ph name="END_LINK" /> pada laman yang cuba anda lawati.</translation>
 <translation id="869891660844655955">Tarikh tamat tempoh</translation>
 <translation id="8699041776323235191">Peranti HID</translation>

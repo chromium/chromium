@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Fjern fanen fra gruppen}other{Fjern fanene fra gruppen}}</translation>
 <translation id="2271452184061378400">Fanegruppene dine lagres her</translation>
 <translation id="2277224997687551299">Endre gruppenavnet</translation>
+<translation id="2289567621059034186">Ny fane nedenfor</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Sett fanen som bokmerke}other{Sett fanene som bokmerker}}</translation>
 <translation id="2359808026110333948">Fortsett</translation>
 <translation id="2371084566192454134">Faner og fanegrupper</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">Vis faner horisontalt</translation>
 <translation id="31806439105337256">Vis faner vertikalt</translation>
 <translation id="3194464645767632461">vurdering</translation>
+<translation id="3228962656492373217">Lukk fanene nedenfor</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Legg til <ph name="TABS_COUNT_ONE" /> fane i en gruppe}other{Legg til <ph name="TABS_COUNT_MANY" /> faner i en gruppe}}</translation>
 <translation id="3328308545011660196">Forslag: <ph name="NUMBER_OF_TABS" /> faner ser ut til å være relaterte. Vil du gruppere dem?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Etter 1 dag med inaktivitet}other{Etter <ph name="DAY_COUNT_MANY" /> dager med inaktivitet}}</translation>

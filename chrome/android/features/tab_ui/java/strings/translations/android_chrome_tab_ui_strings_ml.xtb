@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ടാബ് അൺഗ്രൂപ്പ് ചെയ്യുക}other{ടാബുകൾ അൺഗ്രൂപ്പ് ചെയ്യുക}}</translation>
 <translation id="2271452184061378400">നിങ്ങളുടെ ടാബ് ഗ്രൂപ്പുകൾ ഇവിടെ സംരക്ഷിക്കും</translation>
 <translation id="2277224997687551299">ഗ്രൂപ്പിന്റെ പേര് എഡിറ്റ് ചെയ്യുക</translation>
+<translation id="2289567621059034186">ചുവടെയുള്ള പുതിയ ടാബ്</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{ടാബ് ബുക്ക്‌മാർക്ക് ചെയ്യുക}other{ടാബുകൾ ബുക്ക്‌മാർക്ക് ചെയ്യുക}}</translation>
 <translation id="2359808026110333948">തുടരുക</translation>
 <translation id="2371084566192454134">ടാബുകളും ടാബ് ഗ്രൂപ്പുകളും</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">ടാബുകൾ ഹൊറിസോണ്ടലായി കാണിക്കുക</translation>
 <translation id="31806439105337256">ടാബുകൾ വെർട്ടിക്കലായി കാണിക്കുക</translation>
 <translation id="3194464645767632461">റേറ്റിംഗ്</translation>
+<translation id="3228962656492373217">ചുവടെയുള്ള ടാബുകൾ അടയ്ക്കുക</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{ഗ്രൂപ്പിലേക്ക് <ph name="TABS_COUNT_ONE" /> ടാബ് ചേർക്കുക}other{ഗ്രൂപ്പിലേക്ക് <ph name="TABS_COUNT_MANY" /> ടാബുകൾ ചേർക്കുക}}</translation>
 <translation id="3328308545011660196">നിർദ്ദേശം: <ph name="NUMBER_OF_TABS" /> ടാബുകൾ സമാനമാണെന്ന് തോന്നുന്നു. അവ ഗ്രൂപ്പ് ചെയ്യണോ?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{ഒരു ദിവസത്തിന് ശേഷം നിഷ്‌ക്രിയമായി}other{<ph name="DAY_COUNT_MANY" /> ദിവസത്തിന് ശേഷം നിഷ്‌ക്രിയമായി}}</translation>

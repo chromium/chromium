@@ -565,6 +565,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1855370856221982654">Boksas</translation>
 <translation id="1862788842908766795">Vykdomieji ir valdymo darbai</translation>
 <translation id="1863257867908022953">Dvyliktas dėklas</translation>
+<translation id="1863374797460198869">Pokalbis paslėptas</translation>
 <translation id="186539747722034544">Kabelinio ir palydovinio ryšio teikėjai</translation>
 <translation id="1870473978371099486">Privataus mokymo paslaugos</translation>
 <translation id="1871208020102129563">Įgaliotasis serveris nustatytas naudoti fiksuotų įgaliotųjų serverių, o ne .pac scenarijaus URL.</translation>
@@ -1427,7 +1428,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />; paspauskite tabuliavimo klavišą, tada „Enter“, jei norite tvarkyti sinchronizuojamą informaciją „Chrome“ nustatymuose</translation>
 <translation id="3203025201812691413">URL laukas negali būti tuščias</translation>
 <translation id="320323717674993345">Atšaukti mokėjimą</translation>
-<translation id="3204534477198689393">Kad būtų galima tobulinti pasiūlymus ir greičiau užpildyti formas, puslapių, kuriuose lankotės, turinys ir URL gali būti apdorojami privačioje erdvėje debesyje.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> gali būti suaugusiesiems skirto turinio</translation>
 <translation id="3207960819495026254">Pažymėta</translation>
 <translation id="3208701679386778924">Atsiųskite pranešimą, kad galėtume patobulinti kitus „ChromeOS“ naujinius.</translation>
@@ -4531,6 +4531,7 @@ Papildoma išsami informacija:
 <translation id="7972714317346275248">PKCS Nr. 1 SHA-384 su RSA šifruote</translation>
 <translation id="7976053965094442846">Paslaugos „Pirkite dabar, mokėkite vėliau“ išdavėjai, leidžiantys mokėti per laiką. Klaviatūra paslėpta.</translation>
 <translation id="7976214039405368314">Per daug užklausų</translation>
+<translation id="7977029776654598145">Kai naudojama</translation>
 <translation id="7977538094055660992">Išvesties įrenginys</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Prieš <ph name="TIME_COUNT" /> min.}=1{Prieš <ph name="TIME_COUNT" /> val.}one{Prieš <ph name="TIME_COUNT" /> d.}few{Prieš <ph name="TIME_COUNT" /> d.}many{Prieš <ph name="TIME_COUNT" /> d.}other{Prieš <ph name="TIME_COUNT" /> d.}}</translation>
 <translation id="7979595116210197019">Maisto paslaugos</translation>
@@ -4625,7 +4626,6 @@ Papildoma išsami informacija:
 <translation id="8134058435519644366">Komplektavimas ir personalo poreikiai</translation>
 <translation id="8135546115396015134">kairįjį klavišą</translation>
 <translation id="8137456439814903304">Energija ir komunalinės paslaugos</translation>
-<translation id="8138591088112729119">Teikia Asmeninis intelektas</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Sukurta prieš 1 mėnesį}one{Sukurta prieš {NUM_MONTHS} mėnesį}few{Sukurta prieš {NUM_MONTHS} mėnesius}many{Sukurta prieš {NUM_MONTHS} mėnesio}other{Sukurta prieš {NUM_MONTHS} mėnesių}}</translation>
 <translation id="8147389370274164212">„<ph name="SEARCH_ENGINE_NAME" />“, dabartinis numatytasis. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF versija:</translation>
@@ -4959,6 +4959,7 @@ Papildoma išsami informacija:
 <translation id="8688672835843460752">Galima</translation>
 <translation id="868922510921656628">Puslapių skaičius rinkinyje</translation>
 <translation id="8694684557210599098">Transporto priemonės pridėjimas</translation>
+<translation id="8696297579102085705">Siųsti į įrenginį</translation>
 <translation id="8698428283892912525">„Chrome“ integruotos saugos funkcijos, skirtos apsaugoti jus, kai naršote, pvz., „Google“ saugaus naršymo funkcija, kurią naudojant neseniai <ph name="BEGIN_LINK" />buvo rasta žalinga programinė įranga<ph name="END_LINK" /> svetainėje, kurioje bandėte apsilankyti.</translation>
 <translation id="869891660844655955">Galiojimo data</translation>
 <translation id="8699041776323235191">HID įrenginys</translation>

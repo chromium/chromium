@@ -1998,13 +1998,6 @@ Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa ku
       Kullanıcılar bu ayarı değiştiremez veya geçersiz kılamazlar.
 
       Not: Bu politika, https://support.google.com/a/answer/1668854 sayfasında açıklandığı gibi, tüm google.com alan adlarına gönderilen tüm HTTP ve HTTPS isteklerine X-GoogApps-Allowed-Domains başlığının eklenmesine neden olur.</translation>
-<translation id="2287414160388710497">Yöneticilere, Veri Kaybını Önleme (DLP) kuralları tarafından uygulanan filigranların görünümünü özelleştirme olanağı tanır. Buna, dolgu/çizgi opaklığının ayarlanması ve yazı tipi boyutunun belirlenmesi dahildir.
-Bu politika veya bazı değerler ayarlanmazsa Chrome, varsayılan filigran davranışını kullanır.
-Varsayılan değerler şunlardır: dolgu opaklığı 4, çizgi opaklığı 6 ve yazı tipi boyutu 24.
-
-"Dolgu Opaklığı", 0 (tamamen şeffaf) ile 100 (tamamen opak) arasında bir yüzdedir.
-"Çizgi Opaklığı", 0 (tamamen şeffaf) ile 100 (tamamen opak) arasında bir yüzdedir.
-"Yazı Tipi Boyutu" değeri punto cinsinden belirtilir .</translation>
 <translation id="2288506601233091655">Yazdırma işleri geçmişinin silinmesine izin verme</translation>
 <translation id="2289688405312849186">Kullanıcı ana hesabı "user@realm". <ph name="LOGIN_ID_PLACEHOLDER" /> yer tutucusunun yerine "user" kullanıcı adı gelir. <ph name="LOGIN_EMAIL_PLACEHOLDER" /> yer tutucusunun yerine tam ana hesap "user@realm" gelir.</translation>
 <translation id="2290270645214705008">Bu politika Devre Dışı değerine ayarlanırsa uzaktan erişim ana makine hizmeti başlatılamaz veya gelen bağlantıları kabul etmek üzere yapılandırılamaz.  Bu politika, uzaktan destek senaryolarını etkilemez.
@@ -2289,15 +2282,6 @@ Bazı politikalar (ör. <ph name="GEMINI_SETTINGS_POLICY_NAME" />) yalnızca İz
 <translation id="2479760962196319822">Bu politika, <ph name="PRODUCT_OS_NAME" /> kullanıcılarının yerel olarak veri depolayıp depolayamayacağını kontrol eder.
       Bu politika Yanlış değerine ayarlanırsa <ph name="PRODUCT_OS_NAME" /> sisteminde yerel depolama engellenir. Dolayısıyla, kullanıcılar yerel olarak veri depolayamaz ve yerel dizinlere erişemez.
       Bu politika Doğru değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="PRODUCT_OS_NAME" /> sisteminde yerel depolamaya izin verilir. Kullanıcıların veri depolayabileceği yerler veya erişebilecekleri dizinler konusunda herhangi bir kısıtlama yoktur.</translation>
-<translation id="2480971699591919564">Kullanıcı Oturum açmışken, kullanıcıların Chrome Masaüstü cihazlardan bir Android cihaza telefon numaraları göndermesine olanak tanıyan Tıkla ve Ara özelliğini etkinleştirin. Daha fazla bilgi edinmek için https://support.google.com/chrome/answer/9430554?hl=tr adresindeki yardım merkezi makalesine bakın.
-
-      Bu politika etkin olarak ayarlanırsa Chrome kullanıcısı için Android cihazlara telefon numaraları gönderme özelliği etkinleştirilir.
-
-      Bu politika devre dışı olarak ayarlanırsa Chrome kullanıcısı için Android cihazlara telefon numaraları gönderme özelliği devre dışı bırakılır.
-
-      Bu politikayı ayarlarsanız kullanıcılar değiştiremez veya geçersiz kılamazlar.
-
-      Bu politika ayarlanmadan bırakılırsa Tıkla ve Ara özelliği varsayılan olarak etkindir.</translation>
 <translation id="2482676533225429905">Yerel Mesajlaşma</translation>
 <translation id="2483146640187052324">Ağ bağlantılarında ağ işlemlerini tahmin et</translation>
 <translation id="2487495476672607707"><ph name="PRODUCT_OS_NAME" /> dosya senkronizasyonu, bir kullanıcının Drive'ım bölümündeki <ph name="GOOGLE_DRIVE_NAME" /> dosyalarını <ph name="CHROMEBOOK_PLUS_NAME" /> cihazlarda otomatik olarak çevrimdışı kullanılabilir hale getirir (yeterli alan varsa).

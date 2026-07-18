@@ -565,6 +565,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1855370856221982654">Boks</translation>
 <translation id="1862788842908766795">Uitvoerende en bestuursposte</translation>
 <translation id="1863257867908022953">Laai 12</translation>
+<translation id="1863374797460198869">Klets is versteek</translation>
 <translation id="186539747722034544">Kabel- en satellietverskaffers</translation>
 <translation id="1870473978371099486">Privaattutordienste</translation>
 <translation id="1871208020102129563">Instaanbediener is gestel om vaste instaanbedieners te gebruik, nie 'n .pac-skrip-URL nie.</translation>
@@ -1426,7 +1427,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om te bestuur watter inligting jy in Chrome-instellings sinkroniseer</translation>
 <translation id="3203025201812691413">URL kan nie leeg wees nie</translation>
 <translation id="320323717674993345">Kanselleer betaling</translation>
-<translation id="3204534477198689393">Die inhoud en URL’e van die bladsye wat jy besoek, kan in ’n privaat ruimte in die wolk verwerk word om voorstelle te verbeter en vorms vinniger in te vul.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> kan volwasse inhoud bevat</translation>
 <translation id="3207960819495026254">Geboekmerk</translation>
 <translation id="3208701679386778924">Stuur asseblief ’n verslag sodat ons toekomstige ChromeOS-opdaterings kan verbeter.</translation>
@@ -4529,6 +4529,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7972714317346275248">PKCS #1 SHA-384 met RSA-enkripsie</translation>
 <translation id="7976053965094442846">Uitreikers van Koop-Nou-Betaal-Later beskikbaar vir betaling oor ’n tydperk. Sleutelbord is versteek.</translation>
 <translation id="7976214039405368314">Te veel versoeke</translation>
+<translation id="7977029776654598145">Wanneer gebruik</translation>
 <translation id="7977538094055660992">Uitvoertoestel</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> m. gelede}=1{<ph name="TIME_COUNT" /> u. gelede}other{<ph name="TIME_COUNT" /> d. gelede}}</translation>
 <translation id="7979595116210197019">Kosdiens</translation>
@@ -4623,7 +4624,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8134058435519644366">Werwing en personeel</translation>
 <translation id="8135546115396015134">linkersleutel</translation>
 <translation id="8137456439814903304">Energie- en munisipale dienste</translation>
-<translation id="8138591088112729119">Aangedryf deur Persoonlike Intelligensie</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 maand gelede geskep}other{{NUM_MONTHS} maande gelede geskep}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, huidige verstek. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF-weergawe:</translation>
@@ -4956,6 +4956,7 @@ Bykomende besonderhede:
 <translation id="8688672835843460752">Beskikbaar</translation>
 <translation id="868922510921656628">Bladsye per stel</translation>
 <translation id="8694684557210599098">Voeg voertuig by</translation>
+<translation id="8696297579102085705">Stuur na jou toestel toe</translation>
 <translation id="8698428283892912525">Chrome het ingeboude veiligheidkenmerke om jou te beskerm terwyl jy blaai – soos Google Veiligblaai, wat <ph name="BEGIN_LINK" />onlangs skadelike sagteware gevind het<ph name="END_LINK" /> op die werf wat jy probeer besoek het.</translation>
 <translation id="869891660844655955">Vervaldatum</translation>
 <translation id="8699041776323235191">HID-toestel</translation>

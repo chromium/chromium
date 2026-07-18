@@ -565,6 +565,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1855370856221982654">Boxing</translation>
 <translation id="1862788842908766795">Mga Trabahong Pang-ehekutibo at Pamamahala</translation>
 <translation id="1863257867908022953">Tray 12</translation>
+<translation id="1863374797460198869">Naka-hide ang chat</translation>
 <translation id="186539747722034544">Mga Cable at Satellite Provider</translation>
 <translation id="1870473978371099486">Mga Serbisyo sa Pribadong Pag-tutor</translation>
 <translation id="1871208020102129563">Nakatakda ang proxy upang gumamit ng mga hindi nababagong proxy server, hindi ng isang .pac script URL.</translation>
@@ -1426,7 +1427,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab pagkatapos ay ang Enter para pamahalaan kung anong impormasyon ang isi-sync mo sa mga setting ng Chrome</translation>
 <translation id="3203025201812691413">Hindi puwedeng walang laman ang URL</translation>
 <translation id="320323717674993345">Kanselahin ang Pagbabayad</translation>
-<translation id="3204534477198689393">Para mapahusay ang mga suhestyon at mas mabilis na mapunan ang mga form, puwedeng iproseso ang content at mga URL ng mga page na binibisita mo sa isang pribadong space sa cloud.</translation>
 <translation id="3207830513221832868">Posibleng may pang-mature na content ang <ph name="BLOCKED_URL" /></translation>
 <translation id="3207960819495026254">Naka-bookmark</translation>
 <translation id="3208701679386778924">Magpadala ng ulat para mapahusay pa namin ang mga update sa ChromeOS.</translation>
@@ -4530,6 +4530,7 @@ Mga karagdagang detalye:
 <translation id="7972714317346275248">PKCS #1 SHA-384 na May RSA Encryption</translation>
 <translation id="7976053965094442846">Ang mga available na Buy-Now-Pay-Later na issuer para magbayad sa paglipas ng panahon. Naka-hide ang keyboard.</translation>
 <translation id="7976214039405368314">Masyadong maraming kahilingan</translation>
+<translation id="7977029776654598145">Kapag ginamit</translation>
 <translation id="7977538094055660992">Output device</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> minuto ang nakalipas}=1{<ph name="TIME_COUNT" /> oras ang nakalipas}one{<ph name="TIME_COUNT" /> araw ang nakalipas}other{<ph name="TIME_COUNT" /> na araw ang nakalipas}}</translation>
 <translation id="7979595116210197019">Serbisyo sa Pagkain</translation>
@@ -4624,7 +4625,6 @@ Mga karagdagang detalye:
 <translation id="8134058435519644366">Pag-recruit at Pagpapasok ng Tauhan</translation>
 <translation id="8135546115396015134">pakaliwang key</translation>
 <translation id="8137456439814903304">Enerhiya at Mga Utility</translation>
-<translation id="8138591088112729119">Pinapagana ng Personal Intelligence</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Ginawa 1 buwan ang nakalipas}one{Ginawa {NUM_MONTHS} buwan ang nakalipas}other{Ginawa {NUM_MONTHS} na buwan ang nakalipas}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, kasalukuyang default. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Bersyon ng PDF:</translation>
@@ -4957,6 +4957,7 @@ Mga karagdagang detalye:
 <translation id="8688672835843460752">Available</translation>
 <translation id="868922510921656628">Mga page bawat hanay</translation>
 <translation id="8694684557210599098">Magdagdag ng sasakyan</translation>
+<translation id="8696297579102085705">Ipadala sa iyong device</translation>
 <translation id="8698428283892912525">May mga built-in na pangkaligtasang feature ang Chrome para maprotektahan ka habang nagba-browse ka — tulad ng Ligtas na Pag-browse sa Google, na kamakailang <ph name="BEGIN_LINK" />nakakita ng mapaminsalang software<ph name="END_LINK" /> sa site na sinubukan mong bisitahin.</translation>
 <translation id="869891660844655955">Expiration date</translation>
 <translation id="8699041776323235191">HID device</translation>

@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Desagrupar pestana}other{Desagrupar pestanas}}</translation>
 <translation id="2271452184061378400">Os teus grupos de pestanas gárdanse aquí</translation>
 <translation id="2277224997687551299">Editar nome do grupo</translation>
+<translation id="2289567621059034186">Nova pestana abaixo</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Engadir pestana aos marcadores}other{Engadir pestanas aos marcadores}}</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2371084566192454134">Pestanas e grupos de pestanas</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">Mostrar pestanas en horizontal</translation>
 <translation id="31806439105337256">Mostrar pestanas en vertical</translation>
 <translation id="3194464645767632461">valoración</translation>
+<translation id="3228962656492373217">Pechar pestanas de abaixo</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Engadir <ph name="TABS_COUNT_ONE" /> pestana ao grupo}other{Engadir <ph name="TABS_COUNT_MANY" /> pestanas ao grupo}}</translation>
 <translation id="3328308545011660196">Suxestión: Hai <ph name="NUMBER_OF_TABS" /> pestanas que parecen relacionadas. Queres agrupalas?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Despois de 1 día sen actividade}other{Despois de <ph name="DAY_COUNT_MANY" /> días sen actividade}}</translation>

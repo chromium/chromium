@@ -1177,7 +1177,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1910721550319506122">Welkom!</translation>
 <translation id="1910736334623230603">Kan niet naar meerdere afbeeldingen zoeken. Voeg 1 afbeelding tegelijk toe.</translation>
 <translation id="1910908536872421421">Chrome for Testing v<ph name="BROWSER_VERSION" /> is alleen voor geautomatiseerde tests. Gebruik de standaardversie van Chrome die automatisch wordt geüpdatet voor normaal browsen.</translation>
-<translation id="1912867150686509584">Meer vergaderingen bekijken in je Agenda</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Het tabblad onderbreken dat je browser vertraagt}other{De tabbladen onderbreken die je browser vertragen}}</translation>
 <translation id="1913749768968678106">Casten, opslaan en delen</translation>
 <translation id="19147273405311768">Werkbalk resetten naar standaardinstellingen</translation>
@@ -4256,6 +4255,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4274673989874969668">Nadat je een site verlaat, blijft de synchronisatie meestal doorgaan om taken af te ronden, zoals foto's uploaden of chatberichten sturen</translation>
 <translation id="4275291496240508082">Opstartgeluid</translation>
 <translation id="4275397969489577657">Registratie van gebeurtenisstream aanzetten</translation>
+<translation id="4275663329226226506">Media</translation>
 <translation id="4275788652681621337">Zijvenster sluiten</translation>
 <translation id="4275830172053184480">Je apparaat opnieuw opstarten</translation>
 <translation id="4276390967705106170">Openen in een nieuw browsertabblad</translation>
@@ -9901,7 +9901,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="8693862390730570097">Niet toestaan dat Help me met schrijven automatisch wordt geopend</translation>
 <translation id="8694596275649352090">Vergrendelen in de slaapstand of als de klep is gesloten</translation>
 <translation id="8695825812785969222">&amp;Locatie openen...</translation>
-<translation id="8696297579102085705">Naar je apparaat sturen</translation>
 <translation id="869884720829132584">Menu 'Applicaties'</translation>
 <translation id="869891660844655955">Vervaldatum</translation>
 <translation id="8699296325072357994">Content van wachtwoordpagina's en gerelateerde informatie worden naar Google gestuurd en door mensen beoordeeld. Je wachtwoord is versleuteld en wordt nooit door iemand gezien. <ph name="PASSWORD_CHANGE" /></translation>

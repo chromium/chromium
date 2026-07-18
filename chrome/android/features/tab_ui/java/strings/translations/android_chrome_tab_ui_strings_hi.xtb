@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{टैब को ग्रुप से अलग करें}one{टैब को ग्रुप से अलग करें}other{टैब को ग्रुप से अलग करें}}</translation>
 <translation id="2271452184061378400">आपके टैब ग्रुप यहां सेव किए जाते हैं</translation>
 <translation id="2277224997687551299">ग्रुप के नाम में बदलाव करें</translation>
+<translation id="2289567621059034186">नीचे नया टैब खोलें</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{बुकमार्क टैब}one{बुकमार्क टैब}other{बुकमार्क टैब}}</translation>
 <translation id="2359808026110333948">जारी रखें</translation>
 <translation id="2371084566192454134">टैब और टैब ग्रुप</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">टैब को हॉरिज़ॉन्टल तरीके से दिखाएं</translation>
 <translation id="31806439105337256">टैब को वर्टिकल तरीके से दिखाएं</translation>
 <translation id="3194464645767632461">रेटिंग</translation>
+<translation id="3228962656492373217">नीचे दिए गए टैब बंद करें</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टैब को ग्रुप में जोड़ें}one{<ph name="TABS_COUNT_MANY" /> टैब को ग्रुप में जोड़ें}other{<ph name="TABS_COUNT_MANY" /> टैब, ग्रुप में जोड़ें}}</translation>
 <translation id="3328308545011660196">सुझाव: ऐसा लगता है कि <ph name="NUMBER_OF_TABS" /> टैब एक-दूसरे से मिलते-जुलते हैं. इनका ग्रुप बनाएं?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{1 दिन तक कोई गतिविधि न होने पर}one{<ph name="DAY_COUNT_MANY" /> दिन तक कोई गतिविधि न होने पर}other{<ph name="DAY_COUNT_MANY" /> दिनों तक कोई गतिविधि न होने पर}}</translation>

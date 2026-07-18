@@ -56,7 +56,6 @@
 <translation id="1623563412065267963">휴대전화에서 Chromium 앱을 사용하여 Google 기능을 최대한 활용하세요</translation>
 <translation id="1625909126243026060">Chromium의 주요 개인 정보 보호 및 보안 제어 기능을 검토합니다.</translation>
 <translation id="1640672724030957280">다운로드 중...</translation>
-<translation id="1680687534629375545">이미지 검색에 이 페이지에 관해 질문하기</translation>
 <translation id="1708414395296835197">언제든지 메시지, 문서, 기타 앱에서 링크를 클릭하여 Chromium을 사용할 수 있습니다. 작업 표시줄에도 고정됩니다.</translation>
 <translation id="1709772298389099340"><ph name="BROWSER_NAME" />에 승격된 권한을 제공합니다.</translation>
 <translation id="1722488837206509557">이렇게 하면 사용 가능한 기기 중에서 선택하고 해당 기기에 콘텐츠를 표시할 수 있습니다.</translation>
@@ -80,7 +79,6 @@
 <translation id="1880677175115548835">텍스트 선택</translation>
 <translation id="1881322772814446296">관리 계정으로 로그인하고 Chromium 프로필에 대한 관리자 제어권을 부여하려고 합니다. 앱, 북마크, 방문 기록, 비밀번호 및 기타 설정 등 Chromium 데이터가 <ph name="USER_NAME" /> 계정에 영구적으로 연결됩니다. 이후 이 데이터를 Google 계정 대시보드에서 삭제할 수는 있지만 다른 계정에 연결할 수는 없습니다. 기존 Chromium 데이터를 유지하려면 새 프로필을 만드는 방법이 있습니다. <ph name="LEARN_MORE" /></translation>
 <translation id="1896836275755235458">Chromium에서 부드러운 스크롤 및 동영상 프레임 속도 같은 시각 효과와 백그라운드 활동을 제한하여 배터리 전원을 절약합니다. <ph name="BEGIN_LINK" />에너지 절약 모드에 관해 자세히 알아보기<ph name="END_LINK" /></translation>
-<translation id="1898804291554630487">이 페이지에 대해 질문하기</translation>
 <translation id="1900969832270057921">Chromium 업데이터 서비스</translation>
 <translation id="1911763535808217981">이 기능을 사용 중지하면 Chromium에 로그인하지 않고도 Gmail 등의 Google 사이트에 로그인할 수 있습니다.</translation>
 <translation id="1929939181775079593">Chromium이 응답하지 않습니다. 다시 시작하시겠습니까?</translation>
@@ -226,7 +224,6 @@
 <translation id="3316771292331273802">Chromium에 로그인한 경우 Google 계정을 제외한 모든 Chromium 창을 닫으면 대부분의 사이트에서 로그아웃됩니다. 사이트에서 나를 기억하도록 하려면 <ph name="SETTINGS_LINK" />하세요.</translation>
 <translation id="3352986031709923790">검색 영역의 오른쪽 상단: 오른쪽 <ph name="RIGHT" />%, 상단 <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">사용자 계정의 Chromium 데이터</translation>
-<translation id="3369405342922656244">이미지 검색으로 이 페이지 검색하기</translation>
 <translation id="3375770072980084583">휴대전화에서 Chromium으로 비밀번호를 사용하세요</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">기존 Chromium 프로필로 전환하시겠습니까?</translation>
@@ -373,7 +370,6 @@
 <translation id="5231355151045086930">Chromium에서 로그아웃</translation>
 <translation id="5234764350956374838">닫기</translation>
 <translation id="5249261924633168472">Chromium 시크릿 창에서 링크 열기(&amp;G)</translation>
-<translation id="5254739261293693943">이 동영상에 관해 질문하기</translation>
 <translation id="5276305953263010518">이동 중에도 비밀번호를 저장하려면 Chromium 앱을 다운로드하세요</translation>
 <translation id="5277894862589591112">변경사항을 적용하려면 Chromium을 다시 실행하세요.</translation>
 <translation id="5286907366254680517">감지됨</translation>
@@ -468,7 +464,6 @@
 <translation id="6183079672144801177"><ph name="TARGET_DEVICE_NAME" />에서 Chromium에 로그인되어 있는지 확인한 다음 다시 전송해 보세요.</translation>
 <translation id="6212496753309875659">컴퓨터에 이미 최신 버전의 Chromium이 있습니다. 소프트웨어가 작동하지 않으면 Chromium의 설치를 제거한 뒤 다시 시도하세요.</translation>
 <translation id="6219195342503754812">{0,plural, =0{곧 Chromium이 다시 시작됩니다}=1{1초 후 Chromium이 다시 시작됩니다}other{#초 후 Chromium이 다시 시작됩니다}}</translation>
-<translation id="6239161312595354541">이미지 검색에 이 동영상에 관해 질문하기</translation>
 <translation id="6241367896540709610">파일을 다운로드하려면 Chromium에 저장소 액세스 권한이 필요합니다.</translation>
 <translation id="6245734527075554892">Chromium에 저장된 안전하지 않은 사이트 목록을 사용하여 URL을 검사합니다.</translation>
 <translation id="6248213926982192922">Chromium을 기본 브라우저로 설정</translation>
@@ -559,7 +554,6 @@
             • Chromium 바로가기 재설정
             <ph name="LINE_BREAKS" />
             북마크, 방문 기록, 저장된 비밀번호는 영향을 받지 않습니다.</translation>
-<translation id="6934579572334859869">이미지 검색에 이 이미지에 관해 질문하기</translation>
 <translation id="6948031725951063910">Chromium의 북마크 한도인 <ph name="BOOKMARK_LIMIT" />개에 도달하여 북마크 중 일부가 아직 Google 계정에 저장되지 않았습니다.
 
 일부 북마크를 삭제할 때까지 계정에 새 북마크를 저장할 수 없습니다. 지금 로그아웃하면 저장되지 않은 북마크가 삭제됩니다.</translation>
@@ -650,7 +644,6 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7872446069773932638">다운로드 중... <ph name="SECONDS" />초 남았습니다.</translation>
 <translation id="7873537467422636035">암호가 기억나지 않거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정에서 Chromium 데이터를 삭제<ph name="END_LINK" />하세요</translation>
 <translation id="7874369989024033742">필요할 때마다 빠르게 Chromium의 Gemini를 여세요</translation>
-<translation id="7877212753140190672">이 이미지에 관해 질문하기</translation>
 <translation id="7888981273428720788">Chromium을 기본 브라우저로 설정</translation>
 <translation id="7934340546140346950">가능한 경우 Chromium이 비보안 연결을 HTTPS로 자동 업그레이드합니다.</translation>
 <translation id="7937630085815544518"><ph name="USER_EMAIL_ADDRESS" />(으)로 Chromium에 로그인되어 있습니다. 같은 계정으로 다시 로그인해 주세요.</translation>

@@ -55,7 +55,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="1623563412065267963">Користуйтеся всіма можливостями Google у додатку Chromium на телефоні</translation>
 <translation id="1625909126243026060">Перевірте основні елементи керування конфіденційністю та безпекою в Chromium</translation>
 <translation id="1640672724030957280">Завантаження...</translation>
-<translation id="1680687534629375545">Запитати про цю сторінку в сервісі "Пошук за зображенням"</translation>
 <translation id="1708414395296835197">Ви можете відкривати в Chromium посилання з повідомлень, документів і інших додатків. Вебпереглядач також буде закріплено на панелі завдань.</translation>
 <translation id="1709772298389099340">Надає розширені повноваження для <ph name="BROWSER_NAME" />.</translation>
 <translation id="1722488837206509557">Ви зможете вибирати доступні пристрої і показувати на них контент.</translation>
@@ -79,7 +78,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="1880677175115548835">Вибрати текст</translation>
 <translation id="1881322772814446296">Ви входите, використовуючи дані облікового запису, яким керує адміністратор. Адміністратор може контролювати ваш профіль Chromium. Ваші дані Chromium, як-от програми, закладки, історія, паролі й інші налаштування, буде назавжди пов’язано з обліковим записом <ph name="USER_NAME" />. Ці дані можна видалити на інформаційній панелі Облікових записів Google, але ви не зможете пов’язати їх з іншим обліковим записом. Проте ви можете створити новий профіль, щоб зберігати наявні дані Chromium окремо. <ph name="LEARN_MORE" /></translation>
 <translation id="1896836275755235458">Chromium зберігає заряд акумулятора, обмежуючи фонову активність і візуальні ефекти, як-от плавне прокручування й частоту кадрів відео. <ph name="BEGIN_LINK" />Докладніше про режим енергозбереження.<ph name="END_LINK" /></translation>
-<translation id="1898804291554630487">Поставити запитання про цю сторінку</translation>
 <translation id="1900969832270057921">Сервіс оновлення Chromium</translation>
 <translation id="1911763535808217981">Якщо вимкнути цей параметр, ви зможете входити на сайти Google, як-от Gmail, без входу в Chromium</translation>
 <translation id="1929939181775079593">Chromium не відповідає. Перезапустити зараз?</translation>
@@ -225,7 +223,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="3316771292331273802">Якщо ви закриєте всі вікна Chromium, то вийдете з облікових записів на більшості сайтів, але не з облікового запису Google (за умови, що ви ввійшли в Chromium). Щоб дозволити сайтам запам’ятовувати вас, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">правий верхній кут області пошуку: <ph name="RIGHT" />% праворуч, <ph name="TOP" />% згори</translation>
 <translation id="3366305173356742781">Дані Chromium у вашому обліковому записі</translation>
-<translation id="3369405342922656244">Знайти цю сторінку за допомогою сервісу "Пошук за зображенням"</translation>
 <translation id="3375770072980084583">Користуйтеся своїми паролями в Chromium на телефоні</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Перейти в наявний профіль Chromium?</translation>
@@ -372,7 +369,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="5231355151045086930">Вийти з Chromium</translation>
 <translation id="5234764350956374838">Закрити</translation>
 <translation id="5249261924633168472">Відкрити посилання в &amp;анонімному вікні Chromium</translation>
-<translation id="5254739261293693943">Запитати про це відео</translation>
 <translation id="5276305953263010518">Завантажте додаток Chromium, щоб зберігати паролі, де б ви не були</translation>
 <translation id="5277894862589591112">Щоб застосувати зміни, перезапустіть Chromium</translation>
 <translation id="5286907366254680517">Визначено</translation>
@@ -467,7 +463,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="6183079672144801177">Переконайтеся, що ви ввійшли в Chromium на пристрої <ph name="TARGET_DEVICE_NAME" />, і повторіть спробу.</translation>
 <translation id="6212496753309875659">На цьому комп’ютері вже встановлено новішу версію Chromium. Якщо програмне забезпечення не працює, видаліть Chromium і повторіть спробу.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium перезапуститься зараз}=1{Chromium перезапуститься через 1 секунду}one{Chromium перезапуститься через # секунду}few{Chromium перезапуститься через # секунди}many{Chromium перезапуститься через # секунд}other{Chromium перезапуститься через # секунди}}</translation>
-<translation id="6239161312595354541">Запитати про це відео в сервісі "Пошук за зображенням"</translation>
 <translation id="6241367896540709610">Веб-переглядачу Chromium потрібен доступ до пам’яті, щоб завантажувати файли</translation>
 <translation id="6245734527075554892">Перевіряє URL-адреси за списком шкідливих сайтів, що зберігаються в Chromium</translation>
 <translation id="6248213926982192922">Зробити Chromium переглядачем за умовчанням</translation>
@@ -558,7 +553,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
             • ярлики Chromium буде скинуто.
             <ph name="LINE_BREAKS" />
             Це не вплине на закладки, історію і збережені паролі.</translation>
-<translation id="6934579572334859869">Запитати про це зображення в сервісі "Пошук за зображенням"</translation>
 <translation id="6948031725951063910">Ви додали максимальну кількість закладок у Chromium (<ph name="BOOKMARK_LIMIT" />), тому деякі з них іще не збережено у вашому обліковому записі Google.
 
 Щоб зберегти нові закладки в обліковому записі, видаліть деякі з наявних. Якщо вийти зараз, незбережені закладки буде видалено.</translation>
@@ -649,7 +643,6 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="7872446069773932638">Завантаження… Залишилося: <ph name="SECONDS" /> с.</translation>
 <translation id="7873537467422636035">Якщо ви забули парольну фразу або хочете змінити це налаштування, <ph name="BEGIN_LINK" />видаліть дані Chromium у своєму обліковому записі<ph name="END_LINK" /></translation>
 <translation id="7874369989024033742">Швидко відкривайте Gemini у Chromium будь-коли</translation>
-<translation id="7877212753140190672">Запитати про це зображення</translation>
 <translation id="7888981273428720788">Зробіть Chromium вебпереглядачем за умовчанням</translation>
 <translation id="7934340546140346950">Chromium автоматично переходить на протокол HTTPS, коли це можливо</translation>
 <translation id="7937630085815544518">Ви ввійшли в Chromium як <ph name="USER_EMAIL_ADDRESS" />. Скористайтеся тим самим обліковим записом, щоб увійти знову.</translation>

@@ -55,7 +55,6 @@
 <translation id="1623563412065267963">Beneficiază de tot ce este mai bun la Google cu aplicația Chromium pe telefon</translation>
 <translation id="1625909126243026060">Examinează cele mai importante opțiuni de confidențialitate și de securitate din Chromium</translation>
 <translation id="1640672724030957280">Se descarcă…</translation>
-<translation id="1680687534629375545">Întreabă Căutarea de imagini despre această pagină</translation>
 <translation id="1708414395296835197">Poți folosi Chromium oricând dai clic pe linkuri în mesaje, documente și alte aplicații. Va fi fixat și în bara de activități.</translation>
 <translation id="1709772298389099340">Oferă privilegii de nivel superior pentru <ph name="BROWSER_NAME" />.</translation>
 <translation id="1722488837206509557">Astfel, vei putea să selectezi dintre dispozitivele disponibile și să afișezi conținut pe acestea.</translation>
@@ -79,7 +78,6 @@
 <translation id="1880677175115548835">Selectează text</translation>
 <translation id="1881322772814446296">Vă conectați cu un cont gestionat și îi permiteți administratorului acestuia controlul asupra profilului dvs. Chromium. Datele Chromium, cum ar fi aplicațiile, marcajele, istoricul, parolele și alte setări vor fi asociate definitiv cu <ph name="USER_NAME" />. Veți putea să ștergeți aceste date prin intermediul Tabloului de bord pentru Conturi Google, însă nu veți putea să asociați aceste date cu alt cont. Aveți opțiunea de a crea un profil nou, pentru a păstra separat datele Chromium existente. <ph name="LEARN_MORE" /></translation>
 <translation id="1896836275755235458">Chromium economisește energia bateriei limitând activitatea de fundal și efectele vizuale, cum ar fi derularea lină și ratele de cadre video. <ph name="BEGIN_LINK" />Află mai multe despre Economisirea energiei<ph name="END_LINK" /></translation>
-<translation id="1898804291554630487">Întreabă despre această pagină</translation>
 <translation id="1900969832270057921">Chromium Updater Service</translation>
 <translation id="1911763535808217981">Dacă dezactivezi, te poți conecta la site-uri Google ca Gmail fără a te conecta la Chromium</translation>
 <translation id="1929939181775079593">Chromium nu mai răspunde. Îl reporniți acum?</translation>
@@ -225,7 +223,6 @@
 <translation id="3316771292331273802">Dacă te-ai conectat la Chromium, când închizi toate ferestrele Chromium fără să te deconectezi de la Contul Google, te vei deconecta de pe majoritatea site-urilor. Pentru ca site-urile să te rețină, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">colțul din dreapta sus al zonei de căutare: dreapta <ph name="RIGHT" /> %, sus <ph name="TOP" /> %</translation>
 <translation id="3366305173356742781">Datele Chromium din cont</translation>
-<translation id="3369405342922656244">Caută această pagină cu Căutarea de imagini</translation>
 <translation id="3375770072980084583">Folosește-ți parolele cu Chromium pe telefon</translation>
 <translation id="3387527074123400161">Sistemul de operare Chromium</translation>
 <translation id="3406848076815591792">Schimbi la profilul Chromium existent?</translation>
@@ -372,7 +369,6 @@
 <translation id="5231355151045086930">Deconectează-te de la Chromium</translation>
 <translation id="5234764350956374838">Închide</translation>
 <translation id="5249261924633168472">Deschide linkul într-o fereastră Chromium inco&amp;gnito</translation>
-<translation id="5254739261293693943">Întreabă despre acest videoclip</translation>
 <translation id="5276305953263010518">Descarcă aplicația Chromium pentru a salva parole din mers</translation>
 <translation id="5277894862589591112">Pentru a aplica modificările, relansează Chromium</translation>
 <translation id="5286907366254680517">Detectat</translation>
@@ -467,7 +463,6 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="6183079672144801177">Asigură-te că te-ai conectat la Chromium pe <ph name="TARGET_DEVICE_NAME" /> și încearcă din nou să trimiți.</translation>
 <translation id="6212496753309875659">Acest computer are deja o versiune mai recentă de Chromium. Dacă software-ul nu funcționează, dezinstalați Chromium și încercați din nou.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium se va relansa acum}=1{Chromium se va relansa într-o secundă}few{Chromium se va relansa în # secunde}other{Chromium se va relansa în # de secunde}}</translation>
-<translation id="6239161312595354541">Întreabă Căutarea de imagini despre acest videoclip</translation>
 <translation id="6241367896540709610">Pentru a descărca fișiere, Chromium necesită permisiunea de acces la stocare</translation>
 <translation id="6245734527075554892">Verifică adresele URL folosind o listă de site-uri nesigure, stocată în Chromium</translation>
 <translation id="6248213926982192922">Setați Chromium ca browser prestabilit</translation>
@@ -558,7 +553,6 @@ Este posibil ca unele funcții să nu fie disponibile. Specificați un director 
             • va reinițializa comenzile rapide Chromium.
             <ph name="LINE_BREAKS" />
             Marcajele, istoricul și parolele salvate nu vor fi afectate.</translation>
-<translation id="6934579572334859869">Întreabă Căutarea de imagini despre această imagine</translation>
 <translation id="6948031725951063910">Ai atins limita de <ph name="BOOKMARK_LIMIT" /> marcaje pentru Chromium, așadar unele dintre marcaje nu au fost salvate încă în Contul Google.
 
 Nu poți salva marcaje noi în cont până când nu ștergi câteva. Dacă te deconectezi acum, marcajele nesalvate vor fi șterse.</translation>
@@ -649,7 +643,6 @@ Chromium nu poate recupera setările.</translation>
 <translation id="7872446069773932638">Se descarcă… Timp rămas: <ph name="SECONDS" /> secunde</translation>
 <translation id="7873537467422636035">Dacă uiți expresia de acces sau dorești să modifici această setare, <ph name="BEGIN_LINK" />șterge datele Chromium din cont<ph name="END_LINK" /></translation>
 <translation id="7874369989024033742">Deschide rapid Gemini în Chromium oricând ai nevoie</translation>
-<translation id="7877212753140190672">Întreabă despre această imagine</translation>
 <translation id="7888981273428720788">Setează Chromium ca browser prestabilit</translation>
 <translation id="7934340546140346950">Chromium face automat upgrade conexiunilor nesecurizate la HTTPS, dacă este posibil</translation>
 <translation id="7937630085815544518">Ai fost conectat(ă) la Chromium ca <ph name="USER_EMAIL_ADDRESS" />. Folosește același cont pentru a te conecta din nou.</translation>

@@ -565,6 +565,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="1855370856221982654">Mchezo wa ndondi</translation>
 <translation id="1862788842908766795">Kazi za Utendaji na Usimamizi</translation>
 <translation id="1863257867908022953">Trei ya 12</translation>
+<translation id="1863374797460198869">Gumzo limefichwa</translation>
 <translation id="186539747722034544">Watoa Huduma za Kebo na Setilaiti</translation>
 <translation id="1870473978371099486">Huduma za Mafunzo Binafsi</translation>
 <translation id="1871208020102129563">Proksi imewekwa ili kutumia seva za proksi thabiti, siyo URL ya hati .pac.</translation>
@@ -1426,7 +1427,6 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, bonyeza 'Tab' kisha 'Enter' ili udhibiti maelezo unayosawazisha katika mipangilio ya Chrome</translation>
 <translation id="3203025201812691413">Sharti URL ijazwe</translation>
 <translation id="320323717674993345">Ghairi Malipo</translation>
-<translation id="3204534477198689393">Ili kuboresha mapendekezo na kujaza fomu kwa haraka zaidi, maudhui na URL za kurasa unazotembelea zinaweza kuchakatwa katika sehemu ya faragha kwenye wingu.</translation>
 <translation id="3207830513221832868">Huenda <ph name="BLOCKED_URL" /> ina maudhui ya watu wazima</translation>
 <translation id="3207960819495026254">Imealamishwa</translation>
 <translation id="3208701679386778924">Tafadhali tuma ripoti ili tuweze kuboresha zaidi masasisho ya ChromeOS.</translation>
@@ -4528,6 +4528,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="7972714317346275248">PKCS #1 SHA-384 Na Usimbaji wa RSA</translation>
 <translation id="7976053965094442846">Watoaji wa huduma ya Nunua sasa, lipa baadaye wanapatikana ili ulipie polepole. Kibodi imefichwa.</translation>
 <translation id="7976214039405368314">Maombi mengi mno</translation>
+<translation id="7977029776654598145">Kinapotumika</translation>
 <translation id="7977538094055660992">Kifaa cha kutoa maudhui</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Dak <ph name="TIME_COUNT" /> iliyopita}=1{Saa <ph name="TIME_COUNT" /> iliyopita}other{Siku <ph name="TIME_COUNT" /> zilizopita}}</translation>
 <translation id="7979595116210197019">Huduma ya Vyakula</translation>
@@ -4622,7 +4623,6 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="8134058435519644366">Usajili na Uajiri</translation>
 <translation id="8135546115396015134">kitufe cha kushoto</translation>
 <translation id="8137456439814903304">Nishati na Huduma (za Umma na Binafsi)</translation>
-<translation id="8138591088112729119">Inaendeshwa na Umaizi wa Binafsi</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Kilianzishwa mwezi 1 uliopita}other{Kilianzishwa miezi {NUM_MONTHS} iliyopita}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, chaguomsingi kwa sasa. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Toleo la PDF:</translation>
@@ -4954,6 +4954,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="8688672835843460752">Inapatikana</translation>
 <translation id="868922510921656628">Kurasa kwa kila laha</translation>
 <translation id="8694684557210599098">Weka maelezo ya gari</translation>
+<translation id="8696297579102085705">Tuma kwenye kifaa chako</translation>
 <translation id="8698428283892912525">Chrome ina vipengele vya usalama vilivyojumuishwa ili kukulinda unapovinjari — kama vile Kipengele cha Kuvinjari Salama na Google, ambacho hivi majuzi <ph name="BEGIN_LINK" />kiligundua programu hasidi<ph name="END_LINK" /> kwenye tovuti uliyojaribu kutembelea.</translation>
 <translation id="869891660844655955">Muda wake unakwisha tarehe</translation>
 <translation id="8699041776323235191">Kifaa cha HID</translation>

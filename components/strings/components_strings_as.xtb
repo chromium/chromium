@@ -565,6 +565,7 @@
 <translation id="1855370856221982654">বক্সিং</translation>
 <translation id="1862788842908766795">এক্সিকিউটিভ আৰু পৰিচালনা বিভাগৰ চাকৰি</translation>
 <translation id="1863257867908022953">ট্ৰে’ ১২</translation>
+<translation id="1863374797460198869">চাট লুকুওৱা হৈছে</translation>
 <translation id="186539747722034544">কে’বল আৰু উপগ্ৰহৰ এক্সেছ যোগানকাৰী</translation>
 <translation id="1870473978371099486">ব্যক্তিগত টিউশ্বন সেৱা</translation>
 <translation id="1871208020102129563">প্ৰক্সিয়ে কোনো .pac স্ক্ৰিপ্টৰ URLৰ সলনি স্থিৰ প্ৰ'ক্সী ছার্ভাৰ ব্যৱহাৰ কৰিবলৈ ছেট কৰা হৈছে।</translation>
@@ -1424,7 +1425,6 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপুনি Chromeৰ ছেটিঙত কি তথ্য ছিংক কৰিব সেয়া পৰিচালনা কৰিবলৈ প্ৰথমে টেব আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="3203025201812691413">URL খালী থাকিব নোৱাৰে</translation>
 <translation id="320323717674993345">পৰিশোধ বাতিল কৰক</translation>
-<translation id="3204534477198689393">পৰামৰ্শ উন্নত কৰিবলৈ আৰু ফৰ্মসমূহ দ্ৰুতভাৱে পূৰ কৰিবলৈ, আপুনি চোৱা পৃষ্ঠাৰ সমল আৰু URLসমূহ ক্লাউডত এটা ব্যক্তিগত স্থানত প্ৰক্ৰিয়াকৰণ কৰিব পাৰি।</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" />ত প্ৰাপ্তবয়স্ক লোকৰ সমল থাকিব পাৰে</translation>
 <translation id="3207960819495026254">বুকমার্ক কৰা হৈছে</translation>
 <translation id="3208701679386778924">অনুগ্ৰহ কৰি এটা মতামত সম্বলিত ৰিপ’ৰ্ট পঠিয়াওক যাতে আমি ChromeOSৰ অনাগত আপডে’টসমূহ উন্নত কৰিব পাৰোঁ।</translation>
@@ -4524,6 +4524,7 @@
 <translation id="7972714317346275248">RSA এনক্ৰিপশ্বনৰ সৈতে PKCS #1 SHA-384</translation>
 <translation id="7976053965094442846">সময়ৰ লগে লগে পৰিশোধ কৰাৰ সুবিধা প্ৰদান কৰাৰ বাবে উপলব্ধ এতিয়া ক্ৰয় কৰি পাছত পৰিশোধ কৰক জাৰিকৰ্তা। কীব’ৰ্ড লুকুওৱা হৈছে।</translation>
 <translation id="7976214039405368314">অতি বেছিসংখ্যক অনুৰোধ</translation>
+<translation id="7977029776654598145">ব্যৱহাৰ কৰিলে</translation>
 <translation id="7977538094055660992">আউটপুট ডিভাইচ</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> মিনিট পূৰ্বে}=1{<ph name="TIME_COUNT" /> ঘণ্টা পূৰ্বে}one{<ph name="TIME_COUNT" /> দিন পূৰ্বে}other{<ph name="TIME_COUNT" /> দিন পূৰ্বে}}</translation>
 <translation id="7979595116210197019">খাদ্য সম্পর্কীয় সেৱা</translation>
@@ -4618,7 +4619,6 @@
 <translation id="8134058435519644366">নিযুক্তি আৰু কৰ্মচাৰীৰ ভৰ্তিকৰণ</translation>
 <translation id="8135546115396015134">বাওঁফালৰ কী</translation>
 <translation id="8137456439814903304">শক্তি আৰু উপযোগিতা</translation>
-<translation id="8138591088112729119">পাৰ্ছনেল ইণ্টেলিজেন্সে পৰিচালনা কৰা</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{১ মাহ পূৰ্বে সৃষ্টি কৰা হৈছে}one{{NUM_MONTHS} মাহ পূৰ্বে সৃষ্টি কৰা হৈছে}other{{NUM_MONTHS} মাহ পূৰ্বে সৃষ্টি কৰা হৈছে}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, বৰ্তমানৰ ডিফ’ল্ট। <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDFৰ সংস্কৰণ:</translation>
@@ -4951,6 +4951,7 @@
 <translation id="8688672835843460752">উপলব্ধ</translation>
 <translation id="868922510921656628">প্ৰতিটো ছেটত পৃষ্ঠাৰ সংখ্যা</translation>
 <translation id="8694684557210599098">বাহন যোগ দিয়া</translation>
+<translation id="8696297579102085705">আপোনাৰ ডিভাইচলৈ পঠিয়াওক</translation>
 <translation id="8698428283892912525">আপুনি ব্ৰাউজ কৰি থকাৰ সময়ত আপোনাক সুৰক্ষিত কৰিবলৈ, Chromeৰ ওচৰত বিল্ট-ইন সুৰক্ষাৰ সুবিধাসমূহ আছে — যেনে, Googleৰ সুৰক্ষিত ব্ৰাউজিং, যি আপুনি যাবলৈ চেষ্টা কৰা ছাইটটোত <ph name="BEGIN_LINK" />শেহতীয়াকৈ মালৱেৰ ধৰা পেলাইছে<ph name="END_LINK" />।</translation>
 <translation id="869891660844655955">ম্যাদ উকলাৰ তাৰিখ</translation>
 <translation id="8699041776323235191">HID ডিভাইচ</translation>

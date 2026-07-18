@@ -565,6 +565,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1855370856221982654">Bokss</translation>
 <translation id="1862788842908766795">Vadītāja līmeņa vakances</translation>
 <translation id="1863257867908022953">12. paplāte</translation>
+<translation id="1863374797460198869">Tērzēšana paslēpta</translation>
 <translation id="186539747722034544">Kabeļtelevīzijas un satelīttelevīzijas pakalpojumu sniedzēji</translation>
 <translation id="1870473978371099486">Privātas apmācības pakalpojumi</translation>
 <translation id="1871208020102129563">Starpniekserveris ir iestatīts, lai tas lietotu fiksētus starpniekserverus, nevis .pac skripta URL.</translation>
@@ -1426,7 +1427,6 @@ Lai paslēptu vēlākas maksāšanas iespējas, pārejiet uz <ph name="BEGIN_LIN
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />: nospiediet tabulēšanas taustiņu un pēc tam — ievadīšanas taustiņu, lai Chrome iestatījumos pārvaldītu, kāda informācija tiek sinhronizēta.</translation>
 <translation id="3203025201812691413">URL lauks nedrīkst būt tukšs.</translation>
 <translation id="320323717674993345">Atcelt maksājumu</translation>
-<translation id="3204534477198689393">Lai uzlabotu ieteikumus un ātrāk aizpildītu veidlapas, jūsu apmeklēto lapu saturs un vietrāži URL var tikt apstrādāti privātā telpā mākonī.</translation>
 <translation id="3207830513221832868">Vietnē <ph name="BLOCKED_URL" /> var būt ietverts galvenokārt pieaugušajiem paredzēts saturs.</translation>
 <translation id="3207960819495026254">Atzīmēts kā grāmatzīme</translation>
 <translation id="3208701679386778924">Lūdzu, nosūtiet atsauksmes, lai mēs varētu uzlabot nākamos Chrome OS atjauninājumus.</translation>
@@ -4528,6 +4528,7 @@ Papildu informācija:
 <translation id="7972714317346275248">PKCS #1 SHA-384 ar RSA šifrējumu</translation>
 <translation id="7976053965094442846">Maksājumu veida “Pērciet tūlīt, maksājiet vēlāk” pakalpojuma sniedzējs ļauj maksāt pa daļām. Tastatūra ir paslēpta.</translation>
 <translation id="7976214039405368314">Pārāk daudz pieprasījumu</translation>
+<translation id="7977029776654598145">Kad šī funkcija tiek izmantota</translation>
 <translation id="7977538094055660992">Izvades ierīce</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Pirms <ph name="TIME_COUNT" /> min}=1{Pirms <ph name="TIME_COUNT" /> h}zero{Pirms <ph name="TIME_COUNT" /> d.}one{Pirms <ph name="TIME_COUNT" /> d.}other{Pirms <ph name="TIME_COUNT" /> d.}}</translation>
 <translation id="7979595116210197019">Ēdināšanas nozare</translation>
@@ -4622,7 +4623,6 @@ Papildu informācija:
 <translation id="8134058435519644366">Pieņemšana darbā un personāla komplektēšana</translation>
 <translation id="8135546115396015134">kreisais taustiņš</translation>
 <translation id="8137456439814903304">Enerģija un komunālie pakalpojumi</translation>
-<translation id="8138591088112729119">Nodrošina funkcija “Personīgais intelekts”</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Izveidota pirms 1 mēneša}zero{Izveidota pirms {NUM_MONTHS} mēnešiem}one{Izveidota pirms {NUM_MONTHS} mēneša}other{Izveidota pirms {NUM_MONTHS} mēnešiem}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, pašreizējais noklusējums. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF versija:</translation>
@@ -4956,6 +4956,7 @@ Papildu informācija:
 <translation id="8688672835843460752">Pieejams</translation>
 <translation id="868922510921656628">Lapas katrā kopā</translation>
 <translation id="8694684557210599098">Transportlīdzekļa pievienošana</translation>
+<translation id="8696297579102085705">Nosūtīt uz jūsu ierīci</translation>
 <translation id="8698428283892912525">Lai aizsargātu jūs pārlūkošanas laikā, pārlūkā Chrome ir iebūvētas drošības funkcijas, piemēram, funkcija Google droša pārlūkošana, kas nesen <ph name="BEGIN_LINK" />konstatēja kaitīgu programmatūru<ph name="END_LINK" /> vietnē, kuru mēģināt apmeklēt.</translation>
 <translation id="869891660844655955">Derīguma termiņš</translation>
 <translation id="8699041776323235191">HID ierīce</translation>

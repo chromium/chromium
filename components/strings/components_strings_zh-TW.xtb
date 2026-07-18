@@ -564,6 +564,7 @@
 <translation id="1855370856221982654">拳擊</translation>
 <translation id="1862788842908766795">主管與管理階層工作</translation>
 <translation id="1863257867908022953">紙匣 12</translation>
+<translation id="1863374797460198869">已隱藏對話</translation>
 <translation id="186539747722034544">有線電視與衛星電視業者</translation>
 <translation id="1870473978371099486">私人家教服務</translation>
 <translation id="1871208020102129563">Proxy 設定為使用固定的 Proxy 伺服器，而非 .pac 指令碼網址。</translation>
@@ -1424,7 +1425,6 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可在 Chrome 設定中管理要同步處理哪些資訊</translation>
 <translation id="3203025201812691413">網址不得留空</translation>
 <translation id="320323717674993345">取消付款</translation>
-<translation id="3204534477198689393">系統可能會在雲端私人空間處理你造訪過的網頁內容和網址，以提供更精準的建議，並加快表單填寫速度。</translation>
 <translation id="3207830513221832868">「<ph name="BLOCKED_URL" />」可能含有兒童不宜的內容</translation>
 <translation id="3207960819495026254">已加入書籤</translation>
 <translation id="3208701679386778924">請傳送報告，讓我們進一步改善 ChromeOS 更新。</translation>
@@ -4528,6 +4528,7 @@
 <translation id="7972714317346275248">PKCS #1 SHA-384 (使用 RSA 加密)</translation>
 <translation id="7976053965094442846">提供分期付款服務的「先買後付」發卡機構。鍵盤已隱藏。</translation>
 <translation id="7976214039405368314">要求數量過多</translation>
+<translation id="7977029776654598145">運作方式</translation>
 <translation id="7977538094055660992">輸出裝置</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> 分鐘前}=1{<ph name="TIME_COUNT" /> 小時前}other{<ph name="TIME_COUNT" /> 天前}}</translation>
 <translation id="7979595116210197019">餐飲服務</translation>
@@ -4622,7 +4623,6 @@
 <translation id="8134058435519644366">人才招募與人力派遣</translation>
 <translation id="8135546115396015134">左鍵</translation>
 <translation id="8137456439814903304">能源與公用事業</translation>
-<translation id="8138591088112729119">採用個人化智慧服務</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 個月前建立}other{{NUM_MONTHS} 個月前建立}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" /> 是目前的預設搜尋引擎。<ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF 版本：</translation>
@@ -4955,6 +4955,7 @@
 <translation id="8688672835843460752">可用空間</translation>
 <translation id="868922510921656628">每組頁數</translation>
 <translation id="8694684557210599098">新增車輛</translation>
+<translation id="8696297579102085705">傳送到你的裝置</translation>
 <translation id="8698428283892912525">Chrome 內建安全性功能，可在你瀏覽網站時提供保護，Google 安全瀏覽功能就是其中之一。這項功能最近曾在你嘗試造訪的網站上<ph name="BEGIN_LINK" />發現有害軟體<ph name="END_LINK" />。</translation>
 <translation id="869891660844655955">到期日</translation>
 <translation id="8699041776323235191">HID 裝置</translation>

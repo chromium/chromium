@@ -1177,7 +1177,6 @@
 <translation id="1910721550319506122">Hoş geldiniz!</translation>
 <translation id="1910736334623230603">Birden fazla resim aranamaz. Tek seferde bir tane resim ekleyin.</translation>
 <translation id="1910908536872421421">Chrome for Testing <ph name="BROWSER_VERSION" /> sürümü, yalnızca otomatik test amaçlıdır. Normal tarama için Chrome'un otomatik olarak güncellenen standart bir sürümünü kullanın.</translation>
-<translation id="1912867150686509584">Takviminizdeki diğer toplantıları görün</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Tarayıcınızı Yavaşlatan Sekmeyi Duraklatın}other{Tarayıcınızı Yavaşlatan Sekmeleri Duraklatın}}</translation>
 <translation id="1913749768968678106">Yayınla, kaydet ve paylaş</translation>
 <translation id="19147273405311768">Araç çubuğunu varsayılan ayarlara sıfırla</translation>
@@ -4257,6 +4256,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4274673989874969668">Siz bir siteden çıktıktan sonra o site, fotoğrafları yükleme veya sohbet mesajı gönderme gibi görevleri tamamlamak için senkronizasyona devam edebilir</translation>
 <translation id="4275291496240508082">Başlangıç sesi</translation>
 <translation id="4275397969489577657">Etkinlik akış günlük kaydını etkinleştir</translation>
+<translation id="4275663329226226506">Medya</translation>
 <translation id="4275788652681621337">Yan paneli kapat</translation>
 <translation id="4275830172053184480">Cihazınızı yeniden başlatın</translation>
 <translation id="4276390967705106170">Yeni bir tarayıcı sekmesinde aç</translation>
@@ -9907,7 +9907,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8693862390730570097">"Yazmama yardım et" özelliğinin otomatik olarak açılmasına izin verme</translation>
 <translation id="8694596275649352090">Uyku sırasında veya kapak kapalıyken kilitle</translation>
 <translation id="8695825812785969222">Konumu &amp;Aç...</translation>
-<translation id="8696297579102085705">Cihazıma gönder</translation>
 <translation id="869884720829132584">Uygulamalar menüsü</translation>
 <translation id="869891660844655955">Son kullanma tarihi</translation>
 <translation id="8699296325072357994">Şifre sayfalarındaki içerikler ve ilgili bilgiler Google'a gönderilir ve gerçek kişiler tarafından incelenir. Şifreniz şifrelenir ve başkaları tarafından görülmez. <ph name="PASSWORD_CHANGE" /></translation>

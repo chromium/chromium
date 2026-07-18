@@ -565,6 +565,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1855370856221982654">Boksi</translation>
 <translation id="1862788842908766795">Punë të nivelit ekzekutiv dhe në menaxhim</translation>
 <translation id="1863257867908022953">Tabakaja 12</translation>
+<translation id="1863374797460198869">Biseda u fsheh</translation>
 <translation id="186539747722034544">Ofrues të transmetimeve televizive kabllore dhe satelitore</translation>
 <translation id="1870473978371099486">Shërbime kursesh private</translation>
 <translation id="1871208020102129563">Përfaqësuesi është caktuar të përdorë serverë përfaqësues fiksë, jo një shkrim URL-je .pac.</translation>
@@ -1426,7 +1427,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të menaxhuar se çfarë informacionesh sinkronizon ti te cilësimet e Chrome</translation>
 <translation id="3203025201812691413">URL-ja nuk mund të jetë bosh</translation>
 <translation id="320323717674993345">Anulo pagesën</translation>
-<translation id="3204534477198689393">Për të përmirësuar sugjerimet dhe për të plotësuar formularët më shpejt, përmbajtja dhe URL-të e faqeve që viziton mund të përpunohen në një hapësirë private në renë kompjuterike.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> mund të ketë përmbajtje për të rritur</translation>
 <translation id="3207960819495026254">Regjistruar në faqeshënues</translation>
 <translation id="3208701679386778924">Dërgo një raport që të mund t'i përmirësojmë përditësimet e mëtejshme të ChromeOS.</translation>
@@ -4528,6 +4528,7 @@ Detaje shtesë:
 <translation id="7972714317346275248">PKCS #1 SHA-384 me enkriptim RSA</translation>
 <translation id="7976053965094442846">Lëshuesit e "Bli tani, paguaj më vonë" që disponohen për të paguar me kalimin e kohës. Tastiera është e fshehur.</translation>
 <translation id="7976214039405368314">Ka shumë kërkesa</translation>
+<translation id="7977029776654598145">Kur përdoret</translation>
 <translation id="7977538094055660992">Pajisja e daljes</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> min. më parë}=1{<ph name="TIME_COUNT" /> orë më parë}other{<ph name="TIME_COUNT" /> ditë më parë}}</translation>
 <translation id="7979595116210197019">Shërbim ushqimor</translation>
@@ -4622,7 +4623,6 @@ Detaje shtesë:
 <translation id="8134058435519644366">Rekrutimi i personelit</translation>
 <translation id="8135546115396015134">tasti majtas</translation>
 <translation id="8137456439814903304">Energjia dhe shërbimet utilitare</translation>
-<translation id="8138591088112729119">Mundësuar nga "Inteligjenca personale"</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Krijuar 1 muaj më parë}other{Krijuar {NUM_MONTHS} muaj më parë}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, përzgjedhja aktuale. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Versioni i PDF-së:</translation>
@@ -4955,6 +4955,7 @@ Detaje shtesë:
 <translation id="8688672835843460752">E disponueshme</translation>
 <translation id="868922510921656628">Faqe për grup</translation>
 <translation id="8694684557210599098">Shto automjetin</translation>
+<translation id="8696297579102085705">Dërgo te pajisja jote</translation>
 <translation id="8698428283892912525">Chrome ka veçori të integruara sigurie për të të mbrojtur ndërsa shfleton, si p.sh. "Shfletimi i sigurt i Google", i cili <ph name="BEGIN_LINK" />së fundi gjeti një softuer të dëmshëm<ph name="END_LINK" /> në sajtin që u përpoqe të vizitoje.</translation>
 <translation id="869891660844655955">Data e skadimit</translation>
 <translation id="8699041776323235191">Pajisje HID</translation>

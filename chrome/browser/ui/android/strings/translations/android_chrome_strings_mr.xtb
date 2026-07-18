@@ -147,6 +147,7 @@
 <translation id="1571041387761170095">कोणतेही कमकुवत आणि पुन्हा वापरलेला पासवर्ड नाहीत</translation>
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{या डिव्हाइसवरील १ पासवर्ड धोक्यात आला आहे}other{या डिव्हाइसवरील # पासवर्ड धोक्यात आले आहेत}}</translation>
 <translation id="1594635596540195766">खालील सूचीमध्ये <ph name="SUGGESTIONS_COUNT" /> आयटम सुचवले आहेत.</translation>
+<translation id="159689249463841786">फोल्डर निवडा, सध्या <ph name="FOLDER_NAME" /></translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> सह <ph name="SITE_ETLD_PLUS_ONE" /> वापरा</translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />, पिन केलेला रेकॉर्ड करत असलेला टॅब</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, शेअर करत असलेला टॅब</translation>
@@ -277,6 +278,7 @@
 <translation id="2190355936436201913">(रिक्त)</translation>
 <translation id="219283042927675668">गटामधील टॅब</translation>
 <translation id="2194856509914051091">विचार करण्याच्या गोष्टी</translation>
+<translation id="2196695604589508993">इतिहास उघडा</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, पिन केलेला शेअर करत असलेला टॅब</translation>
 <translation id="22091350895006575">वापरकर्ता नाव जोडा</translation>
 <translation id="221494669172414749">प्रोफाइल लॉकशिवाय Chrome उघडल्याने तुमचे सेव्ह केलेले पासवर्ड आणि पेमेंट पद्धती कारमधून काढून टाकल्या जातील. प्रोफाइल लॉक वापरल्याने हा डेटा सुरक्षित राहतो.</translation>
@@ -1821,6 +1823,7 @@
 <translation id="8317318757008452355">प्रिंट करण्यासाठी पर्याय उघडा</translation>
 <translation id="8320212361750431956">अलीकडील अ‍ॅक्टिव्हिटी</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /></translation>
+<translation id="8333026248928723981">बुकमार्क आणि सूची</translation>
 <translation id="8342727528718219152">Chrome हे अशा साइटविषयी तुम्हाला कळवू शकते, ज्या कदाचित खूप जास्त नोटिफिकेशन पाठवत असतील</translation>
 <translation id="834313815369870491">साइटचे कधीही भाषांतर करू नका</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />, मल्टीसिलेक्ट केलेला पिन केलेला रेकॉर्ड करत असलेला गुप्त टॅब</translation>
@@ -2062,6 +2065,7 @@
 <translation id="939598580284253335">सांकेतिक पासफ्रेझ एंटर करा</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, पिन केलेला चित्रात-चित्र गुप्त टॅब</translation>
 <translation id="945522503751344254">अभिप्राय पाठवा</translation>
+<translation id="948276827484905248">QR कोड तयार करा</translation>
 <translation id="95817756606698420">Chrome चीनमध्ये शोध करण्‍यासाठी <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> चा वापर करू शकते. तुम्ही हे <ph name="BEGIN_LINK" />सेटिंग्जमध्ये<ph name="END_LINK" /> बदलू शकता.</translation>
 <translation id="961856697154696964">ब्राउझिंग डेटा हटवा</translation>
 <translation id="963246339335003378">टास्क मॅनेजर उघडा</translation>

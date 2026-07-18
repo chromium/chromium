@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{பக்கத்தைப் பிரி}other{பக்கங்களைப் பிரி}}</translation>
 <translation id="2271452184061378400">உங்கள் பக்கக் குழுக்கள் இங்கே சேமிக்கப்படும்</translation>
 <translation id="2277224997687551299">குழுவின் பெயரை மாற்று</translation>
+<translation id="2289567621059034186">கீழே புதிய பக்கத்தை உருவாக்கு</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{பக்கத்தை புக்மார்க் செய்}other{பக்கங்களை புக்மார்க் செய்}}</translation>
 <translation id="2359808026110333948">தொடர்க</translation>
 <translation id="2371084566192454134">பக்கங்களும் பக்கக் குழுக்களும்</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">பக்கங்களைக் கிடைமட்டமாகக் காட்டு</translation>
 <translation id="31806439105337256">பக்கங்களைச் செங்குத்தாகக் காட்டு</translation>
 <translation id="3194464645767632461">ரேட்டிங்</translation>
+<translation id="3228962656492373217">கீழே உள்ள பக்கங்களை மூடு</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> பக்கத்தைக் குழுவில் சேர்க்கும்}other{<ph name="TABS_COUNT_MANY" /> பக்கங்களைக் குழுவில் சேர்க்கும்}}</translation>
 <translation id="3328308545011660196">பரிந்துரை: <ph name="NUMBER_OF_TABS" /> தாவல்கள் தொடர்புடையவையாகத் தெரிகின்றன. அவற்றைக் குழுவாக்கவா?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{1 நாளுக்குப் பின் செயலற்றதாகும்}other{<ph name="DAY_COUNT_MANY" /> நாட்களுக்குப் பின் செயலற்றதாகும்}}</translation>

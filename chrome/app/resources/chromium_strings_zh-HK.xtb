@@ -56,7 +56,6 @@
 <translation id="1623563412065267963">透過手機的 Chromium 應用程式盡享 Google 最精彩的功能</translation>
 <translation id="1625909126243026060">查看 Chromium 中重要的私隱和安全控制項</translation>
 <translation id="1640672724030957280">正在下載…</translation>
-<translation id="1680687534629375545">問「圖片搜尋」關於此頁面的問題</translation>
 <translation id="1708414395296835197">你可以隨時使用 Chromium 開啟訊息、文件和其他應用程式中的連結，瀏覽器也會固定在工作列。</translation>
 <translation id="1709772298389099340">為 <ph name="BROWSER_NAME" /> 提供更高權限。</translation>
 <translation id="1722488837206509557">這樣你就能選取可用裝置，並在這些裝置上顯示內容。</translation>
@@ -80,7 +79,6 @@
 <translation id="1880677175115548835">選擇文字</translation>
 <translation id="1881322772814446296">您已登入受管理的帳戶，並將管理控制權授予您的 Chromium 設定檔。您的 Chromium 數據 (例如應用程式、書籤、記錄、密碼和其他設定) 均將永久與 <ph name="USER_NAME" /> 建立關聯。您可以透過 Google 帳戶資訊主頁刪除這些數據，但您無法將這些數據與其他帳戶建立關聯。如要另行保留現有的 Chromium 數據，您可以選建立新的設定檔。<ph name="LEARN_MORE" /></translation>
 <translation id="1896836275755235458">Chromium 會限制背景活動和視覺效果 (例如流暢捲動和影片影格速率) 來節省電池電量。<ph name="BEGIN_LINK" />進一步瞭解省電模式<ph name="END_LINK" /></translation>
-<translation id="1898804291554630487">提出關於此頁的問題</translation>
 <translation id="1900969832270057921">Chromium 更新程式服務</translation>
 <translation id="1911763535808217981">關閉此功能後，您無需登入 Chromium，即可登入 Gmail 等 Google 網站</translation>
 <translation id="1929939181775079593">Chromium 沒有回應，要立即重新啟動嗎？</translation>
@@ -226,7 +224,6 @@
 <translation id="3316771292331273802">關閉所有 Chromium 視窗後，系統會將你登出所有網站，但如果你已登入 Chromium，Google 帳戶就會維持登入狀態。如要允許網站記住你的資料，請<ph name="SETTINGS_LINK" />。</translation>
 <translation id="3352986031709923790">搜尋區域嘅右上角：距右側 <ph name="RIGHT" />%，距頂部 <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">帳戶中的 Chromium 資料</translation>
-<translation id="3369405342922656244">使用「圖片搜尋」搜尋此頁面</translation>
 <translation id="3375770072980084583">透過手機的 Chromium 使用密碼</translation>
 <translation id="3387527074123400161">Chromium 作業系統</translation>
 <translation id="3406848076815591792">要切換至現有 Chromium 設定檔嗎？</translation>
@@ -373,7 +370,6 @@
 <translation id="5231355151045086930">登出 Chromium</translation>
 <translation id="5234764350956374838">關閉</translation>
 <translation id="5249261924633168472">在 Chromium 無痕式視窗中開啟連結</translation>
-<translation id="5254739261293693943">提出關於此影片的問題</translation>
 <translation id="5276305953263010518">取得 Chromium 應用程式，隨時隨地儲存密碼</translation>
 <translation id="5277894862589591112">如要套用變更，請重新啟動 Chromium</translation>
 <translation id="5286907366254680517">偵測到</translation>
@@ -423,7 +419,7 @@
 <translation id="5768371961535086509">Chromium 會從閒置分頁釋出記憶體，為使用中的分頁和其他應用程式提供更多電腦資源，同時保持 Chromium 的運作速度。閒置分頁會在你使用時自動恢復為「使用中」狀態。<ph name="BEGIN_LINK" />進一步瞭解記憶體節省模式<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">如果忘記密碼短語或想變更此設定，請<ph name="SETTINGS_LINK" />帳戶中的 Chromium 資料</translation>
 <translation id="5800158606660203929">自訂及控制 Chromium。將 Chromium 設定為預設瀏覽器。</translation>
-<translation id="5802618941556161431">將 Chromium 設定為預設瀏覽器，讓密碼、書籤和記錄在所有裝置上完美同步。</translation>
+<translation id="5802618941556161431">將 Chromium 設定為預設瀏覽器，在所有裝置上同步更新密碼、書籤和記錄。</translation>
 <translation id="5809516625706423866">無法連線至互聯網。發生 HTTP 401 未授權錯誤，請檢查 Proxy 設定。</translation>
 <translation id="5817952762723416573">使用 Chromium 的 V8 引擎加快網站速度，但 Chromium 防攻擊的能力會略為下降。此設定已關閉。</translation>
 <translation id="5821520528363214608">如要將 Chromium 的資料儲存至 Google 帳戶及使用這類資料，請更新 Chromium</translation>
@@ -468,7 +464,6 @@
 <translation id="6183079672144801177">請確認您已在 <ph name="TARGET_DEVICE_NAME" /> 上登入 Chromium，然後再傳送一次。</translation>
 <translation id="6212496753309875659">這部電腦已安裝較新的 Chromium 版本。如果軟件無法工作，請解除安裝 Chromium，然後再試一次。</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium 將立即重新啟動}=1{Chromium 將於 1 秒後重新啟動}other{Chromium 將於 # 秒後重新啟動}}</translation>
-<translation id="6239161312595354541">問「圖片搜尋」關於此影片的問題</translation>
 <translation id="6241367896540709610">Chromium 需要儲存空間存取權才能下載檔案</translation>
 <translation id="6245734527075554892">使用儲存在 Chromium 中的不安全網站清單來檢查網址</translation>
 <translation id="6248213926982192922">將 Chromium 設為預設瀏覽器</translation>
@@ -559,7 +554,6 @@
             • 重設 Chromium 快速鍵
             <ph name="LINE_BREAKS" />
             書籤、記錄和已儲存的密碼並不會受到影響。</translation>
-<translation id="6934579572334859869">問「圖片搜尋」關於此圖片的問題</translation>
 <translation id="6948031725951063910">Chromium 的書籤數量已達上限 (<ph name="BOOKMARK_LIMIT" /> 個)，因此部分書籤未能儲存至 Google 帳戶。
 
 你必須刪除部分書籤，才能將新書籤儲存至帳戶。如果你現在登出，未儲存的書籤將會刪除。</translation>
@@ -650,7 +644,6 @@ Chromium 無法復原您的設定。</translation>
 <translation id="7872446069773932638">正在下載… 剩餘 <ph name="SECONDS" /> 秒</translation>
 <translation id="7873537467422636035">如果忘記密碼短語或想變更此設定，請<ph name="BEGIN_LINK" />刪除帳戶中的 Chromium 資料<ph name="END_LINK" /></translation>
 <translation id="7874369989024033742">需要時快速開啟 Chromium 版 Gemini</translation>
-<translation id="7877212753140190672">提出關於此圖片的問題</translation>
 <translation id="7888981273428720788">將 Chromium 設定為預設瀏覽器</translation>
 <translation id="7934340546140346950">Chromium 會盡可能自動將不安全的連線升級為 HTTPS</translation>
 <translation id="7937630085815544518">您使用了 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入 Chromium，請使用相同帳戶重新登入。</translation>

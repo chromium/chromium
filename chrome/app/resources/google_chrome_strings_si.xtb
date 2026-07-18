@@ -241,7 +241,6 @@
 <translation id="3282568296779691940">Chrome වෙත පුරන්න</translation>
 <translation id="3286538390144397061">දැන් යළි අාරම්භ කරන්න</translation>
 <translation id="3292333338048274092">පසුව ඔබට Chrome යළි ඇරඹීමට අවශ්‍ය වෙයි.</translation>
-<translation id="3324218984287646518">මෙම වීඩියෝව ගැන Google Lens වෙතින් විමසන්න</translation>
 <translation id="3327226547491422998">පසුව, ඔබ වෙනුවෙන් පෝරම ස්වයංව පිරවීමට සුරකින ලද තතු භාවිතා කිරීමට අවශ්‍ය දැයි Chrome විමසිය හැක</translation>
 <translation id="3352986031709923790">සෙවීම් ප්‍රදේශයේ ඉහළම දකුණු කෙළවර: දකුණ <ph name="RIGHT" />%, ඉහළ <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome සහායක</translation>
@@ -262,8 +261,6 @@
 <translation id="3576528680708590453">ඔබේ පද්ධති පරිපාලකයා <ph name="TARGET_URL_HOSTNAME" /> වෙත ප්‍රවේශ වීමට වෛකල්පික බ්‍රවුසරයක් විවෘත කිරීමට Google Chrome වින්‍යාස කර ඇත.</translation>
 <translation id="3582972582564653026">ඔබගේ උපාංග හරහා Chrome සමමුහුර්ත කර පෞද්ගලීකරණය කරන්න</translation>
 <translation id="3583751698304738917">ඔබ දැනටමත් තව Chrome පැතිඩකක් තුළ <ph name="USER_EMAIL_ADDRESS" /> ලෙස පුරනය වී ඇත</translation>
-<translation id="358381413217813387">Google Lens භාවිතයෙන් මෙම පිටුව සොයන්න</translation>
-<translation id="3589519427766620380">මෙම පිටුව ගැන Google Lens වෙතින් විමසන්න</translation>
 <translation id="3595784445906693824">Chrome වෙත නව පැතිකඩකින් පුරන්නද?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{යාවත්කාලීනයක් යෙදීමට ඔබ Chrome නැවත ආරම්භ කිරීම පරිපාලකයාට අවශ්‍ය වේ}=1{යාවත්කාලීනයක් යෙදීමට ඔබ Chrome නැවත ආරම්භ කිරීම පරිපාලකයාට අවශ්‍ය වේ. ඔබේ අප්‍රසිද්ධ කවුළුව යළි විවෘත නොවෙයි.}one{යාවත්කාලීනයක් යෙදීමට ඔබ Chrome නැවත ආරම්භ කිරීම පරිපාලකයාට අවශ්‍ය වේ. ඔබේ අප්‍රසිද්ධ කවුළු # යළි විවෘත නොවෙයි.}other{යාවත්කාලීනයක් යෙදීමට ඔබ Chrome නැවත ආරම්භ කිරීම පරිපාලකයාට අවශ්‍ය වේ. ඔබේ අප්‍රසිද්ධ කවුළු # යළි විවෘත නොවෙයි.}}</translation>
 <translation id="3597003331831379823">උසස් වරප්‍රසාද සහිත පිහිටුවීම් ධාවනය කිරීමට අසමත් විය. <ph name="METAINSTALLER_ERROR" /></translation>
@@ -357,7 +354,6 @@
 <translation id="4501471624619070934">මෙම රට තුළ ප්‍රවේශය සීමා කර ඇති නිසා ස්ථාපනය අසමත් විය.</translation>
 <translation id="4571503333518166079">Chrome දැනුම් දීම් සැකසීම්වලට යන්න</translation>
 <translation id="4580939929828762295">Google මුරපද කළමනාකරු සමග සුරක්ෂිතව සිටින්න</translation>
-<translation id="4592634244097223647">මෙම රූපය ගැන Google ගෙන් විමසන්න</translation>
 <translation id="459622048091363950">Chrome හට ප්‍රවේශය ඇති විට, වෙබ් අඩවි හට ඔබගෙන් ප්‍රවේශය සඳහා ඉල්ලීමට හැකිය.</translation>
 <translation id="4598116752460667024">ලැයිස්තුවෙන් ඕනෑම ක්‍රියාවලියක් සොයන්න.</translation>
 <translation id="4600710005438004015">Chrome අලුත්ම අනුවාදයට යාවත්කාලීන කළ නොහැකිය, එබැවින් ඔබට අලුත් විශේෂාංග සහ ආරක්ෂණ පිළියම් මඟ හැරෙයි.</translation>
@@ -661,7 +657,6 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="7572537927358445944">අක්‍රිය • Chrome හට මෙම දිගුව එන තැන සත්‍යාපන කළ නොහැක</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> ස්ථාපකය</translation>
 <translation id="7596160425942761210">ඔබ පණිවිඩ, ලේඛන, සහ වෙනත් යෙදුම්වල සබැඳි ක්ලික් කරන ඕනෑම වේලාවක ඔබට Chrome භාවිත කළ හැක</translation>
-<translation id="7602868996817972616">මෙම පිටුව ගැන Google වෙතින් විමසන්න</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7627609214560473136">ඔබේ දත්ත ආරක්ෂා කිරීම සඳහා, ඔබ මෑතක දී නොපැමිණි අඩවිවලින් අවසර ඉවත් කිරීමට Chrome හට ඉඩ දෙන්න.</translation>
 <translation id="7629695634924605473">Chrome ඔබට ඔබේ මුරපද කිසි විටෙක හෝ අවදානමට ලක් වී තිබේද යන්න දන්වයි</translation>
@@ -785,7 +780,6 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="8712637175834984815">එය ලැබුණා</translation>
 <translation id="8712767363896337380">බොහෝ දුරට යාවත්කාලීනයි! යාවත්කාලීනය අවසන් කිරීමට Chrome යළි දියත් කරන්න.</translation>
 <translation id="8718062187489036808">Chrome වෙතින් වරන්න</translation>
-<translation id="8725440680697264016">මෙම වීඩියෝව ගැන Google ගෙන් විමසන්න</translation>
 <translation id="873133009373065397">Google Chrome හට පෙරනිමි බ්‍රව්සරය නිර්ණය කිරීමට හෝ සැකසීමට නොහැකිය</translation>
 <translation id="8747073452963259673">සෙවීම් ප්‍රදේශයේ පහළම වම් කෙළවර: වම <ph name="LEFT" />%, පහළ <ph name="BOTTOM" />%</translation>
 <translation id="8748735421235723888">Chrome අක්‍රිය පටිති වෙතින් මතකය නිදහස් කරයි. මෙය සක්‍රිය පටිති සහ අනෙකුත් යෙදුම්වලට වැඩි පරිගණක සම්පත් ලබා දෙන අතර Chrome වේගවත්ව තබා ගනී. ඔබ ඒවා වෙත ආපසු යන විට ඔබේ අක්‍රිය පටිති ස්වයංක්‍රීයව නැවත සක්‍රිය වේ. <ph name="BEGIN_LINK" />මතක සුරකිනය පිළිබඳ තව දැන ගන්න<ph name="END_LINK" /></translation>
@@ -801,7 +795,6 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome ඔබ එය ඉවත් කිරීම නිර්දේශ කරයි}one{Chrome ඔබ ඒවා ඉවත් කිරීම නිර්දේශ කරයි}other{Chrome ඔබ ඒවා ඉවත් කිරීම නිර්දේශ කරයි}}</translation>
 <translation id="8862326446509486874">ඔබට පද්ධති මට්ටමේ ස්ථානපයකට අයිතිය නැත. නැවත පරිපාලක වශයෙන් ස්ථාපකය ධාවනය කිරීමට උත්සාහ කරන්න.</translation>
 <translation id="8865415417596392024">ඔබේ ගිණුමේ Chrome දත්ත</translation>
-<translation id="8883862939660515976">මෙම රූපය ගැන Google Lens වෙතින් විමසන්න</translation>
 <translation id="8914504000324227558">Chrome නැවත දියත් කරන්න</translation>
 <translation id="8920304659326707347">iOS මත Chrome සමග ඔබ නතර කළ තැනින් පටන් ගන්න.</translation>
 <translation id="8922998289262614701">Chrome වෙතින් මෙම යෙදුම් දත්ත ඉවත් කරන්න</translation>

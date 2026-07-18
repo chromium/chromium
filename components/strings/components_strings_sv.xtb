@@ -565,6 +565,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1855370856221982654">Boxning</translation>
 <translation id="1862788842908766795">Chefs- och ledningsjobb</translation>
 <translation id="1863257867908022953">Fack 12</translation>
+<translation id="1863374797460198869">Chatt dold</translation>
 <translation id="186539747722034544">Kabel- och parabolleverantörer</translation>
 <translation id="1870473978371099486">Privat läxhjälp</translation>
 <translation id="1871208020102129563">Proxyn är inställd på att använda fasta proxyservrar, inte en webbadress med PAC-skript.</translation>
@@ -1426,7 +1427,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryck på Tabb och sedan på Retur om du vill hantera vilken information som synkroniseras i inställningarna för Chrome</translation>
 <translation id="3203025201812691413">Webbadressen får inte lämnas tom</translation>
 <translation id="320323717674993345">Avbryt betalningen</translation>
-<translation id="3204534477198689393">För att förbättra förslagen och fylla i formulär snabbare kan innehållet och webbadresserna till sidorna du besöker behandlas i ett privat utrymme i molnet.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> kan ha innehåll för vuxna</translation>
 <translation id="3207960819495026254">Bokmärkt</translation>
 <translation id="3208701679386778924">Skicka en rapport så att vi kan förbättra framtida ChromeOS-uppdateringar.</translation>
@@ -4530,6 +4530,7 @@ Mer information.
 <translation id="7972714317346275248">PKCS #1 SHA-384 med RSA-kryptering</translation>
 <translation id="7976053965094442846">Köp nu, betala senare-utfärdare som är tillgängliga för att betala över tid. Tangentbordet är dolt.</translation>
 <translation id="7976214039405368314">För många begäranden</translation>
+<translation id="7977029776654598145">När funktionen används</translation>
 <translation id="7977538094055660992">Utmatningsenhet</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> m sedan}=1{<ph name="TIME_COUNT" /> h sedan}other{<ph name="TIME_COUNT" /> d sedan}}</translation>
 <translation id="7979595116210197019">Mat, tillredning och servering</translation>
@@ -4624,7 +4625,6 @@ Mer information.
 <translation id="8134058435519644366">Rekrytering och bemanning</translation>
 <translation id="8135546115396015134">vänstertangent</translation>
 <translation id="8137456439814903304">Energi och energiproduktion</translation>
-<translation id="8138591088112729119">Drivs av Personlig intelligens</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Skapades för 1 månad sedan}other{Skapades för {NUM_MONTHS} månader sedan}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, nuvarande standardsökmotor. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF-version:</translation>
@@ -4958,6 +4958,7 @@ Mer information:
 <translation id="8688672835843460752">Tillgängligt</translation>
 <translation id="868922510921656628">Sidor per uppsättning</translation>
 <translation id="8694684557210599098">Lägg till fordon</translation>
+<translation id="8696297579102085705">Skicka till din enhet</translation>
 <translation id="8698428283892912525">Chrome har inbyggda säkerhetsfunktioner som skyddar dig när du surfar, till exempel Google Säker webbsökning, som nyligen <ph name="BEGIN_LINK" />hittade skadlig mjukvara<ph name="END_LINK" /> på webbplatsen du försökte besöka.</translation>
 <translation id="869891660844655955">Utgångsdatum</translation>
 <translation id="8699041776323235191">HID-enhet</translation>

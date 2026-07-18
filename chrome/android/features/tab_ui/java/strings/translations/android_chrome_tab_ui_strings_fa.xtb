@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{لغو گروه‌بندی زبانه}one{لغو گروه‌بندی زبانه}other{لغو گروه‌بندی زبانه‌ها}}</translation>
 <translation id="2271452184061378400">گروه‌های زبانه شما اینجا ذخیره می‌شود</translation>
 <translation id="2277224997687551299">ویرایش نام گروه</translation>
+<translation id="2289567621059034186">زبانه جدید در زیر</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{نشانک‌گذاری زبانه}one{نشانک‌گذاری زبانه}other{نشانک‌گذاری زبانه‌ها}}</translation>
 <translation id="2359808026110333948">ادامه</translation>
 <translation id="2371084566192454134">زبانه‌ها و گروه زبانه‌ها</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">نمایش افقی زبانه‌ها</translation>
 <translation id="31806439105337256">نمایش عمودی زبانه‌ها</translation>
 <translation id="3194464645767632461">رده‌بندی</translation>
+<translation id="3228962656492373217">بستن زبانه‌های زیر</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{افزودن <ph name="TABS_COUNT_ONE" /> زبانه به گروه}one{افزودن <ph name="TABS_COUNT_MANY" /> زبانه به گروه}other{افزودن <ph name="TABS_COUNT_MANY" /> زبانه به گروه}}</translation>
 <translation id="3328308545011660196">پیشنهاد: به نظر می‌رسد <ph name="NUMBER_OF_TABS" /> برگه مرتبط باشند. گروه‌بندی شوند؟</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{پس‌از ۱ روز غیرفعال بودن}one{پس‌از <ph name="DAY_COUNT_MANY" /> روز غیرفعال بودن}other{پس‌از <ph name="DAY_COUNT_MANY" /> روز غیرفعال بودن}}</translation>

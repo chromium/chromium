@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Separa scheda}other{Separa schede}}</translation>
 <translation id="2271452184061378400">I tuoi gruppi di schede vengono salvati qui</translation>
 <translation id="2277224997687551299">Modifica nome gruppo</translation>
+<translation id="2289567621059034186">Nuova scheda in basso</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Aggiungi scheda a preferiti}other{Aggiungi schede a preferiti}}</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2371084566192454134">Schede e gruppi di schede</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">Mostra schede orizzontalmente</translation>
 <translation id="31806439105337256">Mostra schede verticalmente</translation>
 <translation id="3194464645767632461">valutazione</translation>
+<translation id="3228962656492373217">Chiudi le schede in basso</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Aggiungi <ph name="TABS_COUNT_ONE" /> scheda al gruppo}other{Aggiungi <ph name="TABS_COUNT_MANY" /> schede al gruppo}}</translation>
 <translation id="3328308545011660196">Suggerimento: <ph name="NUMBER_OF_TABS" /> schede sembrano correlate. Vuoi raggrupparle?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Dopo 1 giorno di inattività}other{Dopo <ph name="DAY_COUNT_MANY" /> giorni di inattività}}</translation>

@@ -1187,7 +1187,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1910721550319506122">Välkommen!</translation>
 <translation id="1910736334623230603">Det går inte att söka med flera bilder. Lägg till en bild i taget.</translation>
 <translation id="1910908536872421421">Testning av Chrome v<ph name="BROWSER_VERSION" /> är endast till för automatisk testning. För vanligt surfande använder du en standardversion av Chrome som uppdateras automatiskt.</translation>
-<translation id="1912867150686509584">Se fler möten i kalendern</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Pausa fliken som saktar ned webbläsaren}other{Pausa flikarna som saktar ned webbläsaren}}</translation>
 <translation id="1913749768968678106">Casta, spara och dela</translation>
 <translation id="19147273405311768">Återställ verktygsfältet till standardinställningarna</translation>
@@ -4272,6 +4271,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4274673989874969668">När du har lämnat en webbplats kan den fortsätta med synkroniseringen i syfte att slutföra uppgifter som att ladda upp foton eller skicka ett chattmeddelande</translation>
 <translation id="4275291496240508082">Startljud</translation>
 <translation id="4275397969489577657">Aktivera loggning av händelseflöden</translation>
+<translation id="4275663329226226506">Media</translation>
 <translation id="4275788652681621337">Stäng sidopanelen</translation>
 <translation id="4275830172053184480">Starta om enheten</translation>
 <translation id="4276390967705106170">Öppna på en ny webbläsarflik</translation>
@@ -9923,7 +9923,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8693862390730570097">Tillåt inte att Hjälp mig skriva öppnas automatiskt</translation>
 <translation id="8694596275649352090">Lås enheten i viloläge eller när locket stängs</translation>
 <translation id="8695825812785969222">Öppna plats...</translation>
-<translation id="8696297579102085705">Skicka till din enhet</translation>
 <translation id="869884720829132584">Programmeny</translation>
 <translation id="869891660844655955">Utgångsdatum</translation>
 <translation id="8699296325072357994">Innehåll från lösenordssidor och relaterad information skickas till Google och granskas av människor. Lösenordet krypteras och visas aldrig för någon. <ph name="PASSWORD_CHANGE" /></translation>

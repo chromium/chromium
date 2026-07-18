@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Выдаліць укладку з групы}one{Выдаліць укладкі з групы}few{Выдаліць укладкі з групы}many{Выдаліць укладкі з групы}other{Выдаліць укладкі з групы}}</translation>
 <translation id="2271452184061378400">Тут захоўваюцца групы ўкладак</translation>
 <translation id="2277224997687551299">Змяніць назву групы</translation>
+<translation id="2289567621059034186">Новая ўкладка ніжэй</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Дадаць укладку ў закладкі}one{Дадаць укладкі ў закладкі}few{Дадаць укладкі ў закладкі}many{Дадаць укладкі ў закладкі}other{Дадаць укладкі ў закладкі}}</translation>
 <translation id="2359808026110333948">Працягнуць</translation>
 <translation id="2371084566192454134">Укладкі і групы ўкладак</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">Паказваць укладкі гарызантальна</translation>
 <translation id="31806439105337256">Паказваць укладкі вертыкальна</translation>
 <translation id="3194464645767632461">ацэнка</translation>
+<translation id="3228962656492373217">Закрыць укладкі ніжэй</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Дадаць <ph name="TABS_COUNT_ONE" /> укладку ў групу}one{Дадаць <ph name="TABS_COUNT_MANY" /> укладку ў групу}few{Дадаць <ph name="TABS_COUNT_MANY" /> укладкі ў групу}many{Дадаць <ph name="TABS_COUNT_MANY" /> укладак у групу}other{Дадаць <ph name="TABS_COUNT_MANY" /> укладкі ў групу}}</translation>
 <translation id="3328308545011660196">Прапанова: здаецца, гэтыя ўкладкі (<ph name="NUMBER_OF_TABS" />) звязаныя паміж сабой. Згрупаваць іх?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Праз 1 дзень бяздзейнасці}one{Праз <ph name="DAY_COUNT_MANY" /> дзень бяздзейнасці}few{Праз <ph name="DAY_COUNT_MANY" /> дні бяздзейнасці}many{Праз <ph name="DAY_COUNT_MANY" /> дзён бяздзейнасці}other{Праз <ph name="DAY_COUNT_MANY" /> дня бяздзейнасці}}</translation>

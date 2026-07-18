@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Dégrouper l'onglet}one{Dégrouper l'onglet}other{Dégrouper les onglets}}</translation>
 <translation id="2271452184061378400">Vos groupes d'onglets sont enregistrés ici</translation>
 <translation id="2277224997687551299">Modifier le nom du groupe</translation>
+<translation id="2289567621059034186">Nouvel onglet en dessous</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Ajouter onglet aux favoris}one{Ajouter onglet aux favoris}other{Ajouter onglets aux favoris}}</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2371084566192454134">Onglets et groupes d'onglets</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">Afficher les onglets horizontalement</translation>
 <translation id="31806439105337256">Afficher les onglets verticalement</translation>
 <translation id="3194464645767632461">note</translation>
+<translation id="3228962656492373217">Fermer les onglets en dessous</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Ajouter <ph name="TABS_COUNT_ONE" /> onglet à un groupe}one{Ajouter <ph name="TABS_COUNT_MANY" /> onglet à un groupe}other{Ajouter <ph name="TABS_COUNT_MANY" /> onglets à un groupe}}</translation>
 <translation id="3328308545011660196">Suggestion : <ph name="NUMBER_OF_TABS" /> onglets semblent liés. Voulez-vous les regrouper ?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Après 1 jour d'inactivité}one{Après <ph name="DAY_COUNT_MANY" /> jour d'inactivité}other{Après <ph name="DAY_COUNT_MANY" /> jours d'inactivité}}</translation>

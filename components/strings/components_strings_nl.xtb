@@ -565,6 +565,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1855370856221982654">Boksen</translation>
 <translation id="1862788842908766795">Managementbanen</translation>
 <translation id="1863257867908022953">Lade 12</translation>
+<translation id="1863374797460198869">Chat verborgen</translation>
 <translation id="186539747722034544">Kabel- en schotelaanbieders</translation>
 <translation id="1870473978371099486">Privélessen</translation>
 <translation id="1871208020102129563">Proxy is ingesteld op het gebruik van vaste proxyservers, niet op een script-URL van het PAC-type.</translation>
@@ -1423,7 +1424,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om de informatie die je synchroniseert te beheren in de Chrome-instellingen</translation>
 <translation id="3203025201812691413">De URL mag niet leeg zijn</translation>
 <translation id="320323717674993345">Betaling annuleren</translation>
-<translation id="3204534477198689393">De content en URL's van de pagina's die je bezoekt, kunnen worden verwerkt in een privégedeelte in de cloud om suggesties te verbeteren en formulieren sneller in te vullen.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> kan niet-gezinsvriendelijke content bevatten</translation>
 <translation id="3207960819495026254">Toegevoegd aan 'Bookmarks'</translation>
 <translation id="3208701679386778924">Stuur een rapport zodat we verdere ChromeOS-updates kunnen verbeteren.</translation>
@@ -4523,6 +4523,7 @@ Aanvullende informatie:
 <translation id="7972714317346275248">PKCS nr. 1 SHA-384 met RSA-versleuteling</translation>
 <translation id="7976053965094442846">Uitgevers van Koop nu, betaal later die beschikbaar zijn voor betalen in termijnen. Toetsenbord verborgen.</translation>
 <translation id="7976214039405368314">Te veel verzoeken</translation>
+<translation id="7977029776654598145">Bij gebruik</translation>
 <translation id="7977538094055660992">Uitvoerapparaat</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> min geleden}=1{<ph name="TIME_COUNT" /> u geleden}other{<ph name="TIME_COUNT" /> d geleden}}</translation>
 <translation id="7979595116210197019">Cateringbranche</translation>
@@ -4617,7 +4618,6 @@ Aanvullende informatie:
 <translation id="8134058435519644366">Werving en selectie</translation>
 <translation id="8135546115396015134">linkertoets</translation>
 <translation id="8137456439814903304">Nutsbedrijven</translation>
-<translation id="8138591088112729119">Mogelijk gemaakt door Personal Intelligence</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 maand geleden gemaakt}other{{NUM_MONTHS} maanden geleden gemaakt}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, huidige standaard. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Pdf-versie:</translation>
@@ -4950,6 +4950,7 @@ Aanvullende informatie:
 <translation id="8688672835843460752">Beschikbaar</translation>
 <translation id="868922510921656628">Pagina's per set</translation>
 <translation id="8694684557210599098">Voertuig toevoegen</translation>
+<translation id="8696297579102085705">Naar je apparaat sturen</translation>
 <translation id="8698428283892912525">Chrome bevat ingebouwde veiligheidsfuncties die je beschermen terwijl je browst, zoals Google Safe Browsing, dat recent <ph name="BEGIN_LINK" />schadelijke software heeft gevonden<ph name="END_LINK" /> op de site die je probeerde te bezoeken.</translation>
 <translation id="869891660844655955">Vervaldatum</translation>
 <translation id="8699041776323235191">HID-apparaat</translation>

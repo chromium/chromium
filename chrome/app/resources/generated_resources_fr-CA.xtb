@@ -1177,7 +1177,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1910721550319506122">Bienvenue!</translation>
 <translation id="1910736334623230603">Impossible de rechercher plusieurs images. Ajoutez une image à la fois.</translation>
 <translation id="1910908536872421421">Chrome pour tester v<ph name="BROWSER_VERSION" /> est uniquement destiné aux tests automatisés. Pour une navigation régulière, utilisez une version standard de Chrome, qui se met à jour automatiquement.</translation>
-<translation id="1912867150686509584">Afficher d'autres réunions dans votre agenda</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Suspendre l'onglet qui ralentit votre navigateur}one{Suspendre l'onglet qui ralentit votre navigateur}other{Suspendre les onglets qui ralentissent votre navigateur}}</translation>
 <translation id="1913749768968678106">Diffuser, enregistrer et partager</translation>
 <translation id="19147273405311768">Réinitialiser la barre d'outils aux paramètres par défaut</translation>
@@ -4261,6 +4260,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4274673989874969668">Lorsque vous quittez un site, la synchronisation de celui-ci peut se poursuivre afin de terminer certaines tâches, comme téléverser des photos ou envoyer un message de clavardage</translation>
 <translation id="4275291496240508082">Son de démarrage</translation>
 <translation id="4275397969489577657">Activer la journalisation de flux d'événements</translation>
+<translation id="4275663329226226506">Médias</translation>
 <translation id="4275788652681621337">Fermer le panneau latéral</translation>
 <translation id="4275830172053184480">Redémarrer l'appareil</translation>
 <translation id="4276390967705106170">Ouvrir dans un nouvel onglet de navigateur</translation>
@@ -9911,7 +9911,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="8693862390730570097">Ne pas autoriser l'ouverture automatique de l'« Aide à la rédaction »</translation>
 <translation id="8694596275649352090">Verrouiller lorsque l'appareil est en veille ou que le couvercle est fermé</translation>
 <translation id="8695825812785969222">Atteindre un emp&amp;lacement…</translation>
-<translation id="8696297579102085705">Envoyer l'onglet à votre appareil</translation>
 <translation id="869884720829132584">Menu Applications</translation>
 <translation id="869891660844655955">Date d'expiration</translation>
 <translation id="8699296325072357994">Le contenu provenant des pages de mots de passe et les informations connexes sont envoyés à Google et examinés par des humains. Votre mot de passe est chiffré et n'est jamais vu par personne. <ph name="PASSWORD_CHANGE" /></translation>

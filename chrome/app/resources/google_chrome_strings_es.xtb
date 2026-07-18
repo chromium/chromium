@@ -241,7 +241,6 @@ Si esta página no funciona correctamente, prueba a permitir la optimización.</
 <translation id="3282568296779691940">Iniciar sesión en Chrome</translation>
 <translation id="3286538390144397061">Reiniciar ahora</translation>
 <translation id="3292333338048274092">Después, tendrás que reiniciar Chrome.</translation>
-<translation id="3324218984287646518">Pregunta a Google Lens sobre este vídeo</translation>
 <translation id="3327226547491422998">Más adelante, Chrome puede preguntarte si quieres usar la información guardada para autocompletar formularios por ti</translation>
 <translation id="3352986031709923790">esquina superior derecha del área de búsqueda: un <ph name="RIGHT" /> % a la derecha y un <ph name="TOP" /> % arriba</translation>
 <translation id="3360895254066713204">Ayudante de Chrome</translation>
@@ -262,8 +261,6 @@ Si esta página no funciona correctamente, prueba a permitir la optimización.</
 <translation id="3576528680708590453">El administrador del sistema ha configurado Google Chrome para que abra otro navegador al acceder a <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Sincroniza y personaliza Chrome en todos tus dispositivos</translation>
 <translation id="3583751698304738917">Ya has iniciado sesión como <ph name="USER_EMAIL_ADDRESS" /> en otro perfil de Chrome</translation>
-<translation id="358381413217813387">Busca esta página con Google Lens</translation>
-<translation id="3589519427766620380">Pregunta a Google Lens acerca de esta página</translation>
 <translation id="3595784445906693824">¿Iniciar sesión en Chrome con un perfil nuevo?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Tu administrador pide que reinicies Chrome para aplicar una actualización}=1{Tu administrador pide que reinicies Chrome para aplicar una actualización. La ventana de Incógnito no se volverá a abrir.}other{Tu administrador pide que reinicies Chrome para aplicar una actualización. Las # ventanas de Incógnito no se volverán a abrir.}}</translation>
 <translation id="3597003331831379823">No se ha podido ejecutar la configuración con privilegios avanzados. <ph name="METAINSTALLER_ERROR" /></translation>
@@ -358,7 +355,6 @@ Si esta página no funciona correctamente, prueba a permitir la optimización.</
 <translation id="4501471624619070934">Se ha producido un error en la instalación debido a una restricción de acceso en este país.</translation>
 <translation id="4571503333518166079">Ir a los ajustes de notificaciones de Chrome</translation>
 <translation id="4580939929828762295">Protégete con el Gestor de contraseñas de Google</translation>
-<translation id="4592634244097223647">Pregunta a Google sobre esta imagen</translation>
 <translation id="459622048091363950">Una vez que Chrome tenga acceso, los sitios web podrán solicitarlo también.</translation>
 <translation id="4598116752460667024">Busca cualquier proceso de la lista.</translation>
 <translation id="4600710005438004015">No se ha podido actualizar Chrome a la versión más reciente, por lo que no disfrutas de las últimas funciones y correcciones de seguridad.</translation>
@@ -662,7 +658,6 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="7572537927358445944">Desactivado • Chrome no puede verificar el origen de esta extensión</translation>
 <translation id="7583399374488819119">Instalador de <ph name="COMPANY_NAME" /></translation>
 <translation id="7596160425942761210">Puedes usar Chrome cada vez que hagas clic en enlaces de mensajes, documentos y otras aplicaciones</translation>
-<translation id="7602868996817972616">Preguntar a Google sobre esta página</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7627609214560473136">Para proteger tus datos, permite que Chrome quite los permisos de los sitios que no hayas visitado recientemente.</translation>
 <translation id="7629695634924605473">Chrome te avisará si tus contraseñas están en riesgo</translation>
@@ -787,7 +782,6 @@ No podrás guardar marcadores nuevos en tu cuenta hasta que elimines algunos. Si
 <translation id="8712637175834984815">Entendido</translation>
 <translation id="8712767363896337380">La actualización ya casi ha terminado. Reinicia Chrome para completar la actualización.</translation>
 <translation id="8718062187489036808">Cerrar sesión en Chrome</translation>
-<translation id="8725440680697264016">Pregunta a Google sobre este vídeo</translation>
 <translation id="873133009373065397">Google Chrome no puede determinar ni establecer el navegador predeterminado</translation>
 <translation id="8747073452963259673">esquina inferior izquierda del área de búsqueda: un <ph name="LEFT" /> % a la izquierda y un <ph name="BOTTOM" /> % abajo</translation>
 <translation id="8748735421235723888">Chrome libera memoria de las pestañas inactivas. Esto proporciona más recursos informáticos a las pestañas activas y a otras aplicaciones, y permite que Chrome siga funcionando con rapidez. Tus pestañas inactivas volverán a activarse automáticamente cuando vuelvas a ellas. <ph name="BEGIN_LINK" />Más información sobre Ahorro de memoria<ph name="END_LINK" /></translation>
@@ -803,7 +797,6 @@ No podrás guardar marcadores nuevos en tu cuenta hasta que elimines algunos. Si
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome te recomienda que la elimines}other{Chrome te recomienda que las elimines}}</translation>
 <translation id="8862326446509486874">No dispones de los derechos necesarios para la instalación en el sistema. Intenta ejecutar de nuevo el programa de instalación como administrador.</translation>
 <translation id="8865415417596392024">Datos de Chrome en tu cuenta</translation>
-<translation id="8883862939660515976">Pregunta a Google Lens sobre esta imagen</translation>
 <translation id="8914504000324227558">Volver a iniciar Chrome</translation>
 <translation id="8920304659326707347">Sigue por donde lo dejaste con Chrome en iOS.</translation>
 <translation id="8922998289262614701">Quitar datos de esta aplicación de Chrome</translation>

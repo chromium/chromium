@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Zrušit seskupení karty}few{Zrušit seskupení karet}many{Zrušit seskupení karet}other{Zrušit seskupení karet}}</translation>
 <translation id="2271452184061378400">Tady jsou uloženy vaše skupiny karet</translation>
 <translation id="2277224997687551299">Upravit název skupiny</translation>
+<translation id="2289567621059034186">Nová karta níže</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Přidat kartu do záložek}few{Přidat karty do záložek}many{Přidat karty do záložek}other{Přidat karty do záložek}}</translation>
 <translation id="2359808026110333948">Pokračovat</translation>
 <translation id="2371084566192454134">Karty a skupiny karet</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">Zobrazit karty vodorovně</translation>
 <translation id="31806439105337256">Zobrazit karty svisle</translation>
 <translation id="3194464645767632461">hodnocení</translation>
+<translation id="3228962656492373217">Zavřít karty níže</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Přidat <ph name="TABS_COUNT_ONE" /> kartu do skupiny}few{Přidat <ph name="TABS_COUNT_MANY" /> karty do skupiny}many{Přidat <ph name="TABS_COUNT_MANY" /> karty do skupiny}other{Přidat <ph name="TABS_COUNT_MANY" /> karet do skupiny}}</translation>
 <translation id="3328308545011660196">Návrh: Některé karty (<ph name="NUMBER_OF_TABS" />) spolu pravděpodobně souvisejí. Chcete je seskupit?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Po 1 dni neaktivity}few{Po <ph name="DAY_COUNT_MANY" /> dnech neaktivity}many{Po <ph name="DAY_COUNT_MANY" /> dne neaktivity}other{Po <ph name="DAY_COUNT_MANY" /> dnech neaktivity}}</translation>

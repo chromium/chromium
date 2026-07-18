@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Elimină fila din grup}few{Elimină filele din grup}other{Elimină filele din grup}}</translation>
 <translation id="2271452184061378400">Grupurile de file se salvează aici</translation>
 <translation id="2277224997687551299">Editează numele grupului</translation>
+<translation id="2289567621059034186">Filă nouă mai jos</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Fila Marcaj}few{Filele Marcaj}other{Filele Marcaj}}</translation>
 <translation id="2359808026110333948">Continuă</translation>
 <translation id="2371084566192454134">File și grupuri de file</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">Afișează filele pe orizontală</translation>
 <translation id="31806439105337256">Afișează filele pe verticală</translation>
 <translation id="3194464645767632461">evaluare</translation>
+<translation id="3228962656492373217">Închide filele de mai jos</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Adaugă <ph name="TABS_COUNT_ONE" /> filă în grup}few{Adaugă <ph name="TABS_COUNT_MANY" /> file în grup}other{Adaugă <ph name="TABS_COUNT_MANY" /> de file în grup}}</translation>
 <translation id="3328308545011660196">Sugestie: <ph name="NUMBER_OF_TABS" /> file par similare. Vrei să le grupezi?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{După o zi de inactivitate}few{După <ph name="DAY_COUNT_MANY" /> zile de inactivitate}other{După <ph name="DAY_COUNT_MANY" /> de zile de inactivitate}}</translation>

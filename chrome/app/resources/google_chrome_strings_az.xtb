@@ -239,7 +239,6 @@ Bu səhifə gözlənildiyi kimi işləmirsə, optimallaşdırmaya icazə verməy
 <translation id="3282568296779691940">Chrome'a daxil olun</translation>
 <translation id="3286538390144397061">İndi yenidən başladın</translation>
 <translation id="3292333338048274092">Sonra Chrome-u yenidən başlatmalı olacaqsınız.</translation>
-<translation id="3324218984287646518">Bu video haqqında Google Linzadan soruşun</translation>
 <translation id="3327226547491422998">Sonra Chrome formaları avtomatik doldurmaq üçün yadda saxlanmış məlumatdan istifadə etmək istəyib-istəmədiyinizi soruşa bilər</translation>
 <translation id="3352986031709923790">axtarış sahəsinin yuxarı sağ küncü: <ph name="RIGHT" />% sağ, <ph name="TOP" />% yuxarı</translation>
 <translation id="3360895254066713204">Chrome Yardımçısı</translation>
@@ -260,8 +259,6 @@ Bu səhifə gözlənildiyi kimi işləmirsə, optimallaşdırmaya icazə verməy
 <translation id="3576528680708590453">Sistem administratoru Google Chrome'u <ph name="TARGET_URL_HOSTNAME" /> ünvanına daxil olmaq məqsədilə alternativ brauzer açmaq üçün konfiqurasiya edib.</translation>
 <translation id="3582972582564653026">Chrome'u cihazlarda sinxronizasiya edin və fərdiləşdirin</translation>
 <translation id="3583751698304738917">Artıq başqa Chrome profilində <ph name="USER_EMAIL_ADDRESS" /> kimi daxil olmusunuz</translation>
-<translation id="358381413217813387">Bu səhifəni Google Linza ilə axtarın</translation>
-<translation id="3589519427766620380">Bu səhifə haqqında Google Linzadan soruşun</translation>
 <translation id="3595784445906693824">Yeni profildə Chrome-a daxil olursunuz?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Administrator güncəlləməni tətbiq etmək üçün Chrome'u yenidən başlatmanızı tələb edir}=1{Administrator güncəlləməni tətbiq etmək üçün Chrome'u yenidən başlatmanızı tələb edir. Anonim pəncərəniz yenidən açılmayacaq.}other{Administrator güncəlləməni tətbiq etmək üçün Chrome'u yenidən başlatmanızı tələb edir. # Anonim pəncərəniz yenidən açılmayacaq.}}</translation>
 <translation id="3597003331831379823">Artırılmış imtiyazlar ilə ayarlamanı işə salmaq alınmadı. <ph name="METAINSTALLER_ERROR" /></translation>
@@ -356,7 +353,6 @@ Bu səhifə gözlənildiyi kimi işləmirsə, optimallaşdırmaya icazə verməy
 <translation id="4501471624619070934">Bu ölkədə giriş məhdudlaşdırıldığı üçün quraşdırma alınmadı.</translation>
 <translation id="4571503333518166079">Chrome bildiriş ayarlarına keçin</translation>
 <translation id="4580939929828762295">Google Parol Meneceri ilə güvəndə olun</translation>
-<translation id="4592634244097223647">Bu şəkil haqqında Google-dan soruşun</translation>
 <translation id="459622048091363950">Chrome'un giriş imkanı olduqda veb saytlar giriş üçün Sizdən icazə istəyəcək.</translation>
 <translation id="4598116752460667024">Siyahıdan istənilən prosesi axtarın.</translation>
 <translation id="4600710005438004015">Chromium ən son versiyaya güncəllənə bilmədi. Yeni funksiyaları və təhlükəsizlik həllərini əldən veririsiniz.</translation>
@@ -658,7 +654,6 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="7572537927358445944">Sönülü • Chrome bu artırmanın mənbəyini doğrulaya bilmir</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> Quraşdırıcısı</translation>
 <translation id="7596160425942761210">İstənilən vaxt mesaj, sənəd və digər tətbiqlərdə keçidlərə kliklədikdə Chrome-dan istifadə edə bilərsiniz</translation>
-<translation id="7602868996817972616">Bu səhifə haqqında Google-dan soruşun</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7627609214560473136">Datanı qorumaq üçün Chrome-un son vaxtlar daxil olmadığınız saytlardan icazələri silməsinə icazə verin.</translation>
 <translation id="7629695634924605473">Chrome parollarınızın oğurlanıb-oğurlanmadığı haqqında Sizə məlumat verir</translation>
@@ -783,7 +778,6 @@ Bəzilərini silənə qədər yeni əlfəcinləri hesabınızda yadda saxlamaq o
 <translation id="8712637175834984815">Anladım</translation>
 <translation id="8712767363896337380">Güncəllənmək üzrədir! Güncəlləməni tamamlamaq üçün Chrome'u yenidən başladın.</translation>
 <translation id="8718062187489036808">Chrome'dan çıxın</translation>
-<translation id="8725440680697264016">Bu video haqqında Google-dan soruşun</translation>
 <translation id="873133009373065397">Google Chrome defolt brauzeri müəyyən edə və ya ayarlaya bilmir</translation>
 <translation id="8747073452963259673">axtarış sahəsinin aşağı sol küncü: <ph name="LEFT" />% sol, <ph name="BOTTOM" />% aşağı</translation>
 <translation id="8748735421235723888">Chrome deaktiv tabların yaddaşını boşaldır. Bu, aktiv tablara və digər tətbiqlərə daha çox kompüter resursu verir və Chrome-u sürətləndirir. Qayıtdığınız zaman deaktiv tablar avtomatik olaraq yenidən aktivləşir. <ph name="BEGIN_LINK" />Yaddaşa Qənaət haqqında ətraflı məlumat<ph name="END_LINK" /></translation>
@@ -799,7 +793,6 @@ Bəzilərini silənə qədər yeni əlfəcinləri hesabınızda yadda saxlamaq o
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome onu silməyinizi tövsiyə edir}other{Chrome onları silməyinizi tövsiyə edir}}</translation>
 <translation id="8862326446509486874">Sistem səviyyəli quraşdırma üçün uyğun hüquqlarınız yoxdur. Quraşdırıcını yenidən Administrator olaraq işə salmağa cəhd edin.</translation>
 <translation id="8865415417596392024">Hesabdakı Chrome datası</translation>
-<translation id="8883862939660515976">Bu şəkil haqqında Google Linzadan soruşun</translation>
 <translation id="8914504000324227558">Chrome'u yenidən başladın</translation>
 <translation id="8920304659326707347">iOS-da Chrome ilə qaldığınız yerdən davam edin.</translation>
 <translation id="8922998289262614701">Bu tətbiqin datası Chrome-dan silinsin?</translation>

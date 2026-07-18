@@ -565,6 +565,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1855370856221982654">Quyền anh</translation>
 <translation id="1862788842908766795">Công việc điều hành và quản lý</translation>
 <translation id="1863257867908022953">Khay 12</translation>
+<translation id="1863374797460198869">Cuộc trò chuyện đã bị ẩn</translation>
 <translation id="186539747722034544">Nhà cung cấp dịch vụ cáp và vệ tinh</translation>
 <translation id="1870473978371099486">Dịch vụ dạy kèm</translation>
 <translation id="1871208020102129563">Proxy được đặt để sử dụng máy chủ proxy cố định chứ không phải URL tập lệnh .pac.</translation>
@@ -1426,7 +1427,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, hãy nhấn Tab, sau đó nhấn Enter để quản lý loại thông tin bạn đồng bộ hóa trong phần Cài đặt của Chrome</translation>
 <translation id="3203025201812691413">Không được để trống URL</translation>
 <translation id="320323717674993345">Hủy thanh toán</translation>
-<translation id="3204534477198689393">Nhằm cải thiện đề xuất và điền biểu mẫu nhanh hơn, nội dung và URL của những trang bạn truy cập có thể được xử lý trong một không gian riêng tư trên đám mây.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> có thể chứa nội dung dành cho người trưởng thành</translation>
 <translation id="3207960819495026254">Đã đánh dấu trang</translation>
 <translation id="3208701679386778924">Vui lòng gửi báo cáo để chúng tôi có thể cải thiện hơn nữa các bản cập nhật ChromeOS.</translation>
@@ -4530,6 +4530,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7972714317346275248">PKCS #1 SHA-384 Với Mã hóa RSA</translation>
 <translation id="7976053965094442846">Các tổ chức phát hành dịch vụ Mua trước trả sau hiện có cho tuỳ chọn thanh toán dần. Bàn phím đang ẩn.</translation>
 <translation id="7976214039405368314">Quá nhiều yêu cầu</translation>
+<translation id="7977029776654598145">Khi sử dụng</translation>
 <translation id="7977538094055660992">Thiết bị đầu ra</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> phút trước}=1{<ph name="TIME_COUNT" /> giờ trước}other{<ph name="TIME_COUNT" /> ngày trước}}</translation>
 <translation id="7979595116210197019">Dịch vụ ăn uống</translation>
@@ -4624,7 +4625,6 @@ Thông tin chi tiết bổ sung:
 <translation id="8134058435519644366">Tuyển dụng và bố trí cán bộ</translation>
 <translation id="8135546115396015134">phím mũi tên trái</translation>
 <translation id="8137456439814903304">Tiện ích và năng lượng</translation>
-<translation id="8138591088112729119">Sử dụng Trí thông minh cá nhân</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Tạo 1 tháng trước}other{Tạo {NUM_MONTHS} tháng trước}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, chế độ mặc định hiện tại. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Phiên bản PDF:</translation>
@@ -4958,6 +4958,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8688672835843460752">Có sẵn</translation>
 <translation id="868922510921656628">Số trang mỗi tập</translation>
 <translation id="8694684557210599098">Thêm thông tin xe</translation>
+<translation id="8696297579102085705">Gửi tới thiết bị của bạn</translation>
 <translation id="8698428283892912525">Chrome tích hợp sẵn các tính năng an toàn nhằm bảo vệ bạn khi bạn duyệt web, chẳng hạn như Duyệt web An toàn của Google – tính năng vừa <ph name="BEGIN_LINK" />phát hiện thấy phần mềm độc hại<ph name="END_LINK" /> trên trang web bạn đã cố truy cập.</translation>
 <translation id="869891660844655955">Ngày hết hạn</translation>
 <translation id="8699041776323235191">Thiết bị HID</translation>

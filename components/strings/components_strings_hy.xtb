@@ -569,6 +569,7 @@
 <translation id="1855370856221982654">Բռնցքամարտ</translation>
 <translation id="1862788842908766795">Աշխատանք գործադիր կառավարման և մենեջմենթի ոլորտում</translation>
 <translation id="1863257867908022953">Դարակ 12</translation>
+<translation id="1863374797460198869">Զրույցը թաքցված է</translation>
 <translation id="186539747722034544">Մալուխային և արբանյակային հեռուստատեսության մատակարարներ</translation>
 <translation id="1870473978371099486">Անհատական պարապմունքներ</translation>
 <translation id="1871208020102129563">Ընտրված է ֆիքսված պրոքսի-սերվերների, այլ ոչ PAC սկրիպտի URL-ի օգտագործումը:</translation>
@@ -1432,7 +1433,6 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Համաժամացվող տեղեկությունները Chrome-ի կարգավորումներում կառավարելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="3203025201812691413">URL-ը չի կարող դատարկ լինել</translation>
 <translation id="320323717674993345">Չեղարկել վճարումը</translation>
-<translation id="3204534477198689393">Առաջարկները բարելավելու և ձևերն ավելի արագ լրացնելու համար ձեր այցելած էջերի բովանդակությունն ու URL-ները կարող են մշակվել ամպային սերվերների մասնավոր տարածքում։</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> կայքում կարող է մեծահասակների համար նախատեսված բովանդակություն լինել</translation>
 <translation id="3207960819495026254">Էջանշված է</translation>
 <translation id="3208701679386778924">Կարծիք հայտնեք, որպեսզի մենք կարողանաք բարելավել ChromeOS-ի հետագա թարմացումները։</translation>
@@ -4538,6 +4538,7 @@
 <translation id="7972714317346275248">PKCS #1 SHA-384՝ RSA գաղտնագրումով</translation>
 <translation id="7976053965094442846">Հասանելի են ապառիկ գնման ծառայություններ։ Ստեղնաշարը թաքցված է։</translation>
 <translation id="7976214039405368314">Չափազանց շատ հարցումներ</translation>
+<translation id="7977029776654598145">Երբ օգտագործվում է</translation>
 <translation id="7977538094055660992">Արտածման սարք</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> ր առաջ}=1{<ph name="TIME_COUNT" /> ժ առաջ}one{<ph name="TIME_COUNT" /> օր առաջ}other{<ph name="TIME_COUNT" /> օր առաջ}}</translation>
 <translation id="7979595116210197019">Սննդի ծառայություն</translation>
@@ -4632,7 +4633,6 @@
 <translation id="8134058435519644366">Անձնակազմի հավաքագրում և ընտրություն</translation>
 <translation id="8135546115396015134">ձախ ստեղն</translation>
 <translation id="8137456439814903304">Էներգիա մատակարարող և կոմունալ ծառայություն</translation>
-<translation id="8138591088112729119">Աշխատում է Personal Intelligence-ի հիման վրա</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Ստեղծվել է 1 ամիս առաջ}one{Ստեղծվել է {NUM_MONTHS} ամիս առաջ}other{Ստեղծվել է {NUM_MONTHS} ամիս առաջ}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, ընթացիկ կանխադրված որոնողական համակարգ։ <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF-ի տարբեակը՝</translation>
@@ -4965,6 +4965,7 @@
 <translation id="8688672835843460752">Հասանելի</translation>
 <translation id="868922510921656628">Էջերի թիվը կազմում</translation>
 <translation id="8694684557210599098">Ավելացնել փոխադրամիջոց</translation>
+<translation id="8696297579102085705">Ուղարկել իմ սարքին</translation>
 <translation id="8698428283892912525">Chrome-ում կան անվտանգության ներկառուցված գործառույթներ, որոնք պաշտպանում են ձեզ դիտարկման ընթացքում։ Դրանցից է, օրինակ, Google Ապահով դիտարկումը, որը վերջերս <ph name="BEGIN_LINK" />վտանգավոր ծրագիր է հայտնաբերել<ph name="END_LINK" /> կայքում, որը փորձում էիք այցելել։</translation>
 <translation id="869891660844655955">Սպառման ժամկետ</translation>
 <translation id="8699041776323235191">HID սարք</translation>

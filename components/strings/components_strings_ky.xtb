@@ -565,6 +565,7 @@
 <translation id="1855370856221982654">Бокс</translation>
 <translation id="1862788842908766795">Аткаруучу жана башкаруу жумуштары</translation>
 <translation id="1863257867908022953">12-түпкүч</translation>
+<translation id="1863374797460198869">Чат жашырылды</translation>
 <translation id="186539747722034544">Кабелдик жана спутниктик камсыздоочулар</translation>
 <translation id="1870473978371099486">Жеке окутуу кызматтары</translation>
 <translation id="1871208020102129563">Прокси .pac скрипт URL дарегин эмес, туруктуу прокси серверлерин колдонот деп коюлган.</translation>
@@ -1426,7 +1427,6 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome параметрлеринен шайкештирилген маалыматты башкаруу үчүн Tab, андан соң Enter баскычын басыңыз</translation>
 <translation id="3203025201812691413">URL бош болбошу керек</translation>
 <translation id="320323717674993345">Төлөмдү жокко чыгаруу</translation>
-<translation id="3204534477198689393">Сунуштарды жакшыртуу жана формаларды тезирээк толтуруу үчүн сиз баш баккан барактардын контенти жана URL даректери булуттагы купуя мейкиндикте иштетилиши мүмкүн.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> сайтында чоңдорго арналган материалдар болушу мүмкүн</translation>
 <translation id="3207960819495026254">Кыстармаланды</translation>
 <translation id="3208701679386778924">ChromeOS тутумунун кийинки жаңыртууларын жакшыртуубуз үчүн отчёт жөнөтүңүз.</translation>
@@ -4528,6 +4528,7 @@
 <translation id="7972714317346275248">PKCS #1 SHA-384 RSA шифрлөөсү менен</translation>
 <translation id="7976053965094442846">Бөлүп төлөөнү сунуштаган "Азыр сатып ал, кийин төлө" камсыздоочулар. Баскычтоп жашырылган.</translation>
 <translation id="7976214039405368314">Өтүнүчтөр өтө көп жөнөтүлдү</translation>
+<translation id="7977029776654598145">Колдонулганда</translation>
 <translation id="7977538094055660992">Чыгаруу түзмөгү</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> мүн. мурун}=1{<ph name="TIME_COUNT" /> саат мурун}other{<ph name="TIME_COUNT" /> күн мурун}}</translation>
 <translation id="7979595116210197019">Тамак-аш кызматы</translation>
@@ -4622,7 +4623,6 @@
 <translation id="8134058435519644366">Жумушка алуу жана кадрлар менен камсыз кылуу</translation>
 <translation id="8135546115396015134">сол баскычты</translation>
 <translation id="8137456439814903304">Энергетика жана коммуналдык кызматтар</translation>
-<translation id="8138591088112729119">Personal Intelligence негизинде иштейт</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 ай мурун түзүлдү}other{{NUM_MONTHS} ай мурун түзүлдү}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, демейки шартта колдонулат. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF версиясы:</translation>
@@ -4955,6 +4955,7 @@
 <translation id="8688672835843460752">Бош</translation>
 <translation id="868922510921656628">Бир топтомдогу барактар</translation>
 <translation id="8694684557210599098">Унаа кошуу</translation>
+<translation id="8696297579102085705">Түзмөгүңүзгө жөнөтүү</translation>
 <translation id="8698428283892912525">Chrome'дун Google Коопсуз серептөө сыяктуу алдын ала орнотулган коопсуздук функциялары серептөө учурунда сизди коргойт. Жакында ал аркылуу сиз кирүүгө аракет кылган сайттан <ph name="BEGIN_LINK" />зыяндуу программа табылды<ph name="END_LINK" />.</translation>
 <translation id="869891660844655955">Мөөнөтү аяктай турган күн</translation>
 <translation id="8699041776323235191">HID түзмөгү</translation>

@@ -565,6 +565,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1855370856221982654">Boxeo</translation>
 <translation id="1862788842908766795">Postos executivos e directivos</translation>
 <translation id="1863257867908022953">Bandexa 12</translation>
+<translation id="1863374797460198869">Chat oculto</translation>
 <translation id="186539747722034544">Provedores de cable e satélite</translation>
 <translation id="1870473978371099486">Clases particulares</translation>
 <translation id="1871208020102129563">O proxy está configurado para utilizar servidores proxy fixos, non un URL de script .pac.</translation>
@@ -1426,7 +1427,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para xestionar na configuración de Chrome a información que se sincroniza, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="3203025201812691413">O URL non pode estar baleiro</translation>
 <translation id="320323717674993345">Cancelar pago</translation>
-<translation id="3204534477198689393">Para mellorar as suxestións e completar os formularios máis rápido, o contido e os URL das páxinas que visites poden tratarse nun espazo privado da nube.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> pode incluír contido non adecuado para menores</translation>
 <translation id="3207960819495026254">Engadida a marcadores</translation>
 <translation id="3208701679386778924">Envía un informe para que poidamos mellorar as próximas actualizacións de ChromeOS.</translation>
@@ -4529,6 +4529,7 @@ Detalles adicionais:
 <translation id="7972714317346275248">PKCS #1 SHA-384 con cifrado RSA</translation>
 <translation id="7976053965094442846">Emisores de pago aprazado dispoñibles para pagar a prazos. Teclado oculto.</translation>
 <translation id="7976214039405368314">Hai demasiadas solicitudes</translation>
+<translation id="7977029776654598145">Cando se usa</translation>
 <translation id="7977538094055660992">Dispositivo de saída</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Hai <ph name="TIME_COUNT" /> min}=1{Hai <ph name="TIME_COUNT" /> h}other{Hai <ph name="TIME_COUNT" /> d}}</translation>
 <translation id="7979595116210197019">Servizo de comida</translation>
@@ -4623,7 +4624,6 @@ Detalles adicionais:
 <translation id="8134058435519644366">Contratación e persoal</translation>
 <translation id="8135546115396015134">tecla esquerda</translation>
 <translation id="8137456439814903304">Enerxía, empresas e servizos públicos</translation>
-<translation id="8138591088112729119">Con tecnoloxía da Intelixencia personalizada</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Creouse hai 1 mes}other{Creouse hai {NUM_MONTHS} meses}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, buscador predeterminado actual. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Versión do PDF:</translation>
@@ -4956,6 +4956,7 @@ Detalles adicionais:
 <translation id="8688672835843460752">Dispoñible</translation>
 <translation id="868922510921656628">Páxinas por xogo</translation>
 <translation id="8694684557210599098">Engadir un vehículo</translation>
+<translation id="8696297579102085705">Enviar ao teu dispositivo</translation>
 <translation id="8698428283892912525">Chrome inclúe funcións de seguranza para protexerte cando navegas, como, por exemplo, Navegación segura de Google, que <ph name="BEGIN_LINK" />detectou hai pouco software daniño<ph name="END_LINK" /> no sitio ao que tentaches acceder.</translation>
 <translation id="869891660844655955">Data de vencemento</translation>
 <translation id="8699041776323235191">Dispositivo HID</translation>

@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Išgrupuoti skirtuką}one{Išgrupuoti skirtukus}few{Išgrupuoti skirtukus}many{Išgrupuoti skirtukus}other{Išgrupuoti skirtukus}}</translation>
 <translation id="2271452184061378400">Čia išsaugomos skirtukų grupės</translation>
 <translation id="2277224997687551299">Redaguoti grupės pavadinimą</translation>
+<translation id="2289567621059034186">Naujas skirtukas apačioje</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Pažymėti skirtuką}one{Pažymėti skirtukus}few{Pažymėti skirtukus}many{Pažymėti skirtukus}other{Pažymėti skirtukus}}</translation>
 <translation id="2359808026110333948">Tęskite</translation>
 <translation id="2371084566192454134">Skirtukai ir skirtukų grupės</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">Rodyti skirtukus horizontaliai</translation>
 <translation id="31806439105337256">Rodyti skirtukus vertikaliai</translation>
 <translation id="3194464645767632461">įvertinimas</translation>
+<translation id="3228962656492373217">Uždaryti skirtukus apačioje</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Pridėti <ph name="TABS_COUNT_ONE" /> skirtuką prie grupės}one{Pridėti <ph name="TABS_COUNT_MANY" /> skirtuką prie grupės}few{Pridėti <ph name="TABS_COUNT_MANY" /> skirtukus prie grupės}many{Pridėti <ph name="TABS_COUNT_MANY" /> skirtuko prie grupės}other{Pridėti <ph name="TABS_COUNT_MANY" /> skirtukų prie grupės}}</translation>
 <translation id="3328308545011660196">Pasiūlymas: skirtukai (iš viso: <ph name="NUMBER_OF_TABS" />) atrodo susiję. Grupuoti juos?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Po vienos neaktyvumo dienos}one{Po <ph name="DAY_COUNT_MANY" /> neaktyvumo dienos}few{Po <ph name="DAY_COUNT_MANY" /> neaktyvumo dienų}many{Po <ph name="DAY_COUNT_MANY" /> neaktyvumo dienos}other{Po <ph name="DAY_COUNT_MANY" /> neaktyvumo dienų}}</translation>

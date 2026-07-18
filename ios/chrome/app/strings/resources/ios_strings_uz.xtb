@@ -614,6 +614,7 @@
 <translation id="3037177537145227281">Narxni kuzatyapsiz</translation>
 <translation id="3038136505713492417">Bu qurilmada kirish kalitlaridan foydalanish uchun shaxsingizni tasdiqlang</translation>
 <translation id="3039671569659952257">Jildni o‘chirish</translation>
+<translation id="3050988301648974170">Parol tekshiruvini ochish</translation>
 <translation id="3053332585453689122">Siz tashrif buyurgan URL manzillar va sahifa kontenti, yuklab olishlar, kengaytmalar faoliyati va tizim maʼlumotlarining kichik namunasini ular zararli yoki yoʻqligini tekshirish uchun Google Saytlarni xavfsiz kezish xizmatiga yuboradi.</translation>
 <translation id="3055102495753300780">Axborot hajmi</translation>
 <translation id="3059270601560379555">Yangi qidiruv</translation>
@@ -2323,7 +2324,6 @@ Kompyuterda davom etish uchun <ph name="OTHER_EMAIL" /> hisobiga almashtiring. B
 <translation id="8692689525339542358">Xavfli saytlar, yuklanmalar va kengaytmalardan himoyalaning.</translation>
 <translation id="8692897097252418799">Qaysi maʼlumotlar eksport qilinishini tanlang</translation>
 <translation id="8694281486652655615">Bu elementni koʻrsatadi</translation>
-<translation id="8696297579102085705">Qurilmangizga yuborish</translation>
 <translation id="8697136149718343437">Manzillar qatorini pastga olish</translation>
 <translation id="869891660844655955">Tugash muddati</translation>
 <translation id="8706253136355675497">Harorat</translation>
@@ -2428,6 +2428,7 @@ Kompyuterda davom etish uchun <ph name="OTHER_EMAIL" /> hisobiga almashtiring. B
 <translation id="9013605037177245304">Bildirishnomalarni yoqish</translation>
 <translation id="9029650858822697271">Hisobingizdan chiqasiz</translation>
 <translation id="9032405509996909363">Brauzer maʼlumotlarini oʻchirishni tasdiqlash</translation>
+<translation id="9035699147763101514">Gemini bilan Personal Intelligence texnologiyasi asosida ishlaydi. Tanlovlarni sozlamalar orqali boshqaring.</translation>
 <translation id="9039373489628511875">Trafik nazorati</translation>
 <translation id="9042893549633094279">Maxfiylik va xavfsizlik</translation>
 <translation id="9055291197094969722">Ochilgan sahifalarni tartiblash va samarali ishlash uchun varaqlar guruhini yarating</translation>
@@ -2439,6 +2440,7 @@ Kompyuterda davom etish uchun <ph name="OTHER_EMAIL" /> hisobiga almashtiring. B
 <translation id="9070824521421603770">Hisobingizdan chiqasiz va varaqlar yopiladi</translation>
 <translation id="9072837124205571418">Barcha qurilmalardagi varaqlar guruhi</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> paroli yangilansinmi?</translation>
+<translation id="908365381820697818">Endi Gmail va boshqa ilovalardan ma’lumotlarni topishingiz va toʻldirishingiz mumkin</translation>
 <translation id="9083838294503912307">Barcha qurilmalarda sinxronlash va oʻzingizga moslash uchun sinxronizatsiyani yoqing.</translation>
 <translation id="9084367296493549256">{count,plural, =1{Xavfsizlikka tahdid qilishi mumkin {count} ta zaif parol bor. Axborotlarni himoyalash uchun buni tuzating.}other{Xavfsizlikka tahdid qilishi mumkin {count} ta zaif parol bor. Axborotlarni himoyalash uchun buni tuzating.}}</translation>
 <translation id="9084369964545892485">Guruhdagi yangi Inkognito varaq</translation>

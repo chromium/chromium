@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{إلغاء تجميع علامة التبويب}zero{إلغاء تجميع علامات التبويب}two{إلغاء تجميع علامتَي التبويب}few{إلغاء تجميع علامات التبويب}many{إلغاء تجميع علامات التبويب}other{إلغاء تجميع علامات التبويب}}</translation>
 <translation id="2271452184061378400">يتم حفظ مجموعات علامات التبويب هنا</translation>
 <translation id="2277224997687551299">تعديل اسم المجموعة</translation>
+<translation id="2289567621059034186">علامة تبويب جديدة أدناه</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{وضع إشارة على علامة التبويب}zero{وضع إشارة على علامات التبويب}two{وضع إشارة على علامتَي التبويب}few{وضع إشارة على علامات التبويب}many{وضع إشارة على علامات التبويب}other{وضع إشارة على علامات التبويب}}</translation>
 <translation id="2359808026110333948">متابعة</translation>
 <translation id="2371084566192454134">علامات التبويب ومجموعات علامات التبويب</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">عرض علامات التبويب أفقيًا</translation>
 <translation id="31806439105337256">عرض علامات التبويب عموديًا</translation>
 <translation id="3194464645767632461">التقييم</translation>
+<translation id="3228962656492373217">إغلاق علامات التبويب أدناه</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{إضافة علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />) إلى المجموعة}zero{إضافة <ph name="TABS_COUNT_MANY" /> علامة تبويب إلى المجموعة}two{إضافة علامتَي تبويب (<ph name="TABS_COUNT_MANY" />) إلى المجموعة}few{إضافة <ph name="TABS_COUNT_MANY" /> علامات تبويب إلى المجموعة}many{إضافة <ph name="TABS_COUNT_MANY" /> علامة تبويب إلى المجموعة}other{إضافة <ph name="TABS_COUNT_MANY" /> علامة تبويب إلى المجموعة}}</translation>
 <translation id="3328308545011660196">اقتراح: يبدو أن هناك <ph name="NUMBER_OF_TABS" /> من علامات التبويب متشابهة. هل تريد تجميعها؟</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{بعد يوم واحد من عدم النشاط}zero{بعد <ph name="DAY_COUNT_MANY" /> يوم من عدم النشاط}two{بعد يومَين (<ph name="DAY_COUNT_MANY" />) من عدم النشاط}few{بعد <ph name="DAY_COUNT_MANY" /> أيام من عدم النشاط}many{بعد <ph name="DAY_COUNT_MANY" /> يومًا من عدم النشاط}other{بعد <ph name="DAY_COUNT_MANY" /> يوم من عدم النشاط}}</translation>

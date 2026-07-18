@@ -1176,7 +1176,6 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1910721550319506122">Witamy!</translation>
 <translation id="1910736334623230603">Nie można wyszukiwać wielu obrazów. Dodawaj obrazy pojedynczo.</translation>
 <translation id="1910908536872421421">Chrome do testowania w wersji <ph name="BROWSER_VERSION" /> służy tylko do testowania automatycznego. Do zwykłego przeglądania internetu używaj wersji standardowej Chrome, która aktualizuje się automatycznie.</translation>
-<translation id="1912867150686509584">Zobacz więcej spotkań w Kalendarzu</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Wstrzymaj kartę, która spowalnia przeglądarkę}few{Wstrzymaj karty, które spowalniają przeglądarkę}many{Wstrzymaj karty, które spowalniają przeglądarkę}other{Wstrzymaj karty, które spowalniają przeglądarkę}}</translation>
 <translation id="1913749768968678106">Przesyłaj, zapisuj i udostępniaj</translation>
 <translation id="19147273405311768">Przywróć ustawienia domyślne paska narzędzi</translation>
@@ -4247,6 +4246,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="4274673989874969668">Gdy zamkniesz witrynę, może ona kontynuować synchronizację, aby dokończyć zadania takie jak przesłanie zdjęć czy wysłanie wiadomości czatu</translation>
 <translation id="4275291496240508082">Dźwięk włączania urządzenia</translation>
 <translation id="4275397969489577657">Włącz rejestrowanie strumienia wydarzenia</translation>
+<translation id="4275663329226226506">Multimedia</translation>
 <translation id="4275788652681621337">Zamknij panel boczny</translation>
 <translation id="4275830172053184480">Zrestartuj urządzenie</translation>
 <translation id="4276390967705106170">Otwórz w nowej karcie przeglądarki</translation>
@@ -9894,7 +9894,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8693862390730570097">Nie zezwalaj na automatyczne otwieranie funkcji „Pomóż mi w pisaniu”</translation>
 <translation id="8694596275649352090">Zablokuj po uśpieniu urządzenia lub zamknięciu pokrywy</translation>
 <translation id="8695825812785969222">Otwórz &amp;lokalizację</translation>
-<translation id="8696297579102085705">Wyślij na swoje urządzenie</translation>
 <translation id="869884720829132584">Menu aplikacji</translation>
 <translation id="869891660844655955">Data wygaśnięcia</translation>
 <translation id="8699296325072357994">Treści ze stron z hasłami i powiązane informacje są wysyłane do Google i sprawdzane przez weryfikatorów. Twoje hasło jest zaszyfrowane i nikt go nie widzi. <ph name="PASSWORD_CHANGE" /></translation>

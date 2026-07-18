@@ -565,6 +565,7 @@
 <translation id="1855370856221982654">Бокс</translation>
 <translation id="1862788842908766795">Вакансії в галузі керування й менеджменту</translation>
 <translation id="1863257867908022953">Лоток 12</translation>
+<translation id="1863374797460198869">Чат сховано</translation>
 <translation id="186539747722034544">Постачальники послуг кабельного й супутникового телебачення</translation>
 <translation id="1870473978371099486">Послуги приватного репетитора</translation>
 <translation id="1871208020102129563">Проксі-сервер налаштовано на використання фіксованих проксі-серверів, а не URL-адреси сценарію .pac.</translation>
@@ -1426,7 +1427,6 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб вибрати в налаштуваннях Chrome, яку інформацію синхронізувати</translation>
 <translation id="3203025201812691413">Потрібно вказати URL-адресу</translation>
 <translation id="320323717674993345">Скасувати оплату</translation>
-<translation id="3204534477198689393">Щоб покращувати пропозиції і швидше заповнювати форми, системи можуть обробляти контент і URL-адреси відвіданих сторінок у приватному просторі в хмарі.</translation>
 <translation id="3207830513221832868">Сайт <ph name="BLOCKED_URL" /> може містити контент для повнолітніх</translation>
 <translation id="3207960819495026254">Створено закладку</translation>
 <translation id="3208701679386778924">Надішліть звіт, щоб ми могли покращити інші оновлення ChromeOS.</translation>
@@ -4530,6 +4530,7 @@
 <translation id="7972714317346275248">PKCS #1 SHA-384 із шифруванням RSA</translation>
 <translation id="7976053965094442846">Список емітентів, які пропонують придбання з оплатою пізніше. Клавіатуру сховано.</translation>
 <translation id="7976214039405368314">Забагато запитів</translation>
+<translation id="7977029776654598145">Призначення</translation>
 <translation id="7977538094055660992">Пристрій виведення</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> хв тому}=1{<ph name="TIME_COUNT" /> год тому}one{<ph name="TIME_COUNT" /> дн. тому}few{<ph name="TIME_COUNT" /> дн. тому}many{<ph name="TIME_COUNT" /> дн. тому}other{<ph name="TIME_COUNT" /> дн. тому}}</translation>
 <translation id="7979595116210197019">Приготування й доставка їжі</translation>
@@ -4624,7 +4625,6 @@
 <translation id="8134058435519644366">Набір персоналу й працевлаштування</translation>
 <translation id="8135546115396015134">клавіша зі стрілкою вліво</translation>
 <translation id="8137456439814903304">Енергетична промисловість і комунальне господарство</translation>
-<translation id="8138591088112729119">На основі персоналізованого інтелекту</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Створено 1 місяць тому}one{Створено {NUM_MONTHS} місяць тому}few{Створено {NUM_MONTHS} місяці тому}many{Створено {NUM_MONTHS} місяців тому}other{Створено {NUM_MONTHS} місяця тому}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, використовується за умовчанням. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Версія PDF:</translation>
@@ -4958,6 +4958,7 @@
 <translation id="8688672835843460752">Доступно</translation>
 <translation id="868922510921656628">Кількість сторінок у наборі</translation>
 <translation id="8694684557210599098">Додати відомості про транспортний засіб</translation>
+<translation id="8696297579102085705">Надіслати на ваш пристрій</translation>
 <translation id="8698428283892912525">Chrome має вбудовані функції безпеки, що захищають вас під час вебперегляду, як-от Безпечний перегляд Google. Зокрема, ця функція нещодавно <ph name="BEGIN_LINK" />виявила шкідливе програмне забезпечення<ph name="END_LINK" /> на сайті, який ви намагалися відвідати.</translation>
 <translation id="869891660844655955">Діє до</translation>
 <translation id="8699041776323235191">Пристрій HID</translation>

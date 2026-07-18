@@ -565,6 +565,7 @@
 <translation id="1855370856221982654">Бокс</translation>
 <translation id="1862788842908766795">Вакансіі ў сферы кіравання і менеджменту</translation>
 <translation id="1863257867908022953">Латок 12</translation>
+<translation id="1863374797460198869">Чат схаваны</translation>
 <translation id="186539747722034544">Пастаўшчыкі кабельнага і спадарожнікавага тэлебачання</translation>
 <translation id="1870473978371099486">Рэпетытарства і прыватныя ўрокі</translation>
 <translation id="1871208020102129563">Канфігурацыяй проксі зададзена выкарыстоўваць фіксаваныя проксі-серверы, а не URL-адрас сцэнарыя .pac.</translation>
@@ -1427,7 +1428,6 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб задаць у наладах Chrome, якая іменна інфармацыя будзе сінхранізавацца, націсніце Tab, затым Enter</translation>
 <translation id="3203025201812691413">Укажыце URL-адрас</translation>
 <translation id="320323717674993345">Скасаваць плацеж</translation>
-<translation id="3204534477198689393">Каб палепшыць прапановы і паскорыць запаўненне форм, змесціва і URL-адрасы старонак, якія вы наведваеце, могуць апрацоўвацца ў прыватнай прасторы ў воблаку.</translation>
 <translation id="3207830513221832868">Вэб-сайт <ph name="BLOCKED_URL" /> можа ўтрымліваць змесціва для дарослых</translation>
 <translation id="3207960819495026254">Дададзена ў закладкі</translation>
 <translation id="3208701679386778924">Адпраўце справаздачу, каб мы маглі палепшыць будучыя абнаўленні ChromeOS.</translation>
@@ -2453,6 +2453,7 @@
 <translation id="4786804728079074733">Валейбол</translation>
 <translation id="4787182171088676626">Канверт з высакаякаснага матэрыялу</translation>
 <translation id="4791134497475588553">Усталяваныя праграмы Linux, і калі яны апошні раз выкарыстоўваліся</translation>
+<translation id="4791602164422809437">На платформе персаналізаванага інтэлекту з Gemini. Загалоўкі старонак і URL-адрасы адпраўляюцца ў Google, дзе іх могуць праглядаць спецыялісты. <ph name="BEGIN_LINK" />Кіраваць наладамі<ph name="END_LINK" /></translation>
 <translation id="4792686369684665359">Інфармацыя, якую вы збіраецеся адправіць, не абаронена</translation>
 <translation id="4793219378458250238">11 x 12 цаляў</translation>
 <translation id="4796594887379589189">Ідэнтыфікатар уліковага запісу задання</translation>
@@ -3028,6 +3029,7 @@
 <translation id="5675809467256309336">Танцавальная і электронная музыка</translation>
 <translation id="5675959228867414813">Паказваць па даце</translation>
 <translation id="567604591393105935">Ніжні аркуш з камерцыйнай інфармацыяй адкрыты на палову экрана</translation>
+<translation id="5676124785522323481">Кіраванне падключанымі праграмамі</translation>
 <translation id="5676641328629468296">Google Pay, Pix</translation>
 <translation id="5678007133659493065">Фольга</translation>
 <translation id="5679086391497468752">Хатні адрас</translation>
@@ -3389,6 +3391,7 @@
 <translation id="6240553182907836376">Змяніце даныя пасведчання асобы</translation>
 <translation id="6240601837375010619">Захавайце пашпартныя даныя</translation>
 <translation id="6240964651812394252">Каб выкарыстоўваць Менеджар пароляў з вашай аперацыйнай сістэмай, перазапусціце Chrome і дайце доступ да менеджара пароляў на вашым камп’ютары. Пасля перазапуску ўкладкі будуць адкрыты паўторна.</translation>
+<translation id="6244366663267187541">Выберыце праграмы, да якіх будзе падключацца Gemini</translation>
 <translation id="624499991300733384">Сэрвіс стварэння заданняў для друку</translation>
 <translation id="6246316216123107851"><ph name="NUM_DAYS" /> сут таму</translation>
 <translation id="6246382863801034910">Транспартны сродак</translation>
@@ -4202,6 +4205,7 @@
 <translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> праверыць адпаведнасць патрабаванням (гэта не паўплывае на ваш крэдытны рэйтынг). У выпадку станоўчага рашэння <ph name="BNPL_ISSUER_NAME" /> прапануе вам планы выплат на выбар і завершыць вашу куплю.</translation>
 <translation id="7489392576326061356">Шампуні і кандыцыянеры</translation>
 <translation id="7489919936111034362">Сховішча Google Дыска запоўнена</translation>
+<translation id="7490622939531327327">Больш інтэлектуальнае запаўненне форм</translation>
 <translation id="7495528107193238112">Гэта змесціва заблакіравана. Каб вырашыць праблему, звярніцеся да ўладальніка сайта.</translation>
 <translation id="749865518782565832">Водаправодныя работы</translation>
 <translation id="7499188644237027195">Пры ажыццяўленні купляў у Chrome вы можаце дадаць у якасці спосабаў аплаты eWallet і Pix</translation>
@@ -4529,6 +4533,7 @@
 <translation id="7972714317346275248">PKCS #1 SHA-384 з шыфраваннем RSA</translation>
 <translation id="7976053965094442846">Спіс эмітэнтаў, якія прапануюць куплю ў растэрміноўку. Клавіятура схавана.</translation>
 <translation id="7976214039405368314">Занадта шмат запытаў</translation>
+<translation id="7977029776654598145">Калі функцыя выкарыстоўваецца</translation>
 <translation id="7977538094055660992">Прылада вываду</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> хв таму}=1{<ph name="TIME_COUNT" /> гадз таму}one{<ph name="TIME_COUNT" /> сут таму}few{<ph name="TIME_COUNT" /> сут таму}many{<ph name="TIME_COUNT" /> сут таму}other{<ph name="TIME_COUNT" /> сут таму}}</translation>
 <translation id="7979595116210197019">Грамадскае харчаванне</translation>
@@ -4623,7 +4628,6 @@
 <translation id="8134058435519644366">Рэкрутынг і працаўладкаванне</translation>
 <translation id="8135546115396015134">стрэлку ўлева</translation>
 <translation id="8137456439814903304">Энергетыка і камунальныя арганізацыі</translation>
-<translation id="8138591088112729119">На аснове персаналізаванага інтэлекту</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Створана месяц таму}one{Створана {NUM_MONTHS} месяц таму}few{Створана {NUM_MONTHS} месяцы таму}many{Створана {NUM_MONTHS} месяцаў таму}other{Створана {NUM_MONTHS} месяца таму}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, цяперашняя стандартная сістэма пошуку. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Версія PDF:</translation>
@@ -4956,6 +4960,7 @@
 <translation id="8688672835843460752">Даступна</translation>
 <translation id="868922510921656628">Старонак у наборы</translation>
 <translation id="8694684557210599098">Дадаць транспартны сродак</translation>
+<translation id="8696297579102085705">Адправіць на прыладу</translation>
 <translation id="8698428283892912525">Chrome мае ўбудаваныя функцыі бяспекі, якія абараняюць вас падчас прагляду вэб-старонак, – напрыклад, "Google Бяспечны прагляд". Гэта функцыя <ph name="BEGIN_LINK" />нядаўна выявіла шкоднае праграмнае забеспячэнне<ph name="END_LINK" /> на сайце, які вы спрабавалі наведаць.</translation>
 <translation id="869891660844655955">Тэрмін дзеяння</translation>
 <translation id="8699041776323235191">Прылада HID</translation>
@@ -5192,6 +5197,7 @@
 <translation id="9078912659001679888">Блэндары і сокавыціскалкі</translation>
 <translation id="9078964945751709336">Патрабуецца дадатковая інфармацыя</translation>
 <translation id="9080712759204168376">Звесткі пра заказ</translation>
+<translation id="908365381820697818">Цяпер вы можаце знаходзіць і ўводзіць інфармацыю з Gmail і іншых сэрвісаў</translation>
 <translation id="9084304544887760521">Атрымлівайце электронныя лісты аб зніжэнні цаны на тавары, за якімі вы сочыце, на сайтах на адрас <ph name="EMAIL" />.</translation>
 <translation id="9089260154716455634">Палітыка для нерабочага часу:</translation>
 <translation id="9090218457905363312">Рэгі і карыбская музыка</translation>

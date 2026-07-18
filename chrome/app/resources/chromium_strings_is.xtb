@@ -57,7 +57,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1623563412065267963">Fáðu það besta frá Google með Chromium-forritinu í símanum þínum</translation>
 <translation id="1625909126243026060">Farðu yfir helstu öryggis- og persónuverndarstýringar í Chromium</translation>
 <translation id="1640672724030957280">Sækir...</translation>
-<translation id="1680687534629375545">Spyrja Myndaleit um þessa síðu</translation>
 <translation id="1708414395296835197">Þú getur notað Chromium þegar þú smellir á tengla í skilaboðum, skjölum og öðrum forritum. Það verður einnig fest á forritastikuna.</translation>
 <translation id="1709772298389099340">Veitir auknar heimildir fyrir <ph name="BROWSER_NAME" />.</translation>
 <translation id="1722488837206509557">Þetta gerir þér kleift að velja á milli tiltækra tækja og efnis á skjá þeirra.</translation>
@@ -81,7 +80,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1880677175115548835">Velja texta</translation>
 <translation id="1881322772814446296">Þú ert að skrá þig inn með stýrðum reikningi og veitir stjórnanda hans vald yfir Chromium-prófílnum þínum. Chromium-gögnin þín, s.s. forrit, bókamerki, ferill, aðgangsorð og aðrar stillingar, verða tengd varanlega við <ph name="USER_NAME" />. Þú getur eytt þessum gögnum á stjórnborði Google-reikninga en getur ekki tengt þau öðrum reikningi. Þér er frjálst að búa til nýjan prófíl til að halda fyrirliggjandi Chromium-gögnum aðskildum. <ph name="LEARN_MORE" /></translation>
 <translation id="1896836275755235458">Chromium sparar rafhlöðuna með því að takmarka bakgrunnsvirkni og myndáhrif, s.s. mjúkflettingu og vídeórammatíðni. <ph name="BEGIN_LINK" />Nánar um orkusparnað<ph name="END_LINK" /></translation>
-<translation id="1898804291554630487">Spyrja um þessa síðu</translation>
 <translation id="1900969832270057921">Uppfærsluþjónusta Chromium</translation>
 <translation id="1911763535808217981">Með því að slökkva á þessu geturðu skráð þig inn á Google vefsvæði eins og Gmail án þess að skrá þig inn í Chromium</translation>
 <translation id="1929939181775079593">Chromium svarar ekki. Viltu endurræsa núna?</translation>
@@ -227,7 +225,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3316771292331273802">Þegar þú lokar öllum Chromium-gluggum skráistu út af flestum vefsvæðum, að undanskildum Google-reikningnum þínum ef þú ert skráð(ur) inn á Chromium. <ph name="SETTINGS_LINK" /> til að leyfa vefsvæðum að muna eftir þér.</translation>
 <translation id="3352986031709923790">efsta horn leitarsvæðis hægra megin: til hægri <ph name="RIGHT" />%, efst <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">Chromium-gögn á reikningnum þínum</translation>
-<translation id="3369405342922656244">Leita á þessari síðu með Myndaleit</translation>
 <translation id="3375770072980084583">Notaðu aðgangsorðin þín með Chromium í símanum</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Skipta yfir í Chromium prófíl sem er til?</translation>
@@ -374,7 +371,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="5231355151045086930">Skrá út af Chromium</translation>
 <translation id="5234764350956374838">Hunsa</translation>
 <translation id="5249261924633168472">Opna tengil í huliðsglugga í Chromium</translation>
-<translation id="5254739261293693943">Spyrja út í þetta vídeó</translation>
 <translation id="5276305953263010518">Sæktu Chromium-forritið til að vista aðgangsorð á ferðinni</translation>
 <translation id="5277894862589591112">Endurræstu Chromium til að breytingarnar taki gildi</translation>
 <translation id="5286907366254680517">Greint</translation>
@@ -469,7 +465,6 @@ Ef þessi síða virkar ekki sem skyldi skaltu prófa að leyfa fínstillingu.</
 <translation id="6183079672144801177">Vertu viss um að þú sért skráð(ur) inn á Chromium í <ph name="TARGET_DEVICE_NAME" /> og reyndu svo að senda aftur.</translation>
 <translation id="6212496753309875659">Á þessari tölvu er þegar nýrri útgáfa af Chromium. Ef hugbúnaðurinn virkar ekki skaltu fjarlægja Chromium og reyna aftur.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium verður endurræst núna}=1{Chromium verður endurræst eftir 1 sekúndu}one{Chromium verður endurræst eftir # sekúndu}other{Chromium verður endurræst eftir # sekúndur}}</translation>
-<translation id="6239161312595354541">Spyrja Myndaleit um þetta vídeó</translation>
 <translation id="6241367896540709610">Chromium verður að fá aðgang að geymslurými til að sækja skrár</translation>
 <translation id="6245734527075554892">Ber vefslóðir saman við lista yfir óörugg vefsvæði sem er vistaður í Chromium</translation>
 <translation id="6248213926982192922">Gera Chromium að sjálfgefnum vafra</translation>
@@ -560,7 +555,6 @@ Sumir eiginleikar kunna að verða óaðgengilegir. Tilgreindu aðra prófílam�
             • Endurstilla flýtileiðir Chromium
             <ph name="LINE_BREAKS" />
             Þetta hefur ekki áhrif á bókamerki, feril og vistuð aðgangsorð.</translation>
-<translation id="6934579572334859869">Spyrja Myndaleit um þessa mynd</translation>
 <translation id="6948031725951063910">Þú náðir hámarksfjölda bókamerkja í Chromium (<ph name="BOOKMARK_LIMIT" />) svo að sum bókamerkin þín hafa ekki verið vistuð á Google-reikningnum þínum enn sem komið er.
 
 Ekki er hægt að vista ný bókamerki á reikningnum þínum fyrr en þú eyðir einhverjum. Ef þú skráir þig út núna verður óvistuðum bókamerkjum eytt.</translation>
@@ -650,7 +644,6 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7872446069773932638">Sækir... <ph name="SECONDS" /> sek. eftir</translation>
 <translation id="7873537467422636035">Ef þú gleymdir aðgangsorðinu eða vilt breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chromium-gögnunum á reikningnum þínum<ph name="END_LINK" /></translation>
 <translation id="7874369989024033742">Opnaðu Gemini hratt í Chromium hvenær sem þú þarft</translation>
-<translation id="7877212753140190672">Spyrja um þessa mynd</translation>
 <translation id="7888981273428720788">Stilltu Chromium sem sjálfgefinn vafra</translation>
 <translation id="7934340546140346950">Chromium uppfærir óöruggar tengingar sjálfkrafa í HTTPS þegar hægt er</translation>
 <translation id="7937630085815544518">Þú varst skráð(ur) inn í Chromium sem <ph name="USER_EMAIL_ADDRESS" />. Notaðu sama reikning til að skrá þig inn aftur.</translation>

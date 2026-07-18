@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ትርን ነጥል}one{ትርን ነጥል}other{ትሮችን ነጥል}}</translation>
 <translation id="2271452184061378400">የእርስዎ የትር ቡድኖች እዚህ ተቀምጠዋል</translation>
 <translation id="2277224997687551299">የቡድን ስም ያርትዑ</translation>
+<translation id="2289567621059034186">ከታች አዲስ ትር</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{የዕልባት ትር}one{የዕልባት ትር}other{የዕልባት ትሮች}}</translation>
 <translation id="2359808026110333948">ቀጥል</translation>
 <translation id="2371084566192454134">ትሮች እና ቡድኖች</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">ትሮችን በአግድም አሳይ</translation>
 <translation id="31806439105337256">ትሮችን በአቀባዊ አሳይ</translation>
 <translation id="3194464645767632461">የተሰጡ ደረጃዎች</translation>
+<translation id="3228962656492373217">ከታች ያሉትን ትሮች ዝጋ</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ትርን ወደ ቡድን ያክሉ}one{<ph name="TABS_COUNT_MANY" /> ትርን ወደ ቡድን ያክሉ}other{<ph name="TABS_COUNT_MANY" /> ትሮችን ወደ ቡድን ያክሉ}}</translation>
 <translation id="3328308545011660196">የአስተያየት ጥቆማ፦ <ph name="NUMBER_OF_TABS" /> ትሮች የሚዛመዱ ይመስላሉ። ይቦደኑ?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{ከ1 የቦዘነ ቀን በኋላ}one{ከ<ph name="DAY_COUNT_MANY" /> የቦዘነ ቀን በኋላ}other{ከ<ph name="DAY_COUNT_MANY" /> የቦዘኑ ቀናት በኋላ}}</translation>

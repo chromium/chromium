@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Tühista vahelehe grupeerimine}other{Tühista vahelehtede grupeerimine}}</translation>
 <translation id="2271452184061378400">Teie vahelehegrupid on salvestatud siia</translation>
 <translation id="2277224997687551299">Grupi nime muutmine</translation>
+<translation id="2289567621059034186">Uus vaheleht allpool</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Lisa vaheleht järjehoidjatesse}other{Lisa vahelehed järjehoidjatesse}}</translation>
 <translation id="2359808026110333948">Jätka</translation>
 <translation id="2371084566192454134">Vahelehed ja vahelehegrupid</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">Kuva vahelehed horisontaalselt</translation>
 <translation id="31806439105337256">Kuva vahelehed vertikaalselt</translation>
 <translation id="3194464645767632461">hinnang</translation>
+<translation id="3228962656492373217">Sule allolevad vahelehed</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> vahelehe lisamine gruppi}other{<ph name="TABS_COUNT_MANY" /> vahelehe lisamine gruppi}}</translation>
 <translation id="3328308545011660196">Soovitus: <ph name="NUMBER_OF_TABS" /> vahelehte näivad olevat seotud. Kas soovite need grupeerida?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Pärast 1 päeva mitteaktiivses olekus}other{Pärast <ph name="DAY_COUNT_MANY" /> päeva mitteaktiivses olekus}}</translation>

@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Usuń kartę z grupy}few{Usuń karty z grupy}many{Usuń karty z grupy}other{Usuń karty z grupy}}</translation>
 <translation id="2271452184061378400">Tutaj są zapisane Twoje grupy kart</translation>
 <translation id="2277224997687551299">Edytuj nazwę grupy</translation>
+<translation id="2289567621059034186">Nowa karta poniżej</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Dodaj kartę do zakładek}few{Dodaj karty do zakładek}many{Dodaj karty do zakładek}other{Dodaj karty do zakładek}}</translation>
 <translation id="2359808026110333948">Dalej</translation>
 <translation id="2371084566192454134">Karty i grupy kart</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">Pokaż karty w poziomie</translation>
 <translation id="31806439105337256">Pokaż karty w pionie</translation>
 <translation id="3194464645767632461">ocena</translation>
+<translation id="3228962656492373217">Zamknij karty poniżej</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Dodaj <ph name="TABS_COUNT_ONE" /> kartę do grupy}few{Dodaj <ph name="TABS_COUNT_MANY" /> karty do grupy}many{Dodaj <ph name="TABS_COUNT_MANY" /> kart do grupy}other{Dodaj <ph name="TABS_COUNT_MANY" /> karty do grupy}}</translation>
 <translation id="3328308545011660196">Sugestia: liczba prawdopodobnie powiązanych kart wynosi <ph name="NUMBER_OF_TABS" />. Czy chcesz je pogrupować?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Po 1 dniu braku aktywności}few{Po <ph name="DAY_COUNT_MANY" /> dniach braku aktywności}many{Po <ph name="DAY_COUNT_MANY" /> dniach braku aktywności}other{Po <ph name="DAY_COUNT_MANY" /> dnia braku aktywności}}</translation>

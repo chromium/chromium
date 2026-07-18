@@ -1177,7 +1177,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1910721550319506122">Vítejte!</translation>
 <translation id="1910736334623230603">Nelze vyhledat několik obrázků najednou. Zadávejte obrázky po jednom.</translation>
 <translation id="1910908536872421421">Chrome for Testing verze <ph name="BROWSER_VERSION" /> je určen pouze pro automatické testování. K běžnému prohlížení použijte standardní verzi Chromu, která se automaticky aktualizuje.</translation>
-<translation id="1912867150686509584">Zobrazit další schůzky v kalendáři</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Pozastavení karty, která prohlížeč zpomaluje}few{Pozastavení karet, které prohlížeč zpomalují}many{Pozastavení karet, které prohlížeč zpomalují}other{Pozastavení karet, které prohlížeč zpomalují}}</translation>
 <translation id="1913749768968678106">Odeslat, uložit a sdílet</translation>
 <translation id="19147273405311768">Resetovat lištu do výchozího nastavení</translation>
@@ -4256,6 +4255,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4274673989874969668">Po opuštění web může pokračovat v synchronizaci, aby dokončil úkoly, jako je nahrání fotek nebo odeslání chatové zprávy</translation>
 <translation id="4275291496240508082">Zvuk spuštění</translation>
 <translation id="4275397969489577657">Zapnout protokolování streamů událostí</translation>
+<translation id="4275663329226226506">Média</translation>
 <translation id="4275788652681621337">Zavřít boční panel</translation>
 <translation id="4275830172053184480">Restartovat zařízení</translation>
 <translation id="4276390967705106170">Otevřít na nové kartě prohlížeče</translation>
@@ -9905,7 +9905,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8693862390730570097">Nepovolovat automatické otevírání funkce Pomozte mi psát</translation>
 <translation id="8694596275649352090">Zamknout v režimu spánku nebo při zavřeném víku</translation>
 <translation id="8695825812785969222">&amp;Otevřít umístění...</translation>
-<translation id="8696297579102085705">Odeslat na vaše zařízení</translation>
 <translation id="869884720829132584">Nabídka Aplikace</translation>
 <translation id="869891660844655955">Datum konce platnosti</translation>
 <translation id="8699296325072357994">Obsah ze stránek s hesly a související informace se odesílají do Googlu a kontrolují je lidé. Vaše heslo je zašifrováno a nikdo ho neuvidí. <ph name="PASSWORD_CHANGE" /></translation>

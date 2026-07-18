@@ -566,6 +566,7 @@
 <translation id="1855370856221982654">လက်ဝှေ့</translation>
 <translation id="1862788842908766795">အမှုဆောင်နှင့် စီမံခန့်ခွဲရေး အလုပ်</translation>
 <translation id="1863257867908022953">ဗန်း ၁၂</translation>
+<translation id="1863374797460198869">ချတ်ကို ဖျောက်လိုက်သည်</translation>
 <translation id="186539747722034544">ကေဘယ်ကြိုးနှင့် ဂြိုဟ်ထုဝန်ဆောင်မှုပေးသူ</translation>
 <translation id="1870473978371099486">သီးသန့်နည်းပြသင်ကြားခြင်း ဝန်ဆောင်မှု</translation>
 <translation id="1871208020102129563">ပရောက်စီအား တိကျသည့် ပရောက်ဟီဆာဗာများ သတ်မှတ်ထားသည်၊ .pac script URL မဟုတ်ပါ။</translation>
@@ -1428,7 +1429,6 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Chrome ဆက်တင်များတွင် သင်စင့်ခ်လုပ်သော အချက်အလက်များကို စီမံရန် ‘တဘ်ခလုတ်’ နှိပ်ပြီးနောက် Enter နှိပ်ပါ</translation>
 <translation id="3203025201812691413">URL သည် အလွတ်ဖြစ်၍မရပါ</translation>
 <translation id="320323717674993345">ငွေပေးချေမှုကို ပယ်ဖျက်ရန်</translation>
-<translation id="3204534477198689393">အကြံပြုချက်များ ပိုကောင်းစေရန်နှင့် ဖောင်များကို ပိုမိုမြန်ဆန်စွာ ဖြည့်နိုင်ရန် သင်ဝင်ကြည့်သည့် စာမျက်နှာများ၏ အကြောင်းအရာနှင့် URL များကို cloud ရှိ သီးသန့်နေရာတွင် စီမံဆောင်ရွက်နိုင်သည်။</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> တွင် အရွယ်ရောက်သူဆိုင်ရာ အကြောင်းအရာ ရှိနိုင်သည်</translation>
 <translation id="3207960819495026254">ဘွတ်မက်လုပ်ပြီး၏</translation>
 <translation id="3208701679386778924">ChromeOS အပ်ဒိတ်များ ဆက်လက်၍ ပိုကောင်းအောင်လုပ်နိုင်ရန် အစီရင်ခံစာ ပေးပို့ပါ။</translation>
@@ -2330,7 +2330,7 @@
 <translation id="4607608436550361748">Chrome အကြံပြုချက်များ ကြည့်ရန်</translation>
 <translation id="460848736049414407">စီမံခန့်ခွဲသူက ပိတ်ထားသည်</translation>
 <translation id="4610279718074907952">ယခုဝဘ်ဆိုက်ကို <ph name="SET_OWNER" /> က သတ်မှတ်ပြီး ၎င်းသည် သင့်လုပ်ဆောင်ချက်ကိုမြင်နိုင်သည့် အုပ်စုဝင်ဖြစ်သည်</translation>
-<translation id="4612631413844865947"><ph name="PAYMENT_APP_ORIGIN" /> မှတစ်ဆင့် <ph name="MERCHANT_ORIGIN" /> တွင် သင့်မှာကုန်ကို ဆောင်ရွက်ရာ၌ အမှားဖြစ်သွားသည်။</translation>
+<translation id="4612631413844865947"><ph name="PAYMENT_APP_ORIGIN" /> မှတစ်ဆင့် <ph name="MERCHANT_ORIGIN" /> တွင် သင့်မှာယူမှုကို ဆောင်ရွက်ရာ၌ အမှားတစ်ခု ဖြစ်ပွားခဲ့သည်။</translation>
 <translation id="46128681529823442">ဘောလုံးကန်ပစ္စည်း</translation>
 <translation id="4612904677925722054">ဤဝဘ်ဆိုက်တွင် အရွယ်ရောက်သူဆိုင်ရာ အကြောင်းအရာ ရှိနိုင်သည်။ ဤဝဘ်ဆိုက်သို့ ဝင်ကြည့်ရန်အတွက် မိဘ (သို့) အုပ်ထိန်းသူက သဘောတူရပါမည်။</translation>
 <translation id="4619564267100705184">သင်ဖြစ်ကြောင်း အတည်ပြုရန်</translation>
@@ -4530,6 +4530,7 @@
 <translation id="7972714317346275248">PKCS #1 SHA-384 RSA လျှို့ဝှက်ကုဒ် သွင်းမှုဖြင့်</translation>
 <translation id="7976053965094442846">ငွေခွဲ၍ပေးချေနိုင်သော ‘အခုဝယ်-နောက်မှပေး’ ထုတ်ပေးသည့် အဖွဲ့အစည်းများ။ ကီးဘုတ် ဖျောက်ထားသည်။</translation>
 <translation id="7976214039405368314">တောင်းဆိုမှုများ များလွန်းနေသည်</translation>
+<translation id="7977029776654598145">အသုံးပြုရမည့်အချိန်</translation>
 <translation id="7977538094055660992">ထုတ်ယူမည့်စက်</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{ပြီးခဲ့သော <ph name="TIME_COUNT" /> မိနစ်}=1{ပြီးခဲ့သော <ph name="TIME_COUNT" /> နာရီ}other{ပြီးခဲ့သော <ph name="TIME_COUNT" /> ရက်}}</translation>
 <translation id="7979595116210197019">အစားအသောက် ဝန်ဆောင်မှု</translation>
@@ -4625,7 +4626,6 @@
 <translation id="8134058435519644366">လူသစ်စုဆောင်းမှုနှင့် ဝန်ထမ်းခန့်အပ်မှု</translation>
 <translation id="8135546115396015134">ဘယ်ခလုတ်</translation>
 <translation id="8137456439814903304">စွမ်းအင်၊ လျှပ်စစ်မီး ဝန်ဆောင်မှု</translation>
-<translation id="8138591088112729119">‘ပုဂ္ဂိုလ်ရေးသီးသန့် ဉာဏ်ရည်တု’ က ပံ့ပိုးထားသည်</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{ပြီးခဲ့သော ၁ လက ပြုလုပ်ထားသည်}other{ပြီးခဲ့သော {NUM_MONTHS} လက ပြုလုပ်ထားသည်}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />၊ လက်ရှိမူရင်း။ <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF ဗားရှင်း-</translation>
@@ -4958,6 +4958,7 @@
 <translation id="8688672835843460752">ရနိုင်သည်</translation>
 <translation id="868922510921656628">အတွဲတစ်တွဲပါ စာမျက်နှာများ</translation>
 <translation id="8694684557210599098">ယာဉ် ထည့်ခြင်း</translation>
+<translation id="8696297579102085705">သင့်စက်သို့ ပို့ရန်</translation>
 <translation id="8698428283892912525">ဘရောက်စ်လုပ်နေစဉ် ကာကွယ်ပေးရန်အတွက် Chrome ၌ ‘Google လုံခြုံစွာ ကြည့်ရှုခြင်း’ ကဲ့သို့သော လုံခြုံရေးတူးလ်များ အသင့်ပါပြီး ၎င်းက သင်ဝင်ကြည့်ရန်ကြိုးပမ်းသည့် ဝဘ်ဆိုက်တွင် <ph name="BEGIN_LINK" />အန္တရာယ်ရှိသည့်ဆော့ဖ်ဝဲကို မကြာသေးမီက တွေ့ရှိထားသည်<ph name="END_LINK" />။</translation>
 <translation id="869891660844655955">သက်တမ်း ကုန်ဆုံးရက်</translation>
 <translation id="8699041776323235191">HID စက်ပစ္စည်း</translation>

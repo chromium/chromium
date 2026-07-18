@@ -565,6 +565,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1855370856221982654">Boks</translation>
 <translation id="1862788842908766795">Rukovodeći i menadžerski poslovi</translation>
 <translation id="1863257867908022953">12. fioka</translation>
+<translation id="1863374797460198869">Čet je sakriven</translation>
 <translation id="186539747722034544">Dobavljači kablovskih i satelitskih usluga</translation>
 <translation id="1870473978371099486">Usluge privatnog podučavanja</translation>
 <translation id="1871208020102129563">Proksi je podešen da koristi fiksne proksi servere, a ne URL adresu .pac skripte.</translation>
@@ -1426,7 +1427,6 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste upravljali time koje informacije sinhronizujete u podešavanjima Chrome-a</translation>
 <translation id="3203025201812691413">URL ne može da bude prazan</translation>
 <translation id="320323717674993345">Otkaži plaćanje</translation>
-<translation id="3204534477198689393">Da bismo poboljšali predloge i brže popunjavali obrasce, sadržaj i URL-ovi stranica koje posećujete mogu da se obrađuju u privatnom prostoru u klaudu.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> može da obuhvata sadržaj za stariju publiku</translation>
 <translation id="3207960819495026254">Obeleženo</translation>
 <translation id="3208701679386778924">Pošaljite izveštaj da bismo poboljšali dalja ažuriranja ChromeOS-a.</translation>
@@ -4529,6 +4529,7 @@ Dodatni detalji:
 <translation id="7972714317346275248">PKCS #1 SHA-384 sa RSA šifrovanjem</translation>
 <translation id="7976053965094442846">Izdavaoci opcije Kupite odmah, platite kasnije dostupni za plaćanje tokom vremena. Tastatura je sakrivena.</translation>
 <translation id="7976214039405368314">Previše je zahteva</translation>
+<translation id="7977029776654598145">Kada se koristi</translation>
 <translation id="7977538094055660992">Izlazni uređaj</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Pre <ph name="TIME_COUNT" /> m}=1{Pre <ph name="TIME_COUNT" /> s}one{Pre <ph name="TIME_COUNT" /> d}few{Pre <ph name="TIME_COUNT" /> d}other{Pre <ph name="TIME_COUNT" /> d}}</translation>
 <translation id="7979595116210197019">Priprema i dostava hrane</translation>
@@ -4623,7 +4624,6 @@ Dodatni detalji:
 <translation id="8134058435519644366">Zapošljavanje i izbor kadrova</translation>
 <translation id="8135546115396015134">levi taster</translation>
 <translation id="8137456439814903304">Proizvodnja i distribucija energije</translation>
-<translation id="8138591088112729119">Omogućava Personalizovana inteligencija</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Napravljeno je pre 1 mesec}one{Napravljeno je pre {NUM_MONTHS} mesec}few{Napravljeno je pre {NUM_MONTHS} meseca}other{Napravljeno je pre {NUM_MONTHS} meseci}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, trenutno podrazumevani. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF verzija:</translation>
@@ -4957,6 +4957,7 @@ Dodatni detalji:
 <translation id="8688672835843460752">Dostupno</translation>
 <translation id="868922510921656628">Stranice po skupu</translation>
 <translation id="8694684557210599098">Dodajte vozilo</translation>
+<translation id="8696297579102085705">Pošalji na uređaj</translation>
 <translation id="8698428283892912525">Chrome ima ugrađene bezbednosne funkcije koje vas štite tokom pregledanja – poput Google bezbednog pregledanja, koje je nedavno <ph name="BEGIN_LINK" />otkrilo štetan softver<ph name="END_LINK" /> na sajtu koji ste probali da posetite.</translation>
 <translation id="869891660844655955">Datum isteka</translation>
 <translation id="8699041776323235191">Uređaj sa interfejsom</translation>

@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Опозови груписање картице}one{Опозови груписање картица}few{Опозови груписање картица}other{Опозови груписање картица}}</translation>
 <translation id="2271452184061378400">Групе картица се чувају овде</translation>
 <translation id="2277224997687551299">Измените име групе</translation>
+<translation id="2289567621059034186">Нова картица у наставку</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Обележи картицу}one{Обележи картице}few{Обележи картице}other{Обележи картице}}</translation>
 <translation id="2359808026110333948">Настави</translation>
 <translation id="2371084566192454134">Картице и групе картица</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">Прикажи картице хоризонтално</translation>
 <translation id="31806439105337256">Прикажи картице вертикално</translation>
 <translation id="3194464645767632461">оцена</translation>
+<translation id="3228962656492373217">Затвори картице у наставку</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Додајте <ph name="TABS_COUNT_ONE" /> картицу у групу}one{Додајте <ph name="TABS_COUNT_MANY" /> картицу у групу}few{Додајте <ph name="TABS_COUNT_MANY" /> картице у групу}other{Додајте <ph name="TABS_COUNT_MANY" /> картица у групу}}</translation>
 <translation id="3328308545011660196">Предлог: Картице (<ph name="NUMBER_OF_TABS" />) делују повезано. Желите ли да их групишете?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{После 1 дана неактивности}one{После <ph name="DAY_COUNT_MANY" /> дана неактивности}few{После <ph name="DAY_COUNT_MANY" /> дана неактивности}other{После <ph name="DAY_COUNT_MANY" /> дана неактивности}}</translation>

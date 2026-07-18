@@ -1178,7 +1178,6 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1910721550319506122">Tere tulemast!</translation>
 <translation id="1910736334623230603">Mitut pilti ei saa otsida. Lisage üks pilt korraga.</translation>
 <translation id="1910908536872421421">Chrome for Testing v<ph name="BROWSER_VERSION" /> on mõeldud vaid automatiseeritud testimise jaoks. Kasutage tavalise sirvimise jaoks Chrome'i standardversiooni, mida värskendatakse automaatselt.</translation>
-<translation id="1912867150686509584">Vaadake rohkem koosolekuid oma kalendris</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Peatage brauserit aeglustav vaheleht}other{Peatage brauserit aeglustavad vahelehed}}</translation>
 <translation id="1913749768968678106">Kanna üle, salvesta ja jaga</translation>
 <translation id="19147273405311768">Lähtesta tööriistariba vaikeseadetele</translation>
@@ -4263,6 +4262,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4274673989874969668">Kui lahkute saidilt, võib see sünkroonimist jätkata, et toimingud (nt fotode üleslaadimine või vestlussõnumi saatmine) lõpule viia</translation>
 <translation id="4275291496240508082">Käivitamisheli</translation>
 <translation id="4275397969489577657">Sündmuste voo logimise lubamine</translation>
+<translation id="4275663329226226506">Meedia</translation>
 <translation id="4275788652681621337">Sule külgpaneel</translation>
 <translation id="4275830172053184480">Taaskäivitage seade</translation>
 <translation id="4276390967705106170">Ava uuel brauseri vahelehel</translation>
@@ -9914,7 +9914,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8693862390730570097">Ära luba funktsioonil „Aita mul kirjutada“ automaatselt avaneda</translation>
 <translation id="8694596275649352090">Lukusta unerežiimis või kui kaas suletakse</translation>
 <translation id="8695825812785969222">Ava a&amp;sukoht ...</translation>
-<translation id="8696297579102085705">Saada seadmesse</translation>
 <translation id="869884720829132584">Rakenduste menüü</translation>
 <translation id="869891660844655955">Aegumiskuupäev</translation>
 <translation id="8699296325072357994">Paroolilehtede sisu ja sellega seotud teave saadetakse Google'ile ning seda näevad inimülevaatajad. Teie parool krüpteeritakse ja seda ei näe keegi. <ph name="PASSWORD_CHANGE" /></translation>

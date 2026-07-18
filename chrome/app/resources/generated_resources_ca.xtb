@@ -1177,7 +1177,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1910721550319506122">Us donem la benvinguda</translation>
 <translation id="1910736334623230603">No es poden cercar diverses imatges. Afegeix una imatge cada cop.</translation>
 <translation id="1910908536872421421">La versió <ph name="BROWSER_VERSION" /> de Chrome for Testing només serveix per fer proves automatitzades. Per navegar de la manera habitual, utilitza una versió estàndard de Chrome que s'actualitzi automàticament.</translation>
-<translation id="1912867150686509584">Fes que es mostrin més reunions al teu Calendar</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Posa en pausa la pestanya que està alentint el navegador}other{Posa en pausa les pestanyes que estan alentint el navegador}}</translation>
 <translation id="1913749768968678106">Emet, desa i comparteix</translation>
 <translation id="19147273405311768">Restableix la barra d'eines a la configuració predeterminada</translation>
@@ -4256,6 +4255,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4274673989874969668">Quan surts d'un lloc web, el lloc pot continuar amb la sincronització per finalitzar les taques que estava fent, com ara penjar fotos o enviar un missatge de xat</translation>
 <translation id="4275291496240508082">So a l'inici</translation>
 <translation id="4275397969489577657">Activa el registre del flux d'esdeveniments</translation>
+<translation id="4275663329226226506">Multimèdia</translation>
 <translation id="4275788652681621337">Tanca el tauler lateral</translation>
 <translation id="4275830172053184480">Reinici del dispositiu</translation>
 <translation id="4276390967705106170">Obre en una pestanya nova del navegador</translation>
@@ -9904,7 +9904,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8693862390730570097">No permetis que la funció Ajuda'm a escriure s'obri automàticament</translation>
 <translation id="8694596275649352090">Bloqueja quan està en repòs o es tanca la tapa</translation>
 <translation id="8695825812785969222">Obre la &amp;ubicació...</translation>
-<translation id="8696297579102085705">Envia al teu dispositiu</translation>
 <translation id="869884720829132584">Menú d'aplicacions</translation>
 <translation id="869891660844655955">Data de caducitat</translation>
 <translation id="8699296325072357994">El contingut de les pàgines de contrasenyes i la informació relacionada s'envien a Google i els revisen persones. La teva contrasenya està encriptada i no la veu mai ningú. <ph name="PASSWORD_CHANGE" /></translation>

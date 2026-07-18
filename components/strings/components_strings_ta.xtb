@@ -565,6 +565,7 @@
 <translation id="1855370856221982654">குத்துச்சண்டை</translation>
 <translation id="1862788842908766795">நிர்வாகம் &amp; மேலாண்மைப் பணிகள்</translation>
 <translation id="1863257867908022953">டிரே 12</translation>
+<translation id="1863374797460198869">உரையாடல் மறைக்கப்பட்டுள்ளது</translation>
 <translation id="186539747722034544">கேபிள் &amp; சாட்டிலைட் சேவை வழங்குநர்கள்</translation>
 <translation id="1870473978371099486">தனியார் டியூஷன் சேவைகள்</translation>
 <translation id="1871208020102129563">நிலையான ப்ராக்ஸி சேவையகங்களைப் பயன்படுத்த ப்ராக்ஸி அமைக்கப்பட்டுள்ளது, .pac ஸ்கிரிப்ட் URL அல்ல.</translation>
@@ -1423,7 +1424,6 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. எந்தெந்தத் தகவல்களை ஒத்திசைக்க வேண்டும் என்பதை Chrome அமைப்புகளில் நிர்வகிக்க, Tab விசையை அழுத்திவிட்டு Enter விசையை அழுத்துங்கள்</translation>
 <translation id="3203025201812691413">URL காலியாக இருக்கக்கூடாது</translation>
 <translation id="320323717674993345">கட்டணம் செலுத்துவதை ரத்துசெய்</translation>
-<translation id="3204534477198689393">பரிந்துரைகளை மேம்படுத்தவும் படிவங்களை விரைவாக நிரப்பவும், நீங்கள் பார்வையிடும் பக்கங்களின் உள்ளடக்கமும் URLகளும் கிளவுடில் உள்ள தனிப்பட்ட இடத்தில் செயலாக்கப்படலாம்.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> தளத்தில் பெரியவர்களுக்கான உள்ளடக்கம் இருக்கக்கூடும்</translation>
 <translation id="3207960819495026254">புக்மார்க் செய்யப்பட்டது</translation>
 <translation id="3208701679386778924">புதுப்பிப்பு குறித்த புகாரை எங்களுக்கு அனுப்புங்கள். இதனால் அடுத்து வரும் ChromeOS புதுப்பிப்புகளை எங்களால் மேம்படுத்த முடியும்.</translation>
@@ -4525,6 +4525,7 @@
 <translation id="7972714317346275248">RSA என்க்ரிப்ஷனுடன் PKCS #1 SHA-384</translation>
 <translation id="7976053965094442846">'இப்போது வாங்குங்கள், பிறகு பணம் செலுத்துங்கள்' முறையை வழங்குநர்கள் தவணை முறையில் பணம் செலுத்தவும் அனுமதிக்கின்றனர். கீபோர்டு மறைக்கப்பட்டுள்ளது.</translation>
 <translation id="7976214039405368314">அளவுக்கு அதிகமான கோரிக்கைகள்</translation>
+<translation id="7977029776654598145">இந்த அம்சத்தைப் பயன்படுத்தும்போது</translation>
 <translation id="7977538094055660992">அவுட்புட் சாதனம்</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" />நி முன்பு}=1{<ph name="TIME_COUNT" />ம.நே முன்பு}other{<ph name="TIME_COUNT" />நா முன்பு}}</translation>
 <translation id="7979595116210197019">உணவுச் சேவை</translation>
@@ -4619,7 +4620,6 @@
 <translation id="8134058435519644366">ஆட்சேர்ப்பு &amp; பணியமர்த்துதல்</translation>
 <translation id="8135546115396015134">இடது அம்புக்குறி</translation>
 <translation id="8137456439814903304">ஆற்றல் மற்றும் யூட்டிலிட்டிகள்</translation>
-<translation id="8138591088112729119">தனிப்பட்ட நுண்ணறிவு வழங்குகிறது</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 மாதத்திற்கு முன் உருவாக்கப்பட்டது}other{{NUM_MONTHS} மாதங்களுக்கு முன் உருவாக்கப்பட்டது}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, தற்போது இயல்பாக இருப்பது. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF பதிப்பு:</translation>
@@ -4952,6 +4952,7 @@
 <translation id="8688672835843460752">மீதமுள்ளது:</translation>
 <translation id="868922510921656628">ஒரு செட்டிற்கான பக்கங்கள்</translation>
 <translation id="8694684557210599098">வாகனத் தகவலைச் சேர்த்தல்</translation>
+<translation id="8696297579102085705">வேறு சாதனத்திற்கு அனுப்பு</translation>
 <translation id="8698428283892912525">நீங்கள் பிரவுஸ் செய்யும்போது உங்களைப் பாதுகாக்க ‘Google பாதுகாப்பு உலாவல்’ போன்ற உள்ளமைந்த பாதுகாப்பு அம்சங்கள் Chromeமில் உள்ளன. நீங்கள் பார்க்க முயன்ற தளத்தில் இந்த அம்சம் <ph name="BEGIN_LINK" />தீங்கிழைக்கும் மென்பொருளைச் சமீபத்தில் கண்டறிந்தது<ph name="END_LINK" />.</translation>
 <translation id="869891660844655955">காலாவதியாகும் தேதி</translation>
 <translation id="8699041776323235191">HID சாதனம்</translation>

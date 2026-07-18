@@ -565,6 +565,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1855370856221982654">Box</translation>
 <translation id="1862788842908766795">Manažerská pracovní místa</translation>
 <translation id="1863257867908022953">Přihrádka 12</translation>
+<translation id="1863374797460198869">Chat je skrytý</translation>
 <translation id="186539747722034544">Poskytovatelé kabelového a satelitního připojení</translation>
 <translation id="1870473978371099486">Soukromé vyučování</translation>
 <translation id="1871208020102129563">Proxy je nastaveno na používání pevně daných serverů proxy, nikoliv adresy URL skriptu PAC.</translation>
@@ -1423,7 +1424,6 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru a poté klávesy Enter můžete v nastavení Chromu spravovat, jaké informace synchronizujete</translation>
 <translation id="3203025201812691413">Adresa URL nesmí být prázdná</translation>
 <translation id="320323717674993345">Zrušit platbu</translation>
-<translation id="3204534477198689393">Za účelem vylepšování návrhů a rychlejšího vyplňování formulářů mohou být obsah a adresy URL navštívených stránek zpracovávány v soukromém prostoru v cloudu.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> může zahrnovat obsah nevhodný pro děti</translation>
 <translation id="3207960819495026254">Přidáno do záložek</translation>
 <translation id="3208701679386778924">Pošlete nám hlášení, abychom mohli vylepšit další aktualizace systému ChromeOS.</translation>
@@ -4524,6 +4524,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7972714317346275248">Šifrování PKCS #1 SHA-384 s RSA</translation>
 <translation id="7976053965094442846">Dostupní poskytovatelé financování na splátky. Klávesnice je skrytá.</translation>
 <translation id="7976214039405368314">Příliš mnoho požadavků</translation>
+<translation id="7977029776654598145">Použití</translation>
 <translation id="7977538094055660992">Výstupní zařízení</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Před <ph name="TIME_COUNT" /> min}=1{Před <ph name="TIME_COUNT" /> h}few{Před <ph name="TIME_COUNT" /> dny}many{Před <ph name="TIME_COUNT" /> dne}other{Před <ph name="TIME_COUNT" /> dny}}</translation>
 <translation id="7979595116210197019">Kulinářský průmysl</translation>
@@ -4618,7 +4619,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8134058435519644366">Personální agentury</translation>
 <translation id="8135546115396015134">šipky vlevo</translation>
 <translation id="8137456439814903304">Energie a technické vybavení</translation>
-<translation id="8138591088112729119">Využívá Osobní inteligenci</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Vytvořeno před 1 měsícem}few{Vytvořeno před {NUM_MONTHS} měsíci}many{Vytvořeno před {NUM_MONTHS} měsíce}other{Vytvořeno před {NUM_MONTHS} měsíci}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, aktuálně výchozí. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Verze PDF:</translation>
@@ -4952,6 +4952,7 @@ Další podrobnosti:
 <translation id="8688672835843460752">Dostupné</translation>
 <translation id="868922510921656628">Počet stránek na sadu</translation>
 <translation id="8694684557210599098">Přidání vozidla</translation>
+<translation id="8696297579102085705">Odeslat na vaše zařízení</translation>
 <translation id="8698428283892912525">V Chromu jsou vestavěné bezpečnostní funkce, které vás při procházení chrání – například Bezpečné prohlížení Google, které <ph name="BEGIN_LINK" />nedávno odhalilo škodlivý software<ph name="END_LINK" /> na webu, který jste se pokusili navštívit.</translation>
 <translation id="869891660844655955">Datum konce platnosti</translation>
 <translation id="8699041776323235191">Zařízení HID</translation>

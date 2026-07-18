@@ -1188,7 +1188,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1910721550319506122">Velkommen</translation>
 <translation id="1910736334623230603">Du kan ikke søge i flere billeder på én gang. Tilføj ét billede ad gangen.</translation>
 <translation id="1910908536872421421">Chrome for Testing v<ph name="BROWSER_VERSION" /> er kun beregnet til automatiske tests. Ved almindelig brug af internettet skal du anvende en standardversion af Chrome, der opdaterer automatisk.</translation>
-<translation id="1912867150686509584">Se flere møder i din kalender</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Sæt den fane, der gør din browser langsom, på pause}one{Sæt den fane, der gør din browser langsom, på pause}other{Sæt de faner, der gør din browser langsom, på pause}}</translation>
 <translation id="1913749768968678106">Cast, gem og del</translation>
 <translation id="19147273405311768">Gendan værktøjslinjens standardindstillinger</translation>
@@ -4273,6 +4272,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4274673989874969668">Når du forlader et website, kan websitet fortsætte med at synkronisere for at afslutte opgaver såsom upload af billeder eller afsendelse af en chatbesked</translation>
 <translation id="4275291496240508082">Lyd ved opstart</translation>
 <translation id="4275397969489577657">Aktivér logning af begivenhedsstreaming</translation>
+<translation id="4275663329226226506">Medier</translation>
 <translation id="4275788652681621337">Luk sidepanelet</translation>
 <translation id="4275830172053184480">Genstart din enhed</translation>
 <translation id="4276390967705106170">Åbn på en ny browserfane</translation>
@@ -9926,7 +9926,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8693862390730570097">Tillad ikke, at "Hjælp mig med at skrive" åbnes automatisk</translation>
 <translation id="8694596275649352090">Lås, når enheden skifter til dvaletilstand, eller låget lukkes</translation>
 <translation id="8695825812785969222">Åbn &amp;placering...</translation>
-<translation id="8696297579102085705">Send til din enhed</translation>
 <translation id="869884720829132584">Programmenu</translation>
 <translation id="869891660844655955">Udløbsdato</translation>
 <translation id="8699296325072357994">Indhold fra adgangskodesider og relaterede oplysninger sendes til Google og gennemgås af menneskelige kontrollanter. Din adgangskode er krypteret og kan ikke ses af nogen. <ph name="PASSWORD_CHANGE" /></translation>

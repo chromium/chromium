@@ -55,7 +55,6 @@
 <translation id="1623563412065267963">Obtén el millor de Google amb l'aplicació Chromium al telèfon</translation>
 <translation id="1625909126243026060">Revisa els controls principals de privadesa i seguretat a Chromium</translation>
 <translation id="1640672724030957280">S'està baixant...</translation>
-<translation id="1680687534629375545">Pregunta a la cerca d'imatges sobre aquesta pàgina</translation>
 <translation id="1708414395296835197">Pots utilitzar Chromium cada vegada que facis clic en enllaços de missatges, documents i altres aplicacions. També es fixarà a la barra de tasques.</translation>
 <translation id="1709772298389099340">Proporciona privilegis elevats per a <ph name="BROWSER_NAME" />.</translation>
 <translation id="1722488837206509557">Això et permetrà seleccionar un dels dispositius disponibles i mostrar-hi contingut.</translation>
@@ -79,7 +78,6 @@
 <translation id="1880677175115548835">Selecciona el text</translation>
 <translation id="1881322772814446296">Esteu a punt d'iniciar la sessió amb un compte gestionat i d'atorgar el control del vostre perfil de Chromium a l'administrador corresponent. Les dades de Chromium, com ara aplicacions, adreces d'interès, historial, contrasenyes i altres configuracions, s'enllaçaran permanentment amb <ph name="USER_NAME" />. Podreu suprimir aquestes dades mitjançant el Tauler de Comptes de Google, però no les podreu associar amb un altre compte. De manera opcional, podeu crear un perfil nou per mantenir les vostres dades de Chromium a part. <ph name="LEARN_MORE" /></translation>
 <translation id="1896836275755235458">Chromium estalvia bateria limitant l'activitat en segon pla i els efectes visuals, com ara el desplaçament suau i els fotogrames per segon dels vídeos. <ph name="BEGIN_LINK" />Obtén més informació sobre la funció Estalvi d'energia<ph name="END_LINK" />.</translation>
-<translation id="1898804291554630487">Pregunta sobre aquesta pàgina</translation>
 <translation id="1900969832270057921">Servei de l'actualitzador de Chromium</translation>
 <translation id="1911763535808217981">En desactivar aquesta opció, pots iniciar la sessió en llocs web de Google, com ara Gmail, sense iniciar la sessió a Chromium</translation>
 <translation id="1929939181775079593">Chromium no respon. Voleu tornar-lo a iniciar ara?</translation>
@@ -225,7 +223,6 @@
 <translation id="3316771292331273802">Quan tanquis totes les finestres de Chromium, se't tancarà la sessió de la majoria de llocs web, tret del teu Compte de Google si tens la sessió iniciada a Chromium. Perquè els llocs web et recordin, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">extrem superior dret de l'àrea de cerca: <ph name="RIGHT" /> % per la dreta i <ph name="TOP" /> % per dalt</translation>
 <translation id="3366305173356742781">Dades de Chromium al teu compte</translation>
-<translation id="3369405342922656244">Cerca en aquesta pàgina amb la cerca d'imatges</translation>
 <translation id="3375770072980084583">Utilitza les teves contrasenyes amb Chromium al telèfon</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Vols canviar al perfil de Chromium existent?</translation>
@@ -372,7 +369,6 @@
 <translation id="5231355151045086930">Tanca la sessió de Chromium</translation>
 <translation id="5234764350956374838">Ignora</translation>
 <translation id="5249261924633168472">Obre l'enllaç en una finestra d'incò&amp;gnit a Chromium</translation>
-<translation id="5254739261293693943">Pregunta sobre aquest vídeo</translation>
 <translation id="5276305953263010518">Obtén l'aplicació Chromium per desar contrasenyes siguis on siguis</translation>
 <translation id="5277894862589591112">Torna a iniciar Chromium perquè s'apliquin els canvis</translation>
 <translation id="5286907366254680517">Detectat</translation>
@@ -467,7 +463,6 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="6183079672144801177">Assegura't que tinguis la sessió iniciada a Chromium a <ph name="TARGET_DEVICE_NAME" /> i prova d'enviar-ho de nou.</translation>
 <translation id="6212496753309875659">Aquest equip ja té una versió més recent de Chromium. Si el programari no funciona, desinstal·leu Chromium i torneu-ho a provar.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium es reiniciarà ara}=1{Chromium es reiniciarà d'aquí a 1 segon}other{Chromium es reiniciarà d'aquí a # segons}}</translation>
-<translation id="6239161312595354541">Pregunta a la cerca d'imatges sobre aquest vídeo</translation>
 <translation id="6241367896540709610">Chromium necessita permís d'accés a l'emmagatzematge per poder baixar fitxers</translation>
 <translation id="6245734527075554892">Compara els URL amb una llista de llocs web no segurs emmagatzemada a Chromium</translation>
 <translation id="6248213926982192922">Estableix Chromium com a navegador predeterminat</translation>
@@ -558,7 +553,6 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
             • Es restabliran les dreceres de Chromium.
             <ph name="LINE_BREAKS" />
             Les adreces d'interès, l'historial i les contrasenyes desades no es veuran afectats.</translation>
-<translation id="6934579572334859869">Pregunta a la cerca d'imatges sobre aquesta imatge</translation>
 <translation id="6948031725951063910">Has arribat al límit de <ph name="BOOKMARK_LIMIT" /> adreces d'interès de Chromium, de manera que algunes encara no s'han desat al teu Compte de Google.
 
 No es poden desar adreces d'interès noves al teu compte fins que no en suprimeixis algunes. Si tanques la sessió ara, se suprimiran les adreces d'interès no desades.</translation>
@@ -649,7 +643,6 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="7872446069773932638">S'està baixant… Queden <ph name="SECONDS" /> segons</translation>
 <translation id="7873537467422636035">Si has oblidat la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix les dades de Chromium del compte<ph name="END_LINK" />.</translation>
 <translation id="7874369989024033742">Obre ràpidament Gemini a Chromium sempre que et calgui</translation>
-<translation id="7877212753140190672">Pregunta sobre aquesta imatge</translation>
 <translation id="7888981273428720788">Defineix Chromium com a navegador predeterminat</translation>
 <translation id="7934340546140346950">Quan és possible, Chromium actualitza automàticament les connexions no segures a HTTPS</translation>
 <translation id="7937630085815544518">Teníeu la sessió iniciada a Chromium com a <ph name="USER_EMAIL_ADDRESS" />. Utilitzeu el mateix compte per tornar a iniciar-hi la sessió.</translation>

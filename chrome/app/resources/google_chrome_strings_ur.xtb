@@ -241,7 +241,6 @@
 <translation id="3282568296779691940">‏Chrome میں سائن ان کریں</translation>
 <translation id="3286538390144397061">ابھی ری اسٹارٹ کریں</translation>
 <translation id="3292333338048274092">‏پھر آپ کو Chrome ری اسٹارٹ کرنے کی ضرورت ہوگی۔</translation>
-<translation id="3324218984287646518">‏اس ویڈیو کے بارے میں Google لینز سے پوچھیں</translation>
 <translation id="3327226547491422998">‏بعد میں، Chrome پوچھ سکتا ہے کہ کیا آپ اپنی خاطر فارمز کو آٹو فل کرنے کے لیے محفوظ کردہ معلومات استعمال کرنا چاہتے ہیں</translation>
 <translation id="3352986031709923790">تلاش کے حلقے کا اوپری بایاں کونا: <ph name="RIGHT" /> فیصد بائیں، <ph name="TOP" /> فیصد اوپر</translation>
 <translation id="3360895254066713204">‏Chrome مدد کنندہ</translation>
@@ -262,8 +261,6 @@
 <translation id="3576528680708590453">‏آپ کے سسٹم کے منتظم نے <ph name="TARGET_URL_HOSTNAME" /> تک رسائی حاصل کرنے کے لیے Google Chrome کو ایک متبادل براؤزر کھولنے کے لیے کنفیگر کیا ہے۔</translation>
 <translation id="3582972582564653026">‏اپنے آلات پر Chrome کو مطابقت پذیر اور ذاتی نوعیت کا بنائیں</translation>
 <translation id="3583751698304738917">‏آپ دوسری Chrome پروفائل میں پہلے ہی سے بطور <ph name="USER_EMAIL_ADDRESS" /> سائن ان ہیں</translation>
-<translation id="358381413217813387">‏‫Google لینز کی مدد سے اس صفحہ کو تلاش کریں</translation>
-<translation id="3589519427766620380">‏اس صفحہ کے بارے میں Google لینز سے پوچھیں</translation>
 <translation id="3595784445906693824">‏نئی پروفائل میں Chrome میں سائن ان کریں؟</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{‏آپ کے منتظم کا مطالبہ ہے کہ آپ اپ ڈیٹ کو لاگو کرنے کیلئے Chrome کو بند کر کے دوبارہ چلائیں}=1{‏آپ کے منتظم کا مطالبہ ہے کہ آپ اپ ڈیٹ کو لاگو کرنے کیلئے Chrome کو بند کر کے دوبارہ چلائیں۔ آپ کی پوشیدگی ونڈو دوبارہ نہیں کھلے گی۔}other{‏آپ کے منتظم کا مطالبہ ہے کہ آپ اپ ڈیٹ کو لاگو کرنے کیلئے Chrome کو بند کر کے دوبارہ چلائیں۔ آپ کی # پوشیدگی ونڈوز دوبارہ نہیں کھلیں گی۔}}</translation>
 <translation id="3597003331831379823">زیادہ مراعات کے ساتھ سیٹ اپ کو چلانے میں ناکام۔ <ph name="METAINSTALLER_ERROR" /></translation>
@@ -357,7 +354,6 @@
 <translation id="4501471624619070934">انسٹالیشن ناکام ہوگئی کیونکہ اس ملک میں رسائی محدود ہے۔</translation>
 <translation id="4571503333518166079">‏Chrome کی اطلاع کی ترتیبات پر جائیں</translation>
 <translation id="4580939929828762295">‏‫Google پاس ورڈ مینیجر کے ساتھ محفوظ رہیں</translation>
-<translation id="4592634244097223647">‏اس تصویر کے بارے میں Google سے پوچھیں</translation>
 <translation id="459622048091363950">‏Chrome کو رسائی مل جانے کے بعد، ویب سائٹس آپ سے رسائی طلب کر سکیں گی۔</translation>
 <translation id="4598116752460667024">فہرست سے کوئی بھی پروسیس تلاش کریں۔</translation>
 <translation id="4600710005438004015">‏Chrome تازہ ترین ورژن میں اپ ڈیٹ نہیں ہو سکا اسلئے آپ نئی خصوصیات اور سیکیورٹی کی اصلاحات سے محروم ہو رہے ہیں۔</translation>
@@ -661,7 +657,6 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="7572537927358445944">‏آف • Chrome اس بات کی تصدیق نہیں کر سکتا کہ یہ ایکسٹینشن کہاں سے آتی ہے</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> انسٹالر</translation>
 <translation id="7596160425942761210">‏آپ ہر بار پیغامات، دستاویزات اور دیگر ایپس میں موجود لنکس پر کلک کرتے وقت Chrome کا استعمال کر سکتے ہیں</translation>
-<translation id="7602868996817972616">‏اس صفحہ کے بارے میں Google سے پوچھیں</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7627609214560473136">‏اپنے ڈیٹا کی حفاظت کے لیے، Chrome کو ان سائٹس سے اجازتیں ہٹانے کی اجازت دیں جنہیں آپ نے حال ہی میں ملاحظہ نہیں کیا ہے۔</translation>
 <translation id="7629695634924605473">‏Chrome آپ کو بتاتا ہے کہ آیا آپ کے پاس ورڈز کے ساتھ کبھی چھیڑ چھاڑ کی گئی ہے</translation>
@@ -786,7 +781,6 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="8712637175834984815">سمجھ آ گئی</translation>
 <translation id="8712767363896337380">‏تقریباً اپ ٹو ڈیٹ! اپ ڈیٹ مکمل کرنے کے لیے Chrome کو بند کر کے دوبارہ چلائیں۔</translation>
 <translation id="8718062187489036808">‏Chrome سے سائن آؤٹ کریں</translation>
-<translation id="8725440680697264016">‏اس ویڈیو کے بارے میں Google سے پوچھیں</translation>
 <translation id="873133009373065397">‏Google Chrome ڈیفالٹ براؤزر کا تعین یا اس کو سیٹ نہیں کر سکتا ہے</translation>
 <translation id="8747073452963259673">تلاش کے حلقے کا نیچے والا دایاں کونا: <ph name="LEFT" /> فیصد دائیں، <ph name="BOTTOM" /> فیصد نیچے</translation>
 <translation id="8748735421235723888">‏‫Chrome غیر فعال ٹیبز سے میموری کو خالی کرتا ہے۔ یہ فعال ٹیبز اور دیگر ایپس کو کمپیوٹر کے مزید وسائل فراہم کرتا ہے اور Chrome کو تیز رکھتا ہے۔ جب آپ ان پر واپس جاتے ہیں تو آپ کے غیر فعال ٹیبز خودکار طور پر دوبارہ فعال ہو جاتے ہیں۔ <ph name="BEGIN_LINK" />میموری سیور کے بارے میں مزید جانیں<ph name="END_LINK" /></translation>
@@ -802,7 +796,6 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{‏Chrome تجویز کرتا ہے کہ آپ اسے ہٹا دیں}other{‏Chrome تجویز کرتا ہے کہ آپ انہیں ہٹا دیں}}</translation>
 <translation id="8862326446509486874">سسٹم کی سطح پر انسٹال کرنے کیلئے آپ کے پاس مناسب حقوق نہیں ہیں۔ انسٹالر کو دوبارہ منتظم کے بطور چلانے کی کوشش کریں۔</translation>
 <translation id="8865415417596392024">‏آپ کے اکاؤنٹ میں Chrome کا ڈیٹا</translation>
-<translation id="8883862939660515976">‏‫Google لینز سے اس تصویر کے بارے میں پوچھیں</translation>
 <translation id="8914504000324227558">‏Chrome کو دوبارہ شروع کریں</translation>
 <translation id="8920304659326707347">‏‫iOS پر Chrome کے ساتھ وہیں سے شروع کریں جہاں سے آپ نے چھوڑا تھا۔</translation>
 <translation id="8922998289262614701">‏‫Chrome سے اس ایپس کا ڈیٹا ہٹائیں</translation>

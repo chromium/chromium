@@ -55,7 +55,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="1623563412065267963">Profitez du meilleur de Google avec l'appli Chromium sur votre téléphone</translation>
 <translation id="1625909126243026060">Passez en revue les principaux paramètres de confidentialité et de sécurité dans Chromium</translation>
 <translation id="1640672724030957280">Téléchargement en cours…</translation>
-<translation id="1680687534629375545">Demander des infos sur cette page à la recherche dans des images</translation>
 <translation id="1708414395296835197">Vous pouvez utiliser Chromium chaque fois que vous cliquez sur des liens dans des messages, des documents et d'autres applis. Il sera aussi épinglé à votre barre des tâches.</translation>
 <translation id="1709772298389099340">Fournit des droits élevés pour <ph name="BROWSER_NAME" />.</translation>
 <translation id="1722488837206509557">Cela vous permettra de sélectionner des appareils disponibles et d'y afficher du contenu.</translation>
@@ -79,7 +78,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="1880677175115548835">Sélectionner du texte</translation>
 <translation id="1881322772814446296">Vous vous connectez avec un compte géré et donnez le contrôle de votre profil Chromium à son administrateur. Vos données Chromium, telles que les applications, les favoris, l'historique, les mots de passe et les autres paramètres, vont être définitivement associées à <ph name="USER_NAME" />. Vous pouvez supprimer ces données via le tableau de bord des comptes Google, mais vous ne pouvez pas les associer à un autre compte. Vous pouvez éventuellement créer un nouveau profil pour maintenir vos données Chromium séparées. <ph name="LEARN_MORE" /></translation>
 <translation id="1896836275755235458">Chromium préserve l'autonomie de la batterie en limitant l'activité et les effets visuels en arrière-plan, comme le défilement fluide et la fréquence d'images vidéo. <ph name="BEGIN_LINK" />En savoir plus sur l'économiseur d'énergie<ph name="END_LINK" /></translation>
-<translation id="1898804291554630487">Question sur cette page</translation>
 <translation id="1900969832270057921">Service de mise à jour Chromium</translation>
 <translation id="1911763535808217981">Désactiver cette option vous permet de vous connecter à des sites Google tels que Gmail sans vous connecter à Chromium</translation>
 <translation id="1929939181775079593">Chromium ne répond pas. Voulez-vous le relancer maintenant ?</translation>
@@ -225,7 +223,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="3316771292331273802">Lorsque vous fermerez toutes les fenêtres Chromium, vous serez déconnecté de la plupart des sites, à l'exception de votre compte Google si vous êtes connecté à Chromium. Pour autoriser les sites à se souvenir de vous, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">angle supérieur droit de la zone de recherche : <ph name="RIGHT" /> % droite, <ph name="TOP" /> % haut</translation>
 <translation id="3366305173356742781">Données Chromium de votre compte</translation>
-<translation id="3369405342922656244">Rechercher sur cette page avec la recherche dans des images</translation>
 <translation id="3375770072980084583">Utilisez vos mots de passe avec Chromium sur votre téléphone</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Passer au profil Chromium existant ?</translation>
@@ -372,7 +369,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="5231355151045086930">Se déconnecter de Chromium</translation>
 <translation id="5234764350956374838">Ignorer</translation>
 <translation id="5249261924633168472">Ouvrir le lien dans la fenêtre de navi&amp;gation privée Chromium</translation>
-<translation id="5254739261293693943">Demander des infos sur cette vidéo</translation>
 <translation id="5276305953263010518">Téléchargez l'appli Chromium pour enregistrer des mots de passe où que vous soyez</translation>
 <translation id="5277894862589591112">Pour appliquer vos modifications, relancez Chromium</translation>
 <translation id="5286907366254680517">Détecté</translation>
@@ -467,7 +463,6 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="6183079672144801177">Vérifiez si vous êtes bien connecté à Chromium sur votre <ph name="TARGET_DEVICE_NAME" />, puis procédez de nouveau à l'envoi.</translation>
 <translation id="6212496753309875659">Cet ordinateur dispose déjà d'une version plus récente de Chromium. Si le logiciel ne fonctionne pas, veuillez le désinstaller, puis réessayer.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium va être relancé maintenant}=1{Chromium va être relancé dans 1 seconde}one{Chromium va être relancé dans # seconde}other{Chromium va être relancé dans # secondes}}</translation>
-<translation id="6239161312595354541">Demander des infos sur cette vidéo à la recherche dans des images</translation>
 <translation id="6241367896540709610">Pour télécharger des fichiers, Chromium a besoin de l'autorisation d'accéder à l'espace de stockage</translation>
 <translation id="6245734527075554892">Les URL sont vérifiées d'après une liste de sites dangereux stockée dans Chromium</translation>
 <translation id="6248213926982192922">Définir Chromium en tant que navigateur par défaut</translation>
@@ -558,7 +553,6 @@ Certaines fonctionnalités seront peut-être indisponibles. Veuillez spécifier 
             • Les raccourcis Chromium seront réinitialisés
             <ph name="LINE_BREAKS" />
             Les favoris, l'historique et les mots de passe enregistrés ne seront pas affectés.</translation>
-<translation id="6934579572334859869">Demander des infos sur cette image à la recherche dans des images</translation>
 <translation id="6948031725951063910">Vous avez atteint la limite de <ph name="BOOKMARK_LIMIT" /> favoris de Chromium. Par conséquent, certains de vos favoris n'ont pas encore été enregistrés dans votre compte Google.
 
 Vous ne pourrez pas enregistrer de nouveaux favoris dans votre compte tant que vous n'en aurez pas supprimé. Si vous vous déconnectez maintenant, les favoris non enregistrés seront supprimés.</translation>
@@ -649,7 +643,6 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="7872446069773932638">Téléchargement… <ph name="SECONDS" /> seconde(s) restante(s)</translation>
 <translation id="7873537467422636035">Si vous avez oublié votre phrase secrète ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chromium de votre compte<ph name="END_LINK" />.</translation>
 <translation id="7874369989024033742">Ouvrez rapidement Gemini dans Chromium quand vous en avez besoin</translation>
-<translation id="7877212753140190672">Demander des infos sur cette image</translation>
 <translation id="7888981273428720788">Définir Chromium comme navigateur par défaut</translation>
 <translation id="7934340546140346950">Chromium convertit automatiquement les connexions non sécurisées en HTTPS lorsque c'est possible</translation>
 <translation id="7937630085815544518">Vous étiez connecté à Chromium en tant que <ph name="USER_EMAIL_ADDRESS" />. Veuillez utiliser le même compte pour vous reconnecter.</translation>

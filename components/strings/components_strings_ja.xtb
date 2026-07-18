@@ -565,6 +565,7 @@
 <translation id="1855370856221982654">ボクシング</translation>
 <translation id="1862788842908766795">経営、マネジメント系の求人情報</translation>
 <translation id="1863257867908022953">トレイ 12</translation>
+<translation id="1863374797460198869">チャットは非表示です</translation>
 <translation id="186539747722034544">ケーブル、衛星放送事業者</translation>
 <translation id="1870473978371099486">個別指導サービス</translation>
 <translation id="1871208020102129563">プロキシは .pac スクリプト URL ではなく固定プロキシ サーバーを使用するように設定されています。</translation>
@@ -1426,7 +1427,6 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押して、Chrome の設定で同期する情報を管理します</translation>
 <translation id="3203025201812691413">URL を空白にすることはできません</translation>
 <translation id="320323717674993345">支払いをキャンセル</translation>
-<translation id="3204534477198689393">候補を改善し、フォームの入力をより迅速に行うため、アクセスしたページのコンテンツと URL がクラウドのプライベート スペースで処理される場合があります。</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> には成人向けコンテンツが含まれている可能性があります</translation>
 <translation id="3207960819495026254">ブックマークしました</translation>
 <translation id="3208701679386778924">ChromeOS の今後の更新に役立てるため、報告を送信してください。</translation>
@@ -4530,6 +4530,7 @@
 <translation id="7972714317346275248">PKCS #1 SHA-384 with RSA 暗号化</translation>
 <translation id="7976053965094442846">分割払いを利用できる後払い決済のカード発行会社です。キーボードは非表示です。</translation>
 <translation id="7976214039405368314">リクエストが多すぎます</translation>
+<translation id="7977029776654598145">使用した場合</translation>
 <translation id="7977538094055660992">出力デバイス</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> 分前}=1{<ph name="TIME_COUNT" /> 時間前}other{<ph name="TIME_COUNT" /> 日前}}</translation>
 <translation id="7979595116210197019">飲食業</translation>
@@ -4624,7 +4625,6 @@
 <translation id="8134058435519644366">採用、人事</translation>
 <translation id="8135546115396015134">左矢印キー</translation>
 <translation id="8137456439814903304">エネルギー、公共事業</translation>
-<translation id="8138591088112729119">パーソナル インテリジェンスを活用</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 か月前に作成}other{{NUM_MONTHS} か月前に作成}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />、現在のデフォルト設定。<ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF バージョン:</translation>
@@ -4958,6 +4958,7 @@
 <translation id="8688672835843460752">使用可能</translation>
 <translation id="868922510921656628">1 部あたりのページ数</translation>
 <translation id="8694684557210599098">車両情報の追加</translation>
+<translation id="8696297579102085705">お使いのデバイスに送信</translation>
 <translation id="8698428283892912525">Chrome には、ブラウジング中のユーザーを保護する安全機能が組み込まれています。その一部である Google セーフ ブラウジングにより、アクセスしようとしたサイトで最近<ph name="BEGIN_LINK" />有害なソフトウェアが検出<ph name="END_LINK" />されました。</translation>
 <translation id="869891660844655955">有効期限</translation>
 <translation id="8699041776323235191">HID デバイス</translation>

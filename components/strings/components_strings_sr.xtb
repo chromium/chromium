@@ -565,6 +565,7 @@
 <translation id="1855370856221982654">Бокс</translation>
 <translation id="1862788842908766795">Руководећи и менаџерски послови</translation>
 <translation id="1863257867908022953">12. фиока</translation>
+<translation id="1863374797460198869">Чет је сакривен</translation>
 <translation id="186539747722034544">Добављачи кабловских и сателитских услуга</translation>
 <translation id="1870473978371099486">Услуге приватног подучавања</translation>
 <translation id="1871208020102129563">Прокси је подешен да користи фиксне прокси сервере, а не URL адресу .pac скрипте.</translation>
@@ -1426,7 +1427,6 @@
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте управљали тиме које информације синхронизујете у подешавањима Chrome-а</translation>
 <translation id="3203025201812691413">URL не може да буде празан</translation>
 <translation id="320323717674993345">Откажи плаћање</translation>
-<translation id="3204534477198689393">Да бисмо побољшали предлоге и брже попуњавали обрасце, садржај и URL-ови страница које посећујете могу да се обрађују у приватном простору у клауду.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> може да обухвата садржај за старију публику</translation>
 <translation id="3207960819495026254">Обележено</translation>
 <translation id="3208701679386778924">Пошаљите извештај да бисмо побољшали даља ажурирања ChromeOS-а.</translation>
@@ -4529,6 +4529,7 @@
 <translation id="7972714317346275248">PKCS #1 SHA-384 са RSA шифровањем</translation>
 <translation id="7976053965094442846">Издаваоци опције Купите одмах, платите касније доступни за плаћање током времена. Тастатура је сакривена.</translation>
 <translation id="7976214039405368314">Превише је захтева</translation>
+<translation id="7977029776654598145">Када се користи</translation>
 <translation id="7977538094055660992">Излазни уређај</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Пре <ph name="TIME_COUNT" /> м}=1{Пре <ph name="TIME_COUNT" /> с}one{Пре <ph name="TIME_COUNT" /> д}few{Пре <ph name="TIME_COUNT" /> д}other{Пре <ph name="TIME_COUNT" /> д}}</translation>
 <translation id="7979595116210197019">Припрема и достава хране</translation>
@@ -4623,7 +4624,6 @@
 <translation id="8134058435519644366">Запошљавање и избор кадрова</translation>
 <translation id="8135546115396015134">леви тастер</translation>
 <translation id="8137456439814903304">Производња и дистрибуција енергије</translation>
-<translation id="8138591088112729119">Омогућава Персонализована интелигенција</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Направљено је пре 1 месец}one{Направљено је пре {NUM_MONTHS} месец}few{Направљено је пре {NUM_MONTHS} месеца}other{Направљено је пре {NUM_MONTHS} месеци}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, тренутно подразумевани. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF верзија:</translation>
@@ -4957,6 +4957,7 @@
 <translation id="8688672835843460752">Доступно</translation>
 <translation id="868922510921656628">Странице по скупу</translation>
 <translation id="8694684557210599098">Додајте возило</translation>
+<translation id="8696297579102085705">Пошаљи на уређај</translation>
 <translation id="8698428283892912525">Chrome има уграђене безбедносне функције које вас штите током прегледања – попут Google безбедног прегледања, које је недавно <ph name="BEGIN_LINK" />открило штетан софтвер<ph name="END_LINK" /> на сајту који сте пробали да посетите.</translation>
 <translation id="869891660844655955">Датум истека</translation>
 <translation id="8699041776323235191">Уређај са интерфејсом</translation>

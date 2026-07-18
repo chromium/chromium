@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Ongroepeer oortjie}other{Ongroepeer oortjies}}</translation>
 <translation id="2271452184061378400">Jou oortjiegroepe word hier gestoor</translation>
 <translation id="2277224997687551299">Wysig groep se naam</translation>
+<translation id="2289567621059034186">Nuwe oortjie hier onder</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Boekmerk oortjie}other{Boekmerk oortjies}}</translation>
 <translation id="2359808026110333948">Gaan voort</translation>
 <translation id="2371084566192454134">Oortjies en oortjiegroepe</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">Wys oortjies horisontaal</translation>
 <translation id="31806439105337256">Wys oortjies vertikaal</translation>
 <translation id="3194464645767632461">gradering</translation>
+<translation id="3228962656492373217">Maak oortjies hier onder toe</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Voeg <ph name="TABS_COUNT_ONE" /> oortjie by groep}other{Voeg <ph name="TABS_COUNT_MANY" /> oortjies by groep}}</translation>
 <translation id="3328308545011660196">Voorstel: <ph name="NUMBER_OF_TABS" /> oortjies lyk of hulle verwant is. Groepeer hulle?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Ná 1 dag onaktief}other{Ná <ph name="DAY_COUNT_MANY" /> dae onaktief}}</translation>

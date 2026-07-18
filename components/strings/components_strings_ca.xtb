@@ -565,6 +565,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1855370856221982654">Boxa</translation>
 <translation id="1862788842908766795">Feines de direcció i d'administració</translation>
 <translation id="1863257867908022953">Safata 12</translation>
+<translation id="1863374797460198869">El xat s'ha amagat</translation>
 <translation id="186539747722034544">Proveïdors de serveis per cable i satèl·lit</translation>
 <translation id="1870473978371099486">Serveis de classes particulars</translation>
 <translation id="1871208020102129563">El servidor intermediari està configurat perquè utilitzi servidors intermediaris fixos, en lloc d'un URL de script .pac.</translation>
@@ -1426,7 +1427,6 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per gestionar la informació que sincronitzes a la configuració de Chrome</translation>
 <translation id="3203025201812691413">L'URL no pot ser buit</translation>
 <translation id="320323717674993345">Cancel·la el pagament</translation>
-<translation id="3204534477198689393">Per millorar els suggeriments i emplenar els formularis més ràpidament, el contingut i els URL de les pàgines que visites es poden processar en un espai privat al núvol.</translation>
 <translation id="3207830513221832868">És possible que <ph name="BLOCKED_URL" /> inclogui contingut no apte per a menors</translation>
 <translation id="3207960819495026254">S'ha afegit a les adreces d'interès.</translation>
 <translation id="3208701679386778924">Envia'ns un informe perquè puguem millorar les actualitzacions de ChromeOS.</translation>
@@ -4530,6 +4530,7 @@ Detalls addicionals:
 <translation id="7972714317346275248">PKCS #1 SHA-384 amb encriptació RSA</translation>
 <translation id="7976053965094442846">Llista d'emissors de Compra ara, paga més tard disponibles per pagar a terminis. El teclat està amagat.</translation>
 <translation id="7976214039405368314">Hi ha massa sol·licituds</translation>
+<translation id="7977029776654598145">Quan s'utilitza</translation>
 <translation id="7977538094055660992">Dispositiu de sortida</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{Fa <ph name="TIME_COUNT" /> min}=1{Fa <ph name="TIME_COUNT" /> h}other{Fa <ph name="TIME_COUNT" /> d}}</translation>
 <translation id="7979595116210197019">Serveis alimentaris</translation>
@@ -4624,7 +4625,6 @@ Detalls addicionals:
 <translation id="8134058435519644366">Contractació de personal</translation>
 <translation id="8135546115396015134">tecla esquerra</translation>
 <translation id="8137456439814903304">Energia i companyies elèctriques</translation>
-<translation id="8138591088112729119">Amb la tecnologia d'Intel·ligència personal</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Creat fa 1 mes}other{Creat fa {NUM_MONTHS} mesos}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, predeterminat actualment. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Versió de PDF:</translation>
@@ -4957,6 +4957,7 @@ Detalls addicionals:
 <translation id="8688672835843460752">Disponible</translation>
 <translation id="868922510921656628">Pàgines per conjunt</translation>
 <translation id="8694684557210599098">Afegeix un vehicle</translation>
+<translation id="8696297579102085705">Envia al teu dispositiu</translation>
 <translation id="8698428283892912525">Per protegir-te mentre navegues, Chrome té funcions de seguretat integrades, com ara Navegació segura de Google, que <ph name="BEGIN_LINK" />ha detectat programari nociu<ph name="END_LINK" /> al lloc web que has provat de visitar.</translation>
 <translation id="869891660844655955">Data de caducitat</translation>
 <translation id="8699041776323235191">Dispositiu d'interfície humana</translation>

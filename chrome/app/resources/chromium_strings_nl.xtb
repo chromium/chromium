@@ -56,7 +56,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1623563412065267963">Krijg het beste van Google met de Chromium-app op je telefoon</translation>
 <translation id="1625909126243026060">Neem belangrijke privacy- en beveiligingsopties in Chromium door</translation>
 <translation id="1640672724030957280">Bezig met downloaden...</translation>
-<translation id="1680687534629375545">Vragen over deze pagina stellen aan Zoeken met afbeelding</translation>
 <translation id="1708414395296835197">Je kunt Chromium gebruiken als je op links in berichten, documenten en andere apps klikt. Het wordt ook vastgezet op je taakbalk.</translation>
 <translation id="1709772298389099340">Biedt rechten op hoger niveau voor <ph name="BROWSER_NAME" />.</translation>
 <translation id="1722488837206509557">Hiermee kun je uit beschikbare apparaten kiezen en de content erop weergeven.</translation>
@@ -80,7 +79,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1880677175115548835">Tekst selecteren</translation>
 <translation id="1881322772814446296">Je logt in op een beheerd account waarmee de eigenaar van dat account beheer krijgt over je Chromium-profiel. Je Chromium-gegevens zoals je apps, bookmarks, geschiedenis, wachtwoorden en andere instellingen worden permanent gekoppeld aan <ph name="USER_NAME" />. Je kunt deze gegevens verwijderen via het Google Accounts Dashboard, maar je kunt deze gegevens niet koppelen aan een ander account. Je kunt een nieuw profiel maken om je bestaande Chromium-gegevens apart te houden. <ph name="LEARN_MORE" /></translation>
 <translation id="1896836275755235458">Chromium spaart de batterij door achtergrondactiviteit en visuele effecten te beperken, zoals vloeiend scrollen en videoframesnelheden. <ph name="BEGIN_LINK" />Meer informatie over Energiebesparing<ph name="END_LINK" /></translation>
-<translation id="1898804291554630487">Vraag stellen over deze pagina</translation>
 <translation id="1900969832270057921">Chromium Updater-service</translation>
 <translation id="1911763535808217981">Als je dit uitzet, kun je inloggen bij Google-sites zoals Gmail zonder in te loggen bij Chromium</translation>
 <translation id="1929939181775079593">Chromium reageert niet. Nu opnieuw starten?</translation>
@@ -226,7 +224,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="3316771292331273802">Je wordt uitgelogd van de meeste sites als je alle Chromium-vensters sluit, behalve van je Google-account als je bent ingelogd bij Chromium. Als je wilt dat sites je onthouden, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">rechterbovenhoek van zoekgebied: rechts <ph name="RIGHT" />%, boven <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">Chromium-gegevens in je account</translation>
-<translation id="3369405342922656244">Deze pagina doorzoeken met Zoeken met afbeelding</translation>
 <translation id="3375770072980084583">Gebruik je wachtwoorden met Chromium op je telefoon</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Overschakelen naar bestaand Chromium-profiel?</translation>
@@ -373,7 +370,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="5231355151045086930">Uitloggen bij Chromium</translation>
 <translation id="5234764350956374838">Sluiten</translation>
 <translation id="5249261924633168472">Link openen in een Chromium-inco&amp;gnitovenster</translation>
-<translation id="5254739261293693943">Vragen over deze video</translation>
 <translation id="5276305953263010518">Download de Chromium-app om onderweg wachtwoorden op te slaan</translation>
 <translation id="5277894862589591112">Als je de wijzigingen wilt toepassen, start je Chromium opnieuw</translation>
 <translation id="5286907366254680517">Herkend</translation>
@@ -468,7 +464,6 @@ Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</trans
 <translation id="6183079672144801177">Zorg dat je bent ingelogd bij Chromium op je <ph name="TARGET_DEVICE_NAME" /> en probeer opnieuw te sturen.</translation>
 <translation id="6212496753309875659">Deze computer beschikt al over een recentere versie van Chromium. Als de software niet werkt, moet je Chromium verwijderen en het opnieuw proberen.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium wordt nu opnieuw gestart}=1{Chromium wordt over één seconde opnieuw gestart}other{Chromium wordt over # seconden opnieuw gestart}}</translation>
-<translation id="6239161312595354541">Vragen over deze video stellen aan Zoeken met afbeelding</translation>
 <translation id="6241367896540709610">Chromium heeft toegang tot de opslag nodig om bestanden te downloaden</translation>
 <translation id="6245734527075554892">Checkt URL's aan de hand van een lijst met onveilige sites die is opgeslagen in Chromium</translation>
 <translation id="6248213926982192922">Chromium als standaardbrowser instellen</translation>
@@ -559,7 +554,6 @@ Sommige functies zijn mogelijk niet beschikbaar. Geef een andere profieldirector
             • Chromium-snelkoppelingen worden gereset
             <ph name="LINE_BREAKS" />
             Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.</translation>
-<translation id="6934579572334859869">Vragen over deze afbeelding stellen aan Zoeken met afbeelding</translation>
 <translation id="6948031725951063910">Je hebt de limiet van Chromium van <ph name="BOOKMARK_LIMIT" /> bookmarks bereikt. Sommige van je bookmarks zijn daarom nog niet opgeslagen in je Google-account.
 
 Je kunt pas nieuwe bookmarks opslaan in je account als je er een paar hebt verwijderd. Als je nu uitlogt, worden niet-opgeslagen bookmarks verwijderd.</translation>
@@ -650,7 +644,6 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="7872446069773932638">Downloaden... Nog <ph name="SECONDS" /> seconden</translation>
 <translation id="7873537467422636035">Als je je wachtwoordzin bent vergeten of deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Chromium-gegevens in je account<ph name="END_LINK" />.</translation>
 <translation id="7874369989024033742">Gemini snel openen in Chromium wanneer je het nodig hebt</translation>
-<translation id="7877212753140190672">Vragen over deze afbeelding stellen</translation>
 <translation id="7888981273428720788">Chromium instellen als je standaardbrowser</translation>
 <translation id="7934340546140346950">Chromium upgradet niet-beveiligde verbindingen automatisch naar HTTPS als dat mogelijk is</translation>
 <translation id="7937630085815544518">Je bent ingelogd bij Chromium als <ph name="USER_EMAIL_ADDRESS" />. Gebruik hetzelfde account om opnieuw in te loggen.</translation>

@@ -54,7 +54,6 @@
 <translation id="1623563412065267963">Wykorzystaj w pełni potencjał Google dzięki aplikacji Chromium na telefonie</translation>
 <translation id="1625909126243026060">Zapoznaj się z najważniejszymi funkcjami prywatności i bezpieczeństwa w Chromium</translation>
 <translation id="1640672724030957280">Pobieram...</translation>
-<translation id="1680687534629375545">Zapytaj o tę stronę w usłudze wyszukiwania obrazów</translation>
 <translation id="1708414395296835197">Możesz używać Chromium za każdym razem, gdy klikniesz link w wiadomościach, dokumentach i innych aplikacjach. Przeglądarka zostanie też przypięta do paska zadań.</translation>
 <translation id="1709772298389099340">Przyznaje podwyższone uprawnienia <ph name="BROWSER_NAME" />.</translation>
 <translation id="1722488837206509557">Umożliwi Ci to wybranie dostępnych urządzeń i wyświetlanie na nich treści.</translation>
@@ -78,7 +77,6 @@
 <translation id="1880677175115548835">Zaznacz tekst</translation>
 <translation id="1881322772814446296">Logujesz się na zarządzane konto i przekazujesz jego administratorowi kontrolę nad swoim profilem Chromium. Twoje dane Chromium, takie jak aplikacje, zakładki, historia, hasła i inne ustawienia, zostaną trwale powiązane z użytkownikiem <ph name="USER_NAME" />. Będzie można je usunąć w Panelu kont Google, ale nie będzie można ich powiązać z innym kontem. Możesz też utworzyć nowy profil, by przechowywać swoje dotychczasowe dane Chromium osobno. <ph name="LEARN_MORE" /></translation>
 <translation id="1896836275755235458">Chromium oszczędza baterię, ograniczając aktywność w tle i efekty wizualne, takie jak płynne przewijanie i liczba klatek w filmie. <ph name="BEGIN_LINK" />Więcej informacji o Oszczędzaniu energii<ph name="END_LINK" /></translation>
-<translation id="1898804291554630487">Zapytaj o tę stronę</translation>
 <translation id="1900969832270057921">Usługa aktualizatora Chromium</translation>
 <translation id="1911763535808217981">Jeśli wyłączysz tę opcję, możesz logować się na stronach Google takich jak Gmail bez logowania się w Chromium</translation>
 <translation id="1929939181775079593">Chromium nie odpowiada. Uruchomić go teraz ponownie?</translation>
@@ -222,7 +220,6 @@
 <translation id="3316771292331273802">Gdy zamkniesz wszystkie okna Chromium, wylogujesz się na większości stron, ale nie z konta Google, o ile wcześniej zalogujesz się w Chromium. Aby pozwolić witrynom na zapamiętywanie Twoich danych, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">prawy górny róg obszaru wyszukiwania: po prawej stronie <ph name="RIGHT" />%, u góry <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">Dane Chromium na Twoim koncie</translation>
-<translation id="3369405342922656244">Wyszukaj na tej stronie za pomocą wyszukiwania obrazów</translation>
 <translation id="3375770072980084583">Używaj haseł w Chromium na telefonie</translation>
 <translation id="3387527074123400161">System operacyjny Chromium</translation>
 <translation id="3406848076815591792">Przełączyć na istniejący profil Chromium?</translation>
@@ -369,7 +366,6 @@
 <translation id="5231355151045086930">Wylogowanie z Chromium</translation>
 <translation id="5234764350956374838">Zamknij</translation>
 <translation id="5249261924633168472">Otwórz link w oknie inco&amp;gnito Chromium</translation>
-<translation id="5254739261293693943">Zapytaj o ten film</translation>
 <translation id="5276305953263010518">Pobierz aplikację Chromium, aby zapisywać hasła, gdziekolwiek jesteś</translation>
 <translation id="5277894862589591112">Aby zastosować zmiany, uruchom ponownie Chromium</translation>
 <translation id="5286907366254680517">Wykryto</translation>
@@ -464,7 +460,6 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="6183079672144801177">Najpierw zaloguj się w Chromium na swoim urządzeniu <ph name="TARGET_DEVICE_NAME" />, a potem ponów próbę wysyłania.</translation>
 <translation id="6212496753309875659">Na tym komputerze jest już zainstalowana nowsza wersja Chromium. Jeśli program nie działa, odinstaluj go i spróbuj ponownie.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium uruchomi się ponownie teraz}=1{Chromium uruchomi się ponownie za 1 sekundę}few{Chromium uruchomi się ponownie za # sekundy}many{Chromium uruchomi się ponownie za # sekund}other{Chromium uruchomi się ponownie za # sekundy}}</translation>
-<translation id="6239161312595354541">Zapytaj o ten film w usłudze wyszukiwania obrazów</translation>
 <translation id="6241367896540709610">Aby pobierać pliki, Chromium musi mieć dostęp do pamięci</translation>
 <translation id="6245734527075554892">Sprawdza, czy URL jest na liście niebezpiecznych stron zapisanej w Chromium.</translation>
 <translation id="6248213926982192922">Ustaw Chromium jako domyślną przeglądarkę</translation>
@@ -555,7 +550,6 @@ Niektóre funkcje mogą być niedostępne. Podaj inny katalog z profilem lub uż
             • zresetowanie skrótów Chromium.
             <ph name="LINE_BREAKS" />
             Zakładki, historia i zapisane hasła pozostaną bez zmian.</translation>
-<translation id="6934579572334859869">Zapytaj o ten obraz w usłudze wyszukiwania obrazów</translation>
 <translation id="6948031725951063910">Osiągnięto limit <ph name="BOOKMARK_LIMIT" /> zakładek w Chromium, więc niektóre z Twoich zakładek nie zostały jeszcze zapisane na Twoim koncie Google.
 
 Dopóki nie usuniesz niektórych zakładek, nie będzie można zapisywać nowych na Twoim koncie. Jeśli wylogujesz się teraz, niezapisane zakładki zostaną usunięte.</translation>
@@ -646,7 +640,6 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="7872446069773932638">Pobieram… Pozostało: <ph name="SECONDS" /> s.</translation>
 <translation id="7873537467422636035">Jeśli zapomnisz hasło lub zechcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />usuń dane Chromium na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="7874369989024033742">Szybko otwieraj Gemini w Chromium, kiedy tylko go potrzebujesz</translation>
-<translation id="7877212753140190672">Zapytaj o ten obraz</translation>
 <translation id="7888981273428720788">Ustaw Chromium jako przeglądarkę domyślną</translation>
 <translation id="7934340546140346950">Chromium automatycznie przełącza niezabezpieczone połączenia na HTTPS, gdy jest to możliwe</translation>
 <translation id="7937630085815544518">Byłeś zalogowany w Chromium jako <ph name="USER_EMAIL_ADDRESS" />. Zaloguj się ponownie, korzystając z tego samego konta.</translation>

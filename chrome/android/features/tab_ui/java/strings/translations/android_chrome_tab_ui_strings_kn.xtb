@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ಟ್ಯಾಬ್‌ನ ಗುಂಪನ್ನು ರದ್ದುಮಾಡಿ}one{ಟ್ಯಾಬ್‌ಗಳ ಗುಂಪನ್ನು ರದ್ದುಮಾಡಿ}other{ಟ್ಯಾಬ್‌ಗಳ ಗುಂಪನ್ನು ರದ್ದುಮಾಡಿ}}</translation>
 <translation id="2271452184061378400">ನಿಮ್ಮ ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ಇಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2277224997687551299">ಗುಂಪಿನ ಹೆಸರನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
+<translation id="2289567621059034186">ಕೆಳಗಿನ ಹೊಸ ಟ್ಯಾಬ್</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{ಬುಕ್‌ಮಾರ್ಕ್ ಟ್ಯಾಬ್}one{ಬುಕ್‌ಮಾರ್ಕ್ ಟ್ಯಾಬ್‌ಗಳು}other{ಬುಕ್‌ಮಾರ್ಕ್ ಟ್ಯಾಬ್‌ಗಳು}}</translation>
 <translation id="2359808026110333948">ಮುಂದುವರೆಸಿ</translation>
 <translation id="2371084566192454134">ಟ್ಯಾಬ್‌ಗಳು ಮತ್ತು ಟ್ಯಾಬ್ ಗುಂಪುಗಳು</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಅಡ್ಡಲಾಗಿ ತೋರಿಸಿ</translation>
 <translation id="31806439105337256">ಟ್ಯಾಬ್‌ಗಳನ್ನು ವರ್ಟಿಕಲ್ ಆಗಿ ತೋರಿಸಿ</translation>
 <translation id="3194464645767632461">ರೇಟಿಂಗ್</translation>
+<translation id="3228962656492373217">ಕೆಳಗಿನ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{ಗುಂಪಿಗೆ <ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್ ಸೇರಿಸಿ}one{ಗುಂಪಿಗೆ <ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ}other{ಗುಂಪಿಗೆ <ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ}}</translation>
 <translation id="3328308545011660196">ಸಲಹೆ: <ph name="NUMBER_OF_TABS" /> ಟ್ಯಾಬ್‌ಗಳು ಸಂಬಂಧಿಸಿರುವ ಹಾಗೆ ಕಾಣುತ್ತಿದೆ. ಅವುಗಳನ್ನು ಗುಂಪು ಮಾಡಬೇಕೆ?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{1 ದಿನದ ನಿಷ್ಕ್ರಿಯತೆಯ ನಂತರ}one{<ph name="DAY_COUNT_MANY" /> ದಿನಗಳ ನಿಷ್ಕ್ರಿಯತೆಯ ನಂತರ}other{<ph name="DAY_COUNT_MANY" /> ದಿನಗಳ ನಿಷ್ಕ್ರಿಯತೆಯ ನಂತರ}}</translation>

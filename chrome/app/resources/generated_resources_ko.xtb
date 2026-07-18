@@ -1187,7 +1187,6 @@
 <translation id="1910721550319506122">반갑습니다!</translation>
 <translation id="1910736334623230603">여러 이미지를 검색할 수 없습니다. 한 번에 이미지 하나씩 추가하세요.</translation>
 <translation id="1910908536872421421">테스트용 Chrome v<ph name="BROWSER_VERSION" />은(는) 자동 테스트 전용입니다. 정기적인 탐색을 하려면 자동으로 업데이트되는 표준 버전의 Chrome을 사용하세요.</translation>
-<translation id="1912867150686509584">Calendar에서 더 많은 회의 보기</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{브라우저 속도를 저하시키는 탭 일시중지}other{브라우저 속도를 저하시키는 탭 일시중지}}</translation>
 <translation id="1913749768968678106">전송, 저장, 공유</translation>
 <translation id="19147273405311768">툴바를 기본 설정으로 재설정</translation>
@@ -4271,6 +4270,7 @@
 <translation id="4274673989874969668">사이트에서 나간 후에도 사이트가 동기화를 계속하여 사진 업로드나 채팅 메시지 전송과 같은 작업을 마무리합니다.</translation>
 <translation id="4275291496240508082">시작 알림음</translation>
 <translation id="4275397969489577657">이벤트 스트림 로깅 사용</translation>
+<translation id="4275663329226226506">미디어</translation>
 <translation id="4275788652681621337">측면 패널 닫기</translation>
 <translation id="4275830172053184480">기기 다시 시작</translation>
 <translation id="4276390967705106170">새 브라우저 탭에서 열기</translation>
@@ -9921,7 +9921,6 @@
 <translation id="8693862390730570097">'작성 지원 기능'이 자동으로 열리도록 허용하지 않음</translation>
 <translation id="8694596275649352090">절전 모드일 때 또는 덮개가 닫힌 경우 잠금</translation>
 <translation id="8695825812785969222">위치 열기(&amp;L)...</translation>
-<translation id="8696297579102085705">기기로 보내기</translation>
 <translation id="869884720829132584">애플리케이션 메뉴</translation>
 <translation id="869891660844655955">유효기간</translation>
 <translation id="8699296325072357994">비밀번호 페이지의 콘텐츠 및 관련 정보가 Google로 전송되어 인적 검토자의 검토를 거칩니다. 비밀번호는 암호화되며, 누구에게도 공개되지 않습니다. <ph name="PASSWORD_CHANGE" /></translation>

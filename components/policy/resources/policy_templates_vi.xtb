@@ -1984,13 +1984,6 @@ Nếu bạn đặt chính sách này thành Tắt hoặc không đặt, thì ng�
       Người dùng không thể thay đổi hay ghi đè chế độ cài đặt này.
 
       Lưu ý: Với chính sách này, tiêu đề X-GoogApps-Allowed-Domains sẽ được thêm vào mọi yêu cầu HTTP và HTTPS gửi đến tất cả các miền google.com, như mô tả trong https://support.google.com/a/answer/1668854.</translation>
-<translation id="2287414160388710497">Cho phép quản trị viên tuỳ chỉnh hình thức của hình mờ được áp dụng theo quy tắc của quy trình Ngăn chặn mất dữ liệu (DLP). Điều này bao gồm việc đặt độ mờ của phần tô/viền và xác định cỡ chữ.
-Nếu bạn không đặt chính sách này hoặc một số giá trị, Chrome sẽ sử dụng chế độ mặc định của hình mờ.
-Giá trị mặc định là: độ mờ của phần tô là 4, độ mờ của viền là 6 còn cỡ chữ là 24.
-
-"Độ mờ phần tô" là tỷ lệ phần trăm từ 0 (trong suốt hoàn toàn) đến 100 (mờ hoàn toàn).
-"Độ mờ viền" là tỷ lệ phần trăm từ 0 (trong suốt hoàn toàn) đến 100 (mờ hoàn toàn).
-"Cỡ chứ" được xác định theo điểm.</translation>
 <translation id="2288506601233091655">Không cho phép xoá nhật ký lệnh in</translation>
 <translation id="2289688405312849186">"user@realm" của tài khoản chính của người dùng . Phần giữ chỗ <ph name="LOGIN_ID_PLACEHOLDER" /> được thay bằng tên người dùng ''user''. Phần giữ chỗ <ph name="LOGIN_EMAIL_PLACEHOLDER" /> được thay bằng ''user@realm''.</translation>
 <translation id="2290270645214705008">Nếu bạn Tắt chính sách này, dịch vụ lưu trữ truy cập từ xa sẽ không thể khởi động hoặc được định cấu hình để chấp nhận các kết nối đến.  Chính sách này không ảnh hưởng đến các trường hợp hỗ trợ từ xa.
@@ -2258,15 +2251,6 @@ Một số chính sách, chẳng hạn như <ph name="GEMINI_SETTINGS_POLICY_NAM
 <translation id="2479760962196319822">Chính sách này kiểm soát việc người dùng <ph name="PRODUCT_OS_NAME" /> có thể lưu trữ dữ liệu trên máy hay không.
       Nếu bạn đặt chính sách này thành False thì hệ thống sẽ chặn quyền truy cập vào bộ nhớ cục bộ trên <ph name="PRODUCT_OS_NAME" />, tức là người dùng không thể lưu trữ dữ liệu trên máy và cũng không thể truy cập vào các thư mục trên máy.
       Nếu bạn đặt chính sách này thành True hoặc không đặt thì hệ thống sẽ cho phép truy cập vào bộ nhớ cục bộ trên <ph name="PRODUCT_OS_NAME" />, tức là người dùng có thể lưu trữ dữ liệu ở bất cứ đâu và truy cập bất cứ thư mục nào.</translation>
-<translation id="2480971699591919564">Bật tính năng Nhấp để gọi. Tính năng này cho phép người dùng gửi số điện thoại từ Máy tính đang mở Chrome sang thiết bị Android khi người dùng đã đăng nhập. Để biết thêm thông tin, hãy xem bài viết trong trung tâm trợ giúp: https://support.google.com/chrome/answer/9430554?hl=vi.
-
-      Nếu bạn đặt chính sách này thành bật, thì người dùng Chrome có thể gửi số điện thoại tới thiết bị Android.
-
-      Nếu bạn đặt chính sách này thành tắt, thì người dùng Chrome sẽ không thể gửi số điện thoại tới thiết bị Android.
-
-      Nếu bạn đặt chính sách này, thì người dùng sẽ không thể thay đổi hay ghi đè chính sách này.
-
-      Nếu bạn không đặt chính sách này, thì tính năng Nhấp để gọi sẽ bật theo mặc định.</translation>
 <translation id="2482676533225429905">Máy chủ nhắn tin gốc</translation>
 <translation id="2483146640187052324">Dự đoán tác vụ mạng trên kết nối mạng bất kỳ</translation>
 <translation id="2487495476672607707">Tính năng đồng bộ hoá tệp <ph name="PRODUCT_OS_NAME" /> sẽ tự động đặt các tệp <ph name="GOOGLE_DRIVE_NAME" /> trong “Drive của tôi” của người dùng ở chế độ có thể sử dụng khi không có mạng (nếu có đủ dung lượng) trên thiết bị <ph name="CHROMEBOOK_PLUS_NAME" />.

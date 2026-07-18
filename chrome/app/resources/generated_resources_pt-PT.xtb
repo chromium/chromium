@@ -1177,7 +1177,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1910721550319506122">Bem-vindo!</translation>
 <translation id="1910736334623230603">Não é possível pesquisar várias imagens. Adicione uma imagem de cada vez.</translation>
 <translation id="1910908536872421421">O Chrome for Testing v<ph name="BROWSER_VERSION" /> destina-se apenas a testes automáticos. Para uma navegação normal, use uma versão padrão do Chrome atualizada automaticamente.</translation>
-<translation id="1912867150686509584">Veja mais reuniões no seu Calendário</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Pause o separador que está a abrandar o navegador}other{Pause os separadores que estão a abrandar o navegador}}</translation>
 <translation id="1913749768968678106">Transmitir, guardar e partilhar</translation>
 <translation id="19147273405311768">Repor predefinições da barra de ferramentas</translation>
@@ -4260,6 +4259,7 @@ Quer pará-lo?</translation>
 <translation id="4274673989874969668">Depois de sair de um site, este pode continuar a sincronizar para concluir tarefas, como carregar fotos ou enviar uma mensagem de chat</translation>
 <translation id="4275291496240508082">Som de arranque</translation>
 <translation id="4275397969489577657">Ativar o registo de transmissões de eventos</translation>
+<translation id="4275663329226226506">Multimédia</translation>
 <translation id="4275788652681621337">Feche o painel lateral</translation>
 <translation id="4275830172053184480">Reiniciar o dispositivo</translation>
 <translation id="4276390967705106170">Abrir num novo separador do navegador</translation>
@@ -9912,7 +9912,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8693862390730570097">Não permitir que a funcionalidade "Ajuda-me a escrever" seja aberta automaticamente</translation>
 <translation id="8694596275649352090">Bloquear ao suspender ou quando a tampa for fechada</translation>
 <translation id="8695825812785969222">Abrir &amp;Localização...</translation>
-<translation id="8696297579102085705">Enviar para o dispositivo</translation>
 <translation id="869884720829132584">Menu Apps</translation>
 <translation id="869891660844655955">Data de expiração</translation>
 <translation id="8699296325072357994">O conteúdo das páginas de palavras-passe e as informações relacionadas são enviadas para a Google e revistas por humanos. A sua palavra-passe é encriptada e nunca é visível para ninguém. <ph name="PASSWORD_CHANGE" /></translation>

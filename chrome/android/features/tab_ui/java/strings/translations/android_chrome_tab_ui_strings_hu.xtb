@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Lap kivétele a csoportból}other{Lapok kivétele a csoportból}}</translation>
 <translation id="2271452184061378400">Ide menti a rendszer a lapcsoportokat</translation>
 <translation id="2277224997687551299">Csoportnév szerkesztése</translation>
+<translation id="2289567621059034186">Új lap alul</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Felvétel a könyvjelzők közé}other{Felvétel a könyvjelzők közé}}</translation>
 <translation id="2359808026110333948">Tovább</translation>
 <translation id="2371084566192454134">Lapok és lapcsoportok</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">Lapok megjelenítése vízszintesen</translation>
 <translation id="31806439105337256">Lapok megjelenítése függőlegesen</translation>
 <translation id="3194464645767632461">értékelés</translation>
+<translation id="3228962656492373217">Az alábbi lapok bezárása</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> lap hozzáadása csoporthoz}other{<ph name="TABS_COUNT_MANY" /> lap hozzáadása csoporthoz}}</translation>
 <translation id="3328308545011660196">Javaslat: Úgy tűnik, <ph name="NUMBER_OF_TABS" /> lap kapcsolódik egymáshoz. Csoportosítja őket?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{1 nap inaktivitás után}other{<ph name="DAY_COUNT_MANY" /> nap inaktivitás után}}</translation>

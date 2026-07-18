@@ -55,7 +55,6 @@
 <translation id="1623563412065267963">Kasutage Chromiumi telefonirakenduses Google'i parimaid funktsioone</translation>
 <translation id="1625909126243026060">Vaadake üle Chromiumi peamised privaatsus- ja turvaseaded</translation>
 <translation id="1640672724030957280">Allalaadimine ...</translation>
-<translation id="1680687534629375545">Küsige pildiotsingult selle lehe kohta</translation>
 <translation id="1708414395296835197">Saate kasutada Chromiumi sõnumites, dokumentides ja teistes rakendustes olevatel linkidel klõpsates. See kinnitatakse ka teie tegumiribale.</translation>
 <translation id="1709772298389099340">Annab brauserile <ph name="BROWSER_NAME" /> administraatoriõigused.</translation>
 <translation id="1722488837206509557">See võimaldab teil valida saadaolevate seadmete hulgast ja kuvada neis sisu.</translation>
@@ -79,7 +78,6 @@
 <translation id="1880677175115548835">Valige tekst</translation>
 <translation id="1881322772814446296">Logite sisse hallatud kontoga ja annate selle administraatorile üle Chromiumi profiili juhtimise. Teie Chromiumi andmed, näiteks rakendused, järjehoidjad, ajalugu, paroolid ja muud seaded seotakse jäädavalt kasutajaga <ph name="USER_NAME" />. Saate need andmed kustutada Google'i kontode juhtpaneeli kaudu, kuid te ei saa neid seostada teise kontoga. Võite olemasolevate Chrome'i andmete eraldi hoidmiseks luua aga uue profiili. <ph name="LEARN_MORE" /></translation>
 <translation id="1896836275755235458">Chromium säästab akutoidet, piirates taustal toimuvaid tegevusi ja visuaalseid efekte, nagu sujuv kerimine ja video kaadrisagedus. <ph name="BEGIN_LINK" />Lisateave energiasäästja kohta<ph name="END_LINK" /></translation>
-<translation id="1898804291554630487">Esitage selle lehe kohta küsimus</translation>
 <translation id="1900969832270057921">Chromium Updater Service</translation>
 <translation id="1911763535808217981">Kui selle välja lülitate, saate Google'i saitidele (nt Gmaili) sisse logida ilma Chromiumisse sisse logimata</translation>
 <translation id="1929939181775079593">Chromium ei reageeri. Kas soovite kohe taaskäivitada?</translation>
@@ -225,7 +223,6 @@
 <translation id="3316771292331273802">Kõikide Chromiumi akende sulgemise korral logitakse teid välja enamikust saitidest, v.a Google’i kontolt, kui olete Chromiumis sisse logitud. Kui soovite lubada saitidel ennast meelde jätta, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">otsinguala parem ülanurk: <ph name="RIGHT" />% paremal, <ph name="TOP" />% üleval</translation>
 <translation id="3366305173356742781">Chromiumi andmed teie kontol</translation>
-<translation id="3369405342922656244">Otsige sellelt lehelt pildiotsinguga</translation>
 <translation id="3375770072980084583">Kasutage telefonis Chromiumiga paroole</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Kas lülituda olemasolevale Chromiumi profiilile?</translation>
@@ -372,7 +369,6 @@
 <translation id="5231355151045086930">Chromiumist väljalogimine</translation>
 <translation id="5234764350956374838">Loobu</translation>
 <translation id="5249261924633168472">Ava link Chromiumi inko&amp;gnito aknas</translation>
-<translation id="5254739261293693943">Küsige selle video kohta</translation>
 <translation id="5276305953263010518">Hankige Chromiumi rakendus, et liikvel olles paroole salvestada</translation>
 <translation id="5277894862589591112">Muudatuste rakendamiseks käivitage Chromium uuesti</translation>
 <translation id="5286907366254680517">Tuvastatud</translation>
@@ -467,7 +463,6 @@ Kui see leht ei tööta ootuspäraselt, proovige optimeerimine lubada.</translat
 <translation id="6183079672144801177">Veenduge, et oleksite seadmes <ph name="TARGET_DEVICE_NAME" /> Chromiumi sisse logitud, ja proovige siis uuesti saata.</translation>
 <translation id="6212496753309875659">Arvutis on juba Chromiumi uuem versioon. Kui tarkvara ei tööta, siis desinstallige Chromium ja proovige uuesti.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium käivitatakse kohe uuesti}=1{Chromium käivitatakse uuesti 1 sekundi pärast}other{Chromium käivitatakse uuesti # sekundi pärast}}</translation>
-<translation id="6239161312595354541">Küsige pildiotsingult selle video kohta</translation>
 <translation id="6241367896540709610">Chromium vajab failide allalaadimiseks juurdepääsu salvestusruumile</translation>
 <translation id="6245734527075554892">Kontrollib URL-e Chromiumi talletatud ohtlike saitide loendi alusel.</translation>
 <translation id="6248213926982192922">Määra Chromium vaikebrauseriks</translation>
@@ -558,7 +553,6 @@ On võimalik, et mõni funktsioon ei ole saadaval. Määrake muu profiilikataloo
             • Lähtestatakse Chromiumi otseteed.
             <ph name="LINE_BREAKS" />
             Toiming ei mõjuta järjehoidjaid, ajalugu ega salvestatud paroole.</translation>
-<translation id="6934579572334859869">Küsige pildiotsingult selle pildi kohta</translation>
 <translation id="6948031725951063910">Chromiumi <ph name="BOOKMARK_LIMIT" /> järjehoidja limiit on täis, seega pole mõnda järjehoidjat veel teie Google’i kontole salvestatud.
 
 Uusi järjehoidjaid ei saa teie kontole salvestada, enne kui mõned kustutate. Kui logite praegu välja, siis salvestamata järjehoidjad kustutatakse.</translation>
@@ -649,7 +643,6 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="7872446069773932638">Allalaadimine … <ph name="SECONDS" /> sekund(it) on jäänud</translation>
 <translation id="7873537467422636035">Kui parooli unustasite või soovite seda seadet muuta, <ph name="BEGIN_LINK" />kustutage oma kontol Chromiumi andmed<ph name="END_LINK" />.</translation>
 <translation id="7874369989024033742">Avage Gemini Chromiumis kiiresti just siis, kui seda vajate</translation>
-<translation id="7877212753140190672">Küsige selle pildi kohta</translation>
 <translation id="7888981273428720788">Määrake Chromium vaikebrauseriks</translation>
 <translation id="7934340546140346950">Chromium uuendab võimalusel ebaturvalised ühendused automaatselt HTTPS-ile</translation>
 <translation id="7937630085815544518">Olite Chromiumisse sisse logitud kasutajana <ph name="USER_EMAIL_ADDRESS" />. Kasutage uuesti sisselogimiseks sama kontot.</translation>

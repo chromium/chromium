@@ -1184,7 +1184,6 @@
 <translation id="1910721550319506122">እንኳን ደህና መጡ!</translation>
 <translation id="1910736334623230603">በርካታ ምስሎችን መፈለግ አይቻልም። በአንድ ጊዜ አንድ ምስል ያክሉ።</translation>
 <translation id="1910908536872421421">Chrome ለሙከራ ስሪት <ph name="BROWSER_VERSION" /> ራስ-ሰር ለተደረገ ሙከራ ብቻ ነው። ለመደበኛ አሰሳ በራስ-ሰር የሚዘምን መደበኛ የChrome ስሪትን ይጠቀሙ።</translation>
-<translation id="1912867150686509584">በእርስዎ ቀን መቁጠሪያ ላይ ተጨማሪ ስብሰባዎችን ይመልከቱ</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{አሳሽዎን እያዘገየ ያለውን ትር ባለበት ያቁሙ}one{አሳሽዎን እያዘገየ ያለውን ትር ባለበት ያቁሙ}other{አሳሽዎን እያዘገዩ ያሉትን ትሮች ባሉበት ያቁሙ}}</translation>
 <translation id="1913749768968678106">ውሰድ፣ አስቀምጥ እና አጋራ</translation>
 <translation id="19147273405311768">የመሣሪያ አሞሌን ወደ ነባሪ ቅንብሮች ዳግም አስጀምር</translation>
@@ -4265,6 +4264,7 @@
 <translation id="4274673989874969668">ጣቢያን ከለቀቁ በኋላ፣ እንደ ፎቶዎችን መስቀል ወይም የውይይት መልእክት መላክ ያሉ ተግባሮችን ለመጨረስ ስምረትን መቀጠል ይችላል</translation>
 <translation id="4275291496240508082">የማስጀመሪያ ድምፅ</translation>
 <translation id="4275397969489577657">የክስተት ዥረት ምዝግብ ማስታወሻን ያንቁ</translation>
+<translation id="4275663329226226506">ማህደረ መረጃ</translation>
 <translation id="4275788652681621337">የጎን ፓነልን ዝጋ</translation>
 <translation id="4275830172053184480">መሣሪያዎን ዳግም ያስጀምሩ</translation>
 <translation id="4276390967705106170">በአዲስ የአሳሽ ትር ውስጥ ይክፈቱ</translation>
@@ -9923,7 +9923,6 @@ nil</translation>
 <translation id="8693862390730570097">«እንድጽፍ እርዳኝ» በራስ-ሰር እንዲከፈት አይፍቀዱ</translation>
 <translation id="8694596275649352090">በእንቅልፍ ወይም ክዳኑ በተዘጋ ጊዜ ቆልፍ</translation>
 <translation id="8695825812785969222">&amp;ቦታ ክፈት…</translation>
-<translation id="8696297579102085705">ወደ የእርስዎ መሣሪያ ይላኩ</translation>
 <translation id="869884720829132584">የመተግበሪያዎች ምናሌ</translation>
 <translation id="869891660844655955">የሚያበቀበት ጊዜ</translation>
 <translation id="8699296325072357994">ከይለፍ ቃል ገፆች ላይ ይዘት እና የተያያዘ መረጃ ወደ Google ይላካል እና በሰዎች ይገመገማል። የይለፍ ቃልዎ የተመሰጠረ ነው እና በጭራሽ በማንም አይታይም። <ph name="PASSWORD_CHANGE" /></translation>

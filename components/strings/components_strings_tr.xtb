@@ -565,6 +565,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1855370856221982654">Boks</translation>
 <translation id="1862788842908766795">Yöneticilik ve Yönetim İşleri</translation>
 <translation id="1863257867908022953">Tepsi 12</translation>
+<translation id="1863374797460198869">Sohbet gizlendi</translation>
 <translation id="186539747722034544">Kablo ve Uydu Sağlayıcıları</translation>
 <translation id="1870473978371099486">Özel Ders Hizmetleri</translation>
 <translation id="1871208020102129563">Proxy, bir .pac komut dosyası URL'sini değil, sabit proxy sunucuları kullanacak şekilde ayarlanır.</translation>
@@ -1426,7 +1427,6 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarında hangi bilgileri senkronize ettiğinizi yönetmek için Sekme'ye, ardından Enter'a basın</translation>
 <translation id="3203025201812691413">URL boş olamaz</translation>
 <translation id="320323717674993345">Ödemeyi iptal et</translation>
-<translation id="3204534477198689393">Önerileri iyileştirmek ve formları daha hızlı doldurmak için, ziyaret ettiğiniz sayfaların içeriği ve URL'leri buluttaki özel bir alanda işlenebilir.</translation>
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> adresinde erişkinlere uygun içerik olabilir</translation>
 <translation id="3207960819495026254">Yer işareti koyuldu</translation>
 <translation id="3208701679386778924">ChromeOS güncellemelerini daha iyi hale getirebilmemiz için lütfen rapor gönderin.</translation>
@@ -2329,7 +2329,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="4607608436550361748">Chrome ipuçlarını göster</translation>
 <translation id="460848736049414407">Yönetici tarafından engellendi</translation>
 <translation id="4610279718074907952">Bu site, <ph name="SET_OWNER" /> tarafından tanımlanmış, etkinliğinizi görebilen bir grupta bulunuyor</translation>
-<translation id="4612631413844865947"><ph name="MERCHANT_ORIGIN" /> tarihinde <ph name="PAYMENT_APP_ORIGIN" /> üzerinden verdiğiniz sipariş işlenirken bir hata oluştu.</translation>
+<translation id="4612631413844865947"><ph name="PAYMENT_APP_ORIGIN" /> üzerinden verilen <ph name="MERCHANT_ORIGIN" /> adresindeki siparişiniz işleme alınırken bir hata oluştu.</translation>
 <translation id="46128681529823442">Futbol Gereçleri</translation>
 <translation id="4612904677925722054">Bu sitede erişkinlere uygun içerikler bulunabilir. Annenizin/babanızın veya velinizin, bu web sitesini ziyaret etmenizin uygun olduğunu belirtmesi gerekir.</translation>
 <translation id="4619564267100705184">Kimliğinizi doğrulayın</translation>
@@ -4530,6 +4530,7 @@ Ek ayrıntılar:
 <translation id="7972714317346275248">PKCS #1 RSA Şifrelemeli SHA-384</translation>
 <translation id="7976053965094442846">Taksitle ödeme yapmanıza olanak tanıyan "Şimdi al sonra öde" sağlayıcıları. Klavye gizli.</translation>
 <translation id="7976214039405368314">Çok fazla istek var</translation>
+<translation id="7977029776654598145">Kullanıldığı zaman</translation>
 <translation id="7977538094055660992">Çıkış cihazı</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> dk. önce}=1{<ph name="TIME_COUNT" /> sa. önce}other{<ph name="TIME_COUNT" /> gün önce}}</translation>
 <translation id="7979595116210197019">Gıda Hizmetleri</translation>
@@ -4624,7 +4625,6 @@ Ek ayrıntılar:
 <translation id="8134058435519644366">İşe Alım ve Kadrolar</translation>
 <translation id="8135546115396015134">sol tuş</translation>
 <translation id="8137456439814903304">Enerji ve Kamu Hizmetleri</translation>
-<translation id="8138591088112729119">Kişisel Zeka destekli</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 ay önce oluşturuldu}other{{NUM_MONTHS} ay önce oluşturuldu}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, mevcut varsayılan. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF sürümü:</translation>
@@ -4958,6 +4958,7 @@ Ek ayrıntılar:
 <translation id="8688672835843460752">Kullanılabilir</translation>
 <translation id="868922510921656628">Grup başına sayfa</translation>
 <translation id="8694684557210599098">Araç ekleyin</translation>
+<translation id="8696297579102085705">Cihazıma gönder</translation>
 <translation id="8698428283892912525">Chrome, internette gezinirken sizi koruyacak yerleşik güvenlik özelliklerine sahiptir. Örneğin Google Güvenli Tarama, ziyaret etmeye çalıştığınız sitede kısa süre önce <ph name="BEGIN_LINK" />zararlı yazılım tespit etti<ph name="END_LINK" />.</translation>
 <translation id="869891660844655955">Son kullanma tarihi</translation>
 <translation id="8699041776323235191">HID cihazı</translation>

@@ -47,6 +47,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Desagrupar separador}other{Desagrupar separadores}}</translation>
 <translation id="2271452184061378400">Os seus grupos de separadores são guardados aqui</translation>
 <translation id="2277224997687551299">Editar nome do grupo</translation>
+<translation id="2289567621059034186">Novo separador abaixo</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Adic. separ. aos marcadores}other{Adic. separ. aos marcadores}}</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2371084566192454134">Separadores e grupos de separadores</translation>
@@ -81,6 +82,7 @@
 <translation id="3152596030350326139">Mostrar separadores na horizontal</translation>
 <translation id="31806439105337256">Mostrar separadores na vertical</translation>
 <translation id="3194464645767632461">classificação</translation>
+<translation id="3228962656492373217">Fechar separadores abaixo</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Adicionar <ph name="TABS_COUNT_ONE" /> separador ao grupo}other{Adicionar <ph name="TABS_COUNT_MANY" /> separadores ao grupo}}</translation>
 <translation id="3328308545011660196">Sugestão: <ph name="NUMBER_OF_TABS" /> separadores parecem estar relacionados. Quer agrupá-los?</translation>
 <translation id="3330595302841061275">{DAY_COUNT,plural, =1{Após 1 dia de inatividade}other{Após <ph name="DAY_COUNT_MANY" /> dias de inatividade}}</translation>
