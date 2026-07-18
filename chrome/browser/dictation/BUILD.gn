@@ -9,6 +9,7 @@ source_set("dictation") {
     "dictation_keyed_service_factory.h",
     "dictation_multiplexer.h",
     "features.h",
+    "logging.h",
     "metrics.h",
     "onboarding_manager.h",
     "session_controller.h",

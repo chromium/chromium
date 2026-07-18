@@ -13,6 +13,7 @@
 #include "base/notreached.h"
 #include "base/state_transitions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/dictation/logging.h"
 #include "chrome/browser/dictation/metrics.h"
 #include "chrome/browser/dictation/session_controller_delegate.h"
 #include "chrome/browser/dictation/session_state.h"
@@ -21,14 +22,32 @@
 #include "chrome/browser/dictation/target.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/global_dom_node_id.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom.h"
 
+namespace content {
+
+// TODO(bokan): Move into global_dom_node_id.h
+std::ostream& operator<<(std::ostream& os,
+                         const content::GlobalDOMNodeId& target_id) {
+  const content::RenderFrameHost* rfh =
+      target_id.document.AsRenderFrameHostIfValid();
+
+  return os << "GlobalDOMNodeId("
+            << (rfh ? rfh->GetGlobalId() : content::GlobalRenderFrameHostId())
+            << ", " << target_id.target_element_dom_id << ")";
+}
+
+}  // namespace content
+
 namespace dictation {
 
 SessionController::SessionController(SessionControllerDelegate& delegate)
-    : delegate_(delegate) {}
+    : delegate_(delegate) {
+  VT_LOG() << "=== Session Started";
+}
 
 SessionController::~SessionController() {
   CHECK(state_ != SessionState::kInactive ||
@@ -36,6 +55,7 @@ SessionController::~SessionController() {
   if (attached_stream_provider_) {
     EndDictationStream();
   }
+  VT_LOG() << "=== Session Ended";
 }
 
 void SessionController::Initialize() {
@@ -45,6 +65,7 @@ void SessionController::Initialize() {
 void SessionController::StartDictationStream(
     const content::GlobalDOMNodeId& target_id,
     DictationStreamStartTrigger trigger) {
+  VT_LOG() << "Starting DictationStream on target " << target_id;
   // TODO(b/525856380): Add support for "swapping in" a new stream. That is,
   // end the current stream and start a new one without entering the
   // finalization state which could flash states the UI.
@@ -109,6 +130,7 @@ void SessionController::OnFocusChangedInPage(
 }
 
 void SessionController::EndDictationStream() {
+  VT_LOG() << __func__;
   CHECK(attached_stream_provider_);
   CHECK(state_ == SessionState::kStreamInitializing ||
         state_ == SessionState::kTranscribing);
@@ -130,6 +152,7 @@ void SessionController::UiRequestEndActiveStream() {
 }
 
 void SessionController::FinalizeAndShutdown() {
+  VT_LOG() << __func__;
   is_shutting_down_ = true;
   if (attached_stream_provider_) {
     EndDictationStream();
@@ -238,6 +261,8 @@ void SessionController::MoveToState(SessionState new_state) {
   if (new_state == state_) {
     return;
   }
+
+  VT_LOG() << "SessionState: " << state_ << " --> " << new_state;
 
   using enum SessionState;
 #if DCHECK_IS_ON()
