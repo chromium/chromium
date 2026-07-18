@@ -323,7 +323,9 @@ TEST_P(IdleSpellCheckControllerTest, SelectionFocusType) {
     if (!IsUnrestricted() && ((mojom::blink::FocusType)focus_type ==
                                   mojom::blink::FocusType::kNone ||
                               (mojom::blink::FocusType)focus_type ==
-                                  mojom::blink::FocusType::kScript)) {
+                                  mojom::blink::FocusType::kScript ||
+                              (mojom::blink::FocusType)focus_type ==
+                                  mojom::blink::FocusType::kPage)) {
       ASSERT_EQ(State::kInactive, IdleChecker().GetState());
     } else {
       IdleChecker().SkipColdModeTimerForTesting();

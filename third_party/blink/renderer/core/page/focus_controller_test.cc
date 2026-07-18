@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -385,6 +386,39 @@ TEST_F(FocusControllerTest, FocusHasChangedShouldInvalidateFocusStyle) {
   const auto* style = host->GetComputedStyle();
   EXPECT_EQ(Color(0xA0, 0xA0, 0xA0),
             style->VisitedDependentColor(GetCSSPropertyColor()));
+}
+
+TEST_F(FocusControllerTest, PageFocusPreservesWasLastFocusFromUserGesture) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("<input id=target>");
+  Element* target = GetElementById("target");
+
+  GetFocusController().SetActive(true);
+  GetFocusController().SetFocused(true);
+
+  // Script-initiated focus.
+  target->Focus();
+  ASSERT_EQ(target, GetDocument().FocusedElement());
+  EXPECT_FALSE(target->WasLastFocusFromUserGesture());
+
+  // Page-level blur and re-focus (e.g., switching to another tab and back)
+  // should not change the per-element flag.
+  GetFocusController().SetFocused(false);
+  EXPECT_FALSE(target->WasLastFocusFromUserGesture());
+  GetFocusController().SetFocused(true);
+  ASSERT_EQ(target, GetDocument().FocusedElement());
+  EXPECT_FALSE(target->WasLastFocusFromUserGesture());
+
+  // User-initiated focus.
+  target->blur();
+  target->Focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
+                            mojom::blink::FocusType::kMouse, nullptr));
+  ASSERT_EQ(target, GetDocument().FocusedElement());
+  EXPECT_TRUE(target->WasLastFocusFromUserGesture());
+
+  GetFocusController().SetFocused(false);
+  EXPECT_TRUE(target->WasLastFocusFromUserGesture());
+  GetFocusController().SetFocused(true);
+  EXPECT_TRUE(target->WasLastFocusFromUserGesture());
 }
 
 TEST_F(FocusControllerTest, FocusCanBeEmulated) {
