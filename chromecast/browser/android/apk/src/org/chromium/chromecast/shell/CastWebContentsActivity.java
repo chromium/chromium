@@ -7,7 +7,6 @@ package org.chromium.chromecast.shell;
 import static org.chromium.chromecast.base.Observable.any;
 import static org.chromium.chromecast.base.Observable.not;
 
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.PictureInPictureParams;
 import android.content.Context;
@@ -21,17 +20,21 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
+import androidx.activity.ComponentActivity;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
 import org.chromium.chromecast.base.Both;
 import org.chromium.chromecast.base.CastSwitches;
@@ -44,9 +47,9 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
-import java.util.Scanner;
 
 /**
  * Activity for displaying a WebContents in CastShell.
@@ -56,7 +59,7 @@ import java.util.Scanner;
  * activity. If the CastContentWindowAndroid is destroyed, CastWebContentsActivity should finish().
  * Similarily, if this activity is destroyed, CastContentWindowAndroid should be notified by intent.
  */
-public class CastWebContentsActivity extends Activity {
+public class CastWebContentsActivity extends ComponentActivity {
     private static final String TAG = "CastWebActivity";
 
     @VisibleForTesting
@@ -277,11 +280,10 @@ public class CastWebContentsActivity extends Activity {
                         Observer.onOpen(
                                 Both.adapt(CastWebContentsSurfaceHelper::onNewStartParams)));
 
+        final Observable<WebContents> webContentsState =
+                mCreatedState.ignoreAnd(startParamsState).map(params -> params.webContents);
         final Observable<MediaPlaying> mediaPlaying =
-                mCreatedState.ignoreAnd(startParamsState)
-                        .map(params -> params.webContents)
-                        .flatMap(MediaPlaying::observeFromWebContents)
-                        .share();
+                webContentsState.flatMap(MediaPlaying::observeFromWebContents).share();
         final var audioPlaying = any(mediaPlaying.filter(x -> x.hasAudio));
         final var videoPlaying = any(mediaPlaying.filter(x -> x.hasVideo));
         final var anyMediaPlaying = any(audioPlaying.or(videoPlaying));
@@ -347,6 +349,16 @@ public class CastWebContentsActivity extends Activity {
                             intent.setFlags(flags);
                             startActivity(intent);
                         }));
+
+        var backPressAdapter = BackPressCallbackAdapter.create(this, getOnBackPressedDispatcher());
+        webContentsState
+                .andIgnore(backPressAdapter.observeBackPressedEvents())
+                .flatMap(this::handleBackPressedEvent)
+                // handleBackPressedEvent() emits a signal only if the handler didn't consume the
+                // event; if this happens, we need to re-dispatch the back press event to the
+                // fallback callback.
+                .subscribe(
+                        Observer.onOpen(x -> backPressAdapter.fallbackToDefaultBackPressHandler()));
     }
 
     @RequiresApi(Build.VERSION_CODES.S)
@@ -380,12 +392,31 @@ public class CastWebContentsActivity extends Activity {
         notifyIfActivityStartedByCastCore(getIntent());
     }
 
+    private static final String EXTRA_IS_DELAYED_EXPANSION =
+            "com.google.android.apps.castshell.extra.IS_DELAYED_EXPANSION";
+
     @Override
     protected void onNewIntent(Intent intent) {
         Log.d(TAG, "onNewIntent");
+        super.onNewIntent(intent);
         setIntent(intent);
         mGotIntentState.set(intent);
         notifyIfActivityStartedByCastCore(intent);
+
+        boolean isDelayedExpansion = intent.getBooleanExtra(EXTRA_IS_DELAYED_EXPANSION, false);
+        if (mIsInPictureInPictureMode && !isDelayedExpansion) {
+            Log.i(TAG, "onNewIntent received while in PiP mode. Posting delayed expansion.");
+            Intent expandIntent = new Intent(intent);
+            expandIntent.putExtra(EXTRA_IS_DELAYED_EXPANSION, true);
+            expandIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            new Handler(Looper.getMainLooper())
+                    .postDelayed(
+                            () -> {
+                                Log.i(TAG, "Executing delayed expansion from PiP.");
+                                startActivity(expandIntent);
+                            },
+                            300);
+        }
     }
 
     @Override
@@ -419,40 +450,35 @@ public class CastWebContentsActivity extends Activity {
         super.onDestroy();
     }
 
-    @Override
-    @SuppressWarnings("GestureBackNavigation")
-    public void onBackPressed() {
-        WebContents webContents = CastWebContentsIntentUtils.getWebContents(getIntent());
-        if (webContents == null) {
-            super.onBackPressed();
-            return;
+    private static String loadBackPressedJavaScript(Context context)
+            throws IOException, Resources.NotFoundException {
+        try (InputStream inputStream = context.getResources().openRawResource(R.raw.back_pressed)) {
+            return new String(FileUtils.readStream(inputStream), StandardCharsets.UTF_8);
         }
+    }
+
+    /**
+     * Returns an Observable that activates if the back press event is NOT consumed by JavaScript.
+     */
+    private Observable<Unit> handleBackPressedEvent(WebContents webContents) {
         String backPressedJs;
         try {
             backPressedJs = loadBackPressedJavaScript(this);
         } catch (IOException | Resources.NotFoundException e) {
             Log.e(TAG, "Failed to find JS resource for handling back press key events", e);
-            super.onBackPressed();
-            return;
+            // Activate the observer synchronously to indicate that the event is not consumed.
+            return Observable.just(Unit.unit());
         }
+
+        Controller<Unit> defaultPreventedEvent = new Controller<>();
         webContents.evaluateJavaScript(
                 backPressedJs,
                 defaultPrevented -> {
                     if (!"true".equals(defaultPrevented)) {
-                        super.onBackPressed();
+                        defaultPreventedEvent.set(Unit.unit());
                     }
                 });
-    }
-
-    @SuppressWarnings("ScannerUseDelimiter")
-    private static String loadBackPressedJavaScript(Context context)
-            throws IOException, Resources.NotFoundException {
-        try (Scanner scanner =
-                new Scanner(
-                        context.getResources().openRawResource(R.raw.back_pressed),
-                        StandardCharsets.UTF_8.name())) {
-            return scanner.useDelimiter("\\A").next();
-        }
+        return defaultPreventedEvent;
     }
 
     private static boolean isInLockTaskMode(Context context) {
@@ -464,6 +490,7 @@ public class CastWebContentsActivity extends Activity {
     @Override
     public void onUserLeaveHint() {
         Log.d(TAG, "onUserLeaveHint");
+        super.onUserLeaveHint();
         if (canUsePictureInPicture() && mVideoIsPlaying) {
             Log.i(TAG, "entering picture-in-picture mode");
             enterPictureInPictureMode(new PictureInPictureParams.Builder().build());
@@ -480,6 +507,9 @@ public class CastWebContentsActivity extends Activity {
     @Override
     public void onPictureInPictureModeChanged(
             boolean isInPictureInPictureMode, Configuration newConfig) {
+        if (newConfig != null) {
+            super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
+        }
         mIsInPictureInPictureMode = isInPictureInPictureMode;
     }
 

@@ -29,6 +29,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.PatternMatcher;
@@ -61,6 +62,7 @@ import org.robolectric.annotation.Implements;
 import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowActivityManager;
+import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.ContextUtils;
@@ -72,6 +74,7 @@ import org.chromium.chromecast.base.OwnedScope;
 import org.chromium.chromecast.base.Scope;
 import org.chromium.chromecast.base.Unit;
 import org.chromium.chromecast.shell.CastWebContentsActivity.MediaPlaying;
+import org.chromium.content_public.browser.JavaScriptCallback;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 
@@ -135,6 +138,33 @@ public class CastWebContentsActivityTest {
         public boolean enterPictureInPictureMode(PictureInPictureParams params) {
             mInPipMode = true;
             return true;
+        }
+    }
+
+    /**
+     * A custom Resources wrapper that intentionally throws NotFoundException for back_pressed.js.
+     */
+    private static class BrokenResources extends android.content.res.Resources {
+        public BrokenResources(android.content.res.Resources res) {
+            super(res.getAssets(), res.getDisplayMetrics(), res.getConfiguration());
+        }
+
+        @Override
+        public java.io.InputStream openRawResource(int id)
+                throws android.content.res.Resources.NotFoundException {
+            if (id == R.raw.back_pressed) {
+                throw new android.content.res.Resources.NotFoundException(
+                        "Intentional failure for testing");
+            }
+            return super.openRawResource(id);
+        }
+    }
+
+    /** Activity test subclass that provides our BrokenResources. */
+    public static class CastWebContentsActivityWithBrokenResources extends CastWebContentsActivity {
+        @Override
+        public android.content.res.Resources getResources() {
+            return new BrokenResources(super.getResources());
         }
     }
 
@@ -448,11 +478,11 @@ public class CastWebContentsActivityTest {
         assertTrue(mActivity.dispatchTouchEvent(event));
         assertEquals(shadowActivity.popLastTouchEvent(), event);
         mActivity.onUserLeaveHint();
-        mActivity.onPictureInPictureModeChanged(true, null);
+        mActivity.onPictureInPictureModeChanged(true, new Configuration());
         // Touch is disabled while in PiP mode.
         assertFalse(mActivity.dispatchTouchEvent(event));
         assertNull(shadowActivity.popLastTouchEvent());
-        mActivity.onPictureInPictureModeChanged(false, null);
+        mActivity.onPictureInPictureModeChanged(false, new Configuration());
         // Touch is re-enabled after leaving PiP mode.
         assertTrue(mActivity.dispatchTouchEvent(event));
     }
@@ -479,7 +509,7 @@ public class CastWebContentsActivityTest {
         mActivityLifecycle.create().start().resume();
         updateMediaState(true, true);
         mActivity.onUserLeaveHint();
-        mActivity.onPictureInPictureModeChanged(true, null);
+        mActivity.onPictureInPictureModeChanged(true, new Configuration());
         verifyBroadcastedIntent(
                 filterFor(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED),
                 () -> {
@@ -965,5 +995,103 @@ public class CastWebContentsActivityTest {
                 verify(receiver, times(0)).onReceive(any(Context.class), any(Intent.class));
             }
         }
+    }
+
+    @Test
+    public void testBackPressDelegatesToWebContentsAndPreventsDefault() {
+        mActivityLifecycle.create().start().resume();
+        doAnswer(
+                        invocation -> {
+                            JavaScriptCallback callback = invocation.getArgument(1);
+                            callback.handleJavaScriptResult("true");
+                            return null;
+                        })
+                .when(mWebContents)
+                .evaluateJavaScript(any(), any());
+
+        mActivity.getOnBackPressedDispatcher().onBackPressed();
+
+        Assert.assertFalse(mActivity.isFinishing());
+    }
+
+    @Test
+    public void testBackPressDelegatesToWebContentsAndDoesNotPreventDefault() {
+        mActivityLifecycle.create().start().resume();
+        doAnswer(
+                        invocation -> {
+                            JavaScriptCallback callback = invocation.getArgument(1);
+                            callback.handleJavaScriptResult("false");
+                            return null;
+                        })
+                .when(mWebContents)
+                .evaluateJavaScript(any(), any());
+
+        mActivity.getOnBackPressedDispatcher().onBackPressed();
+
+        Assert.assertTrue(mActivity.isFinishing());
+    }
+
+    @Test
+    public void testBackPressWithoutWebContentsFinishesActivity() {
+        Intent intent =
+                CastWebContentsIntentUtils.requestStartCastActivity(
+                        null, true, false, true, false, "0");
+        ActivityController<CastWebContentsActivity> lifecycle =
+                Robolectric.buildActivity(CastWebContentsActivity.class, intent);
+        CastWebContentsActivity activity = lifecycle.get();
+        activity.testingModeForTesting();
+        lifecycle.create().start().resume();
+
+        activity.getOnBackPressedDispatcher().onBackPressed();
+
+        Assert.assertTrue(activity.isFinishing());
+    }
+
+    @Test
+    public void testBackPressWhenJsFailsToLoadFinishesActivity() {
+        Intent intent =
+                CastWebContentsIntentUtils.requestStartCastActivity(
+                        mWebContents, true, false, true, false, "0");
+        ActivityController<CastWebContentsActivityWithBrokenResources> lifecycle =
+                Robolectric.buildActivity(CastWebContentsActivityWithBrokenResources.class, intent);
+        CastWebContentsActivityWithBrokenResources activity = lifecycle.get();
+        activity.testingModeForTesting();
+        lifecycle.create().start().resume();
+
+        activity.getOnBackPressedDispatcher().onBackPressed();
+
+        Assert.assertTrue(activity.isFinishing());
+    }
+
+    @Test
+    @Config(shadows = {ExtendedShadowActivity.class})
+    public void testPipDelayedExpansionOnNewIntent() {
+        mShadowPackageManager.setSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE, true);
+        mShadowActivityManager.setLockTaskModeState(ActivityManager.LOCK_TASK_MODE_NONE);
+        mActivityLifecycle.create().start().resume();
+        updateMediaState(true, true);
+        mActivity.onUserLeaveHint();
+        mActivity.onPictureInPictureModeChanged(true, new Configuration());
+
+        ExtendedShadowActivity shadowActivity = (ExtendedShadowActivity) Shadow.extract(mActivity);
+
+        Intent newIntent = new Intent(mActivity.getIntent());
+        mActivity.onNewIntent(newIntent);
+
+        // Initially, startActivity shouldn't have been called yet because of the 300ms delay.
+        assertNull(shadowActivity.getNextStartedActivity());
+
+        // Run delayed tasks.
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        // Now startActivity should have been called to expand the Activity.
+        Intent startedIntent = shadowActivity.getNextStartedActivity();
+        assertNotNull(startedIntent);
+        assertEquals(
+                CastWebContentsActivity.class.getName(),
+                startedIntent.getComponent().getClassName());
+        assertTrue(
+                startedIntent.getBooleanExtra(
+                        "com.google.android.apps.castshell.extra.IS_DELAYED_EXPANSION", false));
     }
 }
