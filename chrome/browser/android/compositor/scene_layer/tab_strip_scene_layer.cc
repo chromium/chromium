@@ -653,8 +653,8 @@ void TabStripSceneLayer::UpdateGlicButtonInternal(
       float text_y_offset = (background_size.height() - text_size.height()) / 2;
       float text_x_pos =
           l10n_util::IsLayoutRtl()
-              ? (button_width - button_start_padding - icon_text_padding -
-                 text_size.width())
+              ? (button_width - button_start_padding - icon_size.width() -
+                 icon_text_padding - text_size.width())
               : (button_start_padding + icon_size.width() + icon_text_padding);
 
       text_layer->SetPosition(

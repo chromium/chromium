@@ -439,8 +439,7 @@ void TabHandleLayer::SetProperties(
                    255 * (0.5f +
                           0.5f * cos(std::numbers::pi_v<float> *
                                      (1.f - 2.f * underline_shimmer_offset)))));
-      // TODO(crbug.com/509585777): Do we need to reverse this for RTL?
-      gradient.set_angle(0);
+      gradient.set_angle(is_rtl ? 180 : 0);
       underline_start_layer_->SetGradientMask(gradient);
     }
   } else {

@@ -1259,20 +1259,21 @@ public class StripLayoutTrailingButtonsCoordinator {
         if (mGlicButton == null || mGlicDismissNudgeButton == null || mGlicActorButton == null) {
             return;
         }
-        // TODO(crbug.com/509585777): Implement RTL support
+        boolean isRtl = LocalizationUtils.isLayoutRtl();
+        float startSlop = GLIC_BUTTON_START_SLOP_DP;
         float endSlop =
                 isGlicActorButtonVisible()
                         ? GLIC_BUTTON_WITH_ACTOR_END_SLOP_DP
                         : GLIC_BUTTON_END_SLOP_DP;
         mGlicButton.setTouchTargetInsets(
-                -GLIC_BUTTON_START_SLOP_DP,
+                -(isRtl ? endSlop : startSlop),
                 -GLIC_BUTTON_VERTICAL_SLOP_DP + mTopPadding,
-                -endSlop,
+                -(isRtl ? startSlop : endSlop),
                 -GLIC_BUTTON_VERTICAL_SLOP_DP - mTopPadding);
         mGlicActorButton.setTouchTargetInsets(
-                -GLIC_ACTOR_START_SLOP_DP,
+                -(isRtl ? GLIC_BUTTON_END_SLOP_DP : GLIC_ACTOR_START_SLOP_DP),
                 -GLIC_BUTTON_VERTICAL_SLOP_DP + mTopPadding,
-                -GLIC_BUTTON_END_SLOP_DP,
+                -(isRtl ? GLIC_ACTOR_START_SLOP_DP : GLIC_BUTTON_END_SLOP_DP),
                 -GLIC_BUTTON_VERTICAL_SLOP_DP - mTopPadding);
 
         float glicDismissButtonClickSlopDp = getGlicDismissButtonClickSlopDp();
@@ -1291,9 +1292,9 @@ public class StripLayoutTrailingButtonsCoordinator {
                             - getDimensionDp(R.dimen.tab_strip_glic_dismiss_icon_width)
                             - endInset;
             mGlicDismissNudgeButton.setTouchTargetInsets(
-                    -startInset,
+                    -(isRtl ? endInset : startInset),
                     -glicDismissButtonClickSlopDp + mTopPadding,
-                    -endInset,
+                    -(isRtl ? startInset : endInset),
                     -glicDismissButtonClickSlopDp - mTopPadding);
         }
     }
