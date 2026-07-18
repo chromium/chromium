@@ -449,6 +449,8 @@ void AutofillExternalDelegate::AttemptToDisplayAutofillSuggestions(
 
   if ((!is_update && !trigger_field->is_focusable()) ||
       !manager_->driver().CanShowAutofillUi()) {
+    manager_->client().HideSuggestions(SuggestionHidingReason::kStaleData,
+                                       /*product=*/std::nullopt);
     return;
   }
 

@@ -4278,6 +4278,23 @@ TEST_F(AutofillExternalDelegateTest,
       SuggestionPosition{.multi_index = {0}});
 }
 
+// Tests that AttemptToDisplayAutofillSuggestions() hides any open suggestions
+// with kStaleData when the target field is not focusable or the driver cannot
+// show UI.
+TEST_F(AutofillExternalDelegateTest,
+       ExternalDelegateHidesSuggestionsWhenFieldIsUnfocusable) {
+  IssueOnQuery();
+
+  EXPECT_CALL(
+      autofill_client(),
+      HideSuggestions(SuggestionHidingReason::kStaleData, Eq(std::nullopt)));
+
+  FormFieldData unfocusable_field = queried_field();
+  unfocusable_field.set_is_focusable(false);
+  OnSuggestionsReturned(unfocusable_field,
+                        {Suggestion(SuggestionType::kAddressEntry)});
+}
+
 }  // namespace
 
 }  // namespace autofill
