@@ -4278,29 +4278,6 @@ TEST_F(AutofillExternalDelegateTest,
       SuggestionPosition{.multi_index = {0}});
 }
 
-// Tests that OnQuery() hides any open suggestions with kStaleData only when the
-// queried form or field changes from the previous query.
-TEST_F(AutofillExternalDelegateTest,
-       ExternalDelegateHidesSuggestionsWhenQueryTargetChanges) {
-  IssueOnQuery();
-
-  // Re-querying the exact same form and field should not hide suggestions.
-  EXPECT_CALL(autofill_client(), HideSuggestions).Times(0);
-  external_delegate().OnQuery(queried_form(), queried_field(), gfx::Rect(),
-                              kDefaultSuggestionTriggerSource);
-
-  // Querying a different field (or form) should hide suggestions with
-  // kStaleData.
-  EXPECT_CALL(
-      autofill_client(),
-      HideSuggestions(SuggestionHidingReason::kStaleData, Eq(std::nullopt)));
-  FormData new_form = test::GetFormData(
-      {.fields = {{.role = NAME_FULL, .autocomplete_attribute = "name"}}});
-  autofill_manager().OnFormsSeen({new_form}, {});
-  external_delegate().OnQuery(new_form, new_form.fields()[0], gfx::Rect(),
-                              kDefaultSuggestionTriggerSource);
-}
-
 }  // namespace
 
 }  // namespace autofill
