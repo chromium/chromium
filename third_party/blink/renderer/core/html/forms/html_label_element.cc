@@ -260,8 +260,13 @@ void HTMLLabelElement::DefaultEventHandlerInternal(Event& evt) {
       // In case of double click or triple click, selection will be there,
       // so do not focus the control element.
       if (!is_label_text_selected) {
+        // Set focus_type so that label.click() from script can't set
+        // WasLastFocusFromUserGesture.
+        const mojom::blink::FocusType focus_type =
+            evt.isTrusted() ? mojom::blink::FocusType::kMouse
+                            : mojom::blink::FocusType::kScript;
         element->Focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
-                                   mojom::blink::FocusType::kMouse, nullptr,
+                                   focus_type, nullptr,
                                    FocusOptions::Create()));
       }
     }

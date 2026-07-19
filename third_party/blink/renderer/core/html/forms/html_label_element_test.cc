@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
 namespace blink {
@@ -72,6 +73,33 @@ TEST_F(HTMLLabelElementTest, TextContentExcludingLabelable_OnlyLabelable) {
   auto* label =
       To<HTMLLabelElement>(GetDocument().getElementById(AtomicString("test")));
   EXPECT_EQ("", label->TextContentExcludingLabelable().StripWhiteSpace());
+}
+
+TEST_F(HTMLLabelElementTest, WasLastFocusFromUserGesture) {
+  SetBodyInnerHTML(R"HTML(
+    <label id=label1 for=input1></label>
+    <input id=input1>
+    <label id=label2 for=input2></label>
+    <input id=input2>
+  )HTML");
+  HTMLLabelElement* label1 = To<HTMLLabelElement>(
+      GetDocument().getElementById(AtomicString("label1")));
+  Element* input1 = GetDocument().getElementById(AtomicString("input1"));
+  Element* label2 = GetDocument().getElementById(AtomicString("label2"));
+  Element* input2 = GetDocument().getElementById(AtomicString("input2"));
+
+  // Untrusted click (such as label.click() from script) should not set
+  // WasLastFocusFromUserGesture().
+  label1->click();
+  EXPECT_EQ(input1, GetDocument().FocusedElement());
+  EXPECT_FALSE(input1->WasLastFocusFromUserGesture());
+
+  // Trusted click (such as user interaction) should set
+  // WasLastFocusFromUserGesture().
+  label2->DispatchSimulatedClick(nullptr,
+                                 SimulatedClickCreationScope::kFromUserAgent);
+  EXPECT_EQ(input2, GetDocument().FocusedElement());
+  EXPECT_TRUE(input2->WasLastFocusFromUserGesture());
 }
 
 }  // namespace blink
