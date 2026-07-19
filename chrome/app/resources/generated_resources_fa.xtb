@@ -4740,7 +4740,7 @@
 <translation id="4393102500004843976">جستجو + تبدیل + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="4393713825278446281">دستگاه‌های «جفت‌سازی سریع» ذخیره‌شده در <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4394049700291259645">غیر فعال کردن</translation>
-<translation id="4395129973926795186"><ph name="START_DATE" /> تا <ph name="END_DATE" /></translation>
+<translation id="4395129973926795186">‫<ph name="START_DATE" /> تا <ph name="END_DATE" /></translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{باز کردن همه}=1{باز کردن نشانک}one{باز کردن همه ({COUNT})}other{باز کردن همه ({COUNT})}}</translation>
 <translation id="4397372003838952832">لازم نیست این گذرواژه را به‌خاطر بسپارید. این گذرواژه در <ph name="GOOGLE_PASSWORD_MANAGER" /> برای <ph name="EMAIL" /> ذخیره خواهد شد.</translation>
 <translation id="4397844455100743910">درباره درخواست‌های دسترسی بیشتر بدانید.</translation>
