@@ -348,6 +348,26 @@ public class VerticalTabListCoordinatorUnitTest {
                 mCoordinator.getTabStripContextMenuCoordinatorForTesting());
     }
 
+    private void assertViewTouchUpdatesLastTouchPoint(
+            View targetView, int expectedX, int expectedY) {
+        assertNotNull("Target view must not be null.", targetView);
+
+        // Reset tracking coordinates to a baseline (0, 0).
+        mCoordinator.getLastTouchPointForTesting().set(0, 0);
+
+        // Simulate a touch down at local button coordinates (15, 25).
+        MotionEvent downEvent =
+                obtainMotionEvent(MotionEvent.ACTION_DOWN, (float) expectedX, (float) expectedY);
+        targetView.dispatchTouchEvent(downEvent);
+
+        // Verify that mLastTouchPoint successfully captured the localized touch matrix.
+        Point savedPoint = mCoordinator.getLastTouchPointForTesting();
+        assertEquals("X touch point should map local to the view bounds.", expectedX, savedPoint.x);
+        assertEquals("Y touch point should map local to the view bounds.", expectedY, savedPoint.y);
+
+        downEvent.recycle();
+    }
+
     @Test
     @SmallTest
     public void testConstructor() {
@@ -571,6 +591,22 @@ public class VerticalTabListCoordinatorUnitTest {
         createCoordinator();
         View newTabButton = mCoordinator.getView().findViewById(R.id.new_tab_button);
         assertContextClickDoesNotLaunchEmptySpaceContextMenu(newTabButton);
+    }
+
+    @Test
+    @SmallTest
+    public void testVTGridButtonTouch_UpdatesLastTouchPointToLocalCoordinates() {
+        createCoordinator();
+        View gridButton = mCoordinator.getView().findViewById(R.id.grid_button);
+        assertViewTouchUpdatesLastTouchPoint(gridButton, 15, 25);
+    }
+
+    @Test
+    @SmallTest
+    public void testVTTabSearchButtonTouch_UpdatesLastTouchPointToLocalCoordinates() {
+        createCoordinator();
+        View tabSearchButton = mCoordinator.getView().findViewById(R.id.tab_search_button);
+        assertViewTouchUpdatesLastTouchPoint(tabSearchButton, 30, 35);
     }
 
     @Test

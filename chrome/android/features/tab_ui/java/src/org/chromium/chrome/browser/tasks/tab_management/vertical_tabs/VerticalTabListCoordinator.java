@@ -321,6 +321,20 @@ public class VerticalTabListCoordinator {
                     });
         }
 
+        View gridButton = mContainerView.findViewById(R.id.grid_button);
+        if (gridButton != null) {
+            gridButton.setOnTouchListener(createLocalCoordinateTrackingTouchListener());
+            gridButton.setOnContextClickListener(
+                    createEmptySpaceContextClickListener(activity, gridButton));
+        }
+
+        View tabSearchButton = mContainerView.findViewById(R.id.tab_search_button);
+        if (tabSearchButton != null) {
+            tabSearchButton.setOnTouchListener(createLocalCoordinateTrackingTouchListener());
+            tabSearchButton.setOnContextClickListener(
+                    createEmptySpaceContextClickListener(activity, tabSearchButton));
+        }
+
         // Create a gesture detector to catch long-presses on any raw root container background
         // space.
         GestureDetector rootSpaceGestureDetector =
@@ -1171,6 +1185,22 @@ public class VerticalTabListCoordinator {
                         activity, targetView, mLastTouchPoint.x, mLastTouchPoint.y);
                 return true;
             }
+        };
+    }
+
+    /**
+     * Creates a passive View.OnTouchListener that caches the immediate touch coordinates local to
+     * the clicked view surface upon an ACTION_DOWN event without consuming the touch sequence. This
+     * is needed to update the coordinate tracking frame relative to the specific view surface
+     * instead of its parent layout wrapper.
+     */
+    @SuppressLint("ClickableViewAccessibility")
+    private View.OnTouchListener createLocalCoordinateTrackingTouchListener() {
+        return (v, event) -> {
+            if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                mLastTouchPoint.set((int) event.getX(), (int) event.getY());
+            }
+            return false;
         };
     }
 
