@@ -11,11 +11,13 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.LocaleList;
 import android.os.Looper;
+import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApkInfo;
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordUserAction;
@@ -24,6 +26,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
@@ -288,6 +291,22 @@ public class BookmarkUtils {
             return;
         }
 
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_POPUP)
+                && DeviceInfo.isDesktop()) {
+            View anchor = activity.findViewById(R.id.bookmark_button);
+            if (anchor == null) {
+                anchor = activity.findViewById(android.R.id.content);
+            }
+            // TODO(crbug.com/536095968): Support anchor-less invocation, and anchoring on the app
+            // menu for small screen sizes.
+            if (anchor == null) return;
+
+            BookmarkPopupCoordinator popupCoordinator =
+                    new BookmarkPopupCoordinator(activity, profile, anchor, bookmarkManagerOpener);
+            popupCoordinator.show(bookmarkId, isNewBookmark);
+            return;
+        }
+
         ShoppingService shoppingService = ShoppingServiceFactory.getForProfile(profile);
         UserEducationHelper userEducationHelper =
                 new UserEducationHelper(
@@ -308,6 +327,7 @@ public class BookmarkUtils {
                         identityManager,
                         bookmarkManagerOpener,
                         priceDropNotificationManager);
+
         bookmarkSaveFlowCoordinator.show(
                 bookmarkId, fromExplicitTrackUi, wasBookmarkMoved, isNewBookmark);
     }

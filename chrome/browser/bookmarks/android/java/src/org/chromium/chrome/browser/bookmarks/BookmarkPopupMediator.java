@@ -132,7 +132,7 @@ public class BookmarkPopupMediator {
 
     private void onFolderRowClicked() {
         if (mBookmarkId != null) {
-            mBookmarkManagerOpener.startFolderPickerActivity(mContext, mProfile, mBookmarkId);
+            mBookmarkManagerOpener.startEditActivity(mContext, mProfile, mBookmarkId);
         }
         mDismissRunnable.run();
     }

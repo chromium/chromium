@@ -132,6 +132,7 @@ public class BookmarkPopupMediatorTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testShow_ImageFetching() {
         mMediator.show(mBookmarkId, true);
 
@@ -149,6 +150,7 @@ public class BookmarkPopupMediatorTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testShow_DestroyedBeforeCallback() {
         mMediator.show(mBookmarkId, true);
 
@@ -224,7 +226,7 @@ public class BookmarkPopupMediatorTest {
                 mPropertyModel.get(BookmarkPopupProperties.FOLDER_ROW_CLICK_LISTENER);
         folderRowClickListener.run();
 
-        verify(mBookmarkManagerOpener).startFolderPickerActivity(mActivity, mProfile, mBookmarkId);
+        verify(mBookmarkManagerOpener).startEditActivity(mActivity, mProfile, mBookmarkId);
         verify(mDismissRunnable).run();
     }
 
