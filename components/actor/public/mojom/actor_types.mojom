@@ -526,6 +526,16 @@ enum ActionResultCode {
   // The user declined opting into Gmail OTP filling in the opt-in dialog.
   kOtpUserDeclinedOptingIntoFilling = 1413,
 
+  // The target frame containing the OTP fields could not be found.
+  kOtpTargetFrameNotFound = 1414,
+
+  // No tab observation was found when the TOCTOU check was performed for OTP
+  // filling.
+  kOtpNoLastTabObservation = 1415,
+
+  // The trigger field for OTP filling was not found.
+  kOtpFieldNotFound = 1416,
+
   // Please see the comment above about adding new values.
 };
 

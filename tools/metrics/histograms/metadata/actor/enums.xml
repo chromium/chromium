@@ -160,6 +160,9 @@ chromium-metrics-reviews@google.com.
   <int value="1411" label="OtpInsecureContext"/>
   <int value="1412" label="OtpUnableToFill"/>
   <int value="1413" label="OtpUserDeclinedOptingIntoFilling"/>
+  <int value="1414" label="OtpTargetFrameNotFound"/>
+  <int value="1415" label="OtpNoLastTabObservation"/>
+  <int value="1416" label="OtpFieldNotFound"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/actor/public/mojom/actor_types.mojom:ActionResultCode) -->

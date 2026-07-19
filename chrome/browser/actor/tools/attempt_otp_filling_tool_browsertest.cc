@@ -576,8 +576,7 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
 
-  ExpectErrorResult(result,
-                    mojom::ActionResultCode::kFormFillingNoLastTabObservation);
+  ExpectErrorResult(result, mojom::ActionResultCode::kOtpNoLastTabObservation);
 }
 
 // The tool fails when a trigger field is not found on the page.
@@ -599,7 +598,7 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
 
-  ExpectErrorResult(result, mojom::ActionResultCode::kFormFillingFieldNotFound);
+  ExpectErrorResult(result, mojom::ActionResultCode::kOtpFieldNotFound);
 }
 
 // The tool fails when targeting a field (e.g. a button) that is not associated

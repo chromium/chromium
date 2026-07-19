@@ -258,12 +258,12 @@ using autofill::prefs::SetAutofillGmailOtpFillingEnabled;
 using base::test::RunOnceCallback;
 using base::test::TestFuture;
 using mojom::ActionResultPtr;
-using mojom::ActionResultCode::kFormFillingFieldNotFound;
-using mojom::ActionResultCode::kFormFillingNoLastTabObservation;
-using mojom::ActionResultCode::kFormFillingUnknownAutofillError;
 using mojom::ActionResultCode::kOk;
+using mojom::ActionResultCode::kOtpFieldNotFound;
 using mojom::ActionResultCode::kOtpFillFailure;
+using mojom::ActionResultCode::kOtpNoLastTabObservation;
 using mojom::ActionResultCode::kOtpRetrievalError;
+using mojom::ActionResultCode::kOtpTargetFrameNotFound;
 using mojom::ActionResultCode::kOtpUnableToFill;
 using mojom::ActionResultCode::kOtpUserDeclinedOptingIntoFilling;
 using mojom::ActionResultCode::kTabWentAway;
@@ -413,7 +413,7 @@ TEST_F(AttemptOtpFillingToolTest, TimeOfUseValidation_TabWentAway) {
       AttemptOtpFillingToolEvent::kTabWentAwayBeforeInvocation, 1);
 }
 
-// Time of use validation returns kFormFillingNoLastTabObservation when a tool
+// Time of use validation returns kOtpNoLastTabObservation when a tool
 // invocation request is dispatched without a preceding observation. This might
 // be a result of the tab not having been observed (yet), a possible GLIC state.
 TEST_F(AttemptOtpFillingToolTest, TimeOfUseValidation_NoLastObservation) {
@@ -423,13 +423,13 @@ TEST_F(AttemptOtpFillingToolTest, TimeOfUseValidation_NoLastObservation) {
 
   ActionResultPtr result = tool.TimeOfUseValidation(nullptr);
 
-  EXPECT_EQ(kFormFillingNoLastTabObservation, result->code);
+  EXPECT_EQ(kOtpNoLastTabObservation, result->code);
   histogram_tester_.ExpectBucketCount(
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kNoLastTabObservation, 1);
 }
 
-// Time of use validation returns kFormFillingFieldNotFound when any of the
+// Time of use validation returns kOtpFieldNotFound when any of the
 // trigger fields aren't found.
 TEST_F(AttemptOtpFillingToolTest, TimeOfUseValidation_FieldNotFound) {
   AttemptOtpFillingTool tool(TaskId(1), delegate(), mock_tab().GetHandle(),
@@ -439,7 +439,7 @@ TEST_F(AttemptOtpFillingToolTest, TimeOfUseValidation_FieldNotFound) {
   AnnotatedPageContent observation;
   ActionResultPtr result = tool.TimeOfUseValidation(&observation);
 
-  EXPECT_EQ(kFormFillingFieldNotFound, result->code);
+  EXPECT_EQ(kOtpFieldNotFound, result->code);
   histogram_tester_.ExpectBucketCount(
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kTriggerFieldNotFound, 1);
@@ -676,7 +676,7 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_NoTargetFrameWithOtpFound) {
   TestFuture<ActionResultPtr> future;
   tool.Invoke(future.GetCallback());
 
-  EXPECT_EQ(kFormFillingFieldNotFound, future.Take()->code);
+  EXPECT_EQ(kOtpTargetFrameNotFound, future.Take()->code);
   histogram_tester_.ExpectBucketCount(
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kNoTargetFrameWithOtpFound, 1);

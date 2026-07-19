@@ -361,7 +361,7 @@ mojom::ActionResultPtr AttemptOtpFillingTool::TimeOfUseValidation(
   if (!last_observation) {
     RecordAttemptOtpFillingEvent(
         AttemptOtpFillingToolEvent::kNoLastTabObservation);
-    return MakeResult(mojom::ActionResultCode::kFormFillingNoLastTabObservation,
+    return MakeResult(mojom::ActionResultCode::kOtpNoLastTabObservation,
                       /*requires_page_stabilization=*/false,
                       "Last tab observation is null.");
   }
@@ -374,7 +374,7 @@ mojom::ActionResultPtr AttemptOtpFillingTool::TimeOfUseValidation(
     if (!field_id) {
       RecordAttemptOtpFillingEvent(
           AttemptOtpFillingToolEvent::kTriggerFieldNotFound);
-      return MakeResult(mojom::ActionResultCode::kFormFillingFieldNotFound,
+      return MakeResult(mojom::ActionResultCode::kOtpFieldNotFound,
                         /*requires_page_stabilization=*/false,
                         "Trigger field not found.");
     }
@@ -428,9 +428,7 @@ void AttemptOtpFillingTool::Invoke(ToolCallback callback) {
         FROM_HERE,
         base::BindOnce(
             std::move(callback),
-            // TODO(crbug.com/502908360): Consider using a more specific error
-            // code.
-            MakeResult(mojom::ActionResultCode::kFormFillingFieldNotFound,
+            MakeResult(mojom::ActionResultCode::kOtpTargetFrameNotFound,
                        /*requires_page_stabilization=*/false,
                        "Target frame containing OTP fields not found.")));
     return;
