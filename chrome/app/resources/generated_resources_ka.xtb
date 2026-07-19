@@ -698,6 +698,7 @@
 <translation id="1542137295869176367">თქვენი სისტემაში შესვლის მონაცემების განახლება ვერ მოხერხდა</translation>
 <translation id="1543284117603151572">Edge-დან იმპორტირებული</translation>
 <translation id="1543538514740974167">გადმოდით აქ უფრო სწრაფად</translation>
+<translation id="1544026754762189866">თქვენი ორგანიზაცია არ გირჩევთ ამ კონტენტის კოპირებას</translation>
 <translation id="1544588554445317666">ცადეთ ფაილის უფრო მოკლე სახელის გამოყენება ან სხვა საქაღალდეში შენახვა</translation>
 <translation id="1545749641540134597">QR კოდის სკანირება</translation>
 <translation id="1545775234664667895">დაინსტალირებული თემა „<ph name="THEME_NAME" />“</translation>
@@ -1500,6 +1501,7 @@
 <translation id="2166369534954157698">აბგდევზთიკლმნოპჟრსტუფქღყშჩცძწჭხჯჰ</translation>
 <translation id="2168036794078614559">მოხსენება გაიგზავნა</translation>
 <translation id="2169062631698640254">სისტემაში შესვლა ყველა ვარიანტში</translation>
+<translation id="217120844667431680">შეძელით მეტი ხელოვნური ინტელექტის რეჟიმით</translation>
 <translation id="2173302385160625112">შეამოწმეთ თქვენი ინტერნეტ-კავშირი</translation>
 <translation id="2175384018164129879">საძიებო სისტემებისა და Site Search-ის &amp;მართვა</translation>
 <translation id="2175526076681939329">ძირითადი კლავიშების გამოყენება</translation>
@@ -1812,6 +1814,7 @@
 <translation id="2424424966051154874">{0,plural, =1{სტუმარი}other{სტუმარი (#)}}</translation>
 <translation id="2426805022920575512">სხვა ანგარიშის არჩევა</translation>
 <translation id="2427507373259914951">მარცხენა დაწკაპუნება</translation>
+<translation id="2428120669821109648">ჩანართის სტილი</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" />-ის 1 ანგარიში, პაროლი შენახულია მხოლოდ ამ მოწყობილობაზე. დაწვრილებით}other{<ph name="DOMAIN_LINK" />-ის {NUM_PASSWORDS} ანგარიში, პაროლი შენახულია მხოლოდ ამ მოწყობილობაზე. დაწვრილებით}}</translation>
 <translation id="2428510569851653187">აღწერეთ, რას აკეთებდით, როცა ჩანართი ავარიულად გაითიშა</translation>
 <translation id="2428939361789119025">Wi-Fi-ს გამორთვა</translation>
@@ -3498,6 +3501,7 @@
 <translation id="3700993174159313525">საიტებისთვის თქვენი კამერის პოზიციისთვის თვალის მიდევნების აკრძალვა</translation>
 <translation id="3701167022068948696">ახლავე შესწორება</translation>
 <translation id="3701515417135397388">გაფრთხილება, თუ პაროლი გამჟღავნდა პერსონალურ მონაცემთა გაჟონვის დროს</translation>
+<translation id="3701778844313851487">გაფართოებებზე გადასვლა</translation>
 <translation id="3703166520839776970">თუ პრობლემა არ გვარდება, ქვემოთ აირჩიეთ „დაწვრილებით“, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-დან დამატებითი ინფორმაცია რომ მიიღოთ.</translation>
 <translation id="3703699162703116302">ბილეთი განახლდა</translation>
 <translation id="370415077757856453">JavaScript დაბლოკილია</translation>
@@ -4577,6 +4581,7 @@
 <translation id="4523876148417776526">საიტების XML სიები, რომლებიც ჯერ არ ჩატვირთულა.</translation>
 <translation id="4526051299161934899">დამალული შენახული ჩანართების ჯგუფები</translation>
 <translation id="452750746583162491">სინქრონიზებული მონაცემების გადახედვა</translation>
+<translation id="4528216716764031072">თანამედროვე (გამჭვირვალე)</translation>
 <translation id="4528494169189661126">თარგმნის შემოთავაზება</translation>
 <translation id="4529455689802245339">Chrome-ის ავტოსუბტიტრებმა შეიძლება არ იმუშაოს</translation>
 <translation id="4531451811601110068">ხელახლა ცადეთ ან დახმარებისთვის მიმართეთ ადმინისტრატორს</translation>
@@ -4730,6 +4735,7 @@
 <translation id="4645575059429386691">იმართება თქვენი მშობლის მიერ</translation>
 <translation id="4645676300727003670">&amp;შეინახეთ</translation>
 <translation id="4646675363240786305">პორტები</translation>
+<translation id="4646859937978908916">ახალდამატებული გაფართოებები ავტომატურად ჩამაგრდება. შეცვალეთ ეს გაფართოებების გვერდზე.</translation>
 <translation id="4647025838970719122">ამ პარამეტრს მართავს თქვენი ადმინისტრატორი</translation>
 <translation id="4647090755847581616">&amp;დახურეთ ჩანართი</translation>
 <translation id="4647283074445570750">ნაბიჯი <ph name="CURRENT_STEP" /> / <ph name="TOTAL_STEPS" />-დან</translation>
@@ -8302,6 +8308,7 @@
 <translation id="7446716846072322308">ამ მოქმედებით წაიშლება <ph name="TOTAL_USAGE" /> მოცულობის მონაცემები, რომლებიც შენახულია <ph name="SITE_NAME" />-ის და დაკავშირებული საიტების მიერ.</translation>
 <translation id="7448430327655618736">აპების ავტომატურად ინსტალაცია</translation>
 <translation id="7448664748118305024">საიტების მიერ თქვენს მოწყობილობაზე შენახული მონაცემების წაშლა ყველა ფანჯრის დახურვისას</translation>
+<translation id="7449806939046594699">თქვენმა ორგანიზაციამ ამ კონტენტის კოპირება დაბლოკა</translation>
 <translation id="7450761244949417357"><ph name="ALTERNATIVE_BROWSER_NAME" />-ში გაიხსნება ახლა</translation>
 <translation id="7450926666485653189">გაუგზავნის Google-ს URL-ის შენიღბულ ნაწილს კონფიდენციალური სერვერის მეშვეობით, რომელიც მალავს თქვენს IP მისამართს</translation>
 <translation id="7453008956351770337">ამ პრინტერის არჩევით, თქვენს პრინტერზე წვდომის ნებართვას აძლევთ შემდეგ გაფართოებას:</translation>
@@ -8809,6 +8816,7 @@
 <translation id="7849264908733290972">გამოსახულებ&amp;ის გახსნა ახალ ჩანართზე</translation>
 <translation id="784934925303690534">დროის დიაპაზონი</translation>
 <translation id="7850320739366109486">არ შემაწუხოთ</translation>
+<translation id="7851303446278533774">შექმნა, დაგეგმვა, შეჯამება</translation>
 <translation id="7851716364080026749">ყოველთვის დაიბლოკოს კამერასთან და მიკროფონთან წვდომა</translation>
 <translation id="78526636422538552">სხვა Google ანგარიშების დამატება გათიშულია</translation>
 <translation id="7853747251428735">დამატებითი ხე&amp;ლსაწყოები</translation>
