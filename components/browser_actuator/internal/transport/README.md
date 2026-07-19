@@ -49,6 +49,9 @@ Seams:
   it on reconnect, asynchronous request preparation (OAuth token
   minting), and HTTP-failure retry policy. Delegates compose — an auth
   decorator can wrap a resume-state delegate.
+  `OAuthStreamConnectionDelegate` (in `oauth/`) is the production auth
+  decorator, kept in its own target so the signin dependency stays out
+  of the core transport.
 * `StreamFramer` hides the framing parser behind a mockable interface;
   clients take a framer *factory* because each connection needs a fresh
   framer. `RustStreamFramer` (in `proto_stream_client/`) is the
