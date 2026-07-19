@@ -276,6 +276,21 @@ public class VerticalTabListCoordinatorUnitTest {
         return spy(realRecyclerView);
     }
 
+    private void assertContextClickDoesNotLaunchEmptySpaceContextMenu(View targetView) {
+        assertNotNull("Target view must not be null.", targetView);
+        assertNull(
+                "Context menu coordinator should start as null.",
+                mCoordinator.getTabStripContextMenuCoordinatorForTesting());
+
+        // Simulate a right-click context interaction.
+        targetView.performContextClick();
+
+        // The listener must consume the event, meaning the menu coordinator stays null.
+        assertNull(
+                "Right-clicking this view should not instantiate the context menu coordinator.",
+                mCoordinator.getTabStripContextMenuCoordinatorForTesting());
+    }
+
     private void assertEmptySpaceContextMenuRightClick(View targetView) {
         assertNotNull("Target view for context click must not be null.", targetView);
         assertNull(
@@ -548,6 +563,22 @@ public class VerticalTabListCoordinatorUnitTest {
         createCoordinator();
         ViewGroup container = (ViewGroup) mCoordinator.getView();
         assertEmptySpaceContextMenuRightClick(container);
+    }
+
+    @Test
+    @SmallTest
+    public void testNewTabButtonRightClick_DoesNotLaunchEmptySpaceContextMenu() {
+        createCoordinator();
+        View newTabButton = mCoordinator.getView().findViewById(R.id.new_tab_button);
+        assertContextClickDoesNotLaunchEmptySpaceContextMenu(newTabButton);
+    }
+
+    @Test
+    @SmallTest
+    public void testCollapseButtonRightClick_DoesNotLaunchEmptySpaceContextMenu() {
+        createCoordinator();
+        View collapseButton = mCoordinator.getView().findViewById(R.id.collapse_button);
+        assertContextClickDoesNotLaunchEmptySpaceContextMenu(collapseButton);
     }
 
     @Test

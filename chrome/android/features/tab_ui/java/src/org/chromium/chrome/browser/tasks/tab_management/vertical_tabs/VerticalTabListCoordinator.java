@@ -543,6 +543,18 @@ public class VerticalTabListCoordinator {
                 };
 
         mVerticalTabsActiveSupplier.addSyncObserverAndCallIfNonNull(mActiveObserver);
+
+        // Context menus should not appear upon right-clicking the new tab button or the collapse
+        // button.
+        View newTabButton = mContainerView.findViewById(R.id.new_tab_button);
+        if (newTabButton != null) {
+            newTabButton.setOnContextClickListener(v -> true);
+        }
+
+        View collapseButton = mContainerView.findViewById(R.id.collapse_button);
+        if (collapseButton != null) {
+            collapseButton.setOnContextClickListener(v -> true);
+        }
     }
 
     /** Returns the root ViewGroup container representing the Left Rail sidebar. */
