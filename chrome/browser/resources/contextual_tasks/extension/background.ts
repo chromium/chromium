@@ -43,6 +43,7 @@ chrome.runtime.onMessageExternal.addListener(
           throw new Error('Invalid targetUrl');
         }
         const aimParams = details.aimParams || {};
+        // LINT.IfChange(AimParams)
         return await chrome.contextualTasksPrivate.launchPanelInNewTab({
           aimParams: {
             ntc: aimParams.ntc ?? '',
@@ -53,10 +54,14 @@ chrome.runtime.onMessageExternal.addListener(
             cs: aimParams.cs ?? '',
             sxsrf: aimParams.sxsrf ?? '',
             ei: aimParams.ei ?? '',
+            q: aimParams.q ?? '',
           },
           targetUrl: details.targetUrl,
           documentId: sender.documentId,
         });
+        // LINT.ThenChange(
+        //   //chrome/common/extensions/api/contextual_tasks_private.webidl:AimParams
+        // )
       }
 
       throw new Error(`Unhandled message: ${JSON.stringify(message)}`);

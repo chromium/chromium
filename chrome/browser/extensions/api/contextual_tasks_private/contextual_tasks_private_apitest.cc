@@ -2,17 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service.h"
+#include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/extensions/extension_constants.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_features.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using ::testing::NiceMock;
@@ -46,7 +56,21 @@ class MockContextualTasksEligibilityManager
 
 class ContextualTasksPrivateApiTest : public ExtensionApiTest {
  public:
-  ContextualTasksPrivateApiTest() = default;
+  ContextualTasksPrivateApiTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{extensions_features::kApiContextualTasksPrivate},
+        /*disabled_features=*/{});
+  }
+
+  explicit ContextualTasksPrivateApiTest(
+      const std::vector<base::test::FeatureRef>& enabled_features,
+      const std::vector<base::test::FeatureRef>& disabled_features = {}) {
+    std::vector<base::test::FeatureRef> enabled = {
+        extensions_features::kApiContextualTasksPrivate};
+    enabled.insert(enabled.end(), enabled_features.begin(),
+                   enabled_features.end());
+    feature_list_.InitWithFeatures(enabled, disabled_features);
+  }
 
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
@@ -134,13 +158,15 @@ class ContextualTasksPrivateApiTest : public ExtensionApiTest {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_{
-      extensions_features::kApiContextualTasksPrivate};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 class ContextualTasksPrivateApiEligibleTest
     : public ContextualTasksPrivateApiTest {
  public:
+  ContextualTasksPrivateApiEligibleTest()
+      : ContextualTasksPrivateApiTest(
+            {contextual_tasks::kContextualTasksSearchQuery}) {}
   bool IsEligible() const override { return true; }
 };
 
@@ -167,7 +193,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksPrivateApiEligibleTest,
                   testing::HasSubstr("mstk=abc"), testing::HasSubstr("aioh=1"),
                   testing::HasSubstr("csuir=1"), testing::HasSubstr("ved=123"),
                   testing::HasSubstr("cs=1"), testing::HasSubstr("sxsrf=xyz"),
-                  testing::HasSubstr("ei=456"))),
+                  testing::HasSubstr("ei=456"),
+                  testing::HasSubstr("q=some_query"))),
           testing::_, /*associate_web_contents=*/false, testing::_, true,
           /*use_no_animation=*/false))
       .Times(testing::AtLeast(1));
@@ -175,6 +202,62 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksPrivateApiEligibleTest,
   EXPECT_TRUE(RunExtensionTest(
       "contextual_tasks_private",
       {.extension_url = "test.html", .custom_arg = "launch_panel_eligible"},
+      {.load_as_component = true}))
+      << message_;
+}
+
+class ContextualTasksPrivateApiEligibleDisabledTest
+    : public ContextualTasksPrivateApiTest {
+ public:
+  ContextualTasksPrivateApiEligibleDisabledTest()
+      : ContextualTasksPrivateApiTest(
+            /*enabled_features=*/{},
+            /*disabled_features=*/{
+                contextual_tasks::kContextualTasksSearchQuery}) {}
+  bool IsEligible() const override { return true; }
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksPrivateApiEligibleDisabledTest,
+                       LaunchPanelInNewTabWithoutQ) {
+  auto* mock_ui_service = GetMockUiService();
+
+  EXPECT_CALL(
+      *mock_ui_service,
+      StartTaskUiInSidePanel(
+          testing::_, testing::_,
+          testing::Property(
+              &GURL::spec,
+              testing::AllOf(
+                  testing::HasSubstr("/aim"), testing::HasSubstr("ntc=1"),
+                  testing::HasSubstr("mstk=abc"), testing::HasSubstr("aioh=1"),
+                  testing::HasSubstr("csuir=1"), testing::HasSubstr("ved=123"),
+                  testing::HasSubstr("cs=1"), testing::HasSubstr("sxsrf=xyz"),
+                  testing::HasSubstr("ei=456"),
+                  testing::Not(testing::HasSubstr("q=")))),
+          testing::_, /*associate_web_contents=*/false, testing::_, true,
+          /*use_no_animation=*/false))
+      .Times(testing::AtLeast(1));
+
+  EXPECT_TRUE(RunExtensionTest(
+      "contextual_tasks_private",
+      {.extension_url = "test.html", .custom_arg = "launch_panel_eligible"},
+      {.load_as_component = true}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksPrivateApiEligibleTest,
+                       LaunchPanelInNewTabMissingMstk) {
+  auto* mock_ui_service = GetMockUiService();
+
+  EXPECT_CALL(
+      *mock_ui_service,
+      StartTaskUiInSidePanel(testing::_, testing::_, testing::_, testing::_,
+                             testing::_, testing::_, testing::_, testing::_))
+      .Times(0);
+
+  EXPECT_TRUE(RunExtensionTest(
+      "contextual_tasks_private",
+      {.extension_url = "test.html", .custom_arg = "launch_panel_missing_mstk"},
       {.load_as_component = true}))
       << message_;
 }
