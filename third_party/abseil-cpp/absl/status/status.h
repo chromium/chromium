@@ -56,6 +56,7 @@
 #include <optional>
 #include <ostream>
 #include <string>
+#include <type_traits>
 #include <utility>
 
 #include "absl/base/attributes.h"
@@ -459,6 +460,14 @@ class ABSL_ATTRIBUTE_TRIVIAL_ABI Status final {
   Status(absl::StatusCode code, absl::string_view msg,
          absl::SourceLocation loc = SourceLocation::current());
 
+  // Same as above but for rvalue string.
+  // Note: using a template to disambiguate the case of matching string_view and
+  // string&& (e.g. char*) as a template lowers the priority of the overload.
+  template <typename String,
+            typename = std::enable_if_t<std::is_same_v<String, std::string>>>
+  Status(absl::StatusCode code, String&& msg,
+         absl::SourceLocation loc = SourceLocation::current());
+
   // Create a status from a `base_status` and a `loc`. The `loc` will be
   // appended to the location chain of the new status, iff the `base_status` is
   // not ok and has non-empty msg.
@@ -699,6 +708,8 @@ class ABSL_ATTRIBUTE_TRIVIAL_ABI Status final {
 
   friend class absl::status_internal::StatusPrivateAccessor;
   friend class absl::status_internal::StatusPrivateAccessorForStatusBuilder;
+  template <typename T>
+  friend class absl::StatusOr;
 #endif  // !SWIG
 
   // Creates a status in the canonical error space with the specified
@@ -707,8 +718,18 @@ class ABSL_ATTRIBUTE_TRIVIAL_ABI Status final {
 
   // Delegate factory in header that ensures CodeToInlinedRep is inlined
   // where possible.
-  static uintptr_t MakeRep(uintptr_t inlined_rep, absl::string_view msg,
-                           absl::SourceLocation loc);
+  static uintptr_t MakeRepFromStringView(uintptr_t inlined_rep,
+                                         absl::string_view msg,
+                                         absl::SourceLocation loc);
+
+  // Same as above but for rvalue string.
+  static uintptr_t MakeRepFromStringRvalue(uintptr_t inlined_rep,
+                                           std::string&& msg,
+                                           absl::SourceLocation loc);
+
+  template <typename StringOrView>
+  friend uintptr_t MakeStatusRepImpl(uintptr_t inlined_rep, StringOrView msg,
+                                     absl::SourceLocation loc);
 
   // Underlying constructor for status from a rep_.
   explicit Status(uintptr_t rep) : rep_(rep) {}
@@ -897,7 +918,13 @@ inline Status::Status(absl::StatusCode code) : Status(CodeToInlinedRep(code)) {}
 
 inline Status::Status(absl::StatusCode code, absl::string_view msg,
                       absl::SourceLocation loc)
-    : Status(MakeRep(CodeToInlinedRep(code), msg, loc)) {}
+    : Status(MakeRepFromStringView(CodeToInlinedRep(code), msg, loc)) {}
+
+template <typename String, typename>
+inline Status::Status(absl::StatusCode code, String&& msg,
+                      absl::SourceLocation loc)
+    : Status(MakeRepFromStringRvalue(CodeToInlinedRep(code),
+                                     std::forward<String>(msg), loc)) {}
 
 inline Status::Status(const Status& x) : Status(x.rep_) { Ref(rep_); }
 

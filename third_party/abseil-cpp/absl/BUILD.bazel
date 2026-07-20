@@ -16,7 +16,7 @@
 
 load("@bazel_skylib//lib:selects.bzl", "selects")
 
-package(default_visibility = ["//visibility:public"])
+package(default_visibility = ["//visibility:private"])
 
 licenses(["notice"])
 
@@ -59,10 +59,4 @@ selects.config_setting_group(
         ":mingw-gcc_compiler",
     ],
     visibility = [":__subpackages__"],
-)
-
-# Expose internals to privileged external repositories.
-package_group(
-    name = "friends",
-    packages = [],
 )

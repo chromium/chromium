@@ -39,6 +39,8 @@ absl_cc_test(
     "any_invocable_test.h"
     "any_invocable_test_inst1.cc"
     "any_invocable_test_inst2.cc"
+    "any_invocable_test_inst3.cc"
+    "any_invocable_test_inst4.cc"
   COPTS
     ${ABSL_TEST_COPTS}
   DEPS

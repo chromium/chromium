@@ -504,9 +504,9 @@ class btree_map_container : public btree_set_container<Tree> {
                   0))>                                                       \
   decltype(auto) Func(                                                       \
       __VA_ARGS__ key_arg<K> KQual k ABSL_INTERNAL_IF_##KValue(              \
-          ABSL_INTERNAL_ATTRIBUTE_CAPTURED_BY(this)),                        \
+          ABSL_INTERNAL_ATTRIBUTE_CAPTURED_BY_THIS),                         \
       M MQual obj ABSL_INTERNAL_IF_##MValue(                                 \
-          ABSL_INTERNAL_ATTRIBUTE_CAPTURED_BY(this)))                        \
+          ABSL_INTERNAL_ATTRIBUTE_CAPTURED_BY_THIS))                         \
       ABSL_ATTRIBUTE_LIFETIME_BOUND {                                        \
     return ABSL_INTERNAL_IF_##KValue##_OR_##MValue(                          \
         (this->template Func<K, M, 0>), Callee)(                             \
@@ -605,7 +605,7 @@ class btree_map_container : public btree_set_container<Tree> {
       std::enable_if_t<!std::is_convertible_v<K, const_iterator>, int> = 0>    \
   decltype(auto) Func(                                                         \
       __VA_ARGS__ key_arg<K> KQual k ABSL_INTERNAL_IF_##KValue(                \
-          ABSL_INTERNAL_ATTRIBUTE_CAPTURED_BY(this)),                          \
+          ABSL_INTERNAL_ATTRIBUTE_CAPTURED_BY_THIS),                           \
       Args&&... args) ABSL_ATTRIBUTE_LIFETIME_BOUND {                          \
     return ABSL_INTERNAL_IF_##KValue((this->template Func<K, 0>), Callee)(     \
         __VA_ARGS__ std::forward<decltype(k)>(k),                              \
@@ -632,7 +632,7 @@ class btree_map_container : public btree_set_container<Tree> {
   }
   template <class K = key_type, int &..., EnableIf<LifetimeBoundK<K, true>> = 0>
   mapped_type &operator[](
-      const key_arg<K> &k ABSL_INTERNAL_ATTRIBUTE_CAPTURED_BY(this))
+      const key_arg<K> &k ABSL_INTERNAL_ATTRIBUTE_CAPTURED_BY_THIS)
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return this->template operator[]<K, 0>(k);
   }
@@ -641,8 +641,9 @@ class btree_map_container : public btree_set_container<Tree> {
     return try_emplace(std::forward<key_arg<K>>(k)).first->second;
   }
   template <class K = key_type, int &..., EnableIf<LifetimeBoundK<K, true>> = 0>
-  mapped_type &operator[](key_arg<K> &&k ABSL_INTERNAL_ATTRIBUTE_CAPTURED_BY(
-      this)) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  mapped_type &operator[](
+      key_arg<K> &&k ABSL_INTERNAL_ATTRIBUTE_CAPTURED_BY_THIS)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return this->template operator[]<K, 0>(std::forward<key_arg<K>>(k));
   }
 

@@ -32,7 +32,6 @@
 #include <ostream>
 #include <string>
 #include <string_view>
-#include <tuple>
 
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
@@ -54,7 +53,6 @@
 #include "absl/log/log_entry.h"
 #include "absl/log/log_sink.h"
 #include "absl/log/log_sink_registry.h"
-#include "absl/memory/memory.h"
 #include "absl/strings/internal/utf8.h"
 #include "absl/strings/string_view.h"
 #include "absl/time/clock.h"

@@ -192,7 +192,7 @@ TEST(HashValueTest, PointerAlignment) {
     constexpr size_t kMask = (1 << (kLog2NumValues + 7)) - 1;
     size_t stuck_bits = (~bits_or | bits_and) & kMask;
     int stuck_bit_count = absl::popcount(stuck_bits);
-    size_t max_stuck_bits = 5;
+    size_t max_stuck_bits = 8;
     EXPECT_LE(stuck_bit_count, max_stuck_bits)
         << "0x" << std::hex << stuck_bits;
 
@@ -484,6 +484,17 @@ TEST(HashValueTest, WString) {
       std::wstring(L"Iñtërnâtiônàlizætiøn"))));
 }
 
+#ifdef __cpp_char8_t
+TEST(HashValueTest, U8String) {
+  EXPECT_TRUE((is_hashable<std::u8string>::value));
+
+  EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly(std::make_tuple(
+      std::u8string(), std::u8string(u8"ABC"), std::u8string(u8"ABC"),
+      std::u8string(u8"Some other different string"),
+      std::u8string(u8"Iñtërnâtiônàlizætiøn"))));
+}
+#endif
+
 TEST(HashValueTest, U16String) {
   EXPECT_TRUE((is_hashable<std::u16string>::value));
 
@@ -510,6 +521,18 @@ TEST(HashValueTest, WStringView) {
       std::wstring_view(L"Some other different string_view"),
       std::wstring_view(L"Iñtërnâtiônàlizætiøn"))));
 }
+
+#ifdef __cpp_char8_t
+TEST(HashValueTest, U8StringView) {
+  EXPECT_TRUE((is_hashable<std::u8string_view>::value));
+
+  EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly(
+      std::make_tuple(std::u8string_view(), std::u8string_view(u8"ABC"),
+                      std::u8string_view(u8"ABC"),
+                      std::u8string_view(u8"Some other different string_view"),
+                      std::u8string_view(u8"Iñtërnâtiônàlizætiøn"))));
+}
+#endif
 
 TEST(HashValueTest, U16StringView) {
   EXPECT_TRUE((is_hashable<std::u16string_view>::value));
@@ -558,6 +581,8 @@ TEST(HashValueTest, StdFilesystemPath) {
       std::filesystem::path("c:\\//"),
       std::filesystem::path("c://"),
       std::filesystem::path("c://\\"),
+      std::filesystem::path("c:/a"),
+      std::filesystem::path("c:\\a"),
       std::filesystem::path("/e/p"),
       std::filesystem::path("/s/../e/p"),
       std::filesystem::path("e/p"),

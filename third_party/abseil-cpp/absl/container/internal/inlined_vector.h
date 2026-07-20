@@ -1038,10 +1038,22 @@ void Storage<T, N, A>::SwapN(ElementwiseConstructPolicy, Storage* other,
     ValueType<A> tmp(std::move(*a));
 
     AllocatorTraits<A>::destroy(allocator_a, a);
-    AllocatorTraits<A>::construct(allocator_b, a, std::move(*b));
+    ABSL_INTERNAL_TRY {
+      AllocatorTraits<A>::construct(allocator_b, a, std::move(*b));
+    }
+    ABSL_INTERNAL_CATCH_ANY {
+      AllocatorTraits<A>::construct(allocator_a, a, std::move(tmp));
+      ABSL_INTERNAL_RETHROW;
+    }
 
     AllocatorTraits<A>::destroy(allocator_b, b);
-    AllocatorTraits<A>::construct(allocator_a, b, std::move(tmp));
+    ABSL_INTERNAL_TRY {
+      AllocatorTraits<A>::construct(allocator_a, b, std::move(tmp));
+    }
+    ABSL_INTERNAL_CATCH_ANY {
+      AllocatorTraits<A>::construct(allocator_b, b, std::move(*a));
+      ABSL_INTERNAL_RETHROW;
+    }
   }
 }
 

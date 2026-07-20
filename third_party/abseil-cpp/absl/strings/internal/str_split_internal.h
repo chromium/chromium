@@ -44,10 +44,6 @@
 #include "absl/meta/type_traits.h"
 #include "absl/strings/string_view.h"
 
-#ifdef _GLIBCXX_DEBUG
-#include "absl/strings/internal/stl_type_traits.h"
-#endif  // _GLIBCXX_DEBUG
-
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace strings_internal {
@@ -231,13 +227,9 @@ template <typename C>
 struct SplitterIsConvertibleTo
     : SplitterIsConvertibleToImpl<
           C,
-#ifdef _GLIBCXX_DEBUG
-          !IsStrictlyBaseOfAndConvertibleToSTLContainer<C>::value &&
-#endif  // _GLIBCXX_DEBUG
-              !IsInitializerList<std::remove_reference_t<C>>::value &&
+          !IsInitializerList<std::remove_reference_t<C>>::value &&
               HasValueType<C>::value && HasConstIterator<C>::value,
-          HasMappedType<C>::value> {
-};
+          HasMappedType<C>::value> {};
 
 template <typename StringType, typename Container, typename = void>
 struct ShouldUseLifetimeBound : std::false_type {};

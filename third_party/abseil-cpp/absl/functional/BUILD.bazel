@@ -25,7 +25,7 @@ load(
 )
 
 package(
-    default_visibility = ["//visibility:public"],
+    default_visibility = ["//visibility:private"],
     features = [
         "header_modules",
         "layering_check",
@@ -41,6 +41,7 @@ cc_library(
     hdrs = ["any_invocable.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = ["//visibility:public"],
     deps = [
         "//absl/base:config",
         "//absl/base:core_headers",
@@ -56,6 +57,8 @@ cc_test(
         "any_invocable_test.h",
         "any_invocable_test_inst1.cc",
         "any_invocable_test_inst2.cc",
+        "any_invocable_test_inst3.cc",
+        "any_invocable_test_inst4.cc",
         "internal/any_invocable.h",
     ],
     copts = ABSL_TEST_COPTS,
@@ -78,6 +81,7 @@ cc_library(
     hdrs = ["bind_back.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = ["//visibility:public"],
     deps = [
         "//absl/base:config",
         "//absl/container:compressed_tuple",
@@ -104,6 +108,7 @@ cc_library(
     hdrs = ["bind_front.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = ["//visibility:public"],
     deps = [
         "//absl/container:compressed_tuple",
         "//absl/meta:type_traits",
@@ -130,6 +135,7 @@ cc_library(
     hdrs = ["function_ref.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = ["//visibility:public"],
     deps = [
         ":any_invocable",
         "//absl/base:config",
@@ -161,6 +167,7 @@ cc_library(
     hdrs = ["overload.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = ["//visibility:public"],
     deps = [
         "//absl/base:config",
         "//absl/meta:type_traits",

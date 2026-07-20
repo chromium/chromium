@@ -800,7 +800,7 @@ static ABSL_ATTRIBUTE_NOINLINE FindSymbolResult FindSymbol(
         std::min(num_remaining_symbols, buf_entries);
     const size_t bytes_in_chunk = entries_in_chunk * sizeof(buf[0]);
     const ssize_t len = file->ReadFromOffset(buf, bytes_in_chunk, offset);
-    SAFE_ASSERT(len >= 0);
+    SAFE_ASSERT(len > 0);
     SAFE_ASSERT(static_cast<size_t>(len) % sizeof(buf[0]) == 0);
     const size_t num_symbols_in_buf = static_cast<size_t>(len) / sizeof(buf[0]);
     SAFE_ASSERT(num_symbols_in_buf <= entries_in_chunk);
@@ -1212,7 +1212,8 @@ ObjFile *Symbolizer::FindObjFile(const void *const addr, size_t len) {
       ObjFile *obj = addr_map_.At(lo);
       SAFE_ASSERT(obj->end_addr > addr);
       if (addr >= obj->start_addr &&
-          reinterpret_cast<const char *>(addr) + len <= obj->end_addr)
+          len <= static_cast<size_t>(static_cast<const char*>(obj->end_addr) -
+                                     static_cast<const char*>(addr)))
         return obj;
     }
 
@@ -1697,10 +1698,9 @@ bool Symbolize(const void *pc, char *out, int out_size) {
 ABSL_NAMESPACE_END
 }  // namespace absl
 
-extern "C" bool AbslInternalGetFileMappingHint(const void **start,
-                                               const void **end,
-                                               uint64_t *offset,
-                                               const char **filename) {
+extern "C" bool ABSL_INTERNAL_C_SYMBOL(AbslInternalGetFileMappingHint)(
+    const void** start, const void** end, uint64_t* offset,
+    const char** filename) {
   return absl::debugging_internal::GetFileMappingHint(start, end, offset,
                                                       filename);
 }

@@ -346,8 +346,8 @@ absl_source_set("vlog_config") {
   deps = [
     ":fnmatch",
     "//third_party/abseil-cpp/absl/base",
+    "//third_party/abseil-cpp/absl/base:base_internal",
     "//third_party/abseil-cpp/absl/base:no_destructor",
-    "//third_party/abseil-cpp/absl/memory",
     "//third_party/abseil-cpp/absl/strings",
     "//third_party/abseil-cpp/absl/synchronization",
   ]

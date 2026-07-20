@@ -27,7 +27,6 @@
 #include "absl/base/config.h"
 #include "absl/container/internal/layout.h"
 #include "absl/log/internal/vlog_config.h"
-#include "absl/memory/memory.h"
 #include "absl/random/distributions.h"
 #include "absl/strings/str_cat.h"
 #include "benchmark/benchmark.h"

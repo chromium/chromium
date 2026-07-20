@@ -14,8 +14,9 @@
 
 // To prevent compiler memory exhaustion (OOM / Killed signal terminates
 // cc1plus) during parallel builds with GCC, the test suite instantiations have
-// been split into two separate compilation units: any_invocable_test_inst1.cc
-// and any_invocable_test_inst2.cc. The test definitions remain here in this
+// been split into four separate compilation units: any_invocable_test_inst1.cc,
+// any_invocable_test_inst2.cc, any_invocable_test_inst3.cc, and
+// any_invocable_test_inst4.cc. The test definitions remain here in this
 // header.
 
 // SKIP_ABSL_INLINE_NAMESPACE_CHECK

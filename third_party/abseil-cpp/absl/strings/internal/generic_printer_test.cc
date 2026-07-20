@@ -15,6 +15,7 @@
 #include "absl/strings/internal/generic_printer.h"
 
 #include <array>
+#include <cinttypes>
 #include <clocale>
 #include <cstdint>
 #include <limits>
@@ -38,6 +39,7 @@
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
 #include "absl/strings/str_cat.h"
+#include "absl/strings/str_format.h"
 #include "absl/strings/substitute.h"
 
 namespace generic_logging_test {
@@ -521,23 +523,26 @@ TEST(GenericPrinterTest, SmartPointerPrintsAddressOfPointee) {
   auto cp = std::make_unique<char*>(memory);
 
   EXPECT_THAT(GenericPrintToString(i),
-              AnyOf(Eq(absl::StrFormat("<%016X pointing to 5>",
-                                       reinterpret_cast<intptr_t>(&*i))),
+              AnyOf(Eq(absl::StrFormat("<%0*" PRIXPTR " pointing to 5>",
+                                       sizeof(void*) * 2,
+                                       reinterpret_cast<uintptr_t>(&*i))),
                     Eq(absl::StrFormat("<%#x pointing to 5>",
-                                       reinterpret_cast<intptr_t>(&*i)))));
+                                       reinterpret_cast<uintptr_t>(&*i)))));
 
   EXPECT_THAT(
       GenericPrintToString(c),
-      AnyOf(HasSubstr(absl::StrFormat("<%016X pointing to 'z'",
-                                      reinterpret_cast<intptr_t>(&*c))),
+      AnyOf(HasSubstr(absl::StrFormat("<%0*" PRIXPTR " pointing to 'z'",
+                                      sizeof(void*) * 2,
+                                      reinterpret_cast<uintptr_t>(&*c))),
             HasSubstr(absl::StrFormat("<%#x pointing to 'z'",
-                                      reinterpret_cast<intptr_t>(&*c)))));
+                                      reinterpret_cast<uintptr_t>(&*c)))));
 
   EXPECT_THAT(GenericPrintToString(cp),
-              AnyOf(Eq(absl::StrFormat("<%016X pointing to abcdefg>",
-                                       reinterpret_cast<intptr_t>(&*cp))),
+              AnyOf(Eq(absl::StrFormat("<%0*" PRIXPTR " pointing to abcdefg>",
+                                       sizeof(void*) * 2,
+                                       reinterpret_cast<uintptr_t>(&*cp))),
                     Eq(absl::StrFormat("<%#x pointing to abcdefg>",
-                                       reinterpret_cast<intptr_t>(&*cp)))));
+                                       reinterpret_cast<uintptr_t>(&*cp)))));
 }
 
 TEST(GenericPrinterTest, SmartPointerToArrayOnlyPrintsAddressAndHelpText) {
@@ -552,18 +557,20 @@ TEST(GenericPrinterTest, SmartPointerToArrayOnlyPrintsAddressAndHelpText) {
   EXPECT_THAT(
       GenericPrintToString(nonempty),
       AllOf(AnyOf(HasSubstr(absl::StrFormat(
-                      "%016X", reinterpret_cast<intptr_t>(nonempty.get()))),
+                      "%0*" PRIXPTR, sizeof(void*) * 2,
+                      reinterpret_cast<uintptr_t>(nonempty.get()))),
                   HasSubstr(absl::StrFormat(
-                      "%#x", reinterpret_cast<intptr_t>(nonempty.get())))),
+                      "%#x", reinterpret_cast<uintptr_t>(nonempty.get())))),
             HasSubstr("array"), Not(HasSubstr("to 54321")),
             Not(HasSubstr("to 12345"))));
 
   EXPECT_THAT(
       GenericPrintToString(empty),
       AllOf(AnyOf(HasSubstr(absl::StrFormat(
-                      "%016X", reinterpret_cast<intptr_t>(empty.get()))),
+                      "%0*" PRIXPTR, sizeof(void*) * 2,
+                      reinterpret_cast<uintptr_t>(empty.get()))),
                   HasSubstr(absl::StrFormat(
-                      "%#x", reinterpret_cast<intptr_t>(empty.get())))),
+                      "%#x", reinterpret_cast<uintptr_t>(empty.get())))),
             HasSubstr("array")));
 }
 

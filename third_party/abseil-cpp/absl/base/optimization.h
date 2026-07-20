@@ -266,7 +266,8 @@
 //   int y = x / 16;
 //
 #if !defined(NDEBUG)
-#define ABSL_ASSUME(cond) assert(cond)
+#define ABSL_ASSUME(cond) \
+  (ABSL_PREDICT_TRUE((cond)) ? void() : assert(false && #cond))  // NOLINT
 #elif ABSL_HAVE_BUILTIN(__builtin_assume)
 #define ABSL_ASSUME(cond) __builtin_assume(cond)
 #elif defined(_MSC_VER)

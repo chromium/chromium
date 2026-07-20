@@ -25,7 +25,7 @@ load(
 )
 
 package(
-    default_visibility = ["//visibility:public"],
+    default_visibility = ["//visibility:private"],
     features = [
         "header_modules",
         "layering_check",
@@ -43,8 +43,8 @@ cc_library(
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = [
-        "//absl:friends",
         "//absl/flags:__pkg__",
+        "@do_not_use_for_gloop_visibility_only//gloop/base:__pkg__",
     ],
     deps = [
         "//absl/base:config",
@@ -63,9 +63,9 @@ cc_library(
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = [
-        "//absl:friends",
         "//absl/flags:__pkg__",
         "//absl/log:__pkg__",
+        "@do_not_use_for_gloop_visibility_only//gloop/base:__pkg__",
     ],
     deps = [
         ":path_util",
@@ -88,6 +88,7 @@ cc_library(
     ],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = ["//visibility:public"],
     deps = [
         ":path_util",
         ":program_name",
@@ -109,6 +110,7 @@ cc_library(
     ],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = ["//visibility:public"],
     deps = [
         "//absl/base:config",
         "//absl/base:core_headers",
@@ -131,7 +133,7 @@ cc_library(
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = [
-        "//absl:friends",
+        "@do_not_use_for_gloop_visibility_only//gloop/base:__pkg__",
     ],
     deps = [
         "//absl/base:config",
@@ -149,6 +151,7 @@ cc_library(
     ],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = ["//visibility:public"],
     deps = [
         ":commandlineflag_internal",
         "//absl/base:config",
@@ -170,9 +173,9 @@ cc_library(
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = [
-        "//absl:friends",
         "//absl/flags:__pkg__",
         "//absl/flags/rust:__pkg__",
+        "@do_not_use_for_gloop_visibility_only//gloop/base:__pkg__",
     ],
     deps = [
         ":commandlineflag",
@@ -193,6 +196,7 @@ cc_library(
     ],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = ["//visibility:public"],
     deps = [
         ":commandlineflag",
         ":commandlineflag_internal",
@@ -248,6 +252,7 @@ cc_library(
     ],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = ["//visibility:public"],
     deps = [
         ":commandlineflag",
         ":config",
@@ -271,8 +276,8 @@ cc_library(
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = [
-        "//absl:friends",
         "//absl/flags:__pkg__",
+        "@do_not_use_for_gloop_visibility_only//gloop/base:__pkg__",
     ],
     deps = [
         ":commandlineflag",
@@ -301,6 +306,7 @@ cc_library(
     ],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = ["//visibility:public"],
     deps = [
         ":usage_internal",
         "//absl/base:config",
@@ -320,6 +326,7 @@ cc_library(
     ],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = ["//visibility:public"],
     deps = [
         ":commandlineflag",
         ":commandlineflag_internal",

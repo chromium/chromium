@@ -20,11 +20,13 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <limits>
 #include <string>
 
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
 #include "absl/base/internal/endian.h"
+#include "absl/base/internal/raw_logging.h"
 #include "absl/base/macros.h"
 #include "absl/base/nullability.h"
 #include "absl/base/optimization.h"
@@ -133,9 +135,18 @@ class RefcountAndFlags {
   struct Immortal {};
   explicit constexpr RefcountAndFlags(Immortal) : count_(kImmortalFlag) {}
 
+  static void IncrementOverflow();
+
   // Increments the reference count. Imposes no memory ordering.
   inline void Increment() {
-    count_.fetch_add(kRefIncrement, std::memory_order_relaxed);
+    const int32_t prev_count =
+        count_.fetch_add(kRefIncrement, std::memory_order_relaxed);
+    if (ABSL_PREDICT_FALSE(
+            prev_count >=
+            ((std::numeric_limits<decltype(count_)::value_type>::max)() / 3) *
+                2)) {
+      IncrementOverflow();
+    }
   }
 
   // Asserts that the current refcount is greater than 0. If the refcount is

@@ -118,7 +118,7 @@ ucal_getTimeZoneIDForWindowsID_func LoadIcuGetTimeZoneIDForWindowsID() {
   const auto ucal_getTimeZoneIDForWindowsIDRef =
       AsProcAddress<ucal_getTimeZoneIDForWindowsID_func>(
           icu_dll, "ucal_getTimeZoneIDForWindowsID");
-  if (ucal_getTimeZoneIDForWindowsIDRef != nullptr) {
+  if (ucal_getTimeZoneIDForWindowsIDRef == nullptr) {
     g_unavailable.store(true, std::memory_order_relaxed);
     return nullptr;
   }

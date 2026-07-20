@@ -14,8 +14,7 @@
 
 // To prevent compiler memory exhaustion (OOM / Killed signal terminates
 // cc1plus) during parallel builds with GCC, the test suite instantiations have
-// been split into two separate compilation units: any_invocable_test_inst1.cc
-// and any_invocable_test_inst2.cc.
+// been split into multiple compilation units.
 
 // SKIP_ABSL_INLINE_NAMESPACE_CHECK
 
@@ -30,35 +29,12 @@ INSTANTIATE_TYPED_TEST_SUITE_P(
 INSTANTIATE_TYPED_TEST_SUITE_P(RvalueCallMayThrow, AnyInvTestBasic,
                                TestParameterListRvalueQualifiersCallMayThrow);
 
-INSTANTIATE_TYPED_TEST_SUITE_P(RemoteNonMovable, AnyInvTestBasic,
-                               TestParameterListRemoteNonMovable);
-
-INSTANTIATE_TYPED_TEST_SUITE_P(Local, AnyInvTestBasic, TestParameterListLocal);
-
-INSTANTIATE_TYPED_TEST_SUITE_P(NonRvalueCallNothrow, AnyInvTestBasic,
-                               TestParameterListNonRvalueQualifiersNothrowCall);
-
-INSTANTIATE_TYPED_TEST_SUITE_P(CallNothrowRvalue, AnyInvTestBasic,
-                               TestParameterListRvalueQualifiersNothrowCall);
-
 INSTANTIATE_TYPED_TEST_SUITE_P(
     NonRvalueCallMayThrow, AnyInvTestCombinatoric,
     TestParameterListNonRvalueQualifiersCallMayThrow);
 
 INSTANTIATE_TYPED_TEST_SUITE_P(RvalueCallMayThrow, AnyInvTestCombinatoric,
                                TestParameterListRvalueQualifiersCallMayThrow);
-
-INSTANTIATE_TYPED_TEST_SUITE_P(RemoteNonMovable, AnyInvTestCombinatoric,
-                               TestParameterListRemoteNonMovable);
-
-INSTANTIATE_TYPED_TEST_SUITE_P(Local, AnyInvTestCombinatoric,
-                               TestParameterListLocal);
-
-INSTANTIATE_TYPED_TEST_SUITE_P(NonRvalueCallNothrow, AnyInvTestCombinatoric,
-                               TestParameterListNonRvalueQualifiersNothrowCall);
-
-INSTANTIATE_TYPED_TEST_SUITE_P(RvalueCallNothrow, AnyInvTestCombinatoric,
-                               TestParameterListRvalueQualifiersNothrowCall);
 
 INSTANTIATE_TYPED_TEST_SUITE_P(
     NonRvalueCallMayThrow, AnyInvTestMovable,
@@ -67,15 +43,6 @@ INSTANTIATE_TYPED_TEST_SUITE_P(
 INSTANTIATE_TYPED_TEST_SUITE_P(RvalueCallMayThrow, AnyInvTestMovable,
                                TestParameterListRvalueQualifiersCallMayThrow);
 
-INSTANTIATE_TYPED_TEST_SUITE_P(Local, AnyInvTestMovable,
-                               TestParameterListLocal);
-
-INSTANTIATE_TYPED_TEST_SUITE_P(NonRvalueCallNothrow, AnyInvTestMovable,
-                               TestParameterListNonRvalueQualifiersNothrowCall);
-
-INSTANTIATE_TYPED_TEST_SUITE_P(RvalueCallNothrow, AnyInvTestMovable,
-                               TestParameterListRvalueQualifiersNothrowCall);
-
 INSTANTIATE_TYPED_TEST_SUITE_P(
     NonRvalueCallMayThrow, AnyInvTestNoexceptFalse,
     TestParameterListNonRvalueQualifiersCallMayThrow);
@@ -83,35 +50,11 @@ INSTANTIATE_TYPED_TEST_SUITE_P(
 INSTANTIATE_TYPED_TEST_SUITE_P(RvalueCallMayThrow, AnyInvTestNoexceptFalse,
                                TestParameterListRvalueQualifiersCallMayThrow);
 
-INSTANTIATE_TYPED_TEST_SUITE_P(RemoteNonMovable, AnyInvTestNoexceptFalse,
-                               TestParameterListRemoteNonMovable);
-
-INSTANTIATE_TYPED_TEST_SUITE_P(Local, AnyInvTestNoexceptFalse,
-                               TestParameterListLocal);
-
-INSTANTIATE_TYPED_TEST_SUITE_P(NonRvalueCallNothrow, AnyInvTestNoexceptTrue,
-                               TestParameterListNonRvalueQualifiersNothrowCall);
-
-INSTANTIATE_TYPED_TEST_SUITE_P(RvalueCallNothrow, AnyInvTestNoexceptTrue,
-                               TestParameterListRvalueQualifiersNothrowCall);
-
 INSTANTIATE_TYPED_TEST_SUITE_P(
     NonRvalueCallMayThrow, AnyInvTestNonRvalue,
     TestParameterListNonRvalueQualifiersCallMayThrow);
 
-INSTANTIATE_TYPED_TEST_SUITE_P(RemoteNonMovable, AnyInvTestNonRvalue,
-                               TestParameterListRemoteNonMovable);
-
-INSTANTIATE_TYPED_TEST_SUITE_P(Local, AnyInvTestNonRvalue,
-                               TestParameterListLocal);
-
-INSTANTIATE_TYPED_TEST_SUITE_P(NonRvalueCallNothrow, AnyInvTestNonRvalue,
-                               TestParameterListNonRvalueQualifiersNothrowCall);
-
 INSTANTIATE_TYPED_TEST_SUITE_P(RvalueCallMayThrow, AnyInvTestRvalue,
                                TestParameterListRvalueQualifiersCallMayThrow);
-
-INSTANTIATE_TYPED_TEST_SUITE_P(CallNothrowRvalue, AnyInvTestRvalue,
-                               TestParameterListRvalueQualifiersNothrowCall);
 
 }  // namespace absl_any_invocable_test

@@ -33,16 +33,11 @@ typedef void OutputWriter(const char*, void*);
 typedef void (*SymbolizeUrlEmitter)(void* const stack[], int depth,
                                     const void* crash_pc, OutputWriter* writer,
                                     void* writer_arg);
-typedef void (*SymbolizeUrlEmitterLegacy)(void* const stack[], int depth,
-                                          OutputWriter* writer,
-                                          void* writer_arg);
 
 // Registration of SymbolizeUrlEmitter for use inside of a signal handler.
 // This is inherently unsafe and must be signal safe code.
 void RegisterDebugStackTraceHook(SymbolizeUrlEmitter hook);
 SymbolizeUrlEmitter GetDebugStackTraceHook();
-
-SymbolizeUrlEmitterLegacy GetDebugStackTraceHookLegacy();
 
 // Returns the program counter from signal context, or nullptr if
 // unknown. `vuc` is a ucontext_t*. We use void* to avoid the use of

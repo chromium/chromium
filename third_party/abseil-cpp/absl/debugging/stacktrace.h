@@ -251,6 +251,7 @@ extern bool ShouldFixUpStack();
 // information is assumed to be absent/unavailable.
 extern void FixUpStack(void** pcs, uintptr_t* frames, int* sizes,
                        size_t capacity, size_t& depth);
+
 }  // namespace internal_stacktrace
 
 ABSL_NAMESPACE_END

@@ -154,8 +154,8 @@ class chunked_queue {
     }
 
     void IncrBy(size_t n) {
-      while (ptr + n > limit) {
-        n -= limit - ptr;
+      while (n > static_cast<size_t>(limit - ptr)) {
+        n -= static_cast<size_t>(limit - ptr);
         *this = iterator_common(block->next());
       }
       ptr += n;
@@ -417,6 +417,8 @@ class chunked_queue {
     T* storage = AllocateBack();
     AllocatorTraits::construct(alloc_and_size_.allocator(), storage,
                                std::forward<A>(args)...);
+    ++alloc_and_size_.size;
+    ++tail_.ptr;
     return *storage;
   }
 
@@ -632,15 +634,16 @@ inline chunked_queue<T, BLo, BHi, Allocator>::~chunked_queue() {
 template <typename T, size_t BLo, size_t BHi, typename Allocator>
 void chunked_queue<T, BLo, BHi, Allocator>::resize(size_t new_size) {
   while (new_size > size()) {
-    ptrdiff_t to_add = new_size - size();
     if (tail_.ptr == tail_.limit) {
       AddTailBlock();
     }
+    size_t to_add = (std::min)(new_size - size(),
+                               static_cast<size_t>(tail_.limit - tail_.ptr));
     T* start = tail_.ptr;
-    T* limit = (std::min)(tail_.limit, start + to_add);
+    T* limit = start + to_add;
     Construct(start, limit);
     tail_.ptr = limit;
-    alloc_and_size_.size += limit - start;
+    alloc_and_size_.size += to_add;
   }
   if (size() == new_size) {
     return;
@@ -671,8 +674,7 @@ inline T* chunked_queue<T, BLo, BHi, Allocator>::AllocateBack() {
   if (tail_.ptr == tail_.limit) {
     AddTailBlock();
   }
-  ++alloc_and_size_.size;
-  return tail_.ptr++;
+  return tail_.ptr;
 }
 
 template <typename T, size_t BLo, size_t BHi, typename Allocator>

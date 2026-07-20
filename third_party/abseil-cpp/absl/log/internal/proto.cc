@@ -33,7 +33,6 @@
 #include <cstdint>
 #include <cstring>
 
-#include "absl/base/attributes.h"
 #include "absl/base/config.h"
 #include "absl/types/span.h"
 

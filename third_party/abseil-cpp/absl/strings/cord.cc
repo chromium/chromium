@@ -455,6 +455,9 @@ inline void Cord::AppendImpl(C&& src) {
 
   contents_.MaybeRemoveEmptyCrcNode();
   if (src.empty()) return;
+  ABSL_RAW_CHECK(src.contents_.size() <=
+                     std::numeric_limits<size_t>::max() - contents_.size(),
+                 "Cord length overflow");
 
   if (empty()) {
     // Since destination is empty, we can avoid allocating a node,
@@ -566,6 +569,9 @@ template void Cord::Append(std::string&& src);
 void Cord::Prepend(const Cord& src) {
   contents_.MaybeRemoveEmptyCrcNode();
   if (src.empty()) return;
+  ABSL_RAW_CHECK(src.contents_.size() <=
+                     std::numeric_limits<size_t>::max() - contents_.size(),
+                 "Cord length overflow");
 
   CordRep* src_tree = src.contents_.tree();
   if (src_tree != nullptr) {

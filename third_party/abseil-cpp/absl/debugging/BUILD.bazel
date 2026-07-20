@@ -25,7 +25,7 @@ load(
 )
 
 package(
-    default_visibility = ["//visibility:public"],
+    default_visibility = ["//visibility:private"],
     features = [
         "header_modules",
         "layering_check",
@@ -53,6 +53,7 @@ cc_library(
     hdrs = ["stacktrace.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = ["//visibility:public"],
     deps = [
         ":debugging_internal",
         "//absl/base:config",
@@ -103,6 +104,7 @@ cc_library(
         ],
         "//conditions:default": [],
     }),
+    visibility = ["//visibility:public"],
     deps = [
         ":debugging_internal",
         ":demangle_internal",
@@ -157,8 +159,8 @@ cc_library(
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = [
-        "//absl:friends",
         "//absl/log/internal:__pkg__",
+        "@do_not_use_for_gloop_visibility_only//gloop:__subpackages__",
     ],
     deps = [
         ":stacktrace",
@@ -175,6 +177,7 @@ cc_library(
     hdrs = ["failure_signal_handler.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = ["//visibility:public"],
     deps = [
         ":examine_stack",
         ":stacktrace",
@@ -221,7 +224,9 @@ cc_library(
     ],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
-    visibility = ["//absl:friends"],
+    visibility = [
+        "@do_not_use_for_gloop_visibility_only//gloop:__subpackages__",
+    ],
     deps = [
         "//absl/base:config",
         "//absl/base:core_headers",
@@ -238,9 +243,9 @@ cc_library(
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = [
-        "//absl:friends",
         "//absl/container:__pkg__",
         "//absl/debugging:__pkg__",
+        "@do_not_use_for_gloop_visibility_only//gloop/base:__pkg__",
     ],
     deps = [
         ":demangle_rust",
@@ -326,6 +331,9 @@ cc_library(
     hdrs = ["internal/demangle_rust.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = [
+        "@do_not_use_for_gloop_visibility_only//gloop/util/symbolize:__pkg__",
+    ],
     deps = [
         ":decode_rust_punycode",
         "//absl/base:config",
@@ -375,6 +383,7 @@ cc_library(
     hdrs = ["leak_check.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = ["//visibility:public"],
     deps = [
         "//absl/base:config",
         "//absl/base:core_headers",
@@ -421,7 +430,6 @@ cc_library(
     hdrs = ["internal/stack_consumption.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
-    visibility = ["//visibility:private"],
     deps = [
         "//absl/base:config",
         "//absl/base:core_headers",

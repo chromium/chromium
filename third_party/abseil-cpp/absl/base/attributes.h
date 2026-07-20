@@ -934,6 +934,23 @@ struct AbslInternal_YouForgotToExplicitlyInitializeAField {
 #define ABSL_INTERNAL_ATTRIBUTE_CAPTURED_BY(Owner)
 #endif
 
+// Internal attribute; name and documentation TBD.
+//
+// See the upstream documentation:
+// https://clang.llvm.org/docs/AttributeReference.html#lifetime_capture_by_this
+//
+// Note: ABSL_INTERNAL_ATTRIBUTE_CAPTURED_BY(this) is deprecated. Use
+// ABSL_INTERNAL_ATTRIBUTE_CAPTURED_BY_THIS instead.
+#if ABSL_HAVE_CPP_ATTRIBUTE(clang::lifetime_capture_by_this)
+#define ABSL_INTERNAL_ATTRIBUTE_CAPTURED_BY_THIS \
+  [[clang::lifetime_capture_by_this]]
+#elif ABSL_HAVE_CPP_ATTRIBUTE(clang::lifetime_capture_by)
+#define ABSL_INTERNAL_ATTRIBUTE_CAPTURED_BY_THIS \
+  ABSL_INTERNAL_ATTRIBUTE_CAPTURED_BY(this)
+#else
+#define ABSL_INTERNAL_ATTRIBUTE_CAPTURED_BY_THIS
+#endif
+
 // ABSL_ATTRIBUTE_VIEW indicates that a type is solely a "view" of data that it
 // points to, similarly to a span, string_view, or other non-owning reference
 // type.

@@ -406,6 +406,53 @@ TEST(StatusOr, EmplaceInitializerList) {
                                  Field(&InPlaceHelper::y, Pointee(4)))));
 }
 
+#ifdef ABSL_HAVE_EXCEPTIONS
+class ThrowOnEmplace {
+ public:
+  explicit ThrowOnEmplace(int* counter, int val) : destructor_calls_(counter) {
+    if (val < 0) {
+      throw std::runtime_error("expected");
+    }
+    // While destructor_calls tracks the logic, ptr_ ensures that a double
+    // destruction actually results in a reliable crash. Performing a real heap
+    // allocation and deallocation (new/delete) guarantees that AddressSanitizer
+    // (ASAN) or the heap allocator will instantly catch the double-free if the
+    // bug regresses, rather than relying solely on the integer check.
+    ptr_ = new int(val);
+  }
+
+  ThrowOnEmplace(const ThrowOnEmplace&) = delete;
+  ThrowOnEmplace& operator=(const ThrowOnEmplace&) = delete;
+
+  ~ThrowOnEmplace() {
+    if (destructor_calls_) {
+      ++(*destructor_calls_);
+    }
+    delete ptr_;
+  }
+
+ private:
+  int* destructor_calls_ = nullptr;
+  int* ptr_ = nullptr;
+};
+
+TEST(StatusOr, EmplaceThrowsExceptionSafety) {
+  int destructor_calls = 0;
+  {
+    absl::StatusOr<ThrowOnEmplace> status_or(std::in_place, &destructor_calls,
+                                             1);
+    EXPECT_TRUE(status_or.ok());
+    EXPECT_THROW(status_or.emplace(&destructor_calls, -1), std::runtime_error);
+    EXPECT_FALSE(status_or.ok());
+    EXPECT_EQ(status_or.status().code(), absl::StatusCode::kInternal);
+  }
+  // Verifies that the initial object is properly destroyed by Clear() (count is
+  // 1), and that the exception thrown during replacement does not cause a
+  // second destruction (double-free) during stack unwinding.
+  EXPECT_EQ(destructor_calls, 1);
+}
+#endif  // ABSL_HAVE_EXCEPTIONS
+
 TEST(StatusOr, TestCopyCtorStatusOk) {
   const int kI = 4;
   const absl::StatusOr<int> original(kI);

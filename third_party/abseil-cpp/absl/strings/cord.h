@@ -1621,11 +1621,13 @@ inline bool Cord::ChunkIterator::operator!=(const ChunkIterator& other) const {
 
 inline Cord::ChunkIterator::reference Cord::ChunkIterator::operator*() const {
   absl::base_internal::HardeningAssertGT(bytes_remaining_, size_t{0});
+  ABSL_ASSERT(bytes_remaining_ >= current_chunk_.size());
   return current_chunk_;
 }
 
 inline Cord::ChunkIterator::pointer Cord::ChunkIterator::operator->() const {
   absl::base_internal::HardeningAssertGT(bytes_remaining_, size_t{0});
+  ABSL_ASSERT(bytes_remaining_ >= current_chunk_.size());
   return &current_chunk_;
 }
 

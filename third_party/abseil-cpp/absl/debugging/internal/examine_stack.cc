@@ -143,24 +143,10 @@ void DumpPCAndFrameSizeAndSymbol(OutputWriter* writer, void* writer_arg,
   writer(buf, writer_arg);
 }
 
-void DebugStackTraceHookLegacyAdapter(void* const stack[], int depth,
-                                      OutputWriter* writer, void* writer_arg) {
-  debug_stack_trace_hook(stack, depth, /*crash_pc=*/nullptr, writer,
-                         writer_arg);
-}
-
 }  // namespace
 
 void RegisterDebugStackTraceHook(SymbolizeUrlEmitter hook) {
   debug_stack_trace_hook = hook;
-}
-
-SymbolizeUrlEmitterLegacy GetDebugStackTraceHookLegacy() {
-  if (debug_stack_trace_hook == nullptr) {
-    // No prior call to RegisterDebugStackTraceHook.
-    return nullptr;
-  }
-  return &DebugStackTraceHookLegacyAdapter;
 }
 
 SymbolizeUrlEmitter GetDebugStackTraceHook() { return debug_stack_trace_hook; }

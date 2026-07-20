@@ -17,6 +17,8 @@
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
+#include <cstdint>
+#include <functional>
 #include <memory>
 #include <string>
 #include <utility>
@@ -28,6 +30,7 @@
 #include "absl/container/internal/hash_generator_testing.h"
 #include "absl/container/internal/hash_policy_testing.h"
 #include "absl/container/internal/heterogeneous_lookup_testing.h"
+#include "absl/container/internal/test_allocator.h"
 #include "absl/container/internal/test_instance_tracker.h"
 #include "absl/container/internal/unordered_set_constructor_test.h"
 #include "absl/container/internal/unordered_set_lookup_test.h"
@@ -823,6 +826,29 @@ TEST(LinkedHashSet, ExtractInsert) {
   EXPECT_EQ(node.value(), 9);
   EXPECT_THAT(s, ElementsAre(7, 2, 17));
   EXPECT_FALSE(s.contains(9));
+}
+
+// Verify that emplacing and extracting nodes results in the same stateful
+// allocator being used for splicing purposes, rather than another instance
+// (say, a default-constructed one), which could otherwise silently corrupt
+// memory.
+TEST(LinkedHashSet, ExtractAndEmplaceUseSameStatefulAllocator) {
+  using Alloc = absl::container_internal::CountingAllocator<int>;
+  int64_t bytes_used = 0;
+  Alloc alloc(&bytes_used);
+  linked_hash_set<int, linked_hash_set<int>::hasher, std::equal_to<>, Alloc>
+      set(alloc);
+
+  set.emplace(1);
+  EXPECT_GT(bytes_used, 0) << "emplace() failed to use the same allocator";
+
+  auto node = set.extract(set.begin());
+  EXPECT_EQ(node.get_allocator(), alloc)
+      << "extract(iter) failed to use the same allocator";
+
+  set.insert(std::move(node));
+  EXPECT_EQ(set.extract(1).get_allocator(), alloc)
+      << "extract(key) failed to use the same allocator";
 }
 
 TEST(LinkedHashSet, Merge) {

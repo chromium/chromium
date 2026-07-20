@@ -357,6 +357,44 @@ TEST_F(FormatConvertTest, StringPrecision) {
   EXPECT_EQ("ABC", FormatPack(wformat2, {FormatArgImpl(wp)}));
 }
 
+TEST_F(FormatConvertTest, WideStringUnpairedSurrogate) {
+  // The single wchar_t ("%lc") path rejects an unpaired surrogate. The wide
+  // string ("%ls") path should reject it too rather than emitting a partial
+  // UTF-8 sequence. A failed conversion yields an empty result.
+  auto format_ls = [](const std::wstring& ws) {
+    UntypedFormatSpecImpl format("%ls");
+    return FormatPack(format, {FormatArgImpl(ws)});
+  };
+
+  // A well-formed surrogate pair (U+10000) still converts.
+  std::wstring pair;
+  pair.push_back(static_cast<wchar_t>(0xD800));
+  pair.push_back(static_cast<wchar_t>(0xDC00));
+  EXPECT_EQ("\xF0\x90\x80\x80", format_ls(pair));
+
+  // Trailing high surrogate with no low surrogate to complete it.
+  std::wstring trailing_high;
+  trailing_high.push_back(static_cast<wchar_t>(0xD800));
+  EXPECT_EQ("", format_ls(trailing_high));
+
+  // High surrogate followed by a non-surrogate.
+  std::wstring high_then_ascii;
+  high_then_ascii.push_back(static_cast<wchar_t>(0xD800));
+  high_then_ascii.push_back(L'A');
+  EXPECT_EQ("", format_ls(high_then_ascii));
+
+  // High surrogate followed by another high surrogate.
+  std::wstring high_then_high;
+  high_then_high.push_back(static_cast<wchar_t>(0xD800));
+  high_then_high.push_back(static_cast<wchar_t>(0xD800));
+  EXPECT_EQ("", format_ls(high_then_high));
+
+  // Isolated low surrogate.
+  std::wstring lone_low;
+  lone_low.push_back(static_cast<wchar_t>(0xDC00));
+  EXPECT_EQ("", format_ls(lone_low));
+}
+
 // Pointer formatting is implementation defined. This checks that the argument
 // can be matched to `ptr`.
 MATCHER_P(MatchesPointerString, ptr, "") {

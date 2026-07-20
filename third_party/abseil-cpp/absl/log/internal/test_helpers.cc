@@ -14,6 +14,8 @@
 //
 #include "absl/log/internal/test_helpers.h"
 
+#include <csignal>
+
 #ifdef __Fuchsia__
 #include <zircon/syscalls.h>
 #endif

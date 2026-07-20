@@ -71,6 +71,12 @@ struct FlatHashSetPolicy;
 // * Contains a `capacity()` member function indicating the number of element
 //   slots (open, deleted, and empty) within the hash set.
 // * Returns `void` from the `erase(iterator)` overload.
+// * Constructors accept reservation size as an optional argument instead of
+//   bucket count. Reservation size is the number of elements that fits in the
+//   set before rehash.
+// * insert/emplace and other modification functions return special iterator
+//   that doesn't support iteration. std::next(it) for such iterators would
+//   always point to the end().
 //
 // By default, `flat_hash_set` uses the `absl::Hash` hashing framework. All
 // fundamental and Abseil types that support the `absl::Hash` framework have a

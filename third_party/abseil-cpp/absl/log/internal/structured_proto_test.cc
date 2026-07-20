@@ -25,7 +25,6 @@
 #include "absl/base/config.h"
 #include "absl/strings/string_view.h"
 #include "absl/types/span.h"
-#include "absl/utility/utility.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN

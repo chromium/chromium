@@ -388,4 +388,41 @@ TEST(StackTrace, NoNullptrInPopulatedRange) {
 }
 
 
+#if defined(__aarch64__) && defined(__linux__)
+static void CorruptedSigStackHandler(int, siginfo_t*, void*) {
+  void** fp = reinterpret_cast<void**>(__builtin_frame_address(0));
+  void* saved_fp = fp[0];
+  fp[0] = reinterpret_cast<void*>(0x7deadbeef000ULL);  // Unmapped address
+
+  void* stack[16];
+  absl::GetStackTrace(stack, 16, 0);
+
+  fp[0] = saved_fp;
+}
+#endif
+
+TEST(StackTrace, CorruptedSignalStackFrameSafety) {
+#if defined(__aarch64__) && defined(__linux__)
+  stack_t sigstk{};
+  constexpr size_t kAltstackSize = 1 << 14;
+  char altstack[kAltstackSize];
+  sigstk.ss_sp = altstack;
+  sigstk.ss_size = kAltstackSize;
+  sigstk.ss_flags = 0;
+  ASSERT_EQ(sigaltstack(&sigstk, nullptr), 0);
+
+  struct sigaction act{}, oldact{};
+  act.sa_sigaction = CorruptedSigStackHandler;
+  act.sa_flags = SA_SIGINFO | SA_ONSTACK;
+  ASSERT_EQ(sigaction(SIGUSR1, &act, &oldact), 0);
+
+  raise(SIGUSR1);
+
+  sigaction(SIGUSR1, &oldact, nullptr);
+  stack_t disable_stk{};
+  disable_stk.ss_flags = SS_DISABLE;
+  sigaltstack(&disable_stk, nullptr);
+#endif
+}
+
 }  // namespace

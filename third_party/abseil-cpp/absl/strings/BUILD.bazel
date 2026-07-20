@@ -24,7 +24,7 @@ load(
 )
 
 package(
-    default_visibility = ["//visibility:public"],
+    default_visibility = ["//visibility:private"],
     features = [
         "header_modules",
         "layering_check",
@@ -39,6 +39,7 @@ cc_library(
     hdrs = ["string_view.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = ["//visibility:public"],
     deps = [
         "//absl/base:config",
         "//absl/base:core_headers",
@@ -60,7 +61,6 @@ cc_library(
         "internal/damerau_levenshtein_distance.cc",
         "internal/memutil.cc",
         "internal/memutil.h",
-        "internal/stl_type_traits.h",
         "internal/str_join_internal.h",
         "internal/str_split_internal.h",
         "internal/stringify_sink.cc",
@@ -97,6 +97,7 @@ cc_library(
         # New code should directly depend on :string_view.
         "string_view.h",
     ],
+    visibility = ["//visibility:public"],
     deps = [
         ":append_and_overwrite",
         ":charset",
@@ -135,6 +136,7 @@ cc_library(
     ],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = ["//visibility:public"],  # Logically private. Do not depend on this.
     deps = [
         ":resize_and_overwrite",
         "//absl/base:config",
@@ -150,6 +152,7 @@ cc_library(
     hdrs = ["resize_and_overwrite.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = ["//visibility:public"],
     deps = [
         "//absl/base:config",
         "//absl/base:core_headers",
@@ -225,7 +228,9 @@ cc_test(
     tags = ["no_test_chromiumos_x86_64"],
     visibility = ["//visibility:private"],
     deps = [
+        ":charset",
         ":cord",
+        ":str_format",
         ":strings",
         "//absl/base:core_headers",
         "//absl/container:fixed_array",
@@ -270,6 +275,7 @@ cc_library(
     hdrs = ["has_ostream_operator.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = ["//visibility:public"],
     deps = [
         "//absl/base:config",
     ],
@@ -433,8 +439,8 @@ cc_library(
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = [
-        "//absl:friends",
         "//absl/status:__pkg__",
+        "@do_not_use_for_gloop_visibility_only//gloop/util/status:__pkg__",
     ],
     deps = [
         ":string_view",
@@ -482,6 +488,7 @@ cc_library(
     ],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = ["//visibility:public"],
     deps = [
         ":string_view",
         "//absl/base:config",
@@ -666,6 +673,7 @@ cc_library(
     ],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = ["//visibility:public"],
     deps = [
         ":append_and_overwrite",
         ":cord_internal",
@@ -923,6 +931,7 @@ cc_library(
     ],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = ["//visibility:public"],
     deps = [
         ":cord",
         ":cord_internal",
@@ -951,6 +960,9 @@ cc_library(
     hdrs = ["cordz_test_helpers.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = [
+        "//absl/strings:__pkg__",
+    ],
     deps = [
         ":cord",
         ":cord_internal",
@@ -1365,6 +1377,7 @@ cc_library(
     ],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = ["//visibility:public"],
     deps = [
         ":str_format_internal",
         ":string_view",
@@ -1599,7 +1612,7 @@ cc_library(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = [
         "//absl:__subpackages__",
-        "//absl:friends",
+        "@do_not_use_for_gloop_visibility_only//gloop/util/gtl:__pkg__",
     ],
     deps = [
         ":str_format",
@@ -1617,12 +1630,12 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":generic_printer",
+        ":str_format",
         ":strings",
         "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/cleanup",
         "//absl/container:flat_hash_map",
-        "//absl/log",
         "//absl/status",
         "//absl/status:statusor",
         "@googletest//:gtest",

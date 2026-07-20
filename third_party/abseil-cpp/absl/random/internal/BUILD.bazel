@@ -29,7 +29,7 @@ load(
 
 default_package_visibility = [
     "//absl/random:__pkg__",
-    "//absl:friends",
+    "@do_not_use_for_gloop_visibility_only//gloop/util/random:__subpackages__",
 ]
 
 package(

@@ -18,6 +18,7 @@
 #include <string>
 
 #include "absl/base/internal/raw_logging.h"
+#include "absl/strings/ascii.h"
 #include "absl/strings/escaping.h"
 #include "absl/strings/internal/escaping_test_common.h"
 #include "absl/strings/str_cat.h"
@@ -84,6 +85,42 @@ void BM_HexStringToBytes_Fail(benchmark::State& state) {
   }
 }
 BENCHMARK(BM_HexStringToBytes_Fail);
+
+static void BM_UrlEscape(benchmark::State& state) {
+  std::string all;
+  std::string alnum;
+  all.reserve(256);
+  for (int c = 0; c < 256; ++c) {
+    all.push_back(c);
+    if (absl::ascii_isalnum(c)) {
+      alnum.push_back(c);
+    }
+  }
+
+  for (auto _ : state) {
+    benchmark::DoNotOptimize(absl::UrlEscape(all));
+    benchmark::DoNotOptimize(absl::UrlEscape(alnum));
+  }
+}
+BENCHMARK(BM_UrlEscape);
+
+static void BM_UrlEscapePlus(benchmark::State& state) {
+  std::string all;
+  std::string alnum;
+  all.reserve(256);
+  for (int c = 0; c < 256; ++c) {
+    all.push_back(c);
+    if (absl::ascii_isalnum(c)) {
+      alnum.push_back(c);
+    }
+  }
+
+  for (auto _ : state) {
+    benchmark::DoNotOptimize(absl::UrlEscapePlus(all));
+    benchmark::DoNotOptimize(absl::UrlEscapePlus(alnum));
+  }
+}
+BENCHMARK(BM_UrlEscapePlus);
 
 // Used for the CEscape benchmarks
 const char kStringValueNoEscape[] = "1234567890";

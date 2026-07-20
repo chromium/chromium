@@ -217,7 +217,7 @@ class ThrowingBool {
  public:
   ThrowingBool(bool b) noexcept : b_(b) {}  // NOLINT(runtime/explicit)
   operator bool() const {                   // NOLINT
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     return b_;
   }
 
@@ -267,7 +267,7 @@ class ThrowingValue : private exceptions_internal::TrackedObject {
 
  public:
   ThrowingValue() : TrackedObject(GetInstanceString(kDefaultValue)) {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     dummy_ = kDefaultValue;
   }
 
@@ -275,7 +275,7 @@ class ThrowingValue : private exceptions_internal::TrackedObject {
       IsSpecified(TypeSpec::kNoThrowCopy))
       : TrackedObject(GetInstanceString(other.dummy_)) {
     if (!IsSpecified(TypeSpec::kNoThrowCopy)) {
-      exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+      exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     }
     dummy_ = other.dummy_;
   }
@@ -284,13 +284,13 @@ class ThrowingValue : private exceptions_internal::TrackedObject {
       IsSpecified(TypeSpec::kNoThrowMove))
       : TrackedObject(GetInstanceString(other.dummy_)) {
     if (!IsSpecified(TypeSpec::kNoThrowMove)) {
-      exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+      exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     }
     dummy_ = other.dummy_;
   }
 
   explicit ThrowingValue(int i) : TrackedObject(GetInstanceString(i)) {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     dummy_ = i;
   }
 
@@ -304,7 +304,7 @@ class ThrowingValue : private exceptions_internal::TrackedObject {
       IsSpecified(TypeSpec::kNoThrowCopy)) {
     dummy_ = kBadValue;
     if (!IsSpecified(TypeSpec::kNoThrowCopy)) {
-      exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+      exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     }
     dummy_ = other.dummy_;
     return *this;
@@ -314,7 +314,7 @@ class ThrowingValue : private exceptions_internal::TrackedObject {
       IsSpecified(TypeSpec::kNoThrowMove)) {
     dummy_ = kBadValue;
     if (!IsSpecified(TypeSpec::kNoThrowMove)) {
-      exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+      exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     }
     dummy_ = other.dummy_;
     return *this;
@@ -322,73 +322,73 @@ class ThrowingValue : private exceptions_internal::TrackedObject {
 
   // Arithmetic Operators
   ThrowingValue operator+(const ThrowingValue& other) const {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     return ThrowingValue(dummy_ + other.dummy_, nothrow_ctor);
   }
 
   ThrowingValue operator+() const {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     return ThrowingValue(dummy_, nothrow_ctor);
   }
 
   ThrowingValue operator-(const ThrowingValue& other) const {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     return ThrowingValue(dummy_ - other.dummy_, nothrow_ctor);
   }
 
   ThrowingValue operator-() const {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     return ThrowingValue(-dummy_, nothrow_ctor);
   }
 
   ThrowingValue& operator++() {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     ++dummy_;
     return *this;
   }
 
   ThrowingValue operator++(int) {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     auto out = ThrowingValue(dummy_, nothrow_ctor);
     ++dummy_;
     return out;
   }
 
   ThrowingValue& operator--() {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     --dummy_;
     return *this;
   }
 
   ThrowingValue operator--(int) {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     auto out = ThrowingValue(dummy_, nothrow_ctor);
     --dummy_;
     return out;
   }
 
   ThrowingValue operator*(const ThrowingValue& other) const {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     return ThrowingValue(dummy_ * other.dummy_, nothrow_ctor);
   }
 
   ThrowingValue operator/(const ThrowingValue& other) const {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     return ThrowingValue(dummy_ / other.dummy_, nothrow_ctor);
   }
 
   ThrowingValue operator%(const ThrowingValue& other) const {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     return ThrowingValue(dummy_ % other.dummy_, nothrow_ctor);
   }
 
   ThrowingValue operator<<(int shift) const {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     return ThrowingValue(dummy_ << shift, nothrow_ctor);
   }
 
   ThrowingValue operator>>(int shift) const {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     return ThrowingValue(dummy_ >> shift, nothrow_ctor);
   }
 
@@ -397,129 +397,129 @@ class ThrowingValue : private exceptions_internal::TrackedObject {
   // types/containers requires T to be convertible to bool.
   friend ThrowingBool operator==(const ThrowingValue& a,
                                  const ThrowingValue& b) {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     return a.dummy_ == b.dummy_;
   }
   friend ThrowingBool operator!=(const ThrowingValue& a,
                                  const ThrowingValue& b) {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     return a.dummy_ != b.dummy_;
   }
   friend ThrowingBool operator<(const ThrowingValue& a,
                                 const ThrowingValue& b) {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     return a.dummy_ < b.dummy_;
   }
   friend ThrowingBool operator<=(const ThrowingValue& a,
                                  const ThrowingValue& b) {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     return a.dummy_ <= b.dummy_;
   }
   friend ThrowingBool operator>(const ThrowingValue& a,
                                 const ThrowingValue& b) {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     return a.dummy_ > b.dummy_;
   }
   friend ThrowingBool operator>=(const ThrowingValue& a,
                                  const ThrowingValue& b) {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     return a.dummy_ >= b.dummy_;
   }
 
   // Logical Operators
   ThrowingBool operator!() const {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     return !dummy_;
   }
 
   ThrowingBool operator&&(const ThrowingValue& other) const {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     return dummy_ && other.dummy_;
   }
 
   ThrowingBool operator||(const ThrowingValue& other) const {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     return dummy_ || other.dummy_;
   }
 
   // Bitwise Logical Operators
   ThrowingValue operator~() const {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     return ThrowingValue(~dummy_, nothrow_ctor);
   }
 
   ThrowingValue operator&(const ThrowingValue& other) const {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     return ThrowingValue(dummy_ & other.dummy_, nothrow_ctor);
   }
 
   ThrowingValue operator|(const ThrowingValue& other) const {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     return ThrowingValue(dummy_ | other.dummy_, nothrow_ctor);
   }
 
   ThrowingValue operator^(const ThrowingValue& other) const {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     return ThrowingValue(dummy_ ^ other.dummy_, nothrow_ctor);
   }
 
   // Compound Assignment operators
   ThrowingValue& operator+=(const ThrowingValue& other) {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     dummy_ += other.dummy_;
     return *this;
   }
 
   ThrowingValue& operator-=(const ThrowingValue& other) {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     dummy_ -= other.dummy_;
     return *this;
   }
 
   ThrowingValue& operator*=(const ThrowingValue& other) {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     dummy_ *= other.dummy_;
     return *this;
   }
 
   ThrowingValue& operator/=(const ThrowingValue& other) {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     dummy_ /= other.dummy_;
     return *this;
   }
 
   ThrowingValue& operator%=(const ThrowingValue& other) {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     dummy_ %= other.dummy_;
     return *this;
   }
 
   ThrowingValue& operator&=(const ThrowingValue& other) {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     dummy_ &= other.dummy_;
     return *this;
   }
 
   ThrowingValue& operator|=(const ThrowingValue& other) {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     dummy_ |= other.dummy_;
     return *this;
   }
 
   ThrowingValue& operator^=(const ThrowingValue& other) {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     dummy_ ^= other.dummy_;
     return *this;
   }
 
   ThrowingValue& operator<<=(int shift) {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     dummy_ <<= shift;
     return *this;
   }
 
   ThrowingValue& operator>>=(int shift) {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     dummy_ >>= shift;
     return *this;
   }
@@ -529,12 +529,12 @@ class ThrowingValue : private exceptions_internal::TrackedObject {
 
   // Stream operators
   friend std::ostream& operator<<(std::ostream& os, const ThrowingValue& tv) {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     return os << GetInstanceString(tv.dummy_);
   }
 
   friend std::istream& operator>>(std::istream& is, const ThrowingValue&) {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     return is;
   }
 
@@ -542,7 +542,7 @@ class ThrowingValue : private exceptions_internal::TrackedObject {
   static void* operator new(size_t s) noexcept(
       IsSpecified(TypeSpec::kNoThrowNew)) {
     if (!IsSpecified(TypeSpec::kNoThrowNew)) {
-      exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION, true);
+      exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION, true);
     }
     return ::operator new(s);
   }
@@ -550,7 +550,7 @@ class ThrowingValue : private exceptions_internal::TrackedObject {
   static void* operator new[](size_t s) noexcept(
       IsSpecified(TypeSpec::kNoThrowNew)) {
     if (!IsSpecified(TypeSpec::kNoThrowNew)) {
-      exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION, true);
+      exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION, true);
     }
     return ::operator new[](s);
   }
@@ -559,7 +559,7 @@ class ThrowingValue : private exceptions_internal::TrackedObject {
   static void* operator new(size_t s, Args&&... args) noexcept(
       IsSpecified(TypeSpec::kNoThrowNew)) {
     if (!IsSpecified(TypeSpec::kNoThrowNew)) {
-      exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION, true);
+      exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION, true);
     }
     return ::operator new(s, std::forward<Args>(args)...);
   }
@@ -568,7 +568,7 @@ class ThrowingValue : private exceptions_internal::TrackedObject {
   static void* operator new[](size_t s, Args&&... args) noexcept(
       IsSpecified(TypeSpec::kNoThrowNew)) {
     if (!IsSpecified(TypeSpec::kNoThrowNew)) {
-      exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION, true);
+      exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION, true);
     }
     return ::operator new[](s, std::forward<Args>(args)...);
   }
@@ -654,7 +654,7 @@ class ThrowingAllocator : private exceptions_internal::TrackedObject {
   using is_always_equal = std::false_type;
 
   ThrowingAllocator() : TrackedObject(GetInstanceString(next_id_)) {
-    exceptions_internal::MaybeThrow(ABSL_PRETTY_FUNCTION);
+    exceptions_internal::MaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     dummy_ = std::make_shared<const int>(next_id_++);
   }
 
@@ -705,7 +705,7 @@ class ThrowingAllocator : private exceptions_internal::TrackedObject {
 
   pointer allocate(size_type n) noexcept(
       IsSpecified(AllocSpec::kNoThrowAllocate)) {
-    ReadStateAndMaybeThrow(ABSL_PRETTY_FUNCTION);
+    ReadStateAndMaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     return static_cast<pointer>(::operator new(n * sizeof(T)));
   }
 
@@ -722,7 +722,7 @@ class ThrowingAllocator : private exceptions_internal::TrackedObject {
   template <typename U, typename... Args>
   void construct(U* ptr, Args&&... args) noexcept(
       IsSpecified(AllocSpec::kNoThrowAllocate)) {
-    ReadStateAndMaybeThrow(ABSL_PRETTY_FUNCTION);
+    ReadStateAndMaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     ::new (static_cast<void*>(ptr)) U(std::forward<Args>(args)...);
   }
 
@@ -738,7 +738,7 @@ class ThrowingAllocator : private exceptions_internal::TrackedObject {
 
   ThrowingAllocator select_on_container_copy_construction() noexcept(
       IsSpecified(AllocSpec::kNoThrowAllocate)) {
-    ReadStateAndMaybeThrow(ABSL_PRETTY_FUNCTION);
+    ReadStateAndMaybeThrow(ABSL_INTERNAL_PRETTY_FUNCTION);
     return *this;
   }
 

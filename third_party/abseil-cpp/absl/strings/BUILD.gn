@@ -27,7 +27,6 @@ absl_source_set("strings") {
     "internal/damerau_levenshtein_distance.cc",
     "internal/memutil.cc",
     "internal/memutil.h",
-    "internal/stl_type_traits.h",
     "internal/stringify_sink.cc",
     "match.cc",
     "numbers.cc",
@@ -882,12 +881,12 @@ absl_test("generic_printer_test") {
   sources = [ "internal/generic_printer_test.cc" ]
   deps = [
     ":generic_printer",
+    ":str_format",
     ":strings",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/cleanup",
     "//third_party/abseil-cpp/absl/container:flat_hash_map",
-    "//third_party/abseil-cpp/absl/log",
     "//third_party/abseil-cpp/absl/status",
     "//third_party/abseil-cpp/absl/status:statusor",
   ]

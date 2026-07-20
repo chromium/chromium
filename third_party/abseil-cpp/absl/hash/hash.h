@@ -117,11 +117,11 @@ ABSL_NAMESPACE_BEGIN
 //   * All string-like types including:
 //     * absl::Cord
 //     * std::string (as well as any instance of std::basic_string that
-//       uses one of {char, wchar_t, char16_t, char32_t} and its associated
-//       std::char_traits)
+//       uses one of {char, wchar_t, char8_t, char16_t, char32_t} and its
+//       associated std::char_traits)
 //     * std::string_view (as well as any instance of std::basic_string_view
-//       that uses one of {char, wchar_t, char16_t, char32_t} and its associated
-//       std::char_traits)
+//       that uses one of {char, wchar_t, char8_t, char16_t, char32_t} and its
+//       associated std::char_traits)
 //  * All the standard sequence containers (provided the elements are hashable)
 //  * All the standard associative containers (provided the elements are
 //    hashable)

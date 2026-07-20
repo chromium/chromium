@@ -19,9 +19,11 @@ module(
     version = "head",
 )
 
-cc_configure = use_extension("@rules_cc//cc:extensions.bzl",
-                             "cc_configure_extension",
-                             dev_dependency = True)
+cc_configure = use_extension(
+    "@rules_cc//cc:extensions.bzl",
+    "cc_configure_extension",
+    dev_dependency = True,
+)
 use_repo(cc_configure, "local_config_cc")
 
 bazel_dep(name = "rules_cc", version = "0.2.18")
@@ -39,4 +41,12 @@ bazel_dep(
 bazel_dep(
     name = "googletest",
     version = "1.17.0.bcr.2",
+)
+
+# Note: Gloop is NOT a dev_dependency, but should never be used directly.  It is only included here
+# so that we can give visibility into Abseil internals.
+bazel_dep(
+    name = "gloop",
+    version = "20260708.rc1",
+    repo_name = "do_not_use_for_gloop_visibility_only",
 )

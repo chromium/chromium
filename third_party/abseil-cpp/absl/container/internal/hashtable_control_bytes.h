@@ -185,6 +185,8 @@ enum class ctrl_t : int8_t {
   kEmpty = -128,   // 0b10000000
   kDeleted = -2,   // 0b11111110
   kSentinel = -1,  // 0b11111111
+  // Special value used in the slow path of resizing.
+  kMarkedForSlowTransfer = -3,
 };
 static_assert(
     (static_cast<int8_t>(ctrl_t::kEmpty) &

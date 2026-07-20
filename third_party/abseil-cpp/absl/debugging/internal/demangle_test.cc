@@ -14,6 +14,7 @@
 
 #include "absl/debugging/internal/demangle.h"
 
+#include <array>
 #include <cstdlib>
 #include <memory>
 #include <string>
@@ -30,6 +31,7 @@ ABSL_NAMESPACE_BEGIN
 namespace debugging_internal {
 namespace {
 
+using ::testing::Contains;
 using ::testing::ContainsRegex;
 
 TEST(Demangle, FunctionTemplate) {
@@ -1906,6 +1908,13 @@ TEST(Demangle, DelegatesToDemangleRustSymbolEncoding) {
 
   EXPECT_TRUE(Demangle("_RNvC8my_crate7my_func", tmp, sizeof(tmp)));
   EXPECT_STREQ("my_crate::my_func", tmp);
+}
+
+TEST(Demangle, DemanglingNulTerminatesOnParsingFailure) {
+  std::array buf = {'\xAA', '\xAA', '\xAA', '\xAA'};
+  EXPECT_FALSE(Demangle("_ZN1xBE", std::data(buf), std::size(buf)));
+  // Ensure string is properly NUL-terminated despite parsing failure.
+  EXPECT_THAT(buf, Contains('\0'));
 }
 
 // Tests that verify that Demangle footprint is within some limit.

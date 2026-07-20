@@ -1155,6 +1155,7 @@ absl_cc_test(
     absl::hash_generator_testing
     absl::hash_policy_testing
     absl::string_view
+    absl::test_allocator
     absl::test_instance_tracker
     absl::unordered_set_constructor_test
     absl::unordered_set_lookup_test
@@ -1197,6 +1198,7 @@ absl_cc_test(
     absl::hash_generator_testing
     absl::hash_policy_testing
     absl::string_view
+    absl::test_allocator
     absl::test_instance_tracker
     absl::unordered_set_constructor_test
     absl::unordered_set_lookup_test
@@ -1239,5 +1241,6 @@ absl_cc_test(
     absl::hardening
     absl::strings
     absl::test_allocator
+    absl::throw_delegate
     GTest::gmock_main
 )
