@@ -403,10 +403,7 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
     return NO;
   }
 
-  ProfileIOS* profile = browser->GetProfile();
-
-  return IsContentNotificationEnabled(profile) ||
-         IsContentNotificationRegistered(profile);
+  return YES;
 }
 
 @end
