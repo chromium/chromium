@@ -28,6 +28,7 @@ namespace {
 
 AppShimHost* GetHostForBrowser(Browser* browser) {
   auto* const shim_manager = apps::AppShimManager::Get();
+  CHECK(browser);
   if (!shim_manager) {
     return nullptr;
   }
@@ -75,9 +76,15 @@ class WebUIBrowserNativeWidgetMac : public views::NativeWidgetMac {
 
  private:
   // views::NativeWidgetMac implementation:
+  void OnWidgetDestroyed(views::Widget* widget) override {
+    browser_ = nullptr;
+    NativeWidgetMac::OnWidgetDestroyed(widget);
+  }
+
   void ValidateUserInterfaceItem(
       int32_t command,
       remote_cocoa::mojom::ValidateUserInterfaceItemResult* result) override {
+    CHECK(browser_);
     // This allows menu items like "Close Tabs" to be enabled when the browser
     // has open tabs, which in turn enables the "Close Tabs" keyboard shortcut.
     result->enable = chrome::IsCommandEnabled(browser_, command);
@@ -101,6 +108,7 @@ class WebUIBrowserNativeWidgetMac : public views::NativeWidgetMac {
   bool WillExecuteCommand(int32_t command,
                           WindowOpenDisposition window_open_disposition,
                           bool is_before_first_responder) override {
+    CHECK(browser_);
     if (is_before_first_responder) {
       // The specification for this private extensions API is incredibly vague.
       // For now, we avoid triggering chrome commands prior to giving the
