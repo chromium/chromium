@@ -24,6 +24,7 @@
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -231,6 +232,20 @@ TEST_F(TopLevelStorageAccessPermissionContextTest,
               /*render_frame_host=*/nullptr, GetRequesterURL(),
               GetDummyEmbeddingUrl())
           .status);
+}
+
+TEST_F(TopLevelStorageAccessPermissionContextTest, SameSiteDisallowed) {
+  TopLevelStorageAccessPermissionContext permission_context(profile());
+  NavigateAndCommit(GetTopLevelURL());
+
+  EXPECT_EQ(
+      DecidePermissionSync(&permission_context, /*user_gesture=*/true,
+                           GetDummyEmbeddingUrl(), GetDummyEmbeddingUrl()),
+      PermissionStatus::DENIED);
+
+  EXPECT_EQ(1, static_cast<content::MockRenderProcessHost*>(
+                   web_contents()->GetPrimaryMainFrame()->GetProcess())
+                   ->bad_msg_count());
 }
 
 class TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest

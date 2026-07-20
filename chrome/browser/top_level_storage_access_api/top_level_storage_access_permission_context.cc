@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "chrome/browser/bad_message.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
@@ -36,6 +37,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
 
 namespace {
 
@@ -95,6 +97,22 @@ void TopLevelStorageAccessPermissionContext::DecidePermission(
     return;
   }
 
+  net::SchemefulSite embedding_site(request_data->embedding_origin);
+  net::SchemefulSite requesting_site(request_data->requesting_origin);
+
+  if (requesting_site == embedding_site) {
+    // Well-behaved renderers don't send same-site permissions requests, since
+    // there is no privacy boundary within a site. This must be a compromised
+    // renderer.
+    bad_message::ReceivedBadMessage(
+        rfh->GetProcess(), bad_message::BadMessageReason::
+                               TLSAPC_INVALID_PERMISSION_REQUEST_CONTEXT);
+    std::move(callback).Run(content::PermissionResult(
+        blink::mojom::PermissionStatus::DENIED,
+        content::PermissionStatusSource::UNSPECIFIED));
+    return;
+  }
+
   if (!request_data->user_gesture || !rfh->HasTransientUserActivation() ||
       !request_data->requesting_origin.is_valid() ||
       !request_data->embedding_origin.is_valid()) {
@@ -110,9 +128,6 @@ void TopLevelStorageAccessPermissionContext::DecidePermission(
         content::PermissionStatusSource::UNSPECIFIED));
     return;
   }
-
-  net::SchemefulSite embedding_site(request_data->embedding_origin);
-  net::SchemefulSite requesting_site(request_data->requesting_origin);
 
   first_party_sets::FirstPartySetsPolicyServiceFactory::GetForBrowserContext(
       browser_context())
