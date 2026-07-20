@@ -77,7 +77,6 @@ import org.chromium.chrome.browser.media.MediaCaptureNotificationServiceImpl;
 import org.chromium.chrome.browser.media.MediaViewerUtils;
 import org.chromium.chrome.browser.metrics.LaunchMetrics;
 import org.chromium.chrome.browser.metrics.PackageMetrics;
-import org.chromium.chrome.browser.metrics.StorageSystem;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
@@ -653,8 +652,6 @@ public class ProcessInitializationHandler {
                     BrowserExitReasonTracker.initForegroundBrowserProcess();
 
                     initAsyncDiskTask();
-
-                    StorageSystem.recordStorageType();
 
                     AfterStartupTaskUtils.setStartupComplete();
 

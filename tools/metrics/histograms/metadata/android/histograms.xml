@@ -6065,16 +6065,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.StorageSystem.Type" enum="AndroidStorageSystemType"
-    expires_after="2026-07-26">
-  <owner>yfriedman@chromium.org</owner>
-  <owner>clank-performance-team@google.com</owner>
-  <summary>
-    Records the type of storage system on the device. This is determined by
-    inspecting system files. Recorded once on deferred startup.
-  </summary>
-</histogram>
-
 <histogram name="Android.StrictMode.OverrideUrlLoadingTime" units="ms"
     expires_after="2026-11-15">
   <owner>yfriedman@chromium.org</owner>
