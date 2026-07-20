@@ -2344,7 +2344,10 @@ public class ToolbarManager
             Tab tab = mLocationBarModel.getTab();
             assumeNonNull(tab);
             NativePage nativePage = tab.getNativePage();
-            return nativePage instanceof IncognitoNewTabPage;
+            // Check nativePage instance and fallback to URL check to handle tab navigation
+            // transitions before the NativePage instance is instantiated/updated.
+            return nativePage instanceof IncognitoNewTabPage
+                    || (tab.isIncognito() && UrlUtilities.isNtpUrl(tab.getUrl()));
         }
         return false;
     }

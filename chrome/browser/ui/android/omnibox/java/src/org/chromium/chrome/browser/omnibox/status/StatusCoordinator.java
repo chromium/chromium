@@ -163,6 +163,7 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
 
     /** Signals that native initialization has completed. */
     public void onNativeInitialized() {
+        updateSecurityIcon();
         mMediator.updateLocationBarIcon(StatusView.IconTransitionType.CROSSFADE);
     }
 
