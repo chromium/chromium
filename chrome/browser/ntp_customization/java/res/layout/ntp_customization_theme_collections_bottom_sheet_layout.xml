@@ -34,7 +34,7 @@ found in the LICENSE file.
       android:layout_height="wrap_content"
       android:gravity="start"
       android:textAppearance="@style/TextAppearance.Headline.Primary"
-      android:text="@string/ntp_customization_theme_collections_title"
+      android:text="@string/ntp_customization_theme_bottom_sheet_theme_collections_option"
       android:accessibilityHeading="true"
       android:focusable="true"
       android:layout_marginStart="@dimen/ntp_customization_ntp_cards_title_margin"

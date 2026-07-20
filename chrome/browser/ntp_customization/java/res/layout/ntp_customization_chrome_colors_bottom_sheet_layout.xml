@@ -39,7 +39,7 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:gravity="start"
         android:textAppearance="@style/TextAppearance.Headline.Primary"
-        android:text="@string/ntp_customization_chrome_colors_title"
+        android:text="@string/ntp_customization_theme_bottom_sheet_chrome_colors_option"
         android:focusable="true"
         android:accessibilityHeading="true"
         android:layout_marginStart="@dimen/ntp_customization_ntp_cards_title_margin"
