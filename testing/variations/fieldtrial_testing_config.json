@@ -23874,6 +23874,21 @@
             ]
         }
     ],
+    "SupportGoogleOneDeepLink": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SupportGoogleOneDeepLink"
+                    ]
+                }
+            ]
+        }
+    ],
     "SupportOpeningDraggedLinksInSameTab": [
         {
             "platforms": [
