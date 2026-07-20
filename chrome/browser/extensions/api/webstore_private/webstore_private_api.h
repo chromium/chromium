@@ -76,8 +76,7 @@ class WebstorePrivateApi {
 };
 
 class WebstorePrivateBeginInstallWithManifest3Function
-    : public ExtensionFunction,
-      public WebstoreInstallHelper::Delegate {
+    : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("webstorePrivate.beginInstallWithManifest3",
                              WEBSTOREPRIVATE_BEGININSTALLWITHMANIFEST3)
@@ -97,13 +96,7 @@ class WebstorePrivateBeginInstallWithManifest3Function
   // ExtensionFunction:
   ExtensionFunction::ResponseAction Run() override;
 
-  // WebstoreInstallHelper::Delegate:
-  void OnWebstoreParseSuccess(const std::string& id,
-                              const SkBitmap& icon,
-                              base::DictValue parsed_manifest) override;
-  void OnWebstoreParseFailure(const std::string& id,
-                              InstallHelperResultCode result,
-                              const std::string& error_message) override;
+  void OnWebstoreParseFinished(WebstoreParseResult result);
 
   // Handles the result of GetWebstoreExtensionInstallStatus.
   void OnInstallStatusCheckDone(
@@ -372,8 +365,6 @@ class WebstorePrivateGetExtensionStatusFunction : public ExtensionFunction {
 
   ExtensionFunction::ResponseValue BuildResponseWithoutManifest(
       const ExtensionId& extension_id);
-  void OnManifestParsed(const ExtensionId& extension_id,
-                        data_decoder::DataDecoder::ValueOrError result);
   void OnInstallStatusCheckDone(ExtensionInstallStatus status,
                                 std::u16string blocked_message);
 

@@ -189,78 +189,6 @@ class KioskAppData::CrxLoader : public extensions::SandboxedUnpackerClient {
   std::string required_platform_version_;
 };
 
-////////////////////////////////////////////////////////////////////////////////
-// KioskAppData::WebstoreDataParser
-// Use WebstoreInstallHelper to parse the manifest and decode the icon.
-
-class KioskAppData::WebstoreDataParser
-    : public extensions::WebstoreInstallHelper::Delegate {
- public:
-  explicit WebstoreDataParser(const base::WeakPtr<KioskAppData>& client)
-      : client_(client) {}
-  WebstoreDataParser(const WebstoreDataParser&) = delete;
-  WebstoreDataParser& operator=(const WebstoreDataParser&) = delete;
-
-  void Start(const std::string& app_id,
-             const std::string& manifest,
-             const GURL& icon_url,
-             scoped_refptr<network::SharedURLLoaderFactory> loader_factory) {
-    scoped_refptr<extensions::WebstoreInstallHelper> webstore_helper =
-        new extensions::WebstoreInstallHelper(this, app_id, manifest, icon_url);
-    webstore_helper->Start(loader_factory);
-  }
-
- private:
-  friend class base::RefCounted<WebstoreDataParser>;
-
-  ~WebstoreDataParser() override = default;
-
-  void ReportFailure() {
-    if (client_) {
-      client_->OnWebstoreParseFailure();
-    }
-
-    delete this;
-  }
-
-  // WebstoreInstallHelper::Delegate overrides:
-  void OnWebstoreParseSuccess(const std::string& id,
-                              const SkBitmap& icon,
-                              base::DictValue parsed_manifest) override {
-    extensions::Manifest manifest(
-        extensions::mojom::ManifestLocation::kInvalidLocation,
-        std::move(parsed_manifest), id);
-
-    if (!IsValidKioskAppManifest(manifest)) {
-      ReportFailure();
-      return;
-    }
-
-    std::string required_platform_version;
-    if (const base::Value* temp = manifest.FindPath(
-            extensions::manifest_keys::kKioskRequiredPlatformVersion)) {
-      if (!temp->is_string() ||
-          !extensions::KioskModeInfo::IsValidPlatformVersion(
-              temp->GetString())) {
-        ReportFailure();
-        return;
-      }
-      required_platform_version = temp->GetString();
-    }
-
-    if (client_) {
-      client_->OnWebstoreParseSuccess(icon, required_platform_version);
-    }
-    delete this;
-  }
-  void OnWebstoreParseFailure(const std::string& id,
-                              InstallHelperResultCode result_code,
-                              const std::string& error_message) override {
-    ReportFailure();
-  }
-
-  base::WeakPtr<KioskAppData> client_;
-};
 
 ////////////////////////////////////////////////////////////////////////////////
 // KioskAppData
@@ -448,16 +376,40 @@ void KioskAppData::OnIconLoadDone(std::optional<gfx::ImageSkia> icon) {
   SetStatus(Status::kLoaded);
 }
 
-void KioskAppData::OnWebstoreParseSuccess(
-    const SkBitmap& icon,
-    const std::string& required_platform_version) {
-  SetCache(name_, icon, required_platform_version);
-  SetStatus(Status::kLoaded);
-}
+void KioskAppData::OnWebstoreParseFinished(
+    extensions::WebstoreParseResult result) {
+  if (!result.has_value()) {
+    LOG(WARNING) << "Webstore request parse failure for app_id=" << app_id()
+                 << ": " << result.error().error_message;
+    SetStatus(Status::kError);
+    return;
+  }
 
-void KioskAppData::OnWebstoreParseFailure() {
-  LOG(WARNING) << "Webstore request parse failure for app_id=" << app_id();
-  SetStatus(Status::kError);
+  extensions::Manifest manifest(
+      extensions::mojom::ManifestLocation::kInvalidLocation,
+      std::move(result->manifest), app_id());
+
+  if (!IsValidKioskAppManifest(manifest)) {
+    LOG(WARNING) << "Webstore request parse failure for app_id=" << app_id();
+    SetStatus(Status::kError);
+    return;
+  }
+
+  std::string required_platform_version;
+  if (const base::Value* temp = manifest.FindPath(
+          extensions::manifest_keys::kKioskRequiredPlatformVersion)) {
+    const std::string* version_str = temp->GetIfString();
+    if (!version_str ||
+        !extensions::KioskModeInfo::IsValidPlatformVersion(*version_str)) {
+      LOG(WARNING) << "Webstore request parse failure for app_id=" << app_id();
+      SetStatus(Status::kError);
+      return;
+    }
+    required_platform_version = *version_str;
+  }
+
+  SetCache(name_, result->icon, required_platform_version);
+  SetStatus(Status::kLoaded);
 }
 
 void KioskAppData::StartFetch() {
@@ -502,10 +454,10 @@ void KioskAppData::OnFetchItemSnippetParseSuccess(
 
   name_ = item_snippet.title();
 
-  // WebstoreDataParser deletes itself when done.
-  (new WebstoreDataParser(weak_factory_.GetWeakPtr()))
-      ->Start(app_id(), item_snippet.manifest(), icon_url,
-              shared_url_loader_factory_);
+  extensions::ParseWebstoreData(
+      shared_url_loader_factory_, app_id(), item_snippet.manifest(), icon_url,
+      base::BindOnce(&KioskAppData::OnWebstoreParseFinished,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void KioskAppData::OnWebstoreResponseParseFailure(

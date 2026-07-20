@@ -17,6 +17,7 @@
 #include "components/account_id/account_id.h"
 #include "extensions/browser/cws_item_service.pb.h"
 #include "extensions/browser/webstore_data_fetcher_delegate.h"
+#include "extensions/browser/webstore_install_helper.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
@@ -102,7 +103,6 @@ class KioskAppData : public KioskAppDataBase,
 
  private:
   class CrxLoader;
-  class WebstoreDataParser;
 
   void SetStatus(Status status);
 
@@ -117,10 +117,7 @@ class KioskAppData : public KioskAppDataBase,
   // Callback for extensions::ImageLoader.
   void OnExtensionIconLoaded(const gfx::Image& icon);
 
-  // Callbacks for WebstoreDataParser
-  void OnWebstoreParseSuccess(const SkBitmap& icon,
-                              const std::string& required_platform_version);
-  void OnWebstoreParseFailure();
+  void OnWebstoreParseFinished(extensions::WebstoreParseResult result);
 
   // Starts to fetch data from web store.
   void StartFetch();

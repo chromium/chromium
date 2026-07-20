@@ -262,13 +262,12 @@ void WebstoreStandaloneInstaller::OnFetchItemSnippetParseSuccess(
     return;
   }
 
-  auto helper = base::MakeRefCounted<WebstoreInstallHelper>(
-      this, id_, item_snippet.manifest(), icon_url);
-
-  // The helper will call us back via OnWebstoreParseSuccess() or
-  // OnWebstoreParseFailure().
-  helper->Start(profile_->GetDefaultStoragePartition()
-                    ->GetURLLoaderFactoryForBrowserProcess());
+  ParseWebstoreData(
+      profile_->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess(),
+      id_, item_snippet.manifest(), icon_url,
+      base::BindOnce(&WebstoreStandaloneInstaller::OnWebstoreParseFinished,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void WebstoreStandaloneInstaller::OnWebstoreResponseParseFailure(
@@ -278,41 +277,31 @@ void WebstoreStandaloneInstaller::OnWebstoreResponseParseFailure(
   CompleteInstall(webstore_install::INVALID_WEBSTORE_RESPONSE, error);
 }
 
-void WebstoreStandaloneInstaller::OnWebstoreParseSuccess(
-    const std::string& id,
-    const SkBitmap& icon,
-    base::DictValue manifest) {
-  CHECK_EQ(id_, id);
+void WebstoreStandaloneInstaller::OnWebstoreParseFinished(
+    WebstoreParseResult result) {
+  if (!result.has_value()) {
+    webstore_install::Result install_result = webstore_install::OTHER_ERROR;
+    switch (result.error().error_code) {
+      case WebstoreInstallHelperResultCode::kManifestError:
+        install_result = webstore_install::INVALID_MANIFEST;
+        break;
+      case WebstoreInstallHelperResultCode::kIconError:
+        install_result = webstore_install::ICON_ERROR;
+        break;
+      default:
+        break;
+    }
+    CompleteInstall(install_result, result.error().error_message);
+    return;
+  }
 
   if (!CheckRequestorAlive()) {
     CompleteInstall(webstore_install::ABORTED, std::string());
     return;
   }
-
-  manifest_ = std::move(manifest);
-  icon_ = icon;
-
+  manifest_ = std::move(result->manifest);
+  icon_ = result->icon;
   OnManifestParsed();
-}
-
-void WebstoreStandaloneInstaller::OnWebstoreParseFailure(
-    const std::string& id,
-    InstallHelperResultCode result_code,
-    const std::string& error_message) {
-  webstore_install::Result install_result = webstore_install::OTHER_ERROR;
-  switch (result_code) {
-    case WebstoreInstallHelper::Delegate::InstallHelperResultCode::
-        kManifestError:
-      install_result = webstore_install::INVALID_MANIFEST;
-      break;
-    case WebstoreInstallHelper::Delegate::InstallHelperResultCode::kIconError:
-      install_result = webstore_install::ICON_ERROR;
-      break;
-    default:
-      break;
-  }
-
-  CompleteInstall(install_result, error_message);
 }
 
 void WebstoreStandaloneInstaller::OnExtensionInstallSuccess(

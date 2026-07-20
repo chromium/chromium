@@ -46,7 +46,6 @@ class WebstoreDataFetcher;
 class WebstoreStandaloneInstaller
     : public base::RefCountedThreadSafe<WebstoreStandaloneInstaller>,
       public WebstoreDataFetcherDelegate,
-      public WebstoreInstallHelper::Delegate,
       public ProfileObserver {
  public:
   // A callback for when the install process completes, successfully or not. If
@@ -184,13 +183,7 @@ class WebstoreStandaloneInstaller
   void OnWebstoreResponseParseFailure(const std::string& extension_id,
                                       const std::string& error) override;
 
-  // WebstoreInstallHelper::Delegate interface implementation.
-  void OnWebstoreParseSuccess(const std::string& id,
-                              const SkBitmap& icon,
-                              base::DictValue parsed_manifest) override;
-  void OnWebstoreParseFailure(const std::string& id,
-                              InstallHelperResultCode result_code,
-                              const std::string& error_message) override;
+  void OnWebstoreParseFinished(WebstoreParseResult result);
 
   // WebstoreInstaller::Delegate callbacks.
   void OnExtensionInstallSuccess(const std::string& id);

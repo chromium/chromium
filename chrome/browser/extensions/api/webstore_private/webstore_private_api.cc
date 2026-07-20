@@ -18,6 +18,7 @@
 #include "base/callback_list.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
+#include "base/json/json_reader.h"
 #include "base/json/values_util.h"
 #include "base/lazy_instance.h"
 #include "base/memory/scoped_refptr.h"
@@ -236,15 +237,13 @@ void PendingApprovals::Clear() {
 }
 
 api::webstore_private::Result WebstoreInstallHelperResultToApiResult(
-    WebstoreInstallHelper::Delegate::InstallHelperResultCode result) {
+    WebstoreInstallHelperResultCode result) {
   switch (result) {
-    case WebstoreInstallHelper::Delegate::InstallHelperResultCode::
-        kUnknownError:
+    case WebstoreInstallHelperResultCode::kUnknownError:
       return api::webstore_private::Result::kUnknownError;
-    case WebstoreInstallHelper::Delegate::InstallHelperResultCode::kIconError:
+    case WebstoreInstallHelperResultCode::kIconError:
       return api::webstore_private::Result::kIconError;
-    case WebstoreInstallHelper::Delegate::InstallHelperResultCode::
-        kManifestError:
+    case WebstoreInstallHelperResultCode::kManifestError:
       return api::webstore_private::Result::kManifestError;
   }
   NOTREACHED();
@@ -545,35 +544,33 @@ WebstorePrivateBeginInstallWithManifest3Function::Run() {
                          ->GetURLLoaderFactoryForBrowserProcess();
   }
 
-  auto helper = base::MakeRefCounted<WebstoreInstallHelper>(
-      this, details().id, details().manifest, icon_url);
+  ParseWebstoreData(
+      loader_factory, details().id, details().manifest, icon_url,
+      base::BindOnce(&WebstorePrivateBeginInstallWithManifest3Function::
+                         OnWebstoreParseFinished,
+                     this));
 
-  // The helper will call us back via OnWebstoreParseSuccess or
-  // OnWebstoreParseFailure.
-  helper->Start(loader_factory);
-
-  // Matched with a Release in OnWebstoreParseSuccess/OnWebstoreParseFailure.
-  AddRef();
-
-  // The response is sent asynchronously in OnWebstoreParseSuccess/
-  // OnWebstoreParseFailure.
   return RespondLater();
 }
 
-void WebstorePrivateBeginInstallWithManifest3Function::OnWebstoreParseSuccess(
-    const std::string& id,
-    const SkBitmap& icon,
-    base::DictValue parsed_manifest) {
-  CHECK_EQ(details().id, id);
-  parsed_manifest_ = std::move(parsed_manifest);
-  icon_ = icon;
+void WebstorePrivateBeginInstallWithManifest3Function::OnWebstoreParseFinished(
+    WebstoreParseResult result) {
+  if (!result.has_value()) {
+    Respond(BuildResponse(
+        WebstoreInstallHelperResultToApiResult(result.error().error_code),
+        result.error().error_message));
+    return;
+  }
+
+  parsed_manifest_ = std::move(result->manifest);
+  icon_ = result->icon;
 
   std::string localized_name =
       details().localized_name ? *details().localized_name : std::string();
 
   std::u16string error;
   dummy_extension_ = ui_util::GetLocalizedExtensionForDisplay(
-      *parsed_manifest_, Extension::FROM_WEBSTORE, id, localized_name,
+      *parsed_manifest_, Extension::FROM_WEBSTORE, details().id, localized_name,
       std::string(), &error);
 
   if (!dummy_extension_.get()) {
@@ -581,10 +578,8 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnWebstoreParseSuccess(
     if (!error.empty()) {
       detailed_error += ": " + base::UTF16ToUTF8(error);
     }
-    OnWebstoreParseFailure(details().id,
-                           WebstoreInstallHelper::Delegate::
-                               InstallHelperResultCode::kManifestError,
-                           detailed_error);
+    Respond(BuildResponse(api::webstore_private::Result::kManifestError,
+                          detailed_error));
     return;
   }
 
@@ -593,14 +588,12 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnWebstoreParseSuccess(
     // The browser window has gone away.
     Respond(BuildResponse(api::webstore_private::Result::kUserCancelled,
                           kWebstoreUserCancelledError));
-    // Matches the AddRef in Run().
-    Release();
     return;
   }
 
   // Check the management policy before the installation process begins.
   GetWebstoreExtensionInstallStatus(
-      id, browser_context_, dummy_extension_->version(),
+      details().id, browser_context_, dummy_extension_->version(),
       dummy_extension_->manifest()->type(),
       PermissionsParser::GetRequiredPermissions(dummy_extension_.get()),
       dummy_extension_->manifest_version(),
@@ -673,18 +666,7 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnInstallStatusCheckDone(
   // OnBlockByPolicyPromptDone, or OnRequestParentApprovalPromptCancelled.
 }
 
-void WebstorePrivateBeginInstallWithManifest3Function::OnWebstoreParseFailure(
-    const std::string& id,
-    WebstoreInstallHelper::Delegate::InstallHelperResultCode result,
-    const std::string& error_message) {
-  CHECK_EQ(details().id, id);
 
-  Respond(BuildResponse(WebstoreInstallHelperResultToApiResult(result),
-                        error_message));
-
-  // Matches the AddRef in Run().
-  Release();
-}
 
 void WebstorePrivateBeginInstallWithManifest3Function::RequestExtensionApproval(
     content::WebContents* web_contents) {
@@ -694,8 +676,7 @@ void WebstorePrivateBeginInstallWithManifest3Function::RequestExtensionApproval(
     // contents.
     Respond(BuildResponse(api::webstore_private::Result::kUserCancelled,
                           kWebstoreUserCancelledError));
-    // Matches the AddRef in Run().
-    Release();
+
     return;
   }
 
@@ -734,8 +715,7 @@ void WebstorePrivateBeginInstallWithManifest3Function::
     // The browser window has gone away.
     Respond(BuildResponse(api::webstore_private::Result::kUserCancelled,
                           kWebstoreUserCancelledError));
-    // Matches the AddRef in Run().
-    Release();
+
     return;
   }
 
@@ -815,7 +795,6 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnExtensionApprovalDone(
       OnExtensionApprovalBlocked();
       break;
   }
-  Release();  // Matches the AddRef in Run().
 }
 
 void WebstorePrivateBeginInstallWithManifest3Function::
@@ -905,8 +884,7 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnFrictionPromptDone(
 
     Respond(BuildResponse(api::webstore_private::Result::kUserCancelled,
                           kWebstoreUserCancelledError));
-    // Matches the AddRef in Run().
-    Release();
+
     return;
   }
 
@@ -970,9 +948,6 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnInstallPromptDone(
       break;
     }
   }
-
-  // Matches the AddRef in Run().
-  Release();
 }
 
 void WebstorePrivateBeginInstallWithManifest3Function::OnRequestPromptDone(
@@ -992,16 +967,12 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnRequestPromptDone(
 
   Respond(BuildResponse(api::webstore_private::Result::kUserCancelled,
                         kWebstoreUserCancelledError));
-  // Matches the AddRef in Run().
-  Release();
 }
 
 void WebstorePrivateBeginInstallWithManifest3Function::
     OnBlockByPolicyPromptDone() {
   Respond(BuildResponse(api::webstore_private::Result::kBlockedByPolicy,
                         kWebstoreBlockByPolicy));
-  // Matches the AddRef in Run().
-  Release();
 }
 
 void WebstorePrivateBeginInstallWithManifest3Function::
@@ -1023,8 +994,6 @@ void WebstorePrivateBeginInstallWithManifest3Function::
 
   Respond(BuildResponse(api::webstore_private::Result::kUserCancelled,
                         kWebstoreUserCancelledError));
-  // Matches the AddRef in Run().
-  Release();
 }
 
 void WebstorePrivateBeginInstallWithManifest3Function::HandleInstallProceed(
@@ -1535,11 +1504,35 @@ WebstorePrivateGetExtensionStatusFunction::Run() {
     return RespondNow(BuildResponseWithoutManifest(extension_id));
   }
 
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      *(params->manifest),
+  std::optional<base::DictValue> manifest =
+      base::JSONReader::ReadDict(*(params->manifest), base::JSON_PARSE_RFC);
+
+  if (!manifest) {
+    return RespondNow(Error(kWebstoreInvalidManifestError));
+  }
+
+  if (!ExtensionsBrowserClient::Get()->IsValidContext(browser_context())) {
+    return RespondNow(Error(kWebstoreUserCancelledError));
+  }
+
+  std::u16string error;
+  auto dummy_extension = Extension::Create(
+      base::FilePath(), mojom::ManifestLocation::kInternal, *manifest,
+      Extension::FROM_WEBSTORE, extension_id, &error);
+
+  if (!dummy_extension) {
+    return RespondNow(Error(kWebstoreInvalidManifestError));
+  }
+
+  GetWebstoreExtensionInstallStatus(
+      extension_id, browser_context(), dummy_extension->version(),
+      dummy_extension->GetType(),
+      PermissionsParser::GetRequiredPermissions(dummy_extension.get()),
+      dummy_extension->manifest_version(),
       base::BindOnce(
-          &WebstorePrivateGetExtensionStatusFunction::OnManifestParsed, this,
-          extension_id));
+          &WebstorePrivateGetExtensionStatusFunction::OnInstallStatusCheckDone,
+          this));
+
   return RespondLater();
 }
 
@@ -1551,39 +1544,6 @@ WebstorePrivateGetExtensionStatusFunction::BuildResponseWithoutManifest(
   api::webstore_private::ExtensionInstallStatus api_status =
       ConvertExtensionInstallStatusForAPI(status);
   return ArgumentList(GetExtensionStatus::Results::Create(api_status));
-}
-
-void WebstorePrivateGetExtensionStatusFunction::OnManifestParsed(
-    const ExtensionId& extension_id,
-    data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.has_value() || !result->is_dict()) {
-    Respond(Error(kWebstoreInvalidManifestError));
-    return;
-  }
-
-  if (!ExtensionsBrowserClient::Get()->IsValidContext(browser_context())) {
-    Respond(Error(kWebstoreUserCancelledError));
-    return;
-  }
-
-  std::u16string error;
-  auto dummy_extension = Extension::Create(
-      base::FilePath(), mojom::ManifestLocation::kInternal, result->GetDict(),
-      Extension::FROM_WEBSTORE, extension_id, &error);
-
-  if (!dummy_extension) {
-    Respond(Error(kWebstoreInvalidManifestError));
-    return;
-  }
-
-  GetWebstoreExtensionInstallStatus(
-      extension_id, browser_context(), dummy_extension->version(),
-      dummy_extension->GetType(),
-      PermissionsParser::GetRequiredPermissions(dummy_extension.get()),
-      dummy_extension->manifest_version(),
-      base::BindOnce(
-          &WebstorePrivateGetExtensionStatusFunction::OnInstallStatusCheckDone,
-          this));
 }
 
 void WebstorePrivateGetExtensionStatusFunction::OnInstallStatusCheckDone(
