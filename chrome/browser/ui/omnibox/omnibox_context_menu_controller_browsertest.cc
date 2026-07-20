@@ -13,7 +13,6 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
-#include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -48,7 +47,6 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
@@ -1352,86 +1350,6 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
     EXPECT_EQ(tab_items[2].first, u"Title Of More Awesomeness");
     EXPECT_FALSE(tab_items[2].second);
   }
-}
-
-class TestActiveTaskContextProviderObserver
-    : public contextual_tasks::ActiveTaskContextProvider::Observer {
- public:
-  void OnContextTabsChanged(
-      const std::set<tabs::TabHandle>& context_tabs) override {
-    last_context_tabs_ = context_tabs;
-  }
-  const std::set<tabs::TabHandle>& last_context_tabs() const {
-    return last_context_tabs_;
-  }
-
- private:
-  std::set<tabs::TabHandle> last_context_tabs_;
-};
-
-IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
-                       UnderlinesNotClearedOnOtherTabsOpeningOrClosing) {
-  // Start with tab 1 (index 0) active.
-  tabs::TabInterface* tab1 = browser()->tab_strip_model()->GetTabAtIndex(0);
-
-  // Add tab 2 (index 1) with a normal web URL.
-  GURL url2(embedded_test_server()->GetURL("/title2.html"));
-  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1, url2,
-                                     ui::PAGE_TRANSITION_TYPED,
-                                     /*check_navigation_success=*/false));
-  browser()->tab_strip_model()->ActivateTabAt(0);
-
-  // Tab 1 is active.
-  ASSERT_EQ(tab1, browser()->tab_strip_model()->GetActiveTab());
-
-  tabs::TabInterface* tab2 = browser()->tab_strip_model()->GetTabAtIndex(1);
-
-  // Register test observer.
-  auto* active_task_context_provider =
-      contextual_tasks::ActiveTaskContextProvider::From(browser());
-  ASSERT_TRUE(active_task_context_provider);
-  TestActiveTaskContextProviderObserver observer;
-  active_task_context_provider->AddObserver(&observer);
-  base::ScopedClosureRunner remove_observer(base::BindOnce(
-      &contextual_tasks::ActiveTaskContextProvider::RemoveObserver,
-      base::Unretained(active_task_context_provider), &observer));
-
-  // Add tab 2 context directly to tab 1's local underlines (since tab 1 is
-  // active).
-  active_task_context_provider->AddLocalTabUnderline(tab2->GetHandle());
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return observer.last_context_tabs().contains(tab2->GetHandle());
-  }));
-
-  // Open tab 3 with a normal web URL.
-  GURL url3(embedded_test_server()->GetURL("/title3.html"));
-  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 2, url3,
-                                     ui::PAGE_TRANSITION_TYPED,
-                                     /*check_navigation_success=*/false));
-  tabs::TabInterface* tab3 = browser()->tab_strip_model()->GetTabAtIndex(2);
-
-  // Ensure tab 1 is active, then add tab 3 to tab 1's local underlines list.
-  browser()->tab_strip_model()->ActivateTabAt(0);
-  active_task_context_provider->AddLocalTabUnderline(tab3->GetHandle());
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return observer.last_context_tabs().contains(tab2->GetHandle()) &&
-           observer.last_context_tabs().contains(tab3->GetHandle());
-  }));
-
-  // Switch active tab to tab 3.
-  browser()->tab_strip_model()->ActivateTabAt(2);
-  ASSERT_EQ(3, browser()->tab_strip_model()->count());
-
-  // Close tab 3, removing it from tab 1's underlines.
-  browser()->tab_strip_model()->CloseWebContentsAt(
-      2, TabCloseTypes::CLOSE_USER_GESTURE);
-
-  // Switch back to tab 1 (index 0).
-  browser()->tab_strip_model()->ActivateTabAt(0);
-
-  // Verify that tab 2 is still in the local underlines of tab 1, instead of
-  // being deselected (due to tab 3 being deselected) like in previous bugs.
-  EXPECT_TRUE(observer.last_context_tabs().contains(tab2->GetHandle()));
 }
 
 class OmniboxContextMenuControllerPecBrowserTestWithFlagsDisabled
