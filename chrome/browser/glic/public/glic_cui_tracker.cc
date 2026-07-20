@@ -10,9 +10,14 @@
 
 namespace glic {
 
-GlicCuiTracker::GlicCuiTracker() : start_time_(base::TimeTicks::Now()) {}
+GlicCuiTracker::GlicCuiTracker(const char* metric_prefix)
+    : metric_prefix_(metric_prefix), start_time_(base::TimeTicks::Now()) {}
 
-GlicCuiTracker::~GlicCuiTracker() = default;
+GlicCuiTracker::~GlicCuiTracker() {
+  if (!IsResolved()) {
+    Resolve(GlicCuiOutcome::kUnknownCancel);
+  }
+}
 
 void GlicCuiTracker::Resolve(GlicCuiOutcome reason) {
   if (is_resolved_) {

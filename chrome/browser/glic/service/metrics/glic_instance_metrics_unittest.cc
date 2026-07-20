@@ -16,7 +16,9 @@
 #include "chrome/browser/glic/glic_pref_names_internal.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_cui_tracker.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/service/glic_state_tracker.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
@@ -219,6 +221,30 @@ TEST_F(GlicInstanceMetricsTest, OnUserInputSubmitted_WhileHidden_LogsError) {
   histogram_tester_.ExpectUniqueSample(
       "Glic.Instance.Metrics.Error",
       GlicInstanceMetricsError::kInputSubmittedWhileHidden, 1);
+}
+
+TEST_F(GlicInstanceMetricsTest, SubmitQueryCuiOutcomeRecorded) {
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_.OnResponseStarted();
+  histogram_tester_.ExpectUniqueSample("Glic.CUI.SubmitQuery.Outcome",
+                                       GlicCuiOutcome::kSuccess, 1);
+}
+
+TEST_F(GlicInstanceMetricsTest, SubmitQueryCuiOutcomeRecorded_Failed) {
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_.OnWebUiStateChanged(mojom::WebUiState::kError);
+  histogram_tester_.ExpectUniqueSample("Glic.CUI.SubmitQuery.Outcome",
+                                       GlicCuiOutcome::kFailed, 1);
+}
+
+TEST_F(GlicInstanceMetricsTest, SubmitQueryCuiOutcomeRecorded_Abandoned) {
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_.OnVisibilityChanged(false);
+  histogram_tester_.ExpectUniqueSample("Glic.CUI.SubmitQuery.Outcome",
+                                       GlicCuiOutcome::kAbandoned, 1);
 }
 
 TEST_F(GlicInstanceMetricsTest, OnShowInFloaty_WhileAlreadyOpen_LogsError) {

@@ -356,7 +356,7 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
 
   base::flat_set<SafeEmbedderKey> seen_embedders_;
 
-  std::unique_ptr<GlicWindowInvocationTracker> invocation_tracker_;
+  std::vector<std::unique_ptr<GlicCuiTracker>> cui_trackers_;
 };
 
 }  // namespace glic

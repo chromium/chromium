@@ -39,7 +39,7 @@ enum class GlicInstanceEvent;
 // or accepting an opt-in.
 class GlicCuiTracker {
  public:
-  GlicCuiTracker();
+  explicit GlicCuiTracker(const char* metric_prefix);
   virtual ~GlicCuiTracker();
 
   GlicCuiTracker(const GlicCuiTracker&) = delete;
@@ -54,11 +54,12 @@ class GlicCuiTracker {
   virtual std::optional<GlicCuiOutcome> GetEventOutcome(
       GlicInstanceEvent event) const;
 
-  virtual const char* GetMetricName() const = 0;
+  const char* GetMetricName() const { return metric_prefix_; }
   virtual base::TimeDelta GetHistogramMax() const;
   virtual base::TimeDelta GetMaxLatency() const;
 
  private:
+  const char* metric_prefix_;
   base::TimeTicks start_time_;
   bool is_resolved_ = false;
 };

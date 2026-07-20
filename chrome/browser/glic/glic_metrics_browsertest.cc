@@ -218,6 +218,61 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(user_action_tester.GetActionCount("Glic.Instance.Toggle"), 2);
 }
 
+IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, SubmitQueryCuiOutcome_Failure) {
+  base::HistogramTester histogram_tester;
+
+  auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(
+      PlatformBrowserTest::browser()->GetProfile());
+  glic_service->ToggleUI(PlatformBrowserTest::browser(),
+                         /*prevent_close=*/false,
+                         mojom::InvocationSource::kOsButton);
+  ASSERT_OK(WaitForWebUiState(mojom::WebUiState::kReady));
+
+  tabs::TabInterface* tab =
+      PlatformBrowserTest::browser()->GetActiveTabInterface();
+  auto* instance =
+      static_cast<GlicInstanceImpl*>(glic_service->GetInstanceForTab(tab));
+  ASSERT_TRUE(instance);
+
+  instance->instance_metrics().OnUserInputSubmitted(
+      mojom::WebClientMode::kText);
+  instance->WebUiStateChanged(mojom::WebUiState::kError);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetBucketCount("Glic.CUI.SubmitQuery.Outcome",
+                                           GlicCuiOutcome::kFailed) == 1;
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
+                       SubmitQueryCuiOutcome_Abandoned) {
+  base::HistogramTester histogram_tester;
+
+  auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(
+      PlatformBrowserTest::browser()->GetProfile());
+  glic_service->ToggleUI(PlatformBrowserTest::browser(),
+                         /*prevent_close=*/false,
+                         mojom::InvocationSource::kOsButton);
+  ASSERT_OK(WaitForWebUiState(mojom::WebUiState::kReady));
+
+  tabs::TabInterface* tab =
+      PlatformBrowserTest::browser()->GetActiveTabInterface();
+  auto* instance =
+      static_cast<GlicInstanceImpl*>(glic_service->GetInstanceForTab(tab));
+  ASSERT_TRUE(instance);
+
+  instance->instance_metrics().OnUserInputSubmitted(
+      mojom::WebClientMode::kText);
+  glic_service->ToggleUI(PlatformBrowserTest::browser(),
+                         /*prevent_close=*/false,
+                         mojom::InvocationSource::kOsButton);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetBucketCount("Glic.CUI.SubmitQuery.Outcome",
+                                           GlicCuiOutcome::kAbandoned) == 1;
+  }));
+}
+
 // Test with message first FRE enabled.
 // Expected behavior:
 // 1. The first call to ToggleUI() (to open the panel) is intercepted because
@@ -373,6 +428,19 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
 
   // 3. Verify that Glic.Instance.Open is NOT incremented.
   EXPECT_EQ(user_action_tester.GetActionCount("Glic.Instance.Open"), 1);
+
+  // 4. Verify CUI tracking. We simulate a query submission from the active
+  // instance.
+  auto* instance =
+      static_cast<GlicInstanceImpl*>(glic_service->GetInstanceForTab(tab));
+  ASSERT_TRUE(instance);
+  instance->instance_metrics().OnUserInputSubmitted(
+      mojom::WebClientMode::kText);
+  instance->instance_metrics().OnResponseStarted();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetBucketCount("Glic.CUI.SubmitQuery.Outcome",
+                                           GlicCuiOutcome::kSuccess) == 1;
+  }));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,

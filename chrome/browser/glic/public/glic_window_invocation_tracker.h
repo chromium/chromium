@@ -20,7 +20,6 @@ class GlicWindowInvocationTracker : public GlicCuiTracker {
       delete;
 
  protected:
-  const char* GetMetricName() const override;
   std::optional<GlicCuiOutcome> GetEventOutcome(
       GlicInstanceEvent event) const override;
 };

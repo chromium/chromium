@@ -8,17 +8,10 @@
 
 namespace glic {
 
-GlicWindowInvocationTracker::GlicWindowInvocationTracker() = default;
+GlicWindowInvocationTracker::GlicWindowInvocationTracker()
+    : GlicCuiTracker("Glic.CUI.WindowEntryPointInvocation") {}
 
-GlicWindowInvocationTracker::~GlicWindowInvocationTracker() {
-  if (!IsResolved()) {
-    Resolve(GlicCuiOutcome::kUnknownCancel);
-  }
-}
-
-const char* GlicWindowInvocationTracker::GetMetricName() const {
-  return "Glic.CUI.WindowEntryPointInvocation";
-}
+GlicWindowInvocationTracker::~GlicWindowInvocationTracker() = default;
 
 std::optional<GlicCuiOutcome> GlicWindowInvocationTracker::GetEventOutcome(
     GlicInstanceEvent event) const {

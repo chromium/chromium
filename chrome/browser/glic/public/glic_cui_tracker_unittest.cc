@@ -6,7 +6,9 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/public/glic_submit_query_cui_tracker.h"
 #include "chrome/browser/glic/public/glic_window_invocation_tracker.h"
+#include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace glic {
@@ -14,15 +16,8 @@ namespace {
 
 class TestGlicCuiTracker : public GlicCuiTracker {
  public:
-  TestGlicCuiTracker() = default;
-  ~TestGlicCuiTracker() override {
-    if (!IsResolved()) {
-      Resolve(GlicCuiOutcome::kUnknownCancel);
-    }
-  }
-
- protected:
-  const char* GetMetricName() const override { return "Glic.TestCui"; }
+  TestGlicCuiTracker() : GlicCuiTracker("Glic.TestCui") {}
+  ~TestGlicCuiTracker() override = default;
 };
 
 }  // namespace
@@ -92,6 +87,27 @@ TEST_F(GlicCuiTrackerTest, WindowInvocationTrackerUsesCorrectPrefix) {
       1);
   histogram_tester_.ExpectTotalCount(
       "Glic.CUI.WindowEntryPointInvocation.Latency", 1);
+}
+
+TEST_F(GlicCuiTrackerTest, SubmitQueryTrackerUsesCorrectPrefix) {
+  {
+    GlicSubmitQueryCuiTracker tracker;
+    tracker.Resolve(GlicCuiOutcome::kSuccess);
+  }
+
+  histogram_tester_.ExpectUniqueSample("Glic.CUI.SubmitQuery.Outcome",
+                                       GlicCuiOutcome::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount("Glic.CUI.SubmitQuery.Latency", 1);
+}
+
+TEST_F(GlicCuiTrackerTest, SubmitQueryTrackerResolvesOnEvents) {
+  {
+    GlicSubmitQueryCuiTracker tracker;
+    tracker.OnEvent(GlicInstanceEvent::kResponseStarted);
+  }
+
+  histogram_tester_.ExpectUniqueSample("Glic.CUI.SubmitQuery.Outcome",
+                                       GlicCuiOutcome::kSuccess, 1);
 }
 
 }  // namespace glic
