@@ -10,6 +10,7 @@
 #include "base/mac/mac_util.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/time/time.h"
 #include "components/system_media_controls/mac/now_playing_info_center_delegate_cocoa.h"
 #include "skia/ext/skia_utils_mac.h"
 
@@ -96,11 +97,13 @@ void NowPlayingInfoCenterDelegate::UpdatePlaybackStatusAndPosition() {
       PlaybackStatusToMPNowPlayingPlaybackState(playback_status);
   [now_playing_info_center_delegate_cocoa_ setPlaybackState:state];
 
-  auto time_since_epoch =
-      position.last_updated_time() - base::TimeTicks::UnixEpoch();
+  // Convert the TimeTicks timestamp to wall-clock Time by subtracting the
+  // elapsed tick duration from the current wall-clock time.
+  const base::Time last_updated_time =
+      base::Time::Now() -
+      (base::TimeTicks::Now() - position.last_updated_time());
   [now_playing_info_center_delegate_cocoa_
-      setCurrentPlaybackDate:
-          [NSDate dateWithTimeIntervalSince1970:time_since_epoch.InSecondsF()]];
+      setCurrentPlaybackDate:last_updated_time.ToNSDate()];
   [now_playing_info_center_delegate_cocoa_
       setDuration:@(position.duration().InSecondsF())];
 
