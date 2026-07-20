@@ -122,6 +122,14 @@ struct MemorySearchResult {
   // The index of the entry in the remote response. If the entry is not a remote
   // result, it will be unset (nullopt).
   std::optional<int32_t> remote_response_index;
+
+  // Indicates if the entry comes from a locally stored Autofill data (such as
+  // a local address profile, a local credit card, or a local Autofill AI
+  // entity), as opposed to server-side data (like a Wallet card or a remote
+  // query response). Useful to discern local vs remote entities during
+  // deduplication.
+  // TODO(crbug.com/532649036): Use the real type instead.
+  bool is_local = false;
 };
 
 std::ostream& operator<<(std::ostream& os, const MemorySearchResult& result);

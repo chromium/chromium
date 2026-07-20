@@ -177,6 +177,28 @@ class AtMemoryQueryServiceTest : public testing::Test {
     return response;
   }
 
+  MemorySearchResults RunDeduplicationQueryWithLocalResults(
+      const std::vector<MemorySearchResult>& local_results) {
+    personal_context::proto::AtMemoryQueryResponse response =
+        CreateQueryResponse();
+    personal_context::proto::AutofillFetchPlan* plan =
+        response.mutable_autofill_fetch_plan();
+    plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL);
+    StubFetchContextResponse(std::move(response));
+
+    auto data_provider = std::make_unique<FakeMemoryDataProvider>();
+    data_provider->SetResults(local_results);
+
+    auto service = std::make_unique<AtMemoryQueryService>(
+        std::move(data_provider), &mock_service_, "en-US");
+
+    base::test::TestFuture<MemorySearchResults> future;
+    service->Query(u"what is my name", GURL("https://example.com"),
+                   u"Page Title", future.GetRepeatingCallback());
+    EXPECT_TRUE(future.Wait());
+    return future.Get();
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment_;
   TestAutofillClient autofill_client_;
   NiceMock<personal_context::MockPersonalContextService> mock_service_;
@@ -802,9 +824,9 @@ TEST_F(AtMemoryQueryServiceTest, Query_DeduplicatesResults_PreservesOrder) {
 }
 
 // Tests that deduplication retains fields like confidence_score from the first
-// entry and merges sources.
+// entry.
 TEST_F(AtMemoryQueryServiceTest,
-       Query_DeduplicatesResults_RetainsFirstEntryFieldsAndMergesSources) {
+       Query_DeduplicatesResults_RetainsFirstEntryFields) {
   personal_context::proto::AtMemoryQueryResponse response =
       CreateQueryResponse();
   personal_context::proto::AutofillFetchPlan* plan =
@@ -823,6 +845,7 @@ TEST_F(AtMemoryQueryServiceTest,
 
   MemorySearchResult result1(MemoryDataType::kNameFull, u"Name", u"John Doe",
                              /*confidence_score=*/0.9);
+  result1.is_local = true;
   result1.metadata_list.push_back(metadata);
   result1.sources.push_back(
       MemoryEntrySource(MemoryEntrySourceType::kAutofill));
@@ -846,56 +869,32 @@ TEST_F(AtMemoryQueryServiceTest,
   ASSERT_EQ(result.entries.size(), 1u);
   EXPECT_EQ(result.entries[0].value, u"John Doe");
   EXPECT_DOUBLE_EQ(result.entries[0].confidence_score, 0.9);
-  ASSERT_EQ(result.entries[0].sources.size(), 2u);
+  EXPECT_TRUE(result.entries[0].is_local);
+  ASSERT_EQ(result.entries[0].sources.size(), 1u);
   EXPECT_EQ(result.entries[0].sources[0].type,
             MemoryEntrySourceType::kAutofill);
-  EXPECT_EQ(result.entries[0].sources[1].type, MemoryEntrySourceType::kGmail);
 }
 
 // Tests that entries with different values or metadata lists are both retained.
 TEST_F(AtMemoryQueryServiceTest,
        Query_DeduplicatesResults_KeepsDifferentEntries) {
-  personal_context::proto::AtMemoryQueryResponse response =
-      CreateQueryResponse();
-  personal_context::proto::AutofillFetchPlan* plan =
-      response.mutable_autofill_fetch_plan();
-  plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL);
-
-  StubFetchContextResponse(std::move(response));
-
-  auto data_provider = std::make_unique<FakeMemoryDataProvider>();
-  auto* fake_data_provider = data_provider.get();
-
-  auto service = std::make_unique<AtMemoryQueryService>(
-      std::move(data_provider), &mock_service_, "en-US");
-
-  EntryMetadata metadata_sd(MemoryDataType::kAddressCity, u"City",
-                            u"San Diego");
-  EntryMetadata metadata_ny(MemoryDataType::kAddressCity, u"City", u"New York");
-
-  // Same value, different metadata
+  EntryMetadata sd_meta(MemoryDataType::kAddressCity, u"City", u"San Diego");
+  EntryMetadata ny_meta(MemoryDataType::kAddressCity, u"City", u"New York");
   MemorySearchResult result1(MemoryDataType::kNameFull, u"Name", u"John Doe");
-  result1.metadata_list.push_back(metadata_sd);
+  result1.metadata_list.push_back(sd_meta);
 
   MemorySearchResult result2(MemoryDataType::kNameFull, u"Name", u"John Doe");
-  result2.metadata_list.push_back(metadata_ny);
+  result2.metadata_list.push_back(ny_meta);
 
-  // Different value, same metadata
   MemorySearchResult result3(MemoryDataType::kNameFull, u"Name", u"Jane Doe");
-  result3.metadata_list.push_back(metadata_sd);
+  result3.metadata_list.push_back(sd_meta);
 
   // Same value and metadata, different type
   MemorySearchResult result4(MemoryDataType::kUnknown, u"Unknown", u"John Doe");
-  result4.metadata_list.push_back(metadata_sd);
+  result4.metadata_list.push_back(sd_meta);
 
-  fake_data_provider->SetResults({result1, result2, result3, result4});
-
-  TestFuture<MemorySearchResults> future;
-  service->Query(u"what is my name", GURL("https://example.com"), u"Page Title",
-                 future.GetRepeatingCallback());
-
-  ASSERT_TRUE(future.Wait());
-  const auto& result = future.Get();
+  const MemorySearchResults& result = RunDeduplicationQueryWithLocalResults(
+      {result1, result2, result3, result4});
   ASSERT_EQ(result.entries.size(), 4u);
   EXPECT_EQ(result.entries[0].value, u"John Doe");
   ASSERT_EQ(result.entries[0].metadata_list.size(), 1u);
@@ -916,6 +915,104 @@ TEST_F(AtMemoryQueryServiceTest,
   ASSERT_EQ(result.entries[3].metadata_list.size(), 1u);
   EXPECT_EQ(result.entries[3].metadata_list[0].value, u"San Diego");
   EXPECT_EQ(result.entries[3].type, MemoryDataType::kUnknown);
+}
+
+// Tests that deduplication prefers explicitly saved local Autofill results.
+TEST_F(AtMemoryQueryServiceTest,
+       Query_DeduplicatesResults_PrefersLocalAutofill) {
+  MemorySearchResult remote_result(MemoryDataType::kNameFull, u"Name",
+                                   u"John Doe", /*confidence_score=*/0.9);
+  remote_result.is_local = false;
+
+  MemorySearchResult local_result(MemoryDataType::kNameFull, u"Name",
+                                  u"John Doe", /*confidence_score=*/0.5);
+  local_result.is_local = true;
+
+  // Insert remote first to test tiebreaker overriding the first entry.
+  const MemorySearchResults& result =
+      RunDeduplicationQueryWithLocalResults({remote_result, local_result});
+  EXPECT_THAT(result.entries, testing::ElementsAre(local_result));
+}
+
+// Tests that deduplication prefers results with more non-empty metadata fields.
+TEST_F(AtMemoryQueryServiceTest,
+       Query_DeduplicatesResults_PrefersMoreMetadata) {
+  MemorySearchResult less_meta(MemoryDataType::kNameFull, u"Name", u"John Doe",
+                               /*confidence_score=*/0.9);
+  less_meta.metadata_list.emplace_back(MemoryDataType::kAddressCity, u"City",
+                                       u"San Diego");
+
+  MemorySearchResult more_meta(MemoryDataType::kNameFull, u"Name", u"John Doe",
+                               /*confidence_score=*/0.5);
+  more_meta.metadata_list.emplace_back(MemoryDataType::kAddressCity, u"City",
+                                       u"San Diego");
+  more_meta.metadata_list.emplace_back(MemoryDataType::kAddressState, u"State",
+                                       u"CA");
+
+  const MemorySearchResults& result =
+      RunDeduplicationQueryWithLocalResults({less_meta, more_meta});
+  EXPECT_THAT(result.entries, testing::ElementsAre(more_meta));
+}
+
+// Tests that deduplication prefers results sourced from Autofill.
+TEST_F(AtMemoryQueryServiceTest,
+       Query_DeduplicatesResults_PrefersAutofillSource) {
+  MemorySearchResult gmail_result(MemoryDataType::kNameFull, u"Name",
+                                  u"John Doe", /*confidence_score=*/0.9);
+  gmail_result.sources.emplace_back(MemoryEntrySourceType::kGmail);
+
+  MemorySearchResult autofill_result(MemoryDataType::kNameFull, u"Name",
+                                     u"John Doe", /*confidence_score=*/0.5);
+  autofill_result.sources.emplace_back(MemoryEntrySourceType::kAutofill);
+
+  // We check the entry was replaced based on confidence score changing to 0.5.
+  const MemorySearchResults& result =
+      RunDeduplicationQueryWithLocalResults({gmail_result, autofill_result});
+  EXPECT_THAT(result.entries, testing::ElementsAre(autofill_result));
+}
+
+// Tests that deduplication for Autofill AI entities is determined by merge
+// constraints (e.g. Passport Number), ignoring other contradicting metadata.
+TEST_F(AtMemoryQueryServiceTest,
+       Query_DeduplicatesResults_MergeConstraintsSatisfied) {
+  MemorySearchResult result1(MemoryDataType::kPassportNumber,
+                             u"Passport Number", u"12345");
+  result1.metadata_list.emplace_back(MemoryDataType::kPassportName, u"Name",
+                                     u"John Doe");
+
+  MemorySearchResult result2(MemoryDataType::kPassportNumber,
+                             u"Passport Number", u"12345");
+  result2.metadata_list.emplace_back(MemoryDataType::kPassportName, u"Name",
+                                     u"Jane Doe");
+
+  // The merge constraint for Passport is `kPassportNumber`. Since both results
+  // have the same Passport Number (12345), they are considered duplicates
+  // despite the contradicting `kPassportName`.
+  const MemorySearchResults& result =
+      RunDeduplicationQueryWithLocalResults({result1, result2});
+  EXPECT_EQ(result.entries.size(), 1u);
+}
+
+// Tests that Autofill AI entities are not deduplicated if their merge
+// constraints are not satisfied, even if their main values match.
+TEST_F(AtMemoryQueryServiceTest,
+       Query_DeduplicatesResults_MergeConstraintsNotSatisfied_NotDeduplicated) {
+  MemorySearchResult result1(MemoryDataType::kPassportName, u"Name",
+                             u"John Doe");
+  result1.metadata_list.emplace_back(MemoryDataType::kPassportNumber,
+                                     u"Passport Number", u"888");
+
+  MemorySearchResult result2(MemoryDataType::kPassportName, u"Name",
+                             u"John Doe");
+  result2.metadata_list.emplace_back(MemoryDataType::kPassportNumber,
+                                     u"Passport Number", u"999");
+
+  // Their primary values match ("John Doe"), but their merge constraints
+  // (`kPassportNumber`) do not match (888 vs 999). Therefore, they correspond
+  // to different passport entities and are not deduplicated.
+  const MemorySearchResults& result =
+      RunDeduplicationQueryWithLocalResults({result1, result2});
+  EXPECT_EQ(result.entries.size(), 2u);
 }
 
 // Tests that the query service records the provider result count metric.

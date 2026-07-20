@@ -26,7 +26,11 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_data_type.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_data_type_util.h"
+#include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
 #include "components/autofill/core/browser/at_memory/autofill_data_provider.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/from_accessibility_annotator.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/device_reauth/device_authenticator.h"
@@ -36,6 +40,7 @@
 #include "components/personal_context/proto/features/at_memory.pb.h"
 #include "net/base/network_change_notifier.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -363,27 +368,168 @@ size_t CountFilterWordMatchesInEntry(
   return count;
 }
 
+// Returns a string_view to the value of the given `type` in the `result`, or
+// `std::nullopt` if it doesn't exist. This checks both the primary result type
+// and the `metadata_list`. If the attribute was the primary attribute when
+// creating the result from an entity, it might have been omitted from the
+// `metadata_list`. In that case, we can use `result.type`
+// to identify it.
+std::optional<std::u16string_view> GetValueForMemoryDataType(
+    const MemorySearchResult& result,
+    MemoryDataType type) {
+  if (result.type == type) {
+    return result.value;
+  }
+  auto it = std::ranges::find(result.metadata_list, type, &EntryMetadata::type);
+  if (it != result.metadata_list.end()) {
+    return it->value;
+  }
+  return std::nullopt;
+}
+
+// Returns whether two results are considered duplicates and should be merged.
+// To be a duplicate, both results must have the exact same textual `value`.
+// Since two identical values (e.g. "Peter") could come from two different
+// real-world entities (e.g. two separate passports), we also need to ensure
+// they originate from the same real-world entity.
+//
+// For Autofill AI Entities, we determine if they come from the same real-world
+// entity by checking if they satisfy "merge constraints" from the entity schema
+// (e.g. if both search results belong to passports with the same passport
+// number). If they do and their `value`s match, we deduplicate them so we
+// don't show the user two identical suggestions.
+//
+// For other Autofill data types (Addresses, CreditCards, Ibans) and unknown
+// types, determining if they come from the same real-world entity is done by
+// checking that there is no contradicting metadata.
+bool AreResultsDuplicates(const MemorySearchResult& a,
+                          const MemorySearchResult& b) {
+  if (a.type != b.type) {
+    return false;
+  }
+  if (a.type == MemoryDataType::kUnknown &&
+      (a.type_name != b.type_name || a.type_name.empty())) {
+    return false;
+  }
+  if (a.value != b.value) {
+    return false;
+  }
+
+  std::optional<AtMemoryDataType> at_memory_type = ToAtMemoryDataType(a.type);
+  std::optional<EntityType> entity_type;
+  if (at_memory_type) {
+    std::visit(
+        absl::Overload([&](const EntityType& e_type) { entity_type = e_type; },
+                       [&](const AttributeType& a_type) {
+                         // Extract the parent entity type to use its merge
+                         // constraints for deduplication.
+                         entity_type = a_type.entity_type();
+                       },
+                       [](const auto&) {}),
+        *at_memory_type);
+  }
+
+  if (entity_type) {
+    // For Autofill AI entities, we can use merge constraints to evaluate if
+    // `a` and `b` correspond to the same entity.
+    for (const DenseSet<AttributeType>& constraint :
+         entity_type->merge_constraints()) {
+      if (std::ranges::all_of(constraint, [&](AttributeType attr_type) {
+            MemoryDataType mem_type = AttributeTypeToMemoryDataType(attr_type);
+            std::optional<std::u16string_view> val_a =
+                GetValueForMemoryDataType(a, mem_type);
+            std::optional<std::u16string_view> val_b =
+                GetValueForMemoryDataType(b, mem_type);
+            return val_a && val_b && *val_a == *val_b;
+          })) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  auto has_contradicting_metadata = [](const MemorySearchResult& result,
+                                       const EntryMetadata& meta) {
+    return std::ranges::any_of(
+        result.metadata_list, [&meta](const EntryMetadata& result_meta) {
+          return result_meta.type == meta.type &&
+                 result_meta.type_name == meta.type_name &&
+                 result_meta.value != meta.value;
+        });
+  };
+
+  return std::ranges::all_of(a.metadata_list,
+                             [&](const EntryMetadata& meta_a) {
+                               return !has_contradicting_metadata(b, meta_a);
+                             }) &&
+         std::ranges::all_of(b.metadata_list, [&](const EntryMetadata& meta_b) {
+           return !has_contradicting_metadata(a, meta_b);
+         });
+}
+
+// Returns the number of metadata fields in the result that have a non-empty
+// value.
+int CountNonEmptyMetadata(const MemorySearchResult& result) {
+  return std::ranges::count_if(
+      result.metadata_list,
+      [](const EntryMetadata& meta) { return !meta.value.empty(); });
+}
+
+// Returns whether the result has Autofill as a source.
+bool IsAutofillSourced(const MemorySearchResult& result) {
+  return std::ranges::contains(result.sources, MemoryEntrySourceType::kAutofill,
+                               &MemoryEntrySource::type);
+}
+
+// Primary logic for resolving duplicates.
+// Returns `true` if `first` should be preferred over `second`.
+// Specifically:
+// 1. Pick explicitly saved local Autofill entities first.
+// 2. Otherwise pick the one with more valid metadata fields.
+// 3. In case of a tie, prioritize Autofill-sourced provider if possible.
+bool PreferFirstResult(const MemorySearchResult& first,
+                       const MemorySearchResult& second) {
+  bool first_is_local = first.is_local;
+  bool second_is_local = second.is_local;
+  if (first_is_local != second_is_local) {
+    return first_is_local;
+  }
+
+  int first_metadata = CountNonEmptyMetadata(first);
+  int second_metadata = CountNonEmptyMetadata(second);
+  if (first_metadata != second_metadata) {
+    return first_metadata > second_metadata;
+  }
+
+  bool first_is_autofill = IsAutofillSourced(first);
+  bool second_is_autofill = IsAutofillSourced(second);
+  if (first_is_autofill != second_is_autofill) {
+    return first_is_autofill;
+  }
+
+  return true;
+}
+
 // Deduplicates search results in `MemorySearchResults`.
-// An entry is considered a duplicate if its `type`, `value` and its
-// `metadata_list` are identical to an entry already in the unique set.
-// The first occurrence of a duplicate entry is preserved, maintaining its
-// relative order and other fields (like confidence_score). The `sources` of
-// subsequent duplicates are merged into the preserved entry.
+// For Autofill AI entities, we use merge constraints to evaluate if results
+// correspond to the same underlying entity. When duplicates are found, only the
+// "better" result is kept. The better result is determined by
+// `PreferFirstResult()`, which prioritizes locally stored entities (like
+// addresses or credit cards) and falls back to comparing which result has
+// more complete metadata. The `sources` from the discarded duplicate are
+// intentionally not merged, as we only want to keep the actually relevant
+// sources that link to the correct "manage" UI surface for the kept entry.
 void DeduplicateResults(std::vector<MemorySearchResult>& results) {
   std::vector<MemorySearchResult> unique_results;
   unique_results.reserve(results.size());
   for (MemorySearchResult& result : results) {
     auto it = std::ranges::find_if(
         unique_results, [&result](const MemorySearchResult& existing) {
-          return existing.type == result.type &&
-                 existing.value == result.value &&
-                 existing.metadata_list == result.metadata_list;
+          return AreResultsDuplicates(existing, result);
         });
     if (it != unique_results.end()) {
-      for (MemoryEntrySource& source : result.sources) {
-        if (!std::ranges::contains(it->sources, source)) {
-          it->sources.push_back(std::move(source));
-        }
+      if (!PreferFirstResult(*it, result)) {
+        *it = std::move(result);
       }
     } else {
       unique_results.push_back(std::move(result));

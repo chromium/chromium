@@ -473,7 +473,7 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_AutofillAiEntityData) {
   EXPECT_THAT(
       results,
       ElementsAre(IsMemorySearchResult(
-          u"123456", u"Vehicle",
+          u"123456", u"License plate",
           ElementsAre(
               IsMetadata(MemoryDataType::kVehicleMake, u"BMW"),
               IsMetadata(MemoryDataType::kVehicleModel, u"Series 2"),
@@ -497,7 +497,8 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_PassportData) {
 
   auto it = std::find_if(
       results.begin(), results.end(), [](const MemorySearchResult& r) {
-        return r.type == accessibility_annotator::MemoryDataType::kPassportFull;
+        return r.type ==
+               accessibility_annotator::MemoryDataType::kPassportNumber;
       });
   ASSERT_NE(it, results.end());
 
@@ -549,7 +550,7 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_VehicleFallbackToFirstNonEmpty) {
   EXPECT_THAT(
       results,
       ElementsAre(IsMemorySearchResult(
-          u"BMW", u"Vehicle",
+          u"BMW", u"Make",
           ElementsAre(
               IsMetadata(MemoryDataType::kVehicleModel, u"Series 2"),
               IsMetadata(MemoryDataType::kVehiclePlateState, u"California"),
