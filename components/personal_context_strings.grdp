@@ -52,10 +52,10 @@
     <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_SWITCH_SUMMARY_ANDROID" desc="Description text under the 'Find and fill with Gemini' setting explaining the functionality and data sources. 'Gmail', 'Photos', and 'Personal Intelligence' are proper Google product and feature names that must adhere to standard branding guidelines." formatter_data="android_java">
       Autofill info from apps such as Gmail and Photos. Powered by Personal Intelligence.
     </message>
-    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_MANAGE_CONNECTED_APPS_TITLE_ANDROID" desc="The title of the preference that opens the Gemini application settings page with controls to manage the connected applications." formatter_data="android_java">
+    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_MANAGE_CONNECTED_APPS_TITLE_ANDROID" desc="Button label or link text in Chrome settings. It navigates the user to a Gemini page where they can manage which third-party or Google ecosystem applications are linked to the enhanced autofill feature." formatter_data="android_java">
       Manage Connected Apps
     </message>
-    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_MANAGE_CONNECTED_APPS_SUMMARY_ANDROID" desc="The description of the preference that opens the Gemini application settings page with controls to manage the connected applications." formatter_data="android_java">
+    <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_MANAGE_CONNECTED_APPS_SUMMARY_ANDROID" desc="Subtext or description beneath the 'Manage Connected Apps' entry point, explaining its purpose. 'Gemini' is a proper product name and must remain unlocalized." formatter_data="android_java">
       Choose which apps Gemini connects to
     </message>
     <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_HELPING_IMPROVE_NOTICE_ANDROID" desc="Section header in Chrome settings indicating that the user has opted in to sharing data to improve the feature." formatter_data="android_java">
