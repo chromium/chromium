@@ -8,6 +8,38 @@ found in the LICENSE file.
 
 <enums>
 
+<!-- LINT.IfChange(ActorOneTimeTokenFillingServiceFillOtpEvent) -->
+
+<enum name="ActorOneTimeTokenFillingServiceFillOtpEvent">
+  <int value="0" label="Start"/>
+  <int value="1" label="NullTab"/>
+  <int value="2" label="EmptyTriggerFieldIds"/>
+  <int value="3" label="ConcurrentCall"/>
+  <int value="4" label="NoAutofillManager"/>
+  <int value="5" label="FormStructureNotFound"/>
+  <int value="6" label="TriggerFieldNotFound"/>
+  <int value="7" label="EmptyFillData"/>
+  <int value="8" label="Success"/>
+  <int value="9" label="Error"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service_metrics.h:ActorOneTimeTokenFillingServiceFillOtpEvent) -->
+
+<!-- LINT.IfChange(ActorOneTimeTokenFillingServiceRetrieveOtpEvent) -->
+
+<enum name="ActorOneTimeTokenFillingServiceRetrieveOtpEvent">
+  <int value="0" label="Start"/>
+  <int value="1" label="NullTab"/>
+  <int value="2" label="NoService"/>
+  <int value="3" label="CacheHit"/>
+  <int value="4" label="Success"/>
+  <int value="5" label="Error"/>
+  <int value="6" label="MockOtp"/>
+  <int value="7" label="NoCallback"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service_metrics.h:ActorOneTimeTokenFillingServiceRetrieveOtpEvent) -->
+
 <!-- LINT.IfChange(AttemptOtpFillingEvent) -->
 
 <enum name="AttemptOtpFillingEvent">

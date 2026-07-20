@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
@@ -18,10 +19,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
+#include "chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service_metrics.h"
 #include "chrome/browser/autofill/one_time_token_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_client_provider.h"
 #include "chrome/browser/ui/autofill/autofill_client_provider_factory.h"
+#include "components/actor/core/actor_switches.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/actor/actor_filling_observer.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
@@ -31,8 +34,6 @@
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_suggestion.h"
-#include "base/command_line.h"
-#include "components/actor/core/actor_switches.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service.h"
@@ -146,8 +147,11 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
     const std::vector<FieldGlobalId>& trigger_field_ids,
     base::OnceCallback<void(
         base::expected<std::string, OneTimeTokenRetrievalError>)> callback) {
+  using enum ActorOneTimeTokenFillingServiceRetrieveOtp;
+  RecordActorOneTimeTokenFillingServiceRetrieveOtp(kStart);
   tabs::TabInterface* tab = tab_handle.Get();
   if (!tab || !tab->GetContents()) {
+    RecordActorOneTimeTokenFillingServiceRetrieveOtp(kNullTab);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -160,6 +164,7 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           ::actor::switches::kAttemptOtpFillingMockGmailOtpValue);
   if (!mock_otp.empty()) {
+    RecordActorOneTimeTokenFillingServiceRetrieveOtp(kMockOtp);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(mock_otp)));
     return;
@@ -171,6 +176,7 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
   one_time_tokens::OneTimeTokenService* service =
       OneTimeTokenServiceFactory::GetForProfile(profile_);
   if (!service) {
+    RecordActorOneTimeTokenFillingServiceRetrieveOtp(kNoService);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -209,6 +215,7 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
 
   if (most_recent_token) {
     subscription_ = {};
+    RecordActorOneTimeTokenFillingServiceRetrieveOtp(kCacheHit);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), most_recent_token->value()));
@@ -230,15 +237,19 @@ void ActorOneTimeTokenFillingServiceImpl::OnOneTimeTokenReceived(
     one_time_tokens::OneTimeTokenSource source,
     base::expected<one_time_tokens::OneTimeToken, OneTimeTokenRetrievalError>
         result) {
+  using enum ActorOneTimeTokenFillingServiceRetrieveOtp;
   if (!retrieve_otp_callback_) {
+    RecordActorOneTimeTokenFillingServiceRetrieveOtp(kNoCallback);
     return;
   }
 
   subscription_ = {};
 
   if (result.has_value()) {
+    RecordActorOneTimeTokenFillingServiceRetrieveOtp(kSuccess);
     std::move(retrieve_otp_callback_).Run(result->value());
   } else {
+    RecordActorOneTimeTokenFillingServiceRetrieveOtp(kError);
     std::move(retrieve_otp_callback_).Run(base::unexpected(result.error()));
   }
 }
@@ -248,14 +259,18 @@ void ActorOneTimeTokenFillingServiceImpl::FillOtp(
     const std::vector<FieldGlobalId>& trigger_field_ids,
     const std::string& otp,
     base::OnceCallback<void(bool)> callback) {
+  using enum ActorOneTimeTokenFillingServiceFillOtp;
+  RecordActorOneTimeTokenFillingServiceFillOtp(kStart);
   tabs::TabInterface* tab = tab_handle.Get();
   if (!tab || !tab->GetContents()) {
+    RecordActorOneTimeTokenFillingServiceFillOtp(kNullTab);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
 
   if (trigger_field_ids.empty()) {
+    RecordActorOneTimeTokenFillingServiceFillOtp(kEmptyTriggerFieldIds);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
@@ -266,6 +281,7 @@ void ActorOneTimeTokenFillingServiceImpl::FillOtp(
   // the previous callback would be overwritten and lost. Assuming the Actor
   // coordinates sequential usage, concurrent calls are unexpected.
   if (filling_observer_) {
+    RecordActorOneTimeTokenFillingServiceFillOtp(kConcurrentCall);
     LOG(WARNING) << "FillOtp called while another filling operation is still "
                     "in progress. The new request is ignored.";
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -279,6 +295,7 @@ void ActorOneTimeTokenFillingServiceImpl::FillOtp(
                  ActorFormFillingError>
       maybe_manager = GetAutofillManager(*tab);
   if (!maybe_manager.has_value()) {
+    RecordActorOneTimeTokenFillingServiceFillOtp(kNoAutofillManager);
     LOG(WARNING) << "FillOtp failed: AutofillManager not available.";
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
@@ -296,6 +313,7 @@ void ActorOneTimeTokenFillingServiceImpl::FillOtp(
   const FormStructure* const form_structure =
       autofill_manager.FindCachedFormById(trigger_field_id);
   if (!form_structure) {
+    RecordActorOneTimeTokenFillingServiceFillOtp(kFormStructureNotFound);
     LOG(WARNING) << "FillOtp failed: Form structure containing trigger field "
                  << trigger_field_id << " not found in cache.";
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -305,6 +323,7 @@ void ActorOneTimeTokenFillingServiceImpl::FillOtp(
   const AutofillField* const autofill_field =
       form_structure->GetFieldById(trigger_field_id);
   if (!autofill_field) {
+    RecordActorOneTimeTokenFillingServiceFillOtp(kTriggerFieldNotFound);
     LOG(WARNING) << "FillOtp failed: Trigger field " << trigger_field_id
                  << " not found in the form structure.";
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -319,6 +338,7 @@ void ActorOneTimeTokenFillingServiceImpl::FillOtp(
       *form_structure, *autofill_field, base::UTF8ToUTF16(otp));
 
   if (otp_fill_data.empty()) {
+    RecordActorOneTimeTokenFillingServiceFillOtp(kEmptyFillData);
     LOG(WARNING) << "FillOtp failed: Generated OtpFillData is empty.";
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
@@ -348,6 +368,12 @@ void ActorOneTimeTokenFillingServiceImpl::FillOtp(
       [](base::WeakPtr<ActorOneTimeTokenFillingServiceImpl> service,
          base::OnceCallback<void(bool)> callback,
          base::expected<void, ActorFormFillingError> result) {
+        using enum ActorOneTimeTokenFillingServiceFillOtp;
+        if (result.has_value()) {
+          RecordActorOneTimeTokenFillingServiceFillOtp(kSuccess);
+        } else {
+          RecordActorOneTimeTokenFillingServiceFillOtp(kError);
+        }
         // Once the filling operation completes or times out, we must reset the
         // observer to clear the busy state so subsequent OTP filling requests
         // can proceed.

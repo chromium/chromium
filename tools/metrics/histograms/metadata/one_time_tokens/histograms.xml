@@ -32,6 +32,32 @@ found in the LICENSE file.
   </summary>
 </histogram>
 
+<histogram name="OneTimeTokens.Actor.OneTimeTokenFillingService.FillOtp"
+    enum="ActorOneTimeTokenFillingServiceFillOtpEvent"
+    expires_after="2027-06-30">
+  <owner>ioanap@chromium.org</owner>
+  <owner>sdrab@google.com</owner>
+  <summary>
+    Records events during OTP filling operations of the
+    ActorOneTimeTokenFillingService. Recorded at the start of FillOtp
+    invocations, and when filling outcomes or error conditions (e.g. invalid
+    tab, missing form structure, or successful fill) are determined.
+  </summary>
+</histogram>
+
+<histogram name="OneTimeTokens.Actor.OneTimeTokenFillingService.RetrieveOtp"
+    enum="ActorOneTimeTokenFillingServiceRetrieveOtpEvent"
+    expires_after="2027-06-30">
+  <owner>ioanap@chromium.org</owner>
+  <owner>sdrab@google.com</owner>
+  <summary>
+    Records events during OTP retrieval operations of the
+    ActorOneTimeTokenFillingService. Recorded at the start of RetrieveOtp
+    invocations, and when retrieval outcomes or error conditions (e.g. cache
+    hits, mock OTPs, or superseded callbacks) are determined.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
