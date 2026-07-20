@@ -4139,7 +4139,6 @@ if (!is_android) {
         "../browser/ui/browser_finder_chromeos_browsertest.cc",
         "../browser/ui/browser_tabstrip_browsertest_chromeos.cc",
         "../browser/ui/settings_window_manager_browsertest_chromeos.cc",
-        "../browser/ui/views/apps/chrome_native_app_window_views_aura_ash_browsertest.cc",
         "../browser/ui/views/frame/browser_frame_ash_browsertest.cc",
         "../browser/ui/views/frame/browser_frame_view_chromeos_browsertest.cc",
         "../browser/ui/views/frame/immersive_mode_browser_view_browsertest.cc",
@@ -4452,6 +4451,7 @@ if (!is_android) {
         "//chrome/browser/ui/ash/system_web_apps",
         "//chrome/browser/ui/chromeos:browser_tests",
         "//chrome/browser/ui/tabs:test_support",
+        "//chrome/browser/ui/views/apps:browser_tests",
         "//chrome/browser/ui/views/apps/app_dialog:browser_tests",
         "//chrome/browser/ui/views/bruschetta:browser_tests",
         "//chrome/browser/ui/views/crostini",
@@ -8124,13 +8124,12 @@ test("unit_tests") {
     }
     if (use_aura) {
       sources += [
-        "../browser/ui/views/apps/shaped_app_window_targeter_unittest.cc",
         "../browser/ui/views/bubble/webui_bubble_event_handler_aura_unittest.cc",
-
         # Get this compiling on Mac - see http://crbug.com/41282103.
       ]
 
       deps += [
+        "//chrome/browser/ui/views/apps:unit_tests",
         "//ui/aura:test_support",
         "//ui/views:test_support",
         "//ui/wm",

@@ -2425,9 +2425,6 @@ static_library("ui") {
       "platform_keys_certificate_selector_chromeos.h",
       "settings_window_manager_chromeos.cc",
       "settings_window_manager_chromeos.h",
-      "views/apps/chrome_app_window_client_views_chromeos.cc",
-      "views/apps/chrome_native_app_window_views_aura_ash.cc",
-      "views/apps/chrome_native_app_window_views_aura_ash.h",
       "views/chrome_views_delegate_ash.cc",
       "views/extensions/dialogs/document_scanner_discovery_confirmation_dialog.cc",
       "views/extensions/dialogs/document_scanner_start_scan_confirmation_dialog.cc",
@@ -3545,7 +3542,6 @@ static_library("ui") {
       "browser_mac.h",
       "fullscreen_util_mac.cc",
       "fullscreen_util_mac.h",
-      "views/apps/chrome_app_window_client_views_mac.mm",
       "views/certificate_viewer_mac_views.mm",
       "views/frame/browser_frame_view_factory_mac.mm",
       "views/frame/browser_frame_view_mac.h",
@@ -3603,15 +3599,6 @@ static_library("ui") {
     sources += [
       "network_profile_bubble.cc",
       "network_profile_bubble.h",
-      "views/apps/app_window_desktop_native_widget_aura_win.cc",
-      "views/apps/app_window_desktop_native_widget_aura_win.h",
-      "views/apps/app_window_desktop_window_tree_host_win.cc",
-      "views/apps/app_window_desktop_window_tree_host_win.h",
-      "views/apps/app_window_frame_view_win.cc",
-      "views/apps/app_window_frame_view_win.h",
-      "views/apps/chrome_app_window_client_views_win.cc",
-      "views/apps/chrome_native_app_window_views_win.cc",
-      "views/apps/chrome_native_app_window_views_win.h",
       "views/certificate_viewer_win.cc",
       "views/critical_notification_bubble_view.cc",
       "views/critical_notification_bubble_view.h",
@@ -3687,7 +3674,6 @@ static_library("ui") {
 
   if (is_linux) {
     sources += [
-      "views/apps/chrome_app_window_client_views_aura.cc",
       "views/eula_dialog_linux.cc",
       "views/eula_dialog_linux.h",
       "views/frame/browser_desktop_window_tree_host.h",
@@ -3766,8 +3752,6 @@ static_library("ui") {
       "bubble_anchor_util.h",
       "toolbar_controller_util.cc",
       "toolbar_controller_util.h",
-      "views/apps/chrome_native_app_window_views.cc",
-      "views/apps/chrome_native_app_window_views.h",
       "views/autofill/address_bubble_base_view.cc",
       "views/autofill/address_editor_view.cc",
       "views/autofill/address_editor_view.h",
@@ -4597,6 +4581,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/accessibility",
       "//chrome/browser/ui/views/accessibility:impl",
       "//chrome/browser/ui/views/animations",
+      "//chrome/browser/ui/views/apps",
+      "//chrome/browser/ui/views/apps:impl",
       "//chrome/browser/ui/views/apps/app_info_dialog",
       "//chrome/browser/ui/views/apps/app_info_dialog:impl",
       "//chrome/browser/ui/views/bubble",
@@ -4807,6 +4793,11 @@ static_library("ui") {
       # c/b/ui/views/frame/browser_view.h
       # c/b/ui/views/frame/top_container_view.h
       "//chrome/browser/ui/views/media_router:impl",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when the
+      # following header gets componentized:
+      # c/b/ui/views/extensions/extension_keybinding_registry_views.h
+      "//chrome/browser/ui/views/apps:impl",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when the
       # following header gets componentized:
@@ -5047,10 +5038,6 @@ static_library("ui") {
 
     if (is_mac) {
       sources += [
-        "views/apps/app_window_native_widget_mac.h",
-        "views/apps/app_window_native_widget_mac.mm",
-        "views/apps/chrome_native_app_window_views_mac.h",
-        "views/apps/chrome_native_app_window_views_mac.mm",
         "views/chrome_views_delegate_mac.cc",
         "views/permissions/permission_prompt_notifications_mac.cc",
         "views/permissions/permission_prompt_notifications_mac.h",
@@ -5162,12 +5149,6 @@ static_library("ui") {
   if (use_aura) {
     sources += [
       "views/accelerator_utils_aura.cc",
-      "views/apps/app_window_easy_resize_window_targeter.cc",
-      "views/apps/app_window_easy_resize_window_targeter.h",
-      "views/apps/chrome_native_app_window_views_aura.cc",
-      "views/apps/chrome_native_app_window_views_aura.h",
-      "views/apps/shaped_app_window_targeter.cc",
-      "views/apps/shaped_app_window_targeter.h",
       "views/theme_profile_key.cc",
       "views/theme_profile_key.h",
     ]
