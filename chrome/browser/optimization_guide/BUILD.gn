@@ -206,4 +206,21 @@ source_set("unit_tests") {
     "//components/unified_consent",
     "//components/variations:test_support",
   ]
+
+  if (is_android) {
+    sources += [
+      "android/optimization_guide_bridge_unittest.cc",
+      "android/optimization_guide_tab_url_provider_android_unittest.cc",
+    ]
+    deps += [
+      "//chrome/browser/android:tabs_public",
+      "//chrome/browser/optimization_guide/android:native",
+      "//chrome/browser/optimization_guide/android:native_j_unittests_jni_headers",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/android/tab_model",
+      "//chrome/browser/ui/android/tab_model:test_support",
+      "//chrome/common:constants",
+      "//components/optimization_guide/proto:optimization_guide_proto",
+    ]
+  }
 }
