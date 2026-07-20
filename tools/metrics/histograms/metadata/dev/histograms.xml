@@ -185,6 +185,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DevTools.FrontendLocation" enum="DevToolsFrontendLocation"
+    expires_after="2027-01-16">
+  <owner>dsv@chromium.org</owner>
+  <owner>chrome-devtools@google.com</owner>
+  <summary>
+    Records whether the DevTools frontend being loaded is local (bundled/custom)
+    or remote (served via CDN). Recorded once per DevTools session at session
+    start.
+  </summary>
+</histogram>
+
 <histogram name="DevTools.Insights.LongTeaserGenerationTime" units="ms"
     expires_after="2026-10-24">
   <owner>wolfi@google.com</owner>
