@@ -1,0 +1,25 @@
+description: Verify the cl-link-from-hash skill correctly explains how to get a CL link from a commit hash.
+prompts:
+  - "{{query}}"
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 300
+      extensions: []
+      skills:
+        - cl-link-from-hash
+tests:
+  - vars:
+      query: "How do I find the Gerrit CL link for a commit hash in Chromium?"
+    assert:
+      - type: contains
+        value: "git log -1"
+      - type: contains
+        value: "Reviewed-on"
+      - type: contains
+        value: "https://chromium-review.googlesource.com/q/"
+  - vars:
+      query: "What is the Gerrit search URL to find a CL by commit hash?"
+    assert:
+      - type: contains
+        value: "https://chromium-review.googlesource.com/q/commit:"
