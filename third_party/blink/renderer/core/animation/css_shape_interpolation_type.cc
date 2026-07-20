@@ -64,34 +64,21 @@ class ShapeNonInterpolableValue : public NonInterpolableValue {
     bool operator==(const SegmentParams&) const = default;
   };
 
-  ShapeNonInterpolableValue(WindRule wind_rule, Vector<SegmentParams>&& params)
-      : params_(params), wind_rule_(wind_rule) {}
+  ShapeNonInterpolableValue(WindRule wind_rule,
+                            Vector<SegmentParams>&& params,
+                            ShapeReferenceBox box)
+      : params_(params), wind_rule_(wind_rule), box_(box) {}
   ~ShapeNonInterpolableValue() override = default;
 
   const Vector<SegmentParams>& GetParams() const { return params_; }
   WindRule GetWindRule() const { return wind_rule_; }
-
-  virtual ShapeReferenceBox GetBox() const { return {}; }
+  ShapeReferenceBox GetBox() const { return box_; }
 
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
   Vector<SegmentParams> params_;
   WindRule wind_rule_;
-};
-
-class ReferenceBoxShapeNonInterpolableValue final
-    : public ShapeNonInterpolableValue {
- public:
-  explicit ReferenceBoxShapeNonInterpolableValue(WindRule wind_rule,
-                                                 Vector<SegmentParams>&& params,
-                                                 ShapeReferenceBox box)
-      : ShapeNonInterpolableValue(wind_rule, std::move(params)), box_(box) {}
-  ~ReferenceBoxShapeNonInterpolableValue() override = default;
-
-  ShapeReferenceBox GetBox() const final { return box_; }
-
- private:
   ShapeReferenceBox box_;
 };
 
@@ -215,23 +202,6 @@ class ShapeSegmentInterpolationBuilder {
   float zoom_;
 };
 
-ShapeNonInterpolableValue* MakeShapeNonInterpolableValue(
-    WindRule wind_rule,
-    Vector<ShapeNonInterpolableValue::SegmentParams>&& params,
-    const CSSProperty& property,
-    ShapeReferenceBox box) {
-  switch (property.PropertyID()) {
-    case CSSPropertyID::kBorderShape:
-    case CSSPropertyID::kClipPath:
-    case CSSPropertyID::kOffsetPath:
-    case CSSPropertyID::kShapeOutside:
-      return MakeGarbageCollected<ReferenceBoxShapeNonInterpolableValue>(
-          wind_rule, std::move(params), box);
-    default:
-      NOTREACHED();
-  }
-}
-
 InterpolationValue ConvertPath(const StylePath* style_path,
                                const CSSProperty& property,
                                ShapeReferenceBox box) {
@@ -327,10 +297,8 @@ InterpolationValue ConvertPath(const StylePath* style_path,
     non_interpolable_segments.push_back(params);
   }
 
-  ShapeNonInterpolableValue* non_interpolable = MakeShapeNonInterpolableValue(
-      style_path->GetWindRule(), std::move(non_interpolable_segments), property,
-      box);
-
+  auto* non_interpolable = MakeGarbageCollected<ShapeNonInterpolableValue>(
+      style_path->GetWindRule(), std::move(non_interpolable_segments), box);
   return InterpolationValue(
       MakeGarbageCollected<InterpolableList>(std::move(interpolable_segments)),
       non_interpolable);
@@ -353,10 +321,8 @@ InterpolationValue ConvertShape(const StyleShape* style_shape,
     non_interpolable_segments.push_back(std::visit(builder, segment));
   }
 
-  ShapeNonInterpolableValue* non_interpolable = MakeShapeNonInterpolableValue(
-      style_shape->GetWindRule(), std::move(non_interpolable_segments),
-      property, box);
-
+  auto* non_interpolable = MakeGarbageCollected<ShapeNonInterpolableValue>(
+      style_shape->GetWindRule(), std::move(non_interpolable_segments), box);
   return InterpolationValue(
       MakeGarbageCollected<InterpolableList>(std::move(interpolable_segments)),
       non_interpolable);
@@ -899,10 +865,8 @@ InterpolationValue CSSShapeInterpolationType::MaybeConvertCSSValue(
     non_interpolable_segments.push_back(params);
   }
 
-  ShapeNonInterpolableValue* non_interpolable = MakeShapeNonInterpolableValue(
-      shape_value->GetWindRule(), std::move(non_interpolable_segments),
-      property, box);
-
+  auto* non_interpolable = MakeGarbageCollected<ShapeNonInterpolableValue>(
+      shape_value->GetWindRule(), std::move(non_interpolable_segments), box);
   return InterpolationValue(
       MakeGarbageCollected<InterpolableList>(std::move(interpolable_segments)),
       non_interpolable);
