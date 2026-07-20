@@ -29,6 +29,9 @@ public class SelectionUtils {
     /** Google search doesn't support requests slightly larger than this. */
     public static final int MAX_SEARCH_QUERY_LENGTH = 1000;
 
+    /** Maximum length of selected text to display in context menus before truncating. */
+    public static final int MAX_SELECTION_TEXT_LENGTH_FOR_CONTEXT_MENU = 50;
+
     /**
      * Trim a given string query to be processed safely.
      *
@@ -39,6 +42,16 @@ public class SelectionUtils {
         if (TextUtils.isEmpty(query) || query.length() < maxLength) return query;
         Log.w(TAG, "Truncating oversized query (" + query.length() + ").");
         return query.substring(0, maxLength) + "…";
+    }
+
+    /**
+     * Truncates oversized selected text for display in menu items.
+     *
+     * @param text The selected text.
+     * @return Truncated text with an ellipsis if it exceeds MAX_SELECTION_TEXT_LENGTH_FOR_MENU.
+     */
+    public static String sanitizeTextForMenu(String text) {
+        return sanitizeQuery(text, MAX_SELECTION_TEXT_LENGTH_FOR_CONTEXT_MENU);
     }
 
     /**

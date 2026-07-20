@@ -121,7 +121,7 @@ public class SelectActionMenuHelperTest {
         PendingSelectionMenu pendingMenu = new PendingSelectionMenu(mContext);
         pendingMenu.addAll(
                 SelectActionMenuHelper.getDefaultItems(
-                        mContext, mDelegate, MenuType.FLOATING, null));
+                        mContext, mDelegate, MenuType.FLOATING, "test", null));
         List<SelectionMenuItem> menuItems = pendingMenu.getMenuItemsForTesting();
         assertEquals(7, menuItems.size());
         assertEquals(R.id.select_action_menu_cut, menuItems.get(0).id);
@@ -141,7 +141,11 @@ public class SelectActionMenuHelperTest {
         PendingSelectionMenu pendingMenu = new PendingSelectionMenu(mContext);
         pendingMenu.addAll(
                 SelectActionMenuHelper.getDefaultItems(
-                        mContext, mDelegate, MenuType.FLOATING, selectionActionMenuDelegate));
+                        mContext,
+                        mDelegate,
+                        MenuType.FLOATING,
+                        "test",
+                        selectionActionMenuDelegate));
         List<SelectionMenuItem> menuItems = pendingMenu.getMenuItemsForTesting();
         assertEquals(7, menuItems.size());
         assertEquals(R.id.select_action_menu_cut, menuItems.get(0).id);

@@ -4,6 +4,7 @@
 
 package org.chromium.content_public.browser.selection;
 
+import android.content.Context;
 import android.content.pm.ResolveInfo;
 import android.view.View;
 
@@ -94,5 +95,16 @@ public interface SelectionActionMenuDelegate {
     default boolean handleMenuItemClick(
             SelectionMenuItem item, WebContents webContents, @Nullable View containerView) {
         return false;
+    }
+
+    /**
+     * Provide a custom title for the "web search" function in the selection action menu.
+     *
+     * @param context The context used to retrieve string resources.
+     * @param selectedText the highlighted text for which this menu is being shown.
+     * @return Custom title for "web search" function or null to use default.
+     */
+    default @Nullable String getWebSearchMenuItemTitle(Context context, String selectedText) {
+        return null;
     }
 }

@@ -126,7 +126,9 @@ public class SelectActionMenuHelper {
                 getPrimaryAssistItem(context, selectedText, classificationResult);
         if (primaryAssistItem != null) menu.addMenuItem(primaryAssistItem);
 
-        menu.addAll(getDefaultItems(context, delegate, menuType, selectionActionMenuDelegate));
+        menu.addAll(
+                getDefaultItems(
+                        context, delegate, menuType, selectedText, selectionActionMenuDelegate));
 
         // TODO(crbug.com/452918681): Instead of creating extra lists. We should pass the
         //  PendingSelectionMenu into these helper methods. This would require refactoring tests.
@@ -180,6 +182,7 @@ public class SelectActionMenuHelper {
             @Nullable Context context,
             TextSelectionCapabilitiesDelegate delegate,
             @MenuType int menuType,
+            String selectedText,
             @Nullable SelectionActionMenuDelegate selectionActionMenuDelegate) {
         List<SelectionMenuItem> menuItems = new ArrayList<>();
         // If the delegate is null, use the static default implementation. Otherwise call the method
@@ -204,7 +207,15 @@ public class SelectActionMenuHelper {
             } else if (item == DefaultItem.SELECT_ALL) {
                 if (delegate.canSelectAll()) menuItems.add(selectAll(pos));
             } else if (item == DefaultItem.WEB_SEARCH) {
-                if (delegate.canWebSearch()) menuItems.add(webSearch(context, pos));
+                if (delegate.canWebSearch()) {
+                    menuItems.add(
+                            webSearch(
+                                    context,
+                                    pos,
+                                    selectedText,
+                                    menuType,
+                                    selectionActionMenuDelegate));
+                }
             }
         }
         return menuItems;
@@ -424,11 +435,27 @@ public class SelectActionMenuHelper {
         return builder.build();
     }
 
-    private static SelectionMenuItem webSearch(@Nullable Context context, int order) {
+    private static SelectionMenuItem webSearch(
+            @Nullable Context context,
+            int order,
+            String selectedText,
+            @MenuType int menuType,
+            @Nullable SelectionActionMenuDelegate selectionActionMenuDelegate) {
         if (context == null) {
             context = ContextUtils.getApplicationContext();
         }
-        return new SelectionMenuItem.Builder(context.getString(R.string.actionbar_web_search))
+        // Limited the title, "Search <default search engine> for <selected text>", to context menu
+        // triggered by cursor right click (or touchpad double tap) only. Otherwise using default
+        // title "Web Search".
+        String title = context.getString(R.string.actionbar_web_search);
+        if (menuType == MenuType.DROPDOWN && selectionActionMenuDelegate != null) {
+            String customTitle =
+                    selectionActionMenuDelegate.getWebSearchMenuItemTitle(context, selectedText);
+            if (customTitle != null) {
+                title = customTitle;
+            }
+        }
+        return new SelectionMenuItem.Builder(title)
                 .setId(R.id.select_action_menu_web_search)
                 .setGroupId(R.id.select_action_menu_default_items)
                 .setIconAttr(android.R.attr.actionModeWebSearchDrawable)

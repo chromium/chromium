@@ -1063,6 +1063,8 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/segmentation_platform/SignalAccumulator.java",
   "java/src/org/chromium/chrome/browser/segmentation_platform/TabGroupingActionProvider.java",
   "java/src/org/chromium/chrome/browser/selection/ChromeSelectionDropdownMenuDelegate.java",
+  "java/src/org/chromium/chrome/browser/selection/CompositeSelectionActionMenuDelegate.java",
+  "java/src/org/chromium/chrome/browser/selection/TextSelectionActionMenuDelegate.java",
   "java/src/org/chromium/chrome/browser/services/gcm/ChromeGcmListenerServiceImpl.java",
   "java/src/org/chromium/chrome/browser/services/gcm/GCMBackgroundServiceImpl.java",
   "java/src/org/chromium/chrome/browser/services/gcm/GCMNativeBackgroundTask.java",

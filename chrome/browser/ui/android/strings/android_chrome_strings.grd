@@ -3036,6 +3036,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_CONTEXTMENU_SEARCH_WEB_FOR_IMAGE" desc="Context sensitive menu item for search-for-Image command in a new tab. [CHAR_LIMIT=30]">
         Search <ph name="SEARCH_ENGINE">%1$s<ex>Google</ex></ph> for this image
       </message>
+      <message name="IDS_CONTEXTMENU_SEARCH_WEB_FOR_TEXT" desc="Context sensitive menu item for web search command on selected text. [CHAR_LIMIT=30]">
+        <ph name="SEARCH_ENGINE">%1$s<ex>Search Google</ex></ph> for "<ph name="SEARCH_TERMS">%2$s<ex>Weather</ex></ph>"
+      </message>
       <message name="IDS_CONTEXTMENU_SHARE_IMAGE" desc="Context sensitive menu item for sharing an image via the Android system share action. [CHAR_LIMIT=30]">
         Share image
       </message>
