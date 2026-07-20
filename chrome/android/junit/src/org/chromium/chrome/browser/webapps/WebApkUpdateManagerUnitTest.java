@@ -23,7 +23,6 @@ import android.text.TextUtils;
 
 import org.json.JSONArray;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -1148,9 +1147,8 @@ public class WebApkUpdateManagerUnitTest {
 
     /**
      * Test that an upgrade is not requested when the Web Manifest did not change and the Web
-     * Manifest scope is empty. TODO(crbug.com/40827678): Re-enable test.
+     * Manifest scope is empty.
      */
-    @Ignore
     @Test
     public void testManifestEmptyScopeShouldNotUpgrade() {
         ManifestData oldData = defaultManifestData();
