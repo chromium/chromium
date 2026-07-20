@@ -26,7 +26,20 @@ BOOL ShouldSkipTest() {
 
 @implementation MultitaskingWindowTestCase
 
+- (void)setUp {
+  [super setUp];
+  if ([ChromeEarlGrey isWindowedMode]) {
+    [ChromeMultitaskingTestUtil moveToFullscreenMode];
+  }
+  GREYAssertFalse(
+      [ChromeEarlGrey isWindowedMode],
+      @"Test did not start cleanly with the app across fullscreen.");
+}
+
 - (void)tearDownHelper {
+  if ([ChromeEarlGrey isWindowedMode]) {
+    [ChromeMultitaskingTestUtil moveToFullscreenMode];
+  }
   GREYAssertFalse([ChromeEarlGrey isWindowedMode],
                   @"Test did not end with the app running in fullscreen.");
   [super tearDownHelper];
