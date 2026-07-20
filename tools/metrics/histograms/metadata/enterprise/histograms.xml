@@ -1176,6 +1176,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.DataCopied.DataSize" units="bytes"
+    expires_after="2027-07-15">
+  <owner>eliashomsi@google.com</owner>
+  <owner>cbe-data-protection-eng@google.com</owner>
+  <summary>
+    Records the size (in bytes) of data that might have been scanned by the Copy
+    Enterprise Connector. It is logged once per user action.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.DataProtection.URLVerdictSource"
     enum="DataProtectionURLVerdictSource" expires_after="2026-11-22">
   <owner>alshawwa@chromium.org</owner>

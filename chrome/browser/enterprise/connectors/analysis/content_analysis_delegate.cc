@@ -824,19 +824,26 @@ void ContentAnalysisDelegate::PrepareTextRequest() {
   }
 
   text_request_complete_ = !text_request_required();
-
   if (!full_text.empty()) {
-    base::UmaHistogramCustomCounts("Enterprise.OnBulkDataEntry.DataSize",
-                                   full_text.size(),
-                                   /*min=*/1,
-                                   /*max=*/51 * 1024 * 1024,
-                                   /*buckets=*/50);
-    if (access_point_ == DeepScanAccessPoint::ACTOR) {
-      base::UmaHistogramCustomCounts(
-          "Enterprise.OnBulkDataEntry.Actor.DataSize", full_text.size(),
-          /*min=*/1,
-          /*max=*/51 * 1024 * 1024,
-          /*buckets=*/50);
+    if (access_point_ == DeepScanAccessPoint::COPY) {
+      base::UmaHistogramCustomCounts("Enterprise.DataCopied.DataSize",
+                                     full_text.size(),
+                                     /*min=*/1,
+                                     /*exclusive_max=*/51 * 1024 * 1024,
+                                     /*buckets=*/50);
+    } else {
+      base::UmaHistogramCustomCounts("Enterprise.OnBulkDataEntry.DataSize",
+                                     full_text.size(),
+                                     /*min=*/1,
+                                     /*exclusive_max=*/51 * 1024 * 1024,
+                                     /*buckets=*/50);
+      if (access_point_ == DeepScanAccessPoint::ACTOR) {
+        base::UmaHistogramCustomCounts(
+            "Enterprise.OnBulkDataEntry.Actor.DataSize", full_text.size(),
+            /*min=*/1,
+            /*exclusive_max=*/51 * 1024 * 1024,
+            /*buckets=*/50);
+      }
     }
   }
 
@@ -871,17 +878,25 @@ void ContentAnalysisDelegate::PrepareImageRequest() {
   image_request_complete_ = !image_request_required();
 
   if (!data_.image.empty()) {
-    base::UmaHistogramCustomCounts("Enterprise.OnBulkDataEntry.DataSize",
-                                   data_.image.size(),
-                                   /*min=*/1,
-                                   /*max=*/51 * 1024 * 1024,
-                                   /*buckets=*/50);
-    if (access_point_ == DeepScanAccessPoint::ACTOR) {
-      base::UmaHistogramCustomCounts(
-          "Enterprise.OnBulkDataEntry.Actor.DataSize", data_.image.size(),
-          /*min=*/1,
-          /*max=*/51 * 1024 * 1024,
-          /*buckets=*/50);
+    if (access_point_ == DeepScanAccessPoint::COPY) {
+      base::UmaHistogramCustomCounts("Enterprise.DataCopied.DataSize",
+                                     data_.image.size(),
+                                     /*min=*/1,
+                                     /*exclusive_max=*/51 * 1024 * 1024,
+                                     /*buckets=*/50);
+    } else {
+      base::UmaHistogramCustomCounts("Enterprise.OnBulkDataEntry.DataSize",
+                                     data_.image.size(),
+                                     /*min=*/1,
+                                     /*exclusive_max=*/51 * 1024 * 1024,
+                                     /*buckets=*/50);
+      if (access_point_ == DeepScanAccessPoint::ACTOR) {
+        base::UmaHistogramCustomCounts(
+            "Enterprise.OnBulkDataEntry.Actor.DataSize", data_.image.size(),
+            /*min=*/1,
+            /*exclusive_max=*/51 * 1024 * 1024,
+            /*buckets=*/50);
+      }
     }
   }
 
