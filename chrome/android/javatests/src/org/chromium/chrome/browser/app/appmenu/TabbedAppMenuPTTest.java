@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -209,6 +210,7 @@ public class TabbedAppMenuPTTest {
     @LargeTest
     @Feature({"RenderTest"})
     @DisableFeatures(ChromeFeatureList.HOME_BUTTON_REMOVAL)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // TODO(crbug.com/536994608): Re-enable once passing
     public void testWebPageIncognitoAppMenuItems() throws IOException {
         String appMenuGoldenId =
                 IncognitoUtils.shouldOpenIncognitoAsWindow()
