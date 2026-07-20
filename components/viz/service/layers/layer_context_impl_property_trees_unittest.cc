@@ -621,6 +621,39 @@ TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
 }
 
 TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       UpdateTransformTreePropertiesInvalidNodeIds) {
+  {
+    auto update = CreateDefaultUpdate();
+    auto tree_props = mojom::TransformTreeUpdate::New();
+    tree_props->page_scale_factor = 1.5f;
+    tree_props->device_scale_factor = 2.0f;
+    tree_props->device_transform_scale_factor = 2.5f;
+    // An out-of-bounds node ID.
+    tree_props->nodes_affected_by_outer_viewport_bounds_delta = {999999};
+    update->transform_tree_update = std::move(tree_props);
+    update->page_scale_factor = 1.5f;
+
+    auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+    EXPECT_FALSE(result.has_value());
+  }
+
+  {
+    auto update = CreateDefaultUpdate();
+    auto tree_props = mojom::TransformTreeUpdate::New();
+    tree_props->page_scale_factor = 1.5f;
+    tree_props->device_scale_factor = 2.0f;
+    tree_props->device_transform_scale_factor = 2.5f;
+    // An out-of-bounds node ID.
+    tree_props->nodes_affected_by_safe_area_bottom = {999999};
+    update->transform_tree_update = std::move(tree_props);
+    update->page_scale_factor = 1.5f;
+
+    auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+    EXPECT_FALSE(result.has_value());
+  }
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
        UpdateDrawnElasticOverscroll) {
   cc::LayerTreeImpl* active_tree =
       layer_context_impl_->host_impl()->active_tree();

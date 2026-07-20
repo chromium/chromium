@@ -624,6 +624,18 @@ base::expected<bool, std::string> UpdateTransformTreeProperties(
       !std::isfinite(update.device_transform_scale_factor)) {
     return base::unexpected("Invalid device_transform_scale_factor");
   }
+  for (int id : update.nodes_affected_by_outer_viewport_bounds_delta) {
+    if (!IsPropertyTreeIndexValid(tree, id)) {
+      return base::unexpected(
+          "Invalid node ID in nodes_affected_by_outer_viewport_bounds_delta");
+    }
+  }
+  for (int id : update.nodes_affected_by_safe_area_bottom) {
+    if (!IsPropertyTreeIndexValid(tree, id)) {
+      return base::unexpected(
+          "Invalid node ID in nodes_affected_by_safe_area_bottom");
+    }
+  }
   tree.set_page_scale_factor(update.page_scale_factor);
   tree.set_device_scale_factor(update.device_scale_factor);
   tree.set_device_transform_scale_factor(update.device_transform_scale_factor);
