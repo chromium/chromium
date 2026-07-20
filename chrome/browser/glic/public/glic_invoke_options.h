@@ -205,7 +205,9 @@ enum class GlicInvokeError {
   kProfileNotEnabled = 16,
   // The invocation was cancelled.
   kCancelled = 17,
-  kMaxValue = kCancelled,
+  // The invocation handler was superseded by another invocation.
+  kSuperseded = 18,
+  kMaxValue = kSuperseded,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvokeResult,//chrome/browser/glic/host/glic_internals_page_handler.cc:GlicInvokeError)
 
@@ -296,6 +298,10 @@ struct GlicInvokeOptions {
 
   // The amount of time to wait before canceling the invocation.
   std::optional<base::TimeDelta> timeout;
+
+  // Whether to supersede and cancel an existing in-progress invocation on the
+  // target instance instead of failing with kInvokeInProgress.
+  bool supersede_if_in_progress = false;
 
   // Whether to wait until the side panel has fully opened and the web
   // contents have stabilized before sending the invoke payload to the client.

@@ -384,6 +384,10 @@ void LogGlicInvokeOptions(const GlicInvokeOptions& options,
     ss << "  timeout: " << options.timeout->InMilliseconds() << "ms\n";
   }
 
+  if (options.supersede_if_in_progress) {
+    ss << "  supersede_if_in_progress: true\n";
+  }
+
   if (options.wait_for_panel_open) {
     ss << "  wait_for_panel_open: true\n";
   }
@@ -839,6 +843,9 @@ void GlicInternalsPageHandler::TriggerInvokeFromInternalsAction(
             break;
           case GlicInvokeError::kProfileNotEnabled:
             error_msg = "Profile Not Enabled";
+            break;
+          case GlicInvokeError::kSuperseded:
+            error_msg = "Superseded By Another Invocation";
             break;
           case GlicInvokeError::kUnknown:
             error_msg = "Unknown Error";

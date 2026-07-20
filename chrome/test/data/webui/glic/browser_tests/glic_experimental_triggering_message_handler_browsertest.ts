@@ -77,6 +77,25 @@ class TriggeringUpdatesTest extends ApiTestFixtureBase {
     await runUntil(() => client.isSubscribed);
   }
 
+  async testHandlesContinueActuationRequestSuccessfully() {
+    await runUntil(() => client.isSubscribed);
+  }
+
+  async testContinueActuationTargetsCorrectTab() {
+    await runUntil(() => client.isSubscribed);
+    assertDefined(this.host.registerConversation);
+    await this.host.registerConversation({
+      conversationId: 'test_conv_id',
+      conversationTitle: 'test',
+    });
+    assertDefined(this.host.createTask);
+    await this.host.createTask();
+    client.triggeringUpdatesSubject.next({
+      type: ExperimentalTriggeringUpdateType.WORKLOG,
+      data: 'test_update',
+    });
+  }
+
   async testHandlesStopActuationRequestNoMatchingUpdatesHandler() {
     // No-op.
   }

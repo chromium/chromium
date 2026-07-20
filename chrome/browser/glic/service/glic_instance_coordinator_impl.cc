@@ -659,14 +659,24 @@ base::WeakPtr<GlicInstance> GlicInstanceCoordinatorImpl::InvokeInternal(
     }
   }
 
-  if (invoke_handlers_.contains(instance)) {
-    RecordInvokeError(options.GetInvocationSource(),
-                      GlicInvokeError::kInvokeInProgress);
-    if (options.on_error) {
-      std::move(options.on_error).Run(GlicInvokeError::kInvokeInProgress);
+  if (auto it = invoke_handlers_.find(instance); it != invoke_handlers_.end()) {
+    if (options.supersede_if_in_progress) {
+      // If requested by `options.supersede_if_in_progress` (e.g. for a
+      // continuation prompt from the server during actuation), cancel the
+      // previous handler so this invocation can proceed without being rejected
+      // with kInvokeInProgress.
+      std::unique_ptr<GlicInvokeHandler> old_handler = std::move(it->second);
+      invoke_handlers_.erase(it);
+      old_handler->Cancel(GlicInvokeError::kSuperseded);
+    } else {
+      RecordInvokeError(options.GetInvocationSource(),
+                        GlicInvokeError::kInvokeInProgress);
+      if (options.on_error) {
+        std::move(options.on_error).Run(GlicInvokeError::kInvokeInProgress);
+      }
+      // TODO(crbug.com/483387751): Show default toast here once implemented.
+      return nullptr;
     }
-    // TODO(crbug.com/483387751): Show default toast here once implemented.
-    return nullptr;
   }
 
   invoke_handlers_[instance] = std::make_unique<GlicInvokeHandler>(

@@ -66,21 +66,33 @@ glic::GlicInvokeOptions CreateInvokeOptions(
   glic::GlicInvokeOptions options{
       glic::mojom::InvocationSource::kExperimentalTriggering};
 
-  glic::NewTab new_tab;
-  new_tab.window = window;
-  new_tab.open_in_foreground = false;
-  options.target.surface = new_tab;
+  glic::LastActiveOrNew last_active_or_new;
+  last_active_or_new.window = window;
+  last_active_or_new.open_in_foreground = false;
+  options.target.surface = last_active_or_new;
   options.target.actuation_target =
       glic::mojom::ActuationTarget::kTargetSurface;
 
-  options.feature_mode = glic::mojom::FeatureMode::kExperimentalTriggering;
   options.timeout = base::Minutes(5);
 
-  if (request.has_request() &&
-      request.request().has_trigger_actuation_request() &&
-      request.request().trigger_actuation_request().has_initial_prompt()) {
-    options.prompts.push_back(
-        request.request().trigger_actuation_request().initial_prompt());
+  if (request.has_request()) {
+    if (request.request().has_trigger_actuation_request()) {
+      options.feature_mode = glic::mojom::FeatureMode::kExperimentalTriggering;
+      if (request.request().trigger_actuation_request().has_initial_prompt()) {
+        options.prompts.push_back(
+            request.request().trigger_actuation_request().initial_prompt());
+      }
+    } else if (request.request().has_continue_actuation_request()) {
+      options.feature_mode = glic::mojom::FeatureMode::kActuation;
+      options.supersede_if_in_progress = true;
+      if (request.request()
+              .continue_actuation_request()
+              .has_continuation_prompt()) {
+        options.prompts.push_back(request.request()
+                                      .continue_actuation_request()
+                                      .continuation_prompt());
+      }
+    }
   }
 
   if (request.has_task_metadata() &&
@@ -114,7 +126,6 @@ glic::GlicInvokeOptions CreateInvokeOptions(
   } else {
     options.target.conversation = glic::NewConversation();
   }
-
   return options;
 }
 
@@ -235,8 +246,14 @@ class ExperimentalTriggeringUpdatesHandler
     switch (request.request().payload_case()) {
       case components_sharing_message::GlicExperimentalTriggering::
           ExperimentalTriggeringRequest::kTriggerActuationRequest: {
-        return ProcessTriggerActuationRequest(request,
-                                              std::move(cleanup_runner));
+        return ProcessTriggerOrContinueActuationRequest(
+            request, std::move(cleanup_runner));
+      }
+
+      case components_sharing_message::GlicExperimentalTriggering::
+          ExperimentalTriggeringRequest::kContinueActuationRequest: {
+        return ProcessTriggerOrContinueActuationRequest(
+            request, std::move(cleanup_runner));
       }
 
       case components_sharing_message::GlicExperimentalTriggering::
@@ -368,7 +385,7 @@ class ExperimentalTriggeringUpdatesHandler
   }
 
   std::unique_ptr<components_sharing_message::ResponseMessage>
-  ProcessTriggerActuationRequest(
+  ProcessTriggerOrContinueActuationRequest(
       const components_sharing_message::GlicExperimentalTriggering& request,
       base::ScopedClosureRunner cleanup_runner) {
     CHECK(request.has_task_metadata());
@@ -416,7 +433,10 @@ class ExperimentalTriggeringUpdatesHandler
         weak_ptr_factory_.GetWeakPtr());
     options.on_error = base::BindOnce(
         [](base::WeakPtr<ExperimentalTriggeringUpdatesHandler> updates_handler,
-           const std::string& context_id, glic::GlicInvokeError error) {
+           glic::GlicInvokeError error) {
+          if (error == glic::GlicInvokeError::kSuperseded) {
+            return;
+          }
           DLOG(WARNING) << "Glic invocation failed with error: "
                         << static_cast<int>(error);
           if (updates_handler) {
@@ -426,11 +446,11 @@ class ExperimentalTriggeringUpdatesHandler
                     base::NumberToString(static_cast<int>(error)));
             if (updates_handler->message_handler_) {
               updates_handler->message_handler_->OnUpdatesHandlerCleanup(
-                  context_id);
+                  updates_handler->context_id_);
             }
           }
         },
-        weak_ptr_factory_.GetWeakPtr(), context_id_);
+        weak_ptr_factory_.GetWeakPtr());
 
     auto response = CreateResponseMessage(
         context_id_, TaskUpdate::STARTING, std::nullopt, "",

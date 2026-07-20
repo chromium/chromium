@@ -50,6 +50,11 @@ message GlicExperimentalTriggering {
       optional string initial_prompt = 1;
     }
 
+    message ContinueActuationRequest {
+      // The prompt to be sent to server to continue the actuation.
+      optional string continuation_prompt = 1;
+    }
+
     message StopActuationRequest {
       // The reason for stopping. This may be surfaced to the user, so it should
       // be human readable.
@@ -74,6 +79,7 @@ message GlicExperimentalTriggering {
       StopActuationRequest stop_actuation_request = 2;
       DeviceOptInRequest device_opt_in_request = 3;
       GetScreenshotRequest get_screenshot_request = 4;
+      ContinueActuationRequest continue_actuation_request = 5;
     }
   }
 

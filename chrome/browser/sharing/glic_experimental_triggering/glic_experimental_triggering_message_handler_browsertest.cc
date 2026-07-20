@@ -673,6 +673,141 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
+                       testHandlesContinueActuationRequestSuccessfully) {
+  OptIn();
+  // --- Step 1: Start Actuation ---
+  auto start_message = CreateTriggeringMessage(kDefaultSequenceNumber);
+  auto* start_triggering = start_message.mutable_glic_experimental_triggering();
+  start_triggering->set_context_id("test-context-id");
+  start_triggering->mutable_request()->mutable_trigger_actuation_request();
+
+  int initial_tab_count = GetTabListInterface()->GetTabCount();
+
+  base::test::TestFuture<components_sharing_message::SharingMessage> future;
+  EXPECT_CALL(mock_sharing_message_sender_,
+              SendMessageToServerTarget(_, _, _, _))
+      .WillRepeatedly(
+          [&](const components_sharing_message::ServerChannelConfiguration&,
+              base::TimeDelta,
+              components_sharing_message::SharingMessage message,
+              SharingMessageSender::ResponseCallback) {
+            future.SetValue(std::move(message));
+            return base::OnceClosure();
+          });
+
+  auto start_response = SendMessageAndWait(std::move(start_message));
+  ASSERT_TRUE(start_response);
+  EXPECT_TRUE(start_response->has_glic_experimental_triggering());
+  EXPECT_EQ(start_response->glic_experimental_triggering()
+                .response()
+                .task_update()
+                .state(),
+            components_sharing_message::GlicExperimentalTriggering::
+                ExperimentalTriggeringResponse::TaskUpdate::STARTING);
+
+  // Verify that the instance is bound to the newly created tab.
+  auto* new_tab = GetTabListInterface()->GetTab(initial_tab_count);
+  ASSERT_TRUE(new_tab);
+  ASSERT_OK(WaitForGlicInstanceBoundToTab(new_tab));
+
+  ExecuteJsTest();
+
+  // --- Step 2: Continue Actuation ---
+  auto continue_message = CreateTriggeringMessage(kDefaultSequenceNumber + 1);
+  auto* continue_triggering =
+      continue_message.mutable_glic_experimental_triggering();
+  continue_triggering->set_context_id("test-context-id");
+  continue_triggering->mutable_request()
+      ->mutable_continue_actuation_request()
+      ->set_continuation_prompt("continuation prompt");
+
+  auto response = SendMessageAndWait(std::move(continue_message));
+  ASSERT_TRUE(response);
+  EXPECT_TRUE(response->has_glic_experimental_triggering());
+  EXPECT_EQ(response->glic_experimental_triggering().context_id(),
+            "test-context-id");
+  EXPECT_EQ(
+      response->glic_experimental_triggering().response().task_update().state(),
+      components_sharing_message::GlicExperimentalTriggering::
+          ExperimentalTriggeringResponse::TaskUpdate::STARTING);
+  EXPECT_EQ(response->glic_experimental_triggering()
+                .task_metadata()
+                .sender_sequence_number(),
+            1);
+  EXPECT_EQ(response->glic_experimental_triggering()
+                .task_metadata()
+                .last_seen_sequence_number(),
+            kDefaultSequenceNumber + 1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
+                       testContinueActuationTargetsCorrectTab) {
+  OptIn();
+  // --- Step 1: Start Actuation ---
+  auto start_message = CreateTriggeringMessage(kDefaultSequenceNumber);
+  auto* start_triggering = start_message.mutable_glic_experimental_triggering();
+  start_triggering->set_context_id("test-context-id");
+  start_triggering->mutable_request()->mutable_trigger_actuation_request();
+
+  int initial_tab_count = GetTabListInterface()->GetTabCount();
+
+  base::test::TestFuture<components_sharing_message::SharingMessage> future;
+  EXPECT_CALL(mock_sharing_message_sender_,
+              SendMessageToServerTarget(_, _, _, _))
+      .WillRepeatedly(
+          [&](const components_sharing_message::ServerChannelConfiguration&,
+              base::TimeDelta,
+              components_sharing_message::SharingMessage message,
+              SharingMessageSender::ResponseCallback) {
+            future.SetValue(std::move(message));
+            return base::OnceClosure();
+          });
+
+  auto start_response = SendMessageAndWait(std::move(start_message));
+  ASSERT_TRUE(start_response);
+
+  auto* tab2 = GetTabListInterface()->GetTab(initial_tab_count);
+  ASSERT_TRUE(tab2);
+  ASSERT_OK(WaitForGlicInstanceBoundToTab(tab2));
+
+  ExecuteJsTest();
+
+  auto response_msg = future.Take();
+  std::string conversation_id = response_msg.glic_experimental_triggering()
+                                    .task_metadata()
+                                    .conversation_id();
+  ASSERT_FALSE(conversation_id.empty());
+
+  // Switch back to Tab 1 (making it active)
+  GetTabListInterface()->ActivateTab(
+      GetTabListInterface()->GetTab(0)->GetHandle());
+
+  // --- Step 2: Continue Actuation ---
+  auto continue_message = CreateTriggeringMessage(kDefaultSequenceNumber + 1);
+  auto* continue_triggering =
+      continue_message.mutable_glic_experimental_triggering();
+  continue_triggering->set_context_id("test-context-id");
+  continue_triggering->mutable_task_metadata()->set_conversation_id(
+      conversation_id);
+  auto* continue_req = continue_triggering->mutable_request()
+                           ->mutable_continue_actuation_request();
+  continue_req->set_continuation_prompt("continuation prompt");
+
+  auto response = SendMessageAndWait(std::move(continue_message));
+  ASSERT_TRUE(response);
+
+  // Verify that no new tab was created (we still only have Tab 1 and Tab 2)
+  EXPECT_EQ(GetTabListInterface()->GetTabCount(), initial_tab_count + 1);
+
+  EXPECT_EQ(response->glic_experimental_triggering().context_id(),
+            "test-context-id");
+  EXPECT_EQ(response->glic_experimental_triggering()
+                .task_metadata()
+                .sender_sequence_number(),
+            2);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
                        RejectRequestWhenNotOptedIn) {
   // Ensure we are NOT opted in.
   auto* glic_service = glic::GlicKeyedService::Get(GetProfile());
