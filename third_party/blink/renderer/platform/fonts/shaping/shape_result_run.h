@@ -261,8 +261,14 @@ struct PLATFORM_EXPORT ShapeResultRun final
    public:
     explicit GlyphDataCollection(unsigned num_glyphs) : data_(num_glyphs) {}
 
-    GlyphDataCollection(const GlyphDataCollection& other)
-        : data_(other.data_), offsets_(other.offsets_) {}
+    GlyphDataCollection(const GlyphDataCollection& other) : data_(other.data_) {
+      // Always deep copy `offsets_`, as it is generally modified after copying.
+      if (other.offsets_) {
+        offsets_ = MakeGarbageCollected<GCedHeapVector<GlyphOffset>>(
+            other.offsets_->size());
+        std::ranges::copy(*other.offsets_, offsets_->begin());
+      }
+    }
 
     unsigned size() const { return data_.size(); }
     bool IsEmpty() const { return size() == 0; }
@@ -277,21 +283,22 @@ struct PLATFORM_EXPORT ShapeResultRun final
     HarfBuzzRunGlyphData& back() { return data_.back(); }
     const HarfBuzzRunGlyphData& back() const { return data_.back(); }
 
-    bool HasNonZeroOffsets() const { return !offsets_.empty(); }
+    bool HasNonZeroOffsets() const { return offsets_ != nullptr; }
 
     size_t ByteSize() const {
       return sizeof(*this) + size() * sizeof(HarfBuzzRunGlyphData) +
-             sizeof(GlyphOffset) * offsets_.size();
+             sizeof(GlyphOffset) * (offsets_ ? offsets_->size() : 0u);
     }
 
     // The `span` of `GlyphOffset` if `HasNonZeroOffsets()`, or an empty span.
     base::span<const GlyphOffset> Offsets() const {
-      return static_cast<base::span<const GlyphOffset>>(offsets_);
+      return offsets_ ? base::span<const GlyphOffset>(*offsets_)
+                      : base::span<const GlyphOffset>();
     }
 
     template <bool has_non_zero_glyph_offsets>
     GlyphOffsetIterator<has_non_zero_glyph_offsets> GetOffsets() const {
-      return GlyphOffsetIterator<has_non_zero_glyph_offsets>(offsets_);
+      return GlyphOffsetIterator<has_non_zero_glyph_offsets>(Offsets());
     }
 
     // Note: Caller should be adjust |HarfBuzzRunGlyphData.character_index|.
@@ -307,12 +314,12 @@ struct PLATFORM_EXPORT ShapeResultRun final
 
       if (other1.HasNonZeroOffsets()) {
         AllocateOffsetsIfNeeded();
-        std::ranges::copy(other1.offsets_, offsets_.begin());
+        std::ranges::copy(*other1.offsets_, offsets_->begin());
       }
       if (other2.HasNonZeroOffsets()) {
         AllocateOffsetsIfNeeded();
-        std::ranges::copy(other2.offsets_,
-                          UNSAFE_TODO(offsets_.begin() + other1.size()));
+        std::ranges::copy(*other2.offsets_,
+                          UNSAFE_TODO(offsets_->begin() + other1.size()));
       }
     }
 
@@ -323,23 +330,23 @@ struct PLATFORM_EXPORT ShapeResultRun final
       std::ranges::copy(range, data_.data());
 
       if (!range.HasOffsets() || range.IsEmpty()) {
-        offsets_.clear();
+        offsets_ = nullptr;
       } else {
         AllocateOffsets();
-        std::ranges::copy(range.Offsets(), offsets_.begin());
+        std::ranges::copy(range.Offsets(), offsets_->begin());
       }
     }
 
     void AddOffsetHeightAt(unsigned index, float delta) {
       DCHECK_NE(delta, 0.0f);
       AllocateOffsetsIfNeeded();
-      offsets_[index].set_y(offsets_[index].y() + delta);
+      (*offsets_)[index].set_y((*offsets_)[index].y() + delta);
     }
 
     void AddOffsetWidthAt(unsigned index, float delta) {
       DCHECK_NE(delta, 0.0f);
       AllocateOffsetsIfNeeded();
-      offsets_[index].set_x(offsets_[index].x() + delta);
+      (*offsets_)[index].set_x((*offsets_)[index].x() + delta);
     }
 
     void SetOffsetAt(unsigned index, GlyphOffset offset) {
@@ -349,7 +356,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
         }
         AllocateOffsets();
       }
-      offsets_[index] = offset;
+      (*offsets_)[index] = offset;
     }
 
     // Vector<HarfBuzzRunGlyphData> like functions
@@ -373,7 +380,9 @@ struct PLATFORM_EXPORT ShapeResultRun final
 
     void Reverse() {
       std::ranges::reverse(*this);
-      offsets_.Reverse();
+      if (offsets_) {
+        offsets_->Reverse();
+      }
     }
 
     void Shrink(unsigned new_size) {
@@ -385,13 +394,14 @@ struct PLATFORM_EXPORT ShapeResultRun final
       DCHECK_LT(new_size, size());
       data_.Shrink(new_size);
       if (HasNonZeroOffsets()) {
-        offsets_.Shrink(new_size);
+        offsets_->Shrink(new_size);
       }
     }
 
 #if DCHECK_IS_ON()
     bool operator==(const GlyphDataCollection& other) const {
-      return data_ == other.data_ && offsets_ == other.offsets_;
+      return data_ == other.data_ &&
+             base::ValuesEquivalent(offsets_, other.offsets_);
     }
 #endif
 
@@ -404,7 +414,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
     void AllocateOffsets() {
       DCHECK_GE(size(), 1u);
       DCHECK(!HasNonZeroOffsets());
-      offsets_.resize(size());
+      offsets_ = MakeGarbageCollected<GCedHeapVector<GlyphOffset>>(size());
     }
 
     void AllocateOffsetsIfNeeded() {
@@ -417,8 +427,9 @@ struct PLATFORM_EXPORT ShapeResultRun final
     // memory usage.
     HeapVector<HarfBuzzRunGlyphData> data_;
     // |offsets_| holds collection of offset for |data_[i]|.
-    // When all offsets are zero, we don't allocate for reducing memory usage.
-    HeapVector<GlyphOffset> offsets_;
+    // When all offsets are zero, we leave this null to reduce memory usage
+    // (most runs, e.g. normal horizontal Latin text, have no glyph offsets).
+    Member<GCedHeapVector<GlyphOffset>> offsets_;
   };
 
 #if DCHECK_IS_ON()

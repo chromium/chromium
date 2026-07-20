@@ -90,7 +90,7 @@ struct SameSizeAsRunInfo {
 
    public:
     HeapVector<int> glyphs;
-    HeapVector<int> offsets;
+    Member<void*> offsets;
   } glyph_data;
   Member<void*> pointer2[2];
   int integers[5];
