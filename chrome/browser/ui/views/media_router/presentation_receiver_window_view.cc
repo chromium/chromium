@@ -32,6 +32,7 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_constants.h"
 #include "ui/base/accelerators/accelerator_manager.h"
@@ -134,7 +135,21 @@ PresentationReceiverWindowView::PresentationReceiverWindowView(
   DCHECK(delegate);
 }
 
-PresentationReceiverWindowView::~PresentationReceiverWindowView() = default;
+PresentationReceiverWindowView::~PresentationReceiverWindowView() {
+  for (web_modal::ModalDialogHostObserver& observer : observer_list_) {
+    observer.OnHostDestroying();
+  }
+
+  if (content::WebContents* web_contents = GetWebContents()) {
+    if (auto* manager =
+            web_modal::WebContentsModalDialogManager::FromWebContents(
+                web_contents)) {
+      if (manager->delegate() == this) {
+        manager->SetDelegate(nullptr);
+      }
+    }
+  }
+}
 
 void PresentationReceiverWindowView::Init() {
 #if BUILDFLAG(IS_MAC)
@@ -181,23 +196,27 @@ void PresentationReceiverWindowView::Init() {
       web_contents,
       std::make_unique<PageSpecificContentSettingsDelegate>(web_contents));
 
+  web_modal::WebContentsModalDialogManager::CreateForWebContents(web_contents);
+  web_modal::WebContentsModalDialogManager::FromWebContents(web_contents)
+      ->SetDelegate(this);
+
   auto* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  auto* web_view = new views::WebView(profile);
-  web_view->SetWebContents(web_contents);
-  web_view->set_allow_accelerators(true);
-  location_bar_view_ =
-      new LocationBarView(nullptr, profile, &command_updater_, this, true);
 
   auto box_owner = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical);
   box_owner->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);
   auto* box = SetLayoutManager(std::move(box_owner));
-  AddChildViewRaw(location_bar_view_.get());
+
+  location_bar_view_ = AddChildView(std::make_unique<LocationBarView>(
+      nullptr, profile, &command_updater_, this, true));
   box->SetFlexForView(location_bar_view_, 0);
-  AddChildViewRaw(web_view);
-  box->SetFlexForView(web_view, 1);
+
+  web_view_ = AddChildView(std::make_unique<views::WebView>(profile));
+  web_view_->SetWebContents(web_contents);
+  web_view_->set_allow_accelerators(true);
+  box->SetFlexForView(web_view_, 1);
 
   location_bar_view_->Init();
 
@@ -413,6 +432,84 @@ void PresentationReceiverWindowView::OnFullscreenChanged() {
   location_bar_view_->SetVisible(!fullscreen);
   if (fullscreen == (location_bar_view_->height() > 0)) {
     DeprecatedLayoutImmediately();
+  }
+  NotifyPositionRequiresUpdate();
+}
+
+void PresentationReceiverWindowView::OnBoundsChanged(
+    const gfx::Rect& previous_bounds) {
+  views::WidgetDelegateView::OnBoundsChanged(previous_bounds);
+  NotifyPositionRequiresUpdate();
+}
+
+void PresentationReceiverWindowView::AddedToWidget() {
+  views::WidgetDelegateView::AddedToWidget();
+  widget_observation_.Observe(GetWidget());
+}
+
+void PresentationReceiverWindowView::RemovedFromWidget() {
+  widget_observation_.Reset();
+  views::WidgetDelegateView::RemovedFromWidget();
+}
+
+void PresentationReceiverWindowView::OnWidgetBoundsChanged(
+    views::Widget* widget,
+    const gfx::Rect& new_bounds) {
+  NotifyPositionRequiresUpdate();
+}
+
+void PresentationReceiverWindowView::OnWidgetDestroying(views::Widget* widget) {
+  widget_observation_.Reset();
+}
+
+web_modal::WebContentsModalDialogHost*
+PresentationReceiverWindowView::GetWebContentsModalDialogHost(
+    content::WebContents* web_contents) {
+  DCHECK_EQ(GetWebContents(), web_contents);
+  return this;
+}
+
+bool PresentationReceiverWindowView::IsWebContentsVisible(
+    content::WebContents* web_contents) {
+  DCHECK_EQ(GetWebContents(), web_contents);
+  return web_view_ && web_view_->IsDrawn();
+}
+
+gfx::NativeView PresentationReceiverWindowView::GetHostView() const {
+  return GetWidget() ? GetWidget()->GetNativeView() : gfx::NativeView();
+}
+
+gfx::Point PresentationReceiverWindowView::GetDialogPosition(
+    const gfx::Size& size) {
+  views::View* view = web_view_ ? static_cast<views::View*>(web_view_) : this;
+  if (!GetWidget()) {
+    return gfx::Point();
+  }
+  gfx::Rect bounds = view->ConvertRectToWidget(view->GetLocalBounds());
+  int middle_x = bounds.x() + bounds.width() / 2;
+  int dialog_x = middle_x - size.width() / 2;
+  int max_x = bounds.right() - size.width();
+  dialog_x = std::clamp(dialog_x, bounds.x(), std::max(bounds.x(), max_x));
+  return gfx::Point(dialog_x, bounds.y());
+}
+
+gfx::Size PresentationReceiverWindowView::GetMaximumDialogSize() {
+  return web_view_ ? web_view_->size() : size();
+}
+
+void PresentationReceiverWindowView::AddObserver(
+    web_modal::ModalDialogHostObserver* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void PresentationReceiverWindowView::RemoveObserver(
+    web_modal::ModalDialogHostObserver* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
+void PresentationReceiverWindowView::NotifyPositionRequiresUpdate() {
+  for (web_modal::ModalDialogHostObserver& observer : observer_list_) {
+    observer.OnPositionRequiresUpdate();
   }
 }
 

@@ -7,6 +7,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -15,24 +16,61 @@
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/media_router/presentation_receiver_window_frame.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/web_modal/modal_dialog_host.h"
+#include "components/web_modal/web_contents_modal_dialog_host.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/controls/webview/webview.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
-#include "ui/views/widget/widget.h"
 #endif
 
 namespace {
 
 using content::WebContents;
+
+class TestModalDialogHostObserver : public web_modal::ModalDialogHostObserver {
+ public:
+  TestModalDialogHostObserver() = default;
+  ~TestModalDialogHostObserver() override = default;
+
+  void OnPositionRequiresUpdate() override {
+    position_requires_update_count_++;
+    if (run_loop_) {
+      run_loop_->Quit();
+    }
+  }
+
+  void OnHostDestroying() override { host_destroying_count_++; }
+
+  void WaitForPositionUpdate() {
+    base::RunLoop run_loop;
+    run_loop_ = &run_loop;
+    run_loop.Run();
+    run_loop_ = nullptr;
+  }
+
+  int position_requires_update_count() const {
+    return position_requires_update_count_;
+  }
+  int host_destroying_count() const { return host_destroying_count_; }
+
+ private:
+  int position_requires_update_count_ = 0;
+  int host_destroying_count_ = 0;
+  raw_ptr<base::RunLoop> run_loop_ = nullptr;
+};
 
 // Provides a WebContents for the PresentationReceiverWindowView to display and
 // a window-close callback for the test to cleanly close the view.
@@ -237,6 +275,82 @@ IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowViewBrowserTest,
   location_icon_view->OnMousePressed(security_chip_press_event);
   location_icon_view->OnMouseReleased(security_chip_release_event);
   EXPECT_TRUE(location_icon_view->IsBubbleShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowViewBrowserTest,
+                       WebContentsModalDialogManagerWired) {
+  auto* manager = web_modal::WebContentsModalDialogManager::FromWebContents(
+      fake_delegate_->web_contents());
+  ASSERT_TRUE(manager);
+  EXPECT_EQ(receiver_view_, manager->delegate());
+
+  web_modal::WebContentsModalDialogHost* host =
+      receiver_view_->GetWebContentsModalDialogHost(
+          fake_delegate_->web_contents());
+  ASSERT_TRUE(host);
+  EXPECT_EQ(receiver_view_, host);
+  EXPECT_EQ(receiver_view_->GetWidget()->GetNativeView(), host->GetHostView());
+  EXPECT_EQ(receiver_view_->web_view_for_testing()->size(),
+            host->GetMaximumDialogSize());
+  EXPECT_TRUE(
+      receiver_view_->IsWebContentsVisible(fake_delegate_->web_contents()));
+
+  gfx::Point position = host->GetDialogPosition(gfx::Size(10, 10));
+  EXPECT_GE(position.x(), 0);
+  EXPECT_GE(position.y(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowViewBrowserTest,
+                       ModalDialogHostObserversNotified) {
+  TestModalDialogHostObserver observer;
+  receiver_view_->AddObserver(&observer);
+
+  EXPECT_EQ(0, observer.position_requires_update_count());
+
+  // Toggling fullscreen should trigger a position update notification.
+  receiver_view_->ShowInactiveFullscreen();
+  EXPECT_GT(observer.position_requires_update_count(), 0);
+
+  int count_before_exit = observer.position_requires_update_count();
+  receiver_view_->ExitFullscreen();
+  EXPECT_GT(observer.position_requires_update_count(), count_before_exit);
+
+  int count_before_bounds_change = observer.position_requires_update_count();
+  gfx::Rect current_bounds =
+      receiver_view_->GetWidget()->GetWindowBoundsInScreen();
+  receiver_view_->GetWidget()->SetBounds(
+      gfx::Rect(current_bounds.x() + 10, current_bounds.y() + 10,
+                current_bounds.width() + 50, current_bounds.height() + 50));
+  if (observer.position_requires_update_count() == count_before_bounds_change) {
+    observer.WaitForPositionUpdate();
+  }
+  EXPECT_GT(observer.position_requires_update_count(),
+            count_before_bounds_change);
+
+  receiver_view_->RemoveObserver(&observer);
+}
+
+IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowViewBrowserTest,
+                       DelegateUnsetOnTeardown) {
+  auto delegate = std::make_unique<FakeReceiverDelegate>(browser()->profile());
+  PresentationReceiverWindowView* view =
+      CreateReceiverWindowView(delegate.get(), bounds_);
+
+  auto* manager = web_modal::WebContentsModalDialogManager::FromWebContents(
+      delegate->web_contents());
+  ASSERT_TRUE(manager);
+  EXPECT_EQ(view, manager->delegate());
+
+  TestModalDialogHostObserver observer;
+  view->AddObserver(&observer);
+
+  base::RunLoop run_loop;
+  delegate->set_window_closed_callback(run_loop.QuitClosure());
+  view->Close();
+  run_loop.Run();
+
+  EXPECT_EQ(nullptr, manager->delegate());
+  EXPECT_EQ(1, observer.host_destroying_count());
 }
 
 }  // namespace
