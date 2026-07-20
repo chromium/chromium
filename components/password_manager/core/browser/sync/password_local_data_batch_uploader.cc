@@ -119,12 +119,12 @@ void PasswordLocalDataBatchUploader::GetLocalDataDescription(
 
   auto request = std::make_unique<PasswordFetchRequest>();
   PasswordFetchRequest* request_ptr = request.get();
-  // Unretained() is safe, `this` outlives the `request`.
   request_ptr->Run(
       profile_store_.get(),
       base::BindOnce(
           &PasswordLocalDataBatchUploader::OnGotLocalPasswordsForDescription,
-          base::Unretained(this), std::move(callback), std::move(request)));
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+          std::move(request)));
 }
 
 void PasswordLocalDataBatchUploader::TriggerLocalDataMigrationInternal(
@@ -137,11 +137,11 @@ void PasswordLocalDataBatchUploader::TriggerLocalDataMigrationInternal(
   auto account_store_request = std::make_unique<PasswordFetchRequest>();
   PasswordFetchRequest* profile_store_request_ptr = profile_store_request.get();
   PasswordFetchRequest* account_store_request_ptr = account_store_request.get();
-  // Unretained() is safe, `this` outlives the requests.
+
   auto barrier_closure = base::BarrierClosure(
       2, base::BindOnce(
              &PasswordLocalDataBatchUploader::OnGotAllPasswordsForMigration,
-             base::Unretained(this), std::move(profile_store_request),
+             weak_ptr_factory_.GetWeakPtr(), std::move(profile_store_request),
              std::move(account_store_request), std::move(items)));
   trigger_local_data_migration_ongoing_ = true;
   profile_store_request_ptr->Run(profile_store_.get(), barrier_closure);

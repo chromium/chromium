@@ -749,5 +749,48 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
   histogram_tester.ExpectUniqueSample(kNumUploadsMetric, 0, 1);
 }
 
+TEST_F(PasswordLocalDataBatchUploaderTest,
+       UploaderDestroyedBeforeDescriptionCallbackFires) {
+  CreatePasswordFormsInStore(1, profile_store());
+
+  auto uploader = std::make_unique<PasswordLocalDataBatchUploader>(
+      profile_store(), account_store());
+
+  base::test::TestFuture<syncer::LocalDataDescription> description;
+  uploader->GetLocalDataDescription(description.GetCallback());
+
+  // Destroy the uploader, before it receives passwords from the store
+  // and expect that nothing crashes.
+  uploader.reset();
+
+  RunUntilIdle();
+
+  // The callback should not have been called because it was canceled.
+  EXPECT_FALSE(description.IsReady());
+}
+
+TEST_F(PasswordLocalDataBatchUploaderTest,
+       UploaderDestroyedBeforeMigrationCallbackFires) {
+  CreatePasswordFormsInStore(1, profile_store());
+
+  auto uploader = std::make_unique<PasswordLocalDataBatchUploader>(
+      profile_store(), account_store());
+
+  uploader->TriggerLocalDataMigration();
+
+  // Destroy the uploader before it receives passwords from the store and
+  // expect that nothing crashes.
+  uploader.reset();
+
+  RunUntilIdle();
+
+  // The local password shouldn't have been moved/deleted from the profile
+  // store, because the uploader was destroyed before the migration callback
+  // fired.
+  EXPECT_THAT(GetAllLoginsSync(profile_store()),
+              testing::Not(testing::IsEmpty()));
+  EXPECT_THAT(GetAllLoginsSync(account_store()), testing::IsEmpty());
+}
+
 }  // namespace
 }  // namespace password_manager

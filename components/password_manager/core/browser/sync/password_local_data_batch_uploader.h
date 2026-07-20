@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/sync/service/data_type_local_data_batch_uploader.h"
 
 namespace password_manager {
@@ -65,6 +66,8 @@ class PasswordLocalDataBatchUploader
   const scoped_refptr<PasswordStoreInterface> account_store_;
 
   bool trigger_local_data_migration_ongoing_ = false;
+
+  base::WeakPtrFactory<PasswordLocalDataBatchUploader> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager
