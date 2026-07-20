@@ -501,6 +501,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1376836354785490390">Kamroq</translation>
 <translation id="1377438103060664754">Axborot sizib chiqishida parollaringizdan ochiqlangani aniqlansa, Google Parolalr menejeri uni ishonchli parolga yangilashni taklif qiladi.</translation>
 <translation id="1378613616312864539">Bu parametr <ph name="NAME" /> kengaytmasi tomonidan boshqariladi</translation>
+<translation id="1378715594598306389">Boshqa varaqlar</translation>
 <translation id="1380028686461971526">Tarmoqqa avtomatik ulanish</translation>
 <translation id="1381567580865186407"><ph name="LANGUAGE" /> tilidagi nutq qayta ishlanishi uchun Googlega yuborildi</translation>
 <translation id="1382174183118245544">Kredit karta raqamlari</translation>
@@ -2535,6 +2536,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2955048943983973430">Aloqador Google xizmatlari</translation>
 <translation id="2956070239128776395">Boʻlim guruhlandi: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">Bu kengaytmadan foydalanish uchun dasturchi rejimini yoqing, uni Chrome Web Store tekshirolmaydi.</translation>
+<translation id="2957987442574819977">Gemini kutilmagan natija berdi</translation>
 <translation id="2958721676848865875">Kengaytmani arxivlash ogohlantiruvi</translation>
 <translation id="2959127025785722291">Xatolik yuz berdi. Oxirigacha tekshirilmadi. Qaytadan urining.</translation>
 <translation id="2959474507964749987">Bu shifrlangan fayl tarkibida virus yoki zararli dastur boʻlishi mumkin.<ph name="LINE_BREAK" />Xavfsiz ekanini tekshirish uchun fayl va uning parolini Google Saytlarni xavfsiz kezish tekshiruviga yuboring. Tekshiruv bir necha soniya vaqt oladi.<ph name="LINE_BREAK" />Tekshirish uchun fayl parolini kiriting.</translation>
@@ -3520,6 +3522,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3708295717182051206">Taglavhalar</translation>
 <translation id="3708684582558000260">Yopilgan saytlarga maʼlumotlarni oxirigacha yuborish yoki qabul qilishni taqiqlash</translation>
 <translation id="3709244229496787112">Brauzer fayl ko‘chirib olinishidan avval yopildi.</translation>
+<translation id="3710438437470197252">Google Drive orqali batafsil tanishish</translation>
 <translation id="3710501561113687889">Davom etish uchun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> maʼlumotlaringizni (<ph name="FIELDS_STRING" />) bu saytga ulashadi.</translation>
 <translation id="3711931198657368127">Joyla&amp;sh va ochish: <ph name="URL" /></translation>
 <translation id="3711945201266135623">Bosma serverda <ph name="NUM_PRINTERS" /> ta printer topildi</translation>
@@ -5358,6 +5361,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5112577000029535889">&amp;Dasturchi vositalari</translation>
 <translation id="5112686815928391420">{NUM_OF_FILES,plural, =1{1 ta fayl koʻchirildi}other{{NUM_OF_FILES} ta fayl koʻchirildi}}</translation>
 <translation id="511313294362309725">Tezkor ulanish funksiyasini yoqish</translation>
+<translation id="5113992879909788634">Chrome avtomatik kezish funksiyasi haqida batafsil</translation>
 <translation id="51143538739122961">Elektron kalitni qayta suqing va undagi tugmani bosing</translation>
 <translation id="5115338116365931134">SSO</translation>
 <translation id="5116628073786783676">&amp;Audioni saqlab olish...</translation>
@@ -7042,6 +7046,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6470823736074966819">Bildirishnomalarni tovushsiz qilish</translation>
 <translation id="6472893788822429178">Bosh sahifa tugmasini ko‘rsatish</translation>
 <translation id="6473315466413288899">Birini tanlang</translation>
+<translation id="6474021817475285003">Google Taqvimda orqali batafsil tanishish</translation>
 <translation id="6474498546677193336">Bu jild bandligi sababli umumiy ruxsat bekor qilinmadi. Jildga umumiy ruxsat Linux qayta ishga tushganda bekor qilinadi.</translation>
 <translation id="6474884162850599008">Google Drive hisobini uzib qo‘yish</translation>
 <translation id="6476482583633999078">Nutq tezligi</translation>
@@ -9134,6 +9139,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8082132721957920509">Kartangiz saqlandi</translation>
 <translation id="8082390128630131497">Agar ADB tuzatish vositasi oʻchirilsa, ushbu <ph name="DEVICE_TYPE" /> qurilmasi sozlamalari asliga qaytariladi. Barcha hisoblar va qurilmadagi maʼlumotlar tozalanadi.</translation>
 <translation id="8084114998886531721">Saqlangan parol</translation>
+<translation id="8084417885464859041">Gemini bilan xavfsiz ishlash</translation>
 <translation id="8084429490152575036">Mobil APN sozlamalari</translation>
 <translation id="8084628902026812045">Bu sayt xavfsiz ulanishdan foydalanmayapti va fayl oʻzgartirilgan boʻlishi mumkin</translation>
 <translation id="808488435221187916">Maʼlumotlar hisobga kirilgan istalgan qurilmadagi Google Wallet ilovasida chiqadi</translation>
@@ -9729,6 +9735,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8553342806078037065">Boshqa foydalanuvchilarni boshqarish</translation>
 <translation id="8554642222921881444">Matn belgilanganda chiqadigan bildirgi menyu</translation>
 <translation id="8554899698005018844">Til tanlanmagan</translation>
+<translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" /> - yoyilgan kontent chiqarildi</translation>
 <translation id="8555444629041783356">Kun botishi avtomatik jadvali</translation>
 <translation id="8557022314818157177">Barmoq izi yozib olinguncha elektron kalitga teginib turing</translation>
 <translation id="8557100046150195444">Touch ID bilan davom ettiring</translation>

@@ -699,6 +699,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1542137295869176367">Dine logindata kunne ikke opdateres</translation>
 <translation id="1543284117603151572">Importeret fra Edge</translation>
 <translation id="1543538514740974167">Få hurtig adgang</translation>
+<translation id="1544026754762189866">Din organisation fraråder, at du kopierer dette indhold</translation>
 <translation id="1544588554445317666">Prøv at bruge et kortere filnavn eller gemme i en anden mappe</translation>
 <translation id="1545749641540134597">Scan QR-kode</translation>
 <translation id="1545775234664667895">Installerede temaet "<ph name="THEME_NAME" />"</translation>
@@ -1511,6 +1512,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2166369534954157698">Quizdeltagerne spiste jordbær med fløde, mens cirkusklovnen Walther spillede på xylofon</translation>
 <translation id="2168036794078614559">Rapporteringen er sendt</translation>
 <translation id="2169062631698640254">Log ind alligevel</translation>
+<translation id="217120844667431680">Få mere fra hånden med AI-tilstand</translation>
 <translation id="2173302385160625112">Tjek din internetforbindelse</translation>
 <translation id="2175384018164129879">&amp;Administrer søgemaskiner og Site Search</translation>
 <translation id="2175526076681939329">Brug primære taster</translation>
@@ -1826,6 +1828,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2424424966051154874">{0,plural, =1{Gæst}one{Gæst (#)}other{Gæst (#)}}</translation>
 <translation id="2426805022920575512">Vælg en anden konto</translation>
 <translation id="2427507373259914951">Venstreklik</translation>
+<translation id="2428120669821109648">Fanestil</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 konto. Adgangskoden er kun gemt på denne enhed. Flere oplysninger}one{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} konto. Adgangskoden er kun gemt på denne enhed. Flere oplysninger}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} konti. Adgangskoden er kun gemt på denne enhed. Flere oplysninger}}</translation>
 <translation id="2428510569851653187">Beskriv, hvad du foretog dig, da fanen gik ned</translation>
 <translation id="2428939361789119025">Deaktiver Wi-Fi</translation>
@@ -3512,6 +3515,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3700993174159313525">Tillad ikke, at websites registrerer din kameraposition</translation>
 <translation id="3701167022068948696">Løs problemet nu</translation>
 <translation id="3701515417135397388">Få en underretning, hvis en adgangskode er blevet kompromitteret i forbindelse med et brud på datasikkerheden</translation>
+<translation id="3701778844313851487">Gå til Udvidelser</translation>
 <translation id="3703166520839776970">Hvis dette problem fortsætter, kan du vælge "Flere oplysninger" nedenfor for at få flere oplysninger fra <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="3703699162703116302">Billetten blev opdateret</translation>
 <translation id="370415077757856453">JavaScript er blokeret</translation>
@@ -4591,6 +4595,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4523876148417776526">XML-websitelisterne er ikke blevet hentet endnu.</translation>
 <translation id="4526051299161934899">Gemte fanegrupper, der er skjult</translation>
 <translation id="452750746583162491">Gennemgå dine synkroniserede data</translation>
+<translation id="4528216716764031072">Moderne (gennemsigtig)</translation>
 <translation id="4528494169189661126">Oversættelsesforslag</translation>
 <translation id="4529455689802245339">Chrome Livetekstning fungerer muligvis ikke</translation>
 <translation id="4531451811601110068">Du kan prøve igen eller kontakte din administrator for at få hjælp</translation>
@@ -4744,6 +4749,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4645575059429386691">Administreret af en af dine forældre</translation>
 <translation id="4645676300727003670">&amp;Behold</translation>
 <translation id="4646675363240786305">Porte</translation>
+<translation id="4646859937978908916">Nyligt tilføjede udvidelser fastgøres automatisk. Skift dette på siden Udvidelser.</translation>
 <translation id="4647025838970719122">Denne indstilling administreres af din organisation</translation>
 <translation id="4647090755847581616">&amp;Luk fanen</translation>
 <translation id="4647283074445570750">Trin <ph name="CURRENT_STEP" /> af <ph name="TOTAL_STEPS" /></translation>
@@ -8320,6 +8326,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7446716846072322308">Denne handling sletter <ph name="TOTAL_USAGE" /> data, der er gemt af <ph name="SITE_NAME" /> og relaterede websites</translation>
 <translation id="7448430327655618736">Installer apps automatisk</translation>
 <translation id="7448664748118305024">Slet data, som websites har gemt på din enhed, når du lukker alle vinduer</translation>
+<translation id="7449806939046594699">Din organisation har blokeret kopiering af dette indhold</translation>
 <translation id="7450761244949417357">Åbner i <ph name="ALTERNATIVE_BROWSER_NAME" /> nu</translation>
 <translation id="7450926666485653189">Sender en sløret del af webadressen til Google via en privatlivsbeskyttende server, som skjuler din IP-adresse</translation>
 <translation id="7453008956351770337">Ved at vælge denne printer giver du følgende udvidelser adgang til din printer:</translation>
@@ -8827,6 +8834,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7849264908733290972">Åbn &amp;billede på ny fane</translation>
 <translation id="784934925303690534">Tidsinterval</translation>
 <translation id="7850320739366109486">Vil ikke forstyrres</translation>
+<translation id="7851303446278533774">Opret, planlæg, opsummer</translation>
 <translation id="7851716364080026749">Bloker altid adgang til kamera og mikrofon</translation>
 <translation id="78526636422538552">Tilføjelse af flere Google-konti er deaktiveret</translation>
 <translation id="7853747251428735">Flere værktø&amp;jer</translation>

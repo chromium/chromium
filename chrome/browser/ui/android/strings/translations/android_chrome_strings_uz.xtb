@@ -724,6 +724,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="4044708993631234325">Quyi ekran</translation>
 <translation id="4045441967987592849">Qayta ochish</translation>
 <translation id="4049920046559074950"><ph name="INSTANCE_TITLE" /> uchun boshqa variantlar</translation>
+<translation id="4051548576872472315">Yaqinda yopilgan varaqlar va oynalar shu yerda chiqadi</translation>
 <translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{Inkognito oynada ochish}other{Barchasini (#) inkognito oynada ochish}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{Yangi harakatli <ph name="TABS_COUNT_ONE" /> ta standart varaq umumiy varaqlar guruhiga olindi}other{Yangi harakatli <ph name="TABS_COUNT_MANY" /> ta standart varaq umumiy varaqlar guruhiga olindi}}</translation>
 <translation id="405365679581583349">Google Play xizmatlarini yangilash</translation>
@@ -1695,6 +1696,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="7824665136384946951">Saytlarni xavfsiz kezish tashkilotingiz tomonidan faolsizlantirilgan.</translation>
 <translation id="7825973332242257878">Varaqlar guruhi</translation>
 <translation id="7826342993930002256">Chrome – barcha qurilmalaringizda</translation>
+<translation id="7845155831233417403">Maksimum <ph name="MAX_INSTANCE_COUNT" /> ta oyna ochish mumkin. Davom etish uchun oynani yoping.</translation>
 <translation id="7846161022626028328">Xatolik yuz berdi. Qayta urining.</translation>
 <translation id="7846296061357476882">Google xizmatlari</translation>
 <translation id="784652447248278262">Joriy oyna</translation>

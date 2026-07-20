@@ -614,6 +614,7 @@
 <translation id="3037177537145227281">Der holdes øje med prisen</translation>
 <translation id="3038136505713492417">Verificer din identitet for at bruge dine adgangsnøgler på denne enhed</translation>
 <translation id="3039671569659952257">Slet mappe</translation>
+<translation id="3050988301648974170">Åbn Adgangskodetjek</translation>
 <translation id="3053332585453689122">Sender de webadresser, du besøger, samt et lille uddrag af sideindhold, downloads, udvidelsesaktivitet og systemoplysninger til Google Beskyttet browsing for at tjekke, om indholdet er skadeligt.</translation>
 <translation id="3055102495753300780">Datamængde</translation>
 <translation id="3059270601560379555">Ny søgning</translation>
@@ -2427,6 +2428,7 @@ Skift til <ph name="OTHER_EMAIL" /> for at fortsætte på din computer. Du får 
 <translation id="9013605037177245304">Aktivér notifikationer</translation>
 <translation id="9029650858822697271">Du er blevet logget ud</translation>
 <translation id="9032405509996909363">Bekræft sletning af browserdata</translation>
+<translation id="9035699147763101514">Leveret af Personlig intelligens med Gemini. Administrer dine valg i indstillingerne.</translation>
 <translation id="9039373489628511875">Båndbredde</translation>
 <translation id="9042893549633094279">Privatliv og sikkerhed</translation>
 <translation id="9055291197094969722">Opret fanegrupper for at organisere dine åbne faner og få mere fra hånden</translation>
@@ -2438,6 +2440,7 @@ Skift til <ph name="OTHER_EMAIL" /> for at fortsætte på din computer. Du får 
 <translation id="9070824521421603770">Du logges ud, og fanerne lukkes.</translation>
 <translation id="9072837124205571418">Fanegrupper fra alle enheder</translation>
 <translation id="9081058212938299310">Vil du opdatere adgangskoden til <ph name="USERNAME" />?</translation>
+<translation id="908365381820697818">Nu kan du finde og udfylde oplysninger fra Gmail og meget mere</translation>
 <translation id="9083838294503912307">Aktivér synkronisering for at synkronisere og personligt tilpasse på alle dine enheder.</translation>
 <translation id="9084367296493549256">{count,plural, =1{Du har {count} svag adgangskode, hvilket kan udgøre en sikkerhedsrisiko. Løs problemet nu for at forblive beskyttet.}one{Du har {count} svag adgangskode, hvilket kan udgøre en sikkerhedsrisiko. Løs problemet nu for at forblive beskyttet.}other{Du har {count} svage adgangskoder, hvilket kan udgøre en sikkerhedsrisiko. Løs problemet nu for at forblive beskyttet.}}</translation>
 <translation id="9084369964545892485">Ny inkognitofane i gruppe</translation>

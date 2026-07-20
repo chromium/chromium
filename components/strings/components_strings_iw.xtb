@@ -1823,7 +1823,7 @@
 <translation id="3807366285948165054">‏הזזת תמונה על ציר X</translation>
 <translation id="3807709094043295184">רוק קלאסי ואולדיז</translation>
 <translation id="3807873520724684969">תוכן מזיק נחסם.</translation>
-<translation id="380865868633614173">מתבצעת שמירה של פרטי הכרטיס</translation>
+<translation id="380865868633614173">פרטי הכרטיס נשמרים</translation>
 <translation id="3810770279996899697">‏למנהל הסיסמאות נדרשת גישה אל 'צרור מפתחות של macOS'</translation>
 <translation id="3810973564298564668">ניהול</translation>
 <translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
@@ -4021,6 +4021,7 @@ Del</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /> בנושא זה.</translation>
 <translation id="7213191991901907140">נשמח לשמוע על החוויה שלך</translation>
 <translation id="7219179957768738017">החיבור משתמש ב-<ph name="SSL_VERSION" />.</translation>
+<translation id="7219197639442810756">‏הצעה של Gemini</translation>
 <translation id="7220786058474068424">המערכת מעבדת את התשלום</translation>
 <translation id="7221855153210829124">להציג הודעות</translation>
 <translation id="7222232353993864120">כתובת אימייל</translation>

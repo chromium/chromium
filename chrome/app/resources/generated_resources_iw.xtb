@@ -1232,6 +1232,7 @@
 <translation id="1938351510777341717">‏מקש Command חיצוני</translation>
 <translation id="1940221956626514677">התאמה אישית של סרגל הכלים</translation>
 <translation id="1940546824932169984">מכשירים מחוברים</translation>
+<translation id="194081218158106711">מאשרים את שינוי הסיסמה…</translation>
 <translation id="1941410638996203291">שעת ההתחלה <ph name="TIME" /></translation>
 <translation id="1941553344801134989">גרסה: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">‏לפי הגדרת האדמין שלך, החשבון אמור להתחבר אוטומטית ל-Microsoft OneDrive, אבל משהו השתבש.</translation>
@@ -4758,6 +4759,7 @@
 <translation id="4657914796247705218">‏מהירות TrackPoint</translation>
 <translation id="4658648180588730283">האפליקציה <ph name="APPLICATION_NAME" /> לא זמינה במצב אופליין.</translation>
 <translation id="465878909996028221">‏בהפניה של דפדפן לכתובת URL אחרת, נתמכים רק הפרוטוקולים http, ‏https ו-file.</translation>
+<translation id="4658821552705754298">‫<ph name="ITEM_NAME" /> <ph name="CATEGORY_NAME" /></translation>
 <translation id="4659126640776004816">‏התכונה הזו מופעלת בעת הכניסה לחשבון Google.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{תמונה}one{# תמונות}two{# תמונות}other{# תמונות}}</translation>
 <translation id="4660540330091848931">שינוי הגודל מתבצע</translation>
@@ -8928,6 +8930,7 @@
 <translation id="7933486544522242079">&amp;שמירה ושיתוף</translation>
 <translation id="7933518760693751884">יש ללחוץ על סמל הסימנייה כדי לשמור את הדף לקריאה במועד מאוחר יותר</translation>
 <translation id="7933634003144813719">ניהול תיקיות משותפות</translation>
+<translation id="7935072572536724392">שינוי הסיסמה האוטומטי נכשל</translation>
 <translation id="7936195481975600746">כדי לשתף את המסך, צריך להשתמש בכלי לבחירת המסכים של המערכת</translation>
 <translation id="7937809006412909895">איסוף נתוני אבחון</translation>
 <translation id="7938881824185772026">Google Labs</translation>
@@ -9065,6 +9068,7 @@
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{רשימת קריאה}=1{רשימת קריאה ({SELECTED_ITEMS})}one{Reading list ({SELECTED_ITEMS})}two{רשימת קריאה ({SELECTED_ITEMS})}other{רשימת קריאה ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> – נשלחה בקשה להרשאה, יש ללחוץ על ⌘ + אפשרות + חץ למעלה כדי להשיב</translation>
 <translation id="8030169304546394654">מנותק</translation>
+<translation id="8030814978699290230">מנסים להכניס אותך לחשבון…</translation>
 <translation id="8030852056903932865">אישור</translation>
 <translation id="8033827949643255796">מסומן</translation>
 <translation id="8033958968890501070">הזמן שהוקצב תם</translation>
@@ -9478,6 +9482,7 @@
 <translation id="8343578633847737325">שיחות ושרשורים מהזמן האחרון</translation>
 <translation id="8345848587667658367">עכשיו יש לך אפשרות לראות את התמונות, המדיה, ההתראות והאפליקציות האחרונות שבטלפון</translation>
 <translation id="8347227221149377169">משימות הדפסה</translation>
+<translation id="8347728744337089388">שליחה אל המכ&amp;שיר שלך</translation>
 <translation id="8348430946834215779">‏יש להשתמש ב-HTTPS כשאפשר, ולקבל אזהרה לפני שטוענים אתרים שלא תומכים ב-HTTPS</translation>
 <translation id="8348896480272971199">צריך לבדוק את החיבור לאינטרנט ולנסות שוב.</translation>
 <translation id="8349305172487531364">סרגל סימניות</translation>
@@ -9527,6 +9532,7 @@
 <translation id="8382197851871630452">מזג האוויר המקומי</translation>
 <translation id="8382913212082956454">העתקת &amp;כתובת אימייל</translation>
 <translation id="8383614331548401927">איפה היינו?</translation>
+<translation id="8387157483437834731">הסיסמה שונתה בהצלחה</translation>
 <translation id="8387361103813440603">לא מורשים לראות את המיקום</translation>
 <translation id="8389492867173948260">מתן הרשאה לתוסף הזה לקרוא ולשנות את כל הנתונים שלך באתרים שאליהם נכנסת:</translation>
 <translation id="8390449457866780408">השרת אינו זמין.</translation>
@@ -10613,6 +10619,7 @@
 <translation id="9220820413868316583">צריך להרים את האצבע ולנסות שוב.</translation>
 <translation id="922152298093051471">‏התאמה אישית של Chrome</translation>
 <translation id="9222839391870847423">משך: <ph name="DURATION" /></translation>
+<translation id="923306663772315007">שליחה אל המכ&amp;שיר שלך</translation>
 <translation id="923467487918828349">הצגת הכול</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{כדי לנהל אותו, פותחים את 'תוספים‘}one{כדי לנהל אותם, פותחים את 'תוספים‘}two{כדי לנהל אותם, פותחים את 'תוספים‘}other{כדי לנהל אותם, פותחים את 'תוספים‘}}</translation>
 <translation id="924818813611903184">‏ניהול שפות בהגדרות ChromeOS</translation>

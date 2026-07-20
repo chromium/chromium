@@ -61,6 +61,7 @@
 <translation id="1090629319939036170">VR menyu</translation>
 <translation id="1091463901118115503">Oʻqishda davom etish</translation>
 <translation id="1091779689406092804">skrinshotlar</translation>
+<translation id="1095093219235104018">Gemini yordamida toping va kiriting</translation>
 <translation id="1096545575934602868">Bu maydonchadagi elementlar soni <ph name="MAX_ITEMS_LIMIT" /> yozuvdan oshmasligi kerak. Barcha ortiqchasi rad etiladi.</translation>
 <translation id="1097803577928227769">Hududiy parklar va bogʻlar</translation>
 <translation id="1099928364755383720">avtomatik tasvir ustida tasvir</translation>
@@ -364,6 +365,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1559572115229829303">&lt;p&gt;Qurilmadagi sana va vaqt sozlamalari (<ph name="DATE_AND_TIME" />) noto‘g‘ri bo‘lganligi sababli <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> domeni bilan xavfsiz aloqa o‘rnatib bo‘lmadi.&lt;/p&gt;
           &lt;p&gt;Aniq sana va vaqt sozlamalarini &lt;strong&gt;Sozlamalar&lt;/strong&gt; ilovasidagi &lt;strong&gt;Umumiy&lt;/strong&gt; bo‘limida belgilang.</translation>
 <translation id="1559839503761818503">Administrator qurilmani <ph name="DATE" /> kuni <ph name="TIME" /> da qayta ishga tushiradi</translation>
+<translation id="1562601408588733317">Gemini yordamida axborot topish va kiritishni boshqaring</translation>
 <translation id="1562805467275776390">Avtopoyga</translation>
 <translation id="1563755205047885671">Jangari oʻyinlar</translation>
 <translation id="1564634006476980707">Qidiruv URL manzili uchun tavsiya etilgan HTTPS andozasi: <ph name="SEARCH_URL" /></translation>
@@ -830,6 +832,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2268044343513325586">Aniqlashtirish</translation>
 <translation id="2268966938956566076"><ph name="MINUTES" /> daqadan keyin yuklanadi</translation>
 <translation id="2270484714375784793">Telefon raqami</translation>
+<translation id="2274179746480077483">Gmail va Photos kabi ilovalardan axborotni avtomatik kiritish. Personal Intelligence asosida ishlaydi.</translation>
 <translation id="2276057643614339130">Bosma asosi</translation>
 <translation id="2277103315734023688">Oldinga o‘tkazish</translation>
 <translation id="2277753418458118549">Ulanish tafsilotlarini ochish</translation>
@@ -1170,6 +1173,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2784949926578158345">Aloqa qayta o‘rnatildi.</translation>
 <translation id="2786008859124691917">Velosiped va aksessuarlar</translation>
 <translation id="2792012897584536778">Qurilmaga administratorlar tomonidan xavfsizlik sertifikatlari oʻrnatilgan va ular ochiladigan saytlardagi kontentni koʻrishi mumkin.</translation>
+<translation id="2793425367785017642">Shakllarni yaxshiroq tushunish va kiritish uchun siz tashrif buyurgan sahifalar kontenti va URL manzillari bulutdagi maxfiy makonda qayta ishlanishi mumkin.</translation>
 <translation id="2794233252405721443">Sayt bloklangan</translation>
 <translation id="2794629552137076216">Shisha (jilo berilgan)</translation>
 <translation id="2799223571221894425">Qaytadan ishga tushirish</translation>
@@ -1540,6 +1544,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="3391482648489541560">fayllarni tahrirlash</translation>
 <translation id="3392028486601120379">“<ph name="URL_PATTERN" />” URL namunasi belgilangan yoʻlga ega. Bu kalit uchun yoʻllar qoʻllab-quvvatlanmaydi, yoʻlni olib tashlang va qaytadan urinib koʻring. masalan. *://example.com/ =&gt; *://example.com»,</translation>
 <translation id="3395827396354264108">Olib ketish usuli</translation>
+<translation id="3397968074427155329">Suhbatni davom ettirish uchun oyna oʻlchamini oʻzgartiring</translation>
 <translation id="3399161914051569225">Taqiladigan qurilmalar</translation>
 <translation id="3399952811970034796">Yetkazib berish manzili</translation>
 <translation id="3402261774528610252">Bu sayt eskirgan TLS 1.0 yoki TLS 1.1 ishlatadi, shuning uchun keyingi versiyalarda faolsizlantiriladi. Faolsizlantirilsa, foydalanuvchilar bu saytni ocha olmaydi. Serverda TLS 1.2 yoki yuqoriroq versiya yoqilishi lozim.</translation>
@@ -2625,6 +2630,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="5074134429918579056">Shim va kalta shimlar</translation>
 <translation id="5077767274537436092">Boshqa kirish kalitidan foydalaning</translation>
 <translation id="5078060223219502807">Hozirgina siz foydalangan parol oshkor qilingan. Hisoblaringizni himoyalash maqsadida Parollar menejeri uni hoziroq almashtirishni va saqlangan parollaringizni tekshirishni tavsiya etadi.</translation>
+<translation id="5082949343606863311">Kelgusi takliflarni yaxshilash uchun tizim maʼlumotlari, jumladan, shakl maydonlari va funksiya unumdorligi tahlil qilinadi</translation>
 <translation id="5087286274860437796">Server sertifikati ayni paytda yaroqsiz.</translation>
 <translation id="5087580092889165836">Yangi karta qo‘shish</translation>
 <translation id="5088142053160410913">Operatorga xabar yuborish</translation>
@@ -3062,6 +3068,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="5728246486828755318">Printer qoʻshimcha imkoniyatlaridan foydalanish uchun ruxsat soʻrashi mumkin</translation>
 <translation id="5729442113829771034">Maktabgacha taʼlim</translation>
 <translation id="5730040223043577876">Parolingizni tashkilot domenidan tashqaridagi saytda kiritgan bo‘lsangiz, uni zudlik bilan o‘zgartirishingizni tavsiya etamiz.</translation>
+<translation id="5731983613206445054">Yaxshilangan avtomatik kiritish sifatini oshirishga hissa qoʻshyapsiz</translation>
 <translation id="5735174108294025227">Tasdiqlangan email manzillar shu yerda chiqadi</translation>
 <translation id="573555826359077410">Shakl yaratish tugmasi, Google Formsʼda yangi shaklni tez yaratish uchun faollashtiring</translation>
 <translation id="5738385766833540397">Siz kuzatayotgan mahsulotlar uchun narxlarning tushishi haqida ogohlantirishlarni qanday qabul qilishingizni boshqaring</translation>
@@ -3890,6 +3897,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="7011763495818914549">ID karta</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">Sichqonchadan foydalanish yoki uni qulflashga ruxsat soʻrashi mumkin</translation>
+<translation id="7013844825046560088">Chrome ushbu funksiyadan qanday ishlatishingizni, jumladan, yuborgan soʻrovlaringiz va takliflarni qabul qilish yoki rad etishdagi harakatlaringizni qayd qilib boradi</translation>
 <translation id="7014042602717177828">Avtomobil audio jihozlari</translation>
 <translation id="7014741021609395734">Masshtab</translation>
 <translation id="7016992613359344582">To‘lov bir martalik, qayta bo‘lishi yoki umuman bo‘lmasligi ham mumkin.</translation>
@@ -4567,6 +4575,7 @@ Batafsil axborot:
 <translation id="803771048473350947">Fayl</translation>
 <translation id="8038182528865038593">Qizil 2</translation>
 <translation id="8041089156583427627">Fikr-mulohaza</translation>
+<translation id="8042898384266617514">Soʻrovlaringiz, sahifa sarlavhalari va URL manzillar Googlega yuboriladi hamda xodimlar tomonidan koʻrib chiqilishi mumkin</translation>
 <translation id="8043255123207491407">Sotuvchining foydalanish shartlari</translation>
 <translation id="8044986521421349135">Eng oxirgi varaq</translation>
 <translation id="8046360364391076336">Sanoat materiallari va jihozlari</translation>
@@ -5011,6 +5020,7 @@ Batafsil axborot:
 <translation id="8775347646940100151">Qogʻoz (blanka)</translation>
 <translation id="8775863327608679820">Muddatli toʻlov taklif qiladigan hozir olib, keyin toʻlash emitentlari yarim hajmda ochildi.</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="8781233757384402598">Yaxshilangan avtomatik kiritish uchun soʻrov yuborganingizda, avtomatik kiritish sifatini oshirish maqsadida foydalanish maʼlumotlaringiz, soʻrovlaringiz va sahifa tafsilotlari Googlega yuboriladi</translation>
 <translation id="8781278378794969337">Sahifani tarjima qilish tugmasi, bu sahifani Google Tarjima orqali tarjima qilish uchun faollashtiring</translation>
 <translation id="8785658048882205566">Mototsikllar</translation>
 <translation id="8790007591277257123">&amp;Qayta o‘chirish</translation>
