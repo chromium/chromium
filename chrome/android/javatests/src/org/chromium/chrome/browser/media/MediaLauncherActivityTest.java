@@ -27,9 +27,13 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -57,6 +61,7 @@ public class MediaLauncherActivityTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.OPEN_DOWNLOAD_IN_NEW_TAB)
     public void testHandleVideoIntent() throws Exception {
         String url = TestContentProvider.createContentUrl("media/test.mp4");
         expectMediaToBeHandled(url, "video/mp4");
@@ -64,6 +69,7 @@ public class MediaLauncherActivityTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.OPEN_DOWNLOAD_IN_NEW_TAB)
     public void testHandleAudioIntent() throws Exception {
         String url = TestContentProvider.createContentUrl("media/audio.mp3");
         expectMediaToBeHandled(url, "audio/mp3");
@@ -71,6 +77,7 @@ public class MediaLauncherActivityTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.OPEN_DOWNLOAD_IN_NEW_TAB)
     public void testHandleImageIntent() throws Exception {
         String url = TestContentProvider.createContentUrl("google.png");
         expectMediaToBeHandled(url, "image/png");
@@ -78,12 +85,42 @@ public class MediaLauncherActivityTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.OPEN_DOWNLOAD_IN_NEW_TAB)
     @MaxAndroidSdkLevel(
             value = Build.VERSION_CODES.S_V2,
             reason = "File access was locked down in T")
     public void testHandleFileURIIntent() throws Exception {
         String url = UrlUtils.getTestFileUrl("google.png");
         expectMediaToBeHandled(url, "image/png");
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.OPEN_DOWNLOAD_IN_NEW_TAB)
+    public void testHandleAudioIntentOpenInNewTab() throws Exception {
+        String url = TestContentProvider.createContentUrl("media/audio.mp3");
+        Context context = ContextUtils.getApplicationContext();
+        Uri uri = Uri.parse(url);
+        ComponentName componentName = new ComponentName(context, MediaLauncherActivity.class);
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        intent.setDataAndType(uri, "audio/mp3");
+        intent.setComponent(componentName);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        ChromeTabbedActivity activity =
+                ActivityTestUtils.waitForActivity(
+                        InstrumentationRegistry.getInstrumentation(),
+                        ChromeTabbedActivity.class,
+                        () -> {
+                            context.startActivity(intent);
+                            return null;
+                        });
+        CriteriaHelper.pollUiThreadLongTimeout(
+                "Waiting for Tab URL to be " + url,
+                () -> {
+                    Tab tab = activity.getActivityTab();
+                    Criteria.checkThat(tab, Matchers.notNullValue());
+                    Criteria.checkThat(tab.getUrl().getSpec(), Matchers.is(url));
+                });
     }
 
     @Test

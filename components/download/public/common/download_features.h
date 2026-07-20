@@ -82,6 +82,10 @@ COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(
 // Whether to open the downloaded file in Files app if cannot open in Chrome.
 COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(
     kOpenDownloadInFilesAppIfNoHandlerFound);
+
+// Whether to open the downloaded file in a new tab instead of a Custom Tab on
+// Desktop Android.
+COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kOpenDownloadInNewTab);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Whether to defer download history loading until first use.
