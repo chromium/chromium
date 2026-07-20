@@ -2,23 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <span>
 #include <vector>
+
+#include "src/utils/span.h"
 
 namespace dawn::internal {
 
 class RawStream {
  public:
   // Expected rewrite:
-  // virtual void fct(std::span<char> param) = 0;
-  virtual void fct(std::span<char> param) = 0;
+  // virtual void fct(dawn::Span<char> param) = 0;
+  virtual void fct(dawn::Span<char> param) = 0;
 };
 
 class RawBufferedStream : public RawStream {
  public:
   // Expected rewrite:
-  // void fct(std::span<char> param) override
-  void fct(std::span<char> param) override {
+  // void fct(dawn::Span<char> param) override
+  void fct(dawn::Span<char> param) override {
     // Expected rewrite:
     // param[0] = 'a';
     param[0] = 'a';
@@ -31,13 +32,13 @@ class RawBufferedStream : public RawStream {
 class SimpleBufferedStream : public RawStream {
  public:
   // Expected rewrite:
-  // void fct(std::span<char> param) override
-  void fct(std::span<char> param) override {}
+  // void fct(dawn::Span<char> param) override
+  void fct(dawn::Span<char> param) override {}
 };
 
 // Expected rewrite:
-// std::span<char> get(int index = 0)
-std::span<char> get(int index = 0) {
+// dawn::Span<char> get(int index = 0)
+dawn::Span<char> get(int index = 0) {
   // Expected rewrite:
   // return {};
   return {};
@@ -52,8 +53,8 @@ void fct2() {
   stream.fct(buf);
 
   // Expected rewrite:
-  // std::span<char> ptr = get();
-  std::span<char> ptr = get();
+  // dawn::Span<char> ptr = get();
+  dawn::Span<char> ptr = get();
   // Buffer expression leading ptr and get return type to be rewritten.
   ptr[3] = 'c';
 

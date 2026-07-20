@@ -7,7 +7,7 @@ namespace dawn::internal {
 void fct() {
   int buf[10];
   // Expected rewrite:
-  // std::span<int> ptr = buf;
+  // dawn::Span<int> ptr = buf;
   int* ptr = buf;
 
   // Usage as a buffer, ptr should become a span.

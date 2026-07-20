@@ -24,39 +24,50 @@ class DawnProject : public Project {
   constexpr DawnProject() = default;
 
  private:
-  std::string_view GetSpanIncludePath() const override { return "<span>"; }
+  std::string_view GetSpanIncludePath() const override {
+    return "src/utils/span.h";
+  }
   std::string_view GetSpanRelativePath(
       const clang::ast_matchers::MatchFinder::MatchResult& result)
       const override {
-    return "std::span";
+    return "dawn::Span";
   }
   std::string_view GetRawSpanRelativePath(
       const clang::ast_matchers::MatchFinder::MatchResult& result)
       const override {
     // TODO(crbug.com/497912213): Add a raw_span class to Dawn.
-    return "std::span";
+    return "dawn::Span";
   }
   std::string_view GetSpanFromRefRelativePath(
       const clang::ast_matchers::MatchFinder::MatchResult& result)
       const override {
-    return "TODO_497912213";
+    return "dawn::SpanFromRef";
   }
   std::string_view GetAsByteSpanRelativePath(
       const clang::ast_matchers::MatchFinder::MatchResult& result)
       const override {
-    return "std::as_bytes";
+    return "dawn::SpanAsBytes";
   }
   std::string_view GetAsWritableByteSpanRelativePath(
       const clang::ast_matchers::MatchFinder::MatchResult& result)
       const override {
-    return "std::as_writable_bytes";
+    return "dawn::SpanAsWritableBytes";
   }
   std::string_view GetSafeConversionsIncludePath() const override {
-    return "TODO_497912213";
+    return "src/utils/numeric.h";
   }
-  std::string_view GetRawSpanIncludePath() const override { return "<span>"; }
+  CheckedCastReplacement GetCheckedCastReplacement(
+      clang::SourceRange range) const override {
+    return CheckedCastReplacement{
+        .opener = {.range = range.getBegin(),
+                   .text = "dawn::checked_cast<size_t>("},
+        .closer = {.range = range.getEnd(), .text = ")"}};
+  }
+  std::string_view GetRawSpanIncludePath() const override {
+    return "src/utils/span.h";
+  }
   std::string_view GetAutoSpanificationHelperIncludePath() const override {
-    return "TODO_497912213";
+    return "src/utils/span.h";
   }
 
   const std::vector<FuncMapping>& GetFuncMappingTable() const override {
@@ -79,6 +90,12 @@ class DawnProject : public Project {
     return (file.contains("third_party/") &&
             !file.contains("third_party/dawn/")) ||
            file.contains("third_party/dawn/third_party/");
+  }
+
+  bool SupportsStaticExtent() const override {
+    // TODO(crbug.com/536893823): add dynamic extent support in dawn::Span
+    // and enable its use by spanify here.
+    return false;
   }
 };
 

@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <span>
 #include <vector>
+
+#include "src/utils/span.h"
 
 namespace dawn::internal {
 
@@ -17,13 +18,13 @@ struct S {
   char get_3rd() { return member[2]; }
 
   // Expected rewrite:
-  // std::span<char> member;
-  std::span<char> member;
+  // dawn::Span<char> member;
+  dawn::Span<char> member;
 };
 
 // Expected rewrite:
-// void fct(std::span<char> param)
-void fct(std::span<char> param) {
+// void fct(dawn::Span<char> param)
+void fct(dawn::Span<char> param) {
   // Expected rewrite:
   // param[0] = 'a';
   param[0] = 'a';
@@ -33,8 +34,8 @@ void fct(std::span<char> param) {
 }
 
 // Expected rewrite:
-// std::span<char> get(int index = 0)
-std::span<char> get(int index = 0) {
+// dawn::Span<char> get(int index = 0)
+dawn::Span<char> get(int index = 0) {
   // Expected rewrite:
   // return {};
   return {};
@@ -53,8 +54,8 @@ void fct2() {
   fct(buf);
 
   // Expected rewrite:
-  // std::span<char> ptr = get();
-  std::span<char> ptr = get();
+  // dawn::Span<char> ptr = get();
+  dawn::Span<char> ptr = get();
   // Buffer expression leading ptr and get return type to be rewritten.
   ptr[3] = 'c';
 
