@@ -549,6 +549,12 @@ void StreamWrite(DevToolsUIBindings* bindings,
                              base::Value(encoded));
 }
 
+enum class DevToolsFrontendLocation {
+  kLocal = 0,
+  kRemote = 1,
+  kMaxValue = kRemote,
+};
+
 bool IsLocalDevToolsFrontendURL(const GURL& url) {
   if (!url.is_valid() || url.IsAboutBlank() ||
       !url.SchemeIs(content::kChromeDevToolsScheme) ||
@@ -2462,6 +2468,14 @@ void DevToolsUIBindings::MaybeStartLogging() {
     if (!remote_debugging_enabled) {
       session_tags |= SessionTags::kDevToolsRemoteDebuggingDisabled;
     }
+
+    // Log the frontend location explicitly
+    GURL frontend_url = web_contents_->GetVisibleURL();
+    DevToolsFrontendLocation location = IsLocalDevToolsFrontendURL(frontend_url)
+                                            ? DevToolsFrontendLocation::kLocal
+                                            : DevToolsFrontendLocation::kRemote;
+    base::UmaHistogramEnumeration("DevTools.FrontendLocation", location);
+
     metrics::structured::StructuredMetricsClient::Record(
         metrics::structured::events::v2::dev_tools::SessionStart()
             .SetTags(session_tags)
