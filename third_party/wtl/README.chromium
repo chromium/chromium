@@ -6,7 +6,7 @@ License: MS-PL
 License File: Ms-PL.txt
 Security Critical: yes
 Shipped: yes
-Update Mechanism: Manual
+Update Mechanism: Autoroll
 CPEPrefix: cpe:/a:microsoft:windows_template_library
 Description:
 WTL is a C++ library for developing Windows applications and UI components.
