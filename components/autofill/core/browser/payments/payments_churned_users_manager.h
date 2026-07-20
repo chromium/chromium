@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_CHURNED_USERS_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_CHURNED_USERS_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 
@@ -29,6 +30,12 @@ class PaymentsChurnedUsersManager : public AutofillManager::Observer {
                               bool small_forms_were_parsed) override;
 
  private:
+  void OnBubbleAccepted();
+  void OnBubbleCancelled();
+
+  // The associated AutofillClient.
+  const raw_ref<AutofillClient> client_;
+
   ScopedAutofillManagersObservation autofill_managers_observation_{this};
 
   base::WeakPtrFactory<PaymentsChurnedUsersManager> weak_factory_{this};
