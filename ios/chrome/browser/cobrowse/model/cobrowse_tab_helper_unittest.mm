@@ -183,6 +183,7 @@ TEST_F(CobrowseTabHelperTest, TriggerAssistantFromOpener) {
 
   web::FakeWebState* opener = CreateAndInsertWebState(aim_url);
   web::FakeWebState* web_state = CreateAndInsertWebStateWithOpener({}, opener);
+  web_state->WasShown();
   CobrowseTabHelper* tab_helper = CobrowseTabHelper::FromWebState(web_state);
 
   web::FakeNavigationContext context;
@@ -330,6 +331,7 @@ TEST_F(CobrowseTabHelperTest, HideOnNtpAndRestoreOnNormalNavigation) {
   web::FakeWebState* opener = CreateAndInsertWebState(aim_url);
 
   web::FakeWebState* web_state = CreateAndInsertWebStateWithOpener({}, opener);
+  web_state->WasShown();
 
   CobrowseTabHelper* tab_helper = CobrowseTabHelper::FromWebState(web_state);
 

@@ -77,6 +77,13 @@ void CobrowseTabHelper::DidStartNavigation(
     return;
   }
 
+  // Do not trigger the assistant when the web state is not currently visible.
+  // This could happen e.g. for navigations indirectly caused by the APC
+  // extraction process in the tab picker.
+  if (!web_state->IsVisible()) {
+    return;
+  }
+
   if (delegate_->CanShowAssistantForWebState(web_state)) {
     delegate_->ConfigureAssistantContextForWebState(web_state);
     [scene_handler_ showAssistantInMinimizedState:YES];
