@@ -4,19 +4,13 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import static org.mockito.Mockito.when;
-
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.commerce.core.CommerceSubscription;
 import org.chromium.components.commerce.core.IdentifierType;
 import org.chromium.components.commerce.core.ManagementType;
@@ -25,15 +19,8 @@ import org.chromium.components.power_bookmarks.ProductPrice;
 import org.chromium.components.power_bookmarks.ShoppingSpecifics;
 
 /** Tests for PowerBookmarkUtils. */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
+@RunWith(BaseRobolectricTestRunner.class)
 public class PowerBookmarkUtilsTest {
-    @Before
-    public void setup() {
-        BookmarkModel bookmarkModel =
-                ThreadUtils.runOnUiThreadBlocking(() -> Mockito.mock(BookmarkModel.class));
-        when(bookmarkModel.isBookmarkModelLoaded()).thenReturn(true);
-    }
 
     @Test
     @SmallTest
