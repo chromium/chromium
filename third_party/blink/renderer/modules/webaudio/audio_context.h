@@ -383,9 +383,11 @@ class MODULES_EXPORT AudioContext final
 
   // Send notification to browser that an AudioContext has started or stopped
   // playing audible audio.
-  void NotifyAudibleAudioStarted()
+  void NotifyAudibleAudioStarted(unsigned sequence_id)
       VALID_CONTEXT_REQUIRED(main_thread_sequence_checker_);
-  void NotifyAudibleAudioStopped()
+  void NotifyAudibleAudioStopped(unsigned sequence_id, double silence_time)
+      VALID_CONTEXT_REQUIRED(main_thread_sequence_checker_);
+  void ClearAudibilityState()
       VALID_CONTEXT_REQUIRED(main_thread_sequence_checker_);
 
   void EnsureAudioContextManagerService();
@@ -505,7 +507,19 @@ class MODULES_EXPORT AudioContext final
 
   // Keeps track if the output of this destination was audible, before the
   // current rendering quantum.  Used for recording "playback" time.
-  bool was_audible_ = false;
+  std::atomic<bool> was_audible_{false};
+
+  // Keeps track of the accumulated silent rendering time (in seconds) to
+  // implement hysteresis for audibility notifications.
+  std::atomic<double> accumulated_silence_time_{0.0};
+
+  // Monotonically increasing ID to invalidate stale asynchronous audibility
+  // tasks. When the context's audibility state is cleared synchronously on the
+  // main thread (e.g. during suspend or close), this sequence ID is
+  // incremented. Pending asynchronous NotifyAudibleAudioStarted/Stopped tasks
+  // posted from the audio thread before the reset will carry an older sequence
+  // ID and be safely ignored, avoiding out-of-sync audibility state changes.
+  std::atomic<unsigned> audibility_sequence_id_{0};
 
   // Counts the number of render quanta where audible sound was played.  We
   // determine audibility on render quantum boundaries, so counting quanta is
@@ -611,6 +625,8 @@ class MODULES_EXPORT AudioContext final
   base::TimeTicks audible_start_timestamp_;
   // Total accumulated time this audio context has been audible.
   base::TimeDelta total_audible_duration_;
+
+  const bool use_audibility_hysteresis_;
 
   // Set to true when the DidClose() method is called. Used to detect if the
   // context is destroyed without being properly closed.

@@ -2720,6 +2720,9 @@ BASE_FEATURE(kWebAppMigrationApi, base::FEATURE_ENABLED_BY_DEFAULT);
 // on audio thread. See https://crbug.com/40249972.
 BASE_FEATURE(kWebAudioDeferPullStatusUpdate, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether WebAudio AudioContext has audibility hysteresis.
+BASE_FEATURE(kWebAudioAudibilityHysteresis, base::FEATURE_ENABLED_BY_DEFAULT);
+
 /// Enables cache-aware WebFonts loading. See https://crbug.com/570205.
 // The feature is disabled on Android for WebView API issue discussed at
 // https://crbug.com/942440.

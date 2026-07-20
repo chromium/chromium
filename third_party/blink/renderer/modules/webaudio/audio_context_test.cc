@@ -9,7 +9,9 @@
 
 #include "base/synchronization/waitable_event.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "third_party/blink/public/common/features.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -312,6 +314,43 @@ String GetAecDevice(ExecutionContext* execution_context) {
       ->GetOutputDeviceForAecForTesting();
 }
 
+// Mock implementation of the AudioContextManager Mojo service. This mock
+// tracks the start/stop notifications received from the AudioContext and
+// records their invocation counts to verify correct audibility state
+// reporting.
+class MockAudioContextManager : public mojom::blink::AudioContextManager {
+ public:
+  MockAudioContextManager() = default;
+  ~MockAudioContextManager() override = default;
+
+  void BindRequest(mojo::ScopedMessagePipeHandle handle) {
+    receivers_.Add(
+        this, mojo::PendingReceiver<mojom::blink::AudioContextManager>(
+                  std::move(handle)));
+  }
+
+  void AudioContextAudiblePlaybackStarted(uint32_t id) override {
+    started_count_++;
+  }
+  void AudioContextAudiblePlaybackStopped(uint32_t id) override {
+    stopped_count_++;
+  }
+  void AudioContextCreated(uint32_t id) override {}
+  void AudioContextClosed(uint32_t id) override {}
+
+  int started_count() const { return started_count_; }
+  int stopped_count() const { return stopped_count_; }
+  void reset() {
+    started_count_ = 0;
+    stopped_count_ = 0;
+  }
+
+ private:
+  int started_count_ = 0;
+  int stopped_count_ = 0;
+  mojo::ReceiverSet<mojom::blink::AudioContextManager> receivers_;
+};
+
 }  // namespace
 
 class AudioContextTest : public PageTestBase {
@@ -319,6 +358,8 @@ class AudioContextTest : public PageTestBase {
   AudioContextTest() {
     mock_media_devices_dispatcher_host_ =
         std::make_unique<MockMediaDevicesDispatcherHost>();
+    mock_audio_context_manager_ =
+        std::make_unique<MockAudioContextManager>();
   }
 
   ~AudioContextTest() override = default;
@@ -336,11 +377,17 @@ class AudioContextTest : public PageTestBase {
         mojom::blink::MediaDevicesDispatcherHost::Name_,
         BindRepeating(&MockMediaDevicesDispatcherHost::BindRequest,
                       Unretained(mock_media_devices_dispatcher_host_.get())));
+    GetFrame().DomWindow()->GetBrowserInterfaceBroker().SetBinderForTesting(
+        mojom::blink::AudioContextManager::Name_,
+        BindRepeating(&MockAudioContextManager::BindRequest,
+                      Unretained(mock_audio_context_manager_.get())));
   }
 
   void TearDown() override {
     GetFrame().DomWindow()->GetBrowserInterfaceBroker().SetBinderForTesting(
         mojom::blink::MediaDevicesDispatcherHost::Name_, {});
+    GetFrame().DomWindow()->GetBrowserInterfaceBroker().SetBinderForTesting(
+        mojom::blink::AudioContextManager::Name_, {});
   }
 
   void ResetAudioContextManagerForAudioContext(AudioContext* audio_context) {
@@ -350,6 +397,11 @@ class AudioContextTest : public PageTestBase {
   void SetContextState(AudioContext* audio_context,
                        V8AudioContextState::Enum state) {
     audio_context->SetContextState(state);
+  }
+
+  void ClearAudibilityState(AudioContext* audio_context)
+      NO_THREAD_SAFETY_ANALYSIS {
+    audio_context->ClearAudibilityState();
   }
 
   void ExpectContextBecomesRunningAsync(AudioContext* audio_context) {
@@ -398,6 +450,10 @@ class AudioContextTest : public PageTestBase {
     return platform_.GetTestingPlatformSupport();
   }
 
+  MockAudioContextManager* mock_audio_context_manager() const {
+    return mock_audio_context_manager_.get();
+  }
+
   void ClearAudioContextAsyncStateUseCounters() {
     GetDocument().ClearUseCounterForTesting(
         WebFeature::kAudioContextAsyncStateTransitions);
@@ -411,6 +467,7 @@ class AudioContextTest : public PageTestBase {
   ScopedTestingPlatformSupport<AudioContextTestPlatform> platform_;
   std::unique_ptr<MockMediaDevicesDispatcherHost>
       mock_media_devices_dispatcher_host_;
+  std::unique_ptr<MockAudioContextManager> mock_audio_context_manager_;
 };
 
 TEST_F(AudioContextTest, DisposeOrphansHandlerWhenInterrupted) {
@@ -524,6 +581,294 @@ TEST_F(AudioContextTest, ExecutionContextPaused) {
   GetFrame().DomWindow()->SetLifecycleState(
       mojom::FrameLifecycleState::kRunning);
   EXPECT_FALSE(web_audio_device_paused_);
+}
+
+// Test that the AudioContext correctly handles audibility state transitions
+// and implements the 2-second silence hysteresis.
+TEST_F(AudioContextTest, AudioContextAudibilityHysteresis) {
+  AudioContextOptions* options = AudioContextOptions::Create();
+  AudioContext* audio_context = AudioContext::Create(
+      GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
+
+  SetContextState(audio_context, V8AudioContextState::Enum::kRunning);
+  ExpectContextBecomesRunningAsync(audio_context);
+
+  // Create a background thread to simulate the audio thread.
+  std::unique_ptr<NonMainThread> audio_thread = NonMainThread::CreateThread(
+      ThreadCreationParams(ThreadType::kTestThread));
+
+  auto run_on_audio_thread = [&](CrossThreadOnceClosure closure) {
+    base::WaitableEvent event;
+    PostCrossThreadTask(
+        *audio_thread->GetTaskRunner(), FROM_HERE,
+        CrossThreadBindOnce(
+            [](CrossThreadOnceClosure closure, base::WaitableEvent* event) {
+              std::move(closure).Run();
+              event->Signal();
+            },
+            std::move(closure), CrossThreadUnretained(&event)));
+    event.Wait();
+  };
+
+  // Register the background thread as the audio thread.
+  run_on_audio_thread(CrossThreadBindOnce(
+      [](AudioContext* context) {
+        context->GetDeferredTaskHandler().SetAudioThreadToCurrentThread();
+      },
+      WrapCrossThreadPersistent(audio_context)));
+
+  auto feed_audio = [&](AudioBus* bus) {
+    run_on_audio_thread(CrossThreadBindOnce(
+        [](AudioContext* context, AudioBus* bus) {
+          context->HandleAudibility(bus);
+        },
+        WrapCrossThreadPersistent(audio_context), CrossThreadUnretained(bus)));
+  };
+
+  auto sync_main_thread = [&]() {
+    bool task_run = false;
+    PostCrossThreadTask(
+        *GetFrame().DomWindow()->GetTaskRunner(TaskType::kInternalMedia),
+        FROM_HERE,
+        CrossThreadBindOnce([](bool* task_run) { *task_run = true; },
+                            CrossThreadUnretained(&task_run)));
+    EXPECT_TRUE(base::test::RunUntil([&]() { return task_run; }));
+  };
+
+  scoped_refptr<AudioBus> audible_bus = AudioBus::Create(1, 128);
+  audible_bus->Channel(0)->MutableSpan()[0] = 1.0f;
+
+  scoped_refptr<AudioBus> silent_bus = AudioBus::Create(1, 128);
+
+  // Initially, audibility is false and no starts/stops should be called.
+  EXPECT_EQ(mock_audio_context_manager()->started_count(), 0);
+  EXPECT_EQ(mock_audio_context_manager()->stopped_count(), 0);
+
+  // 1. Transitioning to audible should immediately trigger a start
+  // notification.
+  feed_audio(audible_bus.get());
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return mock_audio_context_manager()->started_count() == 1;
+  }));
+  EXPECT_EQ(mock_audio_context_manager()->stopped_count(), 0);
+
+  // 2. A short duration of silence should NOT trigger a stop notification
+  // (hysteresis).
+  for (int i = 0; i < 10; ++i) {
+    feed_audio(silent_bus.get());
+  }
+  sync_main_thread();
+  EXPECT_EQ(mock_audio_context_manager()->started_count(), 1);
+  EXPECT_EQ(mock_audio_context_manager()->stopped_count(), 0);
+
+  // 3. Resuming audible audio before the threshold resets the silence timer.
+  feed_audio(audible_bus.get());
+  sync_main_thread();
+  EXPECT_EQ(mock_audio_context_manager()->started_count(), 1);
+  EXPECT_EQ(mock_audio_context_manager()->stopped_count(), 0);
+
+  // 4. A prolonged period of silence exceeding the threshold triggers a stop.
+  for (int i = 0; i < 700; ++i) {
+    feed_audio(silent_bus.get());
+  }
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return mock_audio_context_manager()->stopped_count() == 1;
+  }));
+  EXPECT_EQ(mock_audio_context_manager()->started_count(), 1);
+
+  // 5. Playing audible sound again immediately starts.
+  feed_audio(audible_bus.get());
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return mock_audio_context_manager()->started_count() == 2;
+  }));
+  EXPECT_EQ(mock_audio_context_manager()->stopped_count(), 1);
+
+  // 6. Suspending the context should immediately stop the audibility,
+  // bypassing the hysteresis.
+  {
+    V8TestingScope scope;
+    audio_context->suspendContext(scope.GetScriptState(),
+                                  scope.GetExceptionState());
+  }
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return mock_audio_context_manager()->stopped_count() == 2;
+  }));
+  EXPECT_EQ(mock_audio_context_manager()->started_count(), 2);
+
+  // Clean up the background thread registration.
+  run_on_audio_thread(CrossThreadBindOnce(
+      [](AudioContext* context) {
+        // Clear the audio thread registration by setting it to
+        // nullptr/empty task runner context. Or simply let the
+        // thread be destroyed.
+      },
+      WrapCrossThreadPersistent(audio_context)));
+}
+
+// Test that when the audibility hysteresis feature flag is disabled,
+// transitioning to silence immediately triggers a stop notification.
+TEST_F(AudioContextTest, AudioContextAudibilityNoHysteresis) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      blink::features::kWebAudioAudibilityHysteresis);
+
+  AudioContextOptions* options = AudioContextOptions::Create();
+  AudioContext* audio_context = AudioContext::Create(
+      GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
+
+  SetContextState(audio_context, V8AudioContextState::Enum::kRunning);
+  ExpectContextBecomesRunningAsync(audio_context);
+
+  // Create a background thread to simulate the audio thread.
+  std::unique_ptr<NonMainThread> audio_thread = NonMainThread::CreateThread(
+      ThreadCreationParams(ThreadType::kTestThread));
+
+  auto run_on_audio_thread = [&](CrossThreadOnceClosure closure) {
+    base::WaitableEvent event;
+    PostCrossThreadTask(
+        *audio_thread->GetTaskRunner(), FROM_HERE,
+        CrossThreadBindOnce(
+            [](CrossThreadOnceClosure closure, base::WaitableEvent* event) {
+              std::move(closure).Run();
+              event->Signal();
+            },
+            std::move(closure), CrossThreadUnretained(&event)));
+    event.Wait();
+  };
+
+  // Register the background thread as the audio thread.
+  run_on_audio_thread(CrossThreadBindOnce(
+      [](AudioContext* context) {
+        context->GetDeferredTaskHandler().SetAudioThreadToCurrentThread();
+      },
+      WrapCrossThreadPersistent(audio_context)));
+
+  auto feed_audio = [&](AudioBus* bus) {
+    run_on_audio_thread(CrossThreadBindOnce(
+        [](AudioContext* context, AudioBus* bus) {
+          context->HandleAudibility(bus);
+        },
+        WrapCrossThreadPersistent(audio_context), CrossThreadUnretained(bus)));
+  };
+
+  scoped_refptr<AudioBus> audible_bus = AudioBus::Create(1, 128);
+  audible_bus->Channel(0)->MutableSpan()[0] = 1.0f;
+
+  scoped_refptr<AudioBus> silent_bus = AudioBus::Create(1, 128);
+
+  // Initially, audibility is false and no starts/stops should be called.
+  EXPECT_EQ(mock_audio_context_manager()->started_count(), 0);
+  EXPECT_EQ(mock_audio_context_manager()->stopped_count(), 0);
+
+  // 1. Transitioning to audible should immediately trigger a start.
+  feed_audio(audible_bus.get());
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return mock_audio_context_manager()->started_count() == 1;
+  }));
+  EXPECT_EQ(mock_audio_context_manager()->stopped_count(), 0);
+
+  // 2. Feeding a single silent block should immediately trigger a stop
+  // (no hysteresis).
+  feed_audio(silent_bus.get());
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return mock_audio_context_manager()->stopped_count() == 1;
+  }));
+  EXPECT_EQ(mock_audio_context_manager()->started_count(), 1);
+}
+
+// Test that stale asynchronous audibility tasks posted from the audio thread
+// are discarded if a lifecycle reset (ClearAudibilityState) occurs before
+// they execute.
+TEST_F(AudioContextTest, AudioContextAudibilitySequenceFiltering) {
+  AudioContextOptions* options = AudioContextOptions::Create();
+  AudioContext* audio_context = AudioContext::Create(
+      GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
+
+  SetContextState(audio_context, V8AudioContextState::Enum::kRunning);
+  ExpectContextBecomesRunningAsync(audio_context);
+
+  // Create a background thread to simulate the audio thread.
+  std::unique_ptr<NonMainThread> audio_thread = NonMainThread::CreateThread(
+      ThreadCreationParams(ThreadType::kTestThread));
+
+  auto run_on_audio_thread = [&](CrossThreadOnceClosure closure) {
+    base::WaitableEvent event;
+    PostCrossThreadTask(
+        *audio_thread->GetTaskRunner(), FROM_HERE,
+        CrossThreadBindOnce(
+            [](CrossThreadOnceClosure closure, base::WaitableEvent* event) {
+              std::move(closure).Run();
+              event->Signal();
+            },
+            std::move(closure), CrossThreadUnretained(&event)));
+    event.Wait();
+  };
+
+  // Register the background thread as the audio thread.
+  run_on_audio_thread(CrossThreadBindOnce(
+      [](AudioContext* context) {
+        context->GetDeferredTaskHandler().SetAudioThreadToCurrentThread();
+      },
+      WrapCrossThreadPersistent(audio_context)));
+
+  auto feed_audio = [&](AudioBus* bus) {
+    run_on_audio_thread(CrossThreadBindOnce(
+        [](AudioContext* context, AudioBus* bus) {
+          context->HandleAudibility(bus);
+        },
+        WrapCrossThreadPersistent(audio_context), CrossThreadUnretained(bus)));
+  };
+
+  auto sync_main_thread = [&]() {
+    bool task_run = false;
+    PostCrossThreadTask(
+        *GetFrame().DomWindow()->GetTaskRunner(TaskType::kInternalMedia),
+        FROM_HERE,
+        CrossThreadBindOnce([](bool* task_run) { *task_run = true; },
+                            CrossThreadUnretained(&task_run)));
+    EXPECT_TRUE(base::test::RunUntil([&]() { return task_run; }));
+  };
+
+  scoped_refptr<AudioBus> audible_bus = AudioBus::Create(1, 128);
+  audible_bus->Channel(0)->MutableSpan()[0] = 1.0f;
+
+  // Initially, audibility is false.
+  EXPECT_EQ(mock_audio_context_manager()->started_count(), 0);
+  EXPECT_EQ(mock_audio_context_manager()->stopped_count(), 0);
+
+  // 1. Feed audible audio. This posts NotifyAudibleAudioStarted(sequence_id=0)
+  // to the main thread, but we do NOT run the main thread loop yet.
+  feed_audio(audible_bus.get());
+
+  // 2. Call ClearAudibilityState() synchronously. This resets was_audible_ to
+  // false and increments the sequence ID to 1.
+  ClearAudibilityState(audio_context);
+
+  // 4. Feed audible audio again. This posts
+  // NotifyAudibleAudioStarted(sequence_id=1).
+  feed_audio(audible_bus.get());
+
+  // 5. Now run the main thread task runner.
+  // The first task (sequence_id=0) should be discarded because its sequence ID
+  // (0) does not match the current audibility_sequence_id (1).
+  // The second task (sequence_id=1) should be processed because it matches.
+  // Therefore, started_count() should be exactly 1, and no crashes should occur.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return mock_audio_context_manager()->started_count() == 1;
+  }));
+  sync_main_thread();
+
+  EXPECT_EQ(mock_audio_context_manager()->started_count(), 1);
+  EXPECT_EQ(mock_audio_context_manager()->stopped_count(), 0);
+
+  // Clean up the background thread registration.
+  run_on_audio_thread(CrossThreadBindOnce(
+      [](AudioContext* context) {
+        // Clear the audio thread registration by setting it to
+        // nullptr/empty task runner context. Or simply let the
+        // thread be destroyed.
+      },
+      WrapCrossThreadPersistent(audio_context)));
 }
 
 // Test initialization/uninitialization of MediaDeviceService.
