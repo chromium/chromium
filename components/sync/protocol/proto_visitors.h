@@ -2455,8 +2455,14 @@ VISIT_PROTO_FIELDS(const sync_pb::GeminiThreadSpecifics& proto) {
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::NotebookSpecifics& proto) {
-  // TODO(crbug.com/531804614): In CL #2, VISIT fields added to specifics.
+  VISIT(uuid);
+  VISIT(creation_time_windows_epoch_micros);
+  VISIT(update_time_windows_epoch_micros);
+  VISIT(notebook);
+  VISIT(schema_version);
 }
+
+VISIT_PROTO_FIELDS(const sync_pb::Notebook& proto) {}
 
 VISIT_PROTO_FIELDS(const sync_pb::AiThreadSpecifics& proto) {
   VISIT_ENUM(type);
