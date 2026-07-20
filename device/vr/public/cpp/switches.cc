@@ -10,5 +10,4 @@ const char kWebXrHandAnonymizationStrategy[] =
 const char kWebXrHandAnonymizationStrategyNone[] = "none";
 const char kWebXrHandAnonymizationStrategyRuntime[] = "runtime";
 const char kWebXrHandAnonymizationStrategyFallback[] = "fallback";
-const char kWebXrMaxFramebufferScale[] = "webxr-max-framebuffer-scale";
 }  // namespace device::switches

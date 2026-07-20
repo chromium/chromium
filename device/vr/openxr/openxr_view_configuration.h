@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "device/vr/public/mojom/vr_service.mojom-forward.h"
-#include "device/vr/vr_export.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -50,7 +49,7 @@ mojom::XREye GetEyeFromIndex(int i);
 
 // A helper class to abstract away decisions that may need to be made about how
 // to use/consume/interpret the properties.
-class DEVICE_VR_EXPORT OpenXrViewProperties {
+class OpenXrViewProperties {
  public:
   OpenXrViewProperties(XrViewConfigurationView xr_properties,
                        uint32_t view_count,
@@ -68,8 +67,6 @@ class DEVICE_VR_EXPORT OpenXrViewProperties {
   }
 
  private:
-  void CalculateViewportScaledProperties();
-
   uint32_t ClampWidth(uint32_t val) const;
   uint32_t ClampHeight(uint32_t val) const;
   XrViewConfigurationView xr_properties_;
@@ -78,8 +75,6 @@ class DEVICE_VR_EXPORT OpenXrViewProperties {
   // information helps us determine our max width/height.
   uint32_t view_count_;
   gfx::Size max_texture_size_;
-  uint32_t viewport_scaled_width_ = 0;
-  uint32_t viewport_scaled_height_ = 0;
 };
 
 // Stores information about an OpenXR view configuration that is available in

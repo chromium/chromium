@@ -468,7 +468,6 @@ bool UtilityProcessHost::StartProcess() {
 #endif
 #if BUILDFLAG(ENABLE_VR)
       device::switches::kWebXrHandAnonymizationStrategy,
-      device::switches::kWebXrMaxFramebufferScale,
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
       switches::kSchedulerBoostUrgent,
