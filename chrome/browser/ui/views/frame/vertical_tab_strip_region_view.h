@@ -142,7 +142,7 @@ class VerticalTabStripRegionView final
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
   views::Separator* tabs_separator_for_testing() {
-    return tab_strip_view_->GetTabsSeparator();
+    return tab_strip_view() ? tab_strip_view()->GetTabsSeparator() : nullptr;
   }
 
   bool is_expanded_on_hover() const { return is_expanded_on_hover_; }
@@ -200,8 +200,8 @@ class VerticalTabStripRegionView final
 
   void HandleMouseExited();
 
-  views::View* SetTabStripView(std::unique_ptr<views::View> view) override;
-  void ClearTabStripView(views::View* view) override;
+  void OnTabStripViewSet() override;
+  void OnTabStripViewWillClear() override;
 
   void OnCollapseStateChanged(
       tabs::VerticalTabStripCollapseState collapse_state);
@@ -238,7 +238,7 @@ class VerticalTabStripRegionView final
                              OmniboxFocusChangeReason reason) override {}
   void OnOmniboxPopupVisibilityChanged(bool is_open) override;
 
-  void OnActiveTabChanged(const tabs::TabInterface* active_tab);
+  void OnActiveTabChanged(const tabs::TabInterface* active_tab) override;
 
   raw_ptr<VerticalTabStripTopContainer> top_button_container_ = nullptr;
   raw_ptr<views::Separator> top_button_separator_ = nullptr;
@@ -303,6 +303,7 @@ class VerticalTabStripRegionView final
   bool is_first_window_presentation_ = true;
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
+  base::CallbackListSubscription paint_as_active_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_VERTICAL_TAB_STRIP_REGION_VIEW_H_

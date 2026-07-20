@@ -96,21 +96,37 @@ class BaseTabStripRegionView : public TabStripRegionView {
   TabStripOrientation orientation() const { return orientation_; }
 
  protected:
-  virtual views::View* SetTabStripView(std::unique_ptr<views::View> view) = 0;
-  virtual void ClearTabStripView(views::View* view);
+  virtual void OnTabStripViewSet() {}
+  virtual void OnTabStripViewWillClear() {}
 
   void RecordNewTabButtonPressed();
-  void OnChildrenAdded();
-  void OnChildrenRemoved();
-  void OnChildMoved(TabCollectionNode* moved_node);
-  void OnActiveTabChanged(const tabs::TabInterface* active_tab);
+  virtual void OnActiveTabChanged(const tabs::TabInterface* active_tab);
 
   void SetLinkDropArrow(const std::optional<BrowserRootView::DropIndex>& index);
-  gfx::Rect GetLinkDropBounds(const BrowserRootView::DropIndex& drop_index,
-                              DropArrow::Direction* direction);
   virtual gfx::Point GetLinkDropArrowPosition(
       const BrowserRootView::DropIndex& drop_index,
       DropArrow::Direction* direction) = 0;
+
+  BrowserView* browser_view() const { return browser_view_; }
+  actions::ActionItem* root_action_item() const { return root_action_item_; }
+  TabStripModel* tab_strip_model() const { return tab_strip_model_; }
+  TabStripView* tab_strip_view() const { return tab_strip_view_; }
+  RootTabCollectionNode* root_node() const { return root_node_.get(); }
+  DropArrow* drop_arrow() const { return drop_arrow_.get(); }
+  TabHoverCardController* hover_card_controller() const {
+    return hover_card_controller_.get();
+  }
+
+ private:
+  views::View* SetTabStripView(std::unique_ptr<views::View> view);
+  void ClearTabStripView(views::View* view);
+
+  void OnChildrenAdded();
+  void OnChildrenRemoved();
+  void OnChildMoved(TabCollectionNode* moved_node);
+
+  gfx::Rect GetLinkDropBounds(const BrowserRootView::DropIndex& drop_index,
+                              DropArrow::Direction* direction);
   gfx::Rect GetLinkDropBoundsFromPosition(gfx::Point position,
                                           DropArrow::Direction direction);
 
@@ -131,7 +147,6 @@ class BaseTabStripRegionView : public TabStripRegionView {
   std::unique_ptr<TabHoverCardController> hover_card_controller_;
   std::unique_ptr<HoverTabSelector> hover_tab_selector_;
 
-  base::CallbackListSubscription paint_as_active_subscription_;
   std::optional<base::CallbackListSubscription> on_children_added_subscription_;
   std::optional<base::CallbackListSubscription>
       on_children_removed_subscription_;

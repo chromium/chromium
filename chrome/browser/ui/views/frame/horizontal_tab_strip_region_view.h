@@ -160,18 +160,18 @@ class HorizontalTabStripRegionViewNew : public BaseTabStripRegionView {
       const views::SizeBounds& available_size) const override;
   views::View* GetTabStripView() override;
   gfx::Rect GetTabStripDraggableBounds() const override;
-  views::View* SetTabStripView(std::unique_ptr<views::View> view) override;
   gfx::Point GetLinkDropArrowPosition(
       const BrowserRootView::DropIndex& drop_index,
       DropArrow::Direction* direction) override;
 
  private:
+  void OnTabStripViewSet() override;
+
   raw_ptr<views::View> reserved_grab_handle_space_ = nullptr;
   raw_ptr<TabStripComboButton> combo_button_ = nullptr;
   raw_ptr<views::Button> new_tab_button_ = nullptr;
 
   std::unique_ptr<views::ActionViewController> action_view_controller_;
-  base::CallbackListSubscription on_active_tab_changed_subscription_;
 };
 
 using HorizontalTabStripRegionView = HorizontalTabStripRegionViewOld;

@@ -799,11 +799,11 @@ bool HorizontalTabStripRegionViewNew::IsPositionInWindowCaption(
   if (combo_button_ && IsHitInView(combo_button_, point)) {
     return false;
   }
-  if (tab_strip_view_ && IsHitInView(tab_strip_view_, point)) {
+  if (tab_strip_view() && IsHitInView(tab_strip_view(), point)) {
     gfx::Point point_in_tab_strip = point;
-    views::View::ConvertPointToTarget(this, tab_strip_view_,
+    views::View::ConvertPointToTarget(this, tab_strip_view(),
                                       &point_in_tab_strip);
-    if (!tab_strip_view_->IsPositionInWindowCaption(point_in_tab_strip)) {
+    if (!tab_strip_view()->IsPositionInWindowCaption(point_in_tab_strip)) {
       return false;
     }
   }
@@ -812,8 +812,8 @@ bool HorizontalTabStripRegionViewNew::IsPositionInWindowCaption(
 
 views::View::Views HorizontalTabStripRegionViewNew::GetChildrenInZOrder() {
   views::View::Views children;
-  if (tab_strip_view_) {
-    children.emplace_back(tab_strip_view_.get());
+  if (tab_strip_view()) {
+    children.emplace_back(tab_strip_view());
   }
   if (GetDragContext()) {
     children.emplace_back(GetDragContext());
@@ -835,27 +835,27 @@ void HorizontalTabStripRegionViewNew::Layout(PassKey) {
 }
 
 gfx::Size HorizontalTabStripRegionViewNew::GetMinimumSize() const {
-  if (tab_strip_view_) {
-    return tab_strip_view_->GetMinimumSize();
+  if (tab_strip_view()) {
+    return tab_strip_view()->GetMinimumSize();
   }
   return gfx::Size();
 }
 
 gfx::Size HorizontalTabStripRegionViewNew::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  if (tab_strip_view_) {
-    return tab_strip_view_->GetPreferredSize(available_size);
+  if (tab_strip_view()) {
+    return tab_strip_view()->GetPreferredSize(available_size);
   }
   return gfx::Size();
 }
 
 views::View* HorizontalTabStripRegionViewNew::GetTabStripView() {
-  return tab_strip_view_;
+  return tab_strip_view();
 }
 
 gfx::Rect HorizontalTabStripRegionViewNew::GetTabStripDraggableBounds() const {
-  if (tab_strip_view_) {
-    return tab_strip_view_->GetBoundsInScreen();
+  if (tab_strip_view()) {
+    return tab_strip_view()->GetBoundsInScreen();
   }
   return gfx::Rect();
 }
@@ -867,10 +867,11 @@ gfx::Point HorizontalTabStripRegionViewNew::GetLinkDropArrowPosition(
   int target_y = GetBoundsInScreen().y();
 
   *direction = DropArrow::Direction::kDown;
-  if (root_node_ && drop_index.index < tab_strip_model_->count()) {
-    tabs::TabInterface* tab = tab_strip_model_->GetTabAtIndex(drop_index.index);
+  if (root_node() && drop_index.index < tab_strip_model()->count()) {
+    tabs::TabInterface* tab =
+        tab_strip_model()->GetTabAtIndex(drop_index.index);
     if (TabCollectionNode* node =
-            root_node_->GetNodeForHandle(tab->GetHandle())) {
+            root_node()->GetNodeForHandle(tab->GetHandle())) {
       views::View* target_view = node->view();
       if (target_view) {
         target_x = target_view->GetBoundsInScreen().x();
@@ -886,23 +887,9 @@ gfx::Point HorizontalTabStripRegionViewNew::GetLinkDropArrowPosition(
   return gfx::Point(target_x, target_y);
 }
 
-views::View* HorizontalTabStripRegionViewNew::SetTabStripView(
-    std::unique_ptr<views::View> view) {
-  CHECK(views::IsViewClass<TabStripView>(view.get()));
-  tab_strip_view_ = static_cast<TabStripView*>(view.get());
+void HorizontalTabStripRegionViewNew::OnTabStripViewSet() {
   const size_t index = combo_button_ ? 1 : 0;
-  AddChildViewAt(std::move(view), index);
-  tab_strip_view_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kPreferred));
-
-  on_active_tab_changed_subscription_ =
-      root_node_->RegisterOnActiveTabChangedCallback(base::BindRepeating(
-          &HorizontalTabStripRegionViewNew::OnActiveTabChanged,
-          base::Unretained(this)));
-
-  return tab_strip_view_;
+  ReorderChildView(tab_strip_view(), index);
 }
 
 BEGIN_METADATA(HorizontalTabStripRegionViewNew)

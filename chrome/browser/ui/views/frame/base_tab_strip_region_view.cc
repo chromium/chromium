@@ -425,10 +425,31 @@ TabDragTarget* BaseTabStripRegionView::GetTabDragTarget(
   return &GetUnpinnedTabsContainer()->GetTabDragTarget(point_in_screen);
 }
 
+views::View* BaseTabStripRegionView::SetTabStripView(
+    std::unique_ptr<views::View> view) {
+  CHECK(views::IsViewClass<TabStripView>(view.get()));
+  tab_strip_view_ = static_cast<TabStripView*>(view.get());
+
+  AddChildView(std::move(view));
+
+  tab_strip_view_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kPreferred));
+
+  on_active_tab_changed_subscription_ =
+      root_node_->RegisterOnActiveTabChangedCallback(base::BindRepeating(
+          &BaseTabStripRegionView::OnActiveTabChanged, base::Unretained(this)));
+
+  OnTabStripViewSet();
+  return tab_strip_view_;
+}
+
 void BaseTabStripRegionView::ClearTabStripView(views::View* view) {
   CHECK(tab_strip_view_);
   CHECK(tab_strip_view_ == view);
   on_active_tab_changed_subscription_.reset();
+  OnTabStripViewWillClear();
   RemoveChildViewT(std::exchange(tab_strip_view_, nullptr));
 }
 
