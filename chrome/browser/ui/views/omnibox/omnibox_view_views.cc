@@ -61,6 +61,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_placeholder_util.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_text_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_container_view.h"
@@ -197,13 +198,6 @@ void LogOmniboxFocusToCutOrCopyAllTextTime(
   }
 }
 
-std::u16string AimPlaceholderText(
-    const ai_mode_button_config::AiModeButtonConfig& config) {
-  // Appends a unicode character to represent the tab key.
-  const std::u16string kTabChar = u"\u21E5";
-  return kTabChar + u" " + config.placeholder_text;
-}
-
 }  // namespace
 
 // OmniboxState ---------------------------------------------------------------
@@ -337,10 +331,10 @@ void OmniboxViewViews::SaveStateToTab(content::WebContents* tab) {
   UpdateAccessibleTextSelection();
 }
 
-void OmniboxViewViews::OnTabChanged(const content::WebContents* web_contents) {
+void OmniboxViewViews::OnTabChanged(content::WebContents* web_contents) {
   // Observe the WebContents for title changes and navigations for updating the
   // placeholder text.
-  Observe(const_cast<content::WebContents*>(web_contents));
+  Observe(web_contents);
 
   const OmniboxState* state = static_cast<OmniboxState*>(
       web_contents->GetUserData(OmniboxTabHelper::kOmniboxStateKey));
@@ -396,44 +390,14 @@ void OmniboxViewViews::SetUserTextForTab(content::WebContents* web_contents,
 }
 
 void OmniboxViewViews::InstallPlaceholderText() {
-  if (!controller()->edit_model()->keyword_placeholder().empty()) {
-    // If `keyword_placeholder()` is set, then the user is in a keyword mode
-    // that has placeholder text, so display that.
-    SetPlaceholderText(controller()->edit_model()->keyword_placeholder());
-  } else if (ShouldInstallAimPlaceholderText()) {
-    // If the Omnibox is visibly focused w/ AI Mode enabled, display the AI Mode
-    // placeholder text to suggest tabbing into AI Mode. Note, even if the AI
-    // placeholder text is installed, it will only be visible if
-    // `ShouldShowPlaceholderText()` is also true.
-    auto* config = GetAiModeConfig();
-    CHECK(config);
-    SetPlaceholderText(AimPlaceholderText(*config));
-    // Override the AIM accessibility placeholder text, so that the tab icon is
-    // not announced.
+  std::u16string placeholder_text;
+  std::optional<std::u16string> maybe_a11y_placeholder_text;
+  omnibox::ComputePlaceholderText(location_bar_view_, placeholder_text,
+                                  maybe_a11y_placeholder_text);
+  SetPlaceholderText(placeholder_text);
+  if (maybe_a11y_placeholder_text.has_value()) {
     GetViewAccessibility().SetPlaceholder(
-        base::UTF16ToUTF8(config->placeholder_text));
-  } else if (ShouldInstallContextualTasksPlaceholderText()) {
-    // For Contextual Tasks page, use the page title as placeholder text.
-    SetPlaceholderText(location_bar_view_->GetWebContents()->GetTitle());
-  } else if (const auto* default_provider = controller()
-                                                ->client()
-                                                ->GetTemplateURLService()
-                                                ->GetDefaultSearchProvider()) {
-    const bool aim_popup_enabled =
-        location_bar_view_ &&
-        omnibox::IsAimPopupEnabled(location_bar_view_->GetProfile());
-    if (aim_popup_enabled &&
-        search::DefaultSearchProviderIsGoogle(
-            controller()->client()->GetTemplateURLService())) {
-      SetPlaceholderText(l10n_util::GetStringFUTF16(
-          IDS_WEBUI_OMNIBOX_PLACEHOLDER_TEXT, default_provider->short_name()));
-    } else {
-      // Otherwise, if a DSE is set, use the DSE placeholder text.
-      SetPlaceholderText(l10n_util::GetStringFUTF16(
-          IDS_OMNIBOX_PLACEHOLDER_TEXT, default_provider->short_name()));
-    }
-  } else {
-    SetPlaceholderText(std::u16string());
+        base::UTF16ToUTF8(*maybe_a11y_placeholder_text));
   }
 
   UpdatePlaceholderTextColor();
@@ -708,12 +672,11 @@ void OmniboxViewViews::OnPaint(gfx::Canvas* canvas) {
 
   // Record an impression of the AIM hint text if it is being shown.
   const bool should_show_placeholder = ShouldShowPlaceholderText();
-  auto* config = GetAiModeConfig();
   const bool is_aim_placeholder =
-      config && GetPlaceholderText() == AimPlaceholderText(*config);
+      omnibox::IsAimPlaceholderText(location_bar_view_, GetPlaceholderText());
   if (should_show_placeholder && is_aim_placeholder && !aim_hint_shown_) {
     aim_hint_shown_ = true;
-    RecordAimHintImpression();
+    omnibox::RecordAimHintImpression(location_bar_view_);
   }
 }
 
@@ -1891,43 +1854,12 @@ bool OmniboxViewViews::ShouldShowPlaceholderText() const {
     return false;
   }
 
-  // If there's keyword placeholder to show, always show it, regardless of
-  // whether the omnibox is focused, because users won't enter keyword mode,
-  // blur the omnibox, read the placeholder text, refocus the omnibox, and begin
-  // typing.
-  if (!controller()->edit_model()->keyword_placeholder().empty()) {
-    return true;
-  }
-
-  if (base::FeatureList::IsEnabled(
-          omnibox::kOmniboxAimDeferShowUntilVisualStateReady)) {
-    // Suppress the hint text while the AIM popup is displayed or in deferred
-    // transition.
-    OmniboxPopupState state =
-        controller()->popup_state_manager()->popup_state();
-    bool is_webui_popup =
-        state == OmniboxPopupState::kAim || state == OmniboxPopupState::kFull;
-    bool is_transitioning =
-        location_bar_view_ && location_bar_view_->in_popup_state_transition();
-    if (is_webui_popup || is_transitioning) {
-      return false;
-    }
-  }
-
-  // If the omnibox is blurred, only show the DSE placeholder if there is no
-  // keyword selected.
-  if (!controller()->edit_model()->is_caret_visible()) {
-    return !controller()->edit_model()->is_keyword_selected();
-  }
-
-  // If the omnibox is focused, only show the AIM placeholder if its conditions
-  // are met:
-  if (!AimButtonVisible() || AreAimHintImpressionLimitsReached()) {
-    return false;
-  }
-
-  // Hide the AIM placeholder when the AIM button is focused.
-  return !controller()->edit_model()->GetPopupSelection().IsButtonFocused();
+  return omnibox::ShouldShowPlaceholderText(
+      location_bar_view_,
+      /*in_popup_state_transition=*/location_bar_view_ &&
+          location_bar_view_->in_popup_state_transition(),
+      /*aim_button_visible=*/AimButtonVisible(),
+      /*aim_hint_currently_shown=*/aim_hint_shown_);
 }
 
 void OmniboxViewViews::UpdateAccessibleValue() {
@@ -2445,70 +2377,10 @@ void OmniboxViewViews::PerformDrop(
 }
 
 void OmniboxViewViews::UpdatePlaceholderTextColor() {
-  // AIM placeholder text, contextual tasks placeholder text, and keyword
-  // placeholders are dim to differentiate from user input. DSE placeholders are
-  // not dim to draw attention to the omnibox and because the omnibox is
-  // unfocused so there's less risk of confusion with user input.
-  bool dse_placeholder_installed =
-      controller()->edit_model()->keyword_placeholder().empty() &&
-      !ShouldInstallAimPlaceholderText() &&
-      !ShouldInstallContextualTasksPlaceholderText();
-  SetPlaceholderTextColorId(dse_placeholder_installed
-                                ? kColorOmniboxText
-                                : kColorOmniboxForegroundDisabled);
-}
-
-bool OmniboxViewViews::AreAimHintImpressionLimitsReached() const {
-  // If the hint has already been shown in the current focus session, we can
-  // ignore the limits to avoid hiding the hint text in the same session that
-  // the impression limit was reached.
-  if (aim_hint_shown_) {
-    return false;
-  }
-
-  constexpr int kAimHintImpressionLimitTotal = 15;
-  constexpr int kAimHintImpressionLimitDaily = 3;
-
-  PrefService* prefs = location_bar_view_->GetProfile()->GetPrefs();
-
-  // Check total impressions.
-  const int total_impressions =
-      prefs->GetInteger(omnibox::kAimHintTotalImpressions);
-  if (total_impressions >= kAimHintImpressionLimitTotal) {
-    return true;
-  }
-
-  // Check daily impressions.
-  const int today = (base::Time::Now() - base::Time::UnixEpoch()).InDays();
-  if (prefs->GetInteger(omnibox::kAimHintLastImpressionDay) == today &&
-      prefs->GetInteger(omnibox::kAimHintDailyImpressionsCount) >=
-          kAimHintImpressionLimitDaily) {
-    return true;
-  }
-  return false;
-}
-
-bool OmniboxViewViews::ShouldInstallAimPlaceholderText() const {
-  // `location_bar_view_` can be null in tests.
-  if (!location_bar_view_) {
-    return false;
-  }
-
-  const auto* aim_eligibility_service =
-      AimEligibilityServiceFactory::GetForProfile(
-          location_bar_view_->GetProfile());
-  const auto* ai_mode_button_service =
-      AiModeButtonServiceFactory::GetForProfile(
-          location_bar_view_->GetProfile());
-  const auto* template_url_service = TemplateURLServiceFactory::GetForProfile(
-      location_bar_view_->GetProfile());
-  const bool is_aim_entrypoint_enabled =
-      OmniboxFieldTrial::IsAimOmniboxEntrypointEnabled(aim_eligibility_service,
-                                                       ai_mode_button_service,
-                                                       template_url_service);
-
-  return is_aim_entrypoint_enabled &&
-         controller()->edit_model()->is_caret_visible() && GetAiModeConfig();
+  SetPlaceholderTextColorId(
+      omnibox::ShouldUseDimPlaceholderColor(location_bar_view_)
+          ? kColorOmniboxForegroundDisabled
+          : kColorOmniboxText);
 }
 
 const ai_mode_button_config::AiModeButtonConfig*
@@ -2521,51 +2393,6 @@ OmniboxViewViews::GetAiModeConfig() const {
   return service ? service->GetCurrentConfig() : nullptr;
 }
 
-bool OmniboxViewViews::ShouldInstallContextualTasksPlaceholderText() const {
-  // `location_bar_view_` can be null in tests.
-  if (!location_bar_view_) {
-    return false;
-  }
-
-  content::WebContents* web_contents = location_bar_view_->GetWebContents();
-  if (!web_contents) {
-    return false;
-  }
-
-  content::NavigationEntry* entry =
-      web_contents->GetController().GetLastCommittedEntry();
-  if (!entry) {
-    return false;
-  }
-
-  const auto is_contextual_tasks = [](const GURL& url) {
-    return url.SchemeIs(content::kChromeUIScheme) &&
-           url.GetHost() == chrome::kChromeUIContextualTasksHost &&
-           base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks);
-  };
-  return is_contextual_tasks(entry->GetURL());
-}
-
-void OmniboxViewViews::RecordAimHintImpression() {
-  PrefService* prefs = location_bar_view_->GetProfile()->GetPrefs();
-
-  // Increment the total impressions count.
-  const int total_impressions =
-      prefs->GetInteger(omnibox::kAimHintTotalImpressions) + 1;
-  prefs->SetInteger(omnibox::kAimHintTotalImpressions, total_impressions);
-
-  // Increment the daily impressions count, resetting the count if the day has
-  // changed.
-  const int today = (base::Time::Now() - base::Time::UnixEpoch()).InDays();
-  if (prefs->GetInteger(omnibox::kAimHintLastImpressionDay) != today) {
-    prefs->SetInteger(omnibox::kAimHintLastImpressionDay, today);
-    prefs->SetInteger(omnibox::kAimHintDailyImpressionsCount, 0);
-  }
-
-  const int daily_impressions =
-      prefs->GetInteger(omnibox::kAimHintDailyImpressionsCount) + 1;
-  prefs->SetInteger(omnibox::kAimHintDailyImpressionsCount, daily_impressions);
-}
 
 BEGIN_METADATA(OmniboxViewViews)
 ADD_READONLY_PROPERTY_METADATA(bool, SelectionAtEnd)

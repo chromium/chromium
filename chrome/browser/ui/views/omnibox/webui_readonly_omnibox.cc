@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_util.h"
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_placeholder_util.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 #include "chrome/browser/ui/views/page_action/webui_page_action_control.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
@@ -31,6 +32,7 @@
 #include "components/omnibox/browser/omnibox_text_util.h"
 #include "components/omnibox/browser/searchbox_utils.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "net/cert/cert_status_flags.h"
 #include "ui/events/event_constants.h"
@@ -84,6 +86,9 @@ WebUIReadOnlyOmnibox::WebUIReadOnlyOmnibox(
         base::BindRepeating(&WebUIReadOnlyOmnibox::Update,
                             base::Unretained(this)));
   }
+
+  scoped_template_url_service_observation_.Observe(
+      controller->client()->GetTemplateURLService());
 }
 
 WebUIReadOnlyOmnibox::~WebUIReadOnlyOmnibox() = default;
@@ -95,8 +100,11 @@ void WebUIReadOnlyOmnibox::SaveStateToTab(content::WebContents* tab) {
                    std::make_unique<OmniboxState>(state, selection_));
 }
 
-void WebUIReadOnlyOmnibox::OnTabChanged(
-    const content::WebContents* web_contents) {
+void WebUIReadOnlyOmnibox::OnTabChanged(content::WebContents* web_contents) {
+  // Observe the WebContents for title changes and navigations for updating the
+  // placeholder text.
+  Observe(web_contents);
+
   const OmniboxState* state = static_cast<OmniboxState*>(
       web_contents->GetUserData(OmniboxTabHelper::kOmniboxStateKey));
   controller()->edit_model()->RestoreState(state ? &state->model_state
@@ -335,6 +343,10 @@ bool WebUIReadOnlyOmnibox::OnAfterPossibleChange(bool allow_keyword_ui_change) {
   return something_changed;
 }
 
+void WebUIReadOnlyOmnibox::OnKeywordPlaceholderTextChange() {
+  RequestUpdateWebUI();
+}
+
 int WebUIReadOnlyOmnibox::GetOmniboxTextLength() const {
   return text_.size();
 }
@@ -419,7 +431,7 @@ views::Widget* WebUIReadOnlyOmnibox::GetWidgetForTextServices() {
 }
 
 toolbar_ui_api::mojom::OmniboxViewStatePtr
-WebUIReadOnlyOmnibox::ComputeMojoState() const {
+WebUIReadOnlyOmnibox::ComputeMojoState() {
   auto state = toolbar_ui_api::mojom::OmniboxViewState::New();
   state->ui_version = ui_version_;
   state->browser_version = browser_version_;
@@ -453,9 +465,36 @@ WebUIReadOnlyOmnibox::ComputeMojoState() const {
     size_t end = breakpoints[i + 1];
 
     state->text_pieces.push_back(toolbar_ui_api::mojom::OmniboxTextPortion::New(
-        base::UTF16ToUTF8(text_.substr(begin, end - begin)),
+        text_.substr(begin, end - begin),
         text_strike_through_.GetBreak(begin)->second,
         text_colors_.GetBreak(begin)->second));
+  }
+
+  std::u16string placeholder_text;
+  // TODO(crbug.com/507045398): Pay attention to this.
+  std::optional<std::u16string> maybe_a11y_placeholder;
+
+  omnibox::ComputePlaceholderText(location_bar_, placeholder_text,
+                                  maybe_a11y_placeholder);
+  if (has_focus_ && !aim_hint_currently_shown_ &&
+      omnibox::IsAimPlaceholderText(location_bar_, placeholder_text)) {
+    omnibox::RecordAimHintImpression(location_bar_);
+    aim_hint_currently_shown_ = true;
+  }
+
+  if (!placeholder_text.empty() &&
+      omnibox::ShouldShowPlaceholderText(
+          location_bar_,
+          /*in_popup_state_transition=*/false,
+          /*aim_button_visible=*/AimButtonVisible(),
+          /*aim_hint_currently_shown=*/aim_hint_currently_shown_)) {
+    state->placeholder = toolbar_ui_api::mojom::OmniboxTextPortion::New(
+        placeholder_text,
+        /*strikethrough=*/false,
+        omnibox::ShouldUseDimPlaceholderColor(location_bar_)
+            ? toolbar_ui_api::mojom::OmniboxTextColor::
+                  kOmniboxForegroundDisabled
+            : toolbar_ui_api::mojom::OmniboxTextColor::kOmniboxText);
   }
 
   return state;
@@ -493,6 +532,7 @@ base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
 WebUIReadOnlyOmnibox::OnFocusChange(
     const toolbar_ui_api::mojom::OmniboxActionFocusChange& focus_change) {
   if (focus_change.has_focus) {
+    has_focus_ = true;
     selection_ = focus_change.selection;
     // TODO(crbug.com/500653057): Key state, though Views impl doesn't have it.
     controller()->edit_model()->OnSetFocus(/*control_down=*/false);
@@ -508,11 +548,14 @@ WebUIReadOnlyOmnibox::OnFocusChange(
     }
     RequestUpdateWebUI();
   } else {
+    has_focus_ = false;
+    aim_hint_currently_shown_ = false;
     controller()->edit_model()->OnWillKillFocus();
     if (auto* popup_closer = controller()->client()->GetOmniboxPopupCloser()) {
       popup_closer->CloseWithReason(omnibox::PopupCloseReason::kBlur);
     }
     controller()->edit_model()->OnKillFocus();
+    RequestUpdateWebUI();
   }
   return base::ok(std::monostate());
 }
@@ -695,4 +738,38 @@ ui::DomKey WebUIReadOnlyOmnibox::LookupAndCacheDomKey(
   ui::DomKey dom_key = ui::KeycodeConverter::KeyStringToDomKey(key_str);
   key_code_cache_.insert(std::pair(std::string(key_str), dom_key));
   return dom_key;
+}
+
+void WebUIReadOnlyOmnibox::OnTemplateURLServiceChanged() {
+  RequestUpdateWebUI();  // for placeholder text
+}
+
+void WebUIReadOnlyOmnibox::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  // Update the placeholder text after primary main frame navigation of the
+  // currently displayed WebContents to ensure it reflects the current page,
+  // including cases like back/forward navigation between the New Tab Page and
+  // Contextual Tasks page.
+  if (!location_bar_ || location_bar_->GetWebContents() != web_contents()) {
+    return;
+  }
+
+  if (navigation_handle->IsInPrimaryMainFrame() &&
+      navigation_handle->HasCommitted()) {
+    RequestUpdateWebUI();  // for placeholder text
+  }
+}
+
+void WebUIReadOnlyOmnibox::TitleWasSet(content::NavigationEntry* entry) {
+  // Update the placeholder text after title changes in the primary main frame
+  // of the currently displayed WebContents.
+  // For Contextual Tasks page, updates the placeholder text to the page title.
+  if (!location_bar_ || location_bar_->GetWebContents() != web_contents()) {
+    return;
+  }
+
+  if (entry &&
+      entry == web_contents()->GetController().GetLastCommittedEntry()) {
+    RequestUpdateWebUI();  // for placeholder text
+  }
 }

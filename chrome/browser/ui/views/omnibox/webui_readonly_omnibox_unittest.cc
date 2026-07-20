@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
@@ -25,14 +26,14 @@ namespace {
 using testing::ElementsAre;
 
 MATCHER_P2(IsSpan, expect_text, expect_color, "") {
-  EXPECT_EQ(arg->text, expect_text);
+  EXPECT_EQ(arg->text, base::UTF8ToUTF16(expect_text));
   EXPECT_EQ(arg->color, expect_color);
   EXPECT_FALSE(arg->strikethrough);
   return true;
 }
 
 MATCHER_P2(IsStrikethrough, expect_text, expect_color, "") {
-  EXPECT_EQ(arg->text, expect_text);
+  EXPECT_EQ(arg->text, base::UTF8ToUTF16(expect_text));
   EXPECT_EQ(arg->color, expect_color);
   EXPECT_TRUE(arg->strikethrough);
   return true;

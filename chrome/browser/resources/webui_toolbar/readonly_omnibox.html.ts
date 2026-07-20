@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {ReadonlyOmniboxElement} from './readonly_omnibox.js';
 
@@ -24,7 +24,9 @@ export function getHtml(this: ReadonlyOmniboxElement) {
        #textInput contains plaintext version of the input plus optionally an
        inline autocompletion rendered as selection.
    -->
-  <input id="textInput">
+  <input id="textInput"
+        placeholder="${this.getInputPlaceholder_() ?? nothing}"
+        class="${this.getInputClasses_() ?? nothing}">
   <!-- custom formatting/long line to prevent whitespace below -->
   <div id="textContainer">${
     this.omniboxViewState.textPieces.map(

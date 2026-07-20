@@ -298,6 +298,21 @@ class WebUILocationBarInteractiveUiTest : public TestBase {
     return WaitForStateChange(kWebUIToolbarId, text_matches);
   }
 
+  auto WaitTillOmniboxViewPlaceholder(std::u16string_view expected_text) {
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kPlaceholderOK);
+    const char kTemplate[] = R"(
+      (el) => {
+        return el.placeholder === $1;
+      }
+    )";
+
+    WebContentsInteractionTestUtil::StateChange text_matches;
+    text_matches.event = kPlaceholderOK;
+    text_matches.where = kOmniboxInputDeepQuery;
+    text_matches.test_function = content::JsReplace(kTemplate, expected_text);
+    return WaitForStateChange(kWebUIToolbarId, text_matches);
+  }
+
   auto WaitTillSearchKeywordText(std::string_view expected_text) {
     DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kKeywordTextOK);
     const char kTemplate[] = R"(
@@ -769,6 +784,7 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, SearchAtKeyword) {
       // Omnibox text should should become empty, and a keyword chip
       // should show up.
       WaitTillOmniboxViewText(""), WaitTillSearchKeywordText("Search Tabs"),
+      WaitTillOmniboxViewPlaceholder(u"Enter a word or two"),
       SendKeyPress(kWebUIToolbarId, ui::VKEY_S), WaitTillOmniboxViewText("s"),
       WaitTillSearchKeywordText("Search Tabs"),
       SendKeyPress(kWebUIToolbarId, ui::VKEY_BACK), WaitTillOmniboxViewText(""),
@@ -829,6 +845,27 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, ClickSelectsAll) {
       // Now click the omnibox; the contents should get selected again.
       MoveMouseTo(kOmniboxElementId), ClickMouse(), WaitTillOmniboxViewFocus(),
       WaitTillOmniboxViewSelection("about:blank", gfx::Range(11, 0)));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, Placeholder) {
+  RunTestSequence(
+      InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
+      InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
+      WaitTillOmniboxViewText("about:blank"),
+      // The browser will focus the location bar automatically since it's
+      // about-blank; and since it didn't have focus before, it should
+      // select-all.
+      WaitTillOmniboxViewFocus(),
+      WaitTillOmniboxViewSelection("about:blank", gfx::Range(11, 0)),
+      // Delete everything
+      SendKeyPress(kWebUIToolbarId, ui::VKEY_DELETE),
+      WaitTillOmniboxViewText(""),
+      WaitTillOmniboxViewPlaceholder(
+          u"\u21E5 Press tab then enter to ask AI Mode"),
+      // Transfer the focus to contents.
+      FocusWebContents(kTabId),
+      // Now we should get the regular search placeholder, not AIM one.
+      WaitTillOmniboxViewPlaceholder(u"Ask Google or type a URL"));
 }
 
 // Click when already focused doesn't select all.

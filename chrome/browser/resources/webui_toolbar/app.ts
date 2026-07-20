@@ -253,6 +253,7 @@ export class ToolbarAppElement extends AppElementBase {
         uiVersion: 0,
         formattedFullUrl: '',
         textPieces: [],
+        placeholder: null,
         inlineAutocompletion: '',
         additionalText: '',
         selection: null,

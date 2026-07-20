@@ -131,7 +131,7 @@ class OmniboxViewViews
   void SaveStateToTab(content::WebContents* tab);
 
   // Called when the window's active tab changes.
-  void OnTabChanged(const content::WebContents* web_contents);
+  void OnTabChanged(content::WebContents* web_contents);
 
   // Called to clear the saved state for |web_contents|.
   void ResetTabState(content::WebContents* web_contents);
@@ -405,22 +405,8 @@ class OmniboxViewViews
   // DSE placeholder.
   void UpdatePlaceholderTextColor();
 
-  // Returns true if the AIM hint impression limits have been reached.
-  bool AreAimHintImpressionLimitsReached() const;
-
-  // Returns true if the AIM placeholder text should be installed instead of the
-  // DSE placeholder text.
-  bool ShouldInstallAimPlaceholderText() const;
-
-  // Returns true if the Contextual Tasks placeholder text should be installed
-  // instead of the DSE placeholder text.
-  bool ShouldInstallContextualTasksPlaceholderText() const;
-
   // Helper to get the current `AiModeButtonConfig` if available.
   const ai_mode_button_config::AiModeButtonConfig* GetAiModeConfig() const;
-
-  // Records an impression of the AIM hint text.
-  void RecordAimHintImpression();
 
   // Returns the AI Mode page action icon view, if present, or nullptr if the
   // view doesn't exist.

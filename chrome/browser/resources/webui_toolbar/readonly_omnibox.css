@@ -79,11 +79,16 @@
   text-decoration: none;
 }
 
+#textInput::placeholder {
+  color: var(--color-omnibox-text);
+}
+
 #textContainer .color-dim {
   color: var(--color-omnibox-text-dimmed);
 }
 
-#textContainer .color-foreground-disabled {
+#textContainer .color-foreground-disabled,
+#textInput.color-foreground-disabled::placeholder  {
   color: var(--color-omnibox-foreground-disabled);
 }
 

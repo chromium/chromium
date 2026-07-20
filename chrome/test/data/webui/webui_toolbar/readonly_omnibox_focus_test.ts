@@ -51,6 +51,7 @@ suite('ReadOnlyOmniboxFocus', function() {
     browserVersion: 0,
     uiVersion: 0,
     textPieces: [],
+    placeholder: null,
     inlineAutocompletion: '',
     additionalText: '',
     formattedFullUrl: '',
