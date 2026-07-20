@@ -138,7 +138,33 @@ TEST_F(ChromeSigninClientSignoutTest, GetOAuthConsumerForContextualTasks) {
 
   signin::ScopeSet scopes = consumer.GetScopes();
 
-  // Scopes from chormium source
+  // Scopes from chromium source
+  EXPECT_THAT(scopes, testing::Contains(GaiaConstants::kClearCutOAuth2Scope));
+  EXPECT_THAT(scopes, testing::Contains(GaiaConstants::kLensOAuth2Scope));
+
+  // Scopes from FeatureParam
+  EXPECT_THAT(scopes, testing::Contains("https://example.com/scope1"));
+  EXPECT_THAT(scopes, testing::Contains("https://example.com/scope2"));
+}
+
+TEST_F(ChromeSigninClientSignoutTest,
+       GetOAuthConsumerForContextualTasks_SidePanelEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{contextual_tasks::kContextualTasksExtraOauthScopes,
+        {{"ContextualTasksOAuthScopes",
+          "https://example.com/scope1,https://example.com/scope2"}}},
+       {contextual_tasks::kContextualTasksSidePanel, {}}},
+      {contextual_tasks::kContextualTasks});
+
+  signin::OAuthConsumer consumer = client_->GetOAuthConsumerFromId(
+      signin::OAuthConsumerId::kContextualTasks);
+  EXPECT_EQ(consumer.GetName(),
+            signin::oauth_consumer_name::kContextualTasksName);
+
+  signin::ScopeSet scopes = consumer.GetScopes();
+
+  // Scopes from chromium source
   EXPECT_THAT(scopes, testing::Contains(GaiaConstants::kClearCutOAuth2Scope));
   EXPECT_THAT(scopes, testing::Contains(GaiaConstants::kLensOAuth2Scope));
 
