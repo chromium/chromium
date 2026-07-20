@@ -4,23 +4,31 @@ Copyright 2026 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<ViewFlipper
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/at_memory_view_flipper"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingStart="@dimen/at_memory_bottom_sheet_horizontal_margin"
-    android:paddingEnd="@dimen/at_memory_bottom_sheet_horizontal_margin"
-    android:paddingTop="@dimen/at_memory_bottom_sheet_margin_top"
-    android:paddingBottom="@dimen/at_memory_bottom_sheet_margin_bottom"
-    android:background="@drawable/bottom_sheet_background"
-    android:measureAllChildren="false">
+    android:orientation="vertical"
+    android:background="@drawable/bottom_sheet_background">
 
-    <include
-        android:id="@+id/at_memory_home_screen"
-        layout="@layout/at_memory_home_screen" />
+    <include layout="@layout/bottom_sheet_handlebar" />
 
-    <include
-        android:id="@+id/at_memory_flyout_screen"
-        layout="@layout/at_memory_flyout_screen" />
-</ViewFlipper>
+    <ViewFlipper
+        android:id="@+id/at_memory_view_flipper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/at_memory_bottom_sheet_horizontal_margin"
+        android:paddingEnd="@dimen/at_memory_bottom_sheet_horizontal_margin"
+        android:paddingTop="@dimen/at_memory_bottom_sheet_margin_top"
+        android:paddingBottom="@dimen/at_memory_bottom_sheet_margin_bottom"
+        android:measureAllChildren="false">
+
+        <include
+            android:id="@+id/at_memory_home_screen"
+            layout="@layout/at_memory_home_screen" />
+
+        <include
+            android:id="@+id/at_memory_flyout_screen"
+            layout="@layout/at_memory_flyout_screen" />
+    </ViewFlipper>
+</LinearLayout>
