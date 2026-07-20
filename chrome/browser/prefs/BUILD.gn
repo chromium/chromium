@@ -399,6 +399,7 @@ source_set("impl") {
       "//chrome/browser/ui/tabs/saved_tab_groups",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/webui/bookmarks",
+      "//chrome/browser/ui/webui/settings",
       "//chrome/browser/user_education",
       "//components/headless/policy",
       "//components/live_caption",

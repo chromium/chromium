@@ -38,6 +38,7 @@ if (chrome_root_store_cert_management_ui) {
       "//chrome/browser/ui/webui:theme_source",
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/certificate_viewer",
+      "//chrome/browser/ui/webui/settings",
       "//chrome/common",
       "//chrome/common:constants",
       "//chrome/common/net",

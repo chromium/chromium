@@ -65,6 +65,7 @@ source_set("impl") {
       "//chrome/browser/metrics/critical_user_journeys",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/performance_controls",
+      "//chrome/browser/ui/webui/settings",
     ]
   }
   deps += [

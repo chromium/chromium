@@ -310,6 +310,7 @@ source_set("unit_tests") {
       "//chrome/browser/safe_browsing:test_support",
       "//chrome/browser/ui",
       "//chrome/browser/ui/hats:test_support",
+      "//chrome/browser/ui/webui/settings",
       "//components/content_settings/core/common:features",
       "//components/crx_file",
       "//components/history/core/browser",

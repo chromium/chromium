@@ -12,6 +12,7 @@ source_set("prefs") {
     "//chrome/browser/prefs:impl",
     "//chrome/browser/ui",
     "//chrome/browser/ui/views/media_preview/*",
+    "//chrome/browser/ui/webui/settings:impl",
     "//chrome/test/*",
   ]
   sources = [

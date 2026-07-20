@@ -1268,7 +1268,6 @@ static_library("ui") {
     # TODO(crbug.com/353332589): Remove this circular dependency when the
     # following headers get componentized:
     # c/b/ui/browser.h, browser_commands.h, browser_tabstrip.h, browser_window.h
-    # c/b/ui/webui/settings/reset_settings_handler.h
     "//chrome/browser/ui/startup:impl",
 
     # TODO(crbug.com/353332589): Remove this circular dependency when the
@@ -1325,8 +1324,8 @@ static_library("ui") {
     "//chrome/browser/updates/announcement_notification:impl",
 
     # TODO(crbug.com/353332589): Remove this circular dependency when the
-    # following headers get componentized:
-    # c/b/ui/webui/settings/reset_settings_handler.h, settings_ui.h
+    # following header gets componentized:
+    # c/b/ui/network_profile_bubble.h
     "//chrome/browser/prefs:impl",
 
     # TODO(crbug.com/364667551): includes //c/b/about_flags.h and other sources
@@ -1560,79 +1559,6 @@ static_library("ui") {
       "webui/extension_control_handler.h",
       "webui/policy_indicator_localized_strings_provider.cc",
       "webui/policy_indicator_localized_strings_provider.h",
-      "webui/settings/about_handler.cc",
-      "webui/settings/about_handler.h",
-      "webui/settings/accessibility_main_handler.cc",
-      "webui/settings/accessibility_main_handler.h",
-      "webui/settings/appearance_handler.cc",
-      "webui/settings/appearance_handler.h",
-      "webui/settings/browser_lifetime_handler.cc",
-      "webui/settings/browser_lifetime_handler.h",
-      "webui/settings/captions_handler.cc",
-      "webui/settings/captions_handler.h",
-      "webui/settings/custom_home_pages_table_model.cc",
-      "webui/settings/custom_home_pages_table_model.h",
-      "webui/settings/downloads_handler.cc",
-      "webui/settings/downloads_handler.h",
-      "webui/settings/font_handler.cc",
-      "webui/settings/font_handler.h",
-      "webui/settings/glic_handler.cc",
-      "webui/settings/glic_handler.h",
-      "webui/settings/hats_handler.cc",
-      "webui/settings/hats_handler.h",
-      "webui/settings/import_data_handler.cc",
-      "webui/settings/import_data_handler.h",
-      "webui/settings/languages_handler.cc",
-      "webui/settings/languages_handler.h",
-      "webui/settings/metrics_reporting_handler.cc",
-      "webui/settings/metrics_reporting_handler.h",
-      "webui/settings/on_startup_handler.cc",
-      "webui/settings/on_startup_handler.h",
-      "webui/settings/password_manager_handler.cc",
-      "webui/settings/password_manager_handler.h",
-      "webui/settings/people_handler.cc",
-      "webui/settings/people_handler.h",
-      "webui/settings/performance_handler.cc",
-      "webui/settings/performance_handler.h",
-      "webui/settings/privacy_sandbox_handler.cc",
-      "webui/settings/privacy_sandbox_handler.h",
-      "webui/settings/profile_info_handler.cc",
-      "webui/settings/profile_info_handler.h",
-      "webui/settings/protocol_handlers_handler.cc",
-      "webui/settings/protocol_handlers_handler.h",
-      "webui/settings/recent_site_settings_helper.cc",
-      "webui/settings/recent_site_settings_helper.h",
-      "webui/settings/reset_settings_handler.cc",
-      "webui/settings/reset_settings_handler.h",
-      "webui/settings/saved_info_handler.cc",
-      "webui/settings/saved_info_handler.h",
-      "webui/settings/search_engines_handler.cc",
-      "webui/settings/search_engines_handler.h",
-      "webui/settings/security_settings_provider.cc",
-      "webui/settings/security_settings_provider.h",
-      "webui/settings/settings_clear_browsing_data_handler.cc",
-      "webui/settings/settings_clear_browsing_data_handler.h",
-      "webui/settings/settings_localized_strings_privacy_sandbox_provider.cc",
-      "webui/settings/settings_localized_strings_provider.cc",
-      "webui/settings/settings_localized_strings_provider.h",
-      "webui/settings/settings_media_devices_selection_handler.cc",
-      "webui/settings/settings_media_devices_selection_handler.h",
-      "webui/settings/settings_secure_dns_handler.cc",
-      "webui/settings/settings_secure_dns_handler.h",
-      "webui/settings/settings_security_key_handler.cc",
-      "webui/settings/settings_security_key_handler.h",
-      "webui/settings/settings_startup_pages_handler.cc",
-      "webui/settings/settings_startup_pages_handler.h",
-      "webui/settings/settings_ui.cc",
-      "webui/settings/settings_ui.h",
-      "webui/settings/settings_utils.cc",
-      "webui/settings/settings_utils.h",
-      "webui/settings/shared_settings_localized_strings_provider.cc",
-      "webui/settings/shared_settings_localized_strings_provider.h",
-      "webui/settings/site_settings_handler.cc",
-      "webui/settings/site_settings_handler.h",
-      "webui/settings/site_settings_helper.cc",
-      "webui/settings/site_settings_helper.h",
       "webui/theme_colors_source_manager.cc",
       "webui/theme_colors_source_manager.h",
       "webui/theme_colors_source_manager_factory.cc",
@@ -3383,14 +3309,6 @@ static_library("ui") {
       "views/web_apps/force_installed_preinstalled_deprecated_app_dialog_view.h",
       "webui/profile_helper.cc",
       "webui/profile_helper.h",
-      "webui/settings/on_device_ai_settings_handler.cc",
-      "webui/settings/on_device_ai_settings_handler.h",
-      "webui/settings/settings_default_browser_handler.cc",
-      "webui/settings/settings_default_browser_handler.h",
-      "webui/settings/settings_manage_profile_handler.cc",
-      "webui/settings/settings_manage_profile_handler.h",
-      "webui/settings/system_handler.cc",
-      "webui/settings/system_handler.h",
     ]
 
     deps += [
@@ -3555,9 +3473,6 @@ static_library("ui") {
       "views/frame/immersive_mode_controller_mac.mm",
       "views/frame/immersive_mode_overlay_views_mac.h",
       "views/frame/immersive_mode_overlay_views_mac.mm",
-      "webui/settings/mac_system_settings_handler.cc",
-      "webui/settings/mac_system_settings_handler.h",
-      "webui/settings/settings_utils_mac.mm",
     ]
 
     # Any circular includes must depend on the target
@@ -3623,7 +3538,6 @@ static_library("ui") {
       "views/frame/windows_taskbar_icon_updater.cc",
       "views/frame/windows_taskbar_icon_updater.h",
       "views/network_profile_bubble_view.cc",
-      "webui/settings/settings_utils_win.cc",
     ]
 
     public_deps += [ "//ui/base/mojom:ui_base_types" ]
@@ -3685,7 +3599,6 @@ static_library("ui") {
       "views/frame/picture_in_picture_browser_frame_view_linux.h",
       "views/window_sizer_linux.cc",
       "views/window_sizer_linux.h",
-      "webui/settings/settings_utils_linux.cc",
     ]
 
     public_deps += [ "//ui/base/mojom:ui_base_types" ]
@@ -5691,10 +5604,10 @@ static_library("test_support") {
   if (is_android) {
     deps += [ "//chrome/browser/ui/android/autofill:test_support" ]
   } else {
-    sources += [ "webui/settings/saved_info_handler_test_api.h" ]
     public_deps += [
       "//chrome/browser/ui/test:confirm_bubble",
       "//chrome/browser/ui/webui/help:test_support",
+      "//chrome/browser/ui/webui/settings:test_support",
     ]
     deps += [
       "//chrome/browser/ui/content_settings:test_support",
