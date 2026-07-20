@@ -27,7 +27,8 @@
 SigninUIError CanOfferSignin(Profile* profile,
                              const GaiaId& gaia_id,
                              const std::string& email,
-                             bool allow_account_from_other_profile) {
+                             bool allow_account_from_other_profile,
+                             bool ignore_reauth_error) {
   if (!profile) {
     return SigninUIError::NoProfile(email);
   }
@@ -61,7 +62,7 @@ SigninUIError CanOfferSignin(Profile* profile,
     // TODO(crbug.com/440302112): Consider checking for the gaia_id equality
     // instead of the email for reauth flow detection.
     const bool same_email = gaia::AreEmailsSame(current_email, email);
-    if (!current_email.empty() && !same_email) {
+    if (!current_email.empty() && !same_email && !ignore_reauth_error) {
       return SigninUIError::WrongReauthAccount(email, current_email);
     }
 

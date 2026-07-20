@@ -23,7 +23,8 @@ class SigninUIError;
 SigninUIError CanOfferSignin(Profile* profile,
                              const GaiaId& gaia_id,
                              const std::string& email,
-                             bool allow_account_from_other_profile);
+                             bool allow_account_from_other_profile,
+                             bool ignore_reauth_error = false);
 
 // Return true if an account other than `gaia_id` was previously signed into
 // `profile`.

@@ -7,6 +7,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -15,6 +16,8 @@
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/policy/core/browser/signin/profile_separation_policies.h"
+#include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
@@ -455,6 +458,47 @@ IN_PROC_BROWSER_TEST_P(ManagedProfileCreationBrowserTest, Test) {
     EXPECT_FALSE(GetIdentityManager()->HasAccountWithRefreshToken(
         account_info.account_id));
   }
+}
+
+IN_PROC_BROWSER_TEST_F(ManagedProfileCreationBrowserTest,
+                       RestrictSigninPattern_NotAllowed) {
+  // Set the restrictive pattern so signin is not allowed.
+  g_browser_process->local_state()->SetString(
+      prefs::kGoogleServicesUsernamePattern, ".*@google.com");
+
+  // Create an account that doesn't match the pattern.
+  auto account_info = MakeValidAccountInfoAvailableAndUpdate(
+      "bob@example.com", "example.com", /*primary_account=*/true);
+
+  base::test::TestFuture<
+      base::expected<Profile*, ManagedProfileCreationFailureReason>, bool>
+      future;
+
+  // Enforce profile creation so that Signout is called if sign-in is not
+  // allowed. If the bug is present, it will skip the pattern check, show the
+  // disclaimer, and ultimately return GetProfile() because of
+  // SIGNIN_CHOICE_CONTINUE.
+  auto managed_profile_creation_controller =
+      ManagedProfileCreationController::CreateManagedProfileForTesting(
+          GetProfile(), account_info, signin_metrics::AccessPoint::kStartPage,
+          future.GetCallback(),
+          policy::ProfileSeparationPolicies(
+              policy::ProfileSeparationSettings::ENFORCED, std::nullopt),
+          signin::SIGNIN_CHOICE_CONTINUE);
+
+  ASSERT_TRUE(future.Wait());
+  Profile* new_profile =
+      future
+          .Get<base::expected<Profile*, ManagedProfileCreationFailureReason>>()
+          .value_or(nullptr);
+  bool profile_creation_required_by_policy = future.Get<bool>();
+
+  EXPECT_EQ(new_profile, nullptr);
+  EXPECT_TRUE(profile_creation_required_by_policy);
+  EXPECT_FALSE(GetIdentityManager(GetProfile())
+                   ->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  EXPECT_FALSE(GetIdentityManager(GetProfile())
+                   ->HasAccountWithRefreshToken(account_info.account_id));
 }
 
 INSTANTIATE_TEST_SUITE_P(,
