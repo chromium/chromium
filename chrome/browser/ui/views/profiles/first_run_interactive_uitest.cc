@@ -16,6 +16,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
@@ -168,6 +169,7 @@ struct FirstRunVersion {
   struct Revamped {
     switches::FirstRunDesktopSignInPromoVariation variant =
         switches::FirstRunDesktopSignInPromoVariation::kDefault;
+    bool sound_enabled = true;
   };
 
   using Value = std::variant<Legacy, Refreshed, Revamped>;
@@ -221,8 +223,8 @@ void ConfigureTestSyncService(
 std::string VersionSuffix(const FirstRunVersion::Value& version) {
   return std::visit(
       absl::Overload{
-          [](FirstRunVersion::Legacy) { return "LegacyView"; },
-          [](FirstRunVersion::Refreshed refreshed) {
+          [](FirstRunVersion::Legacy) -> std::string { return "LegacyView"; },
+          [](FirstRunVersion::Refreshed refreshed) -> std::string {
             switch (refreshed.variant) {
               case switches::FirstRunDesktopSignInPromoVariation::kDefault:
                 return "RefreshedViewDefault";
@@ -235,16 +237,21 @@ std::string VersionSuffix(const FirstRunVersion::Value& version) {
             }
           },
           [](FirstRunVersion::Revamped revamped) {
+            std::string base_suffix;
             switch (revamped.variant) {
               case switches::FirstRunDesktopSignInPromoVariation::kDefault:
-                return "RevampedViewDefault";
+                base_suffix = "RevampedViewDefault";
+                break;
               case switches::FirstRunDesktopSignInPromoVariation::
                   kDontSignInInTheTopCorner:
-                return "RevampedViewDontSignInTopCorner";
+                base_suffix = "RevampedViewDontSignInTopCorner";
+                break;
               case switches::FirstRunDesktopSignInPromoVariation::
                   kDontSignInOnGaiaPage:
-                return "RevampedViewDontSignInGaiaPage";
+                base_suffix = "RevampedViewDontSignInGaiaPage";
+                break;
             }
+            return base_suffix + (revamped.sound_enabled ? "" : "NoSound");
           }},
       version);
   NOTREACHED();
@@ -346,6 +353,14 @@ class FirstRunInteractiveUiBaseTest
                   {switches::kFirstRunDesktopChoiceScreenRefresh, {}});
               enabled_features.push_back(
                   {switches::kFirstRunDesktopRevamp, {}});
+
+              if (revamped.sound_enabled) {
+                enabled_features.push_back(
+                    {switches::kFirstRunDesktopRevampSound, {}});
+              } else {
+                disabled_features.push_back(
+                    switches::kFirstRunDesktopRevampSound);
+              }
             }},
         params_.flow_version);
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
@@ -516,6 +531,13 @@ class FirstRunInteractiveUiBaseTest
     static const base::NoDestructor<DeepQuery> kQuery(
         {"search-engine-choice-app", "cr-radio-button"});
     return *kQuery;
+  }
+
+  GURL GetFinishOrContinueURL() {
+    return net::AppendQueryParameter(
+        GURL(chrome::kChromeUIIntroURL)
+            .Resolve(chrome::kChromeUIIntroFinishOrContinueSubPage),
+        "showcase", base::ToString(!GetForcedFeatureShowcaseSteps().empty()));
   }
 
   virtual std::vector<std::string> GetForcedFeatureShowcaseSteps() const {
@@ -802,15 +824,11 @@ class FirstRunInteractiveUiBaseTest
   }
 
   auto CompleteFinishOrContinueStep(bool start_browsing = true) {
-    const GURL finish_or_continue_url = net::AppendQueryParameter(
-        GURL(chrome::kChromeUIIntroURL)
-            .Resolve(chrome::kChromeUIIntroFinishOrContinueSubPage),
-        "showcase", base::ToString(!GetForcedFeatureShowcaseSteps().empty()));
     const DeepQuery& button =
         start_browsing ? GetFinishOrContinueStartBrowsingButtonQuery()
                        : GetFinishOrContinueEducationButtonQuery();
     return Steps(
-        WaitForWebContentsNavigation(kWebContentsId, finish_or_continue_url),
+        WaitForWebContentsNavigation(kWebContentsId, GetFinishOrContinueURL()),
         EnsurePresent(kWebContentsId, button),
         PressJsButton(kWebContentsId, button));
   }
@@ -2414,6 +2432,11 @@ class FirstRunRevampInteractiveUiTest : public FirstRunInteractiveUiBaseTest {
             fixture_enabled_features,
             fixture_disabled_features) {}
 
+  explicit FirstRunRevampInteractiveUiTest(bool sound_enabled)
+      : FirstRunInteractiveUiBaseTest(TestParam{
+            .flow_version =
+                FirstRunVersion::Revamped{.sound_enabled = sound_enabled}}) {}
+
  protected:
   GURL GetFeatureShowcaseUrl() const {
     return net::AppendQueryParameter(
@@ -3036,6 +3059,69 @@ IN_PROC_BROWSER_TEST_F(FirstRunRevampInteractiveUiTest,
   EXPECT_EQ(
       browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
       GURL(whats_new::kChromeWhatsNewURL).Resolve("archive/"));
+}
+
+class FirstRunRevampSoundDisabledInteractiveUiTest
+    : public FirstRunRevampInteractiveUiTest {
+ public:
+  FirstRunRevampSoundDisabledInteractiveUiTest()
+      : FirstRunRevampInteractiveUiTest(/*sound_enabled=*/false) {}
+};
+
+IN_PROC_BROWSER_TEST_F(FirstRunRevampSoundDisabledInteractiveUiTest,
+                       EffectsButtonHiddenAndNoSound) {
+  ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
+
+  base::MockCallback<FirstRunFlowController::SoundsManagerFactory>
+      mock_sounds_factory;
+  EXPECT_CALL(mock_sounds_factory, Run).Times(0);
+
+  base::AutoReset<FirstRunFlowController::SoundsManagerFactory>
+      sounds_factory_reset =
+          FirstRunFlowController::SetSoundsManagerFactoryForTesting(
+              mock_sounds_factory.Get());
+
+  // No sounds should play since `kFirstRunDesktopRevampSound` is disabled (i.e.
+  // the factory should never be called).
+
+  base::test::TestFuture<bool> proceed_future;
+  OpenFirstRun(proceed_future.GetCallback());
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      // Effects button should be present on the intro step (to disable
+      // animations).
+      WaitForShow(kProfilePickerToolbarEffectsControlButtonElementId),
+      CompleteIntroStep(/*sign_in=*/false),
+      WaitForWebContentsNavigation(kWebContentsId, GetFeatureShowcaseUrl()),
+      // Effects button should not be present on the feature showcase step.
+      EnsureNotPresent(kProfilePickerToolbarEffectsControlButtonElementId),
+      WaitForButtonEnabled(kWebContentsId,
+                           GetFeatureShowcaseDefaultBrowserSkipButtonQuery()),
+      EnsurePresent(kWebContentsId,
+                    GetFeatureShowcaseDefaultBrowserSkipButtonQuery()),
+      PressJsButton(kWebContentsId,
+                    GetFeatureShowcaseDefaultBrowserSkipButtonQuery()),
+      WaitForButtonEnabled(kWebContentsId,
+                           GetFeatureShowcaseGoogleLensSkipButtonQuery()),
+      EnsurePresent(kWebContentsId,
+                    GetFeatureShowcaseGoogleLensSkipButtonQuery()),
+      PressJsButton(kWebContentsId,
+                    GetFeatureShowcaseGoogleLensSkipButtonQuery()),
+      // Now wait for navigation to finish or continue step.
+      WaitForWebContentsNavigation(kWebContentsId, GetFinishOrContinueURL()),
+      // Effects button should be present on the finish or continue step (to
+      // disable animations).
+      WaitForShow(kProfilePickerToolbarEffectsControlButtonElementId),
+      EnsurePresent(kWebContentsId,
+                    GetFinishOrContinueStartBrowsingButtonQuery()),
+      PressJsButton(kWebContentsId,
+                    GetFinishOrContinueStartBrowsingButtonQuery()));
+
+  WaitForPickerClosed();
+  EXPECT_TRUE(proceed_future.Get());
 }
 
 class FirstRunRevampTurnOnSyncCelebrationInteractiveUiTest

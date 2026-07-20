@@ -480,6 +480,11 @@ void ProfilePickerView::SetNativeToolbarStartBrowsingButtonVisible(
   CHECK_DEREF(toolbar_).SetStartBrowsingButtonVisible(visible);
 }
 
+void ProfilePickerView::SetNativeToolbarEffectsControlButtonVisible(
+    bool visible) {
+  CHECK_DEREF(toolbar_).SetEffectsControlButtonVisible(visible);
+}
+
 bool ProfilePickerView::AreNativeToolbarSigninButtonsVisibleForTesting() const {
   return CHECK_DEREF(toolbar_).AreSigninButtonsVisibleForTesting();  // IN-TEST
 }

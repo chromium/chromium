@@ -32,6 +32,7 @@ struct FirstRunTestParam {
   bool use_primary_and_tonal_buttons_for_promos_enabled = false;
   bool use_refresh = false;
   bool use_revamp = false;
+  bool enable_sound = true;
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -89,6 +90,10 @@ const FirstRunTestParam kTestParams[] = {
                           .use_right_to_left_language = true},
      .use_refresh = true,
      .use_revamp = true},
+    {.pixel_test_param = {.test_suffix = "RevampSoundDisabled"},
+     .use_refresh = true,
+     .use_revamp = true,
+     .enable_sound = false},
 };
 
 std::string_view GetMakeCardDescriptionLongerJsString() {
@@ -131,6 +136,7 @@ class FirstRunIntroPixelTest
           GetParam().use_primary_and_tonal_buttons_for_promos_enabled},
          {switches::kFirstRunDesktopRefresh, GetParam().use_refresh},
          {switches::kFirstRunDesktopRevamp, GetParam().use_revamp},
+         {switches::kFirstRunDesktopRevampSound, GetParam().enable_sound},
          {switches::kDisableFirstRunAnimationsForTesting,
           GetParam().use_refresh}});
   }
@@ -153,7 +159,9 @@ class FirstRunIntroPixelTest
               /*enable_animations=*/false,
               /*query_effects_callback=*/base::BindRepeating([] {
                 return false;
-              }));
+              }),
+              /*effects_button_shown_by_default=*/GetParam().use_revamp &&
+                  GetParam().enable_sound);
         }));
     profile_picker_view_->ShowAndWait(
         GetParam().use_fixed_size

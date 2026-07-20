@@ -55,9 +55,9 @@ class ProfilePickerToolbar : public views::View {
         base::RepeatingClosure on_start_browsing_callback);
 
     // Adds the effects (audio/animations) control button to the toolbar.
-    // Comparing to other buttons, this button is always visible.
     Builder& WithEffectsControlButton(
-        base::RepeatingCallback<void(bool)> on_effects_control_callback);
+        base::RepeatingCallback<void(bool)> on_effects_control_callback,
+        bool visible_by_default);
 
     // Builds a new `ProfilePickerToolbar`.
     //
@@ -69,6 +69,7 @@ class ProfilePickerToolbar : public views::View {
     base::RepeatingClosure on_back_callback_;
     base::RepeatingClosure on_dont_sign_in_callback_;
     base::RepeatingClosure on_start_browsing_callback_;
+    bool effects_control_button_visible_by_default_ = false;
     base::RepeatingCallback<void(bool)> on_effects_control_callback_;
   };
 
@@ -92,6 +93,10 @@ class ProfilePickerToolbar : public views::View {
   // button is not created.
   void SetStartBrowsingButtonVisible(bool visible);
 
+  // Changes the visibility of the effects control button. It's no-op if the
+  // button is not created.
+  void SetEffectsControlButtonVisible(bool visible);
+
   // Returns whether effects (animations/audio) are enabled.
   bool AreEffectsEnabled() const;
 
@@ -110,7 +115,8 @@ class ProfilePickerToolbar : public views::View {
   void AddSeparator();
   void MaybeUpdateSeparatorVisibility();
   void AddEffectsControlButton(
-      base::RepeatingCallback<void(bool)> on_effects_control_callback);
+      base::RepeatingCallback<void(bool)> on_effects_control_callback,
+      bool visible_by_default);
 
   raw_ptr<views::View> sign_in_back_button_ = nullptr;
   raw_ptr<views::View> dont_sign_in_button_ = nullptr;

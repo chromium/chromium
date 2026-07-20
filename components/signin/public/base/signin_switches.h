@@ -521,7 +521,11 @@ BASE_DECLARE_FEATURE(kFirstRunDesktopRefreshSurvey);
 // instead.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kFirstRunDesktopRevamp);
-// // A helper function to determine if the first run desktop revamp is enabled
+// Killswitch for the sound experience in the first run desktop revamp.
+// This feature is no-op if `kFirstRunDesktopRevamp` is disabled.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kFirstRunDesktopRevampSound);
+// A helper function to determine if the first run desktop revamp is enabled
 // (see `kFirstRunDesktopRevamp`, `kFirstRunDesktopRefresh` and
 // `kFirstRunDesktopChoiceScreenRefresh` flags).
 COMPONENT_EXPORT(SIGNIN_SWITCHES)

@@ -26,6 +26,7 @@ namespace {
 struct FinishOrContinueTestParam {
   PixelTestParam pixel_test_param;
   bool is_feature_showcase_eligible = true;
+  bool sound_enabled = true;
 };
 
 const std::vector<FinishOrContinueTestParam>& GetTestParams() {
@@ -44,6 +45,8 @@ const std::vector<FinishOrContinueTestParam>& GetTestParams() {
                               .is_feature_showcase_eligible = eligible});
           }
         }
+        params.push_back({.pixel_test_param = {.test_suffix = "SoundDisabled"},
+                          .sound_enabled = false});
         return params;
       }());
   return *kParams;
@@ -60,6 +63,7 @@ class FirstRunFinishOrContinuePixelTest
         {{switches::kFirstRunDesktopRefresh, true},
          {switches::kFirstRunDesktopChoiceScreenRefresh, true},
          {switches::kFirstRunDesktopRevamp, true},
+         {switches::kFirstRunDesktopRevampSound, GetParam().sound_enabled},
          {switches::kDisableFirstRunAnimationsForTesting, true}});
   }
 
@@ -82,7 +86,8 @@ class FirstRunFinishOrContinuePixelTest
                   /*query_effects_callback=*/
                   base::BindRepeating([] { return false; }),
                   /*step_completed_callback=*/base::DoNothing(),
-                  /*play_all_set_sound_callback=*/base::DoNothing());
+                  /*play_all_set_sound_callback=*/base::DoNothing(),
+                  /*effects_button_shown_by_default=*/GetParam().sound_enabled);
             },
             GetParam().is_feature_showcase_eligible));
     profile_picker_view_tracker_.SetView(view);

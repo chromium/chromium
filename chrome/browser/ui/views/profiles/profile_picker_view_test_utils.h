@@ -145,6 +145,9 @@ class MockProfilePickerWebContentsHost : public ProfilePickerWebContentsHost {
   MOCK_METHOD(void, SetNativeToolbarSigninButtonsVisible, (bool visible));
   MOCK_METHOD(void, SetNativeToolbarDontSignInButtonVisible, (bool visible));
   MOCK_METHOD(void, SetNativeToolbarStartBrowsingButtonVisible, (bool visible));
+  MOCK_METHOD(void,
+              SetNativeToolbarEffectsControlButtonVisible,
+              (bool visible));
   MOCK_METHOD(SkColor, GetPreferredBackgroundColor, (), (const));
   MOCK_METHOD(content::WebContentsDelegate*, GetWebContentsDelegate, ());
   MOCK_METHOD(web_modal::WebContentsModalDialogHost*,

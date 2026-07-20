@@ -33,6 +33,7 @@ namespace {
 struct FeatureShowcaseTestParam {
   PixelTestParam pixel_test_param;
   std::string step;
+  bool sound_enabled = false;
 };
 
 const std::vector<FeatureShowcaseTestParam>& GetTestParams() {
@@ -59,7 +60,11 @@ const std::vector<FeatureShowcaseTestParam>& GetTestParams() {
         std::vector<FeatureShowcaseTestParam> params;
         for (const auto& pixel_test_param : kBaseTestParams) {
           for (const auto& step : kSteps) {
-            params.push_back({pixel_test_param, step});
+            for (bool sound_enabled : {true, false}) {
+              params.push_back({.pixel_test_param = pixel_test_param,
+                                .step = step,
+                                .sound_enabled = sound_enabled});
+            }
           }
         }
         return params;
@@ -75,11 +80,11 @@ class FirstRunFeatureShowcasePixelTest
  public:
   FirstRunFeatureShowcasePixelTest()
       : ProfilesPixelTestBaseT<UiBrowserTest>(GetParam().pixel_test_param) {
-    scoped_feature_list_.InitWithFeatures(
-        {switches::kFirstRunDesktopRefresh,
-         switches::kFirstRunDesktopChoiceScreenRefresh,
-         switches::kFirstRunDesktopRevamp},
-        {});
+    scoped_feature_list_.InitWithFeatureStates(
+        {{switches::kFirstRunDesktopRefresh, true},
+         {switches::kFirstRunDesktopRevampSound, GetParam().sound_enabled},
+         {switches::kFirstRunDesktopChoiceScreenRefresh, true},
+         {switches::kFirstRunDesktopRevamp, true}});
   }
 
   ~FirstRunFeatureShowcasePixelTest() override {
@@ -185,5 +190,6 @@ INSTANTIATE_TEST_SUITE_P(
                  kFeatureShowcaseThemesAndCustomizationStepIdentifier) {
         step_name = "ThemesAndCustomization";
       }
-      return info.param.pixel_test_param.test_suffix + step_name;
+      return base::StrCat({info.param.pixel_test_param.test_suffix, step_name,
+                           info.param.sound_enabled ? "" : "SoundDisabled"});
     });

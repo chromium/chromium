@@ -81,6 +81,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
   void SetNativeToolbarSigninButtonsVisible(bool visible) override;
   void SetNativeToolbarDontSignInButtonVisible(bool visible) override;
   void SetNativeToolbarStartBrowsingButtonVisible(bool visible) override;
+  void SetNativeToolbarEffectsControlButtonVisible(bool visible) override;
   bool AreNativeToolbarSigninButtonsVisibleForTesting() const;
   SkColor GetPreferredBackgroundColor() const override;
 
