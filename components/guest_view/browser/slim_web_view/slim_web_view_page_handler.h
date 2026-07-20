@@ -42,6 +42,10 @@ class SlimWebViewPageHandler
                      SetPermissionCallback callback) override;
   void SetUserAgentOverride(int32_t guest_instance_id,
                             const std::string& user_agent_override) override;
+  void SetZoom(int32_t guest_instance_id,
+               double zoom_factor,
+               SetZoomCallback callback) override;
+  void GetZoom(int32_t guest_instance_id, GetZoomCallback callback) override;
 
  private:
   friend class content::DocumentUserData<SlimWebViewPageHandler>;

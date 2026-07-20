@@ -25,6 +25,11 @@ export class EventDict {
     return this.data.storage[key].intValue;
   }
 
+  getDouble(key: string): number {
+    assertNonNull(this.data.storage[key]?.doubleValue);
+    return this.data.storage[key].doubleValue;
+  }
+
   getDict(key: string): EventDict {
     assertNonNull(this.data.storage[key]?.dictionaryValue);
     return new EventDict(this.data.storage[key].dictionaryValue);

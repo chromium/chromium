@@ -101,6 +101,32 @@ void SlimWebViewPageHandler::SetUserAgentOverride(
   guest->SetUserAgentOverride(user_agent_override);
 }
 
+void SlimWebViewPageHandler::SetZoom(int32_t guest_instance_id,
+                                     double zoom_factor,
+                                     SetZoomCallback callback) {
+  auto* guest = SlimWebViewGuest::FromInstanceID(
+      render_frame_host().GetProcess()->GetID(), guest_instance_id);
+  if (!guest) {
+    mojo::ReportBadMessage("Invalid guest instance id.");
+    std::move(callback).Run();
+    return;
+  }
+  guest->SetZoom(zoom_factor);
+  std::move(callback).Run();
+}
+
+void SlimWebViewPageHandler::GetZoom(int32_t guest_instance_id,
+                                     GetZoomCallback callback) {
+  auto* guest = SlimWebViewGuest::FromInstanceID(
+      render_frame_host().GetProcess()->GetID(), guest_instance_id);
+  if (!guest) {
+    mojo::ReportBadMessage("Invalid guest instance id.");
+    std::move(callback).Run(1.0);
+    return;
+  }
+  std::move(callback).Run(guest->GetZoom());
+}
+
 SlimWebViewPageHandler::SlimWebViewPageHandler(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<PageHandler> page_handler,

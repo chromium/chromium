@@ -52,6 +52,8 @@ class SlimWebViewGuest : public GuestView<SlimWebViewGuest> {
 
   void Navigate(const GURL& url);
   void SetUserAgentOverride(const std::string& user_agent_override);
+  void SetZoom(double zoom_factor);
+  double GetZoom() const;
 
   // Returns true if an origin allowlist was provided at creation time.
   bool HasAllowedOrigins() const;
@@ -122,6 +124,7 @@ class SlimWebViewGuest : public GuestView<SlimWebViewGuest> {
                        const base::DictValue& create_params,
                        GuestPageCreatedCallback callback) final;
   void GuestViewDidStopLoading() final;
+  void GuestZoomChanged(double old_zoom_level, double new_zoom_level) final;
 
   void LoadAbort(bool is_top_level, const GURL& url, net::Error error_code);
 

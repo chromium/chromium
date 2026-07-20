@@ -30,6 +30,7 @@ static_library("slim_web_view") {
     "//base",
     "//components/guest_view/browser",
     "//components/url_pattern",
+    "//components/zoom",
     "//content/public/browser",
     "//content/public/common",
     "//net",

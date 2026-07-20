@@ -6,7 +6,7 @@ import '//glic/shared/guest_view/slim_webview.js';
 
 import {OnBeforeSendHeadersParams, OriginCheckParams} from '//glic/shared/guest_view/request_throttlers.js';
 import {PermissionRequestEvent} from '//glic/shared/guest_view/slim_webview.js';
-import type {LoadAbortEvent, LoadEvent, NewWindowEvent, SlimWebviewElement} from '//glic/shared/guest_view/slim_webview.js';
+import type {LoadAbortEvent, LoadEvent, NewWindowEvent, SlimWebviewElement, ZoomChangeEvent} from '//glic/shared/guest_view/slim_webview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -304,6 +304,19 @@ suite('Operations', function() {
 
     const event = await requestDeniedPromise;
     assertEquals(getTestUrl('/download-file'), event.request.url);
+  });
+
+  test('Zoom', async function() {
+    const zoomChangePromise =
+        eventToPromise<ZoomChangeEvent>('zoomchange', webview);
+    webview.setZoom(1.5);
+    const zoomChangeEvent = await zoomChangePromise;
+    assertEquals(1.0, zoomChangeEvent.oldZoomFactor);
+    assertEquals(1.5, zoomChangeEvent.newZoomFactor);
+
+    const zoomFactor =
+        await new Promise<number>(resolve => webview.getZoom(resolve));
+    assertEquals(1.5, zoomFactor);
   });
 });
 

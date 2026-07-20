@@ -11,8 +11,8 @@ import "url/mojom/url.mojom";
 // Bootstraps the PageHandler for communicating a SlimWebView to the browser.
 interface PageHandlerFactory {
   // Creates a PageHandler and binds it to the given receiver and remote.
-  CreatePageHandler(pending_receiver<PageHandler> handler,
-                    pending_remote<Page> page);
+  CreatePageHandler(
+      pending_receiver<PageHandler> handler, pending_remote<Page> page);
 };
 
 struct SetSizeParams {
@@ -41,18 +41,27 @@ interface PageHandler {
     kAllow = 1,
     kDefault = 2,
   };
+
   // Sets the permission for the given guest and request ID. Returns whether the
   // permission was granted.
-  SetPermission(int32 guest_instance_id, int32 request_id,
+  SetPermission(int32 guest_instance_id,
+                int32 request_id,
                 PermissionResponseAction action) => (bool allowed);
 
   // Sets the user agent override for the GuestView.
   SetUserAgentOverride(int32 guest_instance_id, string user_agent_override);
+
+  // Sets the zoom factor for the GuestView.
+  SetZoom(int32 guest_instance_id, double zoom_factor) => ();
+
+  // Gets the zoom factor for the GuestView.
+  GetZoom(int32 guest_instance_id) => (double zoom_factor);
 };
 
 // Interface that implements browser-to-page messages for a SlimWebView.
 interface Page {
   // Dispatches an event to the SlimWebviewElement.
-  DispatchEvent(string event_name, mojo_base.mojom.DictionaryValue args,
+  DispatchEvent(string event_name,
+                mojo_base.mojom.DictionaryValue args,
                 int32 instance_id);
 };
