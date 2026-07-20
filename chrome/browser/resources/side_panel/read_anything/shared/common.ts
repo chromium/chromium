@@ -103,7 +103,7 @@ export function getReadingModeTextNodes(root: Node): Node[] {
 
 // Gets the next valid node for reading mode using the given TreeWalker.
 // This includes valid marker elements and text nodes.
-function getNextValidNode(walker: TreeWalker): Node|null {
+export function getNextValidNode(walker: TreeWalker): Node|null {
   let currentNode;
   while (currentNode = walker.nextNode()) {
     if (currentNode.nodeType === Node.ELEMENT_NODE) {
@@ -121,7 +121,7 @@ function getNextValidNode(walker: TreeWalker): Node|null {
 
 // Creates a TreeWalker configured to skip hidden elements, consistent with
 // Reading Mode's visibility rules.
-function createVisibleTreeWalker(root: Node): TreeWalker {
+export function createVisibleTreeWalker(root: Node): TreeWalker {
   return document.createTreeWalker(root, NodeFilter.SHOW_ALL, {
     acceptNode: (node) => {
       if (node.nodeType === Node.ELEMENT_NODE) {
