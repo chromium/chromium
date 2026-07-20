@@ -1288,10 +1288,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   [_stateManager onContextChanged];
 }
 
-// Updates the awaiting attachment signals state. Note that this flag is only
-// set to YES during the initial focus flow (triggering the composebox with
-// initial attachments). We stop awaiting signals when there are no more items
-// in the loading or uploading state.
+// Updates the awaiting attachment signals state.
 - (void)updateAwaitingAttachmentSignalsState {
   if (!_awaitingAttachmentSignals) {
     return;
@@ -1324,6 +1321,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
                                withType:[self attachmentEventTypeForItem:item]
                                   title:[self
                                             attachmentEventTitleForItem:item]]];
+  _awaitingAttachmentSignals = YES;
   [_items addItem:item];
 }
 
