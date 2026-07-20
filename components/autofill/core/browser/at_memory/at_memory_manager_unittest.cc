@@ -1878,6 +1878,40 @@ TEST_F(AtMemoryManagerTest, OnSearchSubmitted_PassesUrlAndTitleToQueryService) {
   manager().OnSearchSubmitted(u"test query");
 }
 
+// Tests that receiving additional `OnPopupShown` events is safe even after
+// starting a fill.
+TEST_F(AtMemoryManagerTest, OnPopupShown_SubPopup_NoCrashWhenRecorderMovedOut) {
+  const auto [form_id, field_id] = SeeForm();
+
+  // 1. Show root popup to initialize the recorder.
+  manager().OnPopupShown(form_id, field_id,
+                         AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
+                         /*is_context_secure=*/true, update_callback_.Get(),
+                         ukm::kInvalidSourceId);
+  ASSERT_NE(test_api(manager()).at_memory_metrics_recorder(), nullptr);
+
+  // 2. Fill a suggestion, which moves out at_memory_metrics_recorder_.
+  Suggestion suggestion(u"test", SuggestionType::kAtMemorySearchResult);
+  Suggestion::AtMemoryPayload payload;
+  payload.memory_data_type = MemoryDataType::kIban;
+  payload.identifier = Iban::Guid("guid");
+  suggestion.payload = std::move(payload);
+
+  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill, form_id,
+                                      field_id, suggestion);
+  EXPECT_EQ(test_api(manager()).at_memory_metrics_recorder(), nullptr);
+
+  // 3. Hovering/showing a sub-popup after recorder was moved out should NOT
+  // crash.
+  manager().OnPopupShown(
+      form_id, field_id, AutofillSuggestionTriggerSource::kAtMemory,
+      AutofillSuggestionDelegate::SuggestionMetadata{.multi_index = {2}},
+      /*is_context_secure=*/true, update_callback_.Get(),
+      ukm::kInvalidSourceId);
+  EXPECT_EQ(test_api(manager()).at_memory_metrics_recorder(), nullptr);
+}
+
 }  // namespace
 
 }  // namespace autofill

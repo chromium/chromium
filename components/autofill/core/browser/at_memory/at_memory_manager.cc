@@ -535,11 +535,11 @@ void AtMemoryManager::OnPopupShown(
     bool is_context_secure,
     UpdateSuggestionsCallback update_callback,
     ukm::SourceId ukm_source_id) {
-  if (at_memory_metrics_recorder_ || !IsAtMemoryTriggerSource(trigger_source)) {
+  if (!IsAtMemoryTriggerSource(trigger_source)) {
     return;
   }
 
-  if (!parent_suggestion_metadata) {
+  if (!parent_suggestion_metadata && !at_memory_metrics_recorder_) {
     const auto [form, field] = owner_->FindFormAndField(form_id, field_id);
     const FormSignature form_signature =
         form ? form->form_signature() : FormSignature(0);
@@ -555,8 +555,11 @@ void AtMemoryManager::OnPopupShown(
         owner_->client().GetPageTitle(), field_id, form_signature,
         field_signature);
   }
-  at_memory_metrics_recorder_->OnPopupShown(trigger_source,
-                                            parent_suggestion_metadata);
+
+  if (at_memory_metrics_recorder_) {
+    at_memory_metrics_recorder_->OnPopupShown(trigger_source,
+                                              parent_suggestion_metadata);
+  }
 }
 
 bool AtMemoryManager::OnFilterChanged(const std::u16string& filter) {
