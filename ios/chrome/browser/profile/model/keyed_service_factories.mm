@@ -154,6 +154,8 @@
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_helper_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_metrics_collector_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/tailored_security/tailored_security_service_factory.h"
+#import "ios/chrome/browser/safe_browsing/model/v5_get_hash_protocol_manager_factory.h"
+#import "ios/chrome/browser/safe_browsing/model/v5_search_hashes_cache_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/verdict_cache_manager_factory.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_service_factory.h"
@@ -431,6 +433,8 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   UrlKeyedDataCollectionConsentHelperFactoryIOS::GetInstance();
   UrlLanguageHistogramFactory::GetInstance();
   UserUploadedImageManagerFactory::GetInstance();
+  V5GetHashProtocolManagerFactory::GetInstance();
+  V5SearchHashesCacheFactory::GetInstance();
   VariationsClientServiceFactory::GetInstance();
   VerdictCacheManagerFactory::GetInstance();
   VisitedURLRankingServiceFactory::GetInstance();

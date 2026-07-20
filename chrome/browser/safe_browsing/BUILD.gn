@@ -227,6 +227,8 @@ static_library("safe_browsing") {
       "trigger_creator.h",
       "url_lookup_service_factory.h",
       "user_interaction_observer.h",
+      "v5_get_hash_protocol_manager_factory.h",
+      "v5_search_hashes_cache_factory.h",
     ]
     sources += [
       "chrome_client_side_detection_host_delegate.cc",
@@ -288,6 +290,8 @@ static_library("safe_browsing") {
       "trigger_creator.cc",
       "url_lookup_service_factory.cc",
       "user_interaction_observer.cc",
+      "v5_get_hash_protocol_manager_factory.cc",
+      "v5_search_hashes_cache_factory.cc",
     ]
     if (is_android) {
       public += [
@@ -349,6 +353,8 @@ static_library("safe_browsing") {
       "//components/safe_browsing/core/browser:token_fetcher",
       "//components/safe_browsing/core/browser:verdict_cache_manager",
       "//components/safe_browsing/core/browser/db:allowlist_checker_client",
+      "//components/safe_browsing/core/browser/db:v5_get_hash_protocol_manager",
+      "//components/safe_browsing/core/browser/db:v5_search_hashes_cache",
       "//components/safe_browsing/core/browser/password_protection",
       "//components/safe_browsing/core/browser/password_protection:password_reuse_detection_manager_client",
       "//components/safe_browsing/core/browser/realtime:enterprise_url_lookup_service",
@@ -441,7 +447,6 @@ static_library("safe_browsing") {
         "ohttp_key_service_factory.h",
         "services_delegate_desktop.h",
         "tailored_security/notification_handler_desktop.h",
-        "v5_search_hashes_cache_factory.h",
       ]
       sources += [
         "chrome_safe_browsing_hats_delegate.cc",
@@ -501,7 +506,6 @@ static_library("safe_browsing") {
         "ohttp_key_service_factory.cc",
         "services_delegate_desktop.cc",
         "tailored_security/notification_handler_desktop.cc",
-        "v5_search_hashes_cache_factory.cc",
       ]
       if (is_mac) {
         public += [
@@ -553,7 +557,6 @@ static_library("safe_browsing") {
         "//components/safe_browsing/core/browser:verdict_cache_manager",
         "//components/safe_browsing/core/browser/db",
         "//components/safe_browsing/core/browser/db:sb_store",
-        "//components/safe_browsing/core/browser/db:v5_search_hashes_cache",
         "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_service",
         "//components/safe_browsing/core/browser/realtime:policy_engine",
         "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
