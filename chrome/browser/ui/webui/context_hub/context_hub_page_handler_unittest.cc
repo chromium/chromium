@@ -411,20 +411,25 @@ TEST_F(ContextHubPageHandlerTest, RetrieveAndGroupTabs_WithTabs) {
                     optimization_guide::
                         OptimizationGuideModelExecutionResultCallback
                             callback) {
+        const auto& request =
+            static_cast<const optimization_guide::proto::ContextHubRequest&>(
+                request_metadata);
+        EXPECT_EQ(request.user_command(), "test command");
+
         optimization_guide::proto::ContextHubResponse response;
         optimization_guide::proto::GroupResponse* group_response =
             response.mutable_group_response();
-        optimization_guide::proto::TabGroup* group1 =
-            group_response->add_tab_groups();
+        optimization_guide::proto::TabGroupMinimal* group1 =
+            group_response->add_minimal_tab_groups();
         group1->set_label("Group 1");
-        group1->add_tabs()->set_tab_id(tab_ids[0]);
-        group1->add_tabs()->set_tab_id(tab_ids[1]);
+        group1->add_tab_ids(tab_ids[0]);
+        group1->add_tab_ids(tab_ids[1]);
 
-        optimization_guide::proto::TabGroup* group2 =
-            group_response->add_tab_groups();
+        optimization_guide::proto::TabGroupMinimal* group2 =
+            group_response->add_minimal_tab_groups();
         group2->set_label("Group 2");
-        group2->add_tabs()->set_tab_id(tab_ids[2]);
-        group2->add_tabs()->set_tab_id(tab_ids[3]);
+        group2->add_tab_ids(tab_ids[2]);
+        group2->add_tab_ids(tab_ids[3]);
 
         optimization_guide::proto::Any any_response;
         any_response.set_type_url(
@@ -441,7 +446,7 @@ TEST_F(ContextHubPageHandlerTest, RetrieveAndGroupTabs_WithTabs) {
                          std::vector<browser::context_hub::mojom::TabInfoPtr>>
       future;
   handler_->RetrieveAndGroupTabs(
-      "",
+      "test command",
       future
           .GetCallback<std::vector<browser::context_hub::mojom::TabGroupPtr>,
                        std::vector<browser::context_hub::mojom::TabInfoPtr>>());

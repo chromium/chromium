@@ -75,11 +75,7 @@ export class TabGroupsElement extends CrLitElement {
   }
 
   protected async onGroupTabsClick_() {
-    if (!this.autoTabGroupsEnabled_) {
-      return;
-    }
-    if (this.isGrouped_) {
-      this.fetchTabs_();
+    if (!this.autoTabGroupsEnabled_ || this.isGrouping_) {
       return;
     }
 
@@ -105,6 +101,14 @@ export class TabGroupsElement extends CrLitElement {
     } finally {
       this.isGrouping_ = false;
     }
+  }
+
+  protected onUngroupTabsClick_() {
+    if (!this.autoTabGroupsEnabled_ || this.isGrouping_) {
+      return;
+    }
+    this.inputValue_ = '';
+    this.fetchTabs_();
   }
 
   protected onTabClick_(e: Event) {
@@ -133,6 +137,12 @@ export class TabGroupsElement extends CrLitElement {
 
   protected onInputValueChanged_(e: CustomEvent<{value: string}>) {
     this.inputValue_ = e.detail.value;
+  }
+
+  protected onInputKeydown_(e: KeyboardEvent) {
+    if (e.key === 'Enter' && this.inputValue_.trim().length > 0) {
+      this.onGroupTabsClick_();
+    }
   }
 }
 

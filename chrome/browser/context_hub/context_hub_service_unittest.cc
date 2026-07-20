@@ -203,21 +203,17 @@ TEST_F(ContextHubServiceTest, GroupTabs_WithTabs) {
         optimization_guide::proto::ContextHubResponse response;
         optimization_guide::proto::GroupResponse* group_response =
             response.mutable_group_response();
-        optimization_guide::proto::TabGroup* group1 =
-            group_response->add_tab_groups();
+        optimization_guide::proto::TabGroupMinimal* group1 =
+            group_response->add_minimal_tab_groups();
         group1->set_label("Group 1");
-        optimization_guide::proto::Tab* tab1 = group1->add_tabs();
-        tab1->set_tab_id(1);
-        optimization_guide::proto::Tab* tab2 = group1->add_tabs();
-        tab2->set_tab_id(2);
+        group1->add_tab_ids(1);
+        group1->add_tab_ids(2);
 
-        optimization_guide::proto::TabGroup* group2 =
-            group_response->add_tab_groups();
+        optimization_guide::proto::TabGroupMinimal* group2 =
+            group_response->add_minimal_tab_groups();
         group2->set_label("Group 2");
-        optimization_guide::proto::Tab* tab3 = group2->add_tabs();
-        tab3->set_tab_id(3);
-        optimization_guide::proto::Tab* tab4 = group2->add_tabs();
-        tab4->set_tab_id(4);
+        group2->add_tab_ids(3);
+        group2->add_tab_ids(4);
 
         optimization_guide::proto::Any any_response;
         any_response.set_type_url(

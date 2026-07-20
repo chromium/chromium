@@ -119,7 +119,10 @@ void ContextHubService::GenerateTabGroups(
     tab_proto->set_url(tab.url.spec());
   }
 
-  // TODO(b/534492009): Add support for user command once the proto is synced.
+  if (!user_command.empty()) {
+    request.set_user_command(user_command);
+  }
+
   optimization_guide_remote_model_executor_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kContextHub, request,
       optimization_guide::ModelExecutionOptions(),
@@ -151,11 +154,12 @@ void ContextHubService::HandleModelExecutionResult(
     tab_index_map.emplace(tabs[i].id, i);
   }
 
-  for (const optimization_guide::proto::TabGroup& group_proto :
-       response->group_response().tab_groups()) {
+  for (const optimization_guide::proto::TabGroupMinimal& group_proto :
+       response->group_response().minimal_tab_groups()) {
     std::vector<int32_t> valid_tab_ids;
-    for (const optimization_guide::proto::Tab& tab_proto : group_proto.tabs()) {
-      int32_t tab_id = static_cast<int32_t>(tab_proto.tab_id());
+    for (int64_t tab_id_64 : group_proto.tab_ids()) {
+      // TODO(b/533453094): Update tab ID struct member type to int64.
+      int32_t tab_id = static_cast<int32_t>(tab_id_64);
       if (tab_index_map.contains(tab_id) &&
           std::ranges::find(valid_tab_ids, tab_id) == valid_tab_ids.end()) {
         valid_tab_ids.push_back(tab_id);

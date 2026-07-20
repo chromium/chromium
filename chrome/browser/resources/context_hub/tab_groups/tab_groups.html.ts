@@ -15,16 +15,24 @@ export function getHtml(this: TabGroupsElement) {
         </section>
 
         <section class="input-section">
-            <cr-input id="group-input" disabled
+            <cr-input id="group-input"
+                ?disabled="${!this.autoTabGroupsEnabled_ || this.isGrouping_}"
                 placeholder="Enter prompt to group tabs..."
                 .value="${this.inputValue_}"
-                @value-changed="${this.onInputValueChanged_}">
+                @value-changed="${this.onInputValueChanged_}"
+                @keydown="${this.onInputKeydown_}">
             </cr-input>
             <cr-button class="action-button"
+                id="group-tabs-button"
                 ?disabled="${this.isGrouping_ || !this.autoTabGroupsEnabled_}"
                 @click="${this.onGroupTabsClick_}">
-                ${this.isGrouping_ ? 'Grouping...' :
-                  (this.isGrouped_ ? 'Ungroup tabs' : 'Group tabs')}
+                ${this.isGrouping_ ? 'Grouping...' : 'Group tabs'}
+            </cr-button>
+            <cr-button class="action-button"
+                id="ungroup-tabs-button"
+                ?disabled="${!this.autoTabGroupsEnabled_ || this.isGrouping_ || !this.isGrouped_}"
+                @click="${this.onUngroupTabsClick_}">
+                Ungroup tabs
             </cr-button>
         </section>
 

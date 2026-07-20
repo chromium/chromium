@@ -41,6 +41,12 @@ struct TabGroupData {
   std::vector<TabData> tabs;
 };
 
+struct TabGroupMinimalData {
+  std::string label;
+  std::vector<int32_t> tab_ids;
+  std::string group_id;
+};
+
 class ContextHubService : public KeyedService {
  public:
   explicit ContextHubService(
