@@ -4,12 +4,12 @@
 
 package org.chromium.chrome.browser.browserservices;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.chromium.base.IntentUtils;
@@ -56,8 +56,7 @@ public class ClearDataDialogActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         AlertDialog.Builder builder =
-                new AlertDialog.Builder(
-                                this, android.R.style.Theme_DeviceDefault_Light_Dialog_Alert)
+                new AlertDialog.Builder(this, R.style.ThemeOverlay_BrowserUI_AlertDialog)
                         .setTitle(
                                 getString(
                                         R.string.twa_clear_data_dialog_title,
