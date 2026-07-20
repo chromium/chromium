@@ -2063,7 +2063,14 @@ void ContextualSearchboxHandler::OpenUrl(
         chrome::kChromeUIOmniboxEverywhereHost) {
       if (auto* service =
               OmniboxEverywhereServiceFactory::GetForProfile(profile_)) {
-        service->OpenUrl(url, disposition);
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                [](OmniboxEverywhereService* service, const GURL& url,
+                   WindowOpenDisposition disposition) {
+                  service->OpenUrl(url, disposition);
+                },
+                base::Unretained(service), url, disposition));
         return;
       }
     }
