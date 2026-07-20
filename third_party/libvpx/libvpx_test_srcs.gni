@@ -63,6 +63,7 @@ libvpx_test_srcs_generic_cc = [
   "//third_party/libvpx/source/libvpx/test/invalid_file_test.cc",
   "//third_party/libvpx/source/libvpx/test/keyframe_test.cc",
   "//third_party/libvpx/source/libvpx/test/level_test.cc",
+  "//third_party/libvpx/source/libvpx/test/postproc_test.cc",
   "//third_party/libvpx/source/libvpx/test/realtime_test.cc",
   "//third_party/libvpx/source/libvpx/test/resize_test.cc",
   "//third_party/libvpx/source/libvpx/test/svc_datarate_test.cc",
