@@ -101,7 +101,6 @@ class CastWebContentsImpl : public CastWebContents,
       mojo::PendingRemote<mojom::ApiBindings> api_bindings_remote) override;
   void SetEnabledForRemoteDebugging(bool enabled) override;
   void GetMainFramePid(GetMainFramePidCallback cb) override;
-  bool is_websql_enabled() override;
   bool is_mixer_audio_enabled() override;
 
   // content::RenderProcessHostObserver implementation:

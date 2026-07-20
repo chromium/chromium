@@ -73,7 +73,6 @@ class MockCastWebContents : public CastWebContents {
   MOCK_METHOD(void, SetEnabledForRemoteDebugging, (bool), (override));
   MOCK_METHOD(void, GetMainFramePid, (GetMainFramePidCallback), (override));
   MOCK_METHOD(InterfaceBundle*, local_interfaces, (), (override));
-  MOCK_METHOD(bool, is_websql_enabled, (), (override));
   MOCK_METHOD(bool, is_mixer_audio_enabled, (), (override));
 
   bool TryBindReceiver(mojo::GenericPendingReceiver&) override;

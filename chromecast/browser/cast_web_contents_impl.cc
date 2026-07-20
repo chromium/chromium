@@ -474,10 +474,6 @@ InterfaceBundle* CastWebContentsImpl::local_interfaces() {
   return &local_interfaces_;
 }
 
-bool CastWebContentsImpl::is_websql_enabled() {
-  return params_->enable_websql;
-}
-
 bool CastWebContentsImpl::is_mixer_audio_enabled() {
   return params_->enable_mixer_audio;
 }

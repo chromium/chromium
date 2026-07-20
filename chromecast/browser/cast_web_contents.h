@@ -275,10 +275,6 @@ class CastWebContents : public mojom::CastWebContents {
   // Locally-registered interfaces which are exposed to render frames.
   virtual InterfaceBundle* local_interfaces() = 0;
 
-  // Returns true if WebSQL database is configured enabled for this
-  // CastWebContents.
-  virtual bool is_websql_enabled() = 0;
-
   // Returns true if mixer audio is enabled.
   virtual bool is_mixer_audio_enabled() = 0;
 
