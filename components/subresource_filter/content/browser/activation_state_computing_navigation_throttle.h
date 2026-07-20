@@ -98,7 +98,12 @@ class ActivationStateComputingNavigationThrottle
   void WillSendActivationToRenderer();
 
  private:
-  void CheckActivationState();
+  // Starts computing the activation state for this navigation. Returns true if
+  // an async computation was started (the throttle will later receive
+  // OnActivationStateComputed()). Returns false if it was skipped because the
+  // ruleset handle is no longer available; callers should proceed without
+  // subresource filter activation in that case. See crbug.com/534608620.
+  bool CheckActivationState();
   void OnActivationStateComputed(mojom::ActivationState state);
 
   // In the case when root frame navigations get notified of

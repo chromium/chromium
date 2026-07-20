@@ -110,11 +110,17 @@ ActivationStateComputingNavigationThrottle::WillProcessResponse() {
     return content::NavigationThrottle::PROCEED;
   }
   CHECK(!deferred_);
-  deferred_ = true;
   if (!async_filter_) {
     CHECK(IsInSubresourceFilterRoot(navigation_handle()));
-    CheckActivationState();
+    // If the check was skipped because the ruleset handle is gone, there is
+    // nothing to wait for; proceed instead of deferring on an
+    // OnActivationStateComputed() callback that can never fire, which would
+    // hang the navigation. crbug.com/534608620.
+    if (!CheckActivationState()) {
+      return content::NavigationThrottle::PROCEED;
+    }
   }
+  deferred_ = true;
   return content::NavigationThrottle::DEFER;
 }
 
@@ -122,9 +128,17 @@ const char* ActivationStateComputingNavigationThrottle::GetNameForLogging() {
   return "ActivationStateComputingNavigationThrottle";
 }
 
-void ActivationStateComputingNavigationThrottle::CheckActivationState() {
+bool ActivationStateComputingNavigationThrottle::CheckActivationState() {
   CHECK(parent_activation_state_);
-  CHECK(ruleset_handle_);
+  // `ruleset_handle_` is a WeakPtr into the page's throttle manager. It can be
+  // invalidated if the throttle manager is torn down while this navigation is
+  // still in flight (e.g. a target_hint="_blank" new-tab prerender whose
+  // pre-created WebContents is taken or discarded while the navigation is
+  // processing a redirect). Skip activation rather than dereferencing a null
+  // handle. See crbug.com/534608620.
+  if (!ruleset_handle_) {
+    return false;
+  }
   AsyncDocumentSubresourceFilter::InitializationParams params;
   params.document_url = navigation_handle()->GetURL();
   params.parent_activation_state = parent_activation_state_.value();
@@ -145,6 +159,7 @@ void ActivationStateComputingNavigationThrottle::CheckActivationState() {
                          OnActivationStateComputed,
                      weak_ptr_factory_.GetWeakPtr()),
       uma_tag_);
+  return true;
 }
 
 void ActivationStateComputingNavigationThrottle::OnActivationStateComputed(

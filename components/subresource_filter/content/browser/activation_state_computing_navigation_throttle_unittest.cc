@@ -192,6 +192,16 @@ class ActivationStateComputingNavigationThrottleTest
     parent_activation_state_ = state;
   }
 
+  // Destroys the VerifiedRuleset::Handle owned by the fixture, invalidating
+  // the WeakPtr held by the live throttle. Simulates the page's throttle
+  // manager being torn down mid-navigation. See crbug.com/534608620.
+  void ResetRulesetHandleForTesting() { ruleset_handle_.reset(); }
+
+  // Detaches the fixture observer from the tracked throttle so that its
+  // ReadyToCommitNavigation/DidFinishNavigation overrides do not run on a
+  // navigation that is intentionally abandoned mid-flight during teardown.
+  void ClearTrackedThrottleForTesting() { test_throttle_ = nullptr; }
+
  protected:
   void InsertThrottle(content::NavigationThrottleRegistry& registry) {
     content::NavigationHandle& navigation_handle =
@@ -559,6 +569,60 @@ TEST_P(ActivationStateComputingThrottleSubFrameTest, SpeculationWithDelay) {
   EXPECT_FALSE(subframe_simulator->IsDeferred());
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             simulator->GetLastThrottleCheckResult());
+}
+
+// Regression test for crbug.com/534608620. The throttle holds a WeakPtr to a
+// VerifiedRuleset::Handle owned by the page's throttle manager. That handle can
+// be invalidated while the navigation is still in flight (e.g. a
+// target_hint=_blank new-tab prerender whose pre-created WebContents is taken
+// or discarded during a redirect). A redirect arriving afterwards must proceed
+// gracefully instead of dereferencing the null handle in CheckActivationState.
+TEST_P(ActivationStateComputingThrottleMainFrameTest,
+       RulesetHandleDestroyedBeforeRedirectDoesNotCrash) {
+  if (!dryrun_speculation()) {
+    GTEST_SKIP()
+        << "Requires dryrun activation so the root throttle is created "
+           "with a parent activation state and a ruleset handle.";
+  }
+  CreateTestNavigationForMainFrame(GURL("http://example.test/"));
+  SimulateStartAndExpectToProceed();
+
+  // Tear down the underlying Handle; the throttle's WeakPtr is now null.
+  ResetRulesetHandleForTesting();
+
+  // Must proceed rather than CHECK/deref in CheckActivationState().
+  SimulateRedirectAndExpectToProceed(GURL("http://example.test/?redir=1"));
+
+  // The navigation is intentionally left mid-redirect; detach the observer so
+  // it does not run against an abandoned navigation during teardown.
+  ClearTrackedThrottleForTesting();
+}
+
+// Companion coverage for the WillProcessResponse() guard: when the handle is
+// destroyed before any activation check created an async filter, the response
+// step must proceed rather than defer forever on a callback that can never
+// fire. See crbug.com/534608620.
+TEST_P(ActivationStateComputingThrottleMainFrameTest,
+       RulesetHandleDestroyedBeforeResponseDoesNotDefer) {
+  if (dryrun_speculation()) {
+    GTEST_SKIP() << "Requires the non-dryrun path so WillStartRequest does not "
+                    "create an async filter before the response.";
+  }
+  CreateTestNavigationForMainFrame(GURL("http://example.test/"));
+  // parent_activation_state_ is unset here, so WillStartRequest is a no-op and
+  // no async filter is created.
+  SimulateStartAndExpectToProceed();
+
+  // Install a parent activation state and ruleset handle on the throttle, then
+  // immediately destroy the underlying Handle.
+  mojom::ActivationState dryrun_state;
+  dryrun_state.activation_level = mojom::ActivationLevel::kDryRun;
+  NotifyPageActivation(dryrun_state);
+  ResetRulesetHandleForTesting();
+
+  // WillProcessResponse sees a null handle and no async filter: it must proceed
+  // instead of deferring on an OnActivationStateComputed that will never come.
+  SimulateCommitAndExpectToProceed();
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
