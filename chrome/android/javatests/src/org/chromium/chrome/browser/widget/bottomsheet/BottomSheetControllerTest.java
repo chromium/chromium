@@ -35,6 +35,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Matchers;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -219,6 +220,7 @@ public class BottomSheetControllerTest {
     @Test
     @SmallTest
     @Feature({"BottomSheetController"})
+    @RequiresRestart("crbug.com/535986752")
     public void testShowWithBottomInset_LargeBottomInsets() {
         mEdgeToEdgeController.bottomInset = 2000;
 
@@ -278,6 +280,7 @@ public class BottomSheetControllerTest {
     @Test
     @SmallTest
     @Feature({"BottomSheetController"})
+    @RequiresRestart("crbug.com/535986752")
     public void testShowWithBottomInset_resizeContent_LargeBottomInsets() {
         mEdgeToEdgeController.bottomInset = 2000;
         mNonPeekableContent.setFullHeightRatio(HeightMode.RESIZE_CONTENT);
