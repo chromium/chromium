@@ -214,6 +214,7 @@ public class TabPersistentStoreFactory {
                 recordingTabCreator,
                 regularShadowTabCreator,
                 migrationManager,
+                windowTag,
                 orchestratorTag);
 
         migrationManager.onShadowStoreCreated(shadowStoreType);

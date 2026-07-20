@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.tabmodel.RecordingTabCreator.TabCreationData;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * A profile + window tag-keyed service for collecting and reporting metrics from the
@@ -26,10 +27,37 @@ import java.util.Map;
  */
 @NullMarked
 public class TabStoreMetricsService {
+    /** A bucket of metrics for a specific profile, window tag, and orchestrator type. */
+    public static class MetricsBucket {
+        public MetricsBucket(Profile profile, String windowTag, String orchestratorTag) {
+            this.profile = profile;
+            this.windowTag = windowTag;
+            this.orchestratorTag = orchestratorTag;
+        }
+
+        public Profile profile;
+        public String windowTag;
+        public String orchestratorTag;
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == this) return true;
+            if (!(o instanceof MetricsBucket other)) return false;
+            return profile.equals(other.profile)
+                    && windowTag.equals(other.windowTag)
+                    && orchestratorTag.equals(other.orchestratorTag);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(profile, windowTag, orchestratorTag);
+        }
+    }
+
     private static final ProfileKeyedMap<TabStoreMetricsService> sProfileMap =
             new ProfileKeyedMap<>(ProfileKeyedMap.noRequiredCleanupAction());
 
-    private final Map<String, WindowMetricsTracker> mTrackers = new HashMap<>();
+    private final Map<MetricsBucket, WindowMetricsTracker> mTrackers = new HashMap<>();
 
     /** Private constructor to prevent direct instantiation. */
     private TabStoreMetricsService() {}
@@ -40,23 +68,23 @@ public class TabStoreMetricsService {
      * @param profile The profile the service is associated with.
      * @param windowTag The tag identifying the window.
      */
-    public static WindowMetricsTracker getForProfileAndWindowTag(
-            Profile profile, String windowTag) {
+    public static WindowMetricsTracker getForBucket(MetricsBucket bucket) {
         return sProfileMap
-                .getForProfile(profile.getOriginalProfile(), (p) -> new TabStoreMetricsService())
-                .getTracker(windowTag);
+                .getForProfile(
+                        bucket.profile.getOriginalProfile(), _ -> new TabStoreMetricsService())
+                .getTracker(bucket);
     }
 
     /**
-     * Retrieve the WindowMetricsTracker associated with a specific window tag (e.g. Tabbed).
+     * Retrieve the WindowMetricsTracker associated with a specific metrics bucket.
      *
-     * @param orchestratorTag The tag identifying the type of tab model orchestrator.
+     * @param bucket The metrics bucket to retrieve the tracker for.
      */
-    private WindowMetricsTracker getTracker(String orchestratorTag) {
-        WindowMetricsTracker tracker = mTrackers.get(orchestratorTag);
+    private WindowMetricsTracker getTracker(MetricsBucket bucket) {
+        WindowMetricsTracker tracker = mTrackers.get(bucket);
         if (tracker == null) {
-            tracker = new WindowMetricsTracker(orchestratorTag);
-            mTrackers.put(orchestratorTag, tracker);
+            tracker = new WindowMetricsTracker(bucket.orchestratorTag);
+            mTrackers.put(bucket, tracker);
         }
         return tracker;
     }

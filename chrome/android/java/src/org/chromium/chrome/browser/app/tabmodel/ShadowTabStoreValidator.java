@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.app.tabmodel;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.app.tabmodel.TabStoreMetricsService.MetricsBucket;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator;
@@ -41,6 +42,7 @@ public class ShadowTabStoreValidator {
     private final PersistentStoreMigrationManager mPersistentStoreMigrationManager;
     private final StoreMetricsObserver mAuthoritativeObserver;
     private final StoreMetricsObserver mShadowObserver;
+    private final String mWindowTag;
     private final String mOrchestratorTag;
     private final boolean mShadowStoreCaughtUp;
 
@@ -53,6 +55,7 @@ public class ShadowTabStoreValidator {
      * @param shadowTabCreator The {@link AccumulatingTabCreator} used by the shadow store.
      * @param persistentStoreMigrationManager The {@link PersistentStoreMigrationManager} for
      *     migration.
+     * @param windowTag The tag identifying the window.
      * @param orchestratorTag The type of tab model orchestrator this validator is for.
      */
     public ShadowTabStoreValidator(
@@ -62,6 +65,7 @@ public class ShadowTabStoreValidator {
             RecordingTabCreator authoritativeTabCreator,
             AccumulatingTabCreator shadowTabCreator,
             PersistentStoreMigrationManager persistentStoreMigrationManager,
+            String windowTag,
             String orchestratorTag) {
         mProfile = profile;
         mAuthoritativeStore = authoritativeStore;
@@ -69,6 +73,7 @@ public class ShadowTabStoreValidator {
         mAuthoritativeTabCreator = authoritativeTabCreator;
         mShadowTabCreator = shadowTabCreator;
         mPersistentStoreMigrationManager = persistentStoreMigrationManager;
+        mWindowTag = windowTag;
         mOrchestratorTag = orchestratorTag;
 
         mAuthoritativeObserver = new StoreMetricsObserver(this);
@@ -120,7 +125,8 @@ public class ShadowTabStoreValidator {
         List<TabCreationData> authoritativeNewTabData =
                 mAuthoritativeTabCreator.getNewTabCreationData();
 
-        TabStoreMetricsService.getForProfileAndWindowTag(mProfile, mOrchestratorTag)
+        TabStoreMetricsService.getForBucket(
+                        new MetricsBucket(mProfile, mWindowTag, mOrchestratorTag))
                 .recordDiffMetrics(
                         authoritativeFrozenData,
                         authoritativeNewTabData,
