@@ -145,6 +145,5 @@ void SendTabToSelfTextFragmentSelectorGenerator::ScrollToTextFragment(
   base::ListValue parameters;
   parameters.Append(text_fragment);
 
-  CallJavaScriptFunction(main_frame, kScrollToTextFragmentFunction, parameters,
-                         base::DoNothing(), base::TimeDelta());
+  CallJavaScriptFunction(main_frame, kScrollToTextFragmentFunction, parameters);
 }
