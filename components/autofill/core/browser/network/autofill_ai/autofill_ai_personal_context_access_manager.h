@@ -16,8 +16,18 @@ namespace autofill {
 
 class EntityType;
 
-// Manages access to personal context data for autofill ai, including caching
-// and ttl management.
+// Manages access to personal context data specifically for Autofill AI.
+//
+// This is NOT a generic data access layer for the Personal Context Service.
+// Its networking, protocol buffers, and caching strategy are strictly tailored
+// to Autofill AI form-filling user flows:
+// - Requests always specify `CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL` personal
+//   context feature for all service requests.
+// - Uses feature-specific protobufs
+// (`ContextMemoryAmbientAutofillRequest`/`Response`).
+// - Caching and TTL policies (for both masked entities and unmasked SPII) are
+//   optimized specifically for Autofill AI interaction patterns.
+//
 // Instantiated once per profile/context.
 class AutofillAiPersonalContextAccessManager : public KeyedService {
  public:
