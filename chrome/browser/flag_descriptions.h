@@ -6104,6 +6104,10 @@ inline constexpr char kNoPauseMediaOnHeadphoneUnplugName[] =
 inline constexpr char kNoPauseMediaOnHeadphoneUnplugDescription[] =
     "When enabled, playback will not be paused when headphones are unplugged.";
 
+inline constexpr char kNotebookHomeURLName[] = "Notebook Home URL";
+inline constexpr char kNotebookHomeURLDescription[] =
+    "Overrides the default URL for the Notebook Home WebUI.";
+
 inline constexpr char kNotebooksName[] = "Notebooks";
 inline constexpr char kNotebooksDescription[] = "Enables Notebooks.";
 

@@ -7103,8 +7103,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"composebox-skills-contextual-tasks",
      flag_descriptions::kComposeboxSkillsContextualTasksName,
-     flag_descriptions::kComposeboxSkillsContextualTasksDescription,
-     kOsDesktop,
+     flag_descriptions::kComposeboxSkillsContextualTasksDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kComposeboxSkillsContextualTasks)},
 
     {"composebox-skills-ntp", flag_descriptions::kComposeboxSkillsNtpName,
@@ -7119,8 +7118,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"composebox-skills-omnibox-popup",
      flag_descriptions::kComposeboxSkillsOmniboxPopupName,
-     flag_descriptions::kComposeboxSkillsOmniboxPopupDescription,
-     kOsDesktop,
+     flag_descriptions::kComposeboxSkillsOmniboxPopupDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kComposeboxSkillsOmniboxPopup)},
 
     {"context-management-in-composebox",
@@ -13479,6 +13477,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCameraAndMicrophoneElementsDescription,
      kOsMac | kOsWin | kOsLinux | kOsAndroid,
      FEATURE_VALUE_TYPE(blink::features::kCameraAndMicrophoneElements)},
+    {"notebook-home-url", flag_descriptions::kNotebookHomeURLName,
+     flag_descriptions::kNotebookHomeURLDescription, kOsDesktop,
+     STRING_VALUE_TYPE(switches::kNotebookHomeURL, "")},
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

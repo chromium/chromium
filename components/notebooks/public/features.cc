@@ -7,5 +7,6 @@
 namespace notebooks::features {
 
 BASE_FEATURE(kNotebooks, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(std::string, kNotebookHomeURL, &kNotebooks, "about:blank");
 
 }  // namespace notebooks::features

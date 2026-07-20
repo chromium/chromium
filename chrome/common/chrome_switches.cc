@@ -482,6 +482,9 @@ const char kNoProxyServer[] = "no-proxy-server";
 // launching Chrome for the purpose of hosting background apps).
 const char kNoStartupWindow[] = "no-startup-window";
 
+// Overrides the default URL for the Notebook Home WebUI.
+const char kNotebookHomeURL[] = "notebook-home-url";
+
 // Calculate the hash of an MHTML file as it is being saved.
 // The browser process will write the serialized MHTML contents to a file and
 // calculate its hash as it is streamed back from the renderer via a Mojo data

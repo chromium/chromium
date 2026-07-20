@@ -5,11 +5,15 @@
 #ifndef COMPONENTS_NOTEBOOKS_PUBLIC_FEATURES_H_
 #define COMPONENTS_NOTEBOOKS_PUBLIC_FEATURES_H_
 
+#include <string>
+
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace notebooks::features {
 
 BASE_DECLARE_FEATURE(kNotebooks);
+BASE_DECLARE_FEATURE_PARAM(std::string, kNotebookHomeURL);
 
 }  // namespace notebooks::features
 

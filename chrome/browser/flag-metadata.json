@@ -7022,6 +7022,13 @@
     "expiry_milestone": 170
   },
   {
+    "name": "notebook-home-url",
+    "owners": [
+      "chrome-ai-productivity-eng@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "notebooks",
     "owners": [ "nandrosz@chromium.org", "chrome-ai-productivity-eng@google.com" ],
     "expiry_milestone": 160
