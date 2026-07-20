@@ -42,6 +42,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -60,6 +61,7 @@
 #include "chrome/browser/web_applications/app_service/publisher_helper.h"
 #include "chrome/browser/web_applications/commands/compute_app_size_command.h"
 #include "chrome/browser/web_applications/commands/computed_app_size.h"
+#include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -1452,7 +1454,7 @@ void WebAppPublisherHelper::MaybeSetSupportedLinksPreference(
   }
 
   // PWAs
-  if (base::FeatureList::IsEnabled(features::kPwaNavigationCapturing)) {
+  if (apps::features::IsNavigationCapturingOnByDefault()) {
     bool should_capture_links = false;
     switch (features::kNavigationCapturingDefaultState.Get()) {
       case features::CapturingState::kReimplDefaultOn:
@@ -2362,7 +2364,11 @@ void WebAppPublisherHelper::MaybeMigrateLinkCapturingPreferences() {
 }
 
 void WebAppPublisherHelper::OnPreferredAppsListInitialized() {
-  MaybeMigrateLinkCapturingPreferences();
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &WebAppPublisherHelper::MaybeMigrateLinkCapturingPreferences,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void WebAppPublisherHelper::OnPreferredAppChanged(const std::string& app_id,
