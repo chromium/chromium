@@ -7652,18 +7652,8 @@ test("unit_tests") {
   }
 
   if (enterprise_cloud_content_analysis) {
-    sources += [ "../browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_unittest.cc" ]
-    deps += [
-      "../browser/enterprise/connectors/test:test_support",
-      "//components/enterprise/connectors/core:test_support",
-    ]
-    if (is_chromeos) {
-      deps += [
-        "//chrome/browser/ash/net",
-        "//chromeos/components/mgs",
-        "//chromeos/constants",
-      ]
-    }
+    deps +=
+        [ "//chrome/browser/extensions/api/safe_browsing_private:unit_tests" ]
   }
 
   if (is_win || is_mac || is_linux || is_chromeos || is_desktop_android) {

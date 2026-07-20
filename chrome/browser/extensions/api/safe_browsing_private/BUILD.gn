@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
+import("//components/enterprise/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions)
@@ -29,4 +30,39 @@ source_set("safe_browsing_private") {
     "//chrome/browser/safe_browsing",
     "//content/public/browser",
   ]
+}
+
+if (enterprise_cloud_content_analysis) {
+  source_set("unit_tests") {
+    testonly = true
+
+    sources = [ "safe_browsing_private_event_router_unittest.cc" ]
+
+    deps = [
+      ":safe_browsing_private",
+      "//chrome/browser/enterprise/connectors/test:test_support",
+      "//chrome/browser/extensions",
+      "//chrome/browser/safe_browsing:test_support",
+      "//chrome/test:test_support",
+      "//components/enterprise/connectors/core:test_support",
+      "//components/safe_browsing/core/common",
+      "//components/signin/public/identity_manager:test_support",
+      "//extensions/browser:test_support",
+    ]
+
+    if (is_chromeos) {
+      deps += [
+        "//chrome/browser/ash/login/users",
+        "//chrome/browser/ash/login/users:test_support",
+        "//chrome/browser/ash/net",
+        "//chrome/browser/ash/profiles",
+        "//chrome/browser/ash/settings:test_support",
+        "//chromeos/ash/components/install_attributes:test_support",
+        "//chromeos/ash/components/settings",
+        "//chromeos/components/mgs",
+        "//chromeos/constants",
+        "//components/user_manager:test_support",
+      ]
+    }
+  }
 }
