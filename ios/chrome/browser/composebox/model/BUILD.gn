@@ -35,11 +35,13 @@ source_set("test_support") {
     "mock_ios_contextual_search_service.h",
     "mock_ios_contextual_search_service.mm",
   ]
-  deps = [
+  public_deps = [
     ":model",
+    "//components/contextual_search:test_support",
+  ]
+  deps = [
     "//base",
     "//components/application_locale_storage",
-    "//components/contextual_search:test_support",
     "//components/contextual_search/internal/ios",
     "//components/lens:lens_url_utils",
     "//ios/chrome/browser/search_engines/model",

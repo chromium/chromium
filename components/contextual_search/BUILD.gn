@@ -139,9 +139,11 @@ source_set("test_support") {
     "mock_contextual_search_session_handle.cc",
     "mock_contextual_search_session_handle.h",
   ]
-  public_deps = [ "//components/variations:variations_mojom" ]
-  deps = [
+  public_deps = [
     ":public",
+    "//components/variations:variations_mojom",
+  ]
+  deps = [
     "//components/lens/proto/server:proto",
     "//components/variations",
     "//testing/gmock",
