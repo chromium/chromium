@@ -230,6 +230,11 @@ bool PasswordManagerClient::IsActorTaskActive() {
   return false;
 }
 
+void PasswordManagerClient::OnPasswordFilled(PasswordManagerDriver* driver,
+                                             const GURL& url,
+                                             PasswordFillTrigger trigger_type) {
+}
+
 bool PasswordManagerClient::IsChromeSigninPage() const {
   return false;
 }

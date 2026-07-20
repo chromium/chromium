@@ -54,12 +54,13 @@ class CriticalActionService : public KeyedService,
       history::HistoryService* history_service) override;
 
   // UI thread entry point to add a new critical action.
-  void AddCriticalAction(const CriticalActionEntry& entry);
+  virtual void AddCriticalAction(const CriticalActionEntry& entry);
 
   // UI thread entry point to log or queue a critical action linked by
   // navigation ID.
-  void AddCriticalActionWithNavigationId(const CriticalActionEntry& entry,
-                                         int64_t navigation_id);
+  virtual void AddCriticalActionWithNavigationId(
+      const CriticalActionEntry& entry,
+      int64_t navigation_id);
 
   // UI thread entry point to retrieve a critical action record by ID.
   void GetCriticalAction(

@@ -288,6 +288,9 @@ LikelyFormFilling SendFillInformationToRenderer(
     metrics_recorder->RecordFillEvent(
         PasswordFormMetricsRecorder::kManagerFillEventAutofilled);
     base::RecordAction(base::UserMetricsAction("PasswordManager_Autofilled"));
+    client->OnPasswordFilled(
+        driver, observed_form.url,
+        PasswordManagerClient::PasswordFillTrigger::kPasswordManagerAutofill);
   }
 
   // Continue with autofilling any password forms as traditionally has been

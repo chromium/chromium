@@ -12,6 +12,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -20,7 +21,10 @@
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/credential_management/content_credential_manager.h"
+#include "components/critical_actions/core/browser/critical_action_types.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_service_observer.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "components/password_manager/core/browser/http_auth_manager.h"
 #include "components/password_manager/core/browser/http_auth_manager_impl.h"
@@ -312,6 +316,9 @@ class ChromePasswordManagerClient
   void UpdateFormManagers() override;
   void NavigateToManagePasswordsPage(
       password_manager::ManagePasswordsReferrer referrer) override;
+  void OnPasswordFilled(password_manager::PasswordManagerDriver* driver,
+                        const GURL& url,
+                        PasswordFillTrigger trigger_type) override;
 
 #if BUILDFLAG(IS_ANDROID)
   void NavigateToManagePasskeysPage(
@@ -454,6 +461,9 @@ class ChromePasswordManagerClient
       const GURL& original_url,
       const blink::mojom::ResourceLoadInfo& resource_load_info) override;
   void OnFedCmFederatedLogin(bool success) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
+  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
 
   // autofill::AutofillManager::Observer:
   void OnFieldTypesDetermined(autofill::AutofillManager& manager,
@@ -499,6 +509,8 @@ class ChromePasswordManagerClient
       content::RenderFrameHost* frame_host,
       const gfx::RectF& bounds_in_frame_coordinates);
 
+  void LogCriticalAction(const critical_actions::CriticalActionEntry& entry);
+
 #if BUILDFLAG(IS_ANDROID)
   void ResetErrorMessageDelegate();
 
@@ -526,6 +538,12 @@ class ChromePasswordManagerClient
                                              FieldTypeSource source);
 
   void OnNonPasswordLoginDetected();
+
+  // Returns the navigation_id for the frame associated with `driver`, falling
+  // back to the primary main frame's navigation_id if applicable. Returns 0 if
+  // not found.
+  int64_t GetNavigationIdForDriver(
+      password_manager::PasswordManagerDriver* driver) const;
 
   password_manager::PasswordManager password_manager_;
   password_manager::PasswordFeatureManagerImpl password_feature_manager_;
@@ -627,6 +645,9 @@ class ChromePasswordManagerClient
   // some views specific initializations.
   CrossDomainConfirmationPopupFactory
       cross_domain_confirmation_popup_factory_for_testing_;
+
+  // Maps active frame pointers to the navigation_id that committed them.
+  base::flat_map<content::RenderFrameHost*, int64_t> rfh_to_navigation_id_;
 
   password_manager::UndoPasswordChangeController
       undo_password_change_controller_;
