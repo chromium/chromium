@@ -536,7 +536,7 @@ bool PopupBaseView::DoUpdateBoundsAndRedrawPopup() {
   // Intersect with the current monitor's work area to avoid showing popups
   // outside the screen.
   gfx::Rect visible_content_area_bounds =
-      IntersectWithDisplayBounds(max_bounds_for_popup);
+      IntersectWithDisplayBounds(GetWebContents(), max_bounds_for_popup);
 
   gfx::Rect element_bounds = gfx::ToEnclosingRect(delegate_->element_bounds());
 

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_VIEW_UTILS_H_
 
 #include <functional>
+#include <optional>
 
 #include "base/check.h"
 #include "base/containers/span.h"
@@ -188,14 +189,18 @@ bool ShouldAutoselectFirstSuggestion(
 ui::ElementIdentifier GetAutofillPopupCellElementIdentifier(
     const base::Feature* feature);
 
-// Returns bounds of a display that has most intersection with element_bounds.
-// If no display data is available (e.g display::Screen::Get() == nullptr)
+// Returns the bounds of the display that contains the native window hosting
+// the WebContents, or the display matching `element_bounds`. For environments
+// without global screen coordinates (e.g., Wayland), the origin is shifted
+// to match the local surface coordinate space. If no display data is available,
 // returns std::nullopt.
-std::optional<gfx::Rect> GetDisplayBounds(const gfx::Rect& element_bounds);
+std::optional<gfx::Rect> GetDisplayBounds(content::WebContents* web_contents,
+                                          const gfx::Rect& element_bounds);
 
 // Returns the intersection between the given element and its display.
 // If no display data is available, returns provided element bounds.
-gfx::Rect IntersectWithDisplayBounds(const gfx::Rect& element_bounds);
+gfx::Rect IntersectWithDisplayBounds(content::WebContents* web_contents,
+                                     const gfx::Rect& element_bounds);
 
 // Tracks the lifetime of `view` and runs a sequence of `callbacks` in order.
 // Aborts the sequence early and returns `false` if `view` is destroyed

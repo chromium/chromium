@@ -9,6 +9,7 @@
 
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -28,6 +29,10 @@
 #include "extensions/common/constants.h"
 #include "ui/display/screen.h"
 #include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
 
 using views::BubbleBorder;
 
@@ -383,8 +388,10 @@ bool IsPopupPlaceableOnSideOfElement(
   }
 }
 
-gfx::Rect IntersectWithDisplayBounds(const gfx::Rect& element_bounds) {
-  std::optional<gfx::Rect> display_bounds = GetDisplayBounds(element_bounds);
+gfx::Rect IntersectWithDisplayBounds(content::WebContents* web_contents,
+                                     const gfx::Rect& element_bounds) {
+  std::optional<gfx::Rect> display_bounds =
+      GetDisplayBounds(web_contents, element_bounds);
   if (display_bounds == std::nullopt) {
     return element_bounds;
   }
@@ -392,11 +399,39 @@ gfx::Rect IntersectWithDisplayBounds(const gfx::Rect& element_bounds) {
   return display_bounds.value();
 }
 
-std::optional<gfx::Rect> GetDisplayBounds(const gfx::Rect& element_bounds) {
+std::optional<gfx::Rect> GetDisplayBounds(content::WebContents* web_contents,
+                                          const gfx::Rect& element_bounds) {
   display::Screen* screen = display::Screen::Get();
   if (!screen) {
     return std::nullopt;
   }
+
+#if BUILDFLAG(IS_OZONE)
+  // On Ozone/Wayland platforms that don't support global screen coordinates,
+  // the display returned by `GetDisplayMatching` may be incorrect because the
+  // coordinates for `element_bounds` aren't global. Instead, fall back to
+  // getting the display from the native window hosting the web contents.
+  if (ui::OzonePlatform::IsInitialized() &&
+      !ui::OzonePlatform::GetInstance()
+           ->GetPlatformProperties()
+           .supports_global_screen_coordinates) {
+    gfx::Rect work_area;
+    if (web_contents && web_contents->GetTopLevelNativeWindow()) {
+      work_area =
+          screen
+              ->GetDisplayNearestWindow(web_contents->GetTopLevelNativeWindow())
+              .work_area();
+    } else {
+      work_area = screen->GetDisplayMatching(element_bounds).work_area();
+    }
+
+    // When global screen coordinates aren't supported, shift the work area to
+    // (0,0) to translate the global display bounds into local coordinate space
+    // used by the Views layer.
+    work_area.set_origin(gfx::Point(0, 0));
+    return work_area;
+  }
+#endif
 
   return screen->GetDisplayMatching(element_bounds).work_area();
 }
