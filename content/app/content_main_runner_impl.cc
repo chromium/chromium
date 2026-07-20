@@ -493,13 +493,20 @@ void CreateChildThreadPool(const std::string& process_type) {
   // Thread pool should only be initialized once.
   DCHECK(!base::ThreadPoolInstance::Get());
   std::string_view thread_pool_name;
-  if (process_type == switches::kGpuProcess)
+  base::ThreadPoolInstance::RecordLockContention record_lock_contention =
+      base::ThreadPoolInstance::RecordLockContention::kDisabled;
+  if (process_type == switches::kGpuProcess) {
     thread_pool_name = "GPU";
-  else if (process_type == switches::kRendererProcess)
+    record_lock_contention =
+        base::ThreadPoolInstance::RecordLockContention::kEnabled;
+  } else if (process_type == switches::kRendererProcess) {
     thread_pool_name = "Renderer";
-  else
+    record_lock_contention =
+        base::ThreadPoolInstance::RecordLockContention::kEnabled;
+  } else {
     thread_pool_name = "ContentChild";
-  base::ThreadPoolInstance::Create(thread_pool_name);
+  }
+  base::ThreadPoolInstance::Create(thread_pool_name, record_lock_contention);
 }
 
 }  // namespace

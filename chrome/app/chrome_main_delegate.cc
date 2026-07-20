@@ -949,7 +949,8 @@ void ChromeMainDelegate::CreateThreadPool(std::string_view name) {
     // The ThreadGroupProfiler client must be set before thread pool is created.
     base::ThreadGroupProfiler::SetClient(
         std::make_unique<ChromeThreadGroupProfilerClient>());
-    base::ThreadPoolInstance::Create(name);
+    base::ThreadPoolInstance::Create(
+        name, base::ThreadPoolInstance::RecordLockContention::kEnabled);
   }
 
   // The ThreadProfiler client must be set before main thread profiling is

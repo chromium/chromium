@@ -42,6 +42,11 @@ class WorkerThreadObserver;
 // process's instance.
 class BASE_EXPORT ThreadPoolInstance {
  public:
+  enum class RecordLockContention {
+    kDisabled,
+    kEnabled,
+  };
+
   struct BASE_EXPORT InitParams {
     enum class CommonThreadPoolEnvironment {
       // Use the default environment (no environment).
@@ -212,11 +217,15 @@ class BASE_EXPORT ThreadPoolInstance {
 
   // Creates a ready to start thread pool. |name| is used to label histograms,
   // it must not be empty. It should identify the component that creates the
-  // ThreadPoolInstance. The thread pool doesn't create threads until Start() is
+  // ThreadPoolInstance. |record_lock_contention| is used to
+  // determine if lock contention metrics are recorded depending on the
+  // process type. The thread pool doesn't create threads until Start() is
   // called. Tasks can be posted at any time but will not run until after
   // Start() is called. For tests, prefer base::test::TaskEnvironment
   // (ensures isolation).
-  static void Create(std::string_view name);
+  static void Create(std::string_view name,
+                     RecordLockContention record_lock_contention =
+                         RecordLockContention::kDisabled);
 
   // Registers |thread_pool| to handle tasks posted through the thread_pool.h
   // API for this process. For tests, prefer base::test::TaskEnvironment

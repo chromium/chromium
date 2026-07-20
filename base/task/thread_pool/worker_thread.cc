@@ -15,6 +15,7 @@
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
 #include "base/functional/callback_helpers.h"
+#include "base/synchronization/lock_metrics_recorder.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool/environment_config.h"
 #include "base/task/thread_pool/worker_thread_observer.h"
@@ -438,6 +439,13 @@ void WorkerThread::RunWorker() {
 
     TRACE_EVENT_END("base");
     hang_watch_scope.reset();
+
+    LockMetricsRecorder* recorder =
+        base::LockMetricsRecorder::GetForCurrentThread();
+    if (recorder) {
+      recorder->ReportLockAcquisitionTimes();
+    }
+
     delegate()->WaitForWork();
     TRACE_EVENT_BEGIN("base", "WorkerThread active",
                       perfetto::TerminatingFlow::FromPointer(

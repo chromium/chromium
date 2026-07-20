@@ -30,7 +30,8 @@ static void JNI_InitializeFeatureList_InitializeFeatureList(JNIEnv* env) {
   // The ThreadGroupProfiler client must be set before thread pool is created.
   base::ThreadGroupProfiler::SetClient(
       std::make_unique<ChromeThreadGroupProfilerClient>());
-  base::ThreadPoolInstance::Create("Browser");
+  base::ThreadPoolInstance::Create(
+      "Browser", base::ThreadPoolInstance::RecordLockContention::kEnabled);
   // No specified process type means this is the Browser process.
   base::allocator::PartitionAllocSupport::Get()->ReconfigureEarlyish("");
   // Register the TaskExecutor for posting task to the BrowserThreads. It is

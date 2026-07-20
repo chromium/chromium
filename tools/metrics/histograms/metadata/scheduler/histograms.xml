@@ -45,6 +45,39 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Scheduling.ContendedLockAcquisitionTime.{LockType}.{ProcessName}.{ThreadGroup}Worker"
+    units="microseconds" expires_after="2026-11-08">
+  <owner>fionav@google.com</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <summary>
+    The time it takes to acquire a contended {LockType} on the {ThreadGroup}
+    thread pool in the {ProcessName} process. This is recorded with probability
+    1/1000 when acquisition of the lock is likely to cause the thread to wait in
+    the kernel.
+
+    Note: The metric is reported for only clients with high-resolution clocks (a
+    subset of Windows clients won't report it, see the
+    Windows.HasHighResolutionTimeTicks histogram).
+  </summary>
+  <token key="LockType">
+    <variant name="BaseLock" summary="base:Lock"/>
+    <variant name="PartitionAllocLock"
+        summary="partition_alloc::internal::Lock"/>
+  </token>
+  <token key="ThreadGroup">
+    <variant name="Background"
+        summary="a thread pool background worker thread"/>
+    <variant name="Foreground"
+        summary="a thread pool foreground worker thread"/>
+  </token>
+  <token key="ProcessName">
+    <variant name="Browser" summary="the browser process"/>
+    <variant name="GPU" summary="the gpu process"/>
+    <variant name="Renderer" summary="the renderer process"/>
+  </token>
+</histogram>
+
+<histogram
     name="Scheduling.ContendedLockAcquisitionTime.{LockType}.{ThreadName}"
     units="microseconds" expires_after="2027-01-10">
   <owner>anandrv@google.com</owner>

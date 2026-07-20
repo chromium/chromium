@@ -514,7 +514,8 @@ TaskEnvironment::TestTaskTracker* TaskEnvironment::CreateThreadPool() {
   auto thread_pool = std::make_unique<internal::ThreadPoolImpl>(
       std::string(), std::move(task_tracker),
       /*use_background_threads=*/false,
-      /*monitor_worker_thread_priorities=*/false);
+      /*monitor_worker_thread_priorities=*/false,
+      ThreadPoolInstance::RecordLockContention::kDisabled);
   ThreadPoolInstance::Set(std::move(thread_pool));
   DCHECK(!g_task_tracker);
   g_task_tracker = raw_task_tracker;

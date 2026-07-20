@@ -34,7 +34,8 @@ void Create(const CreateParams& create_params) {
       g_exit_manager = new base::AtExitManager();
     }
     base::CommandLine::Init(create_params.args);
-    base::ThreadPoolInstance::Create("Browser");
+    base::ThreadPoolInstance::Create(
+        "Browser", base::ThreadPoolInstance::RecordLockContention::kEnabled);
   });
 }
 

@@ -10,7 +10,9 @@
 #include "base/metrics/histogram.h"
 #include "base/profiler/thread_group_profiler.h"
 #include "base/sequence_token.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/synchronization/lock_metrics_recorder.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/task_features.h"
 #include "base/task/thread_pool/worker_thread.h"
@@ -49,6 +51,8 @@ namespace {
 constexpr TimeDelta kBackgroundMayBlockThreshold = Seconds(10);
 constexpr TimeDelta kBackgroundBlockedWorkersPoll = Seconds(12);
 
+constexpr std::string_view kForegroundThreadGroupLabel = "Foreground";
+constexpr std::string_view kBackgroundThreadGroupLabel = "Background";
 }  // namespace
 
 // Upon destruction, executes actions that control the number of active workers.
@@ -230,13 +234,15 @@ class ThreadGroupImpl::WorkerDelegate : public WorkerThread::Delegate,
   THREAD_CHECKER(worker_thread_checker_);
 };
 
-ThreadGroupImpl::ThreadGroupImpl(std::string_view histogram_label,
-                                 std::string_view thread_group_label,
-                                 ThreadType thread_type_hint,
-                                 int64_t thread_group_type,
-                                 TrackedRef<TaskTracker> task_tracker,
-                                 TrackedRef<Delegate> delegate,
-                                 bool monitor_worker_thread_priorities)
+ThreadGroupImpl::ThreadGroupImpl(
+    std::string_view histogram_label,
+    std::string_view thread_group_label,
+    ThreadType thread_type_hint,
+    int64_t thread_group_type,
+    TrackedRef<TaskTracker> task_tracker,
+    TrackedRef<Delegate> delegate,
+    bool monitor_worker_thread_priorities,
+    ThreadPoolInstance::RecordLockContention record_lock_contention)
     : ThreadGroup(histogram_label,
                   thread_group_label,
                   thread_type_hint,
@@ -244,7 +250,9 @@ ThreadGroupImpl::ThreadGroupImpl(std::string_view histogram_label,
                   std::move(delegate)),
       thread_group_type_(thread_group_type),
       tracked_ref_factory_(this),
-      monitor_worker_thread_priorities_(monitor_worker_thread_priorities) {
+      monitor_worker_thread_priorities_(monitor_worker_thread_priorities),
+      record_lock_contention_(record_lock_contention),
+      histogram_label_(histogram_label) {
   DCHECK(!thread_group_label_.empty());
 }
 
@@ -381,6 +389,17 @@ void ThreadGroupImpl::WorkerDelegate::OnMainEntry(WorkerThread* worker) {
   std::string thread_name =
       StringPrintf("ThreadPool%sWorker", outer_->thread_group_label_.c_str());
   PlatformThread::SetName(thread_name);
+
+  if (outer_->record_lock_contention_ ==
+          ThreadPoolInstance::RecordLockContention::kEnabled &&
+      (outer_->thread_group_label_ == kForegroundThreadGroupLabel ||
+       outer_->thread_group_label_ == kBackgroundThreadGroupLabel)) {
+    const std::string threadpool_histogram_suffix =
+        StrCat({outer_->histogram_label_, "Worker"});
+    base::LockMetricsRecorder::EnableRecordingOnCurrentThread(
+        threadpool_histogram_suffix);
+  }
+
 #if BUILDFLAG(IS_ANDROID)
   if (outer_->monitor_worker_thread_priorities_) {
     PlatformThreadPriorityMonitor::Get().RegisterCurrentThread(thread_name);

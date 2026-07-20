@@ -95,8 +95,12 @@ void ThreadPoolInstance::StartWithDefaultParams() {
   Start({max_num_foreground_threads});
 }
 
-void ThreadPoolInstance::Create(std::string_view name) {
-  Set(std::make_unique<internal::ThreadPoolImpl>(name));
+void ThreadPoolInstance::Create(std::string_view name,
+                                RecordLockContention record_lock_contention) {
+  Set(std::make_unique<internal::ThreadPoolImpl>(
+      name, std::make_unique<internal::ThreadPoolImpl::TaskTrackerImpl>(),
+      /*use_background_threads=*/true,
+      /*monitor_worker_thread_priorities=*/true, record_lock_contention));
 }
 
 // static
