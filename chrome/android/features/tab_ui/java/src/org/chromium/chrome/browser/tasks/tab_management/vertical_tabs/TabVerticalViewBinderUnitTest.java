@@ -867,9 +867,7 @@ public class TabVerticalViewBinderUnitTest {
         ViewGroup.MarginLayoutParams lp =
                 (ViewGroup.MarginLayoutParams) mItemView.getLayoutParams();
         int expectedMargin =
-                mItemView
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_child_collapsed_margin_start);
+                TabVerticalViewBinder.getCollapsedChildMarginStart(mItemView.getContext());
         assertEquals(expectedMargin, lp.getMarginStart());
     }
 
@@ -932,9 +930,7 @@ public class TabVerticalViewBinderUnitTest {
         ViewGroup.MarginLayoutParams lp =
                 (ViewGroup.MarginLayoutParams) pinnedView.getLayoutParams();
         int expectedMargin =
-                pinnedView
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_child_collapsed_margin_start);
+                TabVerticalViewBinder.getCollapsedChildMarginStart(pinnedView.getContext());
         assertEquals(expectedMargin, lp.getMarginStart());
     }
 
@@ -1000,9 +996,7 @@ public class TabVerticalViewBinderUnitTest {
         ViewGroup.MarginLayoutParams lp =
                 (ViewGroup.MarginLayoutParams) headerView.getLayoutParams();
         int expectedMargin =
-                headerView
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_child_collapsed_margin_start);
+                TabVerticalViewBinder.getCollapsedChildMarginStart(headerView.getContext());
         assertEquals(expectedMargin, lp.getMarginStart());
     }
 

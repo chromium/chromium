@@ -21,6 +21,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.Ver
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.transition.ChangeBounds;
+import android.transition.Fade;
 import android.transition.Transition;
 import android.transition.TransitionSet;
 import android.view.View;
@@ -55,8 +56,6 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs.SideUiSize;
 import org.chromium.ui.base.ViewUtils;
 
-import java.util.List;
-
 /** Unit tests for {@link VerticalTabsSideUiCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class VerticalTabsSideUiCoordinatorUnitTest {
@@ -72,6 +71,8 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     private Activity mActivity;
     private @Px int mWideWindowWidth;
     private @Px int mNarrowWindowWidth;
+    private @Px int mExpandedRailWidth;
+    private @Px int mCollapsedRailWidth;
     private final SettableNonNullObservableSupplier<Boolean> mIsVerticalTabsActiveSupplier =
             ObservableSuppliers.createNonNull(false);
 
@@ -81,12 +82,14 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         mActivity = mActivityController.get();
         mWideWindowWidth = ViewUtils.dpToPx(mActivity, 800);
         mNarrowWindowWidth = ViewUtils.dpToPx(mActivity, 600);
+        mExpandedRailWidth = ViewUtils.dpToPx(mActivity, VIEW_WIDTH_DP);
+        mCollapsedRailWidth =
+                ViewUtils.dpToPx(mActivity, VerticalTabsSideUiCoordinator.COLLAPSED_WIDTH_DP);
         // Initialize window width to wide before mCoordinator creation to avoid
         // triggering a layout change event during constructor setup.
         setWindowWidthPx(mWideWindowWidth);
         View mockView = new View(mActivity);
         when(mMockTabListCoordinator.getView()).thenReturn(mockView);
-        when(mMockTabListCoordinator.getViewsForResizeAnimation()).thenReturn(List.of(mockView));
 
         mCoordinator =
                 new VerticalTabsSideUiCoordinator(
@@ -139,16 +142,16 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testDetermineShowableSize() {
-        @Px int viewWidth = ViewUtils.dpToPx(mActivity, VIEW_WIDTH_DP);
-
         assertEquals(
                 new SideUiSize(0, HeightType.NOT_APPLICABLE),
                 mCoordinator.determineShowableSize(
-                        /* availableWidth= */ viewWidth - 1, /* windowWidth= */ mWideWindowWidth));
+                        /* availableWidth= */ mExpandedRailWidth - 1,
+                        /* windowWidth= */ mWideWindowWidth));
         assertEquals(
-                new SideUiSize(viewWidth, HeightType.TOOLBAR),
+                new SideUiSize(mExpandedRailWidth, HeightType.TOOLBAR),
                 mCoordinator.determineShowableSize(
-                        /* availableWidth= */ viewWidth, /* windowWidth= */ mWideWindowWidth));
+                        /* availableWidth= */ mExpandedRailWidth,
+                        /* windowWidth= */ mWideWindowWidth));
     }
 
     @Test
@@ -211,107 +214,67 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testCollapseToggle() {
-        verify(mMockTabListCoordinator).setCollapseListener(mCollapseListenerCaptor.capture());
-        RailCollapseListener listener = mCollapseListenerCaptor.getValue();
-        assertNotNull(listener);
+        RailCollapseListener listener = captureCollapseListener();
 
         // Initial state: expanded
         assertEquals(
                 RailCollapseState.EXPANDED, mCoordinator.getRailCollapseStateByUserForTesting());
-        @Px int expandedWidth = ViewUtils.dpToPx(mActivity, VIEW_WIDTH_DP);
-        assertEquals(
-                expandedWidth,
-                mCoordinator.determineShowableSize(
-                                /* availableWidth= */ expandedWidth,
-                                /* windowWidth= */ mWideWindowWidth)
-                        .width);
+        assertShowableWidth(mExpandedRailWidth, mWideWindowWidth);
 
         // Collapse requested
         listener.onRailCollapseStateChangeRequested(RailCollapseState.COLLAPSED);
         assertEquals(
                 RailCollapseState.COLLAPSED, mCoordinator.getRailCollapseStateByUserForTesting());
-        @Px
-        int collapsedWidth =
-                ViewUtils.dpToPx(mActivity, VerticalTabsSideUiCoordinator.COLLAPSED_WIDTH_DP);
-        assertEquals(
-                collapsedWidth,
-                mCoordinator.determineShowableSize(
-                                /* availableWidth= */ collapsedWidth,
-                                /* windowWidth= */ mWideWindowWidth)
-                        .width);
+        assertShowableWidth(mCollapsedRailWidth, mWideWindowWidth);
         verify(mMockSideUiCoordinator).updateUi(any(SideUiCoordinator.UiUpdateRequest.class));
 
         // Expand again
         listener.onRailCollapseStateChangeRequested(RailCollapseState.EXPANDED);
         assertEquals(
                 RailCollapseState.EXPANDED, mCoordinator.getRailCollapseStateByUserForTesting());
-        assertEquals(
-                expandedWidth,
-                mCoordinator.determineShowableSize(
-                                /* availableWidth= */ expandedWidth,
-                                /* windowWidth= */ mWideWindowWidth)
-                        .width);
+        assertShowableWidth(mExpandedRailWidth, mWideWindowWidth);
     }
 
     @Test
     @SmallTest
     public void testOnPreSideUiSpecsChange_Resize() {
-        // Mock current specs to be expanded
-        @Px int expandedWidth = ViewUtils.dpToPx(mActivity, VIEW_WIDTH_DP);
-        SideUiSpecs currentSpecs = new SideUiSpecs(expandedWidth, 0);
+        SideUiSpecs currentSpecs = new SideUiSpecs(mExpandedRailWidth, 0);
         when(mMockSideUiCoordinator.getCurrentSideUiSpecs()).thenReturn(currentSpecs);
 
-        // New specs are collapsed
-        @Px
-        int collapsedWidth =
-                ViewUtils.dpToPx(mActivity, VerticalTabsSideUiCoordinator.COLLAPSED_WIDTH_DP);
-        SideUiSpecs newSpecs = new SideUiSpecs(collapsedWidth, 0);
-
-        // Call onPreSideUiSpecsChange
+        SideUiSpecs newSpecs = new SideUiSpecs(mCollapsedRailWidth, 0);
         Transition transition = mCoordinator.onPreSideUiSpecsChange(newSpecs);
 
-        // Verify it returned a transition containing ChangeBounds
         assertNotNull(transition);
         TransitionSet transitionSet = (TransitionSet) transition;
-        assertEquals(1, transitionSet.getTransitionCount());
+        assertEquals(2, transitionSet.getTransitionCount());
         assertTrue(transitionSet.getTransitionAt(0) instanceof ChangeBounds);
+        assertTrue(transitionSet.getTransitionAt(1) instanceof Fade);
     }
 
     @Test
     @SmallTest
     public void testOnPreSideUiSpecsChange_Show() {
-        // Mock current specs to be hidden (0)
         SideUiSpecs currentSpecs = new SideUiSpecs(0, 0);
         when(mMockSideUiCoordinator.getCurrentSideUiSpecs()).thenReturn(currentSpecs);
 
-        // New specs are expanded
-        @Px int expandedWidth = ViewUtils.dpToPx(mActivity, VIEW_WIDTH_DP);
-        SideUiSpecs newSpecs = new SideUiSpecs(expandedWidth, 0);
-
-        // Should return null for show events
+        SideUiSpecs newSpecs = new SideUiSpecs(mExpandedRailWidth, 0);
         assertNull(mCoordinator.onPreSideUiSpecsChange(newSpecs));
     }
 
     @Test
     @SmallTest
     public void testOnPreSideUiSpecsChange_Hide() {
-        // Mock current specs to be expanded
-        @Px int expandedWidth = ViewUtils.dpToPx(mActivity, VIEW_WIDTH_DP);
-        SideUiSpecs currentSpecs = new SideUiSpecs(expandedWidth, 0);
+        SideUiSpecs currentSpecs = new SideUiSpecs(mExpandedRailWidth, 0);
         when(mMockSideUiCoordinator.getCurrentSideUiSpecs()).thenReturn(currentSpecs);
 
-        // New specs are hidden (0)
         SideUiSpecs newSpecs = new SideUiSpecs(0, 0);
-
-        // Should return null for hide events
         assertNull(mCoordinator.onPreSideUiSpecsChange(newSpecs));
     }
 
     @Test
     @SmallTest
     public void testDeferredStateApplication_OnSideUiSpecsChanged() {
-        verify(mMockTabListCoordinator).setCollapseListener(mCollapseListenerCaptor.capture());
-        RailCollapseListener listener = mCollapseListenerCaptor.getValue();
+        RailCollapseListener listener = captureCollapseListener();
 
         // Trigger collapse request
         listener.onRailCollapseStateChangeRequested(RailCollapseState.COLLAPSED);
@@ -329,19 +292,9 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testNarrowWindow_AutoCollapsesAndDisablesButton() {
-        @Px int expandedWidth = ViewUtils.dpToPx(mActivity, VIEW_WIDTH_DP);
-        @Px
-        int collapsedWidth =
-                ViewUtils.dpToPx(mActivity, VerticalTabsSideUiCoordinator.COLLAPSED_WIDTH_DP);
-
         // When window is narrow (< 652dp), determineShowableSize returns collapsed width.
         setWindowWidthPx(mNarrowWindowWidth);
-        assertEquals(
-                collapsedWidth,
-                mCoordinator.determineShowableSize(
-                                /* availableWidth= */ expandedWidth,
-                                /* windowWidth= */ mNarrowWindowWidth)
-                        .width);
+        assertShowableWidth(mCollapsedRailWidth, mNarrowWindowWidth);
 
         // layout change in setWindowWidthPx() should auto-collapse and disable collapse button.
         verify(mMockTabListCoordinator).setRailCollapseState(RailCollapseState.COLLAPSED);
@@ -349,12 +302,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
         // When window is wide (>= 652dp), determineShowableSize returns expanded width.
         setWindowWidthPx(mWideWindowWidth);
-        assertEquals(
-                expandedWidth,
-                mCoordinator.determineShowableSize(
-                                /* availableWidth= */ expandedWidth,
-                                /* windowWidth= */ mWideWindowWidth)
-                        .width);
+        assertShowableWidth(mExpandedRailWidth, mWideWindowWidth);
 
         // layout change in setWindowWidthPx() should restore expanded state and re-enable collapse
         // button.
@@ -365,25 +313,14 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testNarrowWindow_AlreadyCollapsed_ReenablesButtonOnWindowExpanded() {
-        @Px int expandedWidth = ViewUtils.dpToPx(mActivity, VIEW_WIDTH_DP);
-        @Px
-        int collapsedWidth =
-                ViewUtils.dpToPx(mActivity, VerticalTabsSideUiCoordinator.COLLAPSED_WIDTH_DP);
-
-        verify(mMockTabListCoordinator).setCollapseListener(mCollapseListenerCaptor.capture());
-        RailCollapseListener listener = mCollapseListenerCaptor.getValue();
+        RailCollapseListener listener = captureCollapseListener();
 
         // Collapse rail manually while in wide window.
         listener.onRailCollapseStateChangeRequested(RailCollapseState.COLLAPSED);
 
         // Shrink window to narrow (< 652dp). Layout listener fires and disables button.
         setWindowWidthPx(mNarrowWindowWidth);
-        assertEquals(
-                collapsedWidth,
-                mCoordinator.determineShowableSize(
-                                /* availableWidth= */ expandedWidth,
-                                /* windowWidth= */ mNarrowWindowWidth)
-                        .width);
+        assertShowableWidth(mCollapsedRailWidth, mNarrowWindowWidth);
         verify(mMockTabListCoordinator).setRailCollapseState(RailCollapseState.COLLAPSED);
         verify(mMockTabListCoordinator).setCollapseButtonEnabled(false);
 
@@ -391,14 +328,24 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         // but determineShowableSize still returns collapsedWidth, and layout listener fires and
         // re-enables button.
         setWindowWidthPx(mWideWindowWidth);
-        assertEquals(
-                collapsedWidth,
-                mCoordinator.determineShowableSize(
-                                /* availableWidth= */ expandedWidth,
-                                /* windowWidth= */ mWideWindowWidth)
-                        .width);
+        assertShowableWidth(mCollapsedRailWidth, mWideWindowWidth);
         verify(mMockTabListCoordinator, times(2)).setRailCollapseState(RailCollapseState.COLLAPSED);
         verify(mMockTabListCoordinator).setCollapseButtonEnabled(true);
+    }
+
+    private RailCollapseListener captureCollapseListener() {
+        verify(mMockTabListCoordinator).setCollapseListener(mCollapseListenerCaptor.capture());
+        RailCollapseListener listener = mCollapseListenerCaptor.getValue();
+        assertNotNull(listener);
+        return listener;
+    }
+
+    private void assertShowableWidth(@Px int expectedWidth, @Px int windowWidth) {
+        assertEquals(
+                expectedWidth,
+                mCoordinator.determineShowableSize(
+                                /* availableWidth= */ mExpandedRailWidth, windowWidth)
+                        .width);
     }
 
     private void setWindowWidthPx(@Px int widthPx) {

@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListViewBinderUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
@@ -620,14 +621,12 @@ class TabVerticalViewBinder {
                 model.get(TabProperties.RAIL_COLLAPSE_STATE) == RailCollapseState.COLLAPSED;
 
         int marginStart = 0;
-        Resources resources = view.getResources();
         if (isRailCollapsed) {
-            marginStart =
-                    resources.getDimensionPixelSize(
-                            R.dimen.vertical_tab_child_collapsed_margin_start);
+            marginStart = getCollapsedChildMarginStart(view.getContext());
         } else if (isInGroup) {
             marginStart =
-                    resources.getDimensionPixelSize(R.dimen.vertical_tab_child_nesting_margin);
+                    view.getResources()
+                            .getDimensionPixelSize(R.dimen.vertical_tab_child_nesting_margin);
         }
 
         if (view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams params) {
@@ -636,6 +635,25 @@ class TabVerticalViewBinder {
                 view.setLayoutParams(params);
             }
         }
+    }
+
+    /**
+     * Calculates the start margin in pixels for a tab item when the rail is collapsed.
+     *
+     * <p>Horizontally centers the tab item within the collapsed rail container. Because the parent
+     * RecyclerView is asymmetric due to the scrollbar end margin, the child item's start margin is
+     * explicitly computed as: (rail_collapsed_width - tab_item_collapsed_size) / 2 -
+     * rail_horizontal_margin.
+     */
+    @VisibleForTesting
+    static int getCollapsedChildMarginStart(Context context) {
+        Resources resources = context.getResources();
+        int railWidth =
+                ViewUtils.dpToPx(context, VerticalTabUtils.SIDE_UI_CONTAINER_COLLAPSED_WIDTH_DP);
+        int itemSize = resources.getDimensionPixelSize(R.dimen.vertical_tab_item_collapsed_size);
+        int railStartMargin =
+                resources.getDimensionPixelSize(R.dimen.vertical_tabs_rail_horizontal_margin);
+        return (railWidth - itemSize) / 2 - railStartMargin;
     }
 
     private static void updateParentPadding(PropertyModel model, ViewGroup view) {

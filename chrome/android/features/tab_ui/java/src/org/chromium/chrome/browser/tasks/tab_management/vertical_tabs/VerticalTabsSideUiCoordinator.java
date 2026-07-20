@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.tasks.tab_management.vertical_tabs;
 
+import static java.util.Collections.emptySet;
+
 import android.app.Activity;
 import android.transition.ChangeBounds;
+import android.transition.Fade;
 import android.transition.Transition;
 import android.transition.TransitionSet;
 import android.view.View;
@@ -170,14 +173,17 @@ public class VerticalTabsSideUiCoordinator
         int oldWidth = mSideUiCoordinator.getCurrentSideUiSpecs().getWidth(side);
 
         if (oldWidth > 0 && newWidth > 0 && oldWidth != newWidth) {
-            TransitionSet transitionSet = new TransitionSet();
-            List<View> views = new ArrayList<>(mTabListCoordinator.getViewsForResizeAnimation());
-            views.add(getView());
-            Transition changeBounds = new ChangeBounds();
+            TransitionSet transitionSet =
+                    new TransitionSet()
+                            .setOrdering(TransitionSet.ORDERING_TOGETHER)
+                            .addTransition(new ChangeBounds())
+                            .addTransition(new Fade());
+            List<View> views = new ArrayList<>();
+            views.add(mRootView);
+            ViewUtils.getAllDescendants(mRootView, views, emptySet());
             for (View view : views) {
-                changeBounds.addTarget(view);
+                transitionSet.addTarget(view);
             }
-            transitionSet.addTransition(changeBounds);
             return transitionSet;
         }
         return null;

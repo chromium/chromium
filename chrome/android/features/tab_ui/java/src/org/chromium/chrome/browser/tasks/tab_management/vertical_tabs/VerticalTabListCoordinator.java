@@ -90,7 +90,6 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.recyclerview.widget.ItemTouchHelper2;
 import org.chromium.ui.widget.RectProvider;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -611,23 +610,6 @@ public class VerticalTabListCoordinator {
         }
 
         mRailCollapseListener = null;
-    }
-
-    /** Returns the list of views that should participate in the resize transition animation. */
-    List<View> getViewsForResizeAnimation() {
-        List<View> views = new ArrayList<>();
-        views.add(mContainerView);
-        for (int i = 0; i < mContainerView.getChildCount(); i++) {
-            View child = mContainerView.getChildAt(i);
-            views.add(child);
-            if (child.getId() == R.id.vertical_tab_header_container
-                    && child instanceof ViewGroup header) {
-                for (int j = 0; j < header.getChildCount(); j++) {
-                    views.add(header.getChildAt(j));
-                }
-            }
-        }
-        return views;
     }
 
     /**
