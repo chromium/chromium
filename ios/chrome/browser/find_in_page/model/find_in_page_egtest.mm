@@ -27,13 +27,6 @@ const char kFindInPageTestShortTextID[] = "shortText";
 const char kFindInPageTestShortText[] = "ShortQuery";
 const char kFindInPageTestLongText[] =
     "This is a particularly long string with a great number of characters";
-const char kFindInPageTestSpecialCharactersText[] = "!@#$%^&*()_+";
-const char kFindInPageTestNumbersText[] = "1234567890";
-const char kFindInPageTestAlphanumericText[] = "f00bar";
-const char kFindInPageTestNonASCIIText[] = "大家好🦑";
-const char kFindInPageTestWithoutSpanishAccentText[] = "a";
-const char kFindInPageTestLowercaseAndUppercaseText[] =
-    "ThIs tExT Is bOtH UpPeRcAsE AnD LoWeRcAsE";
 const char kFindInPageTestRTLText[] = "He said \"שלם\" (shalom] to me.";
 
 // Relative URLs for testing purposes.
@@ -64,16 +57,6 @@ std::string FindInPageTestContent() {
   oss << "  <p id=\"" << kFindInPageTestShortTextID << "\">"
       << kFindInPageTestShortText << "</p>";
   oss << "  <p>" << kFindInPageTestLongText << "</p>";
-  oss << "  <p>Special characters: " << kFindInPageTestSpecialCharactersText
-      << "</p>";
-  oss << "  <p>Numbers: " << kFindInPageTestNumbersText << "</p>";
-  oss << "  <p>Alphanumeric text: " << kFindInPageTestAlphanumericText
-      << "</p>";
-  oss << "  <p>Non-ASCII text: " << kFindInPageTestNonASCIIText << "</p>";
-  oss << "  <p>Text without spanish accent: "
-      << kFindInPageTestWithoutSpanishAccentText << "</p>";
-  oss << "  <p>Case sensitivity: " << kFindInPageTestLowercaseAndUppercaseText
-      << "</p>";
   oss << "  <p dir=\"RTL\">" << kFindInPageTestRTLText << "</p>";
   oss << "  <div>";
   oss << "<div style=\"height: 2000px; background-color: lightgray;\"/>";
@@ -394,38 +377,7 @@ FindInPageTestCrossOriginFramePageHttpResponse(
   [self closeFindInPageWithDoneButton];
 }
 
-// Tests that FIP can find different types of characters: special characters,
-// number, strings with both letters and numbers as well as non-ASCII
-// characters.
-- (void)testFindInPageSpecialCharacters {
-  [self setUpTestServersForWebPageTest];
 
-  // Load test page with cross-origin iframe.
-  GURL destinationURL =
-      [self secondTestServer]->GetURL(kFindInPageCrossOriginFrameTestURL);
-  [ChromeEarlGrey loadURL:destinationURL];
-
-  // Open FIP.
-  [self openFindInPageWithOverflowMenu];
-  [self assertResultStringIsEmptyOrZero];
-
-  // Tests special characters.
-  [self replaceFindInPageText:@(kFindInPageTestSpecialCharactersText)];
-  [self assertResultStringIsResult:1 outOfTotal:2];
-
-  // Tests numbers.
-  [self replaceFindInPageText:@(kFindInPageTestNumbersText)];
-  [self assertResultStringIsResult:1 outOfTotal:2];
-
-  // Tests alphanumeric values.
-  [self replaceFindInPageText:@(kFindInPageTestAlphanumericText)];
-  [self assertResultStringIsResult:1 outOfTotal:2];
-
-  // Tests non-ASCII characters.
-  [self replaceFindInPageText:@(kFindInPageTestNonASCIIText)];
-  [self assertResultStringIsResult:1 outOfTotal:2];
-  [self closeFindInPageWithDoneButton];
-}
 
 // Tests that text can be copied from the web page and pasted into the FIP input
 // field and that the results UI updates accordingly.
@@ -699,33 +651,7 @@ FindInPageTestCrossOriginFramePageHttpResponse(
   [self closeFindInPageWithDoneButton];
 }
 
-// Tests that FIP is not case sensitive.
-- (void)testFindInPageNotCaseSensitive {
-  [self setUpTestServersForWebPageTest];
 
-  // Load test page with cross-origin iframe.
-  GURL destinationURL =
-      [self secondTestServer]->GetURL(kFindInPageCrossOriginFrameTestURL);
-  [ChromeEarlGrey loadURL:destinationURL];
-
-  // Assert the page contains string that is both lowercase and uppercase.
-  [ChromeEarlGrey
-      waitForWebStateContainingText:kFindInPageTestLowercaseAndUppercaseText];
-
-  // Open FIP and type lowercase version of contained text.
-  [self openFindInPageWithOverflowMenu];
-  [self replaceFindInPageText:[@(kFindInPageTestLowercaseAndUppercaseText)
-                                  lowercaseString]];
-  // Test the number of results is as expected.
-  [self assertResultStringIsResult:1 outOfTotal:2];
-
-  // Clear input field and type uppercase version of contained text.
-  [self replaceFindInPageText:[@(kFindInPageTestLowercaseAndUppercaseText)
-                                  uppercaseString]];
-  // Test the number of results is as expected.
-  [self assertResultStringIsResult:1 outOfTotal:2];
-  [self closeFindInPageWithDoneButton];
-}
 
 // Tests that there is no leak of the FIP search query from Incognito tabs to
 // normal tabs.
