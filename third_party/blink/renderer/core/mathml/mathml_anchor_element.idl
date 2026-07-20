@@ -9,6 +9,7 @@ interface MathMLAnchorElement : MathMLElement {
     [CEReactions, Reflect] attribute DOMString target;
     [CEReactions, Reflect] attribute DOMString download;
 
+    [CEReactions, Reflect] attribute DOMString ping;
 };
 
 MathMLAnchorElement includes HyperlinkElementUtils;
