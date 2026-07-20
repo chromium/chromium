@@ -63,7 +63,7 @@ public class OmniboxPTTest {
 
     @LargeTest
     @Test
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/511288411
+    @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
     public void testOpenTypeDelete_fromWebPage() {
         OmniboxFacility omniboxAndKeyboard = mBlankPage.openOmnibox(sFakeSuggestions);
 
@@ -86,7 +86,7 @@ public class OmniboxPTTest {
 
     @LargeTest
     @Test
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/511288411
+    @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
     public void testOpenTypeDelete_fromNtp() {
         RegularNewTabPageStation ntp = mBlankPage.openNewTabFast();
         OmniboxFacility omnibox = ntp.openOmnibox(sFakeSuggestions);
@@ -111,7 +111,8 @@ public class OmniboxPTTest {
 
     @LargeTest
     @Test
-    @DisableIf.Device(DeviceFormFactor.DESKTOP)
+    @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/536993206
     public void testOpenTypeDelete_fromIncognitoNtp() {
         // Desktop opens an incognito profile as a separate window, which confuses Espresso and
         // leads to test failures.
