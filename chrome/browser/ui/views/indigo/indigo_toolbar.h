@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_INDIGO_INDIGO_TOOLBAR_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/functional/function_ref.h"
@@ -31,8 +32,14 @@ extern const ui::ClassProperty<gfx::Rect*>* const kIndigoTrackedElementRectKey;
 extern const ui::ClassProperty<gfx::Vector2d*>* const
     kIndigoToolbarCornerOffsetKey;
 
-// Delay before a collapsed toolbar auto-compacts into a spark icon.
-inline constexpr base::TimeDelta kAutoCompactDelay = base::Seconds(3);
+// Delays before a collapsed toolbar auto-compacts into a spark icon.
+inline constexpr base::TimeDelta kInitialAutoCompactDelay = base::Seconds(3);
+inline constexpr base::TimeDelta kInteractionAutoCompactDelay =
+    base::Milliseconds(250);
+
+// Duration for the bounds and fade animation between states.
+inline constexpr base::TimeDelta kToolbarAnimationDuration =
+    base::Milliseconds(250);
 
 std::unique_ptr<views::View> CreateIndigoOverlayView();
 
@@ -45,6 +52,7 @@ std::unique_ptr<views::View> CreateIndigoOverlayView();
 class IndigoToolbar {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToolbarElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAnimatingContainerElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCloseButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kExpandButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kChevronElementId);
@@ -117,12 +125,14 @@ class IndigoToolbar {
   void OnAutoCompactTimer();
 
   // Starts the auto-compact countdown timer if the toolbar is ready for it.
-  void StartAutoCompactTimerIfNeeded();
+  void StartAutoCompactTimerIfNeeded(base::TimeDelta delay);
 
   // Changes the presentation state and updates the view hierarchy to match.
   // Also manages starting or stopping the auto-compact timer depending on the
   // new state.
-  void SetPresentationState(PresentationState state);
+  void SetPresentationState(
+      PresentationState state,
+      base::TimeDelta auto_compact_delay = kInteractionAutoCompactDelay);
 
   // Returns true if the toolbar is in a state where the auto-compact timer
   // should be allowed to run.
