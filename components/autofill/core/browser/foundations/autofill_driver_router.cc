@@ -677,6 +677,17 @@ void AutofillDriverRouter::ExtractFormWithField(
   }
 }
 
+void AutofillDriverRouter::ObserveFieldVisibility(
+    RoutedCallback<FieldRendererId,
+                   mojo::PendingRemote<mojom::AutofillVisibilityObserver>>
+        callback,
+    const FieldGlobalId& field_id,
+    mojo::PendingRemote<mojom::AutofillVisibilityObserver> observer) {
+  if (auto* target = DriverOfFrame(field_id.frame_token)) {
+    callback(*target, field_id.renderer_id, std::move(observer));
+  }
+}
+
 void AutofillDriverRouter::SendTypePredictionsToRenderer(
     RoutedCallback<const std::vector<FormDataPredictions>&> callback,
     const FormDataPredictions& browser_fdp) {

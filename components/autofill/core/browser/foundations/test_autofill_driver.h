@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "url/origin.h"
@@ -30,6 +31,10 @@
 #if !BUILDFLAG(IS_IOS)
 #include "components/webauthn/core/browser/internal_authenticator.h"
 #endif
+
+namespace autofill::mojom {
+class AutofillVisibilityObserver;
+}  // namespace autofill::mojom
 
 namespace autofill {
 
@@ -107,6 +112,10 @@ class TestAutofillDriverTemplate : public T {
   void ExtractFormWithField(
       FieldGlobalId field_id,
       AutofillDriver::BrowserFormHandler response_handler) override {}
+  void ObserveFieldVisibility(
+      const FieldGlobalId& field_id,
+      mojo::PendingRemote<mojom::AutofillVisibilityObserver> observer)
+      override {}
   void GetFourDigitCombinationsFromDom(
       base::OnceCallback<void(const std::vector<std::string>&)>
           potential_matches) override {}

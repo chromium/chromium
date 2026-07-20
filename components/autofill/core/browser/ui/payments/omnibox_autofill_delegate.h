@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace autofill {
 
@@ -107,6 +108,8 @@ class OmniboxAutofillDelegate : public AutofillManager::Observer,
   const raw_ref<AutofillClient> client_;
 
   ScopedAutofillManagersObservation autofill_managers_observation_{this};
+
+  mojo::Receiver<mojom::AutofillVisibilityObserver> visibility_receiver_{this};
 
   base::WeakPtrFactory<OmniboxAutofillDelegate> weak_ptr_factory_{this};
 };

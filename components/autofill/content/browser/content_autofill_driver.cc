@@ -350,6 +350,14 @@ void ContentAutofillDriver::TriggerFormExtractionInAllFrames(
   }
 }
 
+void ContentAutofillDriver::ObserveFieldVisibility(
+    const FieldGlobalId& field_id,
+    mojo::PendingRemote<mojom::AutofillVisibilityObserver> observer) {
+  RouteToAgent(router(), &AutofillDriverRouter::ObserveFieldVisibility,
+               &mojom::AutofillAgent::ObserveFieldVisibility, field_id,
+               std::move(observer));
+}
+
 void ContentAutofillDriver::GetFourDigitCombinationsFromDom(
     base::OnceCallback<void(const std::vector<std::string>&)>
         potential_matches) {

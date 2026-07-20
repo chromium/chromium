@@ -230,15 +230,20 @@ void OmniboxAutofillDelegate::OnFieldTypesDetermined(
   LogOmniboxAutofillShowChipDecisionPart1(
       OmniboxAutofillShowChipDecisionPart1::kSuccess);
   trigger_form_global_id_ = form_structure->global_id();
+  trigger_field_global_id_ = {};
   for (const std::unique_ptr<AutofillField>& field : form_structure->fields()) {
     if (field->Type().GetCreditCardType() == CREDIT_CARD_NUMBER) {
       trigger_field_global_id_ = field->global_id();
       break;
     }
   }
+  CHECK(trigger_field_global_id_);
   candidate_form_found_ = true;
 
-  // TODO: crbug.com/490214534 - Initiate ObserveFieldVisibility(~).
+  visibility_receiver_.reset();
+  manager.driver().ObserveFieldVisibility(
+      trigger_field_global_id_,
+      visibility_receiver_.BindNewPipeAndPassRemote());
 }
 
 void OmniboxAutofillDelegate::OnAutofillManagerStateChanged(
@@ -390,6 +395,7 @@ void OmniboxAutofillDelegate::OnTabSelected(TabbedPaneTabType tab_type) {
 }
 
 void OmniboxAutofillDelegate::OnFieldBecameVisible() {
+  visibility_receiver_.reset();
   auto* manager = static_cast<BrowserAutofillManager*>(
       client_->GetAutofillManagerForPrimaryMainFrame());
   if (!manager) {

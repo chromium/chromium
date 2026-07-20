@@ -23,12 +23,17 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/isolation_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "url/origin.h"
 
 namespace autofill {
+
+namespace mojom {
+class AutofillVisibilityObserver;
+}  // namespace mojom
 
 class AutofillClient;
 class AutofillDriverFactory;
@@ -360,6 +365,12 @@ class AutofillDriver {
   virtual void RendererShouldSetSuggestionAvailability(
       const FieldGlobalId& field_id,
       mojom::AutofillSuggestionAvailability suggestion_availability) = 0;
+
+  // Registers an observer to be notified when the field identified by
+  // `field_id` becomes visible.
+  virtual void ObserveFieldVisibility(
+      const FieldGlobalId& field_id,
+      mojo::PendingRemote<mojom::AutofillVisibilityObserver> observer) = 0;
 
   // Query's the DOM for four digit combinations that could potentially be of a
   // card number.

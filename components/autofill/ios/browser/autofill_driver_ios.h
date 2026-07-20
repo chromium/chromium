@@ -27,7 +27,16 @@ class WebState;
 
 @protocol AutofillDriverIOSBridge;
 
+namespace mojo {
+template <typename Interface>
+class PendingRemote;
+}  // namespace mojo
+
 namespace autofill {
+
+namespace mojom {
+class AutofillVisibilityObserver;
+}  // namespace mojom
 
 // Histogram for recording the renderer event used to infer a form submission.
 inline constexpr char kAutofillSubmissionDetectionSourceHistogram[] =
@@ -127,6 +136,9 @@ class AutofillDriverIOS final : public AutofillDriver,
   void TriggerFormExtractionInAllFrames(
       base::OnceCallback<void(bool)> form_extraction_finished_callback)
       override;
+  void ObserveFieldVisibility(
+      const FieldGlobalId& field_id,
+      mojo::PendingRemote<mojom::AutofillVisibilityObserver> observer) override;
   void GetFourDigitCombinationsFromDom(
       base::OnceCallback<void(const std::vector<std::string>&)>
           potential_matches) override;

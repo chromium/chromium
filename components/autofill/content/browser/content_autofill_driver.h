@@ -24,6 +24,8 @@
 #include "content/public/browser/render_widget_host.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace password_manager {
@@ -31,6 +33,10 @@ class ContentPasswordManagerDriver;
 }
 
 namespace autofill {
+
+namespace mojom {
+class AutofillVisibilityObserver;
+}  // namespace mojom
 
 class ContentAutofillDriverFactory;
 class AutofillDriverRouter;
@@ -253,6 +259,9 @@ class ContentAutofillDriver : public AutofillDriver,
       AutofillSuggestionTriggerSource trigger_source) override;
   void SendTypePredictionsToRenderer(const FormStructure& form) override;
   void ScrollFieldIntoView(FieldGlobalId field_id) override;
+  void ObserveFieldVisibility(
+      const FieldGlobalId& field_id,
+      mojo::PendingRemote<mojom::AutofillVisibilityObserver> observer) override;
 
   // Group (1c): browser -> renderer events, directed to this driver's main
   // frame's agent (see comment above).

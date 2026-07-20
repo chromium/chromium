@@ -47,6 +47,7 @@
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
+#import "mojo/public/cpp/bindings/pending_remote.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #import "url/origin.h"
@@ -458,6 +459,13 @@ void AutofillDriverIOS::FetchFormsFilteredByName(
 
 void AutofillDriverIOS::TriggerFormExtractionInAllFrames(
     base::OnceCallback<void(bool)> form_extraction_finished_callback) {
+  NOTIMPLEMENTED();
+}
+
+void AutofillDriverIOS::ObserveFieldVisibility(
+    const FieldGlobalId& field_id,
+    mojo::PendingRemote<mojom::AutofillVisibilityObserver> observer) {
+  // iOS doesn't support this yet.
   NOTIMPLEMENTED();
 }
 
