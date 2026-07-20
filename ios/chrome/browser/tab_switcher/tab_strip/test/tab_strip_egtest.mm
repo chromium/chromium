@@ -53,9 +53,9 @@
   // TODO(crbug.com/41010830):  Make this test also handle the 'collapsed' tab
   // case.
   const int kNumberOfTabs = 3;
-  [ChromeEarlGreyUI openNewTab];
+  [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey loadURL:GURL("chrome://about")];
-  [ChromeEarlGreyUI openNewTab];
+  [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey loadURL:GURL("chrome://version")];
 
   // Note that the tab ordering wraps.  E.g. if A, B, and C are open,
