@@ -222,15 +222,24 @@ source_set("test_support") {
     "//chrome/browser/permissions/test/enums_to_string.h",
     "//chrome/browser/permissions/test/mock_passage_embedder.cc",
     "//chrome/browser/permissions/test/mock_passage_embedder.h",
+    "crowd_deny_fake_safe_browsing_database_manager.cc",
+    "crowd_deny_fake_safe_browsing_database_manager.h",
     "system/mock_platform_handle.cc",
     "system/mock_platform_handle.h",
   ]
 
   deps = [
     ":permissions",
+    "//base",
     "//components/passage_embeddings/core:test_support",
     "//components/permissions:test_support",
+    "//components/safe_browsing/core/browser/db:database_manager",
+    "//components/safe_browsing/core/browser/db:test_database_manager",
+    "//components/safe_browsing/core/browser/db:util",
+    "//content/public/browser",
     "//testing/gmock",
+    "//testing/gtest",
+    "//url",
   ]
 }
 

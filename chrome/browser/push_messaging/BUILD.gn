@@ -134,6 +134,7 @@ if (!is_android) {
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/gcm",
       "//chrome/browser/permissions",
+      "//chrome/browser/permissions:test_support",
       "//chrome/browser/ui",
       "//chrome/test:test_support",
       "//components/browsing_data/content",

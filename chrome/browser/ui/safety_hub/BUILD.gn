@@ -262,6 +262,7 @@ source_set("unit_tests") {
     "//chrome/browser/history",
     "//chrome/browser/password_manager:test_support",
     "//chrome/browser/permissions",
+    "//chrome/browser/permissions:test_support",
     "//chrome/browser/ui/hats",
     "//chrome/browser/ui/safety_hub:test_support",
     "//chrome/common:chrome_features",
