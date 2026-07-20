@@ -229,7 +229,7 @@ public class BrowserMediaRouter implements MediaRouteManager {
     @CalledByNative
     public boolean startObservingMediaSinks(
             @JniType("std::string") String sourceId, @JniType("std::string") String origin) {
-        Log.d(TAG, "startObservingMediaSinks: " + sourceId + " from origin: " + origin);
+        Log.d(TAG, "startObservingMediaSinks: %s from origin: %s", sourceId, origin);
         if (SysUtils.isLowEndDevice()) {
             return false;
         }
@@ -248,7 +248,7 @@ public class BrowserMediaRouter implements MediaRouteManager {
      */
     @CalledByNative
     public void stopObservingMediaSinks(@JniType("std::string") String sourceId) {
-        Log.d(TAG, "stopObservingMediaSinks: " + sourceId);
+        Log.d(TAG, "stopObservingMediaSinks: %s", sourceId);
         for (MediaRouteProvider provider : mRouteProviders) {
             provider.stopObservingMediaSinks(sourceId);
         }

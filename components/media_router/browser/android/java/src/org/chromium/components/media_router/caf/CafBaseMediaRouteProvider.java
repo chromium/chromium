@@ -85,7 +85,7 @@ public abstract class CafBaseMediaRouteProvider
 
     @Override
     public final void startObservingMediaSinks(String sourceId, String origin) {
-        Log.d(TAG, "startObservingMediaSinks: " + sourceId);
+        Log.d(TAG, "startObservingMediaSinks: %s", sourceId);
 
         MediaSource source = getSourceFromId(sourceId);
         if (source == null) {
@@ -144,7 +144,7 @@ public abstract class CafBaseMediaRouteProvider
 
     @Override
     public final void stopObservingMediaSinks(String sourceId) {
-        Log.d(TAG, "stopObservingMediaSinks: " + sourceId);
+        Log.d(TAG, "stopObservingMediaSinks: %s", sourceId);
 
         MediaSource source = getSourceFromId(sourceId);
         if (source == null) {
@@ -301,7 +301,7 @@ public abstract class CafBaseMediaRouteProvider
 
     @Override
     public final void onSessionEnded(CastSession session, int error) {
-        Log.d(TAG, "Session ended with error code " + error);
+        Log.d(TAG, "Session ended with error code %d", error);
         handleSessionEnd();
     }
 

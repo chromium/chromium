@@ -181,11 +181,9 @@ public abstract class BaseSessionController {
     protected void onMessageReceived(CastDevice castDevice, String namespace, String message) {
         Log.d(
                 TAG,
-                "Received message from Cast device: namespace=\""
-                        + namespace
-                        + "\" message=\""
-                        + message
-                        + "\"");
+                "Received message from Cast device: namespace=\"%s\" message=\"%s\"",
+                namespace,
+                message);
         if (CastSessionUtil.MEDIA_NAMESPACE.equals(namespace)) {
             updateRemoteMediaClient(message);
         }
