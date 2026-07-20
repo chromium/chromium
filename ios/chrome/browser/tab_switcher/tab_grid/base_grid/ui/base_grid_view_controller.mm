@@ -2091,7 +2091,8 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
 // instead of EmptyThumbnailLayoutTypeCenteredPortrait.
 - (EmptyThumbnailLayoutType)layoutTypeForContainerSize:(CGSize)containerSize
                                             isGridCell:(BOOL)isGridCell {
-  const CGFloat aspectRatio = TabGridItemAspectRatio(containerSize);
+  const CGFloat aspectRatio =
+      TabGridItemAspectRatio(containerSize, self.view.window.windowScene);
   CGFloat cellHeight =
       aspectRatio * containerSize.width /
       TabGridColumnsCount(containerSize,

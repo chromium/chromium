@@ -218,7 +218,8 @@ NSCollectionLayoutSection* InactiveTabButtonSection(
 NSCollectionLayoutSection* TabsSection(
     id<NSCollectionLayoutEnvironment> layout_environment,
     TabsSectionHeaderType tabs_section_header_type,
-    NSDirectionalEdgeInsets section_insets) {
+    NSDirectionalEdgeInsets section_insets,
+    UIWindowScene* window_scene) {
   // Determine the number of columns.
   NSInteger count = TabGridColumnsCount(
       layout_environment.container.effectiveContentSize,
@@ -227,8 +228,8 @@ NSCollectionLayoutSection* TabsSection(
   // Configure the layout item.
   NSCollectionLayoutDimension* item_width_dimension =
       FractionalWidth(1. / count);
-  const CGFloat item_aspect_ratio =
-      TabGridItemAspectRatio(layout_environment.container.effectiveContentSize);
+  const CGFloat item_aspect_ratio = TabGridItemAspectRatio(
+      layout_environment.container.effectiveContentSize, window_scene);
   NSCollectionLayoutDimension* item_height_dimension =
       FractionalWidth(item_aspect_ratio / count);
   NSCollectionLayoutSize* item_size =
@@ -513,7 +514,8 @@ NSCollectionLayoutSection* SuggestedActionsSection(
   } else if ([sectionIdentifier
                  isEqualToString:kGridOpenTabsSectionIdentifier]) {
     return TabsSection(layoutEnvironment, self.tabsSectionHeaderType,
-                       self.sectionInsets);
+                       self.sectionInsets,
+                       self.collectionView.window.windowScene);
   } else if ([sectionIdentifier
                  isEqualToString:kSuggestedActionsSectionIdentifier]) {
     return SuggestedActionsSection(layoutEnvironment, self.sectionInsets);

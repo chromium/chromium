@@ -29,11 +29,17 @@ constexpr CGFloat kLargeWidthThreshold = 1000;
 
 }  // namespace
 
-CGFloat TabGridItemAspectRatio(CGSize size) {
+CGFloat TabGridItemAspectRatio(CGSize size, UIWindowScene* window_scene) {
   const CGFloat width = size.width;
   const CGFloat height = size.height;
 
-  const CGRect screen_bounds = UIScreen.mainScreen.bounds;
+  CGRect screen_bounds;
+
+  if (@available(iOS 26, *)) {
+    screen_bounds = window_scene.effectiveGeometry.coordinateSpace.bounds;
+  } else {
+    screen_bounds = window_scene.screen.bounds;
+  }
   const CGFloat screen_aspect_ratio =
       CGRectGetHeight(screen_bounds) / CGRectGetWidth(screen_bounds);
 

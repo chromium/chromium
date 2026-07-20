@@ -154,7 +154,8 @@
 
 - (EmptyThumbnailLayoutType)layoutTypeForContainerSize:(CGSize)containerSize
                                             isGridCell:(BOOL)isGridCell {
-  const CGFloat aspectRatio = TabGridItemAspectRatio(containerSize);
+  const CGFloat aspectRatio =
+      TabGridItemAspectRatio(containerSize, self.view.window.windowScene);
   if (aspectRatio < 1 &&
       ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
     return EmptyThumbnailLayoutTypeLandscapeLeading;

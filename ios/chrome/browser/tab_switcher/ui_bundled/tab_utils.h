@@ -28,7 +28,7 @@ typedef NS_ENUM(NSInteger, EmptyThumbnailLayoutType) {
 
 // Returns the aspect ratio (height / width) of an item based on the container
 // `size`.
-CGFloat TabGridItemAspectRatio(CGSize size);
+CGFloat TabGridItemAspectRatio(CGSize size, UIWindowScene* window_scene);
 
 // Returns the number of columns based on based on the container `size` and
 // `content_size_category`.
