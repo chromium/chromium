@@ -292,7 +292,6 @@ chromium_luci.configure_targets(
             "chromium_pixel_2_pie": targets.IGNORE_UNUSED,
             "chromium_pixel_2_q": targets.IGNORE_UNUSED,
             "gpu_amd_rx_5500_xt_linux_experimental": targets.IGNORE_UNUSED,
-            "gpu_nvidia_shield_tv_stable": targets.IGNORE_UNUSED,
             "gpu_pixel_10_stable": targets.IGNORE_UNUSED,
             "gpu_pixel_4_stable": targets.IGNORE_UNUSED,
             "gpu_pixel_6_experimental": targets.IGNORE_UNUSED,

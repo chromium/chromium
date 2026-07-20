@@ -683,19 +683,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "gpu_nvidia_shield_tv_stable",
-    swarming = targets.swarming(
-        dimensions = {
-            "os": "Android",
-            "device_type": "mdarcy",
-            "device_os": "PPR1.180610.011",
-            "device_os_type": "userdebug",
-            "pool": "chromium.tests.gpu",
-        },
-    ),
-)
-
-targets.mixin(
     name = "gpu_pixel_4_stable",
     swarming = targets.swarming(
         dimensions = {

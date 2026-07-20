@@ -54,15 +54,6 @@ def gpu_android_builder(*, name, **kwargs):
     )
 
 gpu_android_builder(
-    name = "gpu-fyi-try-android-nvidia-shield-tv",
-    mirrors = [
-        "ci/GPU FYI Android arm Builder",
-        "ci/Android FYI Release (NVIDIA Shield TV)",
-    ],
-    gn_args = "ci/GPU FYI Android arm Builder",
-)
-
-gpu_android_builder(
     name = "gpu-fyi-try-android-q-pixel-2-32",
     mirrors = [
         "ci/GPU FYI Android arm Builder",

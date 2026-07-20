@@ -323,18 +323,6 @@
       },
     },
   },
-  'gpu_nvidia_shield_tv_stable': {
-    'fail_if_unused': False,
-    'swarming': {
-      'dimensions': {
-        'os': 'Android',
-        'device_type': 'mdarcy',
-        'device_os': 'PPR1.180610.011',
-        'device_os_type': 'userdebug',
-        'pool': 'chromium.tests.gpu',
-      },
-    },
-  },
   'gpu_pixel_10_stable': {
     'fail_if_unused': False,
     'swarming': {

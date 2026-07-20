@@ -4,7 +4,6 @@ ci/ASAN Release Media
 ci/ASan Release (32-bit x86 with V8-ARM)
 ci/ASan Release Media (32-bit x86 with V8-ARM)
 ci/Android FYI Experimental Release (Pixel 6)
-ci/Android FYI Release (NVIDIA Shield TV)
 ci/Android FYI Release (Pixel 2)
 ci/Android FYI Release (Pixel 4)
 ci/Android FYI Release (Pixel 6)
@@ -526,7 +525,6 @@ try/fuchsia-x64-perf-cast-receiver-rel
 try/gn-args-verifier
 try/gpu-fyi-try-android-a13-32
 try/gpu-fyi-try-android-a23-32
-try/gpu-fyi-try-android-nvidia-shield-tv
 try/gpu-fyi-try-android-pixel-10-64
 try/gpu-fyi-try-android-pixel-6-64
 try/gpu-fyi-try-android-pixel-6-64-exp

@@ -19,7 +19,6 @@ MIXIN_GROUPS = {
     'gpu': [
         # ChromeOS amd64-generic omitted since it is run on GCE instances.
         'chromium_pixel_2_q',
-        'gpu_nvidia_shield_tv_stable',
         'gpu_pixel_4_stable',
         'gpu_pixel_6_experimental',
         'gpu_pixel_6_stable',
