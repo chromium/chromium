@@ -100,17 +100,20 @@ bool VerifyInitiatorOrigin(
       return true;
     }
 
-    // Certain (e.g., data:) navigations in subframes of MHTML documents may
-    // have precursor origins that do not match the process lock of the MHTML
-    // document. This is seen in NavigationMhtmlBrowserTest.DataIframe, where:
+    // Navigations in subframes of MHTML documents may have precursor origins
+    // that do not match the process lock of the MHTML document. This is seen
+    // in NavigationMhtmlBrowserTest.DataIframe, where:
     //   - renderer origin lock = { file:/// sandboxed }
     //   - precursor of initiator origin = http://8.8.8.8/
-    // Note that RenderFrameHostImpl::CanCommitOriginAndUrl() similarly allows
-    // such navigations to commit, and it also ensures that they can only commit
-    // in the main frame MHTML document's process.
-    if (current_rfh && current_rfh->IsMhtmlSubframe()) {
-      return true;
-    }
+    // In the past, this case used to be special-cased here, but this is no
+    // longer needed now that ChildProcessSecurityPolicy's enforcements have
+    // been switched to use committed origin tracking. Any frame in the MHTML
+    // page that could legitimately initiate such a navigation has already
+    // committed in this process, so its (opaque) origin has been recorded by
+    // ChildProcessSecurityPolicyImpl::AddCommittedOrigin and the HostsOrigin()
+    // check below will accept it. There is therefore no need to skip the check
+    // for MHTML subframes, and doing so would allow the renderer to claim an
+    // opaque initiator with an arbitrary precursor.
   }
 
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
