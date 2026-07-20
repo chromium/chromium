@@ -3102,7 +3102,8 @@ even if they fit the naming pattern. -->
   <owner>komo-eng@google.com</owner>
   <summary>
     Records whether distillation was successful after opening Reading mode via
-    the omnibox chip.
+    the omnibox chip. Note: prior to late July 2026 (approximately M152), this
+    incorrectly was recorded when distillation was still running.
   </summary>
 </histogram>
 
@@ -3850,7 +3851,9 @@ even if they fit the naming pattern. -->
   <token key="Type">
     <variant name="AfterOmnibox"
         summary="for a page opened via the omnibox entrypoint (estimated
-                 value)"/>
+                 value) Note: prior to late July 2026 (approximately M152),
+                 this incorrectly was recorded when distillation was still
+                 running."/>
     <variant name="ByReadability"
         summary="when using the Readability distillation algorithm, recorded
                  when the content is successfully updated in the Reading Mode
