@@ -912,9 +912,9 @@ TEST(CBORReaderTest, TestReadFloatingPointNumbers) {
   for (const auto& test_case : kFloatingPointTestCases) {
     SCOPED_TRACE(testing::Message() << "testing float: " << test_case.value);
 
-    Reader::Config config;
-    size_t num_bytes_consumed;
     Reader::DecoderError error_code;
+    size_t num_bytes_consumed;
+    Reader::Config config;
     config.allow_floating_point = true;
 
     std::optional<Value> cbor = Reader::Read(test_case.cbor_data, config);
@@ -973,8 +973,8 @@ TEST(CBORReaderTest, TestReadNonMinimalFloatingPointNumbers) {
   for (const auto& input : test_case_inputs) {
     SCOPED_TRACE(testing::Message() << "Testing non-minimal floating point : "
                                     << testing::PrintToString(input));
-    Reader::Config config;
     Reader::DecoderError error_code;
+    Reader::Config config;
     config.error_code_out = &error_code;
     config.allow_floating_point = true;
 
