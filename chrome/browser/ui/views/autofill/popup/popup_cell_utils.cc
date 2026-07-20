@@ -97,6 +97,14 @@ constexpr int kAutofillPopupAdditionalTripleRowHeight = 24;
 // The additional padding of the row in case it has three lines of text.
 constexpr int kAutofillPopupAdditionalVerticalPadding = 16;
 
+// The additional padding of the row in case it is an Autofill AI suggestion
+// and has three lines of text.
+constexpr int kAutofillAiPopupAdditionalVerticalPadding = 8;
+
+// The additional right padding of the row in case it is an Autofill AI
+// suggestion and has three lines of text.
+constexpr int kAutofillAiPopupAdditionalRightPadding = 8;
+
 // Vertical spacing between labels in one row.
 constexpr int kAdjacentLabelsVerticalSpacing = 2;
 
@@ -890,16 +898,27 @@ void AddSuggestionContentToView(
 
   // If there are three rows in total, add extra padding to avoid cramming.
   DCHECK_LE(subtext_views.size(), 2u);
+  int vertical_padding = 0;
+  const int left_padding = content_view.GetInsideBorderInsets().left();
+  int right_padding = left_padding;
   if (subtext_views.size() == 2u) {
     if (should_show_new_fop_format) {
       row_height += kAutofillPopupAdditionalTripleRowHeight;
     } else {
-      content_view.SetInsideBorderInsets(
-          gfx::Insets(content_view.GetInsideBorderInsets())
-              .set_top_bottom(kAutofillPopupAdditionalVerticalPadding,
-                              kAutofillPopupAdditionalVerticalPadding));
+      // TODO(crbug.com/535568421): Investigate if these spacing adjustments
+      // should be applied to all 3-row suggestions rather than special-casing
+      // Autofill AI.
+      vertical_padding = (suggestion.type == SuggestionType::kFillAutofillAi)
+                             ? kAutofillAiPopupAdditionalVerticalPadding
+                             : kAutofillPopupAdditionalVerticalPadding;
+    }
+    if (suggestion.type == SuggestionType::kFillAutofillAi) {
+      right_padding += kAutofillAiPopupAdditionalRightPadding;
     }
   }
+
+  content_view.SetInsideBorderInsets(gfx::Insets::TLBR(
+      vertical_padding, left_padding, vertical_padding, right_padding));
 
   content_view.SetMinimumCrossAxisSize(row_height);
 
