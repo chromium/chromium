@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/notimplemented.h"

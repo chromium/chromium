@@ -8,6 +8,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "chrome/common/extensions/api/autofill_private.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 
