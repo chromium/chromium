@@ -58,8 +58,8 @@
                                  constraintEqualToAnchor:self.trailingAnchor]];
     }
 
-    _toolbarTopConstraint = [[_topToolbarSnapshot topAnchor]
-        constraintEqualToAnchor:self.topAnchor];
+    _toolbarTopConstraint = [[_topToolbarSnapshot bottomAnchor]
+        constraintEqualToAnchor:_imageView.topAnchor];
 
     _imageTopConstraint =
         [_imageView.topAnchor constraintEqualToAnchor:self.topAnchor
@@ -68,7 +68,7 @@
       _imageTopConstraint,
       [[_imageView bottomAnchor] constraintEqualToAnchor:self.bottomAnchor],
       _toolbarTopConstraint,
-      _toolbarBottomConstraint = [_bottomToolbarSnapshot.bottomAnchor
+      _toolbarBottomConstraint = [[_bottomToolbarSnapshot topAnchor]
           constraintEqualToAnchor:self.bottomAnchor
                          constant:-bottomMargin],
     ]];

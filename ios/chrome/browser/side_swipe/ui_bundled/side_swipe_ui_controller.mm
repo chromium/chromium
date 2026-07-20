@@ -601,13 +601,15 @@ const CGFloat kIpadTabSwipeDistance = 100;
     // Add horizontal stack view controller.
     CGFloat headerHeight =
         IsFullscreenRefactoringEnabled()
-            ? _fullscreenBrowserAgent->max_insets().top
-            : self.fullscreenController->GetMaxViewportInsets().top;
+            ? _fullscreenBrowserAgent->insets().top
+            : self.fullscreenController->GetCurrentViewportInsets().top;
 
     CGFloat bottomMargin = 0;
-    if (IsChromeNextIaEnabled() && IsFullscreenRefactoringEnabled()) {
-      CGFloat totalBottomInset = _fullscreenBrowserAgent->max_insets().bottom;
-      bottomMargin = std::max(0.0, totalBottomInset - kToolbarHeight);
+    if (IsFullscreenRefactoringEnabled()) {
+      bottomMargin = _fullscreenBrowserAgent->insets().bottom;
+    } else {
+      bottomMargin =
+          self.fullscreenController->GetCurrentViewportInsets().bottom;
     }
 
     if (_tabSideSwipeView) {

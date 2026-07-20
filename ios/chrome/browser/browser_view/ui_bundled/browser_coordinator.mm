@@ -5016,12 +5016,12 @@ const char kChromeAppStoreUrl[] =
     return lensOverlayTabHelper->GetSnapshotInsets();
   }
 
-  UIEdgeInsets maxViewportInsets;
+  UIEdgeInsets viewportInsets;
   if (IsFullscreenRefactoringEnabled()) {
-    maxViewportInsets =
-        FullscreenBrowserAgent::FromBrowser(self.browser)->max_insets();
+    viewportInsets =
+        FullscreenBrowserAgent::FromBrowser(self.browser)->insets();
   } else {
-    maxViewportInsets = _fullscreenController->GetMaxViewportInsets();
+    viewportInsets = _fullscreenController->GetCurrentViewportInsets();
   }
 
   if (IsVisibleURLNewTabPage(webState)) {
@@ -5038,11 +5038,11 @@ const char kChromeAppStoreUrl[] =
     // For the regular NTP without tab strip, it sits above the bottom toolbar
     // but, since it is displayed as full-screen at the top, it requires maximum
     // viewport insets.
-    maxViewportInsets.bottom = 0;
+    viewportInsets.bottom = 0;
     // In this case as well, the top toolbar is also not showing, so just factor
     // in the top safe area inset.
-    maxViewportInsets.top = _safeAreaProvider.safeArea.top;
-    return maxViewportInsets;
+    viewportInsets.top = _safeAreaProvider.safeArea.top;
+    return viewportInsets;
   } else {
     // If the NTP is inactive, the WebState's view is used as the base view for
     // snapshotting.  If fullscreen is implemented by resizing the scroll view,
@@ -5051,10 +5051,10 @@ const char kChromeAppStoreUrl[] =
     // the WebState view is laid out fullscreen and should be inset by the
     // viewport insets.
     if (IsFullscreenRefactoringEnabled()) {
-      return maxViewportInsets;
+      return viewportInsets;
     } else {
       return _fullscreenController->ResizesScrollView() ? UIEdgeInsetsZero
-                                                        : maxViewportInsets;
+                                                        : viewportInsets;
     }
   }
 }
