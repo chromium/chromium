@@ -4293,12 +4293,78 @@ void Element::MovedFrom(ContainerNode& old_parent) {
   }
 }
 
+#if DCHECK_IS_ON()
+void VerifySubtreeIsInCanvas(const Element& element, bool value) {
+  if (IsA<HTMLCanvasElement>(element)) {
+    // When the verifier starts with an element outside the tree that should
+    // have value false, but then reaches a canvas within the subtree (e.g.
+    // in an iframe or nested), we should set the expected value back to true.
+    value = true;
+  }
+  DCHECK(element.IsCanvasOrInCanvasSubtree() == value);
+  if (ShadowRoot* shadow_root = element.GetShadowRoot()) {
+    for (Element& child : ElementTraversal::ChildrenOf(*shadow_root)) {
+      VerifySubtreeIsInCanvas(child, value);
+    }
+  }
+  if (auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(element)) {
+    for (Node* node : slot->AssignedNodesNoRecalc()) {
+      if (auto* child = DynamicTo<Element>(node)) {
+        VerifySubtreeIsInCanvas(*child, value);
+      }
+    }
+  }
+  if (const auto* frame_owner = DynamicTo<HTMLFrameOwnerElement>(element)) {
+    if (Document* inner_document = frame_owner->contentDocument()) {
+      if (Element* root = inner_document->documentElement()) {
+        VerifySubtreeIsInCanvas(*root, value);
+      }
+    }
+  }
+  for (Element& child : ElementTraversal::ChildrenOf(element)) {
+    if (child.AssignedSlotWithoutRecalc()) {
+      continue;
+    }
+    VerifySubtreeIsInCanvas(child, value);
+  }
+}
+#endif
+
 void Element::SetIsCanvasOrInCanvasSubtree(bool value) {
-  if (value == IsCanvasOrInCanvasSubtree()) {
+  if (IsA<HTMLCanvasElement>(*this)) {
+    value = true;
+  }
+
+  if (value != IsCanvasOrInCanvasSubtree()) {
+    SetElementFlag(ElementFlags::kIsCanvasOrInCanvasSubtree, value);
+    DidChangeIsCanvasOrInCanvasSubtree();
+  } else {
+#if DCHECK_IS_ON()
+    if (!GetDocument().IsSlotAssignmentRecalcForbidden()) {
+      VerifySubtreeIsInCanvas(*this, value);
+    }
+#endif
     return;
   }
-  SetElementFlag(ElementFlags::kIsCanvasOrInCanvasSubtree, value);
-  DidChangeIsCanvasOrInCanvasSubtree();
+
+  if (ShadowRoot* shadow_root = GetShadowRoot()) {
+    for (Element& child : ElementTraversal::ChildrenOf(*shadow_root)) {
+      child.SetIsCanvasOrInCanvasSubtree(value);
+    }
+  }
+  if (auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(*this)) {
+    for (Node* node : slot->AssignedNodesNoRecalc()) {
+      if (auto* child = DynamicTo<Element>(node)) {
+        child->SetIsCanvasOrInCanvasSubtree(value);
+      }
+    }
+  }
+  for (Element& child : ElementTraversal::ChildrenOf(*this)) {
+    if (!child.IsPseudoElement() && child.AssignedSlotWithoutRecalc()) {
+      continue;
+    }
+    child.SetIsCanvasOrInCanvasSubtree(value);
+  }
 }
 
 void Element::DidChangeIsCanvasOrInCanvasSubtree() {
@@ -4311,6 +4377,33 @@ void Element::DidChangeIsCanvasOrInCanvasSubtree() {
         .InvalidateDisplayItemClient(*layout_object,
                                      PaintInvalidationReason::kUncacheable);
   }
+}
+
+bool Element::IsInCanvasSubtree() const {
+  auto& document = GetDocument();
+  const Element* parent = nullptr;
+  if (document.IsFlatTreeTraversalForbidden() ||
+      document.IsInSlotAssignmentRecalc()) {
+    if (IsPseudoElement()) {
+      parent = ParentOrShadowHostElement();
+    } else if (const auto* slot = AssignedSlotWithoutRecalc()) {
+      parent = slot;
+    } else {
+      parent = ParentOrShadowHostElement();
+    }
+  } else {
+    parent = FlatTreeTraversal::ParentElementSkippingSlots(*this);
+  }
+  if (parent) {
+    return parent->IsCanvasOrInCanvasSubtree();
+  }
+
+  if (!isConnected()) {
+    return false;
+  }
+
+  auto* owner = document.LocalOwner();
+  return owner && owner->IsCanvasOrInCanvasSubtree();
 }
 
 void Element::RemovedFrom(ContainerNode& insertion_point) {
@@ -10345,18 +10438,6 @@ bool Element::ShouldStoreComputedStyle(const ComputedStyle& style) const {
   }
 
   return style.Display() == EDisplay::kContents;
-}
-
-bool Element::IsInCanvasSubtree() const {
-  auto* parent = ParentOrShadowHostElement();
-  if (parent) {
-    return parent->IsCanvasOrInCanvasSubtree();
-  }
-  if (!isConnected()) {
-    return false;
-  }
-  auto* owner = GetDocument().LocalOwner();
-  return owner && owner->IsCanvasOrInCanvasSubtree();
 }
 
 AtomicString Element::ComputeInheritedLanguage() const {

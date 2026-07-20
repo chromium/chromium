@@ -3820,12 +3820,25 @@ void Node::FlatTreeParentChanged() {
     // parent box may have changed.
     SetForceReattachLayoutTree();
   }
+  if (auto* element = DynamicTo<Element>(this)) {
+    // Only set canvas subtree state for elements that are participating in
+    // the flat tree (i.e. not awaiting assignment) to avoid forcing assignment
+    // in the FlatTreeTraversal::ParentElement call inside IsInCanvasSubtree.
+    // We do not want to force assignment now because it interferes with
+    // moveBefore semantics. If an element is assigned a slot this method
+    // will be called again and the canvas flags will be set.
+    if (IsNodeInFlatTree(*this, GetStyleRecalcParent())) {
+      element->SetIsCanvasOrInCanvasSubtree(element->IsInCanvasSubtree());
+    }
+  }
 }
 
 void Node::RemovedFromFlatTree() {
   if (Element* element = DynamicTo<Element>(this)) {
     element->DetachOverscroll();
+    element->SetIsCanvasOrInCanvasSubtree(element->IsInCanvasSubtree());
   }
+
   StyleEngine& engine = GetDocument().GetStyleEngine();
   StyleEngine::DetachLayoutTreeScope detach_scope(engine);
   // This node was previously part of the flat tree, but due to slot re-

@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -921,7 +922,9 @@ bool HTMLCanvasElement::VerifyDrawElementImageEligibility(
     Element* element,
     const String& func_name,
     ExceptionState& exception_state) const {
-  if (element->parentElement() != this) {
+  const Element* parent =
+      FlatTreeTraversal::ParentElementSkippingSlots(*element);
+  if (parent != this) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "Only immediate children of the <canvas> element can be passed to " +

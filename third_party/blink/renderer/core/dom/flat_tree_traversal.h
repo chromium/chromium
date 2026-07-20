@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/traversal_range.h"
+#include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -73,6 +74,9 @@ class CORE_EXPORT FlatTreeTraversal {
 
   static ContainerNode* Parent(const Node&);
   static Element* ParentElement(const Node&);
+  // Returns the flat tree parent element, skipping over any HTMLSlotElements.
+  // Used to correctly determine if a node is a child of a canvas element.
+  static Element* ParentElementSkippingSlots(const Node&);
   // Return the passed in Node if it is an Element, otherwise return the
   // ParentElement()
   static const Element* InclusiveParentElement(const Node&);
@@ -213,6 +217,15 @@ inline ContainerNode* FlatTreeTraversal::Parent(const Node& node) {
 
 inline Element* FlatTreeTraversal::ParentElement(const Node& node) {
   return DynamicTo<Element>(FlatTreeTraversal::Parent(node));
+}
+
+inline Element* FlatTreeTraversal::ParentElementSkippingSlots(
+    const Node& node) {
+  Element* parent = FlatTreeTraversal::ParentElement(node);
+  while (parent && IsA<HTMLSlotElement>(parent)) {
+    parent = FlatTreeTraversal::ParentElement(*parent);
+  }
+  return parent;
 }
 
 inline Node* FlatTreeTraversal::NextSibling(const Node& node) {

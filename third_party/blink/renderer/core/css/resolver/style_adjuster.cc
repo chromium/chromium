@@ -743,8 +743,9 @@ static bool ForceStackingAndContainingBlockForCanvasLayoutSubtree(
   if (element && element->IsCanvasOrInCanvasSubtree() &&
       RuntimeEnabledFeatures::CanvasDrawElementEnabled(
           element->GetExecutionContext())) {
-    if (const auto* canvas =
-            DynamicTo<HTMLCanvasElement>(element->parentElement())) {
+    const Element* parent =
+        FlatTreeTraversal::ParentElementSkippingSlots(*element);
+    if (const auto* canvas = DynamicTo<HTMLCanvasElement>(parent)) {
       return canvas->layoutSubtree();
     }
   }

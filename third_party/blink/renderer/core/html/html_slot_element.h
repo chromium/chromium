@@ -55,6 +55,15 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
   const HeapVector<Member<Node>>& AssignedNodes() const;
   const HeapVector<Member<Node>> AssignedNodesForBinding(
       const AssignedNodesOptions*);
+  // Use AssignedNodes() in almost all cases. Only use AssignedNodesNoRecalc()
+  // when calling RecalcAssignment() is forbidden or dangerous (e.g., during
+  // tree modifications, moveBefore semantics, or state propagation like
+  // Element::SetIsCanvasOrInCanvasSubtree where eventual consistency is
+  // guaranteed by subsequent FlatTreeParentChanged/RemovedFromFlatTree
+  // hooks).
+  const HeapVector<Member<Node>>& AssignedNodesNoRecalc() const {
+    return assigned_nodes_;
+  }
   const HeapVector<Member<Element>> AssignedElements();
   const HeapVector<Member<Element>> AssignedElementsForBinding(
       const AssignedNodesOptions*);

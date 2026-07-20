@@ -239,32 +239,11 @@ Node::InsertionNotificationRequest HTMLFrameOwnerElement::InsertedInto(
   return result;
 }
 
-static void SetIsCanvasOrInCanvasSubtreeRecursively(Element& element,
-                                                    bool is_in_canvas) {
-  if (IsA<HTMLCanvasElement>(element)) {
-    is_in_canvas = true;
-  }
-  if (element.IsCanvasOrInCanvasSubtree() == is_in_canvas) {
-    return;
-  }
-  element.SetIsCanvasOrInCanvasSubtree(is_in_canvas);
-
-  if (ShadowRoot* shadow_root = element.GetShadowRoot()) {
-    for (Element& child : ElementTraversal::ChildrenOf(*shadow_root)) {
-      SetIsCanvasOrInCanvasSubtreeRecursively(child, is_in_canvas);
-    }
-  }
-  for (Element& child : ElementTraversal::ChildrenOf(element)) {
-    SetIsCanvasOrInCanvasSubtreeRecursively(child, is_in_canvas);
-  }
-}
-
 void HTMLFrameOwnerElement::DidChangeIsCanvasOrInCanvasSubtree() {
   HTMLElement::DidChangeIsCanvasOrInCanvasSubtree();
   if (Document* inner_document = contentDocument()) {
     if (Element* root = inner_document->documentElement()) {
-      SetIsCanvasOrInCanvasSubtreeRecursively(*root,
-                                              IsCanvasOrInCanvasSubtree());
+      root->SetIsCanvasOrInCanvasSubtree(IsCanvasOrInCanvasSubtree());
     }
   }
 }

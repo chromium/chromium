@@ -553,6 +553,30 @@ TEST_P(HTMLCanvasElementTest, IsCanvasOrInCanvasSubtree) {
   EXPECT_TRUE(nested_input_shadow->IsInCanvasSubtree());
 }
 
+TEST_P(HTMLCanvasElementTest, IsCanvasOrInCanvasSubtreeSlotted) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"(
+    <div id=slotHost>
+      <template shadowrootmode=open>
+        <canvas layoutsubtree>
+          <slot name="slot1"></slot>
+        </canvas>
+      </template>
+      <div id=slotted slot="slot1">
+        <p id=slotchild>Hello</p>
+      </div>
+    </div>
+  )");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* slotted = GetDocument().getElementById(AtomicString("slotted"));
+  EXPECT_TRUE(slotted->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(slotted->IsInCanvasSubtree());
+
+  auto* slotted_child = GetDocument().getElementById(AtomicString("slotchild"));
+  EXPECT_TRUE(slotted_child->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(slotted_child->IsInCanvasSubtree());
+}
+
 TEST_P(HTMLCanvasElementTest, LayoutsubtreeInvalidation) {
   SetBodyInnerHTML(R"HTML(<canvas id=canvas></canvas>)HTML");
   auto* canvas = GetDocument().getElementById(AtomicString("canvas"));

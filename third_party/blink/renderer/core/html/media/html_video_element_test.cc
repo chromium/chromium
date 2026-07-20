@@ -55,6 +55,7 @@ class HTMLVideoElementMockMediaPlayer : public EmptyWebMediaPlayer {
   MOCK_METHOD(gfx::Size, NaturalSize, (), (const));
   MOCK_METHOD(void, EnabledAudioTracksChanged, (std::optional<TrackId>));
   MOCK_METHOD(void, SelectedVideoTrackChanged, (std::optional<TrackId>));
+  MOCK_METHOD(void, RequestVideoFrameCallback, (), (override));
 
   scoped_refptr<media::VideoFrame> GetCurrentFrameThenUpdate() override {
     return video_frame_;
@@ -710,4 +711,37 @@ TEST_P(HTMLVideoElementTest, CreateStaticBitmapImage_Rotated_WYSIWYG) {
   ASSERT_TRUE(image);
   EXPECT_EQ(image->Size(), gfx::Size(270, 480));
 }
+
+TEST_P(HTMLVideoElementTest, CanvasSubtreeChangeTriggersEvents) {
+  ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
+
+  EXPECT_CALL((*MockMediaPlayer()), RequestVideoFrameCallback()).Times(0);
+
+  SetBodyInnerHTML(R"HTML(
+    <canvas id='canvas' layoutsubtree>
+    </canvas>
+    <video id='video_elmt' src='http://example.com/foo.mp4'></video>
+    )HTML");
+
+  test::RunPendingTasks();
+  UpdateAllLifecyclePhasesForTest();
+
+  HTMLVideoElement* video =
+      DynamicTo<HTMLVideoElement>(GetElementById("video_elmt"));
+
+  EXPECT_TRUE(video->GetWebMediaPlayer());
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+
+  EXPECT_CALL((*MockMediaPlayer()), RequestVideoFrameCallback()).Times(1);
+  GetElementById("canvas")->appendChild(video);
+  UpdateAllLifecyclePhasesForTest();
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+
+  // Removing from canvas should not trigger another frame callback request.
+  EXPECT_CALL(*MockMediaPlayer(), RequestVideoFrameCallback()).Times(0);
+  video->remove();
+  UpdateAllLifecyclePhasesForTest();
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+}
+
 }  // namespace blink

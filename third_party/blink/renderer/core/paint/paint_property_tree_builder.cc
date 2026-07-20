@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/css/clip_path_paint_image_generator.h"
 #include "third_party/blink/renderer/core/css/properties/css_bitset.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -583,6 +584,16 @@ static bool NeedsAnchorPositionScrollTranslation(const LayoutObject& object) {
   return false;
 }
 
+static HTMLCanvasElement* FindCanvasParent(const LayoutObject& object) {
+  const Element* element = DynamicTo<Element>(object.GetNode());
+  if (!element) {
+    return nullptr;
+  }
+  const Element* parent =
+      FlatTreeTraversal::ParentElementSkippingSlots(*element);
+  return DynamicTo<HTMLCanvasElement>(const_cast<Element*>(parent));
+}
+
 static bool NeedsPaintOffsetTranslation(
     const LayoutObject& object,
     CompositingReasons direct_compositing_reasons,
@@ -610,7 +621,7 @@ static bool NeedsPaintOffsetTranslation(
 
   // TODO(crbug.com/349835587): Should Element or LayoutObject have a public
   // IsCanvasDrawElementImage() function?
-  if (object.Parent() && object.Parent()->IsCanvas()) {
+  if (FindCanvasParent(object)) {
     // The object may be drawn with drawElementImage and should ignore the paint
     // offset.
     return true;
@@ -1930,10 +1941,14 @@ static void PopulateCanvasChildPaintState(HTMLCanvasElement* canvas,
   paint_state.animated_image_frame_index_map =
       canvas->GetDocument().View()->GetAnimatedImageFrameIndexes();
 }
+
 static void PopulateCanvasChildState(const LayoutObject& object,
                                      EffectPaintPropertyNode::State& state) {
   CHECK(IsA<LayoutBox>(object));
-  auto& canvas_fragment = object.Parent()->FirstFragment();
+  HTMLCanvasElement* canvas = FindCanvasParent(object);
+  CHECK(canvas && canvas->GetLayoutObject());
+  auto& canvas_fragment = canvas->GetLayoutObject()->FirstFragment();
+
   gfx::RectF reference_box(To<LayoutBox>(object).PhysicalBorderBoxRect());
   gfx::Point3F transform_origin(
       FloatValueForLength(object.StyleRef().GetTransformOrigin().X(),
@@ -1950,9 +1965,7 @@ static void PopulateCanvasChildState(const LayoutObject& object,
       transform_origin, 1.0f / object.StyleRef().EffectiveZoom());
   state.canvas_child_state->paint_state.box_size =
       gfx::SizeF(To<LayoutBox>(object).StitchedSize());
-  PopulateCanvasChildPaintState(
-      To<HTMLCanvasElement>(object.Parent()->GetNode()),
-      state.canvas_child_state->paint_state);
+  PopulateCanvasChildPaintState(canvas, state.canvas_child_state->paint_state);
   state.canvas_child_state->content_effect = canvas_fragment.ContentsEffect();
   state.canvas_child_state->content_clip = canvas_fragment.ContentsClip();
 }
