@@ -238,7 +238,11 @@ iwa_access_control {
     key: "zaeekwjquidnqkdbaxlveqbqgjkwqpp76lozvs4hkgv3afuaqteaaaic"
     value: {}
   }
-
+  # crbug.com/527874523
+  managed_allowlist {
+    key: "t754s3hmg6al6gzdheynflgbxy75kmydaodjmhw2avg2xh27dkaqaaic"
+    value: {}
+  }
   # Apps waiting for approval
   managed_allowlist {
     key: "nk3e4k42gj6p5caxu3dfdympbzps7yt4kbk63ykyexaveteyuqfqaaic"
