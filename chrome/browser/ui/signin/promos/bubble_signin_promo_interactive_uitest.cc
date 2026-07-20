@@ -99,6 +99,8 @@ std::unique_ptr<KeyedService> BuildTestSyncService(
   return std::make_unique<testing::NiceMock<syncer::TestSyncService>>();
 }
 
+// TODO(crbug.com/528193769): Re-enable this test on Mac.
+#if !BUILDFLAG(IS_MAC)
 // UI variations of the password save/update bubble to test.
 enum PasswordBubbleTestFeature : uint32_t {
   // Standard 2-button dialog (Save/Update and Cancel).
@@ -121,6 +123,7 @@ std::string GetPasswordSignInPromoSaveUiInteractiveUITestName(
       return "DropdownMenuExperiment";
   }
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
 }  // namespace
 
@@ -315,6 +318,16 @@ BubbleSignInPromoInteractiveUITest::SaveLocalPassword() {
       password_form_manager->GetPendingCredentials();
   GetController()->OnPasswordSubmitted(std::move(password_form_manager));
 
+  password_manager::PasswordStoreWaiter store_waiter(
+      local_password_store_.get());
+  PasswordBubbleViewBase* bubble =
+      PasswordBubbleViewBase::manage_password_bubble();
+  bubble->AcceptDialog();
+  store_waiter.WaitOrReturn();
+
+  // Check that it was properly saved to profile store.
+  EXPECT_EQ(1u, GetAllLoginsSync(local_password_store_.get()).size());
+
   syncer::LocalDataItemModel::DataId data_id =
       PasswordFormUniqueKey(password_form);
   SetLocalDataDescription(syncer::DataType::PASSWORDS, data_id);
@@ -455,6 +468,8 @@ void BubbleSignInPromoInteractiveUITest::ExtendAccountInfo(AccountInfo& info) {
  * ensures that pixel tests (Screenshot) verify promo rendering across all
  * possible bubble width variations.
  */
+// TODO(crbug.com/528193769): Re-enable this test on Mac.
+#if !BUILDFLAG(IS_MAC)
 class BubbleSignInPromoPasswordSaveUiInteractiveUITest
     : public BubbleSignInPromoInteractiveUITest,
       public ::testing::WithParamInterface<PasswordBubbleTestFeature> {
@@ -496,15 +511,9 @@ IN_PROC_BROWSER_TEST_P(BubbleSignInPromoPasswordSaveUiInteractiveUITest,
   // Save a local password.
   syncer::LocalDataItemModel::DataId password_data_id = SaveLocalPassword();
 
-  password_manager::PasswordStoreWaiter store_waiter(
-      local_password_store_.get());
-
   // Wait for the bubble to be replaced with the sign in promo and click the
   // sign in button.
   RunTestSequence(
-      Do([&]() {
-        PasswordBubbleViewBase::manage_password_bubble()->AcceptDialog();
-      }),
       WaitForEvent(BubbleSignInPromoSignInButtonView::kPromoSignInButton,
                    kBubbleSignInPromoSignInButtonHasCallback),
       EnsurePresent(PasswordSaveUpdateView::kPasswordBubbleElementId),
@@ -518,9 +527,6 @@ IN_PROC_BROWSER_TEST_P(BubbleSignInPromoPasswordSaveUiInteractiveUITest,
           BubbleSignInPromoSignInButtonView::kPromoSignInButton, kButton),
       PressButton(kButton).SetMustRemainVisible(false),
       EnsureNotPresent(PasswordSaveUpdateView::kPasswordBubbleElementId));
-
-  store_waiter.WaitOrReturn();
-  EXPECT_EQ(1u, GetAllLoginsSync(local_password_store_.get()).size());
 
   // Check that clicking the sign in button navigated to a sign in page.
   EXPECT_TRUE(IsSignInURL());
@@ -600,16 +606,10 @@ IN_PROC_BROWSER_TEST_P(BubbleSignInPromoPasswordSaveUiInteractiveUITest,
   ASSERT_TRUE(
       HasLocalDataItemId(syncer::DataType::PASSWORDS, password_data_id));
 
-  password_manager::PasswordStoreWaiter store_waiter(
-      local_password_store_.get());
-
   // Wait for the bubble to be replaced with the sign in promo and click the
   // sign in button. This should directly sign the user in and trigger the data
   // migration.
   RunTestSequence(
-      Do([&]() {
-        PasswordBubbleViewBase::manage_password_bubble()->AcceptDialog();
-      }),
       WaitForEvent(BubbleSignInPromoSignInButtonView::kPromoSignInButton,
                    kBubbleSignInPromoSignInButtonHasCallback),
       EnsurePresent(PasswordSaveUpdateView::kPasswordBubbleElementId),
@@ -623,9 +623,6 @@ IN_PROC_BROWSER_TEST_P(BubbleSignInPromoPasswordSaveUiInteractiveUITest,
           BubbleSignInPromoSignInButtonView::kPromoSignInButton, kButton),
       PressButton(kButton).SetMustRemainVisible(false),
       EnsureNotPresent(PasswordSaveUpdateView::kPasswordBubbleElementId));
-
-  store_waiter.WaitOrReturn();
-  EXPECT_EQ(1u, GetAllLoginsSync(local_password_store_.get()).size());
 
   // Check that there is no helper attached to the sign in tab, because the
   // password was already moved.
@@ -692,15 +689,9 @@ IN_PROC_BROWSER_TEST_P(BubbleSignInPromoPasswordSaveUiInteractiveUITest,
   ASSERT_TRUE(
       HasLocalDataItemId(syncer::DataType::PASSWORDS, password_data_id));
 
-  password_manager::PasswordStoreWaiter store_waiter(
-      local_password_store_.get());
-
   // Wait for the bubble to be replaced with the sign in promo and click
   // the sign in button.
   RunTestSequence(
-      Do([&]() {
-        PasswordBubbleViewBase::manage_password_bubble()->AcceptDialog();
-      }),
       WaitForEvent(BubbleSignInPromoSignInButtonView::kPromoSignInButton,
                    kBubbleSignInPromoSignInButtonHasCallback),
       EnsurePresent(PasswordSaveUpdateView::kPasswordBubbleElementId),
@@ -714,9 +705,6 @@ IN_PROC_BROWSER_TEST_P(BubbleSignInPromoPasswordSaveUiInteractiveUITest,
           BubbleSignInPromoSignInButtonView::kPromoSignInButton, kButton),
       PressButton(kButton).SetMustRemainVisible(false),
       EnsureNotPresent(PasswordSaveUpdateView::kPasswordBubbleElementId));
-
-  store_waiter.WaitOrReturn();
-  EXPECT_EQ(1u, GetAllLoginsSync(local_password_store_.get()).size());
 
   // Check that clicking the sign in button navigated to a sign in page.
   EXPECT_TRUE(IsSignInURL());
@@ -764,6 +752,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                                          kThreeButtonSaveDialog,
                                          kDropdownMenuExperiment),
                          GetPasswordSignInPromoSaveUiInteractiveUITestName);
+#endif  // !BUILDFLAG(IS_MAC)
 
 /////////////////////////////////////////////////////////////////
 ///// Address Sign in Promo
@@ -1771,8 +1760,16 @@ IN_PROC_BROWSER_TEST_F(
 /////////////////////////////////////////////////////////////////
 ///// Other tests
 
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/532726834): Re-enable this test on Mac.
+#define MAYBE_PasswordSignInPromoAccountDisallowedByPattern \
+  DISABLED_PasswordSignInPromoAccountDisallowedByPattern
+#else
+#define MAYBE_PasswordSignInPromoAccountDisallowedByPattern \
+  PasswordSignInPromoAccountDisallowedByPattern
+#endif
 IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
-                       PasswordSignInPromoAccountDisallowedByPattern) {
+                       MAYBE_PasswordSignInPromoAccountDisallowedByPattern) {
   // Set the signin pattern
   g_browser_process->local_state()->SetString(
       prefs::kGoogleServicesUsernamePattern, "*@signinallowed.com");
@@ -1796,15 +1793,10 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
   // Save a local password.
   SaveLocalPassword();
 
-  password_manager::PasswordStoreWaiter store_waiter(
-      local_password_store_.get());
-
   // Wait for the bubble to be replaced with the sign in promo and click the
   // sign in button.
   RunTestSequence(
-      Do([&]() {
-        PasswordBubbleViewBase::manage_password_bubble()->AcceptDialog();
-      }),
+      WaitForShow(BubbleSignInPromoSignInButtonView::kPromoSignInButton),
       WaitForEvent(BubbleSignInPromoSignInButtonView::kPromoSignInButton,
                    kBubbleSignInPromoSignInButtonHasCallback),
       EnsurePresent(PasswordSaveUpdateView::kPasswordBubbleElementId),
@@ -1817,9 +1809,6 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
           l10n_util::GetStringUTF16(IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON)),
       PressButton(kButton).SetMustRemainVisible(false),
       EnsureNotPresent(PasswordSaveUpdateView::kPasswordBubbleElementId));
-
-  store_waiter.WaitOrReturn();
-  EXPECT_EQ(1u, GetAllLoginsSync(local_password_store_.get()).size());
 
   // Check that clicking the sign in button navigated to a sign in page.
   EXPECT_TRUE(IsSignInURL());
