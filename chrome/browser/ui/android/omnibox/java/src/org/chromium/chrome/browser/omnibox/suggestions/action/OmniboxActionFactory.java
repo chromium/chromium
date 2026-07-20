@@ -29,6 +29,12 @@ public class OmniboxActionFactory {
     }
 
     @CalledByNative
+    public static @Nullable OmniboxAction buildCrossDeviceTabAction(
+            long nativeInstance, String hint, String accessibilityHint) {
+        return new CrossDeviceTabAction(nativeInstance, hint, accessibilityHint);
+    }
+
+    @CalledByNative
     public static @Nullable OmniboxAction buildOmniboxLensOverlayAction(
             long nativeInstance, String hint, String accessibilityHint) {
         return new OmniboxLensOverlayAction(nativeInstance, hint, accessibilityHint);

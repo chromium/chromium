@@ -16,6 +16,10 @@
 #include "components/vector_icons/vector_icons.h"     // nogncheck
 #endif  // defined(SUPPORT_PEDALS_VECTOR_ICONS)
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/omnibox/browser/actions/omnibox_action_factory_android.h"
+#endif
+
 CrossDeviceTabAction::CrossDeviceTabAction(base::Time tab_last_active_time)
     : OmniboxAction(
           LabelStrings(IDS_OMNIBOX_ACTION_CROSS_DEVICE_TAB_HINT,
@@ -30,6 +34,18 @@ CrossDeviceTabAction::~CrossDeviceTabAction() = default;
 OmniboxActionId CrossDeviceTabAction::ActionId() const {
   return OmniboxActionId::CROSS_DEVICE_TAB;
 }
+
+#if BUILDFLAG(IS_ANDROID)
+base::android::ScopedJavaLocalRef<jobject>
+CrossDeviceTabAction::GetOrCreateJavaObject(JNIEnv* env) const {
+  if (!j_omnibox_action_) {
+    j_omnibox_action_.Reset(
+        BuildCrossDeviceTabAction(env, reinterpret_cast<intptr_t>(this),
+                                  strings_.hint, strings_.accessibility_hint));
+  }
+  return base::android::ScopedJavaLocalRef<jobject>(j_omnibox_action_);
+}
+#endif
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 const gfx::VectorIcon& CrossDeviceTabAction::GetVectorIcon() const {

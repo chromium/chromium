@@ -16,6 +16,17 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/omnibox/browser/jni_headers/OmniboxActionFactory_jni.h"
 
+base::android::ScopedJavaGlobalRef<jobject> BuildCrossDeviceTabAction(
+    JNIEnv* env,
+    intptr_t instance,
+    const std::u16string& hint,
+    const std::u16string& accessibility_hint) {
+  return base::android::ScopedJavaGlobalRef<jobject>(
+      Java_OmniboxActionFactory_buildCrossDeviceTabAction(
+          env, instance, base::android::ConvertUTF16ToJavaString(env, hint),
+          base::android::ConvertUTF16ToJavaString(env, accessibility_hint)));
+}
+
 base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxPedal(
     JNIEnv* env,
     intptr_t instance,

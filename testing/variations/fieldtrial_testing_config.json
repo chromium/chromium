@@ -17665,6 +17665,7 @@
     "OmniboxCrossDeviceTabZeroSuggest": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "ios",
                 "linux",
