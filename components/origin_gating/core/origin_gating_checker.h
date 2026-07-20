@@ -117,15 +117,15 @@ class OriginGatingChecker {
     std::optional<bool> requires_user_confirmation;
   };
 
-  void RunNextPredicate(
+  void EvaluatePredicates(
       std::unique_ptr<GatingDecisionContext> context,
       base::span<const PredicateConfiguration> pending_predicates,
       DelegateInputs input,
       GatingDecisionCallback callback);
 
-  void OnPredicateVerdict(
+  void OnEvaluatedAsyncPredicate(
       std::unique_ptr<GatingDecisionContext> context,
-      base::span<const PredicateConfiguration> remaining_predicates,
+      base::span<const PredicateConfiguration> pending_predicates,
       DecisionAttribution attribution,
       DelegateInputs input,
       GatingDecisionCallback callback,
@@ -133,7 +133,7 @@ class OriginGatingChecker {
 
   void OnEnterprisePolicyVerdict(
       std::unique_ptr<GatingDecisionContext> context,
-      base::span<const PredicateConfiguration> remaining_predicates,
+      base::span<const PredicateConfiguration> pending_predicates,
       DecisionAttribution attribution,
       DelegateInputs input,
       GatingDecisionCallback callback,
@@ -153,15 +153,17 @@ class OriginGatingChecker {
 
   // Runs the given FunctionRef if the `input.requires_user_confirmation` field
   // is non-nullopt; otherwise queries the delegate and resumes via
-  // `RunNextPredicate`
-  void RunActionOrGetUserConfirmationInfo(
-      std::unique_ptr<GatingDecisionContext> context,
+  // `EvaluatePredicates`.
+  // `action` must return true if it moves-from `context`, `input`, and
+  // `callback`; false otherwise.
+  bool RunActionOrGetUserConfirmationInfo(
+      std::unique_ptr<GatingDecisionContext>& context,
       base::span<const PredicateConfiguration> pending_predicates,
-      DelegateInputs input,
-      GatingDecisionCallback callback,
-      base::FunctionRef<void(std::unique_ptr<GatingDecisionContext> context,
-                             DelegateInputs input,
-                             GatingDecisionCallback callback)> action);
+      DelegateInputs& input,
+      GatingDecisionCallback& callback,
+      base::FunctionRef<bool(std::unique_ptr<GatingDecisionContext>& context,
+                             DelegateInputs& input,
+                             GatingDecisionCallback& callback)> action);
 
   // Predicate that returns `kAllowed` if `destination` is in the cache with
   // user confirmation; `kNoDecision` otherwise.
