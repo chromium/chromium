@@ -66,6 +66,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h"
 #import "ios/chrome/browser/autofill/authentication/coordinator/card_unmask_authentication_coordinator.h"
+#import "ios/chrome/browser/autofill/autofill_ai/coordinator/ambient_autofill_notice_coordinator.h"
 #import "ios/chrome/browser/autofill/autofill_ai/coordinator/autofill_ai_save_entity_coordinator.h"
 #import "ios/chrome/browser/autofill/autofill_ai/error_dialog/coordinator/autofill_ai_error_dialog_coordinator.h"
 #import "ios/chrome/browser/autofill/autofill_ai/error_dialog/model/autofill_ai_error_dialog_context.h"
@@ -740,6 +741,10 @@ const char kChromeAppStoreUrl[] =
 
 // Coordinator for the composebox.
 @property(nonatomic, strong) ComposeboxCoordinator* composeboxCoordinator;
+
+// Coordinator to show the Ambient Autofill notice.
+@property(nonatomic, strong)
+    AmbientAutofillNoticeCoordinator* ambientAutofillNoticeCoordinator;
 
 @end
 
@@ -1993,6 +1998,9 @@ const char kChromeAppStoreUrl[] =
   [_passkeyCreationBottomSheetCoordinator stop];
   _passkeyCreationBottomSheetCoordinator = nil;
 
+  [self.ambientAutofillNoticeCoordinator stop];
+  self.ambientAutofillNoticeCoordinator = nil;
+
   [_passkeyIncognitoCoordinator stop];
   _passkeyIncognitoCoordinator = nil;
 
@@ -2547,12 +2555,22 @@ const char kChromeAppStoreUrl[] =
   _autofillAISaveEntityCoordinator = nil;
 }
 
-- (void)showAmbientAutofillNotice {
-  // TODO(crbug.com/533502803): Implement presenting the notice bottom sheet.
+- (void)showAmbientAutofillNotice:(const autofill::FormActivityParams&)params {
+  if (self.ambientAutofillNoticeCoordinator) {
+    [self.ambientAutofillNoticeCoordinator stop];
+  }
+  self.ambientAutofillNoticeCoordinator =
+      [[AmbientAutofillNoticeCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser
+                              params:params];
+  [self.ambientAutofillNoticeCoordinator start];
 }
 
 - (void)dismissAmbientAutofillNotice {
-  // TODO(crbug.com/533502803): Implement dismissing the notice bottom sheet.
+  [self.ambientAutofillNoticeCoordinator markNoticeShown];
+  [self.ambientAutofillNoticeCoordinator stop];
+  self.ambientAutofillNoticeCoordinator = nil;
 }
 
 #pragma mark - IOSPasskeyClientCommands
@@ -3259,6 +3277,9 @@ const char kChromeAppStoreUrl[] =
 
   [_passkeyCreationBottomSheetCoordinator stop];
   _passkeyCreationBottomSheetCoordinator = nil;
+
+  [self.ambientAutofillNoticeCoordinator stop];
+  self.ambientAutofillNoticeCoordinator = nil;
 
   [_passkeyWelcomeScreenCoordinator stop];
   _passkeyWelcomeScreenCoordinator = nil;

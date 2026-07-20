@@ -249,6 +249,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/strings:components_strings_grit",
     "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/autofill/autofill_ai/coordinator:unit_tests",
     "//ios/chrome/browser/autofill/autofill_ai/error_dialog/coordinator",
     "//ios/chrome/browser/autofill/autofill_ai/error_dialog/model",
     "//ios/chrome/browser/autofill/manual_fill/coordinator",

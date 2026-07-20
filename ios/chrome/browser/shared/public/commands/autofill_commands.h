@@ -75,7 +75,7 @@ class WebState;
 - (void)dismissSaveEntityDialog;
 
 // Commands to manage the Autofill notice bottom sheet.
-- (void)showAmbientAutofillNotice;
+- (void)showAmbientAutofillNotice:(const autofill::FormActivityParams&)params;
 - (void)dismissAmbientAutofillNotice;
 
 @end

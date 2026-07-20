@@ -1,8 +1,16 @@
 include_rules = [
+  "+components/personal_context",
+  "+components/prefs",
   "+ios/chrome/browser/autofill/autofill_ai/public",
   "+ios/chrome/browser/autofill/autofill_ai/ui",
+  "+ios/chrome/browser/autofill/model/bottom_sheet",
   "+ios/chrome/browser/shared/coordinator/chrome_coordinator",
   "+ios/chrome/browser/shared/model/browser",
+  "+ios/chrome/browser/shared/model/profile",
+  "+ios/chrome/browser/shared/model/web_state_list",
   "+ios/chrome/browser/shared/public/commands",
   "+ios/chrome/browser/shared/ui/table_view",
+  "+ios/chrome/common/ui/button_stack",
+  "+ios/chrome/common/ui/confirmation_alert",
+  "+ui/base",
 ]

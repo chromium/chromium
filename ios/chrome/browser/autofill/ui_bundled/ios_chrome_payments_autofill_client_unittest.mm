@@ -142,7 +142,7 @@
 - (void)dismissSaveEntityDialog {
 }
 
-- (void)showAmbientAutofillNotice {
+- (void)showAmbientAutofillNotice:(const autofill::FormActivityParams&)params {
   // TODO(crbug.com/533502803): Implement displaying of the ambient notice
   // sheet.
 }

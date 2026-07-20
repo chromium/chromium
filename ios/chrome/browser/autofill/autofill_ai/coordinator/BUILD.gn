@@ -4,23 +4,56 @@
 
 source_set("coordinator") {
   sources = [
+    "ambient_autofill_notice_coordinator.h",
+    "ambient_autofill_notice_coordinator.mm",
+    "ambient_autofill_notice_mediator.h",
+    "ambient_autofill_notice_mediator.mm",
     "autofill_ai_save_entity_coordinator.h",
     "autofill_ai_save_entity_coordinator.mm",
     "autofill_ai_save_entity_mediator.h",
     "autofill_ai_save_entity_mediator.mm",
   ]
   deps = [
+    "//base",
     "//components/autofill/core/browser",
+    "//components/autofill/ios/form_util",
+    "//components/personal_context/core:prefs",
+    "//components/prefs",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/autofill_ai/public",
     "//ios/chrome/browser/autofill/autofill_ai/ui",
     "//ios/chrome/browser/autofill/model",
+    "//ios/chrome/browser/autofill/model/bottom_sheet",
     "//ios/chrome/browser/autofill/ui_bundled/bottom_sheet:constants",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/common/ui/button_stack",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/web/public",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "ambient_autofill_notice_mediator_unittest.mm" ]
+  deps = [
+    ":coordinator",
+    "//base",
+    "//components/personal_context/core:prefs",
+    "//components/prefs:test_support",
+    "//ios/chrome/browser/autofill/model/bottom_sheet",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/web/model:web_internal",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }
