@@ -1683,4 +1683,73 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogCopyJustificationBrowserTest,
   EXPECT_TRUE(callback_called);
 }
 
+class ContentAnalysisDialogCopyJustificationUiTest : public DialogBrowserTest {
+ public:
+  ContentAnalysisDialogCopyJustificationUiTest() {
+    ContentAnalysisDialogController::SetShowDialogDelayForTesting(kNoDelay);
+  }
+
+  void ShowUi(const std::string& name) override {
+    delegate_ = std::make_unique<MockDelegate>();
+    delegate_->SetBypassRequiresJustification(true);
+    ContentAnalysisDialogDelegate::ShowForCopyJustification(
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        std::move(delegate_));
+  }
+
+  void DismissUi() override {
+    web_modal::WebContentsModalDialogManager* manager =
+        web_modal::WebContentsModalDialogManager::FromWebContents(
+            browser()->tab_strip_model()->GetActiveWebContents());
+    if (manager) {
+      manager->CloseAllDialogs();
+    }
+  }
+
+ protected:
+  class MockDelegate : public ContentAnalysisDelegateBase {
+   public:
+    ~MockDelegate() override = default;
+    void BypassWarnings(
+        std::optional<std::u16string> user_justification) override {}
+    void Cancel(bool warning) override {}
+
+    std::optional<std::u16string> GetCustomMessage() const override {
+      return std::nullopt;
+    }
+    std::optional<GURL> GetCustomLearnMoreUrl() const override {
+      return std::nullopt;
+    }
+    std::optional<std::vector<std::pair<gfx::Range, GURL>>>
+    GetCustomRuleMessageRanges() const override {
+      return std::nullopt;
+    }
+    bool BypassRequiresJustification() const override {
+      return bypass_requires_justification_;
+    }
+    std::u16string GetBypassJustificationLabel() const override {
+      return l10n_util::GetStringUTF16(
+          IDS_DEEP_SCANNING_DIALOG_COPY_BYPASS_JUSTIFICATION_LABEL);
+    }
+    std::optional<std::u16string> OverrideCancelButtonText() const override {
+      return std::nullopt;
+    }
+    std::optional<std::u16string> GetFilename() const override {
+      return std::nullopt;
+    }
+    void SetBypassRequiresJustification(bool value) {
+      bypass_requires_justification_ = value;
+    }
+
+   private:
+    bool bypass_requires_justification_ = false;
+  };
+
+  std::unique_ptr<MockDelegate> delegate_;
+};
+
+IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogCopyJustificationUiTest, InvokeUi) {
+  ShowAndVerifyUi();
+}
+
 }  // namespace enterprise_connectors

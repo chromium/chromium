@@ -282,9 +282,13 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
     return final_actions_;
   }
 
-  // Methods to either show the final result in the analysis dialog and to
-  // cancel the dialog.  These methods are protected and virtual for testing.
-  // Returns false if the UI was not enabled to indicate no action was taken.
+  // Methods to either show the final result in the analysis dialog (or via
+  // non-blocking system toast notification for COPY access point) and to
+  // cancel the UI (in case of a dialog only). These methods are protected and
+  // virtual for testing. Returns false if the UI was not shown to indicate no
+  // action was taken.
+  // TODO(b/325455508) refactor to separate code paths between dialog and
+  // toast notification.
   virtual bool ShowFinalResultInDialog();
   virtual bool CancelDialog();
 
