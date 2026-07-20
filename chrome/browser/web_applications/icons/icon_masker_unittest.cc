@@ -56,6 +56,38 @@ TEST(IconMaskingTest, Basic) {
                                          /*max_per_channel_deviation=*/2));
 }
 
+TEST(IconMaskingTest, EmptyBitmap) {
+  base::test::TaskEnvironment task_environment;
+  SkBitmap input_bitmap;
+
+  base::test::TestFuture<SkBitmap> bitmap_future;
+  MaskIconOnOs(input_bitmap, bitmap_future.GetCallback());
+  EXPECT_TRUE(bitmap_future.Wait(base::RunLoop::Type::kNestableTasksAllowed));
+
+  SkBitmap result_bitmap = bitmap_future.Get();
+  EXPECT_TRUE(result_bitmap.drawsNothing());
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST(IconMaskingTest, NonN32Bitmap) {
+  base::test::TaskEnvironment task_environment;
+
+  SkBitmap input_bitmap;
+  SkImageInfo info =
+      SkImageInfo::Make(32, 32, kRGB_565_SkColorType, kOpaque_SkAlphaType);
+  input_bitmap.allocPixels(info);
+  input_bitmap.eraseColor(SK_ColorRED);
+
+  base::test::TestFuture<SkBitmap> bitmap_future;
+  MaskIconOnOs(input_bitmap, bitmap_future.GetCallback());
+  EXPECT_TRUE(bitmap_future.Wait(base::RunLoop::Type::kNestableTasksAllowed));
+
+  SkBitmap result_bitmap = bitmap_future.Get();
+  EXPECT_EQ(result_bitmap.colorType(), kN32_SkColorType);
+  EXPECT_FALSE(result_bitmap.drawsNothing());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace
 
 }  // namespace web_app

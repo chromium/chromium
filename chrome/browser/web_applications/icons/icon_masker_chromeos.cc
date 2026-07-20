@@ -11,6 +11,7 @@
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/grit/app_icon_resources.h"
+#include "skia/ext/skia_utils_base.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_skia.h"
@@ -24,7 +25,14 @@ namespace {
 void MaskIconWithObtainedMask(SkBitmap input_bitmap,
                               SkBitmap mask_bitmap,
                               MaskedIconCallback final_threaded_callback) {
-  gfx::ImageSkia input_image = gfx::ImageSkia::CreateFrom1xBitmap(input_bitmap);
+  SkBitmap n32_bitmap;
+  if (!skia::SkBitmapToN32OpaqueOrPremul(input_bitmap, &n32_bitmap) ||
+      n32_bitmap.drawsNothing()) {
+    std::move(final_threaded_callback).Run(std::move(input_bitmap));
+    return;
+  }
+
+  gfx::ImageSkia input_image = gfx::ImageSkia::CreateFrom1xBitmap(n32_bitmap);
   int icon_size = input_image.width();
 
   CHECK(!mask_bitmap.drawsNothing());
