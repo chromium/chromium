@@ -18,7 +18,7 @@ namespace {
 
 using ::base::i18n::GetKnownLanguageTag;
 using ::base::i18n::LanguageTag;
-using ::base::i18n::LanguageTagMatcher;
+using ::base::i18n::LanguageTagMatcherWithDefault;
 
 constexpr auto kPlatformLocales = std::to_array<LanguageTag>({
 #define PLATFORM_LOCALE(locale) GetKnownLanguageTag(#locale),
@@ -235,9 +235,10 @@ const std::vector<LanguageTag>& GetAcceptLanguageTags() {
   return *tags;
 }
 
-const LanguageTagMatcher& GetAcceptLanguageMatcher() {
-  static base::NoDestructor<LanguageTagMatcher> matcher(
-      LanguageTagMatcher::Create(kAcceptLanguageList));
+const LanguageTagMatcherWithDefault& GetAcceptLanguageMatcher() {
+  static base::NoDestructor<LanguageTagMatcherWithDefault> matcher(
+      LanguageTagMatcherWithDefault::Create(GetKnownLanguageTag("en-US"),
+                                            kAcceptLanguageList));
   return *matcher;
 }
 
@@ -246,9 +247,10 @@ base::span<const LanguageTag> GetPlatformLanguageTags() {
 }
 
 COMPONENT_EXPORT(UI_BASE)
-const LanguageTagMatcher& GetPlatformLanguageMatcher() {
-  static base::NoDestructor<LanguageTagMatcher> matcher(
-      LanguageTagMatcher::Create(kPlatformLocales));
+const LanguageTagMatcherWithDefault& GetPlatformLanguageMatcher() {
+  static base::NoDestructor<LanguageTagMatcherWithDefault> matcher(
+      LanguageTagMatcherWithDefault::Create(GetKnownLanguageTag("en-US"),
+                                            kPlatformLocales));
   return *matcher;
 }
 

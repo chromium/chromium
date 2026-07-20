@@ -126,10 +126,7 @@ bool HasStringsForLocale(std::string_view locale,
     if (!language_tag) {
       return false;
     }
-    // Only accept exact matches.
-    std::optional<LanguageTag> matched =
-        ui_l10n::GetPlatformLanguageMatcher().Match(*language_tag);
-    return matched && matched == language_tag;
+    return ui_l10n::GetPlatformLanguageMatcher().HasExactMatch(*language_tag);
   }
   // If locale has any illegal characters in it, we don't want to try to
   // load it because it may be pointing outside the locale data file directory.
