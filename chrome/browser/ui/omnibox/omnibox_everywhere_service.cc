@@ -60,14 +60,6 @@ void OmniboxEverywhereService::SetIsNavigating(bool is_navigating) {
   }
 }
 
-void OmniboxEverywhereService::SetWasActiveBeforePopup(bool was_active) {
-  auto* controller =
-      g_browser_process->GetFeatures()->omnibox_everywhere_controller();
-  if (controller && controller->ui_manager()) {
-    controller->ui_manager()->SetWasActiveBeforePopup(was_active);
-  }
-}
-
 void OmniboxEverywhereService::OpenUrl(const GURL& url,
                                        WindowOpenDisposition disposition,
                                        ui::PageTransition transition) {

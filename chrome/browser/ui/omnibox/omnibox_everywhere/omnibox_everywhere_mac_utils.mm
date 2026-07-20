@@ -2,31 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_mac_utils.h"
-
-#import <Cocoa/Cocoa.h>
-
+#include "base/apple/foundation_util.h"
+#import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget.h"
 
 namespace omnibox_everywhere {
 
-bool IsAppActiveOnMac() {
-  return [NSApp isActive];
-}
-
-void HideAppOnMac() {
-  [NSApp hide:nil];
-}
-
 void OrderOmniboxEverywhereFrontOnMac(views::Widget* widget) {
-  NSWindow* ns_window = widget->GetNativeWindow().GetNativeNSWindow();
-  [ns_window
+  NativeWidgetMacNSWindow* ns_window =
+      base::apple::ObjCCast<NativeWidgetMacNSWindow>(
+          widget->GetNativeWindow().GetNativeNSWindow());
+  if (ns_window) {
+    [ns_window setActivationIndependence:YES];
+  }
+  NSWindow* raw_window = widget->GetNativeWindow().GetNativeNSWindow();
+  [raw_window
       setCollectionBehavior:NSWindowCollectionBehaviorCanJoinAllSpaces |
                             NSWindowCollectionBehaviorFullScreenAuxiliary];
-  [NSApp activateIgnoringOtherApps:YES];
-  [ns_window makeKeyWindow];
-  [ns_window orderFrontRegardless];
+  [raw_window makeKeyAndOrderFront:nil];
 }
 
 }  // namespace omnibox_everywhere

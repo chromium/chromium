@@ -4,12 +4,10 @@
 
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_controller.h"
 
-#include <vector>
-
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_ui_manager.h"
@@ -19,10 +17,6 @@
 #include "ui/base/base_window.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
-
-#if BUILDFLAG(IS_MAC)
-#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_mac_utils.h"
-#endif
 
 namespace omnibox_everywhere {
 
@@ -99,11 +93,6 @@ void OmniboxEverywhereController::OnKeyPressed(
     gfx::NativeWindow context = active_bwi && active_bwi->GetWindow()
                                     ? active_bwi->GetWindow()->GetNativeWindow()
                                     : gfx::NativeWindow();
-#if BUILDFLAG(IS_MAC)
-    ui_manager_->SetWasActiveBeforePopup(IsAppActiveOnMac());
-#else
-    ui_manager_->SetWasActiveBeforePopup(true);
-#endif
     ui_manager_->SetIsNavigating(false);
     OnInvoke(InvocationSource::kGlobalHotkey, target_profile, context);
   }

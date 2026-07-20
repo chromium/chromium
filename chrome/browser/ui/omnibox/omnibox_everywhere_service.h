@@ -31,7 +31,6 @@ class OmniboxEverywhereService : public KeyedService {
   void Shutdown() override;
 
   void SetIsNavigating(bool is_navigating);
-  void SetWasActiveBeforePopup(bool was_active);
 
  private:
   raw_ptr<Profile> profile_;

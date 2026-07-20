@@ -17,6 +17,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -107,11 +108,6 @@ void OmniboxEverywhereUIManager::ShowForProfile(Profile* profile,
   }
 
   profile_ = profile;
-#if BUILDFLAG(IS_MAC)
-  was_active_before_popup_ = IsAppActiveOnMac();
-#else
-  was_active_before_popup_ = true;
-#endif
   is_navigating_ = false;
 
   if (!contents_wrapper_) {
@@ -142,8 +138,10 @@ void OmniboxEverywhereUIManager::ShowForProfile(Profile* profile,
       params.context = context;
     }
 
-    gfx::Rect screen_bounds =
-        display::Screen::Get()->GetPrimaryDisplay().bounds();
+    display::Display target_display =
+        display::Screen::Get()->GetDisplayNearestPoint(
+            display::Screen::Get()->GetCursorScreenPoint());
+    gfx::Rect screen_bounds = target_display.bounds();
     gfx::Size popup_size(864, 632);
     params.bounds = gfx::Rect(
         screen_bounds.x() + (screen_bounds.width() - popup_size.width()) / 2,
@@ -194,24 +192,25 @@ void OmniboxEverywhereUIManager::Close() {
 
 void OmniboxEverywhereUIManager::CleanUpWidget() {
   if (widget_) {
-#if BUILDFLAG(IS_MAC)
-    if (!is_navigating_ && !was_active_before_popup_) {
-      HideAppOnMac();
-    }
-#endif
     widget_observation_.Reset();
     if (auto* contents_view = widget_->GetContentsView()) {
       if (auto* web_view = views::AsViewClass<views::WebView>(contents_view)) {
         web_view->SetWebContents(nullptr);
       }
     }
-    widget_.reset();
-    widget_delegate_.reset();
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](std::unique_ptr<views::Widget> widget,
+               std::unique_ptr<OmniboxEverywhereWidgetDelegate> delegate) {
+              widget.reset();
+              delegate.reset();
+            },
+            std::move(widget_), std::move(widget_delegate_)));
   }
   contents_wrapper_.reset();
   is_file_chooser_open_ = false;
   is_navigating_ = false;
-  was_active_before_popup_ = false;
 }
 
 void OmniboxEverywhereUIManager::Shutdown() {

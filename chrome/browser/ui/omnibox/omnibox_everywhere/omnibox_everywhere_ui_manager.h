@@ -66,11 +66,7 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   void OnFileChooserClosed();
 
   void SetIsNavigating(bool is_navigating) { is_navigating_ = is_navigating; }
-  void SetWasActiveBeforePopup(bool was_active) {
-    was_active_before_popup_ = was_active;
-  }
   bool IsNavigating() const { return is_navigating_; }
-  bool WasActiveBeforePopup() const { return was_active_before_popup_; }
 
   Profile* profile() { return profile_; }
   const Profile* profile() const { return profile_; }
@@ -97,7 +93,6 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
 
   bool is_file_chooser_open_ = false;
   bool is_navigating_ = false;
-  bool was_active_before_popup_ = false;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};

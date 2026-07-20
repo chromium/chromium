@@ -7,11 +7,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/screen.h"
+#include "ui/display/test/test_screen.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
@@ -222,5 +225,48 @@ TEST_F(OmniboxEverywhereUIManagerTest, NavigationAndActivationStateTracking) {
 
   ui_manager->Close();
   EXPECT_FALSE(ui_manager->IsNavigating());
-  EXPECT_FALSE(ui_manager->WasActiveBeforePopup());
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ShowPositionsOnTargetDisplay DISABLED_ShowPositionsOnTargetDisplay
+#else
+#define MAYBE_ShowPositionsOnTargetDisplay ShowPositionsOnTargetDisplay
+#endif
+TEST_F(OmniboxEverywhereUIManagerTest, MAYBE_ShowPositionsOnTargetDisplay) {
+  // Create and set up a TestScreen with two displays.
+  // Display 1: 0, 0, 800, 600 (Primary)
+  // Display 2: 800, 0, 1024, 768 (Secondary)
+  display::test::TestScreen test_screen(/*create_display=*/false,
+                                        /*register_screen=*/false);
+  display::Screen* old_screen = display::Screen::SetScreenInstance(nullptr);
+  display::Screen::SetScreenInstance(&test_screen);
+
+  display::Display display1(1, gfx::Rect(0, 0, 800, 600));
+  display::Display display2(2, gfx::Rect(800, 0, 1024, 768));
+  test_screen.display_list().AddDisplay(display1,
+                                        display::DisplayList::Type::PRIMARY);
+  test_screen.display_list().AddDisplay(
+      display2, display::DisplayList::Type::NOT_PRIMARY);
+
+  // Set the fake cursor on the second display.
+  test_screen.set_cursor_screen_point(gfx::Point(1200, 300));
+
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget_for_testing();
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(widget->IsVisible());
+
+  gfx::Rect widget_bounds = widget->GetWindowBoundsInScreen();
+
+  // Verify that the widget was positioned on the secondary display (nearest to
+  // cursor).
+  display::Display current_display =
+      display::Screen::Get()->GetDisplayMatching(widget_bounds);
+  EXPECT_NE(current_display.id(),
+            display::Screen::Get()->GetPrimaryDisplay().id());
+
+  ui_manager->Close();
+  display::Screen::SetScreenInstance(nullptr);
+  display::Screen::SetScreenInstance(old_screen);
 }

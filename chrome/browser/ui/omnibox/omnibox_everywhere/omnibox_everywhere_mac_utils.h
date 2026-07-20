@@ -11,8 +11,6 @@ class Widget;
 
 namespace omnibox_everywhere {
 
-bool IsAppActiveOnMac();
-void HideAppOnMac();
 void OrderOmniboxEverywhereFrontOnMac(views::Widget* widget);
 
 }  // namespace omnibox_everywhere
