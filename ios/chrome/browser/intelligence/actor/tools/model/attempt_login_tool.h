@@ -35,15 +35,13 @@ namespace actor {
 class ToolDelegate;
 struct ToolExecutionResult;
 
-class ProfileContextResolver;
-
 // Tool to attempt login on a page.
 class AttemptLoginTool : public ActorTool, public web::WebStateObserver {
  public:
   static base::expected<std::unique_ptr<AttemptLoginTool>, ToolExecutionResult>
-  Create(const optimization_guide::proto::AttemptLoginAction& action,
-         ToolDelegate* tool_delegate,
-         const ProfileContextResolver& profile_context_resolver);
+  Create(base::WeakPtr<web::WebState> web_state,
+         const optimization_guide::proto::AttemptLoginAction& action,
+         ToolDelegate* tool_delegate);
 
   ~AttemptLoginTool() override;
 

@@ -6,7 +6,6 @@
 
 #import "ios/chrome/browser/intelligence/actor/tools/model/tool_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
-#import "ios/chrome/browser/intelligence/actor/tools/utils/profile_context_resolver.h"
 #import "ios/web/public/web_state.h"
 
 namespace actor {
@@ -14,28 +13,16 @@ namespace actor {
 // static
 base::expected<std::unique_ptr<AttemptFormFillingTool>, ToolExecutionResult>
 AttemptFormFillingTool::Create(
+    base::WeakPtr<web::WebState> web_state,
     const optimization_guide::proto::AttemptFormFillingAction& action,
-    ToolDelegate* tool_delegate,
-    const ProfileContextResolver& profile_context_resolver) {
-  if (!action.has_tab_id()) {
-    return base::unexpected(ToolExecutionResult(
-        InternalToolErrorCode::kCreationMissingRequiredFields));
-  }
-
-  base::expected<ProfileContextResolver::TabResolutionResult,
-                 ToolExecutionResult>
-      resolution_result = profile_context_resolver.ResolveTab(action.tab_id());
-  if (!resolution_result.has_value()) {
-    return base::unexpected(resolution_result.error());
-  }
-
-  return std::unique_ptr<AttemptFormFillingTool>(new AttemptFormFillingTool(
-      action, resolution_result.value().web_state, tool_delegate));
+    ToolDelegate* tool_delegate) {
+  return std::unique_ptr<AttemptFormFillingTool>(
+      new AttemptFormFillingTool(web_state, action, tool_delegate));
 }
 
 AttemptFormFillingTool::AttemptFormFillingTool(
-    const optimization_guide::proto::AttemptFormFillingAction& action,
     base::WeakPtr<web::WebState> web_state,
+    const optimization_guide::proto::AttemptFormFillingAction& action,
     ToolDelegate* tool_delegate)
     : action_(action), web_state_(web_state), tool_delegate_(tool_delegate) {}
 

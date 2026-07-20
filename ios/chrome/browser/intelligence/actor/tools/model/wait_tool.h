@@ -24,8 +24,6 @@ namespace actor {
 
 struct ToolExecutionResult;
 
-class ProfileContextResolver;
-
 // Tool to wait for a duration.
 class WaitTool : public ActorTool {
  public:
@@ -33,8 +31,8 @@ class WaitTool : public ActorTool {
 
   // Creates the tool using the given `action`.
   static base::expected<std::unique_ptr<WaitTool>, ToolExecutionResult> Create(
-      const optimization_guide::proto::WaitAction& action,
-      const ProfileContextResolver& profile_context_resolver);
+      base::WeakPtr<web::WebState> web_state,
+      const optimization_guide::proto::WaitAction& action);
 
   // ActorTool:
   void Execute(ToolExecutionCallback callback) override;

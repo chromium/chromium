@@ -10,7 +10,6 @@
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
-#import "ios/chrome/browser/intelligence/actor/tools/utils/profile_context_resolver.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -62,56 +61,30 @@ class HistoryToolTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
 
   base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult> CreateTool(
-      const optimization_guide::proto::HistoryBackAction& action) {
-    return HistoryTool::Create(action, ProfileContextResolver(profile_.get()));
+      const optimization_guide::proto::HistoryBackAction& action,
+      web::WebState* web_state) {
+    return HistoryTool::Create(web_state ? web_state->GetWeakPtr() : nullptr,
+                               action);
   }
 
   base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult> CreateTool(
-      const optimization_guide::proto::HistoryForwardAction& action) {
-    return HistoryTool::Create(action, ProfileContextResolver(profile_.get()));
+      const optimization_guide::proto::HistoryForwardAction& action,
+      web::WebState* web_state) {
+    return HistoryTool::Create(web_state ? web_state->GetWeakPtr() : nullptr,
+                               action);
   }
 };
-
-// Tests that the tool could not be created if proto fields are missing.
-TEST_F(HistoryToolTest, Create_MissingProtoFields) {
-  // Initialize the action without tab_id.
-  optimization_guide::proto::Action action;
-  base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult> result =
-      CreateTool(action.back());
-
-  EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(InternalToolErrorCode::kCreationMissingRequiredFields,
-            result.error().internal_code().value());
-
-  result = CreateTool(action.forward());
-  EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(InternalToolErrorCode::kCreationMissingRequiredFields,
-            result.error().internal_code().value());
-}
-
-// Tests that the tool could not be created if the tab does not exist.
-TEST_F(HistoryToolTest, Create_NoWebStateForTabId) {
-  optimization_guide::proto::Action action;
-  action.mutable_back()->set_tab_id(1);
-  base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult> result =
-      CreateTool(action.back());
-  EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kTabWentAway);
-  EXPECT_FALSE(result.error().internal_code().has_value());
-}
 
 // Tests that the tool could not be created if the tab is removed before the
 // tool is executed.
 TEST_F(HistoryToolTest, Execute_TabRemovedBeforeExecution) {
   InsertWebStateWithNavigationManager(/*first_item_active=*/false);
-  int tab_id = browser_->GetWebStateList()
-                   ->GetWebStateAt(0)
-                   ->GetUniqueIdentifier()
-                   .identifier();
+  web::WebState* web_state = browser_->GetWebStateList()->GetWebStateAt(0);
+  int tab_id = web_state->GetUniqueIdentifier().identifier();
   optimization_guide::proto::Action action;
   action.mutable_back()->set_tab_id(tab_id);
   base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult> maybe_tool =
-      CreateTool(action.back());
+      CreateTool(action.back(), web_state);
   EXPECT_TRUE(maybe_tool.has_value());
   std::unique_ptr<HistoryTool> tool = std::move(maybe_tool.value());
 
@@ -134,7 +107,7 @@ TEST_F(HistoryToolTest, Execute_Back_Success) {
   optimization_guide::proto::Action action;
   action.mutable_back()->set_tab_id(tab_id);
   base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult> maybe_tool =
-      CreateTool(action.back());
+      CreateTool(action.back(), web_state);
   EXPECT_TRUE(maybe_tool.has_value());
 
   std::unique_ptr<HistoryTool> tool = std::move(maybe_tool.value());
@@ -150,14 +123,12 @@ TEST_F(HistoryToolTest, Execute_Back_Success) {
 // navigate back.
 TEST_F(HistoryToolTest, Execute_Back_NotPossible) {
   InsertWebStateWithNavigationManager(/*first_item_active=*/true);
-  int tab_id = browser_->GetWebStateList()
-                   ->GetWebStateAt(0)
-                   ->GetUniqueIdentifier()
-                   .identifier();
+  web::WebState* web_state = browser_->GetWebStateList()->GetWebStateAt(0);
+  int tab_id = web_state->GetUniqueIdentifier().identifier();
   optimization_guide::proto::Action action;
   action.mutable_back()->set_tab_id(tab_id);
   base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult> maybe_tool =
-      CreateTool(action.back());
+      CreateTool(action.back(), web_state);
   EXPECT_TRUE(maybe_tool.has_value());
 
   std::unique_ptr<HistoryTool> tool = std::move(maybe_tool.value());
@@ -178,7 +149,7 @@ TEST_F(HistoryToolTest, Execute_Forward_Success) {
   optimization_guide::proto::Action action;
   action.mutable_forward()->set_tab_id(tab_id);
   base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult> maybe_tool =
-      CreateTool(action.forward());
+      CreateTool(action.forward(), web_state);
   EXPECT_TRUE(maybe_tool.has_value());
 
   std::unique_ptr<HistoryTool> tool = std::move(maybe_tool.value());
@@ -199,7 +170,7 @@ TEST_F(HistoryToolTest, Execute_Forward_NotPossible) {
   optimization_guide::proto::Action action;
   action.mutable_forward()->set_tab_id(tab_id);
   base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult> maybe_tool =
-      CreateTool(action.forward());
+      CreateTool(action.forward(), web_state);
   EXPECT_TRUE(maybe_tool.has_value());
 
   std::unique_ptr<HistoryTool> tool = std::move(maybe_tool.value());
@@ -214,16 +185,14 @@ TEST_F(HistoryToolTest, Execute_Forward_NotPossible) {
 
 TEST_F(HistoryToolTest, GetToolType) {
   InsertWebStateWithNavigationManager(/*first_item_active=*/false);
-  int tab_id = browser_->GetWebStateList()
-                   ->GetWebStateAt(0)
-                   ->GetUniqueIdentifier()
-                   .identifier();
+  web::WebState* web_state = browser_->GetWebStateList()->GetWebStateAt(0);
+  int tab_id = web_state->GetUniqueIdentifier().identifier();
 
   {
     optimization_guide::proto::Action action;
     action.mutable_back()->set_tab_id(tab_id);
     base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult>
-        maybe_tool = CreateTool(action.back());
+        maybe_tool = CreateTool(action.back(), web_state);
     ASSERT_TRUE(maybe_tool.has_value());
     EXPECT_EQ(maybe_tool.value()->GetToolType(), ToolType::kBack);
   }
@@ -232,7 +201,7 @@ TEST_F(HistoryToolTest, GetToolType) {
     optimization_guide::proto::Action action;
     action.mutable_forward()->set_tab_id(tab_id);
     base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult>
-        maybe_tool = CreateTool(action.forward());
+        maybe_tool = CreateTool(action.forward(), web_state);
     ASSERT_TRUE(maybe_tool.has_value());
     EXPECT_EQ(maybe_tool.value()->GetToolType(), ToolType::kForward);
   }

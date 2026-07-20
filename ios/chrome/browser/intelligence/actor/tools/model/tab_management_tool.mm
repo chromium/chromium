@@ -10,7 +10,6 @@
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/actor_browser_utils.h"
-#import "ios/chrome/browser/intelligence/actor/tools/utils/profile_context_resolver.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/web_state.h"
 
@@ -19,18 +18,11 @@ namespace actor {
 // static
 base::expected<std::unique_ptr<TabManagementTool>, ToolExecutionResult>
 TabManagementTool::CreateCloseTabTool(
+    base::WeakPtr<web::WebState> web_state,
     const optimization_guide::proto::CloseTabAction& action,
-    const ProfileContextResolver& profile_context_resolver) {
-  base::expected<ProfileContextResolver::TabResolutionResult,
-                 ToolExecutionResult>
-      resolution_result = profile_context_resolver.ResolveTab(action.tab_id());
-  if (!resolution_result.has_value()) {
-    return base::unexpected(resolution_result.error());
-  }
-
-  return std::unique_ptr<TabManagementTool>(new TabManagementTool(
-      ActionType::kClose, resolution_result.value().web_state,
-      resolution_result.value().web_state_list));
+    base::WeakPtr<WebStateList> web_state_list) {
+  return std::unique_ptr<TabManagementTool>(
+      new TabManagementTool(web_state, ActionType::kClose, web_state_list));
 }
 
 TabManagementTool::~TabManagementTool() = default;
@@ -111,8 +103,8 @@ ToolType TabManagementTool::GetToolType() const {
   }
 }
 
-TabManagementTool::TabManagementTool(ActionType action_type,
-                                     base::WeakPtr<web::WebState> web_state,
+TabManagementTool::TabManagementTool(base::WeakPtr<web::WebState> web_state,
+                                     ActionType action_type,
                                      base::WeakPtr<WebStateList> web_state_list)
     : action_type_(action_type),
       web_state_(web_state),

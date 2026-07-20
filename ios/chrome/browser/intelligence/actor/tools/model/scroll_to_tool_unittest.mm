@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/scroll_tool_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
-#import "ios/chrome/browser/intelligence/actor/tools/utils/profile_context_resolver.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -44,35 +43,17 @@ class ScrollToToolTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
 
   base::expected<std::unique_ptr<ScrollToTool>, ToolExecutionResult> CreateTool(
-      const optimization_guide::proto::ScrollToAction& action) {
-    return ScrollToTool::Create(action, ProfileContextResolver(profile_.get()));
+      const optimization_guide::proto::ScrollToAction& action,
+      web::WebState* web_state) {
+    return ScrollToTool::Create(web_state ? web_state->GetWeakPtr() : nullptr,
+                                action);
   }
 };
-
-TEST_F(ScrollToToolTest, Create_MissingTabId) {
-  optimization_guide::proto::Action action;
-  action.mutable_scroll_to()->mutable_target()->set_content_node_id(123);
-
-  base::expected<std::unique_ptr<ScrollToTool>, ToolExecutionResult> result =
-      CreateTool(action.scroll_to());
-
-  EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
-}
-
-TEST_F(ScrollToToolTest, Create_NoWebStateForTabId) {
-  optimization_guide::proto::Action action;
-  action.mutable_scroll_to()->set_tab_id(1);
-
-  base::expected<std::unique_ptr<ScrollToTool>, ToolExecutionResult> result =
-      CreateTool(action.scroll_to());
-  EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kTabWentAway);
-}
 
 TEST_F(ScrollToToolTest, Create_MissingTarget) {
   optimization_guide::proto::Action action;
   auto web_state = std::make_unique<web::FakeWebState>();
+  web::WebState* web_state_ptr = web_state.get();
   web_state->SetBrowserState(profile_.get());
   int tab_id = web_state->GetUniqueIdentifier().identifier();
   browser_->GetWebStateList()->InsertWebState(
@@ -82,7 +63,7 @@ TEST_F(ScrollToToolTest, Create_MissingTarget) {
   action.mutable_scroll_to()->set_tab_id(tab_id);
 
   base::expected<std::unique_ptr<ScrollToTool>, ToolExecutionResult> result =
-      CreateTool(action.scroll_to());
+      CreateTool(action.scroll_to(), web_state_ptr);
 
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
@@ -91,6 +72,7 @@ TEST_F(ScrollToToolTest, Create_MissingTarget) {
 TEST_F(ScrollToToolTest, Create_NodeIdWithoutDocumentIdentifier_Invalid) {
   optimization_guide::proto::Action action;
   auto web_state = std::make_unique<web::FakeWebState>();
+  web::WebState* web_state_ptr = web_state.get();
   web_state->SetBrowserState(profile_.get());
   int tab_id = web_state->GetUniqueIdentifier().identifier();
   browser_->GetWebStateList()->InsertWebState(
@@ -105,7 +87,7 @@ TEST_F(ScrollToToolTest, Create_NodeIdWithoutDocumentIdentifier_Invalid) {
   // Omit document_identifier
 
   base::expected<std::unique_ptr<ScrollToTool>, ToolExecutionResult> result =
-      CreateTool(action.scroll_to());
+      CreateTool(action.scroll_to(), web_state_ptr);
 
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
@@ -114,6 +96,7 @@ TEST_F(ScrollToToolTest, Create_NodeIdWithoutDocumentIdentifier_Invalid) {
 TEST_F(ScrollToToolTest, Create_BothTargetingTypes_Invalid) {
   optimization_guide::proto::Action action;
   auto web_state = std::make_unique<web::FakeWebState>();
+  web::WebState* web_state_ptr = web_state.get();
   web_state->SetBrowserState(profile_.get());
   int tab_id = web_state->GetUniqueIdentifier().identifier();
   browser_->GetWebStateList()->InsertWebState(
@@ -130,7 +113,7 @@ TEST_F(ScrollToToolTest, Create_BothTargetingTypes_Invalid) {
   target->mutable_document_identifier()->set_serialized_token("dummy");
 
   base::expected<std::unique_ptr<ScrollToTool>, ToolExecutionResult> result =
-      CreateTool(action.scroll_to());
+      CreateTool(action.scroll_to(), web_state_ptr);
 
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
@@ -153,7 +136,7 @@ TEST_F(ScrollToToolTest, Execute_WebStateDestroyed_ReturnsError) {
   scroll_to_action->mutable_target()->mutable_coordinate()->set_y(50);
 
   base::expected<std::unique_ptr<ScrollToTool>, ToolExecutionResult>
-      create_result = CreateTool(action.scroll_to());
+      create_result = CreateTool(action.scroll_to(), inserted_web_state);
   ASSERT_TRUE(create_result.has_value());
   std::unique_ptr<ScrollToTool> tool = std::move(create_result.value());
 
@@ -188,7 +171,7 @@ TEST_F(ScrollToToolTest, Execute_NoWebFramesManager_ReturnsError) {
   scroll_to_action->mutable_target()->mutable_coordinate()->set_y(50);
 
   base::expected<std::unique_ptr<ScrollToTool>, ToolExecutionResult>
-      create_result = CreateTool(action.scroll_to());
+      create_result = CreateTool(action.scroll_to(), inserted_web_state);
   ASSERT_TRUE(create_result.has_value());
   std::unique_ptr<ScrollToTool> tool = std::move(create_result.value());
 
@@ -230,7 +213,7 @@ TEST_F(ScrollToToolTest, Execute_NoMainFrame_ReturnsError) {
   scroll_to_action->mutable_target()->mutable_coordinate()->set_y(50);
 
   base::expected<std::unique_ptr<ScrollToTool>, ToolExecutionResult>
-      create_result = CreateTool(action.scroll_to());
+      create_result = CreateTool(action.scroll_to(), inserted_web_state);
   ASSERT_TRUE(create_result.has_value());
   std::unique_ptr<ScrollToTool> tool = std::move(create_result.value());
 
@@ -245,6 +228,7 @@ TEST_F(ScrollToToolTest, Execute_NoMainFrame_ReturnsError) {
 TEST_F(ScrollToToolTest, GetToolType) {
   optimization_guide::proto::Action action;
   auto web_state = std::make_unique<web::FakeWebState>();
+  web::WebState* web_state_ptr = web_state.get();
   web_state->SetBrowserState(profile_.get());
   int tab_id = web_state->GetUniqueIdentifier().identifier();
   browser_->GetWebStateList()->InsertWebState(
@@ -256,7 +240,7 @@ TEST_F(ScrollToToolTest, GetToolType) {
   action.mutable_scroll_to()->mutable_target()->mutable_coordinate()->set_y(50);
 
   base::expected<std::unique_ptr<ScrollToTool>, ToolExecutionResult> result =
-      CreateTool(action.scroll_to());
+      CreateTool(action.scroll_to(), web_state_ptr);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value()->GetToolType(), ToolType::kScrollTo);
 }

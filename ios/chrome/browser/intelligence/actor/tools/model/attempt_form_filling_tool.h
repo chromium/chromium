@@ -21,16 +21,15 @@ namespace actor {
 
 class ToolDelegate;
 struct ToolExecutionResult;
-class ProfileContextResolver;
 
 // Tool to attempt form filling on iOS.
 class AttemptFormFillingTool : public ActorTool {
  public:
   static base::expected<std::unique_ptr<AttemptFormFillingTool>,
                         ToolExecutionResult>
-  Create(const optimization_guide::proto::AttemptFormFillingAction& action,
-         ToolDelegate* tool_delegate,
-         const ProfileContextResolver& profile_context_resolver);
+  Create(base::WeakPtr<web::WebState> web_state,
+         const optimization_guide::proto::AttemptFormFillingAction& action,
+         ToolDelegate* tool_delegate);
 
   ~AttemptFormFillingTool() override;
 
@@ -42,8 +41,8 @@ class AttemptFormFillingTool : public ActorTool {
 
  private:
   AttemptFormFillingTool(
-      const optimization_guide::proto::AttemptFormFillingAction& action,
       base::WeakPtr<web::WebState> web_state,
+      const optimization_guide::proto::AttemptFormFillingAction& action,
       ToolDelegate* tool_delegate);
 
   optimization_guide::proto::AttemptFormFillingAction action_;

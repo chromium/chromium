@@ -19,6 +19,7 @@ class ProfileIOS;
 namespace actor {
 
 class ToolDelegate;
+class ActorToolRequest;
 
 // Factory for creating `ActorTool` objects from raw action data.
 class ActorToolFactory {
@@ -31,8 +32,7 @@ class ActorToolFactory {
   //
   // This is virtual for testing.
   virtual base::expected<std::unique_ptr<ActorTool>, ToolExecutionResult>
-  CreateTool(const optimization_guide::proto::Action& action,
-             ToolDelegate* tool_delegate);
+  CreateTool(const ActorToolRequest& request, ToolDelegate* tool_delegate);
 
   // Returns the list of supported capabilities by this tool factory.
   virtual std::vector<optimization_guide::proto::Action::ActionCase>

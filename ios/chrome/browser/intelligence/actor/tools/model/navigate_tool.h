@@ -28,14 +28,13 @@ namespace actor {
 
 struct ToolExecutionResult;
 
-class ProfileContextResolver;
-
 // Command to navigate to a URL.
 class NavigateTool : public ActorTool {
  public:
   static base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
-  Create(const optimization_guide::proto::NavigateAction& action,
-         const ProfileContextResolver& profile_context_resolver);
+  Create(base::WeakPtr<web::WebState> web_state,
+         const optimization_guide::proto::NavigateAction& action,
+         base::WeakPtr<UrlLoadingBrowserAgent> url_loader);
 
   ~NavigateTool() override;
 
@@ -45,8 +44,8 @@ class NavigateTool : public ActorTool {
   ToolType GetToolType() const override;
 
  private:
-  NavigateTool(const std::string& url,
-               base::WeakPtr<web::WebState> web_state,
+  NavigateTool(base::WeakPtr<web::WebState> web_state,
+               const std::string& url,
                base::WeakPtr<UrlLoadingBrowserAgent> url_loader);
 
   const std::string url_;

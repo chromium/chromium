@@ -13,7 +13,6 @@
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/scroll_tool_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
-#import "ios/chrome/browser/intelligence/actor/tools/utils/profile_context_resolver.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -25,24 +24,13 @@ ScrollToTool::~ScrollToTool() = default;
 
 // static
 base::expected<std::unique_ptr<ScrollToTool>, ToolExecutionResult>
-ScrollToTool::Create(const optimization_guide::proto::ScrollToAction& action,
-                     const ProfileContextResolver& profile_context_resolver) {
-  if (!action.has_tab_id()) {
-    return base::unexpected(
-        ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
-  }
-
-  base::expected<ProfileContextResolver::TabResolutionResult,
-                 ToolExecutionResult>
-      resolution_result = profile_context_resolver.ResolveTab(action.tab_id());
-  if (!resolution_result.has_value()) {
-    return base::unexpected(resolution_result.error());
-  }
-
+ScrollToTool::Create(base::WeakPtr<web::WebState> web_state,
+                     const optimization_guide::proto::ScrollToAction& action) {
   if (!action.has_target()) {
     return base::unexpected(
         ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
   }
+
   const optimization_guide::proto::ActionTarget& target = action.target();
   // Callers must either target by coordinate or (document_identifier, node_id).
   if (target.has_content_node_id() && !target.has_document_identifier()) {
@@ -61,8 +49,7 @@ ScrollToTool::Create(const optimization_guide::proto::ScrollToAction& action,
         ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
   }
 
-  return std::unique_ptr<ScrollToTool>(
-      new ScrollToTool(action, resolution_result.value().web_state));
+  return std::unique_ptr<ScrollToTool>(new ScrollToTool(web_state, action));
 }
 
 void ScrollToTool::Execute(ToolExecutionCallback callback) {
@@ -95,8 +82,8 @@ ToolType ScrollToTool::GetToolType() const {
 }
 
 ScrollToTool::ScrollToTool(
-    const optimization_guide::proto::ScrollToAction& action,
-    base::WeakPtr<web::WebState> web_state)
+    base::WeakPtr<web::WebState> web_state,
+    const optimization_guide::proto::ScrollToAction& action)
     : action_(action),
       web_state_(web_state),
       js_feature_(ScrollToolJavaScriptFeature::GetInstance()) {}

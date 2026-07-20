@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_constants.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/scroll_tool_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
-#import "ios/chrome/browser/intelligence/actor/tools/utils/profile_context_resolver.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -26,20 +25,8 @@ ScrollTool::~ScrollTool() = default;
 
 // static
 base::expected<std::unique_ptr<ScrollTool>, ToolExecutionResult>
-ScrollTool::Create(const optimization_guide::proto::ScrollAction& action,
-                   const ProfileContextResolver& profile_context_resolver) {
-  if (!action.has_tab_id()) {
-    return base::unexpected(
-        ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
-  }
-
-  base::expected<ProfileContextResolver::TabResolutionResult,
-                 ToolExecutionResult>
-      resolution_result = profile_context_resolver.ResolveTab(action.tab_id());
-  if (!resolution_result.has_value()) {
-    return base::unexpected(resolution_result.error());
-  }
-
+ScrollTool::Create(base::WeakPtr<web::WebState> web_state,
+                   const optimization_guide::proto::ScrollAction& action) {
   if (!action.has_direction() || !action.has_distance()) {
     return base::unexpected(
         ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
@@ -66,8 +53,7 @@ ScrollTool::Create(const optimization_guide::proto::ScrollAction& action,
     }
   }
 
-  return std::unique_ptr<ScrollTool>(
-      new ScrollTool(action, resolution_result.value().web_state));
+  return std::unique_ptr<ScrollTool>(new ScrollTool(web_state, action));
 }
 
 void ScrollTool::Execute(ToolExecutionCallback callback) {
@@ -114,8 +100,8 @@ ToolType ScrollTool::GetToolType() const {
   return ToolType::kScroll;
 }
 
-ScrollTool::ScrollTool(const optimization_guide::proto::ScrollAction& action,
-                       base::WeakPtr<web::WebState> web_state)
+ScrollTool::ScrollTool(base::WeakPtr<web::WebState> web_state,
+                       const optimization_guide::proto::ScrollAction& action)
     : action_(action),
       web_state_(web_state),
       js_feature_(ScrollToolJavaScriptFeature::GetInstance()) {}

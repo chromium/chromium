@@ -42,7 +42,7 @@ class AsyncActorToolFactory : public ActorToolFactory {
   explicit AsyncActorToolFactory(ProfileIOS* profile)
       : ActorToolFactory(profile) {}
   base::expected<std::unique_ptr<ActorTool>, ToolExecutionResult> CreateTool(
-      const optimization_guide::proto::Action& action,
+      const ActorToolRequest& request,
       ToolDelegate* tool_delegate) override {
     return std::make_unique<AsyncActorTool>();
   }
@@ -75,7 +75,7 @@ class StabilizingActorToolFactory : public ActorToolFactory {
       : ActorToolFactory(profile), web_state_(web_state) {}
 
   base::expected<std::unique_ptr<ActorTool>, ToolExecutionResult> CreateTool(
-      const optimization_guide::proto::Action& action,
+      const ActorToolRequest& request,
       ToolDelegate* tool_delegate) override {
     auto tool = std::make_unique<StabilizingActorTool>();
     tool->SetWebState(web_state_);

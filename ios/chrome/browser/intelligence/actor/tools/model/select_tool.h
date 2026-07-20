@@ -20,8 +20,6 @@ namespace actor {
 
 class SelectToolJavaScriptFeature;
 
-class ProfileContextResolver;
-
 // A tool that picks an <option> from a <select> element.
 class SelectTool : public WebActorTool {
  public:
@@ -29,8 +27,8 @@ class SelectTool : public WebActorTool {
 
   // Validates and creates a SelectTool instance.
   static base::expected<std::unique_ptr<SelectTool>, ToolExecutionResult>
-  Create(const optimization_guide::proto::SelectAction& action,
-         const ProfileContextResolver& profile_context_resolver);
+  Create(base::WeakPtr<web::WebState> web_state,
+         const optimization_guide::proto::SelectAction& action);
 
   // ActorTool:
   void Execute(ToolExecutionCallback callback) override;
@@ -38,8 +36,8 @@ class SelectTool : public WebActorTool {
   ToolType GetToolType() const override;
 
  private:
-  SelectTool(const optimization_guide::proto::SelectAction& action,
-             base::WeakPtr<web::WebState> web_state);
+  SelectTool(base::WeakPtr<web::WebState> web_state,
+             const optimization_guide::proto::SelectAction& action);
 
   void OnTargetFrameResolved(
       ToolExecutionCallback callback,

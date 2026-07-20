@@ -23,8 +23,6 @@ namespace actor {
 
 struct ToolExecutionResult;
 
-class ProfileContextResolver;
-
 // Tool to navigate back or forward in a tab's history.
 class HistoryTool : public ActorTool {
  public:
@@ -32,13 +30,13 @@ class HistoryTool : public ActorTool {
 
   // Create the tool to handle "go back" action.
   static base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult>
-  Create(const optimization_guide::proto::HistoryBackAction& action,
-         const ProfileContextResolver& profile_context_resolver);
+  Create(base::WeakPtr<web::WebState> web_state,
+         const optimization_guide::proto::HistoryBackAction& action);
 
   // Create the tool to handle "go forward" action.
   static base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult>
-  Create(const optimization_guide::proto::HistoryForwardAction& action,
-         const ProfileContextResolver& profile_context_resolver);
+  Create(base::WeakPtr<web::WebState> web_state,
+         const optimization_guide::proto::HistoryForwardAction& action);
 
   // ActorTool:
   void Execute(ToolExecutionCallback callback) override;
@@ -49,10 +47,10 @@ class HistoryTool : public ActorTool {
   // Internal helper to create the public `Create` method.
   template <typename HistoryAction>
   static base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult>
-  CreateInternal(const HistoryAction& action,
-                 const ProfileContextResolver& profile_context_resolver);
+  CreateInternal(base::WeakPtr<web::WebState> web_state,
+                 const HistoryAction& action);
 
-  HistoryTool(bool is_back_action, base::WeakPtr<web::WebState> web_state);
+  HistoryTool(base::WeakPtr<web::WebState> web_state, bool is_back_action);
 
   bool is_back_action_;
   base::WeakPtr<web::WebState> web_state_;

@@ -13,7 +13,6 @@
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/type_tool_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
-#import "ios/chrome/browser/intelligence/actor/tools/utils/profile_context_resolver.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -25,20 +24,8 @@ TypeTool::~TypeTool() = default;
 
 // static
 base::expected<std::unique_ptr<TypeTool>, ToolExecutionResult> TypeTool::Create(
-    const optimization_guide::proto::TypeAction& action,
-    const ProfileContextResolver& profile_context_resolver) {
-  if (!action.has_tab_id()) {
-    return base::unexpected(
-        ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
-  }
-
-  base::expected<ProfileContextResolver::TabResolutionResult,
-                 ToolExecutionResult>
-      resolution_result = profile_context_resolver.ResolveTab(action.tab_id());
-  if (!resolution_result.has_value()) {
-    return base::unexpected(resolution_result.error());
-  }
-
+    base::WeakPtr<web::WebState> web_state,
+    const optimization_guide::proto::TypeAction& action) {
   if (!action.has_text() || !action.has_mode()) {
     return base::unexpected(
         ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
@@ -67,8 +54,7 @@ base::expected<std::unique_ptr<TypeTool>, ToolExecutionResult> TypeTool::Create(
         ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
   }
 
-  return std::unique_ptr<TypeTool>(
-      new TypeTool(action, resolution_result.value().web_state));
+  return std::unique_ptr<TypeTool>(new TypeTool(web_state, action));
 }
 
 void TypeTool::Execute(ToolExecutionCallback callback) {
@@ -100,8 +86,8 @@ ToolType TypeTool::GetToolType() const {
   return ToolType::kType;
 }
 
-TypeTool::TypeTool(const optimization_guide::proto::TypeAction& action,
-                   base::WeakPtr<web::WebState> web_state)
+TypeTool::TypeTool(base::WeakPtr<web::WebState> web_state,
+                   const optimization_guide::proto::TypeAction& action)
     : action_(action),
       web_state_(web_state),
       js_feature_(TypeToolJavaScriptFeature::GetInstance()) {}

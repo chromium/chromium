@@ -9,7 +9,6 @@
 #import "base/test/test_future.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
-#import "ios/chrome/browser/intelligence/actor/tools/utils/profile_context_resolver.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -42,13 +41,16 @@ TEST_F(TabManagementToolTest, CloseTab_Success) {
   browser_list_->AddBrowser(browser.get());
   auto web_state = std::make_unique<web::FakeWebState>();
   web::WebStateID tab_id = web_state->GetUniqueIdentifier();
+  web::FakeWebState* web_state_ptr = web_state.get();
+  base::WeakPtr<WebStateList> web_state_list =
+      browser->GetWebStateList()->AsWeakPtr();
   browser->GetWebStateList()->InsertWebState(std::move(web_state));
 
   optimization_guide::proto::Action action;
   action.mutable_close_tab()->set_tab_id(tab_id.identifier());
   base::expected<std::unique_ptr<TabManagementTool>, ToolExecutionResult>
       maybe_tool = TabManagementTool::CreateCloseTabTool(
-          action.close_tab(), ProfileContextResolver(profile_.get()));
+          web_state_ptr->GetWeakPtr(), action.close_tab(), web_state_list);
   ASSERT_TRUE(maybe_tool.has_value());
   std::unique_ptr<TabManagementTool> tool = std::move(maybe_tool.value());
 
@@ -61,29 +63,21 @@ TEST_F(TabManagementToolTest, CloseTab_Success) {
   EXPECT_EQ(0, browser->GetWebStateList()->count());
 }
 
-TEST_F(TabManagementToolTest, CloseTab_TabNotFound_Failure) {
-  optimization_guide::proto::Action action;
-  action.mutable_close_tab()->set_tab_id(999);
-
-  base::expected<std::unique_ptr<TabManagementTool>, ToolExecutionResult>
-      maybe_tool = TabManagementTool::CreateCloseTabTool(
-          action.close_tab(), ProfileContextResolver(profile_.get()));
-  ASSERT_FALSE(maybe_tool.has_value());
-  EXPECT_EQ(mojom::ActionResultCode::kTabWentAway, maybe_tool.error().code());
-}
-
 TEST_F(TabManagementToolTest, CloseTab_BrowserDestroyed_Failure) {
   auto browser = std::make_unique<TestBrowser>(profile_.get());
   browser_list_->AddBrowser(browser.get());
   auto web_state = std::make_unique<web::FakeWebState>();
   web::WebStateID tab_id = web_state->GetUniqueIdentifier();
+  web::FakeWebState* web_state_ptr = web_state.get();
+  base::WeakPtr<WebStateList> web_state_list =
+      browser->GetWebStateList()->AsWeakPtr();
   browser->GetWebStateList()->InsertWebState(std::move(web_state));
 
   optimization_guide::proto::Action action;
   action.mutable_close_tab()->set_tab_id(tab_id.identifier());
   base::expected<std::unique_ptr<TabManagementTool>, ToolExecutionResult>
       maybe_tool = TabManagementTool::CreateCloseTabTool(
-          action.close_tab(), ProfileContextResolver(profile_.get()));
+          web_state_ptr->GetWeakPtr(), action.close_tab(), web_state_list);
   ASSERT_TRUE(maybe_tool.has_value());
   std::unique_ptr<TabManagementTool> tool = std::move(maybe_tool.value());
 
@@ -101,13 +95,16 @@ TEST_F(TabManagementToolTest, CloseTab_WebStateDestroyed_Failure) {
   browser_list_->AddBrowser(browser.get());
   auto web_state = std::make_unique<web::FakeWebState>();
   web::WebStateID tab_id = web_state->GetUniqueIdentifier();
+  web::FakeWebState* web_state_ptr = web_state.get();
+  base::WeakPtr<WebStateList> web_state_list =
+      browser->GetWebStateList()->AsWeakPtr();
   browser->GetWebStateList()->InsertWebState(std::move(web_state));
 
   optimization_guide::proto::Action action;
   action.mutable_close_tab()->set_tab_id(tab_id.identifier());
   base::expected<std::unique_ptr<TabManagementTool>, ToolExecutionResult>
       maybe_tool = TabManagementTool::CreateCloseTabTool(
-          action.close_tab(), ProfileContextResolver(profile_.get()));
+          web_state_ptr->GetWeakPtr(), action.close_tab(), web_state_list);
   ASSERT_TRUE(maybe_tool.has_value());
   std::unique_ptr<TabManagementTool> tool = std::move(maybe_tool.value());
 
@@ -128,13 +125,16 @@ TEST_F(TabManagementToolTest, CloseTab_WebStateDetached_Failure) {
   browser_list_->AddBrowser(browser.get());
   auto web_state = std::make_unique<web::FakeWebState>();
   web::WebStateID tab_id = web_state->GetUniqueIdentifier();
+  web::FakeWebState* web_state_ptr = web_state.get();
+  base::WeakPtr<WebStateList> web_state_list =
+      browser->GetWebStateList()->AsWeakPtr();
   browser->GetWebStateList()->InsertWebState(std::move(web_state));
 
   optimization_guide::proto::Action action;
   action.mutable_close_tab()->set_tab_id(tab_id.identifier());
   base::expected<std::unique_ptr<TabManagementTool>, ToolExecutionResult>
       maybe_tool = TabManagementTool::CreateCloseTabTool(
-          action.close_tab(), ProfileContextResolver(profile_.get()));
+          web_state_ptr->GetWeakPtr(), action.close_tab(), web_state_list);
   ASSERT_TRUE(maybe_tool.has_value());
   std::unique_ptr<TabManagementTool> tool = std::move(maybe_tool.value());
 

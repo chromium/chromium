@@ -23,16 +23,14 @@ namespace actor {
 
 class ScrollToolJavaScriptFeature;
 
-class ProfileContextResolver;
-
 // Tool that scrolls within an element on a page.
 class ScrollTool : public WebActorTool {
  public:
   ~ScrollTool() override;
 
   static base::expected<std::unique_ptr<ScrollTool>, ToolExecutionResult>
-  Create(const optimization_guide::proto::ScrollAction& action,
-         const ProfileContextResolver& profile_context_resolver);
+  Create(base::WeakPtr<web::WebState> web_state,
+         const optimization_guide::proto::ScrollAction& action);
 
   // ActorTool:
   void Execute(ToolExecutionCallback callback) override;
@@ -40,8 +38,8 @@ class ScrollTool : public WebActorTool {
   ToolType GetToolType() const override;
 
  private:
-  ScrollTool(const optimization_guide::proto::ScrollAction& action,
-             base::WeakPtr<web::WebState> web_state);
+  ScrollTool(base::WeakPtr<web::WebState> web_state,
+             const optimization_guide::proto::ScrollAction& action);
 
   void OnTargetFrameResolved(
       optimization_guide::proto::ScrollAction action,

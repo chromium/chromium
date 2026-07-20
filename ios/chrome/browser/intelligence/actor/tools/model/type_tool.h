@@ -23,16 +23,14 @@ namespace actor {
 
 class TypeToolJavaScriptFeature;
 
-class ProfileContextResolver;
-
 // Tool to type text into an element on a page.
 class TypeTool : public WebActorTool {
  public:
   ~TypeTool() override;
 
   static base::expected<std::unique_ptr<TypeTool>, ToolExecutionResult> Create(
-      const optimization_guide::proto::TypeAction& action,
-      const ProfileContextResolver& profile_context_resolver);
+      base::WeakPtr<web::WebState> web_state,
+      const optimization_guide::proto::TypeAction& action);
 
   // ActorTool:
   void Execute(ToolExecutionCallback callback) override;
@@ -40,8 +38,8 @@ class TypeTool : public WebActorTool {
   ToolType GetToolType() const override;
 
  private:
-  TypeTool(const optimization_guide::proto::TypeAction& action,
-           base::WeakPtr<web::WebState> web_state);
+  TypeTool(base::WeakPtr<web::WebState> web_state,
+           const optimization_guide::proto::TypeAction& action);
 
   void OnTargetFrameResolved(
       optimization_guide::proto::TypeAction action,

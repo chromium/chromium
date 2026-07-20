@@ -25,15 +25,14 @@ class WebState;
 
 namespace actor {
 
-class ProfileContextResolver;
-
 // A tool to perform tab management operations.
 class TabManagementTool : public ActorTool {
  public:
   // Creates a TabManagementTool for the CloseTab action.
   static base::expected<std::unique_ptr<TabManagementTool>, ToolExecutionResult>
-  CreateCloseTabTool(const optimization_guide::proto::CloseTabAction& action,
-                     const ProfileContextResolver& profile_context_resolver);
+  CreateCloseTabTool(base::WeakPtr<web::WebState> web_state,
+                     const optimization_guide::proto::CloseTabAction& action,
+                     base::WeakPtr<WebStateList> web_state_list);
 
   ~TabManagementTool() override;
 
@@ -48,8 +47,8 @@ class TabManagementTool : public ActorTool {
     kClose,
   };
 
-  TabManagementTool(ActionType action_type,
-                    base::WeakPtr<web::WebState> web_state,
+  TabManagementTool(base::WeakPtr<web::WebState> web_state,
+                    ActionType action_type,
                     base::WeakPtr<WebStateList> web_state_list);
 
   const ActionType action_type_;
