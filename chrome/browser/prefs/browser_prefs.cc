@@ -2671,6 +2671,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   syncer::ClearAccountKeyedPrefValue(
       profile_prefs, autofill::prefs::kAutofillAiOptInStatus, {});
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Added 07/2026.
+  tabs::MigrateEverythingMenuPinnedToTabstripPref(profile_prefs);
+#endif
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
 
