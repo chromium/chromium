@@ -23,6 +23,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -51,6 +52,7 @@
 #include "net/base/session_usage.h"
 #include "net/base/test_proxy_delegate.h"
 #include "net/cert/mock_cert_verifier.h"
+#include "net/cert/x509_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/host_resolver_source.h"
@@ -15612,14 +15614,21 @@ TEST_P(QuicSessionPoolTest, TrustAnchorIDs) {
   QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
   ASSERT_TRUE(session);
   quic::QuicSSLConfig config = session->GetSSLConfig();
-  EXPECT_EQ(config.trust_anchor_ids, "\x03\x01\x02\x03");
+  EXPECT_THAT(
+      x509_util::ParseTlsTrustAnchorIDs(
+          base::as_byte_span(config.trust_anchor_ids.value())),
+      testing::UnorderedElementsAre(std::vector<uint8_t>{0x01, 0x02, 0x03},
+                                    std::vector<uint8_t>{0x01, 0x01}));
   auto entries =
       net_log_observer.GetEntriesWithType(NetLogEventType::QUIC_SESSION);
   ASSERT_EQ(1u, entries.size());
   EXPECT_EQ("1.2.3, 2.2, 4.5",
             GetStringValueFromParams(entries[0], "trust_anchor_ids_from_dns"));
-  EXPECT_EQ("1.2.3",
-            GetStringValueFromParams(entries[0], "selected_trust_anchor_ids"));
+  EXPECT_THAT(
+      base::SplitString(
+          GetStringValueFromParams(entries[0], "selected_trust_anchor_ids"),
+          ", ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY),
+      testing::UnorderedElementsAre("1.2.3", "1.1"));
 }
 
 // Test that Server Handshake Padding is not requested via GetSSLConfig() when
@@ -15724,7 +15733,12 @@ TEST_P(QuicSessionPoolTest, ServerHandshakePaddingZeroPadding) {
 // Test that MTC Trust Anchor IDs are provided via GetSSLConfig() when enabled.
 TEST_P(QuicSessionPoolTest, MtcTrustAnchorIDs) {
   base::test::ScopedFeatureList feature_list;
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  feature_list.InitWithFeatures(
+      {features::kTLSTrustAnchorIDs, features::kVerifyMTCs}, {});
+#else
   feature_list.InitAndEnableFeature(features::kTLSTrustAnchorIDs);
+#endif
 
   SSLContextConfig ssl_config;
   ssl_config.mtc_trust_anchor_ids = {{0x01, 0x02, 0x03}, {0x01, 0x01}};
@@ -15758,19 +15772,33 @@ TEST_P(QuicSessionPoolTest, MtcTrustAnchorIDs) {
   QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
   ASSERT_TRUE(session);
   quic::QuicSSLConfig config = session->GetSSLConfig();
-  EXPECT_EQ(config.trust_anchor_ids, "\x03\x01\x02\x03\x02\x01\x01");
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  EXPECT_THAT(
+      x509_util::ParseTlsTrustAnchorIDs(
+          base::as_byte_span(config.trust_anchor_ids.value())),
+      testing::UnorderedElementsAre(std::vector<uint8_t>{0x01, 0x02, 0x03},
+                                    std::vector<uint8_t>{0x01, 0x01}));
+#else
+  EXPECT_FALSE(config.trust_anchor_ids.has_value());
+#endif
   auto entries =
       net_log_observer.GetEntriesWithType(NetLogEventType::QUIC_SESSION);
   ASSERT_EQ(1u, entries.size());
   EXPECT_EQ("1.2.3, 2.2, 4.5",
             GetStringValueFromParams(entries[0], "trust_anchor_ids_from_dns"));
-  EXPECT_EQ("1.2.3, 1.1",
-            GetStringValueFromParams(entries[0], "selected_trust_anchor_ids"));
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  EXPECT_THAT(
+      base::SplitString(
+          GetStringValueFromParams(entries[0], "selected_trust_anchor_ids"),
+          ", ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY),
+      testing::UnorderedElementsAre("1.2.3", "1.1"));
+#else
+  EXPECT_FALSE(entries[0].params.contains("selected_trust_anchor_ids"));
+#endif
 }
 
 // Test that when Trust Anchor IDs are not advertised by the server, but are
-// enabled on the client, we send an empty list to indicate that TAI is
-// supported.
+// enabled on the client, we still unconditionally send them (bypassing DNS).
 TEST_P(QuicSessionPoolTest, TrustAnchorIDsNotAdvertisedInDns) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kTLSTrustAnchorIDs);
@@ -15806,13 +15834,20 @@ TEST_P(QuicSessionPoolTest, TrustAnchorIDsNotAdvertisedInDns) {
   QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
   ASSERT_TRUE(session);
   quic::QuicSSLConfig config = session->GetSSLConfig();
-  EXPECT_EQ(config.trust_anchor_ids, "");
+  EXPECT_THAT(
+      x509_util::ParseTlsTrustAnchorIDs(
+          base::as_byte_span(config.trust_anchor_ids.value())),
+      testing::UnorderedElementsAre(std::vector<uint8_t>{0x01, 0x02, 0x03},
+                                    std::vector<uint8_t>{0x01, 0x01}));
   auto entries =
       net_log_observer.GetEntriesWithType(NetLogEventType::QUIC_SESSION);
   ASSERT_EQ(1u, entries.size());
   EXPECT_FALSE(entries[0].params.contains("trust_anchor_ids_from_dns"));
-  EXPECT_EQ("",
-            GetStringValueFromParams(entries[0], "selected_trust_anchor_ids"));
+  EXPECT_THAT(
+      base::SplitString(
+          GetStringValueFromParams(entries[0], "selected_trust_anchor_ids"),
+          ", ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY),
+      testing::UnorderedElementsAre("1.2.3", "1.1"));
 }
 
 // Test that Trust Anchor IDs are not configured via GetSSLConfig() when the

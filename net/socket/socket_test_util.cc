@@ -43,6 +43,7 @@
 #include "net/base/load_timing_info.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_server.h"
+#include "net/cert/x509_util.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
@@ -61,6 +62,7 @@
 #include "net/test/test_data_directory.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 
@@ -1044,8 +1046,13 @@ std::unique_ptr<SSLClientSocket> MockClientSocketFactory::CreateSSLClientSocket(
               ssl_config.ech_config_list);
   }
   if (next_ssl_data->expected_trust_anchor_ids) {
-    EXPECT_EQ(*next_ssl_data->expected_trust_anchor_ids,
-              ssl_config.trust_anchor_ids);
+    EXPECT_TRUE(ssl_config.trust_anchor_ids.has_value());
+    if (ssl_config.trust_anchor_ids.has_value()) {
+      EXPECT_THAT(
+          x509_util::ParseTlsTrustAnchorIDs(*ssl_config.trust_anchor_ids),
+          testing::UnorderedElementsAreArray(
+              *next_ssl_data->expected_trust_anchor_ids));
+    }
   }
   if (next_ssl_data->expect_no_trust_anchor_ids) {
     EXPECT_EQ(std::nullopt, ssl_config.trust_anchor_ids);

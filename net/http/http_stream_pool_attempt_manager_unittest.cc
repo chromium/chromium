@@ -526,6 +526,10 @@ class HttpStreamPoolAttemptManagerTest : public TestWithTaskEnvironment {
 
   HttpStreamPool& pool() { return *http_network_session_->http_stream_pool(); }
 
+  SSLClientContext* ssl_client_context() {
+    return http_network_session_->ssl_client_context();
+  }
+
   FakeServiceEndpointResolver* resolver() {
     return static_cast<FakeServiceEndpointResolver*>(
         session_deps_.alternate_host_resolver.get());
@@ -7819,13 +7823,13 @@ TEST_F(HttpStreamPoolAttemptManagerTest, TrustAnchorIDsDisabled) {
 
   requester.WaitForResult();
   EXPECT_THAT(requester.result(), Optional(IsOk()));
-  histogram_tester.ExpectUniqueSample("Net.SSL_Connection_Error_TrustAnchorIDs",
-                                      OK, 1);
+  histogram_tester.ExpectTotalCount("Net.SSL_Connection_Error_TrustAnchorIDs",
+                                    0);
   histogram_tester.ExpectTotalCount("Net.SSL_Connection_Latency_TrustAnchorIDs",
-                                    1);
+                                    0);
   histogram_tester.ExpectUniqueSample(
       "Net.SSL.TrustAnchorIDsResult",
-      SSLClientSocket::TrustAnchorIDsResult::kDnsSuccessInitial, 1);
+      SSLClientSocket::TrustAnchorIDsResult::kNoDnsSuccessInitial, 1);
 }
 
 // Tests that TLS Trust Anchor IDs are sent when the feature flag is enabled.
@@ -7840,11 +7844,9 @@ TEST_F(HttpStreamPoolAttemptManagerTest, TrustAnchorIDs) {
   SequencedSocketData data;
   socket_factory()->AddSocketDataProvider(&data);
   SSLSocketDataProvider ssl(ASYNC, OK);
-  // The expected Trust Anchor IDs are the intersection of the Trust Anchor IDs
-  // that Chrome trusts (set on SSLContextConfig above) and the Trust Anchor IDs
-  // provided by the server in DNS (set on the endpoint metadata below), in TLS
-  // wire format.
-  ssl.expected_trust_anchor_ids = {{0x02, 0x02, 0x02}};
+  // The expected Trust Anchor IDs are all the configured Trust Anchor IDs.
+  ssl.expected_trust_anchor_ids = std::vector<std::vector<uint8_t>>{
+      {0x01, 0x02, 0x03}, {0x02, 0x02}, {0x04, 0x04}};
   socket_factory()->AddSSLSocketDataProvider(&ssl);
 
   resolver()
@@ -7861,13 +7863,13 @@ TEST_F(HttpStreamPoolAttemptManagerTest, TrustAnchorIDs) {
 
   requester.WaitForResult();
   EXPECT_THAT(requester.result(), Optional(IsOk()));
-  histogram_tester.ExpectUniqueSample("Net.SSL_Connection_Error_TrustAnchorIDs",
-                                      OK, 1);
+  histogram_tester.ExpectTotalCount("Net.SSL_Connection_Error_TrustAnchorIDs",
+                                    0);
   histogram_tester.ExpectTotalCount("Net.SSL_Connection_Latency_TrustAnchorIDs",
-                                    1);
+                                    0);
   histogram_tester.ExpectUniqueSample(
       "Net.SSL.TrustAnchorIDsResult",
-      SSLClientSocket::TrustAnchorIDsResult::kDnsSuccessInitial, 1);
+      SSLClientSocket::TrustAnchorIDsResult::kNoDnsSuccessInitial, 1);
 }
 
 // Tests that TLS Trust Anchor IDs are sent even when ECH is disabled.
@@ -7884,11 +7886,9 @@ TEST_F(HttpStreamPoolAttemptManagerTest, TrustAnchorIDsEnabledWithECHDisabled) {
   SequencedSocketData data;
   socket_factory()->AddSocketDataProvider(&data);
   SSLSocketDataProvider ssl(ASYNC, OK);
-  // The expected Trust Anchor IDs are the intersection of the Trust Anchor IDs
-  // that Chrome trusts (set on SSLContextConfig above) and the Trust Anchor IDs
-  // provided by the server in DNS (set on the endpoint metadata below), in TLS
-  // wire format.
-  ssl.expected_trust_anchor_ids = {{0x02, 0x02, 0x02}};
+  // The expected Trust Anchor IDs are all the configured Trust Anchor IDs.
+  ssl.expected_trust_anchor_ids = std::vector<std::vector<uint8_t>>{
+      {0x01, 0x02, 0x03}, {0x02, 0x02}, {0x04, 0x04}};
   socket_factory()->AddSSLSocketDataProvider(&ssl);
 
   resolver()

@@ -1766,8 +1766,8 @@ quic::QuicSSLConfig QuicChromiumClientSession::GetSSLConfig() const {
   }
 
   if (ssl_context_config.ShouldAdvertiseTrustAnchorIDs()) {
-    config.trust_anchor_ids = base::as_string_view(
-        ssl_context_config.SelectTrustAnchorIDs(trust_anchor_ids_));
+    config.trust_anchor_ids =
+        base::as_string_view(ssl_context_config.SelectAllTrustAnchorIDs());
   }
 
   config.server_padding_to_request = ssl_context_config.RequestServerPadding();

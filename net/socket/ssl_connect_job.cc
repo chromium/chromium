@@ -247,17 +247,11 @@ int SSLConnectJob::DoTransportConnect() {
   next_state_ = STATE_TRANSPORT_CONNECT_COMPLETE;
 
   if (base::FeatureList::IsEnabled(features::kHappyEyeballsV2)) {
-    // If this is an ECH or Trust Anchor IDs retry, connect to the same server
-    // as before.
+    // If this is an ECH retry, connect to the same server as before.
     std::optional<TcpConnectJob::ServiceEndpointOverride>
         service_endpoint_override;
-    if (ech_retry_configs_ || trust_anchor_ids_for_retry_.has_value()) {
-      if (ech_retry_configs_) {
-        DCHECK(ssl_client_context()->config().ech_enabled);
-      }
-      if (trust_anchor_ids_for_retry_.has_value()) {
-        DCHECK(base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs));
-      }
+    if (ech_retry_configs_) {
+      DCHECK(ssl_client_context()->config().ech_enabled);
       DCHECK(service_endpoint_result_);
       service_endpoint_override.emplace(*service_endpoint_result_,
                                         dns_aliases_);
@@ -269,17 +263,11 @@ int SSLConnectJob::DoTransportConnect() {
     tcp_connect_job_ = connect_job.get();
     nested_connect_job_ = std::move(connect_job);
   } else {
-    // If this is an ECH or Trust Anchor IDs retry, connect to the same server
-    // as before.
+    // If this is an ECH retry, connect to the same server as before.
     std::optional<TransportConnectJob::EndpointResultOverride>
         endpoint_result_override;
-    if (ech_retry_configs_ || trust_anchor_ids_for_retry_.has_value()) {
-      if (ech_retry_configs_) {
-        DCHECK(ssl_client_context()->config().ech_enabled);
-      }
-      if (trust_anchor_ids_for_retry_.has_value()) {
-        DCHECK(base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs));
-      }
+    if (ech_retry_configs_) {
+      DCHECK(ssl_client_context()->config().ech_enabled);
       DCHECK(endpoint_result_);
       endpoint_result_override.emplace(*endpoint_result_, dns_aliases_);
     }
@@ -426,22 +414,8 @@ int SSLConnectJob::DoSSLConnect() {
   }
 
   if (ssl_client_context()->config().ShouldAdvertiseTrustAnchorIDs()) {
-    if (trust_anchor_ids_for_retry_.has_value()) {
-      ssl_config.trust_anchor_ids = *trust_anchor_ids_for_retry_;
-    } else if (endpoint_result_) {
-      ssl_config.trust_anchor_ids =
-          ssl_client_context()->config().SelectTrustAnchorIDs(
-              endpoint_result_->metadata.trust_anchor_ids);
-    } else if (service_endpoint_result_) {
-      ssl_config.trust_anchor_ids =
-          ssl_client_context()->config().SelectTrustAnchorIDs(
-              service_endpoint_result_->metadata.trust_anchor_ids);
-    } else {
-      // Send an empty trust_anchors extension to signal we support the
-      // extension and can trigger the retry flow if the server picked a
-      // certificate wrong.
-      ssl_config.trust_anchor_ids.emplace();
-    }
+    ssl_config.trust_anchor_ids =
+        ssl_client_context()->config().SelectAllTrustAnchorIDs();
   }
   ssl_config.server_padding_to_request =
       ssl_client_context()->config().RequestServerPadding();
@@ -451,29 +425,10 @@ int SSLConnectJob::DoSSLConnect() {
     dict.Set("ech_enabled", ssl_client_context()->config().ech_enabled);
     dict.Set("ech_config_list", NetLogBinaryValue(ssl_config.ech_config_list));
     if (ssl_config.trust_anchor_ids) {
-      if (trust_anchor_ids_for_retry_.has_value()) {
-        dict.Set(
-            "selected_trust_anchor_ids_for_retry",
-            x509_util::TrustAnchorIDsToString(x509_util::ParseTlsTrustAnchorIDs(
-                *ssl_config.trust_anchor_ids)));
-      } else {
-        dict.Set(
-            "selected_trust_anchor_ids",
-            x509_util::TrustAnchorIDsToString(x509_util::ParseTlsTrustAnchorIDs(
-                *ssl_config.trust_anchor_ids)));
-      }
-    }
-    if (endpoint_result_ &&
-        !endpoint_result_->metadata.trust_anchor_ids.empty()) {
-      dict.Set("trust_anchor_ids_from_dns",
-               x509_util::TrustAnchorIDsToString(
-                   endpoint_result_->metadata.trust_anchor_ids));
-    }
-    if (service_endpoint_result_ &&
-        !service_endpoint_result_->metadata.trust_anchor_ids.empty()) {
-      dict.Set("trust_anchor_ids_from_dns",
-               x509_util::TrustAnchorIDsToString(
-                   service_endpoint_result_->metadata.trust_anchor_ids));
+      dict.Set(
+          "selected_trust_anchor_ids",
+          x509_util::TrustAnchorIDsToString(
+              x509_util::ParseTlsTrustAnchorIDs(*ssl_config.trust_anchor_ids)));
     }
     if (ssl_config.server_padding_to_request) {
       dict.Set("requested_server_padding",
@@ -562,45 +517,11 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
     return OK;
   }
 
-  // If we got a certificate error and the server advertised some Trust Anchor
-  // IDs in the handshake that we trust, then retry the connection, using the
-  // fresh Trust Anchor IDs from the server. We only want to retry once; if we
-  // already have |server_trust_anchor_ids_for_retry_| set at this point, it
-  // means we already retried, so we skip all of this and treat the connection
-  // error as usual.
-  //
-  // TODO(https://crbug.com/399937371): clarify and test the interactions of ECH
-  // retry and TAI retry.
-  if (IsCertificateError(result) && !trust_anchor_ids_for_retry_.has_value() &&
-      base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs)) {
-    std::vector<std::vector<uint8_t>> server_trust_anchor_ids =
-        ssl_socket_->GetServerTrustAnchorIDs();
-    SSLInfo ssl_info;
-    CHECK(ssl_socket_->GetSSLInfo(&ssl_info));
-    CHECK(ssl_info.cert.get());
-    // https://tlswg.org/tls-trust-anchor-ids/draft-ietf-tls-trust-anchor-ids.html#name-retry-mechanism:
-    // If the EncryptedExtensions had no trust_anchor extension, or no match was
-    // found, the client returns the error to the application.
-    trust_anchor_ids_for_retry_ =
-        ssl_client_context()->config().SelectTrustAnchorIDsForRetry(
-            ssl_info.cert.get(), server_trust_anchor_ids,
-            &trust_anchor_retry_used_mtc_fallback_);
-    if (trust_anchor_ids_for_retry_.has_value()) {
-      ResetStateForRestart();
-      next_state_ = GetInitialState(params_->GetConnectionType());
-      return OK;
-    }
-  }
-
   SSLClientSocket::RecordSSLConnectResult(
       ssl_socket_.get(), result, is_ech_capable, ech_enabled,
-      ech_retry_configs_,
-      (endpoint_result_ &&
-       !endpoint_result_->metadata.trust_anchor_ids.empty()) ||
-          (service_endpoint_result_ &&
-           !service_endpoint_result_->metadata.trust_anchor_ids.empty()),
-      trust_anchor_ids_for_retry_.has_value(),
-      trust_anchor_retry_used_mtc_fallback_, connect_timing_);
+      ech_retry_configs_, /*trust_anchor_ids_from_dns=*/false,
+      /*retried_with_trust_anchor_ids=*/false,
+      /*trust_anchor_retry_used_mtc_fallback=*/false, connect_timing_);
 
   if (result == OK || IsCertificateError(result)) {
     SetSocket(std::move(ssl_socket_), std::move(dns_aliases_));

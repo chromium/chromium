@@ -200,15 +200,14 @@ int TlsStreamAttempt::DoTlsAttempt(int rv) {
     }
 
     is_ech_capable_ = !endpoint->metadata.ech_config_list.empty();
-    trust_anchor_ids_from_dns_ = !endpoint->metadata.trust_anchor_ids.empty();
 
     // Configure ServiceEndpoint-specific TLS settings.
     const SSLContextConfig& ssl_context_config =
         params().ssl_client_context->config();
     ssl_config_ = base_ssl_config_;
     if (ssl_context_config.ShouldAdvertiseTrustAnchorIDs()) {
-      ssl_config_->trust_anchor_ids = ssl_context_config.SelectTrustAnchorIDs(
-          endpoint->metadata.trust_anchor_ids);
+      ssl_config_->trust_anchor_ids =
+          ssl_context_config.SelectAllTrustAnchorIDs();
     }
     if (ssl_context_config.ech_enabled) {
       ssl_config_->ech_config_list = endpoint->metadata.ech_config_list;
@@ -233,24 +232,11 @@ int TlsStreamAttempt::DoTlsAttempt(int rv) {
   TRACE_EVENT_BEGIN("net.stream", "TlsConnect", track());
   net_log().BeginEvent(NetLogEventType::TLS_STREAM_ATTEMPT_CONNECT, [&] {
     base::DictValue results;
-    if (retried_for_trust_anchor_ids_) {
+    if (ssl_config_->trust_anchor_ids) {
       results.Set(
-          "selected_trust_anchor_ids_for_retry",
+          "selected_trust_anchor_ids",
           x509_util::TrustAnchorIDsToString(x509_util::ParseTlsTrustAnchorIDs(
               *ssl_config_->trust_anchor_ids)));
-    } else {
-      if (trust_anchor_ids_from_dns_) {
-        results.Set("trust_anchor_ids_from_dns",
-                    x509_util::TrustAnchorIDsToString(
-                        delegate_->GetServiceEndpointForTlsHandshake()
-                            ->metadata.trust_anchor_ids));
-      }
-      if (ssl_config_->trust_anchor_ids) {
-        results.Set(
-            "selected_trust_anchor_ids",
-            x509_util::TrustAnchorIDsToString(x509_util::ParseTlsTrustAnchorIDs(
-                *ssl_config_->trust_anchor_ids)));
-      }
     }
     return results;
   });
@@ -303,44 +289,11 @@ int TlsStreamAttempt::DoTlsAttemptComplete(int rv) {
     return OK;
   }
 
-  // If we got a certificate error and the server advertised some Trust Anchor
-  // IDs in the handshake that we trust, then retry the connection, using the
-  // fresh Trust Anchor IDs from the server. We only want to retry once; if we
-  // have we already retried, so we skip all of this and treat the connection
-  // error as usual.
-  //
-  // TODO(https://crbug.com/399937371): clarify and test the interactions of ECH
-  // retry and TAI retry.
-  if (IsCertificateError(rv) && !retried_for_trust_anchor_ids_ &&
-      base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs)) {
-    CHECK(ssl_socket_);
-
-    std::vector<std::vector<uint8_t>> server_trust_anchor_ids =
-        ssl_socket_->GetServerTrustAnchorIDs();
-    SSLInfo ssl_info;
-    CHECK(ssl_socket_->GetSSLInfo(&ssl_info));
-    CHECK(ssl_info.cert.get());
-    // https://tlswg.org/tls-trust-anchor-ids/draft-ietf-tls-trust-anchor-ids.html#name-retry-mechanism:
-    // If the EncryptedExtensions had no trust_anchor extension, or no match was
-    // found, the client returns the error to the application.
-    std::optional<std::vector<uint8_t>> trust_anchor_ids_for_retry =
-        params().ssl_client_context->config().SelectTrustAnchorIDsForRetry(
-            ssl_info.cert.get(), server_trust_anchor_ids,
-            &trust_anchor_retry_used_mtc_fallback_);
-    if (trust_anchor_ids_for_retry.has_value()) {
-      retried_for_trust_anchor_ids_ = true;
-      ssl_config_->trust_anchor_ids = *trust_anchor_ids_for_retry;
-
-      ResetStateForRestart();
-      next_state_ = State::kTcpAttempt;
-      return OK;
-    }
-  }
-
   SSLClientSocket::RecordSSLConnectResult(
       ssl_socket_.get(), rv, is_ech_capable_, ech_enabled, ech_retry_configs_,
-      trust_anchor_ids_from_dns_, retried_for_trust_anchor_ids_,
-      trust_anchor_retry_used_mtc_fallback_, connect_timing());
+      /*trust_anchor_ids_from_dns=*/false,
+      /*retried_with_trust_anchor_ids=*/false,
+      /*trust_anchor_retry_used_mtc_fallback=*/false, connect_timing());
 
   if (rv == OK || IsCertificateError(rv)) {
     CHECK(ssl_socket_);

@@ -269,25 +269,15 @@ struct MockReadWrite {
   };
 
   // Default
-  MockReadWrite()
-      : mode(SYNCHRONOUS),
-        result(0),
-        sequence_number(0),
-        tos(0) {}
+  MockReadWrite() : mode(SYNCHRONOUS), result(0), sequence_number(0), tos(0) {}
 
   // Read/write failure (no data).
   MockReadWrite(IoMode io_mode, int result)
-      : mode(io_mode),
-        result(result),
-        sequence_number(0),
-        tos(0) {}
+      : mode(io_mode), result(result), sequence_number(0), tos(0) {}
 
   // Read/write failure (no data), with sequence information.
   MockReadWrite(IoMode io_mode, int result, int seq)
-      : mode(io_mode),
-        result(result),
-        sequence_number(seq),
-        tos(0) {}
+      : mode(io_mode), result(result), sequence_number(seq), tos(0) {}
 
   // Asynchronous read/write success.
   explicit MockReadWrite(ToStringView data)
@@ -676,9 +666,11 @@ struct SSLSocketDataProvider {
   std::optional<bool> expected_ignore_certificate_errors;
   std::optional<NetworkAnonymizationKey> expected_network_anonymization_key;
   std::optional<std::vector<uint8_t>> expected_ech_config_list;
-  // If not nullopt, expects a (possibly empty) trust anchors extension with the
-  // specified value.
-  std::optional<std::vector<uint8_t>> expected_trust_anchor_ids;
+  // If not nullopt, expects a (possibly empty) trust anchors extension with
+  // the specified value. Ordering of the TAIs is not checked since this is
+  // used to check TAIs sent from client to server, where ordering doesn't
+  // matter.
+  std::optional<std::vector<std::vector<uint8_t>>> expected_trust_anchor_ids;
   // Expects no trust anchors extension. This is a separate field to avoid a
   // confusing double-optional.
   bool expect_no_trust_anchor_ids = false;
@@ -1331,8 +1323,9 @@ class ClientSocketPoolTest {
         group_id, socket_params, std::nullopt /* proxy_annotation_tag */,
         priority, SocketTag(), respect_limits, request->callback(),
         ClientSocketPool::ProxyAuthCallback(), socket_pool, NetLogWithSource());
-    if (rv != ERR_IO_PENDING)
+    if (rv != ERR_IO_PENDING) {
       request_order_.push_back(request);
+    }
     return rv;
   }
 
