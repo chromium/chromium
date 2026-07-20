@@ -228,6 +228,10 @@ ListenerStreamProvider::StreamState ListenerStreamProvider::GetState() const {
   return state_;
 }
 
+Target* ListenerStreamProvider::GetTarget() {
+  return target_.get();
+}
+
 const Target* ListenerStreamProvider::GetTarget() const {
   return target_.get();
 }

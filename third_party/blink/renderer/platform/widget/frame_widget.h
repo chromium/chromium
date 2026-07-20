@@ -207,14 +207,16 @@ class PLATFORM_EXPORT FrameWidget {
                               const gfx::Range& replacement_range,
                               int selection_start,
                               int selection_end,
-                              mojom::blink::ImeState ime_state) = 0;
+                              mojom::blink::ImeState ime_state,
+                              DOMNodeIdType target_dom_node_id) = 0;
 
   // This message deletes the current composition, inserts specified text, and
   // moves the cursor.
   virtual void CommitText(const String& text,
                           const Vector<ui::ImeTextSpan>& ime_text_spans,
                           const gfx::Range& replacement_range,
-                          int relative_cursor_pos) = 0;
+                          int relative_cursor_pos,
+                          DOMNodeIdType target_dom_node_id) = 0;
 
   // This message inserts the ongoing composition.
   virtual void FinishComposingText(bool keep_selection) = 0;

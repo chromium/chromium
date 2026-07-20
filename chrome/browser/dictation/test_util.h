@@ -108,6 +108,7 @@ class MockStreamProvider : public StreamProvider {
               (override));
   MOCK_METHOD(void, OnStreamStateChanged, (StreamState state), (override));
   MOCK_METHOD(StreamState, GetState, (), (const, override));
+  MOCK_METHOD(Target*, GetTarget, (), (override));
   MOCK_METHOD(const Target*, GetTarget, (), (const, override));
 };
 

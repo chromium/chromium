@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/direct_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
+#include "third_party/blink/public/mojom/dom/dom_node_id.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 
 namespace blink {
@@ -54,11 +55,13 @@ class WidgetInputHandlerImpl : public mojom::blink::WidgetInputHandler {
                          int32_t start,
                          int32_t end,
                          mojom::blink::ImeState ime_state,
+                         mojom::blink::DOMNodeIdPtr target_dom_node_id,
                          ImeSetCompositionCallback callback) override;
   void ImeCommitText(const String& text,
                      const Vector<ui::ImeTextSpan>& ime_text_spans,
                      const gfx::Range& range,
                      int32_t relative_cursor_position,
+                     mojom::blink::DOMNodeIdPtr target_dom_node_id,
                      ImeCommitTextCallback callback) override;
   void ImeFinishComposingText(bool keep_selection) override;
   void RequestTextInputStateUpdate() override;

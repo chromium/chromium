@@ -64,9 +64,11 @@ void MockWidgetInputHandler::ImeSetComposition(
     int32_t start,
     int32_t end,
     blink::mojom::ImeState ime_state,
+    const blink::DOMNodeIdType& target_dom_node_id,
     ImeSetCompositionCallback callback) {
   dispatched_messages_.emplace_back(std::make_unique<DispatchedIMEMessage>(
-      "SetComposition", text, ime_text_spans, range, start, end, ime_state));
+      "SetComposition", text, ime_text_spans, range, start, end, ime_state,
+      target_dom_node_id));
   if (callback)
     std::move(callback).Run();
 }
@@ -76,10 +78,12 @@ void MockWidgetInputHandler::ImeCommitText(
     const std::vector<ui::ImeTextSpan>& ime_text_spans,
     const gfx::Range& range,
     int32_t relative_cursor_position,
+    const blink::DOMNodeIdType& target_dom_node_id,
     ImeCommitTextCallback callback) {
   dispatched_messages_.emplace_back(std::make_unique<DispatchedIMEMessage>(
       "CommitText", text, ime_text_spans, range, relative_cursor_position,
-      relative_cursor_position, blink::mojom::ImeState::kNone));
+      relative_cursor_position, blink::mojom::ImeState::kNone,
+      target_dom_node_id));
   if (callback)
     std::move(callback).Run();
 }
@@ -195,14 +199,16 @@ MockWidgetInputHandler::DispatchedIMEMessage::DispatchedIMEMessage(
     const gfx::Range& range,
     int32_t start,
     int32_t end,
-    blink::mojom::ImeState ime_state)
+    blink::mojom::ImeState ime_state,
+    blink::DOMNodeIdType target_dom_node_id)
     : DispatchedMessage(name),
       text_(text),
       text_spans_(text_spans),
       range_(range),
       start_(start),
       end_(end),
-      ime_state_(ime_state) {}
+      ime_state_(ime_state),
+      target_dom_node_id_(target_dom_node_id) {}
 
 MockWidgetInputHandler::DispatchedIMEMessage::~DispatchedIMEMessage() {}
 
@@ -217,9 +223,11 @@ bool MockWidgetInputHandler::DispatchedIMEMessage::Matches(
     const gfx::Range& range,
     int32_t start,
     int32_t end,
-    blink::mojom::ImeState ime_state) const {
+    blink::mojom::ImeState ime_state,
+    blink::DOMNodeIdType target_dom_node_id) const {
   return text_ == text && text_spans_ == ime_text_spans && range_ == range &&
-         start_ == start && end_ == end && ime_state_ == ime_state;
+         start_ == start && end_ == end && ime_state_ == ime_state &&
+         target_dom_node_id_ == target_dom_node_id;
 }
 
 MockWidgetInputHandler::DispatchedEditCommandMessage::

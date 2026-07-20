@@ -42,6 +42,7 @@ class ListenerStreamProvider : public StreamProvider {
   void OnTranscriptionUpdated(const std::string& data, bool is_final) override;
   void OnStreamStateChanged(StreamState state) override;
   StreamState GetState() const override;
+  Target* GetTarget() override;
   const Target* GetTarget() const override;
 
   void SetOnUpdateForTesting(base::RepeatingClosure callback);
