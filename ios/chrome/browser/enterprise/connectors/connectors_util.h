@@ -14,6 +14,10 @@
 
 class ProfileIOS;
 
+namespace policy {
+class UserCloudPolicyManager;
+}
+
 namespace enterprise_connectors {
 
 // Fetches additional information that is common to every event. Fetches and
@@ -26,14 +30,14 @@ base::DictValue GetContext(ProfileIOS* profile);
 
 // Fetches the same information as GetContext, but in a protobuf instead of a
 // Value.
-ClientMetadata GetContextAsClientMetadata(ProfileIOS* profile);
+ClientMetadata GetContextAsClientMetadata(
+    const std::string& profile_name,
+    const base::FilePath& profile_path,
+    policy::UserCloudPolicyManager* user_cloud_policy_manager);
 
-// Returns client id for a given `profile` if:
-// * `profile` is NOT incognito profile.
-// * `profile` is NOT sign-in screen profile
-// * user corresponding to a `profile` is managed.
-// Otherwise returns empty optional.
-std::optional<std::string> GetUserClientId(ProfileIOS* profile);
+// Returns client id for a given `UserCloudPolicyManager` if it exists.
+std::optional<std::string> GetUserClientId(
+    policy::UserCloudPolicyManager* user_cloud_policy_manager);
 
 // Returns affiliation IDs contained in the PolicyData corresponding to the
 // profile.
@@ -48,8 +52,9 @@ base::flat_set<std::string> GetUserAffiliationIds(ProfileIOS* profile);
 // Filtering is enabled.
 bool IsEnterpriseUrlFilteringEnabled(EnterpriseRealTimeUrlCheckMode mode);
 
-// Returns whether device info should be reported for the profile.
-bool IncludeDeviceInfo(ProfileIOS* profile, bool per_profile);
+// Returns whether device info should be reported based on policy scope and
+// affiliation.
+bool IncludeDeviceInfo(bool per_profile, bool is_profile_affiliated);
 
 // Returns whether the download connector feature flag is turned on and the
 // connector is enabled.

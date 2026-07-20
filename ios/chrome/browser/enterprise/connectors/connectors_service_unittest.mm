@@ -146,6 +146,16 @@ class ConnectorsServiceTest : public PlatformTest {
                                         signin::ConsentLevel::kSignin);
   }
 
+  ConnectorsService CreateService(ProfileIOS* p = nullptr) {
+    ProfileIOS* target_profile = p ? p : profile();
+    return ConnectorsService(
+        target_profile->GetPrefs(),
+        IdentityManagerFactory::GetForProfile(target_profile),
+        target_profile->GetUserCloudPolicyManager(),
+        target_profile->GetProfileName(), target_profile->GetStatePath(),
+        target_profile->IsOffTheRecord());
+  }
+
  private:
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
@@ -156,8 +166,8 @@ class ConnectorsServiceTest : public PlatformTest {
 }  // namespace
 
 TEST_F(ConnectorsServiceTest, GetPrefs) {
-  ConnectorsService connectors_service{profile()};
-  const ConnectorsService const_connectors_service{profile()};
+  ConnectorsService connectors_service = CreateService();
+  const ConnectorsService const_connectors_service = CreateService();
 
   PrefService* prefs = connectors_service.GetPrefs();
   const PrefService* const_prefs = const_connectors_service.GetPrefs();
@@ -170,7 +180,7 @@ TEST_F(ConnectorsServiceTest, GetPrefs) {
 TEST_F(ConnectorsServiceTest, GetProfileDmToken) {
   profile()->GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
                                     policy::POLICY_SCOPE_USER);
-  ConnectorsService connectors_service{profile()};
+  ConnectorsService connectors_service = CreateService();
 
   auto profile_dm_token =
       connectors_service.GetDmToken(kEnterpriseRealTimeUrlCheckScope);
@@ -182,7 +192,7 @@ TEST_F(ConnectorsServiceTest, GetProfileDmToken) {
 TEST_F(ConnectorsServiceTest, GetBrowserDmToken) {
   profile()->GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
                                     policy::POLICY_SCOPE_MACHINE);
-  ConnectorsService connectors_service{profile()};
+  ConnectorsService connectors_service = CreateService();
 
   auto browser_dm_token =
       connectors_service.GetDmToken(kEnterpriseRealTimeUrlCheckScope);
@@ -200,13 +210,13 @@ TEST_F(ConnectorsServiceTest, ConnectorsEnabled) {
   ASSERT_FALSE(ConnectorsServiceFactory::GetForProfile(
                    profile()->GetOffTheRecordProfile())
                    ->ConnectorsEnabled());
-  ASSERT_TRUE(ConnectorsService(profile()).ConnectorsEnabled());
-  ASSERT_FALSE(ConnectorsService(profile()->GetOffTheRecordProfile())
-                   .ConnectorsEnabled());
+  ASSERT_TRUE(CreateService().ConnectorsEnabled());
+  ASSERT_FALSE(
+      CreateService(profile()->GetOffTheRecordProfile()).ConnectorsEnabled());
 }
 
 TEST_F(ConnectorsServiceTest, RealTimeUrlCheck) {
-  auto service = ConnectorsService(profile());
+  auto service = CreateService();
 
   ASSERT_FALSE(service.GetDMTokenForRealTimeUrlCheck().has_value());
   ASSERT_EQ(service.GetDMTokenForRealTimeUrlCheck().error(),
@@ -236,7 +246,7 @@ TEST_F(ConnectorsServiceTest, RealTimeUrlCheck) {
 }
 
 TEST_F(ConnectorsServiceTest, RealTimeUrlCheck_OffTheRecord) {
-  auto service = ConnectorsService(profile()->GetOffTheRecordProfile());
+  auto service = CreateService(profile()->GetOffTheRecordProfile());
 
   ASSERT_FALSE(service.GetDMTokenForRealTimeUrlCheck().has_value());
   ASSERT_EQ(service.GetDMTokenForRealTimeUrlCheck().error(),
@@ -268,7 +278,7 @@ TEST_F(ConnectorsServiceTest, RealTimeUrlCheck_OffTheRecord) {
 }
 
 TEST_F(ConnectorsServiceTest, ReportingSettings) {
-  auto service = ConnectorsService(profile());
+  auto service = CreateService();
 
   EXPECT_FALSE(service.GetReportingSettings());
   EXPECT_TRUE(service.GetReportingServiceProviderNames().empty());
@@ -303,7 +313,7 @@ TEST_F(ConnectorsServiceTest, ReportingSettings) {
 }
 
 TEST_F(ConnectorsServiceTest, ReportingSettings_OffTheRecord) {
-  auto service = ConnectorsService(profile()->GetOffTheRecordProfile());
+  auto service = CreateService(profile()->GetOffTheRecordProfile());
 
   EXPECT_FALSE(service.GetReportingSettings());
   EXPECT_TRUE(service.GetReportingServiceProviderNames().empty());
@@ -322,7 +332,7 @@ TEST_F(ConnectorsServiceTest, ReportingSettings_OffTheRecord) {
 }
 
 TEST_F(ConnectorsServiceTest, GetManagementDomain_UrlFilteringEnabled) {
-  auto service = ConnectorsService(profile());
+  auto service = CreateService();
 
   ASSERT_EQ(service.GetManagementDomain(), std::string());
 
@@ -340,7 +350,7 @@ TEST_F(ConnectorsServiceTest, GetManagementDomain_UrlFilteringEnabled) {
 }
 
 TEST_F(ConnectorsServiceTest, GetManagementDomain_EventReportingEnabled) {
-  auto service = ConnectorsService(profile());
+  auto service = CreateService();
 
   ASSERT_EQ(service.GetManagementDomain(), std::string());
 
@@ -358,7 +368,7 @@ TEST_F(ConnectorsServiceTest, GetManagementDomain_EventReportingEnabled) {
 }
 
 TEST_F(ConnectorsServiceTest, GetManagementDomain_MachinePolicyHasPrecedence) {
-  auto service = ConnectorsService(profile());
+  auto service = CreateService();
 
   ASSERT_EQ(service.GetManagementDomain(), std::string());
 
@@ -373,7 +383,7 @@ TEST_F(ConnectorsServiceTest, GetManagementDomain_MachinePolicyHasPrecedence) {
 }
 
 TEST_F(ConnectorsServiceTest, GetManagementDomain_OffTheRecord) {
-  auto service = ConnectorsService(profile()->GetOffTheRecordProfile());
+  auto service = CreateService(profile()->GetOffTheRecordProfile());
 
   ASSERT_EQ(service.GetManagementDomain(), std::string());
 }
@@ -381,7 +391,7 @@ TEST_F(ConnectorsServiceTest, GetManagementDomain_OffTheRecord) {
 // Only added test coverage for IsClout since the not_cloud/local agent option
 // is only viable on Windows.
 TEST_F(ConnectorsServiceTest, BuildClientMetadata_IsCloud) {
-  auto service = ConnectorsService(profile());
+  auto service = CreateService();
   test::SetOnSecurityEventReporting(profile()->GetPrefs(), /*enabled=*/true);
   auto meta_data = service.BuildClientMetadata(true);
   base::FilePath expected_browser_id;
@@ -399,7 +409,7 @@ TEST_F(ConnectorsServiceTest, BuildClientMetadata_IsCloud) {
 }
 
 TEST_F(ConnectorsServiceTest, ExemptURL_WebUI) {
-  auto service = ConnectorsService(profile());
+  auto service = CreateService();
   for (const char* url :
        {"chrome://settings", "chrome://help-app/background",
         "chrome://foo/bar/baz.html", "chrome://foo/bar/baz.html?param=value"}) {
@@ -409,7 +419,7 @@ TEST_F(ConnectorsServiceTest, ExemptURL_WebUI) {
 }
 
 TEST_F(ConnectorsServiceTest, ExemptURL_ThirdPartyExtensions) {
-  auto service = ConnectorsService(profile());
+  auto service = CreateService();
   for (const char* url :
        {"chrome-extension://fake_id", "chrome-extension://fake_id/background",
         "chrome-extension://fake_id/main.html",
@@ -421,7 +431,7 @@ TEST_F(ConnectorsServiceTest, ExemptURL_ThirdPartyExtensions) {
 }
 
 TEST_F(ConnectorsServiceTest, ExemptURL_DevTools) {
-  auto service = ConnectorsService(profile());
+  auto service = CreateService();
 
   for (const char* url :
        {"devtools://fake_id", "devtools://fake_id/background",
@@ -436,7 +446,7 @@ TEST_F(ConnectorsServiceTest, ExemptURL_DevTools) {
 }
 
 TEST_F(ConnectorsServiceTest, ExemptURL_BlobAndFilesystem) {
-  auto service = ConnectorsService(profile());
+  auto service = CreateService();
 
   // Test against wildcard policy.
   for (const char* url_string :
@@ -494,7 +504,7 @@ TEST_F(ConnectorsServiceTest, GetRealTimeUrlCheckIdentifier_NoDMToken) {
   auto* manager = profile()->GetUserCloudPolicyManager();
   manager->core()->store()->set_policy_data_for_testing(nullptr);
 
-  auto service = ConnectorsService(profile());
+  auto service = CreateService();
   EXPECT_EQ(service.GetRealTimeUrlCheckIdentifier(), std::string());
 }
 
@@ -533,7 +543,7 @@ TEST_F(ConnectorsServiceTest,
       /*service=*/nullptr, std::move(client));
 
   MakePrimaryAccountAvailable(kTestProfileEmail);
-  auto service = ConnectorsService(profile());
+  auto service = CreateService();
   std::string expected_identifier =
       std::string(kTestClientId) + "\n" + kTestProfileEmail;
   EXPECT_EQ(service.GetRealTimeUrlCheckIdentifier(), expected_identifier);
@@ -572,7 +582,7 @@ TEST_F(ConnectorsServiceTest,
   machine_manager->core()->ConnectForTesting(
       /*service=*/nullptr, std::move(client));
 
-  auto service = ConnectorsService(profile());
+  auto service = CreateService();
   EXPECT_EQ(service.GetRealTimeUrlCheckIdentifier(), kTestClientId);
 }
 
@@ -611,7 +621,7 @@ TEST_F(ConnectorsServiceTest,
       /*service=*/nullptr, std::move(client));
 
   MakePrimaryAccountAvailable(kTestProfileEmail);
-  auto service = ConnectorsService(profile());
+  auto service = CreateService();
   EXPECT_EQ(service.GetRealTimeUrlCheckIdentifier(), kTestClientId);
 }
 
@@ -649,7 +659,7 @@ TEST_F(ConnectorsServiceTest,
       /*service=*/nullptr, std::move(client));
 
   MakePrimaryAccountAvailable(kTestProfileEmail);
-  auto service = ConnectorsService(profile());
+  auto service = CreateService();
   EXPECT_EQ(service.GetRealTimeUrlCheckIdentifier(), kTestProfileEmail);
 }
 

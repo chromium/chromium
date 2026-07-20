@@ -52,11 +52,16 @@ const enterprise_management::PolicyData* GetPolicyData(ProfileIOS* profile) {
   return store->policy();
 }
 
-std::optional<std::string> GetUserDmToken(ProfileIOS* profile) {
-  if (!profile) {
+std::optional<std::string> GetUserDmToken(
+    policy::UserCloudPolicyManager* user_cloud_policy_manager) {
+  if (!user_cloud_policy_manager) {
     return std::nullopt;
   }
-  const enterprise_management::PolicyData* policy_data = GetPolicyData(profile);
+  policy::CloudPolicyStore* store = user_cloud_policy_manager->core()->store();
+  if (!store || !store->has_policy()) {
+    return std::nullopt;
+  }
+  const enterprise_management::PolicyData* policy_data = store->policy();
   if (!policy_data || !policy_data->has_request_token()) {
     return std::nullopt;
   }
@@ -74,19 +79,17 @@ std::optional<std::string> GetBrowserDmToken() {
 }
 
 std::string GetManagementDomain(std::optional<policy::PolicyScope> policy_scope,
-                                ProfileIOS* profile) {
-  // Return empty string if:
-  // a. None of the policies are enabled.
-  // b. Profile is null.
-  if (!policy_scope || !profile) {
+                                signin::IdentityManager* identity_manager) {
+  // Return empty string if none of the policies are enabled.
+  if (!policy_scope) {
     return std::string();
   }
 
   switch (*policy_scope) {
       // Retrieve the domain via profile email for user-scoped policies.
     case policy::PolicyScope::POLICY_SCOPE_USER: {
-      std::string profile_email = enterprise_connectors::GetProfileEmail(
-          IdentityManagerFactory::GetForProfile(profile));
+      std::string profile_email =
+          enterprise_connectors::GetProfileEmail(identity_manager);
       return GetDomainFromEmail(profile_email);
     }
     case policy::PolicyScope::POLICY_SCOPE_MACHINE:

@@ -10,25 +10,40 @@
 #import "components/enterprise/connectors/core/connectors_prefs.h"
 #import "components/enterprise/connectors/core/features.h"
 #import "components/policy/core/browser/policy_data_utils.h"
+#import "components/policy/core/common/cloud/affiliation.h"
 #import "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #import "components/policy/core/common/policy_types.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/enterprise/common/util.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_manager.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_util.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
+#import "ios/web/public/web_client.h"
 
 namespace enterprise_connectors {
 
-ConnectorsService::ConnectorsService(ProfileIOS* profile)
+ConnectorsService::ConnectorsService(
+    PrefService* pref_service,
+    signin::IdentityManager* identity_manager,
+    policy::UserCloudPolicyManager* user_cloud_policy_manager,
+    const std::string& profile_name,
+    const base::FilePath& profile_path,
+    bool is_off_the_record)
     : ConnectorsServiceBase(
-          std::make_unique<ConnectorsManager>(profile->GetPrefs(),
+          std::make_unique<ConnectorsManager>(pref_service,
                                               GetServiceProviderConfig())),
-      profile_(profile) {
-  CHECK(profile_);
+      pref_service_(pref_service),
+      identity_manager_(identity_manager),
+      user_cloud_policy_manager_(user_cloud_policy_manager),
+      profile_name_(profile_name),
+      profile_path_(profile_path),
+      is_off_the_record_(is_off_the_record) {
+  CHECK(pref_service_);
 }
 
 ConnectorsService::~ConnectorsService() = default;
@@ -55,7 +70,7 @@ std::string ConnectorsService::GetManagementDomain() {
     }
   }
 
-  return enterprise::GetManagementDomain(policy_scope, profile_);
+  return enterprise::GetManagementDomain(policy_scope, identity_manager_);
 }
 
 std::optional<std::string> ConnectorsService::GetBrowserDmToken() const {
@@ -64,8 +79,8 @@ std::optional<std::string> ConnectorsService::GetBrowserDmToken() const {
 
 std::optional<ConnectorsServiceBase::DmToken> ConnectorsService::GetDmToken(
     const char* scope_pref) const {
-  policy::PolicyScope scope = static_cast<policy::PolicyScope>(
-      profile_->GetPrefs()->GetInteger(scope_pref));
+  policy::PolicyScope scope =
+      static_cast<policy::PolicyScope>(pref_service_->GetInteger(scope_pref));
   if (scope == policy::PolicyScope::POLICY_SCOPE_USER) {
     auto profile_dm_token = GetProfileDmToken();
     if (profile_dm_token) {
@@ -85,20 +100,20 @@ std::optional<ConnectorsServiceBase::DmToken> ConnectorsService::GetDmToken(
 }
 
 bool ConnectorsService::ConnectorsEnabled() const {
-  return !profile_->IsOffTheRecord();
+  return !is_off_the_record_;
 }
 
 PrefService* ConnectorsService::GetPrefs() {
-  return profile_->GetPrefs();
+  return pref_service_;
 }
 
 const PrefService* ConnectorsService::GetPrefs() const {
-  return profile_->GetPrefs();
+  return pref_service_;
 }
 
 policy::CloudPolicyManager*
 ConnectorsService::GetManagedUserCloudPolicyManager() const {
-  return profile_->GetUserCloudPolicyManager();
+  return user_cloud_policy_manager_;
 }
 
 std::unique_ptr<ClientMetadata> ConnectorsService::BuildClientMetadata(
@@ -108,15 +123,15 @@ std::unique_ptr<ClientMetadata> ConnectorsService::BuildClientMetadata(
     return GetBasicClientMetadata();
   }
 
-  auto metadata =
-      std::make_unique<ClientMetadata>(GetContextAsClientMetadata(profile_));
+  auto metadata = std::make_unique<ClientMetadata>(GetContextAsClientMetadata(
+      profile_name_, profile_path_, user_cloud_policy_manager_));
   if (!is_cloud) {
     PopulateBrowserMetadata(/*include_device_info=*/true,
                             metadata->mutable_browser());
   }
   metadata->set_is_chrome_os_managed_guest_session(false);
-  bool include_device_info =
-      IncludeDeviceInfo(profile_, reporting_settings.value().per_profile);
+  bool include_device_info = IncludeDeviceInfo(
+      reporting_settings.value().per_profile, IsProfileAffiliated());
   PopulateBrowserMetadata(include_device_info, metadata->mutable_browser());
 
   if (include_device_info) {
@@ -137,7 +152,7 @@ std::unique_ptr<ClientMetadata> ConnectorsService::GetBasicClientMetadata() {
   }
 
   std::optional<std::string> profile_dm_token =
-      enterprise::GetUserDmToken(profile_);
+      enterprise::GetUserDmToken(user_cloud_policy_manager_);
   if (profile_dm_token.has_value()) {
     metadata->mutable_profile()->set_dm_token(*profile_dm_token);
   }
@@ -149,12 +164,27 @@ std::unique_ptr<ClientMetadata> ConnectorsService::GetBasicClientMetadata() {
 }
 
 bool ConnectorsService::IsProfileAffiliated() const {
-  return IsProfileAffilicated(profile_);
+  base::flat_set<std::string> user_ids;
+  if (user_cloud_policy_manager_ && user_cloud_policy_manager_->core() &&
+      user_cloud_policy_manager_->core()->store() &&
+      user_cloud_policy_manager_->core()->store()->has_policy()) {
+    const auto* policy_data =
+        user_cloud_policy_manager_->core()->store()->policy();
+    if (policy_data) {
+      const auto& ids = policy_data->user_affiliation_ids();
+      user_ids = {ids.begin(), ids.end()};
+    }
+  }
+
+  base::flat_set<std::string> device_ids = GetApplicationContext()
+                                               ->GetBrowserPolicyConnector()
+                                               ->GetDeviceAffiliationIds();
+
+  return policy::IsAffiliated(user_ids, device_ids);
 }
 
 std::string ConnectorsService::GetProfileEmail() const {
-  return ::enterprise_connectors::GetProfileEmail(
-      IdentityManagerFactory::GetForProfile(profile_));
+  return ::enterprise_connectors::GetProfileEmail(identity_manager_);
 }
 
 std::string ConnectorsService::GetDeviceClientId() const {

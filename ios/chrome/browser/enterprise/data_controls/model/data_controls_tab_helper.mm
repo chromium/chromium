@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/clipboard/clipboard_format_type.h"
 #import "ui/base/clipboard/clipboard_metadata.h"
@@ -379,7 +380,8 @@ std::string DataControlsTabHelper::GetManagementDomain(ProfileIOS* profile) {
 
   policy::PolicyScope scope = static_cast<policy::PolicyScope>(
       profile->GetPrefs()->GetInteger(kDataControlsRulesScopePref));
-  return enterprise::GetManagementDomain(scope, profile);
+  return enterprise::GetManagementDomain(
+      scope, IdentityManagerFactory::GetForProfile(profile));
 }
 
 void DataControlsTabHelper::OnPasteboardContentChanged() {

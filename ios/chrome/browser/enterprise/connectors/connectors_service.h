@@ -9,7 +9,13 @@
 #import "components/enterprise/connectors/core/connectors_service_base.h"
 #import "components/keyed_service/core/keyed_service.h"
 
-class ProfileIOS;
+namespace signin {
+class IdentityManager;
+}
+
+namespace policy {
+class UserCloudPolicyManager;
+}
 
 namespace enterprise_connectors {
 
@@ -19,16 +25,12 @@ namespace enterprise_connectors {
 // - OnSecurityEventEnterpriseConnectors
 class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
  public:
-  // TODO(crbug.com/530113274): Injecting the ProfileIOS* into a KeyedService
-  // is an anti-pattern as it couple the service implementation with the
-  // integration in the rest of the application (i.e. the implementation will
-  // inevitably use other service factories).
-  //
-  // This make it difficult to unit test the code, and also leave the door open
-  // to forgetting to declare some required dependencies. ConnectorsService
-  // should thus directly receive the required dependencies, instead of being
-  // injected a ProfileIOS*.
-  explicit ConnectorsService(ProfileIOS* profile);
+  ConnectorsService(PrefService* pref_service,
+                    signin::IdentityManager* identity_manager,
+                    policy::UserCloudPolicyManager* user_cloud_policy_manager,
+                    const std::string& profile_name,
+                    const base::FilePath& profile_path,
+                    bool is_off_the_record);
   ~ConnectorsService() override;
 
   // Returns the CBCM domain or profile domain that enables connector policies.
@@ -62,7 +64,12 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(ConnectorsServiceTest, GetBrowserDmToken);
   FRIEND_TEST_ALL_PREFIXES(ConnectorsServiceTest, ConnectorsEnabled);
 
-  raw_ptr<ProfileIOS> profile_;
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
+  raw_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_;
+  std::string profile_name_;
+  base::FilePath profile_path_;
+  bool is_off_the_record_ = false;
 };
 
 }  // namespace enterprise_connectors

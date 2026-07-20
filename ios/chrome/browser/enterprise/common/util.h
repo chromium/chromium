@@ -13,6 +13,14 @@
 
 class ProfileIOS;
 
+namespace signin {
+class IdentityManager;
+}
+
+namespace policy {
+class UserCloudPolicyManager;
+}
+
 namespace enterprise {
 
 // Returns the PolicyData associated with the given `profile`, or nullptr if it
@@ -22,18 +30,15 @@ const enterprise_management::PolicyData* GetPolicyData(ProfileIOS* profile);
 // Returns the browser's device management token, if it exists.
 std::optional<std::string> GetBrowserDmToken();
 
-// Returns User DMToken for a given `profile` if:
-// * `profile` is NOT incognito profile.
-// * `profile` is NOT sign-in screen profile
-// * user corresponding to a `profile` is managed.
-// Otherwise returns empty optional. More about DMToken:
-// go/dmserver-domain-model#dmtoken.
-std::optional<std::string> GetUserDmToken(ProfileIOS* profile);
+// Returns User DMToken for a given UserCloudPolicyManager if it has policy data
+// and a request token.
+std::optional<std::string> GetUserDmToken(
+    policy::UserCloudPolicyManager* user_cloud_policy_manager);
 
 // Returns the CBCM domain or profile domain for the given policy::PolicyScope
-// and ProfileIOS.
+// and signin::IdentityManager.
 std::string GetManagementDomain(std::optional<policy::PolicyScope> policy_scope,
-                                ProfileIOS* profile);
+                                signin::IdentityManager* identity_manager);
 
 }  // namespace enterprise
 

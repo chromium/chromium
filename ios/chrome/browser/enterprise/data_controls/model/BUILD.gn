@@ -37,6 +37,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/snackbar",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/signin/model",
     "//ios/web/public",
     "//ui/base/clipboard",
     "//url",

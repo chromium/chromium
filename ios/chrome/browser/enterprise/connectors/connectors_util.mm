@@ -51,26 +51,29 @@ base::DictValue GetContext(ProfileIOS* profile) {
 
   context.SetByDottedPath("profile.profilePath",
                           profile->GetStatePath().AsUTF8Unsafe());
-  std::optional<std::string> client_id = GetUserClientId(profile);
+  std::optional<std::string> client_id =
+      GetUserClientId(profile->GetUserCloudPolicyManager());
   if (client_id) {
     context.SetByDottedPath("profile.clientId", *client_id);
   }
   std::optional<std::string> user_dm_token =
-      enterprise::GetUserDmToken(profile);
+      enterprise::GetUserDmToken(profile->GetUserCloudPolicyManager());
   if (user_dm_token) {
     context.SetByDottedPath("profile.dmToken", *user_dm_token);
   }
   return context;
 }
 
-ClientMetadata GetContextAsClientMetadata(ProfileIOS* profile) {
+ClientMetadata GetContextAsClientMetadata(
+    const std::string& profile_name,
+    const base::FilePath& profile_path,
+    policy::UserCloudPolicyManager* user_cloud_policy_manager) {
   ClientMetadata metadata;
   metadata.mutable_browser()->set_user_agent(
       web::GetWebClient()->GetUserAgent(web::UserAgentType::MOBILE));
 
-  if (!profile) {
-    return metadata;
-  }
+  metadata.mutable_profile()->set_profile_path(profile_path.AsUTF8Unsafe());
+  metadata.mutable_profile()->set_profile_name(profile_name);
 
   ProfileManagerIOS* manager = GetApplicationContext()->GetProfileManager();
 
@@ -78,20 +81,18 @@ ClientMetadata GetContextAsClientMetadata(ProfileIOS* profile) {
   if (manager && manager->GetProfileAttributesStorage()) {
     ProfileAttributesIOS attributes =
         manager->GetProfileAttributesStorage()->GetAttributesForProfileWithName(
-            profile->GetProfileName());
-    metadata.mutable_profile()->set_profile_name(attributes.GetProfileName());
+            profile_name);
     metadata.mutable_profile()->set_gaia_email(attributes.GetUserName());
   }
 
-  metadata.mutable_profile()->set_profile_path(
-      profile->GetStatePath().AsUTF8Unsafe());
-  std::optional<std::string> client_id = GetUserClientId(profile);
+  std::optional<std::string> client_id =
+      GetUserClientId(user_cloud_policy_manager);
   if (client_id) {
     metadata.mutable_profile()->set_client_id(*client_id);
   }
 
   std::optional<std::string> user_dm_token =
-      enterprise::GetUserDmToken(profile);
+      enterprise::GetUserDmToken(user_cloud_policy_manager);
   if (user_dm_token) {
     metadata.mutable_profile()->set_dm_token(*user_dm_token);
   }
@@ -99,13 +100,18 @@ ClientMetadata GetContextAsClientMetadata(ProfileIOS* profile) {
   return metadata;
 }
 
-std::optional<std::string> GetUserClientId(ProfileIOS* profile) {
-  if (!profile) {
+std::optional<std::string> GetUserClientId(
+    policy::UserCloudPolicyManager* user_cloud_policy_manager) {
+  if (!user_cloud_policy_manager) {
     return std::nullopt;
   }
 
-  const enterprise_management::PolicyData* policy_data =
-      enterprise::GetPolicyData(profile);
+  policy::CloudPolicyStore* store = user_cloud_policy_manager->core()->store();
+  if (!store || !store->has_policy()) {
+    return std::nullopt;
+  }
+
+  const enterprise_management::PolicyData* policy_data = store->policy();
   if (!policy_data || !policy_data->has_device_id()) {
     return std::nullopt;
   }
@@ -145,12 +151,13 @@ base::flat_set<std::string> GetUserAffiliationIds(ProfileIOS* profile) {
     request.mutable_profile()->set_gaia_email(attributes.GetUserName());
   }
 
-  std::optional<std::string> client_id = GetUserClientId(profile);
+  std::optional<std::string> client_id =
+      GetUserClientId(profile->GetUserCloudPolicyManager());
   if (client_id) {
     request.mutable_profile()->set_client_id(*client_id);
   }
   std::optional<std::string> user_dm_token =
-      enterprise::GetUserDmToken(profile);
+      enterprise::GetUserDmToken(profile->GetUserCloudPolicyManager());
   if (user_dm_token) {
     request.mutable_profile()->set_dm_token(*user_dm_token);
   }
@@ -163,7 +170,7 @@ bool IsEnterpriseUrlFilteringEnabled(EnterpriseRealTimeUrlCheckMode mode) {
          EnterpriseRealTimeUrlCheckMode::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED;
 }
 
-bool IncludeDeviceInfo(ProfileIOS* profile, bool per_profile) {
+bool IncludeDeviceInfo(bool per_profile, bool is_profile_affiliated) {
   if (!per_profile) {
     return true;
   }
@@ -176,7 +183,7 @@ bool IncludeDeviceInfo(ProfileIOS* profile, bool per_profile) {
 
   // A managed device can share its info with the profile if they are
   // affiliated.
-  return IsProfileAffilicated(profile);
+  return is_profile_affiliated;
 }
 
 bool IsDownloadConnectorEnabled(ConnectorsServiceBase* service) {
