@@ -5,6 +5,7 @@
 module webnn.mojom;
 
 import "mojo/public/mojom/base/big_buffer.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
 import "services/webnn/public/mojom/webnn_device.mojom";
 import "services/webnn/public/mojom/webnn_error.mojom";
 import "services/webnn/public/mojom/webnn_graph.mojom";
@@ -24,7 +25,12 @@ struct CompiledOperandDescriptor {
 struct CompiledGraph {
   // The compiled model bytes (e.g., ORT EP context binary for ORT backend).
   // Self-contained — all weights are included.
+  [EnableIf=is_win]
   mojo_base.mojom.BigBuffer compiled_model_data;
+
+  // The path to the compiled model directory (.mlpackage for CoreML).
+  [EnableIf=is_mac]
+  mojo_base.mojom.FilePath compiled_model_path;
 
   // Maps from WebNN operand name to binding name and descriptor.
   map<string, CompiledOperandDescriptor> inputs;

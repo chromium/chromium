@@ -139,6 +139,8 @@ component("webnn_service") {
     sources += [
       "coreml/buffer_content_coreml.h",
       "coreml/buffer_content_coreml.mm",
+      "coreml/compiler_context_impl_coreml.h",
+      "coreml/compiler_context_impl_coreml.mm",
       "coreml/context_impl_coreml.h",
       "coreml/context_impl_coreml.mm",
       "coreml/graph_builder_coreml.cc",

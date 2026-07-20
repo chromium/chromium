@@ -49,12 +49,14 @@ mojom_component("mojom") {
     "webnn_tensor.mojom",
   ]
 
+  if (is_win || is_mac) {
+    sources += [ "webnn_model_loader.mojom" ]
+  }
   if (is_win) {
     sources += [
       "ep_device_info.mojom",
       "ep_package_info.mojom",
       "webnn_compiler_service.mojom",
-      "webnn_model_loader.mojom",
     ]
   }
 
