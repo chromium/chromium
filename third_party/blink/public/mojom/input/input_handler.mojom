@@ -506,7 +506,8 @@ interface WidgetInputHandler {
   // This message sends a string being composed with an input method.
   // `target_dom_node_id`, if not a null value, will target composition to the
   // specified node, adjusting and restoring focus if necessary.
-  // TODO(crbug.com/535826288): Use `DOMNodeId?`.
+  // TODO(crbug.com/535826288): Make `DOMNodeId` optional once the typemap
+  // is nullable_is_same_type.
   // Note, the response is specifically for Devtools to learn about completion
   ImeSetComposition(mojo_base.mojom.String16 text,
                     array<ui.mojom.ImeTextSpan> ime_text_spans,
@@ -520,7 +521,8 @@ interface WidgetInputHandler {
   // moves the cursor.
   // `target_dom_node_id`, if not a null value, will target the text commit to
   // the specified node, adjusting and restoring focus if necessary.
-  // TODO(crbug.com/535826288): Use `DOMNodeId?`.
+  // TODO(crbug.com/535826288): Make `DOMNodeId` optional once the typemap
+  // is nullable_is_same_type.
   // Note, the response is specifically for Devtools to learn about completion
   ImeCommitText(mojo_base.mojom.String16 text,
                 array<ui.mojom.ImeTextSpan> ime_text_spans,
