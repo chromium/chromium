@@ -28,6 +28,8 @@ dictionary DictationContext {
 dictionary StartStreamFlags {
   // Starts the stream in "eval" mode, useful for recording inputs.
   required boolean evalMode;
+  // If true, uses the Web Speech API backend instead of the cloud backend.
+  required boolean webSpeechApiBackend;
 };
 
 dictionary StartStreamDetails {

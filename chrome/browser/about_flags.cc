@@ -4709,9 +4709,13 @@ const FeatureEntry::FeatureParam kDictationEvalModeParam[] = {
     {"eval_mode", "true"}};
 const FeatureEntry::FeatureParam kDictationShowPartialsParam[] = {
     {"show_partials", "true"}};
+const FeatureEntry::FeatureParam kDictationWebSpeechApiBackendParam[] = {
+    {"web_speech_api_backend", "true"}};
 const FeatureEntry::FeatureVariation kDictationVariations[] = {
     {"with evaluation mode", kDictationEvalModeParam, nullptr},
-    {"with shown partials", kDictationShowPartialsParam, nullptr}};
+    {"with shown partials", kDictationShowPartialsParam, nullptr},
+    {"with Web Speech API backend", kDictationWebSpeechApiBackendParam,
+     nullptr}};
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // RECORDING USER METRICS FOR FLAGS:

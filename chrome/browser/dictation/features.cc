@@ -22,4 +22,7 @@ const base::FeatureParam<bool> kSendContextAsync{&kDictation,
 const base::FeatureParam<bool> kShowPartials{&kDictation, "show_partials",
                                              false};
 
+const base::FeatureParam<bool> kWebSpeechApiBackend{
+    &kDictation, "web_speech_api_backend", false};
+
 }  // namespace dictation
