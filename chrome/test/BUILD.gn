@@ -6357,7 +6357,6 @@ test("unit_tests") {
       "../browser/media/android/cdm/media_drm_origin_id_manager_unittest.cc",
       "../browser/optimization_guide/android/optimization_guide_bridge_unittest.cc",
       "../browser/optimization_guide/android/optimization_guide_tab_url_provider_android_unittest.cc",
-      "../browser/readaloud/android/prefs_unittest.cc",
     ]
 
     deps += [
