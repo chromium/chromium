@@ -62,25 +62,8 @@ class JSONArgsParser {
 
     // JSON must be the following format. All keys and values are strings.
     // {"parameters":{"argv":["arg1", ...]}}
-    std::string argv1 = std::string(argv[1]);
     std::optional<base::DictValue> root =
-        base::JSONReader::ReadDict(argv1, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-    if (!root) {
-      // Try to fix unquoted JSON
-      base::ReplaceSubstringsAfterOffset(&argv1, 0, "{", "{\"");
-      base::ReplaceSubstringsAfterOffset(&argv1, 0, "[", "[\"");
-      base::ReplaceSubstringsAfterOffset(&argv1, 0, "]", "\"]");
-      base::ReplaceSubstringsAfterOffset(&argv1, 0, ":", "\":\"");
-      base::ReplaceSubstringsAfterOffset(&argv1, 0, ",", "\",\"");
-      base::ReplaceSubstringsAfterOffset(&argv1, 0, ":\"[", ":[");
-      base::ReplaceSubstringsAfterOffset(&argv1, 0, ":\"{", ":{");
-
-      // Special case to handle unix:/tmp. This means that things like
-      // "valid_key_unix":"/valid_value" will fail to parse. Known issue.
-      base::ReplaceSubstringsAfterOffset(&argv1, 0, "unix\":\"/", "unix:/");
-      root = base::JSONReader::ReadDict(argv1,
-                                        base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-    }
+        base::JSONReader::ReadDict(argv[1], base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
     if (!root) {
       return false;
