@@ -6,6 +6,7 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/i18n/icu_util.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
@@ -30,6 +31,9 @@ int main(int argc, char **argv) {
 
   // RlzLibTest uses base::test::TaskEnvironment that needs TestTimeouts.
   TestTimeouts::Initialize();
+
+  // Initialize ICU for time formatting.
+  CHECK(base::i18n::InitializeICU());
 
   int ret = RUN_ALL_TESTS();
   if (ret == 0) {

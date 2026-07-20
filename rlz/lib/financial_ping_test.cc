@@ -53,7 +53,7 @@ void RemoveMachineIdFromUrl(std::string* url) {
 }
 
 std::string ConvertTimeToRlzEmbargoDate(const base::Time& time) {
-  return base::UnlocalizedTimeFormatWithPattern(time, "yyyy-mm-dd");
+  return base::UnlocalizedTimeFormatWithPattern(time, "yyyy-MM-dd");
 }
 #endif
 
