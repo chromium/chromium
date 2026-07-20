@@ -13,9 +13,11 @@
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
 #include "chrome/browser/prefs/profile_pref_store_manager.h"
 #include "chrome/common/channel_info.h"
+#include "components/metrics/cpu_metrics_provider.h"
 #include "components/metrics/delegating_provider.h"
 #include "components/metrics/entropy_state_provider.h"
 #include "components/metrics/field_trials_provider.h"
+#include "components/metrics/install_date_provider.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/persistent_system_profile.h"
 #include "components/metrics/version_utils.h"
@@ -100,10 +102,18 @@ void StartupData::RecordCoreSystemProfile() {
       std::make_unique<metrics::EntropyStateProvider>(
           chrome_feature_list_creator()->local_state()));
 
+  // Register CPUMetricsProvider for hardware details.
+  delegating_provider.RegisterMetricsProvider(
+      std::make_unique<metrics::CPUMetricsProvider>());
+
+  // Register InstallDateProvider.
+  delegating_provider.RegisterMetricsProvider(
+      std::make_unique<metrics::InstallDateProvider>(
+          chrome_feature_list_creator()->local_state()));
+
   delegating_provider.ProvideSystemProfileMetricsWithLogCreationTime(
       base::TimeTicks(), &system_profile);
 
-  // TODO(crbug.com/374999988): Records information from other providers.
   metrics::GlobalPersistentSystemProfile::GetInstance()->SetSystemProfile(
       system_profile, /* complete */ false);
 }
