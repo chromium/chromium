@@ -31,7 +31,6 @@ import org.chromium.net.test.ServerCertificate;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /** Tests for shouldInterceptRequest behavior with various prefetch mechanisms. */
 @RunWith(Parameterized.class)
@@ -102,7 +101,7 @@ public class AwPrefetchInterceptionTest extends AwParameterizedTest {
     }
 
     // Triggers a speculation rules prefetch.
-    private void triggerSpeculationRulesPrefetchAndWait(String targetUrl) {
+    private void triggerSpeculationRulesPrefetch(String targetUrl) {
         final String speculationRulesTemplate =
                 """
                     {
@@ -119,18 +118,10 @@ public class AwPrefetchInterceptionTest extends AwParameterizedTest {
                 () -> {
                     mAwContents.evaluateJavaScript(speculationRules, null);
                 });
-
-        // We need to wait in order to give time for the prefetch request
-        // to execute.
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     // Triggers a <link rel="prefetch"> prefetch.
-    private void triggerLinkRelPrefetchAndWait(String targetUrl) {
+    private void triggerLinkRelPrefetch(String targetUrl) {
         // Inject the prefetch link into the loaded page.
         final String script =
                 "var link = document.createElement('link'); "
@@ -140,14 +131,6 @@ public class AwPrefetchInterceptionTest extends AwParameterizedTest {
                         + "'; "
                         + "document.head.appendChild(link);";
         ThreadUtils.runOnUiThreadBlocking(() -> mAwContents.evaluateJavaScript(script, null));
-
-        // We need to wait in order to give time for the prefetch request
-        // to execute.
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private void triggerEmbedderPrefetchAndWait(String targetUrl) throws Exception {
@@ -168,13 +151,9 @@ public class AwPrefetchInterceptionTest extends AwParameterizedTest {
     private void assertShouldInterceptRequestCalled(
             TestAwContentsClient.ShouldInterceptRequestHelper helper,
             String targetUrl,
-            int previousCallCountForUrl)
-            throws TimeoutException {
-        helper.waitForCallback(previousCallCountForUrl);
-        Assert.assertEquals(
-                "shouldInterceptRequest was not called for " + targetUrl,
-                previousCallCountForUrl + 1,
-                helper.getRequestCountForUrl(targetUrl));
+            int previousCallCountForUrl) {
+        AwActivityTestRule.pollInstrumentationThread(
+                () -> helper.getRequestCountForUrl(targetUrl) == previousCallCountForUrl + 1);
     }
 
     private void assertShouldInterceptRequestNotCalled(
@@ -200,7 +179,7 @@ public class AwPrefetchInterceptionTest extends AwParameterizedTest {
         TestAwContentsClient.ShouldInterceptRequestHelper interceptHelper =
                 mContentsClient.getShouldInterceptRequestHelper();
         int previousCountForUrl = interceptHelper.getRequestCountForUrl(mPrefetchUrl);
-        triggerLinkRelPrefetchAndWait(mPrefetchUrl);
+        triggerLinkRelPrefetch(mPrefetchUrl);
         assertShouldInterceptRequestCalled(interceptHelper, mPrefetchUrl, previousCountForUrl);
     }
 
@@ -214,7 +193,7 @@ public class AwPrefetchInterceptionTest extends AwParameterizedTest {
         TestAwContentsClient.ShouldInterceptRequestHelper interceptHelper =
                 mContentsClient.getShouldInterceptRequestHelper();
         int previousCountForUrl = interceptHelper.getRequestCountForUrl(mPrefetchUrl);
-        triggerLinkRelPrefetchAndWait(mPrefetchUrl);
+        triggerLinkRelPrefetch(mPrefetchUrl);
         assertShouldInterceptRequestCalled(interceptHelper, mPrefetchUrl, previousCountForUrl);
     }
 
@@ -229,7 +208,7 @@ public class AwPrefetchInterceptionTest extends AwParameterizedTest {
         TestAwContentsClient.ShouldInterceptRequestHelper interceptHelper =
                 mContentsClient.getShouldInterceptRequestHelper();
         int previousCountForUrl = interceptHelper.getRequestCountForUrl(mPrefetchUrl);
-        triggerSpeculationRulesPrefetchAndWait(mPrefetchUrl);
+        triggerSpeculationRulesPrefetch(mPrefetchUrl);
         assertShouldInterceptRequestCalled(interceptHelper, mPrefetchUrl, previousCountForUrl);
     }
 
@@ -243,7 +222,7 @@ public class AwPrefetchInterceptionTest extends AwParameterizedTest {
         TestAwContentsClient.ShouldInterceptRequestHelper interceptHelper =
                 mContentsClient.getShouldInterceptRequestHelper();
         int previousCountForUrl = interceptHelper.getRequestCountForUrl(mPrefetchUrl);
-        triggerSpeculationRulesPrefetchAndWait(mPrefetchUrl);
+        triggerSpeculationRulesPrefetch(mPrefetchUrl);
         assertShouldInterceptRequestCalled(interceptHelper, mPrefetchUrl, previousCountForUrl);
     }
 
