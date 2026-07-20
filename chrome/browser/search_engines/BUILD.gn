@@ -34,7 +34,6 @@ source_set("search_engines") {
   ]
 
   deps = [
-    "//chrome/app:branded_strings",
     "//chrome/browser:browser_process",
     "//chrome/browser/google",
     "//chrome/browser/history",
@@ -46,6 +45,7 @@ source_set("search_engines") {
     "//components/google/core/common",
     "//components/pref_registry",
     "//components/regional_capabilities",
+    "//components/strings",
     "//components/version_info",
     "//content/public/browser",
     "//rlz/buildflags",

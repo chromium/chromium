@@ -11,8 +11,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/grit/branded_strings.h"
 #include "components/search_engines/ai_mode_button_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
 // static

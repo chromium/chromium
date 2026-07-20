@@ -121,8 +121,12 @@ found in the LICENSE file.
     <style name="AiModeChip" parent="TextButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">@dimen/min_touch_target_size</item>
-        <item name="android:tooltipText">@string/starter_pack_ai_mode_action_hint</item>
-        <item name="android:contentDescription">@string/starter_pack_ai_mode_action_hint</item>
+        <item name="android:tooltipText">
+            @string/starter_pack_ai_mode_action_suggestion_contents
+        </item>
+        <item name="android:contentDescription">
+            @string/starter_pack_ai_mode_action_suggestion_contents
+        </item>
         <item name="android:drawableStart">@drawable/search_spark_black_24dp</item>
         <item name="android:drawableTint">@color/default_text_color_dark</item>
         <item name="android:paddingStart">8dp</item>

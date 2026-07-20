@@ -2226,11 +2226,6 @@ Google Chrome is unable to recover your settings.
         </message>
       </if>
 
-      <message name="IDS_AI_MODE_ENTRYPOINT_LABEL"
-        desc="The label of the AI mode entrypoint in the omnibox" formatter_data="android_java">
-        AI Mode
-      </message>
-
       <if expr="not is_android">
         <!-- Lens Side Panel Error Page -->
         <message name="IDS_SIDE_PANEL_LENS_OVERLAY_GENERIC_ERROR_PAGE_FIRST_LINE"
@@ -2357,18 +2352,6 @@ Google Chrome is unable to recover your settings.
           desc="Header in the Lens side panel indicating a new AI Mode search session.">
           New search
         </message>
-
-        <if expr="use_titlecase">
-          <message name="IDS_CONTEXT_MENU_SHOW_AI_MODE_OMNIBOX_BUTTON"
-            desc="In Title Case: The text label of the omnibox context menu option to enable showing 'AI Mode'">
-            Always Show AI Mode
-          </message>
-        </if>
-        <if expr="not use_titlecase">
-        <message name="IDS_CONTEXT_MENU_SHOW_AI_MODE_OMNIBOX_BUTTON" desc="The text label of the omnibox context menu option to enable showing 'AI Mode'">
-          Always show AI Mode
-        </message>
-      </if>
 
         <!-- On Sign-in Avatar Button Label Desktop -->
         <message name="IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS" desc="The avatar button label when the user has just signed in. When clicked, it opens the profile menu.">
