@@ -77,19 +77,27 @@ WebRtcTaskQueue::WebRtcTaskQueue(base::TaskTraits traits)
 }
 
 void WebRtcTaskQueue::Delete() {
-  {
-    // Ensure no more tasks are going to be run.
+  // If we are deleting the queue from within a task running on it, we already
+  // hold `alive_lock_` on the current thread. Re-acquiring it would deadlock
+  // since base::Lock is non-recursive.
+  if (webrtc::TaskQueueBase::Current() == this) {
+    alive_lock_.AssertAcquired();
+    alive_ = false;
+    coalesced_tasks_.Clear();
+  } else {
+    // Normal shutdown path from another thread.
     base::AutoLock lock(alive_lock_);
     alive_ = false;
 
     // Pretend to be the current task queue and clear the other tasks. This
     // works because we're always deleting or running tasks under the
     // `alive_lock_`, which we keep here.
+    // Also, some task destructors might expect Current() to point to the queue.
     CurrentTaskQueueSetter setter(this);
     coalesced_tasks_.Clear();
   }
   // Drop the first reference we took when creating the task queue. We are
-  // deleted when all closures posted to the task runner has run, or right here
+  // deleted when all closures posted to the task runner have run, or right here
   // in Release().
   Release();
 }
