@@ -7209,9 +7209,6 @@ crbug.com/1462500 [ Win ] media/picture-in-picture/picture-in-picture-interstiti
 # Gardnener 2023-07-07
 crbug.com/1462462 http/tests/history/replacestate-post-to-get-2.html [ Failure Pass Timeout ]
 
-# WPT for the Initiator attribute in RT API which is currently under development
-external/wpt/resource-timing/tentative/stylesheet-initiated.html [ Failure Timeout ]
-
 # Sheriff 2023-07-13
 crbug.com/1404855 virtual/gpu-rasterization/images/ycbcr-with-cmyk-color-profile.html [ Failure Pass ]
 

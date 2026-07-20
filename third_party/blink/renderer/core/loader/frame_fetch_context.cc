@@ -491,9 +491,11 @@ void FrameFetchContext::FillInitiatorInfo(FetchInitiatorInfo& initiator_info) {
   bool was_requested_by_stylesheet =
       initiator_info.name == fetch_initiator_type_names::kCSS ||
       initiator_info.name == fetch_initiator_type_names::kUacss;
+  // |initiator_info.referrer| is empty when the resource is requested by
+  // the document.
   if (was_requested_by_stylesheet && !initiator_info.referrer.empty()) {
-    // TODO(crbug.com/40919714): Fill |initiator_url|.
-    // Initiator is a css file.
+    initiator_info.initiator_url = KURL(initiator_info.referrer);
+
     return;
   }
 
