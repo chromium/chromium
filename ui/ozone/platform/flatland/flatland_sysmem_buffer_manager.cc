@@ -90,8 +90,7 @@ FlatlandSysmemBufferManager::CreateNativePixmap(VkDevice vk_device,
   return result;
 }
 
-scoped_refptr<FlatlandSysmemBufferCollection>
-FlatlandSysmemBufferManager::ImportSysmemBufferCollection(
+void FlatlandSysmemBufferManager::ImportSysmemBufferCollection(
     VkDevice vk_device,
     zx::eventpair service_handle,
     zx::channel sysmem_token,
@@ -100,6 +99,17 @@ FlatlandSysmemBufferManager::ImportSysmemBufferCollection(
     gfx::BufferUsage usage,
     size_t min_buffer_count,
     bool register_with_flatland_allocator) {
+  auto koid = base::GetKoid(service_handle);
+  if (!koid) {
+    return;
+  }
+  {
+    base::AutoLock auto_lock(collections_lock_);
+    if (collections_.contains(koid.value())) {
+      return;
+    }
+    collections_[koid.value()] = nullptr;
+  }
   NativePixmapUsageSet native_pixmap_usage =
       BufferUsageToNativePixmapUsage(usage);
   auto result = base::MakeRefCounted<FlatlandSysmemBufferCollection>();
@@ -108,17 +118,26 @@ FlatlandSysmemBufferManager::ImportSysmemBufferCollection(
                           std::move(sysmem_token), size, format,
                           native_pixmap_usage, vk_device, min_buffer_count,
                           register_with_flatland_allocator)) {
-    return nullptr;
+    base::AutoLock auto_lock(collections_lock_);
+    collections_.erase(koid.value());
+    return;
   }
   RegisterCollection(result);
-  return result;
 }
 
 void FlatlandSysmemBufferManager::RegisterCollection(
     scoped_refptr<FlatlandSysmemBufferCollection> collection) {
   {
     base::AutoLock auto_lock(collections_lock_);
-    collections_[collection->id()] = collection;
+    auto it = collections_.find(collection->id());
+    if (it != collections_.end()) {
+      // The collection should only already exist if it was pre-registered as
+      // nullptr by ImportSysmemBufferCollection().
+      CHECK(!it->second);
+      it->second = collection;
+    } else {
+      collections_[collection->id()] = collection;
+    }
   }
 
   collection->AddOnReleasedCallback(
@@ -134,7 +153,7 @@ FlatlandSysmemBufferManager::GetCollectionByHandle(const zx::eventpair& token) {
 
   base::AutoLock auto_lock(collections_lock_);
   auto it = collections_.find(koid.value());
-  return it == collections_.end() ? nullptr : it->second;
+  return (it == collections_.end() || !it->second) ? nullptr : it->second;
 }
 
 void FlatlandSysmemBufferManager::OnCollectionReleased(zx_koid_t id) {

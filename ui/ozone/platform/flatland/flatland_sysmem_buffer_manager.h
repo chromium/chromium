@@ -56,15 +56,14 @@ class FlatlandSysmemBufferManager {
   // TODO(crbug.com/42050538): Instead of an additional
   // |register_with_flatland_allocator| bool, we can rely on |usage| to decide
   // if the buffers should be registered with Flatland or not.
-  scoped_refptr<FlatlandSysmemBufferCollection> ImportSysmemBufferCollection(
-      VkDevice vk_device,
-      zx::eventpair service_handle,
-      zx::channel sysmem_token,
-      gfx::Size size,
-      viz::SharedImageFormat format,
-      gfx::BufferUsage usage,
-      size_t min_buffer_count,
-      bool register_with_flatland_allocator);
+  void ImportSysmemBufferCollection(VkDevice vk_device,
+                                    zx::eventpair service_handle,
+                                    zx::channel sysmem_token,
+                                    gfx::Size size,
+                                    viz::SharedImageFormat format,
+                                    gfx::BufferUsage usage,
+                                    size_t min_buffer_count,
+                                    bool register_with_flatland_allocator);
 
   // Returns `SysmemBufferCollection` that corresponds to the specified
   // buffer collection `handle`, which should be the other end of the eventpair
@@ -81,6 +80,8 @@ class FlatlandSysmemBufferManager {
   }
 
  private:
+  friend class FlatlandSysmemBufferManagerTest;
+
   void RegisterCollection(
       scoped_refptr<FlatlandSysmemBufferCollection> collection);
 

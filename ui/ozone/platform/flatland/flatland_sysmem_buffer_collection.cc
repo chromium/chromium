@@ -811,14 +811,12 @@ void FlatlandSysmemBufferCollection::OnZxHandleSignalled(zx_handle_t handle,
   DCHECK_EQ(handle, handle_.get());
   DCHECK_EQ(signals, ZX_EVENTPAIR_PEER_CLOSED);
 
-  // Keep a reference to `this` to ensure it's not destroyed while calling the
-  // callbacks.
-  scoped_refptr<FlatlandSysmemBufferCollection> self(this);
-
-  for (auto& callback : on_released_) {
+  // Move the callbacks to the stack since running them may release the last
+  // reference to `this`.
+  std::vector<base::OnceClosure> callbacks = std::move(on_released_);
+  for (auto& callback : callbacks) {
     std::move(callback).Run();
   }
-  on_released_.clear();
 }
 
 }  // namespace ui
