@@ -1931,6 +1931,10 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   MostRelevantTabResumptionPageHandler::RegisterProfilePrefs(registry);
   DriveService::RegisterProfilePrefs(registry);
   GoogleCalendarPageHandler::RegisterProfilePrefs(registry);
+#else
+  // Registered here because it is still accessed on Android (which doesn't use
+  // WebUI NTP).
+  registry->RegisterBooleanPref(ntp_prefs::kNtpShortcutsVisible, true);
 #endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
 
 #if BUILDFLAG(IS_ANDROID)
