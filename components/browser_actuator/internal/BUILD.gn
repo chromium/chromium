@@ -25,6 +25,10 @@ source_set("internal") {
   sources = [
     "browser_actuator_service_impl.cc",
     "browser_actuator_service_impl.h",
+    "transport_session_impl.cc",
+    "transport_session_impl.h",
+    "transport_session_registry_impl.cc",
+    "transport_session_registry_impl.h",
   ]
 
   public_deps = [ "//components/browser_actuator/public" ]
@@ -39,7 +43,11 @@ source_set("internal") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "browser_actuator_service_impl_unittest.cc" ]
+  sources = [
+    "browser_actuator_service_impl_unittest.cc",
+    "transport_session_impl_unittest.cc",
+    "transport_session_registry_impl_unittest.cc",
+  ]
 
   deps = [
     ":internal",

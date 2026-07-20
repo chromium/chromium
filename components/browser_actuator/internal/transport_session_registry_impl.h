@@ -1,0 +1,65 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_SESSION_REGISTRY_IMPL_H_
+#define COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_SESSION_REGISTRY_IMPL_H_
+
+#include <functional>
+#include <map>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <vector>
+
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "components/browser_actuator/public/transport_session_registry.h"
+
+namespace browser_actuator {
+
+class TransportChannel;
+class TransportSessionImpl;
+
+// Manages the lifecycle of active transport sessions. Owned by the
+// TransportChannel.
+class TransportSessionRegistryImpl : public TransportSessionRegistry {
+ public:
+  explicit TransportSessionRegistryImpl(
+      base::WeakPtr<TransportChannel> channel);
+  ~TransportSessionRegistryImpl() override;
+
+  TransportSessionRegistryImpl(const TransportSessionRegistryImpl&) = delete;
+  TransportSessionRegistryImpl& operator=(const TransportSessionRegistryImpl&) =
+      delete;
+
+  // TransportSessionRegistry implementation.
+  TransportSession* GetSession(std::string_view session_id) override;
+
+  // Concrete methods for session lookup and management.
+  TransportSessionImpl* GetSessionImpl(std::string_view session_id);
+  TransportSessionImpl* GetOrCreateSession(std::string_view session_id);
+  void DestroySession(std::string_view session_id);
+  std::vector<TransportSessionImpl*> GetAllSessionImpls();
+
+  // Clears all active sessions from the sessions_ map.
+  void Clear();
+
+  base::WeakPtr<TransportSessionRegistryImpl> GetWeakPtr();
+
+ private:
+  SEQUENCE_CHECKER(sequence_checker_);
+  TransportSessionImpl* CreateSession(std::string_view session_id);
+
+  base::WeakPtr<TransportChannel> channel_;
+
+  // Map of session_id to the corresponding TransportSession.
+  std::map<std::string, std::unique_ptr<TransportSessionImpl>, std::less<>>
+      sessions_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  base::WeakPtrFactory<TransportSessionRegistryImpl> weak_ptr_factory_{this};
+};
+
+}  // namespace browser_actuator
+
+#endif  // COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_SESSION_REGISTRY_IMPL_H_
