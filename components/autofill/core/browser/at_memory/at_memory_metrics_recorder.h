@@ -108,8 +108,19 @@ class AtMemoryMetricsRecorder {
   // Records that the suggestion was successfully filled.
   void MarkFilled();
 
+  // LINT.IfChange(FetchPiiSource)
+  // The source of PII data fetched during filling.
+  enum class FetchPiiSource {
+    kAutofillAi = 0,
+    kCreditCard = 1,
+    kIban = 2,
+    kPersonalContext = 3,
+    kMaxValue = kPersonalContext,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/histograms.xml:Autofill.AtMemory.Latency.FetchPii)
+
   // Records the start time of the asynchronous PII fetching process.
-  void OnFetchPiiStarted();
+  void OnFetchPiiStarted(FetchPiiSource source);
 
   // Records the completion of the asynchronous PII fetching process.
   void OnFetchPiiCompleted();
@@ -172,11 +183,16 @@ class AtMemoryMetricsRecorder {
     std::optional<MemorySourcesBitmask> accepted_sources_bitmask;
   } suggestion_acceptance_;
 
-  // The start time of the asynchronous fetch/unmask process.
-  std::optional<base::TimeTicks> fetch_pii_start_time_;
+  // Information about the asynchronous fetch/unmask process of PII.
+  struct {
+    std::optional<FetchPiiSource> source;
 
-  // The duration of the successful asynchronous fetch/unmask process.
-  std::optional<base::TimeDelta> fetch_pii_duration_;
+    // The start time of the asynchronous fetch/unmask process.
+    std::optional<base::TimeTicks> start_time;
+
+    // The duration of the successful asynchronous fetch/unmask process.
+    std::optional<base::TimeDelta> duration;
+  } fetch_pii_;
 
   // Members related to UKM:
 

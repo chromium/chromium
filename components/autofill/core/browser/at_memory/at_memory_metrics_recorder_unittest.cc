@@ -33,6 +33,7 @@ using ::accessibility_annotator::MemoryEntrySourceType;
 using ::accessibility_annotator::MemorySearchResult;
 using ::accessibility_annotator::MemorySearchResults;
 using ::accessibility_annotator::MemorySearchStatus;
+using ::testing::Values;
 
 constexpr ukm::SourceId kTestSourceId = static_cast<ukm::SourceId>(123);
 
@@ -368,8 +369,20 @@ TEST_F(AtMemoryMetricsRecorderTest, MarkFilled_Filled) {
                                       false, 1);
 }
 
-// Tests that the unmasking duration metric is recorded correctly.
-TEST_F(AtMemoryMetricsRecorderTest, TimeToFetchUnmasked) {
+struct FetchPiiLatencyTestCase {
+  AtMemoryMetricsRecorder::FetchPiiSource source;
+  std::string_view histogram_name;
+};
+
+class AtMemoryMetricsRecorderFetchPiiLatencyTest
+    : public AtMemoryMetricsRecorderTest,
+      public ::testing::WithParamInterface<FetchPiiLatencyTestCase> {};
+
+// Tests that the unmasking duration metric is recorded correctly for all
+// sources.
+TEST_P(AtMemoryMetricsRecorderFetchPiiLatencyTest, FetchPiiLatency) {
+  const FetchPiiLatencyTestCase& test_case = GetParam();
+  base::HistogramTester histogram_tester;
   {
     AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
                                     GURL(), std::u16string(), FieldGlobalId(),
@@ -377,15 +390,31 @@ TEST_F(AtMemoryMetricsRecorderTest, TimeToFetchUnmasked) {
     metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
                          std::nullopt);
     metrics.OnSuggestionAccepted(MemoryDataType::kAddressFull);
-    metrics.OnFetchPiiStarted();
+    metrics.OnFetchPiiStarted(test_case.source);
     task_environment_.FastForwardBy(base::Seconds(2));
     metrics.OnFetchPiiCompleted();
     metrics.MarkFilled();
   }
 
-  histogram_tester_.ExpectUniqueTimeSample(
-      "Autofill.AtMemory.Funnel.TimeToFetchUnmasked", base::Seconds(2), 1);
+  histogram_tester.ExpectUniqueTimeSample(test_case.histogram_name,
+                                          base::Seconds(2), 1);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    AtMemoryMetricsRecorderTest,
+    AtMemoryMetricsRecorderFetchPiiLatencyTest,
+    Values(
+        FetchPiiLatencyTestCase{
+            AtMemoryMetricsRecorder::FetchPiiSource::kAutofillAi,
+            "Autofill.AtMemory.Latency.FetchPii.AutofillAi"},
+        FetchPiiLatencyTestCase{
+            AtMemoryMetricsRecorder::FetchPiiSource::kCreditCard,
+            "Autofill.AtMemory.Latency.FetchPii.CreditCard"},
+        FetchPiiLatencyTestCase{AtMemoryMetricsRecorder::FetchPiiSource::kIban,
+                                "Autofill.AtMemory.Latency.FetchPii.Iban"},
+        FetchPiiLatencyTestCase{
+            AtMemoryMetricsRecorder::FetchPiiSource::kPersonalContext,
+            "Autofill.AtMemory.Latency.FetchPii.PersonalContext"}));
 
 // Tests that the ModelQualityLogEntry is correctly filled and uploaded when the
 // uploader service is available and is flushed on destruction.
@@ -858,7 +887,7 @@ TEST_P(AtMemoryMetricsRecorderQueryCompletedTest, LogsQueryCompletedMetric) {
 INSTANTIATE_TEST_SUITE_P(
     AtMemoryMetricsRecorderTest,
     AtMemoryMetricsRecorderQueryCompletedTest,
-    testing::Values(
+    Values(
         // Success with data.
         QueryCompletedTestCase{
             .search_result =

@@ -10,6 +10,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -44,6 +45,21 @@ std::optional<AtMemoryQueryCompletedStatus> GetQueryCompletedStatus(
       return std::nullopt;
   }
 
+  NOTREACHED();
+}
+
+std::string_view FetchPiiSourceToString(
+    AtMemoryMetricsRecorder::FetchPiiSource source) {
+  switch (source) {
+    case AtMemoryMetricsRecorder::FetchPiiSource::kAutofillAi:
+      return "AutofillAi";
+    case AtMemoryMetricsRecorder::FetchPiiSource::kCreditCard:
+      return "CreditCard";
+    case AtMemoryMetricsRecorder::FetchPiiSource::kIban:
+      return "Iban";
+    case AtMemoryMetricsRecorder::FetchPiiSource::kPersonalContext:
+      return "PersonalContext";
+  }
   NOTREACHED();
 }
 
@@ -85,9 +101,11 @@ AtMemoryMetricsRecorder::~AtMemoryMetricsRecorder() {
   if (suggestion_acceptance_.accepted_data_type.has_value()) {
     base::UmaHistogramBoolean("Autofill.AtMemory.SuggestionFilled",
                               suggestion_filled_in_session_);
-    if (fetch_pii_duration_) {
-      base::UmaHistogramTimes("Autofill.AtMemory.Funnel.TimeToFetchUnmasked",
-                              *fetch_pii_duration_);
+    if (fetch_pii_.duration && fetch_pii_.source) {
+      base::UmaHistogramTimes(
+          base::StrCat({"Autofill.AtMemory.Latency.FetchPii.",
+                        FetchPiiSourceToString(*fetch_pii_.source)}),
+          *fetch_pii_.duration);
     }
   }
 
@@ -308,14 +326,15 @@ void AtMemoryMetricsRecorder::OnQueryResponseReceived(
   }
 }
 
-void AtMemoryMetricsRecorder::OnFetchPiiStarted() {
-  fetch_pii_start_time_ = base::TimeTicks::Now();
-  fetch_pii_duration_.reset();
+void AtMemoryMetricsRecorder::OnFetchPiiStarted(FetchPiiSource source) {
+  fetch_pii_.source = source;
+  fetch_pii_.start_time = base::TimeTicks::Now();
+  fetch_pii_.duration.reset();
 }
 
 void AtMemoryMetricsRecorder::OnFetchPiiCompleted() {
-  CHECK(fetch_pii_start_time_);
-  fetch_pii_duration_.emplace(base::TimeTicks::Now() - *fetch_pii_start_time_);
+  CHECK(fetch_pii_.start_time);
+  fetch_pii_.duration.emplace(base::TimeTicks::Now() - *fetch_pii_.start_time);
 }
 
 void AtMemoryMetricsRecorder::MarkFilled() {

@@ -2296,17 +2296,27 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="Autofill.AtMemory.Funnel.TimeToFetchUnmasked" units="ms"
+<!-- LINT.IfChange(Autofill.AtMemory.Latency.FetchPii) -->
+
+<histogram name="Autofill.AtMemory.Latency.FetchPii.{source}" units="ms"
     expires_after="2027-03-09">
   <owner>picarella@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
-    Records the duration (latency) from the time a PII suggestion (IBAN, Credit
-    Card, or sensitive Autofill AI data) is requested, to the time the unmasked
-    value is successfully obtained. Recorded only for successful unmasking
+    Records the duration (latency) from the time a {source} suggestion is
+    requested, to the time the unmasked value is successfully obtained. Recorded
+    when the suggestion UI is closed. Recorded only for successful unmasking
     flows.
   </summary>
+  <token key="source">
+    <variant name="AutofillAi" summary="Autofill AI"/>
+    <variant name="CreditCard" summary="Credit Card"/>
+    <variant name="Iban" summary="IBAN"/>
+    <variant name="PersonalContext" summary="Personal Context"/>
+  </token>
 </histogram>
+
+<!-- LINT.ThenChange(//components/autofill/core/browser/at_memory/at_memory_metrics_recorder.h:FetchPiiSource) -->
 
 <histogram name="Autofill.AtMemory.Latency.Query" units="ms"
     expires_after="2027-03-09">

@@ -1050,7 +1050,7 @@ void AtMemoryManager::FillIban(
   }
 
   if (metrics) {
-    metrics->OnFetchPiiStarted();
+    metrics->OnFetchPiiStarted(AtMemoryMetricsRecorder::FetchPiiSource::kIban);
   }
 
   iban_access_manager->FetchValue(
@@ -1116,7 +1116,8 @@ void AtMemoryManager::FillCreditCard(
   }
 
   if (metrics) {
-    metrics->OnFetchPiiStarted();
+    metrics->OnFetchPiiStarted(
+        AtMemoryMetricsRecorder::FetchPiiSource::kCreditCard);
   }
 
   // TODO(crbug.com/497795513): Consider caching fetched cards.
@@ -1178,6 +1179,11 @@ void AtMemoryManager::FillSensitiveAutofillAiOrPersonalContextData(
 
   if (payload.is_personal_context_sourced) {
     if (metrics) {
+      metrics->OnFetchPiiStarted(
+          AtMemoryMetricsRecorder::FetchPiiSource::kPersonalContext);
+      // TODO(crbug.com/525385681): Properly record start and completion times
+      // once we actually fetch PII remotely.
+      metrics->OnFetchPiiCompleted();
       metrics->MarkFilled();
     }
     // TODO(crbug.com/525386262): Authenticate before fetching and fetch using
@@ -1217,7 +1223,8 @@ void AtMemoryManager::FillSensitiveAutofillAiData(
   }
 
   if (metrics) {
-    metrics->OnFetchPiiStarted();
+    metrics->OnFetchPiiStarted(
+        AtMemoryMetricsRecorder::FetchPiiSource::kAutofillAi);
   }
 
   owner_->GetAutofillAiAccessManager().FetchEntityInstance(

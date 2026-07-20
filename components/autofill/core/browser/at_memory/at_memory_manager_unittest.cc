@@ -691,7 +691,7 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_EntitySuccess) {
   histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionFilled",
                                       true, 1);
   histogram_tester.ExpectTotalCount(
-      "Autofill.AtMemory.Funnel.TimeToFetchUnmasked", 1);
+      "Autofill.AtMemory.Latency.FetchPii.AutofillAi", 1);
 
   base::optional_ref<const EntityInstance> updated_entity =
       autofill_client().GetEntityDataManager()->GetEntityInstance(
@@ -759,7 +759,7 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_FetchFailed) {
   histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionFilled",
                                       false, 1);
   histogram_tester.ExpectTotalCount(
-      "Autofill.AtMemory.Funnel.TimeToFetchUnmasked", 0);
+      "Autofill.AtMemory.Latency.FetchPii.AutofillAi", 0);
 }
 
 // Tests that when filling a sensitive Credit Card, the manager fetches the
@@ -823,6 +823,8 @@ TEST_F(AtMemoryManagerTest, FillCreditCard_Success) {
                                       true, 1);
   histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionFilled",
                                       true, 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.AtMemory.Latency.FetchPii.CreditCard", 1);
 
   const CreditCard* updated_card = autofill_client()
                                        .GetPersonalDataManager()
@@ -1143,8 +1145,8 @@ TEST_F(AtMemoryManagerTest, FillOverlappingPopups) {
   histogram_tester.ExpectTotalCount("Autofill.AtMemory.QuerySubmitted", 0);
   histogram_tester.ExpectTotalCount("Autofill.AtMemory.SuggestionAccepted", 0);
   histogram_tester.ExpectTotalCount("Autofill.AtMemory.SuggestionFilled", 0);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.AtMemory.Funnel.TimeToFetchUnmasked", 0);
+  histogram_tester.ExpectTotalCount("Autofill.AtMemory.Latency.FetchPii.Iban",
+                                    0);
 
   // 4. Show Popup 2 (overlapping with the pending async fill of Popup 1).
   base::MockCallback<AtMemoryManager::UpdateSuggestionsCallback>
@@ -1190,8 +1192,8 @@ TEST_F(AtMemoryManagerTest, FillOverlappingPopups) {
       histogram_tester.GetAllSamples("Autofill.AtMemory.SuggestionFilled"),
       BucketsAre(Bucket(true, 1)));
   // - TimeToFetchUnmasked should be logged.
-  histogram_tester.ExpectTotalCount(
-      "Autofill.AtMemory.Funnel.TimeToFetchUnmasked", 1);
+  histogram_tester.ExpectTotalCount("Autofill.AtMemory.Latency.FetchPii.Iban",
+                                    1);
 }
 
 // Tests that the personal context notice is appended when the user needs to see
