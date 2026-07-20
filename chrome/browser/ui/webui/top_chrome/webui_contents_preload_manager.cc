@@ -270,16 +270,9 @@ RequestResult& RequestResult::operator=(RequestResult&&) = default;
 namespace {
 
 constexpr base::MemoryConsumerTraits kWebUIContentsPreloadManagerTraits(
-    // Passive consumer. No memory will be reclaimed.
-    base::MemoryConsumerTraits::EstimatedMemoryUsage::kMedium,
-    // Passive consumer. Zero release/traversal overhead.
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kFreesPagesWithoutTraversal,
-    // Discards no data.
-    base::MemoryConsumerTraits::InformationRetention::kLossless,
-    // Checks execute synchronously inline.
-    base::MemoryConsumerTraits::ExecutionType::kSynchronous,
-    // Evaluates pressure as a binary state (avoids preloading).
-    base::MemoryConsumerTraits::SupportsMemoryLimit::kNo);
+    base::MemoryConsumerTraits::ConsumerType::kPassive,
+    // Preloaded WebUI contents live in child renderer processes.
+    base::MemoryConsumerTraits::InProcess::kNo);
 
 }  // namespace
 
