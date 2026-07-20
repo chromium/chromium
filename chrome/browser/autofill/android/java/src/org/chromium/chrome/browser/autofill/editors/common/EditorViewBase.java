@@ -445,7 +445,7 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
                 });
 
         // Cancel editing when the user hits the back arrow.
-        toolbar.setNavigationContentDescription(R.string.cancel);
+        toolbar.setNavigationContentDescription(R.string.abc_action_bar_up_description);
         toolbar.setNavigationIcon(getTintedBackIcon());
         toolbar.setNavigationOnClickListener(view -> assumeNonNull(mCancelRunnable).run());
 
