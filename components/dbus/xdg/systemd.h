@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_DBUS_XDG_SYSTEMD_H_
 #define COMPONENTS_DBUS_XDG_SYSTEMD_H_
 
+#include <string>
+#include <string_view>
+
 #include "base/functional/callback_forward.h"
 
 namespace dbus {
@@ -12,6 +15,9 @@ class Bus;
 }
 
 namespace dbus_xdg::internal {
+
+// Escapes a string for usage in a systemd unit name.
+std::string EscapeSystemdUnitName(std::string_view name);
 
 enum class SystemdUnitStatus {
   kUnitStarted,

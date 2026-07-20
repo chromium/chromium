@@ -480,6 +480,16 @@ TEST_F(SetSystemdScopeUnitNameForXdgPortalTest, UnitNameConstruction) {
   EXPECT_EQ(status, SystemdUnitStatus::kUnitStarted);
 }
 
+TEST(SystemdEscapeTest, EscapeSystemdUnitName) {
+  EXPECT_EQ(internal::EscapeSystemdUnitName("foo-bar"), "foo\\x2dbar");
+  EXPECT_EQ(internal::EscapeSystemdUnitName("foo/bar"), "foo-bar");
+  EXPECT_EQ(internal::EscapeSystemdUnitName(".foo"), "\\x2efoo");
+  EXPECT_EQ(internal::EscapeSystemdUnitName("1foo"), "1foo");
+  EXPECT_EQ(internal::EscapeSystemdUnitName("foo_bar:baz.qux"),
+            "foo_bar:baz.qux");
+  EXPECT_EQ(internal::EscapeSystemdUnitName(""), "");
+}
+
 }  // namespace
 
 }  // namespace dbus_xdg
