@@ -28,7 +28,6 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
@@ -50,7 +49,6 @@ public class TabListRecyclerView extends RecyclerView
         implements TabListMediator.TabGridAccessibilityHelper, RunOnNextLayout {
     private static final float SMOOTH_SCROLL_SPEED_FACTOR = 0.8f;
     private boolean mBlockTouchInput;
-    private boolean mSuspendedScrollBarEnabled;
     private boolean mIsSmoothScrolling;
     // Null unless item animations are disabled.
     private @Nullable ItemAnimator mDisabledAnimatorHolder;
@@ -89,52 +87,6 @@ public class TabListRecyclerView extends RecyclerView
         if (mBlockTouchInput) return true;
 
         return super.dispatchTouchEvent(e);
-    }
-
-    @Override
-    public boolean dispatchHoverEvent(MotionEvent event) {
-        if (ChromeFeatureList.sAndroidVerticalTabs.isEnabled()) {
-            if (mBlockTouchInput) return true;
-
-            // For Vertical Tabs, prevent scroll bar from consuming hover events before the tab.
-            int action = event.getAction();
-            if (action == MotionEvent.ACTION_HOVER_ENTER) {
-                if (isVerticalScrollBarEnabled()) {
-                    mSuspendedScrollBarEnabled = true;
-                    super.setVerticalScrollBarEnabled(false);
-                }
-            }
-
-            boolean handled = super.dispatchHoverEvent(event);
-
-            if (action == MotionEvent.ACTION_HOVER_EXIT) {
-                if (mSuspendedScrollBarEnabled) {
-                    super.setVerticalScrollBarEnabled(true);
-                    mSuspendedScrollBarEnabled = false;
-                }
-            }
-            return handled;
-        } else {
-            return super.dispatchHoverEvent(event);
-        }
-    }
-
-    @Override
-    public void setVerticalScrollBarEnabled(boolean enabled) {
-        if (mSuspendedScrollBarEnabled) {
-            // Updates if vertical scroll bar status changes.
-            mSuspendedScrollBarEnabled = enabled;
-        }
-        super.setVerticalScrollBarEnabled(enabled);
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        if (mSuspendedScrollBarEnabled) {
-            super.setVerticalScrollBarEnabled(true);
-            mSuspendedScrollBarEnabled = false;
-        }
     }
 
     @Override
