@@ -6,7 +6,8 @@
     "gtest_tests": [
       {
         "args": [
-          "--everlasting"
+          "--everlasting",
+          "--orchestrate"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -37,7 +38,8 @@
       },
       {
         "args": [
-          "--everlasting"
+          "--everlasting",
+          "--orchestrate"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -68,7 +70,8 @@
       },
       {
         "args": [
-          "--everlasting"
+          "--everlasting",
+          "--orchestrate"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -99,7 +102,8 @@
       },
       {
         "args": [
-          "--everlasting"
+          "--everlasting",
+          "--orchestrate"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -130,7 +134,8 @@
       },
       {
         "args": [
-          "--everlasting"
+          "--everlasting",
+          "--orchestrate"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -161,7 +166,8 @@
       },
       {
         "args": [
-          "--everlasting"
+          "--everlasting",
+          "--orchestrate"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"

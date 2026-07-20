@@ -297,6 +297,7 @@ ci.builder(
         ],
         mixins = [
             "fuchsia-persistent-emulator",
+            "fuchsia-orchestrate",
             "linux-jammy",
             targets.mixin(
                 swarming = targets.swarming(
