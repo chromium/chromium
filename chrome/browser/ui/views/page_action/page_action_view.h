@@ -174,6 +174,7 @@ class PageActionView : public IconLabelBubbleView,
   void UpdateAnimationState(const PageActionModelInterface& model);
   void HandleSlideAndCrossfadeTransition(const PageActionModelInterface& model);
   void HandleSuggestionChipTransition(const PageActionModelInterface& model);
+  void CloseWidgetDeferred(base::WeakPtr<views::Widget> widget_to_close);
 
   base::WeakPtr<actions::ActionItem> action_item_ = nullptr;
   base::ScopedObservation<PageActionModelInterface, PageActionModelObserver>
@@ -230,6 +231,7 @@ class PageActionView : public IconLabelBubbleView,
   base::RepeatingClosure anchored_message_expand_callback_ = base::DoNothing();
   base::RepeatingClosure anchored_message_collapse_callback_ =
       base::DoNothing();
+
   base::WeakPtrFactory<PageActionView> weak_factory_{this};
 };
 

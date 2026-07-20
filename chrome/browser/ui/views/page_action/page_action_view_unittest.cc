@@ -10,8 +10,10 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
@@ -48,6 +50,7 @@
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace page_actions {
 namespace {
@@ -167,6 +170,7 @@ class PageActionViewTest : public ChromeViewsTestBase {
 
     // Host the view in a Widget so it can handle things like mouse input.
     widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+    widget_->SetBounds(gfx::Rect(0, 0, 800, 600));
     widget_->Show();
 
     page_action_view_ =
@@ -617,6 +621,108 @@ TEST_F(PageActionViewTest, AnchoredMessageChipClickCallbackOrder) {
   EXPECT_CALL(close_callback, Run());
 
   page_action_view()->AnchoredMessageChipClick();
+}
+
+TEST_F(PageActionViewTest, AnchoredMessageCloseOnDeactivateNoCrash) {
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), ShouldShowAnchoredMessage())
+      .WillRepeatedly(Return(true));
+
+  std::u16string text = u"Test Anchored Message";
+  std::optional<ui::ImageModel> icon = std::nullopt;
+  std::optional<AnchoredMessageExpandableContent> content = std::nullopt;
+
+  EXPECT_CALL(*model(), GetAnchoredMessageText())
+      .WillRepeatedly(ReturnRef(text));
+  EXPECT_CALL(*model(), GetAnchoredMessageIcon())
+      .WillRepeatedly(ReturnRef(icon));
+  EXPECT_CALL(*model(), GetAnchoredMessageExpandableContent())
+      .WillRepeatedly(ReturnRef(content));
+  EXPECT_CALL(*model(), GetAnchoredMessageActionIconType())
+      .WillRepeatedly(Return(AnchoredMessageActionIconType::kNone));
+
+  // Show anchored message
+  page_action_view()->OnPageActionModelChanged(*model());
+  ASSERT_TRUE(page_action_view()->IsAnchoredMessageVisible());
+
+  // Get bubble widget
+  views::Widget* bubble_widget =
+      page_action_view()->GetAnchoredMessageForTesting()->GetWidget();
+  ASSERT_TRUE(bubble_widget);
+
+  page_action_view()->GetAnchoredMessageForTesting()->set_close_on_deactivate(
+      true);
+#if BUILDFLAG(IS_MAC)
+  bubble_widget->Activate();
+  // Deactivate the bubble widget by activating the parent widget.
+  widget()->Activate();
+
+  // Wait for the deferred close task to execute.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !page_action_view()->IsAnchoredMessageVisible(); }));
+#else
+  // Close the bubble widget directly. On non-Mac Aura platforms, simulating
+  // native activation loss during unit tests is unreliable due to window
+  // manager constraints, but calling CloseWithReason(kLostFocus) executes the
+  // exact same deactivation close codepath.
+  bubble_widget->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
+
+  // Since CloseWithReason is synchronous on non-Mac, verify visibility
+  // immediately.
+  EXPECT_FALSE(page_action_view()->IsAnchoredMessageVisible());
+#endif
+}
+
+TEST_F(PageActionViewTest, AnchoredMessageCreateBeforeAsyncDestroy) {
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), ShouldShowAnchoredMessage())
+      .WillRepeatedly(Return(true));
+
+  std::u16string text = u"Test message";
+  std::optional<ui::ImageModel> icon = std::nullopt;
+  std::optional<AnchoredMessageExpandableContent> content = std::nullopt;
+
+  EXPECT_CALL(*model(), GetAnchoredMessageText())
+      .WillRepeatedly(ReturnRef(text));
+  EXPECT_CALL(*model(), GetAnchoredMessageIcon())
+      .WillRepeatedly(ReturnRef(icon));
+  EXPECT_CALL(*model(), GetAnchoredMessageExpandableContent())
+      .WillRepeatedly(ReturnRef(content));
+  EXPECT_CALL(*model(), GetAnchoredMessageActionIconType())
+      .WillRepeatedly(Return(AnchoredMessageActionIconType::kNone));
+
+  // 1. Show the first bubble.
+  page_action_view()->OnPageActionModelChanged(*model());
+  ASSERT_TRUE(page_action_view()->IsAnchoredMessageVisible());
+
+  views::Widget* first_bubble_widget =
+      page_action_view()->GetAnchoredMessageForTesting()->GetWidget();
+  ASSERT_TRUE(first_bubble_widget);
+
+  // 2. Close the first bubble, which posts the deferred destroy task.
+  first_bubble_widget->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
+
+  // 3. Immediately show a second bubble (before the task runs).
+  page_action_view()->OnPageActionModelChanged(*model());
+  ASSERT_TRUE(page_action_view()->IsAnchoredMessageVisible());
+
+  views::Widget* second_bubble_widget =
+      page_action_view()->GetAnchoredMessageForTesting()->GetWidget();
+  ASSERT_TRUE(second_bubble_widget);
+  ASSERT_NE(first_bubble_widget, second_bubble_widget);
+
+  // 4. Flush the task queue to run the first bubble's deferred close task
+  // and verify it does not close the second bubble.
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  // 5. Verify the second bubble remains visible and was NOT deleted by the
+  // first task.
+  EXPECT_TRUE(page_action_view()->IsAnchoredMessageVisible());
+  EXPECT_EQ(second_bubble_widget,
+            page_action_view()->GetAnchoredMessageForTesting()->GetWidget());
 }
 
 class PageActionViewTriggerTest : public PageActionViewTest {

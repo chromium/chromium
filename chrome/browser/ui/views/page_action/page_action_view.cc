@@ -577,7 +577,10 @@ void PageActionView::OnAnchoredMessageWidgetClose(
   CHECK(anchored_message_);
   CHECK(anchored_message_widget_);
   anchored_message_ = nullptr;
-  anchored_message_widget_.reset();
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&PageActionView::CloseWidgetDeferred,
+                                weak_factory_.GetWeakPtr(),
+                                anchored_message_widget_->GetWeakPtr()));
   UpdateTooltipText();
   anchored_message_visibility_changed_callbacks_.Notify(this);
 }
@@ -595,6 +598,14 @@ void PageActionView::UpdateTooltipText() {
         IDS_PAGE_ACTION_ANCHORED_MESSAGE_SHOWING, tooltip_text);
   }
   SetTooltipText(tooltip_text);
+}
+
+void PageActionView::CloseWidgetDeferred(
+    base::WeakPtr<views::Widget> widget_to_close) {
+  if (anchored_message_widget_ &&
+      anchored_message_widget_.get() == widget_to_close.get()) {
+    anchored_message_widget_.reset();
+  }
 }
 
 void PageActionView::AnchoredMessageChipClick() {
