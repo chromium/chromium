@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -55,6 +56,7 @@ import java.util.concurrent.TimeoutException;
     "enable-experimental-web-platform-features",
     "enable-blink-features=DigitalGoods"
 })
+@Batch(Batch.PER_CLASS)
 public class DigitalGoodsTest {
     @Rule
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
