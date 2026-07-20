@@ -1991,6 +1991,7 @@ void Widget::OnNativeWidgetVisibilityChanged(bool visible) {
   if (root) {
     root->PropagateVisibilityNotifications(nullptr, visible);
   }
+  ScopedCallStackLock on_stack(this);
   observers_.Notify(&WidgetObserver::OnWidgetVisibilityChanged, this, visible);
   if (GetCompositor() && root && root->layer()) {
     root->layer()->SetVisible(visible);

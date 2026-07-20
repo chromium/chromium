@@ -3148,6 +3148,49 @@ TEST_F(WidgetTest, WheelEventsFromScrollEventTarget) {
   EXPECT_EQ(0, cursor_view->GetEventCount(ui::EventType::kMousewheel));
 }
 
+TEST_F(DesktopWidgetTest, ShowSurvivesWidgetDestructionInVisibilityChange) {
+  // Observer that synchronously destroys the owning unique_ptr when the widget
+  // becomes visible.
+  class DestroyOnVisibleObserver : public WidgetObserver {
+   public:
+    explicit DestroyOnVisibleObserver(std::unique_ptr<Widget> widget)
+        : widget_(std::move(widget)) {
+      widget_->AddObserver(this);
+    }
+    ~DestroyOnVisibleObserver() override {
+      if (widget_) {
+        widget_->RemoveObserver(this);
+      }
+    }
+
+    void OnWidgetVisibilityChanged(Widget* widget, bool visible) override {
+      if (visible) {
+        widget->RemoveObserver(this);
+        widget_.reset();
+      }
+    }
+
+    Widget* widget() { return widget_.get(); }
+
+   private:
+    std::unique_ptr<Widget> widget_;
+  };
+
+  {
+    DestroyOnVisibleObserver observer(
+        CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                         Widget::InitParams::TYPE_WINDOW));
+    EXPECT_CHECK_DEATH(observer.widget()->Show());
+  }
+
+  {
+    DestroyOnVisibleObserver observer(
+        CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                         Widget::InitParams::TYPE_WINDOW));
+    EXPECT_CHECK_DEATH(observer.widget()->ShowInactive());
+  }
+}
+
 // Tests that if a scroll-begin gesture is not handled, then subsequent scroll
 // events are not dispatched to any view.
 TEST_F(WidgetTest, GestureScrollEventDispatching) {
