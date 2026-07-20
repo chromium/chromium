@@ -1061,6 +1061,7 @@ void PageContextFetcher::CollectTrackedElementRectsForIframes(
     iframe_info.mutable_bounding_box()->set_y(bounds.origin().y());
     iframe_info.mutable_bounding_box()->set_width(bounds.width());
     iframe_info.mutable_bounding_box()->set_height(bounds.height());
+    iframe_info.mutable_bounding_box()->set_is_screenshot_relative(true);
 
     // Iframe tracked elements should always have a parent frame token and a
     // frame token.
@@ -1113,6 +1114,12 @@ void PageContextFetcher::MaybeAddIframeInfo() {
 
   // Populate the standalone screenshot_info on FetchPageContextResult.
   pending_result_->screenshot_info.emplace();
+  if (pending_result_->screenshot_result.has_value()) {
+    pending_result_->screenshot_info->mutable_screenshot_size()->set_width(
+        pending_result_->screenshot_result->dimensions.width());
+    pending_result_->screenshot_info->mutable_screenshot_size()->set_height(
+        pending_result_->screenshot_result->dimensions.height());
+  }
   size_t iframe_proto_size = 0;
   for (const auto& iframe_info : iframe_info_) {
     base::UmaHistogramBoolean("Glic.PageContextFetcher.IframeInfoHasUrlOrigin",
