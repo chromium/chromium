@@ -69,6 +69,9 @@ BASE_FEATURE(kEnableExtensionInstallPolicyFetching,
 BASE_FEATURE(kUseManagementServiceForSensitivePolicies,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kFilterSensitivePoliciesOnWorkplaceJoinedDevices,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Modifies behavior of policies utilizing URLBlocklistManager.
 // When enabled, bypasses the wildcard "*" in the blocklist for internal
 // chrome:// URLs such as chrome://ntp, chrome://bookmarks, etc.
