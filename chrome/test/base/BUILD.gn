@@ -50,6 +50,44 @@ source_set("test_launcher_utils") {
   public_deps = [ "//base" ]
 }
 
+# Thin header-only target that exposes testing_profile headers for gn check.
+# The .cc implementations remain in //chrome/test:test_support until
+# fake_profile_manager and testing_browser_process are also extracted from
+# the monolith.
+#
+# TODO(crbug.com/353332589): Add testing_profile.{cc,h},
+# testing_profile_key.{cc,h}, testing_profile_manager.{cc,h} as sources and
+# remove from //chrome/test:test_support once the dep-graph through
+# fake_profile_manager / testing_browser_process is resolved.
+source_set("testing_profile") {
+  testonly = true
+  sources = [
+    "testing_profile.h",
+    "testing_profile_key.h",
+    "testing_profile_manager.h",
+  ]
+  public_deps = [
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile_manager",
+    "//components/domain_reliability",
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
+    "//components/policy/core/common",
+    "//content/public/browser",
+    "//extensions/buildflags",
+    "//services/network/public/cpp",
+  ]
+  if (is_chromeos) {
+    public_deps += [
+      "//chrome/browser/ash/policy/core",
+      "//chrome/browser/ash/settings:test_support",
+      "//components/user_manager",
+    ]
+  }
+}
+
 if (!is_android) {
   # Thin header-only target that exposes in_process_browser_test.h for gn check.
   # The implementation (in_process_browser_test.cc) still lives in

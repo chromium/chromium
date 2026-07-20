@@ -36,7 +36,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "chrome/browser/profiles/profile_load_tracker_win.h"
+class ProfileLoadTracker;
 #endif
 
 class ExtensionSpecialStoragePolicy;
