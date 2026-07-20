@@ -39,7 +39,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Unit tests for {@link TabBottomSheetMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class TabBottomSheetMediatorTest {
+public class TabBottomSheetMediatorUnitTest {
     private static final float DEFAULT_HEIGHT_RATIO = 0.5f;
     private static final int MAX_OFFSET = 1000;
     private static final float EPSILON = 0.001f;

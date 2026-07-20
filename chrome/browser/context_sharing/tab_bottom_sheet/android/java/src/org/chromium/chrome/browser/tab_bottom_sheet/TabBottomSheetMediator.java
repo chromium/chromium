@@ -48,6 +48,42 @@ public class TabBottomSheetMediator extends GestureStateListener {
         mKeyboardShowingHeightRatio = keyboardShowingHeightRatio;
     }
 
+    /** Sets whether the sheet is resizing. */
+    public void onSheetResizingStatusChanged(boolean isResizing) {
+        WebViewResizingHelper helper =
+                mModel.get(TabBottomSheetProperties.WEB_VIEW_RESIZING_HELPER);
+        if (helper != null && isResizing) {
+            if (mResizeLock == null) {
+                mResizeLock = helper.requestResize();
+            }
+        } else if (mResizeLock != null) {
+            mResizeLock.unlock();
+            mResizeLock = null;
+        }
+    }
+
+    /** Updates the state used for resizing the sheet. */
+    public void setToFlexibleHeight() {
+        WebViewResizingHelper helper =
+                mModel.get(TabBottomSheetProperties.WEB_VIEW_RESIZING_HELPER);
+        if (helper != null) {
+            helper.setToFlexibleHeight();
+        }
+    }
+
+    /**
+     * Updates the state used for resizing the sheet.
+     *
+     * @param maxOffset The maximum offset height for the sheet.
+     */
+    public void setToFixedHeight(@Px int maxOffset) {
+        WebViewResizingHelper helper =
+                mModel.get(TabBottomSheetProperties.WEB_VIEW_RESIZING_HELPER);
+        if (helper != null) {
+            helper.setToFixedHeight(maxOffset);
+        }
+    }
+
     void onSheetStateChanged(@SheetState int state) {
         mCurrentSheetState = state;
         if (state == SheetState.PEEK) {
@@ -156,42 +192,6 @@ public class TabBottomSheetMediator extends GestureStateListener {
             v.getParent().requestDisallowInterceptTouchEvent(true);
             v.dispatchTouchEvent(e);
             return true;
-        }
-    }
-
-    /** Sets whether the sheet is resizing. */
-    public void onSheetResizingStatusChanged(boolean isResizing) {
-        WebViewResizingHelper helper =
-                mModel.get(TabBottomSheetProperties.WEB_VIEW_RESIZING_HELPER);
-        if (helper != null && isResizing) {
-            if (mResizeLock == null) {
-                mResizeLock = helper.requestResize();
-            }
-        } else if (mResizeLock != null) {
-            mResizeLock.unlock();
-            mResizeLock = null;
-        }
-    }
-
-    /** Updates the state used for resizing the sheet. */
-    public void setToFlexibleHeight() {
-        WebViewResizingHelper helper =
-                mModel.get(TabBottomSheetProperties.WEB_VIEW_RESIZING_HELPER);
-        if (helper != null) {
-            helper.setToFlexibleHeight();
-        }
-    }
-
-    /**
-     * Updates the state used for resizing the sheet.
-     *
-     * @param maxOffset The maximum offset height for the sheet.
-     */
-    public void setToFixedHeight(@Px int maxOffset) {
-        WebViewResizingHelper helper =
-                mModel.get(TabBottomSheetProperties.WEB_VIEW_RESIZING_HELPER);
-        if (helper != null) {
-            helper.setToFixedHeight(maxOffset);
         }
     }
 
