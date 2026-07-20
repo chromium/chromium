@@ -160,6 +160,7 @@ public class AtMemoryBottomSheetMediatorTest {
                         new AutofillSuggestion.Builder()
                                 .setIconId(R.drawable.travel_trip)
                                 .setLabel("Hotel Booking")
+                                .setSecondaryLabel("Hotel Booking Type")
                                 .setSubLabel("Hilton ⋅ 16 May")
                                 .setChildren(List.of(childSuggestion))
                                 .build());
@@ -170,7 +171,7 @@ public class AtMemoryBottomSheetMediatorTest {
         itemModel2.get(ON_FLYOUT_CLICKED).run();
 
         PropertyModel flyoutModel = mMediator.getFlyoutModel();
-        assertEquals("Hotel Booking", flyoutModel.get(FlyoutProperties.TITLE));
+        assertEquals("Hotel Booking Type", flyoutModel.get(FlyoutProperties.TITLE));
         assertEquals(List.of(childSuggestion), flyoutModel.get(FlyoutProperties.SUGGESTIONS));
     }
 

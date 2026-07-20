@@ -225,6 +225,9 @@ struct Suggestion {
     // Text to fill in the trigger field upon accepting the suggestion.
     std::u16string value;
 
+    // Human-readable type name of the entry.
+    std::u16string type_name;
+
     // The identifier for the entry (e.g. IBAN Guid or InstrumentId).
     Identifier identifier;
 

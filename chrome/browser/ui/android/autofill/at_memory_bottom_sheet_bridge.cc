@@ -33,7 +33,7 @@ namespace {
 // - `icon` -> `iconId` (mapped via ResourceMapper)
 // - `type` -> `suggestionType`
 // - `children` -> `children`
-// TODO(crbug.com/502801668): Add support for `payload`.
+// TODO(crbug.com/536821036): Add support for `payload` and pass name of the type there.
 base::android::ScopedJavaLocalRef<jobject> CreateJavaSuggestion(
     JNIEnv* env,
     const Suggestion& suggestion) {
@@ -41,6 +41,12 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaSuggestion(
   if (!suggestion.labels.empty()) {
     sub_label = base::JoinString(
         base::ToVector(suggestion.labels[0], &Suggestion::Text::value), u" ");
+  }
+
+  std::u16string secondary_label;
+  if (std::holds_alternative<Suggestion::AtMemoryPayload>(suggestion.payload)) {
+    secondary_label =
+        std::get<Suggestion::AtMemoryPayload>(suggestion.payload).type_name;
   }
 
   int android_icon_id = 0;
@@ -55,9 +61,9 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaSuggestion(
       });
 
   return Java_AtMemoryBottomSheetBridge_createAutofillSuggestion(
-      env, suggestion.main_text.value, sub_label, android_icon_id,
-      std::to_underlying(suggestion.type), children, suggestion.IsAcceptable(),
-      suggestion.HasDeactivatedStyle());
+      env, suggestion.main_text.value, secondary_label, sub_label,
+      android_icon_id, std::to_underlying(suggestion.type), children,
+      suggestion.IsAcceptable(), suggestion.HasDeactivatedStyle());
 }
 
 }  // namespace

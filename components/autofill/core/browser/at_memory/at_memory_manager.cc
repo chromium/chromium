@@ -347,6 +347,7 @@ std::vector<Suggestion> CreateSecondarySuggestions(
     }
     Suggestion::AtMemoryPayload child_at_memory_payload(metadata.value,
                                                         metadata.type);
+    child_at_memory_payload.type_name = child_type_name;
     child_at_memory_payload.identifier =
         GetPayloadIdentifier(metadata.type, entry.identifier);
     child_at_memory_payload.is_personal_context_sourced =
@@ -404,7 +405,7 @@ Suggestion TransformResultIntoSuggestion(const MemorySearchResult& entry) {
                                  ? GetMemoryDataTypeNameForI18n(entry.type)
                                  : entry.type_name;
   if (!type_name.empty()) {
-    label_row.emplace_back(std::move(type_name));
+    label_row.emplace_back(type_name);
   }
   for (const accessibility_annotator::EntryMetadata& metadata :
        entry.metadata_list) {
@@ -422,6 +423,7 @@ Suggestion TransformResultIntoSuggestion(const MemorySearchResult& entry) {
     suggestion.labels.emplace_back(std::move(label_row));
   }
   Suggestion::AtMemoryPayload at_memory_payload(entry.value, entry.type);
+  at_memory_payload.type_name = std::move(type_name);
   at_memory_payload.identifier =
       GetPayloadIdentifier(entry.type, entry.identifier);
   at_memory_payload.is_personal_context_sourced = is_personal_context_sourced;

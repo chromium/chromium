@@ -67,6 +67,7 @@ public class AtMemoryBottomSheetBridge implements AtMemoryBottomSheetCoordinator
     @CalledByNative
     public static AutofillSuggestion createAutofillSuggestion(
             @JniType("std::u16string") String label,
+            @JniType("std::u16string") String secondaryLabel,
             @JniType("std::u16string") String subLabel,
             int iconId,
             int suggestionType,
@@ -75,6 +76,7 @@ public class AtMemoryBottomSheetBridge implements AtMemoryBottomSheetCoordinator
             boolean hasDeactivatedStyle) {
         return new AutofillSuggestion.Builder()
                 .setLabel(label)
+                .setSecondaryLabel(secondaryLabel)
                 .setSubLabel(subLabel)
                 .setIconId(iconId)
                 .setSuggestionType(suggestionType)

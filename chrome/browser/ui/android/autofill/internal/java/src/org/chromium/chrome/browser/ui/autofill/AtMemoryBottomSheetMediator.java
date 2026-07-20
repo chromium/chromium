@@ -191,7 +191,8 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
     }
 
     private void onFlyoutClicked(AutofillSuggestion suggestion, int position) {
-        mFlyoutModel.set(FlyoutProperties.TITLE, suggestion.getLabel());
+        // Assumes the secondary label contains the data type name.
+        mFlyoutModel.set(FlyoutProperties.TITLE, suggestion.getSecondaryLabel());
         mFlyoutModel.set(FlyoutProperties.SUGGESTIONS, suggestion.getChildren());
         mFlyoutModel.set(
                 FlyoutProperties.ON_SUGGESTION_CLICKED,
