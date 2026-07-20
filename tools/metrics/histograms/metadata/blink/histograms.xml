@@ -1145,7 +1145,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.DecodedImage.JpegDensity.Count.{ImageArea}"
-    units="0.01 bits per pixel" expires_after="2026-08-30">
+    units="0.01 bits per pixel" expires_after="2027-07-20">
   <owner>wtc@google.com</owner>
   <owner>jzern@google.com</owner>
   <owner>src/third_party/blink/renderer/platform/image-decoders/OWNERS</owner>
