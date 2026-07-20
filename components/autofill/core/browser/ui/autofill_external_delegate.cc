@@ -177,20 +177,6 @@ void PossiblyRemoveAutofillWarnings(std::vector<Suggestion>& suggestions) {
 // the field announcement to notify users about available autofill options,
 // e.g. VoiceOver adds "with autofill menu.".
 bool HasAutofillSuggestionsForA11y(SuggestionType type) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillDoNotUpdateAutofillAvailabilityOnFocusEvents)) {
-    switch (type) {
-      // TODO(crbug.com/374918460): Consider adding other types that can be
-      // classified as "providing autofill capabilities".
-      case SuggestionType::kFillAutofillAi:
-      case SuggestionType::kLoyaltyCardEntry:
-        return true;
-      default:
-        return AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
-            type);
-    }
-  }
-
   switch (type) {
     case SuggestionType::kAddressEntry:
     case SuggestionType::kAddressEntryOnTyping:
