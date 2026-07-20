@@ -26127,25 +26127,6 @@
             ]
         }
     ],
-    "WalletApiPrivatePassesConsent": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WalletApiPrivatePassesConsent"
-                    ]
-                }
-            ]
-        }
-    ],
     "WasapiInputDeviceInUseRetry": [
         {
             "platforms": [
