@@ -795,7 +795,9 @@ void ChromeAutofillClient::ShowAutofillSettings(
     case SuggestionType::kManageAutofillAi:
     case SuggestionType::kManageEnhancedAutofill:
       if (base::FeatureList::IsEnabled(features::kYourSavedInfoSettingsPage)) {
-        ShowAutofillPersonalContextSettings(web_contents());
+        ShowAutofillPersonalContextSettings(
+            web_contents(),
+            AutofillOptionsReferrer::kPersonalContextAtmemoryNotice);
       } else {
         autofill::ShowAutofillSettings(web_contents());
       }

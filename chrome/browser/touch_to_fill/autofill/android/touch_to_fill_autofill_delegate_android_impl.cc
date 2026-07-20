@@ -5,6 +5,8 @@
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_autofill_delegate_android_impl.h"
 
 #include "base/check_deref.h"
+#include "chrome/browser/android/preferences/autofill/settings_navigation_helper.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -110,8 +112,14 @@ void TouchToFillAutofillDelegateAndroidImpl::OnNoticeAcknowledged() {
 }
 
 void TouchToFillAutofillDelegateAndroidImpl::OnSettingsLinkClicked() {
-  // TODO(crbug.com/521716313): Open Chrome settings page for Autofill/Personal
-  // Context.
+  content::WebContents* web_contents =
+      static_cast<ContentAutofillClient&>(manager_->client()).web_contents();
+  if (!web_contents) {
+    return;
+  }
+  ShowAutofillPersonalContextSettings(
+      web_contents,
+      AutofillOptionsReferrer::kPersonalContextAmbientAutofillNotice);
   ttf_autofill_state_ = TouchToFillAutofillState::kInactive;
 }
 

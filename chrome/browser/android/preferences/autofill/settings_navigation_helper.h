@@ -45,7 +45,10 @@ enum class AutofillOptionsReferrer {
   // Personal context AtMemory notice.
   kPersonalContextAtmemoryNotice = 9,
 
-  kMaxValue = kPersonalContextAtmemoryNotice,
+  // Personal context ambient autofill notice.
+  kPersonalContextAmbientAutofillNotice = 10,
+
+  kMaxValue = kPersonalContextAmbientAutofillNotice,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillOptionsReferrer)
 
@@ -65,7 +68,8 @@ void ShowAutofillTravelSettings(content::WebContents* web_contents);
 void ShowAutofillShoppingSettings(content::WebContents* web_contents);
 
 // Opens the autofill settings page for personal context.
-void ShowAutofillPersonalContextSettings(content::WebContents* web_contents);
+void ShowAutofillPersonalContextSettings(content::WebContents* web_contents,
+                                         AutofillOptionsReferrer referrer);
 
 // Open the autofill settings page.
 void ShowAutofillSettings(content::WebContents* web_contents);

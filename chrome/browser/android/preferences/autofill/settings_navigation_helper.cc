@@ -4,6 +4,8 @@
 
 #include "chrome/browser/android/preferences/autofill/settings_navigation_helper.h"
 
+#include <utility>
+
 #include "base/android/jni_android.h"
 #include "content/public/browser/web_contents.h"
 
@@ -37,10 +39,11 @@ void ShowAutofillShoppingSettings(content::WebContents* web_contents) {
       base::android::AttachCurrentThread(), web_contents->GetJavaWebContents());
 }
 
-void ShowAutofillPersonalContextSettings(content::WebContents* web_contents) {
+void ShowAutofillPersonalContextSettings(content::WebContents* web_contents,
+                                         AutofillOptionsReferrer referrer) {
   Java_SettingsNavigationHelper_showAutofillPersonalContextSettings(
       base::android::AttachCurrentThread(), web_contents->GetJavaWebContents(),
-      /*PERSONAL_CONTEXT_ATMEMORY_NOTICE=*/9);
+      std::to_underlying(referrer));
 }
 
 void ShowAutofillSettings(content::WebContents* web_contents) {
