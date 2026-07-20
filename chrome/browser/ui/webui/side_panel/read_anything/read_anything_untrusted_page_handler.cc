@@ -1202,12 +1202,23 @@ void ReadAnythingUntrustedPageHandler::OnDistillationStatus(
     int word_count) {
   if (last_open_trigger_.has_value() &&
       last_open_trigger_.value() == ReadAnythingOpenTrigger::kOmniboxChip) {
-    last_open_trigger_.reset();
-    base::UmaHistogramEnumeration(
-        "Accessibility.ReadAnything.DistillationStatusAfterOmnibox", status);
-    base::UmaHistogramCustomCounts(
-        "Accessibility.ReadAnything.WordsDistilledAfterOmnibox", word_count, 1,
-        kMaxWordsDistilled, kWordsDistilledBuckets);
+    if (status != read_anything::mojom::DistillationStatus::kStillRunning) {
+      last_open_trigger_.reset();
+      base::UmaHistogramEnumeration(
+          "Accessibility.ReadAnything.DistillationStatusAfterOmnibox", status);
+      base::UmaHistogramCustomCounts(
+          "Accessibility.ReadAnything.WordsDistilledAfterOmnibox", word_count,
+          1, kMaxWordsDistilled, kWordsDistilledBuckets);
+
+      content::WebContents* web_contents =
+          main_observer_ ? main_observer_->web_contents() : nullptr;
+      if (web_contents && web_contents->GetPrimaryMainFrame()) {
+        ukm::builders::Accessibility_ReadAnything_OmniboxEntryPointDistillation(
+            web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId())
+            .SetDistillationStatus(static_cast<int>(status))
+            .Record(ukm::UkmRecorder::Get());
+      }
+    }
   }
 }
 

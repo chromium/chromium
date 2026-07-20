@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 // A per-tab class that handles the logic for showing or hiding the omnibox
 // entry point for Reading mode.
@@ -49,6 +50,10 @@ class ReadAnythingOmniboxController : public tabs::ContentsObservingTabFeature,
   void OnDiscardContents(tabs::TabInterface* tab,
                          content::WebContents* old_contents,
                          content::WebContents* new_contents) override;
+
+  // page_actions::PageActionObserver:
+  void OnPageActionIconShown(
+      const page_actions::PageActionState& page_action) override;
 
  protected:
   // Runs a heuristic to check if the current tab's contents are a good
@@ -101,6 +106,9 @@ class ReadAnythingOmniboxController : public tabs::ContentsObservingTabFeature,
   // active or RM is already open.
   bool IsIrrelevant();
 
+  // Logs the UKM metrics for the omnibox entry point.
+  void LogUkm();
+
   // The time when CheckIfShouldSuggestReadingMode was triggered.
   base::TimeTicks candidate_check_triggered_time_ms_;
 
@@ -109,6 +117,15 @@ class ReadAnythingOmniboxController : public tabs::ContentsObservingTabFeature,
 
   // Whether the current page has been already been checked for suggesting RM.
   bool was_page_checked_ = false;
+
+  // Whether Omnibox was triggered to open reading mode on the current page.
+  bool was_triggered_ = false;
+
+  // Whether the entry point was actually shown to the user.
+  bool was_shown_ = false;
+
+  // The current ukm source.
+  ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
 
   // The last reason Immersive RM was closed. Used to determine whether to show
   // the omnibox entrypoint after RM is closed. This needs to be stored because

@@ -571,6 +571,64 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Accessibility.ReadAnything.OmniboxEntryPoint">
+  <owner>lwinston@google.com</owner>
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Recorded when the user interacts with or is shown the Read Anything omnibox
+    entry point.
+  </summary>
+  <metric name="Shown" enum="Boolean">
+    <summary>
+      Whether the omnibox chip is shown.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Triggered" enum="Boolean">
+    <summary>
+      Whether the chip was triggered (via mouse or keyboard) to open Reading
+      mode.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="Accessibility.ReadAnything.OmniboxEntryPointDistillation">
+  <owner>lwinston@google.com</owner>
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Recorded when distillation completes after the Read Anything omnibox entry
+    point was used to open reading mode.
+  </summary>
+  <metric name="DistillationStatus" enum="ReadAnythingDistillationStatus">
+    <summary>
+      The distillation status in reading mode after the omnibox entry point was
+      used to open reading mode.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="Accessibility.ReadAnything.SidePanel">
   <owner>gusmartin@google.com</owner>
   <owner>lwinston@google.com</owner>
