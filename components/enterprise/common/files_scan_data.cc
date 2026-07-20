@@ -24,8 +24,14 @@ FilesScanData::PathsToScanResult GetPathsToScan(
     const base::FilePath& file = base_paths.at(i);
     base::File::Info info;
 
-    // Ignore the path if it's a symbolic link.
-    if (!base::GetFileInfo(file, &info) || info.is_symbolic_link) {
+    if (!base::GetFileInfo(file, &info)) {
+      // Keep the path even if it doesn't exist, so the scanner can handle the
+      // failure.
+      paths.push_back(file);
+      expanded_paths_indexes.insert({file, i});
+      continue;
+    }
+    if (info.is_symbolic_link) {
       continue;
     }
 

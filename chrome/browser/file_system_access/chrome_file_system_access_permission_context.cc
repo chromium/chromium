@@ -69,6 +69,7 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
+#include "storage/browser/file_system/external_mount_points.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -98,6 +99,11 @@
 #include "extensions/common/extension.h"
 #endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 #endif  // BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/fusebox/fusebox_server.h"
+#include "content/public/browser/storage_partition.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
@@ -116,6 +122,41 @@
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE) && BUILDFLAG(ENABLE_GUEST_VIEW)
 
 namespace {
+
+#if BUILDFLAG(IS_CHROMEOS)
+base::FilePath GetExternalPath(Profile* profile,
+                               storage::FileSystemContext* file_system_context,
+                               storage::ExternalMountPoints* mount_points,
+                               const base::FilePath& virtual_path) {
+  std::string ignored_mount_name;
+  storage::FileSystemMountOption ignored_mount_option;
+  base::FilePath physical_path;
+  if (!mount_points || !mount_points->CrackVirtualPath(
+                           virtual_path, &ignored_mount_name, nullptr, nullptr,
+                           &physical_path, &ignored_mount_option)) {
+    return base::FilePath();
+  }
+
+  base::FilePath resolved_path = physical_path;
+  if (file_system_context && profile) {
+    GURL external_gurl;
+    if (file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
+            profile, physical_path, file_manager::util::GetFileManagerURL(),
+            &external_gurl)) {
+      storage::FileSystemURL external_cracked_url =
+          file_system_context->CrackURLInFirstPartyContext(external_gurl);
+      if (external_cracked_url.is_valid()) {
+        base::FilePath fusebox_path =
+            fusebox::Server::SubstituteFuseboxFilePath(external_cracked_url);
+        if (!fusebox_path.empty()) {
+          resolved_path = std::move(fusebox_path);
+        }
+      }
+    }
+  }
+  return resolved_path;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using FileRequestData =
     FileSystemAccessPermissionRequestManager::FileRequestData;
@@ -2072,9 +2113,9 @@ void ChromeFileSystemAccessPermissionContext::CheckPathsAgainstEnterprisePolicy(
     EntriesAllowedByEnterprisePolicyCallback callback) {
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   // Get WebContents pointer in order to perform enterprise content analysis.
+  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(frame_id);
   content::WebContents* web_contents = nullptr;
   if (!entries.empty()) {
-    content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(frame_id);
     if (rfh && rfh->IsActive()) {
       web_contents = content::WebContents::FromRenderFrameHost(rfh);
     }
@@ -2085,10 +2126,10 @@ void ChromeFileSystemAccessPermissionContext::CheckPathsAgainstEnterprisePolicy(
     return;
   }
 
+  Profile* browser_profile = Profile::FromBrowserContext(profile());
   enterprise_connectors::ContentAnalysisDelegate::Data data;
   if (!enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
-          Profile::FromBrowserContext(profile()),
-          web_contents->GetLastCommittedURL(), &data,
+          browser_profile, web_contents->GetLastCommittedURL(), &data,
           enterprise_connectors::AnalysisConnector::FILE_ATTACHED)) {
     std::move(callback).Run(std::move(entries));
     return;
@@ -2097,16 +2138,42 @@ void ChromeFileSystemAccessPermissionContext::CheckPathsAgainstEnterprisePolicy(
   data.reason =
       enterprise_connectors::ContentAnalysisRequest::FILE_PICKER_DIALOG;
 
-  // Move the paths from `entries` to `data.paths` to minimize memory copies.
-  // Later the paths will be recombined with the type left in `entries` for
-  // those files that pass enterprise policy checks.
-  data.paths = base::ToVector(
-      entries, [](auto& entry) { return std::move(entry.path); });
+#if BUILDFLAG(IS_CHROMEOS)
+  storage::FileSystemContext* file_system_context = nullptr;
+  if (rfh) {
+    content::SiteInstance* site_instance = rfh->GetSiteInstance();
+    if (site_instance && browser_profile) {
+      file_system_context = browser_profile->GetStoragePartition(site_instance)
+                                ->GetFileSystemContext();
+    }
+  }
+  storage::ExternalMountPoints* mount_points =
+      storage::ExternalMountPoints::GetSystemInstance();
+#endif
 
-  // TODO: crbug.com/326618625 - Handle kExternal files correctly.
-  // CreateForFilesInWebContents() only handles real OS files, so these entries
-  // are ignored and passed directly to OnContentAnalysisComplete() unchanged.
-  // kExternal files only exist in ChromeOS.
+  // Resolve virtual paths for kExternal files to their physical paths
+  // so they can be scanned, but keep the original entries (with virtual paths)
+  // to return to the caller.
+  data.paths.reserve(entries.size());
+  for (const auto& entry : entries) {
+    base::FilePath path_to_scan = entry.path;
+#if BUILDFLAG(IS_CHROMEOS)
+    if (entry.type == content::PathType::kExternal) {
+      base::FilePath resolved_path = GetExternalPath(
+          browser_profile, file_system_context, mount_points, entry.path);
+      if (!resolved_path.empty()) {
+        path_to_scan = std::move(resolved_path);
+      }
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+    data.paths.push_back(std::move(path_to_scan));
+  }
+
+  // CreateForFilesInWebContents() only handles real OS files. Any kExternal
+  // entries that failed to resolve will be ignored by the scanner and
+  // reconciled based on the policy's default action (fail-open or fail-closed).
+  // TODO(crbug.com/535207208): Add a test to validate that unscannedFileEvent
+  // is reported for these unresolved files.
   enterprise_connectors::ContentAnalysisDelegate::CreateForFilesInWebContents(
       web_contents, std::move(data),
       base::BindOnce(
@@ -2120,6 +2187,7 @@ void ChromeFileSystemAccessPermissionContext::CheckPathsAgainstEnterprisePolicy(
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
+// TODO(crbug.com/534804380): Remove the unused `paths` parameter.
 void ChromeFileSystemAccessPermissionContext::OnContentAnalysisComplete(
     std::vector<content::PathInfo> entries,
     EntriesAllowedByEnterprisePolicyCallback callback,
@@ -2131,7 +2199,7 @@ void ChromeFileSystemAccessPermissionContext::OnContentAnalysisComplete(
   std::vector<content::PathInfo> result_entries;
   for (size_t i = 0; i < paths.size(); ++i) {
     if (allowed[i]) {
-      result_entries.emplace_back(entries[i].type, std::move(paths[i]),
+      result_entries.emplace_back(entries[i].type, std::move(entries[i].path),
                                   std::move(entries[i].display_name));
     }
   }

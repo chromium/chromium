@@ -163,6 +163,59 @@ TEST_F(FilesScanDataTest, Directories) {
   ASSERT_TRUE(blocked_indexes.count(1));
 }
 
+// Test case for crbug.com/501437361.
+// Verifies that ChromeOS virtual paths are not dropped during expansion,
+// ensuring they reach the scanner and are properly evaluated (and reported).
+TEST_F(FilesScanDataTest, VirtualPathNoDrop) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  // Simulate the ChromeOS virtual_path.
+  base::FilePath virtual_path(
+      FILE_PATH_LITERAL("Downloads-deadbeef0123456789/confidential_ssn.pdf"));
+  ASSERT_FALSE(virtual_path.IsAbsolute());
+
+  base::FilePath real_path =
+      AddFile(base::FilePath(FILE_PATH_LITERAL("benign.txt")));
+
+  std::vector<base::FilePath> base_paths = {virtual_path, real_path};
+  FilesScanData files_scan_data(base_paths);
+
+  base::RunLoop run_loop;
+  files_scan_data.ExpandPaths(run_loop.QuitClosure());
+  run_loop.Run();
+
+  // The virtual path is NOT dropped anymore. Both files survive expansion.
+  ASSERT_EQ(files_scan_data.expanded_paths().size(), 2u);
+  EXPECT_EQ(files_scan_data.expanded_paths()[0], virtual_path);
+  EXPECT_EQ(files_scan_data.expanded_paths()[1], real_path);
+  EXPECT_TRUE(files_scan_data.expanded_paths_indexes().contains(virtual_path));
+  EXPECT_TRUE(files_scan_data.expanded_paths_indexes().contains(real_path));
+
+  // base_paths() is round-tripped intact.
+  ASSERT_EQ(files_scan_data.base_paths().size(), 2u);
+
+  // Reconciler simulation.
+  // Case A: Scanner blocks the virtual file (index 0) and allows the real file
+  // (index 1).
+  {
+    std::vector<bool> scan_verdicts = {false, true};
+    absl::flat_hash_set<size_t> blocked =
+        files_scan_data.IndexesToBlock(scan_verdicts);
+    EXPECT_TRUE(blocked.contains(0u));
+    EXPECT_FALSE(blocked.contains(1u));
+  }
+
+  // Case B: Scanner allows the virtual file (index 0) and blocks the real file
+  // (index 1).
+  {
+    std::vector<bool> scan_verdicts = {true, false};
+    absl::flat_hash_set<size_t> blocked =
+        files_scan_data.IndexesToBlock(scan_verdicts);
+    EXPECT_FALSE(blocked.contains(0u));
+    EXPECT_TRUE(blocked.contains(1u));
+  }
+}
+
 TEST_F(FilesScanDataTest, BasePaths) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
