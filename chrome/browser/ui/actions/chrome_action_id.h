@@ -352,10 +352,6 @@
   E(kActionBookmarkBarRemoveFromBookmarksBar, \
     IDC_BOOKMARK_BAR_REMOVE_FROM_BOOKMARKS_BAR) \
   /* Context menu items for Sharing */ \
-  E(kActionContentContextSharingSharedClipboardSingleDevice, \
-    IDC_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_SINGLE_DEVICE) \
-  E(kActionContentContextSharingSharedClipboardMultipleDevices, \
-    IDC_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_MULTIPLE_DEVICES) \
   E(kActionContentContextGenerateQrCode, IDC_CONTENT_CONTEXT_GENERATE_QR_CODE) \
   E(kActionContentContextSharingSubmenu, IDC_CONTENT_CONTEXT_SHARING_SUBMENU) \
   /* Context menu item to show the clipboard history menu */ \

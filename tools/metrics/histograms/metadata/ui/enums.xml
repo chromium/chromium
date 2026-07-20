@@ -296,9 +296,13 @@ chromium-metrics-reviews@google.com.
   <int value="107"
       label="IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_MULTIPLE_DEVICES"/>
   <int value="108"
-      label="IDC_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_SINGLE_DEVICE"/>
+      label="(Obsolete)
+             IDC_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_SINGLE_DEVICE.
+             Removed in 2026/07."/>
   <int value="109"
-      label="IDC_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_MULTIPLE_DEVICES"/>
+      label="(Obsolete)
+             IDC_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_MULTIPLE_DEVICES.
+             Removed in 2026/07."/>
   <int value="110" label="IDC_CONTENT_CONTEXT_GENERATE_QR_CODE"/>
   <int value="111"
       label="(Obsolete) IDC_CONTENT_CLIPBOARD_HISTORY_MENU. Removed in
