@@ -177,6 +177,21 @@ source_set("unit_tests") {
       "//ui/gfx/codec",
     ]
   }
+
+  if (is_android) {
+    sources += [ "android/bookmark_bridge_unittest.cc" ]
+    deps += [
+      "//chrome/browser/bookmarks/android",
+      "//chrome/browser/partnerbookmarks:android",
+      "//chrome/browser/reading_list/android:reading_list",
+      "//components/reading_list/core",
+      "//components/reading_list/core:test_support",
+      "//components/signin/public/identity_manager:test_support",
+      "//components/sync:test_support",
+      "//components/sync/engine",
+      "//components/sync/model",
+    ]
+  }
 }
 
 source_set("browser_tests") {
