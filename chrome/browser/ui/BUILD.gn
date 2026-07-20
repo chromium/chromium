@@ -375,9 +375,12 @@ if (!is_android) {
     ]
   }
 }
-
 source_set("uninstall_browser_prompt") {
   public = [ "uninstall_browser_prompt.h" ]
+}
+
+source_set("view_ids") {
+  public = [ "view_ids.h" ]
 }
 
 # Use a static library here because many test binaries depend on this but don't
@@ -405,7 +408,6 @@ static_library("ui") {
     "tab_modal_confirm_dialog.h",
     "tab_ui_helper.cc",
     "tab_ui_helper.h",
-    "view_ids.h",
     "webui/chrome_web_ui_controller_factory.cc",
     "webui/chrome_web_ui_controller_factory.h",
     "webui/fileicon_source.cc",
@@ -466,6 +468,7 @@ static_library("ui") {
     ":ui_features",
     ":uninstall_browser_prompt",
     ":url_identity",
+    ":view_ids",
     "//base",
     "//base:i18n",
     "//base/allocator:buildflags",

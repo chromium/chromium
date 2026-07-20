@@ -166,6 +166,7 @@ source_set("browser_tests") {
     "//chrome/browser/sync/test/integration:sync_integration_test_support",
     "//chrome/browser/ui",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui:view_ids",
     "//chrome/browser/ui/file_system_access",
     "//chrome/browser/ui/hats:test_support",
     "//chrome/browser/ui/side_panel",

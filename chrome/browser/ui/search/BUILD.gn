@@ -108,6 +108,7 @@ if (!is_chromeos_device && !is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/search",
       "//chrome/browser/search_engines",
+      "//chrome/browser/ui:view_ids",
       "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/search:test_support_ui",

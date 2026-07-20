@@ -126,6 +126,7 @@ source_set("impl") {
       "//chrome/browser/translate",
       "//chrome/browser/ui:browser_actions",
       "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui:view_ids",
       "//chrome/browser/ui/actions",
       "//chrome/browser/ui/autofill/payments",
       "//chrome/browser/ui/browser_window",

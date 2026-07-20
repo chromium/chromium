@@ -472,6 +472,7 @@ source_set("browser_tests") {
     "//chrome/browser/metrics/structured:test_support",
     "//chrome/browser/sync",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:view_ids",
     "//chrome/browser/ui/ash/keyboard",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/ash/login:test_support",

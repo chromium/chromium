@@ -105,6 +105,7 @@ if (!is_android && !is_chromeos_device) {
 
     deps = [
       ":find_bar",
+      "//chrome/browser/ui:view_ids",
       "//chrome/browser/ui/browser_window",
       "//chrome/test:test_support",
     ]

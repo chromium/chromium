@@ -236,6 +236,7 @@ if (!is_android) {
       "//chrome/browser/browsing_data",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:view_ids",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/content_settings",
       "//chrome/test:test_support_ui",

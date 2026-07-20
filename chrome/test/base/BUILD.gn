@@ -132,6 +132,7 @@ if (!is_android) {
     public_deps = [
       "//base",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:view_ids",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
       "//components/history/core/browser",
