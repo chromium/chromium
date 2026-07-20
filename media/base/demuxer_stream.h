@@ -102,6 +102,17 @@ class MEDIA_EXPORT DemuxerStream {
   // on this.
   virtual bool SupportsConfigChanges() = 0;
 
+  // Returns true if the Demuxer handling track switching maps all tracks to a
+  // single, or fixed set of streams, rather than using a one-track-per-stream
+  // model. This results in renderers not having to restart or reinitialize
+  // themseleves on track changes.
+  // TODO(crbug.com/535432430): There are presently limitations in chunk demuxer
+  // that prevent keeping inactive roles in a 1:1 mapping with tracks, as it
+  // expects all active tracks to be receiving data at all times. Changing this
+  // behavior for HLS specifically might require either significant changes to
+  // the ChunkDemuxer itself, or perhaps using multiple ChunkDemuxer instances.
+  virtual bool ManagesTrackSwitchesInternally() const;
+
  protected:
   // Only allow concrete implementations to get deleted.
   virtual ~DemuxerStream();

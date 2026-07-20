@@ -64,6 +64,11 @@ bool ManifestDemuxer::ManifestDemuxerStream::SupportsConfigChanges() {
   return stream_->SupportsConfigChanges();
 }
 
+bool ManifestDemuxer::ManifestDemuxerStream::ManagesTrackSwitchesInternally()
+    const {
+  return true;
+}
+
 ManifestDemuxer::~ManifestDemuxer() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   impl_->Stop();

@@ -150,6 +150,10 @@ class MEDIA_EXPORT RendererImpl final : public Renderer {
                             base::TimeDelta time,
                             base::OnceClosure restart_completed_cb);
 
+  // Handle track changes for streams that manage track switches internally.
+  void HandleInBandTrackChange(DemuxerStream::Type type,
+                               base::OnceClosure change_completed_cb);
+
   // Fix state booleans after the stream switching is finished.
   void CleanUpTrackChange(base::OnceClosure on_finished,
                           bool* ended,

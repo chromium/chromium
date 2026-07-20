@@ -172,6 +172,8 @@ class RendererImplTest : public ::testing::Test {
 
   void CreateAudioStream() {
     audio_stream_ = CreateStream(DemuxerStream::AUDIO);
+    EXPECT_CALL(*audio_stream_, ManagesTrackSwitchesInternally())
+        .WillRepeatedly(Return(false));
     streams_.push_back(audio_stream_.get());
     EXPECT_CALL(*demuxer_, GetAllStreams()).WillRepeatedly(Return(streams_));
   }
@@ -182,6 +184,8 @@ class RendererImplTest : public ::testing::Test {
     video_stream_->set_video_decoder_config(
         is_encrypted ? TestVideoConfig::NormalEncrypted()
                      : TestVideoConfig::Normal());
+    EXPECT_CALL(*video_stream_, ManagesTrackSwitchesInternally())
+        .WillRepeatedly(Return(false));
     streams_.push_back(video_stream_.get());
     EXPECT_CALL(*demuxer_, GetAllStreams()).WillRepeatedly(Return(streams_));
   }
@@ -894,6 +898,34 @@ TEST_F(RendererImplTest, VideoTrackDisableThenEnable) {
   enable_wait.Run();
 
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(RendererImplTest, AudioTrackInBandSwitch) {
+  InitializeWithAudioAndVideo();
+  Play();
+  Mock::VerifyAndClearExpectations(&time_source_);
+
+  EXPECT_CALL(*audio_stream_, ManagesTrackSwitchesInternally())
+      .WillRepeatedly(Return(true));
+
+  base::RunLoop switch_wait;
+  renderer_impl_->OnTracksChanged(DemuxerStream::AUDIO, audio_stream_.get(),
+                                  switch_wait.QuitClosure());
+  switch_wait.Run();
+}
+
+TEST_F(RendererImplTest, VideoTrackInBandSwitch) {
+  InitializeWithAudioAndVideo();
+  Play();
+  Mock::VerifyAndClearExpectations(&time_source_);
+
+  EXPECT_CALL(*video_stream_, ManagesTrackSwitchesInternally())
+      .WillRepeatedly(Return(true));
+
+  base::RunLoop switch_wait;
+  renderer_impl_->OnTracksChanged(DemuxerStream::VIDEO, video_stream_.get(),
+                                  switch_wait.QuitClosure());
+  switch_wait.Run();
 }
 
 TEST_F(RendererImplTest, AudioUnderflowDuringAudioTrackChange) {

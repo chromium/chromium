@@ -385,6 +385,8 @@ TEST_F(ManifestDemuxerTest, TrackChanges) {
   std::vector<raw_ptr<DemuxerStream>> streams =
       manifest_demuxer_->GetAllStreams();
   ASSERT_EQ(streams.size(), 2u);
+  EXPECT_TRUE(streams[0]->ManagesTrackSwitchesInternally());
+  EXPECT_TRUE(streams[1]->ManagesTrackSwitchesInternally());
 
   // Disable video track:
   bool was_called = false;

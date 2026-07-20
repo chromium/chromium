@@ -275,6 +275,7 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
     StreamLiveness liveness() const override;
     void EnableBitstreamConverter() override;
     bool SupportsConfigChanges() override;
+    bool ManagesTrackSwitchesInternally() const override;
 
    private:
     WrapperReadCb read_cb_;

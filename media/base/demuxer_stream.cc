@@ -51,6 +51,10 @@ StreamLiveness DemuxerStream::liveness() const {
   return StreamLiveness::kUnknown;
 }
 
+bool DemuxerStream::ManagesTrackSwitchesInternally() const {
+  return false;
+}
+
 // Most DemuxerStream implementations don't need to convert bit stream.
 // Do nothing by default.
 void DemuxerStream::EnableBitstreamConverter() {}
