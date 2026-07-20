@@ -17,6 +17,7 @@
 #include <type_traits>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry_label_sensitive.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -51,12 +52,29 @@ class AutocompleteSearchResultLabelSensitive {
  public:
   AutocompleteSearchResultLabelSensitive(std::u16string value,
                                          MatchingType matching_type,
+                                         std::u16string query_name,
+                                         std::u16string query_label,
                                          int count);
   ~AutocompleteSearchResultLabelSensitive();
 
+  AutocompleteSearchResultLabelSensitive(
+      const AutocompleteSearchResultLabelSensitive& other);
+  AutocompleteSearchResultLabelSensitive& operator=(
+      const AutocompleteSearchResultLabelSensitive& other);
+  AutocompleteSearchResultLabelSensitive(
+      AutocompleteSearchResultLabelSensitive&& other);
+  AutocompleteSearchResultLabelSensitive& operator=(
+      AutocompleteSearchResultLabelSensitive&& other);
+
   // Getters
-  const std::u16string& value() const { return value_; }
+  const std::u16string& value() const LIFETIME_BOUND { return value_; }
   MatchingType matching_type() const { return matching_type_; }
+  const std::u16string& query_name() const LIFETIME_BOUND {
+    return query_name_;
+  }
+  const std::u16string& query_label() const LIFETIME_BOUND {
+    return query_label_;
+  }
   int count() const { return count_; }
 
   bool operator==(const AutocompleteSearchResultLabelSensitive& other) const {
@@ -78,6 +96,8 @@ class AutocompleteSearchResultLabelSensitive {
                        // suggestion was found via name, label, or both. Also
                        // used in search query for ranking suggestions (both
                        // name and label suggestions first).
+  std::u16string query_name_;
+  std::u16string query_label_;
   int count_;
 };
 

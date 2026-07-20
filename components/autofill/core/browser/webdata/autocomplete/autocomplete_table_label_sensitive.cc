@@ -131,8 +131,14 @@ std::u16string NormalizeLabel(std::u16string_view label_view) {
 AutocompleteSearchResultLabelSensitive::AutocompleteSearchResultLabelSensitive(
     std::u16string value,
     const MatchingType matching_type,
+    std::u16string query_name,
+    std::u16string query_label,
     const int count)
-    : value_(std::move(value)), matching_type_(matching_type), count_(count) {}
+    : value_(std::move(value)),
+      matching_type_(matching_type),
+      query_name_(std::move(query_name)),
+      query_label_(std::move(query_label)),
+      count_(count) {}
 
 AutocompleteSearchResultLabelSensitive::
     ~AutocompleteSearchResultLabelSensitive() = default;
@@ -140,6 +146,17 @@ AutocompleteSearchResultLabelSensitive::
 AutocompleteTableLabelSensitive::AutocompleteTableLabelSensitive() = default;
 
 AutocompleteTableLabelSensitive::~AutocompleteTableLabelSensitive() = default;
+
+AutocompleteSearchResultLabelSensitive::AutocompleteSearchResultLabelSensitive(
+    const AutocompleteSearchResultLabelSensitive& other) = default;
+AutocompleteSearchResultLabelSensitive&
+AutocompleteSearchResultLabelSensitive::operator=(
+    const AutocompleteSearchResultLabelSensitive& other) = default;
+AutocompleteSearchResultLabelSensitive::AutocompleteSearchResultLabelSensitive(
+    AutocompleteSearchResultLabelSensitive&& other) = default;
+AutocompleteSearchResultLabelSensitive&
+AutocompleteSearchResultLabelSensitive::operator=(
+    AutocompleteSearchResultLabelSensitive&& other) = default;
 
 // static
 AutocompleteTableLabelSensitive*
@@ -220,6 +237,8 @@ bool AutocompleteTableLabelSensitive::GetFormValuesForElementNameAndLabel(
       // MatchingType::kUnknown (= 0), should never happen.
       "    ELSE 0 "
       "  END AS matching_type, "
+      "  name AS query_name, "
+      "  label AS query_label, "
       "  MAX(count) AS max_count "
       "FROM autocomplete, inputs "
       "WHERE (name = inputs._name OR (label != '' AND label_normalized = "
@@ -250,7 +269,9 @@ bool AutocompleteTableLabelSensitive::GetFormValuesForElementNameAndLabel(
     AutocompleteSearchResultLabelSensitive current_result(
         /*value=*/s.ColumnString16(0),
         /*matching_type=*/ToSafeMatchingType(s.ColumnInt(1)),
-        /*count=*/s.ColumnInt(2));
+        /*query_name=*/s.ColumnString16(2),
+        /*query_label=*/s.ColumnString16(3),
+        /*count=*/s.ColumnInt(4));
     if (seen_results.insert(current_result).second) {
       entries.push_back(current_result);
     }

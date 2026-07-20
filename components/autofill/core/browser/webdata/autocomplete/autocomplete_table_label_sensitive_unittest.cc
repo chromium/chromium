@@ -92,11 +92,19 @@ CompareAutocompleteEntryLabelSensitiveSets(
                                         << " but count = " << count;
 }
 
-auto EqualsSearchResult(std::u16string value, int count) {
-  return AllOf(Property("AutocompleteSearchResultLabelSensitive::value",
-                        &AutocompleteSearchResultLabelSensitive::value, value),
-               Property("AutocompleteSearchResultLabelSensitive::count",
-                        &AutocompleteSearchResultLabelSensitive::count, count));
+auto EqualsSearchResult(std::u16string value,
+                        std::u16string name,
+                        std::u16string label,
+                        int count) {
+  return AllOf(
+      Property("AutocompleteSearchResultLabelSensitive::value",
+               &AutocompleteSearchResultLabelSensitive::value, value),
+      Property("AutocompleteSearchResultLabelSensitive::count",
+               &AutocompleteSearchResultLabelSensitive::count, count),
+      Property("AutocompleteSearchResultLabelSensitive::query_name",
+               &AutocompleteSearchResultLabelSensitive::query_name, name),
+      Property("AutocompleteSearchResultLabelSensitive::query_label",
+               &AutocompleteSearchResultLabelSensitive::query_label, label));
 }
 
 class AutocompleteTableLabelSensitiveTest : public testing::Test {
@@ -445,7 +453,8 @@ TEST_F(GetFormValuesForElementNameAndLabelTest, ReturnsSuggestion) {
       kDefaultName, kDefaultLabel, /*prefix=*/std::u16string(), /*limit=*/10,
       entries));
 
-  EXPECT_THAT(entries, ElementsAre(EqualsSearchResult(kDefaultValue, 1)));
+  EXPECT_THAT(entries, ElementsAre(EqualsSearchResult(
+                           kDefaultValue, kDefaultName, kDefaultLabel, 1)));
 }
 
 // When asked for 1 result, GetFormValuesForElementNameAndLabel returns the top
@@ -466,7 +475,8 @@ TEST_F(GetFormValuesForElementNameAndLabelTest, ReturnsTopSuggestion) {
       kDefaultName, kDefaultLabel, /*prefix=*/std::u16string(), /*limit=*/1,
       entries));
 
-  EXPECT_THAT(entries, ElementsAre(EqualsSearchResult(kDefaultValue, 2)));
+  EXPECT_THAT(entries, ElementsAre(EqualsSearchResult(
+                           kDefaultValue, kDefaultName, kDefaultLabel, 2)));
 }
 
 // When asked for multiple results, GetFormValuesForElementNameAndLabel returns
@@ -485,8 +495,11 @@ TEST_F(GetFormValuesForElementNameAndLabelTest,
       kDefaultName, kDefaultLabel, /*prefix=*/std::u16string(), /*limit=*/10,
       entries));
 
-  EXPECT_THAT(entries, ElementsAre(EqualsSearchResult(field2.value(), 2),
-                                   EqualsSearchResult(field1.value(), 1)));
+  EXPECT_THAT(entries,
+              ElementsAre(EqualsSearchResult(field2.value(), field2.name(),
+                                             field2.label(), 2),
+                          EqualsSearchResult(field1.value(), field1.name(),
+                                             field1.label(), 1)));
 }
 
 // GetFormValuesForElementNameAndLabelTest should match the value prefix
@@ -502,8 +515,10 @@ TEST_F(GetFormValuesForElementNameAndLabelTest, MatchesPrefixCaseInsensitive) {
       /*prefix=*/u"superman",
       /*limit=*/1, entries));
 
-  EXPECT_THAT(entries, ElementsAre(EqualsSearchResult(
-                           optional_field.value().value(), 1)));
+  EXPECT_THAT(entries,
+              ElementsAre(EqualsSearchResult(
+                  optional_field.value().value(), optional_field.value().name(),
+                  optional_field.value().label(), 1)));
 }
 
 // GetFormValuesForElementNameAndLabelTest should return the correct set of
@@ -526,12 +541,17 @@ TEST_F(GetFormValuesForElementNameAndLabelTest, PrefixNarrowsDownResults) {
       kDefaultName, kDefaultLabel, /*prefix=*/u"clark k", /*limit=*/10,
       entries_narrowed_down));
 
-  EXPECT_THAT(entries,
-              UnorderedElementsAre(
-                  EqualsSearchResult(optional_field1.value().value(), 1),
-                  EqualsSearchResult(optional_field2.value().value(), 1)));
-  EXPECT_THAT(entries_narrowed_down, ElementsAre(EqualsSearchResult(
-                                         optional_field1.value().value(), 1)));
+  EXPECT_THAT(
+      entries,
+      UnorderedElementsAre(
+          EqualsSearchResult(optional_field1->value(), optional_field1->name(),
+                             optional_field1->label(), 1),
+          EqualsSearchResult(optional_field2->value(), optional_field2->name(),
+                             optional_field2->label(), 1)));
+  EXPECT_THAT(entries_narrowed_down,
+              ElementsAre(EqualsSearchResult(optional_field1->value(),
+                                             optional_field1->name(),
+                                             optional_field1->label(), 1)));
 }
 
 // GetFormValuesForElementNameAndLabel normalizes the label before querying the
@@ -546,7 +566,8 @@ TEST_F(GetFormValuesForElementNameAndLabelTest, NormalizesLabelBeforeQuerying) {
       kDefaultName, u"....Test LaBeL!!!!:   ", kDefaultValue, /*limit=*/10,
       entries));
 
-  EXPECT_THAT(entries, ElementsAre(EqualsSearchResult(kDefaultValue, 1)));
+  EXPECT_THAT(entries, ElementsAre(EqualsSearchResult(
+                           kDefaultValue, kDefaultName, field.label(), 1)));
 }
 
 using GetCountOfValuesContainedBetweenTest =
