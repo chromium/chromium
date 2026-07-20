@@ -295,8 +295,8 @@ public class LauncherShortcutTest {
         List<String> expectedLabels;
         int expectedSize;
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
-            expectedLabels = Arrays.asList("New window", "New Incognito window");
-            expectedSize = 2;
+            expectedLabels = Arrays.asList("New Incognito window");
+            expectedSize = 1;
         } else {
             expectedLabels = Arrays.asList("New Incognito tab");
             expectedSize = 1;
@@ -358,8 +358,8 @@ public class LauncherShortcutTest {
         List<String> expectedLabels;
         int expectedSize;
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
-            expectedLabels = Arrays.asList("New window", "New Incognito window");
-            expectedSize = 2;
+            expectedLabels = Arrays.asList("New Incognito window");
+            expectedSize = 1;
         } else {
             expectedLabels = Arrays.asList("New Incognito tab");
             expectedSize = 1;
