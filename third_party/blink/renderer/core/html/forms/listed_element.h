@@ -199,6 +199,8 @@ class CORE_EXPORT ListedElement : public GarbageCollectedMixin {
  protected:
   ListedElement();
 
+  bool FormWasSetByParser() const { return form_was_set_by_parser_; }
+
   // FIXME: Remove usage of setForm. resetFormOwner should be enough, and
   // setForm is confusing.
   void SetForm(HTMLFormElement*);

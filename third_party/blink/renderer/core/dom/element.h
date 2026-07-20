@@ -538,7 +538,7 @@ class CORE_EXPORT Element : public ContainerNode {
   // and MathMLElement but putting the implementation here allows us to use
   // NodeRareData to hold the data.
   const AtomicString& nonce() const;
-  void setNonce(const AtomicString&);
+  virtual void setNonce(const AtomicString&);
 
   // Call this to get the value of the id attribute for style resolution
   // purposes.  The value will already be lowercased if the document is in

@@ -127,8 +127,9 @@ void ListedElement::InsertedInto(ContainerNode& insertion_point) {
 
   if (!form_was_set_by_parser_ || !form_ ||
       NodeTraversal::HighestAncestorOrSelf(insertion_point) !=
-          NodeTraversal::HighestAncestorOrSelf(*form_.Get()))
+          NodeTraversal::HighestAncestorOrSelf(*form_.Get())) {
     ResetFormOwner();
+  }
 
   HTMLElement& element = ToHTMLElement();
   if (insertion_point.isConnected()) {

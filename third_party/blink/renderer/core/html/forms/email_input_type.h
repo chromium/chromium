@@ -77,6 +77,13 @@ class EmailInputType final : public BaseTextInputType {
   bool NeedsContainer() const override;
 
   bool IsEmailVerificationStatusIndicatorEnabled() const;
+  // Returns true if this input field supports email verification, that is,
+  // if there is another input field in the form with a nonce and
+  // autocomplete="email-verification-token". Note that if there are multiple
+  // email fields and/or multiple token fields in the form, they will all be
+  // associated with the first token field (which is a limitation of the
+  // current design).
+  bool IsEmailVerificationSupported() const;
 
   EmailVerificationState email_verification_state_ =
       EmailVerificationState::kNone;

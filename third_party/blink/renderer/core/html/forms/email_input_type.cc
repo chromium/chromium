@@ -34,10 +34,13 @@
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/forms/listed_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_inner_elements.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/platform/bindings/script_regexp.h"
@@ -370,6 +373,7 @@ void EmailInputType::UpdateEmailVerificationIndicator() {
           ? GetElement().UserAgentShadowRoot()->getElementById(
                 shadow_element_names::kIdEmailVerificationIndicator)
           : nullptr;
+
   if (!indicator) {
     return;
   }
@@ -381,10 +385,10 @@ void EmailInputType::UpdateEmailVerificationIndicator() {
     return;
   }
 
-  const char* state_str = "none";
+  const char* state_str = "";
   switch (email_verification_state_) {
     case EmailVerificationState::kNone:
-      state_str = "none";
+      state_str = IsEmailVerificationSupported() ? "supported" : "none";
       break;
     case EmailVerificationState::kLoading:
       state_str = "loading";
@@ -406,6 +410,24 @@ bool EmailInputType::IsEmailVerificationStatusIndicatorEnabled() const {
   const ExecutionContext* context = GetElement().GetExecutionContext();
   return RuntimeEnabledFeatures::EmailVerificationStatusIndicatorEnabled(
       context);
+}
+
+bool EmailInputType::IsEmailVerificationSupported() const {
+  HTMLInputElement& input_element = GetElement();
+  HTMLFormElement* form = input_element.Form();
+  if (!form) {
+    return false;
+  }
+  for (ListedElement* listed_element : form->ListedElements()) {
+    HTMLElement& html_element = listed_element->ToHTMLElement();
+    if (auto* form_input = DynamicTo<HTMLInputElement>(html_element)) {
+      if (form_input->IsEmailVerificationTokenField() &&
+          !form_input->nonce().empty()) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 }  // namespace blink

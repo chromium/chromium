@@ -1170,6 +1170,11 @@ input::-internal-email-verification-indicator {
     background-size: contain;
 }
 
+input::-internal-email-verification-indicator[data-state="supported"] {
+    display: inline-block;
+    background-image: url("images/email_verification_supported.svg");
+}
+
 input::-internal-email-verification-indicator[data-state="verified"] {
     display: inline-block;
     background-image: url("images/email_verification_verified.svg");
