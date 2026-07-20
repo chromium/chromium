@@ -103,6 +103,9 @@ public interface Tab extends TabLifecycle {
     /** Returns the web contents associated with this tab. */
     @Nullable WebContents getWebContents();
 
+    /** Returns the navigation start time in milliseconds of the latest navigation. */
+    long getNavigationStartMs();
+
     /**
      * Returns the {@link Activity} {@link Context} if this {@link Tab} is attached to an {@link
      * Activity}, otherwise the themed application context (e.g. hidden tab or browser action tab).

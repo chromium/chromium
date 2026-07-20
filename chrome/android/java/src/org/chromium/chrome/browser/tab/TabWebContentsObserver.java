@@ -286,6 +286,7 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
         public void didStartNavigationInPrimaryMainFrame(NavigationHandle navigation) {
             if (!navigation.isSameDocument()) {
                 mTab.didStartPageLoad(navigation.getUrl());
+                mTab.setNavigationStartMs(navigation.getNavigationStartMs());
             }
 
             RewindableIterator<TabObserver> observers = mTab.getTabObservers();

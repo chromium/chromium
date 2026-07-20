@@ -68,6 +68,7 @@ public class NavigationHandle {
     private @Nullable Map<String, String> mResponseHeaders;
     private int mIgnoredDuplicateNavigationCount;
 
+    private long mNavigationStartMs;
     private boolean mStarted;
 
     public static NavigationHandle createForTesting(
@@ -119,6 +120,7 @@ public class NavigationHandle {
                 /* isPageActivation= */ false,
                 /* isPdf= */ false,
                 /* mimeType= */ "",
+                /* navigationStartMs= */ 0,
                 /* webContents= */ null);
         return handle;
     }
@@ -161,6 +163,7 @@ public class NavigationHandle {
             boolean isPageActivation,
             boolean isPdf,
             String mimeType,
+            long navigationStartMs,
             @Nullable WebContents webContents) {
         mReferrerUrl = referrerUrl;
         mReferrerPolicy = referrerPolicy;
@@ -177,9 +180,16 @@ public class NavigationHandle {
         mIsPdf = isPdf;
         mIsPageActivation = isPageActivation;
         mMimeType = mimeType;
+        mNavigationStartMs = navigationStartMs;
         mWebContents = webContents;
 
         mStarted = true;
+    }
+
+    /** Returns the navigation start time in milliseconds. */
+    public long getNavigationStartMs() {
+        assert mStarted;
+        return mNavigationStartMs;
     }
 
     /**

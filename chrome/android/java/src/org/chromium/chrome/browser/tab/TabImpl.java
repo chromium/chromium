@@ -217,6 +217,8 @@ class TabImpl implements Tab, TabInternal {
     /** {@link WebContents} showing the current page, or {@code null} if the tab is frozen. */
     private @Nullable WebContents mWebContents;
 
+    private long mNavigationStartMs;
+
     /** The ContentView of this tab. */
     private @Nullable ContentView mContentView;
 
@@ -495,6 +497,15 @@ class TabImpl implements Tab, TabInternal {
     @Override
     public @Nullable WebContents getWebContents() {
         return mWebContents;
+    }
+
+    @Override
+    public long getNavigationStartMs() {
+        return mNavigationStartMs;
+    }
+
+    void setNavigationStartMs(long navigationStartMs) {
+        mNavigationStartMs = navigationStartMs;
     }
 
     @Override
