@@ -438,6 +438,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)contentWillDisappearAnimated:(BOOL)animated {
   [self recordIdlePageStatus];
+  [self.topToolbar unfocusSearchBar];
 
   [self.swipeToIncognitoIPH
       dismissWithReason:IPHDismissalReasonType::kTappedOutsideIPHAndAnchorView];
@@ -668,6 +669,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)setCurrentPage:(TabGridPage)currentPage {
   // Record the idle metric if the previous page was the tab groups page.
   if (_currentPage != currentPage) {
+    [self.topToolbar unfocusSearchBar];
     [self tabGridDidPerformAction:TabGridActionType::kChangePage];
     if (_currentPage == TabGridPageTabGroups) {
       _idleTabGroupsPage = YES;

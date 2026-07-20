@@ -223,4 +223,33 @@ TEST_F(TabGridViewControllerTest, Metrics) {
             "MobileKeyCommandOpenNewIncognitoTab");
 }
 
+// Checks that `topToolbar` search bar is unfocused on `contentWillDisappear`.
+TEST_F(TabGridViewControllerTest, UnfocusesSearchBarOnDisappear) {
+  // Load the view.
+  std::ignore = view_controller_.view;
+  id mock_top_toolbar = OCMPartialMock(view_controller_.topToolbar);
+
+  OCMExpect([mock_top_toolbar unfocusSearchBar]);
+
+  [view_controller_ contentWillDisappearAnimated:NO];
+
+  EXPECT_OCMOCK_VERIFY(mock_top_toolbar);
+  [mock_top_toolbar stopMocking];
+}
+
+// Checks that `topToolbar` search bar is unfocused on page change.
+TEST_F(TabGridViewControllerTest, UnfocusesSearchBarOnTransitionToTabGroups) {
+  // Load the view.
+  std::ignore = view_controller_.view;
+  id mock_top_toolbar = OCMPartialMock(view_controller_.topToolbar);
+
+  OCMExpect([mock_top_toolbar unfocusSearchBar]);
+
+  [view_controller_ setCurrentPageAndPageControl:TabGridPageTabGroups
+                                        animated:NO];
+
+  EXPECT_OCMOCK_VERIFY(mock_top_toolbar);
+  [mock_top_toolbar stopMocking];
+}
+
 }  // namespace
