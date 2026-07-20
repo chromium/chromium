@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.settings;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -16,9 +17,11 @@ public class SettingsInTab {
     public static boolean isEnabled() {
         if (!ChromeFeatureList.sSettingsInTab.isEnabled()) return false;
 
-        // isNonMultiDisplayContextOnTablet() checks display size, so it returns true
-        // both for tablets and desktops. In both cases, the feature is useful so we enable it.
-        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(
-                ContextUtils.getApplicationContext());
+        // Settings in a tab is supported on desktop and tablet form factors.
+        // DeviceInfo.isDesktop() is checked in addition to isNonMultiDisplayContextOnTablet()
+        // because desktop windows can be resized to narrow widths (< 600dp).
+        return DeviceInfo.isDesktop()
+                || DeviceFormFactor.isNonMultiDisplayContextOnTablet(
+                        ContextUtils.getApplicationContext());
     }
 }

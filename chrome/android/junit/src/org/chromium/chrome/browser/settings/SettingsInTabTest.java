@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -36,6 +37,14 @@ public class SettingsInTabTest {
     @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
     @Config(qualifiers = "sw600dp")
     public void testIsEnabled_FeatureEnabledOnTablet_ReturnsTrue() {
+        assertTrue(SettingsInTab.isEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @Config(qualifiers = "sw320dp")
+    public void testIsEnabled_FeatureEnabledOnDesktopNarrowWindow_ReturnsTrue() {
+        DeviceInfo.setIsDesktopForTesting(true);
         assertTrue(SettingsInTab.isEnabled());
     }
 }
