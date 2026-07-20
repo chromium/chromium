@@ -11506,10 +11506,26 @@
             ]
         }
     ],
-    "FirstRunDesktopRefresh": [
+    "FirstRunDesktopChoiceScreenRefresh": [
         {
             "platforms": [
                 "windows",
+                "linux",
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FirstRunDesktopChoiceScreenRefresh"
+                    ]
+                }
+            ]
+        }
+    ],
+    "FirstRunDesktopRefresh": [
+        {
+            "platforms": [
                 "linux",
                 "mac"
             ],
@@ -11520,7 +11536,6 @@
                         "sign-in-promo-variation": "default"
                     },
                     "enable_features": [
-                        "FirstRunDesktopChoiceScreenRefresh",
                         "FirstRunDesktopRefresh"
                     ]
                 }
