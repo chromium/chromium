@@ -701,6 +701,7 @@ if (!is_android) {
       ":test_support_ui",
       "//base",
       "//base/test:test_support",
+      "//chrome/browser/autofill:test_support",
       "//chrome/browser/autofill:test_support_ui",
       "//chrome/browser/password_manager",
       "//chrome/browser/password_manager:impl",

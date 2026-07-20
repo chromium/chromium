@@ -189,6 +189,8 @@ static_library("test_support") {
   sources = [
     "autofill_uitest_util.cc",
     "autofill_uitest_util.h",
+    "automated_tests/cache_replayer.cc",
+    "automated_tests/cache_replayer.h",
     "mock_autofill_agent.cc",
     "mock_autofill_agent.h",
   ]
@@ -200,9 +202,14 @@ static_library("test_support") {
     "//components/autofill/content/browser",
     "//components/autofill/content/common/mojom",
     "//components/autofill/core/browser:test_support",
+    "//components/autofill/core/browser/proto",
     "//content/test:test_support",
+    "//net",
+    "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/protobuf:protobuf_lite",
+    "//third_party/zlib/google:compression_utils",
     "//ui/gfx:test_support",
   ]
 
@@ -385,6 +392,7 @@ if (!is_android) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
     deps = [
+      ":test_support",
       "//chrome/browser/autofill:test_support_ui",
       "//chrome/browser/ui/autofill",
       "//chrome/browser/ui/autofill:test_support",
@@ -401,6 +409,7 @@ source_set("unit_tests") {
   sources = [ "automated_tests/cache_replayer_unittest.cc" ]
 
   deps = [
+    ":test_support",
     "//base",
     "//chrome/test:test_support",
     "//components/autofill/core/browser/proto",

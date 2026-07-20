@@ -214,8 +214,6 @@ static_library("test_support") {
 
   sources = [
     "../app/startup_timestamps.h",
-    "../browser/autofill/automated_tests/cache_replayer.cc",
-    "../browser/autofill/automated_tests/cache_replayer.h",
     "../browser/performance_manager/test_support/page_discarding_utils.cc",
     "../browser/performance_manager/test_support/page_discarding_utils.h",
     "../browser/permissions/crowd_deny_fake_safe_browsing_database_manager.cc",
