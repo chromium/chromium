@@ -11,9 +11,13 @@
 
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/uuid.h"
+#include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
+#include "components/browser_apis/bookmarks/bookmark_event_translator.h"
 #include "components/browser_apis/bookmarks/bookmarks_view.h"
 #include "url/gurl.h"
 
@@ -24,9 +28,12 @@ class ManagedBookmarkService;
 
 namespace bookmarks_api {
 
+class BookmarksViewObserver;
+
 // Default implementation that directly forwards operations to BookmarkModel.
 // This is intended for use in tests where a merged view is not needed.
-class DefaultBookmarksView : public BookmarksView {
+class DefaultBookmarksView : public BookmarksView,
+                             public bookmarks::BookmarkModelObserver {
  public:
   explicit DefaultBookmarksView(
       bookmarks::BookmarkModel* model,
@@ -37,8 +44,8 @@ class DefaultBookmarksView : public BookmarksView {
   DefaultBookmarksView& operator=(const DefaultBookmarksView&) = delete;
 
   // BookmarksView:
-  void AddObserver(bookmarks::BookmarkModelObserver* observer) override;
-  void RemoveObserver(bookmarks::BookmarkModelObserver* observer) override;
+  void AddObserver(BookmarksViewObserver* observer) override;
+  void RemoveObserver(BookmarksViewObserver* observer) override;
   bool IsDoingExtensiveChanges() const override;
   const bookmarks::BookmarkNode* GetRootNode() const override;
   std::vector<const bookmarks::BookmarkNode*> GetChildren(
@@ -73,9 +80,44 @@ class DefaultBookmarksView : public BookmarksView {
                    bookmarks::metrics::BookmarkEditSource source,
                    const base::Location& location) override;
 
+  // bookmarks::BookmarkModelObserver:
+  void BookmarkModelLoaded(bool ids_reassigned) override;
+  void BookmarkModelBeingDeleted() override;
+  void BookmarkNodeMoved(const bookmarks::BookmarkNode* old_parent,
+                         size_t old_index,
+                         const bookmarks::BookmarkNode* new_parent,
+                         size_t new_index) override;
+  void BookmarkNodeAdded(const bookmarks::BookmarkNode* parent,
+                         size_t index,
+                         bool added_by_user) override;
+  void BookmarkNodeRemoved(const bookmarks::BookmarkNode* parent,
+                           size_t old_index,
+                           const bookmarks::BookmarkNode* node,
+                           const std::set<GURL>& no_longer_bookmarked,
+                           const base::Location& location) override;
+  void BookmarkNodeChanged(const bookmarks::BookmarkNode* node) override;
+  void BookmarkNodeFaviconChanged(const bookmarks::BookmarkNode* node) override;
+  void BookmarkNodeChildrenReordered(
+      const bookmarks::BookmarkNode* node) override;
+  void BookmarkAllUserNodesRemoved(const std::set<GURL>& removed_urls,
+                                   const base::Location& location) override;
+  void OnWillReorderBookmarkNode(const bookmarks::BookmarkNode* node) override;
+  void OnWillRemoveAllUserBookmarks(const base::Location& location) override;
+  void ExtensiveBookmarkChangesBeginning() override;
+  void ExtensiveBookmarkChangesEnded() override;
+
  private:
+  void Notify(std::vector<mojom::BookmarksEventPtr> events);
+
   raw_ptr<bookmarks::BookmarkModel> model_;
   raw_ptr<bookmarks::ManagedBookmarkService> managed_service_;
+  base::ObserverList<BookmarksViewObserver> observers_;
+  base::ScopedObservation<bookmarks::BookmarkModel,
+                          bookmarks::BookmarkModelObserver>
+      model_observation_{this};
+
+  BookmarkEventTranslator translator_;
+  std::vector<mojom::BookmarksEventPtr> queued_events_;
 };
 
 }  // namespace bookmarks_api

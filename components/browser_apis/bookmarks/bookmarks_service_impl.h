@@ -10,9 +10,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
-#include "components/browser_apis/bookmarks/bookmark_event_translator.h"
 #include "components/browser_apis/bookmarks/bookmarks_service.h"
 #include "components/browser_apis/bookmarks/bookmarks_view.h"
+#include "components/browser_apis/bookmarks/bookmarks_view_observer.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
@@ -23,7 +23,7 @@ class BookmarkNode;
 namespace bookmarks_api {
 
 class BookmarksServiceImpl : public BookmarksService,
-                             public BookmarkEventTranslator::Subscriber {
+                             public BookmarksViewObserver {
  public:
   explicit BookmarksServiceImpl(std::unique_ptr<BookmarksView> view);
   BookmarksServiceImpl(const BookmarksServiceImpl&) = delete;
@@ -54,9 +54,11 @@ class BookmarksServiceImpl : public BookmarksService,
   mojom::BookmarkNodePtr ConvertNode(const bookmarks::BookmarkNode* node);
   mojom::RootNodePtr ConvertRootNode(const bookmarks::BookmarkNode* node);
 
-  // BookmarkEventTranslator::Subscriber:
-  void OnBookmarkEvents(
+  // BookmarksViewObserver:
+  void OnBookmarksEvents(
+      BookmarksView* view,
       const std::vector<mojom::BookmarksEventPtr>& events) override;
+  void OnBookmarksViewBeingDeleted(BookmarksView* view) override;
 
   void BroadcastEvents(const std::vector<mojom::BookmarksEventPtr>& events);
 
@@ -65,8 +67,6 @@ class BookmarksServiceImpl : public BookmarksService,
   std::unique_ptr<BookmarksView> view_;
   mojo::ReceiverSet<mojom::BookmarksService> receivers_;
   mojo::AssociatedRemoteSet<mojom::BookmarksObserver> observers_;
-
-  std::unique_ptr<BookmarkEventTranslator> translator_;
 };
 
 }  // namespace bookmarks_api

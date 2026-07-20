@@ -8,9 +8,7 @@
 #include <map>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
-#include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "components/browser_apis/bookmarks/bookmarks_api.mojom.h"
 #include "components/browser_apis/bookmarks/bookmarks_view.h"
 
@@ -20,23 +18,20 @@ class BookmarkNode;
 
 namespace bookmarks_api {
 
-// Translates between BookmarkModelObserver to mojo based event types.
-class BookmarkEventTranslator : public bookmarks::BookmarkModelObserver {
+// Helper class to translate BookmarkModel/View changes to Mojo events.
+class BookmarkEventTranslator {
  public:
-  class Subscriber {
-   public:
-    virtual void OnBookmarkEvents(
-        const std::vector<mojom::BookmarksEventPtr>& events) = 0;
+  BookmarkEventTranslator();
+  explicit BookmarkEventTranslator(const BookmarksView* view);
+  ~BookmarkEventTranslator();
 
-   protected:
-    virtual ~Subscriber() = default;
-  };
-
-  BookmarkEventTranslator(BookmarksView* view, Subscriber* subscriber);
   BookmarkEventTranslator(const BookmarkEventTranslator&) = delete;
   BookmarkEventTranslator& operator=(const BookmarkEventTranslator&) = delete;
-  ~BookmarkEventTranslator() override;
 
+  // Initializes or refreshes the internal snapshot state for `view`.
+  void Init(const BookmarksView* view);
+
+  // Static conversion helpers.
   static mojom::BookmarkNodePtr ConvertNode(const bookmarks::BookmarkNode* node,
                                             const BookmarksView* view);
 
@@ -46,60 +41,44 @@ class BookmarkEventTranslator : public bookmarks::BookmarkModelObserver {
   static mojom::FolderPtr ConvertFolderNode(const bookmarks::BookmarkNode* node,
                                             const BookmarksView* view);
 
-  // bookmarks::BookmarkModelObserver:
-  void BookmarkModelLoaded(bool ids_reassigned) override {}
-  void BookmarkModelBeingDeleted() override;
-  void BookmarkNodeMoved(const bookmarks::BookmarkNode* old_parent,
-                         size_t old_index,
-                         const bookmarks::BookmarkNode* new_parent,
-                         size_t new_index) override;
-  void BookmarkNodeAdded(const bookmarks::BookmarkNode* parent,
-                         size_t index,
-                         bool added_by_user) override;
-  void BookmarkNodeRemoved(const bookmarks::BookmarkNode* parent,
-                           size_t old_index,
-                           const bookmarks::BookmarkNode* node,
-                           const std::set<GURL>& no_longer_bookmarked,
-                           const base::Location& location) override;
-  void BookmarkNodeChanged(const bookmarks::BookmarkNode* node) override;
-  void BookmarkNodeFaviconChanged(
-      const bookmarks::BookmarkNode* node) override {}
-  void OnWillReorderBookmarkNode(const bookmarks::BookmarkNode* node) override;
-  void BookmarkNodeChildrenReordered(
-      const bookmarks::BookmarkNode* node) override;
-  void OnWillRemoveAllUserBookmarks(const base::Location& location) override;
-  void BookmarkAllUserNodesRemoved(const std::set<GURL>& removed_urls,
-                                   const base::Location& location) override;
-  void ExtensiveBookmarkChangesBeginning() override;
-  void ExtensiveBookmarkChangesEnded() override;
+  // Static event builders.
+  static mojom::BookmarksEventPtr CreateAddedEvent(
+      const BookmarksView* view,
+      const bookmarks::BookmarkNode* parent,
+      size_t index);
+
+  static mojom::BookmarksEventPtr CreateRemovedEvent(
+      const bookmarks::BookmarkNode* node);
+
+  static mojom::BookmarksEventPtr CreateMovedEvent(
+      const bookmarks::BookmarkNode* old_parent,
+      size_t old_index,
+      const bookmarks::BookmarkNode* new_parent,
+      size_t new_index);
+
+  static mojom::BookmarksEventPtr CreateChangedEvent(
+      const BookmarksView* view,
+      const bookmarks::BookmarkNode* node);
+
+  // Instance methods that manage snapshot tracking and translation for
+  // removals, reordering, and clearing all user nodes.
+  mojom::BookmarksEventPtr OnNodeRemoved(const bookmarks::BookmarkNode* node);
+
+  void OnWillReorderFolder(const bookmarks::BookmarkNode* parent,
+                           const BookmarksView* view);
+
+  std::vector<mojom::BookmarksEventPtr> OnFolderReordered(
+      const bookmarks::BookmarkNode* parent,
+      const BookmarksView* view);
+
+  void OnWillRemoveAllUserBookmarks(const BookmarksView* view);
+
+  std::vector<mojom::BookmarksEventPtr> OnAllUserBookmarksRemoved(
+      const BookmarksView* view);
 
  private:
-  void RefreshFoldersSnapshot();
-  void PopulateFoldersSnapshot(const bookmarks::BookmarkNode* node);
-  // Rebuilds `parent`'s snapshot entry from its current children.
-  void UpdateFolderChildren(const bookmarks::BookmarkNode* parent);
-  // Erases the snapshot entries for `node` and all descendant folders.
-  void RemoveFolderSubtree(const bookmarks::BookmarkNode* node);
-  void Notify(std::vector<mojom::BookmarksEventPtr> events);
-
-  raw_ptr<BookmarksView> view_;
-  raw_ptr<Subscriber> subscriber_;
-  // A snapshot of the folder structure (mapping each folder node to its
-  // children's UUIDs) used to detect changes (adds, removes, moves) in the
-  // bookmark model. Keyed by node pointer rather than UUID because permanent
-  // folders are not uniquely identified by UUID: account and local permanent
-  // folders share the same fixed UUIDs. This is necessary because the bookmark
-  // model has a "reorder" event type, which performs several move operations at
-  // once. We need to keep an old snapshot to compute individual move events.
-  // The snapshot is captured on demand in OnWillReorderBookmarkNode() and
-  // OnWillRemoveAllUserBookmarks(), just before the model applies those
-  // changes, so the add/move/remove paths don't have to maintain it. Entries
-  // are cleared in BookmarkModelBeingDeleted() so the raw pointers never
-  // dangle.
-  std::map<const bookmarks::BookmarkNode*, std::vector<base::Uuid>>
-      folders_snapshot_;
-
-  std::vector<mojom::BookmarksEventPtr> queued_events_;
+  class FolderSnapshot;
+  std::unique_ptr<FolderSnapshot> snapshot_;
 };
 
 }  // namespace bookmarks_api

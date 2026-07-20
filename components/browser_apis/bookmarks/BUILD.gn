@@ -19,6 +19,7 @@ source_set("bookmarks") {
   sources = [
     "bookmarks_service.h",
     "bookmarks_view.h",
+    "bookmarks_view_observer.h",
   ]
 
   public_deps = [ ":mojom" ]
@@ -57,6 +58,7 @@ source_set("test_support") {
 
   deps = [
     ":bookmarks",
+    ":impl",
     "//base",
     "//components/bookmarks/browser",
     "//components/bookmarks/managed",

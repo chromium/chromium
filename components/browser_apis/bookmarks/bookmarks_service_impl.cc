@@ -13,6 +13,7 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
+#include "components/browser_apis/bookmarks/bookmark_event_translator.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 
@@ -42,10 +43,14 @@ mojo_base::mojom::ErrorPtr MakeError(mojo_base::mojom::Code code,
 BookmarksServiceImpl::BookmarksServiceImpl(std::unique_ptr<BookmarksView> view)
     : view_(std::move(view)) {
   CHECK(view_);
-  translator_ = std::make_unique<BookmarkEventTranslator>(view_.get(), this);
+  view_->AddObserver(this);
 }
 
-BookmarksServiceImpl::~BookmarksServiceImpl() = default;
+BookmarksServiceImpl::~BookmarksServiceImpl() {
+  if (view_) {
+    view_->RemoveObserver(this);
+  }
+}
 
 void BookmarksServiceImpl::Accept(
     mojo::PendingReceiver<mojom::BookmarksService> receiver) {
@@ -296,9 +301,15 @@ BookmarksServiceImpl::DeleteBookmarkNodes(const std::vector<base::Uuid>& ids) {
   return std::monostate();
 }
 
-void BookmarksServiceImpl::OnBookmarkEvents(
+void BookmarksServiceImpl::OnBookmarksEvents(
+    BookmarksView* view,
     const std::vector<mojom::BookmarksEventPtr>& events) {
+  CHECK_EQ(view, view_.get());
   BroadcastEvents(events);
+}
+
+void BookmarksServiceImpl::OnBookmarksViewBeingDeleted(BookmarksView* view) {
+  CHECK_EQ(view, view_.get());
 }
 
 void BookmarksServiceImpl::BroadcastEvents(
