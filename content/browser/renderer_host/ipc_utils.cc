@@ -80,41 +80,22 @@ bool VerifyInitiatorOrigin(
     const RenderFrameHostImpl* current_rfh = nullptr,
     GURL* navigation_url = nullptr,
     std::optional<blink::LocalFrameToken>* initiator_frame_token = nullptr) {
-  // TODO(crbug.com/40109437): Ideally, origin verification should be performed
-  // even if `initiator_origin` is opaque, to ensure that the precursor origin
-  // matches the process lock. However, there are a couple of cases where this
-  // doesn't yet work, which are documented and skipped below.
-  if (initiator_origin.opaque()) {
-    // Reloads initiated from error pages may currently lead to a precursor
-    // mismatch, since the error page loads with an opaque origin with the
-    // original URL's origin as its precursor, which may not match the error
-    // page's process lock. This is seen in the following
-    // RenderFrameHostManagerTest tests:
-    // 1. ErrorPageNavigationReload:
-    //    - renderer origin lock = chrome-error://chromewebdata/
-    //    - precursor of initiator origin = http://127.0.0.1:.../
-    // 2. ErrorPageNavigationReload_InSubframe_BlockedByClient
-    //    - renderer origin lock = http://b.com:.../
-    //    - precursor of initiator origin = http://c.com:.../
-    if (current_rfh && current_rfh->IsErrorDocument()) {
-      return true;
-    }
-
-    // Navigations in subframes of MHTML documents may have precursor origins
-    // that do not match the process lock of the MHTML document. This is seen
-    // in NavigationMhtmlBrowserTest.DataIframe, where:
-    //   - renderer origin lock = { file:/// sandboxed }
-    //   - precursor of initiator origin = http://8.8.8.8/
-    // In the past, this case used to be special-cased here, but this is no
-    // longer needed now that ChildProcessSecurityPolicy's enforcements have
-    // been switched to use committed origin tracking. Any frame in the MHTML
-    // page that could legitimately initiate such a navigation has already
-    // committed in this process, so its (opaque) origin has been recorded by
-    // ChildProcessSecurityPolicyImpl::AddCommittedOrigin and the HostsOrigin()
-    // check below will accept it. There is therefore no need to skip the check
-    // for MHTML subframes, and doing so would allow the renderer to claim an
-    // opaque initiator with an arbitrary precursor.
-  }
+  // Important Note about opaque origins: these checks used to be skipped for
+  // opaque origins in two tricky cases, error pages and MHTML subframes. These
+  // exemptions are no longer needed now that ChildProcessSecurityPolicy's
+  // enforcements have been switched to use committed origin tracking. Any error
+  // page or MHTML subframe that could legitimately initiate a navigation has
+  // already committed in this process, so its (opaque) origin has been recorded
+  // by ChildProcessSecurityPolicyImpl::AddCommittedOrigin and the HostsOrigin()
+  // check below will accept it, even if the precursor doesn't match the process
+  // lock. This is covered in tests such as ErrorPageNavigationReload,
+  // ErrorPageNavigationReload_InSubframe_BlockedByClient, and
+  // NavigationMhtmlBrowserTest.DataIframe.
+  //
+  // Warning: avoid skipping this check for future cases, as doing so carries
+  // security consequences, allowing the renderer to claim an opaque initiator
+  // with an arbitrary precursor. See crbug.com/516398679 and
+  // crbug.com/517606780.
 
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   // TODO(crbug.com/379869738): Remove GetUnsafeValue.
