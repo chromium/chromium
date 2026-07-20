@@ -10,15 +10,18 @@ import type {ToastType} from '../skills.mojom-webui.js';
 
 import type {SkillsWebviewBridgeDelegate} from './skills_webview_bridge.js';
 import {SkillsWebviewBridge} from './skills_webview_bridge.js';
+import {getChromePathForRemoteUrl, getRemoteUrlForChromePath} from './skills_webview_bridge_constants.js';
 
 export class SkillsWebview {
-  protected url: string;
+  protected remoteUrl: string;
   protected handler = SkillsPageHandler.getRemote();
   protected webview: chrome.webviewTag.WebView|null = null;
   protected bridge: SkillsWebviewBridge|null = null;
 
-  constructor(url: string) {
-    this.url = url;
+  constructor() {
+    // Resolve the staging remote URL dynamically based on the current Chrome
+    // WebUI path.
+    this.remoteUrl = getRemoteUrlForChromePath(window.location.pathname);
   }
 
   async init() {
@@ -35,11 +38,31 @@ export class SkillsWebview {
       onError: () => this.showError(ErrorType.REMOTE_AUTHORITY_UNREACHABLE),
       onShowToast: (toastType: ToastType) => this.handler.showToast(toastType),
       onInvokeSkill: (skillId: string) => this.handler.invokeSkill(skillId),
+      onUrlChanged: (url: URL) => this.handleUrlChanged(url),
     };
 
     // Initiate handshake. Show error page on failure.
     this.bridge = new SkillsWebviewBridge(this.webview, delegate);
-    this.webview.setAttribute('src', this.url);
+    this.webview.setAttribute('src', this.remoteUrl);
+
+    // Manually handle clicks on forward and back buttons.
+    window.addEventListener('popstate', () => this.syncWebviewToPath());
+  }
+
+  private syncWebviewToPath() {
+    const remoteUrl = getRemoteUrlForChromePath(window.location.pathname);
+    if (this.webview && this.webview.getAttribute('src') !== remoteUrl) {
+      this.webview.setAttribute('src', remoteUrl);
+    }
+  }
+
+  protected handleUrlChanged(url: URL) {
+    const chromePath = getChromePathForRemoteUrl(url);
+    if (window.location.pathname === chromePath) {
+      return;
+    }
+    // Updates url in address bar and adds it to history list.
+    window.history.pushState({}, '', chromePath);
   }
 
   protected showError(errorType: ErrorType) {

@@ -6,7 +6,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {ToastType} from 'chrome://skills/skills.mojom-webui.js';
 import type {SkillsWebviewBridgeDelegate} from 'chrome://skills/v2/skills_webview_bridge.js';
 import {SkillsWebviewBridge} from 'chrome://skills/v2/skills_webview_bridge.js';
-import {HANDSHAKE_TIMEOUT_MS, SKILLS_HANDSHAKE_ACK, SKILLS_HANDSHAKE_TYPE, SKILLS_HOST_URL, SKILLS_INVOKE_SKILL, SKILLS_SHOW_TOAST} from 'chrome://skills/v2/skills_webview_bridge_constants.js';
+import {getChromePathForRemoteUrl, HANDSHAKE_TIMEOUT_MS, PRIMARY_SKILLS_ORIGIN, SKILLS_HANDSHAKE_ACK, SKILLS_HANDSHAKE_TYPE, SKILLS_INVOKE_SKILL, SKILLS_REMOTE_URL, SKILLS_SHOW_TOAST} from 'chrome://skills/v2/skills_webview_bridge_constants.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 
@@ -74,6 +74,7 @@ suite('SkillsWebviewBridgeTest', () => {
       onError: () => {},
       onShowToast: () => {},
       onInvokeSkill: () => {},
+      onUrlChanged: () => {},
     };
     bridge = new SkillsWebviewBridge(webview, delegate);
 
@@ -91,7 +92,7 @@ suite('SkillsWebviewBridgeTest', () => {
     // Trigger loadcommit to start handshake.
     const event = new CustomEvent('loadcommit');
     Object.defineProperty(event, 'isTopLevel', {value: true});
-    Object.defineProperty(event, 'url', {value: SKILLS_HOST_URL});
+    Object.defineProperty(event, 'url', {value: SKILLS_REMOTE_URL});
     webview.dispatchEvent(event);
 
     // Verify ping was sent.
@@ -112,7 +113,7 @@ suite('SkillsWebviewBridgeTest', () => {
     // Send matching ACK via mock MessageEvent to simulate correct origin.
     const messageEvent = new MessageEvent('message', {
       data: {type: SKILLS_HANDSHAKE_ACK},
-      origin: new URL(SKILLS_HOST_URL).origin,
+      origin: new URL(SKILLS_REMOTE_URL).origin,
       source: window,
     });
     window.dispatchEvent(messageEvent);
@@ -147,6 +148,7 @@ suite('SkillsWebviewBridgeTest', () => {
       },
       onShowToast: () => {},
       onInvokeSkill: () => {},
+      onUrlChanged: () => {},
     };
     bridge = new SkillsWebviewBridge(webview, delegate);
 
@@ -156,7 +158,7 @@ suite('SkillsWebviewBridgeTest', () => {
     // Trigger loadcommit to start handshake.
     const event = new CustomEvent('loadcommit');
     Object.defineProperty(event, 'isTopLevel', {value: true});
-    Object.defineProperty(event, 'url', {value: SKILLS_HOST_URL});
+    Object.defineProperty(event, 'url', {value: SKILLS_REMOTE_URL});
     webview.dispatchEvent(event);
 
     // The error callback should not be called immediately.
@@ -179,19 +181,20 @@ suite('SkillsWebviewBridgeTest', () => {
         receivedToastType = toastType;
       },
       onInvokeSkill: () => {},
+      onUrlChanged: () => {},
     };
     bridge = new SkillsWebviewBridge(webview, delegate);
 
     // Trigger loadcommit to start handshake.
     const loadEvent = new CustomEvent('loadcommit');
     Object.defineProperty(loadEvent, 'isTopLevel', {value: true});
-    Object.defineProperty(loadEvent, 'url', {value: SKILLS_HOST_URL});
+    Object.defineProperty(loadEvent, 'url', {value: SKILLS_REMOTE_URL});
     webview.dispatchEvent(loadEvent);
 
     // Send mock ACK to complete handshake.
     const ackEvent = new MessageEvent('message', {
       data: {type: SKILLS_HANDSHAKE_ACK},
-      origin: new URL(SKILLS_HOST_URL).origin,
+      origin: new URL(SKILLS_REMOTE_URL).origin,
       source: window,
     });
     window.dispatchEvent(ackEvent);
@@ -204,7 +207,7 @@ suite('SkillsWebviewBridgeTest', () => {
         type: SKILLS_SHOW_TOAST,
         toastType: 'delete',
       },
-      origin: new URL(SKILLS_HOST_URL).origin,
+      origin: new URL(SKILLS_REMOTE_URL).origin,
       source: window,
     });
     window.dispatchEvent(toastEvent);
@@ -220,19 +223,20 @@ suite('SkillsWebviewBridgeTest', () => {
       onInvokeSkill: (skillId: string) => {
         receivedSkillId = skillId;
       },
+      onUrlChanged: () => {},
     };
     bridge = new SkillsWebviewBridge(webview, delegate);
 
     // Trigger loadcommit to start handshake.
     const loadEvent = new CustomEvent('loadcommit');
     Object.defineProperty(loadEvent, 'isTopLevel', {value: true});
-    Object.defineProperty(loadEvent, 'url', {value: SKILLS_HOST_URL});
+    Object.defineProperty(loadEvent, 'url', {value: SKILLS_REMOTE_URL});
     webview.dispatchEvent(loadEvent);
 
     // Send mock ACK to complete handshake.
     const ackEvent = new MessageEvent('message', {
       data: {type: SKILLS_HANDSHAKE_ACK},
-      origin: new URL(SKILLS_HOST_URL).origin,
+      origin: new URL(SKILLS_REMOTE_URL).origin,
       source: window,
     });
     window.dispatchEvent(ackEvent);
@@ -245,11 +249,51 @@ suite('SkillsWebviewBridgeTest', () => {
         type: SKILLS_INVOKE_SKILL,
         skillId: 'some_skill_id',
       },
-      origin: new URL(SKILLS_HOST_URL).origin,
+      origin: new URL(SKILLS_REMOTE_URL).origin,
       source: window,
     });
     window.dispatchEvent(invokeEvent);
 
     assertEquals('some_skill_id', receivedSkillId);
+  });
+
+  test('HostReceivesUrlChangedEvent', () => {
+    const received = {url: null as URL | null};
+    const delegate: SkillsWebviewBridgeDelegate = {
+      onError: () => {},
+      onShowToast: () => {},
+      onInvokeSkill: () => {},
+      onUrlChanged: (url: URL) => {
+        received.url = url;
+      },
+    };
+    bridge = new SkillsWebviewBridge(webview, delegate);
+
+    // Trigger loadcommit with specific URL.
+    const event = new CustomEvent('loadcommit');
+    Object.defineProperty(event, 'isTopLevel', {value: true});
+    Object.defineProperty(
+        event, 'url',
+        {value: `${PRIMARY_SKILLS_ORIGIN}/chromeskills/yourSkills`});
+    webview.dispatchEvent(event);
+
+    assertEquals(
+        `${PRIMARY_SKILLS_ORIGIN}/chromeskills/yourSkills`,
+        received.url?.href ?? '');
+  });
+
+  test('GetChromePathForRemoteUrl_ValidPath', () => {
+    const url = new URL(`${PRIMARY_SKILLS_ORIGIN}/chromeskills/yourSkills`);
+    assertEquals('/yourSkills', getChromePathForRemoteUrl(url));
+  });
+
+  test('GetChromePathForRemoteUrl_InvalidOriginDefaultsToBrowse', () => {
+    const url = new URL('https://invalidorigin.com/chromeskills/yourSkills');
+    assertEquals('/browse', getChromePathForRemoteUrl(url));
+  });
+
+  test('GetChromePathForRemoteUrl_InvalidPathDefaultsToBrowse', () => {
+    const url = new URL(`${PRIMARY_SKILLS_ORIGIN}/invalidpath/yourSkills`);
+    assertEquals('/browse', getChromePathForRemoteUrl(url));
   });
 });

@@ -60,6 +60,7 @@ export interface SkillsWebviewBridgeDelegate {
   onError(): void;
   onShowToast(toastType: ToastType): void;
   onInvokeSkill(skillId: string): void;
+  onUrlChanged(url: URL): void;
 }
 
 /**
@@ -103,6 +104,8 @@ export class SkillsWebviewBridge {
       this.delegate_.onError();
       return;
     }
+
+    this.delegate_.onUrlChanged(urlObj);
 
     // Start handshake if valid target url.
     if (this.urlRequiresHandshake(urlObj)) {
