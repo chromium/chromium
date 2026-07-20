@@ -13,12 +13,17 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
+import java.util.Collection;
 import java.util.List;
 
 /** Handles the actions for the tab group related menu items in the app menu. */
@@ -83,7 +88,11 @@ public class TabGroupMenuActionHandler {
      * @param tab The tab to be added to a group.
      */
     public void handleAddToGroupAction(Tab tab) {
-        if (mTabModel.getTabGroupCount() == 0) {
+        Collection<TabModelSelector> selectors =
+                ChromeFeatureList.sCrossWindowTabGroupOperations.isEnabled()
+                        ? TabWindowManagerSingleton.getInstance().getAllTabModelSelectors()
+                        : null;
+        if (!TabGroupUtils.hasTabGroups(mTabModel, selectors)) {
             mTabModel.createSingleTabGroup(tab);
             @Nullable Token groupId = tab.getTabGroupId();
             if (groupId != null) {

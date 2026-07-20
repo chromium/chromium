@@ -28,12 +28,16 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
@@ -41,10 +45,14 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabGroupCreationCallback;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+
+import java.util.List;
 
 /** Unit tests for {@link TabGroupMenuActionHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -115,6 +123,28 @@ public class TabGroupMenuActionHandlerUnitTest {
         mHandler.handleAddToGroupAction(mTab);
         verify(mTabModel, never()).createSingleTabGroup(mTab);
         verify(mTabGroupListBottomSheetCoordinator).showBottomSheet(any());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS})
+    public void testHandleAddToGroupAction_crossWindowGroups() {
+        when(mTabModel.getTabGroupCount()).thenReturn(0);
+        TabWindowManager tabWindowManager = mock(TabWindowManager.class);
+        TabModelSelector otherSelector = mock(TabModelSelector.class);
+        TabModel otherModel = mock(TabModel.class);
+        when(otherSelector.getModel(false)).thenReturn(otherModel);
+        when(otherModel.getTabGroupCount()).thenReturn(1);
+        when(tabWindowManager.getAllTabModelSelectors()).thenReturn(List.of(otherSelector));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> TabWindowManagerSingleton.setTabWindowManagerForTesting(tabWindowManager));
+
+        mHandler.handleAddToGroupAction(mTab);
+
+        verify(mTabModel, never()).createSingleTabGroup(mTab);
+        verify(mTabGroupListBottomSheetCoordinator).showBottomSheet(any());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> TabWindowManagerSingleton.setTabWindowManagerForTesting(null));
     }
 
     @Test
