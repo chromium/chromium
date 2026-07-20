@@ -1567,4 +1567,120 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogDownloadObserverTest,
   dtor_run_loop.Run();
 }
 
+using ContentAnalysisDialogCopyJustificationBrowserTest =
+    test::DeepScanningBrowserTestBase;
+
+IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogCopyJustificationBrowserTest,
+                       ShowJustificationDialogAndCancel) {
+  enterprise_connectors::ContentAnalysisDelegate::Data data;
+  data.text.emplace_back("copy text");
+  data.settings.tags["dlp"].requires_justification = true;
+  class TestDelegate
+      : public enterprise_connectors::test::FakeContentAnalysisDelegate {
+   public:
+    using FakeContentAnalysisDelegate::FakeContentAnalysisDelegate;
+    bool BypassRequiresJustification() const override { return true; }
+  };
+
+  base::RunLoop run_loop;
+  bool callback_called = false;
+
+  auto* delegate = new TestDelegate(
+      run_loop.QuitClosure(),
+      base::BindRepeating([](const std::string&, const base::FilePath&) {
+        return enterprise_connectors::test::FakeContentAnalysisDelegate::
+            SuccessfulResponse({"dlp"});
+      }),
+      "dm_token", browser()->tab_strip_model()->GetActiveWebContents(),
+      std::move(data),
+      base::BindLambdaForTesting(
+          [&callback_called](
+              const enterprise_connectors::ContentAnalysisDelegate::Data& data,
+              enterprise_connectors::ContentAnalysisDelegate::Result& result) {
+            callback_called = true;
+            ASSERT_EQ(result.text_results.size(), 1u);
+            // Verify that cancelling the dialog correctly blocks the data.
+            EXPECT_FALSE(result.text_results[0]);
+          }),
+      enterprise_connectors::DeepScanAccessPoint::COPY);
+
+  auto* controller = enterprise_connectors::ContentAnalysisDialogDelegate::
+      ShowForCopyJustification(
+          browser()->tab_strip_model()->GetActiveWebContents(),
+          base::WrapUnique(delegate));
+  base::WeakPtr<enterprise_connectors::ContentAnalysisDialogDelegate>
+      active_dialog = controller->dialog_delegate_for_testing()->GetWeakPtr();
+
+  ASSERT_TRUE(active_dialog);
+  EXPECT_TRUE(active_dialog->is_warning());
+
+  // Cancel the dialog.
+  active_dialog->CancelDialog();
+  run_loop.Run();
+  EXPECT_TRUE(callback_called);
+}
+
+IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogCopyJustificationBrowserTest,
+                       ShowJustificationDialogAndTriggerAccept) {
+  enterprise_connectors::ContentAnalysisDelegate::Data data;
+  data.text.emplace_back("copy text");
+  data.settings.tags["dlp"].requires_justification = true;
+
+  class TestDelegate
+      : public enterprise_connectors::test::FakeContentAnalysisDelegate {
+   public:
+    using FakeContentAnalysisDelegate::FakeContentAnalysisDelegate;
+    bool BypassRequiresJustification() const override { return true; }
+    void BypassWarnings(
+        std::optional<std::u16string> user_justification) override {
+      std::fill(GetResultForTesting().text_results.begin(),
+                GetResultForTesting().text_results.end(), true);
+      RunCallbackForTesting();
+    }
+  };
+
+  bool callback_called = false;
+  base::RunLoop run_loop;
+  auto* delegate = new TestDelegate(
+      run_loop.QuitClosure(),
+      base::BindRepeating([](const std::string&, const base::FilePath&) {
+        return enterprise_connectors::test::FakeContentAnalysisDelegate::
+            SuccessfulResponse({"dlp"});
+      }),
+      "dm_token", browser()->tab_strip_model()->GetActiveWebContents(),
+      std::move(data),
+      base::BindLambdaForTesting(
+          [&callback_called](
+              const enterprise_connectors::ContentAnalysisDelegate::Data& data,
+              enterprise_connectors::ContentAnalysisDelegate::Result& result) {
+            callback_called = true;
+            ASSERT_EQ(result.text_results.size(), 1u);
+            EXPECT_TRUE(result.text_results[0]);
+          }),
+      enterprise_connectors::DeepScanAccessPoint::COPY);
+
+  auto* controller = enterprise_connectors::ContentAnalysisDialogDelegate::
+      ShowForCopyJustification(
+          browser()->tab_strip_model()->GetActiveWebContents(),
+          base::WrapUnique(delegate));
+  base::WeakPtr<enterprise_connectors::ContentAnalysisDialogDelegate>
+      active_dialog = controller->dialog_delegate_for_testing()->GetWeakPtr();
+
+  ASSERT_TRUE(active_dialog);
+  EXPECT_TRUE(active_dialog->is_warning());
+  EXPECT_FALSE(
+      active_dialog->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
+  views::Textarea* textarea =
+      active_dialog->GetBypassJustificationTextareaForTesting();
+  ASSERT_TRUE(textarea);
+  textarea->InsertOrReplaceText(u"My justification text");
+  EXPECT_TRUE(
+      active_dialog->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
+
+  // Accept the dialog.
+  active_dialog->AcceptDialog();
+  run_loop.Run();
+  EXPECT_TRUE(callback_called);
+}
+
 }  // namespace enterprise_connectors

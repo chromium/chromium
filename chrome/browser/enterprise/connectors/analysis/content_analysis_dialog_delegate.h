@@ -26,6 +26,8 @@ class Textarea;
 
 namespace enterprise_connectors {
 
+class ContentAnalysisDialogController;
+
 // Implementation of `views::DialogDelegate` used to show a user the state of
 // content analysis triggered by one of their action.
 class ContentAnalysisDialogDelegate : public views::DialogDelegate,
@@ -57,6 +59,14 @@ class ContentAnalysisDialogDelegate : public views::DialogDelegate,
     // option to force save the file to cloud storage.
     FORCE_SAVE_TO_CLOUD,
   };
+
+  // Shows a specialized version of the dialog strictly for collecting a bypass
+  // justification after a user clicks "Copy anyway" on a warning toast.
+  // Ownership of the delegate is transferred to the dialog, the return value is
+  // used for testing.
+  static ContentAnalysisDialogController* ShowForCopyJustification(
+      content::WebContents* web_contents,
+      std::unique_ptr<ContentAnalysisDelegateBase> delegate);
 
   ContentAnalysisDialogDelegate(
       ContentAnalysisDelegateBase* delegate,

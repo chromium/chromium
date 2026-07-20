@@ -274,6 +274,8 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
   FilesRequestHandlerBase* GetFilesRequestHandlerForTesting();
 
   const Data& GetDataForTesting() { return data_; }
+  Result& GetResultForTesting() { return result_; }
+  void RunCallbackForTesting() { RunCallback(); }
 
   const std::map<std::string, ContentAnalysisAcknowledgement::FinalAction>&
   GetFinalActionsForTesting() {

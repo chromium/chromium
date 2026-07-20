@@ -6,8 +6,9 @@
 
 #include <optional>
 
+#include "base/memory/ptr_util.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog_delegate.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog_controller.h"
 #include "content/public/browser/web_contents.h"
 
 namespace enterprise_connectors {
@@ -38,7 +39,13 @@ void CopyWarningDelegateTracker::BypassAndClear(
   }
   auto* tracker = FromWebContents(web_contents);
   if (tracker && tracker->delegate_) {
-    // TODO(b/325455508): Pass justification text to BypassWarnings.
+    if (tracker->delegate_->BypassRequiresJustification()) {
+      ContentAnalysisDialogDelegate::ShowForCopyJustification(
+          web_contents, base::WrapUnique(tracker->delegate_.get()));
+      tracker->delegate_ = nullptr;
+      // Do not delete the delegate here, it is now owned by the dialog.
+      return;
+    }
 
     auto* delegate = tracker->delegate_.get();
     tracker->delegate_ = nullptr;
