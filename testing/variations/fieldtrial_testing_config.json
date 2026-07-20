@@ -19173,7 +19173,9 @@
                 "chromeos",
                 "linux",
                 "mac",
-                "windows"
+                "windows",
+                "android",
+                "android_webview"
             ],
             "experiments": [
                 {
