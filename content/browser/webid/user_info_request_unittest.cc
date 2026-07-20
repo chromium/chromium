@@ -320,7 +320,7 @@ class UserInfoRequestTest : public RenderViewHostImplTestHarness {
     idp_ptr->client_id = kClientId;
 
     UserInfoCallbackHelper callback_helper;
-    request_ = UserInfoRequest::Create(
+    request_ = std::make_unique<UserInfoRequest>(
         std::move(network_manager), permission_delegate_.get(),
         api_permission_delegate_.get(), iframe_render_frame_host_,
         std::move(idp_ptr));

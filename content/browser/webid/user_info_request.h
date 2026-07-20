@@ -35,8 +35,7 @@ class CONTENT_EXPORT UserInfoRequest {
   using UserInfoRequestResult =
       blink::mojom::FederatedAuthUserInfoRequestResult;
 
-  // Returns an object which fetches data for user-info request.
-  static std::unique_ptr<UserInfoRequest> Create(
+  UserInfoRequest(
       std::unique_ptr<IdpNetworkRequestManager> network_manager,
       FederatedIdentityPermissionContextDelegate* permission_delegate,
       FederatedIdentityApiPermissionContextDelegate* api_permission_delegate,
@@ -54,12 +53,6 @@ class CONTENT_EXPORT UserInfoRequest {
       blink::mojom::FederatedRequestService::RequestUserInfoCallback callback);
 
  private:
-  UserInfoRequest(
-      std::unique_ptr<IdpNetworkRequestManager> network_manager,
-      FederatedIdentityPermissionContextDelegate* permission_delegate,
-      FederatedIdentityApiPermissionContextDelegate* api_permission_delegate,
-      RenderFrameHost* render_frame_host,
-      blink::mojom::IdentityProviderConfigPtr provider);
 
   void OnAllConfigAndWellKnownFetched(
       std::vector<ConfigFetcher::FetchResult> fetch_results);

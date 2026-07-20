@@ -567,7 +567,7 @@ void RequestService::RequestUserInfo(
   // FedCmMetrics class is currently not used for UserInfo API. If we log UKM
   // metrics later on, we should call CreateFedCmMetrics() here.
 
-  auto user_info_request = UserInfoRequest::Create(
+  auto user_info_request = std::make_unique<UserInfoRequest>(
       CreateNetworkManager(), permission_delegate_, api_permission_delegate_,
       &render_frame_host(), std::move(provider));
   UserInfoRequest* user_info_request_ptr = user_info_request.get();
