@@ -16,6 +16,8 @@ source_set("memory_bank") {
 
 source_set("impl") {
   sources = [
+    "database_memory_bank.cc",
+    "database_memory_bank.h",
     "in_memory_memory_bank.cc",
     "in_memory_memory_bank.h",
     "noop_memory_bank.cc",
@@ -25,19 +27,24 @@ source_set("impl") {
   public_deps = [
     ":memory_bank",
     "//base",
+    "//chrome/browser/context_hub/storage",
     "//url",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "in_memory_memory_bank_unittest.cc" ]
+  sources = [
+    "database_memory_bank_unittest.cc",
+    "in_memory_memory_bank_unittest.cc",
+  ]
 
   deps = [
     ":impl",
     ":memory_bank",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/context_hub/storage",
     "//testing/gtest",
     "//url",
   ]

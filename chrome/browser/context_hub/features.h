@@ -26,6 +26,11 @@ BASE_DECLARE_FEATURE_PARAM(size_t, kMaxMemoryBankEntries);
 // The maximum number of tab groups stored in the in-memory tab group store.
 BASE_DECLARE_FEATURE_PARAM(int, kMaxTabGroups);
 
+// The feature flag for using SQLite database storage for Context Hub.
+// When disabled, Memory Banks will use in-memory storage if MemoryBanks
+// feature is enabled.
+BASE_DECLARE_FEATURE(kContextHubDatabaseStorage);
+
 }  // namespace context_hub::features
 
 #endif  // CHROME_BROWSER_CONTEXT_HUB_FEATURES_H_

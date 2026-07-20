@@ -29,11 +29,6 @@ ContextHubBackendImpl::ContextHubBackendImpl(const base::FilePath& db_path)
 
 ContextHubBackendImpl::~ContextHubBackendImpl() = default;
 
-void ContextHubBackendImpl::Shutdown() {
-  weak_ptr_factory_.InvalidateWeakPtrs();
-  queued_operations_.clear();
-}
-
 void ContextHubBackendImpl::OnInitDatabase(const base::FilePath& db_path) {
   db_state_ = DbState::kInitializing;
   db_.AsyncCall(&ContextHubDatabase::Init)

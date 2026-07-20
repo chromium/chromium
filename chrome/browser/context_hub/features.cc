@@ -30,4 +30,6 @@ BASE_FEATURE_PARAM(int,
                    "max_tab_groups",
                    50);
 
+BASE_FEATURE(kContextHubDatabaseStorage, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace context_hub::features

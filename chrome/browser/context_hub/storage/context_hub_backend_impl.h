@@ -25,9 +25,6 @@ class ContextHubBackendImpl : public ContextHubBackend {
   ContextHubBackendImpl& operator=(const ContextHubBackendImpl&) = delete;
   ~ContextHubBackendImpl() override;
 
-  // KeyedService implementation.
-  void Shutdown() override;
-
   // ContextHubBackend implementation.
   void AddOrUpdateMemoryBankEntry(MemoryBankEntry entry,
                                   OperationCompleteCallback callback) override;

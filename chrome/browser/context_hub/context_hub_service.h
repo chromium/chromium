@@ -30,6 +30,9 @@ class PersonalContextService;
 }  // namespace personal_context
 
 namespace context_hub {
+
+class ContextHubBackend;
+
 struct TabData {
   int32_t id;
   std::string title;
@@ -49,11 +52,18 @@ struct TabGroupMinimalData {
 
 class ContextHubService : public KeyedService {
  public:
-  explicit ContextHubService(
+  ContextHubService(
       personal_context::PersonalContextService* personal_context_service,
       optimization_guide::RemoteModelExecutor*
           optimization_guide_remote_model_executor,
       std::unique_ptr<MemoryBank> memory_bank);
+
+  ContextHubService(
+      personal_context::PersonalContextService* personal_context_service,
+      optimization_guide::RemoteModelExecutor*
+          optimization_guide_remote_model_executor,
+      std::unique_ptr<MemoryBank> memory_bank,
+      std::unique_ptr<ContextHubBackend> context_hub_backend);
 
   ContextHubService(const ContextHubService&) = delete;
   ContextHubService& operator=(const ContextHubService&) = delete;
@@ -118,6 +128,10 @@ class ContextHubService : public KeyedService {
       personal_context_service_;
   const raw_ref<optimization_guide::RemoteModelExecutor>
       optimization_guide_remote_model_executor_;
+
+  // Backend storage engine for SQLite operations. May be null if DB storage is
+  // disabled.
+  std::unique_ptr<ContextHubBackend> context_hub_backend_;
 
   // Guaranteed to be non-null. If features::kMemoryBanks is disabled, this
   // will be a NoOpMemoryBank.

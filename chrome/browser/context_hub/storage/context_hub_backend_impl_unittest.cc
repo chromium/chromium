@@ -29,12 +29,6 @@ class ContextHubBackendImplTest : public testing::Test {
     backend_ = std::make_unique<ContextHubBackendImpl>(db_path_);
   }
 
-  void TearDown() override {
-    if (backend_) {
-      backend_->Shutdown();
-    }
-  }
-
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   base::FilePath db_path_;
@@ -125,7 +119,6 @@ TEST_F(ContextHubBackendImplTest, OperationsQueuedBeforeInit) {
   backend->GetAllMemoryBankEntries(empty_future.GetCallback());
   EXPECT_TRUE(empty_future.Get().empty());
 
-  backend->Shutdown();
 }
 
 }  // namespace context_hub

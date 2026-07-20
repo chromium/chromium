@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/context_hub/features.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank.h"
+#include "chrome/browser/context_hub/storage/context_hub_backend.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
@@ -36,9 +37,21 @@ ContextHubService::ContextHubService(
     optimization_guide::RemoteModelExecutor*
         optimization_guide_remote_model_executor,
     std::unique_ptr<MemoryBank> memory_bank)
+    : ContextHubService(personal_context_service,
+                        optimization_guide_remote_model_executor,
+                        std::move(memory_bank),
+                        nullptr) {}
+
+ContextHubService::ContextHubService(
+    personal_context::PersonalContextService* personal_context_service,
+    optimization_guide::RemoteModelExecutor*
+        optimization_guide_remote_model_executor,
+    std::unique_ptr<MemoryBank> memory_bank,
+    std::unique_ptr<ContextHubBackend> context_hub_backend)
     : personal_context_service_(CHECK_DEREF(personal_context_service)),
       optimization_guide_remote_model_executor_(
           CHECK_DEREF(optimization_guide_remote_model_executor)),
+      context_hub_backend_(std::move(context_hub_backend)),
       memory_bank_(std::move(memory_bank)) {
   CHECK(memory_bank_);
 }
