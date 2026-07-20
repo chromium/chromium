@@ -166,6 +166,17 @@ bool OnDeviceModelExecutionInitializeConfig(
   if (result != sandbox::SBOX_ALL_OK) {
     return false;
   }
+
+  // Add MITIGATION_WIN32K_DISABLE to the startup mitigation set. This prevents
+  // the utility process from making Win32k calls and importantly, causes
+  // IsUser32AndGdi32Available() to return false. This avoids a crash during
+  // startup where Chrome attempts to delay-load user32.dll for a window
+  // message, which would otherwise fail under the LPAC sandbox.
+  result = sandbox::policy::SandboxWin::AddWin32kLockdownPolicy(config);
+  if (result != sandbox::SBOX_ALL_OK) {
+    return false;
+  }
+
   return true;
 }
 
