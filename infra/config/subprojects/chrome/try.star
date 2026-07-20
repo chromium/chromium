@@ -292,6 +292,10 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "fuchsia-starview-qemu-tests",
+)
+
+chrome_internal_verifier(
     builder = "fuchsia-webgl-astro",
 )
 
