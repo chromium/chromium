@@ -90,7 +90,7 @@ public class CastContentWindowAndroid
     @SuppressWarnings("unused")
     @CalledByNative
     private void grantScreenAccess() {
-        Log.d(TAG, "Granting screen access: sessionId=" + mSessionId);
+        Log.d(TAG, "Granting screen access: sessionId=%s", mSessionId);
         mScreenAccess = true;
         maybeStartComponent();
     }
@@ -98,7 +98,7 @@ public class CastContentWindowAndroid
     @SuppressWarnings("unused")
     @CalledByNative
     private void revokeScreenAccess() {
-        Log.d(TAG, "Revoking screen access: sessionId=" + mSessionId);
+        Log.d(TAG, "Revoking screen access: sessionId=%s", mSessionId);
         mComponent.stop();
         mScreenAccess = false;
     }
@@ -121,14 +121,14 @@ public class CastContentWindowAndroid
         // TODO(derekjchow): Add a unittest to check this behaviour. Also consider using
         // Instrumentation.startActivitySync to guarentee onCreate is run.
 
-        Log.d(TAG, "Native window destroyed: sessionId=" + mSessionId);
+        Log.d(TAG, "Native window destroyed: sessionId=%s", mSessionId);
         mComponent.stop();
         mComponent.destroy();
     }
 
     @Override
     public void onComponentClosed() {
-        Log.d(TAG, "Component closed: sessionId=" + mSessionId);
+        Log.d(TAG, "Component closed: sessionId=%s", mSessionId);
         if (mNativeCastContentWindowAndroid != 0) {
             CastContentWindowAndroidJni.get().onActivityStopped(mNativeCastContentWindowAndroid);
         }

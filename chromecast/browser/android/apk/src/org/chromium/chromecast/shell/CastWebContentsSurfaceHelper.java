@@ -166,12 +166,11 @@ class CastWebContentsSurfaceHelper {
                                 String intentUri = CastWebContentsIntentUtils.getUriString(intent);
                                 Log.d(
                                         TAG,
-                                        "Intent action="
-                                                + intent.getAction()
-                                                + "; URI="
-                                                + intentUri);
+                                        "Intent action=%s; URI=%s",
+                                        intent.getAction(),
+                                        intentUri);
                                 if (!uri.toString().equals(intentUri)) {
-                                    Log.d(TAG, "Current URI=" + uri + "; intent URI=" + intentUri);
+                                    Log.d(TAG, "Current URI=%s; intent URI=%s", uri, intentUri);
                                     return;
                                 }
                                 mStartParamsState.reset();
@@ -192,12 +191,11 @@ class CastWebContentsSurfaceHelper {
                                 String intentUri = CastWebContentsIntentUtils.getUriString(intent);
                                 Log.d(
                                         TAG,
-                                        "Intent action="
-                                                + intent.getAction()
-                                                + "; URI="
-                                                + intentUri);
+                                        "Intent action=%s; URI=%s",
+                                        intent.getAction(),
+                                        intentUri);
                                 if (!uri.toString().equals(intentUri)) {
-                                    Log.d(TAG, "Current URI=" + uri + "; intent URI=" + intentUri);
+                                    Log.d(TAG, "Current URI=%s; intent URI=%s", uri, intentUri);
                                     return;
                                 }
                                 mTouchInputEnabled = CastWebContentsIntentUtils.isTouchable(intent);
@@ -226,7 +224,7 @@ class CastWebContentsSurfaceHelper {
                 .subscribe(
                         Observer.onOpen(
                                 (Uri uri) -> {
-                                    Log.d(TAG, "onDestroy: " + uri);
+                                    Log.d(TAG, "onDestroy: %s", uri);
                                     mStartParamsState.reset();
                                 }));
 
@@ -242,7 +240,7 @@ class CastWebContentsSurfaceHelper {
     }
 
     void onNewStartParams(final StartParams params) {
-        Log.d(TAG, "onNewStartParams: content_uri=" + params.uri);
+        Log.d(TAG, "onNewStartParams: content_uri=%s", params.uri);
         mStartParamsState.set(params);
     }
 

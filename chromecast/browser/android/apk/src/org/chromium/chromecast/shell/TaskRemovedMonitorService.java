@@ -47,10 +47,9 @@ public class TaskRemovedMonitorService extends Service {
         mSessionId = intent.getStringExtra(SESSION_KEY);
         Log.d(
                 TAG,
-                "Started tracking CastWebContentsActivity: rootSessionId="
-                        + mRootSessionId
-                        + ", sessionId="
-                        + mSessionId);
+                "Started tracking CastWebContentsActivity: rootSessionId=%s, sessionId=%s",
+                mRootSessionId,
+                mSessionId);
         return START_NOT_STICKY;
     }
 
@@ -71,8 +70,8 @@ public class TaskRemovedMonitorService extends Service {
                 && mRootSessionId.equals(CastWebContentsIntentUtils.getSessionId(rootIntent))) {
             Log.d(
                     TAG,
-                    "Detected CastWebContentsActivity task removed, stopping session: "
-                            + mSessionId);
+                    "Detected CastWebContentsActivity task removed, stopping session: %s",
+                    mSessionId);
             CastWebContentsComponent.onComponentClosed(mSessionId);
             stopSelf();
         }

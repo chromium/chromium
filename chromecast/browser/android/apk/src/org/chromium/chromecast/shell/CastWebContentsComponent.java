@@ -152,7 +152,7 @@ public class CastWebContentsComponent {
 
     private void onReceiveIntent(Intent intent) {
         if (CastWebContentsIntentUtils.isIntentOfActivityStopped(intent)) {
-            Log.d(TAG, "Activity stopped: sessionId=" + mSessionId);
+            Log.d(TAG, "Activity stopped: sessionId=%s", mSessionId);
             if (mComponentClosedHandler != null) {
                 mComponentClosedHandler.onComponentClosed();
             }
@@ -210,7 +210,7 @@ public class CastWebContentsComponent {
             return;
         }
 
-        Log.d(TAG, "Stopping WebContents: sessionId" + mSessionId);
+        Log.d(TAG, "Stopping WebContents: sessionId=%s", mSessionId);
         mStartParams.reset();
         mHasWebContentsState.reset();
         sendStopWebContentEvent();
@@ -223,13 +223,13 @@ public class CastWebContentsComponent {
     }
 
     public void enableTouchInput(boolean enabled) {
-        Log.d(TAG, "Touch input updated: enabled=" + enabled);
+        Log.d(TAG, "Touch input updated: enabled=%b", enabled);
         mEnableTouchInput = enabled;
         sendIntentSync(CastWebContentsIntentUtils.enableTouchInput(mSessionId, enabled));
     }
 
     public static void onComponentClosed(String sessionId) {
-        Log.d(TAG, "Component closed: sessionId=" + sessionId);
+        Log.d(TAG, "Component closed: sessionId=%s", sessionId);
         sendIntentSync(CastWebContentsIntentUtils.onActivityStopped(sessionId));
     }
 

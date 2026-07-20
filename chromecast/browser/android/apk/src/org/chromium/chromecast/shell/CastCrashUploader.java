@@ -151,7 +151,7 @@ public final class CastCrashUploader {
                         new SequenceInputStream(logHeaderStream, uploadCrashDumpStream);
             }
 
-            Log.d(TAG, "UUID: " + mUuid);
+            Log.d(TAG, "UUID: %s", mUuid);
             if (!mUuid.equals("")) {
                 StringBuilder uuidBuilder = new StringBuilder();
                 uuidBuilder.append(dumpFirstLine);
