@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.share.send_tab_to_self;
 
 import android.app.Activity;
+import android.app.Person;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ShortcutInfo;
@@ -17,6 +18,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.Build;
+import android.os.PersistableBundle;
 import android.text.TextUtils;
 
 import androidx.annotation.RequiresApi;
@@ -39,6 +41,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.sync_device_info.FormFactor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -57,6 +60,8 @@ public class OtherDevicesShortcutController implements Destroyable {
             "org.chromium.chrome.browser.share.send_tab_to_self.extra.DEVICE_NAME";
 
     private static final String SHORTCUT_ID_PREFIX = "stts-target-";
+    private static final String CATEGORY =
+            "org.chromium.chrome.browser.share.send_tab_to_self.category.DEVICE";
 
     // Limit to 2 devices to avoid overcrowding the share sheet and the launcher.
     private static final int MAX_SHORTCUTS = 2;
@@ -96,6 +101,105 @@ public class OtherDevicesShortcutController implements Destroyable {
         IntentUtils.addTrustedIntentExtras(trustedIntent);
         LaunchIntentDispatcher.dispatchToTabbedActivity(activity, trustedIntent);
         return true;
+    }
+
+    /**
+     * Checks if the intent is a "Send Tab to Self" DirectShare target intent.
+     *
+     * @param intent The intent to check.
+     * @return True if the intent is a Send Tab to Self DirectShare target intent.
+     */
+    static boolean isShareTargetIntent(Intent intent) {
+        if (intent == null || !Intent.ACTION_SEND.equals(intent.getAction())) return false;
+        String shortcutId = intent.getStringExtra(Intent.EXTRA_SHORTCUT_ID);
+        return shortcutId != null && shortcutId.startsWith(SHORTCUT_ID_PREFIX);
+    }
+
+    /**
+     * Handles forwarding the intent to the translucent activity if it is a "Send Tab to Self"
+     * DirectShare target. Meant to be called from ChromeLauncherActivity.
+     *
+     * @param activity The activity receiving the intent.
+     * @param intent The intent to handle.
+     * @return Whether the intent was forwarded.
+     */
+    public static boolean handleShareTargetIntentForwarding(Activity activity, Intent intent) {
+        if (!ChromeFeatureList.sSendTabToSelfDynamicShortcuts.isEnabled()) {
+            return false;
+        }
+        if (!isShareTargetIntent(intent)) return false;
+
+        Intent forwardIntent = new Intent(intent);
+        forwardIntent.setClass(activity, SendTabToSelfShareTargetActivity.class);
+        activity.startActivity(forwardIntent);
+        return true;
+    }
+
+    /**
+     * Handles the ACTION_SEND intent when a "Send Tab to Self" DirectShare target is selected.
+     * Meant to be called from SendTabToSelfShareTargetActivity.
+     *
+     * <p>Note: This method requires native libraries to be loaded.
+     *
+     * @param activity The activity receiving the intent. This should be
+     *     SendTabToSelfShareTargetActivity in practice.
+     * @param intent The intent to handle.
+     */
+    static void handleShareTargetIntent(Activity activity, Intent intent, Profile profile) {
+        if (!ChromeFeatureList.sSendTabToSelfDynamicShortcuts.isEnabled()) {
+            return;
+        }
+        if (!isShareTargetIntent(intent)) return;
+
+        String shortcutId = intent.getStringExtra(Intent.EXTRA_SHORTCUT_ID);
+        assert shortcutId != null; // Guaranteed by isShareTargetIntent().
+
+        Context appContext = activity.getApplicationContext();
+
+        String url = IntentHandler.getUrlFromIntent(intent);
+        if (TextUtils.isEmpty(url)) return;
+
+        String title = intent.getStringExtra(Intent.EXTRA_SUBJECT);
+        // Title is allowed to be empty!
+
+        // Accessing the shortcut from ShortcutManager should be done on a background thread.
+        sTaskRunner.execute(
+                () -> {
+                    ShortcutManager shortcutManager =
+                            appContext.getSystemService(ShortcutManager.class);
+                    if (shortcutManager == null) return;
+                    ShortcutInfo selectedShortcut = null;
+                    // Search through dynamic shortcuts for a match.
+                    for (ShortcutInfo shortcut : shortcutManager.getDynamicShortcuts()) {
+                        if (shortcutId.equals(shortcut.getId())) {
+                            selectedShortcut = shortcut;
+                            break;
+                        }
+                    }
+                    if (selectedShortcut == null) return;
+
+                    PersistableBundle extras = selectedShortcut.getExtras();
+                    if (extras == null) return;
+
+                    String targetDeviceSyncCacheGuid = extras.getString(EXTRA_DEVICE_GUID);
+                    if (TextUtils.isEmpty(targetDeviceSyncCacheGuid)) return;
+
+                    String targetDeviceName = extras.getString(EXTRA_DEVICE_NAME);
+                    if (TextUtils.isEmpty(targetDeviceName)) return;
+
+                    PostTask.postTask(
+                            TaskTraits.UI_DEFAULT,
+                            () -> {
+                                SendTabToSelfAndroidBridge.sendTabToDevice(
+                                        profile,
+                                        null,
+                                        targetDeviceSyncCacheGuid,
+                                        targetDeviceName,
+                                        url,
+                                        title != null ? title : "",
+                                        ShareEntryPoint.SHARE_SHEET);
+                            });
+                });
     }
 
     public OtherDevicesShortcutController(Profile profile) {
@@ -148,6 +252,16 @@ public class OtherDevicesShortcutController implements Destroyable {
             for (int i = 0; i < Math.min(devices.size(), MAX_SHORTCUTS); i++) {
                 TargetDeviceInfo device = devices.get(i);
 
+                // Create a ShortcutInfo corresponding to `device`. Note that the shortcut has two
+                // separate purposes, which use (overlapping) subsets of all the fields.
+                // Launcher shortcut: Displayed using the shortcut's short/long label and icon. The
+                // behavior is specified by the passed Intent.
+                // DirectShare target: Displayed using the shortcut's short/long label, overlaid
+                // with Chrome's icon. Does NOT use the passed Intent; instead the system generates
+                // an ACTION_SEND Intent, which gets routed to the activity defined as the
+                // share-target in launchershortcuts.xml (i.e. IntentDispatcher aka
+                // ChromeLauncherActivity).
+
                 Intent intent = new Intent(ACTION_OPEN_RECENT_TABS);
                 intent.setClassName(
                         mContext, BrowserIntentUtils.LAUNCHER_SHORTCUT_ACTIVITY_CLASS_NAME);
@@ -156,17 +270,33 @@ public class OtherDevicesShortcutController implements Destroyable {
 
                 Icon icon = createAdaptiveIcon(device.formFactor);
 
+                // Note: A Person can also have a name and an icon, but those are not used for the
+                // display of DirectShare targets.
+                // TODO(crbug.com/484887324): Is there any point in providing name/icon/key/uri?
+                Person person = new Person.Builder().setImportant(true).build();
+
+                PersistableBundle shortcutExtras = new PersistableBundle();
+                shortcutExtras.putString(EXTRA_DEVICE_GUID, device.cacheGuid);
+                shortcutExtras.putString(EXTRA_DEVICE_NAME, device.deviceName);
+
                 // The ID passed to the constructor will become EXTRA_SHORTCUT_ID in the received
                 // Intent.
                 String id = SHORTCUT_ID_PREFIX + device.cacheGuid;
                 ShortcutInfo shortcut =
                         new ShortcutInfo.Builder(mContext, id)
+                                // Common fields:
                                 .setShortLabel(device.deviceName)
                                 // TODO(crbug.com/484887324): Include the email in the long label?
                                 .setLongLabel(device.deviceName)
                                 .setIcon(icon)
+                                // For launcher shortcut:
                                 .setIntent(intent)
                                 .setRank(nextRank++)
+                                // For DirectShare target:
+                                .setCategories(Collections.singleton(CATEGORY))
+                                .setLongLived(true)
+                                .setPerson(person)
+                                .setExtras(shortcutExtras)
                                 .build();
                 newShortcuts.add(shortcut);
             }

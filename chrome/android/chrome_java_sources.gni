@@ -1102,6 +1102,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/share/ShareHelper.java",
   "java/src/org/chromium/chrome/browser/share/ShareUtils.java",
   "java/src/org/chromium/chrome/browser/share/TabGroupSharingControllerImpl.java",
+  "java/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfShareTargetActivity.java",
   "java/src/org/chromium/chrome/browser/sharing/SharingNotificationUtil.java",
   "java/src/org/chromium/chrome/browser/sharing/sms_fetcher/SmsFetcherMessageHandler.java",
   "java/src/org/chromium/chrome/browser/signin/AppRestrictionSupplier.java",

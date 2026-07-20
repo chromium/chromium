@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -58,6 +59,11 @@ public class OtherDevicesShortcutControllerTest {
     private static final String DEVICE_GUID_2 = "guid2";
     private static final String SHORTCUT_ID_1 = "stts-target-" + DEVICE_GUID_1;
     private static final String SHORTCUT_ID_2 = "stts-target-" + DEVICE_GUID_2;
+    private static final String CATEGORY =
+            "org.chromium.chrome.browser.share.send_tab_to_self.category.DEVICE";
+
+    private static final String URL = "https://example.com";
+    private static final String TITLE = "Title";
 
     @Mock private Profile mProfile;
     @Mock private SendTabToSelfAndroidBridge.Natives mNativeMock;
@@ -72,8 +78,116 @@ public class OtherDevicesShortcutControllerTest {
         ProfileManager.setLastUsedProfileForTesting(mProfile);
     }
 
+    private Intent createShareTargetIntent(String shortcutId, String url, String title) {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_SHORTCUT_ID, shortcutId);
+        intent.putExtra(Intent.EXTRA_TEXT, url);
+        intent.putExtra(Intent.EXTRA_SUBJECT, title);
+        intent.setType("text/plain");
+        return intent;
+    }
+
     @Test
-    public void testHandleShareShortcutIntent_ActionOpenRecentTabs_RelaunchesAsTrusted() {
+    public void testHandleShareTargetIntentForwarding() {
+        Activity activity = Robolectric.buildActivity(Activity.class).create().get();
+        Intent intent = createShareTargetIntent(SHORTCUT_ID_1, URL, TITLE);
+
+        boolean handled =
+                OtherDevicesShortcutController.handleShareTargetIntentForwarding(activity, intent);
+
+        org.junit.Assert.assertTrue(handled);
+
+        Intent startedIntent =
+                org.robolectric.Shadows.shadowOf(
+                                org.robolectric.RuntimeEnvironment.getApplication())
+                        .getNextStartedActivity();
+        assertNotNull(startedIntent);
+        // The forwarded intent should have its target class set to SendTabToSelfShareTargetActivity
+        // but otherwise match the original intent.
+        assertEquals(
+                SendTabToSelfShareTargetActivity.class.getName(),
+                startedIntent.getComponent().getClassName());
+        assertEquals(Intent.ACTION_SEND, startedIntent.getAction());
+        assertEquals("text/plain", startedIntent.getType());
+        assertEquals(SHORTCUT_ID_1, startedIntent.getStringExtra(Intent.EXTRA_SHORTCUT_ID));
+        assertEquals(URL, startedIntent.getStringExtra(Intent.EXTRA_TEXT));
+        assertEquals(TITLE, startedIntent.getStringExtra(Intent.EXTRA_SUBJECT));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_DYNAMIC_SHORTCUTS)
+    public void testHandleShareTargetIntentForwarding_FeatureDisabled() {
+        Activity activity = Robolectric.buildActivity(Activity.class).create().get();
+        Intent intent = createShareTargetIntent(SHORTCUT_ID_1, URL, TITLE);
+
+        boolean handled =
+                OtherDevicesShortcutController.handleShareTargetIntentForwarding(activity, intent);
+
+        org.junit.Assert.assertFalse(handled);
+    }
+
+    @Test
+    public void handleShareTargetIntent() {
+        List<TargetDeviceInfo> devices = new ArrayList<>();
+        devices.add(new TargetDeviceInfo("Device 1", DEVICE_GUID_1, FormFactor.PHONE, "Just now"));
+        when(mNativeMock.getAllTargetDeviceInfos(mProfile)).thenReturn(devices);
+
+        // Instantiate controller to populate shortcuts in ShortcutManager.
+        OtherDevicesShortcutController controller = new OtherDevicesShortcutController(mProfile);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        Activity activity = Robolectric.buildActivity(Activity.class).create().get();
+        Intent intent = createShareTargetIntent(SHORTCUT_ID_1, URL, TITLE);
+
+        OtherDevicesShortcutController.handleShareTargetIntent(activity, intent, mProfile);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mNativeMock)
+                .sendTabToDevice(
+                        eq(mProfile),
+                        eq(null),
+                        eq(DEVICE_GUID_1),
+                        eq(URL),
+                        eq(TITLE),
+                        any(),
+                        eq(ShareEntryPoint.SHARE_SHEET));
+    }
+
+    @Test
+    public void handleShareTargetIntent_RejectUnknownDevice() {
+        List<TargetDeviceInfo> devices = new ArrayList<>();
+        // No devices synced.
+        when(mNativeMock.getAllTargetDeviceInfos(mProfile)).thenReturn(devices);
+
+        // Instantiate controller to populate shortcuts in ShortcutManager (will be empty).
+        OtherDevicesShortcutController controller = new OtherDevicesShortcutController(mProfile);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        Activity activity = Robolectric.buildActivity(Activity.class).create().get();
+        Intent intent = createShareTargetIntent(SHORTCUT_ID_1, URL, TITLE);
+
+        OtherDevicesShortcutController.handleShareTargetIntent(activity, intent, mProfile);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mNativeMock, never())
+                .sendTabToDevice(any(), any(), any(), any(), any(), any(), anyInt());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_DYNAMIC_SHORTCUTS)
+    public void handleShareTargetIntent_FeatureDisabled() {
+        Activity activity = Robolectric.buildActivity(Activity.class).create().get();
+        Intent intent = createShareTargetIntent(SHORTCUT_ID_1, URL, TITLE);
+
+        OtherDevicesShortcutController.handleShareTargetIntent(activity, intent, mProfile);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mNativeMock, org.mockito.Mockito.never())
+                .sendTabToDevice(any(), any(), any(), any(), any(), any(), anyInt());
+    }
+
+    @Test
+    public void testHandleLauncherShortcutIntent_RelaunchesAsTrusted() {
         List<TargetDeviceInfo> devices = new ArrayList<>();
         devices.add(
                 new TargetDeviceInfo(DEVICE_NAME_1, DEVICE_GUID_1, FormFactor.PHONE, "Just now"));
@@ -110,6 +224,9 @@ public class OtherDevicesShortcutControllerTest {
 
     private boolean isValidOtherDeviceShortcut(ShortcutInfo shortcut) {
         if (shortcut == null) return false;
+
+        if (!shortcut.isLongLived()) return false;
+        if (!shortcut.getCategories().contains(CATEGORY)) return false;
 
         Intent intent = shortcut.getIntent();
         if (intent == null) return false;

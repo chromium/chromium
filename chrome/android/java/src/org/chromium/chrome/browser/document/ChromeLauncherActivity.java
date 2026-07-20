@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.notifications.NotificationPlatformBridge;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
+import org.chromium.chrome.browser.share.send_tab_to_self.OtherDevicesShortcutController;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabwindow.TabWindowInfo;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
@@ -88,6 +89,12 @@ public class ChromeLauncherActivity extends Activity {
      */
     private void dispatch() {
         Intent intent = getIntent();
+
+        // Check if this is a "Send Tab to Self" direct share target.
+        if (OtherDevicesShortcutController.handleShareTargetIntentForwarding(this, intent)) {
+            return;
+        }
+
         // Read partner browser customizations information asynchronously.
         // We want to initialize early because when there are no tabs to restore, we should possibly
         // show homepage, which might require reading PartnerBrowserCustomizations provider.
