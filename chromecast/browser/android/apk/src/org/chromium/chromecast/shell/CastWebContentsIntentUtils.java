@@ -138,7 +138,7 @@ public class CastWebContentsIntentUtils {
     }
 
     private static Intent onVisibilityChange(Uri uri, @VisibilityType int visibilityType) {
-        Log.d(TAG, "onVisibilityChange with uri:" + uri + " type:" + visibilityType);
+        Log.d(TAG, "onVisibilityChange with uri:%s type:%d", uri, visibilityType);
 
         Intent intent = new Intent(ACTION_ON_VISIBILITY_CHANGE, uri);
         intent.putExtra(INTENT_EXTRA_VISIBILITY_TYPE, visibilityType);
