@@ -9,7 +9,9 @@ const kDefaultDictionaryContent = 'This is a test dictionary.\n';
 const kDefaultDictionaryHashBase64 =
     ':U5abz16WDg7b8KS93msLPpOB4Vbef1uRzoORYkJw9BY=:';
 const kRegisterDictionaryPath = './resources/register-dictionary.py';
+const kRegisterDictionaryHttp2Path = './resources/register-dictionary.h2.py';
 const kCompressedDataPath = './resources/compressed-data.py';
+const kCompressedDataHttp2Path = './resources/compressed-data.h2.py';
 const kExpectedCompressedData =
     `This is compressed test data using a test dictionary`;
 const kCheckHeaderMaxRetry = 10;
@@ -94,8 +96,9 @@ async function waitUntilAvailableDictionaryHeader(test, {
 
 // Checks the HTTP request headers which was sent to the server with `token`
 // to register a dictionary.
-async function checkPreviousRequestHeaders(token, check_remote = false) {
-  let url = `./resources/register-dictionary.py?get_previous_header=${token}`;
+async function checkPreviousRequestHeaders(token, options = {}) {
+  const { check_remote = false, use_http2 = false } = options;
+  let url = `${use_http2 ? kRegisterDictionaryHttp2Path : kRegisterDictionaryPath}?get_previous_header=${token}`;
   if (check_remote) {
     url = getRemoteHostUrl(url);
   }
@@ -106,12 +109,12 @@ async function checkPreviousRequestHeaders(token, check_remote = false) {
 // `token` to register a dictionary is available, and returns the header. If the
 // header is not available after the specified number of retries, returns
 // `undefined`.
-async function waitUntilPreviousRequestHeaders(
-    test, token, check_remote = false) {
+async function waitUntilPreviousRequestHeaders(test, token, options = {}) {
+  const { check_remote = false, use_http2 = false } = options;
   for (let retry_count = 0; retry_count <= kCheckPreviousRequestHeadersMaxRetry;
        retry_count++) {
     const header =
-        (await checkPreviousRequestHeaders(token, check_remote))['headers'];
+        (await checkPreviousRequestHeaders(token, {check_remote, use_http2}))['headers'];
     if (header) {
       return header;
     }
@@ -153,4 +156,12 @@ async function registerAltDictionaryAndWait(t) {
   assert_equals(
       await waitUntilAvailableDictionaryHeader(t, {use_alt_path: true}),
       kDefaultDictionaryHashBase64);
+}
+
+function navigateToTestWithCompressionDictionaryEarlyHints(test_url, dictionary_url) {
+  const params = new URLSearchParams();
+  params.set("test_url", test_url);
+  params.set("dictionary_url", dictionary_url);
+  const url = `${RESOURCES_PATH}/early-hint-for-compression-dictionary-test-loader.h2.py?${params.toString()}`;
+  window.location.replace(new URL(url, window.location));
 }

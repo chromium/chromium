@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] attachShadow() on an adopted built-in host: shadow root uses the node document realm
+  assert_true: shadow root is from the node document's (top-level) realm expected true got false
+[FAIL] attachShadow() on an adopted custom element host: shadow root uses the node document realm
+  assert_true: shadow root is from the node document's (top-level) realm expected true got false
+Harness: the test ran to completion.
+

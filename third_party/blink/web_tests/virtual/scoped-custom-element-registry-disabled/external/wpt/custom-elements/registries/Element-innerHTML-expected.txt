@@ -13,6 +13,8 @@ This is a testharness.js-based test.
   assert_equals: expected (object) null but got (undefined) undefined
 [FAIL] createContextualFragment on a range inside a template should use null registry even when the template has a scoped registry
   Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] innerHTML on a template with a scoped registry should use the scoped registry of the document
+  Failed to construct 'CustomElementRegistry': Illegal constructor
 [FAIL] createContextualFragment on a range inside an element with scoped registry should use the scoped registry of the element
   Failed to construct 'CustomElementRegistry': Illegal constructor
 [FAIL] insertAdjacentHTML with beforebegin should use the containing scope's registry

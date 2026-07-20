@@ -74,13 +74,13 @@ Found 61 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to execute 'matches' on 'Element': ':heading' is not a valid selector.
 [FAIL] case 32: heading level for <h2 data-expected-offset="4" headingoffset="2" headingreset="">\n        <!-- Level 4, h2 + 2 + (headingreset) -->\n      </h2> should match based on expected document structure
   Failed to execute 'matches' on 'Element': ':heading' is not a valid selector.
-[FAIL] case 33: heading level for <h2 data-expected-offset="4"><!-- Level 4, h2 + 1 + 1 --></h2> should match based on expected document structure
+[FAIL] case 33: heading level for <h2 data-expected-offset="3"><!-- Level 3, h2 + 1 --></h2> should match based on expected document structure
   Failed to execute 'matches' on 'Element': ':heading' is not a valid selector.
-[FAIL] case 34: heading level for <h4 data-expected-offset="6"><!-- Level 6, h4 + 1 + 1 --></h4> should match based on expected document structure
+[FAIL] case 34: heading level for <h4 data-expected-offset="5"><!-- Level 5, h4 + 1 --></h4> should match based on expected document structure
   Failed to execute 'matches' on 'Element': ':heading' is not a valid selector.
 [FAIL] case 35: heading level for <h4 data-expected-offset="4" headingreset="">\n    <!-- Level 4, h4 (headingreset) -->\n  </h4> should match based on expected document structure
   Failed to execute 'matches' on 'Element': ':heading' is not a valid selector.
-[FAIL] case 36: heading level for <h2 data-expected-offset="4"><!-- Level 4, h2 + 1 + 1 --></h2> should match based on expected document structure
+[FAIL] case 36: heading level for <h2 data-expected-offset="3"><!-- Level 3, h2 + 1 --></h2> should match based on expected document structure
   Failed to execute 'matches' on 'Element': ':heading' is not a valid selector.
 [FAIL] case 37: heading level for <h1 data-expected-offset="2" headingoffset="1"><!-- Level 2, h1 + 1 --></h1> should match based on expected document structure
   Failed to execute 'matches' on 'Element': ':heading' is not a valid selector.

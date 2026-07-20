@@ -1,0 +1,31 @@
+This is a testharness.js-based test.
+[FAIL] e.style['font-family'] = "random-item(auto, serif, sans-serif)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-family'] = "random-item(--x, serif, sans-serif)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-family'] = "random-item(element-scoped, serif, sans-serif)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-family'] = "random-item(--x element-scoped, serif, sans-serif)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-family'] = "random-item(element-scoped --x, serif, sans-serif)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-family'] = "random-item(fixed 0, serif, sans-serif)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-family'] = "random-item(fixed 0.5, serif, sans-serif)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-family'] = "random-item(fixed 1, serif, sans-serif)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-family'] = "random-item(auto, serif)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-family'] = "random-item(auto, {Times, serif}, {Arial, sans-serif})" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-family'] = "random-item(auto, {Times, serif}, sans-serif, {monospace})" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-family'] = "random-item(auto, { Times, serif }, { Arial, sans-serif })" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "random-item(auto, red, green, blue)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['width'] = "random-item(auto, 1px, 2px, 3px)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+

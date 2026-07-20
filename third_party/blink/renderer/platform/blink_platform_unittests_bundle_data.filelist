@@ -154,11 +154,15 @@
 ../../web_tests/external/wpt/jpegxl/resources/animation-2loops.jxl
 ../../web_tests/external/wpt/jpegxl/resources/animation-infiniteloop.jxl
 ../../web_tests/external/wpt/jpegxl/resources/basic.jxl
+../../web_tests/external/wpt/jpegxl/resources/color-management-p3-cicp.jxl
 ../../web_tests/external/wpt/jpegxl/resources/conformance_alpha_nonpremultiplied.jxl
 ../../web_tests/external/wpt/jpegxl/resources/conformance_animation_spline.jxl
 ../../web_tests/external/wpt/jpegxl/resources/conformance_cmyk_layers.jxl
 ../../web_tests/external/wpt/jpegxl/resources/conformance_patches.jxl
 ../../web_tests/external/wpt/jpegxl/resources/conformance_sunset_logo.jxl
+../../web_tests/external/wpt/jpegxl/resources/gray-32x32.jxl
+../../web_tests/external/wpt/jpegxl/resources/gray-with-icc.jxl
+../../web_tests/external/wpt/jpegxl/resources/green-32x32.jxl
 ../../web_tests/external/wpt/jpegxl/resources/green_queen_modular_e3.jxl
 ../../web_tests/external/wpt/jpegxl/resources/green_queen_vardct_e3.jxl
 ../../web_tests/external/wpt/jpegxl/resources/has_permutation.jxl
@@ -176,6 +180,7 @@
 ../../web_tests/external/wpt/jpegxl/resources/sdr_alpha.jxl
 ../../web_tests/external/wpt/jpegxl/resources/smallest_valid.jxl
 ../../web_tests/external/wpt/jpegxl/resources/spline_on_first_frame.jxl
+../../web_tests/external/wpt/jpegxl/resources/transparent-32x32.jxl
 ../../web_tests/external/wpt/jpegxl/resources/with_icc.jxl
 ../../web_tests/images/bmp-suite/bad/badbitcount.bmp
 ../../web_tests/images/bmp-suite/bad/badbitssize.bmp

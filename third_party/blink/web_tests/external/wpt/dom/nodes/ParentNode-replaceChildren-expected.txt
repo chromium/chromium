@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Document.replaceChildren() with an element, replacing an existing doctype and element.
+  Failed to execute 'replaceChildren' on 'Document': Only one element on document allowed.
+[FAIL] Document.replaceChildren() with a DocumentFragment containing a single element, replacing an existing doctype and element.
+  Failed to execute 'replaceChildren' on 'Document': Only one element on document allowed.
+[FAIL] Document.replaceChildren() with a doctype, replacing an existing doctype and element.
+  Failed to execute 'replaceChildren' on 'Document': Can't insert a doctype after the root element.
+Harness: the test ran to completion.
+

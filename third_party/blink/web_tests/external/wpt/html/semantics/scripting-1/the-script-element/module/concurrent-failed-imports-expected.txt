@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] A joined <script type=module> load is notified with its own fetch result even if a sibling's error handler re-inserts a script for the same specifier
+  assert_equals: script #3 should perform a fresh fetch and load, since the failed fetch was not cached expected "load" but got "error"
+Harness: the test ran to completion.
+

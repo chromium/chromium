@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] get() from an opaque origin (sandboxed iframe) rejects with SecurityError
+  assert_equals: an opaque origin must reject with SecurityError expected "SecurityError" but got "NotAllowedError"
+[FAIL] get() from an opaque origin (sandboxed srcdoc iframe) rejects with SecurityError
+  assert_equals: an opaque origin must reject with SecurityError expected "SecurityError" but got "NotAllowedError"
+[FAIL] get() from an opaque origin (iframe whose document has a Content-Security-Policy: sandbox header) rejects with SecurityError
+  assert_equals: an opaque origin must reject with SecurityError expected "SecurityError" but got "NotAllowedError"
+[FAIL] get() from an opaque origin (plain iframe nested inside a sandboxed iframe (2 levels)) rejects with SecurityError
+  assert_equals: an opaque origin must reject with SecurityError expected "SecurityError" but got "NotAllowedError"
+[FAIL] get() from an opaque origin (plain iframes nested two deep inside a sandboxed iframe (3 levels)) rejects with SecurityError
+  assert_equals: an opaque origin must reject with SecurityError expected "SecurityError" but got "NotAllowedError"
+[FAIL] get() from an opaque origin (allow-same-origin iframe nested inside a sandboxed iframe) rejects with SecurityError
+  assert_equals: an opaque origin must reject with SecurityError expected "SecurityError" but got "NotAllowedError"
+[FAIL] get() in a blob: iframe created inside a sandboxed frame inherits the opaque origin and is unavailable
+  assert_false: a blob: document created in an opaque frame is not a secure context expected false got true
+Harness: the test ran to completion.
+

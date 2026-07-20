@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] fenced-frame-bypass
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'FencedFrameConfig': Illegal constructor"
-Harness: the test ran to completion.
-

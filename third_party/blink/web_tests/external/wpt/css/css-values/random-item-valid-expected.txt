@@ -1,0 +1,43 @@
+This is a testharness.js-based test.
+[FAIL] e.style['font-family'] = "random-item(auto, serif)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-family'] = "random-item(auto, serif, sans-serif, monospace)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-family'] = "random-item(auto ,serif ,sans-serif)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-family'] = "random-item(auto , serif , sans-serif)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-family'] = "random-item(auto, )" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-family'] = "random-item(auto, serif,)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-family'] = "random-item(auto, , serif)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-family'] = "random-item(auto, ,)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-family'] = "random-item(auto, {Times, serif}, {Arial, sans-serif})" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-family'] = "random-item(auto, {Times, serif}, sans-serif, {monospace})" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-family'] = "random-item(auto, {Times, serif})" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-family'] = "random-item(auto, { Times, serif }, { Arial, sans-serif })" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-family'] = "random-item(auto, {Times, serif}, { Arial, sans-serif })" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-family'] = "random-item(auto, { monospace })" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-family'] = "random-item(--x, serif, sans-serif)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-family'] = "random-item(fixed 0.5, serif, sans-serif)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-family'] = "random-item(serif, sans-serif)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-family'] = "random-item(foo, serif, sans-serif)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-family'] = "random-item(fixed -0.5, serif, sans-serif)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-family'] = "random-item(property-scoped, serif, sans-serif)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+

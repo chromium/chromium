@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] new ClipboardItem() fails for custom formats with web prefix, but invalid MIME types
+  assert_throws_js: function "() => {\n    const clipboardItemInput = new ClipboardItem(\n    {[format1]: blobInput1, [format2]: blobInput2});\n  }" did not throw
+Harness: the test ran to completion.
+

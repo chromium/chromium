@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Reporting-Endpoints loopback target endpoint received the test report.
+  assert_unreached: A report of test was not found. Reached unreachable code
+Harness: the test ran to completion.
+

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Re-entry via createElement with a different registry after super()
+  assert_true: expected true got false
+[FAIL] Re-entry via createElement with a different registry before super()
+  assert_true: expected true got false
+Harness: the test ran to completion.
+

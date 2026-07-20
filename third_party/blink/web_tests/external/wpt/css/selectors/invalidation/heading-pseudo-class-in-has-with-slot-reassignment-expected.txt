@@ -1,21 +1,29 @@
 This is a testharness.js-based test.
-[FAIL] Initial (h1 slotted into slot_a): #has_heading_3
-  assert_equals: expected "rgb(255, 255, 0)" but got "rgb(128, 128, 128)"
-[FAIL] h1.slot = 'b': #has_heading_5
-  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(128, 128, 128)"
+[FAIL] Initial (h1 slotted into slot_a): #has_heading_1
+  assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
+[FAIL] h1.slot = 'b': #has_heading_1
+  assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
 [FAIL] h1.slot = 'nonexistent': #has_heading_1
   assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
-[FAIL] h1.slot = 'a': #has_heading_3
-  assert_equals: expected "rgb(255, 255, 0)" but got "rgb(128, 128, 128)"
+[FAIL] h1.slot = 'a': #has_heading_1
+  assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
 [FAIL] slotA.name = 'c': #has_heading_1
   assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
-[FAIL] slotB.name = 'a': #has_heading_5
-  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(128, 128, 128)"
-[FAIL] Reset slot names: #has_heading_3
-  assert_equals: expected "rgb(255, 255, 0)" but got "rgb(128, 128, 128)"
+[FAIL] slotB.name = 'a': #has_heading_1
+  assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
+[FAIL] Reset slot names: #has_heading_1
+  assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
 [FAIL] slotA.remove(): #has_heading_1
   assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
-[FAIL] Re-insert slot_a: #has_heading_3
+[FAIL] Re-insert slot_a: #has_heading_1
+  assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
+[FAIL] ancestor[headingoffset=2]: #has_heading_3
   assert_equals: expected "rgb(255, 255, 0)" but got "rgb(128, 128, 128)"
+[FAIL] h1.slot = 'b' with ancestor[headingoffset=2]: #has_heading_3
+  assert_equals: expected "rgb(255, 255, 0)" but got "rgb(128, 128, 128)"
+[FAIL] ancestor[headingoffset=4]: #has_heading_5
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(128, 128, 128)"
+[FAIL] ancestor with headingoffset removed: #has_heading_1
+  assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
 Harness: the test ran to completion.
 

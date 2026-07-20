@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Element parsed into an adopted container takes the node-document realm, not the container's creation realm
+  assert_true: realm is the top-level document it was parsed into expected true got false
+[FAIL] Text parsed into an adopted container takes the node-document realm, not the container's creation realm
+  assert_true: realm is the top-level document it was parsed into expected true got false
+Harness: the test ran to completion.
+

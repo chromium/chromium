@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] .inline-grid 1
+  assert_equals: \n<div class="inline-grid" data-expected-width="100">\n    <div class="item" style="width: fit-content;"><div class="content"></div></div>\n</div>\nwidth expected 100 but got 50
+Harness: the test ran to completion.
+

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] scrollIntoView() followed by a deferred scrollBy() preserves the scroll correction
+  assert_equals: #a should rest OFFSET below the top after the deferred scrollBy() expected 80 but got 80.4375
+Harness: the test ran to completion.
+

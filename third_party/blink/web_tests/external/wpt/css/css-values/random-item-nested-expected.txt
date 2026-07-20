@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] random-item() nested inside random-item()
+  assert_equals: expected "rgb(1, 2, 3)" but got "rgb(0, 128, 0)"
+[FAIL] random-item() resolved through var()
+  assert_equals: expected "rgb(1, 2, 3)" but got "rgb(0, 0, 0)"
+[FAIL] random-item() used as a var() fallback
+  assert_equals: expected "rgb(7, 8, 9)" but got "rgb(0, 0, 0)"
+[FAIL] random-item() expands in a shorthand property
+  assert_equals: expected "1px" but got "0px"
+Harness: the test ran to completion.
+

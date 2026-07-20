@@ -5,6 +5,8 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
 [FAIL] getPublicKey works for Ed25519
   promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
+[FAIL] getPublicKey works for Ed448
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
 [FAIL] getPublicKey works for RSA-OAEP
   promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
 [FAIL] getPublicKey works for RSA-PSS
@@ -13,6 +15,8 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
 [FAIL] getPublicKey works for X25519
   promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
+[FAIL] getPublicKey works for X448
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
 [FAIL] getPublicKey works for ML-DSA-44
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
 [FAIL] getPublicKey works for ML-DSA-65
@@ -33,6 +37,8 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
 [FAIL] getPublicKey works with empty usages for Ed25519
   promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
+[FAIL] getPublicKey works with empty usages for Ed448
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
 [FAIL] getPublicKey works with empty usages for RSA-OAEP
   promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
 [FAIL] getPublicKey works with empty usages for RSA-PSS
@@ -41,6 +47,8 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
 [FAIL] getPublicKey works with empty usages for X25519
   promise_test: Unhandled rejection with value: object "TypeError: crypto.subtle.getPublicKey is not a function"
+[FAIL] getPublicKey works with empty usages for X448
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
 [FAIL] getPublicKey works with empty usages for ML-DSA-44
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
 [FAIL] getPublicKey works with empty usages for ML-DSA-65

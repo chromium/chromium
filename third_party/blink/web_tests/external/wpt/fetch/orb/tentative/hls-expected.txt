@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] ORB allows playing cross-origin HLS segment
+  assert_equals: ORB allows playing cross-origin HLS segment expected "played" but got "error"
+[FAIL] ORB allows playing same-origin media playlist, same-origin segment
+  assert_equals: ORB allows playing same-origin media playlist, same-origin segment expected "played" but got "error"
+[FAIL] ORB allows playing same-origin media playlist, cross-origin segment
+  assert_equals: ORB allows playing same-origin media playlist, cross-origin segment expected "played" but got "error"
+[FAIL] ORB allows playing cross-origin media playlist, same-origin segment
+  assert_equals: ORB allows playing cross-origin media playlist, same-origin segment expected "played" but got "error"
+[FAIL] ORB allows playing cross-origin media playlist, cross-origin segment
+  assert_equals: ORB allows playing cross-origin media playlist, cross-origin segment expected "played" but got "error"
+Harness: the test ran to completion.
+

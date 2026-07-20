@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Default ViewTimeline is affected by scroll-padding
+  assert_approx_equals: values do not match for "undefined" expected 0 +/- 0.125 but got 10
+Harness: the test ran to completion.
+

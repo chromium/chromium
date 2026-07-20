@@ -1,12 +1,10 @@
 This is a testharness.js-based test.
-Found 37 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 36 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] ReadableStream.from accepts an array of values
   promise_test: Unhandled rejection with value: object "TypeError: ReadableStream.from is not a function"
 [FAIL] ReadableStream.from accepts an array of promises
   promise_test: Unhandled rejection with value: object "TypeError: ReadableStream.from is not a function"
 [FAIL] ReadableStream.from accepts an array iterator
-  promise_test: Unhandled rejection with value: object "TypeError: ReadableStream.from is not a function"
-[FAIL] ReadableStream.from accepts a string
   promise_test: Unhandled rejection with value: object "TypeError: ReadableStream.from is not a function"
 [FAIL] ReadableStream.from accepts a Set
   promise_test: Unhandled rejection with value: object "TypeError: ReadableStream.from is not a function"

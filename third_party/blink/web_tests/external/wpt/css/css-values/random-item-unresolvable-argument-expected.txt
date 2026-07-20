@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Selecting a resolvable item produces a value even when other items are unresolvable
+  assert_equals: expected "rgb(1, 2, 3)" but got "rgb(0, 0, 0)"
+[FAIL] A var() fallback inside the selected item is used
+  assert_equals: expected "rgb(4, 5, 6)" but got "rgb(0, 0, 0)"
+Harness: the test ran to completion.
+

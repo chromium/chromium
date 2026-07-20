@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Built-in element: innerHTML creates it in the node document's realm
+  assert_true: <p> is from the node document's (top-level) realm expected true got false
+[FAIL] Built-in element: the created element's realm is independent of the setter's realm
+  assert_true: <p> is from the node document's (top-level) realm expected true got false
+Harness: the test ran to completion.
+

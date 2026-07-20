@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Node reached through the adopting document still reports its creation realm (frame removed before adoption)
+  assert_true: keeps its creation realm regardless of access path expected true got false
+Harness: the test ran to completion.
+

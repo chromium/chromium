@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] FencedFrame within a credentialless iframe is not credentialless
-  assert_true: Fenced frame cannot be created. expected true got false
-Harness: the test ran to completion.
-

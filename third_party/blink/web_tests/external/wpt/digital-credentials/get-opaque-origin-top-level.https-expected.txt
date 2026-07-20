@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] navigator.credentials.get() from a top-level opaque origin rejects with SecurityError
+  promise_rejects_dom: function "function() { throw e; }" threw object "NotAllowedError: The credential operation is not allowed in an opaque origin." that is not a DOMException SecurityError: property "code" is equal to 0, expected 18
+Harness: the test ran to completion.
+

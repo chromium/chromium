@@ -1,4 +1,9 @@
 This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: promise_rejects_js: getType(DOMString type) should reject with TypeError for invalid type function "function() { throw e; }" threw object "NotFoundError: Failed to execute 'getType' on 'ClipboardItem': The type was not found" ("NotFoundError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] ClipboardItem() fails with invalid type string
+  assert_throws_js: function "() => {new ClipboardItem({"not a/real type": blob2});}" did not throw
+[FAIL] ClipboardItem() fails with invalid web custom format
+  assert_throws_js: function "() => {new ClipboardItem({"web notarealtype": blob3});}" did not throw
 [FAIL] supports(text/uri-list) returns true
   assert_equals: expected true but got false
 Harness: the test ran to completion.

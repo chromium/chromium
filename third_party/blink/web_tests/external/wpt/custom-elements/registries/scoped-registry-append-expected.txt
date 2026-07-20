@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught TypeError: Failed to construct 'HTMLElement': Illegal constructor
+[FAIL] Null registry element should gain effective global registry of global registry from its parent upon adoption.
+  assert_true: expected true got false
+[FAIL] Global registry element should gain effective global registry of scoped registry from its parent upon adoption.
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
+Harness: the test ran to completion.
+

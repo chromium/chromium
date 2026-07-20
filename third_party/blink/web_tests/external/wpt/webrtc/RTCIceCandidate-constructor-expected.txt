@@ -1,9 +1,44 @@
 This is a testharness.js-based test.
+Found 20 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] new RTCIceCandidate({ ... }) with nondefault values for all fields
   assert_equals: relayProtocol expected (string) "udp" but got (object) null
 [FAIL] new RTCIceCandidate({ ... }) with nondefault values for all fields, tcp candidate
   assert_equals: url expected (string) "turn:turn.example.net" but got (object) null
 [FAIL] new RTCIceCandidate({ relayProtocol, url }) cloned vs signaled
   assert_equals: relayProtocol cloned expected (string) "tls" but got (object) null
+[FAIL] IPv6 connection-address parses
+  assert_equals: IPv6 compressed expected "2001:db8::1" but got "[2001:db8::1]"
+[FAIL] component-id of 0 fails to parse (prose requires >= 1)
+  assert_equals: foundation expected (object) null but got (string) "1"
+[FAIL] component-id of 257 fails to parse (prose requires <= 256)
+  assert_equals: foundation expected (object) null but got (string) "1"
+[FAIL] srflx candidate without raddr/rport fails to parse
+  assert_equals: foundation expected (object) null but got (string) "1"
+[FAIL] prflx candidate without raddr/rport fails to parse
+  assert_equals: foundation expected (object) null but got (string) "1"
+[FAIL] relay candidate without raddr/rport fails to parse
+  assert_equals: foundation expected (object) null but got (string) "1"
+[FAIL] raddr without rport fails to parse
+  assert_equals: foundation expected (object) null but got (string) "1"
+[FAIL] enum-typed fields are lowercased regardless of input case
+  assert_equals: protocol lowercased expected (string) "udp" but got (object) null
+[FAIL] tcpType is lowercased regardless of input case
+  assert_equals: protocol lowercased expected (string) "tcp" but got (object) null
+[FAIL] priority of 0 fails to parse (prose requires >= 1)
+  assert_equals: foundation expected (object) null but got (string) "1"
+[FAIL] priority above 2^31-1 fails to parse (prose limits to 2^31-1)
+  assert_equals: foundation expected (object) null but got (string) "1"
+[FAIL] foundation longer than 32 chars fails to parse
+  assert_equals: foundation expected (object) null but got (string) "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+[FAIL] foundation with non-ice-char characters fails to parse
+  assert_equals: foundation with '-' fails expected (object) null but got (string) "foo-bar"
+[FAIL] leading "a=" prefix fails to parse
+  assert_equals: foundation expected (object) null but got (string) "1"
+[FAIL] TCP non-relay candidate without tcptype fails to parse
+  assert_equals: foundation expected (object) null but got (string) "1"
+[FAIL] TCP candidate with tcptype keyword but no value fails to parse
+  assert_equals: foundation expected (object) null but got (string) "1"
+[FAIL] TCP candidate with extension before tcptype fails to parse
+  assert_equals: foundation expected (object) null but got (string) "1"
 Harness: the test ran to completion.
 

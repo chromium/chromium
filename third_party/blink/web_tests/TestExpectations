@@ -267,7 +267,7 @@ crbug.com/508672616 virtual/unbounded-element/wpt_internal/html/rendering/unboun
 
 # This is flaky on some bots - this will be fixed in a followup patch:
 crbug.com/508672616 wpt_internal/html/rendering/unbounded-element/sandboxed-iframe-appearance.html [ Failure ]
-crbug.com/508672616 virtual/unbounded-element/wpt_internal/html/rendering/unbounded-element/sandboxed-iframe-appearance.html [ Pass Failure ]
+crbug.com/508672616 virtual/unbounded-element/wpt_internal/html/rendering/unbounded-element/sandboxed-iframe-appearance.html [ Failure Pass ]
 
 # ====== END Unbounded Element tests ======
 
@@ -2783,11 +2783,46 @@ crbug.com/522632542 external/wpt/webdriver/tests/bidi/browsing_context/activate/
 crbug.com/522632542 external/wpt/webdriver/tests/bidi/browsing_context/download_end/status.py [ Failure ]
 crbug.com/522632542 external/wpt/webdriver/tests/bidi/integration/cookies_with_network_events.py [ Failure ]
 
-
 # Sometimes pass
 crbug.com/526677153 external/wpt/intersection-observer/transformed-iframe-003-cross-origin.html [ Failure Pass ]
 crbug.com/526677153 external/wpt/intersection-observer/transformed-iframe-004-cross-origin.html [ Failure Pass ]
+
+# Random UUIDs
+external/wpt/html/semantics/scripting-1/the-script-element/json-module/repeated-imports.any.html [ Failure ]
+external/wpt/html/semantics/scripting-1/the-script-element/json-module/repeated-imports.any.sharedworker.html [ Failure ]
+external/wpt/html/semantics/scripting-1/the-script-element/json-module/repeated-imports.any.worker.html [ Failure ]
+external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/concurrent-failed-imports.any.html [ Failure ]
+external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/concurrent-failed-imports.any.sharedworker.html [ Failure ]
+external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/concurrent-failed-imports.any.worker.html [ Failure ]
+external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/shared-dependency-repeated-import.html [ Failure ]
+
 # ====== New tests from wpt-importer added here ======
+external/wpt/css/css-borders/corner-shape/corner-shape-scoop.html [ Failure ]
+external/wpt/css/css-borders/corner-shape/corner-shape-superellipse-scoop.html [ Failure ]
+[ Win ] external/wpt/css/css-inline/text-box-trim/text-box-on-non-root-inline-box.html [ Pass Timeout ]
+external/wpt/css/css-inline/text-box-trim/text-box-trim-end-001.html?class=ideographic [ Failure ]
+external/wpt/css/css-inline/text-box-trim/text-box-trim-end-001.html?class=ideographic-ink [ Failure ]
+external/wpt/css/css-inline/text-box-trim/text-box-trim-end-001.html?class=vlr,ideographic [ Failure ]
+external/wpt/css/css-inline/text-box-trim/text-box-trim-end-001.html?class=vlr,ideographic-ink [ Failure ]
+external/wpt/css/css-inline/text-box-trim/text-box-trim-end-001.html?class=vrl,ideographic [ Failure ]
+external/wpt/css/css-inline/text-box-trim/text-box-trim-end-001.html?class=vrl,ideographic-ink [ Failure ]
+external/wpt/css/css-inline/text-box-trim/text-box-trim-end-002.html [ Failure ]
+external/wpt/css/css-inline/text-box-trim/text-box-trim-multicol-014.html [ Failure ]
+external/wpt/css/css-inline/text-box-trim/text-box-trim-start-001.html?class=ideographic [ Failure ]
+external/wpt/css/css-inline/text-box-trim/text-box-trim-start-001.html?class=ideographic-ink [ Failure ]
+external/wpt/css/css-inline/text-box-trim/text-box-trim-start-001.html?class=vlr,ideographic [ Failure ]
+external/wpt/css/css-inline/text-box-trim/text-box-trim-start-001.html?class=vlr,ideographic-ink [ Failure ]
+external/wpt/css/css-inline/text-box-trim/text-box-trim-start-001.html?class=vrl,ideographic [ Failure ]
+external/wpt/css/css-inline/text-box-trim/text-box-trim-start-001.html?class=vrl,ideographic-ink [ Failure ]
+[ Mac ] external/wpt/css/css-ui/text-overflow-with-selection.html [ Failure ]
+[ Linux ] external/wpt/css/printing/conic-gradient-skia-crash-print.html [ Failure ]
+[ Win ] external/wpt/css/printing/conic-gradient-skia-crash-print.html [ Failure ]
+external/wpt/digital-credentials/get-opaque-origin-combinations.https.html [ Failure Pass ]
+[ Win ] external/wpt/dom/nodes/node-creation-realm.html [ Pass Timeout ]
+external/wpt/webdriver/tests/bidi/emulation/set_locale_override/locale.py [ Failure ]
+external/wpt/webrtc/RTCDtlsTransport-onerror.html [ Timeout ]
+[ Mac ] external/wpt/webrtc/RTCPeerConnection-video-element-loadedmetadata-event.html [ Timeout ]
+external/wpt/fetch/compression-dictionary/dictionary-fetch-with-link-header-in-subresources.tentative.https.html [ Failure Pass ]
 crbug.com/532607240 [ Win ] external/wpt/bluetooth/bidi/requestDevice/acceptAllDevices/device-with-name.https.window.html [ Pass Timeout ]
 crbug.com/532607276 external/wpt/css/css-backgrounds/background-clip-text-and-blend-mode.html [ Failure ]
 crbug.com/532629409 external/wpt/css/css-borders/corner-shape/corner-shape-bevel.html [ Failure ]
@@ -9438,7 +9473,6 @@ crbug.com/466779634 http/tests/devtools/application-panel/resources-panel-iframe
 
 # Gardener 2026-06-25
 crbug.com/526171024 [ Linux ] external/wpt/webdriver/tests/bidi/browser/set_download_behavior/global.py [ Failure Pass ]
-crbug.com/524270212 [ Linux ] external/wpt/webdriver/tests/bidi/emulation/set_locale_override/locale.py [ Pass Timeout ]
 crbug.com/524583990 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/context_created/subscribe_steps.py [ Pass Timeout ]
 crbug.com/525397936 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/fragment_navigated/fragment_navigated.py [ Pass Timeout ]
 crbug.com/524471138 [ Linux ] external/wpt/webdriver/tests/bidi/input/perform_actions/wheel_events.py [ Pass Timeout ]
@@ -9465,7 +9499,7 @@ crbug.com/532186979 [ Linux ] external/wpt/css/css-image-animation/image-animati
 crbug.com/532703006 virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-animation-view-transition-mixed-change.html [ Failure Pass ]
 
 # Partially fixed by CL 8076718 (`is_outermost_main_frame` plumbing to Network Service)
-crbug.com/533331915 external/wpt/top-level-storage-access-api/requestStorageAccessFor.sub.https.window.html [ Pass Failure ]
+crbug.com/533331915 external/wpt/top-level-storage-access-api/requestStorageAccessFor.sub.https.window.html [ Crash Failure Pass ]
 
 # Gardener 2026-07-13
 crbug.com/534101060 [ Linux ] wpt_internal/webmcp/custom-element-invalid-schema.https.html [ Failure Pass ]
