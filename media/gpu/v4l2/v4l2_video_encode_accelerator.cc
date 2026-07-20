@@ -39,6 +39,7 @@
 #include "media/base/bitstream_buffer.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/encoder_status.h"
+#include "media/base/format_utils.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
@@ -579,16 +580,26 @@ bool V4L2VideoEncodeAccelerator::AllocateImageProcessorOutputBuffers(
       image_processor_->output_config();
   for (size_t i = 0; i < count; i++) {
     switch (output_config.storage_type) {
-      case VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE:
+      case VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE: {
         CHECK(sii_);
+        const VideoPixelFormat output_format =
+            output_config.fourcc.ToVideoPixelFormat();
+        auto si_format = VideoPixelFormatToSharedImageFormat(output_format);
+        gfx::ColorSpace color_space;
+        if (si_format) {
+          color_space = si_format->is_multi_plane()
+                            ? gfx::ColorSpace::CreateREC709()
+                            : gfx::ColorSpace::CreateSRGB();
+        }
         image_processor_output_buffers_[i] =
             CreateMappableSharedImageVideoFrame(
-                output_config.fourcc.ToVideoPixelFormat(), gfx::ColorSpace(),
-                output_config.size, output_config.visible_rect,
-                output_config.visible_rect.size(), base::TimeDelta(),
+                output_format, color_space, output_config.size,
+                output_config.visible_rect, output_config.visible_rect.size(),
+                base::TimeDelta(),
                 gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
                 sii_.get());
         break;
+      }
       default:
         LOG(ERROR) << "Unsupported output storage type of image processor: "
                    << output_config.storage_type;

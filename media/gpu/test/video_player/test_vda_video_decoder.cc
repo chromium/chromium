@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/config/gpu_preferences.h"
+#include "media/base/format_utils.h"
 #include "media/base/media_log.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
@@ -211,9 +212,16 @@ void TestVDAVideoDecoder::ProvidePictureBuffersWithVisibleRect(
   // Create a video frame for each of the picture buffers and provide memory
   // handles to the video frame's data to the decoder.
   for (const PictureBuffer& picture_buffer : picture_buffers) {
+    auto si_format = VideoPixelFormatToSharedImageFormat(format);
+    gfx::ColorSpace color_space;
+    if (si_format) {
+      color_space = si_format->is_multi_plane()
+                        ? gfx::ColorSpace::CreateREC709()
+                        : gfx::ColorSpace::CreateSRGB();
+    }
     scoped_refptr<VideoFrame> video_frame = CreateMappableSharedImageVideoFrame(
-        format, gfx::ColorSpace(), dimensions, visible_rect,
-        visible_rect.size(), base::TimeDelta(),
+        format, color_space, dimensions, visible_rect, visible_rect.size(),
+        base::TimeDelta(),
         linear_output_ ? gfx::BufferUsage::SCANOUT_CPU_READ_WRITE
                        : gfx::BufferUsage::SCANOUT_VDA_WRITE,
         test_sii_.get());
