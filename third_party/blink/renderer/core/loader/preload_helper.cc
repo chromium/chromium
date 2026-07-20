@@ -1050,13 +1050,17 @@ void PreloadHelper::FetchCompressionDictionaryIfNeeded(
            << params.href.GetString().Utf8();
   ResourceRequest resource_request(params.href);
 
-  resource_request.SetReferrerString(Referrer::NoReferrer());
-  if (!RuntimeEnabledFeatures::
-          CompressionDictionaryTransportNewCrossOriginHandlingEnabled()) {
+  if (!RuntimeEnabledFeatures::CDTNewCrossOriginHandlingEnabled()) {
     resource_request.SetMode(network::mojom::RequestMode::kCors);
     resource_request.SetCredentialsMode(network::mojom::CredentialsMode::kOmit);
   }
-  resource_request.SetReferrerPolicy(network::mojom::ReferrerPolicy::kNever);
+  if (RuntimeEnabledFeatures::
+          CDTNewReferrerAndReferrerPolicyHandlingEnabled()) {
+    resource_request.SetReferrerPolicy(params.referrer_policy);
+  } else {
+    resource_request.SetReferrerString(Referrer::NoReferrer());
+    resource_request.SetReferrerPolicy(network::mojom::ReferrerPolicy::kNever);
+  }
   resource_request.SetRequestDestination(
       network::mojom::RequestDestination::kDictionary);
 
@@ -1065,8 +1069,7 @@ void PreloadHelper::FetchCompressionDictionaryIfNeeded(
   options.initiator_info.name = fetch_initiator_type_names::kLink;
 
   FetchParameters link_fetch_params(std::move(resource_request), options);
-  if (RuntimeEnabledFeatures::
-          CompressionDictionaryTransportNewCrossOriginHandlingEnabled()) {
+  if (RuntimeEnabledFeatures::CDTNewCrossOriginHandlingEnabled()) {
     CrossOriginAttributeValue cross_origin = params.cross_origin;
     // Default to anonymous.
     // https://github.com/whatwg/html/pull/11620

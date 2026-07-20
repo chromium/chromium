@@ -3,8 +3,13 @@ self.addEventListener('fetch', function(event) {
     const params = new URL(event.request.url).searchParams;
     const credentials = params.get("credentials");
     const mode = params.get("mode");
-    if ((!mode || mode == event.request.mode) &&
-        (!credentials || credentials == event.request.credentials)) {
+    const referrer = params.get('referrer');
+    const referrerPolicy = params.get('referrerPolicy');
+    if ((credentials === null || credentials == event.request.credentials) &&
+        (mode === null || mode == event.request.mode) &&
+        (referrer === null || referrer == event.request.referrer) &&
+        (referrerPolicy === null ||
+         referrerPolicy == event.request.referrerPolicy)) {
       event.respondWith(fetch(event.request));
     } else {
       event.respondWith(Response.error());
