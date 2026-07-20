@@ -198,7 +198,18 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
   if (is_android) {
-    sources = [ "report_unsafe_site_dialog_android_unittest.cc" ]
+    sources = [
+      "android/family_info_feedback_source_unittest.cc",
+      "report_unsafe_site_dialog_android_unittest.cc",
+    ]
+    deps += [
+      "//chrome/browser/feedback/android",
+      "//chrome/browser/flags:flags_android",
+      "//chrome/browser/signin",
+      "//chrome/browser/signin:test_support",
+      "//chrome/browser/supervised_user:test_support",
+      "//chrome/test:test_support_jni_headers",
+    ]
   } else {
     sources = [
       "report_unsafe_site_dialog_views_unittest.cc",
