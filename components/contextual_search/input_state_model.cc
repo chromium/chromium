@@ -44,14 +44,16 @@ void MaybePopulateBrowserTabInputTypeRule(omnibox::SearchboxConfig* config) {
         return rule.input_type() == omnibox::INPUT_TYPE_BROWSER_TAB;
       });
 
-  // Populate `InputTypeRule` for `omnibox::INPUT_TYPE_BROWSER_TAB`.
-  if (!browser_tab_rule_exists) {
-    omnibox::InputTypeRule* new_rule = rule_set->add_input_type_rules();
-    new_rule->set_input_type(omnibox::INPUT_TYPE_BROWSER_TAB);
-    new_rule->add_allowed_input_types(omnibox::INPUT_TYPE_LENS_IMAGE);
-    new_rule->add_allowed_input_types(omnibox::INPUT_TYPE_LENS_FILE);
-    new_rule->add_allowed_input_types(omnibox::INPUT_TYPE_BROWSER_TAB);
+  if (browser_tab_rule_exists) {
+    return;
   }
+
+  // Populate `InputTypeRule` for `omnibox::INPUT_TYPE_BROWSER_TAB`.
+  omnibox::InputTypeRule* new_rule = rule_set->add_input_type_rules();
+  new_rule->set_input_type(omnibox::INPUT_TYPE_BROWSER_TAB);
+  new_rule->add_allowed_input_types(omnibox::INPUT_TYPE_LENS_IMAGE);
+  new_rule->add_allowed_input_types(omnibox::INPUT_TYPE_LENS_FILE);
+  new_rule->add_allowed_input_types(omnibox::INPUT_TYPE_BROWSER_TAB);
 
   // Add `omnibox::INPUT_TYPE_BROWSER_TAB` to the `allowed_input_types` in
   // `ToolRule` for all tools if the tool allows both images and files.
