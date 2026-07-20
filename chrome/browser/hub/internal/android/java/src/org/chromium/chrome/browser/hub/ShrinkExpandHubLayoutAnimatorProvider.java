@@ -11,6 +11,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.RectEvaluator;
 import android.animation.ValueAnimator;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.os.SystemClock;
@@ -29,7 +30,6 @@ import org.chromium.base.supplier.SyncOneshotSupplier;
 import org.chromium.base.supplier.SyncOneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.animation.AnimationPerformanceTracker;
@@ -361,40 +361,42 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
                         0,
                         mHubContainerView.getHeight()
                                 - (isShrink ? initialRect.bottom : finalRect.bottom));
-        final @Nullable ObjectAnimator bottomControlsTranslateAnimator;
-        if (bottomControlsHeight > 0
-                && BottomBarConfigUtils.isBottomBarEnabled(mHubContainerView.getContext())) {
-            mFakeBottomControlsView = new View(mHubContainerView.getContext());
+        final @Nullable ObjectAnimator bottomControlsScaleAnimator;
+
+        int bottomMargin = animationData.getBottomMargin();
+        int animatingHeight = Math.max(0, bottomControlsHeight - bottomMargin);
+
+        if (animatingHeight > 0) {
+            Context context = mHubContainerView.getContext();
+            mFakeBottomControlsView = new View(context);
+            FrameLayout.LayoutParams fakeViewParams =
+                    new FrameLayout.LayoutParams(
+                            FrameLayout.LayoutParams.MATCH_PARENT, animatingHeight, Gravity.BOTTOM);
+            fakeViewParams.bottomMargin = bottomMargin;
+            mFakeBottomControlsView.setLayoutParams(fakeViewParams);
+
             @ColorInt
             int onSurfaceColor =
                     BottomBarUtils.getBottomBarBackgroundColor(
-                            mHubContainerView.getContext(),
+                            context,
                             mIsIncognito
                                     ? BrandedColorScheme.INCOGNITO
                                     : BrandedColorScheme.APP_DEFAULT);
             mFakeBottomControlsView.setBackgroundColor(onSurfaceColor);
-            FrameLayout.LayoutParams layoutParams =
-                    new FrameLayout.LayoutParams(
-                            FrameLayout.LayoutParams.MATCH_PARENT,
-                            bottomControlsHeight,
-                            Gravity.BOTTOM);
-            mFakeBottomControlsView.setLayoutParams(layoutParams);
             mHubContainerView.addView(mFakeBottomControlsView);
 
-            float initialTranslationY = isShrink ? 0.0f : bottomControlsHeight;
-            float finalTranslationY = isShrink ? bottomControlsHeight : 0.0f;
+            float initialScaleY = isShrink ? 1.0f : 0.0f;
+            float finalScaleY = isShrink ? 0.0f : 1.0f;
 
-            mFakeBottomControlsView.setTranslationY(initialTranslationY);
+            mFakeBottomControlsView.setPivotY(animatingHeight);
+            mFakeBottomControlsView.setScaleY(initialScaleY);
 
-            bottomControlsTranslateAnimator =
+            bottomControlsScaleAnimator =
                     ObjectAnimator.ofFloat(
-                            mFakeBottomControlsView,
-                            View.TRANSLATION_Y,
-                            initialTranslationY,
-                            finalTranslationY);
-            bottomControlsTranslateAnimator.setInterpolator(interpolator);
+                            mFakeBottomControlsView, View.SCALE_Y, initialScaleY, finalScaleY);
+            bottomControlsScaleAnimator.setInterpolator(interpolator);
         } else {
-            bottomControlsTranslateAnimator = null;
+            bottomControlsScaleAnimator = null;
         }
 
         AnimatorSet animatorSet = new AnimatorSet();
@@ -402,8 +404,8 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
         if (fadeAnimator != null) {
             builder.with(fadeAnimator);
         }
-        if (bottomControlsTranslateAnimator != null) {
-            builder.with(bottomControlsTranslateAnimator);
+        if (bottomControlsScaleAnimator != null) {
+            builder.with(bottomControlsScaleAnimator);
         }
         animatorSet.setDuration(mDurationMs);
 

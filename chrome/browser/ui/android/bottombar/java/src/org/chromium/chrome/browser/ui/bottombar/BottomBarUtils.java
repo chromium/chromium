@@ -37,6 +37,11 @@ public class BottomBarUtils {
         return IncognitoColors.getColorSurfaceContainerHigh(context, isIncognito);
     }
 
+    /** Gets the height of the bottom bar. */
+    public static int getBottomBarHeight(Context context) {
+        return context.getResources().getDimensionPixelSize(R.dimen.bottom_bar_height);
+    }
+
     /**
      * Returns the color state list for bottom bar action icons.
      *

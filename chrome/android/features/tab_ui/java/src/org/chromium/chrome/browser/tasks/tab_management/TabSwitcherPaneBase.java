@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController;
 import org.chromium.chrome.browser.ui.actions.button.FullButtonData;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -144,11 +145,14 @@ public abstract class TabSwitcherPaneBase extends PaneBase
                 }
             };
 
+    private final NonNullObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
+    private final boolean mIsBottomBarEnabledOnGts;
+    private final int mBottomBarHeight;
+
     protected @Nullable Tracker mTracker;
-    private boolean mNativeInitialized;
     private @Nullable PaneHubController mPaneHubController;
     private @Nullable Long mWaitForTabStateInitializedStartTimeMs;
-    private final NonNullObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
+    private boolean mNativeInitialized;
 
     /**
      * @param context The activity context.
@@ -183,6 +187,10 @@ public abstract class TabSwitcherPaneBase extends PaneBase
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
         mUiFlow = tabGroupCreationUiDelegate;
         mXrSpaceModeObservableSupplier = xrSpaceModeObservableSupplier;
+        mIsBottomBarEnabledOnGts =
+                BottomBarConfigUtils.isBottomBarEnabled(context)
+                        && BottomBarConfigUtils.shouldShowOnGts();
+        mBottomBarHeight = BottomBarUtils.getBottomBarHeight(context);
 
         mMenuOrKeyboardActionHandler =
                 new MenuOrKeyboardActionHandler() {
@@ -486,6 +494,16 @@ public abstract class TabSwitcherPaneBase extends PaneBase
                     // crbug.com/40942799.
                     initialRect.offset(-initialLeftOffset, -initialTopOffset);
                     finalRect.offset(-finalLeftOffset, -finalTopOffset);
+
+                    int bottomMargin = 0;
+                    if (mIsBottomBarEnabledOnGts) {
+                        EdgeToEdgeController edgeToEdgeController = mEdgeToEdgeSupplier.get();
+                        if (edgeToEdgeController != null) {
+                            bottomMargin += edgeToEdgeController.getSystemBottomInsetPx();
+                        }
+                        bottomMargin += mBottomBarHeight;
+                    }
+
                     animationDataSupplier.set(
                             ShrinkExpandAnimationData.createHubShrinkExpandAnimationData(
                                     initialRect,
@@ -496,7 +514,8 @@ public abstract class TabSwitcherPaneBase extends PaneBase
                                     finalBottomCornerRadius,
                                     coordinator.getThumbnailSize(),
                                     isTopToolbar,
-                                    useFallbackAnimation));
+                                    useFallbackAnimation,
+                                    bottomMargin));
                 };
         coordinator.waitForLayoutWithTab(tabId, provideAnimationData);
         return animationDataSupplier;

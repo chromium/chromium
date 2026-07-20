@@ -603,9 +603,14 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
                 getContext()
                         .getResources()
                         .getDimensionPixelSize(R.dimen.new_tab_animation_rect_corner_radius);
+
         animationDataSupplier.set(
                 ShrinkExpandAnimationData.createHubNewTabAnimationData(
-                        initialRect, finalRect, cornerRadius, /* useFallbackAnimation= */ false));
+                        initialRect,
+                        finalRect,
+                        cornerRadius,
+                        /* useFallbackAnimation= */ false,
+                        /* bottomMargin= */ 0));
 
         assert mCurrentAnimationRunner == null;
         mCurrentAnimationRunner = mHubLayoutAnimationRunnerFactory.apply(animatorProvider);

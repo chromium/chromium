@@ -20,6 +20,7 @@ public class ShrinkExpandAnimationData {
     private final int[] mFinalCornerRadii;
     private final boolean mIsTopToolbar;
     private final boolean mUseFallbackAnimation;
+    private final int mBottomMargin;
 
     /**
      * Creates a {@link ShrinkExpandAnimationData} for {@link
@@ -33,7 +34,11 @@ public class ShrinkExpandAnimationData {
      *     data that suggests the shrink or expand animation can no longer proceed.
      */
     public static ShrinkExpandAnimationData createHubNewTabAnimationData(
-            Rect initialRect, Rect finalRect, int cornerRadius, boolean useFallbackAnimation) {
+            Rect initialRect,
+            Rect finalRect,
+            int cornerRadius,
+            boolean useFallbackAnimation,
+            int bottomMargin) {
         // We can assume the top toolbar exists for this animation as either we will cover the hub
         // toolbar with the animation (incognito) or the new tab has a dedicated top toolbar.
         return new ShrinkExpandAnimationData(
@@ -43,7 +48,8 @@ public class ShrinkExpandAnimationData {
                 new int[] {0, cornerRadius, cornerRadius, cornerRadius},
                 /* thumbnailSize= */ null,
                 /* isTopToolbar= */ true,
-                useFallbackAnimation);
+                useFallbackAnimation,
+                bottomMargin);
     }
 
     /**
@@ -76,7 +82,8 @@ public class ShrinkExpandAnimationData {
             int finalBottomCornerRadius,
             @Nullable Size thumbnailSize,
             boolean isTopToolbar,
-            boolean useFallbackAnimation) {
+            boolean useFallbackAnimation,
+            int bottomMargin) {
         return new ShrinkExpandAnimationData(
                 initialRect,
                 finalRect,
@@ -94,7 +101,8 @@ public class ShrinkExpandAnimationData {
                 },
                 thumbnailSize,
                 isTopToolbar,
-                useFallbackAnimation);
+                useFallbackAnimation,
+                bottomMargin);
     }
 
     /**
@@ -109,6 +117,7 @@ public class ShrinkExpandAnimationData {
      * @param useFallbackAnimation Whether the fallback animation should be used. If this is true
      *     the fallback animation is forced. Useful when something happened while preparing this
      *     data that suggests the shrink or expand animation can no longer proceed.
+     * @param bottomMargin The height of the bottom margin in pixels.
      */
     // TODO(crbug.com/40285429): Try to get rid of useFallbackAnimation, it is a holdover from
     // performance issues with TabSwitcherLayout on low-end devices or when the recycler view
@@ -120,7 +129,8 @@ public class ShrinkExpandAnimationData {
             int[] finalCornerRadii,
             @Nullable Size thumbnailSize,
             boolean isTopToolbar,
-            boolean useFallbackAnimation) {
+            boolean useFallbackAnimation,
+            int bottomMargin) {
         assert initialCornerRadii.length == 4 && finalCornerRadii.length == 4
                 : "Corner Radii should be equal to 4";
         float scaleFactor = (float) initialRect.width() / finalRect.width();
@@ -136,6 +146,7 @@ public class ShrinkExpandAnimationData {
         mThumbnailSize = thumbnailSize;
         mIsTopToolbar = isTopToolbar;
         mUseFallbackAnimation = useFallbackAnimation;
+        mBottomMargin = bottomMargin;
     }
 
     /** Returns the starting rect of the animation. */
@@ -161,6 +172,11 @@ public class ShrinkExpandAnimationData {
     /** Returns the thumbnail size. */
     public @Nullable Size getThumbnailSize() {
         return mThumbnailSize;
+    }
+
+    /** Returns the bottom margin in pixels. */
+    public int getBottomMargin() {
+        return mBottomMargin;
     }
 
     /** Whether the top toolbar will be shown behind the animation. */
