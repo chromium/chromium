@@ -695,28 +695,6 @@ void DataTransfer::setDragImage(ImageResourceContent* image,
   drag_image_element_ = node;
 }
 
-bool DataTransfer::HasFileOfType(const String& type) const {
-  if (!CanReadTypes())
-    return false;
-
-  for (uint32_t i = 0; i < data_object_->length(); ++i) {
-    if (data_object_->Item(i)->Kind() == DataObjectItem::kFileKind) {
-      Blob* blob = data_object_->Item(i)->GetAsFile();
-      if (blob && blob->IsFile() &&
-          DeprecatedEqualIgnoringCase(blob->type(), type))
-        return true;
-    }
-  }
-  return false;
-}
-
-bool DataTransfer::HasStringOfType(const String& type) const {
-  if (!CanReadTypes())
-    return false;
-
-  return data_object_->Types().Contains(type);
-}
-
 void DataTransfer::Trace(Visitor* visitor) const {
   visitor->Trace(data_object_);
   visitor->Trace(drag_image_);

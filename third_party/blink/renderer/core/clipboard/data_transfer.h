@@ -162,9 +162,6 @@ class CORE_EXPORT DataTransfer final : public ScriptWrappable,
  private:
   void setDragImage(ImageResourceContent*, Node*, const gfx::Point&);
 
-  bool HasFileOfType(const String&) const;
-  bool HasStringOfType(const String&) const;
-
   // DataObject::Observer override.
   void OnItemListChanged() override;
 
