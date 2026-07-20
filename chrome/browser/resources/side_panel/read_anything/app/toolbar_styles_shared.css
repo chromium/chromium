@@ -19,6 +19,13 @@ cr-icon-button.active {
   background-color: var(--cr-active-background-color);
 }
 
+cr-toggle {
+  --cr-toggle-width: 26px;
+  --cr-toggle-bar-height: 16px;
+  --cr-toggle-knob-diameter: 12px;
+  --cr-toggle-ripple-diameter: 12px;
+}
+
 .toolbar-button {
   /* Ensure buttons stay above the line focus scrim. */
   position: relative;

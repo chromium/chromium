@@ -39,6 +39,7 @@ build_webui_tests("build") {
     "line_focus_move_mode_test.ts",
     "line_focus_menu_test.ts",
     "line_spacing_test.ts",
+    "media_menu_test.ts",
     "movement_test.ts",
     "node_store_test.ts",
     "presentation_menu_test.ts",

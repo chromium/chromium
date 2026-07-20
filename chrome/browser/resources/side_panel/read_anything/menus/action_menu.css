@@ -2,11 +2,12 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
- /* #css_wrapper_metadata_start
+/* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=//read-anything-side-panel.top-chrome/shared/sp_shared_style.css.js
+ * #import=../app/toolbar_styles_shared.css.js
  * #scheme=relative
- * #include=sp-shared-style
+ * #include=sp-shared-style toolbar-styles-shared
  * #css_wrapper_metadata_end */
 
 .has-icon-false {
@@ -65,13 +66,50 @@ cr-action-menu::part(dialog) {
   z-index: 9999;
 }
 
+#media-menu-dialog::part(dialog) {
+  min-width: 253px;
+}
+
 cr-action-menu[non-modal]::part(dialog),
 :host(.immersive-top-level-menu) cr-action-menu::part(dialog) {
   border-radius: var(--cornerRadii-medium-small, 12px);
 }
 
+.toggle-row {
+  --iron-icon-height: 16px;
+  --iron-icon-width: 16px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  line-height: var(--immersive-menu-line-height);
+  padding-block: 4px;
+  padding-inline: 24px 20px;
+}
+
+.toggle-row:hover,
+.toggle-row:focus-visible {
+  background-color: var(--cr-hover-background-color);
+}
+
+.toggle-row .start-container {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  padding-inline-end: 16px;
+}
+
+.toggle-row .start-icon {
+  --cr-icon-color: var(--cr-secondary-text-color);
+}
+
+.toggle-row .label {
+  flex: 1;
+  font-weight: 400;
+}
+
 @media (forced-colors: active) {
-  .dropdown-item {
+  .dropdown-item,
+  .toggle-row {
     color: LinkText;
   }
 }

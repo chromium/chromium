@@ -6,6 +6,7 @@ import './icons.html.js';
 import '../read_aloud/voice_selection_menu.js';
 import '../menus/simple_action_menu.js';
 import '../menus/appearance_menu.js';
+import '../menus/media_menu.js';
 import '../menus/color_menu.js';
 import '../menus/font_menu.js';
 import '../menus/line_focus_menu.js';
@@ -44,6 +45,7 @@ import type {HighlightMenuElement} from '../menus/highlight_menu.js';
 import type {LetterSpacingMenuElement} from '../menus/letter_spacing_menu.js';
 import type {LineFocusMenuElement} from '../menus/line_focus_menu.js';
 import type {LineSpacingMenuElement} from '../menus/line_spacing_menu.js';
+import type {MediaMenuElement} from '../menus/media_menu.js';
 import type {ToolbarMenu} from '../menus/menu_util.js';
 import type {PresentationMenuElement} from '../menus/presentation_menu.js';
 import type {RateMenuElement} from '../menus/rate_menu.js';
@@ -63,6 +65,7 @@ export interface ReadAnythingToolbarElement {
   $: {
     rateMenu: RateMenuElement,
     appearanceMenu: AppearanceMenuElement,
+    mediaMenu: MediaMenuElement,
     colorMenu: ColorMenuElement,
     lineSpacingMenu: LineSpacingMenuElement,
     letterSpacingMenu: LetterSpacingMenuElement,
@@ -909,6 +912,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   get settingsMenu_(): Partial<Record<SettingsOption, ToolbarMenu>> {
     return {
       [SettingsOption.APPEARANCE]: this.$.appearanceMenu,
+      [SettingsOption.MEDIA]: this.$.mediaMenu,
       [SettingsOption.COLOR]: this.$.colorMenu,
       [SettingsOption.VOICE_HIGHLIGHT]: this.$.highlightMenu,
       [SettingsOption.TEXT]: this.$.textMenu,

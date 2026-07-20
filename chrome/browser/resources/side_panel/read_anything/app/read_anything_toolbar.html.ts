@@ -286,6 +286,14 @@ export function getHtml(this: ReadAnythingToolbarElement) {
       .pageLanguage="${this.pageLanguage}"
       @close-all-menus="${this.onCloseAllMenus_}">
   </text-menu>
+  <media-menu
+      id="mediaMenu"
+      class="settings-submenu"
+      non-modal
+      .settingsPrefs="${this.settingsPrefs}"
+      .isSpeechActive="${this.isSpeechActive}"
+      @close-all-menus="${this.onCloseAllMenus_}">
+  </media-menu>
   <voice-selection-menu id="voiceSelectionMenu"
       class="${this.isImmersiveEnabled_ ? 'settings-submenu' : ''}"
       .nonModal="${this.isImmersiveEnabled_}"

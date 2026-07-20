@@ -87,13 +87,6 @@
   width: 100%;
 }
 
-cr-toggle {
-  --cr-toggle-width: 26px;
-  --cr-toggle-bar-height: 16px;
-  --cr-toggle-knob-diameter: 12px;
-  --cr-toggle-ripple-diameter: 12px;
-}
-
 @media (forced-colors: active) {
    /* The color menu should not be shown when in high contrast mode because
     * reading mode doesn't override system forced colors.
