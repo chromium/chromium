@@ -108,7 +108,8 @@ bool ShouldPreReadFileAsynchronously() {
   // The trial only runs on lower channels for now.
   const version_info::Channel channel = install_static::GetChromeChannel();
   if (channel != version_info::Channel::CANARY &&
-      channel != version_info::Channel::DEV) {
+      channel != version_info::Channel::DEV &&
+      channel != version_info::Channel::BETA) {
     return false;
   }
 
