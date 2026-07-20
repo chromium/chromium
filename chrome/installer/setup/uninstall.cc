@@ -20,6 +20,7 @@
 
 #include "base/base_paths.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -105,9 +106,9 @@ void ProcessChromeWorkItems(const InstallerState& installer_state) {
 }
 
 void ClearRlzProductState() {
-  const rlz_lib::AccessPoint points[] = {
-      rlz_lib::CHROME_OMNIBOX, rlz_lib::CHROME_HOME_PAGE,
-      rlz_lib::CHROME_APP_LIST, rlz_lib::NO_ACCESS_POINT};
+  const rlz_lib::AccessPoint points[] = {rlz_lib::CHROME_OMNIBOX,
+                                         rlz_lib::CHROME_HOME_PAGE,
+                                         rlz_lib::CHROME_APP_LIST};
 
   rlz_lib::ClearProductState(rlz_lib::CHROME, points);
 

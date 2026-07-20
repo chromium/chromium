@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "rlz/lib/rlz_lib_clear.h"
 
+#include "base/containers/span.h"
 #include "rlz/lib/assert.h"
 #include "rlz/lib/rlz_value_store.h"
 
@@ -26,7 +22,8 @@ bool ClearAllProductEvents(Product product) {
   return result;
 }
 
-void ClearProductState(Product product, const AccessPoint* access_points) {
+void ClearProductState(Product product,
+                       base::span<const AccessPoint> access_points) {
   ScopedRlzValueStoreLock lock;
   RlzValueStore* store = lock.GetStore();
   if (!store || !store->HasAccess(RlzValueStore::kWriteAccess))
@@ -37,10 +34,8 @@ void ClearProductState(Product product, const AccessPoint* access_points) {
   VERIFY(store->ClearPingTime(product));
 
   // Delete all RLZ's for access points being uninstalled.
-  if (access_points) {
-    for (int i = 0; access_points[i] != NO_ACCESS_POINT; i++) {
-      VERIFY(store->ClearAccessPointRlz(access_points[i]));
-    }
+  for (AccessPoint point : access_points) {
+    VERIFY(store->ClearAccessPointRlz(point));
   }
 
   store->CollectGarbage();
