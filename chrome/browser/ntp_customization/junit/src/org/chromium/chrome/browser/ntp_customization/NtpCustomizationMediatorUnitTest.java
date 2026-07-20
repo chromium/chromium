@@ -456,7 +456,7 @@ public class NtpCustomizationMediatorUnitTest {
     @Features.EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testBuildListContent_ExcludesThemeWhenE2EDisabled() {
         // Release the token so E2E returns false
-        mE2EProvider.releaseSetDecorFitsSystemWindowToken(0);
+        mE2EProvider.releaseEdgeToEdgeToken(0);
 
         List<Integer> listContent = mMediator.buildListContent(mContext);
 
@@ -470,7 +470,7 @@ public class NtpCustomizationMediatorUnitTest {
     @Features.EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testBuildListContent_IncludesThemeWhenE2EDisabled_tablet() {
         // Release the token so E2E returns false
-        mE2EProvider.releaseSetDecorFitsSystemWindowToken(0);
+        mE2EProvider.releaseEdgeToEdgeToken(0);
 
         List<Integer> listContent = mMediator.buildListContent(mContext);
 
