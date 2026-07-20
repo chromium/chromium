@@ -304,6 +304,10 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<bool> kGlicActorPolicyControlExemption;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(
+    kGlicActorWorkspaceExemptFromTierCheckRegressionFixKillswitch);
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicActorIncrementalTyping);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta> kGlicActorKeyDownDuration;

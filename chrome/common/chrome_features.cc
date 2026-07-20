@@ -467,6 +467,9 @@ BASE_FEATURE_ENUM_PARAM(GlicActorEnterprisePrefDefault,
 const base::FeatureParam<bool> kGlicActorPolicyControlExemption{
     &kGlicActor, "glic_actor_policy_control_exemption", false};
 
+BASE_FEATURE(kGlicActorWorkspaceExemptFromTierCheckRegressionFixKillswitch,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicActorPermissionsBypass, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables rejecting actor click and type targets when Blink reports a

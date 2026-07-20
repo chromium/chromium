@@ -531,6 +531,47 @@ IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestManagedBrowser,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestManagedBrowser,
+                       ManagedEnterpriseAccountDoesNotRequireTierCheck) {
+  SimulatePrimaryAccountChangedSignIn(&kEnterpriseAccount);
+  GetProfile()->GetPrefs()->SetInteger(
+      subscription_eligibility::prefs::kAiSubscriptionTier, 0);
+
+  UpdateGeminiActOnWebPolicy(
+      glic::prefs::GlicActuationOnWebPolicyState::kEnabled);
+  EXPECT_TRUE(GetPolicyChecker().CanActOnWeb());
+  EXPECT_EQ(GetPolicyChecker().CannotActOnWebReason(), CannotActReason::kNone);
+}
+
+class GlicActorPolicyCheckerBrowserTestManagedBrowserFeatureDisabled
+    : public GlicActorPolicyCheckerBrowserTestManagedBrowser {
+ public:
+  GlicActorPolicyCheckerBrowserTestManagedBrowserFeatureDisabled() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::
+            kGlicActorWorkspaceExemptFromTierCheckRegressionFixKillswitch);
+  }
+  ~GlicActorPolicyCheckerBrowserTestManagedBrowserFeatureDisabled() override =
+      default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    GlicActorPolicyCheckerBrowserTestManagedBrowserFeatureDisabled,
+    ManagedEnterpriseAccountRequiresTierCheckWhenFeatureDisabled) {
+  SimulatePrimaryAccountChangedSignIn(&kEnterpriseAccount);
+  GetProfile()->GetPrefs()->SetInteger(
+      subscription_eligibility::prefs::kAiSubscriptionTier, 0);
+
+  UpdateGeminiActOnWebPolicy(
+      glic::prefs::GlicActuationOnWebPolicyState::kEnabled);
+  EXPECT_FALSE(GetPolicyChecker().CanActOnWeb());
+  EXPECT_EQ(GetPolicyChecker().CannotActOnWebReason(),
+            CannotActReason::kAccountMissingChromeBenefits);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestManagedBrowser,
                        BlocklistUrl) {
   TestPolicyCombination(
       glic::prefs::GlicActuationOnWebPolicyState::kEnabled,
