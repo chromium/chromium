@@ -254,6 +254,7 @@ bool GetLocaleEnablement(GlicGlobalEnabling::Delegate& delegate) {
 }
 
 bool g_bypass_enablement_checks_for_testing = false;
+std::optional<bool> g_system_requirement_met_for_testing = std::nullopt;
 
 using DisabledReason = GlicEnabling::ProfileEnablement::DisabledReason;
 using FeatureDisabledReason =
@@ -310,6 +311,11 @@ void RecordFeatureDisabledReasonsWith(
 // static
 void GlicEnabling::SetBypassEnablementChecksForTesting(bool bypass) {
   g_bypass_enablement_checks_for_testing = bypass;
+}
+
+// static
+void GlicEnabling::SetSystemRequirementMetForTesting(std::optional<bool> met) {
+  g_system_requirement_met_for_testing = met;
 }
 
 std::string GlicGlobalEnabling::Delegate::GetPermanentCountryCode() {
@@ -636,6 +642,9 @@ GlicGlobalEnabling::GlicGlobalEnabling(Delegate& delegate) {
 GlicGlobalEnabling::~GlicGlobalEnabling() = default;
 
 bool GlicGlobalEnabling::IsSystemRequirementMet() const {
+  if (g_system_requirement_met_for_testing.has_value()) {
+    return *g_system_requirement_met_for_testing;
+  }
   static const bool supported_system_requirements = [] {
     if (base::SysInfo::AmountOfTotalPhysicalMemory().AsDeprecatedByteCount() <
         base::MiB(features::kGlicMinRequiredRamMb.Get())) {
@@ -685,6 +694,13 @@ bool GlicGlobalEnabling::IsEnabledByGlobalCriteria() {
 
 bool GlicEnabling::IsOsVersionSupported() {
   return GlicGlobalEnabling::IsOsVersionSupported();
+}
+
+// static
+bool GlicEnabling::IsSystemRequirementMet() {
+  return g_browser_process->GetFeatures()
+      ->glic_global_enabling()
+      .IsSystemRequirementMet();
 }
 
 // static
@@ -739,7 +755,7 @@ bool GlicEnabling::IsProfileEligible(Profile* profile) {
 // static
 bool GlicEnabling::IsAnchoredButIneligible(bool global_criteria_met,
                                            bool consented) {
-  return !global_criteria_met && consented &&
+  return !global_criteria_met && consented && IsSystemRequirementMet() &&
          base::FeatureList::IsEnabled(
              features::kGlicAnchorEntryPointForOnboardedUsers);
 }
