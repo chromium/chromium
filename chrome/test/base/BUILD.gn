@@ -55,18 +55,16 @@ source_set("test_launcher_utils") {
   public_deps = [ "//base" ]
 }
 
-# Thin header-only target exposing testing_profile.h and friends. No extensions
-# deps, those live in testing_profile_impl. On ChromeOS, ash/settings is still
-# required because testing_profile.h directly includes
-# scoped_cros_settings_test_helper.h (see TODO inside the is_chromeos block).
-# This split allows extensions:test_support to dep on this target directly
-# without creating a dep-graph cycle.
 source_set("testing_profile") {
   testonly = true
   sources = [
+    "fake_profile_manager.cc",
     "fake_profile_manager.h",
+    "testing_profile.cc",
     "testing_profile.h",
+    "testing_profile_key.cc",
     "testing_profile_key.h",
+    "testing_profile_manager.cc",
     "testing_profile_manager.h",
   ]
   public_deps = [
@@ -82,43 +80,6 @@ source_set("testing_profile") {
     "//extensions/buildflags",
     "//services/network/public/cpp",
   ]
-  if (is_chromeos) {
-    public_deps += [
-      "//chrome/browser/ash/policy/core",
-
-      # testing_profile.h directly includes scoped_cros_settings_test_helper.h.
-      # TODO(crbug.com/353332589): Forward-declare ScopedCrosSettingsTestHelper
-      # so this header dep can move to testing_profile_impl.
-      "//chrome/browser/ash/settings:test_support",
-      "//components/user_manager",
-    ]
-
-    # device_settings_test_helper.cc (in ash/settings:test_support) includes
-    # testing_profile.h. Since testing_profile already deps on
-    # ash/settings:test_support (above), ash/settings:test_support cannot dep
-    # back on testing_profile — allow_circular_includes_from covers the
-    # reverse include without adding a dep-graph edge.
-    allow_circular_includes_from =
-        [ "//chrome/browser/ash/settings:test_support" ]
-  }
-}
-
-# Full implementation of the testing_profile cluster. Carries the ash and
-# extensions deps that only the .cc files need.
-#
-# TODO(crbug.com/353332589): Once testing_profile_manager.cc no longer
-# includes testing_browser_process.h, remove the allow_circular_includes_from
-# entry in testing_browser_process for this target and the TBP.h include
-# from testing_profile_manager.cc.
-source_set("testing_profile_impl") {
-  testonly = true
-  sources = [
-    "fake_profile_manager.cc",
-    "testing_profile.cc",
-    "testing_profile_key.cc",
-    "testing_profile_manager.cc",
-  ]
-  public_deps = [ "//chrome/test/base:testing_profile" ]
   deps = [
     "//chrome/browser:browser_features",
     "//chrome/browser:chrome_content_browser_client",
@@ -159,11 +120,21 @@ source_set("testing_profile_impl") {
     "//components/zoom",
     "//content/test:test_support",
   ]
+
+  # Initialize here; extended conditionally in blocks below.
+  allow_circular_includes_from = []
   if (enable_extensions_core) {
     deps += [
       "//chrome/browser/extensions",
       "//chrome/browser/extensions:test_support",
     ]
+
+    # TODO(crbug.com/353332589): Remove once the circular include between
+    # testing_profile.h and extensions:test_support sources is eliminated.
+    # testing_profile.cc uses TestExtensionSystem from extensions:test_support,
+    # while extensions:test_support sources include testing_profile.h.
+    allow_circular_includes_from +=
+        [ "//chrome/browser/extensions:test_support" ]
   }
   if (enable_extensions) {
     deps += [
@@ -175,6 +146,11 @@ source_set("testing_profile_impl") {
     deps += [ "//components/guest_view/browser" ]
   }
   if (is_chromeos) {
+    public_deps += [
+      "//chrome/browser/ash/policy/core",
+      "//chrome/browser/ash/settings:test_support",
+      "//components/user_manager",
+    ]
     deps += [
       "//chrome/browser/ash/arc/session:service_launcher",
       "//chrome/browser/ash/login/users:test_support",
@@ -187,6 +163,12 @@ source_set("testing_profile_impl") {
       "//chromeos/ash/components/settings",
       "//components/user_manager:test_support",
     ]
+
+    # TODO(crbug.com/353332589): Remove once testing_profile is split into a
+    # thin header target and an impl target, allowing ash/settings:test_support
+    # to dep on the header-only target directly without a dep-graph cycle.
+    allow_circular_includes_from +=
+        [ "//chrome/browser/ash/settings:test_support" ]
   }
 }
 
@@ -204,7 +186,7 @@ source_set("testing_browser_process") {
     "//chrome/browser",
     "//chrome/browser:browser_process_platform_part",
     "//chrome/common:buildflags",
-    "//chrome/test/base:testing_profile_impl",
+    "//chrome/test/base:testing_profile",
     "//components/activity_reporter",
     "//components/signin/core/browser",
     "//extensions/buildflags",
@@ -219,7 +201,7 @@ source_set("testing_browser_process") {
   # testing_profile's sources (testing_profile_manager.cc) include TBP.h;
   # allow_circular_includes_from permits that reverse include while keeping
   # the dep graph one-directional (TBP → testing_profile).
-  allow_circular_includes_from = [ "//chrome/test/base:testing_profile_impl" ]
+  allow_circular_includes_from = [ "//chrome/test/base:testing_profile" ]
   deps = [
     "//chrome/browser:browser_process_impl",
     "//chrome/browser:global_features",
