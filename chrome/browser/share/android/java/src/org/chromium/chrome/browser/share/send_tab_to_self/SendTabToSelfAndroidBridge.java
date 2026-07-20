@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
@@ -85,76 +84,32 @@ public class SendTabToSelfAndroidBridge {
                         targetDeviceSyncCacheGuid,
                         url,
                         title,
-                        result -> showPostSendUi(webContents, result, targetDeviceName),
+                        result -> showPostSendSnackbar(webContents, result, targetDeviceName),
                         entryPoint);
     }
 
-    private static void showPostSendUi(
+    private static void showPostSendSnackbar(
             @Nullable WebContents webContents,
             @SendTabToSelfResult int result,
             String targetDeviceName) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)
+                || webContents == null) {
             return;
         }
+        WindowAndroid windowAndroid = webContents.getTopLevelNativeWindow();
+        if (windowAndroid == null) return;
 
-        if (!maybeShowPostSendSnackbar(webContents, result, targetDeviceName)) {
-            // Fallback to Toast if no SnackbarManager is available. This is the case if a URL
-            // is shared from a different app via the system Share Sheet.
-            showPostSendFallbackToast(result, targetDeviceName);
-        }
-    }
+        SnackbarManager snackbarManager = SnackbarManagerProvider.from(windowAndroid);
+        if (snackbarManager == null) return;
 
-    // Tries to show the post-send snackbar. Returns true if the snackbar was shown, or false if it
-    // couldn't be shown, which can happen if there's no window and no focused Activity.
-    private static boolean maybeShowPostSendSnackbar(
-            @Nullable WebContents webContents,
-            @SendTabToSelfResult int result,
-            String targetDeviceName) {
-        SnackbarManager snackbarManager = null;
-        Context context = null;
-
-        // Try to get the window from the web contents if available. This is used when the tab was
-        // shared from within Chrome directly.
-        if (webContents != null) {
-            WindowAndroid windowAndroid = webContents.getTopLevelNativeWindow();
-            if (windowAndroid != null) {
-                snackbarManager = SnackbarManagerProvider.from(windowAndroid);
-                context = windowAndroid.getContext().get();
-            }
-        }
-
-        // Fallback: Get the window from the last focused activity. This is used when the tab was
-        // shared via a DirectSend action in the system Share Sheet triggered by Chrome.
-        if (snackbarManager == null) {
-            Activity currentActivity = ApplicationStatus.getLastTrackedFocusedActivity();
-            if (currentActivity instanceof SnackbarManageable
-                    && !currentActivity.isFinishing()
-                    && !currentActivity.isDestroyed()) {
-                snackbarManager = ((SnackbarManageable) currentActivity).getSnackbarManager();
-                context = currentActivity;
-            }
-        }
-
-        // If no SnackbarManager is available, no snackbar can be shown.
-        if (snackbarManager == null || context == null) return false;
+        Context context = windowAndroid.getContext().get();
+        if (context == null) return;
 
         String message = getSnackbarMessage(context, result, targetDeviceName);
         Snackbar snackbar =
                 Snackbar.make(
                         message, null, Snackbar.TYPE_NOTIFICATION, Snackbar.UMA_SEND_TAB_TO_SELF);
         snackbarManager.showSnackbar(snackbar);
-        return true;
-    }
-
-    // Shows the post-send toast; to be used as a fallback if the snackbar can't be shown.
-    private static void showPostSendFallbackToast(
-            @SendTabToSelfResult int result, String targetDeviceName) {
-        Context context = ContextUtils.getApplicationContext();
-        String message = getSnackbarMessage(context, result, targetDeviceName);
-        // Note: `org.chromium.ui.widget.Toast` does not work in this situation (where Chrome is not
-        // in the foreground), since it uses a custom view, which Android does not allow from the
-        // background. So here a standard Android Toast has to be used instead.
-        android.widget.Toast.makeText(context, message, android.widget.Toast.LENGTH_SHORT).show();
     }
 
     private static String getSnackbarMessage(
