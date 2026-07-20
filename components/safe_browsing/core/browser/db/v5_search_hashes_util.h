@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/functional/function_ref.h"
 #include "base/types/expected.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
@@ -67,6 +66,8 @@ struct ThreatResult {
 
   // The determined threat type.
   SBThreatType threat_type = SBThreatType::SB_THREAT_TYPE_SAFE;
+  // Metadata associated with the threat.
+  ThreatMetadata metadata;
   // The severity level of the threat (lower is more severe).
   int threat_severity = kLeastSeverity;
 };

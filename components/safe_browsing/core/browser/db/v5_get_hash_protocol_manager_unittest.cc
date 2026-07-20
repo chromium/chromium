@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
 
+#include <array>
 #include <memory>
 #include <string>
 #include <vector>
@@ -15,8 +16,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
+#include "components/safe_browsing/core/browser/db/v5_search_hashes_cache.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "google_apis/google_api_keys.h"
@@ -31,14 +34,16 @@ class V5GetHashProtocolManagerTest : public ::testing::Test {
   V5GetHashProtocolManagerTest()
       : test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_)) {
+                &test_url_loader_factory_)),
+        cache_(std::make_unique<V5SearchHashesCache>(
+            /*history_service=*/nullptr)) {
     feature_list_.InitAndEnableFeature(kLocalListsUseSBv5);
   }
 
   std::unique_ptr<V5GetHashProtocolManager> CreateProtocolManager() {
     // TODO(crbug.com/362791941): Handle v4 references.
     return std::make_unique<V5GetHashProtocolManager>(
-        test_shared_loader_factory_, GetTestV4ProtocolConfig());
+        test_shared_loader_factory_, GetTestV4ProtocolConfig(), cache_.get());
   }
 
   std::string GetExpectedRequestUrl(std::vector<std::string> prefixes) {
@@ -121,6 +126,7 @@ class V5GetHashProtocolManagerTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
+  std::unique_ptr<V5SearchHashesCache> cache_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -230,6 +236,423 @@ TEST_F(V5GetHashProtocolManagerTest,
   EXPECT_EQ(future.Get<1>(), ThreatMetadata());
 }
 
+TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_Cached) {
+  std::unique_ptr<V5GetHashProtocolManager> pm = CreateProtocolManager();
+
+  FullHashStr full_hash("12345678901234567890123456789012");
+
+  std::map<FullHashStr, std::vector<SBThreatType>> full_hash_to_threat_types;
+  full_hash_to_threat_types[full_hash] = {
+      SBThreatType::SB_THREAT_TYPE_URL_PHISHING};
+
+  std::string expected_url =
+      GetExpectedRequestUrl(SBProtocolManagerUtil::GetHashPrefix(full_hash));
+  std::vector<V5::FullHash> full_hashes = {
+      CreateFullHashProto(full_hash, {V5::ThreatType::SOCIAL_ENGINEERING},
+                          /*threat_attributes=*/std::nullopt)};
+  SetUpDefaultLookupResponse(expected_url, full_hashes);
+
+  // 1. First request should hit network and cache the result.
+  {
+    base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+    pm->GetFullHashes(full_hash_to_threat_types, future.GetCallback());
+    EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
+    EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+  }
+
+  test_url_loader_factory_.ClearResponses();
+
+  // 2. Second request should hit cache and NOT network.
+  {
+    base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+    pm->GetFullHashes(full_hash_to_threat_types, future.GetCallback());
+    EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
+    EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+    EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+  }
+}
+
+TEST_F(V5GetHashProtocolManagerTest,
+       GetFullHashes_PartialCached_CachedIsMoreSevere) {
+  std::unique_ptr<V5GetHashProtocolManager> pm = CreateProtocolManager();
+
+  FullHashStr hash_cached("11111111111111111111111111111111");
+  FullHashStr hash_network("22222222222222222222222222222222");
+
+  // 1. Cache hash_cached as MALWARE (severity 0) via a real request.
+  {
+    std::map<FullHashStr, std::vector<SBThreatType>> cache_request;
+    cache_request[hash_cached] = {SBThreatType::SB_THREAT_TYPE_URL_MALWARE};
+    std::string expected_url = GetExpectedRequestUrl(
+        SBProtocolManagerUtil::GetHashPrefix(hash_cached));
+    std::vector<V5::FullHash> response = {
+        CreateFullHashProto(hash_cached, {V5::ThreatType::MALWARE},
+                            /*threat_attributes=*/std::nullopt)};
+    SetUpDefaultLookupResponse(expected_url, response);
+
+    base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+    pm->GetFullHashes(cache_request, future.GetCallback());
+    EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
+  }
+
+  test_url_loader_factory_.ClearResponses();
+
+  // 2. Request both. Network should only be hit for hash_network.
+  std::map<FullHashStr, std::vector<SBThreatType>> full_hash_to_threat_types;
+  full_hash_to_threat_types[hash_cached] = {
+      SBThreatType::SB_THREAT_TYPE_URL_MALWARE};
+  full_hash_to_threat_types[hash_network] = {
+      SBThreatType::SB_THREAT_TYPE_URL_UNWANTED};
+
+  std::string expected_url =
+      GetExpectedRequestUrl(SBProtocolManagerUtil::GetHashPrefix(hash_network));
+  std::vector<V5::FullHash> network_response = {
+      CreateFullHashProto(hash_network, {V5::ThreatType::UNWANTED_SOFTWARE},
+                          /*threat_attributes=*/std::nullopt)};
+  SetUpDefaultLookupResponse(expected_url, network_response);
+
+  base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+  pm->GetFullHashes(full_hash_to_threat_types, future.GetCallback());
+
+  // MALWARE (cached, sev 0) is more severe than UNWANTED_SOFTWARE (network, sev
+  // 1).
+  EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
+  EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+}
+
+TEST_F(V5GetHashProtocolManagerTest,
+       GetFullHashes_PartialCached_NetworkIsMoreSevere) {
+  std::unique_ptr<V5GetHashProtocolManager> pm = CreateProtocolManager();
+
+  FullHashStr hash_cached("11111111111111111111111111111111");
+  FullHashStr hash_network("22222222222222222222222222222222");
+
+  // 1. Cache hash_cached as UNWANTED_SOFTWARE (severity 1) via a real request.
+  {
+    std::map<FullHashStr, std::vector<SBThreatType>> cache_request;
+    cache_request[hash_cached] = {SBThreatType::SB_THREAT_TYPE_URL_UNWANTED};
+    std::string expected_url = GetExpectedRequestUrl(
+        SBProtocolManagerUtil::GetHashPrefix(hash_cached));
+    std::vector<V5::FullHash> response = {
+        CreateFullHashProto(hash_cached, {V5::ThreatType::UNWANTED_SOFTWARE},
+                            /*threat_attributes=*/std::nullopt)};
+    SetUpDefaultLookupResponse(expected_url, response);
+
+    base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+    pm->GetFullHashes(cache_request, future.GetCallback());
+    EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_URL_UNWANTED);
+  }
+
+  test_url_loader_factory_.ClearResponses();
+
+  // 2. Request both. Network should only be hit for hash_network.
+  std::map<FullHashStr, std::vector<SBThreatType>> full_hash_to_threat_types;
+  full_hash_to_threat_types[hash_cached] = {
+      SBThreatType::SB_THREAT_TYPE_URL_UNWANTED};
+  full_hash_to_threat_types[hash_network] = {
+      SBThreatType::SB_THREAT_TYPE_URL_MALWARE};
+
+  std::string expected_url =
+      GetExpectedRequestUrl(SBProtocolManagerUtil::GetHashPrefix(hash_network));
+  std::vector<V5::FullHash> network_response = {
+      CreateFullHashProto(hash_network, {V5::ThreatType::MALWARE},
+                          /*threat_attributes=*/std::nullopt)};
+  SetUpDefaultLookupResponse(expected_url, network_response);
+
+  base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+  pm->GetFullHashes(full_hash_to_threat_types, future.GetCallback());
+
+  // MALWARE (network, sev 0) is more severe than UNWANTED_SOFTWARE (cached, sev
+  // 1).
+  EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
+  EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+}
+
+TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_Backoff) {
+  std::unique_ptr<V5GetHashProtocolManager> pm = CreateProtocolManager();
+
+  FullHashStr full_hash("12345678901234567890123456789012");
+
+  std::map<FullHashStr, std::vector<SBThreatType>> full_hash_to_threat_types;
+  full_hash_to_threat_types[full_hash] = {
+      SBThreatType::SB_THREAT_TYPE_URL_PHISHING};
+
+  std::string expected_url =
+      GetExpectedRequestUrl(SBProtocolManagerUtil::GetHashPrefix(full_hash));
+
+  // 1. Trigger first failure to enter backoff (delay [15, 30] mins).
+  test_url_loader_factory_.AddResponse(
+      GURL(expected_url), network::mojom::URLResponseHead::New(), "",
+      network::URLLoaderCompletionStatus(net::ERR_CONNECTION_RESET));
+  {
+    base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+    pm->GetFullHashes(full_hash_to_threat_types, future.GetCallback());
+    EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
+    EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+  }
+
+  // 2. Verify subsequent request is rejected immediately at T=0.
+  test_url_loader_factory_.ClearResponses();
+  {
+    base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+    pm->GetFullHashes(full_hash_to_threat_types, future.GetCallback());
+    EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
+    EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+    EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+  }
+
+  // 3. Fast forward by 14 minutes (less than min delay 15 mins). Request should
+  // still be rejected.
+  task_environment_.FastForwardBy(base::Minutes(14));
+  {
+    base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+    pm->GetFullHashes(full_hash_to_threat_types, future.GetCallback());
+    EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
+    EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+    EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+  }
+
+  // 4. Fast forward by another 17 minutes (total 31 minutes, which is > max
+  // delay 30 mins). Request should be allowed. We trigger another failure.
+  // Delay should increase to [30, 60] mins.
+  task_environment_.FastForwardBy(base::Minutes(17));
+  test_url_loader_factory_.AddResponse(
+      GURL(expected_url), network::mojom::URLResponseHead::New(), "",
+      network::URLLoaderCompletionStatus(net::ERR_CONNECTION_RESET));
+  {
+    base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+    pm->GetFullHashes(full_hash_to_threat_types, future.GetCallback());
+    EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
+    EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+  }
+
+  // 5. Fast forward by 29 minutes (less than min delay 30 mins). Request should
+  // be rejected.
+  task_environment_.FastForwardBy(base::Minutes(29));
+  {
+    base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+    pm->GetFullHashes(full_hash_to_threat_types, future.GetCallback());
+    EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
+    EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+    EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+  }
+
+  // 6. Fast forward by another 32 minutes (total 61 minutes since second
+  // failure, > max delay 60 mins). Request should be allowed. We let it succeed
+  // this time.
+  task_environment_.FastForwardBy(base::Minutes(32));
+  std::vector<V5::FullHash> full_hashes = {
+      CreateFullHashProto(full_hash, {V5::ThreatType::SOCIAL_ENGINEERING},
+                          /*threat_attributes=*/std::nullopt)};
+  SetUpDefaultLookupResponse(expected_url, full_hashes);
+  {
+    base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+    pm->GetFullHashes(full_hash_to_threat_types, future.GetCallback());
+    EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
+    EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+  }
+
+  // 7. Success should reset backoff. Verify next request is allowed
+  // immediately (using a different hash to avoid cache hit).
+  FullHashStr full_hash2("56789012345678901234567890123456");
+  std::map<FullHashStr, std::vector<SBThreatType>> full_hash_to_threat_types2;
+  full_hash_to_threat_types2[full_hash2] = {
+      SBThreatType::SB_THREAT_TYPE_URL_PHISHING};
+  std::string expected_url2 =
+      GetExpectedRequestUrl(SBProtocolManagerUtil::GetHashPrefix(full_hash2));
+  std::vector<V5::FullHash> full_hashes2 = {
+      CreateFullHashProto(full_hash2, {V5::ThreatType::SOCIAL_ENGINEERING},
+                          /*threat_attributes=*/std::nullopt)};
+
+  test_url_loader_factory_.ClearResponses();
+  SetUpDefaultLookupResponse(expected_url2, full_hashes2);
+  {
+    base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+    pm->GetFullHashes(full_hash_to_threat_types2, future.GetCallback());
+    EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
+    EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+  }
+}
+
+TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_Backoff_RetriableErrors) {
+  std::unique_ptr<V5GetHashProtocolManager> pm = CreateProtocolManager();
+
+  FullHashStr full_hash1("12345678901234567890123456789012");
+  std::map<FullHashStr, std::vector<SBThreatType>> full_hash_to_threat_types1;
+  full_hash_to_threat_types1[full_hash1] = {
+      SBThreatType::SB_THREAT_TYPE_URL_PHISHING};
+  std::string expected_url1 =
+      GetExpectedRequestUrl(SBProtocolManagerUtil::GetHashPrefix(full_hash1));
+
+  // 1. Trigger a retriable failure (ERR_NETWORK_CHANGED).
+  test_url_loader_factory_.AddResponse(
+      GURL(expected_url1), network::mojom::URLResponseHead::New(), "",
+      network::URLLoaderCompletionStatus(net::ERR_NETWORK_CHANGED));
+  {
+    base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+    pm->GetFullHashes(full_hash_to_threat_types1, future.GetCallback());
+    EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
+    EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+  }
+
+  // 2. Verify subsequent request is not blocked + succeeds with URL_PHISHING.
+  FullHashStr full_hash2("23456789012345678901234567890123");
+  std::map<FullHashStr, std::vector<SBThreatType>> full_hash_to_threat_types2;
+  full_hash_to_threat_types2[full_hash2] = {
+      SBThreatType::SB_THREAT_TYPE_URL_PHISHING};
+  std::string expected_url2 =
+      GetExpectedRequestUrl(SBProtocolManagerUtil::GetHashPrefix(full_hash2));
+  std::vector<V5::FullHash> full_hashes2 = {
+      CreateFullHashProto(full_hash2, {V5::ThreatType::SOCIAL_ENGINEERING},
+                          /*threat_attributes=*/std::nullopt)};
+
+  test_url_loader_factory_.ClearResponses();
+  SetUpDefaultLookupResponse(expected_url2, full_hashes2);
+  {
+    base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+    pm->GetFullHashes(full_hash_to_threat_types2, future.GetCallback());
+    EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
+    EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+  }
+
+  // 3. Trigger a real (non-retriable) error to enter backoff.
+  FullHashStr full_hash3("34567890123456789012345678901234");
+  std::map<FullHashStr, std::vector<SBThreatType>> full_hash_to_threat_types3;
+  full_hash_to_threat_types3[full_hash3] = {
+      SBThreatType::SB_THREAT_TYPE_URL_PHISHING};
+  std::string expected_url3 =
+      GetExpectedRequestUrl(SBProtocolManagerUtil::GetHashPrefix(full_hash3));
+
+  test_url_loader_factory_.ClearResponses();
+  test_url_loader_factory_.AddResponse(
+      GURL(expected_url3), network::mojom::URLResponseHead::New(), "",
+      network::URLLoaderCompletionStatus(net::ERR_CONNECTION_RESET));
+  {
+    base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+    pm->GetFullHashes(full_hash_to_threat_types3, future.GetCallback());
+    EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
+    EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+  }
+
+  // 4. Verify we are now in backoff (returns safe, not phishing).
+  FullHashStr full_hash4("45678901234567890123456789012345");
+  std::map<FullHashStr, std::vector<SBThreatType>> full_hash_to_threat_types4;
+  full_hash_to_threat_types4[full_hash4] = {
+      SBThreatType::SB_THREAT_TYPE_URL_PHISHING};
+  test_url_loader_factory_.ClearResponses();
+  {
+    base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+    pm->GetFullHashes(full_hash_to_threat_types4, future.GetCallback());
+    EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
+    EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+    EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+  }
+
+  // 5. Fast forward 31 minutes to exit backoff (exceeds max delay 30 mins).
+  task_environment_.FastForwardBy(base::Minutes(31));
+
+  // 6. Trigger another retriable error after exiting backoff.
+  FullHashStr full_hash5("56789012345678901234567890123456");
+  std::map<FullHashStr, std::vector<SBThreatType>> full_hash_to_threat_types5;
+  full_hash_to_threat_types5[full_hash5] = {
+      SBThreatType::SB_THREAT_TYPE_URL_PHISHING};
+  std::string expected_url5 =
+      GetExpectedRequestUrl(SBProtocolManagerUtil::GetHashPrefix(full_hash5));
+
+  test_url_loader_factory_.ClearResponses();
+  test_url_loader_factory_.AddResponse(
+      GURL(expected_url5), network::mojom::URLResponseHead::New(), "",
+      network::URLLoaderCompletionStatus(net::ERR_NETWORK_CHANGED));
+  {
+    base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+    pm->GetFullHashes(full_hash_to_threat_types5, future.GetCallback());
+    EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
+    EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+  }
+
+  // 7. Verify subsequent request is not blocked + succeeds with URL_PHISHING.
+  FullHashStr full_hash6("67890123456789012345678901234567");
+  std::map<FullHashStr, std::vector<SBThreatType>> full_hash_to_threat_types6;
+  full_hash_to_threat_types6[full_hash6] = {
+      SBThreatType::SB_THREAT_TYPE_URL_PHISHING};
+  std::string expected_url6 =
+      GetExpectedRequestUrl(SBProtocolManagerUtil::GetHashPrefix(full_hash6));
+  std::vector<V5::FullHash> full_hashes6 = {
+      CreateFullHashProto(full_hash6, {V5::ThreatType::SOCIAL_ENGINEERING},
+                          /*threat_attributes=*/std::nullopt)};
+
+  test_url_loader_factory_.ClearResponses();
+  SetUpDefaultLookupResponse(expected_url6, full_hashes6);
+  {
+    base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+    pm->GetFullHashes(full_hash_to_threat_types6, future.GetCallback());
+    EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
+    EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+  }
+}
+
+TEST_F(V5GetHashProtocolManagerTest,
+       GetFullHashes_Metadata_SubresourceFilter_AbusiveEnforce) {
+  std::unique_ptr<V5GetHashProtocolManager> pm = CreateProtocolManager();
+
+  FullHashStr full_hash("12345678901234567890123456789012");
+  std::map<FullHashStr, std::vector<SBThreatType>> full_hash_to_threat_types;
+  full_hash_to_threat_types[full_hash] = {
+      SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER};
+  std::string expected_url =
+      GetExpectedRequestUrl(SBProtocolManagerUtil::GetHashPrefix(full_hash));
+
+  std::vector<V5::FullHash> full_hashes = {CreateFullHashProto(
+      full_hash, {V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION},
+      /*threat_attributes=*/std::nullopt)};
+  SetUpDefaultLookupResponse(expected_url, full_hashes);
+
+  base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+  pm->GetFullHashes(full_hash_to_threat_types, future.GetCallback());
+
+  EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER);
+  const ThreatMetadata& metadata = future.Get<1>();
+  auto it =
+      metadata.subresource_filter_match.find(SubresourceFilterType::ABUSIVE);
+  ASSERT_NE(it, metadata.subresource_filter_match.end());
+  EXPECT_EQ(it->second, SubresourceFilterLevel::ENFORCE);
+}
+
+TEST_F(V5GetHashProtocolManagerTest,
+       GetFullHashes_Metadata_SubresourceFilter_BetterAdsWarn) {
+  std::unique_ptr<V5GetHashProtocolManager> pm = CreateProtocolManager();
+
+  FullHashStr full_hash("12345678901234567890123456789012");
+  std::map<FullHashStr, std::vector<SBThreatType>> full_hash_to_threat_types;
+  full_hash_to_threat_types[full_hash] = {
+      SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER};
+  std::string expected_url =
+      GetExpectedRequestUrl(SBProtocolManagerUtil::GetHashPrefix(full_hash));
+
+  std::vector<std::vector<V5::ThreatAttribute>> attributes = {
+      {V5::ThreatAttribute::CANARY}};
+  V5::FullHash proto = CreateFullHashProto(
+      full_hash, {V5::ThreatType::BETTER_ADS_VIOLATION}, attributes);
+
+  std::vector<V5::FullHash> full_hashes = {proto};
+  SetUpDefaultLookupResponse(expected_url, full_hashes);
+
+  base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+  pm->GetFullHashes(full_hash_to_threat_types, future.GetCallback());
+
+#if BUILDFLAG(IS_IOS)
+  EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
+  EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+#else
+  EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER);
+  const ThreatMetadata& metadata = future.Get<1>();
+  auto it =
+      metadata.subresource_filter_match.find(SubresourceFilterType::BETTER_ADS);
+  ASSERT_NE(it, metadata.subresource_filter_match.end());
+  EXPECT_EQ(it->second, SubresourceFilterLevel::WARN);
+#endif
+}
+
 TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_AllThreatTypes) {
   struct TestCase {
     V5::ThreatType v5_type;
@@ -240,10 +663,19 @@ TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_AllThreatTypes) {
       {V5::ThreatType::MALWARE, SBThreatType::SB_THREAT_TYPE_URL_MALWARE},
       {V5::ThreatType::UNWANTED_SOFTWARE,
        SBThreatType::SB_THREAT_TYPE_URL_UNWANTED},
+      {V5::ThreatType::MALICIOUS_BINARY,
+       SBThreatType::SB_THREAT_TYPE_URL_BINARY_MALWARE},
+      {V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION,
+       SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER},
+      {V5::ThreatType::BETTER_ADS_VIOLATION,
+       SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER},
       {V5::ThreatType::TRICK_TO_BILL, SBThreatType::SB_THREAT_TYPE_BILLING},
+      {V5::ThreatType::NOTIFICATION_ABUSE,
+       SBThreatType::SB_THREAT_TYPE_API_ABUSE},
   };
 
   for (const auto& tc : test_cases) {
+    cache_ = std::make_unique<V5SearchHashesCache>(/*history_service=*/nullptr);
     std::unique_ptr<V5GetHashProtocolManager> pm = CreateProtocolManager();
     test_url_loader_factory_.ClearResponses();
 
@@ -263,7 +695,54 @@ TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_AllThreatTypes) {
 
     EXPECT_EQ(future.Get<0>(), tc.sb_type);
     const ThreatMetadata& metadata = future.Get<1>();
-    EXPECT_EQ(metadata, ThreatMetadata());
+    if (tc.sb_type != SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER) {
+      EXPECT_EQ(metadata, ThreatMetadata());
+    } else if (tc.v5_type == V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION) {
+      auto it = metadata.subresource_filter_match.find(
+          SubresourceFilterType::ABUSIVE);
+      ASSERT_NE(it, metadata.subresource_filter_match.end());
+      EXPECT_EQ(it->second, SubresourceFilterLevel::ENFORCE);
+    } else if (tc.v5_type == V5::ThreatType::BETTER_ADS_VIOLATION) {
+      auto it = metadata.subresource_filter_match.find(
+          SubresourceFilterType::BETTER_ADS);
+      ASSERT_NE(it, metadata.subresource_filter_match.end());
+      EXPECT_EQ(it->second, SubresourceFilterLevel::ENFORCE);
+    } else {
+      NOTREACHED();
+    }
+  }
+}
+
+TEST_F(V5GetHashProtocolManagerTest,
+       GetFullHashes_HTTPError500_TriggersBackoff) {
+  std::unique_ptr<V5GetHashProtocolManager> pm = CreateProtocolManager();
+
+  FullHashStr full_hash("12345678901234567890123456789012");
+  std::map<FullHashStr, std::vector<SBThreatType>> full_hash_to_threat_types;
+  full_hash_to_threat_types[full_hash] = {
+      SBThreatType::SB_THREAT_TYPE_URL_PHISHING};
+
+  std::string expected_url =
+      GetExpectedRequestUrl(SBProtocolManagerUtil::GetHashPrefix(full_hash));
+
+  // 1. Trigger HTTP 500 error.
+  test_url_loader_factory_.AddResponse(expected_url, "",
+                                       net::HTTP_INTERNAL_SERVER_ERROR);
+  {
+    base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+    pm->GetFullHashes(full_hash_to_threat_types, future.GetCallback());
+    EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
+    EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+  }
+
+  // 2. Verify subsequent request is blocked by backoff.
+  test_url_loader_factory_.ClearResponses();
+  {
+    base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+    pm->GetFullHashes(full_hash_to_threat_types, future.GetCallback());
+    EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
+    EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+    EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
   }
 }
 
@@ -329,6 +808,79 @@ TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_ParallelRequests) {
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
 }
 
+TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_Backoff_CapsAt24Hours) {
+  std::unique_ptr<V5GetHashProtocolManager> pm = CreateProtocolManager();
+
+  FullHashStr full_hash("12345678901234567890123456789012");
+  std::map<FullHashStr, std::vector<SBThreatType>> full_hash_to_threat_types;
+  full_hash_to_threat_types[full_hash] = {
+      SBThreatType::SB_THREAT_TYPE_URL_PHISHING};
+
+  std::string expected_url =
+      GetExpectedRequestUrl(SBProtocolManagerUtil::GetHashPrefix(full_hash));
+
+  // Trigger 10 failures. We need to fast forward past the max backoff delay
+  // each time to be allowed to send the next request. Max delays for
+  // failures 1..10 are: 30m, 60m, 120m, 240m, 480m, 960m, and capped at 1440m
+  // (24 hours).
+  std::array<int, 10> wait_times_mins = {31,  61,   121,  241,  481,
+                                         961, 1441, 1441, 1441, 1441};
+
+  for (int i = 0; i < 10; ++i) {
+    test_url_loader_factory_.ClearResponses();
+    test_url_loader_factory_.AddResponse(
+        GURL(expected_url), network::mojom::URLResponseHead::New(), "",
+        network::URLLoaderCompletionStatus(net::ERR_CONNECTION_RESET));
+    {
+      base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+      pm->GetFullHashes(full_hash_to_threat_types, future.GetCallback());
+      EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
+      EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+      EXPECT_EQ(test_url_loader_factory_.total_requests(), i + 1u);
+    }
+    // Fast forward to exit backoff for the next request.
+    task_environment_.FastForwardBy(base::Minutes(wait_times_mins[i]));
+  }
+
+  // Now we have had 10 failures. The next backoff delay should be capped at 24
+  // hours. Trigger 11th failure to enter backoff again.
+  test_url_loader_factory_.ClearResponses();
+  test_url_loader_factory_.AddResponse(
+      GURL(expected_url), network::mojom::URLResponseHead::New(), "",
+      network::URLLoaderCompletionStatus(net::ERR_CONNECTION_RESET));
+  {
+    base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+    pm->GetFullHashes(full_hash_to_threat_types, future.GetCallback());
+    EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
+    EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+  }
+
+  // Verify we are blocked at 23 hours 59 minutes.
+  task_environment_.FastForwardBy(base::Hours(23) + base::Minutes(59));
+  test_url_loader_factory_.ClearResponses();
+  {
+    base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+    pm->GetFullHashes(full_hash_to_threat_types, future.GetCallback());
+    EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
+    EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+    EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+  }
+
+  // Fast forward another 2 minutes (total 24 hours 1 minute since 11th
+  // failure). Request should be allowed. We let it succeed.
+  task_environment_.FastForwardBy(base::Minutes(2));
+  std::vector<V5::FullHash> full_hashes = {
+      CreateFullHashProto(full_hash, {V5::ThreatType::SOCIAL_ENGINEERING},
+                          /*threat_attributes=*/std::nullopt)};
+  SetUpDefaultLookupResponse(expected_url, full_hashes);
+  {
+    base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+    pm->GetFullHashes(full_hash_to_threat_types, future.GetCallback());
+    EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
+    EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+  }
+}
+
 TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_RelevanceFiltering) {
   FullHashStr full_hash("12345678901234567890123456789012");
   std::string expected_url =
@@ -383,6 +935,7 @@ TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_RelevanceFiltering) {
   int idx = 0;
   for (const auto& tc : test_cases) {
     SCOPED_TRACE(base::StringPrintf("Test case index: %d", idx++));
+    cache_ = std::make_unique<V5SearchHashesCache>(/*history_service=*/nullptr);
     std::unique_ptr<V5GetHashProtocolManager> pm = CreateProtocolManager();
     test_url_loader_factory_.ClearResponses();
 
@@ -398,6 +951,60 @@ TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_RelevanceFiltering) {
 
     EXPECT_EQ(future.Get<0>(), tc.expected_result);
     EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+  }
+}
+
+TEST_F(V5GetHashProtocolManagerTest,
+       GetFullHashes_CachedResultsAllowedInBackoff) {
+  std::unique_ptr<V5GetHashProtocolManager> pm = CreateProtocolManager();
+
+  FullHashStr hash_cached("11111111111111111111111111111111");
+  FullHashStr hash_network("22222222222222222222222222222222");
+
+  std::map<FullHashStr, std::vector<SBThreatType>> req_cached;
+  req_cached[hash_cached] = {SBThreatType::SB_THREAT_TYPE_URL_PHISHING};
+
+  std::map<FullHashStr, std::vector<SBThreatType>> req_network;
+  req_network[hash_network] = {SBThreatType::SB_THREAT_TYPE_URL_PHISHING};
+
+  std::string expected_url_cached =
+      GetExpectedRequestUrl(SBProtocolManagerUtil::GetHashPrefix(hash_cached));
+  std::string expected_url_network =
+      GetExpectedRequestUrl(SBProtocolManagerUtil::GetHashPrefix(hash_network));
+
+  // 1. Cache hash_cached.
+  std::vector<V5::FullHash> full_hashes_cached = {
+      CreateFullHashProto(hash_cached, {V5::ThreatType::SOCIAL_ENGINEERING},
+                          /*threat_attributes=*/std::nullopt)};
+  SetUpDefaultLookupResponse(expected_url_cached, full_hashes_cached);
+  {
+    base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+    pm->GetFullHashes(req_cached, future.GetCallback());
+    EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
+    EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+  }
+
+  // 2. Trigger backoff using hash_network.
+  test_url_loader_factory_.ClearResponses();
+  test_url_loader_factory_.AddResponse(
+      GURL(expected_url_network), network::mojom::URLResponseHead::New(), "",
+      network::URLLoaderCompletionStatus(net::ERR_CONNECTION_RESET));
+  {
+    base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+    pm->GetFullHashes(req_network, future.GetCallback());
+    EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
+    EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+  }
+
+  // 3. Request hash_cached again. It should return PHISHING from cache
+  // even though we are in backoff, and no network request should be sent.
+  test_url_loader_factory_.ClearResponses();
+  {
+    base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+    pm->GetFullHashes(req_cached, future.GetCallback());
+    EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
+    EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+    EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
   }
 }
 
@@ -448,6 +1055,7 @@ TEST_F(V5GetHashProtocolManagerTest,
       GetExpectedRequestUrl(SBProtocolManagerUtil::GetHashPrefix(full_hash));
 
   for (const auto& tc : test_cases) {
+    cache_ = std::make_unique<V5SearchHashesCache>(/*history_service=*/nullptr);
     std::unique_ptr<V5GetHashProtocolManager> pm = CreateProtocolManager();
     test_url_loader_factory_.ClearResponses();
 

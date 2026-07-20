@@ -25,6 +25,7 @@
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_config.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
+#include "net/base/backoff_entry.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -32,6 +33,8 @@ class SimpleURLLoader;
 }  // namespace network
 
 namespace safe_browsing {
+
+class V5SearchHashesCache;
 
 class V5GetHashProtocolManager : public KeyedService {
  public:
@@ -56,9 +59,11 @@ class V5GetHashProtocolManager : public KeyedService {
   // `url_loader_factory`.
   //  - `url_loader_factory`: The factory to use for creating URLLoaders.
   //  - `config`: The protocol configuration (used for client info).
+  //  - `cache`: The cache to store and retrieve full hash results.
   V5GetHashProtocolManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const V4ProtocolConfig& config);
+      const V4ProtocolConfig& config,
+      V5SearchHashesCache* cache);
 
   V5GetHashProtocolManager(const V5GetHashProtocolManager&) = delete;
   V5GetHashProtocolManager& operator=(const V5GetHashProtocolManager&) = delete;
@@ -81,7 +86,7 @@ class V5GetHashProtocolManager : public KeyedService {
 
  private:
   // Determines the most severe threat type and metadata from a list of matches.
-  // `matches` is the list of full hash matches returned by the server.
+  // `matches` is the list of full hash matches returned by the server or cache.
   // `full_hash_to_threat_types` maps requested full hashes to the threat types
   // they are being checked against.
   // Returns a ThreatTypeAndMetadata containing the most severe threat type and
@@ -96,12 +101,14 @@ class V5GetHashProtocolManager : public KeyedService {
   //  - `full_hash_to_threat_types`: The map of requested full hashes to threat
   //    types.
   //  - `requested_prefixes`: The list of prefixes that were requested.
+  //  - `cached_full_hashes`: The full hashes that were already in the cache.
   //  - `callback`: The callback to invoke with the results.
   //  - `response_body`: The response body received from the server.
   void OnURLLoaderComplete(network::SimpleURLLoader* url_loader,
                            std::map<FullHashStr, std::vector<SBThreatType>>
                                full_hash_to_threat_types,
                            std::vector<std::string> requested_prefixes,
+                           std::vector<V5::FullHash> cached_full_hashes,
                            FullHashCallback callback,
                            std::optional<std::string> response_body);
 
@@ -115,6 +122,12 @@ class V5GetHashProtocolManager : public KeyedService {
 
   // The config of the client making Pver5 requests.
   const V4ProtocolConfig config_;
+
+  // The shared cache of V5 full hashes.
+  raw_ptr<V5SearchHashesCache> cache_;
+
+  // Enforces exponential backoff on requests.
+  std::unique_ptr<net::BackoffEntry> backoff_entry_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

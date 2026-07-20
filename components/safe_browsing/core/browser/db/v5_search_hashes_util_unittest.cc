@@ -10,7 +10,6 @@
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
-#include "build/build_config.h"
 #include "components/safe_browsing/core/browser/db/v5_search_hashes_cache.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/net_errors.h"
@@ -328,40 +327,88 @@ TEST_F(V5SearchHashesUtilTest, DetermineMostSevereThreat_MultipleDetails) {
 
 TEST_F(V5SearchHashesUtilTest,
        DetermineMostSevereThreat_ExhaustiveMappingAndSeverity) {
+  auto create_metadata = [](SubresourceFilterType type,
+                            SubresourceFilterLevel level) {
+    ThreatMetadata meta;
+    meta.subresource_filter_match[type] = level;
+    return meta;
+  };
+
   struct ThreatConfig {
     V5::ThreatType v5_type;
     std::vector<V5::ThreatAttribute> attributes;
     SBThreatType expected_sb_type;
     int severity_rank;
+    ThreatMetadata expected_metadata;
   };
 
   std::vector<ThreatConfig> configs = {
       {V5::ThreatType::MALWARE,
        {},
        SBThreatType::SB_THREAT_TYPE_URL_MALWARE,
-       0},
+       0,
+       ThreatMetadata()},
       {V5::ThreatType::SOCIAL_ENGINEERING,
        {},
        SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
-       0},
+       0,
+       ThreatMetadata()},
+      {V5::ThreatType::MALICIOUS_BINARY,
+       {},
+       SBThreatType::SB_THREAT_TYPE_URL_BINARY_MALWARE,
+       0,
+       ThreatMetadata()},
       {V5::ThreatType::UNWANTED_SOFTWARE,
        {},
        SBThreatType::SB_THREAT_TYPE_URL_UNWANTED,
-       1},
+       1,
+       ThreatMetadata()},
+      {V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION,
+       {},
+       SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER,
+       2,
+       create_metadata(SubresourceFilterType::ABUSIVE,
+                       SubresourceFilterLevel::ENFORCE)},
+      {V5::ThreatType::BETTER_ADS_VIOLATION,
+       {},
+       SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER,
+       2,
+       create_metadata(SubresourceFilterType::BETTER_ADS,
+                       SubresourceFilterLevel::ENFORCE)},
+      {V5::ThreatType::NOTIFICATION_ABUSE,
+       {},
+       SBThreatType::SB_THREAT_TYPE_API_ABUSE,
+       2,
+       ThreatMetadata()},
       {V5::ThreatType::SOCIAL_ENGINEERING,
        {V5::ThreatAttribute::CANARY},
        SBThreatType::SB_THREAT_TYPE_SUSPICIOUS_SITE,
-       4},
+       4,
+       ThreatMetadata()},
       {V5::ThreatType::TRICK_TO_BILL,
        {},
        SBThreatType::SB_THREAT_TYPE_BILLING,
-       15},
+       15,
+       ThreatMetadata()},
       // Canary variants that shouldn't change mapping/severity (except social
       // engineering)
       {V5::ThreatType::MALWARE,
        {V5::ThreatAttribute::CANARY},
        SBThreatType::SB_THREAT_TYPE_URL_MALWARE,
-       0},
+       0,
+       ThreatMetadata()},
+      {V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION,
+       {V5::ThreatAttribute::CANARY},
+       SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER,
+       2,
+       create_metadata(SubresourceFilterType::ABUSIVE,
+                       SubresourceFilterLevel::WARN)},
+      {V5::ThreatType::BETTER_ADS_VIOLATION,
+       {V5::ThreatAttribute::CANARY},
+       SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER,
+       2,
+       create_metadata(SubresourceFilterType::BETTER_ADS,
+                       SubresourceFilterLevel::WARN)},
   };
 
   // Verify mapping and severity.
@@ -370,6 +417,7 @@ TEST_F(V5SearchHashesUtilTest,
         CreateHashDetail(config1.v5_type, config1.attributes);
     ThreatResult res1 = DetermineMostSevereThreat({&detail1});
     EXPECT_EQ(res1.threat_type, config1.expected_sb_type);
+    EXPECT_EQ(res1.metadata, config1.expected_metadata);
     for (const auto& config2 : configs) {
       SCOPED_TRACE(base::StringPrintf(
           "Severity/Mapping test: config1 (v5_type=%d, rank=%d) vs config2 "

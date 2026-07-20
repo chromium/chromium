@@ -175,6 +175,7 @@ source_set("v5_get_hash_protocol_manager") {
   ]
   deps = [
     ":v4_protocol_manager_util",
+    ":v5_search_hashes_cache",
     "//base",
     "//components/keyed_service/core",
     "//components/safe_browsing/core/browser/db:v4_protocol_config",

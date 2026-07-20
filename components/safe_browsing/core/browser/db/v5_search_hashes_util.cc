@@ -35,20 +35,46 @@ std::optional<ParseFailure> EvaluateNetworkResult(int net_error,
   return std::nullopt;
 }
 
+ThreatMetadata GetThreatMetadata(const V5::FullHash::FullHashDetail& detail) {
+  ThreatMetadata metadata;
+  SubresourceFilterLevel level =
+      std::ranges::contains(detail.attributes(), V5::ThreatAttribute::CANARY)
+          ? SubresourceFilterLevel::WARN
+          : SubresourceFilterLevel::ENFORCE;
+  if (detail.threat_type() == V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION) {
+    metadata.subresource_filter_match[SubresourceFilterType::ABUSIVE] = level;
+  } else if (detail.threat_type() == V5::ThreatType::BETTER_ADS_VIOLATION) {
+    metadata.subresource_filter_match[SubresourceFilterType::BETTER_ADS] =
+        level;
+  }
+  return metadata;
+}
+
 int GetThreatSeverity(const V5::FullHash::FullHashDetail& detail) {
   if (detail.threat_type() == V5::ThreatType::SOCIAL_ENGINEERING &&
       std::ranges::contains(detail.attributes(), V5::ThreatAttribute::CANARY)) {
     // SUSPICIOUS threat type.
     return 4;
   }
+  // LINT.IfChange(ThreatTypeSeverity)
   switch (detail.threat_type()) {
     case V5::ThreatType::MALWARE:
     case V5::ThreatType::SOCIAL_ENGINEERING:
+    case V5::ThreatType::MALICIOUS_BINARY:
       return 0;
     case V5::ThreatType::UNWANTED_SOFTWARE:
       return 1;
+    case V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION:
+    case V5::ThreatType::BETTER_ADS_VIOLATION:
+    case V5::ThreatType::NOTIFICATION_ABUSE:
+      return 2;
     case V5::ThreatType::TRICK_TO_BILL:
       return 15;
+    case V5::ThreatType::SUBRESOURCE_FILTER:
+    case V5::ThreatType::THREAT_TYPE_UNSPECIFIED:
+    case V5::ThreatType::POTENTIALLY_HARMFUL_APPLICATION:
+      NOTREACHED();
+      // LINT.ThenChange(//components/safe_browsing/core/common/proto/safebrowsingv5.proto:ThreatType)
     default:
       // Using "default" because exhaustive switch statements are not
       // recommended for proto3 enums.
@@ -114,6 +140,7 @@ SBThreatType MapFullHashDetailToSbThreatType(
       std::ranges::contains(detail.attributes(), V5::ThreatAttribute::CANARY)) {
     return SBThreatType::SB_THREAT_TYPE_SUSPICIOUS_SITE;
   }
+  // LINT.IfChange(ThreatTypeMap)
   switch (detail.threat_type()) {
     case V5::ThreatType::MALWARE:
       return SBThreatType::SB_THREAT_TYPE_URL_MALWARE;
@@ -123,6 +150,18 @@ SBThreatType MapFullHashDetailToSbThreatType(
       return SBThreatType::SB_THREAT_TYPE_URL_UNWANTED;
     case V5::ThreatType::TRICK_TO_BILL:
       return SBThreatType::SB_THREAT_TYPE_BILLING;
+    case V5::ThreatType::MALICIOUS_BINARY:
+      return SBThreatType::SB_THREAT_TYPE_URL_BINARY_MALWARE;
+    case V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION:
+    case V5::ThreatType::BETTER_ADS_VIOLATION:
+      return SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER;
+    case V5::ThreatType::NOTIFICATION_ABUSE:
+      return SBThreatType::SB_THREAT_TYPE_API_ABUSE;
+    case V5::ThreatType::THREAT_TYPE_UNSPECIFIED:
+    case V5::ThreatType::SUBRESOURCE_FILTER:
+    case V5::ThreatType::POTENTIALLY_HARMFUL_APPLICATION:
+      NOTREACHED();
+      // LINT.ThenChange(//components/safe_browsing/core/common/proto/safebrowsingv5.proto:ThreatType)
     default:
       // Using "default" because exhaustive switch statements are not
       // recommended for proto3 enums.
@@ -139,6 +178,7 @@ ThreatResult DetermineMostSevereThreat(
     if (severity < result.threat_severity) {
       result.threat_severity = severity;
       result.threat_type = MapFullHashDetailToSbThreatType(detail);
+      result.metadata = GetThreatMetadata(detail);
     }
   }
   return result;

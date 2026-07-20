@@ -115,7 +115,10 @@ enum ThreatType {
 
   NOTIFICATION_ABUSE = 24;
 }
-// LINT.ThenChange(//components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.cc:ThreatType)
+// LINT.ThenChange(//components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.cc:ThreatType,
+// //components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.cc:ThreatType,
+// //components/safe_browsing/core/browser/db/v5_search_hashes_util.cc:ThreatTypeMap,
+// //components/safe_browsing/core/browser/db/v5_search_hashes_util.cc:ThreatTypeSeverity)
 
 // Attributes of threats. These attributes may confer additional meaning to a
 // particular threat but will not affect the threat type. For example, an
@@ -133,7 +136,8 @@ enum ThreatAttribute {
   // frames.
   FRAME_ONLY = 2;
 }
-// LINT.ThenChange(//components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.cc:ThreatAttribute)
+// LINT.ThenChange(//components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.cc:ThreatAttribute,
+// //components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.cc:ThreatAttribute)
 
 message Duration {
   // Signed seconds of the span of time. Must be from -315,576,000,000
