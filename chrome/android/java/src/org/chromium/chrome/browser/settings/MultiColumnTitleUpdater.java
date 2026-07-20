@@ -35,6 +35,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.widget.ChromeImageButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -333,13 +334,16 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
             // Set up a back button to go to the section for the previous title.
             int prevIndex = titles.size() - 2;
             var prevTitle = titles.get(prevIndex);
-            var backButton = new ImageView(mContext);
+            var backButton = new ChromeImageButton(mContext);
             backButton.setImageResource(R.drawable.ic_arrow_back_24dp);
+            // Ensure icon isn't stretched by the larger touch target.
+            backButton.setScaleType(ImageView.ScaleType.CENTER);
+            // Provide material design circular hover highlight and ripple.
+            backButton.setBackgroundResource(R.drawable.default_icon_background);
             // Ensure size is large enough for touch accessibility.
             int minTouchTargetPx = getDimenPx(R.dimen.min_touch_target_size);
             backButton.setMinimumWidth(minTouchTargetPx);
             backButton.setMinimumHeight(minTouchTargetPx);
-            backButton.setPaddingRelative(0, 0, paddingPx, 0);
             backButton.setLayoutParams(new LinearLayout.LayoutParams(LAYOUT_CENTER_VERTICAL));
             backButton.setOnClickListener(v -> navigateToTitle(prevTitle, prevIndex));
             // Set both accessibility content description and tooltip.

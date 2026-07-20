@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -42,6 +41,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.widget.ChromeImageButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -192,9 +192,9 @@ public class MultiColumnTitleUpdaterTest {
 
         // Multiple titles should prepend the back button as child at index 0.
         assertTrue(mContainer.getChildCount() > 1);
-        assertTrue(mContainer.getChildAt(0) instanceof ImageView);
+        assertTrue(mContainer.getChildAt(0) instanceof ChromeImageButton);
 
-        ImageView backButton = (ImageView) mContainer.getChildAt(0);
+        ChromeImageButton backButton = (ChromeImageButton) mContainer.getChildAt(0);
         backButton.performClick();
 
         // Clicking back button should pop to previous title ("Appearance") and trigger callback.
