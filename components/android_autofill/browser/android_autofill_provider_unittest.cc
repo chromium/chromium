@@ -1410,6 +1410,62 @@ TEST_F(AndroidAutofillProviderCredManSpoofSheetStatusTest,
   EXPECT_TRUE(test_api(autofill_provider()).is_credman_sheet_showing());
 }
 
+// Tests that a compromised renderer cannot reset the session state or CredMan
+// sheet status by sending a malicious FormSubmitted IPC while a CredMan sheet
+// is active. (See crbug.com/534856303)
+TEST_F(AndroidAutofillProviderCredManSpoofSheetStatusTest,
+       FormSubmittedWhileCredManShowingDoesNotResetSession) {
+  const url::Origin attacker_origin =
+      url::Origin::Create(GURL(kAttackerOrigin));
+  const url::Origin victim_origin = url::Origin::Create(GURL(kVictimOrigin));
+
+  // Setup form spanning multiple frames.
+  FormData form = GetFormData({
+      .fields = {{
+                     .host_frame = LocalFrameToken(
+                         attacker_frame_->GetFrameToken().value()),
+                     .origin = attacker_origin,
+                 },
+                 {
+                     .host_frame =
+                         LocalFrameToken(main_frame()->GetFrameToken().value()),
+                     .autocomplete_attribute = "webauthn",
+                     .origin = victim_origin,
+                 }},
+      .url = std::string(kVictimOrigin) + "/form.html",
+      .main_frame_origin = victim_origin,
+  });
+
+  const FormFieldData& attacker_field = form.fields()[0];
+  const FormFieldData& victim_field = form.fields()[1];
+
+  android_autofill_manager().OnFormsSeen({form}, {});
+
+  // Victim frame queries and focuses, starting session and triggering CredMan
+  // sheet.
+  android_autofill_manager().SimulateOnAskForValuesToFill(form, victim_field);
+  android_autofill_manager().SimulateOnFocusOnFormField(form, victim_field);
+  ASSERT_TRUE(test_api(autofill_provider()).is_credman_sheet_showing());
+  ASSERT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
+            victim_origin);
+
+  // Attacker subframe attempts to submit form while CredMan is active.
+  EXPECT_CALL(provider_bridge(), OnFormSubmitted).Times(0);
+  android_autofill_manager().SimulateOnFormSubmitted(
+      form, mojom::SubmissionSource::FORM_SUBMISSION);
+
+  // Verify sheet status is still showing and session was not reset.
+  EXPECT_TRUE(test_api(autofill_provider()).is_credman_sheet_showing());
+  EXPECT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
+            victim_origin);
+
+  // Subsequent AskForValuesToFill from attacker frame should be ignored while
+  // CredMan is showing, preventing origin poisoning.
+  android_autofill_manager().SimulateOnAskForValuesToFill(form, attacker_field);
+  EXPECT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
+            victim_origin);
+}
+
 using AndroidAutofillProviderPrefillRequestTest = AndroidAutofillProviderTest;
 
 // Tests that we can send another prefill request after navigation.

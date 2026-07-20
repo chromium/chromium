@@ -554,6 +554,12 @@ void AndroidAutofillProvider::OnFormSubmitted(AndroidAutofillManager* manager,
                                               const FormData& form,
                                               SubmissionSource source) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (credman_sheet_status_ == CredManBottomSheetLifecycle::kIsShowing) {
+    // Ignore form submissions while CredMan is showing to prevent a compromised
+    // renderer from resetting session state and spoofing the origin (see
+    // crbug.com/534856303).
+    return;
+  }
   if (!IsLinkedManager(manager)) {
     return;
   }
