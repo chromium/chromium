@@ -292,6 +292,19 @@ struct GatherParams {
   bool is_indices_constant;
 };
 
+struct GatherElementsParams {
+  OperandDataType input_data_type;
+  OperandDataType indices_data_type;
+  uint32_t rank;
+  uint32_t axis;
+  std::array<uint32_t, 8> input_dims;
+  // Dimension size of the indices tensor along `axis`.
+  uint32_t indices_axis_dim_size;
+  int64_t indices_fill_value;
+  bool is_input_constant;
+  bool is_indices_constant;
+};
+
 struct GatherNDParams {
   OperandDataType input_data_type;
   OperandDataType indices_data_type;
@@ -1135,6 +1148,22 @@ auto AnyGatherParams() {
       AnyTensorRankIncludeZero(),          // indices_rank
       fuzztest::ArrayOf<8>(AnyDimSize()),  // indices_dims
       fuzztest::InRange<uint32_t>(0, 7),   // axis
+      fuzztest::OneOf(fuzztest::InRange<int64_t>(-10, 10),
+                      fuzztest::Arbitrary<int64_t>()),  // indices_fill_value
+      fuzztest::Arbitrary<bool>(),                      // is_input_constant
+      fuzztest::Arbitrary<bool>()                       // is_indices_constant
+  );
+}
+
+auto AnyGatherElementsParams() {
+  const auto& limits = GetContextPropertiesForTesting().data_type_limits;
+  return fuzztest::StructOf<GatherElementsParams>(
+      AnyOperandDataTypeFor(limits.gather_elements_input.data_types),
+      AnyOperandDataTypeFor(limits.gather_elements_indices.data_types),
+      AnyTensorRank(),                     // input_rank
+      fuzztest::InRange<uint32_t>(0, 7),   // axis
+      fuzztest::ArrayOf<8>(AnyDimSize()),  // input_dims
+      AnyDimSize(),                        // indices_axis_dim_size
       fuzztest::OneOf(fuzztest::InRange<int64_t>(-10, 10),
                       fuzztest::Arbitrary<int64_t>()),  // indices_fill_value
       fuzztest::Arbitrary<bool>(),                      // is_input_constant
@@ -2901,6 +2930,7 @@ class WebNNGraphImplFuzzerImpl
   void Elu(EluParams params, uint8_t seed_for_data);
   void Expand(ExpandParams params, uint8_t seed_for_data);
   void Gather(GatherParams params, uint8_t seed_for_data);
+  void GatherElements(GatherElementsParams params, uint8_t seed_for_data);
   void GatherND(GatherNDParams params, uint8_t seed_for_data);
   void Gemm(GemmParams params, uint8_t seed_for_data);
   void HardSigmoid(HardSigmoidParams params, uint8_t seed_for_data);
@@ -3576,6 +3606,61 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Gather(GatherParams params,
                           gather_descs.output_desc.data_type());
 
   builder.BuildGather(input_id, indices_id, output_id, gather_descs.axis);
+
+  if (!builder.IsValidGraphForTesting(this->context_properties())) {
+    return;
+  }
+  BuildAndCompute(this->context_, std::move(remote), builder.TakeGraphInfo(),
+                  std::move(named_inputs));
+
+  GetGlobalFuzzEnvironment().GetWebNNTestEnvironment().RunUntilIdle();
+}
+
+template <typename BaseFixture>
+void WebNNGraphImplFuzzerImpl<BaseFixture>::GatherElements(
+    GatherElementsParams params,
+    uint8_t seed_for_data) {
+  std::vector<uint32_t> input_dims(params.input_dims.begin(),
+                                   params.input_dims.begin() + params.rank);
+
+  params.axis %= params.rank;
+  std::vector<uint32_t> indices_dims = input_dims;
+  indices_dims[params.axis] = params.indices_axis_dim_size;
+
+  ASSIGN_OR_RETURN_VOID(
+      auto input_desc,
+      OperandDescriptor::Create(this->context_properties(),
+                                params.input_data_type, input_dims, ""));
+  ASSIGN_OR_RETURN_VOID(
+      auto indices_desc,
+      OperandDescriptor::Create(this->context_properties(),
+                                params.indices_data_type, indices_dims, ""));
+
+  ASSIGN_OR_RETURN_VOID(auto output_desc,
+                        ValidateGatherElementsAndInferOutput(
+                            this->context_properties(), input_desc,
+                            indices_desc, params.axis, ""));
+
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
+      this->BindNewGraphBuilderRemote();
+  GraphInfoBuilder builder(remote);
+
+  base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
+  std::vector<std::vector<uint8_t>> data_buffers;
+  OperandId input_id = BuildInputOrConstant(builder, params.is_input_constant,
+                                            "input", input_desc, seed_for_data,
+                                            data_buffers, named_inputs);
+  OperandId indices_id = BuildInputOrConstant(
+      builder, params.is_indices_constant, "indices", indices_desc,
+      CreateBufferAsIndicesType(indices_desc.PackedByteLength(),
+                                params.indices_data_type,
+                                params.indices_fill_value),
+      data_buffers, named_inputs);
+
+  OperandId output_id = builder.BuildOutput("output", output_desc.shape(),
+                                            output_desc.data_type());
+
+  builder.BuildGatherElements(input_id, indices_id, output_id, params.axis);
 
   if (!builder.IsValidGraphForTesting(this->context_properties())) {
     return;
@@ -6381,6 +6466,22 @@ WEBNN_FUZZ_TEST_F(
                          /*is_indices_constant=*/true,
                      },
                      /*seed_for_data=*/5}}));
+
+WEBNN_FUZZ_TEST_F(
+    GatherElements,
+    .WithDomains(AnyGatherElementsParams(), fuzztest::Arbitrary<uint8_t>())
+        .WithSeeds({{GatherElementsParams{
+                         /*input_data_type=*/OperandDataType::kFloat32,
+                         /*indices_data_type=*/OperandDataType::kInt32,
+                         /*rank=*/2,
+                         /*axis=*/1,
+                         /*input_dims=*/{6, 5, 1, 1, 1, 1, 1, 1},
+                         /*indices_axis_dim_size=*/2,
+                         /*indices_fill_value=*/0,
+                         /*is_input_constant=*/false,
+                         /*is_indices_constant=*/true,
+                     },
+                     /*seed_for_data=*/4}}));
 
 WEBNN_FUZZ_TEST_F(
     GatherND,
