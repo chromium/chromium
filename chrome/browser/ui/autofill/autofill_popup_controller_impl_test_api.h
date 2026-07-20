@@ -51,7 +51,9 @@ class AutofillPopupControllerImplTestApi {
 
   void ClearState() { controller_->ClearState(); }
 
-  bool HasSuggestions() const { return controller_->HasSuggestions(); }
+  bool HasEmptySuggestionContent() const {
+    return controller_->HasEmptySuggestionContent();
+  }
 
  private:
   const raw_ref<AutofillPopupControllerImpl> controller_;

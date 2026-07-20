@@ -1167,6 +1167,28 @@ TEST_F(AutofillPopupControllerImplTest,
 }
 
 TEST_F(AutofillPopupControllerImplTest,
+       RemoveLastSuggestion_DoesNotHidePopupForAtMemory) {
+  ShowSuggestions(manager(), {SuggestionType::kAtMemorySearchResult},
+                  AutofillSuggestionTriggerSource::kAtMemory);
+
+  test::GenerateTestAutofillPopup(&manager().external_delegate());
+  EXPECT_CALL(manager().external_delegate(),
+              RemoveSuggestion(Field(&Suggestion::type,
+                                     SuggestionType::kAtMemorySearchResult)))
+      .WillOnce(Return(true));
+
+  EXPECT_CALL(client().suggestion_controller(manager()), Hide)
+      .WillRepeatedly(Return());
+  EXPECT_CALL(client().suggestion_controller(manager()),
+              Hide(SuggestionHidingReason::kNoSuggestions))
+      .Times(0);
+  EXPECT_CALL(*client().popup_view(),
+              OnSuggestionsChanged(/*prefer_prev_arrow_side=*/false));
+  EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(
+      0, SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
+}
+
+TEST_F(AutofillPopupControllerImplTest,
        RemoveAutocompleteSuggestion_AnnounceText) {
   ShowSuggestions(manager(), {Suggestion(u"main text",
                                          SuggestionType::kAutocompleteEntry)});
@@ -1342,8 +1364,9 @@ TEST_F(AutofillPopupControllerImplTest,
           client().suggestion_controller(manager()));
 
   // kWebauthnSignInWithAnotherDevice should be classified as a standalone
-  // suggestion type on Desktop, so HasSuggestions() evaluates to true!
-  EXPECT_TRUE(test_api(controller).HasSuggestions());
+  // suggestion type on Desktop, so HasEmptySuggestionContent() evaluates to
+  // false!
+  EXPECT_FALSE(test_api(controller).HasEmptySuggestionContent());
 }
 
 TEST_F(AutofillPopupControllerImplTest,
@@ -1356,7 +1379,7 @@ TEST_F(AutofillPopupControllerImplTest,
 
   // A list containing only a separator or a non-standalone settings footer
   // (like kAllSavedPasswordsEntry) does NOT have any standalone suggestions!
-  EXPECT_FALSE(test_api(controller).HasSuggestions());
+  EXPECT_TRUE(test_api(controller).HasEmptySuggestionContent());
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)

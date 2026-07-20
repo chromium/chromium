@@ -120,8 +120,10 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   PopupAnchorType anchor_type() const override;
   base::i18n::TextDirection GetElementTextDirection() const override;
 
-  // Returns true if the popup still has non-options entries to show the user.
-  bool HasSuggestions() const;
+  // Returns true if the popup only contains trivial suggestions (e.g.,
+  // separators). This is always `false` for AtMemory because the search bar
+  // itself counts as non-trivial.
+  bool HasEmptySuggestionContent() const;
 
   // Set the Autofill entry values. Exposed to allow tests to set these values
   // without showing the popup.
