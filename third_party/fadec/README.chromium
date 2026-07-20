@@ -2,8 +2,8 @@ Name: Fadec: Fast x86-32/64 instruction decoder and x86-64 encoder
 Short Name: fadec
 URL: https://github.com/aengelke/fadec
 Version: N/A
-Date: 2026-03-22
-Revision: 340a7a86117895b7b71e56deac99d96340eab587
+Date: 2026-06-01
+Revision: c9f78f532b9004de278489019ab2c6c28ae9746e
 Update Mechanism: Autoroll
 License: BSD-3-Clause
 License File: LICENSE
