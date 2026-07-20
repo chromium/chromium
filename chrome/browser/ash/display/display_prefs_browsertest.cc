@@ -93,7 +93,9 @@ IN_PROC_BROWSER_TEST_F(DisplayPrefsBrowserTest, PRE_DisplayRotation) {
   display_manager->SetDisplayRotation(display.id(),
                                       display::Display::ROTATE_180,
                                       display::Display::RotationSource::USER);
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  local_state_->CommitPendingWrite(run_loop.QuitClosure());
+  run_loop.Run();
 
   // Verify new rotation and pref value.
   rotation = GetRotation(0);
