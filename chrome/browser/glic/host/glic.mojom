@@ -622,6 +622,8 @@ struct WebClientInitialState {
   GeminiEnterpriseSettings? gemini_enterprise_settings;
   // Whether features::kGlicActorAutofillOneTimePassword is enabled.
   bool enable_gmail_otp_opt_in;
+  // Whether the Gmail OTP confirmation dialog is enabled.
+  bool enable_gmail_otp_confirmation;
 };
 
 // @generate glic_api
@@ -1147,8 +1149,15 @@ interface ActorClient {
   NotifyActorTaskStateChanged(int32 task_id, ActorTaskState state);
 
   // Requests the web client to show the Gmail OTP opt-in dialog to the user.
-  RequestToShowGmailOtpOptInDialog(int32 task_id)
+  RequestToShowGmailOtpOptInDialog(
+      actor.webui.mojom.GmailOtpOptInRequest request)
       => (actor.webui.mojom.GmailOtpOptInResult result);
+
+  // Requests the web client to show the Gmail OTP confirmation dialog to the
+  // user.
+  RequestToShowGmailOtpConfirmationDialog(
+      actor.webui.mojom.GmailOtpConfirmationRequest request)
+      => (actor.webui.mojom.GmailOtpConfirmationResult result);
 };
 
 // @generate glic_api

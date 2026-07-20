@@ -115,6 +115,11 @@ class FakeToolDelegate : public ToolDelegate {
               (GmailOtpOptInCallback),
               (override));
 
+  MOCK_METHOD(void,
+              RequestToShowGmailOtpConfirmationDialog,
+              (const std::string&, GmailOtpConfirmationCallback),
+              (override));
+
   MockActorOneTimeTokenFillingService& mock_otp_service() {
     return mock_otp_service_;
   }
@@ -270,7 +275,7 @@ using mojom::ActionResultCode::kTabWentAway;
 using mojom::ActionResultCode::kToolTimeout;
 using optimization_guide::DocumentIdentifierUserData;
 using optimization_guide::proto::AnnotatedPageContent;
-using webui::mojom::GmailOtpOptInErrorReason;
+using webui::mojom::GmailOtpErrorReason;
 using webui::mojom::GmailOtpOptInResult;
 }  // namespace
 
@@ -279,8 +284,8 @@ using webui::mojom::GmailOtpOptInResult;
 // remove the dismissal timestamp.
 TEST_F(AttemptOtpFillingToolTest, Validate_OptInPermissionGranted) {
   EXPECT_CALL(delegate(), RequestToShowGmailOtpOptInDialog)
-      .WillOnce(
-          RunOnceCallback<0>(GmailOtpOptInResult::NewPermissionGranted(true)));
+      .WillOnce(RunOnceCallback<0>(GmailOtpOptInResult::NewResponse(
+          webui::mojom::GmailOtpOptInResponse::New(true))));
   AttemptOtpFillingTool tool(TaskId(1), delegate(), mock_tab().GetHandle(),
                              {PageTarget(gfx::Point(10, 10))},
                              /*for_signin=*/true);
@@ -302,8 +307,8 @@ TEST_F(AttemptOtpFillingToolTest, Validate_OptInPermissionGranted) {
 // without turning on Gmail OTP.
 TEST_F(AttemptOtpFillingToolTest, Validate_OptInPermissionDenied) {
   EXPECT_CALL(delegate(), RequestToShowGmailOtpOptInDialog)
-      .WillOnce(
-          RunOnceCallback<0>(GmailOtpOptInResult::NewPermissionGranted(false)));
+      .WillOnce(RunOnceCallback<0>(GmailOtpOptInResult::NewResponse(
+          webui::mojom::GmailOtpOptInResponse::New(false))));
   AttemptOtpFillingTool tool(TaskId(1), delegate(), mock_tab().GetHandle(),
                              {PageTarget(gfx::Point(10, 10))},
                              /*for_signin=*/true);
@@ -328,7 +333,7 @@ TEST_F(AttemptOtpFillingToolTest, Validate_OptInPermissionDenied) {
 TEST_F(AttemptOtpFillingToolTest, Validate_OptInPermissionCallbackError) {
   EXPECT_CALL(delegate(), RequestToShowGmailOtpOptInDialog)
       .WillOnce(RunOnceCallback<0>(GmailOtpOptInResult::NewErrorReason(
-          GmailOtpOptInErrorReason::kRequestPromiseNoSubscriber)));
+          GmailOtpErrorReason::kRequestPromiseNoSubscriber)));
   AttemptOtpFillingTool tool(TaskId(1), delegate(), mock_tab().GetHandle(),
                              {PageTarget(gfx::Point(10, 10))},
                              /*for_signin=*/true);

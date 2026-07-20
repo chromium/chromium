@@ -223,6 +223,9 @@ class ExecutionEngine : public ToolDelegate,
       AutofillSuggestionSelectedCallback callback) override;
   void RequestToShowGmailOtpOptInDialog(
       GmailOtpOptInCallback callback) override;
+  void RequestToShowGmailOtpConfirmationDialog(
+      const std::string& verification_code,
+      GmailOtpConfirmationCallback callback) override;
   void InterruptFromTool() override;
   void InterruptFromTool(bool retain_user_control) override;
   void UninterruptFromTool() override;

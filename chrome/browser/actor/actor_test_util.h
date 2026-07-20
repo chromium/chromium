@@ -412,6 +412,13 @@ class MockActorTaskDelegate : public ActorTaskDelegate {
               (TaskId task_id, GmailOtpOptInCallback callback),
               (override));
 
+  MOCK_METHOD(void,
+              RequestToShowGmailOtpConfirmationDialog,
+              (TaskId task_id,
+               const std::string& verification_code,
+               GmailOtpConfirmationCallback callback),
+              (override));
+
   base::WeakPtr<MockActorTaskDelegate> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }

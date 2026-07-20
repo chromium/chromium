@@ -1794,12 +1794,28 @@ void ExecutionEngine::RequestToShowGmailOtpOptInDialog(
   TRACE_EVENT0("actor", "ExecutionEngine::RequestToShowGmailOtpOptInDialog");
   if (!task_->delegate()) {
     auto result = webui::mojom::GmailOtpOptInResult::NewErrorReason(
-        webui::mojom::GmailOtpOptInErrorReason::kRequestPromiseNoSubscriber);
+        webui::mojom::GmailOtpErrorReason::kRequestPromiseNoSubscriber);
     std::move(callback).Run(std::move(result));
     return;
   }
   task_->delegate()->RequestToShowGmailOtpOptInDialog(task_->id(),
                                                       std::move(callback));
+}
+
+void ExecutionEngine::RequestToShowGmailOtpConfirmationDialog(
+    const std::string& verification_code,
+    GmailOtpConfirmationCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT0("actor",
+               "ExecutionEngine::RequestToShowGmailOtpConfirmationDialog");
+  if (!task_->delegate()) {
+    auto result = webui::mojom::GmailOtpConfirmationResult::NewErrorReason(
+        webui::mojom::GmailOtpErrorReason::kRequestPromiseNoSubscriber);
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+  task_->delegate()->RequestToShowGmailOtpConfirmationDialog(
+      task_->id(), verification_code, std::move(callback));
 }
 
 void ExecutionEngine::InterruptFromTool() {

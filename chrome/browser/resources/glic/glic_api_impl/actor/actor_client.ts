@@ -6,7 +6,7 @@
 
 import {assert} from '//resources/js/assert.js';
 
-import type {ActorTaskInterruptReason, CancelActionsResult, CreateActorTabOptions, FormFillingResponse, GlicBrowserHost, GlicBrowserHostJournal, GmailOtpOptInRequest, Journal, NavigationConfirmationRequest, Observable, ObservableValue, ResumeActorTaskResult, SelectAutofillSuggestionsDialogRequest, SelectCredentialDialogRequest, TabContextOptions, TabContextResult, TabData, TaskOptions, UserConfirmationDialogRequest} from '../../glic_api/glic_api.js';
+import type {ActorTaskInterruptReason, CancelActionsResult, CreateActorTabOptions, FormFillingResponse, GlicBrowserHost, GlicBrowserHostJournal, GmailOtpConfirmationRequest, GmailOtpOptInRequest, Journal, NavigationConfirmationRequest, Observable, ObservableValue, ResumeActorTaskResult, SelectAutofillSuggestionsDialogRequest, SelectCredentialDialogRequest, TabContextOptions, TabContextResult, TabData, TaskOptions, UserConfirmationDialogRequest} from '../../glic_api/glic_api.js';
 import {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason} from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../../observable.js';
 import {convertTabContextResultFromPrivate, convertTabDataFromPrivate} from '../client/glic_api_client.js';
@@ -15,8 +15,8 @@ import {rgbaImageToBlob} from '../client/image_utils.js';
 import type {WebClientInitialStatePrivate} from '../request_types.js';
 import type {PendingReceiver, PendingRemote, PostMessageHandler, PostMessageRemote} from '../transport/post_message_transport.js';
 
-import {ActorClientDef, ConfirmationRequestErrorReason, GmailOtpOptInErrorReason, SelectAutofillSuggestionsDialogErrorReason, SelectCredentialDialogErrorReason} from './actor_types.js';
-import type {ActorClient, ActorHost, CredentialPrivate, GmailOtpOptInRequestPrivate, GmailOtpOptInResponsePrivate, NavigationConfirmationRequestPrivate, NavigationConfirmationResponsePrivate, SelectAutofillSuggestionsDialogRequestPrivate, SelectAutofillSuggestionsDialogResponsePrivate, SelectCredentialDialogRequestPrivate, SelectCredentialDialogResponsePrivate, UserConfirmationDialogRequestPrivate, UserConfirmationDialogResponsePrivate} from './actor_types.js';
+import {ActorClientDef, ConfirmationRequestErrorReason, GmailOtpErrorReason, SelectAutofillSuggestionsDialogErrorReason, SelectCredentialDialogErrorReason} from './actor_types.js';
+import type {ActorClient, ActorHost, CredentialPrivate, GmailOtpConfirmationRequestPrivate, GmailOtpConfirmationResponsePrivate, GmailOtpOptInRequestPrivate, GmailOtpOptInResponsePrivate, NavigationConfirmationRequestPrivate, NavigationConfirmationResponsePrivate, SelectAutofillSuggestionsDialogRequestPrivate, SelectAutofillSuggestionsDialogResponsePrivate, SelectCredentialDialogRequestPrivate, SelectCredentialDialogResponsePrivate, UserConfirmationDialogRequestPrivate, UserConfirmationDialogResponsePrivate} from './actor_types.js';
 
 // Implements actor-specific methods on GlicBrowserHost.
 export class GlicBrowserHostActor implements Partial<GlicBrowserHost> {
@@ -34,6 +34,8 @@ export class GlicBrowserHostActor implements Partial<GlicBrowserHost> {
       new Subject<SelectAutofillSuggestionsDialogRequest>();
   readonly selectGmailOtpOptInRequestSubject =
       new Subject<GmailOtpOptInRequest>();
+  readonly selectGmailOtpConfirmationRequestSubject =
+      new Subject<GmailOtpConfirmationRequest>();
   private journalHost?: GlicBrowserHostJournalImpl;
   actOnWebCapabilityValue = ObservableValueImpl.withNoValue<boolean>();
   readonly actorTaskListRowClickedSubject = new Subject<number>();
@@ -78,6 +80,9 @@ export class GlicBrowserHostActor implements Partial<GlicBrowserHost> {
     if (!initialState.enableGmailOtpOptIn) {
       this.selectGmailOtpOptInRequestHandler = undefined;
     }
+    if (!initialState.enableGmailOtpConfirmation) {
+      this.selectGmailOtpConfirmationRequestHandler = undefined;
+    }
     if (!initialState.enableGetContextActor) {
       // MOJO_RUNTIME_FEATURE_GATED GetContextForActorFromTab
       this.getContextForActorFromTab = undefined;
@@ -112,6 +117,11 @@ export class GlicBrowserHostActor implements Partial<GlicBrowserHost> {
 
   selectGmailOtpOptInRequestHandler?(): Observable<GmailOtpOptInRequest> {
     return this.selectGmailOtpOptInRequestSubject;
+  }
+
+  selectGmailOtpConfirmationRequestHandler?
+      (): Observable<GmailOtpConfirmationRequest> {
+    return this.selectGmailOtpConfirmationRequestSubject;
   }
 
   selectAutofillSuggestionsDialogRequestHandler?
@@ -439,7 +449,7 @@ export class ActorWebClientMessageHandler implements
         resolve({
           response: {
             permissionGranted: false,
-            errorReason: GmailOtpOptInErrorReason.REQUEST_PROMISE_NO_SUBSCRIBER,
+            errorReason: GmailOtpErrorReason.REQUEST_PROMISE_NO_SUBSCRIBER,
           },
         });
         return;
@@ -451,6 +461,34 @@ export class ActorWebClientMessageHandler implements
         },
       };
       this.actorHost.selectGmailOtpOptInRequestSubject.next(requestWithCallback);
+    });
+  }
+
+  requestToShowGmailOtpConfirmationDialog(payload: {
+    request: GmailOtpConfirmationRequestPrivate,
+  }): Promise<{response: GmailOtpConfirmationResponsePrivate}> {
+    return new Promise(resolve => {
+      if (!this.actorHost.selectGmailOtpConfirmationRequestSubject
+               .hasActiveSubscription()) {
+        window.console.warn(
+            'GlicWebClient: no subscriber for ' +
+            'selectGmailOtpConfirmationRequestHandler()!');
+        resolve({
+          response: {
+            permissionGranted: false,
+            errorReason: GmailOtpErrorReason.REQUEST_PROMISE_NO_SUBSCRIBER,
+          },
+        });
+        return;
+      }
+      const requestWithCallback: GmailOtpConfirmationRequest = {
+        ...payload.request,
+        onDialogClosed: (response) => {
+          resolve({response});
+        },
+      };
+      this.actorHost.selectGmailOtpConfirmationRequestSubject.next(
+          requestWithCallback);
     });
   }
 }

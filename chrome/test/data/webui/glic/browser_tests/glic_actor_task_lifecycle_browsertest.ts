@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {ActorTaskInterruptReason, ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, CancelActionsResult} from '/glic/glic_api/glic_api.js';
-import type {GmailOtpOptInRequest} from '/glic/glic_api/glic_api.js';
+import type {GmailOtpConfirmationRequest, GmailOtpOptInRequest} from '/glic/glic_api/glic_api.js';
 
 import {ApiTestFixtureBase, assertDefined, assertEquals, assertRejects, assertTrue, checkDefined, longWaitTimeMs, observeSequence, testMain} from './browser_test_base.js';
 
@@ -401,6 +401,35 @@ class GlicActorTaskLifecycleFunctionalBrowserTest extends ApiTestFixtureBase {
 
   async testGmailOtpOptInDialogFeatureDisabled() {
     assertTrue(this.host.selectGmailOtpOptInRequestHandler === undefined);
+    await this.advanceToNextStep();
+  }
+
+  async testGmailOtpConfirmationDialog() {
+    assertDefined(this.host.selectGmailOtpConfirmationRequestHandler);
+    const subscriber = this.host.selectGmailOtpConfirmationRequestHandler();
+    assertTrue(!!subscriber);
+    const dialogRequestPromise =
+        new Promise<GmailOtpConfirmationRequest>((resolve) => {
+          const subscription =
+              subscriber.subscribe((request: GmailOtpConfirmationRequest) => {
+                subscription.unsubscribe();
+                resolve(request);
+              });
+        });
+
+    await this.advanceToNextStep();
+    const request = await dialogRequestPromise;
+    assertEquals('123456', request.verificationCode);
+    request.onDialogClosed({permissionGranted: true});
+  }
+
+  async testGmailOtpConfirmationDialogNoSubscriber() {
+    await this.advanceToNextStep();
+  }
+
+  async testGmailOtpConfirmationDialogFeatureDisabled() {
+    assertTrue(
+        this.host.selectGmailOtpConfirmationRequestHandler === undefined);
     await this.advanceToNextStep();
   }
 

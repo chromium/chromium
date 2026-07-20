@@ -19,7 +19,7 @@ import {assertNever} from '../transport/messaging.js';
 import type {ResponseExtras} from '../transport/messaging.js';
 import type {PostMessageHandler, PostMessageRemote} from '../transport/post_message_transport.js';
 
-import type {ConfirmationRequestErrorReason as ConfirmationRequestErrorReasonMojo, GmailOtpOptInErrorReason as GmailOtpOptInErrorReasonMojo, GmailOtpOptInResult as GmailOtpOptInResultMojo, NavigationConfirmationRequest as NavigationConfirmationRequestMojo, NavigationConfirmationResponse as NavigationConfirmationResponseMojo, SelectAutofillSuggestionsDialogErrorReason as SelectAutofillSuggestionsDialogErrorReasonMojo, SelectAutofillSuggestionsDialogRequest as SelectAutofillSuggestionsDialogRequestMojo, SelectAutofillSuggestionsDialogResponse as SelectAutofillSuggestionsDialogResponseMojo, SelectCredentialDialogErrorReason as SelectCredentialDialogErrorReasonMojo, SelectCredentialDialogRequest as SelectCredentialDialogRequestMojo, SelectCredentialDialogResponse as SelectCredentialDialogResponseMojo, TaskOptions as TaskOptionsMojo, UserConfirmationDialogRequest as UserConfirmationDialogRequestMojo, UserConfirmationDialogResponse as UserConfirmationDialogResponseMojo, UserGrantedPermissionDuration as UserGrantedPermissionDurationMojo} from './../../actor_webui.mojom-webui.js';
+import type {ConfirmationRequestErrorReason as ConfirmationRequestErrorReasonMojo, GmailOtpConfirmationRequest as GmailOtpConfirmationRequestMojo, GmailOtpConfirmationResult as GmailOtpConfirmationResultMojo, GmailOtpErrorReason as GmailOtpErrorReasonMojo, GmailOtpOptInRequest as GmailOtpOptInRequestMojo, GmailOtpOptInResult as GmailOtpOptInResultMojo, NavigationConfirmationRequest as NavigationConfirmationRequestMojo, NavigationConfirmationResponse as NavigationConfirmationResponseMojo, SelectAutofillSuggestionsDialogErrorReason as SelectAutofillSuggestionsDialogErrorReasonMojo, SelectAutofillSuggestionsDialogRequest as SelectAutofillSuggestionsDialogRequestMojo, SelectAutofillSuggestionsDialogResponse as SelectAutofillSuggestionsDialogResponseMojo, SelectCredentialDialogErrorReason as SelectCredentialDialogErrorReasonMojo, SelectCredentialDialogRequest as SelectCredentialDialogRequestMojo, SelectCredentialDialogResponse as SelectCredentialDialogResponseMojo, TaskOptions as TaskOptionsMojo, UserConfirmationDialogRequest as UserConfirmationDialogRequestMojo, UserConfirmationDialogResponse as UserConfirmationDialogResponseMojo, UserGrantedPermissionDuration as UserGrantedPermissionDurationMojo} from './../../actor_webui.mojom-webui.js';
 import type * as actorTypes from './actor_types.js';
 import type {ActorClient, ActorHost} from './actor_types.js';
 
@@ -304,12 +304,24 @@ export class ActorClientImpl implements ActorClientInterface {
     };
   }
 
-  async requestToShowGmailOtpOptInDialog(
-      taskId: number): Promise<{result: GmailOtpOptInResultMojo}> {
+  async requestToShowGmailOtpOptInDialog(request: GmailOtpOptInRequestMojo):
+      Promise<{result: GmailOtpOptInResultMojo}> {
     const clientResponse = await this.sender.requestWithResponse(
-        'requestToShowGmailOtpOptInDialog', {request: {taskId}});
+        'requestToShowGmailOtpOptInDialog',
+        {request: gmailOtpOptInRequestToClient(request)});
     return {
       result: gmailOtpOptInResultToMojo(clientResponse.response),
+    };
+  }
+
+  async requestToShowGmailOtpConfirmationDialog(
+      request: GmailOtpConfirmationRequestMojo):
+      Promise<{result: GmailOtpConfirmationResultMojo}> {
+    const clientResponse = await this.sender.requestWithResponse(
+        'requestToShowGmailOtpConfirmationDialog',
+        {request: gmailOtpConfirmationRequestToClient(request)});
+    return {
+      result: gmailOtpConfirmationResultToMojo(clientResponse.response),
     };
   }
 }
@@ -488,19 +500,51 @@ function resumeActorTaskResultToClient(
 }
 
 assertNever<CheckEnumCompatibility<
-    typeof actorWebUiMojom.GmailOtpOptInErrorReason,
-    typeof actorTypes.GmailOtpOptInErrorReason>>();
+    typeof actorWebUiMojom.GmailOtpErrorReason,
+    typeof actorTypes.GmailOtpErrorReason>>();
+
+function gmailOtpOptInRequestToClient(request: GmailOtpOptInRequestMojo):
+    actorTypes.GmailOtpOptInRequestPrivate {
+  return {
+    taskId: request.taskId,
+  };
+}
 
 function gmailOtpOptInResultToMojo(
     response: actorTypes.GmailOtpOptInResponsePrivate):
     GmailOtpOptInResultMojo {
   if (response.errorReason !== undefined) {
     return {
-      errorReason: response.errorReason as number as
-          GmailOtpOptInErrorReasonMojo,
+      errorReason: response.errorReason as number as GmailOtpErrorReasonMojo,
     };
   }
   return {
-    permissionGranted: response.permissionGranted,
+    response: {
+      permissionGranted: response.permissionGranted,
+    },
+  };
+}
+
+function gmailOtpConfirmationRequestToClient(
+    request: GmailOtpConfirmationRequestMojo):
+    actorTypes.GmailOtpConfirmationRequestPrivate {
+  return {
+    taskId: request.taskId,
+    verificationCode: request.verificationCode,
+  };
+}
+
+function gmailOtpConfirmationResultToMojo(
+    response: actorTypes.GmailOtpConfirmationResponsePrivate):
+    GmailOtpConfirmationResultMojo {
+  if (response.errorReason !== undefined) {
+    return {
+      errorReason: response.errorReason as number as GmailOtpErrorReasonMojo,
+    };
+  }
+  return {
+    response: {
+      permissionGranted: response.permissionGranted,
+    },
   };
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ActorTaskInterruptReason, ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, AutofillSuggestion, CancelActionsResult, Credential, FormFillingRequest, FormFillingResponse, Journal, NavigationConfirmationRequest, NavigationConfirmationResponse, SelectAutofillSuggestionsDialogRequest, SelectAutofillSuggestionsDialogResponse, SelectCredentialDialogRequest, SelectCredentialDialogResponse, TabContextOptions, TaskOptions, UserConfirmationDialogRequest, UserConfirmationDialogResponse, GmailOtpOptInRequest, GmailOtpOptInResponse} from '../../glic_api/glic_api.js';
+import type {ActorTaskInterruptReason, ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, AutofillSuggestion, CancelActionsResult, Credential, FormFillingRequest, FormFillingResponse, GmailOtpConfirmationRequest, GmailOtpConfirmationResponse, GmailOtpOptInRequest, GmailOtpOptInResponse, Journal, NavigationConfirmationRequest, NavigationConfirmationResponse, SelectAutofillSuggestionsDialogRequest, SelectAutofillSuggestionsDialogResponse, SelectCredentialDialogRequest, SelectCredentialDialogResponse, TabContextOptions, TaskOptions, UserConfirmationDialogRequest, UserConfirmationDialogResponse} from '../../glic_api/glic_api.js';
 import type {ResumeActorTaskResultPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate} from '../request_types.js';
 import {defInterface, defMessage} from '../transport/messaging.js';
 
@@ -304,6 +304,16 @@ export const ActorClientDef = defInterface({
       }>(),
       backgroundAllowed: true,
     },
+    {
+      name: 'requestToShowGmailOtpConfirmationDialog',
+      request: defMessage<{
+        request: GmailOtpConfirmationRequestPrivate,
+      }>(),
+      response: defMessage<{
+        response: GmailOtpConfirmationResponsePrivate,
+      }>(),
+      backgroundAllowed: true,
+    },
   ],
 });
 
@@ -404,11 +414,19 @@ export declare interface GmailOtpOptInRequestPrivate extends
 
 export declare interface GmailOtpOptInResponsePrivate extends
     GmailOtpOptInResponse {
-  errorReason?: GmailOtpOptInErrorReason;
+  errorReason?: GmailOtpErrorReason;
 }
 
-// LINT.IfChange(GmailOtpOptInErrorReason)
-export enum GmailOtpOptInErrorReason {
+export declare interface GmailOtpConfirmationRequestPrivate extends
+    Omit<GmailOtpConfirmationRequest, 'onDialogClosed'> {}
+
+export declare interface GmailOtpConfirmationResponsePrivate extends
+    GmailOtpConfirmationResponse {
+  errorReason?: GmailOtpErrorReason;
+}
+
+// LINT.IfChange(GmailOtpErrorReason)
+export enum GmailOtpErrorReason {
   REQUEST_PROMISE_NO_SUBSCRIBER = 0,
 }
-// LINT.ThenChange(//chrome/common/actor_webui.mojom:GmailOtpOptInErrorReason)
+// LINT.ThenChange(//chrome/common/actor_webui.mojom:GmailOtpErrorReason)

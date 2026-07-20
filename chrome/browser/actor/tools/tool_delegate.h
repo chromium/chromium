@@ -140,6 +140,12 @@ class ToolDelegate {
   virtual void RequestToShowGmailOtpOptInDialog(
       GmailOtpOptInCallback callback) = 0;
 
+  using GmailOtpConfirmationCallback =
+      base::OnceCallback<void(webui::mojom::GmailOtpConfirmationResultPtr)>;
+  virtual void RequestToShowGmailOtpConfirmationDialog(
+      const std::string& verification_code,
+      GmailOtpConfirmationCallback callback) = 0;
+
   // During tool execution, the tool becomes blocked on the user's attention.
   // The task still has control of the tab.
   virtual void InterruptFromTool() = 0;

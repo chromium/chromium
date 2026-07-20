@@ -52,6 +52,12 @@ export import FormFillingResponse = generated.FormFillingResponse;
 export import FrameMetadata = generated.FrameMetadata;
 export import GeminiEnterpriseSettings = generated.GeminiEnterpriseSettings;
 export import GetPinCandidatesOptions = generated.GetPinCandidatesOptions;
+export import GmailOtpConfirmationRequest =
+    generated.GmailOtpConfirmationRequest;
+export import GmailOtpConfirmationResponse =
+    generated.GmailOtpConfirmationResponse;
+export import GmailOtpOptInRequest = generated.GmailOtpOptInRequest;
+export import GmailOtpOptInResponse = generated.GmailOtpOptInResponse;
 export import ImageBytesResult = generated.ImageBytesResult;
 export import ImageInfo = generated.ImageInfo;
 export import InvokeOptions = generated.InvokeOptions;
@@ -1181,6 +1187,13 @@ export declare interface GlicBrowserHost {
   selectGmailOtpOptInRequestHandler?(): Observable<GmailOtpOptInRequest>;
 
   /**
+   * Returns an observable that emits when the browser wants the web client to
+   * show a Gmail OTP confirmation dialog.
+   */
+  selectGmailOtpConfirmationRequestHandler?
+      (): Observable<GmailOtpConfirmationRequest>;
+
+  /**
    * Switches to a use a different instance that shows the conversation
    * represented by the provided id. If `info` is not provided, a new instance
    * will be created with an empty conversation. When a new conversation is
@@ -1765,20 +1778,7 @@ export declare interface NavigationConfirmationResponse {
   permissionGranted?: boolean;
 }
 
-export declare interface GmailOtpOptInRequest {
-  // ID of the actor's task.
-  taskId: number;
 
-  // The WebClient must call this function to respond back to the browser when
-  // the dialog is closed.
-  onDialogClosed(response: GmailOtpOptInResponse): void;
-}
-
-export declare interface GmailOtpOptInResponse {
-  // True if the user clicked the opt-in button, false if they
-  // cancelled/closed it.
-  permissionGranted: boolean;
-}
 
 /**
  * The response from the web client containing the chosen suggestions for each
@@ -1839,6 +1839,18 @@ declare module './glic_api_generated.js' {
     // The WebClient must call this function to respond back to the browser when
     // the dialog is closed.
     onDialogClosed(result: {response: SelectCredentialDialogResponse}): void;
+  }
+
+  export interface GmailOtpOptInRequest {
+    // The WebClient must call this function to respond back to the browser when
+    // the dialog is closed.
+    onDialogClosed(response: GmailOtpOptInResponse): void;
+  }
+
+  export interface GmailOtpConfirmationRequest {
+    // The WebClient must call this function to respond back to the browser when
+    // the dialog is closed.
+    onDialogClosed(response: GmailOtpConfirmationResponse): void;
   }
 
   export interface TabData {

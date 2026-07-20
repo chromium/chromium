@@ -70,6 +70,13 @@ class ActorTaskDelegate {
   virtual void RequestToShowGmailOtpOptInDialog(
       TaskId task_id,
       GmailOtpOptInCallback callback) = 0;
+
+  using GmailOtpConfirmationCallback =
+      base::OnceCallback<void(webui::mojom::GmailOtpConfirmationResultPtr)>;
+  virtual void RequestToShowGmailOtpConfirmationDialog(
+      TaskId task_id,
+      const std::string& verification_code,
+      GmailOtpConfirmationCallback callback) = 0;
 };
 
 }  // namespace actor

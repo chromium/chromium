@@ -311,17 +311,56 @@ struct NavigationConfirmationResponse {
   ConfirmationRequestResult result;
 };
 
-// LINT.IfChange(GmailOtpOptInErrorReason)
-// Error reasons for why showing the Gmail OTP Opt-in dialog failed.
+// LINT.IfChange(GmailOtpErrorReason)
+// Error reasons for why showing a Gmail OTP dialog failed.
 [Extensible]
-enum GmailOtpOptInErrorReason {
+enum GmailOtpErrorReason {
   // The hosting WebUI received the request, but the web client has not
   // subscribed to the request yet. We couldn't show the dialog in this case.
   [Default] kRequestPromiseNoSubscriber = 0,
 };
+// LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/actor/actor_types.ts:GmailOtpErrorReason)
 
-// LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/actor/actor_types.ts:GmailOtpOptInErrorReason)
-union GmailOtpOptInResult {
-  bool permission_granted;
-  GmailOtpOptInErrorReason error_reason;
+// @generate glic_api
+// Request to show a Gmail OTP opt-in dialog.
+struct GmailOtpOptInRequest {
+  // ID of the actor's task.
+  int32 task_id;
 };
+
+// @generate glic_api
+// Response for the Gmail OTP opt-in dialog.
+struct GmailOtpOptInResponse {
+  // True if the user clicked the opt-in button, false if they
+  // cancelled/closed it.
+  bool permission_granted;
+};
+
+union GmailOtpOptInResult {
+  GmailOtpOptInResponse response;
+  GmailOtpErrorReason error_reason;
+};
+
+// @generate glic_api
+// Request to show a Gmail OTP confirmation dialog.
+struct GmailOtpConfirmationRequest {
+  // ID of the actor's task.
+  int32 task_id;
+  // The verification code that the user needs to confirm.
+  string verification_code;
+};
+
+// @generate glic_api
+// Response for the Gmail OTP confirmation dialog.
+struct GmailOtpConfirmationResponse {
+  // True if the user clicked the confirmation button, false if they
+  // cancelled/closed it.
+  bool permission_granted;
+};
+
+union GmailOtpConfirmationResult {
+  GmailOtpConfirmationResponse response;
+  GmailOtpErrorReason error_reason;
+};
+
+

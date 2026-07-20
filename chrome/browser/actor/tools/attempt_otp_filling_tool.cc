@@ -318,7 +318,7 @@ void AttemptOtpFillingTool::OnGmailOtpOptInResponse(
     return;
   }
 
-  bool opt_in_permission_granted = response->get_permission_granted();
+  bool opt_in_permission_granted = response->get_response()->permission_granted;
 
   PrefService* prefs = tool_delegate().GetProfile().GetPrefs();
   if (!opt_in_permission_granted) {
