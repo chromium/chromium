@@ -14,6 +14,7 @@
 #include "cc/trees/render_frame_metadata.h"
 #include "components/input/cursor_manager.h"
 #include "content/browser/compositor/surface_utils.h"
+#include "content/browser/pointer_lock_browsertest.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/visibility.h"
@@ -342,13 +343,6 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
             FrameConnector::RootViewFocusState::kFocused);
 
   connector->FocusRootView();  // void
-
-  EXPECT_EQ(connector->LockPointer(false),
-            blink::mojom::PointerLockResult::kUnknownError);
-  EXPECT_EQ(connector->ChangePointerLock(false),
-            blink::mojom::PointerLockResult::kUnknownError);
-
-  connector->UnlockPointer();  // void
 
   EXPECT_TRUE(connector->HasSize());
 
@@ -1028,6 +1022,113 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest, UpdateCursor) {
 
   // This should not crash.
   connector_ptr->UpdateCursor(ui::Cursor(ui::mojom::CursorType::kPointer));
+}
+
+class MockPointerLockWebContentsDelegate : public WebContentsDelegate {
+ public:
+  MockPointerLockWebContentsDelegate() = default;
+  ~MockPointerLockWebContentsDelegate() override = default;
+
+  void RequestPointerLock(WebContents* web_contents,
+                          bool user_gesture,
+                          bool last_unlocked_by_target) override {
+    web_contents->GotResponseToPointerLockRequest(
+        blink::mojom::PointerLockResult::kSuccess);
+  }
+
+  void LostPointerLock() override {}
+};
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest, PointerLock) {
+  InstallCreateHooksForPointerLockBrowserTests();
+
+  MockSurfaceEmbedConnectorDelegate delegate;
+  auto context = SetupConnectorTest(&delegate);
+
+  WebContentsImpl* parent_web_contents_impl =
+      static_cast<WebContentsImpl*>(context.parent_web_contents.get());
+  WebContentsImpl* child_web_contents_impl =
+      static_cast<WebContentsImpl*>(context.child_web_contents.get());
+
+  MockPointerLockWebContentsDelegate parent_delegate;
+  parent_web_contents_impl->SetDelegate(&parent_delegate);
+
+  EXPECT_TRUE(NavigateToURL(child_web_contents_impl, GURL("about:blank")));
+
+  child_web_contents_impl->Focus();
+
+  RenderWidgetHostImpl* child_widget =
+      child_web_contents_impl->GetPrimaryMainFrame()->GetRenderWidgetHost();
+
+  // Initially no pointer lock.
+  EXPECT_FALSE(parent_web_contents_impl->mouse_lock_widget_for_testing());
+  EXPECT_FALSE(child_web_contents_impl->mouse_lock_widget_for_testing());
+
+  EXPECT_TRUE(
+      ExecJs(child_web_contents_impl, "document.body.requestPointerLock()"));
+
+  // Since we mocked the delegate to succeed, it should be locked now that we
+  // requested pointer lock from child JS.
+  EXPECT_EQ(child_widget,
+            parent_web_contents_impl->mouse_lock_widget_for_testing());
+  EXPECT_EQ(child_widget,
+            child_web_contents_impl->mouse_lock_widget_for_testing());
+
+  // Unlock.
+  EXPECT_TRUE(ExecJs(child_web_contents_impl, "document.exitPointerLock()"));
+
+  EXPECT_FALSE(parent_web_contents_impl->mouse_lock_widget_for_testing());
+  EXPECT_FALSE(child_web_contents_impl->mouse_lock_widget_for_testing());
+
+  parent_web_contents_impl->SetDelegate(nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
+                       PointerLockDestruction) {
+  InstallCreateHooksForPointerLockBrowserTests();
+
+  MockSurfaceEmbedConnectorDelegate delegate;
+  auto context = SetupConnectorTest(&delegate);
+
+  WebContentsImpl* parent_web_contents_impl =
+      static_cast<WebContentsImpl*>(context.parent_web_contents.get());
+  WebContentsImpl* child_web_contents_impl =
+      static_cast<WebContentsImpl*>(context.child_web_contents.get());
+
+  MockPointerLockWebContentsDelegate parent_delegate;
+  parent_web_contents_impl->SetDelegate(&parent_delegate);
+
+  EXPECT_TRUE(NavigateToURL(child_web_contents_impl, GURL("about:blank")));
+
+  child_web_contents_impl->Focus();
+
+  RenderWidgetHostImpl* child_widget =
+      child_web_contents_impl->GetPrimaryMainFrame()->GetRenderWidgetHost();
+
+  // Initially no pointer lock.
+  EXPECT_FALSE(parent_web_contents_impl->mouse_lock_widget_for_testing());
+  EXPECT_FALSE(child_web_contents_impl->mouse_lock_widget_for_testing());
+
+  EXPECT_TRUE(
+      ExecJs(child_web_contents_impl, "document.body.requestPointerLock()"));
+
+  // It should be locked.
+  EXPECT_EQ(child_widget,
+            parent_web_contents_impl->mouse_lock_widget_for_testing());
+  EXPECT_EQ(child_widget,
+            child_web_contents_impl->mouse_lock_widget_for_testing());
+
+  // Clear raw_ptrs that will dangle after child destruction.
+  context.connector = nullptr;
+  context.rwhvcf = nullptr;
+
+  // Destroy the child WebContents.
+  context.child_web_contents.reset();
+
+  // Verify that parent WebContents's pointer lock widget is cleared.
+  EXPECT_FALSE(parent_web_contents_impl->mouse_lock_widget_for_testing());
+
+  parent_web_contents_impl->SetDelegate(nullptr);
 }
 
 }  // namespace content

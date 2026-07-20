@@ -177,6 +177,36 @@ TextInputManager* SurfaceEmbedConnectorImpl::GetTextInputManager() {
                                : nullptr;
 }
 
+WebContentsDelegate* SurfaceEmbedConnectorImpl::GetFirstWebContentsDelegate()
+    const {
+  return parent_web_contents()
+             ? parent_web_contents()->GetFirstWebContentsDelegate()
+             : nullptr;
+}
+
+bool SurfaceEmbedConnectorImpl::HasPointerLockWidgetInParentChain() const {
+  return parent_web_contents() &&
+         parent_web_contents()->HasPointerLockWidgetInParentChain();
+}
+
+void SurfaceEmbedConnectorImpl::SetPointerLockWidgetInParentChain(
+    RenderWidgetHostImpl* widget) {
+  if (parent_web_contents()) {
+    parent_web_contents()->SetPointerLockWidgetInParentChain(widget);
+  }
+}
+
+bool SurfaceEmbedConnectorImpl::HasPointerLock(
+    RenderWidgetHostImpl* render_widget_host) const {
+  return parent_web_contents() &&
+         parent_web_contents()->HasPointerLock(render_widget_host);
+}
+
+RenderWidgetHostImpl* SurfaceEmbedConnectorImpl::GetPointerLockWidget() const {
+  return parent_web_contents() ? parent_web_contents()->GetPointerLockWidget()
+                               : nullptr;
+}
+
 SurfaceEmbedConnector::Delegate* SurfaceEmbedConnectorImpl::GetDelegate() {
   return delegate_;
 }
@@ -367,19 +397,8 @@ SurfaceEmbedConnectorImpl::GetRootRenderWidgetHostView() {
   if (!parent_web_contents_) {
     return nullptr;
   }
-  WebContentsImpl* root_web_contents = parent_web_contents();
-  while (SurfaceEmbedConnectorImpl* root_connector =
-             static_cast<SurfaceEmbedConnectorImpl*>(
-                 root_web_contents->GetSurfaceEmbedConnector())) {
-    WebContentsImpl* parent = root_connector->parent_web_contents();
-    if (!parent) {
-      break;
-    }
-    root_web_contents = parent;
-  }
-  CHECK(root_web_contents);
   return static_cast<RenderWidgetHostViewBase*>(
-      root_web_contents->GetRenderWidgetHostView());
+      GetRootWebContents(parent_web_contents())->GetRenderWidgetHostView());
 }
 
 void SurfaceEmbedConnectorImpl::RenderProcessGone() {
@@ -458,19 +477,33 @@ FrameConnector::RootViewFocusState SurfaceEmbedConnectorImpl::HasFocus() {
                                : RootViewFocusState::kNotFocused;
 }
 
-void SurfaceEmbedConnectorImpl::FocusRootView() {}
+void SurfaceEmbedConnectorImpl::FocusRootView() {
+  if (RenderWidgetHostViewBase* root_view = GetRootRenderWidgetHostView()) {
+    root_view->Focus();
+  }
+}
 
 blink::mojom::PointerLockResult SurfaceEmbedConnectorImpl::LockPointer(
     bool request_unadjusted_movement) {
-  return blink::mojom::PointerLockResult::kUnknownError;
+  if (RenderWidgetHostViewBase* root_view = GetRootRenderWidgetHostView()) {
+    return root_view->LockPointer(request_unadjusted_movement);
+  }
+  return blink::mojom::PointerLockResult::kWrongDocument;
 }
 
 blink::mojom::PointerLockResult SurfaceEmbedConnectorImpl::ChangePointerLock(
     bool request_unadjusted_movement) {
-  return blink::mojom::PointerLockResult::kUnknownError;
+  if (RenderWidgetHostViewBase* root_view = GetRootRenderWidgetHostView()) {
+    return root_view->ChangePointerLock(request_unadjusted_movement);
+  }
+  return blink::mojom::PointerLockResult::kWrongDocument;
 }
 
-void SurfaceEmbedConnectorImpl::UnlockPointer() {}
+void SurfaceEmbedConnectorImpl::UnlockPointer() {
+  if (RenderWidgetHostViewBase* root_view = GetRootRenderWidgetHostView()) {
+    root_view->UnlockPointer();
+  }
+}
 
 bool SurfaceEmbedConnectorImpl::HasSize() {
   return has_size_;

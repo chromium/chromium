@@ -1673,6 +1673,7 @@ class CONTENT_EXPORT WebContentsImpl
   friend class TestWebContentsDestructionObserver;
   friend class BeforeUnloadBlockingDelegate;
   friend class TestWCDelegateForDialogsAndFullscreen;
+  friend class SurfaceEmbedConnectorImpl;
 
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplTest, CaptureHoldsWakeLock);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplTest,
@@ -2270,6 +2271,18 @@ class CONTENT_EXPORT WebContentsImpl
   void HandleUserInteractionForInputEvent(
       RenderWidgetHostImpl* render_widget_host,
       const blink::WebInputEvent& event);
+
+  // Returns the first WebContentsDelegate found in the embedding chain,
+  // traversing both SurfaceEmbedConnector and outer WebContents.
+  WebContentsDelegate* GetFirstWebContentsDelegate();
+
+  // Returns true if any WebContents in the parent chain (including this one)
+  // has a pointer lock widget.
+  bool HasPointerLockWidgetInParentChain();
+
+  // Sets the pointer lock widget for this WebContents and propagates it to all
+  // parents in the chain (both SurfaceEmbed and GuestView).
+  void SetPointerLockWidgetInParentChain(RenderWidgetHostImpl* widget);
 
 #if BUILDFLAG(IS_ANDROID)
   // Apply the cached primary subframe importance to the primary frame tree.

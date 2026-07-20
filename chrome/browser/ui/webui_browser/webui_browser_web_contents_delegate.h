@@ -51,6 +51,12 @@ class WebUIBrowserWebContentsDelegate : public content::WebContentsDelegate,
       const input::NativeWebKeyboardEvent& event) override;
   bool HandleKeyboardEvent(content::WebContents* source,
                            const input::NativeWebKeyboardEvent& event) override;
+  void RequestPointerLock(content::WebContents* web_contents,
+                          bool user_gesture,
+                          bool last_unlocked_by_target) override;
+  void LostPointerLock() override;
+  bool IsWaitingForPointerLockPrompt(
+      content::WebContents* web_contents) override;
 
   raw_ptr<WebUIBrowserWindow> window_;
   base::ObserverList<Observer> observers_;

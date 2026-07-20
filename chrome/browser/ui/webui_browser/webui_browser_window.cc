@@ -8,6 +8,9 @@
 #include "base/feature_list.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/global_keyboard_shortcuts_mac.h"
+#endif
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -578,6 +581,11 @@ ui::RendererColorMap WebUIBrowserWindow::GetRendererColorMap(
 bool WebUIBrowserWindow::GetAcceleratorForCommandId(
     int command_id,
     ui::Accelerator* accelerator) const {
+#if BUILDFLAG(IS_MAC)
+  if (GetDefaultMacAcceleratorForCommandId(command_id, accelerator)) {
+    return true;
+  }
+#endif
   // Search for the accelerator in our table.
   for (const auto& entry : accelerator_table_) {
     if (entry.second == command_id) {

@@ -72,3 +72,22 @@ bool WebUIBrowserWebContentsDelegate::HandleKeyboardEvent(
     const input::NativeWebKeyboardEvent& event) {
   return window_->HandleKeyboardEvent(event);
 }
+
+void WebUIBrowserWebContentsDelegate::RequestPointerLock(
+    content::WebContents* web_contents,
+    bool user_gesture,
+    bool last_unlocked_by_target) {
+  static_cast<content::WebContentsDelegate*>(window_->browser())
+      ->RequestPointerLock(web_contents, user_gesture, last_unlocked_by_target);
+}
+
+void WebUIBrowserWebContentsDelegate::LostPointerLock() {
+  static_cast<content::WebContentsDelegate*>(window_->browser())
+      ->LostPointerLock();
+}
+
+bool WebUIBrowserWebContentsDelegate::IsWaitingForPointerLockPrompt(
+    content::WebContents* web_contents) {
+  return static_cast<content::WebContentsDelegate*>(window_->browser())
+      ->IsWaitingForPointerLockPrompt(web_contents);
+}
