@@ -1544,10 +1544,11 @@
       status: "stable",
     },
     {
+      // Ship in M152, should be removed in M154.
       // https://drafts.csswg.org/css-color-5/#relative-alpha
       // https://chromestatus.com/feature/5070160203481088
       name: "CSSAlphaColorFunction",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Allows using counter() and counters() in alt text (after / in content property).
