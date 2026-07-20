@@ -19289,6 +19289,21 @@
             ]
         }
     ],
+    "PdfReuseFragment": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PdfReuseFragment"
+                    ]
+                }
+            ]
+        }
+    ],
     "PdfSaveToDriveSurvey": [
         {
             "platforms": [
