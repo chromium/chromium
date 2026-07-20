@@ -273,6 +273,12 @@ std::optional<sync_pb::FormField_AutofillFieldType> AutofillFieldTypeToProto(
     case autofill::FLIGHT_RESERVATION_CONFIRMATION_CODE:
       return sync_pb::
           FormField_AutofillFieldType_FLIGHT_RESERVATION_CONFIRMATION_CODE;
+    case autofill::FLIGHT_RESERVATION_DEPARTURE_AIRPORT:
+      return sync_pb::
+          FormField_AutofillFieldType_FLIGHT_RESERVATION_DEPARTURE_AIRPORT;
+    case autofill::FLIGHT_RESERVATION_ARRIVAL_AIRPORT:
+      return sync_pb::
+          FormField_AutofillFieldType_FLIGHT_RESERVATION_ARRIVAL_AIRPORT;
     case autofill::ORDER_ID:
       return sync_pb::FormField_AutofillFieldType_ORDER_ID;
     case autofill::ORDER_DATE:

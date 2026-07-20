@@ -321,6 +321,8 @@ FormFieldData CreateFieldByRole::operator()(FieldType role) const {
     case FieldType::FLIGHT_RESERVATION_FLIGHT_NUMBER:
     case FieldType::FLIGHT_RESERVATION_CONFIRMATION_CODE:
     case FieldType::FLIGHT_RESERVATION_TICKET_NUMBER:
+    case FieldType::FLIGHT_RESERVATION_DEPARTURE_AIRPORT:
+    case FieldType::FLIGHT_RESERVATION_ARRIVAL_AIRPORT:
     case FieldType::FLIGHT_RESERVATION_DEPARTURE_DATE:
     case FieldType::NAME_SUFFIX:
     case FieldType::MERCHANT_EMAIL_SIGNUP:
@@ -467,6 +469,8 @@ FormFieldData CreateFieldByRole::operator()(FieldType role) const {
     case FieldType::FLIGHT_RESERVATION_FLIGHT_NUMBER:
     case FieldType::FLIGHT_RESERVATION_CONFIRMATION_CODE:
     case FieldType::FLIGHT_RESERVATION_TICKET_NUMBER:
+    case FieldType::FLIGHT_RESERVATION_DEPARTURE_AIRPORT:
+    case FieldType::FLIGHT_RESERVATION_ARRIVAL_AIRPORT:
     case FieldType::FLIGHT_RESERVATION_DEPARTURE_DATE:
     case FieldType::PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX:
     case FieldType::NAME_SUFFIX:

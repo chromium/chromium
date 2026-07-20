@@ -238,9 +238,9 @@ constexpr std::optional<FieldType> AttributeType::field_type() const {
     case AttributeTypeName::kFlightReservationConfirmationCode:
       return FLIGHT_RESERVATION_CONFIRMATION_CODE;
     case AttributeTypeName::kFlightReservationDepartureAirport:
-      return std::nullopt;
+      return FLIGHT_RESERVATION_DEPARTURE_AIRPORT;
     case AttributeTypeName::kFlightReservationArrivalAirport:
-      return std::nullopt;
+      return FLIGHT_RESERVATION_ARRIVAL_AIRPORT;
     case AttributeTypeName::kFlightReservationDepartureDate:
       return FLIGHT_RESERVATION_DEPARTURE_DATE;
 

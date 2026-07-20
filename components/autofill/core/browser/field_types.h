@@ -553,10 +553,8 @@ enum FieldType {
   FLIGHT_RESERVATION_FLIGHT_NUMBER = 198,
   FLIGHT_RESERVATION_CONFIRMATION_CODE = 199,
   FLIGHT_RESERVATION_TICKET_NUMBER = 200,
-  // The following two types were never predicted by the Autofill server.
-  // The numeric values may therefore be recycled:
-  // FLIGHT_RESERVATION_DEPARTURE_AIRPORT = 204,
-  // FLIGHT_RESERVATION_ARRIVAL_AIRPORT = 205,
+  FLIGHT_RESERVATION_DEPARTURE_AIRPORT = 204,
+  FLIGHT_RESERVATION_ARRIVAL_AIRPORT = 205,
   FLIGHT_RESERVATION_DEPARTURE_DATE = 206,
 
   // Combination of types ADDRESS_HOME_ZIP and ADDRESS_HOME_CITY.
@@ -736,8 +734,7 @@ constexpr std::optional<FieldType> ToSafeFieldType(
            // Unused Forms AI types: These types were never predicted by the
            // Autofill server and never used. They may be recycled in the
            // future.
-           (204 <= t && t <= 205) || (211 <= t && t <= 214) ||
-           (215 <= t && t <= 217) || t == 219;
+           (211 <= t && t <= 214) || (215 <= t && t <= 217) || t == 219;
   };
   if (is_invalid(raw_value)) {
     return std::nullopt;
@@ -880,6 +877,8 @@ constexpr FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
     case FLIGHT_RESERVATION_FLIGHT_NUMBER:
     case FLIGHT_RESERVATION_TICKET_NUMBER:
     case FLIGHT_RESERVATION_CONFIRMATION_CODE:
+    case FLIGHT_RESERVATION_DEPARTURE_AIRPORT:
+    case FLIGHT_RESERVATION_ARRIVAL_AIRPORT:
     case FLIGHT_RESERVATION_DEPARTURE_DATE:
     case ORDER_ID:
     case ORDER_DATE:

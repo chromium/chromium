@@ -219,7 +219,8 @@ class BaseAutofillAiTest : public testing::Test {
     return CreateFormStructure(
         {NAME_FULL, FLIGHT_RESERVATION_FLIGHT_NUMBER,
          FLIGHT_RESERVATION_TICKET_NUMBER, FLIGHT_RESERVATION_CONFIRMATION_CODE,
-         UNKNOWN_TYPE, UNKNOWN_TYPE},
+         FLIGHT_RESERVATION_ARRIVAL_AIRPORT,
+         FLIGHT_RESERVATION_DEPARTURE_AIRPORT},
         std::move(url));
   }
 
