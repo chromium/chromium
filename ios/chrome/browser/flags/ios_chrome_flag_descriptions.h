@@ -531,6 +531,11 @@ inline constexpr char kDataSharingVersioningStatesName[] =
 inline constexpr char kDataSharingVersioningStatesDescription[] =
     "Testing multiple scenarios for versioning.";
 
+inline constexpr char kDefaultBottomOmniboxOnIOSName[] =
+    "Default Bottom Omnibox on iOS";
+inline constexpr char kDefaultBottomOmniboxOnIOSDescription[] =
+    "When enabled, the omnibox position defaults to bottom on iOS.";
+
 inline constexpr char kDefaultBrowserOffCyclePromoName[] =
     "Default Browser off-cycle promo";
 inline constexpr char kDefaultBrowserOffCyclePromoDescription[] =

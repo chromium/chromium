@@ -2880,6 +2880,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kIOSPasskeyModalLoginWithShimName,
      flag_descriptions::kIOSPasskeyModalLoginWithShimDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSPasskeyModalLoginWithShim)},
+    {"default-bottom-omnibox-on-ios",
+     flag_descriptions::kDefaultBottomOmniboxOnIOSName,
+     flag_descriptions::kDefaultBottomOmniboxOnIOSDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kDefaultBottomOmniboxOnIOS)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -257,6 +257,7 @@ source_set("web_internal") {
     "//components/metrics:child_call_stack_profile_builder",
     "//components/metrics/public/mojom:call_stack_mojo_bindings",
     "//components/metrics_services_manager",
+    "//components/omnibox/browser:pref_names",
     "//components/open_from_clipboard",
     "//components/password_manager/ios:password_manager_feature_header",
     "//components/payments/core",

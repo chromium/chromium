@@ -1044,4 +1044,10 @@ BASE_DECLARE_FEATURE(kSearchEngineChoiceScreenSnackbar);
 // Returns true if SearchEngineChoiceScreenSnackbar is enabled.
 bool IsSearchEngineChoiceScreenSnackbarEnabled();
 
+// Enables the DefaultBottomOmniboxOnIOS feature.
+BASE_DECLARE_FEATURE(kDefaultBottomOmniboxOnIOS);
+
+// Returns true if the DefaultBottomOmniboxOnIOS feature is enabled.
+bool IsDefaultBottomOmniboxOnIOSEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

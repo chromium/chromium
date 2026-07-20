@@ -38,6 +38,7 @@
 #import "components/metrics/expired_histogram_util.h"
 #import "components/metrics/metrics_service.h"
 #import "components/metrics_services_manager/metrics_services_manager.h"
+#import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "components/prefs/json_pref_store.h"
 #import "components/prefs/pref_service.h"
@@ -69,6 +70,7 @@
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_dependency_manager_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/translate/model/translate_service_ios.h"
 #import "ios/chrome/browser/web/model/ios_thread_profiler.h"
@@ -188,6 +190,13 @@ void IOSChromeMainParts::ApplyFeatureList() {
 
   // Initialize //base features that depend on the `FeatureList`.
   base::features::Init();
+
+  if (IsDefaultBottomOmniboxOnIOSEnabled()) {
+    // Set the default value after the feature list is started as the pref is
+    // registered before the feature is set.
+    local_state_->SetDefaultPrefValue(omnibox::kIsOmniboxInBottomPosition,
+                                      base::Value(true));
+  }
 }
 
 void IOSChromeMainParts::PreCreateThreads() {

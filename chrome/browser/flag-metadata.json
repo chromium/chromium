@@ -2397,6 +2397,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "default-bottom-omnibox-on-ios",
+    "owners": [ "gambard@google.com", "meridian@google.com" ],
+    "expiry_milestone": 157
+  },
+  {
     "name": "default-browser-changed-os-notification",
     "owners": [
       "top-chrome-desktop-ui@google.com",

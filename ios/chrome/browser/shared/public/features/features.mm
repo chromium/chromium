@@ -1264,3 +1264,9 @@ BASE_FEATURE(kSearchEngineChoiceScreenSnackbar,
 bool IsSearchEngineChoiceScreenSnackbarEnabled() {
   return base::FeatureList::IsEnabled(kSearchEngineChoiceScreenSnackbar);
 }
+
+BASE_FEATURE(kDefaultBottomOmniboxOnIOS, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsDefaultBottomOmniboxOnIOSEnabled() {
+  return base::FeatureList::IsEnabled(kDefaultBottomOmniboxOnIOS);
+}
