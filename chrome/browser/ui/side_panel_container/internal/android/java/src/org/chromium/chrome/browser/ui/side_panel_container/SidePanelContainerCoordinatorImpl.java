@@ -26,8 +26,6 @@ import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.side_panel.SidePanelCoordinatorAndroid;
-import org.chromium.chrome.browser.ui.side_panel_container.dev.SidePanelDevFeature;
-import org.chromium.chrome.browser.ui.side_panel_container.dev.SidePanelDevFeatureImpl;
 import org.chromium.chrome.browser.ui.side_ui.SideUiContainer;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
@@ -53,8 +51,6 @@ final class SidePanelContainerCoordinatorImpl
 
     /** JNI bridge to read/write C++ side panel states. */
     private @Nullable SidePanelCoordinatorAndroid mSidePanelCoordinatorAndroid;
-
-    private @Nullable SidePanelDevFeatureImpl mSidePanelPureJavaDevFeature;
 
     private @Nullable SidePanelContent mCurrentContent;
 
@@ -110,22 +106,12 @@ final class SidePanelContainerCoordinatorImpl
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
-    public void init(
-            SidePanelCoordinatorAndroid sidePanelCoordinatorAndroid,
-            @Nullable SidePanelDevFeature sidePanelDevFeature) {
+    public void init(SidePanelCoordinatorAndroid sidePanelCoordinatorAndroid) {
         log(TAG, "init");
         ThreadUtils.assertOnUiThread();
         mSideUiCoordinator.registerSideUiContainer(this);
-
-        // SidePanelCoordinatorAndroid connects the Java UI with the state management logic in C++.
-        // We should _not_ initialize SidePanelCoordinatorAndroid for the pure-Java dev feature,
-        // otherwise the pure-Java dev feature will drive the C++ side into invalid states.
-        if (sidePanelDevFeature instanceof SidePanelDevFeatureImpl) {
-            mSidePanelPureJavaDevFeature = (SidePanelDevFeatureImpl) sidePanelDevFeature;
-        } else {
-            mSidePanelCoordinatorAndroid = sidePanelCoordinatorAndroid;
-            mSidePanelCoordinatorAndroid.init();
-        }
+        mSidePanelCoordinatorAndroid = sidePanelCoordinatorAndroid;
+        mSidePanelCoordinatorAndroid.init();
     }
 
     @Override
@@ -243,13 +229,6 @@ final class SidePanelContainerCoordinatorImpl
     }
 
     @Override
-    public boolean isShowing(SidePanelContent sidePanelContent) {
-        log(TAG, "isShowing", sidePanelContent);
-        ThreadUtils.assertOnUiThread();
-        return sidePanelContent == mCurrentContent;
-    }
-
-    @Override
     public @Nullable View getContentView() {
         ThreadUtils.assertOnUiThread();
         return mCurrentContent != null ? mCurrentContent.mView : null;
@@ -335,17 +314,9 @@ final class SidePanelContainerCoordinatorImpl
     @Override
     public boolean hasContentToShow() {
         ThreadUtils.assertOnUiThread();
-
-        // The pure-Java dev feature doesn't use SidePanelCoordinatorAndroid since
-        // SidePanelCoordinatorAndroid is a bridge to the C++ side panel state management.
-        if (mSidePanelPureJavaDevFeature != null) {
-            return mSidePanelPureJavaDevFeature.hasDevContentToShow();
-        }
-
         if (mSidePanelCoordinatorAndroid != null) {
             return mSidePanelCoordinatorAndroid.hasContentToShow();
         }
-
         return false;
     }
 
@@ -437,12 +408,6 @@ final class SidePanelContainerCoordinatorImpl
 
     @Override
     public void onWillAutoClose() {
-        // The pure-Java dev feature doesn't need onWillAutoClose() or SidePanelCoordinatorAndroid.
-        // SidePanelCoordinatorAndroid is a bridge to the C++ side panel state management.
-        if (mSidePanelPureJavaDevFeature != null) {
-            return;
-        }
-
         if (mSidePanelCoordinatorAndroid != null) {
             mIsPreparingForAutoClose = true;
             mSidePanelCoordinatorAndroid.onWillAutoClose();
@@ -452,13 +417,6 @@ final class SidePanelContainerCoordinatorImpl
 
     @Override
     public void onWillAutoRestore() {
-        // The pure-Java dev feature doesn't need onWillAutoRestore() or
-        // SidePanelCoordinatorAndroid.
-        // SidePanelCoordinatorAndroid is a bridge to the C++ side panel state management.
-        if (mSidePanelPureJavaDevFeature != null) {
-            return;
-        }
-
         if (mSidePanelCoordinatorAndroid != null) {
             mIsPreparingForAutoRestore = true;
             mSidePanelCoordinatorAndroid.onWillAutoRestore();
@@ -515,9 +473,7 @@ final class SidePanelContainerCoordinatorImpl
     }
 
     private void onCloseButtonClicked() {
-        if (mSidePanelPureJavaDevFeature != null) {
-            mSidePanelPureJavaDevFeature.toggle();
-        } else if (mSidePanelCoordinatorAndroid != null) {
+        if (mSidePanelCoordinatorAndroid != null) {
             mSidePanelCoordinatorAndroid.close();
         }
     }

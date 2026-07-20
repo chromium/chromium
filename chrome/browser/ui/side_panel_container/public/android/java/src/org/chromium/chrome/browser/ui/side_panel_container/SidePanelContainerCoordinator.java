@@ -10,7 +10,6 @@ import android.view.View;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.side_panel.SidePanelCoordinatorAndroid;
-import org.chromium.chrome.browser.ui.side_panel_container.dev.SidePanelDevFeature;
 
 /** Coordinator of the side panel container UI. */
 @NullMarked
@@ -61,12 +60,8 @@ public interface SidePanelContainerCoordinator {
      *
      * @param sidePanelCoordinatorAndroid For communicating with the native {@code
      *     SidePanelCoordinatorAndroid}, which manages states for all side panel features.
-     * @param sidePanelDevFeature For communicating with the dev feature. This should always be null
-     *     in production.
      */
-    void init(
-            SidePanelCoordinatorAndroid sidePanelCoordinatorAndroid,
-            @Nullable SidePanelDevFeature sidePanelDevFeature);
+    void init(SidePanelCoordinatorAndroid sidePanelCoordinatorAndroid);
 
     /**
      * Starts opening this side panel container with the given {@link SidePanelContent}.
@@ -106,9 +101,6 @@ public interface SidePanelContainerCoordinator {
 
     /** Immediately ends all ongoing animations. */
     void endAnimations();
-
-    /** Returns whether the given {@link SidePanelContent} is shown in this side panel container. */
-    boolean isShowing(SidePanelContent sidePanelContent);
 
     /** Returns the content View currently shown in the side panel container, or null. */
     @Nullable View getContentView();

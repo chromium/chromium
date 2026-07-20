@@ -20,7 +20,4 @@ public interface SidePanelDevFeature {
      * container.
      */
     void toggle();
-
-    /** Destroys this {@link SidePanelDevFeature}. */
-    void destroy();
 }

@@ -6,21 +6,12 @@ package org.chromium.chrome.browser.ui.side_panel_container.dev;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.ui.side_panel_container.SidePanelContainerCoordinator;
-import org.chromium.chrome.browser.ui.side_panel_container.SidePanelContent;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.content_public.browser.WebContents;
 
 /** A plain old data class holding all objects in the content of {@link SidePanelDevFeature}. */
 @NullMarked
 final class SidePanelDevFeatureContent {
-
-    /**
-     * Content for {@link SidePanelContainerCoordinator#startOpeningPanel}.
-     *
-     * <p>It should hold {@link #mThinWebView} as {@link SidePanelContent#mView}.
-     */
-    @Nullable SidePanelContent mSidePanelContent;
 
     /** The View holding {@link #mWebContents}. */
     @Nullable ThinWebView mThinWebView;
@@ -35,15 +26,10 @@ final class SidePanelDevFeatureContent {
     SidePanelDevFeatureContent(ThinWebView thinWebView, WebContents webContents) {
         mThinWebView = thinWebView;
         mWebContents = webContents;
-        mSidePanelContent =
-                new SidePanelContent(
-                        mThinWebView.getView(), "Developer Panel", /* showHeader= */ true);
     }
 
     /** Destroys all objects in this data class and sets their references to {@code null}. */
     void destroy() {
-        mSidePanelContent = null;
-
         if (mWebContents != null) {
             mWebContents.destroy();
             mWebContents = null;

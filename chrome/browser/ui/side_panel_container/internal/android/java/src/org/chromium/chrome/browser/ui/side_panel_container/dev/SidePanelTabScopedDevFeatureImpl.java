@@ -65,11 +65,6 @@ public final class SidePanelTabScopedDevFeatureImpl implements SidePanelDevFeatu
         }
     }
 
-    @Override
-    public void destroy() {
-        ThreadUtils.assertOnUiThread();
-    }
-
     @SuppressLint("SetTextI18n")
     @CalledByNative
     private static View createTabScopedView(Tab tab) {

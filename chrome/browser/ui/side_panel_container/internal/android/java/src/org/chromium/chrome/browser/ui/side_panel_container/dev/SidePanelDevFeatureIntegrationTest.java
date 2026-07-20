@@ -4,10 +4,10 @@
 
 package org.chromium.chrome.browser.ui.side_panel_container.dev;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+
+import android.view.View;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -33,16 +33,15 @@ import org.chromium.chrome.browser.ui.side_panel_container.SidePanelContainerCoo
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests {@link SidePanelDevFeature}'s integration with {@code ChromeActivity}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
-@EnableFeatures({
-    ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL,
-    ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL_DEV_FEATURE
-})
+@EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL + ":disable_animations/true")
 @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
 @NullMarked
 public class SidePanelDevFeatureIntegrationTest {
@@ -51,9 +50,11 @@ public class SidePanelDevFeatureIntegrationTest {
     public final FreshCtaTransitTestRule mFreshCtaTransitTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
+    private WebPageStation mInitialWebPageStation;
+
     @Before
     public void setUp() {
-        mFreshCtaTransitTestRule.startOnBlankPage();
+        mInitialWebPageStation = mFreshCtaTransitTestRule.startOnBlankPage();
     }
 
     @Test
@@ -65,45 +66,75 @@ public class SidePanelDevFeatureIntegrationTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL + ":disable_animations/true")
-    public void toggle_toggleDevContent() {
-        // Arrange.
-        var sidePanelDevFeature = getSidePanelDevFeature();
-        assertNotNull(sidePanelDevFeature);
+    @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL_DEV_FEATURE)
+    public void testWindowScopedDevFeature() {
+        // Arrange: Open 2 tabs.
+        var tab1 = mInitialWebPageStation.getTab();
+        var newTabPageStation = mInitialWebPageStation.openNewTabFast();
+        var tab2 = newTabPageStation.getTab();
 
         // Act: Toggle the dev feature.
+        var sidePanelDevFeature = getSidePanelDevFeature();
+        assertNotNull(sidePanelDevFeature);
         ThreadUtils.runOnUiThreadBlocking(sidePanelDevFeature::toggle);
 
-        // Assert: The dev feature reports it has content to show.
-        assertTrue(ThreadUtils.runOnUiThreadBlocking(sidePanelDevFeature::hasDevContentToShow));
+        // Assert: Side panel is open.
+        waitForSidePanelOpen();
 
-        // Assert: The dev content is shown in the side panel container.
-        var sidePanelContainerCoordinator = getSidePanelContainerCoordinator();
-        var sidePanelDevFeatureContent =
-                ThreadUtils.runOnUiThreadBlocking(
-                        sidePanelDevFeature::getDevFeatureContentForTesting);
-        assertNotNull(sidePanelDevFeatureContent);
-        var sidePanelContent = sidePanelDevFeatureContent.mSidePanelContent;
-        assertNotNull(sidePanelContent);
-        assertTrue(
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> sidePanelContainerCoordinator.isShowing(sidePanelContent)));
+        // Act: Switch tabs.
+        mInitialWebPageStation = newTabPageStation.selectTabFast(tab1, WebPageStation::newBuilder);
 
-        // Wait for the SidePanelContent's View to be laid out before calling toggle() again.
-        CriteriaHelper.pollUiThread(
-                () -> sidePanelContent.mView.getWidth() > 0,
-                "The SidePanelContent View should have been laid out.");
+        // Assert: Side panel is still open.
+        waitForSidePanelOpen();
 
-        // Act: Toggle the dev feature again.
+        // Act: Toggle again.
         ThreadUtils.runOnUiThreadBlocking(sidePanelDevFeature::toggle);
 
-        // Assert: The dev feature reports it has no content to show.
-        assertFalse(ThreadUtils.runOnUiThreadBlocking(sidePanelDevFeature::hasDevContentToShow));
+        // Assert: Side panel is closed.
+        waitForSidePanelClose();
 
-        // Assert: The dev feature is not shown in the side panel container..
-        assertFalse(
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> sidePanelContainerCoordinator.isShowing(sidePanelContent)));
+        // Act: Switch tabs again.
+        mInitialWebPageStation.selectTabFast(tab2, RegularNewTabPageStation::newBuilder);
+
+        // Assert: Side panel is still closed.
+        waitForSidePanelClose();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL_DEV_FEATURE + ":scope/tab")
+    public void testTabScopedDevFeature() {
+        // Arrange: Open 2 tabs.
+        var tab1 = mInitialWebPageStation.getTab();
+        var newTabPageStation = mInitialWebPageStation.openNewTabFast();
+        var tab2 = newTabPageStation.getTab();
+
+        // Act: Toggle the dev feature.
+        var sidePanelDevFeature = getSidePanelDevFeature();
+        assertNotNull(sidePanelDevFeature);
+        ThreadUtils.runOnUiThreadBlocking(sidePanelDevFeature::toggle);
+
+        // Assert: Side panel is open.
+        waitForSidePanelOpen();
+
+        // Act: Switch tabs.
+        mInitialWebPageStation = newTabPageStation.selectTabFast(tab1, WebPageStation::newBuilder);
+
+        // Assert: Side panel is closed.
+        waitForSidePanelClose();
+
+        // Act: Switch tabs again.
+        newTabPageStation =
+                mInitialWebPageStation.selectTabFast(tab2, RegularNewTabPageStation::newBuilder);
+
+        // Assert: Side panel is open.
+        waitForSidePanelOpen();
+
+        // Act: Toggle again.
+        ThreadUtils.runOnUiThreadBlocking(sidePanelDevFeature::toggle);
+
+        // Assert: Side panel is closed.
+        waitForSidePanelClose();
     }
 
     private TabbedRootUiCoordinator getTabbedRootUiCoordinator() {
@@ -118,8 +149,27 @@ public class SidePanelDevFeatureIntegrationTest {
         return sidePanelContainerCoordinator;
     }
 
-    private @Nullable SidePanelDevFeatureImpl getSidePanelDevFeature() {
-        return (SidePanelDevFeatureImpl)
-                getTabbedRootUiCoordinator().getSidePanelDevFeatureForTesting();
+    private @Nullable SidePanelDevFeature getSidePanelDevFeature() {
+        return getTabbedRootUiCoordinator().getSidePanelDevFeatureForTesting();
+    }
+
+    private void waitForSidePanelOpen() {
+        var sidePanelContainerCoordinator = getSidePanelContainerCoordinator();
+        View containerView =
+                ThreadUtils.runOnUiThreadBlocking(sidePanelContainerCoordinator::getViewForTesting);
+
+        CriteriaHelper.pollUiThread(
+                () -> containerView.getWidth() > 0,
+                "The container View should have been attached and laid out.");
+    }
+
+    private void waitForSidePanelClose() {
+        var sidePanelContainerCoordinator = getSidePanelContainerCoordinator();
+        View containerView =
+                ThreadUtils.runOnUiThreadBlocking(sidePanelContainerCoordinator::getViewForTesting);
+
+        CriteriaHelper.pollUiThread(
+                () -> containerView.getParent() == null,
+                "The container View should have been detached.");
     }
 }

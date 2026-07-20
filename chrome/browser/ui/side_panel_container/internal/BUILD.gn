@@ -31,6 +31,7 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/ui/browser_window/public/android:java",
     "//chrome/browser/ui/side_panel/android:java",
     "//chrome/browser/ui/side_panel_container/public:java",
     "//chrome/browser/ui/side_ui/public:java",
@@ -56,13 +57,18 @@ generate_jni("jni_headers") {
     ":*",
     "//chrome/browser/android:*",
   ]
-  sources = [ "android/java/src/org/chromium/chrome/browser/ui/side_panel_container/dev/SidePanelTabScopedDevFeatureImpl.java" ]
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/ui/side_panel_container/dev/SidePanelDevFeatureImpl.java",
+    "android/java/src/org/chromium/chrome/browser/ui/side_panel_container/dev/SidePanelTabScopedDevFeatureImpl.java",
+  ]
 }
 
 source_set("android") {
   sources = [
     "android/dev/side_panel_tab_scoped_dev_feature.cc",
     "android/dev/side_panel_tab_scoped_dev_feature.h",
+    "android/dev/side_panel_window_scoped_dev_feature.cc",
+    "android/dev/side_panel_window_scoped_dev_feature.h",
   ]
 
   deps = [

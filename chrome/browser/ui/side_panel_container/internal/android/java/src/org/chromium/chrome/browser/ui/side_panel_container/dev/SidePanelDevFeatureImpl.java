@@ -7,16 +7,19 @@ package org.chromium.chrome.browser.ui.side_panel_container.dev;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
+import android.view.View;
+
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
-import org.chromium.chrome.browser.ui.side_panel_container.SidePanelContainerCoordinator;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.thinwebview.ThinWebViewAttachParams;
@@ -27,22 +30,20 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 
-/** Implements a pure-Java, window-scoped {@link SidePanelDevFeature}. */
+/** Implements a window-scoped {@link SidePanelDevFeature}. */
 @NullMarked
-public final class SidePanelDevFeatureImpl implements SidePanelDevFeature {
+public final class SidePanelDevFeatureImpl
+        implements SidePanelDevFeature, ChromeAndroidTaskFeature {
     private static final String DEV_FEATURE_URL = "https://www.google.com";
 
-    private final MonotonicObservableSupplier<Profile> mProfileSupplier;
-    private final SidePanelContainerCoordinator mSidePanelContainerCoordinator;
+    private final Profile mProfile;
     private final WindowAndroid mWindowAndroid;
 
     private @Nullable SidePanelDevFeatureContent mDevContent;
+    private long mNativeSidePanelWindowScopedDevFeature;
 
     private static SidePanelDevFeatureContent createDevContent(
-            MonotonicObservableSupplier<Profile> profileSupplier, WindowAndroid windowAndroid) {
-        Profile profile = profileSupplier.get();
-        assert profile != null;
-
+            Profile profile, WindowAndroid windowAndroid) {
         var webContents =
                 WebContentsFactory.createWebContents(
                         profile, /* initiallyHidden= */ false, /* initializeRenderer= */ true);
@@ -91,50 +92,85 @@ public final class SidePanelDevFeatureImpl implements SidePanelDevFeature {
         return context;
     }
 
-    public SidePanelDevFeatureImpl(
-            MonotonicObservableSupplier<Profile> profileSupplier,
-            SidePanelContainerCoordinator sidePanelContainerCoordinator,
-            WindowAndroid windowAndroid) {
-        assert AndroidSidePanelEnabledFn.isPureJavaDevFeatureEnabled();
+    public SidePanelDevFeatureImpl(Profile profile, WindowAndroid windowAndroid) {
+        assert AndroidSidePanelEnabledFn.isWindowScopedDevFeatureEnabled();
 
-        mProfileSupplier = profileSupplier;
-        mSidePanelContainerCoordinator = sidePanelContainerCoordinator;
+        mProfile = profile;
         mWindowAndroid = windowAndroid;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    //              Start of ChromeAndroidTaskFeature Implementation                             //
+    ///////////////////////////////////////////////////////////////////////////////////////////////
     @Override
-    public void toggle() {
+    public void onAddedToTask(InitInfo initInfo) {
         ThreadUtils.assertOnUiThread();
-        if (mDevContent == null) {
-            mDevContent = createDevContent(mProfileSupplier, mWindowAndroid);
-            mSidePanelContainerCoordinator.startOpeningPanel(
-                    assumeNonNull(mDevContent.mSidePanelContent),
-                    /* startingBounds= */ null,
-                    /* suppressAnimations= */ false);
-        } else {
-            mDevContent.destroy();
-            mDevContent = null;
-            mSidePanelContainerCoordinator.startClosingPanel(/* suppressAnimations= */ false);
-        }
+        createNativePtr(initInfo.nativeBrowserWindowPtr);
     }
 
     @Override
-    public void destroy() {
+    public void onFeatureRemoved() {
         ThreadUtils.assertOnUiThread();
-
         if (mDevContent != null) {
             mDevContent.destroy();
             mDevContent = null;
         }
+
+        destroyNativePtr();
     }
 
-    /** Returns whether there is {@link SidePanelDevFeatureContent} to show. */
-    public boolean hasDevContentToShow() {
-        return mDevContent != null;
-    }
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    //              End of ChromeAndroidTaskFeature Implementation                             //
+    ///////////////////////////////////////////////////////////////////////////////////////////////
 
-    @Nullable SidePanelDevFeatureContent getDevFeatureContentForTesting() {
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    //              Start of SidePanelDevFeature Implementation                                  //
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
+    @Override
+    public void toggle() {
         ThreadUtils.assertOnUiThread();
-        return mDevContent;
+        if (mNativeSidePanelWindowScopedDevFeature != 0) {
+            SidePanelDevFeatureImplJni.get().toggle(mNativeSidePanelWindowScopedDevFeature);
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    //              End of SidePanelDevFeature Implementation                                    //
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
+    private void createNativePtr(long nativeBrowserWindowPtr) {
+        assert nativeBrowserWindowPtr != 0
+                : "Native BrowserWindowInterface pointer shouldn't be null.";
+        assert mNativeSidePanelWindowScopedDevFeature == 0
+                : "Native SidePanelWindowScopedDevFeature already exists";
+
+        mNativeSidePanelWindowScopedDevFeature =
+                SidePanelDevFeatureImplJni.get().init(this, nativeBrowserWindowPtr);
+    }
+
+    private void destroyNativePtr() {
+        if (mNativeSidePanelWindowScopedDevFeature != 0) {
+            SidePanelDevFeatureImplJni.get().destroy(mNativeSidePanelWindowScopedDevFeature);
+            mNativeSidePanelWindowScopedDevFeature = 0;
+        }
+    }
+
+    @CalledByNative
+    private @Nullable View getOrCreateView() {
+        if (mDevContent == null) {
+            mDevContent = createDevContent(mProfile, mWindowAndroid);
+        }
+
+        return assumeNonNull(mDevContent.mThinWebView).getView();
+    }
+
+    @NativeMethods
+    interface Natives {
+        long init(SidePanelDevFeatureImpl caller, long nativeBrowserWindowPtr);
+
+        void destroy(long nativeSidePanelWindowScopedDevFeature);
+
+        void toggle(long nativeSidePanelWindowScopedDevFeature);
     }
 }
