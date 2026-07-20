@@ -152,13 +152,23 @@
 
 - (void)stopWithCompletion:(ProceduralBlock)completion {
   // Retain self to survive synchronous teardown from the completion block.
-  __strong __typeof(self) strongSelf = self;
-  GeminiTabHelper* geminiTabHelper = [strongSelf activeWebStateGeminiTabHelper];
-  if (geminiTabHelper) {
-    geminiTabHelper->SetPreventContextualPanelEntryPoint(NO);
+  __strong __typeof(self) strongSelf =
+      IsGeminiCoordinatorTeardownFixEnabled() ? self : nil;
+  if (strongSelf) {
+    GeminiTabHelper* geminiTabHelper =
+        [strongSelf activeWebStateGeminiTabHelper];
+    if (geminiTabHelper) {
+      geminiTabHelper->SetPreventContextualPanelEntryPoint(NO);
+    }
+    [strongSelf presentPageActionMenuIPH];
+  } else {
+    GeminiTabHelper* geminiTabHelper = [self activeWebStateGeminiTabHelper];
+    if (geminiTabHelper) {
+      geminiTabHelper->SetPreventContextualPanelEntryPoint(NO);
+    }
+    [self presentPageActionMenuIPH];
   }
 
-  [strongSelf presentPageActionMenuIPH];
   _viewController = nil;
   _geminiHandler = nil;
   _helpCommandsHandler = nil;
@@ -168,7 +178,11 @@
   _tracker = nil;
   _completion = nil;
   if (!_consentCompletion) {
-    [strongSelf dismissPresentedViewWithCompletion:completion];
+    if (strongSelf) {
+      [strongSelf dismissPresentedViewWithCompletion:completion];
+    } else {
+      [self dismissPresentedViewWithCompletion:completion];
+    }
   }
   [super stop];
 }

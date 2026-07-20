@@ -5179,6 +5179,14 @@
     "expiry_milestone": 172
   },
   {
+    "name": "gemini-coordinator-teardown-fix",
+    "owners": [
+      "yasamans@google.com",
+      "bling-alchemy-eng@google.com"
+    ],
+    "expiry_milestone": 180
+  },
+  {
     "name": "gemini-image-remix-tool",
     "owners": [
       "nicolasmacbeth@google.com",

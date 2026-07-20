@@ -428,4 +428,10 @@ BASE_DECLARE_FEATURE(kIOSGeminiBottomSheetMigration);
 // Helper function to check if `kIOSGeminiBottomSheetMigration` is enabled.
 bool IsIOSGeminiBottomSheetMigrationEnabled();
 
+// Feature flag to control the Gemini coordinator teardown crash fix.
+BASE_DECLARE_FEATURE(kGeminiCoordinatorTeardownFix);
+
+// Returns true if the Gemini coordinator teardown crash fix is enabled.
+bool IsGeminiCoordinatorTeardownFixEnabled();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_

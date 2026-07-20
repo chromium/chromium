@@ -851,3 +851,9 @@ bool IsIOSGeminiBottomSheetMigrationEnabled() {
   return IsAssistantContainerEnabled() &&
          base::FeatureList::IsEnabled(kIOSGeminiBottomSheetMigration);
 }
+
+BASE_FEATURE(kGeminiCoordinatorTeardownFix, base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsGeminiCoordinatorTeardownFixEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiCoordinatorTeardownFix);
+}
