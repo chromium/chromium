@@ -7,7 +7,6 @@ bundle_data("resources") {
     "save_passwords.json",
     "save_passwords_darkmode.json",
     "use_autofill.json",
-    "use_autofill_darkmode.json",
   ]
   outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
 }

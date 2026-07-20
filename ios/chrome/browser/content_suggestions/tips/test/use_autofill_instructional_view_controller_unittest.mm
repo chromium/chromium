@@ -30,8 +30,6 @@ class UseAutofillInstructionalViewControllerTest : public PlatformTest {
 TEST_F(UseAutofillInstructionalViewControllerTest,
        StringsAndAccessibilityIdentifier) {
   EXPECT_NSEQ([view_controller_ animationName], @"use_autofill");
-  EXPECT_NSEQ([view_controller_ animationNameDarkMode],
-              @"use_autofill_darkmode");
   EXPECT_NSEQ([view_controller_ animationBackgroundColor],
               [UIColor colorNamed:kSecondaryBackgroundColor]);
 

@@ -14,9 +14,6 @@ namespace {
 // The name of the animation used for the use autofill view.
 NSString* const kAnimationName = @"use_autofill";
 
-// The name of the animation used for the use autofill view in dark mode.
-NSString* const kAnimationNameDarkMode = @"use_autofill_darkmode";
-
 // The accessibility identifier for the use autofill instructional view.
 NSString* const kUseAutofillInstructionalAXID =
     @"kUseAutofillInstructionalAXID";
@@ -29,6 +26,22 @@ NSString* const kUseKeyboardKeypath = @"use_keyboard";
 // `animationTextProvider` dictionary.
 NSString* const kUsePasswordKeypath = @"use_password";
 
+// Returns the color provider for the animation.
+NSDictionary<NSString*, UIColor*>* colorProvider() {
+  return @{
+    @"background_color" : [UIColor colorNamed:kBackgroundColor],
+    @"secondary_background_color" :
+        [UIColor colorNamed:kSecondaryBackgroundColor],
+    @"blue_color" : [UIColor colorNamed:kBlueColor],
+    @"separator_color" : [UIColor colorNamed:kSeparatorColor],
+    @"tertiary_background_color" :
+        [UIColor colorNamed:kTertiaryBackgroundColor],
+    @"text_secondary_color" : [UIColor colorNamed:kTextSecondaryColor],
+    @"Use Keyboard" : [UIColor colorNamed:kBlueColor],
+    @"Use Password" : [UIColor colorNamed:kInvertedTextPrimaryColor],
+  };
+}
+
 }  // namespace
 
 @implementation UseAutofillInstructionalViewController
@@ -36,10 +49,12 @@ NSString* const kUsePasswordKeypath = @"use_password";
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
+  self.useLegacyDarkMode = NO;
   self.animationName = kAnimationName;
-  self.animationNameDarkMode = kAnimationNameDarkMode;
   self.animationBackgroundColor =
       [UIColor colorNamed:kSecondaryBackgroundColor];
+  self.lightModeColorProvider = colorProvider();
+  self.darkModeColorProvider = colorProvider();
 
   // Set the text localization.
   NSString* useKeyboardTitle =
