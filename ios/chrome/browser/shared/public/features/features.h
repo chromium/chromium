@@ -1083,4 +1083,10 @@ BASE_DECLARE_FEATURE(kFixOmniboxInitialPositionStartup);
 // Returns true if the FixOmniboxInitialPositionStartup feature is enabled.
 bool IsFixOmniboxInitialPositionStartupEnabled();
 
+// Enables the DefaultBottomOmniboxOnIOS feature.
+BASE_DECLARE_FEATURE(kDefaultBottomOmniboxOnIOS);
+
+// Returns true if the DefaultBottomOmniboxOnIOS feature is enabled.
+bool IsDefaultBottomOmniboxOnIOSEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

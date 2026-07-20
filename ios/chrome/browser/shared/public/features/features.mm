@@ -1302,3 +1302,9 @@ BASE_FEATURE(kFixOmniboxInitialPositionStartup,
 bool IsFixOmniboxInitialPositionStartupEnabled() {
   return base::FeatureList::IsEnabled(kFixOmniboxInitialPositionStartup);
 }
+
+BASE_FEATURE(kDefaultBottomOmniboxOnIOS, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsDefaultBottomOmniboxOnIOSEnabled() {
+  return base::FeatureList::IsEnabled(kDefaultBottomOmniboxOnIOS);
+}
