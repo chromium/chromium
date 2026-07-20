@@ -19,4 +19,10 @@ BASE_FEATURE(kOnDeviceModelGpuCache, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kOnDeviceModelSpeculativeDecoding,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOnDeviceModelAsrDecoderPrefill,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kOnDeviceModelAsrDecoderPrefillBackoff{
+    &kOnDeviceModelAsrDecoderPrefill, "decoder_prefill_backoff", -1};
+
 }  // namespace on_device_model::features

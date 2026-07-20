@@ -434,6 +434,7 @@ struct ChromeMLASRStreamOptions {
   uint32_t sample_rate_hz;
   // Function to call with transcribed audio.
   const ChromeMLASRStreamOutputFn* output_fn;
+  int32_t decoder_prefill_backoff;
 };
 
 struct ChromeMLASRAPI {

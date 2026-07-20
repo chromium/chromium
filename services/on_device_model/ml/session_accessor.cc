@@ -18,6 +18,7 @@
 #include "services/on_device_model/ml/chrome_ml.h"
 #include "services/on_device_model/ml/chrome_ml_types.h"
 #include "services/on_device_model/ml/constraint_factory.h"
+#include "services/on_device_model/public/cpp/features.h"
 
 namespace ml {
 
@@ -510,7 +511,13 @@ std::optional<odmm::AsrError> SessionAccessor::CreateAsrStreamInternal(
   ChromeMLASRStreamOptions options{
       .sample_rate_hz = asr_options->sample_rate_hz,
       .output_fn = &output_fn,
+      .decoder_prefill_backoff = -1,
   };
+  if (base::FeatureList::IsEnabled(
+          on_device_model::features::kOnDeviceModelAsrDecoderPrefill)) {
+    options.decoder_prefill_backoff =
+        on_device_model::features::kOnDeviceModelAsrDecoderPrefillBackoff.Get();
+  }
   asr_stream_ = chrome_ml_->ASRCreateStream(session_, &options);
   if (asr_stream_ == 0) {
     return odmm::AsrError::kInitializationFailed;

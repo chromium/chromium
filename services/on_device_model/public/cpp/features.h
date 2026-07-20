@@ -34,6 +34,13 @@ BASE_DECLARE_FEATURE(kOnDeviceModelGpuCache);
 COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
 BASE_DECLARE_FEATURE(kOnDeviceModelSpeculativeDecoding);
 
+// Controls the decoder prefill setting for on-device ASR stream.
+COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
+BASE_DECLARE_FEATURE(kOnDeviceModelAsrDecoderPrefill);
+
+COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
+extern const base::FeatureParam<int> kOnDeviceModelAsrDecoderPrefillBackoff;
+
 }  // namespace on_device_model::features
 
 #endif  // SERVICES_ON_DEVICE_MODEL_PUBLIC_CPP_FEATURES_H_
