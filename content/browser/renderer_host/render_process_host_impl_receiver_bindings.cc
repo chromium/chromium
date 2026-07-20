@@ -224,12 +224,17 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
       FontUniqueNameLookupService::GetTaskRunner());
 #endif
 #if BUILDFLAG(IS_WIN)
-  if (!features::IsFontDataServiceEnabled()) {
+  if (!base::FeatureList::IsEnabled(
+          features::kFontDataServiceForCSSLocalFonts)) {
     // DWriteFontProxy is superseded by FontDataService.
     registry->AddInterface(
         base::BindRepeating(&DWriteFontProxyImpl::Create),
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::TaskPriority::USER_BLOCKING, base::MayBlock()}));
+  } else {
+    // If we don't initialize DWriteFontProxy, we should have FontDataService
+    // enabled.
+    CHECK(features::IsFontDataServiceEnabled());
   }
 #endif
 
