@@ -913,6 +913,14 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
        IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_TOGGLE_SUBLABEL_DATA_PROTECTED},
       {"glicWebActuationToggle",
        IDS_SETTINGS_GLIC_PERMISSIONS_CHROME_WEB_ACTUATION_TOGGLE},
+      {"glicWebActuationToggleSublabelV2",
+       IDS_SETTINGS_GLIC_PERMISSIONS_CHROME_WEB_ACTUATION_TOGGLE_SUBLABEL_V2},
+      {"glicWebActuationToggleLearnMoreAriaLabel",
+       IDS_SETTINGS_GLIC_PERMISSIONS_CHROME_WEB_ACTUATION_TOGGLE_LEARN_MORE_ARIA_LABEL},
+      {"glicWebActuationToggleConsiderSafelyAriaLabel",
+       IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_SAFELY_ARIA_LABEL},
+      {"glicWebActuationToggleConsiderUnexpectedResultsAriaLabel",
+       IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_UNEXPECTED_RESULTS_ARIA_LABEL},
       {"glicActorLoginPermissionsSectionTitle",
        IDS_SETTINGS_GLIC_ACTOR_LOGIN_PERMISSIONS_SECTION_TITLE},
       {"glicActorLoginPermissionsSectionSublabel",
@@ -1035,26 +1043,14 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
   add_localized_url("glicExperimentalTriggeringLearnMoreUrl",
                     features::kGlicExperimentalTriggeringLearnMoreURL.Get());
   html_source->AddString(
-      "glicWebActuationToggleSublabel",
+      "glicWebActuationToggleConsider2V2",
       l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_GLIC_PERMISSIONS_CHROME_WEB_ACTUATION_TOGGLE_SUBLABEL,
-          l10n_util::GetStringUTF16(
-              IDS_SETTINGS_GLIC_PERMISSIONS_CHROME_WEB_ACTUATION_TOGGLE_SUBLABEL_LEARN_MORE_LINK_LABEL),
-          l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
-  html_source->AddString(
-      "glicWebActuationToggleConsider2",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_2,
+          IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_2_V2,
           base::UTF8ToUTF16(
               features::kGlicWebActuationToggleConsiderSafelyURL.Get()),
           base::UTF8ToUTF16(
               features::kGlicWebActuationToggleConsiderUnexpectedResultsURL
-                  .Get()),
-          l10n_util::GetStringUTF16(
-              IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_SAFELY_LINK_LABEL),
-          l10n_util::GetStringUTF16(
-              IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_UNEXPECTED_RESULTS_LINK_LABEL),
-          l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
+                  .Get())));
   html_source->AddString(
       "glicExperimentalTriggeringConsider3",
       l10n_util::GetStringFUTF16(
@@ -1065,6 +1061,9 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
                       features::kGlicExperimentalTriggeringSafetyURL.Get()),
                   application_locale)
                   .spec())));
+  html_source->AddBoolean(
+      "glicSettingsA11yContextFixEnabled",
+      base::FeatureList::IsEnabled(features::kGlicSettingsA11yContextFix));
   html_source->AddBoolean(
       "glicExtensionsFeatureEnabled",
       base::FeatureList::IsEnabled(features::kGlicExtensions));

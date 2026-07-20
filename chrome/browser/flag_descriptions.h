@@ -8533,6 +8533,12 @@ inline constexpr char kComposeSelectionNudgeDescription[] =
 inline constexpr char kGlicName[] = "Glic";
 inline constexpr char kGlicDescription[] = "Enables glic";
 
+inline constexpr char kGlicSettingsA11yContextFixName[] =
+    "Glic Web Actuation Accessibility Context Fix";
+inline constexpr char kGlicSettingsA11yContextFixDescription[] =
+    "Enables accessible aria-label attributes on Web Actuation settings links "
+    "for screen reader context.";
+
 inline constexpr char kGlicAndroidSidePanelName[] = "Glic Android Side Panel";
 inline constexpr char kGlicAndroidSidePanelDescription[] =
     "Enables the Glic side panel on Android.";

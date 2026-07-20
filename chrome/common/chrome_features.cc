@@ -740,6 +740,11 @@ BASE_FEATURE_PARAM(std::string,
                    &kGlicLearnMoreURLConfig,
                    "glic-experimental-triggering-toggle-safety-url",
                    "https://support.google.com/chrome?p=gemini_spark_safety");
+// These URLs are passed to settings UI templates.
+// Note: Settings WebUI (glic_subpage.ts) matches these links by substring
+// ("use-policy" and "unexpected_results") to apply accessibility labels.
+// Finch configurations overriding these URLs should retain these substrings
+// or update the WebUI logic accordingly.
 BASE_FEATURE_PARAM(
     std::string,
     kGlicWebActuationToggleConsiderSafelyURL,
@@ -993,6 +998,8 @@ const base::FeatureParam<std::string> kGlicWebActuationAllowedTiers{
 // kGlicWebActuationAllowedTiers is populated.
 BASE_FEATURE(kGlicWebActuationSettingsToggle,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGlicSettingsA11yContextFix, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicMetricsSession, base::FEATURE_ENABLED_BY_DEFAULT);
 // The duration of inactivity after which a session is considered ended.

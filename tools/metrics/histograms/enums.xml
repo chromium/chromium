@@ -13581,6 +13581,7 @@ from previous Chrome versions.
   <int value="-329681489" label="AndroidXrImmersivePlayer:disabled"/>
   <int value="-329174540" label="CoralFeature:disabled"/>
   <int value="-328957421" label="MagicBoostRevampForQuickAnswers:disabled"/>
+  <int value="-328544753" label="GlicSettingsA11yContextFix:disabled"/>
   <int value="-328361990" label="enable-experimental-extension-apis"/>
   <int value="-328339709" label="WebFeedAwareness:enabled"/>
   <int value="-327520505" label="RelatedSearchesAlternateUx:enabled"/>
@@ -15821,6 +15822,7 @@ from previous Chrome versions.
   <int value="379397486" label="WebViewSupervisedUserSiteBlock:disabled"/>
   <int value="379428799" label="security-chip-animation"/>
   <int value="379502873" label="webrtc-hw-decoding:enabled"/>
+  <int value="379619532" label="GlicSettingsA11yContextFix:enabled"/>
   <int value="379856248" label="AutofillEnableNewFopDisplayDesktop:enabled"/>
   <int value="380372760" label="V8Orinoco:disabled"/>
   <int value="380378407" label="LacrosProfileMigrationForceOff:enabled"/>

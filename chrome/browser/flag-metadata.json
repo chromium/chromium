@@ -5670,6 +5670,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "glic-settings-a11y-context-fix",
+    "owners": [ "//chrome/browser/glic/OWNERS" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "glic-share-image",
     "owners": [
       "vollick@google.com",

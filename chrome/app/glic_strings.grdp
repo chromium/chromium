@@ -328,9 +328,12 @@
     Let Chrome browse for you
   </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_CHROME_WEB_ACTUATION_TOGGLE_SUBLABEL" desc="Subheader explaining what the Gemini feature does" formatter_data="android_java">
-    Gemini in Chrome uses auto browse to work in your tabs and complete tasks you give it. <ph name="LINK_BEGIN">&lt;a href="#" target="_blank" aria-label="$1" aria-description="$2"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+    Gemini in Chrome uses auto browse to work in your tabs and complete tasks you give it. <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_CHROME_WEB_ACTUATION_TOGGLE_SUBLABEL_LEARN_MORE_LINK_LABEL" desc="Accessible name for the 'Learn more' link in the Let Chrome browse for you toggle sublabel." is_accessibility_with_no_ui="true">
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_CHROME_WEB_ACTUATION_TOGGLE_SUBLABEL_V2" desc="Subheader explaining what the Gemini feature does (WebUI version)">
+    Gemini in Chrome uses auto browse to work in your tabs and complete tasks you give it. <ph name="LINK_BEGIN">&lt;a href="#" target="_blank"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_CHROME_WEB_ACTUATION_TOGGLE_LEARN_MORE_ARIA_LABEL" desc="Accessible label for the 'Learn more' link in the Gemini auto browse sublabel." is_accessibility_with_no_ui="true">
     Learn more about Chrome auto browse
   </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_WHEN_ON_1" desc="First point in 'when on' column of the 'let Gemini browse for you' expands" formatter_data="android_java">
@@ -343,12 +346,15 @@
     The page content and URLs that Gemini uses during a task will be shared with Google.
   </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_2" desc="Second point in 'things to consider' column of the 'let Gemini browse for you' expands" formatter_data="android_java">
-    Use Gemini carefully and <ph name="BEGIN_LINK1">&lt;a href="$1" target="_blank" aria-label="$3" aria-description="$5"&gt;</ph>safely<ph name="LINK_END1">&lt;/a&gt;</ph>. You are responsible for Gemini's actions during a task, including mistakes and <ph name="BEGIN_LINK2">&lt;a href="$2" target="_blank" aria-label="$4" aria-description="$5"&gt;</ph>unexpected results<ph name="LINK_END2">&lt;/a&gt;</ph> like purchases.
+    Use Gemini carefully and <ph name="BEGIN_LINK1">&lt;a href="$1" target="_blank"&gt;</ph>safely<ph name="LINK_END1">&lt;/a&gt;</ph>. You are responsible for Gemini's actions during a task, including mistakes and <ph name="BEGIN_LINK2">&lt;a href="$2" target="_blank"&gt;</ph>unexpected results<ph name="LINK_END2">&lt;/a&gt;</ph> like purchases.
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_SAFELY_LINK_LABEL" desc="Accessible name for the 'safely' link in the Gemini web actuation considerations list." is_accessibility_with_no_ui="true">
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_2_V2" desc="Second point in 'things to consider' column of the 'let Gemini browse for you' expands (WebUI version)">
+    Use Gemini carefully and <ph name="BEGIN_LINK1">&lt;a href="$1" target="_blank"&gt;</ph>safely<ph name="LINK_END1">&lt;/a&gt;</ph>. You are responsible for Gemini's actions during a task, including mistakes and <ph name="BEGIN_LINK2">&lt;a href="$2" target="_blank"&gt;</ph>unexpected results<ph name="LINK_END2">&lt;/a&gt;</ph> like purchases.
+  </message>
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_SAFELY_ARIA_LABEL" desc="Accessible label for the 'safely' link in the Gemini auto browse permissions considerations." is_accessibility_with_no_ui="true">
     Use Gemini safely
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_UNEXPECTED_RESULTS_LINK_LABEL" desc="Accessible name for the 'unexpected results' link in the Gemini web actuation considerations list." is_accessibility_with_no_ui="true">
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_UNEXPECTED_RESULTS_ARIA_LABEL" desc="Accessible label for the 'unexpected results' link in the Gemini auto browse permissions considerations." is_accessibility_with_no_ui="true">
     Unexpected results from Gemini
   </message>
   <message name="IDS_SETTINGS_GLIC_ACTOR_LOGIN_PERMISSIONS_SECTION_TITLE" desc="Title for the Gemini web login linkout." formatter_data="android_java">
