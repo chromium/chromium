@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -34,9 +35,12 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowPackageManager;
 import org.robolectric.util.ReflectionHelpers;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -45,6 +49,7 @@ import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 /** Tests for {@link InstalledWebappPermissionManager}. */
 @RunWith(ParameterizedRobolectricTestRunner.class)
@@ -236,5 +241,90 @@ public class InstalledWebappPermissionManagerTest {
         verify(mStore)
                 .setStateForOrigin(
                         eq(mOrigin), eq(PACKAGE_NAME), anyString(), eq(mType), eq(settingValue));
+    }
+
+    @Test
+    @Feature("TrustedWebActivities")
+    public void getPermissions_distinguishesPreciseFromApproximate() {
+        if (mType != ContentSettingsType.GEOLOCATION_WITH_OPTIONS) {
+            return;
+        }
+
+        // Mock store to return our origin.
+        when(mStore.getStoredOrigins()).thenReturn(Collections.singleton(mOrigin.toString()));
+
+        // Mock CustomTabActivity.
+        CustomTabActivity activity = mock(CustomTabActivity.class);
+        when(activity.isInTwaMode()).thenReturn(true);
+
+        // Register activity with ApplicationStatus.
+        // We need to transition it to CREATED then RESUMED to mimic lifecycle.
+        ApplicationStatus.onStateChangeForTesting(activity, ActivityState.CREATED);
+        ApplicationStatus.onStateChangeForTesting(activity, ActivityState.RESUMED);
+
+        try {
+            // Scenario 1: Coarse only granted.
+            {
+                PackageInfo packageInfo = new PackageInfo();
+                packageInfo.packageName = PACKAGE_NAME;
+                packageInfo.requestedPermissions = new String[] {ACCESS_COARSE_LOCATION};
+                packageInfo.requestedPermissionsFlags =
+                        new int[] {PackageInfo.REQUESTED_PERMISSION_GRANTED};
+                mShadowPackageManager.installPackage(packageInfo);
+
+                setStoredLocationPermission(ContentSetting.ALLOW);
+
+                InstalledWebappBridge.Permission[] permissions =
+                        InstalledWebappPermissionManager.getPermissions(mType);
+                assertEquals(1, permissions.length);
+                assertEquals(mOrigin, permissions[0].origin);
+                assertEquals(ContentSetting.ALLOW, permissions[0].setting); // approximate
+                assertEquals(ContentSetting.BLOCK, permissions[0].preciseSetting); // precise
+            }
+
+            // Scenario 2: Both granted.
+            {
+                PackageInfo packageInfo = new PackageInfo();
+                packageInfo.packageName = PACKAGE_NAME;
+                packageInfo.requestedPermissions =
+                        new String[] {ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION};
+                packageInfo.requestedPermissionsFlags =
+                        new int[] {
+                            PackageInfo.REQUESTED_PERMISSION_GRANTED,
+                            PackageInfo.REQUESTED_PERMISSION_GRANTED
+                        };
+                mShadowPackageManager.installPackage(packageInfo);
+
+                setStoredLocationPermission(ContentSetting.ALLOW);
+
+                InstalledWebappBridge.Permission[] permissions =
+                        InstalledWebappPermissionManager.getPermissions(mType);
+                assertEquals(1, permissions.length);
+                assertEquals(ContentSetting.ALLOW, permissions[0].setting); // approximate
+                assertEquals(ContentSetting.ALLOW, permissions[0].preciseSetting); // precise
+            }
+
+            // Scenario 3: Both requested, but only coarse granted.
+            {
+                PackageInfo packageInfo = new PackageInfo();
+                packageInfo.packageName = PACKAGE_NAME;
+                packageInfo.requestedPermissions =
+                        new String[] {ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION};
+                packageInfo.requestedPermissionsFlags =
+                        new int[] {PackageInfo.REQUESTED_PERMISSION_GRANTED, 0};
+                mShadowPackageManager.installPackage(packageInfo);
+
+                setStoredLocationPermission(ContentSetting.ALLOW);
+
+                InstalledWebappBridge.Permission[] permissions =
+                        InstalledWebappPermissionManager.getPermissions(mType);
+                assertEquals(1, permissions.length);
+                assertEquals(ContentSetting.ALLOW, permissions[0].setting); // approximate
+                assertEquals(ContentSetting.BLOCK, permissions[0].preciseSetting); // precise
+            }
+        } finally {
+            // Clean up activity.
+            ApplicationStatus.onStateChangeForTesting(activity, ActivityState.DESTROYED);
+        }
     }
 }

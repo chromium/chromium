@@ -77,7 +77,19 @@ public class InstalledWebappPermissionManager {
             @ContentSetting int setting = getPermission(type, origin);
 
             if (setting != ContentSetting.DEFAULT) {
-                permissions.add(new InstalledWebappBridge.Permission(origin, setting));
+                @ContentSetting int preciseSetting = setting;
+                if (type == ContentSettingsType.GEOLOCATION_WITH_OPTIONS) {
+                    String packageName = getDelegatePackageName(origin);
+                    Boolean fineEnabled = hasAndroidFineLocationPermission(packageName);
+                    if (setting == ContentSetting.ALLOW) {
+                        preciseSetting =
+                                (fineEnabled != null && fineEnabled)
+                                        ? ContentSetting.ALLOW
+                                        : ContentSetting.BLOCK;
+                    }
+                }
+                permissions.add(
+                        new InstalledWebappBridge.Permission(origin, setting, preciseSetting));
             }
         }
 
@@ -242,6 +254,14 @@ public class InstalledWebappPermissionManager {
     public static @Nullable Boolean hasAndroidLocationPermission(@Nullable String packageName) {
         return hasAndroidPermissions(
                 packageName, new String[] {ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION});
+    }
+
+    /**
+     * Returns whether the delegate application for the origin has Android fine location permission,
+     * or {@code null} if it does not exist or did not request fine location permission.
+     */
+    public static @Nullable Boolean hasAndroidFineLocationPermission(@Nullable String packageName) {
+        return hasAndroidPermissions(packageName, new String[] {ACCESS_FINE_LOCATION});
     }
 
     /**

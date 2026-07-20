@@ -92,9 +92,12 @@ InstalledWebappBridge::GetInstalledWebappPermissions(ContentSettingsType type) {
         Java_InstalledWebappBridge_getSettingFromPermission(env, j_permission));
     PermissionSetting permission_setting = setting;
     if (type == ContentSettingsType::GEOLOCATION_WITH_OPTIONS) {
-      permission_setting =
-          GeolocationSetting{content_settings::ToPermissionOption(setting),
-                             content_settings::ToPermissionOption(setting)};
+      ContentSetting precise_setting = IntToContentSetting(
+          Java_InstalledWebappBridge_getPreciseSettingFromPermission(
+              env, j_permission));
+      permission_setting = GeolocationSetting{
+          content_settings::ToPermissionOption(setting),
+          content_settings::ToPermissionOption(precise_setting)};
     }
     rules.emplace_back(origin, permission_setting);
   }
