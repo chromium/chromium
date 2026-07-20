@@ -23,6 +23,7 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.hub.HubColorMixer.COLOR_MIXER;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.CLOSE_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.HUB_SEARCH_ENABLED_STATE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.MANUAL_SEARCH_BOX_ANIMATION;
@@ -67,6 +68,7 @@ import org.chromium.chrome.browser.ui.actions.button.FullButtonData;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.IntentBuilder;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.R;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -498,6 +500,27 @@ public class HubToolbarMediatorUnitTest {
         assertFalse(mModel.get(SEARCH_BOX_VISIBLE));
         assertTrue(mModel.get(SEARCH_LOUPE_VISIBLE));
         assertNotNull(mModel.get(SEARCH_LISTENER));
+    }
+
+    @Test
+    public void testCloseButton_Phone() {
+        when(mResources.getInteger(R.integer.min_screen_width_bucket)).thenReturn(1);
+        when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
+        mFocusedPaneSupplier.set(mTabSwitcherPane);
+        new HubToolbarMediator(
+                mActivity, mModel, mPaneManager, mTracker, mSearchActivityClient, mExitHubRunnable);
+        assertFalse(mModel.get(CLOSE_BUTTON_VISIBLE));
+    }
+
+    @Test
+    public void testCloseButton_Tablet() {
+        when(mResources.getInteger(R.integer.min_screen_width_bucket))
+                .thenReturn(DeviceFormFactor.SCREEN_BUCKET_TABLET);
+        when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
+        mFocusedPaneSupplier.set(mTabSwitcherPane);
+        new HubToolbarMediator(
+                mActivity, mModel, mPaneManager, mTracker, mSearchActivityClient, mExitHubRunnable);
+        assertTrue(mModel.get(CLOSE_BUTTON_VISIBLE));
     }
 
     @Test

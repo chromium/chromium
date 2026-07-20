@@ -36,6 +36,9 @@ class HubToolbarProperties {
     public static final WritableBooleanPropertyKey SEARCH_LOUPE_VISIBLE =
             new WritableBooleanPropertyKey();
 
+    public static final WritableBooleanPropertyKey CLOSE_BUTTON_VISIBLE =
+            new WritableBooleanPropertyKey();
+
     public static final WritableBooleanPropertyKey HUB_SEARCH_ENABLED_STATE =
             new WritableBooleanPropertyKey();
 
@@ -82,6 +85,7 @@ class HubToolbarProperties {
         PANE_BUTTON_LOOKUP_CALLBACK,
         SEARCH_BOX_VISIBLE,
         SEARCH_LOUPE_VISIBLE,
+        CLOSE_BUTTON_VISIBLE,
         SEARCH_LISTENER,
         IS_INCOGNITO,
         APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION,

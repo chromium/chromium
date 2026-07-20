@@ -41,6 +41,7 @@ public class TabSwitcherListEditorFacility<HostStationT extends TabSwitcherStati
     public final ViewElement<View> editorLayoutElement;
     public final ViewElement<RecyclerView> tabListRecyclerViewElement;
     public final ViewElement<View> selectionTitleElement;
+    public final ViewElement<View> menuButtonElement;
 
     public TabSwitcherListEditorFacility(
             List<Integer> tabIdsSelected, List<List<Integer>> tabGroupsSelected) {
@@ -58,6 +59,7 @@ public class TabSwitcherListEditorFacility<HostStationT extends TabSwitcherStati
                                 withText(getSelectionModeNumberText()),
                                 withId(R.id.down),
                                 withParent(withId(R.id.selection_mode_number))));
+        menuButtonElement = declareView(withId(R.id.list_menu_button));
     }
 
     private String getSelectionModeNumberText() {
@@ -119,10 +121,7 @@ public class TabSwitcherListEditorFacility<HostStationT extends TabSwitcherStati
 
     /** Open the app menu, which looks different while selecting tabs. */
     public TabListEditorAppMenu<HostStationT> openAppMenuWithEditor() {
-        return mHostStation
-                .menuButtonElement
-                .clickTo()
-                .enterFacility(new TabListEditorAppMenu<>(this));
+        return menuButtonElement.clickTo().enterFacility(new TabListEditorAppMenu<>(this));
     }
 
     /**

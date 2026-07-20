@@ -71,6 +71,7 @@ public class HubToolbarView extends LinearLayout {
     private ImageView mSearchLoupeView;
     private ImageView mHairline;
     private FrameLayout mPaneSwitcherCard;
+    private ImageButton mCloseButton;
 
     private Callback<Integer> mToolbarOverviewColorSetter;
     private @Nullable OnTabSelectedListener mOnTabSelectedListener;
@@ -110,13 +111,20 @@ public class HubToolbarView extends LinearLayout {
         mSearchBoxTextView = findViewById(R.id.search_box_text);
         mSearchLoupeView = findViewById(R.id.search_loupe);
         mHairline = findViewById(R.id.toolbar_bottom_hairline);
+        mCloseButton = mMenuButtonContainer.findViewById(R.id.toolbar_close_button);
 
         registerColorBlends();
         registerSearchBoxColorBlends();
     }
 
     void setMenuButtonVisible(boolean visible) {
-        mMenuButtonWrapper.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+        mMenuButtonWrapper.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    void setCloseButtonVisible(boolean visible) {
+        if (mCloseButton != null) {
+            mCloseButton.setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
     }
 
     void setPaneSwitcherScrollPosition(int position, float positionOffset) {

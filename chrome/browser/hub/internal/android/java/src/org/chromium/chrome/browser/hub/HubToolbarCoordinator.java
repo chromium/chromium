@@ -105,6 +105,11 @@ public class HubToolbarCoordinator {
                 activity.getString(R.string.accessibility_tab_switcher_toolbar_btn_menu));
         menuButtonCoordinator.setMenuButton(mMenuButton);
 
+        ImageButton closeButton = hubToolbarView.findViewById(R.id.toolbar_close_button);
+        if (closeButton != null) {
+            closeButton.setOnClickListener(v -> exitHubRunnable.run());
+        }
+
         mIsAnimatingSupplier.addSyncObserver(mIsAnimatingObserver);
     }
 

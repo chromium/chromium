@@ -110,6 +110,17 @@ found in the LICENSE file.
             style="@style/ToolbarMenuButton"
             app:tint="@color/default_icon_color_tint_list"  />
         <include layout="@layout/menu_button" />
+
+        <!-- On large form factor devices, a close button is shown. -->
+        <org.chromium.ui.widget.ChromeImageButton
+            android:id="@+id/toolbar_close_button"
+            style="@style/ToolbarHoverableButton.AdaptiveDensity"
+            android:src="@drawable/btn_close"
+            android:contentDescription="@string/close"
+            android:tooltipText="@string/close"
+            android:layout_gravity="center_vertical"
+            app:tint="@color/default_icon_color_tint_list"
+            android:visibility="gone" />
       </LinearLayout>
 
     </FrameLayout>

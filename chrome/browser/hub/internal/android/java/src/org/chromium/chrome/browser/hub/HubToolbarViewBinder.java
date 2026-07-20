@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.hub;
 
 import static org.chromium.chrome.browser.hub.HubColorMixer.COLOR_MIXER;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.CLOSE_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.HAIRLINE_VISIBILITY;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.HUB_SEARCH_ENABLED_STATE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.IS_INCOGNITO;
@@ -43,6 +44,8 @@ public class HubToolbarViewBinder {
             view.setSearchBoxVisible(model.get(SEARCH_BOX_VISIBLE));
         } else if (key == SEARCH_LOUPE_VISIBLE) {
             view.setSearchLoupeVisible(model.get(SEARCH_LOUPE_VISIBLE));
+        } else if (key == CLOSE_BUTTON_VISIBLE) {
+            view.setCloseButtonVisible(model.get(CLOSE_BUTTON_VISIBLE));
         } else if (key == SEARCH_LISTENER) {
             view.setSearchListener(model.get(SEARCH_LISTENER));
         } else if (key == IS_INCOGNITO) {

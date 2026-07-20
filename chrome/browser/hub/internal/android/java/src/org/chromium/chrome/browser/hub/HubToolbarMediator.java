@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.hub;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.CLOSE_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.HAIRLINE_VISIBILITY;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.HUB_SEARCH_ENABLED_STATE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.IS_INCOGNITO;
@@ -42,6 +43,7 @@ import org.chromium.chrome.browser.ui.actions.button.FullButtonData;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -84,6 +86,10 @@ public class HubToolbarMediator {
             new ComponentCallbacks() {
                 @Override
                 public void onConfigurationChanged(Configuration configuration) {
+                    mPropertyModel.set(
+                            CLOSE_BUTTON_VISIBLE,
+                            DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext));
+
                     int screenWidthDp = configuration.screenWidthDp;
                     boolean isTablet = HubUtils.isScreenWidthTablet(screenWidthDp);
 
