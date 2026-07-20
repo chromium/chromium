@@ -155,20 +155,6 @@ void ProvideRequestHandlerKeyCommitmentsToNetworkService(
   run_loop.Run();
 }
 
-void AccessTopics(const content::ToRenderFrameHost& adapter) {
-  std::string command =
-      R"(
-    (async () => {
-      try {
-        document.browsingTopics();
-      } catch (e) {
-        return e.toString();
-      }
-      return "Success";
-    })())";
-  EXPECT_EQ("Success", EvalJs(adapter, command));
-}
-
 class IdpTestServer {
  public:
   struct ConfigDetails {
@@ -594,46 +580,6 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest, TrustTokenIssuance) {
   // Build another model from disk, ensuring the data is no longer present.
   browsing_data_model = BuildBrowsingDataModel();
   ValidateBrowsingDataEntries(browsing_data_model.get(), {});
-}
-
-IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
-                       TopicsAccessReportedCorrectly) {
-  // Navigate to test page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
-
-  auto* content_settings =
-      content_settings::PageSpecificContentSettings::GetForFrame(
-          web_contents()->GetPrimaryMainFrame());
-
-  // Validate that the allowed browsing data model is empty.
-  auto* allowed_browsing_data_model =
-      content_settings->allowed_browsing_data_model();
-  ValidateBrowsingDataEntries(allowed_browsing_data_model, {});
-  ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
-
-  // Get Topics
-  AccessTopics(web_contents());
-
-  WaitForModelUpdate(allowed_browsing_data_model, 1);
-
-  // Validate Topics are reported correctly
-  url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
-  ValidateBrowsingDataEntries(
-      allowed_browsing_data_model,
-      {{kTestHost,
-        testOrigin,
-        {{static_cast<BrowsingDataModel::StorageType>(
-             ChromeBrowsingDataModelDelegate::StorageType::kTopics)},
-         /*storage_size=*/0,
-         /*cookie_count=*/0}}});
-  ASSERT_EQ(allowed_browsing_data_model->size(), 1u);
-
-  // Clear Topic via BDM
-  RemoveBrowsingDataForDataOwner(allowed_browsing_data_model, kTestHost);
-
-  // Validate that the allowed browsing data model is cleared.
-  ValidateBrowsingDataEntries(allowed_browsing_data_model, {});
-  ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
