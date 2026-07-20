@@ -52,7 +52,7 @@ class VerticalTabStripStateControllerTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
     feature_list_.InitWithFeatures(
-        /* enabled_features */ {tabs::kVerticalTabs,
+        /* enabled_features */ {tabs::kVerticalTabsLaunch,
                                 tabs::kVerticalTabsExpandOnHover},
         /* disabled_features */ {});
     tabs::RegisterProfilePrefs(pref_service_.registry());
@@ -129,7 +129,7 @@ TEST_F(VerticalTabStripStateControllerTest, VerticalTabsEnabled) {
 
 TEST_F(VerticalTabStripStateControllerTest, FeatureDisabled) {
   base::test::ScopedFeatureList local_feature_list;
-  local_feature_list.InitAndDisableFeature(tabs::kVerticalTabs);
+  local_feature_list.InitAndDisableFeature(tabs::kVerticalTabsLaunch);
 
   controller()->SetVerticalTabsEnabled(true);
   EXPECT_TRUE(pref_service()->GetBoolean(prefs::kVerticalTabsEnabled));
