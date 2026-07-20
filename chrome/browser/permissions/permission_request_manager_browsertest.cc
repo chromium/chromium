@@ -67,6 +67,8 @@
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
@@ -2626,6 +2628,40 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerApproximateLocationBrowserTest,
   EXPECT_THAT(content::EvalJs(web_contents, "approximateStatuses"),
               content::EvalJsResult::IsOkAndHolds(
                   base::test::IsJson(R"(["granted", "denied", "prompt"])")));
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
+                       PermissionRequestInSandboxedTopLevelFrame) {
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == "/sandbox_csp") {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_code(net::HTTP_OK);
+          response->set_content("<html><body>Sandboxed Page</body></html>");
+          response->set_content_type("text/html");
+          response->AddCustomHeader("Content-Security-Policy",
+                                    "sandbox allow-scripts");
+          return response;
+        }
+        return nullptr;
+      }));
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL target = embedded_test_server()->GetURL("/sandbox_csp");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), target));
+
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  EXPECT_EQ(
+      RequestPermissionFromDocumentSync(
+          GetActiveMainFrame(), content::PermissionDescriptorUtil::
+                                    CreatePermissionDescriptorForPermissionType(
+                                        blink::PermissionType::GEOLOCATION))
+          .status,
+      blink::mojom::PermissionStatus::GRANTED);
 }
 
 }  // anonymous namespace
