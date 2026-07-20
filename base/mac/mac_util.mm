@@ -380,6 +380,22 @@ bool IsVirtualMachine() {
   return ret;
 }
 
+MacOS26LiquidGlassPreferredLook GetMacOS26LiquidGlassPreferredLook() {
+  CHECK_EQ(MacOSMajorVersion(), 26);
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  NSNumber* setting = base::apple::ObjCCast<NSNumber>(
+      [defaults objectForKey:@"NSGlassDiffusionSetting"]);
+  if (!setting) {
+    setting = base::apple::ObjCCast<NSNumber>(
+        [defaults objectForKey:@"NSLiquidGlassSetting"]);
+  }
+  if (setting) {
+    return [setting boolValue] ? MacOS26LiquidGlassPreferredLook::kTint
+                               : MacOS26LiquidGlassPreferredLook::kClear;
+  }
+  return MacOS26LiquidGlassPreferredLook::kDefault;
+}
+
 namespace {
 
 #if defined(ARCH_CPU_X86_64)

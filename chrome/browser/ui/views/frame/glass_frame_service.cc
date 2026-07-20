@@ -9,6 +9,8 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/mac/mac_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -67,6 +69,8 @@ GlassFrameService::GlassFrameService(BrowserProcess& process)
         return true;
       },
       BrowserCollection::Order::kActivation);
+
+  LogGlassFramePreferredLook();
 }
 
 GlassFrameService::~GlassFrameService() = default;
@@ -149,4 +153,12 @@ GlassFrameService::GetEligibleBrowserWindowInterfaces() {
 
 void GlassFrameService::OnGlassFrameEnabledPrefChanged() {
   callbacks_.Notify(GetEligibleBrowserWindowInterfaces());
+}
+
+void GlassFrameService::LogGlassFramePreferredLook() {
+  if (base::mac::MacOSMajorVersion() == 26) {
+    base::UmaHistogramEnumeration(
+        "Mac.GlassFrame.MacOS26LiquidGlassPreferredLook",
+        base::mac::GetMacOS26LiquidGlassPreferredLook());
+  }
 }

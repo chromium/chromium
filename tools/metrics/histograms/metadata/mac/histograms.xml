@@ -94,6 +94,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Mac.GlassFrame.MacOS26LiquidGlassPreferredLook"
+    enum="MacOS26LiquidGlassPreferredLook" expires_after="2027-07-15">
+  <owner>dpenning@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Logs the preferred look for the macOS 26 Liquid Glass effect (clear or tint)
+    on macOS 26. Logged once per process startup when GlassFrameService is
+    initialized.
+  </summary>
+</histogram>
+
 <histogram name="Mac.LaunchApplicationResult" enum="MacLaunchApplicationResult"
     expires_after="2025-01-26">
   <owner>mek@chromium.org</owner>

@@ -13,6 +13,7 @@
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -23,6 +24,42 @@
 namespace base::mac {
 
 namespace {
+
+// A helper class to temporarily set a value in the `NSArgumentDomain` volatile
+// domain of `NSUserDefaults` and automatically restore it to its original state
+// when the writer goes out of scope. If `value` is nil, the key is removed from
+// the domain.
+class ScopedNSUserDefaultsWriter {
+ public:
+  ScopedNSUserDefaultsWriter(NSString* key, id value) {
+    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+    original_domain_ = [defaults volatileDomainForName:NSArgumentDomain];
+    NSMutableDictionary* temporary =
+        [(original_domain_ ? original_domain_ : @{}) mutableCopy];
+    if (value) {
+      temporary[key] = value;
+    } else {
+      [temporary removeObjectForKey:key];
+    }
+    [defaults setVolatileDomain:temporary forName:NSArgumentDomain];
+  }
+
+  ~ScopedNSUserDefaultsWriter() {
+    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+    if (original_domain_) {
+      [defaults setVolatileDomain:original_domain_ forName:NSArgumentDomain];
+    } else {
+      [defaults removeVolatileDomainForName:NSArgumentDomain];
+    }
+  }
+
+  ScopedNSUserDefaultsWriter(const ScopedNSUserDefaultsWriter&) = delete;
+  ScopedNSUserDefaultsWriter& operator=(const ScopedNSUserDefaultsWriter&) =
+      delete;
+
+ private:
+  NSDictionary* original_domain_ = nil;
+};
 
 using MacUtilTest = PlatformTest;
 
@@ -278,6 +315,36 @@ TEST_F(MacUtilTest, TestRemoveQuarantineAttributeNonExistentPath) {
 
   ASSERT_FALSE(PathExists(non_existent_path));
   EXPECT_FALSE(RemoveQuarantineAttribute(non_existent_path));
+}
+
+TEST_F(MacUtilTest, GetMacOS26LiquidGlassPreferredLook) {
+  if (MacOSMajorVersion() != 26) {
+    GTEST_SKIP() << "This test only runs on macOS 26";
+  }
+
+  struct TestData {
+    NSNumber* diffusion;  // nil if unset
+    NSNumber* liquid;     // nil if unset
+    MacOS26LiquidGlassPreferredLook expected;
+  };
+
+  TestData test_cases[] = {
+      {@YES, nil, MacOS26LiquidGlassPreferredLook::kTint},
+      {@NO, nil, MacOS26LiquidGlassPreferredLook::kClear},
+      {nil, @YES, MacOS26LiquidGlassPreferredLook::kTint},
+      {nil, @NO, MacOS26LiquidGlassPreferredLook::kClear},
+      {@NO, @YES, MacOS26LiquidGlassPreferredLook::kClear},
+      {@YES, @NO, MacOS26LiquidGlassPreferredLook::kTint},
+      {nil, nil, MacOS26LiquidGlassPreferredLook::kDefault},
+  };
+
+  for (const auto& test_case : test_cases) {
+    ScopedNSUserDefaultsWriter diffusion_changer(@"NSGlassDiffusionSetting",
+                                                 test_case.diffusion);
+    ScopedNSUserDefaultsWriter liquid_changer(@"NSLiquidGlassSetting",
+                                              test_case.liquid);
+    EXPECT_EQ(test_case.expected, GetMacOS26LiquidGlassPreferredLook());
+  }
 }
 
 }  // namespace

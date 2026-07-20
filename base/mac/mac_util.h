@@ -75,6 +75,21 @@ inline __attribute__((const)) int MacOSMajorVersion() {
 // Returns true if Mac is running in a virtual machine.
 BASE_EXPORT bool IsVirtualMachine();
 
+// LINT.IfChange(MacOS26LiquidGlassPreferredLook)
+enum class MacOS26LiquidGlassPreferredLook {
+  kDefault = 0,
+  kClear = 1,
+  kTint = 2,
+  kMaxValue = kTint,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/mac/enums.xml:MacOS26LiquidGlassPreferredLook)
+
+// Returns the preferred look for the macOS 26 liquid glass effect (clear or
+// tint). CHECKs on non macOS 26 os versions since there is no expectation that
+// this setting exists or is valid outside of version 26.
+BASE_EXPORT MacOS26LiquidGlassPreferredLook
+GetMacOS26LiquidGlassPreferredLook();
+
 enum class CPUType {
   kIntel,
   kTranslatedIntel,  // Rosetta

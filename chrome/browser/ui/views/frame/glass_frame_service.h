@@ -68,6 +68,8 @@ class GlassFrameService : public BrowserCollectionObserver {
 
   void OnGlassFrameEnabledPrefChanged();
 
+  void LogGlassFramePreferredLook();
+
   base::RepeatingCallbackList<void(
       const base::flat_set<BrowserWindowInterface*>&)>
       callbacks_;

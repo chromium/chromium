@@ -157,6 +157,16 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="OTHER"/>
 </enum>
 
+<!-- LINT.IfChange(MacOS26LiquidGlassPreferredLook) -->
+
+<enum name="MacOS26LiquidGlassPreferredLook">
+  <int value="0" label="Default"/>
+  <int value="1" label="Clear"/>
+  <int value="2" label="Tint"/>
+</enum>
+
+<!-- LINT.ThenChange(/base/mac/mac_util.h:MacOS26LiquidGlassPreferredLook) -->
+
 <!--
 
 Error values returned by the Security.framework code signing APIs, keychain
