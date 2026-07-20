@@ -45,16 +45,64 @@ enum UserSettingRestrictedReason {
   REQUIRES_PARENT_ENABLEMENT = 17;
 }
 
+enum UserSettingHiddenReason {
+  USER_SETTING_HIDDEN_REASON_UNKNOWN = 0;
+  DASHER_ADMIN_DISABLED_SERVICE = 1;
+  SUPERVISED_ACCOUNT = 2;
+  HIDDEN_UNSUPPORTED_REGION = 3;
+  HIDDEN_UNSUPPORTED_ACCOUNT_TYPE = 4;
+  HIDDEN_NOT_AVAILABLE_FOR_CONSENT = 5;
+  HIDDEN_UNAVAILABLE_PRODUCT_FEATURE = 6;
+  HIDDEN_USER_IN_EXPERIMENT_CONTROL_GROUP = 7;
+}
+
 message RecordingSettingInfo {
   reserved 1 to 4;
   repeated UserSettingRestrictedReason user_setting_restricted_reason = 5;
-  reserved 6, 7;
+  repeated UserSettingHiddenReason user_setting_hidden_reason = 6;
+  reserved 7;
+}
+
+message ConsentCaller {
+  optional int32 product_id = 1;
+  optional int32 consent_purpose = 2;
+  optional int32 known_caller = 5;  // CallerInfo.KnownCaller
+  optional int32 feature_id = 6;
+}
+
+message ConsentSetting {
+  optional int32 consent_id = 1;  // ConsentSettingId (e.g. 40)
+}
+
+message ShouldShowMobileConsentFlowRequest {
+  optional ConsentCaller caller = 1;
+  optional int32 consent_flow = 3;  // ConsentFlowId (e.g. 54)
+  repeated ConsentSetting settings = 2;
+}
+
+message ConsentEligibility {
+  optional int32 status = 1;  // ConsentEligibilityStatus
+}
+
+message ShouldShowResult {
+  optional ConsentSetting setting = 4;
+  optional ConsentEligibility eligibility = 2;
+}
+
+message ShouldShowFlowResult {
+  optional ConsentEligibility eligibility = 1;
+}
+
+message ShouldShowMobileConsentFlowResponse {
+  optional ShouldShowFlowResult should_show_flow_result = 3;
+  repeated ShouldShowResult should_show_result = 1;
 }
 
 message FacsSetting {
   optional int32 setting = 1;
   optional bool data_recording_enabled = 2;
-  optional RecordingSettingInfo recording_setting_info = 3;
+  repeated UserSettingRestrictedReason user_setting_restricted_reason = 4;
+  repeated UserSettingHiddenReason user_setting_hidden_reason = 5;
 }
 
 message GetFacsResponse {

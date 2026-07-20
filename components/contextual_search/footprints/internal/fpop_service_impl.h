@@ -48,6 +48,15 @@ class FpopServiceImpl : public FpopService {
           const footprints::oneplatform::UpdateActivityControlsSettingsResponse&
               response)> callback) override;
 
+  // Determines whether a consent flow should be shown for the user.
+  void ShouldShowMobileConsentFlow(
+      const footprints::oneplatform::ShouldShowMobileConsentFlowRequest&
+          request,
+      base::OnceCallback<void(
+          bool success,
+          const footprints::oneplatform::ShouldShowMobileConsentFlowResponse&
+              response)> callback) override;
+
  private:
   // Parses the response body from the GetFacs network request.
   void OnGetFacsResponse(
@@ -66,6 +75,15 @@ class FpopServiceImpl : public FpopService {
       bool success,
       const std::string& response_body);
 
+  // Parses the response body from the ShouldShowMobileConsentFlow network
+  // request.
+  void OnShouldShowMobileConsentFlowResponse(
+      base::OnceCallback<void(
+          bool,
+          const footprints::oneplatform::ShouldShowMobileConsentFlowResponse&)>
+          callback,
+      bool success,
+      const std::string& response_body);
   // Requests an OAuth access token for the `fpop_service` consumer. If a token
   // request is already in progress, the callback is queued. When the token
   // fetch completes, all queued callbacks are executed with the result.

@@ -10,16 +10,33 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 
 namespace drive_picker {
 
 namespace {
-#if BUILDFLAG(IS_IOS)
-constexpr char kApplicationId[] = "chrome_ios_disclaimer";
-#else
-constexpr char kApplicationId[] = "chrome_desktop_disclaimer";
-#endif
+
+// FPOP Backend IDs.
+// For source definitions, see ConsentFlowId in:
+// google3/java/com/google/personalization/footprints/
+// transparencyandcontrol/proto/flow.proto
+constexpr int kConsentFlowWorkspaceAim = 53;
+constexpr int kProductIdChrome = 126;
+constexpr int kKnownCallerSuperrootAsms = 1;
+
+// For source definitions, see ConsentSettingId in:
+// google3/java/com/google/personalization/footprints/
+// transparencyandcontrol/proto/consent.proto
+constexpr int kConsentIdWorkspaceAim = 38;
+
+// ConsentEligibilityStatus enum values mapping.
+// For source definitions, see ConsentEligibilityStatus in:
+// google3/java/com/google/personalization/footprints/
+// transparencyandcontrol/proto/consent.proto
+constexpr int kEligibilityCannotConsent = 2;
+constexpr int kEligibilityAlreadyConsented = 3;
+
 }  // namespace
 
 // static
@@ -45,55 +62,44 @@ DriveDisclaimerController::~DriveDisclaimerController() = default;
 
 void DriveDisclaimerController::CheckDisclaimerStatusAsync(
     base::OnceCallback<void(DisclaimerStatus status)> completion_callback) {
-  DVLOG(1) << "DriveDisclaimerController::CheckDisclaimerStatusAsync: Checking "
-              "FACS status for PersonalContextSearchUsingWorkspace.";
+  footprints::oneplatform::ShouldShowMobileConsentFlowRequest request;
+  request.set_consent_flow(kConsentFlowWorkspaceAim);
 
-  footprints::oneplatform::GetFacsRequest request;
-  request.add_setting(contextual_search::kPersonalContextSearchUsingWorkspace);
-  request.mutable_header()->set_application_id(kApplicationId);
+  auto* caller = request.mutable_caller();
+  caller->set_product_id(kProductIdChrome);
+  caller->set_known_caller(kKnownCallerSuperrootAsms);
 
-  fpop_service_->GetFacs(
-      request, base::BindOnce(&DriveDisclaimerController::OnGetFacsResponse,
-                              weak_factory_.GetWeakPtr(),
-                              std::move(completion_callback)));
+  auto* setting = request.add_settings();
+  setting->set_consent_id(kConsentIdWorkspaceAim);
+
+  fpop_service_->ShouldShowMobileConsentFlow(
+      request,
+      base::BindOnce(
+          &DriveDisclaimerController::OnShouldShowMobileConsentFlowResponse,
+          weak_factory_.GetWeakPtr(), std::move(completion_callback)));
 }
 
-void DriveDisclaimerController::OnGetFacsResponse(
+void DriveDisclaimerController::OnShouldShowMobileConsentFlowResponse(
     base::OnceCallback<void(DisclaimerStatus status)> completion_callback,
     bool success,
-    const footprints::oneplatform::GetFacsResponse& response) {
-  DisclaimerStatus final_status = DisclaimerStatus::kNotAccepted;
-  if (success) {
-    DVLOG(1) << "DriveDisclaimerController::OnGetFacsResponse: FACS request "
-                "succeeded. settings count = "
-             << response.facs_setting_size();
-    for (const auto& facs_setting : response.facs_setting()) {
-      if (facs_setting.setting() ==
-          contextual_search::kPersonalContextSearchUsingWorkspace) {
-        bool restricted = facs_setting.recording_setting_info()
-                              .user_setting_restricted_reason_size() > 0;
-        bool enabled = facs_setting.data_recording_enabled();
-        DVLOG(1) << "DriveDisclaimerController::OnGetFacsResponse: Found "
-                    "workspace personal search setting. "
-                 << "data_recording_enabled = " << enabled
-                 << ", restricted = " << restricted;
-        if (restricted) {
-          final_status = DisclaimerStatus::kRestricted;
-          break;
-        }
-        if (enabled) {
-          final_status = DisclaimerStatus::kAccepted;
-          break;
-        }
-      }
-    }
-  } else {
-    LOG(WARNING)
-        << "DriveDisclaimerController::OnGetFacsResponse: FACS request failed.";
+    const footprints::oneplatform::ShouldShowMobileConsentFlowResponse&
+        response) {
+  if (!success || !response.has_should_show_flow_result()) {
+    std::move(completion_callback).Run(DisclaimerStatus::kRestricted);
+    return;
   }
 
-  DVLOG(1) << "DriveDisclaimerController::OnGetFacsResponse: returning status "
-           << DisclaimerStatusToString(final_status);
+  int32_t status = response.should_show_flow_result().eligibility().status();
+  DisclaimerStatus final_status = DisclaimerStatus::kNotAccepted;
+
+  if (status == kEligibilityCannotConsent) {
+    final_status = DisclaimerStatus::kRestricted;
+  } else if (status == kEligibilityAlreadyConsented) {
+    final_status = DisclaimerStatus::kAccepted;
+  } else {
+    final_status = DisclaimerStatus::kNotAccepted;
+  }
+
   std::move(completion_callback).Run(final_status);
 }
 

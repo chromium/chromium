@@ -31,6 +31,9 @@ const char kFpopGetFacsUrl[] =
     "https://footprints-pa.googleapis.com/v1/get_facs";
 const char kFpopUpdateFacsUrl[] =
     "https://footprints-pa.googleapis.com/v1/update_activity_controls_settings";
+const char kFpopShouldShowMobileConsentFlowUrl[] =
+    "https://footprints-pa.googleapis.com/$rpc/"
+    "footprints.oneplatform.FootprintsService/ShouldShowMobileConsentFlow";
 
 constexpr size_t kMaxResponseSize = 1024 * 1024;  // 1 MB
 
@@ -255,22 +258,60 @@ void FpopServiceImpl::SendRequest(
                            status_code == net::HTTP_OK &&
                            response_body.has_value();
 
-            if (success) {
-              DVLOG(1)
-                  << "FpopServiceImpl SendRequest: Request succeeded (HTTP "
-                     "200).";
-            } else {
-              LOG(ERROR) << "FpopServiceImpl SendRequest: Request failed. "
-                         << "NetError = " << net_error
-                         << ", HTTP Status = " << status_code
-                         << ", Response Body = "
-                         << (body_str.empty() ? "[empty]" : body_str);
+            if (!success) {
+              DLOG(ERROR) << "FpopServiceImpl SendRequest: Request failed. "
+                          << "NetError = " << net_error
+                          << ", HTTP Status = " << status_code;
             }
 
             std::move(callback).Run(/*success=*/success, body_str);
           },
           std::move(url_loader), std::move(callback)),
       kMaxResponseSize);
+}
+
+void FpopServiceImpl::ShouldShowMobileConsentFlow(
+    const footprints::oneplatform::ShouldShowMobileConsentFlowRequest& request,
+    base::OnceCallback<
+        void(bool success,
+             const footprints::oneplatform::ShouldShowMobileConsentFlowResponse&
+                 response)> callback) {
+  std::string request_body;
+  if (!request.SerializeToString(&request_body)) {
+    std::move(callback).Run(
+        /*success=*/false,
+        footprints::oneplatform::ShouldShowMobileConsentFlowResponse());
+    return;
+  }
+
+  RequestAccessToken(base::BindOnce(
+      &FpopServiceImpl::SendRequest, weak_ptr_factory_.GetWeakPtr(),
+      kFpopShouldShowMobileConsentFlowUrl, request_body,
+      base::BindOnce(&FpopServiceImpl::OnShouldShowMobileConsentFlowResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
+}
+
+void FpopServiceImpl::OnShouldShowMobileConsentFlowResponse(
+    base::OnceCallback<void(
+        bool,
+        const footprints::oneplatform::ShouldShowMobileConsentFlowResponse&)>
+        callback,
+    bool success,
+    const std::string& response_body) {
+  footprints::oneplatform::ShouldShowMobileConsentFlowResponse response;
+  if (!success) {
+    std::move(callback).Run(/*success=*/false, response);
+    return;
+  }
+
+  if (!response.ParseFromString(response_body)) {
+    LOG(ERROR) << "Failed to parse ShouldShowMobileConsentFlowResponse from "
+                  "Footprints OnePlatform.";
+    std::move(callback).Run(/*success=*/false, response);
+    return;
+  }
+
+  std::move(callback).Run(/*success=*/true, response);
 }
 
 }  // namespace contextual_search

@@ -20,12 +20,6 @@
 namespace drive_picker {
 namespace {
 
-#if BUILDFLAG(IS_IOS)
-constexpr char kExpectedApplicationId[] = "chrome_ios_disclaimer";
-#else
-constexpr char kExpectedApplicationId[] = "chrome_desktop_disclaimer";
-#endif
-
 class MockFpopService : public contextual_search::FpopService {
  public:
   MOCK_METHOD(
@@ -46,6 +40,16 @@ class MockFpopService : public contextual_search::FpopService {
            const footprints::oneplatform::
                UpdateActivityControlsSettingsResponse& response)> callback),
       (override));
+  MOCK_METHOD(
+      void,
+      ShouldShowMobileConsentFlow,
+      (const footprints::oneplatform::ShouldShowMobileConsentFlowRequest&
+           request,
+       base::OnceCallback<void(
+           bool success,
+           const footprints::oneplatform::ShouldShowMobileConsentFlowResponse&
+               response)> callback),
+      (override));
 };
 
 class DriveDisclaimerControllerTest : public testing::Test {
@@ -65,23 +69,24 @@ class DriveDisclaimerControllerTest : public testing::Test {
 TEST_F(DriveDisclaimerControllerTest, CheckDisclaimerStatusAccepted) {
   using ::testing::_;
 
-  EXPECT_CALL(*mock_fpop_service_, GetFacs(_, _))
-      .WillOnce([](const footprints::oneplatform::GetFacsRequest& request,
-                   base::OnceCallback<void(
-                       bool, const footprints::oneplatform::GetFacsResponse&)>
-                       callback) {
-        EXPECT_EQ(request.header().application_id(), kExpectedApplicationId);
-        ASSERT_EQ(request.setting_size(), 1);
-        EXPECT_EQ(request.setting(0),
-                  contextual_search::kPersonalContextSearchUsingWorkspace);
+  EXPECT_CALL(*mock_fpop_service_, ShouldShowMobileConsentFlow(_, _))
+      .WillOnce(
+          [](const footprints::oneplatform::ShouldShowMobileConsentFlowRequest&
+                 request,
+             base::OnceCallback<void(
+                 bool, const footprints::oneplatform::
+                           ShouldShowMobileConsentFlowResponse&)> callback) {
+            EXPECT_EQ(request.consent_flow(), 53);
+            ASSERT_EQ(request.settings_size(), 1);
+            EXPECT_EQ(request.settings(0).consent_id(), 38);
 
-        footprints::oneplatform::GetFacsResponse response;
-        auto* setting = response.add_facs_setting();
-        setting->set_setting(
-            contextual_search::kPersonalContextSearchUsingWorkspace);
-        setting->set_data_recording_enabled(true);
-        std::move(callback).Run(true, response);
-      });
+            footprints::oneplatform::ShouldShowMobileConsentFlowResponse
+                response;
+            response.mutable_should_show_flow_result()
+                ->mutable_eligibility()
+                ->set_status(3);  // ALREADY_CONSENTED
+            std::move(callback).Run(true, response);
+          });
 
   base::test::TestFuture<DriveDisclaimerController::DisclaimerStatus> future;
   controller_->CheckDisclaimerStatusAsync(future.GetCallback());
@@ -92,26 +97,22 @@ TEST_F(DriveDisclaimerControllerTest, CheckDisclaimerStatusAccepted) {
 TEST_F(DriveDisclaimerControllerTest, CheckDisclaimerStatusRestricted) {
   using ::testing::_;
 
-  EXPECT_CALL(*mock_fpop_service_, GetFacs(_, _))
-      .WillOnce([](const footprints::oneplatform::GetFacsRequest& request,
-                   base::OnceCallback<void(
-                       bool, const footprints::oneplatform::GetFacsResponse&)>
-                       callback) {
-        EXPECT_EQ(request.header().application_id(), kExpectedApplicationId);
-        ASSERT_EQ(request.setting_size(), 1);
-        EXPECT_EQ(request.setting(0),
-                  contextual_search::kPersonalContextSearchUsingWorkspace);
+  EXPECT_CALL(*mock_fpop_service_, ShouldShowMobileConsentFlow(_, _))
+      .WillOnce(
+          [](const footprints::oneplatform::ShouldShowMobileConsentFlowRequest&
+                 request,
+             base::OnceCallback<void(
+                 bool, const footprints::oneplatform::
+                           ShouldShowMobileConsentFlowResponse&)> callback) {
+            EXPECT_EQ(request.consent_flow(), 53);
 
-        footprints::oneplatform::GetFacsResponse response;
-        auto* setting = response.add_facs_setting();
-        setting->set_setting(
-            contextual_search::kPersonalContextSearchUsingWorkspace);
-        setting->mutable_recording_setting_info()
-            ->add_user_setting_restricted_reason(
-                footprints::oneplatform::UserSettingRestrictedReason::
-                    PARENT_CONTROL);
-        std::move(callback).Run(true, response);
-      });
+            footprints::oneplatform::ShouldShowMobileConsentFlowResponse
+                response;
+            response.mutable_should_show_flow_result()
+                ->mutable_eligibility()
+                ->set_status(2);  // CANNOT_CONSENT
+            std::move(callback).Run(true, response);
+          });
 
   base::test::TestFuture<DriveDisclaimerController::DisclaimerStatus> future;
   controller_->CheckDisclaimerStatusAsync(future.GetCallback());
@@ -119,75 +120,67 @@ TEST_F(DriveDisclaimerControllerTest, CheckDisclaimerStatusRestricted) {
             DriveDisclaimerController::DisclaimerStatus::kRestricted);
 }
 
-TEST_F(DriveDisclaimerControllerTest, CheckDisclaimerStatusGetFacsFailure) {
+TEST_F(DriveDisclaimerControllerTest, CheckDisclaimerStatusFailure) {
   using ::testing::_;
 
-  EXPECT_CALL(*mock_fpop_service_, GetFacs(_, _))
-      .WillOnce([](const footprints::oneplatform::GetFacsRequest& request,
-                   base::OnceCallback<void(
-                       bool, const footprints::oneplatform::GetFacsResponse&)>
-                       callback) {
-        EXPECT_EQ(request.header().application_id(), kExpectedApplicationId);
-        ASSERT_EQ(request.setting_size(), 1);
-        EXPECT_EQ(request.setting(0),
-                  contextual_search::kPersonalContextSearchUsingWorkspace);
+  EXPECT_CALL(*mock_fpop_service_, ShouldShowMobileConsentFlow(_, _))
+      .WillOnce(
+          [](const footprints::oneplatform::ShouldShowMobileConsentFlowRequest&
+                 request,
+             base::OnceCallback<void(
+                 bool, const footprints::oneplatform::
+                           ShouldShowMobileConsentFlowResponse&)> callback) {
+            footprints::oneplatform::ShouldShowMobileConsentFlowResponse
+                response;
+            std::move(callback).Run(false, response);
+          });
 
-        footprints::oneplatform::GetFacsResponse response;
-        std::move(callback).Run(false, response);
-      });
+  base::test::TestFuture<DriveDisclaimerController::DisclaimerStatus> future;
+  controller_->CheckDisclaimerStatusAsync(future.GetCallback());
+  // Defaults to restricted on failure now
+  EXPECT_EQ(future.Get(),
+            DriveDisclaimerController::DisclaimerStatus::kRestricted);
+}
+
+TEST_F(DriveDisclaimerControllerTest, CheckDisclaimerStatusNoResultInResponse) {
+  using ::testing::_;
+
+  EXPECT_CALL(*mock_fpop_service_, ShouldShowMobileConsentFlow(_, _))
+      .WillOnce(
+          [](const footprints::oneplatform::ShouldShowMobileConsentFlowRequest&
+                 request,
+             base::OnceCallback<void(
+                 bool, const footprints::oneplatform::
+                           ShouldShowMobileConsentFlowResponse&)> callback) {
+            footprints::oneplatform::ShouldShowMobileConsentFlowResponse
+                response;
+            // Success is true, but no should_show_flow_result is populated.
+            std::move(callback).Run(true, response);
+          });
 
   base::test::TestFuture<DriveDisclaimerController::DisclaimerStatus> future;
   controller_->CheckDisclaimerStatusAsync(future.GetCallback());
   EXPECT_EQ(future.Get(),
-            DriveDisclaimerController::DisclaimerStatus::kNotAccepted);
+            DriveDisclaimerController::DisclaimerStatus::kRestricted);
 }
 
-TEST_F(DriveDisclaimerControllerTest,
-       CheckDisclaimerStatusNoSettingsInResponse) {
+TEST_F(DriveDisclaimerControllerTest, CheckDisclaimerStatusEligibleCanConsent) {
   using ::testing::_;
 
-  EXPECT_CALL(*mock_fpop_service_, GetFacs(_, _))
-      .WillOnce([](const footprints::oneplatform::GetFacsRequest& request,
-                   base::OnceCallback<void(
-                       bool, const footprints::oneplatform::GetFacsResponse&)>
-                       callback) {
-        EXPECT_EQ(request.header().application_id(), kExpectedApplicationId);
-        ASSERT_EQ(request.setting_size(), 1);
-        EXPECT_EQ(request.setting(0),
-                  contextual_search::kPersonalContextSearchUsingWorkspace);
-
-        footprints::oneplatform::GetFacsResponse response;
-        // Success is true, but no settings are populated.
-        std::move(callback).Run(true, response);
-      });
-
-  base::test::TestFuture<DriveDisclaimerController::DisclaimerStatus> future;
-  controller_->CheckDisclaimerStatusAsync(future.GetCallback());
-  EXPECT_EQ(future.Get(),
-            DriveDisclaimerController::DisclaimerStatus::kNotAccepted);
-}
-
-TEST_F(DriveDisclaimerControllerTest,
-       CheckDisclaimerStatusWrongSettingInResponse) {
-  using ::testing::_;
-
-  EXPECT_CALL(*mock_fpop_service_, GetFacs(_, _))
-      .WillOnce([](const footprints::oneplatform::GetFacsRequest& request,
-                   base::OnceCallback<void(
-                       bool, const footprints::oneplatform::GetFacsResponse&)>
-                       callback) {
-        EXPECT_EQ(request.header().application_id(), kExpectedApplicationId);
-        ASSERT_EQ(request.setting_size(), 1);
-        EXPECT_EQ(request.setting(0),
-                  contextual_search::kPersonalContextSearchUsingWorkspace);
-
-        footprints::oneplatform::GetFacsResponse response;
-        auto* setting = response.add_facs_setting();
-        // Populate response with a different/unrelated setting.
-        setting->set_setting(999);
-        setting->set_data_recording_enabled(true);
-        std::move(callback).Run(true, response);
-      });
+  EXPECT_CALL(*mock_fpop_service_, ShouldShowMobileConsentFlow(_, _))
+      .WillOnce(
+          [](const footprints::oneplatform::ShouldShowMobileConsentFlowRequest&
+                 request,
+             base::OnceCallback<void(
+                 bool, const footprints::oneplatform::
+                           ShouldShowMobileConsentFlowResponse&)> callback) {
+            footprints::oneplatform::ShouldShowMobileConsentFlowResponse
+                response;
+            response.mutable_should_show_flow_result()
+                ->mutable_eligibility()
+                ->set_status(1);  // CAN_CONSENT
+            std::move(callback).Run(true, response);
+          });
 
   base::test::TestFuture<DriveDisclaimerController::DisclaimerStatus> future;
   controller_->CheckDisclaimerStatusAsync(future.GetCallback());

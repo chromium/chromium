@@ -50,10 +50,11 @@ class DriveDisclaimerController {
       base::OnceCallback<void(DisclaimerStatus status)> completion_callback);
 
  private:
-  void OnGetFacsResponse(
+  void OnShouldShowMobileConsentFlowResponse(
       base::OnceCallback<void(DisclaimerStatus status)> completion_callback,
       bool success,
-      const footprints::oneplatform::GetFacsResponse& response);
+      const footprints::oneplatform::ShouldShowMobileConsentFlowResponse&
+          response);
 
   std::unique_ptr<contextual_search::FpopService> fpop_service_;
   base::WeakPtrFactory<DriveDisclaimerController> weak_factory_{this};
