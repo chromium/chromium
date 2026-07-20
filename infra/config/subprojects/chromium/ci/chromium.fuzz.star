@@ -232,8 +232,18 @@ def browser_builder(
         clusterfuzz_archive_schema_version = None,
         clusterfuzz_archive_subdir = None,
         clusterfuzz_gs_bucket = None,
+        clusterfuzz_archive_path = None,
+        clusterfuzz_use_archive_path = False,
         console_short_name = None,
         **kwargs):
+    check_clusterfuzz_archive_path(
+        os = kwargs.get("os"),
+        build_config = build_config,
+        archive_path = clusterfuzz_archive_path,
+        archive_prefix = clusterfuzz_archive_name_prefix,
+        archive_subdir = clusterfuzz_archive_subdir,
+    )
+
     if build_config == builder_config.build_config.DEBUG:
         default_console_short_name = "dbg"
         use_component_build = True
@@ -247,10 +257,12 @@ def browser_builder(
         use_component_build = use_component_build,
         clusterfuzz_archive = builder_config.clusterfuzz_archive(
             archive_name_prefix = clusterfuzz_archive_name_prefix,
+            archive_path = clusterfuzz_archive_path,
             archive_schema_version = clusterfuzz_archive_schema_version,
             archive_subdir = clusterfuzz_archive_subdir,
             gs_acl = "public-read",
             gs_bucket = clusterfuzz_gs_bucket,
+            use_archive_path = clusterfuzz_use_archive_path,
         ),
         targets = targets.bundle(
             additional_compile_targets = ["blackbox_fuzzing_targets"],
@@ -470,6 +482,7 @@ browser_asan_builder(
     build_config = builder_config.build_config.DEBUG,
     target_bits = 64,
     target_platform = builder_config.target_platform.LINUX,
+    clusterfuzz_archive_path = "linux-debug/asan-linux-debug",
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     gn_extra_configs = [
         "lsan",
@@ -482,6 +495,7 @@ browser_asan_builder(
     build_config = builder_config.build_config.RELEASE,
     target_bits = 64,
     target_platform = builder_config.target_platform.LINUX,
+    clusterfuzz_archive_path = "linux-release/asan-linux-release",
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     gn_extra_configs = [
         "lsan",
@@ -498,6 +512,7 @@ browser_asan_builder(
     target_bits = 32,
     target_platform = builder_config.target_platform.LINUX,
     clusterfuzz_archive_name_prefix = "asan-v8-arm",
+    clusterfuzz_archive_path = "linux-release-v8-arm/asan-v8-arm-linux-release",
     clusterfuzz_archive_subdir = "v8-arm",
     console_category = "linux asan|x64 v8-ARM",
     contact_team_email = "v8-infra@google.com",
@@ -513,6 +528,7 @@ browser_asan_builder(
     build_config = builder_config.build_config.RELEASE,
     target_bits = 64,
     target_platform = builder_config.target_platform.LINUX,
+    clusterfuzz_archive_path = "linux-release-media/asan-linux-release",
     clusterfuzz_archive_subdir = "media",
     console_short_name = "med",
     gn_extra_configs = [
@@ -534,6 +550,7 @@ browser_asan_builder(
     target_bits = 64,
     target_platform = builder_config.target_platform.LINUX,
     clusterfuzz_archive_name_prefix = "asan-brp-v2",
+    clusterfuzz_archive_path = "linux-release/asan-brp-v2-linux-release",
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     gn_extra_configs = [
         "lsan",
@@ -554,6 +571,7 @@ browser_asan_builder(
     build_config = builder_config.build_config.RELEASE,
     target_bits = 64,
     target_platform = builder_config.target_platform.LINUX,
+    clusterfuzz_archive_path = "linux-release-schema-v1/asan-linux-release",
     clusterfuzz_archive_schema_version = 1,
     clusterfuzz_archive_subdir = "schema-v1",
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
@@ -781,6 +799,7 @@ browser_asan_builder(
     target_bits = 32,
     target_platform = builder_config.target_platform.LINUX,
     clusterfuzz_archive_name_prefix = "asan-v8-arm",
+    clusterfuzz_archive_path = "linux-release-v8-arm-media/asan-v8-arm-linux-release",
     clusterfuzz_archive_subdir = "v8-arm-media",
     console_category = "linux asan|x64 v8-ARM",
     console_short_name = "med",
@@ -798,6 +817,7 @@ browser_asan_builder(
     build_config = builder_config.build_config.RELEASE,
     target_bits = 64,
     target_platform = builder_config.target_platform.CHROMEOS,
+    clusterfuzz_archive_path = "linux-release-chromeos/asan-linux-release",
     clusterfuzz_archive_subdir = "chromeos",
     console_category = "cros asan",
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
@@ -831,6 +851,7 @@ def browser_msan_builder(**kwargs):
 browser_msan_builder(
     name = "MSAN Release (chained origins)",
     clusterfuzz_archive_name_prefix = "msan-chained-origins",
+    clusterfuzz_archive_path = "linux-release/msan-chained-origins-linux-release",
     console_short_name = "org",
     gn_extra_configs = [
         "msan",
@@ -840,6 +861,7 @@ browser_msan_builder(
 browser_msan_builder(
     name = "MSAN Release (no origins)",
     clusterfuzz_archive_name_prefix = "msan-no-origins",
+    clusterfuzz_archive_path = "linux-release/msan-no-origins-linux-release",
     gn_extra_configs = [
         "msan_no_origins",
     ],
@@ -867,6 +889,7 @@ browser_asan_mac_builder(
     name = "Mac ASAN Release",
     builderless = True,
     cpu = cpu.ARM64,
+    clusterfuzz_archive_path = "mac-release/asan-mac-release",
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     health_spec = health_spec.modified_default({
         "Unhealthy": health_spec.unhealthy_thresholds(
@@ -879,6 +902,7 @@ browser_asan_mac_builder(
     name = "Mac ASAN Release Media",
     builderless = False,
     cores = 12,
+    clusterfuzz_archive_path = "mac-release-media/asan-mac-release",
     clusterfuzz_archive_subdir = "media",
     console_short_name = "med",
     gn_extra_configs = [
@@ -895,6 +919,7 @@ browser_asan_mac_builder(
     # is proven green.
     gardener_rotations = args.ignore_default(None),
     target_arch = builder_config.target_arch.ARM,
+    clusterfuzz_archive_path = "mac-release-arm64/asan-mac-release",
     # Full subdir: `mac-release-arm64`
     clusterfuzz_archive_subdir = "arm64",
     console_short_name = "arm64-rel",
@@ -920,11 +945,13 @@ def browser_tsan_builder(**kwargs):
 browser_tsan_builder(
     name = "TSAN Debug",
     build_config = builder_config.build_config.DEBUG,
+    clusterfuzz_archive_path = "linux-debug/tsan-linux-debug",
 )
 
 browser_tsan_builder(
     name = "TSAN Release",
     build_config = builder_config.build_config.RELEASE,
+    clusterfuzz_archive_path = "linux-release/tsan-linux-release",
     max_concurrent_invocations = 3,
 )
 
@@ -944,6 +971,7 @@ browser_ubsan_builder(
     name = "UBSan Release",
     chromium_config_name = "chromium_linux_ubsan",
     clusterfuzz_archive_name_prefix = "ubsan",
+    clusterfuzz_archive_path = "linux-release/ubsan-linux-release",
     gn_extra_configs = [
         "ubsan",
     ],
@@ -953,6 +981,7 @@ browser_ubsan_builder(
     name = "UBSan vptr Release",
     chromium_config_name = "chromium_linux_ubsan_vptr",
     clusterfuzz_archive_name_prefix = "ubsan-vptr",
+    clusterfuzz_archive_path = "linux-release-vptr/ubsan-vptr-linux-release",
     clusterfuzz_archive_subdir = "vptr",
     console_short_name = "vpt",
     gn_extra_configs = [
@@ -985,11 +1014,13 @@ def browser_asan_win_builder(
 
 browser_asan_win_builder(
     name = "Win ASan Release",
+    clusterfuzz_archive_path = "win32-release_x64/asan-win32-release_x64",
     max_concurrent_invocations = 7,
 )
 
 browser_asan_win_builder(
     name = "Win ASan Release Media",
+    clusterfuzz_archive_path = "win32-release_x64-media/asan-win32-release_x64",
     clusterfuzz_archive_subdir = "media",
     console_short_name = "med",
     gn_extra_configs = [

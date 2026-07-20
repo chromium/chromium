@@ -16,6 +16,7 @@
               "builder_group": "chromium.fuzz",
               "clusterfuzz_archive": {
                 "archive_name_prefix": "asan",
+                "archive_path": "linux-release-media/asan-linux-release",
                 "archive_subdir": "media",
                 "gs_acl": "public-read",
                 "gs_bucket": "chromium-browser-asan",
