@@ -2036,8 +2036,21 @@ Superellipse StyleBuilderConverter::ConvertCornerShape(
   }
 
   const auto& superellipse = To<cssvalue::CSSSuperellipseValue>(value);
-  return Superellipse(
-      superellipse.Param().ComputeNumber(state.CssToLengthConversionData()));
+  const CSSPrimitiveValue& param = superellipse.Param();
+  double param_val;
+  if (const auto* numeric = DynamicTo<CSSNumericLiteralValue>(param)) {
+    param_val = numeric->DoubleValue();
+  } else if (const auto* math = DynamicTo<CSSMathFunctionValue>(param)) {
+    if (std::optional<double> unclamped =
+            math->ExpressionNode()->GetValueIfKnown()) {
+      param_val = *unclamped;
+    } else {
+      param_val = param.ComputeNumber(state.CssToLengthConversionData());
+    }
+  } else {
+    param_val = param.ComputeNumber(state.CssToLengthConversionData());
+  }
+  return Superellipse(param_val);
 }
 
 LayoutUnit StyleBuilderConverter::ConvertLayoutUnit(

@@ -23,7 +23,7 @@ class Superellipse {
 
   // https://drafts.csswg.org/css-borders-4/#valdef-corner-shape-value-notch
   static constexpr Superellipse Notch() {
-    return Superellipse(std::numeric_limits<double>::lowest());
+    return Superellipse(-std::numeric_limits<double>::infinity());
   }
 
   // https://drafts.csswg.org/css-borders-4/#valdef-corner-shape-value-round
@@ -37,7 +37,7 @@ class Superellipse {
 
   // https://drafts.csswg.org/css-borders-4/#valdef-corner-shape-value-square
   static constexpr Superellipse Square() {
-    return Superellipse(std::numeric_limits<double>::max());
+    return Superellipse(std::numeric_limits<double>::infinity());
   }
 
   // Very high curvatures are counted as straight as there would be no visual

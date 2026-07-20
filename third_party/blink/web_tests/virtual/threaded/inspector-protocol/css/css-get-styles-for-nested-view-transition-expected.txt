@@ -124,10 +124,10 @@ PseudoElement: view-transition-group-children container
     border-right-width: 0px; @[undefined-undefined]
     border-bottom-width: 0px; @[undefined-undefined]
     border-left-width: 0px; @[undefined-undefined]
-    corner-top-left-shape: round; @[undefined-undefined]
-    corner-top-right-shape: round; @[undefined-undefined]
-    corner-bottom-right-shape: round; @[undefined-undefined]
-    corner-bottom-left-shape: round; @[undefined-undefined]
+    corner-top-left-shape: superellipse(1); @[undefined-undefined]
+    corner-top-right-shape: superellipse(1); @[undefined-undefined]
+    corner-bottom-right-shape: superellipse(1); @[undefined-undefined]
+    corner-bottom-left-shape: superellipse(1); @[undefined-undefined]
 }
 *::view-transition-group-children(container)* {    user-agent    readonly
     animation-name: -ua-view-transition-group-children-anim-container; @[undefined-undefined]
@@ -604,10 +604,10 @@ Dumping styles for : ::view-transition-group-children with id container
     border-right-width: 0px; @[undefined-undefined]
     border-bottom-width: 0px; @[undefined-undefined]
     border-left-width: 0px; @[undefined-undefined]
-    corner-top-left-shape: round; @[undefined-undefined]
-    corner-top-right-shape: round; @[undefined-undefined]
-    corner-bottom-right-shape: round; @[undefined-undefined]
-    corner-bottom-left-shape: round; @[undefined-undefined]
+    corner-top-left-shape: superellipse(1); @[undefined-undefined]
+    corner-top-right-shape: superellipse(1); @[undefined-undefined]
+    corner-bottom-right-shape: superellipse(1); @[undefined-undefined]
+    corner-bottom-left-shape: superellipse(1); @[undefined-undefined]
 }
 *::view-transition-group-children(container)* {    user-agent    readonly
     animation-name: -ua-view-transition-group-children-anim-container; @[undefined-undefined]

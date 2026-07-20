@@ -3064,24 +3064,6 @@ CSSValue* ComputedStyleUtils::ValueForBorderRadiusCorner(
 
 CSSValue* ComputedStyleUtils::ValueForCornerShape(
     const Superellipse& superellipse) {
-  if (superellipse == Superellipse::Bevel()) {
-    return CSSIdentifierValue::Create(CSSValueID::kBevel);
-  }
-  if (superellipse == Superellipse::Notch()) {
-    return CSSIdentifierValue::Create(CSSValueID::kNotch);
-  }
-  if (superellipse == Superellipse::Round()) {
-    return CSSIdentifierValue::Create(CSSValueID::kRound);
-  }
-  if (superellipse == Superellipse::Scoop()) {
-    return CSSIdentifierValue::Create(CSSValueID::kScoop);
-  }
-  if (superellipse == Superellipse::Square()) {
-    return CSSIdentifierValue::Create(CSSValueID::kSquare);
-  }
-  if (superellipse == Superellipse::Squircle()) {
-    return CSSIdentifierValue::Create(CSSValueID::kSquircle);
-  }
   return MakeGarbageCollected<cssvalue::CSSSuperellipseValue>(
       *CSSNumericLiteralValue::Create(superellipse.Parameter(),
                                       CSSPrimitiveValue::UnitType::kNumber));

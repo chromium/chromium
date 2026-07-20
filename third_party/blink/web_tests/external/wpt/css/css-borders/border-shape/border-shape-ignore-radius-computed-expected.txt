@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] border-radius and corner-shape are NOT reset in computed style when border-shape is specified
-  assert_equals: expected "superellipse(0)" but got "bevel"
-Harness: the test ran to completion.
-
