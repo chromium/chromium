@@ -87,7 +87,7 @@ public class IphMessageServiceUnitTest {
                 .wouldTriggerHelpUi(eq(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE));
         doReturn(true).when(mTracker).isInitialized();
         mIphMessageService.initialize(mServiceDismissActionProvider);
-        assertFalse(mIphMessageService.getMessageItems().isEmpty());
+        assertFalse(mIphMessageService.getMessageItemsForTesting().isEmpty());
     }
 
     @Test
@@ -99,7 +99,7 @@ public class IphMessageServiceUnitTest {
         mIphMessageService.initialize(mServiceDismissActionProvider);
         doReturn(true).when(mTracker).isInitialized();
         mIphMessageService.getInitializedCallbackForTesting().onResult(true);
-        assertFalse(mIphMessageService.getMessageItems().isEmpty());
+        assertFalse(mIphMessageService.getMessageItemsForTesting().isEmpty());
     }
 
     @Test
@@ -109,6 +109,6 @@ public class IphMessageServiceUnitTest {
                 .wouldTriggerHelpUi(eq(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE));
         mIphMessageService.initialize(mServiceDismissActionProvider);
         mIphMessageService.getInitializedCallbackForTesting().onResult(true);
-        assertTrue(mIphMessageService.getMessageItems().isEmpty());
+        assertTrue(mIphMessageService.getMessageItemsForTesting().isEmpty());
     }
 }

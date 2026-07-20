@@ -50,21 +50,21 @@ public class TabGroupShareNoticeBottomSheetMediatorUnitTest {
 
     @Test
     public void testObserver_OnSheetClosed() {
-        BottomSheetObserver bottomSheetObserver = mMediator.getBottomSheetObserver();
+        BottomSheetObserver bottomSheetObserver = mMediator.getBottomSheetObserverForTesting();
         bottomSheetObserver.onSheetClosed(StateChangeReason.SWIPE);
         verify(mDelegate).onSheetClosed();
     }
 
     @Test
     public void testObserver_OnSheetHidden() {
-        BottomSheetObserver bottomSheetObserver = mMediator.getBottomSheetObserver();
+        BottomSheetObserver bottomSheetObserver = mMediator.getBottomSheetObserverForTesting();
         bottomSheetObserver.onSheetStateChanged(SheetState.HIDDEN, StateChangeReason.SWIPE);
         verify(mDelegate).onSheetClosed();
     }
 
     @Test
     public void testObserver_OnSheetNotHidden() {
-        BottomSheetObserver bottomSheetObserver = mMediator.getBottomSheetObserver();
+        BottomSheetObserver bottomSheetObserver = mMediator.getBottomSheetObserverForTesting();
         bottomSheetObserver.onSheetStateChanged(SheetState.HALF, StateChangeReason.SWIPE);
         verify(mDelegate, never()).onSheetClosed();
     }

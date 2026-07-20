@@ -77,8 +77,7 @@ public class TabGroupShareNoticeBottomSheetMediator {
         return mModel;
     }
 
-    @VisibleForTesting
-    BottomSheetObserver getBottomSheetObserver() {
+    BottomSheetObserver getBottomSheetObserverForTesting() {
         return mBottomSheetObserver;
     }
 }

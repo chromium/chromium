@@ -223,7 +223,7 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
 
         mIncognitoReauthPromoMessageService.initialize(mServiceDismissActionProvider);
 
-        assertEquals(1, mIncognitoReauthPromoMessageService.getMessageItems().size());
+        assertEquals(1, mIncognitoReauthPromoMessageService.getMessageItemsForTesting().size());
         verify(mContext, atLeastOnce()).getResources();
         verify(mContext, atLeastOnce()).getString(anyInt());
     }
@@ -457,7 +457,7 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
         IncognitoReauthPromoMessageService.setIsPromoEnabledForTesting(true);
         mPauseResumeWithNativeObserver.onResumeWithNative();
 
-        assertEquals(1, mIncognitoReauthPromoMessageService.getMessageItems().size());
+        assertEquals(1, mIncognitoReauthPromoMessageService.getMessageItemsForTesting().size());
         assertTrue(mSharedPreferenceManager.readBoolean(INCOGNITO_REAUTH_PROMO_CARD_ENABLED, true));
         verify(mContext, atLeastOnce()).getResources();
         verify(mContext, atLeastOnce()).getString(anyInt());

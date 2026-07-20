@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
@@ -95,8 +93,7 @@ public class MessageCardProvider<MessageT, UiT> {
         mMessageServices.clear();
     }
 
-    @VisibleForTesting
-    Map<MessageT, MessageService<MessageT, UiT>> getMessageServicesMap() {
+    Map<MessageT, MessageService<MessageT, UiT>> getMessageServicesMapForTesting() {
         return mMessageServices;
     }
 }

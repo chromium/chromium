@@ -76,7 +76,8 @@ public class MessageCardProviderUnitTest {
     }
 
     private void enqueueMessageItem(@MessageType int type, int tabSuggestionAction) {
-        MessageService<Integer, Integer> service = mProvider.getMessageServicesMap().get(type);
+        MessageService<Integer, Integer> service =
+                mProvider.getMessageServicesMapForTesting().get(type);
         assertNotNull(service);
         switch (type) {
             case MessageType.PRICE_MESSAGE:
@@ -194,7 +195,10 @@ public class MessageCardProviderUnitTest {
         }
 
         // Test message updated after invalidation, and the updated message is persisted.
-        mProvider.getMessageServicesMap().get(MessageType.FOR_TESTING).invalidateMessages();
+        mProvider
+                .getMessageServicesMapForTesting()
+                .get(MessageType.FOR_TESTING)
+                .invalidateMessages();
         enqueueMessageItem(MessageType.FOR_TESTING, TESTING_ACTION);
         Message<@MessageType Integer> newMessage =
                 mProvider.getNextMessageItemForType(MessageType.FOR_TESTING);
@@ -220,7 +224,10 @@ public class MessageCardProviderUnitTest {
                 mProvider.getNextMessageItemForType(MessageType.FOR_TESTING);
         assertEquals(testingMessage1, message);
 
-        mProvider.getMessageServicesMap().get(MessageType.FOR_TESTING).invalidateMessages();
+        mProvider
+                .getMessageServicesMapForTesting()
+                .get(MessageType.FOR_TESTING)
+                .invalidateMessages();
 
         message = mProvider.getNextMessageItemForType(MessageType.FOR_TESTING);
         Assert.assertNull(message);
@@ -230,7 +237,10 @@ public class MessageCardProviderUnitTest {
     public void invalidate_allMessages() {
         enqueueMessageItem(MessageType.PRICE_MESSAGE, -1);
 
-        mProvider.getMessageServicesMap().get(MessageType.PRICE_MESSAGE).invalidateMessages();
+        mProvider
+                .getMessageServicesMapForTesting()
+                .get(MessageType.PRICE_MESSAGE)
+                .invalidateMessages();
 
         Assert.assertNull(getShownMessageFromService(MessageType.PRICE_MESSAGE));
         assertTrue(getMessageItemsForService(MessageType.PRICE_MESSAGE).isEmpty());
@@ -239,7 +249,10 @@ public class MessageCardProviderUnitTest {
         enqueueMessageItem(MessageType.FOR_TESTING, TESTING_ACTION);
         enqueueMessageItem(MessageType.FOR_TESTING, TESTING_ACTION);
 
-        mProvider.getMessageServicesMap().get(MessageType.FOR_TESTING).invalidateMessages();
+        mProvider
+                .getMessageServicesMapForTesting()
+                .get(MessageType.FOR_TESTING)
+                .invalidateMessages();
         Assert.assertNull(getShownMessageFromService(MessageType.FOR_TESTING));
         assertTrue(getMessageItemsForService(MessageType.FOR_TESTING).isEmpty());
     }
@@ -249,7 +262,10 @@ public class MessageCardProviderUnitTest {
         enqueueMessageItem(MessageType.PRICE_MESSAGE, -1);
 
         mProvider.getNextMessageItemForType(MessageType.PRICE_MESSAGE);
-        mProvider.getMessageServicesMap().get(MessageType.PRICE_MESSAGE).invalidateMessages();
+        mProvider
+                .getMessageServicesMapForTesting()
+                .get(MessageType.PRICE_MESSAGE)
+                .invalidateMessages();
 
         verify(mServiceDismissActionProvider).dismiss(anyInt());
         Assert.assertNull(getShownMessageFromService(MessageType.PRICE_MESSAGE));
@@ -260,7 +276,10 @@ public class MessageCardProviderUnitTest {
         enqueueMessageItem(MessageType.FOR_TESTING, TESTING_ACTION);
 
         mProvider.getNextMessageItemForType(MessageType.FOR_TESTING);
-        mProvider.getMessageServicesMap().get(MessageType.FOR_TESTING).invalidateMessages();
+        mProvider
+                .getMessageServicesMapForTesting()
+                .get(MessageType.FOR_TESTING)
+                .invalidateMessages();
         Assert.assertNull(getShownMessageFromService(MessageType.FOR_TESTING));
         assertTrue(getMessageItemsForService(MessageType.FOR_TESTING).isEmpty());
     }
@@ -278,7 +297,7 @@ public class MessageCardProviderUnitTest {
     @Test
     public void queueMessage() {
         MessageService<Integer, Integer> service =
-                mProvider.getMessageServicesMap().get(MessageType.FOR_TESTING);
+                mProvider.getMessageServicesMapForTesting().get(MessageType.FOR_TESTING);
         assertNotNull(service);
 
         MessageModelFactory<Integer> factory = mock();
@@ -349,12 +368,18 @@ public class MessageCardProviderUnitTest {
 
     private List<Message<@MessageType Integer>> getMessageItemsForService(
             @MessageType int messageType) {
-        return mProvider.getMessageServicesMap().get(messageType).getMessageItems();
+        return mProvider
+                .getMessageServicesMapForTesting()
+                .get(messageType)
+                .getMessageItemsForTesting();
     }
 
     @Nullable
     private Message<@MessageType Integer> getShownMessageFromService(@MessageType int messageType) {
-        return mProvider.getMessageServicesMap().get(messageType).getShownMessage();
+        return mProvider
+                .getMessageServicesMapForTesting()
+                .get(messageType)
+                .getShownMessageForTesting();
     }
 
     private static MessageService<@MessageType Integer, @UiType Integer> initService(

@@ -8,7 +8,6 @@ import android.view.View;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.LayoutRes;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.MonotonicNonNull;
@@ -151,17 +150,6 @@ public class MessageService<MessageT, UiT> {
         return mShownMessage.model.get(MessageCardViewProperties.MESSAGE_IDENTIFIER) == identifier;
     }
 
-    @VisibleForTesting
-    List<Message<MessageT>> getMessageItems() {
-        return new ArrayList<>(mMessageItems);
-    }
-
-    @Nullable
-    @VisibleForTesting
-    Message<MessageT> getShownMessage() {
-        return mShownMessage;
-    }
-
     /** Returns the message type of this service. */
     public MessageT getMessageType() {
         return mMessageType;
@@ -180,5 +168,13 @@ public class MessageService<MessageT, UiT> {
     /** Returns the {@link ViewBinder} for the message's UI. */
     public ViewBinder<PropertyModel, ? extends View, PropertyKey> getBinder() {
         return mBinder;
+    }
+
+    List<Message<MessageT>> getMessageItemsForTesting() {
+        return new ArrayList<>(mMessageItems);
+    }
+
+    @Nullable Message<MessageT> getShownMessageForTesting() {
+        return mShownMessage;
     }
 }

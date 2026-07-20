@@ -106,7 +106,7 @@ public class PriceMessageServiceUnitTest {
         mMessageService.preparePriceMessage(PriceMessageType.PRICE_WELCOME, mPriceTabData);
         verify(mServiceDismissActionProvider, times(1)).dismiss(eq(MessageType.PRICE_MESSAGE));
         assertEquals(mPriceTabData, mMessageService.getPriceTabDataForTesting());
-        assertFalse(mMessageService.getMessageItems().isEmpty());
+        assertFalse(mMessageService.getMessageItemsForTesting().isEmpty());
         assertEquals(
                 INITIAL_SHOW_COUNT + 1,
                 PriceTrackingUtilities.getPriceWelcomeMessageCardShowCount());

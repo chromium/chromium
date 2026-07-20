@@ -210,18 +210,18 @@ public class ArchivedTabsMessageServiceUnitTest {
         mTabCountSupplier.set(12);
         assertEquals(12, customCardPropertyModel.get(NUMBER_OF_ARCHIVED_TABS));
 
-        assertEquals(1, mArchivedTabsMessageService.getMessageItems().size());
+        assertEquals(1, mArchivedTabsMessageService.getMessageItemsForTesting().size());
 
         mTabCountSupplier.set(8);
         assertEquals(8, customCardPropertyModel.get(NUMBER_OF_ARCHIVED_TABS));
         // Sending another message to the queue should exit early without sending a message.
-        assertEquals(1, mArchivedTabsMessageService.getMessageItems().size());
+        assertEquals(1, mArchivedTabsMessageService.getMessageItemsForTesting().size());
         verify(mAppendMessageRunnable, times(1)).run();
 
         // After invalidating the previous message, a new message should be sent.
         mArchivedTabsMessageService.maybeInvalidatePreviouslySentMessage();
         mArchivedTabsMessageService.maybeSendMessageToQueue(8);
-        assertEquals(1, mArchivedTabsMessageService.getMessageItems().size());
+        assertEquals(1, mArchivedTabsMessageService.getMessageItemsForTesting().size());
         verify(mServiceDismissActionProvider).dismiss(MessageType.ARCHIVED_TABS_MESSAGE);
         verify(mAppendMessageRunnable, times(2)).run();
     }
