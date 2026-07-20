@@ -609,6 +609,8 @@ if (enable_pdf) {
         "//third_party/ink:brush_test_support",
         "//third_party/ink:input_test_support",
       ]
+
+      data_deps += [ "//third_party/test_fonts" ]
     }
 
     if (enable_screen_ai_service) {

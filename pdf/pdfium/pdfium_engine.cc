@@ -742,6 +742,22 @@ std::vector<ScopedFPDFPageObject> RemovePageObjectsFromPage(
   }
   return page_object_deleters;
 }
+
+bool IsEmojiFont(const SkTypeface* typeface) {
+  constexpr SkFontTableTag kCpalTag = SkSetFourByteTag('C', 'P', 'A', 'L');
+  constexpr SkFontTableTag kColrTag = SkSetFourByteTag('C', 'O', 'L', 'R');
+  constexpr SkFontTableTag kSbixTag = SkSetFourByteTag('s', 'b', 'i', 'x');
+  constexpr SkFontTableTag kCbdtTag = SkSetFourByteTag('C', 'B', 'D', 'T');
+  constexpr SkFontTableTag kCblcTag = SkSetFourByteTag('C', 'B', 'L', 'C');
+  constexpr SkFontTableTag kSvgTag = SkSetFourByteTag('S', 'V', 'G', ' ');
+
+  return (typeface->getTableSize(kColrTag) > 0 &&
+          typeface->getTableSize(kCpalTag) > 0) ||
+         typeface->getTableSize(kSbixTag) > 0 ||
+         (typeface->getTableSize(kCbdtTag) > 0 &&
+          typeface->getTableSize(kCblcTag) > 0) ||
+         typeface->getTableSize(kSvgTag) > 0;
+}
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 void CheckBitmapProperties(const SkBitmap& sk_bitmap, FPDF_BITMAP fpdf_bitmap) {
@@ -5297,6 +5313,15 @@ void PDFiumEngine::AddFont(FontId font_id,
                                         font_data_span.size(),
                                         /*font_type=*/font_type,
                                         /*cid=*/true));
+
+  if (IsEmojiFont(typeface.get())) {
+    if (!font) {
+      // TODO(crbug.com/502468286): Support emoji fonts.
+      bool inserted = font_map_.insert({font_id, nullptr}).second;
+      CHECK(inserted);
+      return;
+    }
+  }
   CHECK(font);
 
   bool inserted = font_map_.insert({font_id, std::move(font)}).second;
@@ -5365,7 +5390,12 @@ void PDFiumEngine::DrawText(int page_index,
   FPDF_PAGEOBJECTMARK mark = nullptr;
   for (const InkTextInfo& item : text_info) {
     FPDF_FONT font = GetAddedFont(item.font_id);
-    CHECK(font);
+    if (!font) {
+      // Only possible for emoji fonts.
+      // TODO(crbug.com/502468286): Change to a CHECK once emoji fonts are
+      // supported.
+      continue;
+    }
 
     ScopedFPDFPageObject text_object(
         FPDFPageObj_CreateTextObj(doc(), font, pdf_font_size));
@@ -5424,14 +5454,15 @@ void PDFiumEngine::DrawText(int page_index,
     CHECK(FPDFPageObj_TransformF(text_object.get(), &text_origin_matrix));
     CHECK(FPDFPageObj_TransformF(text_object.get(), &textbox_matrix));
 
-    if (&item == &text_info.front()) {
+    // The metadata mark must be attached to every text object in the
+    // annotation. Initialize it on the first successfully created text object.
+    if (!mark) {
       mark = FPDFPageObj_AddMark(text_object.get(),
                                  kInkTextAnnotationIdentifierKey);
       CHECK(mark);
       AddMetadataToTextObject(doc(), text_object.get(), mark,
                               GetNextTextboxId(), attributes);
     } else {
-      CHECK(mark);
       CHECK(FPDFPageObj_AddExistingMark(text_object.get(), mark));
     }
 

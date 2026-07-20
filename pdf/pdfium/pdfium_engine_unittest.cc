@@ -14,9 +14,11 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/tag_converters.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -60,6 +62,7 @@
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/skia/include/core/SkFont.h"
+#include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkFontTypes.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkTypeface.h"
@@ -74,6 +77,7 @@
 #if BUILDFLAG(ENABLE_PDF_INK2)
 #include <array>
 
+#include "base/base_paths.h"
 #include "base/containers/span.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
@@ -84,6 +88,8 @@
 #include "third_party/ink/src/ink/strokes/input/stroke_input_batch.h"
 #include "third_party/ink/src/ink/strokes/stroke.h"
 #include "third_party/pdfium/public/fpdf_edit.h"
+#include "third_party/skia/include/core/SkData.h"
+#include "third_party/skia/include/ports/SkFontMgr_Fontations.h"
 #endif
 
 namespace chrome_pdf {
@@ -224,6 +230,31 @@ std::u16string UTF16BEBlobToString(base::span<const unsigned char> blob) {
         base::U16FromBigEndian(blob.take_first<2>()));
   }
   return result;
+}
+
+struct TestFont {
+  sk_sp<SkData> serialized_font;
+  FontId font_id;
+};
+
+// Returns the font data for Noto Color Emoji.
+TestFont GetTestEmojiFont() {
+  base::FilePath assets_dir;
+  CHECK(base::PathService::Get(base::DIR_ASSETS, &assets_dir));
+  base::FilePath font_path =
+      assets_dir.AppendASCII("test_fonts").AppendASCII("NotoColorEmoji.ttf");
+  std::optional<std::vector<uint8_t>> font_data =
+      base::ReadFileToBytes(font_path);
+  CHECK(font_data.has_value());
+
+  sk_sp<SkFontMgr> font_mgr = SkFontMgr_New_Fontations_Empty();
+  sk_sp<SkTypeface> typeface = font_mgr->makeFromData(
+      SkData::MakeWithCopy(font_data.value().data(), font_data.value().size()));
+  CHECK(typeface);
+  return TestFont{
+      .serialized_font = typeface->serialize(),
+      .font_id = static_cast<FontId>(typeface->uniqueID()),
+  };
 }
 
 }  // namespace
@@ -3594,6 +3625,40 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawTextSyntheticBoldItalic) {
   const base::FilePath kExpectedFilePath(GetInkTestDataFilePath(
       GetTestDataPathWithPlatformSuffix("applied_text_bold_italic.png")));
   CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kExpectedFilePath);
+}
+
+TEST_P(PDFiumEngineInkDrawTextTest, DrawTextEmojiWithoutFontDoesNotCrash) {
+  TestClient client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
+  ASSERT_TRUE(engine);
+  int page_count = FPDF_GetPageCount(engine->doc());
+  ASSERT_EQ(page_count, 1);
+
+  TestFont emoji_font = GetTestEmojiFont();
+  ASSERT_TRUE(emoji_font.serialized_font);
+  FontId id = emoji_font.font_id;
+
+  // Attempting to add Noto Color Emoji font should not crash. It will fail to
+  // load in PDFium due to missing PNG support, and return gracefully.
+  engine->AddFont(id, "NotoColorEmoji",
+                  gfx::SkDataToSpan(emoji_font.serialized_font));
+
+  // Draw emoji with the failed font. It should not crash.
+  std::u16string emoji_text = u"\U0001F603";
+  // Placeholder glyphs.
+  DrawTextData text_data = GetGlyphsForText("?", /*font_size=*/10.0f);
+  ASSERT_FALSE(text_data.glyphs.empty());
+
+  constexpr int kPageIndex = 0;
+  const InkTextBoxAttributes attributes = SampleInkTextBoxAttributes();
+  engine->DrawText(
+      kPageIndex, InkTextId(0),
+      {InkTextInfo(id, text_data.glyphs, text_data.glyph_positions,
+                   /*location=*/gfx::RectF(0.0f, 0.0f, 100.0f, 20.0f),
+                   /*is_horizontal=*/true, emoji_text)},
+      /*ascent=*/8.0f,
+      /*pdf_zoom=*/1.0, attributes);
 }
 
 TEST_P(PDFiumEngineInkDrawTextTest, StrokeTextStrokeOverlap) {
