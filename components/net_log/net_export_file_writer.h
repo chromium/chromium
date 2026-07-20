@@ -25,11 +25,13 @@ namespace base {
 class TaskRunner;
 }  // namespace base
 
-namespace network {
-namespace mojom {
+namespace net {
+enum class NetLogFileFormat;
+}  // namespace net
+
+namespace network::mojom {
 class NetworkContext;
-}
-}  // namespace network
+}  // namespace network::mojom
 
 namespace net_log {
 
@@ -44,7 +46,8 @@ namespace net_log {
 // non-iOS implementations of chrome://net-export/.
 //
 // NetExportFileWriter maintains the current logging state using the members
-// |state_|, |log_exists_|, |log_capture_mode_known_|, |log_capture_mode_|.
+// |state_|, |log_exists_|, |log_capture_mode_known_|,
+// |log_capture_mode_|, |log_file_format_known_|, and |log_file_format_|.
 // Its three main commands are Initialize(), StartNetLog(), and StopNetLog().
 // These are the only functions that may cause NetExportFileWriter to change
 // state. Initialize() must be called before NetExportFileWriter can process any
@@ -69,10 +72,12 @@ class NetExportFileWriter {
 
   // Struct used to store the results of setting up the default log directory
   // and log path.
-  struct DefaultLogPathResults {
-    bool default_log_path_success;
-    base::FilePath default_log_path;
+  struct DefaultLogDirResults {
+    bool default_log_dir_success;
+    base::FilePath default_log_dir;
     bool log_exists;
+    base::FilePath existing_log_path;
+    net::NetLogFileFormat log_format;
   };
 
   using FilePathCallback = base::OnceCallback<void(const base::FilePath&)>;
@@ -112,6 +117,7 @@ class NetExportFileWriter {
   // at end of logging once StopNetLog is called.
   void StartNetLog(const base::FilePath& log_path,
                    net::NetLogCaptureMode capture_mode,
+                   net::NetLogFileFormat file_format,
                    uint64_t max_file_size,
                    const base::CommandLine::StringType& command_line_string,
                    const std::string& channel_string,
@@ -149,6 +155,12 @@ class NetExportFileWriter {
   static net::NetLogCaptureMode CaptureModeFromString(
       const std::string& capture_mode_string);
 
+  // Converts to/from the string representation of a file format used by
+  // net_export.js.
+  static std::string FileFormatToString(net::NetLogFileFormat file_format);
+  static net::NetLogFileFormat FileFormatFromString(
+      const std::string& file_format_string);
+
   // Overrides the getter used to retrieve the default log base directory during
   // initialization. Should only be used by unit tests.
   void SetDefaultLogBaseDirectoryGetterForTest(const DirectoryGetter& getter);
@@ -179,17 +191,20 @@ class NetExportFileWriter {
   // Called internally by Initialize(). Will initialize NetExportFileWriter's
   // state variables after the default log directory is set up and the default
   // log path is determined on the |file_task_runner_|.
-  void SetStateAfterSetUpDefaultLogPath(
-      const DefaultLogPathResults& set_up_default_log_path_results);
+  void SetStateAfterSetUpDefaultLogDir(
+      const DefaultLogDirResults& set_up_default_log_dir_results);
 
   // Called internally by StartNetLog(). Contains tasks to be done to start
   // logging after the output file has been created.
   void StartNetLogAfterCreateFile(net::NetLogCaptureMode capture_mode,
+                                  net::NetLogFileFormat file_format,
                                   uint64_t max_file_size,
                                   base::DictValue custom_constants,
                                   base::File log_file);
 
-  void OnStartResult(net::NetLogCaptureMode capture_mode, int result);
+  void OnStartResult(net::NetLogCaptureMode capture_mode,
+                     net::NetLogFileFormat file_format,
+                     int result);
   void OnStopResult(int result);
 
   void OnConnectionError();
@@ -210,12 +225,16 @@ class NetExportFileWriter {
   // file or net task runner.
   scoped_refptr<base::TaskRunner> file_task_runner_;
 
-  State state_;  // Current logging state of NetExportFileWriter.
+  State state_ =
+      STATE_UNINITIALIZED;  // Current logging state of NetExportFileWriter.
 
-  bool log_exists_;  // Whether or not a log file exists on disk.
-  bool log_capture_mode_known_;
-  net::NetLogCaptureMode log_capture_mode_;
+  bool log_exists_ = false;  // Whether or not a log file exists on disk.
+  bool log_capture_mode_known_ = false;
+  net::NetLogCaptureMode log_capture_mode_ = net::NetLogCaptureMode::kDefault;
+  bool log_file_format_known_ = false;
+  net::NetLogFileFormat log_file_format_ = net::NetLogFileFormat::kJson;
 
+  base::FilePath default_log_directory_;
   base::FilePath log_path_;  // base::FilePath to the NetLog file.
 
   // Used to ask the network service to do the actual exporting.

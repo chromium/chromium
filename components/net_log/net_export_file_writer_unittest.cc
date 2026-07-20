@@ -20,6 +20,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
@@ -31,6 +32,7 @@
 #include "net/base/network_change_notifier.h"
 #include "net/base/test_completion_callback.h"
 #include "net/http/http_response_headers.h"
+#include "net/log/file_net_log_observer.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_event_type.h"
 #include "net/test/embedded_test_server/default_handlers.h"
@@ -58,6 +60,8 @@ base::FilePath::CharType kLogRelativePath[] =
 const char kCaptureModeDefaultString[] = "STRIP_PRIVATE_DATA";
 const char kCaptureModeIncludeSensitiveString[] = "NORMAL";
 const char kCaptureModeIncludeEverythingString[] = "LOG_BYTES";
+const char kFileFormatJsonString[] = "JSON";
+const char kFileFormatNdjsonString[] = "NDJSON";
 
 const char kStateUninitializedString[] = "UNINITIALIZED";
 const char kStateInitializingString[] = "INITIALIZING";
@@ -77,6 +81,7 @@ class FakeNetLogExporter : public network::mojom::NetLogExporter {
   void Start(base::File destination,
              base::DictValue extra_constants,
              net::NetLogCaptureMode capture_mode,
+             net::NetLogFileFormat file_format,
              uint64_t max_file_size,
              StartCallback callback) override {
     std::move(callback).Run(net::OK);
@@ -136,7 +141,10 @@ bool SetPathToGivenAndReturnTrue(const base::FilePath& path_to_return,
     const std::string& expected_state_string,
     bool expected_log_exists,
     bool expected_log_capture_mode_known,
-    const std::string& expected_log_capture_mode_string) {
+    const std::string& expected_log_capture_mode_string,
+    bool expected_log_file_format_known = false,
+    const std::string& expected_log_file_format_string =
+        kFileFormatJsonString) {
   base::DictValue expected_state;
   expected_state.Set("state", expected_state_string);
   expected_state.Set("logExists", expected_log_exists);
@@ -145,6 +153,12 @@ bool SetPathToGivenAndReturnTrue(const base::FilePath& path_to_return,
     expected_state.Set("captureMode", expected_log_capture_mode_string);
   } else {
     state.Remove("captureMode");
+  }
+  expected_state.Set("logFileFormatKnown", expected_log_file_format_known);
+  if (expected_log_file_format_known) {
+    expected_state.Set("fileFormat", expected_log_file_format_string);
+  } else {
+    state.Remove("fileFormat");
   }
 
   // Remove "file" field which is only added in debug mode.
@@ -170,30 +184,15 @@ bool SetPathToGivenAndReturnTrue(const base::FilePath& path_to_return,
   return ::testing::AssertionSuccess();
 }
 
-[[nodiscard]] base::expected<base::DictValue, ::testing::AssertionResult>
-ReadCompleteLogFile(const base::FilePath& log_path) {
-  DCHECK(!log_path.empty());
-
-  if (!base::PathExists(log_path)) {
-    return base::unexpected(::testing::AssertionFailure()
-                            << log_path.value() << " does not exist.");
-  }
-
-  // Check file permissions. These tests are only done on POSIX for simplicity,
-  // since base has better support for the POSIX permission model.
+::testing::AssertionResult VerifyFilePermissions(
+    const base::FilePath& log_path) {
 #if BUILDFLAG(IS_POSIX)
   int actual_permissions = 0;
   if (!base::GetPosixFilePermissions(log_path, &actual_permissions)) {
-    return base::unexpected(::testing::AssertionFailure()
-                            << "Failed getting file permissions for "
-                            << log_path.value());
+    return ::testing::AssertionFailure()
+           << "Failed getting file permissions for " << log_path.value();
   }
 
-  // Creating the file will have requested permission 600 (or 644 on Chrome
-  // OS). This cannot be asserted directly since the shell's umask may further
-  // restrict the final permissions. For instance if your umask is 0027 and you
-  // try running the Chrome OS tests on Linux, the final permissions will be
-  // 640 rather than 644.
   int expected_permissions = base::FILE_PERMISSION_READ_BY_USER |
                              base::FILE_PERMISSION_WRITE_BY_USER
 #if BUILDFLAG(IS_CHROMEOS)
@@ -203,13 +202,29 @@ ReadCompleteLogFile(const base::FilePath& log_path) {
       ;
 
   if ((actual_permissions & expected_permissions) != actual_permissions) {
-    return base::unexpected(::testing::AssertionFailure()
-                            << "Unexpected permissions: "
-                            << base::StringPrintf("%o", actual_permissions)
-                            << " vs "
-                            << base::StringPrintf("%o", expected_permissions));
+    return ::testing::AssertionFailure()
+           << "Unexpected permissions: "
+           << base::StringPrintf("%o", actual_permissions) << " vs "
+           << base::StringPrintf("%o", expected_permissions);
   }
 #endif  // BUILDFLAG(IS_POSIX)
+  return ::testing::AssertionSuccess();
+}
+
+[[nodiscard]] base::expected<base::DictValue, ::testing::AssertionResult>
+ReadCompleteLogFile(const base::FilePath& log_path) {
+  DCHECK(!log_path.empty());
+
+  if (!base::PathExists(log_path)) {
+    return base::unexpected(::testing::AssertionFailure()
+                            << log_path.value() << " does not exist.");
+  }
+
+  ::testing::AssertionResult permissions_result =
+      VerifyFilePermissions(log_path);
+  if (!permissions_result) {
+    return base::unexpected(permissions_result);
+  }
 
   // Parse log file contents into a dictionary
   std::string log_string;
@@ -236,6 +251,62 @@ ReadCompleteLogFile(const base::FilePath& log_path) {
                             << log_path.value() << " is missing events list.");
   }
   return std::move(*log_parsed);
+}
+
+::testing::AssertionResult VerifyNdjsonLogFile(const base::FilePath& log_path) {
+  DCHECK(!log_path.empty());
+
+  if (!base::PathExists(log_path)) {
+    return ::testing::AssertionFailure()
+           << log_path.value() << " does not exist.";
+  }
+
+  ::testing::AssertionResult permissions_result =
+      VerifyFilePermissions(log_path);
+  if (!permissions_result) {
+    return permissions_result;
+  }
+
+  std::string log_string;
+  if (!base::ReadFileToString(log_path, &log_string)) {
+    return ::testing::AssertionFailure()
+           << log_path.value() << " could not be read.";
+  }
+
+  std::vector<std::string_view> lines = base::SplitStringPiece(
+      log_string, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  bool found_constants = false;
+  bool found_end = false;
+
+  for (const auto& line : lines) {
+    std::optional<base::DictValue> dict =
+        base::JSONReader::ReadDict(line, base::JSON_PARSE_RFC);
+    if (!dict) {
+      return ::testing::AssertionFailure()
+             << "Invalid JSON dict line: " << line;
+    }
+    const std::string* type = dict->FindString("type");
+    if (!type) {
+      return ::testing::AssertionFailure()
+             << "Missing 'type' in line: " << line;
+    }
+    if (*type == "constants") {
+      found_constants = true;
+    } else if (*type == "end") {
+      found_end = true;
+    }
+  }
+
+  if (!found_constants) {
+    return ::testing::AssertionFailure()
+           << "Missing 'constants' in NDJSON log.";
+  }
+  if (!found_end) {
+    return ::testing::AssertionFailure() << "Missing 'end' in NDJSON log.";
+  }
+
+  return ::testing::AssertionSuccess();
 }
 
 // An implementation of NetExportFileWriter::StateObserver that allows waiting
@@ -315,7 +386,9 @@ class NetExportFileWriterTest : public ::testing::Test {
     file_writer_.SetDefaultLogBaseDirectoryGetterForTest(base::BindRepeating(
         &SetPathToGivenAndReturnTrue, log_temp_dir_.GetPath()));
 
-    default_log_path_ = log_temp_dir_.GetPath().Append(kLogRelativePath);
+    default_log_path_ = log_temp_dir_.GetPath()
+                            .Append(kLogRelativePath)
+                            .NormalizePathSeparators();
 
     file_writer_.AddObserver(&test_state_observer_);
 
@@ -337,7 +410,10 @@ class NetExportFileWriterTest : public ::testing::Test {
 
   [[nodiscard]] ::testing::AssertionResult InitializeThenVerifyNewState(
       bool expected_initialize_success,
-      bool expected_log_exists) {
+      bool expected_log_exists,
+      bool expected_log_file_format_known = false,
+      const std::string& expected_log_file_format_string =
+          kFileFormatJsonString) {
     file_writer_.Initialize();
     base::DictValue state = test_state_observer_.WaitForNewState();
     ::testing::AssertionResult result =
@@ -350,11 +426,12 @@ class NetExportFileWriterTest : public ::testing::Test {
     }
 
     state = test_state_observer_.WaitForNewState();
-    result =
-        VerifyState(std::move(state),
-                    expected_initialize_success ? kStateNotLoggingString
-                                                : kStateUninitializedString,
-                    expected_log_exists, false, "");
+    result = VerifyState(
+        std::move(state),
+        expected_initialize_success ? kStateNotLoggingString
+                                    : kStateUninitializedString,
+        expected_log_exists, false, "", expected_log_file_format_known,
+        expected_log_file_format_string);
     if (!result) {
       return ::testing::AssertionFailure()
              << "Second state after Initialize() does not match expected:"
@@ -371,10 +448,12 @@ class NetExportFileWriterTest : public ::testing::Test {
       const base::FilePath& custom_log_path,
       net::NetLogCaptureMode capture_mode,
       const std::string& expected_capture_mode_string,
-      network::mojom::NetworkContext* network_context) {
-    file_writer_.StartNetLog(custom_log_path, capture_mode, kMaxLogSizeBytes,
-                             base::CommandLine::StringType(), kChannelString,
-                             network_context);
+      network::mojom::NetworkContext* network_context,
+      net::NetLogFileFormat file_format = net::NetLogFileFormat::kJson,
+      const std::string& expected_file_format_string = kFileFormatJsonString) {
+    file_writer_.StartNetLog(custom_log_path, capture_mode, file_format,
+                             kMaxLogSizeBytes, base::CommandLine::StringType(),
+                             kChannelString, network_context);
     base::DictValue state = test_state_observer_.WaitForNewState();
     ::testing::AssertionResult result =
         VerifyState(std::move(state), kStateStartingLogString);
@@ -387,7 +466,8 @@ class NetExportFileWriterTest : public ::testing::Test {
 
     state = test_state_observer_.WaitForNewState();
     result = VerifyState(std::move(state), kStateLoggingString, true, true,
-                         expected_capture_mode_string);
+                         expected_capture_mode_string, true,
+                         expected_file_format_string);
     if (!result) {
       return ::testing::AssertionFailure()
              << "Second state after StartNetLog() does not match expected:"
@@ -411,7 +491,8 @@ class NetExportFileWriterTest : public ::testing::Test {
   [[nodiscard]] ::testing::AssertionResult StopThenVerifyNewStateAndFile(
       const base::FilePath& custom_log_path,
       base::DictValue polled_data,
-      const std::string& expected_capture_mode_string) {
+      const std::string& expected_capture_mode_string,
+      const std::string& expected_file_format_string = kFileFormatJsonString) {
     file_writer_.StopNetLog(std::move(polled_data));
     base::DictValue state = test_state_observer_.WaitForNewState();
     ::testing::AssertionResult result =
@@ -425,7 +506,8 @@ class NetExportFileWriterTest : public ::testing::Test {
 
     state = test_state_observer_.WaitForNewState();
     result = VerifyState(std::move(state), kStateNotLoggingString, true, true,
-                         expected_capture_mode_string);
+                         expected_capture_mode_string, true,
+                         expected_file_format_string);
     if (!result) {
       return ::testing::AssertionFailure()
              << "Second state after StopNetLog() does not match expected:"
@@ -447,12 +529,22 @@ class NetExportFileWriterTest : public ::testing::Test {
     }
 
     // Make sure the generated log file is valid.
-    base::expected<base::DictValue, ::testing::AssertionResult> log_result =
-        ReadCompleteLogFile(expected_log_path);
-    if (!log_result.has_value()) {
-      return ::testing::AssertionFailure()
-             << "Log file after logging stopped is not valid:" << std::endl
-             << log_result.error().message();
+    if (expected_file_format_string == kFileFormatNdjsonString) {
+      ::testing::AssertionResult log_result =
+          VerifyNdjsonLogFile(expected_log_path);
+      if (!log_result) {
+        return ::testing::AssertionFailure()
+               << "Log file after logging stopped is not valid:" << std::endl
+               << log_result.message();
+      }
+    } else {
+      base::expected<base::DictValue, ::testing::AssertionResult> log_result =
+          ReadCompleteLogFile(expected_log_path);
+      if (!log_result.has_value()) {
+        return ::testing::AssertionFailure()
+               << "Log file after logging stopped is not valid:" << std::endl
+               << log_result.error().message();
+      }
     }
 
     return ::testing::AssertionSuccess();
@@ -527,9 +619,27 @@ TEST_F(NetExportFileWriterTest, InitWithExistingLog) {
   ASSERT_TRUE(empty_file.get());
   empty_file.reset();
 
-  ASSERT_TRUE(InitializeThenVerifyNewState(true, true));
+  ASSERT_TRUE(
+      InitializeThenVerifyNewState(true, true, true, kFileFormatJsonString));
 
   EXPECT_EQ(default_log_path(), FileWriterGetFilePathToCompletedLog());
+}
+
+TEST_F(NetExportFileWriterTest, InitWithExistingNdjsonLog) {
+  base::FilePath ndjson_path =
+      default_log_path().RemoveExtension().AddExtension(
+          FILE_PATH_LITERAL("jsonl"));
+  // Create and close an empty log file to simulate existence of a previous log
+  // file.
+  ASSERT_TRUE(base::CreateDirectoryAndGetError(ndjson_path.DirName(), nullptr));
+  base::ScopedFILE empty_file(base::OpenFile(ndjson_path, "w"));
+  ASSERT_TRUE(empty_file.get());
+  empty_file.reset();
+
+  ASSERT_TRUE(
+      InitializeThenVerifyNewState(true, true, true, kFileFormatNdjsonString));
+
+  EXPECT_EQ(ndjson_path, FileWriterGetFilePathToCompletedLog());
 }
 
 TEST_F(NetExportFileWriterTest, StartAndStopWithAllCaptureModes) {
@@ -557,15 +667,18 @@ TEST_F(NetExportFileWriterTest, StartAndStopWithAllCaptureModes) {
     // Calling StartNetLog() again should be a no-op. Try doing StartNetLog()
     // with various capture modes; they should all be ignored and result in no
     // state change.
-    file_writer()->StartNetLog(
-        base::FilePath(), capture_modes[i], kMaxLogSizeBytes,
-        base::CommandLine::StringType(), kChannelString, network_context());
-    file_writer()->StartNetLog(
-        base::FilePath(), capture_modes[(i + 1) % 3], kMaxLogSizeBytes,
-        base::CommandLine::StringType(), kChannelString, network_context());
-    file_writer()->StartNetLog(
-        base::FilePath(), capture_modes[(i + 2) % 3], kMaxLogSizeBytes,
-        base::CommandLine::StringType(), kChannelString, network_context());
+    file_writer()->StartNetLog(base::FilePath(), capture_modes[i],
+                               net::NetLogFileFormat::kJson, kMaxLogSizeBytes,
+                               base::CommandLine::StringType(), kChannelString,
+                               network_context());
+    file_writer()->StartNetLog(base::FilePath(), capture_modes[(i + 1) % 3],
+                               net::NetLogFileFormat::kNdjson, kMaxLogSizeBytes,
+                               base::CommandLine::StringType(), kChannelString,
+                               network_context());
+    file_writer()->StartNetLog(base::FilePath(), capture_modes[(i + 2) % 3],
+                               net::NetLogFileFormat::kJson, kMaxLogSizeBytes,
+                               base::CommandLine::StringType(), kChannelString,
+                               network_context());
 
     // StopNetLog(), should result in state change. The capture mode should
     // match that of the first StartNetLog() call (called by
@@ -585,6 +698,34 @@ TEST_F(NetExportFileWriterTest, StartAndStopWithAllCaptureModes) {
 
   ASSERT_TRUE(StopThenVerifyNewStateAndFile(base::FilePath(), base::DictValue(),
                                             capture_mode_strings[0]));
+}
+
+TEST_F(NetExportFileWriterTest, StartAndStopWithNdjsonFileFormat) {
+  ASSERT_TRUE(InitializeThenVerifyNewState(true, false));
+
+  ASSERT_TRUE(StartThenVerifyNewState(
+      base::FilePath(), net::NetLogCaptureMode::kDefault,
+      kCaptureModeDefaultString, network_context(),
+      net::NetLogFileFormat::kNdjson, kFileFormatNdjsonString));
+
+  file_writer()->StopNetLog(base::DictValue());
+  base::DictValue state = test_state_observer()->WaitForNewState();
+  ASSERT_TRUE(VerifyState(std::move(state), kStateStoppingLogString));
+
+  state = test_state_observer()->WaitForNewState();
+  ASSERT_TRUE(VerifyState(std::move(state), kStateNotLoggingString, true, true,
+                          kCaptureModeDefaultString, true,
+                          kFileFormatNdjsonString));
+
+  const base::FilePath expected_log_path =
+      default_log_path().RemoveExtension().AddExtension(
+          FILE_PATH_LITERAL("jsonl"));
+  EXPECT_EQ(expected_log_path, FileWriterGetFilePathToCompletedLog());
+
+  std::string log_string;
+  ASSERT_TRUE(base::ReadFileToString(expected_log_path, &log_string));
+  EXPECT_TRUE(log_string.contains("{\"type\":\"constants\"")) << log_string;
+  EXPECT_TRUE(log_string.contains("{\"type\":\"end\"}")) << log_string;
 }
 
 // Verify the file sizes after two consecutive starts/stops are the same (even
@@ -688,6 +829,47 @@ TEST_F(NetExportFileWriterTest, AddEventCustomPath) {
 
   ASSERT_TRUE(StopThenVerifyNewStateAndFile(custom_log_path, base::DictValue(),
                                             kCaptureModeDefaultString));
+
+  // Get file size after adding the event and make sure it's larger than before.
+  std::optional<int64_t> new_stop_file_size =
+      base::GetFileSize(custom_log_path);
+  ASSERT_TRUE(new_stop_file_size.has_value());
+  EXPECT_GE(new_stop_file_size.value(), stop_file_size.value());
+}
+
+TEST_F(NetExportFileWriterTest, AddEventCustomPathNdjson) {
+  ASSERT_TRUE(InitializeThenVerifyNewState(true, false));
+
+  base::FilePath::CharType kCustomRelativePath[] =
+      FILE_PATH_LITERAL("custom/custom/chrome-net-export-log.jsonl");
+  base::FilePath custom_log_path =
+      GetLogTempDirPath().Append(kCustomRelativePath);
+  EXPECT_TRUE(
+      base::CreateDirectoryAndGetError(custom_log_path.DirName(), nullptr));
+
+  ASSERT_TRUE(StartThenVerifyNewState(
+      custom_log_path, net::NetLogCaptureMode::kDefault,
+      kCaptureModeDefaultString, network_context(),
+      net::NetLogFileFormat::kNdjson, kFileFormatNdjsonString));
+
+  ASSERT_TRUE(StopThenVerifyNewStateAndFile(custom_log_path, base::DictValue(),
+                                            kCaptureModeDefaultString,
+                                            kFileFormatNdjsonString));
+
+  // Get file size without the event.
+  std::optional<int64_t> stop_file_size = base::GetFileSize(custom_log_path);
+  ASSERT_TRUE(stop_file_size.has_value());
+
+  ASSERT_TRUE(StartThenVerifyNewState(
+      custom_log_path, net::NetLogCaptureMode::kDefault,
+      kCaptureModeDefaultString, network_context(),
+      net::NetLogFileFormat::kNdjson, kFileFormatNdjsonString));
+
+  net_log()->AddGlobalEntry(net::NetLogEventType::CANCELLED);
+
+  ASSERT_TRUE(StopThenVerifyNewStateAndFile(custom_log_path, base::DictValue(),
+                                            kCaptureModeDefaultString,
+                                            kFileFormatNdjsonString));
 
   // Get file size after adding the event and make sure it's larger than before.
   std::optional<int64_t> new_stop_file_size =
@@ -828,8 +1010,9 @@ TEST_F(NetExportFileWriterTest, ReceiveStartWhileInitializing) {
   // before |file_writer_| finishes initialization, which means this
   // should be a no-op.
   file_writer()->StartNetLog(base::FilePath(), net::NetLogCaptureMode::kDefault,
-                             kMaxLogSizeBytes, base::CommandLine::StringType(),
-                             kChannelString, network_context());
+                             net::NetLogFileFormat::kJson, kMaxLogSizeBytes,
+                             base::CommandLine::StringType(), kChannelString,
+                             network_context());
 
   // Now run the main message loop. Make sure StartNetLog() was ignored by
   // checking that the next two states are "initializing" followed by
@@ -858,8 +1041,9 @@ TEST_F(NetExportFileWriterTest, ReceiveStartWhileStoppingLog) {
   // |file_writer_| finishes stopping, which means this should be a
   // no-op.
   file_writer()->StartNetLog(base::FilePath(), net::NetLogCaptureMode::kDefault,
-                             kMaxLogSizeBytes, base::CommandLine::StringType(),
-                             kChannelString, network_context());
+                             net::NetLogFileFormat::kJson, kMaxLogSizeBytes,
+                             base::CommandLine::StringType(), kChannelString,
+                             network_context());
 
   // Now run the main message loop. Make sure the last StartNetLog() was
   // ignored by checking that the next two states are "stopping-log" followed by
@@ -869,7 +1053,8 @@ TEST_F(NetExportFileWriterTest, ReceiveStartWhileStoppingLog) {
   ASSERT_TRUE(VerifyState(std::move(state), kStateStoppingLogString));
   state = test_state_observer()->WaitForNewState();
   ASSERT_TRUE(VerifyState(std::move(state), kStateNotLoggingString, true, true,
-                          kCaptureModeIncludeEverythingString));
+                          kCaptureModeIncludeEverythingString, true,
+                          kFileFormatJsonString));
 }
 
 TEST_F(NetExportFileWriterTest, HandleCrash) {
@@ -901,6 +1086,20 @@ TEST_F(NetExportFileWriterTest, IsLogging) {
   ASSERT_TRUE(StopThenVerifyNewStateAndFile(base::FilePath(), base::DictValue(),
                                             kCaptureModeDefaultString));
   EXPECT_FALSE(file_writer()->IsLogging());
+}
+
+TEST_F(NetExportFileWriterTest, StringToEnumFallbacks) {
+  // Test invalid capture modes fallback to default.
+  EXPECT_EQ(net::NetLogCaptureMode::kDefault,
+            NetExportFileWriter::CaptureModeFromString("INVALID_CAPTURE_MODE"));
+  EXPECT_EQ(net::NetLogCaptureMode::kDefault,
+            NetExportFileWriter::CaptureModeFromString(""));
+
+  // Test invalid file formats fallback to JSON.
+  EXPECT_EQ(net::NetLogFileFormat::kJson,
+            NetExportFileWriter::FileFormatFromString("INVALID_FILE_FORMAT"));
+  EXPECT_EQ(net::NetLogFileFormat::kJson,
+            NetExportFileWriter::FileFormatFromString(""));
 }
 
 }  // namespace net_log

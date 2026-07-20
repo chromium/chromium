@@ -19,6 +19,7 @@
 
 namespace net {
 class FileNetLogObserver;
+enum class NetLogFileFormat;
 }  // namespace net
 
 namespace network {
@@ -41,6 +42,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetLogExporter final
   void Start(base::File destination,
              base::DictValue extra_constants,
              net::NetLogCaptureMode capture_mode,
+             net::NetLogFileFormat file_format,
              uint64_t max_file_size,
              StartCallback callback) override;
   void Stop(base::DictValue polled_data, StopCallback callback) override;
@@ -66,12 +68,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetLogExporter final
       base::WeakPtr<NetLogExporter> object,
       base::DictValue extra_constants,
       net::NetLogCaptureMode capture_mode,
+      net::NetLogFileFormat file_format,
       uint64_t max_file_size,
       StartCallback callback,
       const base::FilePath& scratch_dir_path);
 
   void StartWithScratchDir(base::DictValue extra_constants,
                            net::NetLogCaptureMode capture_mode,
+                           net::NetLogFileFormat file_format,
                            uint64_t max_file_size,
                            StartCallback callback,
                            const base::FilePath& scratch_dir_path);

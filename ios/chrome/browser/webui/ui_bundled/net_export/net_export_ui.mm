@@ -30,6 +30,7 @@
 #import "ios/web/public/webui/web_ui_ios.h"
 #import "ios/web/public/webui/web_ui_ios_data_source.h"
 #import "ios/web/public/webui/web_ui_ios_message_handler.h"
+#import "net/log/file_net_log_observer.h"
 #import "net/log/net_log_capture_mode.h"
 #import "net/url_request/url_request_context_getter.h"
 
@@ -137,6 +138,13 @@ void NetExportMessageHandler::OnStartNetLog(const base::ListValue& params) {
         params[0].GetString());
   }
 
+  // Determine the file format.
+  net::NetLogFileFormat file_format = net::NetLogFileFormat::kJson;
+  if (params.size() > 2 && params[2].is_string()) {
+    file_format = net_log::NetExportFileWriter::FileFormatFromString(
+        params[2].GetString());
+  }
+
   // Determine the max file size.
   uint64_t max_log_file_size = net_log::NetExportFileWriter::kNoLimit;
   // Unlike in desktop/Android net_export_ui, the size limit here is encoded
@@ -148,7 +156,7 @@ void NetExportMessageHandler::OnStartNetLog(const base::ListValue& params) {
   }
 
   file_writer_->StartNetLog(
-      base::FilePath(), capture_mode, max_log_file_size,
+      base::FilePath(), capture_mode, file_format, max_log_file_size,
       base::CommandLine::ForCurrentProcess()->GetCommandLineString(),
       GetChannelString(), GetApplicationContext()->GetSystemNetworkContext());
 }

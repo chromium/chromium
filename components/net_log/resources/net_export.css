@@ -55,6 +55,15 @@ h2 {
   line-height: 1.5em;
 }
 
+.option-group {
+  margin-top: 1em;
+}
+
+.option-group-title {
+  font-weight: bold;
+  margin-bottom: 0.25em;
+}
+
 #log-max-filesize {
   width: 4em;
 }

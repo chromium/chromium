@@ -54,6 +54,7 @@ interface NetLogExporter {
     mojo_base.mojom.File destination,
     mojo_base.mojom.DictionaryValue extra_constants,
     NetLogCaptureMode capture_mode,
+    NetLogFileFormat file_format,
     uint64 max_file_size) => (int32 net_error);
 
   // Finalizes the log file. If |polled_values| is provided, it will be

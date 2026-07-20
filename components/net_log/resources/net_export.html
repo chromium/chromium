@@ -56,28 +56,50 @@
       <div class="outline-box">
         <b>OPTIONS</b>:
         <span class="warning">This section should normally be left alone.</span>
-        <div class="radio-button-div">
-          <label>
-            <input id="strip-private-data-button" type="radio"
-                   name="log-mode" value="STRIP_PRIVATE_DATA" checked>
-            Strip private information
-          </label>
+        <div class="option-group">
+          <div class="option-group-title">Log Mode:</div>
+          <div class="radio-button-div">
+            <label>
+              <input id="strip-private-data-button" type="radio"
+                     name="log-mode" value="STRIP_PRIVATE_DATA" checked>
+              Strip private information
+            </label>
+          </div>
+          <div class="radio-button-div">
+            <label>
+              <input id="include-private-data-button" type="radio"
+                     name="log-mode" value="NORMAL">
+              Include cookies and credentials
+            </label>
+          </div>
+          <div class="radio-button-div">
+            <label>
+              <input id="log-bytes-button" type="radio"
+                     name="log-mode" value="LOG_BYTES">
+              Include raw bytes (will include cookies and credentials)
+            </label>
+          </div>
         </div>
-        <div class="radio-button-div">
-          <label>
-            <input id="include-private-data-button" type="radio"
-                   name="log-mode" value="NORMAL">
-            Include cookies and credentials
-          </label>
+
+        <div class="option-group">
+          <div class="option-group-title">File Format:</div>
+          <div class="radio-button-div">
+            <label>
+              <input id="log-file-format-json" type="radio"
+                     name="log-file-format" value="JSON" checked>
+              JSON (Default)
+            </label>
+          </div>
+          <div class="radio-button-div">
+            <label>
+              <input id="log-file-format-ndjson" type="radio"
+                     name="log-file-format" value="NDJSON">
+              NDJSON
+            </label>
+          </div>
         </div>
-        <div class="radio-button-div">
-          <label>
-            <input id="log-bytes-button" type="radio"
-                   name="log-mode" value="LOG_BYTES">
-            Include raw bytes (will include cookies and credentials)
-          </label>
-        </div>
-        <div>
+
+        <div class="option-group">
           <label>
             Maximum log size (megabytes):
             <input id="log-max-filesize" type="number" min="0" step="5" />
@@ -109,7 +131,8 @@
 
       <div class="outline-box">
         <b>FILE:</b> <span id="file-path-logging"></span> <br/>
-        <b>OPTIONS:</b> <span id="capture-mode-logging"></span>
+        <b>OPTIONS:</b> <span id="capture-mode-logging"></span> <br/>
+        <b>FORMAT:</b> <span id="file-format-logging"></span>
       </div>
     </div>
 
@@ -169,7 +192,8 @@
       <!-- TODO(eroman): This is duplicated with the logging state -->
       <div class="outline-box">
         <b>FILE:</b> <span id="file-path-stopped"></span> <br/>
-        <b>OPTIONS:</b> <span id="capture-mode-stopped"></span>
+        <b>OPTIONS:</b> <span id="capture-mode-stopped"></span> <br/>
+        <b>FORMAT:</b> <span id="file-format-stopped"></span>
       </div>
 
       <div class="section-container">
