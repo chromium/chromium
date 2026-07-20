@@ -69,6 +69,7 @@
       "v.test_suite"
     ]
   },
+  "archive_path": "linux-release-android-desktop-x64-asan/libfuzzer-linux-release",
   "builder_group": "chromium.fuzz",
   "recipe": "chromium/fuzz",
   "upload_bucket": "chromium-browser-libfuzzer",

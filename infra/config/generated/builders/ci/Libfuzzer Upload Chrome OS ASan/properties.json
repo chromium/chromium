@@ -69,6 +69,7 @@
       "v.test_suite"
     ]
   },
+  "archive_path": "linux-release-chromeos-asan/libfuzzer-chromeos-linux-release",
   "archive_prefix": "libfuzzer-chromeos",
   "builder_group": "chromium.fuzz",
   "gardener_rotations": [

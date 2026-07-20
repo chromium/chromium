@@ -66,6 +66,7 @@
       "v.test_suite"
     ]
   },
+  "archive_path": "win32-release_x64-asan/libfuzzer-win32-release_x64",
   "builder_group": "chromium.fuzz",
   "gardener_rotations": [
     "chromium"

@@ -60,6 +60,7 @@
       "v.test_suite"
     ]
   },
+  "archive_path": "linux-release-asan/libfuzzer-asan-brp-v2-linux-release",
   "archive_prefix": "libfuzzer-asan-brp-v2",
   "builder_group": "chromium.fuzz",
   "recipe": "chromium/fuzz",

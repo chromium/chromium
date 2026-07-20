@@ -60,6 +60,7 @@
       "v.test_suite"
     ]
   },
+  "archive_path": "linux32-release-asan-arm-sim/libfuzzer-v8-arm-linux32-release",
   "archive_prefix": "libfuzzer-v8-arm",
   "builder_group": "chromium.fuzz",
   "gardener_rotations": [

@@ -61,6 +61,7 @@
       "v.test_suite"
     ]
   },
+  "archive_path": "linux-release-msan/libfuzzer-linux-release",
   "archive_schema_version": 1,
   "builder_group": "chromium.fuzz",
   "gardener_rotations": [

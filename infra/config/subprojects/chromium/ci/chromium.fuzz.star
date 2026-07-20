@@ -191,6 +191,39 @@ def ci_builder(
         **kwargs
     )
 
+def check_clusterfuzz_archive_path(
+        build_config = None,
+        os = None,
+        target_bits = None,
+        archive_prefix = None,
+        archive_subdir = None,
+        archive_path = None):
+    if build_config == None:
+        fail("missing build_config")
+
+    os = os.category.lower() if os != None else "linux"
+    if os == "windows":
+        os = "win32"
+        if target_bits != 32:
+            build_config += "_x64"
+    elif target_bits == 32:
+        os += "32"
+
+    base = "-".join([os, build_config.lower()])
+
+    dir = base
+    if archive_subdir != None:
+        dir += "-" + archive_subdir
+
+    file = base
+    if archive_prefix != None:
+        file = archive_prefix + "-" + file
+
+    path = dir + "/" + file
+
+    if archive_path != path:
+        fail("archive_path = " + str(archive_path) + ", path = " + path)
+
 def browser_builder(
         # Increasing this could overload the remote workers for build, so don't increase it much.
         max_concurrent_invocations = 3,
@@ -255,6 +288,8 @@ def fuzz_target_builder(
         target_arch = None,
         swarming_mixins = None,
         builderless = True,
+        use_ssd_for_test_builder = False,
+        free_space_for_test_builder = None,
         fuzzing_engine = None,
         sanitizer = None,
         branch_selector = None,
@@ -267,12 +302,30 @@ def fuzz_target_builder(
         clusterfuzz_archive_subdir = None,
         clusterfuzz_ios_targets_only = None,
         clusterfuzz_v8_targets_only = None,
-        use_ssd_for_test_builder = False,
-        free_space_for_test_builder = None,
+        clusterfuzz_archive_path = None,
+        clusterfuzz_use_archive_path = None,
         contact_team_email = "chrome-fuzzing-core@google.com",
         **kwargs):
     if not name and not test_builder_name:
         fail("Must specify at least one of name or test_builder_name.")
+
+    if name and not clusterfuzz_archive_path:
+        fail("Must specify clusterfuzz_archive_path for CI builder.")
+
+    clusterfuzz_archive_subdir = clusterfuzz_archive_subdir or sanitizer
+
+    # If we use `archive_path`, no need to check it for equality against the
+    # path derived from builder properties. Otherwise, check it to catch errors
+    # as early as possible, at `lucicfg gen` time.
+    if not clusterfuzz_use_archive_path and clusterfuzz_archive_path:
+        check_clusterfuzz_archive_path(
+            os = kwargs.get("os"),  # Avoid messing with `os` in `kwargs`.
+            build_config = build_config,
+            target_bits = target_bits,
+            archive_path = clusterfuzz_archive_path,
+            archive_prefix = clusterfuzz_archive_name_prefix or "libfuzzer",
+            archive_subdir = clusterfuzz_archive_subdir,
+        )
 
     gn_configs = [
         fuzzing_engine,
@@ -281,7 +334,7 @@ def fuzz_target_builder(
 
     properties = {
         "upload_bucket": "chromium-browser-" + fuzzing_engine,
-        "upload_directory": clusterfuzz_archive_subdir or sanitizer,
+        "upload_directory": clusterfuzz_archive_subdir,
     }
 
     if clusterfuzz_archive_name_prefix != None:
@@ -295,6 +348,12 @@ def fuzz_target_builder(
 
     if clusterfuzz_archive_schema_version != None:
         properties["archive_schema_version"] = clusterfuzz_archive_schema_version
+
+    if clusterfuzz_archive_path:
+        properties["archive_path"] = clusterfuzz_archive_path
+
+    if clusterfuzz_use_archive_path:
+        properties["use_archive_path"] = clusterfuzz_use_archive_path
 
     # Creating a dict in this manner will result in an error if a named
     # argument we provide collides with a value already specified in `kwargs`,
@@ -630,6 +689,7 @@ centipede_linux_asan_builder(
     branch_selector = branches.selector.LINUX_BRANCHES,
     free_space = builders.free_space.high,
     clusterfuzz_archive_name_prefix = "centipede",
+    clusterfuzz_archive_path = "linux-release-asan/centipede-linux-release",
     console_short_name = "cent",
     execution_timeout = 6 * time.hour,
     free_space_for_test_builder = builders.free_space.standard,
@@ -650,6 +710,7 @@ centipede_linux_asan_builder(
 Those fuzzers require more resources to run correctly.\
 """,
     clusterfuzz_archive_name_prefix = "centipede-high-end",
+    clusterfuzz_archive_path = "linux-release-asan/centipede-high-end-linux-release",
     console_short_name = "cent high",
     gn_extra_configs = [
         "chromeos_codecs",
@@ -668,6 +729,7 @@ in release mode with dcheck_always_on.\
     # TODO(crbug.com/399002817): add this to the gardener_rotations.
     gardener_rotations = args.ignore_default(None),
     clusterfuzz_archive_name_prefix = "centipede-high-end-dcheck",
+    clusterfuzz_archive_path = "linux-release-asan/centipede-high-end-dcheck-linux-release",
     console_short_name = "cent high dc",
     dcheck_always_on = True,
     gn_extra_configs = [
@@ -699,6 +761,7 @@ Those fuzzers require more resources to run correctly.\
 libfuzzer_linux_asan_high_end_builder(
     name = "Libfuzzer High End Upload Linux ASan",
     build_config = builder_config.build_config.RELEASE,
+    clusterfuzz_archive_path = "linux-release-asan/libfuzzer-high-end-linux-release",
     console_short_name = "linux high end",
     gn_extra_configs = ["mojo_fuzzer"],
 )
@@ -706,6 +769,7 @@ libfuzzer_linux_asan_high_end_builder(
 libfuzzer_linux_asan_high_end_builder(
     name = "Libfuzzer High End Upload Linux ASan Debug",
     build_config = builder_config.build_config.DEBUG,
+    clusterfuzz_archive_path = "linux-debug-asan/libfuzzer-high-end-linux-debug",
     console_short_name = "linux high dbg",
     gn_extra_configs = ["sanitizer_coverage_skip_stdlib_and_absl"],
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
@@ -940,6 +1004,7 @@ libfuzzer_linux_builder(
     target_bits = 64,
     target_platform = builder_config.target_platform.CHROMEOS,
     clusterfuzz_archive_name_prefix = "libfuzzer-chromeos",
+    clusterfuzz_archive_path = "linux-release-chromeos-asan/libfuzzer-chromeos-linux-release",
     clusterfuzz_archive_subdir = "chromeos-asan",
     console_short_name = "chromeos-asan",
     execution_timeout = 6 * time.hour,
@@ -969,6 +1034,7 @@ libfuzzer_builder(
     target_platform = builder_config.target_platform.IOS,
     chromium_extra_apply_configs = ["mac_toolchain"],
     clusterfuzz_archive_name_prefix = "libfuzzer-ios",
+    clusterfuzz_archive_path = "mac-debug-ios-catalyst-debug/libfuzzer-ios-mac-debug",
     clusterfuzz_archive_subdir = "ios-catalyst-debug",
     clusterfuzz_ios_targets_only = True,
     console_short_name = "ios",
@@ -990,6 +1056,7 @@ libfuzzer_linux_asan_builder(
     branch_selector = branches.selector.LINUX_BRANCHES,
     build_config = builder_config.build_config.RELEASE,
     target_bits = 64,
+    clusterfuzz_archive_path = "linux-release-asan/libfuzzer-linux-release",
     console_short_name = "linux",
     execution_timeout = 5 * time.hour,
     gn_extra_configs = [
@@ -1007,6 +1074,7 @@ libfuzzer_linux_asan_builder(
     free_space = builders.free_space.high,
     build_config = builder_config.build_config.DEBUG,
     target_bits = 64,
+    clusterfuzz_archive_path = "linux-debug-asan/libfuzzer-linux-debug",
     console_short_name = "linux-dbg",
     execution_timeout = 5 * time.hour,
     gn_extra_configs = [
@@ -1030,6 +1098,7 @@ libfuzzer_linux_asan_builder(
     build_config = builder_config.build_config.RELEASE,
     target_bits = 64,
     clusterfuzz_archive_name_prefix = "libfuzzer-asan-brp-v2",
+    clusterfuzz_archive_path = "linux-release-asan/libfuzzer-asan-brp-v2-linux-release",
     console_short_name = "linux-asan-brp-v2",
     execution_timeout = 4 * time.hour,
     gn_extra_configs = [
@@ -1050,6 +1119,7 @@ libfuzzer_linux_asan_builder(
     build_config = builder_config.build_config.RELEASE,
     target_bits = 64,
     clusterfuzz_archive_name_prefix = "libfuzzer-schema-v1",
+    clusterfuzz_archive_path = "linux-release-asan-schema-v1/libfuzzer-schema-v1-linux-release",
     clusterfuzz_archive_schema_version = 1,
     clusterfuzz_archive_subdir = "asan-schema-v1",
     console_short_name = "linux-schema-v1",
@@ -1065,6 +1135,7 @@ libfuzzer_linux_builder(
     build_config = builder_config.build_config.RELEASE,
     target_bits = 64,
     chromium_extra_apply_configs = ["msan"],
+    clusterfuzz_archive_path = "linux-release-msan/libfuzzer-linux-release",
     clusterfuzz_archive_schema_version = 1,
     console_short_name = "linux-msan",
     gn_extra_configs = [
@@ -1083,6 +1154,7 @@ libfuzzer_linux_builder(
     builderless = False,
     build_config = builder_config.build_config.RELEASE,
     target_bits = 64,
+    clusterfuzz_archive_path = "linux-release-ubsan/libfuzzer-linux-release",
     console_short_name = "linux-ubsan",
     execution_timeout = 5 * time.hour,
     gn_extra_configs = [
@@ -1112,12 +1184,14 @@ def libfuzzer_linux_v8_arm64_builder(**kwargs):
 libfuzzer_linux_v8_arm64_builder(
     name = "Libfuzzer Upload Linux V8-ARM64 ASan",
     build_config = builder_config.build_config.RELEASE,
+    clusterfuzz_archive_path = "linux-release-asan-arm64-sim/libfuzzer-v8-arm64-linux-release",
     console_short_name = "arm64",
 )
 
 libfuzzer_linux_v8_arm64_builder(
     name = "Libfuzzer Upload Linux V8-ARM64 ASan Debug",
     build_config = builder_config.build_config.DEBUG,
+    clusterfuzz_archive_path = "linux-debug-asan-arm64-sim/libfuzzer-v8-arm64-linux-debug",
     console_short_name = "arm64-dbg",
 )
 
@@ -1125,6 +1199,7 @@ libfuzzer_linux_asan_builder(
     name = "Libfuzzer Upload Linux32 ASan",
     build_config = builder_config.build_config.RELEASE,
     target_bits = 32,
+    clusterfuzz_archive_path = "linux32-release-asan/libfuzzer-linux32-release",
     console_short_name = "linux32",
     gn_extra_configs = [
         "disable_seed_corpus",
@@ -1151,6 +1226,7 @@ def libfuzzer_linux32_v8_arm_builder(**kwargs):
 libfuzzer_linux32_v8_arm_builder(
     name = "Libfuzzer Upload Linux32 V8-ARM ASan",
     build_config = builder_config.build_config.RELEASE,
+    clusterfuzz_archive_path = "linux32-release-asan-arm-sim/libfuzzer-v8-arm-linux32-release",
     console_short_name = "arm",
     siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )
@@ -1158,6 +1234,7 @@ libfuzzer_linux32_v8_arm_builder(
 libfuzzer_linux32_v8_arm_builder(
     name = "Libfuzzer Upload Linux32 V8-ARM ASan Debug",
     build_config = builder_config.build_config.DEBUG,
+    clusterfuzz_archive_path = "linux32-debug-asan-arm-sim/libfuzzer-v8-arm-linux32-debug",
     console_short_name = "arm-dbg",
 )
 
@@ -1169,6 +1246,7 @@ libfuzzer_linux_asan_builder(
     build_config = builder_config.build_config.RELEASE,
     target_bits = 64,
     target_platform = builder_config.target_platform.ANDROID,
+    clusterfuzz_archive_path = "linux-release-android-desktop-x64-asan/libfuzzer-linux-release",
     clusterfuzz_archive_subdir = "android-desktop-x64-asan",
     console_short_name = "android-desktop-x64",
     execution_timeout = 6 * time.hour,
@@ -1192,6 +1270,7 @@ libfuzzer_linux_builder(
     target_arch = builder_config.target_arch.ARM,
     target_bits = 64,
     target_platform = builder_config.target_platform.ANDROID,
+    clusterfuzz_archive_path = "linux-release-android-arm64-hwasan/libfuzzer-linux-release",
     clusterfuzz_archive_subdir = "android-arm64-hwasan",
     console_short_name = "android-arm64",
     contact_team_email = "chrome-fuzzing-core@google.com",
@@ -1227,6 +1306,7 @@ libfuzzer_mac_asan_builder(
     name = "Libfuzzer Upload Mac ASan",
     builderless = False,
     cores = 12,
+    clusterfuzz_archive_path = "mac-release-asan/libfuzzer-mac-release",
     console_short_name = "mac-asan",
     execution_timeout = 4 * time.hour,
 )
@@ -1254,6 +1334,7 @@ libfuzzer_builder(
     build_config = builder_config.build_config.RELEASE,
     target_bits = 64,
     target_platform = builder_config.target_platform.WIN,
+    clusterfuzz_archive_path = "win32-release_x64-asan/libfuzzer-win32-release_x64",
     console_short_name = "win-asan",
     # crbug.com/1175182: Temporarily increase timeout
     # crbug.com/1372531: Increase timeout again

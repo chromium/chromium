@@ -60,6 +60,7 @@
       "v.test_suite"
     ]
   },
+  "archive_path": "linux-release-ubsan/libfuzzer-linux-release",
   "builder_group": "chromium.fuzz",
   "gardener_rotations": [
     "chromium"

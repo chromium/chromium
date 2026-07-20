@@ -60,6 +60,7 @@
       "v.test_suite"
     ]
   },
+  "archive_path": "linux-release-asan/centipede-high-end-linux-release",
   "archive_prefix": "centipede-high-end",
   "builder_group": "chromium.fuzz",
   "gardener_rotations": [

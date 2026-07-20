@@ -60,6 +60,7 @@
       "v.test_suite"
     ]
   },
+  "archive_path": "linux-debug-asan/libfuzzer-linux-debug",
   "builder_group": "chromium.fuzz",
   "gardener_rotations": [
     "chromium"

@@ -66,6 +66,7 @@
       "v.test_suite"
     ]
   },
+  "archive_path": "mac-release-asan/libfuzzer-mac-release",
   "builder_group": "chromium.fuzz",
   "gardener_rotations": [
     "chromium"
