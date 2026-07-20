@@ -572,6 +572,65 @@ TEST_F(CommitToActiveTreeLayerTreeHostImplTest, ScrollDeltaRepeatedScrolls) {
             gfx::Vector2dF(0, 0));
 }
 
+TEST_P(LayerTreeHostImplTest, ScrollAxisLockBypass) {
+  SetupViewportLayersOuterScrolls(gfx::Size(100, 100), gfx::Size(1000, 1000));
+  LayerImpl* scroll_layer = OuterViewportScrollLayer();
+  ScrollNode* scroll_node = GetScrollNode(scroll_layer);
+  ASSERT_TRUE(scroll_node);
+
+  // Disable scroll axis locking.
+  scroll_node->prevent_scroll_axis_locking = true;
+
+  // Start scroll.
+  InputHandler::ScrollStatus status = GetInputHandler().ScrollBegin(
+      BeginState(gfx::Point(), gfx::Vector2dF(0, 10),
+                 ui::ScrollInputType::kTouchscreen)
+          .get(),
+      ui::ScrollInputType::kTouchscreen);
+  EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
+  EXPECT_TRUE(host_impl_->CurrentlyScrollingNode());
+
+  // Update scroll with constrained and unconstrained deltas.
+  ScrollStateData update_data;
+  update_data.delta_x = 0;
+  update_data.delta_y = 10;
+  update_data.delta_x_unconstrained = 5;
+  update_data.delta_y_unconstrained = 10;
+  update_data.is_direct_manipulation = true;
+  ScrollState update_state(update_data);
+
+  GetInputHandler().ScrollUpdate(update_state);
+
+  // Since locking is disabled, it should have scrolled by unconstrained deltas
+  // (5, 10).
+  EXPECT_POINTF_EQ(gfx::PointF(5, 10), CurrentScrollOffset(scroll_layer));
+
+  GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
+
+  // Reset scroll offset.
+  SetScrollOffset(scroll_layer, gfx::PointF());
+
+  // Enable scroll axis locking.
+  scroll_node->prevent_scroll_axis_locking = false;
+
+  // Start scroll again.
+  status = GetInputHandler().ScrollBegin(
+      BeginState(gfx::Point(), gfx::Vector2dF(0, 10),
+                 ui::ScrollInputType::kTouchscreen)
+          .get(),
+      ui::ScrollInputType::kTouchscreen);
+  EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
+
+  // Update scroll again with same deltas.
+  GetInputHandler().ScrollUpdate(update_state);
+
+  // Since scroll axis locking is enabled, it should have scrolled by
+  // constrained deltas (0, 10).
+  EXPECT_POINTF_EQ(gfx::PointF(0, 10), CurrentScrollOffset(scroll_layer));
+
+  GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
+}
+
 // This test verifies that we drop a scroll (and don't crash) if a scroll is
 // received before the root layer has been attached. https://crbug.com/895817.
 TEST_P(LayerTreeHostImplTest, ScrollBeforeRootLayerAttached) {
@@ -10943,6 +11002,89 @@ TEST_P(LayerTreeHostImplTest, PointerMoveOutOfSequence) {
   EXPECT_TRUE(!host_impl_->CurrentlyScrollingNode());
 
   // Tear down the LayerTreeHostImpl before the InputHandlerClient.
+  host_impl_->ReleaseLayerTreeFrameSink();
+  host_impl_ = nullptr;
+}
+
+TEST_P(LayerTreeHostImplTest, ScrollbarDiagonalDrag) {
+  LayerTreeSettings settings = DefaultSettings();
+  CreateHostImpl(settings, CreateLayerTreeFrameSink());
+
+  // Setup the viewport.
+  const gfx::Size viewport_size = gfx::Size(360, 600);
+  const gfx::Size content_size = gfx::Size(345, 3800);
+  SetupViewportLayersOuterScrolls(viewport_size, content_size);
+  LayerImpl* scroll_layer = OuterViewportScrollLayer();
+  ScrollNode* scroll_node = GetScrollNode(scroll_layer);
+  ASSERT_TRUE(scroll_node);
+
+  // Enable prevent_scroll_axis_locking.
+  scroll_node->prevent_scroll_axis_locking = true;
+
+  // Set up the scrollbar and its dimensions.
+  LayerTreeImpl* layer_tree_impl = host_impl_->active_tree();
+  auto* scrollbar = AddLayer<PaintedScrollbarLayerImpl>(
+      layer_tree_impl, ScrollbarOrientation::kVertical, false, true);
+  SetupScrollbarLayerCommon(scroll_layer, scrollbar);
+  scrollbar->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
+
+  const gfx::Size scrollbar_size = gfx::Size(15, 600);
+  scrollbar->SetBounds(scrollbar_size);
+
+  // Set up the thumb dimensions.
+  scrollbar->SetThumbThickness(15);
+  scrollbar->SetMinimumThumbLength(50);
+  scrollbar->SetTrackRect(gfx::Rect(0, 15, 15, 575));
+  scrollbar->SetOffsetToTransformParent(gfx::Vector2dF(345, 0));
+  layer_tree_impl->UpdateAllScrollbarGeometriesForTesting();
+
+  TestInputHandlerClient input_handler_client;
+  GetInputHandler().BindToClient(&input_handler_client);
+
+  // Click on the thumb (thumb is at y=15..65, click at y=30, x=350).
+  GetInputHandler().MouseDown(gfx::PointF(350, 30),
+                              /*jump_key_modifier*/ false);
+  EXPECT_TRUE(!host_impl_->CurrentlyScrollingNode());
+
+  // Move diagonally: down by 20px, and right by 100px (outside the scrollbar).
+  // x = 350 + 100 = 450
+  // y = 30 + 20 = 50
+  InputHandlerPointerResult result =
+      GetInputHandler().MouseMoveAt(gfx::Point(450, 50));
+
+  // The scroll_delta should be strictly vertical (1D).
+  EXPECT_EQ(result.scroll_delta.x(), 0);
+  EXPECT_GT(result.scroll_delta.y(), 0);
+
+  // Now simulate the gesture scroll sequence that InputHandlerProxy would
+  // inject.
+  gfx::Vector2dF scroll_delta = result.scroll_delta;
+
+  // GSB
+  GetInputHandler().ScrollBegin(BeginState(gfx::Point(350, 30), scroll_delta,
+                                           ui::ScrollInputType::kScrollbar)
+                                    .get(),
+                                ui::ScrollInputType::kScrollbar);
+  EXPECT_TRUE(host_impl_->CurrentlyScrollingNode());
+
+  // GSU.
+  ScrollStateData update_data;
+  update_data.delta_x = scroll_delta.x();
+  update_data.delta_y = scroll_delta.y();
+  update_data.delta_x_unconstrained = scroll_delta.x();
+  update_data.delta_y_unconstrained = scroll_delta.y();
+  update_data.is_direct_manipulation = false;
+  ScrollState update_state(update_data);
+
+  GetInputHandler().ScrollUpdate(update_state);
+
+  // Verify we only scrolled vertically.
+  EXPECT_EQ(CurrentScrollOffset(scroll_layer).x(), 0);
+  EXPECT_GT(CurrentScrollOffset(scroll_layer).y(), 0);
+
+  GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
+
+  // Tear down
   host_impl_->ReleaseLayerTreeFrameSink();
   host_impl_ = nullptr;
 }

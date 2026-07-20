@@ -355,6 +355,10 @@ WebGestureEvent::GenerateInjectedScrollbarGestureScroll(
   } else if (type == WebInputEvent::Type::kGestureScrollUpdate) {
     generated_gesture_event->data.scroll_update.delta_x = -scroll_delta.x();
     generated_gesture_event->data.scroll_update.delta_y = -scroll_delta.y();
+    generated_gesture_event->data.scroll_update.delta_x_unconstrained =
+        -scroll_delta.x();
+    generated_gesture_event->data.scroll_update.delta_y_unconstrained =
+        -scroll_delta.y();
     generated_gesture_event->data.scroll_update.inertial_phase =
         WebGestureEvent::InertialPhaseState::kNonMomentum;
     generated_gesture_event->data.scroll_update.delta_units = granularity;

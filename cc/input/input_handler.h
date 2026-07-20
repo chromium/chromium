@@ -811,6 +811,12 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   // ScrollBegin and ScrollEnd.
   std::optional<ui::ScrollInputType> latched_scroll_type_;
 
+  // Set at the beginning of a scroll when we latch onto a scroller and cleared
+  // at the end when we unlatch. True if the latched scroller has
+  // scroll-axis-lock: none. When true, unconstrained deltas are used to avoid
+  // axis locking.
+  std::optional<bool> prevent_scroll_axis_locking_;
+
   // Tracks the last scroll update/begin state received. Used to infer the most
   // recent scroll type and direction.
   std::optional<ScrollState> last_scroll_begin_state_;

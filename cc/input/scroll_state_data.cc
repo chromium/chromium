@@ -7,24 +7,7 @@
 
 namespace cc {
 
-ScrollStateData::ScrollStateData()
-    : delta_x(0),
-      delta_y(0),
-      delta_x_hint(0),
-      delta_y_hint(0),
-      position_x(0),
-      position_y(0),
-      is_beginning(false),
-      is_in_inertial_phase(false),
-      is_ending(false),
-      from_user_input(false),
-      delta_consumed_for_scroll_sequence(false),
-      is_direct_manipulation(false),
-      is_scrollbar_interaction(false),
-      delta_granularity(ui::ScrollGranularity::kScrollByPrecisePixel),
-      caused_scroll_x(false),
-      caused_scroll_y(false),
-      is_scroll_chain_cut(false) {}
+ScrollStateData::ScrollStateData() = default;
 
 ScrollStateData::ScrollStateData(const ScrollStateData&) = default;
 

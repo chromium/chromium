@@ -199,6 +199,10 @@ bool StructTraits<blink::mojom::EventDataView,
               gesture_data->scroll_data->delta_x;
           gesture_event->data.scroll_update.delta_y =
               gesture_data->scroll_data->delta_y;
+          gesture_event->data.scroll_update.delta_x_unconstrained =
+              gesture_data->scroll_data->delta_x_unconstrained;
+          gesture_event->data.scroll_update.delta_y_unconstrained =
+              gesture_data->scroll_data->delta_y_unconstrained;
           gesture_event->data.scroll_update.delta_units =
               gesture_data->scroll_data->delta_units;
           gesture_event->data.scroll_update.inertial_phase =
@@ -484,7 +488,11 @@ StructTraits<blink::mojom::EventDataView,
           gesture_event->data.scroll_begin.inertial_phase,
           gesture_event->data.scroll_begin.synthetic,
           gesture_event->data.scroll_begin.pointer_count,
-          gesture_event->data.scroll_begin.cursor_control);
+          gesture_event->data.scroll_begin.cursor_control,
+          // NOTE(crbug.com/479472367): ScrollBegin does not use unconstrained
+          // values.
+          gesture_event->data.scroll_begin.delta_x_hint,
+          gesture_event->data.scroll_begin.delta_y_hint);
       break;
     case blink::WebInputEvent::Type::kGestureScrollEnd:
       gesture_data->scroll_data = blink::mojom::ScrollData::New(
@@ -492,14 +500,20 @@ StructTraits<blink::mojom::EventDataView,
           gesture_event->data.scroll_end.delta_y_compensated,
           gesture_event->data.scroll_end.delta_units, false,
           gesture_event->data.scroll_end.inertial_phase,
-          gesture_event->data.scroll_end.synthetic, 0, false);
+          gesture_event->data.scroll_end.synthetic, 0, false,
+          // NOTE(crbug.com/479472367): ScrollEnd does not use unconstrained
+          // values.
+          gesture_event->data.scroll_end.delta_x_compensated,
+          gesture_event->data.scroll_end.delta_y_compensated);
       break;
     case blink::WebInputEvent::Type::kGestureScrollUpdate:
       gesture_data->scroll_data = blink::mojom::ScrollData::New(
           gesture_event->data.scroll_update.delta_x,
           gesture_event->data.scroll_update.delta_y,
           gesture_event->data.scroll_update.delta_units, false,
-          gesture_event->data.scroll_update.inertial_phase, false, 0, false);
+          gesture_event->data.scroll_update.inertial_phase, false, 0, false,
+          gesture_event->data.scroll_update.delta_x_unconstrained,
+          gesture_event->data.scroll_update.delta_y_unconstrained);
       break;
     case blink::WebInputEvent::Type::kGestureFlingStart:
       gesture_data->fling_data = blink::mojom::FlingData::New(

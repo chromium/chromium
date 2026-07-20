@@ -417,6 +417,10 @@ WebGestureEvent CreateWebGestureEvent(const GestureEventDetails& details,
       gesture.SetType(WebInputEvent::Type::kGestureScrollUpdate);
       gesture.data.scroll_update.delta_x = IfNanUseMaxFloat(details.scroll_x());
       gesture.data.scroll_update.delta_y = IfNanUseMaxFloat(details.scroll_y());
+      gesture.data.scroll_update.delta_x_unconstrained =
+          IfNanUseMaxFloat(details.scroll_x_unconstrained());
+      gesture.data.scroll_update.delta_y_unconstrained =
+          IfNanUseMaxFloat(details.scroll_y_unconstrained());
       gesture.data.scroll_update.delta_units = details.scroll_update_units();
       gesture.data.scroll_update.inertial_phase =
           WebGestureEvent::InertialPhaseState::kNonMomentum;

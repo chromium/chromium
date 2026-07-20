@@ -317,6 +317,10 @@ void FlingController::GenerateAndSendGestureScrollEvents(
   if (type == WebInputEvent::Type::kGestureScrollUpdate) {
     synthetic_gesture.event.data.scroll_update.delta_x = delta.x();
     synthetic_gesture.event.data.scroll_update.delta_y = delta.y();
+    synthetic_gesture.event.data.scroll_update.delta_x_unconstrained =
+        delta.x();
+    synthetic_gesture.event.data.scroll_update.delta_y_unconstrained =
+        delta.y();
     synthetic_gesture.event.data.scroll_update.inertial_phase =
         WebGestureEvent::InertialPhaseState::kMomentum;
   } else {

@@ -51,4 +51,24 @@ TEST_F(ScrollStateTest, ConsumeDeltaNative) {
   scroll_state.ConsumeDelta(scroll_state.delta_x(), scroll_state.delta_y());
   EXPECT_TRUE(scroll_state.delta_consumed_for_scroll_sequence());
 }
+
+TEST_F(ScrollStateTest, UnconstrainedDeltas) {
+  const float delta_x = 12.3f;
+  const float delta_y = 3.9f;
+  const float delta_x_unconstrained = 15.0f;
+  const float delta_y_unconstrained = 5.0f;
+
+  ScrollStateData scroll_state_data;
+  scroll_state_data.delta_x = delta_x;
+  scroll_state_data.delta_y = delta_y;
+  scroll_state_data.delta_x_unconstrained = delta_x_unconstrained;
+  scroll_state_data.delta_y_unconstrained = delta_y_unconstrained;
+  ScrollState scroll_state(scroll_state_data);
+
+  EXPECT_FLOAT_EQ(delta_x, scroll_state.delta_x());
+  EXPECT_FLOAT_EQ(delta_y, scroll_state.delta_y());
+  EXPECT_FLOAT_EQ(delta_x_unconstrained, scroll_state.delta_x_unconstrained());
+  EXPECT_FLOAT_EQ(delta_y_unconstrained, scroll_state.delta_y_unconstrained());
+}
+
 }  // namespace cc

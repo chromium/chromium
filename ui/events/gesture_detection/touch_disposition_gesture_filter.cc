@@ -674,11 +674,17 @@ GestureEventData TouchDispositionGestureFilter::ScrollUpdateCompensator::
       gfx::Vector2dF(gesture.details.scroll_x() * (1.f - compensation),
                      gesture.details.scroll_y() * (1.f - compensation));
 
-  return CreateGesture(
-      GestureEventDetails(EventType::kGestureScrollUpdate,
-                          gesture.details.scroll_x() * compensation,
-                          gesture.details.scroll_y() * compensation),
-      packet.unique_touch_event_id(), packet.tool_type(), packet);
+  GestureEventDetails compensated_details(
+      EventType::kGestureScrollUpdate,
+      gesture.details.scroll_x() * compensation,
+      gesture.details.scroll_y() * compensation);
+  compensated_details.set_scroll_x_unconstrained(
+      gesture.details.scroll_x_unconstrained() * compensation);
+  compensated_details.set_scroll_y_unconstrained(
+      gesture.details.scroll_y_unconstrained() * compensation);
+
+  return CreateGesture(compensated_details, packet.unique_touch_event_id(),
+                       packet.tool_type(), packet);
 }
 
 GestureEventData TouchDispositionGestureFilter::ScrollUpdateCompensator::

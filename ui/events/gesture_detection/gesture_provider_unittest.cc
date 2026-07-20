@@ -1188,6 +1188,10 @@ TEST_F(GestureProviderTest, FractionalScroll) {
 
     // And that there has been no horizontal motion at all.
     EXPECT_EQ(0, gesture.details.scroll_x());
+
+    // Verify unconstrained deltas are NOT zeroed.
+    EXPECT_NEAR(delta_x, gesture.details.scroll_x_unconstrained(), 0.001f);
+    EXPECT_NEAR(delta_y, gesture.details.scroll_y_unconstrained(), 0.001f);
   }
 }
 

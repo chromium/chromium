@@ -412,6 +412,9 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
       distance_y = delta.y();
     }
 
+    float unconstrained_distance_x = distance_x;
+    float unconstrained_distance_y = distance_y;
+
     snap_scroll_controller_.UpdateSnapScrollMode(
         distance_x, distance_y, EffectiveSlopDistance(e2, config_));
     if (snap_scroll_controller_.IsSnappingScrolls()) {
@@ -421,8 +424,9 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
         distance_x = 0;
     }
 
-    if (!distance_x && !distance_y)
+    if (!unconstrained_distance_x && !unconstrained_distance_y) {
       return true;
+    }
 
     if (!scroll_event_sent_) {
       // Note that scroll start hints are in distance traveled, where
@@ -447,6 +451,8 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
 
     GestureEventDetails scroll_details = CreateTouchGestureDetails(
         EventType::kGestureScrollUpdate, -distance_x, -distance_y);
+    scroll_details.set_scroll_x_unconstrained(-unconstrained_distance_x);
+    scroll_details.set_scroll_y_unconstrained(-unconstrained_distance_y);
     const gfx::RectF bounding_box = GetBoundingBox(e2, scroll_details.type());
     const gfx::PointF raw_center =
         scroll_focus_point_ +

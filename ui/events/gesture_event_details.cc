@@ -55,6 +55,8 @@ GestureEventDetails::GestureEventDetails(ui::EventType type,
     case ui::EventType::kGestureScrollUpdate:
       data_.scroll_update.x = delta_x;
       data_.scroll_update.y = delta_y;
+      data_.scroll_update.x_unconstrained = delta_x;
+      data_.scroll_update.y_unconstrained = delta_y;
       data_.scroll_update.delta_units = units;
       break;
 

@@ -104,6 +104,26 @@ struct EVENTS_BASE_EXPORT GestureEventDetails {
     return data_.scroll_update.y;
   }
 
+  float scroll_x_unconstrained() const {
+    DCHECK_EQ(EventType::kGestureScrollUpdate, type_);
+    return data_.scroll_update.x_unconstrained;
+  }
+
+  float scroll_y_unconstrained() const {
+    DCHECK_EQ(EventType::kGestureScrollUpdate, type_);
+    return data_.scroll_update.y_unconstrained;
+  }
+
+  void set_scroll_x_unconstrained(float x) {
+    DCHECK_EQ(EventType::kGestureScrollUpdate, type_);
+    data_.scroll_update.x_unconstrained = x;
+  }
+
+  void set_scroll_y_unconstrained(float y) {
+    DCHECK_EQ(EventType::kGestureScrollUpdate, type_);
+    data_.scroll_update.y_unconstrained = y;
+  }
+
   ui::ScrollGranularity scroll_update_units() const {
     DCHECK_EQ(EventType::kGestureScrollUpdate, type_);
     return data_.scroll_update.delta_units;
@@ -256,6 +276,11 @@ struct EVENTS_BASE_EXPORT GestureEventDetails {
     struct {  // SCROLL delta.
       float x;
       float y;
+      // The raw, unconstrained scroll deltas before any axis locking (railing)
+      // or snapping constraints are applied by the browser. Used when
+      // scroll-axis-lock: none is active to allow diagonal scrolling.
+      float x_unconstrained;
+      float y_unconstrained;
       ui::ScrollGranularity delta_units;
       // Whether any previous scroll update in the current scroll sequence was
       // suppressed because the underlying touch was consumed.

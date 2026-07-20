@@ -97,6 +97,10 @@ cc::ScrollStateData CreateScrollStateDataForGesture(
     case WebInputEvent::Type::kGestureScrollUpdate:
       scroll_state_data.delta_x = -event.data.scroll_update.delta_x;
       scroll_state_data.delta_y = -event.data.scroll_update.delta_y;
+      scroll_state_data.delta_x_unconstrained =
+          -event.data.scroll_update.delta_x_unconstrained;
+      scroll_state_data.delta_y_unconstrained =
+          -event.data.scroll_update.delta_y_unconstrained;
       scroll_state_data.is_in_inertial_phase =
           event.data.scroll_update.inertial_phase ==
           WebGestureEvent::InertialPhaseState::kMomentum;

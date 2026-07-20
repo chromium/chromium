@@ -103,6 +103,15 @@ struct ScrollData {
   // Used for GestureScrollBegin type only. If this is true, we use the scroll
   // sequence to do cursor control rather than scroll.
   bool cursor_control;
+  // The scroll deltas, before axis-locking/snapping is applied.
+  // Used when `scroll-axis-lock` is `none` to allow diagonal scrolling even on
+  // nearly vertical/horizontal gestures which would normally be locked to one
+  // axis.
+  // TODO(crbug.com/535432422): Move scroll axis locking to the renderer.
+  // This would obviate the need for an extra pair of deltas in this mojo
+  // struct.
+  float delta_x_unconstrained;
+  float delta_y_unconstrained;
 };
 
 struct PinchBeginData {

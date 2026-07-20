@@ -363,9 +363,14 @@ InputHandlerScrollResult InputHandler::ScrollUpdate(
     AdjustScrollDeltaForScrollbarSnap(scroll_state);
   }
 
+  bool use_unconstrained = prevent_scroll_axis_locking_.value();
+  float delta_x = use_unconstrained ? scroll_state.delta_x_unconstrained()
+                                    : scroll_state.delta_x();
+  float delta_y = use_unconstrained ? scroll_state.delta_y_unconstrained()
+                                    : scroll_state.delta_y();
+
   gfx::Vector2dF resolved_scroll_delta = ResolveScrollGranularityToPixels(
-      scroll_node,
-      gfx::Vector2dF(scroll_state.delta_x(), scroll_state.delta_y()),
+      scroll_node, gfx::Vector2dF(delta_x, delta_y),
       scroll_state.delta_granularity());
 
   bool hit_snap_constraint = false;
@@ -2414,6 +2419,8 @@ void InputHandler::DidLatchToScroller(const ScrollState& scroll_state,
   last_latched_scroller_ = CurrentlyScrollingNode()->element_id;
   latched_scroll_type_ = type;
   last_scroll_begin_state_ = scroll_state;
+  prevent_scroll_axis_locking_ =
+      !!CurrentlyScrollingNode()->prevent_scroll_axis_locking;
 
   ClearAnimatingSnapTargetsForElement(last_latched_scroller_);
 
@@ -2574,6 +2581,9 @@ void InputHandler::ClearCurrentlyScrollingNode() {
   did_scroll_x_for_scroll_gesture_ = false;
   did_scroll_y_for_scroll_gesture_ = false;
   delta_consumed_for_scroll_gesture_ = false;
+  // TODO(crbug.com/479472367): Combine optional field related to latched node
+  // into single struct.
+  prevent_scroll_axis_locking_.reset();
   latched_scroll_type_.reset();
   last_scroll_update_state_.reset();
   last_scroll_begin_state_.reset();

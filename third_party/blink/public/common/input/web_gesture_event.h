@@ -125,6 +125,11 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
       // Notably, this is the reverse as used in Blink, CC, and WebAPIs.
       float delta_x;
       float delta_y;
+      // The raw, unconstrained scroll deltas before any axis locking (railing)
+      // or snapping constraints are applied by the browser. Used when
+      // scroll-axis-lock: none is active to allow diagonal scrolling.
+      float delta_x_unconstrained;
+      float delta_y_unconstrained;
       InertialPhaseState inertial_phase;
       // Default initialized to kScrollByPrecisePixel.
       ui::ScrollGranularity delta_units;
