@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -39,6 +40,7 @@ import java.util.Comparator;
  * correctly.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class OmniboxUrlEmphasizerTest {
     private Profile mProfile;
     private ChromeAutocompleteSchemeClassifier mChromeAutocompleteSchemeClassifier;
