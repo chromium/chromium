@@ -1371,7 +1371,6 @@ android_library("chrome_test_java_org.chromium.chrome.browser.suggestions") {
     "src/org/chromium/chrome/browser/suggestions/tile/MostVisitedTilesLayoutTest.java",
     "src/org/chromium/chrome/browser/suggestions/tile/MostVisitedTilesViewBinderUnitTest.java",
     "src/org/chromium/chrome/browser/suggestions/tile/TileGroupTest.java",
-    "src/org/chromium/chrome/browser/suggestions/tile/TileGroupUnitTest.java",
   ]
 
   deps = [

@@ -33,7 +33,6 @@ import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.CoreMatchers;
@@ -46,8 +45,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
@@ -66,8 +64,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Unit tests for {@link TileGroup}. */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
 public class TileGroupUnitTest {
     private static final int MAX_TILES_TO_FETCH = 4;
     private static final int TILE_TITLE_LINES = 1;
@@ -111,7 +108,6 @@ public class TileGroupUnitTest {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     @DisabledTest(message = "https://crbug.com/40819365")
     public void testInitialiseWithTileList() {
@@ -141,7 +137,6 @@ public class TileGroupUnitTest {
      * event though the data did not change (still empty just like before initialisation).
      */
     @Test
-    @UiThreadTest
     @SmallTest
     public void testInitialiseWithEmptyTileList() {
         TileGroup tileGroup =
@@ -164,7 +159,6 @@ public class TileGroupUnitTest {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     // If this flakes again, refer to https://crbug.com/40848015.
     public void testReceiveNewTilesWithoutChanges() {
@@ -179,7 +173,6 @@ public class TileGroupUnitTest {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     @DisabledTest(message = "https://crbug.com/40848015")
     public void testReceiveNewTilesWithoutChanges_TrackLoad() {
@@ -195,7 +188,6 @@ public class TileGroupUnitTest {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     public void testReceiveNewTilesWithDataChanges() {
         TileGroup tileGroup = initialiseTileGroup(URLS);
@@ -213,7 +205,6 @@ public class TileGroupUnitTest {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     // If this flakes again, refer to https://crbug.com/40227230, https://crbug.com/40819839.
     public void testReceiveNewTilesWithDataChanges_TrackLoad() {
@@ -233,7 +224,6 @@ public class TileGroupUnitTest {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     public void testReceiveNewTilesWithCountChanges() {
         TileGroup tileGroup = initialiseTileGroup(URLS);
@@ -248,7 +238,6 @@ public class TileGroupUnitTest {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     public void testTileLoadingWhenVisibleNotBlockedForInit() {
         SuggestionsUiDelegate uiDelegate = mSuggestionsUiDelegate;
@@ -271,7 +260,6 @@ public class TileGroupUnitTest {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     public void testTileLoadingWhenVisibleBlocked() {
         SuggestionsUiDelegate uiDelegate = mSuggestionsUiDelegate;
@@ -303,7 +291,6 @@ public class TileGroupUnitTest {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     public void testTileLoadingWhenVisibleBlocked_2() {
         TileGroup tileGroup = initialiseTileGroup(true, URLS);
@@ -321,7 +308,6 @@ public class TileGroupUnitTest {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     // If this flakes again, refer to https://crbug.com/40227230, https://crbug.com/40819839.
     public void testRenderTileView() {
@@ -356,7 +342,6 @@ public class TileGroupUnitTest {
 
     /** Check for https://crbug.com/40511776: don't crash on duplicated URLs. */
     @Test
-    @UiThreadTest
     @SmallTest
     public void testRenderTileViewWithDuplicatedUrl() {
         SuggestionsUiDelegate uiDelegate = mSuggestionsUiDelegate;
@@ -383,7 +368,6 @@ public class TileGroupUnitTest {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     // If this flakes again, refer to https://crbug.com/40815816.
     public void testRenderTileViewReplacing() {
@@ -421,7 +405,6 @@ public class TileGroupUnitTest {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     public void testRenderTileViewRecycling() {
         mMostVisitedSites.setTileSuggestionsPassive(URLS);
@@ -457,7 +440,6 @@ public class TileGroupUnitTest {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     @DisabledTest(message = "https://crbug.com/40227230, https://crbug.com/40819839")
     public void testIconLoadingForInit() {
@@ -476,7 +458,6 @@ public class TileGroupUnitTest {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     @DisabledTest(message = "Test is flaky, see crbug.com/40816947")
     public void testIconLoadingWhenTileNotRegistered() {
@@ -494,7 +475,6 @@ public class TileGroupUnitTest {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     @DisabledTest(message = "https://crbug.com/40227230, https://crbug.com/40819839")
     public void testIconLoading_Sync() {
@@ -514,7 +494,6 @@ public class TileGroupUnitTest {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     @DisabledTest(message = "https://crbug.com/40227230, https://crbug.com/40819839")
     public void testIconLoading_AsyncNoTrack() {
@@ -535,7 +514,6 @@ public class TileGroupUnitTest {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     @DisabledTest(message = "https://crbug.com/40227230, https://crbug.com/40819839")
     public void testIconLoading_AsyncTrack() {
