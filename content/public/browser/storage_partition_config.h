@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/gtest_prod_util.h"
@@ -41,8 +42,8 @@ class CONTENT_EXPORT StoragePartitionConfig {
   // the |in_memory| parameter. This is because these profiles are not allowed
   // to persist information on disk.
   static StoragePartitionConfig Create(BrowserContext* browser_context,
-                                       const std::string& partition_domain,
-                                       const std::string& partition_name,
+                                       std::string_view partition_domain,
+                                       std::string_view partition_name,
                                        bool in_memory);
 
   const std::string& partition_domain() const { return partition_domain_; }
@@ -93,8 +94,8 @@ class CONTENT_EXPORT StoragePartitionConfig {
       const std::string&);
   FRIEND_TEST_ALL_PREFIXES(StoragePartitionConfigTest, OperatorLess);
 
-  StoragePartitionConfig(const std::string& partition_domain,
-                         const std::string& partition_name,
+  StoragePartitionConfig(std::string_view partition_domain,
+                         std::string_view partition_name,
                          bool in_memory);
 
   std::string partition_domain_;

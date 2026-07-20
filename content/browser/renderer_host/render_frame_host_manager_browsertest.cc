@@ -4817,15 +4817,15 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
                             .root();
   FrameTreeNode* child1 = root->child_at(0);
   FrameTreeNode* child2 = root->child_at(1);
-  std::string a_site_host = root->current_frame_host()
-                                ->GetSiteInstance()
-                                ->GetSecurityPrincipal()
-                                .GetHost();
+  std::string_view a_site_host = root->current_frame_host()
+                                     ->GetSiteInstance()
+                                     ->GetSecurityPrincipal()
+                                     .GetHost();
   EXPECT_EQ("a.com", a_site_host);
-  std::string b_site_host = child2->current_frame_host()
-                                ->GetSiteInstance()
-                                ->GetSecurityPrincipal()
-                                .GetHost();
+  std::string_view b_site_host = child2->current_frame_host()
+                                     ->GetSiteInstance()
+                                     ->GetSecurityPrincipal()
+                                     .GetHost();
   EXPECT_EQ("b.com", b_site_host);
 
   // Navigate the subframe to a cross-site URL, while blocking the request with
@@ -4888,11 +4888,11 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
     SiteInstanceImpl* child1_site_instance =
         child1->current_frame_host()->GetSiteInstance();
 
-    std::string c_site_host =
+    std::string_view c_site_host =
         child1_site_instance->GetSecurityPrincipal().GetHost();
     if (AreAllSitesIsolatedForTesting()) {
       EXPECT_EQ("c.com", c_site_host);
-      EXPECT_EQ(test_url.GetHost(), c_site_host);
+      EXPECT_EQ(test_url.host(), c_site_host);
     } else if (ShouldUseDefaultSiteInstanceGroup()) {
       EXPECT_EQ(
           child1_site_instance->group(),

@@ -45,6 +45,7 @@
 #include "content/public/browser/security_principal.h"
 #include "content/public/browser/service_worker_version_base_info.h"
 #include "content/public/common/buildflags.h"
+#include "extensions/common/extension_id.h"
 #include "media/mojo/buildflags.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "pdf/buildflags.h"
@@ -330,11 +331,12 @@ void ChromeContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
 
   content::BrowserContext* browser_context =
       render_frame_host->GetProcess()->GetBrowserContext();
-  auto* extension = extensions::ExtensionRegistry::Get(browser_context)
-                        ->enabled_extensions()
-                        .GetByID(render_frame_host->GetSiteInstance()
-                                     ->GetSecurityPrincipal()
-                                     .GetHost());
+  auto* extension =
+      extensions::ExtensionRegistry::Get(browser_context)
+          ->enabled_extensions()
+          .GetByID(extensions::ExtensionId(render_frame_host->GetSiteInstance()
+                                               ->GetSecurityPrincipal()
+                                               .GetHost()));
   if (!extension)
     return;
   extensions::ExtensionsBrowserClient::Get()

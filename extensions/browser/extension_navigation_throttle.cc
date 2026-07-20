@@ -244,7 +244,8 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
       navigation_handle()->GetStartingSiteInstance()->GetSecurityPrincipal();
   bool current_frame_is_extension_process =
       starting_principal.SchemeIs(kExtensionScheme) &&
-      !!registry->enabled_extensions().GetByID(starting_principal.GetHost());
+      !!registry->enabled_extensions().GetByID(
+          ExtensionId(starting_principal.GetHost()));
 
   if (!url_has_extension_scheme && !current_frame_is_extension_process) {
     // Relax this restriction for apps that use <webview>.  See

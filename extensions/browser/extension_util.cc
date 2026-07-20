@@ -412,7 +412,7 @@ ExtensionId GetExtensionIdForSiteInstance(
 
   // Navigating to a disabled (or uninstalled or not-yet-installed) extension
   // will set the site URL to chrome-extension://invalid.
-  ExtensionId maybe_extension_id =
+  std::string_view maybe_extension_id =
       site_instance.GetSecurityPrincipal().GetHost();
   if (maybe_extension_id == "invalid") {
     return ExtensionId();
@@ -424,7 +424,7 @@ ExtensionId GetExtensionIdForSiteInstance(
   // known, extension-id-based hostname).
   DCHECK(crx_file::id_util::IdIsValid(maybe_extension_id))
       << "; maybe_extension_id = " << maybe_extension_id;
-  return maybe_extension_id;
+  return ExtensionId(maybe_extension_id);
 }
 
 std::string GetExtensionIdFromFrame(
@@ -435,7 +435,7 @@ std::string GetExtensionIdFromFrame(
     return std::string();
   }
 
-  return site_instance->GetSecurityPrincipal().GetHost();
+  return std::string(site_instance->GetSecurityPrincipal().GetHost());
 }
 
 bool CanRendererHostExtensionOrigin(int render_process_id,

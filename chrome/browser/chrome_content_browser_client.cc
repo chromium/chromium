@@ -1994,7 +1994,7 @@ bool ChromeContentBrowserClient::ShouldUseProcessPerSite(
   // NTP should use process-per-site.  This is a performance optimization to
   // reduce process count associated with NTP tabs.
   if (security_principal.SchemeIs(content::kChromeUIScheme)) {
-    const std::string host = security_principal.GetHost();
+    const std::string_view host = security_principal.GetHost();
     if (host == chrome::kChromeUINewTabHost ||
         host == chrome::kChromeUINewTabPageHost) {
       return true;

@@ -75,7 +75,7 @@ class CONTENT_EXPORT SecurityPrincipal {
   // Note that when a principal uses an effective URL, the host will correspond
   // to that effective URL rather than the original (see SchemeIs() for an
   // example with hosted apps).
-  virtual std::string GetHost() const = 0;
+  virtual std::string_view GetHost() const = 0;
 
   // Returns the site URL associated with all of the documents and workers in
   // this principal, as described above.

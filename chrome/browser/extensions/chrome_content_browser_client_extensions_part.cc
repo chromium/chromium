@@ -122,7 +122,8 @@ const Extension* GetEnabledExtensionFromSecurityPrincipal(
     return nullptr;
   }
 
-  return registry->enabled_extensions().GetByID(principal.GetHost());
+  return registry->enabled_extensions().GetByID(
+      ExtensionId(principal.GetHost()));
 }
 
 bool HasEffectiveUrl(content::BrowserContext* browser_context,
@@ -840,7 +841,7 @@ bool ChromeContentBrowserClientExtensionsPart::
 #endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
   const Extension* extension = registry->enabled_extensions().GetByID(
-      main_frame_site.GetSecurityPrincipal().GetHost());
+      ExtensionId(main_frame_site.GetSecurityPrincipal().GetHost()));
   extension_webkit_preferences::SetPreferences(extension, web_prefs);
   return true;
 }

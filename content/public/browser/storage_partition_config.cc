@@ -28,8 +28,8 @@ StoragePartitionConfig StoragePartitionConfig::CreateDefault(
 // static
 StoragePartitionConfig StoragePartitionConfig::Create(
     BrowserContext* browser_context,
-    const std::string& partition_domain,
-    const std::string& partition_name,
+    std::string_view partition_domain,
+    std::string_view partition_name,
     bool in_memory) {
   // If a caller tries to pass an empty partition_domain something is seriously
   // wrong or the calling code is not explicitly signalling its desire to create
@@ -40,8 +40,8 @@ StoragePartitionConfig StoragePartitionConfig::Create(
 }
 
 StoragePartitionConfig::StoragePartitionConfig(
-    const std::string& partition_domain,
-    const std::string& partition_name,
+    std::string_view partition_domain,
+    std::string_view partition_name,
     bool in_memory)
     : partition_domain_(partition_domain),
       partition_name_(partition_name),
