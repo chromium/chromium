@@ -1197,10 +1197,26 @@ constexpr std::array<DataTypeInfo, syncer::GetNumDataTypes()>
             .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
             .local_sync_support_policy = LocalSyncSupportPolicy::kSupported,
         },
+        {
+            .type = NOTEBOOK,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kNotebookFieldNumber,
+            .debug_string = "Notebook",
+            .histogram_suffix = "NOTEBOOK",
+            .stable_lowercase_string = "notebook",
+            .encryption_policy = EncryptionPolicy::kNeverEncrypted,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+            .local_sync_support_policy = LocalSyncSupportPolicy::kUnsupported,
+        },
     }};
 
 // LINT.IfChange(DataTypeHistogramSuffix)
-static_assert(GetNumDataTypes() == 65,
+static_assert(GetNumDataTypes() == 66,
               "When adding a new type, update kDataTypeInfoTable, update "
               "histograms.xml and follow the integration checklist in "
               "https://www.chromium.org/developers/design-documents/sync/"
@@ -1423,6 +1439,9 @@ void AddDefaultFieldValue(DataType type, sync_pb::EntitySpecifics* specifics) {
     case THEMES_ANDROID:
       specifics->mutable_theme_android();
       break;
+    case NOTEBOOK:
+      specifics->mutable_notebook();
+      break;
   }
 }
 
@@ -1493,7 +1512,6 @@ DataTypeSet UserTypes() {
       DataTypeSet::FromRange(FIRST_USER_DATA_TYPE, LAST_USER_DATA_TYPE);
   return types;
 }
-
 
 DataTypeSet AlwaysEncryptedUserTypes() {
   static const DataTypeSet types = [] {
@@ -1762,6 +1780,8 @@ DataTypeForHistograms DataTypeHistogramValue(DataType data_type) {
       return DataTypeForHistograms::kGeminiThread;
     case THEMES_ANDROID:
       return DataTypeForHistograms::kThemesAndroid;
+    case NOTEBOOK:
+      return DataTypeForHistograms::kNotebook;
   }
   NOTREACHED();
 }

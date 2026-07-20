@@ -70,6 +70,7 @@ chromium-metrics-reviews@google.com.
       summary="INCOMING_PASSWORD_SHARING_INVITATION"/>
   <variant name=".MANAGED_USER_SETTING" summary="MANAGED_USER_SETTING"/>
   <variant name=".NIGORI" summary="NIGORI"/>
+  <variant name=".NOTEBOOK" summary="NOTEBOOK"/>
   <variant name=".OS_PREFERENCE" summary="OS_PREFERENCE"/>
   <variant name=".OS_PRIORITY_PREFERENCE" summary="OS_PRIORITY_PREFERENCE"/>
   <variant name=".OUTGOING_PASSWORD_SHARING_INVITATION"

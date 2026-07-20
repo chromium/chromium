@@ -186,6 +186,9 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncEverything) {
   // to a selectable type.
   expected_types.Remove(CONTEXTUAL_TASK);
 
+  // TODO(crbug.com/531804614): In CL #3, delete (NOTEBOOK is now mapped to a
+  // selectable type.
+  expected_types.Remove(NOTEBOOK);
 
 #if BUILDFLAG(IS_CHROMEOS)
   expected_types.RemoveAll({WEB_APKS});
@@ -436,7 +439,9 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncAllOsTypes) {
   // selectable type.
   expected_types.Remove(CONTEXTUAL_TASK);
 
-
+  // TODO(crbug.com/531804614): In CL #3, delete (NOTEBOOK is now mapped to a
+  // selectable type.
+  expected_types.Remove(NOTEBOOK);
   EXPECT_TRUE(sync_user_settings->IsSyncAllOsTypesEnabled());
   EXPECT_THAT(GetPreferredUserTypes(*sync_user_settings),
               ContainerEq(expected_types));

@@ -585,6 +585,10 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
     add_controller(CreateGeminiThreadDataTypeController());
   }
 
+  if (!disabled_types.Has(syncer::NOTEBOOK)) {
+    add_controller(CreateNotebookDataTypeController());
+  }
+
   if (!disabled_types.Has(syncer::CONTEXTUAL_TASK)) {
     add_controller(CreateContextualTaskDataTypeController());
   }
@@ -859,7 +863,7 @@ CommonControllerBuilder::CreatePlusAddressDataTypeController() {
 
 std::unique_ptr<syncer::DataTypeController>
 CommonControllerBuilder::CreatePlusAddressSettingDataTypeController() {
-    // `plus_address_setting_service_` is null on iOS WebView.
+  // `plus_address_setting_service_` is null on iOS WebView.
   if (!plus_address_setting_service_.value() ||
       !google_groups_manager_.value()) {
     return nullptr;
@@ -1231,6 +1235,27 @@ CommonControllerBuilder::CreateContextualTaskDataTypeController() {
     return nullptr;
   }
   // TODO(crbug.com/445840788): In CL #4, register the type, i.e. instantiate
+  // the DataTypeController. There is more than one way to go about it,
+  // but one option is:
+  // - Create a trivial implementation of DataTypeSyncBridge which lives in
+  //   your feature's directory. It should have synchronous access to your
+  //   data model (e.g. DualReadingListModel) and be (indirectly) owned by a
+  //   CoolKeyedService (often the model itself).
+  // - Expose CoolKeyedService::GetControllerDelegate() which calls
+  //   bridge->change_processor()->GetControllerDelegate().
+  // - Inject CoolKeyedService in this class and call GetControllerDelegate()
+  //   on it to create the DataTypeController.
+  // In CLs #5, #6, ..., implement the bridge and keep adding unit tests.
+  return nullptr;
+}
+
+std::unique_ptr<syncer::DataTypeController>
+CommonControllerBuilder::CreateNotebookDataTypeController() {
+  if (!base::FeatureList::IsEnabled(syncer::kSyncNotebook)) {
+    return nullptr;
+  }
+
+  // TODO(crbug.com/531804614): In CL #4, register the type, i.e. instantiate
   // the DataTypeController. There is more than one way to go about it,
   // but one option is:
   // - Create a trivial implementation of DataTypeSyncBridge which lives in

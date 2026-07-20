@@ -49,6 +49,7 @@ sync_protocol_sources = [
   "nigori_local_data.proto",
   "nigori_specifics.proto",
   "note_entity.proto",
+  "notebook_specifics.proto",
   "os_preference_specifics.proto",
   "os_priority_preference_specifics.proto",
   "password_sharing_invitation_specifics.proto",

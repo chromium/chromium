@@ -73,6 +73,7 @@ import "components/sync/protocol/theme_android_specifics.proto";
 import "components/sync/protocol/theme_ios_specifics.proto";
 import "components/sync/protocol/encrypted_tab_context_item_specifics.proto";
 import "components/sync/protocol/encrypted_tab_context_container_specifics.proto";
+import "components/sync/protocol/notebook_specifics.proto";
 
 message EntitySpecifics {
   // If a datatype is encrypted, this field will contain the encrypted
@@ -179,6 +180,7 @@ message EntitySpecifics {
     EncryptedTabContextContainerSpecifics encrypted_tab_context_container =
         1656053;
     EncryptedTabContextItemSpecifics encrypted_tab_context_item = 1661069;
+    NotebookSpecifics notebook = 1670544;
     // When adding a new type, follow the docs below and keep this comment as
     // the last entry.
     // https://www.chromium.org/developers/design-documents/sync/integration-checklist/
