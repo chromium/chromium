@@ -234,7 +234,7 @@ public class UiUtils {
                 screenshot = bitmap;
             }
         } catch (OutOfMemoryError e) {
-            Log.d(TAG, "Unable to capture screenshot and scale it down." + e.getMessage());
+            Log.d(TAG, "Unable to capture screenshot and scale it down. %s", e.getMessage());
         } finally {
             if (!drawingCacheEnabled) currentView.setDrawingCacheEnabled(false);
             prepareViewHierarchyForScreenshot(currentView, false);
