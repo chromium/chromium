@@ -485,6 +485,15 @@ class DeviceXcodeTestRunnerTest(test_runner_test.TestCase):
         "fake-app-path", "fake-host-app-path", "fake-out-dir")
     tr.tear_down()
 
+  def test_skip_enumerate_tests(self):
+    """Tests skip_enumerate_tests avoids fetch_test_names on device runner."""
+    tr = xcodebuild_runner.DeviceXcodeTestRunner(
+        "fake-app-path",
+        "fake-host-app-path",
+        "fake-out-dir",
+        skip_enumerate_tests=True)
+    self.assertEqual(tr.all_eg_test_names, [])
+
 
 class SimulatorParallelTestRunnerTest(test_runner_test.SimulatorTestRunnerTest):
   """Test case to test xcodebuild_runner.SimulatorParallelTestRunner"""
@@ -566,6 +575,31 @@ class SimulatorParallelTestRunnerTest(test_runner_test.SimulatorTestRunnerTest):
     mock_plugin_service.start_server.assert_called_once_with()
     mock_plugin_service.reset.assert_called_once_with()
     mock_plugin_service.tear_down.assert_called_once_with()
+
+  def test_skip_enumerate_tests(self):
+    """Tests skip_enumerate_tests avoids fetch_test_names."""
+    tr = xcodebuild_runner.SimulatorParallelTestRunner(
+        "fake-app-path",
+        "fake-host-app-path",
+        "fake-iossim_path",
+        "fake-version",
+        "fake-platform",
+        "fake-out-dir",
+        skip_enumerate_tests=True)
+    self.assertEqual(tr.all_eg_test_names, [])
+
+  def test_auto_skip_enumerate_tests_with_test_cases(self):
+    """Tests providing test_cases auto skips fetch_test_names on single
+    shard."""
+    tr = xcodebuild_runner.SimulatorParallelTestRunner(
+        "fake-app-path",
+        "fake-host-app-path",
+        "fake-iossim_path",
+        "fake-version",
+        "fake-platform",
+        "fake-out-dir",
+        test_cases=['Class1/passedTest1'])
+    self.assertEqual(tr.all_eg_test_names, [])
 
 
 if __name__ == '__main__':

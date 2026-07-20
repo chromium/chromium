@@ -589,6 +589,43 @@ class ParseArgsUnitTest(unittest.TestCase):
     expected_test_cases = ['TestClass1.TestCase2', 'TestClass2.TestCase3']
     self.assertEqual(runner.args.test_cases, expected_test_cases)
 
+  def test_skip_enumerate_tests_arg(self):
+    cmd = [
+        '--app',
+        './foo-Runner.app',
+        '--xcode-path',
+        'some/Xcode.app',
+        '--skip-enumerate-tests',
+
+        # Required
+        '--xcode-build-version',
+        '123abc',
+        '--out-dir',
+        'some/dir',
+    ]
+    runner = run.Runner()
+    runner.parse_args(cmd)
+    self.assertTrue(runner.args.skip_enumerate_tests)
+
+  def test_skip_enumerate_tests_json_arg(self):
+    cmd = [
+        '--app',
+        './foo-Runner.app',
+        '--xcode-path',
+        'some/Xcode.app',
+        '--args-json',
+        '{"skip_enumerate_tests": true}',
+
+        # Required
+        '--xcode-build-version',
+        '123abc',
+        '--out-dir',
+        'some/dir',
+    ]
+    runner = run.Runner()
+    runner.parse_args(cmd)
+    self.assertTrue(runner.args.skip_enumerate_tests)
+
 
 class RunnerInstallXcodeTest(test_runner_test.TestCase):
   """Tests Xcode and runtime installing logic in Runner.run()"""
