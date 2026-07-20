@@ -28,6 +28,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link BottomBarConfigUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -43,6 +44,7 @@ public class BottomBarConfigUtilsUnitTest {
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
     }
 
     @Test
@@ -172,6 +174,7 @@ public class BottomBarConfigUtilsUnitTest {
         when(mTab.isIncognito()).thenReturn(false);
         when(mTab.getNativePage()).thenReturn(mNativePage);
         when(mNativePage.getHost()).thenReturn("newtab");
+        when(mTab.isNativePage()).thenReturn(true);
 
         assertFalse(BottomBarConfigUtils.isNtpScrollOffEnabled(mTab, mContext));
     }
@@ -182,6 +185,7 @@ public class BottomBarConfigUtilsUnitTest {
         when(mTab.isIncognito()).thenReturn(false);
         when(mTab.getNativePage()).thenReturn(mNativePage);
         when(mNativePage.getHost()).thenReturn("newtab");
+        when(mTab.isNativePage()).thenReturn(true);
 
         assertTrue(BottomBarConfigUtils.isNtpScrollOffEnabled(mTab, mContext));
     }
@@ -212,6 +216,7 @@ public class BottomBarConfigUtilsUnitTest {
         when(mTab.isIncognito()).thenReturn(false);
         when(mTab.getNativePage()).thenReturn(mNativePage);
         when(mNativePage.getHost()).thenReturn("newtab");
+        when(mTab.isNativePage()).thenReturn(true);
 
         assertTrue(
                 BottomBarConfigUtils.shouldForceBothConstraintsForBottomControls(mTab, mContext));
@@ -223,6 +228,7 @@ public class BottomBarConfigUtilsUnitTest {
         when(mTab.isIncognito()).thenReturn(true);
         when(mTab.getNativePage()).thenReturn(mNativePage);
         when(mNativePage.getHost()).thenReturn("newtab");
+        when(mTab.isNativePage()).thenReturn(true);
 
         // Should return true for incognito NTP even though scroll-off is disabled.
         assertTrue(
@@ -245,8 +251,20 @@ public class BottomBarConfigUtilsUnitTest {
         when(mTab.isIncognito()).thenReturn(false);
         when(mTab.getNativePage()).thenReturn(mNativePage);
         when(mNativePage.getHost()).thenReturn("newtab");
+        when(mTab.isNativePage()).thenReturn(true);
 
         assertFalse(
+                BottomBarConfigUtils.shouldForceBothConstraintsForBottomControls(mTab, mContext));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/false")
+    public void testShouldForceBothConstraints_InternalScheme() {
+        when(mTab.isIncognito()).thenReturn(false);
+        when(mTab.getNativePage()).thenReturn(null);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
+
+        assertTrue(
                 BottomBarConfigUtils.shouldForceBothConstraintsForBottomControls(mTab, mContext));
     }
 }

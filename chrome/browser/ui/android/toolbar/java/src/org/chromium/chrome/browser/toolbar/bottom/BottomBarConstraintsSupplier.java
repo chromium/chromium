@@ -26,11 +26,11 @@ import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
  * <p>It tracks transitions to and from the New Tab Page (NTP) by listening to {@link
  * TabObserver#onContentChanged(Tab)}.
  *
- * <p>When the current tab is on an NTP, the constraints emitted by this supplier are overridden and
- * forced to {@link BrowserControlsState#BOTH}. This is exclusively to ensure that
- * ScrollingBottomViewResourceFrameLayout allows screenshot updates, preventing stale screenshots.
- * It does not affect the physical scroll behavior of the bottom bar, which is driven by the actual
- * tab constraints.
+ * <p>When the current tab is on an NTP or other native page, the constraints emitted by this
+ * supplier are overridden and forced to {@link BrowserControlsState#BOTH}. This is exclusively to
+ * ensure that ScrollingBottomViewResourceFrameLayout allows screenshot updates, preventing stale
+ * screenshots. It does not affect the physical scroll behavior of the bottom bar, which is driven
+ * by the actual tab constraints.
  */
 @NullMarked
 public class BottomBarConstraintsSupplier
