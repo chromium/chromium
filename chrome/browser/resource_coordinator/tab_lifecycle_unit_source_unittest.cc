@@ -10,6 +10,7 @@
 
 #include "base/byte_size.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -136,6 +137,7 @@ class TabLifecycleUnitSourceTest : public ChromeRenderViewHostTestHarness {
     // Don't observe OnLifecycleUnitDestroyed notifications after the test.
     source_->RemoveLifecycleObserver(&tab_observer_);
 
+    focused_tab_strip_model_override_.RunAndReset();
     tab_strip_model_->CloseAllTabs();
     tab_strip_model_.reset();
 
@@ -150,8 +152,10 @@ class TabLifecycleUnitSourceTest : public ChromeRenderViewHostTestHarness {
   void CreateTwoTabs(bool focus_tab_strip,
                      LifecycleUnit** first_lifecycle_unit,
                      LifecycleUnit** second_lifecycle_unit) {
-    if (focus_tab_strip)
-      source_->SetFocusedTabStripModelForTesting(tab_strip_model_.get());
+    if (focus_tab_strip) {
+      focused_tab_strip_model_override_ =
+          source_->SetFocusedTabStripModelForTesting(tab_strip_model_.get());
+    }
 
     // Add a foreground tab to the tab strip.
     task_environment()->FastForwardBy(kShortDelay);
@@ -334,7 +338,7 @@ class TabLifecycleUnitSourceTest : public ChromeRenderViewHostTestHarness {
     EXPECT_EQ(kDummyLastActiveTime,
               tab_strip_model_->GetWebContentsAt(0)->GetLastActiveTimeTicks());
 
-    source_->SetFocusedTabStripModelForTesting(nullptr);
+    focused_tab_strip_model_override_.RunAndReset();
   }
 
   void DiscardAndActivateTest(LifecycleUnitDiscardReason reason) {
@@ -507,6 +511,7 @@ class TabLifecycleUnitSourceTest : public ChromeRenderViewHostTestHarness {
   ::testing::StrictMock<MockLifecycleUnitSourceObserver> source_observer_;
   ::testing::StrictMock<MockLifecycleUnitObserver> tab_observer_;
   std::unique_ptr<TabStripModel> tab_strip_model_;
+  base::ScopedClosureRunner focused_tab_strip_model_override_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   std::unique_ptr<content::WebContents> CreateAndNavigateWebContents() {

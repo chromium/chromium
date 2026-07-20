@@ -1983,16 +1983,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardedProperty) {
 
   // To avoid flakes when focus changes, set the active tab strip model
   // explicitly.
-  resource_coordinator::GetTabLifecycleUnitSource()
-      ->SetFocusedTabStripModelForTesting(browser()->tab_strip_model());
-  // Ensure the focused tab strip model is reset.
-  // TODO(devlin): Update SetFocusedTabStripModelForTesting() to return a
-  // base::AutoReset<> to avoid this ScopedClosureRunner.
-  base::ScopedClosureRunner reset_focused_tab_strip_model(base::BindOnce(
-      [](resource_coordinator::TabLifecycleUnitSource* source) {
-        source->SetFocusedTabStripModelForTesting(nullptr);
-      },
-      resource_coordinator::GetTabLifecycleUnitSource()));
+  auto focused_tab_strip_model_override =
+      resource_coordinator::GetTabLifecycleUnitSource()
+          ->SetFocusedTabStripModelForTesting(browser()->tab_strip_model());
 
   // Create two additional tabs and wait for them to finish loading.
   content::OpenURLParams params(GURL(url::kAboutBlankURL), content::Referrer(),

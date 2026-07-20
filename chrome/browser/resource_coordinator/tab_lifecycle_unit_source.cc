@@ -155,10 +155,21 @@ void TabLifecycleUnitSource::RemoveLifecycleObserver(
   lifecycle_unit_observers_.RemoveObserver(observer);
 }
 
-void TabLifecycleUnitSource::SetFocusedTabStripModelForTesting(
+base::ScopedClosureRunner
+TabLifecycleUnitSource::SetFocusedTabStripModelForTesting(
     TabStripModel* tab_strip) {
+  base::ScopedClosureRunner reset(base::BindOnce(
+      [](base::WeakPtr<TabLifecycleUnitSource> source) {
+        if (source) {
+          source->focused_tab_strip_model_for_testing_ = nullptr;
+          source->UpdateFocusedTab();
+        }
+      },
+      weak_factory_.GetWeakPtr()));
+
   focused_tab_strip_model_for_testing_ = tab_strip;
   UpdateFocusedTab();
+  return reset;
 }
 
 void TabLifecycleUnitSource::SetMemoryLimitEnterprisePolicyFlag(bool enabled) {

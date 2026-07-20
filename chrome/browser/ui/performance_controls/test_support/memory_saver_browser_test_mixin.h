@@ -9,6 +9,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/json/values_util.h"
 #include "base/test/bind.h"
 #include "base/test/simple_test_clock.h"
@@ -55,11 +56,22 @@ class MemorySaverBrowserTestMixin : public T {
 
     // To avoid flakes when focus changes, set the active tab strip model
     // explicitly.
-    resource_coordinator::GetTabLifecycleUnitSource()
-        ->SetFocusedTabStripModelForTesting(T::browser()->tab_strip_model());
+    focused_tab_strip_model_override_ =
+        resource_coordinator::GetTabLifecycleUnitSource()
+            ->SetFocusedTabStripModelForTesting(
+                T::browser()->tab_strip_model());
 
     T::host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(T::embedded_test_server()->Start());
+  }
+
+  void TearDownOnMainThread() override {
+    focused_tab_strip_model_override_.RunAndReset();
+    T::TearDownOnMainThread();
+  }
+
+  void ClearFocusedTabStripModelForTesting() {
+    focused_tab_strip_model_override_.RunAndReset();
   }
 
   void SetMemorySaverModeEnabled(bool enabled) {
@@ -110,6 +122,7 @@ class MemorySaverBrowserTestMixin : public T {
   base::SimpleTestTickClock test_tick_clock_;
   resource_coordinator::ScopedSetClocksForTesting
       scoped_set_clocks_for_testing_;
+  base::ScopedClosureRunner focused_tab_strip_model_override_;
 };
 
 #endif  // CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_TEST_SUPPORT_MEMORY_SAVER_BROWSER_TEST_MIXIN_H_

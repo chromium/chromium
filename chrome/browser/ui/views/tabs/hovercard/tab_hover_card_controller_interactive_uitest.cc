@@ -308,8 +308,9 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
                        InactiveWindowStaysInactiveOnHover) {
-  resource_coordinator::GetTabLifecycleUnitSource()
-      ->SetFocusedTabStripModelForTesting(nullptr);
+  auto focused_tab_strip_model_override =
+      resource_coordinator::GetTabLifecycleUnitSource()
+          ->SetFocusedTabStripModelForTesting(nullptr);
 
   // Open a second browser window.
   ui_test_utils::NavigateToURLWithDisposition(

@@ -231,8 +231,7 @@ IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperUpdatedInteractiveTest,
       Do([this]() {
         // Override manual value set in MemorySaverInteractiveTestMixin to
         // prepare for tab strip being destroyed along with the browser.
-        resource_coordinator::GetTabLifecycleUnitSource()
-            ->SetFocusedTabStripModelForTesting(nullptr);
+        ClearFocusedTabStripModelForTesting();
         target_browser()->GetWindow()->Close();
         set_target_browser(nullptr);
       }),

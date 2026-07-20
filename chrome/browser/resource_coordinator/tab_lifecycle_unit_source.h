@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_LIFECYCLE_UNIT_SOURCE_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_LIFECYCLE_UNIT_SOURCE_H_
 
+#include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
@@ -61,8 +63,11 @@ class TabLifecycleUnitSource : public BrowserCollectionObserver,
   void AddLifecycleObserver(LifecycleUnitObserver* observer);
   void RemoveLifecycleObserver(LifecycleUnitObserver* observer);
 
-  // Pretend that |tab_strip| is the TabStripModel of the focused window.
-  void SetFocusedTabStripModelForTesting(TabStripModel* tab_strip);
+  // Pretend that `tab_strip` is the TabStripModel of the focused window. The
+  // returned closure will automatically reset the tab strip when it goes out
+  // of scope.
+  [[nodiscard]] base::ScopedClosureRunner SetFocusedTabStripModelForTesting(
+      TabStripModel* tab_strip);
 
   // Returns the state of the MemoryLimitMbEnabled enterprise policy.
   bool memory_limit_enterprise_policy() const {
@@ -143,8 +148,7 @@ class TabLifecycleUnitSource : public BrowserCollectionObserver,
   BrowserTabStripTracker browser_tab_strip_tracker_;
 
   // Pretend that this is the TabStripModel of the focused window, for testing.
-  raw_ptr<TabStripModel, AcrossTasksDanglingUntriaged>
-      focused_tab_strip_model_for_testing_ = nullptr;
+  raw_ptr<TabStripModel> focused_tab_strip_model_for_testing_ = nullptr;
 
   // The currently focused TabLifecycleUnit. Updated by UpdateFocusedTab().
   raw_ptr<TabLifecycleUnit> focused_lifecycle_unit_ = nullptr;
@@ -163,6 +167,8 @@ class TabLifecycleUnitSource : public BrowserCollectionObserver,
 
   // The enterprise policy for setting a limit on total physical memory usage.
   bool memory_limit_enterprise_policy_ = false;
+
+  base::WeakPtrFactory<TabLifecycleUnitSource> weak_factory_{this};
 };
 
 }  // namespace resource_coordinator
