@@ -75,12 +75,17 @@ class PdfToolbarViewBinder {
                         boolean isSuccess = false;
                         String text = currentPage.getText().toString();
                         if (!text.isEmpty()) {
-                            int pageNumber = Integer.parseInt(text);
-                            int totalPageCount = model.get(PdfToolbarProperties.TOTAL_PAGE_COUNT);
+                            try {
+                                int pageNumber = Integer.parseInt(text);
+                                int totalPageCount =
+                                        model.get(PdfToolbarProperties.TOTAL_PAGE_COUNT);
 
-                            if (pageNumber >= 1 && pageNumber <= totalPageCount) {
-                                listener.onResult(pageNumber);
-                                isSuccess = true;
+                                if (pageNumber >= 1 && pageNumber <= totalPageCount) {
+                                    listener.onResult(pageNumber);
+                                    isSuccess = true;
+                                }
+                            } catch (NumberFormatException e) {
+                                isSuccess = false;
                             }
                         }
                         // If the input was invalid, reset the text to the current page

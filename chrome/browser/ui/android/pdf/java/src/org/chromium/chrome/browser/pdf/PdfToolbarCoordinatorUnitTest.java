@@ -131,6 +131,15 @@ public class PdfToolbarCoordinatorUnitTest {
         // Should revert to 99
         assertEquals("99", currentPage.getText().toString());
         assertFalse(currentPage.isFocused());
+
+        // Number overflow / excessively large input string
+        assertTrue(currentPage.requestFocus());
+        assertTrue(currentPage.isFocused());
+        currentPage.setText("7868768761");
+        currentPage.onEditorAction(android.view.inputmethod.EditorInfo.IME_ACTION_GO);
+        // Should revert to 99
+        assertEquals("99", currentPage.getText().toString());
+        assertFalse(currentPage.isFocused());
     }
 
     @Test
