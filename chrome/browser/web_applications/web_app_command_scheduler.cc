@@ -40,6 +40,7 @@
 #include "chrome/browser/web_applications/commands/fetch_installability_for_chrome_management.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_install_command.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_update_command.h"
+#include "chrome/browser/web_applications/commands/garbage_collect_storage_partitions_command.h"
 #include "chrome/browser/web_applications/commands/install_app_locally_command.h"
 #include "chrome/browser/web_applications/commands/install_from_info_command.h"
 #include "chrome/browser/web_applications/commands/install_from_sync_command.h"
@@ -915,6 +916,14 @@ void WebAppCommandScheduler::ApplyManifestMigration(
           &profile_.get(), std::move(keep_alive), std::move(profile_keep_alive),
           std::move(callback)),
       location);
+}
+
+void WebAppCommandScheduler::GarbageCollectStoragePartitions(
+    base::OnceClosure callback,
+    const base::Location& location) {
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<GarbageCollectStoragePartitionsCommand>(
+          &profile_.get(), base::DoNothing()));
 }
 
 void WebAppCommandScheduler::LaunchApp(apps::AppLaunchParams params,

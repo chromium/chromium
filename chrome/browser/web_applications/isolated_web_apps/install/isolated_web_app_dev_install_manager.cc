@@ -27,7 +27,6 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/extensions_manager.h"
-#include "chrome/browser/web_applications/isolated_web_apps/commands/garbage_collect_storage_partitions_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
@@ -211,7 +210,6 @@ void IsolatedWebAppDevInstallManager::SetProvider(base::PassKey<WebAppProvider>,
 }
 
 void IsolatedWebAppDevInstallManager::Start() {
-  MaybeScheduleGarbageCollection();
 #if BUILDFLAG(IS_CHROMEOS)
   auto& command_line = *base::CommandLine::ForCurrentProcess();
   if (!are_isolated_web_apps_enabled_ || !HasIwaInstallSwitch(command_line)) {
@@ -558,25 +556,6 @@ void IsolatedWebAppDevInstallManager::ReportInstallationResult(
   }
   last_installation_result_ = result;
   on_report_installation_result_.Run(std::move(result));
-}
-
-void IsolatedWebAppDevInstallManager::MaybeScheduleGarbageCollection() {
-  if (profile_->GetPrefs()->GetBoolean(
-          prefs::kShouldGarbageCollectStoragePartitions)) {
-    provider_->command_manager().ScheduleCommand(
-        std::make_unique<web_app::GarbageCollectStoragePartitionsCommand>(
-            &profile_.get(),
-            base::BindOnce(
-                [](base::WeakPtr<IsolatedWebAppDevInstallManager> weak_this) {
-                  if (!weak_this) {
-                    return;
-                  }
-                  weak_this
-                      ->on_garbage_collect_storage_partitions_done_for_testing_
-                      .Signal();
-                },
-                weak_ptr_factory_.GetWeakPtr())));
-  }
 }
 
 void IsolatedWebAppDevInstallManager::DownloadWebBundleToFile(

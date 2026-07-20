@@ -573,6 +573,11 @@ void WebAppProvider::OnSyncBridgeReady(
     scheduler().ScheduleResolveWebAppPendingMigrationInfo(base::DoNothing());
   }
 
+  if (profile_->GetPrefs()->GetBoolean(
+          prefs::kShouldGarbageCollectStoragePartitions)) {
+    scheduler().GarbageCollectStoragePartitions(base::DoNothing());
+  }
+
   on_registry_ready_.Signal();
   is_registry_ready_ = true;
 

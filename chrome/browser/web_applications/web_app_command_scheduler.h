@@ -756,6 +756,12 @@ class WebAppCommandScheduler {
       ApplyManifestMigrationResultCallback callback,
       const base::Location& location = FROM_HERE);
 
+  // Schedules the command to run garbage collection on unused storage
+  // partitions.
+  void GarbageCollectStoragePartitions(
+      base::OnceClosure callback,
+      const base::Location& location = FROM_HERE);
+
   // TODO(crbug.com/40215411): expose all commands for web app
   // operations.
 

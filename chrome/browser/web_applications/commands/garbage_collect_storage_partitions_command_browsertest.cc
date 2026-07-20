@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/commands/garbage_collect_storage_partitions_command.h"
+#include "chrome/browser/web_applications/commands/garbage_collect_storage_partitions_command.h"
 
 #include <optional>
 #include <string>
@@ -187,12 +187,7 @@ IN_PROC_BROWSER_TEST_F(GarbageCollectStoragePartitionsCommandBrowserTest,
                        UninstalledAppsHaveStoragePartitionsCleanedUp) {
   base::ScopedAllowBlockingForTesting blocking_allow;
 
-  base::RunLoop run_loop;
-  provider()
-      .isolated_web_app_dev_install_manager()
-      .on_garbage_collect_storage_partitions_done_for_testing()
-      .Post(FROM_HERE, run_loop.QuitClosure());
-  run_loop.Run();
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
 
   ASSERT_TRUE(base::PathExists(storage_partition_path()));
   // Only IWA1's path still exists.

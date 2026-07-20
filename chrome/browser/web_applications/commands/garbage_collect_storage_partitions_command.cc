@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/commands/garbage_collect_storage_partitions_command.h"
+#include "chrome/browser/web_applications/commands/garbage_collect_storage_partitions_command.h"
 
 #include <memory>
 #include <string>
@@ -16,14 +16,11 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/extensions_manager.h"
-#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_dev_install_manager.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
+#include "chrome/browser/web_applications/web_app_isolation_delegate.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/storage_partition.h"
-#include "content/public/browser/storage_partition_config.h"
 
 namespace web_app {
 
@@ -72,27 +69,10 @@ void GarbageCollectStoragePartitionsCommand::DoGarbageCollection() {
       lock_->extensions_manager().RegisterGarbageCollectionInstallGate();
 
   // Get all paths from Extension system.
-  {
-    ExtensionsManager& extensions_manager = lock_->extensions_manager();
-    allowlist.merge(extensions_manager.GetIsolatedStoragePaths());
-  }
+  allowlist.merge(lock_->extensions_manager().GetIsolatedStoragePaths());
 
   // Get all paths from Web App system.
-  {
-    WebAppRegistrar::AppSet app_set = lock_->registrar().GetApps();
-    for (const auto& app : app_set) {
-      if (!app.isolation_data().has_value()) {
-        continue;
-      }
-      auto url_info = IsolatedWebAppUrlInfo::Create(app.scope());
-      if (url_info.has_value()) {
-        allowlist.insert(profile_
-                             ->GetStoragePartition(
-                                 url_info->storage_partition_config(profile_))
-                             ->GetPath());
-      }
-    }
-  }
+  allowlist.merge(lock_->isolation_delegate().GetIsolatedStoragePaths());
 
   base::ListValue* debug_paths =
       GetMutableDebugValue().EnsureList("allow_list_paths");
