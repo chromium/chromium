@@ -22,6 +22,7 @@ source_set("flags") {
     "//components/browser_sync:switches",
     "//components/collaboration/public:features",
     "//components/commerce/core:feature_list",
+    "//components/contextual_tasks/public",
     "//components/data_sharing/public",
     "//components/desktop_to_mobile_promos",
     "//components/dom_distiller/core",

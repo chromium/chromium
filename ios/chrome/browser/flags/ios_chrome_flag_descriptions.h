@@ -475,6 +475,10 @@ inline constexpr char kContentPushNotificationsName[] =
 inline constexpr char kContentPushNotificationsDescription[] =
     "Enables the content push notifications.";
 
+inline constexpr char kContextualTasksName[] = "Enables the contextual tasks";
+inline constexpr char kContextualTasksDescription[] =
+    "Enables the contextual tasks infrastructure";
+
 inline constexpr char kCredentialProviderExtensionPromoName[] =
     "Enable the Credential Provider Extension promo.";
 inline constexpr char kCredentialProviderExtensionPromoDescription[] =
