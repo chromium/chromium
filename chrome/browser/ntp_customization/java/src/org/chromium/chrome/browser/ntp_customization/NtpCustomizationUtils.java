@@ -1675,18 +1675,15 @@ public class NtpCustomizationUtils {
     }
 
     /**
-     * Calculates the adjusted bottom margin for the Logo view in pixels.
-     *
-     * <p>If a shadow is applied to the search box, this method subtracts the shadow's padding from
-     * the margin. This ensures the perceived visual gap between the logo and the search box remains
-     * consistent, regardless of whether the shadow is present.
+     * Calculates the adjusted bottom margin for the Logo view in pixels. Offsets the standard logo
+     * margin against the vertical shadow padding to prevent visual layout shifts regardless of
+     * whether the shadow is visible or not.
      *
      * @param resources Android resources.
      * @return The final adjusted bottom margin in pixels.
      */
     public static int getLogoViewBottomMarginPx(Resources resources) {
-        int bottomMargin = resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom);
-        return bottomMargin;
+        return resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom);
     }
 
     /**

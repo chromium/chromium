@@ -7,7 +7,7 @@ found in the LICENSE file.
 <resources>
   <dimen name="ntp_logo_height">48dp</dimen>
   <dimen name="ntp_logo_margin_top">12dp</dimen>
-  <dimen name="ntp_logo_margin_bottom">24dp</dimen>
+  <dimen name="ntp_logo_margin_bottom">20dp</dimen>
   <dimen name="doodle_height">76dp</dimen>
   <!-- This value is only used in split screens on tablet. -->
   <dimen name="doodle_height_tablet_split_screen">84dp</dimen>

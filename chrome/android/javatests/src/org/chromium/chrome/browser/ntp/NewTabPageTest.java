@@ -237,7 +237,7 @@ public class NewTabPageTest {
         onView(withId(R.id.search_box)).perform(click());
         View view = mNtp.getView().findViewById(R.id.search_box);
         ChromeRenderTestRule.sanitize(view);
-        mRenderTestRule.render(view, "focus_fake_box_v3");
+        mRenderTestRule.render(view, "focus_fake_box_v4");
         scrimManager.disableAnimationForTesting(false);
     }
 
@@ -255,7 +255,7 @@ public class NewTabPageTest {
         onView(withId(R.id.search_box)).perform(click());
         View view = mNtp.getView().findViewById(R.id.search_box);
         ChromeRenderTestRule.sanitize(view);
-        mRenderTestRule.render(view, "focus_fake_box_with_plus_button");
+        mRenderTestRule.render(view, "focus_fake_box_with_plus_button_v2");
         scrimManager.disableAnimationForTesting(false);
     }
 

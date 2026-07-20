@@ -581,7 +581,7 @@ public class ShowNtpAtStartupTest {
 
         // Orientation changes are not supported on automotive.
         if (DeviceInfo.isAutomotive()) {
-            mRenderTestRule.render(searchBoxLayout, "ntp_search_box_automotive");
+            mRenderTestRule.render(searchBoxLayout, "ntp_search_box_automotive_v2");
             return;
         }
 
@@ -591,7 +591,7 @@ public class ShowNtpAtStartupTest {
 
         // Re-fetch view to avoid potential staleness after orientation change.
         mRenderTestRule.render(
-                getNtpLayout().findViewById(R.id.search_box), "ntp_search_box_landscape");
+                getNtpLayout().findViewById(R.id.search_box), "ntp_search_box_landscape_v2");
 
         // Switch to portrait screen orientation.
         ActivityTestUtils.rotateActivityToOrientation(
@@ -599,7 +599,7 @@ public class ShowNtpAtStartupTest {
 
         // Re-fetch view to avoid potential staleness after orientation change.
         mRenderTestRule.render(
-                getNtpLayout().findViewById(R.id.search_box), "ntp_search_box_portrait");
+                getNtpLayout().findViewById(R.id.search_box), "ntp_search_box_portrait_v2");
     }
 
     @Test
