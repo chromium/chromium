@@ -20,7 +20,7 @@ TEST(UserInfoTest, GetProcessUserReturnsSid) {
   ASSERT_HRESULT_SUCCEEDED(hr);
   EXPECT_FALSE(sid.empty());
   // All SID SDDL strings start with "S-".
-  EXPECT_EQ(sid.substr(0, 2), L"S-");
+  EXPECT_TRUE(sid.starts_with(L"S-"));
 }
 
 // Tests that GetProcessUser returns a non-empty name and domain.

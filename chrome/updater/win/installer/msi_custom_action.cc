@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/strings/string_util.h"
 #include "base/win/registry.h"
 #include "chrome/updater/tag.h"
 #include "chrome/updater/util/win_util.h"

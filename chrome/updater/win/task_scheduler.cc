@@ -309,7 +309,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
     }
 
     for (const std::wstring& task_name : task_names) {
-      if (base::StartsWith(task_name, task_prefix)) {
+      if (task_name.starts_with(task_prefix)) {
         return task_name;
       }
     }
@@ -815,7 +815,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
     }
 
     for (const std::wstring& task_name : task_names) {
-      if (base::StartsWith(task_name, prefix)) {
+      if (task_name.starts_with(prefix)) {
         callback(task_name);
       }
     }

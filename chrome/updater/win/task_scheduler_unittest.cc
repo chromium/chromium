@@ -569,7 +569,7 @@ TEST(TaskSchedulerTest, ForEachTaskWithPrefix) {
     task_scheduler->ForEachTaskWithPrefix(
         kTaskNamePrefix, [&count_entries, &task_scheduler,
                           kTaskNamePrefix](const std::wstring& task_name) {
-          EXPECT_TRUE(base::StartsWith(task_name, kTaskNamePrefix));
+          EXPECT_TRUE(task_name.starts_with(kTaskNamePrefix));
           ++count_entries;
           EXPECT_TRUE(task_scheduler->DeleteTask(task_name));
         });

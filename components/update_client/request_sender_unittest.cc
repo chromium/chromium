@@ -14,7 +14,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/client_update_protocol/features.h"
@@ -338,8 +337,8 @@ TEST_P(RequestSenderTest, CupKeySelection) {
 
   std::string query(std::get<2>(post_interceptor_->GetRequests()[0]).query());
   EXPECT_TRUE(IsPqcCupSigningEnabled()
-                  ? base::StartsWith(query, "cup2key=ML-DSA-44-16:")
-                  : base::StartsWith(query, "cup2key=16:"));
+                  ? query.starts_with("cup2key=ML-DSA-44-16:")
+                  : query.starts_with("cup2key=16:"));
 }
 
 }  // namespace update_client

@@ -67,7 +67,7 @@ std::map<std::string, std::string> ParseCommandLine(int argc,
   std::string key;
   for (int i = 1; i < argc; ++i) {
     std::string arg(UNSAFE_TODO(argv[i]));
-    if (base::StartsWith(arg, "--")) {
+    if (arg.starts_with("--")) {
       key = arg.substr(2);
       size_t eq_idx = key.find('=');
       if (eq_idx == std::string::npos) {
@@ -76,7 +76,7 @@ std::map<std::string, std::string> ParseCommandLine(int argc,
         result[key.substr(0, eq_idx)] = key.substr(eq_idx + 1);
         key = "";
       }
-    } else if (base::StartsWith(arg, "-")) {
+    } else if (arg.starts_with('-')) {
       // Multiple short options could be combined together. For example,
       // command `ksadmin -pP com.google.Chrome` should print Chrome ticket.
       // Split the option substring into switches character by character.
@@ -220,8 +220,7 @@ bool IsSystemShim() {
     return false;
   }
 
-  return base::StartsWith(
-      executable_path.value(),
+  return executable_path.value().starts_with(
       GetKeystoneFolderPath(UpdaterScope::kSystem)->value());
 }
 

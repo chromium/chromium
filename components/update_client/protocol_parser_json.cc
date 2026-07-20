@@ -14,7 +14,6 @@
 #include "base/check.h"
 #include "base/json/json_reader.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_util.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -269,8 +268,7 @@ bool ProtocolParserJSON::DoParse(std::string_view response_json,
 
   // The JSON response contains a prefix to prevent XSSI.
   static constexpr std::string_view kJSONPrefix = ")]}'";
-  if (!base::StartsWith(response_json, kJSONPrefix,
-                        base::CompareCase::SENSITIVE)) {
+  if (!response_json.starts_with(kJSONPrefix)) {
     ParseError("Missing secure JSON prefix.");
     return false;
   }

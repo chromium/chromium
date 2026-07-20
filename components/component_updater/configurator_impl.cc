@@ -15,7 +15,6 @@
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "build/build_config.h"

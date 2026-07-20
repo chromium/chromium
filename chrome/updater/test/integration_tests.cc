@@ -6486,7 +6486,7 @@ TEST_P(IntegrationInstallerResultsTest, OnDemandTestCases) {
 
   // TODO(crbug.com/382059245): remove this `if` once the older versions are
   // updated to a version that supports a success `kExitCode`.
-  if (base::StartsWith(GetTestCase().command_line_args, "INSTALLER_RESULT=4") &&
+  if (GetTestCase().command_line_args.starts_with("INSTALLER_RESULT=4") &&
       (GetSetup().version != base::Version(kUpdaterVersion))) {
     GTEST_SKIP();
   }

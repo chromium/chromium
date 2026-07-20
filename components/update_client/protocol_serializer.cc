@@ -118,8 +118,8 @@ protocol_request::Request MakeProtocolRequest(
 
   // Session id and request id.
   CHECK(!session_id.empty());
-  CHECK(base::StartsWith(session_id, "{", base::CompareCase::SENSITIVE));
-  CHECK(base::EndsWith(session_id, "}", base::CompareCase::SENSITIVE));
+  CHECK(session_id.starts_with('{'));
+  CHECK(session_id.ends_with('}'));
   request.session_id = session_id;
   request.request_id = base::StrCat(
       {"{", base::Uuid::GenerateRandomV4().AsLowercaseString(), "}"});

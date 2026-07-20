@@ -135,7 +135,7 @@ std::unique_ptr<net::test_server::HttpResponse> ScopedServer::HandleRequest(
     return response;
   }
 
-  if (base::StartsWith(request.relative_url, download_path()) &&
+  if (request.relative_url.starts_with(download_path()) &&
       !download_delay_.is_zero()) {
     VLOG(0) << "Delay download response by: " << download_delay_;
     response.reset(new net::test_server::DelayedHttpResponse(download_delay_));
@@ -146,10 +146,10 @@ std::unique_ptr<net::test_server::HttpResponse> ScopedServer::HandleRequest(
       response_body_provider.Run(re2::RE2::PartialMatch(
           request.decoded_content, "\"protocol\": *\"4\\.0\""));
   response->set_code(response_code);
-  if (base::StartsWith(request.relative_url, device_management_path())) {
+  if (request.relative_url.starts_with(device_management_path())) {
     response->set_content_type("application/x-protobuf");
   }
-  if (base::StartsWith(request.relative_url, proxy_pac_path())) {
+  if (request.relative_url.starts_with(proxy_pac_path())) {
     VLOG(1) << "PAC proxy settings: [ " << response_body << "]";
   }
 

@@ -54,7 +54,7 @@ std::map<std::string, std::string> ParseCommandLine(int argc,
   std::string key;
   for (int i = 1; i < argc; ++i) {
     std::string arg(UNSAFE_TODO(argv[i]));
-    if (base::StartsWith(arg, "-")) {
+    if (arg.starts_with('-')) {
       key = arg.substr(1);
       result[key] = "";
     } else {

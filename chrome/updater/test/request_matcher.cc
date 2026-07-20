@@ -98,7 +98,7 @@ Matcher GetTargetURLMatcher(GURL target_url) {
     if (!base::StartsWith(request.all_headers, post_target,
                           base::CompareCase::INSENSITIVE_ASCII)) {
       ADD_FAILURE() << "Request all_headers [" << request.all_headers
-                    << "] does not starts with the expected [" << post_target
+                    << "] does not start with the expected [" << post_target
                     << "]";
       return false;
     }
@@ -245,7 +245,7 @@ Matcher GetMultipartContentMatcher(
     }
 
     const std::string content_type = request.headers.at("Content-Type");
-    if (!base::StartsWith(content_type, kMultifpartBoundaryPrefix)) {
+    if (!content_type.starts_with(kMultifpartBoundaryPrefix)) {
       ADD_FAILURE() << "Content-Type value is not the expected "
                     << "[multipart/form-data].";
       return false;

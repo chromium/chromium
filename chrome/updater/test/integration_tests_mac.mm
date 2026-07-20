@@ -135,7 +135,7 @@ void Clean(UpdaterScope scope) {
   for (const auto& token : base::SplitStringPiece(out, base::kWhitespaceASCII,
                                                   base::TRIM_WHITESPACE,
                                                   base::SPLIT_WANT_NONEMPTY)) {
-    if (base::StartsWith(token, MAC_BUNDLE_IDENTIFIER_STRING)) {
+    if (token.starts_with(MAC_BUNDLE_IDENTIFIER_STRING)) {
       std::string out_rm;
       base::CommandLine launchctl_rm(base::FilePath("/bin/launchctl"));
       launchctl_rm.AppendArg("remove");

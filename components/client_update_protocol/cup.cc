@@ -16,7 +16,6 @@
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
 #include "crypto/hash.h"
 #include "crypto/random.h"
 #include "crypto/sign.h"
@@ -116,12 +115,11 @@ bool Cup::ParseETagHeader(std::string_view etag_header_value_in,
 
   // Remove the weak prefix, then remove the begin and the end quotes.
   static constexpr std::string_view kWeakETagPrefix = "W/";
-  if (base::StartsWith(etag_header_value, kWeakETagPrefix)) {
+  if (etag_header_value.starts_with(kWeakETagPrefix)) {
     etag_header_value.remove_prefix(kWeakETagPrefix.size());
   }
-  if (etag_header_value.size() >= 2 &&
-      base::StartsWith(etag_header_value, "\"") &&
-      base::EndsWith(etag_header_value, "\"")) {
+  if (etag_header_value.size() >= 2 && etag_header_value.starts_with('"') &&
+      etag_header_value.ends_with('"')) {
     etag_header_value.remove_prefix(1);
     etag_header_value.remove_suffix(1);
   }

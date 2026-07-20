@@ -30,7 +30,6 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
@@ -432,7 +431,7 @@ TEST(WinUtil, ForEachRegistryRunValueWithPrefix) {
   ForEachRegistryRunValueWithPrefix(
       kRunEntryPrefix,
       [&key, &count_entries, kRunEntryPrefix](const std::wstring& run_name) {
-        EXPECT_TRUE(base::StartsWith(run_name, kRunEntryPrefix));
+        EXPECT_TRUE(run_name.starts_with(kRunEntryPrefix));
         ++count_entries;
         EXPECT_EQ(key.DeleteValue(run_name.c_str()), ERROR_SUCCESS);
       });
@@ -479,7 +478,7 @@ TEST(WinUtil, ForEachServiceWithPrefix) {
   ForEachServiceWithPrefix(
       kServiceNamePrefix, kServiceNamePrefix,
       [&count_entries, kServiceNamePrefix](const std::wstring& service_name) {
-        EXPECT_TRUE(base::StartsWith(service_name, kServiceNamePrefix));
+        EXPECT_TRUE(service_name.starts_with(kServiceNamePrefix));
         ++count_entries;
         EXPECT_TRUE(DeleteService(service_name));
       });

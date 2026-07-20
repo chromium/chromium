@@ -15,7 +15,6 @@
 #include "base/containers/span.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/client_update_protocol/features.h"
 #include "crypto/hash.h"
@@ -92,8 +91,8 @@ TEST_F(CupEcdsaTest, PrepareRequestParameters) {
     // With a 256-bit nonce, the probability of collision is negligible.
     EXPECT_FALSE(queries.contains(query));
     queries.insert(query);
-    EXPECT_TRUE(base::StartsWith(query, kKeyIdWithName));
-    EXPECT_TRUE(base::EndsWith(query, kRequestHashWithName));
+    EXPECT_TRUE(query.starts_with(kKeyIdWithName));
+    EXPECT_TRUE(query.ends_with(kRequestHashWithName));
     // The nonce is a base64url-encoded, 32-byte (256-bit) string.
     std::string_view nonce_b64 = query;
     nonce_b64.remove_prefix(kKeyIdWithName.size());
@@ -389,8 +388,8 @@ TEST_F(CupMldsa44Test, PrepareRequestParameters) {
     // With a 256-bit nonce, the probability of collision is negligible.
     EXPECT_FALSE(queries.contains(query));
     queries.insert(query);
-    EXPECT_TRUE(base::StartsWith(query, kKeyIdWithName));
-    EXPECT_TRUE(base::EndsWith(query, kRequestHashWithName));
+    EXPECT_TRUE(query.starts_with(kKeyIdWithName));
+    EXPECT_TRUE(query.ends_with(kRequestHashWithName));
     // The nonce is a base64url-encoded, 32-byte (256-bit) string.
     std::string_view nonce_b64 = query;
     nonce_b64.remove_prefix(kKeyIdWithName.size());
