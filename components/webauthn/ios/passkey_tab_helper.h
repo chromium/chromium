@@ -84,16 +84,14 @@ class PasskeyTabHelper : public web::WebStateObserver,
   // Handles passkey registration requests. Yields if the request ID is missing.
   void HandleCreateRequestedEvent(RegistrationRequestParams params);
 
-  // Handles PublicKeyCredential.signalUnknownCredential request.
+  // Handles PublicKeyCredential.signal* requests. Validates whether the
+  // `origin` is allowed to make requests for `params.rp_id`. If yes, invokes
+  // the corresponding private continuation. Otherwise, returns.
   void HandleSignalUnknownCredentialEvent(const url::Origin& origin,
                                           SignalUnknownCredentialParams params);
-
-  // Handles PublicKeyCredential.signalCurrentUserDetails request.
   void HandleSignalCurrentUserDetailsEvent(
       const url::Origin& origin,
       SignalCurrentUserDetailsParams params);
-
-  // Handles PublicKeyCredential.signalAllAcceptedCredentials request.
   void HandleSignalAllAcceptedCredentialsEvent(
       const url::Origin& origin,
       SignalAllAcceptedCredentialsParams params);
@@ -174,6 +172,16 @@ class PasskeyTabHelper : public web::WebStateObserver,
   void HandleCreateRequestedEvent(web::WebFrame* web_frame,
                                   RegistrationRequestParams params);
 
+  // Handles continuation of the Signal API events after the remote RP ID
+  // validation has been completed.
+  void HandleSignalUnknownCredential(const url::Origin& origin,
+                                     SignalUnknownCredentialParams params);
+  void HandleSignalCurrentUserDetails(const url::Origin& origin,
+                                      SignalCurrentUserDetailsParams params);
+  void HandleSignalAllAcceptedCredentials(
+      const url::Origin& origin,
+      SignalAllAcceptedCredentialsParams params);
+
   // Returns whether the passkey model contains a passkey from the
   // exclude credentials list from the provided parameters.
   bool HasExcludedPasskey(const RegistrationRequestParams& params) const;
@@ -210,8 +218,18 @@ class PasskeyTabHelper : public web::WebStateObserver,
       const std::string& passkey_request_id,
       base::OnceCallback<void(ValidationStatus)> callback);
 
+  // Performs remote RP ID validation for WebAuthn Signal requests. Generates a
+  // temporary request ID, tracks it, and runs `success_callback` on success.
+  void PerformRemoteSignalRpIdValidation(const url::Origin& origin,
+                                         const std::string& rp_id,
+                                         base::OnceClosure success_callback);
+
   // Callback for processing remote validation result for a pending request.
-  void OnRemoteRpIdValidationCompleted(PendingRequest request,
+  // Cleans up the loader for `request_id` and runs `success_callback` on
+  // successful `status`. Otherwise, runs `failure_callback`, if provided.
+  void OnRemoteRpIdValidationCompleted(std::string request_id,
+                                       base::OnceClosure success_callback,
+                                       base::OnceClosure failure_callback,
                                        ValidationStatus status);
 
   // Handles passkey assertion request after it passes validation.
@@ -262,9 +280,10 @@ class PasskeyTabHelper : public web::WebStateObserver,
                             WebAuthnError error);
 
   // Utility function to defer the passkey request back to the renderer.
-  void DeferToRenderer(web::WebFrame* web_frame,
-                       const std::string& request_id,
-                       PasskeyRequestParams::RequestType request_type) const;
+  void DeferToRendererForFrame(
+      web::WebFrame* web_frame,
+      const std::string& request_id,
+      PasskeyRequestParams::RequestType request_type) const;
 
   // If `request_id` exists in the `assertion_requests_` map, this function will
   // remove the parameters from the `assertion_requests_` map and return them.
