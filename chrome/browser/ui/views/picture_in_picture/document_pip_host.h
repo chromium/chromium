@@ -5,14 +5,17 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PICTURE_IN_PICTURE_DOCUMENT_PIP_HOST_H_
 #define CHROME_BROWSER_UI_VIEWS_PICTURE_IN_PICTURE_DOCUMENT_PIP_HOST_H_
 
+#include <memory>
 #include <optional>
 #include <string>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window.h"
+#include "chrome/browser/ui/views/picture_in_picture/pip_child_dialog_observer_helper.h"
 #include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
@@ -47,7 +50,8 @@ class DocumentPipHost : public content::WebContentsUserData<DocumentPipHost>,
                         public web_modal::WebContentsModalDialogManagerDelegate,
                         public web_modal::WebContentsModalDialogHost,
                         public views::WidgetObserver,
-                        public views::ViewObserver {
+                        public views::ViewObserver,
+                        public PipChildDialogObserverHelper::Delegate {
  public:
   DocumentPipHost(const DocumentPipHost&) = delete;
   DocumentPipHost& operator=(const DocumentPipHost&) = delete;
@@ -230,6 +234,13 @@ class DocumentPipHost : public content::WebContentsUserData<DocumentPipHost>,
 
  private:
   friend class content::WebContentsUserData<DocumentPipHost>;
+  // Grant the child-dialog resize tests access to the private test-only hooks
+  // below (RunPendingChildResizeForTesting/IsChildResizePendingForTesting), so
+  // they can drive the pending resize deterministically without a public API.
+  FRIEND_TEST_ALL_PREFIXES(DocumentPipFrameViewTest,
+                           ChildDialogObserverResizesAndRestores);
+  FRIEND_TEST_ALL_PREFIXES(DocumentPipDialogManagerDelegateTest,
+                           ResizesPipToContainDialogThenRestores);
 
   // Private constructor called by WebContentsUserData machinery via
   // CreateForWebContents().
@@ -250,6 +261,21 @@ class DocumentPipHost : public content::WebContentsUserData<DocumentPipHost>,
   // Callback for Widget::MakeCloseSynchronous(). Invoked when external code
   // (e.g. DialogDelegate, OS close button) requests the widget to close.
   void OnWidgetCloseRequested(views::Widget::ClosedReason reason);
+
+  // Test-only hooks for the child-dialog resize path, reached by the friended
+  // tests above. Private (not a public API); defined in the .cc where
+  // ChildDialogObserverHelper is complete.
+  bool IsChildResizePendingForTesting() const;
+  void RunPendingChildResizeForTesting();
+
+  // PipChildDialogObserverHelper::Delegate:
+  views::Widget* GetPipWidget() override;
+  gfx::Size ComputeDialogPadding() const override;
+  void PositionChildDialog(views::Widget* child_dialog) override;
+  // Re-applies the current tuck/untuck state to the PiP widget. Called by the
+  // helper after it resizes the window for a child dialog, so a forced-tucked
+  // window stays tucked at its new bounds.
+  void EnforceTucking() override;
 
   // The delegate for the floating Widget. Owned by this host (not by the
   // Widget): `CLIENT_OWNS_WIDGET` + not `SetOwnedByWidget()` means the Widget
@@ -281,6 +307,13 @@ class DocumentPipHost : public content::WebContentsUserData<DocumentPipHost>,
       contents_view_observation_{this};
   base::ObserverList<web_modal::ModalDialogHostObserver>
       modal_dialog_host_observer_list_;
+
+  // Resizes the PiP widget so child dialogs are not clipped, and restores the
+  // pre-dialog size when they close. Created in CreateAndShowPipWindow() once
+  // the widget exists and reset in ClosePipWindow() before the widget is
+  // destroyed (it observes the widget). Declared after `widget_` so it is
+  // destroyed before the widget it observes.
+  std::unique_ptr<PipChildDialogObserverHelper> child_dialog_observer_helper_;
 
   base::WeakPtrFactory<DocumentPipHost> weak_factory_{this};
 

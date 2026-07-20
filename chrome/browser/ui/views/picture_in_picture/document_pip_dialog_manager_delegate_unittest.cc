@@ -12,6 +12,7 @@
 #include "base/test/run_until.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
+#include "chrome/browser/ui/views/picture_in_picture/document_pip_frame_view.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_host.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -30,6 +31,7 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
+#include "ui/views/window/non_client_view.h"
 
 namespace {
 
@@ -343,6 +345,7 @@ TEST_F(DocumentPipDialogManagerDelegateTest,
 
   views::Widget* dialog_widget = delegate.GetActiveDialogWidgetForTesting();
   ASSERT_TRUE(dialog_widget);
+  EXPECT_FALSE(host->IsChildResizePendingForTesting());
 
   // The PiP window grew to contain the dialog.
   const gfx::Rect grown_bounds = host->GetWidget()->GetWindowBoundsInScreen();

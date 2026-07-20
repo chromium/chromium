@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
@@ -34,6 +35,8 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
@@ -176,6 +179,12 @@ void DocumentPipHost::CreateAndShowPipWindow(
           widget_->non_client_view()->frame_view())) {
     frame_view->UpdateWindowBoundsForRequestedInnerSize();
   }
+
+  // Now that the widget exists, observe it (and its child dialogs) so dialogs
+  // parented to the PiP window grow/reposition the window instead of being
+  // clipped. Reset in ClosePipWindow() before the widget is destroyed.
+  child_dialog_observer_helper_ =
+      std::make_unique<PipChildDialogObserverHelper>(this);
 
   // Intercept external close paths (OS close button, DialogDelegate, etc.) so
   // they route through our teardown logic.
@@ -637,6 +646,10 @@ void DocumentPipHost::ClosePipWindow() {
   widget_observation_.Reset();
   contents_view_observation_.Reset();
 
+  // Destroy the child-dialog observer before the widget it observes, so its
+  // scoped observations remove themselves while the widget is still alive.
+  child_dialog_observer_helper_.reset();
+
   // Clear the child's delegate before tearing down, since the host set itself
   // as delegate in CreateAndShowPipWindow().
   content::WebContents* child = GetChildWebContents();
@@ -665,6 +678,19 @@ void DocumentPipHost::OnWidgetCloseRequested(
   ClosePipWindow();
 }
 
+bool DocumentPipHost::IsChildResizePendingForTesting() const {
+  return child_dialog_observer_helper_ &&
+         child_dialog_observer_helper_
+             ->IsChildResizePendingForTesting();  // IN-TEST
+}
+
+void DocumentPipHost::RunPendingChildResizeForTesting() {
+  if (child_dialog_observer_helper_) {
+    child_dialog_observer_helper_
+        ->RunPendingChildResizeForTesting();  // IN-TEST
+  }
+}
+
 // =============================================================================
 // PictureInPictureWindow
 // =============================================================================
@@ -685,6 +711,36 @@ void DocumentPipHost::SetForcedTucking(bool tuck) {
       tucker_->Untuck();
     }
   }
+}
+
+void DocumentPipHost::EnforceTucking() {
+  if (!tucker_ || !widget_ || !widget_->IsVisible()) {
+    return;
+  }
+
+  if (is_tucking_forced_) {
+    tucker_->Tuck();
+  } else {
+    tucker_->Untuck();
+  }
+}
+
+views::Widget* DocumentPipHost::GetPipWidget() {
+  return GetWidget();
+}
+
+gfx::Size DocumentPipHost::ComputeDialogPadding() const {
+  return widget_->GetWindowBoundsInScreen().size() -
+         widget_->GetClientAreaBoundsInScreen().size();
+}
+
+void DocumentPipHost::PositionChildDialog(views::Widget* child_dialog) {
+  gfx::Rect dialog_bounds = child_dialog->GetWindowBoundsInScreen();
+  if (dialog_bounds.IsEmpty()) {
+    return;
+  }
+  dialog_bounds.set_origin(widget_->GetClientAreaBoundsInScreen().origin());
+  child_dialog->SetBounds(dialog_bounds);
 }
 
 #if BUILDFLAG(IS_MAC)

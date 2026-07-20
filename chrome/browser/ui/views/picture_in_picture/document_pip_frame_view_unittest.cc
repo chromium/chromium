@@ -50,6 +50,7 @@
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/dialog_delegate.h"
 #include "ui/views/window/non_client_view.h"
 #include "url/gurl.h"
 
@@ -466,6 +467,43 @@ TEST_F(DocumentPipFrameViewTest, GetMaximumSize_AtLeastMinimum) {
   gfx::Size max_size = frame_view->GetMaximumSize();
   EXPECT_GE(max_size.width(), min_size.width());
   EXPECT_GE(max_size.height(), min_size.height());
+}
+
+TEST_F(DocumentPipFrameViewTest, ChildDialogObserverResizesAndRestores) {
+  auto* frame_view =
+      CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
+  views::Widget* pip_widget = frame_view->GetWidget();
+  ASSERT_TRUE(pip_widget);
+  pip_widget->SetBounds(gfx::Rect(20, 30, 120, 80));
+  const gfx::Rect original_bounds = pip_widget->GetWindowBoundsInScreen();
+
+  auto child_contents = std::make_unique<views::View>();
+  child_contents->SetPreferredSize(
+      gfx::Size(original_bounds.width() + 50, original_bounds.height() + 50));
+  auto child_delegate = std::make_unique<views::DialogDelegate>();
+  child_delegate->SetModalType(ui::mojom::ModalType::kWindow);
+  child_delegate->SetOwnershipOfNewWidget(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  child_delegate->SetContentsView(std::move(child_contents));
+  std::unique_ptr<views::Widget> child_dialog(
+      views::DialogDelegate::CreateDialogWidget(child_delegate.get(),
+                                                gfx::NativeWindow(),
+                                                pip_widget->GetNativeView()));
+
+  child_dialog->Show();
+  auto* host = DocumentPipHost::FromWebContents(opener());
+  EXPECT_FALSE(host->IsChildResizePendingForTesting());
+
+  EXPECT_TRUE(
+      child_dialog->GetContentsView()->GetCanProcessEventsWithinSubtree());
+  const gfx::Rect grown_bounds = pip_widget->GetWindowBoundsInScreen();
+  EXPECT_GE(grown_bounds.width(), original_bounds.width());
+  EXPECT_GE(grown_bounds.height(), original_bounds.height());
+  EXPECT_NE(grown_bounds.size(), original_bounds.size());
+
+  child_dialog->CloseNow();
+  EXPECT_EQ(original_bounds.size(),
+            pip_widget->GetWindowBoundsInScreen().size());
 }
 
 // CloseReason UMA defaults to kOther when no reason is set.

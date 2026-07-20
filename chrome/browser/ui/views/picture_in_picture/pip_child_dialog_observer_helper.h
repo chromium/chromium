@@ -8,6 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
@@ -52,6 +53,13 @@ class PipChildDialogObserverHelper : public views::WidgetObserver {
     // Re-applies the owner's current tuck/untuck state after the helper resizes
     // the PiP widget, so a forced-tucked window stays tucked at its new bounds.
     virtual void EnforceTucking() = 0;
+
+    // Repositions `child_dialog` when the PiP window is not resized to grow
+    // around it (e.g. to keep the dialog aligned with the window's client
+    // area). The Browser-backed frame view relies on its modal dialog host to
+    // place dialogs and keeps the default no-op; the standalone host overrides
+    // this to pin dialogs to the client-area origin.
+    virtual void PositionChildDialog(views::Widget* child_dialog) {}
   };
 
   explicit PipChildDialogObserverHelper(Delegate* delegate);
@@ -72,11 +80,7 @@ class PipChildDialogObserverHelper : public views::WidgetObserver {
 
   // Force any pending child resize to run, rather than waiting for enough
   // wall-clock time to elapse.
-  void RunPendingChildResizeForTesting() {
-    if (resize_timer_.IsRunning()) {
-      resize_timer_.FireNow();
-    }
-  }
+  void RunPendingChildResizeForTesting() { RunPendingChildResize(); }
   bool IsChildResizePendingForTesting() const {
     return resize_timer_.IsRunning();
   }
@@ -102,6 +106,22 @@ class PipChildDialogObserverHelper : public views::WidgetObserver {
     kSizedToChildren,
   };
 
+  // Runs a pending resize immediately if the batch timer is still armed.
+  void RunPendingChildResize() {
+    if (resize_timer_.IsRunning()) {
+      resize_timer_.FireNow();
+    }
+  }
+
+  // Drops all observation and cached state for `child_dialog`.
+  void CleanUpChildDialog(views::Widget* child_dialog);
+
+  // Drops state for a removed child and restores the PiP size. Restoration is
+  // posted for bubble dialogs because removing one can happen during its native
+  // window's destruction; resizing synchronously would relayout its anchor and
+  // attempt to set bounds on the already-destroying window.
+  void CleanUpChildDialogAndMaybeRevert(views::Widget* child_dialog);
+
   // Animates the picture-in-picture child dialogs that are waiting to be
   // resized.
   //
@@ -114,7 +134,12 @@ class PipChildDialogObserverHelper : public views::WidgetObserver {
   void PostResizeForChild(const gfx::Rect& new_bounds);
   void FinishPendingResizeForChild();
 
-  void MaybeResizeForChildDialog(views::Widget* child_dialog);
+  // Resizes the PiP widget so `child_dialog` is not clipped. When
+  // `resize_immediately` is true, any resulting pending resize is run
+  // synchronously instead of waiting for the batch timer (used when a dialog
+  // first appears so it isn't briefly clipped).
+  void MaybeResizeForChildDialog(views::Widget* child_dialog,
+                                 bool resize_immediately = false);
   void MaybeRevertSizeAfterChildDialogCloses();
 
   const raw_ptr<Delegate> delegate_;
@@ -155,6 +180,8 @@ class PipChildDialogObserverHelper : public views::WidgetObserver {
 
   base::OneShotTimer resize_timer_;
   gfx::Rect pending_bounds_;
+
+  base::WeakPtrFactory<PipChildDialogObserverHelper> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PICTURE_IN_PICTURE_PIP_CHILD_DIALOG_OBSERVER_HELPER_H_

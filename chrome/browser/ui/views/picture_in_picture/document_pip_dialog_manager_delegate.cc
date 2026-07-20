@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/javascript_dialogs/tab_modal_dialog_view.h"
 #include "content/public/browser/javascript_dialog_manager.h"
@@ -26,7 +25,6 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 
 // A window-modal JavaScript dialog parented to the standalone PiP widget.
@@ -37,8 +35,7 @@
 // shown as a window-modal dialog parented directly to the PiP widget.
 class DocumentPipJavaScriptDialogView
     : public javascript_dialogs::TabModalDialogView,
-      public views::DialogDelegate,
-      public views::WidgetObserver {
+      public views::DialogDelegate {
  public:
   DocumentPipJavaScriptDialogView(
       views::Widget* pip_widget,
@@ -89,10 +86,6 @@ class DocumentPipJavaScriptDialogView
           }
         },
         base::Unretained(this)));
-    // Observe the PiP widget so ResizePipToContainDialog/RestorePipBounds can
-    // detect if the PiP window is destroyed before this dialog finishes
-    // closing.
-    pip_widget_observation_.Observe(pip_widget);
 
     auto message_box_view = std::make_unique<views::MessageBoxView>(
         message_text, /*detect_directionality=*/true);
@@ -110,9 +103,6 @@ class DocumentPipJavaScriptDialogView
     dialog_widget_.reset(views::DialogDelegate::CreateDialogWidget(
         this, gfx::NativeWindow(), pip_widget->GetNativeView()));
     dialog_widget_->MakeCloseSynchronous(std::move(close_callback));
-    // Grow the PiP window to contain the dialog before showing, so the dialog
-    // isn't clipped/overflowing the small PiP window.
-    ResizePipToContainDialog(dialog_widget_.get());
     dialog_widget_->Show();
   }
 
@@ -139,9 +129,6 @@ class DocumentPipJavaScriptDialogView
     if (dialog_force_closed_callback_) {
       std::move(dialog_force_closed_callback_).Run();
     }
-    // Shrink the PiP window back to its pre-dialog size now that the dialog is
-    // going away.
-    RestorePipBounds();
     // The contents view is destroyed when `dialog_widget_` is reset. Drop this
     // raw_ptr before that happens to avoid dangling raw_ptr detection.
     message_box_view_ = nullptr;
@@ -187,13 +174,6 @@ class DocumentPipJavaScriptDialogView
 #endif
   }
 
-  // views::WidgetObserver:
-  void OnWidgetDestroying(views::Widget* widget) override {
-    // The PiP widget is going away; clear the growth flag so RestorePipBounds()
-    // skips the (now-dangling) widget. ScopedObservation removes the observer.
-    did_grow_pip_ = false;
-  }
-
   base::WeakPtr<DocumentPipJavaScriptDialogView> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
@@ -201,79 +181,6 @@ class DocumentPipJavaScriptDialogView
   views::Widget* GetDialogWidget() { return dialog_widget_.get(); }
 
  private:
-  // Grows the standalone PiP window so this window-modal dialog is fully
-  // contained, then places it at the top of the PiP client area (just under
-  // the frame view). The browser-backed PiP does this via its frame view's
-  // child-dialog observer; the standalone dialog is a separate desktop widget,
-  // so we enlarge the PiP and re-position the dialog explicitly. Records the
-  // pre-dialog bounds so they can be restored when the dialog closes.
-  void ResizePipToContainDialog(views::Widget* dialog_widget) {
-    views::Widget* pip_widget = pip_widget_observation_.GetSource();
-    if (!pip_widget || pip_widget->IsClosed()) {
-      return;
-    }
-
-    const gfx::Rect pip_window = pip_widget->GetWindowBoundsInScreen();
-    const gfx::Rect pip_client = pip_widget->GetClientAreaBoundsInScreen();
-
-    gfx::Size dialog_size = dialog_widget->GetWindowBoundsInScreen().size();
-    // The root view's minimum size is the dialog's preferred size; never grow
-    // for anything smaller than that.
-    dialog_size.SetToMax(dialog_widget->GetRootView()->GetMinimumSize());
-
-    // Non-client chrome around the PiP client area (title bar + borders).
-    const gfx::Size non_client_extra(pip_window.width() - pip_client.width(),
-                                     pip_window.height() - pip_client.height());
-
-    // Match the PiP client width exactly to the dialog width, and ensure the
-    // client height is at least tall enough for the dialog (no centering,
-    // no extra margins).
-    gfx::Size required(
-        std::max(pip_window.width(),
-                 dialog_size.width() + non_client_extra.width()),
-        std::max(pip_window.height(),
-                 dialog_size.height() + non_client_extra.height()));
-
-    if (required != pip_window.size()) {
-      saved_pip_bounds_ = pip_window;
-      did_grow_pip_ = true;
-      gfx::Rect new_pip_bounds = pip_window;
-      new_pip_bounds.set_size(required);
-      pip_widget->SetBoundsConstrained(new_pip_bounds);
-    }
-
-    // Position the dialog at the top-left of the PiP client area, immediately
-    // below the non-client frame/title area.
-    const gfx::Rect client = pip_widget->GetClientAreaBoundsInScreen();
-    gfx::Rect dialog_bounds(dialog_size);
-    dialog_bounds.set_origin(client.origin());
-    dialog_widget->SetBounds(dialog_bounds);
-  }
-
-  // Restores the PiP window to its pre-dialog size when the dialog closes, if
-  // it was grown to contain the dialog and the PiP window is still alive.
-  // Preserves the window's current origin so that any move the user performed
-  // while the dialog was open is retained; only the size is restored.
-  void RestorePipBounds() {
-    views::Widget* pip_widget = pip_widget_observation_.GetSource();
-    if (!did_grow_pip_ || !pip_widget || pip_widget->IsClosed()) {
-      return;
-    }
-    did_grow_pip_ = false;
-    gfx::Rect current_bounds = pip_widget->GetWindowBoundsInScreen();
-    current_bounds.set_size(saved_pip_bounds_.size());
-    pip_widget->SetBoundsConstrained(current_bounds);
-  }
-
-  // Observes the standalone PiP widget; cleared automatically if the PiP
-  // window is destroyed before this dialog finishes closing.
-  base::ScopedObservation<views::Widget, views::WidgetObserver>
-      pip_widget_observation_{this};
-  // Pre-dialog PiP window bounds, restored when the dialog closes if the
-  // window was grown to contain the dialog.
-  gfx::Rect saved_pip_bounds_;
-  bool did_grow_pip_ = false;
-
   std::u16string title_;
   std::u16string message_text_;
   std::u16string default_prompt_text_;

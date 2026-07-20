@@ -20,6 +20,7 @@
 #include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/fullscreen_types.h"
+#include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
@@ -959,4 +960,114 @@ TEST_F(DocumentPipHostTest, WebContentsModalDialogHost_ObserversNotified) {
 
   host->CloseContents(host->GetChildWebContents());
   EXPECT_EQ(1, test_observer.on_host_destroying_count());
+}
+
+// --- Lifecycle & observer tests ---
+
+// When the opener navigates to a new primary page, the PiP window is torn
+// down (its child WebContents destroyed) but the host stays attached to the
+// opener.
+TEST_F(DocumentPipHostTest, PrimaryPageChanged_ClosesPipWindow) {
+  DocumentPipHost* host = CreateHostAndOpenPipWindow();
+  ASSERT_TRUE(host);
+  content::WebContents* child = host->GetChildWebContents();
+  content::WebContentsDestroyedWatcher child_destroyed_watcher(child);
+
+  // Navigate the opener to a new primary page; this fires PrimaryPageChanged.
+  content::WebContentsTester::For(opener())->NavigateAndCommit(
+      GURL("https://opener.test/next"));
+
+  EXPECT_EQ(host, DocumentPipHost::FromWebContents(opener()));
+  EXPECT_EQ(nullptr, host->GetWidget());
+  EXPECT_EQ(nullptr, host->GetChildWebContents());
+  EXPECT_TRUE(child_destroyed_watcher.IsDestroyed());
+}
+
+// The public Close() entry point tears down the widget and child but keeps
+// the host attached to the opener, so a later CreateAndShowPipWindow() can
+// reopen.
+TEST_F(DocumentPipHostTest, Close_TearsDownWidgetKeepsHost) {
+  DocumentPipHost* host = CreateHostAndOpenPipWindow();
+  ASSERT_TRUE(host);
+  content::WebContents* child = host->GetChildWebContents();
+  content::WebContentsDestroyedWatcher child_destroyed_watcher(child);
+
+  host->Close();
+
+  EXPECT_EQ(host, DocumentPipHost::FromWebContents(opener()));
+  EXPECT_EQ(nullptr, host->GetWidget());
+  EXPECT_EQ(nullptr, host->GetChildWebContents());
+  EXPECT_TRUE(child_destroyed_watcher.IsDestroyed());
+}
+
+// Close() is idempotent: calling it again after the window is already closed
+// is a safe no-op.
+TEST_F(DocumentPipHostTest, Close_IsIdempotent) {
+  DocumentPipHost* host = CreateHostAndOpenPipWindow();
+  ASSERT_TRUE(host);
+
+  host->Close();
+  ASSERT_EQ(nullptr, host->GetWidget());
+
+  host->Close();
+  EXPECT_EQ(nullptr, host->GetWidget());
+}
+
+// A second CreateAndShowPipWindow() while a window is already open is a
+// no-op: the existing widget/child are kept and the newly supplied child is
+// dropped.
+TEST_F(DocumentPipHostTest, CreateAndShowPipWindow_NoOpWhileAlreadyOpen) {
+  DocumentPipHost* host = CreateHostAndOpenPipWindow();
+  ASSERT_TRUE(host);
+  views::Widget* first_widget = host->GetWidget();
+  content::WebContents* first_child = host->GetChildWebContents();
+  ASSERT_TRUE(first_widget);
+  ASSERT_TRUE(first_child);
+
+  auto second_child =
+      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+  content::WebContentsDestroyedWatcher second_child_watcher(second_child.get());
+  host->CreateAndShowPipWindow(std::move(second_child), MakeDefaultPipOptions(),
+                               MakeDefaultInitialBounds());
+
+  // The existing widget/child are unchanged, and the second child was
+  // dropped.
+  EXPECT_EQ(first_widget, host->GetWidget());
+  EXPECT_EQ(first_child, host->GetChildWebContents());
+  EXPECT_TRUE(second_child_watcher.IsDestroyed());
+}
+
+// ActivateContents forwards to the widget without crashing.
+TEST_F(DocumentPipHostTest, ActivateContents_DoesNotCrash) {
+  DocumentPipHost* host = CreateHostAndOpenPipWindow();
+  ASSERT_TRUE(host);
+
+  host->ActivateContents(host->GetChildWebContents());
+}
+
+// A title-invalidation NavigationStateChanged refreshes the window title;
+// other invalidation types are ignored. Both paths must be crash-free.
+TEST_F(DocumentPipHostTest, NavigationStateChanged_TitleInvalidationIsSafe) {
+  DocumentPipHost* host = CreateHostAndOpenPipWindow();
+  ASSERT_TRUE(host);
+
+  host->NavigationStateChanged(host->GetChildWebContents(),
+                               content::INVALIDATE_TYPE_TITLE);
+  host->NavigationStateChanged(host->GetChildWebContents(),
+                               content::INVALIDATE_TYPE_LOAD);
+}
+
+// SetForcedTucking toggles the tuck state (lazily creating the tucker)
+// without crashing, and remains safe to call after the window has been
+// closed.
+TEST_F(DocumentPipHostTest, SetForcedTucking_TogglesWithoutCrash) {
+  DocumentPipHost* host = CreateHostAndOpenPipWindow();
+  ASSERT_TRUE(host);
+
+  host->SetForcedTucking(true);
+  host->SetForcedTucking(false);
+
+  // After teardown there is no widget/tucker, but the call must stay safe.
+  host->Close();
+  host->SetForcedTucking(true);
 }

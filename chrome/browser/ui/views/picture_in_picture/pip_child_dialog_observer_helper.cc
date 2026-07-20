@@ -7,12 +7,14 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 
 namespace {
 
@@ -78,21 +80,14 @@ void PipChildDialogObserverHelper::OnWidgetBoundsChanged(
 
 void PipChildDialogObserverHelper::OnWidgetDestroying(views::Widget* widget) {
   if (widget == pip_widget_) {
+    // Owners destroy this helper before the PiP widget it observes (the frame
+    // view resets it in its own OnWidgetDestroying; the standalone host resets
+    // it in ClosePipWindow() before tearing the widget down), so this branch is
+    // only reached for the PiP widget itself and there is nothing to unwind.
     return;
   }
 
-  invisible_child_dialogs_.erase(widget);
-  // During widget destruction, it is possible for `OnWidgetDestroying` to be
-  // called multiple times (e.g., once by parent notification and once by
-  // self-notification). This check ensures RemoveObservation is only called
-  // once.
-  if (child_dialog_observations_.IsObservingSource(widget)) {
-    child_dialog_observations_.RemoveObservation(widget);
-  }
-  child_dialogs_waiting_for_resize_.erase(widget);
-  child_dialog_sizes_.erase(widget);
-
-  MaybeRevertSizeAfterChildDialogCloses();
+  CleanUpChildDialogAndMaybeRevert(widget);
 }
 
 void PipChildDialogObserverHelper::OnWidgetVisibilityChanged(
@@ -104,7 +99,7 @@ void PipChildDialogObserverHelper::OnWidgetVisibilityChanged(
 
   if (visible) {
     invisible_child_dialogs_.erase(widget);
-    MaybeResizeForChildDialog(widget);
+    MaybeResizeForChildDialog(widget, /*resize_immediately=*/true);
   } else {
     invisible_child_dialogs_.insert(widget);
     MaybeRevertSizeAfterChildDialogCloses();
@@ -120,7 +115,7 @@ void PipChildDialogObserverHelper::OnWidgetChildAdded(
 
   child_dialog_observations_.AddObservation(child_dialog);
   if (child_dialog->IsVisible()) {
-    MaybeResizeForChildDialog(child_dialog);
+    MaybeResizeForChildDialog(child_dialog, /*resize_immediately=*/true);
   } else {
     invisible_child_dialogs_.insert(child_dialog);
   }
@@ -133,7 +128,49 @@ void PipChildDialogObserverHelper::OnWidgetChildRemoved(
     return;
   }
   // Once it's not a child widget, stop following it.
-  OnWidgetDestroying(child_dialog);
+  CleanUpChildDialogAndMaybeRevert(child_dialog);
+}
+
+void PipChildDialogObserverHelper::CleanUpChildDialog(
+    views::Widget* child_dialog) {
+  invisible_child_dialogs_.erase(child_dialog);
+  // During widget destruction, it is possible for the removal to be requested
+  // multiple times (e.g., once by parent notification and once by
+  // self-notification). This check ensures RemoveObservation is only called
+  // once.
+  if (child_dialog_observations_.IsObservingSource(child_dialog)) {
+    child_dialog_observations_.RemoveObservation(child_dialog);
+  }
+  child_dialogs_waiting_for_resize_.erase(child_dialog);
+  child_dialog_sizes_.erase(child_dialog);
+}
+
+void PipChildDialogObserverHelper::CleanUpChildDialogAndMaybeRevert(
+    views::Widget* child_dialog) {
+  // Bubble dialogs (e.g. Page Info, content-setting bubbles) can be anchored to
+  // a view inside the PiP frame, and this callback runs while the bubble's
+  // native window is already being destroyed (Widget::HandleWidgetDestroying()
+  // removes the child from its parent mid-teardown). Reverting synchronously
+  // would relayout the frame and re-anchor the removed bubble, which then tries
+  // to set bounds on its already-destroying native window. So for bubbles we
+  // post the revert to run after native destruction finishes; every other
+  // dialog type is safe to revert synchronously.
+  views::WidgetDelegate* const widget_delegate =
+      child_dialog->widget_delegate();
+  const bool defer_revert =
+      widget_delegate && widget_delegate->AsBubbleDialogDelegate();
+  CleanUpChildDialog(child_dialog);
+
+  if (!defer_revert) {
+    MaybeRevertSizeAfterChildDialogCloses();
+    return;
+  }
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &PipChildDialogObserverHelper::MaybeRevertSizeAfterChildDialogCloses,
+          weak_factory_.GetWeakPtr()));
 }
 
 void PipChildDialogObserverHelper::AnimateDialogsWaitingForResize() {
@@ -186,13 +223,23 @@ void PipChildDialogObserverHelper::FinishPendingResizeForChild() {
 
   resizing_state_ = ResizingState::kResizeForChildInProgress;
   pip_widget_->SetBoundsConstrained(pending_bounds_);
+  // Give owners that position their own dialogs (e.g. the standalone host) a
+  // chance to keep each visible dialog aligned with the resized window. The
+  // Browser-backed frame view relies on its modal dialog host and uses the
+  // default no-op.
+  for (views::Widget* child_dialog : child_dialog_observations_.sources()) {
+    if (!invisible_child_dialogs_.contains(child_dialog)) {
+      delegate_->PositionChildDialog(child_dialog);
+    }
+  }
   delegate_->EnforceTucking();
   AnimateDialogsWaitingForResize();
   resizing_state_ = ResizingState::kSizedToChildren;
 }
 
 void PipChildDialogObserverHelper::MaybeResizeForChildDialog(
-    views::Widget* child_dialog) {
+    views::Widget* child_dialog,
+    bool resize_immediately) {
   // If the pip window in the process of closing ignore any resizes that could
   // occur as child dialogs are destroyed during teardown.
   if (pip_widget_->IsClosed()) {
@@ -271,6 +318,9 @@ void PipChildDialogObserverHelper::MaybeResizeForChildDialog(
   }
 
   if (adjusted_bounds == original_bounds) {
+    // No resize is needed, but the owner may still want to reposition the
+    // dialog within the unchanged window (no-op for the Browser frame view).
+    delegate_->PositionChildDialog(child_dialog);
     return;
   }
 
@@ -287,6 +337,9 @@ void PipChildDialogObserverHelper::MaybeResizeForChildDialog(
   }
 
   PostResizeForChild(adjusted_bounds);
+  if (resize_immediately) {
+    RunPendingChildResize();
+  }
 }
 
 void PipChildDialogObserverHelper::MaybeRevertSizeAfterChildDialogCloses() {
