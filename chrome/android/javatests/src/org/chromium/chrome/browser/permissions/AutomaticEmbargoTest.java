@@ -10,6 +10,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
@@ -22,6 +23,8 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.permissions.PermissionTestRule.PermissionUpdateWaiter;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.device.geolocation.LocationProviderOverrider;
@@ -34,17 +37,24 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AutomaticEmbargoTest {
-  @Rule
-  public PermissionTestRule mPermissionRule = new PermissionTestRule(/* useHttpsServer= */ true);
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.autoResetCtaActivityRule();
+    public PermissionTestRule mPermissionRule =
+            new PermissionTestRule(
+                    mActivityTestRule.getActivityTestRule(), /* useHttpsServer= */ true);
 
-  private static final String GEOLOCATION_TEST_FILE =
-      "/chrome/test/data/geolocation/geolocation_on_load.html";
-  private static final String NOTIFICATIONS_TEST_FILE =
-      "/chrome/test/data/notifications/notification_tester.html";
-  private static final String MIDI_TEST_FILE = "/content/test/data/android/midi_permissions.html";
-  private static final String MEDIA_TEST_FILE = "/content/test/data/android/media_permissions.html";
+    @Rule
+    public RuleChain mRuleChain = RuleChain.outerRule(mActivityTestRule).around(mPermissionRule);
 
-  private static final int NUMBER_OF_DISMISSALS = 3;
+    private static final String GEOLOCATION_TEST_FILE =
+            "/chrome/test/data/geolocation/geolocation_on_load.html";
+    private static final String NOTIFICATIONS_TEST_FILE =
+            "/chrome/test/data/notifications/notification_tester.html";
+    private static final String MIDI_TEST_FILE = "/content/test/data/android/midi_permissions.html";
+    private static final String MEDIA_TEST_FILE =
+            "/content/test/data/android/media_permissions.html";
+
+    private static final int NUMBER_OF_DISMISSALS = 3;
 
   @Before
   public void setUp() throws Exception {

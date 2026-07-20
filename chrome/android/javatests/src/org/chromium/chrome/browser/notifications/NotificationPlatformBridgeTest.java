@@ -80,9 +80,10 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Features.DisableFeatures(ChromeFeatureList.REPORT_NOTIFICATION_CONTENT_DETECTION_DATA)
 public class NotificationPlatformBridgeTest {
-    @Rule public PermissionTestRule mPermissionTestRule = new PermissionTestRule();
-
     @Rule public NotificationTestRule mNotificationTestRule = new NotificationTestRule();
+
+    @Rule
+    public PermissionTestRule mPermissionTestRule = new PermissionTestRule(mNotificationTestRule);
 
     private static final String NOTIFICATION_TEST_PAGE =
             "/chrome/test/data/notifications/android_test.html";
@@ -112,7 +113,6 @@ public class NotificationPlatformBridgeTest {
     public void setUp() {
         SiteEngagementService.setParamValuesForTesting();
         mNotificationTestRule.loadUrl(mPermissionTestRule.getURL(NOTIFICATION_TEST_PAGE));
-        mPermissionTestRule.setActivity(mNotificationTestRule.getActivity());
     }
 
     @SuppressWarnings("MissingFail")

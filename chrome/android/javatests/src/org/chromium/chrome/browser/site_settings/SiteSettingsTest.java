@@ -64,7 +64,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
@@ -90,6 +89,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.PayloadCallbackHelper;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
@@ -109,8 +109,9 @@ import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.pagecontroller.utils.UiAutomatorUtils;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.util.AdvancedProtectionTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
@@ -184,7 +185,12 @@ import java.util.concurrent.TimeoutException;
 // TODO(crbug.com/344672098): Failing when batched, batch this again.
 public class SiteSettingsTest {
     private static final int RENDER_TEST_REVISION = 6;
-    @ClassRule public static PermissionTestRule mPermissionRule = new PermissionTestRule(true);
+
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.autoResetCtaActivityRule();
+
+    public PermissionTestRule mPermissionTestRule =
+            new PermissionTestRule(mActivityTestRule.getActivityTestRule(), true);
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -195,15 +201,14 @@ public class SiteSettingsTest {
                     .setBugComponent(Component.UI_BROWSER_MOBILE_SETTINGS)
                     .build();
 
-    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(mPermissionRule, false);
-
     public AdvancedProtectionTestRule mAdvancedProtectionRule = new AdvancedProtectionTestRule();
 
     // {@link AdvancedProtectionTestRule} needs to run prior to profile being created.
     @Rule
     public final RuleChain mRuleChain =
-            RuleChain.outerRule(mAdvancedProtectionRule).around(mBlankCTATabInitialStateRule);
+            RuleChain.outerRule(mAdvancedProtectionRule)
+                    .around(mActivityTestRule)
+                    .around(mPermissionTestRule);
 
     @Mock private SettingsNavigation mSettingsNavigation;
 
@@ -272,7 +277,7 @@ public class SiteSettingsTest {
         if (mPermissionUpdateWaiter != null) {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
-                        mPermissionRule
+                        mPermissionTestRule
                                 .getActivityTab()
                                 .removeObserver(mPermissionUpdateWaiter);
                     });
@@ -326,16 +331,16 @@ public class SiteSettingsTest {
         if (mPermissionUpdateWaiter != null) {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
-                        mPermissionRule
+                        mPermissionTestRule
                                 .getActivityTab()
                                 .removeObserver(mPermissionUpdateWaiter);
                     });
         }
-        Tab tab = mPermissionRule.getActivityTab();
+        Tab tab = mPermissionTestRule.getActivityTab();
 
         mPermissionUpdateWaiter =
                 new PermissionUpdateWaiter(
-                        expectGranted ? "Granted" : "Denied", mPermissionRule.getActivity());
+                        expectGranted ? "Granted" : "Denied", mPermissionTestRule.getActivity());
         ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(mPermissionUpdateWaiter));
     }
 
@@ -343,14 +348,14 @@ public class SiteSettingsTest {
         // Ignore notification request 4 times to enter embargo. 5th one ensures that notifications
         // are blocked by actually causing a deny-by-embargo.
         for (int i = 0; i < 5; i++) {
-            mPermissionRule.loadUrl(url);
-            mPermissionRule.runJavaScriptCodeInCurrentTab("requestPermissionAndRespond()");
+            mPermissionTestRule.loadUrl(url);
+            mPermissionTestRule.runJavaScriptCodeInCurrentTab("requestPermissionAndRespond()");
         }
     }
 
     private int getTabCount() {
         return ThreadUtils.runOnUiThreadBlocking(
-                () -> mPermissionRule.getActivity().getTabModelSelector().getTotalTabCount());
+                () -> mPermissionTestRule.getActivity().getTabModelSelector().getTotalTabCount());
     }
 
     private static void cleanUpCookiesAndPermissions() throws TimeoutException {
@@ -512,7 +517,7 @@ public class SiteSettingsTest {
         initializeUpdateWaiter(/* expectGranted= */ true);
 
         // Launch a page that uses geolocation and make sure a permission prompt shows up.
-        mPermissionRule.runAllowTest(
+        mPermissionTestRule.runAllowTest(
                 mPermissionUpdateWaiter,
                 "/chrome/test/data/geolocation/geolocation_on_load.html",
                 "",
@@ -543,7 +548,7 @@ public class SiteSettingsTest {
 
         // Launch a page that uses geolocation. No permission prompt is expected.
         initializeUpdateWaiter(/* expectGranted= */ false);
-        mPermissionRule.runNoPromptTest(
+        mPermissionTestRule.runNoPromptTest(
                 mPermissionUpdateWaiter,
                 "/chrome/test/data/geolocation/geolocation_on_load.html",
                 "",
@@ -762,20 +767,21 @@ public class SiteSettingsTest {
         setCookiesEnabled(settingsActivity, true);
         settingsActivity.finish();
 
-        final String url = mPermissionRule.getURL("/chrome/test/data/android/cookie.html");
+        final String url = mPermissionTestRule.getURL("/chrome/test/data/android/cookie.html");
 
         // Load the page and clear any set cookies.
-        mPermissionRule.loadUrl(url);
-        mPermissionRule.runJavaScriptCodeInCurrentTab("clearCookie()");
-        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
-        mPermissionRule.runJavaScriptCodeInCurrentTab("setCookie()");
+        mPermissionTestRule.loadUrl(url);
+        mPermissionTestRule.runJavaScriptCodeInCurrentTab("clearCookie()");
         Assert.assertEquals(
-                "\"Foo=Bar\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+                "\"\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mPermissionTestRule.runJavaScriptCodeInCurrentTab("setCookie()");
+        Assert.assertEquals(
+                "\"Foo=Bar\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
 
         // Load the page again and ensure the cookie still is set.
-        mPermissionRule.loadUrl(url);
+        mPermissionTestRule.loadUrl(url);
         Assert.assertEquals(
-                "\"Foo=Bar\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+                "\"Foo=Bar\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
     }
 
     /** Clicks on cookies radio buttons and verify the right FPS subpage is launched. */
@@ -834,29 +840,32 @@ public class SiteSettingsTest {
     public void testSiteExceptionSiteDataBlocked() throws Exception {
         setGlobalToggleForCategory(SiteSettingsCategory.Type.SITE_DATA, true);
 
-        final String url = mPermissionRule.getURL("/chrome/test/data/android/cookie.html");
+        final String url = mPermissionTestRule.getURL("/chrome/test/data/android/cookie.html");
 
         // Load the page and clear any set cookies.
-        mPermissionRule.loadUrl(url);
-        mPermissionRule.runJavaScriptCodeInCurrentTab("clearCookie()");
-        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mPermissionTestRule.loadUrl(url);
+        mPermissionTestRule.runJavaScriptCodeInCurrentTab("clearCookie()");
+        Assert.assertEquals(
+                "\"\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
 
         // Check cookies can be set for this website when there is no rule.
-        mPermissionRule.runJavaScriptCodeInCurrentTab("setCookie()");
+        mPermissionTestRule.runJavaScriptCodeInCurrentTab("setCookie()");
         Assert.assertEquals(
-                "\"Foo=Bar\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+                "\"Foo=Bar\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
 
         // Set specific rule to block site and ensure it cannot set cookies.
-        mPermissionRule.loadUrl(url);
-        mPermissionRule.runJavaScriptCodeInCurrentTab("clearCookie()");
+        mPermissionTestRule.loadUrl(url);
+        mPermissionTestRule.runJavaScriptCodeInCurrentTab("clearCookie()");
 
         setGlobalToggleForCategory(SiteSettingsCategory.Type.SITE_DATA, false);
-        mPermissionRule.runJavaScriptCodeInCurrentTab("setCookie()");
-        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mPermissionTestRule.runJavaScriptCodeInCurrentTab("setCookie()");
+        Assert.assertEquals(
+                "\"\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
 
         // Load the page again and ensure the cookie remains unset.
-        mPermissionRule.loadUrl(url);
-        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mPermissionTestRule.loadUrl(url);
+        Assert.assertEquals(
+                "\"\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
     }
 
     /** Set a cookie and check that it is removed when a site is cleared. */
@@ -865,13 +874,14 @@ public class SiteSettingsTest {
     @Feature({"Preferences"})
     @DisabledTest(message = "https://crbug.com/40709705")
     public void testClearCookies() throws Exception {
-        final String url = mPermissionRule.getURL("/chrome/test/data/android/cookie.html");
+        final String url = mPermissionTestRule.getURL("/chrome/test/data/android/cookie.html");
 
-        mPermissionRule.loadUrl(url);
-        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
-        mPermissionRule.runJavaScriptCodeInCurrentTab("setCookie()");
+        mPermissionTestRule.loadUrl(url);
         Assert.assertEquals(
-                "\"Foo=Bar\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+                "\"\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mPermissionTestRule.runJavaScriptCodeInCurrentTab("setCookie()");
+        Assert.assertEquals(
+                "\"Foo=Bar\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -881,8 +891,9 @@ public class SiteSettingsTest {
         resetSite(WebsiteAddress.create(url));
 
         // Load the page again and ensure the cookie is gone.
-        mPermissionRule.loadUrl(url);
-        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mPermissionTestRule.loadUrl(url);
+        Assert.assertEquals(
+                "\"\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
         // Verify DeleteBrowsingDataAction metric is recorded.
         histogramWatcher.assertExpected();
     }
@@ -894,36 +905,38 @@ public class SiteSettingsTest {
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287320
     public void testClearCookiesGroup() throws Exception {
         final String url1 =
-                mPermissionRule.getURLWithHostName(
+                mPermissionTestRule.getURLWithHostName(
                         "one.example.com", "/chrome/test/data/android/cookie.html");
         final String url2 =
-                mPermissionRule.getURLWithHostName(
+                mPermissionTestRule.getURLWithHostName(
                         "two.example.com", "/chrome/test/data/android/cookie.html");
         final String url3 =
-                mPermissionRule.getURLWithHostName(
+                mPermissionTestRule.getURLWithHostName(
                         "foo.com", "/chrome/test/data/android/cookie.html");
 
-        mPermissionRule.loadUrl(url1);
-        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
-        mPermissionRule.runJavaScriptCodeInCurrentTab("setCookie(\".example.com\")");
-        mPermissionRule.runJavaScriptCodeInCurrentTab("setCookie(\".one.example.com\")");
+        mPermissionTestRule.loadUrl(url1);
+        Assert.assertEquals(
+                "\"\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mPermissionTestRule.runJavaScriptCodeInCurrentTab("setCookie(\".example.com\")");
+        mPermissionTestRule.runJavaScriptCodeInCurrentTab("setCookie(\".one.example.com\")");
         Assert.assertEquals(
                 "\"Foo=Bar; Foo=Bar\"",
-                mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+                mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
 
-        mPermissionRule.loadUrl(url2);
+        mPermissionTestRule.loadUrl(url2);
         Assert.assertEquals(
-                "\"Foo=Bar\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
-        mPermissionRule.runJavaScriptCodeInCurrentTab("setCookie(\".two.example.com\")");
+                "\"Foo=Bar\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mPermissionTestRule.runJavaScriptCodeInCurrentTab("setCookie(\".two.example.com\")");
         Assert.assertEquals(
                 "\"Foo=Bar; Foo=Bar\"",
-                mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+                mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
 
-        mPermissionRule.loadUrl(url3);
-        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
-        mPermissionRule.runJavaScriptCodeInCurrentTab("setCookie(\".foo.com\")");
+        mPermissionTestRule.loadUrl(url3);
         Assert.assertEquals(
-                "\"Foo=Bar\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+                "\"\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mPermissionTestRule.runJavaScriptCodeInCurrentTab("setCookie(\".foo.com\")");
+        Assert.assertEquals(
+                "\"Foo=Bar\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -933,13 +946,15 @@ public class SiteSettingsTest {
         resetGroup(Arrays.asList(WebsiteAddress.create(url1), WebsiteAddress.create(url2)));
 
         // 1 and 2 got cleared; 3 stays intact.
-        mPermissionRule.loadUrl(url1);
-        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
-        mPermissionRule.loadUrl(url2);
-        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
-        mPermissionRule.loadUrl(url3);
+        mPermissionTestRule.loadUrl(url1);
         Assert.assertEquals(
-                "\"Foo=Bar\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+                "\"\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mPermissionTestRule.loadUrl(url2);
+        Assert.assertEquals(
+                "\"\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mPermissionTestRule.loadUrl(url3);
+        Assert.assertEquals(
+                "\"Foo=Bar\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
 
         // Verify DeleteBrowsingDataAction metric is recorded.
         histogramWatcher.assertExpected();
@@ -952,22 +967,24 @@ public class SiteSettingsTest {
     @DisabledTest(message = "https://crbug.com/40842614")
     public void testClearDomainCookies() throws Exception {
         final String url =
-                mPermissionRule.getURLWithHostName(
+                mPermissionTestRule.getURLWithHostName(
                         "test.example.com", "/chrome/test/data/android/cookie.html");
 
-        mPermissionRule.loadUrl(url);
-        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
-        mPermissionRule.runJavaScriptCodeInCurrentTab("setCookie(\".example.com\")");
-        mPermissionRule.runJavaScriptCodeInCurrentTab("setCookie(\".test.example.com\")");
+        mPermissionTestRule.loadUrl(url);
+        Assert.assertEquals(
+                "\"\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mPermissionTestRule.runJavaScriptCodeInCurrentTab("setCookie(\".example.com\")");
+        mPermissionTestRule.runJavaScriptCodeInCurrentTab("setCookie(\".test.example.com\")");
         Assert.assertEquals(
                 "\"Foo=Bar; Foo=Bar\"",
-                mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+                mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
 
         resetSite(WebsiteAddress.create("test.example.com"));
 
         // Load the page again and ensure the cookie is gone.
-        mPermissionRule.loadUrl(url);
-        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mPermissionTestRule.loadUrl(url);
+        Assert.assertEquals(
+                "\"\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
     }
 
     /**
@@ -1194,8 +1211,8 @@ public class SiteSettingsTest {
                 .run();
 
         // Test that the popup doesn't open.
-        mPermissionRule.setUpUrl("/chrome/test/data/android/popup.html");
-        mPermissionRule.runJavaScriptCodeInCurrentTab("openPopup();");
+        mPermissionTestRule.setUpUrl("/chrome/test/data/android/popup.html");
+        mPermissionTestRule.runJavaScriptCodeInCurrentTab("openPopup();");
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         Assert.assertEquals(1, getTabCount());
@@ -1215,8 +1232,8 @@ public class SiteSettingsTest {
                 .run();
 
         // Test that a popup opens.
-        mPermissionRule.setUpUrl("/chrome/test/data/android/popup.html");
-        mPermissionRule.runJavaScriptCodeInCurrentTab("openPopup();");
+        mPermissionTestRule.setUpUrl("/chrome/test/data/android/popup.html");
+        mPermissionTestRule.runJavaScriptCodeInCurrentTab("openPopup();");
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         Assert.assertEquals(2, getTabCount());
@@ -2133,7 +2150,7 @@ public class SiteSettingsTest {
 
         // Test that the camera permission doesn't get requested.
         initializeUpdateWaiter(/* expectGranted= */ false);
-        mPermissionRule.runNoPromptTest(
+        mPermissionTestRule.runNoPromptTest(
                 mPermissionUpdateWaiter,
                 "/content/test/data/media/getusermedia.html",
                 "getUserMediaAndStopLegacy({video: true, audio: false});",
@@ -2158,7 +2175,7 @@ public class SiteSettingsTest {
                 .run();
 
         initializeUpdateWaiter(/* expectGranted= */ true);
-        mPermissionRule.runAllowTest(
+        mPermissionTestRule.runAllowTest(
                 mPermissionUpdateWaiter,
                 "/content/test/data/media/getusermedia.html",
                 "getUserMediaAndStopLegacy({video: true, audio: false});",
@@ -2182,7 +2199,7 @@ public class SiteSettingsTest {
 
         // Test that the microphone permission doesn't get requested.
         initializeUpdateWaiter(/* expectGranted= */ false);
-        mPermissionRule.runNoPromptTest(
+        mPermissionTestRule.runNoPromptTest(
                 mPermissionUpdateWaiter,
                 "/content/test/data/media/getusermedia.html",
                 "getUserMediaAndStopLegacy({video: false, audio: true});",
@@ -2207,7 +2224,7 @@ public class SiteSettingsTest {
 
         // Launch a page that uses the microphone and make sure a permission prompt shows up.
         initializeUpdateWaiter(/* expectGranted= */ true);
-        mPermissionRule.runAllowTest(
+        mPermissionTestRule.runAllowTest(
                 mPermissionUpdateWaiter,
                 "/content/test/data/media/getusermedia.html",
                 "getUserMediaAndStopLegacy({video: false, audio: true});",
@@ -2406,7 +2423,7 @@ public class SiteSettingsTest {
     @EnableFeatures(PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)
     public void testEmbargoedGeolocationWithOptions() throws TimeoutException {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
-        final String url = mPermissionRule.getURL("/chrome/test/data/geolocation/simple.html");
+        final String url = mPermissionTestRule.getURL("/chrome/test/data/geolocation/simple.html");
         final String origin = Origin.create(url).toString();
         triggerEmbargoForOrigin(url);
         assertEquals(
@@ -2944,9 +2961,10 @@ public class SiteSettingsTest {
 
     @Test
     @SmallTest
+    @RequiresRestart
     @Feature({"Preferences"})
     public void testOsBlocksJavascriptOptimizer() {
-        String pageOrigin = mPermissionRule.getOrigin();
+        String pageOrigin = mPermissionTestRule.getOrigin();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -3062,6 +3080,7 @@ public class SiteSettingsTest {
      */
     @Test
     @SmallTest
+    @RequiresRestart
     @Feature({"Preferences"})
     @Policies.Add({@Policies.Item(key = "DefaultJavaScriptOptimizerSetting", string = "1")})
     public void testPolicyHigherPriorityThanOsBlockingJavascriptOptimizer() {
@@ -3117,10 +3136,11 @@ public class SiteSettingsTest {
      */
     @Test
     @SmallTest
+    @RequiresRestart
     @Feature({"Preferences"})
     public void testOsBlocksJavascriptOptimizerSingleWebsite() throws Exception {
-        final String pageUrl = mPermissionRule.getURL("/chrome/test/data/android/simple.html");
-        String pageOrigin = mPermissionRule.getOrigin();
+        final String pageUrl = mPermissionTestRule.getURL("/chrome/test/data/android/simple.html");
+        String pageOrigin = mPermissionTestRule.getOrigin();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -3164,7 +3184,7 @@ public class SiteSettingsTest {
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testEmbargoedNotificationSiteSettings() throws Exception {
         final String url =
-                mPermissionRule.getURLWithHostName(
+                mPermissionTestRule.getURLWithHostName(
                         "example.com", "/chrome/test/data/notifications/notification_tester.html");
 
         triggerEmbargoForOrigin(url);
@@ -3215,13 +3235,13 @@ public class SiteSettingsTest {
     @DisabledTest(message = "https://crbug.com/40699792")
     public void testEmbargoedNotificationCategorySiteSettings() throws Exception {
         final String urlToEmbargo =
-                mPermissionRule.getURLWithHostName(
+                mPermissionTestRule.getURLWithHostName(
                         "example.com", "/chrome/test/data/notifications/notification_tester.html");
 
         triggerEmbargoForOrigin(urlToEmbargo);
 
         final String urlToBlock =
-                mPermissionRule.getURLWithHostName(
+                mPermissionTestRule.getURLWithHostName(
                         "exampleToBlock.com",
                         "/chrome/test/data/notifications/notification_tester.html");
 
@@ -3289,7 +3309,7 @@ public class SiteSettingsTest {
     @Feature({"Preferences"})
     public void testEmbargoedFederatedIdentity() throws Exception {
         final String rpUrl =
-                mPermissionRule.getURLWithHostName(
+                mPermissionTestRule.getURLWithHostName(
                         "example.com", "/chrome/test/data/android/simple.html");
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -3328,7 +3348,7 @@ public class SiteSettingsTest {
     @Feature({"Preferences"})
     public void testProtectedContentDefaultOption() throws Exception {
         initializeUpdateWaiter(/* expectGranted= */ true);
-        mPermissionRule.runNoPromptTest(
+        mPermissionTestRule.runNoPromptTest(
                 mPermissionUpdateWaiter,
                 "/content/test/data/android/eme_permissions.html",
                 "requestEME()",
@@ -3344,7 +3364,7 @@ public class SiteSettingsTest {
                 SiteSettingsCategory.Type.PROTECTED_MEDIA, ContentSetting.ASK);
 
         initializeUpdateWaiter(/* expectGranted= */ true);
-        mPermissionRule.runAllowTest(
+        mPermissionTestRule.runAllowTest(
                 mPermissionUpdateWaiter,
                 "/content/test/data/android/eme_permissions.html",
                 "requestEME()",
@@ -3360,7 +3380,7 @@ public class SiteSettingsTest {
                 SiteSettingsCategory.Type.PROTECTED_MEDIA, ContentSetting.ASK);
 
         initializeUpdateWaiter(/* expectGranted= */ false);
-        mPermissionRule.runDenyTest(
+        mPermissionTestRule.runDenyTest(
                 mPermissionUpdateWaiter,
                 "/content/test/data/android/eme_permissions.html",
                 "requestEME()",
@@ -3376,7 +3396,7 @@ public class SiteSettingsTest {
                 SiteSettingsCategory.Type.PROTECTED_MEDIA, ContentSetting.BLOCK);
 
         initializeUpdateWaiter(/* expectGranted= */ false);
-        mPermissionRule.runNoPromptTest(
+        mPermissionTestRule.runNoPromptTest(
                 mPermissionUpdateWaiter,
                 "/content/test/data/android/eme_permissions.html",
                 "requestEME()",
@@ -3391,7 +3411,7 @@ public class SiteSettingsTest {
             message = "https://crbug.com/40804306,https://crbug.com/40256198,crbug.com/40781540")
     public void testProtectedContentAllowThenBlock() throws Exception {
         initializeUpdateWaiter(/* expectGranted= */ true);
-        mPermissionRule.runNoPromptTest(
+        mPermissionTestRule.runNoPromptTest(
                 mPermissionUpdateWaiter,
                 "/content/test/data/android/eme_permissions.html",
                 "requestEME()",
@@ -3402,7 +3422,7 @@ public class SiteSettingsTest {
                 SiteSettingsCategory.Type.PROTECTED_MEDIA, ContentSetting.BLOCK);
 
         initializeUpdateWaiter(/* expectGranted= */ false);
-        mPermissionRule.runNoPromptTest(
+        mPermissionTestRule.runNoPromptTest(
                 mPermissionUpdateWaiter,
                 "/content/test/data/android/eme_permissions.html",
                 "requestEME()",

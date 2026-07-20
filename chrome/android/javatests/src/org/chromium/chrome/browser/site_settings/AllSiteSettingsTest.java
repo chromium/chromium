@@ -38,6 +38,8 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
@@ -74,11 +76,17 @@ public class AllSiteSettingsTest {
                     .setBugComponent(Component.UI_BROWSER_MOBILE_SETTINGS)
                     .build();
 
-    @ClassRule public static PermissionTestRule mPermissionRule = new PermissionTestRule(true);
+    @ClassRule
+    public static final AutoResetCtaTransitTestRule sActivityTestRule =
+            ChromeTransitTestRules.autoResetCtaActivityRule();
+
+    @ClassRule
+    public static final PermissionTestRule sPermissionTestRule =
+            new PermissionTestRule(sActivityTestRule.getActivityTestRule(), true);
 
     @Rule
     public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(mPermissionRule, false);
+            new BlankCTATabInitialStateRule(sActivityTestRule.getActivityTestRule(), false);
 
     private static BrowserContextHandle getBrowserContextHandle() {
         return ProfileManager.getLastUsedRegularProfile();

@@ -24,6 +24,9 @@ import androidx.test.espresso.ViewAction;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
@@ -37,6 +40,8 @@ import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
+import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.components.browser_ui.site_settings.GeolocationSetting;
@@ -46,7 +51,10 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.messages.MessagesTestHelper;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TouchCommon;
+import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -73,7 +81,10 @@ import java.util.concurrent.TimeoutException;
  * persistence toggle is expected, whether it should be explicitly toggled, whether to trigger the
  * JS call with a gesture, and whether an infobar or a dialog is expected.
  */
-public class PermissionTestRule extends ChromeTabbedActivityTestRule {
+public class PermissionTestRule implements TestRule {
+    private final ChromeActivityTestRule<? extends ChromeActivity> mActivityTestRule;
+    private final EmbeddedTestServerRule mEmbeddedTestServerRule = new EmbeddedTestServerRule();
+
     /** Content description for the "allowed" notification icon/status. */
     public static final int NOTIFICATIONS_ALLOWED_ID =
             R.string.permissions_notification_allowed_confirmation_screenreader_announcement;
@@ -219,23 +230,96 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
         }
     }
 
-    public PermissionTestRule() {
-        this(false);
+    public PermissionTestRule(ChromeActivityTestRule<? extends ChromeActivity> activityTestRule) {
+        this(activityTestRule, false);
     }
 
-    public PermissionTestRule(boolean useHttpsServer) {
-        getEmbeddedTestServerRule().setServerUsesHttps(useHttpsServer);
+    public PermissionTestRule(
+            ChromeActivityTestRule<? extends ChromeActivity> activityTestRule,
+            boolean useHttpsServer) {
+        mActivityTestRule = activityTestRule;
+        mEmbeddedTestServerRule.setServerUsesHttps(useHttpsServer);
     }
 
     @Override
-    protected void before() throws Throwable {
-        super.before();
-        ModalDialogView.disableButtonTapProtectionForTesting();
+    public Statement apply(Statement base, Description description) {
+        return mEmbeddedTestServerRule.apply(
+                new Statement() {
+                    @Override
+                    public void evaluate() throws Throwable {
+                        ModalDialogView.disableButtonTapProtectionForTesting();
+                        base.evaluate();
+                    }
+                },
+                description);
+    }
+
+    public ChromeActivity getActivity() {
+        return mActivityTestRule.getActivity();
+    }
+
+    public EmbeddedTestServer getTestServer() {
+        return mEmbeddedTestServerRule.getServer();
+    }
+
+    public EmbeddedTestServerRule getEmbeddedTestServerRule() {
+        return mEmbeddedTestServerRule;
+    }
+
+    public ChromeActivityTestRule<? extends ChromeActivity> getActivityTestRule() {
+        return mActivityTestRule;
+    }
+
+    public LoadUrlResult loadUrl(String url) {
+        return mActivityTestRule.loadUrl(url);
+    }
+
+    public String runJavaScriptCodeInCurrentTab(String js) throws TimeoutException {
+        return mActivityTestRule.runJavaScriptCodeInCurrentTab(js);
+    }
+
+    public void runJavaScriptCodeWithUserGestureInCurrentTab(String js) throws TimeoutException {
+        mActivityTestRule.runJavaScriptCodeWithUserGestureInCurrentTab(js);
+    }
+
+    public WebContents getWebContents() {
+        return mActivityTestRule.getWebContents();
+    }
+
+    public Tab getActivityTab() {
+        return mActivityTestRule.getActivityTab();
+    }
+
+    @SuppressWarnings("unchecked")
+    public void setActivity(ChromeActivity activity) {
+        ((ChromeActivityTestRule<ChromeActivity>) mActivityTestRule).setActivity(activity);
+    }
+
+    public Tab newIncognitoTabFromMenu() {
+        if (mActivityTestRule instanceof ChromeTabbedActivityTestRule ctaRule) {
+            return ctaRule.newIncognitoTabFromMenu();
+        }
+        throw new UnsupportedOperationException(
+                "Activity test rule does not support incognito tabs");
+    }
+
+    public ChromeActivity newIncognitoWindowFromMenu() {
+        if (mActivityTestRule instanceof ChromeTabbedActivityTestRule ctaRule) {
+            return ctaRule.newIncognitoWindowFromMenu();
+        }
+        throw new UnsupportedOperationException(
+                "Activity test rule does not support incognito windows");
     }
 
     /** Starts an activity and listens for info-bars appearing/disappearing. */
     public void setUpActivity() throws InterruptedException {
-        startMainActivityOnBlankPage();
+        if (getActivity() == null) {
+            if (mActivityTestRule instanceof ChromeTabbedActivityTestRule ctaRule) {
+                ctaRule.startMainActivityOnBlankPage();
+            } else {
+                mActivityTestRule.startActivityCompletely(null);
+            }
+        }
     }
 
     /**

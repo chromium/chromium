@@ -23,6 +23,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -49,6 +50,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.hats.SurveyClient;
 import org.chromium.chrome.browser.ui.hats.SurveyClientFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -87,15 +90,22 @@ public class EmbeddedPermissionPromptTest {
     @Mock SurveyClient mSurveyClient;
     @Mock SurveyClientFactory mSurveyClientFactory;
 
-    @Rule public PermissionTestRule mActivityTestRule = new PermissionTestRule();
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.autoResetCtaActivityRule();
+    public PermissionTestRule mPermissionRule =
+            new PermissionTestRule(mActivityTestRule.getActivityTestRule());
+
+    @Rule
+    public RuleChain mRuleChain = RuleChain.outerRule(mActivityTestRule).around(mPermissionRule);
+
     private TestAndroidPermissionDelegate mTestAndroidPermissionDelegate;
 
     @Before
     public void setUp() throws Exception {
         SurveyClientFactory.setInstanceForTesting(mSurveyClientFactory);
         doReturn(mSurveyClient).when(mSurveyClientFactory).createClient(any(), any(), any(), any());
-        mActivityTestRule.getEmbeddedTestServerRule().setServerPort(12345);
-        mActivityTestRule.setUpActivity();
+        mPermissionRule.getEmbeddedTestServerRule().setServerPort(12345);
+        mPermissionRule.setUpActivity();
 
         // Default Android permission delegate setup used by most tests
         String[] requestablePermission =
@@ -148,7 +158,7 @@ public class EmbeddedPermissionPromptTest {
     }
 
     private void setPermission(@ContentSetting int value) {
-        setNativeContentSetting(getGeolocationType(), mActivityTestRule.getURL(TEST_PAGE), value);
+        setNativeContentSetting(getGeolocationType(), mPermissionRule.getURL(TEST_PAGE), value);
     }
 
     private String getGeolocationPermissionStateFromJS() throws Exception {
@@ -227,7 +237,7 @@ public class EmbeddedPermissionPromptTest {
                 });
         activity.getWindowAndroid().setAndroidPermissionDelegate(mTestAndroidPermissionDelegate);
 
-        mActivityTestRule.setUpUrl(TEST_PAGE);
+        mPermissionRule.setUpUrl(TEST_PAGE);
         waitOnLatch(2);
 
         return activity;
