@@ -28,6 +28,8 @@
 namespace {
 
 using ::base::test::RunOnceCallback;
+using testing::_;
+using testing::Field;
 using testing::InSequence;
 using testing::WithArg;
 using QualityStatus = ::optimization_guide::proto::
@@ -130,9 +132,11 @@ class LoginStateCheckerTest : public ChromeRenderViewHostTestHarness {
   }
 
   std::unique_ptr<LoginStateChecker> CreateChecker(
-      LoginStateChecker::LoginStateResultCallback callback) {
+      LoginStateChecker::LoginStateResultCallback callback,
+      optimization_guide::ModelExecutionServiceType service_type =
+          optimization_guide::ModelExecutionServiceType::kDefault) {
     return std::make_unique<LoginStateChecker>(
-        web_contents(), logs_uploader_.get(), &stub_client_,
+        web_contents(), logs_uploader_.get(), &stub_client_, service_type,
         std::move(callback));
   }
 
@@ -497,4 +501,25 @@ TEST_F(LoginStateCheckerTest, EmitsHistogramOnCaptureFailure) {
       "PasswordManager.PasswordChange.FailedCapturingPageContent",
       password_manager::metrics_util::PasswordChangeFlowStep::kLoginCheckStep,
       1);
+}
+
+TEST_F(LoginStateCheckerTest, UsesPrivateAiServiceType) {
+  base::test::TestFuture<LoginCheckResult> future;
+  EXPECT_CALL(
+      *optimization_service(),
+      ExecuteModel(
+          _, _,
+          Field(&optimization_guide::ModelExecutionOptions::service_type,
+                optimization_guide::ModelExecutionServiceType::kPrivateAi),
+          _))
+      .WillOnce(WithArg<3>(&PostResponse<ResponseType::kSuccess>));
+
+  std::unique_ptr<LoginStateChecker> checker =
+      CreateChecker(future.GetRepeatingCallback(),
+                    optimization_guide::ModelExecutionServiceType::kPrivateAi);
+
+  ASSERT_TRUE(checker->capturer());
+  static_cast<FakeAnnotatedPageContentCapturer*>(checker->capturer())
+      ->SimulateResponse(optimization_guide::AIPageContentResult());
+  EXPECT_EQ(future.Take(), LoginCheckResult::kLoggedIn);
 }

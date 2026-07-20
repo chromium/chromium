@@ -54,18 +54,22 @@ LoginStateChecker::LoginStateChecker(
     content::WebContents* web_contents,
     ModelQualityLogsUploader* logs_uploader,
     password_manager::PasswordManagerClient* client,
+    optimization_guide::ModelExecutionServiceType service_type,
     LoginStateResultCallback callback)
     : content::WebContentsObserver(web_contents),
       creation_time_(base::Time::Now()),
-      logs_uploader_(CHECK_DEREF(logs_uploader)),
+      logs_uploader_(logs_uploader),
+      service_type_(service_type),
       client_(client),
       result_check_callback_(std::move(callback)) {
   CheckLoginState(/*ignore_attempts_limit=*/false);
 }
 
 LoginStateChecker::~LoginStateChecker() {
-  logs_uploader_->SetStepDuration(kLoginCheckStep,
-                                  base::Time::Now() - creation_time_);
+  if (logs_uploader_) {
+    logs_uploader_->SetStepDuration(kLoginCheckStep,
+                                    base::Time::Now() - creation_time_);
+  }
 }
 
 bool LoginStateChecker::ReachedAttemptsLimit() const {
@@ -144,7 +148,8 @@ void LoginStateChecker::OnPageContentReceived(
       optimization_guide::ModelBasedCapabilityKey::kPasswordChangeSubmission,
       request, /*execution_timeout=*/std::nullopt,
       base::BindOnce(&LoginStateChecker::OnExecutionResponseCallback,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr()),
+      service_type_);
 }
 
 void LoginStateChecker::OnExecutionResponseCallback(
@@ -155,8 +160,10 @@ void LoginStateChecker::OnExecutionResponseCallback(
   is_request_in_flight_ = false;
   // Increase the count of login checks.
   state_checks_count_++;
-  logs_uploader_->SetLoggedInCheckQuality(state_checks_count_,
-                                          std::move(logging_data));
+  if (logs_uploader_) {
+    logs_uploader_->SetLoggedInCheckQuality(state_checks_count_,
+                                            std::move(logging_data));
+  }
 
   LogMessage(
       client_,
@@ -194,8 +201,10 @@ void LoginStateChecker::OnExecutionResponseCallback(
   bool is_logged_in = response->is_logged_in_data().is_logged_in();
   // If the login state is false, a subsequent retry will override the
   // quality state with either an unexpected or failure status.
-  logs_uploader_->SetLoggedInCheckQuality(state_checks_count_,
-                                          std::move(logging_data));
+  if (logs_uploader_) {
+    logs_uploader_->SetLoggedInCheckQuality(state_checks_count_,
+                                            std::move(logging_data));
+  }
 
   LogBoolean(client_,
              SavePasswordProgressLogger::STRING_LOGIN_STATE_CHECK_RESULT,

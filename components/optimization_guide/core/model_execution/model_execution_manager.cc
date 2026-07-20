@@ -130,6 +130,7 @@ bool IsEligibleForPrivateAI(ModelBasedCapabilityKey feature) {
     case ModelBasedCapabilityKey::kContextualCueing:
     case ModelBasedCapabilityKey::kFormsClassifications:
     case ModelBasedCapabilityKey::kZeroStateSuggestions:
+    case ModelBasedCapabilityKey::kPasswordChangeSubmission:
       return true;
     default:
       return false;

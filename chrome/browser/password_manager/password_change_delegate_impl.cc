@@ -19,6 +19,7 @@
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "chrome/browser/password_manager/password_change/cross_origin_navigation_observer.h"
 #include "chrome/browser/password_manager/password_change/detached_web_contents.h"
+#include "chrome/browser/password_manager/password_change/features.h"
 #include "chrome/browser/password_manager/password_change/login_state_checker.h"
 #include "chrome/browser/password_manager/password_field_classification_model_handler_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -219,6 +220,29 @@ PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
   ui_controller_ =
       std::make_unique<PasswordChangeUIController>(this, tab_interface);
 
+  if (base::FeatureList::IsEnabled(
+          password_change::features::
+              kPasswordChangeWithPrivateInferenceLoginCheck)) {
+    // This creates `FieldClassificationModelHandler` and should trigger
+    // download of a local ML model for field classification.
+    // TODO(crbug.com/452883239): Clean this up when model is downloaded on
+    // start-up for everybody.
+    PasswordFieldClassificationModelHandlerFactory::GetForBrowserContext(
+        originator_->GetBrowserContext());
+
+    // Don't show the dialog and don't start the flow if the user navigates to a
+    // different site during login check.
+    ObserveCrossOriginNavigationInOriginator();
+    login_state_checker_ = std::make_unique<LoginStateChecker>(
+        originator_.get(), /*logs_uploader=*/nullptr,
+        ChromePasswordManagerClient::FromWebContents(originator_),
+        optimization_guide::ModelExecutionServiceType::kPrivateAi,
+        base::BindRepeating(
+            &PasswordChangeDelegateImpl::OnLoginStateCheckedWithPIResult,
+            weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
   // When the flow is started after a leak warning and the user just submitted
   // their credentials, the website may still be waiting for an OTP submission
   // in the `originator_` tab. In this case we need to wait for the OTP to be
@@ -235,13 +259,7 @@ PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
 
   // Don't show the dialog and don't start the flow if user navigates to a
   // different site instead of entering the OTP.
-  navigation_observer_ = std::make_unique<CrossOriginNavigationObserver>(
-      originator_.get(), originator_->GetURL(),
-      AffiliationServiceFactory::GetForProfile(profile_),
-      base::BindOnce(
-          &PasswordChangeDelegateImpl::OnCrossOriginNavigationDetected,
-          weak_ptr_factory_.GetWeakPtr()));
-
+  ObserveCrossOriginNavigationInOriginator();
   // Register a callback to resume the password flow when the the OTP fields are
   // submitted or gone, assuming that the user has entered and submitted the
   // OTP in this case.
@@ -334,21 +352,35 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
   logs_uploader_ = std::make_unique<ModelQualityLogsUploader>(
       originator_.get(), change_password_url_);
   logs_uploader_->SetLoginPasswordFormInfo(password_form_info_);
+
+  if (base::FeatureList::IsEnabled(
+          password_change::features::
+              kPasswordChangeWithPrivateInferenceLoginCheck)) {
+    ProceedToChangePassword();
+    return;
+  }
+
   login_state_checker_ = std::make_unique<LoginStateChecker>(
       originator_.get(), logs_uploader_.get(),
       ChromePasswordManagerClient::FromWebContents(originator_),
-      base::BindRepeating(&PasswordChangeDelegateImpl::OnLoginStateCheckResult,
-                          weak_ptr_factory_.GetWeakPtr()));
+      optimization_guide::ModelExecutionServiceType::kDefault,
+      base::BindRepeating(
+          &PasswordChangeDelegateImpl::OnLoginStateCheckedWithoutPIResult,
+          weak_ptr_factory_.GetWeakPtr()));
 
-  // This creates FieldClassificationModelHandler and should trigger download of
-  // a local ML model for field classification.
-  // TODO(452883239): Clean this up when model is downloaded on start-up for
-  // everybody.
-  PasswordFieldClassificationModelHandlerFactory::GetForBrowserContext(
-      originator_->GetBrowserContext());
+  if (!base::FeatureList::IsEnabled(
+          password_change::features::
+              kPasswordChangeWithPrivateInferenceLoginCheck)) {
+    // This creates FieldClassificationModelHandler and should trigger
+    // download of a local ML model for field classification.
+    // TODO(452883239): Clean this up when model is downloaded on start-up for
+    // everybody.
+    PasswordFieldClassificationModelHandlerFactory::GetForBrowserContext(
+        originator_->GetBrowserContext());
+  }
 }
 
-void PasswordChangeDelegateImpl::OnLoginStateCheckResult(
+void PasswordChangeDelegateImpl::OnLoginStateCheckedWithoutPIResult(
     LoginCheckResult login_status) {
   switch (login_status) {
     case LoginCheckResult::kLoggedIn:
@@ -361,6 +393,26 @@ void PasswordChangeDelegateImpl::OnLoginStateCheckResult(
     case LoginCheckResult::kError:
       UpdateState(State::kChangePasswordFormNotFound);
       login_state_checker_.reset();
+      return;
+  }
+}
+
+void PasswordChangeDelegateImpl::OnLoginStateCheckedWithPIResult(
+    LoginCheckResult login_status) {
+  switch (login_status) {
+    case LoginCheckResult::kLoggedIn:
+      // Offer the feature.
+      login_state_checker_.reset();
+      UpdateState(IsPrivacyNoticeAcknowledged() ? State::kOfferingPasswordChange
+                                                : State::kWaitingForAgreement);
+      return;
+    case LoginCheckResult::kLoggedOut:
+      // No-op. Login check will be silently rechecked.
+      return;
+    case LoginCheckResult::kError:
+      // Silently stop execution.
+      Stop();
+      ResetInternalState();
       return;
   }
 }
@@ -762,4 +814,17 @@ void PasswordChangeDelegateImpl::ResetInternalState() {
   submission_verifier_.reset();
   form_manager_.reset();
   otp_fields_submitted_subscription_ = {};
+}
+
+void PasswordChangeDelegateImpl::ObserveCrossOriginNavigationInOriginator() {
+  if (!originator_ || !originator_->GetURL().is_valid() ||
+      !originator_->GetURL().SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+  navigation_observer_ = std::make_unique<CrossOriginNavigationObserver>(
+      originator_.get(), originator_->GetURL(),
+      AffiliationServiceFactory::GetForProfile(profile_),
+      base::BindOnce(
+          &PasswordChangeDelegateImpl::OnCrossOriginNavigationDetected,
+          weak_ptr_factory_.GetWeakPtr()));
 }

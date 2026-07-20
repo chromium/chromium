@@ -108,7 +108,8 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
   void OnTabWillDetach(tabs::TabInterface* tab_interface,
                        tabs::TabInterface::DetachReason reason);
 
-  void OnLoginStateCheckResult(LoginCheckResult login_status);
+  void OnLoginStateCheckedWithoutPIResult(LoginCheckResult login_status);
+  void OnLoginStateCheckedWithPIResult(LoginCheckResult login_status);
   // Updates `current_state_` and notifies `observers_`.
   void UpdateState(State new_state);
 
@@ -132,6 +133,8 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
   // Resets all helpers. `hidden_executor_` is kept as it is as user might want
   // to open it.
   void ResetInternalState();
+
+  void ObserveCrossOriginNavigationInOriginator();
 
   const GURL change_password_url_;
   const std::u16string username_;

@@ -11,6 +11,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "content/public/browser/web_contents_observer.h"
 
 class AnnotatedPageContentCapturer;
@@ -46,6 +47,7 @@ class LoginStateChecker : public content::WebContentsObserver {
   LoginStateChecker(content::WebContents* web_contents,
                     ModelQualityLogsUploader* logs_uploader,
                     password_manager::PasswordManagerClient* client,
+                    optimization_guide::ModelExecutionServiceType service_type,
                     LoginStateResultCallback callback);
 
   ~LoginStateChecker() override;
@@ -99,7 +101,8 @@ class LoginStateChecker : public content::WebContentsObserver {
   const base::Time creation_time_;
   bool is_request_in_flight_ = false;
   std::optional<optimization_guide::AIPageContentResult> cached_page_content_;
-  const raw_ref<ModelQualityLogsUploader> logs_uploader_;
+  raw_ptr<ModelQualityLogsUploader> logs_uploader_ = nullptr;
+  const optimization_guide::ModelExecutionServiceType service_type_;
 
   raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
 

@@ -9,10 +9,13 @@ namespace password_change::features {
 BASE_FEATURE(kCheckFieldEnabledInChangePasswordFormWaiter,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSkipModelExecutionAllowedCheckForPasswordChange,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPasswordChangeWithPrivateInferenceLoginCheck,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRecordDiscardedFormsToModelQualityLogs,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSkipModelExecutionAllowedCheckForPasswordChange,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace password_change::features
