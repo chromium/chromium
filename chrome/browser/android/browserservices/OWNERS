@@ -1,5 +1,4 @@
-peconn@chromium.org
-eirage@chromium.org
+file://chrome/android/java/src/org/chromium/chrome/browser/browserservices/OWNERS
 
 per-file ...BrowserServicesIntentDataProvider.java=jinsukkim@chromium.org
 per-file ...BrowserServicesIntentDataProvider.java=sinansahin@google.com
