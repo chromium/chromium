@@ -456,6 +456,16 @@ GlicActorPolicyChecker::ComputeActOnWebCapability(bool disable_for_enterprise) {
     }
 
     // policy_enabled is true here.
+    if (!disable_for_enterprise &&
+        base::FeatureList::IsEnabled(
+            features::
+                kGlicActorWorkspaceExemptFromTierCheckRegressionFixKillswitch) &&
+        IsEnterpriseAccountForActor(*profile_, *journal_)) {
+      return log_and_return(
+          CanActOutcome::kYes,
+          "Managed: actuation enabled via policy for enterprise account");
+    }
+
     // If they have Chrome benefits, they can act everywhere.
     if (AccountHasChromeBenefits(*profile_, *journal_)) {
       return log_and_return(
