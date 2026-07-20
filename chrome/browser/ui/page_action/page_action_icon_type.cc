@@ -16,8 +16,6 @@ const base::FeatureParam<bool>* GetPageActionsMigrationParam(
       return &features::kPageActionsMigrationIntentPicker;
     case PageActionIconType::kVirtualCardEnroll:
       return &features::kPageActionsMigrationVirtualCard;
-    case PageActionIconType::kFilledCardInformation:
-      return &features::kPageActionsMigrationFilledCardInformation;
     case PageActionIconType::kBookmarkStar:
       return &features::kPageActionsMigrationBookmarkStar;
     default:
@@ -67,6 +65,7 @@ bool IsPageActionMigrated(PageActionIconType page_action) {
     case PageActionIconType::kPaymentsChurnedUsers:
     case PageActionIconType::kLensOverlayHomework:
     case PageActionIconType::kFakePageActionForDebug:
+    case PageActionIconType::kFilledCardInformation:
       return true;
     default:
       break;

@@ -361,12 +361,6 @@ BASE_FEATURE_PARAM(bool,
                    true);
 
 BASE_FEATURE_PARAM(bool,
-                   kPageActionsMigrationFilledCardInformation,
-                   &kPageActionsMigration,
-                   "filled_card_information",
-                   true);
-
-BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationBookmarkStar,
                    &kPageActionsMigration,
                    "bookmark_star",
