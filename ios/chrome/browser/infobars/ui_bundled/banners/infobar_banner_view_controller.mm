@@ -75,7 +75,8 @@ const CGFloat kRevampContainerStackSpacing = 12.0;
 const CGFloat kRevampLabelsStackViewVerticalSpacing = 3.0;
 
 // Revamp button constants.
-const CGFloat kRevampButtonMaxFontSize = 20;
+const CGFloat kHeightCornerRadiusThreshold = 90.0;
+const CGFloat kButtonMaxWidthMultiplier = 0.40;
 }  // namespace
 
 @interface InfobarBannerViewController ()
@@ -340,6 +341,8 @@ const CGFloat kRevampButtonMaxFontSize = 20;
 - (void)setupRevampedBanner {
   // BannerView setup.
   self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  self.view.maximumContentSizeCategory =
+      UIContentSizeCategoryAccessibilityMedium;
   CALayer* viewLayer = self.view.layer;
   viewLayer.cornerRadius = kInfobarBannerRevampCornerRadius;
   viewLayer.shadowOffset =
@@ -354,10 +357,8 @@ const CGFloat kRevampButtonMaxFontSize = 20;
   UIView* iconContainerView = [self configureIconContainer];
 
   // Labels setup.
-  UIFont* headlineFont = [[UIFontMetrics defaultMetrics]
-      scaledFontForFont:[UIFont
-                            preferredFontForTextStyle:UIFontTextStyleHeadline]
-       maximumPointSize:kRevampButtonMaxFontSize];
+  UIFont* headlineFont =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
   UILabel* titleLabel = [[UILabel alloc] init];
   titleLabel.text = self.titleText;
   titleLabel.font = headlineFont;
@@ -378,7 +379,8 @@ const CGFloat kRevampButtonMaxFontSize = 20;
       [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   subTitleLabel.adjustsFontForContentSizeCategory = YES;
   subTitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-  subTitleLabel.numberOfLines = _subtitleNumberOfLines;
+  subTitleLabel.numberOfLines =
+      _subtitleNumberOfLines > 0 ? MIN(_subtitleNumberOfLines, 3) : 3;
   subTitleLabel.lineBreakMode = _subtitleLineBreakMode;
   subTitleLabel.hidden = (self.subtitleText.length == 0);
   self.subTitleLabel = subTitleLabel;
@@ -423,7 +425,8 @@ const CGFloat kRevampButtonMaxFontSize = 20;
 
   actionButton.titleLabel.adjustsFontForContentSizeCategory = YES;
   actionButton.titleLabel.adjustsFontSizeToFitWidth = YES;
-  actionButton.titleLabel.numberOfLines = 1;
+  actionButton.titleLabel.numberOfLines = 2;
+  actionButton.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
   actionButton.accessibilityIdentifier = kInfobarBannerAcceptButtonIdentifier;
   actionButton.pointerInteractionEnabled = YES;
   actionButton.clipsToBounds = NO;
@@ -499,6 +502,9 @@ const CGFloat kRevampButtonMaxFontSize = 20;
                                    kInfobarBannerRevampMinimumTapTargetSize],
     [actionButton.heightAnchor constraintLessThanOrEqualToConstant:
                                    kInfobarBannerRevampButtonMaxHeight],
+    [actionButton.widthAnchor
+        constraintLessThanOrEqualToAnchor:self.view.widthAnchor
+                               multiplier:kButtonMaxWidthMultiplier],
     [modalButton.widthAnchor constraintGreaterThanOrEqualToConstant:
                                  kInfobarBannerRevampMinimumTapTargetSize],
     [modalButton.heightAnchor constraintEqualToAnchor:modalButton.widthAnchor],
@@ -508,7 +514,12 @@ const CGFloat kRevampButtonMaxFontSize = 20;
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
   if (IsInfobarBannerRevampEnabled()) {
-    self.view.layer.cornerRadius = self.view.bounds.size.height / 2;
+    CGFloat bannerHeight = self.view.bounds.size.height;
+    if (bannerHeight > kHeightCornerRadiusThreshold) {
+      self.view.layer.cornerRadius = kInfobarBannerRevampCornerRadius;
+    } else {
+      self.view.layer.cornerRadius = bannerHeight / 2.0;
+    }
   }
 }
 
