@@ -177,6 +177,7 @@ ui::ImageModel GetChevronImageModel(bool is_expanded) {
 
 std::unique_ptr<views::ImageView> CreateCompactSparkIcon() {
   auto spark_icon = std::make_unique<views::ImageView>();
+  spark_icon->SetCanProcessEventsWithinSubtree(false);
   spark_icon->SetProperty(views::kElementIdentifierKey,
                           IndigoToolbar::kSparkIconElementId);
   spark_icon->SetImage(ui::ImageModel::FromVectorIcon(
@@ -268,8 +269,11 @@ class IndigoExpandButton : public HoverButton {
   METADATA_HEADER(IndigoExpandButton, HoverButton)
 
  public:
-  explicit IndigoExpandButton(PressedCallback callback)
-      : HoverButton(std::move(callback), CreateExpandButtonParams()) {
+  explicit IndigoExpandButton(
+      PressedCallback callback,
+      base::RepeatingCallback<void(bool)> interaction_changed_callback)
+      : HoverButton(std::move(callback), CreateExpandButtonParams()),
+        interaction_changed_callback_(std::move(interaction_changed_callback)) {
     SetProperty(views::kElementIdentifierKey,
                 IndigoToolbar::kExpandButtonElementId);
     SetProperty(
@@ -344,7 +348,30 @@ class IndigoExpandButton : public HoverButton {
                                        views::MaximumFlexSizeRule::kUnbounded));
   }
 
+  void StateChanged(ButtonState old_state) override {
+    HoverButton::StateChanged(old_state);
+    MaybeNotifyInteractionState();
+  }
+
+  void OnFocus() override {
+    HoverButton::OnFocus();
+    MaybeNotifyInteractionState();
+  }
+
+  void OnBlur() override {
+    HoverButton::OnBlur();
+    MaybeNotifyInteractionState();
+  }
+
  private:
+  void MaybeNotifyInteractionState() {
+    const bool is_interacting = HasFocus() || GetState() == STATE_HOVERED ||
+                                GetState() == STATE_PRESSED;
+    if (is_interacting != is_interacting_) {
+      is_interacting_ = is_interacting;
+      interaction_changed_callback_.Run(is_interacting);
+    }
+  }
   static HoverButton::Params CreateExpandButtonParams() {
     HoverButton::Params params;
     params.icon_view = CreateCompactSparkIcon();
@@ -379,6 +406,8 @@ class IndigoExpandButton : public HoverButton {
 
   bool is_expanded_ = false;
   bool is_compact_ = false;
+  bool is_interacting_ = false;
+  base::RepeatingCallback<void(bool)> interaction_changed_callback_;
   raw_ptr<views::ImageView> chevron_ = nullptr;
 };
 
@@ -454,6 +483,10 @@ std::unique_ptr<views::View> IndigoToolbar::CreateToolbarView() {
                           std::make_unique<IndigoExpandButton>(
                               base::BindRepeating(
                                   &IndigoToolbar::OnExpandButtonClicked,
+                                  base::Unretained(this)),
+                              base::BindRepeating(
+                                  &IndigoToolbar::
+                                      OnExpandButtonInteractionChanged,
                                   base::Unretained(this))))
                           .SetProperty(
                               views::kMarginsKey,
@@ -695,12 +728,16 @@ void IndigoToolbar::TabDidBecomeVisible(views::View* parent_view) {
 
 void IndigoToolbar::OnToolbarInteractionChanged(bool interacting) {
   is_interacting_ = interacting;
-  if (interacting && presentation_state_ == PresentationState::kCompact) {
-    SetPresentationState(PresentationState::kCollapsed);
-  } else if (interacting) {
+  if (interacting) {
     auto_compact_timer_.Stop();
   } else {
     StartAutoCompactTimerIfNeeded(kInteractionAutoCompactDelay);
+  }
+}
+
+void IndigoToolbar::OnExpandButtonInteractionChanged(bool interacting) {
+  if (interacting && presentation_state_ == PresentationState::kCompact) {
+    SetPresentationState(PresentationState::kCollapsed);
   }
 }
 
