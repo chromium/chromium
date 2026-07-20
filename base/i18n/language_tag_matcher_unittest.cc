@@ -404,5 +404,17 @@ TEST(LanguageTagMatcherTest, ChineseVariantsAndExtensions) {
   }
 }
 
+TEST(LanguageTagMatcherTest, DefaultMatch) {
+  std::vector<LanguageTag> supported = {GetKnownLanguageTag("en-GB")};
+  LanguageTagMatcherWithDefault matcher = LanguageTagMatcherWithDefault::Create(
+      GetKnownLanguageTag("pt-BR"), supported);
+  EXPECT_THAT(matcher.Match(LanguageTagOrDie("en")),
+              GetKnownLanguageTag("en-GB"));
+  EXPECT_THAT(matcher.MatchOrDefault(LanguageTagOrDie("zh")),
+              GetKnownLanguageTag("pt-BR"));
+  EXPECT_THAT(matcher.MatchOrDefault(LanguageTagOrDie("und")),
+              GetKnownLanguageTag("pt-BR"));
+}
+
 }  // namespace
 }  // namespace base::i18n

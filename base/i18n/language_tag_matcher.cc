@@ -290,4 +290,32 @@ LanguageTagMatcher& LanguageTagMatcher::operator=(
 
 LanguageTagMatcher::~LanguageTagMatcher() = default;
 
+LanguageTagMatcherWithDefault::LanguageTagMatcherWithDefault(
+    LanguageTag default_tag,
+    LanguageTagMatcher matcher)
+    : default_tag_(std::move(default_tag)), matcher_(std::move(matcher)) {}
+
+std::optional<LanguageTag> LanguageTagMatcherWithDefault::Match(
+    const LanguageTag& preferred_tag) const {
+  return matcher_.Match(preferred_tag);
+}
+
+bool LanguageTagMatcherWithDefault::HasExactMatch(
+    const LanguageTag& preferred_tag) const {
+  return matcher_.HasExactMatch(preferred_tag);
+}
+
+LanguageTag LanguageTagMatcherWithDefault::MatchOrDefault(
+    const LanguageTag& preferred_tag) const {
+  return matcher_.Match(preferred_tag).value_or(default_tag_);
+}
+
+// static
+LanguageTagMatcherWithDefault LanguageTagMatcherWithDefault::Create(
+    LanguageTag default_tag,
+    base::span<const LanguageTag> supported_tags) {
+  return LanguageTagMatcherWithDefault(
+      std::move(default_tag), LanguageTagMatcher::Create(supported_tags));
+}
+
 }  // namespace base::i18n

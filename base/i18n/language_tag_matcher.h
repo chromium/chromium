@@ -91,6 +91,37 @@ class BASE_I18N_EXPORT LanguageTagMatcher {
   rust::Box<i18n_internal::IcuFallbacker> icu_fallbacker_;
 };
 
+// This class provides the same methods as `LanguageTagMatcher` with an
+// additional `MatchOrDefault` that always returns a `LanguageTag`. The default
+// language tag needs to be given during construction which makes it useful for
+// usages where a default is needed but the client does not necessarily know
+// which language to use as default.
+class BASE_I18N_EXPORT LanguageTagMatcherWithDefault {
+ public:
+  // Similar to `LanguageTagMatcher::Create` but also takes as the first
+  // argument, a default locale.
+  static LanguageTagMatcherWithDefault Create(
+      LanguageTag default_tag,
+      base::span<const LanguageTag> supported_tags);
+
+  // Same as `LanguageTagMatcher::Match`.
+  std::optional<LanguageTag> Match(const LanguageTag& preferred_tag) const;
+
+  // Same as `LanguageTagMatcher::HasExactMatch`.
+  bool HasExactMatch(const LanguageTag& preferred_tag) const;
+
+  // Same as `LanguageTagMatcher::Match` but returns the default tag (received
+  // during construction) if there is no match in the set of supported language
+  // tags.
+  LanguageTag MatchOrDefault(const LanguageTag& preferred_tag) const;
+
+ private:
+  LanguageTagMatcherWithDefault(LanguageTag default_tag,
+                                LanguageTagMatcher matcher);
+  LanguageTag default_tag_;
+  LanguageTagMatcher matcher_;
+};
+
 }  // namespace base::i18n
 
 #endif  // BASE_I18N_LANGUAGE_TAG_MATCHER_H_
