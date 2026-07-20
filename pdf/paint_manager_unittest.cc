@@ -45,7 +45,7 @@ base::FilePath GetTestDataFilePath(std::string_view filename) {
       .AppendASCII(filename);
 }
 
-class FakeClient : public PaintManager::Client {
+class MockPaintManagerClient : public PaintManager::Client {
  public:
   MOCK_METHOD(void, InvalidatePluginContainer, (), (override));
   MOCK_METHOD(SkBitmap*,
@@ -243,7 +243,7 @@ class PaintManagerTest : public testing::TestWithParam<bool> {
   }
 
   base::test::ScopedFeatureList list_;
-  NiceMock<FakeClient> client_;
+  NiceMock<MockPaintManagerClient> client_;
   SkBitmap client_bitmap_;
   PaintManager paint_manager_{&client_};
 };
