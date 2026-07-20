@@ -3352,12 +3352,16 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
       GURL("https://www.example.com"), DEFAULT_PRIORITY, &delegate,
       TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
   histograms.ExpectTotalCount("Net.HttpTimeToFirstByte.ServerPadding", 0);
+  histograms.ExpectTotalCount(
+      "Net.HttpTimeToFirstByte.ServerPaddingFirstConnectionOnly", 0);
 
   request->Start();
   delegate.RunUntilComplete();
 
   EXPECT_THAT(delegate.request_status(), IsOk());
   histograms.ExpectTotalCount("Net.HttpTimeToFirstByte.ServerPadding", 1);
+  histograms.ExpectTotalCount(
+      "Net.HttpTimeToFirstByte.ServerPaddingFirstConnectionOnly", 1);
 }
 
 TEST_F(URLRequestHttpJobWithMockSocketsTest,
@@ -3378,12 +3382,122 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
       GURL("https://www.example.com"), DEFAULT_PRIORITY, &delegate,
       TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
   histograms.ExpectTotalCount("Net.HttpTimeToFirstByte.ServerPadding", 0);
+  histograms.ExpectTotalCount(
+      "Net.HttpTimeToFirstByte.ServerPaddingFirstConnectionOnly", 0);
 
   request->Start();
   delegate.RunUntilComplete();
 
   EXPECT_THAT(delegate.request_status(), IsOk());
   histograms.ExpectTotalCount("Net.HttpTimeToFirstByte.ServerPadding", 0);
+  histograms.ExpectTotalCount(
+      "Net.HttpTimeToFirstByte.ServerPaddingFirstConnectionOnly", 0);
+}
+
+TEST_F(URLRequestHttpJobWithMockSocketsTest,
+       TestHttpTimeToFirstByteServerPaddingReusedConnection) {
+  base::HistogramTester histograms;
+  MockWrite writes[] = {
+      MockWrite(kSimpleGetMockWrite),
+      MockWrite("GET /two HTTP/1.1\r\n"
+                "Host: www.example.com\r\n"
+                "Connection: keep-alive\r\n"
+                "User-Agent: \r\n"
+                "Accept-Encoding: gzip, deflate\r\n"
+                "Accept-Language: en-us,fr\r\n\r\n"),
+  };
+  MockRead reads[] = {
+      MockRead("HTTP/1.1 200 OK\r\n"
+               "Content-Length: 12\r\n\r\n"),
+      MockRead("Test Content"),
+      MockRead("HTTP/1.1 200 OK\r\n"
+               "Content-Length: 12\r\n\r\n"),
+      MockRead("Test Content"),
+  };
+
+  StaticSocketDataProvider socket_data(reads, writes);
+  socket_factory_.AddSocketDataProvider(&socket_data);
+  SSLSocketDataProvider ssl_data(ASYNC, OK);
+  ssl_data.ssl_info.server_padding_received = true;
+  socket_factory_.AddSSLSocketDataProvider(&ssl_data);
+
+  // First request: new connection.
+  {
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> request = context_->CreateRequest(
+        GURL("https://www.example.com/"), DEFAULT_PRIORITY, &delegate,
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
+    request->Start();
+    delegate.RunUntilComplete();
+    EXPECT_THAT(delegate.request_status(), IsOk());
+  }
+
+  histograms.ExpectTotalCount("Net.HttpTimeToFirstByte.ServerPadding", 1);
+  histograms.ExpectTotalCount(
+      "Net.HttpTimeToFirstByte.ServerPaddingFirstConnectionOnly", 1);
+
+  // Second request: reuses connection.
+  {
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> request = context_->CreateRequest(
+        GURL("https://www.example.com/two"), DEFAULT_PRIORITY, &delegate,
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
+    request->Start();
+    delegate.RunUntilComplete();
+    EXPECT_THAT(delegate.request_status(), IsOk());
+  }
+
+  histograms.ExpectTotalCount("Net.HttpTimeToFirstByte.ServerPadding", 2);
+  histograms.ExpectTotalCount(
+      "Net.HttpTimeToFirstByte.ServerPaddingFirstConnectionOnly", 1);
+}
+
+TEST_F(URLRequestHttpJobWithMockSocketsTest,
+       TestHttpTimeToFirstByteServerPaddingCachedResponse) {
+  base::HistogramTester histograms;
+  MockWrite writes[] = {MockWrite(kSimpleGetMockWrite)};
+  MockRead reads[] = {MockRead("HTTP/1.1 200 OK\r\n"
+                               "Cache-Control: max-age=3600\r\n"
+                               "Content-Length: 12\r\n\r\n"),
+                      MockRead("Test Content")};
+
+  StaticSocketDataProvider socket_data(reads, writes);
+  socket_factory_.AddSocketDataProvider(&socket_data);
+  SSLSocketDataProvider ssl_data(ASYNC, OK);
+  ssl_data.ssl_info.server_padding_received = true;
+  socket_factory_.AddSSLSocketDataProvider(&ssl_data);
+
+  // First request: network response, cached.
+  {
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> request = context_->CreateRequest(
+        GURL("https://www.example.com"), DEFAULT_PRIORITY, &delegate,
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
+    request->Start();
+    delegate.RunUntilComplete();
+    EXPECT_THAT(delegate.request_status(), IsOk());
+    EXPECT_FALSE(request->was_cached());
+  }
+
+  histograms.ExpectTotalCount("Net.HttpTimeToFirstByte.ServerPadding", 1);
+  histograms.ExpectTotalCount(
+      "Net.HttpTimeToFirstByte.ServerPaddingFirstConnectionOnly", 1);
+
+  // Second request: served from cache.
+  {
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> request = context_->CreateRequest(
+        GURL("https://www.example.com"), DEFAULT_PRIORITY, &delegate,
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
+    request->Start();
+    delegate.RunUntilComplete();
+    EXPECT_THAT(delegate.request_status(), IsOk());
+    EXPECT_TRUE(request->was_cached());
+  }
+
+  histograms.ExpectTotalCount("Net.HttpTimeToFirstByte.ServerPadding", 1);
+  histograms.ExpectTotalCount(
+      "Net.HttpTimeToFirstByte.ServerPaddingFirstConnectionOnly", 1);
 }
 
 }  // namespace net

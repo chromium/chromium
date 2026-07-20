@@ -1937,6 +1937,18 @@ void URLRequestHttpJob::RecordTimer() {
       transaction_->GetResponseInfo()->ssl_info.server_padding_received) {
     base::UmaHistogramMediumTimes("Net.HttpTimeToFirstByte.ServerPadding",
                                   to_start);
+
+    LoadTimingInfo load_timing_info;
+    if (transaction_->GetLoadTimingInfo(&load_timing_info)) {
+      // Only log this histogram if connection wasn't reused and request wasn't
+      // served from cache.
+      if (!load_timing_info.socket_reused &&
+          !transaction_->GetResponseInfo()->was_cached) {
+        base::UmaHistogramMediumTimes(
+            "Net.HttpTimeToFirstByte.ServerPaddingFirstConnectionOnly",
+            to_start);
+      }
+    }
   }
 }
 

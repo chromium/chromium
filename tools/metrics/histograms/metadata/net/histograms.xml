@@ -4562,6 +4562,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.HttpTimeToFirstByte.ServerPaddingFirstConnectionOnly"
+    units="ms" expires_after="2026-11-15">
+  <owner>davidben@chromium.org</owner>
+  <owner>hchao@chromium.org</owner>
+  <owner>chrome-secure-web-and-net@chromium.org</owner>
+  <summary>
+    Time from when an HTTP request is issued to when the first byte is
+    processed, if the response was not cached, the connection used the Server
+    Padding extension, and the request did not reuse a connection. Recorded on
+    URLRequestHttpJob::OnStartCompleted.
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpTimeToFirstByte.TLS13.Google" units="ms"
     expires_after="2026-11-15">
   <owner>davidben@chromium.org</owner>
