@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
@@ -71,6 +72,32 @@ class SendTabToSelfToolbarIconControllerTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerTest,
+                       ControllerExists) {
+  EXPECT_TRUE(controller());
+}
+
+// Regression test for crbug.com/534231383.
+IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerTest,
+                       OpenPwaInBackgroundDoesNotCrash) {
+  GURL app_url("https://www.example-a.com/app/index.html");
+  auto web_app_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(app_url);
+  web_app_info->display_mode = blink::mojom::DisplayMode::kBrowser;
+
+  webapps::AppId app_id = web_app::test::InstallWebApp(browser()->GetProfile(),
+                                                       std::move(web_app_info));
+
+  SendTabToSelfEntry entry("a", app_url, "PWA site", base::Time(), "device a",
+                           "device b", PageContext(), NavigationHistory());
+
+  base::WeakPtr<content::WebContents> opened_contents =
+      OpenEntryInNewBackgroundTab(browser()->GetProfile(), entry);
+
+  EXPECT_TRUE(opened_contents);
+  EXPECT_EQ(app_url, opened_contents->GetURL());
+}
+
+IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerTest,
                        DisplayNewEntry) {
   ASSERT_TRUE(browser()->IsActive());
 
@@ -80,11 +107,6 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerTest,
 
   controller()->DisplayNewEntries({&entry});
   EXPECT_TRUE(bubble_controller()->IsBubbleShowing());
-}
-
-IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerTest,
-                       ControllerExists) {
-  EXPECT_TRUE(controller());
 }
 
 // This test cannot work on Wayland because the platform does not allow clients
