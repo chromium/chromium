@@ -30,6 +30,7 @@
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "mojo/core/embedder/embedder.h"
 #include "ui/accessibility/platform/ax_platform_for_test.h"
+#include "ui/base/clipboard/clipboard.h"
 #include "ui/base/ime/init/input_method_initializer.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_paths.h"
@@ -237,6 +238,8 @@ ExamplesExitCode ExamplesMainProc(bool under_test, ExampleVector examples) {
 #if defined(USE_AURA)
   env.reset();
 #endif
+
+  ui::Clipboard::DestroyClipboardForCurrentThread();
 
   return compare_result;
 }
