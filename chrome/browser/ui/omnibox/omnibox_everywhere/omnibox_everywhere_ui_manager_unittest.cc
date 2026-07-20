@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "chrome/test/base/testing_profile.h"
@@ -269,4 +270,50 @@ TEST_F(OmniboxEverywhereUIManagerTest, MAYBE_ShowPositionsOnTargetDisplay) {
   ui_manager->Close();
   display::Screen::SetScreenInstance(nullptr);
   display::Screen::SetScreenInstance(old_screen);
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest, DrivePickerStateTracking) {
+  auto ui_manager = CreateUIManager();
+  EXPECT_FALSE(ui_manager->is_drive_picker_open_for_testing());
+
+  ui_manager->OnDrivePickerOpened();
+  EXPECT_TRUE(ui_manager->is_drive_picker_open_for_testing());
+
+  ui_manager->OnDrivePickerClosed();
+  EXPECT_FALSE(ui_manager->is_drive_picker_open_for_testing());
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringDrivePicker) {
+  auto ui_manager = CreateUIManager();
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget_for_testing();
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(widget->IsVisible());
+
+  // Mark drive picker as open.
+  ui_manager->OnDrivePickerOpened();
+  EXPECT_TRUE(ui_manager->is_drive_picker_open_for_testing());
+
+  // Simulating deactivation while drive picker is open should NOT close the
+  // widget.
+  ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
+  EXPECT_TRUE(ui_manager->widget_for_testing());
+  EXPECT_TRUE(widget->IsVisible());
+
+  // Clean up: closing drive picker and triggering deactivation should close the
+  // widget.
+  views::test::WidgetDestroyedWaiter waiter(widget);
+  ui_manager->OnDrivePickerClosed();
+  ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
+  waiter.Wait();
+  EXPECT_FALSE(ui_manager->widget_for_testing());
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest,
+       BrowserCollectionObserverNoCrashWhenNull) {
+  auto ui_manager = CreateUIManager();
+  MockBrowserWindowInterface mock_browser;
+  ui_manager->OnBrowserActivated(&mock_browser);
+  ui_manager->OnBrowserClosed(&mock_browser);
 }

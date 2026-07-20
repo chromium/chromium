@@ -458,7 +458,9 @@ class ContextualSearchboxHandler
       std::vector<base::WeakPtr<content::WebContents>> relevant_tabs);
 
   // Cleans up the drive picker controller and result handler receiver.
-  void CleanupDrivePicker();
+  // Declared virtual to allow subclasses (such as OmniboxEverywhereHandler) to
+  // hook into the cleanup lifetime and coordinate widget focus/dismissal state.
+  virtual void CleanupDrivePicker();
 
 #if !BUILDFLAG(IS_ANDROID)
   void OnDrivePickerDisconnected();

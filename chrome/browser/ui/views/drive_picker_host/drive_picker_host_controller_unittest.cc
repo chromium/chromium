@@ -6,6 +6,8 @@
 
 #include "base/run_loop.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_host_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -78,7 +80,9 @@ class ViewDestroyedWaiter : public views::ViewObserver {
 
 class DrivePickerHostControllerTest : public TestWithBrowserView {
  public:
-  DrivePickerHostControllerTest() = default;
+  DrivePickerHostControllerTest() {
+    feature_list_.InitAndEnableFeature(omnibox::kOmniboxEverywhere);
+  }
   ~DrivePickerHostControllerTest() override = default;
 
   void SetUp() override {
@@ -90,7 +94,8 @@ class DrivePickerHostControllerTest : public TestWithBrowserView {
     browser_view()->GetWidget()->SetBounds(gfx::Rect(0, 0, 600, 500));
 
     AddTab(browser(), GURL("about:blank"));
-    controller_ = std::make_unique<DrivePickerHostController>(browser());
+    controller_ =
+        std::make_unique<DrivePickerHostController>(profile(), browser());
   }
 
   void TearDown() override {
@@ -123,6 +128,7 @@ class DrivePickerHostControllerTest : public TestWithBrowserView {
   void ResetControllerState() { controller_->ResetControllerStateForTesting(); }
 
  protected:
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<DrivePickerHostController> controller_;
   std::unique_ptr<ViewDestroyedWaiter> view_waiter_;
 };
@@ -209,4 +215,32 @@ TEST_F(DrivePickerHostControllerTest, ResetControllerStateClearsView) {
   EXPECT_FALSE(picker_view());
 }
 
+TEST_F(DrivePickerHostControllerTest, ShowDrivePickerHostWithAnchorWidget) {
+  // Create an anchor widget to simulate Loomnibox
+  views::Widget anchor_widget;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
+  params.context = browser_view()->GetWidget()->GetNativeWindow();
+  anchor_widget.Init(std::move(params));
+  anchor_widget.Show();
 
+  // Instantiate controller with null BWI, but passing the anchor widget.
+  auto anchor_controller = std::make_unique<DrivePickerHostController>(
+      profile(), nullptr, &anchor_widget);
+
+  auto request = std::make_unique<drive_picker_host::DrivePickerHostRequest>(
+      drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi,
+      mojo::PendingRemote<
+          drive_picker_host::mojom::DrivePickerResultHandler>());
+  anchor_controller->ShowDrivePickerHost(std::move(request));
+
+  views::Widget* picker_widget = anchor_controller->GetWidgetForTesting();
+  ASSERT_TRUE(picker_widget);
+  EXPECT_TRUE(picker_widget->IsVisible());
+
+  // Closing the anchor widget (Loomnibox) should automatically reset the
+  // controller and close the picker.
+  anchor_widget.CloseNow();
+  EXPECT_FALSE(anchor_controller->GetWidgetForTesting());
+}

@@ -12,6 +12,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_host_view.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_result_handler.mojom.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -45,8 +46,13 @@ class DrivePickerDialogDelegate : public views::DialogDelegate {
 };
 
 DrivePickerHostController::DrivePickerHostController(
-    BrowserWindowInterface* browser_window_interface)
-    : browser_window_interface_(browser_window_interface) {}
+    Profile* profile,
+    BrowserWindowInterface* browser_window_interface,
+    views::Widget* anchor_widget)
+    : profile_(profile),
+      browser_window_interface_(browser_window_interface),
+      anchor_widget_(anchor_widget),
+      is_standalone_popup_(anchor_widget != nullptr) {}
 
 DrivePickerHostController::~DrivePickerHostController() {
   ResetControllerState();
@@ -65,18 +71,32 @@ void DrivePickerHostController::ShowDrivePickerHost(
   // We host the view inside a standard browser-modal dialog widget using the
   // `constrained_window` framework to prevent interaction with the parent
   // window (such as the omnibox or tabs) while the picker is active.
-  BrowserView* browser_view =
-      BrowserView::GetBrowserViewForBrowser(browser_window_interface_);
-  if (!browser_view) {
+  BrowserView* browser_view = nullptr;
+  if (browser_window_interface_) {
+    browser_view =
+        BrowserView::GetBrowserViewForBrowser(browser_window_interface_);
+  }
+
+  // Under standard Chrome conditions, a valid active browser view must be
+  // resolved to anchor the dialog modal. However, under the Loomnibox
+  // feature flag (omnibox::kOmniboxEverywhere), if no active browser window
+  // exists (e.g. Chrome running in background), we bypass this restriction to
+  // show the Drive picker as a parentless, top-level standalone widget.
+  if (!browser_view &&
+      !base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhere)) {
     SendErrorToRequest(
         std::move(request),
         drive_picker_host::mojom::DrivePickerError::kWindowNotFound);
     return;
   }
 
+  bool use_loomnibox_anchoring =
+      is_standalone_popup_ &&
+      base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhere) &&
+      anchor_widget_;
+
   auto view = std::make_unique<DrivePickerHostView>(
-      browser_window_interface_->GetProfile(), browser_window_interface_,
-      request->type());
+      profile_, browser_window_interface_, request->type());
   DrivePickerHostView* view_ptr = view.get();
   picker_view_ = view.get();
 
@@ -87,11 +107,17 @@ void DrivePickerHostController::ShowDrivePickerHost(
 
   picker_delegate_ = std::move(delegate);
 
-  gfx::NativeWindow parent_window =
-      browser_view->GetWidget()->GetNativeWindow();
-  gfx::NativeView parent_view = platform_util::GetViewForWindow(parent_window);
+  views::Widget* widget = nullptr;
+  gfx::NativeView parent_view = gfx::NativeView();
+  if (use_loomnibox_anchoring) {
+    parent_view = anchor_widget_->GetNativeView();
+  } else if (browser_view) {
+    gfx::NativeWindow parent_window =
+        browser_view->GetWidget()->GetNativeWindow();
+    parent_view = platform_util::GetViewForWindow(parent_window);
+  }
 
-  views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
+  widget = views::DialogDelegate::CreateDialogWidget(
       picker_delegate_.get(), gfx::NativeWindow(), parent_view);
   widget->SetNativeWindowProperty(
       views::kWidgetIdentifierKey,
@@ -100,7 +126,11 @@ void DrivePickerHostController::ShowDrivePickerHost(
 
   picker_widget_ = base::WrapUnique(widget);
 
-  browser_widget_observation_.Observe(browser_view->GetWidget());
+  if (use_loomnibox_anchoring) {
+    browser_widget_observation_.Observe(anchor_widget_);
+  } else if (browser_view) {
+    browser_widget_observation_.Observe(browser_view->GetWidget());
+  }
 
   if (auto* frame_view = picker_widget_->widget_delegate()
                              ->AsDialogDelegate()
@@ -152,6 +182,8 @@ void DrivePickerHostController::SendErrorToRequest(
 void DrivePickerHostController::ResetControllerState() {
   picker_widget_observation_.Reset();
   browser_widget_observation_.Reset();
+  anchor_widget_ = nullptr;
+  browser_window_interface_ = nullptr;
   if (picker_widget_) {
     picker_widget_->Close();
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -175,9 +207,7 @@ void DrivePickerHostController::ResetControllerState() {
 }
 
 void DrivePickerHostController::OnWidgetDestroying(views::Widget* widget) {
-  if (widget == picker_widget_.get()) {
-    ResetControllerState();
-  }
+  ResetControllerState();
 }
 
 void DrivePickerHostController::OnWidgetBoundsChanged(

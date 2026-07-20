@@ -59,6 +59,22 @@ void OmniboxEverywhereService::SetIsNavigating(bool is_navigating) {
   }
 }
 
+void OmniboxEverywhereService::OnDrivePickerOpened() {
+  auto* controller =
+      g_browser_process->GetFeatures()->omnibox_everywhere_controller();
+  if (controller && controller->ui_manager()) {
+    controller->ui_manager()->OnDrivePickerOpened();
+  }
+}
+
+void OmniboxEverywhereService::OnDrivePickerClosed() {
+  auto* controller =
+      g_browser_process->GetFeatures()->omnibox_everywhere_controller();
+  if (controller && controller->ui_manager()) {
+    controller->ui_manager()->OnDrivePickerClosed();
+  }
+}
+
 void OmniboxEverywhereService::OpenUrl(const GURL& url,
                                        WindowOpenDisposition disposition,
                                        ui::PageTransition transition) {

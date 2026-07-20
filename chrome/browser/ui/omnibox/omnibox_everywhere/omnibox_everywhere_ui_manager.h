@@ -10,6 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget.h"
@@ -24,7 +26,8 @@ class OmniboxEverywhereWidgetDelegate;
 // Manages the desktop Omnibox Everywhere native window (views::Widget)
 // lifecycle and handles switching between different profiles.
 class OmniboxEverywhereUIManager : public views::WidgetObserver,
-                                   public WebUIContentsWrapper::Host {
+                                   public WebUIContentsWrapper::Host,
+                                   public BrowserCollectionObserver {
  public:
   using ContentsWrapperFactory =
       base::RepeatingCallback<std::unique_ptr<WebUIContentsWrapper>(Profile*)>;
@@ -65,6 +68,15 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   void OnFileChooserOpened();
   void OnFileChooserClosed();
 
+  void OnDrivePickerOpened();
+  void OnDrivePickerClosed();
+
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override {}
+  void OnBrowserClosed(BrowserWindowInterface* browser) override;
+  void OnBrowserActivated(BrowserWindowInterface* browser) override;
+  void OnBrowserDeactivated(BrowserWindowInterface* browser) override {}
+
   void SetIsNavigating(bool is_navigating) { is_navigating_ = is_navigating; }
   bool IsNavigating() const { return is_navigating_; }
 
@@ -76,6 +88,9 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   }
   bool is_file_chooser_open_for_testing() const {
     return is_file_chooser_open_;
+  }
+  bool is_drive_picker_open_for_testing() const {
+    return is_drive_picker_open_;
   }
 
  private:
@@ -92,10 +107,13 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   std::unique_ptr<views::Widget> widget_;
 
   bool is_file_chooser_open_ = false;
+  bool is_drive_picker_open_ = false;
   bool is_navigating_ = false;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
+  base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
   base::WeakPtrFactory<OmniboxEverywhereUIManager> weak_factory_{this};
 };
 

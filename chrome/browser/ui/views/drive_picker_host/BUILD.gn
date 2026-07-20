@@ -31,6 +31,7 @@ source_set("drive_picker_host") {
     "//chrome/browser:primitives",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/views/interaction",
     "//chrome/browser/ui/webui/drive_picker_host",
     "//chrome/browser/ui/webui/drive_picker_host:mojo_bindings",

@@ -47,6 +47,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
 #endif
@@ -103,6 +104,7 @@
 #include "components/contextual_search/footprints/public/drive_disclaimer_controller.h"
 #include "components/contextual_search/footprints/public/fpop_service.h"
 #include "content/public/browser/storage_partition.h"
+#include "ui/views/widget/widget.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {
@@ -1178,16 +1180,40 @@ void ContextualSearchboxHandler::OnDriveUploadClicked(
 
   auto* browser_window_interface =
       webui::GetBrowserWindowInterface(web_contents_);
-  if (!browser_window_interface) {
+  if (!browser_window_interface &&
+      base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhere)) {
+    ProfileBrowserCollection* profile_collection =
+        ProfileBrowserCollection::GetForProfile(profile_);
+    if (profile_collection) {
+      browser_window_interface = profile_collection->GetLastActiveBrowser();
+    }
+  }
+  // Standalone parentless WebContents (like OmniboxEverywhereUI) lack
+  // a standard parent browser window interface (BWI). To allow the Drive picker
+  // to function even when there is no active browser window (or when Chrome is
+  // in the background), we allow `browser_window_interface` to be null, gated
+  // behind the Loomnibox feature flag.
+  if (!browser_window_interface &&
+      !base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhere)) {
     std::move(callback).Run(searchbox::mojom::DriveUploadResponse::New());
     return;
   }
 
   drive_upload_click_callback_ = std::move(callback);
 
+  bool is_standalone_popup =
+      base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhere) &&
+      (web_contents_->GetVisibleURL().host() ==
+       chrome::kChromeUIOmniboxEverywhereHost);
+
+  views::Widget* anchor_widget =
+      is_standalone_popup ? views::Widget::GetTopLevelWidgetForNativeView(
+                                web_contents_->GetContentNativeView())
+                          : nullptr;
+
   if (!drive_picker_controller_) {
-    drive_picker_controller_ =
-        std::make_unique<DrivePickerHostController>(browser_window_interface);
+    drive_picker_controller_ = std::make_unique<DrivePickerHostController>(
+        profile_, browser_window_interface, anchor_widget);
   }
   // Binds the controller's close callback to OnCancel to ensure that if the
   // user closes the widget (e.g. by pressing Escape), the entire session

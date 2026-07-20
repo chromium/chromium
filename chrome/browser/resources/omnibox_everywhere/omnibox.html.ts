@@ -54,7 +54,8 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
                   @tool-click="${this.onToolClick_}"
                   @deep-search-click="${this.onDeepSearchClick_}"
                   @create-image-click="${this.onCreateImageClick_}"
-                  @model-click="${this.onModelClick_}">
+                  @model-click="${this.onModelClick_}"
+                  @open-drive-upload="${this.onOpenDriveUpload_}">
               </cr-composebox-contextual-entrypoint-and-menu>
             </div>
           </cr-composebox-file-inputs>

@@ -9,8 +9,8 @@ import '//resources/cr_components/search/animated_glow.js';
 import '//resources/cr_components/composebox/composebox_file_inputs.js';
 import '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 
-import {GlifAnimationState, recordContextAdditionMethod, TabSuggestionsState} from '//resources/cr_components/composebox/common.js';
-import type {ComposeboxState, ContextualUpload} from '//resources/cr_components/composebox/common.js';
+import {ContextType, GlifAnimationState, recordContextAdditionMethod, recordContextualElementClickedMetric, TabSuggestionsState} from '//resources/cr_components/composebox/common.js';
+import type {ComposeboxState, ContextualUpload, DriveUpload} from '//resources/cr_components/composebox/common.js';
 import type {ComposeboxFileInputsElement} from '//resources/cr_components/composebox/composebox_file_inputs.js';
 import {ComposeboxContextAddedMethod, GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
@@ -23,6 +23,7 @@ import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mix
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import {DriveDisclaimerStatus} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {DriveUploadError, PageCallbackRouter, PageHandlerInterface, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
@@ -257,6 +258,36 @@ export class OmniboxEverywhereOmniboxElement extends
   protected onLensSearchClick_() {
     this.dropdownIsVisible = false;
     this.dispatchEvent(new Event('open-lens-search'));
+  }
+
+  protected async onOpenDriveUpload_() {
+    // Check if the user has accepted the Drive disclaimer. This handles
+    // the edge case where a user sees the drive option in the menu, but
+    // then revokes Drive permissions.
+    const {status} = await this.pageHandler().getDriveDisclaimerStatus();
+    if (status === DriveDisclaimerStatus.kRestricted) {
+      return;
+    }
+
+    const {response} = await this.pageHandler().onDriveUploadClicked();
+
+    const driveUploads: DriveUpload[] =
+        response.files.map(file => ({
+                             token: file.token,
+                             mimeType: file.mimeType,
+                             fileName: file.fileName,
+                             thumbnailUrl: file.thumbnailUrl ?? null,
+                             iconUrl: file.iconUrl ?? null,
+                           }));
+
+    recordContextualElementClickedMetric(
+        this.composeboxSource, 'OmniboxEverywhere', ContextType.DRIVE);
+
+    if (driveUploads.length > 0 || response.error !== null) {
+      this.openComposebox_(
+          driveUploads, ToolMode.kUnspecified, ModelMode.kUnspecified,
+          response.error ?? undefined);
+    }
   }
 
   protected onFileChange_(e: CustomEvent<{files: FileList}>) {

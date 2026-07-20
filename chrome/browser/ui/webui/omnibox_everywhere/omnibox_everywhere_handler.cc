@@ -7,8 +7,12 @@
 #include <utility>
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_omnibox_client.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "content/public/browser/web_ui.h"
 
 namespace {
@@ -62,7 +66,8 @@ OmniboxEverywhereHandler::OmniboxEverywhereHandler(
           std::make_unique<OmniboxEverywhereClient>(Profile::FromWebUI(web_ui),
                                                     web_ui->GetWebContents(),
                                                     service),
-          std::move(get_session_callback)) {
+          std::move(get_session_callback)),
+      service_(service) {
   static_cast<ContextualOmniboxClient*>(client())->SetSuggestInputsCallback(
       base::BindRepeating(&OmniboxEverywhereHandler::GetSuggestInputs,
                           base::Unretained(this)));
@@ -70,3 +75,35 @@ OmniboxEverywhereHandler::OmniboxEverywhereHandler(
 }
 
 OmniboxEverywhereHandler::~OmniboxEverywhereHandler() = default;
+
+void OmniboxEverywhereHandler::OnDriveUploadClicked(
+    OnDriveUploadClickedCallback callback) {
+  // Notify the service that the Google Drive picker is being opened so it can
+  // suppress auto-dismissal of the standalone Omnibox Everywhere widget.
+  service_->OnDrivePickerOpened();
+
+  // Since the Omnibox Everywhere widget is a standalone popup without a native
+  // embedding browser window, we must dynamically associate the WebContents
+  // with the latest active browser window interface. Doing this on each click
+  // ensures that even if the previously associated browser tab/window was
+  // closed, the flow can still resolve a valid BrowserWindowInterface and
+  // successfully reopen the modal picker dialog. If no active browser window
+  // exists (e.g. Chrome is running in the background), we pass nullptr and
+  // let the DrivePickerHostController handle the top-level dialog.
+  ProfileBrowserCollection* profile_collection =
+      ProfileBrowserCollection::GetForProfile(profile_);
+  CHECK(profile_collection);
+  BrowserWindowInterface* active_bwi =
+      profile_collection->GetLastActiveBrowser();
+  webui::SetBrowserWindowInterface(web_contents_, active_bwi);
+
+  ContextualSearchboxHandler::OnDriveUploadClicked(std::move(callback));
+}
+
+void OmniboxEverywhereHandler::CleanupDrivePicker() {
+  ContextualSearchboxHandler::CleanupDrivePicker();
+  // Notify the service that the Drive picker has closed (either via success,
+  // cancel, or error) so that the widget can regain focus and restore standard
+  // auto-dismissal.
+  service_->OnDrivePickerClosed();
+}

@@ -32,6 +32,9 @@ class OmniboxEverywhereService : public KeyedService {
 
   void SetIsNavigating(bool is_navigating);
 
+  void OnDrivePickerOpened();
+  void OnDrivePickerClosed();
+
  private:
   raw_ptr<Profile> profile_;
 

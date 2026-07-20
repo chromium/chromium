@@ -227,9 +227,10 @@ class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
 
 class MockDrivePickerHostController : public DrivePickerHostController {
  public:
-  explicit MockDrivePickerHostController(
+  MockDrivePickerHostController(
+      Profile* profile,
       BrowserWindowInterface* browser_window_interface)
-      : DrivePickerHostController(browser_window_interface) {}
+      : DrivePickerHostController(profile, browser_window_interface) {}
   ~MockDrivePickerHostController() override = default;
   MOCK_METHOD(void,
               ShowDrivePickerHost,
@@ -383,7 +384,7 @@ class ContextualSearchboxHandlerTest
 
     auto mock_drive_picker_controller =
         std::make_unique<MockDrivePickerHostController>(
-            &mock_browser_window_interface_);
+            profile(), &mock_browser_window_interface_);
     handler().SetDrivePickerController(std::move(mock_drive_picker_controller));
 
     // Drain the Mojo pipe and clear setup-related calls to searchbox page.
@@ -1696,7 +1697,7 @@ TEST_F(ContextualSearchboxHandlerTest, OnDriveUploadClicked_DoubleClick) {
 
   auto mock_drive_picker_controller =
       std::make_unique<MockDrivePickerHostController>(
-          &mock_browser_window_interface_);
+          profile(), &mock_browser_window_interface_);
   auto* mock_ptr = mock_drive_picker_controller.get();
   handler().SetDrivePickerController(std::move(mock_drive_picker_controller));
 
@@ -1859,7 +1860,7 @@ TEST_F(ContextualSearchboxHandlerTest, OnDriveUploadClicked) {
 
   auto mock_drive_picker_controller =
       std::make_unique<MockDrivePickerHostController>(
-          &mock_browser_window_interface_);
+          profile(), &mock_browser_window_interface_);
   auto* mock_ptr = mock_drive_picker_controller.get();
   handler().SetDrivePickerController(std::move(mock_drive_picker_controller));
 
@@ -1961,7 +1962,7 @@ TEST_F(ContextualSearchboxHandlerTest, OnDriveUploadClicked_SizeLimitExceeded) {
 
   auto mock_drive_picker_controller =
       std::make_unique<MockDrivePickerHostController>(
-          &mock_browser_window_interface_);
+          profile(), &mock_browser_window_interface_);
   auto* mock_ptr = mock_drive_picker_controller.get();
   handler().SetDrivePickerController(std::move(mock_drive_picker_controller));
 
@@ -2010,7 +2011,7 @@ TEST_F(ContextualSearchboxHandlerTest, OnDriveUploadClicked_MaxFilesExceeded) {
 
   auto mock_drive_picker_controller =
       std::make_unique<MockDrivePickerHostController>(
-          &mock_browser_window_interface_);
+          profile(), &mock_browser_window_interface_);
   auto* mock_ptr = mock_drive_picker_controller.get();
   handler().SetDrivePickerController(std::move(mock_drive_picker_controller));
 

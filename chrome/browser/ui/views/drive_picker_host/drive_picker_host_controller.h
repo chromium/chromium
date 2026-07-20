@@ -18,11 +18,13 @@
 
 namespace views {
 class Widget;
+class WidgetDelegate;
 class DialogDelegate;
 }  // namespace views
 
 class DrivePickerHostView;
 class BrowserWindowInterface;
+class Profile;
 
 // Window-level orchestrator for the Drive Picker Host, responsible for
 // managing the creation, display, and lifetime of the overlay that hosts
@@ -43,8 +45,9 @@ class BrowserWindowInterface;
 class DrivePickerHostController : public content::WebContentsObserver,
                                   public views::WidgetObserver {
  public:
-  explicit DrivePickerHostController(
-      BrowserWindowInterface* browser_window_interface);
+  DrivePickerHostController(Profile* profile,
+                            BrowserWindowInterface* browser_window_interface,
+                            views::Widget* anchor_widget = nullptr);
   DrivePickerHostController(const DrivePickerHostController&) = delete;
   DrivePickerHostController& operator=(const DrivePickerHostController&) =
       delete;
@@ -88,7 +91,10 @@ class DrivePickerHostController : public content::WebContentsObserver,
   // Whether the Drive Picker document has completed loading in the `WebView`.
   bool is_picker_document_loaded_ = false;
 
+  raw_ptr<Profile> profile_;
   raw_ptr<BrowserWindowInterface> browser_window_interface_;
+  raw_ptr<views::Widget> anchor_widget_ = nullptr;
+  bool is_standalone_popup_ = false;
   raw_ptr<DrivePickerHostView> picker_view_ = nullptr;
   std::unique_ptr<views::Widget> picker_widget_;
   std::unique_ptr<views::DialogDelegate> picker_delegate_;
