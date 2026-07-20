@@ -101,24 +101,28 @@ public class TabbedModeTabPersistencePolicyTest {
 
     @Before
     public void setUp() throws Exception {
-        TabWindowManagerSingleton.setTabModelSelectorFactoryForTesting(
-                new TabModelSelectorFactory() {
-                    @Override
-                    public TabModelSelector buildTabbedSelector(
-                            Context context,
-                            ModalDialogManager modalDialogManager,
-                            OneshotSupplier<ProfileProvider> profileProviderSupplier,
-                            TabCreatorManager tabCreatorManager,
-                            NextTabPolicySupplier nextTabPolicySupplier,
-                            @SupportedProfileType int supportedProfileType) {
-                        return new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
-                    }
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabWindowManagerSingleton.setTabModelSelectorFactoryForTesting(
+                            new TabModelSelectorFactory() {
+                                @Override
+                                public TabModelSelector buildTabbedSelector(
+                                        Context context,
+                                        ModalDialogManager modalDialogManager,
+                                        OneshotSupplier<ProfileProvider> profileProviderSupplier,
+                                        TabCreatorManager tabCreatorManager,
+                                        NextTabPolicySupplier nextTabPolicySupplier,
+                                        @SupportedProfileType int supportedProfileType) {
+                                    return new MockTabModelSelector(
+                                            mProfile, mIncognitoProfile, 0, 0, null);
+                                }
 
-                    @Override
-                    public Pair<TabModelSelector, Destroyable> buildHeadlessSelector(
-                            @WindowId int windowId, Profile profile) {
-                        return Pair.create(null, null);
-                    }
+                                @Override
+                                public Pair<TabModelSelector, Destroyable> buildHeadlessSelector(
+                                        @WindowId int windowId, Profile profile) {
+                                    return Pair.create(null, null);
+                                }
+                            });
                 });
         AdvancedMockContext appContext =
                 new AdvancedMockContext(
@@ -161,8 +165,8 @@ public class TabbedModeTabPersistencePolicyTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabWindowManagerSingleton.getInstance().setArchivedTabModelSelector(null);
+                    TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
                 });
-        TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
     }
 
     private TabbedModeTabModelOrchestrator buildTestTabModelSelector(

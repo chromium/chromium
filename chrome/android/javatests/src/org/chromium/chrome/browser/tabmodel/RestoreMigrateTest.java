@@ -125,7 +125,8 @@ public class RestoreMigrateTest {
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.TABMODEL_HAS_RUN_FILE_MIGRATION, false);
         TabbedModeTabPersistencePolicy.resetMigrationTaskForTesting();
-        TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
+        ThreadUtils.runOnUiThreadBlocking(
+                TabWindowManagerSingleton::resetTabModelSelectorFactoryForTesting);
     }
 
     private TabPersistentStoreImpl buildTabPersistentStore(

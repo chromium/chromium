@@ -92,7 +92,8 @@ public class MultiInstanceMigrationTest {
         FileUtils.recursivelyDeleteFile(
                 TabStateDirectory.getOrCreateBaseStateDirectory(), FileUtils.DELETE_ALL);
         TabbedModeTabPersistencePolicy.resetMigrationTaskForTesting();
-        TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
+        ThreadUtils.runOnUiThreadBlocking(
+                TabWindowManagerSingleton::resetTabModelSelectorFactoryForTesting);
     }
 
     private void buildPersistentStoreAndWaitForMigration() {

@@ -1290,7 +1290,10 @@ public class ChromeTabbedActivityTest {
     public void testRestoreTabFromClosedWindow_hasRemainingTabs() throws Exception {
         int windowId = 2;
 
-        TabWindowManagerSingleton.setTabWindowManagerForTesting(mMockTabWindowManager);
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        TabWindowManagerSingleton.setTabWindowManagerForTesting(
+                                mMockTabWindowManager));
 
         when(mMockNormalModel.getCount()).thenReturn(1);
         when(mMockIncognitoModel.getCount()).thenReturn(0);
@@ -1308,7 +1311,10 @@ public class ChromeTabbedActivityTest {
     public void testRestoreTabFromClosedWindow_noRemainingTabs() throws Exception {
         int windowId = 2;
 
-        TabWindowManagerSingleton.setTabWindowManagerForTesting(mMockTabWindowManager);
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        TabWindowManagerSingleton.setTabWindowManagerForTesting(
+                                mMockTabWindowManager));
 
         when(mMockNormalModel.getCount()).thenReturn(0);
         when(mMockIncognitoModel.getCount()).thenReturn(0);

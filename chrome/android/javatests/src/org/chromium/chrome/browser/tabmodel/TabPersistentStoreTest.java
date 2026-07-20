@@ -77,6 +77,7 @@ import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
+import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl.MigrateTabTask;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl.TabRestoreDetails;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl.TabRestoreMethod;
 import org.chromium.chrome.browser.tabmodel.TestTabModelDirectory.TabModelMetaDataInfo;
@@ -309,25 +310,28 @@ public class TabPersistentStoreTest {
     public static void beforeClassSetUp() {
         // Required for parameterized tests - otherwise we will fail
         // assert sInstance == null in setTabModelSelectorFactoryForTesting
-        TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
-        TabWindowManagerSingleton.setTabModelSelectorFactoryForTesting(
-                sMockTabModelSelectorFactory);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
+                    TabWindowManagerSingleton.setTabModelSelectorFactoryForTesting(
+                            sMockTabModelSelectorFactory);
+                    sTabWindowManager = TabWindowManagerSingleton.getInstance();
+                });
 
         sCipherFactory = new CipherFactory();
-
-        sTabWindowManager =
-                ThreadUtils.runOnUiThreadBlocking(TabWindowManagerSingleton::getInstance);
     }
 
     @AfterClass
     public static void afterClassTearDown() {
-        TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
+        ThreadUtils.runOnUiThreadBlocking(
+                TabWindowManagerSingleton::resetTabModelSelectorFactoryForTesting);
     }
 
     @Before
     public void setUp() {
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         TabPersistentStoreImpl.resetDeferredStartupCompleteForTesting();
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mChromeActivity =
@@ -390,7 +394,8 @@ public class TabPersistentStoreTest {
                             mChromeActivity, ActivityState.CREATED);
                 });
 
-        // Using an AdvancedMockContext allows us to use a fresh in-memory SharedPreference.
+        // Using an AdvancedMockContext allows us to use a fresh in-memory
+        // SharedPreference.
         mAppContext =
                 new AdvancedMockContext(
                         InstrumentationRegistry.getInstrumentation()
@@ -398,6 +403,7 @@ public class TabPersistentStoreTest {
                                 .getApplicationContext());
         ContextUtils.initApplicationContextForTests(mAppContext);
         mPreferences = ChromeSharedPreferences.getInstance();
+
         mMockDirectory =
                 new TestTabModelDirectory(
                         mAppContext, "TabPersistentStoreTest", Integer.toString(SELECTOR_INDEX));

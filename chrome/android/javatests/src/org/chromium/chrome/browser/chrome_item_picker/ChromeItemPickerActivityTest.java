@@ -117,7 +117,8 @@ public class ChromeItemPickerActivityTest {
         if (mTabWindowManager != null) {
             clearInvocations(mTabWindowManager);
         }
-        TabWindowManagerSingleton.setTabWindowManagerForTesting(null);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> TabWindowManagerSingleton.setTabWindowManagerForTesting(null));
     }
 
     @Test
@@ -157,7 +158,9 @@ public class ChromeItemPickerActivityTest {
 
         final int expectedWindowId = 42;
         when(mTabWindowManager.getIdForWindow(any())).thenReturn(expectedWindowId);
-        TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager));
 
         Intent intent = new Intent(hostActivity, ChromeItemPickerActivity.class);
         intent.putExtra(ChromeItemPickerExtras.EXTRA_IS_INCOGNITO_BRANDED, false);

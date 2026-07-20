@@ -46,17 +46,23 @@ public class TabWindowManagerSingleton {
      * @param factory A {@link TabModelSelectorFactory} instance.
      */
     public static void setTabModelSelectorFactoryForTesting(TabModelSelectorFactory factory) {
+        ThreadUtils.assertOnUiThread();
         assert sInstance == null;
         sSelectorFactoryForTesting = factory;
     }
 
     public static void setTabWindowManagerForTesting(TabWindowManager manager) {
+        ThreadUtils.assertOnUiThread();
         sInstance = manager;
         ResettersForTesting.register(
-                TabWindowManagerSingleton::resetTabModelSelectorFactoryForTesting);
+                () -> {
+                    ThreadUtils.runOnUiThreadBlocking(
+                            TabWindowManagerSingleton::resetTabModelSelectorFactoryForTesting);
+                });
     }
 
     public static void resetTabModelSelectorFactoryForTesting() {
+        ThreadUtils.assertOnUiThread();
         sInstance = null;
         sSelectorFactoryForTesting = null;
     }

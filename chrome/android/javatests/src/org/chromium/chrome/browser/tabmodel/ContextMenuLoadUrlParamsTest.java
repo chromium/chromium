@@ -126,34 +126,38 @@ public class ContextMenuLoadUrlParamsTest {
         // Plant RecordingTabModelSelector as the TabModelSelector used in Main. The factory has to
         // be set before super.setUp(), as super.setUp() creates Main and consequently the
         // TabModelSelector.
-        TabWindowManagerSingleton.setTabModelSelectorFactoryForTesting(
-                new TabModelSelectorFactory() {
-                    @Override
-                    public TabModelSelector buildTabbedSelector(
-                            Context context,
-                            ModalDialogManager modalDialogManager,
-                            OneshotSupplier<ProfileProvider> profileProviderSupplier,
-                            TabCreatorManager tabCreatorManager,
-                            NextTabPolicySupplier nextTabPolicySupplier,
-                            int supportedProfileType) {
-                        return new RecordingTabModelSelector(
-                                context,
-                                modalDialogManager,
-                                profileProviderSupplier,
-                                tabCreatorManager);
-                    }
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabWindowManagerSingleton.setTabModelSelectorFactoryForTesting(
+                            new TabModelSelectorFactory() {
+                                @Override
+                                public TabModelSelector buildTabbedSelector(
+                                        Context context,
+                                        ModalDialogManager modalDialogManager,
+                                        OneshotSupplier<ProfileProvider> profileProviderSupplier,
+                                        TabCreatorManager tabCreatorManager,
+                                        NextTabPolicySupplier nextTabPolicySupplier,
+                                        int supportedProfileType) {
+                                    return new RecordingTabModelSelector(
+                                            context,
+                                            modalDialogManager,
+                                            profileProviderSupplier,
+                                            tabCreatorManager);
+                                }
 
-                    @Override
-                    public Pair<TabModelSelector, Destroyable> buildHeadlessSelector(
-                            @WindowId int windowId, Profile profile) {
-                        return Pair.create(null, null);
-                    }
+                                @Override
+                                public Pair<TabModelSelector, Destroyable> buildHeadlessSelector(
+                                        @WindowId int windowId, Profile profile) {
+                                    return Pair.create(null, null);
+                                }
+                            });
                 });
     }
 
     @AfterClass
     public static void afterClass() {
-        TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
+        ThreadUtils.runOnUiThreadBlocking(
+                TabWindowManagerSingleton::resetTabModelSelectorFactoryForTesting);
     }
 
     @Before
