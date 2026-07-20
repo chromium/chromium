@@ -100,7 +100,6 @@ ResourceRequestHead::ResourceRequestHead(const KURL& url)
       download_to_blob_(false),
       use_stream_on_response_(false),
       keepalive_(false),
-      browsing_topics_(false),
       ad_auction_headers_(false),
       shared_storage_writable_opted_in_(false),
       shared_storage_writable_eligible_(false),
@@ -223,7 +222,6 @@ std::unique_ptr<ResourceRequest> ResourceRequestHead::CreateRedirectRequest(
   request->SetTargetAddressSpace(GetTargetAddressSpace());
   request->SetCredentialsMode(GetCredentialsMode());
   request->SetKeepalive(GetKeepalive());
-  request->SetBrowsingTopics(GetBrowsingTopics());
   request->SetAdAuctionHeaders(GetAdAuctionHeaders());
   request->SetSharedStorageWritableOptedIn(GetSharedStorageWritableOptedIn());
   request->SetPriority(Priority());
@@ -506,16 +504,11 @@ bool ResourceRequest::IsFeatureEnabledForSubresourceRequestAssumingOptIn(
     return false;
   }
 
-  bool browsing_topics_opted_in =
-      (feature == network::mojom::PermissionsPolicyFeature::kBrowsingTopics ||
-       feature == network::mojom::PermissionsPolicyFeature::
-                      kBrowsingTopicsBackwardCompatible) &&
-      GetBrowsingTopics();
   bool shared_storage_opted_in =
       feature == network::mojom::PermissionsPolicyFeature::kSharedStorage &&
       GetSharedStorageWritableOptedIn();
 
-  if (!browsing_topics_opted_in && !shared_storage_opted_in) {
+  if (!shared_storage_opted_in) {
     return false;
   }
 

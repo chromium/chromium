@@ -22,7 +22,6 @@ dictionary RequestInit {
     DOMString integrity;
     boolean keepalive;
     FetchPriority priority;
-    [RuntimeEnabled=TopicsAPI, Exposed=Window] boolean browsingTopics;
     [RuntimeEnabled=AdInterestGroupAPI, Exposed=Window] boolean adAuctionHeaders;
     [RuntimeEnabled=SharedStorageAPI, Exposed=Window] boolean sharedStorageWritable;
     AbortSignal? signal;

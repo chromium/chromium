@@ -171,7 +171,6 @@ FetchRequestData* CreateCopyOfFetchRequestDataForFetch(
   request->SetFetchPriorityHint(original->FetchPriorityHint());
   request->SetPriority(original->Priority());
   request->SetKeepalive(original->Keepalive());
-  request->SetBrowsingTopics(original->BrowsingTopics());
   request->SetAdAuctionHeaders(original->AdAuctionHeaders());
   request->SetSharedStorageWritable(original->SharedStorageWritable());
   request->SetIsHistoryNavigation(original->IsHistoryNavigation());
@@ -210,10 +209,10 @@ static bool AreAnyMembersPresent(const RequestInit* init) {
          init->hasReferrer() || init->hasReferrerPolicy() || init->hasMode() ||
          init->hasTargetAddressSpace() || init->hasCredentials() ||
          init->hasCache() || init->hasRedirect() || init->hasIntegrity() ||
-         init->hasKeepalive() || init->hasBrowsingTopics() ||
-         init->hasAdAuctionHeaders() || init->hasSharedStorageWritable() ||
-         init->hasPriority() || init->hasSignal() || init->hasDuplex() ||
-         init->hasPrivateToken() || init->hasRetryOptions();
+         init->hasKeepalive() || init->hasAdAuctionHeaders() ||
+         init->hasSharedStorageWritable() || init->hasPriority() ||
+         init->hasSignal() || init->hasDuplex() || init->hasPrivateToken() ||
+         init->hasRetryOptions();
 }
 
 static BodyStreamBuffer* ExtractBody(ScriptState* script_state,
@@ -692,24 +691,6 @@ Request* Request::CreateRequestWithRequestOrString(
     options.retry_only_if_server_unreached =
         retry_options->retryOnlyIfServerUnreached();
     request->SetRetryOptions(options);
-  }
-
-  if (init->hasBrowsingTopics()) {
-    if (!execution_context->IsSecureContext()) {
-      exception_state.ThrowTypeError(
-          "browsingTopics: Topics operations are only available in secure "
-          "contexts.");
-      return nullptr;
-    }
-
-    request->SetBrowsingTopics(init->browsingTopics());
-
-    if (init->browsingTopics()) {
-      UseCounter::Count(execution_context,
-                        mojom::blink::WebFeature::kTopicsAPIFetch);
-      Deprecation::CountDeprecation(execution_context,
-                                    mojom::blink::WebFeature::kTopicsAPIAll);
-    }
   }
 
   if (init->hasAdAuctionHeaders()) {

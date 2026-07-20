@@ -285,24 +285,6 @@ void HTMLIFrameElement::ParseAttribute(
       should_call_did_change_attributes = true;
       UseCounter::Count(GetDocument(), WebFeature::kIFrameCSPAttribute);
     }
-  } else if (name == html_names::kBrowsingtopicsAttr) {
-    if (GetExecutionContext() &&
-        RuntimeEnabledFeatures::TopicsAPIEnabled(GetExecutionContext()) &&
-        GetExecutionContext()->IsSecureContext()) {
-      bool old_browsing_topics = !params.old_value.IsNull();
-      bool new_browsing_topics = !params.new_value.IsNull();
-
-      if (new_browsing_topics) {
-        UseCounter::Count(GetDocument(),
-                          WebFeature::kIframeBrowsingTopicsAttribute);
-        Deprecation::CountDeprecation(GetExecutionContext(),
-                                      WebFeature::kTopicsAPIAll);
-      }
-
-      if (new_browsing_topics != old_browsing_topics) {
-        should_call_did_change_attributes = true;
-      }
-    }
   } else if (name == html_names::kAdauctionheadersAttr &&
              GetExecutionContext()) {
     if (!GetExecutionContext()->IsSecureContext()) {
@@ -645,12 +627,6 @@ void HTMLIFrameElement::DidChangeAttributes() {
   auto attributes = mojom::blink::IframeAttributes::New();
   attributes->parsed_csp_attribute = csp.empty() ? nullptr : std::move(csp[0]);
   attributes->credentialless = credentialless_;
-
-  if (RuntimeEnabledFeatures::TopicsAPIEnabled(GetExecutionContext()) &&
-      GetExecutionContext()->IsSecureContext()) {
-    attributes->browsing_topics =
-        FastHasAttribute(html_names::kBrowsingtopicsAttr);
-  }
 
   if (GetExecutionContext()->IsSecureContext()) {
     attributes->ad_auction_headers =

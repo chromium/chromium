@@ -1179,7 +1179,6 @@ void FetchLoaderBase::PerformHTTPFetch(ExceptionState& exception_state) {
     request.SetFetchRetryOptions(fetch_request_data_->RetryOptions().value());
   }
 
-  request.SetBrowsingTopics(fetch_request_data_->BrowsingTopics());
   request.SetAdAuctionHeaders(fetch_request_data_->AdAuctionHeaders());
   request.SetSharedStorageWritableOptedIn(
       fetch_request_data_->SharedStorageWritable());

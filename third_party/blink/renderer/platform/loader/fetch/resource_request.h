@@ -301,13 +301,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
     fetch_retry_options_ = fetch_retry_options;
   }
 
-  // True if the request should be considered for computing and attaching the
-  // topics headers.
-  bool GetBrowsingTopics() const { return browsing_topics_; }
-  void SetBrowsingTopics(bool browsing_topics) {
-    browsing_topics_ = browsing_topics;
-  }
-
   // True if this is an ad auction request eligible for attaching the
   // `Sec-Ad-Auction-Fetch` request header and processing the
   // `X-Ad-Auction-Result` response header.
@@ -704,7 +697,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
   bool download_to_blob_ : 1;
   bool use_stream_on_response_ : 1;
   bool keepalive_ : 1;
-  bool browsing_topics_ : 1;
   bool ad_auction_headers_ : 1;
   bool shared_storage_writable_opted_in_ : 1;
   bool shared_storage_writable_eligible_ : 1;

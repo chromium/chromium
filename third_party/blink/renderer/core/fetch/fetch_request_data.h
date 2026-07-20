@@ -144,9 +144,6 @@ class CORE_EXPORT FetchRequestData final
   bool Keepalive() const { return keepalive_; }
   void SetKeepalive(bool b) { keepalive_ = b; }
 
-  bool BrowsingTopics() const { return browsing_topics_; }
-  void SetBrowsingTopics(bool b) { browsing_topics_ = b; }
-
   bool AdAuctionHeaders() const { return ad_auction_headers_; }
   void SetAdAuctionHeaders(bool b) { ad_auction_headers_ = b; }
 
@@ -247,7 +244,6 @@ class CORE_EXPORT FetchRequestData final
   network::mojom::RequestDestination original_destination_ =
       network::mojom::RequestDestination::kEmpty;
   bool keepalive_ = false;
-  bool browsing_topics_ = false;
   bool ad_auction_headers_ = false;
   bool shared_storage_writable_ = false;
   bool is_history_navigation_ = false;
