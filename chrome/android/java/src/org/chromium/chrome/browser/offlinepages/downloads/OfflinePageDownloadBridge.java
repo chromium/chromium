@@ -118,6 +118,8 @@ public class OfflinePageDownloadBridge {
         IntentHandler.setIntentExtraHeaders(params.getExtraHeaders(), intent);
         intent.putExtra(
                 Browser.EXTRA_APPLICATION_ID, activity.getApplicationContext().getPackageName());
+        intent.putExtra(
+                IntentHandler.EXTRA_TAB_OPEN_TYPE, IntentHandler.TabOpenType.CLOBBER_CURRENT_TAB);
         intent.setPackage(activity.getApplicationContext().getPackageName());
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 

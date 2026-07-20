@@ -894,6 +894,8 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                 Browser.EXTRA_APPLICATION_ID, activity.getApplicationContext().getPackageName());
         viewIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         viewIntent.putExtra(IntentHandler.EXTRA_PAGE_TRANSITION_TYPE, PAGE_TRANSITION_TYPE);
+        viewIntent.putExtra(
+                IntentHandler.EXTRA_TAB_OPEN_TYPE, IntentHandler.TabOpenType.CLOBBER_CURRENT_TAB);
         // Determine component or class name.
         ComponentName component;
         if (activity instanceof HistoryActivity) { // phone

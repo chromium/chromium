@@ -20,9 +20,14 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 public class ExternalIntentsFeatures {
     public static final String EXTERNAL_NAVIGATION_DEBUG_LOGS_NAME = "ExternalNavigationDebugLogs";
+    public static final String DONT_CLOBBER_TABS_WITH_CHROME_APP_ID_NAME =
+            "DontClobberTabsWithChromeAppId";
 
     public static final ExternalIntentsFeature EXTERNAL_NAVIGATION_DEBUG_LOGS =
             new ExternalIntentsFeature(0, EXTERNAL_NAVIGATION_DEBUG_LOGS_NAME);
+
+    public static final ExternalIntentsFeature DONT_CLOBBER_TABS_WITH_CHROME_APP_ID =
+            new ExternalIntentsFeature(1, DONT_CLOBBER_TABS_WITH_CHROME_APP_ID_NAME);
 
     public static class ExternalIntentsFeature extends Features {
         private final int mOrdinal;

@@ -1532,19 +1532,21 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
     }
 
     /**
-     * Prepare the intent to be sent. This function does not change the filtering for the intent,
-     * so the list if resolveInfos for the intent will be the same before and after this function.
+     * Prepare the intent to be sent. This function does not change the filtering for the intent, so
+     * the list if resolveInfos for the intent will be the same before and after this function.
      */
     private void prepareExternalIntent(
             Intent targetIntent,
             ExternalNavigationParams params,
             List<ResolveInfo> resolvingInfos) {
-        // Set the Browser application ID to us in case the user chooses this app
-        // as the app.  This will make sure the link is opened in the same tab
-        // instead of making a new one in the case of Chrome.
-        targetIntent.putExtra(
-                Browser.EXTRA_APPLICATION_ID,
-                ContextUtils.getApplicationContext().getPackageName());
+        if (!ExternalIntentsFeatures.DONT_CLOBBER_TABS_WITH_CHROME_APP_ID.isEnabled()) {
+            // Set the Browser application ID to us in case the user chooses this app
+            // as the app.  This will make sure the link is opened in the same tab
+            // instead of making a new one in the case of Chrome.
+            targetIntent.putExtra(
+                    Browser.EXTRA_APPLICATION_ID,
+                    ContextUtils.getApplicationContext().getPackageName());
+        }
         if (params.isOpenInNewTab()) targetIntent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
         targetIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         // Ensure intents re-target potential caller activity when we run in CCT mode.
