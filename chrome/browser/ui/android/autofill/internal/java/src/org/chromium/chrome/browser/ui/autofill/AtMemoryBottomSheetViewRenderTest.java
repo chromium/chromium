@@ -93,8 +93,8 @@ public class AtMemoryBottomSheetViewRenderTest {
     @Rule
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(6)
-                    .setDescription("Icons clickable areas increased to 48dp.")
+                    .setRevision(7)
+                    .setDescription("Strings updated")
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 

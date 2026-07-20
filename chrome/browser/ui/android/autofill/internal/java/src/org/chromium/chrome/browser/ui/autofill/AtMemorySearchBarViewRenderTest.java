@@ -55,6 +55,8 @@ public class AtMemorySearchBarViewRenderTest {
     @Rule
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(2)
+                    .setDescription("Strings updated")
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_AUTOFILL)
                     .build();
 

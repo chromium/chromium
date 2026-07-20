@@ -778,8 +778,8 @@
     <message name="IDS_AUTOFILL_POPUP_SEARCH_BAR_PASSWORDS_INPUT_PLACEHOLDER" desc="The placeholder of the autofill popup search bar input for passwords.">
       Search passwords
     </message>
-    <message name="IDS_AUTOFILL_AT_MEMORY_POPUP_SEARCH_BAR_PLACEHOLDER" desc="Placeholder in the Autofill @memory search bar, used for filling personal data.">
-      Search and fill from anywhere...
+    <message name="IDS_AUTOFILL_AT_MEMORY_POPUP_SEARCH_BAR_PLACEHOLDER" desc="Main action pattern for enhanced autofill. It functions as a concise command or header explaining that Chrome will locate relevant information and insert it into a form.">
+      Find and fill
     </message>
 
     <message name="IDS_AUTOFILL_POPUP_SEARCH_BAR_PASSWORDS_NOT_FOUND" desc="On the autofill popup for paswords, the label to be used when no passwords matching user's request were found.">
@@ -814,7 +814,7 @@
     Suggested by Gemini
   </message>
   <message name="IDS_AUTOFILL_AT_MEMORY_NO_DATA" desc="Message shown when no data is found in @memory search." translateable="false">
-    Couldn't find this in your info
+    Couldn't find this info
   </message>
   <message name="IDS_AUTOFILL_AT_MEMORY_AI_DISCLOSURE" desc="The text shown at the bottom of the @memory search popup to set user expectations regarding potential incorrect suggestions. $1 is the link text." translateable="false">
     Gemini is AI and can make mistakes. <ph name="LEARN_MORE">$1</ph>
@@ -842,7 +842,7 @@
   </message>
   <if expr="is_android">
     <message name="IDS_AT_MEMORY_SEARCH_HINT" desc="Hint text for the search bar in the @memory bottom sheet." formatter_data="android_java" translateable="false">
-      Find and fill info with Gemini
+      Find and fill
     </message>
     <message name="IDS_AT_MEMORY_OPEN_FLYOUT" desc="Content description for the button that opens the details page for a suggestion." formatter_data="android_java" translateable="false">
       Show more
@@ -851,7 +851,7 @@
       You’ll find your autofill suggestions here
     </message>
     <message name="IDS_AUTOFILL_AT_MEMORY_ZERO_STATE_SUBTITLE" desc="Subtitle text shown in zero state when there are no autofill suggestions in the bottom sheet." formatter_data="android_java" translateable="false">
-      Type what you need and ask Gemini to recall info from your Connected Apps
+      Type what you need to find and fill info from your Connected Apps
     </message>
     <message name="IDS_AT_MEMORY_NOTICE_TITLE" desc="Title for the notice shown in the @memory bottom sheet." formatter_data="android_java">
       Now you can find and fill info from Gmail and more
@@ -1568,10 +1568,10 @@
     Verify it’s you to autofill sensitive info
   </message>
   <message name="IDS_AT_MEMORY_PROMO_TITLE" desc="Title of the at-memory promo bubble.">
-    Type @@ in any form to recall and fill info without switching tabs
+    Type @@ in any form to find and fill info without switching tabs
   </message>
   <message name="IDS_AT_MEMORY_PROMO_DESCRIPTION" desc="Description of the at-memory promo bubble.">
-    Gemini can now recall your personal info from across your Google apps and autofill it on the page you're viewing.
+    Enhanced autofill can now find and fill info — like flight numbers and appointment times — from apps like Gmail and Photos. Autofill info from apps such as Gmail and Photos.
   </message>
   <message name="IDS_AT_MEMORY_PROMO_LEARN_MORE_BUTTON" desc="Label of the 'Learn more' button in the at-memory promo bubble.">
     Learn more
