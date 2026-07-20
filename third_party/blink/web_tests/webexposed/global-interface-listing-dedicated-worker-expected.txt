@@ -1666,6 +1666,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter firstUIEventTimestamp
 [Worker]     getter layoutDuration
 [Worker]     getter renderStart
+[Worker]     getter scriptCount
 [Worker]     getter scripts
 [Worker]     getter styleAndLayoutStart
 [Worker]     getter styleDuration

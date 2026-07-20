@@ -71,6 +71,7 @@ PerformanceLongAnimationFrameTiming::PerformanceLongAnimationFrameTiming(
                        startTime,
                        source,
                        navigation_id),
+      script_count_(info->ScriptCount()),
       render_start_(Performance::MonotonicTimeToDOMHighResTimeStamp(
           time_origin,
           info->RenderStartTime(),
@@ -131,6 +132,10 @@ PerformanceEntryType PerformanceLongAnimationFrameTiming::EntryTypeEnum()
 void PerformanceLongAnimationFrameTiming::BuildJSONValue(
     V8ObjectBuilder& builder) const {
   PerformanceEntry::BuildJSONValue(builder);
+  if (RuntimeEnabledFeatures::LongAnimationFrameWorkerEnabled(
+          ExecutionContext::From(builder.GetScriptState()))) {
+    builder.AddNumber("scriptCount", script_count_);
+  }
   builder.AddNumber("renderStart", render_start_);
   builder.AddNumber("styleAndLayoutStart", style_and_layout_start_);
   builder.AddNumber("firstUIEventTimestamp", first_ui_event_timestamp_);

@@ -5,6 +5,7 @@
 // https://github.com/w3c/longtasks/blob/loaf-explainer/loaf-explainer.md
 [Exposed(Window StableBlinkFeatures, DedicatedWorker LongAnimationFrameWorker)]
 interface PerformanceLongAnimationFrameTiming : PerformanceEntry {
+    [RuntimeEnabled=LongAnimationFrameWorker] readonly attribute unsigned long scriptCount;
     readonly attribute DOMHighResTimeStamp renderStart;
     readonly attribute DOMHighResTimeStamp styleAndLayoutStart;
     readonly attribute DOMHighResTimeStamp firstUIEventTimestamp;

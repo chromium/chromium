@@ -48,6 +48,8 @@ class PerformanceLongAnimationFrameTiming final : public PerformanceEntry {
   const AtomicString& entryType() const override;
   PerformanceEntryType EntryTypeEnum() const override;
 
+  uint32_t scriptCount() const { return script_count_; }
+
   DOMHighResTimeStamp renderStart() const { return render_start_; }
   DOMHighResTimeStamp styleAndLayoutStart() const {
     return style_and_layout_start_;
@@ -67,6 +69,7 @@ class PerformanceLongAnimationFrameTiming final : public PerformanceEntry {
   void Trace(Visitor*) const override;
  private:
   void BuildJSONValue(V8ObjectBuilder&) const override;
+  uint32_t script_count_ = 0;
   DOMHighResTimeStamp render_start_;
   DOMHighResTimeStamp style_and_layout_start_;
   DOMHighResTimeStamp first_ui_event_timestamp_;

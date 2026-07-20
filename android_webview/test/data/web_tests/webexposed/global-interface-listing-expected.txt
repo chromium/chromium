@@ -7279,6 +7279,7 @@ interface PerformanceLongAnimationFrameTiming : PerformanceEntry
     getter paintTime
     getter presentationTime
     getter renderStart
+    getter scriptCount
     getter scripts
     getter styleAndLayoutStart
     getter styleDuration

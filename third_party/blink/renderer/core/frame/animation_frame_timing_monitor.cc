@@ -136,6 +136,7 @@ AnimationFrameTimingMonitor::RecordRenderingUpdateEndTime(
   did_pause_ = false;
 
   current_frame_timing_info_->SetScripts(current_scripts_);
+  current_frame_timing_info_->SetScriptCount(script_count_);
 
   if (!conditional_marks_.empty()) {
     CHECK(RuntimeEnabledFeatures::ConditionalTracingLoAFEnabled());
@@ -178,6 +179,7 @@ AnimationFrameTimingMonitor::RecordRenderingUpdateEndTime(
   first_ui_event_timestamp_ = base::TimeTicks();
   current_frame_timing_info_.Clear();
   current_scripts_.clear();
+  script_count_ = 0;
   if (!conditional_marks_.empty()) {
     CHECK(RuntimeEnabledFeatures::ConditionalTracingLoAFEnabled());
     conditional_marks_.clear();
@@ -241,6 +243,8 @@ void AnimationFrameTimingMonitor::OnWorkerTaskCompleted(
 
   HeapVector<Member<ScriptTimingInfo>> scripts;
   std::swap(scripts, current_scripts_);
+  uint32_t script_count = script_count_;
+  script_count_ = 0;
 
   // A single task that occupies the event loop for at least the congestion
   // threshold is reported as a congested moment, attributing the long scripts
@@ -254,6 +258,7 @@ void AnimationFrameTimingMonitor::OnWorkerTaskCompleted(
       MakeGarbageCollected<AnimationFrameTimingInfo>(start_time);
   info->SetRenderEndTime(end_time);
   info->SetScripts(scripts);
+  info->SetScriptCount(script_count);
   info->SetTotalBlockingDuration(task_duration - kCongestionThreshold);
   client_.ReportCongestedMoment(info);
 }
@@ -343,6 +348,8 @@ void AnimationFrameTimingMonitor::OnMainThreadTaskCompleted(
 
   std::swap(scripts, current_scripts_);
   current_scripts_.clear();
+  uint32_t script_count = script_count_;
+  script_count_ = 0;
 
   Vector<ConditionalMarkInfo> conditional_marks;
   if (!conditional_marks_.empty()) {
@@ -367,6 +374,7 @@ void AnimationFrameTimingMonitor::OnMainThreadTaskCompleted(
       MakeGarbageCollected<AnimationFrameTimingInfo>(start_time);
   timing_info->SetRenderEndTime(end_time);
   timing_info->SetScripts(scripts);
+  timing_info->SetScriptCount(script_count);
   timing_info->SetTotalBlockingDuration(task_duration -
                                         kLongAnimationFrameDuration);
   timing_info->SetBeginFrameId(current_begin_frame_id_);
@@ -712,12 +720,20 @@ ScriptTimingInfo* AnimationFrameTimingMonitor::PopScriptEntryPointInternal(
     return nullptr;
   }
 
-  if ((end_time - script_info.start_time) < kLongScriptDuration) {
+  if (!ShouldAllowScriptURL(script_info.source_location.url) ||
+      state_ == State::kIdle) {
     return nullptr;
   }
 
-  if (!ShouldAllowScriptURL(script_info.source_location.url) ||
-      state_ == State::kIdle) {
+  // A top-level script entry point of the current reporting interval (a window
+  // LoAF or a congested moment). Count it for scriptCount regardless of its
+  // duration.
+  ++script_count_;
+
+  // Scripts shorter than kLongScriptDuration do not get a ScriptTimingInfo, so
+  // they are not included/reported in the entry's scripts[] list (they were
+  // still counted in scriptCount above).
+  if ((end_time - script_info.start_time) < kLongScriptDuration) {
     return nullptr;
   }
 

@@ -171,6 +171,9 @@ class AnimationFrameTimingInfo final
   void SetDidPause() { did_pause_ = true; }
   bool DidPause() const { return did_pause_; }
 
+  uint32_t ScriptCount() const { return script_count_; }
+  void SetScriptCount(uint32_t count) { script_count_ = count; }
+
   uint64_t GetTraceId() const;
 
   void Trace(Visitor*) const;
@@ -210,6 +213,9 @@ class AnimationFrameTimingInfo final
 
   // Whether the LoAF included sync XHR or alerts (pause).
   bool did_pause_ = false;
+
+  // Number of JS entry points observed within this entry's interval.
+  uint32_t script_count_ = 0;
 
   // Unique ID used to tie together trace events for this animation frame.
   mutable uint64_t trace_id_ = 0;

@@ -209,6 +209,10 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
 
   unsigned entry_point_depth_ = 0;
 
+  // Top-level script entry points in the current reporting interval, counted
+  // regardless of duration (so it can exceed current_scripts_.size()).
+  uint32_t script_count_ = 0;
+
   bool enabled_ = false;
 };
 
