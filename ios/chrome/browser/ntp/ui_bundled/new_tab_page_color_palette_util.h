@@ -16,4 +16,18 @@ NewTabPageColorPalette* CreateColorPaletteFromSeedColor(
     UIColor* seed_color,
     ui::ColorProviderKey::SchemeVariant variant);
 
+/// TODO(crbug.com/534705391): Investigate getting color palette previews from
+/// home customization and removing this helper.
+// Returns a square, tri-color preview for a `color_palette` with a requested
+// `size`.
+UIImage* CreatePreviewImageForColorPalette(
+    const NewTabPageColorPalette* color_palette,
+    CGFloat size,
+    UITraitCollection* trait_collection);
+
+/// TODO(crbug.com/534705391): Investigate getting color palette previews from
+/// home customization and removing this helper.
+// Returns the color palette for an un-themed NTP in light or dark mode.
+NewTabPageColorPalette* DefaultNTPColorPalette();
+
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_COLOR_PALETTE_UTIL_H_
