@@ -125,6 +125,7 @@ chromium-metrics-reviews@google.com.
   <int value="44" label="kWebrtcVideoPerfHistory"/>
   <int value="45" label="kMediaDeviceSalts"/>
   <int value="46" label="kDisableAutoSigninForAccountPasswords"/>
+  <int value="47" label="kPrivateVerificationTokens"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h:TracingDataType) -->

@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
@@ -32,6 +33,7 @@
 #include "net/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -320,9 +322,8 @@ IN_PROC_BROWSER_TEST_F(PrivateVerificationTokensServiceBrowserTest,
   // Delete tokens for a.com.
   base::test::TestFuture<void> delete_future;
   service->DeleteTokens(
-      base::Time::Min(), base::Time::Max(),
-      std::vector<url::Origin>{url::Origin::Create(GURL("https://a.com"))},
-      delete_future.GetCallback());
+      base::Time::Min(), base::Time::Max(), delete_future.GetCallback(),
+      std::vector<url::Origin>{url::Origin::Create(GURL("https://a.com"))});
   EXPECT_TRUE(delete_future.Wait());
 
   // Verify only b.org remains.
@@ -386,9 +387,8 @@ IN_PROC_BROWSER_TEST_F(PrivateVerificationTokensServiceBrowserTest,
 
   base::test::TestFuture<void> delete_future;
   service->DeleteTokens(
-      base::Time::Min(), base::Time::Max(),
-      std::vector<url::Origin>{url::Origin::Create(GURL("https://a.com"))},
-      delete_future.GetCallback());
+      base::Time::Min(), base::Time::Max(), delete_future.GetCallback(),
+      std::vector<url::Origin>{url::Origin::Create(GURL("https://a.com"))});
 
   EXPECT_FALSE(delete_future.IsReady());
 
@@ -462,9 +462,8 @@ IN_PROC_BROWSER_TEST_F(
 
   base::test::TestFuture<void> delete_future;
   service->DeleteTokens(
-      base::Time::Min(), base::Time::Max(),
-      std::vector<url::Origin>{url::Origin::Create(GURL("https://a.com"))},
-      delete_future.GetCallback());
+      base::Time::Min(), base::Time::Max(), delete_future.GetCallback(),
+      std::vector<url::Origin>{url::Origin::Create(GURL("https://a.com"))});
 
   EXPECT_FALSE(delete_future.IsReady());
 
@@ -475,6 +474,106 @@ IN_PROC_BROWSER_TEST_F(
   // Verify that the callback is run even though we couldn't have deleted the
   // tokens without an initialized store.
   EXPECT_TRUE(delete_future.Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(PrivateVerificationTokensServiceBrowserTest,
+                       DeleteTokensByFilter_Success) {
+  Profile* profile = GetProfile();
+  PrivateVerificationTokensService* service =
+      PrivateVerificationTokensServiceFactory::GetForProfile(profile);
+  ASSERT_TRUE(service);
+
+  WaitForInitialization(service);
+
+  // Verify tokens exist first.
+  base::test::TestFuture<std::vector<url::Origin>> issuers_future;
+  service->GetTokenIssuers(issuers_future.GetCallback());
+  EXPECT_EQ(issuers_future.Get().size(), 2u);
+
+  // Delete tokens for a.com.
+  base::test::TestFuture<void> delete_future;
+  base::RepeatingCallback<bool(const blink::StorageKey&)> storage_key_filter =
+      base::BindRepeating([](const blink::StorageKey& key) {
+        return key == blink::StorageKey::CreateFirstParty(
+                          url::Origin::Create(GURL("https://a.com")));
+      });
+
+  service->DeleteTokensByFilter(base::Time::Min(), base::Time::Max(),
+                                storage_key_filter,
+                                delete_future.GetCallback());
+
+  EXPECT_TRUE(delete_future.Wait());
+
+  // Verify only b.org remains.
+  base::test::TestFuture<std::vector<url::Origin>> issuers_future2;
+  service->GetTokenIssuers(issuers_future2.GetCallback());
+  auto issuers = issuers_future2.Take();
+  EXPECT_EQ(issuers.size(), 1u);
+  EXPECT_EQ(issuers[0], url::Origin::Create(GURL("https://b.org")));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrivateVerificationTokensServiceBrowserTest,
+    DeleteTokensByFilter_PendingBeforeInitialization_Success) {
+  Profile* profile = GetProfile();
+  PrivateVerificationTokensService* service =
+      PrivateVerificationTokensServiceFactory::GetForProfile(profile);
+  ASSERT_TRUE(service);
+
+  base::test::TestFuture<void> delete_future;
+
+  base::RepeatingCallback<bool(const blink::StorageKey&)> storage_key_filter =
+      base::BindRepeating([](const blink::StorageKey& key) {
+        return key == blink::StorageKey::CreateFirstParty(
+                          url::Origin::Create(GURL("https://a.com")));
+      });
+
+  service->DeleteTokensByFilter(base::Time::Min(), base::Time::Max(),
+                                storage_key_filter,
+                                delete_future.GetCallback());
+
+  EXPECT_FALSE(delete_future.IsReady());
+
+  WaitForInitialization(service);
+
+  EXPECT_TRUE(delete_future.Wait());
+
+  // Verify deletion worked.
+  base::test::TestFuture<std::vector<url::Origin>> issuers_future;
+  service->GetTokenIssuers(issuers_future.GetCallback());
+  auto issuers = issuers_future.Take();
+  EXPECT_EQ(issuers.size(), 1u);
+  EXPECT_EQ(issuers[0], url::Origin::Create(GURL("https://b.org")));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrivateVerificationTokensServiceBrowserTest,
+    DeleteTokensByFilter_NullFilterPendingBeforeInitialization_Success) {
+  Profile* profile = GetProfile();
+  PrivateVerificationTokensService* service =
+      PrivateVerificationTokensServiceFactory::GetForProfile(profile);
+  ASSERT_TRUE(service);
+
+  base::test::TestFuture<void> delete_future;
+
+  auto storage_key_filter =
+      base::RepeatingCallback<bool(const blink::StorageKey&)>();
+
+  service->DeleteTokensByFilter(base::Time::Min(), base::Time::Max(),
+                                storage_key_filter,
+                                delete_future.GetCallback());
+
+  EXPECT_FALSE(delete_future.IsReady());
+
+  WaitForInitialization(service);
+
+  EXPECT_TRUE(delete_future.Wait());
+
+  // Verify deletion worked.
+  base::test::TestFuture<std::vector<url::Origin>> issuers_future;
+  service->GetTokenIssuers(issuers_future.GetCallback());
+  auto issuers = issuers_future.Take();
+  EXPECT_EQ(issuers.size(), 0u);
 }
 
 }  // namespace

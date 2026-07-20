@@ -60,8 +60,22 @@ class PrivateVerificationTokensService
   // If `issuers` is an empty vector, the method terminates early and returns.
   void DeleteTokens(base::Time delete_begin,
                     base::Time delete_end,
-                    std::optional<std::vector<url::Origin>> issuers,
-                    base::OnceClosure callback);
+                    base::OnceClosure callback,
+                    std::optional<std::vector<url::Origin>> issuers);
+
+  // Delete tokens within a time range [delete_begin, delete_end) and matching a
+  // specified filter. If a null RepeatingCallback is supplied, delete all
+  // entries in the supplied time range.
+  void DeleteTokensByFilter(
+      base::Time delete_begin,
+      base::Time delete_end,
+      base::RepeatingCallback<bool(const blink::StorageKey&)>
+          storage_key_filter,
+      base::OnceClosure callback);
+
+  base::WeakPtr<PrivateVerificationTokensService> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  private:
   PrivateVerificationTokensService();

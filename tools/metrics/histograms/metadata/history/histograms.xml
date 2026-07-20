@@ -173,6 +173,8 @@ chromium-metrics-reviews@google.com.
     <variant name="OfflinePages" summary="OfflinePages"/>
     <variant name="Passwords" summary="Passwords"/>
     <variant name="PasswordsStatistics" summary="PasswordsStatistics"/>
+    <variant name="PrivateVerificationTokens"
+        summary="PrivateVerificationTokens"/>
     <variant name="ReportingCache" summary="ReportingCache"/>
     <variant name="SecurePaymentConfirmationCredentials"
         summary="SecurePaymentConfirmationCredentials"/>

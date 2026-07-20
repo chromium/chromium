@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_store.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -156,8 +157,8 @@ void PrivateVerificationTokensService::GetTokenIssuers(
 void PrivateVerificationTokensService::DeleteTokens(
     base::Time delete_begin,
     base::Time delete_end,
-    std::optional<std::vector<url::Origin>> issuers,
-    base::OnceClosure callback) {
+    base::OnceClosure callback,
+    std::optional<std::vector<url::Origin>> issuers) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if ((issuers.has_value() && issuers->empty()) || is_shutting_down_) {
     std::move(callback).Run();
@@ -168,13 +169,45 @@ void PrivateVerificationTokensService::DeleteTokens(
     pending_operations_.push_back(
         base::BindOnce(&PrivateVerificationTokensService::DeleteTokens,
                        weak_ptr_factory_.GetWeakPtr(), delete_begin, delete_end,
-                       std::move(issuers), std::move(callback)));
+                       std::move(callback), std::move(issuers)));
     return;
   }
 
   CHECK(store_);
   store_->DeleteTokens(delete_begin, delete_end, std::move(issuers),
                        std::move(callback));
+}
+
+void PrivateVerificationTokensService::DeleteTokensByFilter(
+    base::Time delete_begin,
+    base::Time delete_end,
+    base::RepeatingCallback<bool(const blink::StorageKey&)> storage_key_filter,
+    base::OnceClosure callback) {
+  // Since this method is composed of the other methods in this service, which
+  // handle uninitialized/pending state, we don't need to check and queue these
+  // calls up here.
+  if (storage_key_filter.is_null()) {
+    DeleteTokens(delete_begin, delete_end, std::move(callback), std::nullopt);
+    return;
+  }
+  base::OnceCallback<std::vector<url::Origin>(std::vector<url::Origin>)>
+      apply_filter_cb = base::BindOnce(
+          [](base::RepeatingCallback<bool(const blink::StorageKey&)>
+                 storage_key_filter,
+             std::vector<url::Origin> issuers) {
+            std::erase_if(issuers, [storage_key_filter](url::Origin issuer) {
+              return !storage_key_filter.Run(
+                  blink::StorageKey::CreateFirstParty(issuer));
+            });
+            return issuers;
+          },
+          storage_key_filter);
+
+  GetTokenIssuers(
+      std::move(apply_filter_cb)
+          .Then(base::BindOnce(&PrivateVerificationTokensService::DeleteTokens,
+                               weak_ptr_factory_.GetWeakPtr(), delete_begin,
+                               delete_end, std::move(callback))));
 }
 
 void PrivateVerificationTokensService::OnStoreInitialized() {

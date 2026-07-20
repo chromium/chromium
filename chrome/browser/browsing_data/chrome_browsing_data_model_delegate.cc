@@ -201,8 +201,8 @@ void ChromeBrowsingDataModelDelegate::RemoveDataKey(
               PrivateVerificationTokensServiceFactory::GetForProfile(
                   profile_)) {
         pvt_service->DeleteTokens(base::Time(), base::Time::Max(),
-                                  std::vector<url::Origin>{*origin},
-                                  concurrent.CreateClosure());
+                                  concurrent.CreateClosure(),
+                                  std::vector<url::Origin>{*origin});
       }
     }
   }

@@ -68,6 +68,8 @@
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
+#include "chrome/browser/private_verification_tokens/private_verification_tokens_service.h"
+#include "chrome/browser/private_verification_tokens/private_verification_tokens_service_factory.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
@@ -160,6 +162,7 @@
 #include "media/mojo/services/webrtc_video_perf_history.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/http/http_transaction_factory.h"
 #include "net/net_buildflags.h"
@@ -715,6 +718,30 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       ash::SystemProxyManager::Get()->ClearUserCredentials();
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // DATA_TYPE_PRIVATE_VERIFICATION_TOKENS
+  if (remove_mask & constants::DATA_TYPE_PRIVATE_VERIFICATION_TOKENS) {
+    if (base::FeatureList::IsEnabled(
+            net::features::kEnablePrivateVerificationTokens)) {
+      if (auto* pvt_service =
+              PrivateVerificationTokensServiceFactory::GetForProfile(
+                  profile_)) {
+        auto done_closure = CreateTaskCompletionClosure(
+            TracingDataType::kPrivateVerificationTokens);
+
+        if (filter_builder->MatchesAllOriginsAndDomains()) {
+          pvt_service->DeleteTokens(delete_begin_, delete_end_,
+                                    std::move(done_closure),
+                                    /*issuers=*/std::nullopt);
+        } else {
+          pvt_service->DeleteTokensByFilter(
+              delete_begin_, delete_end_,
+              filter_builder->BuildStorageKeyFilter(), std::move(done_closure));
+        }
+      }
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -1627,6 +1654,8 @@ const char* ChromeBrowsingDataRemoverDelegate::GetHistogramSuffix(
       return "WebrtcVideoPerfHistory";
     case TracingDataType::kMediaDeviceSalts:
       return "MediaDeviceSalts";
+    case TracingDataType::kPrivateVerificationTokens:
+      return "PrivateVerificationTokens";
   }
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/history/histograms.xml:History.ClearBrowsingData.Duration.ChromeTask.Task)
