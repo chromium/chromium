@@ -6,6 +6,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/android/tab_android.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -19,6 +20,16 @@
 using base::android::AttachCurrentThread;
 
 namespace context_sharing {
+
+namespace {
+using ManagerInitializedCallbackList =
+    base::RepeatingCallbackList<void(ui::WindowAndroid*)>;
+
+ManagerInitializedCallbackList& GetManagerInitializedCallbackList() {
+  static base::NoDestructor<ManagerInitializedCallbackList> s_list;
+  return *s_list;
+}
+}  // namespace
 
 void JNI_TabBottomSheetNativeInterface_OnClosed(
     JNIEnv* env,
@@ -40,6 +51,12 @@ void JNI_TabBottomSheetNativeInterface_OnOpened(
     bool is_expanded) {
   reinterpret_cast<TabBottomSheetBridge*>(native_tab_bottom_sheet_bridge)
       ->OnOpened(env, is_expanded);
+}
+
+void JNI_TabBottomSheetNativeInterface_OnManagerInitialized(
+    JNIEnv* env,
+    ui::WindowAndroid* window_android) {
+  GetManagerInitializedCallbackList().Notify(window_android);
 }
 
 TabBottomSheetBridge::TabBottomSheetBridge(Observer* observer,
@@ -77,6 +94,20 @@ void TabBottomSheetBridge::Close(bool animate) {
 void TabBottomSheetBridge::SuppressBottomSheetForTesting(bool suppress) {
   Java_TabBottomSheetNativeInterface_suppressBottomSheetForTesting(  // IN-TEST
       AttachCurrentThread(), java_bridge_, suppress);                // IN-TEST
+}
+
+bool TabBottomSheetBridge::IsManagerReady() const {
+  if (!java_bridge_) {
+    return false;
+  }
+  return Java_TabBottomSheetNativeInterface_isManagerReady(
+      AttachCurrentThread(), java_bridge_);
+}
+
+base::CallbackListSubscription
+TabBottomSheetBridge::RegisterManagerInitializedCallback(
+    ManagerInitializedCallback callback) {
+  return GetManagerInitializedCallbackList().Add(std::move(callback));
 }
 
 void TabBottomSheetBridge::OnClosed(JNIEnv* env) {

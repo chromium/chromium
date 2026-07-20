@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_CONTEXT_SHARING_TAB_BOTTOM_SHEET_ANDROID_TAB_BOTTOM_SHEET_BRIDGE_H_
 
 #include "base/android/scoped_java_ref.h"
+#include "base/callback_list.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/observer_list_types.h"
 
@@ -13,6 +15,10 @@ class TabAndroid;
 
 namespace tabs {
 class TabInterface;
+}
+
+namespace ui {
+class WindowAndroid;
 }
 
 namespace context_sharing {
@@ -55,6 +61,19 @@ class TabBottomSheetBridge {
   void Close(bool animate);
 
   void SuppressBottomSheetForTesting(bool suppress);
+
+  // Returns true if the Java TabBottomSheetManager is initialized for the tab's
+  // current WindowAndroid.
+  bool IsManagerReady() const;
+
+  using ManagerInitializedCallback =
+      base::RepeatingCallback<void(ui::WindowAndroid*)>;
+  // Registers a callback to be notified when a Java TabBottomSheetManager
+  // completes layout initialization for a WindowAndroid. Allows C++ clients
+  // (e.g. Glic) to defer presentation requests until layout infrastructure is
+  // ready.
+  static base::CallbackListSubscription RegisterManagerInitializedCallback(
+      ManagerInitializedCallback callback);
 
   // Called by Java when the bottom sheet is closed.
   void OnClosed(JNIEnv* env);

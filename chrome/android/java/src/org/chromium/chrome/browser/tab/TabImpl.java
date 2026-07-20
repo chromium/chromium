@@ -3157,6 +3157,10 @@ class TabImpl implements Tab, TabInternal {
         mCurrentTabSupplier.removeObserver(mActiveTabObserver);
         mCurrentTabSupplier.removeLookAheadObserver(mActiveTabLookAheadObserver);
         mCurrentTabSupplier = null;
+        // Reset cached active state when detaching supplier (e.g. activity recreation or tab model
+        // changes). This ensures mActiveTabObserver re-evaluates tab state and re-fires
+        // sendDidActivateUpdate upon reattaching.
+        mWasLastActive = null;
     }
 
     void setNativePtrForTesting(long nativePtr) {

@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.tab_bottom_sheet;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.view.Window;
 
 import androidx.annotation.IntDef;
 
@@ -282,6 +284,43 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
         mOmniboxFocusStateSupplier.addSyncObserverAndPostIfNonNull(mOmniboxFocusObserver);
 
         TabBottomSheetUtils.attachManagerToWindow(windowAndroid, this);
+        // Defer sending onManagerInitialized to C++ until the activity's window has non-zero
+        // height. During early activity restoration/recreation, layout passes haven't run yet
+        // (decorView.getHeight() == 0). Sending the initialization event after layout pass
+        // guarantees full layout height is available when C++ calculates bottom sheet dimensions.
+        Window window = windowAndroid.getWindow();
+        if (window != null) {
+            View decorView = window.getDecorView();
+            if (decorView.getHeight() > 0) {
+                TabBottomSheetNativeInterfaceJni.get().onManagerInitialized(windowAndroid);
+            } else {
+                decorView.addOnLayoutChangeListener(
+                        new View.OnLayoutChangeListener() {
+                            @Override
+                            public void onLayoutChange(
+                                    View v,
+                                    int left,
+                                    int top,
+                                    int right,
+                                    int bottom,
+                                    int oldLeft,
+                                    int oldTop,
+                                    int oldRight,
+                                    int oldBottom) {
+                                if (decorView.getHeight() > 0) {
+                                    decorView.removeOnLayoutChangeListener(this);
+                                    if (TabBottomSheetUtils.getManagerFromWindow(windowAndroid)
+                                            != null) {
+                                        TabBottomSheetNativeInterfaceJni.get()
+                                                .onManagerInitialized(windowAndroid);
+                                    }
+                                }
+                            }
+                        });
+            }
+        } else {
+            TabBottomSheetNativeInterfaceJni.get().onManagerInitialized(windowAndroid);
+        }
     }
 
     /**

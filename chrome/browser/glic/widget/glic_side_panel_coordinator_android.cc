@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/public/widget/glic_side_panel_coordinator_android.h"
 
 #include <climits>
+#include <utility>
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/android/window_android.h"
 
 namespace glic {
 
@@ -41,6 +43,11 @@ GlicSidePanelCoordinatorAndroid::GlicSidePanelCoordinatorAndroid(
       CreateBottomSheetContentProvider());
   tab_bottom_sheet_bridge_ =
       std::make_unique<context_sharing::TabBottomSheetBridge>(this, tab);
+  manager_initialized_subscription_ =
+      context_sharing::TabBottomSheetBridge::RegisterManagerInitializedCallback(
+          base::BindRepeating(
+              &GlicSidePanelCoordinatorAndroid::OnManagerInitialized,
+              base::Unretained(this)));
 }
 
 GlicSidePanelCoordinatorAndroid::~GlicSidePanelCoordinatorAndroid() = default;
@@ -58,6 +65,14 @@ void GlicSidePanelCoordinatorAndroid::Show(const ShowOptions& options) {
 
   if (!tab_->IsActivated()) {
     SetState(State::kBackgrounded);
+    return;
+  }
+
+  // If the Java bottom sheet manager layout infrastructure is not ready yet
+  // (e.g. during startup or activity recreation before layout inflation
+  // completes), defer showing Glic until OnManagerInitialized.
+  if (!tab_bottom_sheet_bridge_->IsManagerReady()) {
+    pending_show_options_ = options;
     return;
   }
 
@@ -81,6 +96,7 @@ void GlicSidePanelCoordinatorAndroid::Show(const ShowOptions& options) {
     // future Close() calls.
     SetState(State::kClosed);
   }
+  pending_show_options_.reset();
 }
 
 void GlicSidePanelCoordinatorAndroid::SetWebContents(
@@ -94,6 +110,7 @@ void GlicSidePanelCoordinatorAndroid::SetWebContents(
 }
 
 void GlicSidePanelCoordinatorAndroid::Close(const CloseOptions& options) {
+  pending_show_options_.reset();
   if (state_ == State::kClosed) {
     return;
   }
@@ -159,6 +176,7 @@ void GlicSidePanelCoordinatorAndroid::OnTabDidActivate(
 
 void GlicSidePanelCoordinatorAndroid::OnTabWillDeactivate(
     tabs::TabInterface* tab) {
+  pending_show_options_.reset();
   if (state_ == State::kClosed) {
     return;
   }
@@ -174,6 +192,7 @@ void GlicSidePanelCoordinatorAndroid::OnTabWillDetach(
   // detaching, so that Glic is correctly deactivated. This handles cases where
   // the tab is being deleted, or moved to another window (such as during a
   // foldable fold/unfold).
+  pending_show_options_.reset();
   if (state_ != State::kClosed) {
     SetState(State::kBackgrounded);
     tab_bottom_sheet_bridge_->Close(/* animate= */ false);
@@ -181,6 +200,7 @@ void GlicSidePanelCoordinatorAndroid::OnTabWillDetach(
 }
 
 void GlicSidePanelCoordinatorAndroid::OnClosed() {
+  pending_show_options_.reset();
   if (state_ == State::kBackgrounded) {
     return;
   }
@@ -191,6 +211,25 @@ void GlicSidePanelCoordinatorAndroid::OnSuppressed() {}
 
 void GlicSidePanelCoordinatorAndroid::OnOpened(bool is_expanded) {
   SetState(is_expanded ? State::kShown : State::kPeek);
+}
+
+void GlicSidePanelCoordinatorAndroid::OnManagerInitialized(
+    ui::WindowAndroid* window) {
+  if (!pending_show_options_.has_value()) {
+    return;
+  }
+
+  // Verify that the window being initialized corresponds to the WindowAndroid
+  // hosting this tab.
+  content::WebContents* web_contents = tab_->GetContents();
+  ui::WindowAndroid* tab_window =
+      web_contents ? web_contents->GetTopLevelNativeWindow() : nullptr;
+
+  if (tab_window == window) {
+    ShowOptions options = std::exchange(pending_show_options_, std::nullopt)
+                              .value_or(ShowOptions());
+    Show(options);
+  }
 }
 
 base::android::ScopedJavaLocalRef<jobject>

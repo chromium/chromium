@@ -8,12 +8,14 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.CalledByNativeForTesting;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager.NativeInterfaceDelegate;
+import org.chromium.ui.base.WindowAndroid;
 
 /** Interface for native methods to interact with the tab bottom sheet. */
 @NullMarked
@@ -37,6 +39,15 @@ public class TabBottomSheetNativeInterface implements NativeInterfaceDelegate {
             tabBottomSheetManager.detachNativeInterfaceDelegate(this);
         }
         mTab = null;
+    }
+
+    /**
+     * Checks if a TabBottomSheetManager instance is initialized and bound to the tab's current
+     * WindowAndroid.
+     */
+    @CalledByNative
+    public boolean isManagerReady() {
+        return getTabBottomSheetManager(mTab) != null;
     }
 
     // Native calls for glic.
@@ -100,5 +111,7 @@ public class TabBottomSheetNativeInterface implements NativeInterfaceDelegate {
         void onSuppressed(long nativeTabBottomSheetBridge);
 
         void onOpened(long nativeTabBottomSheetBridge, boolean isExpanded);
+
+        void onManagerInitialized(@JniType("ui::WindowAndroid*") WindowAndroid windowAndroid);
     }
 }
