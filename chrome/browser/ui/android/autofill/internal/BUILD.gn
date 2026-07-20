@@ -158,6 +158,7 @@ android_library("javatests") {
     "//components/browser_ui/bottomsheet/android:factory_java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/bottomsheet/android:manager_java",
+    "//components/browser_ui/bottomsheet/android/test:java",
     "//components/browser_ui/desktop_windowing/android:java",
     "//components/browser_ui/widget/android:java",
     "//content/public/test/android:content_java_test_support",

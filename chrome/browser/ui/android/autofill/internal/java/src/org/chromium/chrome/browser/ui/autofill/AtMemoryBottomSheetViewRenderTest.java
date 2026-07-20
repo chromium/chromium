@@ -53,6 +53,7 @@ import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -193,6 +194,7 @@ public class AtMemoryBottomSheetViewRenderTest {
                     mBottomSheetController.requestShowContent(content, false);
                 });
 
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
         ViewUtils.waitForStableView(mView.getContentView());
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -233,6 +235,7 @@ public class AtMemoryBottomSheetViewRenderTest {
                     mBottomSheetController.requestShowContent(content, false);
                 });
 
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
         ViewUtils.waitForStableView(mView.getContentView());
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -276,6 +279,7 @@ public class AtMemoryBottomSheetViewRenderTest {
                     mBottomSheetController.requestShowContent(content, false);
                 });
 
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
         ViewUtils.waitForStableView(mView.getContentView());
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -312,6 +316,7 @@ public class AtMemoryBottomSheetViewRenderTest {
                     mBottomSheetController.requestShowContent(content, false);
                 });
 
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
         ViewUtils.waitForStableView(mView.getContentView());
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -326,19 +331,8 @@ public class AtMemoryBottomSheetViewRenderTest {
                 "at_memory_bottom_sheet_view_zero_state");
     }
 
-    private static PropertyModel createSuggestionModel(
-            String title, String details, int iconResId, boolean isFlyoutVisible) {
-        return new PropertyModel.Builder(SuggestionItemProperties.ALL_KEYS)
-                .with(TITLE, title)
-                .with(DETAILS, details)
-                .with(ICON, iconResId)
-                .with(IS_FLYOUT_VISIBLE, isFlyoutVisible)
-                .build();
-    }
-
     @Test
     @Feature({"RenderTest"})
-    @DisabledTest(message = "Enabled after fixing crbug.com/535894236")
     public void testAtMemoryBottomSheetFlyoutScreen() throws Exception {
         ContextThemeWrapper themeWrapper =
                 new ContextThemeWrapper(mActivity, R.style.Theme_BrowserUI_DayNight);
@@ -375,9 +369,20 @@ public class AtMemoryBottomSheetViewRenderTest {
                     mBottomSheetController.requestShowContent(content, false);
                 });
 
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
         ViewUtils.waitForStableView(mView.getContentView());
         mRenderTestRule.render(
                 mActivity.findViewById(android.R.id.content), "at_memory_flyout_screen");
+    }
+
+    private static PropertyModel createSuggestionModel(
+            String title, String details, int iconResId, boolean isFlyoutVisible) {
+        return new PropertyModel.Builder(SuggestionItemProperties.ALL_KEYS)
+                .with(TITLE, title)
+                .with(DETAILS, details)
+                .with(ICON, iconResId)
+                .with(IS_FLYOUT_VISIBLE, isFlyoutVisible)
+                .build();
     }
 
     private AutofillSuggestion createManageSuggestion() {
