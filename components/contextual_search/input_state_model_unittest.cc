@@ -1130,6 +1130,140 @@ TEST_F(InputStateModelCompatibilityTest, ForcedDisabledToolsAndInputTypes) {
                   omnibox::InputType::INPUT_TYPE_BROWSER_TAB)));
 }
 
+TEST_F(InputStateModelCompatibilityTest,
+       SmartTabSharingActiveDisablesIncompatibleToolsAndModels) {
+  // Set up rules for Canvas and Image Gen to allow some inputs, so they are
+  // enabled initially.
+  for (auto& tool_config : *config_.mutable_tool_configs()) {
+    if (tool_config.tool() == omnibox::ToolMode::TOOL_MODE_CANVAS ||
+        tool_config.tool() == omnibox::ToolMode::TOOL_MODE_IMAGE_GEN) {
+      auto* rule = tool_config.mutable_rule();
+      rule->set_tool(tool_config.tool());
+      rule->add_allowed_input_types(omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
+    }
+  }
+
+  // Set up rule for Gemini Pro to NOT allow Tab.
+  for (auto& model_config : *config_.mutable_model_configs()) {
+    if (model_config.model() == omnibox::ModelMode::MODEL_MODE_GEMINI_PRO) {
+      auto* rule = model_config.mutable_rule();
+      rule->clear_allowed_input_types();
+      rule->add_allowed_input_types(omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
+      rule->add_allowed_input_types(omnibox::InputType::INPUT_TYPE_LENS_FILE);
+      break;
+    }
+  }
+
+  // Re-create the model with the modified config.
+  input_state_model_ = std::make_unique<InputStateModel>(
+      session_handle_, config_, active_url_, /*is_off_the_record=*/false,
+      /*browser_identity_matches_aim_identity=*/false);
+  input_state_model_->SetPrefService(&pref_service_);
+  input_state_model_->setActiveModel(
+      omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
+
+  // Now they should be enabled initially.
+  auto state = input_state_model_->get_state_for_testing();
+  EXPECT_THAT(
+      state.disabled_tools,
+      testing::Not(testing::Contains(omnibox::ToolMode::TOOL_MODE_CANVAS)));
+  EXPECT_THAT(
+      state.disabled_tools,
+      testing::Not(testing::Contains(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN)));
+  EXPECT_THAT(state.disabled_models,
+              testing::Not(testing::Contains(
+                  omnibox::ModelMode::MODEL_MODE_GEMINI_PRO)));
+
+  // Enable Smart Tab Sharing.
+  input_state_model_->SetSmartTabSharingActive(true);
+  state = input_state_model_->get_state_for_testing();
+
+  // Canvas, Image Gen, and Gemini Pro should now be disabled because they are
+  // incompatible with browser tab input.
+  EXPECT_THAT(state.disabled_tools,
+              testing::Contains(omnibox::ToolMode::TOOL_MODE_CANVAS));
+  EXPECT_THAT(state.disabled_tools,
+              testing::Contains(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN));
+  EXPECT_THAT(state.disabled_models,
+              testing::Contains(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO));
+
+  // Disable Smart Tab Sharing.
+  input_state_model_->SetSmartTabSharingActive(false);
+  state = input_state_model_->get_state_for_testing();
+
+  // They should be enabled again.
+  EXPECT_THAT(
+      state.disabled_tools,
+      testing::Not(testing::Contains(omnibox::ToolMode::TOOL_MODE_CANVAS)));
+  EXPECT_THAT(
+      state.disabled_tools,
+      testing::Not(testing::Contains(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN)));
+  EXPECT_THAT(state.disabled_models,
+              testing::Not(testing::Contains(
+                  omnibox::ModelMode::MODEL_MODE_GEMINI_PRO)));
+}
+
+TEST_F(InputStateModelCompatibilityTest,
+       IncompatibleToolOrModelDisablesBrowserTabInput) {
+  // Set up rule for Canvas to allow Image (not Tab).
+  for (auto& tool_config : *config_.mutable_tool_configs()) {
+    if (tool_config.tool() == omnibox::ToolMode::TOOL_MODE_CANVAS) {
+      auto* rule = tool_config.mutable_rule();
+      rule->set_tool(tool_config.tool());
+      rule->add_allowed_input_types(omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
+      break;
+    }
+  }
+
+  // Set up rule for Gemini Pro to NOT allow Tab.
+  for (auto& model_config : *config_.mutable_model_configs()) {
+    if (model_config.model() == omnibox::ModelMode::MODEL_MODE_GEMINI_PRO) {
+      auto* rule = model_config.mutable_rule();
+      rule->clear_allowed_input_types();
+      rule->add_allowed_input_types(omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
+      rule->add_allowed_input_types(omnibox::InputType::INPUT_TYPE_LENS_FILE);
+      break;
+    }
+  }
+
+  // Re-create the model with the modified config.
+  input_state_model_ = std::make_unique<InputStateModel>(
+      session_handle_, config_, active_url_, /*is_off_the_record=*/false,
+      /*browser_identity_matches_aim_identity=*/false);
+  input_state_model_->SetPrefService(&pref_service_);
+  input_state_model_->setActiveModel(
+      omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
+
+  // Initially, browser tab input should not be disabled.
+  auto state = input_state_model_->get_state_for_testing();
+  EXPECT_THAT(state.disabled_input_types,
+              testing::Not(testing::Contains(
+                  omnibox::InputType::INPUT_TYPE_BROWSER_TAB)));
+
+  // Select Canvas.
+  input_state_model_->setActiveTool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  state = input_state_model_->get_state_for_testing();
+
+  // Browser tab input should be disabled.
+  EXPECT_THAT(state.disabled_input_types,
+              testing::Contains(omnibox::InputType::INPUT_TYPE_BROWSER_TAB));
+
+  // Reset tool.
+  input_state_model_->setActiveTool(omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
+  state = input_state_model_->get_state_for_testing();
+  EXPECT_THAT(state.disabled_input_types,
+              testing::Not(testing::Contains(
+                  omnibox::InputType::INPUT_TYPE_BROWSER_TAB)));
+
+  // Select Gemini Pro.
+  input_state_model_->setActiveModel(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  state = input_state_model_->get_state_for_testing();
+
+  // Browser tab input should be disabled.
+  EXPECT_THAT(state.disabled_input_types,
+              testing::Contains(omnibox::InputType::INPUT_TYPE_BROWSER_TAB));
+}
+
 TEST_F(InputStateModelTest, UpdateModelFromUrl) {
   omnibox::SearchboxConfig config;
 
