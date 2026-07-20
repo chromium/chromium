@@ -10,21 +10,23 @@
  */
 
 import '../controls/settings_toggle_button.js';
-import '../settings_shared.css.js';
 
 import type {AxAnnotationsBrowserProxy} from '/shared/settings/a11y_page/ax_annotations_browser_proxy.js';
 import {AxAnnotationsBrowserProxyImpl, ScreenAiInstallStatus} from '/shared/settings/a11y_page/ax_annotations_browser_proxy.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+import {getCss as getSettingsSharedCss} from '../settings_shared_lit.css.js';
 
-import {getTemplate} from './ax_annotations_section.html.js';
+import {getHtml} from './ax_annotations_section.html.js';
 
 const SettingsAxAnnotationsSectionBaseElement =
-    WebUiListenerMixin(I18nMixin(PolymerElement));
+    WebUiListenerMixinLit(I18nMixinLit(CrLitElement));
+
+export type AxAnnotationsSectionElement = SettingsAxAnnotationsSectionElement;
 
 export class SettingsAxAnnotationsSectionElement extends
     SettingsAxAnnotationsSectionBaseElement {
@@ -32,30 +34,37 @@ export class SettingsAxAnnotationsSectionElement extends
     return 'settings-ax-annotations-section' as const;
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return [
+      getSettingsSharedCss(),
+    ];
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * `screenAIProgress_` stores the downloading progress in percentage of
        * the ScreenAI library, which ranges from 0.0 to 100.0.
        */
-      screenAIProgress_: Number,
+      screenAIProgress_: {type: Number},
 
       /**
        * `screenAIStatus_` stores the ScreenAI library install state.
        */
-      screenAIStatus_: Number,
+      screenAIStatus_: {type: Number},
     };
   }
 
   private browserProxy_: AxAnnotationsBrowserProxy =
       AxAnnotationsBrowserProxyImpl.getInstance();
 
-  declare private screenAIProgress_: number;
-  declare private screenAIStatus_: ScreenAiInstallStatus;
+  protected accessor screenAIProgress_: number = 0;
+  protected accessor screenAIStatus_: ScreenAiInstallStatus =
+      ScreenAiInstallStatus.NOT_DOWNLOADED;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -73,7 +82,7 @@ export class SettingsAxAnnotationsSectionElement extends
         });
   }
 
-  private getMainNodeAnnotationsToggleSublabel_(): string {
+  protected getMainNodeAnnotationsToggleSublabel_(): string {
     switch (this.screenAIStatus_) {
       case ScreenAiInstallStatus.DOWNLOADING:
         return this.screenAIProgress_ > 0 && this.screenAIProgress_ < 100 ?
@@ -98,8 +107,7 @@ export class SettingsAxAnnotationsSectionElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    [SettingsAxAnnotationsSectionElement.is]:
-        SettingsAxAnnotationsSectionElement;
+    'settings-ax-annotations-section': SettingsAxAnnotationsSectionElement;
   }
 }
 

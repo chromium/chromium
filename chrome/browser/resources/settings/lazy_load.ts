@@ -125,7 +125,8 @@ import './your_saved_info_page/suggestions_from_gemini_subpage.js';
 import './your_saved_info_page/travel_page.js';
 
 // <if expr="not is_chromeos">
-export {ScreenAiInstallStatus} from '/shared/settings/a11y_page/ax_annotations_browser_proxy.js';
+export {AxAnnotationsBrowserProxyImpl, ScreenAiInstallStatus} from '/shared/settings/a11y_page/ax_annotations_browser_proxy.js';
+export type {AxAnnotationsBrowserProxy} from '/shared/settings/a11y_page/ax_annotations_browser_proxy.js';
 export {CaptionsBrowserProxyImpl} from '/shared/settings/a11y_page/captions_browser_proxy.js';
 export type {CaptionsBrowserProxy, LiveCaptionLanguageList} from '/shared/settings/a11y_page/captions_browser_proxy.js';
 // </if>

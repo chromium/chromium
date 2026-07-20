@@ -7,231 +7,202 @@
  * settings on chrome://settings/captions.
  */
 
-import '//resources/cr_elements/cr_shared_style.css.js';
 import '../controls/settings_dropdown_menu.js';
 import '../controls/settings_slider.js';
 import '../settings_page/settings_subpage.js';
-import '../settings_shared.css.js';
 import './live_caption.js';
 
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {FontsData} from '/shared/settings/appearance_page/fonts_browser_proxy.js';
 import {FontsBrowserProxyImpl} from '/shared/settings/appearance_page/fonts_browser_proxy.js';
-import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
+import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 
 import type {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
-import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
+import {SettingsViewMixinLit} from '../settings_page/settings_view_mixin_lit.js';
 
-import {getTemplate} from './captions_page.html.js';
+import {getCss} from './captions_page.css.js';
+import {getHtml} from './captions_page.html.js';
 
-const SettingsCaptionsElementBase =
-    SettingsViewMixin(PrefServiceObserverMixin(PolymerElement));
+const SettingsCaptionsPageElementBase =
+    SettingsViewMixinLit(PrefServiceObserverMixinLit(CrLitElement));
 
-export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
+export type CaptionsPageElement = SettingsCaptionsPageElement;
+
+export class SettingsCaptionsPageElement extends
+    SettingsCaptionsPageElementBase {
   static get is() {
     return 'settings-captions-page';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      /**
-       * List of options for the background opacity drop-down menu.
-       */
-      backgroundOpacityOptions_: {
-        readOnly: true,
-        type: Array,
-        value() {
-          return [
-            {
-              value: 100,  // Default
-              name: loadTimeData.getString('captionsOpacityOpaque'),
-            },
-            {
-              value: 50,
-              name: loadTimeData.getString('captionsOpacitySemiTransparent'),
-            },
-            {
-              value: 0,
-              name: loadTimeData.getString('captionsOpacityTransparent'),
-            },
-          ];
-        },
-      },
-
-      /**
-       * List of options for the color drop-down menu.
-       */
-      colorOptions_: {
-        readOnly: true,
-        type: Array,
-        value() {
-          return [
-            {value: '', name: loadTimeData.getString('captionsDefaultSetting')},
-            {
-              value: '0,0,0',
-              name: loadTimeData.getString('captionsColorBlack'),
-            },
-            {
-              value: '255,255,255',
-              name: loadTimeData.getString('captionsColorWhite'),
-            },
-            {
-              value: '255,0,0',
-              name: loadTimeData.getString('captionsColorRed'),
-            },
-            {
-              value: '0,255,0',
-              name: loadTimeData.getString('captionsColorGreen'),
-            },
-            {
-              value: '0,0,255',
-              name: loadTimeData.getString('captionsColorBlue'),
-            },
-            {
-              value: '255,255,0',
-              name: loadTimeData.getString('captionsColorYellow'),
-            },
-            {
-              value: '0,255,255',
-              name: loadTimeData.getString('captionsColorCyan'),
-            },
-            {
-              value: '255,0,255',
-              name: loadTimeData.getString('captionsColorMagenta'),
-            },
-          ];
-        },
-      },
-
-      /**
-       * List of fonts populated by the fonts browser proxy.
-       */
-      textFontOptions_: Object,
-
-      /**
-       * List of options for the text opacity drop-down menu.
-       */
-      textOpacityOptions_: {
-        readOnly: true,
-        type: Array,
-        value() {
-          return [
-            {
-              value: 100,  // Default
-              name: loadTimeData.getString('captionsOpacityOpaque'),
-            },
-            {
-              value: 50,
-              name: loadTimeData.getString('captionsOpacitySemiTransparent'),
-            },
-            {
-              value: 10,
-              name: loadTimeData.getString('captionsOpacityTransparent'),
-            },
-          ];
-        },
-      },
-
-      /**
-       * List of options for the text shadow drop-down menu.
-       *
-       * Other clients are relying on these values to determine text shadow type
-       * from preference. Please update the following files if any of these
-       * values are changed:
-       * https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/resources/ash/settings/os_a11y_page/captions_subpage.ts;l=142-170;drc=0918c7f73782a9575396f0c6b80a722b5a3d255a
-       * https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/arc/intent_helper/arc_settings_service.cc;l=86-94;drc=a782e6ac5124014b8473c9e7e445d799624b532c
-       */
-      textShadowOptions_: {
-        readOnly: true,
-        type: Array,
-        value() {
-          return [
-            {value: '', name: loadTimeData.getString('captionsTextShadowNone')},
-            {
-              value: '-2px -2px 4px rgba(0, 0, 0, 0.5)',
-              name: loadTimeData.getString('captionsTextShadowRaised'),
-            },
-            {
-              value: '2px 2px 4px rgba(0, 0, 0, 0.5)',
-              name: loadTimeData.getString('captionsTextShadowDepressed'),
-            },
-            {
-              value: '-1px 0px 0px black, ' +
-                  '0px -1px 0px black, 1px 0px 0px black, 0px  1px 0px black',
-              name: loadTimeData.getString('captionsTextShadowUniform'),
-            },
-            {
-              value: '0px 0px 2px rgba(0, 0, 0, 0.5), 2px 2px 2px black',
-              name: loadTimeData.getString('captionsTextShadowDropShadow'),
-            },
-          ];
-        },
-      },
-
-      /**
-       * List of options for the text size drop-down menu.
-       */
-      textSizeOptions_: {
-        readOnly: true,
-        type: Array,
-        value() {
-          return [
-            {value: '25%', name: loadTimeData.getString('verySmall')},
-            {value: '50%', name: loadTimeData.getString('small')},
-            {
-              value: '',
-              name: loadTimeData.getString('medium'),
-            },  // Default = 100%
-            {value: '150%', name: loadTimeData.getString('large')},
-            {value: '200%', name: loadTimeData.getString('veryLarge')},
-          ];
-        },
-      },
-
-      enableLiveCaption_: {
-        type: Boolean,
-        value: function() {
-          return loadTimeData.getBoolean('enableLiveCaption');
-        },
-      },
-
-      backgroundColorPref_: Object,
-      backgroundOpacityPref_: Object,
-      textColorPref_: Object,
-      textFontPref_: Object,
-      textOpacityPref_: Object,
-      textShadowPref_: Object,
-      textSizePref_: Object,
+      backgroundOpacityOptions_: {type: Array},
+      colorOptions_: {type: Array},
+      textFontOptions_: {type: Array},
+      textOpacityOptions_: {type: Array},
+      textShadowOptions_: {type: Array},
+      textSizeOptions_: {type: Array},
+      enableLiveCaption_: {type: Boolean},
+      backgroundColorPref_: {type: Object},
+      backgroundOpacityPref_: {type: Object},
+      textColorPref_: {type: Object},
+      textFontPref_: {type: Object},
+      textOpacityPref_: {type: Object},
+      textShadowPref_: {type: Object},
+      textSizePref_: {type: Object},
     };
   }
 
-  declare private readonly backgroundOpacityOptions_: DropdownMenuOptionList;
-  declare private readonly colorOptions_: DropdownMenuOptionList;
-  declare private textFontOptions_: DropdownMenuOptionList;
-  declare private readonly textOpacityOptions_: DropdownMenuOptionList;
-  declare private readonly textShadowOptions_: DropdownMenuOptionList;
-  declare private readonly textSizeOptions_: DropdownMenuOptionList;
-  declare private enableLiveCaption_: boolean;
+  /**
+   * List of options for the background opacity drop-down menu.
+   */
+  protected accessor backgroundOpacityOptions_: DropdownMenuOptionList = [
+    {
+      value: 100,  // Default
+      name: loadTimeData.getString('captionsOpacityOpaque'),
+    },
+    {
+      value: 50,
+      name: loadTimeData.getString('captionsOpacitySemiTransparent'),
+    },
+    {
+      value: 0,
+      name: loadTimeData.getString('captionsOpacityTransparent'),
+    },
+  ];
 
-  declare private backgroundColorPref_:
+  /**
+   * List of options for the color drop-down menu.
+   */
+  protected accessor colorOptions_: DropdownMenuOptionList = [
+    {value: '', name: loadTimeData.getString('captionsDefaultSetting')},
+    {
+      value: '0,0,0',
+      name: loadTimeData.getString('captionsColorBlack'),
+    },
+    {
+      value: '255,255,255',
+      name: loadTimeData.getString('captionsColorWhite'),
+    },
+    {
+      value: '255,0,0',
+      name: loadTimeData.getString('captionsColorRed'),
+    },
+    {
+      value: '0,255,0',
+      name: loadTimeData.getString('captionsColorGreen'),
+    },
+    {
+      value: '0,0,255',
+      name: loadTimeData.getString('captionsColorBlue'),
+    },
+    {
+      value: '255,255,0',
+      name: loadTimeData.getString('captionsColorYellow'),
+    },
+    {
+      value: '0,255,255',
+      name: loadTimeData.getString('captionsColorCyan'),
+    },
+    {
+      value: '255,0,255',
+      name: loadTimeData.getString('captionsColorMagenta'),
+    },
+  ];
+
+  /**
+   * List of fonts populated by the fonts browser proxy.
+   */
+  protected accessor textFontOptions_: DropdownMenuOptionList = [];
+
+  /**
+   * List of options for the text opacity drop-down menu.
+   */
+  protected accessor textOpacityOptions_: DropdownMenuOptionList = [
+    {
+      value: 100,  // Default
+      name: loadTimeData.getString('captionsOpacityOpaque'),
+    },
+    {
+      value: 50,
+      name: loadTimeData.getString('captionsOpacitySemiTransparent'),
+    },
+    {
+      value: 10,
+      name: loadTimeData.getString('captionsOpacityTransparent'),
+    },
+  ];
+
+  /**
+   * List of options for the text shadow drop-down menu.
+   *
+   * Other clients are relying on these values to determine text shadow type
+   * from preference. Please update the following files if any of these
+   * values are changed:
+   * https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/resources/ash/settings/os_a11y_page/captions_subpage.ts;l=142-170;drc=0918c7f73782a9575396f0c6b80a722b5a3d255a
+   * https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/arc/intent_helper/arc_settings_service.cc;l=86-94;drc=a782e6ac5124014b8473c9e7e445d799624b532c
+   */
+  protected accessor textShadowOptions_: DropdownMenuOptionList = [
+    {value: '', name: loadTimeData.getString('captionsTextShadowNone')},
+    {
+      value: '-2px -2px 4px rgba(0, 0, 0, 0.5)',
+      name: loadTimeData.getString('captionsTextShadowRaised'),
+    },
+    {
+      value: '2px 2px 4px rgba(0, 0, 0, 0.5)',
+      name: loadTimeData.getString('captionsTextShadowDepressed'),
+    },
+    {
+      value: '-1px 0px 0px black, ' +
+          '0px -1px 0px black, 1px 0px 0px black, 0px  1px 0px black',
+      name: loadTimeData.getString('captionsTextShadowUniform'),
+    },
+    {
+      value: '0px 0px 2px rgba(0, 0, 0, 0.5), 2px 2px 2px black',
+      name: loadTimeData.getString('captionsTextShadowDropShadow'),
+    },
+  ];
+
+  /**
+   * List of options for the text size drop-down menu.
+   */
+  protected accessor textSizeOptions_: DropdownMenuOptionList = [
+    {value: '25%', name: loadTimeData.getString('verySmall')},
+    {value: '50%', name: loadTimeData.getString('small')},
+    {
+      value: '',
+      name: loadTimeData.getString('medium'),
+    },  // Default = 100%
+    {value: '150%', name: loadTimeData.getString('large')},
+    {value: '200%', name: loadTimeData.getString('veryLarge')},
+  ];
+
+  protected accessor enableLiveCaption_: boolean =
+      loadTimeData.getBoolean('enableLiveCaption');
+
+  protected accessor backgroundColorPref_:
       chrome.settingsPrivate.PrefObject<string>|undefined;
-  declare private backgroundOpacityPref_:
+  protected accessor backgroundOpacityPref_:
       chrome.settingsPrivate.PrefObject<number>|undefined;
-  declare private textColorPref_: chrome.settingsPrivate.PrefObject<string>|
+  protected accessor textColorPref_: chrome.settingsPrivate.PrefObject<string>|
       undefined;
-  declare private textFontPref_: chrome.settingsPrivate.PrefObject<string>|
+  protected accessor textFontPref_: chrome.settingsPrivate.PrefObject<string>|
       undefined;
-  declare private textOpacityPref_: chrome.settingsPrivate.PrefObject<number>|
+  protected accessor textOpacityPref_:
+      chrome.settingsPrivate.PrefObject<number>|undefined;
+  protected accessor textShadowPref_: chrome.settingsPrivate.PrefObject<string>|
       undefined;
-  declare private textShadowPref_: chrome.settingsPrivate.PrefObject<string>|
-      undefined;
-  declare private textSizePref_: chrome.settingsPrivate.PrefObject<string>|
+  protected accessor textSizePref_: chrome.settingsPrivate.PrefObject<string>|
       undefined;
 
   override connectedCallback() {
@@ -247,8 +218,7 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
     });
   }
 
-  override ready() {
-    super.ready();
+  override firstUpdated() {
     FontsBrowserProxyImpl.getInstance().fetchFontsData().then(
         (response: FontsData) => this.setFontsData_(response));
   }
@@ -258,7 +228,7 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
    */
   getLiveCaptionToggle(): SettingsToggleButtonElement|null {
     const liveCaptionSection =
-        this.shadowRoot!.querySelector('settings-live-caption');
+        this.shadowRoot.querySelector('settings-live-caption');
     return liveCaptionSection ? liveCaptionSection.getLiveCaptionToggle() :
                                 null;
   }
@@ -278,7 +248,7 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
   /**
    * @return the font family as a CSS property value.
    */
-  private getFontFamily_(): string {
+  protected getFontFamily_(): string {
     const fontFamily = this.textFontPref_?.value;
 
     // Return the preference value or the default font family for
@@ -289,7 +259,7 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
   /**
    * @return the background color as a RGBA string.
    */
-  private computeBackgroundColor_(): string {
+  protected computeBackgroundColor_(): string {
     const backgroundColor = this.formatRgbaString_(
         this.backgroundColorPref_?.value, this.backgroundOpacityPref_?.value);
 
@@ -301,7 +271,7 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
   /**
    * @return the text color as a RGBA string.
    */
-  private computeTextColor_(): string {
+  protected computeTextColor_(): string {
     const textColor = this.formatRgbaString_(
         this.textColorPref_?.value, this.textOpacityPref_?.value);
 
@@ -328,7 +298,7 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
    * @param size The font size of the captions text as a percentage.
    * @return The padding around the captions text as a percentage.
    */
-  private computePadding_(size: string): string {
+  protected computePadding_(size: string): string {
     if (size === '') {
       return '1%';
     }
@@ -338,14 +308,15 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
 
   // SettingsViewMixin implementation.
   override focusBackButton() {
-    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+    this.shadowRoot.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-captions-page': SettingsCaptionsElement;
+    'settings-captions-page': SettingsCaptionsPageElement;
   }
 }
 
-customElements.define(SettingsCaptionsElement.is, SettingsCaptionsElement);
+customElements.define(
+    SettingsCaptionsPageElement.is, SettingsCaptionsPageElement);
