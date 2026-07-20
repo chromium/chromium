@@ -93,7 +93,7 @@ public class TabStoreMetricsServiceUnitTest {
                         .expectBooleanRecord("Tabs.TabStateStore.TabCountDelta.Equal.Tag", true)
                         .build();
 
-        tracker.recordDiffMetrics(authFrozen, authNew, shadowFrozen, shadowNew, true);
+        tracker.recordDiffMetrics(authFrozen, authNew, shadowFrozen, shadowNew, true, 0);
         histogramWatcher.assertExpected();
     }
 
@@ -112,9 +112,10 @@ public class TabStoreMetricsServiceUnitTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
                                 "Tabs.TabStateStore.TabCountDelta.AuthoritativeHigher.Tag", 1)
+                        .expectIntRecord("Tabs.TabStateStore.RegularFallbackTabCount", 5)
                         .build();
 
-        tracker.recordDiffMetrics(authFrozen, authNew, shadowFrozen, shadowNew, true);
+        tracker.recordDiffMetrics(authFrozen, authNew, shadowFrozen, shadowNew, true, 5);
         histogramWatcher.assertExpected();
     }
 
@@ -136,7 +137,7 @@ public class TabStoreMetricsServiceUnitTest {
                         .expectIntRecord("Tabs.TabStateStore.TabCountDelta.ShadowHigher.Tag", 1)
                         .build();
 
-        tracker.recordDiffMetrics(authFrozen, authNew, shadowFrozen, shadowNew, true);
+        tracker.recordDiffMetrics(authFrozen, authNew, shadowFrozen, shadowNew, true, 0);
         histogramWatcher.assertExpected();
     }
 
@@ -165,7 +166,7 @@ public class TabStoreMetricsServiceUnitTest {
                                 1000)
                         .build();
 
-        tracker.recordDiffMetrics(authFrozen, authNew, shadowFrozen, shadowNew, true);
+        tracker.recordDiffMetrics(authFrozen, authNew, shadowFrozen, shadowNew, true, 0);
         histogramWatcher.assertExpected();
     }
 }

@@ -196,6 +196,13 @@ public class TabPersistentStoreUnitTest {
         mPersistentStore.initializeRestoreVars(
                 /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
 
+        LoadUrlParamsUrlMatcher paramsMatcher =
+                new LoadUrlParamsUrlMatcher(getOriginalNativeNtpUrl());
+        Tab emptyNtp = mock(Tab.class);
+        when(mNormalTabCreator.createNewTab(
+                        argThat(paramsMatcher), eq(TabLaunchType.FROM_RESTORE), isNull()))
+                .thenReturn(emptyNtp);
+
         TabRestoreDetails emptyNtpDetails =
                 new TabRestoreDetails(1, 0, false, getOriginalNativeNtpUrl(), false);
         mPersistentStore.restoreTab(emptyNtpDetails, null, false);

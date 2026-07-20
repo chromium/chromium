@@ -98,20 +98,22 @@ public class TabStoreMetricsService {
         }
 
         /**
-         * Reports store discrepancies.
+         * Reports fallback count and store discrepancies.
          *
          * @param authFrozenData The list of frozen tabs in the authoritative store.
          * @param authNewTabData The list of new tabs in the authoritative store.
          * @param shadowFrozenData The list of frozen tabs in the shadow store.
          * @param shadowNewTabData The list of new tabs in the shadow store.
          * @param shadowStoreCaughtUp Whether the shadow store has caught up.
+         * @param fallbackTabCount The number of fallback tabs created during restoration.
          */
         public void recordDiffMetrics(
                 List<TabCreationData> authFrozenData,
                 List<TabCreationData> authNewTabData,
                 List<CreateFrozenTabArguments> shadowFrozenData,
                 List<CreateNewTabArguments> shadowNewTabData,
-                boolean shadowStoreCaughtUp) {
+                boolean shadowStoreCaughtUp,
+                int fallbackTabCount) {
             if (!shadowStoreCaughtUp) return;
 
             int tabCountDelta =
@@ -130,6 +132,9 @@ public class TabStoreMetricsService {
                 RecordHistogram.recordBooleanHistogram(
                         "Tabs.TabStateStore.TabCountDelta.Equal" + mSuffix, true);
             }
+
+            RecordHistogram.recordCount1000Histogram(
+                    "Tabs.TabStateStore.RegularFallbackTabCount", fallbackTabCount);
 
             SparseArray<TabCreationData> authoritativeDataMap =
                     new SparseArray<>(authFrozenData.size());
