@@ -933,6 +933,39 @@ TEST(VariationsStudyFilteringTest, FilterAndValidateStudies) {
   EXPECT_EQ(kTrial3Name, processed_studies[1].study()->name());
 }
 
+TEST(VariationsStudyFilteringTest, FilterAndValidateStudiesWithCustomFilter) {
+  const std::string kMutableTrialName = "A";
+  const std::string kImmutableTrialName = "B";
+
+  VariationsSeed seed;
+  Study* study1 = seed.add_study();
+  study1->set_name(kMutableTrialName);
+  study1->set_default_experiment_name("Default");
+  study1->set_runtime_mutable(true);
+  AddExperiment("Default", 100, study1);
+
+  Study* study2 = seed.add_study();
+  study2->set_name(kImmutableTrialName);
+  study2->set_default_experiment_name("Default");
+  study2->set_runtime_mutable(false);
+  AddExperiment("Default", 100, study2);
+
+  auto client_state = CreateDummyClientFilterableState();
+  client_state->locale = "en-CA";
+  client_state->reference_date = base::Time::Now();
+  client_state->version = base::Version("20.0.0.0");
+  client_state->channel = Study::STABLE;
+  client_state->form_factor = Study::DESKTOP;
+  client_state->platform = Study::PLATFORM_ANDROID;
+
+  std::vector<ProcessedStudy> processed_studies = FilterAndValidateStudies(
+      seed, *client_state, VariationsLayers(),
+      [](const Study& study) { return study.runtime_mutable(); });
+
+  ASSERT_EQ(1U, processed_studies.size());
+  EXPECT_EQ(kMutableTrialName, processed_studies[0].study()->name());
+}
+
 TEST(VariationsStudyFilteringTest, FilterAndValidateStudiesWithBadFilters) {
   constexpr auto versions = std::to_array<const char*>(
       {"invalid", "1.invalid.0", "0.invalid.0", "\001\000\000\003"});

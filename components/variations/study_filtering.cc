@@ -471,7 +471,8 @@ bool ShouldAddStudy(const ProcessedStudy& processed_study,
 std::vector<ProcessedStudy> FilterAndValidateStudies(
     const VariationsSeed& seed,
     const ClientFilterableState& client_state,
-    const VariationsLayers& layers) {
+    const VariationsLayers& layers,
+    std::optional<base::FunctionRef<bool(const Study&)>> study_filter) {
   DCHECK(client_state.version.IsValid());
 
   std::vector<ProcessedStudy> filtered_studies;
@@ -482,6 +483,10 @@ std::vector<ProcessedStudy> FilterAndValidateStudies(
   std::set<std::string_view, std::less<>> created_studies;
 
   for (const Study& study : seed.study()) {
+    if (study_filter && !(*study_filter)(study)) {
+      continue;
+    }
+
     ProcessedStudy processed_study;
     if (!processed_study.Init(&study)) {
       continue;

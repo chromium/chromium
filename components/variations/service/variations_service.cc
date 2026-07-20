@@ -814,15 +814,13 @@ void VariationsService::SimulateAndApplyRuntimeMutableChanges(
   std::unique_ptr<ClientFilterableState> client_state =
       field_trial_creator_.GetClientFilterableStateForVersion(current_version);
   VariationsLayers layers(seed, *entropy_providers_);
-  auto filtered_studies = FilterAndValidateStudies(seed, *client_state, layers);
+  // Filter for studies that are explicitly declared as runtime mutable, as it
+  // is an opt-in functionality.
+  auto filtered_studies = FilterAndValidateStudies(
+      seed, *client_state, layers,
+      [](const Study& study) { return study.runtime_mutable(); });
 
   for (const ProcessedStudy& study : filtered_studies) {
-    // Only consider studies that are explicitly declared as runtime mutable, as
-    // it is an opt-in functionality.
-    if (!study.study()->runtime_mutable()) {
-      continue;
-    }
-
     // Simulate group assignment for the study, and apply it if necessary.
     scoped_refptr<base::FieldTrial> simulated_trial =
         VariationsSeedProcessor(field_trial_creator_.sticky_activation_manager(
