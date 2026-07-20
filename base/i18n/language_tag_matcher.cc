@@ -249,14 +249,22 @@ LanguageTagMatcher LanguageTagMatcher::Create(
                             std::move(fallbacker));
 }
 
+bool LanguageTagMatcher::HasExactMatch(
+    const LanguageTag& preferred_locale) const {
+  auto it = closest_supported_tag_.find(preferred_locale);
+  if (it == closest_supported_tag_.end()) {
+    return false;
+  }
+  return it->second == preferred_locale;
+}
+
 std::optional<LanguageTag> LanguageTagMatcher::Match(
     const LanguageTag& preferred_locale) const {
-  // Step 1: Check if the preferred locale is supported.
+  // Step 1: Check if the preferred locale is linked to a supported node.
   auto it = closest_supported_tag_.find(preferred_locale);
   if (it != closest_supported_tag_.end()) {
     return it->second;
   }
-
   // Step 2: Traverse the fallback chain to look for a supported locale. The
   // first supported locale found is returned.
   for (const LanguageTag& fallback :

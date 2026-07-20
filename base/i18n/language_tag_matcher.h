@@ -79,6 +79,9 @@ class BASE_I18N_EXPORT LanguageTagMatcher {
   //   Supported: {"es-419"}, Preferred: "es-AR" -> Matches "es-419" (Latin Am.)
   std::optional<LanguageTag> Match(const LanguageTag& preferred_tag) const;
 
+  // Returns true whether there is an exact match or not.
+  bool HasExactMatch(const LanguageTag& preferred_tag) const;
+
  private:
   explicit LanguageTagMatcher(
       base::flat_map<LanguageTag, LanguageTag> closest_supported_tag,

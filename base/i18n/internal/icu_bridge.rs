@@ -279,6 +279,30 @@ mod tests {
     }
 
     #[test]
+    fn test_fallbacker_catalan() {
+        let fallbacker = IcuFallbacker::new();
+        let fallbacks = fallbacker.fallback_to_vec(b"ca-u-va-valencia");
+        let fallback_strings: Vec<String> = fallbacks.iter().map(|f| f.to_string()).collect();
+        assert_eq!(fallback_strings, vec!["ca"]);
+    }
+
+    #[test]
+    fn test_fallbacker_spanish() {
+        let fallbacker = IcuFallbacker::new();
+        let fallbacks = fallbacker.fallback_to_vec(b"es-MX");
+        let fallback_strings: Vec<String> = fallbacks.iter().map(|f| f.to_string()).collect();
+        assert_eq!(fallback_strings, vec!["es-MX", "es-419", "es"]);
+    }
+
+    #[test]
+    fn test_fallbacker_english_lr() {
+        let fallbacker = IcuFallbacker::new();
+        let fallbacks = fallbacker.fallback_to_vec(b"en-LR");
+        let fallback_strings: Vec<String> = fallbacks.iter().map(|f| f.to_string()).collect();
+        assert_eq!(fallback_strings, vec!["en-LR", "en-001", "en"]);
+    }
+
+    #[test]
     fn test_create_icu_locale() {
         let res = create_icu_locale(b"en-US");
         assert!(res.has_value);
