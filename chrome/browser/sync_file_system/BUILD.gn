@@ -160,6 +160,25 @@ source_set("sync_file_system") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_local_change_processor.cc",
+    "mock_local_change_processor.h",
+    "mock_remote_file_sync_service.cc",
+    "mock_remote_file_sync_service.h",
+  ]
+
+  deps = [
+    ":sync_file_system",
+    "//base",
+    "//storage/browser",
+    "//testing/gmock",
+    "//url",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
@@ -216,6 +235,7 @@ source_set("unit_tests") {
 
   deps = [
     ":sync_file_system",
+    ":test_support",
     "//base",
     "//chrome/browser/extensions:test_support",
     "//chrome/browser/profiles:profile",
