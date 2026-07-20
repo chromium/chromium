@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
@@ -43,6 +44,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/radio_button.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_utils.h"
@@ -222,6 +224,7 @@ class PasswordDialogViewTest : public base::test::WithFeatureOverride,
 
   // DialogBrowserTest:
   void SetUpOnMainThread() override;
+  void TearDownOnMainThread() override;
   void ShowUi(const std::string& name) override;
 
   void SetupChooseCredentials(
@@ -256,6 +259,11 @@ class PasswordDialogViewTest : public base::test::WithFeatureOverride,
  private:
   raw_ptr<TestManagePasswordsUIController, AcrossTasksDanglingUntriaged>
       controller_;
+  std::unique_ptr<CredentialManagerDialogControllerMock>
+      remote_actor_mock_controller_;
+  std::unique_ptr<PasswordCombinedSelectorView> remote_actor_view_;
+  std::vector<std::unique_ptr<password_manager::PasswordForm>>
+      remote_actor_forms_;
 };
 
 void PasswordDialogViewTest::SetUpOnMainThread() {
@@ -267,6 +275,12 @@ void PasswordDialogViewTest::SetUpOnMainThread() {
       switches::kDisableModalAnimations);
 #endif
   SetupTabWithTestController(browser());
+}
+
+void PasswordDialogViewTest::TearDownOnMainThread() {
+  remote_actor_view_.reset();
+  remote_actor_mock_controller_.reset();
+  DialogBrowserTest::TearDownOnMainThread();
 }
 
 void PasswordDialogViewTest::SetupChooseCredentials(
@@ -641,6 +655,52 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
 
 // DialogBrowserTest methods for interactive dialog invocation.
 void PasswordDialogViewTest::ShowUi(const std::string& name) {
+  if (name == "RemoteActorSingle" || name == "RemoteActorMultiple") {
+    remote_actor_mock_controller_ = std::make_unique<
+        testing::NiceMock<CredentialManagerDialogControllerMock>>();
+
+    EXPECT_CALL(*remote_actor_mock_controller_, GetDisplayType())
+        .WillRepeatedly(Return(
+            PasswordCombinedSelectorController::DisplayType::kRemoteActor));
+    EXPECT_CALL(*remote_actor_mock_controller_, ShouldShowTopIllustration())
+        .WillRepeatedly(Return(true));
+    EXPECT_CALL(*remote_actor_mock_controller_, GetTitle())
+        .WillRepeatedly(Return(
+            u"Allow Gemini Spark to sign in to terracottaand.co for you?"));
+    EXPECT_CALL(*remote_actor_mock_controller_, GetSubtitle())
+        .WillRepeatedly(
+            Return(u"Spark can use Google Password Manager to sign in "
+                   u"for you. Learn how Spark handles your data"));
+    EXPECT_CALL(*remote_actor_mock_controller_, GetOkButtonLabel())
+        .WillRepeatedly(Return(u"Allow this time"));
+
+    remote_actor_forms_.clear();
+    auto form1 = std::make_unique<password_manager::PasswordForm>();
+    form1->username_value = u"peter@pan.test";
+    form1->password_value = u"I can fly!";
+    remote_actor_forms_.push_back(std::move(form1));
+
+    if (name == "RemoteActorMultiple") {
+      auto form2 = std::make_unique<password_manager::PasswordForm>();
+      form2->username_value = u"notpeter@pan.test";
+      form2->password_value = u"I cannot fly!";
+      remote_actor_forms_.push_back(std::move(form2));
+    }
+
+    EXPECT_CALL(*remote_actor_mock_controller_, GetLocalForms())
+        .WillRepeatedly(ReturnRef(remote_actor_forms_));
+    EXPECT_CALL(*remote_actor_mock_controller_, GetOrigin())
+        .WillRepeatedly(
+            Return(url::Origin::Create(GURL("https://terracottaand.co"))));
+
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    remote_actor_view_ = std::make_unique<PasswordCombinedSelectorView>(
+        remote_actor_mock_controller_.get(), web_contents);
+    remote_actor_view_->ShowAccountChooser();
+    return;
+  }
+
   if (name == "AutoSigninFirstRun") {
     controller()->OnPromptEnableAutoSignin();
     return;
@@ -810,6 +870,14 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest, InvokeUi_FederatedCredentials) {
   ShowAndVerifyUi();
 }
 
+IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest, InvokeUi_RemoteActorSingle) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest, InvokeUi_RemoteActorMultiple) {
+  ShowAndVerifyUi();
+}
+
 IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest, ShowMultipleCredentials) {
   if (!IsParamFeatureEnabled()) {
     return;
@@ -957,6 +1025,14 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
   EXPECT_EQ(subtitle_label->GetText(), expected_subtitle);
   EXPECT_EQ(view->GetOkButton()->GetText(), expected_ok_button);
 
+  views::BubbleFrameView* frame_view = view->GetBubbleFrameView();
+  ASSERT_TRUE(frame_view);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)  // nocheck
+  EXPECT_NE(frame_view->GetHeaderViewForTesting(), nullptr);
+#else
+  EXPECT_EQ(frame_view->GetHeaderViewForTesting(), nullptr);
+#endif
+
   // Verify row labels (should use raw username and 8 password dots)
   std::vector<views::View*> rows =
       GetViewsByID(PasswordCombinedSelectorView::kCredentialRowId,
@@ -1039,6 +1115,14 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
   ASSERT_TRUE(subtitle_label);
   EXPECT_EQ(subtitle_label->GetText(), expected_subtitle);
   EXPECT_EQ(view->GetOkButton()->GetText(), expected_ok_button);
+
+  views::BubbleFrameView* frame_view = view->GetBubbleFrameView();
+  ASSERT_TRUE(frame_view);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)  // nocheck
+  EXPECT_NE(frame_view->GetHeaderViewForTesting(), nullptr);
+#else
+  EXPECT_EQ(frame_view->GetHeaderViewForTesting(), nullptr);
+#endif
 
   // Verify multiple rows radio button list is initialized
   EXPECT_EQ(GetRadioButtons(widget->GetContentsView()).size(), 2u);

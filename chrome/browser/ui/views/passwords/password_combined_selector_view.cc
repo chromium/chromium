@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ui/passwords/account_avatar_fetcher.h"
 #include "chrome/browser/ui/passwords/password_combined_selector_controller.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
@@ -33,6 +34,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/radio_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -446,8 +448,7 @@ PasswordCombinedSelectorView::PasswordCombinedSelectorView(
     : controller_(controller), web_contents_(web_contents) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |
              static_cast<int>(ui::mojom::DialogButton::kCancel));
-  SetButtonLabel(ui::mojom::DialogButton::kOk,
-                 controller_->GetOkButtonLabel());
+  SetButtonLabel(ui::mojom::DialogButton::kOk, controller_->GetOkButtonLabel());
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   SetModalType(ui::mojom::ModalType::kChild);
@@ -568,7 +569,20 @@ void PasswordCombinedSelectorView::OnRadioButtonChecked(int index) {
 
 void PasswordCombinedSelectorView::OnWidgetInitialized() {
   views::DialogDelegate::OnWidgetInitialized();
-  if (controller_->ShouldShowTopIllustration()) {
-    // TODO(crbug.com/532482932): Load remote actor illustration once DEPS roll lands.
+  if (!controller_->ShouldShowTopIllustration()) {
+    return;
   }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)  // nocheck
+  ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
+  auto image_view = std::make_unique<views::ImageView>();
+  image_view->SetImage(ui::ImageModel::FromImageSkia(
+      *bundle.GetImageSkiaNamed(IDR_REMOTE_ACTOR_SHARING_ILLUSTRATION)));
+  image_view->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
+  if (auto* frame_view = GetBubbleFrameView()) {
+    frame_view->SetHeaderView(std::move(image_view));
+  }
+#else
+  // TODO(crbug.com/532482932): Add unbranded header.
+#endif
 }

@@ -273,6 +273,9 @@
         <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_55" file="common/modern_avatars/abstract/avatar_sandwich.png" />
       </if>
       <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE" file="common/profile_avatar_placeholder_large.png" />
+      <if expr="_google_chrome">
+        <structure type="chrome_scaled_image" name="IDR_REMOTE_ACTOR_SHARING_ILLUSTRATION" file="google_chrome/remote_actor_sharing_illustration.png" />
+      </if>
       <if expr="is_chromeos">
         <structure type="chrome_scaled_image" name="IDR_RESET_WARNING" file="cros/reset_warning.png" />
         <structure type="chrome_scaled_image" name="IDR_ENABLE_DEBUGGING_SUCCESS" file="cros/enable_debugging_success.png" />
