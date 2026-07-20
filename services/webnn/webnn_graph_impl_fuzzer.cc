@@ -516,6 +516,15 @@ struct Resample2dParams {
   bool is_input_constant;
 };
 
+struct ReshapeParams {
+  OperandDataType data_type;
+  uint32_t input_rank;
+  std::array<uint32_t, 8> input_dims;
+  uint32_t output_rank;
+  std::array<uint32_t, 8> output_dim_seeds;
+  bool is_input_constant;
+};
+
 struct ScatterElementsParams {
   OperandDataType input_data_type;
   OperandDataType indices_data_type;
@@ -1457,6 +1466,18 @@ auto AnyResample2dParams() {
       AnyDimSize(),                                          // output_height
       AnyDimSize(),                                          // output_width
       fuzztest::Arbitrary<bool>()  // is_input_constant
+  );
+}
+
+auto AnyReshapeParams() {
+  const auto& limits = GetContextPropertiesForTesting().data_type_limits;
+  return fuzztest::StructOf<ReshapeParams>(
+      AnyOperandDataTypeFor(limits.reshape_input.data_types),
+      AnyTensorRankIncludeZero(),          // input_rank
+      fuzztest::ArrayOf<8>(AnyDimSize()),  // input_dims
+      AnyTensorRankIncludeZero(),          // output_rank
+      fuzztest::ArrayOf<8>(AnyDimSize()),  // output_dim_seeds
+      fuzztest::Arbitrary<bool>()          // is_input_constant
   );
 }
 
@@ -2462,6 +2483,66 @@ std::optional<Resample2dDescriptors> SetUpResample2dDescriptors(
   };
 }
 
+struct ReshapeDescriptors {
+  OperandDescriptor input_desc;
+  OperandDescriptor output_desc;
+};
+
+// Helper to set up ReshapeDescriptors. Builds an output shape with `rank` equal
+// to `output_rank` that preserves the total number of elements of the input, by
+// greedily factoring the element count using the fuzzed `output_dim_seeds`.
+// Returns nullopt if any validation fails.
+std::optional<ReshapeDescriptors> SetUpReshapeDescriptors(
+    const ContextProperties& context_properties,
+    const ReshapeParams& params) {
+  std::vector<uint32_t> input_dims(
+      params.input_dims.begin(), params.input_dims.begin() + params.input_rank);
+
+  ASSIGN_OR_RETURN_NULLOPT(
+      auto input_desc,
+      OperandDescriptor::Create(context_properties, params.data_type,
+                                input_dims, ""));
+
+  // Compute the remaining total number of elements to distribute among the
+  // output dimensions.
+  uint64_t remaining = 1;
+  for (uint32_t dim : input_dims) {
+    remaining *= dim;
+  }
+
+  // Greedily assign each output dimension (except the last) a divisor of the
+  // remaining element count, chosen from the fuzzed seed. The final dimension
+  // takes whatever is left so the total element count is preserved exactly.
+  std::vector<uint32_t> output_dims(params.output_rank);
+  if (params.output_rank == 0) {
+    if (remaining != 1) {
+      return std::nullopt;
+    }
+  } else {
+    for (uint32_t i = 0; i < params.output_rank - 1; ++i) {
+      uint32_t divisor = static_cast<uint32_t>(std::gcd(
+          static_cast<uint64_t>(params.output_dim_seeds[i]), remaining));
+      output_dims[i] = divisor;
+      remaining /= divisor;
+    }
+
+    if (remaining > std::numeric_limits<uint32_t>::max()) {
+      return std::nullopt;
+    }
+    output_dims[params.output_rank - 1] = static_cast<uint32_t>(remaining);
+  }
+
+  ASSIGN_OR_RETURN_NULLOPT(
+      auto output_desc,
+      OperandDescriptor::Create(context_properties, params.data_type,
+                                output_dims, ""));
+
+  return ReshapeDescriptors{
+      .input_desc = std::move(input_desc),
+      .output_desc = std::move(output_desc),
+  };
+}
+
 struct SliceDescriptors {
   OperandDescriptor input_desc;
   OperandDescriptor output_desc;
@@ -2952,6 +3033,7 @@ class WebNNGraphImplFuzzerImpl
                       uint8_t seed_for_zero_point);
   void Reduce(ReduceParams params, uint8_t seed_for_data);
   void Resample2d(Resample2dParams params, uint8_t seed_for_data);
+  void Reshape(ReshapeParams params, uint8_t seed_for_data);
   void ScatterElements(ScatterElementsParams params, uint8_t seed_for_data);
   void Slice(SliceParams params, uint8_t seed_for_data);
   void Softmax(SoftmaxParams params, uint8_t seed_for_data);
@@ -3024,6 +3106,11 @@ class WebNNGraphImplFuzzerImpl
                      uint8_t seed_for_input,
                      float seed_for_scale,
                      uint8_t seed_for_zero_point);
+  void DQReshapeQ(ReshapeParams reshape_params,
+                  OperandDataType quantized_type,
+                  uint8_t seed_for_input,
+                  float seed_for_scale,
+                  uint8_t seed_for_zero_point);
   void DQSliceQ(SliceParams slice_params,
                 OperandDataType quantized_type,
                 uint8_t seed_for_input,
@@ -4708,6 +4795,38 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Reduce(ReduceParams params,
 }
 
 template <typename BaseFixture>
+void WebNNGraphImplFuzzerImpl<BaseFixture>::Reshape(ReshapeParams params,
+                                                    uint8_t seed_for_data) {
+  ASSIGN_OR_RETURN_VOID(
+      auto reshape_descs,
+      SetUpReshapeDescriptors(this->context_properties(), params));
+
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
+      this->BindNewGraphBuilderRemote();
+  GraphInfoBuilder builder(remote);
+
+  base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
+  std::vector<std::vector<uint8_t>> data_buffers;
+  OperandId input_id = BuildInputOrConstant(
+      builder, params.is_input_constant, "input", reshape_descs.input_desc,
+      seed_for_data, data_buffers, named_inputs);
+
+  OperandId output_id =
+      builder.BuildOutput("output", reshape_descs.output_desc.shape(),
+                          reshape_descs.output_desc.data_type());
+
+  builder.BuildReshape(input_id, output_id);
+
+  if (!builder.IsValidGraphForTesting(this->context_properties())) {
+    return;
+  }
+  BuildAndCompute(this->context_, std::move(remote), builder.TakeGraphInfo(),
+                  std::move(named_inputs));
+
+  GetGlobalFuzzEnvironment().GetWebNNTestEnvironment().RunUntilIdle();
+}
+
+template <typename BaseFixture>
 void WebNNGraphImplFuzzerImpl<BaseFixture>::Resample2d(Resample2dParams params,
                                                        uint8_t seed_for_data) {
   ASSIGN_OR_RETURN_VOID(
@@ -5954,6 +6073,64 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQReduceQ(
 }
 
 template <typename BaseFixture>
+void WebNNGraphImplFuzzerImpl<BaseFixture>::DQReshapeQ(
+    ReshapeParams reshape_params,
+    OperandDataType quantized_type,
+    uint8_t seed_for_input,
+    float seed_for_scale,
+    uint8_t seed_for_zero_point) {
+  ASSIGN_OR_RETURN_VOID(
+      auto reshape_descs,
+      SetUpReshapeDescriptors(this->context_properties(), reshape_params));
+
+  // kPerTensor quantization is used to exercise the fusiable path for TFLite
+  // backend:
+  // https://source.chromium.org/chromium/chromium/src/+/main:services/webnn/tflite/graph_builder_tflite.cc;l=2374;drc=ec4ff4bae24916aaad3186ce4bc1339313b6fb5a
+  // TODO(crbug.com/498987226): Remove this restriction to increase test
+  // coverage
+  QuantizationParams per_tensor_quantization_params{
+      .quantized_type = quantized_type,
+      .quantization_kind = QuantizationKind::kPerTensor,
+      .channel_block_size = 1};
+
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
+      this->BindNewGraphBuilderRemote();
+  GraphInfoBuilder builder(remote);
+
+  base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
+  std::vector<std::vector<uint8_t>> data_buffers;
+  ASSIGN_OPTIONAL_OR_RETURN_VOID(
+      auto reshape_input_id,
+      BuildDequantizeInput(
+          builder, this->context_properties(), reshape_params.is_input_constant,
+          "input", reshape_descs.input_desc, per_tensor_quantization_params,
+          /*channel_axis=*/std::nullopt, seed_for_input, seed_for_scale,
+          seed_for_zero_point, data_buffers, named_inputs));
+
+  OperandId reshape_output_id = builder.BuildIntermediateOperand(
+      reshape_descs.output_desc.shape(), reshape_descs.output_desc.data_type());
+
+  builder.BuildReshape(reshape_input_id, reshape_output_id);
+
+  if (!BuildQuantizeOutput(builder, this->context_properties(), "output",
+                           reshape_descs.output_desc,
+                           per_tensor_quantization_params,
+                           /*channel_axis=*/std::nullopt, reshape_output_id,
+                           seed_for_scale, seed_for_zero_point)) {
+    return;
+  }
+
+  if (!builder.IsValidGraphForTesting(this->context_properties())) {
+    return;
+  }
+
+  BuildAndCompute(this->context_, std::move(remote), builder.TakeGraphInfo(),
+                  std::move(named_inputs));
+
+  GetGlobalFuzzEnvironment().GetWebNNTestEnvironment().RunUntilIdle();
+}
+
+template <typename BaseFixture>
 void WebNNGraphImplFuzzerImpl<BaseFixture>::DQResample2dQ(
     Resample2dParams resample2d_params,
     OperandDataType quantized_type,
@@ -6740,6 +6917,19 @@ WEBNN_FUZZ_TEST_F(
                      /*seed_for_data=*/2}}));
 
 WEBNN_FUZZ_TEST_F(
+    Reshape,
+    .WithDomains(AnyReshapeParams(), fuzztest::Arbitrary<uint8_t>())
+        .WithSeeds({{ReshapeParams{
+                         /*data_type=*/OperandDataType::kFloat32,
+                         /*input_rank=*/4,
+                         /*input_dims=*/{1, 3, 4, 4, 1, 1, 1, 1},
+                         /*output_rank=*/2,
+                         /*output_dim_seeds=*/{6, 8, 1, 1, 1, 1, 1, 1},
+                         /*is_input_constant=*/false,
+                     },
+                     /*seed_for_data=*/1}}));
+
+WEBNN_FUZZ_TEST_F(
     Resample2d,
     .WithDomains(AnyResample2dParams(), fuzztest::Arbitrary<uint8_t>())
         .WithSeeds({{Resample2dParams{
@@ -7153,6 +7343,27 @@ WEBNN_FUZZ_TEST_F(
                          // This is unused for per tensor quantization.
                          /*channel_block_size=*/1},
                      /*channel_axis=*/1,
+                     /*seed_for_input=*/2,
+                     /*seed_for_scale=*/0.25f,
+                     /*seed_for_zero_point=*/0}}));
+
+WEBNN_FUZZ_TEST_F(
+    DQReshapeQ,
+    .WithDomains(AnyReshapeParams(),
+                 AnyQuantizedDataType(),
+                 /*seed_for_input=*/fuzztest::Arbitrary<uint8_t>(),
+                 /*seed_for_scale=*/
+                 fuzztest::ElementOf({0.125f, 0.25f, 0.5f, 1.0f, 2.0f}),
+                 /*seed_for_zero_point=*/fuzztest::Arbitrary<uint8_t>())
+        .WithSeeds({{ReshapeParams{
+                         /*data_type=*/OperandDataType::kFloat32,
+                         /*input_rank=*/4,
+                         /*input_dims=*/{1, 3, 4, 4, 1, 1, 1, 1},
+                         /*output_rank=*/2,
+                         /*output_dim_seeds=*/{6, 8, 1, 1, 1, 1, 1, 1},
+                         /*is_input_constant=*/false,
+                     },
+                     /*quantized_type=*/OperandDataType::kUint8,
                      /*seed_for_input=*/2,
                      /*seed_for_scale=*/0.25f,
                      /*seed_for_zero_point=*/0}}));
