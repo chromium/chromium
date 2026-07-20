@@ -17,6 +17,7 @@ BASE_FEATURE(kDataControlsSearchWith, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDataControlsGlic, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDataControlsLocalEvaluation, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDataControlsUrlRegexAndSizeAttributes,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace data_controls

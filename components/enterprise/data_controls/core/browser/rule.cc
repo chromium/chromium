@@ -80,8 +80,11 @@ std::vector<std::string_view> AnyOfConditions(const base::DictValue& value) {
   std::vector<std::string_view> anyof_conditions;
   for (const char* anyof_condition :
        {kKeySources, kKeyDestinations, AttributesCondition::kKeyUrls,
+        AttributesCondition::kKeyUrlRegexprs,
         AttributesCondition::kKeyIncognito,
         AttributesCondition::kKeyOtherProfile,
+        AttributesCondition::kKeySizeHigherThan,
+        AttributesCondition::kKeySizeLowerThan,
 #if BUILDFLAG(IS_CHROMEOS)
         AttributesCondition::kKeyComponents
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -565,11 +568,30 @@ bool Rule::AddUnsupportedAttributeErrors(
         // BUILDFLAG(IS_CHROMEOS)
       });
 
+  static const base::NoDestructor<
+      base::flat_map<Rule::Restriction, std::set<std::string_view>>>
+      kLocalSupportedAttributes([] {
+        auto map = *kSupportedAttributes;
+        map[Restriction::kClipboard].insert({
+            AttributesCondition::kKeySizeHigherThan,
+            AttributesCondition::kKeySizeLowerThan,
+            AttributesCondition::kKeyUrlRegexprs,
+        });
+        map[Restriction::kScreenshot].insert(
+            AttributesCondition::kKeyUrlRegexprs);
+        return map;
+      }());
+
+  const auto& active_supported_attributes =
+      base::FeatureList::IsEnabled(kDataControlsUrlRegexAndSizeAttributes)
+          ? *kLocalSupportedAttributes
+          : *kSupportedAttributes;
+
   bool valid = true;
   for (const auto& restriction : restrictions) {
     auto supported_attributes_it =
-        kSupportedAttributes->find(restriction.first);
-    if (supported_attributes_it == kSupportedAttributes->end()) {
+        active_supported_attributes.find(restriction.first);
+    if (supported_attributes_it == active_supported_attributes.end()) {
       // This shouldn't be reached as `AddUnsupportedRestrictionErrors` should
       // catch these unsupported restrictions.
       NOTREACHED();
@@ -577,6 +599,7 @@ bool Rule::AddUnsupportedAttributeErrors(
 
     const std::set<std::string_view>& supported_attributes =
         supported_attributes_it->second;
+
     for (const auto& attribute : anyof_conditions) {
       if (!supported_attributes.contains(attribute)) {
         if (errors) {

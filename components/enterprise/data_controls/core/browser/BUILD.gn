@@ -125,6 +125,8 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/enterprise/buildflags",
+    "//components/policy/core/browser",
     "//components/prefs:test_support",
     "//testing/gtest",
   ]

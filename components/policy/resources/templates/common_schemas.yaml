@@ -60,6 +60,14 @@ DataControlsCondition:
           items:
             type: string
           type: array
+        url_regexprs:
+          items:
+            type: string
+          type: array
+        size_higher_than:
+          type: integer
+        size_lower_than:
+          type: integer
       type: object
     not:
       $ref: DataControlsCondition
@@ -81,6 +89,14 @@ DataControlsCondition:
           items:
             type: string
           type: array
+        url_regexprs:
+          items:
+            type: string
+          type: array
+        size_higher_than:
+          type: integer
+        size_lower_than:
+          type: integer
       type: object
   type: object
 DayPercentagePair:

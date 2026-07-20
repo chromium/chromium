@@ -149,6 +149,10 @@ schema:
             items:
               type: string
             type: array
+          url_regexprs:
+            items:
+              type: string
+            type: array
         type: object
       name:
         type: string
@@ -190,6 +194,16 @@ schema:
             items:
               type: string
             type: array
+          url_regexprs:
+            items:
+              type: string
+            type: array
+          size_higher_than:
+            type: integer
+            minimum: 0
+          size_lower_than:
+            type: integer
+            minimum: 0
         type: object
     type: object
   type: array

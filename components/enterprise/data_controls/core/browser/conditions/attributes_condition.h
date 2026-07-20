@@ -36,10 +36,13 @@ class AttributesCondition {
   // should map to an AttributesCondition. If an attribute is not used outside
   // of this class, declare it in the anonymous namespace instead.
   static constexpr char kKeyUrls[] = "urls";
+  static constexpr char kKeyUrlRegexprs[] = "url_regexprs";
   static constexpr char kKeyIncognito[] = "incognito";
   static constexpr char kKeyOsClipboard[] = "os_clipboard";
   static constexpr char kKeyOtherProfile[] = "other_profile";
   static constexpr char kKeyGeminiInChrome[] = "gemini_in_chrome";
+  static constexpr char kKeySizeHigherThan[] = "size_higher_than";
+  static constexpr char kKeySizeLowerThan[] = "size_lower_than";
 #if BUILDFLAG(IS_CHROMEOS)
   static constexpr char kKeyComponents[] = "components";
 #endif  // BUILDFLAG(IS_CHROMEOS)
