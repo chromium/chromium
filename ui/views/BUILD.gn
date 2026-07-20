@@ -1398,6 +1398,7 @@ test("views_unittests") {
     "widget/unique_widget_ptr_unittest.cc",
     "widget/widget_delegate_unittest.cc",
     "widget/widget_unittest.cc",
+    "widget/widget_utils_unittest.cc",
     "window/default_frame_view_unittest.cc",
     "window/dialog_client_view_unittest.cc",
     "window/dialog_delegate_unittest.cc",

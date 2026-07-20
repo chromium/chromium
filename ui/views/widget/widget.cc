@@ -12,6 +12,7 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/containers/adapters.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/notreached.h"
@@ -54,6 +55,7 @@
 #include "ui/views/focus/native_view_focus_manager.h"
 #include "ui/views/input_protection/occluded_widget_input_protector.h"
 #include "ui/views/views_delegate.h"
+#include "ui/views/views_features.h"
 #include "ui/views/widget/any_widget_observer_singleton.h"
 #include "ui/views/widget/native_widget_private.h"
 #include "ui/views/widget/root_view.h"
@@ -64,6 +66,7 @@
 #include "ui/views/widget/widget_enumerator.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/widget/widget_removals_observer.h"
+#include "ui/views/widget/widget_utils.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "ui/wm/core/window_properties.h"
 
@@ -2390,6 +2393,66 @@ bool Widget::ShouldDescendIntoChildForEventHandling(
     return false;
   }
 
+  if (!base::FeatureList::IsEnabled(
+          views::features::kNativeViewHostManagesLayers)) {
+    return ShouldDescendIntoChildForEventHandlingDeprecated(
+        root_layer, child, child_layer, location);
+  }
+
+  if (!child_layer) {
+    return true;
+  }
+
+  ui::Layer* target_layer = nullptr;
+  View* target_view = GetRootView()->GetEventHandlerForPoint(location);
+  while (target_view && !target_layer) {
+    target_layer = target_view->layer();
+    if (!target_layer) {
+      target_view = target_view->parent();
+    }
+  }
+
+  if (target_layer == root_layer) {
+    return true;
+  }
+
+  CHECK_NE(child_layer, target_layer);
+
+  LayerRelation relation = GetLayerRelation(target_layer, child_layer);
+
+  switch (relation.type) {
+    case LayerRelation::Type::kFirstIsChildOfSecond:
+      // target_layer is child of child_layer (inclusive).
+      // Views are inside child window. Views are on top.
+      return false;
+
+    case LayerRelation::Type::kSecondIsChildOfFirst:
+      // child_layer is child of target_layer (exclusive).
+      // Child window is inside views container. Child is on top.
+      return true;
+
+    case LayerRelation::Type::kSiblings: {
+      for (const auto& sibling_layer : relation.common_parent->children()) {
+        if (sibling_layer == relation.ancestor_of_first) {
+          return true;
+        }
+        if (sibling_layer == relation.ancestor_of_second) {
+          return false;
+        }
+      }
+      NOTREACHED();
+    }
+
+    case LayerRelation::Type::kDisjoint:
+      return true;
+  }
+}
+
+bool Widget::ShouldDescendIntoChildForEventHandlingDeprecated(
+    ui::Layer* root_layer,
+    gfx::NativeView child,
+    ui::Layer* child_layer,
+    const gfx::Point& location) {
   const View::Views& views_with_layers = GetViewsWithLayersInZOrder();
   if (views_with_layers.empty()) {
     return true;

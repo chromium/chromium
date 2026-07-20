@@ -967,6 +967,13 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // default implementation simply calls CanActivate().
   virtual bool ShouldViewsStyleFollowWidgetActivation() const;
 
+  // [Deprecated] Legacy implementation of above method.
+  bool ShouldDescendIntoChildForEventHandlingDeprecated(
+      ui::Layer* root_layer,
+      gfx::NativeView child,
+      ui::Layer* child_layer,
+      const gfx::Point& location);
+
   // Sets the z-order of the widget. This only applies to top-level widgets.
   void SetZOrderLevel(ui::ZOrderLevel order);
 
