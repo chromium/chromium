@@ -31,8 +31,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.content.common.ContentInternalFeatures;
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
+import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.WindowAndroid;
 import org.robolectric.annotation.Config;
 
@@ -268,7 +268,7 @@ public class InputMethodManagerWrapperImplTest {
 
     @Test
     @Config(minSdk = Build.VERSION_CODES.BAKLAVA)
-    @EnableFeatures(ContentInternalFeatures.ANDROID_REMOVE_SET_LOCAL_FOCUS_WORKAROUND_ON_BAKLAVA)
+    @EnableFeatures(ContentFeatures.ANDROID_REMOVE_SET_LOCAL_FOCUS_WORKAROUND_ON_BAKLAVA)
     public void testMultiDisplaysOnBaklavaAndAbove() throws Exception {
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<Activity>(mActivity));
         setDisplayIds(0, 1); // context and activity have different display IDs
@@ -284,7 +284,7 @@ public class InputMethodManagerWrapperImplTest {
 
     @Test
     @Config(minSdk = Build.VERSION_CODES.BAKLAVA)
-    @DisableFeatures(ContentInternalFeatures.ANDROID_REMOVE_SET_LOCAL_FOCUS_WORKAROUND_ON_BAKLAVA)
+    @DisableFeatures(ContentFeatures.ANDROID_REMOVE_SET_LOCAL_FOCUS_WORKAROUND_ON_BAKLAVA)
     public void testMultiDisplaysOnBaklavaAndAbove_featureDisabled() throws Exception {
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<Activity>(mActivity));
         setDisplayIds(0, 1); // context and activity have different display IDs

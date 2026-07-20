@@ -21,7 +21,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.content.common.ContentInternalFeatures;
+import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
 import org.chromium.ui.base.WindowAndroid;
@@ -120,7 +120,7 @@ public class InputMethodManagerWrapperImpl implements InputMethodManagerWrapper 
     private boolean disableWorkAroundForImeFocus() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA
                 && ContentFeatureMap.isEnabled(
-                        ContentInternalFeatures.ANDROID_REMOVE_SET_LOCAL_FOCUS_WORKAROUND_ON_BAKLAVA);
+                        ContentFeatures.ANDROID_REMOVE_SET_LOCAL_FOCUS_WORKAROUND_ON_BAKLAVA);
     }
 
     @Override
