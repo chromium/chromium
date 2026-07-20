@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
 #include "base/numerics/safe_math.h"
@@ -48,11 +49,11 @@ class ByteSlice {
   }
 
   // Copies data from an offset to a buffer.
-  bool CopyDataAt(size_t at, size_t size, uint8_t* out_data) {
-    if (!RangeCheck(at, size)) {
+  bool CopyDataAt(size_t at, base::span<uint8_t> out_data) {
+    if (!RangeCheck(at, out_data.size())) {
       return false;
     }
-    UNSAFE_TODO(memcpy(out_data, data_.subspan(at, size).data(), size));
+    out_data.copy_from(data_.subspan(at, out_data.size()));
     return true;
   }
 
@@ -176,7 +177,7 @@ bool MachOImageReader::Initialize(base::span<const uint8_t> image) {
     LoadCommand* command = &commands_[i];
 
     command->data.resize(load_command_size);
-    if (!data_->CopyDataAt(offset, load_command_size, &command->data[0])) {
+    if (!data_->CopyDataAt(offset, command->data)) {
       return false;
     }
 
@@ -191,7 +192,7 @@ bool MachOImageReader::Initialize(base::span<const uint8_t> image) {
     }
 
     command->data.resize(cmdsize);
-    if (!data_->CopyDataAt(offset, cmdsize, &command->data[0])) {
+    if (!data_->CopyDataAt(offset, command->data)) {
       return false;
     }
 
@@ -256,9 +257,7 @@ bool MachOImageReader::GetCodeSignatureInfo(std::vector<uint8_t>* info) {
     return false;
 
   info->resize(lc_code_signature->datasize);
-  return data_->CopyDataAt(lc_code_signature->dataoff,
-                           lc_code_signature->datasize,
-                           &(*info)[0]);
+  return data_->CopyDataAt(lc_code_signature->dataoff, *info);
 }
 
 }  // namespace safe_browsing
