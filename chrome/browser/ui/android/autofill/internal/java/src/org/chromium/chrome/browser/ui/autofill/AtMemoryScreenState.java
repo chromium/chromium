@@ -37,13 +37,6 @@ class AtMemoryScreenState {
      */
     public final boolean showZeroState;
 
-    /**
-     * Whether the search affordance tile should be displayed. The search affordance is an
-     * interactive suggestion tile (of type AT_MEMORY_SEARCH_AFFORDANCE) that prompts the user to
-     * search for the specific query. Clicking it populates or initiates a search.
-     */
-    public final boolean showSearchAffordance;
-
     /** Whether the list of autofill suggestions should be displayed. */
     public final boolean showAtMemorySuggestions;
 
@@ -51,12 +44,10 @@ class AtMemoryScreenState {
             boolean isLoading,
             boolean showSuggestionsBackground,
             boolean showZeroState,
-            boolean showSearchAffordance,
             boolean showAtMemorySuggestions) {
         this.isLoading = isLoading;
         this.showSuggestionsBackground = showSuggestionsBackground;
         this.showZeroState = showZeroState;
-        this.showSearchAffordance = showSearchAffordance;
         this.showAtMemorySuggestions = showAtMemorySuggestions;
     }
 
@@ -66,7 +57,6 @@ class AtMemoryScreenState {
                     /* isLoading= */ false,
                     /* showSuggestionsBackground= */ false,
                     /* showZeroState= */ false,
-                    /* showSearchAffordance= */ false,
                     /* showAtMemorySuggestions= */ false);
 
     /** Screen state when an asynchronous search is actively loading without prior results. */
@@ -75,7 +65,6 @@ class AtMemoryScreenState {
                     /* isLoading= */ true,
                     /* showSuggestionsBackground= */ false,
                     /* showZeroState= */ true,
-                    /* showSearchAffordance= */ false,
                     /* showAtMemorySuggestions= */ false);
 
     /** Screen state when the search input is empty or returned no results. */
@@ -84,16 +73,6 @@ class AtMemoryScreenState {
                     /* isLoading= */ false,
                     /* showSuggestionsBackground= */ false,
                     /* showZeroState= */ true,
-                    /* showSearchAffordance= */ false,
-                    /* showAtMemorySuggestions= */ false);
-
-    /** Screen state displaying a single search affordance tile. */
-    public static final AtMemoryScreenState SEARCH_AFFORDANCE =
-            new AtMemoryScreenState(
-                    /* isLoading= */ false,
-                    /* showSuggestionsBackground= */ false,
-                    /* showZeroState= */ false,
-                    /* showSearchAffordance= */ true,
                     /* showAtMemorySuggestions= */ false);
 
     /** Screen state displaying a list of autofill suggestions. */
@@ -102,6 +81,5 @@ class AtMemoryScreenState {
                     /* isLoading= */ false,
                     /* showSuggestionsBackground= */ true,
                     /* showZeroState= */ false,
-                    /* showSearchAffordance= */ false,
                     /* showAtMemorySuggestions= */ true);
 }

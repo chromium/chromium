@@ -55,7 +55,6 @@ import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
-import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -320,7 +319,7 @@ public class AtMemoryBottomSheetMediatorTest {
         assertEquals(1, mModelList.size());
         assertEquals(HomeProperties.ItemType.SUGGESTION, mModelList.get(0).type);
         assertEquals("flight", mModelList.get(0).model.get(TITLE));
-        assertFalse(mHomeModel.get(HomeProperties.SHOW_SUGGESTIONS_BACKGROUND));
+        assertTrue(mHomeModel.get(HomeProperties.SHOW_SUGGESTIONS_BACKGROUND));
 
         mModelList.get(0).model.get(ON_SUGGESTION_CLICKED).run();
         verify(mSearchDelegate).hideKeyboardAndClearFocus();
@@ -331,13 +330,11 @@ public class AtMemoryBottomSheetMediatorTest {
     public void testOnQueryTextChanged_subsequentKeystrokes() {
         mMediator.show(List.of(createSearchAffordance("f")));
         assertEquals(1, mModelList.size());
-        ListItem firstItem = mModelList.get(0);
-        assertEquals("f", firstItem.model.get(TITLE));
+        assertEquals("f", mModelList.get(0).model.get(TITLE));
 
         mMediator.show(List.of(createSearchAffordance("fl")));
         assertEquals(1, mModelList.size());
-        assertTrue(firstItem == mModelList.get(0));
-        assertEquals("fl", firstItem.model.get(TITLE));
+        assertEquals("fl", mModelList.get(0).model.get(TITLE));
     }
 
     @Test
@@ -348,6 +345,22 @@ public class AtMemoryBottomSheetMediatorTest {
         mMediator.show(List.of());
         assertEquals(1, mModelList.size());
         assertEquals(HomeProperties.ItemType.ZERO_STATE, mModelList.get(0).type);
+    }
+
+    @Test
+    public void testOnQueryTextChanged_resumeTypingAfterEmptyQuery() {
+        mMediator.show(List.of(createSearchAffordance("f")));
+        assertEquals(1, mModelList.size());
+        assertEquals(HomeProperties.ItemType.SUGGESTION, mModelList.get(0).type);
+
+        mMediator.show(List.of());
+        assertEquals(1, mModelList.size());
+        assertEquals(HomeProperties.ItemType.ZERO_STATE, mModelList.get(0).type);
+
+        mMediator.show(List.of(createSearchAffordance("a")));
+        assertEquals(1, mModelList.size());
+        assertEquals(HomeProperties.ItemType.SUGGESTION, mModelList.get(0).type);
+        assertEquals("a", mModelList.get(0).model.get(TITLE));
     }
 
     private AutofillSuggestion createSearchAffordance(String query) {

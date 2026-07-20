@@ -45,6 +45,9 @@ public class AtMemoryHomeView extends LinearLayout {
         mSearchBarView = findViewById(R.id.search_query_input_container);
         mRecyclerView = findViewById(R.id.suggestions_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        // Disable animations to prevent view flickering during frequent updates (e.g. search
+        // affordance).
+        mRecyclerView.setItemAnimator(null);
         mNoticeContainer = findViewById(R.id.notice_container);
         mNoticeOkButton = findViewById(R.id.notice_ok_button);
     }
@@ -116,6 +119,7 @@ public class AtMemoryHomeView extends LinearLayout {
         mSearchBarView.setIsLoading(isLoading);
     }
 
+    // TODO(crbug.com/536749145): Remove background logic.
     public void setShowSuggestionsBackground(boolean showBackground) {
         if (showBackground) {
             mRecyclerView.setBackgroundResource(R.drawable.at_memory_suggestions_bg);

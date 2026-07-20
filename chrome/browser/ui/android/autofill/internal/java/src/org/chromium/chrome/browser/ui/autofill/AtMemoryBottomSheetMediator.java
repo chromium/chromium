@@ -14,7 +14,6 @@ import androidx.annotation.IntDef;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.settings.PersonalContextSettingsLauncher;
 import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.personal_context.first_run.PersonalContextFirstRunService;
@@ -31,6 +30,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
 import java.util.List;
 
 /** Contains the business logic for the AtMemoryBottomSheet. */
@@ -56,7 +56,6 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
     private final PropertyModel mModel;
     private final PropertyModel mHomeModel;
     private final PropertyModel mFlyoutModel;
-    private @Nullable PropertyModel mSearchAffordanceModel;
     private final AtMemoryBottomSheetCoordinator.Delegate mDelegate;
     private final HomeProperties.SearchDelegate mSearchDelegate;
 
@@ -124,9 +123,6 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
     }
 
     private AtMemoryScreenState getScreenState(List<AutofillSuggestion> suggestions) {
-        if (isSearchAffordance(suggestions)) {
-            return AtMemoryScreenState.SEARCH_AFFORDANCE;
-        }
         if (suggestions.isEmpty()) {
             return mDelegate.isSearching()
                     ? AtMemoryScreenState.LOADING
@@ -145,9 +141,6 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
         if (screenState.showZeroState) {
             applyZeroState(sheetItems);
         }
-        if (screenState.showSearchAffordance) {
-            applySearchAffordance(suggestions.get(0), sheetItems);
-        }
         if (screenState.showAtMemorySuggestions) {
             applySuggestions(suggestions, sheetItems);
         }
@@ -156,7 +149,6 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
             mModel.set(CURRENT_SCREEN, ScreenId.HOME_SCREEN);
             mFlyoutModel.set(FlyoutProperties.TITLE, "");
             mFlyoutModel.set(FlyoutProperties.SUGGESTIONS, List.of());
-            mSearchAffordanceModel = null;
             sheetItems.clear();
             return;
         }
@@ -171,25 +163,15 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
         sheetItems.add(new ListItem(HomeProperties.ItemType.ZERO_STATE, new PropertyModel()));
     }
 
-    private void applySearchAffordance(AutofillSuggestion affordance, ModelList sheetItems) {
-        if (mSearchAffordanceModel != null) {
-            mSearchAffordanceModel.set(SuggestionItemProperties.TITLE, affordance.getLabel());
-            return;
-        }
-
-        mSearchAffordanceModel = createSuggestionModel(affordance, 0);
-        sheetItems.clear();
-        sheetItems.add(new ListItem(HomeProperties.ItemType.SUGGESTION, mSearchAffordanceModel));
-    }
-
     private void applySuggestions(List<AutofillSuggestion> suggestions, ModelList sheetItems) {
-        sheetItems.clear();
+        List<ListItem> listItems = new ArrayList<>();
         for (int i = 0; i < suggestions.size(); i++) {
-            sheetItems.add(
+            listItems.add(
                     new ListItem(
                             HomeProperties.ItemType.SUGGESTION,
                             createSuggestionModel(suggestions.get(i), i)));
         }
+        sheetItems.set(listItems);
     }
 
     private void onSuggestionClicked(AutofillSuggestion suggestion, int position) {
@@ -197,10 +179,9 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
             return;
         }
 
-        if (suggestion.getSuggestionType() == SuggestionType.AT_MEMORY_SEARCH_AFFORDANCE
-                && mSearchAffordanceModel != null) {
+        if (suggestion.getSuggestionType() == SuggestionType.AT_MEMORY_SEARCH_AFFORDANCE) {
             mSearchDelegate.hideKeyboardAndClearFocus();
-            String query = mSearchAffordanceModel.get(SuggestionItemProperties.TITLE);
+            String query = suggestion.getLabel();
             if (query != null) {
                 onQuerySubmitted(query);
             }
@@ -233,7 +214,6 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
     @Override
     public void onQuerySubmitted(String query) {
         mHomeModel.set(HomeProperties.IS_LOADING, true);
-        mSearchAffordanceModel = null;
         mDelegate.onQuerySubmitted(query);
     }
 
@@ -247,12 +227,6 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
         if (hasFocus) {
             mDelegate.requestExpandSheet();
         }
-    }
-
-    private boolean isSearchAffordance(List<AutofillSuggestion> suggestions) {
-        return suggestions.size() == 1
-                && suggestions.get(0).getSuggestionType()
-                        == SuggestionType.AT_MEMORY_SEARCH_AFFORDANCE;
     }
 
     private PropertyModel createSuggestionModel(AutofillSuggestion suggestion, int position) {
