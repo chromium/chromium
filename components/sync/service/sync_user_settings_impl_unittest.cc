@@ -186,10 +186,6 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncEverything) {
   // to a selectable type.
   expected_types.Remove(CONTEXTUAL_TASK);
 
-  // TODO(crbug.com/531804614): In CL #3, delete (NOTEBOOK is now mapped to a
-  // selectable type.
-  expected_types.Remove(NOTEBOOK);
-
 #if BUILDFLAG(IS_CHROMEOS)
   expected_types.RemoveAll({WEB_APKS});
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -439,9 +435,6 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncAllOsTypes) {
   // selectable type.
   expected_types.Remove(CONTEXTUAL_TASK);
 
-  // TODO(crbug.com/531804614): In CL #3, delete (NOTEBOOK is now mapped to a
-  // selectable type.
-  expected_types.Remove(NOTEBOOK);
   EXPECT_TRUE(sync_user_settings->IsSyncAllOsTypesEnabled());
   EXPECT_THAT(GetPreferredUserTypes(*sync_user_settings),
               ContainerEq(expected_types));
@@ -650,19 +643,19 @@ TEST_F(SyncUserSettingsImplTest, ShouldSyncSessionsOnlyIfOpenTabsIsSelected) {
       /*types=*/{UserSelectableType::kHistory, UserSelectableType::kTabs});
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // For android and iOS, we enable SAVED_TAB_GROUP under OpenTabs as well.
-  EXPECT_EQ(
-      GetPreferredUserTypes(*sync_user_settings),
-      Union(AlwaysPreferredUserTypes(),
-            {COLLABORATION_GROUP, HISTORY, HISTORY_DELETE_DIRECTIVES,
-             SAVED_TAB_GROUP, SHARED_COMMENT, SHARED_TAB_GROUP_DATA, SESSIONS,
-             USER_EVENTS, SHARED_TAB_GROUP_ACCOUNT_DATA, WORKSPACE_DESK,
-             ENCRYPTED_TAB_CONTEXT_CONTAINER, ENCRYPTED_TAB_CONTEXT_ITEM}));
+  EXPECT_EQ(GetPreferredUserTypes(*sync_user_settings),
+            Union(AlwaysPreferredUserTypes(),
+                  {COLLABORATION_GROUP, HISTORY, HISTORY_DELETE_DIRECTIVES,
+                   SAVED_TAB_GROUP, SHARED_COMMENT, SHARED_TAB_GROUP_DATA,
+                   SESSIONS, USER_EVENTS, SHARED_TAB_GROUP_ACCOUNT_DATA,
+                   WORKSPACE_DESK, ENCRYPTED_TAB_CONTEXT_CONTAINER,
+                   ENCRYPTED_TAB_CONTEXT_ITEM, NOTEBOOK}));
 #else
   EXPECT_EQ(GetPreferredUserTypes(*sync_user_settings),
             Union(AlwaysPreferredUserTypes(),
                   {HISTORY, HISTORY_DELETE_DIRECTIVES, SESSIONS, USER_EVENTS,
                    WORKSPACE_DESK, ENCRYPTED_TAB_CONTEXT_CONTAINER,
-                   ENCRYPTED_TAB_CONTEXT_ITEM}));
+                   ENCRYPTED_TAB_CONTEXT_ITEM, NOTEBOOK}));
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
   // History only: SESSIONS-related types are gone.
@@ -684,12 +677,12 @@ TEST_F(SyncUserSettingsImplTest, ShouldSyncSessionsOnlyIfOpenTabsIsSelected) {
             {COLLABORATION_GROUP, SAVED_TAB_GROUP, SESSIONS,
              SHARED_TAB_GROUP_DATA, SHARED_TAB_GROUP_ACCOUNT_DATA,
              WORKSPACE_DESK, SHARED_COMMENT, ENCRYPTED_TAB_CONTEXT_CONTAINER,
-             ENCRYPTED_TAB_CONTEXT_ITEM}));
+             ENCRYPTED_TAB_CONTEXT_ITEM, NOTEBOOK}));
 #else
   EXPECT_EQ(GetPreferredUserTypes(*sync_user_settings),
             Union(AlwaysPreferredUserTypes(),
                   {SESSIONS, WORKSPACE_DESK, ENCRYPTED_TAB_CONTEXT_CONTAINER,
-                   ENCRYPTED_TAB_CONTEXT_ITEM}));
+                   ENCRYPTED_TAB_CONTEXT_ITEM, NOTEBOOK}));
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 // SavedTabGroups enabled on desktop. It should enable both saved tab groups and
