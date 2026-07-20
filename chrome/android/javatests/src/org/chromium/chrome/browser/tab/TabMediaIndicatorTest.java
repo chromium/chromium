@@ -53,8 +53,8 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.TabLoadObserver;
 import org.chromium.components.browser_ui.notifications.ForegroundServiceUtils;
@@ -84,8 +84,8 @@ import java.util.concurrent.TimeoutException;
 @EnableFeatures({ChromeFeatureList.ANDROID_NEW_MEDIA_PICKER})
 public class TabMediaIndicatorTest {
     @Rule
-    public AutoResetCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.autoResetCtaActivityRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final String TEST_PATH = "/chrome/test/data/media/tab_media_indicator.html";
     private static final String GOOGLE_PATH = "/chrome/test/data/android/google.html";
