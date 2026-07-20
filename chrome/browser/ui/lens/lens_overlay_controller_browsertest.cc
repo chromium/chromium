@@ -752,6 +752,7 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
          {lens::features::kLensOverlaySidePanelOpenInNewTab, {}}},
         /*disabled_features=*/{
             contextual_tasks::kContextualTasks,
+            contextual_tasks::kContextualTasksSidePanel,
             lens::features::kLensAimSuggestions,
             lens::features::kLensOverlaySuggestionsMigration,
             lens::features::kLensOverlayNonBlockingPrivacyNotice});
@@ -5611,7 +5612,8 @@ class LensOverlayControllerBrowserPDFContextualizationTest
   }
 
   std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
-    return {contextual_tasks::kContextualTasks};
+    return {contextual_tasks::kContextualTasks,
+            contextual_tasks::kContextualTasksSidePanel};
   }
 
  protected:
@@ -6266,7 +6268,8 @@ class LensOverlayControllerBrowserPDFUpdatedContentFieldsTest
   }
 
   std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
-    return {contextual_tasks::kContextualTasks};
+    return {contextual_tasks::kContextualTasks,
+            contextual_tasks::kContextualTasksSidePanel};
   }
 
  protected:
@@ -6321,7 +6324,8 @@ class LensOverlayControllerBrowserPDFIncreaseLimitTest
   }
 
   std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
-    return {contextual_tasks::kContextualTasks};
+    return {contextual_tasks::kContextualTasks,
+            contextual_tasks::kContextualTasksSidePanel};
   }
 
  protected:
@@ -6388,6 +6392,7 @@ class LensOverlayControllerBrowserWithPixelsTest
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{}, /*disabled_features=*/{
             contextual_tasks::kContextualTasks,
+            contextual_tasks::kContextualTasksSidePanel,
             lens::features::kLensOverlayVisualSelectionUpdates});
   }
 
@@ -7775,7 +7780,8 @@ class LensOverlayControllerIframeBrowserTest
           {{"results-search-url", embedded_test_server()
                                       ->GetURL(kDocumentWithNamedElement)
                                       .spec()}}}},
-        /*disabled_features=*/{contextual_tasks::kContextualTasks});
+        /*disabled_features=*/{contextual_tasks::kContextualTasks,
+                               contextual_tasks::kContextualTasksSidePanel});
   }
 };
 
@@ -8133,7 +8139,8 @@ class LensOverlayControllerInnerTextAndApc
               {"use-updated-content-fields", "true"},
           }},
          {lens::features::kLensSearchProtectedPage, {}}},
-        {contextual_tasks::kContextualTasks});
+        {contextual_tasks::kContextualTasks,
+         contextual_tasks::kContextualTasksSidePanel});
   }
 };
 
@@ -8380,6 +8387,7 @@ class LensOverlayControllerContextualFeaturesDisabledTest
         /*enabled_features=*/{},
         /*disabled_features=*/{
             contextual_tasks::kContextualTasks,
+            contextual_tasks::kContextualTasksSidePanel,
             lens::features::kLensOverlayContextualSearchbox,
             lens::features::kLensOverlayNonBlockingPrivacyNotice});
   }
@@ -8634,7 +8642,8 @@ class LensOverlayControllerOverlaySearchbox
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{lens::features::kLensOverlay,
                               lens::features::kLensOverlayContextualSearchbox},
-        /*disabled_features=*/{contextual_tasks::kContextualTasks});
+        /*disabled_features=*/{contextual_tasks::kContextualTasks,
+                               contextual_tasks::kContextualTasksSidePanel});
   }
 
   void VerifyContextualSearchQueryParameters(const GURL& url_to_process) {
@@ -8866,7 +8875,8 @@ class LensOverlayControllerSideBySideBrowserTest
   void SetupFeatureList() override {
     feature_list_.InitWithFeaturesAndParameters(
         {{lens::features::kLensOverlay, {{"use-blur", "true"}}}},
-        {contextual_tasks::kContextualTasks});
+        {contextual_tasks::kContextualTasks,
+         contextual_tasks::kContextualTasksSidePanel});
   }
 
   bool AreAnyRoundedCornersShowing() {
@@ -9321,7 +9331,8 @@ class LensOverlayControllerReinvocationBrowserTest
         {lens::features::kLensOverlay,
          lens::features::kLensOverlayContextualSearchbox,
          lens::features::kLensSearchReinvocationAffordance},
-        {contextual_tasks::kContextualTasks});
+        {contextual_tasks::kContextualTasks,
+         contextual_tasks::kContextualTasksSidePanel});
   }
 };
 
@@ -9829,7 +9840,8 @@ class LensOverlayControllerNonBlockingPrivacyNoticeForImageSearchBrowserTest
         /*enabled_features=*/
         {lens::features::kLensOverlayNonBlockingPrivacyNotice,
          lens::features::kLensOverlayNonBlockingPrivacyNoticeForImageSearch},
-        /*disabled_features=*/{contextual_tasks::kContextualTasks});
+        /*disabled_features=*/{contextual_tasks::kContextualTasks,
+                               contextual_tasks::kContextualTasksSidePanel});
   }
 
   void SetUpOnMainThread() override {
@@ -10048,9 +10060,8 @@ class LensOverlayControllerCoBrowsePreselectionTest
          {lens::features::kLensOverlay,
           {{"results-search-url", kResultsSearchBaseUrl}}},
          {lens::features::kLensOverlayContextualSearchbox, {}}},
-        /*disabled_features=*/{
-            contextual_tasks::kContextualTasks
-        });
+        /*disabled_features=*/{contextual_tasks::kContextualTasks,
+                               contextual_tasks::kContextualTasksSidePanel});
   }
 };
 

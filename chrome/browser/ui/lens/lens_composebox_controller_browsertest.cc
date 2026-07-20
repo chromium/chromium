@@ -189,6 +189,7 @@ class LensComposeboxControllerBrowserTest : public InProcessBrowserTest {
           {{"lens-aim-suggestions-type", "Contextual"}}},
          {lens::features::kLensSearchReinvocationAffordance, {}}},
         /*disabled_features=*/{contextual_tasks::kContextualTasks,
+                               contextual_tasks::kContextualTasksSidePanel,
                                omnibox::kAimServerEligibilityEnabled});
 
     InProcessBrowserTest::SetUp();

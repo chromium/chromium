@@ -15866,6 +15866,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "ContextualTasksSidePanel",
                         "LensSidePanelUnification"
                     ]
                 }

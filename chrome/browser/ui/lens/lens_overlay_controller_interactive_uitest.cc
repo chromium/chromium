@@ -111,6 +111,7 @@ class ParameterizedLensOverlayControllerCUJTest
          {{"use-pdfs-as-context", "true"}, {"auto-focus-searchbox", "false"}}}};
     std::vector<base::test::FeatureRef> disabled_features = {
         contextual_tasks::kContextualTasks,
+        contextual_tasks::kContextualTasksSidePanel,
         features::kNonBlockingOsClipboardReads};
 
     if (GetParam()) {
