@@ -42,9 +42,37 @@
         assert_equals(mediaStreamDestination.numberOfOutputs, 0,
             'mediaStreamDestination.numberOfOutputs should be 0');
 
-        // TODO(crbug.com/402714445): add a test where we create a
-        // `PeerConnection` and call `addStream(mediaStreamDestination.stream)`
       }, 'Validation of MediaStreamAudioDestinationNode API');
+      promise_test(async t => {
+        const context = new AudioContext();
+        t.add_cleanup(() => context.close());
+        const mediaStreamDestination =
+            new MediaStreamAudioDestinationNode(context);
+        const pc = new RTCPeerConnection();
+        t.add_cleanup(() => pc.close());
+        pc.addStream(mediaStreamDestination.stream);
+        assert_equals(
+            pc.getLocalStreams().length, 1, 'pc should have 1 local stream');
+        assert_equals(
+            pc.getLocalStreams()[0], mediaStreamDestination.stream,
+            'local stream should be mediaStreamDestination.stream');
+      },
+      'RTCPeerConnection.addStream with MediaStreamAudioDestinationNode');
+
+      promise_test(async t => {
+        const context = new AudioContext();
+        t.add_cleanup(() => context.close());
+        const mediaStreamDestination =
+            new MediaStreamAudioDestinationNode(context);
+        const pc = new RTCPeerConnection();
+        t.add_cleanup(() => pc.close());
+        const track = mediaStreamDestination.stream.getAudioTracks()[0];
+        pc.addTrack(track, mediaStreamDestination.stream);
+        assert_equals(pc.getSenders().length, 1, 'pc should have 1 sender');
+        assert_equals(
+            pc.getSenders()[0].track, track, 'sender track should match');
+      },
+      'RTCPeerConnection.addTrack with MediaStreamAudioDestinationNode');
     </script>
   </body>
 </html>
