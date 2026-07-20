@@ -18,8 +18,9 @@
 #import "ios/chrome/app/profile/profile_state_test_utils.h"
 #import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider_interface.h"
-#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -85,6 +86,19 @@
 - (void)deactivateGridContainerConstraints {
 }
 @end
+
+namespace {
+
+// Returns the id<BrowserProvider> from `scene_state` for `is_off_the_record`.
+id<BrowserProvider> BrowserProviderForMode(SceneState* scene_state,
+                                           bool is_off_the_record) {
+  id<BrowserProviderInterface> interface = scene_state.browserProviderInterface;
+  return is_off_the_record ? interface.incognitoBrowserProvider
+                           : interface.mainBrowserProvider;
+}
+
+}  // anonymous namespace
+
 // Tests the FirstRunProfileAgent.
 class FirstRunProfileAgentTest : public PlatformTest {
  public:
@@ -100,28 +114,25 @@ class FirstRunProfileAgentTest : public PlatformTest {
   }
 
   ~FirstRunProfileAgentTest() override {
-    [scene_state_ shutdown];
-    profile_state_.profile = nullptr;
-  }
-
-  // Initializes `browser_` using a configured `profile_` and `scene_state_`.
-  void InitializeTestBrowser() {
-    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
-    scene_state_.browserProviderInterface.currentBrowserProvider.browser =
-        browser_.get();
+    @autoreleasepool {
+      [scene_state_ shutdown];
+      scene_state_ = nil;
+      profile_state_ = nil;
+    }
   }
 
   // Initializes `scene_state_` using a configured `profile_`.
   void InitializeActiveSceneState(bool is_off_the_record = false) {
-    StubBrowserProviderInterface* browser_provider_interface =
-        [[StubBrowserProviderInterface alloc] init];
-    browser_provider_interface.currentBrowserProvider =
-        is_off_the_record ? browser_provider_interface.incognitoBrowserProvider
-                          : browser_provider_interface.mainBrowserProvider;
-
     scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-    scene_state_.browserProviderInterface = browser_provider_interface;
+
+    [scene_state_
+        setCurrentBrowserProvider:BrowserProviderForMode(scene_state_,
+                                                         is_off_the_record)];
+  }
+
+  Browser* browser() {
+    return scene_state_.browserProviderInterface.currentBrowserProvider.browser;
   }
 
  protected:
@@ -132,7 +143,6 @@ class FirstRunProfileAgentTest : public PlatformTest {
   FirstRunProfileAgent* profile_agent_;
   ProfileState* profile_state_;
   FakeSceneState* scene_state_;
-  std::unique_ptr<TestBrowser> browser_;
 };
 
 // Validates that the correct metric is logged when the user rejects Guided Tour
@@ -152,29 +162,28 @@ TEST_F(FirstRunProfileAgentTest, GuidedTourStepMetrics) {
       kBestOfAppFRE, {{kWelcomeBackParam, "4"}});
 
   InitializeActiveSceneState();
-  InitializeTestBrowser();
   [profile_agent_ profileState:profile_state_
       firstSceneHasInitializedUI:scene_state_];
 
   FakeTabGridToolbarCommands* fake_tab_grid_toolbar_commands =
       [[FakeTabGridToolbarCommands alloc] init];
-  [browser_->GetCommandDispatcher()
+  [browser()->GetCommandDispatcher()
       startDispatchingToTarget:fake_tab_grid_toolbar_commands
                    forProtocol:@protocol(TabGridToolbarCommands)];
 
   FakeTabGridCommands* fake_tab_grid_commands =
       [[FakeTabGridCommands alloc] init];
-  [browser_->GetCommandDispatcher()
+  [browser()->GetCommandDispatcher()
       startDispatchingToTarget:fake_tab_grid_commands
                    forProtocol:@protocol(TabGridCommands)];
 
   id scene_commands_handler = OCMProtocolMock(@protocol(SceneCommands));
-  [browser_->GetCommandDispatcher()
+  [browser()->GetCommandDispatcher()
       startDispatchingToTarget:scene_commands_handler
                    forProtocol:@protocol(SceneCommands)];
 
   id guided_tour_handler = OCMProtocolMock(@protocol(GuidedTourCommands));
-  [browser_->GetCommandDispatcher()
+  [browser()->GetCommandDispatcher()
       startDispatchingToTarget:guided_tour_handler
                    forProtocol:@protocol(GuidedTourCommands)];
 
@@ -226,8 +235,6 @@ TEST_F(FirstRunProfileAgentTest, SyncedSetUpDoesNotTriggerInIncognito) {
   InitializeActiveSceneState(/*is_off_the_record*/ true);
   ASSERT_NE(scene_state_.browserProviderInterface.currentBrowserProvider, nil);
 
-  InitializeTestBrowser();
-
   // Configure the app state for the post-first run flow.
   FakeStartupInformation* startup_information =
       [[FakeStartupInformation alloc] init];
@@ -275,7 +282,6 @@ TEST_F(FirstRunProfileAgentTest, StopGuidedTourWithoutHandlers) {
       kBestOfAppFRE, {{kWelcomeBackParam, "4"}});
 
   InitializeActiveSceneState();
-  InitializeTestBrowser();
   [profile_agent_ profileState:profile_state_
       firstSceneHasInitializedUI:scene_state_];
 
