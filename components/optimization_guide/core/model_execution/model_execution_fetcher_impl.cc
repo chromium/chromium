@@ -488,6 +488,9 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
     case ModelBasedCapabilityKey::kUpdaterChat:
       // TODO(crbug.com/512194219): Add network traffic annotation.
       return MISSING_TRAFFIC_ANNOTATION;
+    case ModelBasedCapabilityKey::kCardRecommendations:
+      // TODO(crbug.com/534406694): Add network traffic annotation.
+      return MISSING_TRAFFIC_ANNOTATION;
     case ModelBasedCapabilityKey::kContextHub:
       // TODO(crbug.com/532549697): Add network traffic annotation.
       return MISSING_TRAFFIC_ANNOTATION;
@@ -612,6 +615,7 @@ bool IsAccessTokenRequiredForFeature(ModelBasedCapabilityKey feature) {
     case ModelBasedCapabilityKey::kScamDetection:
     case ModelBasedCapabilityKey::kGeminiAntiscamProtection:
     case ModelBasedCapabilityKey::kAmountExtraction:
+    case ModelBasedCapabilityKey::kCardRecommendations:
     case ModelBasedCapabilityKey::kReadAloudGenerateText:
     case ModelBasedCapabilityKey::kReadAloudSynthesize:
       return false;

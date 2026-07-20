@@ -104,6 +104,7 @@ chromium-metrics-reviews@google.com.
   <variant name="AnnotationReducerQueryClassifier"
       summary="User Query Classification"/>
   <variant name="BlingPrototyping" summary="Bling Prototyping"/>
+  <variant name="CardRecommendations" summary="Card Recommendations"/>
   <variant name="Compose" summary="Compose"/>
   <variant name="ContentAnnotation" summary="Content Annotation"/>
   <variant name="ContextHub" summary="Context Hub"/>

@@ -109,6 +109,7 @@ size_t GetMaxParallelFeatureExecutions(ModelBasedCapabilityKey feature) {
     case ModelBasedCapabilityKey::kAnnotationReducerOnePResolver:
     case ModelBasedCapabilityKey::kAnnotationReducerQueryClassifier:
     case ModelBasedCapabilityKey::kContextualCueing:
+    case ModelBasedCapabilityKey::kCardRecommendations:
     case ModelBasedCapabilityKey::kContextHub:
     case ModelBasedCapabilityKey::kReadAloudGenerateText:
     case ModelBasedCapabilityKey::kReadAloudSynthesize:
