@@ -376,13 +376,6 @@ std::optional<base::Version> ComponentInstaller::SelectComponentVersion(
     const base::Version& max_previous_product_version,
     const base::FilePath& base_dir,
     scoped_refptr<RegistrationInfo> registration_info) {
-  base::FileEnumerator file_enumerator(base_dir, false,
-                                       base::FileEnumerator::DIRECTORIES);
-
-  std::optional<base::Version> selected_version;
-  base::FilePath selected_path;
-  std::optional<base::DictValue> selected_manifest;
-
   const base::Version bundled_version = registration_info->version.IsValid()
                                             ? registration_info->version
                                             : base::Version(kNullVersion);
@@ -393,6 +386,29 @@ std::optional<base::Version> ComponentInstaller::SelectComponentVersion(
       (registered_version > bundled_version)
           ? std::optional<base::Version>(registered_version)
           : std::nullopt;
+
+  // Try retrieving target_version directly, without a scan.
+  if (target_version) {
+    base::FilePath candidate_path =
+        base_dir.AppendASCII(target_version->GetString());
+    std::optional<base::DictValue> candidate_manifest =
+        GetValidInstallationManifest(candidate_path);
+    if (candidate_manifest) {
+      registration_info->version = *target_version;
+      registration_info->manifest = std::move(*candidate_manifest);
+      registration_info->install_dir = candidate_path;
+      base::ReadFileToString(candidate_path.AppendASCII("manifest.fingerprint"),
+                             &registration_info->fingerprint);
+      return target_version;
+    }
+  }
+
+  base::FileEnumerator file_enumerator(base_dir, false,
+                                       base::FileEnumerator::DIRECTORIES);
+
+  std::optional<base::Version> selected_version;
+  base::FilePath selected_path;
+  std::optional<base::DictValue> selected_manifest;
 
   for (base::FilePath path = file_enumerator.Next(); !path.value().empty();
        path = file_enumerator.Next()) {
