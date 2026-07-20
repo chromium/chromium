@@ -78,10 +78,10 @@ export function getHtml(this: ComposeboxElement) {
         @keydown="${this.onKeydown}"
         @focusin="${this.onComposeboxFocusin_}"
         @focusout="${this.onComposeboxFocusout_}"
-        @dragenter="${this.dragAndDropHandler_.handleDragEnter}"
-        @dragover="${this.dragAndDropHandler_.handleDragOver}"
-        @dragleave="${this.dragAndDropHandler_.handleDragLeave}"
-        @drop="${this.dragAndDropHandler_.handleDrop}"
+        @dragenter="${this.dragAndDropHandler.handleDragEnter}"
+        @dragover="${this.dragAndDropHandler.handleDragOver}"
+        @dragleave="${this.dragAndDropHandler.handleDragLeave}"
+        @drop="${this.dragAndDropHandler.handleDrop}"
         @paste="${this.onPaste}">
       <div id="inputContainer" part="input-container">
         <cr-composebox-input id="composeboxInput"

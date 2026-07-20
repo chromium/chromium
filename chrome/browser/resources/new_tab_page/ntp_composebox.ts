@@ -28,8 +28,6 @@ import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components
 import type {ErrorScrimElement} from '//resources/cr_components/composebox/error_scrim.js';
 import type {ComposeboxFileCarouselElement} from '//resources/cr_components/composebox/file_carousel.js';
 import {GlowAnimationState} from '//resources/cr_components/search/constants.js';
-import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
-import type {DragAndDropHost} from '//resources/cr_components/search/drag_drop_host.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -50,7 +48,7 @@ export interface NtpComposeboxElement extends ComposeboxEmbedderMixinInterface {
 }
 
 export class NtpComposeboxElement extends ComposeboxEmbedderMixin
-(CrLitElement) implements DragAndDropHost {
+(CrLitElement) {
   static get is() {
     return 'ntp-composebox';
   }
@@ -81,7 +79,6 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
   private pageHandler_: PageHandlerRemote;
   private searchboxHandler_: SearchboxPageHandlerRemote;
   private eventTracker_: EventTracker = new EventTracker();
-  protected dragAndDropHandler_: DragAndDropHandler;
   protected accessor expanding_: boolean = true;
 
   override get keepMenuOpenOnTabSelect(): boolean {
@@ -125,8 +122,6 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
     this.searchboxCallbackRouter_ =
         ComposeboxProxyImpl.getInstance().searchboxCallbackRouter;
     this.searchboxHandler_ = ComposeboxProxyImpl.getInstance().searchboxHandler;
-    this.dragAndDropHandler_ =
-        new DragAndDropHandler(this, this.dragAndDropEnabled);
   }
 
   override connectedCallback() {
@@ -141,11 +136,6 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
     this.eventTracker_.removeAll();
   }
 
-  /* Used by drag/drop host interface so the
-  drag and drop handler can access addDroppedFiles(). */
-  getDropTarget() {
-    return this;
-  }
 
   override shouldShowDivider(): boolean {
     const hasNonTabFiles = Array.from(this.files.values()).some(f => !f.url);

@@ -26,8 +26,6 @@ import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components
 import type {ErrorScrimElement} from '//resources/cr_components/composebox/error_scrim.js';
 import type {ComposeboxFileCarouselElement} from '//resources/cr_components/composebox/file_carousel.js';
 import type {GlowAnimationState} from '//resources/cr_components/search/constants.js';
-import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
-import type {DragAndDropHost} from '//resources/cr_components/search/drag_drop_host.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {debounceEnd} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -104,8 +102,7 @@ export interface ContextualTasksInnerComposeboxElement {
 
 export class
     ContextualTasksInnerComposeboxElement extends ComposeboxEmbedderMixin
-(CrLitElement) implements DragAndDropHost,
-                          ContextualTasksInnerComposeboxInterface {
+(CrLitElement) implements ContextualTasksInnerComposeboxInterface {
   static get is() {
     return 'contextual-tasks-inner-composebox';
   }
@@ -166,7 +163,6 @@ export class
   private searchboxHandler_: SearchboxPageHandlerRemote;
   private eventTracker_: EventTracker = new EventTracker();
   private resizeObservers_: ResizeObserver[] = [];
-  protected dragAndDropHandler_: DragAndDropHandler;
 
   override getPageHandler(): PageHandlerRemote {
     return this.pageHandler_;
@@ -205,8 +201,6 @@ export class
     this.searchboxCallbackRouter_ =
         ComposeboxProxyImpl.getInstance().searchboxCallbackRouter;
     this.searchboxHandler_ = ComposeboxProxyImpl.getInstance().searchboxHandler;
-    this.dragAndDropHandler_ =
-        new DragAndDropHandler(this, this.dragAndDropEnabled);
   }
 
   override async connectedCallback() {
@@ -333,11 +327,6 @@ export class
     }
   }
 
-  /* Used by drag/drop host interface so the
-  drag and drop handler can access addDroppedFiles(). */
-  getDropTarget() {
-    return this;
-  }
 
   protected onComposeboxFocusin_(e: FocusEvent) {
     // Exit early if the focus is still within the composebox.
