@@ -65,6 +65,26 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveTransaction {
   virtual ~EnclaveTransaction() = default;
 };
 
+// Identifies the type of enclave transaction for UMA logging purposes.
+// These correspond to either a single enclave command, or a concatenation of
+// multiple commands in a single transaction.
+//
+// These enum values are not persisted, but translated into string suffices for
+// a UMA token variant (see `TransactionTypeToSuffix()`).
+//
+// LINT.IfChange(EnclaveTransactionTypeForUMA)
+enum class EnclaveTransactionTypeForUMA {
+  kDeviceRegister,
+  kKeysWrapSecrets,
+  kDeviceForget,
+  kRecoveryKeyStoreWrapPINAndSecret,
+  kRecoveryKeyStoreRewrapPIN,
+  kRecoveryKeyStoreWrapPINAndKeysWrap,
+  kPasskeyAssert,
+  kPasskeyCreate,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/histograms.xml:EnclaveTransactionType)
+
 // Perform a transaction with the enclave.
 //
 // Serialises and sends `request` and calls `callback` with the response, or
@@ -76,6 +96,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveTransaction {
         std::string access_token,
         std::optional<std::string> reauthentication_token,
         cbor::Value request,
+        EnclaveTransactionTypeForUMA transaction_type,
         SigningCallback signing_callback,
         base::OnceCallback<void(base::expected<cbor::Value, TransactError>)>
             callback);

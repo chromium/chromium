@@ -602,8 +602,35 @@ TEST_F(EnclaveManagerTest, Basic) {
   DoAssertion(GetTestEntity(), /*claimed_pin=*/nullptr,
               GetAssertionResponseExpectation());
   histogram_tester.ExpectBucketCount(
-      "WebAuthentication.EnclaveTransactionResult",
+      "WebAuthentication.EnclaveTransaction.Result",
       device::enclave::EnclaveTransactionResult::kSuccess, 2);
+  histogram_tester.ExpectBucketCount(
+      "WebAuthentication.EnclaveTransaction.PasskeyCreate.Result",
+      device::enclave::EnclaveTransactionResult::kSuccess, 1);
+  histogram_tester.ExpectBucketCount(
+      "WebAuthentication.EnclaveTransaction.PasskeyAssert.Result",
+      device::enclave::EnclaveTransactionResult::kSuccess, 1);
+
+  histogram_tester.ExpectTotalCount(
+      "WebAuthentication.EnclaveTransaction.Latency", 2);
+  histogram_tester.ExpectTotalCount(
+      "WebAuthentication.EnclaveTransaction.PasskeyCreate.Latency", 1);
+  histogram_tester.ExpectTotalCount(
+      "WebAuthentication.EnclaveTransaction.PasskeyAssert.Latency", 1);
+
+  histogram_tester.ExpectTotalCount(
+      "WebAuthentication.EnclaveTransaction.RequestSize", 2);
+  histogram_tester.ExpectTotalCount(
+      "WebAuthentication.EnclaveTransaction.PasskeyCreate.RequestSize", 1);
+  histogram_tester.ExpectTotalCount(
+      "WebAuthentication.EnclaveTransaction.PasskeyAssert.RequestSize", 1);
+
+  histogram_tester.ExpectTotalCount(
+      "WebAuthentication.EnclaveTransaction.ResponseSize", 2);
+  histogram_tester.ExpectTotalCount(
+      "WebAuthentication.EnclaveTransaction.PasskeyCreate.ResponseSize", 1);
+  histogram_tester.ExpectTotalCount(
+      "WebAuthentication.EnclaveTransaction.PasskeyAssert.ResponseSize", 1);
 }
 
 TEST_F(EnclaveManagerTest,
@@ -3324,7 +3351,7 @@ TEST_F(EnclaveUVTest, UnregisterOnMissingUserVerifyingKey) {
 
   EXPECT_FALSE(manager_.IsRegistered());
   histogram_tester.ExpectBucketCount(
-      "WebAuthentication.EnclaveTransactionResult",
+      "WebAuthentication.EnclaveTransaction.Result",
       device::enclave::EnclaveTransactionResult::kMissingKey, 1);
 }
 

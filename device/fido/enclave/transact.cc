@@ -4,6 +4,7 @@
 
 #include "device/fido/enclave/transact.h"
 
+#include "base/check.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -13,6 +14,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/cbor/diagnostic_writer.h"
 #include "components/cbor/reader.h"
@@ -30,24 +33,42 @@ namespace device::enclave {
 
 namespace {
 
-void RecordTransactionResult(EnclaveTransactionResult result) {
-  base::UmaHistogramEnumeration("WebAuthentication.EnclaveTransactionResult",
-                                result);
+std::string_view TransactionTypeToSuffix(EnclaveTransactionTypeForUMA type) {
+  switch (type) {
+    case EnclaveTransactionTypeForUMA::kDeviceRegister:
+      return ".DeviceRegister";
+    case EnclaveTransactionTypeForUMA::kKeysWrapSecrets:
+      return ".KeysWrapSecrets";
+    case EnclaveTransactionTypeForUMA::kDeviceForget:
+      return ".DeviceForget";
+    case EnclaveTransactionTypeForUMA::kRecoveryKeyStoreWrapPINAndSecret:
+      return ".RecoveryKeyStoreWrapPINAndSecret";
+    case EnclaveTransactionTypeForUMA::kRecoveryKeyStoreRewrapPIN:
+      return ".RecoveryKeyStoreRewrapPIN";
+    case EnclaveTransactionTypeForUMA::kRecoveryKeyStoreWrapPINAndKeysWrap:
+      return ".RecoveryKeyStoreWrapPINAndKeysWrap";
+    case EnclaveTransactionTypeForUMA::kPasskeyAssert:
+      return ".PasskeyAssert";
+    case EnclaveTransactionTypeForUMA::kPasskeyCreate:
+      return ".PasskeyCreate";
+  }
+  NOTREACHED();
 }
 
-struct Transaction : public EnclaveTransaction {
+class Transaction : public EnclaveTransaction {
+ public:
   Transaction(
       const EnclaveIdentity& enclave,
       cbor::Value request,
+      EnclaveTransactionTypeForUMA transaction_type,
       SigningCallback signing_callback,
       base::OnceCallback<void(base::expected<cbor::Value, TransactError>)>
           callback)
-      : request_(std::move(request)),
+      : transaction_type_(transaction_type),
+        request_(std::move(request)),
         signing_callback_(std::move(signing_callback)),
-        handshake_(std::nullopt, enclave.public_key, std::nullopt) {
-    callback_ = base::BindOnce(&Transaction::OnTransactionComplete,
-                               weak_factory_.GetWeakPtr(), std::move(callback));
-  }
+        callback_(std::move(callback)),
+        handshake_(std::nullopt, enclave.public_key, std::nullopt) {}
 
   ~Transaction() override = default;
 
@@ -55,7 +76,50 @@ struct Transaction : public EnclaveTransaction {
     client_ = std::move(client);
   }
 
-  void StartInternal() { client_->Write(handshake_.BuildInitialMessage()); }
+  void RecordTransactionResult(EnclaveTransactionResult result) {
+    transaction_result_ = result;
+  }
+
+  void RecordMetrics() {
+    std::string_view cmd_suffix = TransactionTypeToSuffix(transaction_type_);
+    std::string detailed_prefix =
+        base::StrCat({"WebAuthentication.EnclaveTransaction", cmd_suffix});
+    std::string aggregate_prefix = "WebAuthentication.EnclaveTransaction";
+
+    CHECK(!start_time_.is_null());
+    base::TimeDelta latency = base::TimeTicks::Now() - start_time_;
+
+    if (transaction_result_) {
+      base::UmaHistogramEnumeration(base::StrCat({detailed_prefix, ".Result"}),
+                                    *transaction_result_);
+      base::UmaHistogramEnumeration(base::StrCat({aggregate_prefix, ".Result"}),
+                                    *transaction_result_);
+    }
+
+    base::UmaHistogramMediumTimes(base::StrCat({detailed_prefix, ".Latency"}),
+                                  latency);
+    base::UmaHistogramMediumTimes(base::StrCat({aggregate_prefix, ".Latency"}),
+                                  latency);
+
+    if (request_size_) {
+      base::UmaHistogramCounts1M(
+          base::StrCat({detailed_prefix, ".RequestSize"}), *request_size_);
+      base::UmaHistogramCounts1M(
+          base::StrCat({aggregate_prefix, ".RequestSize"}), *request_size_);
+    }
+
+    if (response_size_) {
+      base::UmaHistogramCounts1M(
+          base::StrCat({detailed_prefix, ".ResponseSize"}), *response_size_);
+      base::UmaHistogramCounts1M(
+          base::StrCat({aggregate_prefix, ".ResponseSize"}), *response_size_);
+    }
+  }
+
+  void StartInternal() {
+    start_time_ = base::TimeTicks::Now();
+    client_->Write(handshake_.BuildInitialMessage());
+  }
 
   void Start() {
     if (base::FeatureList::IsEnabled(
@@ -74,15 +138,14 @@ struct Transaction : public EnclaveTransaction {
     if (status != EnclaveWebSocketClient::SocketStatus::kOk) {
       FIDO_LOG(ERROR) << "Enclave WebSocket connection failed";
       RecordTransactionResult(EnclaveTransactionResult::kWebSocketError);
-      std::move(callback_).Run(
-          base::unexpected(TransactError::kWebSocketError));
+      OnTransactionComplete(base::unexpected(TransactError::kWebSocketError));
       return;
     }
 
     if (!done_handshake_) {
       if (!CompleteHandshake(data)) {
         RecordTransactionResult(EnclaveTransactionResult::kHandshakeFailed);
-        std::move(callback_).Run(
+        OnTransactionComplete(
             base::unexpected(TransactError::kHandshakeFailed));
         return;
       }
@@ -95,11 +158,12 @@ struct Transaction : public EnclaveTransaction {
                               base::BindOnce(&Transaction::RequestReady,
                                              weak_factory_.GetWeakPtr()));
     } else {
+      response_size_ = data.size();
       std::vector<uint8_t> plaintext;
       if (!crypter_->Decrypt(data, &plaintext)) {
         FIDO_LOG(ERROR) << "Failed to decrypt enclave response";
         RecordTransactionResult(EnclaveTransactionResult::kDecryptionFailed);
-        std::move(callback_).Run(base::unexpected(TransactError::kOther));
+        OnTransactionComplete(base::unexpected(TransactError::kOther));
         return;
       }
 
@@ -107,7 +171,7 @@ struct Transaction : public EnclaveTransaction {
       if (!response) {
         FIDO_LOG(ERROR) << "Failed to parse enclave response";
         RecordTransactionResult(EnclaveTransactionResult::kParseFailure);
-        std::move(callback_).Run(base::unexpected(TransactError::kOther));
+        OnTransactionComplete(base::unexpected(TransactError::kOther));
         return;
       }
 
@@ -116,7 +180,7 @@ struct Transaction : public EnclaveTransaction {
                              RedactEnclaveResponse(*response));
       if (!response->is_map()) {
         RecordTransactionResult(EnclaveTransactionResult::kParseFailure);
-        std::move(callback_).Run(base::unexpected(TransactError::kOther));
+        OnTransactionComplete(base::unexpected(TransactError::kOther));
         return;
       }
 
@@ -130,21 +194,20 @@ struct Transaction : public EnclaveTransaction {
           int code = err_it->second.GetInteger();
           if (code == static_cast<int>(TransactError::kUnknownClient)) {
             RecordTransactionResult(EnclaveTransactionResult::kUnknownClient);
-            std::move(callback_).Run(
+            OnTransactionComplete(
                 base::unexpected(TransactError::kUnknownClient));
             return;
           }
           if (code == static_cast<int>(TransactError::kMissingKey)) {
             RecordTransactionResult(EnclaveTransactionResult::kMissingKey);
-            std::move(callback_).Run(
-                base::unexpected(TransactError::kMissingKey));
+            OnTransactionComplete(base::unexpected(TransactError::kMissingKey));
             return;
           }
           if (code ==
               static_cast<int>(TransactError::kSignatureVerificationFailed)) {
             RecordTransactionResult(
                 EnclaveTransactionResult::kSignatureVerificationFailed);
-            std::move(callback_).Run(
+            OnTransactionComplete(
                 base::unexpected(TransactError::kSignatureVerificationFailed));
             return;
           }
@@ -152,13 +215,13 @@ struct Transaction : public EnclaveTransaction {
           // kUnknownServiceError.
         }
         RecordTransactionResult(EnclaveTransactionResult::kOtherError);
-        std::move(callback_).Run(
+        OnTransactionComplete(
             base::unexpected(TransactError::kUnknownServiceError));
         return;
       }
 
       RecordTransactionResult(EnclaveTransactionResult::kSuccess);
-      std::move(callback_).Run(base::ok(ok_it->second.Clone()));
+      OnTransactionComplete(base::ok(ok_it->second.Clone()));
     }
   }
 
@@ -166,10 +229,10 @@ struct Transaction : public EnclaveTransaction {
 
  private:
   void OnTransactionComplete(
-      base::OnceCallback<void(base::expected<cbor::Value, TransactError>)> cb,
       base::expected<cbor::Value, TransactError> result) {
+    RecordMetrics();
     client_.reset();
-    std::move(cb).Run(std::move(result));
+    std::move(callback_).Run(std::move(result));
   }
 
   void RequestReady(std::optional<std::vector<uint8_t>> request) {
@@ -181,15 +244,16 @@ struct Transaction : public EnclaveTransaction {
     if (!request) {
       FIDO_LOG(EVENT)
           << "Signing failed, potentially due to the user canceling";
-      std::move(callback_).Run(base::unexpected(TransactError::kSigningFailed));
+      OnTransactionComplete(base::unexpected(TransactError::kSigningFailed));
       return;
     }
 
     if (!crypter_->Encrypt(&request.value())) {
       FIDO_LOG(ERROR) << "Failed to encrypt message to enclave";
-      std::move(callback_).Run(base::unexpected(TransactError::kOther));
+      OnTransactionComplete(base::unexpected(TransactError::kOther));
       return;
     }
+    request_size_ = request->size();
     client_->Write(*request);
   }
 
@@ -230,7 +294,9 @@ struct Transaction : public EnclaveTransaction {
     return true;
   }
 
+  const EnclaveTransactionTypeForUMA transaction_type_;
   cbor::Value request_;
+
   SigningCallback signing_callback_;
   base::OnceCallback<void(base::expected<cbor::Value, TransactError>)>
       callback_;
@@ -239,6 +305,10 @@ struct Transaction : public EnclaveTransaction {
   std::unique_ptr<cablev2::Crypter> crypter_;
   std::optional<std::array<uint8_t, 32>> handshake_hash_;
   bool done_handshake_ = false;
+  base::TimeTicks start_time_;
+  std::optional<size_t> request_size_;
+  std::optional<size_t> response_size_;
+  std::optional<EnclaveTransactionResult> transaction_result_;
 
   // Timer for `kWebAuthnEnclaveAuthenticatorDelay` dev flag.
   base::OneShotTimer timer_;
@@ -254,12 +324,13 @@ std::unique_ptr<EnclaveTransaction> Transact(
     std::string access_token,
     std::optional<std::string> reauthentication_token,
     cbor::Value request,
+    EnclaveTransactionTypeForUMA transaction_type,
     SigningCallback signing_callback,
     base::OnceCallback<void(base::expected<cbor::Value, TransactError>)>
         callback) {
-  auto transaction = std::make_unique<Transaction>(enclave, std::move(request),
-                                                   std::move(signing_callback),
-                                                   std::move(callback));
+  auto transaction = std::make_unique<Transaction>(
+      enclave, std::move(request), transaction_type,
+      std::move(signing_callback), std::move(callback));
 
   transaction->set_client(std::make_unique<EnclaveWebSocketClient>(
       enclave.url, std::move(access_token), std::move(reauthentication_token),

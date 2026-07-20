@@ -1150,32 +1150,6 @@ ToWebAuthenticationGPMRecoveryEvent(
   }
 }
 
-device::enclave::EnclaveTransactionResult TransactErrorToResult(
-    enclave::TransactError error) {
-  switch (error) {
-    case enclave::TransactError::kUnknownClient:
-      return device::enclave::EnclaveTransactionResult::kUnknownClient;
-    case enclave::TransactError::kMissingKey:
-      return device::enclave::EnclaveTransactionResult::kMissingKey;
-    case enclave::TransactError::kSignatureVerificationFailed:
-      return device::enclave::EnclaveTransactionResult::
-          kSignatureVerificationFailed;
-    case enclave::TransactError::kHandshakeFailed:
-      return device::enclave::EnclaveTransactionResult::kHandshakeFailed;
-    case enclave::TransactError::kWebSocketError:
-      return device::enclave::EnclaveTransactionResult::kWebSocketError;
-    case enclave::TransactError::kSigningFailed:
-    case enclave::TransactError::kUnknownServiceError:
-    case enclave::TransactError::kOther:
-      return device::enclave::EnclaveTransactionResult::kOtherError;
-  }
-}
-
-void LogRenewingPinResult(device::enclave::EnclaveTransactionResult result) {
-  base::UmaHistogramEnumeration(
-      "WebAuthentication.Enclave.RenewingPinTransactionResult", result);
-}
-
 }  // namespace
 
 // StateMachine performs a sequence of actions, as specified by the public
@@ -2059,6 +2033,7 @@ class EnclaveManager::StateMachine {
         BuildRegistrationMessage(
             user_->device_id(), manager_->identity_key_->key(),
             manager_->user_verifying_key_, user_->deferred_uv_key_creation()),
+        enclave::EnclaveTransactionTypeForUMA::kDeviceRegister,
         enclave::SigningCallback(),
         base::BindOnce(&StateMachine::OnEnclaveResponse,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -2117,6 +2092,7 @@ class EnclaveManager::StateMachine {
         /*reauthentication_token=*/std::nullopt,
         cbor::Value(
             BuildSecretWrappingEnclaveRequest(new_security_domain_secrets_)),
+        enclave::EnclaveTransactionTypeForUMA::kKeysWrapSecrets,
         manager_->IdentityKeySigningCallback(),
         base::BindOnce(
             [](base::WeakPtr<StateMachine> machine,
@@ -2381,6 +2357,8 @@ class EnclaveManager::StateMachine {
                 std::move(*sig_xml_)),
             BuildSecretWrappingEnclaveRequest(
                 GetNewSecretsToStore(*user_, *store_keys_args_for_joining_))),
+        enclave::EnclaveTransactionTypeForUMA::
+            kRecoveryKeyStoreWrapPINAndKeysWrap,
         manager_->IdentityKeySigningCallback(),
         base::BindOnce(&StateMachine::OnEnclaveResponse,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -2397,6 +2375,8 @@ class EnclaveManager::StateMachine {
             hashed_pin_->hashed,
             ToSizedSpan<32>(wrapped_pin_proto_->claim_key()),
             std::move(*cert_xml_), std::move(*sig_xml_), wrapped_secret),
+        enclave::EnclaveTransactionTypeForUMA::
+            kRecoveryKeyStoreWrapPINAndSecret,
         manager_->IdentityKeySigningCallback(),
         base::BindOnce(&StateMachine::OnEnclaveResponse,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -2411,6 +2391,7 @@ class EnclaveManager::StateMachine {
             std::move(*cert_xml_), std::move(*sig_xml_),
             GetCurrentWrappedSecretForUser(user_).second,
             base::as_byte_span(user_->wrapped_pin().wrapped_pin())),
+        enclave::EnclaveTransactionTypeForUMA::kRecoveryKeyStoreRewrapPIN,
         manager_->IdentityKeySigningCallback(),
         base::BindOnce(&StateMachine::OnEnclaveResponse,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -2712,13 +2693,15 @@ class EnclaveManager::StateMachine {
 
     state_ = State::kUnregistering;
     std::string token = std::move(std::get_if<AccessToken>(&event)->value());
-    pending_transaction_ = enclave::Transact(
-        manager_->network_context_factory_, enclave::GetEnclaveIdentity(),
-        std::move(token),
-        /*reauthentication_token=*/std::nullopt,
-        BuildUnregisterMessage(user_->device_id()), enclave::SigningCallback(),
-        base::BindOnce(&StateMachine::OnEnclaveResponse,
-                       weak_ptr_factory_.GetWeakPtr()));
+    pending_transaction_ =
+        enclave::Transact(manager_->network_context_factory_,
+                          enclave::GetEnclaveIdentity(), std::move(token),
+                          /*reauthentication_token=*/std::nullopt,
+                          BuildUnregisterMessage(user_->device_id()),
+                          enclave::EnclaveTransactionTypeForUMA::kDeviceForget,
+                          enclave::SigningCallback(),
+                          base::BindOnce(&StateMachine::OnEnclaveResponse,
+                                         weak_ptr_factory_.GetWeakPtr()));
   }
 
   void DoUnregistering(Event event) {
@@ -2826,19 +2809,8 @@ class EnclaveManager::StateMachine {
   void OnEnclaveResponse(
       base::expected<cbor::Value, enclave::TransactError> response) {
     if (!response.has_value()) {
-      if (state_ == State::kRenewingPIN) {
-        // https://crbug.com/467247255: this is to help us investigate why PIN
-        // refreshes fail so often.
-        LogRenewingPinResult(TransactErrorToResult(response.error()));
-      }
       Process(Failure());
     } else {
-      if (state_ == State::kRenewingPIN) {
-        // https://crbug.com/467247255: this is to help us investigate why PIN
-        // refreshes fail so often.
-        LogRenewingPinResult(
-            device::enclave::EnclaveTransactionResult::kSuccess);
-      }
       Process(EnclaveResponse(std::move(response.value())));
     }
   }

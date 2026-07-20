@@ -22,6 +22,23 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="EnclaveTransactionType">
+  <variant name="" summary="all transactions"/>
+  <variant name=".DeviceForget" summary="device/forget"/>
+  <variant name=".DeviceRegister" summary="device/register + keys/genpair"/>
+  <variant name=".KeysWrapSecrets" summary="keys/wrap"/>
+  <variant name=".PasskeyAssert"
+      summary="passkeys/assert (with optional UV key)"/>
+  <variant name=".PasskeyCreate"
+      summary="passkeys/create (with optional UV key)"/>
+  <variant name=".RecoveryKeyStoreRewrapPIN"
+      summary="recovery_key_store/rewrap"/>
+  <variant name=".RecoveryKeyStoreWrapPINAndKeysWrap"
+      summary="recovery_key_store/wrap + keys/wrap (compound)"/>
+  <variant name=".RecoveryKeyStoreWrapPINAndSecret"
+      summary="recovery_key_store/wrap_pin_and_secret"/>
+</variants>
+
 <histogram name="WebAuthentication.Android.CredManAvailability" enum="Boolean"
     expires_after="2026-12-31">
   <owner>derinel@google.com</owner>
@@ -394,19 +411,6 @@ chromium-metrics-reviews@google.com.
   <summary>Records an outcome of the PIN renewal action.</summary>
 </histogram>
 
-<histogram name="WebAuthentication.Enclave.RenewingPinTransactionResult"
-    enum="WebAuthenticationEnclaveTransactionResult" expires_after="2026-12-09">
-  <owner>nsatragno@chromium.org</owner>
-  <owner>chrome-webauthn@google.com</owner>
-  <summary>
-    Records when an enclave PIN renewal request is completed. This records the
-    result of the overall transaction; the success or failure of individual
-    requests within the transaction are not recorded here. This does not record
-    failures due to client-side errors. It does record for errors received from
-    the service, invalid responses from the service, or success.
-  </summary>
-</histogram>
-
 <histogram name="WebAuthentication.EnclaveEvent"
     enum="WebAuthenticationEnclaveEvent" expires_after="2026-11-22">
   <owner>agl@chromium.org</owner>
@@ -442,17 +446,52 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="WebAuthentication.EnclaveTransactionResult"
-    enum="WebAuthenticationEnclaveTransactionResult" expires_after="2026-11-15">
-  <owner>kenrb@chromium.org</owner>
+<histogram
+    name="WebAuthentication.EnclaveTransaction{EnclaveTransactionType}.Latency"
+    units="ms" expires_after="2027-07-13">
+  <owner>martinkr@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>
-    Records when a transaction with the enclave is completed. This records the
-    result of the overall transaction; the success or failure of individual
-    requests within the transaction are not recorded here. This does not record
-    failures due to client-side errors. It does record for errors received from
-    the service, invalid responses from the service, or success.
+    Records the latency of a completed enclave transaction for
+    {EnclaveTransactionType}. Measured from when the connection is initiated to
+    when the transaction completes.
   </summary>
+  <token key="EnclaveTransactionType" variants="EnclaveTransactionType"/>
+</histogram>
+
+<histogram
+    name="WebAuthentication.EnclaveTransaction{EnclaveTransactionType}.RequestSize"
+    units="bytes" expires_after="2027-07-13">
+  <owner>martinkr@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the size in bytes of the encrypted request sent to the enclave for
+    {EnclaveTransactionType}.
+  </summary>
+  <token key="EnclaveTransactionType" variants="EnclaveTransactionType"/>
+</histogram>
+
+<histogram
+    name="WebAuthentication.EnclaveTransaction{EnclaveTransactionType}.ResponseSize"
+    units="bytes" expires_after="2027-07-13">
+  <owner>martinkr@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the size in bytes of the encrypted response received from the
+    enclave for {EnclaveTransactionType}.
+  </summary>
+  <token key="EnclaveTransactionType" variants="EnclaveTransactionType"/>
+</histogram>
+
+<histogram
+    name="WebAuthentication.EnclaveTransaction{EnclaveTransactionType}.Result"
+    enum="WebAuthenticationEnclaveTransactionResult" expires_after="2027-07-13">
+  <owner>martinkr@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the result of an enclave transaction for {EnclaveTransactionType}.
+  </summary>
+  <token key="EnclaveTransactionType" variants="EnclaveTransactionType"/>
 </histogram>
 
 <histogram name="WebAuthentication.GetAssertion.Immediate.EnclaveReady"
