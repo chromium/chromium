@@ -28,6 +28,7 @@ import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.ChromeTriggers;
 import org.chromium.chrome.test.transit.bookmarks.BookmarksPhoneStation;
+import org.chromium.chrome.test.transit.bookmarks.BookmarksTabletStation;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageAppMenuFacility;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
@@ -52,7 +53,7 @@ import java.io.IOException;
 public class TabbedAppMenuPTTest {
     @Rule
     public AutoResetCtaTransitTestRule mCtaTestRule =
-            ChromeTransitTestRules.autoResetCtaActivityRule();
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
@@ -95,7 +96,11 @@ public class TabbedAppMenuPTTest {
     public void testOpenBookmarksTablet() {
         WebPageStation pageStation = mCtaTestRule.startOnBlankPage();
 
-        pageStation.openRegularTabAppMenu().openBookmarksTablet();
+        BookmarksTabletStation bookmarks =
+                pageStation.openRegularTabAppMenu().openBookmarksTablet();
+
+        // Exit bookmarks for the initial state rule to be able to reset state.
+        bookmarks.pressBackTo().arriveAt(WebPageStation.newBuilder().initFrom(pageStation).build());
     }
 
     /** Tests that "Bookmarks" opens the Bookmarks page. */

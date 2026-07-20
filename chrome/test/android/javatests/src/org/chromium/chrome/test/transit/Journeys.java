@@ -19,6 +19,7 @@ import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -61,17 +62,8 @@ public class Journeys {
             int numIncognitoTabs,
             String url,
             Supplier<BasePageStation.Builder<T>> pageStationFactory) {
-        List<String> regularTabs = getListOfIdenticalUrls(numRegularTabs, url);
-        List<String> incognitoTabs = getListOfIdenticalUrls(numIncognitoTabs, url);
-
-        Pair<T, T> stations =
-                doPrepareTabs(
-                        startingStation,
-                        regularTabs,
-                        incognitoTabs,
-                        pageStationFactory,
-                        /* captureThumbnails= */ false);
-        return stations.second != null ? stations.second : stations.first;
+        return prepareTabsFast(
+                startingStation, numRegularTabs, numIncognitoTabs, url, pageStationFactory);
     }
 
     /**
@@ -226,6 +218,108 @@ public class Journeys {
                 /* isIncognito= */ true,
                 () -> WebPageStation.newBuilder().withIncognito(true),
                 /* captureThumbnails= */ false);
+    }
+
+    /**
+     * Create multiple tabs fast by executing all {@link TabCreator#launchUrl} calls in a single UI
+     * thread block, completing in one single Public Transit trip.
+     *
+     * @param <T> specific type of {@link CtaPageStation} for all opened tabs.
+     * @param startingPage The current active station.
+     * @param urls The URLs to load.
+     * @param isIncognito Whether to open incognito tabs.
+     * @param pageStationFactory A factory method to create the PageStations for each tab.
+     * @return the last opened tab's {@link CtaPageStation}.
+     */
+    public static <T extends CtaPageStation> T createTabsFast(
+            CtaPageStation startingPage,
+            List<String> urls,
+            boolean isIncognito,
+            Supplier<BasePageStation.Builder<T>> pageStationFactory) {
+        assert !urls.isEmpty();
+        int numTabsToOpen = urls.size();
+        String lastUrl = urls.get(numTabsToOpen - 1);
+
+        BasePageStation.Builder<T> builder =
+                pageStationFactory
+                        .get()
+                        .withIsOpeningTabs(numTabsToOpen)
+                        .withIsSelectingTabs(1)
+                        .withIncognito(isIncognito)
+                        .withExpectedUrlSubstring(lastUrl);
+
+        return startingPage
+                .runOnUiThreadTo(
+                        () -> {
+                            var tabCreator = startingPage.getActivity().getTabCreator(isIncognito);
+                            for (String url : urls) {
+                                tabCreator.launchUrl(url, TabLaunchType.FROM_LINK);
+                            }
+                        })
+                .arriveAt(builder.build());
+    }
+
+    /**
+     * Make Chrome have {@code numRegularTabs} of regular Tabs and {@code numIncognitoTabs} of
+     * incognito tabs with {@code url} loaded fast in a minimal number of Public Transit trips.
+     *
+     * @param <T> specific type of {@link CtaPageStation} for all opened tabs.
+     * @param startingStation The current active station.
+     * @param numRegularTabs The number of regular tabs.
+     * @param numIncognitoTabs The number of incognito tabs.
+     * @param url The URL to load.
+     * @param pageStationFactory A factory method to create the PageStations for each tab.
+     * @return the last opened tab's PageStation.
+     */
+    public static <T extends CtaPageStation> T prepareTabsFast(
+            CtaPageStation startingStation,
+            int numRegularTabs,
+            int numIncognitoTabs,
+            String url,
+            Supplier<BasePageStation.Builder<T>> pageStationFactory) {
+        List<String> regularTabs = getListOfIdenticalUrls(numRegularTabs, url);
+        List<String> incognitoTabs = getListOfIdenticalUrls(numIncognitoTabs, url);
+
+        Pair<T, T> stations =
+                doPrepareTabsFast(startingStation, regularTabs, incognitoTabs, pageStationFactory);
+        return stations.second != null ? stations.second : stations.first;
+    }
+
+    private static <T extends CtaPageStation> Pair<T, T> doPrepareTabsFast(
+            CtaPageStation startingStation,
+            List<String> urlsForRegularTabs,
+            List<String> urlsForIncognitoTabs,
+            Supplier<BasePageStation.Builder<T>> pageStationFactory) {
+        assert urlsForRegularTabs.size() >= 1;
+        TabModelSelector tabModelSelector = startingStation.getTabModelSelector();
+        int currentTabCount =
+                getTabCountOnUiThread(tabModelSelector.getModel(/* incognito= */ false));
+        int currentIncognitoTabCount =
+                getTabCountOnUiThread(tabModelSelector.getModel(/* incognito= */ true));
+        T station =
+                startingStation.loadPageProgrammatically(
+                        urlsForRegularTabs.get(0), pageStationFactory.get());
+        T stationIncognito = null;
+        // One tab already exists.
+        if (urlsForRegularTabs.size() > 1) {
+            List<String> urlsForRegularTabsMinusFirst =
+                    urlsForRegularTabs.subList(1, urlsForRegularTabs.size());
+            station =
+                    createTabsFast(
+                            station,
+                            urlsForRegularTabsMinusFirst,
+                            /* isIncognito= */ false,
+                            pageStationFactory);
+        }
+        if (urlsForIncognitoTabs.size() > 0) {
+            stationIncognito =
+                    createTabsFast(
+                            station,
+                            urlsForIncognitoTabs,
+                            /* isIncognito= */ true,
+                            pageStationFactory);
+        }
+        return new Pair<>(station, stationIncognito);
     }
 
     // TODO(crbug.com/411430975): Open all tabs at once instead of one by one.

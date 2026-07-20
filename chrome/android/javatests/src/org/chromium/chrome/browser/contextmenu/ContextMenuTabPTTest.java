@@ -49,7 +49,7 @@ public class ContextMenuTabPTTest {
 
     @Rule
     public AutoResetCtaTransitTestRule mCtaTestRule =
-            ChromeTransitTestRules.autoResetCtaActivityRule();
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     /**
      * Assert open tab in new tab group. This test is greatly in common with

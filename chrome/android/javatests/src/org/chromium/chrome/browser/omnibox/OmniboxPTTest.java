@@ -21,10 +21,9 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.omnibox.FakeOmniboxSuggestions;
@@ -40,8 +39,8 @@ import org.chromium.ui.base.DeviceFormFactor;
 @Batch(Batch.PER_CLASS)
 public class OmniboxPTTest {
     @Rule
-    public FreshCtaTransitTestRule mCtaTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+    public AutoResetCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     private static final FakeOmniboxSuggestions sFakeSuggestions = new FakeOmniboxSuggestions();
     private WebPageStation mBlankPage;
@@ -94,10 +93,7 @@ public class OmniboxPTTest {
 
         doOpenTypeDelete(omnibox);
 
-        mBlankPage =
-                ntp.openTabSwitcherActionMenu()
-                        .selectCloseTabAndDisplayAnotherTab(WebPageStation.newBuilder());
-        TransitAsserts.assertFinalDestination(mBlankPage);
+        TransitAsserts.assertFinalDestination(ntp);
     }
 
     @LargeTest
@@ -110,10 +106,7 @@ public class OmniboxPTTest {
 
         doOpenTypeDelete(omnibox);
 
-        mBlankPage =
-                ntp.openTabSwitcherActionMenu()
-                        .selectCloseTabAndDisplayAnotherTab(WebPageStation.newBuilder());
-        TransitAsserts.assertFinalDestination(mBlankPage);
+        TransitAsserts.assertFinalDestination(ntp);
     }
 
     @LargeTest
@@ -127,15 +120,7 @@ public class OmniboxPTTest {
 
         doOpenTypeDelete(omnibox);
 
-        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
-            incognitoNtp.openTabSwitcherActionMenu().selectCloseTabTo().reachLastStop();
-        } else {
-            mBlankPage =
-                    incognitoNtp
-                            .openTabSwitcherActionMenu()
-                            .selectCloseTabAndDisplayRegularTab(WebPageStation.newBuilder());
-        }
-        TransitAsserts.assertFinalDestination(mBlankPage);
+        TransitAsserts.assertFinalDestination(incognitoNtp);
     }
 
     private void doOpenTypeDelete(OmniboxFacility omnibox) {

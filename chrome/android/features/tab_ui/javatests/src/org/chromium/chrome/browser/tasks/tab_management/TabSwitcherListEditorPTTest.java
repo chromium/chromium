@@ -71,7 +71,7 @@ import java.util.List;
 public class TabSwitcherListEditorPTTest {
     @Rule
     public AutoResetCtaTransitTestRule mCtaTestRule =
-            ChromeTransitTestRules.autoResetCtaActivityRule();
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -174,7 +174,6 @@ public class TabSwitcherListEditorPTTest {
 
     @Test
     @MediumTest
-    @RequiresRestart("crbug.com/378502216")
     public void testCreateTabGroupOf10() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         WebPageStation pageStation =
