@@ -298,7 +298,6 @@ public class TabSwitcherSearchTest {
     @Test
     @MediumTest
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/494245361
-    @DisabledTest(message = "crbug.com/536717568 - Fix state leak caused by batching")
     public void testTypedSuggestions_OpenSuggestionWithEnter() {
         List<String> urlsToOpen =
                 List.of(
