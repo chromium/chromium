@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CancelActionsResult, ClientCapabilities, ExperimentalTriggeringUpdateType, FormFactor, HostCapability, PanelStateKind, SbThreatType, ScreenshotEncryptionScheme, ScrollToErrorReason, SkillSource, WebClientMode} from '/glic/glic_api/glic_api.js';
+import {CancelActionsResult, ClientCapabilities, ExperimentalTriggeringUpdateType, FileUploadPolicyState, FormFactor, HostCapability, PanelStateKind, SbThreatType, ScreenshotEncryptionScheme, ScrollToErrorReason, SkillSource, WebClientMode} from '/glic/glic_api/glic_api.js';
 import type {AdditionalContext, CounterAbuseVerdict, ExperimentalTriggeringUpdate, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicWebClient, InvokeOptions, Observable, Observable2, OpenPanelInfo, PageMetadata, PanelOpeningData, PanelState, ScrollToError, TabData, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
 import {Subject} from '/glic/observable.js';
 
@@ -15,6 +15,24 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testDoNothing() {}
+
+  async testGetFileUploadAllowedCapability() {
+    assertTrue(!!this.host.getFileUploadAllowedCapability);
+    const allowed =
+        this.host.getFileUploadAllowedCapability!().getCurrentValue();
+    assertTrue(allowed === FileUploadPolicyState.ENABLED);
+
+    const stateUpdate = new Promise<void>((resolve) => {
+      this.host.getFileUploadAllowedCapability!().subscribe((val) => {
+        if (val === FileUploadPolicyState.DISABLED) {
+          resolve();
+        }
+      });
+    });
+
+    await this.advanceToNextStep();
+    await stateUpdate;
+  }
 
   async testGetContextFromFocusedTabWithIframe() {
     await this.host.setTabContextPermissionState(true);

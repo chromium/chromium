@@ -8,6 +8,11 @@
 
 import type {AdditionalContextPart, ImageOriginAnnotations, InvocationPayload, Point, Rect, ResponseStopCause} from './glic_api.js';
 
+export enum FileUploadPolicyState {
+  ENABLED = 0,
+  DISABLED = 1,
+}
+
 // The type of user input reaction.
 export enum MetricUserInputReactionType {
   // An unknown reaction type.

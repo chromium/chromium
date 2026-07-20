@@ -1,0 +1,36 @@
+caption: Settings for Gemini in Chrome File Uploads
+desc: |-
+  This setting controls whether file uploads are allowed within <ph name="GEMINI_IN_CHROME_NAME">Gemini in Chrome</ph> (see https://support.google.com/chrome/a/answer/16291696).
+
+  0 = File uploads to <ph name="GEMINI_IN_CHROME_NAME">Gemini in Chrome</ph> will be allowed for users.
+
+  1 = File uploads to <ph name="GEMINI_IN_CHROME_NAME">Gemini in Chrome</ph> will not be allowed for users.
+
+  If this policy is set, it overrides the <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME">GenAiDefaultSettings</ph> policy. If this policy is unset, its behavior is determined by the <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME">GenAiDefaultSettings</ph> policy. If both policies are unset, file uploads will be allowed by default.
+owners:
+- birnie@google.com
+- chrome-hocap@google.com
+example_value: 1
+features:
+  dynamic_refresh: true
+  per_profile: true
+type: int-enum
+schema:
+  type: integer
+  enum:
+  - 0
+  - 1
+items:
+- caption: Allow file uploads to Gemini in Chrome.
+  name: Allowed
+  value: 0
+- caption: Do not allow file uploads to Gemini in Chrome.
+  name: Disabled
+  value: 1
+default: 0
+future_on:
+- chrome.win
+- chrome.mac
+- chrome.linux
+- chrome_os
+tags: []

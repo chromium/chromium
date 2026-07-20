@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "linux",
+      "mac",
+      "win",
+      "chromeos"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "glic.file_upload_allowed",
+      "default_value": 0,
+      "values_to_test": [
+        0,
+        1
+      ],
+      "default_for_enterprise_users": 0
+    }
+  }
+]

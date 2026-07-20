@@ -1471,6 +1471,7 @@ policies:
   1470: DeviceOnlinePasswordMismatchBehavior
   1471: UpdateOnZeroWindowEnabled
   1472: BackForwardCacheForWebSocketsAllowed
+  1473: GeminiChromeFileUploadSettings
 
 atomic_groups:
   1: Homepage

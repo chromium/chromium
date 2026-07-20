@@ -2504,6 +2504,7 @@ chromium-metrics-reviews@google.com.
   <int value="1470" label="DeviceOnlinePasswordMismatchBehavior"/>
   <int value="1471" label="UpdateOnZeroWindowEnabled"/>
   <int value="1472" label="BackForwardCacheForWebSocketsAllowed"/>
+  <int value="1473" label="GeminiChromeFileUploadSettings"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

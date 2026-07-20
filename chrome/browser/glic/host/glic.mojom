@@ -41,6 +41,12 @@ enum GlicExperimentalTriggeringState {
   kReady = 2,
 };
 
+// @generate glic_api
+enum FileUploadPolicyState {
+  kEnabled = 0,
+  kDisabled = 1,
+};
+
 // Struct containing data about eligibility for GLIC.
 struct ProfileEnablement {
   // Whether the GLIC feature is enabled.
@@ -624,6 +630,8 @@ struct WebClientInitialState {
   bool enable_gmail_otp_opt_in;
   // Whether the Gmail OTP confirmation dialog is enabled.
   bool enable_gmail_otp_confirmation;
+  // Whether file upload is allowed by the enterprise policy.
+  FileUploadPolicyState file_upload_policy_state;
 };
 
 // @generate glic_api
@@ -2269,6 +2277,10 @@ interface WebClient {
   // The Microphone permission has changed either by action within the web
   // client or by user action in the glic settings.
   NotifyMicrophonePermissionStateChanged(bool enabled);
+
+  // Informs the web client that the enterprise policy for file upload has
+  // changed.
+  NotifyFileUploadStateChanged(FileUploadPolicyState state);
 
   // Requests the web client to stop microphone recording.
   StopMicrophone() => ();

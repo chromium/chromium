@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {CaptureRegionErrorReason, HostCapability} from '../../glic_api/glic_api.js';
-import type {ActivateTabOptions, AdditionalContext, AnnotatedPageData, CaptureRegionParams, CaptureRegionResult, ChromeVersion, ClientCapabilities, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, CreateTabOptions, FocusedTabData, FormFactor, GeminiEnterpriseSettings, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ImageBytesResult, ImageInfo, InvokeOptions, MicrophoneStatus, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResizeWindowOptions, ResumeActorTaskResult, Screenshot, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UserProfileInfo, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
+import type {ActivateTabOptions, AdditionalContext, AnnotatedPageData, CaptureRegionParams, CaptureRegionResult, ChromeVersion, ClientCapabilities, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, CreateTabOptions, FileUploadPolicyState, FocusedTabData, FormFactor, GeminiEnterpriseSettings, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ImageBytesResult, ImageInfo, InvokeOptions, MicrophoneStatus, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResizeWindowOptions, ResumeActorTaskResult, Screenshot, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UserProfileInfo, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../../observable.js';
 import {GlicBrowserHostActor} from '../actor/actor_client.js';
 import {GlicBrowserHostAnnotation} from '../annotation/annotation_client.js';
@@ -166,6 +166,12 @@ class WebClientMessageHandler implements PostMessageHandler<WebClient> {
     this.host.actuationOnWebState.assignAndSignal(payload.enabled);
   }
 
+  notifyFileUploadStateChanged(payload: {
+    state: FileUploadPolicyState,
+  }) {
+    this.host.fileUploadAllowedState.assignAndSignal(payload.state);
+  }
+
   notifyFocusedTabChanged(payload: {
     focusedTabDataPrivate: FocusedTabDataPrivate,
   }) {
@@ -262,7 +268,6 @@ class WebClientMessageHandler implements PostMessageHandler<WebClient> {
   notifyActorTaskListRowClicked(payload: {taskId: number}): void {
     this.host.actorClient.actorTaskListRowClickedSubject.next(payload.taskId);
   }
-
 }
 
 class WebClientRegionCaptureHandler implements
@@ -321,6 +326,8 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
       ObservableValueImpl.withNoValue<boolean>();
   closedCaptioningState = ObservableValueImpl.withNoValue<boolean>();
   actuationOnWebState = ObservableValueImpl.withNoValue<boolean>();
+  fileUploadAllowedState =
+      ObservableValueImpl.withNoValue<FileUploadPolicyState>();
   private osHotkeyState = ObservableValueImpl.withNoValue<{hotkey: string}>();
   onboardingCompleted = ObservableValueImpl.withNoValue<boolean>();
   panelActiveValue = ObservableValueImpl.withNoValue<boolean>();
@@ -448,6 +455,8 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
         state.closedCaptioningSettingEnabled);
     this.actuationOnWebState.assignAndSignal(
         state.actuationOnWebSettingEnabled);
+    this.fileUploadAllowedState.assignAndSignal(
+        state.fileUploadPolicyState as unknown as FileUploadPolicyState);
     for (const capability of state.hostCapabilities) {
       this.hostCapabilities.add(capability);
     }
@@ -546,8 +555,8 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
     return convertTabDataFromPrivate(result.tabData);
   }
 
-  async activateTabWithUrl(
-      exactUrl: string, options: ActivateTabOptions = {}): Promise<TabData> {
+  async activateTabWithUrl(exactUrl: string, options: ActivateTabOptions = {}):
+      Promise<TabData> {
     const result =
         await this.clientRemote.requestWithResponse('activateTabWithUrl', {
           exactUrl,
@@ -763,6 +772,11 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
 
   getActuationOnWebSetting?(): ObservableValueImpl<boolean> {
     return this.actuationOnWebState;
+  }
+
+  getFileUploadAllowedCapability?
+      (): ObservableValueImpl<FileUploadPolicyState> {
+    return this.fileUploadAllowedState;
   }
 
   setMicrophonePermissionState(enabled: boolean): Promise<void> {

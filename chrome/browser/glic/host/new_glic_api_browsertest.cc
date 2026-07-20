@@ -200,6 +200,7 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicApiScrollToTest",
       "NewGlicApiTestWithExperimentalTriggeringScreenshot",
 #if !BUILDFLAG(IS_ANDROID)
+      "NewGlicApiTestWithFileUploadPolicyEnabled",
       "NewGlicApiTestWithSkills",
       "NewGlicApiTestWithNewTabDaisyChain",
 #endif
@@ -1064,6 +1065,36 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+class NewGlicApiTestWithFileUploadPolicyEnabled : public NewGlicApiTest {
+ public:
+  NewGlicApiTestWithFileUploadPolicyEnabled() {
+    feature_list_.InitWithFeatures({features::kGlicDragAndDropFileUpload,
+                                    features::kGlicWebDragAndDropFileUpload},
+                                   {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithFileUploadPolicyEnabled,
+                       testGetFileUploadAllowedCapability) {
+  // Set default state to allowed
+  GetProfile()->GetPrefs()->SetInteger(
+      glic::prefs::kGlicFileUploadAllowed,
+      std::to_underlying(glic::prefs::GlicFileUploadPolicyState::kEnabled));
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+
+  // Change pref to disabled
+  GetProfile()->GetPrefs()->SetInteger(
+      glic::prefs::kGlicFileUploadAllowed,
+      std::to_underlying(glic::prefs::GlicFileUploadPolicyState::kDisabled));
+  ContinueJsTest();
+}
+#endif
 
 class NewGlicApiTestWithContextualCueing : public NewGlicApiTest {
  public:
@@ -3223,8 +3254,12 @@ INSTANTIATE_TEST_SUITE_P(,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 
-// TODO(b/520114620): Skills are not supported yet on Android.
 #if !BUILDFLAG(IS_ANDROID)
+INSTANTIATE_TEST_SUITE_P(,
+                         NewGlicApiTestWithFileUploadPolicyEnabled,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+// TODO(b/520114620): Skills are not supported yet on Android.
 INSTANTIATE_TEST_SUITE_P(,
                          NewGlicApiTestWithSkills,
                          DefaultTestParamSet(),
@@ -3262,6 +3297,8 @@ GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(GlicApiScrollToTest);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
     NewGlicApiTestWithExperimentalTriggeringScreenshot);
 #if !BUILDFLAG(IS_ANDROID)
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    NewGlicApiTestWithFileUploadPolicyEnabled);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NewGlicApiTestWithSkills);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
     NewGlicApiTestWithNewTabDaisyChain);

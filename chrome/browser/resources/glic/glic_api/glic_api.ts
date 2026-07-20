@@ -122,6 +122,7 @@ export import CredentialType = generated.CredentialType;
 export import ExperimentalTriggeringUpdateType =
     generated.ExperimentalTriggeringUpdateType;
 export import FeatureMode = generated.FeatureMode;
+export import FileUploadPolicyState = generated.FileUploadPolicyState;
 export import FormFactor = generated.FormFactor;
 export import FreOverride = generated.FreOverride;
 export import HostCapability = generated.HostCapability;
@@ -1231,6 +1232,12 @@ export declare interface GlicBrowserHost {
    * policy for whether actuation is allowed.
    */
   getActOnWebCapability?(): ObservableValue<boolean>;
+
+  /**
+   * Returns the host's capability to upload files. This reflects enterprise
+   * policy for whether file upload is allowed.
+   */
+  getFileUploadAllowedCapability?(): ObservableValue<FileUploadPolicyState>;
 
   /**
    * Called when the user has completed the onboarding flow.

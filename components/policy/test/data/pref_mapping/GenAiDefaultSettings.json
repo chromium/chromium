@@ -46,6 +46,9 @@
           },
           "omnibox.third_party_ai_chat_settings": {
             "value": 0
+          },
+          "glic.file_upload_allowed": {
+            "value": 0
           }
         }
       },
@@ -88,6 +91,9 @@
             "value": 1
           },
           "omnibox.third_party_ai_chat_settings": {
+            "value": 0
+          },
+          "glic.file_upload_allowed": {
             "value": 0
           }
         }
@@ -132,6 +138,9 @@
           },
           "omnibox.third_party_ai_chat_settings": {
             "value": 1
+          },
+          "glic.file_upload_allowed": {
+            "value": 1
           }
         }
       },
@@ -172,6 +181,9 @@
             "default_value": 0
           },
           "omnibox.third_party_ai_chat_settings": {
+            "default_value": 0
+          },
+          "glic.file_upload_allowed": {
             "default_value": 0
           }
         }
@@ -228,6 +240,9 @@
           },
           "omnibox.third_party_ai_chat_settings": {
             "value": 1
+          },
+          "glic.file_upload_allowed": {
+            "value": 0
           }
         }
       }
@@ -302,6 +317,9 @@
           },
           "omnibox.third_party_ai_chat_settings": {
             "value": 0
+          },
+          "glic.file_upload_allowed": {
+            "value": 0
           }
         }
       },
@@ -366,6 +384,9 @@
             "value": 1
           },
           "omnibox.third_party_ai_chat_settings": {
+            "value": 0
+          },
+          "glic.file_upload_allowed": {
             "value": 0
           }
         }
@@ -453,6 +474,9 @@
           },
           "omnibox.third_party_ai_chat_settings": {
             "value": 1
+          },
+          "glic.file_upload_allowed": {
+            "value": 0
           }
         }
       }
