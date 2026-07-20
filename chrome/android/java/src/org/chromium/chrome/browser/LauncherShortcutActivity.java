@@ -65,12 +65,13 @@ public class LauncherShortcutActivity extends Activity {
             PostTask.createSequencedTaskRunner(TaskTraits.USER_VISIBLE_MAY_BLOCK);
 
     // LINT.IfChange(UpdateFailure)
-    @IntDef({UpdateFailure.RATE_LIMITED, UpdateFailure.LIMIT_EXCEEDED})
+    @IntDef({UpdateFailure.RATE_LIMITED, UpdateFailure.LIMIT_EXCEEDED, UpdateFailure.ILLEGAL_STATE})
     @Retention(RetentionPolicy.SOURCE)
     private @interface UpdateFailure {
         int RATE_LIMITED = 0;
         int LIMIT_EXCEEDED = 1;
-        int NUM_ENTRIES = 2;
+        int ILLEGAL_STATE = 2;
+        int NUM_ENTRIES = 3;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:LauncherShortcutUpdateFailure)
@@ -187,6 +188,10 @@ public class LauncherShortcutActivity extends Activity {
                                     UpdateFailure.NUM_ENTRIES);
                         } catch (IllegalStateException e) {
                             Log.e(TAG, "Failed to set dynamic shortcuts", e);
+                            RecordHistogram.recordEnumeratedHistogram(
+                                    "Android.LauncherShortcut.UpdateFailure",
+                                    UpdateFailure.ILLEGAL_STATE,
+                                    UpdateFailure.NUM_ENTRIES);
                         }
                     } else if (incognitoShortcutAdded) {
                         removeLauncherShortcuts();

@@ -1369,6 +1369,7 @@ chromium-metrics-reviews@google.com.
 <enum name="LauncherShortcutUpdateFailure">
   <int value="0" label="Rate Limited"/>
   <int value="1" label="Limit Exceeded"/>
+  <int value="2" label="Illegal State"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/LauncherShortcutActivity.java:UpdateFailure) -->
