@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/shared/drop_arrow.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
+#include "components/tabs/public/tab_collection.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 class BrowserView;
@@ -101,6 +102,8 @@ class BaseTabStripRegionView : public TabStripRegionView {
 
   void RecordNewTabButtonPressed();
   virtual void OnActiveTabChanged(const tabs::TabInterface* active_tab);
+  void ScrollToFitTabs(const tabs::TabInterface* active_tab,
+                       const tabs::TabInterface* new_tab);
 
   void SetLinkDropArrow(const std::optional<BrowserRootView::DropIndex>& index);
   virtual gfx::Point GetLinkDropArrowPosition(
@@ -121,7 +124,7 @@ class BaseTabStripRegionView : public TabStripRegionView {
   views::View* SetTabStripView(std::unique_ptr<views::View> view);
   void ClearTabStripView(views::View* view);
 
-  void OnChildrenAdded();
+  void OnChildrenAdded(const tabs::TabCollectionNodes& handles);
   void OnChildrenRemoved();
   void OnChildMoved(TabCollectionNode* moved_node);
 

@@ -62,7 +62,7 @@ void RootTabCollectionNode::Reset() {
 
 base::CallbackListSubscription
 RootTabCollectionNode::RegisterOnChildrenAddedCallback(
-    base::RepeatingClosure callback) {
+    ChildrenAddedCallback callback) {
   return on_children_added_callback_list_.Add(std::move(callback));
 }
 
@@ -94,7 +94,7 @@ void RootTabCollectionNode::OnChildrenAdded(
         ->AddNewChild(GetPassKey(), child, position.index,
                       /*perform_initialization=*/insert_from_detached);
   }
-  on_children_added_callback_list_.Notify();
+  on_children_added_callback_list_.Notify(handles);
 }
 
 void RootTabCollectionNode::OnChildrenRemoved(
@@ -276,5 +276,5 @@ void RootTabCollectionNode::NotifyTabSelectionChanged(
 }
 
 void RootTabCollectionNode::NotifyOnChildrenAdded() {
-  on_children_added_callback_list_.Notify();
+  on_children_added_callback_list_.Notify(tabs::TabCollectionNodes());
 }

@@ -44,10 +44,19 @@
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/resize_area.h"
 #include "ui/views/focus/focus_manager.h"
+
+namespace {
+
+constexpr int kMinTabHeightForLayout = 30;
+constexpr int kOverflowTabCount = 40;
+constexpr int kClippedScrollViewHeight = 400;
+
+}  // namespace
 
 class VerticalTabStripRegionViewTest
     : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
@@ -93,12 +102,56 @@ class VerticalTabStripRegionViewTest
     return contents;
   }
 
+  content::WebContents* AppendBackgroundTab() {
+    std::unique_ptr<content::WebContents> contents =
+        content::WebContents::Create(
+            content::WebContents::CreateParams(browser()->profile()));
+    content::WebContents* raw_contents = contents.get();
+    browser()->tab_strip_model()->AppendWebContents(std::move(contents), false);
+    return raw_contents;
+  }
+
+  TabStripView* tab_strip_view() {
+    return static_cast<TabStripView*>(region_view()->GetTabStripView());
+  }
+
+  views::View* GetTabViewAt(int index) {
+    return region_view()->GetTabAnchorViewAt(index);
+  }
+
   void PressCollapseButton() {
     region_view()
         ->GetTopContainer()
         ->GetCollapseButton()
         ->button_controller()
         ->NotifyClick();
+  }
+
+  void SetupExpandedVerticalTabStrip() {
+    state_controller()->RequestCollapse(false);
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return !BrowserAnimationController::From(browser())->IsAnimating(
+          TabStripAnimations::kVerticalTabStrip);
+    }));
+    RunScheduledLayouts();
+  }
+
+  void WaitForTabsLayout(views::ScrollView* scroll_view) {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      for (views::View* child : scroll_view->contents()->children()) {
+        if (child->size().height() < kMinTabHeightForLayout) {
+          return false;
+        }
+      }
+      return !scroll_view->contents()->children().empty();
+    }));
+  }
+
+  void WaitForTrackersCleared() {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return tab_strip_view()->GetActivatedViewForTesting() == nullptr &&
+             tab_strip_view()->GetBackgroundViewForTesting() == nullptr;
+    }));
   }
 
   bool IsAnimatingSize() const {
@@ -1416,4 +1469,116 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewGlassFrameTest,
   }));
   RunScheduledLayouts();
   EXPECT_EQ(background->primary_color().opacity, 0.0f);
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
+                       ScrollToFitTabsSingleBackgroundOverflow) {
+  constexpr int kActiveTabIndex = 15;
+  constexpr int kNewBackgroundTabIndex = 25;
+
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  SetupExpandedVerticalTabStrip();
+
+  for (int i = 0; i < kOverflowTabCount - 1; ++i) {
+    AppendTab();
+  }
+  ASSERT_EQ(kOverflowTabCount, tab_strip_model()->count());
+
+  views::ScrollView* scroll_view =
+      tab_strip_view()->GetUnpinnedTabsScrollViewForTesting();
+  ASSERT_TRUE(scroll_view);
+  scroll_view->ClipHeightTo(0, kClippedScrollViewHeight);
+  scroll_view->SetVerticalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kEnabled);
+
+  WaitForTabsLayout(scroll_view);
+
+  tab_strip_model()->ActivateTabAt(
+      kActiveTabIndex, TabStripUserGestureDetails(
+                           TabStripUserGestureDetails::GestureType::kOther));
+  RunScheduledLayouts();
+
+  scroll_view->ScrollToPosition(scroll_view->vertical_scroll_bar(), 0);
+  RunScheduledLayouts();
+  ASSERT_EQ(0, scroll_view->GetVisibleRect().y());
+
+  std::unique_ptr<content::WebContents> contents = content::WebContents::Create(
+      content::WebContents::CreateParams(browser()->profile()));
+  browser()->tab_strip_model()->InsertWebContentsAt(
+      kNewBackgroundTabIndex, std::move(contents), AddTabTypes::ADD_NONE);
+
+  WaitForTrackersCleared();
+
+  views::View* active_view = GetTabViewAt(kActiveTabIndex);
+  views::View* new_view = GetTabViewAt(kNewBackgroundTabIndex);
+  ASSERT_TRUE(active_view);
+  ASSERT_TRUE(new_view);
+
+  gfx::Rect active_bounds =
+      tab_strip_view()->GetBoundsInScrollViewContentsForTesting(active_view,
+                                                                scroll_view);
+  gfx::Rect new_bounds =
+      tab_strip_view()->GetBoundsInScrollViewContentsForTesting(new_view,
+                                                                scroll_view);
+
+  int y_min = std::min(active_bounds.y(), new_bounds.y());
+  int y_max = std::max(active_bounds.bottom(), new_bounds.bottom());
+  int viewport_height = scroll_view->GetVisibleRect().height();
+
+  int current_offset = scroll_view->GetVisibleRect().y();
+  EXPECT_GE(current_offset, y_max - viewport_height);
+  EXPECT_LE(current_offset, y_min);
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
+                       ScrollToFitTabsFallbackToActiveOnly) {
+  constexpr int kInitialScrollPosition = 200;
+  constexpr int kActiveTabIndex = 0;
+  constexpr int kFarDistantBackgroundTabIndex = 39;
+
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  SetupExpandedVerticalTabStrip();
+
+  for (int i = 0; i < kOverflowTabCount - 1; ++i) {
+    AppendTab();
+  }
+  ASSERT_EQ(kOverflowTabCount, tab_strip_model()->count());
+
+  views::ScrollView* scroll_view =
+      tab_strip_view()->GetUnpinnedTabsScrollViewForTesting();
+  ASSERT_TRUE(scroll_view);
+  scroll_view->ClipHeightTo(0, kClippedScrollViewHeight);
+  scroll_view->SetVerticalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kEnabled);
+
+  WaitForTabsLayout(scroll_view);
+
+  tab_strip_model()->ActivateTabAt(
+      kActiveTabIndex, TabStripUserGestureDetails(
+                           TabStripUserGestureDetails::GestureType::kOther));
+  RunScheduledLayouts();
+
+  scroll_view->ScrollToPosition(scroll_view->vertical_scroll_bar(),
+                                kInitialScrollPosition);
+  RunScheduledLayouts();
+  ASSERT_EQ(kInitialScrollPosition, scroll_view->GetVisibleRect().y());
+
+  std::unique_ptr<content::WebContents> contents = content::WebContents::Create(
+      content::WebContents::CreateParams(browser()->profile()));
+  browser()->tab_strip_model()->InsertWebContentsAt(
+      kFarDistantBackgroundTabIndex, std::move(contents),
+      AddTabTypes::ADD_NONE);
+
+  WaitForTrackersCleared();
+
+  views::View* active_view = GetTabViewAt(kActiveTabIndex);
+  gfx::Rect active_bounds =
+      tab_strip_view()->GetBoundsInScrollViewContentsForTesting(active_view,
+                                                                scroll_view);
+  int current_offset = scroll_view->GetVisibleRect().y();
+  EXPECT_LE(current_offset, active_bounds.y());
 }
