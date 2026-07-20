@@ -32,6 +32,7 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -55,6 +56,7 @@ import org.chromium.content_public.common.ContentUrlConstants;
 /** Tests different scenarios when the bookmark personalized signin promo is not shown. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
+@Batch(Batch.PER_CLASS)
 public class BookmarkPersonalizedSigninPromoDismissTest {
     private static final int MAX_IMPRESSIONS_BOOKMARKS = 20;
 
