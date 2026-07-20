@@ -26,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.chrome.browser.notifications.NotificationChannelStatus;
@@ -56,6 +57,7 @@ import java.util.concurrent.TimeoutException;
  * channel was blocked. Thus some of these tests use different channel ids to avoid this problem.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class SiteChannelsManagerTest {
     private SiteChannelsManager mSiteChannelsManager;
 
