@@ -25,19 +25,17 @@ namespace web_app {
 GetProgressiveWebAppSizeJob::GetProgressiveWebAppSizeJob(
     Profile* profile,
     const webapps::AppId& app_id,
-    base::DictValue& debug_value,
-    ResultCallback result_callback)
-    : app_id_(app_id),
-      profile_(profile),
-      debug_value_(debug_value),
-      result_callback_(std::move(result_callback)) {
+    base::DictValue& debug_value)
+    : app_id_(app_id), profile_(profile), debug_value_(debug_value) {
   debug_value_->Set("profile", profile->GetDebugName());
 }
 
 GetProgressiveWebAppSizeJob::~GetProgressiveWebAppSizeJob() = default;
 
 void GetProgressiveWebAppSizeJob::Start(
-    WithAppResources* lock_with_app_resources) {
+    WithAppResources* lock_with_app_resources,
+    ResultCallback callback) {
+  result_callback_ = std::move(callback);
   CHECK(lock_with_app_resources);
   lock_with_app_resources_ = lock_with_app_resources;
   lock_with_app_resources_->icon_manager().GetIconsSizeForApp(

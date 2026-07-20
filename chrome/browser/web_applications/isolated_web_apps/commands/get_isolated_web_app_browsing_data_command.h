@@ -24,7 +24,7 @@ class Origin;
 
 namespace web_app {
 
-class GetIsolatedWebAppSizeJob;
+class ComputeAppSizeJob;
 class ComputedAppSizeWithOrigin;
 
 // Computes the total browsing data usage in bytes of every installed Isolated
@@ -48,7 +48,7 @@ class GetIsolatedWebAppBrowsingDataCommand
 
   const raw_ref<Profile> profile_;
   std::unique_ptr<AllAppsLock> lock_;
-  std::vector<std::unique_ptr<GetIsolatedWebAppSizeJob>>
+  std::vector<std::unique_ptr<ComputeAppSizeJob>>
       get_isolated_web_app_size_jobs_;
 
   base::WeakPtrFactory<GetIsolatedWebAppBrowsingDataCommand> weak_factory_{

@@ -7,8 +7,10 @@
 
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/types/pass_key.h"
+#include "base/values.h"
 #include "components/webapps/common/web_app_id.h"
 
 class BrowserProcessImpl;
@@ -17,6 +19,8 @@ class TestingBrowserProcess;
 
 namespace web_app {
 
+class ComputeAppSizeJob;
+class ComputedAppSizeWithOrigin;
 class WebAppProvider;
 
 // A delegate used by the WebAppProvider and command system to execute
@@ -42,6 +46,10 @@ class WebAppIsolationDelegate {
   // uninstalled (e.g. storage partitions and bundle caches).
   virtual void ClearAppResourcesOnUninstall(const webapps::AppId& app_id,
                                             base::OnceClosure callback) = 0;
+
+  virtual std::unique_ptr<ComputeAppSizeJob> CreateComputeAppSizeJob(
+      const webapps::AppId& app_id,
+      base::DictValue& debug_value) = 0;
 };
 
 }  // namespace web_app

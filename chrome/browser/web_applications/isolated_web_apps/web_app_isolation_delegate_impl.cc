@@ -9,8 +9,11 @@
 #include "base/barrier_closure.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolated_web_apps/jobs/get_isolated_web_app_size_job.h"
 #include "chrome/browser/web_applications/isolated_web_apps/remove_isolated_web_app_data.h"
+#include "chrome/browser/web_applications/jobs/compute_app_size_job.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -54,6 +57,14 @@ void WebAppIsolationDelegateImpl::ClearAppResourcesOnUninstall(
   RemoveIsolatedWebAppBrowsingData(&profile_.get(), iwa_origin,
                                    barrier_closure);
   CloseAndDeleteBundle(&profile_.get(), location, barrier_closure);
+}
+
+std::unique_ptr<ComputeAppSizeJob>
+WebAppIsolationDelegateImpl::CreateComputeAppSizeJob(
+    const webapps::AppId& app_id,
+    base::DictValue& debug_value) {
+  return std::make_unique<GetIsolatedWebAppSizeJob>(&profile_.get(), app_id,
+                                                    debug_value);
 }
 
 WebAppIsolationDelegateImpl::WebAppIsolationDelegateImpl(Profile* profile)

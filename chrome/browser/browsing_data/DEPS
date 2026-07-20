@@ -159,6 +159,7 @@ include_rules = [
   "+chrome/browser/user_education/user_education_service.h",
   "+chrome/browser/user_education/user_education_service_factory.h",
   "+chrome/browser/web_applications/isolated_web_apps/commands/get_controlled_frame_partition_command.h",
+  "+chrome/browser/web_applications/isolated_web_apps/get_isolated_web_app_browsing_data.h",
   "+chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h",
   "+chrome/browser/web_applications/isolated_web_apps/remove_isolated_web_app_data.h",
   "+chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h",

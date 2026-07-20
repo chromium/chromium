@@ -9,9 +9,10 @@
 
 #include "chrome/browser/web_applications/commands/command_result.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/jobs/get_isolated_web_app_size_job.h"
+#include "chrome/browser/web_applications/jobs/compute_app_size_job.h"
 #include "chrome/browser/web_applications/jobs/get_progressive_web_app_size_job.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
+#include "chrome/browser/web_applications/web_app_isolation_delegate.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 
 namespace web_app {
@@ -43,34 +44,20 @@ void ComputeAppSizeCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
   }
 
   if (registrar.AppMatches(app_id_, WebAppFilter::IsIsolatedApp())) {
-    get_isolated_web_app_size_job_ = std::make_unique<GetIsolatedWebAppSizeJob>(
-        profile_.get(), app_id_, GetMutableDebugValue(),
-        base::BindOnce(&ComputeAppSizeCommand::OnIsolatedAppSizeComputed,
-                       weak_factory_.GetWeakPtr()));
-    get_isolated_web_app_size_job_->Start(lock_.get());
-    return;
+    job_ = lock_->isolation_delegate().CreateComputeAppSizeJob(
+        app_id_, GetMutableDebugValue());
+  } else {
+    // If an app is not an IWA, it's considerered to be a PWA.
+    job_ = std::make_unique<GetProgressiveWebAppSizeJob>(
+        profile_.get(), app_id_, GetMutableDebugValue());
   }
 
-  // If an app is not an IWA, it's considerered to be a PWA.
-  get_progressive_web_app_size_job_ =
-      std::make_unique<GetProgressiveWebAppSizeJob>(
-          profile_.get(), app_id_, GetMutableDebugValue(),
-          base::BindOnce(&ComputeAppSizeCommand::OnProgressiveAppSizeComputed,
-                         weak_factory_.GetWeakPtr()));
-
-  get_progressive_web_app_size_job_->Start(lock_.get());
+  job_->Start(lock_.get(),
+              base::BindOnce(&ComputeAppSizeCommand::OnAppSizeComputed,
+                             weak_factory_.GetWeakPtr()));
 }
 
-void ComputeAppSizeCommand::OnIsolatedAppSizeComputed(
-    std::optional<ComputedAppSizeWithOrigin> result) {
-  if (result) {
-    size_ = std::move(result.value());
-  }
-  ReportResultAndDestroy(result ? CommandResult::kSuccess
-                                : CommandResult::kFailure);
-}
-
-void ComputeAppSizeCommand::OnProgressiveAppSizeComputed(
+void ComputeAppSizeCommand::OnAppSizeComputed(
     std::optional<ComputedAppSizeWithOrigin> result) {
   if (result) {
     size_ = std::move(result.value());

@@ -20,8 +20,7 @@
 namespace web_app {
 
 class AppLock;
-class GetIsolatedWebAppSizeJob;
-class GetProgressiveWebAppSizeJob;
+class ComputeAppSizeJob;
 
 // Calculates the total size of a web app, including the size of the app itself
 // and any data it has stored. This works for both Progressive Web Apps and
@@ -43,10 +42,7 @@ class ComputeAppSizeCommand
 
  private:
   void ReportResultAndDestroy(CommandResult result);
-  void OnIsolatedAppSizeComputed(
-      std::optional<ComputedAppSizeWithOrigin> result);
-  void OnProgressiveAppSizeComputed(
-      std::optional<ComputedAppSizeWithOrigin> result);
+  void OnAppSizeComputed(std::optional<ComputedAppSizeWithOrigin> result);
 
   std::unique_ptr<AppLock> lock_;
 
@@ -55,10 +51,7 @@ class ComputeAppSizeCommand
 
   ComputedAppSizeWithOrigin size_;
 
-  std::unique_ptr<GetIsolatedWebAppSizeJob> get_isolated_web_app_size_job_;
-
-  std::unique_ptr<GetProgressiveWebAppSizeJob>
-      get_progressive_web_app_size_job_;
+  std::unique_ptr<ComputeAppSizeJob> job_;
 
   base::WeakPtrFactory<ComputeAppSizeCommand> weak_factory_{this};
 };

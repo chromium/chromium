@@ -7,6 +7,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/values.h"
+#include "chrome/browser/web_applications/jobs/compute_app_size_job.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "components/browsing_data/content/browsing_data_quota_helper.h"
 #include "components/webapps/common/web_app_id.h"
@@ -26,18 +28,15 @@ class ComputedAppSizeWithOrigin;
 // Calculates the total on-disk storage size for a give installed web app,
 // including both the web app's web platform storage as well as Chrome's
 // internal storage of things like icons.
-class GetProgressiveWebAppSizeJob {
+class GetProgressiveWebAppSizeJob : public ComputeAppSizeJob {
  public:
-  using ResultCallback =
-      base::OnceCallback<void(std::optional<ComputedAppSizeWithOrigin> result)>;
-
   GetProgressiveWebAppSizeJob(Profile* profile,
                               const webapps::AppId& app_id,
-                              base::DictValue& debug_value,
-                              ResultCallback result_callback);
-  ~GetProgressiveWebAppSizeJob();
+                              base::DictValue& debug_value);
+  ~GetProgressiveWebAppSizeJob() override;
 
-  void Start(WithAppResources* lock_with_app_resources);
+  void Start(WithAppResources* lock_with_app_resources,
+             ResultCallback callback) override;
 
  private:
   void MaybeReturnSize();

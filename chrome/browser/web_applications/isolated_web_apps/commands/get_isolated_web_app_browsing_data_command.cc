@@ -18,8 +18,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/web_applications/commands/computed_app_size.h"
-#include "chrome/browser/web_applications/isolated_web_apps/jobs/get_isolated_web_app_size_job.h"
+#include "chrome/browser/web_applications/jobs/compute_app_size_job.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
+#include "chrome/browser/web_applications/web_app_isolation_delegate.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/browsing_data/content/browsing_data_model.h"
 #include "components/webapps/common/web_app_id.h"
@@ -48,12 +49,16 @@ void GetIsolatedWebAppBrowsingDataCommand::StartWithLock(
 
   auto concurrent =
       base::ConcurrentCallbacks<std::optional<ComputedAppSizeWithOrigin>>();
+
+  std::vector<
+      base::OnceCallback<void(std::optional<ComputedAppSizeWithOrigin>)>>
+      callbacks;
   for (const auto& iwa :
        lock_->registrar().GetApps(WebAppFilter::IsIsolatedApp())) {
     get_isolated_web_app_size_jobs_.push_back(
-        std::make_unique<GetIsolatedWebAppSizeJob>(
-            &profile_.get(), iwa.app_id(), GetMutableDebugValue(),
-            concurrent.CreateCallback()));
+        lock_->isolation_delegate().CreateComputeAppSizeJob(
+            iwa.app_id(), GetMutableDebugValue()));
+    callbacks.push_back(concurrent.CreateCallback());
   }
 
   std::move(concurrent)
@@ -61,8 +66,9 @@ void GetIsolatedWebAppBrowsingDataCommand::StartWithLock(
           base::BindOnce(&GetIsolatedWebAppBrowsingDataCommand::CompleteCommand,
                          weak_factory_.GetWeakPtr()));
 
-  for (auto& get_isolated_web_app_size_job : get_isolated_web_app_size_jobs_) {
-    get_isolated_web_app_size_job->Start(lock_.get());
+  for (size_t i = 0; i < get_isolated_web_app_size_jobs_.size(); ++i) {
+    get_isolated_web_app_size_jobs_[i]->Start(lock_.get(),
+                                              std::move(callbacks[i]));
   }
 }
 
