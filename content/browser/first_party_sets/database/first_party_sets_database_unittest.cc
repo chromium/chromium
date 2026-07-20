@@ -168,17 +168,11 @@ TEST_F(FirstPartySetsDatabaseTest, CreateDB_TablesAndIndexesLazilyInitialized) {
   // An unused FirstPartySetsDatabase instance should not create the database.
   EXPECT_FALSE(base::PathExists(db_path()));
 
-  // DB init UMA should not be recorded.
-  histograms.ExpectTotalCount("FirstPartySets.Database.InitStatus", 0);
-
   OpenDatabase();
   // Trigger the lazy-initialization.
   EXPECT_TRUE(db()->InsertSitesToClear("b", {}));
   EXPECT_TRUE(base::PathExists(db_path()));
 
-  histograms.ExpectUniqueSample("FirstPartySets.Database.InitStatus",
-                                FirstPartySetsDatabase::InitStatus::kSuccess,
-                                1);
   CloseDatabase();
 
   // Create a db handle to the existing db file to verify schemas.
@@ -232,10 +226,6 @@ TEST_F(FirstPartySetsDatabaseTest, LoadDBFile_CurrentVersion_Success) {
   EXPECT_EQ(1u, CountBrowserContextsClearedEntries(&db));
   EXPECT_EQ(2u, CountPolicyConfigurationsEntries(&db));
   EXPECT_EQ(2u, CountManualConfigurationsEntries(&db));
-
-  histograms.ExpectUniqueSample("FirstPartySets.Database.InitStatus",
-                                FirstPartySetsDatabase::InitStatus::kSuccess,
-                                1);
 }
 
 TEST_F(FirstPartySetsDatabaseTest, LoadDBFile_RecreateOnTooOld) {
@@ -261,10 +251,6 @@ TEST_F(FirstPartySetsDatabaseTest, LoadDBFile_RecreateOnTooOld) {
   EXPECT_EQ(0u, CountBrowserContextsClearedEntries(&db));
   EXPECT_EQ(0u, CountPolicyConfigurationsEntries(&db));
   EXPECT_EQ(0u, CountManualConfigurationsEntries(&db));
-
-  histograms.ExpectUniqueSample("FirstPartySets.Database.InitStatus",
-                                FirstPartySetsDatabase::InitStatus::kSuccess,
-                                1);
 }
 
 TEST_F(FirstPartySetsDatabaseTest, LoadDBFile_RecreateOnTooNew) {
@@ -290,10 +276,6 @@ TEST_F(FirstPartySetsDatabaseTest, LoadDBFile_RecreateOnTooNew) {
   EXPECT_EQ(0u, CountBrowserContextsClearedEntries(&db));
   EXPECT_EQ(0u, CountPolicyConfigurationsEntries(&db));
   EXPECT_EQ(0u, CountManualConfigurationsEntries(&db));
-
-  histograms.ExpectUniqueSample("FirstPartySets.Database.InitStatus",
-                                FirstPartySetsDatabase::InitStatus::kSuccess,
-                                1);
 }
 
 TEST_F(FirstPartySetsDatabaseTest, LoadDBFile_InvalidRunCount_Fail) {
@@ -311,9 +293,6 @@ TEST_F(FirstPartySetsDatabaseTest, LoadDBFile_InvalidRunCount_Fail) {
   sql::Database db(sql::test::kTestTag);
   EXPECT_TRUE(db.Open(db_path()));
   EXPECT_EQ(0u, sql::test::CountSQLTables(&db));
-  histograms.ExpectUniqueSample("FirstPartySets.Database.InitStatus",
-                                FirstPartySetsDatabase::InitStatus::kCorrupted,
-                                1);
 }
 
 TEST_F(FirstPartySetsDatabaseTest, PersistSets_NoPreExistingDB) {

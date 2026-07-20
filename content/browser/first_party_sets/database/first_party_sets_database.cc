@@ -127,10 +127,6 @@ const char kRunCountKey[] = "run_count";
   return true;
 }
 
-void RecordInitializationStatus(FirstPartySetsDatabase::InitStatus status) {
-  base::UmaHistogramEnumeration("FirstPartySets.Database.InitStatus", status);
-}
-
 }  // namespace
 
 FirstPartySetsDatabase::FirstPartySetsDatabase(base::FilePath db_path)
@@ -764,7 +760,6 @@ bool FirstPartySetsDatabase::LazyInit() {
     IncreaseRunCount();
   }
 
-  RecordInitializationStatus(db_status_);
   return db_status_ == InitStatus::kSuccess;
 }
 
