@@ -136,6 +136,9 @@ class DesktopMediaPicker {
     // track the result of the picker, because the behavior with the
     // Extension API is different, and could therefore lead to mismeasurement.
     RequestSource request_source = RequestSource::kUnknown;
+
+    // True if getDisplayMedia requested audioSelection='preferred'.
+    bool audio_selection_preferred = false;
   };
 
   // Creates a picker dialog/confirmation box depending on the value of

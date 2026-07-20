@@ -7,16 +7,58 @@
 #include <memory>
 #include <string_view>
 
+#include "chrome/grit/generated_resources.h"
+#include "components/vector_icons/vector_icons.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/background.h"
+#include "ui/views/border.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view_class_properties.h"
+
+namespace {
+
+std::unique_ptr<views::View> CreateAudioRecommendationView() {
+  auto recommendation_view = std::make_unique<views::View>();
+  recommendation_view->SetBackground(
+      views::CreateRoundedRectBackground(ui::kColorSysSurface1, 8));
+  recommendation_view->SetBorder(
+      views::CreateRoundedRectBorder(1, 8, ui::kColorSysNeutralOutline));
+  recommendation_view->SetProperty(views::kMarginsKey,
+                                   gfx::Insets::TLBR(8, 16, 0, 16));
+
+  auto* rec_layout =
+      recommendation_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal, gfx::Insets::VH(8, 12)));
+  rec_layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+  rec_layout->set_between_child_spacing(8);
+
+  auto* rec_icon =
+      recommendation_view->AddChildView(std::make_unique<views::ImageView>());
+  rec_icon->SetImage(ui::ImageModel::FromVectorIcon(vector_icons::kInfoIcon,
+                                                    ui::kColorIcon, 16));
+
+  auto* rec_label = recommendation_view->AddChildView(
+      std::make_unique<views::Label>(l10n_util::GetStringUTF16(
+          IDS_DISPLAY_MEDIA_PICKER_AUDIO_RECOMMENDED)));
+  rec_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+
+  return recommendation_view;
+}
+
+}  // namespace
 
 DesktopMediaContentPaneView::DesktopMediaContentPaneView(
     std::unique_ptr<views::View> content_view,
-    std::unique_ptr<ShareAudioView> share_audio_view) {
+    std::unique_ptr<ShareAudioView> share_audio_view,
+    bool show_audio_recommendation,
+    AudioSharingToggleStyle style_audio_toggle) {
   float bottom_radius = 8;
   SetBackground(views::CreateRoundedRectBackground(ui::kColorSysSurface4,
                                                    /*top_radius=*/0,
@@ -35,8 +77,15 @@ DesktopMediaContentPaneView::DesktopMediaContentPaneView(
 
   View* separator_container = AddChildView(std::make_unique<views::View>());
   separator_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets::VH(0, 16)));
+      views::BoxLayout::Orientation::kVertical,
+      style_audio_toggle == AudioSharingToggleStyle::kBoxed
+          ? gfx::Insets::TLBR(12, 16, 0, 16)
+          : gfx::Insets::VH(0, 16)));
   separator_container->AddChildView(std::make_unique<views::Separator>());
+
+  if (show_audio_recommendation) {
+    audio_recommendation_view_ = AddChildView(CreateAudioRecommendationView());
+  }
 
 #if BUILDFLAG(IS_MAC)
   audio_warning_view_ =
@@ -50,6 +99,17 @@ DesktopMediaContentPaneView::DesktopMediaContentPaneView(
 }
 
 DesktopMediaContentPaneView::~DesktopMediaContentPaneView() = default;
+
+bool DesktopMediaContentPaneView::IsAudioRecommendationVisible() const {
+  return audio_recommendation_view_ && audio_recommendation_view_->GetVisible();
+}
+
+void DesktopMediaContentPaneView::SetAudioRecommendationVisible(bool visible) {
+  if (audio_recommendation_view_) {
+    audio_recommendation_view_->SetVisible(visible);
+    InvalidateLayout();
+  }
+}
 
 bool DesktopMediaContentPaneView::AudioOffered() const {
   return share_audio_view_ && share_audio_view_->AudioOffered();

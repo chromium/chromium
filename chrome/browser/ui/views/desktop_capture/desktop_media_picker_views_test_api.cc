@@ -149,6 +149,10 @@ void DesktopMediaPickerViewsTestApi::SetAudioSharingApprovedByUser(bool allow) {
   GetActivePane()->SetAudioSharingApprovedByUser(allow);
 }
 
+void DesktopMediaPickerViewsTestApi::TriggerAudioShareToggled() {
+  picker_->dialog_->OnAudioShareToggled();
+}
+
 bool DesktopMediaPickerViewsTestApi::IsAudioSharingApprovedByUser() const {
   return picker_->dialog_->IsAudioSharingApprovedByUser();
 }
@@ -167,6 +171,18 @@ DesktopMediaPickerViewsTestApi::GetWindowAudioType() const {
 
 views::MdTextButton* DesktopMediaPickerViewsTestApi::GetReselectButton() {
   return picker_->dialog_->reselect_button_;
+}
+
+std::u16string DesktopMediaPickerViewsTestApi::GetOkButtonLabelText() const {
+  return std::u16string(picker_->dialog_->GetOkButton()->GetText());
+}
+
+bool DesktopMediaPickerViewsTestApi::IsOkButtonEnabled() const {
+  return picker_->dialog_->GetOkButton()->GetEnabled();
+}
+
+bool DesktopMediaPickerViewsTestApi::IsAudioRecommendationVisible() const {
+  return GetActivePane() && GetActivePane()->IsAudioRecommendationVisible();
 }
 
 const DesktopMediaPaneView* DesktopMediaPickerViewsTestApi::GetActivePane()

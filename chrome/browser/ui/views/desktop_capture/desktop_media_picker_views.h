@@ -189,6 +189,15 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   // `content::DesktopMediaID::AudioType::AUDIO_TYPE_NONE`.
   bool IsWindowAudioOffered() const;
 
+  // Called when the user toggles the audio sharing checkbox in the active pane.
+  // Updates the OK button label and the audio recommendation visibility.
+  void OnAudioShareToggled();
+
+  // Updates the OK (Share) button label based on whether audio sharing is
+  // currently approved by the user (e.g. "Share" vs "Share with Audio").
+  // Only applies if GetDisplayMediaAudioSelection feature is enabled.
+  void UpdateOkButtonLabel();
+
 #if BUILDFLAG(IS_MAC)
   void OnPermissionUpdate(bool has_permission);
   void OnAudioSharingApprovedByUserUpdate();
@@ -200,6 +209,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   const raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged>
       web_contents_;
   const DesktopMediaPicker::Params::RequestSource request_source_;
+  const bool audio_selection_preferred_;
   const std::u16string app_name_;
   const bool audio_requested_;
   // JS-exposed as systemAudio.

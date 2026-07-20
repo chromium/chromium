@@ -11,6 +11,8 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/background.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -18,9 +20,16 @@
 
 ShareAudioView::ShareAudioView(const std::u16string& label_text,
                                bool audio_offered,
+                               AudioSharingToggleStyle style,
                                base::RepeatingClosure audio_check_callback)
     : audio_check_callback_(audio_check_callback) {
+  const bool is_boxed = style == AudioSharingToggleStyle::kBoxed;
   SetProperty(views::kMarginsKey, gfx::Insets::TLBR(8, 16, 16, 16));
+  if (is_boxed) {
+    SetBackground(views::CreateRoundedRectBackground(ui::kColorSysSurface1, 8));
+    SetBorder(
+        views::CreateRoundedRectBorder(1, 8, ui::kColorSysNeutralOutline));
+  }
 
   views::ImageView* audio_icon_view =
       AddChildView(std::make_unique<views::ImageView>());
@@ -47,7 +56,8 @@ ShareAudioView::ShareAudioView(const std::u16string& label_text,
 
   views::BoxLayout* audio_toggle_layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal));
+          views::BoxLayout::Orientation::kHorizontal,
+          is_boxed ? gfx::Insets::VH(8, 12) : gfx::Insets(0)));
   audio_toggle_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
   audio_toggle_layout->set_between_child_spacing(8);

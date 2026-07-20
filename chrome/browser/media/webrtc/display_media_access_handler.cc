@@ -600,6 +600,10 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
       (capture_level != AllowedScreenCaptureLevel::kUnrestricted);
   picker_params.preferred_display_surface =
       pending_request.request.preferred_display_surface;
+  picker_params.audio_selection_preferred =
+      base::FeatureList::IsEnabled(
+          blink::features::kGetDisplayMediaAudioSelection) &&
+      pending_request.request.audio_selection_preferred;
 #if BUILDFLAG(IS_ANDROID)
   picker_params.capture_this_tab =
       pending_request.request.video_type ==

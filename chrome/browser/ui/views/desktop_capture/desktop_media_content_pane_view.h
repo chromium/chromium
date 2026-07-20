@@ -21,9 +21,15 @@ class DesktopMediaContentPaneView : public views::View {
  public:
   // Creates a pane-view with the supplied content_view. If a non-null
   // share_audio_view is provided, it is added below content_view.
+  // If `show_audio_recommendation` is true (and `share_audio_view` is
+  // non-null), an audio recommendation card is added between the separator and
+  // the `share_audio_view`. `style_audio_toggle` specifies how the audio
+  // sharing toggle should be styled.
   // TODO(crbug.com/340098903): Create ShareAudioView in the constructor.
   DesktopMediaContentPaneView(std::unique_ptr<views::View> content_view,
-                              std::unique_ptr<ShareAudioView> share_audio_view);
+                              std::unique_ptr<ShareAudioView> share_audio_view,
+                              bool show_audio_recommendation,
+                              AudioSharingToggleStyle style_audio_toggle);
 
   DesktopMediaContentPaneView(const DesktopMediaContentPaneView&) = delete;
   DesktopMediaContentPaneView& operator=(const DesktopMediaContentPaneView&) =
@@ -39,6 +45,8 @@ class DesktopMediaContentPaneView : public views::View {
   // Returns the text in the audio label if an audio label exists;
   // returns the empty string otherwise.
   std::u16string_view GetAudioLabelText() const;
+  bool IsAudioRecommendationVisible() const;
+  void SetAudioRecommendationVisible(bool visible);
 #if BUILDFLAG(IS_MAC)
   void SetAudioWarningVisible(bool visible);
   bool IsAudioWarningVisible() const;
@@ -46,6 +54,7 @@ class DesktopMediaContentPaneView : public views::View {
 #endif  // BUILDFLAG(IS_MAC)
 
  private:
+  raw_ptr<views::View> audio_recommendation_view_ = nullptr;
   raw_ptr<ShareAudioView> share_audio_view_ = nullptr;
 #if BUILDFLAG(IS_MAC)
   raw_ptr<AudioPermissionWarningView> audio_warning_view_ = nullptr;

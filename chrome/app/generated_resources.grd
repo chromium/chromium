@@ -16530,6 +16530,18 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_DISPLAY_MEDIA_PICKER_TEXT" desc="Text for the window picker dialog shown when a getDisplayMedia capture is requested by an app to be used by the app itself.">
         The site will be able to see the contents of your screen
       </message>
+      <message name="IDS_DISPLAY_MEDIA_PICKER_AUDIO_RECOMMENDED" desc="Warning text for the window picker dialog shown when getDisplayMedia requested audio preference is high.">
+        This site recommends sharing audio for full functionality
+      </message>
+      <message name="IDS_DISPLAY_MEDIA_PICKER_SHARE_SYSTEM_AUDIO_CHECKBOX" desc="Simplified checkbox label for sharing system audio.">
+        Share with system audio
+      </message>
+      <message name="IDS_DISPLAY_MEDIA_PICKER_SHARE_TAB_AUDIO_CHECKBOX" desc="Simplified checkbox label for sharing tab audio.">
+        Share with tab audio
+      </message>
+      <message name="IDS_DISPLAY_MEDIA_PICKER_CONFIRM_BUTTON_SHARE_WITH_AUDIO" desc="Confirmation button label when audio sharing is selected.">
+        Share with Audio
+      </message>
       <message name="IDS_DESKTOP_MEDIA_PICKER_TEXT_DELEGATED" desc="Text for the window picker dialog shown when desktop capture is requested by an app to be used by a tab.">
         <ph name="APP_NAME">$1<ex>Google Hangouts</ex></ph> wants to share the contents of your screen with <ph name="TARGET_NAME">$2<ex>https://google.com</ex></ph>.
       </message>

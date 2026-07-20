@@ -12,12 +12,20 @@
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/label.h"
 
+enum class AudioSharingToggleStyle {
+  // A simple checkbox/toggle with text.
+  kDefault,
+  // A boxed view with background and border.
+  kBoxed,
+};
+
 class ShareAudioView : public views::View {
   METADATA_HEADER(ShareAudioView, views::View)
 
  public:
   ShareAudioView(const std::u16string& label_text,
                  bool audio_offered,
+                 AudioSharingToggleStyle style,
                  base::RepeatingClosure audio_check_callback);
   ShareAudioView(const ShareAudioView&) = delete;
   ShareAudioView& operator=(const ShareAudioView&) = delete;

@@ -18,9 +18,12 @@ class DesktopMediaPaneViewTest : public ::testing::Test {
   ChromeLayoutProvider layout_provider_;
 
   std::unique_ptr<DesktopMediaPaneView> pane_view_ =
-      std::make_unique<DesktopMediaPaneView>(DesktopMediaList::Type::kScreen,
-                                             std::make_unique<views::View>(),
-                                             nullptr);
+      std::make_unique<DesktopMediaPaneView>(
+          DesktopMediaList::Type::kScreen,
+          std::make_unique<views::View>(),
+          nullptr,
+          /*show_audio_recommendation=*/false,
+          AudioSharingToggleStyle::kDefault);
 };
 
 TEST_F(DesktopMediaPaneViewTest, TestDefaultState) {
