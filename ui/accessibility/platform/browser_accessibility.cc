@@ -64,9 +64,10 @@ bool BrowserAccessibility::ignore_hovered_state_for_testing_ = false;
 // static
 BrowserAccessibility* BrowserAccessibility::FromAXPlatformNodeDelegate(
     AXPlatformNodeDelegate* delegate) {
-  if (!delegate || !delegate->IsWebContent())
+  if (!delegate) {
     return nullptr;
-  return static_cast<BrowserAccessibility*>(delegate);
+  }
+  return delegate->ToBrowserAccessibility();
 }
 
 BrowserAccessibility::BrowserAccessibility(BrowserAccessibilityManager* manager,
@@ -985,6 +986,10 @@ std::string BrowserAccessibility::SubtreeToStringHelper(size_t level) {
   }
 
   return result;
+}
+
+BrowserAccessibility* BrowserAccessibility::ToBrowserAccessibility() {
+  return this;
 }
 
 const std::vector<gfx::NativeViewAccessible>

@@ -47,6 +47,7 @@ namespace ui {
 struct AXActionData;
 struct AXNodeData;
 struct AXTreeData;
+class BrowserAccessibility;
 class ChildIterator;
 
 using TextAttribute = std::pair<std::string, std::string>;
@@ -664,11 +665,15 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   }
 
  protected:
+  friend class BrowserAccessibility;
+
   explicit AXPlatformNodeDelegate(AXNode* node);
 
   virtual std::string SubtreeToStringHelper(size_t level);
 
   virtual void NotifyAccessibilityApiUsage() const {}
+
+  virtual BrowserAccessibility* ToBrowserAccessibility();
 
   AXPlatformNodeDelegate* GetParentDelegate() const;
 

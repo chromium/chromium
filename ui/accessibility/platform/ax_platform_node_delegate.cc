@@ -1354,4 +1354,8 @@ std::string AXPlatformNodeDelegate::SubtreeToStringHelper(size_t level) {
   return result;
 }
 
+BrowserAccessibility* AXPlatformNodeDelegate::ToBrowserAccessibility() {
+  return nullptr;
+}
+
 }  // namespace ui

@@ -28,6 +28,7 @@
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/platform/ax_platform.h"
+#include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/accessibility/platform/browser_accessibility_manager_win.h"
 #include "ui/accessibility/platform/browser_accessibility_win.h"
 #include "ui/base/win/accessibility_ids_win.h"
@@ -1865,8 +1866,13 @@ BrowserAccessibilityComWin* BrowserAccessibilityComWin::GetTargetFromChildID(
     return ToBrowserAccessibilityComWin(owner->PlatformGetChild(child_id - 1));
   }
 
-  auto* child = static_cast<BrowserAccessibilityComWin*>(
-      AXPlatformNodeWin::GetFromUniqueId(-child_id));
+  auto* platform_node = AXPlatformNodeWin::GetFromUniqueId(-child_id);
+  if (!platform_node) {
+    return nullptr;
+  }
+  auto* child = ToBrowserAccessibilityComWin(
+      BrowserAccessibility::FromAXPlatformNodeDelegate(
+          platform_node->GetDelegate()));
   if (child && child->GetOwner()->IsDescendantOf(owner)) {
     return child;
   }

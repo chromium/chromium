@@ -63,6 +63,14 @@ BrowserAccessibility* GetUiaTextPatternProvider(BrowserAccessibility& node) {
 constexpr char kBrowserRootViewClassName[] = "BrowserRootView";
 constexpr char kTabClassName[] = "Tab";
 
+BrowserAccessibilityComWin* ToBrowserAccessibilityComWin(AXPlatformNode* node) {
+  if (!node) {
+    return nullptr;
+  }
+  return ::ui::ToBrowserAccessibilityComWin(
+      BrowserAccessibility::FromAXPlatformNodeDelegate(node->GetDelegate()));
+}
+
 }  // namespace
 
 // static
@@ -1067,8 +1075,9 @@ void BrowserAccessibilityManagerWin::OnAtomicUpdateFinished(
   // recomputes all of win_attributes_ other than IAccessibleText.
   auto state_scan = update_states.begin();
   for (auto* node : objs_to_update) {
-    static_cast<BrowserAccessibilityComWin*>(node)
-        ->UpdateStep1ComputeWinAttributes(&*state_scan);
+    if (auto* com_win = ToBrowserAccessibilityComWin(node)) {
+      com_win->UpdateStep1ComputeWinAttributes(&*state_scan);
+    }
     ++state_scan;
   }
 
@@ -1076,8 +1085,9 @@ void BrowserAccessibilityManagerWin::OnAtomicUpdateFinished(
   // concatenation of all of its child text nodes, so it can't run until
   // the text of all of the nodes was computed in the previous step.
   for (auto* node : objs_to_update) {
-    static_cast<BrowserAccessibilityComWin*>(node)
-        ->UpdateStep2ComputeHypertext();
+    if (auto* com_win = ToBrowserAccessibilityComWin(node)) {
+      com_win->UpdateStep2ComputeHypertext();
+    }
   }
 
   // The third step fires events on nodes based on what's changed - like
@@ -1089,7 +1099,9 @@ void BrowserAccessibilityManagerWin::OnAtomicUpdateFinished(
   // At the end, it deletes old_win_attributes_ since they're not needed
   // anymore.
   for (auto* node : objs_to_update) {
-    static_cast<BrowserAccessibilityComWin*>(node)->UpdateStep3FireEvents();
+    if (auto* com_win = ToBrowserAccessibilityComWin(node)) {
+      com_win->UpdateStep3FireEvents();
+    }
   }
 }
 
