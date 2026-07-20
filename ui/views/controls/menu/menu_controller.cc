@@ -2651,8 +2651,12 @@ void MenuController::MenuChildrenChanged(MenuItemView* item) {
       return;
     }
   }
+  // Setting the selection can indirectly destroy this object via accessibility
+  // system callbacks and activation changes. This should be rare bug must be
+  // protected against.
+  const auto weak_this = AsWeakPtr();
   SetSelection(item, SELECTION_OPEN_SUBMENU | SELECTION_UPDATE_IMMEDIATELY);
-  if (item->HasSubmenu()) {
+  if (weak_this && item->HasSubmenu()) {
     OpenMenuImpl(item, false);
   }
 }

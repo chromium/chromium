@@ -791,11 +791,17 @@ MenuItemView* MenuItemView::GetMenuItemByID(int id) {
 }
 
 void MenuItemView::ChildrenChanged() {
-  MenuController* controller = GetMenuController();
-  if (controller) {
+  auto* const controller_ptr = GetMenuController();
+  if (controller_ptr) {
     UpdateEmptyMenusAndMetrics();
 
+    // Certain accessibility callbacks could destroy the menu indirectly through
+    // activation changes.
+    const auto controller = controller_ptr->AsWeakPtr();
     controller->MenuChildrenChanged(this);
+    if (!controller) {
+      return;
+    }
 
     if (submenu_) {
       // Force a paint and a synchronous layout. This needs a synchronous layout
