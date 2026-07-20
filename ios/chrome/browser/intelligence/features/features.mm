@@ -764,7 +764,7 @@ bool IsGeneralizedGeminiEntryFlowEnabled() {
   return base::FeatureList::IsEnabled(kGeneralizedGeminiEntryFlow);
 }
 
-BASE_FEATURE(kGeminiLuminous, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGeminiLuminous, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsGeminiLuminousEnabled() {
   if (!IsPageActionMenuEnabled()) {

@@ -13544,21 +13544,6 @@
             ]
         }
     ],
-    "HeliosLuminous": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GeminiLuminous"
-                    ]
-                }
-            ]
-        }
-    ],
     "HeliosScreenContextMigration": [
         {
             "platforms": [
