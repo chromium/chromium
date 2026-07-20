@@ -1,0 +1,10 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//pdf/features.gni")
+
+declare_args() {
+  # Enable PDF translation.
+  enable_pdf_translation = enable_pdf && !(is_android || is_ios || is_fuchsia)
+}
