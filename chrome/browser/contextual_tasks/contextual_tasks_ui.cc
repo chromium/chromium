@@ -1308,7 +1308,9 @@ void ContextualTasksUI::AddInitialTaskStateToDataSource(
 }
 
 void ContextualTasksUI::OnSidePanelStateChanged() {
-  page_->OnSidePanelStateChanged();
+  if (page_) {
+    page_->OnSidePanelStateChanged();
+  }
 
   lens::ClientToAimMessage message;
   auto* display_mode_msg = message.mutable_set_cobrowsing_display_mode();
@@ -1523,8 +1525,10 @@ bool ContextualTasksUI::IsActiveTabContextSuggestionShowing() const {
 void ContextualTasksUI::PushTaskDetailsToPage(std::optional<base::Uuid> id,
                                               const GURL& url,
                                               bool replace_navigation_entry) {
-  page_->SetTaskDetails(id.value_or(base::Uuid()), url,
-                        replace_navigation_entry);
+  if (page_) {
+    page_->SetTaskDetails(id.value_or(base::Uuid()), url,
+                          replace_navigation_entry);
+  }
 #if !BUILDFLAG(IS_ANDROID)
   tracked_zoom_host_ = url.host();
   UpdateZoom();

@@ -171,6 +171,10 @@ class ContextualTasksUrlLoaderFactoryInterceptorBrowserTest
                   nullptr, nullptr);
           ON_CALL(*service, IsAimEligible())
               .WillByDefault(testing::Return(true));
+          ON_CALL(*service, IsAimUrl(testing::_, testing::_))
+              .WillByDefault(testing::Return(false));
+          ON_CALL(*service, IsAimHost(testing::_, testing::_))
+              .WillByDefault(testing::Return(false));
           return service;
         }));
 

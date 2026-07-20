@@ -213,9 +213,34 @@ class AimEligibilityService
   // Checks if the user is eligible for AIM Fuseboxes.
   virtual bool IsFuseboxEligible() const;
 
-  // Determining whether the provided URL is an AI page based on server-provided
-  // params.
+  // Returns whether `url` is a valid AIM URL (i.e. would navigate a user to the
+  // AIM feature). All of the host, path, and URL params are checked to
+  // determine this. This method does not incorporate checks for params that
+  // would cause the browser to skip features like cobrowse mode. The
+  // `host_override` param can be used to allow a host that isn't provided by
+  // the eligibility service backend. In practice, this method is primarily used
+  // to determine whether the browser should intercept a navigation and redirect
+  // to an internal page.
+  virtual bool IsAimUrl(const GURL& url,
+                        std::optional<std::string> host_override) const;
+
+  // Returns whether `url` has a host which would qualify it as an AIM URL. This
+  // method alone does not determine whether the URL would actually navigate a
+  // user to AIM, things like path and URL params would also need to be checked.
+  virtual bool IsAimHost(const GURL& url,
+                         std::optional<std::string> host_override) const;
+
+  // Returns whether `url` has the collection of URL params that qualify it as
+  // an AIM URL. This method alone does not determine whether the URL would
+  // actually navigate a user to AIM, things like host and path would still need
+  // to be checked. This is mainly a helper for `IsAimUrl()` above.
   virtual bool HasAimUrlParams(const GURL& url) const;
+
+  // Returns whether `url` has params that should prevent it from being
+  // intercepted and entering cobrowsing mode. This does not check that the
+  // provided `url` is an AIM URL, only whether specific URL params are
+  // present.
+  virtual bool HasNoCobrowseParams(const GURL& url) const;
 
   // Returns the most recent eligibility response proto.
   virtual const omnibox::AimEligibilityResponse& GetMostRecentResponse() const;
@@ -339,6 +364,12 @@ class AimEligibilityService
 
   // Callback for when the AIM policy changes.
   void OnPolicyChanged();
+
+  // Returns whether `url` has a path component which would qualify it as an AIM
+  // URL. This method alone does not determine whether the URL would actually
+  // navigate a user to AIM, things like host and URL params would still need to
+  // be checked. This is primarily a helper for `IsAimUrl()` above.
+  bool IsAimPath(const GURL& url) const;
 
  protected:
   // Callback for when the eligibility response changes. Notifies observers.

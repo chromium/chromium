@@ -17,7 +17,7 @@ import "model_mode.proto";
 import "searchbox_config.proto";
 
 // AIM Eligibility Response.
-// Next ID: 11
+// Next ID: 14
 message AimEligibilityResponse {
   // Whether the user is eligible for Chrome AIM features.
   optional bool is_eligible = 1;
@@ -53,4 +53,14 @@ message AimEligibilityResponse {
 
   // Whether the user is eligible for Chrome Fusebox features.
   optional bool is_fusebox_eligible = 10;
+
+  // The explicit list of hosts allowed for Co-Browse URL interception.
+  repeated string interception_allowed_hosts = 11;
+
+  // The explicit list of URL paths allowed for Co-Browse URL interception.
+  repeated string interception_allowed_paths = 12;
+
+  // Query parameters that, if present in the URL, will prevent the browser
+  // from entering Co-Browse mode (bypassing interception).
+  repeated QueryParam no_cobrowse_params = 13;
 }

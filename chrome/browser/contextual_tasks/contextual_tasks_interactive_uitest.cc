@@ -310,6 +310,12 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
     EXPECT_CALL(*mock_aim, GetSearchboxConfig())
         .WillRepeatedly(testing::Return(config));
 
+    ON_CALL(*mock_aim, IsAimUrl(_, _))
+        .WillByDefault(
+            [](const GURL& url, std::optional<std::string> host_override) {
+              return url.host().find(kMockAimPageHost) != std::string::npos;
+            });
+
     // Satisfy the native navigation interception checks.
     EXPECT_CALL(*mock_aim, HasAimUrlParams(_))
         .WillRepeatedly(testing::Return(true));

@@ -107,7 +107,6 @@ constexpr char kSrpUrl[] = "https://google.com/search?q=query";
 constexpr char kSignOutUrl[] = "https://accounts.google.com/Logout";
 constexpr char kSrpUrlWithLensQuery[] =
     "https://www.google.com/search?lns_mode=un";
-constexpr char kLabsUrl[] = "https://labs.google.com/search";
 
 class FakeContextualTasksEligibilityManager
     : public ContextualTasksEligibilityManager {
@@ -478,6 +477,9 @@ TEST_P(ContextualTasksUiServiceTestParameterized,
   content::WebContentsTester::For(web_contents.get())
       ->SetLastCommittedURL(source_url);
 
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(Return(false));
+
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(),
       /*is_from_embedded_page=*/true,
@@ -769,27 +771,13 @@ TEST_P(ContextualTasksUiServiceTestParameterized,
                                       false, 1);
 }
 
-TEST_F(ContextualTasksUiServiceTest, IsAiUrl_InvalidUrl) {
-  GURL url("http://?a=12345");
-  EXPECT_FALSE(url.is_valid());
-  EXPECT_FALSE(service_for_nav_->IsAiUrl(url));
-}
-
-TEST_F(ContextualTasksUiServiceTest, IsAiUrl_ValidAiUrl) {
-  GURL ai_url(kAiPageUrl);
-  EXPECT_CALL(*aim_eligibility_service_, HasAimUrlParams(ai_url))
-      .WillOnce(Return(true));
-  EXPECT_TRUE(service_for_nav_->IsAiUrl(ai_url));
-}
-
-TEST_F(ContextualTasksUiServiceTest, IsAiUrl_NoAimUrlParams) {
-  GURL ai_url(kAiPageUrl);
-  EXPECT_CALL(*aim_eligibility_service_, HasAimUrlParams(ai_url))
-      .WillOnce(Return(false));
-  EXPECT_FALSE(service_for_nav_->IsAiUrl(ai_url));
-}
-
 TEST_F(ContextualTasksUiServiceTest, IsGoogleCaptchaUrl) {
+  ON_CALL(*aim_eligibility_service_, IsAimHost(_, _))
+      .WillByDefault(
+          [](const GURL& url, std::optional<std::string> host_override) {
+            return url.host().find(".google.com") != std::string::npos;
+          });
+
   EXPECT_TRUE(service_for_nav_->IsGoogleCaptchaUrl(
       GURL("https://www.google.com/sorry/index?continue=foo")));
   EXPECT_TRUE(service_for_nav_->IsGoogleCaptchaUrl(
@@ -802,6 +790,9 @@ TEST_F(ContextualTasksUiServiceTest, IsGoogleCaptchaUrl) {
 
 TEST_F(ContextualTasksUiServiceTest, HandleNavigation_AiPage_ChecksCobrowse) {
   GURL ai_url(kAiPageUrl);
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(Return(true));
+
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
 
@@ -922,28 +913,8 @@ TEST_F(ContextualTasksUiServiceTest, HandleNavigation_AiPage_DebugParam) {
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
 
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
-      .Times(0);
-
-  EXPECT_FALSE(service_for_nav_->HandleNavigation(
-      CreateOpenUrlParams(ai_url, false), web_contents.get(),
-      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
-      blink::mojom::WindowFeatures()));
-
-  base::RunLoop run_loop;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, run_loop.QuitClosure());
-  run_loop.Run();
-}
-
-TEST_F(ContextualTasksUiServiceTest,
-       HandleNavigation_AiPage_DebugParam_Substring) {
-  GURL ai_url(kAiPageUrl);
-  // Have the known debug value be a substring of the broader value.
-  ai_url = net::AppendQueryParameter(ai_url, "deb", "nocobrowse1moredebug1");
-  auto web_contents = content::WebContentsTester::CreateTestWebContents(
-      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  ON_CALL(*aim_eligibility_service_, HasNoCobrowseParams(_))
+      .WillByDefault(Return(true));
 
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
       .Times(0);
@@ -966,6 +937,9 @@ TEST_F(ContextualTasksUiServiceTest,
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
 
+  ON_CALL(*aim_eligibility_service_, HasNoCobrowseParams(_))
+      .WillByDefault(Return(true));
+
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
       .Times(0);
   base::RunLoop run_loop;
@@ -987,56 +961,6 @@ TEST_F(ContextualTasksUiServiceTest,
   run_loop.Run();
 }
 
-TEST_F(ContextualTasksUiServiceTest, HandleNavigation_AiPage_NcbParam) {
-  GURL ai_url(kAiPageUrl);
-  ai_url = net::AppendQueryParameter(ai_url, "ncb", "1");
-  auto web_contents = content::WebContentsTester::CreateTestWebContents(
-      profile_.get(), content::SiteInstance::Create(profile_.get()));
-
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
-      .Times(0);
-
-  EXPECT_FALSE(service_for_nav_->HandleNavigation(
-      CreateOpenUrlParams(ai_url, false), web_contents.get(),
-      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
-      blink::mojom::WindowFeatures()));
-
-  base::RunLoop run_loop;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, run_loop.QuitClosure());
-  run_loop.Run();
-}
-
-TEST_F(ContextualTasksUiServiceTest,
-       HandleNavigation_AiPage_NcbParam_VirtualUrl) {
-  GURL virtual_url("chrome://google.com/search?udm=50&q=test&ncb=1");
-  auto web_contents = content::WebContentsTester::CreateTestWebContents(
-      profile_.get(), content::SiteInstance::Create(profile_.get()));
-
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
-      .Times(0);
-  base::RunLoop run_loop;
-  ON_CALL(*service_for_nav_, LoadUrlInWebContents(_, _))
-      .WillByDefault([&](const GURL& url,
-                         base::WeakPtr<content::WebContents> web_contents) {
-        EXPECT_EQ(url.spec(),
-                  "https://www.google.com/search?udm=50&q=test&ncb=1");
-        run_loop.Quit();
-      });
-
-  EXPECT_TRUE(service_for_nav_->HandleNavigation(
-      CreateOpenUrlParams(virtual_url, false), web_contents.get(),
-      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
-      blink::mojom::WindowFeatures()));
-
-  run_loop.Run();
-}
-
-// A link from the embedded page should be intercepted so that it navigates the
-// current tab by default. Initiating cobrowse now requires a message from the
-// embedded page.
 TEST_F(ContextualTasksUiServiceTest, LinkFromWebUiIntercepted) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(kAimTriggeredThreadLinks);
@@ -1051,6 +975,8 @@ TEST_F(ContextualTasksUiServiceTest, LinkFromWebUiIntercepted) {
 
   tabs::MockTabInterface tab;
   ON_CALL(tab, GetContents).WillByDefault(Return(web_contents.get()));
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(Return(false));
 
   base::RunLoop run_loop;
   EXPECT_CALL(*service_for_nav_,
@@ -1074,6 +1000,9 @@ TEST_F(ContextualTasksUiServiceTest, BrowserUiNavigationFromWebUiIgnored) {
       profile_.get(), content::SiteInstance::Create(profile_.get()));
   content::WebContentsTester::For(web_contents.get())
       ->SetLastCommittedURL(host_web_content_url);
+
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(Return(false));
 
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
@@ -1100,6 +1029,9 @@ TEST_F(ContextualTasksUiServiceTest, NormalLinkNotIntercepted) {
       profile_.get(), content::SiteInstance::Create(profile_.get()));
   content::WebContentsTester::For(web_contents.get())
       ->SetLastCommittedURL(GURL("https://example.com/foo"));
+
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(Return(false));
 
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
@@ -1132,6 +1064,9 @@ TEST_F(ContextualTasksUiServiceTest,
                                 task_id.value().AsLowercaseString());
   content::WebContentsTester::For(web_contents.get())
       ->SetLastCommittedURL(source_url);
+
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(Return(false));
 
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
@@ -1193,6 +1128,9 @@ TEST_F(ContextualTasksUiServiceTest,
 
   GURL navigated_url(kTestUrl);
   GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
+
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(Return(false));
 
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
@@ -1261,6 +1199,9 @@ TEST_F(ContextualTasksUiServiceTest,
   content::WebContentsTester::For(web_contents.get())
       ->SetLastCommittedURL(source_url);
 
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(Return(false));
+
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
       .Times(0);
@@ -1309,27 +1250,6 @@ TEST_F(ContextualTasksUiServiceTest,
     run_loop.Run();
   }
   EXPECT_EQ(0U, service_for_nav_->window_trackers_for_testing().size());
-}
-
-TEST_F(ContextualTasksUiServiceTest, AiHostNotIntercepted_BadPath) {
-  auto web_contents = content::WebContentsTester::CreateTestWebContents(
-      profile_.get(), content::SiteInstance::Create(profile_.get()));
-  content::WebContentsTester::For(web_contents.get())
-      ->SetLastCommittedURL(GURL("https://google.com/maps?udm=50"));
-
-  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _, _)).Times(0);
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
-      .Times(0);
-  EXPECT_FALSE(service_for_nav_->HandleNavigation(
-      CreateOpenUrlParams(GURL(kTestUrl), false), web_contents.get(),
-      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
-      blink::mojom::WindowFeatures()));
-
-  base::RunLoop run_loop;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, run_loop.QuitClosure());
-  run_loop.Run();
 }
 
 TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted_NotEligible) {
@@ -1503,7 +1423,7 @@ TEST_F(ContextualTasksUiServiceTest, SearchResultsNavigation_ViewedInTab) {
   GURL navigated_url(kSrpUrl);
   GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
 
-  ON_CALL(*aim_eligibility_service_, HasAimUrlParams(_))
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
       .WillByDefault(Return(false));
 
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
@@ -1536,7 +1456,7 @@ TEST_F(ContextualTasksUiServiceTest,
   GURL navigated_url(kSrpHomepage);
   GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
 
-  ON_CALL(*aim_eligibility_service_, HasAimUrlParams(_))
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
       .WillByDefault(Return(false));
 
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
@@ -1569,7 +1489,7 @@ TEST_F(ContextualTasksUiServiceTest, AllowedHostNavigation_ViewedInTab) {
   GURL navigated_url("https://google.com");
   GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
 
-  ON_CALL(*aim_eligibility_service_, HasAimUrlParams(_))
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
       .WillByDefault(Return(false));
 
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
@@ -1642,7 +1562,9 @@ TEST_F(ContextualTasksUiServiceTest, Navigation_ViewedInTab) {
   GURL navigated_url("https://example.com");
   GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
 
-  ON_CALL(*aim_eligibility_service_, HasAimUrlParams(_))
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(Return(false));
+  ON_CALL(*aim_eligibility_service_, IsAimHost(_, _))
       .WillByDefault(Return(false));
 
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
@@ -1679,7 +1601,7 @@ TEST_F(ContextualTasksUiServiceTest, Navigation_ViewedInSidePanel) {
   GURL navigated_url("https://example.com");
   GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
 
-  ON_CALL(*aim_eligibility_service_, HasAimUrlParams(_))
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
       .WillByDefault(Return(false));
 
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
@@ -1755,40 +1677,6 @@ TEST_F(ContextualTasksUiServiceTest, CaptchaNavigation_ViewedInSidePanel) {
       /*is_from_embedded_page=*/true,
       /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true, false,
       std::nullopt, std::nullopt, blink::mojom::WindowFeatures()));
-}
-
-// If the navigating to the Search Labs page, the navigation should be
-// intercepted but open in a new tab.
-TEST_F(ContextualTasksUiServiceTest,
-       LabsNavigation_Intercepted_NotViewedInSidePanel) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(kAimTriggeredThreadLinks);
-
-  GURL navigated_url(kLabsUrl);
-  GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
-
-  ON_CALL(*aim_eligibility_service_, HasAimUrlParams(_))
-      .WillByDefault(Return(false));
-
-  auto web_contents = content::WebContentsTester::CreateTestWebContents(
-      profile_.get(), content::SiteInstance::Create(profile_.get()));
-  content::WebContentsTester::For(web_contents.get())
-      ->SetLastCommittedURL(host_web_content_url);
-
-  base::RunLoop run_loop;
-  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _, _))
-      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
-  EXPECT_CALL(*service_for_nav_, OnSearchResultsNavigationInSidePanel(
-                                     OpenURLParamsHasUrl(navigated_url), _))
-      .Times(0);
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
-      .Times(0);
-  EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
-      CreateOpenUrlParams(navigated_url, true), web_contents.get(), nullptr,
-      /*is_from_embedded_page=*/true,
-      /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true, false,
-      std::nullopt, std::nullopt, blink::mojom::WindowFeatures()));
-  run_loop.Run();
 }
 
 TEST_F(ContextualTasksUiServiceTest, OnNavigationToAiPageIntercepted_SameTab) {
@@ -1974,6 +1862,10 @@ TEST_F(ContextualTasksUiServiceTest, SrpHomepage_Intercepted) {
   GURL navigated_url(kSrpHomepage);
   GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
 
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(Return(false));
+  ON_CALL(*aim_eligibility_service_, IsAimHost(_, _))
+      .WillByDefault(Return(true));
   ON_CALL(*aim_eligibility_service_, HasAimUrlParams(_))
       .WillByDefault(Return(false));
 
@@ -2053,7 +1945,7 @@ TEST_F(ContextualTasksUiServiceTest, SrpShoppingMode_InSidePanel_Intercepted) {
   GURL navigated_url(kSrpShopping);
   GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
 
-  ON_CALL(*aim_eligibility_service_, HasAimUrlParams(_))
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
       .WillByDefault(Return(false));
 
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
@@ -2329,7 +2221,7 @@ TEST_F(ContextualTasksUiServiceTest, SignOutNavigation_OpenedInTab) {
   GURL navigated_url(kSignOutUrl);
   GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
 
-  ON_CALL(*aim_eligibility_service_, HasAimUrlParams(_))
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
       .WillByDefault(Return(false));
 
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
@@ -2365,32 +2257,6 @@ TEST_F(ContextualTasksUiServiceTest, ForcedEmbeddedPageHostOverride) {
   // Clearing the override should return to the default state.
   contextual_tasks::SetForcedEmbeddedPageHostOverride("");
   EXPECT_EQ("", contextual_tasks::GetForcedEmbeddedPageHost());
-}
-
-TEST_F(ContextualTasksUiServiceTest, IsAllowedHost_WithOverride) {
-  // Without override, standard domains should be allowed.
-  EXPECT_TRUE(
-      ContextualTasksUiService::IsAllowedHost(GURL("https://google.com")));
-  EXPECT_TRUE(
-      ContextualTasksUiService::IsAllowedHost(GURL("https://www.google.com")));
-
-  // Set an override to a specific testing domain.
-  contextual_tasks::SetForcedEmbeddedPageHostOverride("test.c.googlers.com");
-
-  // The override domain should now be allowed.
-  EXPECT_TRUE(ContextualTasksUiService::IsAllowedHost(
-      GURL("https://test.c.googlers.com")));
-
-  // The standard domains should still be allowed.
-  EXPECT_TRUE(
-      ContextualTasksUiService::IsAllowedHost(GURL("https://google.com")));
-}
-
-TEST_F(ContextualTasksUiServiceTest, IsAllowedHost_LensDebugNotAllowed) {
-  EXPECT_FALSE(ContextualTasksUiService::IsAllowedHost(
-      GURL("https://lndb.corp.google.com")));
-  EXPECT_FALSE(ContextualTasksUiService::IsAllowedHost(
-      GURL("https://lndb-autopush.corp.google.com")));
 }
 
 TEST_F(ContextualTasksUiServiceTest, HandleNavigation_DisplayUrlRewritten) {
@@ -2440,6 +2306,9 @@ TEST_F(ContextualTasksUiServiceTest,
       ->CommitPendingNavigation();
   web_contents->GetController().GoForward();
 
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(Return(false));
+
   base::RunLoop run_loop;
   GURL navigated_url("https://example.com");
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(navigated_url, _, _, _, _))
@@ -2474,6 +2343,9 @@ TEST_F(ContextualTasksUiServiceTest,
       ->CommitPendingNavigation();
   web_contents->GetController().GoForward();
 
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(Return(false));
+
   GURL navigated_url("https://example.com");
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(
@@ -2498,6 +2370,9 @@ TEST_F(ContextualTasksUiServiceTest,
   content::WebContentsTester::For(web_contents.get())
       ->NavigateAndCommit(GURL("chrome://contextual-tasks"));
   web_contents->GetController().GoBack();
+
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(Return(false));
 
   GURL navigated_url("https://example.com");
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
@@ -3083,6 +2958,9 @@ TEST_F(ContextualTasksUiServiceTest, RegisterWindow_UpdatesTracker) {
   content::WebContentsTester::For(web_contents.get())
       ->SetLastCommittedURL(source_url);
 
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(Return(false));
+
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(),
       /*is_from_embedded_page=*/true, /*from_can_create_window=*/true,
@@ -3121,6 +2999,9 @@ TEST_F(ContextualTasksUiServiceTest, CloseTrackedWindow_ClosesTab) {
                                 task_id.value().AsLowercaseString());
   content::WebContentsTester::For(web_contents.get())
       ->SetLastCommittedURL(source_url);
+
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(Return(false));
 
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(),
@@ -3225,7 +3106,7 @@ TEST_F(ContextualTasksUiServiceTest, SearchResultsLink_HandledAsThreadLink) {
                                          /*is_full_page=*/false);
 
   // Ensure the inner contents is not detected as an aim page.
-  ON_CALL(*aim_eligibility_service_, HasAimUrlParams(_))
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
       .WillByDefault(Return(false));
 
   // Test that a navigation from an embedded page that is the SRP is still
@@ -3246,7 +3127,5 @@ TEST_F(ContextualTasksUiServiceTest, SearchResultsLink_HandledAsThreadLink) {
       blink::mojom::WindowFeatures()));
   run_loop.Run();
 }
-
-
 
 }  // namespace contextual_tasks
