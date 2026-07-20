@@ -251,16 +251,24 @@
   }
 }
 
-- (void)shutdown {
-  CHECK(!_isShutdown, base::NotFatalUntil::M152);
-  _isShutdown = YES;
-
+- (void)prepareForShutdown {
+  // Prevent null pointer dereference crashes if this method is called after
+  // `-shutdown` has already run and reset `_mainBrowser` and `_otrBrowser`.
+  if (_isShutdown) {
+    return;
+  }
   // Inform the command dispatchers of the shutdown. Should be in reverse
   // order of -init.
   Browser* inactiveBrowser = _mainBrowser->GetInactiveBrowser();
   [_otrBrowser->GetCommandDispatcher() prepareForShutdown];
   [inactiveBrowser->GetCommandDispatcher() prepareForShutdown];
   [_mainBrowser->GetCommandDispatcher() prepareForShutdown];
+}
+
+- (void)shutdown {
+  CHECK(!_isShutdown, base::NotFatalUntil::M152);
+  [self prepareForShutdown];
+  _isShutdown = YES;
 
   // At this stage, new BrowserCoordinators shouldn't be lazily constructed by
   // calling their property getters.
@@ -274,6 +282,7 @@
   [self cleanupBrowser:_otrBrowser.get()];
   _otrBrowser.reset();
 
+  Browser* inactiveBrowser = _mainBrowser->GetInactiveBrowser();
   [self cleanupBrowser:inactiveBrowser];
   [self cleanupBrowser:_mainBrowser.get()];
   _mainBrowser->DestroyInactiveBrowser();
