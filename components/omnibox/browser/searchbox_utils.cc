@@ -56,6 +56,23 @@ void ClassifyString(OmniboxClient* client,
 
 namespace searchbox {
 
+InteractionMetricsTracker::InteractionMetricsTracker() = default;
+
+InteractionMetricsTracker::~InteractionMetricsTracker() = default;
+
+void InteractionMetricsTracker::FocusChanged(bool focused) {
+  if (focused) {
+    last_omnibox_focus_ = base::TimeTicks::Now();
+    focus_resulted_in_navigation_ = false;
+  } else {
+    if (!last_omnibox_focus_.is_null()) {
+      base::UmaHistogramBoolean("Omnibox.FocusResultedInNavigation",
+                                focus_resulted_in_navigation_);
+    }
+    last_omnibox_focus_ = base::TimeTicks();
+  }
+}
+
 void OpenMatch(
     AutocompleteController* autocomplete_controller,
     OmniboxClient* client,
@@ -63,9 +80,7 @@ void OpenMatch(
     OmniboxPopupSelection selection,
     AutocompleteMatch match,
     WindowOpenDisposition disposition,
-    base::TimeTicks searchbox_focused_timestamp,
-    base::TimeTicks first_modification_timestamp,
-    base::TimeTicks match_selection_timestamp,
+    const InteractionMetricsTracker& metrics_tracker,
     OmniboxEventProto::KeywordModeEntryMethod keyword_mode_entry_method,
     const std::u16string& pasted_text) {
   const base::TimeTicks now = base::TimeTicks::Now();
@@ -76,7 +91,7 @@ void OpenMatch(
   OmniboxAction* action = nullptr;
   if (selection.state == OmniboxPopupSelection::NORMAL &&
       match.takeover_action) {
-    DCHECK_NE(match_selection_timestamp, base::TimeTicks());
+    DCHECK_NE(metrics_tracker.match_selection_timestamp(), base::TimeTicks());
     action = match.takeover_action.get();
   } else if (selection.IsAction()) {
     DCHECK_LT(selection.action_index, match.actions.size());
@@ -106,7 +121,7 @@ void OpenMatch(
   }
 
   base::TimeDelta elapsed_time_since_user_first_modified_omnibox =
-      now - first_modification_timestamp;
+      now - metrics_tracker.time_user_first_modified_omnibox();
   autocomplete_controller
       ->UpdateMatchDestinationURLWithAdditionalSearchboxStats(
           elapsed_time_since_user_first_modified_omnibox, &match);
@@ -144,9 +159,9 @@ void OpenMatch(
   }
   base::TimeDelta elapsed_time_since_user_focused_searchbox =
       default_time_delta;
-  if (!searchbox_focused_timestamp.is_null()) {
+  if (!metrics_tracker.last_omnibox_focus().is_null()) {
     elapsed_time_since_user_focused_searchbox =
-        now - searchbox_focused_timestamp;
+        now - metrics_tracker.last_omnibox_focus();
     // Only record focus to open time when a focus actually happened (as
     // opposed to, say, dragging a link onto the omnibox).
     omnibox::LogFocusToOpenTime(
@@ -276,13 +291,13 @@ void OpenMatch(
 
   if (action) {
     client->ExecuteAction(
-        action, disposition, match_selection_timestamp,
+        action, disposition, metrics_tracker.match_selection_timestamp(),
         *(autocomplete_controller->autocomplete_provider_client()));
     return;
   }
 
   RecordNonActionSearchMetrics(template_url_service, match, is_incognito,
-                               match_selection_timestamp);
+                               metrics_tracker.match_selection_timestamp());
 
   bookmarks::BookmarkModel* bookmark_model = client->GetBookmarkModel();
   if (bookmark_model && bookmark_model->IsBookmarked(destination_url)) {
@@ -307,7 +322,7 @@ void OpenMatch(
       destination_url, match.post_content.get(), disposition,
       ui::PageTransitionFromInt(match.transition |
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-      match.type, match_selection_timestamp,
+      match.type, metrics_tracker.match_selection_timestamp(),
       input.added_default_scheme_to_typed_url(),
       input.typed_url_had_http_scheme() &&
           match.type == AutocompleteMatchType::URL_WHAT_YOU_TYPED,
@@ -327,9 +342,7 @@ bool CanPasteAndGo(OmniboxClient* client, const std::u16string& text) {
 void PasteAndGo(AutocompleteController* autocomplete_controller,
                 OmniboxClient* client,
                 const std::u16string& text,
-                base::TimeTicks searchbox_focused_timestamp,
-                base::TimeTicks first_modification_timestamp,
-                base::TimeTicks match_selection_timestamp,
+                const InteractionMetricsTracker& metrics_tracker,
                 metrics::OmniboxEventProto::KeywordModeEntryMethod
                     keyword_mode_entry_method) {
   DCHECK(CanPasteAndGo(client, text));
@@ -353,8 +366,7 @@ void PasteAndGo(AutocompleteController* autocomplete_controller,
 
   OpenMatch(autocomplete_controller, client, input,
             OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch), match,
-            WindowOpenDisposition::CURRENT_TAB, searchbox_focused_timestamp,
-            first_modification_timestamp, match_selection_timestamp,
+            WindowOpenDisposition::CURRENT_TAB, metrics_tracker,
             keyword_mode_entry_method, text);
 }
 

@@ -1091,8 +1091,10 @@ void SearchboxHandler::OnContextualInputStatusChanged(
 }
 
 void SearchboxHandler::OnFocusChanged(bool focused) {
-  if (!base::FeatureList::IsEnabled(
+  if (base::FeatureList::IsEnabled(
           omnibox::kWebUISearchboxWithoutModelController)) {
+    metrics_tracker_.FocusChanged(focused);
+  } else {
     if (focused) {
       edit_model()->OnSetFocus(false);
     } else {
@@ -1135,6 +1137,10 @@ void SearchboxHandler::QueryAutocompleteWithSuggestInventory(
     // This will SetInputInProgress and consequently mark the input timer so
     // that Omnibox.TypingDuration will be logged correctly.
     edit_model()->SetUserText(input);
+  } else if (!is_on_focus &&
+             metrics_tracker_.time_user_first_modified_omnibox().is_null()) {
+    metrics_tracker_.set_time_user_first_modified_omnibox(
+        base::TimeTicks::Now());
   }
 
   // RealboxOmniboxClient::GetPageClassification() ignores the arguments.
@@ -1223,17 +1229,12 @@ void SearchboxHandler::OpenMatch(OmniboxPopupSelection selection,
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-  // TODO(crbug.com/530242107): Track timestamps of initial focus and
-  //  the user's first edit/modification.
-  const base::TimeTicks searchbox_focused_timestamp =
-      autocomplete_controller()->last_time_default_match_changed();
-  const base::TimeTicks first_modification_timestamp =
-      searchbox_focused_timestamp;
+  metrics_tracker_.set_match_selection_timestamp(match_selection_timestamp);
+  metrics_tracker_.set_focus_resulted_in_navigation(true);
   // TODO(crbug.com/530254690): Associate inputs and results for match.
   searchbox::OpenMatch(autocomplete_controller(), client(),
                        autocomplete_controller()->input(), selection, match,
-                       disposition, searchbox_focused_timestamp,
-                       first_modification_timestamp, match_selection_timestamp,
+                       disposition, metrics_tracker_,
                        metrics::OmniboxEventProto::INVALID, u"");
 }
 

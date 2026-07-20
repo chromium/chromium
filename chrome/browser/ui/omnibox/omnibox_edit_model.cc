@@ -173,8 +173,6 @@ void RecordAimEntrypointMetric(const std::string& name,
   }
 }
 
-const char kOmniboxFocusResultedInNavigation[] =
-    "Omnibox.FocusResultedInNavigation";
 
 void EmitEnteredKeywordModeHistogram(
     OmniboxEventProto::KeywordModeEntryMethod entry_method,
@@ -733,9 +731,9 @@ void OmniboxEditModel::PasteAndGo(const std::u16string& text,
     view_->RevertAll();
   }
 
+  metrics_tracker_.set_match_selection_timestamp(match_selection_timestamp);
   searchbox::PasteAndGo(autocomplete_controller(), controller_->client(), text,
-                        last_omnibox_focus_, time_user_first_modified_omnibox_,
-                        match_selection_timestamp);
+                        metrics_tracker_);
 }
 
 void OmniboxEditModel::EnterKeywordMode(
@@ -1109,8 +1107,7 @@ void OmniboxEditModel::ClearAdditionalText() {
 
 void OmniboxEditModel::OnSetFocus(bool control_down) {
   TRACE_EVENT0("omnibox", "OmniboxEditModel::OnSetFocus");
-  last_omnibox_focus_ = base::TimeTicks::Now();
-  focus_resulted_in_navigation_ = false;
+  metrics_tracker_.FocusChanged(true);
 
   // If the omnibox lost focus while the caret was hidden and then regained
   // focus, OnSetFocus() is called and should restore visibility. Note that
@@ -1197,10 +1194,8 @@ void OmniboxEditModel::OnWillKillFocus() {
 }
 
 void OmniboxEditModel::OnKillFocus() {
-  UMA_HISTOGRAM_BOOLEAN(kOmniboxFocusResultedInNavigation,
-                        focus_resulted_in_navigation_);
+  metrics_tracker_.FocusChanged(false);
   SetFocusState(OMNIBOX_FOCUS_NONE, OMNIBOX_FOCUS_CHANGE_EXPLICIT);
-  last_omnibox_focus_ = base::TimeTicks();
   paste_state_ = PasteState::kNone;
   control_key_state_ = ControlKeyState::kUp;
 #if BUILDFLAG(IS_WIN)
@@ -2668,7 +2663,7 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
               "pasted_text", pasted_text);
   const base::TimeTicks& now(base::TimeTicks::Now());
   base::TimeDelta elapsed_time_since_user_first_modified_omnibox(
-      now - time_user_first_modified_omnibox_);
+      now - metrics_tracker_.time_user_first_modified_omnibox());
   autocomplete_controller()
       ->UpdateMatchDestinationURLWithAdditionalSearchboxStats(
           elapsed_time_since_user_first_modified_omnibox, &match);
@@ -2676,7 +2671,7 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   GURL destination_url = action ? action->getUrl() : match.destination_url;
 
   // Save the result of the interaction, but do not record the histogram yet.
-  focus_resulted_in_navigation_ = true;
+  metrics_tracker_.set_focus_resulted_in_navigation(true);
 
   omnibox::RecordActionShownForAllActions(autocomplete_controller()->result(),
                                           selection);
@@ -2715,8 +2710,9 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   }
 
   base::TimeDelta elapsed_time_since_user_focused_omnibox = default_time_delta;
-  if (!last_omnibox_focus_.is_null()) {
-    elapsed_time_since_user_focused_omnibox = now - last_omnibox_focus_;
+  if (!metrics_tracker_.last_omnibox_focus().is_null()) {
+    elapsed_time_since_user_focused_omnibox =
+        now - metrics_tracker_.last_omnibox_focus();
     // Only record focus to open time when a focus actually happened (as
     // opposed to, say, dragging a link onto the omnibox).
     omnibox::LogFocusToOpenTime(
@@ -3058,7 +3054,8 @@ bool OmniboxEditModel::SetInputInProgressNoNotify(bool in_progress) {
 
   user_input_in_progress_ = in_progress;
   if (user_input_in_progress_) {
-    time_user_first_modified_omnibox_ = base::TimeTicks::Now();
+    metrics_tracker_.set_time_user_first_modified_omnibox(
+        base::TimeTicks::Now());
     base::RecordAction(base::UserMetricsAction("OmniboxInputInProgress"));
     autocomplete_controller()->ResetSession();
   }

@@ -24,6 +24,7 @@
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
+#include "components/omnibox/browser/searchbox_utils.h"
 #include "components/omnibox/common/input_state.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -264,6 +265,8 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   std::unique_ptr<OmniboxController> owned_controller_;
   std::unique_ptr<OmniboxClient> client_;
   std::unique_ptr<AutocompleteController> autocomplete_controller_;
+
+  searchbox::InteractionMetricsTracker metrics_tracker_;
 
   base::ScopedObservation<AutocompleteController,
                           AutocompleteController::Observer>
