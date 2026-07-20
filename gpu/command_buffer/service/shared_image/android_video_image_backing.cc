@@ -103,8 +103,9 @@ std::optional<VulkanYCbCrInfo> AndroidVideoImageBacking::GetYcbcrInfo(
   auto device = dawn_context_provider->GetDevice();
 
   wgpu::AHardwareBufferProperties ahb_properties;
-  if (!device.GetAHardwareBufferProperties(scoped_hardware_buffer->buffer(),
-                                           &ahb_properties)) {
+  if (device.GetAHardwareBufferProperties(scoped_hardware_buffer->buffer(),
+                                          &ahb_properties) !=
+      wgpu::Status::Success) {
     LOG(ERROR) << "Failed to get the ycbcr info.";
     return std::nullopt;
   }

@@ -7,6 +7,10 @@
 #include <dawn/native/VulkanBackend.h>
 #include <sync/sync.h>
 #include <vulkan/vulkan.h>
+// X11 Xlib.h defines Status as int and X.h defines Success as 0, both
+// conflicting with wgpu::Status::Success.
+#undef Status
+#undef Success
 
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -174,7 +178,8 @@ wgpu::Texture DawnOzoneImageRepresentation::BeginAccess(
   }
 
   texture_ = shared_texture_memory_.CreateTexture(&texture_descriptor);
-  if (!shared_texture_memory_.BeginAccess(texture_, &begin_access_desc)) {
+  if (shared_texture_memory_.BeginAccess(texture_, &begin_access_desc) !=
+      wgpu::Status::Success) {
     LOG(ERROR) << "Failed to begin access for shared image.";
     // End the access on the backing and restore its fence, as Dawn did not
     // consume it.
@@ -198,7 +203,8 @@ void DawnOzoneImageRepresentation::EndAccess() {
   wgpu::SharedTextureMemoryVkImageLayoutEndState end_layout{};
   end_access_desc.nextInChain = &end_layout;
 
-  if (!shared_texture_memory_.EndAccess(texture_, &end_access_desc)) {
+  if (shared_texture_memory_.EndAccess(texture_, &end_access_desc) !=
+      wgpu::Status::Success) {
     LOG(ERROR) << "Failed to end access for DawnOzoneImageRepresentation";
     texture_.Destroy();
     texture_ = nullptr;

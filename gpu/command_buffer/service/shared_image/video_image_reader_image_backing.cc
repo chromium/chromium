@@ -448,8 +448,9 @@ class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
 
     // Obtain the YCbCr info from the device.
     wgpu::AHardwareBufferProperties ahb_properties;
-    if (!device.GetAHardwareBufferProperties(scoped_hardware_buffer_->buffer(),
-                                             &ahb_properties)) {
+    if (device.GetAHardwareBufferProperties(scoped_hardware_buffer_->buffer(),
+                                            &ahb_properties) !=
+        wgpu::Status::Success) {
       LOG(ERROR) << "Failed to get the ycbcr info";
       EndReadAccess();
       return {};

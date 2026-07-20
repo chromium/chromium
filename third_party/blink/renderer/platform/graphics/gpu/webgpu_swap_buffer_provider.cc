@@ -55,7 +55,7 @@ WebGPUSwapBufferProvider::WebGPUSwapBufferProvider(
       surface_origin_(surface_origin) {
   wgpu::Limits limits = {};
   auto get_limits_succeeded = device_.GetLimits(&limits);
-  CHECK(get_limits_succeeded);
+  CHECK(get_limits_succeeded == wgpu::Status::Success);
 
   max_texture_size_ = limits.maxTextureDimension2D;
 }

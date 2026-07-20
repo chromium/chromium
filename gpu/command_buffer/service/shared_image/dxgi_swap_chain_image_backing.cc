@@ -405,7 +405,8 @@ wgpu::Texture DXGISwapChainImageBacking::BeginAccessDawn(
   }
 
   if (!cached_wgpu_texture_ ||
-      !shared_texture_memory_.BeginAccess(cached_wgpu_texture_, &desc)) {
+      (shared_texture_memory_.BeginAccess(cached_wgpu_texture_, &desc) !=
+       wgpu::Status::Success)) {
     LOG(ERROR) << "Failed to begin access and produce WGPUTexture";
     return nullptr;
   }
