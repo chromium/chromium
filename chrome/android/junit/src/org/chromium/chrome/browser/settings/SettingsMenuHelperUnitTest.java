@@ -16,7 +16,9 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -24,11 +26,13 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.settings.search.SettingsSearchCoordinator;
@@ -36,6 +40,7 @@ import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link SettingsMenuHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class SettingsMenuHelperUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -44,6 +49,7 @@ public class SettingsMenuHelperUnitTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock private SettingsMenuHelper.Delegate mDelegate;
+    @Mock private Toolbar mToolbar;
     @Mock private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
 
     private Activity mActivity;
@@ -168,5 +174,42 @@ public class SettingsMenuHelperUnitTest {
         when(item.getItemId()).thenReturn(12345);
 
         assertFalse(SettingsMenuHelper.onOptionsItemSelected(item, mActivity, mDelegate));
+    }
+
+    @Test
+    public void testUpdateNavigationIcon_ShowMultiColumn() {
+        Activity activity = mock(Activity.class);
+
+        SettingsMenuHelper.updateNavigationIcon(
+                mToolbar, activity, /* show= */ true, /* isMultiColumn= */ true);
+
+        verify(mToolbar).setNavigationIcon(R.mipmap.app_icon);
+        verify(mToolbar).setNavigationOnClickListener(null);
+    }
+
+    @Test
+    public void testUpdateNavigationIcon_ShowSingleColumn() {
+        Activity activity = mock(Activity.class);
+
+        SettingsMenuHelper.updateNavigationIcon(
+                mToolbar, activity, /* show= */ true, /* isMultiColumn= */ false);
+
+        verify(mToolbar).setNavigationIcon(R.drawable.ic_arrow_back_24dp);
+        ArgumentCaptor<View.OnClickListener> listenerCaptor =
+                ArgumentCaptor.forClass(View.OnClickListener.class);
+        verify(mToolbar).setNavigationOnClickListener(listenerCaptor.capture());
+
+        listenerCaptor.getValue().onClick(null);
+        verify(activity).onBackPressed();
+    }
+
+    @Test
+    public void testUpdateNavigationIcon_Hide() {
+        Activity activity = mock(Activity.class);
+
+        SettingsMenuHelper.updateNavigationIcon(
+                mToolbar, activity, /* show= */ false, /* isMultiColumn= */ false);
+
+        verify(mToolbar).setNavigationIcon(null);
     }
 }

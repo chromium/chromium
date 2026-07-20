@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -131,6 +132,8 @@ public class SettingsPageFragmentDelegateImplTest {
         when(mActivity.getTheme()).thenReturn(context.getTheme());
         when(mActivity.getDrawable(anyInt()))
                 .thenAnswer(invocation -> context.getDrawable(invocation.getArgument(0)));
+        when(mActivity.getString(anyInt()))
+                .thenAnswer(invocation -> context.getString(invocation.getArgument(0)));
 
         SettingsContainmentHelper mockContainmentHelper = mock(SettingsContainmentHelper.class);
         when(mMockSettingsHostFragment.getContainmentHelper()).thenReturn(mockContainmentHelper);
@@ -491,5 +494,60 @@ public class SettingsPageFragmentDelegateImplTest {
         verify(mFragmentManager, atLeastOnce())
                 .unregisterFragmentLifecycleCallbacks(
                         any(FragmentManager.FragmentLifecycleCallbacks.class));
+    }
+
+    @Test
+    public void testOnHeaderLayoutUpdated_updatesNavigationIcon() {
+        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG))
+                .thenReturn(mMockSettingsHostFragment);
+        mDelegate.initSettings(mContainerView);
+
+        Toolbar toolbar = mInflatedSettingsView.findViewById(R.id.action_bar);
+        assertNotNull(toolbar);
+
+        when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
+        when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(mMultiColumnSettings);
+
+        // Single-column mode -> back button navigation icon and description.
+        when(mMultiColumnSettings.isTwoColumn()).thenReturn(false);
+        mDelegate.onHeaderLayoutUpdated();
+        assertEquals(
+                ApplicationProvider.getApplicationContext().getString(R.string.back),
+                toolbar.getNavigationContentDescription());
+
+        // Two-column mode -> app icon navigation icon and description.
+        when(mMultiColumnSettings.isTwoColumn()).thenReturn(true);
+        mDelegate.onHeaderLayoutUpdated();
+        assertEquals(
+                ApplicationProvider.getApplicationContext().getString(R.string.app_name),
+                toolbar.getNavigationContentDescription());
+    }
+
+    @Test
+    public void testInitSettings_registersSelfAsMultiColumnSettingsObserver() {
+        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG))
+                .thenReturn(mMockSettingsHostFragment);
+        mDelegate.initSettings(mContainerView);
+
+        ArgumentCaptor<FragmentManager.FragmentLifecycleCallbacks> callbackCaptor =
+                ArgumentCaptor.forClass(FragmentManager.FragmentLifecycleCallbacks.class);
+        verify(mFragmentManager, atLeastOnce())
+                .registerFragmentLifecycleCallbacks(callbackCaptor.capture(), eq(true));
+
+        when(mFragmentView.findViewById(R.id.settings_title_in_detailed_pane))
+                .thenReturn(mTitleContainer);
+
+        for (FragmentManager.FragmentLifecycleCallbacks callback : callbackCaptor.getAllValues()) {
+            callback.onFragmentViewCreated(
+                    mFragmentManager, mMultiColumnSettings, mFragmentView, null);
+        }
+
+        verify(mMultiColumnSettings).addObserver(mDelegate);
+
+        when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
+        when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(mMultiColumnSettings);
+
+        mDelegate.destroySettings();
+        verify(mMultiColumnSettings).removeObserver(mDelegate);
     }
 }
