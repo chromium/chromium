@@ -96,7 +96,6 @@ android_library("javatests") {
   sources = [
     "javatests/src/org/chromium/chrome/browser/commerce/CommerceBottomSheetContentRenderTest.java",
     "javatests/src/org/chromium/chrome/browser/commerce/PriceNotificationSettingsFragmentTest.java",
-    "javatests/src/org/chromium/chrome/browser/commerce/PriceUtilsTest.java",
   ]
 
   deps = [
@@ -131,6 +130,21 @@ android_library("javatests") {
     "//ui/android:ui_java_test_support",
     "//ui/android:ui_no_recycler_view_java",
     "//ui/android:ui_recycler_view_java",
+  ]
+}
+
+android_library("unit_device_javatests") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.commerce"
+  sources = [
+    "javatests/src/org/chromium/chrome/browser/commerce/PriceUtilsTest.java",
+  ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
   ]
 }
 
