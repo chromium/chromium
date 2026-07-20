@@ -472,10 +472,6 @@ mojom("media_types") {
           cpp = "::media::AudioDecoderType"
         },
         {
-          mojom = "media.mojom.EncryptionScheme"
-          cpp = "::media::EncryptionScheme"
-        },
-        {
           mojom = "media.mojom.FullscreenVideoStatus"
           cpp = "::blink::WebFullscreenVideoStatus"
         },
@@ -540,6 +536,10 @@ mojom("media_types") {
         {
           mojom = "media.mojom.ChannelLayout"
           cpp = "::media::ChannelLayout"
+        },
+        {
+          mojom = "media.mojom.EncryptionScheme"
+          cpp = "::media::EncryptionScheme"
         },
       ]
       traits_headers = [ "media_types_enum_mojom_traits.h" ]

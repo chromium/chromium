@@ -11,6 +11,7 @@
 #include "media/base/cdm_factory.h"
 #include "media/base/channel_layout.h"
 #include "media/base/demuxer.h"
+#include "media/base/encryption_scheme.h"
 #include "media/base/renderer_factory_selector.h"
 #include "media/base/svc_scalability_mode.h"
 #include "media/base/video_transformation.h"
@@ -96,6 +97,37 @@ struct EnumTraits<media::mojom::CdmSessionClosedReason,
         return ::media::CdmSessionClosedReason::kHardwareContextReset;
       case media::mojom::CdmSessionClosedReason::kResourceEvicted:
         return ::media::CdmSessionClosedReason::kResourceEvicted;
+    }
+
+    NOTREACHED();
+  }
+};
+
+template <>
+struct EnumTraits<media::mojom::EncryptionScheme, ::media::EncryptionScheme> {
+  static media::mojom::EncryptionScheme ToMojom(
+      ::media::EncryptionScheme input) {
+    switch (input) {
+      case ::media::EncryptionScheme::kUnencrypted:
+        return media::mojom::EncryptionScheme::kUnencrypted;
+      case ::media::EncryptionScheme::kCenc:
+        return media::mojom::EncryptionScheme::kCenc;
+      case ::media::EncryptionScheme::kCbcs:
+        return media::mojom::EncryptionScheme::kCbcs;
+    }
+
+    NOTREACHED();
+  }
+
+  static ::media::EncryptionScheme FromMojom(
+      media::mojom::EncryptionScheme input) {
+    switch (input) {
+      case media::mojom::EncryptionScheme::kUnencrypted:
+        return ::media::EncryptionScheme::kUnencrypted;
+      case media::mojom::EncryptionScheme::kCenc:
+        return ::media::EncryptionScheme::kCenc;
+      case media::mojom::EncryptionScheme::kCbcs:
+        return ::media::EncryptionScheme::kCbcs;
     }
 
     NOTREACHED();
