@@ -1387,6 +1387,11 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
         base::UmaHistogramExactLinear(
             "ContextualSearch.ContextAdded.ContextAddedMethod.Omnibox",
             /*ContextMenu*/ 0, 4);
+        if (base::FeatureList::IsEnabled(
+                omnibox::kContextManagementInComposebox)) {
+          base::UmaHistogramBoolean(
+              "ContextualSearch.AddTabsFlyout.TabSelected.Omnibox", true);
+        }
         AddTabContext(tab_info);
       }
     }
