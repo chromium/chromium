@@ -9,6 +9,12 @@
 namespace relaunch_notification {
 
 base::TimeDelta ComputeDeadlineDelta(base::TimeDelta deadline_offset) {
+  // If the deadline is in the past or right now, clamp it to a zero delta so
+  // the dialog doesn't display negative time remaining.
+  if (deadline_offset <= base::TimeDelta()) {
+    return base::TimeDelta();
+  }
+
   // Round deadline_offset to the nearest second for the computations below.
   deadline_offset = base::Seconds(std::round(deadline_offset.InSecondsF()));
 

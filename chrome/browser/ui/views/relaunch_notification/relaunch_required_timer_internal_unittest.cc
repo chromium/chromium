@@ -56,6 +56,11 @@ TEST(RelaunchRequiredTimerTest, ComputeDeadlineDelta) {
   EXPECT_EQ(
       relaunch_notification::ComputeDeadlineDelta(base::Milliseconds(250)),
       base::TimeDelta());
+  // Deadline passed (negative offset): zero.
+  EXPECT_EQ(relaunch_notification::ComputeDeadlineDelta(base::Seconds(-5)),
+            base::TimeDelta());
+  EXPECT_EQ(relaunch_notification::ComputeDeadlineDelta(base::Hours(-1)),
+            base::TimeDelta());
 }
 
 TEST(RelaunchRequiredTimerTest, ComputeNextRefreshDelta) {
