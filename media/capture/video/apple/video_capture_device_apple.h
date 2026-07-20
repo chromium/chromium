@@ -114,6 +114,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceApple
 
   VideoFrameMetadata GetVideoFrameMetadata();
 
+  void OnPhotoResultOnMainThread(mojom::BlobPtr blob);
+
   // Flag indicating the internal state.
   enum InternalState { kNotInitialized, kIdle, kCapturing, kError };
 
