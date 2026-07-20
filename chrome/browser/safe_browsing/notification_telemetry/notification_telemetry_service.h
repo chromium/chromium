@@ -29,16 +29,7 @@ struct ServiceWorkerRegistrationInformation;
 
 }  // namespace content
 
-namespace network {
 
-class SharedURLLoaderFactory;
-class SimpleURLLoader;
-
-}  // namespace network
-
-namespace net {
-class HttpResponseHeaders;
-}
 
 namespace safe_browsing {
 
@@ -69,7 +60,6 @@ class NotificationTelemetryService
 
   explicit NotificationTelemetryService(
       Profile* profile,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
       scoped_refptr<SafeBrowsingUIManager> ui_manager);
   explicit NotificationTelemetryService(const NotificationTelemetryService&) =
@@ -123,15 +113,9 @@ class NotificationTelemetryService
       ServiceWorkerTelemetryInfo service_worker_info,
       bool allowlisted);
 
-  // Used for logging after an upload.
-  void UploadComplete(scoped_refptr<net::HttpResponseHeaders> headers);
-
   // Check if a notifications service worker ID matches any of the stored
   // service worker origins.
   void OnNewNotificationServiceWorkerSubscription(int64_t registration_id);
-
-  // Returns the URL to which telemetry reports are to be sent.
-  static GURL GetTelemetryReportUrl();
 
   // Normalizes URLs by stripping any query param values. Since query param
   // values aren't important aspects of the URL, removing them reduces noise
@@ -142,15 +126,10 @@ class NotificationTelemetryService
   // `kNotificationTelemetryServiceWorkerInfoMaxCount`
   std::vector<ServiceWorkerTelemetryInfo> service_worker_infos_;
 
-  // Accessor for an URLLoaderFactory with which reports will be sent.
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-
   // TODO(crbug.com/433543634): Remove `database_manager_` post
   // GlobalCacheListForGatingNotificationProtections launch.
   // Used to preform the Safe Browsing allowlist lookup.
   scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;
-
-  std::unique_ptr<network::SimpleURLLoader> url_loader_;
 
   // Responsible for sending the CSBRRs.
   scoped_refptr<SafeBrowsingUIManager> ui_manager_;

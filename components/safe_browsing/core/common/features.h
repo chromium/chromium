@@ -388,10 +388,6 @@ BASE_DECLARE_FEATURE(kNoticeQueueForEsb);
 // notifications.
 BASE_DECLARE_FEATURE(kNotificationTelemetry);
 
-// Enable the collection of ServiceWorkerBehaviors via the
-// NotificationTelemetryService.
-BASE_DECLARE_FEATURE(kNotificationTelemetrySwb);
-
 // Enables proactive password protection, which triggers a CSD scan when
 // focusing on a password field.
 BASE_DECLARE_FEATURE(kProactivePasswordProtection);

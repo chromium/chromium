@@ -29,9 +29,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/service_worker_test_helpers.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -104,9 +101,6 @@ class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
 };
 }  // namespace
 
-const char kSbIncidentReportUrl[] =
-    "https://sb-ssl.google.com/safebrowsing/clientreport/incident";
-
 class NotificationTelemetryServiceTest : public ::testing::TestWithParam<bool> {
  public:
   NotificationTelemetryServiceTest() = default;
@@ -115,8 +109,7 @@ class NotificationTelemetryServiceTest : public ::testing::TestWithParam<bool> {
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{kNotificationTelemetry,
-                              kNotificationTelemetrySwb},
+        /*enabled_features=*/{kNotificationTelemetry},
         /*disabled_features=*/{});
     profile_.GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
     // TODO(crbug.com/433543634): Cleanup the use of `database_manager_` post
@@ -124,17 +117,15 @@ class NotificationTelemetryServiceTest : public ::testing::TestWithParam<bool> {
     ui_manager_ = new MockSafeBrowsingUIManager();
     if (IsGlobalCacheListFeatureEnabled()) {
       notification_telemetry_service_ =
-          std::make_unique<NotificationTelemetryService>(
-              &profile_, test_url_loader_factory_.GetSafeWeakWrapper(), nullptr,
-              ui_manager_);
+          std::make_unique<NotificationTelemetryService>(&profile_, nullptr,
+                                                         ui_manager_);
 
     } else {
       database_manager_ = new MockSafeBrowsingDatabaseManager();
       // Create service.
       notification_telemetry_service_ =
           std::make_unique<NotificationTelemetryService>(
-              &profile_, test_url_loader_factory_.GetSafeWeakWrapper(),
-              database_manager_, ui_manager_);
+              &profile_, database_manager_, ui_manager_);
     }
   }
 
@@ -163,9 +154,7 @@ class NotificationTelemetryServiceTest : public ::testing::TestWithParam<bool> {
   NotificationTelemetryService* notification_telemetry_service() {
     return notification_telemetry_service_.get();
   }
-  network::TestURLLoaderFactory& test_url_loader_factory() {
-    return test_url_loader_factory_;
-  }
+
   content::BrowserTaskEnvironment& task_environment() {
     return task_environment_;
   }
@@ -174,7 +163,7 @@ class NotificationTelemetryServiceTest : public ::testing::TestWithParam<bool> {
 
  private:
   std::unique_ptr<NotificationTelemetryService> notification_telemetry_service_;
-  network::TestURLLoaderFactory test_url_loader_factory_;
+
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfile profile_;
@@ -233,24 +222,20 @@ TEST_P(NotificationTelemetryServiceTest, SendsTelemetryReport) {
       /*sample=*/false,
       /*expected_bucket_count=*/1);
 
-  test_url_loader_factory().AddResponse(kSbIncidentReportUrl, "", net::HTTP_OK);
+  // Expect only registration_id_1 to send report.
+  CSBRR::ServiceWorkerBehavior expected_behavior =
+      MakeServiceWorkerRegistrationBehavior(scope,
+                                            std::vector<GURL>{import_URL});
+  auto expected_report = MakeCSBRR({expected_behavior});
+  EXPECT_CALL(*ui_manager(),
+              SendThreatDetails(_, Pointee(EqualsProto(expected_report))));
+
   notification_telemetry_service()->OnNewNotificationServiceWorkerSubscription(
       registration_id_1);
   notification_telemetry_service()->OnNewNotificationServiceWorkerSubscription(
       registration_id_2);
   notification_telemetry_service()->OnNewNotificationServiceWorkerSubscription(
       registration_id_3);
-
-  // One pending as scope1 and scope3 SWs did not generate report data.
-  EXPECT_EQ(1, test_url_loader_factory().NumPending());
-  test_url_loader_factory().SimulateResponseForPendingRequest(
-      kSbIncidentReportUrl, "", net::HTTP_OK,
-      network::TestURLLoaderFactory::kUrlMatchPrefix);
-  // One report generated.
-  histogram_tester().ExpectUniqueSample(
-      /*name=*/"SafeBrowsing.NotificationTelemetry.NetworkResult",
-      /*sample=*/net::HTTP_OK,
-      /*expected_bucket_count=*/1);
 }
 
 TEST_P(NotificationTelemetryServiceTest, EnforcesServiceWorkerInfoCacheSize) {
@@ -286,9 +271,9 @@ TEST_P(NotificationTelemetryServiceTest, EnforcesServiceWorkerInfoCacheSize) {
   // Try to trigger an upload of the first SW worker. Since the service worker
   // info cache no longer contains a corresponding entry, there should be no
   // match and hence no upload of a report will be attempted.
+  EXPECT_CALL(*ui_manager(), SendThreatDetails(_, _)).Times(0);
   notification_telemetry_service()->OnNewNotificationServiceWorkerSubscription(
       registration_id_1);
-  EXPECT_EQ(0, test_url_loader_factory().NumPending());
 }
 
 TEST_P(NotificationTelemetryServiceTest,
