@@ -10,6 +10,7 @@
 #import "url/gurl.h"
 
 @class CommandDispatcher;
+@protocol BrowserProvider;
 class ProfileIOS;
 
 // Test double for SceneState, created with appropriate interface objects backed
@@ -42,6 +43,13 @@ class ProfileIOS;
 // This is redeclared relative to FakeScene.window, except this is now readwrite
 // and backed by an instance variable.
 @property(nonatomic, strong, readwrite) UIWindow* window;
+
+// Updates the current BrowserProvider. Must be either -mainBrowserProvider
+// or -incognitoBrowserProvider from -browserProviderInterface.
+- (void)setCurrentBrowserProvider:(id<BrowserProvider>)browserProvider;
+
+// Destroys and recreates the off-the-record Profile and Browser.
+- (void)destroyAndRecreateOffTheRecordProfile;
 
 // Appends a suitable web state test double to the receiver's main interface.
 - (void)appendWebStateWithURL:(const GURL&)URL;

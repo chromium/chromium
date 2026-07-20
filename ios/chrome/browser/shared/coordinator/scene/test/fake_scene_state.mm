@@ -6,6 +6,7 @@
 
 #import <utility>
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider_interface.h"
@@ -79,6 +80,32 @@
 
 - (void)dealloc {
   CHECK(_shutdown) << "-shutdown must be called before -dealloc";
+}
+
+- (void)setCurrentBrowserProvider:(id<BrowserProvider>)browserProvider {
+  CHECK(browserProvider == _browserProviderInterface.mainBrowserProvider ||
+        browserProvider == _browserProviderInterface.incognitoBrowserProvider);
+
+  _browserProviderInterface.currentBrowserProvider =
+      base::apple::ObjCCastStrict<StubBrowserProvider>(browserProvider);
+}
+
+- (void)destroyAndRecreateOffTheRecordProfile {
+  _browserProviderInterface.incognitoBrowserProvider.browser = nullptr;
+
+  ProfileIOS* profile = _browser->GetProfile();
+
+  // Destroy the incognito Browser and Profile.
+  _incognito_browser.reset();
+  profile->DestroyOffTheRecordProfile();
+
+  // Recreate the incognito Browser and Profile (implicitly created when
+  // accessed from the Profile after its destruction).
+  _incognito_browser =
+      std::make_unique<TestBrowser>(profile->GetOffTheRecordProfile(), self);
+
+  _browserProviderInterface.incognitoBrowserProvider.browser =
+      _incognito_browser.get();
 }
 
 - (void)appendWebStateWithURL:(const GURL&)URL {
