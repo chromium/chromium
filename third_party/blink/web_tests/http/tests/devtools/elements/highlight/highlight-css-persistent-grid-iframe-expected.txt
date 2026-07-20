@@ -211,21 +211,6 @@ This test verifies that persistent grid in iframe are positioned correctly.
         }
       ],
       "areaNames": {
-        "sidebar": [
-          "M",
-          98,
-          353,
-          "L",
-          218,
-          353,
-          "L",
-          218,
-          598,
-          "L",
-          98,
-          598,
-          "Z"
-        ],
         "content": [
           "M",
           228,
@@ -255,24 +240,24 @@ This test verifies that persistent grid in iframe are positioned correctly.
           228,
           343,
           "Z"
+        ],
+        "sidebar": [
+          "M",
+          98,
+          353,
+          "L",
+          218,
+          353,
+          "L",
+          218,
+          598,
+          "L",
+          98,
+          598,
+          "Z"
         ]
       },
       "rowLineNameOffsets": [
-        {
-          "x": 98,
-          "y": 98,
-          "name": "header-start"
-        },
-        {
-          "x": 98,
-          "y": 598,
-          "name": "sidebar-end"
-        },
-        {
-          "x": 98,
-          "y": 348,
-          "name": "header-end"
-        },
         {
           "x": 98,
           "y": 598,
@@ -282,6 +267,21 @@ This test verifies that persistent grid in iframe are positioned correctly.
           "x": 98,
           "y": 348,
           "name": "content-start"
+        },
+        {
+          "x": 98,
+          "y": 348,
+          "name": "header-end"
+        },
+        {
+          "x": 98,
+          "y": 98,
+          "name": "header-start"
+        },
+        {
+          "x": 98,
+          "y": 598,
+          "name": "sidebar-end"
         },
         {
           "x": 98,
@@ -291,21 +291,6 @@ This test verifies that persistent grid in iframe are positioned correctly.
       ],
       "columnLineNameOffsets": [
         {
-          "x": 223,
-          "y": 98,
-          "name": "header-start"
-        },
-        {
-          "x": 223,
-          "y": 98,
-          "name": "sidebar-end"
-        },
-        {
-          "x": 478,
-          "y": 98,
-          "name": "header-end"
-        },
-        {
           "x": 478,
           "y": 98,
           "name": "content-end"
@@ -314,6 +299,21 @@ This test verifies that persistent grid in iframe are positioned correctly.
           "x": 223,
           "y": 98,
           "name": "content-start"
+        },
+        {
+          "x": 478,
+          "y": 98,
+          "name": "header-end"
+        },
+        {
+          "x": 223,
+          "y": 98,
+          "name": "header-start"
+        },
+        {
+          "x": 223,
+          "y": 98,
+          "name": "sidebar-end"
         },
         {
           "x": 98,

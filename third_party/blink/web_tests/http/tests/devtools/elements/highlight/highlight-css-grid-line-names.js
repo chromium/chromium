@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {TestRunner} from 'test_runner';
-import {ElementsTestRunner} from 'elements_test_runner';
+import {dumpStableInspectorHighlightJSON} from './resources/highlight-test-helper.js';
 
 (async function() {
   TestRunner.addResult(`This test verifies the names and positions of named grid lines are generated correctly.\n`);
@@ -29,5 +29,6 @@ import {ElementsTestRunner} from 'elements_test_runner';
     <p id="description">This test verifies the names and positions of named grid lines are generated correctly.</p>
   `);
 
-  ElementsTestRunner.dumpInspectorHighlightJSON('grid-with-line-names', () => TestRunner.completeTest());
+  await dumpStableInspectorHighlightJSON('grid-with-line-names');
+  TestRunner.completeTest();
 })();

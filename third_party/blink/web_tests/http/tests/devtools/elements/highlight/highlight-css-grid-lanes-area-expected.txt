@@ -224,21 +224,6 @@ grid-lanes-with-areas{
         }
       ],
       "areaNames": {
-        "sidebar": [
-          "M",
-          208,
-          8,
-          "L",
-          303,
-          8,
-          "L",
-          303,
-          608,
-          "L",
-          208,
-          608,
-          "Z"
-        ],
         "header": [
           "M",
           8,
@@ -268,13 +253,33 @@ grid-lanes-with-areas{
           313,
           608,
           "Z"
+        ],
+        "sidebar": [
+          "M",
+          208,
+          8,
+          "L",
+          303,
+          8,
+          "L",
+          303,
+          608,
+          "L",
+          208,
+          608,
+          "Z"
         ]
       },
       "columnLineNameOffsets": [
         {
-          "x": 308,
+          "x": 203,
           "y": 8,
-          "name": "sidebar-end"
+          "name": "header-end"
+        },
+        {
+          "x": 8,
+          "y": 8,
+          "name": "header-start"
         },
         {
           "x": 408,
@@ -282,19 +287,14 @@ grid-lanes-with-areas{
           "name": "main-end"
         },
         {
-          "x": 203,
-          "y": 8,
-          "name": "header-end"
-        },
-        {
           "x": 308,
           "y": 8,
           "name": "main-start"
         },
         {
-          "x": 8,
+          "x": 308,
           "y": 8,
-          "name": "header-start"
+          "name": "sidebar-end"
         },
         {
           "x": 203,

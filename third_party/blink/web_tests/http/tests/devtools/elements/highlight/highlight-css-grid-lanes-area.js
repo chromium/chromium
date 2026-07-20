@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {TestRunner} from 'test_runner';
-import {ElementsTestRunner} from 'elements_test_runner';
+import {dumpStableInspectorHighlightJSON} from './resources/highlight-test-helper.js';
 
 (async function() {
     TestRunner.addResult(`This test verifies the names, positions and sizes of the highlight rectangles overlayed on CSS Grid Lanes areas.\n`);
@@ -37,11 +37,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
         <p id="description">This test verifies the names, positions and sizes of the highlight rectangles overlayed on CSS Grid Lanes areas.</p>
       `);
 
-    function dumpGridLanesHighlight(id) {
-      return new Promise(resolve => ElementsTestRunner.dumpInspectorHighlightJSON(id, resolve));
-    }
-
-    await dumpGridLanesHighlight('grid-lanes-with-areas');
+    await dumpStableInspectorHighlightJSON('grid-lanes-with-areas');
 
     TestRunner.completeTest();
   })();

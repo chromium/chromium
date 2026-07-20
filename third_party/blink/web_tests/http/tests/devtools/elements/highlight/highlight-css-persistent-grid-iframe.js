@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {TestRunner} from 'test_runner';
-import {ElementsTestRunner} from 'elements_test_runner';
+import {dumpStableInspectorGridHighlightsJSON} from './resources/highlight-test-helper.js';
 
 (async function() {
   TestRunner.addResult(`This test verifies that persistent grid in iframe are positioned correctly.\n`);
@@ -13,9 +13,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
     <iframe style="margin: 5em; width: 600px; height: 600px;" srcdoc="<style>div{width:500px;height:500px;display: grid;grid-gap: 10px;grid-template-columns: 120px  120px  120px;grid-template-areas:'....... header  header' 'sidebar content content'; background-color: #fff; color: #444;grid-template-rows:1fr 1fr;</style><div id='grid'>"></iframe>
   `);
 
-  await new Promise(resolve => {
-    ElementsTestRunner.dumpInspectorGridHighlightsJSON(['grid'], resolve);
-  });
+  await dumpStableInspectorGridHighlightsJSON(['grid']);
 
   TestRunner.completeTest();
 })();
