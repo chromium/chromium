@@ -335,12 +335,11 @@ bool IsAccessibilityInlineLineSeparatorsEnabled() {
       ::features::kAccessibilityInlineLineSeparators);
 }
 
-BASE_FEATURE(kAccessibilityMagnificationFollowsFocus,
+BASE_FEATURE(kAccessibilityMagnificationFollowsFocusKeyboardAttached,
              base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsAccessibilityMagnificationFollowsFocusEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kAccessibilityMagnificationFollowsFocus);
-}
+
+BASE_FEATURE(kAccessibilityMagnificationFollowsFocusNoKeyboard,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAccessibilityAndroidMath, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsAccessibilityAndroidMathEnabled() {

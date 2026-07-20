@@ -133,11 +133,21 @@ public class ContentFeatureList {
             sAccessibilityDeprecateJavaNodeCacheDisableCache =
                     sAccessibilityDeprecateJavaNodeCache.newBooleanParam("disable_cache", false);
 
-    public static final MutableFlagWithSafeDefault sAccessibilityMagnificationFollowsFocus =
-            new MutableFlagWithSafeDefault(
-                    ContentFeatureMap.getInstance(),
-                    AccessibilityFeatures.ACCESSIBILITY_MAGNIFICATION_FOLLOWS_FOCUS,
-                    true);
+    public static final MutableFlagWithSafeDefault
+            sAccessibilityMagnificationFollowsFocusKeyboardAttached =
+                    new MutableFlagWithSafeDefault(
+                            ContentFeatureMap.getInstance(),
+                            AccessibilityFeatures
+                                    .ACCESSIBILITY_MAGNIFICATION_FOLLOWS_FOCUS_KEYBOARD_ATTACHED,
+                            true);
+
+    public static final MutableFlagWithSafeDefault
+            sAccessibilityMagnificationFollowsFocusNoKeyboard =
+                    new MutableFlagWithSafeDefault(
+                            ContentFeatureMap.getInstance(),
+                            AccessibilityFeatures
+                                    .ACCESSIBILITY_MAGNIFICATION_FOLLOWS_FOCUS_NO_KEYBOARD,
+                            false);
 
     public static final MutableFlagWithSafeDefault sAccessibilityRequestScopedContentChangedEvents =
             new MutableFlagWithSafeDefault(

@@ -264,9 +264,15 @@ AX_BASE_EXPORT bool IsAccessibilityInlineLineSeparatorsEnabled();
 // Propagate bounding rectangles of cursor moves and input focus changes to the
 // Android platform to allow Magnification to follow them. For compatibility
 // with older behaviour, Android SDK levels before Baklava 36.1 will only be
-// notified on cursor moves.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityMagnificationFollowsFocus);
-AX_BASE_EXPORT bool IsAccessibilityMagnificationFollowsFocusEnabled();
+// notified on cursor moves. Feature controls behavior for when a keyboard is
+// attached.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(
+    kAccessibilityMagnificationFollowsFocusKeyboardAttached);
+
+// Similar to kAccessibilityMagnificationFollowsFocusKeyboardAttached but
+// controls behavior when no keyboard is attached.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(
+    kAccessibilityMagnificationFollowsFocusNoKeyboard);
 
 // Enables MathML support for Android.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityAndroidMath);
