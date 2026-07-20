@@ -18,7 +18,6 @@
 #include "base/logging.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/scoped_variant.h"
@@ -657,14 +656,21 @@ HRESULT TSFTextStore::RequestLock(DWORD lock_flags, HRESULT* result) {
   if (features::IsHandleIMESpanChangesOnUpdateCompositionEnabled()) {
     on_update_composition_called_ = false;
   }
-  // Save the buffer state before the lock for autocorrect detection.
+  // Whether autocorrect should be suppressed for the focused element, i.e. the
+  // feature is enabled and the element carries the autocorrect="off" attribute.
   const bool should_block_autocorrect =
       features::IsTSFHonorAutocorrectOffEnabled() &&
       (text_input_client_->GetTextInputFlags() &
        TEXT_INPUT_FLAG_AUTOCORRECT_OFF) != 0;
   const bool had_composition_at_lock_start = has_composition_range_;
+  // Save the buffer state before the lock for autocorrect detection.
   const std::u16string pre_lock_buffer =
       should_block_autocorrect ? string_buffer_document_ : std::u16string();
+  // The user's selection before the lock. Used to distinguish a touch-keyboard
+  // autocorrect (which replaces a word the user did not select) from an
+  // explicit selection replacement (where the replaced range matches what the
+  // user selected).
+  const gfx::Range pre_lock_selection(selection_.start(), selection_.end());
 
   // if there is not already some composition text, they we are about to start
   // composition. we need to set `last_composition_start` to the selection
@@ -706,35 +712,39 @@ HRESULT TSFTextStore::RequestLock(DWORD lock_flags, HRESULT* result) {
   if (!text_input_client_)
     return E_UNEXPECTED;
 
-  // Detect and revert touch keyboard autocorrect when the HTML element has
-  // the autocorrect="off" attribute (a web-standard hint on <input> and
-  // <textarea> elements that tells the user agent not to autocorrect).
+  // When the editable element has the autocorrect="off" attribute (a
+  // web-standard hint on <input> and <textarea> elements asking the user agent
+  // not to autocorrect), revert autocorrect performed by the Windows touch
+  // keyboard.
   //
-  // The Windows touch keyboard performs autocorrect by replacing
-  // already-committed text via a separate TSF SetText call after the word
-  // is completed (e.g., when the user presses space).
-  //
-  // Compare the buffer before and after the lock. If existing text was
-  // modified (`pre_lock_buffer` is not a prefix of
-  // `string_buffer_document_`), no composition is involved, and no IME is
-  // active, this is an autocorrect replacement by the touch keyboard. Skip
-  // when an IME is active since autocorrect is a touch-keyboard-only
-  // concept; IMEs may insert characters without composition (e.g.
-  // full-width space) that would be falsely reverted.
-  if (should_block_autocorrect && !pre_lock_buffer.empty() &&
-      !string_pending_insertion_.empty() && !had_composition_at_lock_start &&
-      !has_composition_range_ && !IsInputIME()) {
-    // Check if the pre-lock buffer content was preserved. Normal typing
-    // appends new characters, so the old content remains as a prefix.
-    // Autocorrect replaces existing characters, breaking the prefix.
-    const bool existing_text_modified =
-        !base::StartsWith(string_buffer_document_, pre_lock_buffer);
+  // The touch keyboard autocorrects by replacing an already-committed word via
+  // a TSF SetText call at the word boundary (e.g. when the user presses space).
+  // This replaces a range of committed text that the user never selected, which
+  // distinguishes it from edits that must be preserved:
+  //   * An insertion at a collapsed caret replaces an empty range, so
+  //     `replace_text_range_` is collapsed.
+  //   * A replacement of text the user explicitly selected covers exactly the
+  //     user's selection.
+  // So only revert when a non-empty range of committed text was replaced and
+  // that range is not the user's selection. IME input is excluded because
+  // autocorrect is specific to the touch keyboard; an active composition or an
+  // active input processor profile identifies IME edits.
+  if (should_block_autocorrect && new_text_inserted_ &&
+      !had_composition_at_lock_start && !has_composition_range_ &&
+      !IsInputIME() &&
+      replace_text_range_.start() < replace_text_range_.end()) {
+    const bool user_selected_replaced_range =
+        !pre_lock_selection.is_empty() &&
+        pre_lock_selection.start() == replace_text_range_.start() &&
+        pre_lock_selection.end() == replace_text_range_.end();
 
-    if (existing_text_modified) {
+    if (!user_selected_replaced_range) {
+      // Restore the buffer to its pre-lock state (bringing back the user's
+      // original word) and skip the commit.
       string_buffer_document_ = pre_lock_buffer;
       string_pending_insertion_.clear();
-      selection_.set_start(pre_lock_buffer.size());
-      selection_.set_end(pre_lock_buffer.size());
+      selection_.set_start(pre_lock_selection.start());
+      selection_.set_end(pre_lock_selection.end());
       edit_flag_ = false;
       ResetCacheAfterEditSession();
       CalculateTextandSelectionDiffAndNotifyIfNeeded();

@@ -5312,8 +5312,8 @@ class AutocorrectOffIMENewCompositionMidTextTestCallback
   // Lock 2: Korean IME starts a NEW composition in the middle of "한국" at
   // position 1. The user placed the cursor between 한 and 국 and typed a
   // Korean consonant ㄴ (U+3134). No composition existed before, but one is
-  // created during this lock. The buffer changes from "한국" to "한ㄴ국",
-  // which breaks the prefix check. This should NOT be reverted.
+  // created during this lock. The buffer changes from "한국" to "한ㄴ국".
+  // Since a composition is active during this lock, this must NOT be reverted.
   HRESULT LockGranted2(DWORD flags) {
     GetTextTest(0, -1, L"\uD55C\uAD6D", 2);
     // Move selection to middle of text (cursor after 한).
@@ -5522,6 +5522,379 @@ TEST_F(TSFTextStoreTest, AutocorrectOffAllowsFullWidthSpaceWithoutComposition) {
   EXPECT_EQ(S_OK, result);
 
   EXPECT_EQ(u"he\u3000llo", *string_buffer());
+}
+
+// Regression test for crbug.com/530123092: the Windows emoji panel (Win+.)
+// inserts an emoji at a COLLAPSED caret in a nested-block contenteditable with
+// autocorrect="off". A trailing block-boundary character ("\n") follows the
+// caret, but this is still a pure insertion (the SetText range is collapsed),
+// so it must be KEPT — not misclassified as an autocorrect replacement.
+class AutocorrectOffKeepsEmojiInNestedBlockTestCallback
+    : public TSFTextStoreTestCallback {
+ public:
+  explicit AutocorrectOffKeepsEmojiInNestedBlockTestCallback(
+      TSFTextStore* text_store)
+      : TSFTextStoreTestCallback(text_store) {}
+
+  AutocorrectOffKeepsEmojiInNestedBlockTestCallback(
+      const AutocorrectOffKeepsEmojiInNestedBlockTestCallback&) = delete;
+  AutocorrectOffKeepsEmojiInNestedBlockTestCallback& operator=(
+      const AutocorrectOffKeepsEmojiInNestedBlockTestCallback&) = delete;
+
+  // Lock 1: Commit "hello\n". The trailing "\n" represents the block-boundary
+  // character contributed by the nested block child. The caret is placed at
+  // position 5 (visible end of "hello", BEFORE the trailing "\n").
+  HRESULT LockGranted1(DWORD flags) {
+    SetTextTest(0, 0, L"hello\n", S_OK);
+    SetSelectionTest(5, 5, S_OK);
+    *edit_flag() = true;
+    *composition_start() = 0;
+    *has_composition_range() = false;
+    return S_OK;
+  }
+
+  void InsertText1(
+      const std::u16string& text,
+      ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
+    EXPECT_EQ(u"hello\n", text);
+    SetTextRange(0, 6);
+    SetSelectionRange(5, 5);
+    SetTextBuffer(u"hello\n");
+  }
+
+  // Lock 2: Emoji panel inserts U+1F600 at the collapsed caret (position 5,
+  // before the trailing "\n"). Buffer becomes "hello<emoji>\n".
+  HRESULT LockGranted2(DWORD flags) {
+    GetTextTest(0, -1, L"hello\n", 6);
+    SetSelectionTest(5, 5, S_OK);
+    SetTextTest(5, 5, L"\xD83D\xDE00", S_OK);  // U+1F600 surrogate pair
+    GetTextTest(0, -1, L"hello\xD83D\xDE00\n", 8);
+    SetSelectionTest(7, 7, S_OK);
+    *edit_flag() = true;
+    *has_composition_range() = false;
+    return S_OK;
+  }
+
+  void InsertText2(
+      const std::u16string& text,
+      ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
+    EXPECT_EQ(u"\xD83D\xDE00", text);
+    SetTextRange(0, 8);
+    SetSelectionRange(7, 7);
+    SetTextBuffer(u"hello\xD83D\xDE00\n");
+  }
+};
+
+TEST_F(TSFTextStoreTest, AutocorrectOffKeepsEmojiInNestedBlock) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kTSFHonorAutocorrectOff);
+
+  // The Windows emoji panel is NOT an IME.
+  set_is_input_ime_for_testing(false);
+
+  EXPECT_CALL(text_input_client_, GetTextInputType())
+      .WillRepeatedly(Return(TEXT_INPUT_TYPE_TEXT));
+
+  EXPECT_CALL(text_input_client_, GetTextInputFlags())
+      .WillRepeatedly(Return(TEXT_INPUT_FLAG_AUTOCORRECT_OFF));
+
+  AutocorrectOffKeepsEmojiInNestedBlockTestCallback callback(text_store_.get());
+
+  // InsertText is called for BOTH locks: commit "hello\n", then insert the
+  // emoji (a collapsed-range insertion is not autocorrect, so it is kept).
+  EXPECT_CALL(text_input_client_, InsertText(_, _))
+      .WillOnce(Invoke(
+          &callback,
+          &AutocorrectOffKeepsEmojiInNestedBlockTestCallback::InsertText1))
+      .WillOnce(Invoke(
+          &callback,
+          &AutocorrectOffKeepsEmojiInNestedBlockTestCallback::InsertText2));
+
+  EXPECT_CALL(*sink_, OnLockGranted(_))
+      .WillOnce(Invoke(
+          &callback,
+          &AutocorrectOffKeepsEmojiInNestedBlockTestCallback::LockGranted1))
+      .WillOnce(Invoke(
+          &callback,
+          &AutocorrectOffKeepsEmojiInNestedBlockTestCallback::LockGranted2));
+
+  ON_CALL(text_input_client_, HasCompositionText())
+      .WillByDefault(
+          Invoke(&callback, &TSFTextStoreTestCallback::HasCompositionText));
+
+  ON_CALL(text_input_client_, GetTextRange(_))
+      .WillByDefault(
+          Invoke(&callback, &TSFTextStoreTestCallback::GetTextRange));
+
+  ON_CALL(text_input_client_, GetTextFromRange(_, _))
+      .WillByDefault(
+          Invoke(&callback, &TSFTextStoreTestCallback::GetTextFromRange));
+
+  ON_CALL(text_input_client_, GetEditableSelectionRange(_))
+      .WillByDefault(Invoke(
+          &callback, &TSFTextStoreTestCallback::GetEditableSelectionRange));
+
+  // Lock 1: Commit "hello\n".
+  HRESULT result = kInvalidResult;
+  EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
+  EXPECT_EQ(S_OK, result);
+
+  // Lock 2: Emoji panel inserts U+1F600 before the trailing "\n".
+  result = kInvalidResult;
+  EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
+  EXPECT_EQ(S_OK, result);
+
+  // The collapsed-range insertion is a pure insertion, so the emoji is kept.
+  EXPECT_EQ(u"hello\xD83D\xDE00\n", *string_buffer());
+}
+
+// Companion to AutocorrectOffKeepsEmojiInNestedBlock: the SAME emoji insertion
+// but WITHOUT a trailing block-boundary character (caret at the true end of
+// "hello"). This is also a collapsed-range insertion, so the emoji is kept.
+class AutocorrectOffEmojiFlatEndControlTestCallback
+    : public TSFTextStoreTestCallback {
+ public:
+  explicit AutocorrectOffEmojiFlatEndControlTestCallback(
+      TSFTextStore* text_store)
+      : TSFTextStoreTestCallback(text_store) {}
+
+  AutocorrectOffEmojiFlatEndControlTestCallback(
+      const AutocorrectOffEmojiFlatEndControlTestCallback&) = delete;
+  AutocorrectOffEmojiFlatEndControlTestCallback& operator=(
+      const AutocorrectOffEmojiFlatEndControlTestCallback&) = delete;
+
+  // Lock 1: Commit "hello" with NO trailing boundary. Caret at the true end.
+  HRESULT LockGranted1(DWORD flags) {
+    SetTextTest(0, 0, L"hello", S_OK);
+    SetSelectionTest(5, 5, S_OK);
+    *edit_flag() = true;
+    *composition_start() = 0;
+    *has_composition_range() = false;
+    return S_OK;
+  }
+
+  void InsertText1(
+      const std::u16string& text,
+      ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
+    EXPECT_EQ(u"hello", text);
+    SetTextRange(0, 5);
+    SetSelectionRange(5, 5);
+    SetTextBuffer(u"hello");
+  }
+
+  // Lock 2: Emoji panel inserts U+1F600 at the true end (position 5). The
+  // insertion is at a collapsed caret, so an empty range is replaced.
+  HRESULT LockGranted2(DWORD flags) {
+    GetTextTest(0, -1, L"hello", 5);
+    SetSelectionTest(5, 5, S_OK);
+    SetTextTest(5, 5, L"\xD83D\xDE00", S_OK);  // U+1F600 surrogate pair
+    GetTextTest(0, -1, L"hello\xD83D\xDE00", 7);
+    SetSelectionTest(7, 7, S_OK);
+    *edit_flag() = true;
+    *has_composition_range() = false;
+    return S_OK;
+  }
+
+  void InsertText2(
+      const std::u16string& text,
+      ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
+    EXPECT_EQ(u"\xD83D\xDE00", text);
+    SetTextRange(0, 7);
+    SetSelectionRange(7, 7);
+    SetTextBuffer(u"hello\xD83D\xDE00");
+  }
+};
+
+TEST_F(TSFTextStoreTest, AutocorrectOffKeepsEmojiAtFlatEndControl) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kTSFHonorAutocorrectOff);
+
+  // The Windows emoji panel is NOT an IME.
+  set_is_input_ime_for_testing(false);
+
+  EXPECT_CALL(text_input_client_, GetTextInputType())
+      .WillRepeatedly(Return(TEXT_INPUT_TYPE_TEXT));
+
+  EXPECT_CALL(text_input_client_, GetTextInputFlags())
+      .WillRepeatedly(Return(TEXT_INPUT_FLAG_AUTOCORRECT_OFF));
+
+  AutocorrectOffEmojiFlatEndControlTestCallback callback(text_store_.get());
+
+  // InsertText is called for BOTH locks: once to commit "hello", and again to
+  // insert the emoji (a collapsed-range insertion is not autocorrect, so no
+  // revert happens).
+  EXPECT_CALL(text_input_client_, InsertText(_, _))
+      .WillOnce(
+          Invoke(&callback,
+                 &AutocorrectOffEmojiFlatEndControlTestCallback::InsertText1))
+      .WillOnce(
+          Invoke(&callback,
+                 &AutocorrectOffEmojiFlatEndControlTestCallback::InsertText2));
+
+  EXPECT_CALL(*sink_, OnLockGranted(_))
+      .WillOnce(
+          Invoke(&callback,
+                 &AutocorrectOffEmojiFlatEndControlTestCallback::LockGranted1))
+      .WillOnce(
+          Invoke(&callback,
+                 &AutocorrectOffEmojiFlatEndControlTestCallback::LockGranted2));
+
+  ON_CALL(text_input_client_, HasCompositionText())
+      .WillByDefault(
+          Invoke(&callback, &TSFTextStoreTestCallback::HasCompositionText));
+
+  ON_CALL(text_input_client_, GetTextRange(_))
+      .WillByDefault(
+          Invoke(&callback, &TSFTextStoreTestCallback::GetTextRange));
+
+  ON_CALL(text_input_client_, GetTextFromRange(_, _))
+      .WillByDefault(
+          Invoke(&callback, &TSFTextStoreTestCallback::GetTextFromRange));
+
+  ON_CALL(text_input_client_, GetEditableSelectionRange(_))
+      .WillByDefault(Invoke(
+          &callback, &TSFTextStoreTestCallback::GetEditableSelectionRange));
+
+  // Lock 1: Commit "hello".
+  HRESULT result = kInvalidResult;
+  EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
+  EXPECT_EQ(S_OK, result);
+
+  // Lock 2: Emoji panel appends U+1F600 at the true end.
+  result = kInvalidResult;
+  EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
+  EXPECT_EQ(S_OK, result);
+
+  // The insertion is at a collapsed caret (an empty replaced range), so it is
+  // kept. The only difference from AutocorrectOffKeepsEmojiInNestedBlock is the
+  // absence of a trailing boundary character.
+  EXPECT_EQ(u"hello\xD83D\xDE00", *string_buffer());
+}
+
+// Regression test for crbug.com/530123092: with autocorrect="off", inserting
+// an emoji that REPLACES an explicit user selection must be KEPT. This is the
+// key difference from touch-keyboard autocorrect (which replaces a word the
+// user did NOT select): here the replaced range equals the user's pre-lock
+// selection, so it is an explicit user-driven replacement, not autocorrect.
+class AutocorrectOffKeepsEmojiReplacingSelectionTestCallback
+    : public TSFTextStoreTestCallback {
+ public:
+  explicit AutocorrectOffKeepsEmojiReplacingSelectionTestCallback(
+      TSFTextStore* text_store)
+      : TSFTextStoreTestCallback(text_store) {}
+
+  AutocorrectOffKeepsEmojiReplacingSelectionTestCallback(
+      const AutocorrectOffKeepsEmojiReplacingSelectionTestCallback&) = delete;
+  AutocorrectOffKeepsEmojiReplacingSelectionTestCallback& operator=(
+      const AutocorrectOffKeepsEmojiReplacingSelectionTestCallback&) = delete;
+
+  // Lock 1: Commit "hello world" and leave the user's selection on "world"
+  // (range [6, 11]).
+  HRESULT LockGranted1(DWORD flags) {
+    SetTextTest(0, 0, L"hello world", S_OK);
+    SetSelectionTest(6, 11, S_OK);
+    *edit_flag() = true;
+    *composition_start() = 0;
+    *has_composition_range() = false;
+    return S_OK;
+  }
+
+  void InsertText1(
+      const std::u16string& text,
+      ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
+    EXPECT_EQ(u"hello world", text);
+    SetTextRange(0, 11);
+    SetSelectionRange(6, 11);
+    SetTextBuffer(u"hello world");
+  }
+
+  // Lock 2: Emoji panel replaces the selected "world" (range [6, 11]) with
+  // U+1F600. The replaced range equals the user's selection, so this is an
+  // explicit replacement and must be kept.
+  HRESULT LockGranted2(DWORD flags) {
+    GetTextTest(0, -1, L"hello world", 11);
+    SetSelectionTest(6, 11, S_OK);
+    SetTextTest(6, 11, L"\xD83D\xDE00", S_OK);  // U+1F600 surrogate pair
+    GetTextTest(0, -1, L"hello \xD83D\xDE00", 8);
+    SetSelectionTest(8, 8, S_OK);
+    *edit_flag() = true;
+    *has_composition_range() = false;
+    return S_OK;
+  }
+
+  void InsertText2(
+      const std::u16string& text,
+      ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
+    EXPECT_EQ(u"\xD83D\xDE00", text);
+    SetTextRange(0, 8);
+    SetSelectionRange(8, 8);
+    SetTextBuffer(u"hello \xD83D\xDE00");
+  }
+};
+
+TEST_F(TSFTextStoreTest, AutocorrectOffKeepsEmojiReplacingSelection) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kTSFHonorAutocorrectOff);
+
+  // The Windows emoji panel is NOT an IME.
+  set_is_input_ime_for_testing(false);
+
+  EXPECT_CALL(text_input_client_, GetTextInputType())
+      .WillRepeatedly(Return(TEXT_INPUT_TYPE_TEXT));
+
+  EXPECT_CALL(text_input_client_, GetTextInputFlags())
+      .WillRepeatedly(Return(TEXT_INPUT_FLAG_AUTOCORRECT_OFF));
+
+  AutocorrectOffKeepsEmojiReplacingSelectionTestCallback callback(
+      text_store_.get());
+
+  // InsertText is called for BOTH locks: commit "hello world", then insert the
+  // emoji replacing the user's selection (an explicit replacement is kept).
+  EXPECT_CALL(text_input_client_, InsertText(_, _))
+      .WillOnce(Invoke(
+          &callback,
+          &AutocorrectOffKeepsEmojiReplacingSelectionTestCallback::InsertText1))
+      .WillOnce(Invoke(&callback,
+                       &AutocorrectOffKeepsEmojiReplacingSelectionTestCallback::
+                           InsertText2));
+
+  EXPECT_CALL(*sink_, OnLockGranted(_))
+      .WillOnce(Invoke(&callback,
+                       &AutocorrectOffKeepsEmojiReplacingSelectionTestCallback::
+                           LockGranted1))
+      .WillOnce(Invoke(&callback,
+                       &AutocorrectOffKeepsEmojiReplacingSelectionTestCallback::
+                           LockGranted2));
+
+  ON_CALL(text_input_client_, HasCompositionText())
+      .WillByDefault(
+          Invoke(&callback, &TSFTextStoreTestCallback::HasCompositionText));
+
+  ON_CALL(text_input_client_, GetTextRange(_))
+      .WillByDefault(
+          Invoke(&callback, &TSFTextStoreTestCallback::GetTextRange));
+
+  ON_CALL(text_input_client_, GetTextFromRange(_, _))
+      .WillByDefault(
+          Invoke(&callback, &TSFTextStoreTestCallback::GetTextFromRange));
+
+  ON_CALL(text_input_client_, GetEditableSelectionRange(_))
+      .WillByDefault(Invoke(
+          &callback, &TSFTextStoreTestCallback::GetEditableSelectionRange));
+
+  // Lock 1: Commit "hello world" with "world" selected.
+  HRESULT result = kInvalidResult;
+  EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
+  EXPECT_EQ(S_OK, result);
+
+  // Lock 2: Emoji panel replaces the selection with U+1F600.
+  result = kInvalidResult;
+  EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
+  EXPECT_EQ(S_OK, result);
+
+  // The replaced range matches the user's selection, so it is an explicit
+  // replacement and the emoji is kept.
+  EXPECT_EQ(u"hello \xD83D\xDE00", *string_buffer());
 }
 
 }  // namespace
