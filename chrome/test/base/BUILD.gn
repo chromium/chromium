@@ -2,6 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
+import("//components/guest_view/buildflags/buildflags.gni")
+import("//extensions/buildflags/buildflags.gni")
+import("//printing/buildflags/buildflags.gni")
+import("//services/device/public/cpp/geolocation/buildflags.gni")
 import("//ui/views/features.gni")
 
 source_set("in_process_browser_test_mixin") {
@@ -50,20 +55,16 @@ source_set("test_launcher_utils") {
   public_deps = [ "//base" ]
 }
 
-# Thin header-only target that exposes testing_profile headers for gn check.
-# The .cc implementations remain in //chrome/test:test_support until
-# fake_profile_manager and testing_browser_process are also extracted from
-# the monolith.
-#
-# TODO(crbug.com/353332589): Add testing_profile.{cc,h},
-# testing_profile_key.{cc,h}, testing_profile_manager.{cc,h} as sources and
-# remove from //chrome/test:test_support once the dep-graph through
-# fake_profile_manager / testing_browser_process is resolved.
 source_set("testing_profile") {
   testonly = true
   sources = [
+    "fake_profile_manager.cc",
+    "fake_profile_manager.h",
+    "testing_profile.cc",
     "testing_profile.h",
+    "testing_profile_key.cc",
     "testing_profile_key.h",
+    "testing_profile_manager.cc",
     "testing_profile_manager.h",
   ]
   public_deps = [
@@ -79,12 +80,222 @@ source_set("testing_profile") {
     "//extensions/buildflags",
     "//services/network/public/cpp",
   ]
+  deps = [
+    "//chrome/browser:browser_features",
+    "//chrome/browser:chrome_content_browser_client",
+    "//chrome/browser/autocomplete",
+    "//chrome/browser/autofill",
+    "//chrome/browser/background_fetch",
+    "//chrome/browser/browsing_data",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/device_reauth",
+    "//chrome/browser/history",
+    "//chrome/browser/origin_trials",
+    "//chrome/browser/prefs",
+    "//chrome/browser/prefs:util",
+    "//chrome/browser/profiles:misc",
+    "//chrome/browser/profiles:profile_util",
+    "//chrome/browser/profiles:profiles_extra_parts",
+    "//chrome/browser/reading_list",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/ssl",
+    "//chrome/browser/supervised_user",
+    "//chrome/browser/transition_manager",
+    "//chrome/browser/ui/zoom",
+    "//chrome/common",
+    "//components/account_id",
+    "//components/device_reauth",
+    "//components/guest_view/buildflags",
+    "//components/history/core/test",
+    "//components/policy/core/common:test_support",
+    "//components/prefs:test_support",
+    "//components/profile_metrics",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/supervised_user/core/browser:test_support",
+    "//components/supervised_user/core/common",
+    "//components/sync:test_support",
+    "//components/sync_preferences",
+    "//components/sync_preferences:test_support",
+    "//components/user_prefs",
+    "//components/zoom",
+    "//content/test:test_support",
+  ]
+
+  # Initialize here; extended conditionally in blocks below.
+  allow_circular_includes_from = []
+  if (enable_extensions_core) {
+    deps += [
+      "//chrome/browser/extensions",
+      "//chrome/browser/extensions:test_support",
+    ]
+
+    # TODO(crbug.com/353332589): Remove once the circular include between
+    # testing_profile.h and extensions:test_support sources is eliminated.
+    # testing_profile.cc uses TestExtensionSystem from extensions:test_support,
+    # while extensions:test_support sources include testing_profile.h.
+    allow_circular_includes_from +=
+        [ "//chrome/browser/extensions:test_support" ]
+  }
+  if (enable_extensions) {
+    deps += [
+      "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications:web_applications_test_support",
+    ]
+  }
+  if (enable_guest_view) {
+    deps += [ "//components/guest_view/browser" ]
+  }
   if (is_chromeos) {
     public_deps += [
       "//chrome/browser/ash/policy/core",
       "//chrome/browser/ash/settings:test_support",
       "//components/user_manager",
     ]
+    deps += [
+      "//chrome/browser/ash/arc/session:service_launcher",
+      "//chrome/browser/ash/login/users:test_support",
+      "//chrome/browser/ash/net",
+      "//chrome/browser/ash/profiles",
+      "//chrome/browser/ash/system_web_apps",
+      "//chrome/browser/ash/system_web_apps/test_support",
+      "//chromeos/ash/components/account_manager",
+      "//chromeos/ash/components/browser_context_helper",
+      "//chromeos/ash/components/settings",
+      "//components/user_manager:test_support",
+    ]
+
+    # TODO(crbug.com/353332589): Remove once testing_profile is split into a
+    # thin header target and an impl target, allowing ash/settings:test_support
+    # to dep on the header-only target directly without a dep-graph cycle.
+    allow_circular_includes_from +=
+        [ "//chrome/browser/ash/settings:test_support" ]
+  }
+}
+
+source_set("testing_browser_process") {
+  testonly = true
+  sources = [
+    "testing_browser_process.cc",
+    "testing_browser_process.h",
+    "testing_browser_process_platform_part.cc",
+    "testing_browser_process_platform_part.h",
+  ]
+  public_deps = [
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process_platform_part",
+    "//chrome/common:buildflags",
+    "//chrome/test/base:testing_profile",
+    "//components/activity_reporter",
+    "//components/signin/core/browser",
+    "//extensions/buildflags",
+    "//media:media_buildflags",
+    "//printing/buildflags",
+    "//ui/base/unowned_user_data",
+  ]
+
+  # TODO(crbug.com/353332589): Remove once testing_profile_manager.cc no longer
+  # includes testing_browser_process.h (i.e. when the circular include is
+  # eliminated via further refactoring of the testing_profile cluster).
+  # testing_profile's sources (testing_profile_manager.cc) include TBP.h;
+  # allow_circular_includes_from permits that reverse include while keeping
+  # the dep graph one-directional (TBP → testing_profile).
+  allow_circular_includes_from = [ "//chrome/test/base:testing_profile" ]
+  deps = [
+    "//chrome/browser:browser_process_impl",
+    "//chrome/browser:global_features",
+    "//chrome/browser/download",
+    "//chrome/browser/lifetime",
+    "//chrome/browser/media/webrtc",
+    "//chrome/browser/notifications",
+    "//chrome/browser/notifications:system_notification_helper",
+    "//chrome/browser/notifications:test_support",
+    "//chrome/browser/permissions",
+    "//chrome/browser/policy",
+    "//chrome/browser/prefs",
+    "//chrome/browser/printing",
+    "//chrome/browser/profiles:profile_manager",
+    "//chrome/browser/resource_coordinator",
+    "//chrome/browser/safe_browsing",
+    "//chrome/browser/serial",
+    "//chrome/browser/status_icons",
+    "//components/application_locale_storage",
+    "//components/embedder_support/origin_trials",
+    "//components/metrics",
+    "//components/network_time",
+    "//components/os_crypt/async/browser:test_support",
+    "//components/permissions",
+    "//components/policy/core/browser",
+    "//components/prefs:test_support",
+    "//components/subresource_filter/content/browser",
+    "//components/supervised_user/core/browser:device_parental_controls",
+    "//services/device/public/cpp/geolocation:buildflags",
+    "//services/network:test_support",
+  ]
+  if (os_level_geolocation_permission_supported) {
+    deps += [
+      "//services/device/public/cpp:device_features",
+      "//services/device/public/cpp:test_support",
+      "//services/device/public/cpp/geolocation",
+    ]
+  }
+  if (!is_android) {
+    public_deps += [ "//chrome/browser/upgrade_detector" ]
+    deps += [
+      "//chrome/browser/hid",
+      "//chrome/browser/usb",
+      "//chrome/browser/web_applications/isolated_web_apps",
+      "//components/component_updater",
+      "//components/keep_alive_registry",
+    ]
+    if (!is_chromeos) {
+      deps += [ "//components/enterprise" ]
+    }
+  }
+  if (enable_background_mode) {
+    deps += [ "//chrome/browser/background/extensions" ]
+  }
+  if (enable_extensions) {
+    deps += [
+      "//chrome/browser/apps/platform_apps",
+      "//chrome/browser/ui/apps",
+    ]
+  }
+  if (enable_extensions_core) {
+    deps += [
+      "//chrome/browser/extensions",
+      "//chrome/browser/extensions:test_support",
+    ]
+
+    # TODO(crbug.com/353332589): Remove once testing_browser_process is split
+    # into a thin header target and an impl target (see testing_profile split).
+    allow_circular_includes_from +=
+        [ "//chrome/browser/extensions:test_support" ]
+  }
+  if (enable_print_preview) {
+    deps += [ "//chrome/browser/printing" ]
+  }
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser/ash/policy/core",
+      "//chrome/browser/ash/settings:test_support",
+      "//chrome/browser/ash/system_web_apps/test_support",
+      "//chrome/browser/media_galleries",
+    ]
+
+    # TODO(crbug.com/353332589): Remove once testing_browser_process is split
+    # into a thin header target and an impl target (see testing_profile split).
+    allow_circular_includes_from += [
+      "//chrome/browser/ash/settings:test_support",
+      "//chrome/browser/ash/system_web_apps/test_support",
+    ]
+  }
+  if (enable_chrome_notifications) {
+    deps += [ "//chrome/browser/notifications" ]
+  }
+  if (is_android) {
+    deps += [ "//components/supervised_user/core/browser/android" ]
   }
 }
 
