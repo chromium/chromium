@@ -12,10 +12,9 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_controller.h"
@@ -66,20 +65,18 @@ void OmniboxEverywhereService::OpenUrl(const GURL& url,
   SetIsNavigating(true);
   HidePopup();
 
-  BrowserWindowInterface* active_bwi =
-      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
-  Browser* browser =
-      active_bwi ? active_bwi->GetBrowserForMigrationOnly() : nullptr;
-  if (browser && browser->GetProfile() != profile_) {
-    browser = nullptr;
-  }
+  auto* browser_collection = ProfileBrowserCollection::GetForProfile(profile_);
+  CHECK(browser_collection);
+  BrowserWindowInterface* bwi  =
+      browser_collection->GetLastActiveBrowser();
   bool is_new_window = false;
-  if (!browser) {
-    browser = static_cast<Browser*>(chrome::OpenEmptyWindow(profile_));
+  if (!bwi) {
+    bwi = chrome::OpenEmptyWindow(profile_);
     is_new_window = true;
   }
-  if (browser) {
-    NavigateParams params(browser, url, transition);
+
+  if (bwi) {
+    NavigateParams params(bwi, url, transition);
     params.disposition =
         is_new_window ? WindowOpenDisposition::CURRENT_TAB
                       : ((disposition == WindowOpenDisposition::CURRENT_TAB)
