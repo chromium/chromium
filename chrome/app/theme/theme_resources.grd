@@ -27,6 +27,12 @@
            SAME CONDITIONALS. -->
       <if expr="toolkit_views and not is_macosx">
         <structure type="chrome_scaled_image" name="IDR_ACCESSIBILITY_CAPTIONS_PREVIEW_BACKGROUND" file="common/captions-preview-bg.png" />
+      </if>
+      <if expr="not is_android">
+        <structure type="chrome_scaled_image" name="IDR_AI_ON_IOS" file="common/ai_on_ios.png" />
+        <structure type="chrome_scaled_image" name="IDR_AI_ON_IOS_DARK" file="common/ai_on_ios_dark.png" />
+      </if>
+      <if expr="toolkit_views and not is_macosx">
         <structure type="chrome_scaled_image" name="IDR_APP_WINDOW_CLOSE" file="common/app_window_close.png" />
         <structure type="chrome_scaled_image" name="IDR_APP_WINDOW_CLOSE_H" file="common/app_window_close_hover.png" />
         <structure type="chrome_scaled_image" name="IDR_APP_WINDOW_CLOSE_P" file="common/app_window_close_active.png" />
@@ -330,6 +336,8 @@
             <structure type="chrome_scaled_image" name="IDR_SHARED_TAB_GROUPS_DARK" file="${branding_path_component}/shared_tab_groups_dark.png" />
             <structure type="chrome_scaled_image" name="IDR_SHARED_TAB_GROUPS_LIGHT" file="${branding_path_component}/shared_tab_groups_light.png" />
         </if> <!-- _google_chrome -->
+        <structure type="chrome_scaled_image" name="IDR_SHOPPING_ON_IOS" file="common/shopping_on_ios.png" />
+        <structure type="chrome_scaled_image" name="IDR_SHOPPING_ON_IOS_DARK" file="common/shopping_on_ios_dark.png" />
       </if> <!-- not is_android -->
       <if expr="is_chromeos">
         <structure type="chrome_scaled_image" name="IDR_LOGO_AVATAR_CIRCLE_BLUE_COLOR" file="cros/logo_avatar_circle_blue_color.png" />
@@ -427,6 +435,8 @@
       </if>
       <if expr="not is_android">
         <structure type="chrome_scaled_image" name="IDR_SUCCESS_GREEN_CHECKMARK" file="common/success_green_checkmark.png" />
+        <structure type="chrome_scaled_image" name="IDR_YOUR_CHROME_ON_IOS" file="common/your_chrome_on_ios.png" />
+        <structure type="chrome_scaled_image" name="IDR_YOUR_CHROME_ON_IOS_DARK" file="common/your_chrome_on_ios_dark.png" />
       </if>
     </structures>
   </release>
