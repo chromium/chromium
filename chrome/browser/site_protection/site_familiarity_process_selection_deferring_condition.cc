@@ -12,14 +12,24 @@
 #include "chrome/browser/site_protection/site_familiarity_fetcher.h"
 #include "chrome/browser/site_protection/site_familiarity_process_selection_user_data.h"
 #include "chrome/browser/site_protection/site_familiarity_utils.h"
+#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
+#include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 #include "components/search_engines/template_url_service.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/process_selection_deferring_condition.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/schemeful_site.h"
 #include "url/origin.h"
 
 namespace site_protection {
+
+// Enables skipping site familiarity calculations on same-site navigations.
+BASE_FEATURE(kSkipSiteFamiliarityDeferralForSameSite,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 SiteFamiliarityProcessSelectionDeferringCondition::
     SiteFamiliarityProcessSelectionDeferringCondition(
@@ -69,6 +79,40 @@ SiteFamiliarityProcessSelectionDeferringCondition::OnWillSelectFinalProcess(
 }
 
 void SiteFamiliarityProcessSelectionDeferringCondition::StartFetching() {
+  if (base::FeatureList::IsEnabled(kSkipSiteFamiliarityDeferralForSameSite)) {
+    content::WebContents* web_contents = navigation_handle().GetWebContents();
+    if (web_contents) {
+      content::RenderFrameHost* main_frame =
+          web_contents->GetPrimaryMainFrame();
+      // Ensure the main frame has committed a typical web navigation before
+      // checking same-site status. An unassigned SiteInstance (e.g. from
+      // `about:blank` or an initial navigation) considers any standard URL as
+      // same-site, which would incorrectly skip the familiarity check on
+      // initial site navigations. Checking for HTTP/HTTPS ensures we only
+      // skip checks for standard web-to-web same-site navigations.
+      const GURL& last_url = main_frame->GetLastCommittedURL();
+      if (!last_url.is_empty() && last_url.SchemeIsHTTPOrHTTPS() &&
+          main_frame->GetSiteInstance()->IsSameSiteWithURL(
+              navigation_handle().GetURL())) {
+        weak_factory_.InvalidateWeakPtrs();
+        std::optional<bool> v8_opts_disabled =
+            AreV8OptimizationsDisabled(web_contents);
+        if (v8_opts_disabled.has_value()) {
+          verdict_ = v8_opts_disabled.value()
+                         ? SiteFamiliarityFetcher::Verdict::kUnfamiliar
+                         : SiteFamiliarityFetcher::Verdict::kFamiliar;
+          CRSBLOG
+              << "SiteFamiliarityProcessSelectionDeferringCondition "
+                 "decision [URL]: "
+              << navigation_handle().GetURL()
+              << " [Verdict]: Not-evaluated (Same-site with main frame origin: "
+              << main_frame->GetLastCommittedOrigin() << ")";
+          return;
+        }
+      }
+    }
+  }
+
   verdict_ = std::nullopt;
   fetcher_.Start(
       navigation_handle().GetURL(),

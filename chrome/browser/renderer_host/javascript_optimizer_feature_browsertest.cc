@@ -769,6 +769,71 @@ class DeferProcessSelectionBrowserClient : public ChromeContentBrowserClient {
   bool did_select_final_process_ = false;
 };
 
+// MockSafeBrowsingDatabaseManager which tracks allowlist query counts.
+class QueryTrackingSafeBrowsingDatabaseManager
+    : public safe_browsing::TestSafeBrowsingDatabaseManager {
+ public:
+  explicit QueryTrackingSafeBrowsingDatabaseManager(
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
+      : safe_browsing::TestSafeBrowsingDatabaseManager(
+            std::move(ui_task_runner)) {}
+
+  void CheckUrlForHighConfidenceAllowlist(
+      const GURL& url,
+      CheckUrlForHighConfidenceAllowlistCallback callback) override {
+    queries_.push_back(url);
+    // Fast, synchronous stubbed callback response.
+    std::move(callback).Run(
+        /*url_on_high_confidence_allowlist=*/false,
+        /*logging_details=*/std::nullopt);
+  }
+
+  bool CheckBrowseUrl(
+      const GURL& url,
+      const safe_browsing::SBThreatTypeSet& threat_types,
+      safe_browsing::SafeBrowsingDatabaseManager::Client* client,
+      safe_browsing::CheckBrowseUrlType check_type) override {
+    // Dummy override to prevent NOTREACHED() aborts on Trybots with
+    // dcheck_always_on=true. We intentionally DO NOT track these general
+    // queries to avoid test brittleness.
+    return true;  // Safe
+  }
+
+  safe_browsing::ThreatSource GetBrowseUrlThreatSource(
+      safe_browsing::CheckBrowseUrlType check_type) const override {
+    return safe_browsing::ThreatSource::UNKNOWN;
+  }
+
+  bool CheckUrlForSubresourceFilter(
+      const GURL& url,
+      safe_browsing::SafeBrowsingDatabaseManager::Client* client) override {
+    // Only return true (safe), do not track to avoid throwing off query counts.
+    return true;
+  }
+
+  void ClearQueries() { queries_.clear(); }
+
+  int GetQueryCountForUrl(const GURL& url) const {
+    int count = 0;
+    for (const auto& u : queries_) {
+      if (u == url) {
+        count++;
+      }
+    }
+    return count;
+  }
+
+ protected:
+  ~QueryTrackingSafeBrowsingDatabaseManager() override = default;
+
+ private:
+  friend class base::RefCountedDeleteOnSequence<
+      safe_browsing::SafeBrowsingDatabaseManager>;
+  friend class base::RefCountedDeleteOnSequence<
+      QueryTrackingSafeBrowsingDatabaseManager>;
+  std::vector<GURL> queries_;
+};
+
 }  // anonymous namespace
 
 class JavascriptOptimizerBrowserTest_CustomDeferralCondition
@@ -1011,6 +1076,162 @@ IN_PROC_BROWSER_TEST_F(
   NavigateToUnfamiliarSite(/*expect_v8_optimizations_enabled=*/true);
 }
 
+class JavascriptOptimizerBrowserTest_FamiliarityCheckSkip
+    : public JavascriptOptimizerBrowserTest_UseSiteFamiliarityBase {
+ public:
+  JavascriptOptimizerBrowserTest_FamiliarityCheckSkip() = default;
+  ~JavascriptOptimizerBrowserTest_FamiliarityCheckSkip() override = default;
+
+ protected:
+  bool ShouldEnableSiteFamiliarityFeature() override { return true; }
+
+  void CreatedBrowserMainParts(
+      content::BrowserMainParts* browser_main_parts) override {
+    JavascriptOptimizerBrowserTest::CreatedBrowserMainParts(browser_main_parts);
+    tracking_db_manager_ =
+        base::MakeRefCounted<QueryTrackingSafeBrowsingDatabaseManager>(
+            content::GetUIThreadTaskRunner({}));
+    factory_.SetTestDatabaseManager(tracking_db_manager_.get());
+    safe_browsing::SafeBrowsingService::RegisterFactory(&factory_);
+  }
+
+  void SetUpOnMainThread() override {
+    JavascriptOptimizerBrowserTest_UseSiteFamiliarityBase::SetUpOnMainThread();
+#if BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/536901368): Re-enable once the feature launches on Android
+    // and flakes are fixed.
+    GTEST_SKIP() << "Site Familiarity feature is not launching on Android yet, "
+                    "tests are flaky.";
+#endif
+  }
+
+  QueryTrackingSafeBrowsingDatabaseManager* tracking_db_manager() {
+    return tracking_db_manager_.get();
+  }
+
+ private:
+  safe_browsing::TestSafeBrowsingServiceFactory factory_;
+  scoped_refptr<QueryTrackingSafeBrowsingDatabaseManager> tracking_db_manager_;
+};
+
+// Same-site navigations should skip the site familiarity check by reusing the
+// main frame's JIT optimization status, avoiding the fetcher's Safe Browsing
+// query.
+IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_FamiliarityCheckSkip,
+                       ExpectSkipFamiliarityCheckForSameSiteNavigations) {
+  const GURL kTestUrl1 =
+      embedded_https_test_server().GetURL("a.com", "/simple.html");
+  const GURL kTestUrl2 =
+      embedded_https_test_server().GetURL("a.com", "/title1.html");
+
+  // 1. Initial navigation to unfamiliar a.com. The Site Familiarity fetcher
+  // queries the High Confidence Allowlist.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), kTestUrl1));
+  EXPECT_EQ(1, tracking_db_manager()->GetQueryCountForUrl(kTestUrl1));
+  EXPECT_TRUE(AreV8OptimizationsDisabledOnActiveWebContents());
+
+  // 2. Reset the query count.
+  tracking_db_manager()->ClearQueries();
+
+  // 3. Second navigation (same-site) to a.com/title1.html. Since it is
+  // same-site, we skip the familiarity check.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), kTestUrl2));
+
+  // NO queries should be made by the fetcher because the check is skipped.
+  EXPECT_EQ(0, tracking_db_manager()->GetQueryCountForUrl(kTestUrl2));
+  EXPECT_TRUE(AreV8OptimizationsDisabledOnActiveWebContents());
+}
+
+// Redirects to a cross-site URL must not skip the familiarity check.
+IN_PROC_BROWSER_TEST_F(
+    JavascriptOptimizerBrowserTest_FamiliarityCheckSkip,
+    ExpectNoSkipForSameSiteNavigationsRedirectingToCrossSite) {
+  const GURL kInitialUrl =
+      embedded_https_test_server().GetURL("a.com", "/simple.html");
+  const GURL kRedirectTargetUrl =
+      embedded_https_test_server().GetURL("b.com", "/title1.html");
+  const GURL kRedirectorUrl = embedded_https_test_server().GetURL(
+      "a.com", "/server-redirect?" + kRedirectTargetUrl.spec());
+
+  // 1. Initial navigation to unfamiliar a.com.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), kInitialUrl));
+  EXPECT_EQ(1, tracking_db_manager()->GetQueryCountForUrl(kInitialUrl));
+  EXPECT_TRUE(AreV8OptimizationsDisabledOnActiveWebContents());
+
+  // 2. Reset query count.
+  tracking_db_manager()->ClearQueries();
+
+  // 3. Navigate to a.com/server-redirect which redirects to b.com. Since the
+  // final destination is cross-site, the familiarity check must run for b.com.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), kRedirectorUrl,
+                                     kRedirectTargetUrl));
+
+  // The familiarity fetcher only runs for the final committed URL.
+  EXPECT_EQ(0, tracking_db_manager()->GetQueryCountForUrl(kRedirectorUrl));
+  EXPECT_EQ(1, tracking_db_manager()->GetQueryCountForUrl(kRedirectTargetUrl));
+  EXPECT_TRUE(AreV8OptimizationsDisabledOnActiveWebContents());
+}
+
+class JavascriptOptimizerBrowserTest_FamiliarityCheckSkipParam
+    : public JavascriptOptimizerBrowserTest_FamiliarityCheckSkip,
+      public testing::WithParamInterface<bool> {
+ public:
+  JavascriptOptimizerBrowserTest_FamiliarityCheckSkipParam() = default;
+  ~JavascriptOptimizerBrowserTest_FamiliarityCheckSkipParam() override =
+      default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    JavascriptOptimizerBrowserTest_FamiliarityCheckSkip::SetUpCommandLine(
+        command_line);
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          features::kOriginKeyedProcessesByDefault);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          features::kOriginKeyedProcessesByDefault);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(JavascriptOptimizerBrowserTest_FamiliarityCheckSkipParam,
+                       SameSiteCrossOriginNavigation) {
+  const GURL kInitialUrl =
+      embedded_https_test_server().GetURL("a.com", "/simple.html");
+  const GURL kNextUrl =
+      embedded_https_test_server().GetURL("sub.a.com", "/title1.html");
+
+  // 1. Initial navigation to unfamiliar a.com.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), kInitialUrl));
+  EXPECT_EQ(1, tracking_db_manager()->GetQueryCountForUrl(kInitialUrl));
+  EXPECT_TRUE(AreV8OptimizationsDisabledOnActiveWebContents());
+
+  // 2. Reset query count.
+  tracking_db_manager()->ClearQueries();
+
+  // 3. Second navigation (same-site, cross-origin) to sub.a.com.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), kNextUrl));
+
+  if (GetParam()) {
+    // With OKPBD, they are in different processes, so the check is not skipped.
+    EXPECT_EQ(1, tracking_db_manager()->GetQueryCountForUrl(kNextUrl));
+  } else {
+    // Without OKPBD, they share a process, so the check is skipped.
+    EXPECT_EQ(0, tracking_db_manager()->GetQueryCountForUrl(kNextUrl));
+  }
+  EXPECT_TRUE(AreV8OptimizationsDisabledOnActiveWebContents());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    JavascriptOptimizerBrowserTest_FamiliarityCheckSkipParam,
+    ::testing::Bool(),
+    [](const testing::TestParamInfo<bool>& info) {
+      return info.param ? "WithOriginKeyedProcesses"
+                        : "WithoutOriginKeyedProcesses";
+    });
 IN_PROC_BROWSER_TEST_P(JavascriptOptimizerParamBrowserTest,
                        ExpectOptimizationCanBeEnabledForUnfamiliarOrigin) {
   const GURL kTestUrl =

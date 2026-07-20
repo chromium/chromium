@@ -37,6 +37,7 @@
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -49,6 +50,52 @@ const int kMinSiteEngagementScoreForFamiliarity =
         kMigrateToBlockV8OptimizerOnUnfamiliarSitesMinSiteEngagementScore
             .default_value;
 
+class CustomMockRenderProcessHost : public content::MockRenderProcessHost {
+ public:
+  explicit CustomMockRenderProcessHost(content::BrowserContext* browser_context)
+      : content::MockRenderProcessHost(browser_context) {}
+
+  bool AreV8OptimizationsDisabled() override { return are_v8_opts_disabled_; }
+
+  void SetAreV8OptimizationsDisabled(bool disabled) {
+    are_v8_opts_disabled_ = disabled;
+  }
+
+ private:
+  bool are_v8_opts_disabled_ = false;
+};
+
+class CustomMockRenderProcessHostFactory
+    : public content::MockRenderProcessHostFactory {
+ public:
+  CustomMockRenderProcessHostFactory() = default;
+  ~CustomMockRenderProcessHostFactory() override = default;
+
+  CustomMockRenderProcessHost* GetLastCreatedProcess() {
+    if (GetProcesses()->empty()) {
+      return nullptr;
+    }
+    return static_cast<CustomMockRenderProcessHost*>(
+        GetProcesses()->back().get());
+  }
+
+  CustomMockRenderProcessHost* FindProcess(
+      content::RenderProcessHost* raw_host) {
+    for (auto& process : *GetProcesses()) {
+      if (process.get() == raw_host) {
+        return static_cast<CustomMockRenderProcessHost*>(process.get());
+      }
+    }
+    return nullptr;
+  }
+
+ protected:
+  std::unique_ptr<content::MockRenderProcessHost> BuildRenderProcessHost(
+      content::BrowserContext* browser_context,
+      content::SiteInstance* site_instance) override {
+    return std::make_unique<CustomMockRenderProcessHost>(browser_context);
+  }
+};
 // MockSafeBrowsingDatabaseManager which enables adding URL to high confidence
 // allowlist.
 //
@@ -122,6 +169,14 @@ std::unique_ptr<KeyedService> BuildTestSiteEngagementService(
 class SiteFamiliarityProcessSelectionDeferringConditionTest
     : public ChromeRenderViewHostTestHarness {
  public:
+  SiteFamiliarityProcessSelectionDeferringConditionTest() {
+    SetRenderProcessHostFactory(&custom_rph_factory_);
+  }
+
+  ~SiteFamiliarityProcessSelectionDeferringConditionTest() override {
+    SetRenderProcessHostFactory(nullptr);
+  }
+
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
@@ -150,6 +205,9 @@ class SiteFamiliarityProcessSelectionDeferringConditionTest
     site_protection::SiteFamiliarityFetcher::ResetFamiliarUrlsForTesting();
     browser_process_->safe_browsing_service()->ShutDown();
     browser_process_->SetSafeBrowsingService(nullptr);
+
+    DeleteContents();
+    custom_rph_factory_.GetProcesses()->clear();
 
     ChromeRenderViewHostTestHarness::TearDown();
   }
@@ -211,6 +269,7 @@ class SiteFamiliarityProcessSelectionDeferringConditionTest
       safe_browsing_database_manager_;
   std::unique_ptr<safe_browsing::TestSafeBrowsingServiceFactory>
       safe_browsing_factory_;
+  CustomMockRenderProcessHostFactory custom_rph_factory_;
 };
 
 // Test that data URLs are considered unfamiliar.
@@ -1032,6 +1091,147 @@ TEST_F(SiteFamiliarityDefaultSearchEngineSkipFamiliarityCheckTest,
   CheckSiteUnfamiliar(navigation_handle);
   histogram_tester.ExpectTotalCount(
       kSiteFamiliarityDeferNavigationDurationHistogram, 1);
+}
+
+// SiteFamiliarityProcessSelectionDeferringConditionMockLookupTest subclass for
+// skip same-site checks tests.
+class SiteFamiliaritySameSiteSkipFamiliarityCheckTest
+    : public SiteFamiliarityProcessSelectionDeferringConditionMockLookupTest {
+ public:
+  SiteFamiliaritySameSiteSkipFamiliarityCheckTest() {
+    feature_list_.InitAndEnableFeature(
+        site_protection::kSkipSiteFamiliarityDeferralForSameSite);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class SiteFamiliaritySameSiteRunFamiliarityCheckTest
+    : public SiteFamiliarityProcessSelectionDeferringConditionMockLookupTest {
+ public:
+  SiteFamiliaritySameSiteRunFamiliarityCheckTest() {
+    feature_list_.InitAndDisableFeature(
+        site_protection::kSkipSiteFamiliarityDeferralForSameSite);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test that same-site subframe navigation of a familiar main frame does not
+// defer and is familiar.
+TEST_F(SiteFamiliaritySameSiteSkipFamiliarityCheckTest,
+       SameSiteSubframeOfFamiliarMainFrame) {
+  GURL kMainFrameUrl("https://www.example.com/");
+  NavigateAndCommit(kMainFrameUrl);
+
+  GURL kSubframeUrl("https://www.example.com/page.html");
+  SetSiteEngagementScore(kSubframeUrl,
+                         kMinSiteEngagementScoreForFamiliarity - 1);
+
+  content::MockNavigationHandle navigation_handle(kSubframeUrl, main_rfh());
+  navigation_handle.set_is_in_primary_main_frame(false);
+
+  base::MockCallback<base::OnceClosure> mock_callback;
+  EXPECT_CALL(mock_callback, Run()).Times(0);
+
+  SiteFamiliarityProcessSelectionDeferringCondition condition(
+      navigation_handle);
+
+  // Proceed with process selection without deferral.
+  EXPECT_EQ(content::ProcessSelectionDeferringCondition::Result::kProceed,
+            condition.OnWillSelectFinalProcess(mock_callback.Get()));
+  CheckSiteFamiliar(navigation_handle);
+}
+
+// Test that same-site subframe navigation of an unfamiliar main frame does not
+// defer and is unfamiliar.
+TEST_F(SiteFamiliaritySameSiteSkipFamiliarityCheckTest,
+       SameSiteSubframeOfUnfamiliarMainFrame) {
+  GURL kMainFrameUrl("https://www.example.com/");
+  NavigateAndCommit(kMainFrameUrl);
+
+  // Mark the main frame process as having V8 optimizations disabled
+  // (unfamiliar).
+  CustomMockRenderProcessHost* main_mock_process =
+      custom_rph_factory_.FindProcess(main_rfh()->GetProcess());
+  ASSERT_TRUE(main_mock_process);
+  main_mock_process->SetAreV8OptimizationsDisabled(true);
+
+  GURL kSubframeUrl("https://www.example.com/page.html");
+  SetSiteEngagementScore(kSubframeUrl,
+                         kMinSiteEngagementScoreForFamiliarity - 1);
+
+  content::MockNavigationHandle navigation_handle(kSubframeUrl, main_rfh());
+  navigation_handle.set_is_in_primary_main_frame(false);
+
+  base::MockCallback<base::OnceClosure> mock_callback;
+  EXPECT_CALL(mock_callback, Run()).Times(0);
+
+  SiteFamiliarityProcessSelectionDeferringCondition condition(
+      navigation_handle);
+
+  // Proceed with process selection without deferral.
+  EXPECT_EQ(content::ProcessSelectionDeferringCondition::Result::kProceed,
+            condition.OnWillSelectFinalProcess(mock_callback.Get()));
+  CheckSiteUnfamiliar(navigation_handle);
+}
+
+// Test that same-site subframe navigation is deferred when the same-site skip
+// feature is disabled.
+TEST_F(SiteFamiliaritySameSiteRunFamiliarityCheckTest,
+       SameSiteSubframeDeferred) {
+  GURL kMainFrameUrl("https://www.example.com/");
+  NavigateAndCommit(kMainFrameUrl);
+
+  GURL kSubframeUrl("https://sub.example.com/page.html");
+  SetSiteEngagementScore(kSubframeUrl,
+                         kMinSiteEngagementScoreForFamiliarity - 1);
+
+  content::MockNavigationHandle navigation_handle(kSubframeUrl, main_rfh());
+  navigation_handle.set_is_in_primary_main_frame(false);
+
+  MockConditionCallback callback;
+  SiteFamiliarityProcessSelectionDeferringCondition condition(
+      navigation_handle);
+
+  EXPECT_EQ(content::ProcessSelectionDeferringCondition::Result::kDefer,
+            condition.OnWillSelectFinalProcess(callback.Get()));
+
+  // Complete history fetch.
+  raw_ptr<ManualCallbackEmptyHistoryService> mock_history_service =
+      static_cast<ManualCallbackEmptyHistoryService*>(history_service());
+  mock_history_service->RunNextCallback();
+  CheckSiteUnfamiliar(navigation_handle);
+}
+
+// Test that cross-site subframe navigation of a familiar main frame is
+// deferred.
+TEST_F(SiteFamiliaritySameSiteSkipFamiliarityCheckTest,
+       CrossSiteSubframeOfFamiliarMainFrame) {
+  GURL kMainFrameUrl("https://www.example.com/");
+  NavigateAndCommit(kMainFrameUrl);
+
+  GURL kSubframeUrl("https://www.unrelated.com/page.html");
+  SetSiteEngagementScore(kSubframeUrl,
+                         kMinSiteEngagementScoreForFamiliarity - 1);
+
+  content::MockNavigationHandle navigation_handle(kSubframeUrl, main_rfh());
+  navigation_handle.set_is_in_primary_main_frame(false);
+
+  MockConditionCallback callback;
+  SiteFamiliarityProcessSelectionDeferringCondition condition(
+      navigation_handle);
+
+  EXPECT_EQ(content::ProcessSelectionDeferringCondition::Result::kDefer,
+            condition.OnWillSelectFinalProcess(callback.Get()));
+
+  // Complete history fetch.
+  raw_ptr<ManualCallbackEmptyHistoryService> mock_history_service =
+      static_cast<ManualCallbackEmptyHistoryService*>(history_service());
+  mock_history_service->RunNextCallback();
+  CheckSiteUnfamiliar(navigation_handle);
 }
 
 // SiteFamiliarityDefaultSearchEngineTestBase subclass for tests that run site
