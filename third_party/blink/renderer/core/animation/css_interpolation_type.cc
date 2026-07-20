@@ -434,7 +434,8 @@ void CSSInterpolationType::Apply(
   StyleResolverState& state = environment.GetState();
 
   if (GetProperty().IsCSSCustomProperty()) {
-    ApplyCustomPropertyValue(interpolable_value, non_interpolable_value, state);
+    ApplyCustomPropertyValue(interpolable_value, non_interpolable_value,
+                             environment);
     return;
   }
 
@@ -451,16 +452,22 @@ void CSSInterpolationType::Apply(
 void CSSInterpolationType::ApplyCustomPropertyValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue* non_interpolable_value,
-    StyleResolverState& state) const {
+    CSSInterpolationEnvironment& environment) const {
   DCHECK(GetProperty().IsCSSCustomProperty());
 
+  StyleResolverState& state = environment.GetState();
   const CSSValue* css_value =
       CreateCSSValue(interpolable_value, non_interpolable_value, state);
   DCHECK(!css_value->IsUnparsedDeclaration());
+  CSSProperty::ValueModeFlags value_mode_flags =
+      static_cast<CSSProperty::ValueModeFlags>(
+          StyleBuilder::ValueMode::kAnimated);
+  if (environment.IsAttrTainted()) {
+    value_mode_flags |= static_cast<CSSProperty::ValueModeFlags>(
+        StyleBuilder::ValueMode::kAttrTainted);
+  }
   StyleBuilder::ApplyProperty(GetProperty().GetCSSPropertyName(), state,
-                              *css_value,
-                              static_cast<CSSProperty::ValueModeFlags>(
-                                  StyleBuilder::ValueMode::kAnimated));
+                              *css_value, value_mode_flags);
 }
 
 }  // namespace blink

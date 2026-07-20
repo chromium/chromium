@@ -47,14 +47,16 @@ class CORE_EXPORT TransitionInterpolation : public Interpolation {
                           InterpolationValue&& start,
                           InterpolationValue&& end,
                           CompositorKeyframeValue* compositor_start,
-                          CompositorKeyframeValue* compositor_end)
+                          CompositorKeyframeValue* compositor_end,
+                          bool is_attr_tainted = false)
       : property_(property),
         type_(type),
         start_(std::move(start)),
         end_(std::move(end)),
         merge_(type->MaybeMergeSingles(start_.Clone(), end_.Clone())),
         compositor_start_(compositor_start),
-        compositor_end_(compositor_end) {
+        compositor_end_(compositor_end),
+        is_attr_tainted_(is_attr_tainted) {
     // Incredibly speculative CHECKs, to try and get any insight on
     // crbug.com/826627. Somehow a crash is happening in this constructor, which
     // we believe is based on |start_| having no interpolable value. However a
@@ -108,6 +110,7 @@ class CORE_EXPORT TransitionInterpolation : public Interpolation {
   const PairwiseInterpolationValue merge_;
   const Member<CompositorKeyframeValue> compositor_start_;
   const Member<CompositorKeyframeValue> compositor_end_;
+  const bool is_attr_tainted_;
 
   mutable std::optional<double> cached_fraction_;
   mutable int cached_iteration_ = 0;

@@ -97,8 +97,8 @@ TransitionKeyframe::CreatePropertySpecificKeyframe(
   EffectModel::CompositeOperation composite =
       composite_.value_or(effect_composite);
   return MakeGarbageCollected<PropertySpecificKeyframe>(
-      CheckedOffset(), &Easing(), composite, value_->Clone(),
-      compositor_value_);
+      CheckedOffset(), &Easing(), composite, value_->Clone(), compositor_value_,
+      is_attr_tainted_);
 }
 
 Interpolation*
@@ -110,8 +110,8 @@ TransitionKeyframe::PropertySpecificKeyframe::CreateInterpolation(
   DCHECK(value_->GetType() == other.value_->GetType());
   return MakeGarbageCollected<TransitionInterpolation>(
       property, value_->GetType(), value_->Value().Clone(),
-      other.value_->Value().Clone(), compositor_value_,
-      other.compositor_value_);
+      other.value_->Value().Clone(), compositor_value_, other.compositor_value_,
+      is_attr_tainted_ || other.is_attr_tainted_);
 }
 
 void TransitionKeyframe::PropertySpecificKeyframe::Trace(

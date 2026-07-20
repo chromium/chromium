@@ -51,7 +51,8 @@ class CORE_EXPORT TransitionKeyframe : public Keyframe {
                  copy_from.composite_,
                  copy_from.easing_),
         value_(copy_from.value_->Clone()),
-        compositor_value_(copy_from.compositor_value_) {}
+        compositor_value_(copy_from.compositor_value_),
+        is_attr_tainted_(copy_from.is_attr_tainted_) {}
 
   void SetValue(TypedInterpolationValue* value) {
     // Speculative CHECK to help investigate crbug.com/826627. The theory is
@@ -63,6 +64,9 @@ class CORE_EXPORT TransitionKeyframe : public Keyframe {
     value_ = value;
   }
   void SetCompositorValue(CompositorKeyframeValue*);
+  void SetIsAttrTainted(bool is_attr_tainted) {
+    is_attr_tainted_ = is_attr_tainted;
+  }
   void AddKeyframePropertiesToV8Object(V8ObjectBuilder&,
                                        Element*) const override;
 
@@ -74,12 +78,14 @@ class CORE_EXPORT TransitionKeyframe : public Keyframe {
                              scoped_refptr<TimingFunction> easing,
                              EffectModel::CompositeOperation composite,
                              TypedInterpolationValue* value,
-                             CompositorKeyframeValue* compositor_value)
+                             CompositorKeyframeValue* compositor_value,
+                             bool is_attr_tainted)
         : Keyframe::PropertySpecificKeyframe(offset,
                                              std::move(easing),
                                              composite),
           value_(value),
-          compositor_value_(compositor_value) {}
+          compositor_value_(compositor_value),
+          is_attr_tainted_(is_attr_tainted) {}
 
     const CompositorKeyframeValue* GetCompositorKeyframeValue() const final {
       return compositor_value_.Get();
@@ -108,6 +114,7 @@ class CORE_EXPORT TransitionKeyframe : public Keyframe {
    private:
     Member<TypedInterpolationValue> value_;
     Member<CompositorKeyframeValue> compositor_value_;
+    bool is_attr_tainted_;
   };
 
  private:
@@ -128,6 +135,7 @@ class CORE_EXPORT TransitionKeyframe : public Keyframe {
 
   Member<TypedInterpolationValue> value_;
   Member<CompositorKeyframeValue> compositor_value_;
+  bool is_attr_tainted_ = false;
 };
 
 using TransitionPropertySpecificKeyframe =

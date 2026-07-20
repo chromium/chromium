@@ -80,6 +80,14 @@ class CSSInterpolationEnvironment {
                           const CSSValue*,
                           const TreeScope*) const;
 
+  // Set by the caller of InterpolationType::Apply when one of the values
+  // being interpolated originated from attr(), so that the applied value can
+  // be marked as attr-tainted.
+  bool IsAttrTainted() const { return is_attr_tainted_; }
+  void SetIsAttrTainted(bool is_attr_tainted) {
+    is_attr_tainted_ = is_attr_tainted;
+  }
+
  private:
   const InterpolationTypesMap& interpolation_types_map_;
   StyleResolverState* state_ = nullptr;
@@ -87,6 +95,7 @@ class CSSInterpolationEnvironment {
   const ComputedStyle* animation_controls_style_ = nullptr;
   StyleCascade* cascade_ = nullptr;
   CascadeResolver* cascade_resolver_ = nullptr;
+  bool is_attr_tainted_ = false;
 };
 
 }  // namespace blink

@@ -117,7 +117,7 @@ class CORE_EXPORT CSSInterpolationType : public InterpolationType {
 
   void ApplyCustomPropertyValue(const InterpolableValue&,
                                 const NonInterpolableValue*,
-                                StyleResolverState&) const;
+                                CSSInterpolationEnvironment&) const;
 
   WeakMember<const PropertyRegistration> registration_;
 };

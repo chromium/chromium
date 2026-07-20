@@ -32,11 +32,8 @@ class CORE_EXPORT CSSDefaultNonInterpolableValue final
 
  private:
   Member<const CSSValue> css_value_;
-  // Currently, only non-interpolable <string> types can be used within <url>
-  // types in CSS. If interpolable types (e.g., <integer>) become usable within
-  // <url> types in the future (perhaps via a hypothetical 'concat()' function),
-  // we will need to add an `is_attr_tainted_` flag to other InterpolableValue
-  // types as well.
+  // Interpolable types (e.g., <number>) are handled via TransitionKeyframe and
+  // CSSInterpolationEnvironment::IsAttrTainted() instead.
   bool is_attr_tainted_;
 };
 
