@@ -2059,8 +2059,15 @@ class AXPosition {
                            : ax::mojom::MoveDirection::kBackward);
     }
     // It could be that there are no unignored positions that can be rooted
-    // at the current anchor. In such case, we return a null position.
+    // at the current anchor.
     if (new_position->IsIgnored()) {
+      // If the anchor itself is unignored, its end is still a valid boundary
+      // rooted on this node, even when the leaf equivalent is ignored because
+      // the anchor's text is followed by ignored content. Returning null here
+      // would drop the anchor's last line.
+      if (!GetAnchor()->IsIgnored()) {
+        return Clone();
+      }
       return CreateNullPosition();
     }
 

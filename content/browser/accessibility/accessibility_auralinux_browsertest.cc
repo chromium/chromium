@@ -509,6 +509,41 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
+                       TestLastLineTextAtOffsetWithTrailingIgnoredContent) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(<!DOCTYPE html>
+      <style>
+        pre { position: relative; white-space: pre; }
+        pre > code { display: block; white-space: inherit; }
+        .line-numbers { position: absolute; top: 0; left: -3.2em; }
+        .line-numbers > span { display: block; counter-increment: ln; }
+        .line-numbers > span:before { content: counter(ln); display: block; }
+      </style>
+      <pre><code>L1
+L2
+L3
+<span aria-hidden="true" class="line-numbers"><span></span><span></span>
+<span></span></span></code></pre>)HTML");
+
+  // The <code> element is exposed as a static text object.
+  AtkText* atk_text = FindNode(ATK_ROLE_STATIC);
+  ASSERT_NE(nullptr, atk_text);
+
+  ASSERT_EQ(9, atk_text_get_character_count(atk_text));
+
+  for (int i = 0; i < 3; ++i) {
+    CheckTextAtOffset(atk_text, i, ATK_TEXT_BOUNDARY_LINE_START, 0, 3, "L1\n");
+  }
+  for (int i = 3; i < 6; ++i) {
+    CheckTextAtOffset(atk_text, i, ATK_TEXT_BOUNDARY_LINE_START, 3, 6, "L2\n");
+  }
+  for (int i = 6; i < 9; ++i) {
+    CheckTextAtOffset(atk_text, i, ATK_TEXT_BOUNDARY_LINE_START, 6, 9, "L3\n");
+  }
+
+  g_object_unref(atk_text);
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
                        TestParagraphTextAtOffsetWithBoundarySentence) {
   LoadInitialAccessibilityTreeFromHtml(std::string(
       R"HTML(<!DOCTYPE html>

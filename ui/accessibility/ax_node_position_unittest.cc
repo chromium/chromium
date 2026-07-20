@@ -4561,6 +4561,121 @@ TEST_F(AXPositionTest, CreatePositionAtTextBoundaryContentStartEndIsIgnored) {
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, test_position->affinity());
 }
 
+TEST_F(AXPositionTest, CreatePositionAtLineBoundaryWithTrailingIgnoredContent) {
+  // A block whose text is immediately followed by an ignored leaf, e.g. a
+  // <code> element ending in an aria-hidden gutter.
+  // +-root_data
+  //   +-code_data           "L1\nL2"
+  //   | +-static_text_data_1 "L1"
+  //   | | +-inline_box_data_1 "L1"
+  //   | +-line_break_data    "\n"
+  //   | +-static_text_data_2 "L2"
+  //   | | +-inline_box_data_2 "L2"
+  //   | +-gutter_data IGNORED
+  //   |   +-gutter_text_data IGNORED "12"
+  constexpr AXNodeID kRootId = 1;
+  constexpr AXNodeID kCodeId = 2;
+  constexpr AXNodeID kStaticText1Id = 3;
+  constexpr AXNodeID kInlineBox1Id = 4;
+  constexpr AXNodeID kLineBreakId = 5;
+  constexpr AXNodeID kStaticText2Id = 6;
+  constexpr AXNodeID kInlineBox2Id = 7;
+  constexpr AXNodeID kGutterId = 8;
+  constexpr AXNodeID kGutterTextId = 9;
+
+  AXNodeData root_data;
+  root_data.id = kRootId;
+  root_data.role = ax::mojom::Role::kRootWebArea;
+
+  AXNodeData code_data;
+  code_data.id = kCodeId;
+  code_data.role = ax::mojom::Role::kGenericContainer;
+  code_data.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                             true);
+
+  AXNodeData static_text_data_1;
+  static_text_data_1.id = kStaticText1Id;
+  static_text_data_1.role = ax::mojom::Role::kStaticText;
+  static_text_data_1.SetName("L1");
+
+  AXNodeData inline_box_data_1;
+  inline_box_data_1.id = kInlineBox1Id;
+  inline_box_data_1.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_data_1.SetName("L1");
+  inline_box_data_1.AddIntAttribute(ax::mojom::IntAttribute::kNextOnLineId,
+                                    kLineBreakId);
+
+  AXNodeData line_break_data;
+  line_break_data.id = kLineBreakId;
+  line_break_data.role = ax::mojom::Role::kLineBreak;
+  line_break_data.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  line_break_data.SetName("\n");
+  line_break_data.AddIntAttribute(ax::mojom::IntAttribute::kPreviousOnLineId,
+                                  kInlineBox1Id);
+
+  AXNodeData static_text_data_2;
+  static_text_data_2.id = kStaticText2Id;
+  static_text_data_2.role = ax::mojom::Role::kStaticText;
+  static_text_data_2.SetName("L2");
+
+  AXNodeData inline_box_data_2;
+  inline_box_data_2.id = kInlineBox2Id;
+  inline_box_data_2.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_data_2.SetName("L2");
+
+  AXNodeData gutter_data;
+  gutter_data.id = kGutterId;
+  gutter_data.role = ax::mojom::Role::kGenericContainer;
+  gutter_data.AddState(ax::mojom::State::kIgnored);
+
+  AXNodeData gutter_text_data;
+  gutter_text_data.id = kGutterTextId;
+  gutter_text_data.role = ax::mojom::Role::kStaticText;
+  gutter_text_data.AddState(ax::mojom::State::kIgnored);
+  gutter_text_data.SetName("12");
+
+  root_data.child_ids = {code_data.id};
+  code_data.child_ids = {static_text_data_1.id, line_break_data.id,
+                         static_text_data_2.id, gutter_data.id};
+  static_text_data_1.child_ids = {inline_box_data_1.id};
+  static_text_data_2.child_ids = {inline_box_data_2.id};
+  gutter_data.child_ids = {gutter_text_data.id};
+
+  SetTree(CreateAXTree({root_data, code_data, static_text_data_1,
+                        inline_box_data_1, line_break_data, static_text_data_2,
+                        inline_box_data_2, gutter_data, gutter_text_data}));
+
+  // The block's unignored text is "L1\nL2". The first line's forward line start
+  // is the second line, confirming the block has two distinct lines.
+  TestPositionType text_position = CreateTextPosition(
+      code_data, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_position);
+  ASSERT_FALSE(text_position->IsIgnored());
+  TestPositionType line_position = text_position->CreatePositionAtTextBoundary(
+      ax::mojom::TextBoundary::kLineStart, ax::mojom::MoveDirection::kForward,
+      {AXBoundaryBehavior::kStopAtAnchorBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+  ASSERT_NE(nullptr, line_position);
+  EXPECT_TRUE(line_position->IsTextPosition());
+  EXPECT_EQ(code_data.id, line_position->anchor_id());
+  EXPECT_EQ(3, line_position->text_offset());
+
+  // The last line ("L2") starts at offset 3. Its forward line start runs off
+  // the end into the ignored gutter. The end of the block is a valid boundary
+  // rooted on the block, so this must not be null.
+  text_position = CreateTextPosition(code_data, 3 /* text_offset */,
+                                     ax::mojom::TextAffinity::kDownstream);
+  line_position = text_position->CreatePositionAtTextBoundary(
+      ax::mojom::TextBoundary::kLineStart, ax::mojom::MoveDirection::kForward,
+      {AXBoundaryBehavior::kStopAtAnchorBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+  ASSERT_NE(nullptr, line_position);
+  EXPECT_TRUE(line_position->IsTextPosition());
+  EXPECT_EQ(code_data.id, line_position->anchor_id());
+  EXPECT_EQ(5, line_position->text_offset());
+}
+
 TEST_F(AXPositionTest, CreatePositionAtInvalidGraphemeBoundary) {
   std::vector<int> text_offsets;
   SetTree(CreateMultilingualDocument(&text_offsets));
