@@ -9,15 +9,18 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
 #include "chrome/browser/ui/views/frame/system_menu_model_builder.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_top_container.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
@@ -83,6 +86,27 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
       WaitForShow(kTabSearchButtonElementId),
       // Send Press to Vertical Tabs Tab Search Button
       SendTabSearchAccelerator(), WaitForShow(kTabSearchBubbleElementId));
+}
+
+// This test checks that we can click the tab group button in the top
+// container of the vertical tab strip
+IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
+                       VerifyTabGroupButton) {
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kEverythingMenuPinnedToTabstrip, true);
+  RunTestSequence(
+      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+                  1),
+      WaitForShow(kVerticalTabStripTopContainerElementId),
+      WaitForShow(kSavedTabGroupButtonElementId),
+      PressButton(kSavedTabGroupButtonElementId,
+                  ui::test::InteractionTestUtil::InputType::kDontCare),
+      EnsurePresent(tab_groups::STGEverythingMenu::kCreateNewTabGroup),
+      SelectMenuItem(tab_groups::STGEverythingMenu::kCreateNewTabGroup),
+      WaitForShow(kTabGroupHeaderElementId),
+      WaitForShow(kTabGroupEditorBubbleId),
+      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+                  2));
 }
 
 // This test checks that we can click the collapse button in the vertical tab

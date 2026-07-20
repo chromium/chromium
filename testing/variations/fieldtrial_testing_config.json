@@ -20786,30 +20786,6 @@
             ]
         }
     ],
-    "ProjectsPanel": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "include_threads_in_projects_panel": "true"
-                    },
-                    "enable_features": [
-                        "IPH_ResumptionRail",
-                        "ProjectsPanel",
-                        "SyncAIThreads",
-                        "SyncGeminiThreads"
-                    ]
-                }
-            ]
-        }
-    ],
     "ProvisionalNotificationAlert": [
         {
             "platforms": [
