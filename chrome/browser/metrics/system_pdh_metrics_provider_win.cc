@@ -6,10 +6,14 @@
 
 #include <windows.h>
 
+#include <iterator>
+#include <numeric>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
@@ -58,6 +62,33 @@ std::string_view GetProcessTypeSuffix(content::ProcessType process_type) {
   }
 }
 
+struct CounterDefinition {
+  std::wstring_view counter_name;
+  std::string_view uma_name;
+  DWORD format;
+};
+
+constexpr CounterDefinition kProcessCounterDefinitions[] = {
+    {L"% User Time", "UserTime", PDH_FMT_DOUBLE},
+    {L"% Privileged Time", "PrivilegedTime", PDH_FMT_DOUBLE},
+    {L"Handle Count", "HandleCount", PDH_FMT_LONG},
+    {L"IO Data Bytes/sec", "IODataBytesPerSec", PDH_FMT_LARGE},
+    {L"IO Data Operations/sec", "IODataOperationsPerSec", PDH_FMT_LONG},
+    {L"IO Other Bytes/sec", "IOOtherBytesPerSec", PDH_FMT_LARGE},
+    {L"IO Read Bytes/sec", "IOReadBytesPerSec", PDH_FMT_LARGE},
+    {L"IO Read Operations/sec", "IOReadOperationsPerSec", PDH_FMT_LONG},
+    {L"IO Write Bytes/sec", "IOWriteBytesPerSec", PDH_FMT_LARGE},
+    {L"IO Write Operations/sec", "IOWriteOperationsPerSec", PDH_FMT_LONG},
+    {L"Page Faults/sec", "PageFaultsPerSec", PDH_FMT_LONG},
+    {L"Page File Bytes", "PageFileBytes", PDH_FMT_LARGE},
+    {L"Page File Bytes Peak", "PageFileBytesPeak", PDH_FMT_LARGE},
+    {L"Private Bytes", "PrivateBytes", PDH_FMT_LARGE},
+    {L"Thread Count", "ThreadCount", PDH_FMT_LONG},
+    {L"Working Set", "WorkingSet", PDH_FMT_LARGE},
+    {L"Working Set - Private", "WorkingSetPrivate", PDH_FMT_LARGE},
+    {L"Working Set Peak", "WorkingSetPeak", PDH_FMT_LARGE},
+};
+
 }  // namespace
 
 namespace features {
@@ -82,6 +113,10 @@ const base::FeatureParam<int> kSystemPdhMetrics_DownsamplingFactor{
 const base::FeatureParam<base::TimeDelta> kSystemPdhMetrics_SamplingPeriod{
     &kSystemPdhMetrics, "system_pdh_metrics_sampling_period",
     base::Seconds(30)};
+
+const base::FeatureParam<int> kSystemPdhMetrics_MetricsPerProcess{
+    &kSystemPdhMetrics, "system_pdh_metrics_metrics_per_process",
+    std::size(kProcessCounterDefinitions)};
 
 }  // namespace features
 
@@ -325,6 +360,13 @@ SystemPdhMetricsProvider::PdhQueryHandler::ProcessCounter::ProcessCounter(
 SystemPdhMetricsProvider::PdhQueryHandler::ProcessCounter::~ProcessCounter() =
     default;
 
+SystemPdhMetricsProvider::PdhQueryHandler::ProcessCounter::ProcessCounter(
+    ProcessCounter&&) = default;
+
+SystemPdhMetricsProvider::PdhQueryHandler::ProcessCounter&
+SystemPdhMetricsProvider::PdhQueryHandler::ProcessCounter::operator=(
+    ProcessCounter&&) = default;
+
 void SystemPdhMetricsProvider::PdhQueryHandler::ProcessCounter::Record() {
   if (!counter_handle_.is_valid()) {
     return;
@@ -385,7 +427,7 @@ void SystemPdhMetricsProvider::PdhQueryHandler::
     StartListeningToProcessPdhMetrics(content::ChildProcessId content_id,
                                       base::ProcessId pid,
                                       std::string process_type_name) {
-  auto [it, inserted] = process_counters_.try_emplace(content_id, nullptr);
+  auto [it, inserted] = process_counters_.try_emplace(content_id);
   if (!inserted) {
     // Already tracking this process.
     return;
@@ -394,45 +436,28 @@ void SystemPdhMetricsProvider::PdhQueryHandler::
   // Format the instance name as expected by "Process V2".
   std::wstring instance_name =
       base::StrCat({process_base_name_, L":", base::NumberToWString(pid)});
+  const int metrics_per_process =
+      features::kSystemPdhMetrics_MetricsPerProcess.Get();
+  const size_t num_definitions = std::size(kProcessCounterDefinitions);
 
-  it->second = base::WrapUnique<ProcessCounterArray>(new ProcessCounterArray{
-      ProcessCounter{pdh_query_, instance_name, L"% User Time", "UserTime",
-                     process_type_name, PDH_FMT_DOUBLE},
-      ProcessCounter{pdh_query_, instance_name, L"% Privileged Time",
-                     "PrivilegedTime", process_type_name, PDH_FMT_DOUBLE},
-      ProcessCounter{pdh_query_, instance_name, L"Handle Count", "HandleCount",
-                     process_type_name, PDH_FMT_LONG},
-      ProcessCounter{pdh_query_, instance_name, L"IO Data Bytes/sec",
-                     "IODataBytesPerSec", process_type_name, PDH_FMT_LARGE},
-      ProcessCounter{pdh_query_, instance_name, L"IO Data Operations/sec",
-                     "IODataOperationsPerSec", process_type_name, PDH_FMT_LONG},
-      ProcessCounter{pdh_query_, instance_name, L"IO Other Bytes/sec",
-                     "IOOtherBytesPerSec", process_type_name, PDH_FMT_LARGE},
-      ProcessCounter{pdh_query_, instance_name, L"IO Read Bytes/sec",
-                     "IOReadBytesPerSec", process_type_name, PDH_FMT_LARGE},
-      ProcessCounter{pdh_query_, instance_name, L"IO Read Operations/sec",
-                     "IOReadOperationsPerSec", process_type_name, PDH_FMT_LONG},
-      ProcessCounter{pdh_query_, instance_name, L"IO Write Bytes/sec",
-                     "IOWriteBytesPerSec", process_type_name, PDH_FMT_LARGE},
-      ProcessCounter{pdh_query_, instance_name, L"IO Write Operations/sec",
-                     "IOWriteOperationsPerSec", process_type_name,
-                     PDH_FMT_LONG},
-      ProcessCounter{pdh_query_, instance_name, L"Page Faults/sec",
-                     "PageFaultsPerSec", process_type_name, PDH_FMT_LONG},
-      ProcessCounter{pdh_query_, instance_name, L"Page File Bytes",
-                     "PageFileBytes", process_type_name, PDH_FMT_LARGE},
-      ProcessCounter{pdh_query_, instance_name, L"Page File Bytes Peak",
-                     "PageFileBytesPeak", process_type_name, PDH_FMT_LARGE},
-      ProcessCounter{pdh_query_, instance_name, L"Private Bytes",
-                     "PrivateBytes", process_type_name, PDH_FMT_LARGE},
-      ProcessCounter{pdh_query_, instance_name, L"Thread Count", "ThreadCount",
-                     process_type_name, PDH_FMT_LONG},
-      ProcessCounter{pdh_query_, instance_name, L"Working Set", "WorkingSet",
-                     process_type_name, PDH_FMT_LARGE},
-      ProcessCounter{pdh_query_, instance_name, L"Working Set - Private",
-                     "WorkingSetPrivate", process_type_name, PDH_FMT_LARGE},
-      ProcessCounter{pdh_query_, instance_name, L"Working Set Peak",
-                     "WorkingSetPeak", process_type_name, PDH_FMT_LARGE}});
+  if (metrics_per_process <= 0 ||
+      static_cast<size_t>(metrics_per_process) > num_definitions) {
+    return;
+  }
+
+  std::vector<size_t> indices(num_definitions);
+  std::iota(indices.begin(), indices.end(), 0);
+  base::RandomShuffle(indices.begin(), indices.end());
+  indices.resize(metrics_per_process);
+  base::span<const CounterDefinition> definitions(kProcessCounterDefinitions);
+
+  it->second.reserve(indices.size());
+  for (size_t index : indices) {
+    it->second.emplace_back(pdh_query_, instance_name,
+                            definitions[index].counter_name,
+                            definitions[index].uma_name, process_type_name,
+                            definitions[index].format);
+  }
 }
 
 void SystemPdhMetricsProvider::PdhQueryHandler::
@@ -449,7 +474,7 @@ void SystemPdhMetricsProvider::PdhQueryHandler::Sample() {
   }
 
   for (auto& [pid, counters] : process_counters_) {
-    for (auto& counter : *counters) {
+    for (auto& counter : counters) {
       counter.Record();
     }
   }

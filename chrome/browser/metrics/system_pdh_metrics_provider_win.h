@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_METRICS_SYSTEM_PDH_METRICS_PROVIDER_WIN_H_
 #define CHROME_BROWSER_METRICS_SYSTEM_PDH_METRICS_PROVIDER_WIN_H_
 
-#include <array>
 #include <memory>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
@@ -33,6 +33,7 @@ BASE_DECLARE_FEATURE(kSystemPdhMetrics);
 extern const base::FeatureParam<int> kSystemPdhMetrics_DownsamplingFactor;
 extern const base::FeatureParam<base::TimeDelta>
     kSystemPdhMetrics_SamplingPeriod;
+extern const base::FeatureParam<int> kSystemPdhMetrics_MetricsPerProcess;
 
 }  // namespace features
 
@@ -117,7 +118,9 @@ class SystemPdhMetricsProvider : public metrics::MetricsProvider {
                      DWORD format);
       ~ProcessCounter();
       ProcessCounter(const ProcessCounter&) = delete;
-      ProcessCounter operator=(const ProcessCounter&) = delete;
+      ProcessCounter& operator=(const ProcessCounter&) = delete;
+      ProcessCounter(ProcessCounter&&);
+      ProcessCounter& operator=(ProcessCounter&&);
 
       void Record();
 
@@ -133,18 +136,16 @@ class SystemPdhMetricsProvider : public metrics::MetricsProvider {
       // recorded with a ".FirstSample" suffix.
       bool first_emission_ = true;
 
-      const std::string uma_name_;
-      const std::string process_type_suffix_;
-      const DWORD format_;
+      std::string uma_name_;
+      std::string process_type_suffix_;
+      DWORD format_;
     };
 
     // Initialized during metric recording, and cleared when stopped.
     base::win::ScopedPdhQuery pdh_query_;
 
     // Must be destroyed before `pdh_query_`.
-    using ProcessCounterArray = std::array<ProcessCounter, 18>;
-    absl::flat_hash_map<content::ChildProcessId,
-                        std::unique_ptr<ProcessCounterArray>>
+    absl::flat_hash_map<content::ChildProcessId, std::vector<ProcessCounter>>
         process_counters_;
 
     // This is the name without extension of the current exe binary name. For

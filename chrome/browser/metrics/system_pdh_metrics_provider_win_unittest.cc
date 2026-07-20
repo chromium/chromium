@@ -12,6 +12,7 @@
 #include "base/process/process_handle.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/win/scoped_pdh_query.h"
@@ -146,5 +147,77 @@ TEST_F(PdhMetricsProviderTest, RecordsChildProcessHistograms) {
   } else {
     histogram_tester_.ExpectTotalCount(
         base::win::ScopedPdhQuery::kQueryErrorHistogram, 18);
+  }
+}
+
+TEST_F(PdhMetricsProviderTest, RecordsSubsetOfChildProcessHistograms) {
+  if (base::win::GetVersion() < base::win::Version::WIN11) {
+    GTEST_SKIP() << "Not supported prior to Win11";
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kSystemPdhMetrics,
+      {{"system_pdh_metrics_metrics_per_process", "3"}});
+
+  SystemPdhMetricsProvider provider;
+  provider.OnRecordingEnabled();
+
+  // Windows requires at least one second to have passed between recordings of
+  // the performance counters.
+  environment_.FastForwardBy(base::Seconds(35));
+  base::PlatformThread::Sleep(base::Seconds(1));
+  environment_.FastForwardBy(base::Seconds(30));
+  base::PlatformThread::Sleep(base::Seconds(1));
+  environment_.FastForwardBy(base::Seconds(30));
+
+  // -1073738824 is PDH_CSTATUS_NO_OBJECT, which occurs if the performance
+  // counter object is unavailable in this environment (e.g. on test bots/VMs).
+  // If no such error occurred, verify that metrics were recorded.
+  if (histogram_tester_.GetBucketCount(
+          base::win::ScopedPdhQuery::kQueryErrorHistogram, -1073738824) == 0) {
+    static constexpr std::string_view kMetrics[] = {
+        "UserTime",
+        "PrivilegedTime",
+        "HandleCount",
+        "IODataBytesPerSec",
+        "IODataOperationsPerSec",
+        "IOOtherBytesPerSec",
+        "IOReadBytesPerSec",
+        "IOReadOperationsPerSec",
+        "IOWriteBytesPerSec",
+        "IOWriteOperationsPerSec",
+        "PageFaultsPerSec",
+        "PageFileBytes",
+        "PageFileBytesPeak",
+        "PrivateBytes",
+        "ThreadCount",
+        "WorkingSet",
+        "WorkingSetPrivate",
+        "WorkingSetPeak",
+    };
+
+    int recorded_metrics_count = 0;
+    for (std::string_view metric : kMetrics) {
+      std::string name = base::StrCat(
+          {"Windows.Experimental.Pdh.ProcessV2.", metric, ".Browser"});
+      size_t count = histogram_tester_.GetTotalCountsForPrefix(name).size();
+      if (count > 0) {
+        ++recorded_metrics_count;
+        histogram_tester_.ExpectTotalCount(name, 1);
+        histogram_tester_.ExpectTotalCount(base::StrCat({name, ".FirstSample"}),
+                                           1);
+      }
+    }
+
+    EXPECT_EQ(recorded_metrics_count, 3);
+
+    histogram_tester_.ExpectTotalCount(
+        base::win::ScopedPdhQuery::kQueryErrorHistogram, 0);
+    histogram_tester_.ExpectTotalCount(
+        base::win::ScopedPdhQuery::kResultErrorHistogram, 0);
+  } else {
+    histogram_tester_.ExpectTotalCount(
+        base::win::ScopedPdhQuery::kQueryErrorHistogram, 3);
   }
 }
