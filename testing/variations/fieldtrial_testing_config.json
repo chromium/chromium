@@ -14177,21 +14177,6 @@
             ]
         }
     ],
-    "IOSFRESignInSecondaryActionLabelUpdateHoldback": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "PreviousCTA",
-                    "disable_features": [
-                        "FRESignInSecondaryActionLabelUpdate"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSFastApplicationWillTerminate": [
         {
             "platforms": [

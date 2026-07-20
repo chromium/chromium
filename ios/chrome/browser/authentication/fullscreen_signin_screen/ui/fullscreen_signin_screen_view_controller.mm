@@ -426,25 +426,10 @@ NSString* const kCollaborationSigninHeaderBackground =
             l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_STAY_SIGNED_OUT);
       }
       break;
-    case SigninContextStyle::kDefault: {
-      if (FRESignInSecondaryActionLabelUpdate()) {
-        std::string signinValue =
-            kFRESignInSecondaryActionLabelUpdateParam.Get();
-        if (signinValue ==
-            kFRESignInSecondaryActionLabelUpdateParamStaySignedOut) {
-          self.configuration.secondaryActionString =
-              l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_STAY_SIGNED_OUT);
-        } else {
-          // Fallback action when no valid value is provided.
-          self.configuration.secondaryActionString =
-              l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_DONT_SIGN_IN);
-        }
-      } else {
-        // When the feature flag is disabled, default to the original string
-        self.configuration.secondaryActionString =
-            l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_DONT_SIGN_IN);
-      }
-    } break;
+    case SigninContextStyle::kDefault:
+      self.configuration.secondaryActionString =
+          l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_STAY_SIGNED_OUT);
+      break;
   }
 }
 

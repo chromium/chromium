@@ -280,7 +280,7 @@ void CompleteSigninFlow() {
   // Check that there isn't the button to skip sign-in.
   [[EarlGrey
       selectElementWithMatcher:grey_text(l10n_util::GetNSString(
-                                   IDS_IOS_FIRST_RUN_SIGNIN_DONT_SIGN_IN))]
+                                   IDS_IOS_FIRST_RUN_SIGNIN_STAY_SIGNED_OUT))]
       assertWithMatcher:grey_nil()];
 
   // Touch the continue button to go to the next screen.
@@ -359,7 +359,7 @@ void CompleteSigninFlow() {
   // Check that there isn't the button to skip sign-in.
   [[EarlGrey
       selectElementWithMatcher:grey_text(l10n_util::GetNSString(
-                                   IDS_IOS_FIRST_RUN_SIGNIN_DONT_SIGN_IN))]
+                                   IDS_IOS_FIRST_RUN_SIGNIN_STAY_SIGNED_OUT))]
       assertWithMatcher:grey_nil()];
   ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
       initWithAccessPoint:signin_metrics::AccessPoint::kForcedSignin];

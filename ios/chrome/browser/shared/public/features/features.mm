@@ -451,20 +451,6 @@ bool FRESignInHeaderTextUpdate() {
   return base::FeatureList::IsEnabled(kFRESignInHeaderTextUpdate);
 }
 
-constexpr base::FeatureParam<std::string>
-    kFRESignInSecondaryActionLabelUpdateParam{
-        &kFRESignInSecondaryActionLabelUpdate,
-        "FRESignInSecondaryActionLabelUpdateParam", "StaySignedOut"};
-
-const std::string_view kFRESignInSecondaryActionLabelUpdateParamStaySignedOut =
-    "StaySignedOut";
-
-BASE_FEATURE(kFRESignInSecondaryActionLabelUpdate,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool FRESignInSecondaryActionLabelUpdate() {
-  return base::FeatureList::IsEnabled(kFRESignInSecondaryActionLabelUpdate);
-}
 
 BASE_FEATURE(kIOSPushNotificationMultiProfile,
              base::FEATURE_ENABLED_BY_DEFAULT);
