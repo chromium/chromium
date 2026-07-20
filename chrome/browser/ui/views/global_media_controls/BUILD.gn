@@ -27,6 +27,7 @@ source_set("global_media_controls") {
     "//chrome/browser/ui/media_router",
     "//chrome/browser/ui/views/controls",
     "//chrome/browser/ui/views/location_bar:icon_label_bubble",
+    "//chrome/browser/ui/views/media_router",
     "//chrome/browser/ui/views/toolbar",
     "//components/global_media_controls",
     "//components/media_message_center",

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
+import("//build/config/ui.gni")
 import("//content/public/common/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
@@ -477,6 +478,10 @@ source_set("impl") {
       "//chrome/browser/media/router:media_router_feature",
       "//media/mojo/mojom:remoting",
     ]
+
+    if (toolkit_views) {
+      deps += [ "//chrome/browser/ui/views/media_router" ]
+    }
   }
 
   if (enable_extensions) {

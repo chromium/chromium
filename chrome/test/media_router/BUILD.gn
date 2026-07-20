@@ -39,6 +39,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/media_router",
     "//chrome/browser/ui/views/global_media_controls",
     "//chrome/browser/ui/views/global_media_controls:test_support",
+    "//chrome/browser/ui/views/media_router",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/common",
     "//chrome/test:test_support",
