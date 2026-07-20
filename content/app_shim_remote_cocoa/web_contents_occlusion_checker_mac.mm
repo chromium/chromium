@@ -405,6 +405,14 @@ bool IsBrowserProcess() {
         ![window containsWebContentsViewCocoa])
       continue;
 
+    // `WebContentsViewCocoa` handles hidden windows. Clear their occlusion
+    // state to avoid stale results if they are shown before the next AppKit
+    // update.
+    if (![window isVisible] && ![window isMiniaturized]) {
+      [window setOccluded:NO];
+      continue;
+    }
+
     [window setOccluded:[self isWindowOccluded:window
                                     windowList:windowsFromFrontToBack]];
   }

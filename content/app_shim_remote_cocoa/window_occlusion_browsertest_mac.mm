@@ -39,12 +39,14 @@ struct Version {
 }
 @property(assign, nonatomic) BOOL occludedForTesting;
 @property(assign, nonatomic) BOOL modifyingChildWindowList;
+@property(assign, nonatomic) BOOL forceHiddenForTesting;
 @end
 
 @implementation WebContentsHostWindowForOcclusionTesting
 
 @synthesize occludedForTesting = _occludedForTesting;
 @synthesize modifyingChildWindowList = _modifyingChildWindowList;
+@synthesize forceHiddenForTesting = _forceHiddenForTesting;
 
 - (NSWindowOcclusionState)occlusionState {
   return _occludedForTesting ? 0 : NSWindowOcclusionStateVisible;
@@ -77,6 +79,10 @@ struct Version {
   _modifyingChildWindowList = YES;
   [super removeChildWindow:childWindow];
   _modifyingChildWindowList = NO;
+}
+
+- (BOOL)isVisible {
+  return _forceHiddenForTesting ? NO : [super isVisible];
 }
 
 @end
@@ -1002,6 +1008,37 @@ IN_PROC_BROWSER_TEST_F(WindowOcclusionBrowserTestMac,
   WaitForOcclusionUpdate();
   EXPECT_EQ(WindowAWebContentsVisibility(),
             remote_cocoa::mojom::Visibility::kVisible);
+}
+
+IN_PROC_BROWSER_TEST_F(WindowOcclusionBrowserTestMac,
+                       HiddenWindowDoesNotPersistOcclusionState) {
+  InitWindowA();
+
+  EXPECT_EQ(WindowAWebContentsVisibility(),
+            remote_cocoa::mojom::Visibility::kVisible);
+
+  SetViewHidden(window_a_web_contents_view_cocoa_, YES);
+  EXPECT_EQ(WindowAWebContentsVisibility(),
+            remote_cocoa::mojom::Visibility::kHidden);
+
+  // Simulate an occlusion update after the window is hidden but before it
+  // leaves the ordered window list.
+  [window_a_ setForceHiddenForTesting:YES];
+  [window_a_ setOccludedForTesting:YES];
+  PostNotification(NSWindowDidChangeOcclusionStateNotification, window_a_);
+
+  EXPECT_FALSE([window_a_ isVisible]);
+  EXPECT_FALSE([window_a_ isOccluded]);
+  EXPECT_EQ(WindowAWebContentsVisibility(),
+            remote_cocoa::mojom::Visibility::kHidden);
+
+  // Unhide the view before AppKit reports the window as visible.
+  [window_a_ setForceHiddenForTesting:NO];
+  SetViewHidden(window_a_web_contents_view_cocoa_, NO);
+  EXPECT_EQ(WindowAWebContentsVisibility(),
+            remote_cocoa::mojom::Visibility::kVisible);
+
+  [window_a_ setOccludedForTesting:NO];
 }
 
 }  // namespace content
