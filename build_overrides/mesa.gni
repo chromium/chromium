@@ -3,7 +3,3 @@
 # found in the LICENSE file.
 
 mesa_meson_dir = "//third_party/dawn/third_party/meson/"
-mesa_options = [
-  "-Dgallium-drivers=llvmpipe",
-  "-Dvulkan-drivers=swrast",
-]
