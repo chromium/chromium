@@ -529,7 +529,7 @@ public class NewTabPageCoordinatorUnitTest {
         mCoordinator.setSearchBoxTextAppearance();
 
         int expectedStyle =
-                NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox()
+                mCoordinator.shouldApplyWhiteBackgroundOnSearchBox()
                         ? R.style.TextAppearance_FakeSearchBoxTextMediumDark
                         : R.style.TextAppearance_FakeSearchBoxTextMedium;
         verify(mMockSearchBox).setSearchBoxTextAppearance(eq(expectedStyle));
@@ -694,7 +694,7 @@ public class NewTabPageCoordinatorUnitTest {
         int logoTopMargin = resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_top);
         int expectedBottomMargin = NtpCustomizationUtils.getLogoViewBottomMarginPx(resources);
         int expectedStyle =
-                NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox()
+                mCoordinator.shouldApplyWhiteBackgroundOnSearchBox()
                         ? R.style.TextAppearance_FakeSearchBoxTextMediumDark
                         : R.style.TextAppearance_FakeSearchBoxTextMedium;
 

@@ -107,6 +107,14 @@ public class SearchBoxViewBinderUnitTest {
     }
 
     @Test
+    public void testApplyElevation() {
+        float expectedElevation =
+                mContext.getResources().getDimension(R.dimen.fake_search_box_elevation);
+        mPropertyModel.set(SearchBoxProperties.APPLY_ELEVATION, true);
+        assertEquals(expectedElevation, mSearchBoxLayout.getElevation(), 0.01f);
+    }
+
+    @Test
     public void testApplyWhiteBackground() {
         mPropertyModel.set(SearchBoxProperties.APPLY_WHITE_BACKGROUND, true);
         Drawable background = mSearchBoxLayout.getBackground();

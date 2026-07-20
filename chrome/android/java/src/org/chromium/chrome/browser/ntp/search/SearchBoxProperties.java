@@ -25,6 +25,7 @@ interface SearchBoxProperties {
             new WritableObjectPropertyKey<>();
     WritableBooleanPropertyKey AI_CHIP_VISIBILITY = new WritableBooleanPropertyKey();
     WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
+    WritableBooleanPropertyKey APPLY_ELEVATION = new WritableBooleanPropertyKey();
     WritableBooleanPropertyKey APPLY_WHITE_BACKGROUND = new WritableBooleanPropertyKey();
     WritableObjectPropertyKey<Drawable> DSE_ICON_DRAWABLE = new WritableObjectPropertyKey<>();
     WritableObjectPropertyKey<ColorStateList> DSE_ICON_TINT = new WritableObjectPropertyKey<>();
@@ -61,6 +62,7 @@ interface SearchBoxProperties {
                 AI_CHIP_CLICK_CALLBACK,
                 AI_CHIP_VISIBILITY,
                 ALPHA,
+                APPLY_ELEVATION,
                 APPLY_WHITE_BACKGROUND,
                 DSE_ICON_DRAWABLE,
                 DSE_ICON_TINT,

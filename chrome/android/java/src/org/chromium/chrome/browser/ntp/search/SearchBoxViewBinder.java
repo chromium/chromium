@@ -34,6 +34,8 @@ class SearchBoxViewBinder
                     model.get(SearchBoxProperties.AI_CHIP_VISIBILITY) ? View.VISIBLE : View.GONE);
         } else if (SearchBoxProperties.ALPHA == propertyKey) {
             view.setAlpha(model.get(SearchBoxProperties.ALPHA));
+        } else if (SearchBoxProperties.APPLY_ELEVATION == propertyKey) {
+            view.applyElevation(model.get(SearchBoxProperties.APPLY_ELEVATION));
         } else if (SearchBoxProperties.APPLY_WHITE_BACKGROUND == propertyKey) {
             view.applyWhiteBackground(model.get(SearchBoxProperties.APPLY_WHITE_BACKGROUND));
         } else if (SearchBoxProperties.DSE_ICON_DRAWABLE == propertyKey) {

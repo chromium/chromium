@@ -125,6 +125,21 @@ public class SearchBoxContainerView extends LinearLayout {
         ComposeplateUtils.applyWhiteBackground(getContext(), this, apply);
     }
 
+    /**
+     * Applies elevation to the search box.
+     *
+     * @param apply Whether to apply elevation to the search box.
+     */
+    void applyElevation(boolean apply) {
+        if (!apply) {
+            setElevation(0);
+            return;
+        }
+
+        float elevation = getResources().getDimension(R.dimen.fake_search_box_elevation);
+        setElevation(elevation);
+    }
+
     void setDseIconTint(@Nullable ColorStateList tint) {
         ImageViewCompat.setImageTintList(mDseIconView, tint);
     }

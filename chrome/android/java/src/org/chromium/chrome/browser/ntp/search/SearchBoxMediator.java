@@ -94,6 +94,7 @@ class SearchBoxMediator implements DestroyObserver {
         mModel.set(SearchBoxProperties.PLUS_BUTTON_CLICK_CALLBACK, this::onPlusButtonClick);
         mModel.set(SearchBoxProperties.LENS_CLICK_CALLBACK, this::onLensClick);
         mModel.set(SearchBoxProperties.AI_CHIP_CLICK_CALLBACK, this::onAiChipClick);
+        mModel.set(SearchBoxProperties.APPLY_ELEVATION, OmniboxCapabilities.isDesktopPlatform());
 
         updateAiChip();
         updateStartIcon();

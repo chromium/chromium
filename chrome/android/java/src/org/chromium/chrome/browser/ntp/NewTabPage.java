@@ -749,7 +749,7 @@ public class NewTabPage
         if (!mIsLff) {
             mUseLightIconTint = applyWhiteBackgroundOnSearchBox;
         }
-        mNewTabPageCoordinator.onCustomizedBackgroundChanged(applyWhiteBackgroundOnSearchBox);
+        mNewTabPageCoordinator.onCustomizedBackgroundChanged();
     }
 
     /** Initializes whether to use a light tint color on icons of toolbar and status bar. */

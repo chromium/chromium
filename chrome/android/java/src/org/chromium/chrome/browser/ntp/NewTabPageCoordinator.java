@@ -98,6 +98,7 @@ import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserv
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
@@ -416,8 +417,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
         // This should be called after both mNtpSearchBox and mComposeplateCoordinator are
         // initialized.
-        onCustomizedBackgroundChanged(
-                NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox());
+        onCustomizedBackgroundChanged();
 
         // This should called after flags of composeplate view are initialized.
         setSearchBoxHeightBoundsVerticalInset();
@@ -522,16 +522,19 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     void setSearchBoxTextAppearance() {
         if (mNtpSearchBox == null) return;
 
-        boolean shouldApplyWhiteBackground =
-                NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox();
-
-        if (shouldApplyWhiteBackground) {
+        if (shouldApplyWhiteBackgroundOnSearchBox()) {
             mNtpSearchBox.setSearchBoxTextAppearance(
                     R.style.TextAppearance_FakeSearchBoxTextMediumDark);
         } else {
             mNtpSearchBox.setSearchBoxTextAppearance(
                     R.style.TextAppearance_FakeSearchBoxTextMedium);
         }
+    }
+
+    @VisibleForTesting
+    boolean shouldApplyWhiteBackgroundOnSearchBox() {
+        return NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox()
+                || OmniboxCapabilities.isDesktopPlatform();
     }
 
     private void initializeComposeplateFlags(Profile profile) {
@@ -546,9 +549,6 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
         mIsComposeplateViewInitialized = true;
 
-        boolean shouldApplyWhiteBackgroundOnSearchBox =
-                NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox();
-
         ViewStub composeplateViewStub = mNewTabPageLayout.findViewById(R.id.composeplate_view_stub);
         ViewGroup composeplateView = (ViewGroup) composeplateViewStub.inflate();
         mComposeplateCoordinator = new ComposeplateCoordinator(composeplateView, mProfile);
@@ -558,7 +558,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         mComposeplateCoordinator.setComposeplateButtonClickListener(
                 this::onComposeplateButtonClicked);
 
-        if (shouldApplyWhiteBackgroundOnSearchBox) {
+        if (shouldApplyWhiteBackgroundOnSearchBox()) {
             // It is safe to call mComposeplateCoordinator.applyWhiteBackground() again since it is
             // no-op if the white background has been applied.
             mComposeplateCoordinator.applyWhiteBackground(/* apply= */ true);
@@ -1518,13 +1518,10 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         }
     }
 
-    /**
-     * Called when a customized background image is selected or deselected.
-     *
-     * @param applyWhiteBackgroundOnSearchBox Whether to apply a white background color to the fake
-     *     search box.
-     */
-    void onCustomizedBackgroundChanged(boolean applyWhiteBackgroundOnSearchBox) {
+    /** Called when a customized background image is selected or deselected. */
+    void onCustomizedBackgroundChanged() {
+        boolean applyWhiteBackgroundOnSearchBox = shouldApplyWhiteBackgroundOnSearchBox();
+
         // If shouldn't apply a white background and the background hasn't been updated before,
         // returns now.
         if (mIsWhiteBackgroundOnSearchBoxApplied == null && !applyWhiteBackgroundOnSearchBox) {

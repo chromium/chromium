@@ -224,6 +224,9 @@ found in the LICENSE file.
     <dimen name="omnibox_chip_padding_horizontal_expanded_start">8dp</dimen>
     <dimen name="omnibox_chip_padding_horizontal_expanded_end">12dp</dimen>
 
+    <!-- Fake Search Box -->
+    <dimen name="fake_search_box_elevation">3dp</dimen>
+
     <!-- AI Mode chip. -->
     <dimen name="ai_chip_corner_radius">36dp</dimen>
     <dimen name="ai_chip_vertical_inset">6dp</dimen>
