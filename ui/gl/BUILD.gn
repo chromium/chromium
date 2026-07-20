@@ -170,6 +170,8 @@ component("gl") {
     "scoped_binders.h",
     "scoped_egl_image.cc",
     "scoped_egl_image.h",
+    "scoped_gl_framebuffer.cc",
+    "scoped_gl_framebuffer.h",
     "scoped_gl_texture.cc",
     "scoped_gl_texture.h",
     "scoped_make_current.cc",
@@ -596,6 +598,7 @@ test("gl_unittests") {
     "gl_display_manager_unittest.cc",
     "gl_version_info_unittest.cc",
     "gpu_timing_unittest.cc",
+    "scoped_gl_framebuffer_unittest.cc",
     "test/egl_initialization_displays_unittest.cc",
   ]
 
