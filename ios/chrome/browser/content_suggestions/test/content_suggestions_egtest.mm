@@ -231,6 +231,7 @@ NSString* AccessibilityIdentifierForMostVisitedCellAtIndex(int index) {
 
   // Check the page has been correctly opened.
   [ChromeEarlGrey selectTabAtIndex:1];
+  [ChromeEarlGrey waitForPageToFinishLoading];
   [ChromeEarlGrey waitForWebStateVisibleURL:pageURL];
   [ChromeEarlGrey waitForWebStateContainingText:kPageLoadedString];
 }
@@ -250,6 +251,7 @@ NSString* AccessibilityIdentifierForMostVisitedCellAtIndex(int index) {
   [ChromeEarlGrey waitForIncognitoTabCount:1];
 
   // Check that the tab has been opened in foreground.
+  [ChromeEarlGrey waitForPageToFinishLoading];
   [ChromeEarlGrey waitForWebStateVisibleURL:pageURL];
   [ChromeEarlGrey waitForWebStateContainingText:kPageLoadedString];
 
