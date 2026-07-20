@@ -97,7 +97,7 @@ ui::TrackedElement* WebUIStubLocationBar::GetAnchorOrNull() {
   return nullptr;
 }
 
-Browser* WebUIStubLocationBar::GetBrowser() {
+BrowserWindowInterface* WebUIStubLocationBar::GetBrowser() {
   NOTIMPLEMENTED();
   return nullptr;
 }

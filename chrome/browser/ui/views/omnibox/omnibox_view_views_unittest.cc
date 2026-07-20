@@ -306,7 +306,7 @@ class TestLocationBar : public LocationBar {
   }
 
   ui::TrackedElement* GetAnchorOrNull() override { return nullptr; }
-  Browser* GetBrowser() override { return nullptr; }
+  BrowserWindowInterface* GetBrowser() override { return nullptr; }
   Profile* GetProfile() override { return profile_; }
   bool IsInitialized() const override { return true; }
   bool IsVisible() const override { return true; }

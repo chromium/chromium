@@ -88,7 +88,7 @@ ui::TrackedElement* TestBrowserWindow::TestLocationBar::GetAnchorOrNull() {
   return nullptr;
 }
 
-Browser* TestBrowserWindow::TestLocationBar::GetBrowser() {
+BrowserWindowInterface* TestBrowserWindow::TestLocationBar::GetBrowser() {
   return nullptr;
 }
 

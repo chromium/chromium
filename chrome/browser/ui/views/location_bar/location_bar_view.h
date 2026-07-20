@@ -63,6 +63,8 @@ enum ToolMode : int;
 enum ModelMode : int;
 }  // namespace omnibox
 
+class Browser;
+class BrowserWindowInterface;
 class CommandUpdater;
 class ContentSettingBubbleModelDelegate;
 class IntentChipButton;
@@ -233,7 +235,7 @@ class LocationBarView
   std::optional<bubble_anchor_util::AnchorConfiguration> GetChipAnchor()
       override;
   ui::TrackedElement* GetAnchorOrNull() override;
-  Browser* GetBrowser() override;
+  BrowserWindowInterface* GetBrowser() override;
   Profile* GetProfile() override;
 
   // True if this instance has been initialized by calling Init, which can only

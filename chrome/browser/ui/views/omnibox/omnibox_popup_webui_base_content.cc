@@ -14,7 +14,7 @@
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -265,7 +265,7 @@ void OmniboxPopupWebUIBaseContent::LoadContent() {
   // LocationBarView can be instantiated in windows that do not have a
   // Browser object (i.e Captive Portal). In that case, features depending on
   // the browser are not supported and should be skipped.
-  if (Browser* browser = location_bar_->GetBrowser()) {
+  if (BrowserWindowInterface* browser = location_bar_->GetBrowser()) {
     webui::SetBrowserWindowInterface(contents_wrapper_->web_contents(),
                                      browser);
     tab_selection_listener_ =

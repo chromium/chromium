@@ -19,7 +19,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
-class Browser;
+class BrowserWindowInterface;
 class ChipController;
 class CommandUpdater;
 class LocationBarModel;
@@ -151,7 +151,7 @@ class LocationBar {
   // Returns the Browser object this is for. This may be nullptr sometimes;
   // known cases include captive portals on ChromeOS and
   // PresentationReceiverWindowView.
-  virtual Browser* GetBrowser() = 0;
+  virtual BrowserWindowInterface* GetBrowser() = 0;
 
   // Returns the profile this is for.
   virtual Profile* GetProfile() = 0;

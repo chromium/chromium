@@ -105,7 +105,8 @@ void WebUILocationBar::Init(WebUIToolbarControlDelegate* delegate) {
 
   omnibox_controller_ =
       std::make_unique<OmniboxController>(std::make_unique<ChromeOmniboxClient>(
-          /*location_bar=*/this, browser_, browser_->GetProfile()));
+          /*location_bar=*/this, browser_->GetBrowserForMigrationOnly(),
+          browser_->GetProfile()));
   omnibox_view_ = std::make_unique<WebUIReadOnlyOmnibox>(
       /*location_bar=*/this, toolbar_delegate_, omnibox_controller_.get(),
       /*update_propagator=*/*this);
@@ -120,7 +121,9 @@ void WebUILocationBar::Init(WebUIToolbarControlDelegate* delegate) {
   // be shown.
   const bool is_web_app =
       browser_ && web_app::AppBrowserController::IsWebApp(browser_);
-  const bool is_devtools = browser_ && browser_->is_type_devtools();
+  const bool is_devtools =
+      browser_ &&
+      browser_->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS;
   DCHECK(!is_web_app);
   DCHECK(!is_devtools);
 
@@ -340,7 +343,7 @@ ui::TrackedElement* WebUILocationBar::GetAnchorOrNull() {
   return BrowserElements::From(browser_)->GetElement(kLocationBarElementId);
 }
 
-Browser* WebUILocationBar::GetBrowser() {
+BrowserWindowInterface* WebUILocationBar::GetBrowser() {
   return browser_.get();
 }
 

@@ -26,6 +26,7 @@
 #include "ui/views/mouse_constants.h"
 
 class Browser;
+class BrowserWindowInterface;
 class OmniboxController;
 class OmniboxPopupView;
 class OmniboxPopupViewWebUI;
@@ -92,7 +93,7 @@ class WebUILocationBar : public LocationBar,
   std::optional<bubble_anchor_util::AnchorConfiguration> GetChipAnchor()
       override;
   ui::TrackedElement* GetAnchorOrNull() override;
-  Browser* GetBrowser() override;
+  BrowserWindowInterface* GetBrowser() override;
   Profile* GetProfile() override;
   void OnChanged() override;
   void UpdateWithoutTabRestore() override;
@@ -192,7 +193,7 @@ class WebUILocationBar : public LocationBar,
 
   void ShowPageInfoBubble();
 
-  raw_ptr<Browser> browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface> browser_ = nullptr;
   raw_ptr<LocationBarView::Delegate> delegate_ = nullptr;
   raw_ptr<WebUIToolbarControlDelegate> toolbar_delegate_ = nullptr;
 

@@ -247,7 +247,7 @@ class TestBrowserWindow : public BrowserWindow,
     void OnChanged() override {}
     void UpdateWithoutTabRestore() override {}
     ui::TrackedElement* GetAnchorOrNull() override;
-    Browser* GetBrowser() override;
+    BrowserWindowInterface* GetBrowser() override;
     Profile* GetProfile() override;
     bool IsInitialized() const override;
     bool IsVisible() const override;

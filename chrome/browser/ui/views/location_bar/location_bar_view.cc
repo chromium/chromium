@@ -1158,7 +1158,7 @@ ui::TrackedElement* LocationBarView::GetAnchorOrNull() {
   return views::ElementTrackerViews::GetInstance()->GetElementForView(this);
 }
 
-Browser* LocationBarView::GetBrowser() {
+BrowserWindowInterface* LocationBarView::GetBrowser() {
   return browser();
 }
 

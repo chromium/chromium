@@ -623,7 +623,7 @@ void ChipController::OpenPermissionPromptBubble() {
     return;
   }
 
-  Browser* browser = location_bar_->GetBrowser();
+  BrowserWindowInterface* browser = location_bar_->GetBrowser();
   if (!browser) {
     DLOG(WARNING) << "Permission prompt suppressed because the WebContents is "
                      "not attached to any Browser window.";
