@@ -137,108 +137,14 @@ public class CoBrowseViewFactory {
             @Nullable CoBrowseComponentProvider bottomSheetContentProvider) {
         View containerView =
                 LayoutInflater.from(mActivity).inflate(R.layout.tab_bottom_sheet, null);
+
         TabBottomSheetWebUi webUi =
-                new TabBottomSheetWebUi(
-                        mActivity,
-                        containerView,
-                        mWindowAndroid,
-                        mContextMenuPopulatorFactory,
-                        mSelectionDropdownMenuDelegate,
-                        backgroundColor,
-                        clientType,
-                        containerType,
-                        // Passes a callback to the components layer to open ephemeral tabs,
-                        // avoiding a circular dependency since the components layer cannot depend
-                        // on chrome/ UI coordinators directly.
-                        (GURL url, String title) -> {
-                            var ephemeralTabCoordinatorSupplier =
-                                    EphemeralTabCoordinatorSupplier.from(mWindowAndroid);
-                            if (ephemeralTabCoordinatorSupplier == null) return;
-                            EphemeralTabCoordinator coordinator =
-                                    ephemeralTabCoordinatorSupplier.get();
-                            if (coordinator == null) return;
-
-                            Profile profile = mProfileSupplier.get();
-                            if (profile == null) return;
-
-                            Origin initiatorOrigin = null;
-                            if (webContents != null && webContents.getMainFrame() != null) {
-                                initiatorOrigin =
-                                        webContents.getMainFrame().getLastCommittedOrigin();
-                            }
-
-                            coordinator.requestOpenSheet(
-                                    url,
-                                    /* fullPageUrl= */ null,
-                                    title,
-                                    profile,
-                                    /* canPromoteToNewTab= */ true,
-                                    /* shouldHaveContextMenu= */ true,
-                                    initiatorOrigin,
-                                    /* requestDeniedCallback= */ () -> {});
-                        },
-                        (GURL url, String title) -> {
-                            Profile profile = mProfileSupplier.get();
-                            if (profile == null) return;
-                            BookmarkModel bookmarkModel = BookmarkModel.getForProfile(profile);
-                            bookmarkModel.finishLoadingBookmarkModel(
-                                    () -> {
-                                        BottomSheetController bottomSheetController =
-                                                BottomSheetControllerProvider.from(mWindowAndroid);
-                                        if (bottomSheetController == null) return;
-                                        BookmarkUtils.addToReadingList(
-                                                mActivity,
-                                                bookmarkModel,
-                                                title,
-                                                url,
-                                                mSnackbarManager,
-                                                profile,
-                                                bottomSheetController,
-                                                mBookmarkManagerOpener,
-                                                mPriceDropNotificationManager);
-                                    });
-                        });
-        ContextualTasksFusebox fusebox = null;
-        if (clientType == TabBottomSheetClientType.CONTEXTUAL_TASKS
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_TASKS_JAVA_FUSEBOX)) {
-            // TaskState retrieval from Manager.
-            ContextualTasksFuseboxManager manager =
-                    ContextualTasksFuseboxManager.from(mWindowAndroid);
-            if (manager != null) {
-                // TODO(crbug.com/491504815): Get task ID from native and ensure the session is
-                // initialized for this task and WebContents.
-                fusebox =
-                        new ContextualTasksFusebox(
-                                mActivity,
-                                mFuseboxConfig.contentView,
-                                mFuseboxConfig,
-                                mProfileSupplier,
-                                mWindowAndroid,
-                                mLifecycleDispatcher,
-                                /* loadUrlCallback= */ CallbackUtils.emptyCallback(),
-                                mSnackbarManager,
-                                manager.getFuseboxDataProvider());
-            }
-        }
+                createWebUi(containerView, backgroundColor, clientType, containerType, webContents);
+        ContextualTasksFusebox fusebox = createFuseboxIfNeeded(clientType);
 
         webUi.setWebContents(webContents, requestFocus);
 
-        PeekViewManager peekViewManager = null;
-        TabBottomSheetManager manager = TabBottomSheetUtils.getManagerFromWindow(mWindowAndroid);
-        if (bottomSheetContentProvider != null && manager != null) {
-            peekViewManager =
-                    bottomSheetContentProvider.createPeekViewManager(
-                            manager,
-                            mProfileSupplier,
-                            mActivityTabProvider,
-                            (tabId) -> {
-                                TabModelSelector selector = mTabModelSelectorSupplier.get();
-                                if (selector != null) {
-                                    TabModelUtils.selectTabById(
-                                            selector, tabId, TabSelectionType.FROM_USER);
-                                }
-                            });
-        }
+        PeekViewManager peekViewManager = createPeekViewManagerIfNeeded(bottomSheetContentProvider);
 
         return new CoBrowseViews(
                 containerView,
@@ -277,5 +183,119 @@ public class CoBrowseViewFactory {
                 containerType,
                 requestFocus,
                 bottomSheetContentProvider);
+    }
+
+    private TabBottomSheetWebUi createWebUi(
+            View containerView,
+            @ColorInt int backgroundColor,
+            @TabBottomSheetClientType int clientType,
+            @CoBrowseContainerType int containerType,
+            @Nullable WebContents webContents) {
+        return new TabBottomSheetWebUi(
+                mActivity,
+                containerView,
+                mWindowAndroid,
+                mContextMenuPopulatorFactory,
+                mSelectionDropdownMenuDelegate,
+                backgroundColor,
+                clientType,
+                containerType,
+                // Passes a callback to the components layer to open ephemeral tabs,
+                // avoiding a circular dependency since the components layer cannot depend
+                // on chrome/ UI coordinators directly.
+                (GURL url, String title) -> openInEphemeralTab(url, title, webContents),
+                this::addToReadingList);
+    }
+
+    private void openInEphemeralTab(GURL url, String title, @Nullable WebContents webContents) {
+        var ephemeralTabCoordinatorSupplier = EphemeralTabCoordinatorSupplier.from(mWindowAndroid);
+        if (ephemeralTabCoordinatorSupplier == null) return;
+        EphemeralTabCoordinator coordinator = ephemeralTabCoordinatorSupplier.get();
+        if (coordinator == null) return;
+
+        Profile profile = mProfileSupplier.get();
+        if (profile == null) return;
+
+        Origin initiatorOrigin = null;
+        if (webContents != null && webContents.getMainFrame() != null) {
+            initiatorOrigin = webContents.getMainFrame().getLastCommittedOrigin();
+        }
+
+        coordinator.requestOpenSheet(
+                url,
+                /* fullPageUrl= */ null,
+                title,
+                profile,
+                /* canPromoteToNewTab= */ true,
+                /* shouldHaveContextMenu= */ true,
+                initiatorOrigin,
+                /* requestDeniedCallback= */ () -> {});
+    }
+
+    private void addToReadingList(GURL url, String title) {
+        Profile profile = mProfileSupplier.get();
+        if (profile == null) return;
+        BookmarkModel bookmarkModel = BookmarkModel.getForProfile(profile);
+        bookmarkModel.finishLoadingBookmarkModel(
+                () -> {
+                    BottomSheetController bottomSheetController =
+                            BottomSheetControllerProvider.from(mWindowAndroid);
+                    if (bottomSheetController == null) return;
+                    BookmarkUtils.addToReadingList(
+                            mActivity,
+                            bookmarkModel,
+                            title,
+                            url,
+                            mSnackbarManager,
+                            profile,
+                            bottomSheetController,
+                            mBookmarkManagerOpener,
+                            mPriceDropNotificationManager);
+                });
+    }
+
+    private @Nullable ContextualTasksFusebox createFuseboxIfNeeded(
+            @TabBottomSheetClientType int clientType) {
+        if (clientType != TabBottomSheetClientType.CONTEXTUAL_TASKS
+                || !ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_TASKS_JAVA_FUSEBOX)) {
+            return null;
+        }
+        // TaskState retrieval from Manager.
+        ContextualTasksFuseboxManager manager = ContextualTasksFuseboxManager.from(mWindowAndroid);
+        if (manager == null) {
+            return null;
+        }
+
+        // TODO(crbug.com/491504815): Get task ID from native and ensure the session is
+        // initialized for this task and WebContents.
+        return new ContextualTasksFusebox(
+                mActivity,
+                mFuseboxConfig.contentView,
+                mFuseboxConfig,
+                mProfileSupplier,
+                mWindowAndroid,
+                mLifecycleDispatcher,
+                /* loadUrlCallback= */ CallbackUtils.emptyCallback(),
+                mSnackbarManager,
+                manager.getFuseboxDataProvider());
+    }
+
+    private @Nullable PeekViewManager createPeekViewManagerIfNeeded(
+            @Nullable CoBrowseComponentProvider bottomSheetContentProvider) {
+        TabBottomSheetManager manager = TabBottomSheetUtils.getManagerFromWindow(mWindowAndroid);
+        if (bottomSheetContentProvider == null || manager == null) {
+            return null;
+        }
+
+        return bottomSheetContentProvider.createPeekViewManager(
+                manager,
+                mProfileSupplier,
+                mActivityTabProvider,
+                (tabId) -> {
+                    TabModelSelector selector = mTabModelSelectorSupplier.get();
+                    if (selector != null) {
+                        TabModelUtils.selectTabById(selector, tabId, TabSelectionType.FROM_USER);
+                    }
+                });
     }
 }

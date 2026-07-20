@@ -42,7 +42,7 @@ import org.chromium.ui.base.EventForwarder;
 /** Unit tests for {@link CoBrowseViews}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class CoBrowseViewsTest {
+public class CoBrowseViewsUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private TabBottomSheetWebUi mWebUi;
