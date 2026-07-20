@@ -20,26 +20,21 @@ namespace content {
 
 namespace {
 
-bool IsScriptToolVisibleToOrigin(
+bool IsScriptToolExposedToOrigin(
     const url::Origin& tool_owner_origin,
     const std::vector<url::Origin>& exposed_origins,
-    const url::Origin& target_origin) {
-  if (target_origin.IsSameOriginWith(tool_owner_origin)) {
+    const url::Origin& accessing_origin) {
+  if (accessing_origin.IsSameOriginWith(tool_owner_origin)) {
     return true;
   }
-  for (const auto& allowed_origin : exposed_origins) {
-    if (target_origin.IsSameOriginWith(allowed_origin)) {
-      return true;
-    }
-  }
-  return false;
+  return std::ranges::contains(exposed_origins, accessing_origin);
 }
 
-bool IsScriptToolRequestedByOrigin(
+bool IsScriptToolOwnerRequestedByOrigin(
     const url::Origin& tool_owner_origin,
     const url::Origin& caller_origin,
     const std::vector<url::Origin>& from_origins) {
-  if (tool_owner_origin.IsSameOriginWith(caller_origin)) {
+  if (caller_origin.IsSameOriginWith(tool_owner_origin)) {
     return true;
   }
   return std::ranges::contains(from_origins, tool_owner_origin);
@@ -215,32 +210,37 @@ void ModelContextUserData::GetScriptTools(
       return RenderFrameHost::FrameIterationAction::kContinue;
     }
 
+    const url::Origin& tool_owner_origin = rfh->GetLastCommittedOrigin();
+    if (!IsScriptToolOwnerRequestedByOrigin(tool_owner_origin, caller_origin,
+                                            from_origins)) {
+      return RenderFrameHost::FrameIterationAction::kContinue;
+    }
+
     auto* data = ModelContextUserData::GetForCurrentDocument(rfh);
     if (!data) {
       return RenderFrameHost::FrameIterationAction::kContinue;
     }
 
     const auto& local_tools = data->script_tools();
-    const url::Origin& tool_owner_origin = rfh->GetLastCommittedOrigin();
     for (const auto& t : local_tools) {
-      if (IsScriptToolVisibleToOrigin(tool_owner_origin, t->exposed_origins,
-                                      caller_origin) &&
-          IsScriptToolRequestedByOrigin(tool_owner_origin, caller_origin,
-                                        from_origins)) {
-        blink::mojom::ScriptToolPtr cloned_tool = t.Clone();
-        // Find the frame (it could be local or remote) that the caller can use
-        // to reference the `Window` hosting the tool.
-        //
-        // `token` will never be `nullopt`.
-        blink::FrameToken token =
-            *static_cast<RenderFrameHostImpl*>(rfh)
-                 ->frame_tree_node()
-                 ->render_manager()
-                 ->GetFrameTokenForSiteInstanceGroup(site_instance_group);
-
-        cloned_tool->tool_owner_frame_token = token;
-        all_tools.push_back(std::move(cloned_tool));
+      if (!IsScriptToolExposedToOrigin(tool_owner_origin, t->exposed_origins,
+                                       /*accessing_origin=*/caller_origin)) {
+        continue;
       }
+
+      blink::mojom::ScriptToolPtr cloned_tool = t.Clone();
+      // Find the frame (it could be local or remote) that the caller can use
+      // to reference the `Window` hosting the tool.
+      //
+      // `token` will never be `nullopt`.
+      blink::FrameToken token =
+          *static_cast<RenderFrameHostImpl*>(rfh)
+               ->frame_tree_node()
+               ->render_manager()
+               ->GetFrameTokenForSiteInstanceGroup(site_instance_group);
+
+      cloned_tool->tool_owner_frame_token = token;
+      all_tools.push_back(std::move(cloned_tool));
     }
     return RenderFrameHost::FrameIterationAction::kContinue;
   });
@@ -332,9 +332,10 @@ void ModelContextUserData::ExecuteRemoteScriptTool(
   // Don't kill the renderer here, since legitimate script can target a tool in
   // another document that it might have been told about, but technically cannot
   // access.
-  if (!IsScriptToolVisibleToOrigin(
-          target_rfh->GetLastCommittedOrigin(), (*it)->exposed_origins,
-          render_frame_host().GetLastCommittedOrigin())) {
+  if (!IsScriptToolExposedToOrigin(
+          /*tool_owner_origin=*/target_rfh->GetLastCommittedOrigin(),
+          (*it)->exposed_origins,
+          /*accessing_origin=*/render_frame_host().GetLastCommittedOrigin())) {
     std::move(callback).Run(std::nullopt, false);
     return;
   }
@@ -381,8 +382,9 @@ void ModelContextUserData::NotifyToolChange(
       return RenderFrameHost::FrameIterationAction::kContinue;
     }
 
-    if (IsScriptToolVisibleToOrigin(tool_owner_origin, exposed_origins,
-                                    frame->GetLastCommittedOrigin())) {
+    if (IsScriptToolExposedToOrigin(
+            tool_owner_origin, exposed_origins,
+            /*accessing_origin=*/frame->GetLastCommittedOrigin())) {
       auto* data = ModelContextUserData::GetForCurrentDocument(frame);
       if (!data) {
         return RenderFrameHost::FrameIterationAction::kContinue;
