@@ -16,7 +16,10 @@ build_webui_tests("build") {
   ]
 
   files = [
-    "help_bubble_mixin_lit_test.ts",
+    "help_bubble_mixin_lit_test_container.ts",
+    "help_bubble_mixin_lit_test_element.ts",
+    "help_bubble_mixin_test_container.ts",
+    "help_bubble_mixin_test_element.ts",
     "help_bubble_mixin_test.ts",
     "help_bubble_test.ts",
     "test_custom_help_bubble.html.ts",
