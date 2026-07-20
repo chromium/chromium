@@ -284,7 +284,7 @@ HistogramBase* Histogram::Factory::Build() {
         "DevTools.ExperimentEnabledAtLaunch",
         "DevTools.PanelShown",
     };
-    if (std::ranges::contains(kKnownBadHistogramsHashes, name_)) {
+    if (!std::ranges::contains(kKnownBadHistogramsHashes, name_)) {
       DEBUG_ALIAS_FOR_CSTR(hist_name, std::string(name_).c_str(), 32);
       debug::DumpWithoutCrashing();
     }
