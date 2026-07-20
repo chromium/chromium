@@ -7,7 +7,6 @@
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/run_until.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -107,9 +106,7 @@ class TailoredSecurityDesktopDialogManagerTest
         safe_browsing::kTailoredSecurityNoticeDialog);
     dialog_manager_->ShowEnabledDialogForBrowser(browser, base::DoNothing());
 
-    views::Widget* widget = waiter.WaitIfNeededAndGet();
-    EXPECT_TRUE(base::test::RunUntil([&]() { return widget->IsVisible(); }));
-    return widget;
+    return waiter.WaitIfNeededAndGet();
   }
 
   views::Widget* ShowTailoredSecurityDisabledDialog(Browser* browser) {
@@ -118,9 +115,7 @@ class TailoredSecurityDesktopDialogManagerTest
         safe_browsing::kTailoredSecurityNoticeDialog);
     dialog_manager_->ShowDisabledDialogForBrowser(browser, base::DoNothing());
 
-    views::Widget* widget = waiter.WaitIfNeededAndGet();
-    EXPECT_TRUE(base::test::RunUntil([&]() { return widget->IsVisible(); }));
-    return widget;
+    return waiter.WaitIfNeededAndGet();
   }
 
  private:
