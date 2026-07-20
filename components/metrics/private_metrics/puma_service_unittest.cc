@@ -6,10 +6,12 @@
 
 #include <memory>
 
+#include "base/metrics/metrics_hashes.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/country_codes/country_codes.h"
+#include "components/metrics/private_metrics/lom_recorder.h"
 #include "components/metrics/private_metrics/private_metrics_features.h"
 #include "components/metrics/private_metrics/private_metrics_pref_names.h"
 #include "components/metrics/private_metrics/puma_histogram_functions.h"
@@ -89,7 +91,8 @@ class PumaServiceFeaturesTest
   }
 };
 
-class PumaServiceRcTest : public PumaServiceTest {
+class PumaServiceRcTest : public PumaServiceTest,
+                          public testing::WithParamInterface<bool> {
  public:
   PumaServiceRcTest() = default;
 
@@ -99,9 +102,18 @@ class PumaServiceRcTest : public PumaServiceTest {
   ~PumaServiceRcTest() override = default;
 
   std::vector<base::test::FeatureRef> GetEnabledFeatures() override {
-    return {kPrivateMetricsPuma, kPrivateMetricsPumaRc};
+    std::vector<base::test::FeatureRef> features = {kPrivateMetricsPuma,
+                                                    kPrivateMetricsPumaRc};
+    if (IsLomFeatureEnabled()) {
+      features.push_back(kLomFeature);
+    }
+    return features;
   }
+
+  bool IsLomFeatureEnabled() const { return GetParam(); }
 };
+
+INSTANTIATE_TEST_SUITE_P(All, PumaServiceRcTest, testing::Bool());
 
 }  // namespace
 
@@ -120,7 +132,7 @@ TEST_P(PumaServiceFeaturesTest, IsPumaEnabled) {
   EXPECT_EQ(PumaService::IsPumaEnabled(), std::get<1>(GetParam()));
 }
 
-TEST_F(PumaServiceRcTest, RcRecordCoarseSystemProfile) {
+TEST_P(PumaServiceRcTest, RcRecordCoarseSystemProfile) {
   client_.set_is_extended_stable_channel(true);
 
   RcCoarseSystemProfile rc_profile;
@@ -145,11 +157,11 @@ TEST_F(PumaServiceTest, RcClientId_IsNullWhenPumaRcIsDisabled) {
   EXPECT_FALSE(puma_service_->GetPumaRcClientId().has_value());
 }
 
-TEST_F(PumaServiceRcTest, RcClientId_IsNonNull) {
+TEST_P(PumaServiceRcTest, RcClientId_IsNonNull) {
   EXPECT_TRUE(puma_service_->GetPumaRcClientId().has_value());
 }
 
-TEST_F(PumaServiceRcTest, RcClientId_SameWhenExecutedMultipleTimes) {
+TEST_P(PumaServiceRcTest, RcClientId_SameWhenExecutedMultipleTimes) {
   std::optional<uint64_t> client_id_1 = puma_service_->GetPumaRcClientId();
   std::optional<uint64_t> client_id_2 = puma_service_->GetPumaRcClientId();
 
@@ -157,7 +169,7 @@ TEST_F(PumaServiceRcTest, RcClientId_SameWhenExecutedMultipleTimes) {
   EXPECT_EQ(client_id_1, client_id_2);
 }
 
-TEST_F(PumaServiceRcTest, RcClientId_UpdatesPref) {
+TEST_P(PumaServiceRcTest, RcClientId_UpdatesPref) {
   EXPECT_EQ(prefs_.GetUint64(prefs::kPumaRcClientId), 0u);
 
   std::optional<uint64_t> client_id_1 = puma_service_->GetPumaRcClientId();
@@ -173,7 +185,7 @@ TEST_F(PumaServiceRcTest, RcClientId_UpdatesPref) {
   EXPECT_EQ(pref_value_1, pref_value_2);
 }
 
-TEST_F(PumaServiceRcTest, RcBuildReport_DoesNotCreateReportWithoutEvents) {
+TEST_P(PumaServiceRcTest, RcBuildReport_DoesNotCreateReportWithoutEvents) {
   auto report = puma_service_->BuildPrivateMetricRcReport();
   EXPECT_FALSE(report.has_value());
 
@@ -183,7 +195,7 @@ TEST_F(PumaServiceRcTest, RcBuildReport_DoesNotCreateReportWithoutEvents) {
   histogram_tester_.ExpectTotalCount(kHistogramPumaReportBuildingOutcomeRc, 1);
 }
 
-TEST_F(PumaServiceRcTest, RcBuildReport_DoesCreateReportWithEvents) {
+TEST_P(PumaServiceRcTest, RcBuildReport_DoesCreateReportWithEvents) {
   PumaHistogramBoolean(PumaType::kRc, "PUMA.PumaServiceTestHistogram.Boolean1",
                        true);
 
@@ -209,7 +221,7 @@ TEST_F(PumaServiceTest, RcBuildReport_DoesNotCreateReportWithFeatureDisabled) {
   histogram_tester_.ExpectTotalCount(kHistogramPumaReportBuildingOutcomeRc, 1);
 }
 
-TEST_F(PumaServiceRcTest, RcBuildReport_PayloadProperlyFilled) {
+TEST_P(PumaServiceRcTest, RcBuildReport_PayloadProperlyFilled) {
   PumaHistogramExactLinear(PumaType::kRc,
                            "PUMA.PumaServiceTestHistogram.Linear1", 12, 100);
 
@@ -222,14 +234,23 @@ TEST_F(PumaServiceRcTest, RcBuildReport_PayloadProperlyFilled) {
 
   EXPECT_TRUE(report->has_rc_profile());
 
-  EXPECT_EQ(report->histogram_events_size(), 1);
-
-  auto histogram_event = report->histogram_events().at(0);
-  EXPECT_TRUE(histogram_event.has_name_hash());
-  EXPECT_EQ(histogram_event.bucket_size(), 1);
+  if (IsLomFeatureEnabled()) {
+    EXPECT_EQ(report->profile_keyed_histogram_events_size(), 1);
+    const auto& profile_keyed_event = report->profile_keyed_histogram_events(0);
+    EXPECT_EQ(profile_keyed_event.profile_id(), 0u);
+    EXPECT_EQ(profile_keyed_event.histogram_events_size(), 1);
+    auto histogram_event = profile_keyed_event.histogram_events().at(0);
+    EXPECT_TRUE(histogram_event.has_name_hash());
+    EXPECT_EQ(histogram_event.bucket_size(), 1);
+  } else {
+    EXPECT_EQ(report->histogram_events_size(), 1);
+    auto histogram_event = report->histogram_events().at(0);
+    EXPECT_TRUE(histogram_event.has_name_hash());
+    EXPECT_EQ(histogram_event.bucket_size(), 1);
+  }
 }
 
-TEST_F(PumaServiceRcTest, RcBuildReportAndStore_DoesCreateAndStoreReport) {
+TEST_P(PumaServiceRcTest, RcBuildReportAndStore_DoesCreateAndStoreReport) {
   PumaHistogramBoolean(PumaType::kRc, "PUMA.PumaServiceTestHistogram.Boolean3",
                        true);
 
@@ -246,7 +267,7 @@ TEST_F(PumaServiceRcTest, RcBuildReportAndStore_DoesCreateAndStoreReport) {
   histogram_tester_.ExpectTotalCount(kHistogramPumaReportStoringOutcomeRc, 1);
 }
 
-TEST_F(PumaServiceRcTest, RcBuildReportAndStore_DoesNotStoreReportWithNoData) {
+TEST_P(PumaServiceRcTest, RcBuildReportAndStore_DoesNotStoreReportWithNoData) {
   EXPECT_EQ(GetUnsentLogCount(), 0u);
 
   puma_service_->BuildPrivateMetricRcReportAndStoreLog(
@@ -260,7 +281,7 @@ TEST_F(PumaServiceRcTest, RcBuildReportAndStore_DoesNotStoreReportWithNoData) {
   histogram_tester_.ExpectTotalCount(kHistogramPumaReportStoringOutcomeRc, 1);
 }
 
-TEST_F(PumaServiceRcTest, RcLogsArePersistedAfterFlush) {
+TEST_P(PumaServiceRcTest, RcLogsArePersistedAfterFlush) {
   PumaHistogramBoolean(PumaType::kRc, "PUMA.PumaServiceTestHistogram.Boolean4",
                        true);
 
@@ -270,7 +291,7 @@ TEST_F(PumaServiceRcTest, RcLogsArePersistedAfterFlush) {
   EXPECT_EQ(GetPersistedLogCount(), 1u);
 }
 
-TEST_F(PumaServiceRcTest, RcLogsArePersistedAfterDisablingReporting) {
+TEST_P(PumaServiceRcTest, RcLogsArePersistedAfterDisablingReporting) {
   puma_service_->EnableReporting();
 
   PumaHistogramBoolean(PumaType::kRc, "PUMA.PumaServiceTestHistogram.Boolean5",
@@ -281,7 +302,7 @@ TEST_F(PumaServiceRcTest, RcLogsArePersistedAfterDisablingReporting) {
   EXPECT_EQ(GetPersistedLogCount(), 1u);
 }
 
-TEST_F(PumaServiceRcTest,
+TEST_P(PumaServiceRcTest,
        RcLogsAreNotPersistedAfterDisablingReportingWhenReportingWasDisabled) {
   PumaHistogramBoolean(PumaType::kRc, "PUMA.PumaServiceTestHistogram.Boolean6",
                        true);
@@ -291,7 +312,7 @@ TEST_F(PumaServiceRcTest,
   EXPECT_EQ(GetPersistedLogCount(), 0u);
 }
 
-TEST_F(PumaServiceRcTest, RcLogsArePersistedAfterDestruction) {
+TEST_P(PumaServiceRcTest, RcLogsArePersistedAfterDestruction) {
   puma_service_->EnableReporting();
 
   PumaHistogramBoolean(PumaType::kRc, "PUMA.PumaServiceTestHistogram.Boolean7",
@@ -302,7 +323,7 @@ TEST_F(PumaServiceRcTest, RcLogsArePersistedAfterDestruction) {
   EXPECT_EQ(GetPersistedLogCount(), 1u);
 }
 
-TEST_F(PumaServiceRcTest,
+TEST_P(PumaServiceRcTest,
        RcLogsAreNotPersistedAfterDestructionWhenReportingWasInactive) {
   PumaHistogramBoolean(PumaType::kRc, "PUMA.PumaServiceTestHistogram.Boolean8",
                        true);
@@ -335,7 +356,7 @@ TEST_F(PumaServiceTest, EnableReportingTwiceDoesNotStartAdditionalTasks) {
   EXPECT_EQ(task_environment_.GetPendingMainThreadTaskCount(), 2u);
 }
 
-TEST_F(PumaServiceRcTest, UploadUnsentLogs) {
+TEST_P(PumaServiceRcTest, UploadUnsentLogs) {
   puma_service_->EnableReporting();
 
   PumaHistogramBoolean(PumaType::kRc, "PUMA.PumaServiceTestHistogram.Boolean9",
@@ -368,7 +389,7 @@ TEST_F(PumaServiceRcTest, UploadUnsentLogs) {
   EXPECT_EQ(GetPersistedLogCount(), 0u);
 }
 
-TEST_F(PumaServiceRcTest, UploadPersistedLogs) {
+TEST_P(PumaServiceRcTest, UploadPersistedLogs) {
   puma_service_->EnableReporting();
 
   PumaHistogramBoolean(PumaType::kRc, "PUMA.PumaServiceTestHistogram.Boolean10",
@@ -415,7 +436,7 @@ TEST_F(PumaServiceRcTest, UploadPersistedLogs) {
   EXPECT_EQ(task_environment_.GetPendingMainThreadTaskCount(), 1u);
 }
 
-TEST_F(PumaServiceRcTest, LogsUploadedPeriodically) {
+TEST_P(PumaServiceRcTest, LogsUploadedPeriodically) {
   puma_service_->EnableReporting();
 
   PumaHistogramBoolean(PumaType::kRc, "PUMA.PumaServiceTestHistogram.Boolean11",
@@ -458,6 +479,143 @@ TEST_F(PumaServiceRcTest, LogsUploadedPeriodically) {
   client_.uploader()->CompleteUpload(200);
 
   EXPECT_EQ(GetUnsentLogCount(), 0u);
+}
+
+struct ExpectedReportBucket {
+  int64_t min;
+  int64_t max;
+  int64_t count;
+};
+
+const metrics::HistogramEventProto* FindReportEvent(
+    const ::private_metrics::ProfileKeyedHistogramEvent& profile_keyed_event,
+    uint64_t name_hash) {
+  for (const auto& event : profile_keyed_event.histogram_events()) {
+    if (event.name_hash() == name_hash) {
+      return &event;
+    }
+  }
+  return nullptr;
+}
+
+const metrics::HistogramEventProto::Bucket* FindReportBucket(
+    const metrics::HistogramEventProto& event,
+    int64_t min,
+    int64_t max) {
+  for (int i = 0; i < event.bucket_size(); ++i) {
+    const auto& bucket = event.bucket(i);
+    if (bucket.min() == min && bucket.max() == max) {
+      return &bucket;
+    }
+  }
+  return nullptr;
+}
+
+void ExpectReportEvent(
+    const ::private_metrics::ProfileKeyedHistogramEvent& profile_keyed_event,
+    uint64_t name_hash,
+    int64_t expected_sum,
+    const std::vector<ExpectedReportBucket>& expected_buckets) {
+  const auto* event = FindReportEvent(profile_keyed_event, name_hash);
+  ASSERT_NE(event, nullptr) << "Event not found for name_hash=" << name_hash;
+  EXPECT_EQ(event->sum(), expected_sum);
+  ASSERT_EQ(event->bucket_size(), static_cast<int>(expected_buckets.size()));
+  for (const auto& eb : expected_buckets) {
+    const auto* bucket = FindReportBucket(*event, eb.min, eb.max);
+    ASSERT_NE(bucket, nullptr)
+        << "Bucket [" << eb.min << ", " << eb.max << ") not found";
+    EXPECT_EQ(bucket->count(), eb.count);
+  }
+}
+
+class PumaServiceWithLomFeatureTest : public PumaServiceTest {
+ public:
+  PumaServiceWithLomFeatureTest() = default;
+
+  PumaServiceWithLomFeatureTest(const PumaServiceWithLomFeatureTest&) = delete;
+  PumaServiceWithLomFeatureTest& operator=(
+      const PumaServiceWithLomFeatureTest&) = delete;
+
+  ~PumaServiceWithLomFeatureTest() override = default;
+
+  std::vector<base::test::FeatureRef> GetEnabledFeatures() override {
+    return {kPrivateMetricsPuma, kPrivateMetricsPumaRc, kLomFeature};
+  }
+};
+
+TEST_F(PumaServiceWithLomFeatureTest, BuildReportWithLomFeature) {
+  PumaHistogramBoolean(PumaType::kRc,
+                       "PUMA.PumaServiceTestHistogram.LomBoolean", true);
+  PumaHistogramBoolean(PumaType::kRc,
+                       "PUMA.PumaServiceTestHistogram.LomBoolean", false);
+  PumaHistogramExactLinear(PumaType::kRc,
+                           "PUMA.PumaServiceTestHistogram.LomLinear", 2, 10);
+  PumaHistogramExactLinear(PumaType::kRc,
+                           "PUMA.PumaServiceTestHistogram.LomLinear", 3, 10);
+  PumaHistogramExactLinear(PumaType::kRc,
+                           "PUMA.PumaServiceTestHistogram.LomLinear", 3, 10);
+  PumaHistogramExactLinear(PumaType::kRc,
+                           "PUMA.PumaServiceTestHistogram.LomLinear", 4, 10);
+
+  auto report = puma_service_->BuildPrivateMetricRcReport();
+  ASSERT_TRUE(report.has_value());
+  EXPECT_EQ(report->profile_keyed_histogram_events_size(), 1);
+
+  const auto& profile_keyed_event = report->profile_keyed_histogram_events(0);
+  EXPECT_EQ(profile_keyed_event.profile_id(), 0u);
+  EXPECT_EQ(profile_keyed_event.histogram_events_size(), 2);
+
+  ExpectReportEvent(
+      profile_keyed_event,
+      base::HashMetricName("PUMA.PumaServiceTestHistogram.LomBoolean"),
+      /*expected_sum=*/1,
+      {{std::numeric_limits<int64_t>::min(), 1, 1}, {1, 2, 1}});
+  ExpectReportEvent(
+      profile_keyed_event,
+      base::HashMetricName("PUMA.PumaServiceTestHistogram.LomLinear"),
+      /*expected_sum=*/12, {{2, 3, 1}, {3, 4, 2}, {4, 5, 1}});
+
+  // Second build report should return nullopt as events were cleared.
+  EXPECT_FALSE(puma_service_->BuildPrivateMetricRcReport().has_value());
+}
+
+TEST_F(PumaServiceWithLomFeatureTest, BuildReportWithLomFeatureAndProfile) {
+  LomRecorder::Get()->RecordBoolean(PumaType::kRc,
+                                    "PUMA.PumaServiceTestHistogram.ProfileBool",
+                                    true, "Profile1");
+  LomRecorder::Get()->RecordBoolean(PumaType::kRc,
+                                    "PUMA.PumaServiceTestHistogram.ProfileBool",
+                                    true, "Profile1");
+  LomRecorder::Get()->RecordBoolean(PumaType::kRc,
+                                    "PUMA.PumaServiceTestHistogram.ProfileBool",
+                                    false, "Profile1");
+  LomRecorder::Get()->RecordExactLinear(
+      PumaType::kRc, "PUMA.PumaServiceTestHistogram.ProfileLinear", 5, 10,
+      "Profile1");
+  LomRecorder::Get()->RecordExactLinear(
+      PumaType::kRc, "PUMA.PumaServiceTestHistogram.ProfileLinear", 7, 10,
+      "Profile1");
+
+  auto report = puma_service_->BuildPrivateMetricRcReport();
+  ASSERT_TRUE(report.has_value());
+  EXPECT_EQ(report->profile_keyed_histogram_events_size(), 1);
+
+  const auto& profile_keyed_event = report->profile_keyed_histogram_events(0);
+  EXPECT_EQ(profile_keyed_event.profile_id(), base::HashMetricName("Profile1"));
+  EXPECT_EQ(profile_keyed_event.histogram_events_size(), 2);
+
+  ExpectReportEvent(
+      profile_keyed_event,
+      base::HashMetricName("PUMA.PumaServiceTestHistogram.ProfileBool"),
+      /*expected_sum=*/2,
+      {{std::numeric_limits<int64_t>::min(), 1, 1}, {1, 2, 2}});
+  ExpectReportEvent(
+      profile_keyed_event,
+      base::HashMetricName("PUMA.PumaServiceTestHistogram.ProfileLinear"),
+      /*expected_sum=*/12, {{5, 6, 1}, {7, 8, 1}});
+
+  // Second build report should return nullopt as events were cleared.
+  EXPECT_FALSE(puma_service_->BuildPrivateMetricRcReport().has_value());
 }
 
 }  // namespace metrics::private_metrics

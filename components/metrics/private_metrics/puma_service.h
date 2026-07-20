@@ -99,6 +99,10 @@ class PumaService {
       RcBuildReport_DoesNotCreateReportWithFeatureDisabled);
   FRIEND_TEST_ALL_PREFIXES(PumaServiceTest,
                            RcClientId_IsNullWhenPumaRcIsDisabled);
+  FRIEND_TEST_ALL_PREFIXES(PumaServiceWithLomFeatureTest,
+                           BuildReportWithLomFeature);
+  FRIEND_TEST_ALL_PREFIXES(PumaServiceWithLomFeatureTest,
+                           BuildReportWithLomFeatureAndProfile);
 
   // Gets or generates client ID for PUMA for Regional Capabilities.
   //

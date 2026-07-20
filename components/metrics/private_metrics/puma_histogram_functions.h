@@ -14,6 +14,10 @@
 // Each function accepts an additional PumaType parameter which discriminates
 // between different PUMA types.
 //
+// Note: These functions must only be called on the main thread/sequence.
+// When the LOM feature is enabled, this sequence affinity is enforced by a
+// sequence checker inside LomRecorder.
+//
 // Implementation note: PUMA histogram values are emitted with a different set
 // of flags in order to be distinguished from regular UMA histograms. The flag
 // kUmaTargetedHistogramFlag is not being set for PUMA, and instead a separate
@@ -51,12 +55,16 @@ constexpr base::HistogramBase::Flags PumaTypeToHistogramFlags(
 }
 
 // PUMA version of base::UmaHistogramBoolean().
+// This function should only be called on the main thread. This is checked with
+// sequence checker in `components/metrics/private_metrics/lom_recorder.h`.
 COMPONENT_EXPORT(PRIVATE_METRICS_RECORDERS)
 void PumaHistogramBoolean(PumaType puma_type,
                           std::string_view name,
                           bool sample);
 
 // PUMA version of base::UmaHistogramExactLinear().
+// This function should only be called on the main thread. This is checked with
+// sequence checker in `components/metrics/private_metrics/lom_recorder.h`.
 COMPONENT_EXPORT(PRIVATE_METRICS_RECORDERS)
 void PumaHistogramExactLinear(PumaType puma_type,
                               std::string_view name,
@@ -64,6 +72,8 @@ void PumaHistogramExactLinear(PumaType puma_type,
                               int exclusive_max);
 
 // PUMA version of base::UmaHistogramEnumeration().
+// This function should only be called on the main thread. This is checked with
+// sequence checker in `components/metrics/private_metrics/lom_recorder.h`.
 template <typename T>
 void PumaHistogramEnumeration(PumaType puma_type,
                               std::string_view name,
@@ -81,6 +91,8 @@ void PumaHistogramEnumeration(PumaType puma_type,
 }
 
 // PUMA version of base::UmaHistogramEnumeration().
+// This function should only be called on the main thread. This is checked with
+// sequence checker in `components/metrics/private_metrics/lom_recorder.h`.
 template <typename T>
 void PumaHistogramEnumeration(PumaType puma_type,
                               std::string_view name,

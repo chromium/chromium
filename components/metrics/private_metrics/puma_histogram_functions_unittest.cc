@@ -9,6 +9,8 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/notreached.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/metrics/private_metrics/private_metrics_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -41,10 +43,15 @@ enum class HistogramFunctionType {
 class PumaHistogramFunctionsTest
     : public ::testing::TestWithParam<HistogramFunctionType> {
  public:
-  PumaHistogramFunctionsTest() = default;
+  PumaHistogramFunctionsTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        metrics::private_metrics::kLomFeature);
+  }
   ~PumaHistogramFunctionsTest() override = default;
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   // PUMA histograms will be recorded in the global StatisticsRecorder.
   // This is needed to properly initialize it for tests.
   std::unique_ptr<StatisticsRecorder> statistics_recorder_ =

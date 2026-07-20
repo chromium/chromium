@@ -39,6 +39,10 @@ extern const base::FeatureParam<size_t> kPrivateMetricsPumaMaxLogSizeBytes;
 COMPONENT_EXPORT(PRIVATE_METRICS_FEATURES)
 BASE_DECLARE_FEATURE(kPrivateMetricsPumaRc);
 
+// Enables Legal Obligation Metrics (LOM).
+COMPONENT_EXPORT(PRIVATE_METRICS_FEATURES)
+BASE_DECLARE_FEATURE(kLomFeature);
+
 }  // namespace metrics::private_metrics
 
 #endif  // COMPONENTS_METRICS_PRIVATE_METRICS_PRIVATE_METRICS_FEATURES_H_

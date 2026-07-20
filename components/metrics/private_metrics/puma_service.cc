@@ -10,6 +10,7 @@
 #include "base/rand_util.h"
 #include "base/version.h"
 #include "components/metrics/metrics_service_client.h"
+#include "components/metrics/private_metrics/lom_recorder.h"
 #include "components/metrics/private_metrics/private_metrics_features.h"
 #include "components/metrics/private_metrics/private_metrics_pref_names.h"
 #include "components/metrics/private_metrics/puma_histogram_encoder.h"
@@ -232,9 +233,17 @@ PumaService::BuildPrivateMetricRcReport() {
   }
 
   ::private_metrics::PrivateUserMetrics report;
-  PumaHistogramEncoder::EncodeHistogramDeltas(PumaType::kRc, report);
+  if (base::FeatureList::IsEnabled(kLomFeature)) {
+    auto events = LomRecorder::Get()->TakeHistogramEvents();
+    for (auto& event : events) {
+      *report.add_profile_keyed_histogram_events() = std::move(event);
+    }
+  } else {
+    PumaHistogramEncoder::EncodeHistogramDeltas(PumaType::kRc, report);
+  }
 
-  if (report.histogram_events_size() == 0) {
+  if (report.histogram_events_size() == 0 &&
+      report.profile_keyed_histogram_events_size() == 0) {
     // No histograms to report.
     base::UmaHistogramEnumeration(
         kHistogramPumaReportBuildingOutcomeRc,

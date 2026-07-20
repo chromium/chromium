@@ -5,6 +5,9 @@
 #include "components/metrics/profile_metrics_service.h"
 
 #include "base/strings/stringprintf.h"
+#include "components/metrics/private_metrics/lom_recorder.h"
+#include "components/metrics/private_metrics/private_metrics_features.h"
+#include "components/metrics/private_metrics/puma_histogram_functions.h"
 
 namespace {
 
@@ -102,6 +105,29 @@ void ProfileMetricsService::UmaHistogramCustomTimes(std::string_view name,
   if (!histogram_suffix_.empty()) {
     base::UmaHistogramCustomTimes(base::StrCat({name, histogram_suffix_}),
                                   sample, min, max, buckets);
+  }
+}
+
+void ProfileMetricsService::PumaHistogramBoolean(
+    private_metrics::PumaType puma_type,
+    std::string_view name,
+    bool sample,
+    std::optional<std::string> profile_name) const {
+  if (base::FeatureList::IsEnabled(metrics::private_metrics::kLomFeature)) {
+    metrics::private_metrics::LomRecorder::Get()->RecordBoolean(
+        puma_type, name, sample, /*profile_name=*/profile_name);
+  }
+}
+
+void ProfileMetricsService::PumaHistogramExactLinear(
+    private_metrics::PumaType puma_type,
+    std::string_view name,
+    int sample,
+    int exclusive_max,
+    std::optional<std::string> profile_name) const {
+  if (base::FeatureList::IsEnabled(metrics::private_metrics::kLomFeature)) {
+    metrics::private_metrics::LomRecorder::Get()->RecordExactLinear(
+        puma_type, name, sample, exclusive_max, /*profile_name=*/profile_name);
   }
 }
 

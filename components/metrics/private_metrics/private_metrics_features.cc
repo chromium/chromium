@@ -22,4 +22,6 @@ const base::FeatureParam<size_t> kPrivateMetricsPumaMaxLogSizeBytes{
 
 BASE_FEATURE(kPrivateMetricsPumaRc, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLomFeature, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace metrics::private_metrics
