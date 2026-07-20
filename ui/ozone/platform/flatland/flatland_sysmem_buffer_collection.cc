@@ -13,6 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/koid.h"
+#include "base/numerics/checked_math.h"
 #include "base/task/current_thread.h"
 #include "build/build_config.h"
 #include "flatland_sysmem_buffer_collection.h"
@@ -25,9 +26,6 @@ namespace ui {
 
 namespace {
 
-size_t RoundUp(size_t value, size_t alignment) {
-  return ((value + alignment - 1) / alignment) * alignment;
-}
 
 VkFormat ToTextureVkFormat(viz::SharedImageFormat format) {
   if (format == viz::MultiPlaneFormat::kYV12) {
@@ -56,6 +54,80 @@ size_t GetBytesPerPixel(viz::SharedImageFormat format) {
     return 1U;
   }
   return format.BytesPerPixel();
+}
+struct BufferLayout {
+  size_t stride = 0;
+  size_t plane_offset = 0;
+  size_t plane_size = 0;
+
+  // uv_plane_offset and uv_plane_size are only calculated and used for NV12
+  // (2-plane YUV).
+  size_t uv_plane_offset = 0;
+  size_t uv_plane_size = 0;
+};
+
+std::optional<BufferLayout> CalculateBufferLayout(
+    const fuchsia::sysmem2::ImageFormatConstraints& constraints,
+    gfx::Size size,
+    viz::SharedImageFormat format,
+    size_t vmo_usable_start,
+    size_t buffer_size) {
+  if (constraints.has_max_size()) {
+    const fuchsia::math::SizeU& max_size = constraints.max_size();
+    if (static_cast<uint32_t>(size.width()) > max_size.width ||
+        static_cast<uint32_t>(size.height()) > max_size.height) {
+      return std::nullopt;
+    }
+  }
+
+  base::CheckedNumeric<size_t> checked_stride = size.width();
+  checked_stride *= GetBytesPerPixel(format);
+  checked_stride =
+      checked_stride.Max(static_cast<size_t>(constraints.min_bytes_per_row()));
+
+  size_t divisor = constraints.bytes_per_row_divisor();
+  if (divisor > 0) {
+    checked_stride = ((checked_stride + divisor - 1) / divisor) * divisor;
+  }
+
+  base::CheckedNumeric<size_t> checked_plane_size =
+      checked_stride * size.height();
+  base::CheckedNumeric<size_t> checked_plane_end =
+      checked_plane_size + vmo_usable_start;
+
+  // Checking validity of `checked_plane_end` also implicitly validates
+  // `checked_plane_size` and `checked_stride`, because they are chained
+  // together.
+  if (!checked_plane_end.IsValid() ||
+      checked_plane_end.ValueOrDie() > buffer_size) {
+    return std::nullopt;
+  }
+
+  BufferLayout layout;
+  layout.stride = checked_stride.ValueOrDie();
+  layout.plane_offset = vmo_usable_start;
+  layout.plane_size = checked_plane_size.ValueOrDie();
+
+  if (format == viz::MultiPlaneFormat::kNV12) {
+    base::CheckedNumeric<size_t> checked_uv_plane_offset = checked_plane_end;
+    base::CheckedNumeric<size_t> checked_uv_plane_size =
+        checked_stride * ((static_cast<size_t>(size.height()) + 1) / 2);
+    base::CheckedNumeric<size_t> checked_uv_plane_end =
+        checked_uv_plane_offset + checked_uv_plane_size;
+
+    // Checking validity of `checked_uv_plane_end` also implicitly validates
+    // `checked_uv_plane_size` and `checked_uv_plane_offset` because they are
+    // chained together.
+    if (!checked_uv_plane_end.IsValid() ||
+        checked_uv_plane_end.ValueOrDie() > buffer_size) {
+      return std::nullopt;
+    }
+
+    layout.uv_plane_offset = checked_uv_plane_offset.ValueOrDie();
+    layout.uv_plane_size = checked_uv_plane_size.ValueOrDie();
+  }
+
+  return layout;
 }
 
 bool IsYuvVkFormat(VkFormat format) {
@@ -251,7 +323,10 @@ bool FlatlandSysmemBufferCollection::Initialize(
     VkDevice vk_device,
     size_t min_buffer_count,
     bool register_with_flatland_allocator) {
-  DCHECK(IsNativePixmapConfigSupported(format, usage));
+  if (!IsNativePixmapConfigSupported(format, usage)) {
+    LOG(ERROR) << "Unsupported format/usage: " << format.ToString();
+    return false;
+  }
   DCHECK(!collection_);
   DCHECK(!vk_buffer_collection_);
 
@@ -269,7 +344,10 @@ bool FlatlandSysmemBufferCollection::Initialize(
   if (size.IsEmpty()) {
     // Buffer collection that doesn't have explicit size is expected to be
     // shared with other participants, who will determine the actual image size.
-    DCHECK(sysmem_token);
+    if (!sysmem_token) {
+      LOG(ERROR) << "Sysmem token is required for empty size.";
+      return false;
+    }
 
     // Set nominal size of 1x1, which will be used only for
     // vkSetBufferCollectionConstraintsFUCHSIA(). The actual size of the
@@ -278,6 +356,10 @@ bool FlatlandSysmemBufferCollection::Initialize(
     // by the values passed to CreateVkImage().
     min_size_ = gfx::Size(1, 1);
   } else {
+    if (!size.GetCheckedArea().IsValid() || !format.VerifySizeInBytes(size)) {
+      LOG(ERROR) << "Invalid size: " << size.ToString();
+      return false;
+    }
     min_size_ = size;
   }
 
@@ -323,7 +405,24 @@ scoped_refptr<gfx::NativePixmap>
 FlatlandSysmemBufferCollection::CreateNativePixmap(
     gfx::NativePixmapHandle handle,
     gfx::Size size) {
+  if (size.IsEmpty() || !size.GetCheckedArea().IsValid() ||
+      !format_.VerifySizeInBytes(size)) {
+    LOG(ERROR) << "Invalid size: " << size.ToString();
+    return nullptr;
+  }
+
   CHECK_LT(handle.buffer_index, num_buffers());
+
+  auto layout = CalculateBufferLayout(
+      buffers_info_.settings().image_format_constraints(), size, format_,
+      buffers_info_.buffers()[handle.buffer_index].vmo_usable_start(),
+      buffer_size_);
+  if (!layout) {
+    LOG(ERROR) << "Requested NativePixmap size " << size.ToString()
+               << " exceeds the allocated sysmem buffer size or has invalid "
+                  "layout.";
+    return nullptr;
+  }
 
   DCHECK_EQ(base::GetRelatedKoid(handle.buffer_collection_handle).value(), id_);
   // sysmem always fills out settings(), buffer_settings(), coherency_domain()
@@ -345,36 +444,22 @@ FlatlandSysmemBufferCollection::CreateNativePixmap(
     return nullptr;
   }
 
-  const fuchsia::sysmem2::ImageFormatConstraints& format =
-      buffers_info_.settings().image_format_constraints();
-
-  // The logic should match LogicalBufferCollection::Allocate().
-  size_t stride =
-      RoundUp(std::max(static_cast<size_t>(format.min_bytes_per_row()),
-                       size.width() * GetBytesPerPixel(format_)),
-              format.bytes_per_row_divisor());
-  size_t plane_offset =
-      buffers_info_.buffers()[handle.buffer_index].vmo_usable_start();
-  size_t plane_size = stride * size.height();
-  handle.planes.emplace_back(stride, plane_offset, plane_size,
-                             std::move(main_plane_vmo));
-
   // For YUV images add a second plane.
   if (format_ == viz::MultiPlaneFormat::kNV12) {
-    size_t uv_plane_offset = plane_offset + plane_size;
-    size_t uv_plane_size = plane_size / 2;
-
     zx::vmo uv_plane_vmo;
-    status =
-        handle.planes[0].vmo.duplicate(ZX_RIGHT_SAME_RIGHTS, &uv_plane_vmo);
+    status = main_plane_vmo.duplicate(ZX_RIGHT_SAME_RIGHTS, &uv_plane_vmo);
     if (status != ZX_OK) {
       ZX_DLOG(ERROR, status) << "zx_handle_duplicate";
       return nullptr;
     }
 
-    handle.planes.emplace_back(stride, uv_plane_offset, uv_plane_size,
-                               std::move(uv_plane_vmo));
-    DCHECK_LE(uv_plane_offset + uv_plane_size, buffer_size_);
+    handle.planes.emplace_back(layout->stride, layout->plane_offset,
+                               layout->plane_size, std::move(main_plane_vmo));
+    handle.planes.emplace_back(layout->stride, layout->uv_plane_offset,
+                               layout->uv_plane_size, std::move(uv_plane_vmo));
+  } else {
+    handle.planes.emplace_back(layout->stride, layout->plane_offset,
+                               layout->plane_size, std::move(main_plane_vmo));
   }
 
   return new FlatlandSysmemNativePixmap(this, std::move(handle), size);
@@ -389,6 +474,22 @@ bool FlatlandSysmemBufferCollection::CreateVkImage(
     VkDeviceMemory* vk_device_memory,
     VkDeviceSize* mem_allocation_size) {
   DCHECK_CALLED_ON_VALID_THREAD(vulkan_thread_checker_);
+
+  if (size.IsEmpty() || !size.GetCheckedArea().IsValid() ||
+      !format_.VerifySizeInBytes(size)) {
+    LOG(ERROR) << "Invalid size: " << size.ToString();
+    return false;
+  }
+
+  // Verify that the image size and layout fit within the allocated buffer.
+  if (!CalculateBufferLayout(
+          buffers_info_.settings().image_format_constraints(), size, format_,
+          buffers_info_.buffers()[buffer_index].vmo_usable_start(),
+          buffer_size_)) {
+    LOG(ERROR) << "Requested VkImage size " << size.ToString()
+               << " exceeds the allocated sysmem buffer size.";
+    return false;
+  }
 
   if (buffer_index >= num_buffers()) {
     DLOG(ERROR) << "Invalid buffer_index=" << buffer_index
@@ -429,6 +530,10 @@ bool FlatlandSysmemBufferCollection::CreateVkImage(
 
   VkMemoryRequirements requirements;
   vkGetImageMemoryRequirements(vk_device, *vk_image, &requirements);
+
+  CHECK_LE(requirements.size, buffer_size_)
+      << "VkImage memory requirements (" << requirements.size
+      << ") exceed the allocated sysmem buffer size (" << buffer_size_ << ").";
 
   uint32_t viable_memory_types =
       properties.memoryTypeBits & requirements.memoryTypeBits;
