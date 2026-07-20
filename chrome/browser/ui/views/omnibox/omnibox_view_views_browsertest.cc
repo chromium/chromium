@@ -1717,7 +1717,8 @@ class OmniboxViewViewsAIMButtonDynamicTest
   OmniboxViewViewsAIMButtonDynamicTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kPageActionsMigration, {{"ai_mode", "true"}}},
-         {omnibox::kWebUIOmniboxDynamicAiModeButton, {}}},
+         {omnibox::kWebUIOmniboxDynamicAiModeButton,
+          {{"Omnibox_DynamicAnimation", "true"}}}},
         {lens::features::kLensOverlay});
   }
 

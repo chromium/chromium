@@ -379,6 +379,11 @@ const base::FeatureParam<bool> kAskGCoBrowseWithVisualSelection{
     &kWebUIOmniboxAskGAboutThisPage,
     "Omnibox_AskGCoBrowseWithVisualSelection", false};
 
+const base::FeatureParam<bool> kWebUIOmniboxDynamicAnimation{
+    &kWebUIOmniboxDynamicAiModeButton, "Omnibox_DynamicAnimation", false};
+const base::FeatureParam<bool> kWebUIOmniboxDynamicColorScheme{
+    &kWebUIOmniboxDynamicAiModeButton, "Omnibox_DynamicColorScheme", false};
+
 FeatureConfig::FeatureConfig() : config(GetNTPComposeboxConfig()) {}
 
 
