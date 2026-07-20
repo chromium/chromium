@@ -733,6 +733,7 @@ void LayoutBlockFlow::SetShouldDoFullPaintInvalidationForFirstLine() {
         LayoutObject* layout_object = item->GetMutableLayoutObject();
         DCHECK(layout_object);
         layout_object->StyleRef().ClearCachedPseudoElementStyles();
+        item->GetMutableForPainting().InvalidateInkOverflow();
         layout_object->SetShouldDoFullPaintInvalidation();
       }
       StyleRef().ClearCachedPseudoElementStyles();

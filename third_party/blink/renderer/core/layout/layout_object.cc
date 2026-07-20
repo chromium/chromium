@@ -3457,6 +3457,7 @@ void LayoutObject::ApplyFirstLineChanges(const ComputedStyle* old_style) {
 
   StyleDifference diff;
   bool has_diff = false;
+  bool first_line_highlight_changed = false;
   if (Parent() && has_old_first_line_style && has_new_first_line_style) {
     if (const auto* old_first_line_style =
             old_style->GetCachedPseudoElementStyle(kPseudoIdFirstLine)) {
@@ -3465,6 +3466,11 @@ void LayoutObject::ApplyFirstLineChanges(const ComputedStyle* old_style) {
             GetDocument(), *new_first_line_style);
         diff = AdjustForCompositableAnimationPaint(
             old_first_line_style, new_first_line_style, GetNode(), diff);
+        // Highlight pseudo styles are stored  in StyleHighlightData and are
+        // intentionally ignored by VisualInvalidationDiff, because highlight
+        // repaints are normally driven by HighlightRegistry.
+        first_line_highlight_changed = old_first_line_style->HighlightData() !=
+                                       new_first_line_style->HighlightData();
         has_diff = true;
       }
     }
@@ -3474,8 +3480,9 @@ void LayoutObject::ApplyFirstLineChanges(const ComputedStyle* old_style) {
     diff.SetNeedsFullLayout();
   }
 
-  if (BehavesLikeBlockContainer() && (diff.NeedsNormalPaintInvalidation() ||
-                                      diff.text_decoration_or_color_changed)) {
+  if (BehavesLikeBlockContainer() &&
+      (diff.NeedsNormalPaintInvalidation() ||
+       diff.text_decoration_or_color_changed || first_line_highlight_changed)) {
     if (auto* first_line_container =
             To<LayoutBlock>(this)->NearestInnerBlockWithFirstLine())
       first_line_container->SetShouldDoFullPaintInvalidationForFirstLine();
