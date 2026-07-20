@@ -15,6 +15,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -339,7 +340,34 @@ void VariationsSeedProcessor::CreateTrialsFromSeed(
       FilterAndValidateStudies(seed, client_state, layers);
 
   for (const ProcessedStudy& study : filtered_studies) {
-    CreateTrialFromStudyImpl(study, entropy_providers, layers, feature_list);
+    bool run_simulation = base::ShouldRecordSubsampledMetric(0.01) &&
+                          !base::FieldTrialList::Find(study.study()->name());
+
+    scoped_refptr<base::FieldTrial> actual_trial = CreateTrialFromStudyImpl(
+        study, entropy_providers, layers, feature_list, /*simulated=*/false);
+
+    if (run_simulation) {
+      scoped_refptr<base::FieldTrial> simulated_trial =
+          CreateTrialFromStudyImpl(study, entropy_providers, layers,
+                                   feature_list, /*simulated=*/true);
+
+      // Validate that the simulation returns the same result as the actual
+      // trial. Note that `CreateTrialFromStudyImpl()` (`simulated = false`) can
+      // return a trial with the group `kFeatureConflictGroupName` when a
+      // feature conflict occurs. `CreateTrialFromStudyImpl()` (`simulated =
+      // true`) skips this check (`if (!simulated)`) and simulates the group
+      // assignment from scratch. We only validate when no feature conflict
+      // occurs.
+      if (!actual_trial || actual_trial->GetGroupNameWithoutActivation() !=
+                               internal::kFeatureConflictGroupName) {
+        bool matches = (simulated_trial && actual_trial &&
+                        simulated_trial->GetGroupNameWithoutActivation() ==
+                            actual_trial->GetGroupNameWithoutActivation()) ||
+                       (!simulated_trial && !actual_trial);
+        base::UmaHistogramBoolean("Variations.CreateTrial.SimulationMatches",
+                                  matches);
+      }
+    }
   }
 }
 

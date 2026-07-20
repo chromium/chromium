@@ -94,6 +94,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Variations.CreateTrial.SimulationMatches" enum="Boolean"
+    expires_after="2027-07-17">
+  <owner>lucnguyen@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Whether creating a simulated field trial for a variations study results in
+    the same assigned group and nullability state as creating the actual field
+    trial for the study. Recorded for approximately 1% of studies when creating
+    trials from a variations seed at startup, excluding studies that already
+    exist or have feature conflicts.
+  </summary>
+</histogram>
+
 <histogram name="Variations.ExtendedSafeMode.BeaconFileDeserializationError"
     enum="JsonDeserializationError" expires_after="2026-11-15">
   <owner>caitlinfischer@google.com</owner>

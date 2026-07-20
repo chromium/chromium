@@ -24,6 +24,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_list_including_low_anonymity.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -2240,6 +2241,42 @@ TYPED_TEST(VariationsSeedProcessorTest,
                                  simulated_group_name),
             EMPTY_ID);
   EXPECT_EQ(base::GetFieldTrialParamValue(kStudyName, "x"), "");
+}
+
+TYPED_TEST(VariationsSeedProcessorTest,
+           CreateTrialsFromSeed_SimulatesAndValidates) {
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
+  base::HistogramTester histogram_tester;
+
+  VariationsSeed seed;
+  Study* study = seed.add_study();
+  study->set_name("Study1");
+  study->set_default_experiment_name("Default");
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
+  AddExperiment("Default", 100, study);
+
+  this->CreateTrialsFromSeed(seed);
+
+  histogram_tester.ExpectUniqueSample(
+      "Variations.CreateTrial.SimulationMatches", true, 1);
+}
+
+TYPED_TEST(VariationsSeedProcessorTest,
+           CreateTrialsFromSeed_SimulationNotSampled) {
+  base::MetricsSubSampler::ScopedNeverSampleForTesting never_sample;
+  base::HistogramTester histogram_tester;
+
+  VariationsSeed seed;
+  Study* study = seed.add_study();
+  study->set_name("Study1");
+  study->set_default_experiment_name("Default");
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
+  AddExperiment("Default", 100, study);
+
+  this->CreateTrialsFromSeed(seed);
+
+  histogram_tester.ExpectTotalCount("Variations.CreateTrial.SimulationMatches",
+                                    0);
 }
 
 }  // namespace variations
