@@ -28,11 +28,13 @@ public final class SidePanelDevFeatureFactory {
             ActivityWindowAndroid windowAndroid,
             Supplier<Tab> tabSupplier) {
         if (AndroidSidePanelEnabledFn.isWindowScopedDevFeatureEnabled()) {
-            return (SidePanelDevFeatureImpl)
+            return (SidePanelWindowScopedDevFeatureImpl)
                     chromeAndroidTask.addFeature(
                             new ChromeAndroidTaskFeatureKey(
-                                    SidePanelDevFeatureImpl.class, profile, windowAndroid),
-                            () -> new SidePanelDevFeatureImpl(profile, windowAndroid));
+                                    SidePanelWindowScopedDevFeatureImpl.class,
+                                    profile,
+                                    windowAndroid),
+                            () -> new SidePanelWindowScopedDevFeatureImpl(profile, windowAndroid));
         }
 
         if (AndroidSidePanelEnabledFn.isTabScopedDevFeatureEnabled()) {

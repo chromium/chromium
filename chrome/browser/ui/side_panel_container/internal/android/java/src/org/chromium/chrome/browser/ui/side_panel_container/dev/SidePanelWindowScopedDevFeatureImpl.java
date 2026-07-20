@@ -32,7 +32,7 @@ import org.chromium.ui.base.WindowAndroid;
 
 /** Implements a window-scoped {@link SidePanelDevFeature}. */
 @NullMarked
-public final class SidePanelDevFeatureImpl
+public final class SidePanelWindowScopedDevFeatureImpl
         implements SidePanelDevFeature, ChromeAndroidTaskFeature {
     private static final String DEV_FEATURE_URL = "https://www.google.com";
 
@@ -92,7 +92,7 @@ public final class SidePanelDevFeatureImpl
         return context;
     }
 
-    public SidePanelDevFeatureImpl(Profile profile, WindowAndroid windowAndroid) {
+    public SidePanelWindowScopedDevFeatureImpl(Profile profile, WindowAndroid windowAndroid) {
         assert AndroidSidePanelEnabledFn.isWindowScopedDevFeatureEnabled();
 
         mProfile = profile;
@@ -131,7 +131,8 @@ public final class SidePanelDevFeatureImpl
     public void toggle() {
         ThreadUtils.assertOnUiThread();
         if (mNativeSidePanelWindowScopedDevFeature != 0) {
-            SidePanelDevFeatureImplJni.get().toggle(mNativeSidePanelWindowScopedDevFeature);
+            SidePanelWindowScopedDevFeatureImplJni.get()
+                    .toggle(mNativeSidePanelWindowScopedDevFeature);
         }
     }
 
@@ -146,12 +147,13 @@ public final class SidePanelDevFeatureImpl
                 : "Native SidePanelWindowScopedDevFeature already exists";
 
         mNativeSidePanelWindowScopedDevFeature =
-                SidePanelDevFeatureImplJni.get().init(this, nativeBrowserWindowPtr);
+                SidePanelWindowScopedDevFeatureImplJni.get().init(this, nativeBrowserWindowPtr);
     }
 
     private void destroyNativePtr() {
         if (mNativeSidePanelWindowScopedDevFeature != 0) {
-            SidePanelDevFeatureImplJni.get().destroy(mNativeSidePanelWindowScopedDevFeature);
+            SidePanelWindowScopedDevFeatureImplJni.get()
+                    .destroy(mNativeSidePanelWindowScopedDevFeature);
             mNativeSidePanelWindowScopedDevFeature = 0;
         }
     }
@@ -167,7 +169,7 @@ public final class SidePanelDevFeatureImpl
 
     @NativeMethods
     interface Natives {
-        long init(SidePanelDevFeatureImpl caller, long nativeBrowserWindowPtr);
+        long init(SidePanelWindowScopedDevFeatureImpl caller, long nativeBrowserWindowPtr);
 
         void destroy(long nativeSidePanelWindowScopedDevFeature);
 

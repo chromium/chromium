@@ -14,7 +14,7 @@
 class BrowserWindowInterface;
 class SidePanelEntryScope;
 
-// The native counterpart of the Java `SidePanelDevFeatureImpl`.
+// The native counterpart of the Java `SidePanelWindowScopedDevFeatureImpl`.
 class SidePanelWindowScopedDevFeature {
  public:
   SidePanelWindowScopedDevFeature(
@@ -28,7 +28,7 @@ class SidePanelWindowScopedDevFeature {
   SidePanelWindowScopedDevFeature& operator=(
       const SidePanelWindowScopedDevFeature&) = delete;
 
-  // Implements Java `SidePanelDevFeatureImpl.Natives`.
+  // Implements Java `SidePanelWindowScopedDevFeatureImpl.Natives`.
   void Toggle();
   void Destroy();
 

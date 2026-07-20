@@ -18,7 +18,7 @@
 #include "third_party/jni_zero/jni_zero.h"
 
 // Must come after headers that provide symbols used by @JniType.
-#include "chrome/browser/ui/side_panel_container/internal/jni_headers/SidePanelDevFeatureImpl_jni.h"
+#include "chrome/browser/ui/side_panel_container/internal/jni_headers/SidePanelWindowScopedDevFeatureImpl_jni.h"
 
 namespace {
 using jni_zero::AttachCurrentThread;
@@ -26,7 +26,7 @@ using jni_zero::JavaRef;
 using jni_zero::ScopedJavaLocalRef;
 }  // namespace
 
-static int64_t JNI_SidePanelDevFeatureImpl_Init(
+static int64_t JNI_SidePanelWindowScopedDevFeatureImpl_Init(
     JNIEnv* env,
     const JavaRef<jobject>& caller,
     int64_t nativeBrowserWindowPtr) {
@@ -80,7 +80,8 @@ SidePanelNativeView SidePanelWindowScopedDevFeature::GetOrCreateView(
     SidePanelEntryScope& scope) const {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> view =
-      Java_SidePanelDevFeatureImpl_getOrCreateView(env, java_dev_feature());
+      Java_SidePanelWindowScopedDevFeatureImpl_getOrCreateView(
+          env, java_dev_feature());
   CHECK(view);
   return std::make_unique<SidePanelNativeViewAndroid>(view);
 }
@@ -93,4 +94,4 @@ ScopedJavaLocalRef<jobject> SidePanelWindowScopedDevFeature::java_dev_feature()
   return local_ref;
 }
 
-DEFINE_JNI(SidePanelDevFeatureImpl)
+DEFINE_JNI(SidePanelWindowScopedDevFeatureImpl)
