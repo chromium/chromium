@@ -3,22 +3,15 @@
 // found in the LICENSE file.
 
 import 'chrome://contextual-tasks/strings.m.js';
-import 'chrome://resources/cr_components/composebox/composebox_dropdown.js';
-import 'chrome://resources/cr_components/composebox/composebox_file_inputs.js';
-import 'chrome://resources/cr_components/composebox/composebox_input.js';
-import 'chrome://resources/cr_components/composebox/file_carousel.js';
+import './test_composebox_mixin.js';
 
 import {ComposeboxFile, ContextType, ContextualSearchInputStateDeletionType, TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
-import type {ComposeboxDropdownElement} from 'chrome://resources/cr_components/composebox/composebox_dropdown.js';
 import type {ComposeboxInputElement} from 'chrome://resources/cr_components/composebox/composebox_input.js';
-import {ComposeboxEmbedderMixin} from 'chrome://resources/cr_components/composebox/composebox_mixin.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import type {ComposeboxFileCarouselElement} from 'chrome://resources/cr_components/composebox/file_carousel.js';
-import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {DriveDisclaimerStatus, DriveUploadError, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {AutocompleteMatch, AutocompleteResult, PageRemote as SearchboxPageRemote, SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ContextUploadStatus, InputType, ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
@@ -35,101 +28,7 @@ import {getTrustedHtml} from 'chrome://webui-test/trusted_html.js';
 
 // </if>
 import {installMock, MockInputState} from './composebox_test_utils.js';
-
-const TestElementBase = ComposeboxEmbedderMixin(I18nMixinLit(CrLitElement));
-
-interface TestComposeboxMixinElement {
-  $: {
-    input: ComposeboxInputElement,
-    matches: ComposeboxDropdownElement,
-    inputWrapper: HTMLElement,
-  };
-}
-
-class TestComposeboxMixinElement extends TestElementBase {
-  static get is() {
-    return 'test-composebox-mixin';
-  }
-
-  override render() {
-    // clang-format off
-    return html`
-      <div id="inputWrapper" @keydown="${this.onKeydown}">
-        <cr-composebox-input id="input"
-            .result="${this.result}"
-            .input="${this.input}"
-            .smartComposeEnabled="${this.smartComposeEnabled}"
-            .smartComposeInlineHint="${this.smartComposeInlineHint}"
-            .cancelButtonTitle="${this.computeCancelButtonTitle()}"
-            @input-input="${this.onInputInput}"
-            @input-focusin="${this.onInputFocusin}"
-            @cancel-click="${this.onCancelClick}"
-            @clear-smart-compose="${this.onClearSmartCompose}">
-        </cr-composebox-input>
-        <cr-composebox-dropdown id="matches"
-            .result="${this.result}"
-            .selectedMatchIndex="${this.selectedMatchIndex}"
-            @selected-match-index-changed="${this.onSelectedMatchIndexChanged}"
-            @match-focusin="${this.onMatchFocusin}"
-            @match-click="${this.onMatchClick}">
-        </cr-composebox-dropdown>
-        <cr-composebox-file-inputs id="fileInputs"
-            @file-change="${this.onFileChange}"
-            .disableFileInputs="${this.shouldDisableFileInputs()}">
-        </cr-composebox-file-inputs>
-        ${this.showFileCarousel ? html`
-          <cr-composebox-file-carousel
-              id="carousel"
-              .files="${this.getFilteredCarouselFiles()}"
-              @delete-file="${this.onDeleteFile}">
-          </cr-composebox-file-carousel>
-        ` : ''}
-      </div>
-    `;
-    // clang-format on
-  }
-
-  override getInputElement(): ComposeboxInputElement {
-    return this.$.input;
-  }
-
-  override getDropdownElement(): ComposeboxDropdownElement {
-    return this.$.matches;
-  }
-
-  getWrapperElement(): HTMLElement {
-    return this.$.inputWrapper;
-  }
-
-  private activeElement_: Element|null = null;
-  setActiveElement(elem: Element|null) {
-    this.activeElement_ = elem;
-  }
-
-  override getActiveElement(): Element|null {
-    return this.activeElement_ ?? this.shadowRoot.activeElement;
-  }
-
-  override getPageHandler() {
-    return ComposeboxProxyImpl.getInstance().handler;
-  }
-
-  override getSearchboxCallbackRouter() {
-    return ComposeboxProxyImpl.getInstance().searchboxCallbackRouter;
-  }
-
-  override getSearchboxHandler() {
-    return ComposeboxProxyImpl.getInstance().searchboxHandler;
-  }
-
-  override getContextEntrypointElement(): ContextualEntrypointAndMenuElement
-      |null {
-    return null;
-  }
-}
-
-customElements.define(
-    TestComposeboxMixinElement.is, TestComposeboxMixinElement);
+import type {TestComposeboxMixinElement} from './test_composebox_mixin.js';
 
 function simulateUserTextInput(
     inputElement: ComposeboxInputElement, value: string): Promise<void> {
@@ -167,8 +66,7 @@ suite('ComposeboxMixinTest', () => {
       state: new MockInputState(),
     });
 
-    element = document.createElement('test-composebox-mixin') as
-        TestComposeboxMixinElement;
+    element = document.createElement('test-composebox-mixin');
     // The mixin queries ZPS on mount by default, which advances the
     // autocomplete query id; opt out so per-test assertions start clean.
     element.queryZpsOnLoad = false;
@@ -614,8 +512,7 @@ suite('ComposeboxMixinTest', () => {
 
   test('queries autocomplete on load by default', async () => {
     searchboxHandler.resetResolver('queryAutocompleteWithSuggestInventory');
-    const freshComposebox = document.createElement('test-composebox-mixin') as
-        TestComposeboxMixinElement;
+    const freshComposebox = document.createElement('test-composebox-mixin');
     document.body.appendChild(freshComposebox);
     await microtasksFinished();
 
@@ -627,9 +524,7 @@ suite('ComposeboxMixinTest', () => {
   test('does not query autocomplete on load when queryZpsOnLoad is false',
        async () => {
     searchboxHandler.resetResolver('queryAutocompleteWithSuggestInventory');
-    const freshComposebox =
-        document.createElement('test-composebox-mixin') as
-        TestComposeboxMixinElement;
+    const freshComposebox = document.createElement('test-composebox-mixin');
     // queryZpsOnLoad is read in connectedCallback, so it must be set before
     // the element connects. Contextual Tasks sets it false and drives
     // autocomplete from its own zero-state logic instead.
@@ -796,9 +691,7 @@ suite('ComposeboxMixinTest', () => {
         });
 
         document.body.innerHTML = window.trustedTypes!.emptyHTML;
-        const freshComposebox =
-            document.createElement('test-composebox-mixin') as
-            TestComposeboxMixinElement;
+        const freshComposebox = document.createElement('test-composebox-mixin');
         document.body.appendChild(freshComposebox);
 
         const regularFile = ({
@@ -828,8 +721,7 @@ suite('ComposeboxMixinTest', () => {
     });
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    const freshComposebox = document.createElement('test-composebox-mixin') as
-        TestComposeboxMixinElement;
+    const freshComposebox = document.createElement('test-composebox-mixin');
     document.body.appendChild(freshComposebox);
 
     const regularFile = ({
@@ -2014,8 +1906,7 @@ suite('ComposeboxMixinTest', () => {
         searchboxHandler.setResultMapperFor(
             'getSmartTabSharingActive', () => Promise.resolve({active: true}));
 
-        const newElement = document.createElement('test-composebox-mixin') as
-            TestComposeboxMixinElement;
+        const newElement = document.createElement('test-composebox-mixin');
         newElement.smartTabSharingVisible = true;
         document.body.appendChild(newElement);
         await searchboxHandler.whenCalled('getSmartTabSharingActive');
@@ -2032,8 +1923,7 @@ suite('ComposeboxMixinTest', () => {
       'connectedCallback does NOT call getSmartTabSharingActive when' +
           ' smartTabSharingVisible is false',
       async () => {
-        const newElement = document.createElement('test-composebox-mixin') as
-            TestComposeboxMixinElement;
+        const newElement = document.createElement('test-composebox-mixin');
         newElement.smartTabSharingVisible = false;
         document.body.appendChild(newElement);
         await newElement.updateComplete;

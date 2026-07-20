@@ -38,6 +38,7 @@ build_webui_tests("build") {
     "file_thumbnail_test.ts",
     "recent_tab_chip_test.ts",
     "recording_wave_test.ts",
+    "test_composebox_mixin.ts",
   ]
 
   ts_deps = [
