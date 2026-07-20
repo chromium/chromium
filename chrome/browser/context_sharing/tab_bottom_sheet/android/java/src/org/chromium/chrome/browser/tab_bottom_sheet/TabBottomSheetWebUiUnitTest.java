@@ -13,7 +13,6 @@ import static org.mockito.ArgumentCaptor.captor;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -58,9 +57,6 @@ import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewAttachParams;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
 import org.chromium.components.thinwebview.internal.ThinWebViewContextMenuItemDelegate;
-import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
-import org.chromium.content.browser.webcontents.WebContentsImpl;
-import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 import org.chromium.ui.base.EventForwarder;
@@ -74,11 +70,11 @@ import java.util.function.BiConsumer;
 /** Unit tests for {@link TabBottomSheetWebUi}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class TabBottomSheetWebUiTest {
+public class TabBottomSheetWebUiUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private WindowAndroid mWindowAndroid;
-    @Mock private WebContentsImpl mWebContents;
+    @Mock private WebContents mWebContents;
     @Mock private ThinWebView mThinWebView;
     @Mock private View mView;
     @Mock private ContextMenuPopulatorFactory mContextMenuPopulatorFactory;
@@ -645,11 +641,6 @@ public class TabBottomSheetWebUiTest {
 
     @Test
     public void testSetWebContents_ContextualTasks_BlocksActionModeMenu() {
-        SelectionPopupControllerImpl mockSelectionPopupController =
-                mock(SelectionPopupControllerImpl.class);
-        when(mWebContents.getOrSetUserData(eq(SelectionPopupControllerImpl.class), any()))
-                .thenReturn(mockSelectionPopupController);
-
         Context context =
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
@@ -660,7 +651,7 @@ public class TabBottomSheetWebUiTest {
                                 org.chromium.chrome.browser.context_sharing.R.layout
                                         .tab_bottom_sheet,
                                 null);
-        TabBottomSheetWebUi webUi =
+        TestTabBottomSheetWebUi webUi =
                 new TestTabBottomSheetWebUi(
                         context,
                         containerView,
@@ -675,17 +666,11 @@ public class TabBottomSheetWebUiTest {
                         mMockContentView);
         webUi.setWebContents(mWebContents, true);
 
-        verify(mockSelectionPopupController)
-                .setActionModeCallback(ActionModeCallbackHelper.EMPTY_CALLBACK);
+        assertTrue(webUi.isDisableActionModeSelectionMenuCalled());
     }
 
     @Test
     public void testSetWebContents_Glic_DoesNotBlockActionModeMenu() {
-        SelectionPopupControllerImpl mockSelectionPopupController =
-                mock(SelectionPopupControllerImpl.class);
-        when(mWebContents.getOrSetUserData(eq(SelectionPopupControllerImpl.class), any()))
-                .thenReturn(mockSelectionPopupController);
-
         Context context =
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
@@ -696,7 +681,7 @@ public class TabBottomSheetWebUiTest {
                                 org.chromium.chrome.browser.context_sharing.R.layout
                                         .tab_bottom_sheet,
                                 null);
-        TabBottomSheetWebUi webUi =
+        TestTabBottomSheetWebUi webUi =
                 new TestTabBottomSheetWebUi(
                         context,
                         containerView,
@@ -711,11 +696,12 @@ public class TabBottomSheetWebUiTest {
                         mMockContentView);
         webUi.setWebContents(mWebContents, true);
 
-        verify(mockSelectionPopupController, never()).setActionModeCallback(any());
+        assertFalse(webUi.isDisableActionModeSelectionMenuCalled());
     }
 
     private static class TestTabBottomSheetWebUi extends TabBottomSheetWebUi {
         private final ContentView mMockContentView;
+        private boolean mDisableActionModeSelectionMenuCalled;
 
         TestTabBottomSheetWebUi(
                 Context context,
@@ -746,6 +732,15 @@ public class TabBottomSheetWebUiTest {
         @Override
         ContentView createContentView(Context context, WebContents webContents) {
             return mMockContentView;
+        }
+
+        @Override
+        void disableActionModeSelectionMenu(WebContents webContents) {
+            mDisableActionModeSelectionMenuCalled = true;
+        }
+
+        boolean isDisableActionModeSelectionMenuCalled() {
+            return mDisableActionModeSelectionMenuCalled;
         }
     }
 }

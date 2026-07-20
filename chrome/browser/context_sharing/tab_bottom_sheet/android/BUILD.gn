@@ -67,6 +67,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetViewBinder.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetWebUi.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetWebUiContainer.java",
+    "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetWebUiLinkOpener.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/WebViewResizingHelper.java",
   ]
   resources_package = "org.chromium.chrome.browser.context_sharing"
@@ -130,7 +131,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetMediatorTest.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetPeekViewBinderTest.java",
-    "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetWebUiTest.java",
+    "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetWebUiUnitTest.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/WebViewResizingHelperUnitTest.java",
   ]
   deps = [
