@@ -24,6 +24,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowToast;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -64,7 +65,9 @@ import java.util.function.Supplier;
 
 /** Tests for SendTabToSelfAndroidBridge */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowToast.class})
 public class SendTabToSelfAndroidBridgeTest {
     private static final String URL = "https://www.google.com";
     private static final String TITLE = "Google";
@@ -243,6 +246,58 @@ public class SendTabToSelfAndroidBridgeTest {
         Assert.assertEquals(
                 "Already sent to Chrome on your Pixel 10",
                 snackbarCaptor.getValue().getTextForTesting().toString());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)
+    public void testSendTabToDevice_ShowsSnackbarFromActivity_WhenWebContentsNull() {
+        ArgumentCaptor<SendTabToSelfAndroidBridge.CommitConfirmationCallback>
+                confirmationCallbackCaptor =
+                        ArgumentCaptor.forClass(
+                                SendTabToSelfAndroidBridge.CommitConfirmationCallback.class);
+
+        // Set up an activity to be returned from ApplicationStatus.getLastTrackedFocusedActivity()
+        // (which is what the bridge uses as a fallback if the WebContents is null).
+        ChromeTabbedActivity activity = mock(ChromeTabbedActivity.class);
+        when(activity.getSnackbarManager()).thenReturn(mSnackbarManager);
+        when(activity.getString(
+                        eq(R.string.send_tab_to_self_post_send_success_toast_android),
+                        any(Object[].class)))
+                .thenReturn("Sent to Chrome on your Pixel 10.");
+
+        ApplicationStatus.onStateChangeForTesting(activity, ActivityState.CREATED);
+        ApplicationStatus.onStateChangeForTesting(activity, ActivityState.STARTED);
+        ApplicationStatus.onStateChangeForTesting(activity, ActivityState.RESUMED);
+
+        SendTabToSelfAndroidBridge.sendTabToDevice(
+                mProfile,
+                null,
+                TARGET_DEVICE_SYNC_CACHE_GUID,
+                "Pixel 10",
+                URL,
+                TITLE,
+                ShareEntryPoint.SHARE_SHEET);
+
+        verify(mNativeMock)
+                .sendTabToDevice(
+                        eq(mProfile),
+                        eq(null),
+                        eq(TARGET_DEVICE_SYNC_CACHE_GUID),
+                        eq(URL),
+                        eq(TITLE),
+                        confirmationCallbackCaptor.capture(),
+                        eq(ShareEntryPoint.SHARE_SHEET));
+
+        confirmationCallbackCaptor.getValue().onResult(SendTabToSelfResult.SUCCESS);
+
+        ArgumentCaptor<Snackbar> snackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
+        verify(mSnackbarManager).showSnackbar(snackbarCaptor.capture());
+        Assert.assertEquals(
+                "Sent to Chrome on your Pixel 10.",
+                snackbarCaptor.getValue().getTextForTesting().toString());
+
+        ApplicationStatus.onStateChangeForTesting(activity, ActivityState.DESTROYED);
     }
 
     @Test
@@ -603,5 +658,71 @@ public class SendTabToSelfAndroidBridgeTest {
         // Clean up.
         ApplicationStatus.onStateChangeForTesting(tabbedActivity, ActivityState.DESTROYED);
         MessagesFactory.detachMessageDispatcher(messageDispatcher);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)
+    public void testSendTabToDevice_ShowsToast_WhenSnackbarManagerUnavailable() {
+        ArgumentCaptor<SendTabToSelfAndroidBridge.CommitConfirmationCallback>
+                confirmationCallbackCaptor =
+                        ArgumentCaptor.forClass(
+                                SendTabToSelfAndroidBridge.CommitConfirmationCallback.class);
+
+        SendTabToSelfAndroidBridge.sendTabToDevice(
+                mProfile,
+                null,
+                TARGET_DEVICE_SYNC_CACHE_GUID,
+                "Pixel 10",
+                URL,
+                TITLE,
+                ShareEntryPoint.SHARE_SHEET);
+
+        verify(mNativeMock)
+                .sendTabToDevice(
+                        eq(mProfile),
+                        eq(null),
+                        eq(TARGET_DEVICE_SYNC_CACHE_GUID),
+                        eq(URL),
+                        eq(TITLE),
+                        confirmationCallbackCaptor.capture(),
+                        eq(ShareEntryPoint.SHARE_SHEET));
+
+        confirmationCallbackCaptor.getValue().onResult(SendTabToSelfResult.SUCCESS);
+
+        Assert.assertEquals("Sent to Chrome on your Pixel 10.", ShadowToast.getTextOfLatestToast());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)
+    public void testSendTabToDevice_ShowsToast_OnFailure_WhenSnackbarManagerUnavailable() {
+        ArgumentCaptor<SendTabToSelfAndroidBridge.CommitConfirmationCallback>
+                confirmationCallbackCaptor =
+                        ArgumentCaptor.forClass(
+                                SendTabToSelfAndroidBridge.CommitConfirmationCallback.class);
+
+        SendTabToSelfAndroidBridge.sendTabToDevice(
+                mProfile,
+                null,
+                TARGET_DEVICE_SYNC_CACHE_GUID,
+                "Pixel 10",
+                URL,
+                TITLE,
+                ShareEntryPoint.SHARE_SHEET);
+
+        verify(mNativeMock)
+                .sendTabToDevice(
+                        eq(mProfile),
+                        eq(null),
+                        eq(TARGET_DEVICE_SYNC_CACHE_GUID),
+                        eq(URL),
+                        eq(TITLE),
+                        confirmationCallbackCaptor.capture(),
+                        eq(ShareEntryPoint.SHARE_SHEET));
+
+        confirmationCallbackCaptor.getValue().onResult(SendTabToSelfResult.FAILURE_INVALID_URL);
+
+        Assert.assertEquals("Something went wrong. Try again.", ShadowToast.getTextOfLatestToast());
     }
 }
