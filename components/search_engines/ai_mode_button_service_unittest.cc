@@ -32,12 +32,7 @@ class AiModeButtonServiceTest : public testing::Test {
  public:
   void SetUp() override {
     template_url_service()->Load();
-
-    AiModeButtonService::GoogleStrings google_strings;
-    google_strings.entrypoint_label = u"Google AI";
-    google_strings.context_menu_label = u"Show Google AI";
-    service_ = std::make_unique<AiModeButtonService>(template_url_service(),
-                                                     google_strings);
+    service_ = std::make_unique<AiModeButtonService>(template_url_service());
   }
 
   TemplateURLService* template_url_service() {
@@ -73,7 +68,16 @@ TEST_F(AiModeButtonServiceTest, ConfigWithGoogleDse) {
   const auto* config = service_->GetCurrentConfig();
   ASSERT_TRUE(config);
   EXPECT_EQ(config->id, SearchEngineType::SEARCH_ENGINE_GOOGLE);
-  EXPECT_EQ(std::u16string_view(config->text), u"Google AI");
+  EXPECT_EQ(std::u16string_view(config->text), u"AI Mode");
+  EXPECT_EQ(std::u16string_view(config->tooltip),
+            u"Ask AI Mode in Google Search");
+  EXPECT_EQ(std::u16string_view(config->a11y_label),
+            u"AI Mode button, press Enter to ask AI Mode");
+  // Context menu item capitalization is platform dependent.
+  EXPECT_THAT(std::u16string_view(config->context_menu_label),
+              testing::AnyOf(u"Always Show AI Mode", u"Always show AI Mode"));
+  EXPECT_EQ(std::u16string_view(config->placeholder_text),
+            u"Press tab then enter to ask AI Mode");
 }
 
 TEST_F(AiModeButtonServiceTest, NoConfigWithNonGoogleDse) {

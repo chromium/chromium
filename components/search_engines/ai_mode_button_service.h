@@ -20,14 +20,7 @@
 class AiModeButtonService : public KeyedService,
                             public TemplateURLServiceObserver {
  public:
-  // Used to pass in chrome strings for the google config.
-  struct GoogleStrings {
-    std::u16string entrypoint_label;
-    std::u16string context_menu_label;
-  };
-
-  AiModeButtonService(TemplateURLService* template_url_service,
-                      GoogleStrings google_strings);
+  explicit AiModeButtonService(TemplateURLService* template_url_service);
   AiModeButtonService(const AiModeButtonService&) = delete;
   AiModeButtonService& operator=(const AiModeButtonService&) = delete;
   ~AiModeButtonService() override;

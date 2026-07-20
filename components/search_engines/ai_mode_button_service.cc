@@ -31,15 +31,15 @@ bool IsValidStringPtr(const char16_t* str, size_t max_length) {
 }  // namespace
 
 AiModeButtonService::AiModeButtonService(
-    TemplateURLService* template_url_service,
-    GoogleStrings google_strings)
+    TemplateURLService* template_url_service)
     : template_url_service_(template_url_service),
       google_config_owned_{
-          std::move(google_strings.entrypoint_label),
+          l10n_util::GetStringUTF16(IDS_AI_MODE_ENTRYPOINT_LABEL),
           l10n_util::GetStringUTF16(
               IDS_STARTER_PACK_AI_MODE_ACTION_SUGGESTION_CONTENTS),
           l10n_util::GetStringUTF16(IDS_ACC_AI_MODE_BUTTON_FOCUSED),
-          std::move(google_strings.context_menu_label),
+          l10n_util::GetStringUTF16(
+              IDS_CONTEXT_MENU_SHOW_AI_MODE_OMNIBOX_BUTTON),
           l10n_util::GetStringUTF16(IDS_ACC_AI_MODE_PLACEHOLDER_TEXT)},
       google_config_{
           SearchEngineType::SEARCH_ENGINE_GOOGLE,
