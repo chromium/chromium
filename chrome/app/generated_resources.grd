@@ -19012,7 +19012,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Dismiss
       </message>
       <message name="IDS_PERFORMANCE_INTERVENTION_BUTTON_TOOLTIP" desc="The tooltip for the performance intervention toolbar button">
-        Perfomance issue alert
+        Performance issue alert
       </message>
       <message name="IDS_PERFORMANCE_INTERVENTION_BUTTON_ACCNAME" desc="The accessibility text for the performance intervention toolbar button">
         Performance issue alert
