@@ -690,6 +690,51 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest,
       RemoveFocusFromPopup());
 }
 
+IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest,
+                       FocusLocationNoDefaultSuggestion) {
+  auto shortcuts_backend =
+      ShortcutsBackendFactory::GetForProfile(browser()->GetProfile());
+  if (!shortcuts_backend->initialized()) {
+    base::RunLoop run_loop;
+    NotifyWhenShortcutsLoadedObserver notify_init(run_loop.QuitClosure());
+    shortcuts_backend->AddObserver(&notify_init);
+    run_loop.Run();
+    shortcuts_backend->RemoveObserver(&notify_init);
+  }
+
+  std::array<TestShortcutData, 1> test_shortcut = {
+      // Thanks, shortcuts_provider_unittest.cc
+      {{"BD85DBA2-8C29-49F9-84AE-48E1E12345E0", "https://www.cnn.com",
+        "www.cnn.com/index.html", "https://www.cnn.com/index.html",
+        AutocompleteMatch::DocumentType::NONE, "www.cnn.com/index.html", "0,1",
+        "CNN.com - Breaking News, U.S., World, Weather, Entertainment & Video",
+        "0,0,19,2,23,0,38,2,45,0", ui::PAGE_TRANSITION_TYPED,
+        AutocompleteMatchType::HISTORY_TITLE, "", 1, 10}}};
+  PopulateShortcutsBackendWithTestData(shortcuts_backend, test_shortcut);
+
+  ui::Accelerator accelerator;
+  EXPECT_TRUE(
+      AcceleratorProviderForBrowser(browser())->GetAcceleratorForCommandId(
+          IDC_FOCUS_LOCATION, &accelerator));
+
+  RunTestSequence(
+      InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
+      InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
+      WaitTillOmniboxViewText("about:blank"),
+      WaitTillOmniboxViewSelection("about:blank", gfx::Range(11, 0)),
+      // Unfocus, since we want to test us focusing.
+      FocusWebContents(kTabId),
+      NavigateWebContents(kTabId, GURL("https://www.cnn.com/")),
+      WaitTillOmniboxViewText("cnn.com"),
+      // Press Ctrl-L; it should not show a suggestion (as additional text, in
+      // this case).
+      SendAccelerator(kBrowserViewElementId, accelerator),
+      // Since we are checking for a negative, delay before checking.
+      DoWaitForTime(base::Milliseconds(500)),
+      CheckJsResultAt(kWebUIToolbarId, kOmniboxAdditionalText,
+                      "el => el.textContent === ''"));
+}
+
 IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, AdditionalText) {
   auto shortcuts_backend =
       ShortcutsBackendFactory::GetForProfile(browser()->GetProfile());

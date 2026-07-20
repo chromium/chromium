@@ -294,10 +294,8 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       // as well to avoid flicker.
       this.$.textInput.value = '';
       this.updateStateFromTextInput();
-      this.sendInputToBrowser();
     } else if (isUserInitiated) {
       this.unelide();
-      this.sendInputToBrowser();
     }
     this.$.textInput.focus();
     this.switchView_(/*hasFocus=*/ true);
@@ -325,6 +323,9 @@ export class ReadonlyOmniboxElement extends CrLitElement {
         this.selectAllBackwards();
       }
     }
+    // It's important this is done after updating the selection since that
+    // prevents inline completion, which isn't desired for these shortcuts.
+    this.sendInputToBrowser();
 
     this.browserProxy_.toolbarUIHandler.onOmniboxAction({
       focusChange: {
