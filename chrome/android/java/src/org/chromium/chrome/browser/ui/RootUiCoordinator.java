@@ -1835,6 +1835,7 @@ public class RootUiCoordinator
             return true;
         } else if (id == R.id.paint_preview_show_id) {
             DemoPaintPreview.showForTab(mActivityTabProvider.get());
+            RecordUserAction.record("MobileMenuPaintPreview");
             return true;
         } else if (id == R.id.get_image_descriptions_id) {
             Tab tab = mActivityTabProvider.get();

@@ -4312,6 +4312,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             Tab destTab = groupTabs.get(0);
             TabGroupUtils.mergeTabsToDest(
                     List.of(currentTab), destTab.getId(), tabModel, /* tabMovedCallback= */ null);
+            RecordUserAction.record("MobileMenuAddToExistingGroup");
             return true;
         } else if (id == R.id.create_new_tab_group_menu_id) {
             RecordUserAction.record("MobileMenuCreateTabGroup");

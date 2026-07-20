@@ -2919,6 +2919,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         if (id == R.id.about_chrome_menu_id) {
             SettingsNavigationFactory.createSettingsNavigation()
                     .startSettings(this, AboutChromeSettings.class);
+            RecordUserAction.record("MobileMenuAboutChrome");
             return true;
         }
 
@@ -2995,6 +2996,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             BookmarkOpener opener =
                     new BookmarkOpenerImpl(mBookmarkModelSupplier, this, getComponentName());
             opener.openBookmarkInCurrentTab(bookmarkId, currentTab.isIncognito());
+            RecordUserAction.record("MobileMenuOpenBookmark");
             return true;
         }
 
@@ -3005,6 +3007,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                     getTabModelSelector(),
                     menuItemData.getInt(AppMenuPropertiesDelegateImpl.TAB_ID_BUNDLE_KEY),
                     TabSelectionType.FROM_USER);
+            RecordUserAction.record("MobileMenuSelectTabFromGroup");
             return true;
         }
 
