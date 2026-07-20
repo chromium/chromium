@@ -24,7 +24,9 @@
 #include "base/types/expected_macros.h"
 #include "build/android_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/browser/glic/common/local_hotkey_manager.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
+#include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_instance.h"
@@ -32,6 +34,7 @@
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
+#include "chrome/browser/glic/service/glic_ui_embedder.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_tab_added_waiter.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
@@ -44,11 +47,15 @@
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/host_zoom_map.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/base_window.h"
+#include "ui/base/test/ui_controls.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "url/gurl.h"
 
@@ -56,6 +63,11 @@
 #include "base/android/device_info.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "ui/android/accelerator_manager_android.h"
+#include "ui/android/window_android.h"
+#else
+#include "ui/views/focus/focus_manager.h"
+#include "ui/views/widget/widget.h"
 #endif
 
 #if defined(TOOLKIT_VIEWS)
@@ -194,6 +206,7 @@ class GlicBrowserTestMixin : public T {
     // ChromeTabbedActivity in tests, it shows the browser window instead of the
     // FRE onboarding screens.
     command_line->AppendSwitch("disable-fre");
+    command_line->AppendSwitch("disable-startup-promos-for-testing");
 #endif
   }
 
@@ -403,6 +416,36 @@ class GlicBrowserTestMixin : public T {
 
     return WaitForWebUiContentsVisibility(weak_instance.get(),
                                           content::Visibility::HIDDEN);
+  }
+
+  [[nodiscard]] TestResult<> FocusGlic(GlicInstanceImpl* instance) {
+    GlicUiEmbedder* embedder = instance->GetActiveEmbedder();
+    if (!embedder) {
+      return base::unexpected("GlicInstance has no active embedder");
+    }
+    embedder->Focus();
+    bool success = base::test::RunUntil([&]() {
+      return instance->GetActiveEmbedder() &&
+             instance->GetActiveEmbedder()->HasFocus();
+    });
+    if (!success) {
+      return base::unexpected("Timed out waiting for Glic to gain focus");
+    }
+    return base::ok();
+  }
+
+  double GetZoomLevel(GlicInstanceImpl* instance) {
+    content::WebContents* webui_contents = instance->host().webui_contents();
+    if (!webui_contents) {
+      return 1.0;
+    }
+    content::WebContents* guest_contents =
+        GetGlicGuestWebContents(webui_contents);
+    if (!guest_contents) {
+      return 1.0;
+    }
+    double zoom_level = content::HostZoomMap::GetZoomLevel(guest_contents);
+    return blink::ZoomLevelToZoomFactor(zoom_level);
   }
 
   [[nodiscard]] TestResult<GlicInstanceImpl*> WaitForGlicInstanceBoundToTab(
@@ -692,6 +735,54 @@ class GlicBrowserTestMixin : public T {
       instance = GetOnlyGlicInstance();
     }
     return static_cast<GlicInstanceImpl*>(instance);
+  }
+
+  ui::Accelerator GetAccelerator(LocalHotkeyManager::Command command) {
+    if (command == LocalHotkeyManager::Command::kFocusToggle ||
+        command == LocalHotkeyManager::Command::kCaptureRegion ||
+        command == LocalHotkeyManager::Command::kPanelToggle) {
+      return LocalHotkeyManager::GetDefaultAccelerator(command);
+    }
+    auto static_accels = LocalHotkeyManager::GetStaticAccelerators(command);
+    CHECK(!static_accels.empty());
+    return static_accels[0];
+  }
+
+  bool TriggerHotkey(ui::Accelerator accelerator) {
+#if BUILDFLAG(IS_ANDROID)
+    gfx::NativeWindow window = GetBrowser()->GetWindow()->GetNativeWindow();
+    int accelerator_state = ui_controls::kNoAccelerator;
+    if (accelerator.IsCtrlDown()) {
+      accelerator_state |= ui_controls::kControl;
+    }
+    if (accelerator.IsShiftDown()) {
+      accelerator_state |= ui_controls::kShift;
+    }
+    if (accelerator.IsAltDown()) {
+      accelerator_state |= ui_controls::kAlt;
+    }
+    if (accelerator.IsCmdDown()) {
+      accelerator_state |= ui_controls::kCommand;
+    }
+    return ui_controls::SendKeyEvents(window, accelerator.key_code(),
+                                      ui_controls::kKeyPress,
+                                      accelerator_state);
+#else
+    views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
+        GetBrowser()->GetWindow()->GetNativeWindow());
+    if (!widget) {
+      return false;
+    }
+    views::FocusManager* focus_manager = widget->GetFocusManager();
+    if (!focus_manager) {
+      return false;
+    }
+    return focus_manager->ProcessAccelerator(accelerator);
+#endif
+  }
+
+  bool TriggerHotkey(LocalHotkeyManager::Command command) {
+    return TriggerHotkey(GetAccelerator(command));
   }
 
  private:
