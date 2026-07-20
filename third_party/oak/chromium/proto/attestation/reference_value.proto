@@ -20,7 +20,7 @@ syntax = "proto3";
 package oak.attestation.v1;
 
 import "google/protobuf/duration.proto";
-import "google/protobuf/timestamp.proto";
+import "proto/chromium_types/timestamp.proto";
 import "proto/attestation/tcb_version.proto";
 import "proto/digest.proto";
 
@@ -57,7 +57,7 @@ message VerifyingKey {
 message TimestampReferenceValue {
   // Verification passes whenever the timestamp under verification is not before
   // the specified timestamp.
-  google.protobuf.Timestamp not_before_absolute = 1;
+  Timestamp not_before_absolute = 1;
 
   // Verification passes whenever the timestamp under verification is not before
   // the current time to which the specified (signed) duration is added.

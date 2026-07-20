@@ -1,0 +1,5 @@
+In order to update the dependency:
+
+1. Update revision in README.chromium
+2. Update the submodule using gclient set-dep
+3. Execute ./sync-chromium.sh
