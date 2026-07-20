@@ -84,8 +84,7 @@ class WebUILocationBarTest : public testing::Test {
   }
 
   void SimulatePageInfoBubbleClosed() {
-    location_bar_->OnPageInfoBubbleClosed(
-        views::Widget::ClosedReason::kCloseButtonClicked, false);
+    location_bar_->page_info_reopen_suppressor_.CloseForTesting();
   }
 
   WebUIPermissionDashboard* permission_dashboard() {

@@ -13,6 +13,8 @@ source_set("bubble") {
     "webui_bubble_manager.cc",
     "webui_bubble_manager.h",
     "webui_bubble_manager_observer.h",
+    "webui_bubble_reopen_suppressor.cc",
+    "webui_bubble_reopen_suppressor.h",
   ]
   public_deps = [
     "//base",

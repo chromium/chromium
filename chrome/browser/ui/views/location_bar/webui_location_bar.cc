@@ -579,11 +579,9 @@ void WebUILocationBar::OnLhsChipMousePressed(
     // Note: If the user mouses down and drags out without releasing, this
     // flag remains true. This is safe because it will be unconditionally
     // overwritten by the next OnLhsChipMousePressed IPC when they click again.
-    suppress_lhs_chip_clicked_ =
-        (PageInfoBubbleView::GetShownBubbleType() !=
-         PageInfoBubbleView::BUBBLE_NONE) ||
-        (base::TimeTicks::Now() - last_page_info_bubble_close_time_ <
-         suppression_threshold_);
+    suppress_lhs_chip_clicked_ = (PageInfoBubbleView::GetShownBubbleType() !=
+                                  PageInfoBubbleView::BUBBLE_NONE) ||
+                                 page_info_reopen_suppressor_.ShouldSuppress();
   } else if (identifier ==
              toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionRequest) {
     permission_dashboard_->request_chip()->OnMousePressed();
@@ -591,18 +589,6 @@ void WebUILocationBar::OnLhsChipMousePressed(
              toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator) {
     permission_dashboard_->indicator_chip()->OnMousePressed();
   }
-}
-
-void WebUILocationBar::OnPageInfoBubbleClosed(
-    views::Widget::ClosedReason closed_reason,
-    bool reload_prompt) {
-  last_page_info_bubble_close_time_ = base::TimeTicks::Now();
-
-  // TODO(crbug.com/495419742): If `reload_prompt` is true, and the user closed
-  // the bubble by pressing ESC or clicking the Close button, we should
-  // refocus the location bar so the user can tab into the "You should reload
-  // this page" infobar rather than being dumped back out into a stale webpage.
-  // See `LocationBarView::OnPageInfoBubbleClosed` for the implementation.
 }
 
 void WebUILocationBar::OnLhsChipClicked(
@@ -655,20 +641,24 @@ void WebUILocationBar::ShowPageInfoBubble() {
               : views::BubbleAnchor(toolbar_delegate_->GetView()),
           toolbar_delegate_->GetView()->GetWidget()->GetNativeWindow(),
           contents, entry->GetVirtualURL())
-
-          .AddPageInfoClosingCallback(
-              base::BindOnce(&WebUILocationBar::OnPageInfoBubbleClosed,
-                             weak_ptr_factory_.GetWeakPtr()))
+          // TODO(crbug.com/495419742): We currently don't handle refocusing the
+          // location bar after the WebUI page info bubble closes. If a page
+          // reload is required (e.g. after changing permissions), and the user
+          // closed the bubble by pressing ESC or clicking the Close button, we
+          // should refocus the location bar to allow the user to easily tab
+          // into the "You should reload this page" infobar.
           .Build();
   views::BubbleDialogDelegateView* const bubble =
       PageInfoBubbleView::CreatePageInfoBubble(std::move(specification));
   bubble->SetHighlightedElement(kLocationIconElementId);
   bubble->GetWidget()->Show();
+  page_info_reopen_suppressor_.Observe(bubble->GetWidget());
 }
 
 void WebUILocationBar::SetSuppressionThresholdForTesting(
     base::TimeDelta threshold) {
-  suppression_threshold_ = threshold;
+  page_info_reopen_suppressor_.SetSuppressionThresholdForTesting(  // IN-TEST
+      threshold);
 }
 
 void WebUILocationBar::OnLhsChipPointerEntered(

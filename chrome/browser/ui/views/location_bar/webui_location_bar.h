@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/views/bubble/webui_bubble_reopen_suppressor.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/webui_content_setting_image_control.h"
@@ -188,8 +189,6 @@ class WebUILocationBar : public LocationBar,
 
   void OnIconFetched(const gfx::Image& image);
 
-  void OnPageInfoBubbleClosed(views::Widget::ClosedReason closed_reason,
-                              bool reload_prompt);
 
   void ShowPageInfoBubble();
 
@@ -206,9 +205,6 @@ class WebUILocationBar : public LocationBar,
   WebUIContentSettingImageControl content_setting_image_control_;
   page_actions::WebUIPageActionControl page_action_control_;
 
-  // Threshold for suppressing LHS chip clicks after bubble closing.
-  base::TimeDelta suppression_threshold_ =
-      views::kMinimumTimeBetweenButtonClicks;
 
   std::unique_ptr<WebUIPermissionDashboard> permission_dashboard_;
   std::unique_ptr<PermissionDashboardController>
@@ -233,7 +229,7 @@ class WebUILocationBar : public LocationBar,
   security_state::SecurityLevel last_update_security_level_ =
       security_state::NONE;
 
-  base::TimeTicks last_page_info_bubble_close_time_;
+  WebUIBubbleReopenSuppressor page_info_reopen_suppressor_;
   bool suppress_lhs_chip_clicked_ = false;
 
   std::optional<std::u16string> last_search_keyword_;
