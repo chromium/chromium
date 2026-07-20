@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.multiwindow;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyInt;
@@ -477,7 +478,7 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         setupAndShowCrashRecoveryDialog();
 
         // Act.
-        mDelegate.restoreWindows(mHostActivity);
+        mDelegate.restoreWindows(mHostActivity, MultiWindowUtils.getAppTasksById(mHostActivity));
 
         // Verify.
         ArgumentCaptor<Intent> intentCaptor1 = ArgumentCaptor.forClass(Intent.class);
@@ -528,7 +529,7 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         setupAndShowCrashRecoveryDialog();
 
         // Act.
-        mDelegate.restoreWindows(mHostActivity);
+        mDelegate.restoreWindows(mHostActivity, MultiWindowUtils.getAppTasksById(mHostActivity));
 
         // Verify.
         AppTask liveTask1 = mPreRecoveryAppTasks.get(1);
@@ -593,7 +594,7 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         var userActionTester = new UserActionTester();
 
         // Act.
-        mDelegate.restoreWindows(mHostActivity);
+        mDelegate.restoreWindows(mHostActivity, MultiWindowUtils.getAppTasksById(mHostActivity));
 
         // Verify: The live task for the non-visible window should not be finished when host window
         // is launched in non-multi window mode.
@@ -637,7 +638,7 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         initWatcher.assertExpected();
 
         var userActionTester = new UserActionTester();
-        mDelegate.restoreWindows(mHostActivity);
+        mDelegate.restoreWindows(mHostActivity, MultiWindowUtils.getAppTasksById(mHostActivity));
         assertTrue(
                 userActionTester
                         .getActions()
@@ -670,7 +671,7 @@ public class TabbedCrashRecoveryDelegateUnitTest {
                 userActionTester
                         .getActions()
                         .contains("Android.MultiWindow.CrashRecoveryCompleted"));
-
+        assertStateReset();
         userActionTester.tearDown();
     }
 
@@ -818,6 +819,7 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         AppTask liveTask2 = mPreRecoveryAppTasks.get(1);
         verify(liveTask2).finishAndRemoveTask();
 
+        assertStateReset();
         userActionTester.tearDown();
     }
 
@@ -865,6 +867,7 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         // Verify: Window 2's task is NOT finished again (it was only finished once during setup).
         verify(liveTask2, times(1)).finishAndRemoveTask();
 
+        assertStateReset();
         userActionTester.tearDown();
     }
 
@@ -932,6 +935,7 @@ public class TabbedCrashRecoveryDelegateUnitTest {
 
         // Verify: Window 1 recoverable state is set to false.
         assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
+        assertStateReset();
     }
 
     @Test
@@ -970,6 +974,7 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         AppTask liveTask1 = mPreRecoveryAppTasks.get(1);
         verify(liveTask1).finishAndRemoveTask();
         assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
+        assertStateReset();
     }
 
     @Test
@@ -1003,6 +1008,7 @@ public class TabbedCrashRecoveryDelegateUnitTest {
 
         // Verify: Window 1 recoverable state is set to false.
         assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
+        assertStateReset();
     }
 
     @Test
@@ -1073,6 +1079,7 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         AppTask liveTask1 = mPreRecoveryAppTasks.get(1);
         verify(liveTask1).finishAndRemoveTask();
         assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
+        assertStateReset();
     }
 
     private void setupOtherCrashedWindows(
@@ -1144,5 +1151,42 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         boolean shown =
                 mDelegate.maybeShowCrashRecoveryDialog(mModalDialogManagerSupplier, mHostActivity);
         assertTrue(shown);
+    }
+
+    private void assertStateReset() {
+        assertTrue(mDelegate.getNonVisibleWindowsForTesting().isEmpty());
+        assertTrue(mDelegate.getVisibleWindowsForTesting().isEmpty());
+        assertTrue(mDelegate.getWindowIdsPendingRecoveryForTesting().isEmpty());
+    }
+
+    @Test
+    public void testRestoreWindows_clearsStrongReferencesImmediately() {
+        // Setup: 1 host + 1 visible window (Id 1).
+        setupOtherCrashedWindows(
+                /* numNonVisibleWindows= */ 0,
+                /* numDefaultDisplayWindows= */ 1,
+                /* numNonDefaultDisplayWindows= */ 0); // windowId=1
+        setupPreRecoveryAppTasks(HOST_WINDOW_ID);
+        setupAndShowCrashRecoveryDialog();
+
+        // Act: Click positive (restore).
+        mDelegate.restoreWindows(mHostActivity, MultiWindowUtils.getAppTasksById(mHostActivity));
+
+        // Verify: Strong references are cleared immediately after restoreWindows returns.
+        assertTrue(mDelegate.getNonVisibleWindowsForTesting().isEmpty());
+        assertTrue(mDelegate.getVisibleWindowsForTesting().isEmpty());
+        assertNull(mDelegate.getCrashedWindowsForTesting());
+        assertFalse(mDelegate.isCrashRecoveryEligibleForTesting());
+
+        // Verify: Pending recovery window set is NOT cleared yet because window 1 hasn't registered
+        // recovery.
+        assertEquals(1, mDelegate.getWindowIdsPendingRecoveryForTesting().size());
+        assertTrue(mDelegate.getWindowIdsPendingRecoveryForTesting().contains(1));
+
+        // Act: Register recovery for window 1.
+        mDelegate.registerRecovery(1);
+
+        // Verify: Pending recovery window set is now empty (fully reset).
+        assertTrue(mDelegate.getWindowIdsPendingRecoveryForTesting().isEmpty());
     }
 }
