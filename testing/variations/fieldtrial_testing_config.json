@@ -21447,25 +21447,6 @@
             ]
         }
     ],
-    "ReportingApiEnableVariationsHeaders": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20260417",
-                    "enable_features": [
-                        "ReportingApiEnableVariationsHeaders"
-                    ]
-                }
-            ]
-        }
-    ],
     "ResampleScrollEventsForFling": [
         {
             "platforms": [
