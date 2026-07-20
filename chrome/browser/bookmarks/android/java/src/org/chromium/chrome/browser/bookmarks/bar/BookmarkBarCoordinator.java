@@ -205,6 +205,11 @@ public class BookmarkBarCoordinator
                 (sideUiStateProvider) -> {
                     mSideUiStateProvider = sideUiStateProvider;
                     mSideUiStateProvider.addObserver(mSideUiObserver);
+
+                    // BookmarkBarCoordinator is created lazily, therefore may miss the latest
+                    // SideUi changes. Update the bar UI with the current SideUiSpecs.
+                    mSideUiObserver.onSideUiSpecsChanged(
+                            sideUiStateProvider.getCurrentSideUiSpecs());
                 });
 
         // The content container contains the tightly-wrapper ViewResourceFrameLayout for snapshots.

@@ -172,6 +172,8 @@ public class BookmarkBarCoordinatorTest {
         ImageServiceBridgeJni.setInstanceForTesting(mImageServiceBridgeJni);
 
         onActivity(this::createCoordinator);
+        SideUiSpecs sideUiSpecs = new SideUiSpecs(100, 200);
+        when(mSideUiStateProvider.getCurrentSideUiSpecs()).thenReturn(sideUiSpecs);
     }
 
     @SuppressWarnings("unchecked") // Raw CompositorModelChangeProcessor mock.
