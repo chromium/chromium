@@ -441,6 +441,29 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Tab.CloseUndoBar.Dismissed" enum="SnackbarIdentifier"
+    expires_after="2027-07-01">
+  <owner>hitarthkothari@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@chromium.org</owner>
+  <summary>
+    Records the SnackbarIdentifier of a tab-closure-related undo snackbar when
+    it is dismissed without the user performing the Undo action (e.g. timeout,
+    swipe, dismissed by caller, etc.).
+  </summary>
+</histogram>
+
+<histogram name="Tab.CloseUndoBar.Undone" enum="SnackbarIdentifier"
+    expires_after="2027-07-01">
+  <owner>hitarthkothari@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@chromium.org</owner>
+  <summary>
+    Records the SnackbarIdentifier of a tab-closure-related undo snackbar when
+    the user actively clicks the Undo action.
+  </summary>
+</histogram>
+
 <histogram name="Tab.ContextMenu.{TabContextMenuCommand}.SelectedTabsCount"
     units="tabs" expires_after="2026-11-29">
   <owner>dpenning@chromium.org</owner>

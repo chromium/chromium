@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.Context;
 import android.util.Pair;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -128,7 +129,8 @@ public abstract class UndoBarController
         // This must always come after retrieving the template and content text.
         int umaType = getUmaType(singleTab, isDeletingTabGroups(savedTabGroupSyncIds), isAllTabs);
 
-        UndoActionData undoActionData = new UndoActionData(closedTabs, savedTabGroupSyncIds);
+        UndoActionData undoActionData =
+                new UndoActionData(closedTabs, savedTabGroupSyncIds, umaType);
 
         mSnackbarManageable
                 .getSnackbarManager()
@@ -176,10 +178,12 @@ public abstract class UndoBarController
     protected static class UndoActionData {
         public final List<Tab> closedTabs = new ArrayList<>();
         public final List<String> closedSavedTabGroupSyncIds = new ArrayList<>();
+        public final int umaType;
 
-        UndoActionData(List<Tab> closedTabs, List<String> closedSavedTabGroupSyncIds) {
+        UndoActionData(List<Tab> closedTabs, List<String> closedSavedTabGroupSyncIds, int umaType) {
             this.closedTabs.addAll(closedTabs);
             this.closedSavedTabGroupSyncIds.addAll(closedSavedTabGroupSyncIds);
+            this.umaType = umaType;
         }
     }
 
@@ -191,6 +195,7 @@ public abstract class UndoBarController
     @Override
     public void onAction(@Nullable Object actionData) {
         UndoActionData undoActionData = assumeNonNull((UndoActionData) actionData);
+        RecordHistogram.recordSparseHistogram("Tab.CloseUndoBar.Undone", undoActionData.umaType);
         List<Tab> closedTabs = undoActionData.closedTabs;
         if (!closedTabs.isEmpty()) {
             for (Tab closedTab : closedTabs) {
@@ -212,6 +217,7 @@ public abstract class UndoBarController
     @Override
     public void onDismissNoAction(@Nullable Object actionData) {
         UndoActionData undoActionData = assumeNonNull((UndoActionData) actionData);
+        RecordHistogram.recordSparseHistogram("Tab.CloseUndoBar.Dismissed", undoActionData.umaType);
         List<Tab> closedTabs = undoActionData.closedTabs;
         if (!closedTabs.isEmpty()) {
             for (Tab closedTab : closedTabs) {

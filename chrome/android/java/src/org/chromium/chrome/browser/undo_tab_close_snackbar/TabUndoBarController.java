@@ -209,7 +209,7 @@ public class TabUndoBarController extends UndoBarController {
             }
         }
         return new ClosureMetadata(
-                isDeletingTabGroups,
+                isDeletingTabGroups && !fullyClosingTabGroupIds.isEmpty(),
                 tabGroupSyncEnabled,
                 fullyClosingTabGroupIds,
                 ungroupedOrPartialGroupTabs);
