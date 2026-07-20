@@ -26,7 +26,7 @@ NSString* const kPinnedTabTitlePrefix = @"PinnedTab";
 // Creates a regular tab with `title` using `test_server`.
 void CreateRegularTab(net::test_server::EmbeddedTestServer* test_server,
                       NSString* title) {
-  [ChromeEarlGreyUI openNewTab];
+  [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey loadURL:GetQueryTitleURL(test_server, title)];
 }
 
