@@ -133,10 +133,7 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
 @Batch(Batch.UNIT_TESTS)
-@DisableFeatures({
-    ChromeFeatureList.LENS_OVERLAY_ANDROID,
-    ChromeFeatureList.ENABLE_DOWNLOAD_SAVE_AS_CONTEXT_MENU,
-})
+@DisableFeatures({ChromeFeatureList.LENS_OVERLAY_ANDROID})
 public class ChromeContextMenuPopulatorTest {
     private static final String DATA_URL = "data:encodedstringblahblah";
     private static final String PAGE_URL = "http://www.blah.com/page_url";
@@ -3988,37 +3985,5 @@ public class ChromeContextMenuPopulatorTest {
                 /* openedFromInterestFor= */ false,
                 /* interestForNodeID= */ 0,
                 /* additionalNavigationParams= */ null);
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.ENABLE_DOWNLOAD_SAVE_AS_CONTEXT_MENU)
-    public void testSaveAsContextMenuStrings() {
-        Context context = ContextUtils.getApplicationContext();
-
-        // Verify that getTitle() returns the "Save... as..." strings
-        assertEquals(
-                context.getString(R.string.contextmenu_save_image_as),
-                ChromeContextMenuItem.getTitle(
-                                context, mProfile, ChromeContextMenuItem.Item.SAVE_IMAGE, false)
-                        .toString());
-        assertEquals(
-                context.getString(R.string.contextmenu_save_link_as),
-                ChromeContextMenuItem.getTitle(
-                                context, mProfile, ChromeContextMenuItem.Item.SAVE_LINK_AS, false)
-                        .toString());
-        assertEquals(
-                context.getString(R.string.contextmenu_save_video_as),
-                ChromeContextMenuItem.getTitle(
-                                context, mProfile, ChromeContextMenuItem.Item.SAVE_VIDEO, false)
-                        .toString());
-        assertEquals(
-                context.getString(R.string.contextmenu_save_video_frame_as),
-                ChromeContextMenuItem.getTitle(
-                                context,
-                                mProfile,
-                                ChromeContextMenuItem.Item.DOWNLOAD_VIDEO_FRAME,
-                                false)
-                        .toString());
     }
 }

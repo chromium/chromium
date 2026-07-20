@@ -1510,10 +1510,7 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
 #if BUILDFLAG(IS_ANDROID)
   content::WebContents* web_contents =
       content::DownloadItemUtils::GetWebContents(download);
-
-  bool is_save_as_enabled = base::FeatureList::IsEnabled(
-      download::features::kEnableDownloadSaveAsContextMenu);
-  if (reason == DownloadConfirmationReason::SAVE_AS && !is_save_as_enabled) {
+  if (reason == DownloadConfirmationReason::SAVE_AS) {
     // If this is a 'Save As' download, just run without confirmation.
     std::move(callback).Run(
         DownloadConfirmationResult::CONTINUE_WITHOUT_CONFIRMATION,
@@ -1564,12 +1561,7 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
       download::RecordDuplicatePdfDownloadTriggered(/*open_inline=*/false);
     }
 
-    bool is_save_as_prompt =
-        (download->GetTargetDisposition() ==
-         download::DownloadItem::TARGET_DISPOSITION_PROMPT) &&
-        base::FeatureList::IsEnabled(
-            download::features::kEnableDownloadSaveAsContextMenu);
-    if (!download_prefs_->PromptForDownload() && !is_save_as_prompt) {
+    if (!download_prefs_->PromptForDownload()) {
       DuplicateDownloadDialogBridgeDelegate::GetInstance()->CreateDialog(
           download, suggested_path, web_contents, std::move(callback));
       return;
@@ -1590,10 +1582,6 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
   DownloadLocationDialogType dialog_type = DownloadLocationDialogType::DEFAULT;
 
   switch (reason) {
-    case DownloadConfirmationReason::SAVE_AS:
-      dialog_type = DownloadLocationDialogType::FORCE_PROMPT;
-      break;
-
     case DownloadConfirmationReason::TARGET_NO_SPACE:
       dialog_type = DownloadLocationDialogType::LOCATION_FULL;
       break;
@@ -1716,15 +1704,9 @@ void ChromeDownloadManagerDelegate::GenerateUniqueFileNameDone(
   // with the filename automatically set to be the unique filename.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (download::IsPathValidationSuccessful(result)) {
-    download::DownloadItem* download =
-        download_manager_->GetDownloadByGuid(download_guid);
-    bool is_save_as_enabled =
-        download &&
-        (download->GetTargetDisposition() ==
-         download::DownloadItem::TARGET_DISPOSITION_PROMPT) &&
-        base::FeatureList::IsEnabled(
-            download::features::kEnableDownloadSaveAsContextMenu);
-    if (download_prefs_->PromptForDownload() || is_save_as_enabled) {
+    if (download_prefs_->PromptForDownload()) {
+      download::DownloadItem* download =
+          download_manager_->GetDownloadByGuid(download_guid);
       content::WebContents* web_contents =
           download ? content::DownloadItemUtils::GetWebContents(download)
                    : nullptr;

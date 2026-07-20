@@ -3006,14 +3006,8 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_CONTEXTMENU_SAVE_LINK" desc="Context sensitive menu item for saving the target of a link [CHAR_LIMIT=30]">
         Download link
       </message>
-      <message name="IDS_CONTEXTMENU_SAVE_LINK_AS" desc="Context sensitive menu item for saving the target of a link [CHAR_LIMIT=30]">
-        Save link as…
-      </message>
       <message name="IDS_CONTEXTMENU_SAVE_IMAGE" desc="Context sensitive menu item for saving the selected image. [CHAR_LIMIT=30]">
         Download image
-      </message>
-      <message name="IDS_CONTEXTMENU_SAVE_IMAGE_AS" desc="Context sensitive menu item for saving the selected image. [CHAR_LIMIT=30]">
-        Save image as…
       </message>
       <message name="IDS_CONTEXTMENU_OPEN_IMAGE" desc="Context sensitive menu item for opening/viewing the selected image. [CHAR_LIMIT=30]">
         Open image
@@ -3051,17 +3045,11 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_CONTEXTMENU_SAVE_VIDEO" desc="Context sensitive menu item for saving the selected video. [CHAR_LIMIT=30]">
         Download video
       </message>
-      <message name="IDS_CONTEXTMENU_SAVE_VIDEO_AS" desc="Context sensitive menu item for saving the selected video. [CHAR_LIMIT=30]">
-        Save video as…
-      </message>
       <message name="IDS_CONTEXTMENU_COPY_VIDEO_FRAME" desc="The context menu item to copy the current video frame as an image. [CHAR_LIMIT=30]">
         Copy video frame
       </message>
       <message name="IDS_CONTEXTMENU_DOWNLOAD_VIDEO_FRAME" desc="The context menu item to download the current video frame as an image. [CHAR_LIMIT=30]">
         Download video frame
-      </message>
-      <message name="IDS_CONTEXTMENU_SAVE_VIDEO_FRAME_AS" desc="The context menu item to save the current video frame as an image. [CHAR_LIMIT=30]">
-        Save video frame as…
       </message>
       <message name="IDS_CONTEXTMENU_PICTURE_IN_PICTURE" desc="The context menu item to enter picture-in-picture mode for a video. [CHAR_LIMIT=30]">
         Picture in Picture
