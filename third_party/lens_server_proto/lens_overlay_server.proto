@@ -73,7 +73,7 @@ message MissingChunksMetadata {
   repeated int64 missing_chunk_ids = 2;
 }
 
-// Next ID: 7
+// Next ID: 8
 message LensOverlayServerRequest {
   // Options for fetching objects.
   LensOverlayObjectsRequest objects_request = 1;

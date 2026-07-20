@@ -2,6 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# This file was exported from google3, do not edit manually.
+# See README.chromium for details.
+
+import("//components/proto_extras/proto_extras.gni")
+import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 _proto_files = [
@@ -52,7 +57,12 @@ _proto_files = [
   "modality_chip_props.proto",
 ]
 
-proto_library("lens_overlay_proto") {
+fuzzable_proto_library("lens_overlay_proto") {
   sources = _proto_files
   proto_in_dir = "."
+  import_dirs = [
+    "//",
+    "//third_party/omnibox_proto",
+  ]
+  deps = [ "//third_party/omnibox_proto" ]
 }

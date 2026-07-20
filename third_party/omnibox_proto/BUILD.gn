@@ -21,7 +21,6 @@ _proto_files = [
   "chrome_aim_entry_point.proto",
   "chrome_searchbox_stats.proto",
   "entity_info.proto",
-  "feature_gate_constraints.proto",
   "groups.proto",
   "icon.proto",
   "icon_resource_ids.proto",

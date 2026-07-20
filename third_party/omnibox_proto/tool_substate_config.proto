@@ -16,6 +16,9 @@ package omnibox;
 import "tool_substate.proto";
 
 // Configuration for Tool Substate specific behavior.
+// Please do not add new values without going through
+// TODO: taicheng - Deprecate this once we no longer need to support custom
+// tool substate specific input plate UI override.
 // Next ID: 4
 message ToolSubstateConfig {
   // The tool substate.

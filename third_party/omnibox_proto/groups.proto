@@ -83,8 +83,8 @@ enum GroupId {
   GROUP_AI_MODE_CREATE_IMAGE_ACTION = 10012;
   GROUP_AI_MODE_CANVAS_ACTION = 10013;
   // This will be used for all steady state actions for chrome-ntp-action.
-  // TODO: b/487232930 - Replace the Create Images, Deep Search, Canvas actions
-  // with this group.
+  // TODO: crbug.com/487232930 - Replace the Create Images, Deep Search, Canvas
+  // actions with this group.
   GROUP_STEADY_STATE_ACTION = 10014;
   GROUP_POLARIS_RESERVED_MAX = 19999;
 

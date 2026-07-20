@@ -15,19 +15,31 @@ package omnibox;
 
 import "input_type.proto";
 import "input_type_rule.proto";
-import "model_mode.proto";
 import "model_rule.proto";
-import "tool_mode.proto";
 import "tool_rule.proto";
+import "model_mode.proto";
+import "tool_mode.proto";
 
 // A set of rules that are applied to the input plate or fusebox.
+//
+// This is deprecated (only used for legacy xGA client and legacy Chrome)
+// For validation use SearchboxConfig.*_config.rule instead.
+// For allowed primitives use presence of the SearchboxConfig.*_configs instead.
+//
+// Next ID: 8
 message RuleSet {
+  // Server determined allowed tools based on user/geo/platform.
   repeated ToolMode allowed_tools = 1;
+  // Server determined allowed input_types based on user/geo/platform.
   repeated InputType allowed_input_types = 2;
+  // Server determined allowed models based on user/geo/platform.
   repeated ModelMode allowed_models = 5;
+  // Rules for restricting tools.
   repeated ToolRule tool_rules = 3;
+  // Rules for restricting input types.
   repeated InputTypeRule input_type_rules = 4;
+  // Rules for restricting based on models.
   repeated ModelRule model_rules = 6;
-  // Default value of 10 removed for proto3 compatibility.
+  // Max total allowed input types.
   optional int32 max_total_inputs = 7;
 }

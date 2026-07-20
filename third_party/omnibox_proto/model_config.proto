@@ -12,11 +12,9 @@ option java_package = 'org.chromium.components.omnibox';
 option java_outer_classname = 'ModelConfigProto';
 
 package omnibox;
-
-import "feature_gate_constraints.proto";
+import "model_rule.proto";
 import "icon.proto";
 import "model_mode.proto";
-import "model_rule.proto";
 import "url_param.proto";
 
 // Configuration for a model mode.
@@ -35,11 +33,6 @@ message ModelConfig {
   repeated UrlParam aim_url_params = 5;
   // The icon for the model.
   optional Icon icon = 6;
-  // DO NOT USE in Chrome. Feature gate configs for the model.
-  repeated FeatureGateConfig feature_gate_configs = 7;
-
-  // DO NOT USE in Chrome. Search VE logging fields.
-  reserved 8;
 
   // Optional tooltip for the model in a menu.
   string menu_tooltip = 9;

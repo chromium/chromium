@@ -906,7 +906,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServicePecApiEnabledBrowserTest,
 
   auto* config = response.mutable_searchbox_config();
   // Set a specific value to verify that we retrieved the correct object later.
-  config->set_initial_tool_mode(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  config->set_hint_text("test_hint_text");
 
   base::test::TestFuture<bool> request_handled_future;
   auto url_loader_interceptor = std::make_unique<content::URLLoaderInterceptor>(
@@ -928,8 +928,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServicePecApiEnabledBrowserTest,
   // Verify the config was correctly parsed and matches the input.
   const auto* actual_config = service->GetSearchboxConfig();
   ASSERT_NE(actual_config, nullptr);
-  EXPECT_EQ(actual_config->initial_tool_mode(),
-            omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  EXPECT_EQ(actual_config->hint_text(), "test_hint_text");
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServicePecApiEnabledBrowserTest,

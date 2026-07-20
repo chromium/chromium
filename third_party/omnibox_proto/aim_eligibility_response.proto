@@ -16,18 +16,28 @@ package omnibox;
 import "model_mode.proto";
 import "searchbox_config.proto";
 
-// AIM Eligibility Response.
+// GWS serves this proto from a publicly accessible endpoint.
+// DO NOT include any sensitive data in this proto.
+
+// Configuration for AIM eligibility response.
 // Next ID: 14
 message AimEligibilityResponse {
-  // Whether the user is eligible for Chrome AIM features.
+  // True if the user is eligible for AIM. This is false for users in any AIM
+  // holdback.
   optional bool is_eligible = 1;
   optional bool is_pdf_upload_eligible = 2;
   optional bool is_deep_search_eligible = 3;
   optional bool is_canvas_eligible = 4;
   optional bool is_image_generation_eligible = 6;
+
+  // Primitives enablement and compatibility config. Used only by xGA for Capy
+  // eligibility for now. Not ready to be consumed by other clients.
+  // TODO(wilsonssun): Flesh out values in this config and deprecate the
+  // primitive-specific fields above.
+  optional SearchboxConfig searchbox_config = 7;
+
   // The session index of the user.
   optional int32 session_index = 5;
-  optional SearchboxConfig searchbox_config = 7;
 
   message QueryParam {
     optional string key = 1;
@@ -43,15 +53,43 @@ message AimEligibilityResponse {
     optional ModelMode type = 2;
   }
 
-  // A list of criteria sets. To be considered an AIM URL, a URL must
-  // contain all key-value pairs defined within at least one of
-  // these criteria sets.
+  // A list of rules to DETECT potential AIM URLs. Every URL load in the
+  // client is inspected against these rules.
+  //
+  // If a URL matches any rule in this list:
+  //   1. A background request is ALWAYS sent to the AIM Eligibility Service
+  //   (AES)
+  //      to synchronize and update the client's eligibility status.
+  //   2. The URL is INTERCEPTED (i.e., prevented from normal navigation and
+  //      instead embedded within the AIM Co-Browse experience) ONLY IF
+  //      `is_cobrowse_eligible` is true.
+  //
+  // If no rules exist, or if no rule matches the URL, the client will neither
+  // intercept the URL nor send a request to AES.
   repeated AimDetectionUrlRule aim_detection_url_rule = 8;
 
-  // Whether the user is eligible for Chrome Co-Browse.
+  // Controls whether a DETECTED AIM URL should be INTERCEPTED and embedded
+  // in the Co-Browse experience. This field works in tandem with
+  // `aim_detection_url_rule`.
+  //
+  // When a URL matches a rule in `aim_detection_url_rule`:
+  //   - If true: The client INTERCEPTS the URL (for Co-Browse embedding)
+  //     AND sends a background request to AES.
+  //   - If false: The client does NOT INTERCEPT the URL, but STILL sends
+  //     a background request to AES to update client state.
+  //
+  // This setup allows the Co-Browse feature to be dynamically enabled/disabled
+  // via AES response, with the state update affecting subsequent AIM
+  // interactions, while ensuring the eligibility status is kept fresh even if
+  // interception is off.
   optional bool is_cobrowse_eligible = 9;
 
-  // Whether the user is eligible for Chrome Fusebox features.
+  // Controls whether the user is eligible for Chrome Fusebox features.
+  // This flag will be controlled by GWS Mendel and used to signal Chrome
+  // clients whether to enable or disable Chrome Fusebox and dependent features.
+  //
+  // The primary use case is to support server-side Mendel holdback studies for
+  // Fusebox, ensuring users in a holdback group do not see the Fusebox.
   optional bool is_fusebox_eligible = 10;
 
   // The explicit list of hosts allowed for Co-Browse URL interception.

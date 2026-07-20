@@ -13,23 +13,35 @@ option java_outer_classname = 'ToolModeProto';
 
 package omnibox;
 
-// AIM ToolMode to apply to a query.
-// In the AIM Composebox, tools can be added to a query to enter a
-// specific mode. For example, some modes include "deep search", "create
-// images", and "canvas".
+// The AIM tool mode that is applied to a query (e.g. on the input plate or
+// fusebox).
 // Next ID: 11
 // LINT.IfChange(ToolMode)
 enum ToolMode {
   TOOL_MODE_UNSPECIFIED = 0;
+
+  // When enabled, these tools are visible and selectable in the tools UI.
   TOOL_MODE_DEEP_SEARCH = 1;
   TOOL_MODE_CANVAS = 2;
-  TOOL_MODE_GEMINI_PRO = 3;
   TOOL_MODE_IMAGE_GEN = 4;
   TOOL_MODE_DEEP_BROWSE = 5;
+
+  // These tools do not have an explicit UI, but are used for one of the AIM
+  // tools that does, and is used to trigger more granular suggestions.
   TOOL_MODE_IMAGE_GEN_SELFIE = 6;
   TOOL_MODE_IMAGE_GEN_UPLOAD = 7;
-  TOOL_MODE_DISABLE_SUGGEST = 8;
+
+  // This tool is Fusebox-specific and simply directs the query to AIM.
   TOOL_MODE_AIM = 9;
+
+  // Temporary tool mode to differentiate scenarios where we need to suppress
+  // suggestions.
+  TOOL_MODE_DISABLE_SUGGEST = 8;
+
+  // Prompt suggestion for asset generation.
   TOOL_MODE_AIM_GEN_PROMPT = 10;
+
+  // Below tools are not used.
+  TOOL_MODE_GEMINI_PRO = 3;
 }
 // LINT.ThenChange(//components/omnibox/composebox/composebox_query.mojom:ToolMode, //components/omnibox/common/omnibox_metrics_utils.cc:ToolMode, //tools/metrics/histograms/metadata/omnibox/histograms.xml:OmniboxToolMode)

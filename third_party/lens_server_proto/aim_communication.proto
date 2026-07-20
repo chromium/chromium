@@ -8,6 +8,9 @@ option optimize_for = LITE_RUNTIME;
 
 package lens;
 
+import "tool_mode.proto";
+import "tool_substate.proto";
+import "model_mode.proto";
 import "aim_query.proto";
 import "modality_chip_props.proto";
 
@@ -144,6 +147,7 @@ message AimToClientMessage {
     UnlockInput unlock_input = 12;
     LockInput lock_input = 13;
     OpenLinkInSidePanelMode open_link_in_side_panel_mode = 14;
+    UpdateInputPlateStateRequest update_input_plate_state = 16;
   }
 }
 
@@ -245,4 +249,10 @@ message RemoveInjectedInput {
 // Message AIM sends to clients to notify to open a link in the side panel.
 message OpenLinkInSidePanelMode {
   string url = 1;
+}
+
+message UpdateInputPlateStateRequest {
+  omnibox.ToolMode active_tool = 1;
+  omnibox.ToolSubstate active_tool_substate = 2;
+  omnibox.ModelMode active_model = 3;
 }

@@ -12,33 +12,32 @@ option java_package = 'org.chromium.components.omnibox';
 option java_outer_classname = 'SearchboxConfigProto';
 
 package omnibox;
-
-import "feature_gate_constraints.proto";
+import "rule_set.proto";
 import "input_type_config.proto";
 import "model_config.proto";
-import "model_mode.proto";
-import "rule_set.proto";
 import "section_config.proto";
-import "suggest_inventory.proto";
 import "tool_config.proto";
-import "tool_mode.proto";
 
 // Configuration for the AI searchbox (e.g. input plate and fusebox)
-// Next ID: 12
+// Next ID: 13
 message SearchboxConfig {
   // The rule set to use for the searchbox.
+  // This is deprecated (only used for legacy xGA client and Chrome)
+  // For validation use *_config.rule instead.
+  // For allowed primitives use presence of the *_configs instead.
   optional RuleSet rule_set = 1;
-  // The initial tool mode to use when the searchbox is first rendered.
-  optional ToolMode initial_tool_mode = 2;
-  // The initial model mode to use when the searchbox is first rendered.
-  optional ModelMode initial_model_mode = 3;
 
-  // Configurations for available input types.
+
+  // Configurations for server allowed input types.
+  // This is the source of truth for what input types are allowed.
   repeated InputTypeConfig input_type_configs = 4;
-  // Configurations for available tools.
+  // Configurations for server allowed tools.
+  // This is the source of truth for what tools are allowed.
   repeated ToolConfig tool_configs = 5;
-  // Configurations for available models.
+  // Configurations for server allowed models.
+  // This is the source of truth for what models are allowed.
   repeated ModelConfig model_configs = 6;
+
   // Configuration for the tools section in menu.
   optional SectionConfig tools_section_config = 7;
   // Configuration for the model section in menu.
@@ -47,11 +46,5 @@ message SearchboxConfig {
   // Current active tools/models takes precedence
   optional string hint_text = 9;
 
-  // Preferred inventory for the request. This should be propagated as is to the
-  // /complete/search request using the 'azi' CGI arg.
-  // This is not relevant for Chrome at this point.
-  optional SuggestInventory preferred_inventory = 10;
 
-  // Feature gating configurations.
-  repeated FeatureGateConfig feature_gate_configs = 11;
 }

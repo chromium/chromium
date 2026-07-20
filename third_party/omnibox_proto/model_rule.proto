@@ -17,10 +17,19 @@ import "input_type.proto";
 import "model_mode.proto";
 import "tool_mode.proto";
 
+// Rule for restricting a model.
+// Next ID: 6
 message ModelRule {
+  // The model that is being restricted.
   optional ModelMode model = 1;
+  // The tools that are allowed to be used with the model.
+  // If allow_all_tools is true, this field is ignored.
   repeated ToolMode allowed_tools = 2;
+  // The input types that are allowed to be used with the model.
+  // If allow_all_input_types is true, this field is ignored.
   repeated InputType allowed_input_types = 3;
+  // If true, all tools are allowed with this model.
   optional bool allow_all_tools = 4;
+  // If true, all input types are allowed with this model.
   optional bool allow_all_input_types = 5;
 }

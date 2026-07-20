@@ -13,10 +13,10 @@ option java_outer_classname = 'ToolConfigProto';
 
 package omnibox;
 
-import "icon.proto";
-import "tool_mode.proto";
 import "tool_rule.proto";
+import "icon.proto";
 import "tool_substate_config.proto";
+import "tool_mode.proto";
 import "url_param.proto";
 
 // Configuration for a tool mode.
@@ -46,9 +46,6 @@ message ToolConfig {
   optional Icon icon = 9;
   // Whether to hide the tool from the tools menu (including tool chips).
   bool hide_from_menu = 10;
-
-  // DO NOT USE in Chrome. Search VE logging fields.
-  reserved 11, 12;
 
   // Optional tooltip for the tool in a menu.
   string menu_tooltip = 13;

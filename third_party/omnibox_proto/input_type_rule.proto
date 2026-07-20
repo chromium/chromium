@@ -17,13 +17,25 @@ import "input_type.proto";
 import "model_mode.proto";
 import "tool_mode.proto";
 
+// Rule for restricting an InputType.
+// Next ID: 9
 message InputTypeRule {
+  // The input type that is being restricted.
   optional InputType input_type = 1;
+  // Maximum number of instances for the input_type.
+  // Set to 0 for no limit.
   optional int32 max_instance = 2;
+  // The input types that are allowed to be used with the input_type.
+  // If allow_all_input_types is true, this field is ignored.
   repeated InputType allowed_input_types = 3;
+  // If true, all input types are allowed to be used with the input_type.
   optional bool allow_all_input_types = 4;
+  // The tools that are allowed to be used with the input_type.
   repeated ToolMode allowed_tools = 5;
+  // If true, all tools are allowed to be used with the input_type.
   optional bool allow_all_tools = 6;
+  // The models that are allowed to be used with the input_type.
   repeated ModelMode allowed_models = 7;
+  // If true, all models are allowed to be used with the input_type.
   optional bool allow_all_models = 8;
 }

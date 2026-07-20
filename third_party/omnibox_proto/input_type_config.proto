@@ -13,13 +13,13 @@ option java_outer_classname = 'InputTypeConfigProto';
 
 package omnibox;
 
-import "icon.proto";
 import "input_source.proto";
 import "input_type.proto";
 import "input_type_rule.proto";
+import "icon.proto";
 
 // Configuration for an input type.
-// Next ID: 6
+// Next ID: 7
 // LINT.IfChange(InputTypeConfig)
 message InputTypeConfig {
   // The input type.

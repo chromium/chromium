@@ -15,7 +15,6 @@ package omnibox;
 
 // The vertical information of a page.
 // PageVertical is used to set the pageVertical= CGI parameter, introduced in
-//
 enum PageVertical {
   // Default value. This value should not be used in production.
   PAGE_VERTICAL_UNSPECIFIED = 0;

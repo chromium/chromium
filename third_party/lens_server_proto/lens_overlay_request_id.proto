@@ -50,7 +50,7 @@ message LensOverlayRequestId {
     MEDIA_TYPE_WEBPAGE_AND_IMAGE = 4;
     MEDIA_TYPE_UNRESOLVED_URL = 5;
     // Media type for all file bytes upload. This needs to be set with mime_type
-    // below. See go/lens-rfc-180.
+    // below.
     MEDIA_TYPE_RAW_FILE = 6;
     MEDIA_TYPE_UNRESOLVED = 7;
   }

@@ -2168,8 +2168,6 @@ TEST_F(ComposeboxQueryControllerTest, PopulatesContentMetadataForPdfUpload) {
       "test title");
   EXPECT_EQ(request->objects_request().payload().content_metadata().file_name(),
             "test_file.pdf");
-  EXPECT_EQ(request->objects_request().payload().content_metadata().url(),
-            "https://example.com/");
 }
 
 TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestSuccess) {

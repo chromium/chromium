@@ -15,6 +15,7 @@ package omnibox;
 
 import "rule_set.proto";
 
+// Next ID: 3
 message InputConstraints {
   optional RuleSet first_turn_ruleset = 1;
   optional RuleSet followup_turn_ruleset = 2;

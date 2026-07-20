@@ -202,15 +202,12 @@ constexpr net::BackoffEntry::Policy kClusterInfoBackoffPolicy = {
 };
 
 void PopulateContentMetadata(lens::Payload* payload,
-                             const std::optional<GURL>& page_url,
                              const std::optional<std::string>& page_title,
                              const std::optional<std::string>& file_name,
                              const std::optional<std::string>& drive_id,
-                             const std::optional<std::string>& resource_key,
-                             const std::optional<std::string>& parsed_url) {
+                             const std::optional<std::string>& resource_key) {
   if (!page_title.has_value() && !file_name.has_value() &&
-      !page_url.has_value() && !drive_id.has_value() &&
-      !resource_key.has_value() && !parsed_url.has_value()) {
+      !drive_id.has_value() && !resource_key.has_value()) {
     return;
   }
   auto* content_metadata = payload->mutable_content_metadata();
@@ -220,11 +217,7 @@ void PopulateContentMetadata(lens::Payload* payload,
   if (file_name.has_value()) {
     content_metadata->set_file_name(file_name.value());
   }
-  if (parsed_url.has_value() && !parsed_url->empty()) {
-    content_metadata->set_url(parsed_url.value());
-  } else if (page_url.has_value()) {
-    content_metadata->set_url(page_url->spec());
-  }
+
   if (drive_id.has_value()) {
     content_metadata->mutable_drive_metadata()->set_drive_id(drive_id.value());
   }
@@ -256,8 +249,8 @@ lens::Payload CreateContentextualDataUploadPayload(
     content->set_webpage_title(page_title.value());
   }
 
-  PopulateContentMetadata(&payload, page_url, page_title, file_name, drive_id,
-                          resource_key, parsed_url);
+  PopulateContentMetadata(&payload, page_title, file_name, drive_id,
+                          resource_key);
 
   for (const lens::ContextualInput& context_input : context_inputs) {
     auto* content_data = content->add_content_data();
@@ -1393,10 +1386,9 @@ void ComposeboxQueryController::
     image_data.mutable_image_metadata()->set_file_name(file_name.value());
   }
 
-  PopulateContentMetadata(objects_request->mutable_payload(), page_url,
-                          page_title, file_name, /*drive_id=*/std::nullopt,
-                          /*resource_key=*/std::nullopt,
-                          /*parsed_url=*/std::nullopt);
+  PopulateContentMetadata(objects_request->mutable_payload(), page_title,
+                          file_name, /*drive_id=*/std::nullopt,
+                          /*resource_key=*/std::nullopt);
 
   objects_request->mutable_image_data()->CopyFrom(image_data);
   request.mutable_client_logs()->CopyFrom(client_logs->client_logs());

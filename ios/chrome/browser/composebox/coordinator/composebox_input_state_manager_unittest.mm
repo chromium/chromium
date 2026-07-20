@@ -341,8 +341,6 @@ TEST_F(ComposeboxInputStateManagerTest, ToolDisabled_ServerSideEnabled) {
   model_rule->set_allow_all_tools(false);
   // Do NOT add IMAGE_GEN to allowed_tools.
 
-  config.set_initial_model_mode(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
-
   EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
       .WillRepeatedly(testing::Return(&config));
   if (aim_eligibility_callback_) {
@@ -1008,7 +1006,8 @@ TEST_F(ComposeboxInputStateManagerTest, SetActiveModel_FallbackToDefault) {
       .WillRepeatedly(testing::Return(true));
 
   omnibox::SearchboxConfig config;
-  config.set_initial_model_mode(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+  omnibox::ModelConfig* model_config = config.add_model_configs();
+  model_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
   EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
       .WillRepeatedly(testing::Return(&config));
   if (aim_eligibility_callback_) {

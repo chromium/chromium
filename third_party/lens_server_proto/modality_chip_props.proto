@@ -27,15 +27,13 @@ message ModalityChipProps {
     AimIconType icon_id = 16;
   }
 
-  // True if this modality chip can be submitted without additional user input.
-  // For example, entity modalities can be searched with just their title.
-  bool is_unimodal = 4;
   AddedInput added_input = 10;
+
+  // True if this modality chip can be submitted without additional user input.
+  bool is_unimodal = 4;
 
   // Optional consumer-provided ID used for de-duplication.
   string id = 11;
 
   reserved 3, 5 to 9, 12;
 }
-
-
