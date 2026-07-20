@@ -42,6 +42,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/features.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -230,6 +231,14 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
   signin_view_controller->ShowModalSigninErrorDialog();
   EXPECT_TRUE(signin_view_controller->ShowsModalDialog());
   content_observer.Wait();
+
+  // Wait for the modal dialog sheet window to be presented and receive focus.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    auto* web_contents =
+        signin_view_controller->GetModalDialogWebContentsForTesting();
+    return web_contents && web_contents->GetRenderWidgetHostView() &&
+           web_contents->GetRenderWidgetHostView()->HasFocus();
+  }));
 
   content::WebContentsDestroyedWatcher dialog_destroyed_watcher(
       signin_view_controller->GetModalDialogWebContentsForTesting());

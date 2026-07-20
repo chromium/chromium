@@ -53,6 +53,10 @@ class EnterpriseStartupDialogViewBrowserTest : public DialogBrowserTest {
   }
 #endif
 
+  // EnterpriseStartupDialogView runs a blocking modal loop, so return false to
+  // avoid deadlocks when pumping the run loop in VerifyUi().
+  bool ShouldWaitForDialogBeforeVerify() override { return false; }
+
  private:
   raw_ptr<EnterpriseStartupDialogView, AcrossTasksDanglingUntriaged> dialog;
 };

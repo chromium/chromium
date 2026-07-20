@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/sys_string_conversions.h"
@@ -1453,13 +1454,14 @@ Widget* ShowChildModalWidgetAndWait(NSWindow* native_parent) {
   return modal_dialog_widget;
 }
 
-// Shows a window-modal Widget (as a sheet). No need to wait since the native
-// sheet animation is blocking.
+// Shows a window-modal Widget (as a sheet).
 Widget* ShowWindowModalWidget(NSWindow* native_parent) {
   Widget* sheet_widget = views::DialogDelegate::CreateDialogWidget(
       NativeWidgetMacTest::MakeModalDialog(ui::mojom::ModalType::kWindow),
       gfx::NativeWindow(), gfx::NativeView(native_parent.contentView));
   sheet_widget->Show();
+  NSWindow* sheet_window = sheet_widget->GetNativeWindow().GetNativeNSWindow();
+  EXPECT_TRUE(base::test::RunUntil([&]() { return [sheet_window isVisible]; }));
   return sheet_widget;
 }
 
@@ -1805,43 +1807,50 @@ TEST_F(NativeWidgetMacTest, CloseWithWindowModalSheet) {
   }
 }
 
-// Test that if the bridge is destroyed synchronously during a modal sheet
-// animation inside FullscreenControllerTransitionComplete(), the weak pointer
-// check correctly prevents a Use-After-Free (UAF) upon return
-// (https://crbug.com/517040438).
-TEST_F(NativeWidgetMacTest, FullscreenTransitionCompleteBridgeDestruction) {
+// Test that SetVisibilityState() handles the bridge being destroyed during a
+// modal sheet animation entered via parent_->OrderChildren(). A non-sheet
+// child showing itself orders its parent's children, which can synchronously
+// present a deferred sibling sheet and spin a nested run-loop.
+TEST_F(NativeWidgetMacTest, SetVisibilityStateBridgeDestruction) {
   NSWindow* native_parent = MakeClosableTitledNativeParent();
-  @autoreleasepool {
-    Widget* parent_widget =
-        Widget::GetWidgetForNativeWindow(gfx::NativeWindow(native_parent));
-    ASSERT_TRUE(parent_widget);
+  Widget* parent_widget =
+      Widget::GetWidgetForNativeWindow(gfx::NativeWindow(native_parent));
+  ASSERT_TRUE(parent_widget);
 
-    Widget* sheet_widget = views::DialogDelegate::CreateDialogWidget(
-        NativeWidgetMacTest::MakeModalDialog(ui::mojom::ModalType::kWindow),
-        gfx::NativeWindow(), parent_widget->GetNativeView());
+  // A deferred window-modal sheet on the parent. OrderChildren() will present
+  // it via -[NSWindow beginSheet:], spinning a nested run-loop.
+  Widget* sheet_widget = views::DialogDelegate::CreateDialogWidget(
+      NativeWidgetMacTest::MakeModalDialog(ui::mojom::ModalType::kWindow),
+      gfx::NativeWindow(), parent_widget->GetNativeView());
+  BridgedNativeWidgetTestApi(sheet_widget).set_wants_to_be_visible(true);
 
-    BridgedNativeWidgetTestApi(sheet_widget).set_wants_to_be_visible(true);
+  // A non-sheet sibling whose SetVisibilityState() will call
+  // parent_->OrderChildren() and find the deferred sheet above.
+  Widget* child_widget = views::DialogDelegate::CreateDialogWidget(
+      NativeWidgetMacTest::MakeModalDialog(ui::mojom::ModalType::kChild),
+      gfx::NativeWindow(), parent_widget->GetNativeView());
+  remote_cocoa::NativeWidgetNSWindowBridge* child_bridge =
+      BridgedNativeWidgetTestApi(child_widget).bridge();
 
-    remote_cocoa::NativeWidgetNSWindowBridge* parent_bridge =
-        NativeWidgetMacNSWindowHost::GetFromNativeWindow(
-            gfx::NativeWindow(native_parent))
-            ->GetInProcessNSWindowBridge();
+  auto notification_received =
+      base::MakeRefCounted<base::RefCountedData<bool>>(false);
+  id observer = [[NSNotificationCenter defaultCenter]
+      addObserverForName:NSWindowWillBeginSheetNotification
+                  object:native_parent
+                   queue:nil
+              usingBlock:^(NSNotification* note) {
+                notification_received->data = true;
+                child_widget->CloseNow();
+              }];
 
-    // Register an observer to close the parent widget synchronously when the
-    // child modal sheet starts its presentation animation. This simulates the
-    // synchronous bridge destruction during the on-stack beginSheet: call.
-    id observer = [[NSNotificationCenter defaultCenter]
-        addObserverForName:NSWindowWillBeginSheetNotification
-                    object:native_parent
-                     queue:nil
-                usingBlock:^(NSNotification* note) {
-                  parent_widget->CloseNow();
-                }];
+  child_bridge->SetVisibilityState(
+      remote_cocoa::mojom::WindowVisibilityState::kShowAndActivateWindow);
 
-    parent_bridge->FullscreenControllerTransitionComplete(true);
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return notification_received->data; }));
 
-    [[NSNotificationCenter defaultCenter] removeObserver:observer];
-  }
+  [[NSNotificationCenter defaultCenter] removeObserver:observer];
+  [native_parent close];
 }
 
 // Exercise a scenario where the task posted in the asynchronous Close() could

@@ -16,6 +16,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -448,6 +449,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUpdateDialogBrowserTests,
   const webapps::AppId& app_id = InstallAppAndTriggerAppUpdateDialog();
   views::Widget* dialog_widget = update_dialog_waiter.WaitIfNeededAndGet();
   ASSERT_NE(nullptr, dialog_widget);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return dialog_widget->IsVisible(); }));
 
   // At this point, the update has not been triggered yet.
   const WebApp* old_web_app = provider().registrar_unsafe().GetAppById(app_id);
@@ -480,6 +483,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUpdateDialogBrowserTests, Accept) {
   const webapps::AppId& app_id = InstallAppAndTriggerAppUpdateDialog();
   views::Widget* dialog_widget = update_dialog_waiter.WaitIfNeededAndGet();
   ASSERT_NE(nullptr, dialog_widget);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return dialog_widget->IsVisible(); }));
   EXPECT_EQ("Web app for updating",
             provider().registrar_unsafe().GetAppShortName(app_id));
 
@@ -525,6 +530,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUpdateDialogBrowserTests, CancelUninstall) {
   const webapps::AppId& app_id = InstallAppAndTriggerAppUpdateDialog();
   views::Widget* dialog_widget = update_dialog_waiter.WaitIfNeededAndGet();
   ASSERT_NE(nullptr, dialog_widget);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return dialog_widget->IsVisible(); }));
 
   // This will trigger uninstallation of the app. Wait for the uninstallation
   // dialog to show up.
@@ -536,6 +543,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUpdateDialogBrowserTests, CancelUninstall) {
       BucketsAre(base::Bucket(WebAppIdentityUpdateResult::kUninstallApp, 1)));
   views::Widget* uninstall_dialog =
       uninstall_dialog_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return uninstall_dialog->IsVisible(); }));
 
   // Trigger uninstallation of the app by accepting the dialog and verify.
   WebAppProvider* provider = WebAppProvider::GetForTest(profile());
@@ -551,6 +560,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUpdateDialogBrowserTests, IgnoreRemovesMenuLabel) {
   const webapps::AppId& app_id = InstallAppAndTriggerAppUpdateDialog();
   views::Widget* dialog_widget = update_dialog_waiter.WaitIfNeededAndGet();
   ASSERT_NE(nullptr, dialog_widget);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return dialog_widget->IsVisible(); }));
 
   BrowserWindowInterface* app_browser =
       AppBrowserController::FindForWebApp(*profile(), app_id);
@@ -589,6 +600,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUpdateDialogBrowserTests,
   const webapps::AppId& app_id = InstallAppAndTriggerAppUpdateDialog();
   views::Widget* dialog_widget = update_dialog_waiter.WaitIfNeededAndGet();
   ASSERT_NE(nullptr, dialog_widget);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return dialog_widget->IsVisible(); }));
 
   BrowserWindowInterface* app_browser =
       AppBrowserController::FindForWebApp(*profile(), app_id);
