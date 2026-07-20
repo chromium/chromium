@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/scoped_environment_variable_override.h"
 #include "base/test/task_environment.h"
 #include "components/dbus/xdg/portal_constants.h"
 #include "components/dbus/xdg/systemd.h"
@@ -86,16 +87,15 @@ TEST_F(RequestXdgDesktopPortalTest, RequestXdgDesktopPortalSuccessNoSystemd) {
                                     dbus::ObjectPath(kPortalObjectPath)))
       .WillRepeatedly(Return(mock_portal_proxy.get()));
 
-  // Expect Register call because systemd unit creation failed
-  // (kNoSystemdService)
+  // Expect a Register call because systemd unit creation failed
+  // (kNoSystemdService).
   EXPECT_CALL(*mock_portal_proxy, CallMethodWithErrorResponse(_, _, _))
-      .WillRepeatedly([](dbus::MethodCall* method_call, int timeout_ms,
-                         dbus::ObjectProxy::ResponseOrErrorCallback callback) {
-        if (method_call->GetInterface() == kRegistryInterface &&
-            method_call->GetMember() == kMethodRegister) {
-          auto response = dbus::Response::CreateEmpty();
-          std::move(callback).Run(response.get(), nullptr);
-        }
+      .WillOnce([](dbus::MethodCall* method_call, int timeout_ms,
+                   dbus::ObjectProxy::ResponseOrErrorCallback callback) {
+        EXPECT_EQ(method_call->GetInterface(), kRegistryInterface);
+        EXPECT_EQ(method_call->GetMember(), kMethodRegister);
+        auto response = dbus::Response::CreateEmpty();
+        std::move(callback).Run(response.get(), nullptr);
       });
 
   // Expect SetNameOwnerChangedCallback
@@ -224,10 +224,103 @@ TEST_F(RequestXdgDesktopPortalTest, RequestXdgDesktopPortalSuccessWithSystemd) {
                                     dbus::ObjectPath(kPortalObjectPath)))
       .WillRepeatedly(Return(mock_portal_proxy.get()));
 
-  // Expect NO SetNameOwnerChangedCallback
-  EXPECT_CALL(*mock_portal_proxy, SetNameOwnerChangedCallback(_)).Times(0);
+  // Expect Register even though the systemd unit started (portal >= 1.21
+  // needs an explicit app id).
+  EXPECT_CALL(*mock_portal_proxy, CallMethodWithErrorResponse(_, _, _))
+      .WillOnce([](dbus::MethodCall* method_call, int timeout_ms,
+                   dbus::ObjectProxy::ResponseOrErrorCallback callback) {
+        EXPECT_EQ(method_call->GetInterface(), kRegistryInterface);
+        EXPECT_EQ(method_call->GetMember(), kMethodRegister);
+        auto response = dbus::Response::CreateEmpty();
+        std::move(callback).Run(response.get(), nullptr);
+      });
+
+  // Expect SetNameOwnerChangedCallback
+  EXPECT_CALL(*mock_portal_proxy, SetNameOwnerChangedCallback(_));
 
   // Expect GetVersion call
+  EXPECT_CALL(*mock_portal_proxy, CallMethod(_, _, _))
+      .WillRepeatedly([](dbus::MethodCall* method_call, int timeout_ms,
+                         dbus::ObjectProxy::ResponseCallback callback) {
+        if (method_call->GetInterface() == DBUS_INTERFACE_PROPERTIES &&
+            method_call->GetMember() == "Get") {
+          dbus::MessageReader reader(method_call);
+          std::string interface_name;
+          std::string property_name;
+          reader.PopString(&interface_name);
+          reader.PopString(&property_name);
+
+          if (interface_name == kFileChooserInterfaceName &&
+              property_name == "version") {
+            auto response = dbus::Response::CreateEmpty();
+            dbus::MessageWriter writer(response.get());
+            writer.AppendVariantOfUint32(3);
+            std::move(callback).Run(response.get());
+            return;
+          }
+        }
+        std::move(callback).Run(nullptr);
+      });
+
+  uint32_t version = 0;
+  base::RunLoop run_loop;
+  RequestXdgDesktopPortal(
+      bus_.get(),
+      base::BindOnce(
+          [](uint32_t* out, base::OnceClosure quit_closure, uint32_t res) {
+            *out = res;
+            std::move(quit_closure).Run();
+          },
+          &version, run_loop.QuitClosure()));
+
+  run_loop.Run();
+  EXPECT_EQ(version, 3u);
+}
+
+TEST_F(RequestXdgDesktopPortalTest,
+       RequestXdgDesktopPortalSkipsRegisterInSnap) {
+  // Under Flatpak or Snap (kUnitNotNecessary), the sandbox provides the app
+  // id, so the portal must not be registered with.
+  base::ScopedEnvironmentVariableOverride snap_env("SNAP", "/snap/app");
+
+  auto mock_dbus_proxy = base::MakeRefCounted<dbus::MockObjectProxy>(
+      bus_.get(), DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS));
+
+  EXPECT_CALL(*bus_, GetObjectProxy(DBUS_SERVICE_DBUS,
+                                    dbus::ObjectPath(DBUS_PATH_DBUS)))
+      .WillRepeatedly(Return(mock_dbus_proxy.get()));
+
+  // The portal service exists; systemd is never queried because the sandbox
+  // short-circuits unit detection.
+  EXPECT_CALL(*mock_dbus_proxy, CallMethod(_, _, _))
+      .WillRepeatedly([](dbus::MethodCall* method_call, int timeout_ms,
+                         dbus::ObjectProxy::ResponseCallback callback) {
+        if (method_call->GetMember() == "NameHasOwner") {
+          dbus::MessageReader reader(method_call);
+          std::string name;
+          reader.PopString(&name);
+          auto response = dbus::Response::CreateEmpty();
+          dbus::MessageWriter writer(response.get());
+          writer.AppendBool(name == kPortalServiceName);
+          std::move(callback).Run(response.get());
+          return;
+        }
+        std::move(callback).Run(nullptr);
+      });
+
+  auto mock_portal_proxy = base::MakeRefCounted<dbus::MockObjectProxy>(
+      bus_.get(), kPortalServiceName, dbus::ObjectPath(kPortalObjectPath));
+
+  EXPECT_CALL(*bus_, GetObjectProxy(kPortalServiceName,
+                                    dbus::ObjectPath(kPortalObjectPath)))
+      .WillRepeatedly(Return(mock_portal_proxy.get()));
+
+  // No Register and no NameOwnerChanged listener on the skip path.
+  EXPECT_CALL(*mock_portal_proxy, CallMethodWithErrorResponse(_, _, _))
+      .Times(0);
+  EXPECT_CALL(*mock_portal_proxy, SetNameOwnerChangedCallback(_)).Times(0);
+
+  // The version is still fetched.
   EXPECT_CALL(*mock_portal_proxy, CallMethod(_, _, _))
       .WillRepeatedly([](dbus::MethodCall* method_call, int timeout_ms,
                          dbus::ObjectProxy::ResponseCallback callback) {

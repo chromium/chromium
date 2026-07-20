@@ -84,15 +84,17 @@ class PortalRegistrar {
       return;
     }
 
-    // If running under Flatpak or Snap, or unit started successfully, then no
-    // need to register.
+    // If running under Flatpak or Snap, the app id is determined by the
+    // sandbox, so there's no need to register.
     if (systemd_unit_status_ ==
-            internal::SystemdUnitStatus::kUnitNotNecessary ||
-        systemd_unit_status_ == internal::SystemdUnitStatus::kUnitStarted) {
+        internal::SystemdUnitStatus::kUnitNotNecessary) {
       GetVersion();
       return;
     }
 
+    // Even when a systemd scope was started, register explicitly:
+    // xdg-desktop-portal >= 1.21 requires a registered app id for some
+    // interfaces (e.g. GlobalShortcuts).
     Register();
 
     // Listen for NameOwnerChanged to re-register if needed.
