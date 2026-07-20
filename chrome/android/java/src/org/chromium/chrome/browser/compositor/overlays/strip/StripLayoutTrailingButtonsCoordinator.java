@@ -1414,17 +1414,39 @@ public class StripLayoutTrailingButtonsCoordinator {
     }
 
     /**
-     * Fades out trailing buttons when the compositor buttons are set to hidden (e.g. during tab
-     * drag).
+     * Fades visible trailing buttons in or out when compositor buttons change visibility (e.g.
+     * during tab drag).
+     *
+     * @param visible Whether the compositor buttons should be visible.
      */
     public void fadeCompositorButtons(boolean visible) {
-        if (mGlicButton != null) {
-            float endOpacity = visible ? 1.f : 0.f;
+        float endOpacity = visible ? 1.f : 0.f;
+        if (mGlicButton != null && mGlicButton.isVisible()) {
             CompositorAnimator.ofFloatProperty(
                             mUpdateHost.getAnimationHandler(),
                             mGlicButton,
                             CompositorButton.OPACITY,
                             mGlicButton.getOpacity(),
+                            endOpacity,
+                            ANIM_BUTTONS_FADE_MS)
+                    .start();
+        }
+        if (mGlicActorButton != null && mGlicActorButton.isVisible()) {
+            CompositorAnimator.ofFloatProperty(
+                            mUpdateHost.getAnimationHandler(),
+                            mGlicActorButton,
+                            CompositorButton.OPACITY,
+                            mGlicActorButton.getOpacity(),
+                            endOpacity,
+                            ANIM_BUTTONS_FADE_MS)
+                    .start();
+        }
+        if (mModelSelectorButton != null && mModelSelectorButton.isVisible()) {
+            CompositorAnimator.ofFloatProperty(
+                            mUpdateHost.getAnimationHandler(),
+                            mModelSelectorButton,
+                            CompositorButton.OPACITY,
+                            mModelSelectorButton.getOpacity(),
                             endOpacity,
                             ANIM_BUTTONS_FADE_MS)
                     .start();

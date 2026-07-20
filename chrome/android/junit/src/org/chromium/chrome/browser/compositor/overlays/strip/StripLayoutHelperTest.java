@@ -205,7 +205,6 @@ public class StripLayoutHelperTest {
     @Mock private LayoutManagerHost mManagerHost;
     @Mock private LayoutUpdateHost mUpdateHost;
     @Mock private LayoutRenderHost mRenderHost;
-    @Mock private CompositorButton mModelSelectorBtn;
     @Mock private TabUngrouper mTabUngrouper;
     @Mock private View mControlContainer;
     @Mock private StripTabHoverCardView mTabHoverCardView;
@@ -4995,7 +4994,6 @@ public class StripLayoutHelperTest {
                         mUpdateHost,
                         mRenderHost,
                         incognito,
-                        mModelSelectorBtn,
                         mTabStripDragHandler,
                         mControlContainer,
                         mWindowAndroid,
