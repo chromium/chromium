@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<script>
+if (window.testRunner) {
+  testRunner.dumpAsText();
+  testRunner.waitUntilDone();
+}
+</script>
+<div id=ca><b><p id=fb><script>
+window.fb = document.getElementById('fb');
+window.ca = document.getElementById('ca');
+document.body.appendChild(window.fb);
+window.fb.appendChild(window.ca);
+</script></b></div>
+<script>
+if (window.testRunner) {
+  testRunner.notifyDone();
+}
+</script>
+PASS if no crash.

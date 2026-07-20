@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<script>
+if (window.testRunner) {
+  testRunner.dumpAsText();
+  testRunner.waitUntilDone();
+}
+</script>
+<table><tbody><tr><b><div id=fb><script>
+window.fb = document.getElementById('fb');
+window.other = document.implementation.createHTMLDocument('');
+window.other.documentElement.remove();
+window.other.appendChild(document.querySelector('table'));
+</script></b></table>
+<script>
+if (window.testRunner) {
+  testRunner.notifyDone();
+}
+</script>
+PASS if no crash.
