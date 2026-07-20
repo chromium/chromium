@@ -4,6 +4,7 @@
 
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <tuple>
 
 #include "base/strings/strcat.h"
@@ -877,6 +878,14 @@ class ActorClickToolValidationBrowserTest : public ActorClickToolBrowserTest {
     const GURL url = embedded_test_server()->GetURL(path);
     ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
+    ExpectCurrentPageDirectActivationRejectedDuringRendererValidation(
+        expected_code, expect_panel_hit);
+  }
+
+  void ExpectCurrentPageDirectActivationRejectedDuringRendererValidation(
+      mojom::ActionResultCode expected_code,
+      bool expect_panel_hit = true,
+      std::string_view expected_message = {}) {
     std::optional<int> target_id = GetDOMNodeId(*main_frame(), "#target");
     ASSERT_TRUE(target_id);
 
@@ -918,6 +927,9 @@ class ActorClickToolValidationBrowserTest : public ActorClickToolBrowserTest {
     const mojom::ActionResultPtr& error_result =
         initialize_result->get_error_result();
     EXPECT_EQ(expected_code, error_result->code);
+    if (!expected_message.empty()) {
+      EXPECT_EQ(expected_message, error_result->message);
+    }
     EXPECT_FALSE(error_result->requires_page_stabilization);
     EXPECT_THAT(EvalJs(web_contents(), "click_log.join(',')").ExtractString(),
                 testing::IsEmpty());
@@ -1651,12 +1663,122 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     ActorClickToolValidationBrowserTest,
-    ClickTool_DirectActivation_FailsForEmbeddedContentOccluder) {
-  // Embedded content occluders are rejected server-side today. If one reaches
-  // the client anyway, fail closed rather than normalizing child-frame hits.
-  ExpectDirectActivationRejectedDuringRendererValidation(
-      "/actor/click_occluded_by_fixed.html?panel=iframe",
+    ClickTool_DirectActivation_RejectsSubframeHitInsideTarget) {
+  const GURL url = embedded_test_server()->GetURL(
+      "/actor/click_occluded_by_fixed.html?panel=iframe");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_TRUE(ExecJs(web_contents(), R"JS(
+    const iframe = document.getElementById('fixed-container');
+    const target = document.getElementById('target');
+    target.appendChild(iframe);
+    target.style =
+        'position:relative;margin:220px 0 0 10px;width:50px;height:50px';
+    iframe.style = 'position:static;width:100%;height:100%;border:0';
+  )JS"));
+
+  // The same-process hit comes from the child document, but its iframe owner
+  // is inside the target's flat-tree subtree. Direct activation must recognize
+  // that the target is no longer occluded instead of looking for a panel.
+  ExpectCurrentPageDirectActivationRejectedDuringRendererValidation(
+      mojom::ActionResultCode::kTargetNodeInteractionPointObscured,
+      /*expect_panel_hit=*/true,
+      "The target is no longer occluded; use a normal click instead.");
+}
+
+IN_PROC_BROWSER_TEST_F(ActorClickToolValidationBrowserTest,
+                       ClickTool_DirectActivation_OccludedBySubframe) {
+  // The target stays in the top document while a fixed iframe covers it.
+  const GURL url = embedded_test_server()->GetURL(
+      "/actor/click_occluded_by_fixed.html?panel=iframe");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  ExpectDirectActivationClicksTarget();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ActorClickToolValidationBrowserTest,
+    ClickTool_DirectActivation_OccludedBySubframeInFixedAncestor) {
+  // An ordinary iframe also qualifies when a fixed top-document ancestor is
+  // the panel covering the target.
+  const GURL url = embedded_test_server()->GetURL(
+      "/actor/click_occluded_by_fixed.html?panel=iframe");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_TRUE(ExecJs(web_contents(), R"JS(
+    const iframe = document.getElementById('fixed-container');
+    const panel = document.createElement('div');
+    panel.style =
+        'position:fixed;top:200px;left:0;width:100%;height:100px;z-index:10';
+    iframe.before(panel);
+    panel.appendChild(iframe);
+    iframe.style = 'position:static;width:100%;height:100%';
+  )JS"));
+
+  ExpectDirectActivationClicksTarget();
+}
+
+IN_PROC_BROWSER_TEST_F(ActorClickToolValidationBrowserTest,
+                       ClickTool_DirectActivation_RejectsPanelInsideSubframe) {
+  // The iframe owner must be the panel. A fixed element inside an ordinary
+  // iframe does not qualify for direct activation.
+  const GURL url = embedded_test_server()->GetURL(
+      "/actor/click_occluded_by_fixed.html?panel=iframe");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_TRUE(ExecJs(web_contents(), R"JS(
+    const iframe = document.getElementById('fixed-container');
+    iframe.style.position = 'relative';
+    iframe.contentDocument.body.innerHTML =
+        '<div style="position:fixed;inset:0">Embedded Panel</div>';
+  )JS"));
+
+  ExpectCurrentPageDirectActivationRejectedDuringRendererValidation(
       mojom::ActionResultCode::kTargetNodeInteractionPointObscured);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorClickToolValidationBrowserTest,
+                       ClickTool_DirectActivation_RejectsNestedSubframe) {
+  // Direct activation only follows a hit into one child document. A nested
+  // iframe is outside that supported scope, even when the outer iframe is the
+  // fixed panel.
+  const GURL url = embedded_test_server()->GetURL(
+      "/actor/click_occluded_by_fixed.html?panel=iframe");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_TRUE(ExecJs(web_contents(), R"JS(
+    const iframe = document.getElementById('fixed-container');
+    iframe.contentDocument.body.innerHTML = `
+      <iframe style="position:fixed;inset:0;width:100%;height:100%;border:0"
+          srcdoc="<body style='margin:0'>Nested Frame</body>">
+      </iframe>`;
+  )JS"));
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
+
+  ExpectCurrentPageDirectActivationRejectedDuringRendererValidation(
+      mojom::ActionResultCode::kTargetNodeInteractionPointObscured);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ActorClickToolValidationBrowserTest,
+    ClickTool_DirectActivation_OccludedByCrossProcessSubframe) {
+  // A cross-process iframe can be the panel covering a top-document target.
+  if (!content::AreAllSitesIsolatedForTesting()) {
+    GTEST_SKIP();
+  }
+
+  const GURL url = embedded_https_test_server().GetURL(
+      "foo.com", "/actor/click_occluded_by_fixed.html?panel=iframe");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const GURL subframe_url = embedded_https_test_server().GetURL(
+      "bar.com", "/actor/page_with_clickable_element.html");
+  RenderFrameHost* subframe = ChildFrameAt(main_frame(), 0);
+  ASSERT_TRUE(subframe);
+  ASSERT_TRUE(content::NavigateToURLFromRenderer(subframe, subframe_url));
+  // Cross-site navigation replaces the local frame with a remote frame.
+  subframe = ChildFrameAt(main_frame(), 0);
+  ASSERT_TRUE(subframe);
+  ASSERT_EQ(subframe_url, subframe->GetLastCommittedURL());
+  ASSERT_TRUE(subframe->IsCrossProcessSubframe());
+
+  ExpectDirectActivationClicksTarget();
 }
 
 IN_PROC_BROWSER_TEST_F(

@@ -86,6 +86,12 @@ WebFrame* WebFrame::Parent() const {
   return FromCoreFrame(core_frame->Parent());
 }
 
+WebElement WebFrame::FrameOwnerElement() const {
+  Frame* core_frame = ToCoreFrame(*this);
+  CHECK(core_frame);
+  return WebElement(DynamicTo<HTMLFrameOwnerElement>(core_frame->Owner()));
+}
+
 WebFrame* WebFrame::Top() const {
   Frame* core_frame = ToCoreFrame(*this);
   CHECK(core_frame);

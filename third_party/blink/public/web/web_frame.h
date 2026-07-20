@@ -51,6 +51,7 @@ enum class DetachReason;
 class Frame;
 #endif
 
+class WebElement;
 class WebLocalFrame;
 class WebRemoteFrame;
 class WebSecurityOrigin;
@@ -132,6 +133,10 @@ class BLINK_EXPORT WebFrame {
 
   // Returns the parent frame or 0 if this is a top-most frame.
   WebFrame* Parent() const;
+
+  // Returns the local element that embeds this frame, or a null element when
+  // its owner is not in this renderer.
+  WebElement FrameOwnerElement() const;
 
   // Returns the top-most frame in the hierarchy containing this frame.
   WebFrame* Top() const;

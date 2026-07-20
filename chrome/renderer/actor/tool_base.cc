@@ -35,6 +35,7 @@
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
 using base::UmaHistogramEnumeration;
+using blink::WebDocument;
 using blink::WebElement;
 using blink::WebFormControlElement;
 using blink::WebFrameWidget;
@@ -181,6 +182,26 @@ WebElementAuthorBarrierReason GetWebElementAuthorBarrierReason(
   }
 
   return WebElementAuthorBarrierReason::kNone;
+}
+
+WebElement GetHitElementInTargetDocument(WebElement hit_element,
+                                         const WebDocument& target_document) {
+  // A remote iframe hit already points to its element in the target document.
+  // A same-process hit points inside the iframe, so move up once to that
+  // element. Nested iframes are not supported here.
+  if (hit_element.GetDocument() != target_document) {
+    WebLocalFrame* frame = hit_element.GetDocument().GetFrame();
+    if (!frame) {
+      return WebElement();
+    }
+
+    hit_element = frame->FrameOwnerElement();
+    if (hit_element.IsNull() || hit_element.GetDocument() != target_document) {
+      return WebElement();
+    }
+  }
+
+  return hit_element;
 }
 
 WebElement GetFixedOrAbsolutePanel(WebElement hit_element) {
@@ -710,17 +731,13 @@ mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
       const WebHitTestResult hit_test_result =
           widget->HitTestResultAt(resolved_target.widget_point);
       const WebElement hit_element = hit_test_result.GetElement();
-      // Direct activation only supports main-document targets covered by
-      // main-document panels. A hit inside a child document means the live
-      // occluder is embedded content, which the server rejects today.
-      if (hit_element.IsNull() ||
-          hit_element.GetDocument() != target_document) {
+      if (hit_element.IsNull()) {
         journal_->Log(task_id_, journal_name,
                       JournalDetailsBuilder()
                           .Add("target_id", target_element.GetDomNodeId())
                           .Add("target", NodeToDebugString(target_element))
-                          .AddError("Direct-activation hit test did not return "
-                                    "a top-document element")
+                          .AddError("Direct-activation hit test returned no "
+                                    "element")
                           .Build());
         UmaHistogramEnumeration(
             histogram_name,
@@ -732,15 +749,25 @@ mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
             "panel.");
       }
 
+      // If the hit is inside a same-process iframe, use its frame owner in the
+      // target document so we can test whether it belongs to the target
+      // subtree. Merely being in the same document is not enough; an unrelated
+      // element there may still be the occluding panel.
+      const WebElement hit_element_in_target_document =
+          GetHitElementInTargetDocument(hit_element, target_document);
+
       // If the live hit is the target or one of its flat-tree children, the
       // page no longer needs click-behind handling.
-      if (target_node.ContainsViaFlatTree(&hit_element)) {
+      if (!hit_element_in_target_document.IsNull() &&
+          target_node.ContainsViaFlatTree(&hit_element_in_target_document)) {
         journal_->Log(task_id_, journal_name,
                       JournalDetailsBuilder()
                           .Add("target_id", target_element.GetDomNodeId())
-                          .Add("hit_node_id", hit_element.GetDomNodeId())
+                          .Add("hit_node_id",
+                               hit_element_in_target_document.GetDomNodeId())
                           .Add("target", NodeToDebugString(target_element))
-                          .Add("hit_node", NodeToDebugString(hit_element))
+                          .Add("hit_node", NodeToDebugString(
+                                               hit_element_in_target_document))
                           .AddError("Direct-activation target is no longer "
                                     "occluded")
                           .Build());
@@ -754,16 +781,25 @@ mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
       }
 
       // Server-side APC selection already decided whether this occluder is a
-      // bypassable modeless panel. The client only revalidates that the live
-      // hit still resolves to a fixed/absolute panel before dispatch.
-      const WebElement panel = GetFixedOrAbsolutePanel(hit_element);
+      // bypassable modeless panel. The client revalidates that the live hit or
+      // its top-document iframe owner is inside a fixed/absolute panel.
+      const WebElement panel =
+          GetFixedOrAbsolutePanel(hit_element_in_target_document);
       if (panel.IsNull()) {
         JournalDetailsBuilder builder;
         builder.Add("target_id", target_element.GetDomNodeId())
             .Add("hit_node_id", hit_element.GetDomNodeId())
             .Add("target", NodeToDebugString(target_element))
-            .Add("hit_node", NodeToDebugString(hit_element))
-            .Add("status", "NoEligiblePanel")
+            .Add("hit_node", NodeToDebugString(hit_element));
+        if (!hit_element_in_target_document.IsNull() &&
+            hit_element.GetDocument() != target_document) {
+          builder
+              .Add("target_document_hit_node_id",
+                   hit_element_in_target_document.GetDomNodeId())
+              .Add("target_document_hit_node",
+                   NodeToDebugString(hit_element_in_target_document));
+        }
+        builder.Add("status", "NoEligiblePanel")
             .AddError(
                 "Direct-activation target is not covered by an eligible "
                 "fixed or absolute panel");

@@ -1026,6 +1026,23 @@ TEST_F(WebFrameTest, IframeScriptRemovesSelf) {
   EXPECT_FALSE(callback_helper.HasAnyResults());
 }
 
+TEST_F(WebFrameTest, FrameOwnerElement) {
+  RegisterMockedHttpURLLoad("single_iframe.html");
+  RegisterMockedHttpURLLoad("visible_iframe.html");
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.InitializeAndLoad(base_url_ + "single_iframe.html");
+
+  WebFrame* main_frame = web_view_helper.LocalMainFrame();
+  WebFrame* child_frame = main_frame->FirstChild();
+  ASSERT_TRUE(child_frame);
+
+  // Child frames expose the element that embeds them. The top frame has no
+  // owner element.
+  EXPECT_TRUE(child_frame->FrameOwnerElement().HasHTMLTagName("iframe"));
+  EXPECT_TRUE(main_frame->FrameOwnerElement().IsNull());
+}
+
 namespace {
 
 class CapabilityDelegationMessageListener final : public NativeEventListener {
