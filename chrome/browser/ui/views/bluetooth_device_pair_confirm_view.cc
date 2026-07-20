@@ -161,6 +161,11 @@ std::u16string BluetoothDevicePairConfirmView::GetWindowTitle() const {
                             IDS_BLUETOOTH_DEVICE_PAIR_CONFIRM_TITLE);
 }
 
+bool BluetoothDevicePairConfirmView::ShouldAllowKeyEventsDuringInputProtection()
+    const {
+  return false;
+}
+
 void BluetoothDevicePairConfirmView::OnDialogAccepted() {
   BluetoothDelegate::PairPromptResult prompt_result;
   prompt_result.result_code = BluetoothDelegate::PairPromptStatus::kSuccess;
