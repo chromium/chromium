@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.media.immersive_playback.components.Immersive
 import org.chromium.chrome.browser.media.immersive_playback.components.ImmersiveVideoControlCoordinator;
 import org.chromium.chrome.browser.media.immersive_playback.components.ImmersiveVideoControlView;
 import org.chromium.chrome.browser.media.immersive_playback.components.ImmersiveVideoPlayerCoordinator;
+import org.chromium.chrome.browser.xr.scenecore.XrModuleProviderImpl;
 import org.chromium.components.thinwebview.CompositorView;
 import org.chromium.content_public.browser.ImmersiveProjectionType;
 import org.chromium.content_public.browser.ImmersiveStereoMode;
@@ -87,6 +88,7 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
 
     @Before
     public void setUp() throws Exception {
+        XrModuleProviderImpl.initialize();
         MockitoAnnotations.openMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).create().get();
         mActivity.setTheme(org.chromium.chrome.R.style.Theme_BrowserUI_Light);

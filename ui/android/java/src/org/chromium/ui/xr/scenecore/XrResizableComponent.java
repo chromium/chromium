@@ -12,30 +12,22 @@ public interface XrResizableComponent {
     /**
      * Sets the minimum allowed size for the entity.
      *
-     * @param width The minimum width of the entity.
-     * @param height The minimum height of the entity.
-     * @param depth The minimum depth of the entity.
+     * @param size The minimum size of the entity.
      */
-    void setMinSize(float width, float height, float depth);
+    void setMinSize(XrFloatSize3d size);
 
-    /**
-     * Returns the minimum allowed size for the entity as a 3-element array [width, height, depth].
-     */
-    float[] getMinSize();
+    /** Returns the minimum allowed size for the entity. */
+    XrFloatSize3d getMinSize();
 
     /**
      * Sets the maximum allowed size for the entity.
      *
-     * @param width The maximum width of the entity.
-     * @param height The maximum height of the entity.
-     * @param depth The maximum depth of the entity.
+     * @param size The maximum size of the entity.
      */
-    void setMaxSize(float width, float height, float depth);
+    void setMaxSize(XrFloatSize3d size);
 
-    /**
-     * Returns the maximum allowed size for the entity as a 3-element array [width, height, depth].
-     */
-    float[] getMaxSize();
+    /** Returns the maximum allowed size for the entity. */
+    XrFloatSize3d getMaxSize();
 
     /**
      * Sets whether the entity is resizable.
@@ -66,31 +58,25 @@ public interface XrResizableComponent {
         /**
          * Called when the entity's size is updated during resizing.
          *
-         * @param width The new width of the entity.
-         * @param height The new height of the entity.
-         * @param depth The new depth of the entity.
+         * @param size The new size of the entity.
          */
-        void onResizeUpdate(float width, float height, float depth);
+        void onResizeUpdate(XrFloatSize3d size);
 
         /**
          * Called when the resizing starts.
          *
-         * @param width The width of the entity when resizing started.
-         * @param height The height of the entity when resizing started.
-         * @param depth The depth of the entity when resizing started.
+         * @param size The size of the entity when resizing started.
          */
-        default void onResizeStart(float width, float height, float depth) {
+        default void onResizeStart(XrFloatSize3d size) {
             // No-op by default.
         }
 
         /**
          * Called when the resizing ends.
          *
-         * @param width The final width of the entity.
-         * @param height The final height of the entity.
-         * @param depth The final depth of the entity.
+         * @param size The final size of the entity.
          */
-        default void onResizeEnd(float width, float height, float depth) {
+        default void onResizeEnd(XrFloatSize3d size) {
             // No-op by default.
         }
     }

@@ -19,36 +19,19 @@ public interface XrEntityHolder<EntityType> {
     EntityType getEntity();
 
     /**
-     * Sets the entity's translation in the specified XR space.
+     * Sets the entity's pose in the specified XR space.
      *
-     * @param translation A 3-element array representing the X, Y, and Z translation.
+     * @param pose The pose representing translation and rotation.
      * @param space The space to pose the entity in.
      */
-    void setEntityPose(float[] translation, @XrSpace int space);
+    void setEntityPose(XrPose pose, @XrSpace int space);
 
     /**
-     * Sets the entity's translation and rotation in the specified XR space.
+     * Returns the entity's pose in the specified XR space.
      *
-     * @param translation A 3-element array representing the X, Y, and Z translation.
-     * @param rotation A 4-element array representing the X, Y, Z, and W components of the rotation
-     *     quaternion.
-     * @param space The space to pose the entity in.
+     * @param space The space to query the pose in.
      */
-    void setEntityPose(float[] translation, float[] rotation, @XrSpace int space);
-
-    /**
-     * Returns the entity's translation in the specified XR space.
-     *
-     * @param space The space to query the translation in.
-     */
-    float[] getEntityTranslation(@XrSpace int space);
-
-    /**
-     * Returns the entity's rotation in the specified XR space.
-     *
-     * @param space The space to query the rotation in.
-     */
-    float[] getEntityRotation(@XrSpace int space);
+    XrPose getEntityPose(@XrSpace int space);
 
     /**
      * Sets the entity's scale in the specified XR space.

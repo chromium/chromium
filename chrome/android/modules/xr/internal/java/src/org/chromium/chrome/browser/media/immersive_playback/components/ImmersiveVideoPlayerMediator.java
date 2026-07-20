@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.media.immersive_playback.components;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.xr.scenecore.XrPose;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityShape;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityStereoMode;
 
@@ -40,12 +41,10 @@ public class ImmersiveVideoPlayerMediator {
     /**
      * Updates the player panel pose.
      *
-     * @param translation The translation of the player panel.
-     * @param rotation The rotation of the player panel.
+     * @param pose The pose of the player panel.
      */
-    public void updatePose(float[] translation, float[] rotation) {
-        mModel.set(ImmersiveVideoPlayerProperties.POSE_TRANSLATION, translation);
-        mModel.set(ImmersiveVideoPlayerProperties.POSE_ROTATION, rotation);
+    public void updatePose(XrPose pose) {
+        mModel.set(ImmersiveVideoPlayerProperties.POSE, pose);
     }
 
     /** Updates the player size and aspect ratio. */

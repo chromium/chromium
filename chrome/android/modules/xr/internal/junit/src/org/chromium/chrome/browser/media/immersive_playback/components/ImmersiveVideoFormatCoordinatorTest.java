@@ -26,6 +26,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.media.immersive_playback.ImmersiveVideoFormatRadioGroup;
 import org.chromium.chrome.browser.modules.xr.R;
+import org.chromium.chrome.browser.xr.scenecore.XrModuleProviderImpl;
 import org.chromium.content_public.browser.ImmersiveProjectionType;
 import org.chromium.content_public.browser.ImmersiveStereoMode;
 import org.chromium.ui.xr.scenecore.XrEntityHolder;
@@ -48,6 +49,7 @@ public class ImmersiveVideoFormatCoordinatorTest {
 
     @Before
     public void setUp() {
+        XrModuleProviderImpl.initialize();
         MockitoAnnotations.openMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).create().get();
 

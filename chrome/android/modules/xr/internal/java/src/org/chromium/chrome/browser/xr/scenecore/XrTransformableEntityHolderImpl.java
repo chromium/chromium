@@ -8,6 +8,7 @@ import androidx.xr.runtime.Session;
 import androidx.xr.scenecore.BaseEntity;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.ui.xr.scenecore.XrFloatSize3d;
 import org.chromium.ui.xr.scenecore.XrInteractableComponent;
 import org.chromium.ui.xr.scenecore.XrMovableComponent;
 import org.chromium.ui.xr.scenecore.XrResizableComponent;
@@ -30,11 +31,11 @@ public abstract class XrTransformableEntityHolderImpl<EntityType extends BaseEnt
     private final XrResizableComponent.OnResizeListener mResizeListener =
             new XrResizableComponent.OnResizeListener() {
                 @Override
-                public void onResizeUpdate(float width, float height, float depth) {}
+                public void onResizeUpdate(XrFloatSize3d size) {}
 
                 @Override
-                public void onResizeEnd(float width, float height, float depth) {
-                    setEntitySize(width, height);
+                public void onResizeEnd(XrFloatSize3d size) {
+                    setEntitySize(size.getWidth(), size.getHeight());
                 }
             };
 

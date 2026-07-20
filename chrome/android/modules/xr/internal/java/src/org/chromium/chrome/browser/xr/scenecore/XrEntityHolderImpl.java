@@ -5,9 +5,6 @@
 package org.chromium.chrome.browser.xr.scenecore;
 
 import androidx.xr.runtime.Session;
-import androidx.xr.runtime.math.Pose;
-import androidx.xr.runtime.math.Quaternion;
-import androidx.xr.runtime.math.Vector3;
 import androidx.xr.scenecore.BaseEntity;
 import androidx.xr.scenecore.Entity;
 import androidx.xr.scenecore.Space;
@@ -15,6 +12,7 @@ import androidx.xr.scenecore.Space;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.xr.scenecore.XrEntityHolder;
+import org.chromium.ui.xr.scenecore.XrPose;
 import org.chromium.ui.xr.scenecore.XrSpace;
 
 /** Base class for {@link XrEntityHolder} implementations. */
@@ -50,42 +48,15 @@ public abstract class XrEntityHolderImpl<EntityType extends BaseEntity>
     }
 
     @Override
-    public void setEntityPose(float[] translation, @XrSpace int space) {
+    public void setEntityPose(XrPose pose, @XrSpace int space) {
         assertDisposed();
-        if (translation.length != 3) {
-            throw new IllegalArgumentException("Translation must be length 3");
-        }
-        mEntity.setPose(
-                new Pose(new Vector3(translation[0], translation[1], translation[2])),
-                mapSpace(space));
+        mEntity.setPose(XrPoseImpl.toPose(pose), mapSpace(space));
     }
 
     @Override
-    public void setEntityPose(float[] translation, float[] rotation, @XrSpace int space) {
+    public XrPose getEntityPose(@XrSpace int space) {
         assertDisposed();
-        if (translation.length != 3 || rotation.length != 4) {
-            throw new IllegalArgumentException(
-                    "Translation must be length 3 and rotation must be length 4");
-        }
-        mEntity.setPose(
-                new Pose(
-                        new Vector3(translation[0], translation[1], translation[2]),
-                        new Quaternion(rotation[0], rotation[1], rotation[2], rotation[3])),
-                mapSpace(space));
-    }
-
-    @Override
-    public float[] getEntityTranslation(@XrSpace int space) {
-        assertDisposed();
-        Vector3 translation = mEntity.getPose(mapSpace(space)).getTranslation();
-        return new float[] {translation.getX(), translation.getY(), translation.getZ()};
-    }
-
-    @Override
-    public float[] getEntityRotation(@XrSpace int space) {
-        assertDisposed();
-        Quaternion rotation = mEntity.getPose(mapSpace(space)).getRotation();
-        return new float[] {rotation.getX(), rotation.getY(), rotation.getZ(), rotation.getW()};
+        return XrPoseImpl.toXrPose(mEntity.getPose(mapSpace(space)));
     }
 
     @Override

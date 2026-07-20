@@ -10,12 +10,13 @@ import org.chromium.chrome.browser.media.immersive_playback.ImmersiveVideoFormat
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.xr.scenecore.XrPanelEntityHolder;
+import org.chromium.ui.xr.scenecore.XrPose;
 import org.chromium.ui.xr.scenecore.XrSpace;
+import org.chromium.ui.xr.scenecore.XrVector3;
 
 /** View binder for the immersive playback format selection panel. */
 @NullMarked
 public class ImmersiveVideoFormatViewBinder {
-    private static final float[] IDENTITY_ROTATION = new float[] {0f, 0f, 0f, 1f};
 
     /**
      * Binds the model to the view for a specific property key.
@@ -84,9 +85,13 @@ public class ImmersiveVideoFormatViewBinder {
                 && height > 0f
                 && parentWidth > 0f
                 && parentHeight > 0f) {
-            float[] translation =
-                    new float[] {parentWidth / 2 - width / 2, parentHeight / 2 + height / 2, 0f};
-            holder.setEntityPose(translation, IDENTITY_ROTATION, XrSpace.PARENT);
+            XrPose pose =
+                    XrPose.create(
+                            XrVector3.create(
+                                    parentWidth / 2 - width / 2,
+                                    parentHeight / 2 + height / 2,
+                                    0f));
+            holder.setEntityPose(pose, XrSpace.PARENT);
         }
     }
 }

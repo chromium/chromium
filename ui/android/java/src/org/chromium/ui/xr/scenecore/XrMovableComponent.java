@@ -56,31 +56,25 @@ public interface XrMovableComponent {
         /**
          * Called when the entity's pose or scale is updated during movement.
          *
-         * @param translation A 3-element array representing the X, Y, and Z translation.
-         * @param rotation A 4-element array representing the X, Y, Z, and W components of the
-         *     rotation quaternion.
+         * @param pose The updated pose.
          * @param scale The uniform scale factor applied to the entity.
          */
-        void onMoveUpdate(float[] translation, float[] rotation, float scale);
+        void onMoveUpdate(XrPose pose, float scale);
 
         /**
          * Called when the movement starts.
          *
-         * @param translation A 3-element array representing the X, Y, and Z translation.
-         * @param rotation A 4-element array representing the X, Y, Z, and W components of the
-         *     rotation quaternion.
+         * @param pose The initial pose.
          * @param scale The uniform scale factor applied to the entity.
          */
-        default void onMoveStart(float[] translation, float[] rotation, float scale) {}
+        default void onMoveStart(XrPose pose, float scale) {}
 
         /**
          * Called when the movement ends.
          *
-         * @param translation A 3-element array representing the X, Y, and Z translation.
-         * @param rotation A 4-element array representing the X, Y, Z, and W components of the
-         *     rotation quaternion.
+         * @param pose The final pose.
          * @param scale The uniform scale factor applied to the entity.
          */
-        default void onMoveEnd(float[] translation, float[] rotation, float scale) {}
+        default void onMoveEnd(XrPose pose, float scale) {}
     }
 }

@@ -50,18 +50,22 @@ android_library("java") {
     "internal/java/src/org/chromium/chrome/browser/media/immersive_playback/components/ImmersiveVideoPlayerProperties.java",
     "internal/java/src/org/chromium/chrome/browser/media/immersive_playback/components/ImmersiveVideoPlayerViewBinder.java",
     "internal/java/src/org/chromium/chrome/browser/media/immersive_playback/components/ImmersiveVideoPoseManager.java",
-    "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrEntityHolderFactory.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrEntityHolderImpl.java",
+    "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrFactoryImpl.java",
+    "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrFloatSize3dImpl.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrInteractableComponentImpl.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrModuleProviderImpl.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrMovableComponentImpl.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrPanelEntityHolderImpl.java",
+    "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrPoseImpl.java",
+    "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrQuaternionImpl.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrResizableComponentImpl.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrSceneCoreSessionInitializerImpl.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrSceneCoreSessionManagerImpl.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrSurfaceEntityHolderImpl.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrSurfaceEntityUtils.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrTransformableEntityHolderImpl.java",
+    "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrVector3Impl.java",
   ]
   deps = [
     ":xr_resources",
@@ -142,7 +146,7 @@ robolectric_binary("xr_junit_tests") {
   package_name = "org.chromium.chrome"
 
   sources = [
-    "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/XrEntityHolderFactoryTest.java",
+    "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/XrFactoryImplTest.java",
     "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/XrInteractableComponentImplTest.java",
     "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/XrMeshDataTest.java",
     "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/XrMovableComponentImplTest.java",

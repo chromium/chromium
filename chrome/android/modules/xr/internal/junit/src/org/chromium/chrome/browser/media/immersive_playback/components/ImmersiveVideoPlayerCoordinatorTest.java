@@ -21,6 +21,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.xr.scenecore.XrModuleProviderImpl;
 import org.chromium.components.thinwebview.CompositorView;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.xr.scenecore.XrInteractableComponent;
@@ -51,6 +52,7 @@ public class ImmersiveVideoPlayerCoordinatorTest {
 
     @Before
     public void setUp() {
+        XrModuleProviderImpl.initialize();
         MockitoAnnotations.openMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).get();
 

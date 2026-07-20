@@ -31,6 +31,7 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.xr.scenecore.XrEntityHolder;
+import org.chromium.ui.xr.scenecore.XrFactory;
 import org.chromium.ui.xr.scenecore.XrPanelEntityHolder;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityHolder;
@@ -50,7 +51,11 @@ public class XrSceneCoreSessionManagerImpl implements XrSceneCoreSessionManager 
     private static final String MODULE_NAME = "xr";
     // List of native libraries to load for the XR module.
     private static final String[] NATIVE_LIBS = {
-        "impress_api_jni", "arcore_sdk_c", "arcore_sdk_jni", "androidx.xr.runtime.openxr", "androidx.xr.arcore.openxr",
+        "impress_api_jni",
+        "arcore_sdk_c",
+        "arcore_sdk_jni",
+        "androidx.xr.runtime.openxr",
+        "androidx.xr.arcore.openxr",
     };
     private static final Object sLock = new Object();
     private static boolean sLibrariesLoaded;
@@ -170,12 +175,12 @@ public class XrSceneCoreSessionManagerImpl implements XrSceneCoreSessionManager 
 
     @Override
     public XrSurfaceEntityHolder createSurfaceEntity(@XrSurfaceEntityShape int shape) {
-        return XrEntityHolderFactory.createSurfaceEntityHolder(mXrSession, shape);
+        return XrFactory.Holder.get().createSurfaceEntity(mXrSession, shape);
     }
 
     @Override
     public XrPanelEntityHolder createPanelEntity(View view, String name) {
-        return XrEntityHolderFactory.createPanelEntityHolder(mXrSession, view, name);
+        return XrFactory.Holder.get().createPanelEntity(mXrSession, view, name);
     }
 
     @Override

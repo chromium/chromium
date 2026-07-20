@@ -19,6 +19,7 @@ import androidx.xr.scenecore.SurfaceEntity.StereoMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.xr.scenecore.XrCurvedSurfaceEntityHolder;
+import org.chromium.ui.xr.scenecore.XrFloatSize3d;
 import org.chromium.ui.xr.scenecore.XrMeshData;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityHolder;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityHolder.Callback;
@@ -194,10 +195,18 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
 
         if (mResizableComponent.shouldMaintainAspectRatio()) {
             float aspectRatio = width / height;
-            float[] minSize = mResizableComponent.getMinSize();
-            float[] maxSize = mResizableComponent.getMaxSize();
-            mResizableComponent.setMinSize(minSize[0], minSize[0] / aspectRatio, minSize[2]);
-            mResizableComponent.setMaxSize(maxSize[0], maxSize[0] / aspectRatio, maxSize[2]);
+            XrFloatSize3d minSize = mResizableComponent.getMinSize();
+            XrFloatSize3d maxSize = mResizableComponent.getMaxSize();
+            mResizableComponent.setMinSize(
+                    XrFloatSize3d.create(
+                            minSize.getWidth(),
+                            minSize.getWidth() / aspectRatio,
+                            minSize.getDepth()));
+            mResizableComponent.setMaxSize(
+                    XrFloatSize3d.create(
+                            maxSize.getWidth(),
+                            maxSize.getWidth() / aspectRatio,
+                            maxSize.getDepth()));
         }
     }
 

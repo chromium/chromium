@@ -10,6 +10,7 @@ import android.os.SystemClock;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.xr.scenecore.XrPose;
 
 import java.util.Locale;
 
@@ -138,12 +139,10 @@ public class ImmersiveVideoControlMediator
     /**
      * Updates the pose translation and rotation in the model.
      *
-     * @param translation The translation from the parent {@link XrSpace}.
-     * @param rotation The rotation from the parent {@link XrSpace}.
+     * @param pose The pose from the parent {@link XrSpace}.
      */
-    public void updatePose(float[] translation, float[] rotation) {
-        mModel.set(ImmersiveVideoControlProperties.POSE_TRANSLATION, translation);
-        mModel.set(ImmersiveVideoControlProperties.POSE_ROTATION, rotation);
+    public void updatePose(XrPose pose) {
+        mModel.set(ImmersiveVideoControlProperties.POSE, pose);
     }
 
     // UserInteractionListener implementation

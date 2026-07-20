@@ -23,11 +23,14 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.xr.scenecore.XrModuleProviderImpl;
 import org.chromium.ui.xr.scenecore.XrEntityHolder;
 import org.chromium.ui.xr.scenecore.XrMovableComponent;
 import org.chromium.ui.xr.scenecore.XrPanelEntityHolder;
+import org.chromium.ui.xr.scenecore.XrPose;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
 import org.chromium.ui.xr.scenecore.XrSpace;
+import org.chromium.ui.xr.scenecore.XrVector3;
 
 /** Tests for {@link ImmersiveVideoControlCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -45,6 +48,7 @@ public class ImmersiveVideoControlCoordinatorTest {
 
     @Before
     public void setUp() {
+        XrModuleProviderImpl.initialize();
         MockitoAnnotations.openMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).create().get();
 
@@ -107,11 +111,10 @@ public class ImmersiveVideoControlCoordinatorTest {
     @Test
     public void testUpdatePose() {
         mCoordinator.show(mParentEntity);
-        float[] expectedTranslation = new float[] {0f, -0.5f, 0f};
-        float[] expectedRotation = new float[] {0f, 0f, 0f, 1f};
-        mCoordinator.updatePose(expectedTranslation, expectedRotation);
+        XrPose expectedPose = XrPose.create(XrVector3.create(0f, -0.5f, 0f));
+        mCoordinator.updatePose(expectedPose);
 
-        verify(mHolder).setEntityPose(expectedTranslation, expectedRotation, XrSpace.PARENT);
+        verify(mHolder).setEntityPose(expectedPose, XrSpace.PARENT);
     }
 
     @Test

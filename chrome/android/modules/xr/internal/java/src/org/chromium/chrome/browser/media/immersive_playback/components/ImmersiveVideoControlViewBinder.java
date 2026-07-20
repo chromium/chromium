@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.media.immersive_playback.components;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.xr.scenecore.XrPose;
 import org.chromium.ui.xr.scenecore.XrSpace;
 
 /** View binder for the immersive video control panel. */
@@ -50,12 +51,10 @@ public class ImmersiveVideoControlViewBinder {
             view.spatialEntityHolder
                     .getMovableComponent()
                     .setMovable(model.get(ImmersiveVideoControlProperties.IS_MOVABLE), false);
-        } else if (propertyKey == ImmersiveVideoControlProperties.POSE_TRANSLATION
-                || propertyKey == ImmersiveVideoControlProperties.POSE_ROTATION) {
-            float[] translation = model.get(ImmersiveVideoControlProperties.POSE_TRANSLATION);
-            float[] rotation = model.get(ImmersiveVideoControlProperties.POSE_ROTATION);
-            if (translation != null && rotation != null) {
-                view.spatialEntityHolder.setEntityPose(translation, rotation, XrSpace.PARENT);
+        } else if (propertyKey == ImmersiveVideoControlProperties.POSE) {
+            XrPose pose = model.get(ImmersiveVideoControlProperties.POSE);
+            if (pose != null) {
+                view.spatialEntityHolder.setEntityPose(pose, XrSpace.PARENT);
             }
         }
     }

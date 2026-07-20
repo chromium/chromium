@@ -28,7 +28,9 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.ui.xr.scenecore.XrPose;
 import org.chromium.ui.xr.scenecore.XrSpace;
+import org.chromium.ui.xr.scenecore.XrVector3;
 
 /** Tests for {@link XrPanelEntityHolderImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -44,6 +46,7 @@ public class XrPanelEntityHolderImplTest {
 
     @Before
     public void setUp() {
+        XrModuleProviderImpl.initialize();
         MockitoAnnotations.openMocks(this);
 
         mActivity = Robolectric.buildActivity(ComponentActivity.class).create().start().get();
@@ -105,34 +108,19 @@ public class XrPanelEntityHolderImplTest {
 
     @Test
     public void testSetEntityPose() {
-        float[] translation = new float[] {1f, 2f, 3f};
-        mHolder.setEntityPose(translation, XrSpace.ACTIVITY);
-        Pose pose = mPanelEntity.getPose(androidx.xr.scenecore.Space.ACTIVITY);
-        assertEquals(1f, pose.getTranslation().getX(), DELTA);
+        XrPose pose = XrPose.create(XrVector3.create(1f, 2f, 3f));
+        mHolder.setEntityPose(pose, XrSpace.ACTIVITY);
+        Pose actualPose = mPanelEntity.getPose(androidx.xr.scenecore.Space.ACTIVITY);
+        assertEquals(1f, actualPose.getTranslation().getX(), DELTA);
     }
 
     @Test
-    public void testSetEntityPose_WithRotation() {
-        float[] translation = new float[] {1f, 2f, 3f};
-        float[] rotation = new float[] {0f, 0f, 0f, 1f};
-        mHolder.setEntityPose(translation, rotation, XrSpace.ACTIVITY);
-        Pose pose = mPanelEntity.getPose(androidx.xr.scenecore.Space.ACTIVITY);
-        assertEquals(1f, pose.getTranslation().getX(), DELTA);
-    }
-
-    @Test
-    public void testGetEntityTranslation() {
-        mHolder.setEntityPose(new float[] {1f, 2f, 3f}, XrSpace.ACTIVITY);
-        float[] translation = mHolder.getEntityTranslation(XrSpace.ACTIVITY);
-        assertEquals(1f, translation[0], DELTA);
-    }
-
-    @Test
-    public void testGetEntityRotation() {
-        mHolder.setEntityPose(
-                new float[] {1f, 2f, 3f}, new float[] {0f, 0f, 0f, 1f}, XrSpace.ACTIVITY);
-        float[] rotation = mHolder.getEntityRotation(XrSpace.ACTIVITY);
-        assertEquals(1f, rotation[3], DELTA);
+    public void testGetEntityPose() {
+        XrPose expectedPose = XrPose.create(XrVector3.create(1f, 2f, 3f));
+        mHolder.setEntityPose(expectedPose, XrSpace.ACTIVITY);
+        XrPose actualPose = mHolder.getEntityPose(XrSpace.ACTIVITY);
+        assertEquals(1f, actualPose.getTranslation().getX(), DELTA);
+        assertEquals(1f, actualPose.getRotation().getW(), DELTA);
     }
 
     @Test

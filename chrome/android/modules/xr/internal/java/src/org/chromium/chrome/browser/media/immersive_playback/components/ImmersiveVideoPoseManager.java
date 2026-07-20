@@ -6,21 +6,19 @@ package org.chromium.chrome.browser.media.immersive_playback.components;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.ImmersiveProjectionType;
+import org.chromium.ui.xr.scenecore.XrPose;
+import org.chromium.ui.xr.scenecore.XrVector3;
 
 /** Helper class that manages 3D spatial coordinate calculations and center screen tracking. */
 @NullMarked
 public class ImmersiveVideoPoseManager {
-    private static final float[] IDENTITY_ROTATION = new float[] {0f, 0f, 0f, 1f};
-    private static final float[] ORIGIN_TRANSLATION = new float[] {0f, 0f, 0f};
-
     /** Delegate for providing layout dimensions needed for vertical offset calculations. */
     public interface Delegate {
         /** Returns the layout height of the video surface. */
         float getLayoutHeight();
     }
 
-    private float[] mCenterTranslation = new float[] {0f, 0f, 0.5f};
-    private float[] mCenterRotation = new float[] {0f, 0f, 0f, 1f};
+    private XrPose mCenterPose = XrPose.create(XrVector3.create(0f, 0f, 0.5f));
     private final Delegate mDelegate;
 
     /**
@@ -33,61 +31,46 @@ public class ImmersiveVideoPoseManager {
     }
 
     /** Called when the pose of the player panel changes during interaction. */
-    public void onPlayerPanelPoseChanged(
-            float[] translation, float[] rotation, @ImmersiveProjectionType int projectionType) {
+    public void onPlayerPanelPoseChanged(XrPose pose, @ImmersiveProjectionType int projectionType) {
         if (projectionType == ImmersiveProjectionType.QUAD) {
-            mCenterTranslation = translation.clone();
-            mCenterRotation = rotation.clone();
+            mCenterPose = pose;
         }
     }
 
     /** Called when the pose of the control panel changes during interaction. */
     public void onControlPanelPoseChanged(
-            float[] translation, float[] rotation, @ImmersiveProjectionType int projectionType) {
+            XrPose pose, @ImmersiveProjectionType int projectionType) {
         if (projectionType != ImmersiveProjectionType.QUAD) {
-            float[] playerTranslation = translation.clone();
-            playerTranslation[1] -= getVerticalOffset();
-            mCenterTranslation = playerTranslation;
-            mCenterRotation = rotation.clone();
+            XrVector3 translation = pose.getTranslation();
+            mCenterPose =
+                    XrPose.create(
+                            XrVector3.create(
+                                    translation.getX(),
+                                    translation.getY() - getVerticalOffset(),
+                                    translation.getZ()),
+                            pose.getRotation());
         }
     }
 
-    /**
-     * Returns the expected translation for the player panel based on the current projection mode.
-     */
-    public float[] getPlayerPanelTranslation(@ImmersiveProjectionType int projectionType) {
-        return projectionType == ImmersiveProjectionType.QUAD
-                ? mCenterTranslation.clone()
-                : ORIGIN_TRANSLATION;
+    /** Returns the expected pose for the player panel based on the current projection mode. */
+    public XrPose getPlayerPanelPose(@ImmersiveProjectionType int projectionType) {
+        return projectionType == ImmersiveProjectionType.QUAD ? mCenterPose : XrPose.getIdentity();
     }
 
-    /** Returns the expected rotation for the player panel based on the current projection mode. */
-    public float[] getPlayerPanelRotation(@ImmersiveProjectionType int projectionType) {
-        return projectionType == ImmersiveProjectionType.QUAD
-                ? mCenterRotation.clone()
-                : IDENTITY_ROTATION;
-    }
-
-    /**
-     * Returns the expected translation for the control panel based on projection and vertical
-     * offset.
-     */
-    public float[] getControlPanelTranslation(@ImmersiveProjectionType int projectionType) {
+    /** Returns the expected pose for the control panel based on the current projection mode. */
+    public XrPose getControlPanelPose(@ImmersiveProjectionType int projectionType) {
         float verticalOffset = getVerticalOffset();
         if (projectionType == ImmersiveProjectionType.QUAD) {
-            return new float[] {0f, verticalOffset, 0f};
+            return XrPose.create(XrVector3.create(0f, verticalOffset, 0f));
         } else {
-            return new float[] {
-                mCenterTranslation[0], mCenterTranslation[1] + verticalOffset, mCenterTranslation[2]
-            };
+            XrVector3 centerTranslation = mCenterPose.getTranslation();
+            return XrPose.create(
+                    XrVector3.create(
+                            centerTranslation.getX(),
+                            centerTranslation.getY() + verticalOffset,
+                            centerTranslation.getZ()),
+                    mCenterPose.getRotation());
         }
-    }
-
-    /** Returns the expected rotation for the control panel based on the current projection mode. */
-    public float[] getControlPanelRotation(@ImmersiveProjectionType int projectionType) {
-        return projectionType == ImmersiveProjectionType.QUAD
-                ? IDENTITY_ROTATION
-                : mCenterRotation.clone();
     }
 
     private float getVerticalOffset() {

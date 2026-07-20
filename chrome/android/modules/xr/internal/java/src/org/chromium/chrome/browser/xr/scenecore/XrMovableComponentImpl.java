@@ -7,9 +7,7 @@ package org.chromium.chrome.browser.xr.scenecore;
 import androidx.xr.runtime.Session;
 import androidx.xr.runtime.math.FloatSize3d;
 import androidx.xr.runtime.math.Pose;
-import androidx.xr.runtime.math.Quaternion;
 import androidx.xr.runtime.math.Ray;
-import androidx.xr.runtime.math.Vector3;
 import androidx.xr.scenecore.BaseEntity;
 import androidx.xr.scenecore.Entity;
 import androidx.xr.scenecore.EntityMoveListener;
@@ -88,27 +86,13 @@ public class XrMovableComponentImpl<EntityType extends BaseEntity> implements Xr
                     Pose initialPose,
                     float initialScale,
                     Entity initialParent) {
-                Vector3 translation = initialPose.getTranslation();
-                Quaternion rotation = initialPose.getRotation();
-                listener.onMoveStart(
-                        new float[] {translation.getX(), translation.getY(), translation.getZ()},
-                        new float[] {
-                            rotation.getX(), rotation.getY(), rotation.getZ(), rotation.getW()
-                        },
-                        initialScale);
+                listener.onMoveStart(XrPoseImpl.toXrPose(initialPose), initialScale);
             }
 
             @Override
             public void onMoveUpdate(
                     Entity entity, Ray currentInputRay, Pose currentPose, float currentScale) {
-                Vector3 translation = currentPose.getTranslation();
-                Quaternion rotation = currentPose.getRotation();
-                listener.onMoveUpdate(
-                        new float[] {translation.getX(), translation.getY(), translation.getZ()},
-                        new float[] {
-                            rotation.getX(), rotation.getY(), rotation.getZ(), rotation.getW()
-                        },
-                        currentScale);
+                listener.onMoveUpdate(XrPoseImpl.toXrPose(currentPose), currentScale);
             }
 
             @Override
@@ -118,14 +102,7 @@ public class XrMovableComponentImpl<EntityType extends BaseEntity> implements Xr
                     Pose finalPose,
                     float finalScale,
                     @Nullable Entity updatedParent) {
-                Vector3 translation = finalPose.getTranslation();
-                Quaternion rotation = finalPose.getRotation();
-                listener.onMoveEnd(
-                        new float[] {translation.getX(), translation.getY(), translation.getZ()},
-                        new float[] {
-                            rotation.getX(), rotation.getY(), rotation.getZ(), rotation.getW()
-                        },
-                        finalScale);
+                listener.onMoveEnd(XrPoseImpl.toXrPose(finalPose), finalScale);
             }
         };
     }

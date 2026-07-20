@@ -18,13 +18,16 @@ import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.xr.scenecore.XrFloatSize3d;
 import org.chromium.ui.xr.scenecore.XrMovableComponent;
+import org.chromium.ui.xr.scenecore.XrPose;
 import org.chromium.ui.xr.scenecore.XrResizableComponent;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityHolder;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityShape;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityStereoMode;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityView;
+import org.chromium.ui.xr.scenecore.XrVector3;
 
 /** Coordinator for the video player panel. */
 @NullMarked
@@ -33,9 +36,9 @@ public class ImmersiveVideoPlayerCoordinator {
     public interface Delegate {
         void onPlayerPanelClicked();
 
-        void onPlayerPanelPoseChanged(float[] translation, float[] rotation);
+        void onPlayerPanelPoseChanged(XrPose pose);
 
-        void onPlayerPanelResized(float width, float height);
+        void onPlayerPanelResized(XrFloatSize3d size);
     }
 
     private final PropertyModel mModel =
@@ -46,11 +49,8 @@ public class ImmersiveVideoPlayerCoordinator {
                     .with(ImmersiveVideoPlayerProperties.DEFAULT_CURVE_RADIUS, 5f)
                     .with(ImmersiveVideoPlayerProperties.DEFAULT_ASPECT_RATIO, 16f / 9f)
                     .with(
-                            ImmersiveVideoPlayerProperties.POSE_TRANSLATION,
-                            new float[] {0f, 0f, 0.5f})
-                    .with(
-                            ImmersiveVideoPlayerProperties.POSE_ROTATION,
-                            new float[] {0f, 0f, 0f, 1f})
+                            ImmersiveVideoPlayerProperties.POSE,
+                            XrPose.create(XrVector3.create(0f, 0f, 0.5f)))
                     .with(
                             ImmersiveVideoPlayerProperties.STEREO_MODE,
                             XrSurfaceEntityStereoMode.MONO)
@@ -64,14 +64,27 @@ public class ImmersiveVideoPlayerCoordinator {
     private final XrMovableComponent.OnMoveListener mOnMoveListener =
             new XrMovableComponent.OnMoveListener() {
                 @Override
-                public void onMoveStart(float[] translation, float[] rotation, float scale) {}
+                public void onMoveStart(XrPose pose, float scale) {}
 
                 @Override
-                public void onMoveUpdate(float[] translation, float[] rotation, float scale) {}
+                public void onMoveUpdate(XrPose pose, float scale) {}
 
                 @Override
-                public void onMoveEnd(float[] translation, float[] rotation, float scale) {
-                    mDelegate.onPlayerPanelPoseChanged(translation, rotation);
+                public void onMoveEnd(XrPose pose, float scale) {
+                    mDelegate.onPlayerPanelPoseChanged(pose);
+                }
+            };
+
+    private final XrResizableComponent.OnResizeListener mOnResizeListener =
+            new XrResizableComponent.OnResizeListener() {
+                @Override
+                public void onResizeUpdate(XrFloatSize3d size) {
+                    mDelegate.onPlayerPanelResized(size);
+                }
+
+                @Override
+                public void onResizeEnd(XrFloatSize3d size) {
+                    mDelegate.onPlayerPanelResized(size);
                 }
             };
 
@@ -111,19 +124,7 @@ public class ImmersiveVideoPlayerCoordinator {
         if (mHolder != null) {
             mHolder.getInteractableComponent().addOnClickListener(mDelegate::onPlayerPanelClicked);
             mHolder.getMovableComponent().addMoveListener(mOnMoveListener);
-            mHolder.getResizableComponent()
-                    .addResizeListener(
-                            new XrResizableComponent.OnResizeListener() {
-                                @Override
-                                public void onResizeUpdate(float width, float height, float depth) {
-                                    mDelegate.onPlayerPanelResized(width, height);
-                                }
-
-                                @Override
-                                public void onResizeEnd(float width, float height, float depth) {
-                                    mDelegate.onPlayerPanelResized(width, height);
-                                }
-                            });
+            mHolder.getResizableComponent().addResizeListener(mOnResizeListener);
             PropertyModelChangeProcessor.create(
                     mModel, mHolder, ImmersiveVideoPlayerViewBinder::bind);
         }
@@ -169,15 +170,10 @@ public class ImmersiveVideoPlayerCoordinator {
         }
     }
 
-    /**
-     * Updates the pose.
-     *
-     * @param translation The translation.
-     * @param rotation The rotation.
-     */
-    public void updatePose(float[] translation, float[] rotation) {
+    /** Updates the pose. */
+    public void updatePose(XrPose pose) {
         if (mMediator != null) {
-            mMediator.updatePose(translation, rotation);
+            mMediator.updatePose(pose);
         }
     }
 

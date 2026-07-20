@@ -13,6 +13,7 @@ import androidx.xr.scenecore.ResizeEvent;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.xr.scenecore.XrFloatSize3d;
 import org.chromium.ui.xr.scenecore.XrResizableComponent;
 
 import java.util.HashMap;
@@ -45,33 +46,29 @@ public class XrResizableComponentImpl<EntityType extends BaseEntity>
     }
 
     @Override
-    public void setMinSize(float width, float height, float depth) {
-        mMinEntitySize = new FloatSize3d(width, height, depth);
+    public void setMinSize(XrFloatSize3d size) {
+        mMinEntitySize = XrFloatSize3dImpl.toFloatSize3d(size);
         if (mResizableComponent != null) {
             mResizableComponent.setMinimumEntitySize(mMinEntitySize);
         }
     }
 
     @Override
-    public float[] getMinSize() {
-        return new float[] {
-            mMinEntitySize.getWidth(), mMinEntitySize.getHeight(), mMinEntitySize.getDepth()
-        };
+    public XrFloatSize3d getMinSize() {
+        return XrFloatSize3dImpl.toXrFloatSize3d(mMinEntitySize);
     }
 
     @Override
-    public void setMaxSize(float width, float height, float depth) {
-        mMaxEntitySize = new FloatSize3d(width, height, depth);
+    public void setMaxSize(XrFloatSize3d size) {
+        mMaxEntitySize = XrFloatSize3dImpl.toFloatSize3d(size);
         if (mResizableComponent != null) {
             mResizableComponent.setMaximumEntitySize(mMaxEntitySize);
         }
     }
 
     @Override
-    public float[] getMaxSize() {
-        return new float[] {
-            mMaxEntitySize.getWidth(), mMaxEntitySize.getHeight(), mMaxEntitySize.getDepth()
-        };
+    public XrFloatSize3d getMaxSize() {
+        return XrFloatSize3dImpl.toXrFloatSize3d(mMaxEntitySize);
     }
 
     @Override
@@ -113,13 +110,13 @@ public class XrResizableComponentImpl<EntityType extends BaseEntity>
         return new Consumer<ResizeEvent>() {
             @Override
             public void accept(ResizeEvent event) {
-                FloatSize3d size = event.getNewSize();
+                XrFloatSize3d size = XrFloatSize3dImpl.toXrFloatSize3d(event.getNewSize());
                 if (event.getResizeState() == ResizeEvent.ResizeState.START) {
-                    listener.onResizeStart(size.getWidth(), size.getHeight(), size.getDepth());
+                    listener.onResizeStart(size);
                 } else if (event.getResizeState() == ResizeEvent.ResizeState.ONGOING) {
-                    listener.onResizeUpdate(size.getWidth(), size.getHeight(), size.getDepth());
+                    listener.onResizeUpdate(size);
                 } else if (event.getResizeState() == ResizeEvent.ResizeState.END) {
-                    listener.onResizeEnd(size.getWidth(), size.getHeight(), size.getDepth());
+                    listener.onResizeEnd(size);
                 }
             }
         };

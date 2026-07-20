@@ -9,6 +9,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
+import org.chromium.ui.xr.scenecore.XrPose;
 
 /** Properties for the immersive video control panel. */
 @NullMarked
@@ -29,10 +30,7 @@ public class ImmersiveVideoControlProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Double> PLAYBACK_RATE =
             new WritableObjectPropertyKey<>();
-    public static final WritableObjectPropertyKey<float[]> POSE_ROTATION =
-            new WritableObjectPropertyKey<>();
-    public static final WritableObjectPropertyKey<float[]> POSE_TRANSLATION =
-            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<XrPose> POSE = new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Long> POSITION_MS =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> POSITION_TEXT =
@@ -51,8 +49,7 @@ public class ImmersiveVideoControlProperties {
                 IS_PLAYING,
                 MAX_PROGRESS,
                 PLAYBACK_RATE,
-                POSE_ROTATION,
-                POSE_TRANSLATION,
+                POSE,
                 POSITION_MS,
                 POSITION_TEXT,
                 PROGRESS,
