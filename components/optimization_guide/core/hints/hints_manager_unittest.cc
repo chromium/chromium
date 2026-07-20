@@ -1725,27 +1725,19 @@ class HintsManagerFetchingTest : public HintsManagerTest {
              {
                  {kHintsMaxConcurrentNavigationFetches.name, "2"},
              }},
-            {*kHintsMaxConcurrentBatchUpdateFetches.feature,
-             {
-                 {kHintsMaxConcurrentBatchUpdateFetches.name,
-                  base::NumberToString(batch_concurrency_limit_)},
-             }},
         },
         {});
   }
 
-  size_t batch_concurrency_limit() const { return batch_concurrency_limit_; }
-
  private:
-  size_t batch_concurrency_limit_ = 2;
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   base::test::ScopedFeatureList scoped_list_;
 };
 
 TEST_F(HintsManagerFetchingTest, BatchUpdateFetcherCleanup) {
-  EXPECT_GT(batch_concurrency_limit(), 1u);
-  for (size_t i = 0; i < batch_concurrency_limit() * 2; ++i) {
+  EXPECT_GT(kMaxConcurrentBatchUpdateFetches, 1u);
+  for (size_t i = 0; i < kMaxConcurrentBatchUpdateFetches * 2; ++i) {
     auto request_id_and_fetcher =
         hints_manager_->CreateAndTrackBatchUpdateHintsFetcher();
     // Now run clean up on this id and expect LRU size to be 0.
@@ -1754,7 +1746,7 @@ TEST_F(HintsManagerFetchingTest, BatchUpdateFetcherCleanup) {
     EXPECT_EQ(0u, hints_manager_->batch_update_hints_fetchers_.size());
   }
   EXPECT_EQ(hints_manager()->num_batch_update_hints_fetches_initiated(),
-            int(batch_concurrency_limit() * 2));
+            int(kMaxConcurrentBatchUpdateFetches * 2));
 }
 
 TEST_F(HintsManagerFetchingTest,
@@ -3167,38 +3159,28 @@ TEST_F(HintsManagerFetchingTest, BatchUpdateCalledMoreThanMaxConcurrent) {
           {HintsFetcherEndState::kFetchSuccessWithURLHints}));
 
   // Call this over the max count.
-  hints_manager()->CanApplyOptimizationOnDemand(
-      {url_with_url_keyed_hint()}, {proto::COMPRESS_PUBLIC_IMAGES},
-      proto::RequestContext::CONTEXT_BOOKMARKS,
-      base::DoNothingAs<void(
-          const GURL&,
-          const base::flat_map<proto::OptimizationType,
-                               OptimizationGuideDecisionWithMetadata>&)>(),
-      std::nullopt);
-  hints_manager()->CanApplyOptimizationOnDemand(
-      {url_with_url_keyed_hint()}, {proto::COMPRESS_PUBLIC_IMAGES},
-      proto::RequestContext::CONTEXT_BOOKMARKS,
-      base::DoNothingAs<void(
-          const GURL&,
-          const base::flat_map<proto::OptimizationType,
-                               OptimizationGuideDecisionWithMetadata>&)>(),
-      std::nullopt);
-  hints_manager()->CanApplyOptimizationOnDemand(
-      {url_with_url_keyed_hint()}, {proto::COMPRESS_PUBLIC_IMAGES},
-      proto::RequestContext::CONTEXT_BOOKMARKS,
-      base::DoNothingAs<void(
-          const GURL&,
-          const base::flat_map<proto::OptimizationType,
-                               OptimizationGuideDecisionWithMetadata>&)>(),
-      std::nullopt);
+  for (size_t i = 0; i < kMaxConcurrentBatchUpdateFetches + 1; ++i) {
+    hints_manager()->CanApplyOptimizationOnDemand(
+        {url_with_url_keyed_hint()}, {proto::COMPRESS_PUBLIC_IMAGES},
+        proto::RequestContext::CONTEXT_BOOKMARKS,
+        base::DoNothingAs<void(
+            const GURL&,
+            const base::flat_map<proto::OptimizationType,
+                                 OptimizationGuideDecisionWithMetadata>&)>(),
+        std::nullopt);
+  }
 
-  // The third one is over the max and should evict another one.
+  // The last one is over the max and should evict another one.
   histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.HintsManager.ConcurrentBatchUpdateFetches", 3);
+      "OptimizationGuide.HintsManager.ConcurrentBatchUpdateFetches",
+      kMaxConcurrentBatchUpdateFetches + 1);
+  for (size_t i = 1; i < kMaxConcurrentBatchUpdateFetches; ++i) {
+    histogram_tester.ExpectBucketCount(
+        "OptimizationGuide.HintsManager.ConcurrentBatchUpdateFetches", i, 1);
+  }
   histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.HintsManager.ConcurrentBatchUpdateFetches", 1, 1);
-  histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.HintsManager.ConcurrentBatchUpdateFetches", 2, 2);
+      "OptimizationGuide.HintsManager.ConcurrentBatchUpdateFetches",
+      kMaxConcurrentBatchUpdateFetches, 2);
 }
 
 TEST_F(HintsManagerFetchingTest,
@@ -3761,10 +3743,6 @@ class HintsManagerProactivePersonalizationFetchingTest
             {*kHintsMaxConcurrentNavigationFetches.feature,
              {
                  {kHintsMaxConcurrentNavigationFetches.name, "2"},
-             }},
-            {*kHintsMaxConcurrentBatchUpdateFetches.feature,
-             {
-                 {kHintsMaxConcurrentBatchUpdateFetches.name, "2"},
              }},
             {
                 features::kOptimizationGuideProactivePersonalizedHintsFetching,

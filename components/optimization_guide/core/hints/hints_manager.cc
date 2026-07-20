@@ -75,14 +75,6 @@ BASE_FEATURE(kHintsBatchUpdateForActiveTabsAndTopHosts,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kHintsMaxConcurrentBatchUpdateFetchesOverride,
-             "OptimizationGuideHintsMaxConcurrentBatchUpdateFetchesOverride",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(size_t,
-                   kHintsMaxConcurrentBatchUpdateFetches,
-                   &kHintsMaxConcurrentBatchUpdateFetchesOverride,
-                   "OptimizationGuideHintsMaxConcurrentBatchUpdateFetches",
-                   20);
 
 BASE_FEATURE(kHintsMaxConcurrentNavigationFetchesOverride,
              "OptimizationGuideHintsMaxConcurrentNavigationFetchesOverride",
@@ -412,7 +404,7 @@ HintsManager::HintsManager(
       hint_cache_(
           std::make_unique<HintCache>(hint_store,
                                       features::MaxHostKeyedHintCacheSize())),
-      batch_update_hints_fetchers_(kHintsMaxConcurrentBatchUpdateFetches.Get()),
+      batch_update_hints_fetchers_(kMaxConcurrentBatchUpdateFetches),
       page_navigation_hints_fetchers_(
           kHintsMaxConcurrentNavigationFetches.Get()),
       hints_fetcher_factory_(
