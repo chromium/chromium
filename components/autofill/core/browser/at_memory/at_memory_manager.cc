@@ -868,6 +868,9 @@ void AtMemoryManager::MaybeAppendPersonalContextNotice(
 
   if (suggestions.size() == 1u &&
       suggestions[0].type == SuggestionType::kAtMemorySearchAffordance) {
+    suggestions.emplace_back(SuggestionType::kSeparator);
+    suggestions.back().filtration_policy =
+        Suggestion::FiltrationPolicy::kStatic;
     suggestions.push_back(std::move(notice));
     return;
   }

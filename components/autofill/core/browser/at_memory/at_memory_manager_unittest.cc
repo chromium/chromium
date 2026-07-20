@@ -1249,9 +1249,10 @@ TEST_F(AtMemoryManagerTest,
   ASSERT_EQ(1u, suggestions.size());
   EXPECT_EQ(SuggestionType::kAtMemorySearchAffordance, suggestions[0].type);
 #else
-  ASSERT_EQ(2u, suggestions.size());
+  ASSERT_EQ(3u, suggestions.size());
   EXPECT_EQ(SuggestionType::kAtMemorySearchAffordance, suggestions[0].type);
-  EXPECT_EQ(SuggestionType::kPersonalContextNotice, suggestions[1].type);
+  EXPECT_EQ(SuggestionType::kSeparator, suggestions[1].type);
+  EXPECT_EQ(SuggestionType::kPersonalContextNotice, suggestions[2].type);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
