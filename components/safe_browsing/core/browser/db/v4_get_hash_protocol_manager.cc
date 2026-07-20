@@ -271,6 +271,8 @@ void V4GetHashProtocolManager::GetFullHashes(
 
   base::UmaHistogramBoolean("SafeBrowsing.V4GetHash.CacheFullyHit",
                             prefixes_to_request.empty());
+  base::UmaHistogramBoolean("SafeBrowsing.SBGetHash.CacheHitAllPrefixes",
+                            prefixes_to_request.empty());
   if (prefixes_to_request.empty()) {
     // 100% cache hits (positive or negative) so we can call the callback right
     // away.
@@ -348,6 +350,8 @@ void V4GetHashProtocolManager::GetFullHashes(
       full_hash_to_store_and_hash_prefixes, std::move(callback), clock_->Now());
   UMA_HISTOGRAM_COUNTS_100("SafeBrowsing.V4GetHash.CountOfPrefixes",
                            prefixes_to_request.size());
+  base::UmaHistogramCounts100("SafeBrowsing.SBGetHash.Request.CountOfPrefixes",
+                              prefixes_to_request.size());
 }
 
 void V4GetHashProtocolManager::GetFullHashesForNotificationAbuse(
@@ -752,6 +756,8 @@ void V4GetHashProtocolManager::OnURLLoaderCompleteInternal(
   CHECK(it != pending_hash_requests_.end()) << "Request not found";
   RecordHttpResponseOrErrorCode("SafeBrowsing.V4GetHash.Network.Result",
                                 net_error, response_code);
+  RecordHttpResponseOrErrorCode("SafeBrowsing.SBGetHash.Network.Result",
+                                net_error, response_code);
 
   std::vector<FullHashInfo> full_hash_infos;
   Time negative_cache_expire;
@@ -788,6 +794,8 @@ void V4GetHashProtocolManager::OnURLLoaderCompleteInternal(
   const std::unique_ptr<FullHashCallbackInfo>& fhci = it->second;
   UMA_HISTOGRAM_LONG_TIMES("SafeBrowsing.V4GetHash.Network.Time",
                            clock_->Now() - fhci->network_start_time);
+  base::UmaHistogramLongTimes("SafeBrowsing.SBGetHash.Network.Time",
+                              clock_->Now() - fhci->network_start_time);
   UpdateCache(fhci->prefixes_requested, full_hash_infos, negative_cache_expire);
   MergeResults(fhci->full_hash_to_store_and_hash_prefixes, full_hash_infos,
                &fhci->cached_full_hash_infos);

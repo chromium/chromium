@@ -13,6 +13,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -31,6 +32,8 @@ namespace safe_browsing {
 
 class V5GetHashProtocolManagerTest : public ::testing::Test {
  protected:
+  using OperationOutcome = V5GetHashProtocolManager::OperationOutcome;
+
   V5GetHashProtocolManagerTest()
       : test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -122,12 +125,136 @@ class V5GetHashProtocolManagerTest : public ::testing::Test {
         request_url, CreateSerializedResponse(full_hashes));
   }
 
+  void ResetMetrics() {
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+  }
+
+  void CheckCacheHitMetrics(bool expect_cache_hit) {
+    histogram_tester_->ExpectUniqueSample(
+        "SafeBrowsing.V5GetHash.CacheHitAllPrefixes",
+        /*sample=*/expect_cache_hit,
+        /*expected_bucket_count=*/1);
+    histogram_tester_->ExpectUniqueSample(
+        "SafeBrowsing.SBGetHash.CacheHitAllPrefixes",
+        /*sample=*/expect_cache_hit,
+        /*expected_bucket_count=*/1);
+  }
+
+  void CheckRequestMetrics(int expected_prefix_count,
+                           int expected_network_result) {
+    histogram_tester_->ExpectUniqueSample(
+        "SafeBrowsing.V5GetHash.Request.CountOfPrefixes",
+        /*sample=*/expected_prefix_count,
+        /*expected_bucket_count=*/1);
+    histogram_tester_->ExpectUniqueSample(
+        "SafeBrowsing.SBGetHash.Request.CountOfPrefixes",
+        /*sample=*/expected_prefix_count,
+        /*expected_bucket_count=*/1);
+    histogram_tester_->ExpectUniqueSample(
+        "SafeBrowsing.V5GetHash.Network.Result",
+        /*sample=*/expected_network_result,
+        /*expected_bucket_count=*/1);
+    histogram_tester_->ExpectUniqueSample(
+        "SafeBrowsing.SBGetHash.Network.Result",
+        /*sample=*/expected_network_result,
+        /*expected_bucket_count=*/1);
+    histogram_tester_->ExpectTotalCount("SafeBrowsing.V5GetHash.Network.Time",
+                                        1);
+    histogram_tester_->ExpectTotalCount("SafeBrowsing.SBGetHash.Network.Time",
+                                        1);
+  }
+
+  void CheckNoNetworkMetrics() {
+    histogram_tester_->ExpectTotalCount(
+        "SafeBrowsing.V5GetHash.Request.CountOfPrefixes", 0);
+    histogram_tester_->ExpectTotalCount(
+        "SafeBrowsing.SBGetHash.Request.CountOfPrefixes", 0);
+    histogram_tester_->ExpectTotalCount("SafeBrowsing.V5GetHash.Network.Result",
+                                        0);
+    histogram_tester_->ExpectTotalCount("SafeBrowsing.SBGetHash.Network.Result",
+                                        0);
+    histogram_tester_->ExpectTotalCount("SafeBrowsing.V5GetHash.Network.Time",
+                                        0);
+    histogram_tester_->ExpectTotalCount("SafeBrowsing.SBGetHash.Network.Time",
+                                        0);
+  }
+
+  void CheckOperationOutcome(OperationOutcome expected_outcome) {
+    histogram_tester_->ExpectUniqueSample(
+        "SafeBrowsing.V5GetHash.OperationOutcome",
+        /*sample=*/static_cast<int>(expected_outcome),
+        /*expected_bucket_count=*/1);
+  }
+
+  void CheckThreatInfoSize(int expected_size) {
+    histogram_tester_->ExpectUniqueSample(
+        "SafeBrowsing.V5GetHash.ThreatInfoSize",
+        /*sample=*/expected_size,
+        /*expected_bucket_count=*/1);
+  }
+
+  void CheckParseFailureReason(
+      v5_search_hashes_util::ParseFailure expected_reason) {
+    histogram_tester_->ExpectUniqueSample(
+        "SafeBrowsing.V5GetHash.ParseFailureReason",
+        /*sample=*/static_cast<int>(expected_reason),
+        /*expected_bucket_count=*/1);
+  }
+
+  void CheckFoundUnmatchedFullHashes(bool expected) {
+    histogram_tester_->ExpectUniqueSample(
+        "SafeBrowsing.V5GetHash.FoundUnmatchedFullHashes",
+        /*sample=*/expected,
+        /*expected_bucket_count=*/1);
+  }
+
+  void CheckSuccessTestLogs(int expected_prefix_count,
+                            int expected_threat_info_size,
+                            bool expected_found_unmatched_full_hashes) {
+    CheckCacheHitMetrics(/*expect_cache_hit=*/false);
+    CheckRequestMetrics(expected_prefix_count, /*expected_network_result=*/200);
+    CheckOperationOutcome(OperationOutcome::kSuccess);
+    CheckThreatInfoSize(expected_threat_info_size);
+    CheckFoundUnmatchedFullHashes(expected_found_unmatched_full_hashes);
+    ResetMetrics();
+  }
+
+  void CheckFullyCachedTestLogs(int expected_threat_info_size) {
+    CheckCacheHitMetrics(/*expect_cache_hit=*/true);
+    CheckNoNetworkMetrics();
+    CheckOperationOutcome(OperationOutcome::kLocalCacheHit);
+    CheckThreatInfoSize(expected_threat_info_size);
+    ResetMetrics();
+  }
+
+  void CheckBackoffTestLogs() {
+    CheckNoNetworkMetrics();
+    CheckOperationOutcome(OperationOutcome::kBackoffError);
+    ResetMetrics();
+  }
+
+  void CheckFailureTestLogs(
+      int expected_prefix_count,
+      int net_error,
+      int response_code,
+      OperationOutcome expected_outcome,
+      v5_search_hashes_util::ParseFailure expected_parse_failure) {
+    CheckCacheHitMetrics(/*expect_cache_hit=*/false);
+    CheckRequestMetrics(expected_prefix_count,
+                        net_error == net::OK ? response_code : net_error);
+    CheckOperationOutcome(expected_outcome);
+    CheckParseFailureReason(expected_parse_failure);
+    ResetMetrics();
+  }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   std::unique_ptr<V5SearchHashesCache> cache_;
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_ =
+      std::make_unique<base::HistogramTester>();
 };
 
 TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_OneHash_Safe) {
@@ -148,6 +275,10 @@ TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_OneHash_Safe) {
 
   EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
   EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+
+  CheckSuccessTestLogs(/*expected_prefix_count=*/1,
+                       /*expected_threat_info_size=*/0,
+                       /*expected_found_unmatched_full_hashes=*/false);
 }
 
 TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_OneHash_Threat) {
@@ -171,6 +302,10 @@ TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_OneHash_Threat) {
 
   EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
   EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+
+  CheckSuccessTestLogs(/*expected_prefix_count=*/1,
+                       /*expected_threat_info_size=*/1,
+                       /*expected_found_unmatched_full_hashes=*/false);
 }
 
 TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_MultipleHashes_MostSevere) {
@@ -204,6 +339,10 @@ TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_MultipleHashes_MostSevere) {
   // MALWARE is more severe than UNWANTED_SOFTWARE, so it should be returned.
   EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
   EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+
+  CheckSuccessTestLogs(/*expected_prefix_count=*/2,
+                       /*expected_threat_info_size=*/2,
+                       /*expected_found_unmatched_full_hashes=*/false);
 }
 
 TEST_F(V5GetHashProtocolManagerTest,
@@ -234,6 +373,10 @@ TEST_F(V5GetHashProtocolManagerTest,
   // so it should be returned.
   EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
   EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+
+  CheckSuccessTestLogs(/*expected_prefix_count=*/1,
+                       /*expected_threat_info_size=*/2,
+                       /*expected_found_unmatched_full_hashes=*/false);
 }
 
 TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_Cached) {
@@ -258,6 +401,10 @@ TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_Cached) {
     pm->GetFullHashes(full_hash_to_threat_types, future.GetCallback());
     EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
     EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+
+    CheckSuccessTestLogs(/*expected_prefix_count=*/1,
+                         /*expected_threat_info_size=*/1,
+                         /*expected_found_unmatched_full_hashes=*/false);
   }
 
   test_url_loader_factory_.ClearResponses();
@@ -269,6 +416,8 @@ TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_Cached) {
     EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
     EXPECT_EQ(future.Get<1>(), ThreatMetadata());
     EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+
+    CheckFullyCachedTestLogs(/*expected_threat_info_size=*/1);
   }
 }
 
@@ -293,6 +442,11 @@ TEST_F(V5GetHashProtocolManagerTest,
     base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
     pm->GetFullHashes(cache_request, future.GetCallback());
     EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
+    EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+
+    CheckSuccessTestLogs(/*expected_prefix_count=*/1,
+                         /*expected_threat_info_size=*/1,
+                         /*expected_found_unmatched_full_hashes=*/false);
   }
 
   test_url_loader_factory_.ClearResponses();
@@ -318,6 +472,10 @@ TEST_F(V5GetHashProtocolManagerTest,
   // 1).
   EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
   EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+
+  CheckSuccessTestLogs(/*expected_prefix_count=*/1,
+                       /*expected_threat_info_size=*/2,
+                       /*expected_found_unmatched_full_hashes=*/false);
 }
 
 TEST_F(V5GetHashProtocolManagerTest,
@@ -341,6 +499,11 @@ TEST_F(V5GetHashProtocolManagerTest,
     base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
     pm->GetFullHashes(cache_request, future.GetCallback());
     EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_URL_UNWANTED);
+    EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+
+    CheckSuccessTestLogs(/*expected_prefix_count=*/1,
+                         /*expected_threat_info_size=*/1,
+                         /*expected_found_unmatched_full_hashes=*/false);
   }
 
   test_url_loader_factory_.ClearResponses();
@@ -366,6 +529,10 @@ TEST_F(V5GetHashProtocolManagerTest,
   // 1).
   EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
   EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+
+  CheckSuccessTestLogs(/*expected_prefix_count=*/1,
+                       /*expected_threat_info_size=*/2,
+                       /*expected_found_unmatched_full_hashes=*/false);
 }
 
 TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_Backoff) {
@@ -389,6 +556,10 @@ TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_Backoff) {
     pm->GetFullHashes(full_hash_to_threat_types, future.GetCallback());
     EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
     EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+
+    CheckFailureTestLogs(/*expected_prefix_count=*/1, net::ERR_CONNECTION_RESET,
+                         /*response_code=*/0, OperationOutcome::kNetworkError,
+                         v5_search_hashes_util::ParseFailure::kNetworkError);
   }
 
   // 2. Verify subsequent request is rejected immediately at T=0.
@@ -399,6 +570,8 @@ TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_Backoff) {
     EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
     EXPECT_EQ(future.Get<1>(), ThreatMetadata());
     EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+
+    CheckBackoffTestLogs();
   }
 
   // 3. Fast forward by 14 minutes (less than min delay 15 mins). Request should
@@ -410,6 +583,8 @@ TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_Backoff) {
     EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
     EXPECT_EQ(future.Get<1>(), ThreatMetadata());
     EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+
+    CheckBackoffTestLogs();
   }
 
   // 4. Fast forward by another 17 minutes (total 31 minutes, which is > max
@@ -424,6 +599,10 @@ TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_Backoff) {
     pm->GetFullHashes(full_hash_to_threat_types, future.GetCallback());
     EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
     EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+
+    CheckFailureTestLogs(/*expected_prefix_count=*/1, net::ERR_CONNECTION_RESET,
+                         /*response_code=*/0, OperationOutcome::kNetworkError,
+                         v5_search_hashes_util::ParseFailure::kNetworkError);
   }
 
   // 5. Fast forward by 29 minutes (less than min delay 30 mins). Request should
@@ -435,6 +614,8 @@ TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_Backoff) {
     EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
     EXPECT_EQ(future.Get<1>(), ThreatMetadata());
     EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+
+    CheckBackoffTestLogs();
   }
 
   // 6. Fast forward by another 32 minutes (total 61 minutes since second
@@ -450,6 +631,10 @@ TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_Backoff) {
     pm->GetFullHashes(full_hash_to_threat_types, future.GetCallback());
     EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
     EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+
+    CheckSuccessTestLogs(/*expected_prefix_count=*/1,
+                         /*expected_threat_info_size=*/1,
+                         /*expected_found_unmatched_full_hashes=*/false);
   }
 
   // 7. Success should reset backoff. Verify next request is allowed
@@ -471,6 +656,10 @@ TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_Backoff) {
     pm->GetFullHashes(full_hash_to_threat_types2, future.GetCallback());
     EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
     EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+
+    CheckSuccessTestLogs(/*expected_prefix_count=*/1,
+                         /*expected_threat_info_size=*/1,
+                         /*expected_found_unmatched_full_hashes=*/false);
   }
 }
 
@@ -493,6 +682,10 @@ TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_Backoff_RetriableErrors) {
     pm->GetFullHashes(full_hash_to_threat_types1, future.GetCallback());
     EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
     EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+
+    CheckFailureTestLogs(/*expected_prefix_count=*/1, net::ERR_NETWORK_CHANGED,
+                         /*response_code=*/0, OperationOutcome::kRetriableError,
+                         v5_search_hashes_util::ParseFailure::kRetriableError);
   }
 
   // 2. Verify subsequent request is not blocked + succeeds with URL_PHISHING.
@@ -513,6 +706,10 @@ TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_Backoff_RetriableErrors) {
     pm->GetFullHashes(full_hash_to_threat_types2, future.GetCallback());
     EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
     EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+
+    CheckSuccessTestLogs(/*expected_prefix_count=*/1,
+                         /*expected_threat_info_size=*/1,
+                         /*expected_found_unmatched_full_hashes=*/false);
   }
 
   // 3. Trigger a real (non-retriable) error to enter backoff.
@@ -532,6 +729,10 @@ TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_Backoff_RetriableErrors) {
     pm->GetFullHashes(full_hash_to_threat_types3, future.GetCallback());
     EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
     EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+
+    CheckFailureTestLogs(/*expected_prefix_count=*/1, net::ERR_CONNECTION_RESET,
+                         /*response_code=*/0, OperationOutcome::kNetworkError,
+                         v5_search_hashes_util::ParseFailure::kNetworkError);
   }
 
   // 4. Verify we are now in backoff (returns safe, not phishing).
@@ -546,6 +747,8 @@ TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_Backoff_RetriableErrors) {
     EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
     EXPECT_EQ(future.Get<1>(), ThreatMetadata());
     EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+
+    CheckBackoffTestLogs();
   }
 
   // 5. Fast forward 31 minutes to exit backoff (exceeds max delay 30 mins).
@@ -568,6 +771,10 @@ TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_Backoff_RetriableErrors) {
     pm->GetFullHashes(full_hash_to_threat_types5, future.GetCallback());
     EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
     EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+
+    CheckFailureTestLogs(/*expected_prefix_count=*/1, net::ERR_NETWORK_CHANGED,
+                         /*response_code=*/0, OperationOutcome::kRetriableError,
+                         v5_search_hashes_util::ParseFailure::kRetriableError);
   }
 
   // 7. Verify subsequent request is not blocked + succeeds with URL_PHISHING.
@@ -588,6 +795,10 @@ TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_Backoff_RetriableErrors) {
     pm->GetFullHashes(full_hash_to_threat_types6, future.GetCallback());
     EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
     EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+
+    CheckSuccessTestLogs(/*expected_prefix_count=*/1,
+                         /*expected_threat_info_size=*/1,
+                         /*expected_found_unmatched_full_hashes=*/false);
   }
 }
 
@@ -616,6 +827,10 @@ TEST_F(V5GetHashProtocolManagerTest,
       metadata.subresource_filter_match.find(SubresourceFilterType::ABUSIVE);
   ASSERT_NE(it, metadata.subresource_filter_match.end());
   EXPECT_EQ(it->second, SubresourceFilterLevel::ENFORCE);
+
+  CheckSuccessTestLogs(/*expected_prefix_count=*/1,
+                       /*expected_threat_info_size=*/1,
+                       /*expected_found_unmatched_full_hashes=*/false);
 }
 
 TEST_F(V5GetHashProtocolManagerTest,
@@ -631,10 +846,8 @@ TEST_F(V5GetHashProtocolManagerTest,
 
   std::vector<std::vector<V5::ThreatAttribute>> attributes = {
       {V5::ThreatAttribute::CANARY}};
-  V5::FullHash proto = CreateFullHashProto(
-      full_hash, {V5::ThreatType::BETTER_ADS_VIOLATION}, attributes);
-
-  std::vector<V5::FullHash> full_hashes = {proto};
+  std::vector<V5::FullHash> full_hashes = {CreateFullHashProto(
+      full_hash, {V5::ThreatType::BETTER_ADS_VIOLATION}, attributes)};
   SetUpDefaultLookupResponse(expected_url, full_hashes);
 
   base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
@@ -643,6 +856,10 @@ TEST_F(V5GetHashProtocolManagerTest,
 #if BUILDFLAG(IS_IOS)
   EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
   EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+
+  CheckSuccessTestLogs(/*expected_prefix_count=*/1,
+                       /*expected_threat_info_size=*/0,
+                       /*expected_found_unmatched_full_hashes=*/false);
 #else
   EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER);
   const ThreatMetadata& metadata = future.Get<1>();
@@ -650,6 +867,10 @@ TEST_F(V5GetHashProtocolManagerTest,
       metadata.subresource_filter_match.find(SubresourceFilterType::BETTER_ADS);
   ASSERT_NE(it, metadata.subresource_filter_match.end());
   EXPECT_EQ(it->second, SubresourceFilterLevel::WARN);
+
+  CheckSuccessTestLogs(/*expected_prefix_count=*/1,
+                       /*expected_threat_info_size=*/1,
+                       /*expected_found_unmatched_full_hashes=*/false);
 #endif
 }
 
@@ -710,6 +931,10 @@ TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_AllThreatTypes) {
     } else {
       NOTREACHED();
     }
+
+    CheckSuccessTestLogs(/*expected_prefix_count=*/1,
+                         /*expected_threat_info_size=*/1,
+                         /*expected_found_unmatched_full_hashes=*/false);
   }
 }
 
@@ -733,6 +958,10 @@ TEST_F(V5GetHashProtocolManagerTest,
     pm->GetFullHashes(full_hash_to_threat_types, future.GetCallback());
     EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
     EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+
+    CheckFailureTestLogs(/*expected_prefix_count=*/1, net::OK,
+                         /*response_code=*/500, OperationOutcome::kHttpError,
+                         v5_search_hashes_util::ParseFailure::kHttpError);
   }
 
   // 2. Verify subsequent request is blocked by backoff.
@@ -743,6 +972,8 @@ TEST_F(V5GetHashProtocolManagerTest,
     EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
     EXPECT_EQ(future.Get<1>(), ThreatMetadata());
     EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+
+    CheckBackoffTestLogs();
   }
 }
 
@@ -806,6 +1037,44 @@ TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_ParallelRequests) {
   EXPECT_EQ(futureB.Get<0>(), SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
   EXPECT_EQ(futureB.Get<1>(), ThreatMetadata());
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+
+  // Verify all metrics at the end.
+  histogram_tester_->ExpectUniqueSample(
+      "SafeBrowsing.V5GetHash.Request.CountOfPrefixes",
+      /*sample=*/1,
+      /*expected_bucket_count=*/3);
+  histogram_tester_->ExpectUniqueSample(
+      "SafeBrowsing.SBGetHash.Request.CountOfPrefixes",
+      /*sample=*/1,
+      /*expected_bucket_count=*/3);
+
+  histogram_tester_->ExpectUniqueSample("SafeBrowsing.V5GetHash.Network.Result",
+                                        /*sample=*/200,
+                                        /*expected_bucket_count=*/3);
+  histogram_tester_->ExpectUniqueSample("SafeBrowsing.SBGetHash.Network.Result",
+                                        /*sample=*/200,
+                                        /*expected_bucket_count=*/3);
+
+  histogram_tester_->ExpectTotalCount("SafeBrowsing.V5GetHash.Network.Time", 3);
+  histogram_tester_->ExpectTotalCount("SafeBrowsing.SBGetHash.Network.Time", 3);
+
+  histogram_tester_->ExpectUniqueSample(
+      "SafeBrowsing.V5GetHash.CacheHitAllPrefixes",
+      /*sample=*/false,
+      /*expected_bucket_count=*/3);
+  histogram_tester_->ExpectUniqueSample(
+      "SafeBrowsing.SBGetHash.CacheHitAllPrefixes",
+      /*sample=*/false,
+      /*expected_bucket_count=*/3);
+
+  histogram_tester_->ExpectUniqueSample(
+      "SafeBrowsing.V5GetHash.OperationOutcome",
+      /*sample=*/static_cast<int>(OperationOutcome::kSuccess),
+      /*expected_bucket_count=*/3);
+
+  histogram_tester_->ExpectUniqueSample("SafeBrowsing.V5GetHash.ThreatInfoSize",
+                                        /*sample=*/1,
+                                        /*expected_bucket_count=*/3);
 }
 
 TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_Backoff_CapsAt24Hours) {
@@ -837,6 +1106,11 @@ TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_Backoff_CapsAt24Hours) {
       EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
       EXPECT_EQ(future.Get<1>(), ThreatMetadata());
       EXPECT_EQ(test_url_loader_factory_.total_requests(), i + 1u);
+
+      CheckFailureTestLogs(/*expected_prefix_count=*/1,
+                           net::ERR_CONNECTION_RESET, /*response_code=*/0,
+                           OperationOutcome::kNetworkError,
+                           v5_search_hashes_util::ParseFailure::kNetworkError);
     }
     // Fast forward to exit backoff for the next request.
     task_environment_.FastForwardBy(base::Minutes(wait_times_mins[i]));
@@ -853,6 +1127,10 @@ TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_Backoff_CapsAt24Hours) {
     pm->GetFullHashes(full_hash_to_threat_types, future.GetCallback());
     EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
     EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+
+    CheckFailureTestLogs(/*expected_prefix_count=*/1, net::ERR_CONNECTION_RESET,
+                         /*response_code=*/0, OperationOutcome::kNetworkError,
+                         v5_search_hashes_util::ParseFailure::kNetworkError);
   }
 
   // Verify we are blocked at 23 hours 59 minutes.
@@ -864,6 +1142,8 @@ TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_Backoff_CapsAt24Hours) {
     EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
     EXPECT_EQ(future.Get<1>(), ThreatMetadata());
     EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+
+    CheckBackoffTestLogs();
   }
 
   // Fast forward another 2 minutes (total 24 hours 1 minute since 11th
@@ -878,6 +1158,10 @@ TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_Backoff_CapsAt24Hours) {
     pm->GetFullHashes(full_hash_to_threat_types, future.GetCallback());
     EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
     EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+
+    CheckSuccessTestLogs(/*expected_prefix_count=*/1,
+                         /*expected_threat_info_size=*/1,
+                         /*expected_found_unmatched_full_hashes=*/false);
   }
 }
 
@@ -951,6 +1235,11 @@ TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_RelevanceFiltering) {
 
     EXPECT_EQ(future.Get<0>(), tc.expected_result);
     EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+
+    int expected_threat_info_size =
+        tc.expected_result == SBThreatType::SB_THREAT_TYPE_SAFE ? 0 : 1;
+    CheckSuccessTestLogs(/*expected_prefix_count=*/1, expected_threat_info_size,
+                         /*expected_found_unmatched_full_hashes=*/false);
   }
 }
 
@@ -982,6 +1271,10 @@ TEST_F(V5GetHashProtocolManagerTest,
     pm->GetFullHashes(req_cached, future.GetCallback());
     EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
     EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+
+    CheckSuccessTestLogs(/*expected_prefix_count=*/1,
+                         /*expected_threat_info_size=*/1,
+                         /*expected_found_unmatched_full_hashes=*/false);
   }
 
   // 2. Trigger backoff using hash_network.
@@ -994,6 +1287,10 @@ TEST_F(V5GetHashProtocolManagerTest,
     pm->GetFullHashes(req_network, future.GetCallback());
     EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
     EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+
+    CheckFailureTestLogs(/*expected_prefix_count=*/1, net::ERR_CONNECTION_RESET,
+                         /*response_code=*/0, OperationOutcome::kNetworkError,
+                         v5_search_hashes_util::ParseFailure::kNetworkError);
   }
 
   // 3. Request hash_cached again. It should return PHISHING from cache
@@ -1005,6 +1302,8 @@ TEST_F(V5GetHashProtocolManagerTest,
     EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
     EXPECT_EQ(future.Get<1>(), ThreatMetadata());
     EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+
+    CheckFullyCachedTestLogs(/*expected_threat_info_size=*/1);
   }
 }
 
@@ -1035,6 +1334,10 @@ TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_PrefixCollision_Ignored) {
   // requested one.
   EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
   EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+
+  CheckSuccessTestLogs(/*expected_prefix_count=*/1,
+                       /*expected_threat_info_size=*/0,
+                       /*expected_found_unmatched_full_hashes=*/false);
 }
 
 TEST_F(V5GetHashProtocolManagerTest,
@@ -1072,7 +1375,40 @@ TEST_F(V5GetHashProtocolManagerTest,
 
     EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
     EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+
+    CheckSuccessTestLogs(/*expected_prefix_count=*/1,
+                         /*expected_threat_info_size=*/0,
+                         /*expected_found_unmatched_full_hashes=*/false);
   }
+}
+
+TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_UnmatchedPrefix_Ignored) {
+  std::unique_ptr<V5GetHashProtocolManager> pm = CreateProtocolManager();
+
+  FullHashStr hash_requested("11111111111111111111111111111111");
+  FullHashStr hash_returned("22222222222222222222222222222222");
+
+  std::map<FullHashStr, std::vector<SBThreatType>> full_hash_to_threat_types;
+  full_hash_to_threat_types[hash_requested] = {
+      SBThreatType::SB_THREAT_TYPE_URL_PHISHING};
+
+  std::string expected_url = GetExpectedRequestUrl(
+      SBProtocolManagerUtil::GetHashPrefix(hash_requested));
+
+  std::vector<V5::FullHash> full_hashes = {
+      CreateFullHashProto(hash_returned, {V5::ThreatType::SOCIAL_ENGINEERING},
+                          /*threat_attributes=*/std::nullopt)};
+  SetUpDefaultLookupResponse(expected_url, full_hashes);
+
+  base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+  pm->GetFullHashes(full_hash_to_threat_types, future.GetCallback());
+
+  EXPECT_EQ(future.Get<0>(), SBThreatType::SB_THREAT_TYPE_SAFE);
+  EXPECT_EQ(future.Get<1>(), ThreatMetadata());
+
+  CheckSuccessTestLogs(/*expected_prefix_count=*/1,
+                       /*expected_threat_info_size=*/0,
+                       /*expected_found_unmatched_full_hashes=*/true);
 }
 
 }  // namespace safe_browsing

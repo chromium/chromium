@@ -222,6 +222,19 @@ TEST_F(V4GetHashProtocolManagerTest, TestBackoffErrorHistogramCount) {
 
   histogram_tester.ExpectTotalCount(
       "SafeBrowsing.V4GetHash.Result.BackoffErrorCount", 1);
+
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.SBGetHash.CacheHitAllPrefixes", /*sample=*/false,
+      /*expected_count=*/3);
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.SBGetHash.Request.CountOfPrefixes", /*sample=*/1,
+      /*expected_count=*/2);
+  histogram_tester.ExpectBucketCount("SafeBrowsing.SBGetHash.Network.Result",
+                                     /*sample=*/net::ERR_CONNECTION_RESET,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("SafeBrowsing.SBGetHash.Network.Result",
+                                     /*sample=*/200, /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("SafeBrowsing.SBGetHash.Network.Time", 2);
 }
 
 TEST_F(V4GetHashProtocolManagerTest, TestGetHashErrorHandlingParallelRequests) {
@@ -287,6 +300,19 @@ TEST_F(V4GetHashProtocolManagerTest, TestGetHashErrorHandlingParallelRequests) {
   histogram_tester.ExpectBucketCount("SafeBrowsing.V4GetHash.Result",
                                      V4OperationResult::MIN_WAIT_DURATION_ERROR,
                                      0);
+
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.SBGetHash.CacheHitAllPrefixes", /*sample=*/false,
+      /*expected_count=*/3);
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.SBGetHash.Request.CountOfPrefixes", /*sample=*/1,
+      /*expected_count=*/3);
+  histogram_tester.ExpectBucketCount("SafeBrowsing.SBGetHash.Network.Result",
+                                     /*sample=*/net::ERR_CONNECTION_RESET,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("SafeBrowsing.SBGetHash.Network.Result",
+                                     /*sample=*/200, /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("SafeBrowsing.SBGetHash.Network.Time", 2);
 }
 
 TEST_F(V4GetHashProtocolManagerTest, TestGetHashErrorHandlingOK) {

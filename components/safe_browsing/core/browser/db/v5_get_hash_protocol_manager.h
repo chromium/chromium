@@ -20,10 +20,13 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
+#include "base/types/expected.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_config.h"
+#include "components/safe_browsing/core/browser/db/v5_search_hashes_util.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "net/base/backoff_entry.h"
 
@@ -38,6 +41,22 @@ class V5SearchHashesCache;
 
 class V5GetHashProtocolManager : public KeyedService {
  public:
+  // Enumerate outcomes of a GetHash request for logging purposes.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(V5GetHashOperationOutcome)
+  enum class OperationOutcome {
+    kSuccess = 0,
+    kNetworkError = 1,
+    kHttpError = 2,
+    kParseError = 3,
+    kBackoffError = 4,
+    kLocalCacheHit = 5,
+    kRetriableError = 6,
+    kMaxValue = kRetriableError,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/enums.xml:SafeBrowsingV5GetHashOperationOutcome)
+
   // Holds the threat type and metadata for a full hash match.
   struct ThreatTypeAndMetadata {
     ThreatTypeAndMetadata(SBThreatType threat_type, ThreatMetadata metadata)
@@ -103,6 +122,7 @@ class V5GetHashProtocolManager : public KeyedService {
   //  - `requested_prefixes`: The list of prefixes that were requested.
   //  - `cached_full_hashes`: The full hashes that were already in the cache.
   //  - `callback`: The callback to invoke with the results.
+  //  - `request_start_time`: The time when the network request was started.
   //  - `response_body`: The response body received from the server.
   void OnURLLoaderComplete(network::SimpleURLLoader* url_loader,
                            std::map<FullHashStr, std::vector<SBThreatType>>
@@ -110,7 +130,35 @@ class V5GetHashProtocolManager : public KeyedService {
                            std::vector<std::string> requested_prefixes,
                            std::vector<V5::FullHash> cached_full_hashes,
                            FullHashCallback callback,
+                           base::TimeTicks request_start_time,
                            std::optional<std::string> response_body);
+
+  // Logs the `outcome` to UMA and runs the `callback` with the provided
+  // `threat_type` and `metadata`.
+  //  - `callback` is the callback to run with the lookup results.
+  //  - `outcome` is the operation outcome to log to UMA.
+  //  - `threat_type` is the threat type to return to the callback.
+  //  - `metadata` is the threat metadata to return to the callback.
+  void CompleteLookup(FullHashCallback callback,
+                      OperationOutcome outcome,
+                      SBThreatType threat_type,
+                      const ThreatMetadata& metadata);
+
+  // Parses the response from the Safe Browsing server and updates the backoff
+  // entry.
+  //  - `net_error` is the network error code from the URL loader.
+  //  - `response_code` is the HTTP response code.
+  //  - `response_body` is the raw response body.
+  //  - `requested_prefixes` are the hash prefixes that were requested from the
+  //    server.
+  // Returns a `ParseResultSuccess` containing the parsed proto, or
+  // `OperationOutcome` representing the parse failure reason if parsing failed.
+  base::expected<v5_search_hashes_util::ParseResultSuccess, OperationOutcome>
+  ParseResponseAndUpdateBackoff(
+      int net_error,
+      int response_code,
+      const std::string& response_body,
+      const std::vector<std::string>& requested_prefixes);
 
   // In-flight loaders, owned by the protocol manager to ensure they are safely
   // aborted during teardown/Shutdown.

@@ -150,6 +150,11 @@ chromium-metrics-reviews@google.com.
   <variant name="V5" summary="Safe Browsing V5"/>
 </variants>
 
+<variants name="SafeBrowsingV5OrSB">
+  <variant name="SB" summary="Safe Browsing"/>
+  <variant name="V5" summary="Safe Browsing V5"/>
+</variants>
+
 <variants name="ThreatSources">
   <variant name=""/>
   <variant name=".AndroidSafeBrowsing"/>
@@ -3813,30 +3818,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.V4GetHash.Network.Result"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-11-29">
-  <owner>vakh@google.com</owner>
-  <owner>kcarattini@google.com</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Response or error codes from the SafeBrowsing Pver4 service. Logged after a
-    GetHash or request finishes to capture the response code or error code for
-    that call. Warning: this histogram was expired from M86 to M91. Data may be
-    missing. Starting M92, the ERR_HTTP_RESPONSE_CODE_FAILURE net error is
-    matched to the actual HTTP response code.
-  </summary>
-</histogram>
-
-<histogram name="SafeBrowsing.V4GetHash.Network.Time" units="ms"
-    expires_after="2026-12-20">
-  <owner>vakh@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    The time that it took to receive a response from the Google SafeBrowsing
-    servers for a full hash request.
-  </summary>
-</histogram>
-
 <histogram name="SafeBrowsing.V4GetHash.Parse.Result"
     enum="SafeBrowsingParseV4HashResult" expires_after="never">
 <!-- expires-never: This reports the reason for the failure to parse the response
@@ -4323,6 +4304,50 @@ risk. -->
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.V5GetHash.FoundUnmatchedFullHashes"
+    enum="Boolean" expires_after="2027-07-14">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs whether a V5 GetHash response contained any full hashes that did not
+    match the requested prefixes. Logged after a successful V5 GetHash request
+    is parsed.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V5GetHash.OperationOutcome"
+    enum="SafeBrowsingV5GetHashOperationOutcome" expires_after="2027-07-14">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The overall outcome of a V5 GetHash operation. Logged when the operation
+    completes, which can be due to a full cache hit, a successful network
+    response, a network/HTTP error, a parse failure, or because the request was
+    blocked by backoff.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V5GetHash.ParseFailureReason"
+    enum="SafeBrowsingV5GetHashParseFailureReason" expires_after="2027-07-14">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The specific reason why parsing or validating a V5 GetHash network response
+    failed. Logged when the response parsing fails or when required fields (like
+    cache duration) are missing or invalid in the response.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V5GetHash.ThreatInfoSize" units="matches"
+    expires_after="2027-07-14">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The number of full hash details that matched the query for V5 local database
+    checks. Logged when determining the most severe threat.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.V5ReadFromDisk.ApplyUpdate.Result{Store}_v5"
     enum="SafeBrowsingV5ApplyUpdateResult" expires_after="never">
 <!-- expires-never: This reports the reason for the failure to use the Safe
@@ -4682,6 +4707,30 @@ failing to fetch the updates which puts users' security at risk. -->
   <token key="SafeBrowsingV4OrV5OrSB" variants="SafeBrowsingV4OrV5OrSB"/>
 </histogram>
 
+<histogram name="SafeBrowsing.{SafeBrowsingV4OrV5OrSB}GetHash.Network.Result"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2027-07-14">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Response or error codes from the {SafeBrowsingV4OrV5OrSB} GetHash service.
+    Logged after a GetHash request finishes to capture the response code or
+    error code for that call.
+  </summary>
+  <token key="SafeBrowsingV4OrV5OrSB" variants="SafeBrowsingV4OrV5OrSB"/>
+</histogram>
+
+<histogram name="SafeBrowsing.{SafeBrowsingV4OrV5OrSB}GetHash.Network.Time"
+    units="ms" expires_after="2027-07-14">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The time that it took to receive a response from the Google SafeBrowsing
+    servers for a {SafeBrowsingV4OrV5OrSB} GetHash request. Logged when the
+    network request completes (either successfully or with an error).
+  </summary>
+  <token key="SafeBrowsingV4OrV5OrSB" variants="SafeBrowsingV4OrV5OrSB"/>
+</histogram>
+
 <histogram
     name="SafeBrowsing.{SafeBrowsingV4OrV5OrSB}ReadFromDisk.VerifyChecksumDuration"
     units="ms" expires_after="2026-11-15">
@@ -4805,6 +4854,30 @@ useful for Chirp alerts (go/crca-alerts). -->
     service, in KB.
   </summary>
   <token key="SafeBrowsingV4OrV5OrSB" variants="SafeBrowsingV4OrV5OrSB"/>
+</histogram>
+
+<histogram name="SafeBrowsing.{SafeBrowsingV5OrSB}GetHash.CacheHitAllPrefixes"
+    enum="BooleanCacheHit" expires_after="2027-07-14">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Track whether a {SafeBrowsingV5OrSB} GetHash request was able to be skipped
+    because all parts of it were found in the local cache. Logged after the the
+    local cache is checked.
+  </summary>
+  <token key="SafeBrowsingV5OrSB" variants="SafeBrowsingV5OrSB"/>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.{SafeBrowsingV5OrSB}GetHash.Request.CountOfPrefixes"
+    units="prefixes" expires_after="2027-07-14">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The number of prefixes requested in a single GetHash request
+    ({SafeBrowsingV5OrSB}). Recorded when a network request is sent.
+  </summary>
+  <token key="SafeBrowsingV5OrSB" variants="SafeBrowsingV5OrSB"/>
 </histogram>
 
 <histogram

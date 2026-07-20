@@ -8,10 +8,12 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/core/browser/db/v5_search_hashes_cache.h"
 #include "components/safe_browsing/core/browser/db/v5_search_hashes_util.h"
+#include "components/safe_browsing/core/common/utils.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
@@ -156,21 +158,32 @@ void V5GetHashProtocolManager::GetFullHashes(
       cache_.get(), unique_prefixes, &hash_prefixes_to_request,
       &cached_full_hashes);
 
+  bool cache_hit_all = hash_prefixes_to_request.empty();
+  base::UmaHistogramBoolean("SafeBrowsing.V5GetHash.CacheHitAllPrefixes",
+                            cache_hit_all);
+  base::UmaHistogramBoolean("SafeBrowsing.SBGetHash.CacheHitAllPrefixes",
+                            cache_hit_all);
   // All results are in the cache so there's no need for a network request.
   // Return early.
-  if (hash_prefixes_to_request.empty()) {
+  if (cache_hit_all) {
     ThreatTypeAndMetadata result = DetermineMostSevereThreatForLocalChecks(
         cached_full_hashes, full_hash_to_threat_types);
-    std::move(callback).Run(result.threat_type, result.metadata);
+    CompleteLookup(std::move(callback), OperationOutcome::kLocalCacheHit,
+                   result.threat_type, result.metadata);
     return;
   }
 
   // If the service is in backoff mode, don't send a request.
   if (backoff_entry_->ShouldRejectRequest()) {
-    std::move(callback).Run(SBThreatType::SB_THREAT_TYPE_SAFE,
-                            ThreatMetadata());
+    CompleteLookup(std::move(callback), OperationOutcome::kBackoffError,
+                   SBThreatType::SB_THREAT_TYPE_SAFE, ThreatMetadata());
     return;
   }
+
+  base::UmaHistogramCounts100("SafeBrowsing.V5GetHash.Request.CountOfPrefixes",
+                              hash_prefixes_to_request.size());
+  base::UmaHistogramCounts100("SafeBrowsing.SBGetHash.Request.CountOfPrefixes",
+                              hash_prefixes_to_request.size());
 
   // Build the request.
   V5::SearchHashesRequest request;
@@ -243,13 +256,14 @@ void V5GetHashProtocolManager::GetFullHashes(
       network::SimpleURLLoader::Create(std::move(resource_request),
                                        traffic_annotation);
   network::SimpleURLLoader* loader = owned_loader.get();
+  base::TimeTicks request_start_time = base::TimeTicks::Now();
   loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
-      base::BindOnce(&V5GetHashProtocolManager::OnURLLoaderComplete,
-                     weak_factory_.GetWeakPtr(), loader,
-                     full_hash_to_threat_types,
-                     std::move(hash_prefixes_to_request),
-                     std::move(cached_full_hashes), std::move(callback)));
+      base::BindOnce(
+          &V5GetHashProtocolManager::OnURLLoaderComplete,
+          weak_factory_.GetWeakPtr(), loader, full_hash_to_threat_types,
+          std::move(hash_prefixes_to_request), std::move(cached_full_hashes),
+          std::move(callback), request_start_time));
 
   pending_loaders_.insert(std::move(owned_loader));
 }
@@ -260,6 +274,7 @@ void V5GetHashProtocolManager::OnURLLoaderComplete(
     std::vector<std::string> requested_prefixes,
     std::vector<V5::FullHash> cached_full_hashes,
     FullHashCallback callback,
+    base::TimeTicks request_start_time,
     std::optional<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -270,46 +285,33 @@ void V5GetHashProtocolManager::OnURLLoaderComplete(
   std::unique_ptr<network::SimpleURLLoader> loader_to_delete =
       std::move(pending_loaders_.extract(it).value());
 
+  base::TimeDelta request_duration =
+      base::TimeTicks::Now() - request_start_time;
+  base::UmaHistogramLongTimes("SafeBrowsing.V5GetHash.Network.Time",
+                              request_duration);
+  base::UmaHistogramLongTimes("SafeBrowsing.SBGetHash.Network.Time",
+                              request_duration);
+
   // Parse the result.
   int response_code = 0;
   if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers) {
     response_code = url_loader->ResponseInfo()->headers->response_code();
   }
   int net_error = url_loader->NetError();
-  base::expected<v5_search_hashes_util::ParseResultSuccess,
-                 v5_search_hashes_util::ParseFailure>
-      parse_info = safe_browsing::v5_search_hashes_util::ParseResponse(
-          net_error, response_code, response_body.value_or(""),
-          requested_prefixes);
+  RecordHttpResponseOrErrorCode("SafeBrowsing.V5GetHash.Network.Result",
+                                net_error, response_code);
+  RecordHttpResponseOrErrorCode("SafeBrowsing.SBGetHash.Network.Result",
+                                net_error, response_code);
 
-  // Handle updating backoff.
-  if (parse_info.has_value()) {
-    backoff_entry_->InformOfRequest(/*succeeded=*/true);
-  } else {
-    switch (parse_info.error()) {
-      case safe_browsing::v5_search_hashes_util::ParseFailure::kNetworkError:
-      case safe_browsing::v5_search_hashes_util::ParseFailure::kHttpError:
-        backoff_entry_->InformOfRequest(/*succeeded=*/false);
-        break;
-      case safe_browsing::v5_search_hashes_util::ParseFailure::kRetriableError:
-        // Retriable errors are ignored. Do not inform the backoff entry.
-        break;
-      case safe_browsing::v5_search_hashes_util::ParseFailure::kParseError:
-      case safe_browsing::v5_search_hashes_util::ParseFailure::
-          kNoCacheDurationError:
-      case safe_browsing::v5_search_hashes_util::ParseFailure::
-          kIncorrectFullHashLengthError:
-        // Parsing and validation errors do not count as server load issues,
-        // so we treat them as successful requests to reset backoff.
-        backoff_entry_->InformOfRequest(/*succeeded=*/true);
-        break;
-    }
-  }
+  base::expected<v5_search_hashes_util::ParseResultSuccess, OperationOutcome>
+      parse_info = ParseResponseAndUpdateBackoff(net_error, response_code,
+                                                 response_body.value_or(""),
+                                                 requested_prefixes);
 
   // Return upon error.
   if (!parse_info.has_value()) {
-    std::move(callback).Run(SBThreatType::SB_THREAT_TYPE_SAFE,
-                            ThreatMetadata());
+    CompleteLookup(std::move(callback), parse_info.error(),
+                   SBThreatType::SB_THREAT_TYPE_SAFE, ThreatMetadata());
     return;
   }
 
@@ -331,7 +333,51 @@ void V5GetHashProtocolManager::OnURLLoaderComplete(
 
   ThreatTypeAndMetadata result = DetermineMostSevereThreatForLocalChecks(
       matches, full_hash_to_threat_types);
-  std::move(callback).Run(result.threat_type, result.metadata);
+  CompleteLookup(std::move(callback), OperationOutcome::kSuccess,
+                 result.threat_type, result.metadata);
+}
+
+base::expected<v5_search_hashes_util::ParseResultSuccess,
+               V5GetHashProtocolManager::OperationOutcome>
+V5GetHashProtocolManager::ParseResponseAndUpdateBackoff(
+    int net_error,
+    int response_code,
+    const std::string& response_body,
+    const std::vector<std::string>& requested_prefixes) {
+  base::expected<v5_search_hashes_util::ParseResultSuccess,
+                 v5_search_hashes_util::ParseFailure>
+      parse_info = safe_browsing::v5_search_hashes_util::ParseResponse(
+          net_error, response_code, response_body, requested_prefixes);
+
+  if (parse_info.has_value()) {
+    base::UmaHistogramBoolean("SafeBrowsing.V5GetHash.FoundUnmatchedFullHashes",
+                              parse_info->found_unmatched_full_hashes);
+    backoff_entry_->InformOfRequest(/*succeeded=*/true);
+    return std::move(parse_info).value();
+  }
+
+  base::UmaHistogramEnumeration("SafeBrowsing.V5GetHash.ParseFailureReason",
+                                parse_info.error());
+  switch (parse_info.error()) {
+    case safe_browsing::v5_search_hashes_util::ParseFailure::kNetworkError:
+      backoff_entry_->InformOfRequest(/*succeeded=*/false);
+      return base::unexpected(OperationOutcome::kNetworkError);
+    case safe_browsing::v5_search_hashes_util::ParseFailure::kHttpError:
+      backoff_entry_->InformOfRequest(/*succeeded=*/false);
+      return base::unexpected(OperationOutcome::kHttpError);
+    case safe_browsing::v5_search_hashes_util::ParseFailure::kRetriableError:
+      // Retriable errors are ignored. Do not inform the backoff entry.
+      return base::unexpected(OperationOutcome::kRetriableError);
+    case safe_browsing::v5_search_hashes_util::ParseFailure::kParseError:
+    case safe_browsing::v5_search_hashes_util::ParseFailure::
+        kNoCacheDurationError:
+    case safe_browsing::v5_search_hashes_util::ParseFailure::
+        kIncorrectFullHashLengthError:
+      // Parsing and validation errors do not count as server load issues,
+      // so we treat them as successful requests to reset backoff.
+      backoff_entry_->InformOfRequest(/*succeeded=*/true);
+      return base::unexpected(OperationOutcome::kParseError);
+  }
 }
 
 V5GetHashProtocolManager::ThreatTypeAndMetadata
@@ -364,10 +410,22 @@ V5GetHashProtocolManager::DetermineMostSevereThreatForLocalChecks(
     }
   }
 
+  base::UmaHistogramCounts100("SafeBrowsing.V5GetHash.ThreatInfoSize",
+                              filtered_details.size());
+
   safe_browsing::v5_search_hashes_util::ThreatResult result =
       safe_browsing::v5_search_hashes_util::DetermineMostSevereThreat(
           filtered_details);
   return ThreatTypeAndMetadata(result.threat_type, result.metadata);
+}
+
+void V5GetHashProtocolManager::CompleteLookup(FullHashCallback callback,
+                                              OperationOutcome outcome,
+                                              SBThreatType threat_type,
+                                              const ThreatMetadata& metadata) {
+  base::UmaHistogramEnumeration("SafeBrowsing.V5GetHash.OperationOutcome",
+                                outcome);
+  std::move(callback).Run(threat_type, metadata);
 }
 
 }  // namespace safe_browsing

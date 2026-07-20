@@ -680,6 +680,33 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/safe_browsing/core/browser/db/v5_rice.h:V5DecodeResult) -->
 
+<!-- LINT.IfChange(SafeBrowsingV5GetHashOperationOutcome) -->
+
+<enum name="SafeBrowsingV5GetHashOperationOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="NetworkError"/>
+  <int value="2" label="HttpError"/>
+  <int value="3" label="ParseError"/>
+  <int value="4" label="BackoffError"/>
+  <int value="5" label="LocalCacheHit"/>
+  <int value="6" label="RetriableError"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h:V5GetHashOperationOutcome) -->
+
+<!-- LINT.IfChange(SafeBrowsingV5GetHashParseFailureReason) -->
+
+<enum name="SafeBrowsingV5GetHashParseFailureReason">
+  <int value="1" label="NetworkError"/>
+  <int value="2" label="HttpError"/>
+  <int value="3" label="RetriableError"/>
+  <int value="4" label="ParseError"/>
+  <int value="5" label="NoCacheDurationError"/>
+  <int value="6" label="IncorrectFullHashLengthError"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/safe_browsing/core/browser/db/v5_search_hashes_util.h:V5GetHashParseFailureReason) -->
+
 <!-- LINT.IfChange(SafeBrowsingV5InputValidationResult) -->
 
 <enum name="SafeBrowsingV5InputValidationResult">
