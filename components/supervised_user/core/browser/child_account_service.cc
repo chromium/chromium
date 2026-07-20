@@ -21,7 +21,6 @@
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/supervised_user/core/browser/family_link_settings_service.h"
 #include "components/supervised_user/core/browser/family_link_user_capabilities.h"
-#include "components/supervised_user/core/browser/list_family_members_service.h"
 #include "components/supervised_user/core/browser/proto/families_common.pb.h"
 #include "components/supervised_user/core/browser/proto_fetcher.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
@@ -39,19 +38,11 @@ using ::base::BindRepeating;
 ChildAccountService::ChildAccountService(
     PrefService& user_prefs,
     signin::IdentityManager* identity_manager,
-    base::OnceCallback<void(bool)> check_user_child_status_callback,
-    ListFamilyMembersService& list_family_members_service)
+    base::OnceCallback<void(bool)> check_user_child_status_callback)
     : identity_manager_(identity_manager),
       user_prefs_(user_prefs),
       check_user_child_status_callback_(
-          std::move(check_user_child_status_callback)) {
-  set_custodian_prefs_subscription_ =
-      list_family_members_service.SubscribeToSuccessfulFetches(BindRepeating(
-          &RegisterFamilyPrefs,
-          std::ref(user_prefs)));  // list_family_members_service is
-                                   // an instance of a keyed service
-                                   // and PrefService outlives it.
-}
+          std::move(check_user_child_status_callback)) {}
 
 ChildAccountService::~ChildAccountService() = default;
 

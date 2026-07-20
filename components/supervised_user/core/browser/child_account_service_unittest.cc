@@ -23,7 +23,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/browser/family_link_settings_service.h"
-#include "components/supervised_user/core/browser/list_family_members_service.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
@@ -65,14 +64,9 @@ class ChildAccountServiceTest : public ::testing::Test {
     registry->RegisterBooleanPref(policy::policy_prefs::kForceGoogleSafeSearch,
                                   false);
 
-    list_family_members_service_ = std::make_unique<ListFamilyMembersService>(
-        identity_test_environment_->identity_manager(),
-        weak_wrapped_subresource_loader_factory, syncable_pref_service_);
-
     child_account_service_ = std::make_unique<ChildAccountService>(
         syncable_pref_service_, identity_test_environment_->identity_manager(),
-        /*check_user_child_status_callback=*/base::DoNothing(),
-        *list_family_members_service_.get());
+        /*check_user_child_status_callback=*/base::DoNothing());
 
     child_account_service_->Init();
   }
@@ -110,7 +104,6 @@ class ChildAccountServiceTest : public ::testing::Test {
 
   std::unique_ptr<TestSigninClient> test_signin_client_;
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_environment_;
-  std::unique_ptr<ListFamilyMembersService> list_family_members_service_;
   std::unique_ptr<ChildAccountService> child_account_service_;
 };
 

@@ -8,10 +8,12 @@
 #include <utility>
 
 #include "base/callback_list.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/kids_management_api_fetcher.h"
@@ -50,11 +52,6 @@ ListFamilyMembersService::ListFamilyMembersService(
 
 ListFamilyMembersService::~ListFamilyMembersService() = default;
 
-base::CallbackListSubscription
-ListFamilyMembersService::SubscribeToSuccessfulFetches(
-    base::RepeatingCallback<SuccessfulFetchCallback> callback) {
-  return successful_fetch_repeating_consumers_.Add(callback);
-}
 
 void ListFamilyMembersService::Init() {
   identity_manager_observer_.Observe(identity_manager_);
@@ -137,14 +134,12 @@ void ListFamilyMembersService::OnPrimaryAccountChanged(
   signin::PrimaryAccountChangeEvent::Type event_type =
       event_details.GetEventTypeFor(signin::ConsentLevel::kSignin);
 
-  kidsmanagement::ListMembersResponse empty_response;
   AccountInfo account_info;
   switch (event_type) {
     case (signin::PrimaryAccountChangeEvent::Type::kCleared):
       StopFetch();
-      // Notify consumers that family member information is cleared following a
-      // sign-out event.
-      successful_fetch_repeating_consumers_.Notify(empty_response);
+      // Clear family member prefs when the user signs out with empty response.
+      RegisterFamilyPrefs(*user_prefs_, kidsmanagement::ListMembersResponse());
       break;
     case (signin::PrimaryAccountChangeEvent::Type::kSet):
       account_info = identity_manager_->FindExtendedAccountInfo(
@@ -179,7 +174,7 @@ void ListFamilyMembersService::OnResponse(
     return;
   }
 
-  successful_fetch_repeating_consumers_.Notify(*response);
+  RegisterFamilyPrefs(*user_prefs_, *response);
   SetFamilyMemberPrefs(*response);
   ScheduleNextUpdate(NextUpdate(status));
 }
