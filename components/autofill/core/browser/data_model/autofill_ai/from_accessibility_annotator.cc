@@ -5,7 +5,6 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/from_accessibility_annotator.h"
 
 #include <string>
-#include <variant>
 
 #include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
@@ -64,16 +63,12 @@ aa::MemoryDataType AttributeTypeToMemoryDataType(AttributeType type) {
     ATTRIBUTE_TO_QUERY_INTENT(kShipmentCarrierDomain);
     ATTRIBUTE_TO_QUERY_INTENT(kShipmentTrackingNumber);
     ATTRIBUTE_TO_QUERY_INTENT(kShipmentShippedDate);
+    ATTRIBUTE_TO_QUERY_INTENT(kShipmentDeliveryZipCode);
     case AttributeTypeName::kShipmentOrderIds:
       return aa::MemoryDataType::kShipmentAssociatedOrderId;
     case AttributeTypeName::kShipmentOrderDates:
     case AttributeTypeName::kShipmentMerchantName:
     case AttributeTypeName::kShipmentProductNames:
-    case AttributeTypeName::kShipmentDeliveryZipCode:
-      // TODO(crbug.com/484094746): Map `delivery_address` to
-      // `kShipmentDeliveryZipCode`. Since `delivery_address` is a
-      // `std::string`, it's unclear how we can process this (here and in
-      // general).
       return aa::MemoryDataType::kUnknown;
   }
 #undef ATTRIBUTE_TO_QUERY_INTENT
