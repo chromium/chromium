@@ -2942,4 +2942,24 @@ TEST_F(InputRouterImplScaleGestureEventTest, GestureTwoFingerTap) {
                        WebInputEvent::Type::kGestureTwoFingerTap});
 }
 
+TEST_F(InputRouterImplTest, SynchronousDestructionDuringAck) {
+  blink::SyntheticWebTouchEvent touch;
+  touch.PressPoint(1, 1);
+
+  // Set the disposition handler to destroy the input router during ACK.
+  disposition_handler_->set_on_touch_event_ack_closure(base::BindOnce(
+      [](std::unique_ptr<input::InputRouterImpl>* router) { router->reset(); },
+      &input_router_));
+
+  // Trigger an ACK.
+  input::TouchEventWithLatencyInfo touch_event(touch);
+  // OnTouchEventAck is private in InputRouterImpl but public in the interface.
+  static_cast<input::PassthroughTouchEventQueueClient*>(input_router_.get())
+      ->OnTouchEventAck(touch_event,
+                        blink::mojom::InputEventResultSource::kMainThread,
+                        blink::mojom::InputEventResultState::kConsumed);
+
+  EXPECT_EQ(nullptr, input_router_);
+}
+
 }  // namespace content
