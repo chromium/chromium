@@ -421,9 +421,6 @@ try_.builder(
             "sandbox/policy/win/.+",
         ],
     ),
-    experiments = {
-        "luci.buildbucket.run_in_turboci": 25,
-    },
     main_list_view = "try",
     # The size of the testing pool is limited.
     max_concurrent_builds = 4,
@@ -629,9 +626,6 @@ gpu.try_.optional_tests_builder(
     ),
     # default is 6 in _gpu_optional_tests_builder()
     execution_timeout = 5 * time.hour,
-    experiments = {
-        "luci.buildbucket.run_in_turboci": 25,
-    },
     main_list_view = "try",
     # This is higher than the default of 7 for optional GPU builders
     # because Windows builds take longer than other platforms even
