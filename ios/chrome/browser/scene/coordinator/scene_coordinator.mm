@@ -735,7 +735,7 @@ inline LayoutStateScenePassKey PassKey() {
 }
 
 - (void)showAssistantInMinimizedState:(BOOL)minimized {
-  if (!IsAssistantContainerEnabled()) {
+  if (!IsAssistantContainerEnabled() || !IsAimCobrowseEnabled()) {
     return;
   }
   if (_assistantAIMCoordinator) {

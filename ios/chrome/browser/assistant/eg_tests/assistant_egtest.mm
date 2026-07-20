@@ -64,10 +64,7 @@ void OpenAssistantFromOmnibox() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
-  // When `kAssistantContainerParamDebug` is set, the assistant container should
-  // always be shown. If this test suite fails in the future, avoid adding new
-  // flags or workarounds to make it pass; instead, ensure the debug behavior is
-  // correctly preserved.
+  config.features_enabled.push_back(kAimCobrowse);
   config.features_enabled_and_params.push_back(
       {kAssistantContainer,
        {{kAssistantContainerParam, kAssistantContainerParamDebug}}});

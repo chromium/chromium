@@ -902,6 +902,10 @@ const char kAssistantContainerMediumDetentPercentParam[] =
     "AssistantMediumDetentPercent";
 
 bool IsAssistantContainerEnabled() {
+  if (IsAimCobrowseEnabled()) {
+    return true;
+  }
+
   if (IsAssistantSidePanelEnabled()) {
     return true;
   }
@@ -1060,8 +1064,7 @@ const base::FeatureParam<base::TimeDelta> kIOSSoftLockBackgroundThreshold{
 BASE_FEATURE(kAimCobrowse, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAimCobrowseEnabled() {
-  return IsAssistantContainerEnabled() ||
-         base::FeatureList::IsEnabled(kAimCobrowse);
+  return base::FeatureList::IsEnabled(kAimCobrowse);
 }
 
 BASE_FEATURE(kFeedbackEntryPointsRequireCanSubmitFeedbackCapability,
