@@ -321,6 +321,27 @@ class IndigoExpandButton : public HoverButton {
     icon_view()->parent()->SetVisible(compact);
     title()->parent()->SetVisible(!compact);
     chevron_->SetVisible(!compact);
+
+    SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+        kExpandButtonVerticalPadding,
+        compact ? kCloseButtonLeftMargin : kExpandButtonLeftPadding,
+        kExpandButtonVerticalPadding, kExpandButtonRightPadding)));
+
+    SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::TLBR(
+            kTopRowButtonVerticalMargin,
+            compact ? kCloseButtonLeftMargin : kExpandButtonLeftMargin,
+            kTopRowButtonVerticalMargin,
+            compact ? kCloseButtonRightMargin : kExpandButtonRightMargin));
+
+    SetProperty(
+        views::kFlexBehaviorKey,
+        compact
+            ? views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                                       views::MaximumFlexSizeRule::kPreferred)
+            : views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                                       views::MaximumFlexSizeRule::kUnbounded));
   }
 
  private:
