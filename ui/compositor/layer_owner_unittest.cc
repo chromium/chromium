@@ -101,6 +101,8 @@ void LayerOwnerTestWithCompositor::TearDown() {
   context_factories_.reset();
 }
 
+using LayerOwnerDeathTest = testing::Test;
+
 }  // namespace
 
 TEST_F(LayerOwnerTestWithCompositor, RecreateRootLayerWithCompositor) {
@@ -242,7 +244,55 @@ class TestLayerDelegate : public LayerDelegate {
   raw_ptr<ui::LayerOwner> owner_;
 };
 
+class DeleteOwnerOnRecreated : public LayerOwner::Observer {
+ public:
+  explicit DeleteOwnerOnRecreated(LayerOwner* owner) : owner_(owner) {
+    owner_->AddObserver(this);
+  }
+  ~DeleteOwnerOnRecreated() override {
+    if (owner_) {
+      owner_->RemoveObserver(this);
+    }
+  }
+
+  void OnLayerRecreated(ui::Layer* old_layer) override {
+    LayerOwner* doomed = owner_;
+    owner_ = nullptr;
+    delete doomed;
+  }
+
+ private:
+  raw_ptr<LayerOwner> owner_;
+};
+
+class RecreateNestedOwner : public LayerOwner::Observer {
+ public:
+  explicit RecreateNestedOwner(LayerOwner* owner) : owner_(owner) {
+    owner_->AddObserver(this);
+  }
+  ~RecreateNestedOwner() override { owner_->RemoveObserver(this); }
+
+  void OnLayerRecreated(ui::Layer* old_layer) override {
+    owner_->RecreateLayer();
+  }
+
+ private:
+  raw_ptr<LayerOwner> owner_;
+};
+
 }  // namespace
+
+TEST_F(LayerOwnerDeathTest, DeleteInOnLayerRecreated) {
+  LayerOwnerForTesting owner(std::make_unique<LayerTextured>());
+  DeleteOwnerOnRecreated observer(&owner);
+  EXPECT_DEATH(owner.RecreateLayer(), "");
+}
+
+TEST_F(LayerOwnerDeathTest, RecreateNested) {
+  LayerOwnerForTesting owner(std::make_unique<LayerTextured>());
+  RecreateNestedOwner observer(&owner);
+  EXPECT_DEATH(owner.RecreateLayer(), "");
+}
 
 // Test if recreating a layer in OnLayerBoundsChanged will not
 // cause a use-after-free.

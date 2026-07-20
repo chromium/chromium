@@ -79,6 +79,7 @@ class COMPOSITOR_EXPORT LayerOwner {
   // e.g. fading it out when it is destroyed.
   std::unique_ptr<Layer> layer_owner_;
   raw_ptr<Layer> layer_ = nullptr;
+  bool recreating_layer_ = false;
 
   base::ObserverList<Observer>::Unchecked observers_;
 };
