@@ -5123,6 +5123,7 @@ static_library("test_support") {
     "//chrome/browser/autofill:test_support_ui",
     "//chrome/browser/bookmarks:browser_tests",
     "//chrome/browser/browsing_data:browser_tests",
+    "//chrome/browser/chromeos/enterprise/cloud_storage:browser_tests",
     "//chrome/browser/extensions:test_support",
     "//chrome/browser/media/webrtc:browser_tests",
     "//chrome/browser/printing:test_support",

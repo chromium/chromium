@@ -4114,7 +4114,6 @@ if (!is_android) {
     # NOTE: This is the main "browser_tests" section for |is_chromeos|.
     if (is_chromeos) {
       sources += [
-        "../browser/chromeos/enterprise/cloud_storage/one_drive_pref_observer_browsertest.cc",
         "../browser/file_system_access/cloud_identifier/cloud_identifier_util_ash_browsertest.cc",
 
         # TODO(crbug.com/510716187): Enable for other platforms once macOS
@@ -4388,6 +4387,7 @@ if (!is_android) {
         "//chrome/browser/chromeos/app_mode",
         "//chrome/browser/chromeos/arc",
         "//chrome/browser/chromeos/enterprise/cloud_storage",
+        "//chrome/browser/chromeos/enterprise/cloud_storage:browser_tests",
         "//chrome/browser/chromeos/network",
         "//chrome/browser/chromeos/platform_keys",
         "//chrome/browser/chromeos/policy/dlp",

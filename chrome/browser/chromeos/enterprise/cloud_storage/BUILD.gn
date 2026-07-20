@@ -52,3 +52,36 @@ source_set("cloud_storage_pref_utils") {
     "//components/prefs",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "one_drive_pref_observer_browsertest.cc" ]
+
+  deps = [
+    ":cloud_storage",
+    "//chrome/browser:test_support",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/link_capturing:test_support",
+    "//chrome/browser/extensions",
+    "//chrome/browser/policy:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/common:constants",
+    "//chrome/common/extensions/api",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chromeos/constants",
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
+    "//components/policy/core/common:common_constants",
+    "//components/prefs",
+    "//components/services/app_service",
+    "//content/test:browsertest_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}
