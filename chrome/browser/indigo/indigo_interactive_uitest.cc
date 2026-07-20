@@ -196,7 +196,11 @@ IN_PROC_BROWSER_TEST_F(IndigoInteractiveUiTest, ToolbarKeyboardFocus) {
                  views::FocusManager* focus_manager =
                      expand_button->GetFocusManager();
                  ASSERT_NE(focus_manager, nullptr);
-                 EXPECT_TRUE(expand_button->IsFocusable());
+                 focus_manager->SetKeyboardAccessible(true);
+                 EXPECT_EQ(expand_button->GetFocusBehavior(),
+                           views::View::FocusBehavior::ACCESSIBLE_ONLY);
+                 EXPECT_TRUE(expand_button->GetViewAccessibility()
+                                 .IsAccessibilityFocusable());
 
                  views::View* toolbar_view =
                      BrowserElementsViews::From(browser())->GetView(
