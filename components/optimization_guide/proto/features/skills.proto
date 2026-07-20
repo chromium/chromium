@@ -37,15 +37,19 @@ message SkillsRequest {
   SkillDraft skill_draft = 2 [features = { field_presence: EXPLICIT }];
 
   // The current state of the skill, used as input for refinement.
+  // Next ID: 5
   message SkillDraft {
     string prompt = 1 [features = { field_presence: EXPLICIT }];
 
     string name = 2 [features = { field_presence: EXPLICIT }];
 
     string icon = 3 [features = { field_presence: EXPLICIT }];
+
+    string description = 4 [features = { field_presence: EXPLICIT }];
   }
 
   // Enum to determine the goal of this request.
+  // Next ID: 4
   enum TaskType {
     TASK_TYPE_UNSPECIFIED = 0;
 
@@ -54,6 +58,9 @@ message SkillsRequest {
 
     // Improves the user's draft prompt.
     REFINE_PROMPT = 2;
+
+    // Generates description based on name, icon, and prompt.
+    GENERATE_DESCRIPTION = 3;
   }
 }
 
@@ -71,6 +78,7 @@ message SkillsResponse {
   string error_message = 3 [features = { field_presence: EXPLICIT }];
 
   // A single suggestion returned by the model.
+  // Next ID: 5
   message Suggestion {
     // The refined or generated prompt text.
     string prompt = 1 [features = { field_presence: EXPLICIT }];
@@ -80,5 +88,8 @@ message SkillsResponse {
 
     // Suggested icon for the skill.
     string icon = 3 [features = { field_presence: EXPLICIT }];
+
+    // Suggested description for the skill.
+    string description = 4 [features = { field_presence: EXPLICIT }];
   }
 }
