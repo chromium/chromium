@@ -20,6 +20,7 @@ struct BreakTokenAlgorithmData
     kFieldsetData,
     kFlexData,
     kGridData,
+    kGridLanesData,
     kTableData,
     kTableRowData,
     kMulticolData,
@@ -37,6 +38,7 @@ struct BreakTokenAlgorithmData
   bool IsFieldsetType() const { return Type() == kFieldsetData; }
   bool IsFlexType() const { return Type() == kFlexData; }
   bool IsGridType() const { return Type() == kGridData; }
+  bool IsGridLanesType() const { return Type() == kGridLanesData; }
   bool IsTableType() const { return Type() == kTableData; }
   bool IsTableRowType() const { return Type() == kTableRowData; }
   bool IsMulticolType() const { return Type() == kMulticolData; }
