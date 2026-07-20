@@ -339,6 +339,15 @@ BASE_EXPORT bool IsStringASCII(std::u16string_view str);
 BASE_EXPORT bool IsStringASCII(std::wstring_view str);
 #endif
 
+// Returns the 0-based index of the first non-ASCII character in |str|, or
+// |str.length()| if |str| contains only ASCII characters.
+BASE_EXPORT size_t FindFirstNonASCII(std::string_view str);
+BASE_EXPORT size_t FindFirstNonASCII(std::u16string_view str);
+
+#if defined(WCHAR_T_IS_32_BIT)
+BASE_EXPORT size_t FindFirstNonASCII(std::wstring_view str);
+#endif
+
 // Performs a case-sensitive string compare of the given 16-bit string against
 // the given 8-bit ASCII string (typically a constant). The behavior is
 // undefined if the |ascii| string is not ASCII.

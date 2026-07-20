@@ -257,6 +257,20 @@ bool IsStringASCII(std::wstring_view str) {
 }
 #endif
 
+size_t FindFirstNonASCII(std::string_view str) {
+  return internal::FindFirstNonASCII(str.data(), str.length());
+}
+
+size_t FindFirstNonASCII(std::u16string_view str) {
+  return internal::FindFirstNonASCII(str.data(), str.length());
+}
+
+#if defined(WCHAR_T_IS_32_BIT)
+size_t FindFirstNonASCII(std::wstring_view str) {
+  return internal::FindFirstNonASCII(str.data(), str.length());
+}
+#endif
+
 bool IsStringUTF8(std::string_view str) {
   return internal::DoIsStringUTF8<IsValidCharacter>(str);
 }

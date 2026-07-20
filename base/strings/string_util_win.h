@@ -123,6 +123,7 @@ inline std::u16string AsString16(std::wstring_view str) {
 // The following section contains overloads of the cross-platform APIs for
 // std::wstring and std::wstring_view.
 BASE_EXPORT bool IsStringASCII(std::wstring_view str);
+BASE_EXPORT size_t FindFirstNonASCII(std::wstring_view str);
 
 BASE_EXPORT std::wstring ToLowerASCII(std::wstring_view str);
 

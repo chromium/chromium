@@ -204,6 +204,83 @@ bool DoIsStringASCII(const Char* characters, size_t length) {
   return !(all_char_bits & non_ascii_bit_mask);
 }
 
+template <class Char>
+size_t FindFirstNonASCII(const Char* characters, size_t length) {
+  // Bitmasks to detect non ASCII characters for character sizes of 8, 16 and 32
+  // bits.
+  constexpr auto NonASCIIMasks = std::to_array<MachineWord>({
+      0,
+      MachineWord(0x8080808080808080ULL),
+      MachineWord(0xFF80FF80FF80FF80ULL),
+      0,
+      MachineWord(0xFFFFFF80FFFFFF80ULL),
+  });
+
+  if (!length) {
+    return 0;
+  }
+  constexpr MachineWord non_ascii_bit_mask = NonASCIIMasks[sizeof(Char)];
+  static_assert(non_ascii_bit_mask, "Error: Invalid Mask");
+  MachineWord all_char_bits = 0;
+  const Char* const start = characters;
+  const Char* end = UNSAFE_TODO(characters + length);
+
+  auto find_first_non_ascii = [start](const Char* ptr) {
+    while (static_cast<std::make_unsigned_t<Char>>(*ptr) <= 0x7F) {
+      ptr = UNSAFE_TODO(ptr + 1);
+    }
+    return static_cast<size_t>(ptr - start);
+  };
+
+  // Prologue: align the input.
+  const Char* prologue_start = characters;
+  while (!IsMachineWordAligned(characters) && characters < end) {
+    all_char_bits |= UNSAFE_TODO(static_cast<MachineWord>(*characters++));
+  }
+  if (all_char_bits & non_ascii_bit_mask) {
+    return find_first_non_ascii(prologue_start);
+  }
+
+  // Compare the values of CPU word size.
+  constexpr size_t chars_per_word = sizeof(MachineWord) / sizeof(Char);
+  constexpr int batch_count = 16;
+  // Process batches until the remaining amount of characters is smaller than a
+  // full batch size.
+  while (static_cast<size_t>(end - characters) >=
+         batch_count * chars_per_word) {
+    const Char* batch_start = characters;
+    all_char_bits = 0;
+    for (int i = 0; i < batch_count; ++i) {
+      all_char_bits |= *(reinterpret_cast<const MachineWord*>(characters));
+      UNSAFE_TODO(characters += chars_per_word);
+    }
+    if (all_char_bits & non_ascii_bit_mask) {
+      return find_first_non_ascii(batch_start);
+    }
+  }
+
+  // Process the remaining words.
+  const Char* remainder_start = characters;
+  all_char_bits = 0;
+  // Loop until the remaining byte count is lower than the amount of bytes in a
+  // word.
+  while (static_cast<size_t>(end - characters) >= chars_per_word) {
+    all_char_bits |= *(reinterpret_cast<const MachineWord*>(characters));
+    UNSAFE_TODO(characters += chars_per_word);
+  }
+
+  // Process the remaining bytes.
+  while (characters < end) {
+    all_char_bits |= UNSAFE_TODO(static_cast<MachineWord>(*characters++));
+  }
+
+  if (all_char_bits & non_ascii_bit_mask) {
+    return find_first_non_ascii(remainder_start);
+  }
+
+  return length;
+}
+
 template <bool (*Validator)(base_icu::UChar32)>
 inline bool DoIsStringUTF8(std::string_view str) {
   const uint8_t* src = reinterpret_cast<const uint8_t*>(str.data());

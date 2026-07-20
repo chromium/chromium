@@ -19,6 +19,10 @@ bool IsStringASCII(std::wstring_view str) {
   return internal::DoIsStringASCII(str.data(), str.length());
 }
 
+size_t FindFirstNonASCII(std::wstring_view str) {
+  return internal::FindFirstNonASCII(str.data(), str.length());
+}
+
 std::wstring ToLowerASCII(std::wstring_view str) {
   return internal::ToLowerASCIIImpl(str);
 }
