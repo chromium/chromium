@@ -5202,6 +5202,7 @@ CSSValue* ConsumeBackgroundSize(CSSParserTokenStream& stream,
   if (!stream.AtEnd()) {
     if (stream.Peek().Id() == CSSValueID::kAuto) {  // `auto' is the default
       stream.ConsumeIncludingWhitespace();
+      vertical = CSSIdentifierValue::Create(CSSValueID::kAuto);
     } else {
       vertical = ConsumeLengthOrPercent(
           stream, context, local_context,
@@ -5213,6 +5214,22 @@ CSSValue* ConsumeBackgroundSize(CSSParserTokenStream& stream,
     vertical = horizontal;
   }
   if (!vertical) {
+    // No explicit second value for this layer (end of value, or a following
+    // comma / unrelated token). Legacy syntax preserves its historical behavior
+    // of returning the single value; modern syntax defaults the omitted second
+    // value to `auto`.
+    if (parsing_style == ParsingStyle::kLegacy) {
+      return horizontal;
+    }
+    vertical = CSSIdentifierValue::Create(CSSValueID::kAuto);
+  }
+  // Collapse to a single value only when both axes are `auto` (`auto auto` ->
+  // `auto`). Otherwise the pair must be preserved, so e.g. `1px` serializes as
+  // `1px auto`. https://github.com/w3c/csswg-drafts/issues/7802
+  auto* horizontal_ident = DynamicTo<CSSIdentifierValue>(horizontal);
+  auto* vertical_ident = DynamicTo<CSSIdentifierValue>(vertical);
+  if (horizontal_ident && horizontal_ident->GetValueID() == CSSValueID::kAuto &&
+      vertical_ident && vertical_ident->GetValueID() == CSSValueID::kAuto) {
     return horizontal;
   }
   return MakeGarbageCollected<CSSValuePair>(horizontal, vertical,

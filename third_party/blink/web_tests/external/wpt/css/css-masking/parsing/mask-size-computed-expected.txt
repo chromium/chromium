@@ -1,17 +1,11 @@
 This is a testharness.js-based test.
-[FAIL] Property mask-size value '1px'
-  assert_equals: expected "1px auto" but got "1px"
-[FAIL] Property mask-size value '1px auto'
-  assert_equals: expected "1px auto" but got "1px"
 [FAIL] Property mask-size value 'auto 1px, 2% 3%, contain'
   assert_equals: expected "auto 1px, 2% 3%, contain" but got "auto 1px"
 [FAIL] Property mask-size value 'auto' multiple base values
   assert_equals: expected "auto" but got "auto, auto"
 [FAIL] Property mask-size value 'auto, auto, auto' multiple base values
   assert_equals: expected "auto, auto, auto" but got "auto, auto"
-[FAIL] Property mask-size value 'auto, 100%' multiple base values
-  assert_equals: expected "auto, 100% auto" but got "auto, 100%"
 [FAIL] Property mask-size value '100%' multiple base values
-  assert_equals: expected "100% auto" but got "100%, 100%"
+  assert_equals: expected "100% auto" but got "100% auto, 100% auto"
 Harness: the test ran to completion.
 

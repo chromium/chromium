@@ -42,19 +42,19 @@ PASS computedStyle.getPropertyValue("background-size") is "auto"
 PASS checkComputedStyleValue() is true
 
 
-PASS e.style.background is "url(\"dummy://test.png\") 50px 60px / 50% no-repeat fixed red"
-PASS e.style.backgroundSize is "50%"
+PASS e.style.background is "url(\"dummy://test.png\") 50px 60px / 50% auto no-repeat fixed red"
+PASS e.style.backgroundSize is "50% auto"
 PASS checkStyle() is true
-PASS computedStyle.getPropertyValue("background") is "rgb(255, 0, 0) url(\"dummy://test.png\") no-repeat fixed 50px 60px / 50% padding-box border-box"
-PASS computedStyle.getPropertyValue("background-size") is "50%"
+PASS computedStyle.getPropertyValue("background") is "rgb(255, 0, 0) url(\"dummy://test.png\") no-repeat fixed 50px 60px / 50% auto padding-box border-box"
+PASS computedStyle.getPropertyValue("background-size") is "50% auto"
 PASS checkComputedStyleValue() is true
 
 
-PASS e.style.background is "url(\"dummy://test.png\") left top / 100px repeat scroll padding-box border-box red"
-PASS e.style.backgroundSize is "100px"
+PASS e.style.background is "url(\"dummy://test.png\") left top / 100px auto repeat scroll padding-box border-box red"
+PASS e.style.backgroundSize is "100px auto"
 PASS checkStyle() is true
-PASS computedStyle.getPropertyValue("background") is "rgb(255, 0, 0) url(\"dummy://test.png\") repeat scroll 0% 0% / 100px padding-box border-box"
-PASS computedStyle.getPropertyValue("background-size") is "100px"
+PASS computedStyle.getPropertyValue("background") is "rgb(255, 0, 0) url(\"dummy://test.png\") repeat scroll 0% 0% / 100px auto padding-box border-box"
+PASS computedStyle.getPropertyValue("background-size") is "100px auto"
 PASS checkComputedStyleValue() is true
 
 
@@ -66,11 +66,11 @@ PASS computedStyle.getPropertyValue("background-size") is "auto"
 PASS checkComputedStyleValue() is true
 
 
-PASS e.style.background is "left top / 50%"
-PASS e.style.backgroundSize is "50%"
+PASS e.style.background is "left top / 50% auto"
+PASS e.style.backgroundSize is "50% auto"
 PASS checkStyle() is true
-PASS computedStyle.getPropertyValue("background") is "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / 50% padding-box border-box"
-PASS computedStyle.getPropertyValue("background-size") is "50%"
+PASS computedStyle.getPropertyValue("background") is "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / 50% auto padding-box border-box"
+PASS computedStyle.getPropertyValue("background-size") is "50% auto"
 PASS checkComputedStyleValue() is true
 
 

@@ -110,9 +110,9 @@ testInner("-webkit-mask", "none padding-box border-box", "padding-box border-box
 // test mask-size
 testInner("-webkit-mask", "none left top / auto", "left top");
 testInner("-webkit-mask", "none left top / auto auto", "left top");
-testInner("-webkit-mask", "none left top / 100%", "left top / 100%");
+testInner("-webkit-mask", "none left top / 100%", "left top / 100% auto");
 testInner("-webkit-mask", "none left top / 100% 100%", "left top / 100% 100%");
-testInner("-webkit-mask", "none left top / 0%", "left top / 0%");
+testInner("-webkit-mask", "none left top / 0%", "left top / 0% auto");
 testInner("-webkit-mask", "none left top / auto 0%", "left top / auto 0%");
 testInner("-webkit-mask", "none left top / cover", "left top / cover");
 testInner("-webkit-mask", "none left top / contain", "left top / contain");
