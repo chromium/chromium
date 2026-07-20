@@ -9,10 +9,16 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/notreached.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/browser/renderer_host/overscroll_controller_delegate.h"
 #include "content/public/browser/overscroll_configuration.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+
+namespace features {
+BASE_FEATURE(kOverscrollPostDelegateCompleteKillSwitch,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+}  // namespace features
 
 namespace content {
 
@@ -561,16 +567,27 @@ bool OverscrollController::ProcessOverscroll(float delta_x,
 void OverscrollController::CompleteAction() {
   ignore_following_inertial_events_ = true;
   if (delegate_) {
-    // The delegate call can lead to the destruction of |this|.
-    // Get a weak pointer to |this| before making the call.
-    base::WeakPtr<OverscrollController> weak_this = weak_factory_.GetWeakPtr();
+    if (base::FeatureList::IsEnabled(
+            features::kOverscrollPostDelegateCompleteKillSwitch)) {
+      // The delegate call can lead to the destruction of |this|. So post it
+      // instead.
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&OverscrollControllerDelegate::OnOverscrollComplete,
+                         delegate_, overscroll_mode_));
+    } else {
+      // The delegate call can lead to the destruction of |this|.
+      // Get a weak pointer to |this| before making the call.
+      base::WeakPtr<OverscrollController> weak_this =
+          weak_factory_.GetWeakPtr();
 
-    delegate_->OnOverscrollComplete(overscroll_mode_);
+      delegate_->OnOverscrollComplete(overscroll_mode_);
 
-    // If |this| was destroyed, the weak pointer will now be invalid.
-    // Return immediately to avoid the UAF on the call to Reset().
-    if (!weak_this) {
-      return;
+      // If |this| was destroyed, the weak pointer will now be invalid.
+      // Return immediately to avoid the UAF on the call to Reset().
+      if (!weak_this) {
+        return;
+      }
     }
   }
   Reset();

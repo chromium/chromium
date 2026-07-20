@@ -3925,6 +3925,7 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest,
     base::TimeTicks progress_time =
         base::TimeTicks::Now() + base::Milliseconds(17);
     widget_host_->ProgressFlingIfNeeded(progress_time);
+    base::RunLoop().RunUntilIdle();
     EXPECT_EQ(OVERSCROLL_NONE, overscroll_delegate()->current_mode());
     ReleaseAndResetDispatchedMessages();
   }
