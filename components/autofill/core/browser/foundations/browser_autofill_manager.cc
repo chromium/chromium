@@ -21,7 +21,6 @@
 #include <variant>
 #include <vector>
 
-#include "autofill_client.h"
 #include "base/barrier_callback.h"
 #include "base/check.h"
 #include "base/check_deref.h"

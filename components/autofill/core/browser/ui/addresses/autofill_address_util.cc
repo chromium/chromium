@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "autofill_address_util.h"
 #include "base/check.h"
 #include "base/containers/to_vector.h"
 #include "base/notreached.h"
