@@ -24,26 +24,9 @@ class ProfileIOS;
               commandDispatcher:(CommandDispatcher*)commandDispatcher
     NS_DESIGNATED_INITIALIZER;
 
-// Convenience initializer, deprecated as `appState` is unused.
-- (instancetype)initWithAppState:(AppState*)appState
-                         profile:(ProfileIOS*)profile
-                  sceneSessionID:(std::string)sceneSessionID
-               commandDispatcher:(CommandDispatcher*)commandDispatcher;
-
-// Convenience initializer that uses a default value for `commandDispatcher`,
-// deperecated as `appState` is unused.
-- (instancetype)initWithAppState:(AppState*)appState
-                         profile:(ProfileIOS*)profile
-                  sceneSessionID:(std::string)sceneSessionID;
-
 // Convenience initializer that uses a default value for `commandDispatcher`.
 - (instancetype)initWithProfile:(ProfileIOS*)profile
                  sceneSessionID:(std::string)sceneSessionID;
-
-// Convenience initializer that uses default values for `sceneSessionID`
-// and `commandDispatcher`, deprecated as `appState` is unused.
-- (instancetype)initWithAppState:(AppState*)appState
-                         profile:(ProfileIOS*)profile;
 
 // Convenience initializer that uses default values for `sceneSessionID`
 // and `commandDispatcher`.

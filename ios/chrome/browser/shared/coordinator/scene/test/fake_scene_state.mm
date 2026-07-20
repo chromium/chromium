@@ -62,33 +62,11 @@
   return self;
 }
 
-- (instancetype)initWithAppState:(AppState*)appState
-                         profile:(ProfileIOS*)profile
-                  sceneSessionID:(std::string)sceneSessionID
-               commandDispatcher:(CommandDispatcher*)commandDispatcher {
-  return [self initWithProfile:profile
-                sceneSessionID:std::move(sceneSessionID)
-             commandDispatcher:commandDispatcher];
-}
-
-- (instancetype)initWithAppState:(AppState*)appState
-                         profile:(ProfileIOS*)profile
-                  sceneSessionID:(std::string)sceneSessionID {
-  return [self initWithProfile:profile
-                sceneSessionID:std::move(sceneSessionID)
-             commandDispatcher:nil];
-}
-
 - (instancetype)initWithProfile:(ProfileIOS*)profile
                  sceneSessionID:(std::string)sceneSessionID {
   return [self initWithProfile:profile
                 sceneSessionID:std::move(sceneSessionID)
              commandDispatcher:nil];
-}
-
-- (instancetype)initWithAppState:(AppState*)appState
-                         profile:(ProfileIOS*)profile {
-  return [self initWithProfile:profile sceneSessionID:{} commandDispatcher:nil];
 }
 
 - (instancetype)initWithProfile:(ProfileIOS*)profile {
