@@ -1170,7 +1170,9 @@ void BoxFragmentPainter::PaintBlockChildren(const PaintInfo& paint_info,
         // painted inline to maintain correct paint order with siblings.
         // They will be skipped in PaintLayerPainter::PaintChildren.
         MaybePaintReplacedNormalFlowInline(child_fragment, paint_info);
-      } else if (!child_fragment.IsFloating()) {
+      } else if (!child_fragment.IsFloating() &&
+                 !PaintLayerPainter::PaintedOutputInvisible(
+                     child_fragment.Style())) {
         // Self-painting-layer descendants are skipped by the layer-tree walk
         // during kTextClip, so visit them here to get their glyphs into the
         // mask. The mask is pure text geometry, so don't apply the
