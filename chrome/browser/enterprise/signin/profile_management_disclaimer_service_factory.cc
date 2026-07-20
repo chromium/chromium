@@ -8,6 +8,7 @@
 #include "chrome/browser/enterprise/signin/profile_management_disclaimer_service.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/account_consistency_mode_manager_factory.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -35,6 +36,9 @@ ProfileManagementDisclaimerServiceFactory::
     ProfileManagementDisclaimerServiceFactory()
     : ProfileKeyedServiceFactory("ProfileManagementDisclaimerService") {
   DependsOn(IdentityManagerFactory::GetInstance());
+  // This dependency is needed through so that prefs::kSigninAllowed is
+  // initialized properly in AccountConsistencyModeManager.
+  DependsOn(AccountConsistencyModeManagerFactory::GetInstance());
   DependsOn(DiceWebSigninInterceptorFactory::GetInstance());
   // This dependency is needed through `TurnSyncOnHelperPolicyFetchTracker`.
   DependsOn(policy::UserPolicySigninServiceFactory::GetInstance());
