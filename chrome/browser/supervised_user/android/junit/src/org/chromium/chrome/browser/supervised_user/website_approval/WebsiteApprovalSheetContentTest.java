@@ -11,14 +11,14 @@ import androidx.test.filters.SmallTest;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.url.GURL;
 
 /** Unit tests for {@link WebsiteApprovalSheetContent}. */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
 public class WebsiteApprovalSheetContentTest {
     private static final String PREFIX = "https://www.";
 
