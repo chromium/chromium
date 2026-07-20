@@ -498,12 +498,12 @@ interface RelyingPartyEntity {
 function extractRelyingPartyEntity(options: Options): RelyingPartyEntity {
   if (isCreationOptions(options)) {
     return {
-      'id': options.rp.id ?? document.location.host,
+      'id': options.rp.id ?? document.location.hostname,
       'name': options.rp.name,
     };
   } else {  // PublicKeyCredentialRequestOptions
     return {
-      'id': options.rpId ?? document.location.host,
+      'id': options.rpId ?? document.location.hostname,
     };
   }
 }
@@ -961,7 +961,7 @@ function createPassthroughRegistrationRequest(
       // https://w3c.github.io/webauthn/#sctn-authenticator-data.
       const aaguid = new Uint8Array(
           response.getAuthenticatorData().slice(37).slice(0, 16));
-      const rpId = options!.publicKey!.rp.id ?? document.location.host;
+      const rpId = options!.publicKey!.rp.id ?? document.location.hostname;
       sendWebKitMessage(HANDLER_NAME, {
         'event': 'logCreateResolved',
         'isGpm': isGpmAaguid(aaguid),
@@ -985,7 +985,7 @@ function createPassthroughAssertionRequest(
       // rpId is an optional member of publicKey. Default value (caller's
       // origin domain) should be used if it is not specified
       // (https://w3c.github.io/webauthn/#dom-publickeycredentialrequestoptions-rpid).
-      const rpId = options!.publicKey!.rpId ?? document.location.host;
+      const rpId = options!.publicKey!.rpId ?? document.location.hostname;
       sendWebKitMessage(HANDLER_NAME, {
         'event': 'logGetResolved',
         'credentialId': credential.id,

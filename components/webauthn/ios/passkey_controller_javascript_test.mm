@@ -41,6 +41,8 @@ const char kNavigatorCredentialsCreateUrl[] = "/credentialsCreate";
 const char kNavigatorCredentialsGetUrl[] = "/credentialsGet";
 const char kNavigatorCredentialsConditionalGetUrl[] =
     "/credentialsConditionalGet";
+const char kNavigatorCredentialsCreateMissingRpIdUrl[] =
+    "/credentialsCreateMissingRpId";
 const char kAnotherPageUrl[] = "/anotherPage";
 
 const char kNavigatorCredentialsCreatePageHtml[] =
@@ -62,6 +64,13 @@ const char kNavigatorCredentialsConditionalGetPageHtml[] =
     "publicKey: { challenge: new ArrayBuffer(0) } "
     "});"
     "</script></body></html>";
+const char kNavigatorCredentialsCreateMissingRpIdPageHtml[] =
+    "<html><body><script>"
+    "navigator.credentials.create({ publicKey: { "
+    "challenge: new ArrayBuffer(0), "
+    "rp: { name: 'My Website' },"
+    "user: { id: new ArrayBuffer(0), name: '', displayName: '' } } });"
+    "</script></body></html>";
 const char kAnotherPageHtml[] = "<html><body>Another Page</body></html>";
 
 // Provides responses for initial page and destination URLs.
@@ -73,6 +82,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   if (request.relative_url == kNavigatorCredentialsCreateUrl) {
     http_response->set_content(kNavigatorCredentialsCreatePageHtml);
+  } else if (request.relative_url ==
+             kNavigatorCredentialsCreateMissingRpIdUrl) {
+    http_response->set_content(kNavigatorCredentialsCreateMissingRpIdPageHtml);
   } else if (request.relative_url == kNavigatorCredentialsGetUrl) {
     http_response->set_content(kNavigatorCredentialsGetPageHtml);
   } else if (request.relative_url == kNavigatorCredentialsConditionalGetUrl) {
@@ -213,6 +225,35 @@ TEST_F(PasskeyControllerJavaScriptTest,
 }
 
 TEST_F(PasskeyControllerJavaScriptTest,
+       NavigatorCredentialsModalCreateMissingRpIdMessageReceived) {
+  GURL URL = server().GetURL(kNavigatorCredentialsCreateMissingRpIdUrl);
+  ASSERT_TRUE(LoadUrl(URL));
+
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^{
+        return message_handler().lastReceivedMessage != nil;
+      }));
+
+  NSDictionary* body = message_handler().lastReceivedMessage.body;
+  NSArray* allKeys = body.allKeys;
+  EXPECT_EQ(allKeys.count, 8ul);
+  EXPECT_TRUE([allKeys containsObject:@"event"]);
+  EXPECT_TRUE([allKeys containsObject:@"frameId"]);
+  EXPECT_TRUE([allKeys containsObject:@"requestId"]);
+  EXPECT_TRUE([allKeys containsObject:@"request"]);
+  EXPECT_TRUE([allKeys containsObject:@"rpEntity"]);
+  EXPECT_TRUE([allKeys containsObject:@"userEntity"]);
+  EXPECT_TRUE([allKeys containsObject:@"excludeCredentials"]);
+  EXPECT_TRUE([allKeys containsObject:@"extensions"]);
+
+  EXPECT_NSEQ(@"handleCreateRequest", body[@"event"]);
+
+  NSDictionary* rpEntity = body[@"rpEntity"];
+  EXPECT_TRUE(rpEntity != nil);
+  EXPECT_NSEQ(@"127.0.0.1", rpEntity[@"id"]);
+}
+
+TEST_F(PasskeyControllerJavaScriptTest,
        NavigatorCredentialsModalGetMessageReceived) {
   GURL URL = server().GetURL(kNavigatorCredentialsGetUrl);
   ASSERT_TRUE(LoadUrl(URL));
@@ -235,6 +276,10 @@ TEST_F(PasskeyControllerJavaScriptTest,
   EXPECT_TRUE([allKeys containsObject:@"extensions"]);
 
   EXPECT_NSEQ(@"handleGetRequest", body[@"event"]);
+
+  NSDictionary* rpEntity = body[@"rpEntity"];
+  EXPECT_TRUE(rpEntity != nil);
+  EXPECT_NSEQ(@"127.0.0.1", rpEntity[@"id"]);
 }
 
 TEST_F(PasskeyControllerJavaScriptTest,
