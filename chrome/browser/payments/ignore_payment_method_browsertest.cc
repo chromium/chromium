@@ -7,6 +7,7 @@
 #include "chrome/test/payments/payment_app_install_util.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
 #include "components/payments/content/service_worker_payment_app_finder.h"
+#include "components/payments/content/service_worker_payment_app_finder_test_api.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,7 +51,7 @@ IN_PROC_BROWSER_TEST_F(IgnorePaymentMethodTest, InstalledPHCannotMakePayments) {
   NavigateTo("b.com", "/can_make_payment_checker.html");
   VerifyFunctionOutput("true", "canMakePayment($1)");
 
-  GetFinder()->IgnorePaymentMethodForTest(method_name_);
+  test_api(GetFinder()).IgnorePaymentMethod(method_name_);
 
   VerifyFunctionOutput("false", "canMakePayment($1)");
 }
@@ -61,7 +62,7 @@ IN_PROC_BROWSER_TEST_F(IgnorePaymentMethodTest,
   NavigateTo("b.com", "/has_enrolled_instrument_checker.html");
   VerifyFunctionOutput("true", "hasEnrolledInstrument($1)");
 
-  GetFinder()->IgnorePaymentMethodForTest(method_name_);
+  test_api(GetFinder()).IgnorePaymentMethod(method_name_);
 
   VerifyFunctionOutput("false", "hasEnrolledInstrument($1)");
 }
@@ -71,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(IgnorePaymentMethodTest, InstalledPHCannotBeLaunched) {
   NavigateTo("b.com", "/payment_handler_status.html");
   VerifyFunctionOutput("success", "getStatus($1)");
 
-  GetFinder()->IgnorePaymentMethodForTest(method_name_);
+  test_api(GetFinder()).IgnorePaymentMethod(method_name_);
 
   VerifyFunctionOutput("NotSupportedError: The payment method \"" +
                            method_name_ + "\" is not supported.",
@@ -83,7 +84,7 @@ IN_PROC_BROWSER_TEST_F(IgnorePaymentMethodTest,
   NavigateTo("b.com", "/can_make_payment_checker.html");
   VerifyFunctionOutput("true", "canMakePayment($1)");
 
-  GetFinder()->IgnorePaymentMethodForTest(method_name_);
+  test_api(GetFinder()).IgnorePaymentMethod(method_name_);
 
   VerifyFunctionOutput("false", "canMakePayment($1)");
 }
@@ -93,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(IgnorePaymentMethodTest,
   NavigateTo("b.com", "/has_enrolled_instrument_checker.html");
   VerifyFunctionOutput("false", "hasEnrolledInstrument($1)");
 
-  GetFinder()->IgnorePaymentMethodForTest(method_name_);
+  test_api(GetFinder()).IgnorePaymentMethod(method_name_);
 
   VerifyFunctionOutput("false", "hasEnrolledInstrument($1)");
 }
@@ -109,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(
     JITInstallablePHCannotBeInstalledAndLaunchedWhenIgnored) {
   NavigateTo("b.com", "/payment_handler_status.html");
 
-  GetFinder()->IgnorePaymentMethodForTest(method_name_);
+  test_api(GetFinder()).IgnorePaymentMethod(method_name_);
 
   VerifyFunctionOutput("NotSupportedError: The payment method \"" +
                            method_name_ + "\" is not supported.",

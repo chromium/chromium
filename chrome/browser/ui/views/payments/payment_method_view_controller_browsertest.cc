@@ -9,6 +9,7 @@
 #include "components/payments/content/payment_request.h"
 #include "components/payments/content/payment_request_state.h"
 #include "components/payments/content/service_worker_payment_app_finder.h"
+#include "components/payments/content/service_worker_payment_app_finder_test_api.h"
 #include "components/payments/content/test_payment_manifest_downloader.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
@@ -65,10 +66,9 @@ class PaymentMethodViewControllerTest : public PaymentRequestBrowserTestBase {
                                  kylepay_server_.GetURL("kylepay.test", "/"));
     downloader->AddTestServerURL("https://google.com/",
                                  gpay_server_.GetURL("google.com", "/"));
-    ServiceWorkerPaymentAppFinder::GetOrCreateForCurrentDocument(
-        GetActiveWebContents()->GetPrimaryMainFrame())
-        ->SetDownloaderAndIgnorePortInOriginComparisonForTesting(
-            std::move(downloader));
+    test_api(ServiceWorkerPaymentAppFinder::GetOrCreateForCurrentDocument(
+                 GetActiveWebContents()->GetPrimaryMainFrame()))
+        .SetDownloaderAndIgnorePortInOriginComparison(std::move(downloader));
   }
 
  private:

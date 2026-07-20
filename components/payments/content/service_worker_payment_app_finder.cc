@@ -495,22 +495,11 @@ void ServiceWorkerPaymentAppFinder::RemoveAppsWithoutMatchingMethodData(
   }
 }
 
-void ServiceWorkerPaymentAppFinder::IgnorePaymentMethodForTest(
-    const std::string& method) {
-  ignored_methods_.insert(method);
-}
-
 ServiceWorkerPaymentAppFinder::ServiceWorkerPaymentAppFinder(
     content::RenderFrameHost* rfh)
     : content::DocumentUserData<ServiceWorkerPaymentAppFinder>(rfh),
       ignored_methods_({methods::kGooglePlayBilling}),
       test_downloader_(nullptr) {}
-
-void ServiceWorkerPaymentAppFinder::
-    SetDownloaderAndIgnorePortInOriginComparisonForTesting(
-        std::unique_ptr<PaymentManifestDownloader> downloader) {
-  test_downloader_ = std::move(downloader);
-}
 
 DOCUMENT_USER_DATA_KEY_IMPL(ServiceWorkerPaymentAppFinder);
 

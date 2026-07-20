@@ -16,6 +16,7 @@
 #include "chrome/test/payments/payment_app_install_util.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/payments/content/service_worker_payment_app_finder.h"
+#include "components/payments/content/service_worker_payment_app_finder_test_api.h"
 #include "components/payments/content/test_payment_manifest_downloader.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
@@ -122,9 +123,8 @@ void PaymentRequestPlatformBrowserTestBase::
     downloader->AddTestServerURL("https://" + method.first + "/",
                                  method.second->GetURL(method.first, "/"));
   }
-  ServiceWorkerPaymentAppFinder::GetOrCreateForCurrentDocument(frame)
-      ->SetDownloaderAndIgnorePortInOriginComparisonForTesting(
-          std::move(downloader));
+  test_api(ServiceWorkerPaymentAppFinder::GetOrCreateForCurrentDocument(frame))
+      .SetDownloaderAndIgnorePortInOriginComparison(std::move(downloader));
 }
 
 void PaymentRequestPlatformBrowserTestBase::

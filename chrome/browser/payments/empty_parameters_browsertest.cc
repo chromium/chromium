@@ -4,6 +4,7 @@
 
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
 #include "components/payments/content/service_worker_payment_app_finder.h"
+#include "components/payments/content/service_worker_payment_app_finder_test_api.h"
 #include "components/payments/content/test_payment_manifest_downloader.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
@@ -43,10 +44,9 @@ class EmptyParametersTest : public PaymentRequestPlatformBrowserTestBase {
         GetActiveWebContents()->GetPrimaryMainFrame()->GetWeakDocumentPtr());
     downloader->AddTestServerURL("https://kylepay.test/",
                                  kylepay_server_.GetURL("kylepay.test", "/"));
-    ServiceWorkerPaymentAppFinder::GetOrCreateForCurrentDocument(
-        GetActiveWebContents()->GetPrimaryMainFrame())
-        ->SetDownloaderAndIgnorePortInOriginComparisonForTesting(
-            std::move(downloader));
+    test_api(ServiceWorkerPaymentAppFinder::GetOrCreateForCurrentDocument(
+                 GetActiveWebContents()->GetPrimaryMainFrame()))
+        .SetDownloaderAndIgnorePortInOriginComparison(std::move(downloader));
   }
 
  private:

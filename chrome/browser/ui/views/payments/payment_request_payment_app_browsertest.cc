@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/payments/content/service_worker_payment_app_finder.h"
+#include "components/payments/content/service_worker_payment_app_finder_test_api.h"
 #include "components/payments/content/test_payment_manifest_downloader.h"
 #include "components/payments/core/features.h"
 #include "components/permissions/permission_request_manager.h"
@@ -126,10 +127,9 @@ class PaymentRequestPaymentAppTest : public PaymentRequestBrowserTestBase {
                                  frankpay_.GetURL("frankpay.test", "/"));
     downloader->AddTestServerURL("https://kylepay.test/",
                                  kylepay_.GetURL("kylepay.test", "/"));
-    ServiceWorkerPaymentAppFinder::GetOrCreateForCurrentDocument(
-        web_contents->GetPrimaryMainFrame())
-        ->SetDownloaderAndIgnorePortInOriginComparisonForTesting(
-            std::move(downloader));
+    test_api(ServiceWorkerPaymentAppFinder::GetOrCreateForCurrentDocument(
+                 web_contents->GetPrimaryMainFrame()))
+        .SetDownloaderAndIgnorePortInOriginComparison(std::move(downloader));
   }
 
  private:

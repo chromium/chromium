@@ -199,6 +199,7 @@ static_library("test_support") {
   sources = [
     "mock_web_payments_web_data_service.cc",
     "mock_web_payments_web_data_service.h",
+    "service_worker_payment_app_finder_test_api.h",
     "test_payment_manifest_downloader.cc",
     "test_payment_manifest_downloader.h",
   ]

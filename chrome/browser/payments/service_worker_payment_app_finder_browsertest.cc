@@ -17,6 +17,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/payments/payment_app_install_util.h"
+#include "components/payments/content/service_worker_payment_app_finder_test_api.h"
 #include "components/payments/content/test_payment_manifest_downloader.h"
 #include "components/payments/content/web_payments_web_data_service.h"
 #include "components/payments/core/const_csp_checker.h"
@@ -198,7 +199,7 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
             ->tab_strip_model()
             ->GetActiveWebContents()
             ->GetPrimaryMainFrame());
-    finder->SetDownloaderAndIgnorePortInOriginComparisonForTesting(
+    test_api(finder).SetDownloaderAndIgnorePortInOriginComparison(
         std::move(downloader));
 
     std::vector<mojom::PaymentMethodDataPtr> method_data;
