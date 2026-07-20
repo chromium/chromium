@@ -707,17 +707,14 @@ bool GraphiteSharedContext::isDeviceLost() const {
 }
 
 int GraphiteSharedContext::maxTextureSize() const {
-  AutoLock auto_lock(this);
   return graphite_context_->maxTextureSize();
 }
 
 bool GraphiteSharedContext::supportsProtectedContent() const {
-  AutoLock auto_lock(this);
   return graphite_context_->supportsProtectedContent();
 }
 
 skgpu::GpuStatsFlags GraphiteSharedContext::supportedGpuStats() const {
-  AutoLock auto_lock(this);
   return graphite_context_->supportedGpuStats();
 }
 
