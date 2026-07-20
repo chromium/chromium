@@ -3034,15 +3034,21 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         }
 
         if (id == R.id.offline_page_id) {
-            DownloadUtils.downloadOfflinePage(this, currentTab, /* fromAppMenu= */ true);
             RecordUserAction.record("MobileMenuDownloadPage");
-            return true;
+            if (DownloadUtils.isAllowedToDownloadPage(currentTab)) {
+                DownloadUtils.downloadOfflinePage(this, currentTab, /* fromAppMenu= */ true);
+                return true;
+            }
+            return false;
         }
 
         if (id == R.id.download_page_id) {
-            DownloadUtils.downloadOfflinePage(this, currentTab, /* fromAppMenu= */ true);
             RecordUserAction.record("MobileMenuItemDownloadPage");
-            return true;
+            if (DownloadUtils.isAllowedToDownloadPage(currentTab)) {
+                DownloadUtils.downloadOfflinePage(this, currentTab, /* fromAppMenu= */ true);
+                return true;
+            }
+            return false;
         }
 
         if (id == R.id.reload_menu_id) {

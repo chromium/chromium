@@ -13,9 +13,11 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.suggestions.tile.TileUtils;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
@@ -28,6 +30,7 @@ import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.ui.widget.RectProvider;
+import org.chromium.ui.widget.Toast;
 import org.chromium.ui.widget.ViewRectProvider;
 import org.chromium.url.GURL;
 
@@ -255,7 +258,15 @@ public class ContextMenuManager {
             if (!shouldShowItem(itemId, delegate)) continue;
 
             int titleId = getResourceIdForMenuItem(itemId);
-            menuModel.add(new ListItemBuilder().withTitleRes(titleId).withMenuId(itemId).build());
+            ListItemBuilder builder =
+                    new ListItemBuilder().withTitleRes(titleId).withMenuId(itemId);
+            if (itemId == ContextMenuItemId.SAVE_FOR_OFFLINE
+                    && ProfileManager.isInitialized()
+                    && DownloadUtils.isDownloadRestrictedByPolicy(
+                            ProfileManager.getLastUsedRegularProfile())) {
+                builder.withEnabled(false);
+            }
+            menuModel.add(builder.build());
         }
 
         if (menuModel.isEmpty()) {
@@ -472,7 +483,19 @@ public class ContextMenuManager {
                 RecordUserAction.record(mUserActionPrefix + ".ContextMenu.OpenAllItems");
                 return true;
             case ContextMenuItemId.SAVE_FOR_OFFLINE:
-                delegate.openItem(WindowOpenDisposition.SAVE_TO_DISK);
+                if (ProfileManager.isInitialized()
+                        && DownloadUtils.isDownloadRestrictedByPolicy(
+                                ProfileManager.getLastUsedRegularProfile())) {
+                    if (mAnchorView != null) {
+                        Toast.makeText(
+                                        mAnchorView.getContext(),
+                                        R.string.download_message_single_download_blocked,
+                                        Toast.LENGTH_SHORT)
+                                .show();
+                    }
+                } else {
+                    delegate.openItem(WindowOpenDisposition.SAVE_TO_DISK);
+                }
                 RecordUserAction.record(mUserActionPrefix + ".ContextMenu.DownloadItem");
                 return true;
             case ContextMenuItemId.REMOVE:

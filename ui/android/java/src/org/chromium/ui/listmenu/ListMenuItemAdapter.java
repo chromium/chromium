@@ -67,7 +67,11 @@ public class ListMenuItemAdapter extends ModelListAdapter {
     @Override
     public boolean isEnabled(int position) {
         int type = getItemViewType(position);
-        return type != ListItemType.DIVIDER && !mDisabledTypes.contains(type);
+        if (type == ListItemType.DIVIDER || mDisabledTypes.contains(type)) {
+            return false;
+        }
+        ListItem item = (ListItem) getItem(position);
+        return !item.model.containsKey(ENABLED) || item.model.get(ENABLED);
     }
 
     @Override
