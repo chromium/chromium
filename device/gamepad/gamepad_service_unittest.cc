@@ -413,8 +413,7 @@ TEST_F(GamepadServiceTest, ConnectAndDisconnectWhileInactiveTest) {
   WaitForData();
 }
 
-// https://crbug.com/1346527 Flaky on Android and Linux.
-TEST_F(GamepadServiceTest, DISABLED_DisconnectWhileInactiveTest) {
+TEST_F(GamepadServiceTest, DisconnectWhileInactiveTest) {
   // Create two active consumers.
   auto* consumer1 = CreateConsumer();
   auto* consumer2 = CreateConsumer();
@@ -436,6 +435,7 @@ TEST_F(GamepadServiceTest, DISABLED_DisconnectWhileInactiveTest) {
     SimulateUserGesture(/*has_gesture=*/true);
     loop.Run();
   }
+  WaitForData();
 
   // Mark the second consumer inactive.
   EXPECT_TRUE(service()->ConsumerBecameInactive(consumer2));
@@ -451,6 +451,7 @@ TEST_F(GamepadServiceTest, DISABLED_DisconnectWhileInactiveTest) {
     SetPadsConnected(/*connected_count=*/0);
     loop.Run();
   }
+  WaitForData();
 
   // Mark the second consumer active again. The second consumer is notified for
   // gamepads that were disconnected while it was inactive.
