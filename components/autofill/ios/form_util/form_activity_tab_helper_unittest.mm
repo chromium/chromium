@@ -373,7 +373,9 @@ TEST_F(FormActivityTabHelperTest, FocusMainFrame) {
             "<input type='password' name='password' id='id2'>"
             "</form>");
   ASSERT_FALSE(observer_->form_activity_info());
-  ExecuteJavaScript(@"document.getElementById('id1').focus();");
+  ExecuteJavaScript(@"var el = document.getElementById('id1');"
+                    @"el.focus();"
+                    @"el.dispatchEvent(new Event('focus', {bubbles: true}));");
   TestFormActivityObserver* block_observer = observer_.get();
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
     return block_observer->form_activity_info() != nullptr;
@@ -396,8 +398,10 @@ TEST_F(FormActivityTabHelperTest, FocusSameOriginIFrame) {
        "</form>'");
 
   ExecuteJavaScript(
-      @"document.getElementById('frame1').contentDocument.getElementById('id1')"
-      @".focus()");
+      @"var doc = document.getElementById('frame1').contentDocument;"
+      @"var el = doc.getElementById('id1');"
+      @"el.focus();"
+      @"el.dispatchEvent(new Event('focus', {bubbles: true}));");
   TestFormActivityObserver* block_observer = observer_.get();
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
     return block_observer->form_activity_info() != nullptr;
