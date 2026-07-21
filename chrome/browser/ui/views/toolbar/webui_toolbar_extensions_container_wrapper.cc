@@ -204,11 +204,15 @@ void WebUIToolbarExtensionsContainerWrapper::OnElementShown(
 
 void WebUIToolbarExtensionsContainerWrapper::SendExtensionsState() {
   std::vector<extensions_bar::mojom::ExtensionActionInfoPtr> state;
-  for (const auto& [id, action] : cached_actions_) {
-    if (!action->is_visible) {
-      continue;
+  if (extensions_container_) {
+    for (const auto& id : extensions_container_->GetOrderedActionIds()) {
+      auto it = cached_actions_.find(id);
+      if (it != cached_actions_.end()) {
+        if (it->second->is_visible) {
+          state.push_back(mojo::Clone(it->second));
+        }
+      }
     }
-    state.push_back(mojo::Clone(action));
   }
   if (!cached_actions_.empty()) {
     state.push_back(GetExtensionsButton());
@@ -232,5 +236,21 @@ void WebUIToolbarExtensionsContainerWrapper::ShowContextMenu(
     const std::string& extension_id) {
   if (extensions_container_ && extension_id != kExtensionsButtonId) {
     extensions_container_->ShowContextMenu(source, extension_id);
+  }
+}
+
+void WebUIToolbarExtensionsContainerWrapper::MoveExtension(
+    const std::string& extension_id,
+    int32_t target_index) {
+  if (extensions_container_) {
+    extensions_container_->MoveExtensionAction(extension_id, target_index);
+  }
+}
+
+void WebUIToolbarExtensionsContainerWrapper::MoveExtensionBy(
+    const std::string& extension_id,
+    int32_t delta) {
+  if (extensions_container_) {
+    extensions_container_->MoveExtensionActionBy(extension_id, delta);
   }
 }

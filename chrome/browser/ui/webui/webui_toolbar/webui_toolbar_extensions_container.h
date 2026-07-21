@@ -53,6 +53,11 @@ class WebUIToolbarExtensionsContainer
   // called.
   void SetObserver(WebUIToolbarExtensionsContainerObserver* observer);
 
+  void MoveExtensionAction(const std::string& extension_id,
+                           int32_t target_index);
+  void MoveExtensionActionBy(const std::string& extension_id, int32_t delta);
+  std::vector<std::string> GetOrderedActionIds() const;
+
   // ExtensionsContainer:
   ToolbarActionViewModel* GetActionForId(const std::string& action_id) override;
   void HideActivePopup() override;

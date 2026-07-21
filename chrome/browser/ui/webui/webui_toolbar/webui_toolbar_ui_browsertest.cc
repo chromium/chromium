@@ -156,6 +156,15 @@ class MockToolbarUIDelegate
               (toolbar_ui_api::mojom::PinnedToolbarAction, int32_t),
               (override));
   MOCK_METHOD(void,
+              MoveExtensionAction,
+              (const std::string& extension_id, int32_t target_index),
+              (override));
+  MOCK_METHOD(void,
+              MoveExtensionActionBy,
+              (const std::string& extension_id, int32_t delta),
+              (override));
+
+  MOCK_METHOD(void,
               OnLhsChipMousePressed,
               (toolbar_ui_api::mojom::LhsChipIdentifier),
               (override));

@@ -9,6 +9,7 @@
 #include "base/callback_list.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
+#include "base/numerics/checked_math.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_view_host.h"
@@ -426,8 +427,11 @@ void WebUIToolbarExtensionsContainer::NotifyOfAllActions() {
   }
 
   std::vector<extensions_bar::mojom::ExtensionActionInfoPtr> updates;
-  for (const auto& [_, action] : actions_) {
-    updates.push_back(action->ToMojo());
+  for (const auto& id : GetOrderedActionIds()) {
+    auto it = actions_.find(id);
+    if (it != actions_.end()) {
+      updates.push_back(it->second->ToMojo());
+    }
   }
   std::vector<toolbar_ui_api::mojom::IconUpdatePtr> icon_updates;
   if (push_icon_table_updates_) {
@@ -528,6 +532,64 @@ void WebUIToolbarExtensionsContainer::ShowContextMenu(
 
 void WebUIToolbarExtensionsContainer::ToggleExtensionsMenuFromWebUI() {
   ToggleExtensionsMenu();
+}
+
+void WebUIToolbarExtensionsContainer::MoveExtensionAction(
+    const std::string& extension_id,
+    int32_t target_index) {
+  const auto& pinned_action_ids = model_->pinned_action_ids();
+  auto iter = std::ranges::find(pinned_action_ids, extension_id);
+  if (iter == pinned_action_ids.end()) {
+    return;
+  }
+  if (target_index < 0 ||
+      target_index >= static_cast<int32_t>(pinned_action_ids.size())) {
+    return;
+  }
+  model_->MovePinnedAction(extension_id, target_index);
+}
+
+void WebUIToolbarExtensionsContainer::MoveExtensionActionBy(
+    const std::string& extension_id,
+    int32_t delta) {
+  const auto& pinned_action_ids = model_->pinned_action_ids();
+  auto iter = std::ranges::find(pinned_action_ids, extension_id);
+  if (iter == pinned_action_ids.end()) {
+    return;
+  }
+  ptrdiff_t current_index = std::distance(pinned_action_ids.begin(), iter);
+  base::CheckedNumeric<int32_t> checked_target_index = current_index;
+  checked_target_index += delta;
+  int32_t target_index;
+  if (!checked_target_index.AssignIfValid(&target_index)) {
+    return;
+  }
+  if (target_index >= 0 &&
+      target_index < static_cast<int32_t>(pinned_action_ids.size())) {
+    model_->MovePinnedAction(extension_id, target_index);
+  }
+}
+
+std::vector<std::string> WebUIToolbarExtensionsContainer::GetOrderedActionIds()
+    const {
+  std::vector<std::string> ordered;
+  base::flat_set<std::string> added;
+  for (const auto& id : model_->pinned_action_ids()) {
+    ordered.push_back(id);
+    added.insert(id);
+  }
+  for (const auto& action_id : model_->action_ids()) {
+    if (IsActionVisibleOnToolbar(action_id) && !added.contains(action_id)) {
+      ordered.push_back(action_id);
+      added.insert(action_id);
+    }
+  }
+  for (const auto& action_id : model_->action_ids()) {
+    if (!added.contains(action_id)) {
+      ordered.push_back(action_id);
+    }
+  }
+  return ordered;
 }
 
 void WebUIToolbarExtensionsContainer::CreateActions() {

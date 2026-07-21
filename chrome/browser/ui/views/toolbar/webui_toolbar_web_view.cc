@@ -669,6 +669,16 @@ void WebUIToolbarWebView::MovePinnedToolbarActionBy(
   }
 }
 
+void WebUIToolbarWebView::MoveExtensionAction(const std::string& extension_id,
+                                              int32_t target_index) {
+  extensions_container_.MoveExtension(extension_id, target_index);
+}
+
+void WebUIToolbarWebView::MoveExtensionActionBy(const std::string& extension_id,
+                                                int32_t delta) {
+  extensions_container_.MoveExtensionBy(extension_id, delta);
+}
+
 base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
 WebUIToolbarWebView::OnOmniboxAction(
     toolbar_ui_api::mojom::OmniboxActionPtr action) {

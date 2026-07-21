@@ -57,6 +57,8 @@ class WebUIToolbarExtensionsContainerWrapper
   void ExecuteUserAction(const std::string& extension_id);
   void ShowContextMenu(ui::mojom::MenuSourceType source,
                        const std::string& extension_id);
+  void MoveExtension(const std::string& extension_id, int32_t target_index);
+  void MoveExtensionBy(const std::string& extension_id, int32_t delta);
 
   // WebUIToolbarExtensionsContainer::Observer:
   void OnActionsAddedOrUpdated(

@@ -52,6 +52,8 @@ class TestToolbarUiHandler extends TestBrowserProxy implements
   invokePinnedToolbarAction() {}
   movePinnedToolbarAction() {}
   movePinnedToolbarActionBy() {}
+  moveExtensionAction(_extensionId: string, _targetIndex: number) {}
+  moveExtensionActionBy(_extensionId: string, _delta: number) {}
   onHomeButtonDropUrl() {}
   onHomeButtonDropFile() {}
   onToolbarDropFile() {}

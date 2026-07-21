@@ -98,6 +98,13 @@ interface ToolbarUIService {
   // right/next).
   MovePinnedToolbarActionBy(PinnedToolbarAction action_id, int32 delta);
 
+  // Moves the extension action identified by `extension_id` to `target_index`.
+  MoveExtensionAction(string extension_id, int32 target_index);
+
+  // Moves the extension action by `delta` (-1 for left/previous, +1 for
+  // right/next).
+  MoveExtensionActionBy(string extension_id, int32 delta);
+
   // Called when an LHS chip is pressed (e.g., pointerdown).
   OnLhsChipMousePressed(LhsChipIdentifier identifier);
 

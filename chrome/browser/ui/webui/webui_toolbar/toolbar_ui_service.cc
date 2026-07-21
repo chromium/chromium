@@ -201,6 +201,20 @@ void ToolbarUIService::MovePinnedToolbarActionBy(
   }
 }
 
+void ToolbarUIService::MoveExtensionAction(const std::string& extension_id,
+                                           int32_t target_index) {
+  if (delegate_) {
+    delegate_->MoveExtensionAction(extension_id, target_index);
+  }
+}
+
+void ToolbarUIService::MoveExtensionActionBy(const std::string& extension_id,
+                                             int32_t delta) {
+  if (delegate_) {
+    delegate_->MoveExtensionActionBy(extension_id, delta);
+  }
+}
+
 void ToolbarUIService::OnLhsChipMousePressed(
     toolbar_ui_api::mojom::LhsChipIdentifier identifier) {
   if (delegate_) {
