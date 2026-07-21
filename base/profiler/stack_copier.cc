@@ -72,6 +72,7 @@ uintptr_t StackCopier::RewritePointerIfInOriginalStack(
 
 // static
 NO_SANITIZE("address")
+NO_SANITIZE("hwaddress")
 const uint8_t* StackCopier::CopyStackContentsAndRewritePointers(
     const uint8_t* original_stack_bottom,
     const uintptr_t* original_stack_top,
