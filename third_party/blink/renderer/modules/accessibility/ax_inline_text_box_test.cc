@@ -905,6 +905,42 @@ TEST_P(AXInlineTextBoxTest, FirstLineTextTransformCrash) {
   ASSERT_NE(nullptr, ax_root);
 }
 
+TEST_P(AXInlineTextBoxTest, InlineBoxFragmentDoesNotJoinWrappedLines) {
+  // An outline gives the link a box fragment of its own on each line it wraps
+  // across. Those box fragments must not hide the line boundary: the link
+  // still wraps, so "Rowland" still starts a line and has nothing before it
+  // on that line.
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      p { width: 34ch; font: 16px/16px Ahem; }
+      a { outline: 2px solid red; }
+    </style>
+    <p id="para">The group included star <a id="split"
+    href="#member">Kelly Rowland</a> plus others here.</p>)HTML");
+
+  AXObject* ax_link = GetAXObjectByElementId("split");
+  ASSERT_NE(nullptr, ax_link);
+  ASSERT_EQ(ax::mojom::Role::kLink, ax_link->RoleValue());
+  ax_link->LoadInlineTextBoxes();
+
+  const AXObject* ax_static_text = ax_link->FirstChildIncludingIgnored();
+  ASSERT_NE(nullptr, ax_static_text);
+  ASSERT_EQ(2, ax_static_text->ChildCountIncludingIgnored());
+
+  AXObject* first_box = ax_static_text->ChildAtIncludingIgnored(0);
+  AXObject* second_box = ax_static_text->ChildAtIncludingIgnored(1);
+  ASSERT_EQ("Kelly ", first_box->ComputedName());
+  ASSERT_EQ("Rowland", second_box->ComputedName());
+
+  ScopedFreezeAXCache freeze(ax_link->AXObjectCache());
+  EXPECT_EQ("The group included star ",
+            first_box->PreviousOnLine()->ComputedName());
+  EXPECT_EQ(nullptr, first_box->NextOnLine());
+  EXPECT_EQ(nullptr, second_box->PreviousOnLine());
+  EXPECT_EQ(" plus others here.", second_box->NextOnLine()->ComputedName());
+}
+
 }  // namespace test
 
 TEST_F(AccessibilityTest, LoadInlineTextBoxesCrashsOnAndroid) {

@@ -550,7 +550,8 @@ AXObject* AXInlineTextBox::NeighboringOnLine(const Direction direction) const {
         return nullptr;
 
       case FragmentItem::kBox:
-        if (cursor.Current().Item()->BoxFragment()) {
+        if (cursor.Current().Item()->BoxFragment() &&
+            !cursor.Current().Item()->IsInlineBox()) {
           // TODO(crbug.com/399204651): Implement navigating into separate
           // PhysicalBox
           // fragments.
@@ -561,7 +562,10 @@ AXObject* AXInlineTextBox::NeighboringOnLine(const Direction direction) const {
                      ? ParentObject()->NextOnLine()
                      : ParentObject()->PreviousOnLine();
         }
-        // Inline-box continues on to the next/previous item.
+        // Inline-box continues on to the next/previous item. An inline box
+        // like <span> or <a> can have a box fragment of its own, for instance
+        // when it has an outline, but its contents are still in this item
+        // list and it does not change where the lines break.
         break;
 
       case FragmentItem::kInvalid:
