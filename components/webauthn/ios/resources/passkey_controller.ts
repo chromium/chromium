@@ -749,7 +749,7 @@ function createPublicKeyCredential(
     response: AuthenticatorResponse,
     extensionOutputs: AuthenticationExtensionsClientOutputs):
     PublicKeyCredential {
-  return {
+  const credential = {
     id: arrayBufferToBase64URL(rawId),
     type: PUBLIC_KEY,
     authenticatorAttachment: authenticatorAttachment,
@@ -777,6 +777,9 @@ function createPublicKeyCredential(
       }
     },
   };
+
+  Object.setPrototypeOf(credential, PublicKeyCredential.prototype);
+  return credential as PublicKeyCredential;
 }
 
 // Creates an empty credential, which will be used to resolve a Credential
@@ -802,7 +805,7 @@ function createAuthenticatorAttestationResponse(
     attestationObj: ArrayBuffer, authenticatorData: ArrayBuffer,
     publicKeySpkiDer: ArrayBuffer,
     clientDataJson: string): AuthenticatorAttestationResponse {
-  return {
+  const response = {
     attestationObject: attestationObj,
     clientDataJSON: stringToArrayBuffer(clientDataJson),
     getAuthenticatorData(): ArrayBuffer {
@@ -820,6 +823,9 @@ function createAuthenticatorAttestationResponse(
       return ['hybrid', 'internal'];
     },
   };
+
+  Object.setPrototypeOf(response, AuthenticatorAttestationResponse.prototype);
+  return response as AuthenticatorAttestationResponse;
 }
 
 // Resolve and reject functions types used by the deferred promise.
@@ -1228,6 +1234,7 @@ function resolveAssertionRequest(
                                null,
   };
 
+  Object.setPrototypeOf(response, AuthenticatorAssertionResponse.prototype);
   resolveCredentialPromise(requestId, id64, response, extensions);
 }
 

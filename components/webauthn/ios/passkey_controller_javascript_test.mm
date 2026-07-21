@@ -46,6 +46,10 @@ const char kNavigatorCredentialsCreateMissingRpIdUrl[] =
     "/credentialsCreateMissingRpId";
 const char kNavigatorCredentialsGetWithUserHandleUrl[] =
     "/credentialsGetWithUserHandle";
+const char kNavigatorCredentialsCreateWithResultUrl[] =
+    "/credentialsCreateWithResult";
+const char kNavigatorCredentialsGetWithResultUrl[] =
+    "/credentialsGetWithResult";
 const char kAnotherPageUrl[] = "/anotherPage";
 
 const char kNavigatorCredentialsCreatePageHtml[] =
@@ -87,6 +91,32 @@ const char kNavigatorCredentialsGetWithUserHandlePageHtml[] =
     "  });"
     "};"
     "</script></body></html>";
+const char kNavigatorCredentialsCreateWithResultPageHtml[] =
+    "<html><body><script>"
+    "window.onload = () => {"
+    "  navigator.credentials.create({ publicKey: { "
+    "    challenge: new ArrayBuffer(0), "
+    "    rp: { id: 'example.com', name: 'Example' },"
+    "    user: { id: new ArrayBuffer(0), name: '', displayName: '' } } "
+    "  }).then(cred => { "
+    "    window.credentialResult = cred; "
+    "  }).catch(err => { "
+    "    window.credentialError = err; "
+    "  });"
+    "};"
+    "</script></body></html>";
+const char kNavigatorCredentialsGetWithResultPageHtml[] =
+    "<html><body><script>"
+    "window.onload = () => {"
+    "  navigator.credentials.get({ "
+    "    publicKey: { challenge: new ArrayBuffer(0) } "
+    "  }).then(cred => { "
+    "    window.credentialResult = cred; "
+    "  }).catch(err => { "
+    "    window.credentialError = err; "
+    "  });"
+    "};"
+    "</script></body></html>";
 const char kAnotherPageHtml[] = "<html><body>Another Page</body></html>";
 
 NSString* const kDisableNativeCapabilitiesJs =
@@ -119,6 +149,7 @@ NSString* const kResolveAssertionRequestWithEmptyUserHandleFormat =
     @"__gCrWeb.getRegisteredApi('passkey').getFunction('"
     @"resolveAssertionRequest')('%@', 'AQ', '', '', '', '', {})";
 
+// Note: 'AQ==' is base64 of 0x01.
 NSString* const kResolveAssertionRequestWithUserHandleFormat =
     @"__gCrWeb.getRegisteredApi('passkey').getFunction('"
     @"resolveAssertionRequest')('%@', 'AQ', '', '', 'AQ==', '', {})";
@@ -207,6 +238,26 @@ NSString* const kLogGetRequestEvent = @"logGetRequest";
 NSString* const kHandleCreateRequestEvent = @"handleCreateRequest";
 NSString* const kHandleGetRequestEvent = @"handleGetRequest";
 
+NSString* const kCheckCredentialResultInstanceOfPublicKeyCredentialJs =
+    @"window.credentialResult instanceof PublicKeyCredential";
+
+NSString* const kCheckResponseInstanceOfAuthenticatorAttestationResponseJs =
+    @"window.credentialResult.response instanceof "
+    @"AuthenticatorAttestationResponse";
+
+NSString* const kCheckResponseInstanceOfAuthenticatorAssertionResponseJs =
+    @"window.credentialResult.response instanceof "
+    @"AuthenticatorAssertionResponse";
+
+NSString* const kResolveAttestationRequestFormat =
+    @"__gCrWeb.getRegisteredApi('passkey').getFunction('"
+    @"resolveAttestationRequest')('%@', 'AQ', 'AQ==', 'AQ==', 'AQ==', '{}', "
+    @"{})";
+
+NSString* const kResolveAssertionRequestFormat =
+    @"__gCrWeb.getRegisteredApi('passkey').getFunction('"
+    @"resolveAssertionRequest')('%@', 'AQ', 'AQ==', 'AQ==', 'AQ==', '{}', {})";
+
 // Provides responses for initial page and destination URLs.
 std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
     const net::test_server::HttpRequest& request) {
@@ -226,6 +277,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   } else if (request.relative_url ==
              kNavigatorCredentialsGetWithUserHandleUrl) {
     http_response->set_content(kNavigatorCredentialsGetWithUserHandlePageHtml);
+  } else if (request.relative_url == kNavigatorCredentialsCreateWithResultUrl) {
+    http_response->set_content(kNavigatorCredentialsCreateWithResultPageHtml);
+  } else if (request.relative_url == kNavigatorCredentialsGetWithResultUrl) {
+    http_response->set_content(kNavigatorCredentialsGetWithResultPageHtml);
   } else if (request.relative_url == kAnotherPageUrl) {
     http_response->set_content(kAnotherPageHtml);
   } else {
@@ -810,6 +865,88 @@ TEST_F(PasskeyControllerJavaScriptTest,
   id promiseError =
       web::test::ExecuteJavaScript(web_view(), kGetPromiseErrorJs);
   EXPECT_TRUE(promiseError == nil);
+}
+
+TEST_F(PasskeyControllerJavaScriptTest,
+       NavigatorCredentialsModalCreateReturnsCorrectPrototype) {
+  GURL create_url = server().GetURL(kNavigatorCredentialsCreateWithResultUrl);
+
+  ASSERT_TRUE(LoadUrl(create_url));
+
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^{
+        return message_handler().lastReceivedMessage != nil;
+      }));
+  NSDictionary* body = message_handler().lastReceivedMessage.body;
+  EXPECT_NSEQ(kHandleCreateRequestEvent, body[kEventKey]);
+
+  NSString* requestId = body[kRequestIdKey];
+  ASSERT_TRUE(requestId != nil);
+
+  // Resolve the request with valid dummy attestation parameters.
+  NSString* resolveJs =
+      [NSString stringWithFormat:kResolveAttestationRequestFormat, requestId];
+  web::test::ExecuteJavaScriptInWebView(web_view(), resolveJs);
+
+  // Wait until window.credentialResult is set.
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^{
+        id result = web::test::ExecuteJavaScript(
+            web_view(), kCheckCredentialResultDefinedJs);
+        return [result boolValue];
+      }));
+
+  // Verify that window.credentialResult is an instance of PublicKeyCredential.
+  id isPublicKeyCredential = web::test::ExecuteJavaScript(
+      web_view(), kCheckCredentialResultInstanceOfPublicKeyCredentialJs);
+  EXPECT_TRUE([isPublicKeyCredential boolValue]);
+
+  // Verify that window.credentialResult.response is an instance of
+  // AuthenticatorAttestationResponse.
+  id isAttestationResponse = web::test::ExecuteJavaScript(
+      web_view(), kCheckResponseInstanceOfAuthenticatorAttestationResponseJs);
+  EXPECT_TRUE([isAttestationResponse boolValue]);
+}
+
+TEST_F(PasskeyControllerJavaScriptTest,
+       NavigatorCredentialsModalGetReturnsCorrectPrototype) {
+  GURL get_url = server().GetURL(kNavigatorCredentialsGetWithResultUrl);
+
+  ASSERT_TRUE(LoadUrl(get_url));
+
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^{
+        return message_handler().lastReceivedMessage != nil;
+      }));
+  NSDictionary* body = message_handler().lastReceivedMessage.body;
+  EXPECT_NSEQ(kHandleGetRequestEvent, body[kEventKey]);
+
+  NSString* requestId = body[kRequestIdKey];
+  ASSERT_TRUE(requestId != nil);
+
+  // Resolve the request with valid dummy assertion parameters.
+  NSString* resolveJs =
+      [NSString stringWithFormat:kResolveAssertionRequestFormat, requestId];
+  web::test::ExecuteJavaScriptInWebView(web_view(), resolveJs);
+
+  // Wait until window.credentialResult is set.
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^{
+        id result = web::test::ExecuteJavaScript(
+            web_view(), kCheckCredentialResultDefinedJs);
+        return [result boolValue];
+      }));
+
+  // Verify that window.credentialResult is an instance of PublicKeyCredential.
+  id isPublicKeyCredential = web::test::ExecuteJavaScript(
+      web_view(), kCheckCredentialResultInstanceOfPublicKeyCredentialJs);
+  EXPECT_TRUE([isPublicKeyCredential boolValue]);
+
+  // Verify that window.credentialResult.response is an instance of
+  // AuthenticatorAssertionResponse.
+  id isAssertionResponse = web::test::ExecuteJavaScript(
+      web_view(), kCheckResponseInstanceOfAuthenticatorAssertionResponseJs);
+  EXPECT_TRUE([isAssertionResponse boolValue]);
 }
 
 }  // namespace webauthn
