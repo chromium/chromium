@@ -86,6 +86,14 @@ class AutofillManager
     friend class AutofillDriverIOS;
     friend class AutofillManagerTestApi;
   };
+  class FormMutationPassKey {
+   private:
+    FormMutationPassKey() = default;
+    friend class AutofillManager;
+    friend class AutofillManagerTestApi;
+    friend class BrowserAutofillManager;
+    friend class FormFiller;
+  };
 
   using LifecycleState = AutofillDriver::LifecycleState;
 
@@ -314,6 +322,16 @@ class AutofillManager
   // Returns a WeakPtr to the leaf class.
   virtual base::WeakPtr<AutofillManager> GetWeakPtr() = 0;
 
+  // Routes calls from external components to FormFiller::FillOrPreviewField.
+  // Virtual for testing.
+  virtual void FillOrPreviewField(mojom::ActionPersistence action_persistence,
+                                  mojom::FieldActionType action_type,
+                                  const FormGlobalId& form_id,
+                                  const FieldGlobalId& field_id,
+                                  const std::u16string& value,
+                                  FillingProduct filling_product,
+                                  std::optional<FieldType> field_type_used) = 0;
+
   // Events triggered by the renderer.
   // See autofill_driver.mojom for documentation.
   // Some functions are virtual for testing.
@@ -364,9 +382,6 @@ class AutofillManager
       const std::u16string& old_value,
       RendererEventPassKey pass_key);
 
-  // Invoked when the suggestions are actually hidden.
-  virtual void OnSuggestionsHidden(SuggestionHidingReason reason);
-
   // Invoked when a form with an email verification token is submitted.
   virtual void OnFormWithEmailVerificationTokenSubmitted(
       const FormData& form,
@@ -381,17 +396,10 @@ class AutofillManager
       const std::vector<FieldGlobalId>& field_ids,
       RendererEventPassKey pass_key);
 
-  // Routes calls from external components to FormFiller::FillOrPreviewField.
-  // Virtual for testing.
-  virtual void FillOrPreviewField(mojom::ActionPersistence action_persistence,
-                                  mojom::FieldActionType action_type,
-                                  const FormGlobalId& form_id,
-                                  const FieldGlobalId& field_id,
-                                  const std::u16string& value,
-                                  FillingProduct filling_product,
-                                  std::optional<FieldType> field_type_used) = 0;
-
   // Other events.
+
+  // Invoked when the suggestions are actually hidden.
+  virtual void OnSuggestionsHidden(SuggestionHidingReason reason);
 
   virtual void ReportAutofillWebOTPMetrics(bool used_web_otp) = 0;
 
@@ -405,15 +413,6 @@ class AutofillManager
   // language, its predictions are not recomputed.
   void OnLanguageDetermined(
       const translate::LanguageDetectionDetails& details) override;
-
-  class FormMutationPassKey {
-   private:
-    FormMutationPassKey() = default;
-    friend class AutofillManager;
-    friend class AutofillManagerTestApi;
-    friend class BrowserAutofillManager;
-    friend class FormFiller;
-  };
 
   FormStructure* FindCachedFormById(const FormGlobalId& form_id,
                                     const FormMutationPassKey& pass_key);
@@ -499,6 +498,32 @@ class AutofillManager
   // Retrieves the page language from |client_|
   LanguageCode GetCurrentPageLanguage();
 
+  // Return whether the |forms| from OnFormSeen() should be parsed to
+  // form_structures.
+  virtual bool ShouldParseForms() = 0;
+
+  // Invoked before parsing the forms.
+  // TODO(crbug.com/40219607): Rename to some consistent scheme, e.g.,
+  // OnBeforeParsedForm().
+  virtual void OnBeforeProcessParsedForms() = 0;
+
+  // Invoked when `form` has been processed into a `FormStructure`.
+  virtual void OnFormProcessed(const FormStructure& form) = 0;
+
+  // Returns true only if the previewed form should be cleared.
+  virtual bool ShouldClearPreviewedForm() = 0;
+
+  // Logs the field types of `form` to chrome://autofill-internals and the
+  // autofill-information attribute (if
+  // `features::debug::kAutofillShowTypePredictions` is enabled).
+  void LogCurrentFieldTypes(
+      std::variant<const FormData*, const FormStructure*> form);
+
+ private:
+  friend class AutofillManagerTestApi;
+
+  struct AsyncContext;
+
   // OnFooImpl() is called, potentially asynchronously after parsing the form,
   // by the renderer event OnFoo().
   virtual void OnFormSubmittedImpl(const FormData& form,
@@ -544,32 +569,6 @@ class AutofillManager
       const std::vector<FieldGlobalId>& field_ids) = 0;
   virtual void OnLoadedServerPredictionsImpl(
       base::span<const raw_ref<FormStructure>> forms) = 0;
-
-  // Return whether the |forms| from OnFormSeen() should be parsed to
-  // form_structures.
-  virtual bool ShouldParseForms() = 0;
-
-  // Invoked before parsing the forms.
-  // TODO(crbug.com/40219607): Rename to some consistent scheme, e.g.,
-  // OnBeforeParsedForm().
-  virtual void OnBeforeProcessParsedForms() = 0;
-
-  // Invoked when `form` has been processed into a `FormStructure`.
-  virtual void OnFormProcessed(const FormStructure& form) = 0;
-
-  // Returns true only if the previewed form should be cleared.
-  virtual bool ShouldClearPreviewedForm() = 0;
-
-  // Logs the field types of `form` to chrome://autofill-internals and the
-  // autofill-information attribute (if
-  // `features::debug::kAutofillShowTypePredictions` is enabled).
-  void LogCurrentFieldTypes(
-      std::variant<const FormData*, const FormStructure*> form);
-
- private:
-  friend class AutofillManagerTestApi;
-
-  struct AsyncContext;
 
   // Parses multiple forms in one go. The function proceeds in five stages:
   //
