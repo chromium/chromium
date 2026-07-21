@@ -10,6 +10,13 @@
 // Checks if the caller app is a first party app.
 bool IsCallerAppFirstParty(NSString* caller_app_id);
 
+// Checks if the caller app is allowed for the AI summarization experiment.
+bool IsCallerAppAllowListedForAISummarization(NSString* caller_app_id);
+
+// Checks if the caller app is allowed for the youtube incognito experiment.
+bool IsCallerAppAllowListedForApplicationMode(NSString* caller_app_id);
+
+// TODO(crbug.com/527016607): Remove when flag is enabled by default.
 // Checks if the caller app is allowed for the youtube incognito experiment.
 bool IsCallerAppAllowListed(NSString* caller_app_id);
 

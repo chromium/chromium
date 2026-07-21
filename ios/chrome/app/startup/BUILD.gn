@@ -100,7 +100,10 @@ source_set("utils") {
     "app_startup_utils.h",
     "app_startup_utils.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/intelligence/features",
+  ]
 }
 
 source_set("unit_tests") {

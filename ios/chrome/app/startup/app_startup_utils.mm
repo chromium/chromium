@@ -5,6 +5,7 @@
 #import "ios/chrome/app/startup/app_startup_utils.h"
 
 #import "base/apple/bundle_locations.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 
 namespace {
 
@@ -83,11 +84,27 @@ bool IsCallerAppFirstParty(NSString* caller_app_id) {
   }
 }
 
-bool IsCallerAppAllowListed(NSString* caller_app_id) {
+bool IsCallerAppAllowListedForAISummarization(NSString* caller_app_id) {
+  if (!IsAppSwitcherAISummarizationEnabled()) {
+    return false;
+  }
+  CallerApp caller_app = CallerAppFromAppID(caller_app_id);
+  if (caller_app == CallerApp::kGmail ||
+      caller_app == CallerApp::kExperienceKitCatalog) {
+    return true;
+  }
+  return false;
+}
+
+bool IsCallerAppAllowListedForApplicationMode(NSString* caller_app_id) {
   CallerApp caller_app = CallerAppFromAppID(caller_app_id);
   if (caller_app == CallerApp::kYoutube ||
       caller_app == CallerApp::kExperienceKitCatalog) {
     return true;
   }
   return false;
+}
+
+bool IsCallerAppAllowListed(NSString* caller_app_id) {
+  return IsCallerAppAllowListedForApplicationMode(caller_app_id);
 }
