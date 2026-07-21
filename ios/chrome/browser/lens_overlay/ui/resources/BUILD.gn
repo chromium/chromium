@@ -5,10 +5,7 @@
 import("//build/config/ios/rules.gni")
 
 bundle_data("animation_files") {
-  sources = [
-    "lens_usered_darkmode.json",
-    "lens_usered_lightmode.json",
-  ]
+  sources = [ "lens_usered_lightmode.json" ]
   outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
 }
 

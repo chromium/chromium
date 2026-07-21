@@ -5,7 +5,9 @@
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_consent_view_controller.h"
 
 #import "ios/chrome/browser/lens_overlay/public/lens_overlay_availability.h"
+#import "ios/chrome/browser/shared/ui/animated_promo/animated_promo_utils.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/promo_style/utils.h"
@@ -20,8 +22,6 @@
 namespace {
 
 NSString* const kLensUserEducationLightMode = @"lens_usered_lightmode";
-
-NSString* const kLensUserEducationDarkMode = @"lens_usered_darkmode";
 
 // The height of the animation, as a percentage of the whole view minus the
 // fixed height items. By subtracting out the height of the items with a
@@ -82,6 +82,10 @@ const CGFloat kDialogWidthInRegularDisplaySize = 540;
   AddSameConstraintsToSides(
       _contentStack, self.specificContentView,
       LayoutSides::kTrailing | LayoutSides::kLeading | LayoutSides::kTop);
+
+  [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
+                     withAction:@selector(configureAnimationColors)];
+  [self configureAnimationColors];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -121,10 +125,7 @@ const CGFloat kDialogWidthInRegularDisplaySize = 540;
 
 - (UIView*)createAnimationView {
   // Lottie animation.
-  _animationViewWrapper =
-      self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark
-          ? [self createAnimation:kLensUserEducationDarkMode]
-          : [self createAnimation:kLensUserEducationLightMode];
+  _animationViewWrapper = [self createAnimation:kLensUserEducationLightMode];
 
   UIView* animationView = _animationViewWrapper.animationView;
 
@@ -318,6 +319,18 @@ const CGFloat kDialogWidthInRegularDisplaySize = 540;
                                context:nil];
 
   return ceil(boundingBox.size.height);
+}
+
+// Configures the animation with semantic and custom colors.
+- (void)configureAnimationColors {
+  ConfigureAnimationSemanticColor(_animationViewWrapper,
+                                  kSecondaryBackgroundColor,
+                                  kSecondaryBackgroundColor);
+  ConfigureAnimationSemanticColor(_animationViewWrapper, kBlue100Color,
+                                  kBlue100Color);
+  ConfigureAnimationCustomColor(
+      _animationViewWrapper, @"grouped_tertiary_background_color",
+      UIColorFromRGB(0xE8EAED), UIColorFromRGB(0x5F6368));
 }
 
 @end
