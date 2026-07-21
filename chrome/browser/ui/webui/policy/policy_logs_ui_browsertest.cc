@@ -30,23 +30,16 @@ class PolicyUILogsPageTest : public PlatformBrowserTest,
 
   void ClickRefreshLogsButton() {
     ASSERT_TRUE(content::ExecJs(
-        web_contents(),
-        "document.querySelector('policy-logs-app').shadowRoot"
-        ".querySelector('#logs-refresh').click();"));
+        web_contents(), "document.querySelector('#logs-refresh').click();"));
   }
 
   void ClickDownloadJsonButton() {
     ASSERT_TRUE(content::ExecJs(
-        web_contents(),
-        "document.querySelector('policy-logs-app').shadowRoot"
-        ".querySelector('#logs-dump').click();"));
+        web_contents(), "document.querySelector('#logs-dump').click();"));
   }
 
   const std::string GetPageText() {
-    return content::EvalJs(
-               web_contents(),
-               "document.querySelector('policy-logs-app').shadowRoot"
-               ".textContent")
+    return content::EvalJs(web_contents(), "document.body.textContent")
         .ExtractString();
   }
 };
