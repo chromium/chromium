@@ -721,7 +721,6 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
     bool should_reencrypt) {
   VLOG(1) << "MutablePO2TS::LoadAllCredentialsIntoMemory; " << db_tokens.size()
           << " credential(s).";
-  bool did_reencrypt = false;
   ScopedBatchChange batch(this);
   for (const auto& [prefixed_account_id, token_with_binding_info] : db_tokens) {
     LoadTokenFromDBStatus load_token_status =
@@ -798,7 +797,6 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
     }
 
     if (!revoke_token && should_reencrypt) {
-      did_reencrypt = true;
       PersistCredentials(account_id, refresh_token, token_binding_info);
     }
 
@@ -812,7 +810,6 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
         return kv_pair.second.refresh_token.value() !=
                GaiaConstants::kInvalidRefreshToken;
       }));
-  base::UmaHistogramBoolean("Signin.ReencryptTokensInDb", did_reencrypt);
 }
 
 void MutableProfileOAuth2TokenServiceDelegate::UpdateCredentialsInternal(

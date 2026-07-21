@@ -3341,18 +3341,6 @@ Signin.OAuthMultiloginResponseStatus2{PartitionSuffix} one for a long enough tim
   </token>
 </histogram>
 
-<histogram name="Signin.ReencryptTokensInDb" enum="Boolean"
-    expires_after="2026-08-30">
-  <owner>wfh@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    True if one or more database operations were enqueued to migrate one or more
-    tokens in the token table to a new key because OSCrypt Async has indicated
-    that a re-encrypt of any of the tokens is required. This is recorded each
-    time any tokens have been successfully loaded into memory from the database.
-  </summary>
-</histogram>
-
 <histogram name="Signin.RefreshTokenRevoked.Source"
     enum="SourceForRefreshTokenOperation" expires_after="never">
 <!-- expires-never:  This histogram reports the source for token revocation

@@ -1751,7 +1751,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, TokenReencryption) {
   // This closure sets up the environment for the test, and also creates a
   // cleanup at the end of the scope of the test.
   auto SetUpTestAndReturnScopedCleanup =
-      [this](bool new_encryption_enabled, bool expect_reencrypt,
+      [this](bool new_encryption_enabled,
              base::HistogramBase::Count32 expected_writes)
       -> base::ScopedClosureRunner {
     std::vector<std::pair<size_t, std::unique_ptr<os_crypt_async::KeyProvider>>>
@@ -1775,7 +1775,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, TokenReencryption) {
     InitializeOAuth2ServiceDelegate();
 
     return base::ScopedClosureRunner(base::BindLambdaForTesting(
-        [this, expected_prefix, expect_reencrypt, expected_writes,
+        [this, expected_prefix, expected_writes,
          histograms = std::move(histograms), os_crypt = std::move(os_crypt)]() {
           UnloadTokenDatabase();
           {
@@ -1798,8 +1798,6 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, TokenReencryption) {
           }
           test_service_observation_.Reset();
           oauth2_service_delegate_->Shutdown();
-          histograms->ExpectUniqueSample("Signin.ReencryptTokensInDb",
-                                         expect_reencrypt, 1u);
           histograms->ExpectUniqueSample("Signin.TokenTable.SetTokenResult",
                                          /*kSuccess*/ 0, expected_writes);
         }));
@@ -1809,7 +1807,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, TokenReencryption) {
     // Expect two writes. They are both from the calls to `AddAuthTokenManually`
     // to set up the database.
     auto cleanup = SetUpTestAndReturnScopedCleanup(
-        /*new_encryption_enabled=*/false, /*expect_reencrypt=*/false,
+        /*new_encryption_enabled=*/false,
         /*expected_writes=*/2);
 
     // Verify DB is clean.
@@ -1837,7 +1835,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, TokenReencryption) {
     // token. Two writes only indicates that the invalid token was not
     // re-encrypted to the database, as expected.
     auto cleanup = SetUpTestAndReturnScopedCleanup(
-        /*new_encryption_enabled=*/true, /*expect_reencrypt=*/true,
+        /*new_encryption_enabled=*/true,
         /*expected_writes=*/2);
 
     // Add another invalid token. This will be not re-encrypted, and removed
@@ -1860,8 +1858,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, TokenReencryption) {
     // Expect no writes. The tokens have already been migrated to the new key so
     // no writes are needed.
     auto cleanup = SetUpTestAndReturnScopedCleanup(
-        /*new_encryption_enabled=*/true, /*expect_reencrypt=*/false,
-        /*expected_writes=*/0);
+        /*new_encryption_enabled=*/true, /*expected_writes=*/0);
 
     ResetObserverCounts();
     oauth2_service_delegate_->LoadCredentials(primary_account);
@@ -1878,8 +1875,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, TokenReencryption) {
     // One write is expected here. The single token is migrated back to the old
     // key.
     auto cleanup = SetUpTestAndReturnScopedCleanup(
-        /*new_encryption_enabled=*/false, /*expect_reencrypt=*/true,
-        /*expected_writes=*/1);
+        /*new_encryption_enabled=*/false, /*expected_writes=*/1);
 
     ResetObserverCounts();
     oauth2_service_delegate_->LoadCredentials(primary_account);
