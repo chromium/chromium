@@ -1059,13 +1059,6 @@ BASE_FEATURE(kHardwareSecureDecryptionAv1, base::FEATURE_DISABLED_BY_DEFAULT);
 // and the OS Content Decryption Module (CDM).
 BASE_FEATURE(kHardwareSecureDecryptionVp9, base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
-// Enables hardware secure Dolby Vision decoding always with HDR display check
-// if supported by the hardware and the OS Content Decryption Module (CDM).
-BASE_FEATURE(kHardwareSecureDecryptionDolbyVisionWithHdrCheck,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION
-
 #if BUILDFLAG(IS_WIN)
 // Enables showing permission indicator in the omnibox when a site is allowed or
 // denied to to use protected content IDs to play protected content.

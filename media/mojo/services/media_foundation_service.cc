@@ -473,16 +473,25 @@ CdmCapabilityOrStatus GetCdmCapability(
       base::UmaHistogramBoolean(
           std::string(kDolbyVisionSupportUmaPrefix) + ".WithHdrCheck",
           dv_support_with_hdr);
+      // TODO(crbug.com/536954447): Remove the ".WithoutHdrCheck" histogram once
+      // we verify that the Dolby Vision capability query with the HDR display
+      // check always is working as expected.
       base::UmaHistogramBoolean(
           std::string(kDolbyVisionSupportUmaPrefix) + ".WithoutHdrCheck",
           dv_support_without_hdr);
 
-      // 3. Determine the final support based on the feature flag.
-      is_type_supported_result =
-          base::FeatureList::IsEnabled(
-              kHardwareSecureDecryptionDolbyVisionWithHdrCheck)
-              ? dv_support_with_hdr
-              : dv_support_without_hdr;
+      // 3. Determine the final support. We always require the HDR display
+      // check for Dolby Vision (via MediaFoundation's IsTypeSupported query)
+      // for the following reasons:
+      // - Content providers often check for HDR display support using their
+      //   own methods (e.g., via CSS Media Queries).
+      // - MediaFoundation's IsTypeSupported query with "hdr=1" considers
+      //   EDR (Enhanced Dynamic Range) as HDR.
+      // - Dolby Vision content is expected to be played on an HDR-capable
+      //   display.
+      // - Querying Dolby Vision support with the HDR display check always
+      //   prevents complexity and confusion across player implementations.
+      is_type_supported_result = dv_support_with_hdr;
     }
 #endif
 
