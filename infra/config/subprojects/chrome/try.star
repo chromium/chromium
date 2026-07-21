@@ -87,6 +87,42 @@ chrome_internal_verifier(
 ### Optional builders ###
 
 chrome_internal_verifier(
+    builder = "ai_wpt-mac-arm64",
+    cq_settings = try_.cq_settings(
+        experiment_percentage = 100,
+        location_filters = [
+            "chrome/browser/ai/.+",
+            "components/on_device_translation/.+",
+            "components/optimization_guide/.+",
+            "services/on_device_model/.+",
+            "third_party/blink/web_tests/external/wpt/ai/.+",
+            "third_party/blink/web_tests/AIExpectations.*",
+        ],
+    ),
+    owner_whitelist = [
+        "google/optimization-guide-try-opt-in@google.com",
+    ],
+)
+
+chrome_internal_verifier(
+    builder = "ai_wpt-mac-x64",
+    cq_settings = try_.cq_settings(
+        experiment_percentage = 100,
+        location_filters = [
+            "chrome/browser/ai/.+",
+            "components/on_device_translation/.+",
+            "components/optimization_guide/.+",
+            "services/on_device_model/.+",
+            "third_party/blink/web_tests/external/wpt/ai/.+",
+            "third_party/blink/web_tests/AIExpectations.*",
+        ],
+    ),
+    owner_whitelist = [
+        "google/optimization-guide-try-opt-in@google.com",
+    ],
+)
+
+chrome_internal_verifier(
     # TODO(https://crbug.com/400712231): Turn on branches for this bot.
     #branch_selector = branches.selector.ANDROID_BRANCHES,
     builder = "android-arm32-orderfile",
