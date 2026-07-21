@@ -55,7 +55,6 @@ class CORE_EXPORT ColorChooserClient : public GarbageCollectedMixin {
   virtual Element& OwnerElement() const = 0;
   virtual gfx::Rect ElementRectRelativeToLocalRoot() const = 0;
   virtual Color CurrentColor() = 0;
-  virtual bool ShouldShowAlpha() const = 0;
   virtual bool ShouldShowSuggestions() const = 0;
   virtual Vector<mojom::blink::ColorSuggestionPtr> Suggestions() const = 0;
 };

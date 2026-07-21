@@ -31,7 +31,6 @@
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -119,14 +118,8 @@ void ColorChooserPopupUIController::WriteColorPickerDocument(
       "<div id='main'>Loading...</div><script>\n"
       "window.dialogArguments = {\n",
       data);
-  Color selected_color = client_->CurrentColor();
-  PagePopupClient::AddProperty("selectedColor",
-                               Color::FromRGBA32(selected_color.Rgb())
-                                   .MakeOpaque()
-                                   .SerializeAsCanvasColor(),
-                               data);
-  AddProperty("selectedColorAlpha", selected_color.Alpha(), data);
-  AddProperty("shouldShowAlpha", client_->ShouldShowAlpha(), data);
+  PagePopupClient::AddProperty(
+      "selectedColor", client_->CurrentColor().SerializeAsCSSColor(), data);
   AddProperty("anchorRectInScreen", anchor_rect_in_screen, data);
   AddProperty("zoomFactor", ScaledZoomFactor(), data);
   AddProperty("shouldShowColorSuggestionPicker", false, data);
@@ -138,7 +131,6 @@ void ColorChooserPopupUIController::WriteColorPickerDocument(
   AddLocalizedProperty("axColorWellRoleDescription",
                        IDS_AX_COLOR_WELL_ROLEDESCRIPTION, data);
   AddLocalizedProperty("axHueSliderLabel", IDS_AX_COLOR_HUE_SLIDER, data);
-  AddLocalizedProperty("axAlphaChannelLabel", IDS_AX_COLOR_ALPHA_SLIDER, data);
   AddLocalizedProperty("axHexadecimalEditLabel", IDS_AX_COLOR_EDIT_HEXADECIMAL,
                        data);
   AddLocalizedProperty("axRedEditLabel", IDS_AX_COLOR_EDIT_RED, data);
@@ -189,23 +181,14 @@ void ColorChooserPopupUIController::WriteColorSuggestionPickerDocument(
   PagePopupClient::AddProperty("values", suggestion_values, data);
   PagePopupClient::AddLocalizedProperty("otherColorLabel",
                                         IDS_FORM_OTHER_COLOR_LABEL, data);
-  Color selected_color = client_->CurrentColor();
-  PagePopupClient::AddProperty("selectedColor",
-                               Color::FromRGBA32(selected_color.Rgb())
-                                   .MakeOpaque()
-                                   .SerializeAsCanvasColor(),
-                               data);
-  AddProperty("selectedColorAlpha", selected_color.Alpha(), data);
-  AddProperty("shouldShowAlpha", client_->ShouldShowAlpha(), data);
+  PagePopupClient::AddProperty(
+      "selectedColor", client_->CurrentColor().SerializeAsCSSColor(), data);
   AddProperty("anchorRectInScreen", anchor_rect_in_screen, data);
   AddProperty("zoomFactor", ScaledZoomFactor(), data);
   AddProperty("shouldShowColorSuggestionPicker", true, data);
   AddProperty("isEyeDropperEnabled", ::features::IsEyeDropperEnabled(), data);
 #if BUILDFLAG(IS_MAC)
   AddProperty("isBorderTransparent", true, data);
-#endif
-#if !BUILDFLAG(IS_ANDROID)
-  AddLocalizedProperty("axAlphaChannelLabel", IDS_AX_COLOR_ALPHA_SLIDER, data);
 #endif
   PagePopupClient::AddLiteral("};\n", data);
   data.Append(ChooserResourceLoader::GetPickerCommonJS());
@@ -233,7 +216,7 @@ void ColorChooserPopupUIController::SetValueAndClosePopup(
 void ColorChooserPopupUIController::SetValue(const String& value) {
   DCHECK(client_);
   Color color;
-  bool success = CSSParser::ParseColor(color, value);
+  bool success = color.SetFromString(value);
   DCHECK(success);
   client_->DidChooseColor(color);
 }
