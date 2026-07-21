@@ -31,14 +31,17 @@ import static org.mockito.Mockito.mock;
 import static org.chromium.url.JUnitTestGURLs.HTTP_URL;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
 import android.widget.TextView;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.filters.LargeTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
@@ -59,6 +62,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -78,6 +82,8 @@ import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.test.util.BlankUiTestActivity;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 /** Tests for SendTabToSelfCoordinator */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -562,6 +568,130 @@ public class SendTabToSelfCoordinatorTest {
                 });
 
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures({
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
+        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
+        ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST
+    })
+    public void testSnackbarShownAfterSend_WebContentsNull() {
+        // Sign in and wait for the device list to be downloaded.
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        CriteriaHelper.pollUiThread(
+                () ->
+                        SendTabToSelfAndroidBridge.getEntryPointDisplayReason(
+                                        ProfileManager.getLastUsedRegularProfile(),
+                                        HTTP_URL.getSpec())
+                                .equals(EntryPointDisplayReason.OFFER_FEATURE));
+
+        // Trigger sendTabToDevice directly with null WebContents. This simulates the case where the
+        // send is triggered from the system Share Sheet.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SendTabToSelfAndroidBridge.sendTabToDevice(
+                            ProfileManager.getLastUsedRegularProfile(),
+                            null,
+                            "CacheGuid",
+                            "Device",
+                            HTTP_URL.getSpec(),
+                            "Title",
+                            ShareEntryPoint.SHARE_SHEET);
+                });
+
+        // Verify that the snackbar is shown on the activity.
+        ChromeTabbedActivity activity = mSyncTestRule.getActivity();
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    SnackbarManager snackbarManager = activity.getSnackbarManager();
+                    Snackbar snackbar = snackbarManager.getCurrentSnackbarForTesting();
+                    Criteria.checkThat(snackbar, Matchers.notNullValue());
+                    Criteria.checkThat(
+                            snackbar.getIdentifierForTesting(),
+                            Matchers.is(Snackbar.UMA_SEND_TAB_TO_SELF));
+
+                    TextView snackbarMessage = activity.findViewById(R.id.snackbar_message);
+                    Criteria.checkThat(snackbarMessage, Matchers.notNullValue());
+                    Criteria.checkThat(
+                            snackbarMessage.getText().toString(),
+                            Matchers.is("Sent to Chrome on your Device."));
+                });
+    }
+
+    @Test
+    @LargeTest
+    // On Automotive, the way this test detects the Toast (via a11y APIs) doesn't work.
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+    @EnableFeatures({
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
+        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
+        ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST
+    })
+    public void testToastShownAfterSend_SnackbarManagerUnavailable() {
+        // Sign in and wait for the device list to be downloaded.
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        CriteriaHelper.pollUiThread(
+                () ->
+                        SendTabToSelfAndroidBridge.getEntryPointDisplayReason(
+                                        ProfileManager.getLastUsedRegularProfile(),
+                                        HTTP_URL.getSpec())
+                                .equals(EntryPointDisplayReason.OFFER_FEATURE));
+
+        // Start BlankUiTestActivity to take focus. It does not implement SnackbarManageable. This
+        // simulates the case where the system Share Sheet is triggered from another app, and there
+        // is no visible Chrome activity.
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        Intent intent = new Intent(context, BlankUiTestActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        BlankUiTestActivity blankActivity =
+                (BlankUiTestActivity)
+                        InstrumentationRegistry.getInstrumentation().startActivitySync(intent);
+
+        // Register accessibility listener to capture the Toast.
+        var automation = InstrumentationRegistry.getInstrumentation().getUiAutomation();
+        java.util.concurrent.atomic.AtomicBoolean toastDisplayed =
+                new java.util.concurrent.atomic.AtomicBoolean(false);
+        automation.setOnAccessibilityEventListener(
+                event -> {
+                    if (event.getEventType()
+                            == AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED) {
+                        String className =
+                                event.getClassName() != null ? event.getClassName().toString() : "";
+                        String eventText = event.getText().toString();
+                        if (className.contains("android.widget.Toast")
+                                && eventText.contains("Sent to Chrome on your Device.")) {
+                            toastDisplayed.set(true);
+                        }
+                    }
+                });
+
+        // Trigger sendTabToDevice directly with null WebContents. This simulates the send being
+        // triggered from the system Share Sheet. It should check the focused activity
+        // (BlankUiTestActivity), find that it doesn't implement SnackbarManageable, and fallback to
+        // Toast.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SendTabToSelfAndroidBridge.sendTabToDevice(
+                            ProfileManager.getLastUsedRegularProfile(),
+                            null,
+                            "CacheGuid",
+                            "Device",
+                            HTTP_URL.getSpec(),
+                            "Title",
+                            ShareEntryPoint.SHARE_SHEET);
+                });
+
+        // Wait for the toast to be displayed.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(toastDisplayed.get(), Matchers.is(true));
+                });
+
+        // Clean up.
+        automation.setOnAccessibilityEventListener(null);
+        blankActivity.finish();
     }
 
     // Verify that show() returns early without crashing when getEntryPointDisplayReason returns
