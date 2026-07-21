@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(crbug.com/262737383): When Crubit supports generating C++ pattern
+// matching and accessor logic for non-repr(C) Rust ADT enums (like `Value` and
+// `MapKey`), remove all manual inspection (`kind()`) and payload extraction
+// (`as_int()`, `as_string()`, `as_array()`, etc.) methods below, as well as the
+// `MapKeyKind` and `ValueKind` proxy enums.
 use alloc::collections::BTreeMap;
 use alloc::string::String;
 use alloc::vec::Vec;
@@ -9,6 +14,21 @@ use core::cmp::Ordering;
 
 use crate::constants::*;
 use crate::writer;
+
+#[repr(C)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ValueKind {
+    Int = 0,
+    Bytestring = 1,
+    String = 2,
+    Array = 3,
+    Map = 4,
+    Boolean = 5,
+    Float = 6,
+    Null = 7,
+    Undefined = 8,
+    InvalidUtf8 = 9,
+}
 
 /// Value represents a CBOR structure.
 ///
@@ -41,6 +61,94 @@ impl Value {
     pub fn append_bytes(&self, out: &mut Vec<u8>) {
         writer::append_value(self, out);
     }
+
+    pub fn kind(&self) -> ValueKind {
+        match self {
+            Value::Int(_) => ValueKind::Int,
+            Value::Bytestring(_) => ValueKind::Bytestring,
+            Value::String(_) => ValueKind::String,
+            Value::Array(_) => ValueKind::Array,
+            Value::Map(_) => ValueKind::Map,
+            Value::Boolean(_) => ValueKind::Boolean,
+            Value::Float(_) => ValueKind::Float,
+            Value::Null => ValueKind::Null,
+            Value::Undefined => ValueKind::Undefined,
+            Value::InvalidUtf8(_) => ValueKind::InvalidUtf8,
+        }
+    }
+
+    pub fn as_int(&self) -> Option<i64> {
+        match self {
+            Value::Int(v) => Some(*v),
+            _ => None,
+        }
+    }
+
+    pub fn as_bool(&self) -> Option<bool> {
+        match self {
+            Value::Boolean(v) => Some(*v),
+            _ => None,
+        }
+    }
+
+    pub fn as_float(&self) -> Option<f64> {
+        match self {
+            Value::Float(v) => Some(*v),
+            _ => None,
+        }
+    }
+
+    pub fn as_bytestring(&self) -> Option<&[u8]> {
+        match self {
+            Value::Bytestring(v) => Some(v.as_slice()),
+            _ => None,
+        }
+    }
+
+    pub fn as_string(&self) -> Option<&str> {
+        match self {
+            Value::String(s) => Some(s.as_str()),
+            _ => None,
+        }
+    }
+
+    pub fn as_invalid_utf8(&self) -> Option<&[u8]> {
+        match self {
+            Value::InvalidUtf8(v) => Some(v.as_slice()),
+            _ => None,
+        }
+    }
+
+    pub fn as_array(&self) -> Option<&[Value]> {
+        match self {
+            Value::Array(v) => Some(v.as_slice()),
+            _ => None,
+        }
+    }
+
+    pub fn map_entries(&self) -> Option<Vec<MapEntryRef<'_>>> {
+        match self {
+            Value::Map(m) => {
+                Some(m.iter().map(|(k, v)| MapEntryRef { key: k, value: v }).collect())
+            }
+            _ => None,
+        }
+    }
+}
+
+#[repr(C)]
+#[derive(Debug, PartialEq, Clone)]
+pub struct MapEntryRef<'a> {
+    pub key: &'a MapKey,
+    pub value: &'a Value,
+}
+
+#[repr(C)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MapKeyKind {
+    Int = 0,
+    Bytestring = 1,
+    String = 2,
 }
 
 /// A MapKey is the type of values that can key a CBOR map.
@@ -67,6 +175,35 @@ impl MapKey {
             MapKey::Int(v) => (MAJOR_TYPE_NEGATIVE_INT, !*v as u64, None),
             MapKey::Bytestring(b) => (MAJOR_TYPE_BYTE_STRING, b.len() as u64, Some(b)),
             MapKey::String(s) => (MAJOR_TYPE_TEXT_STRING, s.len() as u64, Some(s.as_bytes())),
+        }
+    }
+
+    pub fn kind(&self) -> MapKeyKind {
+        match self {
+            MapKey::Int(_) => MapKeyKind::Int,
+            MapKey::Bytestring(_) => MapKeyKind::Bytestring,
+            MapKey::String(_) => MapKeyKind::String,
+        }
+    }
+
+    pub fn as_int(&self) -> Option<i64> {
+        match self {
+            MapKey::Int(v) => Some(*v),
+            _ => None,
+        }
+    }
+
+    pub fn as_bytestring(&self) -> Option<&[u8]> {
+        match self {
+            MapKey::Bytestring(v) => Some(v.as_slice()),
+            _ => None,
+        }
+    }
+
+    pub fn as_string(&self) -> Option<&str> {
+        match self {
+            MapKey::String(s) => Some(s.as_str()),
+            _ => None,
         }
     }
 }

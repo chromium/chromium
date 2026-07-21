@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(crbug.com/259749095): When Crubit (`cpp_api_from_rust`) supports generic
+// return types like `Result<(Value, usize), Error>` directly across FFI, remove
+// `ParseResult` and `parse_with_config_ffi` below, and rely entirely on
+// `parse_with_config` propagating a structured `Result` to C++.
 use alloc::collections::BTreeMap;
 use alloc::string::String;
 use alloc::vec::Vec;
@@ -34,6 +38,52 @@ pub enum Error {
     UnsupportedFloatingPointValue(u64),
 }
 
+// LINT.IfChange(ErrorCode)
+#[repr(C)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ErrorCode {
+    Ok = 0,
+    UnsupportedMajorType = 1,
+    UnknownAdditionalInfo = 2,
+    IncompleteCborData = 3,
+    IncorrectMapKeyType = 4,
+    TooMuchNesting = 5,
+    InvalidUtf8 = 6,
+    ExtraneousData = 7,
+    OutOfOrderKey = 8,
+    NonMinimalCborEncoding = 9,
+    UnsupportedSimpleValue = 10,
+    UnsupportedFloatingPointValue = 11,
+    OutOfRangeIntegerValue = 12,
+    DuplicateKey = 13,
+    UnknownError = 14,
+}
+// LINT.ThenChange(//components/cbor/reader.h:DecoderError,
+// //components/cbor/reader.cc:DecoderErrorAsserts)
+
+impl Error {
+    pub fn error_code(&self) -> ErrorCode {
+        match self {
+            Error::UnsupportedMajorType(_, _) => ErrorCode::UnsupportedMajorType,
+            Error::UnsupportedAdditionalInformation(_, _) => ErrorCode::UnknownAdditionalInfo,
+            Error::InputTruncated => ErrorCode::IncompleteCborData,
+            Error::UnsupportedMapKeyType(_, _) => ErrorCode::IncorrectMapKeyType,
+            Error::DepthLimitExceeded(_, _) => ErrorCode::TooMuchNesting,
+            Error::InvalidUTF8(_) => ErrorCode::InvalidUtf8,
+            Error::TrailingData(_) => ErrorCode::ExtraneousData,
+            Error::MapKeysOutOfOrder(_, _) => ErrorCode::OutOfOrderKey,
+            Error::NonMinimalAdditionalData(_) => ErrorCode::NonMinimalCborEncoding,
+            Error::UnsupportedSimpleValue(_) => ErrorCode::UnsupportedSimpleValue,
+            Error::UnsupportedFloatingPointValue(_) => ErrorCode::UnsupportedFloatingPointValue,
+            Error::NegativeOutOfRange(_) | Error::UnsignedOutOfRange(_) => {
+                ErrorCode::OutOfRangeIntegerValue
+            }
+            Error::DuplicateMapKey(_, _) => ErrorCode::DuplicateKey,
+        }
+    }
+}
+
+#[repr(C)]
 #[derive(Clone, Copy)]
 pub struct Config {
     pub allow_invalid_utf8: bool,
@@ -55,17 +105,34 @@ fn get<'a>(bytes: &mut &'a [u8], num_bytes: usize) -> Result<&'a [u8], Error> {
     bytes.split_off(..num_bytes).ok_or(Error::InputTruncated)
 }
 
+#[repr(C)]
+#[derive(Debug, PartialEq, Clone)]
+pub struct ParseResult {
+    pub value: Value,
+    pub bytes_consumed: usize,
+    pub error_code: ErrorCode,
+}
+
 /// Parses CBOR bytes into a `Value`.
 ///
 /// Returns the parsed value and the number of bytes consumed.
-/// The consumed bytes are used by the C++ FFI (`Reader::Read`) to support
-/// parsing a CBOR structure when it's concatenated with other data (by
-/// reporting how many bytes the C++ caller should advance its buffer by).
 pub fn parse_with_config(mut input: &[u8], config: Config) -> Result<(Value, usize), Error> {
     let orig_len = input.len();
     let ret = parse_value(&mut input, 0, &config)?;
     let consumed = orig_len - input.len();
     Ok((ret, consumed))
+}
+
+/// FFI wrapper returning `ParseResult` for Crubit C++ consumption.
+pub fn parse_with_config_ffi(input: &[u8], config: Config) -> ParseResult {
+    match parse_with_config(input, config) {
+        Ok((value, bytes_consumed)) => {
+            ParseResult { value, bytes_consumed, error_code: ErrorCode::Ok }
+        }
+        Err(err) => {
+            ParseResult { value: Value::Null, bytes_consumed: 0, error_code: err.error_code() }
+        }
+    }
 }
 
 fn parse_value(input: &mut &[u8], depth: usize, config: &Config) -> Result<Value, Error> {
@@ -195,13 +262,24 @@ fn to_map(
         let key_value = parse_value(input, depth, config)?;
         let key_bytes = &key_slice[..key_slice.len() - input.len()];
 
-        // `previous_key` starts empty. The first key always evaluates as
-        // `Ordering::Greater` since CBOR values require at least a 1-byte
-        // header, meaning `key_bytes` is never empty.
-        match key_bytes.cmp(previous_key) {
-            Ordering::Equal => return Err(Error::DuplicateMapKey(input.len(), key_value)),
-            Ordering::Less => return Err(Error::MapKeysOutOfOrder(input.len(), key_value)),
-            Ordering::Greater => {}
+        // CTAP2 canonical CBOR sorting rules (and cbor::Value::Less in Chromium):
+        // 1. If major types differ, lower numerical major type sorts earlier
+        //    (key_bytes[0] >> 5).
+        // 2. If lengths differ, shorter encoded byte length sorts earlier
+        //    (key_bytes.len()).
+        // 3. If major type and length are equal, lower byte-wise lexical order sorts
+        //    earlier.
+        if !previous_key.is_empty() {
+            let key_order = (key_bytes[0] >> 5, key_bytes.len(), key_bytes).cmp(&(
+                previous_key[0] >> 5,
+                previous_key.len(),
+                previous_key,
+            ));
+            match key_order {
+                Ordering::Equal => return Err(Error::DuplicateMapKey(input.len(), key_value)),
+                Ordering::Less => return Err(Error::MapKeysOutOfOrder(input.len(), key_value)),
+                Ordering::Greater => {}
+            }
         }
         previous_key = key_bytes;
 

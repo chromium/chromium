@@ -2,7 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
+import("//build/config/cronet/config.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
+
+buildflag_header("buildflags") {
+  header = "cbor_buildflags.h"
+
+  # TODO(crbug.com/535682335): Remove `USE_CBOR_RUST` buildflag entirely,
+  # unconditionally enable Rust CBOR parser, and drop `is_cronet_build` check
+  # once Cronet supports Crubit dependencies.
+  flags = [ "USE_CBOR_RUST=!$is_cronet_build" ]
+}
 
 component("cbor") {
   sources = [
@@ -21,7 +32,17 @@ component("cbor") {
 
   defines = [ "CBOR_IMPLEMENTATION" ]
 
-  deps = [ "//base" ]
+  deps = [
+    ":buildflags",
+    "//base",
+  ]
+
+  if (!is_cronet_build) {
+    public_deps = [
+      "//build/rust/crubit",
+      "//components/cbor/rust:cbor_rust_bindings",
+    ]
+  }
 }
 
 source_set("unit_tests") {
@@ -35,13 +56,16 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":buildflags",
     ":cbor",
     "//base",
-    "//components/cbor/rust:cbor_rust_unittests",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/fuzztest",
   ]
+  if (!is_cronet_build) {
+    deps += [ "//components/cbor/rust:cbor_rust_unittests" ]
+  }
 
   data = [ "reader_fuzzer_corpus/" ]
 

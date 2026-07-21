@@ -12,8 +12,16 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
+#include "components/cbor/cbor_buildflags.h"
 #include "components/cbor/cbor_export.h"
 #include "components/cbor/values.h"
+
+// TODO(crbug.com/536539387): Once Crubit fixes -Wnullability-completeness, we
+// can include cbor_rust.h in reader.h instead of reader.cc and assign the
+// values of DecoderError directly from the Rust Tag enum.
+#if BUILDFLAG(USE_CBOR_RUST)
+// Included in reader.cc instead: #include "components/cbor/rust/cbor_rust.h"
+#endif
 
 // Concise Binary Object Representation (CBOR) decoder as defined by
 // https://tools.ietf.org/html/rfc7049. This decoder only accepts canonical CBOR
@@ -57,24 +65,37 @@
 
 namespace cbor {
 
+// TODO(crbug.com/535682335): Remove `#if BUILDFLAG(USE_CBOR_RUST)` macros and
+// unconditionally use rust types once Cronet supports Crubit dependencies.
+#if BUILDFLAG(USE_CBOR_RUST)
+namespace rust {
+struct Value;
+}
+#endif
+
 class CBOR_EXPORT Reader {
  public:
+  // TODO(crbug.com/536539387): Once Crubit fixes -Wnullability-completeness, we
+  // can include cbor_rust.h in reader.h and assign the values of DecoderError
+  // directly from the Rust Tag enum.
   enum class DecoderError {
+    // LINT.IfChange(DecoderError)
     CBOR_NO_ERROR = 0,
-    UNSUPPORTED_MAJOR_TYPE,
-    UNKNOWN_ADDITIONAL_INFO,
-    INCOMPLETE_CBOR_DATA,
-    INCORRECT_MAP_KEY_TYPE,
-    TOO_MUCH_NESTING,
-    INVALID_UTF8,
-    EXTRANEOUS_DATA,
-    OUT_OF_ORDER_KEY,
-    NON_MINIMAL_CBOR_ENCODING,
-    UNSUPPORTED_SIMPLE_VALUE,
-    UNSUPPORTED_FLOATING_POINT_VALUE,
-    OUT_OF_RANGE_INTEGER_VALUE,
-    DUPLICATE_KEY,
-    UNKNOWN_ERROR,
+    UNSUPPORTED_MAJOR_TYPE = 1,
+    UNKNOWN_ADDITIONAL_INFO = 2,
+    INCOMPLETE_CBOR_DATA = 3,
+    INCORRECT_MAP_KEY_TYPE = 4,
+    TOO_MUCH_NESTING = 5,
+    INVALID_UTF8 = 6,
+    EXTRANEOUS_DATA = 7,
+    OUT_OF_ORDER_KEY = 8,
+    NON_MINIMAL_CBOR_ENCODING = 9,
+    UNSUPPORTED_SIMPLE_VALUE = 10,
+    UNSUPPORTED_FLOATING_POINT_VALUE = 11,
+    OUT_OF_RANGE_INTEGER_VALUE = 12,
+    DUPLICATE_KEY = 13,
+    UNKNOWN_ERROR = 14,
+    // LINT.ThenChange(//components/cbor/rust/reader.rs:ErrorCode,//components/cbor/reader.cc:DecoderErrorAsserts)
   };
 
   // CBOR nested depth sufficient for most use cases.
@@ -99,7 +120,7 @@ class CBOR_EXPORT Reader {
 
     // Controls the maximum depth of CBOR nesting that will be permitted. This
     // exists to control stack consumption during parsing.
-    int max_nesting_level = kCBORMaxDepth;
+    size_t max_nesting_level = kCBORMaxDepth;
 
     // Causes strings that are not valid UTF-8 to be accepted and suppresses the
     // |INVALID_UTF8| error, unless such strings are map keys. Invalid strings
@@ -118,6 +139,9 @@ class CBOR_EXPORT Reader {
     // during decoding will set raise the `UNSUPPORTED_FLOATING_POINT_VALUE`
     // error.
     bool allow_floating_point = false;
+
+    // Uses the rust parser instead of the C++ parser.
+    bool use_rust = false;
   };
 
   Reader(const Reader&) = delete;
@@ -197,6 +221,10 @@ class CBOR_EXPORT Reader {
   bool IsEncodingMinimal(uint8_t additional_bytes, uint64_t uint_data);
 
   DecoderError GetErrorCode() { return error_code_; }
+
+#if BUILDFLAG(USE_CBOR_RUST)
+  static Value ConvertRustValueToCpp(const cbor::rust::Value& rust_val);
+#endif
 
   size_t num_bytes_remaining() const { return rest_.size(); }
 
