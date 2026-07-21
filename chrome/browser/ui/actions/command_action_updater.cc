@@ -46,8 +46,8 @@ const base::flat_map<int, actions::ActionId>& GetCommandIdToActionIdMap() {
   static const base::NoDestructor<base::flat_map<int, actions::ActionId>> kMap(
       [] {
         std::vector<std::pair<int, actions::ActionId>> entries = {
-            CHROME_ACTION_IDS SIDE_PANEL_ACTION_IDS
-                TOOLBAR_PINNABLE_ACTION_IDS};
+            CHROME_ACTION_IDS SIDE_PANEL_ACTION_IDS TOOLBAR_PINNABLE_ACTION_IDS
+                SUBMENU_ACTION_IDS};
         base::flat_map<int, actions::ActionId> map;
         map.reserve(entries.size());
         for (const auto& [idc, action_id] : entries) {

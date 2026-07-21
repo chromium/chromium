@@ -423,6 +423,8 @@ void BrowserActions::InitializeBrowserActions() {
 
   InitializeNavigationActions();
 
+  InitializeSubmenuActions();
+
   AddListeners();
 }
 
@@ -4887,4 +4889,17 @@ void BrowserActions::InitializeNavigationActions() {
               bwi))
           .SetActionId(kActionForward)
           .Build());
+}
+
+void BrowserActions::InitializeSubmenuActions() {
+  for (actions::ActionId action_id :
+       {kActionMenuBookmarksSubmenu, kActionMenuPasswordsAndAutofillSubmenu,
+        kActionMenuReadingListSubmenu, kActionMenuZoomSubmenu,
+        kActionMenuProfileSubmenu, kActionMenuFindAndEditSubmenu,
+        kActionMenuSaveAndShareSubmenu, kActionMenuHelpSubmenu,
+        kActionMenuSavedTabGroupsSubmenu, kActionMenuRecentTabsSubmenu,
+        kActionMenuDeveloperSubmenu}) {
+    root_action_item_->AddChild(
+        actions::ActionItem::Builder().SetActionId(action_id).Build());
+  }
 }

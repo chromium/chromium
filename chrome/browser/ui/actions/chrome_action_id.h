@@ -531,6 +531,19 @@
   E(kActionWebAuthnAmbientSignin) \
   E(kActionAutofillPayment) \
 
+#define SUBMENU_ACTION_IDS                                                     \
+  E(kActionMenuBookmarksSubmenu, kBookmarksMenuId)                             \
+  E(kActionMenuPasswordsAndAutofillSubmenu, kPasswordsAndAutofillMenuId)       \
+  E(kActionMenuReadingListSubmenu, kReadingListMenuId)                         \
+  E(kActionMenuZoomSubmenu, kZoomMenuId)                                       \
+  E(kActionMenuProfileSubmenu, kProfileMenuId)                                 \
+  E(kActionMenuFindAndEditSubmenu, kFindAndEditMenuId)                         \
+  E(kActionMenuSaveAndShareSubmenu, kSaveAndShareMenuId)                       \
+  E(kActionMenuHelpSubmenu, kHelpMenuId)                                       \
+  E(kActionMenuSavedTabGroupsSubmenu, kSavedTabGroupsMenuId)                   \
+  E(kActionMenuRecentTabsSubmenu, kRecentTabsMenuId)                           \
+  E(kActionMenuDeveloperSubmenu, kDeveloperMenuId)
+
 #define CHROME_ACTION_IDS \
     CHROME_COMMON_ACTION_IDS \
     CHROME_PLATFORM_SPECIFIC_ACTION_IDS \
@@ -544,6 +557,7 @@ enum ChromeActionIds : actions::ActionId {
   CHROME_ACTION_IDS
   SIDE_PANEL_ACTION_IDS
   TOOLBAR_PINNABLE_ACTION_IDS
+  SUBMENU_ACTION_IDS
 
   kChromeActionsEnd,
 };
