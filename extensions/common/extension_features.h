@@ -135,6 +135,11 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kBackgroundCompilationTimeout);
 BASE_DECLARE_FEATURE_PARAM(size_t, kMinScriptSizeForBackgroundCompilation);
 BASE_DECLARE_FEATURE_PARAM(size_t, kMaxScriptSizeForBackgroundCompilation);
 
+// If enabled, queries for external web page connections to extensions or apps
+// in incognito mode are short-circuited and automatically rejected without
+// prompting the user.
+BASE_DECLARE_FEATURE(kExtensionAutoRejectIncognitoConnectability);
+
 // If enabled, disables unpacked extensions if developer mode is off.
 BASE_DECLARE_FEATURE(kExtensionDisableUnsupportedDeveloper);
 
