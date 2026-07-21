@@ -30,7 +30,7 @@ public class HubBottomToolbarView extends LinearLayout {
         mColorMixerHelper.registerBlend(
                 new SingleHubViewColorBlend(
                         PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
-                        colorScheme -> HubColors.getBackgroundColor(context, colorScheme),
+                        colorScheme -> HubColors.getHubBottomToolbarColor(context, colorScheme),
                         this::setBackgroundColor));
     }
 

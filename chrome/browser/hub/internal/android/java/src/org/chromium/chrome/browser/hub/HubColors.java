@@ -20,6 +20,9 @@ import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarUtils;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.IncognitoColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.util.ColorUtils;
@@ -60,6 +63,21 @@ public final class HubColors {
     public static @ColorInt int getBackgroundColor(
             Context context, @HubColorScheme int colorScheme, boolean isXrFullSpaceMode) {
         if (isXrFullSpaceMode) return Color.TRANSPARENT;
+        return getBackgroundColor(context, colorScheme);
+    }
+
+    /** Returns the background color bottom bar should use per the given color scheme. */
+    public static @ColorInt int getHubBottomToolbarColor(
+            Context context, @HubColorScheme int colorScheme) {
+        if (BottomBarConfigUtils.isBottomBarEnabled(context)
+                && BottomBarConfigUtils.shouldShowOnGts()) {
+            @BrandedColorScheme
+            int brandedColorScheme =
+                    colorScheme == HubColorScheme.INCOGNITO
+                            ? BrandedColorScheme.INCOGNITO
+                            : BrandedColorScheme.APP_DEFAULT;
+            return BottomBarUtils.getBottomBarBackgroundColor(context, brandedColorScheme);
+        }
         return getBackgroundColor(context, colorScheme);
     }
 
