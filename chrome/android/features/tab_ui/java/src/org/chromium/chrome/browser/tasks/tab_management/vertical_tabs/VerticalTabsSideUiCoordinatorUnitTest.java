@@ -237,6 +237,62 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Test
     @SmallTest
+    public void testHoverExpandAndCollapse() {
+        RailCollapseListener listener = captureCollapseListener();
+
+        // Collapse the rail
+        listener.onRailCollapseStateChangeRequested(RailCollapseState.COLLAPSED);
+        assertEquals(RailCollapseState.COLLAPSED, mCoordinator.getRailCollapseStateForTesting());
+        assertShowableWidth(mCollapsedRailWidth, mWideWindowWidth);
+        verify(mMockSideUiCoordinator).updateUi(any(SideUiCoordinator.UiUpdateRequest.class));
+
+        // Hover enter: rail expands for hovering
+        listener.onRailCollapseStateChangeRequested(RailCollapseState.EXPANDED_FOR_HOVERING);
+        assertEquals(
+                RailCollapseState.EXPANDED_FOR_HOVERING,
+                mCoordinator.getRailCollapseStateForTesting());
+        assertShowableWidth(mExpandedRailWidth, mWideWindowWidth);
+        verify(mMockSideUiCoordinator, times(2))
+                .updateUi(any(SideUiCoordinator.UiUpdateRequest.class));
+
+        // Hover exit: rail collapses back
+        listener.onRailCollapseStateChangeRequested(RailCollapseState.COLLAPSED);
+        assertEquals(RailCollapseState.COLLAPSED, mCoordinator.getRailCollapseStateForTesting());
+        assertShowableWidth(mCollapsedRailWidth, mWideWindowWidth);
+        verify(mMockSideUiCoordinator, times(3))
+                .updateUi(any(SideUiCoordinator.UiUpdateRequest.class));
+    }
+
+    @Test
+    @SmallTest
+    public void testPinRailWhenHoverExpanded() {
+        RailCollapseListener listener = captureCollapseListener();
+
+        // Start in COLLAPSED
+        listener.onRailCollapseStateChangeRequested(RailCollapseState.COLLAPSED);
+        assertEquals(RailCollapseState.COLLAPSED, mCoordinator.getRailCollapseStateForTesting());
+        verify(mMockSideUiCoordinator, times(1))
+                .updateUi(any(SideUiCoordinator.UiUpdateRequest.class));
+
+        // Hover expand
+        listener.onRailCollapseStateChangeRequested(RailCollapseState.EXPANDED_FOR_HOVERING);
+        assertEquals(
+                RailCollapseState.EXPANDED_FOR_HOVERING,
+                mCoordinator.getRailCollapseStateForTesting());
+        verify(mMockSideUiCoordinator, times(2))
+                .updateUi(any(SideUiCoordinator.UiUpdateRequest.class));
+
+        // User clicks expand chevron button to open pinned rail.
+        listener.onRailCollapseStateChangeRequested(RailCollapseState.EXPANDED);
+        assertEquals(RailCollapseState.EXPANDED, mCoordinator.getRailCollapseStateForTesting());
+        verify(mMockTabListCoordinator).setRailCollapseState(RailCollapseState.EXPANDED);
+        // updateUi() is not called when transitioning from EXPANDED_FOR_HOVERING to EXPANDED
+        verify(mMockSideUiCoordinator, times(2))
+                .updateUi(any(SideUiCoordinator.UiUpdateRequest.class));
+    }
+
+    @Test
+    @SmallTest
     public void testOnPreSideUiSpecsChange_Resize() {
         SideUiSpecs currentSpecs = new SideUiSpecs(mExpandedRailWidth, 0);
         when(mMockSideUiCoordinator.getCurrentSideUiSpecs()).thenReturn(currentSpecs);

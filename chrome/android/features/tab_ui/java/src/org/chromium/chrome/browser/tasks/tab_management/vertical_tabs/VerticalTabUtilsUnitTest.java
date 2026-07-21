@@ -98,4 +98,14 @@ public class VerticalTabUtilsUnitTest {
                 .writeBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, true);
         assertTrue(VerticalTabUtils.isVerticalTabsEnabled(mContext));
     }
+
+    @Test
+    @SmallTest
+    public void testIsExpandOnHoverEnabled() {
+        assertFalse(VerticalTabUtils.isExpandOnHoverEnabled());
+
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", true);
+        assertTrue(VerticalTabUtils.isExpandOnHoverEnabled());
+    }
 }

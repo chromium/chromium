@@ -5,7 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<androidx.constraintlayout.widget.ConstraintLayout
+<org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabRailLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/vertical_tab_rail_container"
@@ -115,4 +115,4 @@ found in the LICENSE file.
         android:layout_marginTop="@dimen/vertical_tabs_new_tab_button_margin_top"
         android:layout_marginBottom="@dimen/vertical_tabs_new_tab_button_margin_bottom"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabRailLayout>

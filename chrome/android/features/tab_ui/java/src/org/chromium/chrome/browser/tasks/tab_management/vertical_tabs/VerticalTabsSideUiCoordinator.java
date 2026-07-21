@@ -219,10 +219,23 @@ public class VerticalTabsSideUiCoordinator
     // 3. onSideUiSpecsChanged: fired post-specs change (only if width/specs changed) to sync button
     // and rail model state.
     private void onRailCollapseStateChangeRequested(@RailCollapseState int newState) {
+        @RailCollapseState int oldState = mRailCollapseStateByUser;
         if (mRailCollapseStateByUser == newState) return;
+
         mRailCollapseStateByUser = newState;
-        mSideUiCoordinator.updateUi(
-                new UiUpdateRequest(getSideUiId(), /* suppressAnimations= */ false));
+
+        // TODO(crbug.com/527641177): Remove this if check after expand on hovering UI is done.
+        if (isExpanded(oldState) && isExpanded(newState)) {
+            updateCollapseButtonAndRailState(isCurrentWindowNarrow());
+        } else {
+            mSideUiCoordinator.updateUi(
+                    new UiUpdateRequest(getSideUiId(), /* suppressAnimations= */ false));
+        }
+    }
+
+    private boolean isExpanded(@RailCollapseState int state) {
+        return state == RailCollapseState.EXPANDED
+                || state == RailCollapseState.EXPANDED_FOR_HOVERING;
     }
 
     private void updateCollapseButtonAndRailState(boolean isNarrow) {
@@ -243,5 +256,10 @@ public class VerticalTabsSideUiCoordinator
     @RailCollapseState
     int getRailCollapseStateByUserForTesting() {
         return mRailCollapseStateByUser;
+    }
+
+    @RailCollapseState
+    int getRailCollapseStateForTesting() {
+        return getRailCollapseState(isCurrentWindowNarrow());
     }
 }

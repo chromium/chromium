@@ -52,4 +52,10 @@ public class VerticalTabUtils {
         context.getResources().getValue(resId, outValue, true);
         return outValue.getFloat();
     }
+
+    /** Returns whether expand-on-hover behavior is enabled for Vertical Tabs. */
+    public static boolean isExpandOnHoverEnabled() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", false);
+    }
 }

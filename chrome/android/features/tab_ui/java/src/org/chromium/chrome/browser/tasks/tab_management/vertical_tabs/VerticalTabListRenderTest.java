@@ -500,7 +500,9 @@ public class VerticalTabListRenderTest {
         ViewGroup[] view = new ViewGroup[1];
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ViewGroup container = inflateAndAttachView(R.layout.vertical_tab_layout);
+                    VerticalTabRailLayout container =
+                            (VerticalTabRailLayout)
+                                    inflateAndAttachView(R.layout.vertical_tab_layout);
                     int widthPx = ViewUtils.dpToPx(mActivity, EXPANDED_RAIL_WIDTH_DP);
                     container.setLayoutParams(
                             new FrameLayout.LayoutParams(
@@ -525,7 +527,9 @@ public class VerticalTabListRenderTest {
         ViewGroup[] view = new ViewGroup[1];
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ViewGroup container = inflateAndAttachView(R.layout.vertical_tab_layout);
+                    VerticalTabRailLayout container =
+                            (VerticalTabRailLayout)
+                                    inflateAndAttachView(R.layout.vertical_tab_layout);
                     int widthPx = ViewUtils.dpToPx(mActivity, COLLAPSED_RAIL_WIDTH_DP);
                     int heightPx = ViewUtils.dpToPx(mActivity, RAIL_TEST_HEIGHT_DP);
                     container.setLayoutParams(new FrameLayout.LayoutParams(widthPx, heightPx));
