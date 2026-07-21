@@ -492,68 +492,6 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroup,
   EXPECT_EQ(2, tsm->count());
 }
 
-IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroup,
-                       ConvertTabGroupToBookmark) {
-  base::UserActionTester user_action_tester;
-
-  ShowUi("SetUp");
-
-  TabStripModel* tsm = browser()->tab_strip_model();
-  ASSERT_EQ(1, tsm->count());
-  TabGroupModel* group_model = tsm->group_model();
-  std::vector<tab_groups::TabGroupId> group_list = group_model->ListTabGroups();
-  ASSERT_EQ(1u, group_list.size());
-  ASSERT_EQ(1u, group_model->GetTabGroup(group_list[0])->ListTabs().length());
-
-  views::Widget* editor_bubble = WaitForAndGetEditorBubbleWidget();
-  ASSERT_NE(nullptr, editor_bubble);
-
-  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       BookmarkEditorView::kViewClassName);
-
-  // Convert the tab group to bookmark.
-  views::Button* const convert_to_bookmark_button =
-      views::Button::AsButton(editor_bubble->GetContentsView()->GetViewByID(
-          TabGroupEditorBubbleView::
-              TAB_GROUP_HEADER_CXMENU_CONVERT_TO_BOOKMARK));
-  ASSERT_NE(nullptr, convert_to_bookmark_button);
-  ui::MouseEvent released_event(ui::EventType::kMouseReleased, gfx::PointF(),
-                                gfx::PointF(), base::TimeTicks(), 0, 0);
-  views::test::ButtonTestApi(convert_to_bookmark_button)
-      .NotifyClick(released_event);
-
-  // Make sure the bookmark editor is shown and press the save button.
-  views::Widget* bookmark_editor_widget = waiter.WaitIfNeededAndGet();
-  ASSERT_NE(nullptr, bookmark_editor_widget);
-  bookmark_editor_widget->widget_delegate()->AsDialogDelegate()->Accept();
-
-  // Make sure that the group is removed after convert to bookmark.
-  EXPECT_EQ(0u, group_model->ListTabGroups().size());
-
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "BookmarkTabGroupConversion_ConvertToBookmarkSelected"));
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "BookmarkTabGroupConversion_ConvertToBookmarkConfirmed"));
-}
-
-IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroup,
-                       ConvertTabGroupToBookmarkDisabledByPolicy) {
-  // Bookmark disabled by policy.
-  browser()->profile()->GetPrefs()->SetBoolean(
-      bookmarks::prefs::kEditBookmarksEnabled, false);
-
-  ShowUi("SetUp");
-
-  views::Widget* editor_bubble = WaitForAndGetEditorBubbleWidget();
-  ASSERT_NE(nullptr, editor_bubble);
-
-  // Make sure the convert to bookmark button is not shown.
-  views::Button* const convert_to_bookmark_button =
-      views::Button::AsButton(editor_bubble->GetContentsView()->GetViewByID(
-          TabGroupEditorBubbleView::
-              TAB_GROUP_HEADER_CXMENU_CONVERT_TO_BOOKMARK));
-  ASSERT_EQ(nullptr, convert_to_bookmark_button);
-}
 
 class TabGroupEditorBubbleViewDialogBrowserTestWithFocusingEnabled
     : public TabGroupEditorBubbleViewDialogBrowserTest {
