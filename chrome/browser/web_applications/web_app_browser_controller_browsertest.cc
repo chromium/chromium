@@ -54,7 +54,7 @@ class WebAppBrowserControllerBrowserTest : public WebAppBrowserTestBase {
     test::WaitUntilWebAppProviderAndSubsystemsReady(&provider());
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   std::optional<base::AutoReset<std::vector<ExternalInstallOptions>>>
       custom_preinstalls_;

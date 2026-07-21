@@ -1232,7 +1232,7 @@ class ClientSideDetectionHostClipboardTest
     ASSERT_TRUE(embedded_test_server()->Start());
 
     content::PermissionController* permission_controller =
-        browser()->profile()->GetPermissionController();
+        browser()->GetProfile()->GetPermissionController();
     url::Origin origin =
         url::Origin::Create(embedded_test_server()->GetURL("/title1.html"));
     content::SetPermissionControllerOverride(

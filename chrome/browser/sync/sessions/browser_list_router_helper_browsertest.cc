@@ -93,7 +93,7 @@ INSTANTIATE_TEST_SUITE_P(WebContentsDiscard,
 IN_PROC_BROWSER_TEST_P(BrowserListRouterHelperBrowserTest,
                        ObservationScopedToSingleProfile) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  Profile* profile_1 = browser()->profile();
+  Profile* profile_1 = browser()->GetProfile();
 
   // Create a second profile and browser.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_P(BrowserListRouterHelperBrowserTest,
 // observed.
 IN_PROC_BROWSER_TEST_P(BrowserListRouterHelperBrowserTest, NotifyOnDiscardTab) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  Profile* profile_1 = browser()->profile();
+  Profile* profile_1 = browser()->GetProfile();
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   Profile* profile_2 = &profiles::testing::CreateProfileSync(

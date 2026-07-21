@@ -146,16 +146,16 @@ class GeminiAntiscamProtectionServiceBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(GeminiAntiscamProtectionServiceBrowserTest,
                        StandardProtection_NoService) {
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
-                                               false);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
+                                                  false);
   EXPECT_EQ(nullptr, GeminiAntiscamProtectionServiceFactory::GetForProfile(
                          browser()->GetProfile()));
 }
 
 IN_PROC_BROWSER_TEST_F(GeminiAntiscamProtectionServiceBrowserTest,
                        IncognitoProfile_NoService) {
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
-                                               true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
+                                                  true);
   EXPECT_EQ(nullptr, GeminiAntiscamProtectionServiceFactory::GetForProfile(
                          browser()->GetProfile()->GetOffTheRecordProfile(
                              Profile::OTRProfileID::CreateUniqueForTesting(),
@@ -164,8 +164,8 @@ IN_PROC_BROWSER_TEST_F(GeminiAntiscamProtectionServiceBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(GeminiAntiscamProtectionServiceBrowserTest,
                        EnhancedProtection_HasService) {
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
-                                               true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
+                                                  true);
   auto* service = GeminiAntiscamProtectionServiceFactory::GetForProfile(
       browser()->GetProfile());
   EXPECT_NE(nullptr, service);
@@ -173,8 +173,8 @@ IN_PROC_BROWSER_TEST_F(GeminiAntiscamProtectionServiceBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(GeminiAntiscamProtectionServiceBrowserTest,
                        EnhancedProtection_EmptyResponse) {
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
-                                               true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
+                                                  true);
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("https://example.com/")));
   base::HistogramTester histogram_tester;
@@ -209,8 +209,8 @@ IN_PROC_BROWSER_TEST_F(GeminiAntiscamProtectionServiceBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(GeminiAntiscamProtectionServiceBrowserTest,
                        EnhancedProtection_FailedParsingError) {
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
-                                               true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
+                                                  true);
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("https://example.com/")));
   base::HistogramTester histogram_tester;
@@ -246,8 +246,8 @@ IN_PROC_BROWSER_TEST_F(GeminiAntiscamProtectionServiceBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     GeminiAntiscamProtectionServiceBrowserTest,
     EnhancedProtection_SuccessfulResponseReturnsScamVerdict) {
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
-                                               true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
+                                                  true);
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("https://example.com/")));
   base::HistogramTester histogram_tester;
@@ -297,8 +297,8 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     GeminiAntiscamProtectionServiceBrowserTest,
     EnhancedProtection_SuccessfulResponseReturnsBenignVerdict) {
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
-                                               true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
+                                                  true);
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("https://example.com/")));
   base::HistogramTester histogram_tester;

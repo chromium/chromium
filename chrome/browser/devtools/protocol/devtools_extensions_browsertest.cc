@@ -116,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
   ASSERT_EQ(extension->location(),
             extensions::mojom::ManifestLocation::kUnpacked);
   ASSERT_FALSE(extensions::util::IsIncognitoEnabled(*result->FindString("id"),
-                                                    browser()->profile()));
+                                                    browser()->GetProfile()));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
             extensions::mojom::ManifestLocation::kUnpacked);
 
   ASSERT_TRUE(extensions::util::IsIncognitoEnabled(*result->FindString("id"),
-                                                   browser()->profile()));
+                                                   browser()->GetProfile()));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest, ThrowsOnWrongPath) {
@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
   // Verify that the extension is not enabled in incognito, as `false` was
   // passed for `enable_in_incognito`.
   ASSERT_FALSE(extensions::util::IsIncognitoEnabled(*result->FindString("id"),
-                                                    browser()->profile()));
+                                                    browser()->GetProfile()));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest, CanUninstallExtension) {

@@ -48,11 +48,11 @@ class IncognitoModeInSupervisedContextUiTest
 IN_PROC_BROWSER_TEST_F(IncognitoModeInSupervisedContextUiTest,
                        IncognitoModeIsNotAvailableToSupervisedUser) {
   ASSERT_TRUE(
-      IncognitoModePrefs::IsIncognitoAllowed(child().browser().profile()));
+      IncognitoModePrefs::IsIncognitoAllowed(child().browser().GetProfile()));
   SigninToBrowserFor(child());
 
   ASSERT_FALSE(
-      IncognitoModePrefs::IsIncognitoAllowed(child().browser().profile()));
+      IncognitoModePrefs::IsIncognitoAllowed(child().browser().GetProfile()));
 
   RunTestSequenceInContext(
       BrowserElements::From(&child().browser())->GetContext(),
@@ -70,7 +70,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoModeInSupervisedContextUiTest,
                        IncognitoModeIsAvailableToHeadOfHousehold) {
   SigninToBrowserFor(head_of_household());
   ASSERT_TRUE(IncognitoModePrefs::IsIncognitoAllowed(
-      head_of_household().browser().profile()));
+      head_of_household().browser().GetProfile()));
 
   RunTestSequenceInContext(
       BrowserElements::From(&head_of_household().browser())->GetContext(),

@@ -303,7 +303,7 @@ class TabRestoreTest : public InProcessBrowserTest {
   void EnableSessionService(
       SessionStartupPref::Type type = SessionStartupPref::Type::DEFAULT) {
     SessionStartupPref pref(type);
-    Profile* profile = browser()->profile();
+    Profile* profile = browser()->GetProfile();
     SessionStartupPref::SetStartupPref(profile, pref);
   }
 
@@ -685,14 +685,15 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
   // grouped tab. This should restore the tab and not recreate the group.
   Browser::CreateParams app_browser_params =
       Browser::CreateParams::CreateForApp("App Name", true, gfx::Rect(),
-                                          browser()->profile(), false);
+                                          browser()->GetProfile(), false);
   Browser* app_browser = Browser::Create(app_browser_params);
   EXPECT_FALSE(app_browser->tab_strip_model()->group_model());
 
   // Create a tab entry with a group and add it to TabRestoreService directly.
   auto service = std::make_unique<sessions::TabRestoreServiceImpl>(
-      std::make_unique<ChromeTabRestoreServiceClient>(app_browser->profile()),
-      app_browser->profile()->GetPrefs(), nullptr, os_crypt_async_.get());
+      std::make_unique<ChromeTabRestoreServiceClient>(
+          app_browser->GetProfile()),
+      app_browser->GetProfile()->GetPrefs(), nullptr, os_crypt_async_.get());
 
   tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
   std::unique_ptr<sessions::tab_restore::Tab> tab =

@@ -249,7 +249,7 @@ class FirstRunMasterPrefsWithTrackedPreferences
 
 IN_PROC_BROWSER_TEST_F(FirstRunMasterPrefsWithTrackedPreferences,
                        TrackedPreferencesSurviveFirstRun) {
-  const PrefService* user_prefs = browser()->profile()->GetPrefs();
+  const PrefService* user_prefs = browser()->GetProfile()->GetPrefs();
   EXPECT_EQ("example.com", user_prefs->GetString(prefs::kHomePage));
   EXPECT_FALSE(user_prefs->GetBoolean(prefs::kHomePageIsNewTabPage));
 
@@ -445,7 +445,7 @@ class FirstRunMasterPrefsImportBookmarkFaviconBrowserTest
 
 IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsImportBookmarkFaviconBrowserTest,
                        ImportBookmarksDict) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(profile);
 

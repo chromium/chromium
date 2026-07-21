@@ -105,7 +105,7 @@ class ExternallyManagedAppManagerBrowserTest : public WebAppBrowserTestBase {
     test::WaitUntilWebAppProviderAndSubsystemsReady(provider());
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   WebAppRegistrar& registrar() { return provider()->registrar_unsafe(); }
 

@@ -183,8 +183,8 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
     // Disable Safe Browsing service so we can directly control when
     // SafeBrowsingNavigationObserverManager and SafeBrowsingNavigationObserver
     // are instantiated.
-    browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
-                                                 false);
+    browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
+                                                    false);
     ASSERT_TRUE(embedded_test_server()->Start());
     host_resolver()->AddRule("*", "127.0.0.1");
     observer_manager_ =
@@ -202,10 +202,10 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
     if (!browser())
       return false;
 
-    browser()->profile()->GetPrefs()->SetBoolean(prefs::kPromptForDownload,
-                                                 false);
+    browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kPromptForDownload,
+                                                    false);
     content::DownloadManager* manager =
-        browser()->profile()->GetDownloadManager();
+        browser()->GetProfile()->GetDownloadManager();
     DownloadPrefs::FromDownloadManager(manager)->ResetAutoOpenByUser();
 
     return true;
@@ -224,7 +224,7 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
   void CancelDownloads() {
     std::vector<raw_ptr<DownloadItem, VectorExperimental>> download_items;
     content::DownloadManager* manager =
-        browser()->profile()->GetDownloadManager();
+        browser()->GetProfile()->GetDownloadManager();
     manager->GetAllDownloads(&download_items);
     for (download::DownloadItem* item : download_items) {
       if (!item->IsDone())
@@ -235,7 +235,7 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
   DownloadItem* GetDownload() {
     std::vector<raw_ptr<DownloadItem, VectorExperimental>> download_items;
     content::DownloadManager* manager =
-        browser()->profile()->GetDownloadManager();
+        browser()->GetProfile()->GetDownloadManager();
     manager->GetAllDownloads(&download_items);
     if (download_items.empty())
       DownloadItemCreatedObserver(manager).WaitForDownloadItem(&download_items);
@@ -332,7 +332,7 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
   void TriggerDownloadViaHtml5FileApi() {
     std::vector<raw_ptr<DownloadItem, VectorExperimental>> items;
     content::DownloadManager* manager =
-        browser()->profile()->GetDownloadManager();
+        browser()->GetProfile()->GetDownloadManager();
     content::WebContents* current_web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(content::ExecJs(current_web_contents, "downloadViaFileApi()"));
@@ -490,10 +490,10 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
       SafeBrowsingNavigationObserverManager::AttributionResult result) {
     SetEnhancedProtectionPrefForTests(browser()->GetProfile()->GetPrefs(),
                                       enhanced_protection_enabled);
-    auto* maybe_otr_profile = is_incognito
-                                  ? browser()->profile()->GetPrimaryOTRProfile(
-                                        /*create_if_needed=*/true)
-                                  : browser()->profile();
+    auto* maybe_otr_profile =
+        is_incognito ? browser()->GetProfile()->GetPrimaryOTRProfile(
+                           /*create_if_needed=*/true)
+                     : browser()->GetProfile();
     return SafeBrowsingNavigationObserverManager::
         CountOfRecentNavigationsToAppend(maybe_otr_profile,
                                          maybe_otr_profile->GetPrefs(), result);
@@ -3119,7 +3119,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   allowlist.Append(iframe_url.GetHost());
   allowlist.Append(iframe_retargeting_url.GetHost());
   allowlist.Append(download_url.GetHost());
-  browser()->profile()->GetPrefs()->SetList(
+  browser()->GetProfile()->GetPrefs()->SetList(
       prefs::kSafeBrowsingAllowlistDomains, std::move(allowlist));
 
   ReferrerChain referrer_chain;
@@ -3191,7 +3191,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   allowlist.Append(initial_url.GetHost());
   allowlist.Append(download_url.GetHost());
   allowlist.Append(request_url.GetHost());
-  browser()->profile()->GetPrefs()->SetList(
+  browser()->GetProfile()->GetPrefs()->SetList(
       prefs::kSafeBrowsingAllowlistDomains, std::move(allowlist));
 
   ReferrerChain referrer_chain;
@@ -3224,7 +3224,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   base::ListValue allowlist;
   allowlist.Append(initial_url.GetHost());
   allowlist.Append(download_url.GetHost());
-  browser()->profile()->GetPrefs()->SetList(
+  browser()->GetProfile()->GetPrefs()->SetList(
       prefs::kSafeBrowsingAllowlistDomains, std::move(allowlist));
 
   ReferrerChain referrer_chain;

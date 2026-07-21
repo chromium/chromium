@@ -73,7 +73,7 @@ class BrowserNavigatorIwaTest : public BrowserNavigatorTest {
         web_app::WebAppProvider::GetForTest(profile()));
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
  protected:
   void InstallBundles() {

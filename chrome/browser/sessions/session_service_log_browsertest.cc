@@ -50,7 +50,7 @@ class SessionServiceLogTest : public InProcessBrowserTest {
   void PreRunTestOnMainThread() override {
     InProcessBrowserTest::PreRunTestOnMainThread();
     ASSERT_TRUE(browser());
-    profile_ = browser()->profile();
+    profile_ = browser()->GetProfile();
     ASSERT_TRUE(profile_);
   }
 

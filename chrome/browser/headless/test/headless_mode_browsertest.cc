@@ -285,7 +285,7 @@ class HeadlessModeUserAgentBrowserTest : public HeadlessModeBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(HeadlessModeUserAgentBrowserTest, UserAgentHasHeadless) {
-  content::BrowserContext* browser_context = browser()->profile();
+  content::BrowserContext* browser_context = browser()->GetProfile();
   DCHECK(browser_context);
 
   content::WebContents::CreateParams create_params(browser_context);

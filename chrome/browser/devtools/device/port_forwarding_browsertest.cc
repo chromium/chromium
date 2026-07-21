@@ -82,7 +82,7 @@ class PortForwardingTest: public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(PortForwardingTest, LoadPageWithStyleAnsScript) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   AndroidDeviceManager::DeviceProviders device_providers;
 
   device_providers.push_back(
@@ -141,7 +141,7 @@ class PortForwardingDisconnectTest : public PortForwardingTest {
 };
 
 IN_PROC_BROWSER_TEST_F(PortForwardingDisconnectTest, DisconnectOnRelease) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   AndroidDeviceManager::DeviceProviders device_providers;
 

@@ -42,7 +42,7 @@ class ChromeClientSideDetectionHostDelegateTest : public InProcessBrowserTest {
         browser(), GURL("http://foo/0"),
         WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-    Profile* profile = browser()->profile();
+    Profile* profile = browser()->GetProfile();
     navigation_observer_manager_ =
         SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
             profile);

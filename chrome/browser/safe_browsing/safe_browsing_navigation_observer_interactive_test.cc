@@ -57,8 +57,8 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
     // Disable Safe Browsing service so we can directly control when
     // SafeBrowsingNavigationObserverManager and SafeBrowsingNavigationObserver
     // are instantiated.
-    browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
-                                                 false);
+    browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
+                                                    false);
     ASSERT_TRUE(embedded_test_server()->Start());
     host_resolver()->AddRule("*", "127.0.0.1");
     observer_manager_ =
@@ -75,8 +75,8 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
       return false;
     }
 
-    browser()->profile()->GetPrefs()->SetBoolean(prefs::kPromptForDownload,
-                                                 false);
+    browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kPromptForDownload,
+                                                    false);
     return true;
   }
 

@@ -1072,7 +1072,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest, TestWithDownloads) {
 IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
                        TestWithOffTheRecordDownloads) {
   Profile* otr_profile =
-      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+      browser()->GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   Browser* otr_browser = CreateBrowser(otr_profile);
   {
     ui_test_utils::BrowserDestroyedObserver observer(browser());
@@ -1107,7 +1107,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
 IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
                        DISABLED_TestWithOffTheRecordWindowAndRegularDownload) {
   Profile* otr_profile =
-      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+      browser()->GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   Browser* otr_browser = CreateBrowser(otr_profile);
   ASSERT_NO_FATAL_FAILURE(CreateStalledDownload(browser()));
 
@@ -1270,7 +1270,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerWithBackgroundModeBrowserTest,
   EXPECT_FALSE(IsBackgroundModeSuspended());
   std::unique_ptr<ScopedKeepAlive> tmp_keep_alive;
   std::unique_ptr<ScopedProfileKeepAlive> tmp_profile_keep_alive;
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   {
     tmp_keep_alive = std::make_unique<ScopedKeepAlive>(
         KeepAliveOrigin::PANEL_VIEW, KeepAliveRestartOption::DISABLED);

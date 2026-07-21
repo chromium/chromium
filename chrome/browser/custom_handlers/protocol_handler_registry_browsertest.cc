@@ -131,7 +131,7 @@ class ChromeRegisterProtocolHandlerBrowserTest : public InProcessBrowserTest {
 
   ProtocolHandlerRegistry* GetRegistry(Profile* profile = nullptr) {
     if (!profile) {
-      profile = browser()->profile();
+      profile = browser()->GetProfile();
     }
     return ProtocolHandlerRegistryFactory::GetForBrowserContext(profile);
   }
@@ -382,7 +382,7 @@ class ProtocolHandlerRegistryOTRBrowserTest
     : public ChromeRegisterProtocolHandlerBrowserTest {
  public:
   Profile* GetOTRProfile() {
-    Profile* otr_profile = browser()->profile()->GetPrimaryOTRProfile(
+    Profile* otr_profile = browser()->GetProfile()->GetPrimaryOTRProfile(
         /*create_if_needed=*/true);
     // Install the test delegate on the OTR registry so it behaves the same on
     // every platform; see TestProtocolHandlerRegistryDelegate above. Re-install

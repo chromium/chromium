@@ -347,12 +347,12 @@ IN_PROC_BROWSER_TEST_P(NewTabPageUtilTileTypesEnterpriseShortcutsBrowserTest,
             std::set<ntp_tiles::TileType>({ntp_tiles::TileType::kCustomLinks}));
 
   // Set enterprise shortcuts policy.
-  browser()->profile()->GetPrefs()->SetList(
+  browser()->GetProfile()->GetPrefs()->SetList(
       ntp_tiles::prefs::kEnterpriseShortcutsPolicyList,
       CreatePolicyList("work name", "https://work.com/"));
 
   // If enterprise shortcuts are also visible, both should be enabled.
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       ntp_prefs::kNtpEnterpriseShortcutsVisible, true);
   EXPECT_EQ(GetEnabledTileTypes(browser()->GetProfile()),
             std::set<ntp_tiles::TileType>(
@@ -361,14 +361,14 @@ IN_PROC_BROWSER_TEST_P(NewTabPageUtilTileTypesEnterpriseShortcutsBrowserTest,
 
   // If personal shortcuts are explicitly hidden by the user,
   // only enterprise should remain.
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       ntp_prefs::kNtpPersonalShortcutsVisible, false);
   EXPECT_EQ(GetEnabledTileTypes(browser()->GetProfile()),
             std::set<ntp_tiles::TileType>(
                 {ntp_tiles::TileType::kEnterpriseShortcuts}));
 
   // Remove enterprise shortcuts policy, personal shortcuts should be visible.
-  browser()->profile()->GetPrefs()->SetList(
+  browser()->GetProfile()->GetPrefs()->SetList(
       ntp_tiles::prefs::kEnterpriseShortcutsPolicyList, base::ListValue());
   EXPECT_EQ(GetEnabledTileTypes(browser()->GetProfile()),
             std::set<ntp_tiles::TileType>({ntp_tiles::TileType::kCustomLinks}));
@@ -395,7 +395,7 @@ IN_PROC_BROWSER_TEST_P(
   // Assert.
   const bool actual_value =
       browser()
-          ->profile()
+          ->GetProfile()
           ->GetPrefs()
           ->GetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict)
           .FindBool(module_id)
@@ -416,7 +416,7 @@ IN_PROC_BROWSER_TEST_P(NewTabPageUtilFeatureOptimizationModuleRemovalTest,
   DisableModuleListAutoRemoval(browser()->GetProfile(), module_ids);
 
   // Assert.
-  const auto& dict_pref = browser()->profile()->GetPrefs()->GetDict(
+  const auto& dict_pref = browser()->GetProfile()->GetPrefs()->GetDict(
       ntp_prefs::kNtpModulesAutoRemovalDisabledDict);
   for (const auto& module_id : module_ids) {
     EXPECT_TRUE(dict_pref.FindBool(module_id).value_or(false));

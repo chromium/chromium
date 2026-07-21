@@ -117,7 +117,7 @@ class ExtensionTelemetryServiceBrowserTest
     return browser->tab_strip_model()->GetActiveWebContents();
   }
 
-  PrefService* prefs() { return browser()->profile()->GetPrefs(); }
+  PrefService* prefs() { return browser()->GetProfile()->GetPrefs(); }
 
   ExtensionTelemetryService* telemetry_service() {
     return ExtensionTelemetryServiceFactory::GetForProfile(

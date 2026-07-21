@@ -46,7 +46,7 @@ class ChromeTailoredSecurityServiceBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(ChromeTailoredSecurityServiceBrowserTest,
                        OnSyncNotificationTriggersDialogButSuppressesToast) {
   base::UserActionTester uat;
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   ChromeTailoredSecurityService* service =
       static_cast<ChromeTailoredSecurityService*>(
           TailoredSecurityServiceFactory::GetForProfile(profile));

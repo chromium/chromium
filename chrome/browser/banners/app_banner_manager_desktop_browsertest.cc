@@ -312,7 +312,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
   TestAppBannerManagerDesktop* manager =
       TestAppBannerManagerDesktop::FromWebContents(
           browser()->tab_strip_model()->GetActiveWebContents());
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   // Install web app by policy.
   web_app::ExternalInstallOptions options =

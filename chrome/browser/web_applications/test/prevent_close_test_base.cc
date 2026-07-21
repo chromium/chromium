@@ -99,5 +99,5 @@ base::Value PreventCloseTestBase::ReturnPolicyValueFromJson(
 }
 
 Profile* PreventCloseTestBase::profile() {
-  return browser()->profile();
+  return browser()->GetProfile();
 }

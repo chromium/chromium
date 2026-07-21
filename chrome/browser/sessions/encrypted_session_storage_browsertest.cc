@@ -139,7 +139,7 @@ class EncryptedSessionStorageBrowserTestBase : public InProcessBrowserTest {
   void AssertCommandStorageBackendFilesExist(SessionType session_type,
                                              Profile* profile = nullptr) {
     if (!profile) {
-      profile = browser()->profile();
+      profile = browser()->GetProfile();
     }
     base::ScopedAllowBlockingForTesting allow_blocking;
     sessions::CommandStorageManager* command_storage_manager = nullptr;
@@ -826,7 +826,7 @@ class SessionRestoreAcrossStagesTest : public RestoreAcrossStagesTestBase {
         << ", Expected size: " << kWindowBounds2.size().ToString();
 
     base::FilePath bounds_file =
-        browser()->profile()->GetPath().AppendASCII("saved_bounds.json");
+        browser()->GetProfile()->GetPath().AppendASCII("saved_bounds.json");
     SaveWindowBoundsToFile(bounds_file, browser(), window2);
   }
 
@@ -839,7 +839,7 @@ class SessionRestoreAcrossStagesTest : public RestoreAcrossStagesTestBase {
     auto windows = GetAllBrowserWindowInterfaces();
     std::vector<BrowserWindowInterface*> profile_windows;
     for (auto* window : windows) {
-      if (window->GetProfile() == browser()->profile()) {
+      if (window->GetProfile() == browser()->GetProfile()) {
         profile_windows.push_back(window);
       }
     }
@@ -863,7 +863,7 @@ class SessionRestoreAcrossStagesTest : public RestoreAcrossStagesTestBase {
     ASSERT_TRUE(w2) << "Window 2 (3 tabs) not found.";
 
     base::FilePath bounds_file =
-        browser()->profile()->GetPath().AppendASCII("saved_bounds.json");
+        browser()->GetProfile()->GetPath().AppendASCII("saved_bounds.json");
     auto [expected_bounds1, expected_bounds2] =
         ReadWindowBoundsFromFile(bounds_file);
 
@@ -923,13 +923,13 @@ class SessionRestoreAcrossStagesTest : public RestoreAcrossStagesTestBase {
 
 IN_PROC_BROWSER_TEST_P(SessionRestoreAcrossStagesTest, PRE_Restore) {
   SetUpSessionState();
-  browser()->profile()->SaveSessionState();
+  browser()->GetProfile()->SaveSessionState();
   AssertCommandStorageBackendFilesExist(SessionType::kSessionRestore);
 }
 
 IN_PROC_BROWSER_TEST_P(SessionRestoreAcrossStagesTest, Restore) {
   AssertSessionState();
-  browser()->profile()->SaveSessionState();
+  browser()->GetProfile()->SaveSessionState();
   AssertCommandStorageBackendFilesExist(SessionType::kSessionRestore);
 }
 
@@ -987,13 +987,13 @@ class TabRestoreAcrossStagesTest : public RestoreAcrossStagesTestBase {
 
 IN_PROC_BROWSER_TEST_P(TabRestoreAcrossStagesTest, PRE_Restore) {
   SetUpExpectedTabs();
-  browser()->profile()->SaveSessionState();
+  browser()->GetProfile()->SaveSessionState();
   AssertCommandStorageBackendFilesExist(SessionType::kTabRestore);
 }
 
 IN_PROC_BROWSER_TEST_P(TabRestoreAcrossStagesTest, Restore) {
   AssertExpectedTabs();
-  browser()->profile()->SaveSessionState();
+  browser()->GetProfile()->SaveSessionState();
   AssertCommandStorageBackendFilesExist(SessionType::kTabRestore);
 }
 

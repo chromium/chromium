@@ -217,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreInteractiveTest,
 // Also fails flakily on Mac.
 IN_PROC_BROWSER_TEST_F(SessionRestoreInteractiveTest,
                        DISABLED_RestoreMinimizedWindowTwice) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   // Create a second browser.
   CreateBrowser(browser()->GetProfile());
@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreAshInteractiveTest, MultiWindowTabLoad) {
   base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
   cmd->RemoveSwitch(switches::kDisableBackgroundingOccludedWindowsForTesting);
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   const gfx::Rect bounds(0, 0, 600, 400);
 

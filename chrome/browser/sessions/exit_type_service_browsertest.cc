@@ -241,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(ExitTypeServiceTest, Defaults) {
   ExitTypeService* service =
       ExitTypeService::GetInstanceForProfile(browser()->GetProfile());
   ASSERT_TRUE(service);
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   // The initial state is crashed; store for later reference.
   std::string crash_value(prefs->GetString(prefs::kSessionExitType));
 

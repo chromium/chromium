@@ -144,7 +144,7 @@ class ChromePasswordProtectionServiceBrowserTest : public InProcessBrowserTest {
     return ChromePasswordProtectionService::GetPasswordProtectionService(
         is_incognito ? browser()->GetProfile()->GetPrimaryOTRProfile(
                            /*create_if_needed=*/true)
-                     : browser()->profile());
+                     : browser()->GetProfile());
   }
 
   void SimulateGaiaPasswordChange(const std::string& new_password) {
@@ -212,9 +212,9 @@ class ChromePasswordProtectionServiceBrowserTest : public InProcessBrowserTest {
       PasswordProtectionTrigger trigger_type) {
     if (is_gsuite)
       SetUpPrimaryAccountWithHostedDomain("example.com");
-    browser()->profile()->GetPrefs()->SetInteger(
+    browser()->GetProfile()->GetPrefs()->SetInteger(
         prefs::kPasswordProtectionWarningTrigger, trigger_type);
-    browser()->profile()->GetPrefs()->SetString(
+    browser()->GetProfile()->GetPrefs()->SetString(
         prefs::kPasswordProtectionChangePasswordURL,
         embedded_test_server()->GetURL(kChangePasswordUrl).spec());
   }
@@ -574,7 +574,7 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
   // Prepare sync account will trigger a password change.
   ChromePasswordProtectionService* service = GetService(/*is_incognito=*/false);
   ASSERT_TRUE(service);
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(kLoginPageUrl)));
   ASSERT_TRUE(profile->GetPrefs()
@@ -628,7 +628,7 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
 IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
                        VerifyCheckGaiaPasswordChange) {
   SetUpPrimaryAccountWithHostedDomain(kNoHostedDomainFound);
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   ChromePasswordProtectionService* service = GetService(/*is_incognito=*/false);
   // Configures initial password to "password_1";
   password_manager::PasswordReuseManager* reuse_manager =
@@ -837,7 +837,7 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
   GetService(/*is_incognito=*/false);  // Create a service to listen to events.
   ConfigureEnterprisePasswordProtection(
       /*is_gsuite=*/true, PasswordProtectionTrigger::PHISHING_REUSE);
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   SimulateGaiaPasswordChange("password");
   ASSERT_EQ(1u, profile->GetPrefs()
                     ->GetList(password_manager::prefs::kPasswordHashDataList)
@@ -864,7 +864,7 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
   GetService(/*is_incognito=*/false);  // Create a service to listen to events.
   ConfigureEnterprisePasswordProtection(
       /*is_gsuite=*/false, PasswordProtectionTrigger::PHISHING_REUSE);
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   ASSERT_EQ(0u, profile->GetPrefs()
                     ->GetList(password_manager::prefs::kPasswordHashDataList)
@@ -1594,7 +1594,7 @@ class ChromePasswordProtectionServiceTrustSafetySentimentServiceBrowserTest
 IN_PROC_BROWSER_TEST_F(
     ChromePasswordProtectionServiceTrustSafetySentimentServiceBrowserTest,
     NonPasswordChangeTrigger) {
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kSafeBrowsingSurveysEnabled, true);
   // Expect Trust and Safety Sentiment Service to call
   // PhishedPasswordUpdateNotClicked.
@@ -1622,7 +1622,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     ChromePasswordProtectionServiceTrustSafetySentimentServiceBrowserTest,
     PasswordChangeTrigger) {
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kSafeBrowsingSurveysEnabled, true);
   // Expect Trust and Safety Sentiment Service to call
   // ProtectResetOrCheckPasswordClicked.

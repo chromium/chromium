@@ -33,7 +33,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideTabUrlProviderBrowserTest,
   // Instead, we open an Incognito browser to keep the BrowserProcess and the
   // original Profile alive, and then safely close the main browser window.
   CreateIncognitoBrowser();
-  Profile* original_profile = browser()->profile();
+  Profile* original_profile = browser()->GetProfile();
 
   // Close the only window associated with original_profile.
   CloseBrowserSynchronously(browser());

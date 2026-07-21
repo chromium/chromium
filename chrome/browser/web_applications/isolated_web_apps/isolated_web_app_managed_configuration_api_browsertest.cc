@@ -78,7 +78,7 @@ class ManagedConfigurationAPIInIsolatedWebAppTest
   void SetConfiguration(const std::string& conf_url,
                         const std::string& conf_hash,
                         const std::string& origin_key) {
-    browser()->profile()->GetPrefs()->SetList(
+    browser()->GetProfile()->GetPrefs()->SetList(
         prefs::kManagedConfigurationPerOrigin,
         base::ListValue().Append(
             base::DictValue()

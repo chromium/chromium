@@ -65,7 +65,7 @@ class IsolatedWebAppsCloseWindowBrowserTest
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   AssertionResult InstallAndOpenIWA(bool has_wm_permission_policy) {
     url_info_ = InstallIWA(has_wm_permission_policy);

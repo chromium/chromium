@@ -407,7 +407,8 @@ class TabsSnapshotTest : public UserDataSnapshotBrowserTestBase {
   }
 
   void SimulateUserActions() override {
-    browser()->profile()->GetPrefs()->SetInteger(prefs::kRestoreOnStartup, 1);
+    browser()->GetProfile()->GetPrefs()->SetInteger(prefs::kRestoreOnStartup,
+                                                    1);
     browser()->OpenURL(
         content::OpenURLParams(embedded_test_server()->GetURL("/title1.html"),
                                content::Referrer(),

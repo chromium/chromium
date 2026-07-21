@@ -84,7 +84,7 @@ class IsolatedWebAppsWindowOpenPermissionServiceBrowserTest
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   WebAppProvider& provider() { return *WebAppProvider::GetForTest(profile()); }
 

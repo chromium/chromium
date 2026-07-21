@@ -107,7 +107,7 @@ class RunOnOsLoginTestHandlerMixin : public InProcessBrowserTestMixin {
             WebAppRunOnOsLoginManager::SkipStartupForTesting())) {}
 
   void SetUpOnMainThread() override {
-    profile_ = test_base_->browser()->profile();
+    profile_ = test_base_->browser()->GetProfile();
     provider_ = WebAppProvider::GetForTest(profile_);
     InProcessBrowserTestMixin::SetUpOnMainThread();
   }

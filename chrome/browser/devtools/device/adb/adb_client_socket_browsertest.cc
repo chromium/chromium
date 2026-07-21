@@ -30,7 +30,7 @@ class AdbClientSocketTest : public InProcessBrowserTest,
 
  public:
   void StartTest(base::RunLoop* loop) {
-    Profile* profile = browser()->profile();
+    Profile* profile = browser()->GetProfile();
     android_bridge_ = DevToolsAndroidBridge::Factory::GetForProfile(profile);
     AndroidDeviceManager::DeviceProviders device_providers;
     device_providers.push_back(new AdbDeviceProvider());

@@ -35,7 +35,7 @@ class DownloadProtectionServiceBrowserTest : public InProcessBrowserTest {
 
   void DownloadAndWait(GURL url) {
     content::DownloadManager* download_manager =
-        browser()->profile()->GetDownloadManager();
+        browser()->GetProfile()->GetDownloadManager();
     content::DownloadTestObserverTerminal observer(
         download_manager, 1,
         content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_IGNORE);

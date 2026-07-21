@@ -58,7 +58,7 @@ class SupervisedUserServiceBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBrowserTest, LocalPolicies) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   PrefService* prefs = profile->GetPrefs();
 
   if (GetSignInMode() == SupervisionMixin::SignInMode::kSupervised) {
@@ -84,7 +84,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBrowserTest, LocalPolicies) {
 }
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBrowserTest, ProfileName) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   PrefService* prefs = profile->GetPrefs();
   EXPECT_TRUE(prefs->IsUserModifiablePreference(prefs::kProfileName));
 
@@ -123,7 +123,7 @@ class SupervisedUserServiceForRegularUsersBrowserTest
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserServiceForRegularUsersBrowserTest,
                        ForceGoogleSafeSearchCanBeOverriden) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   PrefService* prefs = profile->GetPrefs();
 
   content::TestNavigationObserver observer(
@@ -190,7 +190,7 @@ class SupervisedUserServiceForSupervisedUsersBrowserTest
 // `SupervisedUserUrlFilteringServiceBrowserTest`.
 IN_PROC_BROWSER_TEST_F(SupervisedUserServiceForSupervisedUsersBrowserTest,
                        FilterIsNeutralized) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   PrefService* pref_service = profile->GetPrefs();
 
   supervised_user_test_util::SetWebFilterType(

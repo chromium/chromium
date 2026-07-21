@@ -497,7 +497,7 @@ class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
 
   void SetUpSendingNotificationsAcceptedCSBRR() {
     // Enable enhanced safe browsing for the profile.
-    PrefService* prefs = browser()->profile()->GetPrefs();
+    PrefService* prefs = browser()->GetProfile()->GetPrefs();
     prefs->SetBoolean(prefs::kSafeBrowsingEnabled, true);
     prefs->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
     ASSERT_TRUE(IsExtendedReportingEnabled(*prefs));

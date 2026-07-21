@@ -825,7 +825,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
       "OptimizationGuide.HintCache.HintType.Loaded", 0);
 
   // Wipe the browser history - clear all the fetched hints.
-  browser()->profile()->Wipe();
+  browser()->GetProfile()->Wipe();
 
   // Wait until hint cache stabilizes and clears all the fetched hints.
   base::ThreadPoolInstance::Get()->FlushForTesting();

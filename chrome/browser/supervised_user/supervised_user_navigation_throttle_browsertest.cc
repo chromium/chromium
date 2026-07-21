@@ -341,7 +341,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserNavigationThrottleWithPrerenderingTest,
 // SupervisedUserNavigationObserver.
 IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleTest,
                        NoNavigationObserverBlock) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   supervised_user_test_util::SetWebFilterType(
       profile, supervised_user::WebFilterType::kCertainSites);
 

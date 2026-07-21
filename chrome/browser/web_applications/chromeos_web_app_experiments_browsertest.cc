@@ -496,7 +496,7 @@ class ChromeOsWebAppExperimentsManifestOverrideBrowserTest
     scoped_feature_list_.Reset();
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   content::WebContents* web_contents() const {
     return browser()->tab_strip_model()->GetActiveWebContents();

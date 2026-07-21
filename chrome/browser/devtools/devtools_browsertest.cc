@@ -955,7 +955,7 @@ class WorkerDevToolsTest : public InProcessBrowserTest {
   }
 
   void OpenDevToolsWindow(scoped_refptr<DevToolsAgentHost> agent_host) {
-    Profile* profile = browser()->profile();
+    Profile* profile = browser()->GetProfile();
     window_ =
         DevToolsWindowTesting::OpenDevToolsWindowSync(profile, agent_host);
   }
@@ -3191,7 +3191,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, TestRawHeadersWithRedirectAndHSTS) {
   bool include_subdomains = false;
   mojo::ScopedAllowSyncCallForTesting allow_sync_call;
   content::StoragePartition* partition =
-      browser()->profile()->GetDefaultStoragePartition();
+      browser()->GetProfile()->GetDefaultStoragePartition();
   base::RunLoop run_loop;
   partition->GetNetworkContext()->AddHSTS(
       https_url.GetHost(), expiry, include_subdomains, run_loop.QuitClosure());

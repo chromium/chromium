@@ -24,7 +24,7 @@ namespace {
 
 class AdobeExpressOemToDefaultMigrationTest : public InProcessBrowserTest {
  public:
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 };
 
 // Installs Adobe Express as an OEM installed app.

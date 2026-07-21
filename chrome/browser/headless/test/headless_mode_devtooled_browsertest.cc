@@ -22,7 +22,7 @@ HeadlessModeDevTooledBrowserTest::~HeadlessModeDevTooledBrowserTest() = default;
 void HeadlessModeDevTooledBrowserTest::RunTest() {
   browser_devtools_client_.AttachToBrowser();
 
-  content::BrowserContext* browser_context = browser()->profile();
+  content::BrowserContext* browser_context = browser()->GetProfile();
   DCHECK(browser_context);
 
   content::WebContents::CreateParams create_params(browser_context);

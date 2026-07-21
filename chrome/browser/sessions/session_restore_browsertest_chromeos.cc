@@ -112,7 +112,7 @@ class SessionRestoreTestChromeOS : public InProcessBrowserTest {
         browser()->GetProfile(), SessionStartupPref(SessionStartupPref::LAST));
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
  private:
   gfx::ScopedAnimationDurationScaleMode faster_animations_;

@@ -1024,7 +1024,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
 // command anyway doesn't advance to the unsafe site.
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, ProceedDisabled) {
   // Simulate a policy disabling the "proceed anyway" link.
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kSafeBrowsingProceedAnywayDisabled, true);
 
   SetupWarningAndNavigate(browser());
@@ -1072,7 +1072,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, NoBackToSafety) {
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
                        ReportingDisabledByPolicy) {
   EnableExtendedReporting(true);
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kSafeBrowsingExtendedReportingOptInAllowed, false);
 
   base::RunLoop threat_report_sent_loop;
@@ -1089,7 +1089,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   safe_browsing::SetSafeBrowsingState(
       browser()->GetProfile()->GetPrefs(),
       safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kSafeBrowsingSurveysEnabled, false);
   // Start navigation to bad page (kEmptyPage), which will be blocked before it
   // is committed.
@@ -1447,7 +1447,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
                        VerifyClientReportNotSentOnIncognito) {
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kSafeBrowsingSurveysEnabled, false);
   // The extended reporting opt-in is presented in the interstitial for malware,
   // phishing, and UwS threats.
@@ -1482,7 +1482,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
     SetReportSentCallback(threat_report_sent_loop.QuitClosure());
   }
 
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kSafeBrowsingScoutReportingEnabled, false);  // set up SBER
   GURL url = SetupWarningAndNavigate(browser());          // not incognito
   EXPECT_FALSE(report_sent());
@@ -1629,7 +1629,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   // Add test server domain into the enterprise allowlist.
   base::ListValue allowlist;
   allowlist.Append(url.GetHost());
-  browser()->profile()->GetPrefs()->SetList(
+  browser()->GetProfile()->GetPrefs()->SetList(
       prefs::kSafeBrowsingAllowlistDomains, std::move(allowlist));
 
   SetURLThreatType(url, GetThreatType());
@@ -1985,7 +1985,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingHatsSurveyBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingHatsSurveyBrowserTest,
                        NoHatsSurveyWhenProceedDisabled) {
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kSafeBrowsingProceedAnywayDisabled, true);
   EnableExtendedReporting(false);
   SetExpectEmptyReportForHats(true);
@@ -2012,7 +2012,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingHatsSurveyBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingHatsSurveyBrowserTest,
                        NoHatsSurveyWhenSafeBrowsingSurveysDisabled) {
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kSafeBrowsingSurveysEnabled, false);
   EnableExtendedReporting(false);
   SetExpectEmptyReportForHats(true);
@@ -3051,10 +3051,10 @@ class SafeBrowsingBlockingPageAsyncChecksTestBase
                                             threat_type);
   }
   void SetUpEnterpriseUrlCheck() {
-    browser()->profile()->GetPrefs()->SetInteger(
+    browser()->GetProfile()->GetPrefs()->SetInteger(
         enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
         enterprise_connectors::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
-    browser()->profile()->GetPrefs()->SetInteger(
+    browser()->GetProfile()->GetPrefs()->SetInteger(
         enterprise_connectors::kEnterpriseRealTimeUrlCheckScope,
         policy::POLICY_SCOPE_MACHINE);
     SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
@@ -3102,7 +3102,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageAsyncChecksTest,
   safe_browsing::SetSafeBrowsingState(
       browser()->GetProfile()->GetPrefs(),
       safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
 
   GURL url = embedded_test_server()->GetURL(kEmptyPage);
@@ -3372,7 +3372,7 @@ class SafeBrowsingBlockingPageAsyncChecksTimingTest
     // RealTimeUrlLookupServiceBase::CanCheckUrl returns true so the real time
     // check is performed.
     SetupUrlRealTimeVerdictInCacheManager(GURL("https://random.url"),
-                                          browser()->profile(),
+                                          browser()->GetProfile(),
                                           RTLookupResponse::ThreatInfo::SAFE,
                                           /*threat_type=*/std::nullopt);
     SetReportSentCallback(std::move(report_sent_callback));
@@ -3436,7 +3436,7 @@ IN_PROC_BROWSER_TEST_F(
   // RealTimeUrlLookupServiceBase::CanCheckUrl returns true so the real time
   // check is performed.
   SetupUrlRealTimeVerdictInCacheManager(GURL("https://random.url"),
-                                        browser()->profile(),
+                                        browser()->GetProfile(),
                                         RTLookupResponse::ThreatInfo::SAFE,
                                         /*threat_type=*/std::nullopt);
   std::vector<UrlAndIsUnsafe> url_and_server_redirects = {
@@ -3516,7 +3516,7 @@ IN_PROC_BROWSER_TEST_P(
   // RealTimeUrlLookupServiceBase::CanCheckUrl returns true so the real time
   // check is performed.
   SetupUrlRealTimeVerdictInCacheManager(GURL("https://random.url"),
-                                        browser()->profile(),
+                                        browser()->GetProfile(),
                                         RTLookupResponse::ThreatInfo::SAFE,
                                         /*threat_type=*/std::nullopt);
   GURL url = embedded_test_server()->GetURL(kEmptyPage);
@@ -3703,7 +3703,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTimingTest,
 
   // Navigate to an unrelated page and revisit the allowlisted URL.
   SetupUrlRealTimeVerdictInCacheManager(GURL(kUnrelatedUrl),
-                                        browser()->profile(),
+                                        browser()->GetProfile(),
                                         RTLookupResponse::ThreatInfo::SAFE,
                                         /*threat_type=*/std::nullopt);
   NavigateToURLAndWaitForAsyncChecks(GURL(kUnrelatedUrl));
@@ -3880,7 +3880,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
   safe_browsing::SetSafeBrowsingState(
       browser()->GetProfile()->GetPrefs(),
       safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
   GURL url = embedded_test_server()->GetURL("/empty.html");
   SetupUnsafeVerdict(url, browser()->GetProfile());
@@ -3895,7 +3895,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
   safe_browsing::SetSafeBrowsingState(
       browser()->GetProfile()->GetPrefs(),
       safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
   GURL url = embedded_test_server()->GetURL("/empty.html");
   SetupUnsafeVerdict(url, browser()->GetProfile());
@@ -3913,10 +3913,10 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
       safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
 
   // Set up enterprise lookup, including DM token.
-  browser()->profile()->GetPrefs()->SetInteger(
+  browser()->GetProfile()->GetPrefs()->SetInteger(
       enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
       enterprise_connectors::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
-  browser()->profile()->GetPrefs()->SetInteger(
+  browser()->GetProfile()->GetPrefs()->SetInteger(
       enterprise_connectors::kEnterpriseRealTimeUrlCheckScope,
       policy::POLICY_SCOPE_MACHINE);
   SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
@@ -3941,10 +3941,10 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
       safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
 
   // Set up enterprise lookup, but no DM token.
-  browser()->profile()->GetPrefs()->SetInteger(
+  browser()->GetProfile()->GetPrefs()->SetInteger(
       enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
       enterprise_connectors::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
-  browser()->profile()->GetPrefs()->SetInteger(
+  browser()->GetProfile()->GetPrefs()->SetInteger(
       enterprise_connectors::kEnterpriseRealTimeUrlCheckScope,
       policy::POLICY_SCOPE_MACHINE);
 
@@ -3969,10 +3969,10 @@ IN_PROC_BROWSER_TEST_F(
       safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
 
   // Set up enterprise lookup so that the policy is disabled.
-  browser()->profile()->GetPrefs()->SetInteger(
+  browser()->GetProfile()->GetPrefs()->SetInteger(
       enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
       enterprise_connectors::REAL_TIME_CHECK_DISABLED);
-  browser()->profile()->GetPrefs()->SetInteger(
+  browser()->GetProfile()->GetPrefs()->SetInteger(
       enterprise_connectors::kEnterpriseRealTimeUrlCheckScope,
       policy::POLICY_SCOPE_MACHINE);
   SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));

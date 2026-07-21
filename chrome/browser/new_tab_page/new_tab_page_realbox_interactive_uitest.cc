@@ -440,7 +440,7 @@ IN_PROC_BROWSER_TEST_P(NtpRealboxUiScreenshotTest, MAYBE_Screenshots) {
   }
 
   // Disable compose button animation to prevent screenshot variations.
-  browser()->profile()->GetPrefs()->SetInteger(
+  browser()->GetProfile()->GetPrefs()->SetInteger(
       prefs::kNtpComposeButtonShownCountPrefName,
       ntp_composebox::FeatureConfig::Get()
           .config.entry_point()
@@ -847,7 +847,7 @@ IN_PROC_BROWSER_TEST_F(NtpRealboxTabFlyoverInteractiveTest,
 
   RunTestSequence(
       Do([this]() {
-        browser()->profile()->GetPrefs()->SetInteger(
+        browser()->GetProfile()->GetPrefs()->SetInteger(
             contextual_search::kSearchContentSharingSettings,
             static_cast<int>(contextual_search::
                                  SearchContentSharingSettingsValue::kEnabled));

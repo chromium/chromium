@@ -419,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, MAYBE_AutoAttachToUnloadedTab) {
       browser()->tab_strip_model()->GetWebContentsAt(1);
 
   // 2. Restore session without loading background tabs.
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   SessionStartupPref::SetStartupPref(
       profile, SessionStartupPref(SessionStartupPref::LAST));
   SessionServiceTestHelper(profile).SetForceBrowserNotAliveWithNoWindows(true);
@@ -2400,8 +2400,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, OpensDevTools_OpensUndocked) {
   base::DictValue prefs;
   prefs.Set("isUnderTest", "true");
   prefs.Set("currentDockState", "undocked");
-  browser()->profile()->GetPrefs()->SetDict(prefs::kDevToolsPreferences,
-                                            std::move(prefs));
+  browser()->GetProfile()->GetPrefs()->SetDict(prefs::kDevToolsPreferences,
+                                               std::move(prefs));
   AttachToBrowserTarget();
 
   base::DictValue tabFilter = base::DictValue();

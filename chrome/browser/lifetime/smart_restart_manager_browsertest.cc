@@ -217,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(SmartRestartManagerBrowserTest,
   fake_upgrade_detector_.SetUpgradeAvailable();
 
   // 2. Action: Close all windows to start the timer.
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   PrefService* local_state = g_browser_process->local_state();
 
   // Keep the process and profile alive between windows.
@@ -426,7 +426,7 @@ IN_PROC_BROWSER_TEST_F(SmartRestartManagerPolicyBrowserTest,
 IN_PROC_BROWSER_TEST_F(SmartRestartManagerBrowserTest,
                        TriggersRestartOnLockScreen) {
   base::HistogramTester histogram_tester;
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   // 1. Setup: Pending update.
   fake_upgrade_detector_.SetUpgradeAvailable();

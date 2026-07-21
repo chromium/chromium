@@ -45,7 +45,7 @@ class WebAppIconManagerBrowserTest : public WebAppBrowserTestBase {
   ~WebAppIconManagerBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
-    Profile* profile = browser()->profile();
+    Profile* profile = browser()->GetProfile();
     app_service_test_.SetUp(profile);
     web_app::test::WaitUntilReady(WebAppProvider::GetForTest(profile));
     WebAppBrowserTestBase::SetUpOnMainThread();

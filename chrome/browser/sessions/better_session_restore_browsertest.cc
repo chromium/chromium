@@ -909,7 +909,7 @@ IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest, PRE_CookiesClearedOnStartup) {
 
   // Disable cookie and storage deletion on shutdown to simulate the
   // process being killed before cleanup is finished.
-  browser()->profile()->SaveSessionState();
+  browser()->GetProfile()->SaveSessionState();
 }
 
 IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest, CookiesClearedOnStartup) {
@@ -926,7 +926,7 @@ IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest, PRE_LocalStorageClearedOnStartup) {
 
   // Disable cookie and storage deletion on shutdown to simulate the
   // process being killed before cleanup is finished.
-  browser()->profile()->SaveSessionState();
+  browser()->GetProfile()->SaveSessionState();
 }
 
 IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest, LocalStorageClearedOnStartup) {

@@ -57,7 +57,7 @@ class WebAppFileHandlerRegistrationLinuxBrowserTest
  protected:
   WebAppFileHandlerRegistrationLinuxBrowserTest() = default;
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   void InstallApp(ExternalInstallOptions install_options) {
     auto result = ExternallyManagedAppManagerInstall(browser()->GetProfile(),

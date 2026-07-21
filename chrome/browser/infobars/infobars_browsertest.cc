@@ -314,7 +314,7 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       ADD_FAILURE() << "This infobar is not supported on this OS.";
 #else
       DefaultBrowserInfoBarDelegate::Create(GetInfoBarManager(),
-                                            browser()->profile(),
+                                            browser()->GetProfile(),
                                             /*can_pin_to_taskbar=*/false);
 #endif
       break;

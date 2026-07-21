@@ -619,7 +619,7 @@ IN_PROC_BROWSER_TEST_F(NotificationContentDetectionBrowserTest,
   // Setup enterprise allowlist.
   base::ListValue allowlist;
   allowlist.Append("enterprise-domain.com");
-  browser()->profile()->GetPrefs()->SetList(
+  browser()->GetProfile()->GetPrefs()->SetList(
       prefs::kSafeBrowsingAllowlistDomains, std::move(allowlist));
 
   UpdateNotificationContentDetectionModel();
@@ -711,7 +711,7 @@ class NotificationContentDetectionLoggingEnabledBrowserTest
 
     base::RunLoop run_loop;
     browser()
-        ->profile()
+        ->GetProfile()
         ->GetStoragePartitionForUrl(origin)
         ->GetPlatformNotificationContext()
         ->WriteNotificationData(
@@ -828,7 +828,7 @@ IN_PROC_BROWSER_TEST_P(NotificationContentDetectionLoggingEnabledBrowserTest,
       std::make_unique<PersistentNotificationHandler>();
   handler->ReportUnwarnedNotificationAsSpam(
       GetNotificationId(/*is_allowlisted=*/true), GURL(kAllowlistedUrl),
-      browser()->profile());
+      browser()->GetProfile());
   ASSERT_TRUE(log_uploaded_signal.Wait());
   VerifyUniqueQualityLog(
       /*did_user_always_allow_url=*/false,
@@ -856,7 +856,7 @@ IN_PROC_BROWSER_TEST_P(NotificationContentDetectionLoggingEnabledBrowserTest,
       std::make_unique<PersistentNotificationHandler>();
   handler->ReportWarnedNotificationAsSpam(
       GetNotificationId(/*is_allowlisted=*/false), GURL(kNonAllowlistedUrl),
-      browser()->profile());
+      browser()->GetProfile());
   ASSERT_TRUE(log_uploaded_signal.Wait());
   VerifyUniqueQualityLog(
       /*did_user_always_allow_url=*/false,
@@ -884,7 +884,7 @@ IN_PROC_BROWSER_TEST_P(NotificationContentDetectionLoggingEnabledBrowserTest,
       std::make_unique<PersistentNotificationHandler>();
   handler->ReportNotificationAsSafe(GetNotificationId(/*is_allowlisted=*/false),
                                     GURL(kNonAllowlistedUrl),
-                                    browser()->profile());
+                                    browser()->GetProfile());
   ASSERT_TRUE(log_uploaded_signal.Wait());
   VerifyUniqueQualityLog(
       /*did_user_always_allow_url=*/false,

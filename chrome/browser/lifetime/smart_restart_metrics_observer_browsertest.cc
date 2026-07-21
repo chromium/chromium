@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_P(SmartRestartMetricsObserverBrowserTest,
   }
 
   // Close the default browser window the test starts with.
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   // Keep the process and profile alive between windows.
   ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,

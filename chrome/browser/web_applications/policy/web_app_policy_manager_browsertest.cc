@@ -102,7 +102,7 @@ class WebAppPolicyManagerBrowserTest : public base::test::WithFeatureOverride,
                             base::Unretained(this)));
     WebAppBrowserTestBase::SetUpOnMainThread();
   }
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   content::WebContents* web_contents() const {
     return browser()->tab_strip_model()->GetActiveWebContents();
@@ -467,7 +467,7 @@ IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerGuestModeTest,
       app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  Profile* guest_profile = CreateGuestBrowser()->profile();
+  Profile* guest_profile = CreateGuestBrowser()->GetProfile();
   EXPECT_FALSE(WebAppProvider::GetForTest(guest_profile));
 #endif
 }
@@ -497,7 +497,7 @@ class WebAppPolicyManagerBrowserTestWithAuthProxy
     WebAppPolicyManagerBrowserTest::SetUpCommandLine(command_line);
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   net::test_server::EmbeddedTestServer auth_proxy_server_{
       net::test_server::EmbeddedTestServer::Type::TYPE_HTTPS};
@@ -578,7 +578,7 @@ class WebAppPolicyUserInstallTest : public WebAppBrowserTestBase {
     policy_provider_.UpdateChromePolicy(policies);
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   void SetSyncAppsDefaultPref() {
     PrefService* prefs_service = profile()->GetPrefs();

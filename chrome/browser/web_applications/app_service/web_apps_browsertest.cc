@@ -40,7 +40,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsBrowserTest, LaunchWithIntent) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url(
       embedded_test_server()->GetURL("/web_share_target/charts.html"));
-  Profile* const profile = browser()->profile();
+  Profile* const profile = browser()->GetProfile();
   const webapps::AppId app_id = InstallWebAppFromManifest(browser(), app_url);
 
   base::RunLoop run_loop;
@@ -72,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsBrowserTest, IntentWithoutFiles) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url(
       embedded_test_server()->GetURL("/web_share_target/poster.html"));
-  Profile* const profile = browser()->profile();
+  Profile* const profile = browser()->GetProfile();
   const webapps::AppId app_id = InstallWebAppFromManifest(browser(), app_url);
 
   base::RunLoop run_loop;

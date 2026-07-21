@@ -223,7 +223,7 @@ class ServiceWorkerVersionStoppedRunningWaiter
 class IsolatedWebAppBrowserTest : public IsolatedWebAppBrowserTestHarness {
  protected:
   content::StoragePartition* default_storage_partition() {
-    return browser()->profile()->GetDefaultStoragePartition();
+    return browser()->GetProfile()->GetDefaultStoragePartition();
   }
 
   content::RenderFrameHost* GetPrimaryMainFrame(Browser* browser) {

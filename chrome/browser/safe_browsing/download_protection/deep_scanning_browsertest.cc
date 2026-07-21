@@ -265,7 +265,7 @@ class DownloadDeepScanningBrowserTestBase
 
   void WaitForDownloadToFinish() {
     content::DownloadManager* download_manager =
-        browser()->profile()->GetDownloadManager();
+        browser()->GetProfile()->GetDownloadManager();
     content::DownloadTestObserverTerminal observer(
         download_manager, 1,
         content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_QUIT);
@@ -386,7 +386,7 @@ class DownloadDeepScanningBrowserTestBase
 
   void ObserveDownloadManager() {
     content::DownloadManager* download_manager =
-        browser()->profile()->GetDownloadManager();
+        browser()->GetProfile()->GetDownloadManager();
     download_manager->AddObserver(this);
   }
 
@@ -415,10 +415,10 @@ class DownloadDeepScanningBrowserTestBase
 
   std::string GetProfileIdentifier() const {
 #if BUILDFLAG(IS_CHROMEOS)
-    return browser()->profile()->GetPath().AsUTF8Unsafe();
+    return browser()->GetProfile()->GetPath().AsUTF8Unsafe();
 #else
     if (connectors_machine_scope_) {
-      return browser()->profile()->GetPath().AsUTF8Unsafe();
+      return browser()->GetProfile()->GetPath().AsUTF8Unsafe();
     }
     auto* profile_id_service =
         enterprise::ProfileIdServiceFactory::GetForProfile(
@@ -1028,7 +1028,7 @@ class DownloadRestrictionsDeepScanningBrowserTest
   void SetUpOnMainThread() override {
     DownloadDeepScanningBrowserTestBase::SetUpOnMainThread();
 
-    browser()->profile()->GetPrefs()->SetInteger(
+    browser()->GetProfile()->GetPrefs()->SetInteger(
         policy::policy_prefs::kDownloadRestrictions,
         static_cast<int>(policy::DownloadRestriction::DANGEROUS_FILES));
     enterprise_connectors::test::SetAnalysisConnector(
@@ -1144,7 +1144,7 @@ class AllowlistedUrlDeepScanningBrowserTest
 
     base::ListValue domain_list;
     domain_list.Append(embedded_test_server()->base_url().host());
-    browser()->profile()->GetPrefs()->SetList(
+    browser()->GetProfile()->GetPrefs()->SetList(
         prefs::kSafeBrowsingAllowlistDomains, std::move(domain_list));
   }
 };

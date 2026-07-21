@@ -45,7 +45,7 @@ static std::string AllTargetsString(
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsAndroidBridgeTest, DiscoveryListChanges) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   PrefService* service = profile->GetPrefs();
   service->ClearPref(prefs::kDevToolsTCPDiscoveryConfig);
@@ -96,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAndroidBridgeTest, DiscoveryListChanges) {
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsAndroidBridgeTest, DefaultValues) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   PrefService* service = profile->GetPrefs();
   DevToolsAndroidBridge::Factory::GetForProfile(profile);
@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAndroidBridgeTest, DefaultValues) {
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsAndroidBridgeTest, TCPEnableChange) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   PrefService* service = profile->GetPrefs();
   service->ClearPref(prefs::kDevToolsTCPDiscoveryConfig);
