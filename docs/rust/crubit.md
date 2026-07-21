@@ -49,6 +49,8 @@ Other notes:
     * This is mostly the same content as above, but is mentioned here because it
       includes a few extra things like document freshness and owner metadata,
       link to a Google-internal chatroom, etc.)
+* Crubit's Discord server can be joined using the following invite link:
+  https://discord.gg/nHq5fdADKV
 * TODO: Cover Crubit in
   [Chromium/FFI chapter of Comprehensive Rust course](https://google.github.io/comprehensive-rust/chromium/interoperability-with-cpp.html)
 
