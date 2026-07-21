@@ -8,10 +8,14 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
-namespace extensions {
-
 class AimEligibilityExtensionBridge;
 
+// Factory for the `AimEligibilityExtensionBridge` KeyedService.
+// During construction, it registers the Mojo binder provider for the AIM
+// Eligibility component extension with the global `ExtensionMojoBinderRegistry`
+// directly, passing ownership so that incoming frame-scoped and
+// service-worker-scoped Mojo interface requests route to the
+// `AimEligibilityExtensionBridge`.
 class AimEligibilityExtensionBridgeFactory : public ProfileKeyedServiceFactory {
  public:
   static AimEligibilityExtensionBridge* GetForProfile(Profile* profile);
@@ -28,7 +32,5 @@ class AimEligibilityExtensionBridgeFactory : public ProfileKeyedServiceFactory {
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
 };
-
-}  // namespace extensions
 
 #endif  // CHROME_BROWSER_UI_WEBUI_OMNIBOX_AIM_ELIGIBILITY_EXTENSION_AIM_ELIGIBILITY_EXTENSION_BRIDGE_FACTORY_H_

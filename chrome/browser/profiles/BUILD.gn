@@ -906,6 +906,7 @@ source_set("profiles_extra_parts_impl") {
   if (enable_extensions_core) {
     deps += [
       "//chrome/browser/extensions/keyed_services:keyed_service_factories",
+      "//chrome/browser/ui/webui/omnibox/aim_eligibility_extension",
       "//extensions/browser",
     ]
   }

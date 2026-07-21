@@ -18,12 +18,10 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/constants.h"
 
-namespace extensions {
-
 AimEligibilityExtensionBridge::AimEligibilityExtensionBridge(Profile* profile)
     : profile_(*profile) {
-  auto* resource_manager =
-      ExtensionsBrowserClient::Get()->GetComponentExtensionResourceManager();
+  auto* resource_manager = extensions::ExtensionsBrowserClient::Get()
+                               ->GetComponentExtensionResourceManager();
   if (resource_manager) {
     load_time_data_subscription_ =
         resource_manager->RegisterTemplateDataProvider(
@@ -79,5 +77,3 @@ void AimEligibilityExtensionBridge::CreatePageHandler(
       base::Unretained(this), raw_handler));
   page_handlers_.push_back(std::move(handler_instance));
 }
-
-}  // namespace extensions

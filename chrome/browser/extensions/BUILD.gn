@@ -961,7 +961,6 @@ source_set("extensions") {
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/web_applications",
-      "//chrome/browser/ui/webui/omnibox/aim_eligibility:mojo_bindings",
       "//chrome/browser/ui/window_sizer",
       "//chrome/browser/ui/zoom",
       "//chrome/browser/webauthn",
