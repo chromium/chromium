@@ -7,6 +7,8 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -14,6 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "components/pwg_encoder/bitmap_image.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
 namespace pwg_encoder {
 
@@ -79,5 +82,56 @@ TEST(PwgRasterTest, Encode) {
   sha1 = base::SHA1HashString(output);
   EXPECT_EQ("4E718B0A69AC26A366A2E23AE1ECA6055079A1FF", base::HexEncode(sha1));
 }
+
+auto ImageWithPixels(int width, int height) {
+  return fuzztest::Map(
+      [width, height](const std::vector<uint32_t>& pixels) {
+        auto image = std::make_unique<BitmapImage>(gfx::Size(width, height));
+        image->pixels().copy_from_nonoverlapping(pixels);
+        return image;
+      },
+      fuzztest::VectorOf(fuzztest::Arbitrary<uint32_t>())
+          .WithSize(width * height));
+}
+
+auto AnyBitmapImage() {
+  return fuzztest::FlatMap(ImageWithPixels, fuzztest::InRange(0, 500),
+                           fuzztest::InRange(0, 500));
+}
+
+void EncodeDoesNotCrash(std::unique_ptr<BitmapImage> image,
+                        int dpi_width,
+                        int dpi_height,
+                        uint32_t total_pages,
+                        bool flipx,
+                        bool flipy,
+                        PwgHeaderInfo::ColorSpace color_space,
+                        bool duplex,
+                        bool tumble) {
+  PwgHeaderInfo header_info;
+  header_info.dpi = gfx::Size(dpi_width, dpi_height);
+  header_info.total_pages = total_pages;
+  header_info.flipx = flipx;
+  header_info.flipy = flipy;
+  header_info.color_space = color_space;
+  header_info.duplex = duplex;
+  header_info.tumble = tumble;
+
+  std::string output =
+      PwgEncoder::EncodePageFromBGRAColorspace(*image, header_info);
+}
+
+FUZZ_TEST(PwgEncoderFuzzTest, EncodeDoesNotCrash)
+    .WithDomains(
+        /*image=*/AnyBitmapImage(),
+        /*dpi_width=*/fuzztest::InRange(0, 2400),
+        /*dpi_height=*/fuzztest::InRange(0, 2400),
+        /*total_pages=*/fuzztest::Arbitrary<uint32_t>(),
+        /*flipx=*/fuzztest::Arbitrary<bool>(),
+        /*flipy=*/fuzztest::Arbitrary<bool>(),
+        /*color_space=*/
+        fuzztest::ElementOf({PwgHeaderInfo::SGRAY, PwgHeaderInfo::SRGB}),
+        /*duplex=*/fuzztest::Arbitrary<bool>(),
+        /*tumble=*/fuzztest::Arbitrary<bool>());
 
 }  // namespace pwg_encoder

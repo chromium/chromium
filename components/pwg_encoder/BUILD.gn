@@ -27,7 +27,9 @@ source_set("unit_tests") {
 
   deps = [
     ":pwg_encoder",
+    "//base/test:fuzztest_support",
     "//base/test:test_support",
     "//testing/gtest",
+    "//third_party/fuzztest",
   ]
 }

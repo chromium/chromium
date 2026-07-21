@@ -1053,6 +1053,7 @@ test("components_unittests") {
     "CurrencyFormatterFuzzTest.FormatDoesNotCrash",
     "PaymentCurrencyAmountFuzzTest.FromValueDictDoesNotCrash",
     "PrivacySandboxAttestationsParserFuzzTest.ParseAttestationsFromStringDoesNotCrash",
+    "PwgEncoderFuzzTest.EncodeDoesNotCrash",
     "RustStreamFramerFuzzTest.FeedDoesNotCrashOnArbitraryChunks",
     "TranslateUtilFuzzTest.GetTranslateSecurityOriginDoesNotCrash",
   ]
