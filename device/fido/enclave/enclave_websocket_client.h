@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -23,8 +24,9 @@
 
 namespace device::enclave {
 
-class EnclaveWebSocketClient : public network::mojom::WebSocketHandshakeClient,
-                               network::mojom::WebSocketClient {
+class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveWebSocketClient
+    : public network::mojom::WebSocketHandshakeClient,
+      public network::mojom::WebSocketClient {
  public:
   enum class SocketStatus {
     kOk,

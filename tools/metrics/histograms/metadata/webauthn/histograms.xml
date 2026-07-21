@@ -390,6 +390,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.Enclave.HttpStatusOrNetError"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2027-07-20">
+  <owner>martinkr@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the net error or HTTP response code when an enclave connection
+    fails.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.Enclave.OpportunisticStoreKeysOutcome"
     enum="EnclaveManagerActionOutcome" expires_after="2026-12-09">
   <owner>ylahodiuk@google.com</owner>
@@ -409,6 +419,16 @@ chromium-metrics-reviews@google.com.
   <owner>ylahodiuk@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>Records an outcome of the PIN renewal action.</summary>
+</histogram>
+
+<histogram name="WebAuthentication.Enclave.WebSocketCloseCode"
+    enum="WebSocketCloseCode" expires_after="2027-07-20">
+  <owner>martinkr@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the WebSocket close code when the connection to the passkey enclave
+    is dropped.
+  </summary>
 </histogram>
 
 <histogram name="WebAuthentication.EnclaveEvent"

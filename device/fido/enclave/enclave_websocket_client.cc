@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/network_context_factory.h"
@@ -187,6 +188,9 @@ void EnclaveWebSocketClient::OnFailure(const std::string& message,
   FIDO_LOG(ERROR) << "Enclave service connection failed " << message << ", "
                   << net_error << ", " << response_code;
 
+  base::UmaHistogramSparse("WebAuthentication.Enclave.HttpStatusOrNetError",
+                           response_code > 0 ? response_code : net_error);
+
   ClosePipe(SocketStatus::kError);
   // `this` may have been deleted at this point.
 }
@@ -271,6 +275,9 @@ void EnclaveWebSocketClient::OnDropChannel(bool was_clean,
                                            const std::string& reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(state_ == State::kOpen || state_ == State::kConnecting);
+
+  base::UmaHistogramSparse("WebAuthentication.Enclave.WebSocketCloseCode",
+                           code);
 
   ClosePipe(SocketStatus::kSocketClosed);
   // `this` may have been deleted at this point.
