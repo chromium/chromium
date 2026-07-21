@@ -330,7 +330,9 @@ void BrowserProcessPlatformPart::InitializePrimaryProfileServices(
       ash::AnnotatedAccountId::Get(primary_profile->GetOriginalProfile())));
   secure_dns_manager_ = std::make_unique<ash::SecureDnsManager>(
       g_browser_process->local_state(),
-      std::make_unique<policy::DeviceAttributesImpl>(), CHECK_DEREF(user),
+      std::make_unique<policy::DeviceAttributesImpl>(
+          browser_policy_connector_ash()),
+      CHECK_DEREF(user),
       primary_profile->GetProfilePolicyConnector()->IsManaged());
 
   if (ash::features::IsAutoSignOutEnabled() &&

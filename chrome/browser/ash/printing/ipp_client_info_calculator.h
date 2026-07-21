@@ -11,6 +11,7 @@
 #include "printing/mojom/print.mojom-forward.h"
 
 namespace policy {
+class BrowserPolicyConnectorAsh;
 class DeviceAttributes;
 }
 
@@ -32,7 +33,10 @@ class IppClientInfoCalculator {
   // the policy is not set.
   virtual ::printing::mojom::IppClientInfoPtr GetDeviceInfo() const = 0;
 
-  static std::unique_ptr<IppClientInfoCalculator> Create();
+  // `browser_policy_connector` must be non-null and must outlive the returned
+  // calculator.
+  static std::unique_ptr<IppClientInfoCalculator> Create(
+      policy::BrowserPolicyConnectorAsh* browser_policy_connector);
 
   // Factory function that allows injected dependencies, for testing.
   static std::unique_ptr<IppClientInfoCalculator> CreateForTesting(

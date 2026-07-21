@@ -21,6 +21,7 @@ source_set("enterprise_device_attributes") {
   deps = [
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser:browser_process_platform_part",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/profiles",

@@ -23,6 +23,8 @@ static_library("policy") {
   deps = [
     "//ash/constants",
     "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:browser_process_platform_part",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc/auth",
     "//chrome/browser/ash/arc/enterprise/cert_store",

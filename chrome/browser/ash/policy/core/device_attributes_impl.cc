@@ -6,40 +6,33 @@
 
 #include <string>
 
+#include "base/check_deref.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/handlers/device_name_policy_handler.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 
 namespace policy {
 
-DeviceAttributesImpl::DeviceAttributesImpl() = default;
+DeviceAttributesImpl::DeviceAttributesImpl(
+    BrowserPolicyConnectorAsh* browser_policy_connector)
+    : browser_policy_connector_(CHECK_DEREF(browser_policy_connector)) {}
 DeviceAttributesImpl::~DeviceAttributesImpl() = default;
 
 std::string DeviceAttributesImpl::GetEnterpriseEnrollmentDomain() const {
-  return g_browser_process->platform_part()
-      ->browser_policy_connector_ash()
-      ->GetEnterpriseEnrollmentDomain();
+  return browser_policy_connector_->GetEnterpriseEnrollmentDomain();
 }
 
 std::string DeviceAttributesImpl::GetEnterpriseDomainManager() const {
-  return g_browser_process->platform_part()
-      ->browser_policy_connector_ash()
-      ->GetEnterpriseDomainManager();
+  return browser_policy_connector_->GetEnterpriseDomainManager();
 }
 
 std::string DeviceAttributesImpl::GetSSOProfile() const {
-  return g_browser_process->platform_part()
-      ->browser_policy_connector_ash()
-      ->GetSSOProfile();
+  return browser_policy_connector_->GetSSOProfile();
 }
 
 std::string DeviceAttributesImpl::GetDeviceAssetID() const {
-  return g_browser_process->platform_part()
-      ->browser_policy_connector_ash()
-      ->GetDeviceAssetID();
+  return browser_policy_connector_->GetDeviceAssetID();
 }
 
 std::string DeviceAttributesImpl::GetDeviceSerialNumber() const {
@@ -49,46 +42,32 @@ std::string DeviceAttributesImpl::GetDeviceSerialNumber() const {
 }
 
 std::string DeviceAttributesImpl::GetMachineName() const {
-  return g_browser_process->platform_part()
-      ->browser_policy_connector_ash()
-      ->GetMachineName();
+  return browser_policy_connector_->GetMachineName();
 }
 
 std::string DeviceAttributesImpl::GetDeviceAnnotatedLocation() const {
-  return g_browser_process->platform_part()
-      ->browser_policy_connector_ash()
-      ->GetDeviceAnnotatedLocation();
+  return browser_policy_connector_->GetDeviceAnnotatedLocation();
 }
 
 std::optional<std::string> DeviceAttributesImpl::GetDeviceHostname() const {
-  return g_browser_process->platform_part()
-      ->browser_policy_connector_ash()
-      ->GetDeviceNamePolicyHandler()
+  return browser_policy_connector_->GetDeviceNamePolicyHandler()
       ->GetHostnameChosenByAdministrator();
 }
 
 std::string DeviceAttributesImpl::GetDirectoryApiID() const {
-  return g_browser_process->platform_part()
-      ->browser_policy_connector_ash()
-      ->GetDirectoryApiID();
+  return browser_policy_connector_->GetDirectoryApiID();
 }
 
 std::string DeviceAttributesImpl::GetObfuscatedCustomerID() const {
-  return g_browser_process->platform_part()
-      ->browser_policy_connector_ash()
-      ->GetObfuscatedCustomerID();
+  return browser_policy_connector_->GetObfuscatedCustomerID();
 }
 
 std::string DeviceAttributesImpl::GetCustomerLogoURL() const {
-  return g_browser_process->platform_part()
-      ->browser_policy_connector_ash()
-      ->GetCustomerLogoURL();
+  return browser_policy_connector_->GetCustomerLogoURL();
 }
 
 MarketSegment DeviceAttributesImpl::GetEnterpriseMarketSegment() const {
-  return g_browser_process->platform_part()
-      ->browser_policy_connector_ash()
-      ->GetEnterpriseMarketSegment();
+  return browser_policy_connector_->GetEnterpriseMarketSegment();
 }
 
 }  // namespace policy

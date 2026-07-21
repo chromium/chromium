@@ -25,6 +25,8 @@
 #include "base/version_info/version_info.h"
 #include "chrome/browser/ash/printing/ipp_client_info_calculator.h"
 #include "chrome/browser/ash/printing/local_printer.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_utils.h"
 #include "chrome/common/pref_names.h"
@@ -608,7 +610,8 @@ ash::printing::IppClientInfoCalculator*
 LocalPrinterHandlerChromeos::GetIppClientInfoCalculator() const {
   if (!ipp_client_info_calculator_) {
     ipp_client_info_calculator_ =
-        ash::printing::IppClientInfoCalculator::Create();
+        ash::printing::IppClientInfoCalculator::Create(
+            g_browser_process->platform_part()->browser_policy_connector_ash());
   }
   return ipp_client_info_calculator_.get();
 }

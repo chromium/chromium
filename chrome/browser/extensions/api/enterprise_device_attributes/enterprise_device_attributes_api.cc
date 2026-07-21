@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/policy/core/device_attributes_impl.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -45,7 +46,9 @@ bool IsAccessAllowed() {
 namespace extensions {
 
 EnterpriseDeviceAttributesBase::EnterpriseDeviceAttributesBase()
-    : device_attributes_(std::make_unique<policy::DeviceAttributesImpl>()) {}
+    : device_attributes_(std::make_unique<policy::DeviceAttributesImpl>(
+          g_browser_process->platform_part()->browser_policy_connector_ash())) {
+}
 
 EnterpriseDeviceAttributesBase::~EnterpriseDeviceAttributesBase() = default;
 

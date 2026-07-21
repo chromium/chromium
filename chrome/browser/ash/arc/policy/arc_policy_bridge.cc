@@ -28,6 +28,8 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/policy/core/device_attributes_impl.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/chromeos/platform_keys/extension_key_permissions_service.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -579,7 +581,10 @@ ArcPolicyBridge::ArcPolicyBridge(content::BrowserContext* context,
     : ArcPolicyBridge(context,
                       bridge_service,
                       /*policy_service=*/nullptr,
-                      std::make_unique<policy::DeviceAttributesImpl>()) {}
+                      // TODO(crbug.com/404130092): Avoid g_browser_process.
+                      std::make_unique<policy::DeviceAttributesImpl>(
+                          g_browser_process->platform_part()
+                              ->browser_policy_connector_ash())) {}
 
 ArcPolicyBridge::ArcPolicyBridge(
     content::BrowserContext* context,

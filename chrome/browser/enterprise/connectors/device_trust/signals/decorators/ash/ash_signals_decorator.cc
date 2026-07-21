@@ -107,7 +107,8 @@ AshSignalsDecorator::AshSignalsDecorator(
     Profile* profile)
     : browser_policy_connector_(browser_policy_connector),
       profile_(profile),
-      attributes_(std::make_unique<policy::DeviceAttributesImpl>()) {
+      attributes_(std::make_unique<policy::DeviceAttributesImpl>(
+          browser_policy_connector_)) {
   DCHECK(browser_policy_connector_);
   DCHECK(profile_);
 }

@@ -7,17 +7,22 @@
 
 #include <string>
 
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ash/policy/core/device_attributes.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 
 namespace policy {
+
+class BrowserPolicyConnectorAsh;
 
 // This implementation of DeviceAttributes forwards calls to
 // |BrowserPolicyConnectorAsh| to retrieve device attributes of Chrome OS
 // managed devices.
 class DeviceAttributesImpl : public DeviceAttributes {
  public:
-  DeviceAttributesImpl();
+  // `browser_policy_connector` must not be null and must outlive this object.
+  explicit DeviceAttributesImpl(
+      BrowserPolicyConnectorAsh* browser_policy_connector);
   ~DeviceAttributesImpl() override;
 
   // Not copyable nor movable.
@@ -51,6 +56,9 @@ class DeviceAttributesImpl : public DeviceAttributes {
   std::string GetCustomerLogoURL() const override;
 
   MarketSegment GetEnterpriseMarketSegment() const override;
+
+ private:
+  const raw_ref<BrowserPolicyConnectorAsh> browser_policy_connector_;
 };
 
 }  // namespace policy

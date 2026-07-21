@@ -151,6 +151,7 @@ source_set("impl") {
     ]
     deps += [
       "//ash/constants",
+      "//chrome/browser:browser_process_platform_part",
       "//chrome/browser/ash/drive",
       "//chrome/browser/ash/printing",
       "//chrome/browser/ash/profiles",
