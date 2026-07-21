@@ -41,6 +41,7 @@ void GlicActuationPriorityVoter::TearDownOnGraph(Graph* graph) {
   graph->RemoveFrameNodeObserver(this);
   graph->RemovePageNodeObserver(this);
   voting_channel_.Reset();
+  voted_contexts_.clear();
 }
 
 void GlicActuationPriorityVoter::OnGlicActuationStateChanged(
@@ -84,15 +85,7 @@ void GlicActuationPriorityVoter::OnBeforeFrameNodeAdded(
 
 void GlicActuationPriorityVoter::OnBeforeFrameNodeRemoved(
     const FrameNode* frame_node) {
-  const GlicActuationState state =
-      PageLiveStateDecorator::Data::FromPageNode(frame_node->GetPageNode())
-          ->GetGlicActuationState();
-  // Only main frames participate in actuation. If this frame is no longer
-  // current, the vote would have been invalidated in OnCurrentFrameChanged.
-  if (frame_node->IsMainFrame() && frame_node->IsCurrent() &&
-      state != GlicActuationState::kNone) {
-    voting_channel_.InvalidateVote(GetExecutionContext(frame_node));
-  }
+  InvalidateVote(GetExecutionContext(frame_node));
 }
 
 void GlicActuationPriorityVoter::OnCurrentFrameChanged(
@@ -116,7 +109,7 @@ void GlicActuationPriorityVoter::OnCurrentFrameChanged(
     UpdateFrameNodeVote(current_frame_node, GlicActuationState::kNone, state);
   }
   if (previous_frame_node) {
-    voting_channel_.InvalidateVote(GetExecutionContext(previous_frame_node));
+    InvalidateVote(GetExecutionContext(previous_frame_node));
   }
 }
 
@@ -131,7 +124,7 @@ void GlicActuationPriorityVoter::UpdateFrameNodeVote(
   }
 
   if (new_state == GlicActuationState::kNone) {
-    voting_channel_.InvalidateVote(GetExecutionContext(frame_node));
+    InvalidateVote(GetExecutionContext(frame_node));
     return;
   }
 
@@ -142,10 +135,32 @@ void GlicActuationPriorityVoter::UpdateFrameNodeVote(
 
   const Vote vote(priority, kGlicActuationReason);
 
-  if (previous_state != GlicActuationState::kNone) {
-    voting_channel_.ChangeVote(GetExecutionContext(frame_node), vote);
-  } else {
-    voting_channel_.SubmitVote(GetExecutionContext(frame_node), vote);
+  SubmitVote(GetExecutionContext(frame_node), vote);
+}
+
+void GlicActuationPriorityVoter::SubmitVote(
+    const execution_context::ExecutionContext* execution_context,
+    const Vote& vote) {
+  if (!execution_context) {
+    return;
+  }
+  auto [it, inserted] = voted_contexts_.try_emplace(execution_context, vote);
+  if (inserted) {
+    voting_channel_.SubmitVote(execution_context, vote);
+  } else if (it->second != vote) {
+    it->second = vote;
+    voting_channel_.ChangeVote(execution_context, vote);
+  }
+}
+
+void GlicActuationPriorityVoter::InvalidateVote(
+    const execution_context::ExecutionContext* execution_context) {
+  if (!execution_context) {
+    return;
+  }
+  size_t removed = voted_contexts_.erase(execution_context);
+  if (removed) {
+    voting_channel_.InvalidateVote(execution_context);
   }
 }
 

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -133,6 +134,75 @@ TEST_F(GlicActuationPriorityVoterTest,
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node)
       ->SetGlicActuationStateForTesting(GlicActuationState::kNone);
   EXPECT_EQ(observer_.GetVoteCount(), 0u);
+}
+
+// Tests that when OnCurrentFrameChanged is called during actuation, if the
+// previous frame node did not have an active vote (e.g., because it was already
+// invalidated or not voted on), the voter does not crash trying to invalidate a
+// non-existent vote.
+TEST_F(GlicActuationPriorityVoterTest,
+       OnCurrentFrameChangedUnvotedPreviousFrame) {
+  MockSinglePageInSingleProcessGraph mock_graph(graph());
+  auto* page_node = mock_graph.page.get();
+  auto* frame_1 = mock_graph.frame.get();
+
+  auto frame_2 = TestNodeWrapper<FrameNodeImpl>::Create(
+      graph(), mock_graph.process.get(), page_node,
+      /*parent_frame_node=*/nullptr,
+      /*outer_document_for_fenced_frame=*/nullptr, NextTestFrameRoutingId(),
+      blink::LocalFrameToken(), content::BrowsingInstanceId(0),
+      content::SiteInstanceGroupId(0), /*is_current=*/false);
+  EXPECT_FALSE(frame_2->IsCurrent());
+
+  // Set page to actuating while frame_1 is current. frame_1 gets a vote.
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node)
+      ->SetGlicActuationStateForTesting(
+          GlicActuationState::kActuatingOnVisibleTab);
+  EXPECT_EQ(observer_.GetVoteCount(), 1u);
+  EXPECT_TRUE(observer_.HasVote(voter_id(), GetExecutionContext(frame_1)));
+
+  // Simulate frame_1's vote being invalidated prior to current frame change
+  // (e.g., during frame destruction or when unvoted).
+  glic_voter_.OnBeforeFrameNodeRemoved(frame_1);
+  EXPECT_EQ(observer_.GetVoteCount(), 0u);
+
+  // Now simulate OnCurrentFrameChanged(frame_1, frame_2).
+  // frame_1 is passed as previous_frame_node despite having no active vote.
+  // Before the bug fix, this caused a CHECK failure when invalidating frame_1.
+  FrameNodeImpl::UpdateCurrentFrame(frame_1, frame_2.get(), graph());
+
+  // frame_1 should safely not be invalidated again, and frame_2 should get the
+  // vote.
+  EXPECT_EQ(observer_.GetVoteCount(), 1u);
+  EXPECT_FALSE(observer_.HasVote(voter_id(), GetExecutionContext(frame_1)));
+  EXPECT_TRUE(
+      observer_.HasVote(voter_id(), GetExecutionContext(frame_2.get())));
+}
+
+// Tests that if a vote is already active on a frame, changing the actuation
+// state safely updates the vote (via ChangeVote) without double-submitting.
+TEST_F(GlicActuationPriorityVoterTest, ChangeVoteWhenAlreadyVoted) {
+  MockSinglePageInSingleProcessGraph mock_graph(graph());
+  auto* page_node = mock_graph.page.get();
+  auto* frame_1 = mock_graph.frame.get();
+
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node)
+      ->SetGlicActuationStateForTesting(
+          GlicActuationState::kActuatingOnVisibleTab);
+  EXPECT_EQ(observer_.GetVoteCount(), 1u);
+  EXPECT_TRUE(
+      observer_.HasVote(voter_id(), GetExecutionContext(frame_1),
+                        base::Process::Priority::kUserBlocking,
+                        GlicActuationPriorityVoter::kGlicActuationReason));
+
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node)
+      ->SetGlicActuationStateForTesting(
+          GlicActuationState::kActuatingOnBackgroundTab);
+  EXPECT_EQ(observer_.GetVoteCount(), 1u);
+  EXPECT_TRUE(
+      observer_.HasVote(voter_id(), GetExecutionContext(frame_1),
+                        base::Process::Priority::kUserVisible,
+                        GlicActuationPriorityVoter::kGlicActuationReason));
 }
 
 }  // namespace performance_manager::execution_context_priority
