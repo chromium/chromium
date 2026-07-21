@@ -494,4 +494,8 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
                     KEY_CACHED_DEEP_LINK_PATH, new ArrayList<>(mCachedDeepLinkPath));
         }
     }
+
+    @Nullable List<SettingsIndexData.Entry> getInitialBreadcrumbPathForTesting() {
+        return mInitialBreadcrumbPath;
+    }
 }

@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.content.ComponentCallbacks;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +34,8 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider;
+import org.chromium.chrome.browser.lifecycle.SaveInstanceStateObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.search.SettingsSearchCoordinator;
 import org.chromium.chrome.browser.tab.TabId;
@@ -55,7 +58,8 @@ public class SettingsPageFragmentDelegateImpl
         implements SettingsPage.FragmentDelegate,
                 SettingsMenuHelper.Delegate,
                 PreferenceUpdateObserver,
-                MultiColumnSettings.Observer {
+                MultiColumnSettings.Observer,
+                SaveInstanceStateObserver {
     private static final String SETTINGS_NATIVE_PAGE_TAG = "settings_native_page";
 
     private final Activity mActivity;
@@ -206,19 +210,26 @@ public class SettingsPageFragmentDelegateImpl
         }
         mSettingsHostFragment.setDependencyProvider(mDependencyProvider);
 
-        Bundle savedInstanceState = getSavedInstanceState();
-        if (savedInstanceState != null) {
-            // If savedInstanceState is non-null then the activity is being recreated and
-            // and the multi-column title updater and search coordinator must be created for
-            // the existing fragment.
-            MultiColumnSettings multiColumnSettings = getMultiColumnSettings();
-            assert multiColumnSettings != null;
-            assert multiColumnSettings.getView() != null;
+        assert mActivity instanceof ActivityLifecycleDispatcherProvider;
+        ((ActivityLifecycleDispatcherProvider) mActivity).getLifecycleDispatcher().register(this);
+
+        // During activity recreation savedInstanceState may be non-null but MultiColumnSettings may
+        // not be attached yet. Check for the existing of MultiColumnSettings to decide whether to
+        // create the title updater and search coordinator now vs. later.
+        // TODO(crbug.com/537343764): Revisit this and make it more similar to SettingsActivity's
+        // initialization behavior.
+        MultiColumnSettings multiColumnSettings = getMultiColumnSettings();
+        if (multiColumnSettings != null && multiColumnSettings.getView() != null) {
+            Bundle savedInstanceState = getSavedInstanceState();
             createMultiColumnTitleUpdater(
                     multiColumnSettings, multiColumnSettings.requireView(), savedInstanceState);
             createSearchCoordinator(multiColumnSettings, savedInstanceState);
             multiColumnSettings.addObserver(this);
             onHeaderLayoutUpdated();
+
+            // TODO(crbug.com/521895796): Update initial breadcrumb path from savedInstanceState if
+            // we're showing a particular fragment, then save it on onSaveInstanceState(). See
+            // SettingsActivity.
         } else {
             // Otherwise create the title updater and search coordinator when the fragment is
             // created.
@@ -230,6 +241,9 @@ public class SettingsPageFragmentDelegateImpl
 
     @Override
     public void destroySettings() {
+        assert mActivity instanceof ActivityLifecycleDispatcherProvider;
+        ((ActivityLifecycleDispatcherProvider) mActivity).getLifecycleDispatcher().unregister(this);
+
         FragmentManager fragmentManager =
                 ((FragmentActivity) mActivity).getSupportFragmentManager();
         assumeNonNull(mDependencyProvider);
@@ -278,6 +292,20 @@ public class SettingsPageFragmentDelegateImpl
         mToolbar = null;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        if (mSearchCoordinator != null) {
+            mSearchCoordinator.onSaveInstanceState(outState);
+        }
+        if (mMultiColumnTitleUpdater != null) {
+            mMultiColumnTitleUpdater.onSaveInstanceState(outState);
+        }
+        // TODO(crbug.com/521895796): Save breadcrumb state here.
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {}
+
     private @Nullable Bundle getSavedInstanceState() {
         return mActivity instanceof AsyncInitializationActivity asyncActivity
                 ? asyncActivity.getSavedInstanceState()
@@ -302,7 +330,7 @@ public class SettingsPageFragmentDelegateImpl
                         titleContainer,
                         mToolbar::setTitle,
                         this::onTitleTapped,
-                        /* initialBreadcrumbPath= */ null);
+                        SettingsBreadcrumbUtil.getInitialBreadcrumbPath(savedInstanceState));
         multiColumnSettings.addObserver(mMultiColumnTitleUpdater);
     }
 

@@ -94,7 +94,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -127,8 +126,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
     // Key used to store activity start time in the Bundle to have it survive activity re-creation.
     private static final String KEY_START_TIME = "start_time";
-
-    private static final String KEY_INITIAL_BREADCRUMB_PATH = "initial_breadcrumb_path";
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static final String EXTRA_SHOW_FRAGMENT = "show_fragment";
@@ -251,16 +248,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                 }
             }
         } else if (savedInstanceState != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                mInitialBreadcrumbPath =
-                        savedInstanceState.getParcelableArrayList(
-                                KEY_INITIAL_BREADCRUMB_PATH, SettingsIndexData.Entry.class);
-            } else {
-                @SuppressWarnings("deprecation")
-                ArrayList<SettingsIndexData.Entry> legacyList =
-                        savedInstanceState.getParcelableArrayList(KEY_INITIAL_BREADCRUMB_PATH);
-                mInitialBreadcrumbPath = legacyList;
-            }
+            mInitialBreadcrumbPath =
+                    SettingsBreadcrumbUtil.getInitialBreadcrumbPath(savedInstanceState);
         }
 
         // Register fragment lifecycle callbacks before calling super.onCreate() because it may
@@ -1079,10 +1068,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             mStartTimeSaved = true;
         }
 
-        if (mInitialBreadcrumbPath != null) {
-            outState.putParcelableArrayList(
-                    KEY_INITIAL_BREADCRUMB_PATH, new ArrayList<>(mInitialBreadcrumbPath));
-        }
+        SettingsBreadcrumbUtil.saveInitialBreadcrumbPath(outState, mInitialBreadcrumbPath);
     }
 
     // TODO(crbug.com/521895796): Extract to a shared class so it can be reused by

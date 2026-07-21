@@ -1525,6 +1525,7 @@ if (is_android) {
       "//chrome/android/java/src/org/chromium/chrome/browser/settings/SettingsMenuHelperUnitTest.java",
       "src/org/chromium/chrome/browser/settings/ActivityUtilUnitTest.java",
       "src/org/chromium/chrome/browser/settings/SettingsActivityUnitTest.java",
+      "src/org/chromium/chrome/browser/settings/SettingsBreadcrumbUtilTest.java",
       "src/org/chromium/chrome/browser/settings/SettingsContainmentHelperTest.java",
       "src/org/chromium/chrome/browser/settings/SettingsEnumsTest.java",
       "src/org/chromium/chrome/browser/settings/SettingsHostFragmentTest.java",
