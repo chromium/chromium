@@ -8,6 +8,7 @@ import android.content.ClipData;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.PointerIcon;
@@ -604,6 +605,12 @@ public class ViewAndroidDelegate {
             int unusedY,
             int unusedWidth,
             int unusedHeight) {
+        // Exit early in case of empty or null tooltip Strings.
+        if (TextUtils.isEmpty(text) || text.trim().isEmpty()) {
+            clearTooltipFromKeyboard();
+            return;
+        }
+
         // Bounds are unused because Android system API has no way to provide them to accessibility
         // APIs
         View container = getContainerView();
