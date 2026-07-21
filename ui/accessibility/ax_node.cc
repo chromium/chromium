@@ -843,11 +843,17 @@ AXTreeManager* AXNode::GetManager() const {
   return AXTreeManager::FromID(tree_->GetAXTreeID());
 }
 
+bool AXNode::HasSelectionFocusInSubtree() const {
+  const AXNode* focus = tree()->GetFromId(GetSelection().focus_object_id);
+  return focus && focus->IsDescendantOf(this);
+}
+
 bool AXNode::HasVisibleCaretOrSelection() const {
-  const AXSelection selection = GetSelection();
-  const AXNode* focus = tree()->GetFromId(selection.focus_object_id);
-  if (!focus || !focus->IsDescendantOf(this))
+  if (!HasSelectionFocusInSubtree()) {
     return false;
+  }
+
+  const AXSelection selection = GetSelection();
 
   // A selection or the caret will be visible in a focused text field (including
   // a content editable).

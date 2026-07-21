@@ -308,6 +308,10 @@ class AX_EXPORT AXNode final {
   // this node.
   bool HasVisibleCaretOrSelection() const;
 
+  // Returns true if the focus of the current selection is this node or one of
+  // its descendants, regardless of whether that selection is visible.
+  bool HasSelectionFocusInSubtree() const;
+
   // Gets the current selection from the accessibility tree.
   AXSelection GetSelection() const;
 

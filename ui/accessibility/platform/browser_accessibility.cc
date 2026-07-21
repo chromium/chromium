@@ -927,12 +927,13 @@ bool BrowserAccessibility::IsWebContent() const {
 }
 
 bool BrowserAccessibility::HasVisibleCaretOrSelection() const {
-  // The caret should be visible if Caret Browsing is enabled.
+  // The caret should be visible if Caret Browsing is enabled, but only in the
+  // node which contains it.
   //
   // TODO(crbug.com/40674120): Caret Browsing should be looking at leaf text
   // nodes so it might not return expected results in this method.
   if (AXPlatform::GetInstance().IsCaretBrowsingEnabled()) {
-    return true;
+    return node()->HasSelectionFocusInSubtree();
   }
   return node()->HasVisibleCaretOrSelection();
 }

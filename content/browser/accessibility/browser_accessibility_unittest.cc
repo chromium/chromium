@@ -11,6 +11,7 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_position.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/accessibility/platform/test_ax_node_id_delegate.h"
 #include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
@@ -120,6 +121,66 @@ TEST_F(BrowserAccessibilityTest, TestCanFireEvents) {
       manager->RetargetBrowserAccessibilityForEvents(
           text_obj, RetargetEventType::RetargetEventTypeBlinkHover);
   EXPECT_TRUE(retarget->CanFireEvents());
+
+  manager.reset();
+}
+
+TEST_F(BrowserAccessibilityTest, CaretBrowsingVisibleCaretIsWhereSelectionIs) {
+  ui::AXNodeData text1;
+  text1.id = 111;
+  text1.role = ax::mojom::Role::kStaticText;
+  text1.SetName("Paragraph one text.");
+
+  ui::AXNodeData para1;
+  para1.id = 11;
+  para1.role = ax::mojom::Role::kParagraph;
+  para1.child_ids.push_back(text1.id);
+
+  ui::AXNodeData text2;
+  text2.id = 222;
+  text2.role = ax::mojom::Role::kStaticText;
+  text2.SetName("Paragraph two text.");
+
+  ui::AXNodeData para2;
+  para2.id = 22;
+  para2.role = ax::mojom::Role::kParagraph;
+  para2.child_ids.push_back(text2.id);
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {para1.id, para2.id};
+
+  ui::AXTreeUpdate update =
+      MakeAXTreeUpdateForTesting(root, para1, text1, para2, text2);
+  // A collapsed selection, i.e. a caret, in the first paragraph.
+  update.has_tree_data = true;
+  update.tree_data.sel_anchor_object_id = text1.id;
+  update.tree_data.sel_anchor_offset = 5;
+  update.tree_data.sel_focus_object_id = text1.id;
+  update.tree_data.sel_focus_offset = 5;
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      CreateBrowserAccessibilityManager(
+          update, node_id_delegate_,
+          test_browser_accessibility_delegate_.get()));
+
+  ui::BrowserAccessibility* para1_obj = manager->GetFromID(para1.id);
+  ui::BrowserAccessibility* para2_obj = manager->GetFromID(para2.id);
+  ASSERT_NE(nullptr, para1_obj);
+  ASSERT_NE(nullptr, para2_obj);
+
+  // Without Caret Browsing, a collapsed selection in non-editable content is
+  // not visible anywhere.
+  EXPECT_FALSE(para1_obj->HasVisibleCaretOrSelection());
+  EXPECT_FALSE(para2_obj->HasVisibleCaretOrSelection());
+
+  // With Caret Browsing, it is visible, but only in the paragraph which
+  // actually contains it.
+  ui::AXPlatform::GetInstance().SetCaretBrowsingState(true);
+  EXPECT_TRUE(para1_obj->HasVisibleCaretOrSelection());
+  EXPECT_FALSE(para2_obj->HasVisibleCaretOrSelection());
+  ui::AXPlatform::GetInstance().SetCaretBrowsingState(false);
 
   manager.reset();
 }
