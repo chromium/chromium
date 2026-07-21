@@ -79,6 +79,8 @@
 }
 - (void)hideTabGridGuidedTour {
 }
+- (void)presentPinTabBubble {
+}
 - (void)showPageActionMenuFromTabGrid {
 }
 - (void)activateGridContainerConstraints {

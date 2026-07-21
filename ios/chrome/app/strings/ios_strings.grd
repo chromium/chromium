@@ -4452,6 +4452,9 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_LEVEL_UP_MAXIMUM_LEVEL" desc="Progress message displaying that all tasks have been completed and the user is all set. [iOS only]">
         You’re all set! Get notified when new tasks arrive.
       </message>
+      <message name="IDS_IOS_LEVEL_UP_PIN_TABS_IPH" desc="IPH bubble message highlighting how to pin a tab in the Tab Grid. [iOS only]">
+        Press and hold to pin this tab
+      </message>
       <message name="IDS_IOS_LEVEL_UP_SEE_ALL" desc="Link button to open all available level-up tasks. [iOS only]">
         See All
       </message>

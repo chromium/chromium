@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/bring_android_tabs/ui_bundled/bring_android_tabs_prompt_coordinator.h"
 #import "ios/chrome/browser/bring_android_tabs/ui_bundled/tab_list_from_android_coordinator.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
+#import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/ios_collaboration_controller_delegate.h"
 #import "ios/chrome/browser/commerce/ui_bundled/price_card/price_card_mediator.h"
@@ -280,6 +281,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 @implementation TabGridCoordinator {
   // Coordinator for the long press step of the guided tour.
   GuidedTourCoordinator* _guidedTourCoordinator;
+
+  // The presenter for the pin tab IPH bubble.
+  BubbleViewControllerPresenter* _pinTabBubblePresenter;
 
   // The view controller for the Tab Grid, defined manually so that the type can
   // be specified.
@@ -1183,6 +1187,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [_guidedTourCoordinator stop];
   _guidedTourCoordinator = nil;
 
+  [_pinTabBubblePresenter dismissAnimated:NO];
+  _pinTabBubblePresenter = nil;
+
   [_toolbarsCoordinator stop];
   _toolbarsCoordinator = nil;
 
@@ -1893,6 +1900,50 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 - (void)hideTabGridGuidedTour {
   [_guidedTourCoordinator stop];
   _guidedTourCoordinator = nil;
+}
+
+- (void)presentPinTabBubble {
+  if (!IsLevelUpEnabled()) {
+    return;
+  }
+
+  NSString* text = l10n_util::GetNSString(IDS_IOS_LEVEL_UP_PIN_TABS_IPH);
+  UIView* anchorView = [LayoutGuideCenterForBrowser(self.regularBrowser)
+      referencedViewUnderName:kSelectedRegularCellGuide];
+  if (!anchorView) {
+    return;
+  }
+
+  CGFloat anchorPointX = CGRectGetMidX(anchorView.frame);
+  CGFloat anchorPointY = 0.0;
+  BubbleArrowDirection direction = BubbleArrowDirectionUp;
+
+  CGRect anchorFrameInViewController =
+      [anchorView convertRect:[anchorView bounds] toView:_viewController.view];
+  if (CGRectGetMidY(anchorFrameInViewController) >
+      CGRectGetMidY(_viewController.view.bounds)) {
+    direction = BubbleArrowDirectionDown;
+    anchorPointY = CGRectGetMinY(anchorView.frame);
+  } else {
+    direction = BubbleArrowDirectionUp;
+    anchorPointY = CGRectGetMaxY(anchorView.frame);
+  }
+
+  CGPoint anchorPoint = CGPointMake(anchorPointX, anchorPointY);
+  anchorPoint = [anchorView.superview convertPoint:anchorPoint toView:nil];
+
+  BubbleViewControllerPresenter* presenter =
+      [[BubbleViewControllerPresenter alloc]
+          initDefaultBubbleWithText:text
+                     arrowDirection:direction
+                          alignment:BubbleAlignmentCenter
+                  dismissalCallback:nil];
+  if (![presenter canPresentInView:_viewController.view
+                       anchorPoint:anchorPoint]) {
+    return;
+  }
+  [presenter presentInViewController:_viewController anchorPoint:anchorPoint];
+  _pinTabBubblePresenter = presenter;
 }
 
 - (void)showPageActionMenuFromTabGrid {
