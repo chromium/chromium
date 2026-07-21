@@ -285,13 +285,13 @@ class RecreateNestedOwner : public LayerOwner::Observer {
 TEST_F(LayerOwnerDeathTest, DeleteInOnLayerRecreated) {
   LayerOwnerForTesting owner(std::make_unique<LayerTextured>());
   DeleteOwnerOnRecreated observer(&owner);
-  EXPECT_DEATH(owner.RecreateLayer(), "");
+  EXPECT_DEATH_IF_SUPPORTED(owner.RecreateLayer(), "");
 }
 
 TEST_F(LayerOwnerDeathTest, RecreateNested) {
   LayerOwnerForTesting owner(std::make_unique<LayerTextured>());
   RecreateNestedOwner observer(&owner);
-  EXPECT_DEATH(owner.RecreateLayer(), "");
+  EXPECT_DEATH_IF_SUPPORTED(owner.RecreateLayer(), "");
 }
 
 // Test if recreating a layer in OnLayerBoundsChanged will not
