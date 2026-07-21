@@ -2038,11 +2038,14 @@ config("default_clippy_lints") {
     # `config("rustc_revision")` - a custom `--cfg` flag is used to force
     # rebuilding of all `.rs` files (which as a side-effect should also trigger
     # a Clippy check if `enable_rust_clippy = true`).
-    "--cfg=cr_clippy_revision=\"2026-07-18\"",
+    "--cfg=cr_clippy_revision=\"2026-07-20\"",
 
     # Treat all default Clippy lints as warnings.
     # See also `config("treat_warnings_as_errors")`.
     "-Wclippy::all",
+
+    # Additional lints that we enable beyond the defaults
+    "-Wclippy::undocumented_unsafe_blocks",
 
     # Lints disabled during the initial rollout period (when any objection
     # coming from a Chromium engineer would get a lint disabled):

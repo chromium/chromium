@@ -16,5 +16,6 @@ fn main() {
         szPathName: [0; 128],
     };
     let ustyle: u32 = 0;
-    unsafe { OpenFile(filename.as_bytes().as_ptr(), &mut out as *mut OFSTRUCT, ustyle) };
+    // SAFETY: `out` is derived from a reference, and `filename` is a valid c string.
+    unsafe { OpenFile(filename.as_bytes_with_nul().as_ptr(), &mut out as *mut OFSTRUCT, ustyle) };
 }
