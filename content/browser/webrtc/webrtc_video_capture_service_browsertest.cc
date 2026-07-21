@@ -174,7 +174,7 @@ class TextureDeviceExerciser : public VirtualDeviceExerciser {
 
     media::mojom::VideoFrameInfoPtr info = media::mojom::VideoFrameInfo::New();
     info->timestamp = timestamp;
-    info->pixel_format = media::PIXEL_FORMAT_ARGB;
+    info->pixel_format = media::PIXEL_FORMAT_ABGR;
     info->coded_size = kDummyFrameCodedSize;
     info->visible_rect = gfx::Rect(kDummyFrameCodedSize);
     info->natural_size = kDummyFrameCodedSize;

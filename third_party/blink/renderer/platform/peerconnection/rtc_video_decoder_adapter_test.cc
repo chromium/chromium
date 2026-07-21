@@ -415,7 +415,7 @@ class RTCVideoDecoderAdapterTest : public ::testing::Test {
     scoped_refptr<gpu::ClientSharedImage> shared_image =
         gpu::ClientSharedImage::CreateForTesting(metadata);
     scoped_refptr<media::VideoFrame> frame = media::VideoFrame::WrapSharedImage(
-        media::PIXEL_FORMAT_ARGB, shared_image, gpu::SyncToken(),
+        media::PIXEL_FORMAT_ABGR, shared_image, gpu::SyncToken(),
         media::VideoFrame::ReleaseMailboxCB(), gfx::Rect(si_size), si_size,
         base::Microseconds(timestamp));
     output_cb_.Run(std::move(frame));

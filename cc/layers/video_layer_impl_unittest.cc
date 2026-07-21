@@ -380,9 +380,9 @@ TEST(VideoLayerImplTest, NativeYUVFrameGeneratesYUVQuad) {
 
   auto si_size = gfx::Size(10, 10);
   gpu::SharedImageMetadata metadata;
-  metadata.format = viz::SinglePlaneFormat::kRGBA_8888;
+  metadata.format = viz::MultiPlaneFormat::kI420;
   metadata.size = si_size;
-  metadata.color_space = gfx::ColorSpace::CreateSRGB();
+  metadata.color_space = gfx::ColorSpace::CreateREC709();
   metadata.surface_origin = kTopLeft_GrSurfaceOrigin;
   metadata.alpha_type = kOpaque_SkAlphaType;
   metadata.usage = gpu::SharedImageUsageSet();
@@ -426,7 +426,7 @@ TEST(VideoLayerImplTest, NativeARGBFrameGeneratesTextureQuad) {
 
   auto si_size = gfx::Size(10, 10);
   gpu::SharedImageMetadata metadata;
-  metadata.format = viz::SinglePlaneFormat::kRGBA_8888;
+  metadata.format = viz::SinglePlaneFormat::kBGRA_8888;
   metadata.size = si_size;
   metadata.color_space = gfx::ColorSpace::CreateSRGB();
   metadata.surface_origin = kTopLeft_GrSurfaceOrigin;

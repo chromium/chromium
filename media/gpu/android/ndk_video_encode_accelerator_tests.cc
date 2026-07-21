@@ -323,7 +323,7 @@ class NdkVideoEncoderAcceleratorTest
 
     } else {
       CHECK_EQ(software_frame->format(), PIXEL_FORMAT_XBGR);
-      viz_format = viz::SinglePlaneFormat::kRGBA_8888;
+      viz_format = viz::SinglePlaneFormat::kRGBX_8888;
 
       AHardwareBuffer_Desc desc = {};
       desc.width = size.width();

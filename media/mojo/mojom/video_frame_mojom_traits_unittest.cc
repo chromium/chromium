@@ -376,14 +376,14 @@ TEST_F(VideoFrameStructTraitsTest, SharedImageVideoFrame) {
   scoped_refptr<gpu::ClientSharedImage> shared_image =
       gpu::ClientSharedImage::CreateForTesting(metadata);
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
-      PIXEL_FORMAT_ARGB, shared_image, gpu::SyncToken(),
+      PIXEL_FORMAT_ABGR, shared_image, gpu::SyncToken(),
       VideoFrame::ReleaseMailboxCB(), gfx::Rect(10, 10, 80, 80),
       gfx::Size(200, 100), base::Seconds(100));
   frame->set_color_space(shared_image->color_space());
   ASSERT_TRUE(RoundTrip(&frame));
   ASSERT_TRUE(frame);
   EXPECT_FALSE(frame->metadata().end_of_stream);
-  EXPECT_EQ(frame->format(), PIXEL_FORMAT_ARGB);
+  EXPECT_EQ(frame->format(), PIXEL_FORMAT_ABGR);
   EXPECT_EQ(frame->coded_size(), gfx::Size(100, 100));
   EXPECT_EQ(frame->visible_rect(), gfx::Rect(10, 10, 80, 80));
   EXPECT_EQ(frame->natural_size(), gfx::Size(200, 100));
@@ -393,7 +393,7 @@ TEST_F(VideoFrameStructTraitsTest, SharedImageVideoFrame) {
 }
 
 TEST_F(VideoFrameStructTraitsTest, SharedImageVideoFrameMismatchedSize) {
-  constexpr VideoPixelFormat kFormat = PIXEL_FORMAT_ARGB;
+  constexpr VideoPixelFormat kFormat = PIXEL_FORMAT_ABGR;
 
   // This test works by patching the outgoing mojo message, so choose a size
   // that's two primes to try and maximize the uniqueness of the values we're

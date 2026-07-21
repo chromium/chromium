@@ -434,6 +434,20 @@ scoped_refptr<VideoFrame> VideoFrame::WrapSharedImage(
     const gfx::Size& natural_size,
     base::TimeDelta timestamp) {
   CHECK(shared_image);
+  auto pixel_si_format = VideoPixelFormatToSharedImageFormat(format);
+  if (!pixel_si_format.has_value() ||
+      pixel_si_format != shared_image->format()) {
+    SCOPED_CRASH_KEY_STRING256("video_frame", "format",
+                               VideoPixelFormatToString(format));
+    SCOPED_CRASH_KEY_STRING256("video_frame", "si_format",
+                               shared_image->format().ToString());
+    SCOPED_CRASH_KEY_STRING256("video_frame", "si_label",
+                               shared_image->debug_label());
+    DUMP_WILL_BE_CHECK(false)
+        << "VideoFrame format (" << VideoPixelFormatToString(format)
+        << ") does not match SharedImage format ("
+        << shared_image->format().ToString() << ")";
+  }
   scoped_refptr<VideoFrame> frame = CreateFrameForNativeTexturesInternal(
       format, shared_image->size(), visible_rect, natural_size, timestamp);
   if (!frame) {

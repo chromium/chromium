@@ -243,7 +243,7 @@ class VideoResourceUpdaterTest : public testing::Test {
 
   scoped_refptr<VideoFrame> CreateTestRGBAHardwareVideoFrame() {
     return CreateTestHardwareVideoFrame(viz::SinglePlaneFormat::kRGBA_8888,
-                                        PIXEL_FORMAT_ARGB, kSRGBColorSpace,
+                                        PIXEL_FORMAT_ABGR, kSRGBColorSpace,
                                         GL_TEXTURE_2D,
                                         /*needs_raster_access=*/false);
   }
@@ -251,7 +251,7 @@ class VideoResourceUpdaterTest : public testing::Test {
   scoped_refptr<VideoFrame> CreateTestStreamTextureHardwareVideoFrame(
       bool needs_copy) {
     scoped_refptr<VideoFrame> video_frame = CreateTestHardwareVideoFrame(
-        viz::SinglePlaneFormat::kRGBA_8888, PIXEL_FORMAT_ARGB, kSRGBColorSpace,
+        viz::SinglePlaneFormat::kRGBA_8888, PIXEL_FORMAT_ABGR, kSRGBColorSpace,
         GL_TEXTURE_EXTERNAL_OES, /*needs_raster_access=*/needs_copy);
     video_frame->metadata().copy_required = needs_copy;
     return video_frame;
@@ -260,7 +260,7 @@ class VideoResourceUpdaterTest : public testing::Test {
 #if BUILDFLAG(IS_WIN)
   scoped_refptr<VideoFrame> CreateTestDCompSurfaceVideoFrame() {
     scoped_refptr<VideoFrame> video_frame = CreateTestHardwareVideoFrame(
-        viz::SinglePlaneFormat::kRGBA_8888, PIXEL_FORMAT_ARGB, kSRGBColorSpace,
+        viz::SinglePlaneFormat::kRGBA_8888, PIXEL_FORMAT_ABGR, kSRGBColorSpace,
         GL_TEXTURE_EXTERNAL_OES, /*needs_raster_access=*/false);
     video_frame->metadata().dcomp_surface = true;
     return video_frame;
