@@ -4,7 +4,11 @@
 
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_test_util.h"
 
+#include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
+#include "chrome/browser/ui/views/tabs/common/tab_view.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -30,77 +34,77 @@ TabStrip* TabHoverCardTestUtil::GetTabStrip(BrowserWindowInterface* browser) {
 }
 
 // static
+TabHoverCardController* TabHoverCardTestUtil::GetHoverCardController(
+    BrowserWindowInterface* browser) {
+  auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  if (!browser_view) {
+    return nullptr;
+  }
+  if (base::FeatureList::IsEnabled(tabs::kTabStripUnification)) {
+    auto* base_region_view = views::AsViewClass<BaseTabStripRegionView>(
+        browser_view->tab_strip_view());
+    return base_region_view
+               ? base_region_view->GetTabStripCollectionController()
+                     ->GetHoverCardController()
+               : nullptr;
+  }
+  auto* tab_strip = browser_view->horizontal_tab_strip_for_testing();
+  return tab_strip ? tab_strip->hover_card_controller_for_testing() : nullptr;
+}
+
+// static
 TabHoverCardBubbleView* TabHoverCardTestUtil::GetHoverCard(
-    TabStrip* tab_strip) {
-  return tab_strip->hover_card_controller_for_testing()
-      ->hover_card_for_testing();
+    BrowserWindowInterface* browser) {
+  auto* controller = GetHoverCardController(browser);
+  return controller ? controller->hover_card_for_testing() : nullptr;
 }
 
 // static
 TabHoverCardBubbleView* TabHoverCardTestUtil::WaitForHoverCardVisible(
-    TabStrip* tab_strip) {
-  auto* const hover_card = GetHoverCard(tab_strip);
+    BrowserWindowInterface* browser) {
+  auto* const hover_card = GetHoverCard(browser);
   DCHECK(hover_card);
   views::test::WidgetVisibleWaiter(hover_card->GetWidget()).Wait();
   return hover_card;
 }
 
 // static
-bool TabHoverCardTestUtil::IsHoverCardVisible(TabStrip* tab_strip) {
-  auto* const hover_card = GetHoverCard(tab_strip);
+bool TabHoverCardTestUtil::IsHoverCardVisible(BrowserWindowInterface* browser) {
+  auto* const hover_card = GetHoverCard(browser);
   return hover_card && hover_card->GetWidget() &&
          hover_card->GetWidget()->IsVisible();
 }
 
 // static
 int TabHoverCardTestUtil::GetHoverCardsSeenCount(Browser* browser) {
-  return GetTabStrip(browser)
-      ->hover_card_controller_for_testing()
-      ->hover_cards_seen_count_for_testing();
+  auto* controller = GetHoverCardController(browser);
+  return controller ? controller->hover_cards_seen_count_for_testing() : 0;
 }
 
 // static
 TabHoverCardBubbleView* TabHoverCardTestUtil::SimulateHoverTab(
     BrowserWindowInterface* browser,
     int tab_index) {
-  auto* const tab_strip = GetTabStrip(browser);
-
-  // We don't use Tab::OnMouseEntered here to invoke the hover card because
-  // that path is disabled in browser tests. If we enabled it, the real mouse
-  // might interfere with the test.
-  tab_strip->UpdateHoverCard(tab_strip->tab_at(tab_index),
-                             TabSlotController::HoverCardUpdateType::kHover);
-
-  return WaitForHoverCardVisible(tab_strip);
-}
-
-TabHoverCardTestUtil::HoverCardDestroyedWaiter::HoverCardDestroyedWaiter(
-    TabStrip* tab_strip) {
-  auto* const hover_card = GetHoverCard(tab_strip);
-  if (hover_card && hover_card->GetWidget()) {
-    observation_.Observe(hover_card->GetWidget());
+  auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  if (base::FeatureList::IsEnabled(tabs::kTabStripUnification)) {
+    auto* tab_view = views::AsViewClass<TabView>(
+        browser_view->tab_strip_view()->GetTabAnchorViewAt(tab_index));
+    if (tab_view) {
+      if (auto* controller = GetHoverCardController(browser)) {
+        controller->UpdateHoverCard(
+            tab_view, TabSlotController::HoverCardUpdateType::kHover);
+      }
+    }
+  } else {
+    auto* const tab_strip = GetTabStrip(browser);
+    if (tab_strip) {
+      tab_strip->UpdateHoverCard(
+          tab_strip->tab_at(tab_index),
+          TabSlotController::HoverCardUpdateType::kHover);
+    }
   }
-}
 
-TabHoverCardTestUtil::HoverCardDestroyedWaiter::~HoverCardDestroyedWaiter() =
-    default;
-
-void TabHoverCardTestUtil::HoverCardDestroyedWaiter::Wait() {
-  if (!observation_.IsObserving()) {
-    return;
-  }
-  DCHECK(quit_closure_.is_null());
-  quit_closure_ = run_loop_.QuitClosure();
-  run_loop_.Run();
-}
-
-// views::WidgetObserver:
-void TabHoverCardTestUtil::HoverCardDestroyedWaiter::OnWidgetDestroyed(
-    views::Widget* widget) {
-  observation_.Reset();
-  if (!quit_closure_.is_null()) {
-    std::move(quit_closure_).Run();
-  }
+  return WaitForHoverCardVisible(browser);
 }
 
 }  // namespace test

@@ -1067,6 +1067,22 @@ void TabView::UpdateTabData(const tabs::TabInterface* tab) {
   SetHoverCardDataFrom(tab_data_);
 }
 
+void TabView::SetDataForTesting(tabs::TabData data) {
+  tabs::TabData old_data = std::move(tab_data_);
+  tab_data_ = std::move(data);
+
+  if (tabs::ShouldUpdateAccessibleName(old_data, tab_data_)) {
+    UpdateAccessibleName();
+  }
+
+  icon_->SetData(tab_data_);
+  icon_->SetAttention(TabIcon::AttentionType::kTabWantsAttentionStatus,
+                      tab_data_.needs_attention);
+  UpdateTitle(tab_data_.title, tab_data_.should_render_loading_title);
+  alert_indicator_->TransitionToAlertState(tab_data_.alert_state);
+  SetHoverCardDataFrom(tab_data_);
+}
+
 void TabView::UpdateTitle(std::u16string title,
                           bool should_render_loading_title) {
   if (should_render_loading_title) {

@@ -86,6 +86,7 @@ class TabView : public views::View,
   bool IsActive() const { return active_; }
 
   TabCloseButton* close_button_for_testing() { return close_button_; }
+  void SetDataForTesting(tabs::TabData data);
 
   // HoverCardAnchorTarget:
   bool NeedsToShowThumbnail() const override;

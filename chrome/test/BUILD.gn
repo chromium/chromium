@@ -739,7 +739,10 @@ static_library("test_support") {
       "base/test_browser_window.cc",
       "base/test_browser_window.h",
     ]
-    allow_circular_includes_from += [ ":test_support_ui" ]
+    allow_circular_includes_from += [
+      ":test_support_ui",
+      "//chrome/browser/ui/views/tabs/common:impl",
+    ]
   }
 
   if (enable_devtools_frontend) {

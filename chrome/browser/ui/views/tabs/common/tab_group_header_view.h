@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/tabs/groups/tab_group_editor_bubble_tracker.h"
 #include "chrome/browser/ui/views/tabs/hovercard/hover_card_anchor_target.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/context_menu_controller.h"
@@ -109,6 +110,8 @@ class TabGroupHeaderView : public views::FlexLayoutView,
   views::BubbleBorder::Arrow GetAnchorPosition() const override;
 
   void OnDataChanged(const tabs::TabGroupData& tab_group_data);
+
+  tab_groups::TabGroupId group() const;
 
   views::LabelButton* editor_bubble_button() { return editor_bubble_button_; }
   views::ImageView* collapse_icon_for_testing() { return collapse_icon_; }

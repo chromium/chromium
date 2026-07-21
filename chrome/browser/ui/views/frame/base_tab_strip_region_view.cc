@@ -504,6 +504,10 @@ void BaseTabStripRegionView::OnChildMoved(TabCollectionNode* moved_node) {
 
 void BaseTabStripRegionView::OnActiveTabChanged(
     const tabs::TabInterface* active_tab) {
+  if (hover_card_controller_) {
+    hover_card_controller_->UpdateHoverCard(
+        nullptr, TabSlotController::HoverCardUpdateType::kSelectionChanged);
+  }
   if (tab_strip_view_) {
     tab_strip_view_->OnTabChanged(active_tab);
   }

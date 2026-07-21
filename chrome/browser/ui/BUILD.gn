@@ -4442,8 +4442,10 @@ static_library("ui") {
 
     sources += get_target_outputs(":webui_name_variants")
 
-    public_deps +=
-        [ "//chrome/browser/ui/views/bookmarks:bookmark_bar_view_observer" ]
+    public_deps += [
+      "//chrome/browser/ui/views/bookmarks:bookmark_bar_view_observer",
+      "//chrome/browser/ui/views/tabs/common:impl",
+    ]
 
     deps += [
       "//base",
@@ -4561,7 +4563,6 @@ static_library("ui") {
       "//chrome/browser/ui/views/tab_contents",
       "//chrome/browser/ui/views/tab_sharing",
       "//chrome/browser/ui/views/tabs/common",
-      "//chrome/browser/ui/views/tabs/common:impl",
       "//chrome/browser/ui/views/tabs/dragging:tab_drag_target",
       "//chrome/browser/ui/views/tabs/projects",
       "//chrome/browser/ui/views/tabs/shared",

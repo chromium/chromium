@@ -9,7 +9,10 @@
 
 #include "base/test/bind.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/tabs/common/tab_group_header_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
@@ -33,14 +36,37 @@ class TabStripInteractiveTestMixin : public T {
       delete;
 
   auto FinishTabstripAnimations() {
+    if (base::FeatureList::IsEnabled(tabs::kTabStripUnification)) {
+      return T::Steps(T::WaitForShow(kTabStripRegionElementId));
+    }
     return T::Steps(T::WaitForShow(kTabStripElementId),
                     T::WithView(kTabStripElementId, [](TabStrip* tab_strip) {
                       tab_strip->StopAnimating();
                     }));
   }
 
+  auto FocusTabAt(int index) {
+    const char kTabToFocus[] = "Tab to focus";
+    if (base::FeatureList::IsEnabled(tabs::kTabStripUnification)) {
+      return T::Steps(FinishTabstripAnimations(),
+                      T::template NameDescendantViewByType<TabView>(
+                          kBrowserViewElementId, kTabToFocus, index),
+                      T::FocusElement(kTabToFocus));
+    }
+    return T::Steps(FinishTabstripAnimations(),
+                    T::template NameDescendantViewByType<Tab>(
+                        kTabStripElementId, kTabToFocus, index),
+                    T::FocusElement(kTabToFocus));
+  }
+
   auto HoverTabAt(int index) {
     const char kTabToHover[] = "Tab to hover";
+    if (base::FeatureList::IsEnabled(tabs::kTabStripUnification)) {
+      return T::Steps(FinishTabstripAnimations(),
+                      T::template NameDescendantViewByType<TabView>(
+                          kBrowserViewElementId, kTabToHover, index),
+                      T::MoveMouseTo(kTabToHover));
+    }
     return T::Steps(FinishTabstripAnimations(),
                     T::template NameDescendantViewByType<Tab>(
                         kTabStripElementId, kTabToHover, index),
@@ -55,12 +81,15 @@ class TabStripInteractiveTestMixin : public T {
             kBrowserViewElementId, kTabGroupHeaderToHover,
             base::BindRepeating(
                 [](tab_groups::TabGroupId group_id, const views::View* view) {
-                  const TabGroupHeader* header =
-                      views::AsViewClass<TabGroupHeader>(view);
-                  if (!header) {
-                    return false;
+                  if (const TabGroupHeader* header =
+                          views::AsViewClass<TabGroupHeader>(view)) {
+                    return header->group().value() == group_id;
                   }
-                  return header->group().value() == group_id;
+                  if (const TabGroupHeaderView* header =
+                          views::AsViewClass<TabGroupHeaderView>(view)) {
+                    return header->group() == group_id;
+                  }
+                  return false;
                 },
                 group_id)),
         T::MoveMouseTo(kTabGroupHeaderToHover));
