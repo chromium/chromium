@@ -214,9 +214,9 @@ base::CallbackListSubscription WebUIPermissionChip::AddVisibilityCallback(
 }
 
 void WebUIPermissionChip::SetAccessibilityIgnored(bool is_ignored) {
-  // No-op for WebUI. When the chip is hidden in WebUI, it is removed from the
-  // DOM entirely (via Lit's conditional rendering), meaning it naturally drops
-  // out of the accessibility tree without needing explicit aria-hidden flags.
+  // No-op for WebUI. When the chip is hidden in WebUI, it is given the
+  // `visibility: hidden` CSS property, meaning it naturally drops out of the
+  // accessibility tree without needing explicit aria-hidden flags.
 }
 
 void WebUIPermissionChip::SetAccessibilityName(const std::u16string& name) {
