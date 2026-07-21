@@ -550,6 +550,7 @@ source_set("unit_tests") {
   deps = [
     ":metrics",
     "//base/test:test_support",
+    "//chrome/browser/performance_manager:test_support",
     "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//components/metrics:test_support",

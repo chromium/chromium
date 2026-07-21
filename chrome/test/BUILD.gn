@@ -176,6 +176,7 @@ static_library("test_support") {
     "//chrome/browser/password_manager",
     "//chrome/browser/password_manager:test_support",
     "//chrome/browser/password_manager/factories",
+    "//chrome/browser/performance_manager:test_support",
     "//chrome/browser/profiles:misc",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/profiles/keep_alive",
@@ -702,18 +703,6 @@ static_library("test_support") {
     }
 
     sources += [
-      "../browser/performance_manager/test_support/fake_child_process_tuning_delegate.cc",
-      "../browser/performance_manager/test_support/fake_child_process_tuning_delegate.h",
-      "../browser/performance_manager/test_support/fake_frame_throttling_delegate.cc",
-      "../browser/performance_manager/test_support/fake_frame_throttling_delegate.h",
-      "../browser/performance_manager/test_support/fake_freezing_delegate.cc",
-      "../browser/performance_manager/test_support/fake_freezing_delegate.h",
-      "../browser/performance_manager/test_support/fake_memory_saver_mode_delegate.cc",
-      "../browser/performance_manager/test_support/fake_memory_saver_mode_delegate.h",
-      "../browser/performance_manager/test_support/fake_power_monitor_source.cc",
-      "../browser/performance_manager/test_support/fake_power_monitor_source.h",
-      "../browser/performance_manager/test_support/site_data_utils.cc",
-      "../browser/performance_manager/test_support/site_data_utils.h",
       "../browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.cc",
       "../browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.h",
       "../browser/signin/signin_browser_test_base.h",

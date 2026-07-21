@@ -282,6 +282,40 @@ source_set("impl") {
   }
 }
 
+source_set("test_support") {
+  testonly = true
+
+  public = [
+    "test_support/fake_child_process_tuning_delegate.h",
+    "test_support/fake_frame_throttling_delegate.h",
+    "test_support/fake_freezing_delegate.h",
+    "test_support/fake_memory_saver_mode_delegate.h",
+    "test_support/fake_power_monitor_source.h",
+    "test_support/site_data_utils.h",
+  ]
+
+  sources = [
+    "test_support/fake_child_process_tuning_delegate.cc",
+    "test_support/fake_frame_throttling_delegate.cc",
+    "test_support/fake_freezing_delegate.cc",
+    "test_support/fake_memory_saver_mode_delegate.cc",
+    "test_support/fake_power_monitor_source.cc",
+    "test_support/site_data_utils.cc",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/performance_manager",
+    "//components/performance_manager",
+  ]
+
+  deps = [
+    "//base/test:test_support",
+    "//components/performance_manager/test_support:test_support_common",
+    "//content/public/browser",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
@@ -302,6 +336,7 @@ source_set("unit_tests") {
     ":performance_manager",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/performance_manager:test_support",
     "//chrome/browser/search_engines",
     "//chrome/test:test_support",
     "//components/performance_manager/test_support",
