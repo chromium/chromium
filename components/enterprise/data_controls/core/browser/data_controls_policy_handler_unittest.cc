@@ -843,6 +843,32 @@ constexpr UrlRegexAndSizeTestCase kUrlRegexAndSizeTestCases[] = {
          ])",
         u"",
     },
+    {
+        /*feature_enabled=*/true,
+        R"([
+           {
+             "destinations": { "size_higher_than": 1024 },
+             "restrictions": [
+               { "class": "CLIPBOARD", "level": "BLOCK" }
+             ]
+           }
+         ])",
+        u"Error at PolicyForTesting[0].destinations: \"size_higher_than\" is "
+        u"not a supported condition for \"CLIPBOARD\"",
+    },
+    {
+        /*feature_enabled=*/true,
+        R"([
+           {
+             "destinations": { "size_lower_than": 1024 },
+             "restrictions": [
+               { "class": "CLIPBOARD", "level": "BLOCK" }
+             ]
+           }
+         ])",
+        u"Error at PolicyForTesting[0].destinations: \"size_lower_than\" is "
+        u"not a supported condition for \"CLIPBOARD\"",
+    },
 #if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
     {
         /*feature_enabled=*/true,

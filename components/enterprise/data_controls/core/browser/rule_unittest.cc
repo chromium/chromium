@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/data_controls/core/browser/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -791,6 +792,78 @@ TEST_P(DataControlsRuleOrTest, NonTriggeringContext) {
 
   ASSERT_EQ(rule->GetLevel(Rule::Restriction::kClipboard, {}),
             Rule::Level::kNotSet);
+}
+
+TEST(DataControlsRuleTest, SizeConditionRuleMatchingHigherThan) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kDataControlsUrlRegexAndSizeAttributes);
+
+  auto rule = MakeRule(R"({
+    "name": "Size Eval Rule Higher",
+    "sources": { "size_higher_than": 1000 },
+    "restrictions": [ { "class": "CLIPBOARD", "level": "BLOCK" } ]
+  })");
+  ASSERT_TRUE(rule);
+
+  EXPECT_EQ(
+      rule->GetLevel(Rule::Restriction::kClipboard,
+                     {.source = {.url = GURL("https://google.com"),
+                                 .content_size = 500}}),
+      Rule::Level::kNotSet);
+
+  EXPECT_EQ(
+      rule->GetLevel(Rule::Restriction::kClipboard,
+                     {.source = {.url = GURL("https://google.com"),
+                                 .content_size = 1000}}),
+      Rule::Level::kNotSet);
+
+  EXPECT_EQ(
+      rule->GetLevel(Rule::Restriction::kClipboard,
+                     {.source = {.url = GURL("https://google.com"),
+                                 .content_size = 1001}}),
+      Rule::Level::kBlock);
+
+  EXPECT_EQ(
+      rule->GetLevel(Rule::Restriction::kClipboard,
+                     {.source = {.url = GURL("https://google.com"),
+                                 .content_size = 2000}}),
+      Rule::Level::kBlock);
+}
+
+TEST(DataControlsRuleTest, SizeConditionRuleMatchingLowerThan) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kDataControlsUrlRegexAndSizeAttributes);
+
+  auto rule = MakeRule(R"({
+    "name": "Size Eval Rule Lower",
+    "sources": { "size_lower_than": 1000 },
+    "restrictions": [ { "class": "CLIPBOARD", "level": "BLOCK" } ]
+  })");
+  ASSERT_TRUE(rule);
+
+  EXPECT_EQ(
+      rule->GetLevel(Rule::Restriction::kClipboard,
+                     {.source = {.url = GURL("https://google.com"),
+                                 .content_size = 500}}),
+      Rule::Level::kBlock);
+
+  EXPECT_EQ(
+      rule->GetLevel(Rule::Restriction::kClipboard,
+                     {.source = {.url = GURL("https://google.com"),
+                                 .content_size = 999}}),
+      Rule::Level::kBlock);
+  EXPECT_EQ(
+      rule->GetLevel(Rule::Restriction::kClipboard,
+                     {.source = {.url = GURL("https://google.com"),
+                                 .content_size = 1000}}),
+      Rule::Level::kNotSet);
+  EXPECT_EQ(
+      rule->GetLevel(Rule::Restriction::kClipboard,
+                     {.source = {.url = GURL("https://google.com"),
+                                 .content_size = 2000}}),
+      Rule::Level::kNotSet);
 }
 
 }  // namespace data_controls

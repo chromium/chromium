@@ -1015,6 +1015,20 @@ TEST(AttributesConditionTest, FileSizeIsTriggeredWithOsClipboard) {
       {.source = {.os_clipboard = true, .content_size = 1001}}));
   EXPECT_TRUE(condition->IsTriggered(
       {.source = {.os_clipboard = true, .content_size = 2000}}));
+  auto lower_condition = SourceAttributesCondition::Create(CreateDict(R"(
+      {
+        "os_clipboard": true,
+        "size_lower_than": 1000,
+      })"));
+  ASSERT_TRUE(lower_condition);
+  EXPECT_TRUE(lower_condition->IsTriggered(
+      {.source = {.os_clipboard = true, .content_size = 500}}));
+  EXPECT_TRUE(lower_condition->IsTriggered(
+      {.source = {.os_clipboard = true, .content_size = 999}}));
+  EXPECT_FALSE(lower_condition->IsTriggered(
+      {.source = {.os_clipboard = true, .content_size = 1000}}));
+  EXPECT_FALSE(lower_condition->IsTriggered(
+      {.source = {.os_clipboard = true, .content_size = 2000}}));
 }
 
 TEST(AttributesConditionTest, FileSizeIsTriggeredWithGeminiInChrome) {
@@ -1034,6 +1048,21 @@ TEST(AttributesConditionTest, FileSizeIsTriggeredWithGeminiInChrome) {
   EXPECT_TRUE(condition->IsTriggered(
       {.source = {.gemini_in_chrome = true, .content_size = 1001}}));
   EXPECT_TRUE(condition->IsTriggered(
+      {.source = {.gemini_in_chrome = true, .content_size = 2000}}));
+
+  auto lower_condition = SourceAttributesCondition::Create(CreateDict(R"(
+      {
+        "gemini_in_chrome": true,
+        "size_lower_than": 1000,
+      })"));
+  ASSERT_TRUE(lower_condition);
+  EXPECT_TRUE(lower_condition->IsTriggered(
+      {.source = {.gemini_in_chrome = true, .content_size = 500}}));
+  EXPECT_TRUE(lower_condition->IsTriggered(
+      {.source = {.gemini_in_chrome = true, .content_size = 999}}));
+  EXPECT_FALSE(lower_condition->IsTriggered(
+      {.source = {.gemini_in_chrome = true, .content_size = 1000}}));
+  EXPECT_FALSE(lower_condition->IsTriggered(
       {.source = {.gemini_in_chrome = true, .content_size = 2000}}));
 }
 
