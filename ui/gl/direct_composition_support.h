@@ -141,6 +141,13 @@ GL_EXPORT gfx::mojom::DXGIInfoPtr GetDirectCompositionHDRMonitorDXGIInfo();
 // Returns true if there is support for |IDCompositionTexture|.
 GL_EXPORT bool DirectCompositionTextureSupported();
 
+// Returns true if |color_space| is supported by the IHV overlay hardware for
+// |format| on |output|. Returns false if |output| is null.
+GL_EXPORT bool DirectCompositionColorSpaceOverlaySupported(
+    DXGI_FORMAT format,
+    DXGI_COLOR_SPACE_TYPE color_space,
+    IDXGIOutput* output);
+
 struct DirectCompositionOverlayWorkarounds {
   // Whether software video overlays i.e. swap chains used without hardware
   // overlay/MPO support are used or not.

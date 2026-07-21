@@ -5,6 +5,7 @@
 #include "ui/gl/dc_layer_tree.h"
 
 #include <d3d11_1.h>
+#include <dxgi.h>
 
 #include <utility>
 
@@ -1062,6 +1063,61 @@ DCLayerTree::VisualTree::GetFrontMostVisualSubtreeForTesting() const {
   return visual_subtrees_.back().get();
 }
 
+void DCLayerTree::UpdateCurrentOutput() {
+  const HMONITOR monitor = MonitorFromWindow(window_, MONITOR_DEFAULTTONEAREST);
+
+  // |factory| is populated from the cached output's adapter chain when
+  // current_output_ is valid. It is reused in the enumeration below when the
+  // factory is still current, avoiding an unnecessary CreateDXGIFactory1 call.
+  Microsoft::WRL::ComPtr<IDXGIFactory1> factory;
+
+  // Invalidate the cached IDXGIOutput if the DXGI factory has become stale
+  // (e.g. after a display topology change or lock/unlock) or if the window
+  // moved to a different monitor.
+  if (current_output_) {
+    Microsoft::WRL::ComPtr<IDXGIAdapter> adapter;
+    CHECK_EQ(current_output_->GetParent(IID_PPV_ARGS(&adapter)), S_OK);
+    Microsoft::WRL::ComPtr<IDXGIFactory1> factory_local;
+    CHECK_EQ(adapter->GetParent(IID_PPV_ARGS(&factory_local)), S_OK);
+    if (factory_local->IsCurrent()) {
+      // Factory is current; only reset output if window moved to a new monitor.
+      factory = std::move(factory_local);
+      DXGI_OUTPUT_DESC desc = {};
+      CHECK_EQ(current_output_->GetDesc(&desc), S_OK);
+      if (desc.Monitor != monitor) {
+        current_output_.Reset();
+        // If only the monitor changed and the factory is still current,
+        // reuse it below.
+      }
+    } else {
+      // Factory is stale; skip GetDesc() (result would be discarded). Reset
+      // output and leave factory null so CreateDXGIFactory1 is called below.
+      current_output_.Reset();
+    }
+  }
+
+  // Find the IDXGIOutput for |monitor| by enumerating all adapters.
+  // This correctly handles the case where the window is on a monitor driven by
+  // a different adapter than d3d11_device_
+  if (!current_output_ && monitor) {
+    if (!factory && FAILED(::CreateDXGIFactory1(IID_PPV_ARGS(&factory)))) {
+      return;
+    }
+    Microsoft::WRL::ComPtr<IDXGIAdapter1> adapter;
+    for (UINT i = 0; SUCCEEDED(factory->EnumAdapters1(i, &adapter)); i++) {
+      Microsoft::WRL::ComPtr<IDXGIOutput> output;
+      for (UINT j = 0; SUCCEEDED(adapter->EnumOutputs(j, &output)); j++) {
+        DXGI_OUTPUT_DESC desc = {};
+        CHECK_EQ(output->GetDesc(&desc), S_OK);
+        if (desc.Monitor == monitor) {
+          current_output_ = output;
+          return;
+        }
+      }
+    }
+  }
+}
+
 base::expected<void, CommitError> DCLayerTree::CommitAndClearPendingOverlays(
     std::vector<DCLayerOverlayParams> overlays) {
   TRACE_EVENT1("gpu", "DCLayerTree::CommitAndClearPendingOverlays",
@@ -1070,6 +1126,8 @@ base::expected<void, CommitError> DCLayerTree::CommitAndClearPendingOverlays(
   base::ScopedUmaHistogramTimer scoped_timer(
       "GPU.DirectComposition.CommitAndClearPendingOverlaysDuration",
       base::ScopedUmaHistogramTimer::ScopedHistogramTiming::kMicrosecondTimes);
+
+  UpdateCurrentOutput();
 
   // If delegated ink metadata exists for this frame, attempt to make an overlay
   // so that a visual subtree can be created for a delegated ink visual.

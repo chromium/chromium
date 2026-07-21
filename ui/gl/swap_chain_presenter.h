@@ -156,7 +156,8 @@ class SwapChainPresenter : public base::PowerStateObserver {
   // This changes over time based on stats recorded in |presentation_history|.
   DXGI_FORMAT GetSwapChainFormat(gfx::ProtectedVideoType protected_video_type,
                                  bool use_hdr_swap_chain,
-                                 bool use_p010_for_sdr_swap_chain);
+                                 bool use_p010_for_sdr_swap_chain,
+                                 const gfx::ColorSpace& input_color_space);
 
   // Perform a blit using video processor from given input texture to swap chain
   // backbuffer. |input_texture| is the input texture (array), and |input_level|
@@ -318,6 +319,28 @@ class SwapChainPresenter : public base::PowerStateObserver {
   bool enable_vp_super_resolution_ = false;
 
   UINT gpu_vendor_id_ = 0;
+
+  // Cache key for DirectCompositionColorSpaceOverlaySupported(). Keyed on
+  // (format, color_space, output), invalidated when any changes.
+  struct ColorSpaceSupportedKey {
+    ColorSpaceSupportedKey(DXGI_FORMAT format,
+                           DXGI_COLOR_SPACE_TYPE color_space,
+                           IDXGIOutput* dxgi_output);
+    ColorSpaceSupportedKey(const ColorSpaceSupportedKey&);
+    ~ColorSpaceSupportedKey();
+    bool operator==(const ColorSpaceSupportedKey& other) const;
+    DXGI_FORMAT format;
+    DXGI_COLOR_SPACE_TYPE color_space;
+    // Holds a reference to the IDXGIOutput so the object remains alive while
+    // this cache entry exists. Without this, the output could be freed and its
+    // address recycled for a new IDXGIOutput, causing a false cache hit on
+    // pointer comparison.
+    Microsoft::WRL::ComPtr<IDXGIOutput> output;
+  };
+  // Cache for the result of DirectCompositionColorSpaceOverlaySupported().
+  // Avoids querying the driver for color space overlay support every frame.
+  std::optional<std::pair<ColorSpaceSupportedKey, bool>>
+      color_space_supported_cache_;
 };
 
 }  // namespace gl

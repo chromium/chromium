@@ -455,6 +455,23 @@ int SwapChainPresenter::PresentationHistory::composed_count() const {
   return composed_count_;
 }
 
+SwapChainPresenter::ColorSpaceSupportedKey::ColorSpaceSupportedKey(
+    DXGI_FORMAT format,
+    DXGI_COLOR_SPACE_TYPE color_space,
+    IDXGIOutput* dxgi_output)
+    : format(format), color_space(color_space), output(dxgi_output) {}
+
+SwapChainPresenter::ColorSpaceSupportedKey::ColorSpaceSupportedKey(
+    const ColorSpaceSupportedKey&) = default;
+
+SwapChainPresenter::ColorSpaceSupportedKey::~ColorSpaceSupportedKey() = default;
+
+bool SwapChainPresenter::ColorSpaceSupportedKey::operator==(
+    const ColorSpaceSupportedKey& other) const {
+  return format == other.format && color_space == other.color_space &&
+         output == other.output;
+}
+
 SwapChainPresenter::SwapChainPresenter(
     DCLayerTree* layer_tree,
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
@@ -480,7 +497,8 @@ SwapChainPresenter::~SwapChainPresenter() {
 DXGI_FORMAT SwapChainPresenter::GetSwapChainFormat(
     gfx::ProtectedVideoType protected_video_type,
     bool use_hdr_swap_chain,
-    bool use_p010_for_sdr_swap_chain) {
+    bool use_p010_for_sdr_swap_chain,
+    const gfx::ColorSpace& input_color_space) {
   // Prefer RGB10A2 swapchain when playing HDR content and system HDR being
   // enabled. Another scenario is that AutoHDR is enabled even with SDR
   // content, RGB10A2 is also preferred.
@@ -489,17 +507,50 @@ DXGI_FORMAT SwapChainPresenter::GetSwapChainFormat(
     return DXGI_FORMAT_R10G10B10A2_UNORM;
   }
 
-  if (failed_to_create_yuv_swapchain_ ||
-      !DirectCompositionHardwareOverlaysSupported()) {
+  // Runtime fallback: a prior YUV swap-chain creation actually failed. Latches,
+  // so it gates protected too and prevents per-frame reallocation thrash.
+  if (failed_to_create_yuv_swapchain_) {
     return DXGI_FORMAT_B8G8R8A8_UNORM;
   }
+
+  gfx::ColorSpace output_color_space =
+      GetOutputColorSpace(input_color_space, /*is_yuv_swapchain=*/true);
+  DXGI_COLOR_SPACE_TYPE output_dxgi_color_space =
+      gfx::ColorSpaceWin::GetDXGIColorSpace(output_color_space,
+                                            /*force_yuv=*/true);
 
   DXGI_FORMAT sdr_yuv_overlay_format =
       use_p010_for_sdr_swap_chain ? DXGI_FORMAT_P010
                                   : GetDirectCompositionSDROverlayFormat();
-  // Always prefer YUV swap chain for hardware protected video for now.
+
   if (protected_video_type == gfx::ProtectedVideoType::kHardwareProtected) {
     return sdr_yuv_overlay_format;
+  }
+
+  // Coarse, cached, workaround-aware system gate.
+  if (!DirectCompositionHardwareOverlaysSupported()) {
+    return DXGI_FORMAT_B8G8R8A8_UNORM;
+  }
+
+  // Query color space overlay support, using a per-presenter cache keyed on
+  // (format, color_space, output). DCLayerTree keeps current_output() fresh
+  // and already handles factory staleness and monitor changes.
+  IDXGIOutput* current_output = layer_tree_->current_output();
+  if (!current_output) {
+    return DXGI_FORMAT_B8G8R8A8_UNORM;
+  }
+  const ColorSpaceSupportedKey key(sdr_yuv_overlay_format,
+                                   output_dxgi_color_space, current_output);
+  const bool cache_miss = !color_space_supported_cache_ ||
+                          !(color_space_supported_cache_->first == key);
+  if (cache_miss) {
+    bool supported = DirectCompositionColorSpaceOverlaySupported(
+        sdr_yuv_overlay_format, output_dxgi_color_space, current_output);
+    color_space_supported_cache_ = std::make_pair(key, supported);
+  }
+
+  if (!color_space_supported_cache_->second) {
+    return DXGI_FORMAT_B8G8R8A8_UNORM;
   }
 
   if (!presentation_history_.Valid() || IsSwapChainYuvFormatForced()) {
@@ -1046,9 +1097,9 @@ bool SwapChainPresenter::SetupPresentToSwapChain(DCLayerOverlayParams& params) {
       !DirectCompositionMonitorHDREnabled(layer_tree_->window()) &&
       params.video_params.is_p010_content;
 
-  DXGI_FORMAT swap_chain_format =
-      GetSwapChainFormat(params.video_params.protected_video_type,
-                         use_hdr_swap_chain, use_p010_for_sdr_swap_chain);
+  DXGI_FORMAT swap_chain_format = GetSwapChainFormat(
+      params.video_params.protected_video_type, use_hdr_swap_chain,
+      use_p010_for_sdr_swap_chain, input_color_space);
 
   bool swap_chain_format_changed = swap_chain_format != swap_chain_format_;
   bool toggle_protected_video = swap_chain_protected_video_type_ !=
@@ -1928,7 +1979,8 @@ bool SwapChainPresenter::RevertSwapChainToSDR(
           gfx::Size(swap_chain_size_),
           GetSwapChainFormat(swap_chain_protected_video_type_,
                              /*use_hdr_swap_chain=*/false,
-                             /*use_p010_for_sdr_swap_chain=*/false),
+                             /*use_p010_for_sdr_swap_chain=*/false,
+                             input_color_space),
           swap_chain_protected_video_type_)) {
     ReleaseSwapChainResources();
     return false;

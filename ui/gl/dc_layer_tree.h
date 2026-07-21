@@ -10,6 +10,7 @@
 #include <d3d11.h>
 #include <d3d12.h>
 #include <dcomp.h>
+#include <dxgi.h>
 #include <wrl/client.h>
 
 #include <memory>
@@ -178,6 +179,13 @@ class GL_EXPORT DCLayerTree {
   }
 
   HWND window() const { return window_; }
+
+  // The IDXGIOutput for the monitor |window_| is currently on, refreshed when
+  // the DXGI factory becomes stale or the window moves to a different monitor.
+  // Enumerates all adapters so it works even when the window is on a monitor
+  // driven by a different adapter than d3d11_device_. Query GetDesc().Monitor
+  // to get the corresponding HMONITOR.
+  IDXGIOutput* current_output() const { return current_output_.Get(); }
 
   bool SupportsDelegatedInk();
 
@@ -454,6 +462,11 @@ class GL_EXPORT DCLayerTree {
   VisualTree::VisualSubtree* GetFrontMostVideoVisualSubtreeForTesting() const;
 
  private:
+  // Refreshes |current_output_| to match the monitor |window_| is currently
+  // on. Invalidates the cache if the DXGI factory is stale or the window moved
+  // to a different monitor, then re-enumerates adapters to find the new output.
+  void UpdateCurrentOutput();
+
   const bool disable_nv12_dynamic_textures_;
   const bool disable_vp_auto_hdr_;
   const bool disable_vp_scaling_;
@@ -465,6 +478,7 @@ class GL_EXPORT DCLayerTree {
   const bool tint_video_layer_;
 
   HWND window_;
+  Microsoft::WRL::ComPtr<IDXGIOutput> current_output_;
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
   Microsoft::WRL::ComPtr<IDCompositionDevice3> dcomp_device_;
   Microsoft::WRL::ComPtr<IDCompositionTarget> dcomp_target_;
