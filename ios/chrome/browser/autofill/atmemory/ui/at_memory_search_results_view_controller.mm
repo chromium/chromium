@@ -105,7 +105,17 @@ enum ItemType {
 #pragma mark - Action
 
 - (void)didTapInfoButton:(UIButton*)button {
-  [self.delegate searchResultsViewControllerDidTapInfo:self];
+  CGPoint buttonPosition = [button convertPoint:CGPointZero
+                                         toView:self.tableView];
+  NSIndexPath* indexPath =
+      [self.tableView indexPathForRowAtPoint:buttonPosition];
+  if (indexPath) {
+    if (indexPath.row < (NSInteger)self.results.count) {
+      AtMemorySearchResultItem* resultItem = self.results[indexPath.row];
+      [self.delegate searchResultsViewController:self
+                         didTapInfoForResultItem:resultItem];
+    }
+  }
 }
 
 #pragma mark - Private

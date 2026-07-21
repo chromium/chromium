@@ -32,7 +32,6 @@ TEST_F(AtMemoryMediatorTest, SetsInitialEmptyStateOnConsumer) {
   AtMemoryMediator* mediator = [[AtMemoryMediator alloc] init];
   id consumer = [OCMockObject mockForProtocol:@protocol(AtMemoryConsumer)];
 
-  OCMExpect([consumer setGranularFillItems:OCMOCK_ANY]);
   OCMExpect([consumer setViewState:AtMemoryViewState::kEmpty]);
 
   mediator.consumer = consumer;
@@ -50,7 +49,6 @@ TEST_F(AtMemoryMediatorTest, SetsInitialPreviouslyFilledStateOnConsumer) {
   [AtMemoryMediator setRecentFills:fakeData];
   id consumer = [OCMockObject mockForProtocol:@protocol(AtMemoryConsumer)];
 
-  OCMExpect([consumer setGranularFillItems:OCMOCK_ANY]);
   OCMExpect([consumer setRecentFills:fakeData]);
   OCMExpect([consumer setViewState:AtMemoryViewState::kRecentFills]);
 
@@ -107,33 +105,9 @@ TEST_F(AtMemoryMediatorTest, HandleTapSearchResultInfo) {
 
   OCMExpect([consumer setViewState:AtMemoryViewState::kGranularFill]);
 
-  [mediator atMemoryViewControllerDidTapSearchResultInfo:nil];
+  [mediator atMemoryViewController:nil didTapSearchResultInfoForItem:nil];
 
   EXPECT_OCMOCK_VERIFY(consumer);
-}
-
-// Tests that selecting content triggers injection and dismiss.
-TEST_F(AtMemoryMediatorTest, HandleSelectContent) {
-  AtMemoryMediator* mediator = [[AtMemoryMediator alloc] init];
-  id mockInjector =
-      [OCMockObject mockForProtocol:@protocol(ManualFillContentInjector)];
-  mediator.contentInjector = mockInjector;
-
-  id mockViewController =
-      [OCMockObject mockForClass:[AtMemoryViewController class]];
-  id mockHandler = [OCMockObject mockForProtocol:@protocol(AtMemoryCommands)];
-  OCMStub([mockViewController atMemoryHandler]).andReturn(mockHandler);
-
-  OCMExpect([mockInjector userDidPickContent:@"test_content"
-                               passwordField:NO
-                               requiresHTTPS:NO]);
-  OCMExpect([mockHandler dismissAtMemory]);
-
-  [mediator atMemoryViewController:mockViewController
-                  didSelectContent:@"test_content"];
-
-  EXPECT_OCMOCK_VERIFY(mockInjector);
-  EXPECT_OCMOCK_VERIFY(mockHandler);
 }
 
 }  // namespace

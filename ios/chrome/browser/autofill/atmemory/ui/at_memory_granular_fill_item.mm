@@ -120,6 +120,7 @@
     config.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
     config.contentInsets = NSDirectionalEdgeInsetsMake(8.0, 16.0, 8.0, 16.0);
     button.configuration = config;
+    button.accessibilityLabel = text;
 
     if (target && action) {
       [button addTarget:target

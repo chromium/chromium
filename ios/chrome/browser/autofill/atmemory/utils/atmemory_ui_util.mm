@@ -53,12 +53,12 @@ ImageContentConfiguration* AtMemoryCellIconConfiguration(
       configurationWithPointSize:kCellIconSize
                           weight:UIImageSymbolWeightMedium
                            scale:UIImageSymbolScaleMedium];
-  UIImage* symbol;
-  if ([UIImage imageNamed:symbol_name]) {
-    symbol = CustomSymbolWithConfiguration(symbol_name, configuration);
-  } else {
-    symbol = DefaultSymbolWithConfiguration(symbol_name, configuration);
-  }
+  UIImage* symbol =
+      [UIImage imageNamed:symbol_name
+                   inBundle:nil
+          withConfiguration:configuration]
+          ? CustomSymbolWithConfiguration(symbol_name, configuration)
+          : DefaultSymbolWithConfiguration(symbol_name, configuration);
 
   ImageContentConfiguration* symbol_configuration =
       [[ImageContentConfiguration alloc] init];

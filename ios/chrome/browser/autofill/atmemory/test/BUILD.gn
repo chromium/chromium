@@ -2,11 +2,48 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "at_memory_app_interface.h",
+    "at_memory_app_interface.mm",
+    "fake_at_memory_search_provider.h",
+    "fake_at_memory_search_provider.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/autofill/atmemory/coordinator",
+    "//ios/chrome/browser/autofill/atmemory/public",
+    "//ios/chrome/browser/autofill/atmemory/ui",
+    "//ios/chrome/browser/shared/ui/symbols",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "at_memory_app_interface.h",
+    "at_memory_app_interface_stub.mm",
+    "at_memory_test_util.h",
+    "at_memory_test_util.mm",
+    "fake_at_memory_search_provider.h",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/autofill/atmemory/public",
+    "//ios/chrome/common/ui/elements:form_input_accessory",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+}
+
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "at_memory_egtest.mm" ]
   deps = [
+    ":eg_test_support+eg2",
     "//components/autofill/core/common",
     "//components/strings",
     "//ios/chrome/browser/autofill/atmemory/public",

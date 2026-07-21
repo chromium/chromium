@@ -490,9 +490,11 @@ constexpr CGFloat kCloseButtonMargin = 16.0;
 
 #pragma mark - AtMemorySearchResultsViewControllerDelegate
 
-- (void)searchResultsViewControllerDidTapInfo:
-    (AtMemorySearchResultsViewController*)viewController {
-  [self.delegate atMemoryViewControllerDidTapSearchResultInfo:self];
+- (void)searchResultsViewController:
+            (AtMemorySearchResultsViewController*)viewController
+            didTapInfoForResultItem:(AtMemorySearchResultItem*)resultItem {
+  [self.delegate atMemoryViewController:self
+          didTapSearchResultInfoForItem:resultItem];
 }
 
 - (void)searchResultsViewController:

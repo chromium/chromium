@@ -12,6 +12,7 @@
 @protocol AtMemoryCommands;
 
 @class AtMemoryViewController;
+@class AtMemorySearchResultItem;
 
 @protocol AtMemoryViewControllerDelegate <NSObject>
 // Notifies that the user changed the search text.
@@ -22,9 +23,9 @@
 - (void)atMemoryViewControllerDidTapSearch:
     (AtMemoryViewController*)viewController;
 
-// Notifies that the user tapped the info button on search result.
-- (void)atMemoryViewControllerDidTapSearchResultInfo:
-    (AtMemoryViewController*)viewController;
+// Notifies that the user tapped the info button on a search result.
+- (void)atMemoryViewController:(AtMemoryViewController*)viewController
+    didTapSearchResultInfoForItem:(AtMemorySearchResultItem*)item;
 
 // Notifies that the user selected content.
 - (void)atMemoryViewController:(AtMemoryViewController*)viewController

@@ -8,6 +8,8 @@ source_set("coordinator") {
     "at_memory_coordinator.mm",
     "at_memory_mediator.h",
     "at_memory_mediator.mm",
+    "scoped_at_memory_search_provider_override.h",
+    "scoped_at_memory_search_provider_override.mm",
   ]
   deps = [
     "//ios/chrome/browser/autofill/atmemory/public",

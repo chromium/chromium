@@ -12,8 +12,9 @@
 
 @protocol AtMemorySearchResultsViewControllerDelegate <NSObject>
 // Notifies that the info button was tapped on a search result cell.
-- (void)searchResultsViewControllerDidTapInfo:
-    (AtMemorySearchResultsViewController*)viewController;
+- (void)searchResultsViewController:
+            (AtMemorySearchResultsViewController*)viewController
+            didTapInfoForResultItem:(AtMemorySearchResultItem*)resultItem;
 
 // Notifies that an item was selected.
 - (void)searchResultsViewController:
