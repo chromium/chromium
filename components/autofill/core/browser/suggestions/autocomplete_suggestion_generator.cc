@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/suggestions/suggestion_util.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
+#include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry_label_sensitive.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -129,12 +130,20 @@ void AutocompleteSuggestionGenerator::GenerateSuggestions(
     std::move(callback).Run({SuggestionDataSource::kAutocomplete, {}});
     return;
   }
-
-  pending_query_ = profile_database_->GetFormValuesForElementName(
-      trigger_field.name(), trigger_field.value(), kMaxAutocompleteMenuItems,
+  auto on_autofill_values_returned =
       base::BindOnce(&AutocompleteSuggestionGenerator::OnAutofillValuesReturned,
                      weak_ptr_factory_.GetWeakPtr(),
-                     QueryHandler(trigger_field.value(), std::move(callback))));
+                     QueryHandler(trigger_field.value(), std::move(callback)));
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillLabelSensitiveAutocomplete)) {
+    pending_query_ = profile_database_->GetFormValuesForElementNameAndLabel(
+        trigger_field.name(), trigger_field.label(), trigger_field.value(),
+        kMaxAutocompleteMenuItems, std::move(on_autofill_values_returned));
+  } else {
+    pending_query_ = profile_database_->GetFormValuesForElementName(
+        trigger_field.name(), trigger_field.value(), kMaxAutocompleteMenuItems,
+        std::move(on_autofill_values_returned));
+  }
 }
 
 void AutocompleteSuggestionGenerator::OnAutofillValuesReturned(
@@ -149,7 +158,11 @@ void AutocompleteSuggestionGenerator::OnAutofillValuesReturned(
         .Run({SuggestionDataSource::kAutocomplete, {}});
     return;
   }
-  DCHECK_EQ(AUTOFILL_VALUE_RESULT, result->GetType());
+  DCHECK_EQ(result->GetType(),
+            base::FeatureList::IsEnabled(
+                features::kAutofillLabelSensitiveAutocomplete)
+                ? AUTOCOMPLETE_SEARCH_RESULT
+                : AUTOFILL_VALUE_RESULT);
 
   if (!pending_query_ || *pending_query_ != current_handle) {
     // There's no handler for this query, hence nothing to do.
@@ -160,33 +173,57 @@ void AutocompleteSuggestionGenerator::OnAutofillValuesReturned(
   // Removing the query, as it is no longer pending.
   pending_query_.reset();
 
-  const WDResult<std::vector<AutocompleteEntry>>* autocomplete_result =
-      static_cast<const WDResult<std::vector<AutocompleteEntry>>*>(
-          result.get());
-  std::vector<AutocompleteEntry> entries = autocomplete_result->GetValue();
+  std::vector<Suggestion> suggestions;
 
-  if (entries.empty()) {
-    std::move(query_handler.on_suggestions_returned)
-        .Run({SuggestionDataSource::kAutocomplete, {}});
-    return;
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillLabelSensitiveAutocomplete)) {
+    const WDResult<std::vector<AutocompleteSearchResultLabelSensitive>>*
+        autocomplete_result = static_cast<const WDResult<
+            std::vector<AutocompleteSearchResultLabelSensitive>>*>(
+            result.get());
+    std::vector<AutocompleteSearchResultLabelSensitive> entries =
+        autocomplete_result->GetValue();
+
+    // If there are no entries or only one entry that is the exact same string
+    // as what is in the input box, then don't offer it as a suggestion.
+    if (entries.empty() || (entries.size() == 1 &&
+                            query_handler.prefix == entries.front().value())) {
+      std::move(query_handler.on_suggestions_returned)
+          .Run({SuggestionDataSource::kAutocomplete, {}});
+      return;
+    }
+
+    suggestions = base::ToVector(
+        std::move(entries), [](AutocompleteSearchResultLabelSensitive& entry) {
+          Suggestion suggestion(entry.value(),
+                                SuggestionType::kAutocompleteEntry);
+          suggestion.payload = std::move(entry);
+          return suggestion;
+        });
+  } else {
+    const WDResult<std::vector<AutocompleteEntry>>* autocomplete_result =
+        static_cast<const WDResult<std::vector<AutocompleteEntry>>*>(
+            result.get());
+    std::vector<AutocompleteEntry> entries = autocomplete_result->GetValue();
+
+    // If there are no entries or only one entry that is the exact same string
+    // as what is in the input box, then don't offer it as a suggestion.
+    if (entries.empty() ||
+        (entries.size() == 1 &&
+         query_handler.prefix == entries.front().key().value())) {
+      std::move(query_handler.on_suggestions_returned)
+          .Run({SuggestionDataSource::kAutocomplete, {}});
+      return;
+    }
+
+    suggestions =
+        base::ToVector(std::move(entries), [](AutocompleteEntry& entry) {
+          Suggestion suggestion(entry.key().value(),
+                                SuggestionType::kAutocompleteEntry);
+          suggestion.payload = std::move(entry);
+          return suggestion;
+        });
   }
-
-  // If there is only one entry that is the exact same string as what is in the
-  // input box, then don't offer it as a suggestion.
-  if (entries.size() == 1 &&
-      query_handler.prefix == entries.front().key().value()) {
-    std::move(query_handler.on_suggestions_returned)
-        .Run({SuggestionDataSource::kAutocomplete, {}});
-    return;
-  }
-
-  std::vector<Suggestion> suggestions =
-      base::ToVector(entries, [](const AutocompleteEntry& entry) {
-        Suggestion suggestion(entry.key().value(),
-                              SuggestionType::kAutocompleteEntry);
-        suggestion.payload = std::move(entry);
-        return suggestion;
-      });
   if (at_memory_enabled_ &&
       base::FeatureList::IsEnabled(features::kShowAutocompleteAtMemoryButton)) {
     suggestions.emplace_back(SuggestionType::kSeparator);
