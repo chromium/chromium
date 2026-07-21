@@ -302,6 +302,25 @@ source_set("testing_browser_process") {
   }
 }
 
+source_set("profile_lifecycle_test_utils") {
+  testonly = true
+  sources = [
+    "profile_deletion_observer.cc",
+    "profile_deletion_observer.h",
+    "profile_destruction_waiter.cc",
+    "profile_destruction_waiter.h",
+    "profile_waiter.cc",
+    "profile_waiter.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile_manager",
+    "//chrome/browser/profiles:profile_util",
+  ]
+  deps = [ "//chrome/browser:browser_process" ]
+}
+
 if (!is_android) {
   # Thin header-only target that exposes in_process_browser_test.h for gn check.
   # The implementation (in_process_browser_test.cc) still lives in
