@@ -90,6 +90,7 @@ class BrowserNativeWidgetMac : public views::NativeWidgetMac,
   void OnWidgetInitDone() override;
   void OnWidgetThemeChanged(views::Widget* widget) override;
   void OnWindowDestroying(gfx::NativeWindow window) override;
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
   // Overridden from CommandObserver:
   void EnabledStateChangedForCommand(int id, bool enabled) override;

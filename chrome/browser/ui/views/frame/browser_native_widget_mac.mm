@@ -249,6 +249,7 @@ void BrowserNativeWidgetMac::OnWindowFullscreenTransitionComplete() {
 }
 
 void BrowserNativeWidgetMac::OnWidgetDestroyed(views::Widget* widget) {
+  widget->RemoveObserver(this);
   CHECK(browser_view_);
   if (UsesRemoteCocoaApplicationHost(browser_view_->browser())) {
     chrome::RemoveCommandObserver(browser_view_->browser(), IDC_BACK, this);
@@ -635,6 +636,9 @@ void BrowserNativeWidgetMac::OnWindowInitialized() {
 
 void BrowserNativeWidgetMac::OnWidgetInitDone() {
   NativeWidgetMac::OnWidgetInitDone();
+  if (!GetWidget()->HasObserver(this)) {
+    GetWidget()->AddObserver(this);
+  }
   // GlassFrameService is only available if glass frame is enabled.
   if (auto* const glass_frame_service = GlassFrameService::GetInstance()) {
     glass_frame_service_subscription_ =
@@ -662,6 +666,13 @@ void BrowserNativeWidgetMac::OnWindowDestroying(
       base::apple::ObjCCastStrict<NativeWidgetMacNSWindow>(
           native_window.GetNativeNSWindow());
   [ns_window setWindowTouchBarDelegate:nil];
+}
+
+void BrowserNativeWidgetMac::OnWidgetActivationChanged(views::Widget* widget,
+                                                       bool active) {
+  last_theme_color_.reset();
+  last_preferred_color_scheme_.reset();
+  UpdateBackground(IsBrowserWidgetEligible());
 }
 
 void BrowserNativeWidgetMac::EnabledStateChangedForCommand(int id,
@@ -799,8 +810,9 @@ void BrowserNativeWidgetMac::UpdateBackground(bool is_eligible) {
 
   const ui::NativeTheme::PreferredColorScheme color_scheme =
       browser_view_->GetNativeTheme()->preferred_color_scheme();
-  const SkColor theme_color =
-      browser_view_->GetColorProvider()->GetColor(ui::kColorFrameActive);
+  const bool is_active = GetWidget()->IsActive();
+  const SkColor theme_color = browser_view_->GetColorProvider()->GetColor(
+      is_active ? ui::kColorFrameActive : ui::kColorFrameInactive);
 
   // Avoid updating the background view if the theme colors haven't changed.
   if (background_view_ && last_preferred_color_scheme_ == color_scheme &&
