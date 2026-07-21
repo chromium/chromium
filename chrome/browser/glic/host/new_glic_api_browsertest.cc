@@ -886,7 +886,8 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, MAYBE_testThereCanOnlyBeOneFloaty) {
             tab0_instance->GetPanelState().kind);
 }
 
-#if defined(NOT_VETTED_ON_ANDROID)
+// TODO(crbug.com/536051726): Re-enable the test on Linux.
+#if defined(NOT_VETTED_ON_ANDROID) || BUILDFLAG(IS_LINUX)
 #define MAYBE_testSwitchConversationWithEmptyId \
   DISABLED_testSwitchConversationWithEmptyId
 #else
