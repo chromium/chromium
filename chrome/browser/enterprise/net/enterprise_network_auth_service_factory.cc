@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/net/enterprise_network_auth_service_factory.h"
 
+#include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -27,6 +28,7 @@ EnterpriseNetworkAuthServiceFactory::EnterpriseNetworkAuthServiceFactory()
     : ProfileKeyedServiceFactory("EnterpriseNetworkAuthService",
                                  ProfileSelections::BuildForRegularProfile()) {
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(enterprise::ProfileIdServiceFactory::GetInstance());
 }
 
 EnterpriseNetworkAuthServiceFactory::~EnterpriseNetworkAuthServiceFactory() =
@@ -41,5 +43,6 @@ EnterpriseNetworkAuthServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<enterprise_net::EnterpriseNetworkAuthService>(
-      IdentityManagerFactory::GetForProfile(profile));
+      IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),
+      enterprise::ProfileIdServiceFactory::GetForProfile(profile));
 }

@@ -18,6 +18,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "net/http/http_request_headers.h"
 
 namespace signin {
 struct AccessTokenInfo;
@@ -25,6 +26,12 @@ class AccountManagedStatusFinder;
 class IdentityManager;
 class PrimaryAccountAccessTokenFetcher;
 }  // namespace signin
+
+class PrefService;
+
+namespace enterprise {
+class ProfileIdService;
+}  // namespace enterprise
 
 namespace enterprise_net {
 
@@ -56,8 +63,10 @@ class EnterpriseNetworkAuthService : public KeyedService {
   using AccessTokenCallback =
       base::OnceCallback<void(AccessTokenResult result)>;
 
-  explicit EnterpriseNetworkAuthService(
-      signin::IdentityManager* identity_manager);
+  EnterpriseNetworkAuthService(
+      signin::IdentityManager* identity_manager,
+      PrefService* pref_service,
+      enterprise::ProfileIdService* profile_id_service);
   EnterpriseNetworkAuthService(const EnterpriseNetworkAuthService&) = delete;
   EnterpriseNetworkAuthService& operator=(const EnterpriseNetworkAuthService&) =
       delete;
@@ -70,6 +79,12 @@ class EnterpriseNetworkAuthService : public KeyedService {
   // Calls `callback` with the token string on success, or a TokenFetchError on
   // failure.
   virtual void FetchAccessToken(AuthScope scope, AccessTokenCallback callback);
+
+  // Resolves extra headers specified by `extra_headers` using identity and user
+  // preferences. Supported variable placeholders: `${profile_id}` and
+  // `${accept_language}`. Unsupported `kVariable` headers are dropped.
+  virtual net::HttpRequestHeaders ResolveExtraHeaders(
+      const std::vector<ProxyExtraHeader>& extra_headers) const;
 
   // Returns the number of currently active in-flight token fetch requests.
   size_t GetPendingTokenFetchCountForTesting() const {
@@ -121,6 +136,8 @@ class EnterpriseNetworkAuthService : public KeyedService {
                             signin::AccessTokenInfo access_token_info);
 
   const raw_ptr<signin::IdentityManager> identity_manager_;
+  const raw_ptr<PrefService> pref_service_;
+  const raw_ptr<enterprise::ProfileIdService> profile_id_service_;
 
   // In-flight account managed status checks.
   base::IDMap<std::unique_ptr<PendingManagedStatusCheck>>

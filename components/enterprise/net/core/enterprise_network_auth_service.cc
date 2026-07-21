@@ -10,6 +10,9 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "components/enterprise/browser/identifiers/profile_id_service.h"
+#include "components/enterprise/net/core/utils.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
@@ -97,9 +100,15 @@ EnterpriseNetworkAuthService::PendingTokenFetch::operator=(
 EnterpriseNetworkAuthService::PendingTokenFetch::~PendingTokenFetch() = default;
 
 EnterpriseNetworkAuthService::EnterpriseNetworkAuthService(
-    signin::IdentityManager* identity_manager)
-    : identity_manager_(identity_manager) {
+    signin::IdentityManager* identity_manager,
+    PrefService* pref_service,
+    enterprise::ProfileIdService* profile_id_service)
+    : identity_manager_(identity_manager),
+      pref_service_(pref_service),
+      profile_id_service_(profile_id_service) {
   CHECK(identity_manager_);
+  CHECK(pref_service_);
+  CHECK(profile_id_service_);
 }
 
 EnterpriseNetworkAuthService::~EnterpriseNetworkAuthService() = default;
@@ -159,6 +168,25 @@ void EnterpriseNetworkAuthService::FetchAccessToken(
       signin::AccountManagedStatusFinderOutcome::kPending) {
     OnManagedStatusChecked(check_id);
   }
+}
+
+net::HttpRequestHeaders EnterpriseNetworkAuthService::ResolveExtraHeaders(
+    const std::vector<ProxyExtraHeader>& extra_headers) const {
+  std::string profile_id;
+  if (profile_id_service_) {
+    std::optional<std::string> pid = profile_id_service_->GetProfileId();
+    if (pid.has_value()) {
+      profile_id = *pid;
+    }
+  }
+  std::string accept_languages;
+  // "intl.accept_languages" is Chrome's standard pref containing HTTP
+  // Accept-Language formatted string (e.g. "en-US,en;q=0.9").
+  if (pref_service_ && pref_service_->FindPreference("intl.accept_languages")) {
+    accept_languages = pref_service_->GetString("intl.accept_languages");
+  }
+  return enterprise_net::ResolveExtraHeadersWithValues(
+      extra_headers, profile_id, accept_languages);
 }
 
 void EnterpriseNetworkAuthService::ClearPendingTokenFetches() {

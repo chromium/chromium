@@ -175,21 +175,42 @@ TEST(ParseProvisioningDomainProxyProtocolTest, MapsProtocolStringsCorrectly) {
             ParseProvisioningDomainProxyProtocol("invalid"));
 }
 
-TEST(ResolveExtraHeadersTest, ExpandsPlaceholdersCorrectly) {
-  ProvisioningDomainConfig policy;
-  policy.pvd_id = "example.com";
-  policy.extra_headers = {
-      ProxyExtraHeader(kTestHeaderKeyResourceKey, "projects/default"),
-      ProxyExtraHeader(kTestHeaderKeyProfileId, "${profile_id}"),
-      ProxyExtraHeader(kTestHeaderKeyLanguages, "${accept_language}"),
+TEST(ResolveExtraHeadersTest, ExpandsPlaceholdersAndEnforcesTypes) {
+  std::vector<ProxyExtraHeader> extra_headers = {
+      // Constant header
+      ProxyExtraHeader(kTestHeaderKeyResourceKey, "static_value",
+                       ProxyExtraHeader::HeaderType::kConstant),
+
+      // Constant header with placeholder (unexpanded)
+      ProxyExtraHeader("X-Constant-Literal-Placeholder", "prefix-${profile_id}",
+                       ProxyExtraHeader::HeaderType::kConstant),
+
+      // kVariable header with supported placeholder (expanded)
+      ProxyExtraHeader(kTestHeaderKeyProfileId, "profile_${profile_id}",
+                       ProxyExtraHeader::HeaderType::kVariable),
+      ProxyExtraHeader(kTestHeaderKeyLanguages, "${accept_language}",
+                       ProxyExtraHeader::HeaderType::kVariable),
+
+      // kVariable header with static value (kept)
+      ProxyExtraHeader("X-Variable-Static", "hello",
+                       ProxyExtraHeader::HeaderType::kVariable),
+
+      // kVariable header with unsupported placeholder (dropped)
+      ProxyExtraHeader("X-Variable-Unknown", "val_${unknown_var}",
+                       ProxyExtraHeader::HeaderType::kVariable),
   };
 
-  net::HttpRequestHeaders headers =
-      ResolveExtraHeaders(policy, kTestProfileId, kTestAcceptLanguages);
+  net::HttpRequestHeaders headers = ResolveExtraHeadersWithValues(
+      extra_headers, kTestProfileId, kTestAcceptLanguages);
 
-  ExpectHeader(headers, kTestHeaderKeyResourceKey, "projects/default");
-  ExpectHeader(headers, kTestHeaderKeyProfileId, kTestProfileId);
+  ExpectHeader(headers, kTestHeaderKeyResourceKey, "static_value");
+  ExpectHeader(headers, "X-Constant-Literal-Placeholder",
+               "prefix-${profile_id}");
+  ExpectHeader(headers, kTestHeaderKeyProfileId,
+               "profile_" + std::string(kTestProfileId));
   ExpectHeader(headers, kTestHeaderKeyLanguages, kTestAcceptLanguages);
+  ExpectHeader(headers, "X-Variable-Static", "hello");
+  EXPECT_FALSE(headers.HasHeader("X-Variable-Unknown"));
 }
 
 TEST(ParseProxyProvisioningDomainPolicyTest, ParsesValidPolicyDict) {

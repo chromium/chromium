@@ -12,6 +12,9 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/enterprise/browser/identifiers/profile_id_service.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -26,6 +29,12 @@ constexpr char kTestOAuthToken[] = "test_access_token_123";
 constexpr char kTestHistogramName[] = "Enterprise.NetworkAuth.TokenFetchError";
 
 class EnterpriseNetworkAuthServiceTest : public testing::Test {
+ public:
+  EnterpriseNetworkAuthServiceTest() {
+    pref_service_.registry()->RegisterStringPref("intl.accept_languages",
+                                                 "en-US,en;q=0.9");
+  }
+
  protected:
   void SetUpManagedPrimaryAccount(
       const std::string& email = "user@managed.com") {
@@ -73,6 +82,8 @@ class EnterpriseNetworkAuthServiceTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
+  TestingPrefServiceSimple pref_service_;
+  enterprise::ProfileIdService profile_id_service_{"test_profile_id"};
 };
 
 TEST_F(EnterpriseNetworkAuthServiceTest, SuccessfulAccessTokenFetch) {
@@ -80,7 +91,8 @@ TEST_F(EnterpriseNetworkAuthServiceTest, SuccessfulAccessTokenFetch) {
   SetUpManagedPrimaryAccount();
 
   EnterpriseNetworkAuthService auth_service(
-      identity_test_env_.identity_manager());
+      identity_test_env_.identity_manager(), &pref_service_,
+      &profile_id_service_);
 
   AccessTokenResult fetched_result = FetchAccessTokenAsyncSuccess(
       auth_service, AuthScope::kCloudSecureGateway, kTestOAuthToken);
@@ -94,7 +106,8 @@ TEST_F(EnterpriseNetworkAuthServiceTest, ConcurrentAccessTokenFetches) {
   SetUpManagedPrimaryAccount();
 
   EnterpriseNetworkAuthService auth_service(
-      identity_test_env_.identity_manager());
+      identity_test_env_.identity_manager(), &pref_service_,
+      &profile_id_service_);
 
   base::MockCallback<EnterpriseNetworkAuthService::AccessTokenCallback>
       callback1;
@@ -118,7 +131,8 @@ TEST_F(EnterpriseNetworkAuthServiceTest,
   SetUpManagedPrimaryAccount();
 
   EnterpriseNetworkAuthService auth_service(
-      identity_test_env_.identity_manager());
+      identity_test_env_.identity_manager(), &pref_service_,
+      &profile_id_service_);
 
   EXPECT_EQ(0u, auth_service.GetPendingTokenFetchCountForTesting());
 
@@ -153,7 +167,8 @@ TEST_F(EnterpriseNetworkAuthServiceTest, CancelPendingFetchesOnShutdown) {
   SetUpManagedPrimaryAccount();
 
   auto auth_service = std::make_unique<EnterpriseNetworkAuthService>(
-      identity_test_env_.identity_manager());
+      identity_test_env_.identity_manager(), &pref_service_,
+      &profile_id_service_);
 
   base::MockCallback<EnterpriseNetworkAuthService::AccessTokenCallback>
       mock_callback;
@@ -174,7 +189,8 @@ TEST_F(EnterpriseNetworkAuthServiceTest, MapsGoogleServiceAuthErrors) {
   SetUpManagedPrimaryAccount();
 
   EnterpriseNetworkAuthService auth_service(
-      identity_test_env_.identity_manager());
+      identity_test_env_.identity_manager(), &pref_service_,
+      &profile_id_service_);
 
   const struct {
     GoogleServiceAuthError::State gaia_state;
@@ -208,7 +224,8 @@ TEST_F(EnterpriseNetworkAuthServiceTest,
   SetUpManagedPrimaryAccount();
 
   EnterpriseNetworkAuthService auth_service(
-      identity_test_env_.identity_manager());
+      identity_test_env_.identity_manager(), &pref_service_,
+      &profile_id_service_);
 
   AccessTokenResult result =
       FetchAccessTokenSyncFailure(auth_service, AuthScope::kNone);
@@ -223,7 +240,8 @@ TEST_F(EnterpriseNetworkAuthServiceTest,
        NoPrimaryAccountReturnsNoPrimaryAccountError) {
   base::HistogramTester histogram_tester;
   EnterpriseNetworkAuthService auth_service(
-      identity_test_env_.identity_manager());
+      identity_test_env_.identity_manager(), &pref_service_,
+      &profile_id_service_);
 
   AccessTokenResult result =
       FetchAccessTokenSyncFailure(auth_service, AuthScope::kCloudSecureGateway);
@@ -241,7 +259,8 @@ TEST_F(EnterpriseNetworkAuthServiceTest,
       "user@gmail.com", signin::ConsentLevel::kSignin);
 
   EnterpriseNetworkAuthService auth_service(
-      identity_test_env_.identity_manager());
+      identity_test_env_.identity_manager(), &pref_service_,
+      &profile_id_service_);
 
   AccessTokenResult result =
       FetchAccessTokenSyncFailure(auth_service, AuthScope::kCloudSecureGateway);
@@ -264,7 +283,8 @@ TEST_F(EnterpriseNetworkAuthServiceTest,
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
 
   EnterpriseNetworkAuthService auth_service(
-      identity_test_env_.identity_manager());
+      identity_test_env_.identity_manager(), &pref_service_,
+      &profile_id_service_);
 
   AccessTokenResult result =
       FetchAccessTokenSyncFailure(auth_service, AuthScope::kCloudSecureGateway);
@@ -282,7 +302,8 @@ TEST_F(EnterpriseNetworkAuthServiceTest,
       "user@custom-domain.com", signin::ConsentLevel::kSignin);
 
   EnterpriseNetworkAuthService auth_service(
-      identity_test_env_.identity_manager());
+      identity_test_env_.identity_manager(), &pref_service_,
+      &profile_id_service_);
 
   base::MockCallback<EnterpriseNetworkAuthService::AccessTokenCallback>
       mock_callback;
@@ -302,6 +323,54 @@ TEST_F(EnterpriseNetworkAuthServiceTest,
       kTestOAuthToken, base::Time::Max());
 
   histogram_tester.ExpectBucketCount(kTestHistogramName, kNoErrorForMetrics, 1);
+}
+
+TEST_F(EnterpriseNetworkAuthServiceTest,
+       GetExtraHeadersExpandsProfileIdAndPrefs) {
+  TestingPrefServiceSimple pref_service;
+  pref_service.registry()->RegisterStringPref("intl.accept_languages",
+                                              "en-US,ja");
+
+  enterprise::ProfileIdService profile_id_service("test-profile-guid-999");
+
+  EnterpriseNetworkAuthService auth_service(
+      identity_test_env_.identity_manager(), &pref_service,
+      &profile_id_service);
+
+  std::vector<ProxyExtraHeader> extra_headers = {
+      ProxyExtraHeader("X-Constant-Header", "constant_value",
+                       ProxyExtraHeader::HeaderType::kConstant),
+      ProxyExtraHeader("X-Constant-Literal-Placeholder", "${profile_id}",
+                       ProxyExtraHeader::HeaderType::kConstant),
+      ProxyExtraHeader("X-Variable-Profile-Id", "pid-${profile_id}",
+                       ProxyExtraHeader::HeaderType::kVariable),
+      ProxyExtraHeader("X-Variable-Lang", "${accept_language}",
+                       ProxyExtraHeader::HeaderType::kVariable),
+      ProxyExtraHeader("X-Variable-Unsupported", "${unsupported_var}",
+                       ProxyExtraHeader::HeaderType::kVariable),
+  };
+
+  net::HttpRequestHeaders resolved =
+      auth_service.ResolveExtraHeaders(extra_headers);
+
+  std::optional<std::string> val1 = resolved.GetHeader("X-Constant-Header");
+  ASSERT_TRUE(val1.has_value());
+  EXPECT_EQ("constant_value", *val1);
+
+  std::optional<std::string> val2 =
+      resolved.GetHeader("X-Constant-Literal-Placeholder");
+  ASSERT_TRUE(val2.has_value());
+  EXPECT_EQ("${profile_id}", *val2);
+
+  std::optional<std::string> val3 = resolved.GetHeader("X-Variable-Profile-Id");
+  ASSERT_TRUE(val3.has_value());
+  EXPECT_EQ("pid-test-profile-guid-999", *val3);
+
+  std::optional<std::string> val4 = resolved.GetHeader("X-Variable-Lang");
+  ASSERT_TRUE(val4.has_value());
+  EXPECT_EQ("en-US,ja", *val4);
+
+  EXPECT_FALSE(resolved.HasHeader("X-Variable-Unsupported"));
 }
 
 }  // namespace

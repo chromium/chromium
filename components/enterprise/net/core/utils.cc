@@ -299,8 +299,8 @@ net::ProxyServer::Scheme ParseProvisioningDomainProxyProtocol(
                                   : net::ProxyServer::SCHEME_INVALID;
 }
 
-net::HttpRequestHeaders ResolveExtraHeaders(
-    const ProvisioningDomainConfig& policy,
+net::HttpRequestHeaders ResolveExtraHeadersWithValues(
+    const std::vector<ProxyExtraHeader>& extra_headers,
     const std::string& profile_id,
     const std::string& accept_languages) {
   std::initializer_list<PlaceholderReplacement> replacements = {
@@ -309,10 +309,22 @@ net::HttpRequestHeaders ResolveExtraHeaders(
   };
 
   net::HttpRequestHeaders headers;
-  for (const auto& header : policy.extra_headers) {
-    std::string expanded_value = header.value;
-    ExpandPlaceholders(&expanded_value, replacements);
-    headers.SetHeader(header.key, expanded_value);
+  for (const auto& header : extra_headers) {
+    if (header.type == ProxyExtraHeader::HeaderType::kConstant) {
+      headers.SetHeader(header.key, header.value);
+      continue;
+    }
+
+    if (header.type == ProxyExtraHeader::HeaderType::kVariable) {
+      std::string expanded_value = header.value;
+      ExpandPlaceholders(&expanded_value, replacements);
+      // Drop header if it contains unsupported or unrecognized variable
+      // placeholders.
+      if (expanded_value.find("${") != std::string::npos) {
+        continue;
+      }
+      headers.SetHeader(header.key, expanded_value);
+    }
   }
   return headers;
 }

@@ -26,10 +26,19 @@ namespace enterprise_net {
 net::ProxyServer::Scheme ParseProvisioningDomainProxyProtocol(
     std::string_view protocol_str);
 
-// Resolves and expands policy extra headers (including placeholders) into a
-// net::HttpRequestHeaders object.
-net::HttpRequestHeaders ResolveExtraHeaders(
-    const ProvisioningDomainConfig& policy,
+// Resolves and expands policy extra headers into a net::HttpRequestHeaders
+// object.
+// - `kConstant` headers are set directly.
+// - `kVariable` headers will have their supported placeholders expanded.
+//
+// Supported variable placeholders:
+//   - `${profile_id}`
+//   - `${accept_language}`
+//
+// If a `kVariable` header contains unsupported/unrecognized variable
+// placeholders, it will be dropped.
+net::HttpRequestHeaders ResolveExtraHeadersWithValues(
+    const std::vector<ProxyExtraHeader>& extra_headers,
     const std::string& profile_id,
     const std::string& accept_languages);
 
