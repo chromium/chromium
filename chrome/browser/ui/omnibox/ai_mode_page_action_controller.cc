@@ -286,6 +286,11 @@ void AiModePageActionController::UpdatePageActionUi(bool is_visible) {
     page_action_controller->SetShowTrailingIcon(kActionAiMode, has_user_input);
   }
 
+  if (omnibox::kWebUIOmniboxDynamicColorScheme.Get()) {
+    page_action_controller->OverrideBackgroundColor(
+        kActionAiMode, kColorOmniboxResultsBackgroundHovered);
+  }
+
   if (config->id == SearchEngineType::SEARCH_ENGINE_GOOGLE) {
     ShowAndOverrideImage(
         ui::ImageModel::FromImageGenerator(

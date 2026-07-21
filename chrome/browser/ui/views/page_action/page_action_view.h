@@ -137,6 +137,9 @@ class PageActionView : public IconLabelBubbleView,
   gfx::SlideAnimation& GetSlideAnimationForTesting();
   AnchoredMessageBubbleView* GetAnchoredMessageForTesting();
 
+  // IconLabelBubbleView:
+  SkColor GetBackgroundColor() const override;
+
   static PageActionPassKey PassKeyForTesting() { return PageActionPassKey(); }
 
  protected:
