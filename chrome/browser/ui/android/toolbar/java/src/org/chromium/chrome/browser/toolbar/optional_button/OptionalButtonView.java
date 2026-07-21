@@ -406,22 +406,37 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
             mActionChipLabelString = getContext().getString(chipLabelResId);
         }
 
-        // The button's height precisely matches the avatar and its padding. When an error badge is
-        // added in the avatar's bottom-right corner, the avatar height increases. To maintain the
-        // original position of the avatar, the button's bottom padding is then reduced.
-        int paddingBottom =
-                getDimensionPixelSize(
-                        buttonSpec.hasErrorBadge()
-                                ? R.dimen
-                                        .optional_toolbar_phone_button_with_error_badge_padding_bottom
-                                : R.dimen
-                                        .toolbar_phone_optional_button_foreground_vertical_padding);
+        // The button's bounds precisely match the avatar and its padding. When additional elements
+        // like an error badge or an AI tier ring are added to the avatar, the effective size
+        // increases.
+        // To maintain the original position and bounds of the avatar, the button's paddings are
+        // adjusted accordingly.
+        int paddingBottomRes;
+        int paddingTopRes;
+        int paddingStartRes;
+
+        if (buttonSpec.hasErrorBadge()) {
+            paddingBottomRes =
+                    R.dimen.optional_toolbar_phone_button_with_error_badge_padding_bottom;
+            paddingTopRes = R.dimen.toolbar_phone_optional_button_foreground_vertical_padding;
+            paddingStartRes = R.dimen.toolbar_phone_optional_button_foreground_start_padding;
+        } else if (buttonSpec.hasAiTierRing()) {
+            paddingBottomRes = R.dimen.optional_toolbar_phone_button_with_ai_ring_padding_vertical;
+            paddingTopRes = R.dimen.optional_toolbar_phone_button_with_ai_ring_padding_vertical;
+            paddingStartRes = R.dimen.optional_toolbar_phone_button_with_ai_ring_padding_start;
+        } else {
+            paddingBottomRes = R.dimen.toolbar_phone_optional_button_foreground_vertical_padding;
+            paddingTopRes = R.dimen.toolbar_phone_optional_button_foreground_vertical_padding;
+            paddingStartRes = R.dimen.toolbar_phone_optional_button_foreground_start_padding;
+        }
+
+        int paddingEnd = mButton.getPaddingEnd();
 
         mButton.setPaddingRelative(
-                mButton.getPaddingStart(),
-                mButton.getPaddingTop(),
-                mButton.getPaddingEnd(),
-                paddingBottom);
+                getDimensionPixelSize(paddingStartRes),
+                getDimensionPixelSize(paddingTopRes),
+                paddingEnd,
+                getDimensionPixelSize(paddingBottomRes));
 
         mClickListener = buttonSpec.getOnClickListener();
         mLongClickListener = buttonSpec.getOnLongClickListener();

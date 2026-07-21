@@ -21,6 +21,7 @@ public class DisplayableProfileData {
     private final @Nullable String mFullName;
     private final @Nullable String mGivenName;
     private final boolean mHasDisplayableEmailAddress;
+    private final boolean mHasAiTierRing;
 
     public DisplayableProfileData(
             CoreAccountId accountId,
@@ -28,7 +29,8 @@ public class DisplayableProfileData {
             @Nullable Drawable image,
             @Nullable String fullName,
             @Nullable String givenName,
-            boolean hasDisplayableEmailAddress) {
+            boolean hasDisplayableEmailAddress,
+            boolean hasAiTierRing) {
         assert accountId != null;
         assert accountEmail != null;
         assert image != null;
@@ -38,6 +40,7 @@ public class DisplayableProfileData {
         mFullName = fullName;
         mGivenName = givenName;
         mHasDisplayableEmailAddress = hasDisplayableEmailAddress;
+        mHasAiTierRing = hasAiTierRing;
     }
 
     /**
@@ -120,5 +123,12 @@ public class DisplayableProfileData {
      */
     public boolean hasDisplayableEmailAddress() {
         return mHasDisplayableEmailAddress;
+    }
+
+    /**
+     * @return Whether this profile image was wrapped with an AI tier ring.
+     */
+    public boolean hasAiTierRing() {
+        return mHasAiTierRing;
     }
 }

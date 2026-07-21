@@ -804,7 +804,8 @@ public class ToolbarManagerUnitTest {
                                         /* contentDescription= */ "Identity Disk",
                                         /* supportsTinting= */ false)
                                 .setButtonVariant(AdaptiveToolbarButtonVariant.UNKNOWN)
-                                .setIsIdentityDisc(true)
+                                .setIdentityDiscConfig(
+                                        /* isIdentityDisc= */ true, /* hasAiTierRing= */ false)
                                 .build());
         when(mIdentityDiscProvider.get(ntpTab)).thenReturn(identityDiskData);
 
@@ -835,7 +836,8 @@ public class ToolbarManagerUnitTest {
                                         /* contentDescription= */ "Identity Disk",
                                         /* supportsTinting= */ false)
                                 .setButtonVariant(AdaptiveToolbarButtonVariant.UNKNOWN)
-                                .setIsIdentityDisc(true)
+                                .setIdentityDiscConfig(
+                                        /* isIdentityDisc= */ true, /* hasAiTierRing= */ false)
                                 .build());
         when(mIdentityDiscProvider.get(webTab)).thenReturn(identityDiskData);
 
@@ -895,7 +897,8 @@ public class ToolbarManagerUnitTest {
                                         /* contentDescription= */ "Identity Disk",
                                         /* supportsTinting= */ false)
                                 .setButtonVariant(AdaptiveToolbarButtonVariant.UNKNOWN)
-                                .setIsIdentityDisc(true)
+                                .setIdentityDiscConfig(
+                                        /* isIdentityDisc= */ true, /* hasAiTierRing= */ false)
                                 .build());
         when(mIdentityDiscProvider.get(ntpTab)).thenReturn(identityDiskData);
 
@@ -1021,7 +1024,8 @@ public class ToolbarManagerUnitTest {
                                         /* contentDescription= */ "Identity Disk",
                                         /* supportsTinting= */ false)
                                 .setButtonVariant(AdaptiveToolbarButtonVariant.UNKNOWN)
-                                .setIsIdentityDisc(true)
+                                .setIdentityDiscConfig(
+                                        /* isIdentityDisc= */ true, /* hasAiTierRing= */ false)
                                 .build());
         when(mIdentityDiscProvider.get(ntpTab)).thenReturn(identityDiskData);
         when(mAdaptiveButtonProvider.get(ntpTab)).thenReturn(null);
@@ -1057,7 +1061,8 @@ public class ToolbarManagerUnitTest {
                                         /* contentDescription= */ "Identity Disk",
                                         /* supportsTinting= */ false)
                                 .setButtonVariant(AdaptiveToolbarButtonVariant.UNKNOWN)
-                                .setIsIdentityDisc(true)
+                                .setIdentityDiscConfig(
+                                        /* isIdentityDisc= */ true, /* hasAiTierRing= */ false)
                                 .build());
         when(mIdentityDiscProvider.get(ntpTab)).thenReturn(identityDiskData);
 

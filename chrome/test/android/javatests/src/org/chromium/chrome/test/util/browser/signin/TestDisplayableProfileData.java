@@ -39,7 +39,8 @@ public class TestDisplayableProfileData {
                 new BitmapDrawable(accountInfo.getAccountImage()),
                 accountInfo.getFullName(),
                 accountInfo.getGivenName(),
-                true);
+                /* hasDisplayableEmailAddress= */ true,
+                /* hasAiTierRing= */ false);
     }
 
     private TestDisplayableProfileData() {}

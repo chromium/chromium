@@ -80,6 +80,10 @@ found in the LICENSE file.
     <!-- Padding of optional phone button, used to adjust button's icon within its clickable area. -->
     <dimen name="optional_toolbar_phone_button_with_error_badge_padding_bottom">12dp</dimen>
 
+    <!-- Optional button with AI Tier Ring -->
+    <dimen name="optional_toolbar_phone_button_with_ai_ring_padding_start">10dp</dimen>
+    <dimen name="optional_toolbar_phone_button_with_ai_ring_padding_vertical">12dp</dimen>
+
     <!-- Padding of optional tablet button, used to adjust button's icon within its clickable area. -->
     <dimen name="optional_toolbar_tablet_button_padding_start">0dp</dimen>
     <dimen name="optional_toolbar_tablet_button_padding_top">0dp</dimen>

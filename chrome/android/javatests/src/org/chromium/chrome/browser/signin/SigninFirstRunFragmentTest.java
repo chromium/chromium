@@ -1557,7 +1557,8 @@ public class SigninFirstRunFragmentTest {
                         mock(Drawable.class),
                         accountInfo.getFullName(),
                         accountInfo.getGivenName(),
-                        true);
+                        /* hasDisplayableEmailAddress= */ true,
+                        /* hasAiTierRing= */ false);
         onScrollToView(allOf(withId(R.id.title), withText(R.string.signin_fre_title)))
                 .check(matches(isDisplayed()));
         if (shouldShowSubtitle) {
@@ -1659,7 +1660,8 @@ public class SigninFirstRunFragmentTest {
                         mock(Drawable.class),
                         accountInfo.getFullName(),
                         accountInfo.getGivenName(),
-                        accountInfo.canHaveEmailAddressDisplayed());
+                        accountInfo.canHaveEmailAddressDisplayed(),
+                        /* hasAiTierRing= */ false);
         final String expectedTitle =
                 mActivityTestRule
                         .getActivity()

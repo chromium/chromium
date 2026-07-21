@@ -78,6 +78,7 @@ public interface ButtonData {
         private final @AttrRes int mActionChipBackgroundColorResId;
         private final @AttrRes int mActionChipTextColorResId;
         private final boolean mIsIdentityDisc;
+        private final boolean mHasAiTierRing;
 
         private ButtonSpec(
                 @Nullable Drawable drawable,
@@ -97,7 +98,8 @@ public interface ButtonData {
                 int actionChipCollapseDelayMs,
                 @AttrRes int actionChipBackgroundColorResId,
                 @AttrRes int actionChipTextColorResId,
-                boolean isIdentityDisc) {
+                boolean isIdentityDisc,
+                boolean hasAiTierRing) {
             mDrawable = drawable;
             mCollapsedDrawable = collapsedDrawable;
             mOnClickListener = onClickListener;
@@ -117,6 +119,7 @@ public interface ButtonData {
             mActionChipBackgroundColorResId = actionChipBackgroundColorResId;
             mActionChipTextColorResId = actionChipTextColorResId;
             mIsIdentityDisc = isIdentityDisc;
+            mHasAiTierRing = hasAiTierRing;
         }
 
         /** Builder for {@link ButtonSpec}. */
@@ -140,6 +143,7 @@ public interface ButtonData {
             private @AttrRes int mActionChipBackgroundColorResId = Resources.ID_NULL;
             private @AttrRes int mActionChipTextColorResId = Resources.ID_NULL;
             private boolean mIsIdentityDisc;
+            private boolean mHasAiTierRing;
 
             /**
              * Creates a new {@link Builder} with the required properties.
@@ -156,6 +160,7 @@ public interface ButtonData {
                 mContentDescription = contentDescription;
                 mSupportsTinting = supportsTinting;
                 mIsIdentityDisc = false;
+                mHasAiTierRing = false;
             }
 
             /**
@@ -182,6 +187,7 @@ public interface ButtonData {
                 mActionChipBackgroundColorResId = buttonSpec.mActionChipBackgroundColorResId;
                 mActionChipTextColorResId = buttonSpec.mActionChipTextColorResId;
                 mIsIdentityDisc = buttonSpec.mIsIdentityDisc;
+                mHasAiTierRing = buttonSpec.mHasAiTierRing;
             }
 
             public Builder setDrawable(@Nullable Drawable drawable) {
@@ -271,8 +277,9 @@ public interface ButtonData {
                 return this;
             }
 
-            public Builder setIsIdentityDisc(boolean isIdentityDisc) {
+            public Builder setIdentityDiscConfig(boolean isIdentityDisc, boolean hasAiTierRing) {
                 mIsIdentityDisc = isIdentityDisc;
+                mHasAiTierRing = hasAiTierRing;
                 return this;
             }
 
@@ -295,7 +302,8 @@ public interface ButtonData {
                         mActionChipCollapseDelayMs,
                         mActionChipBackgroundColorResId,
                         mActionChipTextColorResId,
-                        mIsIdentityDisc);
+                        mIsIdentityDisc,
+                        mHasAiTierRing);
             }
         }
 
@@ -361,6 +369,11 @@ public interface ButtonData {
         /** Returns {@code true} if this button spec represents the Identity Disk. */
         public boolean isIdentityDisc() {
             return mIsIdentityDisc;
+        }
+
+        /** Returns {@code true} if the button should display the AI Tier ring. */
+        public boolean hasAiTierRing() {
+            return mHasAiTierRing;
         }
 
         /**
@@ -446,6 +459,7 @@ public interface ButtonData {
                     && mActionChipBackgroundColorResId == that.mActionChipBackgroundColorResId
                     && mActionChipTextColorResId == that.mActionChipTextColorResId
                     && mIsIdentityDisc == that.mIsIdentityDisc
+                    && mHasAiTierRing == that.mHasAiTierRing
                     && Objects.equals(mDrawable, that.mDrawable)
                     && Objects.equals(mOnClickListener, that.mOnClickListener)
                     && Objects.equals(mOnLongClickListener, that.mOnLongClickListener)
@@ -473,7 +487,8 @@ public interface ButtonData {
                     mActionChipCollapseDelayMs,
                     mActionChipBackgroundColorResId,
                     mActionChipTextColorResId,
-                    mIsIdentityDisc);
+                    mIsIdentityDisc,
+                    mHasAiTierRing);
         }
     }
 }

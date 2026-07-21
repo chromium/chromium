@@ -34,7 +34,8 @@ public class DisplayableProfileDataUnitTest {
                 mMockDrawable,
                 fullName,
                 givenName,
-                /* hasDisplayableEmailAddress= */ true);
+                /* hasDisplayableEmailAddress= */ true,
+                /* hasAiTierRing= */ false);
     }
 
     @Test

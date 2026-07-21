@@ -168,7 +168,8 @@ public class SigninPromoDelegateTest {
                         mock(Drawable.class),
                         "TestName LastName",
                         "TestName",
-                        true);
+                        /* hasDisplayableEmailAddress= */ true,
+                        /* hasAiTierRing= */ false);
 
         assertTrue(mDelegate.canShowPromo());
         assertEquals(

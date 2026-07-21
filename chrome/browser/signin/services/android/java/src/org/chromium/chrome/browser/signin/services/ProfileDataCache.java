@@ -369,7 +369,8 @@ public class ProfileDataCache implements IdentityManager.Observer {
                     croppedAvatar,
                     accountInfo.getFullName(),
                     accountInfo.getGivenName(),
-                    accountInfo.canHaveEmailAddressDisplayed());
+                    accountInfo.canHaveEmailAddressDisplayed(),
+                    /* hasAiTierRing= */ false);
         } else {
             final var shouldPopulateNames = accountInfo.hasDisplayableInfo() || badgeConfig != null;
             return new DisplayableProfileData(
@@ -378,7 +379,8 @@ public class ProfileDataCache implements IdentityManager.Observer {
                     croppedAvatar,
                     shouldPopulateNames ? accountInfo.getFullName() : null,
                     shouldPopulateNames ? accountInfo.getGivenName() : null,
-                    accountInfo.canHaveEmailAddressDisplayed());
+                    accountInfo.canHaveEmailAddressDisplayed(),
+                    /* hasAiTierRing= */ false);
         }
     }
 

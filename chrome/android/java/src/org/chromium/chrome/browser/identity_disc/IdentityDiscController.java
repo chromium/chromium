@@ -169,7 +169,8 @@ public class IdentityDiscController
                                                 FeatureConstants.IDENTITY_DISC_FEATURE,
                                                 R.string.iph_identity_disc_text,
                                                 R.string.iph_identity_disc_accessibility_text))
-                                .setIsIdentityDisc(true)
+                                .setIdentityDiscConfig(
+                                        /* isIdentityDisc= */ true, /* hasAiTierRing= */ false)
                                 .build());
     }
 
@@ -230,6 +231,9 @@ public class IdentityDiscController
                 .setContentDescription(contentDescription)
                 .setSupportsTinting(shouldSupportTinting)
                 .setHasErrorBadge(mIdentityError != UserActionableError.NONE)
+                .setIdentityDiscConfig(
+                        /* isIdentityDisc= */ true,
+                        /* hasAiTierRing= */ profileData != null && profileData.hasAiTierRing())
                 .setButtonVariant(AdaptiveToolbarButtonVariant.UNKNOWN)
                 .setOnLongClickListener(null)
                 .build();
