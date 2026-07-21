@@ -58,6 +58,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -352,6 +353,7 @@ class NoStatePrefetchBrowserTest
   }
 
  protected:
+  void RunServiceWorkerInterceptTest(bool expect_two_hosts);
   // Loads kPrefetchLoaderPath and specifies |target_url| as a query param. The
   // |loader_url| looks something like:
   // http://127.0.0.1:port_number/prerender/prefetch_loader.html?replace_text=\
@@ -1627,14 +1629,8 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, IssuesIdlePriorityRequests) {
 
 // Checks that a registered ServiceWorker (SW) that is not currently running
 // will intercepts a prefetch request.
-// TODO(crbug.com/500524504): Enable the test.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ServiceWorkerIntercept DISABLED_ServiceWorkerIntercept
-#else
-#define MAYBE_ServiceWorkerIntercept ServiceWorkerIntercept
-#endif
-IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
-                       MAYBE_ServiceWorkerIntercept) {
+void NoStatePrefetchBrowserTest::RunServiceWorkerInterceptTest(
+    bool expect_two_hosts) {
   // Register and launch a SW.
   std::u16string expected_title = u"SW READY";
   content::TitleWatcher title_watcher(GetActiveWebContents(), expected_title);
@@ -1686,8 +1682,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
   //    site (V8 OFF) forces a BrowsingInstance swap. Consequently, 2 hosts
   //    are created instead of the previously expected 1.
   // TODO(crbug.com/493200120): Find a better way to handle this situation.
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kMigrateToBlockV8OptimizerOnUnfamiliarSites)) {
+  if (expect_two_hosts) {
     EXPECT_EQ(2, host_count);
   } else {
     EXPECT_EQ(1, host_count);
@@ -1704,6 +1699,50 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
   // observing the fetch of the image.
   PrefetchFromFile(kPrefetchPage, FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
   WaitForRequestCount(src_server()->GetURL(kPrefetchPng), 1);
+}
+
+// TODO(crbug.com/500524504): Enable the test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ServiceWorkerIntercept DISABLED_ServiceWorkerIntercept
+#else
+#define MAYBE_ServiceWorkerIntercept ServiceWorkerIntercept
+#endif
+IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
+                       MAYBE_ServiceWorkerIntercept) {
+  bool expect_two_hosts = base::FeatureList::IsEnabled(
+      safe_browsing::kMigrateToBlockV8OptimizerOnUnfamiliarSites);
+  RunServiceWorkerInterceptTest(expect_two_hosts);
+}
+
+class NoStatePrefetchBrowserTestWithEsbBlockV8
+    : public NoStatePrefetchBrowserTest {
+ public:
+  NoStatePrefetchBrowserTestWithEsbBlockV8() {
+    feature_list_.InitAndEnableFeature(
+        safe_browsing::kEnableBlockV8OptimizerOnUnfamiliarSitesForEsbClients);
+  }
+
+  void SetUpOnMainThread() override {
+    NoStatePrefetchBrowserTest::SetUpOnMainThread();
+    safe_browsing::SetSafeBrowsingState(
+        current_browser()->profile()->GetPrefs(),
+        safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// TODO(crbug.com/500524504): Enable the test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ServiceWorkerInterceptWithEsb \
+  DISABLED_ServiceWorkerInterceptWithEsb
+#else
+#define MAYBE_ServiceWorkerInterceptWithEsb ServiceWorkerInterceptWithEsb
+#endif
+IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTestWithEsbBlockV8,
+                       MAYBE_ServiceWorkerInterceptWithEsb) {
+  RunServiceWorkerInterceptTest(true);
 }
 
 // Checks that when the history is cleared, NoStatePrefetch history is cleared.

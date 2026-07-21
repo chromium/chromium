@@ -990,7 +990,8 @@ class JavascriptOptimizerBrowserTest_UseSiteFamiliarityMigrationDryRun
         command_line);
     feature_list_.InitAndEnableFeatureWithParameters(
         safe_browsing::kMigrateToBlockV8OptimizerOnUnfamiliarSites,
-        {{"dry_run", "true"}});
+        {{safe_browsing::kMigrateToBlockV8OptimizerOnUnfamiliarSitesDryRun.name,
+          "true"}});
   }
 
   void SetUpOnMainThread() override {

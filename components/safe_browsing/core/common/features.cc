@@ -228,6 +228,21 @@ constexpr base::FeatureParam<int> kDownloadWarningSurveyType{
 constexpr base::FeatureParam<int> kDownloadWarningSurveyIgnoreDelaySeconds{
     &kDownloadWarningSurvey, "ignore_delay_seconds", 300};
 
+BASE_FEATURE(kEnableBlockV8OptimizerOnUnfamiliarSitesForEsbClients,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(bool,
+                   kEsbDryRun,
+                   &kEnableBlockV8OptimizerOnUnfamiliarSitesForEsbClients,
+                   false);
+BASE_FEATURE_PARAM(int,
+                   kEsbMinSiteEngagementScore,
+                   &kEnableBlockV8OptimizerOnUnfamiliarSitesForEsbClients,
+                   10);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kEsbMinAgeOfInitialVisit,
+                   &kEnableBlockV8OptimizerOnUnfamiliarSitesForEsbClients,
+                   base::Hours(24));
+
 BASE_FEATURE(kEnhancedFieldsForSecOps,
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -363,22 +378,21 @@ BASE_FEATURE(kMigrateEnhancedSbUserToEnhancedBundle,
 
 BASE_FEATURE(kMigrateToBlockV8OptimizerOnUnfamiliarSites,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE_PARAM(
     int,
     kMigrateToBlockV8OptimizerOnUnfamiliarSitesMinSiteEngagementScore,
     &kMigrateToBlockV8OptimizerOnUnfamiliarSites,
-    "min_site_engagement_score",
     10);
 BASE_FEATURE_PARAM(
     base::TimeDelta,
     kMigrateToBlockV8OptimizerOnUnfamiliarSitesMinAgeOfInitialVisit,
     &kMigrateToBlockV8OptimizerOnUnfamiliarSites,
-    "min_age_of_initial_visit",
     base::Hours(24));
-constexpr base::FeatureParam<bool>
-    kMigrateToBlockV8OptimizerOnUnfamiliarSitesDryRun{
-        &kMigrateToBlockV8OptimizerOnUnfamiliarSites, "dry_run",
-        /*default_value=*/false};
+BASE_FEATURE_PARAM(bool,
+                   kMigrateToBlockV8OptimizerOnUnfamiliarSitesDryRun,
+                   &kMigrateToBlockV8OptimizerOnUnfamiliarSites,
+                   false);
 
 BASE_FEATURE(kMovePasswordLeakDetectionToggleIos,
              base::FEATURE_ENABLED_BY_DEFAULT);

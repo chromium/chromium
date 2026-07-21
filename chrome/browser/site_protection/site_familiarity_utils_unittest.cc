@@ -55,35 +55,47 @@ class SiteFamiliarityUtilsJsOptimizerTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
 };
 
-class SiteFamiliarityUtilsJsOptimizerMigrationEnabledTest
-    : public SiteFamiliarityUtilsJsOptimizerTest {
- public:
-  SiteFamiliarityUtilsJsOptimizerMigrationEnabledTest()
-      : SiteFamiliarityUtilsJsOptimizerTest(
-            {safe_browsing::kMigrateToBlockV8OptimizerOnUnfamiliarSites}) {}
+struct JsOptimizerTestParam {
+  std::string test_name;
+  std::vector<base::test::FeatureRef> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
+  safe_browsing::SafeBrowsingState sb_state;
+  content_settings::JavascriptOptimizerSetting expected_default_setting;
 };
 
-TEST_F(SiteFamiliarityUtilsJsOptimizerMigrationEnabledTest,
-       DefaultUserReturnsBlockedForUnfamiliarSites) {
-  ExpectJsOptimizerSetting(
-      content_settings::JavascriptOptimizerSetting::kBlockedForUnfamiliarSites);
+class SiteFamiliarityUtilsJsOptimizerParameterizedTest
+    : public SiteFamiliarityUtilsJsOptimizerTest,
+      public ::testing::WithParamInterface<JsOptimizerTestParam> {
+ public:
+  SiteFamiliarityUtilsJsOptimizerParameterizedTest()
+      : SiteFamiliarityUtilsJsOptimizerTest(GetParam().enabled_features,
+                                            GetParam().disabled_features) {}
+
+  void SetUp() override {
+    SiteFamiliarityUtilsJsOptimizerTest::SetUp();
+    safe_browsing::SetSafeBrowsingState(profile()->GetPrefs(),
+                                        GetParam().sb_state);
+  }
+};
+
+TEST_P(SiteFamiliarityUtilsJsOptimizerParameterizedTest, DefaultBehavior) {
+  ExpectJsOptimizerSetting(GetParam().expected_default_setting);
 }
 
-TEST_F(SiteFamiliarityUtilsJsOptimizerMigrationEnabledTest,
-       ManualOverrideIgnoresMigration) {
+TEST_P(SiteFamiliarityUtilsJsOptimizerParameterizedTest, ManualOverride) {
   SetJsOptimizerSetting(content_settings::JavascriptOptimizerSetting::kAllowed);
   ExpectJsOptimizerSetting(
       content_settings::JavascriptOptimizerSetting::kAllowed);
 }
 
-TEST_F(SiteFamiliarityUtilsJsOptimizerMigrationEnabledTest,
+TEST_P(SiteFamiliarityUtilsJsOptimizerParameterizedTest,
        BlockedUserRemainsBlocked) {
   SetJsOptimizerSetting(content_settings::JavascriptOptimizerSetting::kBlocked);
   ExpectJsOptimizerSetting(
       content_settings::JavascriptOptimizerSetting::kBlocked);
 }
 
-TEST_F(SiteFamiliarityUtilsJsOptimizerMigrationEnabledTest,
+TEST_P(SiteFamiliarityUtilsJsOptimizerParameterizedTest,
        ReturnsAllowedIfSafeBrowsingDisabled) {
   safe_browsing::SetSafeBrowsingState(
       profile()->GetPrefs(),
@@ -92,8 +104,7 @@ TEST_F(SiteFamiliarityUtilsJsOptimizerMigrationEnabledTest,
       content_settings::JavascriptOptimizerSetting::kAllowed);
 }
 
-
-TEST_F(SiteFamiliarityUtilsJsOptimizerMigrationEnabledTest,
+TEST_P(SiteFamiliarityUtilsJsOptimizerParameterizedTest,
        ReturnsAllowedIfProcessSelectionFlagDisabled) {
   base::test::ScopedFeatureList local_features;
   local_features.InitAndDisableFeature(
@@ -102,44 +113,65 @@ TEST_F(SiteFamiliarityUtilsJsOptimizerMigrationEnabledTest,
       content_settings::JavascriptOptimizerSetting::kAllowed);
 }
 
-TEST_F(SiteFamiliarityUtilsJsOptimizerTest, MigrationFeatureToggle) {
-  {
-    base::test::ScopedFeatureList migration_feature_list;
-    migration_feature_list.InitAndEnableFeature(
-        safe_browsing::kMigrateToBlockV8OptimizerOnUnfamiliarSites);
-    ExpectJsOptimizerSetting(content_settings::JavascriptOptimizerSetting::
-                                 kBlockedForUnfamiliarSites);
-  }
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SiteFamiliarityUtilsJsOptimizerParameterizedTest,
+    ::testing::Values(
+        // Scenario 1: General Migration Feature Enabled -> Blocked for all SB
+        // users
+        JsOptimizerTestParam{
+            .test_name = "MigrationEnabled",
+            .enabled_features =
+                {safe_browsing::kMigrateToBlockV8OptimizerOnUnfamiliarSites},
+            .sb_state = safe_browsing::SafeBrowsingState::STANDARD_PROTECTION,
+            .expected_default_setting = content_settings::
+                JavascriptOptimizerSetting::kBlockedForUnfamiliarSites,
+        },
+        // Scenario 2: ESB Feature Enabled + ESB Active -> Blocked
+        JsOptimizerTestParam{
+            .test_name = "EsbFeatureEnabled_EsbUser",
+            .enabled_features =
+                {safe_browsing::
+                     kEnableBlockV8OptimizerOnUnfamiliarSitesForEsbClients},
+            .sb_state = safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION,
+            .expected_default_setting = content_settings::
+                JavascriptOptimizerSetting::kBlockedForUnfamiliarSites,
+        },
+        // Scenario 3: ESB Feature Enabled + Standard SB -> Allowed
+        JsOptimizerTestParam{
+            .test_name = "EsbFeatureEnabled_StandardUser",
+            .enabled_features =
+                {safe_browsing::
+                     kEnableBlockV8OptimizerOnUnfamiliarSitesForEsbClients},
+            .sb_state = safe_browsing::SafeBrowsingState::STANDARD_PROTECTION,
+            .expected_default_setting =
+                content_settings::JavascriptOptimizerSetting::kAllowed,
+        },
+        // Scenario 4: Both Features Disabled -> Allowed
+        JsOptimizerTestParam{
+            .test_name = "BothFeaturesDisabled",
+            .disabled_features =
+                {safe_browsing::kMigrateToBlockV8OptimizerOnUnfamiliarSites,
+                 safe_browsing::
+                     kEnableBlockV8OptimizerOnUnfamiliarSitesForEsbClients},
+            .sb_state = safe_browsing::SafeBrowsingState::STANDARD_PROTECTION,
+            .expected_default_setting =
+                content_settings::JavascriptOptimizerSetting::kAllowed,
+        }),
+    [](const ::testing::TestParamInfo<JsOptimizerTestParam>& info) {
+      return info.param.test_name;
+    });
 
-  ExpectJsOptimizerSetting(
-      content_settings::JavascriptOptimizerSetting::kAllowed);
-}
-
-class SiteFamiliarityUtilsJsOptimizerMigrationDisabledTest
-    : public SiteFamiliarityUtilsJsOptimizerTest {
- public:
-  SiteFamiliarityUtilsJsOptimizerMigrationDisabledTest()
-      : SiteFamiliarityUtilsJsOptimizerTest(
-            {},
-            {safe_browsing::kMigrateToBlockV8OptimizerOnUnfamiliarSites}) {}
-};
-
-TEST_F(SiteFamiliarityUtilsJsOptimizerMigrationDisabledTest,
-       DefaultUserReturnsAllowedIfFlagDisabled) {
-  ExpectJsOptimizerSetting(
-      content_settings::JavascriptOptimizerSetting::kAllowed);
-}
-
-TEST_F(SiteFamiliarityUtilsJsOptimizerTest, IsV8OptimizerMigrationDryRun) {
+TEST_F(SiteFamiliarityUtilsJsOptimizerTest, IsV8OptimizerBlockingDryRun) {
   // 1. Migration disabled, dry run disabled (default).
-  EXPECT_FALSE(IsV8OptimizerMigrationDryRun(profile()));
+  EXPECT_FALSE(IsV8OptimizerBlockingDryRun(profile()));
 
   // 2. Migration enabled, dry run disabled (default).
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeature(
         safe_browsing::kMigrateToBlockV8OptimizerOnUnfamiliarSites);
-    EXPECT_FALSE(IsV8OptimizerMigrationDryRun(profile()));
+    EXPECT_FALSE(IsV8OptimizerBlockingDryRun(profile()));
   }
 
   // 3. Migration enabled, dry run enabled.
@@ -147,20 +179,60 @@ TEST_F(SiteFamiliarityUtilsJsOptimizerTest, IsV8OptimizerMigrationDryRun) {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeatureWithParameters(
         safe_browsing::kMigrateToBlockV8OptimizerOnUnfamiliarSites,
-        {{"dry_run", "true"}});
+        {{safe_browsing::kMigrateToBlockV8OptimizerOnUnfamiliarSitesDryRun.name,
+          "true"}});
 
     // Default user (no pref) -> should be dry run.
-    EXPECT_TRUE(IsV8OptimizerMigrationDryRun(profile()));
+    EXPECT_TRUE(IsV8OptimizerBlockingDryRun(profile()));
 
     // User opted in via pref -> should NOT be dry run.
     SetJsOptimizerSetting(content_settings::JavascriptOptimizerSetting::
                               kBlockedForUnfamiliarSites);
-    EXPECT_FALSE(IsV8OptimizerMigrationDryRun(profile()));
+    EXPECT_FALSE(IsV8OptimizerBlockingDryRun(profile()));
 
     // User opted out via pref -> should NOT be dry run.
     SetJsOptimizerSetting(
         content_settings::JavascriptOptimizerSetting::kAllowed);
-    EXPECT_FALSE(IsV8OptimizerMigrationDryRun(profile()));
+    EXPECT_FALSE(IsV8OptimizerBlockingDryRun(profile()));
+
+    // Clear pref for next tests
+    profile()->GetPrefs()->ClearPref(
+        prefs::kJavascriptOptimizerBlockedForUnfamiliarSites);
+  }
+
+  // 4. ESB feature enabled, dry run disabled (default).
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        safe_browsing::kEnableBlockV8OptimizerOnUnfamiliarSitesForEsbClients);
+    safe_browsing::SetSafeBrowsingState(
+        profile()->GetPrefs(),
+        safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
+    EXPECT_FALSE(IsV8OptimizerBlockingDryRun(profile()));
+  }
+
+  // 5. ESB feature enabled, dry run enabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        safe_browsing::kEnableBlockV8OptimizerOnUnfamiliarSitesForEsbClients,
+        {{safe_browsing::kEsbDryRun.name, "true"}});
+    safe_browsing::SetSafeBrowsingState(
+        profile()->GetPrefs(),
+        safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
+
+    // Default user (no pref) -> should be dry run.
+    EXPECT_TRUE(IsV8OptimizerBlockingDryRun(profile()));
+
+    // User opted in via pref -> should NOT be dry run.
+    SetJsOptimizerSetting(content_settings::JavascriptOptimizerSetting::
+                              kBlockedForUnfamiliarSites);
+    EXPECT_FALSE(IsV8OptimizerBlockingDryRun(profile()));
+
+    // User opted out via pref -> should NOT be dry run.
+    SetJsOptimizerSetting(
+        content_settings::JavascriptOptimizerSetting::kAllowed);
+    EXPECT_FALSE(IsV8OptimizerBlockingDryRun(profile()));
   }
 }
 

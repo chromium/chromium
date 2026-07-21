@@ -4,6 +4,7 @@
 
 #include "chrome/browser/site_protection/site_familiarity_utils.h"
 
+#include "base/metrics/field_trial_params.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -69,6 +70,40 @@ bool CanEnableBlockingJavascriptOptimizersForUnfamiliarSites(Profile* profile) {
   return true;
 }
 
+bool IsBlockFeaturesOnUnfamiliarSitesForEsbEnabled(Profile* profile) {
+  if (!profile) {
+    return false;
+  }
+  return safe_browsing::IsEnhancedProtectionEnabled(*profile->GetPrefs()) &&
+         base::FeatureList::IsEnabled(
+             safe_browsing::
+                 kEnableBlockV8OptimizerOnUnfamiliarSitesForEsbClients);
+}
+
+base::TimeDelta GetMinAgeOfInitialVisitForFamiliarity(Profile* profile) {
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kMigrateToBlockV8OptimizerOnUnfamiliarSites)) {
+    return safe_browsing::
+        kMigrateToBlockV8OptimizerOnUnfamiliarSitesMinAgeOfInitialVisit.Get();
+  }
+  if (IsBlockFeaturesOnUnfamiliarSitesForEsbEnabled(profile)) {
+    return safe_browsing::kEsbMinAgeOfInitialVisit.Get();
+  }
+  return safe_browsing::kEsbMinAgeOfInitialVisit.default_value;
+}
+
+int GetMinSiteEngagementScoreForFamiliarity(Profile* profile) {
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kMigrateToBlockV8OptimizerOnUnfamiliarSites)) {
+    return safe_browsing::
+        kMigrateToBlockV8OptimizerOnUnfamiliarSitesMinSiteEngagementScore.Get();
+  }
+  if (IsBlockFeaturesOnUnfamiliarSitesForEsbEnabled(profile)) {
+    return safe_browsing::kEsbMinSiteEngagementScore.Get();
+  }
+  return safe_browsing::kEsbMinSiteEngagementScore.default_value;
+}
+
 content_settings::JavascriptOptimizerSetting
 ComputeDefaultJavascriptOptimizerSetting(Profile* profile) {
   HostContentSettingsMap* host_content_settings_map =
@@ -106,10 +141,15 @@ ComputeDefaultJavascriptOptimizerSetting(Profile* profile) {
         kBlockedForUnfamiliarSites;
   }
 
+  if (IsBlockFeaturesOnUnfamiliarSitesForEsbEnabled(profile)) {
+    return content_settings::JavascriptOptimizerSetting::
+        kBlockedForUnfamiliarSites;
+  }
+
   return content_settings::JavascriptOptimizerSetting::kAllowed;
 }
 
-bool IsV8OptimizerMigrationDryRun(Profile* profile) {
+bool IsV8OptimizerBlockingDryRun(Profile* profile) {
   if (ComputeDefaultJavascriptOptimizerSetting(profile) !=
       content_settings::JavascriptOptimizerSetting::
           kBlockedForUnfamiliarSites) {
@@ -122,7 +162,16 @@ bool IsV8OptimizerMigrationDryRun(Profile* profile) {
     return false;  // Opted in via pref, so don't apply dry run.
   }
 
-  return safe_browsing::kMigrateToBlockV8OptimizerOnUnfamiliarSitesDryRun.Get();
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kMigrateToBlockV8OptimizerOnUnfamiliarSites)) {
+    return safe_browsing::kMigrateToBlockV8OptimizerOnUnfamiliarSitesDryRun
+        .Get();
+  }
+  if (IsBlockFeaturesOnUnfamiliarSitesForEsbEnabled(profile)) {
+    return safe_browsing::kEsbDryRun.Get();
+  }
+
+  return false;
 }
 
 std::optional<bool> AreV8OptimizationsDisabled(

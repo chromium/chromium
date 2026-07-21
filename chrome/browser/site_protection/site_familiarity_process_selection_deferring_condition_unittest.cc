@@ -20,6 +20,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
 #include "chrome/browser/site_protection/site_familiarity_fetcher.h"
 #include "chrome/browser/site_protection/site_familiarity_process_selection_user_data.h"
+#include "chrome/browser/site_protection/site_familiarity_utils.h"
 #include "chrome/browser/ui/safety_hub/mock_safe_browsing_database_manager.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -430,7 +431,10 @@ TEST_F(SiteFamiliarityProcessSelectionDeferringConditionTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       safe_browsing::kMigrateToBlockV8OptimizerOnUnfamiliarSites,
-      {{"min_site_engagement_score", "5"}});
+      {{safe_browsing::
+            kMigrateToBlockV8OptimizerOnUnfamiliarSitesMinSiteEngagementScore
+                .name,
+        "5"}});
 
   GURL kTestUrl("https://www.example.com");
 
@@ -450,7 +454,60 @@ TEST_F(SiteFamiliarityProcessSelectionDeferringConditionTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       safe_browsing::kMigrateToBlockV8OptimizerOnUnfamiliarSites,
-      {{"min_age_of_initial_visit", "12h"}});
+      {{safe_browsing::
+            kMigrateToBlockV8OptimizerOnUnfamiliarSitesMinAgeOfInitialVisit
+                .name,
+        "12h"}});
+
+  GURL kTestUrl("https://www.example.com");
+  SetSiteEngagementScore(kTestUrl, kMinSiteEngagementScoreForFamiliarity - 1);
+
+  // Add visit 13 hours ago. This is less than 24h (default) but more than 12h
+  // (config).
+  history_service()->AddPage(kTestUrl, (base::Time::Now() - base::Hours(13)),
+                             history::SOURCE_BROWSED);
+
+  content::MockNavigationHandle navigation_handle(kTestUrl, main_rfh());
+  BuildAndWaitForConditionToRunCallback(navigation_handle);
+
+  // Should be familiar because of the lowered threshold.
+  CheckSiteFamiliar(navigation_handle);
+}
+
+TEST_F(SiteFamiliarityProcessSelectionDeferringConditionTest,
+       FamiliarityHeuristic_EsbConfigurableEngagementScore) {
+  safe_browsing::SetSafeBrowsingState(
+      profile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      safe_browsing::kEnableBlockV8OptimizerOnUnfamiliarSitesForEsbClients,
+      {{safe_browsing::kEsbMinSiteEngagementScore.name, "5"}});
+
+  GURL kTestUrl("https://www.example.com");
+
+  // Set engagement score to 6, which is below default (10) but above config
+  // (5).
+  SetSiteEngagementScore(kTestUrl, 6);
+
+  content::MockNavigationHandle navigation_handle(kTestUrl, main_rfh());
+  BuildAndWaitForConditionToRunCallback(navigation_handle);
+
+  // Should be familiar because of the lowered threshold.
+  CheckSiteFamiliar(navigation_handle);
+}
+
+TEST_F(SiteFamiliarityProcessSelectionDeferringConditionTest,
+       FamiliarityHeuristic_EsbConfigurableMinAgeOfInitialVisit) {
+  safe_browsing::SetSafeBrowsingState(
+      profile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      safe_browsing::kEnableBlockV8OptimizerOnUnfamiliarSitesForEsbClients,
+      {{safe_browsing::kEsbMinAgeOfInitialVisit.name, "12h"}});
 
   GURL kTestUrl("https://www.example.com");
   SetSiteEngagementScore(kTestUrl, kMinSiteEngagementScoreForFamiliarity - 1);

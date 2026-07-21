@@ -224,6 +224,14 @@ extern const base::FeatureParam<int> kDownloadWarningSurveyIgnoreDelaySeconds;
 // //c/b/download/download_warning_desktop_hats_util.h).
 extern const base::FeatureParam<int> kDownloadWarningSurveyType;
 
+// When enabled, behaves the same as
+// kMigrateToBlockV8OptimizerOnUnfamiliarSites, but only targeting profiles
+// that have Safe Browsing Enhanced Protection enabled.
+BASE_DECLARE_FEATURE(kEnableBlockV8OptimizerOnUnfamiliarSitesForEsbClients);
+BASE_DECLARE_FEATURE_PARAM(bool, kEsbDryRun);
+BASE_DECLARE_FEATURE_PARAM(int, kEsbMinSiteEngagementScore);
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kEsbMinAgeOfInitialVisit);
+
 // Enabled additional device and network information to RealTimeUrlCheck
 // requests, WP scan requests, and reporting events. These will be visible from
 // the chrome://safe-browsing page.
@@ -373,8 +381,8 @@ BASE_DECLARE_FEATURE_PARAM(
     kMigrateToBlockV8OptimizerOnUnfamiliarSitesMinAgeOfInitialVisit);
 // If true, the migration will run in dry-run mode (evaluating eligibility and
 // logging metrics, but not actually changing the content setting).
-extern const base::FeatureParam<bool>
-    kMigrateToBlockV8OptimizerOnUnfamiliarSitesDryRun;
+BASE_DECLARE_FEATURE_PARAM(bool,
+                           kMigrateToBlockV8OptimizerOnUnfamiliarSitesDryRun);
 
 // When enabled, the Password Leak detection toggle is moved out from under the
 // 'Standard protection' Safe Browsing option to the top-level 'Privacy and

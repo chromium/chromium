@@ -8287,7 +8287,7 @@ bool ChromeContentBrowserClient::AreV8OptimizationsEnabledForSite(
 
   if (default_javascript_optimizer_setting !=
           JavascriptOptimizerSetting::kBlockedForUnfamiliarSites ||
-      site_protection::IsV8OptimizerMigrationDryRun(profile)) {
+      site_protection::IsV8OptimizerBlockingDryRun(profile)) {
     // If site familiarity is turned off or we are in dry-run mode, use content
     // settings to set v8 optimization. Use `site_content_setting` to honor
     // exceptions for specific sites over a default policy that applies to all

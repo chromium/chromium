@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/time/time.h"
 #include "components/content_settings/browser/ui/javascript_optimizer_setting.h"
 #include "components/content_settings/core/common/content_settings.h"
 
@@ -33,9 +34,20 @@ bool CanEnableBlockingJavascriptOptimizersForUnfamiliarSites(Profile* profile);
 content_settings::JavascriptOptimizerSetting
 ComputeDefaultJavascriptOptimizerSetting(Profile* profile);
 
-// Returns whether the V8 optimizer migration is running in dry-run mode.
-bool IsV8OptimizerMigrationDryRun(Profile* profile);
+// Returns whether the V8 optimizer blocking feature is running in dry-run mode.
+bool IsV8OptimizerBlockingDryRun(Profile* profile);
 
+// Returns whether the ESB-specific block features on unfamiliar sites is
+// enabled.
+bool IsBlockFeaturesOnUnfamiliarSitesForEsbEnabled(Profile* profile);
+
+// Returns the minimum age of the initial visit required for a site to be
+// considered familiar, based on active features.
+base::TimeDelta GetMinAgeOfInitialVisitForFamiliarity(Profile* profile);
+
+// Returns the minimum site engagement score required for a site to be
+// considered familiar, based on active features.
+int GetMinSiteEngagementScoreForFamiliarity(Profile* profile);
 // Checks if V8 optimizations are disabled in the renderer process of the given
 // WebContents. Returns nullopt if the web_contents or the associated renderer
 // process are not available.
