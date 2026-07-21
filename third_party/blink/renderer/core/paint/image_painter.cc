@@ -80,11 +80,12 @@ void ImagePainter::PaintAreaElementFocusRing(const PaintInfo& paint_info) {
     return;
 
   // We use EnsureComputedStyle() instead of GetComputedStyle() here because
-  // <area> is used and its style applied even if it has display:none.
+  // <area> is used and its style applied even if it has display:none. The style
+  // may still be null if the area_element is outside the flat tree.
   const ComputedStyle* area_element_style = area_element->EnsureComputedStyle();
   // If the outline is hidden we want to avoid drawing anything even if we
   // don't use the value directly.
-  if (!area_element_style->HasOutline()) {
+  if (!area_element_style || !area_element_style->HasOutline()) {
     return;
   }
 
