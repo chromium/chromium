@@ -599,16 +599,17 @@ public class DownloadUtils {
             delegate.launchNewTab(params, TabLaunchType.FROM_CHROME_UI, /* parent= */ null);
             return;
         }
+        Context context = activity != null ? activity : ContextUtils.getApplicationContext();
         DownloadOpenRequest req =
-            DownloadOpenRequest.builder(ContextUtils.getApplicationContext(), filePath)
-                .mimeType(newMimeType)
-                .downloadGuid(downloadGuid)
-                .otrProfileId(otrProfileId)
-                .originalUrl(originalUrl)
-                .referrer(referer)
-                .source(source)
-                .fileName(fileName)
-                .build();
+                DownloadOpenRequest.builder(context, filePath)
+                        .mimeType(newMimeType)
+                        .downloadGuid(downloadGuid)
+                        .otrProfileId(otrProfileId)
+                        .originalUrl(originalUrl)
+                        .referrer(referer)
+                        .source(source)
+                        .fileName(fileName)
+                        .build();
         boolean canOpen = DownloadUtils.openFile(req);
         if (!canOpen) {
             if (openDownloadInFilesAppIfNoHandlerFound() && showDownloadInFilesApp(filePath)) {
