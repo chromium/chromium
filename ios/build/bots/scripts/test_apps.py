@@ -284,8 +284,6 @@ class GTestsApp(object):
         f'__PLATFORMS__/{self.xcode_platform_dir_name}/Developer')
     dyld_library_paths.append(f'{platform_dev_path}/Library')
     dyld_framework_paths.append(f'{platform_dev_path}/Library/Frameworks')
-    dyld_framework_paths.append(
-        f'{platform_dev_path}/Library/PrivateFrameworks')
 
     module_data = {
         'TestBundlePath': self.test_app_path,
@@ -579,14 +577,10 @@ class DeviceXCTestUnitTestsApp(GTestsApp):
                 'DYLD_INSERT_LIBRARIES':
                     '__TESTHOST__/Frameworks/libXCTestBundleInject.dylib',
                 'DYLD_LIBRARY_PATH':
-                    '__TESTHOST__/Frameworks:'
                     '__PLATFORMS__/iPhoneOS.platform/Developer/Library',
                 'DYLD_FRAMEWORK_PATH':
-                    '__TESTHOST__/Frameworks:'
                     '__PLATFORMS__/iPhoneOS.platform/Developer/'
-                    'Library/Frameworks:'
-                    '__PLATFORMS__/iPhoneOS.platform/Developer/'
-                    'Library/PrivateFrameworks',
+                    'Library/Frameworks',
                 'XCInjectBundleInto':
                     '__TESTHOST__/%s' % self.module_name
             }
@@ -679,15 +673,11 @@ class SimulatorXCTestUnitTestsApp(GTestsApp):
                     f'__PLATFORMS__/{self.xcode_platform_dir_name}/Developer/'
                     'usr/lib/libXCTestBundleInject.dylib',
                 'DYLD_LIBRARY_PATH':
-                    '__TESTHOST__/Frameworks:'
                     f'__PLATFORMS__/{self.xcode_platform_dir_name}/Developer/'
                     'Library',
                 'DYLD_FRAMEWORK_PATH':
-                    '__TESTHOST__/Frameworks:'
                     f'__PLATFORMS__/{self.xcode_platform_dir_name}/Developer/'
-                    'Library/Frameworks:'
-                    f'__PLATFORMS__/{self.xcode_platform_dir_name}/Developer/'
-                    'Library/PrivateFrameworks',
+                    'Library/Frameworks',
                 'XCInjectBundleInto': '__TESTHOST__/%s' % self.module_name
             }
         }
