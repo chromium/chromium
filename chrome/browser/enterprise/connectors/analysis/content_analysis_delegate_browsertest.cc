@@ -29,6 +29,8 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/buildflags/buildflags.h"
@@ -2455,4 +2457,60 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateFilesBrowserTest,
   content_analysis_run_loop.Run();
 }
 
+
+IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, UaFOnWebContentsDestroyed) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  EnableUploadsScanningAndReporting();
+
+  base::RunLoop content_analysis_run_loop;
+  ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create,
+                          content_analysis_run_loop.QuitClosure()));
+
+  FakeBinaryUploadServiceStorage()->SetAuthorized(true);
+  FakeBinaryUploadServiceStorage()->SetShouldAutomaticallyAuthorize(true);
+
+  // Set up a successful response so `RunCallback()` is executed with success.
+  ContentAnalysisResponse response;
+  response.set_request_token("upload_token_0");
+  auto* result = response.add_results();
+  result->set_tag("dlp");
+  result->set_status(ContentAnalysisResponse::Result::SUCCESS);
+  ContentAnalysisDelegate::Data data;
+  CreateFilesForTest({"foo.doc"}, {"foo content"}, &data);
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
+      browser()->GetProfile(), GURL(kTestUrl), &data, FILE_ATTACHED));
+
+  FakeBinaryUploadServiceStorage()->SetResponseForFile(
+      created_file_paths()[0].AsUTF8Unsafe(), ScanRequestUploadResult::kSuccess, response);
+  FakeBinaryUploadServiceStorage()->SetExpectedFinalAction(
+      "upload_token_0", ContentAnalysisAcknowledgement::ALLOW); // Dummy action expectation
+
+  bool called = false;
+  base::RunLoop run_loop;
+  base::RepeatingClosure quit_closure = run_loop.QuitClosure();
+
+  content::WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
+
+  ContentAnalysisDelegate::CreateForWebContents(
+      contents, std::move(data),
+      base::BindLambdaForTesting(
+          [this, contents, &quit_closure, &called](
+              const ContentAnalysisDelegate::Data& data,
+              ContentAnalysisDelegate::Result& result) {
+            called = true;
+            // Close the WebContents during the callback execution.
+            // This destroys the web contents, triggering ContentAnalysisDialogController::WebContentsDestroyed()
+            // which deletes the ContentAnalysisDelegate instance we are currently inside.
+            int index = browser()->tab_strip_model()->GetIndexOfWebContents(contents);
+            browser()->tab_strip_model()->CloseWebContentsAt(index, TabCloseTypes::CLOSE_USER_GESTURE);
+            quit_closure.Run();
+          }),
+      DeepScanAccessPoint::UPLOAD);
+
+  run_loop.Run();
+
+  EXPECT_TRUE(called);
+}
 }  // namespace enterprise_connectors

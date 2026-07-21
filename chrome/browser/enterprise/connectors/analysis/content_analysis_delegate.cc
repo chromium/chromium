@@ -985,12 +985,20 @@ void ContentAnalysisDelegate::MaybeCompleteScanRequest() {
       base::TimeTicks::Now() - creation_time_, base::Milliseconds(1),
       base::Minutes(30), 50);
 
+  base::WeakPtr<ContentAnalysisDelegate> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
+
   // If showing the warning message, wait before running the callback. The
   // callback will be called either in BypassWarnings or Cancel.
   if (final_result_ != FinalContentAnalysisResult::WARNING) {
     DVLOG(1) << __func__ << ": calling RunCallback()";
     RunCallback();
   }
+
+  // The callback can synchronously tear down the WebContents acting as the
+  // context for this analysis, which deletes `this`. Check if we were destroyed.
+  if (!weak_this)
+    return;
 
   AckAllRequests();
 
@@ -1018,7 +1026,17 @@ void ContentAnalysisDelegate::RunCallback() {
   }
 
   callback_running_ = true;
+  base::WeakPtr<ContentAnalysisDelegate> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
   std::move(callback_).Run(data_, result_);
+
+  // The callback can synchronously tear down the WebContents acting as the
+  // context for this analysis, which deletes `this`. Check if we were destroyed
+  // to avoid executing the remainder of this function.
+  if (!weak_this) {
+    return;
+  }
+
   callback_running_ = false;
 
   // Since `result_` might have been tweaked by `callback_`, `final_actions_`
