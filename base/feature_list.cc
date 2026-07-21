@@ -608,6 +608,32 @@ FeatureList::GetAssociatedRuntimeFieldTrialOverrideByFeatureName(
   return it->second.field_trial_name;
 }
 
+FeatureList::ControllingTrialInfo
+FeatureList::GetControllingTrialInfoByFeatureName(
+    std::string_view feature_name) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(initialized_);
+  DCHECK(IsValidFeatureOrFieldTrialName(feature_name)) << feature_name;
+
+  if (HasRuntimeMutabilityEnabledByFeatureName(feature_name)) {
+    std::string_view runtime_override_trial =
+        GetAssociatedRuntimeFieldTrialOverrideByFeatureName(feature_name);
+    if (!runtime_override_trial.empty()) {
+      return ControllingTrialInfo{
+          .trial_name = std::string(runtime_override_trial),
+          .is_runtime_override = true};
+    }
+  }
+
+  base::FieldTrial* trial = GetAssociatedFieldTrialByFeatureName(feature_name);
+  if (trial) {
+    return ControllingTrialInfo{.trial_name = trial->trial_name(),
+                                .is_runtime_override = false};
+  }
+
+  return ControllingTrialInfo();
+}
+
 bool FeatureList::IsFeatureOverridden(std::string_view feature_name) const {
   return GetOverrideEntryByFeatureName(feature_name);
 }
