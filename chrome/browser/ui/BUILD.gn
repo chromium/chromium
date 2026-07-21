@@ -1058,6 +1058,7 @@ static_library("ui") {
 
   if (!is_android) {
     deps += [
+      "//chrome/browser/ui/infobars",
       "//chrome/browser/ui/views/relaunch_notification",
       "//chrome/browser/ui/views/relaunch_notification:impl",
     ]
