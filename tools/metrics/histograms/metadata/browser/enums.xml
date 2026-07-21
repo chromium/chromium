@@ -370,6 +370,7 @@ chromium-metrics-reviews@google.com.
   <int value="135" label="OSCRYPTASYNC_AVAILABILITY_INFOBAR_DELEGATE"/>
   <int value="136" label="AUTOFILL_AI_PRE_FETCH_FAILURE_INFOBAR_DELEGATE_IOS"/>
   <int value="137" label="SIGNIN_QRCODE_INFOBAR_DELEGATE"/>
+  <int value="138" label="FORMS_AI_PRIVATE_INFERENCE_INFOBAR_DELEGATE_IOS"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/infobars/core/infobar_delegate.h:InfoBarIdentifier) -->
