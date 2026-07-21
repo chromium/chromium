@@ -8,7 +8,6 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
@@ -116,9 +115,6 @@ void ChromeFeatureListCreator::CreatePrefService() {
       base::PathService::Get(chrome::FILE_LOCAL_STATE, &local_state_file);
   DCHECK(result);
 
-  base::UmaHistogramBoolean("UMA.Startup.LocalStateFileExistence",
-                            base::PathExists(local_state_file));
-
   auto pref_registry = base::MakeRefCounted<PrefRegistrySimple>();
   RegisterLocalState(pref_registry.get());
 
@@ -140,8 +136,16 @@ void ChromeFeatureListCreator::CreatePrefService() {
 
   // Try and read the local state prefs, if it succeeds, use it as the
   // ManagementService's cache.
-  if (local_state_pref_store->ReadPrefs() ==
-      JsonPrefStore::PREF_READ_ERROR_NONE) {
+  const auto read_error = local_state_pref_store->ReadPrefs();
+
+  // Record whether Local State was present when ReadPrefs() attempted to load
+  // it. Deriving this from the read result avoids a separate PathExists() call
+  // on the startup critical path.
+  base::UmaHistogramBoolean(
+      "UMA.Startup.LocalStateFileExistence",
+      read_error != JsonPrefStore::PREF_READ_ERROR_NO_FILE);
+
+  if (read_error == JsonPrefStore::PREF_READ_ERROR_NONE) {
     auto* platform_management_service =
         policy::ManagementServiceFactory::GetForPlatform();
     platform_management_service->UsePrefStoreAsCache(local_state_pref_store);
