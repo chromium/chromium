@@ -695,6 +695,13 @@ public class ToolbarTablet extends ToolbarLayout {
         }
     }
 
+    /**
+     * @return The {@link View} representing the Glic action chip.
+     */
+    public @Nullable View getGlicActionChipView() {
+        return mGlicActionChip;
+    }
+
     private class ToolbarPaddingWidthConsumer implements ToolbarWidthConsumer {
         private final View mToolbarView;
         private final int mHorizontalPadding;

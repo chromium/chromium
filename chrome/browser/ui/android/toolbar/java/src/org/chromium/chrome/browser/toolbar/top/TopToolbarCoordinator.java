@@ -1256,17 +1256,34 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
                 });
     }
 
-    private boolean shouldShowGlicToolbarButton() {
-        return assumeNonNull(mIsVerticalTabsActiveSupplier).get()
-                && assumeNonNull(mIsGlicPinnedSupplier).get()
-                && !assumeNonNull(mIncognitoStateProvider).isIncognitoSelected();
+    /** Returns whether the Glic button should be shown on the toolbar. */
+    public boolean shouldShowGlicToolbarButton() {
+        if (!(mToolbarLayout instanceof ToolbarTablet)) return false;
+        if (mIsVerticalTabsActiveSupplier == null
+                || mIsGlicPinnedSupplier == null
+                || mIncognitoStateProvider == null) {
+            return false;
+        }
+        return Boolean.TRUE.equals(mIsVerticalTabsActiveSupplier.get())
+                && Boolean.TRUE.equals(mIsGlicPinnedSupplier.get())
+                && !mIncognitoStateProvider.isIncognitoSelected();
+    }
+
+    /**
+     * @return The {@link View} representing the Glic action chip on the toolbar.
+     */
+    public @Nullable View getGlicActionChipView() {
+        if (mToolbarLayout instanceof ToolbarTablet tabletLayout) {
+            return tabletLayout.getGlicActionChipView();
+        }
+        return null;
     }
 
     private void onGlicVisibilityNeedsUpdate(boolean state) {
-        ((ToolbarTablet) mToolbarLayout)
-                .setGlicActionChipVisibility(
-                        shouldShowGlicToolbarButton(),
-                        v -> assumeNonNull(mToggleGlicCallback).run());
+        if (mToolbarLayout instanceof ToolbarTablet tabletLayout) {
+            tabletLayout.setGlicActionChipVisibility(
+                    shouldShowGlicToolbarButton(), v -> assumeNonNull(mToggleGlicCallback).run());
+        }
     }
 
     void setOverlayCoordinatorForTesting(TopToolbarOverlayCoordinator overlayCoordinator) {

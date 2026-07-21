@@ -99,6 +99,7 @@ import org.chromium.chrome.browser.gesturenav.OverscrollGlowCoordinator;
 import org.chromium.chrome.browser.gesturenav.TabOnBackGestureHandler;
 import org.chromium.chrome.browser.glic.GlicButtonDelegate;
 import org.chromium.chrome.browser.glic.GlicKeyedService.GlicInvocationSource;
+import org.chromium.chrome.browser.glic.GlicUtils;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepageManager.HomepageStateListener;
@@ -1414,6 +1415,7 @@ public class ToolbarManager
                         refreshSelectedTab(tab);
                         onTabOrModelChanged();
                         maybeTriggerCacheRefreshForZeroSuggest(tab.getUrl());
+                        maybeShowGlicIph(tab);
                     }
 
                     /**
@@ -1483,6 +1485,13 @@ public class ToolbarManager
                         updateTabLoadingState(true);
                         mLocationBarModel.onPageLoadStopped();
                         mToolbar.onPageLoadStopped();
+                    }
+
+                    @Override
+                    public void onPageLoadFinished(Tab tab, GURL url) {
+                        if (tab == mActivityTabProvider.get()) {
+                            maybeShowGlicIph(tab);
+                        }
                     }
 
                     @Override
@@ -2786,6 +2795,19 @@ public class ToolbarManager
 
     private void onGlicToggled() {
         mToggleGlicCallback.onClick(/* preventClose= */ false, GlicInvocationSource.TOOLBAR_BUTTON);
+    }
+
+    private void maybeShowGlicIph(@Nullable Tab tab) {
+        if (tab == null || tab.isIncognitoBranded()) return;
+        if (!mToolbar.shouldShowGlicToolbarButton()) return;
+        if (!GlicUtils.isTabEligibleForGlicIph(tab)) return;
+
+        View anchorView = assumeNonNull(mToolbar.getGlicActionChipView());
+        if (anchorView.getVisibility() != View.VISIBLE || !anchorView.isAttachedToWindow()) {
+            return;
+        }
+
+        mIphController.showGlicIph(anchorView);
     }
 
     /**

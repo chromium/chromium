@@ -24,6 +24,8 @@ public class ToolbarIphController {
 
     // 2 seconds.
     private static final long MIN_DELAY_BEFORE_TOUCH_DISMISS_MS = 2000;
+    // 5 seconds.
+    @VisibleForTesting static final int GLIC_IPH_AUTO_DISMISS_TIMEOUT_MS = 5 * 1000;
 
     private final Context mContext;
     private final UserEducationHelper mEducationHelper;
@@ -51,6 +53,24 @@ public class ToolbarIphController {
                         .setInsetRect(new Rect(0, 0, 0, yInset))
                         .setAnchorView(anchorView)
                         .setDelayedDismissOnTouch(MIN_DELAY_BEFORE_TOUCH_DISMISS_MS)
+                        .build());
+    }
+
+    /**
+     * Attempts to show the Glic Promo in-product help bubble.
+     *
+     * @param anchorView The view to anchor the IPH bubble on.
+     */
+    public void showGlicIph(View anchorView) {
+        mEducationHelper.requestShowIph(
+                new IphCommandBuilder(
+                                mContext.getResources(),
+                                FeatureConstants.GLIC_PROMO_ANDROID_FEATURE,
+                                R.string.iph_glic_promo_text,
+                                R.string.iph_glic_promo_accessibility_text)
+                        .setAnchorView(anchorView)
+                        .setDismissOnTouch(true)
+                        .setAutoDismissTimeout(GLIC_IPH_AUTO_DISMISS_TIMEOUT_MS)
                         .build());
     }
 }
