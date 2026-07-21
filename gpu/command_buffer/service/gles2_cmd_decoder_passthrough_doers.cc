@@ -992,6 +992,18 @@ error::Error GLES2DecoderPassthroughImpl::DoDeleteFramebuffers(
             GL_READ_FRAMEBUFFER, emulated_back_buffer_->framebuffer_service_id);
       }
     }
+
+    GLuint framebuffer_service_id =
+        GetFramebufferServiceID(api(), framebuffer, &framebuffer_id_map_);
+    auto it =
+        framebuffer_to_shared_image_texture_map_.find(framebuffer_service_id);
+    if (it != framebuffer_to_shared_image_texture_map_.end()) {
+      for (auto& texture_id : it->second) {
+        resources_->texture_shared_image_map[texture_id].FramebufferDeleted(
+            framebuffer_service_id);
+      }
+      framebuffer_to_shared_image_texture_map_.erase(it);
+    }
   }
 
   return DeleteHelper(n, framebuffers_copy.data(), &framebuffer_id_map_,
@@ -1073,6 +1085,23 @@ error::Error GLES2DecoderPassthroughImpl::DoDeleteTextures(
       // Deleted when unreferenced
       resources_->texture_id_map.RemoveClientID(client_id);
       resources_->texture_object_map.RemoveClientID(client_id);
+
+      auto shared_image_it =
+          resources_->texture_shared_image_map.find(client_id);
+      if (shared_image_it != resources_->texture_shared_image_map.end()) {
+        auto framebuffers_affected =
+            shared_image_it->second.DetachFromFramebuffers(
+                api(), supports_separate_fbo_bindings_);
+        resources_->texture_shared_image_map.erase(shared_image_it);
+
+        for (auto framebuffer_service_id : framebuffers_affected) {
+          auto frame_buffer_it = framebuffer_to_shared_image_texture_map_.find(
+              framebuffer_service_id);
+          CHECK(frame_buffer_it !=
+                framebuffer_to_shared_image_texture_map_.end());
+          frame_buffer_it->second.erase(client_id);
+        }
+      }
       resources_->texture_shared_image_map.erase(client_id);
       UpdateTextureBinding(texture->target(), client_id, nullptr);
     }
@@ -1232,9 +1261,19 @@ error::Error GLES2DecoderPassthroughImpl::DoFramebufferRenderbuffer(
                 "Cannot change the attachments of the default framebuffer.");
     return error::kNoError;
   }
+
+  CheckErrorCallbackState();
   api()->glFramebufferRenderbufferEXTFn(
       target, attachment, renderbuffertarget,
       GetRenderbufferServiceID(api(), renderbuffer, resources_));
+
+  if (CheckErrorCallbackState()) {
+    return error::kNoError;
+  }
+
+  // Update bindings in case shared image was bound to this attachment before.
+  UpdateFramebufferSharedImageBindings(target, attachment, /*texture=*/0);
+
   return error::kNoError;
 }
 
@@ -1249,9 +1288,18 @@ error::Error GLES2DecoderPassthroughImpl::DoFramebufferTexture2D(
                 "Cannot change the attachments of the default framebuffer.");
     return error::kNoError;
   }
+
+  CheckErrorCallbackState();
   api()->glFramebufferTexture2DEXTFn(
       target, attachment, textarget,
       GetTextureServiceID(api(), texture, resources_), level);
+
+  if (CheckErrorCallbackState()) {
+    return error::kNoError;
+  }
+
+  UpdateFramebufferSharedImageBindings(target, attachment, texture);
+
   return error::kNoError;
 }
 
@@ -1266,9 +1314,26 @@ error::Error GLES2DecoderPassthroughImpl::DoFramebufferTextureLayer(
                 "Cannot change the attachments of the default framebuffer.");
     return error::kNoError;
   }
+
+  // Shared images can't have layers.
+  if (resources_->IsSharedImage(texture)) {
+    InsertError(GL_INVALID_OPERATION,
+                "Cannot attach shared image as a texture layer.");
+    return error::kNoError;
+  }
+
+  CheckErrorCallbackState();
   api()->glFramebufferTextureLayerFn(
       target, attachment, GetTextureServiceID(api(), texture, resources_),
       level, layer);
+
+  if (CheckErrorCallbackState()) {
+    return error::kNoError;
+  }
+
+  // Update bindings in case shared image was bound to this attachment before.
+  UpdateFramebufferSharedImageBindings(target, attachment, /*texture=*/0);
+
   return error::kNoError;
 }
 
@@ -1284,9 +1349,25 @@ error::Error GLES2DecoderPassthroughImpl::DoFramebufferTextureMultiviewOVR(
                 "Cannot change the attachments of the default framebuffer.");
     return error::kNoError;
   }
+
+  // Shared images can't have views.
+  if (resources_->IsSharedImage(texture)) {
+    InsertError(GL_INVALID_OPERATION, "Cannot attach shared image as a view.");
+    return error::kNoError;
+  }
+
+  CheckErrorCallbackState();
   api()->glFramebufferTextureMultiviewOVRFn(
       target, attachment, GetTextureServiceID(api(), texture, resources_),
       level, base_view_index, num_views);
+
+  if (CheckErrorCallbackState()) {
+    return error::kNoError;
+  }
+
+  // Update bindings in case shared image was bound to this attachment before.
+  UpdateFramebufferSharedImageBindings(target, attachment, /*texture=*/0);
+
   return error::kNoError;
 }
 
@@ -3516,9 +3597,16 @@ error::Error GLES2DecoderPassthroughImpl::DoFramebufferTexture2DMultisampleEXT(
                 "Cannot change the attachments of the default framebuffer.");
     return error::kNoError;
   }
+
+  CheckErrorCallbackState();
   api()->glFramebufferTexture2DMultisampleEXTFn(
       target, attachment, textarget,
       GetTextureServiceID(api(), texture, resources_), level, samples);
+
+  if (!CheckErrorCallbackState()) {
+    return error::kNoError;
+  }
+  UpdateFramebufferSharedImageBindings(target, attachment, texture);
   return error::kNoError;
 }
 
@@ -4847,6 +4935,13 @@ GLES2DecoderPassthroughImpl::DoFramebufferTexturePixelLocalStorageANGLE(
     InsertError(GL_INVALID_OPERATION, kPLSDefaultFramebufferBound);
     return error::kNoError;
   }
+
+  // Shared images can't be attached as PLS.
+  if (resources_->IsSharedImage(backingtexture)) {
+    InsertError(GL_INVALID_OPERATION, "Cannot attach shared image as PLS.");
+    return error::kNoError;
+  }
+
   api()->glFramebufferTexturePixelLocalStorageANGLEFn(
       plane, GetTextureServiceID(api(), backingtexture, resources_), level,
       layer, usage);
