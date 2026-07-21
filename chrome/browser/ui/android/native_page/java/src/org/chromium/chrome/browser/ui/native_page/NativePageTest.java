@@ -24,7 +24,6 @@ import org.chromium.url.GURL;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class NativePageTest {
-
     public static class UrlCombo {
         public String url;
         public @NativePageType int expectedType;
@@ -166,19 +165,40 @@ public class NativePageTest {
     }
 
     @Test
-    public void testManagementNativePageType() {
+    @DisableFeatures(ChromeFeatureList.CHROME_NATIVE_URL_OVERRIDING)
+    public void testManagementNativePageType_FeatureDisabled() {
         GURL url = new GURL("chrome://management");
         Assert.assertEquals(
-                "Management page should be a native page",
+                "Management page should be a native page when feature is disabled",
                 NativePageType.MANAGEMENT,
                 NativePage.nativePageType(url, null, false, false, false));
     }
 
     @Test
-    public void testIsNativePageUrl_Management() {
+    @EnableFeatures(ChromeFeatureList.CHROME_NATIVE_URL_OVERRIDING)
+    public void testManagementNativePageType_FeatureEnabled() {
+        GURL url = new GURL("chrome://management");
+        Assert.assertEquals(
+                "Management page should NOT be a native page when feature is enabled",
+                NativePageType.NONE,
+                NativePage.nativePageType(url, null, false, false, false));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.CHROME_NATIVE_URL_OVERRIDING)
+    public void testIsNativePageUrl_Management_FeatureDisabled() {
         GURL url = new GURL("chrome://management");
         Assert.assertTrue(
-                "isNativePageUrl should be true for management host",
+                "isNativePageUrl should be true for management host when feature is disabled",
+                NativePage.isNativePageUrl(url, false, false));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CHROME_NATIVE_URL_OVERRIDING)
+    public void testIsNativePageUrl_Management_FeatureEnabled() {
+        GURL url = new GURL("chrome://management");
+        Assert.assertFalse(
+                "isNativePageUrl should be false for management host when feature is enabled",
                 NativePage.isNativePageUrl(url, false, false));
     }
 }

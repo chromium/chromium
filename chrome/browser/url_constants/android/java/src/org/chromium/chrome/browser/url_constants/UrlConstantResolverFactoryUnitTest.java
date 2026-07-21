@@ -37,6 +37,7 @@ import org.chromium.url.GURL;
 
 /** Unit tests for {@link UrlConstantResolverFactory}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures({ChromeFeatureList.CHROME_NATIVE_URL_OVERRIDING})
 public class UrlConstantResolverFactoryUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -105,6 +106,15 @@ public class UrlConstantResolverFactoryUnitTest {
 
         when(mProfile.isOffTheRecord()).thenReturn(true);
         assertEquals(testResolver, UrlConstantResolverFactory.getForProfile(mProfile));
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.CHROME_NATIVE_URL_OVERRIDING})
+    public void testOriginalResolver_FeatureDisabled() {
+        UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
+        assertEquals(getOriginalNativeNtpUrl(), resolver.getNtpUrl());
+        assertEquals(getOriginalNativeBookmarksUrl(), resolver.getBookmarksPageUrl());
+        assertEquals(getOriginalNativeHistoryUrl(), resolver.getHistoryPageUrl());
     }
 
     @Test

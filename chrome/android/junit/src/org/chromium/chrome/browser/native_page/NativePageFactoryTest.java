@@ -290,6 +290,7 @@ public class NativePageFactoryTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.CHROME_NATIVE_URL_OVERRIDING)
     public void testExtensionUrlOverrides() {
         // Test NTP override
         String ntpUrl = "chrome://newtab";

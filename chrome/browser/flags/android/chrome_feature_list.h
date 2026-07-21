@@ -134,6 +134,7 @@ BASE_DECLARE_FEATURE(kCastDeviceFilter);
 BASE_DECLARE_FEATURE(kCctTabResumption);
 BASE_DECLARE_FEATURE(kChangeUnfocusedPriority);
 BASE_DECLARE_FEATURE(kChromeItemPickerUi);
+BASE_DECLARE_FEATURE(kChromeNativeUrlOverriding);
 BASE_DECLARE_FEATURE(kChromeShareScreenshot);
 BASE_DECLARE_FEATURE(kChromeSharingHubLaunchAdjacent);
 BASE_DECLARE_FEATURE(kChromeSurveyNextAndroid);
