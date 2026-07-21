@@ -833,9 +833,9 @@ const DEFAULT_TIMEOUT_MS = 300000;
 // later use.
 class DeferredPublicKeyCredentialPromise {
   // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-  public promise: Promise<PublicKeyCredential>;
+  public promise: Promise<PublicKeyCredential|null>;
   // Resolve function of the deferred promise.
-  private resolve: ResolveFunction<PublicKeyCredential> = () => {};
+  private resolve: ResolveFunction<PublicKeyCredential|null> = () => {};
   // Reject function of the deferred promise.
   private reject: RejectFunction = () => {};
   // Unique ID for this deferred promise.
@@ -850,27 +850,32 @@ class DeferredPublicKeyCredentialPromise {
     this.id = generateRandomId();
 
     let timerId: ReturnType<typeof setTimeout>;
-    this.promise = Promise.race([
-      new Promise<PublicKeyCredential>((resolve, reject) => {
-        this.resolve = resolve;
-        this.reject = reject;
-      }),
-      new Promise<PublicKeyCredential>((_, reject) => {
-        timerId = setTimeout(() => {
-          reject(new DOMException(
-              `Promise timed out after ${timeoutMs}ms`, 'NotAllowedError'));
-        }, timeoutMs);
-      }),
-    ]).finally(() => {
-      clearTimeout(timerId);
-      DeferredPublicKeyCredentialPromise.ongoingPromises.delete(this.id);
-    });
+    this.promise =
+        Promise
+            .race([
+              new Promise<PublicKeyCredential|null>((resolve, reject) => {
+                this.resolve = resolve;
+                this.reject = reject;
+              }),
+              new Promise<PublicKeyCredential|null>((_, reject) => {
+                timerId = setTimeout(() => {
+                  reject(new DOMException(
+                      `Promise timed out after ${timeoutMs}ms`,
+                      'NotAllowedError'));
+                }, timeoutMs);
+              }),
+            ])
+            .finally(() => {
+              clearTimeout(timerId);
+              DeferredPublicKeyCredentialPromise.ongoingPromises.delete(
+                  this.id);
+            });
 
     DeferredPublicKeyCredentialPromise.ongoingPromises.set(this.id, this);
   }
 
   // Resolves a deferred promise using the provided credential.
-  static resolve(id: string, cred: PublicKeyCredential): void {
+  static resolve(id: string, cred: PublicKeyCredential|null): void {
     DeferredPublicKeyCredentialPromise.ongoingPromises.get(id)?.resolve(cred);
   }
 
@@ -1075,6 +1080,10 @@ const credentialsContainer: CredentialsContainer = {
       promise = createAssertionRequest(
                     options.publicKey, isConditional, options.signal)
                     .then(result => {
+                      if (result === null) {
+                        return null;
+                      }
+
                       if (isValidCredential(result)) {
                         // TODO(crbug.com/460485333): Notification message of
                         // success here?
@@ -1108,6 +1117,10 @@ const credentialsContainer: CredentialsContainer = {
       promise = createRegistrationRequest(
                     options.publicKey, isConditional, options.signal)
                     .then(result => {
+                      if (result === null) {
+                        return null;
+                      }
+
                       if (isValidCredential(result)) {
                         // TODO(crbug.com/460485333): Notification message of
                         // success here?
@@ -1165,7 +1178,7 @@ function deferToRenderer(requestId: string, requestType: number): void {
             DeferredPublicKeyCredentialPromise.resolve(
                 requestId, emptyCredential);
           } else {
-            DeferredPublicKeyCredentialPromise.reject(requestId);
+            DeferredPublicKeyCredentialPromise.resolve(requestId, null);
           }
         });
   } else if (requestType === RequestType.CONDITIONAL_CREATE) {
@@ -1175,7 +1188,7 @@ function deferToRenderer(requestId: string, requestType: number): void {
             DeferredPublicKeyCredentialPromise.resolve(
                 requestId, emptyCredential);
           } else {
-            DeferredPublicKeyCredentialPromise.reject(requestId);
+            DeferredPublicKeyCredentialPromise.resolve(requestId, null);
           }
         });
   } else {  // MODAL or UNKNOWN
