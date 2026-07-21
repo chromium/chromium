@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -41,7 +42,7 @@ TEST(DhcpPacFileFetcherWin, AdapterNamesAndPacURLFromDhcp) {
   // running in, so it just exercises the code to make sure there
   // is no crash and no error returned, but does not assert on the number
   // of interfaces or the information returned via DHCP.
-  std::set<std::string> adapter_names;
+  std::vector<std::string> adapter_names;
   DhcpPacFileFetcherWin::GetCandidateAdapterNames(&adapter_names, nullptr);
   for (const std::string& adapter_name : adapter_names) {
     DhcpPacFileAdapterFetcher::GetPacURLFromDhcp(adapter_name);
@@ -222,6 +223,9 @@ class DummyDhcpPacFileAdapterFetcher : public DhcpPacFileAdapterFetcher {
   void Fetch(const std::string& adapter_name,
              CompletionOnceCallback callback,
              const NetworkTrafficAnnotationTag traffic_annotation) override {
+    if (fetched_adapter_names_) {
+      fetched_adapter_names_->push_back(adapter_name);
+    }
     callback_ = std::move(callback);
     timer_.Start(FROM_HERE, base::Milliseconds(fetch_delay_ms_), this,
                  &DummyDhcpPacFileAdapterFetcher::OnTimer);
@@ -246,11 +250,13 @@ class DummyDhcpPacFileAdapterFetcher : public DhcpPacFileAdapterFetcher {
   void Configure(bool did_finish,
                  int result,
                  std::u16string pac_script,
-                 int fetch_delay_ms) {
+                 int fetch_delay_ms,
+                 std::vector<std::string>* fetched_adapter_names = nullptr) {
     did_finish_ = did_finish;
     result_ = result;
     pac_script_ = pac_script;
     fetch_delay_ms_ = fetch_delay_ms;
+    fetched_adapter_names_ = fetched_adapter_names;
   }
 
  private:
@@ -258,6 +264,7 @@ class DummyDhcpPacFileAdapterFetcher : public DhcpPacFileAdapterFetcher {
   int result_ = OK;
   std::u16string pac_script_;
   int fetch_delay_ms_ = 1;
+  raw_ptr<std::vector<std::string>> fetched_adapter_names_ = nullptr;
   CompletionOnceCallback callback_;
   base::OneShotTimer timer_;
 };
@@ -270,9 +277,9 @@ class MockDhcpPacFileFetcherWin : public DhcpPacFileFetcherWin {
     }
 
     bool ImplGetCandidateAdapterNames(
-        std::set<std::string>* adapter_names,
+        std::vector<std::string>* adapter_names,
         DhcpAdapterNamesLoggingInfo* logging) override {
-      adapter_names->insert(mock_adapter_names_.begin(),
+      adapter_names->insert(adapter_names->end(), mock_adapter_names_.begin(),
                             mock_adapter_names_.end());
       return true;
     }
@@ -311,8 +318,9 @@ class MockDhcpPacFileFetcherWin : public DhcpPacFileFetcherWin {
                                    base::TimeDelta fetch_delay) {
     auto adapter_fetcher = std::make_unique<DummyDhcpPacFileAdapterFetcher>(
         url_request_context(), GetTaskRunner());
-    adapter_fetcher->Configure(
-        did_finish, result, pac_script, fetch_delay.InMilliseconds());
+    adapter_fetcher->Configure(did_finish, result, pac_script,
+                               fetch_delay.InMilliseconds(),
+                               &fetched_adapter_names_);
     PushBackAdapter(adapter_name, std::move(adapter_fetcher));
   }
 
@@ -336,9 +344,12 @@ class MockDhcpPacFileFetcherWin : public DhcpPacFileFetcherWin {
   }
 
   void ResetTestState() {
+    Cancel();
+    worker_finished_event_.Reset();
     next_adapter_fetcher_index_ = 0;
     num_fetchers_created_ = 0;
     adapter_fetchers_.clear();
+    fetched_adapter_names_.clear();
     adapter_query_ = base::MakeRefCounted<MockAdapterQuery>();
     max_wait_ = TestTimeouts::tiny_timeout();
   }
@@ -348,6 +359,9 @@ class MockDhcpPacFileFetcherWin : public DhcpPacFileFetcherWin {
   }
 
   int next_adapter_fetcher_index_;
+
+  // Must outlive adapter fetchers, which may hold pointers to this vector.
+  std::vector<std::string> fetched_adapter_names_;
 
   // Ownership gets transferred to the implementation class via
   // ImplCreateAdapterFetcher, but any objects not handed out are
@@ -590,6 +604,26 @@ void TestShortCircuitLessPreferredAdapters(FetcherClient* client) {
             timer.Elapsed());
 }
 
+void TestPreservesCandidateAdapterOrder(FetcherClient* client) {
+  client->fetcher_.ConfigureAndPushBackAdapter(
+      "z_primary", true, OK, u"primary", base::Milliseconds(1));
+  client->fetcher_.ConfigureAndPushBackAdapter(
+      "a_secondary", true, OK, u"secondary", base::Milliseconds(1));
+  client->RunTest();
+  client->RunMessageLoopUntilComplete();
+  ASSERT_EQ(2u, client->fetcher_.fetched_adapter_names_.size());
+  EXPECT_EQ("z_primary", client->fetcher_.fetched_adapter_names_[0]);
+  EXPECT_EQ("a_secondary", client->fetcher_.fetched_adapter_names_[1]);
+  EXPECT_EQ(u"primary", client->pac_text_);
+}
+
+TEST(DhcpPacFileFetcherWin, PreservesCandidateAdapterOrder) {
+  base::test::TaskEnvironment task_environment;
+
+  FetcherClient client;
+  TestPreservesCandidateAdapterOrder(&client);
+}
+
 TEST(DhcpPacFileFetcherWin, ShortCircuitLessPreferredAdapters) {
   base::test::TaskEnvironment task_environment;
 
@@ -640,6 +674,7 @@ TEST(DhcpPacFileFetcherWin, ReuseFetcher) {
   test_functions.push_back(TestFailureCaseNoDhcpAdapters);
   test_functions.push_back(TestShortCircuitLessPreferredAdapters);
   test_functions.push_back(TestImmediateCancel);
+  test_functions.push_back(TestPreservesCandidateAdapterOrder);
 
   base::RandomShuffle(test_functions.begin(), test_functions.end());
   for (TestVector::const_iterator it = test_functions.begin();
