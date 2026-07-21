@@ -16,6 +16,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -65,6 +66,8 @@ namespace net::device_bound_sessions {
 
 namespace {
 
+using ::base::Bucket;
+using ::base::BucketsAre;
 using ::base::test::RunOnceCallback;
 using ::base::test::ValueIs;
 using ::testing::_;
@@ -72,6 +75,7 @@ using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Invoke;
+using ::testing::Not;
 using ::testing::Optional;
 using ::testing::Property;
 using ::testing::Return;
@@ -198,19 +202,21 @@ class RegistrationTest : public TestWithTaskEnvironment {
     auto network_delegate = std::make_unique<TestNetworkDelegate>();
     network_delegate_ = network_delegate.get();
     context_builder->set_network_delegate(std::move(network_delegate));
+
+    auto session_service = std::make_unique<SessionServiceMock>();
+    session_service_ = session_service.get();
+    context_builder->set_device_bound_session_service(
+        std::move(session_service));
+
     context_ = context_builder->Build();
   }
 
-  void TearDown() override {
-    // Reset the `network_delegate_` to avoid a dangling pointer.
-    network_delegate_ = nullptr;
-  }
 
   unexportable_keys::UnexportableKeyService& unexportable_key_service() {
     return unexportable_key_service_;
   }
 
-  SessionServiceMock& session_service() { return session_service_; }
+  SessionServiceMock& session_service() { return *session_service_; }
 
   TestNetworkDelegate* network_delegate() { return network_delegate_; }
 
@@ -266,14 +272,16 @@ class RegistrationTest : public TestWithTaskEnvironment {
   }
 
   test_server::EmbeddedTestServer server_;
-  raw_ptr<TestNetworkDelegate> network_delegate_;
   std::unique_ptr<URLRequestContext> context_;
+  // `session_service_` and `network_delegate_` are owned by `context_` so they
+  // should be defined after it.
+  raw_ptr<SessionServiceMock> session_service_;
+  raw_ptr<TestNetworkDelegate> network_delegate_;
 
   const url::Origin kOrigin = url::Origin::Create(GURL("https://origin/"));
   unexportable_keys::UnexportableKeyTaskManager task_manager_;
   unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_{
       task_manager_, kTaskOrigin, crypto::UnexportableKeyProvider::Config()};
-  SessionServiceMock session_service_;
   scoped_refptr<net::RuleBasedHostResolverProc> host_resolver_;
 };
 
@@ -288,20 +296,24 @@ std::unique_ptr<test_server::HttpResponse> ReturnResponse(
   return response;
 }
 
+std::unique_ptr<test_server::HttpResponse> ReturnChallengeResponse(
+    HttpStatusCode code,
+    std::string_view challenge) {
+  auto response = std::make_unique<test_server::BasicHttpResponse>();
+  response->set_code(code);
+  response->AddCustomHeader(kSessionChallengeHeaderName,
+                            base::StrCat({"\"", challenge, "\""}));
+  return response;
+}
+
 std::unique_ptr<test_server::HttpResponse> ReturnUnauthorized(
     const test_server::HttpRequest& request) {
-  auto response = std::make_unique<test_server::BasicHttpResponse>();
-  response->set_code(HTTP_UNAUTHORIZED);
-  response->AddCustomHeader(kSessionChallengeHeaderName, R"("challenge")");
-  return response;
+  return ReturnChallengeResponse(HTTP_UNAUTHORIZED, "challenge");
 }
 
 std::unique_ptr<test_server::HttpResponse> ReturnForbidden(
     const test_server::HttpRequest& request) {
-  auto response = std::make_unique<test_server::BasicHttpResponse>();
-  response->set_code(HTTP_FORBIDDEN);
-  response->AddCustomHeader(kSessionChallengeHeaderName, R"("challenge")");
-  return response;
+  return ReturnChallengeResponse(HTTP_FORBIDDEN, "challenge");
 }
 
 std::unique_ptr<test_server::HttpResponse> ReturnTextResponse(
@@ -3358,6 +3370,164 @@ TEST_F(RegistrationTest, RefreshRetryTransientError) {
       net::ERR_INVALID_HTTP_RESPONSE, 1);
   histogram_tester.ExpectUniqueSample(
       "Net.DeviceBoundSessions.Refresh.Network.Result.SecondAttempt", 200, 1);
+}
+
+TEST_F(RegistrationTest, RefreshRetryTransientErrorOnSecondRoundtrip) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kDeviceBoundSessionsRetryTransientRefreshErrors);
+  base::HistogramTester histogram_tester;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+
+  int request_count = 0;
+  int jwt_request_count = 0;
+  server_.RegisterRequestHandler(
+      base::BindLambdaForTesting([&request_count, &jwt_request_count](
+                                     const test_server::HttpRequest& request) {
+        request_count++;
+        if (!request.headers.contains(kSessionResponseHeaderName)) {
+          return ReturnChallengeResponse(HTTP_FORBIDDEN, "new_challenge");
+        } else {
+          jwt_request_count++;
+          if (jwt_request_count == 1) {
+            return ReturnInvalidResponse(request);
+          }
+          return ReturnResponse(HTTP_OK, kBasicValidJson, request);
+        }
+      }));
+  ASSERT_TRUE(server_.Start());
+
+  std::unique_ptr<Session> session = CreateTestSession(kSessionIdentifier);
+  EXPECT_EQ(session->cached_challenge(), std::nullopt);
+
+  EXPECT_CALL(
+      session_service(),
+      GetSession(SessionKey{SchemefulSite(GetBaseURL()), session->id()}))
+      .WillRepeatedly(Return(session.get()));
+
+  EXPECT_CALL(session_service(), HandleResponseHeaders)
+      .WillRepeatedly([&session](DbscRequest& request,
+                                 HttpResponseHeaders* headers,
+                                 const FirstPartySetMetadata& fp) {
+        session->set_cached_challenge("new_challenge");
+      });
+
+  EXPECT_CALL(session_service(), GetLatestSignedRefreshChallenge)
+      .WillRepeatedly(Return(nullptr));
+  EXPECT_CALL(session_service(), AddSigningOccurrence).Times(1);
+  EXPECT_CALL(session_service(), SetLatestSignedRefreshChallenge).Times(1);
+  EXPECT_CALL(session_service(), SigningQuotaExceeded)
+      .WillRepeatedly(Return(false));
+
+  TestRegistrationCallback callback;
+  auto param = RegistrationRequestParam::CreateForTesting(
+      server_.GetURL("a.test", "/"), kSessionIdentifier,
+      /*challenge=*/std::nullopt,
+      /*authorization=*/std::nullopt);
+
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          param, session_service(), unexportable_key_service(), context_.get(),
+          IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt,
+          unexportable_keys::BackgroundTaskPriority::kBestEffort);
+
+  fetcher->StartFetchWithExistingKey(param, CreateSigningKey(),
+                                     callback.callback());
+  callback.WaitForCall();
+
+  EXPECT_THAT(callback.outcome(), Not(IsErrorRegistrationResult()));
+  EXPECT_EQ(request_count, 3);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Net.DeviceBoundSessions.Refresh.Network.Result.FirstAttempt"),
+      BucketsAre(Bucket(403, 1), Bucket(net::ERR_INVALID_HTTP_RESPONSE, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Net.DeviceBoundSessions.Refresh.Network.Result.SecondAttempt"),
+      BucketsAre(Bucket(200, 1)));
+}
+
+TEST_F(RegistrationTest, RefreshRetryTransientErrorOnBothRoundtrips) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kDeviceBoundSessionsRetryTransientRefreshErrors);
+  base::HistogramTester histogram_tester;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+
+  int no_jwt_request_count = 0;
+  int jwt_request_count = 0;
+  server_.RegisterRequestHandler(
+      base::BindLambdaForTesting([&no_jwt_request_count, &jwt_request_count](
+                                     const test_server::HttpRequest& request) {
+        if (!request.headers.contains(kSessionResponseHeaderName)) {
+          no_jwt_request_count++;
+          if (no_jwt_request_count == 1) {
+            return ReturnInvalidResponse(request);
+          }
+          return ReturnChallengeResponse(HTTP_FORBIDDEN, "new_challenge");
+        } else {
+          jwt_request_count++;
+          if (jwt_request_count == 1) {
+            return ReturnInvalidResponse(request);
+          }
+          return ReturnResponse(HTTP_OK, kBasicValidJson, request);
+        }
+      }));
+  ASSERT_TRUE(server_.Start());
+
+  std::unique_ptr<Session> session = CreateTestSession(kSessionIdentifier);
+  EXPECT_EQ(session->cached_challenge(), std::nullopt);
+
+  EXPECT_CALL(
+      session_service(),
+      GetSession(SessionKey{SchemefulSite(GetBaseURL()), session->id()}))
+      .WillRepeatedly(Return(session.get()));
+
+  EXPECT_CALL(session_service(), HandleResponseHeaders)
+      .WillRepeatedly([&session](DbscRequest& request,
+                                 HttpResponseHeaders* headers,
+                                 const FirstPartySetMetadata& fp) {
+        session->set_cached_challenge("new_challenge");
+      });
+
+  EXPECT_CALL(session_service(), GetLatestSignedRefreshChallenge)
+      .WillRepeatedly(Return(nullptr));
+  EXPECT_CALL(session_service(), AddSigningOccurrence).Times(1);
+  EXPECT_CALL(session_service(), SetLatestSignedRefreshChallenge).Times(1);
+  EXPECT_CALL(session_service(), SigningQuotaExceeded)
+      .WillRepeatedly(Return(false));
+
+  TestRegistrationCallback callback;
+  auto param = RegistrationRequestParam::CreateForTesting(
+      server_.GetURL("a.test", "/"), kSessionIdentifier,
+      /*challenge=*/std::nullopt,
+      /*authorization=*/std::nullopt);
+
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          param, session_service(), unexportable_key_service(), context_.get(),
+          IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt,
+          unexportable_keys::BackgroundTaskPriority::kBestEffort);
+
+  fetcher->StartFetchWithExistingKey(param, CreateSigningKey(),
+                                     callback.callback());
+  callback.WaitForCall();
+
+  EXPECT_THAT(callback.outcome(), Not(IsErrorRegistrationResult()));
+  EXPECT_EQ(no_jwt_request_count, 2);
+  EXPECT_EQ(jwt_request_count, 2);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Net.DeviceBoundSessions.Refresh.Network.Result.FirstAttempt"),
+      BucketsAre(Bucket(net::ERR_INVALID_HTTP_RESPONSE, 2)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Net.DeviceBoundSessions.Refresh.Network.Result.SecondAttempt"),
+      BucketsAre(Bucket(403, 1), Bucket(200, 1)));
 }
 
 TEST_F(RegistrationTest, RefreshRetryTransientErrorDisabled) {

@@ -648,6 +648,10 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       return;
     }
 
+    // Reset the number of attempts because we are transitioning to a new
+    // challenge (a new roundtrip), and each roundtrip should have its own
+    // retry budget.
+    attempts_made_ = 0;
     StartFetch(*session->cached_challenge(), std::nullopt);
     // `this` may be deleted.
   }
