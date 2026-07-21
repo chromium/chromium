@@ -1028,10 +1028,6 @@ static_library("test_support") {
 
   if (is_win || is_mac || is_linux) {
     sources += [
-      "../browser/enterprise/signin/mock_oidc_authentication_signin_interceptor.cc",
-      "../browser/enterprise/signin/mock_oidc_authentication_signin_interceptor.h",
-      "../browser/enterprise/signin/mock_user_policy_oidc_signin_service.cc",
-      "../browser/enterprise/signin/mock_user_policy_oidc_signin_service.h",
     ]
   }
 
