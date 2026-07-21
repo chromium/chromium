@@ -509,19 +509,37 @@ void TranslateAgent::TranslateFrame(const std::string& translate_script,
   // Set up v8 isolated world.
   EnsureIsolatedWorldInitialized(world_id_);
 
+  // Executing script may spin a nested run loop that detaches the frame and
+  // deletes |this|.
+  auto weak_this = weak_pointer_factory_.GetWeakPtr();
   if (!IsTranslateLibAvailable()) {
+    if (!weak_this) {
+      return;
+    }
     // Evaluate the script to add the translation related method to the global
     // context of the page.
     ExecuteScript(translate_script);
+    if (!weak_this) {
+      return;
+    }
     DCHECK(IsTranslateLibAvailable());
+  }
+  if (!weak_this) {
+    return;
   }
 
   TranslatePageImpl(0);
 }
 
 void TranslateAgent::RevertTranslation() {
+  // Executing script may spin a nested run loop that detaches the frame and
+  // deletes |this|.
+  auto weak_this = weak_pointer_factory_.GetWeakPtr();
   if (!IsTranslateLibAvailable()) {
     DUMP_WILL_BE_NOTREACHED();
+    return;
+  }
+  if (!weak_this) {
     return;
   }
 
@@ -533,19 +551,38 @@ void TranslateAgent::RevertTranslation() {
 ////////////////////////////////////////////////////////////////////////////////
 // TranslateAgent, private:
 void TranslateAgent::CheckTranslateStatus() {
+  // Executing script may spin a nested run loop that detaches the frame and
+  // deletes |this|.
+  auto weak_this = weak_pointer_factory_.GetWeakPtr();
   // First check if there was an error.
   if (HasTranslationFailed()) {
-    NotifyBrowserTranslationFailed(
-        static_cast<translate::TranslateErrors>(GetErrorCode()));
+    if (!weak_this) {
+      return;
+    }
+    TranslateErrors error =
+        static_cast<translate::TranslateErrors>(GetErrorCode());
+    if (!weak_this) {
+      return;
+    }
+    NotifyBrowserTranslationFailed(error);
     return;  // There was an error.
+  }
+  if (!weak_this) {
+    return;
   }
 
   if (HasTranslationFinished()) {
+    if (!weak_this) {
+      return;
+    }
     std::string actual_source_lang;
     // Translation was successfull, if it was auto, retrieve the source
     // language the Translate Element detected.
     if (source_lang_ == kAutoDetectionLanguage) {
       actual_source_lang = GetPageSourceLanguage();
+      if (!weak_this) {
+        return;
+      }
       if (actual_source_lang.empty()) {
         NotifyBrowserTranslationFailed(TranslateErrors::UNKNOWN_LANGUAGE);
         return;
@@ -564,11 +601,17 @@ void TranslateAgent::CheckTranslateStatus() {
     // Check JavaScript performance counters for UMA reports.
     ReportTimeToTranslate(
         ExecuteScriptAndGetDoubleResult("cr.googleTranslate.translationTime"));
+    if (!weak_this) {
+      return;
+    }
     ReportTranslatedLanguageDetectionContentLength(page_contents_length_);
 
     // Notify the browser we are done.
     std::move(translate_callback_pending_)
         .Run(false, actual_source_lang, target_lang_, TranslateErrors::NONE);
+    return;
+  }
+  if (!weak_this) {
     return;
   }
 
@@ -582,10 +625,19 @@ void TranslateAgent::CheckTranslateStatus() {
 
 void TranslateAgent::TranslatePageImpl(int count) {
   DCHECK_LT(count, kMaxTranslateInitCheckAttempts);
+  // Executing script may spin a nested run loop that detaches the frame and
+  // deletes |this|.
+  auto weak_this = weak_pointer_factory_.GetWeakPtr();
   if (!IsTranslateLibReady()) {
+    if (!weak_this) {
+      return;
+    }
     // There was an error during initialization of library.
     TranslateErrors error =
         static_cast<translate::TranslateErrors>(GetErrorCode());
+    if (!weak_this) {
+      return;
+    }
     if (error != TranslateErrors::NONE) {
       NotifyBrowserTranslationFailed(error);
       return;
@@ -604,16 +656,31 @@ void TranslateAgent::TranslatePageImpl(int count) {
         AdjustDelay(count * kTranslateInitCheckDelayMs));
     return;
   }
+  if (!weak_this) {
+    return;
+  }
 
   // The library is loaded, and ready for translation now.
   // Check JavaScript performance counters for UMA reports.
   ReportTimeToBeReady(
       ExecuteScriptAndGetDoubleResult("cr.googleTranslate.readyTime"));
+  if (!weak_this) {
+    return;
+  }
   ReportTimeToLoad(
       ExecuteScriptAndGetDoubleResult("cr.googleTranslate.loadTime"));
+  if (!weak_this) {
+    return;
+  }
 
   if (!StartTranslation()) {
+    if (!weak_this) {
+      return;
+    }
     CheckTranslateStatus();
+    return;
+  }
+  if (!weak_this) {
     return;
   }
   // Check the status of the translation.

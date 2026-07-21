@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
@@ -596,6 +597,59 @@ TEST_F(TranslateAgentBrowserTest, UnsupportedTranslateSchemes) {
   ASSERT_TRUE(fake_translate_driver_.called_new_page_);
   EXPECT_FALSE(fake_translate_driver_.page_level_translation_criteria_met_);
   EXPECT_TRUE(fake_translate_driver_.details_->adopted_language.empty());
+}
+
+// Tests that the agent gracefully handles being deleted while it is injecting
+// the translate library script (e.g. when script execution spins a nested run
+// loop that tears down the owning frame).
+TEST_F(TranslateAgentBrowserTest, AgentDeletedDuringScriptInjection) {
+  // Take raw ownership so the agent can be deleted from inside a mock action.
+  TestTranslateAgent* agent = translate_agent_.release();
+
+  EXPECT_CALL(*agent, IsTranslateLibAvailable()).WillOnce(Return(false));
+  EXPECT_CALL(*agent, ExecuteScript(_)).WillOnce([agent](const std::string&) {
+    delete agent;
+  });
+
+  agent->TranslateFrame(std::string(), "en", "fr", base::DoNothing());
+}
+
+// Tests that the agent gracefully handles being deleted while it is starting
+// the translation.
+TEST_F(TranslateAgentBrowserTest, AgentDeletedDuringStartTranslation) {
+  TestTranslateAgent* agent = translate_agent_.release();
+
+  EXPECT_CALL(*agent, IsTranslateLibAvailable()).WillOnce(Return(true));
+  EXPECT_CALL(*agent, IsTranslateLibReady()).WillOnce(Return(true));
+  EXPECT_CALL(*agent, ExecuteScriptAndGetDoubleResult(_))
+      .WillRepeatedly(Return(0.0));
+  EXPECT_CALL(*agent, StartTranslation()).WillOnce([agent]() {
+    delete agent;
+    return false;
+  });
+
+  agent->TranslateFrame(std::string(), "en", "fr", base::DoNothing());
+}
+
+// Tests that the agent gracefully handles being deleted while it is checking
+// the translation status.
+TEST_F(TranslateAgentBrowserTest, AgentDeletedDuringCheckTranslateStatus) {
+  TestTranslateAgent* agent = translate_agent_.release();
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*agent, IsTranslateLibAvailable()).WillOnce(Return(true));
+  EXPECT_CALL(*agent, IsTranslateLibReady()).WillOnce(Return(true));
+  EXPECT_CALL(*agent, ExecuteScriptAndGetDoubleResult(_))
+      .WillRepeatedly(Return(0.0));
+  EXPECT_CALL(*agent, StartTranslation()).WillOnce(Return(true));
+  EXPECT_CALL(*agent, HasTranslationFailed()).WillOnce([agent, &run_loop]() {
+    delete agent;
+    run_loop.Quit();
+    return false;
+  });
+
+  agent->TranslateFrame(std::string(), "en", "fr", base::DoNothing());
+  run_loop.Run();
 }
 
 #if BUILDFLAG(ENABLE_PDF)
