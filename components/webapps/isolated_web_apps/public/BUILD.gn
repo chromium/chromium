@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 source_set("public") {
+  defines = [ "IS_ISOLATED_WEB_APPS_IMPL" ]
   sources = [
     "header_utils.cc",
     "header_utils.h",
@@ -29,8 +30,8 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "iwa_entitlements_unittest.cc" ]
   deps = [
-    ":public",
     "//base",
+    "//components/webapps/isolated_web_apps",
     "//components/webapps/isolated_web_apps/key_distribution/proto",
     "//services/network/public/cpp",
     "//testing/gtest",

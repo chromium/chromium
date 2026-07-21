@@ -10,6 +10,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/values.h"
 #include "components/webapps/isolated_web_apps/key_distribution/proto/key_distribution.pb.h"
 
@@ -20,7 +21,7 @@ using IwaEntitlement =
 using IwaVersionRange =
     IwaAccessControl::UserInstallAllowlistItemData::VersionRange;
 
-struct IwaEntitlementsSet {
+struct COMPONENT_EXPORT(ISOLATED_WEB_APPS) IwaEntitlementsSet {
   IwaEntitlementsSet();
   ~IwaEntitlementsSet();
   IwaEntitlementsSet(const IwaEntitlementsSet&);
@@ -42,6 +43,7 @@ struct IwaEntitlementsSet {
 // If it's `std::nullopt` and
 // `network::IsPermissionsPolicyFeatureGuardedByIsolatedContext` returns true,
 // then the feature is disallowed for user-installed IWAs.
+COMPONENT_EXPORT(ISOLATED_WEB_APPS)
 std::optional<IwaEntitlement> GetEntitlementForFeature(
     const std::string& feature_name);
 

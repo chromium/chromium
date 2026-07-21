@@ -12,6 +12,7 @@
 
 #include "base/auto_reset.h"
 #include "base/callback_list.h"
+#include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/one_shot_event.h"
 #include "base/types/pass_key.h"
@@ -27,11 +28,11 @@ namespace web_app {
 // The `components/` layer uses this interface to get data without needing
 // to know where that data comes from (e.g., Component Updater). The concrete
 // implementation is provided by the embedder (e.g., Chrome).
-class IwaRuntimeDataProvider {
+class COMPONENT_EXPORT(ISOLATED_WEB_APPS) IwaRuntimeDataProvider {
  public:
   // The KeyRotationInfo struct provides information about expected public keys
   // for Isolated Web Apps, which is fundamental to IWA security.
-  struct KeyRotationInfo {
+  struct COMPONENT_EXPORT(ISOLATED_WEB_APPS) KeyRotationInfo {
     using PublicKeyData = std::vector<uint8_t>;
 
     explicit KeyRotationInfo(
@@ -46,13 +47,13 @@ class IwaRuntimeDataProvider {
     std::optional<PublicKeyData> previous_key;
   };
 
-  struct SpecialAppPermissionsInfo {
+  struct COMPONENT_EXPORT(ISOLATED_WEB_APPS) SpecialAppPermissionsInfo {
     base::Value AsDebugValue() const;
     bool skip_capture_started_notification = false;
     bool allow_set_shape = false;
   };
 
-  struct UserInstallAllowlistItemData {
+  struct COMPONENT_EXPORT(ISOLATED_WEB_APPS) UserInstallAllowlistItemData {
     explicit UserInstallAllowlistItemData(
         const std::string& enterprise_name,
         std::vector<IwaEntitlementsSet> entitlements = {});
