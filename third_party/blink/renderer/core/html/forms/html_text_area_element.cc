@@ -225,16 +225,14 @@ int HTMLTextAreaElement::scrollHeight() {
 }
 
 double HTMLTextAreaElement::scrollLeft() {
-  if (RuntimeEnabledFeatures::TextAreaScrollTopPreviewEnabled() &&
-      !SuggestedValue().empty()) {
+  if (!SuggestedValue().empty()) {
     return 0;
   }
   return TextControlElement::scrollLeft();
 }
 
 double HTMLTextAreaElement::scrollTop() {
-  if (RuntimeEnabledFeatures::TextAreaScrollTopPreviewEnabled() &&
-      !SuggestedValue().empty()) {
+  if (!SuggestedValue().empty()) {
     return 0;
   }
   return TextControlElement::scrollTop();
