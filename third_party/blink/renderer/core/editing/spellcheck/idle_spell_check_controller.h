@@ -69,6 +69,9 @@ class CORE_EXPORT IdleSpellCheckController final
   void SetNeedsMoreColdModeInvocationForTesting();
   void SkipColdModeTimerForTesting();
   int IdleCallbackHandle() const { return idle_callback_handle_; }
+  uint64_t LastProcessedUndoStepSequenceForTesting() const {
+    return last_processed_undo_step_sequence_;
+  }
 
   void Trace(Visitor*) const override;
 

@@ -8,6 +8,9 @@
 
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/editing/commands/undo_stack.h"
+#include "third_party/blink/renderer/core/editing/commands/undo_step.h"
+#include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_check_test_base.h"
@@ -16,6 +19,8 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_object_element.h"
 #include "third_party/blink/renderer/core/keywords.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -372,6 +377,57 @@ TEST_P(IdleSpellCheckControllerTest, ProgrammaticSelectionChangeToNewElement) {
   } else {
     EXPECT_EQ(State::kInactive, IdleChecker().GetState());
   }
+}
+
+TEST_P(IdleSpellCheckControllerTest, StaleUndoStepSkippedOnDeactivate) {
+  if (IsUnrestricted()) {
+    return;
+  }
+
+  SetBodyContent(
+      "<div id='div1' contenteditable='true' spellcheck='true'>foo</div>");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* div1 = QuerySelector("#div1");
+  div1->Focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
+                          mojom::blink::FocusType::kScript,
+                          /*capabilities=*/nullptr));
+  GetDocument().execCommand("insertHTML", false, "bar", ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+
+  // Since execCommand was executed without a user gesture, the controller
+  // is deactivated and the watermark is advanced to the sequence number
+  // of the newly registered UndoStep.
+  EXPECT_EQ(State::kInactive, IdleChecker().GetState());
+  auto undo_steps =
+      GetDocument().GetFrame()->GetEditor().GetUndoStack().UndoSteps();
+  ASSERT_NE(undo_steps.begin(), undo_steps.end());
+  uint64_t last_step_seq = (*undo_steps.begin())->SequenceNumber();
+  EXPECT_GE(IdleChecker().LastProcessedUndoStepSequenceForTesting(),
+            last_step_seq);
+}
+
+TEST_P(IdleSpellCheckControllerTest,
+       StaleUndoStepNotSkippedWhenFeatureDisabled) {
+  if (IsUnrestricted()) {
+    return;
+  }
+
+  ScopedSkipStaleUndoStepsInIdleSpellCheckForTest feature(false);
+
+  SetBodyContent(
+      "<div id='div1' contenteditable='true' spellcheck='true'>foo</div>");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* div1 = QuerySelector("#div1");
+  div1->Focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
+                          mojom::blink::FocusType::kScript,
+                          /*capabilities=*/nullptr));
+  GetDocument().execCommand("insertHTML", false, "bar", ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(State::kInactive, IdleChecker().GetState());
+  EXPECT_EQ(0u, IdleChecker().LastProcessedUndoStepSequenceForTesting());
 }
 
 }  // namespace blink

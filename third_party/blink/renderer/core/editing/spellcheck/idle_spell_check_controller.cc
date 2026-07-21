@@ -114,6 +114,20 @@ void IdleSpellCheckController::Deactivate() {
   cold_mode_requester_->Deactivate();
   DisposeIdleCallback();
   spell_check_requester_->Deactivate();
+
+  // Advance the undo step sequence so that a later hot mode invocation only
+  // checks undo steps registered after the controller was reactivated.
+  if (GetExecutionContext() &&
+      RuntimeEnabledFeatures::SkipStaleUndoStepsInIdleSpellCheckEnabled()) {
+    if (const LocalFrame* frame = GetWindow().GetFrame()) {
+      const auto undo_steps = frame->GetEditor().GetUndoStack().UndoSteps();
+      if (undo_steps.begin() != undo_steps.end()) {
+        last_processed_undo_step_sequence_ =
+            std::max(last_processed_undo_step_sequence_,
+                     (*undo_steps.begin())->SequenceNumber());
+      }
+    }
+  }
 }
 
 void IdleSpellCheckController::RespondToChangedSelection() {
