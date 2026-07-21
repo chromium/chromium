@@ -11,11 +11,11 @@
 #include "chrome/browser/ash/attestation/soft_bind_attestation_flow_impl.h"
 #include "chrome/browser/ash/cryptauth/client_app_metadata_provider_service.h"
 #include "chrome/browser/ash/cryptauth/client_app_metadata_provider_service_factory.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/multidevice/stub_multidevice_util.h"
 #include "chromeos/ash/services/device_sync/device_sync_impl.h"
 #include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
@@ -95,7 +95,7 @@ class DeviceSyncClientHolder : public KeyedService {
       attestation::SoftBindAttestationFlow::Callback notify_callback,
       const std::string& user_key) {
     const user_manager::User* user =
-        ProfileHelper::Get()->GetUserByProfile(profile);
+        BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
     soft_bind_attestation_flow_->GetCertificate(
         std::move(notify_callback),
         user ? user->GetAccountId() : EmptyAccountId(), user_key);

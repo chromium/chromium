@@ -16,7 +16,6 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/attestation",
   "+chrome/browser/ash/cryptauth",
-  "+chrome/browser/ash/profiles",
   "+chrome/browser/gcm",
   "+chrome/browser/profiles",
   "+chrome/browser/signin",
