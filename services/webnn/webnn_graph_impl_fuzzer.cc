@@ -603,6 +603,20 @@ struct TriangularParams {
   bool is_input_constant;
 };
 
+struct WhereParams {
+  OperandDataType condition_data_type;
+  OperandDataType value_data_type;
+  uint32_t condition_rank;
+  uint32_t true_value_rank;
+  uint32_t false_value_rank;
+  std::array<uint32_t, 8> condition_dims;
+  std::array<uint32_t, 8> true_value_dims;
+  std::array<uint32_t, 8> false_value_dims;
+  bool is_condition_constant;
+  bool is_true_value_constant;
+  bool is_false_value_constant;
+};
+
 SupportedDataTypes GetActivationDataTypes(ActivationKind kind) {
   const auto& limits = GetContextPropertiesForTesting().data_type_limits;
   switch (kind) {
@@ -1593,6 +1607,25 @@ auto AnyTriangularParams() {
       fuzztest::OneOf(fuzztest::InRange<int32_t>(-10, 10),
                       fuzztest::Arbitrary<int32_t>()),  // diagonal
       fuzztest::Arbitrary<bool>()                       // is_input_constant
+  );
+}
+
+auto AnyWhereParams() {
+  const auto& limits = GetContextPropertiesForTesting().data_type_limits;
+  // Bias input dims toward 1 which is broadcastable.
+  auto any_input_dim = fuzztest::OneOf(fuzztest::Just(1u), AnyDimSize());
+  return fuzztest::StructOf<WhereParams>(
+      AnyOperandDataTypeFor(limits.where_condition.data_types),
+      AnyOperandDataTypeFor(limits.where_value.data_types),
+      AnyTensorRankIncludeZero(),           // condition_rank
+      AnyTensorRankIncludeZero(),           // true_value_rank
+      AnyTensorRankIncludeZero(),           // false_value_rank
+      fuzztest::ArrayOf<8>(any_input_dim),  // condition_dims
+      fuzztest::ArrayOf<8>(any_input_dim),  // true_value_dims
+      fuzztest::ArrayOf<8>(any_input_dim),  // false_value_dims
+      fuzztest::Arbitrary<bool>(),          // is_condition_constant
+      fuzztest::Arbitrary<bool>(),          // is_true_value_constant
+      fuzztest::Arbitrary<bool>()           // is_false_value_constant
   );
 }
 
@@ -3071,6 +3104,10 @@ class WebNNGraphImplFuzzerImpl
   void Split(SplitParams params, uint8_t seed_for_data);
   void Transpose(TransposeParams params, uint8_t seed_for_data);
   void Triangular(TriangularParams params, uint8_t seed_for_data);
+  void Where(WhereParams params,
+             uint8_t seed_for_condition,
+             uint8_t seed_for_true_value,
+             uint8_t seed_for_false_value);
   void DQActivationQ(ActivationParams activation_params,
                      OperandDataType quantized_type,
                      uint8_t seed_for_input,
@@ -5204,6 +5241,97 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Triangular(TriangularParams params,
 }
 
 template <typename BaseFixture>
+void WebNNGraphImplFuzzerImpl<BaseFixture>::Where(
+    WhereParams params,
+    uint8_t seed_for_condition,
+    uint8_t seed_for_true_value,
+    uint8_t seed_for_false_value) {
+  std::vector<uint32_t> condition_dims(
+      params.condition_dims.begin(),
+      params.condition_dims.begin() + params.condition_rank);
+  std::vector<uint32_t> true_value_dims(
+      params.true_value_dims.begin(),
+      params.true_value_dims.begin() + params.true_value_rank);
+  std::vector<uint32_t> false_value_dims(
+      params.false_value_dims.begin(),
+      params.false_value_dims.begin() + params.false_value_rank);
+
+  // Fix up the three shapes to be bidirectionally broadcastable. For each
+  // aligned dimension (from the right), pick the first non-1 value as the
+  // target and rewrite any other non-1 value that differs from it.
+  std::array<std::vector<uint32_t>*, 3> all_dims = {
+      &condition_dims, &true_value_dims, &false_value_dims};
+  size_t max_rank = std::max(
+      {condition_dims.size(), true_value_dims.size(), false_value_dims.size()});
+  for (size_t i = 0; i < max_rank; ++i) {
+    uint32_t target = 1;
+    for (std::vector<uint32_t>* dims : all_dims) {
+      if (i >= dims->size()) {
+        continue;
+      }
+      uint32_t& dim = (*dims)[dims->size() - 1 - i];
+      if (dim != 1) {
+        // The first non-1 value becomes the target. Subsequent non-1 values are
+        // aligned to it.
+        if (target == 1) {
+          target = dim;
+        } else {
+          dim = target;
+        }
+      }
+    }
+  }
+
+  ASSIGN_OR_RETURN_VOID(auto condition_desc,
+                        OperandDescriptor::Create(this->context_properties(),
+                                                  params.condition_data_type,
+                                                  condition_dims, ""));
+  ASSIGN_OR_RETURN_VOID(
+      auto true_value_desc,
+      OperandDescriptor::Create(this->context_properties(),
+                                params.value_data_type, true_value_dims, ""));
+  ASSIGN_OR_RETURN_VOID(
+      auto false_value_desc,
+      OperandDescriptor::Create(this->context_properties(),
+                                params.value_data_type, false_value_dims, ""));
+
+  ASSIGN_OR_RETURN_VOID(
+      auto output_desc,
+      ValidateWhereAndInferOutput(this->context_properties(), condition_desc,
+                                  true_value_desc, false_value_desc, ""));
+
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
+      this->BindNewGraphBuilderRemote();
+  GraphInfoBuilder builder(remote);
+
+  base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
+  std::vector<std::vector<uint8_t>> data_buffers;
+  data_buffers.reserve(3);
+  OperandId condition_id = BuildInputOrConstant(
+      builder, params.is_condition_constant, "condition", condition_desc,
+      seed_for_condition, data_buffers, named_inputs);
+  OperandId true_value_id = BuildInputOrConstant(
+      builder, params.is_true_value_constant, "true_value", true_value_desc,
+      seed_for_true_value, data_buffers, named_inputs);
+  OperandId false_value_id = BuildInputOrConstant(
+      builder, params.is_false_value_constant, "false_value", false_value_desc,
+      seed_for_false_value, data_buffers, named_inputs);
+
+  OperandId output_id = builder.BuildOutput("output", output_desc.shape(),
+                                            output_desc.data_type());
+
+  builder.BuildWhere(condition_id, true_value_id, false_value_id, output_id);
+
+  if (!builder.IsValidGraphForTesting(this->context_properties())) {
+    return;
+  }
+  BuildAndCompute(this->context_, std::move(remote), builder.TakeGraphInfo(),
+                  std::move(named_inputs));
+
+  GetGlobalFuzzEnvironment().GetWebNNTestEnvironment().RunUntilIdle();
+}
+
+template <typename BaseFixture>
 void WebNNGraphImplFuzzerImpl<BaseFixture>::DQActivationQ(
     ActivationParams params,
     OperandDataType quantized_type,
@@ -7147,6 +7275,29 @@ WEBNN_FUZZ_TEST_F(Triangular,
                                        /*is_input_constant=*/false,
                                    },
                                    /*seed_for_data=*/5}}));
+
+WEBNN_FUZZ_TEST_F(
+    Where,
+    .WithDomains(AnyWhereParams(),
+                 /*seed_for_condition=*/fuzztest::Arbitrary<uint8_t>(),
+                 /*seed_for_true_value=*/fuzztest::Arbitrary<uint8_t>(),
+                 /*seed_for_false_value=*/fuzztest::Arbitrary<uint8_t>())
+        .WithSeeds({{WhereParams{
+                         /*condition_data_type=*/OperandDataType::kUint8,
+                         /*value_data_type=*/OperandDataType::kFloat32,
+                         /*condition_rank=*/4,
+                         /*true_value_rank=*/3,
+                         /*false_value_rank=*/2,
+                         /*condition_dims=*/{1, 3, 4, 4, 1, 1, 1, 1},
+                         /*true_value_dims=*/{3, 4, 4, 1, 1, 1, 1, 1},
+                         /*false_value_dims=*/{4, 4, 1, 1, 1, 1, 1, 1},
+                         /*is_condition_constant=*/false,
+                         /*is_true_value_constant=*/true,
+                         /*is_false_value_constant=*/false,
+                     },
+                     /*seed_for_condition=*/1,
+                     /*seed_for_true_value=*/2,
+                     /*seed_for_false_value=*/3}}));
 
 WEBNN_FUZZ_TEST_F(
     DQActivationQ,
