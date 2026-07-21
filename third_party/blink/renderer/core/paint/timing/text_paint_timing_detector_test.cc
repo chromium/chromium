@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_manager.h"
 #include "third_party/blink/renderer/core/paint/timing/mock_paint_timing_callback_manager.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
@@ -121,16 +122,12 @@ class TextPaintTimingDetectorTest : public testing::Test {
   }
 
   base::TimeTicks LargestPaintTime() {
-    return GetPaintTimingDetector()
-        .GetLargestContentfulPaintCalculator()
-        ->LatestLcpDetails()
+    return main_frame_lcp_calculator_->LatestLcpDetails()
         .largest_text_paint_time;
   }
 
   uint64_t LargestPaintSize() {
-    return GetPaintTimingDetector()
-        .GetLargestContentfulPaintCalculator()
-        ->LatestLcpDetails()
+    return main_frame_lcp_calculator_->LatestLcpDetails()
         .largest_text_paint_size;
   }
 
@@ -143,7 +140,9 @@ class TextPaintTimingDetectorTest : public testing::Test {
     PaintTiming::From(GetDocument())
         .SetCallbackManagerForTest(mock_callback_manager_);
     main_frame_lcp_calculator_ =
-        GetPaintTimingDetector().GetLargestContentfulPaintCalculator();
+        PaintTiming::From(GetDocument())
+            .GetLargestContentfulPaintManager()
+            ->LargestContentfulPaintCalculatorForTest();
     // Set this so presentation time callbacks aren't coarsened, which would
     // result in the callback running in a separate task.
     DOMWindowPerformance::performance(*GetDocument().domWindow())
@@ -157,7 +156,8 @@ class TextPaintTimingDetectorTest : public testing::Test {
     PaintTiming& timing = PaintTiming::From(*GetChildDocument());
     timing.SetCallbackManagerForTest(mock_callback_manager_);
     child_frame_lcp_calculator_ =
-        timing.GetPaintTimingDetector().GetLargestContentfulPaintCalculator();
+        timing.GetLargestContentfulPaintManager()
+            ->LargestContentfulPaintCalculatorForTest();
     // Set this so presentation time callbacks aren't coarsened, which would
     // result in the callback running in a separate task.
     DOMWindowPerformance::performance(*GetChildDocument()->domWindow())

@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -25,6 +26,8 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/image_paint_timing_detector.h"
+#include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_manager.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_utils.h"
 #include "third_party/blink/renderer/core/paint/timing/text_element_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/text_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
@@ -300,6 +303,7 @@ void PaintTiming::MarkPaintTimingInternal() {
              compute_painted_text_callback,
          OptionalPaintTimingCallback element_timing_painted_images_callback,
          PaintTimingDetector* paint_timing_detector,
+         LargestContentfulPaintManager* hard_lcp_manager,
          TextElementTiming* text_element_timing,
          SoftNavigationHeuristics* soft_navigation_heuristics,
          const base::TimeTicks& raw_presentation_timestamp,
@@ -345,8 +349,8 @@ void PaintTiming::MarkPaintTimingInternal() {
 
         // 10.3. Report largest contentful paint given document,
         // paintTimingInfo, paintedImages and paintedTextNodes.
-        if (paint_timing_detector && may_have_lcp) {
-          paint_timing_detector->OnFramePresented(image_records, text_records);
+        if (hard_lcp_manager && may_have_lcp) {
+          hard_lcp_manager->OnFramePresented(image_records, text_records);
         }
 
         // 10.4 Report element timing given document, paintTimingInfo,
@@ -378,6 +382,7 @@ void PaintTiming::MarkPaintTimingInternal() {
       std::move(compute_painted_text_entries),
       std::move(add_painted_images_element_timing_entries),
       WrapWeakPersistent(paint_timing_detector_.Get()),
+      WrapWeakPersistent(largest_contentful_paint_manager_.Get()),
       WrapWeakPersistent(text_element_timing_.Get()),
       WrapWeakPersistent(soft_navigation_heuristics));
 
@@ -476,6 +481,7 @@ void PaintTiming::Trace(Visitor* visitor) const {
   visitor->Trace(fmp_detector_);
   visitor->Trace(image_element_timing_);
   visitor->Trace(text_element_timing_);
+  visitor->Trace(largest_contentful_paint_manager_);
   visitor->Trace(callback_manager_);
   Supplement<Document>::Trace(visitor);
 }
@@ -491,6 +497,9 @@ PaintTiming::PaintTiming(Document& document)
   if (LocalDOMWindow* window = document.domWindow()) {
     text_element_timing_ = MakeGarbageCollected<TextElementTiming>(*window);
     image_element_timing_ = MakeGarbageCollected<ImageElementTiming>(*window);
+    largest_contentful_paint_manager_ =
+        MakeGarbageCollected<LargestContentfulPaintManager>(
+            document.domWindow());
   }
 }
 
@@ -499,8 +508,7 @@ LocalFrame* PaintTiming::GetFrame() const {
 }
 
 void PaintTiming::NotifyPaintTimingChanged() {
-  if (GetSupplementable()->Loader())
-    GetSupplementable()->Loader()->DidChangePerformanceTiming();
+  paint_timing::NotifyLoaderPerformanceTimingChanged(GetSupplementable());
 }
 
 void PaintTiming::SetFirstPaint(base::TimeTicks stamp) {
@@ -789,6 +797,26 @@ void PaintTiming::NotifyPaintFinished() {
   }
 
   MarkPaintTimingInternal();
+}
+
+void PaintTiming::OnInputOrScroll() {
+  // `largest_contentful_paint_manager_` will be non-null as long as first input
+  // has not occurred and this object wasn't created while detached (in which
+  // case the associated frame cannot be targeted for input).
+  if (!largest_contentful_paint_manager_) {
+    return;
+  }
+  // LCP stops recording on first input or scroll.
+  largest_contentful_paint_manager_->OnFirstInputOrScroll();
+  largest_contentful_paint_manager_ = nullptr;
+
+  // Notify the metrics layer of the timestamp so it can determine which records
+  // are valid.
+  DOMWindowPerformance::performance(
+      CHECK_DEREF(GetSupplementable()->domWindow()))
+      ->timingForReporting()
+      ->SetFirstInputOrScrollNotifiedTimestamp(base::TimeTicks::Now());
+  paint_timing::NotifyLoaderPerformanceTimingChanged(GetSupplementable());
 }
 
 }  // namespace blink

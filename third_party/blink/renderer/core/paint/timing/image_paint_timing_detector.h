@@ -32,8 +32,8 @@
 
 namespace blink {
 struct DOMPaintTimingInfo;
+class LargestContentfulPaintManager;
 class Image;
-class LargestContentfulPaintCalculator;
 class LayoutObject;
 class PaintTimingDetector;
 class PropertyTreeStateOrAlias;
@@ -239,12 +239,6 @@ class CORE_EXPORT ImagePaintTimingDetector final
   // is attributable to an interaction.
   void NotifyInteractionTriggeredVideoSrcChange(const LayoutObject&);
 
-  bool IsRecordingLargestImagePaint() const {
-    return recording_largest_image_paint_;
-  }
-  void StopRecordingLargestImagePaint() {
-    recording_largest_image_paint_ = false;
-  }
   void Trace(Visitor*) const;
 
  private:
@@ -257,22 +251,16 @@ class CORE_EXPORT ImagePaintTimingDetector final
   // needed.
   uint64_t ViewportSize();
 
-  LargestContentfulPaintCalculator* GetLargestContentfulPaintCalculator() const;
+  LargestContentfulPaintManager* GetLargestContentfulPaintManager() const;
 
   // Used to decide which frame a record belongs to, monotonically increasing.
   uint32_t frame_index_ = 1;
   bool added_entry_in_latest_frame_ = false;
 
-  bool contains_full_viewport_image_ = false;
-
   // We cache the viewport size computation to avoid performing it on every
   // image. This value is reset when paint is finished and is computed if unset
   // when needed. 0 means that the size has not been computed.
   std::optional<uint64_t> viewport_size_;
-
-  // Are we recording an LCP candidate? True after a hard navigation until the
-  // next user interaction.
-  bool recording_largest_image_paint_ = true;
 
   ImageRecordsManager records_manager_;
   Member<PaintTimingDetector> paint_timing_detector_;

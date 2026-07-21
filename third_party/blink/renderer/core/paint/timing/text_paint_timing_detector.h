@@ -19,6 +19,7 @@
 
 namespace blink {
 struct DOMPaintTimingInfo;
+class LargestContentfulPaintManager;
 class LayoutBoxModelObject;
 class PaintTimingDetector;
 class PropertyTreeStateOrAlias;
@@ -93,7 +94,6 @@ class CORE_EXPORT TextPaintTimingDetector final
                             const gfx::Rect& aggregated_visual_rect,
                             const PropertyTreeStateOrAlias&);
   OptionalPaintTimingDetectorCallback<TextRecord> TakePaintTimingCallback();
-  void StopRecordingLargestTextPaint();
 
   // Mark that the `LayoutObject` should be considered for paint timing, even if
   // it's already been painted, because it was modified as part of an
@@ -101,9 +101,7 @@ class CORE_EXPORT TextPaintTimingDetector final
   // timing entries to be emitted.
   void ResetPaintTrackingOnInteraction(const LayoutObject&);
 
-  inline bool IsRecordingLargestTextPaint() const {
-    return recording_largest_text_paint_;
-  }
+  bool IsRecordingLargestTextPaint() const;
 
   void ReportLargestIgnoredText();
   void Trace(Visitor*) const;
@@ -133,6 +131,8 @@ class CORE_EXPORT TextPaintTimingDetector final
     texts_queued_for_paint_time_.push_back(record);
     added_entry_in_latest_frame_ = true;
   }
+
+  LargestContentfulPaintManager* GetLargestContentfulPaintManager() const;
 
   // LayoutObjects for which text has been aggregated.
   HeapHashMap<WeakMember<const LayoutObject>, TextPaintStatus> recorded_set_;

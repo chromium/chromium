@@ -11,6 +11,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
+#include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_manager.h"
 #include "third_party/blink/renderer/core/paint/timing/mock_paint_timing_callback_manager.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
@@ -136,8 +137,9 @@ class LargestContentfulPaintCalculatorTest : public RenderingTest {
   Element* CurrentLcpCandidate() { return test_delegate_->CurrentCandidate(); }
 
   LargestContentfulPaintCalculator* GetLargestContentfulPaintCalculator() {
-    return PaintTimingDetector::From(GetDocument())
-        .GetLargestContentfulPaintCalculator();
+    return PaintTiming::From(GetDocument())
+        .GetLargestContentfulPaintManager()
+        ->LargestContentfulPaintCalculatorForTest();
   }
 
  private:

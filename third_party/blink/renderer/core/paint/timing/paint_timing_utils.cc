@@ -5,7 +5,10 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_utils.h"
 
 #include "cc/trees/layer_tree_host.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/loader/document_loader.h"
 
 namespace blink::paint_timing {
 
@@ -48,6 +51,20 @@ cc::HeadsUpDisplayLayer* GetHUDLayerIfLayoutShiftRectsEnabled(
     return hud;
   }
   return nullptr;
+}
+
+void NotifyLoaderPerformanceTimingChanged(LocalDOMWindow* window) {
+  if (!window) {
+    return;
+  }
+  NotifyLoaderPerformanceTimingChanged(window->document());
+}
+
+void NotifyLoaderPerformanceTimingChanged(Document* document) {
+  if (!document || !document->Loader()) {
+    return;
+  }
+  document->Loader()->DidChangePerformanceTiming();
 }
 
 }  // namespace blink::paint_timing

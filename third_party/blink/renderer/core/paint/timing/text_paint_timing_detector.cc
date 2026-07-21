@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
-#include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.h"
+#include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_manager.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_utils.h"
@@ -44,12 +44,14 @@ void TextPaintTimingDetector::SendRectsToHud() {
     return;
   }
 
+  bool is_recording_lcp = IsRecordingLargestTextPaint();
+
   for (const auto& record : texts_queued_for_paint_time_) {
     if (record->FrameIndex() == frame_index_) {
       cc::WebVitalMetricType type;
       if (record->GetSoftNavigationContext()) {
         type = cc::WebVitalMetricType::kInteractionContentfulPaint;
-      } else if (IsRecordingLargestTextPaint()) {
+      } else if (is_recording_lcp) {
         type = cc::WebVitalMetricType::kNavigationContentfulPaint;
       } else {
         continue;
@@ -122,12 +124,10 @@ void TextPaintTimingDetector::RecordAggregatedText(
       CreateTextRecord(aggregator, effective_visual_size, property_tree_state,
                        aggregated_visual_rect, mapped_visual_rect);
 
-  LargestContentfulPaintCalculator* lcp_calculator =
-      IsRecordingLargestTextPaint()
-          ? paint_timing_detector_->GetLargestContentfulPaintCalculator()
-          : nullptr;
-  record->SetIsNeededForLargestContentfulPaint(
-      !!lcp_calculator && lcp_calculator->IsEligibleForLcp(*record));
+  if (LargestContentfulPaintManager* manager =
+          GetLargestContentfulPaintManager()) {
+    manager->InitializePaintTracking(record);
+  }
 
   CHECK_LE(IgnorePaintTimingScope::IgnoreDepth(), 1);
   // Record the largest aggregated text that is hidden due to documentElement
@@ -173,8 +173,8 @@ void TextPaintTimingDetector::RecordAggregatedText(
   }
 }
 
-void TextPaintTimingDetector::StopRecordingLargestTextPaint() {
-  recording_largest_text_paint_ = false;
+bool TextPaintTimingDetector::IsRecordingLargestTextPaint() const {
+  return !!GetLargestContentfulPaintManager();
 }
 
 void TextPaintTimingDetector::ReportLargestIgnoredText() {
@@ -254,6 +254,12 @@ TextRecord* TextPaintTimingDetector::CreateTextRecord(
                                                    property_tree_state),
         frame_visual_rect, root_visual_rect);
   }
+}
+
+LargestContentfulPaintManager*
+TextPaintTimingDetector::GetLargestContentfulPaintManager() const {
+  return paint_timing_detector_->GetPaintTiming()
+      .GetLargestContentfulPaintManager();
 }
 
 }  // namespace blink

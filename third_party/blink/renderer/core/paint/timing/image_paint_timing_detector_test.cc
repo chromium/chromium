@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/loader/resource/image_resource.h"
 #include "third_party/blink/renderer/core/loader/resource/video_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.h"
+#include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_manager.h"
 #include "third_party/blink/renderer/core/paint/timing/mock_paint_timing_callback_manager.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
@@ -121,20 +122,24 @@ class ImagePaintTimingDetectorTest : public testing::Test,
   }
 
   ImageRecord* LargestImage() {
-    return GetPaintTimingDetector()
-        .GetLargestContentfulPaintCalculator()
+    return PaintTiming::From(GetDocument())
+        .GetLargestContentfulPaintManager()
+        ->LargestContentfulPaintCalculatorForTest()
         ->LargestPaintedOrPendingImageForTest();
   }
 
   ImageRecord* LargestPaintedImage() {
-    return GetPaintTimingDetector()
-        .GetLargestContentfulPaintCalculator()
+    return PaintTiming::From(GetDocument())
+        .GetLargestContentfulPaintManager()
+        ->LargestContentfulPaintCalculatorForTest()
         ->LargestPaintedImageForTest();
   }
 
   ImageRecord* ChildFrameLargestImage() {
     return GetChildPaintTimingDetector()
-        .GetLargestContentfulPaintCalculator()
+        .GetPaintTiming()
+        .GetLargestContentfulPaintManager()
+        ->LargestContentfulPaintCalculatorForTest()
         ->LargestPaintedOrPendingImageForTest();
   }
 
@@ -168,15 +173,17 @@ class ImagePaintTimingDetectorTest : public testing::Test,
   }
 
   base::TimeTicks LargestPaintTime() {
-    return GetPaintTimingDetector()
-        .GetLargestContentfulPaintCalculator()
+    return PaintTiming::From(GetDocument())
+        .GetLargestContentfulPaintManager()
+        ->LargestContentfulPaintCalculatorForTest()
         ->LatestLcpDetails()
         .largest_image_paint_time;
   }
 
   uint64_t LargestPaintSize() {
-    return GetPaintTimingDetector()
-        .GetLargestContentfulPaintCalculator()
+    return PaintTiming::From(GetDocument())
+        .GetLargestContentfulPaintManager()
+        ->LargestContentfulPaintCalculatorForTest()
         ->LatestLcpDetails()
         .largest_image_paint_size;
   }
@@ -1037,9 +1044,8 @@ TEST_P(ImagePaintTimingDetectorTest, DeactivateAfterUserInput) {
   SimulateScroll();
   SetImageAndPaint("target", 5, 5);
   SimulateRenderingAndPresentationTime();
-  EXPECT_FALSE(GetPaintTimingDetector()
-                   .GetImagePaintTimingDetector()
-                   .IsRecordingLargestImagePaint());
+  EXPECT_FALSE(
+      PaintTiming::From(GetDocument()).GetLargestContentfulPaintManager());
 }
 
 TEST_P(ImagePaintTimingDetectorTest, ContinueAfterKeyUp) {
@@ -1051,9 +1057,8 @@ TEST_P(ImagePaintTimingDetectorTest, ContinueAfterKeyUp) {
   SimulateKeyUp();
   SetImageAndPaint("target", 5, 5);
   SimulateRenderingAndPresentationTime();
-  EXPECT_TRUE(GetPaintTimingDetector()
-                  .GetImagePaintTimingDetector()
-                  .IsRecordingLargestImagePaint());
+  EXPECT_TRUE(
+      PaintTiming::From(GetDocument()).GetLargestContentfulPaintManager());
 }
 
 TEST_P(ImagePaintTimingDetectorTest, NullTimeNoCrash) {

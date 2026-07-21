@@ -1,6 +1,7 @@
 // Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 
 #include "base/check_deref.h"
@@ -26,11 +27,11 @@
 #include "third_party/blink/renderer/core/paint/timing/image_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_utils.h"
 #include "third_party/blink/renderer/core/paint/timing/text_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
-#include "third_party/blink/renderer/core/timing/performance_timing_for_reporting.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
@@ -244,9 +245,8 @@ void PaintTimingDetector::NotifyFirstVideoFrame(
     // since this is still experimental and we want accurate behavior for origin
     // trial along with attributing video src changes (crbug.com/434215966).
     if (RuntimeEnabledFeatures::RequestMainFrameAfterFirstVideoFrameEnabled() ||
-        !PaintTimingDetector::From(object.GetDocument())
-             .GetImagePaintTimingDetector()
-             .IsRecordingLargestImagePaint()) {
+        !PaintTiming::From(object.GetDocument())
+             .GetLargestContentfulPaintManager()) {
       object.GetFrameView()->ScheduleAnimation();
     }
   }
@@ -286,24 +286,15 @@ void PaintTimingDetector::OnInputOrScroll() {
   }
   did_notify_first_input_or_scroll_ = true;
 
-  // TextPaintTimingDetector is used for both Largest Contentful Paint and for
-  // Element Timing. Therefore, here we only want to stop recording Largest
-  // Contentful Paint.
-  text_paint_timing_detector_->StopRecordingLargestTextPaint();
-  // ImagePaintTimingDetector is currently only being used for
-  // LargestContentfulPaint.
-  image_paint_timing_detector_->StopRecordEntries();
-  image_paint_timing_detector_->StopRecordingLargestImagePaint();
-  largest_contentful_paint_calculator_ = nullptr;
-
-  if (!window) {
-    return;
+  // Notify `PaintTiming` so it can shut down hard navigation LCP.
+  if (window) {
+    PaintTiming::From(CHECK_DEREF(window->document())).OnInputOrScroll();
   }
 
-  DOMWindowPerformance::performance(*window)
-      ->timingForReporting()
-      ->SetFirstInputOrScrollNotifiedTimestamp(base::TimeTicks::Now());
-  DidChangePerformanceTiming();
+  // TODO(crbug.com/454082773): We should compare the presentation
+  // time to the input time to avoid ignoring candidates that were presented
+  // before this input arrived.
+  image_paint_timing_detector_->StopRecordEntries();
 }
 
 void PaintTimingDetector::NotifyInputEvent(WebInputEvent::Type type) {
@@ -331,47 +322,9 @@ void PaintTimingDetector::NotifyScroll(mojom::blink::ScrollType scroll_type) {
   OnInputOrScroll();
 }
 
-LargestContentfulPaintCalculator*
-PaintTimingDetector::GetLargestContentfulPaintCalculator() {
-  // Do not create an LCP calculator once we stop measuring hard LCP.
-  if (did_notify_first_input_or_scroll_) {
-    return nullptr;
-  }
-  if (largest_contentful_paint_calculator_) {
-    return largest_contentful_paint_calculator_.Get();
-  }
-
-  auto* dom_window = DomWindow();
-  if (!dom_window) {
-    return nullptr;
-  }
-
-  largest_contentful_paint_calculator_ =
-      MakeGarbageCollected<LargestContentfulPaintCalculator>(
-          DOMWindowPerformance::performance(*dom_window), this);
-  return largest_contentful_paint_calculator_.Get();
-}
-
-void PaintTimingDetector::OnLcpMetricsForReportingChanged() {
-  // The DidChangePerformanceTiming method which triggers the reporting of
-  // metrics LCP would not be called when we are not recording metrics LCP.
-  if (did_notify_first_input_or_scroll_) {
-    return;
-  }
-
-  DOMWindowPerformance::performance(CHECK_DEREF(DomWindow()))
-      ->timingForReporting()
-      ->SetLargestContentfulPaintDetailsForMetrics(
-          GetLargestContentfulPaintCalculator()->LatestLcpDetails());
-  DidChangePerformanceTiming();
-}
-
 void PaintTimingDetector::DidChangePerformanceTiming() {
-  DocumentLoader* loader = paint_timing_->GetDocument()->Loader();
-  if (!loader) {
-    return;
-  }
-  loader->DidChangePerformanceTiming();
+  paint_timing::NotifyLoaderPerformanceTimingChanged(
+      paint_timing_->GetDocument());
 }
 
 gfx::RectF PaintTimingDetector::BlinkSpaceToDIPs(const gfx::RectF& rect) const {
@@ -421,31 +374,9 @@ gfx::RectF PaintTimingDetector::CalculateVisualRect(
   return BlinkSpaceToDIPs(gfx::RectF(layout_visual_rect));
 }
 
-void PaintTimingDetector::OnFramePresented(
-    const HeapVector<Member<ImageRecord>>& image_records,
-    const HeapVector<Member<TextRecord>>& text_records) {
-  auto* lcp_calculator = GetLargestContentfulPaintCalculator();
-  if (!lcp_calculator) {
-    return;
-  }
-  lcp_calculator->OnFramePresented(image_records, text_records);
-}
-
 void PaintTimingDetector::ReportIgnoredContent() {
   text_paint_timing_detector_->ReportLargestIgnoredText();
   image_paint_timing_detector_->ReportLargestIgnoredImage();
-}
-
-void PaintTimingDetector::EmitLcpPerformanceEntry(
-    const DOMPaintTimingInfo& paint_timing_info,
-    uint64_t paint_size,
-    base::TimeTicks load_time,
-    const AtomicString& id,
-    const String& url,
-    Element* element) {
-  DOMWindowPerformance::performance(CHECK_DEREF(DomWindow()))
-      ->OnLargestContentfulPaintUpdated(paint_timing_info, paint_size,
-                                        load_time, id, url, element);
 }
 
 ScopedPaintTimingDetectorBlockPaintHook*
@@ -503,7 +434,6 @@ ScopedPaintTimingDetectorBlockPaintHook::
 void PaintTimingDetector::Trace(Visitor* visitor) const {
   visitor->Trace(text_paint_timing_detector_);
   visitor->Trace(image_paint_timing_detector_);
-  visitor->Trace(largest_contentful_paint_calculator_);
   visitor->Trace(paint_timing_);
 }
 
