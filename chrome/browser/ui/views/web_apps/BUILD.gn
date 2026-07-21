@@ -8,6 +8,17 @@ assert(toolkit_views)
 
 source_set("web_apps") {
   public = [ "web_app_views_utils.h" ]
+  sources = [ "web_app_views_utils.cc" ]
+  deps = [
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ui/views:layout_provider",
+    "//components/url_formatter",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/views",
+    "//url",
+  ]
 }
 
 source_set("browser_tests") {

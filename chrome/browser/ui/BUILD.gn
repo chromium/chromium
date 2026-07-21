@@ -4436,7 +4436,6 @@ static_library("ui") {
       "views/web_apps/web_app_update_identity_view.h",
       "views/web_apps/web_app_update_review_dialog.cc",
       "views/web_apps/web_app_update_review_dialog.h",
-      "views/web_apps/web_app_views_utils.cc",
     ]
 
     sources += get_target_outputs(":webui_name_variants")
