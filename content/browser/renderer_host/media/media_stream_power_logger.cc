@@ -17,7 +17,8 @@ void SendLogMessage(const std::string& message) {
 }
 }  // namespace
 
-MediaStreamPowerLogger::MediaStreamPowerLogger() {
+MediaStreamPowerLogger::MediaStreamPowerLogger()
+    : id_(base::UnguessableToken::Create()) {
   auto* power_monitor = base::PowerMonitor::GetInstance();
   power_monitor->AddPowerSuspendObserver(this);
   power_monitor->AddPowerThermalObserver(this);
@@ -30,24 +31,28 @@ MediaStreamPowerLogger::~MediaStreamPowerLogger() {
 }
 
 void MediaStreamPowerLogger::OnSuspend() {
-  SendLogMessage(base::StringPrintf("OnSuspend([this=%p])", this));
+  SendLogMessage(
+      base::StringPrintf("OnSuspend([id=%s])", id_.ToString().c_str()));
 }
 
 void MediaStreamPowerLogger::OnResume() {
-  SendLogMessage(base::StringPrintf("OnResume([this=%p])", this));
+  SendLogMessage(
+      base::StringPrintf("OnResume([id=%s])", id_.ToString().c_str()));
 }
 
 void MediaStreamPowerLogger::OnThermalStateChange(
     base::PowerThermalObserver::DeviceThermalState new_state) {
   const char* state_name =
       base::PowerMonitorSource::DeviceThermalStateToString(new_state);
-  SendLogMessage(base::StringPrintf(
-      "OnThermalStateChange({this=%p}, {new_state=%s})", this, state_name));
+  SendLogMessage(
+      base::StringPrintf("OnThermalStateChange({id=%s}, {new_state=%s})",
+                         id_.ToString().c_str(), state_name));
 }
 
 void MediaStreamPowerLogger::OnSpeedLimitChange(int new_limit) {
-  SendLogMessage(base::StringPrintf(
-      "OnSpeedLimitChange({this=%p}, {new_limit=%d})", this, new_limit));
+  SendLogMessage(
+      base::StringPrintf("OnSpeedLimitChange({id=%s}, {new_limit=%d})",
+                         id_.ToString().c_str(), new_limit));
 }
 
 }  // namespace content

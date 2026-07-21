@@ -6,14 +6,17 @@
 #define CONTENT_BROWSER_RENDERER_HOST_MEDIA_MEDIA_STREAM_POWER_LOGGER_H_
 
 #include "base/power_monitor/power_observer.h"
+#include "base/unguessable_token.h"
+#include "content/common/content_export.h"
 
 namespace content {
 
 // Injects system power event log entries into the WebRTC text logs, for
 // debugging of unexpected call ending and performance changes eg when calls end
 // due to a laptop's lid being closed.
-class MediaStreamPowerLogger : public base::PowerSuspendObserver,
-                               public base::PowerThermalObserver {
+class CONTENT_EXPORT MediaStreamPowerLogger
+    : public base::PowerSuspendObserver,
+      public base::PowerThermalObserver {
  public:
   MediaStreamPowerLogger();
   ~MediaStreamPowerLogger() override;
@@ -26,6 +29,9 @@ class MediaStreamPowerLogger : public base::PowerSuspendObserver,
   void OnThermalStateChange(
       base::PowerThermalObserver::DeviceThermalState new_state) override;
   void OnSpeedLimitChange(int new_limit) override;
+
+ private:
+  const base::UnguessableToken id_;
 };
 }  // namespace content
 

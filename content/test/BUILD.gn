@@ -2868,6 +2868,7 @@ test("content_unittests") {
     "../browser/renderer_host/media/media_devices_manager_unittest.cc",
     "../browser/renderer_host/media/media_stream_dispatcher_host_unittest.cc",
     "../browser/renderer_host/media/media_stream_manager_unittest.cc",
+    "../browser/renderer_host/media/media_stream_power_logger_unittest.cc",
     "../browser/renderer_host/media/media_stream_ui_proxy_unittest.cc",
     "../browser/renderer_host/media/mock_preferred_audio_output_device_manager.cc",
     "../browser/renderer_host/media/mock_preferred_audio_output_device_manager.h",
