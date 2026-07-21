@@ -645,9 +645,6 @@ class LocationBarMediator
                         });
             }
             hintZeroSuggestRefresh();
-        } // Focus change caused by a closed tab may result in there not being an active tab.
-        if (!hasFocus && mLocationBarDataProvider.hasTab()) {
-            updateUrl();
         }
     }
 
