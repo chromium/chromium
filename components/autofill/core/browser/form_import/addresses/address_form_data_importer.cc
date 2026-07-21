@@ -456,9 +456,12 @@ AutofillProfile AddressFormDataImporter::ConstructProfileFromObservedValues(
   // country of the profile first.
   if (const std::u16string* country =
           base::FindOrNull(observed_values, ADDRESS_HOME_COUNTRY)) {
-    candidate_profile.SetInfoWithVerificationStatus(
-        ADDRESS_HOME_COUNTRY, *country, client_->GetAppLocale(),
-        VerificationStatus::kObserved);
+    if (candidate_profile.SetInfoWithVerificationStatus(
+            ADDRESS_HOME_COUNTRY, *country, client_->GetAppLocale(),
+            VerificationStatus::kObserved)) {
+      import_metadata.country_source =
+          ProfileCountrySource::kExplicitlyObserved;
+    }
 
     import_metadata.observed_invalid_country =
         !candidate_profile.HasRawInfo(ADDRESS_HOME_COUNTRY);
@@ -469,12 +472,15 @@ AutofillProfile AddressFormDataImporter::ConstructProfileFromObservedValues(
   // complementing the phone number's country code, the profile country
   // complemention needs to happen before `SetPhoneNumber()`.
   if (!candidate_profile.HasRawInfo(ADDRESS_HOME_COUNTRY)) {
-    const std::u16string fallback_country = GetFallbackCountry(combined_phone);
+    std::u16string fallback_country;
+    std::tie(fallback_country, import_metadata.country_source) =
+        GetFallbackCountry(combined_phone);
 
-    import_metadata.did_complement_country =
-        candidate_profile.SetInfoWithVerificationStatus(
+    if (!candidate_profile.SetInfoWithVerificationStatus(
             ADDRESS_HOME_COUNTRY, fallback_country, client_->GetAppLocale(),
-            VerificationStatus::kObserved);
+            VerificationStatus::kObserved)) {
+      import_metadata.country_source = ProfileCountrySource::kNoCountry;
+    }
 
     LOG_AF(import_log_buffer)
         << LogMessage::kImportAddressProfileComplementedCountryCode
@@ -616,6 +622,7 @@ AddressFormDataImporter::ExtractAddressProfileFromSection(
       candidate_profile.GetRawInfo(ADDRESS_HOME_ZIP));
   autofill_metrics::LogZipCodeSeparatorMetric(
       candidate_profile.GetRawInfo(ADDRESS_HOME_ZIP));
+  autofill_metrics::LogAddressFormImportCountrySource(import_metadata);
 
   // At this stage, the saving of the profile can only be omitted by the
   // incognito mode but the import is not triggered if the browser is in the
@@ -629,21 +636,26 @@ AddressFormDataImporter::ExtractAddressProfileFromSection(
   return extracted_address_profile;
 }
 
-std::u16string AddressFormDataImporter::GetFallbackCountry(
+std::pair<std::u16string, ProfileCountrySource>
+AddressFormDataImporter::GetFallbackCountry(
     const PhoneNumber::PhoneCombineHelper& combined_phone) const {
   return combined_phone.GetRegionCode()
-      .and_then(
-          [](std::u16string region_code) -> std::optional<std::u16string> {
-            // Perform feature check only if phone number is in international
-            // format and contains a region code.
-            if (base::FeatureList::IsEnabled(
-                    features::kAutofillComplementCountryUsingPhoneNumber)) {
-              return region_code;
-            }
-            return std::nullopt;
-          })
-      .value_or(base::UTF8ToUTF16(
-          *address_data_manager().GetDefaultCountryCodeForNewAddress()));
+      .and_then([](std::u16string region_code)
+                    -> std::optional<
+                        std::pair<std::u16string, ProfileCountrySource>> {
+        // Perform feature check only if phone number is in international
+        // format and contains a region code.
+        if (base::FeatureList::IsEnabled(
+                features::kAutofillComplementCountryUsingPhoneNumber)) {
+          return std::make_pair(region_code,
+                                ProfileCountrySource::kPhoneNumberRegionCode);
+        }
+        return std::nullopt;
+      })
+      .value_or(std::make_pair(
+          base::UTF8ToUTF16(
+              *address_data_manager().GetDefaultCountryCodeForNewAddress()),
+          ProfileCountrySource::kDefaultCountryCodeForNewAddress));
 }
 
 bool AddressFormDataImporter::SetPhoneNumber(

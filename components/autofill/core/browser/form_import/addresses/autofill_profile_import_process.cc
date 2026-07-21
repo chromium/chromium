@@ -156,12 +156,13 @@ void ProfileImportProcess::DetermineProfileImportType() {
   AutofillProfileComparator comparator(app_locale_);
   // If there is reason to believe that the `observed_profile_`'s country was
   // complemented incorrectly, remove the country.
-  if (import_metadata_.did_complement_country &&
+  if (import_metadata_.country_source !=
+          ProfileCountrySource::kExplicitlyObserved &&
       ShouldCountryApproximationBeRemoved(observed_profile_,
                                           address_data_manager_->GetProfiles(),
                                           comparator)) {
     observed_profile_.ClearFields({ADDRESS_HOME_COUNTRY});
-    import_metadata_.did_complement_country = false;
+    import_metadata_.country_source = ProfileCountrySource::kNoCountry;
   }
 
   // Existing profiles that are not mergeable with the `observed_profile_`

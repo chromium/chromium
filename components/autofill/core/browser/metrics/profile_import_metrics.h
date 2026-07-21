@@ -172,6 +172,10 @@ void LogAddressProfileImportUkm(
 void LogAddressFormImportRequirementMetric(
     AddressProfileImportRequirementMetric metric);
 
+// Logs the source of the country of a profile.
+void LogAddressFormImportCountrySource(
+    const ProfileImportMetadata& profile_import_metadata);
+
 // Validates the profile import requirements and emits all the results.
 // Additionally, logs country-specific field requirement metrics.
 void LogAddressFormImportRequirementMetric(const AutofillProfile& profile);

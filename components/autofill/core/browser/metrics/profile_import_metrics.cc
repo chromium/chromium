@@ -210,6 +210,12 @@ void LogAddressFormImportRequirementMetric(
                                 metric);
 }
 
+void LogAddressFormImportCountrySource(
+    const ProfileImportMetadata& profile_import_metadata) {
+  base::UmaHistogramEnumeration("Autofill.AddressProfileImportCountrySource",
+                                profile_import_metadata.country_source);
+}
+
 void LogAddressFormImportRequirementMetric(const AutofillProfile& profile) {
   std::vector<AddressProfileImportRequirementMetric> requirements =
       ValidateProfileImportRequirements(profile);

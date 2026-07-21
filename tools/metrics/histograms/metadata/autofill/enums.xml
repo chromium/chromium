@@ -156,6 +156,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/resources/settings/autofill_page/autofill_section.ts:AutofillAddressOptInChange) -->
 
+<!-- LINT.IfChange(AutofillAddressProfileImportCountrySource) -->
+
+<enum name="AutofillAddressProfileImportCountrySource">
+  <int value="0" label="Explicitly Observed"/>
+  <int value="1" label="Variations Services (Latest Country) or Locale"/>
+  <int value="2" label="Phone Number Region Code"/>
+  <int value="3" label="No Country"/>
+  <int value="4" label="Country Merged"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/autofill/core/browser/form_import/addresses/autofill_profile_import_process.h:ProfileCountrySource) -->
+
 <enum name="AutofillAddressProfileImportCountrySpecificFieldRequirement">
   <int value="0" label="All required fields present"/>
   <int value="1" label="Missing: ZIP"/>

@@ -122,7 +122,7 @@ class AddressFormDataImporter : public AddressDataManager::Observer {
   // Returns the fallback value for the profile country. The following values
   // are used, with decreasing priority: region of given phone number (if it is
   // in international format), variation country, country of app locale.
-  std::u16string GetFallbackCountry(
+  std::pair<std::u16string, ProfileCountrySource> GetFallbackCountry(
       const PhoneNumber::PhoneCombineHelper& combined_phone) const;
 
   // Sets the `profile`'s PHONE_HOME_WHOLE_NUMBER to the `combined_phone`, if

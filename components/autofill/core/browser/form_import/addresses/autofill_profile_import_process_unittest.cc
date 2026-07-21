@@ -240,7 +240,8 @@ TEST_F(AutofillProfileImportProcessTest, IncorrectlyComplementedCountry) {
 
   // Test that the import is correctly classified as a duplicate.
   ProfileImportMetadata metadata;
-  metadata.did_complement_country = true;
+  metadata.country_source =
+      ProfileCountrySource::kDefaultCountryCodeForNewAddress;
   ProfileImportProcess import_data(
       profile, "en_US", url_, ukm_source_id(), &address_data_manager(),
       /*allow_only_silent_updates=*/false, metadata);

@@ -1775,5 +1775,94 @@ TEST_F(AddressFormDataImporterTest,
                   .empty());
 }
 
+// Tests that the country source of the profile's country is set correctly for
+// cases where the country was explicitly specified in the form.
+TEST_F(AddressFormDataImporterTest,
+       ImportMetadataProfileCountrySource_ExplicitlyObserved) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillComplementCountryUsingPhoneNumber);
+
+  const TypeValuePairs form_structure_pairs =
+      GetDefaultProfileTypeValuePairsWithOverriddenCountry("DE");
+
+  {
+    base::HistogramTester tester;
+    const std::vector<AddressFormDataImporter::ExtractedAddressProfile>
+        profiles = test_api(GetAddressFormDataImporter())
+                       .ExtractAddressProfiles(
+                           *ConstructFormStructureFromTypeValuePairs(
+                               form_structure_pairs));
+
+    ASSERT_EQ(profiles.size(), 1UL);
+    EXPECT_EQ(profiles[0].import_metadata.country_source,
+              ProfileCountrySource::kExplicitlyObserved);
+
+    EXPECT_THAT(
+        tester.GetAllSamples("Autofill.AddressProfileImportCountrySource"),
+        base::BucketsAre(
+            base::Bucket(ProfileCountrySource::kExplicitlyObserved, 1)));
+  }
+}
+
+// Tests that the country source of the profile's country is set correctly for
+// cases where the default fallback is used.
+TEST_F(AddressFormDataImporterTest,
+       ImportMetadataProfileCountrySource_DefaultCountry) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillComplementCountryUsingPhoneNumber);
+
+  const TypeValuePairs form_structure_pairs =
+      GetDefaultProfileTypeValuePairsWithOverriddenCountry("");
+
+  {
+    base::HistogramTester tester;
+    const std::vector<AddressFormDataImporter::ExtractedAddressProfile>
+        profiles = test_api(GetAddressFormDataImporter())
+                       .ExtractAddressProfiles(
+                           *ConstructFormStructureFromTypeValuePairs(
+                               form_structure_pairs));
+
+    ASSERT_EQ(profiles.size(), 1UL);
+    EXPECT_EQ(profiles[0].import_metadata.country_source,
+              ProfileCountrySource::kDefaultCountryCodeForNewAddress);
+
+    EXPECT_THAT(
+        tester.GetAllSamples("Autofill.AddressProfileImportCountrySource"),
+        base::BucketsAre(base::Bucket(
+            ProfileCountrySource::kDefaultCountryCodeForNewAddress, 1)));
+  }
+}
+
+// Tests that the country source of the profile's country is set correctly for
+// cases where no country was observed but an international phone number.
+TEST_F(AddressFormDataImporterTest,
+       ImportMetadataProfileCountrySource_PhoneNumber) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillComplementCountryUsingPhoneNumber);
+
+  TypeValuePairs form_structure_pairs =
+      GetDefaultProfileTypeValuePairsWithOverriddenCountry("");
+  SetValueForType(form_structure_pairs, PHONE_HOME_WHOLE_NUMBER,
+                  kDefaultPhoneMexico);
+
+  {
+    base::HistogramTester tester;
+    const std::vector<AddressFormDataImporter::ExtractedAddressProfile>
+        profiles = test_api(GetAddressFormDataImporter())
+                       .ExtractAddressProfiles(
+                           *ConstructFormStructureFromTypeValuePairs(
+                               form_structure_pairs));
+
+    ASSERT_EQ(profiles.size(), 1UL);
+    EXPECT_EQ(profiles[0].import_metadata.country_source,
+              ProfileCountrySource::kPhoneNumberRegionCode);
+
+    EXPECT_THAT(
+        tester.GetAllSamples("Autofill.AddressProfileImportCountrySource"),
+        base::BucketsAre(
+            base::Bucket(ProfileCountrySource::kPhoneNumberRegionCode, 1)));
+  }
+}
+
 }  // namespace
 }  // namespace autofill
