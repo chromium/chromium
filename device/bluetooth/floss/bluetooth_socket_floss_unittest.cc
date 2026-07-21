@@ -371,4 +371,48 @@ TEST_F(BluetoothSocketFlossTest, Listen) {
   DisconnectSocket(server_socket.get());
 }
 
+// Regression test for a use-after-free in DoConnectionStateChanged.
+//
+// After CompleteListen(), the sole strong reference to the BluetoothSocketFloss
+// is held by its own |pending_listen_ready_callback_| member.
+// DoConnectionStateChanged is dispatched via a WeakPtr-bound RepeatingCallback
+// (no strong ref on the stack) and synchronously runs that callback. If the
+// callee drops the scoped_refptr without retaining it (which happens in
+// production when chrome.bluetoothSocket.close() removed the BluetoothApiSocket
+// before listen completed), |this| is freed mid-method and the subsequent
+// member writes/reads are use-after-free.
+TEST_F(BluetoothSocketFlossTest, ListenReadyCallbackDropsLastRef) {
+  FlossSocketManager::SocketId id = GetFakeFlossSocketManager()->GetNextId();
+
+  // Simulates BluetoothSocketListenFunction::OnCreateService when
+  // GetSocket(socket_id()) returns nullptr: the scoped_refptr parameter is
+  // destroyed without being retained anywhere.
+  auto drop_last_ref = [](scoped_refptr<device::BluetoothSocket> socket) {
+    // |socket| destructs here. Without a self-ref in DoConnectionStateChanged
+    // this is the last reference -> refcount hits 0 -> ~BluetoothSocketFloss().
+  };
+
+  adapter_->CreateRfcommService(
+      device::BluetoothUUID(FakeFlossSocketManager::kRfcommUuid),
+      BluetoothAdapter::ServiceOptions(),
+      base::BindLambdaForTesting(drop_last_ref),
+      base::BindLambdaForTesting(
+          [](const std::string& msg) { FAIL() << msg; }));
+
+  // At this point CompleteListen has run synchronously (FakeFlossSocketManager
+  // invokes the response callback inline), so the only owner of the
+  // BluetoothSocketFloss is its own pending_listen_ready_callback_ member.
+  //
+  // SendSocketReady dispatches DoConnectionStateChanged via the WeakPtr-bound
+  // ConnectionStateChanged callback. Inside, pending_listen_ready_callback_ is
+  // run, |drop_last_ref| destroys the last scoped_refptr, the object is freed,
+  // and DoConnectionStateChanged then writes is_accepting_ and dereferences
+  // weak_ptr_factory_ on freed heap. ASan reports heap-use-after-free here.
+  GetFakeFlossSocketManager()->SendSocketReady(
+      id, device::BluetoothUUID(FakeFlossSocketManager::kRfcommUuid),
+      FlossDBusClient::BtifStatus::kSuccess);
+
+  base::RunLoop().RunUntilIdle();
+}
+
 }  // namespace floss

@@ -211,6 +211,10 @@ void BluetoothSocketFloss::DoConnectionStateChanged(
     FlossSocketManager::ServerSocketState state,
     FlossSocketManager::FlossListeningSocket socket,
     FlossDBusClient::BtifStatus status) {
+  // The callbacks invoked below may hold the last reference to |this|, so keep
+  // a local reference for the duration of the method.
+  scoped_refptr<BluetoothSocketFloss> self(this);
+
   // If we don't already have socket info, store it.
   if (!listening_socket_info_) {
     listening_socket_info_ = socket;
