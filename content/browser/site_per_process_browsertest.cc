@@ -1722,12 +1722,21 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ProcessTransferAfterError) {
   EXPECT_EQ(2, shell()->web_contents()->GetController().GetEntryCount());
 
   // Ensure that we have created a new process for the subframe.
-  EXPECT_EQ(
-      " Site A ------------ proxies for B\n"
-      "   +--Site B ------- proxies for A\n"
-      "Where A = http://a.com/\n"
-      "      B = http://b.com/",
-      DepictFrameTree(root));
+  if (base::FeatureList::IsEnabled(features::kIsolateSubframeErrorPages)) {
+    EXPECT_EQ(
+        " Site A ------------ proxies for B\n"
+        "   +--Site B ------- proxies for A\n"
+        "Where A = http://a.com/\n"
+        "      B = chrome-error://chromewebdata/",
+        DepictFrameTree(root));
+  } else {
+    EXPECT_EQ(
+        " Site A ------------ proxies for B\n"
+        "   +--Site B ------- proxies for A\n"
+        "Where A = http://a.com/\n"
+        "      B = http://b.com/",
+        DepictFrameTree(root));
+  }
   EXPECT_NE(shell()->web_contents()->GetSiteInstance(),
             child->current_frame_host()->GetSiteInstance());
 
@@ -1756,12 +1765,21 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ProcessTransferAfterError) {
             child->current_origin().Serialize() + '/');
 
   // Ensure that we have created a new process for the subframe.
-  EXPECT_EQ(
-      " Site A ------------ proxies for B\n"
-      "   +--Site B ------- proxies for A\n"
-      "Where A = http://a.com/\n"
-      "      B = http://b.com/",
-      DepictFrameTree(root));
+  if (base::FeatureList::IsEnabled(features::kIsolateSubframeErrorPages)) {
+    EXPECT_EQ(
+        " Site A ------------ proxies for C\n"
+        "   +--Site C ------- proxies for A\n"
+        "Where A = http://a.com/\n"
+        "      C = http://b.com/",
+        DepictFrameTree(root));
+  } else {
+    EXPECT_EQ(
+        " Site A ------------ proxies for B\n"
+        "   +--Site B ------- proxies for A\n"
+        "Where A = http://a.com/\n"
+        "      B = http://b.com/",
+        DepictFrameTree(root));
+  }
   EXPECT_NE(shell()->web_contents()->GetSiteInstance(),
             child->current_frame_host()->GetSiteInstance());
 
