@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.provider.Browser;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -42,6 +43,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -78,6 +80,7 @@ import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.Page
 import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.KeyNavigationUtil;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
@@ -501,6 +504,23 @@ public class SearchActivity extends AsyncInitializationActivity
         return true;
     }
 
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (!ChromeFeatureList.sKeyboardEscBackNavigation.isEnabled()
+                || !KeyNavigationUtil.isEscape(event)) {
+            return super.dispatchKeyEvent(event);
+        }
+
+        BackPressManager manager = mSearchUiCoordinator.getBackPressManager();
+        if (Boolean.TRUE.equals(manager.processEscapeKeyEvent())) {
+            return true;
+        }
+        // Escape key was not consumed by any active handler (e.g. to clear suggestions),
+        // so we treat it as a back press to exit the activity.
+        handleBackKeyPressed();
+        return true;
+    }
+
     @VisibleForTesting
     void finishDeferredInitialization() {
         mSearchUiCoordinator
@@ -866,6 +886,10 @@ public class SearchActivity extends AsyncInitializationActivity
 
     /* package */ void setLocationBarCoordinatorForTesting(LocationBarCoordinator coordinator) {
         mSearchUiCoordinator.setLocationBarCoordinator(coordinator);
+    }
+
+    /* package */ void setBackPressManagerForTesting(BackPressManager manager) {
+        mSearchUiCoordinator.setBackPressManager(manager);
     }
 
     /* package */ LocationBarCoordinator getLocationBarCoordinatorForTesting() {

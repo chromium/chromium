@@ -252,6 +252,11 @@ public class SearchUiCoordinator {
         mControlContainer = controlContainer;
     }
 
+    @VisibleForTesting
+    /* package */ void setBackPressManager(BackPressManager manager) {
+        mBackPressManager = manager;
+    }
+
     /**
      * Adds a listener for URL focus changes.
      *

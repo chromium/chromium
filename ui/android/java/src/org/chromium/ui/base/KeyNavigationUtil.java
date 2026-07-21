@@ -165,6 +165,16 @@ public class KeyNavigationUtil {
     }
 
     /**
+     * Checks whether the given event is ESCAPE.
+     *
+     * @param event Event to be checked.
+     * @return Whether the event is ESCAPE.
+     */
+    public static boolean isEscape(KeyEvent event) {
+        return isActionDown(event) && event.getKeyCode() == KeyEvent.KEYCODE_ESCAPE;
+    }
+
+    /**
      * Checks whether the given event is an ACTION_DOWN event.
      *
      * @param event Event to be checked.

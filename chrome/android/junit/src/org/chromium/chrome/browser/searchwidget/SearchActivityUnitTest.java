@@ -31,6 +31,7 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 
@@ -55,11 +56,13 @@ import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -126,6 +129,7 @@ public class SearchActivityUnitTest {
     private @Mock LocationBarCoordinator mLocationBarCoordinator;
     private @Mock UrlBarCoordinator mUrlCoordinator;
     private @Mock StatusCoordinator mStatusCoordinator;
+    private @Mock BackPressManager mBackPressManager;
     private MonotonicObservableSupplier<Profile> mProfileSupplier;
     private OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
 
@@ -1143,5 +1147,51 @@ public class SearchActivityUnitTest {
         assertEquals(
                 expectedRegularColor,
                 ((ColorDrawable) mControlContainer.getBackground()).getColor());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.KEYBOARD_ESC_BACK_NAVIGATION)
+    public void testDispatchKeyEvent_escapeKey_consumedByBackPressManager() {
+        doReturn(true).when(mBackPressManager).processEscapeKeyEvent();
+        mActivity.setBackPressManagerForTesting(mBackPressManager);
+
+        KeyEvent event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ESCAPE);
+        assertTrue(mActivity.dispatchKeyEvent(event));
+        assertFalse(mActivity.isFinishing());
+        verify(mBackPressManager).processEscapeKeyEvent();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.KEYBOARD_ESC_BACK_NAVIGATION)
+    public void testDispatchKeyEvent_escapeKey_notConsumedByBackPressManager() {
+        doReturn(false).when(mBackPressManager).processEscapeKeyEvent();
+        mActivity.setBackPressManagerForTesting(mBackPressManager);
+
+        KeyEvent event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ESCAPE);
+        assertTrue(mActivity.dispatchKeyEvent(event));
+        assertTrue(mActivity.isFinishing());
+        verify(mBackPressManager).processEscapeKeyEvent();
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.KEYBOARD_ESC_BACK_NAVIGATION)
+    public void testDispatchKeyEvent_escapeKey_featureDisabled() {
+        mActivity.setBackPressManagerForTesting(mBackPressManager);
+
+        KeyEvent event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ESCAPE);
+        assertFalse(mActivity.dispatchKeyEvent(event));
+        assertFalse(mActivity.isFinishing());
+        verify(mBackPressManager, never()).processEscapeKeyEvent();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.KEYBOARD_ESC_BACK_NAVIGATION)
+    public void testDispatchKeyEvent_otherKeys_notIntercepted() {
+        mActivity.setBackPressManagerForTesting(mBackPressManager);
+
+        KeyEvent event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER);
+        assertFalse(mActivity.dispatchKeyEvent(event));
+        assertFalse(mActivity.isFinishing());
+        verify(mBackPressManager, never()).processEscapeKeyEvent();
     }
 }

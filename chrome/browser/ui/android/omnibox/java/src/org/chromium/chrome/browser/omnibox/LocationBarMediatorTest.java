@@ -1377,6 +1377,26 @@ public class LocationBarMediatorTest {
     }
 
     @Test
+    public void testEscapePress_noTab() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+        mMediator.onUrlFocusChange(true);
+
+        doReturn(false).when(mLocationBarDataProvider).hasTab();
+        doReturn(true).when(mOverrideBackKeyBehaviorDelegate).handleBackKeyPressed();
+
+        var input = mSessionState.getAutocompleteInput();
+        input.setUserText("some text");
+        input.setInitialUserText("some text");
+        input.setAutocompleteState(AutocompleteState.STANDBY);
+
+        doReturn(false).when(mAutocompleteCoordinator).isServingSuggestions();
+
+        assertTrue(mMediator.handleEscPress());
+        verify(mOverrideBackKeyBehaviorDelegate).handleBackKeyPressed();
+    }
+
+    @Test
     public void testEscapePress_resetsRequestTypeToSearch() {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
@@ -3164,6 +3184,14 @@ public class LocationBarMediatorTest {
         doReturn(false).when(mTab).canGoBack();
         mMediator.onBackButtonClicked();
         verify(mTab, never()).goBack();
+    }
+
+    @Test
+    public void testBackButtonClicked_nullTab() {
+        doReturn(null).when(mLocationBarDataProvider).getTab();
+        doReturn(true).when(mOverrideBackKeyBehaviorDelegate).handleBackKeyPressed();
+        mMediator.onBackButtonClicked();
+        verify(mOverrideBackKeyBehaviorDelegate).handleBackKeyPressed();
     }
 
     @Test

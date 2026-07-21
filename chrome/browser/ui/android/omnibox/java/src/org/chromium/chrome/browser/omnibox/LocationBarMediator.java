@@ -2155,8 +2155,13 @@ class LocationBarMediator
 
     /* package */ void onBackButtonClicked() {
         Tab tab = mLocationBarDataProvider.getTab();
-        if (tab != null && tab.canGoBack()) {
-            tab.goBack();
+        if (tab != null) {
+            if (tab.canGoBack()) {
+                tab.goBack();
+            }
+        } else {
+            // Tab-less environments should treat the esc press as a back press.
+            backKeyPressed();
         }
     }
 
@@ -2679,7 +2684,12 @@ class LocationBarMediator
             revertChanges();
             updateButtonVisibility();
         } else {
-            endInputAndFocusCurrentTab();
+            if (mLocationBarDataProvider.hasTab()) {
+                endInputAndFocusCurrentTab();
+            } else {
+                // Tab-less environments should treat the esc press as a back press.
+                backKeyPressed();
+            }
         }
         return true;
     }
