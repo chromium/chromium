@@ -298,8 +298,8 @@ TEST_F(WebUIReadOnlyOmniboxTest, InputVersion) {
   EXPECT_THAT(mojo_state->text_pieces,
               ElementsAre(IsSpan("https://en.wikiped",
                                  OmniboxTextColor::kOmniboxText)));
-  EXPECT_EQ(1, mojo_state->browser_version);
-  EXPECT_EQ(10, mojo_state->ui_version);
+  EXPECT_EQ(1u, mojo_state->browser_version);
+  EXPECT_EQ(10u, mojo_state->ui_version);
 
   // Resetting the URL should bump the browser version and send the new URL.
   omnibox_view_->RevertAll();
@@ -310,8 +310,8 @@ TEST_F(WebUIReadOnlyOmniboxTest, InputVersion) {
       ElementsAre(IsSpan("https://", OmniboxTextColor::kOmniboxTextDimmed),
                   IsSpan("www.example.org", OmniboxTextColor::kOmniboxText),
                   IsSpan("/", OmniboxTextColor::kOmniboxTextDimmed)));
-  EXPECT_EQ(2, mojo_state->browser_version);
-  EXPECT_EQ(0, mojo_state->ui_version);
+  EXPECT_EQ(2u, mojo_state->browser_version);
+  EXPECT_EQ(0u, mojo_state->ui_version);
 
   // Racing input gets ignored.
   EXPECT_TRUE(
@@ -332,8 +332,8 @@ TEST_F(WebUIReadOnlyOmniboxTest, InputVersion) {
       ElementsAre(IsSpan("https://", OmniboxTextColor::kOmniboxTextDimmed),
                   IsSpan("www.example.org", OmniboxTextColor::kOmniboxText),
                   IsSpan("/", OmniboxTextColor::kOmniboxTextDimmed)));
-  EXPECT_EQ(2, mojo_state->browser_version);
-  EXPECT_EQ(0, mojo_state->ui_version);
+  EXPECT_EQ(2u, mojo_state->browser_version);
+  EXPECT_EQ(0u, mojo_state->ui_version);
 
   // Now an update with appropriate browser version will work.
   EXPECT_TRUE(
@@ -351,8 +351,8 @@ TEST_F(WebUIReadOnlyOmniboxTest, InputVersion) {
   EXPECT_THAT(mojo_state->text_pieces,
               ElementsAre(IsSpan("https://www.example.org/a",
                                  OmniboxTextColor::kOmniboxText)));
-  EXPECT_EQ(2, mojo_state->browser_version);
-  EXPECT_EQ(1, mojo_state->ui_version);
+  EXPECT_EQ(2u, mojo_state->browser_version);
+  EXPECT_EQ(1u, mojo_state->ui_version);
 }
 
 }  // namespace
