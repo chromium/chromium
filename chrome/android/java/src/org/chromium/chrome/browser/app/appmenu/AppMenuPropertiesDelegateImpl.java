@@ -660,11 +660,16 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     public static @Nullable ResolveInfo queryWebApkResolveInfo(Context context, Tab currentTab) {
         String manifestId =
                 AppBannerManager.maybeGetManifestId(assumeNonNull(currentTab.getWebContents()));
+        String expectedPackage = WebappRegistry.getInstance().findWebApkWithManifestId(manifestId);
         ResolveInfo resolveInfo =
                 WebApkValidator.queryFirstWebApkResolveInfo(
-                        context,
-                        currentTab.getUrl().getSpec(),
-                        WebappRegistry.getInstance().findWebApkWithManifestId(manifestId));
+                        context, currentTab.getUrl().getSpec(), expectedPackage);
+
+        if (resolveInfo != null
+                && expectedPackage != null
+                && !expectedPackage.equals(resolveInfo.activityInfo.packageName)) {
+            resolveInfo = null;
+        }
 
         if (resolveInfo == null) {
             // If a WebAPK with matching manifestId can't be found, fallback to query without it.
