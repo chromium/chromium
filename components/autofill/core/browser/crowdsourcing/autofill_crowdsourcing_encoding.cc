@@ -490,14 +490,6 @@ void EncodeFormFieldsForUpload(
     if (IsCheckable(field->check_status())) {
       continue;
     }
-    // Do not upload fields that were filled with a fallback type, as this would
-    // introduce unnecessary noise in the field votes.
-    if (field->WasAutofilledWithFallback() &&
-        !base::FeatureList::IsEnabled(
-            features::kAutofillUploadManualFallbackFieldsToServer)) {
-      continue;
-    }
-
     const EncodeUploadRequestOptions::Field* field_options = nullptr;
     if (auto it = fields.find(field->global_id()); it != fields.end()) {
       field_options = &it->second;

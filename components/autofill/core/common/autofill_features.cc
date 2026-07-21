@@ -934,11 +934,6 @@ BASE_FEATURE_PARAM(std::string,
                    "autofill_experimental_regex_bucket4",
                    "");
 
-// Enables uploading fields that were autofilled with fallback types.
-// TODO: crbug.com/444147005 - Clean up after this feature is rolled out.
-BASE_FEATURE(kAutofillUploadManualFallbackFieldsToServer,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables using a custom address model for India, overriding the legacy one.
 BASE_FEATURE(kAutofillUseINAddressModel, base::FEATURE_DISABLED_BY_DEFAULT);
 

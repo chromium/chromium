@@ -2147,7 +2147,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
 // fallback. Chrome clients should upload all form fields, see
 // crbug.com/444147005 for more details.
 TEST_F(AutofillCrowdsourcingEncoding,
-       EncodeUploadRequest_SkipFieldsFilledWithFallback) {
+       EncodeUploadRequest_UploadFieldsFilledWithFallback) {
   FormData form = test::GetFormData({.fields = {{.role = NAME_FIRST}}});
   FormStructure form_structure(form);
 
