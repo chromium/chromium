@@ -105,6 +105,7 @@ public class VerticalTabListCoordinator {
     private final TabListModel mPinnedTabsModelList;
     private final StaticPinnedTabsMediator mPinnedTabsMediator;
     private final TabListRecyclerView mPinnedTabsRecyclerView;
+    private final SimpleRecyclerViewAdapter mPinnedTabsAdapter;
     private final GridLayoutManager mPinnedLayoutManager;
     private final TabModelSelector mTabModelSelector;
     private final WindowAndroid mWindowAndroid;
@@ -465,6 +466,8 @@ public class VerticalTabListCoordinator {
                 TabVerticalViewBinder::bindPinnedTab);
 
         pinnedTabsRecyclerView.setAdapter(pinnedTabsAdapter);
+        mPinnedTabsAdapter = pinnedTabsAdapter;
+        pinnedTabsRecyclerView.setupCustomItemAnimator(/* useClipAnimations= */ true);
         mPinnedLayoutManager = new GridLayoutManager(activity, getSpanCount());
         pinnedTabsRecyclerView.setLayoutManager(mPinnedLayoutManager);
 
@@ -709,8 +712,16 @@ public class VerticalTabListCoordinator {
     }
 
     private void updatePinnedTabsVisibility() {
-        mPinnedTabsRecyclerView.setVisibility(
-                mPinnedTabsModelList.isEmpty() ? View.GONE : View.VISIBLE);
+        boolean isEmpty = mPinnedTabsModelList.isEmpty();
+        if (isEmpty) {
+            if (mPinnedTabsRecyclerView.getVisibility() != View.GONE) {
+                mPinnedTabsRecyclerView.setVisibility(View.GONE);
+                mPinnedTabsRecyclerView.swapAdapter(
+                        mPinnedTabsAdapter, /* removeAndRecycleExistingViews= */ true);
+            }
+        } else {
+            mPinnedTabsRecyclerView.setVisibility(View.VISIBLE);
+        }
     }
 
     private void requestRailCollapseStateChange(@RailCollapseState int targetState) {
