@@ -6,7 +6,7 @@ import 'chrome://contextual-tasks/app.js';
 
 import type {ContextualTasksAppElement} from 'chrome://contextual-tasks/app.js';
 import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
-import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
+import {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
 import {LensOverlayDismissalSource, PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import {ContextUploadStatus, InputType, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
@@ -14,6 +14,7 @@ import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_b
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockInputState} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
@@ -785,6 +786,41 @@ suite('ContextualTasksComposeboxFilesTest', () => {
               FAKE_TOKEN_STRING_2, pdfFile, innerComposebox,
               mockSearchboxPageHandler, 1);
           assertEquals('Ask about these', innerComposebox.inputPlaceholder);
+        });
+
+        test('single tab file updates the input placeholder', async () => {
+          const {innerComposebox} = parts;
+          const token = {high: 0n, low: 1n} as unknown as UnguessableToken;
+          const file = new ComposeboxFile(
+              token, 'test.tab', 'tab', InputType.kBrowserTab);
+          innerComposebox.addFileContextForTesting(file);
+          await innerComposebox.updateComplete;
+
+          assertEquals('Ask about this tab', innerComposebox.inputPlaceholder);
+        });
+
+        test('single pdf file updates the input placeholder', async () => {
+          const {innerComposebox} = parts;
+          const pdfFile =
+              new File(['test'], 'test.pdf', {type: 'application/pdf'});
+          await uploadFileAndVerify(
+              FAKE_TOKEN_STRING, pdfFile, innerComposebox,
+              mockSearchboxPageHandler);
+          assertEquals('Ask about this doc', innerComposebox.inputPlaceholder);
+        });
+
+        test('single unknown file does not update placeholder', async () => {
+          const {innerComposebox} = parts;
+          const token = {high: 0n, low: 1n} as unknown as UnguessableToken;
+          const file = new ComposeboxFile(
+              token, 'unknown.dat', 'unknown/type', InputType.kLensFile);
+          innerComposebox.addFileContextForTesting(file);
+          await innerComposebox.updateComplete;
+
+          const placeholder = innerComposebox.inputPlaceholder;
+          assertTrue(
+              !placeholder.includes('Ask about'),
+              `Placeholder '${placeholder}' should not include 'Ask about'`);
         });
       });
 });

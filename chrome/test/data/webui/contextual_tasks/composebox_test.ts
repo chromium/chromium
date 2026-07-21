@@ -1047,6 +1047,28 @@ suite('ContextualTasksComposeboxTest', () => {
     assertEquals(updatedFile, files[0]);
   });
 
+  test('SingleAutoTabFileDoesNotUpdatePlaceholder', async () => {
+    const innerComposebox = contextualTasksApp.$.composebox.$.composebox;
+    const defaultApiHint =
+        loadTimeData.getString('searchboxComposePlaceholder');
+    innerComposebox.enableFileHint = true;
+
+    const tabInfo = {
+      tabId: 1,
+      title: 'Auto Tab',
+      url: 'https://example.com',
+      lastActive: {internalValue: BigInt(100)},
+      showInCurrentTabChip: false,
+      showInPreviousTabChip: false,
+    };
+    searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(tabInfo, null);
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+    await innerComposebox.updateComplete;
+
+    assertEquals(defaultApiHint, innerComposebox.inputPlaceholder);
+  });
+
   test('VoiceSearchErrorDetailsLinkIsClickable', async () => {
     const contextualComposebox = contextualTasksApp.$.composebox;
     const innerComposebox = contextualComposebox.$.composebox;

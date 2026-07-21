@@ -3,17 +3,14 @@
 // found in the LICENSE file.
 
 import 'chrome://contextual-tasks/strings.m.js';
-import 'chrome://resources/cr_components/composebox/composebox.js';
+import './test_composebox_mixin.js';
 
-import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
-import type {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
 import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
-import {ContextUploadStatus, ModelMode, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {ModelMode, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {InputState} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -21,9 +18,10 @@ import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {installMock, MockInputState} from './composebox_test_utils.js';
+import type {TestComposeboxMixinElement} from './test_composebox_mixin.js';
 
 suite('ComposeboxInputPlaceholder', () => {
-  let composebox: ComposeboxElement;
+  let composebox: TestComposeboxMixinElement;
   let searchboxHandler: TestMock<SearchboxPageHandlerRemote>;
   let windowProxy: TestMock<WindowProxy>;
   let searchboxCallbackRouter: SearchboxPageCallbackRouter;
@@ -35,8 +33,7 @@ suite('ComposeboxInputPlaceholder', () => {
     searchboxHandler.setResultFor(
         'getInputState', Promise.resolve({state: inputState}));
 
-    composebox = document.createElement('cr-composebox');
-    composebox.ntpRealboxNextEnabled = true;
+    composebox = document.createElement('test-composebox-mixin');
     composebox.state = {
       text: '',
       files: [],
@@ -54,7 +51,7 @@ suite('ComposeboxInputPlaceholder', () => {
     await microtasksFinished();
   }
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     searchboxCallbackRouter = new SearchboxPageCallbackRouter();
@@ -88,31 +85,8 @@ suite('ComposeboxInputPlaceholder', () => {
                                                    removeListener() {},
                                                    removeEventListener() {},
                                                  }));
-
-
-    composebox = document.createElement('cr-composebox');
-    document.body.appendChild(composebox);
-    await microtasksFinished();
   });
 
-  test('InputPlaceholderOverride', async () => {
-    const input = composebox.getInputElement().$.input;
-    assertTrue(!!input);
-    const initialPlaceholder = input.placeholder;
-    assertTrue(initialPlaceholder.length > 0);
-    assertEquals('', composebox.inputPlaceholderOverride);
-
-    const overrideText = 'Override Text';
-    composebox.inputPlaceholderOverride = overrideText;
-    await composebox.updateComplete;
-
-    assertEquals(overrideText, input.placeholder);
-
-    composebox.inputPlaceholderOverride = '';
-    await composebox.updateComplete;
-
-    assertEquals(initialPlaceholder, input.placeholder);
-  });
 
   test('InputPlaceholderFromModelConfig', async () => {
     const modelHint = 'Ask a model';
@@ -177,10 +151,7 @@ suite('ComposeboxInputPlaceholder', () => {
           defaultApiHint, composebox.getInputElement().$.input.placeholder);
 
       // Enable tool mode.
-      const contextEntrypoint =
-          composebox.shadowRoot.querySelector('#contextEntrypoint');
-      assertTrue(!!contextEntrypoint);
-      contextEntrypoint.dispatchEvent(new CustomEvent('tool-click', {
+      composebox.onToolClick(new CustomEvent('tool-click', {
         bubbles: true,
         composed: true,
         detail: {toolMode: tool},
@@ -196,7 +167,7 @@ suite('ComposeboxInputPlaceholder', () => {
       assertEquals(hint, composebox.getInputElement().$.input.placeholder);
 
       // Disable tool mode.
-      contextEntrypoint.dispatchEvent(new CustomEvent('tool-click', {
+      composebox.onToolClick(new CustomEvent('tool-click', {
         bubbles: true,
         composed: true,
         detail: {toolMode: tool},
@@ -214,121 +185,6 @@ suite('ComposeboxInputPlaceholder', () => {
     });
   });
 
-  test('MultipleFilesUpdatesPlaceholder', async () => {
-    loadTimeData.overrideValues({
-      composeboxHintTextAskAboutThese: 'Ask about these',
-    });
-    composebox.enableFileHint = true;
-    const token1 = {high: 0n, low: 1n} as any;
-    const token2 = {high: 0n, low: 2n} as any;
-    composebox.addFileContextForTesting({
-      type: 'image/png',
-      uuid: token1,
-      status: ContextUploadStatus.kNotUploaded,
-    } as ComposeboxFile);
-    composebox.addFileContextForTesting({
-      type: 'application/pdf',
-      uuid: token2,
-      status: ContextUploadStatus.kNotUploaded,
-    } as ComposeboxFile);
-    await composebox.updateComplete;
-
-    assertEquals(
-        'Ask about these', composebox.getInputElement().$.input.placeholder);
-  });
-
-  test('SingleTabFileUpdatesPlaceholder', async () => {
-    loadTimeData.overrideValues({
-      composeboxHintTextAskAboutThisTab: 'Ask about this tab',
-    });
-    composebox.enableFileHint = true;
-    const token = {high: 0n, low: 1n} as any;
-    composebox.addFileContextForTesting({
-      type: 'tab',
-      uuid: token,
-      status: ContextUploadStatus.kNotUploaded,
-    } as ComposeboxFile);
-    await composebox.updateComplete;
-
-    assertEquals(
-        'Ask about this tab', composebox.getInputElement().$.input.placeholder);
-  });
-
-  test('SingleAutoTabFileDoesNotUpdatePlaceholder', async () => {
-    loadTimeData.overrideValues({
-      composeboxHintTextAskAboutThisTab: 'Ask about this tab',
-    });
-    composebox.enableFileHint = true;
-    const token = {high: 0n, low: 1n};
-    searchboxHandler.setResultFor('addTabContext', Promise.resolve({token}));
-
-    const tab: TabInfo = {
-      tabId: 1,
-      title: 'Auto Tab',
-      url: 'http://example.com',
-      showInCurrentTabChip: false,
-      showInPreviousTabChip: false,
-      lastActive: {internalValue: BigInt(1)} as any,
-    };
-
-    composebox.updateAutoSuggestedTabContextForTesting(tab);
-    await searchboxHandler.whenCalled('addTabContext');
-    await composebox.updateComplete;
-
-    assertEquals(
-        defaultApiHint, composebox.getInputElement().$.input.placeholder);
-  });
-
-  test('SingleImageFileUpdatesPlaceholder', async () => {
-    loadTimeData.overrideValues({
-      composeboxHintTextAskAboutThisImage: 'Ask about this image',
-    });
-    composebox.enableFileHint = true;
-    const token = {high: 0n, low: 1n} as any;
-    composebox.addFileContextForTesting({
-      type: 'image/png',
-      uuid: token,
-      status: ContextUploadStatus.kNotUploaded,
-    } as ComposeboxFile);
-    await composebox.updateComplete;
-
-    assertEquals(
-        'Ask about this image',
-        composebox.getInputElement().$.input.placeholder);
-  });
-
-  test('SinglePdfFileUpdatesPlaceholder', async () => {
-    loadTimeData.overrideValues({
-      composeboxHintTextAskAboutThisDoc: 'Ask about this doc',
-    });
-    composebox.enableFileHint = true;
-    const token = {high: 0n, low: 1n} as any;
-    composebox.addFileContextForTesting({
-      type: 'application/pdf',
-      uuid: token,
-      status: ContextUploadStatus.kNotUploaded,
-    } as ComposeboxFile);
-    await composebox.updateComplete;
-
-    assertEquals(
-        'Ask about this doc', composebox.getInputElement().$.input.placeholder);
-  });
-
-  test('SingleUnknownFileUpdatesPlaceholder', async () => {
-    composebox.enableFileHint = true;
-    const token = {high: 0n, low: 1n} as any;
-    composebox.addFileContextForTesting({
-      type: 'unknown/type',
-      uuid: token,
-      status: ContextUploadStatus.kNotUploaded,
-    } as ComposeboxFile);
-    await composebox.updateComplete;
-
-    const placeholder = composebox.getInputElement().$.input.placeholder;
-    assertTrue(
-        !placeholder.includes('Ask about'),
-        `Placeholder '${placeholder}' should not include 'Ask about'`);
-  });
 
   test(
       'updates suggestions when inputState activeTool changes from unspecified',

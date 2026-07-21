@@ -37,6 +37,7 @@ export class TestComposeboxMixinElement extends TestElementBase {
         <cr-composebox-input id="input"
             .result="${this.result}"
             .input="${this.input}"
+            .inputPlaceholder="${this.inputPlaceholder}"
             .smartComposeEnabled="${this.smartComposeEnabled}"
             .smartComposeInlineHint="${this.smartComposeInlineHint}"
             .cancelButtonTitle="${this.computeCancelButtonTitle()}"
