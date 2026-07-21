@@ -5511,6 +5511,56 @@ TEST_F(ReadAnythingAppControllerTest, ProcessModelUpdates_ResetsPdfDebouncer) {
   EXPECT_TRUE(model().display_node_ids().contains(kId));
 }
 
+TEST_F(ReadAnythingAppControllerTest,
+       MaybeLogAXTreeReady_LogsTimeFromActiveAXTreeIDChangedToAXTreeReady) {
+  base::HistogramTester histogram_tester;
+  ui::AXTreeID new_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+
+  // Change the active tree ID. This will trigger OnActiveAXTreeIDChanged, which
+  // sets ax_tree_ready_for_current_active_tree_recorded_ to false.
+  controller().OnActiveAXTreeIDChanged(new_tree_id, ukm::kInvalidSourceId,
+                                       false);
+
+  // The metric should not be logged yet because the active tree is not in the
+  // model.
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.TimeFromActiveAXTreeIDChangedToAXTreeReady",
+      0);
+
+  // Send an update for a different tree.
+  ui::AXTreeID different_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  ui::AXTreeUpdate different_update;
+  test::SetUpdateTreeID(&different_update, different_tree_id);
+  different_update.root_id = 1;
+  different_update.nodes = {test::TextNode(1, u"Hello World")};
+
+  // Confirm that Distill hasn't been called for the active tree.
+  EXPECT_CALL(*distiller_, Distill).Times(0);
+
+  AccessibilityEventReceived({different_update});
+
+  // Verify that the metric still not logged.
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.TimeFromActiveAXTreeIDChangedToAXTreeReady",
+      0);
+
+  // Update for the new active tree.
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, new_tree_id);
+  update.root_id = 1;
+  update.nodes = {test::TextNode(1, u"Hello World")};
+
+  // Expect Distill to not be called because there is no load complete event.
+  EXPECT_CALL(*distiller_, Distill).Times(0);
+
+  AccessibilityEventReceived({update});
+
+  // Verify that the metric is now logged.
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.TimeFromActiveAXTreeIDChangedToAXTreeReady",
+      1);
+}
+
 class ReadAnythingAppControllerReadabilitySelectTextTest
     : public ReadAnythingAppControllerTest {
  public:

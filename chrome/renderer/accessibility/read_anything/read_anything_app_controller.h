@@ -571,6 +571,10 @@ class ReadAnythingAppController
 
   void OnPdfDebounceFinished();
 
+  // Logs the time it took for the AXTree to become ready after the active
+  // tree ID changed.
+  void MaybeLogAXTreeReady();
+
   // Stores a screenshot of the page and triggers distillation to record protos.
   // This function is not used in production and is behind the disabled
   // `DataCollectionModeForScreen2x` flag.
@@ -604,6 +608,10 @@ class ReadAnythingAppController
   // Tracks the time since the active tree ID was last changed.
   base::TimeTicks active_tree_changed_start_time_;
 
+  // Tracks the time it took for the AXTree to become ready after the active
+  // tree changes.
+  base::TimeDelta elapsed_time_ax_tree_ready_;
+
   // Model that holds Reading mode state for this controller.
   ReadAnythingAppModel model_;
 
@@ -626,6 +634,16 @@ class ReadAnythingAppController
 
   // The time when the WebUI connects i.e. when onConnected is called.
   base::TimeTicks web_ui_connected_time_ms_;
+
+  // Flag to ensure the AXTree ready metric is logged only once per active
+  // tree change. Initially set as true to make sure that the variable reset is
+  // called before trying to log the metric.
+  bool ax_tree_ready_for_current_active_tree_recorded_ = true;
+
+  // Flag to ensure the AXTree ready metric is measured only once per active
+  // tree change. Initially set as true to make sure that the variable reset is
+  // called before trying to measure the metric.
+  bool ax_tree_ready_for_current_active_tree_measured_ = true;
 
   // A timer that causes a distillation after a user stops typing for a set
   // number of seconds.

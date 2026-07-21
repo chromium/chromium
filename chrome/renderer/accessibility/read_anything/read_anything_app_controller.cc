@@ -643,6 +643,8 @@ void ReadAnythingAppController::AccessibilityEventReceived(
     }
   }
 
+  MaybeLogAXTreeReady();
+
   // From this point onward, `updates` and `events` should not be accessed.
   if (tree_id != model_.active_tree_id() || IsUpdateProcessingPaused()) {
     return;
@@ -794,6 +796,10 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
     return;
   }
   VLOG(1) << "On active tree changed with new id: " << tree_id;
+
+  ax_tree_ready_for_current_active_tree_measured_ = false;
+  ax_tree_ready_for_current_active_tree_recorded_ = false;
+  active_tree_changed_start_time_ = base::TimeTicks::Now();
 
   // If the previous tree was not unknown (e.g. this is not the first tree
   // seen), log session metrics for the previous tree.
@@ -971,6 +977,30 @@ void ReadAnythingAppController::RecordEstimatedWordsHeard() {
   base::UmaHistogramCustomCounts(kWordsHeardHistogramName, model_.words_heard(),
                                  1, kMaxWordsConsumed, kWordsConsumedBuckets);
   model_.set_words_heard(0);
+}
+
+// TODO(crbug.com/525868787): Incorporate OnAXTreeReady for getting the
+// processed AXTree after it is processed.
+void ReadAnythingAppController::MaybeLogAXTreeReady() {
+  if (ax_tree_ready_for_current_active_tree_recorded_) {
+    return;
+  }
+
+  if (model_.GetValidActiveTree()) {
+    if (!ax_tree_ready_for_current_active_tree_measured_) {
+      elapsed_time_ax_tree_ready_ =
+          base::TimeTicks::Now() - active_tree_changed_start_time_;
+      ax_tree_ready_for_current_active_tree_measured_ = true;
+    }
+
+    if (!IsHidden() && ax_tree_ready_for_current_active_tree_measured_) {
+      base::UmaHistogramLongTimes(
+          "Accessibility.ReadAnything."
+          "TimeFromActiveAXTreeIDChangedToAXTreeReady",
+          elapsed_time_ax_tree_ready_);
+      ax_tree_ready_for_current_active_tree_recorded_ = true;
+    }
+  }
 }
 
 void ReadAnythingAppController::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
@@ -2790,6 +2820,10 @@ void ReadAnythingAppController::OnReadingModeShown(
   if (open_trigger == read_anything::mojom::ReadAnythingOpenTrigger::
                           kListenToThisPageContextMenu) {
     ExecuteJavaScript("chrome.readingMode.setPlayOnOpen(true);");
+  }
+
+  if (ax_tree_ready_for_current_active_tree_measured_) {
+    MaybeLogAXTreeReady();
   }
 }
 
