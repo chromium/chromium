@@ -302,7 +302,7 @@ crbug.com/515133241 [ win11 nvidia-0x2c02 ] OverlayModeTraceTest_DirectCompositi
 # Win11/Qualcomm Snapdragon X Elite
 crbug.com/453704683 [ win11 qualcomm-0x36334330 ] OverlayModeTraceTest_DirectComposition* [ Failure ]
 
-
+crbug.com/536977885 [ mac asan apple-angle-metal-renderer:-apple-m2 ] * [ RetryOnFailure ]
 
 ###############################
 # Permanent Slow Expectations #
