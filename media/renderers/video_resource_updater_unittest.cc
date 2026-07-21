@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "media/renderers/video_resource_updater.h"
 
 #include <stddef.h>
@@ -21,7 +20,9 @@
 #include "components/viz/test/test_raster_interface.h"
 #include "components/viz/test/test_shared_image_interface_provider.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "skia/ext/skcolorspace_primaries.h"
@@ -983,6 +984,25 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SingleP010HDR) {
   EXPECT_EQ(kHDR10ColorSpace, resource.resource.GetColorSpace());
   EXPECT_EQ(hdr_metadata, resource.resource.hdr_metadata);
   EXPECT_EQ(0u, GetSharedImageCount());
+}
+
+TEST_F(VideoResourceUpdaterTest, EightBitFrameForcedToF16DoesNotOverread) {
+  gpu::SharedImageCapabilities caps =
+      context_provider_->SharedImageInterface()->GetCapabilities();
+  caps.disable_r8_shared_images = true;
+  caps.is_r16f_supported = true;
+  caps.supports_r16_shared_images = false;
+  context_provider_->SharedImageInterface()->SetCapabilities(caps);
+
+  std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
+  scoped_refptr<VideoFrame> video_frame = CreateTestYUVVideoFrame();
+
+  VideoFrameExternalResource resource =
+      updater->CreateExternalResourceFromVideoFrame(video_frame);
+  if (resource.resource.GetFormat().is_multi_plane()) {
+    EXPECT_NE(viz::SharedImageFormat::ChannelFormat::k16F,
+              resource.resource.GetFormat().channel_format());
+  }
 }
 
 }  // namespace
