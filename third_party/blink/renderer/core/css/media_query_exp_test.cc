@@ -426,7 +426,7 @@ TEST(MediaQueryExpTest, UnitFlags) {
   EXPECT_EQ(MediaQueryExpValue::UnitFlags::kFontRelative,
             RightExp("width", LtCmp(EmValue(10.0))).GetUnitFlags());
   // width < 10rem
-  EXPECT_EQ(MediaQueryExpValue::UnitFlags::kRootFontRelative,
+  EXPECT_EQ(MediaQueryExpValue::UnitFlags::kRootRelative,
             RightExp("width", LtCmp(RemValue(10.0))).GetUnitFlags());
   // 10px < width
   EXPECT_EQ(MediaQueryExpValue::UnitFlags::kNone,
@@ -435,7 +435,7 @@ TEST(MediaQueryExpTest, UnitFlags) {
   EXPECT_EQ(MediaQueryExpValue::UnitFlags::kFontRelative,
             LeftExp("width", LtCmp(EmValue(10.0))).GetUnitFlags());
   // 10rem < width
-  EXPECT_EQ(MediaQueryExpValue::UnitFlags::kRootFontRelative,
+  EXPECT_EQ(MediaQueryExpValue::UnitFlags::kRootRelative,
             LeftExp("width", LtCmp(RemValue(10.0))).GetUnitFlags());
   // 10dvh < width
   EXPECT_EQ(MediaQueryExpValue::UnitFlags::kDynamicViewport,

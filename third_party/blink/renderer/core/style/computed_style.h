@@ -856,8 +856,7 @@ class ComputedStyle final : public ComputedStyleBase {
     return GetFont()->GetFontDescription();
   }
   bool HasFontRelativeUnits() const {
-    return HasEmUnits() || HasRootFontRelativeUnits() ||
-           HasGlyphRelativeUnits();
+    return HasEmUnits() || HasRootRelativeUnits() || HasGlyphRelativeUnits();
   }
   bool HasAnyRelativeUnits() const {
     return HasFontRelativeUnits() || HasContainerRelativeValue() ||

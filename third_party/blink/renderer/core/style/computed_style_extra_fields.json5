@@ -194,7 +194,7 @@
       type_name: "unsigned",
     },
     {
-      name: "HasRootFontRelativeUnits",
+      name: "HasRootRelativeUnits",
       field_template: "monotonic_flag",
       default_value: "false",
       custom_compare: true,

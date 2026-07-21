@@ -264,7 +264,7 @@ bool ContainerQueryEvaluator::EvalAndAdd(const ContainerQuery& query,
   // represents dependencies on external circumstance that can change without
   // ContainerQueryEvaluator being notified.
   bool use_cached =
-      (result.unit_flags & (MediaQueryExpValue::UnitFlags::kRootFontRelative |
+      (result.unit_flags & (MediaQueryExpValue::UnitFlags::kRootRelative |
                             MediaQueryExpValue::UnitFlags::kDynamicViewport |
                             MediaQueryExpValue::UnitFlags::kStaticViewport |
                             MediaQueryExpValue::UnitFlags::kContainer)) == 0;
@@ -296,8 +296,8 @@ bool ContainerQueryEvaluator::EvalAndAdd(const ContainerQuery& query,
                            MediaQueryExpValue::UnitFlags::kContainer)) {
     match_result.SetDependsOnStaticViewportUnits();
   }
-  if (result.unit_flags & MediaQueryExpValue::UnitFlags::kRootFontRelative) {
-    match_result.SetDependsOnRootFontContainerQueries();
+  if (result.unit_flags & MediaQueryExpValue::UnitFlags::kRootRelative) {
+    match_result.SetDependsOnRootUnitContainerQueries();
   }
   if (!depends_on_size_) {
     depends_on_size_ = query.Selector().SelectsSizeContainers();
@@ -353,6 +353,15 @@ bool ContainerQueryEvaluator::EvalAndAdd(const ContainerQuery& query,
       parent->SetChildrenAffectedByBackwardPositionalRules();
       container->GetDocument().GetStyleEngine().SetUsesTreeCountingFunctions();
     }
+  }
+  if ((result.unit_flags & MediaQueryExpValue::UnitFlags::kRootRelative) != 0) {
+    Element* container = ContainerElement();
+    container->GetDocument().GetStyleEngine().SetUsesRootRelativeUnits(true);
+  }
+  if ((result.unit_flags &
+       MediaQueryExpValue::UnitFlags::kLineHeightRelative) != 0) {
+    Element* container = ContainerElement();
+    container->GetDocument().GetStyleEngine().SetUsesLineHeightUnits(true);
   }
   unit_flags_ |= result.unit_flags;
 
@@ -899,7 +908,7 @@ void ContainerQueryEvaluator::UpdateContainerValuesFromUnitChanges(
   CHECK(media_query_evaluator_);
   unsigned changed_flags = 0;
   if (change.RootRelativeUnitsMaybeChanged()) {
-    changed_flags |= MediaQueryExpValue::kRootFontRelative;
+    changed_flags |= MediaQueryExpValue::kRootRelative;
   }
   if (change.ContainerRelativeUnitsMaybeChanged()) {
     changed_flags |= MediaQueryExpValue::kContainer;
@@ -953,16 +962,19 @@ StyleRecalcChange ContainerQueryEvaluator::ApplyScrollStateAndStyleChanges(
     return recalc_change;
   }
 
-  // If size container queries are expressed in font-relative units, the query
+  // If size container queries are expressed in relative units, the query
   // evaluation may change even if the size of the container in pixels did not
   // change. If the old and new style use different font properties, and there
   // are existing queries that depend on font relative units, we need to update
   // the container values and invalidate style for any changed queries.
-  bool invalidate_for_font =
-      (unit_flags_ & MediaQueryExpValue::kFontRelative) &&
-      (base::FeatureList::IsEnabled(blink::features::kCSSFontComparisonFix)
-           ? !base::ValuesEquivalent(old_style.GetFont(), new_style.GetFont())
-           : old_style.GetFont() != new_style.GetFont());
+  // Similarly for line-height and the lh unit.
+  bool invalidate_for_relative_units =
+      ((unit_flags_ & MediaQueryExpValue::kFontRelative) &&
+       (base::FeatureList::IsEnabled(blink::features::kCSSFontComparisonFix)
+            ? !base::ValuesEquivalent(old_style.GetFont(), new_style.GetFont())
+            : old_style.GetFont() != new_style.GetFont())) ||
+      ((unit_flags_ & MediaQueryExpValue::kLineHeightRelative) &&
+       old_style.ComputedLineHeight() != new_style.ComputedLineHeight());
 
   // Writing direction changes may affect how logical queries match for size and
   // scroll-state() queries even when the physical size or scroll-state do not
@@ -971,14 +983,14 @@ StyleRecalcChange ContainerQueryEvaluator::ApplyScrollStateAndStyleChanges(
       MayDependOnWritingDirection() &&
       old_style.GetWritingDirection() != new_style.GetWritingDirection();
 
-  if (invalidate_for_writing_direction || invalidate_for_font ||
+  if (invalidate_for_writing_direction || invalidate_for_relative_units ||
       DependsOnTreeCounting()) {
     // Writing direction and font sizing are cached on CSSContainerValues. Need
     // to recreate the values based on the current ComputedStyle.
     UpdateContainerValues();
   }
 
-  if (invalidate_for_writing_direction || invalidate_for_font ||
+  if (invalidate_for_writing_direction || invalidate_for_relative_units ||
       DependsOnTreeCounting()) {
     switch (StyleAffectingSizeChanged()) {
       case ContainerQueryEvaluator::Change::kNone:
@@ -1004,7 +1016,7 @@ StyleRecalcChange ContainerQueryEvaluator::ApplyScrollStateAndStyleChanges(
         break;
     }
   }
-  if (invalidate_for_font || DependsOnTreeCounting() ||
+  if (invalidate_for_relative_units || DependsOnTreeCounting() ||
       old_style.InheritedVariables() != new_style.InheritedVariables() ||
       old_style.NonInheritedVariables() != new_style.NonInheritedVariables() ||
       old_style.InitialData() != new_style.InitialData()) {

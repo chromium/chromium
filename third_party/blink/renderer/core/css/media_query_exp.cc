@@ -743,9 +743,12 @@ unsigned MediaQueryExpValue::GetUnitFlags() const {
       length_type_flags.test(CSSPrimitiveValue::kUnitTypeZeroCharacterWidth) ||
       length_type_flags.test(CSSPrimitiveValue::kUnitTypeFontCapitalHeight) ||
       length_type_flags.test(
-          CSSPrimitiveValue::kUnitTypeIdeographicFullWidth) ||
-      length_type_flags.test(CSSPrimitiveValue::kUnitTypeLineHeight)) {
+          CSSPrimitiveValue::kUnitTypeIdeographicFullWidth)) {
     unit_flags |= UnitFlags::kFontRelative;
+  }
+
+  if (length_type_flags.test(CSSPrimitiveValue::kUnitTypeLineHeight)) {
+    unit_flags |= UnitFlags::kLineHeightRelative;
   }
 
   if (length_type_flags.test(CSSPrimitiveValue::kUnitTypeRootFontSize) ||
@@ -757,7 +760,7 @@ unsigned MediaQueryExpValue::GetUnitFlags() const {
       length_type_flags.test(
           CSSPrimitiveValue::kUnitTypeRootFontIdeographicFullWidth) ||
       length_type_flags.test(CSSPrimitiveValue::kUnitTypeRootLineHeight)) {
-    unit_flags |= UnitFlags::kRootFontRelative;
+    unit_flags |= UnitFlags::kRootRelative;
   }
 
   if (CSSPrimitiveValue::HasDynamicViewportUnits(length_type_flags)) {
