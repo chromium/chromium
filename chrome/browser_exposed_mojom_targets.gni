@@ -99,7 +99,6 @@ browser_exposed_mojom_targets = [
   "//components/autofill/core/browser/ml_model/logging:mojo_bindings",
   "//components/autofill/core/common/mojom:mojo_types",
   "//components/browser_apis/tab_strip:mojom",
-  "//components/browsing_topics/mojom:mojo_bindings",
   "//components/commerce/core/internals/mojom:mojo_bindings",
   "//components/commerce/core/mojom:mojo_bindings",
   "//components/compose/core/browser:mojo_bindings",

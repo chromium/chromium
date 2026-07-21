@@ -67,10 +67,6 @@ class BrowsingTopicsServiceImpl
 
   int NumVersionsInEpochs(const url::Origin& main_frame_origin) const override;
 
-  void GetBrowsingTopicsStateForWebUi(
-      bool calculate_now,
-      mojom::PageHandler::GetBrowsingTopicsStateCallback callback) override;
-
   std::vector<privacy_sandbox::CanonicalTopic> GetTopTopicsForDisplay()
       const override;
 
@@ -148,16 +144,6 @@ class BrowsingTopicsServiceImpl
   // KeyedService:
   void Shutdown() override;
 
-  // Note: There could be a race in topics calculation and this callback, in
-  // which
-  // case `browsing_topics_state_`'s underlying data could be newer than
-  // `hashed_to_unhashed_context_domains`'s data. This is a minor issue, as it's
-  // unlikely to happen, and the worst consequence is that we fail to display
-  // some unhashed domains for the latest epoch.
-  void GetBrowsingTopicsStateForWebUiHelper(
-      mojom::PageHandler::GetBrowsingTopicsStateCallback callback,
-      std::map<HashedDomain, std::string> hashed_to_unhashed_context_domains);
-
   // These pointers correspond to KeyedServices we depend on, and are safe to
   // hold and use until `Shutdown()` is called (at which point they are
   // cleared):
@@ -195,14 +181,6 @@ class BrowsingTopicsServiceImpl
   // triggered periodically, or due to the "Calculate Now" request from the
   // WebUI.
   std::unique_ptr<BrowsingTopicsCalculator> topics_calculator_;
-
-  // This is populated when a request for the topics state arrives during an
-  // ongoing topics calculation, or for a request that requires "Calculate Now"
-  // in the first place. Callbacks will be invoked to return the latest topics
-  // state as soon as the ongoing calculation finishes, and
-  // `get_state_for_webui_callbacks_` will be cleared afterwards.
-  std::vector<mojom::PageHandler::GetBrowsingTopicsStateCallback>
-      get_state_for_webui_callbacks_;
 
   base::WallClockTimer schedule_calculate_timer_;
 

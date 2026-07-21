@@ -129,7 +129,6 @@ base::span<const base::cstring_view> ChromeURLHosts() {
 #endif
       kChromeUIAutofillInternalsHost,
       kChromeUIBluetoothInternalsHost,
-      kChromeUIBrowsingTopicsInternalsHost,
       kChromeUIChromeFindsInternalsHost,
       kChromeUIChromeURLsHost,
       kChromeUIComponentsHost,

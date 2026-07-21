@@ -63,8 +63,6 @@ inline constexpr char kChromeUIBatchUploadURL[] = "chrome://batch-upload/";
 inline constexpr char kChromeUIBluetoothInternalsHost[] = "bluetooth-internals";
 inline constexpr char kChromeUIBookmarksHost[] = "bookmarks";
 inline constexpr char kChromeUIBookmarksURL[] = "chrome://bookmarks/";
-inline constexpr char kChromeUIBrowsingTopicsInternalsHost[] =
-    "topics-internals";
 inline constexpr char kChromeUICertificateViewerHost[] = "view-cert";
 inline constexpr char kChromeUICertificateViewerURL[] = "chrome://view-cert/";
 inline constexpr char kChromeUIChromeFindsInternalsHost[] =

@@ -14,7 +14,6 @@
 #include "components/browsing_topics/annotator.h"
 #include "components/browsing_topics/browsing_topics_calculator.h"
 #include "components/browsing_topics/browsing_topics_service.h"
-#include "components/browsing_topics/mojom/browsing_topics_internals.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/browsing_topics/browsing_topics.mojom.h"
 
@@ -125,10 +124,6 @@ class MockBrowsingTopicsService : public BrowsingTopicsService {
                std::vector<blink::mojom::EpochTopicPtr>&),
               (override));
   MOCK_METHOD(int, NumVersionsInEpochs, (const url::Origin&), (const override));
-  MOCK_METHOD(void,
-              GetBrowsingTopicsStateForWebUi,
-              (bool, mojom::PageHandler::GetBrowsingTopicsStateCallback),
-              (override));
   MOCK_METHOD(std::vector<privacy_sandbox::CanonicalTopic>,
               GetTopTopicsForDisplay,
               (),

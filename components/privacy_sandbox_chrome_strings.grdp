@@ -147,18 +147,6 @@
   </message>
 
   <!-- Privacy Sandbox v4 - Topics Consent Details -->
-  <message name="IDS_PRIVACY_SANDBOX_TOPICS_CONSENT_STATUS_LABEL" desc="Label for the text which displays the state of the user's Topics consent">
-    Consent status:
-  </message>
-  <message name="IDS_PRIVACY_SANDBOX_TOPICS_CONSENT_LAST_UPDATE_TIME_LABEL" desc="Label for the text which displays the time the user's Topics consent was last updated">
-    Consent last updated:
-  </message>
-  <message name="IDS_PRIVACY_SANDBOX_TOPICS_CONSENT_LAST_UPDATE_SOURCE_LABEL" desc="Label for the text which displays the source of the last update to the users topics consent">
-    Source of last consent update:
-  </message>
-  <message name="IDS_PRIVACY_SANDBOX_TOPICS_CONSENT_LAST_UPDATE_TEXT_LABEL" desc="Label for the text which captures what was presented to the user during their last consent decision">
-    Text presented to user:
-  </message>
   <message name="IDS_PRIVACY_SANDBOX_TOPICS_CONSENT_UPDATE_SOURCE_SETTINGS" desc="Text presented when the user's last Topics consent location was Chrome settings">
     Chrome settings
   </message>

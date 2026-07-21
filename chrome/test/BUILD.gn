@@ -2135,7 +2135,6 @@ if (!is_android) {
       "//chrome/browser/breadcrumbs:browser_tests",
       "//chrome/browser/browsing_data:browser_tests",
       "//chrome/browser/browsing_data:constants",
-      "//chrome/browser/browsing_topics:browser_tests",
       "//chrome/browser/btm:browser_tests",
       "//chrome/browser/chooser_controller:browser_tests",
       "//chrome/browser/client_hints:browser_tests",

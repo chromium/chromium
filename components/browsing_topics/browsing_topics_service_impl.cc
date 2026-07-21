@@ -18,7 +18,6 @@
 #include "components/browsing_topics/browsing_topics_calculator.h"
 #include "components/browsing_topics/browsing_topics_page_load_data_tracker.h"
 #include "components/browsing_topics/common/common_types.h"
-#include "components/browsing_topics/mojom/browsing_topics_internals.mojom.h"
 #include "components/browsing_topics/util.h"
 #include "components/metrics/dwa/dwa_builders.h"
 #include "components/metrics/dwa/dwa_recorder.h"
@@ -365,19 +364,6 @@ void RecordBrowsingTopicsApiActionTypeMetrics(ApiCallerSource caller_source,
       BrowsingTopicsApiActionType::kObserveViaFetchLikeApi);
 }
 
-std::set<HashedDomain> GetAllObservingDomains(
-    const BrowsingTopicsState& browsing_topics_state) {
-  std::set<HashedDomain> observing_domains;
-  for (const EpochTopics& epoch : browsing_topics_state.epochs()) {
-    for (const auto& topic_and_domains :
-         epoch.top_topics_and_observing_domains()) {
-      observing_domains.insert(topic_and_domains.hashed_domains().begin(),
-                               topic_and_domains.hashed_domains().end());
-    }
-  }
-  return observing_domains;
-}
-
 }  // namespace
 
 BrowsingTopicsServiceImpl::~BrowsingTopicsServiceImpl() = default;
@@ -562,49 +548,6 @@ int BrowsingTopicsServiceImpl::NumVersionsInEpochs(
   }
 
   return distinct_versions.size();
-}
-
-void BrowsingTopicsServiceImpl::GetBrowsingTopicsStateForWebUi(
-    bool calculate_now,
-    mojom::PageHandler::GetBrowsingTopicsStateCallback callback) {
-  if (!browsing_topics_state_loaded_) {
-    std::move(callback).Run(
-        mojom::WebUIGetBrowsingTopicsStateResult::NewOverrideStatusMessage(
-            "State loading hasn't finished. Please retry shortly."));
-    return;
-  }
-
-  if (is_shutting_down_) {
-    std::move(callback).Run(
-        mojom::WebUIGetBrowsingTopicsStateResult::NewOverrideStatusMessage(
-            "BrowsingTopicsService is shutting down."));
-    return;
-  }
-
-  // If a calculation is already in progress, get the webui topics state after
-  // the calculation is done. Do this regardless of whether `calculate_now` is
-  // true, i.e. if `calculate_now` is true, this request is effectively merged
-  // with the in progress calculation.
-  if (topics_calculator_) {
-    get_state_for_webui_callbacks_.push_back(std::move(callback));
-    return;
-  }
-
-  DCHECK(schedule_calculate_timer_.IsRunning());
-
-  if (calculate_now) {
-    get_state_for_webui_callbacks_.push_back(std::move(callback));
-    schedule_calculate_timer_.Stop();
-    CalculateBrowsingTopics(/*is_manually_triggered=*/true,
-                            /*previous_timeout_count=*/0);
-    return;
-  }
-
-  site_data_manager_->GetContextDomainsFromHashedContextDomains(
-      GetAllObservingDomains(browsing_topics_state_),
-      base::BindOnce(
-          &BrowsingTopicsServiceImpl::GetBrowsingTopicsStateForWebUiHelper,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 std::vector<privacy_sandbox::CanonicalTopic>
@@ -839,14 +782,6 @@ void BrowsingTopicsServiceImpl::OnCalculateBrowsingTopicsCompleted(
       /*previous_timeout_count=*/0,
       blink::features::kBrowsingTopicsTimePeriodPerEpoch.Get());
 
-  for (auto& callback : get_state_for_webui_callbacks_) {
-    site_data_manager_->GetContextDomainsFromHashedContextDomains(
-        GetAllObservingDomains(browsing_topics_state_),
-        base::BindOnce(
-            &BrowsingTopicsServiceImpl::GetBrowsingTopicsStateForWebUiHelper,
-            weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  }
-  get_state_for_webui_callbacks_.clear();
 }
 
 void BrowsingTopicsServiceImpl::OnBrowsingTopicsStateLoaded() {
@@ -968,84 +903,6 @@ void BrowsingTopicsServiceImpl::OnHistoryDeletions(
     topics_calculator_.reset();
     CalculateBrowsingTopics(is_manually_triggered, previous_timeout_count);
   }
-}
-
-void BrowsingTopicsServiceImpl::GetBrowsingTopicsStateForWebUiHelper(
-    mojom::PageHandler::GetBrowsingTopicsStateCallback callback,
-    std::map<HashedDomain, std::string> hashed_to_unhashed_context_domains) {
-  DCHECK(browsing_topics_state_loaded_);
-  DCHECK(!topics_calculator_);
-
-  if (is_shutting_down_) {
-    std::move(callback).Run(
-        mojom::WebUIGetBrowsingTopicsStateResult::NewOverrideStatusMessage(
-            "BrowsingTopicsService is shutting down."));
-    return;
-  }
-
-  auto webui_state = mojom::WebUIBrowsingTopicsState::New();
-
-  webui_state->next_scheduled_calculation_time =
-      browsing_topics_state_.next_scheduled_calculation_time();
-
-  for (const EpochTopics& epoch : browsing_topics_state_.epochs()) {
-    DCHECK_LE(epoch.padded_top_topics_start_index(),
-              epoch.top_topics_and_observing_domains().size());
-
-    // Note: for a failed epoch calculation, the default zero-initialized values
-    // will be displayed in the Web UI.
-    auto webui_epoch = mojom::WebUIEpoch::New();
-    webui_epoch->calculation_time = epoch.calculation_time();
-    webui_epoch->model_version = base::NumberToString(epoch.model_version());
-    webui_epoch->taxonomy_version =
-        base::NumberToString(epoch.taxonomy_version());
-
-    for (size_t i = 0; i < epoch.top_topics_and_observing_domains().size();
-         ++i) {
-      const TopicAndDomains& topic_and_domains =
-          epoch.top_topics_and_observing_domains()[i];
-
-      privacy_sandbox::CanonicalTopic canonical_topic =
-          privacy_sandbox::CanonicalTopic(topic_and_domains.topic(),
-                                          epoch.taxonomy_version());
-
-      std::vector<std::string> webui_observed_by_domains;
-      webui_observed_by_domains.reserve(
-          topic_and_domains.hashed_domains().size());
-      for (const HashedDomain& hashed_domain :
-           topic_and_domains.hashed_domains()) {
-        auto it = hashed_to_unhashed_context_domains.find(hashed_domain);
-        if (it != hashed_to_unhashed_context_domains.end()) {
-          webui_observed_by_domains.push_back(it->second);
-        } else {
-          // Default to the hashed value if we don't have the original.
-          webui_observed_by_domains.push_back(
-              base::NumberToString(hashed_domain.value()));
-        }
-      }
-
-      // Note: if the topic is invalid (i.e. cleared), the output `topic_id`
-      // will be 0; if the topic is invalid, or if the taxonomy version isn't
-      // recognized by this Chrome binary, the output `topic_name` will be
-      // "Unknown".
-      auto webui_topic = mojom::WebUITopic::New();
-      webui_topic->topic_id = topic_and_domains.topic().value();
-      webui_topic->topic_name = canonical_topic.GetLocalizedRepresentation();
-      webui_topic->is_real_topic = (i < epoch.padded_top_topics_start_index());
-      webui_topic->observed_by_domains = std::move(webui_observed_by_domains);
-
-      webui_epoch->topics.push_back(std::move(webui_topic));
-    }
-
-    webui_state->epochs.push_back(std::move(webui_epoch));
-  }
-
-  // Reorder the epochs from latest to oldest.
-  std::ranges::reverse(webui_state->epochs);
-
-  std::move(callback).Run(
-      mojom::WebUIGetBrowsingTopicsStateResult::NewBrowsingTopicsState(
-          std::move(webui_state)));
 }
 
 }  // namespace browsing_topics
