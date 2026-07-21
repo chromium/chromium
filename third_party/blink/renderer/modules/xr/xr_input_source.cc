@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/html/html_frame_element_base.h"
+#include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/input/event_handling_util.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/modules/xr/xr_grip_space.h"
@@ -522,8 +522,8 @@ void XRInputSource::ProcessOverlayHitTest(
   // the common base class to cover both. (There's no intention to actively
   // support framesets for DOM Overlay, but this helps prevent them from
   // being used as a mechanism for information leaks.)
-  HTMLFrameElementBase* frame_element =
-      DynamicTo<HTMLFrameElementBase>(hit_element);
+  HTMLFrameOwnerElement* frame_element =
+      DynamicTo<HTMLFrameOwnerElement>(hit_element);
   if (frame_element) {
     Frame* hit_frame = frame_element->ContentFrame();
     if (hit_frame) {
