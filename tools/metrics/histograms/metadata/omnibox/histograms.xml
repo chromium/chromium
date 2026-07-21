@@ -2322,7 +2322,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.InputToAcceptNonAction" units="microseconds"
-    expires_after="2026-11-12">
+    expires_after="2027-01-17">
   <owner>kouhei@google.com</owner>
   <owner>chrome-loading@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -3961,7 +3961,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.QueryTime2{QueryTimeSuffix}" units="ms"
-    expires_after="2026-11-12">
+    expires_after="2027-01-17">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -4111,7 +4111,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.Search.OffTheRecord" enum="BooleanOffTheRecord"
-    expires_after="2026-11-12">
+    expires_after="2027-01-17">
   <owner>jdonnelly@chromium.org</owner>
   <owner>roagarwal@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
@@ -4653,7 +4653,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
 <histogram
     name="Omnibox.SuggestionUsed.Search.NavigationToFirstContentfulPaint"
-    units="ms" expires_after="2026-11-12">
+    units="ms" expires_after="2027-01-17">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -4747,7 +4747,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.SuggestionUsed.URL.NavigationToFirstContentfulPaint"
-    units="ms" expires_after="2026-11-12">
+    units="ms" expires_after="2027-01-17">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -4782,7 +4782,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.SuggestRequest.Success.GoogleResponseTime" units="ms"
-    expires_after="2026-11-12">
+    expires_after="2027-01-17">
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>cch@chromium.org</owner>
@@ -5609,7 +5609,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.ZeroSuggest.AllResults" units="units"
-    expires_after="2026-11-12">
+    expires_after="2027-01-17">
   <owner>pnoland@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>

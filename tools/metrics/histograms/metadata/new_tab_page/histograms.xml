@@ -108,7 +108,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.ActionChips.AnyShown" enum="Boolean"
-    expires_after="2026-11-15">
+    expires_after="2027-01-17">
   <owner>shomizoe@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -182,7 +182,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.ActionChips.SuggestionCount" units="count"
-    expires_after="2026-11-15">
+    expires_after="2027-01-17">
   <owner>shomizoe@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -738,7 +738,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.CustomizeChromePromoEligibility"
-    enum="NTPCustomizeChromePromoEligibility" expires_after="2026-11-15">
+    enum="NTPCustomizeChromePromoEligibility" expires_after="2027-01-17">
   <owner>kbajkiewicz@google.com</owner>
   <owner>rsult@google.com</owner>
   <owner>chrome-signin-desktop-team@google.com</owner>

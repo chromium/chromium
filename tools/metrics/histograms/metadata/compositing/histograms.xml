@@ -480,7 +480,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Display.VizScheduledDrawToGpuStartedDrawUs"
-    units="microseconds" expires_after="2026-11-15">
+    units="microseconds" expires_after="2027-01-17">
   <owner>vasilyt@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -978,7 +978,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Graphics.Smoothness.Jank3.AllSequences" units="%"
-    expires_after="2026-11-15">
+    expires_after="2027-01-17">
   <owner>jonross@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>

@@ -4775,7 +4775,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InstanceID.GetToken.RequestStatus.SyncInvalidations"
-    enum="GCMRegistrationRequestStatus" expires_after="2026-11-17">
+    enum="GCMRegistrationRequestStatus" expires_after="2027-01-17">
   <owner>rushans@google.com</owner>
   <owner>peter@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -5011,7 +5011,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mojo.Channel.WriteSendMessageProcessType"
-    enum="ShortProcessType" expires_after="2026-11-15">
+    enum="ShortProcessType" expires_after="2027-01-17">
   <owner>amanvr@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
   <summary>
@@ -6583,7 +6583,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SBIRS.UploadResult" enum="ReportProcessingResult"
-    expires_after="2026-11-15">
+    expires_after="2027-01-17">
 <!-- Note to owner: This histogram can be renewed 1 full year if it is still
 useful for Chirp alerts (go/crca-alerts). -->
 

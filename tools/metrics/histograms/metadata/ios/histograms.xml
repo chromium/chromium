@@ -3127,7 +3127,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Gemini.Response.Latency.WithoutContext" units="ms"
-    expires_after="2026-11-15">
+    expires_after="2027-01-17">
   <owner>kanouche@google.com</owner>
   <owner>bling-alchemy@google.com</owner>
   <summary>
@@ -3509,7 +3509,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.HomeCustomization.Background.Ntp.Loaded"
-    enum="IOSHomeCustomizationBackgroundStyle" expires_after="2026-11-15">
+    enum="IOSHomeCustomizationBackgroundStyle" expires_after="2027-01-17">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -3554,7 +3554,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IOS.HomeCustomization.Background.UserUploaded.ImageMemoryFootprint"
-    units="KB" expires_after="2026-11-15">
+    units="KB" expires_after="2027-01-17">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -4663,7 +4663,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Minimap.AddressValidation.Outcome"
-    enum="IOSAddressValidationOutcome" expires_after="2026-11-15">
+    enum="IOSAddressValidationOutcome" expires_after="2027-01-17">
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-squid-squad@google.com</owner>
   <summary>

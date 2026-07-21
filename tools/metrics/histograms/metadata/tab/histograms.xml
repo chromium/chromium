@@ -3891,7 +3891,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabStrip.TimeToCreateNewTabFromPress" units="ms"
-    expires_after="2026-11-15">
+    expires_after="2027-01-17">
   <owner>robliao@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
