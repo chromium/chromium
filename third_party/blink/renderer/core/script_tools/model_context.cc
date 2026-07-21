@@ -1082,22 +1082,15 @@ ScriptPromise<IDLNullable<IDLString>> ModelContext::executeTool(
       invocation_id, frame_token,
       SecurityOrigin::CreateFromString(tool->origin()), tool->name(),
       input_arguments,
-      blink::BindOnce(
-          [](ModelContext* self,
-             ScriptPromiseResolver<IDLNullable<IDLString>>* resolver,
-             std::unique_ptr<ScopedAbortState> abort_state,
-             const String& result, bool success) {
-            if (self) {
-              self->OnExecuteScriptToolCompleted(resolver, result, success);
-            }
-          },
-          WrapWeakPersistent(this), WrapPersistent(resolver),
-          std::move(scoped_abort_state)));
+      blink::BindOnce(&ModelContext::OnExecuteScriptToolCompleted,
+                      WrapWeakPersistent(this), WrapPersistent(resolver),
+                      std::move(scoped_abort_state)));
   return promise;
 }
 
 void ModelContext::OnExecuteScriptToolCompleted(
     ScriptPromiseResolver<IDLNullable<IDLString>>* resolver,
+    std::unique_ptr<ScopedAbortState> abort_state,
     const String& result,
     bool success) {
   // For the execution result to have been received from the browser process

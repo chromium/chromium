@@ -182,6 +182,7 @@ class CORE_EXPORT ModelContext : public EventTarget,
 
   void OnExecuteScriptToolCompleted(
       ScriptPromiseResolver<IDLNullable<IDLString>>* resolver,
+      std::unique_ptr<ScopedAbortState> abort_state,
       const String& result,
       bool success);
 
