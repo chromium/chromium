@@ -1156,16 +1156,16 @@ TEST_F(PasswordControllerTest, SuggestionUpdateTests) {
   SuggestionTestData test_data[] = {
     {
       "Should show all suggestions when focusing empty username field",
-      @[(@"var evt = document.createEvent('Events');"
-         "username_.focus();"),
+      @[(@"username_.focus();"
+         "username_.dispatchEvent(new Event('focus', {bubbles: true}));"),
         @";"],
       @[@"user0", @"abc"],
       @"[]=, onkeyup=false, onchange=false"
     },
     {
       "Should show password suggestions when focusing password field",
-      @[(@"var evt = document.createEvent('Events');"
-         "password_.focus();"),
+      @[(@"password_.focus();"
+         "password_.dispatchEvent(new Event('focus', {bubbles: true}));"),
         @";"],
       @[@"user0", @"abc"],
       @"[]=, onkeyup=false, onchange=false"
@@ -1173,7 +1173,8 @@ TEST_F(PasswordControllerTest, SuggestionUpdateTests) {
     {
       "Should not filter suggestions when focusing username field with input",
       @[(@"username_.value='ab';"
-         "username_.focus();"),
+         "username_.focus();"
+         "username_.dispatchEvent(new Event('focus', {bubbles: true}));"),
         @";"],
       @[@"user0", @"abc"],
       @"ab[]=, onkeyup=false, onchange=false"
@@ -1182,6 +1183,7 @@ TEST_F(PasswordControllerTest, SuggestionUpdateTests) {
       "Should filter suggestions when typing into a username field",
       @[(@"username_.value='ab';"
          "username_.focus();"
+         "username_.dispatchEvent(new Event('focus', {bubbles: true}));"
          // Keyup event is dispatched to simulate typing
          "var ev = new KeyboardEvent('keyup', {bubbles:true});"
          "username_.dispatchEvent(ev);"),
@@ -1194,6 +1196,7 @@ TEST_F(PasswordControllerTest, SuggestionUpdateTests) {
       @[(@"username_.value='abc';"
          "password_.value='••';"
          "password_.focus();"
+         "password_.dispatchEvent(new Event('focus', {bubbles: true}));"
          // Keyup event is dispatched to simulate typing.
          "var ev = new KeyboardEvent('keyup', {bubbles:true});"
          "password_.dispatchEvent(ev);"),
@@ -1407,7 +1410,9 @@ TEST_F(PasswordControllerTest, SendingToStoreDynamicallyAddedFormsOnFocus) {
 
   // Sets a focus on a username field.
   NSString* kSetUsernameInFocusScript =
-      @"document.getElementById('username').focus();";
+      @"document.getElementById('username').focus();"
+      @"document.getElementById('username').dispatchEvent("
+      @"new Event('focus', {bubbles: true}));";
   ExecuteJavaScript(kSetUsernameInFocusScript);
 
   // Wait until GetLogins is called.
@@ -1613,16 +1618,16 @@ TEST_F(PasswordControllerTest, CheckPasswordGenerationSuggestion) {
   SuggestionTestData test_data[] = {
     {
       "Should not show suggest password when focusing username field",
-      @[(@"var evt = document.createEvent('Events');"
-         "username_.focus();"),
+      @[(@"username_.focus();"
+         "username_.dispatchEvent(new Event('focus', {bubbles: true}));"),
         @";"],
       @[@"user0", @"abc"],
       @"[]=, onkeyup=false, onchange=false"
     },
     {
       "Should show suggest password when focusing password field",
-      @[(@"var evt = document.createEvent('Events');"
-         "password_.focus();"),
+      @[(@"password_.focus();"
+         "password_.dispatchEvent(new Event('focus', {bubbles: true}));"),
         @";"],
       @[@"user0", @"abc", @"Suggest strong password"],
       @"[]=, onkeyup=false, onchange=false"
