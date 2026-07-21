@@ -5,6 +5,7 @@
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #include <GLES2/gl2extchromium.h>
+#include <GLES3/gl3.h>
 #include <stdint.h>
 
 #include <array>
@@ -253,5 +254,156 @@ static const GLenum kFormats[] = {
 INSTANTIATE_TEST_SUITE_P(Format,
                          CompressedTextureTest,
                          ::testing::ValuesIn(kFormats));
+
+class CompressedTextureTestES3 : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    GLManager::Options options;
+    options.size = gfx::Size(kTextureWidth, kTextureHeight);
+    options.context_type = CONTEXT_TYPE_OPENGLES3;
+    gl_.Initialize(options);
+  }
+
+  void TearDown() override { gl_.Destroy(); }
+
+ private:
+  GLManager gl_;
+};
+
+// Test that compressed sub-image updates work when TEXTURE_BASE_LEVEL > 0.
+// This is a workaround for a PowerVR driver bug where it miscomputes the
+// offset.
+TEST_F(CompressedTextureTestES3, ASTCCompressedSubImageWithBaseLevel) {
+  if (!GLTestHelper::HasExtension("GL_KHR_texture_compression_astc_ldr")) {
+    return;
+  }
+
+  // Use shaders that match the proof-of-concept.
+  // They don't use vertex attributes, but gl_VertexID to generate a quad.
+  const char* kVS =
+      "#version 300 es\n"
+      "out vec2 uv;\n"
+      "void main() {\n"
+      "  vec2 p = vec2(gl_VertexID & 1, gl_VertexID >> 1);\n"
+      "  uv = p;\n"
+      "  gl_Position = vec4(p * 2.0 - 1.0, 0.0, 1.0);\n"
+      "}\n";
+
+  const char* kFS =
+      "#version 300 es\n"
+      "precision highp float;\n"
+      "uniform sampler2D t;\n"
+      "in vec2 uv;\n"
+      "out vec4 c;\n"
+      "void main() {\n"
+      "  c = texture(t, uv);\n"
+      "}\n";
+
+  GLuint program = GLTestHelper::LoadProgram(kVS, kFS);
+  ASSERT_NE(program, 0u);
+  glUseProgram(program);
+  GLint tex_location = glGetUniformLocation(program, "t");
+  ASSERT_NE(tex_location, -1);
+  glUniform1i(tex_location, 0);
+  ASSERT_TRUE(GLTestHelper::CheckGLError("Setup program", __LINE__));
+
+  // Void-extent blocks for ASTC.
+  // Format: 0xFC, 0xFD, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, R_lo, R_hi, G_lo,
+  // G_hi, B_lo, B_hi, A_lo, A_hi Red: (255, 0, 0, 255) -> R=0xFFFF, G=0x0000,
+  // B=0x0000, A=0xFFFF
+  constexpr uint8_t kBlockRed[16] = {0xFC, 0xFD, 0xFF, 0xFF, 0xFF, 0xFF,
+                                     0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00,
+                                     0x00, 0x00, 0xFF, 0xFF};
+  // Green: (0, 255, 0, 255) -> R=0x0000, G=0xFFFF, B=0x0000, A=0xFFFF
+  constexpr uint8_t kBlockGreen[16] = {0xFC, 0xFD, 0xFF, 0xFF, 0xFF, 0xFF,
+                                       0xFF, 0xFF, 0x00, 0x00, 0xFF, 0xFF,
+                                       0x00, 0x00, 0xFF, 0xFF};
+
+  // 8x5 ASTC format.
+  // Using 8x160 with 5 levels results in level 4 being 1x10 and level 3 being
+  // 1x20. These levels have a width (1) smaller than the ASTC block width (8),
+  // which triggers PowerVR driver's TwiddleSmallTexture128bpp path. To satisfy
+  // ASTC sizing requirements on Qualcomm/Adreno drivers (where partial
+  // sub-image updates on non-block-aligned levels are rejected with
+  // GL_INVALID_OPERATION), glCompressedTexSubImage2D must update the entire
+  // level dimensions (width = level_width, height = level_height).
+  GLenum format = GL_COMPRESSED_RGBA_ASTC_8x5_KHR;
+  constexpr GLsizei kWidth = 8;
+  constexpr GLsizei kHeight = 160;
+  constexpr GLsizei kLevels = 5;
+
+  // Level 4: 1x10 pixels (1x2 blocks = 32 bytes).
+  std::vector<uint8_t> data_red;
+  data_red.reserve(32);
+  data_red.insert(data_red.end(), std::begin(kBlockRed), std::end(kBlockRed));
+  data_red.insert(data_red.end(), std::begin(kBlockRed), std::end(kBlockRed));
+
+  // Level 3: 1x20 pixels (1x4 blocks = 64 bytes).
+  std::vector<uint8_t> data_green;
+  data_green.reserve(64);
+  for (int i = 0; i < 4; ++i) {
+    data_green.insert(data_green.end(), std::begin(kBlockGreen),
+                      std::end(kBlockGreen));
+  }
+
+  // Loop multiple times to increase chances of hitting OOB write/crash if
+  // workaround fails. Keep textures alive to groom the heap.
+  constexpr int kIterations = 16;
+  std::vector<GLuint> textures(kIterations);
+  glGenTextures(kIterations, textures.data());
+
+  for (int i = 0; i < kIterations; ++i) {
+    glBindTexture(GL_TEXTURE_2D, textures[i]);
+
+    glTexStorage2DEXT(GL_TEXTURE_2D, kLevels, format, kWidth, kHeight);
+    ASSERT_TRUE(GLTestHelper::CheckGLError("glTexStorage2D", __LINE__));
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 4);
+    ASSERT_TRUE(
+        GLTestHelper::CheckGLError("glTexParameteri base level 4", __LINE__));
+
+    // Upload Red to level 4 (full level: 1x10 pixels = 32 bytes).
+    glCompressedTexSubImage2D(GL_TEXTURE_2D, 4, 0, 0, 1, 10, format,
+                              static_cast<GLsizei>(data_red.size()),
+                              data_red.data());
+    ASSERT_TRUE(GLTestHelper::CheckGLError("glCompressedTexSubImage2D level 4",
+                                           __LINE__));
+
+    // Upload Green to level 3 (full level: 1x20 pixels = 64 bytes).
+    glCompressedTexSubImage2D(GL_TEXTURE_2D, 3, 0, 0, 1, 20, format,
+                              static_cast<GLsizei>(data_green.size()),
+                              data_green.data());
+    ASSERT_TRUE(GLTestHelper::CheckGLError("glCompressedTexSubImage2D level 3",
+                                           __LINE__));
+
+    // Draw. Since BASE_LEVEL is 4, it should sample from level 4 (Red).
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glFinish();
+    ASSERT_TRUE(GLTestHelper::CheckGLError("Draw level 4", __LINE__));
+
+    uint8_t expected_red[4] = {255, 0, 0, 255};
+    EXPECT_TRUE(
+        GLTestHelper::CheckPixels(0, 0, 1, 1, 1, expected_red, nullptr));
+
+    // Change BASE_LEVEL to 3.
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 3);
+    ASSERT_TRUE(
+        GLTestHelper::CheckGLError("glTexParameteri base level 3", __LINE__));
+
+    // Draw again. Now it should sample from level 3 (Green).
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glFinish();
+    ASSERT_TRUE(GLTestHelper::CheckGLError("Draw level 3", __LINE__));
+
+    uint8_t expected_green[4] = {0, 255, 0, 255};
+    EXPECT_TRUE(
+        GLTestHelper::CheckPixels(0, 0, 1, 1, 1, expected_green, nullptr));
+  }
+
+  glDeleteTextures(kIterations, textures.data());
+  glDeleteProgram(program);
+}
 
 }  // namespace gpu
