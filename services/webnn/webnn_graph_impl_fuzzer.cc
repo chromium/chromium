@@ -596,6 +596,14 @@ struct SplitParams {
   bool is_input_constant;
 };
 
+struct TileParams {
+  OperandDataType data_type;
+  uint32_t rank;
+  std::array<uint32_t, 8> input_dims;
+  std::array<uint32_t, 8> repetitions;
+  bool is_input_constant;
+};
+
 struct TransposeParams {
   OperandDataType data_type;
   uint32_t rank;
@@ -1602,6 +1610,21 @@ auto AnySplitParams() {
           .WithMinSize(1)
           .WithMaxSize(kMaxValidTensorCount),  // split_sizes
       fuzztest::Arbitrary<bool>()              // is_input_constant
+  );
+}
+
+auto AnyTileParams() {
+  const auto& limits = GetContextPropertiesForTesting().data_type_limits;
+  // Bias repetitions toward small values to avoid creating excessively large
+  // output tensors.
+  auto any_repetition =
+      fuzztest::OneOf(fuzztest::InRange<uint32_t>(1, 4), AnyDimSize());
+  return fuzztest::StructOf<TileParams>(
+      AnyOperandDataTypeFor(limits.tile_input.data_types),
+      AnyTensorRankIncludeZero(),            // rank
+      fuzztest::ArrayOf<8>(AnyDimSize()),    // input_dims
+      fuzztest::ArrayOf<8>(any_repetition),  // repetitions
+      fuzztest::Arbitrary<bool>()            // is_input_constant
   );
 }
 
@@ -3126,6 +3149,7 @@ class WebNNGraphImplFuzzerImpl
   void Slice(SliceParams params, uint8_t seed_for_data);
   void Softmax(SoftmaxParams params, uint8_t seed_for_data);
   void Split(SplitParams params, uint8_t seed_for_data);
+  void Tile(TileParams params, uint8_t seed_for_data);
   void Transpose(TransposeParams params, uint8_t seed_for_data);
   void Triangular(TriangularParams params, uint8_t seed_for_data);
   void Where(WhereParams params,
@@ -5235,6 +5259,45 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Split(SplitParams params,
 }
 
 template <typename BaseFixture>
+void WebNNGraphImplFuzzerImpl<BaseFixture>::Tile(TileParams params,
+                                                 uint8_t seed_for_data) {
+  std::vector<uint32_t> input_dims(params.input_dims.begin(),
+                                   params.input_dims.begin() + params.rank);
+  std::vector<uint32_t> repetitions(params.repetitions.begin(),
+                                    params.repetitions.begin() + params.rank);
+
+  ASSIGN_OR_RETURN_VOID(auto input_desc, OperandDescriptor::Create(
+                                             this->context_properties(),
+                                             params.data_type, input_dims, ""));
+
+  ASSIGN_OR_RETURN_VOID(auto output_desc, ValidateTileAndInferOutput(
+                                              this->context_properties(),
+                                              input_desc, repetitions, ""));
+
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
+      this->BindNewGraphBuilderRemote();
+  GraphInfoBuilder builder(remote);
+  base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
+  std::vector<std::vector<uint8_t>> data_buffers;
+  OperandId input_id = BuildInputOrConstant(builder, params.is_input_constant,
+                                            "input", input_desc, seed_for_data,
+                                            data_buffers, named_inputs);
+
+  OperandId output_id = builder.BuildOutput("output", output_desc.shape(),
+                                            output_desc.data_type());
+
+  builder.BuildTile(input_id, output_id, std::move(repetitions));
+
+  if (!builder.IsValidGraphForTesting(this->context_properties())) {
+    return;
+  }
+  BuildAndCompute(this->context_, std::move(remote), builder.TakeGraphInfo(),
+                  std::move(named_inputs));
+
+  GetGlobalFuzzEnvironment().GetWebNNTestEnvironment().RunUntilIdle();
+}
+
+template <typename BaseFixture>
 void WebNNGraphImplFuzzerImpl<BaseFixture>::Transpose(TransposeParams params,
                                                       uint8_t seed_for_data) {
   ASSIGN_OR_RETURN_VOID(
@@ -7326,6 +7389,17 @@ WEBNN_FUZZ_TEST_F(Split,
                                        /*use_equal_splits=*/true,
                                        /*num_splits=*/3,
                                        /*split_sizes=*/{1},
+                                       /*is_input_constant=*/false,
+                                   },
+                                   /*seed_for_data=*/1}}));
+
+WEBNN_FUZZ_TEST_F(Tile,
+                  .WithDomains(AnyTileParams(), fuzztest::Arbitrary<uint8_t>())
+                      .WithSeeds({{TileParams{
+                                       /*data_type=*/OperandDataType::kFloat32,
+                                       /*rank=*/4,
+                                       /*input_dims=*/{1, 3, 4, 4, 1, 1, 1, 1},
+                                       /*repetitions=*/{2, 1, 2, 1, 1, 1, 1, 1},
                                        /*is_input_constant=*/false,
                                    },
                                    /*seed_for_data=*/1}}));
