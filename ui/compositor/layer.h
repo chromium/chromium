@@ -82,8 +82,7 @@ class LayerThreadedAnimationDelegate;
 // NOTE: Unlike Views, each Layer does *not* own its child Layers. If you
 // delete a Layer and it has children, the parent of each child Layer is set to
 // NULL, but the children are not deleted.
-class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
-                                public cc::ContentLayerClient {
+class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate {
   // TODO(crbug.com/453831486): Remove this macro once the bug gets fixed.
   ADVANCED_MEMORY_SAFETY_CHECKS();
 
@@ -119,8 +118,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   ~Layer() override;
 
   // Note that only solid color and surface content is copied.
-  // TODO(crbug.com/522627357): Make it a virtual method.
-  std::unique_ptr<Layer> Clone() const;
+  virtual std::unique_ptr<Layer> Clone() const;
 
   // Settings that determine which properties from the source layer are
   // synchronized to the destination mirror layer.
@@ -455,10 +453,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   void SetFillsBoundsOpaquely(bool fills_bounds_opaquely);
   bool fills_bounds_opaquely() const { return fills_bounds_opaquely_; }
 
-  // Set to true if this layer always paints completely within its bounds. If so
-  // we can omit an unnecessary clear, even if the layer is transparent.
-  void SetFillsBoundsCompletely(bool fills_bounds_completely);
-
   const std::string& name() const { return name_; }
   void SetName(const std::string& name);
 
@@ -573,10 +567,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   gfx::PointF CurrentScrollOffset() const;
   void SetScrollOffset(const gfx::PointF& offset);
 
-  // ContentLayerClient implementation.
-  scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList() override;
-  bool FillsBoundsCompletely() const override;
-
   cc::Layer* cc_layer_for_testing() { return cc_layer_; }
   const cc::Layer* cc_layer_for_testing() const { return cc_layer_; }
 
@@ -586,7 +576,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // Triggers a call to `FinishAnimationsBeforeSwitchToLayer` and
   // `SwitchToLayer`. If this returns false, then `this` Layer was destroyed.
   // TODO(crbug.com/522627357): Move all the test-only methods to TestApi class.
-  bool SwitchCCLayerForTest();
+  virtual bool SwitchCCLayerForTest();
 
   const cc::Region& damaged_region_for_testing() const {
     return damaged_region_;
@@ -603,8 +593,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // |quality| lower than one will decrease memory usage and increase
   // performance.
   void SetBackdropFilterQuality(const float quality);
-
-  bool IsPaintDeferredForTesting() const { return deferred_paint_requests_; }
 
   // The back link from the mask layer to it's associated masked layer.
   // We keep this reference for the case that if the mask layer gets deleted
@@ -636,6 +624,16 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
 
   virtual void HandleDeviceScaleFactorChange();
 
+  // Called when a paint is scheduled (from Layer::SchedulePaint()).
+  virtual void OnPaintScheduled() {}
+
+  // Returns true if the accumulated damage should be committed to the
+  // cc::Layer.
+  virtual bool ShouldCommitDamage() const;
+
+  // Commits the damage to the cc::Layer.
+  virtual void CommitDamage(const cc::Region& damage);
+
   void Destroy();
   virtual void Reset() {}
 
@@ -658,10 +656,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // surface even if layer is invisible is not a problem.
   void AddCacheRenderSurfaceRequest();
   void RemoveCacheRenderSurfaceRequest();
-
-  // Request deferring painting for layer.
-  void AddDeferredPaintRequest();
-  void RemoveDeferredPaintRequest();
 
   // Request trilinear filtering for layer.
   void AddTrilinearFilteringRequest();
@@ -815,15 +809,9 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // See SetFillsBoundsOpaquely().
   bool fills_bounds_opaquely_;
 
-  bool fills_bounds_completely_;
-
   // Union of damaged rects, in layer space, that SetNeedsDisplayRect should
   // be called on.
   cc::Region damaged_region_;
-
-  // Union of damaged rects, in layer space, to be used when compositor is ready
-  // to paint the content.
-  cc::Region paint_region_;
 
   float background_blur_sigma_;
 
@@ -873,7 +861,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // Ownership of the layer is held through one of the strongly typed layer
   // pointers, depending on which sort of layer this is.
   // TODO(crbug.com/522627357): Move to subclasses.
-  scoped_refptr<cc::PictureLayer> content_layer_;
   scoped_refptr<cc::SurfaceLayer> surface_layer_;
   // TODO(crbug.com/522627357): Move it subclasses and expose via a virtual
   // getter.
@@ -890,11 +877,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // the value > 0, means we need to cache the render surface. If the value
   // == 0, means we should not cache the render surface.
   unsigned cache_render_surface_requests_;
-
-  // The counter to maintain how many deferred paint requests we have. If the
-  // value > 0, means we need to defer painting the layer. If the value == 0,
-  // means we should paint the layer.
-  unsigned deferred_paint_requests_;
 
   float backdrop_filter_quality_;
 
@@ -915,7 +897,8 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   base::WeakPtrFactory<Layer> weak_ptr_factory_{this};
 };
 
-class COMPOSITOR_EXPORT LayerNotDrawn : public Layer {
+class COMPOSITOR_EXPORT LayerNotDrawn : public Layer,
+                                        public cc::ContentLayerClient {
  public:
   static constexpr LayerType kType = LAYER_NOT_DRAWN;
 
@@ -926,7 +909,19 @@ class COMPOSITOR_EXPORT LayerNotDrawn : public Layer {
 
   ~LayerNotDrawn() override;
 
+  // Layer:
   bool ShouldSchedulePaint() const override;
+  bool SwitchCCLayerForTest() override;
+
+  // ContentLayerClient implementation.
+  scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList() override;
+  bool FillsBoundsCompletely() const override;
+
+ private:
+  // Layer:
+  void Reset() override;
+
+  scoped_refptr<cc::PictureLayer> content_layer_;
 };
 
 class COMPOSITOR_EXPORT LayerWithExternalTexture
@@ -967,6 +962,8 @@ class COMPOSITOR_EXPORT LayerWithExternalTexture
   std::unique_ptr<Layer> CreateMirror(
       const LayerMirrorSettings& settings) override;
   void Reset() override;
+  void OnPaintScheduled() override;
+  bool ShouldCommitDamage() const override;
 
   cc::TextureLayer* texture_layer() { return texture_layer_.get(); }
   const cc::TextureLayer* texture_layer() const { return texture_layer_.get(); }
@@ -977,7 +974,8 @@ class COMPOSITOR_EXPORT LayerWithExternalTexture
   viz::ReleaseCallback transfer_release_callback_;
 };
 
-class COMPOSITOR_EXPORT LayerTextured : public LayerWithExternalTexture {
+class COMPOSITOR_EXPORT LayerTextured : public LayerWithExternalTexture,
+                                        public cc::ContentLayerClient {
  public:
   static constexpr LayerType kType = LAYER_TEXTURED;
 
@@ -988,7 +986,48 @@ class COMPOSITOR_EXPORT LayerTextured : public LayerWithExternalTexture {
 
   ~LayerTextured() override;
 
+  // Request deferring painting for layer.
+  void AddDeferredPaintRequest();
+  void RemoveDeferredPaintRequest();
+
+  // Layer:
+  std::unique_ptr<Layer> Clone() const override;
   bool ShouldSchedulePaint() const override;
+  bool SwitchCCLayerForTest() override;
+
+  // ContentLayerClient implementation.
+  scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList() override;
+  bool FillsBoundsCompletely() const override;
+
+  // Set to true if this layer always paints completely within its bounds. If so
+  // we can omit an unnecessary clear, even if the layer is transparent.
+  void SetFillsBoundsCompletely(bool fills_bounds_completely);
+
+  cc::PictureLayer* content_layer() { return content_layer_.get(); }
+
+  bool IsPaintDeferredForTesting() const;
+
+ protected:
+  // Layer:
+  void OnPaintScheduled() override;
+  bool ShouldCommitDamage() const override;
+  void CommitDamage(const cc::Region& damage) override;
+  void Reset() override;
+
+ private:
+  // See `SetFillsBoundsCompletely()`.
+  bool fills_bounds_completely_ = false;
+
+  // Union of damaged rects, in layer space, to be used when compositor is ready
+  // to paint the content.
+  cc::Region paint_region_;
+
+  // The counter to maintain how many deferred paint requests we have. If the
+  // value > 0, means we need to defer painting the layer. If the value == 0,
+  // means we should paint the layer.
+  unsigned deferred_paint_requests_ = 0u;
+
+  scoped_refptr<cc::PictureLayer> content_layer_;
 };
 
 class COMPOSITOR_EXPORT LayerSolidColor : public LayerWithExternalTexture {
@@ -1019,13 +1058,16 @@ class COMPOSITOR_EXPORT LayerSolidColor : public LayerWithExternalTexture {
   SkColor background_color() const;
 
   // Layer:
+  std::unique_ptr<Layer> Clone() const override;
   bool ShouldSchedulePaint() const override;
+  bool SwitchCCLayerForTest() override;
 
   cc::MirrorLayer* mirror_layer_for_testing() { return mirror_layer_.get(); }
 
  private:
   // Layer:
   void Reset() override;
+  void OnPaintScheduled() override;
 
   // LayerAnimatorDelegate:
   void SetColorFromAnimation(SkColor4f color,

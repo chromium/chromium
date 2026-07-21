@@ -35,7 +35,7 @@ ToolbarIconContainerView::RoundRectBorder::RoundRectBorder(views::View* parent)
     : parent_(parent) {
   layer_.set_delegate(this);
   layer_.SetFillsBoundsOpaquely(false);
-  layer_.SetFillsBoundsCompletely(false);
+  layer_.AsTextured()->SetFillsBoundsCompletely(false);
   layer_.SetOpacity(0);
   layer_.SetVisible(true);
 }
@@ -115,7 +115,7 @@ ToolbarIconContainerView::ToolbarIconContainerView(
     : uses_highlight_(uses_highlight) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetFillsBoundsCompletely(false);
+  layer()->AsTextured()->SetFillsBoundsCompletely(false);
   AddLayerToRegion(border_.layer(), views::LayerRegion::kBelow);
 
   views::AnimatingLayoutManager* animating_layout =

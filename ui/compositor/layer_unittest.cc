@@ -1137,13 +1137,14 @@ class LayerWithNullDelegateTest : public LayerWithDelegateTest {
     return layer;
   }
 
-  std::unique_ptr<Layer> CreateTextureRootLayer(const gfx::Rect& bounds) {
-    std::unique_ptr<Layer> layer = CreateTextureLayer(bounds);
+  std::unique_ptr<LayerTextured> CreateTextureRootLayer(
+      const gfx::Rect& bounds) {
+    auto layer = CreateTextureLayer(bounds);
     compositor()->SetRootLayer(layer.get());
     return layer;
   }
 
-  std::unique_ptr<Layer> CreateTextureLayer(const gfx::Rect& bounds) {
+  std::unique_ptr<LayerTextured> CreateTextureLayer(const gfx::Rect& bounds) {
     auto layer = CreateLayer<LayerTextured>();
     layer->SetBounds(bounds);
     return layer;
@@ -1683,7 +1684,7 @@ TEST_P(LayerWithNullDelegateTest, EmptyDamagedRect) {
 // Tests that in deferred paint request, the layer damage will be accumulated.
 TEST_P(LayerWithNullDelegateTest, UpdateDamageInDeferredPaint) {
   gfx::Rect bound(gfx::Rect(500, 500));
-  std::unique_ptr<Layer> root = CreateTextureRootLayer(bound);
+  auto root = CreateTextureRootLayer(bound);
   EXPECT_EQ(bound, root->damaged_region_for_testing());
   WaitForCommit();
   EXPECT_EQ(gfx::Rect(), root->damaged_region_for_testing());

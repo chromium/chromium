@@ -49,7 +49,7 @@ AppLoadingIcon::AppLoadingIcon(int size)
               size) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetFillsBoundsCompletely(false);
+  layer()->AsTextured()->SetFillsBoundsCompletely(false);
 }
 
 AppLoadingIcon::~AppLoadingIcon() = default;

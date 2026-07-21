@@ -245,7 +245,6 @@ Layer::Layer(LayerType type)
           std::make_unique<SubpixelPositionOffsetCache>()),
       visible_(true),
       fills_bounds_opaquely_(true),
-      fills_bounds_completely_(false),
       background_blur_sigma_(0.0f),
       layer_saturation_(0.0f),
       layer_brightness_(0.0f),
@@ -262,7 +261,6 @@ Layer::Layer(LayerType type)
       cc_layer_(nullptr),
       device_scale_factor_(1.0f),
       cache_render_surface_requests_(0),
-      deferred_paint_requests_(0),
       backdrop_filter_quality_(1.0f),
       trilinear_filtering_request_(0) {
 }
@@ -289,8 +287,6 @@ void Layer::Destroy() {
     child->parent_ = nullptr;
   }
 
-  if (content_layer_)
-    content_layer_->ClearClient();
   cc_layer_->RemoveFromParent();
   cc_layer_ = nullptr;
 
@@ -340,9 +336,6 @@ std::unique_ptr<Layer> Layer::Clone() const {
     if (surface_layer_->oldest_acceptable_fallback())
       clone->SetOldestAcceptableFallback(
           *surface_layer_->oldest_acceptable_fallback());
-  } else if (type_ == LAYER_SOLID_COLOR) {
-    // TODO(crbug.com/522627357): Move to LayerSolidColor.
-    clone->AsSolidColor()->SetColor(this->AsSolidColor()->GetTargetColor());
   }
 
   clone->SetTransform(GetTargetTransform());
@@ -354,7 +347,6 @@ std::unique_ptr<Layer> Layer::Clone() const {
   clone->SetVisible(GetTargetVisibility());
   clone->SetClipRect(GetTargetClipRect());
   clone->SetAcceptEvents(accept_events());
-  clone->SetFillsBoundsCompletely(fills_bounds_completely_);
   clone->SetRoundedCornerRadius(GetTargetRoundedCornerRadius());
   clone->SetGradientMask(gradient_mask());
   clone->SetIsFastRoundedCorner(is_fast_rounded_corner());
@@ -716,16 +708,16 @@ void Layer::SetMaskLayer(Layer* layer_mask) {
   DCHECK(!layer_mask ||
          (!layer_mask->layer_mask_layer() && layer_mask->children().empty()));
   DCHECK(!layer_mask_back_link_);
-  DCHECK(!layer_mask || layer_mask->type_ == LAYER_TEXTURED);
+  DCHECK(!layer_mask || layer_mask->type() == LAYER_TEXTURED);
   // Masks must be backed by a PictureLayer.
-  DCHECK(!layer_mask || layer_mask->content_layer_);
+  DCHECK(!layer_mask || layer_mask->AsTextured()->content_layer());
   // We need to de-reference the currently linked object so that no problem
   // arises if the mask layer gets deleted before this object.
   if (layer_mask_) {
     layer_mask_->layer_mask_back_link_ = nullptr;
   }
   layer_mask_ = layer_mask;
-  cc_layer_->SetMaskLayer(layer_mask ? layer_mask->content_layer_.get()
+  cc_layer_->SetMaskLayer(layer_mask ? layer_mask->AsTextured()->content_layer()
                                      : nullptr);
   // We need to reference the linked object so that it can properly break the
   // link to us when it gets deleted.
@@ -977,10 +969,6 @@ void Layer::SetFillsBoundsOpaquely(bool fills_bounds_opaquely) {
                                    PropertyChangeReason::NOT_FROM_ANIMATION);
 }
 
-void Layer::SetFillsBoundsCompletely(bool fills_bounds_completely) {
-  fills_bounds_completely_ = fills_bounds_completely;
-}
-
 void Layer::SetName(const std::string& name) {
   name_ = name;
   cc_layer_->SetDebugName(name);
@@ -1035,11 +1023,6 @@ void Layer::SwitchToLayer(scoped_refptr<cc::Layer> new_layer) {
   cc_layer_ = new_layer.get();
 
   Reset();
-  // TODO(crbug.com/522627357): Move to Reset().
-  if (content_layer_) {
-    content_layer_->ClearClient();
-    content_layer_ = nullptr;
-  }
   surface_layer_ = nullptr;
 
   for (ui::Layer* child : children_) {
@@ -1060,17 +1043,7 @@ void Layer::SwitchToLayer(scoped_refptr<cc::Layer> new_layer) {
 }
 
 bool Layer::SwitchCCLayerForTest() {
-  // If `FinishAnimationsBeforeSwitchToLayer` returns false, `this` Layer was
-  // destroyed.
-  if (!FinishAnimationsBeforeSwitchToLayer()) {
-    return false;
-  }
-
-  scoped_refptr<cc::PictureLayer> new_layer = cc::PictureLayer::Create(this);
-  SwitchToLayer(new_layer);
-
-  content_layer_ = std::move(new_layer);
-  return true;
+  return false;
 }
 
 void Layer::SetBackdropFilterQuality(const float quality) {
@@ -1104,22 +1077,6 @@ void Layer::RemoveCacheRenderSurfaceRequest() {
   if (cache_render_surface_requests_ == 0) {
     cc_layer_->SetCacheRenderSurface(false);
   }
-}
-
-void Layer::AddDeferredPaintRequest() {
-  ++deferred_paint_requests_;
-  TRACE_COUNTER_ID1("ui", "DeferredPaintRequests", this,
-                    deferred_paint_requests_);
-}
-
-void Layer::RemoveDeferredPaintRequest() {
-  DCHECK_GT(deferred_paint_requests_, 0u);
-
-  --deferred_paint_requests_;
-  TRACE_COUNTER_ID1("ui", "DeferredPaintRequests", this,
-                    deferred_paint_requests_);
-  if (!deferred_paint_requests_ && !damaged_region_.IsEmpty())
-    ScheduleDraw();
 }
 
 // Note: The code that sets this flag would be responsible to unset it on that
@@ -1286,8 +1243,7 @@ bool Layer::SchedulePaint(const gfx::Rect& invalid_rect) {
   if (layer_mask_)
     layer_mask_->damaged_region_.Union(invalid_rect);
 
-  if (!content_layer_ || !deferred_paint_requests_)
-    ScheduleDraw();
+  OnPaintScheduled();
   return true;
 }
 
@@ -1308,24 +1264,26 @@ void Layer::SendDamagedRects() {
   if (delegate_)
     delegate_->UpdateVisualState();
 
-  if (damaged_region_.IsEmpty())
-    return;
-  if (!delegate_ && !HasTransferableResource()) {
+  if (!ShouldCommitDamage()) {
     return;
   }
-  if (content_layer_ && deferred_paint_requests_)
-    return;
 
-  for (gfx::Rect damaged_rect : damaged_region_)
-    cc_layer_->SetNeedsDisplayRect(damaged_rect);
-
-  if (content_layer_)
-    paint_region_.Union(damaged_region_);
+  CommitDamage(damaged_region_);
   damaged_region_.Clear();
 }
 
+void Layer::CommitDamage(const cc::Region& damage) {
+  for (gfx::Rect damaged_rect : damage) {
+    cc_layer_->SetNeedsDisplayRect(damaged_rect);
+  }
+}
+
+bool Layer::ShouldCommitDamage() const {
+  return !damaged_region_.IsEmpty();
+}
+
 void Layer::CompleteAllAnimations() {
-  typedef std::vector<scoped_refptr<LayerAnimator> > LayerAnimatorVector;
+  typedef std::vector<scoped_refptr<LayerAnimator>> LayerAnimatorVector;
   LayerAnimatorVector animators;
   CollectAnimators(&animators);
   for (LayerAnimatorVector::const_iterator it = animators.begin();
@@ -1492,28 +1450,6 @@ void Layer::RequestCopyOfOutput(
 
   cc_layer_->RequestCopyOfOutput(std::move(request));
 }
-
-scoped_refptr<cc::DisplayItemList> Layer::PaintContentsToDisplayList() {
-  TRACE_EVENT1("ui", "Layer::PaintContentsToDisplayList", "name", name_);
-  gfx::Rect local_bounds(bounds().size());
-  gfx::Rect invalidation(
-      gfx::IntersectRects(paint_region_.bounds(), local_bounds));
-  paint_region_.Clear();
-  auto display_list = base::MakeRefCounted<cc::DisplayItemList>();
-  if (delegate_) {
-    delegate_->OnPaintLayer(PaintContext(display_list.get(),
-                                         device_scale_factor_, invalidation,
-                                         GetCompositor()->is_pixel_canvas()));
-  }
-  display_list->Finalize();
-  // TODO(domlaskowski): Move mirror invalidation to Layer::SchedulePaint.
-  for (const auto& mirror : mirrors_)
-    mirror->dest()->SchedulePaint(invalidation);
-  return display_list;
-}
-
-bool Layer::FillsBoundsCompletely() const { return fills_bounds_completely_; }
-
 
 void Layer::CollectAnimators(
     std::vector<scoped_refptr<LayerAnimator>>* animators) {
@@ -1789,14 +1725,9 @@ LayerThreadedAnimationDelegate* Layer::GetThreadedAnimationDelegate() {
 }
 
 void Layer::CreateCcLayer() {
-  if (type_ == LAYER_NOT_DRAWN || type_ == LAYER_TEXTURED) {
-    content_layer_ = cc::PictureLayer::Create(this);
-    cc_layer_ = content_layer_.get();
-  }
-
   CHECK(cc_layer_) << "No cc layer for type " << type_;
   cc_layer_->SetTransformOrigin(gfx::Point3F());
-  cc_layer_->SetIsDrawable(type_ != LAYER_NOT_DRAWN);
+  cc_layer_->SetIsDrawable(true);
   cc_layer_->SetHitTestable(IsHitTestableForCC());
   cc_layer_->SetElementId(cc::ElementId(cc_layer_->id()));
   cc_layer_->SetBackgroundColor(SkColors::kTransparent);
@@ -1927,7 +1858,10 @@ bool Layer::GetTransformRelativeToImpl(const Layer* ancestor,
 // LayerNotDrawn, public:
 
 LayerNotDrawn::LayerNotDrawn() : Layer(LAYER_NOT_DRAWN) {
+  content_layer_ = cc::PictureLayer::Create(this);
+  cc_layer_ = content_layer_.get();
   CreateCcLayer();
+  cc_layer_->SetIsDrawable(false);
 }
 
 LayerNotDrawn::~LayerNotDrawn() {
@@ -1937,6 +1871,31 @@ LayerNotDrawn::~LayerNotDrawn() {
 bool LayerNotDrawn::ShouldSchedulePaint() const {
   // LayerNotDrawn does not draw any content, so it never needs to paint.
   return false;
+}
+
+bool LayerNotDrawn::SwitchCCLayerForTest() {
+  if (!FinishAnimationsBeforeSwitchToLayer()) {
+    return false;
+  }
+
+  scoped_refptr<cc::PictureLayer> new_layer = cc::PictureLayer::Create(this);
+  SwitchToLayer(new_layer);
+
+  content_layer_ = std::move(new_layer);
+  return true;
+}
+
+scoped_refptr<cc::DisplayItemList> LayerNotDrawn::PaintContentsToDisplayList() {
+  return base::MakeRefCounted<cc::DisplayItemList>();
+}
+
+bool LayerNotDrawn::FillsBoundsCompletely() const {
+  return false;
+}
+
+void LayerNotDrawn::Reset() {
+  content_layer_->ClearClient();
+  content_layer_ = nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2048,6 +2007,16 @@ bool LayerWithExternalTexture::ShouldSchedulePaint() const {
   return HasTransferableResource();
 }
 
+void LayerWithExternalTexture::OnPaintScheduled() {
+  ScheduleDraw();
+}
+
+bool LayerWithExternalTexture::ShouldCommitDamage() const {
+  // A layer with an external texture needs to commit damage when it has a
+  // transferable resource to display.
+  return HasTransferableResource();
+}
+
 bool LayerWithExternalTexture::PrepareTransferableResource(
     viz::TransferableResource* resource,
     viz::ReleaseCallback* release_callback) {
@@ -2082,6 +2051,8 @@ void LayerWithExternalTexture::Reset() {
 // LayerTextured, public:
 
 LayerTextured::LayerTextured() : LayerWithExternalTexture(LAYER_TEXTURED) {
+  content_layer_ = cc::PictureLayer::Create(this);
+  cc_layer_ = content_layer_.get();
   CreateCcLayer();
 }
 
@@ -2089,10 +2060,117 @@ LayerTextured::~LayerTextured() {
   Destroy();
 }
 
+void LayerTextured::AddDeferredPaintRequest() {
+  ++deferred_paint_requests_;
+  TRACE_COUNTER("ui",
+                perfetto::CounterTrack("DeferredPaintRequests",
+                                       reinterpret_cast<uintptr_t>(this)),
+                deferred_paint_requests_);
+}
+
+void LayerTextured::RemoveDeferredPaintRequest() {
+  DCHECK_GT(deferred_paint_requests_, 0u);
+
+  --deferred_paint_requests_;
+  TRACE_COUNTER("ui",
+                perfetto::CounterTrack("DeferredPaintRequests",
+                                       reinterpret_cast<uintptr_t>(this)),
+                deferred_paint_requests_);
+  if (!deferred_paint_requests_ && !damaged_region().IsEmpty()) {
+    ScheduleDraw();
+  }
+}
+
+std::unique_ptr<Layer> LayerTextured::Clone() const {
+  auto clone = Layer::Clone();
+  clone->AsTextured()->SetFillsBoundsCompletely(FillsBoundsCompletely());
+  return clone;
+}
+
 bool LayerTextured::ShouldSchedulePaint() const {
   // LayerTextured only needs to schedule paint if it has a delegate to paint
   // its contents, or if it has an external transferable resource to display.
   return delegate_ || LayerWithExternalTexture::ShouldSchedulePaint();
+}
+
+bool LayerTextured::SwitchCCLayerForTest() {
+  if (!FinishAnimationsBeforeSwitchToLayer()) {
+    return false;
+  }
+
+  scoped_refptr<cc::PictureLayer> new_layer = cc::PictureLayer::Create(this);
+  SwitchToLayer(new_layer);
+
+  content_layer_ = std::move(new_layer);
+  return true;
+}
+
+scoped_refptr<cc::DisplayItemList> LayerTextured::PaintContentsToDisplayList() {
+  TRACE_EVENT1("ui", "LayerTextured::PaintContentsToDisplayList", "name",
+               name_);
+  gfx::Rect local_bounds(bounds().size());
+  gfx::Rect invalidation(
+      gfx::IntersectRects(paint_region_.bounds(), local_bounds));
+  paint_region_.Clear();
+  auto display_list = base::MakeRefCounted<cc::DisplayItemList>();
+  if (delegate_) {
+    delegate_->OnPaintLayer(PaintContext(display_list.get(),
+                                         device_scale_factor_, invalidation,
+                                         GetCompositor()->is_pixel_canvas()));
+  }
+  display_list->Finalize();
+  // TODO(domlaskowski): Move mirror invalidation to Layer::SchedulePaint.
+  for (const auto& mirror : mirrors_) {
+    mirror->dest()->SchedulePaint(invalidation);
+  }
+
+  return display_list;
+}
+
+bool LayerTextured::FillsBoundsCompletely() const {
+  return fills_bounds_completely_;
+}
+
+void LayerTextured::SetFillsBoundsCompletely(bool fills_bounds_completely) {
+  fills_bounds_completely_ = fills_bounds_completely;
+}
+
+bool LayerTextured::IsPaintDeferredForTesting() const {
+  return deferred_paint_requests_;
+}
+
+void LayerTextured::OnPaintScheduled() {
+  if (deferred_paint_requests_) {
+    return;
+  }
+
+  ScheduleDraw();
+}
+
+bool LayerTextured::ShouldCommitDamage() const {
+  // If painting is deferred, we don't commit the accumulated damage yet.
+  if (deferred_paint_requests_) {
+    return false;
+  }
+
+  // Otherwise, we commit damage if we have a delegate to paint our contents,
+  // or if we have an external transferable resource.
+  return delegate_ || LayerWithExternalTexture::ShouldCommitDamage();
+}
+
+void LayerTextured::CommitDamage(const cc::Region& damage) {
+  Layer::CommitDamage(damage);
+  paint_region_.Union(damage);
+}
+
+void LayerTextured::Reset() {
+  LayerWithExternalTexture::Reset();
+
+  if (content_layer_) {
+    content_layer_->ClearClient();
+  }
+
+  content_layer_ = nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2116,9 +2194,31 @@ LayerSolidColor::~LayerSolidColor() {
   Destroy();
 }
 
+std::unique_ptr<Layer> LayerSolidColor::Clone() const {
+  auto clone = Layer::Clone();
+  clone->AsSolidColor()->SetColor(GetTargetColor());
+  return clone;
+}
+
 bool LayerSolidColor::ShouldSchedulePaint() const {
   // Only Schedule paint if LayerSolidColor has external content.
   return texture_layer() && LayerWithExternalTexture::ShouldSchedulePaint();
+}
+
+void LayerSolidColor::OnPaintScheduled() {
+  ScheduleDraw();
+}
+
+bool LayerSolidColor::SwitchCCLayerForTest() {
+  if (!FinishAnimationsBeforeSwitchToLayer()) {
+    return false;
+  }
+
+  scoped_refptr<cc::SolidColorLayer> new_layer = cc::SolidColorLayer::Create();
+  SwitchToLayer(new_layer);
+
+  solid_color_layer_ = std::move(new_layer);
+  return true;
 }
 
 void LayerSolidColor::SetShowReflectedLayerSubtree(

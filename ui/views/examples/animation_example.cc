@@ -73,7 +73,7 @@ END_METADATA
 AnimatingSquare::AnimatingSquare(size_t index) : index_(index) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetFillsBoundsCompletely(false);
+  layer()->AsTextured()->SetFillsBoundsCompletely(false);
 }
 
 void AnimatingSquare::OnPaint(gfx::Canvas* canvas) {

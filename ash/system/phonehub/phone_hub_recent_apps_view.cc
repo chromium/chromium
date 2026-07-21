@@ -185,7 +185,7 @@ PhoneHubRecentAppsView::~PhoneHubRecentAppsView() {
 PhoneHubRecentAppsView::RecentAppButtonsView::RecentAppButtonsView() {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetFillsBoundsCompletely(false);
+  layer()->AsTextured()->SetFillsBoundsCompletely(false);
 
   views::BoxLayout* box_layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -238,7 +238,7 @@ END_METADATA
 PhoneHubRecentAppsView::LoadingView::LoadingView() {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetFillsBoundsCompletely(false);
+  layer()->AsTextured()->SetFillsBoundsCompletely(false);
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   SetDefaultFlex(1);
   SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter);

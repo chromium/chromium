@@ -412,7 +412,9 @@ void Window::SetLayerManagedByParent(bool layer_managed_by_parent) {
 void Window::SetFillsBoundsCompletely(bool fills_bounds) {
   CHECK(layer());
   DUMP_WILL_BE_CHECK(!is_destroying_);
-  layer()->SetFillsBoundsCompletely(fills_bounds);
+  if (auto* textured = layer()->AsTextured()) {
+    textured->SetFillsBoundsCompletely(fills_bounds);
+  }
 }
 
 Window* Window::GetRootWindow() {
