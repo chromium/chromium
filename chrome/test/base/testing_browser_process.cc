@@ -60,9 +60,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
-#include "services/device/public/cpp/device_features.h"
-#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
-#include "services/device/public/cpp/test/fake_geolocation_system_permission_manager.h"
+#include "services/device/public/cpp/device_features.h"  // nogncheck
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"  // nogncheck
+#include "services/device/public/cpp/test/fake_geolocation_system_permission_manager.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)

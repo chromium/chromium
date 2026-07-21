@@ -78,7 +78,6 @@
 #include "chrome/test/base/chrome_test_suite.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/test_launcher_utils.h"
-#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/feature_engagement/public/feature_list.h"
