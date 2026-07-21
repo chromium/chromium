@@ -7571,9 +7571,6 @@ test("unit_tests") {
   if (safe_browsing_mode == 1) {
     # TODO(sgurun): enable tests for safe_browsing==2.
     sources += [
-      "../browser/safe_browsing/download_protection/download_feedback_service_unittest.cc",
-      "../browser/safe_browsing/download_protection/download_feedback_unittest.cc",
-      "../browser/safe_browsing/download_protection/path_sanitizer_unittest.cc",
       "../common/safe_browsing/ipc_protobuf_message_test_messages.h",
       "../common/safe_browsing/ipc_protobuf_message_unittest.cc",
     ]
