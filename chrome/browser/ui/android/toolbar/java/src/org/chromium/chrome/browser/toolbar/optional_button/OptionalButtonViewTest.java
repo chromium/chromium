@@ -1531,4 +1531,64 @@ public class OptionalButtonViewTest {
         mOptionalButtonView.updateButtonWithAnimation(buttonData);
         assertEquals(View.VISIBLE, mOptionalButtonView.getVisibility());
     }
+
+    @Test
+    public void testHasOverlappingRendering_returnsFalse() {
+        assertFalse(mOptionalButtonView.hasOverlappingRendering());
+    }
+
+    @Test
+    public void testSetLayerType_zeroDimensions_coercesHardwareLayerToNone() {
+        mOptionalButtonView.layout(/* l= */ 0, /* t= */ 0, /* r= */ 0, /* b= */ 0);
+        assertEquals(0, mOptionalButtonView.getWidth());
+        assertEquals(0, mOptionalButtonView.getHeight());
+
+        mOptionalButtonView.setLayerType(View.LAYER_TYPE_HARDWARE, /* paint= */ null);
+        assertEquals(View.LAYER_TYPE_NONE, mOptionalButtonView.getLayerType());
+    }
+
+    @Test
+    public void testSetLayerType_positiveDimensions_preservesHardwareLayer() {
+        mOptionalButtonView.layout(/* l= */ 0, /* t= */ 0, /* r= */ 100, /* b= */ 100);
+        assertEquals(100, mOptionalButtonView.getWidth());
+        assertEquals(100, mOptionalButtonView.getHeight());
+
+        mOptionalButtonView.setLayerType(View.LAYER_TYPE_HARDWARE, /* paint= */ null);
+        assertEquals(View.LAYER_TYPE_HARDWARE, mOptionalButtonView.getLayerType());
+    }
+
+    @Test
+    public void testHide_whenAlreadyHidden_doesNotTriggerDelayedTransition() {
+        // Start in hidden state.
+        mOptionalButtonView.updateButtonWithAnimation(/* buttonData= */ null);
+        verify(mMockBeginDelayedTransition, never()).onResult(any());
+
+        // Calling updateButtonWithAnimation(null) again should return early.
+        mOptionalButtonView.updateButtonWithAnimation(/* buttonData= */ null);
+        verify(mMockBeginDelayedTransition, never()).onResult(any());
+    }
+
+    @Test
+    public void testHide_whenUnlaidOut_runsSynchronously() {
+        OptionalButtonView unlaidOutView =
+                (OptionalButtonView)
+                        LayoutInflater.from(mActivity)
+                                .inflate(R.layout.optional_button_layout, /* root= */ null);
+        unlaidOutView.setLayoutParams(
+                new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        unlaidOutView.setIsAnimationAllowedPredicate(mMockAnimationChecker);
+        unlaidOutView.setTransitionRoot(mMockTransitionRoot);
+        unlaidOutView.setFakeBeginDelayedTransitionForTesting(mMockBeginDelayedTransition);
+        unlaidOutView.setHandlerForTesting(new Handler(Looper.getMainLooper()));
+
+        Callback<Integer> transitionFinishedCallback = MockitoHelper.mockCallback();
+        unlaidOutView.setTransitionFinishedCallback(transitionFinishedCallback);
+
+        unlaidOutView.updateButtonWithAnimation(/* buttonData= */ null);
+
+        // Since the view is not laid out, it should force animate=false and run synchronously.
+        verify(mMockBeginDelayedTransition, never()).onResult(any());
+        verify(transitionFinishedCallback).onResult(TransitionType.HIDING);
+        assertEquals(View.GONE, unlaidOutView.getVisibility());
+    }
 }

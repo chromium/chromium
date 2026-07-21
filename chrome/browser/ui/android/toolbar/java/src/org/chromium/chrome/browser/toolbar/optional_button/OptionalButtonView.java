@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.transition.ChangeBounds;
@@ -349,6 +350,9 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
             mCurrentButtonVariant = AdaptiveToolbarButtonVariant.NONE;
             mCanCurrentButtonShow = false;
             mActionChipLabelResId = Resources.ID_NULL;
+            if (mState == State.HIDDEN && getVisibility() == GONE && !isRunningTransition()) {
+                return;
+            }
             hide(isAnimationAllowedByParent);
             return;
         }
@@ -734,6 +738,9 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
 
         // All appearing/disappearing views will fade in/out.
         Fade fade = new Fade();
+        fade.addTarget(mButton);
+        fade.addTarget(mAnimationImage);
+        fade.addTarget(mBackground);
 
         // When appearing/disappearing mButton will shrink/grow.
         ShrinkTransition shrink = new ShrinkTransition();
@@ -756,12 +763,20 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         transition.setOrdering(TransitionSet.ORDERING_TOGETHER);
 
         Fade fade = new Fade();
+        fade.addTarget(mButton);
+        fade.addTarget(mBackground);
+        fade.addTarget(mActionChipLabel);
+        fade.addTarget(mAnimationImage);
+
         // When showing/hiding this view we change its width from/to 0dp, this transition animates
         // that width change.
         ChangeBounds changeBounds = new ChangeBounds();
+        changeBounds.addTarget(this);
 
         // When mButton shows/hides we use a grow/shrink animation.
         ShrinkTransition shrink = new ShrinkTransition();
+        shrink.addTarget(mButton);
+        shrink.addTarget(mBackground);
 
         // When mButton and mBackground show up or hide they slide from/to the end (right in LTR,
         // left in RTL).
@@ -789,10 +804,18 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         // During the action chip transition we change this view's width to fit the action chip
         // label, this transition animates that change.
         ChangeBounds changeBounds = new ChangeBounds();
+        changeBounds.addTarget(this);
 
         // The action chip label and the new icon fade in and grow when showing up.
         Fade fade = new Fade();
+        fade.addTarget(mActionChipLabel);
+        fade.addTarget(mButton);
+        fade.addTarget(mBackground);
+        fade.addTarget(mAnimationImage);
+
         ShrinkTransition shrinkTransition = new ShrinkTransition();
+        shrinkTransition.addTarget(mActionChipLabel);
+        shrinkTransition.addTarget(mButton);
 
         transitionSet
                 .addTransition(changeBounds)
@@ -1029,6 +1052,14 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     }
 
     private void hide(boolean animate) {
+        if (!isLaidOut()
+                || getVisibility() == GONE
+                || mState == State.HIDDEN
+                || mTransitionRoot == null
+                || !mTransitionRoot.isAttachedToWindow()) {
+            animate = false;
+        }
+
         removePendingDelayedRunnables();
         Transition transition = createShowHideTransition();
         if (!animate) {
@@ -1056,10 +1087,8 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         if (!animate) {
             // If not animating, manually trigger the transition lifecycle synchronously to restore
             // listeners and update state immediately.
-            onTransitionStart(null);
-            onTransitionEnd(null);
-        } else if (mTransitionRoot == null || !mTransitionRoot.isAttachedToWindow()) {
-            onTransitionEnd(null);
+            onTransitionStart(/* transition= */ null);
+            onTransitionEnd(/* transition= */ null);
         }
     }
 
@@ -1079,7 +1108,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     }
 
     private void showIcon(boolean animate) {
-        if (!isLaidOut()) {
+        if (!isLaidOut() || mTransitionRoot == null || !mTransitionRoot.isAttachedToWindow()) {
             animate = false;
         }
 
@@ -1090,7 +1119,9 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
 
         // Prepare views for the transition, these changes aren't animated.
         if (mCanChangeOwnVisibility) this.setVisibility(VISIBLE);
-        setWidth(0);
+        if (animate) {
+            setWidth(0);
+        }
 
         mButton.setVisibility(GONE);
         mBackground.setVisibility(GONE);
@@ -1126,10 +1157,8 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         if (!animate) {
             // If not animating, manually trigger the transition lifecycle synchronously to restore
             // listeners and update state immediately.
-            onTransitionStart(null);
-            onTransitionEnd(null);
-        } else if (mTransitionRoot == null || !mTransitionRoot.isAttachedToWindow()) {
-            onTransitionEnd(null);
+            onTransitionStart(/* transition= */ null);
+            onTransitionEnd(/* transition= */ null);
         }
     }
 
@@ -1215,5 +1244,18 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         }
 
         return mForegroundColorTint;
+    }
+
+    @Override
+    public boolean hasOverlappingRendering() {
+        return false;
+    }
+
+    @Override
+    public void setLayerType(int layerType, @Nullable Paint paint) {
+        if (layerType == LAYER_TYPE_HARDWARE && (getWidth() <= 0 || getHeight() <= 0)) {
+            layerType = LAYER_TYPE_NONE;
+        }
+        super.setLayerType(layerType, paint);
     }
 }
