@@ -25,6 +25,7 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.TextAttribute;
 import android.webkit.WebViewDelegate;
+import android.window.TrustedPresentationThresholds;
 
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
@@ -531,5 +532,19 @@ public interface AconfigFlaggedApiDelegate {
     /** Returns the Contacts Picker session provider authority string if supported. */
     default @Nullable String getSystemContactsPickerAuthority() {
         return null;
+    }
+
+    /**
+     * Creates a {@link android.window.TrustedPresentationThresholds} instance using the upcoming
+     * strict occlusion API if supported, otherwise returns {@code null}.
+     */
+    default @Nullable TrustedPresentationThresholds createTrustedPresentationThresholdsStrictMode(
+            float minAlpha, float minFraction, int stabilityRequirementMs) {
+        return null;
+    }
+
+    /** Returns whether the new strict occlusion API is available. */
+    default boolean isStrictOcclusionAvailable() {
+        return false;
     }
 }
