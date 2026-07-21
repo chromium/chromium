@@ -822,12 +822,13 @@ bool SharedContextState::InitializeGLWithFeatureInfo(
 
 bool SharedContextState::FlushGraphiteRecorder() {
   auto recording = gpu_main_graphite_recorder()->snap();
-  if (recording) {
-    skgpu::graphite::InsertRecordingInfo info = {};
-    info.fRecording = recording.get();
-    return graphite_shared_context()->insertRecording(info);
+  if (!recording) {
+    return false;
   }
-  return true;
+
+  skgpu::graphite::InsertRecordingInfo info = {};
+  info.fRecording = recording.get();
+  return graphite_shared_context()->insertRecording(info);
 }
 
 void SharedContextState::FlushAndSubmit(bool sync_to_cpu) {
