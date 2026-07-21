@@ -148,10 +148,6 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   // The returned value represents the timestamp of the write, such that any
   // progress marker greater or equal to this timestamp must have processed the
   // changes. See GetProgressMarkerTimestamp() below.
-  // TODO(crbug.com/448316539): Migrate to FullUpdate mode and remove this
-  // method.
-  base::Time SetWalletData(
-      const std::vector<sync_pb::SyncEntity>& wallet_entities);
 
   // Sets the Autofill offer data to be served in following GetUpdates
   // requests (any further GetUpdates response will be empty, indicating no
@@ -405,10 +401,6 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   base::ThreadChecker thread_checker_;
 
   std::unique_ptr<syncer::LoopbackServer> loopback_server_;
-
-  // The LoopbackServer does not know how to handle Wallet data properly, so
-  // the FakeServer handles those itself.
-  std::vector<sync_pb::SyncEntity> wallet_entities_;
 
   // The LoopbackServer does not know how to handle offer data properly, so
   // the FakeServer handles those itself.

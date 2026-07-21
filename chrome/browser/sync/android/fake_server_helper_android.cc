@@ -259,7 +259,12 @@ static void JNI_FakeServerHelper_SetWalletData(
   sync_pb::SyncEntity entity;
   DeserializeEntity(env, serialized_entity, &entity);
 
-  fake_server_ptr->SetWalletData({entity});
+  fake_server_ptr->DeleteAllEntitiesForDataType(syncer::AUTOFILL_WALLET_DATA);
+  int64_t now = syncer::TimeToProtoTime(base::Time::Now());
+  fake_server_ptr->InjectEntity(
+      syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
+          entity.name(), entity.id_string(), entity.specifics(),
+          /*creation_time=*/now, /*last_modified_time=*/now));
 }
 
 static void JNI_FakeServerHelper_ModifyEntitySpecifics(

@@ -33,6 +33,10 @@ class DataTypeState;
 class SyncEntity;
 }  // namespace sync_pb
 
+namespace fake_server {
+class FakeServer;
+}  // namespace fake_server
+
 namespace wallet_helper {
 
 inline constexpr char kDefaultCardID[] = "wallet card ID";
@@ -110,6 +114,9 @@ sync_pb::DataTypeState GetWalletDataTypeState(syncer::DataType type,
                                               int profile,
                                               StoreType store_type);
 
+void SetWalletData(fake_server::FakeServer* fake_server,
+                   const std::vector<sync_pb::SyncEntity>& wallet_entities);
+
 sync_pb::SyncEntity CreateDefaultSyncWalletCard();
 
 sync_pb::SyncEntity CreateSyncWalletCard(const std::string& name,
@@ -169,8 +176,10 @@ class AutofillWalletChecker : public StatusChangeChecker,
   const int profile_b_;
 };
 
-// Checker to block until a new progress marker with correct timestamp is
-// received.
+// Checker to block until a new progress marker is received.
+// TODO(crbug.com/393282276): Remove legacy progress marker timestamp parsing
+// once all data types (e.g., AUTOFILL_WALLET_OFFER) are migrated to
+// LoopbackServer's full update support.
 class FullUpdateTypeProgressMarkerChecker : public StatusChangeChecker,
                                             public syncer::SyncServiceObserver {
  public:
@@ -196,6 +205,7 @@ class FullUpdateTypeProgressMarkerChecker : public StatusChangeChecker,
   const base::Time min_required_progress_marker_timestamp_;
   const raw_ptr<const syncer::SyncService> service_;
   const syncer::DataType data_type_;
+  std::optional<std::string> initial_token_;
 
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       scoped_observation_{this};

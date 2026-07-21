@@ -206,7 +206,6 @@ class UpdateSieve {
   // Updates internal tracking of max versions to later be used to set response
   // progress markers.
   void UpdateProgressMarker(const LoopbackServerEntity& entity) {
-    DCHECK(ClientWantsItem(entity));
     DataType type = entity.GetDataType();
     response_version_map_[type].UpdateWithEntity(entity.GetVersion());
   }
@@ -530,10 +529,7 @@ bool LoopbackServer::HandleGetUpdatesRequest(
   }
 
   // For data types configured as full update types, check if there is at least
-  // one entity with a newer version on the server (using the initial
-  // incremental version check in `sieve->ClientWantsItem`). If so, mark the
-  // type to force a full update (returning all non-deleted entities and a GC
-  // directive).
+  // one entity with a newer version on the server.
   syncer::DataTypeSet full_update_types_with_new_updates;
   for (const auto& [id, entity] : entities_) {
     DataType type = entity->GetDataType();
@@ -543,10 +539,23 @@ bool LoopbackServer::HandleGetUpdatesRequest(
   }
   sieve->SetForceFullUpdateTypes(full_update_types_with_new_updates);
 
+  // Note that for data types configured as full update types and having new
+  // updates, ClientWantsItem() behavior will be changed after
+  // SetForceFullUpdateTypes() is called.
   std::vector<const LoopbackServerEntity*> wanted_entities;
   for (const auto& [id, entity] : entities_) {
     if (sieve->ClientWantsItem(*entity)) {
       wanted_entities.push_back(entity.get());
+    }
+
+    if (full_update_types_with_new_updates.Has(entity->GetDataType())) {
+      // For full update types, track the highest entity version (including
+      // tombstones) in the progress marker. Even if tombstones are filtered out
+      // from the response entries payload by GC directives, the progress marker
+      // version should advance.
+      // Note that below UpdateProgressMarker() is called for only
+      // `wanted_entities` while here it is called for every stored entity.
+      sieve->UpdateProgressMarker(*entity);
     }
   }
 

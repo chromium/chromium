@@ -54,6 +54,7 @@ FakeServer::FakeServer(const base::FilePath& loopback_server_dir)
   loopback_server_->set_observer_for_tests(this);
 
   SetUpdateMode(syncer::AUTOFILL_VALUABLE, UpdateMode::kFull);
+  SetUpdateMode(syncer::AUTOFILL_WALLET_DATA, UpdateMode::kFull);
 
   LoadFakeStateFromDisk();
 }
@@ -166,8 +167,7 @@ void VerifyNoProgressMarkerExistsInResponseForFullUpdateType(
         syncer::GetDataTypeFromSpecificsFieldNumber(marker.data_type_id());
     // Verified there is no progress marker for the full sync type we cared
     // about.
-    DCHECK(type != syncer::AUTOFILL_WALLET_DATA &&
-           type != syncer::AUTOFILL_WALLET_OFFER);
+    DCHECK(type != syncer::AUTOFILL_WALLET_OFFER);
   }
 }
 
@@ -377,9 +377,6 @@ net::HttpStatusCode FakeServer::HandleParsedCommand(
   // structured. To not interfere with this, we remove progress markers for
   // full-update types before passing the request to the loopback server.
   sync_pb::ClientToServerMessage message_for_loopback_server = message;
-  std::unique_ptr<sync_pb::DataTypeProgressMarker> wallet_marker =
-      RemoveFullUpdateTypeProgressMarkerIfExists(syncer::AUTOFILL_WALLET_DATA,
-                                                 &message_for_loopback_server);
   std::unique_ptr<sync_pb::DataTypeProgressMarker> offer_marker =
       RemoveFullUpdateTypeProgressMarkerIfExists(syncer::AUTOFILL_WALLET_OFFER,
                                                  &message_for_loopback_server);
@@ -407,11 +404,6 @@ net::HttpStatusCode FakeServer::HandleParsedCommand(
     // the request).
     VerifyNoProgressMarkerExistsInResponseForFullUpdateType(
         response->mutable_get_updates());
-
-    if (wallet_marker != nullptr) {
-      PopulateFullUpdateTypeResults(wallet_entities_, *wallet_marker,
-                                    response->mutable_get_updates());
-    }
 
     if (offer_marker != nullptr) {
       PopulateFullUpdateTypeResults(offer_entities_, *offer_marker,
@@ -530,10 +522,8 @@ void FakeServer::TriggerKeystoreKeyRotation() {
 
 void FakeServer::InjectEntity(std::unique_ptr<LoopbackServerEntity> entity) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(entity->GetDataType() != syncer::AUTOFILL_WALLET_DATA &&
-         entity->GetDataType() != syncer::AUTOFILL_WALLET_OFFER)
-      << "Wallet/Offer data must be injected via "
-         "SetWalletData()/SetOfferData().";
+  DCHECK(entity->GetDataType() != syncer::AUTOFILL_WALLET_OFFER)
+      << "Offer data must be injected via SetOfferData().";
 
   const DataType data_type = entity->GetDataType();
 
@@ -549,32 +539,7 @@ void FakeServer::InjectEntity(std::unique_ptr<LoopbackServerEntity> entity) {
   OnCommit(/*committed_data_types=*/{data_type});
 }
 
-base::Time FakeServer::SetWalletData(
-    const std::vector<sync_pb::SyncEntity>& wallet_entities) {
-  DCHECK(!wallet_entities.empty());
-  DataType data_type = GetDataTypeFromSpecifics(wallet_entities[0].specifics());
-  CHECK_EQ(data_type, syncer::AUTOFILL_WALLET_DATA);
 
-  OnWillCommit();
-  wallet_entities_ = wallet_entities;
-
-  const base::Time now = base::Time::Now();
-  const int64_t version = (now - base::Time::UnixEpoch()).InMilliseconds();
-
-  for (sync_pb::SyncEntity& entity : wallet_entities_) {
-    DCHECK(!entity.has_client_tag_hash())
-        << "The sync server doesn not provide a client tag for wallet entries.";
-    DCHECK(!entity.id_string().empty()) << "server id required!";
-
-    // The version is overridden during serving of the entities, but is useful
-    // here to influence the entities' hash.
-    entity.set_version(version);
-  }
-
-  OnCommit(/*committed_data_types=*/{syncer::AUTOFILL_WALLET_DATA});
-
-  return now;
-}
 
 base::Time FakeServer::SetOfferData(
     const std::vector<sync_pb::SyncEntity>& offer_entities) {

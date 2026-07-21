@@ -33,6 +33,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
+#include "components/sync/engine/loopback_server/persistent_tombstone_entity.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -223,7 +224,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
   ASSERT_TRUE(SetupClients());
   PaymentsDataManager* paydm = GetPaymentsDataManager(0);
 
-  GetFakeServer()->SetWalletData(
+  wallet_helper::SetWalletData(
+      GetFakeServer(),
       {CreateDefaultSyncWalletCard(), CreateDefaultSyncPaymentsCustomerData()});
 
   ASSERT_TRUE(SignIn());
@@ -275,7 +277,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
   PaymentsDataManager* paydm = GetPaymentsDataManager(0);
   ASSERT_NE(nullptr, paydm);
 
-  GetFakeServer()->SetWalletData(
+  wallet_helper::SetWalletData(
+      GetFakeServer(),
       {CreateSyncWalletCard(/*name=*/"card-1", /*last_four=*/"0001",
                             kDefaultBillingAddressID),
        CreateDefaultSyncPaymentsCustomerData(),
@@ -300,7 +303,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
 
   // Set a different set of cards on the server, then sign in again (this is a
   // good enough approximation of signing in with a different Google account).
-  GetFakeServer()->SetWalletData(
+  wallet_helper::SetWalletData(
+      GetFakeServer(),
       {CreateSyncWalletCard(/*name=*/"new-card", /*last_four=*/"0002",
                             kDefaultBillingAddressID),
        CreateSyncPaymentsCustomerData(/*customer_id=*/"different"),
@@ -332,9 +336,10 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest, EnabledByDefault) {
 // ChromeOS does not sign out, so the test below does not apply.
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest, ClearOnSignOut) {
-  GetFakeServer()->SetWalletData({CreateDefaultSyncWalletCard(),
-                                  CreateDefaultSyncPaymentsCustomerData(),
-                                  CreateDefaultSyncCreditCardCloudTokenData()});
+  wallet_helper::SetWalletData(
+      GetFakeServer(),
+      {CreateDefaultSyncWalletCard(), CreateDefaultSyncPaymentsCustomerData(),
+       CreateDefaultSyncCreditCardCloudTokenData()});
   ASSERT_TRUE(SetupSync());
 
   PaymentsDataManager* paydm = GetPaymentsDataManager(0);
@@ -361,9 +366,10 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest, ClearOnSignOut) {
 // Wallet data should get cleared from the database when the user enters the
 // sync paused state (e.g. persistent auth error).
 IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest, ClearOnSyncPaused) {
-  GetFakeServer()->SetWalletData({CreateDefaultSyncWalletCard(),
-                                  CreateDefaultSyncPaymentsCustomerData(),
-                                  CreateDefaultSyncCreditCardCloudTokenData()});
+  wallet_helper::SetWalletData(
+      GetFakeServer(),
+      {CreateDefaultSyncWalletCard(), CreateDefaultSyncPaymentsCustomerData(),
+       CreateDefaultSyncCreditCardCloudTokenData()});
   ASSERT_TRUE(SetupSync());
 
   PaymentsDataManager* paydm = GetPaymentsDataManager(0);
@@ -404,7 +410,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest, ClearOnSyncPaused) {
 // replaced when synced down.
 IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
                        NewSyncDataShouldReplaceExistingData) {
-  GetFakeServer()->SetWalletData(
+  wallet_helper::SetWalletData(
+      GetFakeServer(),
       {CreateSyncWalletCard(/*name=*/"card-1", /*last_four=*/"0001",
                             kDefaultBillingAddressID, /*nickname=*/"",
                             /*instrument_id=*/123),
@@ -429,7 +436,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
   EXPECT_EQ("data-1", cloud_token_data[0]->instrument_token);
 
   // Put some completely new data in the sync server.
-  GetFakeServer()->SetWalletData(
+  wallet_helper::SetWalletData(
+      GetFakeServer(),
       {CreateSyncWalletCard(/*name=*/"new-card", /*last_four=*/"0002",
                             kDefaultBillingAddressID,
                             /*nickname=*/"Grocery Card", /*instrument_id=*/321),
@@ -453,7 +461,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
 // update with deletion gc directives and with the (possibly empty) full data
 // set, or (more often) an empty update.
 IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest, EmptyUpdatesAreIgnored) {
-  GetFakeServer()->SetWalletData(
+  wallet_helper::SetWalletData(
+      GetFakeServer(),
       {CreateSyncWalletCard(/*name=*/"card-1", /*last_four=*/"0001",
                             kDefaultBillingAddressID),
        CreateDefaultSyncPaymentsCustomerData(),
@@ -475,6 +484,17 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest, EmptyUpdatesAreIgnored) {
   // Trigger a sync and wait for the new data to arrive.
   sync_pb::DataTypeState state_before =
       GetWalletDataTypeState(syncer::AUTOFILL_WALLET_DATA, 0, GetStoreType());
+
+  // Inject a tombstone (deleted entity) on the server to advance the server
+  // version for AUTOFILL_WALLET_DATA. LoopbackServer will return an empty
+  // update (0 entities) but advance the progress marker token version. This
+  // verifies that empty update responses containing a updated progress marker
+  // are properly stored by the client (regression check for
+  // crbug.com/41436932).
+  GetFakeServer()->InjectEntity(
+      syncer::PersistentTombstoneEntity::CreateNewForTest(
+          syncer::AUTOFILL_WALLET_DATA, "tombstone-id"));
+
   ASSERT_TRUE(TriggerGetUpdatesAndWait());
 
   // Check that the new progress marker is stored for empty updates. This is a
@@ -506,7 +526,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest, EmptyUpdatesAreIgnored) {
 // If the server sends the same cards again, they should not change on the
 // client. We should also not overwrite existing metadata.
 IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest, SameUpdatesAreIgnored) {
-  GetFakeServer()->SetWalletData(
+  wallet_helper::SetWalletData(
+      GetFakeServer(),
       {CreateSyncWalletCard(/*name=*/"card-1", /*last_four=*/"0001",
                             kDefaultBillingAddressID),
        CreateDefaultSyncPaymentsCustomerData(),
@@ -521,7 +542,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest, SameUpdatesAreIgnored) {
 
   // Keep the same data (only change the customer data and the cloud token to
   // force the FakeServer to send the full update).
-  GetFakeServer()->SetWalletData(
+  wallet_helper::SetWalletData(
+      GetFakeServer(),
       {CreateSyncWalletCard(/*name=*/"card-1", /*last_four=*/"0001",
                             kDefaultBillingAddressID),
        CreateSyncPaymentsCustomerData("different"),
@@ -548,7 +570,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest, SameUpdatesAreIgnored) {
 // If the server sends the same cards with changed data, they should change on
 // the client.
 IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest, ChangedEntityGetsUpdated) {
-  GetFakeServer()->SetWalletData(
+  wallet_helper::SetWalletData(
+      GetFakeServer(),
       {CreateSyncWalletCard(/*name=*/"card-1", /*last_four=*/"0002",
                             kDefaultBillingAddressID, /*nickname=*/"Outdated"),
        CreateDefaultSyncPaymentsCustomerData(),
@@ -564,7 +587,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest, ChangedEntityGetsUpdated) {
   // Update the data (also change the customer data to force the full update as
   // FakeServer computes the hash for progress markers only based on ids). For
   // server card, only the card's nickname is changed, metadata is unchanged.
-  GetFakeServer()->SetWalletData(
+  wallet_helper::SetWalletData(
+      GetFakeServer(),
       {CreateSyncWalletCard(/*name=*/"card-1", /*last_four=*/"0002",
                             kDefaultBillingAddressID,
                             /*nickname=*/"Grocery Card"),
@@ -592,9 +616,10 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest, ChangedEntityGetsUpdated) {
 // Wallet data should get cleared from the database when the wallet sync type
 // flag is disabled.
 IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest, ClearOnDisableWalletSync) {
-  GetFakeServer()->SetWalletData({CreateDefaultSyncWalletCard(),
-                                  CreateDefaultSyncPaymentsCustomerData(),
-                                  CreateDefaultSyncCreditCardCloudTokenData()});
+  wallet_helper::SetWalletData(
+      GetFakeServer(),
+      {CreateDefaultSyncWalletCard(), CreateDefaultSyncPaymentsCustomerData(),
+       CreateDefaultSyncCreditCardCloudTokenData()});
   ASSERT_TRUE(SetupSync());
 
   PaymentsDataManager* paydm = GetPaymentsDataManager(0);
@@ -623,9 +648,10 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest, ClearOnDisableWalletSync) {
 // integration flag is disabled.
 IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
                        ClearOnDisableWalletAutofill) {
-  GetFakeServer()->SetWalletData({CreateDefaultSyncWalletCard(),
-                                  CreateDefaultSyncPaymentsCustomerData(),
-                                  CreateDefaultSyncCreditCardCloudTokenData()});
+  wallet_helper::SetWalletData(
+      GetFakeServer(),
+      {CreateDefaultSyncWalletCard(), CreateDefaultSyncPaymentsCustomerData(),
+       CreateDefaultSyncCreditCardCloudTokenData()});
   ASSERT_TRUE(SetupSync());
 
   PaymentsDataManager* paydm = GetPaymentsDataManager(0);
@@ -692,10 +718,10 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
   EXPECT_EQ("data-1", cloud_token_data[0]->instrument_token);
 
   // Add new data to the server and sync it down.
-  GetFakeServer()->SetWalletData(
-      {CreateDefaultSyncWalletCard(),
-       CreateSyncPaymentsCustomerData("different"),
-       CreateSyncCreditCardCloudTokenData("data-2")});
+  wallet_helper::SetWalletData(GetFakeServer(),
+                               {CreateDefaultSyncWalletCard(),
+                                CreateSyncPaymentsCustomerData("different"),
+                                CreateSyncCreditCardCloudTokenData("data-2")});
 
   WaitForPaymentsCustomerData(/*customer_id=*/"different", paydm);
 
@@ -754,7 +780,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
   EXPECT_EQ("data-1", cloud_token_data[0]->instrument_token);
 
   // Add a new customer data from the server and sync them down.
-  GetFakeServer()->SetWalletData(
+  wallet_helper::SetWalletData(
+      GetFakeServer(),
       {CreateSyncPaymentsCustomerData(/*customer_id=*/"different"),
        CreateSyncCreditCardCloudTokenData("data-2")});
 
@@ -797,7 +824,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
 
   // Sync the same card from the server, except with a default billing address
   // id.
-  GetFakeServer()->SetWalletData(
+  wallet_helper::SetWalletData(
+      GetFakeServer(),
       {CreateDefaultSyncWalletCard(),
        CreateSyncPaymentsCustomerData(/*customer_id=*/"different")});
 
@@ -837,7 +865,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
 
   // Sync the same card from the server, except with a default billing address
   // id.
-  GetFakeServer()->SetWalletData(
+  wallet_helper::SetWalletData(
+      GetFakeServer(),
       {CreateDefaultSyncWalletCard(),
        CreateSyncPaymentsCustomerData(/*customer_id=*/"different")});
 
@@ -862,8 +891,10 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
 
   // Use the ID which is the least one to guarantee that Wallet entity will be
   // in the first GetUpdates request.
-  GetFakeServer()->SetWalletData({CreateSyncWalletCard(
-      /*name=*/"server_id_0", /*last_four=*/"0001", kDefaultBillingAddressID)});
+  wallet_helper::SetWalletData(GetFakeServer(),
+                               {CreateSyncWalletCard(
+                                   /*name=*/"server_id_0", /*last_four=*/"0001",
+                                   kDefaultBillingAddressID)});
 
   // Inject a lot of bookmark to result in several GetUpdates requests.
   fake_server::EntityBuilderFactory entity_builder_factory;
@@ -886,9 +917,10 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
                        SwitchesFromAccountToProfileStorageOnSyncOptIn) {
-  GetFakeServer()->SetWalletData({CreateDefaultSyncWalletCard(),
-                                  CreateDefaultSyncPaymentsCustomerData(),
-                                  CreateDefaultSyncCreditCardCloudTokenData()});
+  wallet_helper::SetWalletData(
+      GetFakeServer(),
+      {CreateDefaultSyncWalletCard(), CreateDefaultSyncPaymentsCustomerData(),
+       CreateDefaultSyncCreditCardCloudTokenData()});
 
   // Set up Sync in transport mode.
   ASSERT_TRUE(SignIn());
@@ -944,8 +976,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
 IN_PROC_BROWSER_TEST_P(
     SingleClientWalletSyncTest,
     SwitchesFromAccountToProfileStorageOnSyncOptInWithAdvancedSetup) {
-  GetFakeServer()->SetWalletData({CreateDefaultSyncWalletCard(),
-                                  CreateDefaultSyncCreditCardCloudTokenData()});
+  wallet_helper::SetWalletData(GetFakeServer(),
+                               {CreateDefaultSyncWalletCard(),
+                                CreateDefaultSyncCreditCardCloudTokenData()});
 
   // Set up Sync in transport mode.
   ASSERT_TRUE(SignIn());

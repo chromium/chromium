@@ -95,7 +95,8 @@ INSTANTIATE_TEST_SUITE_P(
     testing::PrintToStringParamName());
 
 IN_PROC_BROWSER_TEST_P(TwoClientWalletSyncTest, UpdateCreditCardMetadata) {
-  GetFakeServer()->SetWalletData(
+  wallet_helper::SetWalletData(
+      GetFakeServer(),
       {CreateSyncWalletCard(/*name=*/"card-1", /*last_four=*/"0001",
                             kDefaultBillingAddressID),
        CreateDefaultSyncPaymentsCustomerData()});
@@ -128,7 +129,8 @@ IN_PROC_BROWSER_TEST_P(TwoClientWalletSyncTest, UpdateCreditCardMetadata) {
 
 IN_PROC_BROWSER_TEST_P(TwoClientWalletSyncTest,
                        UpdateCreditCardMetadataWhileNotSyncing) {
-  GetFakeServer()->SetWalletData(
+  wallet_helper::SetWalletData(
+      GetFakeServer(),
       {CreateSyncWalletCard(/*name=*/"card-1", /*last_four=*/"0001",
                             kDefaultBillingAddressID),
        CreateDefaultSyncPaymentsCustomerData()});
@@ -167,7 +169,8 @@ IN_PROC_BROWSER_TEST_P(TwoClientWalletSyncTest,
 
 IN_PROC_BROWSER_TEST_P(TwoClientWalletSyncTest,
                        UpdateCreditCardMetadataConflictsWhileNotSyncing) {
-  GetFakeServer()->SetWalletData(
+  wallet_helper::SetWalletData(
+      GetFakeServer(),
       {CreateSyncWalletCard(/*name=*/"card-1", /*last_four=*/"0001",
                             kDefaultBillingAddressID),
        CreateDefaultSyncPaymentsCustomerData()});
@@ -213,7 +216,8 @@ IN_PROC_BROWSER_TEST_P(TwoClientWalletSyncTest,
 
 IN_PROC_BROWSER_TEST_P(TwoClientWalletSyncTest,
                        UpdateCreditCardMetadataWithNewBillingAddressId) {
-  GetFakeServer()->SetWalletData(
+  wallet_helper::SetWalletData(
+      GetFakeServer(),
       {CreateSyncWalletCard(/*name=*/"card-1", /*last_four=*/"0001",
                             /*billing_address_id=*/""),
        CreateDefaultSyncPaymentsCustomerData()});
@@ -242,7 +246,8 @@ IN_PROC_BROWSER_TEST_P(TwoClientWalletSyncTest,
 
 IN_PROC_BROWSER_TEST_P(TwoClientWalletSyncTest,
                        UpdateCreditCardMetadataWithChangedBillingAddressId) {
-  GetFakeServer()->SetWalletData(
+  wallet_helper::SetWalletData(
+      GetFakeServer(),
       {CreateSyncWalletCard(/*name=*/"card-1", /*last_four=*/"0001",
                             kDefaultBillingAddressID),
        CreateDefaultSyncPaymentsCustomerData()});
@@ -272,7 +277,8 @@ IN_PROC_BROWSER_TEST_P(TwoClientWalletSyncTest,
 IN_PROC_BROWSER_TEST_P(
     TwoClientWalletSyncTest,
     UpdateCreditCardMetadataWithChangedBillingAddressId_RemoteToLocal) {
-  GetFakeServer()->SetWalletData(
+  wallet_helper::SetWalletData(
+      GetFakeServer(),
       {CreateSyncWalletCard(/*name=*/"card-1", /*last_four=*/"0001",
                             kDefaultBillingAddressID),
        CreateDefaultSyncPaymentsCustomerData()});
@@ -303,7 +309,8 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     TwoClientWalletSyncTest,
     UpdateCreditCardMetadataWithChangedBillingAddressId_RemoteToLocalConflict) {
-  GetFakeServer()->SetWalletData(
+  wallet_helper::SetWalletData(
+      GetFakeServer(),
       {CreateSyncWalletCard(/*name=*/"card-1", /*last_four=*/"0001",
                             kDefaultBillingAddressID),
        CreateDefaultSyncPaymentsCustomerData()});

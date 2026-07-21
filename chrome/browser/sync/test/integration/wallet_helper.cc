@@ -24,10 +24,12 @@
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/autofill_wallet_credential_specifics.pb.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/data_type_state.pb.h"
+#include "components/sync/test/fake_server.h"
 
 using autofill::AutofillWebDataService;
 using autofill::CreditCard;
@@ -377,6 +379,19 @@ sync_pb::DataTypeState GetWalletDataTypeState(syncer::DataType data_type,
   return result;
 }
 
+void SetWalletData(fake_server::FakeServer* fake_server,
+                   const std::vector<sync_pb::SyncEntity>& wallet_entities) {
+  fake_server->DeleteAllEntitiesForDataType(syncer::AUTOFILL_WALLET_DATA);
+  for (const sync_pb::SyncEntity& entity : wallet_entities) {
+    fake_server->InjectEntity(
+        syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
+            /*non_unique_name=*/entity.name(),
+            /*client_tag=*/entity.id_string(), entity.specifics(),
+            /*creation_time=*/entity.ctime(),
+            /*last_modified_time=*/entity.mtime()));
+  }
+}
+
 sync_pb::SyncEntity CreateDefaultSyncWalletCard() {
   return CreateSyncWalletCard(kDefaultCardID, kDefaultCardLastFour,
                               kDefaultBillingAddressID);
@@ -567,6 +582,18 @@ FullUpdateTypeProgressMarkerChecker::FullUpdateTypeProgressMarkerChecker(
       service_(service),
       data_type_(data_type) {
   scoped_observation_.Observe(service);
+
+  const syncer::SyncCycleSnapshot snap =
+      service_->GetLastCycleSnapshotForDebugging();
+  const syncer::ProgressMarkerMap& progress_markers =
+      snap.download_progress_markers();
+  auto marker_it = progress_markers.find(data_type_);
+  if (marker_it != progress_markers.end()) {
+    sync_pb::DataTypeProgressMarker progress_marker;
+    if (progress_marker.ParseFromString(marker_it->second)) {
+      initial_token_ = progress_marker.token();
+    }
+  }
 }
 
 FullUpdateTypeProgressMarkerChecker::~FullUpdateTypeProgressMarkerChecker() =
@@ -592,14 +619,29 @@ bool FullUpdateTypeProgressMarkerChecker::IsExitConditionSatisfied(
   bool success = progress_marker.ParseFromString(marker_it->second);
   DCHECK(success);
 
+  // TODO(crbug.com/393282276): Remove legacy FakeServer progress marker
+  // timestamp parsing once all data types (e.g., AUTOFILL_WALLET_OFFER) are
+  // migrated to LoopbackServer's full update support. For legacy FakeServer
+  // full updates, progress markers contain a space-delimited timestamp.
   const base::Time actual_timestamp =
       fake_server::FakeServer::GetProgressMarkerTimestamp(progress_marker);
+  if (actual_timestamp >= min_required_progress_marker_timestamp_) {
+    return true;
+  }
+
+  // For LoopbackServer full updates, tokens are version strings
+  // ("migration_version/entity_version"). If the token string has changed since
+  // this checker was created, a new progress marker has arrived.
+  if (initial_token_.has_value() &&
+      progress_marker.token() != *initial_token_) {
+    return true;
+  }
 
   *os << "Waiting for an updated progress marker timestamp "
       << min_required_progress_marker_timestamp_ << "; actual "
       << actual_timestamp;
 
-  return actual_timestamp >= min_required_progress_marker_timestamp_;
+  return false;
 }
 
 // syncer::SyncServiceObserver implementation.
