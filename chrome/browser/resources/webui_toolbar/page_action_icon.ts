@@ -5,9 +5,9 @@
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {assertNotReachedCase} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
+import {IconTable} from '/shared/icon_table.js';
 import type {PageActionState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import {PageActionId, PageActionTrigger} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
@@ -46,62 +46,28 @@ export class PageActionIconElement extends CrLitElement {
     pageActionId: PageActionId.kActionAiMode,
     accessibleName: '',
     tooltipText: '',
+    icon: {handleId: 0n},
   };
 
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
+  private iconTable_: IconTable = IconTable.getInstance();
 
-  protected getIconClass_(): string {
-    const actionId = this.state.pageActionId;
+  protected getIronIcon_(): string|undefined {
+    return this.iconTable_.getIconName(this.state.icon);
+  }
 
-    switch (actionId) {
-      case PageActionId.kActionShowPasswordsBubbleOrPage:
-        return 'icon-password-manager';
-      case PageActionId.kActionShowMemorySaverChip:
-        return 'icon-performance-speedometer';
-      case PageActionId.kActionShowTranslate:
-        return 'icon-translate';
-      case PageActionId.kActionBookmarkThisTab:
-        return 'icon-bookmark';
-      case PageActionId.kActionRecordReplay:
-        return 'icon-screen-record';
+  protected getIconStyle_(): string|undefined {
+    const providedIconUrl = this.iconTable_.getIconMaskUrl(this.state.icon);
+    const providedIconColor = this.iconTable_.getIconColor(this.state.icon);
+    let style = '';
 
-      // Placeholders with TODOs for missing SVGs
-      case PageActionId.kActionAiMode:
-      case PageActionId.kActionIndigo:
-      case PageActionId.kActionMultistepFilter:
-      case PageActionId.kActionSidePanelShowLensOverlayResults:
-      case PageActionId.kActionLensOverlayHomework:
-      case PageActionId.kActionShowJsOptimizationsIcon:
-      case PageActionId.kActionShowIntentPicker:
-      case PageActionId.kActionZoomNormal:
-      case PageActionId.kActionSidePanelShowReadAnything:
-      case PageActionId.kActionOffersAndRewardsForPage:
-      case PageActionId.kActionShowFileSystemAccess:
-      case PageActionId.kActionInstallPwa:
-      case PageActionId.kActionCommercePriceInsights:
-      case PageActionId.kActionCommerceDiscounts:
-      case PageActionId.kActionShowCollaborationRecentActivity:
-      case PageActionId.kActionAutofillMandatoryReauth:
-      case PageActionId.kActionFind:
-      case PageActionId.kActionShowCookieControls:
-      case PageActionId.kActionShowAddressesBubbleOrPage:
-      case PageActionId.kActionVirtualCardEnroll:
-      case PageActionId.kActionFilledCardInformation:
-      case PageActionId.kActionShowPaymentsBubbleOrPage:
-      case PageActionId.kActionSidePanelShowContextualTasks:
-      case PageActionId.kActionFederation:
-      case PageActionId.kActionGlicContextualCueing:
-      case PageActionId.kActionAnchoredContextualCue:
-      case PageActionId.kActionWebAuthnAmbientSignin:
-      case PageActionId.kActionAutofillPayment:
-      case PageActionId.kActionShowPaymentsChurnedUsersBubble:
-      case PageActionId.kActionFakePageActionForDebug:
-        // TODO: Track down the missing .svg files for these actions.
-        return 'icon-placeholder';
-
-      default:
-        assertNotReachedCase(actionId);
+    if (providedIconUrl) {
+      style += `--cr-icon-image: url(${providedIconUrl});`;
     }
+    if (providedIconColor) {
+      style += `--cr-icon-button-fill-color: ${providedIconColor};`;
+    }
+    return style.length > 0 ? style : undefined;
   }
 
   protected getAriaLabel_(): string {

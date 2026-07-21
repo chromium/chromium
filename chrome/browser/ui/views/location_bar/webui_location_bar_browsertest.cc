@@ -6,27 +6,33 @@
 
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
+#include "chrome/browser/ui/page_action/action_ids.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/page_action/webui_page_action_control.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
+#include "chrome/browser/ui/webui/webui_toolbar/utils/toolbar_button_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -224,6 +230,106 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, PageActionNavigation) {
 
   controller->Show(kActionAiMode);
   EXPECT_FALSE(control.GetPageActionStates().empty());
+}
+
+// Display all available page actions and check that a button is rendered.
+IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, AllPageActionsPresent) {
+  WaitForInitialWebUIToolbar(browser());
+  auto* location_bar = static_cast<WebUILocationBar*>(GetLocationBar());
+  auto& control = location_bar->page_action_control();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents);
+  auto* controller = tab->GetTabFeatures()->page_action_controller();
+
+  constexpr char kGetPageActionIconsScript[] = R"(
+    Array.from(document.querySelector('toolbar-app')?.
+      shadowRoot?.querySelector('location-bar')?.
+      shadowRoot?.querySelector('page-action-icons')?.
+      shadowRoot?.querySelectorAll('page-action-icon') || [])
+  )";
+
+  for (actions::ActionId action_id : page_actions::kActionIds) {
+    SCOPED_TRACE(action_id);
+    if (!controller->ActionExists(action_id)) {
+      continue;
+    }
+    // Enable and make the action item visible.
+    actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
+        action_id, browser()->GetActions()->root_action_item());
+    if (action_item) {
+      action_item->SetVisible(true);
+      action_item->SetEnabled(true);
+      // Add a static vector image if the action item has none, except leave the
+      // fake one without an image.
+      if (action_item->GetImage().IsEmpty() &&
+          action_id != kActionFakePageActionForDebug) {
+        action_item->SetImage(
+            ui::ImageModel::FromVectorIcon(vector_icons::kFeedbackIcon));
+      }
+    }
+    controller->Show(action_id);
+    EXPECT_FALSE(control.GetPageActionStates().empty());
+
+    // Verify the button appears.
+    const bool is_fake_action = (action_id == kActionFakePageActionForDebug);
+    const int mojom_id =
+        static_cast<int>(webui_toolbar::ActionIdToMojomPageActionId(action_id));
+    const std::string kCheckButtonJs =
+        content::JsReplace(base::StrCat({kGetPageActionIconsScript, R"(
+            .some(icon => {
+              if (!icon.state || icon.state.pageActionId !== $1) {
+                return false;
+              }
+              const button = icon.shadowRoot?.querySelector('cr-icon-button');
+              if (!button) {
+                return false;
+              }
+              if (icon.state.icon.handleId == 0) {
+                return $2;
+              }
+              if (!button.hasAttribute('iron-icon')) {
+                return false;
+              }
+              const crIcons =
+                  button.shadowRoot?.querySelectorAll('#icon cr-icon') || [];
+              if (crIcons.length === 0) {
+                return false;
+              }
+              for (const crIcon of crIcons) {
+                if (!crIcon.shadowRoot?.querySelector('svg')) {
+                  return false;
+                }
+              }
+              return true;
+            });
+        )"}),
+                           mojom_id, is_fake_action);
+
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      // While we're waiting, the page action can be hidden by other code, e.g.
+      // AiModePageActionController and ZoomViewController, so continue to
+      // request it be shown. Show() dedups requests so there shouldn't be a
+      // cost to re-requesting.
+      controller->Show(action_id);
+      return content::EvalJs(GetWebUIToolbarWebContents(), kCheckButtonJs)
+          .ExtractBool();
+    })) << "Failed to find page action button in HTML for action id: "
+        << action_id;
+
+    controller->Hide(action_id);
+    const std::string kCheckButtonHiddenJs =
+        content::JsReplace(base::StrCat({"!", kGetPageActionIconsScript, R"(
+            .some(icon => icon.state && icon.state.pageActionId === $1);
+        )"}),
+                           mojom_id);
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return content::EvalJs(GetWebUIToolbarWebContents(), kCheckButtonHiddenJs)
+          .ExtractBool();
+    })) << "Failed to hide page action button in HTML for action id: "
+        << action_id;
+  }
 }
 
 }  // namespace
