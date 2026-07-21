@@ -12,13 +12,13 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/renderer_forms_from_browser_form.h"
-#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "content/public/browser/web_contents.h"
 
 using ::autofill::AccessoryAction;
 using ::autofill::AccessorySheetData;
 using ::autofill::AccessorySheetField;
-using ::autofill::BrowserAutofillManager;
+using ::autofill::AutofillDriver;
+using ::autofill::AutofillSuggestionTriggerSource;
 using ::autofill::ContentAutofillDriver;
 using ::autofill::FieldGlobalId;
 using ::autofill::FindRenderFrameHostByToken;
@@ -78,15 +78,12 @@ void AtMemoryAccessoryControllerImpl::OnOptionSelected(
     return;
   }
 
-  ContentAutofillDriver* driver =
-      ContentAutofillDriver::GetForRenderFrameHost(rfh);
+  AutofillDriver* driver = ContentAutofillDriver::GetForRenderFrameHost(rfh);
   if (!driver) {
     return;
   }
-
-  BrowserAutofillManager* bam =
-      static_cast<BrowserAutofillManager*>(&driver->GetAutofillManager());
-  bam->TriggerAtMemorySuggestions(field_id);
+  driver->RendererShouldTriggerSuggestions(
+      field_id, AutofillSuggestionTriggerSource::kAtMemory);
 }
 
 void AtMemoryAccessoryControllerImpl::OnToggleChanged(

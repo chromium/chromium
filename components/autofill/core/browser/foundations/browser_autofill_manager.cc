@@ -869,17 +869,6 @@ AutofillAiAccessManager& BrowserAutofillManager::GetAutofillAiAccessManager() {
   return *autofill_ai_access_manager_;
 }
 
-void BrowserAutofillManager::TriggerAtMemorySuggestions(
-    const FieldGlobalId& field_id) {
-  const FormStructure* form_structure = FindCachedFormById(field_id);
-  if (!form_structure) {
-    return;
-  }
-  OnAskForValuesToFill(form_structure->ToFormData(), field_id, gfx::Rect(),
-                       AutofillSuggestionTriggerSource::kAtMemory,
-                       std::nullopt);
-}
-
 payments::AmountExtractionManager&
 BrowserAutofillManager::GetAmountExtractionManager() {
   if (!amount_extraction_manager_) {

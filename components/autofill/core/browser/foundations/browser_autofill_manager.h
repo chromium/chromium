@@ -241,9 +241,6 @@ class BrowserAutofillManager : public AutofillManager {
   // Gets the Autofill AI access manager owned by `this`.
   virtual AutofillAiAccessManager& GetAutofillAiAccessManager();
 
-  // Triggers suggestions for @memory.
-  void TriggerAtMemorySuggestions(const FieldGlobalId& field_id);
-
   // Gets the payments BNPL manager owned by `this`. This will be used to
   // handle BNPL flows. May return nullptr if BNPL is not supported on the
   // current platform.
