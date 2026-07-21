@@ -138,4 +138,8 @@ void TabStripModelEventBridge::OnSplitTabChanged(const SplitTabChange& change) {
   }
 }
 
+void TabStripModelEventBridge::NotifyFaviconsChanged() {
+  Notify(events::ToFaviconChangedEvents(*tab_strip_model_adapter_));
+}
+
 }  // namespace tabs_api::tab_strip_model

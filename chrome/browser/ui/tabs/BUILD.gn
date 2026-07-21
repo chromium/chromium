@@ -70,6 +70,22 @@ if (!is_android) {
     ]
   }
 
+  # Shared tab favicon theming helpers, used by both the Views tab strip
+  # (TabIcon) and the WebUI browser tab strip converter.
+  source_set("favicon_theming") {
+    sources = [
+      "tab_favicon_theming.cc",
+      "tab_favicon_theming.h",
+    ]
+
+    deps = [
+      "//chrome/browser/favicon",
+      "//chrome/browser/ui/color:color_headers",
+      "//ui/color",
+      "//ui/gfx",
+    ]
+  }
+
   source_set("tab_list_bridge") {
     sources = [
       "tab_list_bridge.cc",

@@ -7,6 +7,8 @@ source_set("tab_strip_model_impl") {
   sources = [
     "browser_adapter_impl.cc",
     "browser_adapter_impl.h",
+    "browser_event_bridge.cc",
+    "browser_event_bridge.h",
     "browser_tab_strip_service_tracker.cc",
     "browser_tab_strip_service_tracker.h",
     "tab_context_menu_adapter_impl.cc",

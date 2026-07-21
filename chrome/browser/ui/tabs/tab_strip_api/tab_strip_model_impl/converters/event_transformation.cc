@@ -212,4 +212,30 @@ std::vector<Event> ToEvent(const TabStripSelectionChange& selection,
   }
   return events;
 }
+
+std::vector<Event> ToFaviconChangedEvents(
+    const tabs_api::TabStripModelAdapter& adapter) {
+  std::vector<Event> events;
+  auto tabs = adapter.GetTabs();
+  if (tabs.empty()) {
+    return events;
+  }
+
+  const ui::ColorProvider& color_provider = adapter.GetColorProvider();
+  for (auto& handle : tabs) {
+    if (!handle.Get()) {
+      continue;
+    }
+
+    auto tab_change = mojom::TabChange::New();
+    tab_change->data = tabs_api::converters::BuildMojoTab(
+        handle.Get(), color_provider, adapter.GetTabStates(handle));
+    auto mask = tabs_api::mojom::TabFieldMask::New();
+    mask->favicon = true;
+    tab_change->mask = std::move(mask);
+
+    events.push_back(mojom::OnDataChangedEvent::NewTab(std::move(tab_change)));
+  }
+  return events;
+}
 }  // namespace tabs_api::events

@@ -157,9 +157,6 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
   // allowing the UI thread to remain idle during page loads.
   void UpdateThrobber();
 
-  gfx::ImageSkia ThemeFavicon(const gfx::ImageSkia& source);
-  gfx::ImageSkia ThemeMonochromeFavicon(const gfx::ImageSkia& source);
-
   // Updates the themed favicon if necessary.
   void UpdateThemedFavicon();
 

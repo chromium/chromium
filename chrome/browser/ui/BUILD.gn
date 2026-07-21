@@ -1801,6 +1801,7 @@ static_library("ui") {
       "//chrome/browser/ui/signin:impl",
       "//chrome/browser/ui/startup:startup_tab",
       "//chrome/browser/ui/tabs",
+      "//chrome/browser/ui/tabs:favicon_theming",
       "//chrome/browser/ui/tabs:impl",
       "//chrome/browser/ui/tabs:tab_group",
       "//chrome/browser/ui/tabs:tab_group_impl",

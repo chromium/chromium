@@ -38,7 +38,8 @@ TabStripModelInjector::TabStripModelInjector(
       browser_adapter_(
           std::make_unique<BrowserAdapterImpl>(browser_window_interface)),
       translator_(*tab_strip_model_adapter_),
-      event_bridge_(*tab_strip_model_adapter_) {}
+      event_bridge_(*tab_strip_model_adapter_),
+      browser_event_bridge_(*browser_window_interface, event_bridge_) {}
 
 TabStripModelInjector::~TabStripModelInjector() = default;
 

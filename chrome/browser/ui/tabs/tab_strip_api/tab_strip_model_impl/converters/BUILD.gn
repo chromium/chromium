@@ -15,6 +15,7 @@ source_set("converters") {
 
   deps = [
     "//base",
+    "//chrome/browser/ui/tabs:favicon_theming",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chrome/browser/ui/tabs/alert:tab_alert",
@@ -22,8 +23,11 @@ source_set("converters") {
     "//components/browser_apis/tab_strip/adapters",
     "//components/browser_apis/tab_strip/events",
     "//components/browser_apis/tab_strip/types",
+    "//components/favicon/content",
+    "//components/favicon/core",
     "//components/tabs:public",
     "//ui/color",
+    "//ui/gfx",
   ]
 }
 

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TAB_STRIP_MODEL_IMPL_TAB_STRIP_MODEL_INJECTOR_H_
 
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/browser_adapter_impl.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/browser_event_bridge.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/tab_context_menu_adapter_impl.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/tab_strip_model_adapter_impl.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/tab_strip_model_event_bridge.h"
@@ -52,6 +53,7 @@ class TabStripModelInjector : public PlatformAdaptersProvider {
   std::unique_ptr<BrowserAdapterImpl> browser_adapter_;
   Translator translator_;
   TabStripModelEventBridge event_bridge_;
+  BrowserEventBridge browser_event_bridge_;
 };
 
 }  // namespace tabs_api::tab_strip_model

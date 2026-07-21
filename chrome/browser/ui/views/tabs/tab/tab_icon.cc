@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/tab_data.h"
+#include "chrome/browser/ui/tabs/tab_favicon_theming.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/dotted_icon.h"
@@ -412,8 +413,8 @@ gfx::ImageSkia TabIcon::GetIconToPaint() {
     if (crashed_icon_.isNull()) {
       // Lazily create a themed sad tab icon.
       ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-      crashed_icon_ =
-          ThemeFavicon(*rb.GetImageSkiaNamed(IDR_CRASH_SAD_FAVICON));
+      crashed_icon_ = tabs::ThemeFaviconForTab(
+          *rb.GetImageSkiaNamed(IDR_CRASH_SAD_FAVICON), *GetColorProvider());
     }
     return crashed_icon_;
   }
@@ -706,32 +707,18 @@ void TabIcon::UpdateThrobber() {
   }
 }
 
-gfx::ImageSkia TabIcon::ThemeFavicon(const gfx::ImageSkia& source) {
-  const auto* cp = GetColorProvider();
-  return favicon::ThemeFavicon(
-      source, cp->GetColor(kColorToolbarButtonIcon),
-      cp->GetColor(kColorTabBackgroundActiveFrameActive),
-      cp->GetColor(kColorTabBackgroundInactiveFrameActive));
-}
-
-gfx::ImageSkia TabIcon::ThemeMonochromeFavicon(const gfx::ImageSkia& source) {
-  const auto* cp = GetColorProvider();
-  return favicon::ThemeMonochromeFavicon(
-      source, is_active_tab_
-                  ? cp->GetColor(kColorTabBackgroundActiveFrameActive)
-                  : cp->GetColor(kColorTabBackgroundInactiveFrameActive));
-}
-
 void TabIcon::UpdateThemedFavicon() {
   if (!GetWidget()) {
     return;
   }
 
   if (!GetNonDefaultFavicon() || should_themify_favicon_) {
-    themed_favicon_ = ThemeFavicon(favicon_.Rasterize(GetColorProvider()));
+    themed_favicon_ = tabs::ThemeFaviconForTab(
+        favicon_.Rasterize(GetColorProvider()), *GetColorProvider());
   } else if (is_monochrome_favicon_) {
-    themed_favicon_ =
-        ThemeMonochromeFavicon(favicon_.Rasterize(GetColorProvider()));
+    themed_favicon_ = tabs::ThemeMonochromeFaviconForTab(
+        favicon_.Rasterize(GetColorProvider()), *GetColorProvider(),
+        is_active_tab_);
   } else {
     themed_favicon_ = gfx::ImageSkia();
   }
