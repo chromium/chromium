@@ -93,8 +93,14 @@ class DictationSessionUiImplBrowserTest
     });
   }
 
+  auto StartDictationStream(DictationStreamStartTrigger trigger) {
+    return Do([this, trigger]() {
+      dictation_service().session_controller()->StartDictationStream(
+          DefaultInPageTargetId(web_contents()), trigger);
+    });
+  }
+
  private:
-  base::WeakPtr<ListenerStreamProvider> last_started_provider_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -373,6 +379,71 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest, ShowsToastOnError) {
     WaitForHide(DictationBubbleUi::kViewElementIdForTesting),
     CheckShowingDictationErrorToast(true),
     Check([this]{ return session_ui() == nullptr; })
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
+                       FailedStreamInitAllowsOngoingFinalizing) {
+  base::WeakPtr<ListenerStreamProvider> finalizing_stream;
+  StreamId finalizing_stream_id;
+
+  // clang-format off
+  RunTestSequence(
+    StartSession(),
+    WaitForShow(DictationBubbleUi::kViewElementIdForTesting),
+
+    ExtensionAPISetStreamState(ExtensionStreamState::kTranscribing),
+    CheckResult(GetSessionState(), SessionState::kTranscribing),
+
+    // End active stream to transition the first stream to finalization.
+    Do([&finalizing_stream, &finalizing_stream_id, this] {
+      finalizing_stream = last_started_provider_;
+      ASSERT_NE(finalizing_stream, nullptr);
+      finalizing_stream_id = finalizing_stream->stream_id_for_testing();
+      dictation_service().session_controller()->EndDictationStream();
+    }),
+    CheckResult(GetSessionState(), SessionState::kFinalizing),
+    CheckResult(HasAttachedStreamProvider(), false),
+
+    // Start a second stream while the first stream is finalizing.
+    StartDictationStream(DictationStreamStartTrigger::kFocusChange),
+    CheckResult(GetSessionState(), SessionState::kStreamInitializing),
+    CheckResult(HasAttachedStreamProvider(), true),
+    ExtensionAPIWaitForStreamStart(),
+
+    CheckShowingDictationErrorToast(false),
+
+    // Simulate the second stream failing to initialize.
+    ExtensionAPISetStreamState(ExtensionStreamState::kFailed),
+
+    // The second stream failure should show the error toast. However, because
+    // the first stream is still finalizing, the session should remain active in
+    // the finalizing state rather than immediately ending.
+    CheckShowingDictationErrorToast(true),
+    CheckHasSession(true),
+    CheckResult(GetSessionState(), SessionState::kFinalizing),
+    CheckResult(HasAttachedStreamProvider(), false),
+    EnsurePresent(DictationBubbleUi::kViewElementIdForTesting),
+    CheckViewProperty(DictationBubbleUi::kToggleButtonElementIdForTesting,
+                      &views::View::GetEnabled, false),
+
+    // The finalizing stream should still be able to accept final text.
+    ExtensionAPIUpdateTranscription(finalizing_stream_id,
+                                    ExtensionTranscriptionType::kFinal,
+                                    "Final text"),
+    Check([&finalizing_stream] {
+      return finalizing_stream &&
+             finalizing_stream->GetLatestTranscriptionForTesting() ==
+                 "Final text" &&
+             finalizing_stream->IsTranscriptionFinalForTesting();
+    }),
+
+    // Once the finalizing stream completes, the session should end.
+    ExtensionAPISetStreamState(finalizing_stream_id,
+                               ExtensionStreamState::kComplete),
+    WaitForHide(DictationBubbleUi::kViewElementIdForTesting),
+    CheckHasSession(false)
   );
   // clang-format on
 }

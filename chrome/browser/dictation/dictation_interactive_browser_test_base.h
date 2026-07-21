@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/dictation/dictation_browser_test_base.h"
+#include "chrome/browser/dictation/dictation_multiplexer.h"
 #include "chrome/browser/dictation/session_state.h"
 #include "chrome/common/extensions/api/dictation_private.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -30,6 +31,7 @@ class DictationInteractiveBrowserTestBase
   using ExtensionStreamState = extensions::api::dictation_private::StreamState;
   using ExtensionTranscriptionType =
       extensions::api::dictation_private::TranscriptionType;
+  using StreamId = DictationMultiplexer::StreamId;
 
   DictationInteractiveBrowserTestBase();
   ~DictationInteractiveBrowserTestBase() override;
@@ -47,9 +49,17 @@ class DictationInteractiveBrowserTestBase
   // until the StreamStart event has been received in the extension.
   MultiStep StartSession();
 
+  // If a StreamId isn't specified, then these operate on the last started
+  // stream.
   MultiStep ExtensionAPISetStreamState(ExtensionStreamState state);
+  MultiStep ExtensionAPISetStreamState(const StreamId& stream_id,
+                                       ExtensionStreamState state);
   MultiStep ExtensionAPIUpdateTranscription(ExtensionTranscriptionType type,
                                             std::string_view text);
+  MultiStep ExtensionAPIUpdateTranscription(const StreamId& stream_id,
+                                            ExtensionTranscriptionType type,
+                                            std::string_view text);
+  MultiStep ExtensionAPIWaitForStreamStart();
 
   base::RepeatingCallback<SessionState()> GetSessionState();
   base::RepeatingCallback<bool()> HasAttachedStreamProvider();

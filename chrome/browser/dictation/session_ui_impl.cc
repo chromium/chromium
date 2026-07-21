@@ -107,7 +107,9 @@ void SessionUiImpl::OnError(StreamType stream_type) {
   }
 
   if (stream_type == StreamType::kAttached) {
-    controller_->UiRequestEndSession();
+    // If the attached stream failed, we still want to let any finalizing
+    // streams finish before ending the session.
+    controller_->FinalizeAndShutdown();
   }
 }
 

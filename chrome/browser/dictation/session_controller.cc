@@ -71,6 +71,7 @@ void SessionController::StartDictationStream(
   // finalization state which could flash states the UI.
   CHECK(state_ == SessionState::kInactive ||
         state_ == SessionState::kFinalizing);
+  CHECK(!is_shutting_down_);
   CHECK(!attached_stream_provider_);
 
   Observe(content::WebContents::FromRenderFrameHost(
@@ -132,7 +133,7 @@ void SessionController::OnFocusChangedInPage(
                    newly_focused_target_id.target_element_dom_id;
       });
 
-  if (!is_finalizing_for_same_element) {
+  if (!is_finalizing_for_same_element && !is_shutting_down_) {
     StartDictationStream(newly_focused_target_id,
                          DictationStreamStartTrigger::kFocusChange);
   }
@@ -184,6 +185,7 @@ void SessionController::FinalizeAndShutdown() {
 void SessionController::UiRequestStartStream() {
   CHECK(!attached_stream_provider_);
   CHECK_EQ(state_, SessionState::kInactive);
+  CHECK(!is_shutting_down_);
 
   // A stream is always started when the session is created using an explicit
   // target. Starting from UI can only happen after that.

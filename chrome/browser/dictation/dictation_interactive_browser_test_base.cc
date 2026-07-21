@@ -50,35 +50,32 @@ DictationInteractiveBrowserTestBase::CheckHasSession(
 
 DictationInteractiveBrowserTestBase::MultiStep
 DictationInteractiveBrowserTestBase::StartSession() {
-  return Steps(Do([this] {
-    tabs::TabInterface* tab = chrome_test_utils::GetActiveTab(this);
-    CHECK(tab);
-    dictation_service().StartSession(*tab,
-                                     DefaultInPageTargetId(web_contents()),
-                                     DictationSessionEntryPoint::kContextMenu);
-    if (dictation_service().session_controller()) {
-      last_started_provider_ =
-          static_cast<ListenerStreamProvider*>(dictation_service()
-                                                   .session_controller()
-                                                   ->attached_stream_provider())
-              ->GetWeakPtr();
+  return Steps(
+      Do([this] {
+        tabs::TabInterface* tab = chrome_test_utils::GetActiveTab(this);
+        CHECK(tab);
+        dictation_service().StartSession(
+            *tab, DefaultInPageTargetId(web_contents()),
+            DictationSessionEntryPoint::kContextMenu);
+        if (dictation_service().session_controller()) {
+          last_started_provider_ = static_cast<ListenerStreamProvider*>(
+                                       dictation_service()
+                                           .session_controller()
+                                           ->attached_stream_provider())
+                                       ->GetWeakPtr();
 
-      // Register callback to update last_started_provider_ on subsequent
-      // starts.
-      session_state_subscription_ =
-          dictation_service()
-              .session_controller()
-              ->AddSessionStateChangedCallback(base::BindRepeating(
-                  &DictationInteractiveBrowserTestBase::OnSessionStateChanged,
-                  base::Unretained(this)));
-
-      // A stream may not always be created (e.g. onboarding needs to be shown).
-      if (last_started_provider_) {
-        ExtensionWaitForStreamStart(
-            profile(), last_started_provider_->stream_id_for_testing());
-      }
-    }
-  }));
+          // Register callback to update last_started_provider_ on subsequent
+          // starts.
+          session_state_subscription_ =
+              dictation_service()
+                  .session_controller()
+                  ->AddSessionStateChangedCallback(
+                      base::BindRepeating(&DictationInteractiveBrowserTestBase::
+                                              OnSessionStateChanged,
+                                          base::Unretained(this)));
+        }
+      }),
+      ExtensionAPIWaitForStreamStart());
 }
 
 DictationInteractiveBrowserTestBase::MultiStep
@@ -92,6 +89,15 @@ DictationInteractiveBrowserTestBase::ExtensionAPISetStreamState(
 }
 
 DictationInteractiveBrowserTestBase::MultiStep
+DictationInteractiveBrowserTestBase::ExtensionAPISetStreamState(
+    const StreamId& stream_id,
+    ExtensionStreamState state) {
+  return Steps(Do([this, &stream_id, state] {
+    ExtensionSendStreamStateUpdate(profile(), stream_id, state);
+  }));
+}
+
+DictationInteractiveBrowserTestBase::MultiStep
 DictationInteractiveBrowserTestBase::ExtensionAPIUpdateTranscription(
     ExtensionTranscriptionType type,
     std::string_view text) {
@@ -100,6 +106,27 @@ DictationInteractiveBrowserTestBase::ExtensionAPIUpdateTranscription(
     ExtensionSendTranscriptUpdate(
         profile(), last_started_provider_->stream_id_for_testing(), type,
         text_str);
+  }));
+}
+
+DictationInteractiveBrowserTestBase::MultiStep
+DictationInteractiveBrowserTestBase::ExtensionAPIUpdateTranscription(
+    const StreamId& stream_id,
+    ExtensionTranscriptionType type,
+    std::string_view text) {
+  return Steps(Do([this, &stream_id, type, text_str = std::string(text)] {
+    ExtensionSendTranscriptUpdate(profile(), stream_id, type, text_str);
+  }));
+}
+
+DictationInteractiveBrowserTestBase::MultiStep
+DictationInteractiveBrowserTestBase::ExtensionAPIWaitForStreamStart() {
+  return Steps(Do([this] {
+    // A stream may not always be created (e.g. onboarding needs to be shown).
+    if (last_started_provider_) {
+      ExtensionWaitForStreamStart(
+          profile(), last_started_provider_->stream_id_for_testing());
+    }
   }));
 }
 

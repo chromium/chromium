@@ -556,6 +556,41 @@ TEST_F(DictationSessionControllerTest,
   EXPECT_EQ(controller_->attached_stream_provider(), nullptr);
 }
 
+TEST_F(DictationSessionControllerTest,
+       DoNotStartNewStreamOnFocusElementDuringShutdown) {
+  content::GlobalDOMNodeId target_id_1 = MockTargetInMainFrame(1);
+  Target target_1(target_id_1);
+
+  auto mock_stream_provider_1 =
+      std::make_unique<testing::NiceMock<MockStreamProvider>>();
+  MockStreamProvider* stream_provider_1_ptr = mock_stream_provider_1.get();
+
+  EXPECT_CALL(*stream_provider_1_ptr, GetTarget())
+      .WillRepeatedly(Return(&target_1));
+
+  EXPECT_CALL(mock_delegate_, CreateStreamProvider(_))
+      .WillOnce(Return(std::move(mock_stream_provider_1)));
+  controller_->StartDictationStream(target_id_1,
+                                    DictationStreamStartTrigger::kSessionStart);
+
+  EXPECT_CALL(*stream_provider_1_ptr, Stop());
+  controller_->FinalizeAndShutdown();
+  EXPECT_EQ(controller_->GetState(), SessionState::kFinalizing);
+
+  // The session is pending shutdown with a finalizing stream. We cannot create
+  // additional streams in this state. Simulate a focus change, which should not
+  // start a new stream.
+  content::FocusedNodeDetails details;
+  details.focus_type = blink::mojom::FocusType::kMouse;
+  details.is_editable_node = true;
+  details.global_dom_node_id = MockTargetInMainFrame(2);
+
+  EXPECT_CALL(mock_delegate_, CreateStreamProvider(_)).Times(0);
+  controller_->OnFocusChangedInPage(details);
+  EXPECT_EQ(controller_->GetState(), SessionState::kFinalizing);
+  EXPECT_EQ(controller_->attached_stream_provider(), nullptr);
+}
+
 // Test that transitioning an active stream provider to a failure state
 // calls OnError on the UI.
 TEST_F(DictationSessionControllerTest, ActiveStreamFailureOnErrorCalled) {
