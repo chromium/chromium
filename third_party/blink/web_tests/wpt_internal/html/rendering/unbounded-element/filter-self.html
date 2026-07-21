@@ -1,33 +1,24 @@
 <!DOCTYPE html>
 <html class="reftest-wait">
 <meta charset="utf-8">
+<meta name="fuzzy" content="maxDifference=0-60;totalPixels=0-30000">
 <link rel="author" href="mailto:masonf@chromium.org">
 <link rel="help" href="https://crbug.com/508672616">
-<link rel="match" href="unbounded-element-clip-parent-ref.html">
+<link rel="match" href="filter-self-ref.html">
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="resources/unbounded-utils.js"></script>
 
 <style>
-  #parent {
+  #target {
     position: absolute;
     top: 100px;
     left: 100px;
     width: 200px;
     height: 200px;
-    clip-path: inset(50px);
-    border: 1px dotted black;
-  }
-  #target {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 200px;
-    height: 200px;
     background: green;
+    filter: blur(3px);
   }
 </style>
 
-<div id="parent">
-  <div id="target" unbounded></div>
-</div>
+<div id="target" unbounded></div>

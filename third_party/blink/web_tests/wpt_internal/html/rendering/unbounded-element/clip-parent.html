@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html class="reftest-wait">
 <meta charset="utf-8">
-<meta name="fuzzy" content="maxDifference=0-50;totalPixels=0-2000">
 <link rel="author" href="mailto:masonf@chromium.org">
 <link rel="help" href="https://crbug.com/508672616">
-<link rel="match" href="unbounded-element-rotate-parent-ref.html">
+<link rel="match" href="clip-parent-ref.html">
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="resources/unbounded-utils.js"></script>
@@ -16,7 +15,7 @@
     left: 100px;
     width: 200px;
     height: 200px;
-    transform: rotate(45deg);
+    clip-path: inset(50px);
     border: 1px dotted black;
   }
   #target {

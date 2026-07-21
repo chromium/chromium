@@ -3,31 +3,21 @@
 <meta charset="utf-8">
 <link rel="author" href="mailto:masonf@chromium.org">
 <link rel="help" href="https://crbug.com/508672616">
-<link rel="match" href="unbounded-element-transform-parent-ref.html">
+<link rel="match" href="clip-self-ref.html">
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="resources/unbounded-utils.js"></script>
 
 <style>
-  #parent {
+  #target {
     position: absolute;
     top: 100px;
     left: 100px;
     width: 200px;
     height: 200px;
-    transform: translate(50px, 50px);
-    border: 1px dotted black;
-  }
-  #target {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 200px;
-    height: 200px;
     background: green;
+    clip-path: inset(50px);
   }
 </style>
 
-<div id="parent">
-  <div id="target" unbounded></div>
-</div>
+<div id="target" unbounded></div>
