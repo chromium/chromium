@@ -257,6 +257,8 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
       std::optional<AutofillPopupView::SearchBarConfig> search_bar_config =
           std::nullopt,
       std::optional<AutofillPopupView::TabbedPaneConfig> tabbed_pane_config =
+          std::nullopt,
+      std::optional<AutofillPopupView::SubPopupConfig> sub_popup_config =
           std::nullopt) {
     view_ = nullptr;
     generator_.reset();
@@ -274,9 +276,9 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
     widget_ = CreateTestWidget(std::move(params));
     generator_ = std::make_unique<ui::test::EventGenerator>(
         GetRootWindow(widget_.get()));
-    view_ = new TestPopupViewViews(controller().GetWeakPtr(),
-                                   std::move(search_bar_config),
-                                   std::move(tabbed_pane_config));
+    view_ = new TestPopupViewViews(
+        controller().GetWeakPtr(), std::move(search_bar_config),
+        std::move(tabbed_pane_config), std::move(sub_popup_config));
   }
 
   void CreateAndShowView(
@@ -284,9 +286,11 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
       std::optional<AutofillPopupView::SearchBarConfig> search_bar_config =
           std::nullopt,
       std::optional<AutofillPopupView::TabbedPaneConfig> tabbed_pane_config =
+          std::nullopt,
+      std::optional<AutofillPopupView::SubPopupConfig> sub_popup_config =
           std::nullopt) {
     CreateView(std::move(widget_params), std::move(search_bar_config),
-               std::move(tabbed_pane_config));
+               std::move(tabbed_pane_config), std::move(sub_popup_config));
     ShowView(view_, *widget_);
   }
 
@@ -296,10 +300,13 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
       std::optional<AutofillPopupView::SearchBarConfig> search_bar_config =
           std::nullopt,
       std::optional<AutofillPopupView::TabbedPaneConfig> tabbed_pane_config =
+          std::nullopt,
+      std::optional<AutofillPopupView::SubPopupConfig> sub_popup_config =
           std::nullopt) {
     controller().set_suggestions(ids);
     CreateAndShowView(std::move(widget_params), std::move(search_bar_config),
-                      std::move(tabbed_pane_config));
+                      std::move(tabbed_pane_config),
+                      std::move(sub_popup_config));
   }
 
   void UpdateSuggestions(const std::vector<SuggestionType>& ids,
@@ -2204,6 +2211,47 @@ TEST_F(PopupViewViewsTest, SubPopupHidingOnNoSelection) {
 
   EXPECT_EQ(test_api(view()).GetOpenSubPopupRow(), std::nullopt);
   EXPECT_EQ(test_api(*sub_view).GetOpenSubPopupRow(), std::nullopt);
+}
+
+TEST_F(PopupViewViewsTest, SubPopupHidingOnNoSelectionCustomDelay) {
+  ui::MouseEvent fake_event(ui::EventType::kMouseMoved, gfx::Point(),
+                            gfx::Point(), ui::EventTimeForNow(),
+                            ui::EF_IS_SYNTHESIZED, 0);
+  controller().set_suggestions({
+      CreateSuggestionWithChildren(
+          SuggestionType::kPasswordEntry,
+          {Suggestion(u"Child #1",
+                      SuggestionType::kPasswordFieldByFieldFilling)}),
+      Suggestion(u"Suggestion #2", SuggestionType::kPasswordEntry),
+  });
+  CreateAndShowView(
+      /*widget_params=*/std::nullopt,
+      /*search_bar_config=*/std::nullopt,
+      /*tabbed_pane_config=*/std::nullopt,
+      /*sub_popup_config=*/
+      AutofillPopupView::SubPopupConfig{.no_selection_hide_delay =
+                                            base::Seconds(1)});
+  CellIndex cell{0, CellType::kControl};
+
+  view().SetSelectedCell(cell, PopupCellSelectionSource::kNonUserInput);
+  task_environment()->FastForwardBy(PopupViewViews::kNonMouseOpenSubPopupDelay);
+  ASSERT_EQ(test_api(view()).GetOpenSubPopupRow(), cell.first);
+
+  auto [sub_controller, sub_view] = OpenSubView(
+      view(), {CreateSuggestionWithChildren(
+                  SuggestionType::kPasswordEntry,
+                  {Suggestion(u"Sub Child #1",
+                              SuggestionType::kPasswordFieldByFieldFilling)})});
+  view().SetSelectedCell(std::nullopt, PopupCellSelectionSource::kNonUserInput);
+  sub_view->OnMouseExited(fake_event);
+
+  // After 500ms, sub-popup should still be open (delay is 1 second).
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+  EXPECT_NE(test_api(view()).GetOpenSubPopupRow(), std::nullopt);
+
+  // After another 500ms (total 1000ms), sub-popup should be closed.
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+  EXPECT_EQ(test_api(view()).GetOpenSubPopupRow(), std::nullopt);
 }
 
 TEST_F(PopupViewViewsTest, SubPopupHidingIsCanceledOnSelection) {

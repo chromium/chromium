@@ -216,6 +216,35 @@ void MaybeRecordAddressDeletedMetric(content::WebContents* web_contents,
   }
 }
 
+std::optional<AutofillPopupView::SubPopupConfig> GetSubPopupConfig(
+    AutofillSuggestionTriggerSource trigger_source) {
+  switch (trigger_source) {
+    case AutofillSuggestionTriggerSource::kAtMemory:
+    case AutofillSuggestionTriggerSource::kAtMemoryContextMenu:
+    case AutofillSuggestionTriggerSource::kAtMemoryInactivityNudge:
+      return AutofillPopupView::SubPopupConfig{.no_selection_hide_delay =
+                                                   base::Seconds(1)};
+    case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
+    case AutofillSuggestionTriggerSource::kFormControlElementClicked:
+    case AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick:
+    case AutofillSuggestionTriggerSource::kContentEditableClicked:
+    case AutofillSuggestionTriggerSource::kTextFieldValueChanged:
+    case AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown:
+    case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
+    case AutofillSuggestionTriggerSource::kPasswordManager:
+    case AutofillSuggestionTriggerSource::kiOS:
+    case AutofillSuggestionTriggerSource::kComposeDialogLostFocus:
+    case AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge:
+    case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
+    case AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess:
+    case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
+    case AutofillSuggestionTriggerSource::kGlic:
+    case AutofillSuggestionTriggerSource::kUnspecified:
+      return std::nullopt;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 
@@ -381,7 +410,8 @@ void AutofillPopupControllerImpl::Show(
                 ? parent_controller_->get()->CreateSubPopupView(GetWeakPtr())
                 : AutofillPopupView::Create(GetWeakPtr(),
                                             GetSearchBarConfig(trigger_source),
-                                            std::move(tabbed_pane_config));
+                                            std::move(tabbed_pane_config),
+                                            GetSubPopupConfig(trigger_source));
 
     // It is possible to fail to create the popup, in this case
     // treat the popup as hiding right away.

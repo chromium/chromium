@@ -221,13 +221,15 @@ void DefaultA11yAnnouncer(const std::u16string& message, bool polite) {
 PopupViewViews::PopupViewViews(
     base::WeakPtr<AutofillPopupController> controller,
     base::WeakPtr<ExpandablePopupParentView> parent,
-    views::Widget* parent_widget)
+    views::Widget* parent_widget,
+    std::optional<const AutofillPopupView::SubPopupConfig> sub_popup_config)
     : PopupBaseView(controller,
                     parent_widget,
                     views::Widget::InitParams::Activatable::kDefault,
                     /*show_arrow_pointer=*/false),
       controller_(controller),
-      parent_(parent) {
+      parent_(parent),
+      sub_popup_config_(std::move(sub_popup_config)) {
   InitViews();
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kListBox);
@@ -238,7 +240,8 @@ PopupViewViews::PopupViewViews(
 PopupViewViews::PopupViewViews(
     base::WeakPtr<AutofillPopupController> controller,
     std::optional<const AutofillPopupView::SearchBarConfig> search_bar_config,
-    std::optional<const AutofillPopupView::TabbedPaneConfig> tabbed_pane_config)
+    std::optional<const AutofillPopupView::TabbedPaneConfig> tabbed_pane_config,
+    std::optional<const AutofillPopupView::SubPopupConfig> sub_popup_config)
     : PopupBaseView(controller,
                     views::Widget::GetTopLevelWidgetForNativeView(
                         controller->container_view()),
@@ -247,7 +250,8 @@ PopupViewViews::PopupViewViews(
                         : views::Widget::InitParams::Activatable::kDefault),
       controller_(controller),
       search_bar_config_(std::move(search_bar_config)),
-      tabbed_pane_config_(std::move(tabbed_pane_config)) {
+      tabbed_pane_config_(std::move(tabbed_pane_config)),
+      sub_popup_config_(std::move(sub_popup_config)) {
   InitViews();
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kListBox);
@@ -846,7 +850,7 @@ base::WeakPtr<AutofillPopupView> PopupViewViews::CreateSubPopupView(
     base::WeakPtr<AutofillPopupController> controller) {
   if (GetWidget() && controller) {
     return (new PopupViewViews(controller, weak_ptr_factory_.GetWeakPtr(),
-                               GetWidget()))
+                               GetWidget(), sub_popup_config_))
         ->GetWeakPtr();
   }
   return nullptr;
@@ -1577,8 +1581,12 @@ void PopupViewViews::OnMouseExitedInChildren() {
   }
 
   // Schedule sub-popup closing.
+  const base::TimeDelta hide_delay =
+      sub_popup_config_ ? sub_popup_config_->no_selection_hide_delay
+                        : kNoSelectionHideSubPopupDelay;
+
   no_selection_sub_popup_close_timer_.Start(
-      FROM_HERE, kNoSelectionHideSubPopupDelay,
+      FROM_HERE, hide_delay,
       base::BindRepeating(&PopupViewViews::SetRowWithOpenSubPopup,
                           weak_ptr_factory_.GetWeakPtr(), std::nullopt,
                           AutoselectFirstSuggestion(false)));
@@ -1742,14 +1750,15 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
 base::WeakPtr<AutofillPopupView> AutofillPopupView::Create(
     base::WeakPtr<AutofillPopupController> controller,
     std::optional<const AutofillPopupView::SearchBarConfig> search_bar_config,
-    std::optional<const AutofillPopupView::TabbedPaneConfig>
-        tabbed_pane_config) {
+    std::optional<const AutofillPopupView::TabbedPaneConfig> tabbed_pane_config,
+    std::optional<const AutofillPopupView::SubPopupConfig> sub_popup_config) {
   if (!controller || !CanShowRootPopup(*controller)) {
     return nullptr;
   }
 
   return (new PopupViewViews(controller, std::move(search_bar_config),
-                             std::move(tabbed_pane_config)))
+                             std::move(tabbed_pane_config),
+                             std::move(sub_popup_config)))
       ->GetWeakPtr();
 }
 

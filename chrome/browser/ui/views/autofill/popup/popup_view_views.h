@@ -118,7 +118,9 @@ class PopupViewViews : public PopupBaseView,
   // Constructor for creating sub-popups.
   PopupViewViews(base::WeakPtr<AutofillPopupController> controller,
                  base::WeakPtr<ExpandablePopupParentView> parent,
-                 views::Widget* parent_widget);
+                 views::Widget* parent_widget,
+                 std::optional<const AutofillPopupView::SubPopupConfig>
+                     sub_popup_config = std::nullopt);
 
   // Constructor for creating root level popups.
   // Providing `std::nullopt` to the `search_bar_config` results in creating a
@@ -130,7 +132,9 @@ class PopupViewViews : public PopupBaseView,
       std::optional<const AutofillPopupView::SearchBarConfig>
           search_bar_config = std::nullopt,
       std::optional<const AutofillPopupView::TabbedPaneConfig>
-          tabbed_pane_config = std::nullopt);
+          tabbed_pane_config = std::nullopt,
+      std::optional<const AutofillPopupView::SubPopupConfig> sub_popup_config =
+          std::nullopt);
   PopupViewViews(const PopupViewViews&) = delete;
   PopupViewViews& operator=(const PopupViewViews&) = delete;
   ~PopupViewViews() override;
@@ -372,6 +376,8 @@ class PopupViewViews : public PopupBaseView,
       search_bar_config_;
   const std::optional<const AutofillPopupView::TabbedPaneConfig>
       tabbed_pane_config_;
+  const std::optional<const AutofillPopupView::SubPopupConfig>
+      sub_popup_config_;
   raw_ptr<PopupSearchBarView> search_bar_ = nullptr;
   raw_ptr<views::TabbedPane> tabbed_pane_ = nullptr;
   raw_ptr<views::BoxLayoutView> suggestions_container_ = nullptr;
