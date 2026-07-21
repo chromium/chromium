@@ -9,18 +9,25 @@ import type {ContextualCueingInternalsAppElement} from './app.js';
 export function getHtml(this: ContextualCueingInternalsAppElement) {
   return html`
 <h1>Contextual Cueing Internals</h1>
-<cr-tab-box>
-  <div slot="tab">Generated Cues</div>
-  <div slot="tab">Logs</div>
-  <div slot="panel">
-    <div class="card">
-      <h2>Generated Cues</h2>
-    </div>
+<div class="card">
+  <h2>Generated Cues</h2>
+  <div class="cues-container">
+    ${this.shownCues_.length === 0 ?
+      html`<div class="empty-state">No cues shown yet.</div>` :
+      this.shownCues_.map((cue, index) => html`
+        <div class="cue-item">
+          <div class="cue-details">
+            ${cue.cuj ? html`<div class="cue-field"><strong>CUJ:</strong> <span>${cue.cuj}</span></div>` : ''}
+            ${cue.anchoredMessageText ? html`<div class="cue-field"><strong>Message:</strong> <span>${cue.anchoredMessageText}</span></div>` : ''}
+            ${cue.actionText ? html`<div class="cue-field"><strong>Action:</strong> <span>${cue.actionText}</span></div>` : ''}
+            ${cue.url ? html`<div class="cue-field"><strong>URL:</strong> <span class="url-text">${cue.url}</span></div>` : ''}
+            ${cue.prompt ? html`<div class="cue-field"><strong>Prompt:</strong> <span>${cue.prompt}</span></div>` : ''}
+          </div>
+          <cr-button data-index="${index}" @click="${this.onFeedbackClick_}">
+            Give Feedback
+          </cr-button>
+        </div>
+      `)}
   </div>
-  <div slot="panel">
-    <div class="card">
-      <h2>Logs Panel</h2>
-    </div>
-  </div>
-</cr-tab-box>`;
+</div>`;
 }

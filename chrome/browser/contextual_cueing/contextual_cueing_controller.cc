@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/i18n/message_formatter.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/metrics/metrics_hashes.h"
@@ -77,6 +76,7 @@
 #include "ui/menus/simple_menu_model.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/contextual_cueing/internals/contextual_cueing_internals.mojom.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_observer.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
@@ -1035,6 +1035,19 @@ void ContextualCueingController::ShowCue(
   CUEING_LOG(base::StringPrintf(
       "Showing cue for CUJ %s: %s [%s]", cue.suggested_cuj(),
       strings.anchored_message_text(), strings.action_text()));
+
+  auto cue_log = contextual_cueing_internals::mojom::CueLog::New();
+  cue_log->cuj = cue.suggested_cuj();
+  cue_log->anchored_message_text = strings.anchored_message_text();
+  cue_log->action_text = strings.action_text();
+  if (tab_ && tab_->GetContents()) {
+    cue_log->url = tab_->GetContents()->GetLastCommittedURL();
+  }
+  if (cue.has_gemini_in_chrome_surface() &&
+      cue.gemini_in_chrome_surface().has_prompt()) {
+    cue_log->prompt = cue.gemini_in_chrome_surface().prompt();
+  }
+  contextual_cueing_service_->LogCueShownMetadata(std::move(cue_log));
 
   contextual_cueing_service_->OnCueShown(
       tab_->GetContents()->GetLastCommittedURL(), cue_type);

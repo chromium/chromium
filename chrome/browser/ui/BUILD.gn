@@ -1994,6 +1994,7 @@ static_library("ui") {
 
     # Non-android public_deps for "ui" target.
     public_deps += [
+      "//chrome/browser/contextual_cueing/internals",
       "//chrome/browser/importer",
       "//chrome/browser/importer:impl",
       "//chrome/browser/personal_context/first_run",

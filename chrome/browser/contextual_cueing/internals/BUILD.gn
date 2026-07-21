@@ -2,14 +2,27 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//mojo/public/tools/bindings/mojom.gni")
+
 assert(!is_android)
+
+mojom("mojo_bindings") {
+  sources = [ "contextual_cueing_internals.mojom" ]
+  webui_module_path = "/"
+  public_deps = [ "//url/mojom:url_mojom_gurl" ]
+}
 
 source_set("internals") {
   sources = [
+    "contextual_cueing_internals_page_handler.cc",
+    "contextual_cueing_internals_page_handler.h",
     "contextual_cueing_internals_ui.cc",
     "contextual_cueing_internals_ui.h",
   ]
-  public_deps = [ "//content/public/browser" ]
+  public_deps = [
+    ":mojo_bindings",
+    "//content/public/browser",
+  ]
   deps = [
     "//chrome/browser/contextual_cueing",
     "//chrome/browser/resources/contextual_cueing/internals:resources",

@@ -4,8 +4,97 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
  * #css_wrapper_metadata_end */
 
+:host {
+  display: block;
+  margin: 0 auto;
+  max-width: 800px;
+  padding: 32px 24px;
+  color: var(--cr-primary-text-color);
+}
+
 h1 {
-  color: #1a73e8;
+  margin: 0 0 24px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--cr-secondary-text-color);
+}
+
+.card {
+  background-color: var(--cr-card-background-color);
+  border-radius: var(--cr-card-border-radius);
+  box-shadow: var(--cr-card-shadow);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.card h2 {
+  font-size: 16px;
+  font-weight: 500;
+  margin-top: 0;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--cr-separator-color);
+  padding-bottom: 12px;
+}
+
+.cues-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cue-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid var(--cr-separator-color);
+  padding-bottom: 16px;
+  gap: 16px;
+}
+
+.cue-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.cue-details {
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cue-field {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.cue-field strong {
+  min-width: 70px;
+  color: var(--cr-secondary-text-color);
+  font-weight: 500;
+}
+
+.cue-field span {
+  word-break: break-word;
+}
+
+.cue-field .url-text {
+  color: var(--cr-link-color);
+  font-family: monospace;
+  font-size: 13px;
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--cr-secondary-text-color);
+  padding: 32px 0;
+  font-size: 14px;
 }

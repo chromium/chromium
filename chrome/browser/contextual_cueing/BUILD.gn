@@ -33,7 +33,10 @@ source_set("contextual_cueing") {
   ]
 
   if (!is_android) {
-    public_deps += [ "//chrome/browser/ui/page_action" ]
+    public_deps += [
+      "//chrome/browser/contextual_cueing/internals:mojo_bindings",
+      "//chrome/browser/ui/page_action",
+    ]
   }
 }
 

@@ -6,6 +6,8 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/contextual_cueing/features.h"
+#include "chrome/browser/contextual_cueing/internals/contextual_cueing_internals_page_handler.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/contextual_cueing_internals_resources.h"
 #include "chrome/grit/contextual_cueing_internals_resources_map.h"
 #include "content/public/browser/web_contents.h"
@@ -32,5 +34,12 @@ ContextualCueingInternalsUI::ContextualCueingInternalsUI(content::WebUI* web_ui)
       IDR_CONTEXTUAL_CUEING_INTERNALS_CONTEXTUAL_CUEING_INTERNALS_HTML);
 }
 ContextualCueingInternalsUI::~ContextualCueingInternalsUI() = default;
+
+void ContextualCueingInternalsUI::BindInterface(
+    mojo::PendingReceiver<contextual_cueing_internals::mojom::PageHandler>
+        receiver) {
+  page_handler_ = std::make_unique<ContextualCueingInternalsPageHandler>(
+      std::move(receiver), Profile::FromWebUI(web_ui()));
+}
 
 }  // namespace contextual_cueing_internals

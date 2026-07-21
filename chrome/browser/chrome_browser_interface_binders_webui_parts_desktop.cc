@@ -8,6 +8,8 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/actor/ui/actor_overlay_ui.h"
 #include "chrome/browser/chrome_browser_interface_binders_webui_parts.h"
+#include "chrome/browser/contextual_cueing/internals/contextual_cueing_internals.mojom.h"
+#include "chrome/browser/contextual_cueing/internals/contextual_cueing_internals_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_internals.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
@@ -654,6 +656,10 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
 
   RegisterWebUIControllerInterfaceBinder<
       feedback::report_unsafe_site::mojom::PageHandlerFactory, FeedbackUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<
+      contextual_cueing_internals::mojom::PageHandler,
+      contextual_cueing_internals::ContextualCueingInternalsUI>(map);
 }
 
 void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(
