@@ -26,6 +26,8 @@ std::vector<tabs::TabInterface*> GetTabsInTabGroup(
     BrowserWindowInterface* window,
     tab_groups::TabGroupId group_id);
 
+void EnsureTabInGroup(tabs::TabInterface* tab, tab_groups::TabGroupId group_id);
+
 }  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_SERVICE_GLIC_TAB_GROUP_UTILS_H_
