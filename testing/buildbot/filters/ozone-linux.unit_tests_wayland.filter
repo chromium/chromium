@@ -4,3 +4,6 @@
 # https://crbug.com/1360854), this test should pass. As soon as the compositor
 # that is used on the test bot supports this extension, the test can be enabled.
 -RelaunchNotificationControllerPlatformImplTest.SynchronousNotification
+
+# TODO(crbug.com/531514480): Re-enable once the test is fixed.
+-SafetyHubHatsServiceTest.GetOverallState_Password
