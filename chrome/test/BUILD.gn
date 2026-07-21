@@ -791,8 +791,6 @@ static_library("test_support") {
 
   if (is_chromeos) {
     sources += [
-      "../browser/chromeos/extensions/login_screen/login_screen_apitest_base.cc",
-      "../browser/chromeos/extensions/login_screen/login_screen_apitest_base.h",
       "../browser/ui/views/frame/immersive_mode_tester.cc",
       "../browser/ui/views/frame/immersive_mode_tester.h",
       "base/ash/extension_js_browser_test.cc",

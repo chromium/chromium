@@ -2961,6 +2961,7 @@ source_set("browser_tests") {
         "//chrome/browser/ash/scanning",
         "//chrome/browser/ash/scanning:test_support",
         "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
+        "//chrome/browser/chromeos/extensions/login_screen:test_support",
         "//chrome/browser/chromeos/extensions/smart_card_provider_private:browser_tests",
         "//chrome/browser/chromeos/extensions/telemetry/api:browser_tests",
         "//chrome/browser/chromeos/extensions/vpn_provider",

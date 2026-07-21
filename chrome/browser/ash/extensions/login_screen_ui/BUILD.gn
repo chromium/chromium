@@ -65,6 +65,7 @@ source_set("browser_tests") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/ash/policy/login:test_support",
+    "//chrome/browser/chromeos/extensions/login_screen:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/login/login_screen_extension_ui",
