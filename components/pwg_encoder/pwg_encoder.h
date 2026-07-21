@@ -44,8 +44,9 @@ class PwgEncoder {
 
   // Given an image, create a PWG of the image and put the compressed image data
   // in the returned string, or return an empty string on failure.
-  static std::string EncodePage(const BitmapImage& image,
-                                const PwgHeaderInfo& pwg_header_info);
+  static std::string EncodePageFromBGRAColorspace(
+      const BitmapImage& image,
+      const PwgHeaderInfo& pwg_header_info);
 };
 
 }  // namespace pwg_encoder

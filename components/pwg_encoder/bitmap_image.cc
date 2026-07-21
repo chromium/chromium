@@ -8,10 +8,8 @@
 
 namespace pwg_encoder {
 
-BitmapImage::BitmapImage(const gfx::Size& size, Colorspace colorspace)
-    : size_(size),
-      colorspace_(colorspace),
-      data_(base::HeapArray<uint32_t>::Uninit(size.GetArea())) {}
+BitmapImage::BitmapImage(const gfx::Size& size)
+    : size_(size), data_(base::HeapArray<uint32_t>::Uninit(size.GetArea())) {}
 
 BitmapImage::~BitmapImage() = default;
 

@@ -24,8 +24,8 @@ const int kRasterHeight = 792;
 const int kRasterDPI = 72;
 
 std::unique_ptr<BitmapImage> MakeSampleBitmap() {
-  auto bitmap_image = std::make_unique<BitmapImage>(
-      gfx::Size(kRasterWidth, kRasterHeight), BitmapImage::RGBA);
+  auto bitmap_image =
+      std::make_unique<BitmapImage>(gfx::Size(kRasterWidth, kRasterHeight));
   base::span<uint32_t> bitmap_data = bitmap_image->pixels();
   for (int i = 0; i < kRasterWidth * kRasterHeight; i++) {
     bitmap_data[i] = 0xFFFFFF;
@@ -35,7 +35,7 @@ std::unique_ptr<BitmapImage> MakeSampleBitmap() {
     for (int j = 200; j < 300; j++) {
       int row_start = j * kRasterWidth;
       uint32_t red = (i * 255) / kRasterWidth;
-      bitmap_data[row_start + i] = red;
+      bitmap_data[row_start + i] = red << 16;
     }
   }
 
@@ -46,7 +46,7 @@ std::unique_ptr<BitmapImage> MakeSampleBitmap() {
       if ((i / 40) % 2 == 0) {
         bitmap_data[row_start + i] = 255 << 8;
       } else {
-        bitmap_data[row_start + i] = 255 << 16;
+        bitmap_data[row_start + i] = 255;
       }
     }
   }
@@ -63,7 +63,7 @@ TEST(PwgRasterTest, Encode) {
   header_info.dpi = gfx::Size(kRasterDPI, kRasterDPI);
 
   std::string output = PwgEncoder::GetDocumentHeader();
-  output += PwgEncoder::EncodePage(*image, header_info);
+  output += PwgEncoder::EncodePageFromBGRAColorspace(*image, header_info);
   EXPECT_EQ(2970U, output.size());
 
   std::string sha1 = base::SHA1HashString(output);
@@ -73,7 +73,7 @@ TEST(PwgRasterTest, Encode) {
   header_info.color_space = PwgHeaderInfo::SGRAY;
 
   output = PwgEncoder::GetDocumentHeader();
-  output += PwgEncoder::EncodePage(*image, header_info);
+  output += PwgEncoder::EncodePageFromBGRAColorspace(*image, header_info);
   EXPECT_EQ(2388U, output.size());
 
   sha1 = base::SHA1HashString(output);

@@ -16,13 +16,7 @@ namespace pwg_encoder {
 
 class BitmapImage {
  public:
-  enum Colorspace {
-    // These are the only types PWGEncoder currently supports.
-    RGBA,
-    BGRA
-  };
-
-  BitmapImage(const gfx::Size& size, Colorspace colorspace);
+  explicit BitmapImage(const gfx::Size& size);
 
   BitmapImage(const BitmapImage&) = delete;
   BitmapImage& operator=(const BitmapImage&) = delete;
@@ -31,7 +25,6 @@ class BitmapImage {
 
   static constexpr uint8_t channels() { return 4u; }
   const gfx::Size& size() const { return size_; }
-  Colorspace colorspace() const { return colorspace_; }
 
   base::span<uint32_t> pixels();
 
@@ -39,7 +32,6 @@ class BitmapImage {
 
  private:
   gfx::Size size_;
-  Colorspace colorspace_;
   base::HeapArray<uint32_t> data_;
 };
 

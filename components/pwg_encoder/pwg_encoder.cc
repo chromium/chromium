@@ -12,7 +12,6 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
-#include "base/logging.h"
 #include "base/numerics/byte_conversions.h"
 #include "components/pwg_encoder/bitmap_image.h"
 
@@ -52,13 +51,6 @@ const int kPwgMaxPackedRows = 256;
 
 const int kPwgMaxPackedPixels = 128;
 
-struct RGBA8 {
-  uint8_t red;
-  uint8_t green;
-  uint8_t blue;
-  uint8_t alpha;
-};
-
 struct BGRA8 {
   uint8_t blue;
   uint8_t green;
@@ -66,17 +58,15 @@ struct BGRA8 {
   uint8_t alpha;
 };
 
-template <class InputStruct>
-void EncodePixelToRGB(const void* pixel, std::string* output) {
-  const InputStruct* i = reinterpret_cast<const InputStruct*>(pixel);
+void EncodePixelToRGB(const uint32_t* pixel, std::string* output) {
+  const auto* i = reinterpret_cast<const BGRA8*>(pixel);
   output->push_back(static_cast<char>(i->red));
   output->push_back(static_cast<char>(i->green));
   output->push_back(static_cast<char>(i->blue));
 }
 
-template <class InputStruct>
-void EncodePixelToMonochrome(const void* pixel, std::string* output) {
-  const InputStruct* i = reinterpret_cast<const InputStruct*>(pixel);
+void EncodePixelToMonochrome(const uint32_t* pixel, std::string* output) {
+  const auto* i = reinterpret_cast<const BGRA8*>(pixel);
   output->push_back(static_cast<char>((i->red * kRedCoefficient +
                                        i->green * kGreenCoefficient +
                                        i->blue * kBlueCoefficient) /
@@ -125,7 +115,7 @@ std::string EncodePageHeader(const BitmapImage& image,
   return std::string(header.begin(), header.end());
 }
 
-template <typename InputStruct, class RandomAccessIterator>
+template <class RandomAccessIterator>
 void EncodeRow(RandomAccessIterator pos,
                RandomAccessIterator row_end,
                bool monochrome,
@@ -154,9 +144,9 @@ void EncodeRow(RandomAccessIterator pos,
     if (it != pos + 1) {  // More than one pixel
       output->push_back(static_cast<char>((it - pos) - 1));
       if (monochrome) {
-        EncodePixelToMonochrome<InputStruct>(&*pos, output);
+        EncodePixelToMonochrome(&*pos, output);
       } else {
-        EncodePixelToRGB<InputStruct>(&*pos, output);
+        EncodePixelToRGB(&*pos, output);
       }
       pos = it;
     } else {
@@ -177,9 +167,9 @@ void EncodeRow(RandomAccessIterator pos,
       output->push_back(static_cast<char>(1 - (it - pos)));
       while (pos != it) {
         if (monochrome) {
-          EncodePixelToMonochrome<InputStruct>(&*pos, output);
+          EncodePixelToMonochrome(&*pos, output);
         } else {
-          EncodePixelToRGB<InputStruct>(&*pos, output);
+          EncodePixelToRGB(&*pos, output);
         }
         ++pos;
       }
@@ -187,9 +177,12 @@ void EncodeRow(RandomAccessIterator pos,
   }
 }
 
-template <typename InputStruct>
-std::string EncodePageWithColorspace(const BitmapImage& image,
-                                     const PwgHeaderInfo& pwg_header_info) {
+}  // namespace
+
+// static
+std::string PwgEncoder::EncodePageFromBGRAColorspace(
+    const BitmapImage& image,
+    const PwgHeaderInfo& pwg_header_info) {
   bool monochrome = pwg_header_info.color_space == PwgHeaderInfo::SGRAY;
   std::string output = EncodePageHeader(image, pwg_header_info);
 
@@ -210,50 +203,24 @@ std::string EncodePageWithColorspace(const BitmapImage& image,
     }
     output.push_back(static_cast<char>(num_identical_rows - 1));
 
-    // Both supported colorspaces have a 32-bit pixels information.
+    // The BGRA colorspace has a 32-bit pixels information.
     // Management of the bytes of the pixel is done by pixel_encoder function
     // on the original array to avoid endian problems.
     if (!pwg_header_info.flipx) {
-      EncodeRow<InputStruct>(current_row.begin(), current_row.end(), monochrome,
-                             &output);
+      EncodeRow(current_row.begin(), current_row.end(), monochrome, &output);
     } else {
       // We reverse the iterators.
-      EncodeRow<InputStruct>(current_row.rbegin(), current_row.rend(),
-                             monochrome, &output);
+      EncodeRow(current_row.rbegin(), current_row.rend(), monochrome, &output);
     }
   }
   return output;
 }
-
-}  // namespace
 
 // static
 std::string PwgEncoder::GetDocumentHeader() {
   std::string output;
   output.append(kPwgKeyword, 4);
   return output;
-}
-
-// static
-std::string PwgEncoder::EncodePage(const BitmapImage& image,
-                                   const PwgHeaderInfo& pwg_header_info) {
-  // pwg_header_info.color_space can only contain color spaces that are
-  // supported, so no sanity check is needed.
-  std::string data;
-  switch (image.colorspace()) {
-    case BitmapImage::RGBA:
-      data = EncodePageWithColorspace<RGBA8>(image, pwg_header_info);
-      break;
-
-    case BitmapImage::BGRA:
-      data = EncodePageWithColorspace<BGRA8>(image, pwg_header_info);
-      break;
-
-    default:
-      LOG(ERROR) << "Unsupported colorspace.";
-      break;
-  }
-  return data;
 }
 
 }  // namespace pwg_encoder

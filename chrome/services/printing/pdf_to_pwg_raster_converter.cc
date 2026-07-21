@@ -46,8 +46,7 @@ base::ReadOnlySharedMemoryRegion RenderPdfPagesToPwgRaster(
   std::string pwg_data;
   pwg_data.reserve(total_page_count * kEstimatedSizePerPage);
   pwg_data = pwg_encoder::PwgEncoder::GetDocumentHeader();
-  pwg_encoder::BitmapImage image(settings.area.size(),
-                                 pwg_encoder::BitmapImage::BGRA);
+  pwg_encoder::BitmapImage image(settings.area.size());
   const chrome_pdf::RenderOptions options = {
       .stretch_to_bounds = false,
       .keep_aspect_ratio = true,
@@ -113,7 +112,8 @@ base::ReadOnlySharedMemoryRegion RenderPdfPagesToPwgRaster(
     }
 
     std::string pwg_page =
-        pwg_encoder::PwgEncoder::EncodePage(image, header_info);
+        pwg_encoder::PwgEncoder::EncodePageFromBGRAColorspace(image,
+                                                              header_info);
     if (pwg_page.empty())
       return invalid_pwg_region;
     pwg_data += pwg_page;
