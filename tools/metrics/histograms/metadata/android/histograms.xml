@@ -8517,7 +8517,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.Preconnect.ConnectionDuration{Protocol}"
-    units="ms" expires_after="2026-12-01">
+    units="ms" expires_after="2027-01-01">
   <owner>peconn@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -8534,7 +8534,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.Preconnect.Event"
-    enum="AndroidWebViewPreconnectEvent" expires_after="2026-09-01">
+    enum="AndroidWebViewPreconnectEvent" expires_after="2027-01-01">
   <owner>peconn@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -8544,7 +8544,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.Preconnect.SessionCreationTime.{Protocol}"
-    units="ms" expires_after="2026-09-01">
+    units="ms" expires_after="2027-01-01">
   <owner>peconn@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
