@@ -414,8 +414,21 @@ GbmSurfaceFactory::CreateNativePixmapFromHandle(
   // valid and can be further importer by standard means.
   if (!get_protected_native_pixmap_callback_.is_null()) {
     auto protected_pixmap = get_protected_native_pixmap_callback_.Run(handle);
-    if (protected_pixmap)
+    if (protected_pixmap) {
+      // The substituted pixmap is used in place of the supplied handle, so it
+      // must match the geometry the caller will use to bind it.
+      // See https://crbug.com/501762862
+      if (protected_pixmap->GetBufferSize() != size ||
+          protected_pixmap->GetSharedImageFormat() != format) {
+        LOG(ERROR) << "Protected pixmap ("
+                   << protected_pixmap->GetBufferSize().ToString() << ", "
+                   << protected_pixmap->GetSharedImageFormat().ToString()
+                   << ") does not match requested geometry (" << size.ToString()
+                   << ", " << format.ToString() << ")";
+        return nullptr;
+      }
       return protected_pixmap;
+    }
   }
 
   return CreateNativePixmapFromHandleInternal(widget, size, format,
