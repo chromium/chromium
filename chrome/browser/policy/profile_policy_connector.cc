@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -330,14 +331,34 @@ class LocalTestInfoBarVisibilityManager :
 
   bool infobar_active() { return infobar_active_; }
 
+  base::WeakPtr<LocalTestInfoBarVisibilityManager> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   bool infobar_active_ = false;
 #if !BUILDFLAG(IS_ANDROID)
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};
 #endif  // !BUILDFLAG(IS_ANDROID)
+  base::WeakPtrFactory<LocalTestInfoBarVisibilityManager> weak_ptr_factory_{
+      this};
 };
 }  // namespace internal
+
+namespace {
+
+// Runs a task on the UI thread, eagerly if currently on the UI thread (to
+// reduce the risk for potential race conditions), else posted to the UI thread.
+void RunNowOnOrPostToUIThread(base::OnceClosure task) {
+  if (content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
+    std::move(task).Run();
+  } else {
+    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(task));
+  }
+}
+
+}  // namespace
 
 #if BUILDFLAG(IS_CHROMEOS)
 namespace {
@@ -789,8 +810,10 @@ void ProfilePolicyConnector::UseLocalTestPolicyProvider() {
   policy_service()->RefreshPolicies(base::DoNothing(),
                                     PolicyFetchReason::kTest);
   if (!local_test_infobar_visibility_manager_->infobar_active()) {
-    local_test_infobar_visibility_manager_
-        ->AddInfobarsForActiveLocalTestPoliciesAllTabs();
+    RunNowOnOrPostToUIThread(
+        base::BindOnce(&internal::LocalTestInfoBarVisibilityManager::
+                           AddInfobarsForActiveLocalTestPoliciesAllTabs,
+                       local_test_infobar_visibility_manager_->GetWeakPtr()));
   }
 }
 
@@ -802,8 +825,10 @@ void ProfilePolicyConnector::RevertUseLocalTestPolicyProvider() {
   policy_service()->RefreshPolicies(base::DoNothing(),
                                     PolicyFetchReason::kTest);
   if (local_test_infobar_visibility_manager_->infobar_active()) {
-    local_test_infobar_visibility_manager_
-        ->DismissInfobarsForActiveLocalTestPoliciesAllTabs();
+    RunNowOnOrPostToUIThread(
+        base::BindOnce(&internal::LocalTestInfoBarVisibilityManager::
+                           DismissInfobarsForActiveLocalTestPoliciesAllTabs,
+                       local_test_infobar_visibility_manager_->GetWeakPtr()));
   }
 }
 
