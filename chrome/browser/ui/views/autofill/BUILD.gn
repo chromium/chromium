@@ -1,0 +1,18 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+source_set("delete_address_profile_dialog_view") {
+  sources = [ "delete_address_profile_dialog_view.cc" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ui/autofill",
+    "//chrome/browser/ui/dialogs:browser_dialogs",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/views",
+  ]
+}
