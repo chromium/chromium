@@ -238,6 +238,8 @@ crbug.com/338574390 [ amd-0x7340 angle-metal debug graphite-enabled mac no-clang
 crbug.com/380088337 [ angle-metal asan graphite-enabled intel-0x3e9b sonoma ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ Failure ]
 
 crbug.com/536066868 [ mac apple-angle-metal-renderer:-apple-m2 asan ] * [ RetryOnFailure ]
+crbug.com/536066868 [ mac apple-angle-metal-renderer:-apple-m2 asan ] ContextLost_WebGLContextRestoredInHiddenTab [ Failure ]
+crbug.com/536066868 [ mac apple-angle-metal-renderer:-apple-m2 asan ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Failure ]
 
 ###############################
 # Permanent Slow Expectations #
