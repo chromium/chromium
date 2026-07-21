@@ -18,12 +18,13 @@
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider.h"
-#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider_interface.h"
-#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/test/app/uikit_test_util.h"
+#import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -32,8 +33,21 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
+namespace {
+
 const char kProtectedURL[] = "https://protected.com";
 const char kChromeVersionURL[] = "chrome://version";
+
+// Returns the id<BrowserProvider> from `scene_state` corresponding to
+// `is_off_the_record`.
+id<BrowserProvider> BrowserProviderForMode(SceneState* scene_state,
+                                           bool is_off_the_record) {
+  id<BrowserProviderInterface> interface = scene_state.browserProviderInterface;
+  return is_off_the_record ? interface.incognitoBrowserProvider
+                           : interface.mainBrowserProvider;
+}
+
+}  // anonymous namespace
 
 // Testing extension used for verifying calls to `applyScreenshotProtection`.
 @interface DataProtectionSceneAgent ()
@@ -54,47 +68,13 @@ class DataProtectionSceneAgentTestBase : public PlatformTest {
     SetProfileStateInitStage(profile_state_, ProfileInitStage::kProfileLoaded);
     profile_state_.profile = profile_.get();
 
-    UIWindowScene* window_scene = chrome_test_util::GetAnyWindowScene();
     scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
     scene_state_.profileState = profile_state_;
-    scene_state_.scene = window_scene;
-    scene_state_.window = [[UIWindow alloc] initWithWindowScene:window_scene];
+    scene_state_.scene = scoped_key_window_.GetScene();
+    scene_state_.window = scoped_key_window_.Get();
     scene_state_.UIEnabled = YES;
 
     agent_ = [[DataProtectionSceneAgent alloc] init];
-
-    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
-
-    ProfileIOS* otr_profile = profile_->GetOffTheRecordProfile();
-    incognito_browser_ =
-        std::make_unique<TestBrowser>(otr_profile, scene_state_);
-
-    StubBrowserProvider* main_provider = [[StubBrowserProvider alloc] init];
-    main_provider.browser = browser_.get();
-
-    StubBrowserProvider* incognito_provider =
-        [[StubBrowserProvider alloc] init];
-    incognito_provider.browser = incognito_browser_.get();
-
-    StubBrowserProviderInterface* interface =
-        [[StubBrowserProviderInterface alloc] init];
-    interface.mainBrowserProvider = main_provider;
-    interface.currentBrowserProvider = main_provider;
-    interface.incognitoBrowserProvider = incognito_provider;
-
-    scene_state_.browserProviderInterface = interface;
-    mock_window_scene_ = OCMClassMock([UIWindowScene class]);
-    // Scene state requires its scene to have a session identifier.
-    id mock_session = OCMClassMock([UISceneSession class]);
-    OCMStub([mock_session persistentIdentifier]).andReturn(@"fake_identifier");
-    OCMStub([mock_window_scene_ session]).andReturn(mock_session);
-    NSArray<UIWindow*>* windows = @[ scene_state_.window ];
-    OCMStub([mock_window_scene_ windows]).andReturn(windows);
-    scene_state_.scene = mock_window_scene_;
-
-    // Set `incognitoContentVisible` to NO after the scene is connected to
-    // overwrite any polluted state loaded from `NSUserDefaults`.
-    scene_state_.incognitoState.incognitoContentVisible = NO;
 
     mock_agent_ = OCMPartialMock(agent_);
     [mock_agent_ setExpectationOrderMatters:YES];
@@ -102,20 +82,18 @@ class DataProtectionSceneAgentTestBase : public PlatformTest {
 
   void TearDown() override {
     EXPECT_OCMOCK_VERIFY(mock_agent_);
-    [mock_agent_ stopMocking];
-    mock_agent_ = nil;
+    @autoreleasepool {
+      [mock_agent_ stopMocking];
+      mock_agent_ = nil;
 
-    // Trigger `sceneStateDidDisableUI:` to clean up observers and the test
-    // state.
-    scene_state_.UIEnabled = NO;
-
-    [scene_state_ shutdown];
-    agent_ = nil;
-    scene_state_ = nil;
-    mock_window_scene_ = nil;
-    profile_state_ = nil;
-    browser_.reset();
-    incognito_browser_.reset();
+      // Trigger `sceneStateDidDisableUI:` to clean up observers and the test
+      // state.
+      scene_state_.UIEnabled = NO;
+      [scene_state_ shutdown];
+      agent_ = nil;
+      scene_state_ = nil;
+      profile_state_ = nil;
+    }
     profile_.reset();
     PlatformTest::TearDown();
   }
@@ -185,7 +163,9 @@ class DataProtectionSceneAgentTestBase : public PlatformTest {
       web_state->SetVisibleURL(url);
     }
     DataProtectionTabHelper::CreateForWebState(web_state_ptr);
-    Browser* browser = incognito ? incognito_browser_.get() : browser_.get();
+    Browser* browser = BrowserProviderForMode(scene_state_, incognito).browser;
+    CHECK_NE(browser, nullptr);
+    CHECK_EQ(browser->GetProfile(), profile);
     browser->GetWebStateList()->InsertWebState(
         std::move(web_state),
         WebStateList::InsertionParams::AtIndex(0).Activate());
@@ -194,12 +174,10 @@ class DataProtectionSceneAgentTestBase : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
+  ScopedKeyWindow scoped_key_window_;
 
   ProfileState* profile_state_;
-  id mock_window_scene_;
   FakeSceneState* scene_state_;
-  std::unique_ptr<TestBrowser> browser_;
-  std::unique_ptr<TestBrowser> incognito_browser_;
 
   DataProtectionSceneAgent* agent_;
   id mock_agent_;
@@ -720,8 +698,9 @@ TEST_F(DataProtectionSceneAgentTransitionTest, SingleTab_SwitchBrowser) {
   ExpectApplyScreenshotProtection(NO);
 
   scene_state_.incognitoState.incognitoContentVisible = YES;
-  scene_state_.browserProviderInterface.currentBrowserProvider =
-      scene_state_.browserProviderInterface.incognitoBrowserProvider;
+  [scene_state_
+      setCurrentBrowserProvider:BrowserProviderForMode(
+                                    scene_state_, /*is_off_the_record=*/true)];
 
   EXPECT_OCMOCK_VERIFY(mock_agent_);
 }
@@ -738,19 +717,21 @@ TEST_F(DataProtectionSceneAgentTransitionTest,
   scene_state_.tabGridState.tabGridVisible = YES;
 
   // Switch to Incognito Tab Grid.
-  scene_state_.browserProviderInterface.currentBrowserProvider =
-      scene_state_.browserProviderInterface.incognitoBrowserProvider;
   scene_state_.incognitoState.incognitoContentVisible = YES;
+  [scene_state_
+      setCurrentBrowserProvider:BrowserProviderForMode(
+                                    scene_state_, /*is_off_the_record=*/true)];
 
   // Destroy the incognito browser.
-  incognito_browser_.reset();
+  [scene_state_ destroyAndRecreateOffTheRecordProfile];
 
   // Switch back to Regular Tab Grid. This will cause the scene state
   // to update its observers, which could lead to a UAF if the destroyed
   // browser wasn't properly unobserved.
-  scene_state_.browserProviderInterface.currentBrowserProvider =
-      scene_state_.browserProviderInterface.mainBrowserProvider;
   scene_state_.incognitoState.incognitoContentVisible = NO;
+  [scene_state_
+      setCurrentBrowserProvider:BrowserProviderForMode(
+                                    scene_state_, /*is_off_the_record=*/false)];
 
   // Expect no protection. No crash means success.
   ExpectNoCallsToApplyScreenshotProtection();
