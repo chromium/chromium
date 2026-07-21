@@ -672,7 +672,9 @@ public final class ToolbarTabletUnitTest {
         updateOptionalButton(
                 /* buttonVariant= */ AdaptiveToolbarButtonVariant.READER_MODE,
                 /* tooltipTextResId= */ 0);
-        assertEquals(null, mToolbarTablet.getOptionalButtonViewForTesting().getTooltipText());
+        assertEquals(
+                mActivity.getString(R.string.actionbar_share),
+                mToolbarTablet.getOptionalButtonViewForTesting().getTooltipText());
 
         // Test whether share button tooltip Text is set correctly.
         updateOptionalButton(

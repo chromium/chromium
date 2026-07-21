@@ -272,13 +272,13 @@ public class OptionalButtonViewTest {
                 mButton.getTooltipText(),
                 mActivity.getResources().getString(R.string.button_new_tab));
 
-        // Test whether reader mode tooltip Text is null.
+        // Test whether reader mode tooltip text falls back to the content description.
         buttonData = getDataForTestingTooltipText(AdaptiveToolbarButtonVariant.READER_MODE, 0);
         mOptionalButtonView.updateButtonWithAnimation(buttonData);
         assertEquals(
                 "Tooltip text for reader mode button is not as expected",
-                mButton.getTooltipText(),
-                null);
+                mActivity.getString(R.string.actionbar_share),
+                mButton.getTooltipText());
     }
 
     @Test

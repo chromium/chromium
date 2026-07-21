@@ -362,9 +362,11 @@ public class TileRenderer {
                 mTitleLinesCount);
         tileView.setIconTint(
                 ChromeColors.getSecondaryIconTint(mContext, /* forceLightIconTint= */ false));
-        tileView.setContentDescription(
+        String contentDescription =
                 mContext.getString(
-                        R.string.accessibility_omnibox_most_visited_tile_add_new_shortcut));
+                        R.string.accessibility_omnibox_most_visited_tile_add_new_shortcut);
+        tileView.setContentDescription(contentDescription);
+        tileView.setTooltipText(contentDescription);
         tileView.setOnClickListener(
                 (View v) -> {
                     RecordUserAction.record("Suggestions.Button.AddItem");
@@ -406,22 +408,25 @@ public class TileRenderer {
      * @param tileView The view that should receive updated content description.
      */
     private void updateContentDescription(Tile tile, SuggestionsTileView tileView) {
+        String contentDescription;
         if (isSearchTile(tile)) {
-            tileView.setContentDescription(
+            contentDescription =
                     mContext.getString(
                             R.string.accessibility_omnibox_most_visited_tile_search,
-                            tile.getTitle()));
+                            tile.getTitle());
         } else {
             String title = tile.getTitle();
             if (tile.getData().source == TileSource.CUSTOM_LINKS) {
                 title += ": " + mPinnedShortcutString;
             }
-            tileView.setContentDescription(
+            contentDescription =
                     mContext.getString(
                             R.string.accessibility_omnibox_most_visited_tile_navigate,
                             title,
-                            tile.getUrl().getHost()));
+                            tile.getUrl().getHost());
         }
+        tileView.setContentDescription(contentDescription);
+        tileView.setTooltipText(contentDescription);
     }
 
     /**

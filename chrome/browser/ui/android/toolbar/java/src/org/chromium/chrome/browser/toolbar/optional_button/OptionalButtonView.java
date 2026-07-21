@@ -443,16 +443,18 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         mButton.setEnabled(buttonData.isEnabled());
         mActionChipLabel.setEnabled(buttonData.isEnabled());
 
-        // Set hover state tooltip text for optional toolbar buttons(e.g. share, voice search, new
-        // tab and profile).
-        if (buttonSpec.getHoverTooltipTextId() != ButtonSpec.INVALID_TOOLTIP_TEXT_ID
-                && mButton != null) {
+        mContentDescription = buttonSpec.getContentDescription();
+        // Set hover state tooltip text for optional toolbar buttons(e.g. share, voice search and
+        // new tab).
+        if (buttonSpec.getHoverTooltipTextId() != ButtonSpec.INVALID_TOOLTIP_TEXT_ID) {
             TooltipCompat.setTooltipText(
                     mButton, getContext().getString(buttonSpec.getHoverTooltipTextId()));
+        } else if (buttonSpec.getContentDescription() != null) {
+            // Fallback to the content description if a static tooltip string ID is not provided.
+            TooltipCompat.setTooltipText(mButton, mContentDescription);
         } else {
             TooltipCompat.setTooltipText(mButton, null);
         }
-        mContentDescription = buttonSpec.getContentDescription();
         mButton.setContentDescription(mContentDescription);
         boolean showTextBubble = buttonData.shouldShowTextBubble();
 

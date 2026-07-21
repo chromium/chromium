@@ -590,6 +590,9 @@ public class ToolbarTablet extends ToolbarLayout {
         if (buttonSpec.getHoverTooltipTextId() != ButtonSpec.INVALID_TOOLTIP_TEXT_ID) {
             super.setTooltipText(
                     mOptionalButton, getContext().getString(buttonSpec.getHoverTooltipTextId()));
+        } else if (buttonSpec.getContentDescription() != null) {
+            // Fallback to the content description if a static tooltip string ID is not provided.
+            super.setTooltipText(mOptionalButton, buttonSpec.getContentDescription());
         } else {
             super.setTooltipText(mOptionalButton, null);
         }
