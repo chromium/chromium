@@ -62,7 +62,7 @@ const CGFloat kSpinnerButtonPadding = 18;
 }  // namespace
 
 @interface SyncEncryptionPassphraseTableViewController () <
-    IdentityManagerObserverBridgeDelegate> {
+    IdentityManagerObserving> {
   // Whether the decryption progress is currently being shown.
   BOOL _isDecryptionProgressShown;
   NSString* _savedTitle;
@@ -559,9 +559,9 @@ const CGFloat kSpinnerButtonPadding = 18;
   [self reloadData];
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - IdentityManagerObserving
 
-- (void)onEndBatchOfRefreshTokenStateChanges {
+- (void)batchOfRefreshTokenStateChangesDidEnd {
   DCHECK(!_settingsAreDismissed);
   ProfileIOS* profile = self.browser->GetProfile();
   if (AuthenticationServiceFactory::GetForProfile(profile)

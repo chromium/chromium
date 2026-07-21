@@ -43,7 +43,7 @@
 @interface SaveToDriveMediator () <AuthenticationServiceObserving,
                                    CRWDownloadTaskObserver,
                                    CRWWebStateObserver,
-                                   IdentityManagerObserverBridgeDelegate>
+                                   IdentityManagerObserving>
 
 // Called when the storage quota has been fetched, with or without any error.
 - (void)didReceiveStorageQuotaResult:(const DriveStorageQuotaResult&)result;
@@ -385,9 +385,9 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
       _numberOfAttempts);
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - IdentityManagerObserving
 
-- (void)onPrimaryAccountChanged:
+- (void)primaryAccountDidChange:
     (const signin::PrimaryAccountChangeEvent&)event {
   if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
       signin::PrimaryAccountChangeEvent::Type::kCleared) {

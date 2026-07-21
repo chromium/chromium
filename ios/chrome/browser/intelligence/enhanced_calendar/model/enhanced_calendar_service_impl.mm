@@ -210,7 +210,7 @@ void EnhancedCalendarServiceImpl::RecordMetrics(
       EnhancedCalendarResponseStatus::kGenericFailure);
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - IdentityManagerObserving
 
 void EnhancedCalendarServiceImpl::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {

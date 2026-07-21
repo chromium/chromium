@@ -49,7 +49,7 @@ const CGFloat kSymbolSize = 20;
 
 @interface SafeBrowsingStandardProtectionMediator () <
     BooleanObserver,
-    IdentityManagerObserverBridgeDelegate> {
+    IdentityManagerObserving> {
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
 }
@@ -391,10 +391,10 @@ const CGFloat kSymbolSize = 20;
   [self updateSafeBrowsingStandardProtectionModel];
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - IdentityManagerObserving
 
 // Used to update model when signing in/out is completed.
-- (void)onPrimaryAccountChanged:
+- (void)primaryAccountDidChange:
     (const signin::PrimaryAccountChangeEvent&)event {
   [self updateSafeBrowsingStandardProtectionModel];
 }

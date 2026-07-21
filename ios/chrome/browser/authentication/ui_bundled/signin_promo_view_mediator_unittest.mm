@@ -573,12 +573,12 @@ TEST_F(SigninPromoViewMediatorTest,
   // Starts sign-in with an identity.
   [mediator_
       signinPromoViewDidTapPrimaryButtonWithDefaultAccount:signin_promo_view_];
-  EXPECT_TRUE([mediator_
-      conformsToProtocol:@protocol(IdentityManagerObserverBridgeDelegate)]);
-  id<IdentityManagerObserverBridgeDelegate> identityManagerObserver =
-      (id<IdentityManagerObserverBridgeDelegate>)mediator_;
+  EXPECT_TRUE(
+      [mediator_ conformsToProtocol:@protocol(IdentityManagerObserving)]);
+  id<IdentityManagerObserving> identityManagerObserver =
+      (id<IdentityManagerObserving>)mediator_;
   // Simulates an identity update.
-  [identityManagerObserver onExtendedAccountInfoUpdated:AccountInfo()];
+  [identityManagerObserver extendedAccountInfoDidUpdate:AccountInfo()];
   // Spins the run loop to wait for the profile image update.
   fake_system_identity_manager()->WaitForServiceCallbacksToComplete();
   // Finishs the sign-in.

@@ -101,7 +101,7 @@ inline LayoutStateAssistantPassKey PassKey() {
 
 @interface AppBarMediator () <GeminiBrowserAgentObserving,
                               GeminiServiceObserving,
-                              IdentityManagerObserverBridgeDelegate,
+                              IdentityManagerObserving,
                               IncognitoStateObserver,
                               LensOverlayStateNotifierObserver,
                               PrefObserverDelegate,
@@ -1127,14 +1127,14 @@ inline LayoutStateAssistantPassKey PassKey() {
   }
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - IdentityManagerObserving
 
-- (void)onPrimaryAccountChanged:
+- (void)primaryAccountDidChange:
     (const signin::PrimaryAccountChangeEvent&)event {
   [self updateAssistantButton];
 }
 
-- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
+- (void)extendedAccountInfoDidUpdate:(const AccountInfo&)info {
   [self updateAssistantButton];
 }
 

@@ -94,7 +94,7 @@ NSString* const kGooglePhotosRecentlyAddedURLString =
 NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
 
 @interface SaveToPhotosMediator () <AuthenticationServiceObserving,
-                                    IdentityManagerObserverBridgeDelegate>
+                                    IdentityManagerObserving>
 
 // Identity used to perform an upload. Should be set when the user selects an
 // identity, right before starting to upload. If the upload fails, should be
@@ -615,9 +615,9 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
   [self.delegate hideSaveToPhotos];
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - IdentityManagerObserving
 
-- (void)onPrimaryAccountChanged:
+- (void)primaryAccountDidChange:
     (const signin::PrimaryAccountChangeEvent&)event {
   if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
       signin::PrimaryAccountChangeEvent::Type::kCleared) {

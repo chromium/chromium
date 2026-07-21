@@ -63,7 +63,7 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
 
 }  // namespace
 
-@interface BulkUploadMediator () <IdentityManagerObserverBridgeDelegate>
+@interface BulkUploadMediator () <IdentityManagerObserving>
 @end
 
 @implementation BulkUploadMediator {
@@ -262,9 +262,9 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
                                }];
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - IdentityManagerObserving
 
-- (void)onPrimaryAccountChanged:
+- (void)primaryAccountDidChange:
     (const signin::PrimaryAccountChangeEvent&)event {
   if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
       signin::PrimaryAccountChangeEvent::Type::kNone) {

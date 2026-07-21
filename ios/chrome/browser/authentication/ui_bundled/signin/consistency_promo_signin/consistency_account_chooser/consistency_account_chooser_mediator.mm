@@ -18,8 +18,7 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 
-@interface ConsistencyAccountChooserMediator () <
-    IdentityManagerObserverBridgeDelegate> {
+@interface ConsistencyAccountChooserMediator () <IdentityManagerObserving> {
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
   raw_ptr<signin::IdentityManager> _identityManager;
   std::unique_ptr<signin::IdentityManagerObserverBridge>
@@ -156,12 +155,12 @@
 
 #pragma mark -  IdentityManagerObserver
 
-- (void)onAccountsOnDeviceChanged {
+- (void)accountsOnDeviceDidChange {
   [self loadIdentityItemConfigurators];
   [self.consumer reloadAllIdentities];
 }
 
-- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
+- (void)extendedAccountInfoDidUpdate:(const AccountInfo&)info {
   id<SystemIdentity> identity =
       _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
   CHECK(identity, base::NotFatalUntil::M147);

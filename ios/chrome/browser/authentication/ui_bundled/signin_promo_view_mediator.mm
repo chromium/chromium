@@ -635,7 +635,7 @@ id<SystemIdentity> GetDisplayedIdentity(
 
 }  // namespace
 
-@interface SigninPromoViewMediator () <IdentityManagerObserverBridgeDelegate,
+@interface SigninPromoViewMediator () <IdentityManagerObserving,
                                        SyncObserverModelBridge>
 
 // Redefined to be readwrite. See documentation in the header file.
@@ -834,7 +834,7 @@ id<SystemIdentity> GetDisplayedIdentity(
       // by the mediator. We should not have no identity. This can be reproduced
       // with EGtests with bots. The identity notification might not have
       // received yet. Let's update the promo identity.
-      [self onAccountsOnDeviceChanged];
+      [self accountsOnDeviceDidChange];
     }
     CHECK(self.displayedIdentity, base::NotFatalUntil::M151)
         << base::SysNSStringToUTF8([self description]);
@@ -1169,7 +1169,7 @@ id<SystemIdentity> GetDisplayedIdentity(
 
 #pragma mark -  IdentityManagerObserver
 
-- (void)onAccountsOnDeviceChanged {
+- (void)accountsOnDeviceDidChange {
   id<SystemIdentity> currentIdentity = self.displayedIdentity;
   id<SystemIdentity> displayedIdentity = GetDisplayedIdentity(
       _authService, _identityManager, _accountManagerService);
@@ -1181,7 +1181,7 @@ id<SystemIdentity> GetDisplayedIdentity(
   }
 }
 
-- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
+- (void)extendedAccountInfoDidUpdate:(const AccountInfo&)info {
   [self sendConsumerNotificationWithIdentityChanged:NO];
 }
 

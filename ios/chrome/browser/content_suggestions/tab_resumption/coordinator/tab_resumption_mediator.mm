@@ -245,7 +245,7 @@ class TabResumptionMediatorProxy {
 };
 
 @interface TabResumptionMediator () <BooleanObserver,
-                                     IdentityManagerObserverBridgeDelegate,
+                                     IdentityManagerObserving,
                                      MagicStackModuleDelegate,
                                      StartSurfaceRecentTabObserving,
                                      SyncedSessionsObserver,
@@ -535,9 +535,9 @@ class TabResumptionMediatorProxy {
   }
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - IdentityManagerObserving
 
-- (void)onPrimaryAccountChanged:
+- (void)primaryAccountDidChange:
     (const signin::PrimaryAccountChangeEvent&)event {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {

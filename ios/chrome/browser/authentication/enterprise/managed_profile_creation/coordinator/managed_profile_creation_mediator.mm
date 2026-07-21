@@ -15,8 +15,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 
-@interface ManagedProfileCreationMediator () <
-    IdentityManagerObserverBridgeDelegate> {
+@interface ManagedProfileCreationMediator () <IdentityManagerObserving> {
   // How to present the view.
   signin::ManagedAccountSigninMode _mode;
   GaiaId _gaiaID;
@@ -101,7 +100,7 @@
 
 #pragma mark - BrowsingDataMigrationViewControllerMutator
 
-- (void)onAccountsOnDeviceChanged {
+- (void)accountsOnDeviceDidChange {
   id<SystemIdentity> identity =
       _accountManagerService->GetIdentityOnDeviceWithGaiaID(GaiaId(_gaiaID));
   if (!identity) {
@@ -109,7 +108,7 @@
   }
 }
 
-- (void)onPrimaryAccountChanged:
+- (void)primaryAccountDidChange:
     (const signin::PrimaryAccountChangeEvent&)event {
   if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
       signin::PrimaryAccountChangeEvent::Type::kSet) {

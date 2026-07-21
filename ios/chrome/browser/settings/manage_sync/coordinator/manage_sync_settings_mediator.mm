@@ -86,7 +86,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 }  // namespace
 
 @interface ManageSyncSettingsMediator () <AuthenticationServiceObserving,
-                                          IdentityManagerObserverBridgeDelegate>
+                                          IdentityManagerObserving>
 
 // Model item for each data types.
 @property(nonatomic, strong) NSArray<TableViewItem*>* syncSwitchItems;
@@ -1040,9 +1040,9 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   [self fetchLocalDataDescriptionsForBatchUploadWithFirstLoad:NO];
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - IdentityManagerObserving
 
-- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
+- (void)extendedAccountInfoDidUpdate:(const AccountInfo&)info {
   id<SystemIdentity> identity =
       _chromeAccountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
   if ([_signedInIdentity isEqual:identity]) {
@@ -1057,7 +1057,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   }
 }
 
-- (void)onEndBatchOfPrimaryAccountChanges {
+- (void)batchOfPrimaryAccountChangesDidEnd {
   if (!_authenticationService->HasPrimaryIdentity()) {
     return;
   }

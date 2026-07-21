@@ -89,7 +89,8 @@
 // to the view.
 @interface ReadingListCoordinator () <AccountSettingsPresenter,
                                       AuthenticationServiceObserving,
-                                      IdentityManagerObserverBridgeDelegate,
+                                      IdentityManagerObserving,
+                                      ReadingListMenuProvider,
                                       ReadingListListItemFactoryDelegate,
                                       ReadingListListViewControllerAudience,
                                       ReadingListListViewControllerDelegate,
@@ -587,10 +588,10 @@
 
 // TODO(crbug.com/40898970): This delegate's implementation will be moved to
 // SigninPromoViewMediator.
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - IdentityManagerObserving
 
 // Called when a user changes the syncing state.
-- (void)onPrimaryAccountChanged:
+- (void)primaryAccountDidChange:
     (const signin::PrimaryAccountChangeEvent&)event {
   switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet:

@@ -403,18 +403,18 @@ void LogSnackbarInteraction(SyncedSetUpState state,
   return NO;
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - IdentityManagerObserving
 
 // Called when the primary account changes (e.g., sign-in, sign-out, account
 // switch).
-- (void)onPrimaryAccountChanged:
+- (void)primaryAccountDidChange:
     (const signin::PrimaryAccountChangeEvent&)event {
   [self updatePrimaryIdentity];
 }
 
 // Called when the extended account info (i.e., name and avatar) is
 // updated/fetched.
-- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
+- (void)extendedAccountInfoDidUpdate:(const AccountInfo&)info {
   if (!_primaryIdentity || _primaryIdentity.gaiaId != info.gaia) {
     return;
   }
@@ -504,8 +504,7 @@ void LogSnackbarInteraction(SyncedSetUpState state,
   // Get the avatar. `GetIdentityAvatarWithIdentityOnDevice()` handles
   // asynchronous loading. It returns a cached image or a placeholder
   // immediately and initiates a fetch in the background if necessary. When the
-  // fetch completes,
-  // `-onExtendedAccountInfoUpdated:` will be called.
+  // fetch completes, `-extendedAccountInfoDidUpdate:` will be called.
   UIImage* avatar =
       GetApplicationContext()->GetIdentityAvatarProvider()->GetIdentityAvatar(
           _primaryIdentity, IdentityAvatarSize::Large);

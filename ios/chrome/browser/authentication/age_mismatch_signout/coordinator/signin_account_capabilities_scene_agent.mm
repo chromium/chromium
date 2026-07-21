@@ -53,7 +53,7 @@
 @interface SigninAccountCapabilitiesSceneAgent () <
     AgeMismatchSignoutCoordinatorDelegate,
     ExternalPrivacyContextUIProvider,
-    IdentityManagerObserverBridgeDelegate,
+    IdentityManagerObserving,
     ProfileStateObserver,
     SceneUIBlockerStateObserver,
     UIBlockerManagerObserver>
@@ -181,9 +181,9 @@ void SignOutDoneForSceneState(id<SystemIdentity> identity,
   [self notifyProviderReadyIfUIAvailable];
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - IdentityManagerObserving
 
-- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
+- (void)extendedAccountInfoDidUpdate:(const AccountInfo&)info {
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(
           self.sceneState.profileState.profile);
@@ -202,7 +202,7 @@ void SignOutDoneForSceneState(id<SystemIdentity> identity,
 // Needed for profile switches (e.g. from managed accounts) where capabilities
 // are unknown, ensuring immediate signout if the capability is already
 // available.
-- (void)onPrimaryAccountChanged:
+- (void)primaryAccountDidChange:
     (const signin::PrimaryAccountChangeEvent&)event {
   switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet:

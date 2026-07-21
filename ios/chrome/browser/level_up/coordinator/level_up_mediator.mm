@@ -29,8 +29,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-@interface LevelUpMediator () <IdentityManagerObserverBridgeDelegate,
-                               PrefObserverDelegate>
+@interface LevelUpMediator () <IdentityManagerObserving, PrefObserverDelegate>
 @end
 
 @implementation LevelUpMediator {
@@ -281,9 +280,9 @@
   [self.profileConsumer setUserFullName:userFullName userAvatar:userAvatar];
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - IdentityManagerObserving
 
-- (void)onPrimaryAccountChanged:
+- (void)primaryAccountDidChange:
     (const signin::PrimaryAccountChangeEvent&)event {
   if (_identityManager->IsBatchOfPrimaryAccountChangesInProgress()) {
     return;
@@ -298,7 +297,7 @@
   }
 }
 
-- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
+- (void)extendedAccountInfoDidUpdate:(const AccountInfo&)info {
   if (_identityManager->IsBatchOfPrimaryAccountChangesInProgress()) {
     return;
   }

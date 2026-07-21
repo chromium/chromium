@@ -45,7 +45,7 @@
 
 @interface AccountMenuMediator () <AuthenticationFlowDelegate,
                                    AuthenticationServiceObserving,
-                                   IdentityManagerObserverBridgeDelegate,
+                                   IdentityManagerObserving,
                                    SyncObserverModelBridge>
 
 // Redefine as readwrite.
@@ -222,9 +222,9 @@
   return _error;
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - IdentityManagerObserving
 
-- (void)onEndBatchOfPrimaryAccountChanges {
+- (void)batchOfPrimaryAccountChangesDidEnd {
   if (_blockUpdates) {
     return;
   }
@@ -247,11 +247,11 @@
                  userTappedClose:NO];
 }
 
-- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
+- (void)extendedAccountInfoDidUpdate:(const AccountInfo&)info {
   [self updateIdentitiesIfAllowed];
 }
 
-- (void)onAccountsOnDeviceChanged {
+- (void)accountsOnDeviceDidChange {
   [self updateIdentitiesIfAllowed];
 }
 

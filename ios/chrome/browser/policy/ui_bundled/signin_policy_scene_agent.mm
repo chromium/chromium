@@ -37,7 +37,7 @@
 
 @interface SigninPolicySceneAgent () <AuthenticationServiceObserving,
                                       FullscreenSigninCoordinatorDelegate,
-                                      IdentityManagerObserverBridgeDelegate,
+                                      IdentityManagerObserving,
                                       ProfileStateObserver,
                                       SceneUIBlockerStateObserver,
                                       UIBlockerManagerObserver> {
@@ -157,9 +157,9 @@
   [self handleSigninPromptsIfUIAvailable];
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - IdentityManagerObserving
 
-- (void)onPrimaryAccountChanged:
+- (void)primaryAccountDidChange:
     (const signin::PrimaryAccountChangeEvent&)event {
   // Consider showing the sign-in prompts when there is change in the
   // primary account.

@@ -20,7 +20,7 @@ using signin_metrics::PromoAction;
 
 @interface InstantSigninMediator () <AuthenticationFlowDelegate,
                                      AuthenticationServiceObserving,
-                                     IdentityManagerObserverBridgeDelegate>
+                                     IdentityManagerObserving>
 @end
 
 @implementation InstantSigninMediator {
@@ -121,9 +121,9 @@ using signin_metrics::PromoAction;
   }
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - IdentityManagerObserving
 
-- (void)onPrimaryAccountChanged:
+- (void)primaryAccountDidChange:
     (const signin::PrimaryAccountChangeEvent&)event {
   if (_authenticationFlow) {
     // Authentication is started. The instant signin will be stopped by the

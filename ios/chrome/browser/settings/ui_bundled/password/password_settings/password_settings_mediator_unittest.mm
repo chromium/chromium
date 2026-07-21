@@ -269,12 +269,11 @@ TEST_F(PasswordSettingsMediatorTest,
   CreateMediator();
   ASSERT_TRUE(
       [mediator_ conformsToProtocol:@protocol(SyncObserverModelBridge)]);
-  PasswordSettingsMediator<IdentityManagerObserverBridgeDelegate>*
-      syncObserver = static_cast<
-          PasswordSettingsMediator<IdentityManagerObserverBridgeDelegate>*>(
+  PasswordSettingsMediator<IdentityManagerObserving>* syncObserver =
+      static_cast<PasswordSettingsMediator<IdentityManagerObserving>*>(
           mediator_);
   const signin::PrimaryAccountChangeEvent event;
-  [syncObserver onPrimaryAccountChanged:event];
+  [syncObserver primaryAccountDidChange:event];
   [[consumer_ verify] setOnDeviceEncryptionState:
                           PasswordSettingsOnDeviceEncryptionStateNotShown];
 }

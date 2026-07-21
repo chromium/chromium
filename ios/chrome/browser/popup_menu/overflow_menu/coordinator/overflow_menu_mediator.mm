@@ -246,7 +246,7 @@ void GetPresetNTPBackgroundPreview(
 @interface OverflowMenuMediator () <AuthenticationServiceObserving,
                                     BookmarkModelBridgeObserver,
                                     CRWWebStateObserver,
-                                    IdentityManagerObserverBridgeDelegate,
+                                    IdentityManagerObserving,
                                     IOSLanguageDetectionTabHelperObserving,
                                     OverflowMenuDestinationProvider,
                                     OverlayPresenterObserving,
@@ -3196,9 +3196,9 @@ void GetPresetNTPBackgroundPreview(
                                      actionSubtitle:subtitle];
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - IdentityManagerObserving
 
-- (void)onPrimaryAccountChanged:
+- (void)primaryAccountDidChange:
     (const signin::PrimaryAccountChangeEvent&)event {
   switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kNone:
@@ -3210,7 +3210,7 @@ void GetPresetNTPBackgroundPreview(
   }
 }
 
-- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
+- (void)extendedAccountInfoDidUpdate:(const AccountInfo&)info {
   [self updateModel];
 }
 

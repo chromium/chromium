@@ -63,7 +63,7 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
 
 @interface DriveFilePickerMediator () <AuthenticationServiceObserving,
                                        ChooseFileControllerObserving,
-                                       IdentityManagerObserverBridgeDelegate>
+                                       IdentityManagerObserving>
 @end
 
 @implementation DriveFilePickerMediator {
@@ -1289,9 +1289,9 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
   }
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - IdentityManagerObserving
 
-- (void)onPrimaryAccountChanged:
+- (void)primaryAccountDidChange:
     (const signin::PrimaryAccountChangeEvent&)event {
   switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kCleared:

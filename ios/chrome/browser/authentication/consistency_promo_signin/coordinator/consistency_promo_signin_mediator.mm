@@ -38,10 +38,9 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
 
 }  // namespace
 
-@interface ConsistencyPromoSigninMediator () <
-    AuthenticationFlowDelegate,
-    AuthenticationServiceObserving,
-    IdentityManagerObserverBridgeDelegate> {
+@interface ConsistencyPromoSigninMediator () <AuthenticationFlowDelegate,
+                                              AuthenticationServiceObserving,
+                                              IdentityManagerObserving> {
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
   raw_ptr<AuthenticationService> _authenticationService;
   raw_ptr<signin::IdentityManager> _identityManager;
@@ -368,9 +367,9 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
       });
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - IdentityManagerObserving
 
-- (void)onPrimaryAccountChanged:
+- (void)primaryAccountDidChange:
     (const signin::PrimaryAccountChangeEvent&)event {
   if (_authenticationFlow) {
     // If the authentication is in progress, its callback will deal with

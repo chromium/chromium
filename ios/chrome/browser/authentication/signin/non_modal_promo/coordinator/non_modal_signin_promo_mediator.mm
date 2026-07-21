@@ -30,9 +30,8 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
 
 }  // namespace signin
 
-@interface NonModalSignInPromoMediator () <
-    AuthenticationServiceObserving,
-    IdentityManagerObserverBridgeDelegate>
+@interface NonModalSignInPromoMediator () <AuthenticationServiceObserving,
+                                           IdentityManagerObserving>
 @end
 
 @implementation NonModalSignInPromoMediator {
@@ -194,9 +193,9 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
   [self.delegate nonModalSignInPromoMediatorShouldDismiss:self];
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - IdentityManagerObserving
 
-- (void)onPrimaryAccountChanged:
+- (void)primaryAccountDidChange:
     (const signin::PrimaryAccountChangeEvent&)event {
   [self maybeCancelPromo];
 }

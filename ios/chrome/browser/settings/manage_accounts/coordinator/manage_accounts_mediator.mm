@@ -38,7 +38,7 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 @interface ManageAccountsMediator () <AuthenticationServiceObserving,
-                                      IdentityManagerObserverBridgeDelegate>
+                                      IdentityManagerObserving>
 @end
 
 @implementation ManageAccountsMediator {
@@ -136,9 +136,9 @@
   [self.delegate signOutWithItemView:itemView];
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - IdentityManagerObserving
 
-- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
+- (void)extendedAccountInfoDidUpdate:(const AccountInfo&)info {
   id<SystemIdentity> identity =
       _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
   if (!identity) {
@@ -150,7 +150,7 @@
   [self handleIdentityUpdated:identity];
 }
 
-- (void)onAccountsOnDeviceChanged {
+- (void)accountsOnDeviceDidChange {
   if (!_authService->HasPrimaryIdentity()) {
     // This accounts table view will be popped or dismissed when the user
     // is signed out. Avoid reloading it in that case as that would lead to an
@@ -164,7 +164,7 @@
   [self.consumer popView];
 }
 
-- (void)onEndBatchOfPrimaryAccountChanges {
+- (void)batchOfPrimaryAccountChangesDidEnd {
   if (!_authService->HasPrimaryIdentity()) {
     [self.delegate manageAccountsMediatorWantsToBeStopped:self];
   }

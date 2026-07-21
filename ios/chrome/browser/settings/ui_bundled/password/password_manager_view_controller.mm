@@ -192,7 +192,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 }  // namespace
 
 @interface PasswordManagerViewController () <
-    IdentityManagerObserverBridgeDelegate,
+    IdentityManagerObserving,
     PopoverLabelViewControllerDelegate,
     TableViewIllustratedEmptyViewDelegate>
 
@@ -2394,9 +2394,9 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   }
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - IdentityManagerObserving
 
-- (void)onPrimaryAccountChanged:
+- (void)primaryAccountDidChange:
     (const signin::PrimaryAccountChangeEvent&)event {
   [self reloadData];
 }

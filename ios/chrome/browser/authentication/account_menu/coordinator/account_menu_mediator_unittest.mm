@@ -262,7 +262,7 @@ TEST_F(AccountMenuMediatorTest, TestRemoveSecondaryIdentity) {
   }
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - IdentityManagerObserving
 
 // Checks that removing the primary identity lead to updating the
 // consumer.

@@ -17,9 +17,8 @@
 
 using quick_delete_util::DefaultSearchEngineState;
 
-@interface QuickDeleteOtherDataMediator () <
-    IdentityManagerObserverBridgeDelegate,
-    SearchEngineObserving>
+@interface QuickDeleteOtherDataMediator () <IdentityManagerObserving,
+                                            SearchEngineObserving>
 @end
 
 @implementation QuickDeleteOtherDataMediator {
@@ -80,9 +79,9 @@ using quick_delete_util::DefaultSearchEngineState;
   _templateURLService = nullptr;
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - IdentityManagerObserving
 
-- (void)onPrimaryAccountChanged:
+- (void)primaryAccountDidChange:
     (const signin::PrimaryAccountChangeEvent&)event {
   switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet:

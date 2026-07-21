@@ -25,7 +25,7 @@
 
 @interface AccountPickerConfirmationScreenMediator () <
     AuthenticationServiceObserving,
-    IdentityManagerObserverBridgeDelegate> {
+    IdentityManagerObserving> {
 }
 
 @end
@@ -176,11 +176,11 @@
 
 #pragma mark -  IdentityManagerObserver
 
-- (void)onAccountsOnDeviceChanged {
+- (void)accountsOnDeviceDidChange {
   [self selectDefaultIdentity];
 }
 
-- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
+- (void)extendedAccountInfoDidUpdate:(const AccountInfo&)info {
   id<SystemIdentity> identity =
       _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
   [self handleIdentityUpdated:identity];

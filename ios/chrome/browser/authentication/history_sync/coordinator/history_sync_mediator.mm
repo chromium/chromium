@@ -25,7 +25,7 @@
 #import "ui/base/l10n/l10n_util.h"
 
 // Mediator that handles the sync operations.
-@interface HistorySyncMediator () <IdentityManagerObserverBridgeDelegate>
+@interface HistorySyncMediator () <IdentityManagerObserving>
 @end
 
 @implementation HistorySyncMediator {
@@ -87,7 +87,7 @@
       _identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
   // It is possible to have no identity from AuthenticationService here
   // (see crbug.com/366198713).
-  // The mediator listens for IdentityManagerObserverBridgeDelegate to know
+  // The mediator listens for IdentityManagerObserving to know
   // if the user is signed out. If it happens, the dialog is supposed to be
   // dismissed automatically.
   // To understand if there is a difference between AuthenticationService and
@@ -130,9 +130,9 @@
           [_capabilitiesFetcher canShowUnrestrictedOptInsCapability]];
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - IdentityManagerObserving
 
-- (void)onPrimaryAccountChanged:
+- (void)primaryAccountDidChange:
     (const signin::PrimaryAccountChangeEvent&)event {
   if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
       signin::PrimaryAccountChangeEvent::Type::kCleared) {
@@ -141,7 +141,7 @@
   }
 }
 
-- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
+- (void)extendedAccountInfoDidUpdate:(const AccountInfo&)info {
   id<SystemIdentity> identity =
       _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
   if ([identity isEqual:_authenticationService->GetPrimaryIdentity()]) {

@@ -107,7 +107,7 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
 
 }  // namespace
 
-@interface QuickDeleteMediator () <IdentityManagerObserverBridgeDelegate,
+@interface QuickDeleteMediator () <IdentityManagerObserving,
                                    PrefObserverDelegate,
                                    SearchEngineObserving>
 
@@ -535,9 +535,9 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
   _prefs->SetBoolean(browsing_data::prefs::kDeleteFormData, selected);
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - IdentityManagerObserving
 
-- (void)onPrimaryAccountChanged:
+- (void)primaryAccountDidChange:
     (const signin::PrimaryAccountChangeEvent&)event {
   switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet:

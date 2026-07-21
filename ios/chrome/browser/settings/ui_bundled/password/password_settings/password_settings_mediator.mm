@@ -58,7 +58,7 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
 
 }  // namespace
 
-@interface PasswordSettingsMediator () <IdentityManagerObserverBridgeDelegate,
+@interface PasswordSettingsMediator () <IdentityManagerObserving,
                                         PasskeyModelObserverDelegate,
                                         PasswordAutoFillStatusObserver,
                                         PasswordExporterDelegate,
@@ -430,9 +430,9 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
   }
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - IdentityManagerObserving
 
-- (void)onPrimaryAccountChanged:
+- (void)primaryAccountDidChange:
     (const signin::PrimaryAccountChangeEvent&)event {
   [self.consumer setOnDeviceEncryptionState:[self onDeviceEncryptionState]];
 }

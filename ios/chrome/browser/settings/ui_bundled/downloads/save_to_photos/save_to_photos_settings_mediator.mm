@@ -23,9 +23,8 @@
 #import "ios/chrome/browser/signin/model/avatar/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 
-@interface SaveToPhotosSettingsMediator () <
-    IdentityManagerObserverBridgeDelegate,
-    PrefObserverDelegate>
+@interface SaveToPhotosSettingsMediator () <IdentityManagerObserving,
+                                            PrefObserverDelegate>
 
 @end
 
@@ -128,9 +127,9 @@
   [self updateConsumers];
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - IdentityManagerObserving
 
-- (void)onPrimaryAccountChanged:
+- (void)primaryAccountDidChange:
     (const signin::PrimaryAccountChangeEvent&)event {
   [self displayOrHideSaveToPhotosSettingsUI];
   if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
@@ -140,11 +139,11 @@
   [self updateConsumers];
 }
 
-- (void)onAccountsOnDeviceChanged {
+- (void)accountsOnDeviceDidChange {
   [self updateConsumers];
 }
 
-- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
+- (void)extendedAccountInfoDidUpdate:(const AccountInfo&)info {
   [self updateConsumers];
 }
 

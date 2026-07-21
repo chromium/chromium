@@ -220,7 +220,7 @@ struct EnhancedSafeBrowsingActivePromoData
     EnhancedSafeBrowsingInlinePromoDelegate,
     GeminiSettingsCoordinatorDelegate,
     GoogleServicesSettingsCoordinatorDelegate,
-    IdentityManagerObserverBridgeDelegate,
+    IdentityManagerObserving,
     ManageSyncSettingsCoordinatorDelegate,
     NotificationsCoordinatorDelegate,
     NotificationsSettingsObserverDelegate,
@@ -2652,7 +2652,7 @@ struct EnhancedSafeBrowsingActivePromoData
   _privacyCoordinator = nil;
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - IdentityManagerObserving
 
 // Notifies this controller that the sign in state has changed.
 - (void)signinStateDidChange {
@@ -2669,12 +2669,12 @@ struct EnhancedSafeBrowsingActivePromoData
   [self reloadData];
 }
 
-- (void)onPrimaryAccountChanged:
+- (void)primaryAccountDidChange:
     (const signin::PrimaryAccountChangeEvent&)event {
   [self signinStateDidChange];
 }
 
-- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
+- (void)extendedAccountInfoDidUpdate:(const AccountInfo&)info {
   id<SystemIdentity> identity =
       _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
   if ([_identity isEqual:identity]) {

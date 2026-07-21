@@ -14,17 +14,16 @@
 #import "services/network/test/test_url_loader_factory.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
-@interface ObserverBridgeDelegateFake
-    : NSObject <IdentityManagerObserverBridgeDelegate>
+@interface IdentityManagerObservingFake : NSObject <IdentityManagerObserving>
 
-@property(nonatomic, assign) NSInteger onPrimaryAccountChangedCount;
-@property(nonatomic, assign) NSInteger onRefreshTokenUpdatedForAccountCount;
-@property(nonatomic, assign) NSInteger onRefreshTokenRemovedForAccountCount;
-@property(nonatomic, assign) NSInteger onRefreshTokensLoadedCount;
-@property(nonatomic, assign) NSInteger onAccountsInCookieUpdatedCount;
+@property(nonatomic, assign) NSInteger primaryAccountDidChangeCount;
+@property(nonatomic, assign) NSInteger refreshTokenDidUpdateForAccountCount;
+@property(nonatomic, assign) NSInteger refreshTokenWasRemovedForAccountCount;
+@property(nonatomic, assign) NSInteger refreshTokensWasLoadedCount;
+@property(nonatomic, assign) NSInteger accountsInCookieWasUpdatedCount;
 @property(nonatomic, assign)
-    NSInteger onEndBatchOfRefreshTokenStateChangesCount;
-@property(nonatomic, assign) NSInteger onIdentityManagerShutdownCount;
+    NSInteger batchOfRefreshTokenStateChangesDidEndCount;
+@property(nonatomic, assign) NSInteger identityManagerDidShutdownCount;
 @property(nonatomic, strong) ProceduralBlock onIdentityManagerShutdownBlock;
 
 @property(nonatomic, assign) signin::PrimaryAccountChangeEvent receivedEvent;
@@ -36,42 +35,42 @@
 
 @end
 
-@implementation ObserverBridgeDelegateFake
+@implementation IdentityManagerObservingFake
 
-- (void)onPrimaryAccountChanged:
+- (void)primaryAccountDidChange:
     (const signin::PrimaryAccountChangeEvent&)event {
-  ++self.onPrimaryAccountChangedCount;
+  ++self.primaryAccountDidChangeCount;
   self.receivedEvent = event;
 }
 
-- (void)onRefreshTokenUpdatedForAccount:(const CoreAccountInfo&)accountInfo {
-  ++self.onRefreshTokenUpdatedForAccountCount;
+- (void)refreshTokenDidUpdateForAccount:(const CoreAccountInfo&)accountInfo {
+  ++self.refreshTokenDidUpdateForAccountCount;
   self.receivedPrimaryAccountInfo = accountInfo;
 }
 
-- (void)onRefreshTokenRemovedForAccount:(const CoreAccountId&)accountId {
-  ++self.onRefreshTokenRemovedForAccountCount;
+- (void)refreshTokenWasRemovedForAccount:(const CoreAccountId&)accountId {
+  ++self.refreshTokenWasRemovedForAccountCount;
   self.receivedAccountId = accountId;
 }
 
-- (void)onRefreshTokensLoaded {
-  ++self.onRefreshTokensLoadedCount;
+- (void)refreshTokensWasLoaded {
+  ++self.refreshTokensWasLoadedCount;
 }
 
-- (void)onAccountsInCookieUpdated:
+- (void)accountsInCookieWasUpdated:
             (const signin::AccountsInCookieJarInfo&)accountsInCookieJarInfo
-                            error:(const GoogleServiceAuthError&)error {
-  ++self.onAccountsInCookieUpdatedCount;
+                             error:(const GoogleServiceAuthError&)error {
+  ++self.accountsInCookieWasUpdatedCount;
   self.receivedccountsInCookieJarInfo = accountsInCookieJarInfo;
   self.receivedError = error;
 }
 
-- (void)onEndBatchOfRefreshTokenStateChanges {
-  ++self.onEndBatchOfRefreshTokenStateChangesCount;
+- (void)batchOfRefreshTokenStateChangesDidEnd {
+  ++self.batchOfRefreshTokenStateChangesDidEndCount;
 }
 
-- (void)onIdentityManagerShutdown:(signin::IdentityManager*)identityManager {
-  ++self.onIdentityManagerShutdownCount;
+- (void)identityManagerDidShutdown:(signin::IdentityManager*)identityManager {
+  ++self.identityManagerDidShutdownCount;
   if (self.onIdentityManagerShutdownBlock) {
     self.onIdentityManagerShutdownBlock();
   }
@@ -86,11 +85,11 @@ class IdentityManagerObserverBridgeTest : public testing::Test {
   IdentityManagerObserverBridgeTest()
       : identity_test_env_(std::make_unique<signin::IdentityTestEnvironment>(
             &test_url_loader_factory_)) {
-    observer_bridge_delegate_ = [[ObserverBridgeDelegateFake alloc] init];
+    observer_bridge_target_ = [[IdentityManagerObservingFake alloc] init];
     signin::IdentityManager* identity_manager =
         identity_test_env_->identity_manager();
     observer_bridge_ = std::make_unique<signin::IdentityManagerObserverBridge>(
-        identity_manager, observer_bridge_delegate_);
+        identity_manager, observer_bridge_target_);
     account_info_.gaia = GaiaId("joegaia");
     account_info_.account_id = CoreAccountId::FromGaiaId(account_info_.gaia);
     account_info_.email = "joe@example.com";
@@ -100,16 +99,14 @@ class IdentityManagerObserverBridgeTest : public testing::Test {
   void TearDown() override {
     // Check no unexpected calls. None zero counter needs to be reset at the end
     // tests.
-    EXPECT_EQ(0, observer_bridge_delegate_.onPrimaryAccountChangedCount);
-    EXPECT_EQ(0,
-              observer_bridge_delegate_.onRefreshTokenUpdatedForAccountCount);
-    EXPECT_EQ(0,
-              observer_bridge_delegate_.onRefreshTokenRemovedForAccountCount);
-    EXPECT_EQ(0, observer_bridge_delegate_.onRefreshTokensLoadedCount);
-    EXPECT_EQ(0, observer_bridge_delegate_.onAccountsInCookieUpdatedCount);
+    EXPECT_EQ(0, observer_bridge_target_.primaryAccountDidChangeCount);
+    EXPECT_EQ(0, observer_bridge_target_.refreshTokenDidUpdateForAccountCount);
+    EXPECT_EQ(0, observer_bridge_target_.refreshTokenWasRemovedForAccountCount);
+    EXPECT_EQ(0, observer_bridge_target_.refreshTokensWasLoadedCount);
+    EXPECT_EQ(0, observer_bridge_target_.accountsInCookieWasUpdatedCount);
     EXPECT_EQ(
-        0, observer_bridge_delegate_.onEndBatchOfRefreshTokenStateChangesCount);
-    EXPECT_EQ(0, observer_bridge_delegate_.onIdentityManagerShutdownCount);
+        0, observer_bridge_target_.batchOfRefreshTokenStateChangesDidEndCount);
+    EXPECT_EQ(0, observer_bridge_target_.identityManagerDidShutdownCount);
   }
 
  public:
@@ -123,7 +120,7 @@ class IdentityManagerObserverBridgeTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
   std::unique_ptr<signin::IdentityManagerObserverBridge> observer_bridge_;
-  ObserverBridgeDelegateFake* observer_bridge_delegate_;
+  IdentityManagerObservingFake* observer_bridge_target_;
   CoreAccountInfo account_info_;
 };
 
@@ -136,13 +133,13 @@ TEST_F(IdentityManagerObserverBridgeTest, TestOnPrimaryAccountChanged) {
   PrimaryAccountChangeEvent event_details(
       previous_state, current_state, signin_metrics::AccessPoint::kStartPage);
   observer_bridge_.get()->OnPrimaryAccountChanged(event_details);
-  EXPECT_EQ(1, observer_bridge_delegate_.onPrimaryAccountChangedCount);
+  EXPECT_EQ(1, observer_bridge_target_.primaryAccountDidChangeCount);
   EXPECT_EQ(event_details.GetPreviousState(),
-            observer_bridge_delegate_.receivedEvent.GetPreviousState());
+            observer_bridge_target_.receivedEvent.GetPreviousState());
   EXPECT_EQ(event_details.GetCurrentState(),
-            observer_bridge_delegate_.receivedEvent.GetCurrentState());
+            observer_bridge_target_.receivedEvent.GetCurrentState());
   // Reset counter to pass the tear down.
-  observer_bridge_delegate_.onPrimaryAccountChangedCount = 0;
+  observer_bridge_target_.primaryAccountDidChangeCount = 0;
 }
 
 // Tests IdentityManagerObserverBridge::OnPrimaryAccountChanged(), with clear
@@ -154,40 +151,39 @@ TEST_F(IdentityManagerObserverBridgeTest, TestOnPrimaryAccountCleared) {
   PrimaryAccountChangeEvent event_details(
       previous_state, current_state, signin_metrics::ProfileSignout::kTest);
   observer_bridge_.get()->OnPrimaryAccountChanged(event_details);
-  EXPECT_EQ(1, observer_bridge_delegate_.onPrimaryAccountChangedCount);
+  EXPECT_EQ(1, observer_bridge_target_.primaryAccountDidChangeCount);
   EXPECT_EQ(event_details.GetPreviousState(),
-            observer_bridge_delegate_.receivedEvent.GetPreviousState());
+            observer_bridge_target_.receivedEvent.GetPreviousState());
   EXPECT_EQ(event_details.GetCurrentState(),
-            observer_bridge_delegate_.receivedEvent.GetCurrentState());
+            observer_bridge_target_.receivedEvent.GetCurrentState());
   // Reset counter to pass the tear down.
-  observer_bridge_delegate_.onPrimaryAccountChangedCount = 0;
+  observer_bridge_target_.primaryAccountDidChangeCount = 0;
 }
 
-// Tests IdentityManagerObserverBridge::OnRefreshTokenUpdatedForAccount()
-TEST_F(IdentityManagerObserverBridgeTest, TestOnRefreshTokenUpdatedForAccount) {
+// Tests IdentityManagerObserverBridge::refreshTokenDidUpdateForAccount()
+TEST_F(IdentityManagerObserverBridgeTest, TestrefreshTokenDidUpdateForAccount) {
   observer_bridge_.get()->OnRefreshTokenUpdatedForAccount(account_info_);
-  EXPECT_EQ(1, observer_bridge_delegate_.onRefreshTokenUpdatedForAccountCount);
-  EXPECT_EQ(account_info_,
-            observer_bridge_delegate_.receivedPrimaryAccountInfo);
+  EXPECT_EQ(1, observer_bridge_target_.refreshTokenDidUpdateForAccountCount);
+  EXPECT_EQ(account_info_, observer_bridge_target_.receivedPrimaryAccountInfo);
   // Reset counter to pass the tear down.
-  observer_bridge_delegate_.onRefreshTokenUpdatedForAccountCount = 0;
+  observer_bridge_target_.refreshTokenDidUpdateForAccountCount = 0;
 }
 
 // Tests IdentityManagerObserverBridge::OnRefreshTokenRemovedForAccount()
 TEST_F(IdentityManagerObserverBridgeTest, OnRefreshTokenRemovedForAccount) {
   CoreAccountId account_id;
   observer_bridge_.get()->OnRefreshTokenRemovedForAccount(account_id);
-  EXPECT_EQ(1, observer_bridge_delegate_.onRefreshTokenRemovedForAccountCount);
+  EXPECT_EQ(1, observer_bridge_target_.refreshTokenWasRemovedForAccountCount);
   // Reset counter to pass the tear down.
-  observer_bridge_delegate_.onRefreshTokenRemovedForAccountCount = 0;
+  observer_bridge_target_.refreshTokenWasRemovedForAccountCount = 0;
 }
 
 // Tests IdentityManagerObserverBridge::OnRefreshTokensLoaded()
-TEST_F(IdentityManagerObserverBridgeTest, OnRefreshTokensLoaded) {
+TEST_F(IdentityManagerObserverBridgeTest, refreshTokensWasLoaded) {
   observer_bridge_.get()->OnRefreshTokensLoaded();
-  EXPECT_EQ(1, observer_bridge_delegate_.onRefreshTokensLoadedCount);
+  EXPECT_EQ(1, observer_bridge_target_.refreshTokensWasLoadedCount);
   // Reset counter to pass the tear down.
-  observer_bridge_delegate_.onRefreshTokensLoadedCount = 0;
+  observer_bridge_target_.refreshTokensWasLoadedCount = 0;
 }
 
 // Tests IdentityManagerObserverBridge::OnAccountsInCookieUpdated() with no
@@ -202,10 +198,10 @@ TEST_F(IdentityManagerObserverBridgeTest,
   GoogleServiceAuthError noError = GoogleServiceAuthError::AuthErrorNone();
   observer_bridge_.get()->OnAccountsInCookieUpdated(accounts_in_cookie_jar_info,
                                                     noError);
-  EXPECT_EQ(1, observer_bridge_delegate_.onAccountsInCookieUpdatedCount);
-  EXPECT_EQ(noError, observer_bridge_delegate_.receivedError);
+  EXPECT_EQ(1, observer_bridge_target_.accountsInCookieWasUpdatedCount);
+  EXPECT_EQ(noError, observer_bridge_target_.receivedError);
   // Reset counter to pass the tear down.
-  observer_bridge_delegate_.onAccountsInCookieUpdatedCount = 0;
+  observer_bridge_target_.accountsInCookieWasUpdatedCount = 0;
 }
 
 // Tests IdentityManagerObserverBridge::OnAccountsInCookieUpdated() with error.
@@ -220,28 +216,28 @@ TEST_F(IdentityManagerObserverBridgeTest, OnAccountsInCookieUpdatedWithError) {
       GoogleServiceAuthError::State::CONNECTION_FAILED);
   observer_bridge_.get()->OnAccountsInCookieUpdated(accounts_in_cookie_jar_info,
                                                     error);
-  EXPECT_EQ(1, observer_bridge_delegate_.onAccountsInCookieUpdatedCount);
-  EXPECT_EQ(error, observer_bridge_delegate_.receivedError);
+  EXPECT_EQ(1, observer_bridge_target_.accountsInCookieWasUpdatedCount);
+  EXPECT_EQ(error, observer_bridge_target_.receivedError);
   // Reset counter to pass the tear down.
-  observer_bridge_delegate_.onAccountsInCookieUpdatedCount = 0;
+  observer_bridge_target_.accountsInCookieWasUpdatedCount = 0;
 }
 
 // Tests IdentityManagerObserverBridge::OnEndBatchOfRefreshTokenStateChanges().
 TEST_F(IdentityManagerObserverBridgeTest,
        OnEndBatchOfRefreshTokenStateChanges) {
   observer_bridge_.get()->OnEndBatchOfRefreshTokenStateChanges();
-  EXPECT_EQ(
-      1, observer_bridge_delegate_.onEndBatchOfRefreshTokenStateChangesCount);
+  EXPECT_EQ(1,
+            observer_bridge_target_.batchOfRefreshTokenStateChangesDidEndCount);
   // Reset counter to pass the tear down.
-  observer_bridge_delegate_.onEndBatchOfRefreshTokenStateChangesCount = 0;
+  observer_bridge_target_.batchOfRefreshTokenStateChangesDidEndCount = 0;
 }
 
 // Tests IdentityManagerObserverBridge::OnIdentityManagerShutdown().
 TEST_F(IdentityManagerObserverBridgeTest, OnIdentityManagerShutdown) {
-  EXPECT_EQ(0, observer_bridge_delegate_.onIdentityManagerShutdownCount);
+  EXPECT_EQ(0, observer_bridge_target_.identityManagerDidShutdownCount);
 
   // On shutdown, the observer needs to be stopped.
-  observer_bridge_delegate_.onIdentityManagerShutdownBlock = ^{
+  observer_bridge_target_.onIdentityManagerShutdownBlock = ^{
     observer_bridge_.reset();
   };
 
@@ -249,9 +245,9 @@ TEST_F(IdentityManagerObserverBridgeTest, OnIdentityManagerShutdown) {
   identity_test_env_.reset();
 
   // Expect to have gotten the shutdown signal.
-  EXPECT_EQ(1, observer_bridge_delegate_.onIdentityManagerShutdownCount);
+  EXPECT_EQ(1, observer_bridge_target_.identityManagerDidShutdownCount);
 
   // Reset counter to pass the tear down.
-  observer_bridge_delegate_.onIdentityManagerShutdownCount = 0;
+  observer_bridge_target_.identityManagerDidShutdownCount = 0;
 }
 }  // namespace signin

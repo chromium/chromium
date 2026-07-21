@@ -37,7 +37,7 @@ using base::RecordAction;
 using base::UmaHistogramEnumeration;
 using base::UserMetricsAction;
 
-@interface FeedTopSectionMediator () <IdentityManagerObserverBridgeDelegate> {
+@interface FeedTopSectionMediator () <IdentityManagerObserving> {
   // Observes changes in identity.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityObserverBridge;
@@ -116,10 +116,10 @@ using base::UserMetricsAction;
   return _signinPromoConfigurator;
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - IdentityManagerObserving
 
 // Called when a user changes the syncing state.
-- (void)onPrimaryAccountChanged:
+- (void)primaryAccountDidChange:
     (const signin::PrimaryAccountChangeEvent&)event {
   switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet:

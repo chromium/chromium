@@ -88,7 +88,7 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 }  // namespace
 
 @interface RecentTabsMediator () <AuthenticationServiceObserving,
-                                  IdentityManagerObserverBridgeDelegate,
+                                  IdentityManagerObserving,
                                   SyncedSessionsObserver> {
   std::unique_ptr<synced_sessions::SyncedSessionsObserverBridge>
       _syncedSessionsObserver;
@@ -210,9 +210,9 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
   [self refreshSessionsView];
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - IdentityManagerObserving
 
-- (void)onPrimaryAccountChanged:
+- (void)primaryAccountDidChange:
     (const signin::PrimaryAccountChangeEvent&)event {
   switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kNone:

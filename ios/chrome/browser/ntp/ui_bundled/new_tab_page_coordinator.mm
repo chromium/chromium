@@ -173,7 +173,7 @@
                                      FeedWrapperViewControllerDelegate,
                                      HomeCustomizationDelegate,
                                      HomeStartDataSource,
-                                     IdentityManagerObserverBridgeDelegate,
+                                     IdentityManagerObserving,
                                      NewTabPageActionsDelegate,
                                      NewTabPageContentDelegate,
                                      NewTabPageDelegate,
@@ -1640,11 +1640,11 @@
   }
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - IdentityManagerObserving
 
 // TODO(crbug.com/346756363): Remove this method as it is replaced with
 // `onIsSubjectToParentalControlsCapabilityChanged`.
-- (void)onPrimaryAccountChanged:
+- (void)primaryAccountDidChange:
     (const signin::PrimaryAccountChangeEvent&)event {
   // An account change may trigger after the coordinator has been stopped.
   // In this case do not process the event.

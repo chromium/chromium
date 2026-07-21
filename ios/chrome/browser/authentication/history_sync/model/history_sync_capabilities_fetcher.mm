@@ -30,8 +30,7 @@ const Tribool kCanShowUnrestrictedOptInsFallbackValue = Tribool::kUnknown;
 
 }  // namespace
 
-@interface HistorySyncCapabilitiesFetcher () <
-    IdentityManagerObserverBridgeDelegate>
+@interface HistorySyncCapabilitiesFetcher () <IdentityManagerObserving>
 @end
 
 @implementation HistorySyncCapabilitiesFetcher {
@@ -109,9 +108,9 @@ const Tribool kCanShowUnrestrictedOptInsFallbackValue = Tribool::kUnknown;
       .can_show_history_sync_opt_ins_without_minor_mode_restrictions();
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - IdentityManagerObserving
 
-- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)accountInfo {
+- (void)extendedAccountInfoDidUpdate:(const AccountInfo&)accountInfo {
   signin::Tribool capability =
       accountInfo.GetAccountCapabilities()
           .can_show_history_sync_opt_ins_without_minor_mode_restrictions();

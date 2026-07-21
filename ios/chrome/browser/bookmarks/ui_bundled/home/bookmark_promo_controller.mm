@@ -30,7 +30,7 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
 @interface BookmarkPromoController () <AuthenticationServiceObserving,
-                                       IdentityManagerObserverBridgeDelegate,
+                                       IdentityManagerObserving,
                                        SigninPromoViewConsumer>
 
 @end
@@ -177,10 +177,10 @@
   [self updateShouldShowSigninPromo];
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - IdentityManagerObserving
 
 // Called when a user changes the syncing state.
-- (void)onPrimaryAccountChanged:
+- (void)primaryAccountDidChange:
     (const signin::PrimaryAccountChangeEvent&)event {
   // The account storage promo is not shown if the user is signed-in, so sign-in
   // events should be captured and handled.

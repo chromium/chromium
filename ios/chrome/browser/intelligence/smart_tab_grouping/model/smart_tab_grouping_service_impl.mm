@@ -166,7 +166,7 @@ void SmartTabGroupingServiceImpl::CancelPendingRequest(
   InvokePendingCallback(std::move(result_union));
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+#pragma mark - IdentityManagerObserving
 
 void SmartTabGroupingServiceImpl::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
