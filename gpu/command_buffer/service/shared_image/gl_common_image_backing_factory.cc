@@ -30,8 +30,7 @@ BASE_FEATURE(kAllowEs3F16CoreTypeForGlSi, base::FEATURE_ENABLED_BY_DEFAULT);
 std::optional<viz::SharedImageFormat> GetFallbackFormatIfNotSupported(
     viz::SharedImageFormat plane_format,
     const GLFormatCaps& caps) {
-  if (plane_format == viz::SinglePlaneFormat::kR_8 &&
-      (!caps.ext_texture_rg() || caps.disable_r8_shared_images())) {
+  if (plane_format == viz::SinglePlaneFormat::kR_8 && !caps.ext_texture_rg()) {
     // Fallback to ALPHA_8 for R_8 format.
     return viz::SinglePlaneFormat::kALPHA_8;
   }

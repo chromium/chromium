@@ -24,7 +24,6 @@ bool StructTraits<gpu::mojom::SharedImageCapabilitiesDataView,
   out->supports_ycbcr_nv12_sampling = data.supports_ycbcr_nv12_sampling();
   out->supports_ycbcr_p010_sampling = data.supports_ycbcr_p010_sampling();
   out->is_r16f_supported = data.is_r16f_supported();
-  out->disable_r8_shared_images = data.disable_r8_shared_images();
   out->disable_webgpu_shared_images = data.disable_webgpu_shared_images();
   out->disable_one_component_textures = data.disable_one_component_textures();
 

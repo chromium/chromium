@@ -1403,7 +1403,7 @@ bool PaintCanvasVideoRenderer::MultiPlaneChannelFormatSupported(
   }
   switch (channel_format) {
     case viz::SharedImageFormat::ChannelFormat::k8:
-      return !shared_image_caps.disable_r8_shared_images;
+      return true;
     case viz::SharedImageFormat::ChannelFormat::k10:
     case viz::SharedImageFormat::ChannelFormat::k16:
       return caps.texture_norm16;

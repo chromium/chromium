@@ -97,7 +97,6 @@ class GPU_GLES2_EXPORT GLFormatCaps {
 
   bool ext_texture_rg() const { return ext_texture_rg_; }
   bool ext_texture_norm16() const { return ext_texture_norm16_; }
-  bool disable_r8_shared_images() const { return disable_r8_shared_images_; }
   bool enable_texture_half_float_linear() const {
     return enable_texture_half_float_linear_;
   }
@@ -112,7 +111,6 @@ class GPU_GLES2_EXPORT GLFormatCaps {
   bool oes_texture_float_available_ = false;
   bool ext_texture_rg_ = false;
   bool ext_texture_norm16_ = false;
-  bool disable_r8_shared_images_ = false;
   bool enable_texture_half_float_linear_ = false;
   bool is_atleast_gles3_ = false;
 };
