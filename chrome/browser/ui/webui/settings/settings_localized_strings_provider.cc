@@ -26,6 +26,7 @@
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_settings_util.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -973,8 +974,6 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
        IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_1},
       {"glicExperimentalTriggering",
        IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_TOGGLE},
-      {"glicExperimentalTriggeringSublabel",
-       IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_SUB_LABEL},
       {"glicExperimentalTriggeringWhenOn1",
        IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_WHEN_ON_1},
       {"glicExperimentalTriggeringWhenOn2",
@@ -1040,8 +1039,6 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
                     features::kGlicExtensionsManagementUrl.Get());
   add_localized_url("glicWebActuationToggleLearnMoreUrl",
                     features::kGlicWebActuationToggleLearnMoreURL.Get());
-  add_localized_url("glicExperimentalTriggeringLearnMoreUrl",
-                    features::kGlicExperimentalTriggeringLearnMoreURL.Get());
   html_source->AddString(
       "glicWebActuationToggleConsider2V2",
       l10n_util::GetStringFUTF16(
@@ -1051,16 +1048,53 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
           base::UTF8ToUTF16(
               features::kGlicWebActuationToggleConsiderUnexpectedResultsURL
                   .Get())));
-  html_source->AddString(
-      "glicExperimentalTriggeringConsider3",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_CONSIDER_3,
-          base::UTF8ToUTF16(
-              google_util::AppendGoogleLocaleParam(
-                  glic::GetHelpCenterUrl(
-                      features::kGlicExperimentalTriggeringSafetyURL.Get()),
-                  application_locale)
-                  .spec())));
+
+  const std::string experimental_triggering_learn_more_url =
+      google_util::AppendGoogleLocaleParam(
+          glic::GetHelpCenterUrl(
+              features::kGlicExperimentalTriggeringLearnMoreURL.Get()),
+          application_locale)
+          .spec();
+  html_source->AddString("glicExperimentalTriggeringLearnMoreUrl",
+                         experimental_triggering_learn_more_url);
+  const std::string experimental_triggering_safety_url =
+      google_util::AppendGoogleLocaleParam(
+          glic::GetHelpCenterUrl(
+              features::kGlicExperimentalTriggeringSafetyURL.Get()),
+          application_locale)
+          .spec();
+
+  if (base::FeatureList::IsEnabled(
+          features::kGlicSparkSettingsAccessibleLabels)) {
+    html_source->AddString(
+        "glicExperimentalTriggeringSublabel",
+        l10n_util::GetStringFUTF16(
+            IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_SUB_LABEL_V2,
+            base::UTF8ToUTF16(experimental_triggering_learn_more_url),
+            base::EscapeForHTML(l10n_util::GetStringUTF16(
+                IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_SUB_LABEL_LEARN_MORE_LINK_LABEL)),
+            base::EscapeForHTML(
+                l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB))));
+    html_source->AddString(
+        "glicExperimentalTriggeringConsider3",
+        l10n_util::GetStringFUTF16(
+            IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_CONSIDER_3_V2,
+            base::UTF8ToUTF16(experimental_triggering_safety_url),
+            base::EscapeForHTML(l10n_util::GetStringUTF16(
+                IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_CONSIDER_REVIEW_RISKS_LINK_LABEL_SPARK)),
+            base::EscapeForHTML(
+                l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB))));
+  } else {
+    html_source->AddString(
+        "glicExperimentalTriggeringSublabel",
+        l10n_util::GetStringUTF16(
+            IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_SUB_LABEL));
+    html_source->AddString(
+        "glicExperimentalTriggeringConsider3",
+        l10n_util::GetStringFUTF16(
+            IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_CONSIDER_3,
+            base::UTF8ToUTF16(experimental_triggering_safety_url)));
+  }
   html_source->AddBoolean(
       "glicSettingsA11yContextFixEnabled",
       base::FeatureList::IsEnabled(features::kGlicSettingsA11yContextFix));

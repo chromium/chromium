@@ -770,7 +770,11 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
   }
 
   private computeExperimentalTriggeringSubLabel_(): string {
-    return this.i18nAdvanced('glicExperimentalTriggeringSublabel').toString();
+    return this
+        .i18nAdvanced('glicExperimentalTriggeringSublabel', {
+          attrs: ['aria-label', 'aria-description'],
+        })
+        .toString();
   }
 
   private onWebActuationExpand_() {

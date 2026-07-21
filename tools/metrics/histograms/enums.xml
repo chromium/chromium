@@ -11200,6 +11200,7 @@ from previous Chrome versions.
   <int value="-1096531645" label="InfiniteTabsFreezing:enabled"/>
   <int value="-1096204531" label="Apb144Patch5:enabled"/>
   <int value="-1095947169" label="ModalPermissionDialogView:disabled"/>
+  <int value="-1094846514" label="GlicSparkSettingsAccessibleLabels:disabled"/>
   <int value="-1093967431" label="ToolbarSnapshotRefactor:enabled"/>
   <int value="-1093225454" label="FedCmIdPregistration:disabled"/>
   <int value="-1093224986" label="ArcUnthrottleOnActiveAudioV2:disabled"/>
@@ -12658,6 +12659,7 @@ from previous Chrome versions.
       label="AutofillPreventOverridingPrefilledValues:enabled"/>
   <int value="-627028731"
       label="EnableChromeRefreshTokenBindingUpgrade:disabled"/>
+  <int value="-626756888" label="GlicSparkSettingsAccessibleLabels:enabled"/>
   <int value="-626329144" label="SyncSupportTrustedVaultPassphrase:enabled"/>
   <int value="-626211146" label="DesktopMinimalUI:disabled"/>
   <int value="-625858826" label="EnableDuplicateDownloadDialog:disabled"/>

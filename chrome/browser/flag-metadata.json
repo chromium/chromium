@@ -5683,6 +5683,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "glic-spark-settings-accessible-labels",
+    "owners": [ "rosiey@chromium.org", "//chrome/browser/glic/OWNERS" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "glic-tab-groups",
     "owners": [
       "bryantchandler@chromium.org",
