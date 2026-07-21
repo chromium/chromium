@@ -1078,7 +1078,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.BatterySaver.UserBrightenedSec" units="seconds"
-    expires_after="2026-07-26">
+    expires_after="2027-07-26">
   <owner>zactu@google.com</owner>
   <owner>chromeos-bsm@google.com</owner>
   <summary>
