@@ -212,7 +212,7 @@
         Use Chrome autofill suggestion
       </message>
       <message name="IDS_IPH_KEYBOARD_ACCESSORY_AT_MEMORY" desc="Text in the In-Product-Help bubble for a feature to help users find and fill saved autofill information.">
-        Chrome can now recall your personal info – from across Google apps and autofill it on any page
+        Enhanced autofill can now find and fill your info from apps like Gmail and Photos
       </message>
       <message name="IDS_IPH_KEYBOARD_ACCESSORY_AUTOFILL_AI_VALUABLES_IPH" desc="Text in In-Product-Help with an item from Google Wallet">
         Now you can autofill more info from Google Wallet. Manage your information or turn these suggestions off in Settings.
