@@ -10,11 +10,14 @@
 #include "base/observer_list.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_action_manager.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/app_menu_button_observer.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
@@ -115,8 +118,12 @@ void AppMenuButton::RunActionMenu(
     BrowserWindowInterface* browser_window_interface,
     int run_flags) {
   action_menu_.reset();
+  auto action_manager = std::make_unique<AppMenuActionManager>(
+      browser_window_interface->GetActions()->root_action_item());
+  action_manager->Initialize();
+
   action_menu_ = std::make_unique<ActionAppMenu>(
-      browser_window_interface,
+      browser_window_interface, std::move(action_manager),
       base::BindRepeating(&AppMenuButton::OnMenuClosed,
                           weak_ptr_factory_.GetWeakPtr()));
   action_menu_->RunMenu(menu_button_controller_);

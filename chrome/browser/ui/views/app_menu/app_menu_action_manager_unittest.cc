@@ -31,9 +31,9 @@ class AppMenuActionManagerTest : public testing::Test {
         actions::ActionItem::Builder(
             base::BindRepeating(&MockActionCallback::Call,
                                 base::Unretained(&mock_action_invoked_),
-                                kActionShowDownloads))
-            .SetActionId(kActionShowDownloads)
-            .SetText(u"Downloads")
+                                kActionNewTab))
+            .SetActionId(kActionNewTab)
+            .SetText(u"New tab")
             .SetEnabled(true)
             .SetVisible(true)
             .Build());
@@ -81,11 +81,11 @@ TEST_F(AppMenuActionManagerTest, InitializeInflatesHierarchy) {
   const auto& section_children = section->GetChildren().children();
   ASSERT_EQ(section_children.size(), 2u);
 
-  actions::ActionItem* downloads_proxy = section_children[0].get();
+  actions::ActionItem* new_tab_proxy = section_children[0].get();
   EXPECT_TRUE(
-      actions::IsActionItemClass<AppMenuProxyActionItem>(downloads_proxy));
-  EXPECT_EQ(downloads_proxy->GetActionId(), kActionShowDownloads);
-  EXPECT_EQ(downloads_proxy->GetText(), u"Downloads");
+      actions::IsActionItemClass<AppMenuProxyActionItem>(new_tab_proxy));
+  EXPECT_EQ(new_tab_proxy->GetActionId(), kActionNewTab);
+  EXPECT_EQ(new_tab_proxy->GetText(), u"New tab");
 
   actions::ActionItem* clear_data_proxy = section_children[1].get();
   EXPECT_TRUE(
@@ -99,27 +99,27 @@ TEST_F(AppMenuActionManagerTest, ProxySyncsWithDelegateAndInvokes) {
   manager.Initialize();
 
   actions::ActionItem* delegate =
-      actions::ActionManager::Get().FindAction(kActionShowDownloads);
+      actions::ActionManager::Get().FindAction(kActionNewTab);
   ASSERT_NE(delegate, nullptr);
 
   actions::ActionItem* root = manager.root_action_item();
-  actions::ActionItem* downloads_proxy =
+  actions::ActionItem* new_tab_proxy =
       root->GetChildren().children()[0]->GetChildren().children()[0].get();
 
   // Test dynamic synchronization.
-  EXPECT_EQ(downloads_proxy->GetText(), u"Downloads");
-  delegate->SetText(u"New Downloads Title");
-  EXPECT_EQ(downloads_proxy->GetText(), u"New Downloads Title");
+  EXPECT_EQ(new_tab_proxy->GetText(), u"New tab");
+  delegate->SetText(u"New Tab Title");
+  EXPECT_EQ(new_tab_proxy->GetText(), u"New Tab Title");
 
-  EXPECT_TRUE(downloads_proxy->GetEnabled());
+  EXPECT_TRUE(new_tab_proxy->GetEnabled());
   delegate->SetEnabled(false);
-  EXPECT_FALSE(downloads_proxy->GetEnabled());
+  EXPECT_FALSE(new_tab_proxy->GetEnabled());
 
   // Re-enable the delegate so that InvokeAction() can execute the callback.
   delegate->SetEnabled(true);
-  EXPECT_TRUE(downloads_proxy->GetEnabled());
+  EXPECT_TRUE(new_tab_proxy->GetEnabled());
 
-  EXPECT_CALL(mock_action_invoked_, Call(kActionShowDownloads, _, _)).Times(1);
-  downloads_proxy->InvokeAction();
+  EXPECT_CALL(mock_action_invoked_, Call(kActionNewTab, _, _)).Times(1);
+  new_tab_proxy->InvokeAction();
   testing::Mock::VerifyAndClearExpectations(&mock_action_invoked_);
 }
