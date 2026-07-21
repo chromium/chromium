@@ -1278,6 +1278,7 @@
 <translation id="6321592572353357376">Щоб використовувати розширення <ph name="EXTENSION_NAME" />, потрібно ввійти в Chrome</translation>
 <translation id="6324916366299863871">Змінити ярлик</translation>
 <translation id="6324977638108296054">Не вдається створити посилання на виділений текст</translation>
+<translation id="6331836477476466332">Безпечніший і потужніший вебпереглядач</translation>
 <translation id="6333140779060797560">Надіслати через <ph name="APPLICATION" /></translation>
 <translation id="6335454563754888572">Редагувати URL-адресу, що спрямовує на сторінку "<ph name="PAGE_URL" />"</translation>
 <translation id="6337234675334993532">Шифрування</translation>
@@ -1435,6 +1436,7 @@
 <translation id="6867400383614725881">Нова анонімна вкладка</translation>
 <translation id="686899695320434745">Адреси не шифруються за допомогою парольної фрази. Це дає змогу використовувати їх в інших сервісах Google.</translation>
 <translation id="6870625088374152862">Ви ввійшли в обліковий запис <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6871397658902960384">Почати перегляд</translation>
 <translation id="687838958001010630">Кожен, хто має посилання, може редагувати всі вкладки</translation>
 <translation id="6880903702195291049">З дозволами все гаразд</translation>
 <translation id="6883204995689174413">Поділитися</translation>
@@ -1759,7 +1761,6 @@
 <translation id="8088176524274673045">Щоб ділитися даними з людьми поблизу, дозвольте їм зісканувати цей QR-код</translation>
 <translation id="8090732854597034573">Якщо тобі потрібна допомога, звернися до батьків</translation>
 <translation id="8101414242770404289">Немає вкладок за <ph name="TIME_PERIOD" /></translation>
-<translation id="8103578431304235997">Анонімна вкладка</translation>
 <translation id="810433609302852">Пропозиція отримувати сповіщення з порадами й посилання на покрокові інструкції на нижньому екрані</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109802255973641442">Вилучити розширення й дані, які вони зберегли на цьому пристрої</translation>

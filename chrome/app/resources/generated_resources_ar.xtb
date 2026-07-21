@@ -4306,7 +4306,6 @@
 <translation id="4303079906735388947">إعداد رقم تعريف شخصي جديد لمفتاح الأمان</translation>
 <translation id="430351398235329166">يمكنك تبديل موضع شريط العناوين للحصول على تجربة تصفُّح مخصَّصة</translation>
 <translation id="4304713468139749426">مدير كلمات المرور</translation>
-<translation id="4305402730127028764">نسخ إلى <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">تبديل</translation>
 <translation id="4306489587293957491">إدخال</translation>
 <translation id="4306810703452026910">‏سيتوقف Chrome عن الإبلاغ عن الإشعارات الواردة من هذا الموقع الإلكتروني على أنّها محتوى غير مرغوب فيه</translation>
@@ -7277,7 +7276,6 @@
 <translation id="6657180931610302174">هل تريد إضافة اسم مستخدِم؟</translation>
 <translation id="6657240842932274095">هل تريد السماح لخدمات النظام باستخدام موقعك الجغرافي؟</translation>
 <translation id="6657585470893396449">كلمة المرور</translation>
-<translation id="6658957691413122395">‏جارٍ تغيير حجم Gemini…</translation>
 <translation id="6659213950629089752">تم تكبير/تصغير هذه الصفحة عبر إضافة "<ph name="NAME" />"</translation>
 <translation id="6659594942844771486">‏مفتاح Tab</translation>
 <translation id="6660099350750552197">‫<ph name="WINDOW_TITLE" /> - يتم التسجيل من الكاميرا.</translation>
@@ -9514,7 +9512,6 @@
 <translation id="8376532149031784008">جارٍ إعادة تحميل <ph name="DOMAIN" />…</translation>
 <translation id="8376610503048439696">سيظل بإمكان الإضافات التي ثبَّتها المشرف قراءة هذا الموقع الإلكتروني وتغييره.</translation>
 <translation id="8376752431516546391">‏اللوحة الجانبية لمحرك بحث Google</translation>
-<translation id="8376812682111060348">تنبيه بشأن مشكلة في الأداء</translation>
 <translation id="8377625247046155446">سيتم حفظ مفتاح المرور هذا على هذا الجهاز فقط. وسيبقى محفوظًا على هذا الجهاز بعد إغلاق جميع نوافذ التصفّح المتخفي.</translation>
 <translation id="837790003026572432">لا تتوفّر إمكانية بث المحتوى الصوتي من علامة التبويب على هذا الجهاز</translation>
 <translation id="8378714024927312812">بإدارة مؤسستك</translation>

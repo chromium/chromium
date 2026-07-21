@@ -129,6 +129,7 @@
 <translation id="5042769431350623987">{WINDOW_COUNT,plural, =1{ટૅબને નવી વિન્ડોમાં ખસેડો}one{ટૅબને બીજી વિન્ડોમાં ખસેડો}other{ટૅબને બીજી વિન્ડોમાં ખસેડો}}</translation>
 <translation id="5073204694187207510">પૂર્ણસ્ક્રીન ગ્રિડને છુપાવો</translation>
 <translation id="5076161749301278626">શું સ્ટોરના રિવ્યૂ જોવા માગો છો?</translation>
+<translation id="5093447877601682598">ટૅબ સ્ટ્રિપ વિશે પ્રતિસાદ મોકલો</translation>
 <translation id="5161254044473106830">શીર્ષક જરૂરી</translation>
 <translation id="5204584298075822291">ટૅબ નાના કરો</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome <ph name="AUTO_DELETE_DELAY_ONE" /> મહિના પછી નિષ્ક્રિય ટૅબ અને ટૅબના ગ્રૂપને ઑટોમૅટિક રીતે બંધ કરે છે. તમે આને સેટિંગમાં બદલી શકો છો.}one{Chrome <ph name="AUTO_DELETE_DELAY_MANY" /> મહિના પછી નિષ્ક્રિય ટૅબ અને ટૅબના ગ્રૂપને ઑટોમૅટિક રીતે બંધ કરે છે. તમે આને સેટિંગમાં બદલી શકો છો.}other{Chrome <ph name="AUTO_DELETE_DELAY_MANY" /> મહિના પછી નિષ્ક્રિય ટૅબ અને ટૅબના ગ્રૂપને ઑટોમૅટિક રીતે બંધ કરે છે. તમે આને સેટિંગમાં બદલી શકો છો.}}</translation>

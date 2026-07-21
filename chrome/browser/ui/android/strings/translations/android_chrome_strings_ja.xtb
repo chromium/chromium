@@ -147,6 +147,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="1571041387761170095">脆弱なパスワードや使い回されているパスワードはありません</translation>
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{このデバイスに不正使用されたパスワードが 1 件あります}other{このデバイスに不正使用されたパスワードが # 件あります}}</translation>
 <translation id="1594635596540195766">下のリストに <ph name="SUGGESTIONS_COUNT" /> 件の候補があります。</translation>
+<translation id="159689249463841786">フォルダを選択、現在 <ph name="FOLDER_NAME" /> を選択しています</translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> を使用して <ph name="SITE_ETLD_PLUS_ONE" /> を利用</translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />、録画中の固定のタブ</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />、共有タブ</translation>
@@ -277,6 +278,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="2190355936436201913">(なし)</translation>
 <translation id="219283042927675668">グループ内のタブ</translation>
 <translation id="2194856509914051091">留意事項</translation>
+<translation id="2196695604589508993">履歴を開く</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />、固定の共有タブ</translation>
 <translation id="22091350895006575">ユーザー名を追加</translation>
 <translation id="221494669172414749">プロフィールのロックを設定せずに Chrome を開くと、保存したパスワードとお支払い方法が車から削除されます。プロフィールのロックを使用すると、このデータを安全に保護できます。</translation>
@@ -1278,6 +1280,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="6321592572353357376">拡張機能「<ph name="EXTENSION_NAME" />」が Chrome へのログインを求めています</translation>
 <translation id="6324916366299863871">ショートカットの編集</translation>
 <translation id="6324977638108296054">選択箇所へのリンクを作成できません</translation>
+<translation id="6331836477476466332">より安全で強力なブラウザ</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> で共有します</translation>
 <translation id="6335454563754888572"><ph name="PAGE_URL" /> のページを指す URL を編集します</translation>
 <translation id="6337234675334993532">暗号化</translation>
@@ -1435,6 +1438,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="6867400383614725881">新しいシークレット タブ</translation>
 <translation id="686899695320434745">住所はパスフレーズで暗号化されません。そのため、他の Google サービスで使用できます。</translation>
 <translation id="6870625088374152862"><ph name="USER_EMAIL_ADDRESS" /> としてログインしています</translation>
+<translation id="6871397658902960384">ブラウジングを開始</translation>
 <translation id="687838958001010630">リンクを知っているユーザーは誰でも、すべてのタブを編集できます</translation>
 <translation id="6880903702195291049">権限に問題は見受けられません</translation>
 <translation id="6883204995689174413">共有</translation>
@@ -1759,7 +1763,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="8088176524274673045">近くのユーザーと共有するには、この QR コードをスキャンしてもらいます</translation>
 <translation id="8090732854597034573">わからないことがあるときは、保護者の方に聞いてください</translation>
 <translation id="8101414242770404289"><ph name="TIME_PERIOD" />に閉じられたタブなし</translation>
-<translation id="8103578431304235997">シークレット タブ</translation>
 <translation id="810433609302852">ヒント通知機能のプロモーションと使用手順のボトムシート</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109802255973641442">拡張機能と、このデバイスに保存されている拡張機能のデータを削除する</translation>
@@ -1821,6 +1824,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="8317318757008452355">印刷オプションを開く</translation>
 <translation id="8320212361750431956">最近のアクティビティ</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
+<translation id="8333026248928723981">ブックマークとリスト</translation>
 <translation id="8342727528718219152">過剰な数の通知を送信しているサイトがあれば、Chrome でお知らせします</translation>
 <translation id="834313815369870491">翻訳しないサイト</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />、複数選択された録画中の固定のシークレット タブ</translation>
@@ -2062,6 +2066,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="939598580284253335">パスフレーズを入力</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />、ピクチャー イン ピクチャーの固定シークレット タブ</translation>
 <translation id="945522503751344254">フィードバックを送信</translation>
+<translation id="948276827484905248">QR コードを作成</translation>
 <translation id="95817756606698420">中国のユーザーは Chrome での検索に <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> を使用できます。この設定は [<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] で変更可能です。</translation>
 <translation id="961856697154696964">閲覧履歴データを削除</translation>
 <translation id="963246339335003378">タスク マネージャーを開く</translation>

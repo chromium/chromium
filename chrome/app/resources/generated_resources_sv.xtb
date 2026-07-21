@@ -4318,7 +4318,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4303079906735388947">Ange en ny pinkod för säkerhetsnyckeln</translation>
 <translation id="430351398235329166">Anpassa surfningen genom att ändra adressfältets position</translation>
 <translation id="4304713468139749426">Lösenordshantering</translation>
-<translation id="4305402730127028764">Kopiera till <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Byt</translation>
 <translation id="4306489587293957491">Ange</translation>
 <translation id="4306810703452026910">Chrome slutar flagga aviseringar från den här webbplatsen som spam</translation>
@@ -7281,7 +7280,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6657180931610302174">Lägg till användarnamn</translation>
 <translation id="6657240842932274095">Vill du tillåta att systemtjänster använder din plats?</translation>
 <translation id="6657585470893396449">Lösenord</translation>
-<translation id="6658957691413122395">Ändrar storlek på Gemini …</translation>
 <translation id="6659213950629089752">Den här sidan har zoomats in med tillägget <ph name="NAME" /></translation>
 <translation id="6659594942844771486">Tabb</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – Kameran spelar in</translation>
@@ -9517,7 +9515,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8376532149031784008">Läser in <ph name="DOMAIN" /> igen …</translation>
 <translation id="8376610503048439696">Tillägg som har installerats av administratören kan fortfarande läsa och ändra den här webbplatsen</translation>
 <translation id="8376752431516546391">Sidopanel med Google Sök</translation>
-<translation id="8376812682111060348">Varning om prestandaproblem</translation>
 <translation id="8377625247046155446">Den här nyckeln sparas bara på den här enheten. Den finns kvar på enheten när du stänger alla inkognitofönster.</translation>
 <translation id="837790003026572432">Den här enheten har inte stöd för att casta ljud från en flik</translation>
 <translation id="8378714024927312812">Hanteras av organisationen</translation>

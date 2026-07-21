@@ -260,6 +260,7 @@
 <translation id="1393071644879491291">আপনি যে সাইট ভিজিট করার চেষ্টা করেছেন সেখানে আক্রমণকারীরা প্রতারণার মাধ্যমে আপনাকে দিয়ে কোনও সফ্টওয়্যার ইনস্টল করিয়ে নিতে পারে। অথবা আপনার পাসওয়ার্ড, ফোন নম্বর বা ক্রেডিট কার্ড নম্বর জেনে নিতে পারে। Chrome সম্পূর্ণভাবে নিরাপদ সাইটে ফিরে যাওয়ার সাজেশন দেয়। <ph name="BEGIN_LEARN_MORE_LINK" />এই সতর্কতা সম্পর্কে আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">আপনি এখানে যেসব সাইট যোগ করেছেন সেগুলি উত্তরের জন্য রেফারেন্স হিসেবে ব্যবহার করা হবে না, এমনকি ট্যাবটি খোলা থাকলেও। আপনি যোগ করেছেন এমন কোনও সাইট বর্তমানে কোনও থ্রেডে ব্যবহার করা হলে, থ্রেডটির ক্ষেত্রে সেই সাইটের রেফারেন্স দেওয়া বন্ধ করতে ৩০ মিনিট পর্যন্ত সময় লাগতে পারে।</translation>
 <translation id="1402151528875251561">সাইড প্যানেলে ইতিহাস দেখুন</translation>
+<translation id="1404026649028693342">সবসময় AI মোড দেখা যাবে</translation>
 <translation id="1405567553485452995">হালকা সবুজ</translation>
 <translation id="1406370515365284486">পেমেন্ট পদ্ধতিগুলি এখনও সেভ করা থাকবে</translation>
 <translation id="1406500794671479665">যাচাই করা হচ্ছে...</translation>
@@ -656,7 +657,6 @@
 <translation id="2027465737841872819">প্লাস্টিক</translation>
 <translation id="2027707238798802149">কার্ড উপলভ্য নয়</translation>
 <translation id="2029735183873159415">বংশ ও বংশতালিকা</translation>
-<translation id="2031095660415483845">যেকোনও জায়গা থেকে সার্চ ও পূরণ করুন...</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />প্রক্সি এবং ফায়ারওয়াল পরীক্ষা করে দেখুন<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">শর্টকার্ট, <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> দ্বারা সংজ্ঞায়িত সার্চ পরিষেবা প্রদানকারীর কীওয়ার্ডের মতো এক হতে পারে না: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">যাই হোক সেভ করুন</translation>
@@ -674,6 +674,7 @@
 <translation id="2059202684901022309">২২ x ৩৪ ইঞ্চি</translation>
 <translation id="2064568741209980952">ক্রেডিট ও ধার দেওয়া</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{১টি প্রস্তাব}one{#টি প্রস্তাব}other{#টি প্রস্তাব}}</translation>
+<translation id="2066690553719545730">সবসময় AI মোড দেখা যাবে</translation>
 <translation id="2066969741541525119">আপনার প্রতিষ্ঠান আগে থেকেই সাইট ব্লক করেছে</translation>
 <translation id="2069913043427250781">যানবাহন ও ট্রাফিক নিরাপত্তা</translation>
 <translation id="2071156619270205202">ভার্চুয়াল কার্ড নম্বরের জন্য এই কার্ডটি যোগ্য নয়।</translation>
@@ -2454,6 +2455,7 @@
 <translation id="4786804728079074733">ভলিবল</translation>
 <translation id="4787182171088676626">এনভেলপ (ফাইন)</translation>
 <translation id="4791134497475588553">ইনস্টল থাকা Linux অ্যাপ এবং শেষবার কখন সেগুলি ব্যবহার করা হয়েছে</translation>
+<translation id="4791602164422809437">Gemini-র পার্সোনাল ইন্টেলিজেন্স দ্বারা পরিচালিত। পৃষ্ঠার টাইটেল ও URL Google-এ পাঠানো হয় এবং হিউম্যান রিভিউয়ার তা পর্যালোচনা করতে পারেন। <ph name="BEGIN_LINK" />সেটিংস ম্যানেজ করুন<ph name="END_LINK" /></translation>
 <translation id="4792686369684665359">আপনি নিরাপদ নয় এমন ফর্মের মাধ্যমে তথ্য জমা দিচ্ছেন</translation>
 <translation id="4793219378458250238">১১ x ১২ ইঞ্চি</translation>
 <translation id="4796594887379589189">জব অ্যাকাউন্টের আইডি</translation>
@@ -3030,6 +3032,7 @@
 <translation id="5675809467256309336">নাচ ও ইলেক্ট্রনিক মিউজিক</translation>
 <translation id="5675959228867414813">তারিখ অনুযায়ী দেখুন</translation>
 <translation id="567604591393105935">স্ক্রিনের নিচে অ্যাটাচ করা কমার্স শিট অর্ধেক স্ক্রিন জুড়ে খুলেছে</translation>
+<translation id="5676124785522323481">কানেক্ট করা অ্যাপ ম্যানেজ করুন</translation>
 <translation id="5676641328629468296">Google Pay, Pix</translation>
 <translation id="5678007133659493065">ফয়েল</translation>
 <translation id="5679086391497468752">বাড়ির ঠিকানা</translation>
@@ -3390,6 +3393,7 @@
 <translation id="6240553182907836376">আইডি কার্ড আপডেট করা</translation>
 <translation id="6240601837375010619">পাসপোর্ট সম্পর্কিত তথ্য সেভ করা</translation>
 <translation id="6240964651812394252">আপনার অপারেটিং সিস্টেমের সাথে Google Password Manager ব্যবহার করতে, Chrome আবার চালু করুন এবং নিজের কম্পিউটারের Password Manager অ্যাক্সেস করার অনুমতি দিন। আবার চালু করার পরে আপনার ট্যাব আবার খোলা হবে।</translation>
+<translation id="6244366663267187541">Gemini কোন অ্যাপের সাথে কানেক্ট করবে তা বেছে নিন</translation>
 <translation id="624499991300733384">প্রিন্ট কম্পোজিটর পরিষেবা</translation>
 <translation id="6246316216123107851"><ph name="NUM_DAYS" /> দিন আগে</translation>
 <translation id="6246382863801034910">গাড়ি</translation>
@@ -4203,6 +4207,7 @@
 <translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> আপনার যোগ্যতা যাচাই করবে (এর ফলে আপনার ক্রেডিট স্কোরে কোনও প্রভাব পড়বে না)। অনুমোদন করা হলে, <ph name="BNPL_ISSUER_NAME" /> আপনাকে কিছু পেমেন্ট প্ল্যান দেবে যার মধ্যে থেকে কোনও একটি বেছে নিয়ে আপনি কেনাকাটা সম্পূর্ণ করতে পারবেন।</translation>
 <translation id="7489392576326061356">শ্যাম্পু ও কন্ডিশনার</translation>
 <translation id="7489919936111034362">আপনার Google Drive-এর স্টোরেজ ভর্তি হয়ে গেছে</translation>
+<translation id="7490622939531327327">ফর্ম বোঝার আরও স্মার্ট পদ্ধতি</translation>
 <translation id="7495528107193238112">এই কন্টেন্ট ব্লক করা হয়েছে। এই সমস্যার সমাধান করতে সাইটের মালিকের সাথে যোগাযোগ করুন।</translation>
 <translation id="749865518782565832">প্লাম্বিং</translation>
 <translation id="7499188644237027195">Chrome-এ কেনাকাটা করার সময়, বিকল্প হিসেবে eWallet ও Pix দেখুন</translation>
@@ -4443,7 +4448,6 @@
 <translation id="7840103971441592723">'স্ক্রিন ক্যাপচার' করা শুরু হয়েছে</translation>
 <translation id="784137052867620416">কেনাকাটা সংক্রান্ত ইনসাইট</translation>
 <translation id="7841633276323004751">পেমেন্ট করা ও বেছে নেওয়ার জন্য পেমেন্ট পদ্ধতি উপলভ্য। কীবোর্ড লুকানো রয়েছে।</translation>
-<translation id="784189052219692670">Gemini এখন আপনার Google অ্যাপ জুড়ে আপনার ব্যক্তিগত তথ্য রিকল করতে এবং আপনি যে পৃষ্ঠা দেখছেন সেখানে তা অটোফিল করতে পারবে।</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{একটিও নয়}=1{১টি অ্যাপ (<ph name="EXAMPLE_APP_1" />)}=2{২টি অ্যাপ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{#টি অ্যাপ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{#টি অ্যাপ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">কোনও সমস্যা হয়েছে। আবার চেষ্টা করুন।</translation>
 <translation id="784623644169604270">কোনও সাম্প্রতিক অ্যাক্টিভিটি নেই</translation>
@@ -4845,7 +4849,6 @@
 <translation id="8488350697529856933">এতে প্রয়োগ হয়</translation>
 <translation id="8490137692873530638">স্ট্যাকার ১০</translation>
 <translation id="8493948351860045254">জায়গা ফাঁকা করুন</translation>
-<translation id="8495170825732897952">ট্যাব পরিবর্তন না করেই তথ্য রিকল করতে ও তা পূরণ করতে, যেকোনও ফর্মে @@ টাইপ করুন</translation>
 <translation id="8498870489552322848"><ph name="APP_NAME" />-এ আপনার সংবেদনশীল তথ্য পূরণ করুন</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> সাড়া দিতে খুবে বেশি সময় নিয়েছে।</translation>
 <translation id="8502023382441452707">জন্মদিন এবং নাম দিবস</translation>
@@ -5194,6 +5197,7 @@
 <translation id="9078912659001679888">ব্লেন্ডার্স ও জুসার্স</translation>
 <translation id="9078964945751709336">আরও তথ্য প্রয়োজন</translation>
 <translation id="9080712759204168376">অর্ডারের সারসংক্ষেপ</translation>
+<translation id="908365381820697818">এখন আপনি Gmail ও আরও অনেক অ্যাপ থেকে তথ্য খুঁজে পেতে ও পূরণ করতে পারবেন</translation>
 <translation id="9084304544887760521">আপনার ট্র্যাক করা আইটেমের দাম যেকোনও ওয়েবসাইটে কমলেই সেই বিষয়ে <ph name="EMAIL" /> আইডিতে ইমেল পান।</translation>
 <translation id="9089260154716455634">Off-Hours সংক্রান্ত নীতি:</translation>
 <translation id="9090218457905363312">রেগা ও ক্যারিবিয়ান মিউজিক</translation>

@@ -699,6 +699,7 @@
 <translation id="1542137295869176367">Таны нэвтрэх өгөгдлийг шинэчилж чадсангүй</translation>
 <translation id="1543284117603151572">Edge-с импортлосон</translation>
 <translation id="1543538514740974167">Энд хурдан очих</translation>
+<translation id="1544026754762189866">Танай байгууллага энэ контентыг хуулахгүй байхыг зөвлөж байна</translation>
 <translation id="1544588554445317666">Файлын богино нэр ашиглах эсвэл өөр фолдерт хадгалж үзнэ үү</translation>
 <translation id="1545749641540134597">QR кодыг скан хийх</translation>
 <translation id="1545775234664667895">"<ph name="THEME_NAME" />" загварыг суулгасан</translation>
@@ -1509,6 +1510,7 @@
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2168036794078614559">Мэдүүлгийг илгээсэн</translation>
 <translation id="2169062631698640254">Ямар ч байсан нэвтэр</translation>
+<translation id="217120844667431680">ХОУ-ы горимоор илүү ихийг хийгээрэй</translation>
 <translation id="2173302385160625112">Интернэт холболтоо шалгана уу</translation>
 <translation id="2175384018164129879">&amp;Хайлтын систем болон сайтын хайлтыг удирдах</translation>
 <translation id="2175526076681939329">Үндсэн товчийг ашиглах</translation>
@@ -1824,6 +1826,7 @@
 <translation id="2424424966051154874">{0,plural, =1{Зочин}other{Зочин (#)}}</translation>
 <translation id="2426805022920575512">Өөр бүртгэл сонгох</translation>
 <translation id="2427507373259914951">Зүүн талыг товших</translation>
+<translation id="2428120669821109648">Табын загварчлал</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 бүртгэл, нууц үгийг зөвхөн энэ төхөөрөмжид хадгалсан. Дэлгэрэнгүй мэдээлэл}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} бүртгэл, нууц үгийг зөвхөн энэ төхөөрөмжид хадгалсан. Дэлгэрэнгүй мэдээлэл}}</translation>
 <translation id="2428510569851653187">Табыг гэмтсэн үед хийж байсан зүйлээ тайлбарлана уу</translation>
 <translation id="2428939361789119025">Wi-Fi-г унтраах</translation>
@@ -3510,6 +3513,7 @@
 <translation id="3700993174159313525">Сайтуудад таны камерын байрлалыг хянахыг бүү зөвшөөр</translation>
 <translation id="3701167022068948696">Одоо засах</translation>
 <translation id="3701515417135397388">Нууц үг өгөгдлийн зөрчилд алдагдсан тохиолдолд танд сануулах</translation>
+<translation id="3701778844313851487">Өргөтгөл рүү очих</translation>
 <translation id="3703166520839776970">Хэрэв энэ асуудал тохиолдсоор байвал <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-с нэмэлт мэдээлэл авахын тулд доорх "Дэлгэрэнгүй мэдээлэл"-ийг сонгоно уу.</translation>
 <translation id="3703699162703116302">Тасалбарыг сэргээсэн</translation>
 <translation id="370415077757856453">JavaScript-г блоклосон</translation>
@@ -4316,7 +4320,6 @@
 <translation id="4303079906735388947">Аюулгүй байдлын түлхүүртэйгээ ашиглах шинэ ПИН тохируулна уу</translation>
 <translation id="430351398235329166">Тусгайлан өөрчилсөн үзэх хэрэглээг авах бол хаяг оруулах хэсгийнхээ байрлалыг сэлгээрэй</translation>
 <translation id="4304713468139749426">Нууц үгний менежер</translation>
-<translation id="4305402730127028764"><ph name="DEVICE_NAME" /> руу хуулах</translation>
 <translation id="4305817255990598646">Сэлгэх</translation>
 <translation id="4306489587293957491">Оруулах</translation>
 <translation id="4306810703452026910">Chrome энэ сайтын мэдэгдлийг спам гэж дарцаглахаа болино</translation>
@@ -4588,6 +4591,7 @@
 <translation id="4523876148417776526">XML сайтын жагсаалтуудыг одоогоор дуудаагүй байна.</translation>
 <translation id="4526051299161934899">Хадгалсан табын нуусан бүлгүүд</translation>
 <translation id="452750746583162491">Синк хийсэн өгөгдлөө шалгах</translation>
+<translation id="4528216716764031072">Орчин үеийн (нэвт харагдах)</translation>
 <translation id="4528494169189661126">Орчуулгын зөвлөмж</translation>
 <translation id="4529455689802245339">Chrome-н Шууд тайлбар ажиллахгүй байж магадгүй</translation>
 <translation id="4531451811601110068">Та дахин оролдох эсвэл тусламж авахаар администратортайгаа холбогдох боломжтой</translation>
@@ -4741,6 +4745,7 @@
 <translation id="4645575059429386691">Эцэг, эх нь хариуцаж байна</translation>
 <translation id="4645676300727003670">&amp;Хадгал</translation>
 <translation id="4646675363240786305">Портууд</translation>
+<translation id="4646859937978908916">Шинээр нэмсэн өргөтгөлүүдийг автоматаар бэхэлдэг. Үүнийг Өргөтгөл хуудсан дээр өөрчилнө үү.</translation>
 <translation id="4647025838970719122">Энэ тохиргоог танай байгууллагаас удирддаг</translation>
 <translation id="4647090755847581616">Цонхыг хаах</translation>
 <translation id="4647283074445570750">Алхам <ph name="TOTAL_STEPS" />-н <ph name="CURRENT_STEP" /></translation>
@@ -7279,7 +7284,6 @@
 <translation id="6657180931610302174">Хэрэглэгчийн нэр нэмэх үү?</translation>
 <translation id="6657240842932274095">Системийн үйлчилгээнүүдэд таны байршлыг ашиглахыг зөвшөөрөх үү?</translation>
 <translation id="6657585470893396449">Нууц үг</translation>
-<translation id="6658957691413122395">Gemini-н хэмжээг өөрчилж байна...</translation>
 <translation id="6659213950629089752">Энэ хуудсыг "<ph name="NAME" />" өргөтгөлөөр татаж харуулсан байна.</translation>
 <translation id="6659594942844771486">Таб</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - Камерын бичлэг</translation>
@@ -8314,6 +8318,7 @@
 <translation id="7446716846072322308">Энэ нь <ph name="SITE_NAME" />, холбогдох сайтын хадгалсан <ph name="TOTAL_USAGE" />-н өгөгдлийг устгана</translation>
 <translation id="7448430327655618736">Автоматаар суулгасан апп</translation>
 <translation id="7448664748118305024">Таныг бүх цонхыг хаах үед сайтуудын таны төхөөрөмжид хадгалсан өгөгдлийг устгах</translation>
+<translation id="7449806939046594699">Танай байгууллага энэ контентыг хуулахыг блоклосон</translation>
 <translation id="7450761244949417357">Одоо <ph name="ALTERNATIVE_BROWSER_NAME" />-д нээж байна</translation>
 <translation id="7450926666485653189">Таны IP хаягийг нуудаг нууцлалын серверээр дамжуулан URL-н будлиулсан хэсгийг Google-д илгээнэ</translation>
 <translation id="7453008956351770337">Энэ хэвлэгчийг сонгосноор та дараах өргөтгөлд хандалт хийхийг зөвшөөрч байна:</translation>
@@ -8821,6 +8826,7 @@
 <translation id="7849264908733290972">Зургийг шинэ цонхонд нээх</translation>
 <translation id="784934925303690534">Цагийн хүрээ</translation>
 <translation id="7850320739366109486">Бүү саад бол</translation>
+<translation id="7851303446278533774">Үүсгэх, төлөвлөх, хураангуйлах</translation>
 <translation id="7851716364080026749">Камер болон микрофон руу нэвтрэхийг үргэлж хориглох</translation>
 <translation id="78526636422538552">Илүү Google Бүртгэл нэмэхийг идэвхгүй болгосон</translation>
 <translation id="7853747251428735">Бусад хэрэгсэл</translation>
@@ -9513,7 +9519,6 @@
 <translation id="8376532149031784008"><ph name="DOMAIN" />-г дахин ачаалж байна...</translation>
 <translation id="8376610503048439696">Танай администраторын суулгасан өргөтгөлүүд энэ сайтыг унших болон өөрчлөх боломжтой хэвээр байна</translation>
 <translation id="8376752431516546391">Google Хайлтын хажуугийн самбар</translation>
-<translation id="8376812682111060348">Гүйцэтгэлийн асуудлын сэрэмжлүүлэг</translation>
 <translation id="8377625247046155446">Энэ passkey-г зөвхөн уг төхөөрөмж дээр хадгална. Энэ нь таныг нууцлалтай бүх цонхыг хаасны дараа уг төхөөрөмж дээр үлдэнэ.</translation>
 <translation id="837790003026572432">Энэ төхөөрөмж дээр табын аудиог дамжуулахыг дэмждэггүй</translation>
 <translation id="8378714024927312812">Танай байгууллагаас удирддаг</translation>

@@ -147,6 +147,7 @@
 <translation id="1571041387761170095">လုံခြုံမှုလျော့နည်းသည့် (သို့) ပြန်သုံးထားသည့် စကားဝှက်များ မရှိပါ</translation>
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{ဤစက်တွင် ကျိုးပေါက်ထားသည့် စကားဝှက် ၁ ခုရှိသည်}other{ဤစက်တွင် ကျိုးပေါက်ထားသည့် စကားဝှက် # ခုရှိသည်}}</translation>
 <translation id="1594635596540195766">အောက်ပါစာရင်းတွင် အကြံပြုအရာ<ph name="SUGGESTIONS_COUNT" /> ခု ရှိသည်။</translation>
+<translation id="159689249463841786">ဖိုင်တွဲရွေးရန်၊ လက်ရှိ <ph name="FOLDER_NAME" /></translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ဖြင့် <ph name="SITE_ETLD_PLUS_ONE" /> ကို အသုံးပြုပါ</translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />၊ ပင်ထိုးထားသည့် ရိုက်ကူးနေသောတဘ်</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />၊ မျှဝေနေသောတဘ်</translation>
@@ -277,6 +278,7 @@
 <translation id="2190355936436201913">(ဗလာ)</translation>
 <translation id="219283042927675668">အုပ်စုလိုက် တဘ်များ</translation>
 <translation id="2194856509914051091">စဉ်းစားရန် အချက်များ</translation>
+<translation id="2196695604589508993">မှတ်တမ်းဖွင့်ရန်</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />၊ ပင်ထိုးထားသည့် မျှဝေနေသောတဘ်</translation>
 <translation id="22091350895006575">အသုံးပြုသူအမည် ထည့်ရန်</translation>
 <translation id="221494669172414749">ပရိုဖိုင်လော့ခ်ချခြင်းမပါဘဲ Chrome ကိုဖွင့်ပါက သိမ်းထားသော စကားဝှက်နှင့် ငွေပေးချေနည်းလမ်းများကို သင့်ကားမှ ဖယ်ရှားပါမည်။ ပရိုဖိုင်လော့ခ်ချခြင်း သုံးပါက ဤဒေတာအား လုံခြုံမှုရှိစေသည်။</translation>
@@ -1277,6 +1279,7 @@
 <translation id="6321592572353357376">နောက်ဆက်တွဲ “<ph name="EXTENSION_NAME" />” က သင့်အား Chrome သို့ လက်မှတ်ထိုးဝင်စေလိုသည်</translation>
 <translation id="6324916366299863871">ဖြတ်လမ်းလင့်ခ်ကို တည်းဖြတ်ခြင်း</translation>
 <translation id="6324977638108296054">မြင်သာအောင်လုပ်ထားသော စာသားသို့ လင့်ခ်ကို ပြုလုပ်၍မရပါ</translation>
+<translation id="6331836477476466332">သင့်အတွက် ပိုဘေးကင်း၊ ပိုအားကောင်းသော ဘရောင်ဇာ</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> မှတစ်ဆင့် မျှဝေရန်</translation>
 <translation id="6335454563754888572">ဤလိပ်စာရှိ စာမျက်နှာသို့ ညွှန်ပြသော URL ကို ပြင်ရန်- <ph name="PAGE_URL" /></translation>
 <translation id="6337234675334993532">လျှို့ဝှက်ကုဒ်သွင်းခြင်း</translation>
@@ -1434,6 +1437,7 @@
 <translation id="6867400383614725881">ရုပ်ဖျက်တဘ် အသစ်</translation>
 <translation id="686899695320434745">လိပ်စာများကို သင့်စကားဝှက်စာဖြင့် အသွင်ဝှက်ထားခြင်းမရှိပါ။ ၎င်းက သင့်အား အခြား Google ဝန်ဆောင်မှုများတွင် ၎င်းတို့ကို သုံးနိုင်စေသည်။</translation>
 <translation id="6870625088374152862"><ph name="USER_EMAIL_ADDRESS" /> အဖြစ် လက်မှတ်ထိုးဝင်ထားသည်</translation>
+<translation id="6871397658902960384">စတင် ဘရောက်စ်လုပ်ရန်</translation>
 <translation id="687838958001010630">လင့်ခ်ရှိသူတိုင်း တဘ်အားလုံးကို တည်းဖြတ်နိုင်သည်</translation>
 <translation id="6880903702195291049">ခွင့်ပြုချက်များ အဆင်ပြေပုံပေါ်သည်</translation>
 <translation id="6883204995689174413">မျှဝေရန်</translation>
@@ -1758,7 +1762,6 @@
 <translation id="8088176524274673045">အနီးရှိလူများနှင့် မျှဝေရန် ၎င်းတို့အား ဤ QR ကုဒ်ကို စကင်ဖတ်ခိုင်းပါ</translation>
 <translation id="8090732854597034573">အကူအညီလိုပါက သင့်မိဘကိုတောင်းပါ</translation>
 <translation id="8101414242770404289"><ph name="TIME_PERIOD" /> မှ တဘ်များ မရှိပါ</translation>
-<translation id="8103578431304235997">ကိုယ်ဖျောက်တဘ်</translation>
 <translation id="810433609302852">အကြံပြုချက်ဆိုင်ရာ အကြောင်းကြားချက်တူးလ် ပရိုမိုးရှင်းနှင့် အသုံးပြုမှု အဆင့်များဆိုင်ရာ အောက်ခြေအပိုဆောင်း စာမျက်နှာ</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109802255973641442">နောက်ဆက်တွဲများနှင့် ဤစက်တွင် ၎င်းတို့သိမ်းထားသော ဒေတာကို ဖယ်ရှားရန်</translation>
@@ -1820,6 +1823,7 @@
 <translation id="8317318757008452355">ပုံနှိပ်ရန်အတွက် ရွေးစရာများဖွင့်ရန်</translation>
 <translation id="8320212361750431956">မကြာသေးမီက လုပ်ဆောင်ချက်</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
+<translation id="8333026248928723981">လိပ်စာနှင့် စာရင်းများ</translation>
 <translation id="8342727528718219152">အကြောင်းကြားချက်များစွာ ပို့နိုင်သည့် ဝဘ်ဆိုက်များနှင့် ပတ်သက်ပြီး Chrome က အသိပေးပါမည်</translation>
 <translation id="834313815369870491">ဝဘ်ဆိုက်များကို ဘယ်တော့မှ ဘာသာမပြန်ပါနှင့်</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />၊ တစ်ခုထက်ပိုရွေးထားပြီး ပင်ထိုးထားသည့် ရိုက်ကူးနေသော ရုပ်ဖျက်တဘ်</translation>
@@ -2061,6 +2065,7 @@
 <translation id="939598580284253335">စကားစုဝှက်ကို ရိုက်ထည့်ရန်</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />၊ နှစ်ခုထပ်၍ ကြည့်ခြင်း ရုပ်ဖျက်တဘ်ကို ပင်ထိုးထားသည်</translation>
 <translation id="945522503751344254">အကြံပြုချက် ပေးပို့မည်</translation>
+<translation id="948276827484905248">QR ကုဒ် ပြုလုပ်ရန်</translation>
 <translation id="95817756606698420">Chrome သည် တရုတ်ပြည်တွင် ရှာဖွေရန် <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> ကို အသုံးပြုနိုင်ပါသည်။ ၎င်းကို <ph name="BEGIN_LINK" />ဆက်တင်များ<ph name="END_LINK" /> ထဲတွင် ပြောင်းလဲနိုင်သည်။</translation>
 <translation id="961856697154696964">ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာ ဖျက်ရန်</translation>
 <translation id="963246339335003378">လုပ်ဆောင်ချက်မန်နေဂျာ ဖွင့်ရန်</translation>

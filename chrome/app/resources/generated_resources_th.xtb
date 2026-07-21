@@ -4303,7 +4303,6 @@
 <translation id="4303079906735388947">ตั้งค่า PIN ใหม่สำหรับคีย์ความปลอดภัย</translation>
 <translation id="430351398235329166">สลับตำแหน่งแถบที่อยู่เพื่อประสบการณ์การท่องเว็บที่เหมาะกับคุณ</translation>
 <translation id="4304713468139749426">เครื่องมือจัดการรหัสผ่าน</translation>
-<translation id="4305402730127028764">คัดลอกไปยัง <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">สลับ</translation>
 <translation id="4306489587293957491">ป้อน</translation>
 <translation id="4306810703452026910">Chrome จะหยุดแจ้งว่าการแจ้งเตือนจากเว็บไซต์นี้เป็นสแปม</translation>
@@ -7261,7 +7260,6 @@
 <translation id="6657180931610302174">เพิ่มชื่อผู้ใช้ไหม</translation>
 <translation id="6657240842932274095">อนุญาตให้บริการของระบบใช้ตำแหน่งของคุณไหม</translation>
 <translation id="6657585470893396449">รหัสผ่าน</translation>
-<translation id="6658957691413122395">กำลังปรับขนาด Gemini...</translation>
 <translation id="6659213950629089752">หน้านี้ซูมด้วยส่วนขยาย "<ph name="NAME" />"</translation>
 <translation id="6659594942844771486">แท็บ</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - กำลังบันทึกกล้อง</translation>
@@ -9496,7 +9494,6 @@
 <translation id="8376532149031784008">กำลังโหลด <ph name="DOMAIN" /> ซ้ำ...</translation>
 <translation id="8376610503048439696">ส่วนขยายที่ติดตั้งโดยผู้ดูแลระบบจะยังคงอ่านและเปลี่ยนแปลงเว็บไซต์นี้ได้</translation>
 <translation id="8376752431516546391">แผงด้านข้างของ Google Search</translation>
-<translation id="8376812682111060348">การแจ้งเตือนปัญหาด้านประสิทธิภาพ</translation>
 <translation id="8377625247046155446">พาสคีย์นี้จะบันทึกในอุปกรณ์นี้เท่านั้น และพาสคีย์จะยังคงอยู่ในอุปกรณ์นี้หลังจากที่คุณปิดหน้าต่างที่ไม่ระบุตัวตนทั้งหมด</translation>
 <translation id="837790003026572432">อุปกรณ์นี้ไม่รองรับการแคสต์เสียงของแท็บ</translation>
 <translation id="8378714024927312812">จัดการโดยองค์กร</translation>

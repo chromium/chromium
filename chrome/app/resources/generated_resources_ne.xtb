@@ -699,6 +699,7 @@
 <translation id="1542137295869176367">तपाईंको साइन इन डेटा परिवर्तन गर्न सकिएन</translation>
 <translation id="1543284117603151572">Edge बाट आयात गरिएको</translation>
 <translation id="1543538514740974167">यो पृष्ठमा अझ छिटो पुग्नुहोस्</translation>
+<translation id="1544026754762189866">तपाईंको सङ्गठनले यो सामग्री कपी नगर्न सुझाव दिन्छ</translation>
 <translation id="1544588554445317666">फाइलको अझ छोटो नाम प्रयोग गरी हेर्नुहोस् वा कुनै अर्को फोल्डरमा सेभ गरी हेर्नुहोस्</translation>
 <translation id="1545749641540134597">QR कोड स्क्यान गर्नुहोस्</translation>
 <translation id="1545775234664667895">स्थापित विषयवस्तु "<ph name="THEME_NAME" />"</translation>
@@ -1500,6 +1501,7 @@
 <translation id="2166369534954157698">अ आ इ ई उ ऊ ए ऐ ओ औ अं अ: क ख ग घ ङ</translation>
 <translation id="2168036794078614559">रिपोर्ट पठाइएको छ</translation>
 <translation id="2169062631698640254">कुनैपनि अवस्थामा साइन इन गर्नुहोस्</translation>
+<translation id="217120844667431680">AI मोड प्रयोग गरी अझ धेरै कार्य गर्नुहोस्</translation>
 <translation id="2173302385160625112">आफ्नो इन्टरनेट जडानको जाँच गर्नुहोस्</translation>
 <translation id="2175384018164129879">&amp;साइटमा भएको कुरा खोज्ने सुविधा र सर्च इन्जिनहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="2175526076681939329">मुख्य कीहरू प्रयोग गर्नुहोस्</translation>
@@ -1812,6 +1814,7 @@
 <translation id="2424424966051154874">{0,plural, =1{अतिथि}other{अतिथि (#)}}</translation>
 <translation id="2426805022920575512">कुनै अर्को खाता छनौट गर्नुहोस्‌</translation>
 <translation id="2427507373259914951">बायाँ क्लिक गर्नुहोस्</translation>
+<translation id="2428120669821109648">ट्याबको शैली</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> एउटा खाता, पासवर्ड यो डिभाइसमा मात्र सेभ गरिएको छ थप विवरणहरू}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} वटा खाता, पासवर्ड यो डिभाइसमा मात्र सेभ गरिएको छ थप विवरणहरू}}</translation>
 <translation id="2428510569851653187">ट्याब क्र्यास भएको बेला तपाईं के गर्दै हुनुहुन्थ्यो भनी वर्णन दिनुहोस्</translation>
 <translation id="2428939361789119025">WiFi निष्क्रिय पार्नुहोस्</translation>
@@ -3497,6 +3500,7 @@
 <translation id="3700993174159313525">साइटहरूलाई मेरो क्यामेराको स्थिति ट्र्याक गर्ने अनुमति नदिनुहोस्</translation>
 <translation id="3701167022068948696">अहिले नै समाधान गर्नुहोस्</translation>
 <translation id="3701515417135397388">कुनै पासवर्ड डेटा चोरीको घटनामा देखिएका खण्डमा तपाईंलाई चेतावनी दिन्छ</translation>
+<translation id="3701778844313851487">एक्स्टेन्सनहरूमा जानुहोस्</translation>
 <translation id="3703166520839776970">यो समस्या अझै पनि देखिएको खण्डमा <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> बाट थप जानकारी प्राप्त गर्न तल "थप विवरणहरू" नामक बटनमा क्लिक गर्नुहोस्।</translation>
 <translation id="3703699162703116302">टिकट पुनः ताजा गरियो</translation>
 <translation id="370415077757856453">JavaScript लाई ब्लक गरिएको छ</translation>
@@ -4303,7 +4307,6 @@
 <translation id="4303079906735388947">आफ्नो सुरक्षा साँचो प्रयोग गर्नका लागि नयाँ PIN सेटअप गर्नुहोस्</translation>
 <translation id="430351398235329166">ब्राउजिङसम्बन्धी कस्टमाइज गरिएको सुविधा प्राप्त गर्न आफ्नो एड्रेस बार राखिने ठाउँ बदल्नुहोस्</translation>
 <translation id="4304713468139749426">पासवर्ड म्यानेजर</translation>
-<translation id="4305402730127028764">कपी गरेर <ph name="DEVICE_NAME" /> मा पेस्ट गर्नुहोस्</translation>
 <translation id="4305817255990598646">स्विच</translation>
 <translation id="4306489587293957491">हाल्नुहोस्</translation>
 <translation id="4306810703452026910">Chrome ले यो साइटबाट प्राप्त नोटिफिकेसनहरूलाई स्प्यामका रूपमा फ्ल्याग गर्न छाड्ने छ</translation>
@@ -4575,6 +4578,7 @@
 <translation id="4523876148417776526">XML प्रयोग गर्ने साइटका सूचीहरू अझै पनि प्राप्त गरिएको छैन।</translation>
 <translation id="4526051299161934899">सेभ गरिएका लुकाइएका ट्याब समूहहरू</translation>
 <translation id="452750746583162491">आफ्नो सिंक गरिएको डेटाको समीक्षा गर्नुहोस्</translation>
+<translation id="4528216716764031072">आधुनिक (पारदर्शी)</translation>
 <translation id="4528494169189661126">अनुवादसम्बन्धी सुझाव</translation>
 <translation id="4529455689802245339">Chrome लाइभ क्याप्सनले काम नगर्न सक्छ</translation>
 <translation id="4531451811601110068">तपाईं फेरि प्रयास गर्न वा मद्दत प्राप्त गर्नका लागि आफ्ना एड्मिनलाई सम्पर्क गर्न सक्नुहुन्छ</translation>
@@ -4728,6 +4732,7 @@
 <translation id="4645575059429386691">तपाईँको अविभावक द्वारा प्रबन्ध गरिएको</translation>
 <translation id="4645676300727003670">&amp;राख्नुहोस्</translation>
 <translation id="4646675363240786305">पोर्टहरू</translation>
+<translation id="4646859937978908916">हालसालै हालिएका एक्स्टेन्सनहरू स्वतः पिन गरिन्छन्। एक्स्टेन्सनहरू भएको पेजमा गई यो कुरा परिवर्तन गर्नुहोस्।</translation>
 <translation id="4647025838970719122">यो सेटिङ तपाईंको संस्थाले मिलाउँछ</translation>
 <translation id="4647090755847581616">ट्याब &amp;बन्द गर्नुहोस्</translation>
 <translation id="4647283074445570750"><ph name="TOTAL_STEPS" /> मध्ये <ph name="CURRENT_STEP" /> औँ चरण</translation>
@@ -7264,7 +7269,6 @@
 <translation id="6657180931610302174">युजरनेम हाल्ने हो?</translation>
 <translation id="6657240842932274095">सिस्टमका सेवाहरूलाई तपाईंको लोकेसन प्रयोग गर्न दिने हो?</translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
-<translation id="6658957691413122395">Gemini को आकार बदलिँदै छ...</translation>
 <translation id="6659213950629089752">यो पृष्ठलाई "<ph name="NAME" />" एक्स्टेन्सनले जूम गरेको थियो</translation>
 <translation id="6659594942844771486">ट्याब</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - क्यामेराले रेकर्ड गरिरहेको छ</translation>
@@ -8299,6 +8303,7 @@
 <translation id="7446716846072322308">तपाईंले यसो गर्नुभयो भने <ph name="SITE_NAME" /> तथा सम्बन्धित साइटहरूले भण्डारण गरेको <ph name="TOTAL_USAGE" /> डेटा मेटिने छ</translation>
 <translation id="7448430327655618736">एपहरू स्वतः स्थापना गर्नुहोस्</translation>
 <translation id="7448664748118305024">तपाईंले सबै विन्डोहरू बन्द गर्दा साइटहरूले तपाईंको डिभाइसमा सेभ गरेका डेटा मेटाउनुहोस्</translation>
+<translation id="7449806939046594699">तपाईंको सङ्गठनले यो सामग्री कपी गर्न रोक लगाएको छ</translation>
 <translation id="7450761244949417357">अहिले <ph name="ALTERNATIVE_BROWSER_NAME" /> मा खोलिँदै</translation>
 <translation id="7450926666485653189">तपाईंको IP एड्रेस लुकाउने निजी सर्भरमार्फत Google लाई URL को अस्पष्ट भाग पठाउँछ</translation>
 <translation id="7453008956351770337">यस प्रिन्टरको चयन गरेर तपाईँले निम्न विस्तारलाई तपाईँको प्रिन्टरमा पहुँचको अनुमति दिँदै हुनुहुन्छ:</translation>
@@ -8806,6 +8811,7 @@
 <translation id="7849264908733290972">नयाँ ट्याबमा &amp;छवि खोल्नुहोस्</translation>
 <translation id="784934925303690534">समयको दायरा</translation>
 <translation id="7850320739366109486">Do Not Disturb</translation>
+<translation id="7851303446278533774">बनाउनुहोस्, योजना बनाउनुहोस्, सारांश बनाउनुहोस्</translation>
 <translation id="7851716364080026749">सधैं क्यामेरा र माइक्रोफोन प्रयोग ब्लक गर्नुहोस्</translation>
 <translation id="78526636422538552">योभन्दा बढी Google खाताहरू थप्ने सुविधा अफ गरिएको छ</translation>
 <translation id="7853747251428735">थप उपकरणहरू</translation>
@@ -9499,7 +9505,6 @@
 <translation id="8376532149031784008"><ph name="DOMAIN" /> रिलोड गरिँदै छ…</translation>
 <translation id="8376610503048439696">तपाईंका एड्मिनले इन्स्टल गरेका एक्स्टेन्सनहरूले अझै पनि यो साइट रिड गर्न र बदल्न सक्छन्</translation>
 <translation id="8376752431516546391">Google Search को साइड प्यानल</translation>
-<translation id="8376812682111060348">पर्फर्मेन्समा देखिएको समस्यासम्बन्धी अलर्ट</translation>
 <translation id="8377625247046155446">यो पासकी यस डिभाइसमा मात्र सेभ गरिने छ। तपाईंले सबै इन्कोग्निटो विन्डो बन्द गरेपछि पनि यो पासकी यस डिभाइसमा रहने छ।</translation>
 <translation id="837790003026572432">यो डिभाइसमा ट्याबको अडियो कास्ट गर्न मिल्दैन</translation>
 <translation id="8378714024927312812">तपाईंको सङ्गठनले व्यवस्थापन गरेको</translation>

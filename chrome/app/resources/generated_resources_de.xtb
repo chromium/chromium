@@ -4303,7 +4303,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4303079906735388947">Richte eine neue PIN für deinen Sicherheitsschlüssel ein</translation>
 <translation id="430351398235329166">Verschiebe die Adressleiste, um den Browser deinen Bedürfnissen anzupassen</translation>
 <translation id="4304713468139749426">Passwort­manager</translation>
-<translation id="4305402730127028764">Auf <ph name="DEVICE_NAME" /> kopieren</translation>
 <translation id="4305817255990598646">Wechseln</translation>
 <translation id="4306489587293957491">Eingeben</translation>
 <translation id="4306810703452026910">Benachrichtigungen von dieser Website werden in Chrome nicht mehr als Spam gemeldet</translation>
@@ -7261,7 +7260,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6657180931610302174">Nutzername hinzufügen?</translation>
 <translation id="6657240842932274095">Systemdiensten erlauben, deinen Standort zu verwenden?</translation>
 <translation id="6657585470893396449">Passwort</translation>
-<translation id="6658957691413122395">Größe der Gemini-Ansicht wird angepasst…</translation>
 <translation id="6659213950629089752">Diese Seite wurde mit der Erweiterung "<ph name="NAME" />" gezoomt.</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – Kamera zeichnet auf</translation>
@@ -9497,7 +9495,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8376532149031784008"><ph name="DOMAIN" /> wird aktualisiert…</translation>
 <translation id="8376610503048439696">Von deinem Administrator installierte Erweiterungen können diese Website weiterhin lesen und ändern</translation>
 <translation id="8376752431516546391">Seitenleiste der Google Suche</translation>
-<translation id="8376812682111060348">Benachrichtigung zu Leistungsproblemen</translation>
 <translation id="8377625247046155446">Dieser Passkey wird nur auf diesem Gerät gespeichert. Er verbleibt auf dem Gerät, nachdem du alle Inkognitofenster geschlossen hast.</translation>
 <translation id="837790003026572432">Das Audio-Streaming von einem Tab wird auf diesem Gerät nicht unterstützt</translation>
 <translation id="8378714024927312812">Von deiner Organisation verwaltet</translation>

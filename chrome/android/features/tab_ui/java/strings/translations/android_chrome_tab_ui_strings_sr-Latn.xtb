@@ -129,6 +129,7 @@
 <translation id="5042769431350623987">{WINDOW_COUNT,plural, =1{Premesti kartice u nov prozor}one{Premesti kartice u drugi prozor}few{Premesti kartice u drugi prozor}other{Premesti kartice u drugi prozor}}</translation>
 <translation id="5073204694187207510">Sakrijte prikaz mreže na celom ekranu</translation>
 <translation id="5076161749301278626">Želite da vidite recenzije prodavnica?</translation>
+<translation id="5093447877601682598">Pošalji povratne informacije o traci sa karticama</translation>
 <translation id="5161254044473106830">Naslov je obavezan</translation>
 <translation id="5204584298075822291">Skupi kartice</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome automatski zatvara neaktivne kartice i grupe kartica posle <ph name="AUTO_DELETE_DELAY_ONE" /> meseca. Ovo možete da promenite u podešavanjima.}one{Chrome automatski zatvara neaktivne kartice i grupe kartica posle <ph name="AUTO_DELETE_DELAY_MANY" /> meseca. Ovo možete da promenite u podešavanjima.}few{Chrome automatski zatvara neaktivne kartice i grupe kartica posle <ph name="AUTO_DELETE_DELAY_MANY" /> meseca. Ovo možete da promenite u podešavanjima.}other{Chrome automatski zatvara neaktivne kartice i grupe kartica posle <ph name="AUTO_DELETE_DELAY_MANY" /> meseci. Ovo možete da promenite u podešavanjima.}}</translation>

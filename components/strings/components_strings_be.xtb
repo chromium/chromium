@@ -260,6 +260,7 @@
 <translation id="1393071644879491291">На сайце, які вы спрабавалі наведаць, дзейнічаюць зламыснікі. Яны могуць падманам прымусіць вас усталяваць праграмнае забеспячэнне ці раскрыць вашы даныя, напрыклад паролі, нумар тэлефона ці нумары крэдытных картак. Chrome настойліва рэкамендуе вярнуцца на бяспечную старонку. <ph name="BEGIN_LEARN_MORE_LINK" />Даведацца больш пра гэта папярэджанне<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">Дададзеныя сюды сайты не будуць выкарыстоўвацца ў якасці крыніц для адказаў, нават калі ўкладкі з імі адкрыты. Калі сайт, які вы дадаяце, ужо выкарыстоўваецца ў ланцужку, можа прайсці да 30 хвілін, пакуль ланцужок перастане спасылацца на яго.</translation>
 <translation id="1402151528875251561">Паказаць гісторыю на бакавой панэлі</translation>
+<translation id="1404026649028693342">Заўсёды паказваць рэжым AI</translation>
 <translation id="1405567553485452995">Светла-зялёны</translation>
 <translation id="1406370515365284486">Вашы спосабы аплаты захаваюцца</translation>
 <translation id="1406500794671479665">Ідзе спраўджанне...</translation>
@@ -655,7 +656,6 @@
 <translation id="2027465737841872819">Пластык</translation>
 <translation id="2027707238798802149">Картка недаступная</translation>
 <translation id="2029735183873159415">Продкі і генеалогія</translation>
-<translation id="2031095660415483845">Запаўняйце інфармацыю для пошуку на любой прыладзе…</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Праверыць проксі-сервер і брандмаўэр.<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">Хуткая каманда "<ph name="SHORTCUT_NAME" />" не павінна супадаць з ключавым словам стандартнай пошукавай сістэмы, якое вызначана палітыкай <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /></translation>
 <translation id="2034971124472263449">Усё роўна захаваць</translation>
@@ -673,6 +673,7 @@
 <translation id="2059202684901022309">22 x 34 цалі</translation>
 <translation id="2064568741209980952">Крэдыты і пазыкі</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 прапанова}one{# прапанова}few{# прапановы}many{# прапаноў}other{# прапановы}}</translation>
+<translation id="2066690553719545730">Заўсёды паказваць рэжым AI</translation>
 <translation id="2066969741541525119">Ваша арганізацыя заблакіравала сайт, які вы збіраліся адкрыць</translation>
 <translation id="2069913043427250781">Бяспека аўтамабіляў і дарожнага руху</translation>
 <translation id="2071156619270205202">Гэтай картцы нельга прысвоіць нумар віртуальнай карткі.</translation>
@@ -4446,7 +4447,6 @@
 <translation id="7840103971441592723">Здыманне экрана пачалося</translation>
 <translation id="784137052867620416">Статыстыка купляў</translation>
 <translation id="7841633276323004751">Спіс даступных спосабаў аплаты на выбар для выканання плацяжу. Клавіятура схавана.</translation>
-<translation id="784189052219692670">Цяпер Gemini можа атрымліваць вашу асабістую інфармацыю з розных праграм Google і аўтаматычна запаўняць яе на старонцы, якую вы праглядаеце.</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Няма}=1{1 праграма (<ph name="EXAMPLE_APP_1" />)}=2{2 праграмы (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# праграма (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}few{# праграмы (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}many{# праграм (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# праграмы (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Узнікла памылка. Паўтарыце спробу.</translation>
 <translation id="784623644169604270">Няма нядаўніх дзеянняў</translation>
@@ -4848,7 +4848,6 @@
 <translation id="8488350697529856933">Аб’ект прымянення</translation>
 <translation id="8490137692873530638">Укладчык 10</translation>
 <translation id="8493948351860045254">Вызваліць месца</translation>
-<translation id="8495170825732897952">Каб атрымаць і запоўніць інфармацыю, не пераключаючыся паміж укладкамі, увядзіце @@ у любой форме</translation>
 <translation id="8498870489552322848">ўвесці вашу канфідэнцыяльную інфармацыю ў праграме "<ph name="APP_NAME" />"</translation>
 <translation id="8498891568109133222">Чаканне адказу ад <ph name="HOST_NAME" /> заняло занадта шмат часу.</translation>
 <translation id="8502023382441452707">Дні нараджэння і імяніны</translation>

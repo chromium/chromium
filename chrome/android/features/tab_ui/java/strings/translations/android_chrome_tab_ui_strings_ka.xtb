@@ -129,6 +129,7 @@
 <translation id="5042769431350623987">{WINDOW_COUNT,plural, =1{გადაიტანეთ ჩანართები ახალ ფანჯარაში}other{გადაიტანეთ ჩანართები ახალ ფანჯარაში}}</translation>
 <translation id="5073204694187207510">სრულეკრანიანი ბადის დამალვა</translation>
 <translation id="5076161749301278626">გსურთ, ნახოთ მიმოხილვები მაღაზიიდან?</translation>
+<translation id="5093447877601682598">ჩანართების ზოლის შესახებ გამოხმაურება</translation>
 <translation id="5161254044473106830">საჭიროა სათაური</translation>
 <translation id="5204584298075822291">ჩანართების ჩაკეცვა</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome ავტომატურად ხურავს არააქტიურ ჩანართებსა და ჩანართების ჯგუფებს <ph name="AUTO_DELETE_DELAY_ONE" /> თვის შემდეგ. ამის შეცვლა პარამეტრებში შეგიძლიათ.}other{Chrome ავტომატურად ხურავს არააქტიურ ჩანართებს და ჩანართების ჯგუფებს <ph name="AUTO_DELETE_DELAY_MANY" /> თვის შემდეგ. ამის შეცვლა პარამეტრებში შეგიძლიათ.}}</translation>

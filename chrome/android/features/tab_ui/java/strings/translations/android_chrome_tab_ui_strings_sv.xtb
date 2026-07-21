@@ -129,6 +129,7 @@
 <translation id="5042769431350623987">{WINDOW_COUNT,plural, =1{Flytta flikarna till ett nytt fönster}other{Flytta flikarna till ett annat fönster}}</translation>
 <translation id="5073204694187207510">Dölj helskärmsrutnät</translation>
 <translation id="5076161749301278626">Vill du visa butiksrecensioner?</translation>
+<translation id="5093447877601682598">Skicka feedback om flikhuvudet</translation>
 <translation id="5161254044473106830">Titel krävs</translation>
 <translation id="5204584298075822291">Komprimera flikar</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome stänger automatiskt inaktiva flikar och flikgrupper efter <ph name="AUTO_DELETE_DELAY_ONE" /> månad. Du kan ändra det här i inställningarna.}other{Chrome stänger automatiskt inaktiva flikar och flikgrupper efter <ph name="AUTO_DELETE_DELAY_MANY" /> månader. Du kan ändra det här i inställningarna.}}</translation>

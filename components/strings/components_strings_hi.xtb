@@ -260,6 +260,7 @@
 <translation id="1393071644879491291">आपने जिस साइट पर जाने की कोशिश की है उससे जुड़े हमलावर, धोखे से आपके डिवाइस में सॉफ़्टवेयर इंस्टॉल करवा सकते हैं या आपके पासवर्ड, फ़ोन नंबर, क्रेडिट कार्ड नंबर वगैरह चुरा सकते हैं. Chrome का सुझाव है कि आप इस साइट पर न जाएं. <ph name="BEGIN_LEARN_MORE_LINK" />इस चेतावनी के बारे में ज़्यादा जानें<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">टैब खुला होने पर भी, यहां जोड़ी गई साइटों को जवाबों के लिए रेफ़रंस के तौर पर इस्तेमाल नहीं किया जाएगा. अगर आपने कोई ऐसी साइट जोड़ी है जिसका इस्तेमाल फ़िलहाल किसी थ्रेड में किया जा रहा है, तो थ्रेड को उस साइट का रेफ़रंस लेना बंद करने में 30 मिनट लग सकते हैं.</translation>
 <translation id="1402151528875251561">साइड पैनल में इतिहास दिखाएं</translation>
+<translation id="1404026649028693342">एआई मोड हमेशा दिखाएं</translation>
 <translation id="1405567553485452995">हल्का हरा</translation>
 <translation id="1406370515365284486">पेमेंट के तरीके अब भी सेव रहेंगे</translation>
 <translation id="1406500794671479665">सत्यापन हो रहा है...</translation>
@@ -656,7 +657,6 @@
 <translation id="2027465737841872819">प्लास्टिक</translation>
 <translation id="2027707238798802149">कार्ड उपलब्ध नहीं है</translation>
 <translation id="2029735183873159415">पूर्वज और वंशावली</translation>
-<translation id="2031095660415483845">ब्राउज़र या वेब पेज के किसी भी हिस्से से खोजकर जानकारी भरें...</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />प्रॉक्सी और फ़ायरवॉल की जांच करें<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">शॉर्टकट और <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> की ओर से तय किया गया, खोज की सेवा देने वाली डिफ़ॉल्ट कंपनी का कीवर्ड, एक जैसे नहीं हो सकते: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">फिर भी सेव करें</translation>
@@ -674,6 +674,7 @@
 <translation id="2059202684901022309">22 x 34 इंच</translation>
 <translation id="2064568741209980952">क्रेडिट और क़र्ज़</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 सुझाव}one{# सुझाव}other{# सुझाव}}</translation>
+<translation id="2066690553719545730">एआई मोड हमेशा दिखाएं</translation>
 <translation id="2066969741541525119">आपको जिस साइट पर जाना है उसे आपके संगठन ने ब्लॉक किया है</translation>
 <translation id="2069913043427250781">वाहन और ट्रैफ़िक से जुड़ी सुरक्षा</translation>
 <translation id="2071156619270205202">इस कार्ड को वर्चुअल कार्ड के तौर पर इस्तेमाल नहीं किया जा सकता.</translation>
@@ -4443,7 +4444,6 @@
 <translation id="7840103971441592723">स्क्रीन कैप्चर करने की सुविधा चालू हो गई है</translation>
 <translation id="784137052867620416">खरीदारी के बारे में अहम जानकारी</translation>
 <translation id="7841633276323004751">पेमेंट करने के लिए, पैसे चुकाने के उपलब्ध तरीके चुने जा सकते हैं. कीबोर्ड छिपा हुआ है.</translation>
-<translation id="784189052219692670">अब Gemini, अलग-अलग Google ऐप्लिकेशन में मौजूद आपकी निजी जानकारी को ऐक्सेस करके, आपके मौजूदा वेब पेज पर उसे ऑटोमैटिक तरीके से भर सकता है.</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{कोई नहीं}=1{एक ऐप्लिकेशन (<ph name="EXAMPLE_APP_1" />)}=2{दो ऐप्लिकेशन (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# ऐप्लिकेशन (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# ऐप्लिकेशन (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">कोई गड़बड़ी हुई. फिर से कोशिश करें.</translation>
 <translation id="784623644169604270">हाल ही में कोई गतिविधि नहीं हुई</translation>
@@ -4845,7 +4845,6 @@
 <translation id="8488350697529856933">इस पर लागू होती है</translation>
 <translation id="8490137692873530638">स्टैकर 10</translation>
 <translation id="8493948351860045254">स्‍थान खाली करें</translation>
-<translation id="8495170825732897952">बिना टैब बदले जानकारी ऐक्सेस करने और उसे भरने के लिए, किसी भी फ़ॉर्म में @@ टाइप करें</translation>
 <translation id="8498870489552322848"><ph name="APP_NAME" /> पर अपनी संवेदनशील जानकारी भरें</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> को लोड होने में बहुत ज़्यादा समय लगा.</translation>
 <translation id="8502023382441452707">जन्मदिन और नामकरण का दिन</translation>

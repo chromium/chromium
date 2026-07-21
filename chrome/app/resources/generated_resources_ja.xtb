@@ -698,6 +698,7 @@
 <translation id="1542137295869176367">ログインデータを更新できませんでした</translation>
 <translation id="1543284117603151572">Edge からインポート</translation>
 <translation id="1543538514740974167">このページにすばやくアクセス</translation>
+<translation id="1544026754762189866">このコンテンツのコピーは組織で推奨されていません</translation>
 <translation id="1544588554445317666">ファイル名を短くするか、別のフォルダに保存してください</translation>
 <translation id="1545749641540134597">QR コードをスキャンします</translation>
 <translation id="1545775234664667895">テーマ「<ph name="THEME_NAME" />」をインストールしました</translation>
@@ -1499,6 +1500,7 @@
 <translation id="2166369534954157698">あいうえおアイウエオABCabc123漢字</translation>
 <translation id="2168036794078614559">報告を送信しました</translation>
 <translation id="2169062631698640254">このままログインする</translation>
+<translation id="217120844667431680">AI モードでさらに便利に</translation>
 <translation id="2173302385160625112">インターネット接続を確認してください</translation>
 <translation id="2175384018164129879">検索エンジンとサイト内検索を管理する(&amp;M)</translation>
 <translation id="2175526076681939329">メインキーを使用する</translation>
@@ -1811,6 +1813,7 @@
 <translation id="2424424966051154874">{0,plural, =1{ゲスト}other{ゲスト（#）}}</translation>
 <translation id="2426805022920575512">別のアカウントを選択</translation>
 <translation id="2427507373259914951">左クリック</translation>
+<translation id="2428120669821109648">タブのスタイル設定</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> の 1 個のアカウントとパスワードはこのデバイスのみに保存されました。詳細}other{<ph name="DOMAIN_LINK" /> の {NUM_PASSWORDS} 個のアカウントとパスワードはこのデバイスのみに保存されました。詳細}}</translation>
 <translation id="2428510569851653187">タブのクラッシュ時に行っていた操作をご説明ください</translation>
 <translation id="2428939361789119025">Wi-Fi をオフにする</translation>
@@ -3495,6 +3498,7 @@
 <translation id="3700993174159313525">サイトにカメラ位置の追跡を許可しない</translation>
 <translation id="3701167022068948696">今すぐ修正</translation>
 <translation id="3701515417135397388">データ侵害によりパスワードが漏洩した場合に警告する</translation>
+<translation id="3701778844313851487">拡張機能に移動</translation>
 <translation id="3703166520839776970">問題が解消しない場合は、下の [詳細] を選択して <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> の詳細をご覧ください。</translation>
 <translation id="3703699162703116302">チケットが更新されました</translation>
 <translation id="370415077757856453">JavaScript がブロックされました</translation>
@@ -4302,7 +4306,6 @@
 <translation id="4303079906735388947">セキュリティ キーの新しい PIN を設定します</translation>
 <translation id="430351398235329166">アドレスバーの位置を変更してブラウジング環境をカスタマイズできます</translation>
 <translation id="4304713468139749426">パスワード マネージャー</translation>
-<translation id="4305402730127028764">「<ph name="DEVICE_NAME" />」にコピー</translation>
 <translation id="4305817255990598646">切り替え</translation>
 <translation id="4306489587293957491">入力</translation>
 <translation id="4306810703452026910">今後、このサイトからの通知はスパムとして報告しません</translation>
@@ -4574,6 +4577,7 @@
 <translation id="4523876148417776526">XML サイトリストはまだ取得されていません。</translation>
 <translation id="4526051299161934899">非表示の保存済みタブグループ</translation>
 <translation id="452750746583162491">同期したデータを確認する</translation>
+<translation id="4528216716764031072">モダン（透明）</translation>
 <translation id="4528494169189661126">翻訳の提案</translation>
 <translation id="4529455689802245339">Chrome 自動字幕起こしを使用できない可能性があります</translation>
 <translation id="4531451811601110068">もう一度お試しいただくか、管理者にお問い合わせください</translation>
@@ -4727,6 +4731,7 @@
 <translation id="4645575059429386691">保護者により管理されています</translation>
 <translation id="4645676300727003670">継続(&amp;K)</translation>
 <translation id="4646675363240786305">ポート</translation>
+<translation id="4646859937978908916">新しく追加された拡張機能は自動的に固定されます。この設定は、[拡張機能] ページで変更できます。</translation>
 <translation id="4647025838970719122">この設定は組織によって管理されています</translation>
 <translation id="4647090755847581616">タブを閉じる(&amp;C)</translation>
 <translation id="4647283074445570750">ステップ <ph name="CURRENT_STEP" />/<ph name="TOTAL_STEPS" /></translation>
@@ -7261,7 +7266,6 @@
 <translation id="6657180931610302174">ユーザー名を追加しますか？</translation>
 <translation id="6657240842932274095">システム サービスによる位置情報の使用を許可しますか？</translation>
 <translation id="6657585470893396449">パスワード</translation>
-<translation id="6658957691413122395">Gemini のサイズを変更しています...</translation>
 <translation id="6659213950629089752">このページには「<ph name="NAME" />」拡張機能によるズームが適用されています</translation>
 <translation id="6659594942844771486">タブ</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - カメラ録画</translation>
@@ -8297,6 +8301,7 @@
 <translation id="7446716846072322308"><ph name="SITE_NAME" /> と関連サイトにより保存された <ph name="TOTAL_USAGE" /> のデータを削除します</translation>
 <translation id="7448430327655618736">アプリの自動インストール</translation>
 <translation id="7448664748118305024">すべてのウィンドウを閉じるときに、サイトによりデバイスに保存されたデータを削除する</translation>
+<translation id="7449806939046594699">このコンテンツのコピーは組織でブロックされています</translation>
 <translation id="7450761244949417357">まもなく <ph name="ALTERNATIVE_BROWSER_NAME" /> で開きます</translation>
 <translation id="7450926666485653189">ユーザーの　IP アドレスを隠すプライバシー サーバーを介して、URL の一部を難読化して Google に送信します</translation>
 <translation id="7453008956351770337">このプリンタを選択すると、次の拡張機能にプリンタへのアクセスを許可することになります。</translation>
@@ -8803,6 +8808,7 @@
 <translation id="7849264908733290972">新しいタブで画像を開く(&amp;I)</translation>
 <translation id="784934925303690534">期間</translation>
 <translation id="7850320739366109486">通知を一時的にミュート</translation>
+<translation id="7851303446278533774">作成、計画、要約まで</translation>
 <translation id="7851716364080026749">カメラとマイクへのアクセスを常にブロックする</translation>
 <translation id="78526636422538552">Google アカウントをさらに追加するオプションは無効になっています</translation>
 <translation id="7853747251428735">その他のツール(&amp;L)</translation>
@@ -9496,7 +9502,6 @@
 <translation id="8376532149031784008"><ph name="DOMAIN" /> を再読み込みしています...</translation>
 <translation id="8376610503048439696">管理者がインストールした拡張機能では、このサイトの読み取りや変更が可能です</translation>
 <translation id="8376752431516546391">Google 検索サイドパネル</translation>
-<translation id="8376812682111060348">パフォーマンスの問題に関する警告</translation>
 <translation id="8377625247046155446">このパスキーはこのデバイスにのみ保存されます。すべてのシークレット ウィンドウを閉じた後も、パスキーはこのデバイスには残ります。</translation>
 <translation id="837790003026572432">このデバイスでは、タブの音声をキャストできません</translation>
 <translation id="8378714024927312812">組織によって管理されています</translation>

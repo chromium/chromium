@@ -2163,17 +2163,6 @@ ServiceWorkerAutoPreload 功能會在開始執行 ServiceWorker 啟動程序時�
 這項政策只是控管此功能的暫時性措施，將在 M154 中移除。</translation>
 <translation id="2467181864598429837">預設瀏覽器行為</translation>
 <translation id="2467896267442150508">最長為期一週的限制時段。如果開始時間設在結束時間之後，限制時段會跨日。</translation>
-<translation id="2475594733565572760">這項政策會定義所有相關生成式 AI 功能的預設設定。舉例來說，如果將這項政策的值設為 1，1 就會是所有相關生成式 AI 功能的預設設定值。這不會影響任何手動設定的政策值。這項設定會定義 Chrome 中涵蓋的生成式 AI 功能預設值。如要查看相關功能的完整清單，請前往 https://support.google.com/chrome/a?p=generative_ai_settings。
-
-「<ph name="GEMINI_SETTINGS_POLICY_NAME" />」等部分政策，只會有「允許」和「不允許」兩種狀態。在此情況下，如果將「<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />」設為 0 或 1，系統就會啟用這項功能。如果將「<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />」設為 2，系統會停用這項功能。各項功能的說明文件詳細說明這項政策中的值如何影響該功能，例如 Chrome 內建 Gemini：https://support.google.com/chrome/a/?p=gemini_in_chrome。Chrome 內建 Gemini、Google 智慧鏡頭和 AI 模式等功能，皆有專屬的保證和/或服務條款 (https://support.google.com/chrome/a/?p=genai_features_chrome)，因此均適用此規定。
-
-0 = 允許使用這項功能，並允許 Google 運用相關資料改善 AI 模型。相關資料可能包括提示、輸入內容、輸出內容、來源資料和文字意見回饋 (視功能而定)。這些資料也可能會送交專人審查，以提升 AI 模型。預設值為 0，但以下註明的情形除外。
-
-1 = 允許使用這項功能，但不允許 Google 運用使用者的內容 (包括提示、輸入內容、輸出內容、來源資料和文字意見回饋) 改良模型。如果是「<ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />」管理的企業版使用者，以及「<ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />」管理的教育版帳戶，預設值為 1。
-
-2 = 不允許使用這項功能。
-
-如要進一步瞭解生成式 AI 功能的資料處理方式，請前往 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
 <translation id="2476249479201711962">允許存取預設搜尋引擎內容選單</translation>
 <translation id="2478756867046106663">允許具有濫用行為的網站開啟新視窗或新分頁</translation>
 <translation id="2479760962196319822">這項政策可控管 <ph name="PRODUCT_OS_NAME" /> 使用者能否在本機儲存資料。

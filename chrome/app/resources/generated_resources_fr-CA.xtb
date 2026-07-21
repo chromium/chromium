@@ -4307,7 +4307,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4303079906735388947">Créez un nouveau NIP pour votre clé de sécurité</translation>
 <translation id="430351398235329166">Modifiez la position de votre barre d'adresse pour une expérience de navigation personnalisée</translation>
 <translation id="4304713468139749426">Gestionnaire de mots de passe</translation>
-<translation id="4305402730127028764">Copier vers <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Changer</translation>
 <translation id="4306489587293957491">Entrer</translation>
 <translation id="4306810703452026910">Chrome cessera de signaler les notifications de ce site comme indésirables</translation>
@@ -7270,7 +7269,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6657180931610302174">Ajouter un nom d'utilisateur?</translation>
 <translation id="6657240842932274095">Autoriser les services système à utiliser votre position?</translation>
 <translation id="6657585470893396449">Mot de passe</translation>
-<translation id="6658957691413122395">Redimensionnement de Gemini en cours…</translation>
 <translation id="6659213950629089752">Zoom effectué par l'extension « <ph name="NAME" /> » sur cette page</translation>
 <translation id="6659594942844771486">Onglet</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – Enregistrement par appareil photo</translation>
@@ -9505,7 +9503,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8376532149031784008">Actualisation de <ph name="DOMAIN" /> en cours…</translation>
 <translation id="8376610503048439696">Les extensions installées par votre administrateur peuvent toujours lire et modifier ce site</translation>
 <translation id="8376752431516546391">Panneau latéral de la recherche Google</translation>
-<translation id="8376812682111060348">Alerte relative à un problème de performance</translation>
 <translation id="8377625247046155446">Cette clé d'accès ne sera enregistrée que sur cet appareil. Elle restera sur cet appareil après la fermeture de toutes les fenêtres de navigation privée.</translation>
 <translation id="837790003026572432">La diffusion de l'audio de l'onglet n'est pas prise en charge sur cet appareil</translation>
 <translation id="8378714024927312812">Géré par votre organisation</translation>

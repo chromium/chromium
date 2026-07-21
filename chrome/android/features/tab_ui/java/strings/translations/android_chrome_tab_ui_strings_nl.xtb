@@ -129,6 +129,7 @@
 <translation id="5042769431350623987">{WINDOW_COUNT,plural, =1{Tabbladen verplaatsen naar nieuw venster}other{Tabbladen verplaatsen naar ander venster}}</translation>
 <translation id="5073204694187207510">Raster op volledig scherm verbergen</translation>
 <translation id="5076161749301278626">Winkelreviews bekijken?</translation>
+<translation id="5093447877601682598">Feedback sturen over de tabbladstrook</translation>
 <translation id="5161254044473106830">Titel is vereist</translation>
 <translation id="5204584298075822291">Tabbladen samenvouwen</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome sluit inactieve tabbladen en tabbladgroepen automatisch na <ph name="AUTO_DELETE_DELAY_ONE" /> maand. Je kunt dit wijzigen in de instellingen.}other{Chrome sluit inactieve tabbladen en tabbladgroepen automatisch na <ph name="AUTO_DELETE_DELAY_MANY" /> maanden. Je kunt dit wijzigen in de instellingen.}}</translation>

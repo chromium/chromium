@@ -129,6 +129,7 @@
 <translation id="5042769431350623987">{WINDOW_COUNT,plural, =1{ຍ້າຍແຖບໄປໃສ່ໜ້າຈໍໃໝ່}other{ຍ້າຍແຖບໄປໃສ່ໜ້າຈໍອື່ນ}}</translation>
 <translation id="5073204694187207510">ເຊື່ອງຕາໜ່າງແບບເຕັມຈໍ</translation>
 <translation id="5076161749301278626">ເບິ່ງຄຳຕິຊົມຮ້ານຄ້າບໍ?</translation>
+<translation id="5093447877601682598">ສົ່ງຄຳຕິຊົມກ່ຽວກັບລາຍແຖບ</translation>
 <translation id="5161254044473106830">ຈຳ​ເປັນ​ຕ້ອງ​ມີ​ຫົວ​ຂໍ້</translation>
 <translation id="5204584298075822291">ຫຍໍ້ແຖບລົງ</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome ຈະປິດແຖບ ແລະ ກຸ່ມແຖບທີ່ບໍ່ໄດ້ນຳໃຊ້ໂດຍອັດຕະໂນມັດຫຼັງຈາກຜ່ານໄປ <ph name="AUTO_DELETE_DELAY_ONE" /> ເດືອນ. ທ່ານສາມາດປ່ຽນຄ່ານີ້ໄດ້ໃນການຕັ້ງຄ່າ.}other{Chrome ຈະປິດແຖບ ແລະ ກຸ່ມແຖບທີ່ບໍ່ໄດ້ນຳໃຊ້ໂດຍອັດຕະໂນມັດຫຼັງຈາກຜ່ານໄປ <ph name="AUTO_DELETE_DELAY_MANY" /> ເດືອນ. ທ່ານສາມາດປ່ຽນຄ່ານີ້ໄດ້ໃນການຕັ້ງຄ່າ.}}</translation>

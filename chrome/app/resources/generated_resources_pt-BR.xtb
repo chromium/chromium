@@ -699,6 +699,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1542137295869176367">Não foi possível atualizar os dados de login</translation>
 <translation id="1543284117603151572">Importados do Edge</translation>
 <translation id="1543538514740974167">Acessar esta página mais rapidamente</translation>
+<translation id="1544026754762189866">Sua organização não recomenda copiar este conteúdo</translation>
 <translation id="1544588554445317666">Tente usar um nome de arquivo mais curto ou salve em uma pasta diferente</translation>
 <translation id="1545749641540134597">Ler QR code</translation>
 <translation id="1545775234664667895">Tema "<ph name="THEME_NAME" />" instalado</translation>
@@ -1510,6 +1511,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2166369534954157698">Jane quer LP, fax, CD, giz, TV e bom whisky.</translation>
 <translation id="2168036794078614559">Denúncia feita</translation>
 <translation id="2169062631698640254">Fazer login assim mesmo</translation>
+<translation id="217120844667431680">Faça mais com o Modo IA</translation>
 <translation id="2173302385160625112">Verifique sua conexão com a Internet</translation>
 <translation id="2175384018164129879">&amp;Gerenciar mecanismos de pesquisa e pesquisas em sites</translation>
 <translation id="2175526076681939329">Usar chaves primárias</translation>
@@ -1825,6 +1827,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2424424966051154874">{0,plural, =1{Visitante}one{Visitante (#)}other{Visitantes (#)}}</translation>
 <translation id="2426805022920575512">Escolher outra conta</translation>
 <translation id="2427507373259914951">Clicar com o botão esquerdo</translation>
+<translation id="2428120669821109648">Estilo da guia</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{1 conta de <ph name="DOMAIN_LINK" />. Senha salva apenas neste dispositivo. Mais detalhes}one{{NUM_PASSWORDS} conta de <ph name="DOMAIN_LINK" />. Senha salva apenas neste dispositivo. Mais detalhes}other{{NUM_PASSWORDS} contas de <ph name="DOMAIN_LINK" />. Senhas salvas apenas neste dispositivo. Mais detalhes}}</translation>
 <translation id="2428510569851653187">Descrever o que você estava fazendo quando a guia travou</translation>
 <translation id="2428939361789119025">Desativar o Wi-Fi</translation>
@@ -3511,6 +3514,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3700993174159313525">Não permitir que os sites rastreiem a posição da câmera</translation>
 <translation id="3701167022068948696">Corrigir agora</translation>
 <translation id="3701515417135397388">Avisar caso uma senha seja comprometida em uma violação de dados</translation>
+<translation id="3701778844313851487">Acesse as extensões</translation>
 <translation id="3703166520839776970">Se o problema persistir, selecione "Mais detalhes" abaixo para saber mais sobre o <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="3703699162703116302">Tíquete atualizado</translation>
 <translation id="370415077757856453">JavaScript bloqueado</translation>
@@ -4318,7 +4322,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4303079906735388947">Configure um novo PIN para sua chave de segurança</translation>
 <translation id="430351398235329166">Mude a posição da barra de endereço para personalizar sua experiência de navegação</translation>
 <translation id="4304713468139749426">Gerenciador de Senhas</translation>
-<translation id="4305402730127028764">Copiar para <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Alternar</translation>
 <translation id="4306489587293957491">Inserir</translation>
 <translation id="4306810703452026910">O Chrome não vai mais marcar as notificações desse site como spam</translation>
@@ -4590,6 +4593,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4523876148417776526">Listas de sites XML ainda não foram buscadas.</translation>
 <translation id="4526051299161934899">Grupos de guias salvos ocultos</translation>
 <translation id="452750746583162491">Revisar dados sincronizados</translation>
+<translation id="4528216716764031072">Moderno (transparente)</translation>
 <translation id="4528494169189661126">Sugestão de tradução</translation>
 <translation id="4529455689802245339">A legenda instantânea do Chrome pode não funcionar</translation>
 <translation id="4531451811601110068">Tente de novo ou peça ajuda ao administrador</translation>
@@ -4743,6 +4747,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4645575059429386691">Gerenciado pelos seus pais</translation>
 <translation id="4645676300727003670">&amp;Manter</translation>
 <translation id="4646675363240786305">Portas</translation>
+<translation id="4646859937978908916">As extensões recém-adicionadas são fixadas automaticamente. Mude isso na página Extensões.</translation>
 <translation id="4647025838970719122">Essa configuração é gerenciada pela sua organização</translation>
 <translation id="4647090755847581616">&amp;Fechar guia</translation>
 <translation id="4647283074445570750">Etapa <ph name="CURRENT_STEP" /> de <ph name="TOTAL_STEPS" /></translation>
@@ -7284,7 +7289,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6657180931610302174">Adicionar nome de usuário?</translation>
 <translation id="6657240842932274095">Permitir que serviços do sistema usem sua localização?</translation>
 <translation id="6657585470893396449">Senha</translation>
-<translation id="6658957691413122395">Redimensionando o Gemini…</translation>
 <translation id="6659213950629089752">Esta página foi ampliada pela extensão "<ph name="NAME" />"</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" />: gravação da câmera</translation>
@@ -8320,6 +8324,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7446716846072322308">Essa ação vai excluir <ph name="TOTAL_USAGE" /> de dados armazenados por <ph name="SITE_NAME" /> e sites relacionados</translation>
 <translation id="7448430327655618736">Instalar apps automaticamente</translation>
 <translation id="7448664748118305024">Excluir dados que sites salvaram no dispositivo quando você fechar todas as janelas</translation>
+<translation id="7449806939046594699">Sua organização bloqueou a cópia deste conteúdo</translation>
 <translation id="7450761244949417357">Abrindo no <ph name="ALTERNATIVE_BROWSER_NAME" /> agora</translation>
 <translation id="7450926666485653189">Envia apenas uma parte ofuscada do URL ao Google por um servidor de privacidade que oculta seu endereço IP</translation>
 <translation id="7453008956351770337">Ao selecionar esta impressora, você concede permissão para acessar sua impressora à seguinte extensão:</translation>
@@ -8827,6 +8832,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7849264908733290972">Abrir &amp;imagem em uma nova guia</translation>
 <translation id="784934925303690534">Período</translation>
 <translation id="7850320739366109486">Não Perturbe</translation>
+<translation id="7851303446278533774">Criar, planejar, resumir</translation>
 <translation id="7851716364080026749">Sempre bloquear acesso à câmera e ao microfone</translation>
 <translation id="78526636422538552">A adição de mais Contas do Google está desativada</translation>
 <translation id="7853747251428735">Mais &amp;ferramentas</translation>
@@ -9520,7 +9526,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8376532149031784008">Recarregando <ph name="DOMAIN" />…</translation>
 <translation id="8376610503048439696">As extensões instaladas pelo administrador ainda podem ler e mudar este site</translation>
 <translation id="8376752431516546391">Painel lateral da Pesquisa Google</translation>
-<translation id="8376812682111060348">Alerta de problema de desempenho</translation>
 <translation id="8377625247046155446">Esta senha de acesso é salva apenas neste dispositivo. Ela continua neste dispositivo depois que você fecha todas as janelas anônimas.</translation>
 <translation id="837790003026572432">Não é possível transmitir o áudio de guias com este dispositivo</translation>
 <translation id="8378714024927312812">Gerenciado pela sua organização</translation>

@@ -4318,7 +4318,6 @@
 <translation id="4303079906735388947">Налаштуйте новий PIN-код для ключа безпеки</translation>
 <translation id="430351398235329166">Щоб персоналізувати вебперегляд, змініть положення адресного рядка</translation>
 <translation id="4304713468139749426">Менеджер паролів</translation>
-<translation id="4305402730127028764">Копіювати на пристрій <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Перейти</translation>
 <translation id="4306489587293957491">Ввести</translation>
 <translation id="4306810703452026910">Chrome більше не позначатиме сповіщення від цього сайту як спам</translation>
@@ -7282,7 +7281,6 @@
 <translation id="6657180931610302174">Додати ім’я користувача?</translation>
 <translation id="6657240842932274095">Дозволити системним сервісам використовувати ваші геодані?</translation>
 <translation id="6657585470893396449">Пароль</translation>
-<translation id="6658957691413122395">Змінення розміру вікна Gemini…</translation>
 <translation id="6659213950629089752">Цю сторінку масштабовано розширенням "<ph name="NAME" />"</translation>
 <translation id="6659594942844771486">Вкладка</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – записування з камери</translation>
@@ -9517,7 +9515,6 @@
 <translation id="8376532149031784008">Оновлення <ph name="DOMAIN" />…</translation>
 <translation id="8376610503048439696">Розширення, установлені адміністратором, усе одно зможуть переглядати й змінювати дані на цьому сайті</translation>
 <translation id="8376752431516546391">Бічна панель Пошуку Google</translation>
-<translation id="8376812682111060348">Сповіщення про проблему з продуктивністю</translation>
 <translation id="8377625247046155446">Ключ доступу буде збережено лише на цьому пристрої й залишиться на ньому після того, як ви закриєте всі вікна в режимі анонімного перегляду.</translation>
 <translation id="837790003026572432">Цей пристрій не підтримує трансляцію звуку вкладки</translation>
 <translation id="8378714024927312812">Профілем керує ваша організація</translation>

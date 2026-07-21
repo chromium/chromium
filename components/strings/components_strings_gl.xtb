@@ -260,6 +260,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1393071644879491291">Os atacantes do sitio que tentaches visitar poderían enganarte para que instales software ou reveles información como os teus contrasinais, números de teléfono ou tarxetas de crédito. Chrome recoméndache encarecidamente volver a un sitio seguro. <ph name="BEGIN_LEARN_MORE_LINK" />Máis información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">Os sitios que engadas aquí non se usarán como referencia para as respostas, aínda que a pestana estea aberta. Se un dos sitios que engadas xa se está usando nun fío, este pode tardar ata 30 minutos en deixar de facer referencia a el.</translation>
 <translation id="1402151528875251561">Mostrar historial no panel lateral</translation>
+<translation id="1404026649028693342">Mostrar sempre modo IA</translation>
 <translation id="1405567553485452995">Verde claro</translation>
 <translation id="1406370515365284486">Os teus métodos de pago seguirán gardados</translation>
 <translation id="1406500794671479665">Verificando...</translation>
@@ -655,7 +656,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2027465737841872819">Plástico</translation>
 <translation id="2027707238798802149">A tarxeta non está dispoñible</translation>
 <translation id="2029735183873159415">Ascendencia e xenealoxía</translation>
-<translation id="2031095660415483845">Busca e completa a información desde calquera lugar...</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Comprobar o proxy e o firewall<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">O atallo non pode ser igual que a palabra clave do provedor de busca predeterminado definida por <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Gardar de todas formas</translation>
@@ -673,6 +673,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2059202684901022309">22 × 34 in</translation>
 <translation id="2064568741209980952">Crédito e préstamos</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 suxestión}other{# suxestións}}</translation>
+<translation id="2066690553719545730">Mostrar sempre modo IA</translation>
 <translation id="2066969741541525119">A túa organización bloqueou o sitio ao que queres acceder</translation>
 <translation id="2069913043427250781">Seguranza viaria</translation>
 <translation id="2071156619270205202">Esta tarxeta non é apta para asociarlle un número de tarxeta virtual.</translation>
@@ -2453,6 +2454,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4786804728079074733">Voleibol</translation>
 <translation id="4787182171088676626">Sobre (fino)</translation>
 <translation id="4791134497475588553">Aplicacións Linux instaladas e último uso</translation>
+<translation id="4791602164422809437">Con tecnoloxía de Intelixencia personalizada de Gemini. Os títulos e os URL das páxinas envíanse a Google e poden someterse a un proceso de revisión manual. <ph name="BEGIN_LINK" />Xestionar a configuración<ph name="END_LINK" /></translation>
 <translation id="4792686369684665359">A información que estás a piques de enviar non é segura</translation>
 <translation id="4793219378458250238">11 x 12 polgadas</translation>
 <translation id="4796594887379589189">Código da conta para o traballo</translation>
@@ -3029,6 +3031,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5675809467256309336">Música dance e electrónica</translation>
 <translation id="5675959228867414813">Mostrar por data</translation>
 <translation id="567604591393105935">Panel inferior do comercio aberto a altura media</translation>
+<translation id="5676124785522323481">Xestionar aplicacións conectadas</translation>
 <translation id="5676641328629468296">Google Pay, Pix</translation>
 <translation id="5678007133659493065">Lámina</translation>
 <translation id="5679086391497468752">Enderezo particular</translation>
@@ -3390,6 +3393,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6240553182907836376">Actualiza o documento de identidade</translation>
 <translation id="6240601837375010619">Garda o pasaporte</translation>
 <translation id="6240964651812394252">Para poder usar o xestor de contrasinais de Google co teu sistema operativo, reinicia Chrome e permite o acceso ao xestor de contrasinais do ordenador. Despois do reinicio volverán abrirse as pestanas.</translation>
+<translation id="6244366663267187541">Escolle a que aplicacións se conecta Gemini</translation>
 <translation id="624499991300733384">Servizo de composición de impresión</translation>
 <translation id="6246316216123107851">Hai <ph name="NUM_DAYS" /> días</translation>
 <translation id="6246382863801034910">Vehículo</translation>
@@ -4202,6 +4206,7 @@ Detalles adicionais:
 <translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> comprobará se cumpres os requisitos (este proceso non lle afectará á túa cualificación crediticia). Se os cumpres, <ph name="BNPL_ISSUER_NAME" /> ofrecerache varios plans de pagos entre os que poderás escoller para completar a compra.</translation>
 <translation id="7489392576326061356">Champús e acondicionadores</translation>
 <translation id="7489919936111034362">Tes ocupado todo o espazo de almacenamento de Google Drive</translation>
+<translation id="7490622939531327327">Interpretación máis intelixente de formularios</translation>
 <translation id="7495528107193238112">Este contido está bloqueado. Ponte en contacto co propietario do sitio para corrixir o problema.</translation>
 <translation id="749865518782565832">Fontanaría</translation>
 <translation id="7499188644237027195">Cando fagas compras en Chrome, verás o moedeiro electrónico e Pix como opcións</translation>
@@ -4442,7 +4447,6 @@ Detalles adicionais:
 <translation id="7840103971441592723">Comezou a captura de pantalla</translation>
 <translation id="784137052867620416">Estatísticas de compras</translation>
 <translation id="7841633276323004751">Métodos de pago que se poden seleccionar para proceder co pagamento. Teclado oculto.</translation>
-<translation id="784189052219692670">Agora Gemini pode recuperar a túa información persoal das aplicacións de Google e autocompletala na páxina que esteas vendo.</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ningunha}=1{1 aplicación (<ph name="EXAMPLE_APP_1" />)}=2{2 aplicacións (<ph name="EXAMPLE_APP_1" /> e <ph name="EXAMPLE_APP_2" />)}other{# aplicacións (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> e <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Produciuse un erro. Téntao de novo.</translation>
 <translation id="784623644169604270">Ningunha actividade recente</translation>
@@ -4844,7 +4848,6 @@ Detalles adicionais:
 <translation id="8488350697529856933">Aplícase a</translation>
 <translation id="8490137692873530638">Amontoador 10</translation>
 <translation id="8493948351860045254">Liberar espazo</translation>
-<translation id="8495170825732897952">Escribe @@ nun formulario para recuperar e completar información sen cambiar de pestana</translation>
 <translation id="8498870489552322848">completar a túa información confidencial en <ph name="APP_NAME" /></translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> tardou demasiado en responder.</translation>
 <translation id="8502023382441452707">Aniversarios e santos</translation>
@@ -5193,6 +5196,7 @@ Detalles adicionais:
 <translation id="9078912659001679888">Licuadoras e espremedores</translation>
 <translation id="9078964945751709336">É obrigatorio introducir máis información</translation>
 <translation id="9080712759204168376">Resumo do pedido</translation>
+<translation id="908365381820697818">Agora podes atopar e completar información de Gmail e outros servizos</translation>
 <translation id="9084304544887760521">Recibe correos electrónicos en <ph name="EMAIL" /> cando baixe en calquera sitio o prezo dos produtos dos que fas un seguimento.</translation>
 <translation id="9089260154716455634">Política fóra do horario:</translation>
 <translation id="9090218457905363312">Reggae e música caribeña</translation>

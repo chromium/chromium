@@ -147,6 +147,7 @@
 <translation id="1571041387761170095">வலுவற்ற அல்லது ஏற்கெனவே பயன்படுத்திய கடவுச்சொற்கள் எதுவுமில்லை</translation>
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{இந்தச் சாதனத்தில் 1 களவாடப்பட்ட கடவுச்சொல் உள்ளது}other{இந்தச் சாதனத்தில் # களவாடப்பட்ட கடவுச்சொற்கள் உள்ளன}}</translation>
 <translation id="1594635596540195766">இந்தப் பட்டியலில் <ph name="SUGGESTIONS_COUNT" /> பரிந்துரைகள் உள்ளன.</translation>
+<translation id="159689249463841786">ஃபோல்டரைத் தேர்வுசெய்யும். தற்போதைய ஃபோல்டர்: <ph name="FOLDER_NAME" /></translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> மூலம் <ph name="SITE_ETLD_PLUS_ONE" /> இணையதளத்தைப் பயன்படுத்துங்கள்</translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />, பின் செய்யப்பட்ட ரெக்கார்டு செய்யப்படுகின்ற பக்கம்</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, பகிரப்படுகின்ற பக்கம்</translation>
@@ -277,6 +278,7 @@
 <translation id="2190355936436201913">(காலி)</translation>
 <translation id="219283042927675668">குழுவில் உள்ள பக்கங்கள்</translation>
 <translation id="2194856509914051091">கருத்தில்கொள்ள வேண்டியவை</translation>
+<translation id="2196695604589508993">பதிவுகளைத் திற</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, பின் செய்யப்பட்ட பகிரப்படுகின்ற பக்கம்</translation>
 <translation id="22091350895006575">பயனர்பெயரைச் சேருங்கள்</translation>
 <translation id="221494669172414749">சுயவிவரப் பூட்டு இல்லாமல் Chromeமைத் திறந்தால் நீங்கள் காரில் சேமித்துள்ள கடவுச்சொற்களும் பேமெண்ட் முறைகளும் அகற்றப்படும். சுயவிவரப் பூட்டைப் பயன்படுத்தினால் இந்தத் தரவு பாதுகாப்பாக இருக்கும்.</translation>
@@ -1278,6 +1280,7 @@
 <translation id="6321592572353357376">"<ph name="EXTENSION_NAME" />" நீட்டிப்பைப் பயன்படுத்த Chromeமில் நீங்கள் உள்நுழைய வேண்டும்</translation>
 <translation id="6324916366299863871">ஷார்ட்கட்டைத் திருத்து</translation>
 <translation id="6324977638108296054">ஹைலைட் செய்யப்பட்ட உரைக்கான இணைப்பை உருவாக்க முடியவில்லை</translation>
+<translation id="6331836477476466332">உங்களுக்கான பாதுகாப்புமிக்க, மிகவும் திறன் வாய்ந்த பிரவுசர்</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> வழியாகப் பகிர்</translation>
 <translation id="6335454563754888572"><ph name="PAGE_URL" /> என்ற தளத்தில் உள்ள பக்கத்தைக் காட்டும் URLலை மாற்றலாம்</translation>
 <translation id="6337234675334993532">என்க்ரிப்ஷன்</translation>
@@ -1435,6 +1438,7 @@
 <translation id="6867400383614725881">புதிய மறைநிலைத் தாவல்</translation>
 <translation id="686899695320434745">உங்கள் முகவரிகள் உங்கள் கடவுச்சொற்றொடரைக் கொண்டு என்க்ரிப்ட் செய்யப்படவில்லை. இதனால் நீங்கள் பிற Google சேவைகளில் அந்த முகவரிகளைப் பயன்படுத்தலாம்.</translation>
 <translation id="6870625088374152862"><ph name="USER_EMAIL_ADDRESS" /> என்ற கணக்கின் மூலம் உள்நுழைந்துள்ளீர்கள்</translation>
+<translation id="6871397658902960384">பிரவுசிங் செய்யுங்கள்</translation>
 <translation id="687838958001010630">இணைப்பு உள்ள அனைவரும் எல்லாப் பக்கங்களையும் திருத்தலாம்</translation>
 <translation id="6880903702195291049">அனுமதிகள் சரியாக உள்ளன</translation>
 <translation id="6883204995689174413">பகிர்தல்</translation>
@@ -1759,7 +1763,6 @@
 <translation id="8088176524274673045">அருகிலுள்ளவர்களுடன் பகிர இந்த QR குறியீட்டை அவர்கள் ஸ்கேன் செய்ய வேண்டும்</translation>
 <translation id="8090732854597034573">உங்களுக்கு உதவி தேவைப்பட்டால் பெற்றோரிடம் கேளுங்கள்</translation>
 <translation id="8101414242770404289"><ph name="TIME_PERIOD" /> திறக்கப்பட்ட உலாவிப் பக்கம் எதுவும் இல்லை</translation>
-<translation id="8103578431304235997">மறைநிலைத் தாவல்</translation>
 <translation id="810433609302852">உதவிக்குறிப்பு அறிவிப்புகள் அம்சத்தின் புரோமோவையும் பயன்படுத்துவதற்கான வழிமுறைகளையும் காட்டும் கீழ்ப்புறச் சீட்டு</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109802255973641442">நீட்டிப்புகளையும் அவை இந்தச் சாதனத்தில் சேமித்து வைத்திருக்கும் தரவையும் அகற்று</translation>
@@ -1821,6 +1824,7 @@
 <translation id="8317318757008452355">அச்சிடுவதற்கான விருப்பங்களைத் திறக்கும்</translation>
 <translation id="8320212361750431956">சமீபத்திய செயல்</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />புதிது<ph name="END_NEW" /></translation>
+<translation id="8333026248928723981">புக்மார்க் &amp; பட்டியல்கள்</translation>
 <translation id="8342727528718219152">அதிகமான அறிவிப்புகளை அனுப்பக்கூடிய தளங்கள் குறித்து Chrome உங்களுக்குத் தெரியப்படுத்தும்</translation>
 <translation id="834313815369870491">மொழிபெயர்க்கக்கூடாத தளங்கள்</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />, தேர்ந்தெடுத்தவற்றில் பின் செய்யப்பட்ட ரெக்கார்டு செய்யப்படுகின்ற மறைநிலைப் பக்கம்</translation>
@@ -2062,6 +2066,7 @@
 <translation id="939598580284253335">கடவுச்சொற்றொடரை உள்ளிடுக</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, பின் செய்யப்பட்ட பிக்ச்சர்-இன்-பிக்ச்சர் மறைநிலைப் பக்கம்</translation>
 <translation id="945522503751344254">கருத்தை அனுப்பு</translation>
+<translation id="948276827484905248">QR குறியீட்டை உருவாக்கு</translation>
 <translation id="95817756606698420">சீனாவில் தேடுவதற்கு, Chromeமில் <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />ஐப் பயன்படுத்தலாம். இதை <ph name="BEGIN_LINK" />அமைப்புகளுக்குச்<ph name="END_LINK" /> சென்று மாற்றலாம்.</translation>
 <translation id="961856697154696964">உலாவிய தரவை நீக்கு</translation>
 <translation id="963246339335003378">செயல் நிர்வாகியைத் திறக்கும்</translation>

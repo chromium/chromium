@@ -147,6 +147,7 @@
 <translation id="1571041387761170095">Нема слабих лозинки или лозинки које користите за више налога</translation>
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{1 угрожена лозинка на овом уређају}one{# угрожена лозинка на овом уређају}few{# угрожене лозинке на овом уређају}other{# угрожених лозинки на овом уређају}}</translation>
 <translation id="1594635596540195766">Предложених ставки на листи у наставку:<ph name="SUGGESTIONS_COUNT" />.</translation>
+<translation id="159689249463841786">Изаберите фолдер, тренутно је изабран <ph name="FOLDER_NAME" /></translation>
 <translation id="1598163867407640634">Користите <ph name="SITE_ETLD_PLUS_ONE" /> уз <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />, закачена картица за снимање</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, картица за дељење</translation>
@@ -277,6 +278,7 @@
 <translation id="2190355936436201913">(празно)</translation>
 <translation id="219283042927675668">Картице у групи</translation>
 <translation id="2194856509914051091">Шта треба имати у виду</translation>
+<translation id="2196695604589508993">Отвори историју</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, закачена картица за дељење</translation>
 <translation id="22091350895006575">Додај корисничко име</translation>
 <translation id="221494669172414749">Ако отворите Chrome без закључавања профила, уклонићете сачуване лозинке и начине плаћања из аутомобила. Коришћењем закључавања профила штитите податке.</translation>
@@ -1278,6 +1280,7 @@ Google налог можда има друге облике историје п�
 <translation id="6321592572353357376">Додатак <ph name="EXTENSION_NAME" /> жели да се пријавите у Chrome</translation>
 <translation id="6324916366299863871">Измени пречицу</translation>
 <translation id="6324977638108296054">Прављење линка до истакнутог текста није успело</translation>
+<translation id="6331836477476466332">Безбеднији и моћнији прегледач за вас</translation>
 <translation id="6333140779060797560">Дељење преко <ph name="APPLICATION" /></translation>
 <translation id="6335454563754888572">Измените URL који води до странице на: <ph name="PAGE_URL" /></translation>
 <translation id="6337234675334993532">Шифровање</translation>
@@ -1435,6 +1438,7 @@ Google налог можда има друге облике историје п�
 <translation id="6867400383614725881">Нова картица без архивирања</translation>
 <translation id="686899695320434745">Адресе нису шифроване помоћу приступне фразе. То вам омогућава да их користите у другим Google услугама.</translation>
 <translation id="6870625088374152862">Пријављени сте као <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6871397658902960384">Почните да прегледате</translation>
 <translation id="687838958001010630">Свако са линком може да мења све картице</translation>
 <translation id="6880903702195291049">Дозволе делују у реду</translation>
 <translation id="6883204995689174413">Делите</translation>
@@ -1759,7 +1763,6 @@ Google налог можда има друге облике историје п�
 <translation id="8088176524274673045">Да бисте делили са људима у близини, дајте им да скенирају овај QR кôд</translation>
 <translation id="8090732854597034573">Ако ти треба помоћ, питај родитеља</translation>
 <translation id="8101414242770404289">Нема картица из периода <ph name="TIME_PERIOD" /></translation>
-<translation id="8103578431304235997">Картице без архивирања</translation>
 <translation id="810433609302852">Доња табела са промоцијом функције обавештења са саветима и корацима за коришћење</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109802255973641442">Уклони додатке и податке које су сачували на овом уређају</translation>
@@ -1821,6 +1824,7 @@ Google налог можда има друге облике историје п�
 <translation id="8317318757008452355">Отворите опције за штампање</translation>
 <translation id="8320212361750431956">Недавна активност</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
+<translation id="8333026248928723981">Обележивачи и листе</translation>
 <translation id="8342727528718219152">Chrome ће вас обавештавати о сајтовима који можда шаљу превише обавештења</translation>
 <translation id="834313815369870491">Никад не преводи сајтове</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />, вишеструко изабрана закачена картица без архивирања за снимање</translation>
@@ -2062,6 +2066,7 @@ Google налог можда има друге облике историје п�
 <translation id="939598580284253335">Унесите приступну фразу</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, закачена картица без архивирања у режиму слике у слици</translation>
 <translation id="945522503751344254">Пошаљи повратне информације</translation>
+<translation id="948276827484905248">Направи QR кôд</translation>
 <translation id="95817756606698420">Chrome може да користи <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> за претрагу у Кини. Ово можете да промените у <ph name="BEGIN_LINK" />Подешавањима<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Избриши податке прегледања</translation>
 <translation id="963246339335003378">Отвори Менаџер задатака</translation>

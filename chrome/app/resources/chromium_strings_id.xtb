@@ -39,7 +39,6 @@
 <translation id="1383876407941801731">Telusuri</translation>
 <translation id="1388276868779258475">Gunakan aplikasi Chromium untuk terus menjelajah kapan saja di mana saja</translation>
 <translation id="1397530502368084401">&amp;Kelola Profil Chromium</translation>
-<translation id="1404026649028693342">Selalu tampilkan Mode AI</translation>
 <translation id="141901961143729572">Sampaikan pendapat Anda</translation>
 <translation id="1465192221147974788">Untuk membagikan jendela Anda, izinkan perekaman layar untuk Chromium di Setelan Sistem.</translation>
 <translation id="1478370723027452770">Dapatkan bantuan untuk Chrome for Testing</translation>
@@ -95,7 +94,6 @@
 <translation id="2049376729098081731">Pilih apakah akan menyertakan histori Chromium untuk mendapatkan pengalaman yang lebih dipersonalisasi di layanan Google</translation>
 <translation id="2050698962207788467">Diintegrasikan dalam Chromium untuk membantu Anda membuat, menyimpan, dan mengisi otomatis sandi kuat. Tambahkan pintasan untuk memudahkan akses.</translation>
 <translation id="2064856577282482477">Klik tombol Sesuaikan Chromium di Halaman Tab Baru untuk memberikan tampilan baru pada Chromium</translation>
-<translation id="2066690553719545730">Selalu Tampilkan Mode AI</translation>
 <translation id="2086476982681781442">Chromium memblokir download ini karena file tersebut tidak jujur dan dapat menyebabkan perubahan tidak terduga di perangkat Anda</translation>
 <translation id="208726765006323911">Anda akan melihat perintah untuk mencoba <ph name="FEATURE_NAME" /> saat berikutnya Anda membuka Chromium iOS.</translation>
 <translation id="2099452623287920103">Sandi dan data Chromium Anda lainnya yang disimpan di Akun Google Anda akan dihapus dari perangkat ini. Untuk menggunakannya lagi di Chromium, login kembali.</translation>
@@ -436,7 +434,6 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="5949225980829865667">Untuk mendapatkan bookmark ini dan lainnya di semua perangkat Anda, login ke Chromium</translation>
 <translation id="5953657885167112863">Personalisasi Chromium Anda</translation>
 <translation id="5960071705175224773">Setelan Anda diubah oleh aplikasi yang tidak dikenal</translation>
-<translation id="5968400720580217226">Mode AI</translation>
 <translation id="5977420883993828287">Disematkan. Gunakan Tugas Kontekstual lagi dari toolbar</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Organisasi akan otomatis menutup Chromium jika tidak digunakan selama 1 menit.}other{Organisasi akan otomatis menutup Chromium jika tidak digunakan selama # menit.}}</translation>
 <translation id="5987687638152509985">Perbarui Chromium untuk memulai sinkronisasi</translation>

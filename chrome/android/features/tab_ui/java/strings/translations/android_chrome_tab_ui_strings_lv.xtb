@@ -129,6 +129,7 @@
 <translation id="5042769431350623987">{WINDOW_COUNT,plural, =1{Pārvietot cilnes uz jaunu logu}zero{Pārvietot cilnes uz citu logu}one{Pārvietot cilnes uz citu logu}other{Pārvietot cilnes uz citu logu}}</translation>
 <translation id="5073204694187207510">Slēpt pilnekrāna režģi</translation>
 <translation id="5076161749301278626">Vai skatīt atsauksmes par veikalu?</translation>
+<translation id="5093447877601682598">Sūtīt atsauksmes par ciļņu joslu</translation>
 <translation id="5161254044473106830">Jānorāda nosaukums</translation>
 <translation id="5204584298075822291">Sakļaut cilnes</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Pārlūkā Chrome tiek automātiski aizvērtas neaktīvās cilnes un ciļņu grupas pēc <ph name="AUTO_DELETE_DELAY_ONE" /> mēneša. Varat to mainīt iestatījumos.}zero{Pārlūkā Chrome tiek automātiski aizvērtas neaktīvās cilnes un ciļņu grupas pēc <ph name="AUTO_DELETE_DELAY_MANY" /> mēnešiem. Varat to mainīt iestatījumos.}one{Pārlūkā Chrome tiek automātiski aizvērtas neaktīvās cilnes un ciļņu grupas pēc <ph name="AUTO_DELETE_DELAY_MANY" /> mēneša. Varat to mainīt iestatījumos.}other{Pārlūkā Chrome tiek automātiski aizvērtas neaktīvās cilnes un ciļņu grupas pēc <ph name="AUTO_DELETE_DELAY_MANY" /> mēnešiem. Varat to mainīt iestatījumos.}}</translation>

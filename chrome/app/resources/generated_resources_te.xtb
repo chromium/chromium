@@ -699,6 +699,7 @@
 <translation id="1542137295869176367">మీ సైన్-ఇన్ డేటాను అప్‌డేట్ చేయడం సాధ్యం కాలేదు</translation>
 <translation id="1543284117603151572">Edge నుండి దిగుమతి చేసినవి</translation>
 <translation id="1543538514740974167">ఇక్కడకు త్వరగా చేరుకోండి</translation>
+<translation id="1544026754762189866">ఈ కంటెంట్‌ను కాపీ చేయవద్దని మీ సంస్థ సలహా ఇస్తోంది</translation>
 <translation id="1544588554445317666">చిన్నగా ఉన్న ఫైల్ పేరుతో ట్రై చేయండి లేదా వేరే ఫోల్డర్‌లో సేవ్ చేయడానికి ట్రై చేయండి</translation>
 <translation id="1545749641540134597">QR కోడ్‌ను స్కాన్ చేయండి</translation>
 <translation id="1545775234664667895">"<ph name="THEME_NAME" />" థీమ్ వ్యవస్థాపించబడింది.</translation>
@@ -1508,6 +1509,7 @@
 <translation id="2166369534954157698">దేశ భాషలందు తెలుగు లెస్స</translation>
 <translation id="2168036794078614559">రిపోర్ట్ పంపబడింది</translation>
 <translation id="2169062631698640254">ఏదేమైనా సైన్ ఇన్ చేయండి</translation>
+<translation id="217120844667431680">AI మోడ్‌తో మరెన్నో పనులు చేయండి</translation>
 <translation id="2173302385160625112">మీ ఇంటర్నెట్ కనెక్షన్‌ను చెక్ చేయండి</translation>
 <translation id="2175384018164129879">సెర్చ్ ఇంజిన్‌లను, సైట్ సెర్చ్‌ను &amp;మేనేజ్ చేయండి</translation>
 <translation id="2175526076681939329">ప్రధానమైన కీలను ఉపయోగించండి</translation>
@@ -1823,6 +1825,7 @@
 <translation id="2424424966051154874">{0,plural, =1{గెస్ట్}other{గెస్ట్ (#)}}</translation>
 <translation id="2426805022920575512">మరొక ఖాతాను ఎంచుకోండి</translation>
 <translation id="2427507373259914951">ఎడమ క్లిక్</translation>
+<translation id="2428120669821109648">ట్యాబ్ స్టయిలింగ్</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 ఖాతా, పాస్‌వర్డ్ ఈ పరికరంలో మాత్రమే సేవ్ అవుతాయి. మరిన్ని వివరాలు}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} ఖాతాలు, పాస్‌వర్డ్ ఈ పరికరంలో మాత్రమే సేవ్ అవుతాయి. మరిన్ని వివరాలు}}</translation>
 <translation id="2428510569851653187">ట్యాబ్ క్రాష్ అయిన సమయంలో మీరు ఏం చేస్తున్నారో వివరించండి</translation>
 <translation id="2428939361789119025">Wi-Fiను ఆఫ్ చేయండి</translation>
@@ -3509,6 +3512,7 @@
 <translation id="3700993174159313525">మీ కెమెరా పొజిషన్‌ను ట్రాక్ చేయడానికి సైట్‌లను అనుమతించకండి</translation>
 <translation id="3701167022068948696">ఇప్పుడే పరిష్కరించు</translation>
 <translation id="3701515417135397388">డేటా ఉల్లంఘనలో పాస్‌వర్డ్ చోరీకి గురై ఉంటే మిమ్మల్ని హెచ్చరిస్తుంది</translation>
+<translation id="3701778844313851487">ఎక్స్‌టెన్షన్‌లకు వెళ్లండి</translation>
 <translation id="3703166520839776970">ఈ సమస్య అలాగే కొనసాగుతూ ఉంటే, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> నుండి మరింత సమాచారాన్ని పొందడానికి దిగువున "మరిన్ని వివరాలు" ఆప్షన్‌ను ఎంచుకోండి.</translation>
 <translation id="3703699162703116302">టికెట్ రిఫ్రెష్ చేయబడింది</translation>
 <translation id="370415077757856453">JavaScript బ్లాక్ చేయబడింది</translation>
@@ -4316,7 +4320,6 @@
 <translation id="4303079906735388947">మీ సెక్యూరిటీ కీ కోసం కొత్త పిన్‌ని సెటప్ చేయండి</translation>
 <translation id="430351398235329166">అనుకూలంగా మార్చిన ఎక్స్‌పీరియన్స్ కోసం మీ అడ్రస్ బార్ పొజిషన్‌ను మార్చండి</translation>
 <translation id="4304713468139749426">పాస్‌వర్డ్ మేనేజర్</translation>
-<translation id="4305402730127028764"><ph name="DEVICE_NAME" />కి కాపీ చేయి</translation>
 <translation id="4305817255990598646">స్విచ్</translation>
 <translation id="4306489587293957491">ఎంటర్ చేయండి</translation>
 <translation id="4306810703452026910">ఈ సైట్ నుండి వచ్చే నోటిఫికేషన్‌లను స్పామ్‌గా ఫ్లాగ్ చేయడాన్ని Chrome ఆపివేస్తుంది</translation>
@@ -4588,6 +4591,7 @@
 <translation id="4523876148417776526">XML సైట్‌లిస్ట్‌లు ఇంకా ఫెచ్ చేయబడలేదు.</translation>
 <translation id="4526051299161934899">దాచబడిన సేవ్ చేయబడిన ట్యాబ్ గ్రూప్‌లు</translation>
 <translation id="452750746583162491">సింక్ చేసిన మీ డేటాను రివ్యూ చేయండి</translation>
+<translation id="4528216716764031072">మోడర్న్ (పారదర్శకమైనది)</translation>
 <translation id="4528494169189661126">అనువాద సూచన</translation>
 <translation id="4529455689802245339">Chrome లైవ్ క్యాప్షన్ పని చేయకపోవచ్చు</translation>
 <translation id="4531451811601110068">మీరు మళ్లీ ట్రై చేయవచ్చు లేదా సహాయం కోసం మీ అడ్మినిస్ట్రేటర్‌ను కాంటాక్ట్ చేయవచ్చు</translation>
@@ -4741,6 +4745,7 @@
 <translation id="4645575059429386691">మీ తల్లి/తండ్రి ద్వారా నిర్వహించబడుతోంది</translation>
 <translation id="4645676300727003670">&amp;ఉంచు</translation>
 <translation id="4646675363240786305">పోర్ట్‌లు</translation>
+<translation id="4646859937978908916">కొత్తగా జోడించిన ఎక్స్‌టెన్షన్‌లు ఆటోమేటిక్‌గా పిన్ అవుతాయి. దీన్ని ఎక్స్‌టెన్షన్‌ల పేజీలో మార్చండి.</translation>
 <translation id="4647025838970719122">ఈ సెట్టింగ్‌ను మీ సంస్థ మేనేజ్ చేస్తుంది</translation>
 <translation id="4647090755847581616">ట్యాబ్‌ను &amp;మూసివేయి</translation>
 <translation id="4647283074445570750">దశ <ph name="TOTAL_STEPS" />లో <ph name="CURRENT_STEP" />వది</translation>
@@ -7278,7 +7283,6 @@
 <translation id="6657180931610302174">యూజర్‌నేమ్‌ను జోడించాలా?</translation>
 <translation id="6657240842932274095">మీ లొకేషన్‌ను ఉపయోగించడానికి సిస్టమ్ సర్వీస్‌లను అనుమతించాలా?</translation>
 <translation id="6657585470893396449">పాస్‌వర్డ్</translation>
-<translation id="6658957691413122395">Gemini సైజ్ మారుతోంది...</translation>
 <translation id="6659213950629089752">ఈ పేజీ "<ph name="NAME" />" ఎక్స్‌టెన్షన్‌ ద్వారా జూమ్ చేయబడింది</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - కెమెరా రికార్డింగ్</translation>
@@ -8314,6 +8318,7 @@
 <translation id="7446716846072322308">దీని వలన <ph name="SITE_NAME" />, సంబంధిత సైట్‌లు, స్టోర్ చేసిన <ph name="TOTAL_USAGE" /> డేటా తొలగిపోతుంది</translation>
 <translation id="7448430327655618736">యాప్‌లను ఆటోమేటిక్‌గా ఇన్‌స్టాల్ చేస్తుంది</translation>
 <translation id="7448664748118305024">మీరు అన్ని విండోలను మూసివేసినప్పుడు, సైట్‌లు మీ పరికరంలో సేవ్ చేసిన డేటాను తొలగించండి</translation>
+<translation id="7449806939046594699">ఈ కంటెంట్‌ను కాపీ చేయకుండా మీ సంస్థ బ్లాక్ చేసింది</translation>
 <translation id="7450761244949417357">ఇప్పుడు <ph name="ALTERNATIVE_BROWSER_NAME" />లో తెరుస్తోంది</translation>
 <translation id="7450926666485653189">మీ IP అడ్రస్‌ ను దాచిపెట్టే గోప్యతా సర్వర్ ద్వారా URLకు సంబంధించిన గందరగోళానికి గురి చేసే భాగాన్ని Googleకి పంపుతుంది</translation>
 <translation id="7453008956351770337">ఈ ప్రింటర్‌ను ఎంచుకోవడం ద్వారా, మీరు మీ ప్రింటర్‌ని యాక్సెస్ చేయడానికి కింది ఎక్సటెన్షన్‌కు అనుమతి ఇస్తున్నారు:</translation>
@@ -8821,6 +8826,7 @@
 <translation id="7849264908733290972">&amp;చిత్రాన్ని కొత్త‌ ట్యాబ్‌లో తెరువు</translation>
 <translation id="784934925303690534">సమయ పరిధి</translation>
 <translation id="7850320739366109486">డిస్టర్బ్ చేయవద్దు</translation>
+<translation id="7851303446278533774">క్రియేట్ చేయండి, ప్లాన్ చేయండి, సారాంశాన్ని పొందండి</translation>
 <translation id="7851716364080026749">ఎల్లప్పుడూ కెమెరా మరియు మైక్రోఫోన్ యాక్సెస్‌ను బ్లాక్ చేయండి</translation>
 <translation id="78526636422538552">మరిన్ని Google ఖాతాలను జోడించడం నిలిపివేయబడింది</translation>
 <translation id="7853747251428735">మరిన్ని సాధనా&amp;లు</translation>
@@ -9511,7 +9517,6 @@
 <translation id="8376532149031784008"><ph name="DOMAIN" />ను రీలోడ్ చేస్తోంది...</translation>
 <translation id="8376610503048439696">మీ అడ్మినిస్ట్రేటర్ ద్వారా ఇన్‌స్టాల్ చేయబడిన ఎక్స్‌టెన్షన్‌లను ఉపయోగించి ఇప్పటికీ ఈ సైట్‌ను చదవగలరు, మార్చగలరు</translation>
 <translation id="8376752431516546391">Google Search సైడ్ ప్యానెల్</translation>
-<translation id="8376812682111060348">బ్రౌజర్ పనితీరుపై అలర్ట్</translation>
 <translation id="8377625247046155446">ఈ పాస్-కీ కేవలం ఈ పరికరంలో మాత్రమే సేవ్ చేయబడుతుంది. మీరు అజ్ఞాత విండోలన్నింటినీ మూసివేసిన తర్వాత, అది ఈ పరికరంలో అలాగే ఉంటుంది.</translation>
 <translation id="837790003026572432">ట్యాబ్ ఆడియోను ప్రసారం చేయడానికి ఈ పరికరం సపోర్ట్ చేయదు</translation>
 <translation id="8378714024927312812">మీ సంస్థ ద్వారా నిర్వహించబడుతున్నవి</translation>

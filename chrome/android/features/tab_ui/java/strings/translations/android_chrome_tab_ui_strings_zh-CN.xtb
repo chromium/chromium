@@ -129,6 +129,7 @@
 <translation id="5042769431350623987">{WINDOW_COUNT,plural, =1{将标签页移至新窗口}other{将标签页移至另一个窗口}}</translation>
 <translation id="5073204694187207510">隐藏“全屏网格状视图”按钮</translation>
 <translation id="5076161749301278626">查看商店评价？</translation>
+<translation id="5093447877601682598">发送关于标签栏的反馈</translation>
 <translation id="5161254044473106830">必须提供标题</translation>
 <translation id="5204584298075822291">收起标签页</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome 会在 <ph name="AUTO_DELETE_DELAY_ONE" /> 个月后自动关闭闲置的标签页和标签页分组。您可以在设置中进行更改。}other{Chrome 会在 <ph name="AUTO_DELETE_DELAY_MANY" /> 个月后自动关闭闲置的标签页和标签页分组。您可以在设置中进行更改。}}</translation>

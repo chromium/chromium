@@ -1279,6 +1279,7 @@
 <translation id="6321592572353357376">‏تطلب منك الإضافة "<ph name="EXTENSION_NAME" />" تسجيل الدخول إلى Chrome</translation>
 <translation id="6324916366299863871">تعديل الاختصار</translation>
 <translation id="6324977638108296054">يتعذّر إنشاء رابط يؤدي إلى النصوص التي تم تمييزها.</translation>
+<translation id="6331836477476466332">متصفّح أكثر أمانًا وفعالية</translation>
 <translation id="6333140779060797560">المشاركة عن طريق <ph name="APPLICATION" /></translation>
 <translation id="6335454563754888572">‏يؤدي النقر على الزرّ إلى تعديل عنوان URL الذي يشير إلى صفحة على <ph name="PAGE_URL" /></translation>
 <translation id="6337234675334993532">التشفير</translation>
@@ -1436,6 +1437,7 @@
 <translation id="6867400383614725881">علامة تبويب جديدة في وضع التصفُّح المتخفي</translation>
 <translation id="686899695320434745">‏لا يتم تشفير العناوين باستخدام عبارة المرور. يتيح لك ذلك استخدامها في خدمات Google الأخرى.</translation>
 <translation id="6870625088374152862">تم تسجيل الدخول بحساب <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="6871397658902960384">بدء التصفُّح</translation>
 <translation id="687838958001010630">يمكن لأي مستخدم لديه الرابط تعديل جميع علامات التبويب</translation>
 <translation id="6880903702195291049">ما مِن أذونات بحاجة إلى مراجعة</translation>
 <translation id="6883204995689174413">مشاركة</translation>
@@ -1762,7 +1764,6 @@
 <translation id="8088176524274673045">للمشاركة مع المستخدمين على مقربة منك، اسمح لهم بمسح رمز الاستجابة السريعة هذا ضوئيًا.</translation>
 <translation id="8090732854597034573">إذا احتجت للمساعدة، يمكنك طلبها من أحد والدَيك.</translation>
 <translation id="8101414242770404289">لم يتم إغلاق أي علامات تبويب خلال <ph name="TIME_PERIOD" />.</translation>
-<translation id="8103578431304235997">علامة تبويب للتصفح المتخفي</translation>
 <translation id="810433609302852">بطاقة سفلية عن العرض الترويجي لميزة إشعارات النصائح وخطوات استخدامها</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109802255973641442">إزالة الإضافات والبيانات التي تم حفظها على هذا الجهاز</translation>

@@ -724,6 +724,7 @@
 <translation id="4044708993631234325">សន្លឹក​ខាងក្រោម</translation>
 <translation id="4045441967987592849">បើកឡើងវិញ</translation>
 <translation id="4049920046559074950">ជម្រើស​ច្រើន​ទៀត​សម្រាប់ <ph name="INSTANCE_TITLE" /></translation>
+<translation id="4051548576872472315">ស្វែងរកផ្ទាំង និងវិនដូដែលបានបិទថ្មីៗរបស់អ្នកនៅទីនេះ</translation>
 <translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{បើកនៅក្នុង​ផ្ទាំងឯកជន}other{បើកទាំងអស់ (#) នៅក្នុងផ្ទាំងឯកជន}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ផ្ទាំង​ស្តង់ដារ​ដែលមាន​សកម្មភាពថ្មី​នៅក្នុង​ក្រុមផ្ទាំងរួម}other{<ph name="TABS_COUNT_MANY" /> ផ្ទាំង​ស្តង់ដារ​ដែលមាន​សកម្មភាពថ្មី​នៅក្នុង​ក្រុមផ្ទាំងរួម}}</translation>
 <translation id="405365679581583349">ធ្វើ​បច្ចុប្បន្នភាព​សេវាកម្ម Google Play</translation>
@@ -1280,6 +1281,7 @@
 <translation id="6321592572353357376">កម្មវិធី​បន្ថែម "<ph name="EXTENSION_NAME" />" ចង់ឱ្យ​អ្នកចូលគណនី Chrome</translation>
 <translation id="6324916366299863871">កែសម្រួលផ្លូវកាត់</translation>
 <translation id="6324977638108296054">មិនអាចបង្កើតតំណ​ទៅកាន់អត្ថបទ​ដែលបានរំលេចបានទេ</translation>
+<translation id="6331836477476466332">កម្មវិធីរុករក​តាមអ៊ីនធឺណិត​ដែល​កាន់តែមាន​សុវត្ថិភាព និង​មានអានុភាព​សម្រាប់អ្នក</translation>
 <translation id="6333140779060797560">ចែករំលែកតាមរយៈ <ph name="APPLICATION" /></translation>
 <translation id="6335454563754888572">កែ URL ដែលនាំ​ទៅកាន់​ទំព័រ​នៅលើ៖ <ph name="PAGE_URL" /></translation>
 <translation id="6337234675334993532">ការអ៊ីនគ្រីប</translation>
@@ -1437,6 +1439,7 @@
 <translation id="6867400383614725881">ផ្ទាំងឯកជន​ថ្មី</translation>
 <translation id="686899695320434745">អាសយដ្ឋាន​មិនត្រូវបាន​អ៊ីនគ្រីប​ដោយប្រើ​ឃ្លាសម្ងាត់​របស់អ្នកទេ។ លក្ខណៈនេះ​អាចឱ្យអ្នក​ប្រើអាសយដ្ឋាន​ទាំងនោះ​នៅក្នុង​សេវាកម្ម Google ផ្សេងទៀត។</translation>
 <translation id="6870625088374152862">បានចូលគណនីជា <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6871397658902960384">ចាប់ផ្ដើម​រុករក</translation>
 <translation id="687838958001010630">គ្រប់គ្នា​ដែលមាន​តំណនេះអាច​កែផ្ទាំង​ទាំងអស់បាន</translation>
 <translation id="6880903702195291049">ការអនុញ្ញាត​មើលទៅគ្មានបញ្ហា​ទេ</translation>
 <translation id="6883204995689174413">ចែករំលែក</translation>
@@ -1695,6 +1698,7 @@
 <translation id="7824665136384946951">ស្ថាប័ន​របស់អ្នក​បានបិទ​ការរុករក​ដោយសុវត្ថិភាព</translation>
 <translation id="7825973332242257878">ក្រុមផ្ទាំង</translation>
 <translation id="7826342993930002256">ប្រើ Chrome របស់អ្នក​នៅទីណាក៏បាន</translation>
+<translation id="7845155831233417403">អ្នក​អាចមាន​វិនដូ​រហូតដល់ <ph name="MAX_INSTANCE_COUNT" />។ បិទវិនដូ ដើម្បីបន្ត។</translation>
 <translation id="7846161022626028328">មាន​បញ្ហា​បានកើតឡើង។ សូមព្យាយាមម្ដងទៀត។</translation>
 <translation id="7846296061357476882">សេវាកម្ម Google</translation>
 <translation id="784652447248278262">វិនដូ​បច្ចុប្បន្ន</translation>
@@ -1761,7 +1765,6 @@
 <translation id="8088176524274673045">ដើម្បីចែករំលែក​ជាមួយមនុស្ស​នៅជិត សូមអនុញ្ញាត​ឱ្យពួកគេ​ស្កេនកូដ QR នេះ</translation>
 <translation id="8090732854597034573">ប្រសិនបើ​អ្នក​ត្រូវការ​ជំនួយ សូម​ស្នើសុំពី​មាតាបិតា​របស់​អ្នក</translation>
 <translation id="8101414242770404289">មិនមាន​ផ្ទាំងពី​រយៈពេល <ph name="TIME_PERIOD" />ទេ</translation>
-<translation id="8103578431304235997">ផ្ទាំងអនាមិក</translation>
 <translation id="810433609302852">សន្លឹក​ខាងក្រោម​នៃជំហាន​ក្នុងការប្រើប្រាស់ និង​ការផ្សព្វផ្សាយ​មុខងារ​ជូនដំណឹង​អំពី​គន្លឹះ</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109802255973641442">ដកចេញនូវ​កម្មវិធីបន្ថែម និង​ទិន្នន័យ​ដែល​កម្មវិធីបន្ថែម​ទាំងនេះ​បានរក្សាទុក​នៅលើ​ឧបករណ៍នេះ</translation>

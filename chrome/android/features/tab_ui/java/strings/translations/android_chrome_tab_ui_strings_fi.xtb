@@ -129,6 +129,7 @@
 <translation id="5042769431350623987">{WINDOW_COUNT,plural, =1{Siirrä välilehdet toiseen ikkunaan}other{Siirrä välilehdet toiseen ikkunaan}}</translation>
 <translation id="5073204694187207510">Piilota koko näytön ruudukko</translation>
 <translation id="5076161749301278626">Näytetäänkö kaupan arvostelut?</translation>
+<translation id="5093447877601682598">Lähetä palautetta välilehtirivistä</translation>
 <translation id="5161254044473106830">Nimike vaaditaan</translation>
 <translation id="5204584298075822291">Tiivistä välilehdet</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome sulkee automaattisesti ei-aktiiviset välilehdet ja välilehtiryhmät <ph name="AUTO_DELETE_DELAY_ONE" /> kuukauden kuluttua. Voit muuttaa tätä asetuksista.}other{Chrome sulkee automaattisesti ei-aktiiviset välilehdet ja välilehtiryhmät <ph name="AUTO_DELETE_DELAY_MANY" /> kuukauden kuluttua. Voit muuttaa tätä asetuksista.}}</translation>

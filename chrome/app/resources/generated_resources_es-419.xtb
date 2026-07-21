@@ -4305,7 +4305,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4303079906735388947">Configura un nuevo PIN para tu llave de seguridad</translation>
 <translation id="430351398235329166">Cambia la posición de la barra de direcciones para obtener una experiencia de búsqueda personalizada</translation>
 <translation id="4304713468139749426">Administrador de contraseñas</translation>
-<translation id="4305402730127028764">Copiar a <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Cambiar</translation>
 <translation id="4306489587293957491">Ingresar</translation>
 <translation id="4306810703452026910">Chrome dejará de marcar las notificaciones de este sitio como spam</translation>
@@ -7268,7 +7267,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6657180931610302174">¿Quieres agregar un nombre de usuario?</translation>
 <translation id="6657240842932274095">¿Quieres permitir que los servicios del sistema usen tu ubicación?</translation>
 <translation id="6657585470893396449">Contraseña</translation>
-<translation id="6658957691413122395">Cambiando el tamaño de Gemini…</translation>
 <translation id="6659213950629089752">La extensión "<ph name="NAME" />" hizo zoom en esta página</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - La cámara está grabando</translation>
@@ -9504,7 +9502,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8376532149031784008">Volviendo a cargar <ph name="DOMAIN" />…</translation>
 <translation id="8376610503048439696">Las extensiones que instaló tu administrador aún pueden leer y modificar este sitio</translation>
 <translation id="8376752431516546391">Panel lateral de la Búsqueda de Google</translation>
-<translation id="8376812682111060348">Alerta de problemas de rendimiento</translation>
 <translation id="8377625247046155446">Esta llave de acceso solo se guardará en este dispositivo. Permanecerá en este dispositivo cuando cierres todas las ventanas de incógnito.</translation>
 <translation id="837790003026572432">La transmisión de audio de la pestaña no es compatible con este dispositivo</translation>
 <translation id="8378714024927312812">Administrado por tu organización</translation>

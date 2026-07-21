@@ -129,6 +129,7 @@
 <translation id="5042769431350623987">{WINDOW_COUNT,plural, =1{ย้ายแท็บไปยังหน้าต่างใหม่}other{ย้ายหลายแท็บไปยังหน้าต่างใหม่}}</translation>
 <translation id="5073204694187207510">ซ่อนตารางกริดแบบเต็มหน้าจอ</translation>
 <translation id="5076161749301278626">ดูรีวิวร้านค้าไหม</translation>
+<translation id="5093447877601682598">ส่งความคิดเห็นเกี่ยวกับแนวแท็บ</translation>
 <translation id="5161254044473106830">ต้องระบุชื่อ</translation>
 <translation id="5204584298075822291">ยุบแท็บ</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome จะปิดแท็บและกลุ่มแท็บที่ไม่ได้ใช้งานโดยอัตโนมัติหลังจากผ่านไป <ph name="AUTO_DELETE_DELAY_ONE" /> เดือน คุณเปลี่ยนค่านี้ได้ในการตั้งค่า}other{Chrome จะปิดแท็บและกลุ่มแท็บที่ไม่ได้ใช้งานโดยอัตโนมัติหลังจากผ่านไป <ph name="AUTO_DELETE_DELAY_MANY" /> เดือน คุณเปลี่ยนค่านี้ได้ในการตั้งค่า}}</translation>

@@ -129,6 +129,7 @@
 <translation id="5042769431350623987">{WINDOW_COUNT,plural, =1{Flytt faner til et nytt vindu}other{Flytt fanene til et annet vindu}}</translation>
 <translation id="5073204694187207510">Skjul fullskjermrutenett</translation>
 <translation id="5076161749301278626">Vil du se butikkanmeldelser?</translation>
+<translation id="5093447877601682598">Send tilbakemelding om faneraden</translation>
 <translation id="5161254044473106830">Du må oppgi en tittel</translation>
 <translation id="5204584298075822291">Skjul faner</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome lukker automatisk inaktive faner og fanegrupper etter <ph name="AUTO_DELETE_DELAY_ONE" /> måned. Du kan endre dette i innstillingene.}other{Chrome lukker automatisk inaktive faner og fanegrupper etter <ph name="AUTO_DELETE_DELAY_MANY" /> måneder. Du kan endre dette i innstillingene.}}</translation>

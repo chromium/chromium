@@ -4318,7 +4318,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4303079906735388947">Set up a new PIN for your security key</translation>
 <translation id="430351398235329166">Switch the position of your address bar for a customised browsing experience</translation>
 <translation id="4304713468139749426">Password Manager</translation>
-<translation id="4305402730127028764">Copy to <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Switch</translation>
 <translation id="4306489587293957491">Enter</translation>
 <translation id="4306810703452026910">Chrome will stop flagging notifications from this site as spam</translation>
@@ -7281,7 +7280,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6657180931610302174">Add username?</translation>
 <translation id="6657240842932274095">Allow system services to use your location?</translation>
 <translation id="6657585470893396449">Password</translation>
-<translation id="6658957691413122395">Resizing Gemini…</translation>
 <translation id="6659213950629089752">This page was zoomed by the "<ph name="NAME" />" extension</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – Camera recording</translation>
@@ -9517,7 +9515,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8376532149031784008">Reloading <ph name="DOMAIN" />...</translation>
 <translation id="8376610503048439696">Extensions installed by your administrator can still read and change this site</translation>
 <translation id="8376752431516546391">Google Search side panel</translation>
-<translation id="8376812682111060348">Performance issue alert</translation>
 <translation id="8377625247046155446">This passkey will only be saved on this device. It will remain on this device after you close all incognito windows.</translation>
 <translation id="837790003026572432">Casting tab audio is not supported on this device</translation>
 <translation id="8378714024927312812">Managed by your organisation</translation>

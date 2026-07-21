@@ -4317,7 +4317,6 @@
 <translation id="4303079906735388947">अपनी 'सुरक्षा कुंजी' के लिए नया पिन सेट अप करें</translation>
 <translation id="430351398235329166">ब्राउज़िंग का मनमुताबिक अनुभव पाने के लिए, पता बार की जगह बदलें</translation>
 <translation id="4304713468139749426">Password Manager</translation>
-<translation id="4305402730127028764"><ph name="DEVICE_NAME" /> में कॉपी करें</translation>
 <translation id="4305817255990598646">बदलें</translation>
 <translation id="4306489587293957491">डालें</translation>
 <translation id="4306810703452026910">Chrome, इस साइट से मिलने वाली सूचनाओं को स्पैम के तौर पर मार्क करना बंद कर देगा</translation>
@@ -7280,7 +7279,6 @@
 <translation id="6657180931610302174">उपयोगकर्ता नाम जोड़ना है?</translation>
 <translation id="6657240842932274095">क्या सिस्टम की सेवाओं को अपनी जगह की जानकारी का ऐक्सेस देना है?</translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
-<translation id="6658957691413122395">Gemini के वेब व्यू के साइज़ में बदलाव किया जा रहा है...</translation>
 <translation id="6659213950629089752">इस पेज को "<ph name="NAME" />" एक्सटेंशन द्वारा ज़ूम किया गया था</translation>
 <translation id="6659594942844771486">टैब</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - कैमरे से रिकॉर्डिंग की जा रही है</translation>
@@ -9515,7 +9513,6 @@
 <translation id="8376532149031784008"><ph name="DOMAIN" /> फिर से लोड हो रहा है...</translation>
 <translation id="8376610503048439696">आपके एडमिन ने जो एक्सटेंशन इंस्टॉल किए हैं वे अब भी इस साइट का कॉन्टेंट पढ़ सकते हैं और उसमें बदलाव कर सकते हैं</translation>
 <translation id="8376752431516546391">Google Search का साइड पैनल</translation>
-<translation id="8376812682111060348">ब्राउज़र की परफ़ॉर्मेंस पर असर डालने वाली समस्या मिली है</translation>
 <translation id="8377625247046155446">यह पासकी सिर्फ़ इस डिवाइस पर सेव की जाएगी. सभी गुप्त विंडो बंद करने के बाद, यह पासकी इस डिवाइस पर सेव रहेगी.</translation>
 <translation id="837790003026572432">इस डिवाइस पर, टैब के ऑडियो को कास्ट करने की सुविधा उपलब्ध नहीं है</translation>
 <translation id="8378714024927312812">आपके संगठन की ओर से प्रबंधित</translation>

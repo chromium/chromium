@@ -129,6 +129,7 @@
 <translation id="5042769431350623987">{WINDOW_COUNT,plural, =1{העברת כרטיסיות לחלון חדש}one{העברת כרטיסיות לחלון אחר}two{העברת כרטיסיות לחלון אחר}other{העברת כרטיסיות לחלון אחר}}</translation>
 <translation id="5073204694187207510">הסתרת רשת מסך מלא</translation>
 <translation id="5076161749301278626">להציג ביקורות נוספות על החנות?</translation>
+<translation id="5093447877601682598">שליחת משוב על שורת הכרטיסיות</translation>
 <translation id="5161254044473106830">יש להזין כותרת</translation>
 <translation id="5204584298075822291">כיווץ הכרטיסיות</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{‏‫Chrome סוגר באופן אוטומטי כרטיסיות וקבוצות של כרטיסיות לא פעילות אחרי חודש אחד (<ph name="AUTO_DELETE_DELAY_ONE" />). אפשר לשנות את זה בהגדרות.}one{‏‫Chrome סוגר באופן אוטומטי כרטיסיות וקבוצות של כרטיסיות לא פעילות אחרי <ph name="AUTO_DELETE_DELAY_MANY" /> חודשים. אפשר לשנות את זה בהגדרות.}two{‏‫Chrome סוגר באופן אוטומטי כרטיסיות וקבוצות של כרטיסיות לא פעילות אחרי חודשיים (<ph name="AUTO_DELETE_DELAY_MANY" />). אפשר לשנות את זה בהגדרות.}other{‏‫Chrome סוגר באופן אוטומטי כרטיסיות וקבוצות של כרטיסיות לא פעילות אחרי <ph name="AUTO_DELETE_DELAY_MANY" /> חודשים. אפשר לשנות את זה בהגדרות.}}</translation>

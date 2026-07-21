@@ -129,6 +129,7 @@
 <translation id="5042769431350623987">{WINDOW_COUNT,plural, =1{Mover las pestañas a una ventana nueva}other{Mover las pestañas a otras ventanas}}</translation>
 <translation id="5073204694187207510">Oculta la cuadrícula de pantalla completa</translation>
 <translation id="5076161749301278626">¿Quieres ver las opiniones de la tienda?</translation>
+<translation id="5093447877601682598">Enviar comentarios sobre la barra de pestañas</translation>
 <translation id="5161254044473106830">Se requiere un título</translation>
 <translation id="5204584298075822291">Contraer pestañas</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome cierra automáticamente las pestañas y los grupos de pestañas inactivos después de <ph name="AUTO_DELETE_DELAY_ONE" /> mes. Puedes cambiarlo en la configuración.}other{Chrome cierra automáticamente las pestañas y los grupos de pestañas inactivos después de <ph name="AUTO_DELETE_DELAY_MANY" /> meses. Puedes cambiarlo en la configuración.}}</translation>

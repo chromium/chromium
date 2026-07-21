@@ -1280,6 +1280,7 @@
 <translation id="6321592572353357376">„<ph name="EXTENSION_NAME" />“ გაფართოების გამოსაყენებლად შედით Chrome-ში</translation>
 <translation id="6324916366299863871">მალსახმობის რედაქტირება</translation>
 <translation id="6324977638108296054">გამოყოფილთან ბმულის შექმნა ვერ მოხერხდა</translation>
+<translation id="6331836477476466332">უსაფრთხო და მძლავრი ბრაუზერი თქვენთვის</translation>
 <translation id="6333140779060797560">გაზიარების პროგრამა: <ph name="APPLICATION" /></translation>
 <translation id="6335454563754888572">დაარედაქტირეთ URL, რომელიც მიმართულია გვერდზე: <ph name="PAGE_URL" /></translation>
 <translation id="6337234675334993532">დაშიფვრა</translation>
@@ -1437,6 +1438,7 @@
 <translation id="6867400383614725881">ახალი ინკოგნიტო ჩანართი</translation>
 <translation id="686899695320434745">მისამართები არ არის დაშიფრული თქვენი საიდუმლო ფრაზით. აღნიშნული საშუალებას გაძლევთ, გამოიყენოთ ისინი სხვა Google სერვისებში.</translation>
 <translation id="6870625088374152862">შესული ხართ, როგორც <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6871397658902960384">დათვალიერების დაწყება</translation>
 <translation id="687838958001010630">ყველას, ვისაც აქვს ბმული, შეუძლია ნებისმიერი ჩანართის რედაქტირება</translation>
 <translation id="6880903702195291049">ნებართვები წესრიგშია</translation>
 <translation id="6883204995689174413">გაზიარება</translation>
@@ -1761,7 +1763,6 @@
 <translation id="8088176524274673045">ახლოს მყოფ ადამიანებთან გასაზიარებლად სთხოვეთ მათ ამ QR კოდის სკანირება</translation>
 <translation id="8090732854597034573">საჭიროებისამებრ, დაიხმარეთ მშობელი</translation>
 <translation id="8101414242770404289"><ph name="TIME_PERIOD" /> ჩანართები არ ფიქსირდება</translation>
-<translation id="8103578431304235997">ინკოგნიტო ჩანართი</translation>
 <translation id="810433609302852">რჩევების შეტყობინების ჩვენების პრომოსა და გამოყენების ინსტრუქციის ქვედა ფურცელი</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109802255973641442">გაფართოებებისა და მათ მიერ ამ მოწყობილობაზე შენახული მონაცემების ამოშლა</translation>

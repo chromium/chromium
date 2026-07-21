@@ -699,6 +699,7 @@
 <translation id="1542137295869176367">ನಿಮ್ಮ ಸೈನ್-ಇನ್ ಡೇಟಾವನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="1543284117603151572">Edge ನಿಂದ ಆಮದು ಮಾಡಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
 <translation id="1543538514740974167">ತ್ವರಿತವಾಗಿ ಇಲ್ಲಿ ಪಡೆಯಿರಿ</translation>
+<translation id="1544026754762189866">ಈ ಕಂಟೆಂಟ್ ಅನ್ನು ಕಾಪಿ ಮಾಡಬಾರದೆಂದು ನಿಮ್ಮ ಸಂಸ್ಥೆ ಸಲಹೆ ನೀಡುತ್ತದೆ</translation>
 <translation id="1544588554445317666">ಚಿಕ್ಕ ಫೈಲ್ ಹೆಸರನ್ನು ಬಳಸಲು ಅಥವಾ ಬೇರೆ ಫೋಲ್ಡರ್‌ಗೆ ಉಳಿಸಲು ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="1545749641540134597">QR ಕೋಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
 <translation id="1545775234664667895">ಸ್ಥಾಪಿಸಲಾಗಿರುವ ಥೀಮ್ "<ph name="THEME_NAME" />"</translation>
@@ -1501,6 +1502,7 @@
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2168036794078614559">ವರದಿಯನ್ನು ಕಳುಹಿಸಲಾಗಿದೆ</translation>
 <translation id="2169062631698640254">ಹೇಗಾದರೂ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
+<translation id="217120844667431680">AI ಮೋಡ್ ಮೂಲಕ ಇನ್ನಷ್ಟು ಮಾಡಿ</translation>
 <translation id="2173302385160625112">ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="2175384018164129879">&amp;ಹುಡುಕಾಟ ಎಂಜಿನ್‌ಗಳು ಮತ್ತು ಸೈಟ್ ಹುಡುಕಾಟವನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="2175526076681939329">ಪ್ರಾಥಮಿಕ ಕೀಗಳನ್ನು ಬಳಸಿ</translation>
@@ -1816,6 +1818,7 @@
 <translation id="2424424966051154874">{0,plural, =1{ಅತಿಥಿ}one{ಅತಿಥಿಗಳು (#)}other{ಅತಿಥಿಗಳು (#)}}</translation>
 <translation id="2426805022920575512">ಇನ್ನೊಂದು ಖಾತೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="2427507373259914951">ಎಡ-ಕ್ಲಿಕ್</translation>
+<translation id="2428120669821109648">ಟ್ಯಾಬ್ ಸ್ಟೈಲಿಂಗ್</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 ಖಾತೆ, ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್‌ ಮಾಡಲಾಗಿದೆ. ಇನ್ನಷ್ಟು ವಿವರಗಳು}one{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} ಖಾತೆಗಳು, ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್‌ ಮಾಡಲಾಗಿದೆ. ಇನ್ನಷ್ಟು ವಿವರಗಳು}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} ಖಾತೆಗಳು, ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್‌ ಮಾಡಲಾಗಿದೆ. ಇನ್ನಷ್ಟು ವಿವರಗಳು}}</translation>
 <translation id="2428510569851653187">ಟ್ಯಾಬ್ ಕ್ರ್ಯಾಶ್ ಆದಾಗ ನೀವೇನು ಮಾಡುತ್ತಿದ್ದಿರಿ ಎಂಬುದನ್ನು ವಿವರಿಸಿ</translation>
 <translation id="2428939361789119025">ವೈ-ಫೈ ಆಫ್ ಮಾಡಿ</translation>
@@ -3501,6 +3504,7 @@
 <translation id="3700993174159313525">ನಿಮ್ಮ ಕ್ಯಾಮರಾದ ಸ್ಥಾನವನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="3701167022068948696">ಈಗಲೇ ಸರಿಪಡಿಸಿ</translation>
 <translation id="3701515417135397388">ಡೇಟಾ ಉಲ್ಲಂಘನೆಯಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್ ಅಪಾಯಕ್ಕೀಡಾದರೆ ನಿಮಗೆ ಎಚ್ಚರಿಕೆ ನೀಡಲಾಗುವುದು</translation>
+<translation id="3701778844313851487">ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳಿಗೆ ಹೋಗಿ</translation>
 <translation id="3703166520839776970">ಈ ಸಮಸ್ಯೆ ಮುಂದುವರಿದರೆ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ನಿಂದ ಇನ್ನಷ್ಟು ಮಾಹಿತಿಯನ್ನು ಪಡೆಯಲು ಕೆಳಗೆ "ಇನ್ನಷ್ಟು ವಿವರಗಳು" ಎಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="3703699162703116302">ಟಿಕೆಟ್ ಅನ್ನು ರಿಫ್ರೆಶ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="370415077757856453">JavaScript ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
@@ -4308,7 +4312,6 @@
 <translation id="4303079906735388947">ನಿಮ್ಮ ಭದ್ರತೆ ಕೀಗಾಗಿ ಹೊಸ ಪಿನ್ ಸೆಟಪ್ ಮಾಡಿ</translation>
 <translation id="430351398235329166">ಕಸ್ಟಮೈಸ್ ಮಾಡಿದ ಬ್ರೌಸಿಂಗ್ ಅನುಭವಕ್ಕಾಗಿ ನಿಮ್ಮ ವಿಳಾಸ ಪಟ್ಟಿಯ ಸ್ಥಾನವನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="4304713468139749426">ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕ</translation>
-<translation id="4305402730127028764"><ph name="DEVICE_NAME" /> ಗೆ ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="4305817255990598646">ಬದಲಿಸಿ</translation>
 <translation id="4306489587293957491">ನಮೂದಿಸಿ</translation>
 <translation id="4306810703452026910">ಈ ಸೈಟ್‌ನಿಂದ ಬರುವ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಸ್ಪ್ಯಾಮ್ ಎಂದು ಫ್ಲ್ಯಾಗ್ ಮಾಡುವುದನ್ನು Chrome ನಿಲ್ಲಿಸುತ್ತದೆ</translation>
@@ -4580,6 +4583,7 @@
 <translation id="4523876148417776526">XML ಸೈಟ್‌ಲಿಸ್ಟ್‌ಗಳನ್ನು ಇನ್ನೂ ಪಡೆಯಲಾಗಿಲ್ಲ.</translation>
 <translation id="4526051299161934899">ಮರೆಮಾಡಲಾದ ಸೇವ್ ಮಾಡಿದ ಟ್ಯಾಬ್ ಗುಂಪುಗಳು</translation>
 <translation id="452750746583162491">ಸಿಂಕ್ ಮಾಡಲಾಗಿರುವ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
+<translation id="4528216716764031072">ಆಧುನಿಕ (ಪಾರದರ್ಶಕ)</translation>
 <translation id="4528494169189661126">ಅನುವಾದ ಸಲಹೆ</translation>
 <translation id="4529455689802245339">Chrome ಲೈವ್ ಕ್ಯಾಪ್ಶನ್ ಕಾರ್ಯನಿರ್ವಹಿಸದೇ ಇರಬಹುದು</translation>
 <translation id="4531451811601110068">ನೀವು ಪುನಃ ಪ್ರಯತ್ನಿಸಬಹುದು ಅಥವಾ ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಹಾಯಕ್ಕಾಗಿ ಸಂಪರ್ಕಿಸಬಹುದು</translation>
@@ -4733,6 +4737,7 @@
 <translation id="4645575059429386691">ನಿಮ್ಮ ಪೋಷಕರು ನಿರ್ವಹಿಸುತ್ತಿದ್ದಾರೆ</translation>
 <translation id="4645676300727003670">&amp;ಇರಿಸಿ</translation>
 <translation id="4646675363240786305">ಪೋರ್ಟ್‌ಗಳು</translation>
+<translation id="4646859937978908916">ಹೊಸದಾಗಿ ಸೇರಿಸಲಾದ ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪಿನ್ ಮಾಡಲಾಗುತ್ತದೆ. ಇದನ್ನು ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳ ಪುಟದಲ್ಲಿ ಬದಲಾಯಿಸಿ.</translation>
 <translation id="4647025838970719122">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸುತ್ತಾರೆ</translation>
 <translation id="4647090755847581616">&amp;ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="4647283074445570750"><ph name="TOTAL_STEPS" /> ಹಂತಗಳಲ್ಲಿ <ph name="CURRENT_STEP" /> ಹಂತ</translation>
@@ -7273,7 +7278,6 @@
 <translation id="6657180931610302174">ಬಳಕೆದಾರರ ಹೆಸರನ್ನು ಸೇರಿಸಬೇಕೆ?</translation>
 <translation id="6657240842932274095">ನಿಮ್ಮ ಸ್ಥಳದ ಮಾಹಿತಿಯನ್ನು ಬಳಸಲು ಸಿಸ್ಟಂ ಸೇವೆಗಳನ್ನು ಅನುಮತಿಸಬೇಕೆ?</translation>
 <translation id="6657585470893396449">ಪಾಸ್‌ವರ್ಡ್</translation>
-<translation id="6658957691413122395">Gemini ಅನ್ನು ಮರುಗಾತ್ರಗೊಳಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="6659213950629089752">ಈ ಪುಟವನ್ನು "<ph name="NAME" />" ವಿಸ್ತರಣೆಯಿಂದ  ಝೂಮ್‌ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="6659594942844771486">ಟ್ಯಾಬ್</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - ಕ್ಯಾಮರಾ ರೆಕಾರ್ಡಿಂಗ್</translation>
@@ -8309,6 +8313,7 @@
 <translation id="7446716846072322308">ಇದು <ph name="SITE_NAME" /> ಮತ್ತು ಸಂಬಂಧಿತ ಸೈಟ್‌ಗಳಲ್ಲಿ ಸಂಗ್ರಹವಾಗಿರುವ <ph name="TOTAL_USAGE" /> ಡೇಟಾವನ್ನು ಅಳಿಸುತ್ತದೆ</translation>
 <translation id="7448430327655618736">ಆ್ಯಪ್‌ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ</translation>
 <translation id="7448664748118305024">ನೀವು ಎಲ್ಲಾ ವಿಂಡೋಗಳನ್ನು ಮುಚ್ಚಿದಾಗ, ಸೈಟ್‌ಗಳು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಉಳಿಸಿರುವ ಡೇಟಾವನ್ನು ಅಳಿಸಿ</translation>
+<translation id="7449806939046594699">ಈ ಕಂಟೆಂಟ್ ಅನ್ನು ಕಾಪಿ ಮಾಡುವುದನ್ನು ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನಿರ್ಬಂಧಿಸಿದೆ</translation>
 <translation id="7450761244949417357">ಇದೀಗ <ph name="ALTERNATIVE_BROWSER_NAME" /> ನಲ್ಲಿ ತೆರೆಯಲಾಗುತ್ತಿದೆ</translation>
 <translation id="7450926666485653189">ನಿಮ್ಮ IP ವಿಳಾಸವನ್ನು ಮರೆಮಾಡುವ ಗೌಪ್ಯತೆ ಸರ್ವರ್ ಮೂಲಕ URL ನ ಮಬ್ಬುಗೊಳಿಸಿದ ಭಾಗವನ್ನು Google ಗೆ ಕಳುಹಿಸುತ್ತದೆ</translation>
 <translation id="7453008956351770337">ಈ ಪ್ರಿಂಟರ್‌ ಆಯ್ಕೆ ಮಾಡುವ ಮೂಲಕ ನಿಮ್ಮ ಪ್ರಿಂಟರ್‌ ಪ್ರವೇಶಕ್ಕೆ ನೀವು ಈ ಮುಂದಿನ ವಿಸ್ತರಣೆ ಅನುಮತಿಯನ್ನು ನೀಡುತ್ತಿರುವಿರಿ:</translation>
@@ -8816,6 +8821,7 @@
 <translation id="7849264908733290972">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ &amp;ಇಮೇಜ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="784934925303690534">ಸಮಯ ವ್ಯಾಪ್ತಿ</translation>
 <translation id="7850320739366109486">ಅಡಚಣೆ ಮಾಡಬೇಡಿ</translation>
+<translation id="7851303446278533774">ರಚಿಸಿ, ಪ್ಲಾನ್ ಮಾಡಿ, ಸಾರಾಂಶಗೊಳಿಸಿ</translation>
 <translation id="7851716364080026749">ಯಾವಾಗಲೂ ಕ್ಯಾಮರಾ ಹಾಗೂ ಮೈಕ್ರೋಫೋನ್ ಪ್ರವೇಶನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="78526636422538552">ಹೆಚ್ಚಿನ Google ಖಾತೆಗಳ ಸೇರಿಸುವಿಕೆಯನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="7853747251428735">ಇನ್ನಷ್ಟು ಪರಿಕರ&amp;ಗಳು</translation>
@@ -9506,7 +9512,6 @@
 <translation id="8376532149031784008"><ph name="DOMAIN" /> ಅನ್ನು ಪುನಃ ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="8376610503048439696">ನಿಮ್ಮ ನಿರ್ವಾಹಕರಿಂದ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾದ ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳು ಈಗಲೂ ಈ ಸೈಟ್ ಅನ್ನು ಓದಬಹುದು ಮತ್ತು ಬದಲಾಯಿಸಬಹುದು</translation>
 <translation id="8376752431516546391">Google Search ಪಾರ್ಶ್ವ ಫಲಕ</translation>
-<translation id="8376812682111060348">ಪರ್ಫಾರ್ಮೆನ್ಸ್ ಸಮಸ್ಯೆ ಕುರಿತ ಎಚ್ಚರಿಕೆ</translation>
 <translation id="8377625247046155446">ಈ ಪಾಸ್‌ಕೀಯನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಉಳಿಸಲಾಗುತ್ತದೆ. ನೀವು ಎಲ್ಲಾ ಅಜ್ಞಾತ ವಿಂಡೋಗಳನ್ನು ಮುಚ್ಚಿದ ನಂತರ ಅದು ಈ ಸಾಧನದಲ್ಲಿ ಉಳಿಯುತ್ತದೆ.</translation>
 <translation id="837790003026572432">ಈ ಸಾಧನದಲ್ಲಿ ಟ್ಯಾಬ್ ಆಡಿಯೋ ಬಿತ್ತರಿಸುವಿಕೆಗೆ ಬೆಂಬಲವಿಲ್ಲ</translation>
 <translation id="8378714024927312812">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗಿದೆ</translation>

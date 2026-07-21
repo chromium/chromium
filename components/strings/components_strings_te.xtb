@@ -255,6 +255,7 @@
 <translation id="1393071644879491291">మీరు చూడటానికి ట్రై చేసిన సైట్‌లో అటాకర్‌లు సాఫ్ట్‌వేర్‌ను ఇన్‌స్టాల్ చేసేలా లేదా మీ పాస్‌వర్డ్‌లు, ఫోన్ లేదా క్రెడిట్ కార్డ్ నంబర్‌లు వంటి వివరాలను బహిర్గతం చేసేలా మిమ్మల్ని మోసగించవచ్చు. భద్రత కోసం ఆ సైట్ నుండి నిష్క్రమించాల్సిందిగా మీకు Chrome సూచిస్తోంది. <ph name="BEGIN_LEARN_MORE_LINK" />ఈ హెచ్చరిక గురించి మరింత తెలుసుకోండి<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">మీరు ఇక్కడ జోడించే సైట్‌లు, ఆ ట్యాబ్ తెరిచి ఉన్నప్పటికీ, సమాధానాల కోసం ఉపయోగించబడవు. మీరు జోడించే సైట్ ప్రస్తుతం ఏదైనా థ్రెడ్‌లో ఉపయోగించబడుతుంటే, ఆ థ్రెడ్ దాన్ని ఉపయోగించడం ఆపివేయడానికి 30 నిమిషాల వరకు సమయం పట్టవచ్చు.</translation>
 <translation id="1402151528875251561">సైడ్ ప్యానెల్‌లో హిస్టరీని చూడండి</translation>
+<translation id="1404026649028693342">AI మోడ్‌ను ఎల్లప్పుడూ చూడండి</translation>
 <translation id="1405567553485452995">లేత ఆకుపచ్చ రంగు</translation>
 <translation id="1406370515365284486">మీ పేమెంట్ ఆప్షన్‌లు ఇప్పటికీ సేవ్ చేయబడతాయి</translation>
 <translation id="1406500794671479665">ధృవీకరిస్తోంది...</translation>
@@ -650,7 +651,6 @@
 <translation id="2027465737841872819">ప్లాస్టిక్</translation>
 <translation id="2027707238798802149">కార్డ్ అందుబాటులో లేదు</translation>
 <translation id="2029735183873159415">సంతతి &amp; వంశ పరిణామ క్రమం</translation>
-<translation id="2031095660415483845">ఎక్కడి నుండైనా సెర్చ్ చేసి, ఫిల్ చేయండి...</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />ప్రాక్సీని, ఫైర్‌వాల్‌ను చెక్ చేయడం<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">షార్ట్‌కట్ అనేది <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> ద్వారా నిర్వచించబడిన ఆటోమేటిక్ సెర్చ్ ప్రొవైడర్ కీవర్డ్ లాగా ఉండకూడదు: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">ఏదేమైనా సేవ్ చేయండి</translation>
@@ -668,6 +668,7 @@
 <translation id="2059202684901022309">22 x 34 అంగుళాలు</translation>
 <translation id="2064568741209980952">రుణాలు &amp; అప్పులు ఇవ్వడం</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 సూచన}other{# సూచనలు}}</translation>
+<translation id="2066690553719545730">AI మోడ్‌ను ఎల్లప్పుడూ చూడండి</translation>
 <translation id="2066969741541525119">ముందున్న సైట్ మీ సంస్థ ద్వారా బ్లాక్ చేయబడింది</translation>
 <translation id="2069913043427250781">వాహనం &amp; ట్రాఫిక్ భద్రత</translation>
 <translation id="2071156619270205202">వర్చువల్ కార్డ్ నంబర్ కోసం ఈ కార్డ్‌కు అర్హత లేదు.</translation>
@@ -2448,6 +2449,7 @@
 <translation id="4786804728079074733">వాలీబాల్</translation>
 <translation id="4787182171088676626">ఎన్వలప్ (ఫైన్)</translation>
 <translation id="4791134497475588553">ఇన్‌స్టాల్ చేయబడిన Linux యాప్‌లు మరియు వాటిని చివరిగా ఎప్పుడు ఉపయోగించినది తెలిపే వివరాలు</translation>
+<translation id="4791602164422809437">Geminiలోని పర్సనల్ ఇంటెలిజెన్స్ సహాయంతో పని చేస్తుంది. పేజీ టైటిళ్లు, URLలు Googleకు వెళతాయి. వీటిని రివ్యూవర్‌లు రివ్యూ చేసే అవకాశం ఉంది. <ph name="BEGIN_LINK" />సెట్టింగ్‌లను మేనేజ్ చేస్తుంది<ph name="END_LINK" /></translation>
 <translation id="4792686369684665359">మీరు సమర్పించబోయే సమాచారం సురక్షితమైనది కాదు</translation>
 <translation id="4793219378458250238">11 x 12 అంగుళాలు</translation>
 <translation id="4796594887379589189">జాబ్ ఖాతా ID</translation>
@@ -3024,6 +3026,7 @@
 <translation id="5675809467256309336">డ్యాన్స్ &amp; ఎలక్ట్రానిక్ మ్యూజిక్</translation>
 <translation id="5675959228867414813">తేదీ వారీగా చూడండి</translation>
 <translation id="567604591393105935">దిగువున ఉన్న కామర్స్ షీట్ సగం ఎత్తులో తెరవబడింది</translation>
+<translation id="5676124785522323481">కనెక్ట్ అయిన యాప్‌లను మేనేజ్ చేయండి</translation>
 <translation id="5676641328629468296">Google Pay, Pix</translation>
 <translation id="5678007133659493065">ఫాయిల్</translation>
 <translation id="5679086391497468752">ఇంటి అడ్రస్</translation>
@@ -3385,6 +3388,7 @@
 <translation id="6240553182907836376">ఐడెంటిటీ కార్డ్‌ను అప్‌డేట్ చేయండి</translation>
 <translation id="6240601837375010619">పాస్‌పోర్ట్‌ను సేవ్ చేయండి</translation>
 <translation id="6240964651812394252">మీ ఆపరేటింగ్ సిస్టమ్‌తో Google Password Managerను ఉపయోగించడానికి, Chromeను రీ-లాంచ్ చేసి, మీ కంప్యూటర్ పాస్‌వర్డ్ మేనేజర్‌కు యాక్సెస్‌ను అనుమతించండి. మీ ట్యాబ్‌లు రీ-లాంచ్ చేసిన తర్వాత మళ్లీ తెరవబడతాయి.</translation>
+<translation id="6244366663267187541">Gemini ఏ యాప్‌లకు కనెక్ట్ అవ్వాలో ఎంచుకోండి</translation>
 <translation id="624499991300733384">ప్రింట్ కంపోజిటర్ సేవ</translation>
 <translation id="6246316216123107851"><ph name="NUM_DAYS" /> రోజుల క్రితం</translation>
 <translation id="6246382863801034910">వెహికిల్</translation>
@@ -4198,6 +4202,7 @@
 <translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> మీ అర్హతను చెక్ చేస్తుంది (ఇది మీ క్రెడిట్ స్కోర్‌ను ప్రభావితం చేయదు). ఆమోదించబడితే, <ph name="BNPL_ISSUER_NAME" /> మీరు ఎంచుకోవడానికి, మీ కొనుగోలును పూర్తి చేయడానికి పేమెంట్ ప్లాన్‌లను అందిస్తుంది.</translation>
 <translation id="7489392576326061356">షాంపూలు &amp; కండీషనర్‌లు</translation>
 <translation id="7489919936111034362">మీ Google Drive స్టోరేజ్ నిండింది</translation>
+<translation id="7490622939531327327">మెరుగైన ఫారమ్ అవగాహన</translation>
 <translation id="7495528107193238112">ఈ కంటెంట్ బ్లాక్ అయింది. ఈ సమస్య పరిష్కారం కోసం సైట్ ఓనర్‌ను సంప్రదించండి.</translation>
 <translation id="749865518782565832">ప్లంబింగ్</translation>
 <translation id="7499188644237027195">మీరు Chromeలో కొనుగోళ్లు చేసినప్పుడు, eWallet, Pixను ఆప్షన్స్‌గా చూడండి</translation>
@@ -4438,7 +4443,6 @@
 <translation id="7840103971441592723">స్క్రీన్ క్యాప్చర్ ప్రారంభమైంది</translation>
 <translation id="784137052867620416">షాపింగ్ గణాంకాలు</translation>
 <translation id="7841633276323004751">పేమెంట్ చేయడానికి, మీరు అందుబాటులో ఉన్న పేమెంట్ ఆప్షన్‌లను ఎంచుకోవచ్చు. కీబోర్డ్ దాచబడింది.</translation>
-<translation id="784189052219692670">Gemini ఇప్పుడు మీ Google యాప్‌లన్నింటి నుండి మీ వ్యక్తిగత సమాచారాన్ని సేకరించి, మీరు చూస్తున్న పేజీలో దాన్ని ఆటోఫిల్ చేయగలదు.</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{ఏదీ వద్దు}=1{1 యాప్ (<ph name="EXAMPLE_APP_1" />)}=2{2 యాప్‌లు (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# యాప్‌లు (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">ఎర్రర్ ఏర్పడింది. మళ్లీ ట్రై చేయండి.</translation>
 <translation id="784623644169604270">ఇటీవలి యాక్టివిటీ ఏదీ లేదు</translation>
@@ -4840,7 +4844,6 @@
 <translation id="8488350697529856933">వీటికి వర్తిస్తుంది</translation>
 <translation id="8490137692873530638">స్టాకర్ 10</translation>
 <translation id="8493948351860045254">స్థలాన్ని ఖాళీ చేయి</translation>
-<translation id="8495170825732897952">ట్యాబ్‌లు మారాల్సిన అవసరం లేకుండానే, మీ సమాచారాన్ని వెతికి ఫారమ్‌లో ఫిల్ చేయడానికి ఎక్కడైనా @@ అని టైప్ చేయండి</translation>
 <translation id="8498870489552322848"><ph name="APP_NAME" />‌లో మీ గోప్యమైన సమాచారాన్ని పూరించండి</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> ప్రతిస్పందించడానికి చాలా ఎక్కువ సమయం పట్టింది.</translation>
 <translation id="8502023382441452707">పుట్టినరోజులు &amp; నామకరణ రోజులు</translation>
@@ -5189,6 +5192,7 @@
 <translation id="9078912659001679888">బ్లెండర్‌లు &amp; జూసర్‌లు</translation>
 <translation id="9078964945751709336">మరింత సమాచారం ఆవశ్యకం</translation>
 <translation id="9080712759204168376">ఆర్డర్ సారాంశం</translation>
+<translation id="908365381820697818">ఇప్పుడు మీరు Gmail, అలాగే మరెన్నో వాటి నుండి సమాచారాన్ని వెతికి, ఫిల్ చేయవచ్చు</translation>
 <translation id="9084304544887760521">ఏదైనా సైట్‌లో మీరు ట్రాక్ చేస్తున్న ఐటెమ్‌ల ధర తగ్గినప్పుడు <ph name="EMAIL" />‌కు ఈమెయిల్స్ పొందండి.</translation>
 <translation id="9089260154716455634">తీరిక వేళల విధానం:</translation>
 <translation id="9090218457905363312">రెగ్గే &amp; కరేబియన్ మ్యూజిక్</translation>

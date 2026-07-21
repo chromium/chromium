@@ -260,6 +260,7 @@
 <translation id="1393071644879491291">तपाईंले खोल्न खोज्नुभएको साइटमा ह्याकरहरूले तपाईंलाई झुक्याएर कुनै सफ्टवेयर इन्स्टल गर्न वा तपाईंका पासवर्ड, फोन नम्बर वा क्रेडिट कार्ड नम्बर जस्ता कुराहरू खुलाउन लगाउन सक्छन्। ह्याकरहरूबाट सुरक्षित रहनका लागि Chrome ले तपाईंलाई यो साइट नखोल्न सिफारिस गर्छ। <ph name="BEGIN_LEARN_MORE_LINK" />यो चेतावनीका बारेमा थप जान्नुहोस्<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">तपाईंले यहाँ हाल्ने साइटहरू ट्याबमा खोलिएका भए पनि जवाफ दिँदा ती साइटहरूबाट सन्दर्भ लिइने छैन। तपाईंले हाल्ने साइट हाल कुनै थ्रेडमा प्रयोग भइरहेको छ भने उक्त थ्रेडले उक्त साइटको सन्दर्भ लिन छाड्न ३० मिनेटसम्म लाग्न सक्छ।</translation>
 <translation id="1402151528875251561">साइड प्यानलमा हिस्ट्री देखाउनुहोस्</translation>
+<translation id="1404026649028693342">AI मोड सधैँ देखाउनुहोस्</translation>
 <translation id="1405567553485452995">हल्का हरियो</translation>
 <translation id="1406370515365284486">तपाईंका भुक्तानी विधिहरू अझै पनि सेभ गरिने छन्</translation>
 <translation id="1406500794671479665">रुजू गर्दै...</translation>
@@ -655,7 +656,6 @@
 <translation id="2027465737841872819">प्लास्टिक</translation>
 <translation id="2027707238798802149">कार्ड उपलब्ध छैन</translation>
 <translation id="2029735183873159415">पूर्वज तथा वंशावली</translation>
-<translation id="2031095660415483845">जुनसुकै ठाउँबाट खोज्नुहोस् र भर्नुहोस्...</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />प्रोक्सी र फायरवाललाई जाँच गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">यो सर्टकट र <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> ले परिभाषित गरिएको खोज प्रदायकको डिफल्ट किवर्ड एउटै हुनु हुँदैन: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">जे भए पनि सेभ गर्नुहोस्</translation>
@@ -673,6 +673,7 @@
 <translation id="2059202684901022309">२२ x ३४ इन्च</translation>
 <translation id="2064568741209980952">क्रेडिट तथा ऋण</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{१ सुझाव}other{# सुझावहरू}}</translation>
+<translation id="2066690553719545730">AI मोड सधैँ देखाउनुहोस्</translation>
 <translation id="2066969741541525119">तपाईंको सङ्गठनले तपाईंले खोल्न लाग्नुभएको साइट ब्लक गरेको छ</translation>
 <translation id="2069913043427250781">सवारी साधन तथा यातायात सुरक्षा</translation>
 <translation id="2071156619270205202">यो कार्डलाई भर्चुअल कार्ड नम्बर प्रदान गर्न मिल्दैन।</translation>
@@ -2451,6 +2452,7 @@
 <translation id="4786804728079074733">भलिबल</translation>
 <translation id="4787182171088676626">इन्भलप (फाइन)</translation>
 <translation id="4791134497475588553">स्थापना गरिएका Linux एप र यिनीहरूलाई अन्तिम पटक प्रयोग गरिएको समय</translation>
+<translation id="4791602164422809437">Gemini मा उपलब्ध पर्सनल इन्टेलिजेन्स प्रयोग गरी बनाइएको। पेजका शीर्षक र URL हरू Google मा पठाइन्छन् र समीक्षकहरू तिनको समीक्षा गर्न सक्छन्। <ph name="BEGIN_LINK" />सेटिङ मिलाउनुहोस्<ph name="END_LINK" /></translation>
 <translation id="4792686369684665359">तपाईंले पेस गर्न लाग्नुभएको जानकारी सुरक्षित छैन</translation>
 <translation id="4793219378458250238">११ x १२ इन्च</translation>
 <translation id="4796594887379589189">कार्य खाताको ID</translation>
@@ -3027,6 +3029,7 @@
 <translation id="5675809467256309336">नृत्य तथा इलेक्ट्रोनिक सङ्गीत</translation>
 <translation id="5675959228867414813">मितिअनुसार देखाउनुहोस्</translation>
 <translation id="567604591393105935">कमर्स बटम सिट स्क्रिनको आधा भाग ओगट्ने गरी खोलिएको छ</translation>
+<translation id="5676124785522323481">कनेक्ट गरिएका एपहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="5676641328629468296">Google Pay, Pix</translation>
 <translation id="5678007133659493065">फोइल</translation>
 <translation id="5679086391497468752">घरको ठेगाना</translation>
@@ -3388,6 +3391,7 @@
 <translation id="6240553182907836376">परिचयपत्र अपडेट गर्नुहोस्</translation>
 <translation id="6240601837375010619">राहदानीसम्बन्धी जानकारी सेभ गर्नुहोस्</translation>
 <translation id="6240964651812394252">अपरेटिङ सिस्टममा पासवर्ड म्यानेजर प्रयोग गर्न Chrome रिलन्च गर्नुहोस् र कम्प्युटरको पासवर्ड म्यानेजर प्रयोग गर्ने अनुमति दिनुहोस्। रिलन्च गरेपछि तपाईंका ट्याबहरू फेरि खुल्ने छन्।</translation>
+<translation id="6244366663267187541">Gemini लाई कुन कुन एपसँग कनेक्ट गर्न दिने भन्ने कुरा छनौट गर्नुहोस्</translation>
 <translation id="624499991300733384">छाप्नका लागि अक्षर मिलाइदिने सेवा</translation>
 <translation id="6246316216123107851"><ph name="NUM_DAYS" /> दिनअघि</translation>
 <translation id="6246382863801034910">सवारी साधन</translation>
@@ -4200,6 +4204,7 @@
 <translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> ले तपाईंको योग्यता जाँच गर्ने छ (यसो गर्दा तपाईंको क्रेडिट स्कोर घटबढ हुँदैन)। स्वीकृत गरिएका खण्डमा <ph name="BNPL_ISSUER_NAME" /> ले तपाईंलाई छनौट गर्न मिल्ने भुक्तानी योजनाहरू उपलब्ध गराउने छ। त्यसपछि तपाईं भुक्तानी योजना छनौट गरेर खरिद प्रक्रिया पूरा गर्न सक्नुहुन्छ।</translation>
 <translation id="7489392576326061356">स्याम्पु तथा कन्डिसनर</translation>
 <translation id="7489919936111034362">तपाईंको Google Drive को भण्डारण भरिएको छ</translation>
+<translation id="7490622939531327327">फाराम अझ राम्रोसँग बुझ्ने सुविधा</translation>
 <translation id="7495528107193238112">यो सामग्रीलाई रोक लगाइएको छ। यो समस्या समाधान गर्न उक्त साइटका मालिकसँग सम्पर्क गर्नुहोस्।</translation>
 <translation id="749865518782565832">प्लम्बिङ</translation>
 <translation id="7499188644237027195">तपाईंले Chrome मा सामग्री खरिद गर्दा तपाईं इवालेट र Pix विकल्पहरूका रूपमा देख्नु हुने छ</translation>
@@ -4440,7 +4445,6 @@
 <translation id="7840103971441592723">स्क्रिन क्याप्चर गर्ने कार्य सुरु भएको छ</translation>
 <translation id="784137052867620416">Shopping सम्बन्धी विश्लेषणात्मक डेटा</translation>
 <translation id="7841633276323004751">भुक्तानी प्रक्रिया अगाडि बढाउनका निम्ति चयन गर्न मिल्ने भुक्तानी विधिहरूको सूची। किबोर्ड लुकाइएको छ।</translation>
-<translation id="784189052219692670">Gemini ले अब Google का विभिन्न एपहरूबाट तपाईंको व्यक्तिगत जानकारी सम्झिन र तपाईंले हेरिरहेको पेजमा उक्त जानकारी स्वतः भर्न सक्छ।</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{कुनै पनि होइन}=1{१ एप (<ph name="EXAMPLE_APP_1" />)}=2{२ एपहरू (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# एपहरू (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">कुनै त्रुटि भयो। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="784623644169604270">हालसालै कुनै पनि क्रियाकलाप गरिएको छैन</translation>
@@ -4842,7 +4846,6 @@
 <translation id="8488350697529856933">मा लागू हुन्छ</translation>
 <translation id="8490137692873530638">स्ट्याकर १०</translation>
 <translation id="8493948351860045254">ठाउँ खाली गर्नुहोस्</translation>
-<translation id="8495170825732897952">ट्याबहरू अदलबदल नगरिकनै जानकारी सम्झन र भर्न कुनै पनि फाराममा @@ टाइप गर्नुहोस्</translation>
 <translation id="8498870489552322848"><ph name="APP_NAME" /> मा तपाईंको संवेदनशील जानकारी हाल्न</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> ले प्रतिक्रिया दिन निकै लामो समय लियो।</translation>
 <translation id="8502023382441452707">जन्मदिन तथा न्वाराम</translation>
@@ -5191,6 +5194,7 @@
 <translation id="9078912659001679888">ब्लेन्डर तथा जुसरहरू</translation>
 <translation id="9078964945751709336">थप जानकारी आवश्यक छ</translation>
 <translation id="9080712759204168376">अर्डरको सारांश</translation>
+<translation id="908365381820697818">तपाईं अब Gmail र अन्य सेवामा भएको जानकारी खोज्न र भर्न सक्नुहुन्छ</translation>
 <translation id="9084304544887760521">तपाईंले ट्र्याक गरिरहनुभएका वस्तुहरूको मूल्य कुनै पनि साइटमा घट्दा <ph name="EMAIL" /> मा इमेल प्राप्त गर्नुहोस्।</translation>
 <translation id="9089260154716455634">निष्क्रिय समयसम्बन्धी नीति:</translation>
 <translation id="9090218457905363312">रेगे तथा क्यारेबियाली सङ्गीत</translation>

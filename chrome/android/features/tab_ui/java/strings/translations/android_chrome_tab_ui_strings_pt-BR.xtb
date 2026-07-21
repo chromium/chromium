@@ -129,6 +129,7 @@
 <translation id="5042769431350623987">{WINDOW_COUNT,plural, =1{Mover guia para outra janela}one{Mover guia para outra janela}other{Mover guias para outras janelas}}</translation>
 <translation id="5073204694187207510">Ocultar grade de tela cheia</translation>
 <translation id="5076161749301278626">Ver avaliações da loja?</translation>
+<translation id="5093447877601682598">Enviar feedback sobre a barra de guias</translation>
 <translation id="5161254044473106830">O título é obrigatório</translation>
 <translation id="5204584298075822291">Ocultar guias</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{O Chrome fecha automaticamente as guias e os grupos de guias inativos após <ph name="AUTO_DELETE_DELAY_ONE" /> mês. Você pode mudar isso nas configurações.}one{O Chrome fecha automaticamente as guias e os grupos de guias inativos após <ph name="AUTO_DELETE_DELAY_MANY" /> mês. Você pode mudar isso nas configurações.}other{O Chrome fecha automaticamente as guias e os grupos de guias inativos após <ph name="AUTO_DELETE_DELAY_MANY" /> meses. Você pode mudar isso nas configurações.}}</translation>

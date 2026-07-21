@@ -129,6 +129,7 @@
 <translation id="5042769431350623987">{WINDOW_COUNT,plural, =1{ट्याबहरू सारेर नयाँ विन्डोमा लैजानुहोस्}other{ट्याबहरू सारेर अर्को विन्डोमा लैजानुहोस्}}</translation>
 <translation id="5073204694187207510">फुल स्क्रिन ग्रिड लुकाउनुहोस्</translation>
 <translation id="5076161749301278626">स्टोरसम्बन्धी समीक्षाहरू हेर्ने हो?</translation>
+<translation id="5093447877601682598">ट्याब स्ट्रिपका बारेमा प्रतिक्रिया पठाउनुहोस्</translation>
 <translation id="5161254044473106830">शीर्षक आवश्यक छ</translation>
 <translation id="5204584298075822291">ट्याबहरू कोल्याप्स गर्नुहोस्</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome ले <ph name="AUTO_DELETE_DELAY_ONE" /> महिनापछि निष्क्रिय ट्याब र ट्याब समूहहरू स्वतः बन्द गर्ने छ। तपाईं सेटिङमा गई यो कुरा बदल्न सक्नुहुन्छ।}other{Chrome ले <ph name="AUTO_DELETE_DELAY_MANY" /> महिनापछि निष्क्रिय ट्याब र ट्याब समूहहरू स्वतः बन्द गर्ने छ। तपाईं सेटिङमा गई यो कुरा बदल्न सक्नुहुन्छ।}}</translation>

@@ -1278,6 +1278,7 @@
 <translation id="6321592572353357376">Η επέκταση <ph name="EXTENSION_NAME" /> θέλει να συνδεθείτε στο Chrome</translation>
 <translation id="6324916366299863871">Επεξεργασία συντόμευσης</translation>
 <translation id="6324977638108296054">Δεν είναι δυνατή η δημιουργία συνδέσμου προς την επισήμανση</translation>
+<translation id="6331836477476466332">Ένα πιο ασφαλές και ισχυρό πρόγραμμα περιήγησης για εσάς</translation>
 <translation id="6333140779060797560">Μοιραστείτε μέσω <ph name="APPLICATION" /></translation>
 <translation id="6335454563754888572">Επεξεργασία URL που οδηγεί στη σελίδα στη διεύθυνση: <ph name="PAGE_URL" /></translation>
 <translation id="6337234675334993532">Κρυπτογράφηση</translation>
@@ -1435,6 +1436,7 @@
 <translation id="6867400383614725881">Νέα καρτ. ανών. περιήγ.</translation>
 <translation id="686899695320434745">Οι διευθύνσεις δεν κρυπτογραφούνται με τη φράση πρόσβασής σας. Με αυτόν τον τρόπο, μπορείτε να τις χρησιμοποιείτε σε άλλες υπηρεσίες Google.</translation>
 <translation id="6870625088374152862">Έχετε συνδεθεί ως <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6871397658902960384">Έναρξη περιήγησης</translation>
 <translation id="687838958001010630">Όποιος διαθέτει τον σύνδεσμο μπορεί να επεξεργαστεί όλες τις καρτέλες</translation>
 <translation id="6880903702195291049">Οι άδειες φαίνονται εντάξει</translation>
 <translation id="6883204995689174413">Κοινοποίηση</translation>
@@ -1759,7 +1761,6 @@
 <translation id="8088176524274673045">Για κοινοποίηση στα άτομα που βρίσκονται κοντά σας, επιτρέψτε τους να σαρώσουν αυτόν τον κωδικό QR.</translation>
 <translation id="8090732854597034573">Εάν χρειάζεσαι βοήθεια, ρώτησε τον γονέα σου</translation>
 <translation id="8101414242770404289">Δεν υπάρχουν καρτέλες από: <ph name="TIME_PERIOD" /></translation>
-<translation id="8103578431304235997">Καρτέλα ανώνυμης περιήγησης</translation>
 <translation id="810433609302852">Φύλλο κάτω μέρους για την προώθηση της λειτουργίας ειδοποιήσεων συμβουλών και τα βήματα χρήσης της</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109802255973641442">Κατάργηση επεκτάσεων και των δεδομένων που έχουν αποθηκεύσει σε αυτή τη συσκευή</translation>

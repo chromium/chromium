@@ -698,6 +698,7 @@
 <translation id="1542137295869176367">Не удалось обновить ваши учетные данные.</translation>
 <translation id="1543284117603151572">Импортированные из Microsoft Edge</translation>
 <translation id="1543538514740974167">Быстрый доступ</translation>
+<translation id="1544026754762189866">Ваша организация не рекомендует копировать этот контент.</translation>
 <translation id="1544588554445317666">Сократите название файла или сохраните его в другую папку.</translation>
 <translation id="1545749641540134597">Сканирование QR-кода</translation>
 <translation id="1545775234664667895">Установлена тема "<ph name="THEME_NAME" />"</translation>
@@ -1500,6 +1501,7 @@
 <translation id="2166369534954157698">Съешь же ещё этих мягких французских булок, да выпей чаю</translation>
 <translation id="2168036794078614559">Жалоба отправлена.</translation>
 <translation id="2169062631698640254">Выполнить вход</translation>
+<translation id="217120844667431680">Больше возможностей с режимом ИИ</translation>
 <translation id="2173302385160625112">Проверьте подключение к интернету.</translation>
 <translation id="2175384018164129879">&amp;Управление поисковыми системами и поиском по сайту</translation>
 <translation id="2175526076681939329">Использовать основные клавиши</translation>
@@ -1812,6 +1814,7 @@
 <translation id="2424424966051154874">{0,plural, =1{Гость}one{Гость (#)}few{Гость (#)}many{Гость (#)}other{Гость (#)}}</translation>
 <translation id="2426805022920575512">Сменить аккаунт</translation>
 <translation id="2427507373259914951">Нажатие на левую кнопку мыши</translation>
+<translation id="2428120669821109648">Стиль вкладок</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" />: 1 аккаунт, пароль сохранен только на этом устройстве. Подробнее…}one{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} аккаунт, пароль сохранен только на этом устройстве. Подробнее…}few{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} аккаунта, пароль сохранен только на этом устройстве. Подробнее…}many{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} аккаунтов, пароль сохранен только на этом устройстве. Подробнее…}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} аккаунта, пароль сохранен только на этом устройстве. Подробнее…}}</translation>
 <translation id="2428510569851653187">Опишите, что вы делали, когда произошел сбой</translation>
 <translation id="2428939361789119025">Отключить Wi-Fi</translation>
@@ -3498,6 +3501,7 @@
 <translation id="3700993174159313525">Запретить сайтам отслеживать положение камеры</translation>
 <translation id="3701167022068948696">Исправить</translation>
 <translation id="3701515417135397388">Сообщать, если пароли были раскрыты в результате утечки данных</translation>
+<translation id="3701778844313851487">Перейти к расширениям</translation>
 <translation id="3703166520839776970">Если проблема не решится, нажмите кнопку "Подробнее" ниже, чтобы получить дополнительную информацию от сервиса "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />".</translation>
 <translation id="3703699162703116302">Билет обновлен</translation>
 <translation id="370415077757856453">Контент JavaScript заблокирован</translation>
@@ -4305,7 +4309,6 @@
 <translation id="4303079906735388947">Установите новый PIN-код для электронного ключа.</translation>
 <translation id="430351398235329166">Вы можете изменить ее расположение.</translation>
 <translation id="4304713468139749426">Менеджер паролей</translation>
-<translation id="4305402730127028764">Копировать на устройство "<ph name="DEVICE_NAME" />"</translation>
 <translation id="4305817255990598646">Переключиться</translation>
 <translation id="4306489587293957491">Ввести</translation>
 <translation id="4306810703452026910">Chrome больше не будет отмечать уведомления с этого сайта как спам.</translation>
@@ -4577,6 +4580,7 @@
 <translation id="4523876148417776526">Списки сайтов XML ещё не получены.</translation>
 <translation id="4526051299161934899">Скрытые сохраненные группы вкладок</translation>
 <translation id="452750746583162491">Проверить синхронизированные данные</translation>
+<translation id="4528216716764031072">Современный (прозрачный)</translation>
 <translation id="4528494169189661126">Предлагать перевод</translation>
 <translation id="4529455689802245339">Автоматические субтитры Chrome могут не поддерживаться</translation>
 <translation id="4531451811601110068">Вы можете попробовать снова или обратиться за помощью к администратору.</translation>
@@ -4730,6 +4734,7 @@
 <translation id="4645575059429386691">Управляется твоим родителем</translation>
 <translation id="4645676300727003670">&amp;Сохранить</translation>
 <translation id="4646675363240786305">Порты</translation>
+<translation id="4646859937978908916">Новые добавленные расширения автоматически закрепляются. Изменить этот параметр можно на странице расширений.</translation>
 <translation id="4647025838970719122">Этим параметром управляет ваша организация.</translation>
 <translation id="4647090755847581616">&amp;Закрыть вкладку</translation>
 <translation id="4647283074445570750">Шаг <ph name="CURRENT_STEP" /> из <ph name="TOTAL_STEPS" /></translation>
@@ -7273,7 +7278,6 @@
 <translation id="6657180931610302174">Добавить имя пользователя?</translation>
 <translation id="6657240842932274095">Разрешить системным службам доступ к данным о местоположении?</translation>
 <translation id="6657585470893396449">Пароль</translation>
-<translation id="6658957691413122395">Изменение размера Gemini…</translation>
 <translation id="6659213950629089752">Масштаб этой страницы изменен расширением "<ph name="NAME" />"</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" />, включена запись с камеры</translation>
@@ -8308,6 +8312,7 @@
 <translation id="7446716846072322308">Будут удалены данные (<ph name="TOTAL_USAGE" />), сохраненные сайтом <ph name="SITE_NAME" /> и другими, связанными с ним.</translation>
 <translation id="7448430327655618736">Устанавливайте приложения автоматически</translation>
 <translation id="7448664748118305024">Удалять данные сайтов, сохраненные на устройстве, при закрытии всех окон</translation>
+<translation id="7449806939046594699">Ваша организация запретила копирование этого контента.</translation>
 <translation id="7450761244949417357">Открывается <ph name="ALTERNATIVE_BROWSER_NAME" />…</translation>
 <translation id="7450926666485653189">Когда вы переходите на сайт, Chrome отправляет обфусцированную часть URL в Google через специальный сервер, что позволяет скрыть ваш IP-адрес.</translation>
 <translation id="7453008956351770337">Выбирая этот принтер, вы предоставляете к нему доступ следующему расширению:</translation>
@@ -8815,6 +8820,7 @@
 <translation id="7849264908733290972">Открыть изображение в новой вкладке</translation>
 <translation id="784934925303690534">Временной диапазон</translation>
 <translation id="7850320739366109486">Не беспокоить</translation>
+<translation id="7851303446278533774">Создавайте, планируйте, обобщайте</translation>
 <translation id="7851716364080026749">Всегда блокировать доступ к камере и микрофону</translation>
 <translation id="78526636422538552">Добавлять другие аккаунты Google нельзя.</translation>
 <translation id="7853747251428735">Дополнительные инструмен&amp;ты</translation>
@@ -9508,7 +9514,6 @@
 <translation id="8376532149031784008">Обновление <ph name="DOMAIN" />…</translation>
 <translation id="8376610503048439696">Расширения, установленные администратором, всё ещё могут считывать и изменять данные сайта</translation>
 <translation id="8376752431516546391">Боковая панель Google Поиска</translation>
-<translation id="8376812682111060348">Предупреждение о проблеме с производительностью</translation>
 <translation id="8377625247046155446">Ключ доступа будет сохранен только на этом устройстве. Когда вы закроете все окна в режиме инкогнито, он останется на этом устройстве.</translation>
 <translation id="837790003026572432">На этом устройстве не поддерживается трансляция аудио из вкладок</translation>
 <translation id="8378714024927312812">Управляется вашей организацией</translation>

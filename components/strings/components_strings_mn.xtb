@@ -260,6 +260,7 @@
 <translation id="1393071644879491291">Таны зочлохоор оролдсон сайт дээрх халдагчид танаар программ хангамж суулгуулах эсвэл нууц үг, утасны дугаар, кредит картын дугаар зэрэг зүйлсээ илчлэх үйлдэл хийлгэхээр таныг хуурч магадгүй. Chrome аюулгүй байдал руу буцаж очихыг нухацтай зөвлөж байна. <ph name="BEGIN_LEARN_MORE_LINK" />Энэ сануулгын талаар нэмэлт мэдээлэл авах<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">Таб нээлттэй байсан ч таны энд нэмсэн сайтуудыг хариултад лавлахгүй. Хэрэв таны нэмсэн сайтыг одоогоор уялдаанд ашиглаж байгаа бол тухайн уялдаа уг сайтыг лавлахаа зогсооход 30 хүртэлх минут зарцуулж болно.</translation>
 <translation id="1402151528875251561">Хажуугийн самбарт түүхийг харуулах</translation>
+<translation id="1404026649028693342">ХОУ-ы горимыг үргэлж харуулах</translation>
 <translation id="1405567553485452995">Цайвар ногоон</translation>
 <translation id="1406370515365284486">Таны төлбөрийн хэрэгслийг хадгалсан хэвээр байх болно</translation>
 <translation id="1406500794671479665">Шалгаж байна...</translation>
@@ -655,7 +656,6 @@
 <translation id="2027465737841872819">Хуванцар</translation>
 <translation id="2027707238798802149">Карт боломжгүй байна</translation>
 <translation id="2029735183873159415">Удам угсаа, гарал судлал</translation>
-<translation id="2031095660415483845">Хүссэн газраасаа хайж, бөглөөрэй...</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Прокси болон галт ханыг шалгаж байна<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">Товчлол нь <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />-с тодорхойлсон өгөгдмөл хайлтын үйлчилгээ үзүүлэгчийн түлхүүр үгтэй ижил байх боломжгүй: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Ямартай ч хадгалах</translation>
@@ -673,6 +673,7 @@
 <translation id="2059202684901022309">22 x 34 инч</translation>
 <translation id="2064568741209980952">Кредит болон зээл</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 зөвлөмж}other{# зөвлөмж}}</translation>
+<translation id="2066690553719545730">ХОУ-ы горимыг үргэлж харуулах</translation>
 <translation id="2066969741541525119">Танай байгууллага уг сайтыг блоклосон байна</translation>
 <translation id="2069913043427250781">Тээврийн хэрэгсэл, замын хөдөлгөөний аюулгүй байдал</translation>
 <translation id="2071156619270205202">Энэ карт нь виртуал картын дугаарын эрхгүй байна.</translation>
@@ -2454,6 +2455,7 @@
 <translation id="4786804728079074733">Гар бөмбөг</translation>
 <translation id="4787182171088676626">Дугтуй (нарийн)</translation>
 <translation id="4791134497475588553">Linux-н апп суулгагдсан болон хэзээ хамгийн сүүлд түүнийг ашигласан</translation>
+<translation id="4791602164422809437">Gemini-тай Personal Intelligence-р дэмжсэн. Хуудасны гарчиг, URL-уудыг Google рүү илгээдэг бөгөөд хүмүүс хянаж магадгүй. <ph name="BEGIN_LINK" />Тохиргоог удирдах<ph name="END_LINK" /></translation>
 <translation id="4792686369684665359">Таны илгээх гэж буй мэдээлэл аюултай байна</translation>
 <translation id="4793219378458250238">11 x 12 инч</translation>
 <translation id="4796594887379589189">Ажилтай холбоотой бүртгэлийн ID</translation>
@@ -3030,6 +3032,7 @@
 <translation id="5675809467256309336">Бүжиг, электрон хөгжим</translation>
 <translation id="5675959228867414813">Огноогоор харуулах</translation>
 <translation id="567604591393105935">Худалдааны доод хүснэгтийг тал өндрөөр нээсэн</translation>
+<translation id="5676124785522323481">Холбоотой аппыг удирдах</translation>
 <translation id="5676641328629468296">Google Pay, Pix</translation>
 <translation id="5678007133659493065">Тугалган цаас</translation>
 <translation id="5679086391497468752">Гэрийн хаяг</translation>
@@ -3390,6 +3393,7 @@
 <translation id="6240553182907836376">Биеийн байцаалтыг шинэчлэх</translation>
 <translation id="6240601837375010619">Паспортыг хадгалах</translation>
 <translation id="6240964651812394252">Үйлдлийн системээрээ Нууц үгний менежерийг ашиглахын тулд Chrome-г дахин ачаалж, компьютерынхоо нууц үгний менежерт хандахыг зөвшөөрнө үү. Дахин ачаалсны дараа таны табуудыг дахин нээнэ.</translation>
+<translation id="6244366663267187541">Gemini-г ямар аппуудтай холбогдохыг сонгоно уу</translation>
 <translation id="624499991300733384">Хэвлэлийг нэгтгэгч үйлчилгээ</translation>
 <translation id="6246316216123107851"><ph name="NUM_DAYS" /> хоногийн өмнө</translation>
 <translation id="6246382863801034910">Тээврийн хэрэгсэл</translation>
@@ -4202,6 +4206,7 @@
 <translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> нь таны зохих эрхтэй байдлыг шалгана (энэ нь таны зээлийн оноонд нөлөөлөхгүй). Зөвшөөрсөн тохиолдолд <ph name="BNPL_ISSUER_NAME" /> танд сонголт хийх, худалдан авалтаа гүйцээх төлбөрийн багцыг гаргаж өгнө.</translation>
 <translation id="7489392576326061356">Шампунь болон ангижруулагч</translation>
 <translation id="7489919936111034362">Таны Google Драйв сан дүүрсэн байна</translation>
+<translation id="7490622939531327327">Маягтын илүү ухаалаг ойлголт</translation>
 <translation id="7495528107193238112">Энэ контентыг блоклосон байна. Асуудлыг шийдвэрлэхийн тулд сайтын өмчлөгчтэй холбогдоно уу.</translation>
 <translation id="749865518782565832">Сантехникийн үйлчилгээ</translation>
 <translation id="7499188644237027195">Та Chrome-д худалдан авалт хийхдээ цахим хэтэвч, Pix-г сонголт болгон харна уу</translation>
@@ -4442,7 +4447,6 @@
 <translation id="7840103971441592723">Дэлгэцийн зураг авч эхэллээ</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
 <translation id="7841633276323004751">Төлбөрийг үргэлжлүүлэхээр сонгох боломжтой төлбөрийн хэрэгслүүд. Гарыг нуусан.</translation>
-<translation id="784189052219692670">Gemini одоо таны Google-н аппууд дээрх хувийн мэдээллийг санах, таны үзэж буй хуудсан дээр автоматаар бөглөх боломжтой.</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Байхгүй}=1{1 апп (<ph name="EXAMPLE_APP_1" />)}=2{2 апп (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# апп (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Алдаа гарлаа. Дахин оролдоно уу.</translation>
 <translation id="784623644169604270">Саяхны үйл ажиллагаа байхгүй байна</translation>
@@ -4844,7 +4848,6 @@
 <translation id="8488350697529856933">руу тохируулах</translation>
 <translation id="8490137692873530638">Гарах цаасыг зэрэгцүүлэх тавцан 10</translation>
 <translation id="8493948351860045254">Зай гаргах</translation>
-<translation id="8495170825732897952">Таб сэлгэхгүйгээр мэдээллийг эргэн санах, бөглөхийн тулд дурын маягтад @@ гэж бичнэ үү</translation>
 <translation id="8498870489552322848">эмзэг мэдээллээ <ph name="APP_NAME" /> дээр бөглөнө үү</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" />-д холбогдоход хэтэрхий удаж байна.</translation>
 <translation id="8502023382441452707">Төрсөн өдөр, нэр өгөх өдөр</translation>
@@ -5193,6 +5196,7 @@
 <translation id="9078912659001679888">Холигч болон жимсний шүүс шахагчид</translation>
 <translation id="9078964945751709336">Дэлгэрэнгүй мэдээлэл шаардлагатай</translation>
 <translation id="9080712759204168376">Захиалгын хураангуй</translation>
+<translation id="908365381820697818">Одоо та Gmail болон бусад үйлчилгээнээс мэдээлэл олж, бөглөх боломжтой</translation>
 <translation id="9084304544887760521">Аливаа сайтад таны хянадаг зүйлсийн үнэ буурах үед <ph name="EMAIL" />-д имэйл хүлээн аваарай.</translation>
 <translation id="9089260154716455634">Ажиллахгүй цагийн удирдамж:</translation>
 <translation id="9090218457905363312">Рeгги, карибын хөгжим</translation>

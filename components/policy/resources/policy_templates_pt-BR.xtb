@@ -2300,17 +2300,6 @@ Se estiver desativado, o <ph name="PRODUCT_NAME" /> não vai ativar o ServiceWor
 Esta política é uma medida temporária para controlar o recurso e será removida na versão M154.</translation>
 <translation id="2467181864598429837">Comportamento padrão do navegador</translation>
 <translation id="2467896267442150508">Intervalo de tempo que dura no máximo uma semana. Se o horário de início for posterior ao de término, o intervalo será contínuo.</translation>
-<translation id="2475594733565572760">Esta política define a configuração padrão para todos os recursos de IA generativa cobertos. Por exemplo, se esta política for definida com o valor 1, então 1 será a configuração padrão para todos os recursos de IA generativa cobertos. Isso não afeta os valores de política definidos manualmente. Essa configuração vai definir os padrões para os recursos de IA generativa cobertos no Chrome. Consulte https://support.google.com/chrome/a?p=generative_ai_settings para conferir a lista de recursos cobertos.
-
-Algumas políticas, como a <ph name="GEMINI_SETTINGS_POLICY_NAME" />, só aceitam as definições "Permitido" e "Não permitido". Nesse caso, se a política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> estiver definida como 0 ou 1, o recurso estará ativado. Se <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> estiver definida como 2, o recurso estará desativado. A documentação de cada recurso contém mais informações sobre a interação com os valores nesta política (por exemplo, Gemini no Chrome: https://support.google.com/chrome/a/?p=gemini_in_chrome). Isso se aplica aos seguintes recursos: Gemini no Chrome, Google Lens e Modo IA, pois estão sujeitos às próprias garantias e/ou Termos de Serviço (https://support.google.com/chrome/a/?p=genai_features_chrome).
-
-Definir a política como 0 habilita o recurso e permite que os dados relevantes sejam usados pelo Google para melhorar os modelos de IA. Esses dados podem incluir comandos, entradas, saídas, materiais de fonte e feedback por escrito, dependendo do recurso. Eles também podem ser analisados por humanos para melhorar os modelos de IA. O valor padrão é 0, exceto quando indicado de outra forma abaixo.
-
-Definir a política como 1 habilita o recurso, mas não permite que o Google use o conteúdo dos usuários para melhorar os modelos (incluindo comandos, entradas, saídas, material de fonte e feedback por escrito). O valor 1 é o padrão para usuários corporativos, gerenciados pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />, e contas de ensino, gerenciadas pelo <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Definir a política como 2 não permite que o recurso seja habilitado.
-
-Para mais informações sobre como tratar dados de recursos de IA generativa, consulte https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="2476249479201711962">Ativar o acesso ao menu de contexto do provedor de pesquisa padrão</translation>
 <translation id="2478756867046106663">Permitir que sites com experiências abusivas abram novas janelas ou guias</translation>
 <translation id="2479760962196319822">Esta política controla se os usuários do <ph name="PRODUCT_OS_NAME" /> podem armazenar dados localmente.
@@ -13238,6 +13227,13 @@ Observação: a reinicialização do dispositivo limpa o cache. Até os dados te
 <translation id="9087652369391570821">Política de configuração para o conector OnFileTransfer do Chrome Enterprise</translation>
 <translation id="9088433379343318874">Ativar o provedor de conteúdo de usuário supervisionado</translation>
 <translation id="9088444059179765143">Configurar o método de detecção automática de fuso horário</translation>
+<translation id="9094681501120769194">Controla se o visualizador de PDF no <ph name="PRODUCT_NAME" /> usa um iframe fora do processo (OOPIF, na sigla em inglês). Essa será a nova arquitetura do visualizador de PDF no futuro, porque é mais simples e facilita a adição de novos recursos. O visualizador de PDF do GuestView atual é uma arquitetura complexa e desatualizada que está sendo descontinuada.
+
+Quando esta política for ativada ou deixada sem definição, o <ph name="PRODUCT_NAME" /> poderá usar a arquitetura do visualizador de PDF OOPIF. Se a política for ativada ou deixada sem definição, o comportamento padrão será decidido pelo <ph name="PRODUCT_NAME" />.
+
+Se ela for desativada, o <ph name="PRODUCT_NAME" /> vai usar estritamente o visualizador de PDF do GuestView. Ele incorpora uma página da web, com uma árvore de frames separada, a outra página.
+
+Esta política foi descontinuada na versão M152 e será removida na versão M155. O visualizador de PDF do GuestView está sendo removido, e a arquitetura do visualizador de PDF do iframe fora do processo (OOPIF) será sempre usada.</translation>
 <translation id="9095599826504830315">Não permitir o uso da Tabela de comparação.</translation>
 <translation id="9096772739225230999">Não informar configuração da rede</translation>
 <translation id="9098409326885953506">Detectar janela coberta e suspender a pintura</translation>

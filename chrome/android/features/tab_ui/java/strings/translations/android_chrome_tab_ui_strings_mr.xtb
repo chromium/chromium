@@ -129,6 +129,7 @@
 <translation id="5042769431350623987">{WINDOW_COUNT,plural, =1{टॅब नवीन विंडोवर हलवा}other{टॅब दुसऱ्या विंडोवर हलवा}}</translation>
 <translation id="5073204694187207510">फुलस्क्रीन ग्रिड लपवा</translation>
 <translation id="5076161749301278626">स्टोअरशी संबंधित पुनरावलोकने पहायची आहेत का?</translation>
+<translation id="5093447877601682598">टॅब स्ट्रिपबद्दल फीडबॅक पाठवा</translation>
 <translation id="5161254044473106830">शीर्षक आवश्यक</translation>
 <translation id="5204584298075822291">टॅब कोलॅप्स करा</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome <ph name="AUTO_DELETE_DELAY_ONE" /> महिन्यानंतर इनॅक्टिव्ह टॅब आणि टॅब गट आपोआप बंद करते. तुम्ही हे सेटिंग्‍जमध्‍ये बदलू शकता.}other{Chrome <ph name="AUTO_DELETE_DELAY_MANY" /> महिन्यांनंतर इनॅक्टिव्ह टॅब आणि टॅब गट आपोआप बंद करते. तुम्ही हे सेटिंग्‍जमध्‍ये बदलू शकता.}}</translation>

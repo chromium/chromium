@@ -4313,7 +4313,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4303079906735388947">Angi en ny PIN-kode for sikkerhetsnøkkelen din</translation>
 <translation id="430351398235329166">Endre adressefeltets plassering for å få en tilpasset opplevelse i nettleseren.</translation>
 <translation id="4304713468139749426">Passordlagring</translation>
-<translation id="4305402730127028764">Kopiér til <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Bytt</translation>
 <translation id="4306489587293957491">Skriv inn</translation>
 <translation id="4306810703452026910">Chrome slutter å flagge varsler fra dette nettstedet som søppelpost</translation>
@@ -7273,7 +7272,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6657180931610302174">Vil du legge til et brukernavn?</translation>
 <translation id="6657240842932274095">Vil du la systemtjenester bruke posisjonen din?</translation>
 <translation id="6657585470893396449">Passord</translation>
-<translation id="6658957691413122395">Endrer størrelsen på Gemini …</translation>
 <translation id="6659213950629089752">Denne siden ble zoomet inn av utvidelsen «<ph name="NAME" />»</translation>
 <translation id="6659594942844771486">Fane</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – kameraopptak</translation>
@@ -9509,7 +9507,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8376532149031784008">Laster inn <ph name="DOMAIN" /> på nytt …</translation>
 <translation id="8376610503048439696">Utvidelser som administratoren din har installert, kan fremdeles lese og endre dette nettstedet</translation>
 <translation id="8376752431516546391">Google Søk-sidepanelet</translation>
-<translation id="8376812682111060348">Varsel om ytelsesproblemer</translation>
 <translation id="8377625247046155446">Denne tilgangsnøkkelen lagres bare på denne enheten. Den blir værende på denne enheten når du har lukket alle inkognitovinduer.</translation>
 <translation id="837790003026572432">Denne enheten støtter ikke casting av fanelyd</translation>
 <translation id="8378714024927312812">Administreres av organisasjonen din</translation>

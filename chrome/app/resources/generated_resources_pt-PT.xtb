@@ -4306,7 +4306,6 @@ Quer pará-lo?</translation>
 <translation id="4303079906735388947">Configure um novo PIN para a sua chave de segurança.</translation>
 <translation id="430351398235329166">Mude a posição da barra de endereço para ter uma experiência de navegação personalizada</translation>
 <translation id="4304713468139749426">Gestor de palavras-passe</translation>
-<translation id="4305402730127028764">Copiar para <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Mudar</translation>
 <translation id="4306489587293957491">Introduzir</translation>
 <translation id="4306810703452026910">O Chrome vai deixar de sinalizar as notificações deste site como spam</translation>
@@ -7270,7 +7269,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6657180931610302174">Adicionar um nome de utilizador?</translation>
 <translation id="6657240842932274095">Permitir que os serviços do sistema usem a sua localização?</translation>
 <translation id="6657585470893396449">Palavra-passe</translation>
-<translation id="6658957691413122395">A redimensionar o Gemini…</translation>
 <translation id="6659213950629089752">Foi aumentado o zoom nesta página pela extensão "<ph name="NAME" />"</translation>
 <translation id="6659594942844771486">Separador</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" />: gravação da câmara</translation>
@@ -9506,7 +9504,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8376532149031784008">A atualizar <ph name="DOMAIN" />…</translation>
 <translation id="8376610503048439696">As extensões instaladas pelo seu administrador ainda podem ler e alterar este site</translation>
 <translation id="8376752431516546391">Painel lateral da Pesquisa Google</translation>
-<translation id="8376812682111060348">Alerta de problema de desempenho</translation>
 <translation id="8377625247046155446">Esta token de acesso só é guardada neste dispositivo. Permanece neste dispositivo após fechar todas as janelas de navegação anónima.</translation>
 <translation id="837790003026572432">A transmissão do áudio do separador não é suportada neste dispositivo</translation>
 <translation id="8378714024927312812">Gerido pela sua entidade</translation>

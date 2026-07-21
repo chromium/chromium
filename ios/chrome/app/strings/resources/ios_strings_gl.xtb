@@ -614,6 +614,7 @@
 <translation id="3037177537145227281">Estase facendo un seguimento do prezo</translation>
 <translation id="3038136505713492417">Verifica a túa identidade para usar as túas claves de acceso neste dispositivo</translation>
 <translation id="3039671569659952257">Eliminar cartafol</translation>
+<translation id="3050988301648974170">Abrir Revisión de contrasinais</translation>
 <translation id="3053332585453689122">Envía a Navegación segura de Google os URL que visites e unha pequena mostra do contido da páxina, das descargas, da actividade das extensións e da información do sistema para comprobar se son daniños.</translation>
 <translation id="3055102495753300780">Almacenamento de información</translation>
 <translation id="3059270601560379555">Nova busca</translation>
@@ -2427,6 +2428,7 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="9013605037177245304">Activar notificacións</translation>
 <translation id="9029650858822697271">Pechouse a túa sesión</translation>
 <translation id="9032405509996909363">Confirmar a eliminación dos datos de navegación</translation>
+<translation id="9035699147763101514">Con tecnoloxía de Intelixencia personalizada de Gemini. Xestiona as túas opcións na configuración.</translation>
 <translation id="9039373489628511875">Largura de banda</translation>
 <translation id="9042893549633094279">Privacidade e seguranza</translation>
 <translation id="9055291197094969722">Crea grupos de pestanas para organizar as que estean abertas e seguir mantendo a produtividade</translation>
@@ -2438,6 +2440,7 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="9070824521421603770">Pecharanse a túa sesión e as pestanas</translation>
 <translation id="9072837124205571418">Grupos de pestanas de todos os dispositivos</translation>
 <translation id="9081058212938299310">Queres actualizar o contrasinal do usuario <ph name="USERNAME" />?</translation>
+<translation id="908365381820697818">Agora podes atopar e completar información de Gmail e outros servizos</translation>
 <translation id="9083838294503912307">Para sincronizar e personalizar todos os teus dispositivos, activa a sincronización.</translation>
 <translation id="9084367296493549256">{count,plural, =1{Tes {count} contrasinal pouco seguro que podería poñer en perigo a túa seguranza. Cámbiao xa para non correr riscos.}other{Tes {count} contrasinais pouco seguros que poderían poñer en perigo a túa seguranza. Cámbiaos xa para non correr riscos.}}</translation>
 <translation id="9084369964545892485">Nova pestana do modo de incógnito no grupo</translation>

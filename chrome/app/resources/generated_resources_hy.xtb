@@ -698,6 +698,7 @@
 <translation id="1542137295869176367">Չհաջողվեց թարմացնել ձեր մուտքի տվյալները</translation>
 <translation id="1543284117603151572">Edge-ից ներմուծված</translation>
 <translation id="1543538514740974167">Արագ հասանելիություն</translation>
+<translation id="1544026754762189866">Ձեր կազմակերպությունը խորհուրդ չի տալիս պատճենել այս բովանդակությունը</translation>
 <translation id="1544588554445317666">Ընտրեք ֆայլի ավելի կարճ անվանում կամ փորձեք պահել այլ պանակում</translation>
 <translation id="1545749641540134597">Սկանավորեք QR-կոդը</translation>
 <translation id="1545775234664667895">«<ph name="THEME_NAME" />» թեման տեղադրվեց</translation>
@@ -1500,6 +1501,7 @@
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2168036794078614559">Բողոքն ուղարկվեց</translation>
 <translation id="2169062631698640254">Մուտք գործել</translation>
+<translation id="217120844667431680">Արեք ավելին ԱԲ ռեժիմի օգնությամբ</translation>
 <translation id="2173302385160625112">Ստուգեք կապը</translation>
 <translation id="2175384018164129879">&amp;Որոնողական համակարգերի և կայքերում որոնման կառավարում</translation>
 <translation id="2175526076681939329">Օգտագործել հիմնական ստեղները</translation>
@@ -1812,6 +1814,7 @@
 <translation id="2424424966051154874">{0,plural, =1{Հյուր}one{Հյուր (#)}other{Հյուր (#)}}</translation>
 <translation id="2426805022920575512">Ընտրել այլ հաշիվ</translation>
 <translation id="2427507373259914951">Ձախ սեղմում</translation>
+<translation id="2428120669821109648">Ներդիրների ոճավորում</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> տիրույթի 1 հաշիվ, գաղտնաբառը պահված է միայն այս սարքում։ Այլ մանրամասներ}one{<ph name="DOMAIN_LINK" /> տիրույթի {NUM_PASSWORDS} հաշիվ, գաղտնաբառը պահված է միայն այս սարքում։ Այլ մանրամասներ}other{<ph name="DOMAIN_LINK" /> տիրույթի {NUM_PASSWORDS} հաշիվ, գաղտնաբառը պահված է միայն այս սարքում։ Այլ մանրամասներ}}</translation>
 <translation id="2428510569851653187">Նկարագրեք ձեր գործողությունները նախքան ներդիրի աշխատանքի խափանվելը</translation>
 <translation id="2428939361789119025">Անջատել Wi-Fi-ը</translation>
@@ -3494,6 +3497,7 @@
 <translation id="3700993174159313525">Թույլ չտալ կայքերին հետագծել ձեր տեսախցիկի դիրքը</translation>
 <translation id="3701167022068948696">Ուղղել</translation>
 <translation id="3701515417135397388">Զգուշացնել ձեզ, եթե գաղտնաբառը տվյալների արտահոսքի պատճառով բացահայտվել է</translation>
+<translation id="3701778844313851487">Անցնել Ընդլայնումներ</translation>
 <translation id="3703166520839776970">Եթե խնդիրը չվերանա, ընտրեք «Այլ մանրամասներ» ստորև՝ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ից լրացուցիչ տեղեկություններ ստանալու համար։</translation>
 <translation id="3703699162703116302">Տոմսը թարմացված է</translation>
 <translation id="370415077757856453">JavaScript-ն արգելափակված է</translation>
@@ -4301,7 +4305,6 @@
 <translation id="4303079906735388947">Սահմանեք նոր PIN կոդ ձեր անվտանգության բանալու համար</translation>
 <translation id="430351398235329166">Դիտումն անհատականացնելու համար հասցեագոտին տեղափոխեք ավելի հարմար տեղ</translation>
 <translation id="4304713468139749426">Գաղտնաբառերի կառավարիչ</translation>
-<translation id="4305402730127028764">Պատճենել <ph name="DEVICE_NAME" /> սարքում</translation>
 <translation id="4305817255990598646">Փոխարկել</translation>
 <translation id="4306489587293957491">Մուտքագրեք</translation>
 <translation id="4306810703452026910">Chrome-ը այս կայքի ծանուցումներն այլևս չի նշի որպես սպամ</translation>
@@ -4573,6 +4576,7 @@
 <translation id="4523876148417776526">Կայքերի ցուցակները (XML ձևաչափով) դեռ չեն բեռնվել։</translation>
 <translation id="4526051299161934899">Թաքցված պահված ներդիրների խմբեր</translation>
 <translation id="452750746583162491">Ստուգեք ձեր համաժամացված տվյալները</translation>
+<translation id="4528216716764031072">Ժամանակակից (թափանցիկ)</translation>
 <translation id="4528494169189661126">Թարգմանության առաջարկ</translation>
 <translation id="4529455689802245339">Chrome-ի Կենդանի ենթագրերը կարող են չաշխատել</translation>
 <translation id="4531451811601110068">Կարող եք նորից փորձել կամ դիմել ադմինիստրատորին՝ օգնություն ստանալու համար</translation>
@@ -4726,6 +4730,7 @@
 <translation id="4645575059429386691">Կառավարվում է ձեր ծնողի կողմից</translation>
 <translation id="4645676300727003670">&amp;Տեղադրել</translation>
 <translation id="4646675363240786305">Միացքներ</translation>
+<translation id="4646859937978908916">Նոր ավելացված ընդլայնումներն ավտոմատ ամրացվում են։ Փոխեք այս կարգավորումը «Ընդլայնումներ» էջում։</translation>
 <translation id="4647025838970719122">Այս կարգավորումը կառավարվում է ձեր կազմակերպության կողմից</translation>
 <translation id="4647090755847581616">&amp;Փակել ներդիրը</translation>
 <translation id="4647283074445570750">Քայլ <ph name="CURRENT_STEP" />/<ph name="TOTAL_STEPS" /></translation>
@@ -7262,7 +7267,6 @@
 <translation id="6657180931610302174">Ավելացնե՞լ օգտանուն</translation>
 <translation id="6657240842932274095">Թույլատրե՞լ համակարգային ծառայություններին օգտագործել ձեր տեղադրության տվյալները</translation>
 <translation id="6657585470893396449">Գաղտնաբառ</translation>
-<translation id="6658957691413122395">Gemini-ի չափը փոխվում է…</translation>
 <translation id="6659213950629089752">Այս էջի չափերը փոփոխել է <ph name="NAME" /> ընդլայնումը</translation>
 <translation id="6659594942844771486">Ներդիր</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – Տեսախցիկով տեսագրում</translation>
@@ -8297,6 +8301,7 @@
 <translation id="7446716846072322308"><ph name="SITE_NAME" /> կայքի և առնչվող կայքերի կողմից պահված <ph name="TOTAL_USAGE" /> ծավալով տվյալները կջնջվեն</translation>
 <translation id="7448430327655618736">Ավտոմատ տեղադրել հավելվածներ</translation>
 <translation id="7448664748118305024">Ջնջել տվյալները, որոնք կայքերը պահում են ձեր սարքում, երբ դուք փակում եք բոլոր պատուհանները</translation>
+<translation id="7449806939046594699">Ձեր կազմակերպությունն արգելափակել է այս բովանդակության պատճենումը</translation>
 <translation id="7450761244949417357">Բացվում է <ph name="ALTERNATIVE_BROWSER_NAME" /> դիտարկիչով</translation>
 <translation id="7450926666485653189">Ուղարկում է URL-ի քողարկված մասը Google-ին գաղտնիության սերվերի միջոցով, որը թաքցնում է ձեր IP հասցեն</translation>
 <translation id="7453008956351770337">Ընտրելով այս տպիչը՝ դուք հետևյալ ընդլայնմանը թույլատրում եք մուտք գործել ձեր տպիչ՝</translation>
@@ -8804,6 +8809,7 @@
 <translation id="7849264908733290972">Բացել &amp;պատկերը նոր ներդիրով</translation>
 <translation id="784934925303690534">Ժամանակի սանդղակ</translation>
 <translation id="7850320739366109486">Չանհանգստացնել</translation>
+<translation id="7851303446278533774">Ստեղծել, պլանավորել, ամփոփել</translation>
 <translation id="7851716364080026749">Միշտ արգելափակել տեսախցիկի և խոսափողի օգտագործումը</translation>
 <translation id="78526636422538552">Այլ Google հաշիվներ ավելացնելու հնարավորությունն անջատված է</translation>
 <translation id="7853747251428735">Լրացուցիչ գործիքներ</translation>
@@ -9497,7 +9503,6 @@
 <translation id="8376532149031784008">Նորից ենք բեռնում <ph name="DOMAIN" /> տիրույթը...</translation>
 <translation id="8376610503048439696">Ձեր ադմինիստրատորի կողմից տեղադրված ընդլայնումները դեռ կարող են կարդալ և փոփոխել այս կայքի տվյալները</translation>
 <translation id="8376752431516546391">Google Որոնման կողային վահանակ</translation>
-<translation id="8376812682111060348">Արդյունավետության հետ կապված խնդրի վերաբերյալ ծանուցում</translation>
 <translation id="8377625247046155446">Այս մուտքի բանալին կպահվի միայն այս սարքում։ Երբ փակեք բոլոր ինկոգնիտո պատուհանները, այն կպահպանվի այս սարքում։</translation>
 <translation id="837790003026572432">Ներդիրի ձայնի հեռարձակումն այս սարքում չի աջակցվում</translation>
 <translation id="8378714024927312812">Կառավարվում է ձեր կազմակերպության կողմից</translation>

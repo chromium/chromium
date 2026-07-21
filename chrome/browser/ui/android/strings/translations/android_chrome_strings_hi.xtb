@@ -1278,6 +1278,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="6321592572353357376">"<ph name="EXTENSION_NAME" />" एक्सटेंशन का इस्तेमाल करने के लिए, आपको Chrome में साइन इन करना होगा</translation>
 <translation id="6324916366299863871">शॉर्टकट में बदलाव करें</translation>
 <translation id="6324977638108296054">हाइलाइट किए गए टेक्स्ट का लिंक नहीं बनाया जा सकता</translation>
+<translation id="6331836477476466332">आपके लिए ज़्यादा सुरक्षित और शानदार ब्राउज़र</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> के द्वारा शेयर करें</translation>
 <translation id="6335454563754888572">यूआरएल में बदलाव करें, ताकि वह इस पेज पर ले जाए: <ph name="PAGE_URL" /></translation>
 <translation id="6337234675334993532">सुरक्षित करने का तरीका</translation>
@@ -1435,6 +1436,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="6867400383614725881">नया गुप्त टैब</translation>
 <translation id="686899695320434745">लंबे पासवर्ड के साथ पते एन्क्रिप्ट (सुरक्षित) नहीं किए जाते हैं. इससे उन पतों को Google की अन्य सेवाओं में इस्तेमाल किया जा सकता है.</translation>
 <translation id="6870625088374152862">आपने <ph name="USER_EMAIL_ADDRESS" /> के तौर पर साइन इन किया है</translation>
+<translation id="6871397658902960384">ब्राउज़ करना शुरू करें</translation>
 <translation id="687838958001010630">जिन लोगों के पास यह लिंक है वे हर टैब में बदलाव कर सकते हैं</translation>
 <translation id="6880903702195291049">सभी अनुमतियों की समीक्षा हो चुकी है</translation>
 <translation id="6883204995689174413">शेयर करें</translation>
@@ -1759,7 +1761,6 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="8088176524274673045">आस-पास के लोगों से शेयर करने के लिए, उन्हें यह क्यूआर कोड स्कैन करने दें</translation>
 <translation id="8090732854597034573">अगर आपको मदद चाहिए, तो अपने माता-पिता से पूछें</translation>
 <translation id="8101414242770404289"><ph name="TIME_PERIOD" /> में खोला गया कोई भी टैब बंद नहीं किया जाएगा</translation>
-<translation id="8103578431304235997">गुप्त टैब</translation>
 <translation id="810433609302852">सलाह की सूचनाओं की सुविधा का प्रमोशन और उसे इस्तेमाल करने के तरीके बताने वाली बॉटम शीट</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109802255973641442">इस डिवाइस से, एक्सटेंशन और इनकी मदद से सेव किया गया डेटा हटाएं</translation>

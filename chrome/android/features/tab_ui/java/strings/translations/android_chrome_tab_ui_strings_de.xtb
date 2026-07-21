@@ -129,6 +129,7 @@
 <translation id="5042769431350623987">{WINDOW_COUNT,plural, =1{Tabs in ein neues Fenster verschieben}other{Tabs in ein anderes Fenster verschieben}}</translation>
 <translation id="5073204694187207510">Vollbildraster ausblenden</translation>
 <translation id="5076161749301278626">Möchtest du dir Händlerrezensionen ansehen?</translation>
+<translation id="5093447877601682598">Feedback zur Tableiste senden</translation>
 <translation id="5161254044473106830">Titel erforderlich</translation>
 <translation id="5204584298075822291">Tabs minimieren</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Inaktive Tabs und Tabgruppen in Chrome werden nach <ph name="AUTO_DELETE_DELAY_ONE" /> Monat automatisch geschlossen. Du kannst das in den Einstellungen ändern.}other{Inaktive Tabs und Tabgruppen in Chrome werden nach <ph name="AUTO_DELETE_DELAY_MANY" /> Monaten automatisch geschlossen. Du kannst das in den Einstellungen ändern.}}</translation>

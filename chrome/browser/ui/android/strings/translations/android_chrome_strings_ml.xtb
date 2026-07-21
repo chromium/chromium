@@ -147,6 +147,7 @@
 <translation id="1571041387761170095">ദുർബലമായതോ ആവർത്തിച്ച് ഉപയോഗിക്കുന്നതോ ആയ പാസ്‌വേഡുകളൊന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{ഈ ഉപകരണത്തിൽ അപഹരിക്കപ്പെട്ട ഒരു പാസ്‌വേഡുണ്ട്}other{ഈ ഉപകരണത്തിൽ അപഹരിക്കപ്പെട്ട # പാസ്‌വേഡുകളുണ്ട്}}</translation>
 <translation id="1594635596540195766">ചുവടെയുള്ള ലിസ്റ്റിൽ <ph name="SUGGESTIONS_COUNT" /> ഇനങ്ങൾ നിർദ്ദേശിച്ചിരിക്കുന്നു.</translation>
+<translation id="159689249463841786">ഫോൾഡർ തിരഞ്ഞെടുക്കുക, നിലവിൽ <ph name="FOLDER_NAME" /></translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> എന്ന അക്കൗണ്ട് നൽകി <ph name="SITE_ETLD_PLUS_ONE" /> ഉപയോഗിക്കുക</translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />, പിൻ ചെയ്ത, മീഡിയ റെക്കോർഡ് ചെയ്യുന്ന ടാബ്</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, ഉള്ളടക്കം പങ്കിടുന്ന ടാബ്</translation>
@@ -277,6 +278,7 @@
 <translation id="2190355936436201913">(ശൂന്യം)</translation>
 <translation id="219283042927675668">ഗ്രൂപ്പിലെ ടാബുകൾ</translation>
 <translation id="2194856509914051091">പരിഗണിക്കേണ്ട കാര്യങ്ങൾ</translation>
+<translation id="2196695604589508993">ചരിത്രം തുറക്കുക</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, പിൻ ചെയ്ത, ഉള്ളടക്കം പങ്കിടുന്ന ടാബ്</translation>
 <translation id="22091350895006575">ഉപയോക്തൃനാമം ചേർക്കുക</translation>
 <translation id="221494669172414749">പ്രൊഫൈൽ ലോക്ക് ഇല്ലാതെ Chrome തുറക്കുന്നത്, നിങ്ങളുടെ സംരക്ഷിച്ച പാസ്‌വേഡുകളും പേയ്‌മെന്റ് രീതികളും കാറിൽ നിന്ന് നീക്കം ചെയ്യും. പ്രൊഫൈൽ ലോക്ക് ഉപയോഗിക്കുന്നത്, ഈ ഡാറ്റ സുരക്ഷിതമാക്കി നിലനിർത്തുന്നു.</translation>
@@ -1278,6 +1280,7 @@
 <translation id="6321592572353357376">Chrome-ലേക്ക് സൈൻ ഇൻ ചെയ്യാൻ "<ph name="EXTENSION_NAME" />" എന്ന വിപുലീകരണം നിങ്ങളോട് ആവശ്യപ്പെടുന്നു</translation>
 <translation id="6324916366299863871">കുറുക്കുവഴി എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="6324977638108296054">ഹൈലൈറ്റിലേക്കുള്ള ലിങ്ക് സൃഷ്‌ടിക്കാനാകുന്നില്ല</translation>
+<translation id="6331836477476466332">നിങ്ങൾക്കായി കൂടുതൽ സുരക്ഷിതവും കൂടുതൽ കരുത്തുറ്റതുമായ ബ്രൗസർ</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> വഴി പങ്കിടുക</translation>
 <translation id="6335454563754888572">ഇനിപ്പറയുന്നതിലെ പേജിലേക്ക് പോയിന്റ് ചെയ്യുന്ന URL എഡിറ്റ് ചെയ്യുക: <ph name="PAGE_URL" /></translation>
 <translation id="6337234675334993532">എന്‍ക്രിപ്ഷന്‍</translation>
@@ -1435,6 +1438,7 @@
 <translation id="6867400383614725881">പുതിയ അദൃശ്യ ടാബ്</translation>
 <translation id="686899695320434745">വിലാസങ്ങൾ നിങ്ങളുടെ പാസ്‌ഫ്രെയ്‌സ് ഉപയോഗിച്ച് എൻക്രിപ്റ്റ് ചെയ്തിട്ടില്ല. അതിനാൽ നിങ്ങൾക്ക് അവ മറ്റ് Google സേവനങ്ങളിൽ ഉപയോഗിക്കാം.</translation>
 <translation id="6870625088374152862"><ph name="USER_EMAIL_ADDRESS" /> ആയി സൈൻ ഇൻ ചെയ്‌തിരിക്കുന്നു</translation>
+<translation id="6871397658902960384">ബ്രൗസിംഗ് ആരംഭിക്കുക</translation>
 <translation id="687838958001010630">ലിങ്കുള്ള ആർക്ക് വേണമെങ്കിലും എല്ലാ ടാബുകളും എഡിറ്റ് ചെയ്യാം</translation>
 <translation id="6880903702195291049">അനുമതികൾ നല്ല നിലയിലാണെന്ന് തോന്നുന്നു</translation>
 <translation id="6883204995689174413">പങ്കിടുക</translation>
@@ -1759,7 +1763,6 @@
 <translation id="8088176524274673045">സമീപമുള്ള ആളുകളുമായി പങ്കിടുന്നതിന്, അവരെ ഈ QR കോഡ് സ്‌കാൻ ചെയ്യാൻ അനുവദിക്കുക</translation>
 <translation id="8090732854597034573">നിങ്ങൾക്ക് സഹായം ആവശ്യമുണ്ടെങ്കിൽ രക്ഷിതാവിനോട് ചോദിക്കുക</translation>
 <translation id="8101414242770404289"><ph name="TIME_PERIOD" /> കാലയളവിൽ ടാബുകളൊന്നുമില്ല</translation>
-<translation id="8103578431304235997">അദൃശ്യ ടാബ്</translation>
 <translation id="810433609302852">'നുറുങ്ങുകളെ കുറിച്ചുള്ള അറിയിപ്പുകൾ' ഫീച്ചർ പ്രമോയും ഉപയോഗ ഘട്ടങ്ങളും കാണിക്കുന്ന ബോട്ടം ഷീറ്റ്</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109802255973641442">അവർ ഈ ഉപകരണത്തിൽ സംരക്ഷിച്ചിട്ടുള്ള വിപുലീകരണങ്ങളും ഡാറ്റയും നീക്കം ചെയ്യുക</translation>
@@ -1821,6 +1824,7 @@
 <translation id="8317318757008452355">പ്രിന്റ് ചെയ്യാനുള്ള ഓപ്ഷനുകൾ തുറക്കുക</translation>
 <translation id="8320212361750431956">സമീപകാല ആക്റ്റിവിറ്റി</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />പുതിയത്<ph name="END_NEW" /></translation>
+<translation id="8333026248928723981">ബുക്ക്‌മാർക്കും ലിസ്റ്റും</translation>
 <translation id="8342727528718219152">നിരവധി അറിയിപ്പുകൾ അയച്ചേക്കാവുന്ന സൈറ്റുകളെക്കുറിച്ച് Chrome നിങ്ങളെ അറിയിക്കും</translation>
 <translation id="834313815369870491">സൈറ്റുകൾ ഒരിക്കലും വിവർത്തനം ചെയ്യരുത്</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />, മൾട്ടിസെലക്റ്റ് ചെയ്ത, പിൻ ചെയ്ത, മീഡിയ റെക്കോർഡ് ചെയ്യുന്ന അദൃശ്യ ടാബ്</translation>
@@ -2062,6 +2066,7 @@
 <translation id="939598580284253335">പാസ്ഫ്രെയ്‍സ് നല്‍കുക</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, പിൻ ചെയ്ത 'പിക്ച്ചർ-ഇൻ-പിക്ച്ചർ' അദൃശ്യ ടാബ്</translation>
 <translation id="945522503751344254">ഫീഡ്‌ബാക്ക് അയയ്‌ക്കുക</translation>
+<translation id="948276827484905248">QR കോഡ് സൃഷ്‌ടിക്കുക</translation>
 <translation id="95817756606698420"><ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> ഉപയോഗിച്ച് Chrome-ന് ചൈനയിൽ തിരയാനാവും. നിങ്ങൾക്കിത്‌ <ph name="BEGIN_LINK" />ക്രമീകരണത്തിൽ<ph name="END_LINK" /> മാറ്റാനാവും.</translation>
 <translation id="961856697154696964">ബ്രൗസിംഗ് ഡാറ്റ ഇല്ലാതാക്കൂ</translation>
 <translation id="963246339335003378">ടാസ്‌ക് മാനേജർ തുറക്കുക</translation>

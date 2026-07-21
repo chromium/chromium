@@ -129,6 +129,7 @@
 <translation id="5042769431350623987">{WINDOW_COUNT,plural, =1{Varaqlarni yangi oynaga olish}other{Varaqlarni boshqa oynaga olish}}</translation>
 <translation id="5073204694187207510">Butun ekranga chiqarilgan jadval shaklini yopish</translation>
 <translation id="5076161749301278626">Doʻkon sharhlari ochilsinmi?</translation>
+<translation id="5093447877601682598">Varaqlar tasmasi haqida fikr-mulohaza yuborish</translation>
 <translation id="5161254044473106830">Sarlavha kiriting</translation>
 <translation id="5204584298075822291">Varaqlarni yigʻish</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome nofaol varaqlar va varaqlar guruhini <ph name="AUTO_DELETE_DELAY_ONE" /> oydan keyin avtomatik yopadi. Buni sozlamalardan oʻzgartirish mumkin.}other{Chrome nofaol varaqlar va varaqlar guruhini <ph name="AUTO_DELETE_DELAY_MANY" /> oydan keyin avtomatik yopadi. Buni sozlamalardan oʻzgartirish mumkin.}}</translation>

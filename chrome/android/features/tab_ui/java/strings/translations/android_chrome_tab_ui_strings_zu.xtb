@@ -129,6 +129,7 @@
 <translation id="5042769431350623987">{WINDOW_COUNT,plural, =1{Hambisa amathebhu ewindini elisha}one{Hambisa amathebhu kwelinye iwindi}other{Hambisa amathebhu kwelinye iwindi}}</translation>
 <translation id="5073204694187207510">Fihla igridi yesikrini esigcwele</translation>
 <translation id="5076161749301278626">Bona izibuyekezo zesitoreji?</translation>
+<translation id="5093447877601682598">Thumela impendulo emayelana nomugqa wamathebhu</translation>
 <translation id="5161254044473106830">Isihloko siyadingeka</translation>
 <translation id="5204584298075822291">Nciphisa Amathebhu</translation>
 <translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{IChrome ivala ngokuzenzakalelayo amathebhu angasebenzi namaqembu amathebhu ngemva kwenyanga e-<ph name="AUTO_DELETE_DELAY_ONE" />. Ungakushintsha lokhu kumasethingi.}one{IChrome ivala ngokuzenzakalelayo amathebhu angasebenzi namaqembu amathebhu ngemva kwezinyanga ezi-<ph name="AUTO_DELETE_DELAY_MANY" />. Ungakushintsha lokhu kumasethingi.}other{IChrome ivala ngokuzenzakalelayo amathebhu angasebenzi namaqembu amathebhu ngemva kwezinyanga ezi-<ph name="AUTO_DELETE_DELAY_MANY" />. Ungakushintsha lokhu kumasethingi.}}</translation>
