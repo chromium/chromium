@@ -1010,6 +1010,8 @@ crbug.com/352489143 virtual/third-party-storage-partitioning/external/wpt/Indexe
 crbug.com/352489143 virtual/third-party-storage-partitioning/external/wpt/IndexedDB/interleaved-cursors-large.any.sharedworker.html [ Slow ]
 crbug.com/352489143 virtual/third-party-storage-partitioning/external/wpt/IndexedDB/interleaved-cursors-large.any.worker.html [ Slow ]
 
+crbug.com/40257273 http/tests/storage/partitioned-storage/clear-site-data.https.html [ Slow ]
+
 crbug.com/351944362 external/wpt/fetch/metadata/generated/element-iframe.https.sub.html [ Slow ]
 
 crbug.com/354579691 fast/events/touch/gesture/long-press-drag-drop-touch-editing-combined-in-iframe.html [ Slow ]
