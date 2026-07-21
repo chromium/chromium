@@ -44,7 +44,7 @@ MediaRouterE2EBrowserTest::~MediaRouterE2EBrowserTest() = default;
 void MediaRouterE2EBrowserTest::SetUpOnMainThread() {
   MediaRouterIntegrationBrowserTest::SetUpOnMainThread();
   media_router_ =
-      MediaRouterFactory::GetApiForBrowserContext(browser()->profile());
+      MediaRouterFactory::GetApiForBrowserContext(browser()->GetProfile());
   DCHECK(media_router_);
 // On Mac, cast device discovery isn't started until explicit user gesture.
 // Starting sink discovery now for tests.

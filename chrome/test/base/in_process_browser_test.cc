@@ -662,7 +662,7 @@ void InProcessBrowserTest::SetUpLocalStatePrefService(
 }
 
 Profile* InProcessBrowserTest::GetProfile() const {
-  return browser() ? browser()->profile() : nullptr;
+  return browser() ? browser()->GetProfile() : nullptr;
 }
 
 TabListInterface* InProcessBrowserTest::GetTabListInterface() const {
@@ -786,7 +786,7 @@ Browser* InProcessBrowserTest::CreateBrowser(Profile* profile) {
 Browser* InProcessBrowserTest::CreateIncognitoBrowser(Profile* profile) {
   // Use active profile if default nullptr was passed.
   if (!profile) {
-    profile = browser()->profile();
+    profile = browser()->GetProfile();
   }
   // Create a new browser with using the incognito profile.
   Browser* incognito = Browser::Create(Browser::CreateParams(

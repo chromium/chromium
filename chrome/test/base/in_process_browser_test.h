@@ -212,7 +212,7 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // Tests can override this to customize the initial local_state.
   virtual void SetUpLocalStatePrefService(PrefService* local_state);
 
-  // Returns the profile. Prefer this method to browser()->profile() for
+  // Returns the profile. Prefer this method to browser()->GetProfile() for
   // cross-platform compatibility.
   Profile* GetProfile() const;
 

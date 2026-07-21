@@ -81,7 +81,7 @@ class InteractiveBrowserTestUiTest : public InteractiveBrowserTest {
 
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         prefs::kTabSearchPinnedToTabstrip, true);
     embedded_test_server()->StartAcceptingConnections();
   }

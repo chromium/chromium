@@ -30,7 +30,7 @@ class HistorySupervisedUserTest : public WebUIMochaBrowserTest {
  protected:
   // Sets the pref to allow or prohibit deleting history entries.
   void SetDeleteAllowed(bool allowed) {
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         prefs::kAllowDeletingBrowserHistory, allowed);
   }
 

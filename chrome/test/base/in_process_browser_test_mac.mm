@@ -61,7 +61,7 @@ Browser* InProcessBrowserTest::CreateIncognitoBrowser(Profile* profile) {
   @autoreleasepool {
     // Use active profile if default nullptr was passed.
     if (!profile)
-      profile = browser()->profile();
+      profile = browser()->GetProfile();
 
     // Create a new browser with using the incognito profile.
     Browser* incognito = Browser::Create(Browser::CreateParams(

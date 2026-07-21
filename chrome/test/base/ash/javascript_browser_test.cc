@@ -133,5 +133,5 @@ std::u16string JavaScriptBrowserTest::BuildRunTestJSCall(
 }
 
 Profile* JavaScriptBrowserTest::GetProfile() const {
-  return browser()->profile();
+  return browser()->GetProfile();
 }

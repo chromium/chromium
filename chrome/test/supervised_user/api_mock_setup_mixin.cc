@@ -41,7 +41,7 @@ void WaitUntilReady(InProcessBrowserTest* test_base,
   PrefService* pref_service =
       ProfileManager::GetActiveUserProfile()->GetPrefs();
 #else
-  PrefService* pref_service = test_base->browser()->profile()->GetPrefs();
+  PrefService* pref_service = test_base->browser()->GetProfile()->GetPrefs();
 #endif
 
   if (pref_service->GetString(prefs::kSupervisedUserId) !=

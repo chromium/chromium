@@ -91,7 +91,7 @@ class BookmarksExtensionAPITest : public BookmarksBrowserTest {
  protected:
   void SetupExtensionAPITest() {
     // Add managed bookmarks.
-    Profile* profile = browser()->profile();
+    Profile* profile = browser()->GetProfile();
     bookmarks::BookmarkModel* model =
         BookmarkModelFactory::GetForBrowserContext(profile);
     bookmarks::ManagedBookmarkService* managed =
@@ -113,7 +113,7 @@ class BookmarksExtensionAPITest : public BookmarksBrowserTest {
   }
 
   void SetupExtensionAPIEditDisabledTest() {
-    Profile* profile = browser()->profile();
+    Profile* profile = browser()->GetProfile();
 
     // Provide some testing data here, since bookmark editing will be disabled
     // within the extension.

@@ -76,7 +76,7 @@ class SanitizeUIBrowserTest : public WebUIMochaBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(SanitizeUIBrowserTest, PRE_SanitizeCheckPreferences) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   PrefService* prefs = profile->GetPrefs();
 
   // Ensure user preferences are set to proper test values before safety reset.
@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(SanitizeUIBrowserTest, PRE_SanitizeCheckPreferences) {
 }
 
 IN_PROC_BROWSER_TEST_F(SanitizeUIBrowserTest, SanitizeCheckPreferences) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   PrefService* prefs = profile->GetPrefs();
 
   // Check for expected changes in user preferences.

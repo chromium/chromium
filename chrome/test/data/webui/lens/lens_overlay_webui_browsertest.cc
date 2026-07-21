@@ -51,7 +51,7 @@ class LensOverlayWebUIBrowserTest : public WebUIMochaBrowserTest {
     embedded_test_server()->StartAcceptingConnections();
 
     // Permits sharing the page screenshot by default.
-    PrefService* prefs = browser()->profile()->GetPrefs();
+    PrefService* prefs = browser()->GetProfile()->GetPrefs();
     prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, true);
   }
 
@@ -60,7 +60,7 @@ class LensOverlayWebUIBrowserTest : public WebUIMochaBrowserTest {
     WebUIMochaBrowserTest::TearDownOnMainThread();
 
     // Disallow sharing the page screenshot by default.
-    PrefService* prefs = browser()->profile()->GetPrefs();
+    PrefService* prefs = browser()->GetProfile()->GetPrefs();
     prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, false);
   }
 

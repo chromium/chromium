@@ -202,9 +202,9 @@ IN_PROC_BROWSER_TEST_F(BocaAppBrowserConsumerTest, TestMainPageLoaded) {
 }
 
 IN_PROC_BROWSER_TEST_F(BocaAppBrowserConsumerTest, TestFeatureFlagNotHonored) {
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       ash::prefs::kClassManagementToolsCaptionEligibilitySetting, false);
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       ash::prefs::kClassManagementToolsViewScreenEligibilitySetting, false);
   RunTestWithoutTestLoader("chromeos/boca_ui/feature_flag_test.js",
                            "mocha.run()");

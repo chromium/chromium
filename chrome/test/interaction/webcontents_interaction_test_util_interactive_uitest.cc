@@ -67,13 +67,13 @@ class WebContentsInteractionTestUtilInteractiveUiTest
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         prefs::kTabSearchPinnedToTabstrip, true);
     embedded_test_server()->StartAcceptingConnections();
   }
 
   void TearDownOnMainThread() override {
-    browser()->profile()->GetPrefs()->ClearPref(
+    browser()->GetProfile()->GetPrefs()->ClearPref(
         prefs::kTabSearchPinnedToTabstrip);
     EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
     InProcessBrowserTest::TearDownOnMainThread();

@@ -72,7 +72,7 @@ Profile* GetProfile(const PlatformBrowserTest* browser_test) {
   }
   NOTREACHED() << "No active TabModel??";
 #else
-  return browser_test->browser()->profile();
+  return browser_test->browser()->GetProfile();
 #endif
 }
 

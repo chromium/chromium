@@ -156,7 +156,7 @@ void MediaRouterIntegrationBrowserTest::SetUpInProcessBrowserTestFixture() {
 
 void MediaRouterIntegrationBrowserTest::SetUpOnMainThread() {
   MediaRouterDesktop* router = static_cast<MediaRouterDesktop*>(
-      MediaRouterFactory::GetApiForBrowserContext(browser()->profile()));
+      MediaRouterFactory::GetApiForBrowserContext(browser()->GetProfile()));
   mojo::PendingRemote<mojom::MediaRouter> media_router_remote;
   mojo::PendingRemote<mojom::MediaRouteProvider> provider_remote;
   router->BindToMojoReceiver(

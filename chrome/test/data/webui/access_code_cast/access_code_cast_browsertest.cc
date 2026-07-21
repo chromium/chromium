@@ -17,7 +17,7 @@ class AccessCodeCastTest : public WebUIMochaBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         media_router::prefs::kAccessCodeCastEnabled, true);
     WebUIMochaBrowserTest::SetUpOnMainThread();
   }

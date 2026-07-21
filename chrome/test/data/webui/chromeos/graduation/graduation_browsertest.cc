@@ -31,7 +31,7 @@ class GraduationMochaTest : public WebUIMochaBrowserTest,
 
     base::DictValue status;
     status.Set("is_enabled", true);
-    browser()->profile()->GetPrefs()->SetDict(
+    browser()->GetProfile()->GetPrefs()->SetDict(
         ash::prefs::kGraduationEnablementStatus, status.Clone());
   }
 
