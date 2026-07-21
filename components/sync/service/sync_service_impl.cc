@@ -230,8 +230,10 @@ SyncServiceImpl::SyncServiceImpl(InitParams init_params)
       identity_manager_(sync_prefs_.IsLocalSyncEnabled()
                             ? nullptr
                             : sync_client_->GetIdentityManager()),
-      auth_manager_(std::make_unique<SyncAuthManager>(identity_manager_,
-                                                      /*delegate=*/this)),
+      auth_manager_(std::make_unique<SyncAuthManager>(
+          identity_manager_,
+          /*delegate=*/this,
+          init_params.account_managed_status_finder_timeout)),
       channel_(init_params.channel),
       debug_identifier_(std::move(init_params.debug_identifier)),
       sync_service_url_(
@@ -876,14 +878,12 @@ SyncService::TransportState SyncServiceImpl::GetTransportState() const {
     return TransportState::INITIALIZING;
   }
 
-  if (base::FeatureList::IsEnabled(kSyncDetermineAccountManagedStatus)) {
-    // Determining the account's managed-ness status is also considered part of
-    // initialization.
-    if (!IsLocalSyncEnabled() &&
-        auth_manager_->GetActiveAccountInfo().managed_status ==
-            signin::AccountManagedStatusFinderOutcome::kPending) {
-      return TransportState::INITIALIZING;
-    }
+  // Determining the account's managed-ness status is also considered part of
+  // initialization.
+  if (!IsLocalSyncEnabled() &&
+      auth_manager_->GetActiveAccountInfo().managed_status ==
+          signin::AccountManagedStatusFinderOutcome::kPending) {
+    return TransportState::INITIALIZING;
   }
 
   // At this point we should usually be able to configure our data types (so the
@@ -1302,8 +1302,7 @@ void SyncServiceImpl::SyncAuthAccountStateChanged() {
       // If sync startup is still deferred, then honor that. (In practice, this
       // mostly happens when the `managed_status` of the account gets
       // determined.)
-      if (!base::FeatureList::IsEnabled(kSyncDetermineAccountManagedStatus) ||
-          deferring_first_start_since_.is_null()) {
+      if (deferring_first_start_since_.is_null()) {
         TryStart();
       }
       NotifyObservers();
@@ -1700,14 +1699,12 @@ void SyncServiceImpl::ConfigureDataTypeManager(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(kSyncDetermineAccountManagedStatus)) {
-    // If the account type hasn't been determined yet, don't configure. A
-    // configuration will be triggered again once the type has been determined.
-    if (!IsLocalSyncEnabled() &&
-        auth_manager_->GetActiveAccountInfo().managed_status ==
-            signin::AccountManagedStatusFinderOutcome::kPending) {
-      return;
-    }
+  // If the account type hasn't been determined yet, don't configure. A
+  // configuration will be triggered again once the type has been determined.
+  if (!IsLocalSyncEnabled() &&
+      auth_manager_->GetActiveAccountInfo().managed_status ==
+          signin::AccountManagedStatusFinderOutcome::kPending) {
+    return;
   }
 
   DCHECK(!engine_->GetCacheGuid().empty());

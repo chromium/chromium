@@ -46,10 +46,13 @@ class MockSyncServiceObserver : public SyncServiceObserver {
 
 class SyncServiceImplStartupTest : public testing::Test {
  public:
-  SyncServiceImplStartupTest()
+  explicit SyncServiceImplStartupTest(
+      base::TimeDelta account_managed_status_finder_timeout = base::Seconds(5))
       : task_environment_(
             base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME),
-        sync_prefs_(sync_service_impl_bundle_.pref_service()) {
+        sync_prefs_(sync_service_impl_bundle_.pref_service()),
+        account_managed_status_finder_timeout_(
+            account_managed_status_finder_timeout) {
     sync_service_impl_bundle_.identity_test_env()
         ->SetAutomaticIssueOfAccessTokens(true);
   }
@@ -77,9 +80,11 @@ class SyncServiceImplStartupTest : public testing::Test {
     ON_CALL(*sync_client, GetIdentityManager)
         .WillByDefault(Return(sync_service_impl_bundle_.identity_manager()));
 
-    sync_service_ = std::make_unique<SyncServiceImpl>(
-        sync_service_impl_bundle_.CreateBasicInitParams(
-            std::move(sync_client)));
+    SyncServiceImpl::InitParams init_params =
+        sync_service_impl_bundle_.CreateBasicInitParams(std::move(sync_client));
+    init_params.account_managed_status_finder_timeout =
+        account_managed_status_finder_timeout_;
+    sync_service_ = std::make_unique<SyncServiceImpl>(std::move(init_params));
     sync_service_->Initialize(std::move(controllers));
   }
 
@@ -193,6 +198,7 @@ class SyncServiceImplStartupTest : public testing::Test {
   // The controllers are owned by `sync_service_`.
   std::map<DataType, raw_ptr<FakeDataTypeController, CtnExperimental>>
       controller_map_;
+  const base::TimeDelta account_managed_status_finder_timeout_;
 };
 
 // ChromeOS does not support sign-in after startup
@@ -266,17 +272,11 @@ TEST_F(SyncServiceImplStartupTest, StartNoCredentials) {
   CreateSyncService();
   FastForwardThroughSyncStartup();
 
-  if (base::FeatureList::IsEnabled(kSyncDetermineAccountManagedStatus)) {
-    // Without refresh tokens, SyncServiceImpl can't determine whether the
-    // signed-in account is managed or not, so it'll remain in the INITIALIZING
-    // state.
-    EXPECT_EQ(SyncService::TransportState::INITIALIZING,
-              sync_service()->GetTransportState());
-  } else {
-    // SyncServiceImpl should now be active.
-    EXPECT_EQ(SyncService::TransportState::ACTIVE,
-              sync_service()->GetTransportState());
-  }
+  // Without refresh tokens, SyncServiceImpl can't determine whether the
+  // signed-in account is managed or not, so it'll remain in the INITIALIZING
+  // state.
+  EXPECT_EQ(SyncService::TransportState::INITIALIZING,
+            sync_service()->GetTransportState());
   // Either way, it shouldn't have an access token.
   EXPECT_TRUE(sync_service()->GetAccessTokenForTest().empty());
   // Note that SyncServiceImpl is not in an auth error state - no auth was
@@ -421,17 +421,11 @@ TEST_F(SyncServiceImplStartupTest, StartAshNoCredentials) {
   // initialize the engine, and configure the DataTypeManager.
   base::RunLoop().RunUntilIdle();
 
-  if (base::FeatureList::IsEnabled(kSyncDetermineAccountManagedStatus)) {
-    // Without refresh tokens, SyncServiceImpl can't determine whether the
-    // signed-in account is managed or not, so it'll remain in the INITIALIZING
-    // state.
-    EXPECT_EQ(SyncService::TransportState::INITIALIZING,
-              sync_service()->GetTransportState());
-  } else {
-    // Sync should be considered active, even though there is no refresh token.
-    EXPECT_EQ(SyncService::TransportState::ACTIVE,
-              sync_service()->GetTransportState());
-  }
+  // Without refresh tokens, SyncServiceImpl can't determine whether the
+  // signed-in account is managed or not, so it'll remain in the INITIALIZING
+  // state.
+  EXPECT_EQ(SyncService::TransportState::INITIALIZING,
+            sync_service()->GetTransportState());
   // FirstSetupComplete gets set automatically on Ash.
   EXPECT_TRUE(
       sync_service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
@@ -907,18 +901,12 @@ TEST_F(SyncServiceImplStartupTest,
 class SyncServiceImplStartupWithDetermineAccountTypeTest
     : public SyncServiceImplStartupTest {
  public:
-  SyncServiceImplStartupWithDetermineAccountTypeTest() {
-    // Disable the timeout for determining the managed status, since otherwise
-    // the FastForward*() calls would trigger the account status fetcher to
-    // time out (which would then unblock the sync startup, and make these tests
-    // pointless).
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        kSyncDetermineAccountManagedStatus,
-        {{kSyncDetermineAccountManagedStatusTimeout.name, "inf"}});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  // Disable the timeout for determining the managed status, since otherwise
+  // the FastForward*() calls would trigger the account status fetcher to time
+  // out, which would then unblock the sync startup and make these tests
+  // pointless.
+  SyncServiceImplStartupWithDetermineAccountTypeTest()
+      : SyncServiceImplStartupTest(base::TimeDelta::Max()) {}
 };
 
 TEST_F(SyncServiceImplStartupWithDetermineAccountTypeTest,

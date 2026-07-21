@@ -172,14 +172,6 @@ BASE_FEATURE(kSyncTrustedVaultInfobarMessageImprovements,
 BASE_FEATURE(kSyncPreferencesUseSelectedTypes,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSyncDetermineAccountManagedStatus,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kSyncDetermineAccountManagedStatusTimeout,
-                   &kSyncDetermineAccountManagedStatus,
-                   "account_managed_status_timeout",
-                   base::Seconds(5));
-
 BASE_FEATURE(kSyncEnableNewSyncDashboardUrl, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSyncRecordDeviceStatisticsMetrics,

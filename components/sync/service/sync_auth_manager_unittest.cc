@@ -43,13 +43,15 @@ class SyncAuthManagerTest
 
   ~SyncAuthManagerTest() override = default;
 
-  std::unique_ptr<SyncAuthManager> CreateAuthManager() {
+  std::unique_ptr<SyncAuthManager> CreateAuthManager(
+      base::TimeDelta timeout = base::Seconds(5)) {
     return std::make_unique<SyncAuthManager>(identity_env_.identity_manager(),
-                                             &delegate_);
+                                             &delegate_, timeout);
   }
 
-  std::unique_ptr<SyncAuthManager> CreateAuthManagerForLocalSync() {
-    return std::make_unique<SyncAuthManager>(nullptr, &delegate_);
+  std::unique_ptr<SyncAuthManager> CreateAuthManagerForLocalSync(
+      base::TimeDelta timeout = base::Seconds(5)) {
+    return std::make_unique<SyncAuthManager>(nullptr, &delegate_, timeout);
   }
 
   signin::IdentityTestEnvironment* identity_env() { return &identity_env_; }
@@ -986,19 +988,7 @@ TEST_P(SyncAuthManagerTest, DetectsInvalidRefreshTokenAtStartup) {
   EXPECT_TRUE(auth_manager->GetLastAuthError().IsPersistentError());
 }
 
-class SyncAuthManagerWithDetermineAccountTypeTest : public SyncAuthManagerTest {
- public:
-  SyncAuthManagerWithDetermineAccountTypeTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        kSyncDetermineAccountManagedStatus);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(SyncAuthManagerWithDetermineAccountTypeTest,
-       DeterminesAccountTypeSynchronously) {
+TEST_F(SyncAuthManagerTest, DeterminesAccountTypeSynchronously) {
   // There is a primary account. It's @gmail.com so it's managed status can be
   // determined synchronously.
   AccountInfo account_info = identity_env()->MakePrimaryAccountAvailable(
@@ -1040,8 +1030,7 @@ TEST_F(SyncAuthManagerWithDetermineAccountTypeTest,
   histograms.ExpectTotalCount("Sync.AccountManagedStatusDuration", 0);
 }
 
-TEST_F(SyncAuthManagerWithDetermineAccountTypeTest,
-       DeterminesAccountTypeAsynchronously) {
+TEST_F(SyncAuthManagerTest, DeterminesAccountTypeAsynchronously) {
   // There is a primary account, whose managed-ness status isn't known yet.
   AccountInfo account_info = identity_env()->MakePrimaryAccountAvailable(
       "test@consumer.com", signin::ConsentLevel::kSignin);
@@ -1084,8 +1073,7 @@ TEST_F(SyncAuthManagerWithDetermineAccountTypeTest,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-TEST_F(SyncAuthManagerWithDetermineAccountTypeTest,
-       AccountChangeWhileDeterminingAccountType) {
+TEST_F(SyncAuthManagerTest, AccountChangeWhileDeterminingAccountType) {
   // There is a primary account, whose managed-ness status isn't known yet.
   AccountInfo account_info = identity_env()->MakePrimaryAccountAvailable(
       "test@consumer.com", signin::ConsentLevel::kSignin);

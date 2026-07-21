@@ -103,6 +103,7 @@ class SyncServiceImpl : public SyncService,
     version_info::Channel channel = version_info::Channel::UNKNOWN;
     std::string debug_identifier;
     raw_ptr<os_crypt_async::OSCryptAsync> os_crypt_async = nullptr;
+    base::TimeDelta account_managed_status_finder_timeout = base::Seconds(5);
   };
 
   explicit SyncServiceImpl(InitParams init_params);

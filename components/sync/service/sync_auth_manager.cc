@@ -78,8 +78,10 @@ SyncAccountInfo DetermineAccountToUse(
 
 SyncAuthManager::ActiveAccount::ActiveAccount(
     signin::IdentityManager* identity_manager,
+    base::TimeDelta managed_status_finder_timeout,
     base::RepeatingClosure account_changed_callback)
     : identity_manager_(identity_manager),
+      managed_status_finder_timeout_(managed_status_finder_timeout),
       account_changed_callback_(std::move(account_changed_callback)) {}
 
 SyncAuthManager::ActiveAccount::~ActiveAccount() = default;
@@ -94,9 +96,6 @@ const SyncAccountInfo& SyncAuthManager::ActiveAccount::Get() const {
 }
 
 void SyncAuthManager::ActiveAccount::StartDeterminingAccountType() {
-  if (!base::FeatureList::IsEnabled(kSyncDetermineAccountManagedStatus)) {
-    return;
-  }
   if (account_info_.account_info.account_id.empty()) {
     managed_status_finder_.reset();
     return;
@@ -113,7 +112,7 @@ void SyncAuthManager::ActiveAccount::StartDeterminingAccountType() {
             base::BindOnce(&SyncAuthManager::ActiveAccount::
                                AccountTypeDeterminedAsynchronously,
                            base::Unretained(this)),
-            kSyncDetermineAccountManagedStatusTimeout.Get());
+            managed_status_finder_timeout_);
     base::UmaHistogramEnumeration("Sync.AccountManagedStatusSynchronousOutcome",
                                   managed_status_finder_->GetOutcome());
   }
@@ -125,8 +124,6 @@ void SyncAuthManager::ActiveAccount::StartDeterminingAccountType() {
 }
 
 void SyncAuthManager::ActiveAccount::AccountTypeDeterminedAsynchronously() {
-  CHECK(base::FeatureList::IsEnabled(kSyncDetermineAccountManagedStatus));
-
   account_info_.managed_status = managed_status_finder_->GetOutcome();
 
   const base::TimeDelta duration =
@@ -139,12 +136,15 @@ void SyncAuthManager::ActiveAccount::AccountTypeDeterminedAsynchronously() {
   account_changed_callback_.Run();
 }
 
-SyncAuthManager::SyncAuthManager(signin::IdentityManager* identity_manager,
-                                 Delegate* delegate)
+SyncAuthManager::SyncAuthManager(
+    signin::IdentityManager* identity_manager,
+    Delegate* delegate,
+    base::TimeDelta account_managed_status_finder_timeout)
     : identity_manager_(identity_manager),
       delegate_(delegate),
       sync_account_(
           identity_manager,
+          account_managed_status_finder_timeout,
           base::BindRepeating(&SyncAuthManager::AccountManagednessDetermined,
                               base::Unretained(this))),
       request_access_token_backoff_(

@@ -66,7 +66,8 @@ class SyncAuthManager : public signin::IdentityManager::Observer {
   // but if non-null, must outlive this object. `delegate` must not be null and
   // must outlive this object.
   SyncAuthManager(signin::IdentityManager* identity_manager,
-                  Delegate* delegate);
+                  Delegate* delegate,
+                  base::TimeDelta account_managed_status_finder_timeout);
 
   SyncAuthManager(const SyncAuthManager&) = delete;
   SyncAuthManager& operator=(const SyncAuthManager&) = delete;
@@ -148,6 +149,7 @@ class SyncAuthManager : public signin::IdentityManager::Observer {
     // The `account_changed_callback` will be called whenever an account's
     // managed-ness is determined asynchronously.
     ActiveAccount(signin::IdentityManager* identity_manager,
+                  base::TimeDelta managed_status_finder_timeout,
                   base::RepeatingClosure account_changed_callback);
     ~ActiveAccount();
 
@@ -169,6 +171,7 @@ class SyncAuthManager : public signin::IdentityManager::Observer {
     void AccountTypeDeterminedAsynchronously();
 
     const raw_ptr<signin::IdentityManager> identity_manager_;
+    const base::TimeDelta managed_status_finder_timeout_;
     base::RepeatingClosure account_changed_callback_;
     SyncAccountInfo account_info_;
     std::unique_ptr<signin::AccountManagedStatusFinder> managed_status_finder_;

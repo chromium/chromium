@@ -197,10 +197,6 @@ BASE_DECLARE_FEATURE(kSyncTrustedVaultInfobarMessageImprovements);
 // determine whether the pref values should be set in the account storage.
 BASE_DECLARE_FEATURE(kSyncPreferencesUseSelectedTypes);
 
-BASE_DECLARE_FEATURE(kSyncDetermineAccountManagedStatus);
-BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
-                           kSyncDetermineAccountManagedStatusTimeout);
-
 // If enabled, the new sync dashboard URL will be opened when the user clicks
 // on the "Review your synced data" (or equivalent) entrypoint in settings.
 BASE_DECLARE_FEATURE(kSyncEnableNewSyncDashboardUrl);
