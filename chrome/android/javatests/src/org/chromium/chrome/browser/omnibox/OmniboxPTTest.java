@@ -18,9 +18,9 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.transit.TransitAsserts;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -112,16 +112,17 @@ public class OmniboxPTTest {
     @LargeTest
     @Test
     @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
-    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/536993206
     public void testOpenTypeDelete_fromIncognitoNtp() {
-        // Desktop opens an incognito profile as a separate window, which confuses Espresso and
-        // leads to test failures.
         IncognitoNewTabPageStation incognitoNtp = mBlankPage.openNewIncognitoTabOrWindowFast();
         OmniboxFacility omnibox = incognitoNtp.openOmnibox(sFakeSuggestions);
 
         doOpenTypeDelete(omnibox);
 
-        TransitAsserts.assertFinalDestination(incognitoNtp);
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            TransitAsserts.assertFinalDestinations(mBlankPage, incognitoNtp);
+        } else {
+            TransitAsserts.assertFinalDestination(incognitoNtp);
+        }
     }
 
     private void doOpenTypeDelete(OmniboxFacility omnibox) {
