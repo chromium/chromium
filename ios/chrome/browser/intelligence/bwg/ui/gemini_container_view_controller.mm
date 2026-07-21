@@ -37,7 +37,19 @@
     [self addChildViewController:_geminiViewController];
     _geminiViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:_geminiViewController.view];
-    AddSameConstraints(_geminiViewController.view, self.view);
+
+    // Prevent double-padding/extra spacing at the bottom when the keyboard
+    // is hidden.
+    self.view.keyboardLayoutGuide.usesBottomSafeArea = NO;
+
+    // Anchor on top of the keyboard.
+    AddSameConstraintsToSides(
+        _geminiViewController.view, self.view,
+        LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
+    [NSLayoutConstraint activateConstraints:@[
+      [_geminiViewController.view.bottomAnchor
+          constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor]
+    ]];
     [_geminiViewController didMoveToParentViewController:self];
   }
 }
