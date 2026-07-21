@@ -723,16 +723,16 @@ void ActorKeyedService::RemoveObserver(BackgroundActuationObserver* observer) {
 
 void ActorKeyedService::NotifyBackgroundTabReady(
     tabs::TabInterface* tab,
-    const std::string& context_id) {
+    const std::string& glic_trigger_message_id) {
   for (auto& observer : observers_) {
-    observer.OnBackgroundTabPrepared(tab, context_id);
+    observer.OnBackgroundTabPrepared(tab, glic_trigger_message_id);
   }
 }
 
 void ActorKeyedService::NotifyBackgroundSetupFailed(
-    const std::string& context_id) {
+    const std::string& glic_trigger_message_id) {
   for (auto& observer : observers_) {
-    observer.OnBackgroundSetupFailed(context_id);
+    observer.OnBackgroundSetupFailed(glic_trigger_message_id);
   }
 }
 
@@ -743,8 +743,8 @@ ActorKeyedService::AddForegroundServiceStartedCallback(
 }
 
 void ActorKeyedService::EnsureForegroundServiceStarted(
-    const std::string& context_id) {
-  ensure_foreground_service_started_callbacks_.Notify(context_id);
+    const std::string& glic_trigger_message_id) {
+  ensure_foreground_service_started_callbacks_.Notify(glic_trigger_message_id);
 }
 #endif
 

@@ -134,21 +134,21 @@ void ActorKeyedServiceAndroid::StopTask(JNIEnv* env,
 void ActorKeyedServiceAndroid::SetPreparedBackgroundTab(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_tab,
-    const base::android::JavaRef<jstring>& j_context_id) {
+    const base::android::JavaRef<jstring>& j_glic_trigger_message_id) {
   TabAndroid* tab = TabAndroid::GetNativeTab(env, j_tab);
-  std::string context_id =
-      base::android::ConvertJavaStringToUTF8(env, j_context_id);
+  std::string glic_trigger_message_id =
+      base::android::ConvertJavaStringToUTF8(env, j_glic_trigger_message_id);
 
-  service_->NotifyBackgroundTabReady(tab, context_id);
+  service_->NotifyBackgroundTabReady(tab, glic_trigger_message_id);
 }
 
 void ActorKeyedServiceAndroid::NotifyBackgroundSetupFailed(
     JNIEnv* env,
-    const base::android::JavaRef<jstring>& j_context_id) {
-  std::string context_id =
-      base::android::ConvertJavaStringToUTF8(env, j_context_id);
+    const base::android::JavaRef<jstring>& j_glic_trigger_message_id) {
+  std::string glic_trigger_message_id =
+      base::android::ConvertJavaStringToUTF8(env, j_glic_trigger_message_id);
 
-  service_->NotifyBackgroundSetupFailed(context_id);
+  service_->NotifyBackgroundSetupFailed(glic_trigger_message_id);
 }
 
 void ActorKeyedServiceAndroid::OnTaskStateChanged(ActorTask& task) {
@@ -159,10 +159,11 @@ void ActorKeyedServiceAndroid::OnTaskStateChanged(ActorTask& task) {
 }
 
 void ActorKeyedServiceAndroid::EnsureForegroundServiceStarted(
-    const std::string& context_id) {
+    const std::string& glic_trigger_message_id) {
   JNIEnv* env = AttachCurrentThread();
   Java_ActorKeyedService_ensureForegroundServiceStarted(
-      env, java_obj_, base::android::ConvertUTF8ToJavaString(env, context_id));
+      env, java_obj_,
+      base::android::ConvertUTF8ToJavaString(env, glic_trigger_message_id));
 }
 
 }  // namespace actor

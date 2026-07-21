@@ -66,9 +66,10 @@ public class ActorForegroundServiceControllerImpl implements ActorForegroundServ
             };
 
     @Override
-    public void startService(String contextId) {
+    public void startService(String glicTriggerMessageId) {
         Context context = ContextUtils.getApplicationContext();
-        ActorForegroundServiceImpl.startActorForegroundServiceWithContextId(context, contextId);
+        ActorForegroundServiceImpl.startActorForegroundServiceWithGlicTriggerMessageId(
+                context, glicTriggerMessageId);
     }
 
     @Override

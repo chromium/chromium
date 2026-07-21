@@ -28,9 +28,9 @@ public interface ActorForegroundServiceController {
     /**
      * Starts the service.
      *
-     * @param contextId The context ID associated with the request.
+     * @param glicTriggerMessageId The GLIC trigger message ID associated with the request.
      */
-    void startService(String contextId);
+    void startService(String glicTriggerMessageId);
 
     /**
      * Starts the service and binds to it.

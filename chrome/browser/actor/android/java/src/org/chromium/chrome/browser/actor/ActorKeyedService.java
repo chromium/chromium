@@ -117,29 +117,30 @@ public class ActorKeyedService {
     }
 
     @CalledByNative
-    private void ensureForegroundServiceStarted(String contextId) {
-        ActorForegroundServiceController.get().startService(contextId);
+    private void ensureForegroundServiceStarted(String glicTriggerMessageId) {
+        ActorForegroundServiceController.get().startService(glicTriggerMessageId);
     }
 
     /**
      * Called when a background tab is ready for actuation.
      *
      * @param tab The prepared tab.
-     * @param contextId The context ID associated with the request.
+     * @param glicTriggerMessageId The GLIC trigger message ID associated with the request.
      */
-    public void setPreparedBackgroundTab(Tab tab, String contextId) {
+    public void setPreparedBackgroundTab(Tab tab, String glicTriggerMessageId) {
         if (mNativePtr == 0) return;
-        ActorKeyedServiceJni.get().setPreparedBackgroundTab(mNativePtr, tab, contextId);
+        ActorKeyedServiceJni.get().setPreparedBackgroundTab(
+                mNativePtr, tab, glicTriggerMessageId);
     }
 
     /**
      * Called when background setup fails.
      *
-     * @param contextId The context ID associated with the request.
+     * @param glicTriggerMessageId The GLIC trigger message ID associated with the request.
      */
-    public void notifyBackgroundSetupFailed(String contextId) {
+    public void notifyBackgroundSetupFailed(String glicTriggerMessageId) {
         if (mNativePtr == 0) return;
-        ActorKeyedServiceJni.get().notifyBackgroundSetupFailed(mNativePtr, contextId);
+        ActorKeyedServiceJni.get().notifyBackgroundSetupFailed(mNativePtr, glicTriggerMessageId);
     }
 
     @CalledByNative
@@ -165,8 +166,9 @@ public class ActorKeyedService {
         void stopTask(long nativeActorKeyedServiceAndroid, int taskId, int stopReason);
 
         void setPreparedBackgroundTab(
-                long nativeActorKeyedServiceAndroid, Tab tab, String contextId);
+                long nativeActorKeyedServiceAndroid, Tab tab, String glicTriggerMessageId);
 
-        void notifyBackgroundSetupFailed(long nativeActorKeyedServiceAndroid, String contextId);
+        void notifyBackgroundSetupFailed(
+                long nativeActorKeyedServiceAndroid, String glicTriggerMessageId);
     }
 }

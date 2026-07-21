@@ -37,15 +37,16 @@ class ActorKeyedServiceAndroid : public base::SupportsUserData::Data {
   void SetPreparedBackgroundTab(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& j_tab,
-      const base::android::JavaRef<jstring>& j_context_id);
+      const base::android::JavaRef<jstring>& j_glic_trigger_message_id);
 
   void NotifyBackgroundSetupFailed(
       JNIEnv* env,
-      const base::android::JavaRef<jstring>& j_context_id);
+      const base::android::JavaRef<jstring>& j_glic_trigger_message_id);
 
  private:
   void OnTaskStateChanged(ActorTask& task);
-  void EnsureForegroundServiceStarted(const std::string& context_id);
+  void EnsureForegroundServiceStarted(
+      const std::string& glic_trigger_message_id);
 
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
   raw_ptr<ActorKeyedService> service_;

@@ -185,22 +185,25 @@ class ActorKeyedService : public KeyedService,
 #if BUILDFLAG(IS_ANDROID)
   class BackgroundActuationObserver : public base::CheckedObserver {
    public:
-    virtual void OnBackgroundTabPrepared(tabs::TabInterface* tab,
-                                         const std::string& context_id) = 0;
-    virtual void OnBackgroundSetupFailed(const std::string& context_id) = 0;
+    virtual void OnBackgroundTabPrepared(
+        tabs::TabInterface* tab,
+        const std::string& glic_trigger_message_id) = 0;
+    virtual void OnBackgroundSetupFailed(
+        const std::string& glic_trigger_message_id) = 0;
   };
 
   void AddObserver(BackgroundActuationObserver* observer);
   void RemoveObserver(BackgroundActuationObserver* observer);
   void NotifyBackgroundTabReady(tabs::TabInterface* tab,
-                                const std::string& context_id);
-  void NotifyBackgroundSetupFailed(const std::string& context_id);
+                                const std::string& glic_trigger_message_id);
+  void NotifyBackgroundSetupFailed(const std::string& glic_trigger_message_id);
 
   using EnsureForegroundServiceStartedCallback =
       base::RepeatingCallback<void(const std::string&)>;
   base::CallbackListSubscription AddForegroundServiceStartedCallback(
       EnsureForegroundServiceStartedCallback callback);
-  void EnsureForegroundServiceStarted(const std::string& context_id);
+  void EnsureForegroundServiceStarted(
+      const std::string& glic_trigger_message_id);
 #endif
 
   base::WeakPtr<ActorKeyedService> GetWeakPtr();

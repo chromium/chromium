@@ -35,8 +35,8 @@ import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 public class ActorForegroundServiceImpl extends SplitCompatService.Impl {
     private static final String START_ACTOR_FOREGROUND_SERVICE =
             "org.chromium.chrome.browser.actor.START_ACTOR_FOREGROUND_SERVICE";
-    private static final String EXTRA_CONTEXT_ID =
-            "org.chromium.chrome.browser.actor.EXTRA_CONTEXT_ID";
+    private static final String EXTRA_GLIC_TRIGGER_MESSAGE_ID =
+            "org.chromium.chrome.browser.actor.EXTRA_GLIC_TRIGGER_MESSAGE_ID";
 
     private final IBinder mBinder = new LocalBinder();
     private long mStartTime;
@@ -62,10 +62,11 @@ public class ActorForegroundServiceImpl extends SplitCompatService.Impl {
      * @param context The context used to start service.
      * @param contextId The context ID associated with the request.
      */
-    public static void startActorForegroundServiceWithContextId(Context context, String contextId) {
+    public static void startActorForegroundServiceWithGlicTriggerMessageId(
+            Context context, String glicTriggerMessageId) {
         Intent intent = new Intent(context, ActorForegroundService.class);
         intent.setAction(START_ACTOR_FOREGROUND_SERVICE);
-        intent.putExtra(EXTRA_CONTEXT_ID, contextId);
+        intent.putExtra(EXTRA_GLIC_TRIGGER_MESSAGE_ID, glicTriggerMessageId);
         IntentUtils.addTrustedIntentExtras(intent);
         ForegroundServiceUtils.getInstance().startForegroundService(intent);
     }
@@ -156,18 +157,21 @@ public class ActorForegroundServiceImpl extends SplitCompatService.Impl {
                 return Service.START_NOT_STICKY;
             }
 
-            String contextId = intent.getStringExtra(EXTRA_CONTEXT_ID);
-            Log.d(TAG, "Received start Intent for contextId=" + contextId);
+            String glicTriggerMessageId = intent.getStringExtra(EXTRA_GLIC_TRIGGER_MESSAGE_ID);
+            Log.d(TAG, "Received start Intent for glicTriggerMessageId=" + glicTriggerMessageId);
 
-            if (contextId != null && !contextId.isEmpty()) {
+            if (glicTriggerMessageId != null && !glicTriggerMessageId.isEmpty()) {
                 if (mBackgroundManager == null) {
                     mBackgroundManager = new ActorBackgroundActuationManager();
                 }
-                Log.d(TAG, "Triggering background actuation flow for contextId=" + contextId);
+                Log.d(
+                        TAG,
+                        "Triggering background actuation flow for glicTriggerMessageId="
+                                + glicTriggerMessageId);
                 Profile profile = ProfileManager.getLastUsedRegularProfile();
-                mBackgroundManager.startBackgroundActuation(profile, contextId);
+                mBackgroundManager.startBackgroundActuation(profile, glicTriggerMessageId);
             } else {
-                Log.w(TAG, "Start intent was ignored as there was no context id.");
+                Log.w(TAG, "Start intent was ignored as there was no glic trigger message id.");
             }
         }
 

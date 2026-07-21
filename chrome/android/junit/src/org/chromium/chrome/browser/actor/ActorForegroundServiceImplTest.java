@@ -197,11 +197,13 @@ public class ActorForegroundServiceImplTest {
 
         Intent intent = new Intent();
         intent.setAction("org.chromium.chrome.browser.actor.START_ACTOR_FOREGROUND_SERVICE");
-        intent.putExtra("org.chromium.chrome.browser.actor.EXTRA_CONTEXT_ID", "test-context-id");
+        intent.putExtra(
+                "org.chromium.chrome.browser.actor.EXTRA_GLIC_TRIGGER_MESSAGE_ID",
+                "test-message-id");
 
         mServiceImpl.onStartCommand(intent, /* flags= */ 0, /* startId= */ 1);
 
-        verify(mMockBackgroundManager).startBackgroundActuation(mMockProfile, "test-context-id");
+        verify(mMockBackgroundManager).startBackgroundActuation(mMockProfile, "test-message-id");
     }
 
     @Test
@@ -212,11 +214,13 @@ public class ActorForegroundServiceImplTest {
 
         Intent intent = new Intent();
         intent.setAction("org.chromium.chrome.browser.actor.START_ACTOR_FOREGROUND_SERVICE");
-        intent.putExtra("org.chromium.chrome.browser.actor.EXTRA_CONTEXT_ID", "test-context-id");
+        intent.putExtra(
+                "org.chromium.chrome.browser.actor.EXTRA_GLIC_TRIGGER_MESSAGE_ID",
+                "test-message-id");
 
         mServiceImpl.onStartCommand(intent, /* flags= */ 0, /* startId= */ 1);
 
         verify(mMockBackgroundManager, never())
-                .startBackgroundActuation(mMockProfile, "test-context-id");
+                .startBackgroundActuation(mMockProfile, "test-message-id");
     }
 }
