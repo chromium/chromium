@@ -10,7 +10,7 @@ import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_repor
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, AutocompleteResult, OmniboxPopupSelection} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {RenderType, SelectionDirection, SelectionLineState, SelectionStep, SideType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {RenderType, SelectionLineState, SideType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
 import {getCss} from './searchbox_dropdown.css.js';
 import {getHtml} from './searchbox_dropdown.html.js';
@@ -127,7 +127,6 @@ export class SearchboxDropdownElement extends CrLitElement {
   /** The list of selectable match elements. */
   private selectableMatchElements_: SearchboxMatchElement[] = [];
 
-  private availableSelections_: OmniboxPopupSelection[] = [];
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -146,19 +145,11 @@ export class SearchboxDropdownElement extends CrLitElement {
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
-    if (changedProperties.has('result')) {
-      this.availableSelections_ = this.getResultSelections();
-    }
-
     this.onResultRepaint_();
 
     // Update the list of selectable match elements.
     this.selectableMatchElements_ =
         [...this.shadowRoot.querySelectorAll('cr-searchbox-match')];
-  }
-
-  getCachedSelections(): OmniboxPopupSelection[] {
-    return this.availableSelections_;
   }
 
   //============================================================================
@@ -240,131 +231,6 @@ export class SearchboxDropdownElement extends CrLitElement {
     this.selectedMatchIndex =
         remainder(next, this.selectableMatchElements.length);
     return this.updateComplete;
-  }
-
-  stepSelection(direction: SelectionDirection, step: SelectionStep) {
-    if (!this.result) {
-      return;
-    }
-    const available = this.getCachedSelections();
-    if (available.length === 0) {
-      return;
-    }
-    const current = this.selection;
-    const isNormal = (selection: OmniboxPopupSelection) =>
-        selection.state === SelectionLineState.kNormal;
-    const selectionsEqual =
-        (a: OmniboxPopupSelection, b: OmniboxPopupSelection) =>
-            a.line === b.line && a.state === b.state &&
-        a.actionIndex === b.actionIndex;
-
-    let fromIndex = available.findIndex(s => selectionsEqual(current, s));
-
-    // Fallback: If currently in keyword mode, the keyword chip might be hidden
-    // from the match list (as we have transitioned inside that engine search).
-    // Find the normal suggestion line as the starting point for navigation.
-    if (fromIndex < 0 && current.state === SelectionLineState.kKeywordMode) {
-      fromIndex = available.findIndex(
-          s => selectionsEqual(
-              {
-                ...current,
-                state: SelectionLineState.kNormal,
-              },
-              s));
-    }
-    let nextSelection = current;
-    if (fromIndex < 0) {
-      // Create a copy of the available selections array before modifying it
-      // to avoid modifying the cached array.
-      const availableCopy = [...available];
-      availableCopy.splice(0, 0, current);
-      fromIndex = 0;
-      nextSelectionFromAvailable(availableCopy);
-    } else {
-      nextSelectionFromAvailable(available);
-    }
-
-    function nextSelectionFromAvailable(
-        selectionsList: OmniboxPopupSelection[]) {
-      if (step === SelectionStep.kAllLines) {
-        const normalIndex = direction === SelectionDirection.kBackward ?
-            selectionsList.findIndex(isNormal) :
-            selectionsList.findLastIndex(isNormal);
-        nextSelection =
-            normalIndex < 0 ? current : selectionsList[normalIndex]!;
-      } else {
-        const getNextIndex = (idx: number): number => {
-          const stepSize = direction === SelectionDirection.kForward ? 1 : -1;
-          return remainder(idx + stepSize, selectionsList.length);
-        };
-
-        const originalIndex = fromIndex;
-        let index = getNextIndex(originalIndex);
-        do {
-          const candidate = selectionsList[index]!;
-          if (step === SelectionStep.kStateOrLine || isNormal(candidate)) {
-            nextSelection = candidate;
-            break;
-          }
-          index = getNextIndex(index);
-        } while (index !== originalIndex);
-      }
-    }
-
-    const oldSelection = this.selection;
-    this.selection = nextSelection;
-    this.updateSelection(oldSelection, nextSelection);
-  }
-
-  /**
-   * Returns a flat array of all selectable target states in the dropdown
-   * (including normal lines, keyword mode chips, action chips, and remove
-   * buttons) in order.
-   */
-  private getSelectionsForMatch_(match: AutocompleteMatch, matchIndex: number):
-      OmniboxPopupSelection[] {
-    if (match.isHidden && !match.allowedToBeDefaultMatch) {
-      return [];
-    }
-    const selections: OmniboxPopupSelection[] = [{
-      line: matchIndex,
-      state: SelectionLineState.kNormal,
-      actionIndex: 0,
-    }];
-    if (match.keywordChipHint && match.keywordChipHint.length > 0) {
-      selections.push({
-        line: matchIndex,
-        state: SelectionLineState.kKeywordMode,
-        actionIndex: 0,
-      });
-    }
-    if (match.actions) {
-      for (let actionIndex = 0; actionIndex < match.actions.length;
-           actionIndex++) {
-        selections.push({
-          line: matchIndex,
-          state: SelectionLineState.kFocusedButtonAction,
-          actionIndex: actionIndex,
-        });
-      }
-    }
-    if (match.supportsDeletion) {
-      selections.push({
-        line: matchIndex,
-        state: SelectionLineState.kFocusedButtonRemoveSuggestion,
-        actionIndex: 0,
-      });
-    }
-    return selections;
-  }
-
-  getResultSelections(): OmniboxPopupSelection[] {
-    if (!this.result) {
-      return [];
-    }
-    return this.result.matches.flatMap(
-        (match: AutocompleteMatch, matchIndex: number) =>
-            this.getSelectionsForMatch_(match, matchIndex));
   }
 
   //============================================================================

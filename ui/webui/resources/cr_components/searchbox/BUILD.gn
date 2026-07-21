@@ -12,7 +12,7 @@ build_webui("build") {
   grd_prefix = "cr_components_searchbox"
   ts_files = [
     "placeholder_text_cycler.ts",
-    "selection_control.ts",
+    "searchbox_selection_mixin.ts",
     "searchbox_action.html.ts",
     "searchbox_action.ts",
     "searchbox_browser_proxy.ts",

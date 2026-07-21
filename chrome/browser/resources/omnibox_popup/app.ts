@@ -13,9 +13,9 @@ import type {ContextualEntrypointButtonElement} from '//resources/cr_components/
 import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import type {SearchboxDropdownElement} from '//resources/cr_components/searchbox/searchbox_dropdown.js';
 import {kDefaultSelection} from '//resources/cr_components/searchbox/searchbox_match.js';
-import {getMatchSelections, getNextSelection, selectionIsNativelySupported, selectionsEqual, selectionToString} from '//resources/cr_components/searchbox/selection_control.js';
-import type {AutocompleteResult, OmniboxPopupSelection, SelectionDirection, SelectionStep} from '//resources/cr_components/searchbox/selection_control.js';
-import {SelectionLineState} from '//resources/cr_components/searchbox/selection_control.js';
+import {SearchboxSelectionMixin, selectionIsNativelySupported, selectionsEqual, selectionToString} from '//resources/cr_components/searchbox/searchbox_selection_mixin.js';
+import type {AutocompleteResult, OmniboxPopupSelection, SelectionDirection, SelectionStep} from '//resources/cr_components/searchbox/searchbox_selection_mixin.js';
+import {SelectionLineState} from '//resources/cr_components/searchbox/searchbox_selection_mixin.js';
 import {getInstance as getA11yAnnouncer} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assertNotReached} from '//resources/js/assert.js';
@@ -37,8 +37,8 @@ const canShowSecondarySideMediaQueryList =
     window.matchMedia('(min-width: 675px)');
 
 // Displays the autocomplete matches in the autocomplete result.
-export class OmniboxPopupAppElement extends I18nMixinLit
-(CrLitElement) {
+export class OmniboxPopupAppElement extends SearchboxSelectionMixin
+(I18nMixinLit(CrLitElement)) {
   static get is() {
     return 'omnibox-popup-app';
   }
@@ -133,6 +133,14 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   protected accessor isOblongShape_: boolean =
       loadTimeData.getBoolean('contextButtonShapeIsOblong');
 
+  override get isAimButtonVisible(): boolean {
+    return this.isAimButtonVisible_;
+  }
+
+  override get showContextEntrypoint(): boolean {
+    return this.showContextEntrypoint_ && !this.shouldHideEntrypointButton_();
+  }
+
   private searchboxBrowserProxy_: SearchboxBrowserProxy;
   private eventTracker_ = new EventTracker();
   private hideContextButton_: boolean =
@@ -145,7 +153,6 @@ export class OmniboxPopupAppElement extends I18nMixinLit
 
   private browserProxy_: BrowserProxy;
   private popupListenerIds_: number[] = [];
-  private selection_: OmniboxPopupSelection = kDefaultSelection;
 
   constructor() {
     super();
@@ -301,17 +308,17 @@ export class OmniboxPopupAppElement extends I18nMixinLit
     this.result_ = result;
 
     if (this.webuiOmniboxPopupSelectionControlEnabled_) {
-      const available = this.getResultSelections_(this.result_);
+      const available = this.getAvailableSelections(this.result_);
       const sameLineSelection = {
-        ...this.selection_,
+        ...this.selection,
         state: SelectionLineState.kNormal,
       };
       if (result.matches[0]?.allowedToBeDefaultMatch) {
-        this.setSelection_(available[0] || kDefaultSelection);
+        this.setSelection(available[0] || kDefaultSelection);
       } else if (available.some(s => selectionsEqual(s, sameLineSelection))) {
-        this.setSelection_(sameLineSelection);
+        this.setSelection(sameLineSelection);
       } else {
-        this.setSelection_(kDefaultSelection);
+        this.setSelection(kDefaultSelection);
       }
       return;
     }
@@ -354,26 +361,26 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   private onUpdateSelection_(
       oldSelection: OmniboxPopupSelection, selection: OmniboxPopupSelection) {
     if (this.webuiOmniboxPopupSelectionControlEnabled_) {
-      this.setSelection_(selection, false);
+      this.setSelection(selection, false);
     } else {
       this.getDropdown().updateSelection(oldSelection, selection);
     }
   }
 
-  private setSelection_(
+  override setSelection(
       selection: OmniboxPopupSelection, notify: boolean = true) {
-    const oldSelection = this.selection_;
-    this.selection_ = selection;
-    this.getDropdown().updateSelection(oldSelection, this.selection_);
+    const oldSelection = this.selection;
+    super.setSelection(selection);
+    this.getDropdown().updateSelection(oldSelection, this.selection);
     if (notify) {
       this.searchboxBrowserProxy_.handler.setPopupSelection(
-          selectionIsNativelySupported(this.selection_) ? this.selection_ :
-                                                          kDefaultSelection);
+          selectionIsNativelySupported(this.selection) ? this.selection :
+                                                         kDefaultSelection);
     }
 
     const entrypoint = this.getContextualEntrypointButton_();
     if (entrypoint) {
-      entrypoint.hasPopupFocus = this.selection_.state ===
+      entrypoint.hasPopupFocus = this.selection.state ===
           SelectionLineState.kFocusedButtonContextEntrypoint;
       if (entrypoint.hasPopupFocus) {
         this.notifyContextualEntrypoint_(entrypoint);
@@ -403,61 +410,23 @@ export class OmniboxPopupAppElement extends I18nMixinLit
     if (!this.result_) {
       return;
     }
-    const available = this.getResultSelections_(this.result_);
-    this.setSelection_(
-        getNextSelection(this.selection_, direction, step, available));
-  }
-
-  // Returns the full set of selections available based on the given
-  // AutocompleteResult. Note, this currently also depends on the
-  // current popup state, e.g. the AI Mode button visibility, but
-  // should eventually be driven entirely by a single data structure.
-  private getResultSelections_(result: AutocompleteResult):
-      OmniboxPopupSelection[] {
-    const available = getMatchSelections(result);
-    // TODO(crbug.com/462775253): Ideally everything available for selection
-    // comes from the AutocompleteResult.
-    if (this.showContextEntrypoint_ && !this.shouldHideEntrypointButton_()) {
-      available.push({
-        line: -1,
-        state: SelectionLineState.kFocusedButtonContextEntrypoint,
-        actionIndex: 0,
-      });
-    }
-
-    if (this.isAimButtonVisible_) {
-      const insertionIndex =
-          available.length > 0 && result.matches[0]?.allowedToBeDefaultMatch ?
-          1 :
-          0;
-      available.splice(insertionIndex, 0, {
-        // Use first default match if available (if not, the -1 means kNoMatch).
-        line: result.matches.findIndex(m => m.allowedToBeDefaultMatch),
-        state: SelectionLineState.kFocusedButtonAim,
-        actionIndex: 0,
-      });
-      if (available.length === 1) {
-        // If AIM button is the only selection available, provide a way to
-        // deselect it.
-        available.splice(0, 0, kDefaultSelection);
-      }
-    }
-    return available;
+    this.setSelection(
+        this.getNextSelection(this.result_, this.selection, direction, step));
   }
 
   // Opens the current popup selection (the one visually indicated by the
   // element with popup-focus).
   private openCurrentSelection_(disposition: WindowOpenDisposition) {
-    if (this.selection_.state ===
+    if (this.selection.state ===
         SelectionLineState.kFocusedButtonContextEntrypoint) {
       this.browserProxy_.handler.showContextMenu({x: 0, y: 0});
-    } else if (selectionIsNativelySupported(this.selection_)) {
+    } else if (selectionIsNativelySupported(this.selection)) {
       this.searchboxBrowserProxy_.handler.openPopupSelection(
-          this.result_?.sequenceId || 0, this.selection_, disposition);
+          this.result_?.sequenceId || 0, this.selection, disposition);
     } else {
       assertNotReached(
           `openCurrentSelection_ called for unsupported selection: ${
-              selectionToString(this.selection_)}`);
+              selectionToString(this.selection)}`);
     }
   }
 
