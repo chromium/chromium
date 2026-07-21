@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/record_replay/save_recording_bubble_view.h"
 
+#include "base/i18n/icubridge/date_time_formatter.h"
+#include "base/i18n/icubridge/icu_bridge.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -107,9 +109,14 @@ void SaveRecordingBubbleView::Init() {
       domain = domain.substr(0, dot_pos);
     }
 
+    using base::i18n::GetKnownLanguageTag;
+    using base::i18n::IcuBridge;
+    using base::i18n::datetime_options::YMD;
+
     base::Time now = base::Time::Now();
     std::string date_str =
-        base::UnlocalizedTimeFormatWithPattern(now, "dd-MM-yyyy");
+        base::UTF16ToUTF8(IcuBridge::GetInstance().date_time_formatter().Format(
+            now, GetKnownLanguageTag("en-US"), YMD::Short()));
 
     placeholder_text =
         base::UTF8ToUTF16(domain) + u"_" + base::UTF8ToUTF16(date_str);

@@ -11,6 +11,8 @@
 #include "base/containers/extend.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/callback.h"
+#include "base/i18n/icubridge/date_time_formatter.h"
+#include "base/i18n/icubridge/icu_bridge.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -52,13 +54,17 @@ RecordReplayManager::State RecordReplayManager::state() const {
 }
 
 void RecordReplayManager::StartRecording() {
+  using base::i18n::IcuBridge;
+  using base::i18n::datetime_options::YMD;
+
   ReportToUser("Starting recording");
   base::Time now = base::Time::Now();
   GURL url = client_->GetPrimaryMainFrameUrl();
   recorder_.emplace(url, now);
-  recorder_->SetName(std::string(url.host()) + " - " +
-                     base::UTF16ToUTF8(base::LocalizedTimeFormatWithPattern(
-                         now, "yyyy-MM-dd")));
+  recorder_->SetName(
+      std::string(url.host()) + " - " +
+      base::UTF16ToUTF8(IcuBridge::GetInstance().date_time_formatter().Format(
+          now, YMD::Short())));
 
   // TODO(crbug.com/485828286): Capture a screenshot of the `WebContents` and
   // encode it as a JPEG before passing it to the recorder.
