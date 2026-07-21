@@ -26,8 +26,8 @@ constexpr char kFakeSrcUrl[] = "chrome-extension://fake-source-url";
 // Creates a `blink::WebPluginParams` with only required attributes.
 blink::WebPluginParams CreateMinimalWebPluginParams() {
   blink::WebPluginParams params;
-  params.attribute_names.push_back(blink::WebString("src"));
-  params.attribute_values.push_back(blink::WebString(kFakeSrcUrl));
+  params.attribute_names.push_back("src");
+  params.attribute_values.push_back(kFakeSrcUrl);
   return params;
 }
 
@@ -57,9 +57,8 @@ TEST(ParsedParamsTest, ParseWebPluginParamsWithoutSourceUrl) {
 
 TEST(ParsedParamsTest, ParseWebPluginParamsWithOriginalUrl) {
   blink::WebPluginParams params = CreateMinimalWebPluginParams();
-  params.attribute_names.push_back(blink::WebString("original-url"));
-  params.attribute_values.push_back(
-      blink::WebString("https://example.com/original.pdf"));
+  params.attribute_names.push_back("original-url");
+  params.attribute_values.push_back("https://example.com/original.pdf");
 
   std::optional<ParsedParams> result = ParseWebPluginParams(params);
   ASSERT_TRUE(result.has_value());
@@ -70,9 +69,8 @@ TEST(ParsedParamsTest, ParseWebPluginParamsWithOriginalUrl) {
 
 TEST(ParsedParamsTest, ParseWebPluginParamsWithTopLevelUrl) {
   blink::WebPluginParams params = CreateMinimalWebPluginParams();
-  params.attribute_names.push_back(blink::WebString("top-level-url"));
-  params.attribute_values.push_back(
-      blink::WebString("https://example.net/top.html"));
+  params.attribute_names.push_back("top-level-url");
+  params.attribute_values.push_back("https://example.net/top.html");
 
   std::optional<ParsedParams> result = ParseWebPluginParams(params);
   ASSERT_TRUE(result.has_value());
@@ -82,8 +80,8 @@ TEST(ParsedParamsTest, ParseWebPluginParamsWithTopLevelUrl) {
 
 TEST(ParsedParamsTest, ParseWebPluginParamsWithFullFrame) {
   blink::WebPluginParams params = CreateMinimalWebPluginParams();
-  params.attribute_names.push_back(blink::WebString("full-frame"));
-  params.attribute_values.push_back(blink::WebString(""));
+  params.attribute_names.push_back("full-frame");
+  params.attribute_values.push_back("");
 
   std::optional<ParsedParams> result = ParseWebPluginParams(params);
   ASSERT_TRUE(result.has_value());
@@ -93,8 +91,8 @@ TEST(ParsedParamsTest, ParseWebPluginParamsWithFullFrame) {
 
 TEST(ParsedParamsTest, ParseWebPluginParamsWithFullFrameNonEmpty) {
   blink::WebPluginParams params = CreateMinimalWebPluginParams();
-  params.attribute_names.push_back(blink::WebString("full-frame"));
-  params.attribute_values.push_back(blink::WebString("false"));
+  params.attribute_names.push_back("full-frame");
+  params.attribute_values.push_back("false");
 
   std::optional<ParsedParams> result = ParseWebPluginParams(params);
   ASSERT_TRUE(result.has_value());
@@ -104,8 +102,8 @@ TEST(ParsedParamsTest, ParseWebPluginParamsWithFullFrameNonEmpty) {
 
 TEST(ParsedParamsTest, ParseWebPluginParamsWithBackgroundColor) {
   blink::WebPluginParams params = CreateMinimalWebPluginParams();
-  params.attribute_names.push_back(blink::WebString("background-color"));
-  params.attribute_values.push_back(blink::WebString("4283586137"));
+  params.attribute_names.push_back("background-color");
+  params.attribute_values.push_back("4283586137");
 
   std::optional<ParsedParams> result = ParseWebPluginParams(params);
   ASSERT_TRUE(result.has_value());
@@ -115,8 +113,8 @@ TEST(ParsedParamsTest, ParseWebPluginParamsWithBackgroundColor) {
 
 TEST(ParsedParamsTest, ParseWebPluginParamsWithInvalidBackgroundColor) {
   blink::WebPluginParams params = CreateMinimalWebPluginParams();
-  params.attribute_names.push_back(blink::WebString("background-color"));
-  params.attribute_values.push_back(blink::WebString("red"));
+  params.attribute_names.push_back("background-color");
+  params.attribute_values.push_back("red");
 
   std::optional<ParsedParams> result = ParseWebPluginParams(params);
   EXPECT_FALSE(result.has_value());
@@ -124,8 +122,8 @@ TEST(ParsedParamsTest, ParseWebPluginParamsWithInvalidBackgroundColor) {
 
 TEST(ParsedParamsTest, ParseWebPluginParamsWithJavascriptAllow) {
   blink::WebPluginParams params = CreateMinimalWebPluginParams();
-  params.attribute_names.push_back(blink::WebString("javascript"));
-  params.attribute_values.push_back(blink::WebString("allow"));
+  params.attribute_names.push_back("javascript");
+  params.attribute_values.push_back("allow");
 
   std::optional<ParsedParams> result = ParseWebPluginParams(params);
   ASSERT_TRUE(result.has_value());
@@ -137,8 +135,8 @@ TEST(ParsedParamsTest, ParseWebPluginParamsWithJavascriptAllow) {
 
 TEST(ParsedParamsTest, ParseWebPluginParamsWithJavascriptEmpty) {
   blink::WebPluginParams params = CreateMinimalWebPluginParams();
-  params.attribute_names.push_back(blink::WebString("javascript"));
-  params.attribute_values.push_back(blink::WebString(""));
+  params.attribute_names.push_back("javascript");
+  params.attribute_values.push_back("");
 
   std::optional<ParsedParams> result = ParseWebPluginParams(params);
   ASSERT_TRUE(result.has_value());
@@ -149,8 +147,8 @@ TEST(ParsedParamsTest, ParseWebPluginParamsWithJavascriptEmpty) {
 
 TEST(ParsedParamsTest, ParseWebPluginParamsWithJavascriptNonEmpty) {
   blink::WebPluginParams params = CreateMinimalWebPluginParams();
-  params.attribute_names.push_back(blink::WebString("javascript"));
-  params.attribute_values.push_back(blink::WebString("true"));
+  params.attribute_names.push_back("javascript");
+  params.attribute_values.push_back("true");
 
   std::optional<ParsedParams> result = ParseWebPluginParams(params);
   ASSERT_TRUE(result.has_value());
@@ -161,8 +159,8 @@ TEST(ParsedParamsTest, ParseWebPluginParamsWithJavascriptNonEmpty) {
 
 TEST(ParsedParamsTest, ParseWebPluginParamsWithHasUseSkia) {
   blink::WebPluginParams params = CreateMinimalWebPluginParams();
-  params.attribute_names.push_back(blink::WebString("use-skia"));
-  params.attribute_values.push_back(blink::WebString(""));
+  params.attribute_names.push_back("use-skia");
+  params.attribute_values.push_back("");
 
   std::optional<ParsedParams> result = ParseWebPluginParams(params);
   ASSERT_TRUE(result.has_value());
@@ -172,8 +170,8 @@ TEST(ParsedParamsTest, ParseWebPluginParamsWithHasUseSkia) {
 
 TEST(ParsedParamsTest, ParseWebPluginParamsWithHasUseSkiaNonEmpty) {
   blink::WebPluginParams params = CreateMinimalWebPluginParams();
-  params.attribute_names.push_back(blink::WebString("use-skia"));
-  params.attribute_values.push_back(blink::WebString("false"));
+  params.attribute_names.push_back("use-skia");
+  params.attribute_values.push_back("false");
 
   std::optional<ParsedParams> result = ParseWebPluginParams(params);
   ASSERT_TRUE(result.has_value());
@@ -183,10 +181,10 @@ TEST(ParsedParamsTest, ParseWebPluginParamsWithHasUseSkiaNonEmpty) {
 
 TEST(ParsedParamsTest, ParseWebPluginParamsWithHasAllowXfa) {
   blink::WebPluginParams params = CreateMinimalWebPluginParams();
-  params.attribute_names.emplace_back("javascript");
-  params.attribute_values.emplace_back("allow");
-  params.attribute_names.emplace_back("allow-xfa-forms");
-  params.attribute_values.emplace_back("");
+  params.attribute_names.push_back("javascript");
+  params.attribute_values.push_back("allow");
+  params.attribute_names.push_back("allow-xfa-forms");
+  params.attribute_values.push_back("");
 
   std::optional<ParsedParams> result = ParseWebPluginParams(params);
   ASSERT_TRUE(result.has_value());
@@ -197,10 +195,10 @@ TEST(ParsedParamsTest, ParseWebPluginParamsWithHasAllowXfa) {
 
 TEST(ParsedParamsTest, ParseWebPluginParamsWithHasAllowXfaNonEmpty) {
   blink::WebPluginParams params = CreateMinimalWebPluginParams();
-  params.attribute_names.emplace_back("javascript");
-  params.attribute_values.emplace_back("allow");
-  params.attribute_names.emplace_back("allow-xfa-forms");
-  params.attribute_values.emplace_back("false");
+  params.attribute_names.push_back("javascript");
+  params.attribute_values.push_back("allow");
+  params.attribute_names.push_back("allow-xfa-forms");
+  params.attribute_values.push_back("false");
 
   std::optional<ParsedParams> result = ParseWebPluginParams(params);
   ASSERT_TRUE(result.has_value());
@@ -211,10 +209,10 @@ TEST(ParsedParamsTest, ParseWebPluginParamsWithHasAllowXfaNonEmpty) {
 
 TEST(ParsedParamsTest, ParseWebPluginParamsWithHasAllowXfaNoJavaScript) {
   blink::WebPluginParams params = CreateMinimalWebPluginParams();
-  params.attribute_names.emplace_back("javascript");
-  params.attribute_values.emplace_back("");
-  params.attribute_names.emplace_back("allow-xfa-forms");
-  params.attribute_values.emplace_back("");
+  params.attribute_names.push_back("javascript");
+  params.attribute_values.push_back("");
+  params.attribute_names.push_back("allow-xfa-forms");
+  params.attribute_values.push_back("");
 
   std::optional<ParsedParams> result = ParseWebPluginParams(params);
   ASSERT_TRUE(result.has_value());
