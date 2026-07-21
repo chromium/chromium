@@ -11,7 +11,9 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
 #include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view.h"
+#include "components/tabs/public/tab_group.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view.h"
@@ -62,6 +64,9 @@ views::ProposedLayout UnpinnedTabContainerViewLayout::CalculateHorizontalLayout(
     return layouts;
   }
 
+  std::optional<tab_groups::TabGroupId> focused_group_id =
+      GetFocusedGroupId(tab_container_view);
+
   int x = 0;
   const int container_height = size_bounds.height().value_or(
       GetLayoutConstant(LayoutConstant::kTabHeight));
@@ -72,11 +77,29 @@ views::ProposedLayout UnpinnedTabContainerViewLayout::CalculateHorizontalLayout(
         child->GetPreferredSize(views::SizeBounds({}, size_bounds.height()))
             .width();
 
-    gfx::Rect bounds(x, 0, child_width, container_height);
     auto drag_data = tab_container_view->GetVisualDataForDraggedView(*child);
+    bool should_show_child = !(drag_data && drag_data->should_hide);
+
+    if (should_show_child && focused_group_id.has_value()) {
+      std::optional<tab_groups::TabGroupId> group_id =
+          GetGroupIdForChild(child);
+      if (group_id != focused_group_id.value()) {
+        should_show_child = false;
+      }
+    }
+
+    if (!should_show_child) {
+      layouts.child_layouts.emplace_back(
+          child, false,
+          gfx::Rect(drag_data ? drag_data->offset.x() : x, 0, 0,
+                    container_height));
+      continue;
+    }
+
+    gfx::Rect bounds(x, 0, child_width, container_height);
     bounds.set_x(drag_data ? drag_data->offset.x() : x);
 
-    layouts.child_layouts.emplace_back(child, child->GetVisible(), bounds);
+    layouts.child_layouts.emplace_back(child, true, bounds);
     x += bounds.width();
   }
 
@@ -91,6 +114,9 @@ views::ProposedLayout UnpinnedTabContainerViewLayout::CalculateVerticalLayout(
   if (!tab_container_view->collection_node_) {
     return layouts;
   }
+
+  std::optional<tab_groups::TabGroupId> focused_group_id =
+      GetFocusedGroupId(tab_container_view);
 
   const std::vector<views::View*> children =
       tab_container_view->collection_node_->GetDirectChildren();
@@ -118,18 +144,36 @@ views::ProposedLayout UnpinnedTabContainerViewLayout::CalculateVerticalLayout(
     bounds.set_x(x);
 
     auto drag_data = tab_container_view->GetVisualDataForDraggedView(*child);
-    CHECK(!drag_data || !drag_data->should_hide);
+    bool should_show_child = !(drag_data && drag_data->should_hide);
+
+    if (should_show_child && focused_group_id.has_value()) {
+      std::optional<tab_groups::TabGroupId> group_id =
+          GetGroupIdForChild(child);
+      if (group_id != focused_group_id.value()) {
+        should_show_child = false;
+      }
+    }
+
+    if (!should_show_child) {
+      layouts.child_layouts.emplace_back(
+          child, false,
+          gfx::Rect(x, drag_data ? drag_data->offset.y() : height,
+                    bounds.width(), 0));
+      continue;
+    }
+
     bounds.set_y(drag_data ? drag_data->offset.y() : height);
 
     if (size_bounds.width().is_bounded()) {
       bounds.set_width(size_bounds.width().value() - bounds.x() -
                        horizontal_padding);
     }
-    layouts.child_layouts.emplace_back(child, child->GetVisible(), bounds);
+    layouts.child_layouts.emplace_back(child, true, bounds);
     height += bounds.height() + kTabVerticalPadding;
     width = std::max(width, bounds.width() + bounds.x());
   }
-  if (!children.empty()) {
+
+  if (height > 0) {
     height -= kTabVerticalPadding;
   }
 
@@ -148,9 +192,22 @@ gfx::Size UnpinnedTabContainerViewLayout::CalculateHorizontalMinimumSize(
     const UnpinnedTabContainerView* tab_container_view) const {
   int min_width = 0;
   if (tab_container_view->collection_node_) {
+    std::optional<tab_groups::TabGroupId> focused_group_id =
+        GetFocusedGroupId(tab_container_view);
+
     for (const auto* child :
          tab_container_view->collection_node_->GetDirectChildren()) {
-      min_width += child->GetMinimumSize().width();
+      bool should_show = true;
+      if (focused_group_id.has_value()) {
+        std::optional<tab_groups::TabGroupId> group_id =
+            GetGroupIdForChild(child);
+        if (group_id != focused_group_id.value()) {
+          should_show = false;
+        }
+      }
+      if (should_show) {
+        min_width += child->GetMinimumSize().width();
+      }
     }
   }
   return gfx::Size(min_width, GetLayoutConstant(LayoutConstant::kTabHeight));
@@ -162,12 +219,49 @@ gfx::Size UnpinnedTabContainerViewLayout::CalculateVerticalMinimumSize(
     return gfx::Size();
   }
 
-  const int num_children =
-      tab_container_view->collection_node_->GetDirectChildren().size();
+  std::optional<tab_groups::TabGroupId> focused_group_id =
+      GetFocusedGroupId(tab_container_view);
+
+  int num_children = 0;
+  for (const auto* child :
+       tab_container_view->collection_node_->GetDirectChildren()) {
+    bool should_show = true;
+    if (focused_group_id.has_value()) {
+      std::optional<tab_groups::TabGroupId> group_id =
+          GetGroupIdForChild(child);
+      if (group_id != focused_group_id.value()) {
+        should_show = false;
+      }
+    }
+    if (should_show) {
+      num_children++;
+    }
+  }
+
   const int min_height =
       base::ClampCeil(GetLayoutConstant(LayoutConstant::kVerticalTabHeight) *
                       std::min(1.5f, static_cast<float>(num_children))) +
       (num_children > 1 ? kTabVerticalPadding : 0);
   return gfx::Size(GetLayoutConstant(LayoutConstant::kVerticalTabMinWidth),
                    min_height);
+}
+
+std::optional<tab_groups::TabGroupId>
+UnpinnedTabContainerViewLayout::GetFocusedGroupId(
+    const UnpinnedTabContainerView* tab_container_view) const {
+  if (!tab_container_view->collection_node_ ||
+      !tab_container_view->collection_node_->GetController()) {
+    return std::nullopt;
+  }
+  return tab_container_view->collection_node_->GetController()
+      ->GetFocusedGroup();
+}
+
+std::optional<tab_groups::TabGroupId>
+UnpinnedTabContainerViewLayout::GetGroupIdForChild(
+    const views::View* child) const {
+  if (auto* group_view = views::AsViewClass<TabGroupView>(child)) {
+    return group_view->GetTabGroup().id();
+  }
+  return std::nullopt;
 }

@@ -100,6 +100,8 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
   // changed.
   void TabKeyboardFocusChangedTo(const tabs::TabInterface* tab);
 
+  std::optional<tab_groups::TabGroupId> GetFocusedGroup() const;
+
   void TabGroupFocusChanged(
       std::optional<tab_groups::TabGroupId> new_focused_group_id,
       std::optional<tab_groups::TabGroupId> old_focused_group_id);

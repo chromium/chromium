@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_COMMON_UNPINNED_TAB_CONTAINER_VIEW_LAYOUT_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_COMMON_UNPINNED_TAB_CONTAINER_VIEW_LAYOUT_H_
 
+#include <optional>
+
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/layout/proposed_layout.h"
 
@@ -39,6 +42,12 @@ class UnpinnedTabContainerViewLayout : public views::LayoutManagerBase {
       const UnpinnedTabContainerView* host) const;
   gfx::Size CalculateVerticalMinimumSize(
       const UnpinnedTabContainerView* host) const;
+
+  std::optional<tab_groups::TabGroupId> GetFocusedGroupId(
+      const UnpinnedTabContainerView* tab_container_view) const;
+  std::optional<tab_groups::TabGroupId> GetGroupIdForChild(
+      const views::View* child) const;
+
   const TabStripOrientation orientation_;
 };
 

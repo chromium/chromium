@@ -75,6 +75,10 @@ class PinnedTabContainerView
   void ResetCollectionNode();
   void OnCollapseStateChanged(tabs::VerticalTabStripCollapseState state);
 
+  // Returns true if pinned tabs should be hidden (i.e. when focus is in a tab
+  // group and the feature flag is enabled).
+  bool ShouldHidePinnedTabs() const;
+
   raw_ptr<TabCollectionNode> collection_node_;
   const raw_ref<TabCollectionAnimatingLayoutManager> layout_manager_;
 

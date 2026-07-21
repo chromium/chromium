@@ -458,6 +458,11 @@ void TabStripCollectionController::OnTabContextMenuClosed() {
   expand_on_hover_lock_.reset();
 }
 
+std::optional<tab_groups::TabGroupId>
+TabStripCollectionController::GetFocusedGroup() const {
+  return model_->GetFocusedGroup();
+}
+
 void TabStripCollectionController::TabGroupFocusChanged(
     std::optional<tab_groups::TabGroupId> new_focused_group_id,
     std::optional<tab_groups::TabGroupId> old_focused_group_id) {

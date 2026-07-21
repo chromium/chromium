@@ -34,6 +34,7 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/view_utils.h"
 
@@ -518,6 +519,73 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerFocusingAutoCloseBrowserTest,
       group, ToggleTabGroupCollapsedStateOrigin::kMouse);
 
   EXPECT_FALSE(model->group_model()->ContainsTabGroup(group_id));
+}
+
+class VerticalTabStripControllerFocusingVisibilityBrowserTest
+    : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
+ public:
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    return {
+        {features::kTabGroupsFocusing,
+         {{"tab_groups_focusing_pinned_tabs", "false"}}},
+        {tabs::kVerticalTabs, {}},
+    };
+  }
+
+ private:
+  std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
+      animation_mode_reset_ = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+          gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+};
+
+// Verifies that when a tab group is focused, pinned tabs and unfocused
+// groups/tabs are correctly hidden from the layout. It also ensures that
+// exiting focus mode restores the visibility of all tabs.
+IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerFocusingVisibilityBrowserTest,
+                       FocusModeHidesUnfocusedAndPinnedTabs) {
+  AppendTab();
+  AppendTab();
+
+  TabStripModel* model = browser()->tab_strip_model();
+  ASSERT_EQ(3, model->count());
+
+  // Pin the first tab.
+  model->SetTabPinned(0, true);
+
+  // Group the second tab.
+  tab_groups::TabGroupId group_id = model->AddToNewGroup({1});
+
+  RunScheduledLayouts();
+
+  views::View* pinned_tab_view =
+      pinned_collection_node()->children()[0]->view();
+  views::View* group_view = unpinned_collection_node()->children()[0]->view();
+  views::View* unpinned_tab_view =
+      unpinned_collection_node()->children()[1]->view();
+
+  // Verify all are initially visible.
+  EXPECT_TRUE(pinned_tab_view->GetVisible());
+  EXPECT_TRUE(group_view->GetVisible());
+  EXPECT_TRUE(unpinned_tab_view->GetVisible());
+
+  // Focus the group.
+  model->SetFocusedGroup(group_id);
+  RunScheduledLayouts();
+
+  // Verify pinned tab and unfocused tab are hidden.
+  EXPECT_FALSE(pinned_tab_view->GetVisible());
+  EXPECT_TRUE(group_view->GetVisible());
+  EXPECT_FALSE(unpinned_tab_view->GetVisible());
+
+  // Unfocus the group.
+  model->SetFocusedGroup(std::nullopt);
+  RunScheduledLayouts();
+
+  // Verify all are restored.
+  EXPECT_TRUE(pinned_tab_view->GetVisible());
+  EXPECT_TRUE(group_view->GetVisible());
+  EXPECT_TRUE(unpinned_tab_view->GetVisible());
 }
 
 }  // namespace

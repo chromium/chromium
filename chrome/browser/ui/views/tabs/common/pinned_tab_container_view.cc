@@ -7,6 +7,7 @@
 #include "base/i18n/rtl.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/common/dragged_tabs_container.h"
 #include "chrome/browser/ui/views/tabs/common/split_tab_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_animating_layout_manager.h"
@@ -82,7 +83,7 @@ views::ProposedLayout PinnedTabContainerView::CalculateProposedLayout(
 }
 
 gfx::Size PinnedTabContainerView::GetMinimumSize() const {
-  if (!collection_node_) {
+  if (!collection_node_ || ShouldHidePinnedTabs()) {
     return gfx::Size();
   }
 
@@ -296,9 +297,16 @@ views::ProposedLayout PinnedTabContainerView::CalculateHorizontalLayout(
     bounds.set_height(container_height);
 
     auto drag_data = GetVisualDataForDraggedView(*child);
+    const bool should_show_child =
+        !(drag_data && drag_data->should_hide) && !ShouldHidePinnedTabs();
+    if (!should_show_child) {
+      layouts.child_layouts.emplace_back(child, false, gfx::Rect());
+      continue;
+    }
+
     bounds.set_x(drag_data ? drag_data->offset.x() : x);
 
-    layouts.child_layouts.emplace_back(child, child->GetVisible(), bounds);
+    layouts.child_layouts.emplace_back(child, true, bounds);
     x += bounds.width();
   }
   layouts.host_size = gfx::Size(x, container_height);
@@ -372,9 +380,10 @@ views::ProposedLayout PinnedTabContainerView::CalculateVerticalLayout(
     bounds.set_width(child_width);
 
     auto drag_data = GetVisualDataForDraggedView(*child);
-    const bool should_show_child = !(drag_data && drag_data->should_hide);
+    const bool should_show_child =
+        !(drag_data && drag_data->should_hide) && !ShouldHidePinnedTabs();
     if (!should_show_child) {
-      layouts.child_layouts.emplace_back(child, false, bounds);
+      layouts.child_layouts.emplace_back(child, false, gfx::Rect());
       continue;
     }
 
@@ -416,6 +425,16 @@ views::ProposedLayout PinnedTabContainerView::CalculateVerticalLayout(
   layouts.host_size =
       gfx::Size(size_bounds.width().value_or(total_width), total_height);
   return layouts;
+}
+
+bool PinnedTabContainerView::ShouldHidePinnedTabs() const {
+  if (!collection_node_ || !collection_node_->GetController()) {
+    return false;
+  }
+  const std::optional<tab_groups::TabGroupId> focused_group_id =
+      collection_node_->GetController()->GetFocusedGroup();
+  return focused_group_id.has_value() &&
+         !features::kTabGroupsFocusingPinnedTabs.Get();
 }
 
 BEGIN_METADATA(PinnedTabContainerView)
