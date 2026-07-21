@@ -36,6 +36,17 @@ void FutureImpl::Sync(RawReply* raw_reply, std::unique_ptr<Error>* error) {
   TakeResponse(raw_reply, error);
 }
 
+void FutureImpl::Peek(RawReply* raw_reply, std::unique_ptr<Error>* error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(connection_->sequence_checker_);
+  Wait();
+
+  auto* request = connection_->GetRequestForFuture(this);
+  CHECK(request->have_response);
+
+  *raw_reply = request->reply;
+  *error = nullptr;
+}
+
 void FutureImpl::OnResponse(ResponseCallback callback) {
   UpdateRequestHandler(std::move(callback));
 }

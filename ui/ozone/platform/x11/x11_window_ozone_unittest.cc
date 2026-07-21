@@ -2,27 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/ozone/platform/x11/x11_window.h"
-#include "ui/platform_window/extensions/x11_extension_delegate.h"
-#include "base/nix/xdg_util.h"
-#include "ui/base/x/x11_util.h"
-#include "ui/gfx/x/atom_cache.h"
-
 #include <memory>
 #include <utility>
 
+#include "base/nix/xdg_util.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/x/x11_util.h"
 #include "ui/display/display.h"
 #include "ui/display/screen_base.h"
 #include "ui/events/devices/x11/touch_factory_x11.h"
 #include "ui/events/event.h"
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/events/test/events_test_utils_x11.h"
+#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/event.h"
+#include "ui/ozone/platform/x11/x11_window.h"
 #include "ui/ozone/platform/x11/x11_window_manager.h"
 #include "ui/ozone/test/mock_platform_window_delegate.h"
+#include "ui/platform_window/extensions/x11_extension_delegate.h"
 #include "ui/platform_window/platform_window_delegate.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
@@ -481,10 +481,11 @@ TEST_F(X11WindowOzoneTest, OnWindowMappedUseAfterFreeAfterMaximize) {
   x11::Event map_event(/*send_event=*/false, std::move(map_notify));
   connection->DispatchEvent(map_event);
 
-  // The synchronous-free path must have been exercised; otherwise the test
-  // didn't reach the vulnerable frame.
-  EXPECT_TRUE(freed) << "delegate->OnBoundsChanged() was not invoked "
-                        "synchronously from OnWindowMapped/Maximize";
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    connection->DispatchAll();
+    return freed;
+  })) << "delegate->OnBoundsChanged() was not invoked from "
+         "OnWindowMapped/Maximize";
 
   connection->DestroyWindow({new_parent});
 }
@@ -554,10 +555,10 @@ TEST_F(X11WindowOzoneTest, SetOverrideRedirectSelfDeleteUaf) {
   auto* x11_window_raw = static_cast<X11Window*>(window.get());
   x11_window_raw->SetOverrideRedirect(true);
 
-  // The synchronous-free path must have been exercised; otherwise the test
-  // didn't reach the vulnerable frame.
-  EXPECT_TRUE(freed) << "delegate->OnBoundsChanged() was not invoked "
-                        "synchronously from SetOverrideRedirect";
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    connection->DispatchAll();
+    return freed;
+  })) << "delegate->OnBoundsChanged() was not invoked from SetOverrideRedirect";
 
   connection->DestroyWindow({new_parent});
 }
@@ -635,9 +636,10 @@ TEST_F(X11WindowOzoneTest, DispatchUiEventGrabberFreedDuringGeometryFetch) {
   // Dispatch the event to window2.
   DispatchXEvent(xi_event, widget2);
 
-  // Verify that window1 was indeed synchronously freed during the geometry
-  // fetch.
-  EXPECT_TRUE(freed) << "grabber delegate was never invoked synchronously";
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    connection->DispatchAll();
+    return freed;
+  })) << "grabber delegate was never invoked";
 
   connection->DestroyWindow({new_parent});
 }
@@ -712,9 +714,10 @@ TEST_F(X11WindowOzoneTest, DispatchEventSelfFreedDuringMouseOnWindow) {
   // Step 7: Dispatch the event to widget. This will trigger DispatchEvent.
   DispatchXEvent(xi_event, widget);
 
-  // If we got here without ASAN/crash tripping, verify the window was indeed
-  // freed.
-  EXPECT_TRUE(freed) << "delegate was never invoked synchronously";
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    connection->DispatchAll();
+    return freed;
+  })) << "delegate was never invoked";
 
   connection->DestroyWindow({new_parent});
 }

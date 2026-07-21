@@ -34,31 +34,43 @@ GeometryCache::GeometryCache(Connection* connection,
 GeometryCache::~GeometryCache() = default;
 
 gfx::Rect GeometryCache::GetBoundsPx() {
-  auto weak_this = weak_ptr_factory_.GetWeakPtr();
-  if (!have_parent_) {
-    parent_future_.DispatchNow();
-    if (!weak_this) {
-      return {};
+  auto get_local_geometry = [this]() {
+    if (have_geometry_) {
+      return geometry_;
     }
-  }
-  CHECK(have_parent_);
-  if (!have_geometry_) {
-    geometry_future_.DispatchNow();
-    if (!weak_this) {
-      return {};
+    if (auto response = geometry_future_.Peek()) {
+      return response ? gfx::Rect(response->x, response->y, response->width,
+                                  response->height)
+                      : gfx::Rect();
     }
-  }
-  CHECK(have_geometry_);
-
-  if (!parent_) {
     return geometry_;
+  };
+
+  if (!have_parent_) {
+    auto response = parent_future_.Peek();
+    if (!response) {
+      return get_local_geometry();
+    }
+    Window parent_window = response ? response->parent : Window::None;
+    if (parent_window == Window::None) {
+      parent_.reset();
+      return get_local_geometry();
+    }
+    if (!parent_ || parent_->window_ != parent_window) {
+      parent_ = std::make_unique<GeometryCache>(
+          connection_, parent_window,
+          base::BindRepeating(&GeometryCache::OnParentGeometryChanged,
+                              weak_ptr_factory_.GetWeakPtr()));
+    }
+  }
+
+  gfx::Rect geometry = get_local_geometry();
+  if (!parent_) {
+    return geometry;
   }
   auto parent_bounds = parent_->GetBoundsPx();
-  if (!weak_this) {
-    return {};
-  }
   gfx::Vector2d offset(parent_bounds.x(), parent_bounds.y());
-  return geometry_ + offset;
+  return geometry + offset;
 }
 
 void GeometryCache::OnQueryTreeResponse(QueryTreeResponse response) {
@@ -121,12 +133,7 @@ void GeometryCache::NotifyGeometryChanged() {
     return;
   }
 
-  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   auto geometry = GetBoundsPx();
-  if (!weak_this) {
-    return;
-  }
-
   if (last_notified_geometry_ == geometry) {
     return;
   }
