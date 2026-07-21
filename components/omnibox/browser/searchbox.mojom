@@ -227,6 +227,7 @@ enum SelectionLineState {
   kFocusedButtonRemoveSuggestion = 4,
   kFocusedButtonAim = 5,
   kFocusedButtonContextEntrypoint = 6,
+  kCtrlEnter = 7,
 };
 
 // See components/omnibox/browser/omnibox_popup_selection.h

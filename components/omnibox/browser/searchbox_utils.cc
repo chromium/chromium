@@ -73,6 +73,40 @@ void InteractionMetricsTracker::FocusChanged(bool focused) {
   }
 }
 
+AutocompleteMatch GenerateDotComMatch(
+    OmniboxClient* client,
+    AutocompleteController* autocomplete_controller,
+    const AutocompleteInput& original_input,
+    const std::u16string& text_for_desired_tld_navigation,
+    AutocompleteInput* generated_input) {
+  AutocompleteInput input(
+      text_for_desired_tld_navigation, original_input.cursor_position(), "com",
+      original_input.current_page_classification(),
+      client->GetSchemeClassifier(),
+      client->ShouldDefaultTypedNavigationsToHttps(), 0, false);
+  input.set_prevent_inline_autocomplete(
+      original_input.prevent_inline_autocomplete());
+  input.set_in_keyword_mode(original_input.in_keyword_mode());
+  input.set_allow_exact_keyword_match(
+      original_input.allow_exact_keyword_match());
+  input.set_omit_asynchronous_matches(
+      original_input.omit_asynchronous_matches());
+  input.set_focus_type(original_input.focus_type());
+
+  if (generated_input) {
+    *generated_input = input;
+  }
+
+  AutocompleteMatch match = VerbatimMatchForInput(
+      autocomplete_controller->history_url_provider(),
+      autocomplete_controller->autocomplete_provider_client(), input,
+      input.canonicalized_url(), false);
+
+  base::UmaHistogramBoolean("Omnibox.Search.CtrlEnter.ResolvedAsUrl",
+                            match.destination_url.is_valid());
+  return match;
+}
+
 void OpenMatch(
     AutocompleteController* autocomplete_controller,
     OmniboxClient* client,

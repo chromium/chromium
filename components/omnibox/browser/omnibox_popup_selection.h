@@ -72,6 +72,10 @@ struct OmniboxPopupSelection {
     // when such a match has an IPH URL link.
     FOCUSED_IPH_LINK,
 
+    // CTRL_ENTER state means that the user triggered Ctrl+Enter on this
+    // suggestion.
+    CTRL_ENTER,
+
     // Whenever new line state is added, accessibility label for current
     // selection should be revisited
     // (`OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection()`).

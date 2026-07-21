@@ -80,6 +80,17 @@ class InteractionMetricsTracker {
 };
 
 // Handles the acceptance of a match from a WebUI searchbox.
+// Generates a URL_WHAT_YOU_TYPED match with ".com" appended.
+// If |generated_input| is provided, it will be updated with the new input used
+// to generate the match.
+AutocompleteMatch GenerateDotComMatch(
+    OmniboxClient* client,
+    AutocompleteController* autocomplete_controller,
+    const AutocompleteInput& original_input,
+    const std::u16string& text_for_desired_tld_navigation,
+    AutocompleteInput* generated_input = nullptr);
+
+// Handles opening a match (called by AcceptInput).
 void OpenMatch(AutocompleteController* autocomplete_controller,
                OmniboxClient* client,
                const AutocompleteInput& input,

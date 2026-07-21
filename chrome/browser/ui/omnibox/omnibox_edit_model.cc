@@ -876,6 +876,25 @@ void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
   const AutocompleteMatch& match =
       autocomplete_controller()->result().match_at(selection.line);
 
+  // For Ctrl+Enter selections triggered via a WebUI searchbox, the event
+  // bypasses `AcceptInput` and arrives here directly. The match is mutated here
+  // to generate a TLD match.
+  if (selection.state == OmniboxPopupSelection::CTRL_ENTER &&
+      autocomplete_controller()->history_url_provider()) {
+    std::u16string text_for_tld = autocomplete_controller()->input().text();
+    if (selection.line > 0) {
+      text_for_tld = match.fill_into_edit;
+    }
+    AutocompleteMatch url_match = searchbox::GenerateDotComMatch(
+        controller_->client(), autocomplete_controller(), input_, text_for_tld,
+        nullptr);
+    if (url_match.destination_url.is_valid()) {
+      OpenMatch(selection, url_match, disposition, GURL(), std::u16string(),
+                timestamp);
+      return;
+    }
+  }
+
   // Selecting a featured search match should enter keyword mode instead of
   // navigating to the suggestion.
   if (selection.state == OmniboxPopupSelection::NORMAL &&
@@ -2109,7 +2128,7 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
   int additional_message_id = 0;
   std::u16string additional_message;
   // This switch statement should be updated when new selection types are added.
-  static_assert(OmniboxPopupSelection::LINE_STATE_MAX_VALUE == 8);
+  static_assert(OmniboxPopupSelection::LINE_STATE_MAX_VALUE == 9);
   switch (popup_selection_.state) {
     case OmniboxPopupSelection::NORMAL: {
       int available_actions_count = 0;
@@ -2205,6 +2224,7 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
                match.iph_link_text, line, 0,
                l10n_util::GetStringUTF16(IDS_ACC_OMNIBOX_IPH_LINK_SELECTED),
                label_prefix_length)});
+    case OmniboxPopupSelection::CTRL_ENTER:
     default:
       break;
   }
@@ -2492,28 +2512,9 @@ void OmniboxEditModel::AcceptInput(WindowOpenDisposition disposition,
       text_for_desired_tld_navigation = url_for_editing_;
     }
 
-    // Generate a new AutocompleteInput, copying the latest one but using "com"
-    // as the desired TLD. Then use this autocomplete input to generate a
-    // URL_WHAT_YOU_TYPED AutocompleteMatch.
-    AutocompleteInput input(
-        text_for_desired_tld_navigation, input_.cursor_position(), "com",
-        input_.current_page_classification(),
-        controller_->client()->GetSchemeClassifier(),
-        controller_->client()->ShouldDefaultTypedNavigationsToHttps(), 0,
-        false);
-    input.set_prevent_inline_autocomplete(input_.prevent_inline_autocomplete());
-    input.set_in_keyword_mode(input_.in_keyword_mode());
-    input.set_allow_exact_keyword_match(input_.allow_exact_keyword_match());
-    input.set_omit_asynchronous_matches(input_.omit_asynchronous_matches());
-    input.set_focus_type(input_.focus_type());
-    input_ = input;
-    AutocompleteMatch url_match(VerbatimMatchForInput(
-        autocomplete_controller()->history_url_provider(),
-        autocomplete_controller()->autocomplete_provider_client(), input_,
-        input_.canonicalized_url(), false));
-
-    base::UmaHistogramBoolean("Omnibox.Search.CtrlEnter.ResolvedAsUrl",
-                              url_match.destination_url.is_valid());
+    AutocompleteMatch url_match = searchbox::GenerateDotComMatch(
+        controller_->client(), autocomplete_controller(), input_,
+        text_for_desired_tld_navigation, &input_);
 
     if (url_match.destination_url.is_valid()) {
       // We have a valid URL, we use this newly generated AutocompleteMatch.

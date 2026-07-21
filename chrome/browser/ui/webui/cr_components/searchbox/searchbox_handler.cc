@@ -1297,6 +1297,10 @@ OmniboxPopupSelection ConvertSelection(
       // Handled directly by webui omnibox popup.
       NOTREACHED();
     }
+    case searchbox::mojom::SelectionLineState::kCtrlEnter: {
+      state = OmniboxPopupSelection::LineState::CTRL_ENTER;
+      break;
+    }
   }
   CHECK_NE(state, OmniboxPopupSelection::LineState::LINE_STATE_MAX_VALUE);
   // Special case line for mojom equivalent of kNoMatch; it is represented
@@ -1330,7 +1334,8 @@ void SearchboxHandler::OpenPopupSelection(
           omnibox::kWebUISearchboxWithoutModelController)) {
     const bool selection_matched =
         popup_selection == edit_model()->GetPopupSelection() ||
-        popup_selection.state == OmniboxPopupSelection::FOCUSED_BUTTON_AIM;
+        popup_selection.state == OmniboxPopupSelection::FOCUSED_BUTTON_AIM ||
+        popup_selection.state == OmniboxPopupSelection::CTRL_ENTER;
     base::UmaHistogramBoolean("Omnibox.WebUI.SelectionMatched",
                               selection_matched);
     base::UmaHistogramBoolean(
@@ -1370,6 +1375,22 @@ void SearchboxHandler::OpenPopupSelection(
             *(autocomplete_controller()->autocomplete_provider_client()));
       }
     }
+  } else if (popup_selection.state == OmniboxPopupSelection::CTRL_ENTER) {
+    AutocompleteMatch final_match = match;
+    if (autocomplete_controller()->history_url_provider()) {
+      std::u16string text_for_tld = autocomplete_controller()->input().text();
+      if (popup_selection.line > 0) {
+        text_for_tld = match.fill_into_edit;
+      }
+      AutocompleteMatch alternate_match = searchbox::GenerateDotComMatch(
+          client(), autocomplete_controller(),
+          autocomplete_controller()->input(), text_for_tld);
+      if (alternate_match.destination_url.is_valid()) {
+        final_match = alternate_match;
+      }
+    }
+    OpenMatch(popup_selection, final_match, disposition,
+              base::TimeTicks::Now());
   } else {
     OpenMatch(popup_selection, match, disposition, base::TimeTicks::Now());
   }

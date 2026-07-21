@@ -73,6 +73,8 @@ bool OmniboxPopupSelection::IsControlPresentOnMatch(
       return match.SupportsDeletion();
     case FOCUSED_IPH_LINK:
       return match.IsIphSuggestion() && !match.iph_link_url.is_empty();
+    case CTRL_ENTER:
+      return false;
     default:
       break;
   }

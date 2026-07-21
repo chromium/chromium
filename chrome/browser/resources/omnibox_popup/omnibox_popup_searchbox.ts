@@ -247,6 +247,10 @@ export class OmniboxPopupSearchboxElement extends
     }
   }
 
+  override shouldAppendDotComOnCtrlEnter(): boolean {
+    return true;
+  }
+
   focusInput() {
     this.$.input.focus();
   }
