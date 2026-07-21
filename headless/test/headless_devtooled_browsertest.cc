@@ -11,6 +11,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "content/public/browser/devtools_agent_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -169,5 +171,53 @@ INSTANTIATE_TEST_SUITE_P(
 HEADLESS_DEVTOOLED_TEST_P(HeadlessAllowedVideoCodecsTest);
 
 #endif  // #if !BUILDFLAG(IS_FUCHSIA)
+
+class HeadlessCreatedTargetIsUsedProcessTest
+    : public HeadlessDevTooledBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  HeadlessCreatedTargetIsUsedProcessTest() = default;
+
+  bool IsHiddenTarget() const { return GetParam(); }
+
+ private:
+  void RunDevTooledTest() override {
+    base::DictValue params;
+    params.Set("url", "");
+    params.Set("hidden", IsHiddenTarget());
+    browser_devtools_client_.SendCommand(
+        "Target.createTarget", std::move(params),
+        base::BindOnce(&HeadlessCreatedTargetIsUsedProcessTest::OnTargetCreated,
+                       base::Unretained(this)));
+  }
+
+  void OnTargetCreated(base::DictValue result) {
+    std::string target_id = DictString(result, "result.targetId");
+    ASSERT_FALSE(target_id.empty());
+
+    scoped_refptr<content::DevToolsAgentHost> agent_host =
+        content::DevToolsAgentHost::GetForId(target_id);
+    ASSERT_TRUE(agent_host);
+
+    content::WebContents* web_contents = agent_host->GetWebContents();
+    ASSERT_TRUE(web_contents);
+
+    bool is_used =
+        !web_contents->GetPrimaryMainFrame()->GetProcess()->IsUnused();
+    EXPECT_EQ(is_used, IsHiddenTarget());
+
+    FinishAsynchronousTest();
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    HeadlessCreatedTargetIsUsedProcessTest,
+    testing::Bool(),
+    [](const testing::TestParamInfo<bool>& info) {
+      return info.param ? "hidden" : "normal";
+    });
+
+HEADLESS_DEVTOOLED_TEST_P(HeadlessCreatedTargetIsUsedProcessTest);
 
 }  // namespace headless
