@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_FRAME_DEADLINE_DECIDER_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_FRAME_DEADLINE_DECIDER_H_
 
-#include "base/memory/raw_ref.h"
+#include <optional>
+
 #include "base/time/time.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/service/viz_service_export.h"
@@ -53,9 +54,12 @@ class VIZ_SERVICE_EXPORT FrameDeadlineDecider {
   size_t FindClosestDeadlineByPresentation(
       const PossibleDeadlines& possible_deadlines) const;
 
-  bool in_frame_sequence_ = false;
-  base::TimeDelta curr_sequence_present_delta_;
-  size_t curr_sequence_deadline_index_ = 0;
+  struct FrameSequenceState {
+    base::TimeDelta present_delta;
+    size_t deadline_index = 0;
+  };
+
+  std::optional<FrameSequenceState> frame_sequence_state_;
   const bool use_platform_preferred_deadlines_;
 };
 

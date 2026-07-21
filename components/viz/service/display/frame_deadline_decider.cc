@@ -6,12 +6,10 @@
 
 #include <algorithm>
 
-#include "base/feature_list.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/build_config.h"
 #include "components/viz/common/features.h"
-#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace viz {
 
@@ -33,7 +31,7 @@ size_t FrameDeadlineDecider::QueryDeadline(
     return possible_deadlines.os_preferred_index;
   }
 
-  if (in_frame_sequence_) {
+  if (frame_sequence_state_.has_value()) {
     return FindClosestDeadlineByPresentation(possible_deadlines);
   }
 
@@ -112,10 +110,10 @@ size_t FrameDeadlineDecider::SelectDeadline(
       QueryDeadline(possible_deadlines, vsync_interval, max_allowed_buffers,
                     frame_time, earliest_input_time);
 
-  in_frame_sequence_ = true;
-  curr_sequence_deadline_index_ = result_index;
-  curr_sequence_present_delta_ =
-      possible_deadlines.deadlines[result_index].present_delta;
+  frame_sequence_state_ = FrameSequenceState{
+      .present_delta = possible_deadlines.deadlines[result_index].present_delta,
+      .deadline_index = result_index,
+  };
 
   TRACE_EVENT_END(
       "toplevel,graphics.pipeline,viz", [&](perfetto::EventContext ctx) {
@@ -135,20 +133,19 @@ size_t FrameDeadlineDecider::SelectDeadline(
 void FrameDeadlineDecider::OnGoIdle() {
   // TODO(crbug.com/500826814): Handle cases where scheduler goes to idle and
   // then immediately kicks off again, so we don't break the frame sequence.
-  in_frame_sequence_ = false;
-  curr_sequence_present_delta_ = base::TimeDelta();
-  curr_sequence_deadline_index_ = 0;
+  frame_sequence_state_.reset();
 }
 
 size_t FrameDeadlineDecider::FindClosestDeadlineByPresentation(
     const PossibleDeadlines& possible_deadlines) const {
   // Check if the cached index is valid and within 1ms of target.
-  if (curr_sequence_deadline_index_ < possible_deadlines.deadlines.size()) {
+  if (frame_sequence_state_->deadline_index <
+      possible_deadlines.deadlines.size()) {
     const auto& cached_deadline =
-        possible_deadlines.deadlines[curr_sequence_deadline_index_];
-    if ((cached_deadline.present_delta - curr_sequence_present_delta_)
+        possible_deadlines.deadlines[frame_sequence_state_->deadline_index];
+    if ((cached_deadline.present_delta - frame_sequence_state_->present_delta)
             .magnitude() <= base::Milliseconds(1)) {
-      return curr_sequence_deadline_index_;
+      return frame_sequence_state_->deadline_index;
     }
   }
 
@@ -157,7 +154,7 @@ size_t FrameDeadlineDecider::FindClosestDeadlineByPresentation(
   // is perfectly fine for the baseline comparison.
   size_t best_index = 0;
   base::TimeDelta min_diff = (possible_deadlines.deadlines[0].present_delta -
-                              curr_sequence_present_delta_)
+                              frame_sequence_state_->present_delta)
                                  .magnitude();
 
   // Possible deadlines are guaranteed to be in chronological order from
@@ -165,7 +162,8 @@ size_t FrameDeadlineDecider::FindClosestDeadlineByPresentation(
   for (size_t i = 1; i < possible_deadlines.deadlines.size(); ++i) {
     const auto& deadline = possible_deadlines.deadlines[i];
     base::TimeDelta diff =
-        (deadline.present_delta - curr_sequence_present_delta_).magnitude();
+        (deadline.present_delta - frame_sequence_state_->present_delta)
+            .magnitude();
     if (diff < min_diff) {
       min_diff = diff;
       best_index = i;
