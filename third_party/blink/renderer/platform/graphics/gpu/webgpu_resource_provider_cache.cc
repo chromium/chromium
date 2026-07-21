@@ -15,15 +15,16 @@
 
 namespace blink {
 
-RecyclableCanvasResource::RecyclableCanvasResource(
+WebGpuRecyclableResourceProviderLease::WebGpuRecyclableResourceProviderLease(
     std::unique_ptr<WebGpuRecyclableResourceProvider> resource_provider,
     base::WeakPtr<WebGPURecyclableResourceCache> cache)
     : resource_provider_(std::move(resource_provider)), cache_(cache) {}
 
-RecyclableCanvasResource::~RecyclableCanvasResource() {
+WebGpuRecyclableResourceProviderLease::
+    ~WebGpuRecyclableResourceProviderLease() {
   if (cache_ && resource_provider_) {
-    cache_->OnDestroyRecyclableResource(std::move(resource_provider_),
-                                        completion_sync_token_);
+    cache_->ReturnWebGpuRecyclableResourceProvider(
+        std::move(resource_provider_), completion_sync_token_);
   }
 }
 
@@ -39,8 +40,8 @@ WebGPURecyclableResourceCache::WebGPURecyclableResourceCache(
   DCHECK_LE(kTimerDurationInSeconds, kCleanUpDelayInSeconds);
 }
 
-std::unique_ptr<RecyclableCanvasResource>
-WebGPURecyclableResourceCache::GetOrCreateCanvasResource(
+std::unique_ptr<WebGpuRecyclableResourceProviderLease>
+WebGPURecyclableResourceCache::LeaseWebGpuRecyclableResourceProvider(
     viz::SharedImageFormat format,
     gfx::Size size,
     const gfx::ColorSpace& color_space,
@@ -57,11 +58,11 @@ WebGPURecyclableResourceCache::GetOrCreateCanvasResource(
       return nullptr;
   }
 
-  return std::make_unique<RecyclableCanvasResource>(std::move(provider),
-                                                    weak_ptr_);
+  return std::make_unique<WebGpuRecyclableResourceProviderLease>(
+      std::move(provider), weak_ptr_);
 }
 
-void WebGPURecyclableResourceCache::OnDestroyRecyclableResource(
+void WebGPURecyclableResourceCache::ReturnWebGpuRecyclableResourceProvider(
     std::unique_ptr<WebGpuRecyclableResourceProvider> resource_provider,
     const gpu::SyncToken& completion_sync_token) {
   size_t resource_size =

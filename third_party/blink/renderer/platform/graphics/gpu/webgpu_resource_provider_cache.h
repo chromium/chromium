@@ -23,13 +23,13 @@ class WebGpuRecyclableResourceProvider;
 class WebGPURecyclableResourceCache;
 class WebGraphicsContext3DProviderWrapper;
 
-class PLATFORM_EXPORT RecyclableCanvasResource {
+class PLATFORM_EXPORT WebGpuRecyclableResourceProviderLease {
  public:
-  RecyclableCanvasResource(
+  WebGpuRecyclableResourceProviderLease(
       std::unique_ptr<WebGpuRecyclableResourceProvider> resource_provider,
       base::WeakPtr<WebGPURecyclableResourceCache> cache);
 
-  ~RecyclableCanvasResource();
+  ~WebGpuRecyclableResourceProviderLease();
 
   WebGpuRecyclableResourceProvider* resource_provider() {
     return resource_provider_.get();
@@ -52,16 +52,16 @@ class PLATFORM_EXPORT WebGPURecyclableResourceCache {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   ~WebGPURecyclableResourceCache() = default;
 
-  std::unique_ptr<RecyclableCanvasResource> GetOrCreateCanvasResource(
-      viz::SharedImageFormat format,
-      gfx::Size size,
-      const gfx::ColorSpace& color_space,
-      const gfx::HDRMetadata& hdr_metadata,
-      SkAlphaType alpha_type);
+  std::unique_ptr<WebGpuRecyclableResourceProviderLease>
+  LeaseWebGpuRecyclableResourceProvider(viz::SharedImageFormat format,
+                                        gfx::Size size,
+                                        const gfx::ColorSpace& color_space,
+                                        const gfx::HDRMetadata& hdr_metadata,
+                                        SkAlphaType alpha_type);
 
-  // When the holder is destroyed, move the resource provider to
+  // When the lease is destroyed, move the resource provider to
   // |unused_providers_| if the cache is not full.
-  void OnDestroyRecyclableResource(
+  void ReturnWebGpuRecyclableResourceProvider(
       std::unique_ptr<WebGpuRecyclableResourceProvider> resource_provider,
       const gpu::SyncToken& completion_sync_token);
 
@@ -72,7 +72,8 @@ class PLATFORM_EXPORT WebGPURecyclableResourceCache {
   }
 
  private:
-  // The maximum number of unused CanvasNon2DResourceProviders size, 128 MB.
+  // The maximum number of unused WebGpuRecyclableResourceProviders size, 128
+  // MB.
   static constexpr int kMaxRecyclableResourceCachesInKB = 128 * 1024;
   static constexpr int kMaxRecyclableResourceCachesInBytes =
       kMaxRecyclableResourceCachesInKB * 1024;
@@ -107,8 +108,8 @@ class PLATFORM_EXPORT WebGPURecyclableResourceCache {
 
   using DequeResourceProvider = Deque<Resource>;
 
-  // Search |unused_providers_| and acquire the canvas resource provider with
-  // the same cache key for re-use.
+  // Search |unused_providers_| and acquire the WebGPU recyclable resource
+  // provider with the same cache key for reuse.
   std::unique_ptr<WebGpuRecyclableResourceProvider> AcquireCachedProvider(
       const gfx::Size& size,
       const viz::SharedImageFormat& format,
@@ -121,8 +122,8 @@ class PLATFORM_EXPORT WebGPURecyclableResourceCache {
   // Start the clean-up function runs when there are unused resources.
   void StartResourceCleanUpTimer();
 
-  // This is the place to keep the unused CanvasNon2DResourceProviders. They are
-  // waiting to be used. MRU is in the front of the deque.
+  // This is the place to keep the unused WebGpuRecyclableResourceProviders.
+  // They are waiting to be used. MRU is in the front of the deque.
   DequeResourceProvider unused_providers_;
 
   uint64_t total_unused_resources_in_bytes_ = 0;

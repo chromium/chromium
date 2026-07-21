@@ -110,14 +110,14 @@ bool DawnControlClientHolder::IsContextLost() const {
   return context_lost_;
 }
 
-std::unique_ptr<RecyclableCanvasResource>
-DawnControlClientHolder::GetOrCreateCanvasResource(
+std::unique_ptr<WebGpuRecyclableResourceProviderLease>
+DawnControlClientHolder::LeaseWebGpuRecyclableResourceProvider(
     viz::SharedImageFormat format,
     gfx::Size size,
     const gfx::ColorSpace& color_space,
     const gfx::HDRMetadata& hdr_metadata,
     SkAlphaType alpha_type) {
-  return recyclable_resource_cache_.GetOrCreateCanvasResource(
+  return recyclable_resource_cache_.LeaseWebGpuRecyclableResourceProvider(
       format, size, color_space, hdr_metadata, alpha_type);
 }
 

@@ -400,16 +400,16 @@ ExternalTexture CreateExternalTexture(
     format = viz::SinglePlaneFormat::kRGBA_F16;
   }
 
-  std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource =
-      device->GetDawnControlClient()->GetOrCreateCanvasResource(
+  std::unique_ptr<WebGpuRecyclableResourceProviderLease> provider_lease =
+      device->GetDawnControlClient()->LeaseWebGpuRecyclableResourceProvider(
           format, natural_size, resource_color_space,
           media_video_frame->hdr_metadata(), kPremul_SkAlphaType);
-  if (!recyclable_canvas_resource) {
+  if (!provider_lease) {
     return external_texture;
   }
 
   WebGpuRecyclableResourceProvider* resource_provider =
-      recyclable_canvas_resource->resource_provider();
+      provider_lease->resource_provider();
   DCHECK(resource_provider);
 
   viz::RasterContextProvider* raster_context_provider =
@@ -463,8 +463,7 @@ ExternalTexture CreateExternalTexture(
       WebGPUMailboxTexture::FromCanvasResource(
           device->GetDawnControlClient(), device->GetHandle(),
           wgpu::TextureUsage::TextureBinding, std::move(shared_image),
-          resource_provider->GetSyncToken(),
-          std::move(recyclable_canvas_resource));
+          resource_provider->GetSyncToken(), std::move(provider_lease));
 
   wgpu::TextureViewDescriptor view_desc = {};
   wgpu::TextureView plane0 =

@@ -60,12 +60,12 @@ class PLATFORM_EXPORT DawnControlClientHolder
   wgpu::Instance GetWGPUInstance() const;
   void MarkContextLost();
   bool IsContextLost() const;
-  std::unique_ptr<RecyclableCanvasResource> GetOrCreateCanvasResource(
-      viz::SharedImageFormat format,
-      gfx::Size size,
-      const gfx::ColorSpace& color_space,
-      const gfx::HDRMetadata& hdr_metadata,
-      SkAlphaType alpha_type);
+  std::unique_ptr<WebGpuRecyclableResourceProviderLease>
+  LeaseWebGpuRecyclableResourceProvider(viz::SharedImageFormat format,
+                                        gfx::Size size,
+                                        const gfx::ColorSpace& color_space,
+                                        const gfx::HDRMetadata& hdr_metadata,
+                                        SkAlphaType alpha_type);
 
   // Flush commands on this client immediately.
   void Flush();
