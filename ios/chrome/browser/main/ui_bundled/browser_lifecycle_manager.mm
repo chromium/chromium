@@ -89,9 +89,10 @@
 - (void)createMainCoordinatorAndInterface {
   TRACE_EVENT("ui",
               "-[BrowserLifecycleManager createMainCoordinatorAndInterface]");
-  DCHECK(!_mainInterface)
-      << "-createMainCoordinatorAndInterface must not be called once";
+  CHECK(!_mainInterface, base::NotFatalUntil::M155)
+      << "-createMainCoordinatorAndInterface must not be called multiple times";
 
+  CHECK(!_mainBrowserCoordinator, base::NotFatalUntil::M155);
   // Create the main coordinator, and thus the main interface.
   _mainBrowserCoordinator = [[BrowserCoordinator alloc]
       initWithBaseViewController:nil
@@ -332,10 +333,10 @@
 // Create the OTR interface object.
 - (WrangledBrowser*)createOTRInterface {
   TRACE_EVENT("ui", "-[BrowserLifecycleManager createOTRInterface]");
-  DCHECK(!_incognitoInterface);
+  CHECK(!_incognitoInterface, base::NotFatalUntil::M155);
 
   // The backing coordinator should not have been created yet.
-  DCHECK(!_incognitoBrowserCoordinator);
+  CHECK(!_incognitoBrowserCoordinator, base::NotFatalUntil::M155);
   _incognitoBrowserCoordinator =
       [[BrowserCoordinator alloc] initWithBaseViewController:nil
                                                      browser:_otrBrowser.get()];
