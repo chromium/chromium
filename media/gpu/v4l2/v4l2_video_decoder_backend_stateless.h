@@ -112,6 +112,8 @@ class V4L2StatelessVideoDecoderBackend : public V4L2VideoDecoderBackend,
     kRanOutOfSurfaces,
   };
 
+  static constexpr uint8_t kDefaultBitDepth = 8;
+
   // Callback which is called when the output buffer is not used anymore.
   static void ReuseOutputBufferThunk(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -149,6 +151,9 @@ class V4L2StatelessVideoDecoderBackend : public V4L2VideoDecoderBackend,
 
   // Video coded size we are decoding.
   gfx::Size pic_size_;
+
+  // Video bit depth we are decoding.
+  uint8_t bit_depth_ = kDefaultBitDepth;
 
   // Video decoder used to parse stream headers by software.
   std::unique_ptr<AcceleratedVideoDecoder> decoder_;
