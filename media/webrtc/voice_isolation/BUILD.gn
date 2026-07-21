@@ -41,3 +41,14 @@ source_set("unit_tests") {
     "voice_isolation_unittest.cc",
   ]
 }
+
+if (chrome_wide_echo_cancellation_supported) {
+  executable("voice_isolation_wav_tool") {
+    testonly = true
+    sources = [ "voice_isolation_wav_tool.cc" ]
+    deps = [
+      "//components/optimization_guide/core/inference:op_resolver",
+      "//media/webrtc",
+    ]
+  }
+}
