@@ -12,11 +12,12 @@
 
 namespace rlz_lib {
 
-int Crc32(base::span<const uint8_t> data) {
-  return crc32(0L, data.data(), static_cast<uInt>(data.size()));
+uint32_t Crc32(base::span<const uint8_t> data) {
+  return static_cast<uint32_t>(
+      crc32(0L, data.data(), static_cast<uInt>(data.size())));
 }
 
-bool Crc32(std::string_view text, int* crc) {
+bool Crc32(std::string_view text, uint32_t* crc) {
   if (!crc) {
     ASSERT_STRING("Crc32: crc is NULL.");
     return false;

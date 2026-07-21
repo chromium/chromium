@@ -15,8 +15,8 @@
 
 namespace rlz_lib {
 
-int Crc32(base::span<const uint8_t> data);
-bool Crc32(std::string_view text, int* crc);
+uint32_t Crc32(base::span<const uint8_t> data);
+bool Crc32(std::string_view text, uint32_t* crc);
 
 }  // namespace rlz_lib
 

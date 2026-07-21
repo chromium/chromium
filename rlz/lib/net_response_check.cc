@@ -29,7 +29,7 @@ bool IsPingResponseValid(const char* response, int* checksum_idx) {
   std::string response_string(response);
 
   std::string checksum_param("\ncrc32: ");
-  int calculated_crc;
+  uint32_t calculated_crc;
   int checksum_index = response_string.find(checksum_param);
   if (checksum_index >= 0) {
     // Calculate checksum of message preceeding checksum line.
@@ -61,8 +61,8 @@ bool IsPingResponseValid(const char* response, int* checksum_idx) {
   if (checksum_idx)
     *checksum_idx = checksum_index;
 
-  int response_crc = 0;
-  if (!base::HexStringToInt(checksum, &response_crc)) {
+  uint32_t response_crc = 0;
+  if (!base::HexStringToUInt(checksum, &response_crc)) {
     return false;
   }
 

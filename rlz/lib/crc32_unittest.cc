@@ -16,9 +16,9 @@ TEST(Crc32Unittest, ByteTest) {
   struct {
     std::string_view data;
     // Externally calculated at http://crc32-checksum.waraxe.us/
-    int crc;
+    uint32_t crc;
   } kData[] = {
-      {"Hello", static_cast<int>(0xF7D18982)},
+      {"Hello", 0xF7D18982},
       {"Google", 0x62B0F067},
       {"", 0x0},
       {"One more string.", 0x0CA14970},
@@ -33,16 +33,16 @@ TEST(Crc32Unittest, CharTest) {
   struct {
     std::string_view data;
     // Externally calculated at http://crc32-checksum.waraxe.us/
-    int crc;
+    uint32_t crc;
   } kData[] = {
-      {"Hello", static_cast<int>(0xF7D18982)},
+      {"Hello", 0xF7D18982},
       {"Google", 0x62B0F067},
       {"", 0x0},
       {"One more string.", 0x0CA14970},
-      {"Google\r\n", static_cast<int>(0x83A3E860)},
+      {"Google\r\n", 0x83A3E860},
   };
 
-  int crc;
+  uint32_t crc;
   for (const auto& item : kData) {
     EXPECT_TRUE(rlz_lib::Crc32(item.data, &crc));
     EXPECT_EQ(item.crc, crc);
