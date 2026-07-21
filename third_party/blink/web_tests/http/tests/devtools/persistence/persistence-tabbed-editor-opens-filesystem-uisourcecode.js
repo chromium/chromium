@@ -22,17 +22,20 @@ import * as Sources from 'devtools/panels/sources/sources.js';
   testMapping.addBinding('foo.js');
   BindingsTestRunner.waitForBinding('foo.js').then(onBindingCreated);
 
-  function onBindingCreated(binding) {
+  async function onBindingCreated(binding) {
     TestRunner.addResult('Binding created: ' + binding);
-    dumpEditorTabs('Opened tabs before opening any UISourceCodes:');
+    await dumpEditorTabs('Opened tabs before opening any UISourceCodes:');
     TestRunner.addResult('request open uiSourceCode: ' + binding.fileSystem.url());
     Sources.SourcesPanel.SourcesPanel.instance().showUISourceCode(binding.network, 0, 0);
-    dumpEditorTabs('Opened tabs after opening UISourceCode:');
+    await dumpEditorTabs('Opened tabs after opening UISourceCode:');
     TestRunner.completeTest();
   }
 
-  function dumpEditorTabs(title) {
-    var editorContainer = Sources.SourcesPanel.SourcesPanel.instance().sourcesView().editorContainer;
+  async function dumpEditorTabs(title) {
+    const sourcesView =
+        Sources.SourcesPanel.SourcesPanel.instance().sourcesView();
+    await sourcesView.updateComplete;
+    var editorContainer = sourcesView.editorContainer;
     var openedUISourceCodes = [...editorContainer.tabIds.keys()];
     openedUISourceCodes.sort((a, b) => a.url > b.url ? 1 : b.url > a.url ? -1 : 0);
     TestRunner.addResult(title);

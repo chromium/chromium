@@ -28,14 +28,17 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
   // Open and select file system tab. Selection should stay here.
   Sources.SourcesPanel.SourcesPanel.instance().showUISourceCode(fsSourceCode, 0, 0);
 
-  dumpTabs('Opened tabs before persistence binding:');
+  await dumpTabs('Opened tabs before persistence binding:');
   testMapping.addBinding('foo.js');
   await BindingsTestRunner.waitForBinding('foo.js');
-  dumpTabs('\nOpened tabs after persistence binding:');
+  await dumpTabs('\nOpened tabs after persistence binding:');
   TestRunner.completeTest();
 
-  function dumpTabs(title) {
-    var tabbedPane = Sources.SourcesPanel.SourcesPanel.instance().sourcesView().editorContainer.tabbedPane;
+  async function dumpTabs(title) {
+    const sourcesView =
+        Sources.SourcesPanel.SourcesPanel.instance().sourcesView();
+    await sourcesView.updateComplete;
+    var tabbedPane = sourcesView.editorContainer.tabbedPane;
     var tabs = tabbedPane.tabs;
     TestRunner.addResult(title);
     for (var i = 0; i < tabs.length; ++i) {

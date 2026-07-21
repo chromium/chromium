@@ -49,7 +49,10 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
 
   async function runTest() {
     // Verify contents of the TabHeader to make sure files are open
-    const tabbedPane = Sources.SourcesPanel.SourcesPanel.instance().sourcesView().editorContainer.tabbedPane;
+    const sourcesView =
+        Sources.SourcesPanel.SourcesPanel.instance().sourcesView();
+    await sourcesView.updateComplete;
+    const tabbedPane = sourcesView.editorContainer.tabbedPane;
     const tabs = tabbedPane.tabs;
     TestRunner.addResult('All tabs:');
     tabs.forEach(tab => TestRunner.addResult(tab.title));
