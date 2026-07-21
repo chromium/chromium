@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLEX_FLEX_GAP_ACCUMULATOR_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/flex/flex_line.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -133,6 +134,10 @@ class CORE_EXPORT FlexGapAccumulator {
   const GapGeometry* BuildGapGeometry(
       const BoxFragmentBuilder& container_builder);
 
+  // Creates `MainGaps` for fragmented column flexbox containers, since all
+  // columns exist in every fragment.
+  void InitializeFragmentedColumnGapGeometry(const FlexLineVector& flex_lines);
+
   // We populate the gap data structures within the flex container in an
   // item by item basis. The main and cross gaps that correspond to each item
   // are defined as follows:
@@ -188,8 +193,8 @@ class CORE_EXPORT FlexGapAccumulator {
   //
   // For more information on GapDecorations implementation see
   // `third_party/blink/renderer/core/layout/gap/README.md`.
-  void BuildGapsForCurrentItem(const FlexLine& flex_line,
-                               wtf_size_t flex_line_index,
+  void BuildGapsForCurrentItem(const FlexLineVector& flex_lines,
+                               wtf_size_t absolute_flex_line_index,
                                LogicalOffset item_offset,
                                bool is_first_item,
                                bool is_last_item,
@@ -259,13 +264,13 @@ class CORE_EXPORT FlexGapAccumulator {
 
   LayoutUnit content_main_end_;
 
-  // Maps an absolute flex-line index to its per-fragment relative line index
-  // (assigned in first-visit order), or `kNotFound` if the line has not been
-  // visited yet.
-  Vector<wtf_size_t, 4> fragment_relative_line_indices_;
+  // For row flex, maps an absolute flex-line index to its per-fragment relative
+  // line index (assigned in first-visit order), or `kNotFound` if the line has
+  // not been visited yet.
+  Vector<wtf_size_t, 4> fragment_relative_row_line_indices_;
 
-  // The index to assign to the next line visited in this fragment.
-  wtf_size_t next_fragment_relative_line_index_ = 0;
+  // The index to assign to the next row-flex line visited in this fragment.
+  wtf_size_t next_fragment_relative_row_line_index_ = 0;
 };
 
 }  // namespace blink
