@@ -198,6 +198,7 @@ def _run_tests(out_dir: str, simulator_udid: str, arch: str, scheme: str,
         scheme,
         '-destination',
         f'platform=iOS Simulator,id={simulator_udid},arch={arch}',
+        f'CONFIGURATION_BUILD_DIR={os.path.abspath(out_dir)}',
     ]
     if test_filters:
         for test_filter in test_filters:
