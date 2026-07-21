@@ -36,7 +36,6 @@ public class StylusWritingController {
     private @Nullable PointerIcon mHandwritingIcon;
     private @Nullable StylusApiOption mStylusHandler;
     private boolean mIconFetched;
-    private final boolean mLazyFetchHandWritingIconFeatureEnabled;
     private boolean mShouldOverrideStylusHoverIcon;
     private boolean mIsWindowFocused;
 
@@ -73,22 +72,8 @@ public class StylusWritingController {
     /** Creates a new instance of this class. */
     @MainThread
     public StylusWritingController(Context context) {
-        this(context, false);
-    }
-
-    @MainThread
-    public StylusWritingController(
-            Context context, boolean lazyFetchHandWritingIconFeatureEnabled) {
         mContext = context;
-        mLazyFetchHandWritingIconFeatureEnabled = lazyFetchHandWritingIconFeatureEnabled;
         mIconFetched = false;
-        if (!mLazyFetchHandWritingIconFeatureEnabled) {
-            int iconType = getHandler().getStylusPointerIcon();
-            if (iconType != PointerIcon.TYPE_NULL) {
-                mHandwritingIcon =
-                        PointerIcon.getSystemIcon(context, getHandler().getStylusPointerIcon());
-            }
-        }
     }
 
     @MainThread
@@ -277,9 +262,7 @@ public class StylusWritingController {
     @MainThread
     public @Nullable PointerIcon resolvePointerIcon() {
         if (mShouldOverrideStylusHoverIcon) {
-            return mLazyFetchHandWritingIconFeatureEnabled
-                    ? getHandwritingIcon()
-                    : mHandwritingIcon;
+            return getHandwritingIcon();
         }
         return null;
     }
