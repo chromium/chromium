@@ -67,8 +67,9 @@
     ]
   },
   "archive_path": "linux-release-asan/libfuzzer-high-end-linux-release",
+  "archive_prefix": "libfuzzer-high-end",
   "builder_group": "chromium.fuzz",
   "recipe": "chromium/fuzz",
   "upload_bucket": "chromium-browser-libfuzzer",
-  "use_archive_path": true
+  "upload_directory": "asan"
 }

@@ -67,8 +67,9 @@
     ]
   },
   "archive_path": "linux-release-asan/centipede-high-end-dcheck-linux-release",
+  "archive_prefix": "centipede-high-end-dcheck",
   "builder_group": "chromium.fuzz",
   "recipe": "chromium/fuzz",
   "upload_bucket": "chromium-browser-centipede",
-  "use_archive_path": true
+  "upload_directory": "asan"
 }

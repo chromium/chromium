@@ -15,10 +15,12 @@
             "builder_spec": {
               "builder_group": "chromium.fuzz",
               "clusterfuzz_archive": {
+                "archive_name_prefix": "ubsan-vptr",
                 "archive_path": "linux-release-vptr/ubsan-vptr-linux-release",
+                "archive_subdir": "vptr",
                 "gs_acl": "public-read",
                 "gs_bucket": "chromium-browser-ubsan",
-                "use_archive_path": true
+                "use_archive_path": false
               },
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {

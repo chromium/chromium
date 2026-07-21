@@ -61,8 +61,9 @@
     ]
   },
   "archive_path": "linux-release-asan/libfuzzer-asan-brp-v2-linux-release",
+  "archive_prefix": "libfuzzer-asan-brp-v2",
   "builder_group": "chromium.fuzz",
   "recipe": "chromium/fuzz",
   "upload_bucket": "chromium-browser-libfuzzer",
-  "use_archive_path": true
+  "upload_directory": "asan"
 }

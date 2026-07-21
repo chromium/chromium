@@ -15,10 +15,12 @@
             "builder_spec": {
               "builder_group": "chromium.fuzz",
               "clusterfuzz_archive": {
+                "archive_name_prefix": "asan",
                 "archive_path": "mac-release-media/asan-mac-release",
+                "archive_subdir": "media",
                 "gs_acl": "public-read",
                 "gs_bucket": "chromium-browser-asan",
-                "use_archive_path": true
+                "use_archive_path": false
               },
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {

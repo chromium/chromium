@@ -61,6 +61,7 @@
     ]
   },
   "archive_path": "linux-release-asan/centipede-high-end-linux-release",
+  "archive_prefix": "centipede-high-end",
   "builder_group": "chromium.fuzz",
   "gardener_rotations": [
     "chromium"
@@ -70,5 +71,5 @@
     "chromium"
   ],
   "upload_bucket": "chromium-browser-centipede",
-  "use_archive_path": true
+  "upload_directory": "asan"
 }

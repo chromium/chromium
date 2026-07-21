@@ -70,5 +70,5 @@
     "chromium"
   ],
   "upload_bucket": "chromium-browser-libfuzzer",
-  "use_archive_path": true
+  "upload_directory": "asan"
 }
