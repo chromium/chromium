@@ -433,6 +433,35 @@ TEST_F(AtMemoryManagerTest, OnSearchSubmitted_SchemalessResultHasEmptyLabels) {
   EXPECT_TRUE(final_suggestions[0].labels.empty());
 }
 
+// Tests that when a search result has `MemoryDataType::kUnknown`, the generated
+// suggestion uses the entry's type name for the label.
+TEST_F(AtMemoryManagerTest,
+       OnSearchSubmitted_UnknownTypeWithTypeName_UsesTypeNameInLabel) {
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
+                         AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
+                         /*is_context_secure=*/true, update_callback_.Get(),
+                         ukm::kInvalidSourceId);
+
+  std::vector<Suggestion> final_suggestions;
+  std::vector<MemorySearchResult> entries;
+  entries.emplace_back(MemoryDataType::kUnknown, u"Custom Type", u"Some Value");
+
+  MockQueryResultsAndExpectCallback(u"query",
+                                    MemorySearchStatus::kFinalResponseSuccess,
+                                    std::move(entries), final_suggestions);
+
+  manager().OnSearchSubmitted(u"query");
+
+  ASSERT_EQ(final_suggestions.size(), 1u);
+  EXPECT_EQ(final_suggestions[0].type, SuggestionType::kAtMemorySearchResult);
+  EXPECT_EQ(final_suggestions[0].main_text.value, u"Some Value");
+  ASSERT_EQ(final_suggestions[0].labels.size(), 1u);
+  ASSERT_EQ(final_suggestions[0].labels[0].size(), 1u);
+  EXPECT_EQ(final_suggestions[0].labels[0][0].value, u"Custom Type");
+}
+
 // Tests that Autofill-sourced data displays ONLY the local settings manage link
 // (e.g. kManageAddress) and NOT the "Manage enhanced autofill" footer.
 TEST_F(AtMemoryManagerTest,
@@ -1623,7 +1652,7 @@ TEST_F(AtMemoryManagerTest, CvcMetadata_ExcludedFromLabels) {
   // The label row should be: [type_name, bullet, Name]
   // (CVC and its bullet should be skipped).
   std::vector<std::vector<Suggestion::Text>> expected_labels = {
-      {Suggestion::Text(u"Card Number"), Suggestion::Text(u"\u2022"),
+      {Suggestion::Text(u"Card number"), Suggestion::Text(u"\u2022"),
        Suggestion::Text(u"John Doe")}};
 
   EXPECT_THAT(final_suggestions,
@@ -1631,6 +1660,48 @@ TEST_F(AtMemoryManagerTest, CvcMetadata_ExcludedFromLabels) {
                   SuggestionType::kAtMemorySearchResult,
                   GetObfuscatedValue(u"1234567890123456", kVisibleSuffixLength),
                   Suggestion::Icon::kCardGenericSpark, expected_labels)));
+}
+
+// Tests that when an AtMemory search result is an AutofillAi attribute type
+// (e.g. `kFlightReservationFlightNumber`), the main suggestion label uses the
+// general Entity name, while child suggestions (metadata entries) still use
+// attribute names.
+TEST_F(AtMemoryManagerTest,
+       AutofillAiAttribute_UsesEntityNameForMainSuggestionLabel) {
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
+                         AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
+                         /*is_context_secure=*/true, update_callback_.Get(),
+                         ukm::kInvalidSourceId);
+
+  MemorySearchResult entry(MemoryDataType::kFlightReservationFlightNumber,
+                           u"Flight number", u"UA123");
+  entry.metadata_list.emplace_back(
+      MemoryDataType::kFlightReservationArrivalAirport, u"Destination airport",
+      u"SFO");
+
+  std::vector<Suggestion> final_suggestions;
+  MockQueryResultsAndExpectCallback(
+      u"query",
+      accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
+      {entry}, final_suggestions);
+  manager().OnSearchSubmitted(u"query");
+
+  ASSERT_EQ(final_suggestions.size(), 1u);
+  // Main suggestion label row should start with Entity name ("Flight"), not
+  // attribute name ("Flight number").
+  ASSERT_EQ(final_suggestions[0].labels.size(), 1u);
+  ASSERT_GE(final_suggestions[0].labels[0].size(), 1u);
+  EXPECT_EQ(final_suggestions[0].labels[0][0].value, u"Flight");
+
+  // Child suggestion label should retain the attribute name ("Destination
+  // airport").
+  ASSERT_GE(final_suggestions[0].children.size(), 1u);
+  ASSERT_EQ(final_suggestions[0].children[0].labels.size(), 1u);
+  ASSERT_EQ(final_suggestions[0].children[0].labels[0].size(), 1u);
+  EXPECT_EQ(final_suggestions[0].children[0].labels[0][0].value,
+            u"Destination airport");
 }
 
 // Tests that sensitive metadata is obfuscated in the primary suggestion labels
