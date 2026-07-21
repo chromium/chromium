@@ -375,17 +375,17 @@ void CertVerifierServiceFactoryImpl::OnCRLSetParsed(
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 void CertVerifierServiceFactoryImpl::UpdateChromeRootStore(
     mojo_base::ProtoWrapper new_root_store,
-    std::optional<mojo_base::ProtoWrapper> new_signer_set,
+    std::optional<mojo_base::ProtoWrapper> new_mtc_config,
     UpdateChromeRootStoreCallback callback) {
   // Ensure the callback is run regardless which return path is used.
   base::ScopedClosureRunner scoped_callback_runner(std::move(callback));
 
   std::optional<net::ChromeRootStoreData> new_crs_data =
       ParseChromeRootStoreProto(new_root_store);
-  std::optional<net::ChromeRootStoreSignerSet> new_signer_set_data =
-      ParseSignerSetProto(new_signer_set);
+  std::optional<chrome_root_store::MtcConfig> mtc_config_data =
+      ParseMtcConfigProto(new_mtc_config);
 
-  if (!new_crs_data && !new_signer_set_data) {
+  if (!new_crs_data && !mtc_config_data) {
     return;
   }
 
@@ -393,12 +393,33 @@ void CertVerifierServiceFactoryImpl::UpdateChromeRootStore(
 
   net::ChromeRootStoreData root_store_data =
       new_crs_data ? std::move(*new_crs_data) : *proc_params_.root_store_data;
-  std::optional<net::ChromeRootStoreSignerSet> signer_set =
-      new_signer_set_data ? std::move(new_signer_set_data)
-                          : proc_params_.root_store_data->signer_set();
+
+  std::optional<net::ChromeRootStoreSignerSet> signer_set;
+  bool disable_mtc =
+      proc_params_.root_store_data->disable_mtc_mirroring_requirements();
+
+  if (new_mtc_config && mtc_config_data) {
+    if (mtc_config_data->has_signer_set() &&
+        mtc_config_data->signer_set().timestamp().seconds() >
+            net::CompiledSignerSetTimestampSeconds()) {
+      signer_set = net::ChromeRootStoreSignerSet::CreateFromProto(
+          mtc_config_data->signer_set());
+      if (!signer_set) {
+        signer_set = proc_params_.root_store_data->signer_set();
+      }
+    } else {
+      signer_set = proc_params_.root_store_data->signer_set();
+    }
+    disable_mtc = mtc_config_data->disable_mtc_mirroring_requirements();
+  } else {
+    signer_set = proc_params_.root_store_data->signer_set();
+  }
+
   if (signer_set) {
     root_store_data.SetSignerSet(std::move(*signer_set));
   }
+  root_store_data.SetDisableMtcMirroringRequirements(disable_mtc);
+
   proc_params_.root_store_data = std::move(root_store_data);
   UpdateVerifierServices();
 }
@@ -437,34 +458,22 @@ CertVerifierServiceFactoryImpl::ParseChromeRootStoreProto(
 }
 
 // static
-std::optional<net::ChromeRootStoreSignerSet>
-CertVerifierServiceFactoryImpl::ParseSignerSetProto(
-    const std::optional<mojo_base::ProtoWrapper>& new_signer_set) {
-  if (!new_signer_set.has_value() ||
+std::optional<chrome_root_store::MtcConfig>
+CertVerifierServiceFactoryImpl::ParseMtcConfigProto(
+    const std::optional<mojo_base::ProtoWrapper>& new_mtc_config) {
+  if (!new_mtc_config.has_value() ||
       !base::FeatureList::IsEnabled(net::features::kVerifyMTCs)) {
     return std::nullopt;
   }
 
-  std::optional<chrome_root_store::SignerSet> signer_set_message =
-      new_signer_set->As<chrome_root_store::SignerSet>();
-  if (!signer_set_message.has_value()) {
-    LOG(ERROR) << "error parsing proto for SignerSet";
+  std::optional<chrome_root_store::MtcConfig> mtc_config_message =
+      new_mtc_config->As<chrome_root_store::MtcConfig>();
+  if (!mtc_config_message.has_value()) {
+    LOG(ERROR) << "error parsing proto for MtcConfig";
     return std::nullopt;
   }
 
-  if (signer_set_message->timestamp().seconds() <=
-      net::CompiledSignerSetTimestampSeconds()) {
-    return std::nullopt;
-  }
-
-  std::optional<net::ChromeRootStoreSignerSet> signer_set =
-      net::ChromeRootStoreSignerSet::CreateFromProto(*signer_set_message);
-  if (!signer_set.has_value()) {
-    LOG(ERROR) << "error interpreting proto for SignerSet";
-    return std::nullopt;
-  }
-
-  return signer_set;
+  return mtc_config_message;
 }
 
 void CertVerifierServiceFactoryImpl::UpdateMtcMetadata(

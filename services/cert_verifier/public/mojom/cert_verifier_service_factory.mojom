@@ -105,13 +105,13 @@ interface CertVerifierServiceFactory {
   [EnableIf=is_ct_supported]
   DisableCtEnforcement() => ();
 
-  // Updates the ChromeRootStore and optional SignerSet used by the
+  // Updates the ChromeRootStore and optional MtcConfig used by the
   // CertVerifierServiceFactory with a new version. The callback will be run
   // once the update has been processed (regardless if it was updated
   // successfully or the update was ignored.)
   [EnableIf=is_chrome_root_store_supported]
   UpdateChromeRootStore(mojo_base.mojom.ProtoWrapper new_root_store,
-                        mojo_base.mojom.ProtoWrapper? new_signer_set) => ();
+                        mojo_base.mojom.ProtoWrapper? new_mtc_config) => ();
 
   // Updates the Merkle Tree Certificate metadata used by the
   // CertVerifierServiceFactory with a new version. The callback will be run

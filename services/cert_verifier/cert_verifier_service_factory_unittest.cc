@@ -1644,28 +1644,31 @@ TEST(CertVerifierServiceFactoryTest, UpdateSignerSetChecksVersion) {
   int64_t compiled_seconds = net::CompiledSignerSetTimestampSeconds();
 
   // 1. Update with timestamp <= compiled-in should be ignored.
-  chrome_root_store::SignerSet signer_set_proto_old;
-  signer_set_proto_old.mutable_timestamp()->set_seconds(compiled_seconds - 10);
-  signer_set_proto_old.set_version("0.9.0");
+  chrome_root_store::MtcConfig mtc_config_old;
+  chrome_root_store::SignerSet* signer_set_proto_old =
+      mtc_config_old.mutable_signer_set();
+  signer_set_proto_old->mutable_timestamp()->set_seconds(compiled_seconds - 10);
+  signer_set_proto_old->set_version("0.9.0");
 
   {
     base::RunLoop update_run_loop;
     cv_service_factory_impl.UpdateChromeRootStore(
         mojo_base::ProtoWrapper(root_store_proto),
-        mojo_base::ProtoWrapper(signer_set_proto_old),
-        update_run_loop.QuitClosure());
+        mojo_base::ProtoWrapper(mtc_config_old), update_run_loop.QuitClosure());
     update_run_loop.Run();
   }
 
-  chrome_root_store::SignerSet signer_set_proto_equal;
-  signer_set_proto_equal.mutable_timestamp()->set_seconds(compiled_seconds);
-  signer_set_proto_equal.set_version("0.9.0");
+  chrome_root_store::MtcConfig mtc_config_equal;
+  chrome_root_store::SignerSet* signer_set_proto_equal =
+      mtc_config_equal.mutable_signer_set();
+  signer_set_proto_equal->mutable_timestamp()->set_seconds(compiled_seconds);
+  signer_set_proto_equal->set_version("0.9.0");
 
   {
     base::RunLoop update_run_loop;
     cv_service_factory_impl.UpdateChromeRootStore(
         mojo_base::ProtoWrapper(root_store_proto),
-        mojo_base::ProtoWrapper(signer_set_proto_equal),
+        mojo_base::ProtoWrapper(mtc_config_equal),
         update_run_loop.QuitClosure());
     update_run_loop.Run();
   }
@@ -1678,16 +1681,17 @@ TEST(CertVerifierServiceFactoryTest, UpdateSignerSetChecksVersion) {
   EXPECT_NE(params1.root_store_data->signer_set()->version(), "0.9.0");
 
   // 2. Update with timestamp > compiled-in should be applied.
-  chrome_root_store::SignerSet signer_set_proto_new;
-  signer_set_proto_new.mutable_timestamp()->set_seconds(compiled_seconds + 20);
-  signer_set_proto_new.set_version(GetNonCompiledSignerSetVersion());
+  chrome_root_store::MtcConfig mtc_config_new;
+  chrome_root_store::SignerSet* signer_set_proto_new =
+      mtc_config_new.mutable_signer_set();
+  signer_set_proto_new->mutable_timestamp()->set_seconds(compiled_seconds + 20);
+  signer_set_proto_new->set_version(GetNonCompiledSignerSetVersion());
 
   {
     base::RunLoop update_run_loop;
     cv_service_factory_impl.UpdateChromeRootStore(
         mojo_base::ProtoWrapper(root_store_proto),
-        mojo_base::ProtoWrapper(signer_set_proto_new),
-        update_run_loop.QuitClosure());
+        mojo_base::ProtoWrapper(mtc_config_new), update_run_loop.QuitClosure());
     update_run_loop.Run();
   }
 
@@ -1701,16 +1705,17 @@ TEST(CertVerifierServiceFactoryTest, UpdateSignerSetChecksVersion) {
 
   // 3. Update with timestamp > compiled-in but < currently active should be
   // applied (since we allow downgrades).
-  chrome_root_store::SignerSet signer_set_proto_mid;
-  signer_set_proto_mid.mutable_timestamp()->set_seconds(compiled_seconds + 10);
-  signer_set_proto_mid.set_version("1.5.0");
+  chrome_root_store::MtcConfig mtc_config_mid;
+  chrome_root_store::SignerSet* signer_set_proto_mid =
+      mtc_config_mid.mutable_signer_set();
+  signer_set_proto_mid->mutable_timestamp()->set_seconds(compiled_seconds + 10);
+  signer_set_proto_mid->set_version("1.5.0");
 
   {
     base::RunLoop update_run_loop;
     cv_service_factory_impl.UpdateChromeRootStore(
         mojo_base::ProtoWrapper(root_store_proto),
-        mojo_base::ProtoWrapper(signer_set_proto_mid),
-        update_run_loop.QuitClosure());
+        mojo_base::ProtoWrapper(mtc_config_mid), update_run_loop.QuitClosure());
     update_run_loop.Run();
   }
 
@@ -1753,21 +1758,23 @@ TEST(CertVerifierServiceFactoryTest, ParseChromeRootStoreProto) {
   EXPECT_EQ(parsed->version(), compiled_version + 1);
 }
 
-TEST(CertVerifierServiceFactoryTest, ParseSignerSetProto) {
+TEST(CertVerifierServiceFactoryTest, ParseMtcConfigProto) {
   base::test::TaskEnvironment task_environment;
 
   int64_t compiled_seconds = net::CompiledSignerSetTimestampSeconds();
 
-  chrome_root_store::SignerSet signer_set_proto;
-  signer_set_proto.mutable_timestamp()->set_seconds(compiled_seconds + 10);
-  signer_set_proto.set_version(GetNonCompiledSignerSetVersion());
+  chrome_root_store::MtcConfig mtc_config_proto;
+  chrome_root_store::SignerSet* signer_set_proto =
+      mtc_config_proto.mutable_signer_set();
+  signer_set_proto->mutable_timestamp()->set_seconds(compiled_seconds + 10);
+  signer_set_proto->set_version(GetNonCompiledSignerSetVersion());
 
   // Test with disabled VerifyMTCs feature
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndDisableFeature(net::features::kVerifyMTCs);
-    EXPECT_FALSE(CertVerifierServiceFactoryImpl::ParseSignerSetProto(
-                     mojo_base::ProtoWrapper(signer_set_proto))
+    EXPECT_FALSE(CertVerifierServiceFactoryImpl::ParseMtcConfigProto(
+                     mojo_base::ProtoWrapper(mtc_config_proto))
                      .has_value());
   }
 
@@ -1777,26 +1784,19 @@ TEST(CertVerifierServiceFactoryTest, ParseSignerSetProto) {
 
     // Empty input
     EXPECT_FALSE(
-        CertVerifierServiceFactoryImpl::ParseSignerSetProto(std::nullopt)
+        CertVerifierServiceFactoryImpl::ParseMtcConfigProto(std::nullopt)
             .has_value());
 
     // Passing an invalid proto should return nullopt.
     chrome_root_store::RootStore root_store_proto;
-    EXPECT_FALSE(CertVerifierServiceFactoryImpl::ParseSignerSetProto(
+    EXPECT_FALSE(CertVerifierServiceFactoryImpl::ParseMtcConfigProto(
                      mojo_base::ProtoWrapper(root_store_proto))
                      .has_value());
 
-    // Check we don't overwrite a newer compiled-in version.
-    chrome_root_store::SignerSet signer_set_old = signer_set_proto;
-    signer_set_old.mutable_timestamp()->set_seconds(compiled_seconds - 10);
-    EXPECT_FALSE(CertVerifierServiceFactoryImpl::ParseSignerSetProto(
-                     mojo_base::ProtoWrapper(signer_set_old))
-                     .has_value());
-
-    auto parsed = CertVerifierServiceFactoryImpl::ParseSignerSetProto(
-        mojo_base::ProtoWrapper(signer_set_proto));
+    auto parsed = CertVerifierServiceFactoryImpl::ParseMtcConfigProto(
+        mojo_base::ProtoWrapper(mtc_config_proto));
     ASSERT_TRUE(parsed.has_value());
-    EXPECT_EQ(parsed->version(), GetNonCompiledSignerSetVersion());
+    EXPECT_EQ(parsed->signer_set().version(), GetNonCompiledSignerSetVersion());
   }
 }
 
@@ -1816,16 +1816,18 @@ TEST(CertVerifierServiceFactoryTest, UpdateSignerSetWithOldRootStore) {
   chrome_root_store::RootStore root_store_proto_old;
   root_store_proto_old.set_version_major(compiled_crs_version);
   // And a SignerSet with timestamp > compiled-in.
-  chrome_root_store::SignerSet signer_set_proto_new;
-  signer_set_proto_new.mutable_timestamp()->set_seconds(
+  chrome_root_store::MtcConfig mtc_config_proto_new;
+  chrome_root_store::SignerSet* signer_set_proto_new =
+      mtc_config_proto_new.mutable_signer_set();
+  signer_set_proto_new->mutable_timestamp()->set_seconds(
       compiled_signer_seconds + 10);
-  signer_set_proto_new.set_version(GetNonCompiledSignerSetVersion());
+  signer_set_proto_new->set_version(GetNonCompiledSignerSetVersion());
 
   {
     base::RunLoop update_run_loop;
     cv_service_factory_impl.UpdateChromeRootStore(
         mojo_base::ProtoWrapper(root_store_proto_old),
-        mojo_base::ProtoWrapper(signer_set_proto_new),
+        mojo_base::ProtoWrapper(mtc_config_proto_new),
         update_run_loop.QuitClosure());
     update_run_loop.Run();
   }
@@ -1863,16 +1865,18 @@ TEST(CertVerifierServiceFactoryTest, UpdateRootStoreWithOldSignerSet) {
   anchor->set_der(root->GetDER());
 
   // And a SignerSet with timestamp <= compiled-in.
-  chrome_root_store::SignerSet signer_set_proto_old;
-  signer_set_proto_old.mutable_timestamp()->set_seconds(
+  chrome_root_store::MtcConfig mtc_config_proto_old;
+  chrome_root_store::SignerSet* signer_set_proto_old =
+      mtc_config_proto_old.mutable_signer_set();
+  signer_set_proto_old->mutable_timestamp()->set_seconds(
       compiled_signer_seconds - 10);
-  signer_set_proto_old.set_version(GetNonCompiledSignerSetVersion());
+  signer_set_proto_old->set_version(GetNonCompiledSignerSetVersion());
 
   {
     base::RunLoop update_run_loop;
     cv_service_factory_impl.UpdateChromeRootStore(
         mojo_base::ProtoWrapper(root_store_proto_new),
-        mojo_base::ProtoWrapper(signer_set_proto_old),
+        mojo_base::ProtoWrapper(mtc_config_proto_old),
         update_run_loop.QuitClosure());
     update_run_loop.Run();
   }
@@ -1885,6 +1889,89 @@ TEST(CertVerifierServiceFactoryTest, UpdateRootStoreWithOldSignerSet) {
   // The signer set should still be the compiled in version
   ASSERT_TRUE(params.root_store_data->signer_set().has_value());
   EXPECT_EQ(params.root_store_data->signer_set()
+                ->timestamp()
+                .InSecondsFSinceUnixEpoch(),
+            compiled_signer_seconds);
+}
+TEST(CertVerifierServiceFactoryTest, UpdateMtcConfigDisableFlag) {
+  base::test::TaskEnvironment task_environment;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kVerifyMTCs);
+
+  mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
+  CertVerifierServiceFactoryImpl cv_service_factory_impl(
+      cv_service_factory_remote.BindNewPipeAndPassReceiver());
+
+  int64_t compiled_signer_seconds = net::CompiledSignerSetTimestampSeconds();
+  int64_t compiled_crs_version = net::CompiledChromeRootStoreVersion();
+  auto [leaf, root] = net::CertBuilder::CreateSimpleChain2();
+
+  chrome_root_store::RootStore root_store_proto;
+  root_store_proto.set_version_major(compiled_crs_version + 10);
+  chrome_root_store::TrustAnchor* anchor = root_store_proto.add_trust_anchors();
+  anchor->set_der(root->GetDER());
+
+  // Initial update without any MtcConfig, to initialize the root store and
+  // verify the initial state of the disable flag.
+  {
+    base::RunLoop update_run_loop;
+    cv_service_factory_impl.UpdateChromeRootStore(
+        mojo_base::ProtoWrapper(root_store_proto), std::nullopt,
+        update_run_loop.QuitClosure());
+    update_run_loop.Run();
+  }
+
+  const net::CertVerifyProc::ImplParams& initial_params =
+      cv_service_factory_impl.get_impl_params();
+  ASSERT_TRUE(initial_params.root_store_data);
+  EXPECT_FALSE(
+      initial_params.root_store_data->disable_mtc_mirroring_requirements());
+
+  // Update with an MtcConfig that doesn't have a SignerSet, but has the
+  // disable flag set to true.
+  chrome_root_store::MtcConfig mtc_config_no_signer_set;
+  mtc_config_no_signer_set.set_disable_mtc_mirroring_requirements(true);
+
+  {
+    base::RunLoop update_run_loop;
+    cv_service_factory_impl.UpdateChromeRootStore(
+        mojo_base::ProtoWrapper(root_store_proto),
+        mojo_base::ProtoWrapper(mtc_config_no_signer_set),
+        update_run_loop.QuitClosure());
+    update_run_loop.Run();
+  }
+
+  const net::CertVerifyProc::ImplParams& params1 =
+      cv_service_factory_impl.get_impl_params();
+  ASSERT_TRUE(params1.root_store_data);
+  EXPECT_TRUE(params1.root_store_data->disable_mtc_mirroring_requirements());
+  // The signer set should still be the compiled in version.
+  ASSERT_TRUE(params1.root_store_data->signer_set().has_value());
+  EXPECT_EQ(params1.root_store_data->signer_set()
+                ->timestamp()
+                .InSecondsFSinceUnixEpoch(),
+            compiled_signer_seconds);
+
+  // Update with an MtcConfig that turns the flag back off.
+  chrome_root_store::MtcConfig mtc_config_disable_off;
+  mtc_config_disable_off.set_disable_mtc_mirroring_requirements(false);
+
+  {
+    base::RunLoop update_run_loop;
+    cv_service_factory_impl.UpdateChromeRootStore(
+        mojo_base::ProtoWrapper(root_store_proto),
+        mojo_base::ProtoWrapper(mtc_config_disable_off),
+        update_run_loop.QuitClosure());
+    update_run_loop.Run();
+  }
+
+  const net::CertVerifyProc::ImplParams& params2 =
+      cv_service_factory_impl.get_impl_params();
+  ASSERT_TRUE(params2.root_store_data);
+  EXPECT_FALSE(params2.root_store_data->disable_mtc_mirroring_requirements());
+  // The signer set should still be the compiled in version.
+  ASSERT_TRUE(params2.root_store_data->signer_set().has_value());
+  EXPECT_EQ(params2.root_store_data->signer_set()
                 ->timestamp()
                 .InSecondsFSinceUnixEpoch(),
             compiled_signer_seconds);

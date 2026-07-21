@@ -109,12 +109,15 @@ class PKIMetadataComponentInstallerService final {
   static std::optional<chrome_root_store::MtcConfig> ParseMtcConfig(
       const base::FilePath& mtc_config_pb_path);
 
+  struct ChromeRootStoreAndMtcConfig {
+    std::optional<mojo_base::ProtoWrapper> chrome_root_store;
+    std::optional<mojo_base::ProtoWrapper> mtc_config;
+  };
+
   // Updates SystemNetworkContextManager and cert verifiers with the component
-  // delivered Chrome Root Store data and optional Signer Set data.
+  // delivered Chrome Root Store data and optional Mtc Config data.
   void UpdateChromeRootStoreOnUI(
-      std::pair<std::optional<mojo_base::ProtoWrapper>,
-                std::optional<mojo_base::ProtoWrapper>>
-          root_store_and_signer_set);
+      ChromeRootStoreAndMtcConfig root_store_and_mtc_config);
 
   // Updates SystemNetworkContextManager and cert verifiers with the component
   // delivered MTC Metadata. `mtc_metadata` should be a wrapped

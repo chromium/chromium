@@ -11,4 +11,7 @@ import "signer_set.proto";
 // Merkle Tree Certificates configuration as used by Chrome.
 message MtcConfig {
   SignerSet signer_set = 1;
+  // If true, Chrome will trust MTCs from any known trusted issuer, without
+  // enforcing mirroring cosigner requirements.
+  bool disable_mtc_mirroring_requirements = 2;
 }

@@ -277,6 +277,12 @@ class NET_EXPORT ChromeRootStoreData {
   void SetSignerSet(ChromeRootStoreSignerSet signer_set) {
     signer_set_ = std::move(signer_set);
   }
+  bool disable_mtc_mirroring_requirements() const {
+    return disable_mtc_mirroring_requirements_;
+  }
+  void SetDisableMtcMirroringRequirements(bool disable) {
+    disable_mtc_mirroring_requirements_ = disable;
+  }
   int64_t version() const { return version_; }
 
  private:
@@ -291,6 +297,7 @@ class NET_EXPORT ChromeRootStoreData {
   std::vector<Anchor> eutl_certs_;
   std::vector<MtcAnchor> mtc_trust_anchors_;
   std::optional<ChromeRootStoreSignerSet> signer_set_;
+  bool disable_mtc_mirroring_requirements_ = false;
   int64_t version_;
 };
 
