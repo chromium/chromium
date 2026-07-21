@@ -195,7 +195,21 @@ void ActiveTaskContextProviderImpl::PrimaryPageChanged(content::Page& page) {
                       url.host() == chrome::kChromeUINewTabPageHost);
 
   if (!is_aim_page) {
-    local_tab_underlines_.clear();
+    if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
+      tabs::TabInterface* navigating_tab =
+          tabs::TabInterface::MaybeGetFromContents(web_contents());
+      tabs::TabHandle navigating_tab_handle = navigating_tab
+                                                  ? navigating_tab->GetHandle()
+                                                  : tabs::TabHandle::Null();
+
+      // Only erase local underlines owned by the navigating tab, not all
+      // of the tabs, because now, there are multiple owners of tab underlines,
+      // not just one. This is because this tab's AIM/entrypoint searchbox has
+      // likely changed upon navigation, and no other tabs. If it navigates
+      // back to an AIM page, it will add the underlined tabs again in the
+      // contextual searchbox handler.
+      local_tab_underlines_.erase(navigating_tab_handle);
+    }
 
     auto* helper =
         ContextualSearchWebContentsHelper::FromWebContents(web_contents());
