@@ -534,8 +534,10 @@
     VLOG(1) << "AimCobrowse: Received RestoreInput";
   } else if (message.has_enter_basic_mode()) {
     VLOG(1) << "AimCobrowse: Received EnterBasicMode";
+    [_consumer setInputPlateForceHidden:YES];
   } else if (message.has_exit_basic_mode()) {
     VLOG(1) << "AimCobrowse: Received ExitBasicMode";
+    [_consumer setInputPlateForceHidden:NO];
   } else if (message.has_update_thread_context_library()) {
     VLOG(1) << "AimCobrowse: Received UpdateThreadContextLibrary";
     if (!_hasProcessedInitialContextLibrary) {

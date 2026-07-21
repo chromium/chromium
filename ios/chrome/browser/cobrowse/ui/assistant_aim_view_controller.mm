@@ -35,6 +35,10 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
 @interface AssistantAIMViewController () <
     AssistantAIMHeaderViewDelegate,
     AssistantAIMHistoryViewControllerDelegate>
+
+// Whether the asisstant view is fully mimimized.
+@property(nonatomic, assign) BOOL isMinimized;
+
 @end
 
 @implementation AssistantAIMViewController {
@@ -53,10 +57,10 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
   AssistantAIMState _state;
   AssistantAIMState _previousState;
   NSString* _greetingMessage;
-  // Whether the asisstant view is fully mimimized.
-  BOOL _isMinimized;
   // Tracks the gesture recognizer panning the input plate.
   __weak UIPanGestureRecognizer* _panGestureInInputPlate;
+  // Whether the input plate should stay hidden.
+  BOOL _inputPlateForceHidden;
 }
 
 @synthesize delegate = _delegate;
@@ -151,8 +155,7 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
   _inputViewController.view.alpha = effectPercentage;
   _webStateView.alpha = effectPercentage;
   _inputViewFade.alpha = effectPercentage;
-  _isMinimized = effectPercentage == 0;
-  _inputViewController.view.hidden = _isMinimized;
+  self.isMinimized = effectPercentage == 0;
 
   [_headerView adjustForPercentage:effectPercentage];
 }
@@ -314,6 +317,15 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
   }
 }
 
+- (void)setIsMinimized:(BOOL)isMinimized {
+  if (_isMinimized == isMinimized) {
+    return;
+  }
+
+  _isMinimized = isMinimized;
+  [self computeInputPlateVisibility];
+}
+
 #pragma mark - AssistantAIMConsumer
 
 - (void)setWebStateView:(UIView*)webStateView {
@@ -396,6 +408,11 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
   [_headerView setTitle:title];
 }
 
+- (void)setInputPlateForceHidden:(BOOL)hidden {
+  _inputPlateForceHidden = hidden;
+  [self computeInputPlateVisibility];
+}
+
 - (void)setGreetingMessage:(NSString*)message {
   if ([_greetingMessage isEqualToString:message]) {
     return;
@@ -460,6 +477,12 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
 }
 
 #pragma mark - Private
+
+// Computes the visibility for the input plate.
+- (void)computeInputPlateVisibility {
+  BOOL shouldHide = _inputPlateForceHidden || _isMinimized;
+  [_inputViewController.view setHidden:shouldHide];
+}
 
 // Recursively searches for a WKWebView in the given view's hierarchy.
 - (WKWebView*)findWKWebViewInView:(UIView*)view {

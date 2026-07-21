@@ -34,6 +34,9 @@ enum class AssistantAIMState {
 // Sets the header title.
 - (void)setHeaderTitle:(NSString*)title;
 
+// Hides the input plate.
+- (void)setInputPlateForceHidden:(BOOL)hidden;
+
 // Sets the greeting message to display in the landing state.
 - (void)setGreetingMessage:(NSString*)message;
 
