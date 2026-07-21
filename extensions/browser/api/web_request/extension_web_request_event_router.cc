@@ -54,8 +54,10 @@
 #include "extensions/browser/safe_browsing_delegate.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/web_request/web_request_activity_log_constants.h"
+#include "extensions/common/api/web_request/web_request_constants.h"
 #include "extensions/common/api/web_request/web_request_filter.h"
 #include "extensions/common/api/web_request/web_request_resource_type.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 
@@ -573,10 +575,18 @@ struct WebRequestEventRouter::BlockedRequest {
 
   // The number of blocking sources that we are awaiting a response from.
   // A source is one of:
-  //   - a blocking listener (resolved by `OnEventHandled()`),
-  //   - a not-yet-ready declarative rules registry (see
-  //     `ProcessDeclarativeRules()`).
+  //  - a blocking listener registered with a legacy per-listener sub-event
+  //    name (resolved by `OnEventHandled()`),
+  //  - a dispatch target with blocking listeners under per-context
+  //    dispatch (resolved by `OnEventHandlingDone()`).
+  //  - a not-yet-ready declarative rules registry (see
+  //    `ProcessDeclarativeRules()`).
   int num_blocking_sources = 0;
+
+  // The dispatch targets that still owe a completion signal
+  // (`OnEventHandlingDone()`) for this request, for the stage recorded in
+  // `event`. Only used for per-context dispatch.
+  PendingTargetMap pending_targets;
 
   // The callback to call when we get a response from all event handlers.
   net::CompletionOnceCallback callback;
@@ -1536,22 +1546,37 @@ bool WebRequestEventRouter::DispatchEvent(
     const WebRequestInfo* request,
     const RawListeners& listeners,
     std::unique_ptr<WebRequestEventDetails> event_details) {
-  // TODO(mpcomplete): Consider consolidating common (extension_id,json_args)
-  // pairs into a single message sent to a list of sub_event_names.
-  int num_blocking_sources = 0;
-
-  auto listeners_to_dispatch = std::make_unique<ListenerIDs>();
-  listeners_to_dispatch->reserve(listeners.size());
-  for (EventListener* listener : listeners) {
-    listeners_to_dispatch->push_back(listener->id);
-    if (listener->IsBlocking()) {
-      listener->blocked_requests.insert(request->id);
-      ++num_blocking_sources;
-    }
+  // Per-context dispatch enabled, renderers register listeners under the
+  // parent event name and each dispatch target receives one event per
+  // matching request.
+  const bool per_context_dispatch = base::FeatureList::IsEnabled(
+      extensions_features::kWebRequestPerContextEventDispatch);
+  for (const EventListener* listener : listeners) {
+    CHECK_NE(EventRouter::IsSubEventName(listener->id.sub_event_name),
+             per_context_dispatch);
   }
 
-  DispatchEventToListeners(browser_context, std::move(listeners_to_dispatch),
-                           request->id, std::move(event_details));
+  int num_blocking_sources = 0;
+
+  if (per_context_dispatch) {
+    num_blocking_sources = DispatchEventToTargets(browser_context, request,
+                                                  listeners, *event_details);
+  } else {
+    // TODO(mpcomplete): Consider consolidating common (extension_id,json_args)
+    // pairs into a single message sent to a list of sub_event_names.
+    auto listeners_to_dispatch = std::make_unique<ListenerIDs>();
+    listeners_to_dispatch->reserve(listeners.size());
+    for (EventListener* listener : listeners) {
+      listeners_to_dispatch->push_back(listener->id);
+      if (listener->IsBlocking()) {
+        listener->blocked_requests.insert(request->id);
+        ++num_blocking_sources;
+      }
+    }
+
+    DispatchEventToListeners(browser_context, std::move(listeners_to_dispatch),
+                             request->id, std::move(event_details));
+  }
 
   if (num_blocking_sources > 0) {
     BlockedRequest& blocked_request =
@@ -1682,6 +1707,109 @@ void WebRequestEventRouter::DispatchEventToListeners(
   }
 }
 
+int WebRequestEventRouter::DispatchEventToTargets(
+    content::BrowserContext* browser_context,
+    const WebRequestInfo* request,
+    const RawListeners& listeners,
+    const WebRequestEventDetails& event_details) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(!listeners.empty());
+
+  // Per-context registrations carry the parent event name; `DispatchEvent()`
+  // validated the shape of every listener in `listeners`.
+  const std::string event_name = listeners[0]->id.sub_event_name;
+  DCHECK(IsWebRequestEvent(event_name));
+
+  // Group the matched listeners by their dispatch target. Each target
+  // receives one event; targets with blocking listeners reply with one
+  // completion signal.
+  std::map<DispatchTargetKey, RawListeners> targets;
+  for (EventListener* listener : listeners) {
+    targets[DispatchTargetKey::ForListener(*listener)].push_back(listener);
+  }
+
+  int num_blocking_targets = 0;
+  for (auto& [key, group] : targets) {
+    int union_spec_all = 0;
+    int union_spec_blocking = 0;
+    bool await_response = false;
+    for (const EventListener* listener : group) {
+      union_spec_all |= listener->extra_info_spec;
+      if (listener->IsBlocking()) {
+        union_spec_blocking |= listener->extra_info_spec;
+        await_response = true;
+      }
+    }
+
+    // Fields shared by every listener in the group: the browser context is
+    // part of the group key, and all listeners observe the same event.
+    content::BrowserContext* group_browser_context =
+        group.front()->id.browser_context;
+    const events::HistogramValue histogram_value =
+        group.front()->histogram_value;
+    const bool crosses_incognito =
+        key.listener_context_id != GetBrowserContextID(browser_context);
+
+    // The renderer matches its listeners itself and filters the details per
+    // listener, so the dispatched details carry the union of the group's
+    // options.
+    base::ListValue args;
+    args.Append(event_details.GetFilteredDict(
+        union_spec_all, PermissionHelper::Get(browser_context),
+        key.extension_id, crosses_incognito));
+    // An additional payload provides what the renderer needs to do the
+    // matching, beyond the event details themselves.
+    base::DictValue payload;
+    payload.Set(kContextDispatchWindowIdKey, request->frame_data.window_id);
+    payload.Set(kContextDispatchInstanceIdKey, key.web_view_instance_id);
+    payload.Set(kContextDispatchAwaitResponseKey, await_response);
+    args.Append(std::move(payload));
+
+    // TODO(crbug.com/494684626): pending targets block the request but nothing
+    // resolves them yet; the resolution paths land in a follow-up.
+    if (await_response) {
+      BlockedRequest& blocked_request =
+          GetOrAddBlockedRequest(browser_context, request->id);
+      blocked_request.pending_targets[key] |= union_spec_blocking;
+      ++num_blocking_targets;
+    }
+
+    if (!key.IsLazy() && key.web_view_instance_id != 0) {
+      // Active WebView targets keep the bespoke dispatch mechanism. Several
+      // instances can share one embedder process and WebUI/ControlledFrame
+      // embedders have an empty extension id, so these targets cannot be
+      // addressed through extension-scoped dispatch.
+      content::RenderProcessHost* render_process =
+          content::RenderProcessHost::FromID(key.render_process_id);
+      if (render_process) {
+        EventRouter::Get(group_browser_context)
+            ->DispatchEventToSender(
+                render_process, group_browser_context,
+                /*host_id=*/
+                mojom::HostID(mojom::HostID::HostType::kExtensions,
+                              key.extension_id),
+                histogram_value, event_name, key.worker_thread_id,
+                key.service_worker_version_id, std::move(args),
+                mojom::EventFilteringInfo::New());
+      }
+    } else {
+      // Every other target goes through the regular extension event dispatching
+      // code, narrowed to this target. For a lazy target this wakes up the lazy
+      // context.
+      CHECK(!key.extension_id.empty());
+      auto event =
+          std::make_unique<Event>(histogram_value, event_name, std::move(args));
+      event->restrict_to_dispatch_target =
+          Event::DispatchTarget{key.render_process_id, key.worker_thread_id,
+                                key.service_worker_version_id};
+      EventRouter::Get(group_browser_context)
+          ->DispatchEventToExtension(key.extension_id, std::move(event));
+    }
+  }
+
+  return num_blocking_targets;
+}
+
 void WebRequestEventRouter::OnEventHandled(
     content::BrowserContext* browser_context,
     const ExtensionId& extension_id,
@@ -1762,6 +1890,20 @@ void WebRequestEventRouter::OnEventHandlingDone(
   // TODO(crbug.com/494684626): per-context dispatch is not wired up yet;
   // drop the signal. The browser-side dispatch target tracking will land in
   // a follow-up.
+}
+
+// static
+WebRequestEventRouter::DispatchTargetKey
+WebRequestEventRouter::DispatchTargetKey::ForListener(
+    const EventListener& listener) {
+  DispatchTargetKey key;
+  key.listener_context_id = GetBrowserContextID(listener.id.browser_context);
+  key.extension_id = listener.id.extension_id;
+  key.render_process_id = listener.id.render_process_id;
+  key.web_view_instance_id = listener.id.web_view_instance_id;
+  key.worker_thread_id = listener.id.worker_thread_id;
+  key.service_worker_version_id = listener.id.service_worker_version_id;
+  return key;
 }
 
 bool WebRequestEventRouter::AddEventListener(

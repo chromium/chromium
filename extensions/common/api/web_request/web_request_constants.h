@@ -11,6 +11,12 @@
 
 namespace extensions {
 
+// Keys of the payload dictionary that is appended as a second argument in
+// per-context dispatch.
+inline constexpr char kContextDispatchAwaitResponseKey[] = "awaitResponse";
+inline constexpr char kContextDispatchInstanceIdKey[] = "instanceId";
+inline constexpr char kContextDispatchWindowIdKey[] = "windowId";
+
 // Request/response header names only delivered to webRequest listeners that
 // registered the "extraHeaders" option. Lowercase for case-insensitive
 // comparison.

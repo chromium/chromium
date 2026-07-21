@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -28,10 +29,12 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/web_request/web_request_filter.h"
 #include "extensions/common/api/web_request/web_request_resource_type.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/url_pattern_set.h"
 #include "net/base/completion_once_callback.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -495,6 +498,41 @@ class WebRequestEventRouter : public KeyedService {
   using ListenerMap = std::map<std::string, Listeners>;
   using BlockedRequestMap = std::map<uint64_t, BlockedRequest>;
 
+  // Identifies a renderer-side dispatch target for per-context event dispatch.
+  //
+  // Because stopped lazy contexts lack assigned process or worker IDs, a
+  // logical target can use two keys during a request:
+  // - A placeholder lazy key (`IsLazy()`) for event dispatch and startup.
+  // - A concrete key with actual renderer IDs for actions like responding or
+  //   unregistering.
+  struct DispatchTargetKey {
+    // Returns the key of the dispatch target that `listener` belongs to. For
+    // a stopped lazy context's registration this is the target's lazy key.
+    static DispatchTargetKey ForListener(const EventListener& listener);
+
+    BrowserContextID listener_context_id = 0;
+    ExtensionId extension_id;
+    content::ChildProcessId render_process_id;
+    int worker_thread_id = kMainThreadId;
+    int64_t service_worker_version_id =
+        blink::mojom::kInvalidServiceWorkerVersionId;
+    int web_view_instance_id = 0;
+
+    bool IsLazy() const { return render_process_id.is_null(); }
+
+    friend auto operator<=>(const DispatchTargetKey&,
+                            const DispatchTargetKey&) = default;
+  };
+
+  // Map of pending targets that still owe the browser a completion signal
+  // (`OnEventHandlingDone`) for a single stage of a blocked request.
+  // Entries are keyed by the target's initial dispatch identity, and the mapped
+  // integer stores the union of the matched blocking listeners'
+  // `extra_info_spec`. Lazy keys remain fixed throughout the request's lifetime
+  // even when the underlying context starts up and acquires a concrete
+  // identity.
+  using PendingTargetMap = base::flat_map<DispatchTargetKey, int>;
+
   enum class ListenerCountUpdate {
     kIncrement,
     kAlreadyCounted,
@@ -680,6 +718,15 @@ class WebRequestEventRouter : public KeyedService {
       std::unique_ptr<ListenerIDs> listener_ids,
       uint64_t request_id,
       std::unique_ptr<WebRequestEventDetails> event_details);
+
+  // Dispatches one event per dispatch target to the per-context
+  // (parent-event named) `listeners`, recording a pending target for each
+  // target that contains blocking listeners. Returns the number of blocking
+  // targets recorded.
+  int DispatchEventToTargets(content::BrowserContext* browser_context,
+                             const WebRequestInfo* request,
+                             const RawListeners& listeners,
+                             const WebRequestEventDetails& event_details);
 
   // Returns a list of event listeners that care about the given event, based
   // on their filter parameters. `extra_info_spec` will contain the combined
