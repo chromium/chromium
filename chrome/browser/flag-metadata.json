@@ -8627,7 +8627,7 @@
   {
     "name": "responsive-iframes",
     "owners": [ "kojii@chromium.org" ],
-    "expiry_milestone": 151
+    "expiry_milestone": 152
   },
   {
     "name": "rewriter-api",
