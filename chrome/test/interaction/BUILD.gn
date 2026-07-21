@@ -43,6 +43,7 @@ if (!is_android) {
       "//chrome/browser/ui/navigator",
       "//chrome/browser/ui/views/frame",
       "//chrome/browser/ui/views/interaction",
+      "//chrome/browser/ui/views/omnibox",
       "//chrome/browser/ui/views/tabs/common",
       "//chrome/test:test_switches",
       "//components/feature_engagement",

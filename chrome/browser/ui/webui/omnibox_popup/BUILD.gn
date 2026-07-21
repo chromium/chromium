@@ -27,6 +27,7 @@ if (!is_android) {
       "//chrome/browser/ui/contextual_search",
       "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/omnibox",
+      "//chrome/browser/ui/views/omnibox",
       "//chrome/browser/ui/webui:favicon_source",
       "//chrome/browser/ui/webui:plural_string_handler",
       "//chrome/browser/ui/webui:webui_util",

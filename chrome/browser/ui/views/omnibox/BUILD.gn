@@ -1,0 +1,322 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+assert(toolkit_views)
+
+source_set("omnibox") {
+  public = [
+    "full_webui_omnibox_frame.h",
+    "omnibox_aim_popup_webui_content.h",
+    "omnibox_context_menu.h",
+    "omnibox_context_menu_mixin.h",
+    "omnibox_full_popup_webui_content.h",
+    "omnibox_header_view.h",
+    "omnibox_local_answer_header_view.h",
+    "omnibox_match_cell_view.h",
+    "omnibox_mouse_enter_exit_handler.h",
+    "omnibox_placeholder_util.h",
+    "omnibox_popup_aim_presenter.h",
+    "omnibox_popup_closer.h",
+    "omnibox_popup_full_presenter.h",
+    "omnibox_popup_presenter.h",
+    "omnibox_popup_presenter_base.h",
+    "omnibox_popup_presenter_delegate.h",
+    "omnibox_popup_tab_selection_listener.h",
+    "omnibox_popup_view_browser_view.h",
+    "omnibox_popup_view_full_webui.h",
+    "omnibox_popup_view_views.h",
+    "omnibox_popup_view_webui.h",
+    "omnibox_popup_webui_base_content.h",
+    "omnibox_popup_webui_content.h",
+    "omnibox_result_view.h",
+    "omnibox_row_grouped_view.h",
+    "omnibox_row_view.h",
+    "omnibox_suggestion_button_row_view.h",
+    "omnibox_text_view.h",
+    "omnibox_view_views.h",
+    "remove_suggestion_bubble.h",
+    "rounded_omnibox_results_frame.h",
+    "webui_readonly_omnibox.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/autocomplete",
+    "//chrome/browser/themes",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui:view_ids",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/location_bar",
+    "//chrome/browser/ui/omnibox",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/tabs:tabs_public",
+    "//chrome/browser/ui/webui/cr_components/searchbox",
+    "//chrome/browser/ui/webui/top_chrome",
+    "//components/browser_apis/ui_controllers/toolbar:mojom_data_model",
+    "//components/omnibox/browser",
+    "//components/omnibox/common",
+    "//components/permissions",
+    "//components/prefs",
+    "//components/search_engines",
+    "//content/public/browser",
+    "//ui/accessibility",
+    "//ui/base",
+    "//ui/base/interaction",
+    "//ui/base/metadata",
+    "//ui/compositor",
+    "//ui/events",
+    "//ui/gfx",
+    "//ui/gfx/animation",
+    "//ui/menus",
+    "//ui/views",
+    "//ui/views/controls/webview",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "full_webui_omnibox_frame.cc",
+    "omnibox_aim_popup_webui_content.cc",
+    "omnibox_context_menu.cc",
+    "omnibox_context_menu_mixin.cc",
+    "omnibox_full_popup_webui_content.cc",
+    "omnibox_header_view.cc",
+    "omnibox_local_answer_header_view.cc",
+    "omnibox_match_cell_view.cc",
+    "omnibox_mouse_enter_exit_handler.cc",
+    "omnibox_placeholder_util.cc",
+    "omnibox_popup_aim_presenter.cc",
+    "omnibox_popup_closer.cc",
+    "omnibox_popup_full_presenter.cc",
+    "omnibox_popup_presenter.cc",
+    "omnibox_popup_presenter_base.cc",
+    "omnibox_popup_tab_selection_listener.cc",
+    "omnibox_popup_view_browser_view.cc",
+    "omnibox_popup_view_full_webui.cc",
+    "omnibox_popup_view_views.cc",
+    "omnibox_popup_view_webui.cc",
+    "omnibox_popup_webui_base_content.cc",
+    "omnibox_popup_webui_content.cc",
+    "omnibox_result_view.cc",
+    "omnibox_row_grouped_view.cc",
+    "omnibox_row_view.cc",
+    "omnibox_suggestion_button_row_view.cc",
+    "omnibox_text_view.cc",
+    "omnibox_view_views.cc",
+    "remove_suggestion_bubble.cc",
+    "rounded_omnibox_results_frame.cc",
+    "webui_readonly_omnibox.cc",
+  ]
+
+  deps = [
+    ":omnibox",
+    "//chrome/app:command_ids",
+    "//chrome/app/vector_icons",
+    "//chrome/browser:file_select_helper",
+    "//chrome/browser/autocomplete:aim_eligibility_service",
+    "//chrome/browser/external_protocol",
+    "//chrome/browser/glic",
+    "//chrome/browser/history_clusters",
+    "//chrome/browser/media/webrtc",
+    "//chrome/browser/page_load_metrics",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/send_tab_to_self",
+    "//chrome/browser/ui:accelerator_table",
+    "//chrome/browser/ui:browser_actions",
+    "//chrome/browser/ui:layout_constants",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/contextual_search",
+    "//chrome/browser/ui/immersive:immersive_mode_controller",
+    "//chrome/browser/ui/lens",
+    "//chrome/browser/ui/omnibox",
+    "//chrome/browser/ui/page_action:icon_type",
+    "//chrome/browser/ui/send_tab_to_self",
+    "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/views/location_bar",
+    "//chrome/browser/ui/views/page_action",
+    "//chrome/browser/ui/views/send_tab_to_self",
+    "//chrome/browser/ui/views/toolbar",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/ui/webui/omnibox_popup",
+    "//chrome/browser/ui/webui/searchbox",
+    "//chrome/browser/ui/webui/top_chrome",
+    "//chrome/browser/user_education",
+    "//chrome/common:buildflags",
+    "//components/lens:features",
+    "//components/omnibox/browser",
+    "//components/omnibox/common",
+    "//components/omnibox/common:features",
+    "//components/permissions",
+    "//components/prefs",
+    "//components/search",
+    "//components/search_engines",
+    "//components/security_state/core",
+    "//components/send_tab_to_self",
+    "//components/strings:components_strings",
+    "//components/url_formatter",
+    "//components/vector_icons",
+    "//content/public/browser",
+    "//extensions/common:common_constants",
+    "//ui/base:data_exchange",
+    "//ui/strings:ui_strings_grit",
+  ]
+
+  # These .cc files include headers still compiled in //chrome/browser/ui:ui:
+  # browser.h, view_ids.h, views/frame/browser_view.h,
+  # views/frame/contents_web_view.h and views/theme_copying_widget.h. Reach
+  # them via browser_public_dependencies; the reverse edge is the
+  # allow_circular_includes_from entry on //chrome/browser/ui:ui.
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "omnibox_match_cell_view_unittest.cc",
+    "omnibox_popup_presenter_base_unittest.cc",
+    "omnibox_result_view_unittest.cc",
+    "omnibox_view_views_unittest.cc",
+    "webui_readonly_omnibox_unittest.cc",
+  ]
+
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
+  deps = [
+    ":omnibox",
+    "//chrome/app:command_ids",
+    "//chrome/browser/autocomplete",
+    "//chrome/browser/signin:test_support",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/omnibox",
+    "//chrome/browser/ui/views:layout_provider",
+    "//chrome/test:test_support",
+    "//chrome/test/views",
+    "//components/omnibox/browser",
+    "//components/omnibox/browser:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base/clipboard:clipboard_test_support",
+    "//ui/display:test_support",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "omnibox_aim_popup_browsertest.cc",
+    "omnibox_popup_view_browser_view_browsertest.cc",
+    "omnibox_popup_view_views_browsertest.cc",
+    "omnibox_row_grouped_view_browsertest.cc",
+    "omnibox_suggestion_button_row_browsertest.cc",
+  ]
+
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
+  deps = [
+    ":omnibox",
+    "//chrome/browser/autocomplete",
+    "//chrome/browser/autocomplete:aim_eligibility_service",
+    "//chrome/browser/extensions:test_support",
+    "//chrome/browser/themes:test_support",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/omnibox",
+    "//chrome/browser/ui/test:test_support",
+    "//chrome/browser/ui/views/frame",
+    "//chrome/browser/ui/views/location_bar",
+    "//chrome/browser/ui/views/toolbar",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chrome/test/interaction",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/common",
+    "//components/omnibox/browser",
+    "//components/permissions",
+    "//components/permissions:test_support",
+    "//components/strings:components_strings",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/events:test_support",
+    "//ui/shell_dialogs:test_support",
+  ]
+
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
+}
+
+if (!is_chromeos_device) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [
+      "inline_location_signaling_interactive_uitest.cc",
+      "omnibox_popup_view_views_interactive_uitest.cc",
+      "omnibox_popup_view_webui_interactive_uitest.cc",
+      "omnibox_view_views_interactive_uitest.cc",
+    ]
+
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
+    deps = [
+      ":omnibox",
+      "//chrome/browser/autocomplete",
+      "//chrome/browser/autocomplete:aim_eligibility_service",
+      "//chrome/browser/external_protocol",
+      "//chrome/browser/omnibox",
+      "//chrome/browser/permissions/system",
+      "//chrome/browser/search_engines",
+      "//chrome/browser/send_tab_to_self",
+      "//chrome/browser/sync",
+      "//chrome/browser/themes:test_support",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/hats:test_support",
+      "//chrome/browser/ui/location_bar",
+      "//chrome/browser/ui/omnibox",
+      "//chrome/browser/ui/views/accessibility:dump_accessibility_events_views_browsertest_base",
+      "//chrome/browser/ui/views/frame",
+      "//chrome/browser/ui/views/location_bar",
+      "//chrome/browser/ui/views/toolbar",
+      "//chrome/browser/ui/webui/omnibox_popup",
+      "//chrome/browser/ui/webui/searchbox",
+      "//chrome/common:chrome_features",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//chrome/test/interaction",
+      "//components/content_settings/core/browser",
+      "//components/content_settings/core/common",
+      "//components/omnibox/browser",
+      "//components/prefs",
+      "//components/search_engines",
+      "//components/send_tab_to_self",
+      "//components/send_tab_to_self:test_support",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//ui/events:test_support",
+    ]
+
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
+
+    if (is_win) {
+      deps += [ "//chrome/browser/ui/views/accessibility:uia_test_support" ]
+    }
+  }
+}

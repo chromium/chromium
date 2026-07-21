@@ -7,7 +7,6 @@
 #include <string_view>
 
 #include "chrome/browser/lifetime/browser_shutdown.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
