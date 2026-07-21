@@ -12,7 +12,6 @@ build_webui("build") {
   ts_files = [
     "app.ts",
     "app.html.ts",
-    "browser_proxy.ts",
     "memory_banks/memory_banks.html.ts",
     "memory_banks/memory_banks_entry.html.ts",
     "memory_banks/memory_banks.ts",

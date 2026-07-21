@@ -3,10 +3,9 @@
 // found in the LICENSE file.
 import 'chrome://extensions-zero-state/zero_state_promo_app.js';
 
-import {WebStoreLinkClicked} from 'chrome://extensions-zero-state/zero_state_promo.mojom-webui.js';
+import {browserProxyFactory as zeroStatePromoProxyFactory, WebStoreLinkClicked} from 'chrome://extensions-zero-state/zero_state_promo.mojom-webui.js';
+import type {PageHandlerInterface} from 'chrome://extensions-zero-state/zero_state_promo.mojom-webui.js';
 import type {ZeroStatePromoAppElement} from 'chrome://extensions-zero-state/zero_state_promo_app.js';
-import type {ZeroStatePromoBrowserProxy} from 'chrome://extensions-zero-state/zero_state_promo_browser_proxy.js';
-import {ZeroStatePromoBrowserProxyImpl} from 'chrome://extensions-zero-state/zero_state_promo_browser_proxy.js';
 import {CustomHelpBubbleUserAction} from 'chrome://resources/cr_components/help_bubble/custom_help_bubble.mojom-webui.js';
 import type {CustomHelpBubbleHandlerInterface} from 'chrome://resources/cr_components/help_bubble/custom_help_bubble.mojom-webui.js';
 import type {CustomHelpBubbleProxy} from 'chrome://resources/cr_components/help_bubble/custom_help_bubble_proxy.js';
@@ -40,7 +39,7 @@ export class TestBubbleProxy implements CustomHelpBubbleProxy {
 }
 
 export class TestPromoProxy extends TestBrowserProxy implements
-    ZeroStatePromoBrowserProxy {
+    PageHandlerInterface {
   constructor() {
     super(['launchWebStoreLink']);
   }
@@ -60,7 +59,7 @@ suite('ChipsUiV1Test', () => {
     CustomHelpBubbleProxyImpl.setInstance(new TestBubbleProxy(bubbleHandler));
 
     promoProxy = new TestPromoProxy();
-    ZeroStatePromoBrowserProxyImpl.setInstance(promoProxy);
+    zeroStatePromoProxyFactory.setInstance({handler: promoProxy});
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     zeroStatePromoApp =
@@ -160,7 +159,7 @@ suite('ChipsUiV2Test', () => {
     CustomHelpBubbleProxyImpl.setInstance(new TestBubbleProxy(bubbleHandler));
 
     promoProxy = new TestPromoProxy();
-    ZeroStatePromoBrowserProxyImpl.setInstance(promoProxy);
+    zeroStatePromoProxyFactory.setInstance({handler: promoProxy});
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     zeroStatePromoApp =
@@ -260,7 +259,7 @@ suite('ChipsUiV3Test', () => {
     CustomHelpBubbleProxyImpl.setInstance(new TestBubbleProxy(bubbleHandler));
 
     promoProxy = new TestPromoProxy();
-    ZeroStatePromoBrowserProxyImpl.setInstance(promoProxy);
+    zeroStatePromoProxyFactory.setInstance({handler: promoProxy});
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     zeroStatePromoApp =
@@ -360,7 +359,7 @@ suite('PlainLinkUiTest', () => {
     CustomHelpBubbleProxyImpl.setInstance(new TestBubbleProxy(bubbleHandler));
 
     promoProxy = new TestPromoProxy();
-    ZeroStatePromoBrowserProxyImpl.setInstance(promoProxy);
+    zeroStatePromoProxyFactory.setInstance({handler: promoProxy});
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     zeroStatePromoApp =

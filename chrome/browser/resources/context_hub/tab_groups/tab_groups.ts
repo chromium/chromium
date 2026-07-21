@@ -11,7 +11,7 @@ import '/strings.m.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {BrowserProxyImpl} from '../browser_proxy.js';
+import {browserProxyFactory} from '../context_hub.mojom-webui.js';
 import type {TabInfo} from '../context_hub.mojom-webui.js';
 
 import {getCss} from './tab_groups.css.js';
@@ -66,7 +66,7 @@ export class TabGroupsElement extends CrLitElement {
     if (!this.autoTabGroupsEnabled_) {
       return;
     }
-    const {tabs} = await BrowserProxyImpl.getInstance().handler.getTabs();
+    const {tabs} = await browserProxyFactory.getInstance().handler.getTabs();
     this.tabs_ = tabs;
     this.groups_ = [];
     this.isGrouped_ = false;
@@ -83,7 +83,7 @@ export class TabGroupsElement extends CrLitElement {
 
     try {
       const {groups, ungroupedTabs} =
-          await BrowserProxyImpl.getInstance().handler.retrieveAndGroupTabs(
+          await browserProxyFactory.getInstance().handler.retrieveAndGroupTabs(
               this.inputValue_);
 
       this.groups_ = groups
@@ -115,7 +115,7 @@ export class TabGroupsElement extends CrLitElement {
     const target = e.currentTarget as HTMLElement;
     const tabId = parseInt(target.dataset['id'] || '0', 10);
     if (tabId) {
-      BrowserProxyImpl.getInstance().handler.switchToTab(tabId);
+      browserProxyFactory.getInstance().handler.switchToTab(tabId);
     }
   }
 

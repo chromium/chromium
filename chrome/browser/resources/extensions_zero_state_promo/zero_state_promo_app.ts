@@ -15,11 +15,10 @@ import {CustomHelpBubbleProxyImpl} from 'chrome://resources/cr_components/help_b
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {WebStoreLinkClicked} from './zero_state_promo.mojom-webui.js';
+import {browserProxyFactory, WebStoreLinkClicked} from './zero_state_promo.mojom-webui.js';
+import type {BrowserProxy} from './zero_state_promo.mojom-webui.js';
 import {getCss} from './zero_state_promo_app.css.js';
 import {getHtml} from './zero_state_promo_app.html.js';
-import type {ZeroStatePromoBrowserProxy} from './zero_state_promo_browser_proxy.js';
-import {ZeroStatePromoBrowserProxyImpl} from './zero_state_promo_browser_proxy.js';
 
 export class ZeroStatePromoAppElement extends CrLitElement {
   static get is() {
@@ -43,8 +42,7 @@ export class ZeroStatePromoAppElement extends CrLitElement {
     };
   }
 
-  private apiProxy_: ZeroStatePromoBrowserProxy =
-      ZeroStatePromoBrowserProxyImpl.getInstance();
+  private apiProxy_: BrowserProxy = browserProxyFactory.getInstance();
   private customHelpBubbleHandler_: CustomHelpBubbleHandlerInterface =
       CustomHelpBubbleProxyImpl.getInstance().getHandler();
 
@@ -61,31 +59,33 @@ export class ZeroStatePromoAppElement extends CrLitElement {
       loadTimeData.getBoolean('showChipsUiV3');
 
   protected onChromeWebStoreButtonClick_() {
-    this.apiProxy_.launchWebStoreLink(WebStoreLinkClicked.kDiscoverExtension);
+    this.apiProxy_.handler.launchWebStoreLink(
+        WebStoreLinkClicked.kDiscoverExtension);
     this.customHelpBubbleHandler_.notifyUserAction(
         CustomHelpBubbleUserAction.kAction);
   }
 
   protected onCouponsButtonClick_() {
-    this.apiProxy_.launchWebStoreLink(WebStoreLinkClicked.kCoupon);
+    this.apiProxy_.handler.launchWebStoreLink(WebStoreLinkClicked.kCoupon);
     this.customHelpBubbleHandler_.notifyUserAction(
         CustomHelpBubbleUserAction.kAction);
   }
 
   protected onWritingButtonClick_() {
-    this.apiProxy_.launchWebStoreLink(WebStoreLinkClicked.kWriting);
+    this.apiProxy_.handler.launchWebStoreLink(WebStoreLinkClicked.kWriting);
     this.customHelpBubbleHandler_.notifyUserAction(
         CustomHelpBubbleUserAction.kAction);
   }
 
   protected onProductivityButtonClick_() {
-    this.apiProxy_.launchWebStoreLink(WebStoreLinkClicked.kProductivity);
+    this.apiProxy_.handler.launchWebStoreLink(
+        WebStoreLinkClicked.kProductivity);
     this.customHelpBubbleHandler_.notifyUserAction(
         CustomHelpBubbleUserAction.kAction);
   }
 
   protected onAiButtonClick_() {
-    this.apiProxy_.launchWebStoreLink(WebStoreLinkClicked.kAi);
+    this.apiProxy_.handler.launchWebStoreLink(WebStoreLinkClicked.kAi);
     this.customHelpBubbleHandler_.notifyUserAction(
         CustomHelpBubbleUserAction.kAction);
   }

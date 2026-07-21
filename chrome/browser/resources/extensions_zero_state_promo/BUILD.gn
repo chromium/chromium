@@ -17,7 +17,6 @@ build_webui("build") {
   ts_files = [
     "zero_state_promo_app.html.ts",
     "zero_state_promo_app.ts",
-    "zero_state_promo_browser_proxy.ts",
   ]
 
   icons_html_files = [ "icons.html" ]

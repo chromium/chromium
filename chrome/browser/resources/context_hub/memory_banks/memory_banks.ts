@@ -9,8 +9,7 @@ import '//resources/cr_elements/cr_search_field/cr_search_field.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {BrowserProxyImpl} from '../browser_proxy.js';
-import {EntryType} from '../context_hub.mojom-webui.js';
+import {browserProxyFactory, EntryType} from '../context_hub.mojom-webui.js';
 import type {MemoryBankEntry} from '../context_hub.mojom-webui.js';
 
 import {getCss} from './memory_banks.css.js';
@@ -47,8 +46,8 @@ export class MemoryBanksElement extends CrLitElement {
   }
 
   private async fetchEntries() {
-    const {entries} =
-        await BrowserProxyImpl.getInstance().handler.getAllMemoryBankEntries();
+    const {entries} = await browserProxyFactory.getInstance()
+                          .handler.getAllMemoryBankEntries();
     this.entries = entries;
   }
 
@@ -155,7 +154,8 @@ export class MemoryBanksElement extends CrLitElement {
 
   protected async onDeleteClick_() {
     const ids = Array.from(this.selectedIds);
-    await BrowserProxyImpl.getInstance().handler.deleteMemoryBankEntries(ids);
+    await browserProxyFactory.getInstance().handler.deleteMemoryBankEntries(
+        ids);
     this.selectedIds = new Set();
     await this.fetchEntries();
   }

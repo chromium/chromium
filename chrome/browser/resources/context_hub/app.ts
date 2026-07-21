@@ -14,7 +14,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import {BrowserProxyImpl} from './browser_proxy.js';
+import {browserProxyFactory} from './context_hub.mojom-webui.js';
 import type {AutoTodoItem} from './context_hub.mojom-webui.js';
 
 export type ViewType = 'ai-taskbox'|'memory-banks'|'tab-groups';
@@ -45,7 +45,7 @@ export class ContextHubAppElement extends CrLitElement {
   override connectedCallback() {
     super.connectedCallback();
     if (loadTimeData.getBoolean('kAutoTodos')) {
-      BrowserProxyImpl.getInstance().handler.generateAutoTodos().then(
+      browserProxyFactory.getInstance().handler.generateAutoTodos().then(
           ({todos}) => {
             this.todos_ = todos;
           });

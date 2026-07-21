@@ -10,14 +10,11 @@ import 'chrome://feature-showcase/themes_and_customization/themes_and_customizat
 import type {FeatureShowcaseAppElement} from 'chrome://feature-showcase/app.js';
 import {browserProxyFactory as defaultBrowserProxyFactory, DefaultBrowserPageHandlerRemote} from 'chrome://feature-showcase/default_browser.mojom-webui.js';
 import type {FeatureShowcaseDefaultBrowserStepElement} from 'chrome://feature-showcase/default_browser/default_browser_step.js';
-import {FeatureShowcasePageHandlerRemote} from 'chrome://feature-showcase/feature_showcase.mojom-webui.js';
-import {FeatureShowcaseBrowserProxyImpl} from 'chrome://feature-showcase/feature_showcase_browser_proxy.js';
+import {browserProxyFactory as featureShowcaseProxyFactory, FeatureShowcasePageHandlerRemote} from 'chrome://feature-showcase/feature_showcase.mojom-webui.js';
 import type {FeatureShowcaseStepperElement} from 'chrome://feature-showcase/feature_showcase_stepper.js';
-import {PasswordManagerPageHandlerRemote} from 'chrome://feature-showcase/password_manager.mojom-webui.js';
-import {PasswordManagerBrowserProxyImpl} from 'chrome://feature-showcase/password_manager/password_manager_browser_proxy.js';
+import {browserProxyFactory as passwordManagerProxyFactory, PasswordManagerPageHandlerRemote} from 'chrome://feature-showcase/password_manager.mojom-webui.js';
 import type {FeatureShowcasePasswordManagerStepElement} from 'chrome://feature-showcase/password_manager/password_manager_step.js';
-import {ThemesAndCustomizationPageHandlerRemote} from 'chrome://feature-showcase/themes_and_customization.mojom-webui.js';
-import {ThemesAndCustomizationBrowserProxyImpl} from 'chrome://feature-showcase/themes_and_customization/themes_and_customization_browser_proxy.js';
+import {browserProxyFactory as themesAndCustomizationProxyFactory, ThemesAndCustomizationPageHandlerRemote} from 'chrome://feature-showcase/themes_and_customization.mojom-webui.js';
 import type {FeatureShowcaseThemesAndCustomizationStepElement} from 'chrome://feature-showcase/themes_and_customization/themes_and_customization_step.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -38,7 +35,7 @@ suite('FeatureShowcaseAppTest', function() {
         TestMock<PasswordManagerPageHandlerRemote>&
         PasswordManagerPageHandlerRemote =
         TestMock.fromClass(PasswordManagerPageHandlerRemote);
-    PasswordManagerBrowserProxyImpl.setInstance(
+    passwordManagerProxyFactory.setInstance(
         {handler: passwordManagerTestHandler});
 
     const defaultBrowserTestHandler: TestMock<DefaultBrowserPageHandlerRemote>&
@@ -53,7 +50,7 @@ suite('FeatureShowcaseAppTest', function() {
     window.matchMedia = () => mockMediaQueryList as unknown as MediaQueryList;
 
     testHandler = TestMock.fromClass(FeatureShowcasePageHandlerRemote);
-    FeatureShowcaseBrowserProxyImpl.setInstance({handler: testHandler});
+    featureShowcaseProxyFactory.setInstance({handler: testHandler});
 
     appElement = document.createElement('feature-showcase-app');
     document.body.appendChild(appElement);
@@ -91,7 +88,7 @@ suite('FeatureShowcaseAppTest', function() {
         {}, '', '?steps=default-browser,password-manager');
 
     testHandler = TestMock.fromClass(FeatureShowcasePageHandlerRemote);
-    FeatureShowcaseBrowserProxyImpl.setInstance({handler: testHandler});
+    featureShowcaseProxyFactory.setInstance({handler: testHandler});
 
     appElement = document.createElement('feature-showcase-app');
     document.body.appendChild(appElement);
@@ -261,7 +258,7 @@ suite('FeatureShowcasePasswordManagerStepTest', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     testHandler = TestMock.fromClass(PasswordManagerPageHandlerRemote);
-    PasswordManagerBrowserProxyImpl.setInstance({handler: testHandler});
+    passwordManagerProxyFactory.setInstance({handler: testHandler});
 
     stepElement =
         document.createElement('feature-showcase-password-manager-step');
@@ -310,7 +307,7 @@ suite('FeatureShowcaseThemesAndCustomizationStepTest', function() {
 
   setup(function() {
     testHandler = TestMock.fromClass(ThemesAndCustomizationPageHandlerRemote);
-    ThemesAndCustomizationBrowserProxyImpl.setInstance({handler: testHandler});
+    themesAndCustomizationProxyFactory.setInstance({handler: testHandler});
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     stepElement = document.createElement(

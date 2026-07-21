@@ -9,7 +9,8 @@ import '../feature_showcase_step.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {ThemesAndCustomizationBrowserProxyImpl} from './themes_and_customization_browser_proxy.js';
+import {browserProxyFactory} from '../themes_and_customization.mojom-webui.js';
+
 import {getCss} from './themes_and_customization_step.css.js';
 import {getHtml} from './themes_and_customization_step.html.js';
 
@@ -38,18 +39,17 @@ export class FeatureShowcaseThemesAndCustomizationStepElement extends
   override connectedCallback() {
     super.connectedCallback();
 
-    ThemesAndCustomizationBrowserProxyImpl.getInstance()
-        .handler.snapshotTheme();
+    browserProxyFactory.getInstance().handler.snapshotTheme();
   }
 
   protected onConfirmClick_() {
-    ThemesAndCustomizationBrowserProxyImpl.getInstance().handler.acceptTheme();
+    browserProxyFactory.getInstance().handler.acceptTheme();
     this.buttonsDisabled = true;
     this.fire('step-completed');
   }
 
   protected onSkipClick_() {
-    ThemesAndCustomizationBrowserProxyImpl.getInstance().handler.revertTheme();
+    browserProxyFactory.getInstance().handler.revertTheme();
     this.buttonsDisabled = true;
     this.fire('step-completed');
   }

@@ -7,7 +7,8 @@ import '../feature_showcase_step.js';
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {PasswordManagerBrowserProxyImpl} from './password_manager_browser_proxy.js';
+import {browserProxyFactory} from '../password_manager.mojom-webui.js';
+
 import {getCss} from './password_manager_step.css.js';
 import {getHtml} from './password_manager_step.html.js';
 
@@ -34,13 +35,13 @@ export class FeatureShowcasePasswordManagerStepElement extends CrLitElement {
 
   protected onConfirmClick_() {
     this.buttonsDisabled = true;
-    PasswordManagerBrowserProxyImpl.getInstance().handler.pinPasswordManager();
+    browserProxyFactory.getInstance().handler.pinPasswordManager();
     this.fire('step-completed');
   }
 
   protected onSkipClick_() {
     this.buttonsDisabled = true;
-    PasswordManagerBrowserProxyImpl.getInstance().handler.skipPasswordManager();
+    browserProxyFactory.getInstance().handler.skipPasswordManager();
     this.fire('step-completed');
   }
 }

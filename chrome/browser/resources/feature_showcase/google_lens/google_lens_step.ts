@@ -7,7 +7,8 @@ import '../feature_showcase_step.js';
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {GoogleLensBrowserProxyImpl} from './google_lens_browser_proxy.js';
+import {browserProxyFactory} from '../google_lens.mojom-webui.js';
+
 import {getCss} from './google_lens_step.css.js';
 import {getHtml} from './google_lens_step.html.js';
 
@@ -34,13 +35,13 @@ export class FeatureShowcaseGoogleLensStepElement extends CrLitElement {
 
   protected onConfirmClick_() {
     this.buttonsDisabled = true;
-    GoogleLensBrowserProxyImpl.getInstance().handler.enableGoogleLens();
+    browserProxyFactory.getInstance().handler.enableGoogleLens();
     this.fire('step-completed');
   }
 
   protected onSkipClick_() {
     this.buttonsDisabled = true;
-    GoogleLensBrowserProxyImpl.getInstance().handler.skipGoogleLens();
+    browserProxyFactory.getInstance().handler.skipGoogleLens();
     this.fire('step-completed');
   }
 }
