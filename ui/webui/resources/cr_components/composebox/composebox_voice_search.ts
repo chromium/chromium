@@ -830,6 +830,7 @@ export class ComposeboxVoiceSearchElement extends
     this.errorMessage_ = '';
     this.error_ = null;
     this.start();
+    this.fire('voice-search-restart');
   }
   }
 
