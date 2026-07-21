@@ -28,6 +28,7 @@
 #include "media/base/android/media_codec_util.h"
 #include "media/base/android/media_format_color_space.h"
 #include "media/base/audio_codecs.h"
+#include "media/base/limits.h"
 #include "media/base/media_switches.h"
 #include "media/base/subsample_entry.h"
 #include "media/base/video_codecs.h"
@@ -651,6 +652,10 @@ MediaCodecResult MediaCodecBridgeImpl::QueueSecureInputBuffer(
   // one subsample here just to be on the safe side.
   const auto num_subsamples =
       std::max(static_cast<size_t>(1), decrypt_config.subsamples().size());
+
+  if (num_subsamples > media::limits::kMaxSubsamplesPerBuffer) {
+    return {MediaCodecResult::Codes::kError, "Too many subsamples."};
+  }
 
   // Decompose SubsampleEntry objects into two int32_t arrays since there's no
   // way to set the values directly into a jintArray :|

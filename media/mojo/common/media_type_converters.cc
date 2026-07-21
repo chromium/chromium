@@ -54,6 +54,11 @@ TypeConverter<std::unique_ptr<media::DecryptConfig>,
       input->encryption_pattern) {
     return nullptr;
   }
+  // Enforce a hard upper bound on the number of subsamples to prevent
+  // unbounded allocations or HAL vulnerabilities.
+  if (input->subsamples.size() > media::limits::kMaxSubsamplesPerBuffer) {
+    return nullptr;
+  }
   return std::make_unique<media::DecryptConfig>(
       input->encryption_scheme, input->key_id, input->iv, input->subsamples,
       input->encryption_pattern);

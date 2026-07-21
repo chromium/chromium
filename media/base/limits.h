@@ -74,6 +74,10 @@ inline constexpr int kMaxInitDataLength = 64 * 1024;         // 64 KB
 inline constexpr int kMaxSessionResponseLength = 64 * 1024;  // 64 KB
 inline constexpr int kMaxKeySystemLength = 256;
 
+// Maximum number of subsample entries allowed per DecryptConfig.
+// 65535 matches the ISO 23001-7 `senc` wire bound ceiling.
+inline constexpr int kMaxSubsamplesPerBuffer = 65535;
+
 // Minimum and maximum buffer sizes for certain audio platforms.
 #if BUILDFLAG(IS_MAC)
 inline constexpr int kMinAudioBufferSize = 128;

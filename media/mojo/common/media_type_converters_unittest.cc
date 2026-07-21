@@ -19,6 +19,7 @@
 #include "media/base/decrypt_config.h"
 #include "media/base/encryption_pattern.h"
 #include "media/base/encryption_scheme.h"
+#include "media/base/limits.h"
 #include "media/base/sample_format.h"
 #include "media/base/test_helpers.h"
 #include "media/mojo/common/validation_utils.h"
@@ -368,6 +369,21 @@ TEST(MediaTypeConvertersTest, RejectOOBSubsample) {
       mojo_buffer.To<scoped_refptr<DecoderBuffer>>();
 
   EXPECT_FALSE(converted_buffer);
+}
+
+TEST(MediaTypeConvertersTest, ConvertDecryptConfig_RejectsUnboundedSubsamples) {
+  media::mojom::DecryptConfigPtr mojo_decrypt_config(
+      media::mojom::DecryptConfig::New());
+  mojo_decrypt_config->key_id = "key_id";
+  mojo_decrypt_config->iv = "0123456789abcdef";
+  mojo_decrypt_config->encryption_scheme = media::EncryptionScheme::kCenc;
+  mojo_decrypt_config->subsamples.resize(
+      media::limits::kMaxSubsamplesPerBuffer + 1);
+
+  std::unique_ptr<media::DecryptConfig> decrypt_config =
+      mojo_decrypt_config.To<std::unique_ptr<media::DecryptConfig>>();
+
+  EXPECT_FALSE(decrypt_config);
 }
 
 }  // namespace media
