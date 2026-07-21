@@ -829,6 +829,13 @@ void OmniboxEditModel::OpenAiMode(AimActivation activation) {
 }
 
 void OmniboxEditModel::OpenLensSearch() {
+  if (omnibox::kAskGLensChipRoute.Get()) {
+    if (auto* client =
+            autocomplete_controller()->autocomplete_provider_client()) {
+      client->OpenLensOverlay(/*show=*/true);
+    }
+    return;
+  }
   if (auto* provider =
           autocomplete_controller()->contextual_search_provider()) {
     OpenMatch(

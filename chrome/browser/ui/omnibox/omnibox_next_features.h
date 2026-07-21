@@ -125,7 +125,10 @@ extern const base::FeatureParam<bool> kAskGCoBrowseWithVisualSelection;
 extern const base::FeatureParam<bool> kWebUIOmniboxDynamicAnimation;
 // Whether to enable dynamic color scheme for the WebUI Omnibox.
 extern const base::FeatureParam<bool> kWebUIOmniboxDynamicColorScheme;
+// Whether to open the composebox for AskG.
 extern const base::FeatureParam<bool> kAskGComposeBox;
+// Determines how to route the lens chip.
+extern const base::FeatureParam<bool> kAskGLensChipRoute;
 
 // Returns true if `kWebUIOmniboxPopup` is enabled.
 bool IsWebUIOmniboxPopupEnabled();

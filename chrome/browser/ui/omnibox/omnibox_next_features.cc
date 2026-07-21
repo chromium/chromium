@@ -383,7 +383,8 @@ const base::FeatureParam<bool> kAskGCoBrowseWithVisualSelection{
     "Omnibox_AskGCoBrowseWithVisualSelection", false};
 const base::FeatureParam<bool> kAskGComposeBox{&kWebUIOmniboxAskGAboutThisPage,
                                                "Omnibox_AskGComposeBox", false};
-
+const base::FeatureParam<bool> kAskGLensChipRoute{
+    &kWebUIOmniboxAskGAboutThisPage, "Omnibox_AskGLensChipRoute", false};
 const base::FeatureParam<bool> kWebUIOmniboxDynamicAnimation{
     &kWebUIOmniboxDynamicAiModeButton, "Omnibox_DynamicAnimation", false};
 const base::FeatureParam<bool> kWebUIOmniboxDynamicColorScheme{

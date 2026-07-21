@@ -827,9 +827,11 @@ void ChromeAutocompleteProviderClient::OpenLensOverlay(bool show) {
   if (auto* lens_search_controller =
           GetLensSearchController(GetWebContents(web_contents_getter_))) {
     if (show) {
-      // Force showing the contextual search box in the Lens Overlay.
+      // Force showing the contextual search box in the Lens Overlay, unless
+      // kAskGLensChipRoute is enabled.
+      bool show_csb = !omnibox::kAskGLensChipRoute.Get();
       lens_search_controller->OpenLensOverlay(
-          lens::LensOverlayInvocationSource::kOmniboxPageAction, true);
+          lens::LensOverlayInvocationSource::kOmniboxPageAction, show_csb);
     } else {
       // TODO(crbug.com/402497756): For prototyping, reusing the existing
       // omnibox entry point. However, for production, create a new invocation

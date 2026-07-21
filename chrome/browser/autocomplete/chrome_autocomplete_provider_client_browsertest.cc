@@ -15,6 +15,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/lens/test_lens_search_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -129,6 +130,14 @@ class ChromeAutocompleteProviderClientTest : public InProcessBrowserTest {
   MockLensSearchController* GetLensSearchController() {
     return static_cast<MockLensSearchController*>(
         LensSearchController::From(browser()->GetActiveTabInterface()));
+  }
+
+  OmniboxEditModel* GetOmniboxEditModel() {
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->toolbar()
+        ->location_bar()
+        ->GetOmniboxController()
+        ->edit_model();
   }
 
   // Replaces the client with one using an incognito profile. Note that this is
@@ -299,3 +308,55 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(GetLensSearchController()->invocation_source(),
             lens::LensOverlayInvocationSource::kOmniboxPageAction);
 }
+
+class ChromeAutocompleteProviderClientAskGLensChipRouteTest
+    : public ChromeAutocompleteProviderClientTest {
+ protected:
+  ChromeAutocompleteProviderClientAskGLensChipRouteTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{omnibox::kWebUIOmniboxAskGAboutThisPage,
+          {{"Omnibox_AskGLensChipRoute", "true"}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientAskGLensChipRouteTest,
+                       OpenLensOverlay_Show_HideCsb) {
+  // When kAskGLensChipRoute is enabled, OpenLensOverlay(true) should pass
+  // false for should_show_csb.
+  EXPECT_CALL(*GetLensSearchController(),
+              OpenLensOverlay(
+                  lens::LensOverlayInvocationSource::kOmniboxPageAction, false))
+      .Times(1);
+  GetAutocompleteProviderClient()->OpenLensOverlay(/*show=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientAskGLensChipRouteTest,
+                       OmniboxEditModelOpenLensSearch_BypassesAction) {
+  // When kAskGLensChipRoute is enabled, OpenLensSearch should bypass the action
+  // and call OpenLensOverlay directly (which will hide CSB).
+  EXPECT_CALL(*GetLensSearchController(),
+              OpenLensOverlay(
+                  lens::LensOverlayInvocationSource::kOmniboxPageAction, false))
+      .Times(1);
+
+  GetOmniboxEditModel()->OpenLensSearch();
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientTest,
+                       OmniboxEditModelOpenLensSearch_RoutesToAction) {
+  // When kAskGLensChipRoute is disabled (default), OpenLensSearch should route
+  // to the action. Since AskG/CoBrowse are disabled by default, it eventually
+  // falls back to OpenLensOverlay (showing CSB).
+  EXPECT_CALL(*GetLensSearchController(),
+              OpenLensOverlay(
+                  lens::LensOverlayInvocationSource::kOmniboxPageAction, true))
+      .Times(1);
+
+  GetOmniboxEditModel()->OpenLensSearch();
+}
+
+
