@@ -14997,6 +14997,22 @@
             ]
         }
     ],
+    "InAppWindowManagerDeprecation": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IPH_RecentTabs",
+                        "InAppWindowManagerDeprecation"
+                    ]
+                }
+            ]
+        }
+    ],
     "IncognitoScreenshot": [
         {
             "platforms": [
