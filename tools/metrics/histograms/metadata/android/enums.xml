@@ -278,6 +278,17 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Abort"/>
 </enum>
 
+<!-- LINT.IfChange(AndroidPdfSelectionMenuItem) -->
+
+<enum name="AndroidPdfSelectionMenuItem">
+  <int value="0" label="Other"/>
+  <int value="1" label="Share"/>
+  <int value="2" label="Web Search"/>
+  <int value="3" label="Translate"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/pdf/java/src/org/chromium/chrome/browser/pdf/PdfUtils.java:PdfSelectionMenuItem) -->
+
 <!-- LINT.IfChange(AndroidPdfToolbarAction) -->
 
 <enum name="AndroidPdfToolbarAction">

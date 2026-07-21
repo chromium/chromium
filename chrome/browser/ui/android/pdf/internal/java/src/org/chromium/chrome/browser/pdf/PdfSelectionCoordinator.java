@@ -59,6 +59,8 @@ public class PdfSelectionCoordinator {
                             mActivity.getString(org.chromium.content.R.string.actionbar_share),
                             session -> {
                                 SelectionUtils.share(mActivity, textSelection.getText().toString());
+                                PdfUtils.recordSelectionMenuItem(
+                                        PdfUtils.PdfSelectionMenuItem.SHARE);
                                 return null;
                             }));
             components.add(
@@ -69,6 +71,8 @@ public class PdfSelectionCoordinator {
                             session -> {
                                 SelectionUtils.webSearch(
                                         mActivity, textSelection.getText().toString());
+                                PdfUtils.recordSelectionMenuItem(
+                                        PdfUtils.PdfSelectionMenuItem.WEB_SEARCH);
                                 return null;
                             }));
 
@@ -82,6 +86,8 @@ public class PdfSelectionCoordinator {
                             session -> {
                                 SelectionUtils.translate(
                                         mActivity, textSelection.getText().toString());
+                                PdfUtils.recordSelectionMenuItem(
+                                        PdfUtils.PdfSelectionMenuItem.TRANSLATE);
                                 return null;
                             }));
         }

@@ -582,4 +582,13 @@ public class PdfUtilsUnitTest {
         PdfUtils.setShouldOpenPdfInlineForTesting(false);
         Assert.assertTrue(PdfUtils.shouldOpenPdfInline(false));
     }
+
+    @Test
+    public void testRecordSelectionMenuItem() {
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Pdf.SelectionMenuItem", PdfUtils.PdfSelectionMenuItem.SHARE);
+        PdfUtils.recordSelectionMenuItem(PdfUtils.PdfSelectionMenuItem.SHARE);
+        histogramExpectation.assertExpected();
+    }
 }

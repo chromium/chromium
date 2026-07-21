@@ -106,6 +106,27 @@ public class PdfUtils {
     }
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidPdfToolbarAction)
 
+    // LINT.IfChange(PdfSelectionMenuItem)
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({
+        PdfSelectionMenuItem.OTHER,
+        PdfSelectionMenuItem.SHARE,
+        PdfSelectionMenuItem.WEB_SEARCH,
+        PdfSelectionMenuItem.TRANSLATE,
+        PdfSelectionMenuItem.NUM_ENTRIES
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface PdfSelectionMenuItem {
+        int OTHER = 0;
+        int SHARE = 1;
+        int WEB_SEARCH = 2;
+        int TRANSLATE = 3;
+
+        int NUM_ENTRIES = 4;
+    }
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidPdfSelectionMenuItem)
+
     private static final String TAG = "PdfUtils";
     private static final Set<String> TRANSIENT_PDF_SCHEMES =
             Set.of(
@@ -435,6 +456,11 @@ public class PdfUtils {
     public static void recordToolbarAction(@PdfToolbarAction int action) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.Pdf.ToolbarAction", action, PdfToolbarAction.NUM_ENTRIES);
+    }
+
+    public static void recordSelectionMenuItem(@PdfSelectionMenuItem int menuItem) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.Pdf.SelectionMenuItem", menuItem, PdfSelectionMenuItem.NUM_ENTRIES);
     }
 
     public static void recordPdfLoadResultDetail(@PdfLoadResult int loadResult) {

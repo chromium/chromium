@@ -5254,6 +5254,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Pdf.SelectionMenuItem"
+    enum="AndroidPdfSelectionMenuItem" expires_after="2027-01-10">
+  <owner>rathomas@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records user interactions with PDF V2 selection menu items. Recorded when a
+    selection menu item (such as Share, Web Search, or Translate) is selected.
+  </summary>
+</histogram>
+
 <histogram name="Android.Pdf.ToolbarAction" enum="AndroidPdfToolbarAction"
     expires_after="2027-01-10">
   <owner>rathomas@google.com</owner>
