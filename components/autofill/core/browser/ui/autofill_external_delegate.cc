@@ -863,7 +863,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_SELECTED);
       autofill_metrics::LogSuggestionAcceptedIndex(
           metadata.row(), FillingProduct::kAutocomplete,
-          manager_->client().IsOffTheRecord());
+          manager_->client().IsOffTheRecord(), shown_suggestion_types_);
       manager_->FillOrPreviewField(
           mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
           last_query_.form_id, last_query_.field_id, suggestion.main_text.value,
@@ -902,6 +902,9 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       }
       break;
     case SuggestionType::kFillAutofillAi: {
+      autofill_metrics::LogSuggestionAcceptedIndex(
+          metadata.row(), FillingProduct::kAutofillAi,
+          manager_->client().IsOffTheRecord(), shown_suggestion_types_);
       const base::optional_ref<const EntityInstance> entity =
           GetEntityInstance(suggestion);
       if (!entity || !autofill_field || !form_structure) {
@@ -1406,7 +1409,7 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
       trigger_field->value().size());
   autofill_metrics::LogSuggestionAcceptedIndex(
       metadata.row(), FillingProduct::kAddress,
-      manager_->client().IsOffTheRecord());
+      manager_->client().IsOffTheRecord(), shown_suggestion_types_);
   switch (suggestion.type) {
     case SuggestionType::kAddressEntry: {
       const AutofillField* autofill_trigger_field = GetQueriedField();
@@ -1475,7 +1478,7 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
     case SuggestionType::kCreditCardEntry:
       autofill_metrics::LogSuggestionAcceptedIndex(
           metadata.row(), FillingProduct::kCreditCard,
-          manager_->client().IsOffTheRecord());
+          manager_->client().IsOffTheRecord(), shown_suggestion_types_);
       AutofillForm(suggestion.type, suggestion.payload, metadata,
                    /*is_preview=*/false, GetTriggerSource());
       break;

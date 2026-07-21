@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data_test_api.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::autofill_metrics {
@@ -91,6 +92,94 @@ TEST_F(SuggestionsListMetricsTest, AcceptedSuggestionIndex) {
                                             {.multi_index = {0}});
     histogram_tester.ExpectUniqueSample(
         "Autofill.SuggestionAcceptedIndex.CreditCard", 0, 1);
+  }
+}
+
+// Tests that the selected suggestion index is counted correctly if there are
+// many available suggestions.
+TEST_F(SuggestionsListMetricsTest, AcceptedSuggestionIndexDisplayedAtLeast) {
+  const FormData form =
+      test::GetFormData({.fields = {{.role = NAME_FULL},
+                                    {.role = ADDRESS_HOME_STREET_ADDRESS},
+                                    {.role = ADDRESS_HOME_CITY}}});
+  autofill_manager().OnFormsSeen({form}, {});
+  const FormFieldData& form_field = form.fields()[0];
+
+  std::vector<Suggestion> suggestions(
+      3, Suggestion(u"test", SuggestionType::kAddressEntry));
+  {
+    autofill_manager().OnAskForValuesToFillTest(form, form_field.global_id());
+    external_delegate().OnSuggestionsReturned(form_field, suggestions);
+
+    base::HistogramTester histogram_tester;
+    external_delegate().DidAcceptSuggestion(suggestions[1],
+                                            {.multi_index = {1}});
+    histogram_tester.ExpectTotalCount(
+        "Autofill.SuggestionAcceptedIndex.DisplayedAtLeast5.Address", 0);
+    histogram_tester.ExpectTotalCount(
+        "Autofill.SuggestionAcceptedIndex.DisplayedAtLeast10.Address", 0);
+    histogram_tester.ExpectTotalCount(
+        "Autofill.SuggestionAcceptedIndex.DisplayedAtLeast20.Address", 0);
+  }
+
+  suggestions.resize(7, Suggestion(u"test", SuggestionType::kAddressEntry));
+  {
+    autofill_manager().OnAskForValuesToFillTest(form, form_field.global_id());
+    external_delegate().OnSuggestionsReturned(form_field, suggestions);
+
+    base::HistogramTester histogram_tester;
+    external_delegate().DidAcceptSuggestion(suggestions[1],
+                                            {.multi_index = {1}});
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples(
+            "Autofill.SuggestionAcceptedIndex.DisplayedAtLeast5.Address"),
+        base::BucketsAre(base::Bucket(1, 1)));
+    histogram_tester.ExpectTotalCount(
+        "Autofill.SuggestionAcceptedIndex.DisplayedAtLeast10.Address", 0);
+    histogram_tester.ExpectTotalCount(
+        "Autofill.SuggestionAcceptedIndex.DisplayedAtLeast20.Address", 0);
+  }
+
+  suggestions.resize(10, Suggestion(u"test", SuggestionType::kAddressEntry));
+  {
+    autofill_manager().OnAskForValuesToFillTest(form, form_field.global_id());
+    external_delegate().OnSuggestionsReturned(form_field, suggestions);
+
+    base::HistogramTester histogram_tester;
+    external_delegate().DidAcceptSuggestion(suggestions[5],
+                                            {.multi_index = {5}});
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples(
+            "Autofill.SuggestionAcceptedIndex.DisplayedAtLeast5.Address"),
+        base::BucketsAre(base::Bucket(5, 1)));
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples(
+            "Autofill.SuggestionAcceptedIndex.DisplayedAtLeast10.Address"),
+        base::BucketsAre(base::Bucket(5, 1)));
+    histogram_tester.ExpectTotalCount(
+        "Autofill.SuggestionAcceptedIndex.DisplayedAtLeast20.Address", 0);
+  }
+
+  suggestions.resize(20, Suggestion(u"test", SuggestionType::kAddressEntry));
+  {
+    autofill_manager().OnAskForValuesToFillTest(form, form_field.global_id());
+    external_delegate().OnSuggestionsReturned(form_field, suggestions);
+
+    base::HistogramTester histogram_tester;
+    external_delegate().DidAcceptSuggestion(suggestions[18],
+                                            {.multi_index = {18}});
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples(
+            "Autofill.SuggestionAcceptedIndex.DisplayedAtLeast5.Address"),
+        base::BucketsAre(base::Bucket(18, 1)));
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples(
+            "Autofill.SuggestionAcceptedIndex.DisplayedAtLeast10.Address"),
+        base::BucketsAre(base::Bucket(18, 1)));
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples(
+            "Autofill.SuggestionAcceptedIndex.DisplayedAtLeast20.Address"),
+        base::BucketsAre(base::Bucket(18, 1)));
   }
 }
 

@@ -8872,6 +8872,35 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram
+    name="Autofill.SuggestionAcceptedIndex.DisplayedAtLeast{MinSuggestions}.{SuggestionType}"
+    units="position" expires_after="2026-12-12">
+  <owner>taminob@chromium.org</owner>
+  <owner>jihadghanna@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The index of the accepted Autofill suggestion of type {SuggestionType} in
+    popups with many suggestions.
+
+    Recorded when a suggestion of this type is accepted and at least
+    {MinSuggestions} suggestions of this type were available. Complements the
+    metric Autofill.SuggestionAcceptedIndex* by filtering out samples where only
+    a few suggestions were available. This enables evaluations for the handling
+    of suggestions at large indices.
+  </summary>
+  <token key="MinSuggestions">
+    <variant name="5"/>
+    <variant name="10"/>
+    <variant name="20"/>
+  </token>
+  <token key="SuggestionType">
+    <variant name="Address"/>
+    <variant name="Autocomplete"/>
+    <variant name="AutofillAi"/>
+    <variant name="CreditCard"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.SuggestionAcceptedIndex{SuggestionType}"
     units="position" expires_after="2026-12-12">
   <owner>battre@chromium.org</owner>
@@ -8883,6 +8912,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     <variant name=""/>
     <variant name=".Address"/>
     <variant name=".Autocomplete"/>
+    <variant name=".AutofillAi"/>
     <variant name=".CreditCard"/>
   </token>
 </histogram>
