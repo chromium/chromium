@@ -221,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginNTPBrowserTest,
 
   // Sanity check that a SiteInstance for a generic ntp.com URL requires a
   // dedicated process.
-  content::BrowserContext* context = browser()->profile();
+  content::BrowserContext* context = browser()->GetProfile();
   GURL isolated_url(https_test_server().GetURL("ntp.com", "/title1.html"));
   scoped_refptr<content::SiteInstance> site_instance =
       content::SiteInstance::CreateForURL(context, isolated_url);
@@ -366,7 +366,7 @@ IN_PROC_BROWSER_TEST_P(ForcedColorsTest, ForcedColorsWithBlockList) {
   // Add url to the page colors block list.
   base::ListValue list;
   list.Append(url);
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   profile->GetPrefs()->SetList(prefs::kPageColorsBlockList, list.Clone());
   browser()
       ->tab_strip_model()
@@ -481,7 +481,7 @@ class PrefersColorSchemeTest
     const auto* const web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     const bool use_os_theme =
-        browser()->profile()->IsIncognitoProfile() &&
+        browser()->GetProfile()->IsIncognitoProfile() &&
         !web_contents->GetLastCommittedURL().SchemeIs(content::kChromeUIScheme);
     const bool dark_mode = use_os_theme ? DarkOs() : DarkColorProvider();
     return dark_mode ? "dark" : "light";
@@ -991,8 +991,8 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest,
 
   base::ListValue allowlist;
   allowlist.Append("geo://*");
-  browser()->profile()->GetPrefs()->SetList(policy::policy_prefs::kUrlAllowlist,
-                                            std::move(allowlist));
+  browser()->GetProfile()->GetPrefs()->SetList(
+      policy::policy_prefs::kUrlAllowlist, std::move(allowlist));
   // The call to update the internal allowlist value is async.
   base::RunLoop().RunUntilIdle();
 
@@ -1021,8 +1021,8 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest,
 
   base::ListValue allowlist;
   allowlist.Append("intent://*");
-  browser()->profile()->GetPrefs()->SetList(policy::policy_prefs::kUrlAllowlist,
-                                            std::move(allowlist));
+  browser()->GetProfile()->GetPrefs()->SetList(
+      policy::policy_prefs::kUrlAllowlist, std::move(allowlist));
   // The call to update the internal allowlist value is async.
   base::RunLoop().RunUntilIdle();
 
@@ -1063,19 +1063,19 @@ class KeepaliveDurationOnShutdownTest : public InProcessBrowserTest,
 };
 
 IN_PROC_BROWSER_TEST_F(KeepaliveDurationOnShutdownTest, DefaultValue) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   EXPECT_EQ(client()->GetKeepaliveTimerTimeout(profile), base::TimeDelta());
 }
 
 IN_PROC_BROWSER_TEST_F(KeepaliveDurationOnShutdownTest, PolicySettings) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   profile->GetPrefs()->SetInteger(prefs::kFetchKeepaliveDurationOnShutdown, 2);
 
   EXPECT_EQ(client()->GetKeepaliveTimerTimeout(profile), base::Seconds(2));
 }
 
 IN_PROC_BROWSER_TEST_F(KeepaliveDurationOnShutdownTest, DynamicUpdate) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   profile->GetPrefs()->SetInteger(prefs::kFetchKeepaliveDurationOnShutdown, 2);
 
   EXPECT_EQ(client()->GetKeepaliveTimerTimeout(profile), base::Seconds(2));

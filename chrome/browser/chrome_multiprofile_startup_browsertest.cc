@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_P(ChromeMultiProfileStartupBrowserTestBase,
   } else {
     EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
     EXPECT_NE(base::FilePath::FromASCII(kOtherProfileDirPath),
-              browser()->profile()->GetPath().BaseName());
+              browser()->GetProfile()->GetPath().BaseName());
     EXPECT_FALSE(ProfilePicker::IsOpen());
   }
 

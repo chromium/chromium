@@ -365,8 +365,8 @@ class RealCriticalUserJourneyServiceInteractiveTest
 
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
-    browser()->profile()->GetPrefs()->SetBoolean(prefs::kPromptForDownload,
-                                                 false);
+    browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kPromptForDownload,
+                                                    false);
     embedded_test_server()->ServeFilesFromDirectory(
         base::PathService::CheckedGet(chrome::DIR_TEST_DATA));
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -379,7 +379,7 @@ class RealCriticalUserJourneyServiceInteractiveTest
     return Steps(Do([this]() {
       GURL url = embedded_test_server()->GetURL("/downloads/a_zip_file.zip");
       content::DownloadManager* manager =
-          browser()->profile()->GetDownloadManager();
+          browser()->GetProfile()->GetDownloadManager();
       std::unique_ptr<content::DownloadTestObserver> observer(
           new content::DownloadTestObserverTerminal(
               manager, 1,

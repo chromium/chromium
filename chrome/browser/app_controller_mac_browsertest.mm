@@ -990,7 +990,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenUrlInGuestBrowser) {
 // Test for https://crbug.com/40912038#comment9
 IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenUrlWhenForcedIncognito) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   base::FilePath original_profile_base_name = profile->GetBaseName();
   // Force incognito mode.
   IncognitoModePrefs::SetAvailability(
@@ -1347,7 +1347,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
   AppController* app_controller = AppController.sharedController;
 
   // Use the existing profile as profile 1.
-  Profile* profile1 = browser()->profile();
+  Profile* profile1 = browser()->GetProfile();
 
   // Create profile 2.
   base::FilePath profile2_path =
@@ -1407,7 +1407,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   AppController* app_controller = AppController.sharedController;
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   base::FilePath profile_path = profile->GetPath();
 
   // Switch the controller to |profile|.
@@ -1449,7 +1449,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
   const GURL url2("https://www.xkcd.com/");
 
   // Use the existing profile as profile 1.
-  Profile* profile1 = browser()->profile();
+  Profile* profile1 = browser()->GetProfile();
   WaitForBookmarkMergedSurfaceServiceToLoad(
       BookmarkMergedSurfaceServiceFactory::GetForProfile(profile1));
 
@@ -1511,7 +1511,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
                        DISABLED_ForcedIncognito_NewWindow) {
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
   // Close the current non-incognito browser.
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   ui_test_utils::BrowserDestroyedObserver observer(browser());
   chrome::CloseAllBrowsers();
   observer.Wait();
@@ -1542,7 +1542,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
 IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
                        LastActiveColorProviderNulledOnBrowserClose) {
   AppController* app_controller = AppController.sharedController;
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   // Close a tab group to create a GROUP entry in TRS.
   ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));

@@ -930,7 +930,7 @@ IN_PROC_BROWSER_TEST_F(
   // any event listeners attached (e.g. because the tab closed) creates a new
   // foreground tab.
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   NotificationDisplayServiceImpl* display_service =
       NotificationDisplayServiceImpl::GetForProfile(profile);
@@ -1223,7 +1223,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
       KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT));
 
   // Close the browser before the first 'notificationclose' event completes.
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   CloseBrowserSynchronously(browser());
 
   // Close the second notification.
@@ -1328,7 +1328,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
       KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT));
 
   // Close the browser before the 'notificationclose' event completes.
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   CloseBrowserSynchronously(browser());
 
   // Reopen the browser before the 'notificationclose' event completes.

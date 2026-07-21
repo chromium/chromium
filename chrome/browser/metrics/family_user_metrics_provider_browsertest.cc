@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_P(FamilyUserMetricsProviderTest, UserCategory) {
   if (GetFamilyUserLogSegment() ==
       FamilyUserMetricsProvider::FamilyUserLogSegment::kSupervisedStudent) {
     // Add a secondary EDU account.
-    Profile* profile = browser()->profile();
+    Profile* profile = browser()->GetProfile();
     ASSERT_TRUE(profile);
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile);

@@ -186,13 +186,16 @@ class AskBeforeHttpDialogControllerUiTest
   }
 
   void TearDownOnMainThread() override {
-    browser()->profile()->GetPrefs()->ClearPref(prefs::kHttpsOnlyModeEnabled);
-    browser()->profile()->GetPrefs()->ClearPref(
+    browser()->GetProfile()->GetPrefs()->ClearPref(
+        prefs::kHttpsOnlyModeEnabled);
+    browser()->GetProfile()->GetPrefs()->ClearPref(
         prefs::kHttpsOnlyModeAutoEnabled);
-    browser()->profile()->GetPrefs()->ClearPref(prefs::kHttpsUpgradeFallbacks);
-    browser()->profile()->GetPrefs()->ClearPref(
+    browser()->GetProfile()->GetPrefs()->ClearPref(
+        prefs::kHttpsUpgradeFallbacks);
+    browser()->GetProfile()->GetPrefs()->ClearPref(
         prefs::kHttpsUpgradeNavigations);
-    browser()->profile()->GetPrefs()->ClearPref(prefs::kHttpsFirstBalancedMode);
+    browser()->GetProfile()->GetPrefs()->ClearPref(
+        prefs::kHttpsFirstBalancedMode);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -224,12 +227,12 @@ class AskBeforeHttpDialogControllerUiTest
   AskBeforeHttpDialogControllerTestType test_type() const { return GetParam(); }
 
   void SetPref(bool enabled) {
-    auto* prefs = browser()->profile()->GetPrefs();
+    auto* prefs = browser()->GetProfile()->GetPrefs();
     prefs->SetBoolean(prefs::kHttpsOnlyModeEnabled, enabled);
   }
 
   void SetBalancedPref(bool enabled) {
-    auto* prefs = browser()->profile()->GetPrefs();
+    auto* prefs = browser()->GetProfile()->GetPrefs();
     prefs->SetBoolean(prefs::kHttpsFirstBalancedMode, enabled);
   }
 

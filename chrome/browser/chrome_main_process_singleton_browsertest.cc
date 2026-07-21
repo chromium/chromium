@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunchWithIncognitoUrl) {
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunchFromIncognitoWithNormalUrl) {
-  Profile* const profile = browser()->profile();
+  Profile* const profile = browser()->GetProfile();
 
   // We should start with one normal window.
   ASSERT_EQ(1u, GetTabbedBrowserCount(profile));

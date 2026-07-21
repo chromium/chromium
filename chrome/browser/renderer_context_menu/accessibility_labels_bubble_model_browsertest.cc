@@ -41,7 +41,7 @@ class AccessibilityLabelsBubbleModelTest : public InProcessBrowserTest {
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBubbleModelTest, ConfirmSetsPref) {
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityImageLabelsEnabled, false);
   std::unique_ptr<AccessibilityLabelsBubbleModel> model = CreateConfirmBubble();
   model->Accept();
@@ -51,7 +51,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBubbleModelTest, ConfirmSetsPref) {
 
 IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBubbleModelTest,
                        CancelDoesNotSetPref) {
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityImageLabelsEnabled, false);
   std::unique_ptr<AccessibilityLabelsBubbleModel> model = CreateConfirmBubble();
   model->Cancel();
@@ -64,7 +64,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBubbleModelTest, OpenHelpPage) {
   ui_test_utils::AllBrowserTabAddedWaiter waiter;
   model->OpenHelpPage();
   content::WebContents* web_contents = waiter.Wait();
-  EXPECT_EQ(web_contents->GetBrowserContext(), browser()->profile());
+  EXPECT_EQ(web_contents->GetBrowserContext(), browser()->GetProfile());
   EXPECT_EQ(web_contents->GetVisibleURL(), model->GetHelpPageURL());
 }
 
@@ -86,6 +86,6 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBubbleModelTest,
   ui_test_utils::AllBrowserTabAddedWaiter waiter;
   model->OpenHelpPage();
   content::WebContents* web_contents = waiter.Wait();
-  EXPECT_EQ(web_contents->GetBrowserContext(), browser()->profile());
+  EXPECT_EQ(web_contents->GetBrowserContext(), browser()->GetProfile());
   EXPECT_EQ(web_contents->GetVisibleURL(), model->GetHelpPageURL());
 }

@@ -153,7 +153,7 @@ class NotificationScheduleServiceTest : public InProcessBrowserTest {
 
   // Initializes |service_|. Injects database test data before this call.
   void Init() {
-    auto* profile = browser()->profile();
+    auto* profile = browser()->GetProfile();
     auto client = std::make_unique<TestClient>();
     clients_[SchedulerClientType::kTest1] = client.get();
     auto client_registrar =

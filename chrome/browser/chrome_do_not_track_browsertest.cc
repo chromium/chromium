@@ -22,7 +22,7 @@ namespace {
 class ChromeDoNotTrackTest : public InProcessBrowserTest {
  protected:
   void SetEnableDoNotTrack(bool enabled) {
-    PrefService* prefs = browser()->profile()->GetPrefs();
+    PrefService* prefs = browser()->GetProfile()->GetPrefs();
     prefs->SetBoolean(prefs::kEnableDoNotTrack, enabled);
   }
 

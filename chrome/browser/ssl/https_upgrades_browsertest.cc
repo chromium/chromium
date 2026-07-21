@@ -462,13 +462,16 @@ class HttpsUpgradesBrowserTest
   }
 
   void TearDownOnMainThread() override {
-    browser()->profile()->GetPrefs()->ClearPref(prefs::kHttpsOnlyModeEnabled);
-    browser()->profile()->GetPrefs()->ClearPref(
+    browser()->GetProfile()->GetPrefs()->ClearPref(
+        prefs::kHttpsOnlyModeEnabled);
+    browser()->GetProfile()->GetPrefs()->ClearPref(
         prefs::kHttpsOnlyModeAutoEnabled);
-    browser()->profile()->GetPrefs()->ClearPref(prefs::kHttpsUpgradeFallbacks);
-    browser()->profile()->GetPrefs()->ClearPref(
+    browser()->GetProfile()->GetPrefs()->ClearPref(
+        prefs::kHttpsUpgradeFallbacks);
+    browser()->GetProfile()->GetPrefs()->ClearPref(
         prefs::kHttpsUpgradeNavigations);
-    browser()->profile()->GetPrefs()->ClearPref(prefs::kHttpsFirstBalancedMode);
+    browser()->GetProfile()->GetPrefs()->ClearPref(
+        prefs::kHttpsFirstBalancedMode);
 
     HttpsUpgradesInterceptor::SetHttpsPortForTesting(0);
     HttpsUpgradesInterceptor::SetHttpPortForTesting(0);
@@ -516,22 +519,22 @@ class HttpsUpgradesBrowserTest
   HttpsUpgradesTestType https_upgrades_test_type() const { return GetParam(); }
 
   void SetPref(bool enabled) {
-    auto* prefs = browser()->profile()->GetPrefs();
+    auto* prefs = browser()->GetProfile()->GetPrefs();
     prefs->SetBoolean(prefs::kHttpsOnlyModeEnabled, enabled);
   }
 
   bool GetPref() const {
-    auto* prefs = browser()->profile()->GetPrefs();
+    auto* prefs = browser()->GetProfile()->GetPrefs();
     return prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled);
   }
 
   void SetBalancedPref(bool enabled) {
-    auto* prefs = browser()->profile()->GetPrefs();
+    auto* prefs = browser()->GetProfile()->GetPrefs();
     prefs->SetBoolean(prefs::kHttpsFirstBalancedMode, enabled);
   }
 
   bool GetBalancedPref() const {
-    auto* prefs = browser()->profile()->GetPrefs();
+    auto* prefs = browser()->GetProfile()->GetPrefs();
     return prefs->GetBoolean(prefs::kHttpsFirstBalancedMode);
   }
 
@@ -672,8 +675,8 @@ class HttpsUpgradesBrowserTest
     SetSiteEngagementScore(GURL("https://google.com:12345"), 90);
 
     // Profile must be old enough.
-    browser()->profile()->SetCreationTimeForTesting(clock->Now() -
-                                                    base::Days(30));
+    browser()->GetProfile()->SetCreationTimeForTesting(clock->Now() -
+                                                       base::Days(30));
     hfm_service()->SetClockForTesting(clock);
 
     // There must be a lot of recorded navigations.
@@ -1207,7 +1210,7 @@ IN_PROC_BROWSER_TEST_P(
 
   content::WebContents* contents =
       GetBrowser()->tab_strip_model()->GetActiveWebContents();
-  Profile* profile = GetBrowser()->profile();
+  Profile* profile = GetBrowser()->GetProfile();
   content::SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
 
   // Set test clock.
@@ -1435,7 +1438,7 @@ IN_PROC_BROWSER_TEST_P(
 
   content::WebContents* contents =
       GetBrowser()->tab_strip_model()->GetActiveWebContents();
-  Profile* profile = GetBrowser()->profile();
+  Profile* profile = GetBrowser()->GetProfile();
   content::SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
 
   // Set test clock.
@@ -3266,7 +3269,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
                        EnterprisePolicyDisablesUpgrades) {
   // Disable HTTPS-Upgrades via enterprise policy.
-  auto* prefs = browser()->profile()->GetPrefs();
+  auto* prefs = browser()->GetProfile()->GetPrefs();
   prefs->SetBoolean(prefs::kHttpsUpgradesEnabled, false);
 
   content::WebContents* contents =
@@ -4095,12 +4098,13 @@ class HttpsUpgradesTypedSchemelessNavigationBalancedModeBrowserTest
 
   void SetUpOnMainThread() override {
     HttpsUpgradesTypedSchemelessNavigationTestBase::SetUpOnMainThread();
-    browser()->profile()->GetPrefs()->SetBoolean(prefs::kHttpsFirstBalancedMode,
-                                                 true);
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
+        prefs::kHttpsFirstBalancedMode, true);
   }
 
   void TearDownOnMainThread() override {
-    browser()->profile()->GetPrefs()->ClearPref(prefs::kHttpsFirstBalancedMode);
+    browser()->GetProfile()->GetPrefs()->ClearPref(
+        prefs::kHttpsFirstBalancedMode);
     HttpsUpgradesTypedSchemelessNavigationTestBase::TearDownOnMainThread();
   }
 };
@@ -4499,7 +4503,7 @@ class HttpsUpgradesPrefsBrowserTest : public InProcessBrowserTest {
   }
 
   bool GetPref() const {
-    auto* prefs = browser()->profile()->GetPrefs();
+    auto* prefs = browser()->GetProfile()->GetPrefs();
     return prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled);
   }
 
@@ -4591,7 +4595,7 @@ class HttpsUpgradesBalancedModePrefsBrowserTest
   }
 
   bool GetPref() const {
-    auto* prefs = browser()->profile()->GetPrefs();
+    auto* prefs = browser()->GetProfile()->GetPrefs();
     return prefs->GetBoolean(prefs::kHttpsFirstBalancedMode);
   }
 
@@ -4735,7 +4739,7 @@ IN_PROC_BROWSER_TEST_P(
 
   content::WebContents* contents =
       GetBrowser()->tab_strip_model()->GetActiveWebContents();
-  Profile* profile = GetBrowser()->profile();
+  Profile* profile = GetBrowser()->GetProfile();
   content::SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
 
   // Set test clock.
@@ -4924,7 +4928,7 @@ class HttpsUpgradesAskBeforeHttpDelayTest : public InProcessBrowserTest {
     HttpsUpgradesInterceptor::SetHttpPortForTesting(http_server_.port());
 
     // Enable HFM pref.
-    auto* prefs = browser()->profile()->GetPrefs();
+    auto* prefs = browser()->GetProfile()->GetPrefs();
     prefs->SetBoolean(prefs::kHttpsOnlyModeEnabled, true);
   }
 
@@ -5012,7 +5016,7 @@ class HttpsUpgradesSilentFallbackDelayTest : public InProcessBrowserTest {
     HttpsUpgradesInterceptor::SetHttpPortForTesting(http_server_.port());
 
     // Disable HFM pref.
-    auto* prefs = browser()->profile()->GetPrefs();
+    auto* prefs = browser()->GetProfile()->GetPrefs();
     prefs->SetBoolean(prefs::kHttpsOnlyModeEnabled, false);
     prefs->SetBoolean(prefs::kHttpsFirstBalancedMode, false);
   }
@@ -5105,8 +5109,8 @@ class HttpsUpgradesSafeBrowsingTest : public InProcessBrowserTest {
     HttpsUpgradesInterceptor::SetHttpPortForTesting(http_server_.port());
 
     // Enable the HFM pref.
-    browser()->profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled,
-                                                 true);
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
+        prefs::kHttpsOnlyModeEnabled, true);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

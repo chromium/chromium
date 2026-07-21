@@ -85,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartAshBrowsertest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Keep the browser process running while browsers are closed.
-  auto* profile = browser()->profile();
+  auto* profile = browser()->GetProfile();
   ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
                              KeepAliveRestartOption::DISABLED);
   ScopedProfileKeepAlive profile_keep_alive(
@@ -145,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartAshBrowsertest,
             tab_strip_model->GetWebContentsAt(0)->GetLastCommittedURL());
 
   // Keep the browser process running while browsers are closed.
-  auto* profile = browser()->profile();
+  auto* profile = browser()->GetProfile();
   ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
                              KeepAliveRestartOption::DISABLED);
   ScopedProfileKeepAlive profile_keep_alive(
@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartAshBrowsertest,
             tab_strip_model->GetWebContentsAt(0)->GetLastCommittedURL());
 
   // Keep the browser process running while browsers are closed.
-  auto* profile = browser()->profile();
+  auto* profile = browser()->GetProfile();
   ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
                              KeepAliveRestartOption::DISABLED);
   ScopedProfileKeepAlive profile_keep_alive(

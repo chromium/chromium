@@ -368,10 +368,10 @@ class ContentAnalysisDelegateBrowserTestBase
 
   std::string GetProfileIdentifier() const {
 #if BUILDFLAG(IS_CHROMEOS)
-    return browser()->profile()->GetPath().AsUTF8Unsafe();
+    return browser()->GetProfile()->GetPath().AsUTF8Unsafe();
 #else
     if (machine_scope_) {
-      return browser()->profile()->GetPath().AsUTF8Unsafe();
+      return browser()->GetProfile()->GetPath().AsUTF8Unsafe();
     }
     auto* profile_id_service =
         enterprise::ProfileIdServiceFactory::GetForProfile(

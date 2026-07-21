@@ -202,7 +202,7 @@ class SaasUsageProfileLevelTest : public policy::PolicyTest {
 };
 
 IN_PROC_BROWSER_TEST_F(SaasUsageProfileLevelTest, RecordsUsage) {
-  auto* policy_manager = browser()->profile()->GetCloudPolicyManager();
+  auto* policy_manager = browser()->GetProfile()->GetCloudPolicyManager();
   ASSERT_TRUE(policy_manager);
 
   enterprise_management::PolicyData policy_data;
@@ -228,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(SaasUsageProfileLevelTest, RecordsUsage) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Verify that the usage was recorded in the correct pref service.
-  PrefService* pref_service = browser()->profile()->GetPrefs();
+  PrefService* pref_service = browser()->GetProfile()->GetPrefs();
   ASSERT_TRUE(pref_service);
 
   const base::DictValue& report_dict = pref_service->GetDict(kSaasUsageReport);

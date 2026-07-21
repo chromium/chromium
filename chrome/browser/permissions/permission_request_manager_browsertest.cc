@@ -133,7 +133,7 @@ class PermissionRequestManagerBrowserTestBase : public InProcessBrowserTest {
     }));
 
     browser()
-        ->profile()
+        ->GetProfile()
         ->GetPermissionController()
         ->RequestPermissionFromCurrentDocument(
             rfh, std::move(request_description), callback.Get());
@@ -2259,7 +2259,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerApproximateLocationBrowserTest,
   permissions::PermissionRequestManager* request_manager =
       GetPermissionRequestManager();
   content::PermissionController* permission_controller =
-      browser()->profile()->GetPermissionController();
+      browser()->GetProfile()->GetPermissionController();
 
   {
     base::HistogramTester histograms;
@@ -2325,7 +2325,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerApproximateLocationBrowserTest,
   permissions::PermissionRequestManager* request_manager =
       GetPermissionRequestManager();
   content::PermissionController* permission_controller =
-      browser()->profile()->GetPermissionController();
+      browser()->GetProfile()->GetPermissionController();
 
   {
     base::HistogramTester histograms;
@@ -2415,7 +2415,7 @@ IN_PROC_BROWSER_TEST_F(
   permissions::PermissionRequestManager* request_manager =
       GetPermissionRequestManager();
   content::PermissionController* permission_controller =
-      browser()->profile()->GetPermissionController();
+      browser()->GetProfile()->GetPermissionController();
 
   base::HistogramTester histograms;
   request_manager->set_auto_response_for_test(

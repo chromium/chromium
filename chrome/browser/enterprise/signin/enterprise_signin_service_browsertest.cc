@@ -90,7 +90,7 @@ class EnterpriseSigninServiceTest : public InteractiveBrowserTest {
 
   void SetUpOnMainThread() override {
     CHECK(browser());
-    Profile* profile = browser()->profile();
+    Profile* profile = browser()->GetProfile();
     CHECK(profile);
 
     sync_service_ = static_cast<syncer::TestSyncService*>(
@@ -173,7 +173,7 @@ class EnterpriseSigninServiceTest : public InteractiveBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(EnterpriseSigninServiceTest, DoesNothingIfPolicyNotSet) {
   GURL about_blank = GURL(url::kAboutBlankURL);
-  browser()->profile()->GetPrefs()->ClearPref(prefs::kProfileReauthPrompt);
+  browser()->GetProfile()->GetPrefs()->ClearPref(prefs::kProfileReauthPrompt);
   RunTestSequence(
       SetMaxTransportState(TransportState::START_DEFERRED),
       CheckTabs(browser(), {{about_blank, ACTIVE}}),

@@ -724,7 +724,7 @@ class WatermarkSettingsBrowserTest : public InProcessBrowserTest,
 };
 
 IN_PROC_BROWSER_TEST_P(WatermarkSettingsBrowserTest, GetStyleSettings) {
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
 
   // Test with default pref values.
   SkColor expected_fill_color = GetDefaultFillColor();
@@ -773,7 +773,7 @@ class WatermarkSettingsCommandLineBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(WatermarkSettingsCommandLineBrowserTest, GetColors) {
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   EXPECT_EQ(GetFillColor(prefs), SkColorSetA(SkColorSetRGB(0x00, 0x00, 0x00),
                                              PercentageToSkAlpha(50)));
   EXPECT_EQ(GetOutlineColor(prefs), SkColorSetA(SkColorSetRGB(0xff, 0xff, 0xff),

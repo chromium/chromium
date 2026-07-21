@@ -857,11 +857,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
                        MAYBE_SaveLinkAsEntryIsDisabledForBlockedUrls) {
   base::ListValue list;
   list.Append("google.com");
-  browser()->profile()->GetPrefs()->SetList(policy::policy_prefs::kUrlBlocklist,
-                                            std::move(list));
+  browser()->GetProfile()->GetPrefs()->SetList(
+      policy::policy_prefs::kUrlBlocklist, std::move(list));
   base::RunLoop run_loop;
   browser()
-      ->profile()
+      ->GetProfile()
       ->GetProfilePolicyConnector()
       ->policy_service()
       ->RefreshPolicies(run_loop.QuitClosure(),
@@ -882,7 +882,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   auto initial_url = embedded_test_server()->GetURL("/empty.html");
-  browser()->profile()->GetPrefs()->SetList(
+  browser()->GetProfile()->GetPrefs()->SetList(
       policy::policy_prefs::kUrlBlocklist,
       base::ListValue().Append(initial_url.spec()));
   base::RunLoop().RunUntilIdle();
@@ -903,7 +903,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   auto initial_url = embedded_test_server()->GetURL("/empty.html");
-  browser()->profile()->GetPrefs()->SetList(
+  browser()->GetProfile()->GetPrefs()->SetList(
       policy::policy_prefs::kUrlBlocklist,
       base::ListValue().Append("google.com"));
   base::RunLoop().RunUntilIdle();
@@ -932,11 +932,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
                        MAYBE_SaveImageAsEntryIsDisabledForBlockedUrls) {
   base::ListValue list;
   list.Append("url.com");
-  browser()->profile()->GetPrefs()->SetList(policy::policy_prefs::kUrlBlocklist,
-                                            std::move(list));
+  browser()->GetProfile()->GetPrefs()->SetList(
+      policy::policy_prefs::kUrlBlocklist, std::move(list));
   base::RunLoop run_loop;
   browser()
-      ->profile()
+      ->GetProfile()
       ->GetProfilePolicyConnector()
       ->policy_service()
       ->RefreshPolicies(run_loop.QuitClosure(),
@@ -955,8 +955,8 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
                        SaveVideoAsEntryIsDisabledForBlockedUrls) {
   base::ListValue list;
   list.Append("example.com");
-  browser()->profile()->GetPrefs()->SetList(policy::policy_prefs::kUrlBlocklist,
-                                            std::move(list));
+  browser()->GetProfile()->GetPrefs()->SetList(
+      policy::policy_prefs::kUrlBlocklist, std::move(list));
   base::RunLoop().RunUntilIdle();
 
   std::unique_ptr<TestRenderViewContextMenu> menu = CreateContextMenu(
@@ -3061,7 +3061,7 @@ class LensOverlayBrowserTest : public LensBrowserBaseTest {
     InProcessBrowserTest::SetUpOnMainThread();
 
     // Permits sharing the page screenshot and content by default.
-    PrefService* prefs = browser()->profile()->GetPrefs();
+    PrefService* prefs = browser()->GetProfile()->GetPrefs();
     prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, true);
     prefs->SetBoolean(lens::prefs::kLensSharingPageContentEnabled, true);
   }
@@ -3070,7 +3070,7 @@ class LensOverlayBrowserTest : public LensBrowserBaseTest {
     InProcessBrowserTest::TearDownOnMainThread();
 
     // Disallow sharing the page screenshot by default.
-    PrefService* prefs = browser()->profile()->GetPrefs();
+    PrefService* prefs = browser()->GetProfile()->GetPrefs();
     prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, false);
   }
 
@@ -3283,7 +3283,7 @@ class DevToolsPolicyContextMenuBrowserTest : public ContextMenuBrowserTestBase {
 
   void SetDevToolsAvailability(
       policy::DeveloperToolsAvailability availability) {
-    browser()->profile()->GetPrefs()->SetInteger(
+    browser()->GetProfile()->GetPrefs()->SetInteger(
         prefs::kDevToolsAvailability, static_cast<int>(availability));
   }
 
@@ -3838,7 +3838,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, MAYBE_WebpImageDownscaleToWebp) {
 
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
                        CopyLinkToTextDisabledWithScrollToTextPolicyDisabled) {
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kScrollToTextFragmentEnabled, false);
 
   std::unique_ptr<TestRenderViewContextMenu> menu =
@@ -4348,7 +4348,8 @@ IN_PROC_BROWSER_TEST_P(MemoryBanksContextMenuBrowserTest,
 
   std::unique_ptr<TestRenderViewContextMenu> menu =
       CreateContextMenuMediaTypeNone(url, url);
-  auto* service = ContextHubServiceFactory::GetForProfile(browser()->profile());
+  auto* service =
+      ContextHubServiceFactory::GetForProfile(browser()->GetProfile());
   ASSERT_TRUE(service);
 
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_SAVE_TO_MEMORY_BANKS, 0);

@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(MultiProfileDownloadNotifierBrowserTest,
                        ProfileObservation) {
   // Make sure that profiles are not observed when they are filtered by
   // `ShouldObserveProfile()`.
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   ON_CALL(client(), ShouldObserveProfile(profile))
       .WillByDefault(testing::Return(false));
   // Since `manager()`'s `IsManagerInitialized()` is mocked to return true,
@@ -180,7 +180,7 @@ INSTANTIATE_TEST_SUITE_P(
 IN_PROC_BROWSER_TEST_P(
     MultiProfileDownloadNotifierManagerInitializationBrowserTest,
     ClientCalls) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   ON_CALL(client(), ShouldObserveProfile(profile))
       .WillByDefault(testing::Return(true));
   notifier()->AddProfile(profile);
@@ -217,7 +217,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     MultiProfileDownloadNotifierManagerInitializationBrowserTest,
     DownloadRetrieval) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   ON_CALL(client(), ShouldObserveProfile(profile))
       .WillByDefault(testing::Return(true));
   notifier()->AddProfile(profile);

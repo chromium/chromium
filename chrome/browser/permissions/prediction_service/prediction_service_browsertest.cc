@@ -340,10 +340,10 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
     mock_permission_prompt_factory_ =
         std::make_unique<MockPermissionPromptFactory>(manager);
     host_resolver()->AddRule("*", "127.0.0.1");
-    browser()->profile()->GetPrefs()->SetBoolean(prefs::kEnableNotificationCPSS,
-                                                 true);
-    browser()->profile()->GetPrefs()->SetBoolean(prefs::kEnableGeolocationCPSS,
-                                                 true);
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
+        prefs::kEnableNotificationCPSS, true);
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
+        prefs::kEnableGeolocationCPSS, true);
   }
 
   void TearDownOnMainThread() override {
@@ -517,7 +517,7 @@ class PredictionServiceHoldbackBrowserTest
   void SetUpOnMainThread() override {
     PredictionServiceBrowserTestBase::SetUpOnMainThread();
 
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
   }
 };
@@ -827,7 +827,7 @@ class AivXModelPredictionServiceBrowserTest
     // providing it with the additional AIv4 permission relevance field. Because
     // of this we only provide those workflows to users that agreed to data
     // collection.
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
 
     // Only one model_handler can be registered for the same optimization
@@ -1680,7 +1680,7 @@ class PredictionServiceAIP92BrowserTest
 
   void SetUpOnMainThread() override {
     PredictionServiceBrowserTestBase::SetUpOnMainThread();
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
   }
 };
@@ -1759,7 +1759,7 @@ class PredictionServiceGeolocationAccuracyBrowserTest
 
   void SetUpOnMainThread() override {
     PredictionServiceBrowserTestBase::SetUpOnMainThread();
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
   }
 

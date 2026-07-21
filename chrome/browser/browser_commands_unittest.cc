@@ -105,7 +105,7 @@ TEST_F(BrowserCommandsTest, TabNavigationAccelerators) {
 TEST_F(BrowserCommandsTest, SelectNextTab_MRU) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kCtrlTabMru);
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kCtrlTabMru, true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kCtrlTabMru, true);
 
   GURL about_blank(url::kAboutBlankURL);
 
@@ -249,7 +249,7 @@ TEST_F(BrowserCommandsTest, BookmarkCurrentTab) {
   chrome::BookmarkCurrentTab(browser());
 
   // It should now be bookmarked in the bookmark model.
-  EXPECT_EQ(profile(), browser()->profile());
+  EXPECT_EQ(profile(), browser()->GetProfile());
   EXPECT_TRUE(model->IsBookmarked(url1));
 }
 

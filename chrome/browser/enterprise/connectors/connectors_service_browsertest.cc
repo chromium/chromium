@@ -178,9 +178,9 @@ class ConnectorsServiceProfileBrowserTest
 
     auto* profile_policy_manager =
 #if BUILDFLAG(IS_CHROMEOS)
-        browser()->profile()->GetUserCloudPolicyManagerAsh();
+        browser()->GetProfile()->GetUserCloudPolicyManagerAsh();
 #else
-        browser()->profile()->GetUserCloudPolicyManager();
+        browser()->GetProfile()->GetUserCloudPolicyManager();
 #endif
 
     profile_policy_manager->core()->store()->set_policy_data_for_testing(
@@ -224,10 +224,10 @@ class ConnectorsServiceProfileBrowserTest
                 std::string_view scope_pref,
                 std::string_view pref_value,
                 bool profile_scope = true) {
-    browser()->profile()->GetPrefs()->Set(
+    browser()->GetProfile()->GetPrefs()->Set(
         pref, *base::JSONReader::Read(pref_value,
                                       base::JSON_PARSE_CHROMIUM_EXTENSIONS));
-    browser()->profile()->GetPrefs()->SetInteger(
+    browser()->GetProfile()->GetPrefs()->SetInteger(
         scope_pref, profile_scope ? policy::POLICY_SCOPE_USER
                                   : policy::POLICY_SCOPE_MACHINE);
   }
@@ -235,8 +235,8 @@ class ConnectorsServiceProfileBrowserTest
                 std::string_view scope_pref,
                 int pref_value,
                 bool profile_scope = true) {
-    browser()->profile()->GetPrefs()->SetInteger(pref, pref_value);
-    browser()->profile()->GetPrefs()->SetInteger(
+    browser()->GetProfile()->GetPrefs()->SetInteger(pref, pref_value);
+    browser()->GetProfile()->GetPrefs()->SetInteger(
         scope_pref, profile_scope ? policy::POLICY_SCOPE_USER
                                   : policy::POLICY_SCOPE_MACHINE);
   }

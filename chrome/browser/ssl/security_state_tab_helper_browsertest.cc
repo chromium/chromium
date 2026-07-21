@@ -1015,7 +1015,7 @@ class PKPModelClientTest : public SecurityStateTabHelperTest {
     }
 
     content::StoragePartition* partition =
-        browser()->profile()->GetDefaultStoragePartition();
+        browser()->GetProfile()->GetDefaultStoragePartition();
     {
       base::test::TestFuture<void> future;
       partition->GetNetworkContext()->EnableStaticKeyPinningForTesting(
@@ -1360,7 +1360,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest,
                        MixedFormsDontShowLockIfWarningsAreDisabledByPolicy) {
   SetUpMockCertVerifierForHttpsServer(0, net::OK);
 
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kMixedFormsWarningsEnabled, false);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(

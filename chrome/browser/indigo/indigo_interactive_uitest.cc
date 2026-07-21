@@ -124,8 +124,8 @@ class IndigoInteractiveUiTest : public InteractiveBrowserTest {
         identity_test_env_adaptor_->identity_test_env()->identity_manager(),
         account_info);
 
-    browser()->profile()->GetPrefs()->SetBoolean(prefs::kIndigoHasOnboarded,
-                                                 true);
+    browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kIndigoHasOnboarded,
+                                                    true);
     fake_api_.StartAcceptingConnectionsAutomatic();
 
     embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(

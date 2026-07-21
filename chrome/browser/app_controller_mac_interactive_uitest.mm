@@ -58,7 +58,7 @@ using AppControllerInteractiveUITest = InteractiveBrowserTest;
 // Regression test for https://crbug.com/40192595
 IN_PROC_BROWSER_TEST_F(AppControllerInteractiveUITest, DeleteEphemeralProfile) {
   EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   AppController* app_controller = AppController.sharedController;
   ASSERT_EQ(profile, app_controller.lastProfileIfLoaded);
@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuInteractiveUITest,
   GURL simple(embedded_test_server()->GetURL("/simple.html"));
   SendOpenUrlToAppController(simple);
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
 
   // Load profile's History Service backend so it will be assigned to the
@@ -386,7 +386,7 @@ class AppControllerIncognitoSwitchInteractiveUITest
 IN_PROC_BROWSER_TEST_F(AppControllerIncognitoSwitchInteractiveUITest,
                        ObserveProfileDestruction) {
   // Chrome is launched in incognito.
-  Profile* otr_profile = browser()->profile();
+  Profile* otr_profile = browser()->GetProfile();
   EXPECT_EQ(otr_profile,
             otr_profile->GetPrimaryOTRProfile(/*create_if_needed=*/false));
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);

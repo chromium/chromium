@@ -491,7 +491,7 @@ class DeviceTrustBrowserTestWithConsent
   void SetUpOnMainThread() override {
     InteractiveBrowserTestMixin::SetUpOnMainThread();
 
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         device_signals::prefs::kUnmanagedDeviceSignalsConsentFlowEnabled,
         is_consent_policy_enabled());
   }

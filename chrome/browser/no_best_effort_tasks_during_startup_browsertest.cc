@@ -281,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(NoBestEffortTasksDuringSlowStartupTest,
 IN_PROC_BROWSER_TEST_F(NoBestEffortTasksDuringSessionRestoreStartupTest,
                        PRE_Restore) {
   SessionStartupPref pref(SessionStartupPref::LAST);
-  SessionStartupPref::SetStartupPref(browser()->profile(), pref);
+  SessionStartupPref::SetStartupPref(browser()->GetProfile(), pref);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSlowURL()));
   chrome::AddTabAt(browser(), GetSlowURL(), -1, true);

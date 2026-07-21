@@ -266,7 +266,7 @@ class DownloadFramePolicyBrowserTest
     std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>
         download_items;
     content::DownloadManager* manager =
-        browser()->profile()->GetDownloadManager();
+        browser()->GetProfile()->GetDownloadManager();
     manager->GetAllDownloads(&download_items);
     EXPECT_EQ(expected_num_downloads_, download_items.size());
   }

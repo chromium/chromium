@@ -428,7 +428,7 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest, RequestDevice) {
 IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest,
                        DeviceConnectAndOpenDeviceWhenServiceWorkerStopped) {
   content::ServiceWorkerContext* context = browser()
-                                               ->profile()
+                                               ->GetProfile()
                                                ->GetDefaultStoragePartition()
                                                ->GetServiceWorkerContext();
   // Set up an observer for service worker events.
@@ -538,7 +538,7 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest,
       "events/";
 
   content::ServiceWorkerContext* context = browser()
-                                               ->profile()
+                                               ->GetProfile()
                                                ->GetDefaultStoragePartition()
                                                ->GetServiceWorkerContext();
   // Set up an observer for service worker events.

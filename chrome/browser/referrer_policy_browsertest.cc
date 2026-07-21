@@ -632,7 +632,7 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, RequestTabletSite) {
 // the load was triggered by the parent, or from the iframe itself, if the
 // navigations was started by the iframe.
 IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, IFrame) {
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kWebKitAllowRunningInsecureContent, true);
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();

@@ -216,9 +216,9 @@ class DataProtectionNavigationControllerPolicyTest
         enterprise_connectors::AnalysisConnector::PRINT);
     enterprise_connectors::test::SetOnSecurityEventReporting(
         browser()->GetProfile()->GetPrefs(), false);
-    browser()->profile()->GetPrefs()->ClearPref(
+    browser()->GetProfile()->GetPrefs()->ClearPref(
         enterprise_connectors::kEnterpriseRealTimeUrlCheckMode);
-    browser()->profile()->GetPrefs()->ClearPref(
+    browser()->GetProfile()->GetPrefs()->ClearPref(
         enterprise_connectors::kEnterpriseRealTimeUrlCheckScope);
   }
 };

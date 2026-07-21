@@ -203,7 +203,8 @@ IN_PROC_BROWSER_TEST_F(IncognitoNavigationThrottleBrowserTest,
 
   // Disallow the extension to run in Incognito and verify that navigaion is
   // again blocked.
-  extensions::util::SetIsIncognitoEnabled(extension->id(), browser()->profile(),
+  extensions::util::SetIsIncognitoEnabled(extension->id(),
+                                          browser()->GetProfile(),
                                           /*enabled=*/false);
   NavigateToSimplePage(incognito_browser());
   EXPECT_TRUE(IsUnallowedExtensionsBlockingPageSown(incognito_browser(),

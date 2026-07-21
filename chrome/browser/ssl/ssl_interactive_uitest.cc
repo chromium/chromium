@@ -42,7 +42,7 @@ class SSLUITestWithWebApps : public InteractiveBrowserTestMixin<SSLUITestBase> {
     web_app_info->title = u"Test app";
     web_app_info->description = u"Test description";
 
-    Profile* profile = browser()->profile();
+    Profile* profile = browser()->GetProfile();
 
     webapps::AppId app_id =
         web_app::test::InstallWebApp(profile, std::move(web_app_info));
@@ -58,7 +58,7 @@ class SSLUITestWithWebApps : public InteractiveBrowserTestMixin<SSLUITestBase> {
   void ProceedThroughInterstitialInAppAndCheckNewTabOpened(
       Browser* app_browser,
       const GURL& app_url) {
-    Profile* profile = browser()->profile();
+    Profile* profile = browser()->GetProfile();
 
     size_t num_browsers =
         ProfileBrowserCollection::GetForProfile(profile)->GetSize();

@@ -341,7 +341,7 @@ class DownloadNotificationTest : public DownloadNotificationTestBase {
   ~DownloadNotificationTest() override = default;
 
   void SetUpOnMainThread() override {
-    Profile* profile = browser()->profile();
+    Profile* profile = browser()->GetProfile();
 
     std::unique_ptr<TestChromeDownloadManagerDelegate> test_delegate;
     test_delegate =
@@ -379,7 +379,7 @@ class DownloadNotificationTest : public DownloadNotificationTestBase {
 
   TestChromeDownloadManagerDelegate* GetIncognitoDownloadManagerDelegate()
       const {
-    Profile* incognito_profile = incognito_browser()->profile();
+    Profile* incognito_profile = incognito_browser()->GetProfile();
     return static_cast<TestChromeDownloadManagerDelegate*>(
         DownloadCoreServiceFactory::GetForBrowserContext(incognito_profile)
             ->GetDownloadManagerDelegate());

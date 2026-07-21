@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(SystemPermissionSettingsMacTest,
   // 2. Simulate deactivation and reactivation of the browser window.
   // We can do this by creating a second browser window, activating it, and then
   // activating the first browser window.
-  Browser* second_browser = CreateBrowser(browser()->profile());
+  Browser* second_browser = CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(second_browser));
   ASSERT_FALSE(browser()->GetWindow()->IsActive());
 

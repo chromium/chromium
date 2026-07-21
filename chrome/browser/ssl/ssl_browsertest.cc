@@ -1588,7 +1588,7 @@ IN_PROC_BROWSER_TEST_F(
   test_dir.WriteManifest(kManifest);
   test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
 
-  Profile* const profile = browser()->profile();
+  Profile* const profile = browser()->GetProfile();
   extensions::ChromeTestExtensionLoader extension_loader(profile);
   scoped_refptr<const extensions::Extension> extension =
       extension_loader.LoadExtension(test_dir.UnpackedPath());

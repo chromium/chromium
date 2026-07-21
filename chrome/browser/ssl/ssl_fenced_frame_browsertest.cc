@@ -61,7 +61,7 @@ class SSLFencedFrameBrowserTest : public InProcessBrowserTest {
     web_app_info->title = u"Test app";
     web_app_info->description = u"Test description";
 
-    Profile* profile = browser()->profile();
+    Profile* profile = browser()->GetProfile();
 
     webapps::AppId app_id =
         web_app::test::InstallWebApp(profile, std::move(web_app_info));

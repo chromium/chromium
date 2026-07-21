@@ -94,7 +94,7 @@ class DefaultBrowserManagerWinBrowserTest : public InProcessBrowserTest {
               return std::make_unique<DefaultBrowserManager>(
                   &browser_process, std::move(fake_shell_delegate),
                   base::BindLambdaForTesting(
-                      [&]() { return browser()->profile(); }));
+                      [&]() { return browser()->GetProfile(); }));
             }));
   }
 

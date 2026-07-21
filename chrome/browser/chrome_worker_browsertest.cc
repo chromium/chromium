@@ -59,7 +59,7 @@ class ChromeWorkerBrowserTest : public InProcessBrowserTest {
     const std::string kCookie = "foo=bar";
 
     // Set up third-party cookie blocking.
-    browser()->profile()->GetPrefs()->SetInteger(
+    browser()->GetProfile()->GetPrefs()->SetInteger(
         prefs::kCookieControlsMode, static_cast<int>(cookie_controls_mode));
 
     // Make sure cookies are not set.

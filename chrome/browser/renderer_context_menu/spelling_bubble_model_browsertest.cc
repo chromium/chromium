@@ -39,9 +39,9 @@ class SpellingBubbleModelTest : public InProcessBrowserTest {
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(SpellingBubbleModelTest, ConfirmSetsPrefs) {
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       spellcheck::prefs::kSpellCheckUseSpellingService, false);
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       spellcheck::prefs::kSpellCheckEnable, false);
   std::unique_ptr<SpellingBubbleModel> model = CreateSpellingBubble();
   model->Accept();
@@ -52,7 +52,7 @@ IN_PROC_BROWSER_TEST_F(SpellingBubbleModelTest, ConfirmSetsPrefs) {
 }
 
 IN_PROC_BROWSER_TEST_F(SpellingBubbleModelTest, CancelSetsPref) {
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       spellcheck::prefs::kSpellCheckUseSpellingService, true);
   std::unique_ptr<SpellingBubbleModel> model = CreateSpellingBubble();
   model->Cancel();
@@ -65,7 +65,7 @@ IN_PROC_BROWSER_TEST_F(SpellingBubbleModelTest, OpenHelpPage) {
   ui_test_utils::AllBrowserTabAddedWaiter waiter;
   model->OpenHelpPage();
   content::WebContents* web_contents = waiter.Wait();
-  EXPECT_EQ(web_contents->GetBrowserContext(), browser()->profile());
+  EXPECT_EQ(web_contents->GetBrowserContext(), browser()->GetProfile());
   EXPECT_EQ(web_contents->GetVisibleURL(), model->GetHelpPageURL());
 }
 
@@ -86,6 +86,6 @@ IN_PROC_BROWSER_TEST_F(SpellingBubbleModelTest,
   ui_test_utils::AllBrowserTabAddedWaiter waiter;
   model->OpenHelpPage();
   content::WebContents* web_contents = waiter.Wait();
-  EXPECT_EQ(web_contents->GetBrowserContext(), browser()->profile());
+  EXPECT_EQ(web_contents->GetBrowserContext(), browser()->GetProfile());
   EXPECT_EQ(web_contents->GetVisibleURL(), model->GetHelpPageURL());
 }

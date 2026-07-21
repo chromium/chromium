@@ -247,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
                             blink::mojom::PermissionStatus::ASK,
                             content::PermissionStatusSource::UNSPECIFIED)));
   browser()
-      ->profile()
+      ->GetProfile()
       ->GetPermissionController()
       ->RequestPermissionFromCurrentDocument(
           rfh_a.get(),

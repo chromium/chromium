@@ -117,7 +117,7 @@ class EnterpriseProfileBadgingTest
 };
 
 IN_PROC_BROWSER_TEST_P(EnterpriseProfileBadgingTest, CanShowEnterpriseBadging) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   // When no custom policy is set, the visibility of each of the the avatar
   // badging and profile menu badging depends on whether the profile is managed
   // and if each feature controlling the default behaviour is enabled.
@@ -149,10 +149,11 @@ IN_PROC_BROWSER_TEST_P(EnterpriseProfileBadgingTest,
 
 IN_PROC_BROWSER_TEST_P(EnterpriseProfileBadgingTest,
                        CanNotShowEnterpriseBadgingForNonPrimaryOTRProfile) {
-  browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  Profile* secondary_incognito = browser()->profile()->GetOffTheRecordProfile(
-      Profile::OTRProfileID::CreateUnique("Test:NonPrimaryOTRProfile"),
-      /*create_if_needed=*/true);
+  browser()->GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  Profile* secondary_incognito =
+      browser()->GetProfile()->GetOffTheRecordProfile(
+          Profile::OTRProfileID::CreateUnique("Test:NonPrimaryOTRProfile"),
+          /*create_if_needed=*/true);
   // Profile badging should always return false in incognito.
   EXPECT_FALSE(CanShowEnterpriseBadgingForAvatar(secondary_incognito));
   EXPECT_FALSE(CanShowEnterpriseBadgingForMenu(secondary_incognito));
@@ -209,7 +210,7 @@ class EnterpriseBrowserBadgingTest
 
 IN_PROC_BROWSER_TEST_P(EnterpriseBrowserBadgingTest,
                        CanShowEnterpriseBadgingForNTPFooter) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   // When no custom policy is set, the visibility of the management notice in
   // the NTP footer depends on whether the browser is managed and
   // if the feature controlling the default behaviour is enabled.
@@ -228,7 +229,7 @@ IN_PROC_BROWSER_TEST_P(EnterpriseBrowserBadgingTest,
 
 IN_PROC_BROWSER_TEST_P(EnterpriseBrowserBadgingTest,
                        GetManagementNoticeStateForNTPFooter) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   if (!managed_browser()) {
     EXPECT_EQ(GetManagementNoticeStateForNTPFooter(profile),
@@ -297,7 +298,7 @@ using ManagedBrowserUtilsDeviceSignalsBrowserTest = InProcessBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(ManagedBrowserUtilsDeviceSignalsBrowserTest,
                        UserAcceptedAccountManagementSharesDeviceSignals) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   auto* user_permission_service =
       enterprise_signals::UserPermissionServiceFactory::GetForProfile(profile);
 

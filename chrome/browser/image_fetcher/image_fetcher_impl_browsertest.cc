@@ -54,7 +54,7 @@ class ImageFetcherImplBrowserTest : public InProcessBrowserTest {
     ImageFetcher* fetcher =
         new ImageFetcherImpl(std::make_unique<ImageDecoderImpl>(),
                              browser()
-                                 ->profile()
+                                 ->GetProfile()
                                  ->GetDefaultStoragePartition()
                                  ->GetURLLoaderFactoryForBrowserProcess());
     return fetcher;

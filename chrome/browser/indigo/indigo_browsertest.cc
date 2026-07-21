@@ -228,8 +228,8 @@ class IndigoBrowserTest : public InteractiveBrowserTest {
         identity_test_env_adaptor_->identity_test_env()->identity_manager(),
         account_info);
 
-    browser()->profile()->GetPrefs()->SetBoolean(prefs::kIndigoHasOnboarded,
-                                                 true);
+    browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kIndigoHasOnboarded,
+                                                    true);
 
     fake_api_.StartAcceptingConnectionsAutomatic();
 
@@ -469,8 +469,8 @@ class IndigoOnboardingBrowserTest : public IndigoBrowserTest {
  public:
   void SetUpOnMainThread() override {
     IndigoBrowserTest::SetUpOnMainThread();
-    browser()->profile()->GetPrefs()->SetBoolean(prefs::kIndigoHasOnboarded,
-                                                 false);
+    browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kIndigoHasOnboarded,
+                                                    false);
 
     // Tell the popup to load the distinct empty page
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
@@ -506,7 +506,7 @@ IN_PROC_BROWSER_TEST_F(IndigoOnboardingBrowserTest, OnboardingFlow) {
                   )js",
                 ExecuteJsMode::kFireAndForget),
       WaitForHide(IndigoOnboardingDialog::kWebViewId), Check([&]() {
-        return browser()->profile()->GetPrefs()->GetBoolean(
+        return browser()->GetProfile()->GetPrefs()->GetBoolean(
             prefs::kIndigoHasOnboarded);
       }));
 }
@@ -536,7 +536,7 @@ IN_PROC_BROWSER_TEST_F(IndigoOnboardingBrowserTest, ClosedOnNavigation) {
       WaitForHide(IndigoOnboardingDialog::kWebViewId),
       // Acknowledge pref remains false because onboarding was cancelled.
       Check([&]() {
-        return !browser()->profile()->GetPrefs()->GetBoolean(
+        return !browser()->GetProfile()->GetPrefs()->GetBoolean(
             prefs::kIndigoHasOnboarded);
       }));
 }

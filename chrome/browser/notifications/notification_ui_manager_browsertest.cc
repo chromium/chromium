@@ -47,7 +47,7 @@ class NotificationUIManagerBrowserTest : public InProcessBrowserTest {
     return message_center::MessageCenter::Get();
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   class TestDelegate : public message_center::NotificationDelegate {
    public:

@@ -135,7 +135,7 @@ class OidcAuthResponseCaptureNavigationThrottleTest
                       profile,
                       std::make_unique<DiceWebSigninInterceptorDelegate>());
                 },
-                browser()->profile()));
+                browser()->GetProfile()));
 
     host_resolver()->AddRule("*", "127.0.0.1");
     embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");

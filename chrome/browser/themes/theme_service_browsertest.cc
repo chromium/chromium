@@ -56,7 +56,7 @@ class ThemeServiceBrowserTest : public extensions::ExtensionBrowserTest {
 // The PRE_ part of the test installs the theme and changes where Chrome looks
 // for the theme data pack to make sure that Chrome does not find it.
 IN_PROC_BROWSER_TEST_F(ThemeServiceBrowserTest, PRE_ThemeDataPackInvalid) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   ThemeService* theme_service = ThemeServiceFactory::GetForProfile(profile);
 
   // Test initial state.

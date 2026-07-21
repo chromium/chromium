@@ -149,7 +149,7 @@ class DownloadBubbleUIControllerTest : public InProcessBrowserTest {
     EXPECT_CALL(*manager, GetBrowserContext())
         .WillRepeatedly(Return(browser()->GetProfile()));
     EXPECT_CALL(*manager, RemoveObserver(_)).WillRepeatedly(Return());
-    browser()->profile()->SetDownloadManagerForTesting(std::move(manager));
+    browser()->GetProfile()->SetDownloadManagerForTesting(std::move(manager));
 
     auto delegate = std::make_unique<ChromeDownloadManagerDelegate>(
         browser()->GetProfile());
@@ -276,7 +276,7 @@ class DownloadBubbleUIControllerTest : public InProcessBrowserTest {
     EXPECT_CALL(*manager_, GetDownloadByGuid(id))
         .WillRepeatedly(Return(&(item(index))));
     content::DownloadItemUtils::AttachInfoForTesting(
-        &(item(index)), browser()->profile(), nullptr);
+        &(item(index)), browser()->GetProfile(), nullptr);
     mock_update_service_->AddModel(
         MockDownloadBubbleUpdateService::ModelType::kDownloadItem);
     controller().OnDownloadItemAdded(&item(index), may_show_animation);

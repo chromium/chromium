@@ -337,7 +337,7 @@ class DownloadDisplayControllerTest : public InProcessBrowserTest {
       items.push_back(&item(i));
     }
     content::DownloadItemUtils::AttachInfoForTesting(
-        &(item(index)), browser()->profile(), nullptr);
+        &(item(index)), browser()->GetProfile(), nullptr);
     mock_update_service_->AddModel(
         MockDownloadBubbleUpdateService::ModelType::kDownloadItem);
     DownloadDisplay::ProgressInfo progress_info;

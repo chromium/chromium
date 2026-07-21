@@ -395,7 +395,7 @@ class SavePageBrowserTest : public InProcessBrowserTest {
   // persisted.
 
   DownloadManager* GetDownloadManager() const {
-    auto* download_manager = browser()->profile()->GetDownloadManager();
+    auto* download_manager = browser()->GetProfile()->GetDownloadManager();
     EXPECT_TRUE(download_manager);
     return download_manager;
   }

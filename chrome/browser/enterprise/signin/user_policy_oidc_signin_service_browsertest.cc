@@ -145,7 +145,7 @@ class UserPolicyOidcSigninServiceTestBase
     profile_path_ = user_data_dir.AppendASCII("OidcTestProfile");
 
     // Set policy data on the main profile to prevent it from creating jobs.
-    Profile* main_profile = browser()->profile();
+    Profile* main_profile = browser()->GetProfile();
     auto policy_data = std::make_unique<enterprise_management::PolicyData>();
     policy_data->set_gaia_id(kExampleGaiaId.ToString());
     policy_data->set_command_invalidation_topic("fake-topic");

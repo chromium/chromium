@@ -820,7 +820,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(extension);
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
   browser()
-      ->profile()
+      ->GetProfile()
       ->GetDefaultStoragePartition()
       ->FlushNetworkInterfaceForTesting();
 
@@ -964,7 +964,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(extension);
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
   browser()
-      ->profile()
+      ->GetProfile()
       ->GetDefaultStoragePartition()
       ->FlushNetworkInterfaceForTesting();
 
@@ -1135,7 +1135,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   ASSERT_TRUE(extension);
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
   browser()
-      ->profile()
+      ->GetProfile()
       ->GetDefaultStoragePartition()
       ->FlushNetworkInterfaceForTesting();
 
@@ -1277,7 +1277,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   ASSERT_TRUE(extension);
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
   browser()
-      ->profile()
+      ->GetProfile()
       ->GetDefaultStoragePartition()
       ->FlushNetworkInterfaceForTesting();
 
@@ -1402,7 +1402,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   ASSERT_TRUE(extension);
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
   browser()
-      ->profile()
+      ->GetProfile()
       ->GetDefaultStoragePartition()
       ->FlushNetworkInterfaceForTesting();
 
@@ -1916,8 +1916,8 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
                        OpenerNavigation_DownloadPolicy_Disallowed) {
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kPromptForDownload,
-                                               false);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kPromptForDownload,
+                                                  false);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("a.com", "/title1.html")));
 
@@ -1957,7 +1957,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>
       download_items;
   content::DownloadManager* manager =
-      browser()->profile()->GetDownloadManager();
+      browser()->GetProfile()->GetDownloadManager();
   manager->GetAllDownloads(&download_items);
   EXPECT_TRUE(download_items.empty());
 }
@@ -1965,8 +1965,8 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
 // Opener navigations from a same-origin popup should be allowed.
 IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
                        OpenerNavigation_DownloadPolicy_Allowed) {
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kPromptForDownload,
-                                               false);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kPromptForDownload,
+                                                  false);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("a.com", "/title1.html")));
 
@@ -2005,7 +2005,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>
       download_items;
   content::DownloadManager* manager =
-      browser()->profile()->GetDownloadManager();
+      browser()->GetProfile()->GetDownloadManager();
   manager->GetAllDownloads(&download_items);
   for (download::DownloadItem* item : download_items) {
     if (!item->IsDone())
@@ -2137,7 +2137,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
                        NavigationCanceledOnProfileShutdown) {
   Browser* incognito = CreateIncognitoBrowser();
   Profile* incognito_profile =
-      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/false);
+      browser()->GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/false);
   ASSERT_TRUE(incognito_profile);
 
   // Create a custom WebContents in which to perform a navigation. Note that we

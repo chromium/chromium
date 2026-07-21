@@ -69,7 +69,7 @@ class ManifestVerifierBrowserTest : public InProcessBrowserTest {
     test_downloader_ = std::make_unique<TestDownloader>(
         const_csp_checker_->GetWeakPtr(),
         browser()
-            ->profile()
+            ->GetProfile()
             ->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess(),
         std::move(renderer_url_loader_factory),
