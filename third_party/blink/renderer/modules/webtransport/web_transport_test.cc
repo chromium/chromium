@@ -848,6 +848,36 @@ TEST_F(WebTransportTest, SendDatagram) {
   EXPECT_TRUE(tester.Value().IsUndefined());
 }
 
+TEST_F(WebTransportTest, SendDatagramConnectionErrorWhilePending) {
+  V8TestingScope scope;
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+
+  MockWebTransport::SendDatagramCallback datagram_callback;
+  EXPECT_CALL(*mock_web_transport_, SendDatagram(ElementsAre('A'), _))
+      .WillOnce([&datagram_callback](
+                    base::span<const uint8_t>,
+                    MockWebTransport::SendDatagramCallback callback) {
+        datagram_callback = std::move(callback);
+      });
+
+  auto* writable = web_transport->datagrams()->writable();
+  auto* script_state = scope.GetScriptState();
+  auto* writer = writable->getWriter(script_state, ASSERT_NO_EXCEPTION);
+  auto* chunk = DOMUint8Array::Create(1);
+  *chunk->Data() = 'A';
+  auto result =
+      writer->write(script_state, ScriptValue::From(script_state, chunk),
+                    ASSERT_NO_EXCEPTION);
+
+  datagram_callback.Reset();
+  client_remote_.reset();
+
+  ScriptPromiseTester tester(script_state, result);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsRejected());
+}
+
 // TODO(yhirano): Move this to datagram_duplex_stream_test.cc.
 TEST_F(WebTransportTest, BackpressureForOutgoingDatagrams) {
   V8TestingScope scope;

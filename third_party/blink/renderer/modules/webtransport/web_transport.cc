@@ -240,17 +240,17 @@ class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
     UnderlyingSinkBase::Trace(visitor);
   }
 
+  void RejectPendingResolvers(v8::Local<v8::Value> error) {
+    while (!pending_datagrams_resolvers_.empty()) {
+      pending_datagrams_resolvers_.TakeFirst()->Reject(error);
+    }
+    pending_datagrams_.clear();
+  }
+
  private:
   ScriptPromise<IDLUndefined> SendDatagram(base::span<const uint8_t> data) {
     auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
         web_transport_->script_state_);
-    // This resolver is for the return value of this function. When the
-    // WebTransport is closed, the stream (for datagrams) is errored and
-    // resolvers in `pending_datagrams_resolvers_` are released without
-    // neither resolved nor rejected. That's fine, because the WritableStream
-    // takes care of the case and reject all the pending promises when the
-    // stream is errored. So we call SuppressDetachCheck here.
-    resolver->SuppressDetachCheck();
     pending_datagrams_resolvers_.push_back(resolver);
 
     if (web_transport_->transport_remote_.is_bound()) {
@@ -1655,6 +1655,7 @@ void WebTransport::Cleanup(WebTransportCloseInfo* info,
   HandlePendingGetStatsResolvers(error);
   ScriptValue error_value(isolate, error);
   datagram_underlying_source_->Error(received_datagrams_controller_, error);
+  datagram_underlying_sink_->RejectPendingResolvers(error);
   outgoing_datagrams_->Controller()->error(script_state_, error_value);
 
   // We use local variables to avoid re-entrant problems.
