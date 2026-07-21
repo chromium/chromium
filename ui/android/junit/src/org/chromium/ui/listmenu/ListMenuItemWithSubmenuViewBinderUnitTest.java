@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -37,10 +38,11 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class ListMenuItemWithSubmenuViewBinderUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private View mListItemView;
+    @Mock private ViewGroup mListItemView;
     @Mock private TextView mTextView;
     @Mock private ImageView mStartIcon;
     @Mock private ImageView mSubmenuArrow;
+    @Mock private View.OnTouchListener mOnTouchListener;
 
     private Context mContext;
 
@@ -52,6 +54,13 @@ public class ListMenuItemWithSubmenuViewBinderUnitTest {
         when(mListItemView.findViewById(R.id.menu_row_text)).thenReturn(mTextView);
         when(mListItemView.findViewById(R.id.menu_item_icon)).thenReturn(mStartIcon);
         when(mListItemView.findViewById(R.id.submenu_arrow)).thenReturn(mSubmenuArrow);
+        when(mStartIcon.getContext()).thenReturn(mContext);
+        when(mSubmenuArrow.getContext()).thenReturn(mContext);
+
+        when(mListItemView.getChildCount()).thenReturn(3);
+        when(mListItemView.getChildAt(0)).thenReturn(mStartIcon);
+        when(mListItemView.getChildAt(1)).thenReturn(mTextView);
+        when(mListItemView.getChildAt(2)).thenReturn(mSubmenuArrow);
     }
 
     @Test
@@ -74,5 +83,17 @@ public class ListMenuItemWithSubmenuViewBinderUnitTest {
                 propertyModel, mListItemView, ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID);
         verify(mStartIcon).setImageTintList(null);
         verify(mSubmenuArrow).setImageTintList(null);
+    }
+
+    @Test
+    @SmallTest
+    public void testTouchListener() {
+        PropertyModel propertyModel =
+                new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
+                        .with(ListMenuItemProperties.TOUCH_LISTENER, mOnTouchListener)
+                        .build();
+        ListMenuItemWithSubmenuViewBinder.bind(
+                propertyModel, mListItemView, ListMenuItemProperties.TOUCH_LISTENER);
+        verify(mListItemView).setOnTouchListener(mOnTouchListener);
     }
 }

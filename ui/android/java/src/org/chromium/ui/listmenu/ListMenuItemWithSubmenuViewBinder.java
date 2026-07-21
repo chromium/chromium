@@ -18,6 +18,7 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.START_ICON_BITMAP;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TEXT_APPEARANCE_ID;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TOOLTIP;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.TOUCH_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.IS_EXPANDED;
 
 import android.content.res.Resources;
@@ -83,6 +84,8 @@ class ListMenuItemWithSubmenuViewBinder {
             }
         } else if (propertyKey == KEY_LISTENER) {
             view.setOnKeyListener(model.get(KEY_LISTENER));
+        } else if (propertyKey == TOUCH_LISTENER) {
+            view.setOnTouchListener(model.get(TOUCH_LISTENER));
         } else if (propertyKey == TEXT_APPEARANCE_ID) {
             @StyleRes int textAppearanceId = model.get(TEXT_APPEARANCE_ID);
             if (textAppearanceId != Resources.ID_NULL) {
