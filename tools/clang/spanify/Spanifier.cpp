@@ -140,37 +140,6 @@ enum Precedence {
   // Higher priority (stronger ties to the target)
 };
 
-// Resolves a SourceLocation to its spelling location safely.
-// Returns an invalid location if the spelling location is in '<scratch space>'
-// (Clang's virtual buffer for token pasting).
-clang::SourceLocation GetSafeSpellingLoc(clang::SourceLocation loc,
-                                         const clang::SourceManager& sm) {
-  if (loc.isInvalid()) {
-    return clang::SourceLocation();
-  }
-  clang::SourceLocation spelling_loc = sm.getSpellingLoc(loc);
-  if (sm.isWrittenInScratchSpace(spelling_loc)) {
-    return clang::SourceLocation();
-  }
-  return spelling_loc;
-}
-
-// Convenience wrapper around `GetSafeSpellingLoc` that resolves a
-// clang::SourceRange safely. Returns an invalid clang::SourceRange if either
-// location resolves to an invalid location.
-clang::SourceRange GetSafeSpellingLocations(
-    const clang::SourceRange& range,
-    const clang::SourceManager& source_manager) {
-  clang::SourceLocation spelling_begin =
-      GetSafeSpellingLoc(range.getBegin(), source_manager);
-  clang::SourceLocation spelling_end =
-      GetSafeSpellingLoc(range.getEnd(), source_manager);
-  if (spelling_begin.isInvalid() || spelling_end.isInvalid()) {
-    return clang::SourceRange();
-  }
-  return clang::SourceRange(spelling_begin, spelling_end);
-}
-
 // Returns true if the `loc` is inside a macro expansion, except for the case
 // that the `loc` is at a macro argument of the exceptional macros (EXPECT_ and
 // ASSERT_ family).
@@ -179,10 +148,6 @@ bool IsInExcludedMacro(clang::SourceLocation loc,
                        const clang::ASTContext& ast_context,
                        const clang::SourceManager& source_manager) {
   if (!loc.isMacroID()) [[likely]] {
-    return false;
-  }
-  // Exclude scratch space locations early as they cannot be rewritten.
-  if (GetSafeSpellingLoc(loc, source_manager).isInvalid()) {
     return false;
   }
 
@@ -206,12 +171,6 @@ bool IsInExcludedMacro(clang::SourceLocation loc,
   }
 
   if (loc.isMacroID()) {
-    // If we stopped the loop because we hit scratch space, return false
-    // to avoid treating this as an excluded macro (which would trigger
-    // AdaptBinaryOpInMacro and crash on the virtual location).
-    if (GetSafeSpellingLoc(loc, source_manager).isInvalid()) {
-      return false;
-    }
     // This branch handles the following case:
     //     #define EXPECT_TRUE(expect_arg) if (expect_arg) ; else Crash()
     //     #define MY_MACRO() EXPECT_TRUE(immediate_value)
@@ -236,39 +195,6 @@ bool IsInExcludedMacro(clang::SourceLocation loc,
   }
 
   return true;
-}
-
-// Resolves a SourceLocation to its expansion location safely.
-// Returns an invalid location if the expansion location is in '<scratch space>'
-// (Clang's virtual buffer for token pasting).
-clang::SourceLocation GetSafeExpansionLoc(clang::SourceLocation loc,
-                                          const clang::SourceManager& sm) {
-  if (loc.isInvalid()) {
-    return clang::SourceLocation();
-  }
-  clang::SourceLocation exp_loc = sm.getExpansionLoc(loc);
-  if (sm.isWrittenInScratchSpace(exp_loc)) {
-    return clang::SourceLocation();
-  }
-  return exp_loc;
-}
-
-// Matcher that checks if a node is expanded in a system header safely.
-// Returns false early for scratch space to prevent Clang crashes.
-AST_POLYMORPHIC_MATCHER(isSafeExpansionInSystemHeader,
-                        AST_POLYMORPHIC_SUPPORTED_TYPES(clang::Decl,
-                                                        clang::Stmt,
-                                                        clang::TypeLoc)) {
-  auto loc = Node.getBeginLoc();
-  if (loc.isInvalid()) {
-    return false;
-  }
-  const clang::SourceManager& sm = Finder->getASTContext().getSourceManager();
-  clang::SourceLocation exp_loc = GetSafeExpansionLoc(loc, sm);
-  if (exp_loc.isInvalid()) {
-    return false;
-  }
-  return sm.isInSystemHeader(exp_loc);
 }
 
 // Returns true if the Node is inside a macro expansion, except for the case
@@ -530,19 +456,8 @@ template <bool human_readable = false /* Tweak this to debug*/>
 std::string NodeKeyFromRange(const clang::SourceRange& range,
                              const clang::SourceManager& source_manager,
                              const std::string& optional_seed = "") {
-  clang::SourceRange safe_range =
-      GetSafeSpellingLocations(range, source_manager);
-  if (safe_range.isInvalid()) {
-    std::string key = llvm::formatv(
-        "invalid_{0}_{1}_{2}", range.getBegin().getRawEncoding(),
-        range.getEnd().getRawEncoding(), HashBase64(optional_seed));
-    if constexpr (human_readable) {
-      key += "_scratch_or_invalid";
-    }
-    return key;
-  }
   clang::tooling::Replacement replacement(
-      source_manager, clang::CharSourceRange::getCharRange(safe_range), "");
+      source_manager, clang::CharSourceRange::getCharRange(range), "");
   llvm::StringRef path = replacement.getFilePath();
   llvm::StringRef file_name = llvm::sys::path::filename(path);
 
@@ -553,18 +468,16 @@ std::string NodeKeyFromRange(const clang::SourceRange& range,
   if constexpr (!human_readable) {
     return llvm::formatv(
         "{0}:{1}", ToStringWithPadding(replacement.getOffset(), 7),
-        HashBase64(
-            NodeKeyFromRange<true>(safe_range, source_manager, optional_seed),
-            8));
+        HashBase64(NodeKeyFromRange<true>(range, source_manager, optional_seed),
+                   8));
   }
 
-  return llvm::formatv(
-      "{0}:{1}:{2}:{3}:{4}:{5}",
-      ToStringWithPadding(replacement.getOffset(), 7),
-      HashBase64(path.str() + optional_seed), file_name,
-      source_manager.getSpellingLineNumber(safe_range.getBegin()),
-      source_manager.getSpellingColumnNumber(safe_range.getBegin()),
-      replacement.getLength());
+  return llvm::formatv("{0}:{1}:{2}:{3}:{4}:{5}",
+                       ToStringWithPadding(replacement.getOffset(), 7),
+                       HashBase64(path.str() + optional_seed), file_name,
+                       source_manager.getSpellingLineNumber(range.getBegin()),
+                       source_manager.getSpellingColumnNumber(range.getBegin()),
+                       replacement.getLength());
 }
 
 // Returns the identifier for the given clang node. The returned identifier is
@@ -597,15 +510,6 @@ void Emit(const std::string& line) {
   }
 }
 
-void EmitEdge(const std::string& lhs, const std::string& rhs) {
-  Emit(llvm::formatv("e {0} {1}\n", lhs, rhs));
-}
-
-// Emits an exclusion edge to prevent a node entirely from being rewritten.
-void EmitExclusion(const std::string& node) {
-  EmitEdge(node, "global_exclude");
-}
-
 // Associate a change with a node.
 // A replacement has one of following format:
 // - r:::<file path>:::<offset>:::<length>:::<replacement text>
@@ -614,11 +518,16 @@ void EmitExclusion(const std::string& node) {
 //
 // It is associated with a "Node", which is a unique identifier.
 void EmitReplacement(std::string_view node, std::string_view replacement) {
-  if (replacement.empty()) {
-    EmitExclusion(std::string(node));
-    return;
-  }
   Emit(llvm::formatv("r {0} {1}\n", node, replacement));
+}
+
+void EmitEdge(const std::string& lhs, const std::string& rhs) {
+  Emit(llvm::formatv("e {0} {1}\n", lhs, rhs));
+}
+
+// Emits an exclusion edge to prevent a node entirely from being rewritten.
+void EmitExclusion(const std::string& node) {
+  EmitEdge(node, "global_exclude");
 }
 
 // Emits a source node.
@@ -651,11 +560,6 @@ void EmitSink(const std::string& node) {
 void EmitFrontier(const std::string& lhs_key,
                   const std::string& rhs_key,
                   const std::string& replacement) {
-  if (replacement.empty()) {
-    EmitExclusion(lhs_key);
-    EmitExclusion(rhs_key);
-    return;
-  }
   Emit(llvm::formatv("f {0} {1} {2}\n", lhs_key, rhs_key, replacement));
 }
 
@@ -663,18 +567,11 @@ std::string GetReplacementDirective(const clang::SourceRange& replacement_range,
                                     std::string replacement_text,
                                     const clang::SourceManager& source_manager,
                                     int precedence = kNeutralPrecedence) {
-  clang::SourceRange safe_range =
-      GetSafeSpellingLocations(replacement_range, source_manager);
-  if (safe_range.isInvalid()) {
-    return "";
-  }
   clang::tooling::Replacement replacement(
-      source_manager, clang::CharSourceRange::getCharRange(safe_range),
+      source_manager, clang::CharSourceRange::getCharRange(replacement_range),
       replacement_text);
   llvm::StringRef file_path = replacement.getFilePath();
-  if (file_path.empty()) {
-    return "";
-  }
+  assert(!file_path.empty() && "Replacement file path is empty.");
   // For replacements that span multiple lines, make sure to remove the newline
   // character.
   // `./apply-edits.py` expects `\n` to be escaped as '\0'.
@@ -729,9 +626,6 @@ std::function<clang::SourceLocation(clang::SourceLocation)> GetSpellingLocFunc(
     const clang::LangOptions& lang_opts [[clang::lifetimebound]]) {
   return [&](clang::SourceLocation loc) -> clang::SourceLocation {
     if (!loc.isMacroID()) [[likely]] {
-      return loc;
-    }
-    if (GetSafeSpellingLoc(loc, source_manager).isInvalid()) {
       return loc;
     }
     clang::SourceLocation original_loc = loc;
@@ -1195,17 +1089,6 @@ std::string getNodeFromRawPtrTypeLoc(
   return key;
 }
 
-// Returns true if the declaration should be excluded from spanification.
-bool IsDeclExcluded(const clang::DeclaratorDecl* decl) {
-  // Exclude null pointers.
-  if (!decl) {
-    return true;
-  }
-  const clang::SourceManager& sm = decl->getASTContext().getSourceManager();
-  // Exclude invalid locations and tokens from Scratch Space.
-  return GetSafeSpellingLoc(decl->getLocation(), sm).isInvalid();
-}
-
 // This represents a c-style array function parameter.
 // Since we don't always have the size of the array parameter, we rewrite the
 // parameter to a base::span to preserve the size information for bound
@@ -1255,11 +1138,6 @@ std::string getNodeFromFunctionArrayParameter(
 
   const std::string key =
       NodeKeyFromRange(replacement_range, source_manager, type);
-  if (IsDeclExcluded(param_decl)) {
-    EmitExclusion(key);
-    return key;
-  }
-
   EmitReplacement(key,
                   GetReplacementDirective(replacement_range, replacement_text,
                                           source_manager));
@@ -1313,12 +1191,6 @@ std::string getNodeFromDecl(const clang::DeclaratorDecl* decl,
     EmitExclusion(key);
     return key;
   }
-
-  if (IsDeclExcluded(decl)) {
-    EmitExclusion(key);
-    return key;
-  }
-
   EmitReplacement(key,
                   GetReplacementDirective(replacement_range, replacement_text,
                                           source_manager));
@@ -1460,12 +1332,6 @@ void AdaptBinaryOpInMacro(const MatchFinder::MatchResult& result,
            "Error: In case of a binary operation in a macro expansion, "
            "only `declRefExpr` is supported for now.\n";
     DumpMatchResult(result);
-    EmitExclusion(key);
-    return;
-  }
-
-  if (GetSafeSpellingLoc(decl_ref->getBeginLoc(), source_manager).isInvalid()) {
-    EmitExclusion(key);
     return;
   }
 
@@ -2590,24 +2456,10 @@ bool ShouldInsertTrailingComma(const clang::InitListExpr* init_list_expr,
   const clang::Expr* last_element =
       init_list_expr->getInit(init_list_expr->getNumInits() - 1);
 
-  clang::SourceRange safe_range = GetSafeSpellingLocations(
-      clang::SourceRange(last_element->getEndLoc(),
-                         init_list_expr->getRBraceLoc()),
-      source_manager);
-  if (safe_range.isInvalid()) {
-    return false;
-  }
-  clang::SourceLocation clean_end = safe_range.getBegin();
-  clang::SourceLocation clean_rbrace = safe_range.getEnd();
-  if (source_manager.getFileID(clean_end) !=
-      source_manager.getFileID(clean_rbrace)) {
-    return false;
-  }
-
   // Conservatively search for the trailing comma. If it's already there, we do
   // not need to insert another one.
-  for (auto loc = clean_end.getLocWithOffset(1); loc != clean_rbrace;
-       loc = loc.getLocWithOffset(1)) {
+  for (auto loc = last_element->getEndLoc().getLocWithOffset(1);
+       loc != init_list_expr->getRBraceLoc(); loc = loc.getLocWithOffset(1)) {
     if (source_manager.getCharacterData(loc)[0] == ',') {
       return false;
     }
@@ -2651,12 +2503,7 @@ bool CanElideBracesForStdArrayInitialization(
   // the braces.
   for (const clang::Expr* expr : init_list_expr->inits()) {
     const clang::SourceLocation& begin_loc = expr->getBeginLoc();
-    clang::SourceLocation safe_begin =
-        GetSafeSpellingLoc(begin_loc, source_manager);
-    if (safe_begin.isInvalid()) {
-      return false;
-    }
-    if (source_manager.getCharacterData(safe_begin)[0] == '{') {
+    if (source_manager.getCharacterData(begin_loc)[0] == '{') {
       return false;
     }
   }
@@ -2704,12 +2551,9 @@ std::pair<std::string, std::string> RewriteStdArrayWithInitList(
         constant_array_type->getSize().getZExtValue() !=
             init_list_expr->getNumInits()) {
       const clang::SourceLocation& location = init_list_expr->getBeginLoc();
-      clang::SourceLocation spelling_loc =
-          GetSafeSpellingLoc(location, source_manager);
       llvm::errs() << "Array and initializer list size mismatch in file "
-                   << source_manager.getFilename(spelling_loc) << ":"
-                   << source_manager.getSpellingLineNumber(spelling_loc)
-                   << "\n";
+                   << source_manager.getFilename(location) << ":"
+                   << source_manager.getSpellingLineNumber(location) << "\n";
     }
   }
 
@@ -2805,16 +2649,6 @@ std::string getNodeFromArrayDecl(const clang::TypeLoc* type_loc,
   auto proxy_node = NodeKeyFromRange(
       clang::SourceRange(array_decl->getBeginLoc(), array_decl->getBeginLoc()),
       *result.SourceManager);
-
-  // Exclude the array but return a valid key to preserve key tracking and
-  // prevent issues in callers.
-  if (IsDeclExcluded(array_decl)) {
-    std::string key = NodeKey(array_decl, *result.SourceManager);
-    EmitExclusion(key);
-    EmitExclusion(proxy_node);
-    return proxy_node;
-  }
-
   EmitSink(proxy_node);
   if (!result.Nodes.getNodeAs<clang::Expr>("unsafe_buffer_access")) {
     // Early return to avoid uselessly determining the array replacement.
@@ -3441,19 +3275,11 @@ void MatchAdjacency(const MatchFinder::MatchResult& result) {
   std::string lhs = GetLHS(result);
   std::string rhs = GetRHS(result);
 
-  const auto* lhs_decl =
-      result.Nodes.getNodeAs<clang::DeclaratorDecl>("lhs_begin");
-  bool lhs_is_excluded = lhs_decl && IsDeclExcluded(lhs_decl);
-
-  bool is_frontier =
-      result.Nodes.getNodeAs<clang::Expr>("span_frontier") != nullptr;
-  if (is_frontier) {
+  if (result.Nodes.getNodeAs<clang::Expr>("span_frontier")) {
     AddSpanFrontierChange(lhs, rhs, result);
   }
 
-  if (!is_frontier || !lhs_is_excluded) {
-    EmitEdge(lhs, rhs);
-  }
+  EmitEdge(lhs, rhs);
 }
 
 class ExprVisitor
@@ -3508,7 +3334,7 @@ class Spanifier {
     // `raw_ptr` or `span` should not have `.data()` applied.
     auto frontier_exclusions = anyOf(
         // 1. Common exclusions that aren't project specific:
-        isSafeExpansionInSystemHeader(), isInExcludedMacroLocation(),
+        isExpansionInSystemHeader(), isInExcludedMacroLocation(),
         raw_ptr_plugin::isInGeneratedLocation(),
         raw_ptr_plugin::ImplicitFieldDeclaration(),
         raw_ptr_plugin::isInExternCContext(),
@@ -3733,7 +3559,7 @@ class Spanifier {
                        callExpr(callee(functionDecl(
                            hasReturnTypeLoc(pointer_type_loc),
                            anyOf(raw_ptr_plugin::isInThirdPartyLocation(),
-                                 isSafeExpansionInSystemHeader(),
+                                 isExpansionInSystemHeader(),
                                  raw_ptr_plugin::isInExternCContext())))),
                        cxxNullPtrLiteralExpr().bind("nullptr_expr"),
                        cxxNewExpr(),
@@ -3838,16 +3664,8 @@ class Spanifier {
                                            hasOperatorName("++")),
                                      hasArgument(0, lhs_expr_variations)))))
             .bind("unsafe_buffer_access"));
-    Match(unsafe_buffer_access, [](const MatchFinder::MatchResult& result) {
-      const auto* decl =
-          result.Nodes.getNodeAs<clang::DeclaratorDecl>("lhs_begin");
-      if (decl && IsDeclExcluded(decl)) {
-        return;
-      }
-      std::string lhs = GetLHS(result);
-      if (!lhs.empty()) {
-        EmitSource(lhs);
-      }
+    Match(unsafe_buffer_access, [](const auto& result) {
+      EmitSource(GetLHS(result));  // Declare unsafe buffer access.
     });
 
     // `sizeof(c_array)` is rewritten to
@@ -4008,7 +3826,7 @@ class Spanifier {
                                     anyOf(rhs_expr_variations,
                                           conditionalOperator(hasTrueExpression(
                                               rhs_expr_variations)))),
-                        unless(isSafeExpansionInSystemHeader())));
+                        unless(isExpansionInSystemHeader())));
     Match(assignment_relationship, MatchAdjacency);
 
     // Creates the edge from lhs to false_expr in a ternary conditional
@@ -4019,7 +3837,7 @@ class Spanifier {
                         hasOperands(lhs_expr_variations,
                                     conditionalOperator(hasFalseExpression(
                                         rhs_expr_variations))),
-                        unless(isSafeExpansionInSystemHeader())));
+                        unless(isExpansionInSystemHeader())));
     Match(assignment_relationship2, MatchAdjacency);
 
     // Supports:
@@ -4037,7 +3855,7 @@ class Spanifier {
                 cxxConstructExpr(has(expr(anyOf(
                     rhs_expr_variations, conditionalOperator(hasTrueExpression(
                                              rhs_expr_variations))))))))),
-            unless(isSafeExpansionInSystemHeader())));
+            unless(isExpansionInSystemHeader())));
     Match(var_construction, MatchAdjacency);
 
     // Creates the edge from lhs to false_expr in a ternary conditional
@@ -4050,7 +3868,7 @@ class Spanifier {
                 conditionalOperator(hasFalseExpression(rhs_expr_variations)),
                 cxxConstructExpr(has(expr(conditionalOperator(
                     hasFalseExpression(rhs_expr_variations)))))))),
-            unless(isSafeExpansionInSystemHeader())));
+            unless(isExpansionInSystemHeader())));
     Match(var_construction2, MatchAdjacency);
 
     // Supports:
@@ -4075,7 +3893,7 @@ class Spanifier {
             hasReturnValue(expr(anyOf(
                 rhs_expr_variations,
                 conditionalOperator(hasTrueExpression(rhs_expr_variations))))),
-            unless(isSafeExpansionInSystemHeader()),
+            unless(isExpansionInSystemHeader()),
             forFunction(functionDecl(
                 hasReturnTypeLoc(pointer_type_loc.bind("lhs_type_loc")),
                 unless(exclusions))))
@@ -4088,7 +3906,7 @@ class Spanifier {
         clang::TK_IgnoreUnlessSpelledInSource,
         returnStmt(hasReturnValue(conditionalOperator(
                        hasFalseExpression(rhs_expr_variations))),
-                   unless(isSafeExpansionInSystemHeader()),
+                   unless(isExpansionInSystemHeader()),
                    forFunction(functionDecl(
                        hasReturnTypeLoc(pointer_type_loc.bind("lhs_type_loc")),
                        unless(exclusions))))
@@ -4131,7 +3949,7 @@ class Spanifier {
 
     // Handles member field initializers.
     auto field_init = fieldDecl(lhs_field, has(rhs_expr_variations),
-                                unless(isSafeExpansionInSystemHeader()));
+                                unless(isExpansionInSystemHeader()));
     Match(field_init, MatchAdjacency);
 
     // handles Obj o{temp} when Obj has no constructor.
@@ -4163,7 +3981,7 @@ class Spanifier {
                                 conditionalOperator(
                                     hasTrueExpression(rhs_expr_variations)))),
                      lhs_param),
-                 unless(isSafeExpansionInSystemHeader()),
+                 unless(isExpansionInSystemHeader()),
                  unless(cxxOperatorCallExpr(hasOperatorName("=")))));
     Match(call_expr, MatchAdjacency);
 
