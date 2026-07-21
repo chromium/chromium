@@ -331,7 +331,10 @@ void ManifestBrokerState::SetUseCaseRequested(const std::string& use_case,
 }
 
 void ManifestBrokerState::UninstallModels() {
-  asset_manager_->UninstallModels();
+  if (asset_manager_) {
+    asset_manager_->UninstallModels();
+    OnManifestUpdated();
+  }
 }
 
 void ManifestBrokerState::ResetModelCrashCount() {
