@@ -7,6 +7,8 @@
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory_coordinator/traits.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -46,6 +48,13 @@ std::string ToCommaSeparatedString(
   }
   return base::JoinString(destinations, ",");
 }
+
+constexpr base::MemoryConsumerTraits kOnDiskTraits(
+    base::MemoryConsumerTraits::EstimatedMemoryUsage::kMedium,
+    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    base::MemoryConsumerTraits::InformationRetention::kLossless,
+    base::MemoryConsumerTraits::ExecutionType::kAsynchronous,
+    base::MemoryConsumerTraits::IsStateful::kYes);
 
 }  // namespace
 
@@ -481,7 +490,8 @@ SharedDictionaryManagerOnDisk::SharedDictionaryManagerOnDisk(
 #endif  // BUILDFLAG(IS_ANDROID)
     scoped_refptr<disk_cache::BackendFileOperationsFactory>
         file_operations_factory)
-    : cache_max_size_(cache_max_size),
+    : SharedDictionaryManager("SharedDictionaryManagerOnDisk", kOnDiskTraits),
+      cache_max_size_(cache_max_size),
       cache_max_count_(cache_max_count),
       metadata_store_(database_path,
                       /*client_task_runner=*/
@@ -587,13 +597,6 @@ void SharedDictionaryManagerOnDisk::GetOriginsBetween(
                 result.value_or(std::vector<url::Origin>()));
           },
           std::move(callback)));
-}
-
-void SharedDictionaryManagerOnDisk::HandleMemoryPressure(
-    base::MemoryPressureLevel level) {
-  if (level != base::MEMORY_PRESSURE_LEVEL_NONE) {
-    dictionary_cache_->Clear();
-  }
 }
 
 scoped_refptr<SharedDictionaryWriter>
@@ -839,6 +842,13 @@ void SharedDictionaryManagerOnDisk::MaybePostExpiredDictionaryDeletionTask() {
             }
           },
           weak_factory_.GetWeakPtr())));
+}
+
+void SharedDictionaryManagerOnDisk::OnReleaseMemory() {
+  SharedDictionaryManager::OnReleaseMemory();
+  if (memory_limit() <= base::kModerateMemoryPressureThreshold) {
+    dictionary_cache_->Clear();
+  }
 }
 
 }  // namespace network

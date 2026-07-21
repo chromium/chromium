@@ -13,8 +13,9 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
 #include "base/functional/callback.h"
-#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory_coordinator/test_memory_consumer_registry.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -245,7 +246,7 @@ class SharedDictionaryManagerTest
     return result.Get();
   }
 
-  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
+  base::TestMemoryConsumerRegistry test_memory_consumer_registry_;
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -392,8 +393,11 @@ TEST_P(SharedDictionaryManagerTest,
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
 
-  base::MemoryPressureListener::SimulatePressureNotificationAsync(
-      base::MEMORY_PRESSURE_LEVEL_MODERATE, task_environment_.QuitClosure());
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
+      base::kModerateMemoryPressureThreshold, task_environment_.QuitClosure());
+  task_environment_.RunUntilQuit();
+  test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
+      task_environment_.QuitClosure());
   task_environment_.RunUntilQuit();
 
   scoped_refptr<SharedDictionaryStorage> storage =
@@ -424,8 +428,11 @@ TEST_P(SharedDictionaryManagerTest,
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
 
-  base::MemoryPressureListener::SimulatePressureNotificationAsync(
-      base::MEMORY_PRESSURE_LEVEL_CRITICAL, task_environment_.QuitClosure());
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
+      base::kCriticalMemoryPressureThreshold, task_environment_.QuitClosure());
+  task_environment_.RunUntilQuit();
+  test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
+      task_environment_.QuitClosure());
   task_environment_.RunUntilQuit();
 
   scoped_refptr<SharedDictionaryStorage> storage =
@@ -470,8 +477,11 @@ TEST_P(SharedDictionaryManagerTest,
 
   storage.reset();
 
-  base::MemoryPressureListener::SimulatePressureNotificationAsync(
-      base::MEMORY_PRESSURE_LEVEL_MODERATE, task_environment_.QuitClosure());
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
+      base::kModerateMemoryPressureThreshold, task_environment_.QuitClosure());
+  task_environment_.RunUntilQuit();
+  test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
+      task_environment_.QuitClosure());
   task_environment_.RunUntilQuit();
 
   // If `manager` observed moderate memory pressure, it should clear the cached
@@ -502,8 +512,11 @@ TEST_P(SharedDictionaryManagerTest,
 
   storage.reset();
 
-  base::MemoryPressureListener::SimulatePressureNotificationAsync(
-      base::MEMORY_PRESSURE_LEVEL_CRITICAL, task_environment_.QuitClosure());
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
+      base::kCriticalMemoryPressureThreshold, task_environment_.QuitClosure());
+  task_environment_.RunUntilQuit();
+  test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
+      task_environment_.QuitClosure());
   task_environment_.RunUntilQuit();
 
   // If `manager` observed critical memory pressure, it should clear the cached

@@ -15,8 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/memory_coordinator/async_memory_consumer_registration.h"
-#include "base/memory_coordinator/memory_consumer.h"
 #include "base/time/time.h"
 #include "net/base/hash_value.h"
 #include "net/base/network_isolation_key.h"
@@ -39,8 +37,7 @@ class SharedDictionaryCache;
 class SharedDictionaryManagerOnDisk;
 
 // A SharedDictionaryStorage which is managed by SharedDictionaryManagerOnDisk.
-class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage,
-                                      public base::PassiveMemoryConsumer {
+class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
  public:
   class WrappedDictionaryInfo : public net::SharedDictionaryInfo {
    public:
@@ -161,8 +158,6 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage,
   scoped_refptr<SharedDictionaryCache> dictionary_cache_;
   std::map<base::UnguessableToken, raw_ptr<net::SharedDictionary>>
       dictionaries_;
-
-  base::AsyncMemoryConsumerRegistration memory_consumer_registration_;
 
   bool get_dictionary_called_ = false;
   bool is_metadata_ready_ = false;

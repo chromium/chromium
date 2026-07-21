@@ -9,8 +9,9 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
-#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory_coordinator/test_memory_consumer_registry.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -273,7 +274,7 @@ class SharedDictionaryManagerOnDiskTest : public ::testing::Test {
     ASSERT_TRUE(future.Wait());
   }
 
-  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
+  base::TestMemoryConsumerRegistry test_memory_consumer_registry_;
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -2562,8 +2563,9 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
   }
 
   // Trigger memory pressure to evict all cached storages.
-  base::MemoryPressureListener::SimulatePressureNotification(
-      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(
+      base::kCriticalMemoryPressureThreshold);
+  test_memory_consumer_registry_.NotifyReleaseMemory();
   task_environment_.RunUntilIdle();
 
   // The storage for `isolation_key` should have been evicted.
@@ -2678,8 +2680,9 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
   }
 
   // Trigger memory pressure to evict all cached storages.
-  base::MemoryPressureListener::SimulatePressureNotification(
-      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(
+      base::kCriticalMemoryPressureThreshold);
+  test_memory_consumer_registry_.NotifyReleaseMemory();
   task_environment_.RunUntilIdle();
 
   // The storage for `isolation_key` should have been evicted.
@@ -2735,8 +2738,9 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
   }
 
   // Trigger memory pressure to evict all cached storages.
-  base::MemoryPressureListener::SimulatePressureNotification(
-      base::MEMORY_PRESSURE_LEVEL_MODERATE);
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(
+      base::kModerateMemoryPressureThreshold);
+  test_memory_consumer_registry_.NotifyReleaseMemory();
   task_environment_.RunUntilIdle();
 
   // The storage for `isolation_key` should have been evicted.
@@ -2793,8 +2797,9 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
   }
 
   // Trigger memory pressure to evict all cached storages.
-  base::MemoryPressureListener::SimulatePressureNotification(
-      base::MEMORY_PRESSURE_LEVEL_MODERATE);
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(
+      base::kModerateMemoryPressureThreshold);
+  test_memory_consumer_registry_.NotifyReleaseMemory();
   task_environment_.RunUntilIdle();
 
   // The storage for `isolation_key` should have been evicted.

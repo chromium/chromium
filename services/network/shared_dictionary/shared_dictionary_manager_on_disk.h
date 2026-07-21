@@ -84,8 +84,6 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
       base::Time end_time,
       base::OnceCallback<void(const std::vector<url::Origin>&)> callback)
       override;
-  void HandleMemoryPressure(
-      base::MemoryPressureLevel memory_pressure_level) override;
 
   SharedDictionaryDiskCache& disk_cache() { return disk_cache_; }
   net::SQLitePersistentSharedDictionaryStore& metadata_store() {
@@ -117,6 +115,9 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
   void MaybePostExpiredDictionaryDeletionTask();
 
  private:
+  // base::MemoryConsumer:
+  void OnReleaseMemory() override;
+
   class SerializedTask {
    public:
     virtual ~SerializedTask() = default;

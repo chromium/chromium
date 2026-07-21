@@ -10,7 +10,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory_coordinator/traits.h"
 #include "base/memory_coordinator/utils.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/pattern.h"
@@ -76,9 +75,6 @@ std::set<mojom::RequestDestination> ToRequestDestinationSet(
   return destinations;
 }
 
-constexpr base::MemoryConsumerTraits kSharedDictionaryStorageTraits(
-    base::MemoryConsumerTraits::ConsumerType::kPassive);
-
 }  // namespace
 
 SharedDictionaryStorageOnDisk::WrappedDictionaryInfo::WrappedDictionaryInfo(
@@ -105,11 +101,6 @@ SharedDictionaryStorageOnDisk::SharedDictionaryStorageOnDisk(
       isolation_key_(isolation_key),
       on_deleted_closure_runner_(std::move(on_deleted_closure_runner)),
       dictionary_cache_(dictionary_cache),
-      memory_consumer_registration_(
-          "SharedDictionaryStorageOnDisk",
-          kSharedDictionaryStorageTraits,
-          this,
-          base::AsyncMemoryConsumerRegistration::CheckUnregister::kDisabled),
       previous_eviction_reason_(previous_eviction_reason) {
   manager_->metadata_store().GetDictionaries(
       isolation_key_,
@@ -266,7 +257,7 @@ SharedDictionaryStorageOnDisk::GetDictionarySyncInternal(
           weak_factory_.GetWeakPtr(), info->disk_cache_key_token())));
   dictionaries_.emplace(info->disk_cache_key_token(), shared_dictionary.get());
 
-  if (memory_limit() >= base::kNoMemoryPressureThreshold) {
+  if (manager_->memory_limit() > base::kModerateMemoryPressureThreshold) {
     dictionary_cache_->Put(info->disk_cache_key_token(), destination,
                            shared_dictionary);
   }
