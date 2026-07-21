@@ -719,9 +719,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate {
   LayerAnimatorCollection* GetLayerAnimatorCollection() override;
   float GetRefreshRate() const override;
 
-  // Creates a corresponding composited layer for |type_|.
-  // TODO(crbug.com/522627357): Rename this method to InitializeCcLayer.
-  void CreateCcLayer();
+  void InitializeCcLayer();
 
   // Recomputes and sets to |cc_layer_|.
   virtual void RecomputeDrawsContentAndUVRect();

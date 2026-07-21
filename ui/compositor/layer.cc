@@ -1724,8 +1724,8 @@ LayerThreadedAnimationDelegate* Layer::GetThreadedAnimationDelegate() {
   return animator_.get();
 }
 
-void Layer::CreateCcLayer() {
-  CHECK(cc_layer_) << "No cc layer for type " << type_;
+void Layer::InitializeCcLayer() {
+  CHECK(cc_layer_);
   cc_layer_->SetTransformOrigin(gfx::Point3F());
   cc_layer_->SetIsDrawable(true);
   cc_layer_->SetHitTestable(IsHitTestableForCC());
@@ -1860,7 +1860,7 @@ bool Layer::GetTransformRelativeToImpl(const Layer* ancestor,
 LayerNotDrawn::LayerNotDrawn() : Layer(LAYER_NOT_DRAWN) {
   content_layer_ = cc::PictureLayer::Create(this);
   cc_layer_ = content_layer_.get();
-  CreateCcLayer();
+  InitializeCcLayer();
   cc_layer_->SetIsDrawable(false);
 }
 
@@ -2053,7 +2053,7 @@ void LayerWithExternalTexture::Reset() {
 LayerTextured::LayerTextured() : LayerWithExternalTexture(LAYER_TEXTURED) {
   content_layer_ = cc::PictureLayer::Create(this);
   cc_layer_ = content_layer_.get();
-  CreateCcLayer();
+  InitializeCcLayer();
 }
 
 LayerTextured::~LayerTextured() {
@@ -2180,7 +2180,7 @@ LayerSolidColor::LayerSolidColor()
     : LayerWithExternalTexture(LAYER_SOLID_COLOR) {
   solid_color_layer_ = cc::SolidColorLayer::Create();
   cc_layer_ = solid_color_layer_.get();
-  CreateCcLayer();
+  InitializeCcLayer();
 
   cc_layer_->SetSafeOpaqueBackgroundColor(SkColors::kBlack);
   cc_layer_->SetBackgroundColor(SkColors::kTransparent);
@@ -2335,7 +2335,7 @@ void LayerSolidColor::ResetSubtreeReflectedLayer() {
 LayerNinePatch::LayerNinePatch() : Layer(LAYER_NINE_PATCH) {
   nine_patch_layer_ = cc::NinePatchLayer::Create();
   cc_layer_ = nine_patch_layer_.get();
-  CreateCcLayer();
+  InitializeCcLayer();
 }
 
 LayerNinePatch::~LayerNinePatch() {
