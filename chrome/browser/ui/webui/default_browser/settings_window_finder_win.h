@@ -41,6 +41,15 @@ class SettingsWindowFinderWin {
   // callbacks.
   virtual void Stop();
 
+  using WindowResizedCallback = base::RepeatingClosure;
+
+  // Starts observing size/location changes for the given Settings HWND.
+  virtual void StartObservingLocationChanges(HWND settings_hwnd,
+                                             WindowResizedCallback on_resized);
+
+  // Stops observing size/location changes.
+  virtual void StopObservingLocationChanges();
+
  protected:
   virtual HWND FindSettingsTopLevelWindow() const;
 
@@ -56,11 +65,15 @@ class SettingsWindowFinderWin {
                                         DWORD dwmsEventTime);
 
   void OnTimeout();
+  void UpdateGlobalInstance();
 
   WindowFoundCallback on_found_;
   base::OnceClosure on_timeout_;
+  WindowResizedCallback on_resized_;
+  HWND observed_hwnd_ = nullptr;
   base::OneShotTimer timeout_timer_;
   HWINEVENTHOOK winevent_hook_ = nullptr;
+  HWINEVENTHOOK location_change_hook_ = nullptr;
 
   bool is_active_ = false;
 

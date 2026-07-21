@@ -60,6 +60,7 @@ SettingsWindowFinderWin::SettingsWindowFinderWin() {
 SettingsWindowFinderWin::~SettingsWindowFinderWin() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Stop();
+  StopObservingLocationChanges();
 }
 
 void SettingsWindowFinderWin::Start(base::TimeDelta timeout,
@@ -76,14 +77,12 @@ void SettingsWindowFinderWin::Start(base::TimeDelta timeout,
     return;
   }
 
-  CHECK(!GetGlobalFinderInstance())
-      << "Only one SettingsWindowFinderWin can be active at a time.";
-  GetGlobalFinderInstance() = weak_ptr_factory_.GetWeakPtr();
   is_active_ = true;
   winevent_hook_ =
       ::SetWinEventHook(EVENT_OBJECT_CREATE, EVENT_OBJECT_SHOW, nullptr,
                         &SettingsWindowFinderWin::WinEventCallback, 0, 0,
                         WINEVENT_OUTOFCONTEXT | WINEVENT_SKIPOWNPROCESS);
+  UpdateGlobalInstance();
 
   timeout_timer_.Start(FROM_HERE, timeout, this,
                        &SettingsWindowFinderWin::OnTimeout);
@@ -98,14 +97,53 @@ void SettingsWindowFinderWin::Stop() {
     winevent_hook_ = nullptr;
   }
 
-  if (is_active_) {
-    CHECK_EQ(GetGlobalFinderInstance().get(), this);
-    GetGlobalFinderInstance().reset();
-    is_active_ = false;
-  }
+  is_active_ = false;
+  UpdateGlobalInstance();
 
   on_found_.Reset();
   on_timeout_.Reset();
+}
+
+void SettingsWindowFinderWin::StartObservingLocationChanges(
+    HWND settings_hwnd,
+    WindowResizedCallback on_resized) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  StopObservingLocationChanges();
+
+  observed_hwnd_ = settings_hwnd;
+  on_resized_ = std::move(on_resized);
+
+  location_change_hook_ = ::SetWinEventHook(
+      EVENT_OBJECT_LOCATIONCHANGE, EVENT_OBJECT_LOCATIONCHANGE, nullptr,
+      &SettingsWindowFinderWin::WinEventCallback, 0, 0,
+      WINEVENT_OUTOFCONTEXT | WINEVENT_SKIPOWNPROCESS);
+  UpdateGlobalInstance();
+}
+
+void SettingsWindowFinderWin::StopObservingLocationChanges() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (location_change_hook_) {
+    ::UnhookWinEvent(location_change_hook_);
+    location_change_hook_ = nullptr;
+  }
+  observed_hwnd_ = nullptr;
+  on_resized_.Reset();
+
+  UpdateGlobalInstance();
+}
+
+void SettingsWindowFinderWin::UpdateGlobalInstance() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (winevent_hook_ || location_change_hook_) {
+    if (GetGlobalFinderInstance().get() != this) {
+      CHECK(!GetGlobalFinderInstance())
+          << "Only one SettingsWindowFinderWin can be active at a time.";
+      GetGlobalFinderInstance() = weak_ptr_factory_.GetWeakPtr();
+    }
+  } else if (GetGlobalFinderInstance().get() == this) {
+    // No hooks are active, reset the global weak pointer.
+    GetGlobalFinderInstance().reset();
+  }
 }
 
 void SettingsWindowFinderWin::OnTimeout() {
@@ -192,13 +230,24 @@ SettingsWindowFinderWin::WinEventCallback(HWINEVENTHOOK hWinEventHook,
   }
 
   SettingsWindowFinderWin* finder = GetGlobalFinderInstance().get();
-  if (!finder || !finder->on_found_) {
+  if (!finder) {
     return;
   }
 
   // WINEVENT_OUTOFCONTEXT hooks are guaranteed by the OS to be dispatched via
   // the message pump of the thread that called SetWinEventHook.
   DCHECK_CALLED_ON_VALID_SEQUENCE(finder->sequence_checker_);
+
+  if (event == EVENT_OBJECT_LOCATIONCHANGE) {
+    if (hwnd == finder->observed_hwnd_ && finder->on_resized_) {
+      finder->on_resized_.Run();
+    }
+    return;
+  }
+
+  if (!finder->on_found_) {
+    return;
+  }
 
   HWND root_hwnd = ::GetAncestor(hwnd, GA_ROOT);
   if (!finder->IsLikelySettingsWindow(root_hwnd)) {

@@ -267,10 +267,20 @@ void VisualGuidedSetterControllerWin::OnSettingsWindowFound(HWND hwnd) {
   }
 
   settings_hwnd_ = hwnd;
+
+  if (!is_continuous_docking_enabled_) {
+    settings_window_finder_->StartObservingLocationChanges(
+        settings_hwnd_,
+        base::BindRepeating(
+            &VisualGuidedSetterControllerWin::UpdateDockedLayout,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
+
   if (parent_widget_ && !parent_widget_->IsVisible()) {
     ::ShowWindow(settings_hwnd_, SW_HIDE);
     return;
   }
+
   if (is_continuous_docking_enabled_) {
     StartRuntimeTimers();
   }
@@ -300,6 +310,7 @@ void VisualGuidedSetterControllerWin::StartRuntimeTimers() {
 
 void VisualGuidedSetterControllerWin::StopAllTimers() {
   settings_window_finder_->Stop();
+  settings_window_finder_->StopObservingLocationChanges();
   dock_timer_.Stop();
 }
 

@@ -94,4 +94,31 @@ TEST_F(SettingsWindowFinderWinTest, OnlyOneActiveInstanceAllowed) {
       "");
 }
 
+TEST_F(SettingsWindowFinderWinTest,
+       OnlyOneActiveInstanceAllowedWithLocationObserver) {
+  TestSettingsWindowFinderWin finder1;
+
+  finder1.StartObservingLocationChanges(reinterpret_cast<HWND>(0x12345),
+                                        base::DoNothing());
+
+  TestSettingsWindowFinderWin finder2;
+  // Because `finder1` is active and using the global WinEvent hook instance
+  // slot, `finder2` should CHECK fail if it tries to start.
+  EXPECT_DEATH_IF_SUPPORTED(
+      finder2.Start(base::Seconds(5), base::DoNothing(), base::DoNothing()),
+      "");
+}
+
+TEST_F(SettingsWindowFinderWinTest, StopObservingReleasesGlobalInstance) {
+  TestSettingsWindowFinderWin finder1;
+  finder1.StartObservingLocationChanges(reinterpret_cast<HWND>(0x12345),
+                                        base::DoNothing());
+  finder1.StopObservingLocationChanges();
+
+  TestSettingsWindowFinderWin finder2;
+  // Since finder1 stopped observing, finder2 should be able to start without
+  // crashing.
+  finder2.Start(base::Seconds(5), base::DoNothing(), base::DoNothing());
+}
+
 }  // namespace

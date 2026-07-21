@@ -52,6 +52,20 @@ class TestSettingsWindowFinderWin : public SettingsWindowFinderWin {
     on_timeout_.Reset();
   }
 
+  void StartObservingLocationChanges(
+      HWND settings_hwnd,
+      WindowResizedCallback on_resized) override {
+    observed_hwnd_ = settings_hwnd;
+    on_resized_ = std::move(on_resized);
+    ++start_observing_called_count_;
+  }
+
+  void StopObservingLocationChanges() override {
+    ++stop_observing_called_count_;
+    observed_hwnd_ = nullptr;
+    on_resized_.Reset();
+  }
+
   void TriggerFound(HWND hwnd) {
     if (hwnd) {
       if (on_found_) {
@@ -64,16 +78,32 @@ class TestSettingsWindowFinderWin : public SettingsWindowFinderWin {
     }
   }
 
+  void TriggerResized() {
+    if (on_resized_) {
+      on_resized_.Run();
+    }
+  }
+
   int start_called_count() const { return start_called_count_; }
   int stop_called_count() const { return stop_called_count_; }
+  int start_observing_called_count() const {
+    return start_observing_called_count_;
+  }
+  int stop_observing_called_count() const {
+    return stop_observing_called_count_;
+  }
   base::TimeDelta timeout() const { return timeout_; }
 
  private:
   WindowFoundCallback on_found_;
   base::OnceClosure on_timeout_;
+  WindowResizedCallback on_resized_;
+  HWND observed_hwnd_ = nullptr;
   base::TimeDelta timeout_;
   int start_called_count_ = 0;
   int stop_called_count_ = 0;
+  int start_observing_called_count_ = 0;
+  int stop_observing_called_count_ = 0;
 };
 
 class TestVisualGuidedSetterControllerWin
@@ -382,4 +412,41 @@ TEST_F(VisualGuidedSetterControllerWinTest, ContinuousDockingDisabled) {
   EXPECT_EQ(controller_->applied_z_orders().size(), 0u);
 
   controller_->Stop();
+}
+
+TEST_F(VisualGuidedSetterControllerWinTest,
+       ObservesLocationChangesIfContinuousDockingDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      default_browser::kVisualGuidedSetterDocking);
+
+  // We must recreate the controller so that it reads the new feature state
+  // at construction.
+  controller_ =
+      std::make_unique<TestVisualGuidedSetterControllerWin>(widget_.get());
+  gfx::Rect anchor(400, 300, 600, 400);
+  controller_->SetAnchorRect(anchor);
+  controller_->SetAnchorRectInWebUi(gfx::Rect(0, 0, 600, 400));
+
+  HWND fake_hwnd = reinterpret_cast<HWND>(0x12345);
+
+  controller_->Start();
+  controller_->test_finder()->TriggerFound(fake_hwnd);
+
+  // Triggering window discovery should call StartObservingLocationChanges.
+  EXPECT_EQ(controller_->test_finder()->start_observing_called_count(), 1);
+
+  // Clear previously recorded calls.
+  controller_->clear_applied_rects();
+
+  // Simulate a window resize/move event.
+  controller_->test_finder()->TriggerResized();
+
+  // Triggering the resize callback should run UpdateDockedLayout, which calls
+  // ApplySettingsRectAndZOrder.
+  EXPECT_GT(controller_->applied_rects().size(), 0u);
+
+  // Stopping the controller should call StopObservingLocationChanges.
+  controller_->Stop();
+  EXPECT_EQ(controller_->test_finder()->stop_observing_called_count(), 1);
 }
