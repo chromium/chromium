@@ -8,6 +8,7 @@
 #define RLZ_LIB_STRING_UTILS_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/containers/span.h"
 
@@ -15,11 +16,7 @@ namespace rlz_lib {
 
 bool IsAscii(unsigned char letter);
 
-bool BytesToString(base::span<uint8_t> data, std::string* string);
-
-bool GetHexValue(char letter, int* value);
-
-int HexStringToInteger(const char* text);
+bool BytesToString(base::span<const uint8_t> data, std::string* string);
 
 }  // namespace rlz_lib
 

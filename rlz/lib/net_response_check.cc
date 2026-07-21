@@ -5,10 +5,10 @@
 
 #include "rlz/lib/net_response_check.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "rlz/lib/assert.h"
 #include "rlz/lib/crc32.h"
-#include "rlz/lib/string_utils.h"
 
 // Checksum validation convenience call for RLZ responses.
 namespace rlz_lib {
@@ -61,7 +61,12 @@ bool IsPingResponseValid(const char* response, int* checksum_idx) {
   if (checksum_idx)
     *checksum_idx = checksum_index;
 
-  return calculated_crc == HexStringToInteger(checksum.c_str());
+  int response_crc = 0;
+  if (!base::HexStringToInt(checksum, &response_crc)) {
+    return false;
+  }
+
+  return calculated_crc == response_crc;
 }
 
 }  // namespace rlz_lib
