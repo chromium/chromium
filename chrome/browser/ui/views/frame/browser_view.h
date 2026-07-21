@@ -1363,7 +1363,9 @@ class BrowserView : public BrowserWindow,
 
   base::CallbackListSubscription projects_panel_subscription_;
 
+#if BUILDFLAG(IS_CHROMEOS)
   base::CallbackListSubscription on_locked_task_subscription_;
+#endif
 
   base::CallbackListSubscription theme_changed_subscription_;
 

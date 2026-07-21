@@ -566,6 +566,7 @@ base::WeakPtr<content::NavigationHandle> NavigateImpl(
     return nullptr;
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
   // Block navigation requests when in locked fullscreen mode. We allow
   // navigation requests in the webapp when locked for OnTask (only relevant for
   // non-web browser scenarios).
@@ -574,16 +575,15 @@ base::WeakPtr<content::NavigationHandle> NavigateImpl(
   if (source_browser) {
     bool should_block_navigation =
         platform_util::IsBrowserLockedFullscreen(source_browser);
-#if BUILDFLAG(IS_CHROMEOS)
     if (ash::boca::OnTaskLockedController::From(source_browser)
             ->is_locked_for_on_task()) {
       should_block_navigation = false;
     }
-#endif  // BUILDFLAG(IS_CHROMEOS)
     if (should_block_navigation) {
       return nullptr;
     }
   }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Open System Apps in their standalone window if necessary.
   // TODO(crbug.com/40136163): Remove this code after we integrate with intent

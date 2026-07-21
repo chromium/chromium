@@ -115,10 +115,12 @@ bool IsSwipeTrackingFromScrollEventsEnabled();
 gfx::NativeWindow GetActiveWindow();
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
 // Returns true if the given browser window is in locked fullscreen mode
 // (a special type of fullscreen where the user is locked into one browser
 // window).
 bool IsBrowserLockedFullscreen(const BrowserWindowInterface* browser);
+#endif
 
 }  // namespace platform_util
 

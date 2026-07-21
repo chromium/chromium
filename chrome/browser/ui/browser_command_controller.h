@@ -267,8 +267,10 @@ class BrowserCommandController : public CommandUpdater,
   PrefChangeRegistrar local_pref_registrar_;
   std::unique_ptr<base::CallbackListSubscription> glic_enabling_subscription_;
 
+#if BUILDFLAG(IS_CHROMEOS)
   // In locked fullscreen mode disallow enabling/disabling commands.
   bool is_locked_fullscreen_ = false;
+#endif
 
   // If the Customize Chrome side panel is shown, determines which section to
   // display.

@@ -330,13 +330,11 @@ bool MatchesBool(const std::optional<bool>& boolean, bool value) {
 // window).
 // TODO(https://crbug.com/432056907): Determine if we need locked-fullscreen
 // support on desktop android.
-bool IsLockedFullscreen(BrowserWindowInterface* browser) {
 #if BUILDFLAG(IS_CHROMEOS)
+bool IsLockedFullscreen(BrowserWindowInterface* browser) {
   return platform_util::IsBrowserLockedFullscreen(browser);
-#else
-  return false;
-#endif
 }
+#endif
 
 // Returns the tab group ID for the tab at `index`. Returns nullopt if the index
 // is out of range, the tab is not found, or the tab is not part of a group.
@@ -353,10 +351,10 @@ std::optional<tab_groups::TabGroupId> GetTabGroupForTab(
 
 // Places the window in a special type of fullscreen where the user is locked
 // into one browser window based on `is_locked_fullscreen`.
+#if BUILDFLAG(IS_CHROMEOS)
 void MaybeSetLockedFullscreenState(const api::windows::Update::Params& params,
                                    BrowserWindowInterface* browser,
                                    bool is_locked_fullscreen) {
-#if BUILDFLAG(IS_CHROMEOS)
   // State will be WINDOW_STATE_NONE if the state parameter wasn't passed from
   // the JS side, and in that case we don't want to change the locked state.
   Browser* const target_browser = browser->GetBrowserForMigrationOnly();
@@ -379,8 +377,8 @@ void MaybeSetLockedFullscreenState(const api::windows::Update::Params& params,
       }
     }
   }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Updates `window_bounds` from `params`. Returns true if bounds were set.
 bool UpdateWindowBoundsFromParams(const api::windows::Update::Params& params,
@@ -1513,6 +1511,7 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
   }
   ui::BaseWindow* browser_window = browser->GetWindow();
 
+#if BUILDFLAG(IS_CHROMEOS)
   // Don't allow locked fullscreen operations on a window without the proper
   // permission (also don't allow any operations on a locked window if the
   // extension doesn't have the permission).
@@ -1523,6 +1522,7 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
     return RespondNow(
         Error(tabs_internal::kMissingLockWindowFullscreenPrivatePermission));
   }
+#endif
 
   // Before changing any of a window's state, validate the update parameters.
   // This prevents Chrome from performing "half" an update.
@@ -1579,7 +1579,9 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
 #endif
 
   // Parameters are valid. Now to perform the actual updates.
+#if BUILDFLAG(IS_CHROMEOS)
   MaybeSetLockedFullscreenState(*params, browser, is_locked_fullscreen);
+#endif
 
   UpdateWindowState(*params, browser, window_controller, show_state,
                     set_window_bounds, window_bounds);
@@ -1658,10 +1660,9 @@ ExtensionFunction::ResponseAction WindowsRemoveFunction::Run() {
 
   // TODO(https://crbug.com/432056907): Determine if we need locked-fullscreen
   // support on desktop android.
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS)
   if (window_controller->GetBrowserWindowInterface() &&
-      platform_util::IsBrowserLockedFullscreen(
-          window_controller->GetBrowserWindowInterface()) &&
+      IsLockedFullscreen(window_controller->GetBrowserWindowInterface()) &&
       !tabs_internal::ExtensionHasLockedFullscreenPermission(extension())) {
     return RespondNow(
         Error(tabs_internal::kMissingLockWindowFullscreenPrivatePermission));

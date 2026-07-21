@@ -63,7 +63,7 @@ constexpr char kShowStateValueNormal[] = "normal";
 constexpr char kShowStateValueMinimized[] = "minimized";
 constexpr char kShowStateValueMaximized[] = "maximized";
 constexpr char kShowStateValueFullscreen[] = "fullscreen";
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr char kShowStateValueLockedFullscreen[] = "locked-fullscreen";
 #endif
 
@@ -204,7 +204,7 @@ base::DictValue BrowserExtensionWindowController::CreateWindowValueForExtension(
     if (window()->IsMinimized()) {
       return kShowStateValueMinimized;
     } else if (window()->IsFullscreen()) {
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS)
       if (platform_util::IsBrowserLockedFullscreen(GetBrowser())) {
         return kShowStateValueLockedFullscreen;
       }
