@@ -65,8 +65,8 @@ class CORE_EXPORT ReplaceSelectionCommand final : public CompositeEditCommand {
   InputEvent::InputType GetInputType() const override;
   bool IsReplaceSelectionCommand() const override;
   HTMLSpanElement* PreserveWhiteSpaceForNode(Node* node, EditingState*);
-  void HandleStyleSpansBeforeInsertion(ReplacementFragment& fragment,
-                                       const Position& insertion_pos);
+  void HandleStyleSpansBeforeInsertion(const Position& insertion_pos,
+                                       ReplacementFragment& fragment);
 
   class InsertedNodes {
     STACK_ALLOCATED();

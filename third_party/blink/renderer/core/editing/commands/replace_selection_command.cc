@@ -1174,8 +1174,8 @@ static bool FollowBlockElementStyle(const Node* node) {
 // Remove style spans before insertion if they are unnecessary.  It's faster
 // because we'll avoid doing a layout.
 void ReplaceSelectionCommand::HandleStyleSpansBeforeInsertion(
-    ReplacementFragment& fragment,
-    const Position& insertion_pos) {
+    const Position& insertion_pos,
+    ReplacementFragment& fragment) {
   Node* top_node = fragment.FirstChild();
   if (!IsA<HTMLSpanElement>(top_node))
     return;
@@ -1668,7 +1668,7 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
   // Paste into run of tabs splits the tab span.
   insertion_pos = PositionOutsideTabSpan(insertion_pos);
 
-  HandleStyleSpansBeforeInsertion(fragment, insertion_pos);
+  HandleStyleSpansBeforeInsertion(insertion_pos, fragment);
 
   // We're finished if there is nothing to add.
   if (fragment.IsEmpty() || !fragment.FirstChild())
