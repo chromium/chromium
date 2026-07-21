@@ -285,6 +285,7 @@ void AttemptOtpFillingTool::Validate(ToolCallback callback) {
                    "Gmail OTP disabled and within cool-off period for Gmail "
                    "OTP opt-in dialog."));
   } else {
+    RecordGmailOtpOptInCardInteraction(GmailOtpOptInCardInteraction::kShowCard);
     tool_delegate().RequestToShowGmailOtpOptInDialog(
         base::BindOnce(&AttemptOtpFillingTool::OnGmailOtpOptInResponse,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -297,6 +298,8 @@ void AttemptOtpFillingTool::OnGmailOtpOptInResponse(
   if (!response || response.is_null()) {
     RecordAttemptOtpFillingEvent(
         AttemptOtpFillingToolEvent::kOptInNullResponse);
+    RecordGmailOtpOptInCardInteraction(
+        GmailOtpOptInCardInteraction::kErrorResponse);
     std::move(callback).Run(
         MakeResult(mojom::ActionResultCode::kOtpUnableToFill,
                    /*requires_page_stabilization=*/false,
@@ -307,6 +310,8 @@ void AttemptOtpFillingTool::OnGmailOtpOptInResponse(
   if (response->is_error_reason()) {
     RecordAttemptOtpFillingEvent(
         AttemptOtpFillingToolEvent::kOptInErrorResponse);
+    RecordGmailOtpOptInCardInteraction(
+        GmailOtpOptInCardInteraction::kErrorResponse);
     LogJournalEvent("AttemptOtpFillingTool::OnGmailOtpOptInResponse",
                     JournalDetailsBuilder()
                         .Add("error_reason", response->get_error_reason())
@@ -324,6 +329,8 @@ void AttemptOtpFillingTool::OnGmailOtpOptInResponse(
   if (!opt_in_permission_granted) {
     RecordAttemptOtpFillingEvent(
         AttemptOtpFillingToolEvent::kOptInPermissionDenied);
+    RecordGmailOtpOptInCardInteraction(
+        GmailOtpOptInCardInteraction::kPermissionDenied);
     autofill::prefs::SetAutofillGmailOtpFillingActivationDismissalTimestamp(
         prefs, base::Time::Now());
     std::move(callback).Run(
@@ -333,6 +340,8 @@ void AttemptOtpFillingTool::OnGmailOtpOptInResponse(
     return;
   }
 
+  RecordGmailOtpOptInCardInteraction(
+      GmailOtpOptInCardInteraction::kPermissionGranted);
   autofill::prefs::SetAutofillGmailOtpFillingEnabled(prefs, true);
   autofill::prefs::ClearAutofillGmailOtpFillingActivationDismissalTimestamp(
       prefs);

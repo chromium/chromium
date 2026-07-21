@@ -300,6 +300,12 @@ TEST_F(AttemptOtpFillingToolTest, Validate_OptInPermissionGranted) {
   EXPECT_TRUE(IsAutofillGmailOtpFillingEnabled(prefs()));
   EXPECT_EQ(base::Time(),
             GetAutofillGmailOtpFillingActivationDismissalTimestamp(prefs()));
+  histogram_tester_.ExpectBucketCount(kGmailOtpOptInCardInteractionHistogram,
+                                      GmailOtpOptInCardInteraction::kShowCard,
+                                      1);
+  histogram_tester_.ExpectBucketCount(
+      kGmailOtpOptInCardInteractionHistogram,
+      GmailOtpOptInCardInteraction::kPermissionGranted, 1);
 }
 
 // When the user denies permission to opt in to Gmail OTPs, the tool
@@ -326,6 +332,12 @@ TEST_F(AttemptOtpFillingToolTest, Validate_OptInPermissionDenied) {
   histogram_tester_.ExpectBucketCount(
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kOptInPermissionDenied, 1);
+  histogram_tester_.ExpectBucketCount(kGmailOtpOptInCardInteractionHistogram,
+                                      GmailOtpOptInCardInteraction::kShowCard,
+                                      1);
+  histogram_tester_.ExpectBucketCount(
+      kGmailOtpOptInCardInteractionHistogram,
+      GmailOtpOptInCardInteraction::kPermissionDenied, 1);
 }
 
 // When the asking the user for opting into using Gmail OTPs fails, the tool
@@ -351,6 +363,12 @@ TEST_F(AttemptOtpFillingToolTest, Validate_OptInPermissionCallbackError) {
   histogram_tester_.ExpectBucketCount(
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kOptInErrorResponse, 1);
+  histogram_tester_.ExpectBucketCount(kGmailOtpOptInCardInteractionHistogram,
+                                      GmailOtpOptInCardInteraction::kShowCard,
+                                      1);
+  histogram_tester_.ExpectBucketCount(
+      kGmailOtpOptInCardInteractionHistogram,
+      GmailOtpOptInCardInteraction::kErrorResponse, 1);
 }
 
 // When Gmail OTP is disabled, but we're within the cool off period for asking
@@ -606,6 +624,12 @@ TEST_F(AttemptOtpFillingToolTest,
   histogram_tester_.ExpectBucketCount(
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kOptInNullResponse, 1);
+  histogram_tester_.ExpectBucketCount(kGmailOtpOptInCardInteractionHistogram,
+                                      GmailOtpOptInCardInteraction::kShowCard,
+                                      1);
+  histogram_tester_.ExpectBucketCount(
+      kGmailOtpOptInCardInteractionHistogram,
+      GmailOtpOptInCardInteraction::kErrorResponse, 1);
 }
 
 TEST_F(AttemptOtpFillingToolTest, Validate_GmailOtpFillingEnabled) {

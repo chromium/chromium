@@ -13,6 +13,8 @@ namespace actor {
 // LINT.IfChange(AttemptOtpFillingEvent)
 
 // Events recorded during the AttemptOtpFilling tool execution.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class AttemptOtpFillingToolEvent {
   kStartFillingAttempt = 0,
   kWithinOptInCoolOffPeriod = 1,
@@ -35,17 +37,38 @@ enum class AttemptOtpFillingToolEvent {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:AttemptOtpFillingEvent)
 
+// LINT.IfChange(GmailOtpOptInCardInteraction)
+
+// Outcomes of the Gmail OTP opt-in card interaction.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class GmailOtpOptInCardInteraction {
+  kShowCard = 0,
+  kErrorResponse = 1,
+  kPermissionDenied = 2,
+  kPermissionGranted = 3,
+  kMaxValue = kPermissionGranted
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:GmailOtpOptInCardInteraction)
+
 // Histogram name for AttemptOtpFilling tool invocation events.
 inline constexpr char kAttemptOtpFillingToolHistogram[] =
     "OneTimeTokens.Actor.AttemptOtpFilling.ToolInvocation";
 
+// Histogram name for Gmail OTP opt-in card interaction events.
+inline constexpr char kGmailOtpOptInCardInteractionHistogram[] =
+    "OneTimeTokens.Actor.AttemptOtpFilling.GmailOtpOptInCardInteraction";
+
 // Records events during the AttemptOtpFilling tool invocation events.
 void RecordAttemptOtpFillingEvent(AttemptOtpFillingToolEvent event);
+
+// Records user interactions with the Gmail OTP opt-in card.
+void RecordGmailOtpOptInCardInteraction(
+    GmailOtpOptInCardInteraction interaction);
 
 void RecordPredictedOtpTypeMetrics(
     AttemptOtpFillingToolRequest::OtpType predicted_otp_type,
     ukm::SourceId ukm_source_id);
-
 }  // namespace actor
 
 #endif  // CHROME_BROWSER_ACTOR_TOOLS_ATTEMPT_OTP_FILLING_TOOL_METRICS_H_

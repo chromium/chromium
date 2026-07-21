@@ -14,6 +14,12 @@ void RecordAttemptOtpFillingEvent(AttemptOtpFillingToolEvent event) {
   base::UmaHistogramEnumeration(kAttemptOtpFillingToolHistogram, event);
 }
 
+void RecordGmailOtpOptInCardInteraction(
+    GmailOtpOptInCardInteraction interaction) {
+  base::UmaHistogramEnumeration(kGmailOtpOptInCardInteractionHistogram,
+                                interaction);
+}
+
 void RecordPredictedOtpTypeMetrics(
     AttemptOtpFillingToolRequest::OtpType predicted_otp_type,
     ukm::SourceId ukm_source_id) {
@@ -27,5 +33,4 @@ void RecordPredictedOtpTypeMetrics(
         .Record(ukm::UkmRecorder::Get());
   }
 }
-
 }  // namespace actor
