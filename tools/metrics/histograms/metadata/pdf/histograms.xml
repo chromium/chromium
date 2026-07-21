@@ -155,6 +155,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PDF.Ink2EmojiFontLoadFailed" enum="Boolean"
+    expires_after="2026-12-16">
+  <owner>andyphan@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Tracks emoji font load failures for Ink text annotations in the PDF viewer.
+    Recorded when an emoji font fails to load. Always records true.
+  </summary>
+</histogram>
+
+<histogram name="PDF.Ink2FontLoaded" enum="Boolean" expires_after="2026-12-16">
+  <owner>andyphan@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Tracks the success or failure of loading fonts for Ink text annotations in
+    the PDF viewer. Recorded when attempting to load a font. Records true on
+    success and false on failure.
+  </summary>
+</histogram>
+
 <histogram name="PDF.Ink2StrokeBrushType" enum="PDFInk2StrokeBrushType"
     expires_after="2026-12-16">
   <owner>andyphan@chromium.org</owner>

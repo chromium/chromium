@@ -5314,13 +5314,13 @@ void PDFiumEngine::AddFont(FontId font_id,
                                         /*font_type=*/font_type,
                                         /*cid=*/true));
 
-  if (IsEmojiFont(typeface.get())) {
-    if (!font) {
-      // TODO(crbug.com/502468286): Support emoji fonts.
-      bool inserted = font_map_.insert({font_id, nullptr}).second;
-      CHECK(inserted);
-      return;
-    }
+  base::UmaHistogramBoolean("PDF.Ink2FontLoaded", font != nullptr);
+  if (!font && IsEmojiFont(typeface.get())) {
+    base::UmaHistogramBoolean("PDF.Ink2EmojiFontLoadFailed", true);
+    // TODO(crbug.com/502468286): Support emoji fonts.
+    bool inserted = font_map_.insert({font_id, nullptr}).second;
+    CHECK(inserted);
+    return;
   }
   CHECK(font);
 

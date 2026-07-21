@@ -81,6 +81,7 @@
 #include "base/containers/span.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "pdf/pdf_ink_brush.h"
 #include "pdf/pdf_ink_constants.h"
 #include "pdf/pdf_ink_metrics_handler.h"
@@ -2867,6 +2868,7 @@ TEST_P(PDFiumEngineInkTest, GetCanonicalToPdfTransform) {
 }
 
 TEST_P(PDFiumEngineInkTest, AddFont) {
+  base::HistogramTester histograms;
   TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
@@ -2883,6 +2885,32 @@ TEST_P(PDFiumEngineInkTest, AddFont) {
   float ascent = 0;
   EXPECT_TRUE(FPDFFont_GetAscent(font, 12, &ascent));
   EXPECT_GT(ascent, 0);
+
+  histograms.ExpectUniqueSample("PDF.Ink2FontLoaded", true, 1);
+  histograms.ExpectTotalCount("PDF.Ink2EmojiFontLoadFailed", 0);
+}
+
+TEST_P(PDFiumEngineInkTest, AddFontEmojiLoadFailure) {
+  base::HistogramTester histograms;
+  TestClient client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  TestFont emoji_font = GetTestEmojiFont();
+  ASSERT_TRUE(emoji_font.serialized_font);
+  FontId id = emoji_font.font_id;
+
+  // Attempting to add Noto Color Emoji font should not crash. It will fail to
+  // load in PDFium due to missing PNG support, and return gracefully. The
+  // font should be set as nullptr.
+  engine->AddFont(id, "NotoColorEmoji",
+                  gfx::SkDataToSpan(emoji_font.serialized_font));
+  FPDF_FONT font = engine->GetAddedFont(id);
+  EXPECT_FALSE(font);
+
+  histograms.ExpectUniqueSample("PDF.Ink2FontLoaded", false, 1);
+  histograms.ExpectUniqueSample("PDF.Ink2EmojiFontLoadFailed", true, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineInkTest, testing::Bool());
