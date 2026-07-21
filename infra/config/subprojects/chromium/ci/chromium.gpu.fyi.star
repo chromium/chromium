@@ -393,6 +393,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Android FYI Release (Pixel 10)",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     description_html = "Runs release GPU tests on stable Pixel 10 configs",
     parent = "GPU FYI Android arm64 Builder",
     builder_spec = builder_config.builder_spec(
@@ -452,7 +453,6 @@ ci.thin_tester(
         os_type = targets.os_type.ANDROID,
         use_android_merge_script_by_default = False,
     ),
-    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "Android|arm64|IMG",
         short_name = "P10",

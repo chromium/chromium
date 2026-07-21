@@ -1604,10 +1604,11 @@ gpu.try_.optional_tests_builder(
 gpu.try_.optional_tests_builder(
     name = "gpu-fyi-cq-android-arm64",
     branch_selector = branches.selector.ANDROID_BRANCHES,
-    description_html = "Runs GPU tests on Pixel 6 devices. Only automatically added to CLs that touch GPU-related files.",
+    description_html = "Runs GPU tests on Pixel 6/10 devices. Only automatically added to CLs that touch GPU-related files.",
     mirrors = [
         "ci/GPU FYI Android arm64 Builder",
         "ci/Android FYI Release (Pixel 6)",
+        "ci/Android FYI Release (Pixel 10)",
     ],
     builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,

@@ -82,6 +82,10 @@
       ],
       "mirroring_builder_group_and_names": [
         {
+          "builder": "gpu-fyi-cq-android-arm64",
+          "group": "tryserver.chromium.android"
+        },
+        {
           "builder": "gpu-fyi-try-android-pixel-10-64",
           "group": "tryserver.chromium.android"
         }
@@ -97,6 +101,12 @@
     ]
   },
   "builder_group": "chromium.gpu.fyi",
+  "gardener_rotations": [
+    "chromium.gpu"
+  ],
   "perf_dashboard_machine_group": "ChromiumGPUFYI",
-  "recipe": "chromium"
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chromium.gpu"
+  ]
 }

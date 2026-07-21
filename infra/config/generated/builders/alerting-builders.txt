@@ -4,6 +4,7 @@ ci/ASAN Release Media
 ci/ASan Release (32-bit x86 with V8-ARM)
 ci/ASan Release Media (32-bit x86 with V8-ARM)
 ci/Android FYI Experimental Release (Pixel 6)
+ci/Android FYI Release (Pixel 10)
 ci/Android FYI Release (Pixel 2)
 ci/Android FYI Release (Pixel 4)
 ci/Android FYI Release (Pixel 6)
