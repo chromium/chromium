@@ -16,7 +16,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/events/devices/ui_events_devices_jni_headers/InputDeviceObserver_jni.h"
 
-using jni_zero::AttachCurrentThread;
 using jni_zero::JavaRef;
 using jni_zero::ScopedJavaLocalRef;
 
@@ -32,8 +31,6 @@ InputDeviceType GetInputDeviceType(bool is_virtual, bool is_external) {
   // external devices, so we conservatively map all external devices to USB.
   return is_external ? INPUT_DEVICE_USB : INPUT_DEVICE_INTERNAL;
 }
-
-}  // namespace
 
 KeyboardDevice KeyboardDeviceFromJava(JNIEnv* env,
                                       const JavaRef<jobject>& j_device) {
@@ -96,55 +93,13 @@ TouchscreenDevice TouchscreenDeviceFromJava(JNIEnv* env,
   return touchscreen;
 }
 
-// Test helper implementations (declared in
-// input_device_observer_android_test_helper.h)
-KeyboardDevice KeyboardDeviceFromJavaForTesting(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& j_device) {
-  return KeyboardDeviceFromJava(env, j_device);
-}
-
-InputDevice MouseDeviceFromJavaForTesting(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& j_device) {
-  return MouseDeviceFromJava(env, j_device);
-}
-
-TouchpadDevice TouchpadDeviceFromJavaForTesting(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& j_device) {
-  return TouchpadDeviceFromJava(env, j_device);
-}
-
-TouchscreenDevice TouchscreenDeviceFromJavaForTesting(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& j_device) {
-  return TouchscreenDeviceFromJava(env, j_device);
-}
-
-base::android::ScopedJavaLocalRef<jobject> CreateInputDeviceDataForTesting(
-    JNIEnv* env,
-    int id,
-    const std::string& name,
-    bool is_external,
-    bool is_virtual,
-    int vendor_id,
-    int product_id) {
-  ScopedJavaLocalRef<jstring> jname =
-      base::android::ConvertUTF8ToJavaString(env, name);
-  return Java_InputDeviceData_Constructor(env, id, jname, is_external,
-                                          is_virtual, vendor_id, product_id);
-}
-
-namespace {
-
 void UpdateInputDevices() {
   std::vector<KeyboardDevice> keyboards;
   std::vector<InputDevice> mice;
   std::vector<TouchpadDevice> touchpads;
   std::vector<TouchscreenDevice> touchscreens;
 
-  JNIEnv* env = AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
 
   // Keyboards
   ScopedJavaLocalRef<jobjectArray> j_keyboards =
@@ -231,14 +186,14 @@ InputDeviceObserverAndroid* InputDeviceObserverAndroid::GetInstance() {
 void InputDeviceObserverAndroid::AddObserver(
     ui::InputDeviceEventObserver* observer) {
   observers_.AddObserver(observer);
-  JNIEnv* env = AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   Java_InputDeviceObserver_addObserver(env);
 }
 
 void InputDeviceObserverAndroid::RemoveObserver(
     ui::InputDeviceEventObserver* observer) {
   observers_.RemoveObserver(observer);
-  JNIEnv* env = AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   Java_InputDeviceObserver_removeObserver(env);
 }
 
@@ -257,6 +212,46 @@ void InputDeviceObserverAndroid::UpdateAndNotifyDeviceConfigurationChanged() {
       InputDeviceEventObserver::kMouse | InputDeviceEventObserver::kKeyboard |
           InputDeviceEventObserver::kTouchpad |
           InputDeviceEventObserver::kTouchscreen);
+}
+
+// Test helper implementations (declared in
+// input_device_observer_android_test_helper.h)
+KeyboardDevice KeyboardDeviceFromJavaForTesting(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& j_device) {
+  return KeyboardDeviceFromJava(env, j_device);
+}
+
+InputDevice MouseDeviceFromJavaForTesting(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& j_device) {
+  return MouseDeviceFromJava(env, j_device);
+}
+
+TouchpadDevice TouchpadDeviceFromJavaForTesting(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& j_device) {
+  return TouchpadDeviceFromJava(env, j_device);
+}
+
+TouchscreenDevice TouchscreenDeviceFromJavaForTesting(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& j_device) {
+  return TouchscreenDeviceFromJava(env, j_device);
+}
+
+base::android::ScopedJavaLocalRef<jobject> CreateInputDeviceDataForTesting(
+    JNIEnv* env,
+    int id,
+    const std::string& name,
+    bool is_external,
+    bool is_virtual,
+    int vendor_id,
+    int product_id) {
+  ScopedJavaLocalRef<jstring> jname =
+      base::android::ConvertUTF8ToJavaString(env, name);
+  return Java_InputDeviceData_Constructor(env, id, jname, is_external,
+                                          is_virtual, vendor_id, product_id);
 }
 
 }  // namespace ui
