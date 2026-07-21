@@ -1938,14 +1938,12 @@ void LayerWithExternalTexture::SetTransferableResource(
   for (const auto& mirror : mirrors_) {
     // The release callbacks should be empty as only the source layer
     // should be able to release the texture resource.
-    if (mirror->dest()->AsTextured() || mirror->dest()->AsSolidColor()) {
-      static_cast<LayerWithExternalTexture*>(mirror->dest())
-          ->SetTransferableResource(
-              transfer_resource_,
-              base::BindOnce(
-                  [](const gpu::SyncToken& sync_token, bool is_lost) {}),
-              frame_size_in_dip_);
-    }
+    static_cast<LayerWithExternalTexture*>(mirror->dest())
+        ->SetTransferableResource(
+            transfer_resource_,
+            base::BindOnce(
+                [](const gpu::SyncToken& sync_token, bool is_lost) {}),
+            frame_size_in_dip_);
   }
 }
 
@@ -2269,9 +2267,7 @@ void LayerSolidColor::SetShowSolidColorContent() {
 
   RecomputeDrawsContentAndUVRect();
   for (const auto& mirror : mirrors_) {
-    if (auto* layer = mirror->dest()->AsSolidColor()) {
-      layer->SetShowSolidColorContent();
-    }
+    mirror->dest()->AsSolidColor()->SetShowSolidColorContent();
   }
 }
 
