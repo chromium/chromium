@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_content_pane_view.h"
 #include "chrome/browser/ui/views/desktop_capture/share_audio_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/layout/box_layout.h"
 
 class DesktopMediaPermissionPaneViewMac;
@@ -46,6 +47,9 @@ class DesktopMediaPaneView : public views::View {
   // Returns the text in the audio label if an audio label exists;
   // returns the empty string otherwise.
   std::u16string_view GetAudioLabelText() const;
+
+  // Returns the audio sharing toggle button if it exists.
+  views::ToggleButton* GetAudioToggleButtonForTesting() const;
 
   bool IsPermissionPaneVisible() const;
   bool IsContentPaneVisible() const;

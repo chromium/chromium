@@ -61,6 +61,14 @@ std::u16string_view DesktopMediaPaneView::GetAudioLabelText() const {
   return content_pane_view_->GetAudioLabelText();
 }
 
+views::ToggleButton*
+DesktopMediaPaneView::GetAudioToggleButtonForTesting()  // IN-TEST
+    const {
+  return content_pane_view_
+             ? content_pane_view_->GetAudioToggleButtonForTesting()  // IN-TEST
+             : nullptr;
+}
+
 bool DesktopMediaPaneView::IsPermissionPaneVisible() const {
 #if BUILDFLAG(IS_MAC)
   return permission_pane_view_ && permission_pane_view_->GetVisible();

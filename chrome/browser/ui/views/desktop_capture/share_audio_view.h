@@ -41,6 +41,11 @@ class ShareAudioView : public views::View {
   // returns the empty string otherwise.
   std::u16string_view GetAudioLabelText() const;
 
+  // Returns the toggle button used for audio sharing.
+  views::ToggleButton* GetToggleButtonForTesting() const {
+    return audio_toggle_button_;
+  }
+
  private:
   void OnAudioToggleButtonPressed();
   base::RepeatingClosure audio_check_callback_;
