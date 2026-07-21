@@ -269,7 +269,7 @@ void VerifyIsEqual(base::span<const T> actual, const OperandInfo<T>& expected) {
   EXPECT_EQ(actual, expected.values);
 }
 
-[[maybe_unused]] std::string_view GetBaseTestName(std::string_view test_name) {
+std::string_view GetBaseTestName(std::string_view test_name) {
   const size_t slash_pos = test_name.find('/');
   if (slash_pos != std::string_view::npos) {
     return test_name.substr(0, slash_pos);
@@ -356,12 +356,6 @@ class WebNNGraphImplBackendTest : public testing::Test,
 };
 
 void WebNNGraphImplBackendTest::SetUp() {
-#if BUILDFLAG(IS_WIN)
-  // TODO: https://crbug.com/394119734 - Re-enable Windows GPU backend tests
-  // once internal odml rolls past cl/943394391 (MSVC bitfield ABI alignment).
-  GTEST_SKIP()
-      << "Skipping GPU backend tests on Windows due to crbug.com/394119734.";
-#else
   const std::string_view current_test_name =
       ::testing::UnitTest::GetInstance()->current_test_info()->name();
   // TODO: https://crbug.com/394119734 - Enable the commented-out tests after
@@ -372,20 +366,26 @@ void WebNNGraphImplBackendTest::SetUp() {
       // "BuildAndComputeAddWithOnlyConstantInputs",
       "BuildAndComputeConcatWithConstants",
       "BuildAndComputeGraphWithReshapeAsLastNode",
+#if !BUILDFLAG(IS_WIN)
       "BuildAndComputeGraphWithReshapeAsIntermediateNode",
       "BuildAndComputeGraphWithSplitAndReshape",
       "BuildAndComputeGraphWithTransposeAndRelu",
       "BuildAndComputeGraphWithTransposeAndTwoOutputs",
       "BuildAndComputeGraphWithTransposeAndTwoReshape",
+#endif  // !BUILDFLAG(IS_WIN)
       "BuildAndComputeGraphWithTwoOutputs", "BuildAndComputeGraphWithTwoRelu",
       "BuildAndComputeGraphWithTwoReshape",
       "BuildAndComputeGraphWithTwoTranspose",
       "BuildAndComputeMultipleOperatorGemm",
       // "BuildAndComputeReluWithOnlyConstantInput",
+#if !BUILDFLAG(IS_WIN)
       "BuildAndComputeReshapeConcatAndClamp",
+#endif  // !BUILDFLAG(IS_WIN)
       "BuildAndComputeSingleOperatorClamp",
+#if !BUILDFLAG(IS_WIN)
       "BuildAndComputeSingleOperatorGruCell",
       "BuildAndComputeSingleOperatorGru",
+#endif  // !BUILDFLAG(IS_WIN)
       "BuildAndComputeSingleOperatorHardSigmoid",
       "BuildAndComputeSingleOperatorHardSwish",
       // "BuildAndComputeSingleOperatorLstmCell",
@@ -393,8 +393,10 @@ void WebNNGraphImplBackendTest::SetUp() {
       // "BuildAndComputeSingleOperatorResample2d",
       "BuildAndComputeSingleOperatorTanh",
       "BuildGemmWithReshapedConstantOperand",
+#if !BUILDFLAG(IS_WIN)
       "BuildMaxPoolingAsFirstOperator", "BuildMaxPoolingAsSecondOperator",
       "BuildMaxPoolingAsThirdOperator",
+#endif  // !BUILDFLAG(IS_WIN)
       "BuildMultipleConstantsAppendingInputs",
       "BuildMultipleInputsAppendingConstants",
       "BuildSingleOperatorLayerNormalization",
@@ -414,7 +416,6 @@ void WebNNGraphImplBackendTest::SetUp() {
   }
 
   SetUpBase();
-#endif  // BUILDFLAG(IS_WIN)
 }
 #endif  // (BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)) &&
         // !BUILDFLAG(IS_MAC)
