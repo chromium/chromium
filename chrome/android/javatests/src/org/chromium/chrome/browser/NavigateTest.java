@@ -330,13 +330,14 @@ public class NavigateTest {
     public void testAndroidDesktopUAPlatformClientHint() throws Exception {
         final Tab tab =
                 navigateUrlToEchoClientHintHeaders(
-                        "/set-header?Accept-CH: sec-ch-ua-platform",
-                        "/echoheader?sec-ch-ua-platform",
+                        "/set-header?Accept-CH: sec-ch-ua-platform,sec-ch-ua-platform-version",
+                        "/echoheader?sec-ch-ua-platform&sec-ch-ua-platform-version",
                         /* overrideUserAgent= */ false);
         String content =
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
                         tab.getWebContents(), "document.body.textContent");
-        Assert.assertEquals("Proper headers", "\"\\\"Android\\\"\"", content);
+        Assert.assertTrue("Proper platform header", content.startsWith("\"\\\"Android\\\"\\n\\\""));
+        Assert.assertFalse("Platform version should not be empty", content.endsWith("\\\"\\\"\""));
     }
 
     private Tab navigateUrlToEchoClientHintHeaders(

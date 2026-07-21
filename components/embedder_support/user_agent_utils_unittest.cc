@@ -732,13 +732,18 @@ TEST_F(UserAgentUtilsTest, UserAgentMetadataForXrDevice) {
   EXPECT_EQ(metadata.form_factors, expected_form_factors);
 
   // The kAndroidDesktopUAPlatform changes XR devices platform client hint to
-  // Android.
+  // Android, and reports the real OS version instead of an empty platform
+  // version.
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeature(
         blink::features::kAndroidDesktopUAPlatform);
     auto metadata_with_feature = GetUserAgentMetadata();
     EXPECT_EQ(metadata_with_feature.platform, "Android");
+    int32_t major, minor, bugfix = 0;
+    base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);
+    EXPECT_EQ(metadata_with_feature.platform_version,
+              base::StringPrintf("%d.%d.%d", major, minor, bugfix));
   }
 
   // Restore the device info.

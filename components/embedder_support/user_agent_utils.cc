@@ -584,8 +584,19 @@ bool GetMobileBitForUAMetadata() {
 
 std::string GetPlatformVersion() {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::device_info::is_desktop() ||
-      base::android::device_info::is_xr()) {
+  // For Android XR or desktop form factors, report a non-empty platform
+  // version when kAndroidDesktopUAPlatform is enabled to follow the spec:
+  // https://wicg.github.io/ua-client-hints/#sec-ch-ua-platform-version. When
+  // disabled, their UA-CH platform is spoofed (see GetPlatformForUAMetadata()),
+  // so they follow the Linux platform version which is empty. Once
+  // kAndroidDesktopUAPlatform is fully launched, this gating should be removed
+  // and the real OS version reported unconditionally.
+  // Note: check the feature flag first since it is cheaper than the device
+  // info checks.
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kAndroidDesktopUAPlatform) &&
+      (base::android::device_info::is_desktop() ||
+       base::android::device_info::is_xr())) {
     return std::string();
   }
 #endif

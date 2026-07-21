@@ -25,6 +25,8 @@ static void JNI_ContentUtils_SetUserAgentOverride(
 
   bool spoof_as_chromeos = base::FeatureList::IsEnabled(
       blink::features::kAndroidDesktopUASpoofAsChromeOS);
+  bool android_desktop_ua_platform =
+      base::FeatureList::IsEnabled(blink::features::kAndroidDesktopUAPlatform);
 
   // Note: Any updates to desktop overrides here should also be applied to
   // DESKTOP form factor defaults in embedder_support::GetUserAgentMetadata.
@@ -38,11 +40,14 @@ static void JNI_ContentUtils_SetUserAgentOverride(
           embedder_support::GetProductAndVersion());
   spoofed_ua.ua_metadata_override = metadata;
   spoofed_ua.ua_metadata_override->platform =
-      base::FeatureList::IsEnabled(blink::features::kAndroidDesktopUAPlatform)
-          ? "Android"
-          : (spoof_as_chromeos ? "Chrome OS" : "Linux");
-  spoofed_ua.ua_metadata_override->platform_version =
-      std::string();  // match content::GetOSVersion(false) on Linux
+      android_desktop_ua_platform ? "Android"
+                                  : (spoof_as_chromeos ? "Chrome OS" : "Linux");
+  if (!android_desktop_ua_platform) {
+    // Match content::GetOSVersion(false) on Linux. When the platform is
+    // reported honestly as "Android", keep the real platform version from
+    // GetUserAgentMetadata() for consistency with the non-override path.
+    spoofed_ua.ua_metadata_override->platform_version = std::string();
+  }
   spoofed_ua.ua_metadata_override->model = std::string();
   spoofed_ua.ua_metadata_override->mobile = false;
   spoofed_ua.ua_metadata_override->form_factors =
