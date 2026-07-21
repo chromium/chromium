@@ -84,8 +84,10 @@ class CORE_EXPORT LayoutGrid : public LayoutBlock {
 
   const GridLayoutData* LayoutData() const;
 
-  wtf_size_t StitchedRowGapIndex(const PhysicalBoxFragment& fragment,
-                                 wtf_size_t gap_index) const override;
+  wtf_size_t StitchedRowGapIndex(
+      const PhysicalBoxFragment& fragment,
+      wtf_size_t gap_index,
+      std::optional<wtf_size_t> line_index) const override;
 
   void Trace(Visitor* visitor) const override {
     LayoutBlock::Trace(visitor);

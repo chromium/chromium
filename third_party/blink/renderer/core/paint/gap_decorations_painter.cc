@@ -4,9 +4,10 @@
 
 #include "third_party/blink/renderer/core/paint/gap_decorations_painter.h"
 
+#include <optional>
+
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/css/css_gap_decoration_property_utils.h"
-#include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/core/layout/break_token_algorithm_data.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
@@ -195,6 +196,23 @@ void AdjustIntersectionIndexPair(GridTrackSizingDirection track_direction,
   }
 }
 
+// Advances `main_gap_index` to the flex line that owns cross gap
+// `cross_gap_index`. Cross gaps are painted in order, so the main gap index
+// should only move forward.
+void AdvanceFlexCrossGapLineCursor(const GapGeometry& gap_geometry,
+                                   wtf_size_t cross_gap_index,
+                                   wtf_size_t& main_gap_index) {
+  const Vector<MainGap>& main_gaps = gap_geometry.GetMainGaps();
+  while (main_gap_index < main_gaps.size()) {
+    const MainGap& main_gap = main_gaps[main_gap_index];
+    if (main_gap.HasCrossGapsBefore() &&
+        cross_gap_index <= main_gap.GetCrossGapBeforeEnd()) {
+      return;
+    }
+    ++main_gap_index;
+  }
+}
+
 }  // namespace
 
 // TODO(samomekarajr): Consider refactoring the Paint method to improve
@@ -281,10 +299,18 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
   // (or zero times if the loop is fully skipped, e.g. all multicol spanners).
   Vector<GapIntersection> intersections;
 
-  // Reset transient per-paint state. The `GapGeometry` may be reused
-  // across relayouts and repaints, so we must not inherit stale state from a
-  // previous paint.
+  // Reset transient per-paint state. The `GapGeometry` may be reused across
+  // relayouts and repaints, so we must not inherit stale state (e.g. the
+  // multicol spanner-adjacent set) from a previous paint.
   gap_geometry.InitPaintState();
+
+  // For flex cross gaps, we need to track the flex line that owns the current
+  // cross gap for intersection generation and getting the stitched gap index.
+  std::optional<wtf_size_t> main_gap_index;
+  if (gap_geometry.GetContainerType() == GapGeometry::ContainerType::kFlex &&
+      !is_main) {
+    main_gap_index = 0u;
+  }
 
   for (wtf_size_t gap_index = 0; gap_index < fragment_relative_gap_count;
        ++gap_index) {
@@ -294,6 +320,12 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
     if (gap_geometry.IsMultiColSpanner(gap_index, track_direction)) {
       continue;
     }
+    // For flex cross gaps, advance the per-line cursor to the flex line that
+    // owns this gap. We need the owning line both to generate the gap's
+    // intersections and to resolve its stitched index across fragments.
+    if (main_gap_index) {
+      AdvanceFlexCrossGapLineCursor(gap_geometry, gap_index, *main_gap_index);
+    }
     // Gap decorations can take a list format for their styles, and that order
     // must be maintained when the container fragments. Resolve this gap's
     // `stitched_gap_index` (i.e. its index in the global unfragmented context)
@@ -301,8 +333,8 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
     // 'width' patterns are maintained across fragments.
     if (has_row_gap_fragmentation) {
       const wtf_size_t stitched_gap_index =
-          box_fragment_.GetLayoutObject()->StitchedRowGapIndex(box_fragment_,
-                                                               gap_index);
+          box_fragment_.GetLayoutObject()->StitchedRowGapIndex(
+              box_fragment_, gap_index, main_gap_index);
       color_iterator.AdvanceUpTo(stitched_gap_index);
       style_iterator.AdvanceUpTo(stitched_gap_index);
       width_iterator.AdvanceUpTo(stitched_gap_index);
@@ -318,7 +350,7 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
         gap_geometry.GetGapCenterOffset(track_direction, gap_index);
 
     gap_geometry.GenerateIntersectionListForGap(track_direction, gap_index,
-                                                intersections);
+                                                intersections, main_gap_index);
 
     const wtf_size_t intersection_count = intersections.size();
 

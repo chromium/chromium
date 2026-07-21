@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GAP_GAP_GEOMETRY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GAP_GAP_GEOMETRY_H_
 
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/gap/gap_intersection.h"
 #include "third_party/blink/renderer/core/layout/gap/main_gap.h"
@@ -90,8 +92,7 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
         content_inline_end_(other.content_inline_end_),
         content_block_start_(new_content_block_start),
         content_block_end_(new_content_block_end),
-        main_direction_(other.main_direction_),
-        main_gap_running_index_(other.main_gap_running_index_) {}
+        main_direction_(other.main_direction_) {}
 
   void Trace(Visitor* visitor) const {}
 
@@ -226,13 +227,12 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
     (*flex_cross_gap_sizes_)[index] = size;
   }
 
-  void Finalize() { InitMainGapRunningIndex(); }
-
-  // Resets transient per-paint cursor state. A cached `GapGeometry` can be reused
-  // across relayouts, so paint must not depend on cursor state left behind by a
-  // previous paint.
+  // Resets transient per-paint state. A cached `GapGeometry` can be reused
+  // across relayouts and repaints, so paint must not inherit state left behind
+  // by a previous paint. The flex cross-gap cursor is now a local paint-time
+  // variable (`main_gap_running_index` in GapDecorationsPainter), so only the
+  // multicol spanner-adjacent set needs clearing here.
   void InitPaintState() const {
-    InitMainGapRunningIndex();
     multicol_spanner_adjacent_intersections_.clear();
   }
 
@@ -266,10 +266,14 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   // We reset `intersections` (Shrink(0)) before populating, so the buffer's
   // capacity is preserved through loop iterations. This makes reuse across a
   // gap loop allocation-free after the first call.
+  //
+  // `main_gap_index` is the index of the main gap (flex line) that owns the
+  // cross gap being processed.
   void GenerateIntersectionListForGap(
       GridTrackSizingDirection direction,
       wtf_size_t gap_index,
-      Vector<GapIntersection>& intersections) const;
+      Vector<GapIntersection>& intersections,
+      std::optional<wtf_size_t> main_gap_index) const;
 
   // Determines whether the intersection at `intersection_index` within
   // `gap_index` lies on the container boundary. Typically, the first and last
@@ -445,11 +449,13 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   // Fills `intersections` for a cross gap at `gap_index`. For grid containers,
   // this includes the container content edges and every main gap offset. For
   // flex containers, it includes the cross-gap start offset and its computed
-  // end offset.
+  // end offset. `main_gap_index` is the index of the main gap that owns the
+  // cross gap being processed, when there is one.
   void GenerateCrossIntersectionList(
       GridTrackSizingDirection direction,
       wtf_size_t gap_index,
-      Vector<GapIntersection>& intersections) const;
+      Vector<GapIntersection>& intersections,
+      std::optional<wtf_size_t> main_gap_index) const;
 
   // Fills `intersections` for a grid cross gap at `gap_index`, which includes:
   // 1. The content-start edge
@@ -464,11 +470,13 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   // 1. The gap's start offset
   // 2. Its computed end offset (either a main gap or the container's
   // content-end edge)
+  // `main_gap_index` is the index of the main gap where this cross gap ends.
   void GenerateCrossIntersectionListForFlex(
       GridTrackSizingDirection direction,
       wtf_size_t gap_index,
       Vector<GapIntersection>& intersections,
-      GapSegmentStateCursor& cursor) const;
+      GapSegmentStateCursor& cursor,
+      wtf_size_t main_gap_index) const;
 
   // Fills `intersections` for a multicol cross gap at `gap_index`, which
   // includes:
@@ -485,11 +493,11 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   // - The container's content end which occurs when the cross gap is at last
   // line, or
   // - The offset of the main gap where this cross gap ends (tracked by
-  // `main_gap_running_index_`) which occurs when the cross gap occurs on any
+  // `main_gap_index`) which occurs when the cross gap occurs on any
   // line but the last.
-  LayoutUnit ComputeEndOffsetForFlexCrossGap(wtf_size_t cross_gap_index,
-                                             GridTrackSizingDirection direction,
-                                             bool cross_gap_is_at_end) const;
+  LayoutUnit ComputeEndOffsetForFlexCrossGap(GridTrackSizingDirection direction,
+                                             bool cross_gap_is_at_end,
+                                             wtf_size_t main_gap_index) const;
 
   // For `overlap-join`, computes the inset so the main-direction decoration
   // extends to meet the far edge of the cross-direction decoration at each
@@ -501,16 +509,6 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
                                      bool is_main,
                                      LayoutUnit cross_gap_width,
                                      LayoutUnit cross_decoration_width) const;
-
-  // Initializes the transient paint-time cursor `main_gap_running_index_` to
-  // the first main gap that has cross gaps before it.
-  void InitMainGapRunningIndex() const {
-    main_gap_running_index_ = 0;
-    while (main_gap_running_index_ < main_gaps_.size() &&
-           !main_gaps_[main_gap_running_index_].HasCrossGapsBefore()) {
-      ++main_gap_running_index_;
-    }
-  }
 
   // In flex it refers to the gap between flex items, and in grid it
   // refers to the column gutter size.
@@ -532,9 +530,8 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   CrossGaps cross_gaps_;
 
   // Per-line effective gap sizes (`gap` property + content distribution space)
-  // for flex containers. Each flex line corresponds to one entry in this
-  // vector, indexed by fragment-relative line index. Every line has a
-  // corresponding entry.
+  // for flex containers. Column flex uses absolute flex-line indices, while row
+  // flex uses fragment-relative line indices.
   std::optional<Vector<LayoutUnit>> flex_cross_gap_sizes_;
 
   // These represent the offsets of the content where the gaps begin and end.
@@ -546,34 +543,23 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   LayoutUnit content_block_start_;
   LayoutUnit content_block_end_;
 
-  // TODO(samomekarajr): Consider making this type a display agnostic type that
+  // TODO(javiercon): Consider making this type a display agnostic type that
   // uses inline/block rather than rows/columns.
   GridTrackSizingDirection main_direction_ = kForRows;
-
-  // In flex, cross gaps (except those at the last flex line) terminate
-  // at a main gap. Main gaps already track their adjacent cross gaps (before
-  // and after). The `main_gap_running_index_` tracks which main gap a sequence
-  // of cross gaps belongs to. This allows us to determine the correct end
-  // offset for cross gaps in flex.
-  //
-  // This is made be mutable because GapGeometry is treated as const during
-  // Paint, but `ComputeEndOffsetForFlexCrossGap()` (called at paint time)
-  // updates this index as part of its calculation. Making this mutable allows
-  // us to maintain necessary state without breaking const-correctness for the
-  // overall GapGeometry object.
-  //
-  // TODO(javiercon): Explore removing this in favour of having this state
-  // live at the parent paint call and passing in as an input/output param.
-  // Paint resets it via `InitPaintState()` so it never inherits stale state
-  // across relayouts; another cleanup option is to remove it entirely
-  // (store the cross-gap->main-gap linkage on CrossGap at layout time, or
-  // thread a local running index through paint).
-  mutable wtf_size_t main_gap_running_index_ = kNotFound;
 
   // For multicol containers, this set tracks which intersection indices are
   // considered to be spanner-adjacent "edges". These intersections are
   // adjacent to spanner main gaps and need to be treated as edge
   // intersections so that insets are applied correctly.
+  //
+  // This is mutable because it is populated at paint time (GapGeometry is const
+  // during paint) and `InitPaintState()` clears it before each paint so a
+  // cached GapGeometry never inherits stale entries across relayouts/repaints.
+  //
+  // TODO(javiercon): Lift this transient state up to the paint call and
+  // thread it through as an input/output param (as was done for the flex
+  // cross-gap cursor `main_gap_running_index`), so it no longer needs to be a
+  // mutable member reset via `InitPaintState()`.
   mutable HashSet<wtf_size_t> multicol_spanner_adjacent_intersections_;
 };
 

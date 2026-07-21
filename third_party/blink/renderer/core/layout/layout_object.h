@@ -28,6 +28,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_OBJECT_H_
 
 #include <concepts>
+#include <optional>
 #include <utility>
 
 #include "base/check_op.h"
@@ -2041,10 +2042,12 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // Gap decorations can take a list format for its styles. When the container
   // fragments, the order of those styles must be maintained. This method
   // returns the index of the gap within the container's decoration style
-  // pattern within the stiched container given the provided fragment relative
+  // pattern within the stitched container given the provided fragment relative
   // `gap_index`.
-  virtual wtf_size_t StitchedRowGapIndex(const PhysicalBoxFragment& fragment,
-                                         wtf_size_t gap_index) const {
+  virtual wtf_size_t StitchedRowGapIndex(
+      const PhysicalBoxFragment& fragment,
+      wtf_size_t gap_index,
+      std::optional<wtf_size_t> line_index) const {
     NOT_DESTROYED();
     return gap_index;
   }

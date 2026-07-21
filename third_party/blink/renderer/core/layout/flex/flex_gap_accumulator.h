@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLEX_FLEX_GAP_ACCUMULATOR_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/flex/flex_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/flex/flex_line.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -194,7 +195,7 @@ class CORE_EXPORT FlexGapAccumulator {
   // For more information on GapDecorations implementation see
   // `third_party/blink/renderer/core/layout/gap/README.md`.
   void BuildGapsForCurrentItem(const FlexLineVector& flex_lines,
-                               wtf_size_t absolute_flex_line_index,
+                               wtf_size_t global_line_index,
                                LogicalOffset item_offset,
                                bool is_first_item,
                                bool is_last_item,
@@ -204,19 +205,36 @@ class CORE_EXPORT FlexGapAccumulator {
                                LayoutUnit container_main_end,
                                bool in_fragmentation = false);
 
+  // Returns this fragment's row gap info: one entry for row flex (the main
+  // gaps), and one entry per absolute flex line for column flex.
+  Vector<FlexRowGapBreakTokenData> FinalizeRowGapBreakTokenData();
+
   void PopulateMainGapForFirstItem(LayoutUnit cross_end);
 
+  // An absolute flex-line index indexes `flex_lines`. A geometry line index
+  // indexes `GapGeometry`. It is an absolute flex-line index for column flex
+  // and fragment-relative for row flex.
   void HandleCrossGapRangesForCurrentItem(
       wtf_size_t fragment_relative_line_index,
       wtf_size_t cross_gap_index);
 
   void PopulateCrossGapForCurrentItem(const FlexLine& flex_line,
+                                      wtf_size_t global_line_index,
                                       wtf_size_t fragment_relative_line_index,
                                       bool is_first_line,
                                       bool is_last_line,
                                       bool single_line,
                                       LayoutUnit main_intersection_offset,
                                       LayoutUnit cross_start);
+
+  // Calculates a column flex container line's `first_row_gap_index`. This is
+  // done the moment we encounter a new line during item placement.
+  // `previous_gap_data` is the prior fragment's flex gap break-token data, or
+  // null when there is no previous fragment.
+  void CalculateColumnFlexLineRowGapStart(
+      const FlexLineVector& flex_lines,
+      wtf_size_t global_line_index,
+      const FlexGapBreakTokenData* previous_gap_data = nullptr);
 
   void SetContentMainEnd(LayoutUnit content_main_end) {
     content_main_end_ = content_main_end;
@@ -226,10 +244,17 @@ class CORE_EXPORT FlexGapAccumulator {
     effective_gap_between_lines_ = effective_gap;
   }
 
-  // In the flex algorithm, there are some cases where we need to suppress a row
-  // gap (i.e. if a row gap is the last content in a fragment). In such cases,
-  // we must then also remove the `MainGap` that was created for that row gap
-  // that will now be suppressed.
+  // Increases the fragment-relative `row_gap_count` for the entry at
+  // `row_gap_data_index`. This counts only the row gaps that land in the
+  // current fragment (not the container's unfragmented total). Row flex passes
+  // 0 (a single entry per fragment) while column flex passes the absolute flex
+  // line index.
+  void IncrementRowGapCount(wtf_size_t row_gap_data_index);
+
+  // Decreases the current fragment's single row-flex gap count.
+  void DecrementRowGapCount();
+
+  // Removes the last `MainGap` from this fragment.
   void SuppressLastMainGap(
       std::optional<LayoutUnit> new_cross_end = std::nullopt);
 
@@ -271,6 +296,13 @@ class CORE_EXPORT FlexGapAccumulator {
 
   // The index to assign to the next row-flex line visited in this fragment.
   wtf_size_t next_fragment_relative_row_line_index_ = 0;
+
+  // The current fragment's row gap info, built during placement. Column flex
+  // containers store one entry per absolute flex line while row flex
+  // containers store a single entry for the whole fragment. This is because
+  // row gaps exist per line in a column flex container while in the case of a
+  // row flex container, row gaps separate flex lines in a given fragment.
+  Vector<FlexRowGapBreakTokenData> row_gap_break_token_data_;
 };
 
 }  // namespace blink

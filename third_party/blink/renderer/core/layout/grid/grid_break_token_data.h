@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_BREAK_TOKEN_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_BREAK_TOKEN_DATA_H_
 
+#include <optional>
+
 #include "base/check.h"
 #include "third_party/blink/renderer/core/layout/break_token_algorithm_data.h"
 #include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
@@ -72,7 +74,8 @@ struct GridBreakTokenData final : BreakTokenAlgorithmData {
     return full_gap_geometry->GetMainGaps().size();
   }
 
-  wtf_size_t GetFirstUnprocessedRowGapIndex() const override {
+  wtf_size_t GetFirstUnprocessedRowGapIndex(
+      std::optional<wtf_size_t> line_index) const override {
     return first_unprocessed_row_gap_idx;
   }
 

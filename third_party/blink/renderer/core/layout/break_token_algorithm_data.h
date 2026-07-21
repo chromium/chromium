@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_BREAK_TOKEN_ALGORITHM_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_BREAK_TOKEN_ALGORITHM_DATA_H_
 
+#include <optional>
+
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -49,8 +51,13 @@ struct BreakTokenAlgorithmData
 
   // Returns the first row gap index associated with this break token data
   // in the stitched container. In other words, it would be the index of the
-  // gap in the container had it not been fragmented.
-  virtual wtf_size_t GetFirstUnprocessedRowGapIndex() const { NOTREACHED(); }
+  // gap in the container had it not been fragmented. If provided, `line_index`
+  // is used to tell which line within a given layout type we are accessing the
+  // gap index for.
+  virtual wtf_size_t GetFirstUnprocessedRowGapIndex(
+      std::optional<wtf_size_t> line_index) const {
+    NOTREACHED();
+  }
 
   virtual void Trace(Visitor* visitor) const {}
 

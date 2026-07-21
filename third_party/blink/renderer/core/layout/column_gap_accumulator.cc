@@ -151,8 +151,6 @@ const GapGeometry* ColumnGapAccumulator::BuildGapGeometry(
 
   gap_geometry_->SetMainDirection(kForRows);
 
-  gap_geometry_->Finalize();
-
   return gap_geometry_;
 }
 

@@ -28,7 +28,13 @@ bool GapGeometry::HasRowGapFragmentation(
     return is_main;
   }
 
-  // TODO(samomekarajr): Implement for flex and multicol in a follow-up CL.
+  // Row-flex fragments main gaps while column-flex fragments cross gaps within
+  // each line.
+  if (container_type_ == GapGeometry::ContainerType::kFlex) {
+    return main_direction_ == kForColumns ? !is_main : is_main;
+  }
+
+  // TODO(samomekarajr): Implement for multicol in a follow-up CL.
   return false;
 }
 
@@ -209,14 +215,16 @@ LayoutUnit GapGeometry::GetGapCenterOffset(GridTrackSizingDirection direction,
 void GapGeometry::GenerateIntersectionListForGap(
     GridTrackSizingDirection direction,
     wtf_size_t gap_index,
-    Vector<GapIntersection>& intersections) const {
+    Vector<GapIntersection>& intersections,
+    std::optional<wtf_size_t> main_gap_index) const {
   // Reset the buffer's logical size but keep capacity, so we can reuse
   // a single Vector across loop iterations without reallocating.
   intersections.Shrink(0);
   if (IsMainDirection(direction)) {
     GenerateMainIntersectionList(direction, gap_index, intersections);
   } else {
-    GenerateCrossIntersectionList(direction, gap_index, intersections);
+    GenerateCrossIntersectionList(direction, gap_index, intersections,
+                                  main_gap_index);
   }
 }
 
@@ -441,7 +449,8 @@ void GapGeometry::GenerateMainIntersectionListForFlex(
 void GapGeometry::GenerateCrossIntersectionList(
     GridTrackSizingDirection direction,
     wtf_size_t gap_index,
-    Vector<GapIntersection>& intersections) const {
+    Vector<GapIntersection>& intersections,
+    std::optional<wtf_size_t> main_gap_index) const {
   GapSegmentStateCursor cursor(
       GetGapSegmentStateRangesForGap(direction, gap_index));
   switch (GetContainerType()) {
@@ -450,8 +459,9 @@ void GapGeometry::GenerateCrossIntersectionList(
       break;
     }
     case ContainerType::kFlex: {
+      DCHECK(main_gap_index);
       GenerateCrossIntersectionListForFlex(direction, gap_index, intersections,
-                                           cursor);
+                                           cursor, *main_gap_index);
       break;
     }
     case ContainerType::kMultiColumn:
@@ -492,7 +502,8 @@ void GapGeometry::GenerateCrossIntersectionListForFlex(
     GridTrackSizingDirection direction,
     wtf_size_t gap_index,
     Vector<GapIntersection>& intersections,
-    GapSegmentStateCursor& cursor) const {
+    GapSegmentStateCursor& cursor,
+    wtf_size_t main_gap_index) const {
   // For a flex cross gap:
   // - There are exactly two intersections:
   // 1. The gap's start offset
@@ -511,7 +522,7 @@ void GapGeometry::GenerateCrossIntersectionListForFlex(
                           : cross_gap.GetGapOffset().inline_offset;
   intersections.emplace_back(offset, cursor.GetNextGapSegmentState());
   LayoutUnit end_offset_for_flex_cross_gap = ComputeEndOffsetForFlexCrossGap(
-      gap_index, direction, cross_gap.EndsAtEdge());
+      direction, cross_gap.EndsAtEdge(), main_gap_index);
   intersections.emplace_back(end_offset_for_flex_cross_gap,
                              cursor.GetNextGapSegmentState());
 
@@ -536,15 +547,15 @@ void GapGeometry::GenerateCrossIntersectionListForFlex(
     intersections[0].SetMainGapIndex(
         edge_state == CrossGap::EdgeIntersectionState::kEnd
             ? GetMainGaps().size() - 1
-            : main_gap_running_index_ - 1);
+            : main_gap_index - 1);
   }
 
   // Set `main_gap_index` for the end of the cross gap.
   const bool is_end_edge =
       edge_state == CrossGap::EdgeIntersectionState::kEnd ||
       edge_state == CrossGap::EdgeIntersectionState::kBoth;
-  if (!is_end_edge && main_gap_running_index_ != kNotFound) {
-    intersections[1].SetMainGapIndex(main_gap_running_index_);
+  if (!is_end_edge && main_gap_index < GetMainGaps().size()) {
+    intersections[1].SetMainGapIndex(main_gap_index);
   }
 }
 
@@ -590,42 +601,22 @@ void GapGeometry::GenerateCrossIntersectionListForMulticol(
 }
 
 LayoutUnit GapGeometry::ComputeEndOffsetForFlexCrossGap(
-    wtf_size_t cross_gap_index,
     GridTrackSizingDirection direction,
-    bool cross_gap_is_at_end) const {
-  if (main_gap_running_index_ == kNotFound || cross_gap_is_at_end) {
+    bool cross_gap_is_at_end,
+    wtf_size_t main_gap_index) const {
+  const MainGaps& main_gaps = GetMainGaps();
+
+  DCHECK_LE(main_gap_index, main_gaps.size());
+
+  // `main_gap_index` identifies the main gap where this cross gap ends,
+  // or equals `main_gaps.size()` when the cross gap ends at the content edge.
+  if (main_gap_index == main_gaps.size() || cross_gap_is_at_end) {
     // If the cross gap is an end-edge gap, its end offset is the container's
     // content end.
     return direction == kForRows ? content_inline_end_ : content_block_end_;
   }
 
-  // Determine whether the current cross gap falls before the main gap
-  // currently being tracked.
-  const MainGaps& main_gaps = GetMainGaps();
-  CHECK_LT(main_gap_running_index_, main_gaps.size());
-  wtf_size_t last_cross_before_index =
-      main_gaps[main_gap_running_index_].GetCrossGapBeforeEnd();
-
-  // If the cross gap does not fall before the currently tracked main gap,
-  // advance `main_gap_running_index_` to the next main gap that has cross
-  // gap(s) before it.
-  if (cross_gap_index > last_cross_before_index) {
-    do {
-      ++main_gap_running_index_;
-
-      if (main_gap_running_index_ == main_gaps.size()) {
-        main_gap_running_index_ = kNotFound;
-        return content_block_end_;
-      }
-      // Main gaps placed at the end of spanners don't have any cross gaps
-      // associated with them, so we skip them. The same may be the case at the
-      // beginning of spanners, if a spanner was pushed to the next row, so that
-      // it follows a row gap.
-    } while (!main_gaps[main_gap_running_index_].HasCrossGapsBefore());
-  }
-
-  CHECK_LT(main_gap_running_index_, main_gaps.size());
-  return main_gaps[main_gap_running_index_].GetGapOffset();
+  return main_gaps[main_gap_index].GetGapOffset();
 }
 
 bool GapGeometry::IsIntersectionAtContainerEdge(

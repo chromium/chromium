@@ -71,20 +71,24 @@ class CORE_EXPORT FlexLayoutAlgorithm
       HeapVector<Member<LayoutBox>>* oof_children = nullptr);
   void ApplyReversals(FlexLineVector* flex_lines);
   // `effective_gap_between_lines` is an out parameter that receives the
-  // computed effective gap (base CSS gap + content distribution space). It is
-  // used for gap decoration placement and gap suppression during fragmentation.
+  // effective gap (base gap + content distribution). `total_row_gap_count` is
+  // an out parameter that receives the unfragmented row gap count: for row flex
+  // containers, it is the number of gaps between flex lines while for column
+  // flex containers, it is the sum of the gaps within each flex line.
   LayoutResult::EStatus GiveItemsFinalPositionAndSize(
       FlexLineVector* flex_lines,
       Vector<EBreakBetween>* row_break_between_outputs,
       std::optional<FlexGapAccumulator>& gap_accumulator,
-      LayoutUnit& effective_gap_between_lines);
+      LayoutUnit& effective_gap_between_lines,
+      wtf_size_t* total_row_gap_count);
   LayoutResult::EStatus GiveItemsFinalPositionAndSizeForFragmentation(
       FlexLineVector* flex_lines,
       Vector<EBreakBetween>* row_break_between_outputs,
       FlexBreakTokenData::FlexBreakBeforeRow* break_before_row,
       LayoutUnit* total_intrinsic_block_size,
       std::optional<FlexGapAccumulator>& gap_accumulator,
-      LayoutUnit effective_gap_between_lines);
+      LayoutUnit effective_gap_between_lines,
+      const FlexGapBreakTokenData* previous_gap_data);
   LayoutResult::EStatus PropagateFlexItemInfo(
       const FlexItem&,
       const PhysicalBoxFragment&,

@@ -5,12 +5,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLEX_LAYOUT_FLEXIBLE_BOX_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLEX_LAYOUT_FLEXIBLE_BOX_H_
 
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 
 namespace blink {
 
 struct DevtoolsFlexInfo;
+class PhysicalBoxFragment;
 
 // Devtools uses this info to highlight lines and items on its flexbox overlay.
 // Devtools usually reads such info from the layout or fragment trees. But
@@ -24,6 +27,11 @@ class CORE_EXPORT LayoutFlexibleBox : public LayoutBlock {
 
   bool HasTopOverflow() const override;
   bool HasLeftOverflow() const override;
+
+  wtf_size_t StitchedRowGapIndex(
+      const PhysicalBoxFragment& fragment,
+      wtf_size_t gap_index,
+      std::optional<wtf_size_t> absolute_flex_line_index) const override;
 
   const char* GetName() const override {
     NOT_DESTROYED();

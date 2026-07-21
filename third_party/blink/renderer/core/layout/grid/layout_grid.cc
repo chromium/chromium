@@ -168,8 +168,10 @@ const GridLayoutData* LayoutGrid::LayoutData() const {
   return GetGridLayoutDataFromFragments(this);
 }
 
-wtf_size_t LayoutGrid::StitchedRowGapIndex(const PhysicalBoxFragment& fragment,
-                                           wtf_size_t gap_index) const {
+wtf_size_t LayoutGrid::StitchedRowGapIndex(
+    const PhysicalBoxFragment& fragment,
+    wtf_size_t gap_index,
+    std::optional<wtf_size_t> line_index) const {
   NOT_DESTROYED();
   // This should only be reached when painting gap decorations in a fragmented
   // context.
@@ -181,7 +183,8 @@ wtf_size_t LayoutGrid::StitchedRowGapIndex(const PhysicalBoxFragment& fragment,
   if (!previous_break_token) {
     return gap_index;
   }
-  return previous_break_token->TokenData()->GetFirstUnprocessedRowGapIndex() +
+  return previous_break_token->TokenData()->GetFirstUnprocessedRowGapIndex(
+             line_index) +
          gap_index;
 }
 

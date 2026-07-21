@@ -1698,8 +1698,6 @@ class GapAccumulator {
     gap_geometry_->SetContentBlockOffsets(content_block_start_,
                                           content_block_end_);
 
-    gap_geometry_->Finalize();
-
     return gap_geometry_;
   }
 
