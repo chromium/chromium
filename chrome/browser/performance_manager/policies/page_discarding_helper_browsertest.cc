@@ -406,7 +406,8 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest, NoDiscardPatterns) {
-  const auto& default_browser_context_id = browser()->profile()->UniqueToken();
+  const auto& default_browser_context_id =
+      browser()->GetProfile()->UniqueToken();
   const std::string base_url_pattern =
       embedded_test_server()->base_url().spec();
 

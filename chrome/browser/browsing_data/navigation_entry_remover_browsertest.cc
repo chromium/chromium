@@ -47,7 +47,7 @@ class NavigationEntryRemoverTest : public InProcessBrowserTest {
     about_blank_ = GURL("about:blank");
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   void AddNavigations(Browser* browser, const std::vector<GURL>& urls) {
     for (const GURL& url : urls) {

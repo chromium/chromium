@@ -58,12 +58,12 @@ class CacheCounterTest : public InProcessBrowserTest {
   }
 
   void SetCacheDeletionPref(bool value) {
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         browsing_data::prefs::kDeleteCache, value);
   }
 
   void SetDeletionPeriodPref(browsing_data::TimePeriod period) {
-    browser()->profile()->GetPrefs()->SetInteger(
+    browser()->GetProfile()->GetPrefs()->SetInteger(
         browsing_data::prefs::kDeleteTimePeriod, static_cast<int>(period));
   }
 
@@ -89,7 +89,7 @@ class CacheCounterTest : public InProcessBrowserTest {
                                          TRAFFIC_ANNOTATION_FOR_TESTS);
     simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
         browser()
-            ->profile()
+            ->GetProfile()
             ->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess()
             .get(),
@@ -126,12 +126,12 @@ void WaitForCountingResult(CounterFuture& future) {
 IN_PROC_BROWSER_TEST_F(CacheCounterTest, Empty) {
   base::test::TestFuture<void> clean_cache_future;
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   // Clear the |profile| to ensure that there was no data added from other
   // processes unrelated to this test.
   browser()
-      ->profile()
+      ->GetProfile()
       ->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->ClearHttpCache(base::Time(), base::Time::Max(), nullptr,
@@ -170,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(CacheCounterTest, Empty) {
 IN_PROC_BROWSER_TEST_F(CacheCounterTest, NonEmpty) {
   CreateCacheEntry();
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   CacheCounter counter(profile);
   counter.Init(profile->GetPrefs(),
                future.GetRepeatingCallback());
@@ -185,13 +185,13 @@ IN_PROC_BROWSER_TEST_F(CacheCounterTest, AfterDoom) {
 
   CreateCacheEntry();
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   CacheCounter counter(profile);
   counter.Init(profile->GetPrefs(),
                future.GetRepeatingCallback());
 
   browser()
-      ->profile()
+      ->GetProfile()
       ->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->ClearHttpCache(
@@ -206,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(CacheCounterTest, AfterDoom) {
 IN_PROC_BROWSER_TEST_F(CacheCounterTest, PrefChanged) {
   SetCacheDeletionPref(false);
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   CacheCounter counter(profile);
   counter.Init(profile->GetPrefs(),
                future.GetRepeatingCallback());
@@ -222,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(CacheCounterTest, PrefChanged) {
 IN_PROC_BROWSER_TEST_F(CacheCounterTest, PeriodChanged) {
   CreateCacheEntry();
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   CacheCounter counter(profile);
   counter.Init(profile->GetPrefs(),
                future.GetRepeatingCallback());

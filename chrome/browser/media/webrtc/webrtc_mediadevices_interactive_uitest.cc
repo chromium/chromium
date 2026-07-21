@@ -301,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesInteractiveUITest,
   std::vector<MediaDeviceInfo> devices;
   EnumerateDevices(tab, &devices);
 
-  auto* remover = browser()->profile()->GetBrowsingDataRemover();
+  auto* remover = browser()->GetProfile()->GetBrowsingDataRemover();
   content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
   remover->RemoveAndReply(
       base::Time(), base::Time::Max(),

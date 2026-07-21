@@ -181,7 +181,7 @@ class IncognitoBrowsingDataBrowserTest
 
   network::mojom::NetworkContext* network_context() const {
     return GetBrowser()
-        ->profile()
+        ->GetProfile()
         ->GetDefaultStoragePartition()
         ->GetNetworkContext();
   }
@@ -247,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest, MediaDeviceIdSalt) {
 IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest,
                        VideoDecodePerfHistory) {
   media::VideoDecodePerfHistory* video_decode_perf_history =
-      GetBrowser()->profile()->GetVideoDecodePerfHistory();
+      GetBrowser()->GetProfile()->GetVideoDecodePerfHistory();
 
   // Save a video decode record. Note: we avoid using a web page to generate the
   // stats as this takes at least 5 seconds and even then is not a guarantee
@@ -300,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest,
   // |is_power_efficient| should report true because the VideoDecodePerfHistory
   // optimistically returns true when it has no data.
   media::VideoDecodePerfHistory* regular_mode_video_decode_perf_history =
-      GetRegularBrowser()->profile()->GetVideoDecodePerfHistory();
+      GetRegularBrowser()->GetProfile()->GetVideoDecodePerfHistory();
   {
     base::RunLoop run_loop;
     regular_mode_video_decode_perf_history->GetPerfInfo(
@@ -316,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest,
   // Restart Incognito.
   RestartIncognitoBrowser();
   video_decode_perf_history =
-      GetBrowser()->profile()->GetVideoDecodePerfHistory();
+      GetBrowser()->GetProfile()->GetVideoDecodePerfHistory();
 
   // Verify history no longer exists. Both |is_smooth| and |is_power_efficient|
   // should now report true because the VideoDecodePerfHistory optimistically
@@ -359,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest, Cache) {
 
 IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest,
                        ExternalProtocolHandlerPerOriginPrefs) {
-  Profile* profile = GetBrowser()->profile();
+  Profile* profile = GetBrowser()->GetProfile();
   url::Origin test_origin = url::Origin::Create(GURL("https://example.test/"));
   const std::string serialized_test_origin = test_origin.Serialize();
   base::DictValue allowed_protocols_for_origin;
@@ -379,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest,
   ASSERT_EQ(ExternalProtocolHandler::UNKNOWN, block_state);
 
   RestartIncognitoBrowser();
-  profile = GetBrowser()->profile();
+  profile = GetBrowser()->GetProfile();
 
   block_state =
       ExternalProtocolHandler::GetBlockState("tel", &test_origin, profile);

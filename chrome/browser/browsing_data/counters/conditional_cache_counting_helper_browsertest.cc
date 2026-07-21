@@ -103,7 +103,7 @@ class ConditionalCacheCountingHelperBrowserTest : public InProcessBrowserTest {
                                            TRAFFIC_ANNOTATION_FOR_TESTS);
       simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
           browser()
-              ->profile()
+              ->GetProfile()
               ->GetDefaultStoragePartition()
               ->GetURLLoaderFactoryForBrowserProcess()
               .get(),

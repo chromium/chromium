@@ -164,7 +164,7 @@ class ChromeComposeClientBrowserTest : public InProcessBrowserTest {
         std::make_unique<TestModelQualityLogsUploaderService>(
             g_browser_process->local_state()));
 
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         prefs::kPrefHasCompletedComposeFRE, true);
     SetPrefsForComposeMSBBState(true);
 
@@ -263,7 +263,7 @@ class ChromeComposeClientBrowserTest : public InProcessBrowserTest {
   }
 
   void SetPrefsForComposeMSBBState(bool msbb_state) {
-    PrefService* prefs = browser()->profile()->GetPrefs();
+    PrefService* prefs = browser()->GetProfile()->GetPrefs();
     prefs->SetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
         msbb_state);
@@ -798,7 +798,7 @@ IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
   base::UserActionTester user_action_tester;
   base::ScopedMockElapsedTimersForTest test_timer;
 
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kPrefHasCompletedComposeFRE, false);
 
   compose::Config& config = compose::GetMutableConfigForTesting();
@@ -1190,7 +1190,7 @@ IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
   base::ScopedMockElapsedTimersForTest test_timer;
 
   // Enable FRE and show the dialog.
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kPrefHasCompletedComposeFRE, false);
   ShowDialogAndBindMojo();
   client().CloseUI(compose::mojom::CloseReason::kFirstRunCloseButton);
@@ -1267,7 +1267,7 @@ IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
   base::UserActionTester user_action_tester;
 
   // Set both FRE and MSBB dialog states.
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kPrefHasCompletedComposeFRE, false);
   SetPrefsForComposeMSBBState(false);
   // Dialog should show at FRE state.
@@ -1318,7 +1318,7 @@ IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
   base::HistogramTester histograms;
 
   // Enable FRE and show the dialog.
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kPrefHasCompletedComposeFRE, false);
   ShowDialogAndBindMojo();
   // Show the dialog a second time.
@@ -1373,7 +1373,7 @@ IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
   base::HistogramTester histograms;
 
   // Enable FRE and show the dialog.
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kPrefHasCompletedComposeFRE, false);
   ShowDialogAndBindMojo();
   // Complete FRE then close by inserting.

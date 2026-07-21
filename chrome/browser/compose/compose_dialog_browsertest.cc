@@ -174,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest, OpenFeedbackPage) {
   // is flaky on Linux MSan builders. This requires further investigation, but
   // the MSBB dialog state is not on the feedback page testing path so the
   // current state still satisfies the test requirement.
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   prefs->SetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
 

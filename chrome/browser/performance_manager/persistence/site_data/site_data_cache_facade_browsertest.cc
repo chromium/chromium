@@ -148,7 +148,7 @@ class SiteDataCacheFacadeBrowserTest : public InProcessBrowserTest {
   void ExpectSiteData(const std::string& site,
                       SiteFeatureUsage expected_updates_title_in_background,
                       bool expected_is_dirty) {
-    const auto browser_context_id = browser()->profile()->UniqueToken();
+    const auto browser_context_id = browser()->GetProfile()->UniqueToken();
     const url::Origin origin = embedded_test_server()->GetOrigin(site);
 
     // Look up the reader and writer for `origin`.

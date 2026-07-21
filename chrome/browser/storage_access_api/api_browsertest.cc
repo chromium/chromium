@@ -409,7 +409,7 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
   // TODO(crbug.com/381856829): Update SetBlockThirdPartyCookies to use sync
   // interface once implemented.
   void SetBlockThirdPartyCookies(bool value) {
-    browser()->profile()->GetPrefs()->SetInteger(
+    browser()->GetProfile()->GetPrefs()->SetInteger(
         prefs::kCookieControlsMode,
         static_cast<int>(
             value ? content_settings::CookieControlsMode::kBlockThirdParty
@@ -1492,7 +1492,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   // are propagated to the network service.
   base::RunLoop().RunUntilIdle();
   browser()
-      ->profile()
+      ->GetProfile()
       ->GetDefaultStoragePartition()
       ->FlushNetworkInterfaceForTesting();
 
@@ -1525,7 +1525,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   // are propagated to the network service.
   base::RunLoop().RunUntilIdle();
   browser()
-      ->profile()
+      ->GetProfile()
       ->GetDefaultStoragePartition()
       ->FlushNetworkInterfaceForTesting();
 
@@ -2519,7 +2519,7 @@ class StorageAccessAPIWithFirstPartySetsBrowserTest
   void SetUpOnMainThread() override {
     StorageAccessAPIBaseBrowserTest::SetUpOnMainThread();
     // Explicitly enable Related Website Sets (formerly First Party Sets).
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true);
   }
 

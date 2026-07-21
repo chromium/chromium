@@ -1757,7 +1757,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnIWABrowserTest,
       std::move(virtual_device_factory));
 
   content::RenderFrameHost* app_frame =
-      OpenApp(url_info->app_id(), browser()->profile());
+      OpenApp(url_info->app_id(), browser()->GetProfile());
   content::EvalJsResult result = EvalJs(app_frame, kGetAssertionCredID1234);
 
   EXPECT_THAT(result.ExtractString(), testing::HasSubstr("NotAllowedError"));
@@ -1793,7 +1793,7 @@ IN_PROC_BROWSER_TEST_F(
       std::move(virtual_device_factory));
 
   content::RenderFrameHost* app_frame =
-      OpenApp(url_info->app_id(), browser()->profile());
+      OpenApp(url_info->app_id(), browser()->GetProfile());
 
   content::EvalJsResult result = EvalJs(app_frame, kGetAssertionCredID1234);
   // Call not permitted due to 'local' case, we only allow WebAuthn for IWAs if
@@ -1843,7 +1843,7 @@ IN_PROC_BROWSER_TEST_F(
       std::move(virtual_device_factory));
 
   content::RenderFrameHost* app_frame =
-      OpenApp(url_info->app_id(), browser()->profile());
+      OpenApp(url_info->app_id(), browser()->GetProfile());
 
   content::EvalJsResult result = EvalJs(app_frame, kGetAssertionCredID1234);
   // Call not permitted due to 'local' case, despite same rp_id, we only allow

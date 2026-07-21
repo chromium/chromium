@@ -505,11 +505,11 @@ IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest, Download) {
     return;
   }
 
-  browser()->profile()->GetPrefs()->SetInteger(
+  browser()->GetProfile()->GetPrefs()->SetInteger(
       policy::policy_prefs::kDownloadRestrictions,
       static_cast<int>(policy::DownloadRestriction::ALL_FILES));
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kPromptForDownload,
-                                               false);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kPromptForDownload,
+                                                  false);
 
   // Need this to wait for the download to be fully cancelled to avoid a
   // confirmation prompt on quit.

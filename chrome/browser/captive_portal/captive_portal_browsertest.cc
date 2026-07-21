@@ -964,7 +964,7 @@ class CaptivePortalBrowserTest : public InProcessBrowserTest {
   void CreateLoader(content::URLLoaderInterceptor::RequestParams job) {
     CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
     browser()
-        ->profile()
+        ->GetProfile()
         ->GetDefaultStoragePartition()
         ->GetURLLoaderFactoryForBrowserProcess()
         ->CreateLoaderAndStart(std::move(job.receiver), job.request_id,
@@ -3339,7 +3339,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, MAYBE_SecureDnsCaptivePortal) {
 #if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS, the local_state is shared between all users so the user-set
   // pref is stored in the profile's pref service.
-  pref_service = browser()->profile()->GetPrefs();
+  pref_service = browser()->GetProfile()->GetPrefs();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   pref_service->SetString(prefs::kDnsOverHttpsMode,
@@ -3390,7 +3390,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
 #if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS, the local_state is shared between all users so the user-set
   // pref is stored in the profile's pref service.
-  pref_service = browser()->profile()->GetPrefs();
+  pref_service = browser()->GetProfile()->GetPrefs();
 #endif  // BUILDFLAG(IS_CHROMEOS)
   pref_service->SetString(prefs::kDnsOverHttpsTemplates,
                           "https://bar.test/dns-query{?dns}");
@@ -3443,7 +3443,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
 #if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS, the local_state is shared between all users so the user-set
   // pref is stored in the profile's pref service.
-  pref_service = browser()->profile()->GetPrefs();
+  pref_service = browser()->GetProfile()->GetPrefs();
 #endif  // BUILDFLAG(IS_CHROMEOS)
   pref_service->SetString(prefs::kDnsOverHttpsTemplates,
                           "https://bar.test/dns-query{?dns}");
@@ -3485,7 +3485,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
 #if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS, the local_state is shared between all users so the user-set
   // pref is stored in the profile's pref service.
-  pref_service = browser()->profile()->GetPrefs();
+  pref_service = browser()->GetProfile()->GetPrefs();
 #endif  // BUILDFLAG(IS_CHROMEOS)
   pref_service->SetString(prefs::kDnsOverHttpsTemplates,
                           "https://bar.test/dns-query{?dns}");

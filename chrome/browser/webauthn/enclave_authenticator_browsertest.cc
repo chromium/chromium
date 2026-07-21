@@ -2830,7 +2830,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, BiometricsInPWA) {
   // Create a Browser of type `TYPE_APP`, like a PWA.
   Browser* app_browser = Browser::Create(Browser::CreateParams::CreateForApp(
       "appname", /*trusted_source=*/true, gfx::Rect(0, 0, 500, 500),
-      browser()->profile(),
+      browser()->GetProfile(),
       /*user_gesture=*/true));
   ASSERT_EQ(app_browser->type(), Browser::Type::TYPE_APP);
   app_browser->GetWindow()->Show();
@@ -2915,7 +2915,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   EnableUVKeySupport();
   CheckRegistrationStateNotRequested();
 
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       password_manager::prefs::kCredentialsEnableService, false);
 
   content::WebContents* web_contents =
@@ -2945,7 +2945,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   EnableUVKeySupport();
   CheckRegistrationStateNotRequested();
 
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       password_manager::prefs::kCredentialsEnablePasskeys, false);
 
   content::WebContents* web_contents =
@@ -4567,7 +4567,7 @@ IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorConditionalCreateBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorConditionalCreateBrowserTest,
                        ConditionalCreate_FailsWithSettingDisabled) {
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       password_manager::prefs::kAutomaticPasskeyUpgrades, false);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("www.example.com", "/title1.html")));
@@ -4595,7 +4595,7 @@ IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorConditionalCreateBrowserTest,
 IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorConditionalCreateBrowserTest,
                        ConditionalCreate_FailsWithGPMDisabledByPolicy) {
   // Disabling GPM via policy should cause upgrade requests to fail.
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       password_manager::prefs::kCredentialsEnableService, false);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(

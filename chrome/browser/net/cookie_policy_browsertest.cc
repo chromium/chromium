@@ -66,7 +66,7 @@ class CookiePolicyBrowserTest : public InProcessBrowserTest {
   CookiePolicyBrowserTest& operator=(const CookiePolicyBrowserTest&) = delete;
 
   void SetBlockThirdPartyCookies() {
-    browser()->profile()->GetPrefs()->SetInteger(
+    browser()->GetProfile()->GetPrefs()->SetInteger(
         prefs::kCookieControlsMode,
         static_cast<int>(
             content_settings::CookieControlsMode::kBlockThirdParty));

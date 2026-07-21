@@ -138,7 +138,7 @@ class NetworkQualityTrackerBrowserTest : public InProcessBrowserTest {
 
     mojo::ScopedAllowSyncCallForTesting allow_sync_call;
     content::StoragePartition* partition =
-        browser()->profile()->GetDefaultStoragePartition();
+        browser()->GetProfile()->GetDefaultStoragePartition();
     DCHECK(partition->GetNetworkContext());
     DCHECK(content::GetNetworkService());
 
@@ -257,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(NetworkQualityTrackerBrowserTest,
   SimulateNetworkServiceCrash();
   // Flush the network interface to make sure it notices the crash.
   browser()
-      ->profile()
+      ->GetProfile()
       ->GetDefaultStoragePartition()
       ->FlushNetworkInterfaceForTesting();
 

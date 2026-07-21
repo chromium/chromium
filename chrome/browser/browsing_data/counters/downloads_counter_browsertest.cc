@@ -48,7 +48,7 @@ class DownloadsCounterTest : public InProcessBrowserTest,
   void SetUpOnMainThread() override {
     time_ = base::Time::Now();
     items_count_ = 0;
-    manager_ = browser()->profile()->GetDownloadManager();
+    manager_ = browser()->GetProfile()->GetDownloadManager();
     WaitForInitialization(manager_);
     history_ = DownloadCoreServiceFactory::GetForBrowserContext(
                    browser()->GetProfile())
@@ -56,7 +56,7 @@ class DownloadsCounterTest : public InProcessBrowserTest,
     history_->AddObserver(this);
 
     otr_manager_ = browser()
-                       ->profile()
+                       ->GetProfile()
                        ->GetPrimaryOTRProfile(/*create_if_needed=*/true)
                        ->GetDownloadManager();
     WaitForInitialization(otr_manager_);
@@ -158,12 +158,12 @@ class DownloadsCounterTest : public InProcessBrowserTest,
   // Miscellaneous. ------------------------------------------------------------
 
   void SetDownloadsDeletionPref(bool value) {
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         browsing_data::prefs::kDeleteDownloadHistory, value);
   }
 
   void SetDeletionPeriodPref(browsing_data::TimePeriod period) {
-    browser()->profile()->GetPrefs()->SetInteger(
+    browser()->GetProfile()->GetPrefs()->SetInteger(
         browsing_data::prefs::kDeleteTimePeriod, static_cast<int>(period));
   }
 
@@ -293,7 +293,7 @@ class DownloadsCounterTest : public InProcessBrowserTest,
 
 // Tests that we count the total number of downloads correctly.
 IN_PROC_BROWSER_TEST_F(DownloadsCounterTest, Count) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   DownloadsCounter counter(profile);
   counter.Init(profile->GetPrefs(),
                base::BindRepeating(&DownloadsCounterTest::ResultCallback,
@@ -363,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(DownloadsCounterTest, AsynchronousInitialization) {
 
 // Tests that not just standard complete downloads are counted.
 IN_PROC_BROWSER_TEST_F(DownloadsCounterTest, Types) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   DownloadsCounter counter(profile);
   counter.Init(profile->GetPrefs(),
                base::BindRepeating(&DownloadsCounterTest::ResultCallback,
@@ -393,7 +393,7 @@ IN_PROC_BROWSER_TEST_F(DownloadsCounterTest, Types) {
 
 // Tests that downloads not persisted by DownloadHistory are not counted.
 IN_PROC_BROWSER_TEST_F(DownloadsCounterTest, NotPersisted) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   DownloadsCounter counter(profile);
   counter.Init(profile->GetPrefs(),
                base::BindRepeating(&DownloadsCounterTest::ResultCallback,
@@ -448,7 +448,7 @@ IN_PROC_BROWSER_TEST_F(DownloadsCounterTest, MAYBE_TimeRanges) {
 
   WaitForDownloadHistory();
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   DownloadsCounter counter(profile);
   counter.Init(profile->GetPrefs(),
                base::BindRepeating(&DownloadsCounterTest::ResultCallback,

@@ -506,7 +506,7 @@ IN_PROC_BROWSER_TEST_F(
     // Make sure the network service is fully up and running after having to
     // restart twice.
     browser()
-        ->profile()
+        ->GetProfile()
         ->GetDefaultStoragePartition()
         ->FlushNetworkInterfaceForTesting();
 
@@ -552,7 +552,7 @@ IN_PROC_BROWSER_TEST_F(
     // Make sure the network service is fully up and running after having to
     // restart.
     browser()
-        ->profile()
+        ->GetProfile()
         ->GetDefaultStoragePartition()
         ->FlushNetworkInterfaceForTesting();
 
@@ -586,7 +586,7 @@ IN_PROC_BROWSER_TEST_F(
     // Make sure the network service is fully up and running after having to
     // restart.
     browser()
-        ->profile()
+        ->GetProfile()
         ->GetDefaultStoragePartition()
         ->FlushNetworkInterfaceForTesting();
 

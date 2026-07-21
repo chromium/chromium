@@ -2005,7 +2005,7 @@ IN_PROC_BROWSER_TEST_F(
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest,
                        WidevineHWSecureBlockedWhenPolicyBlocked) {
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       policy::policy_prefs::kProtectedContentIdentifiersAllowed, true);
   EXPECT_WV(IsVideoRobustnessSupported(kWidevine, nullptr));
   EXPECT_WV(IsVideoRobustnessSupported(kWidevine, ""));
@@ -2028,7 +2028,7 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest,
 
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest,
                        WidevineHWSecureAllowedWhenPolicyAllowed) {
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       policy::policy_prefs::kProtectedContentIdentifiersAllowed, true);
   EXPECT_WV(IsVideoRobustnessSupported(kWidevine, nullptr));
   EXPECT_WV(IsVideoRobustnessSupported(kWidevine, ""));
@@ -2060,7 +2060,7 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesPlayReadyTest,
                        PlayReadyBlockedWhenPolicyBlocked) {
   SKIP_IF_WINDOWS_PLAYREADY_INCOMPATIBLE();
 
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       policy::policy_prefs::kProtectedContentIdentifiersAllowed, false);
 
   // PlayReady hardware secure key systems should be blocked.
@@ -2075,7 +2075,7 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesPlayReadyTest,
                        PlayReadySuccessWhenPolicyAllowed) {
   SKIP_IF_WINDOWS_PLAYREADY_INCOMPATIBLE();
 
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       policy::policy_prefs::kProtectedContentIdentifiersAllowed, true);
 
   // PlayReady hardware secure key systems should succeed.

@@ -66,7 +66,7 @@ class ContentIndexTest : public InProcessBrowserTest,
 
     RunScript("RegisterServiceWorker()");
 
-    auto* provider = browser()->profile()->GetContentIndexProvider();
+    auto* provider = browser()->GetProfile()->GetContentIndexProvider();
     DCHECK(provider);
     provider_ = static_cast<ContentIndexProviderImpl*>(provider);
     provider_->AddObserver(this);

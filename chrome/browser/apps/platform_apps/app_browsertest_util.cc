@@ -216,7 +216,7 @@ size_t PlatformAppBrowserTest::RunGetWindowsFunctionForExtension(
   scoped_refptr<WindowsGetAllFunction> function = new WindowsGetAllFunction();
   function->set_extension(extension);
   base::ListValue result(utils::ToList(utils::RunFunctionAndReturnSingleResult(
-      function.get(), "[]", browser()->profile())));
+      function.get(), "[]", browser()->GetProfile())));
   return result.size();
 }
 
@@ -226,7 +226,8 @@ bool PlatformAppBrowserTest::RunGetWindowFunctionForExtension(
   scoped_refptr<WindowsGetFunction> function = new WindowsGetFunction();
   function->set_extension(extension);
   utils::RunFunction(function.get(), base::StringPrintf("[%u]", window_id),
-                     browser()->profile(), api_test_utils::FunctionMode::kNone);
+                     browser()->GetProfile(),
+                     api_test_utils::FunctionMode::kNone);
   return *function->response_type() ==
          ExtensionFunction::ResponseType::kSucceeded;
 }

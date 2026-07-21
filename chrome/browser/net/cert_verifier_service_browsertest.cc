@@ -611,7 +611,7 @@ class CertVerifierMultiProfileUserSettingsTest
     ASSERT_TRUE(
         (test_server_handle_2_ = test_server_2_.StartAndReturnHandle()));
 
-    profile_1_ = browser()->profile();
+    profile_1_ = browser()->GetProfile();
 
     // Create a second profile.
     {

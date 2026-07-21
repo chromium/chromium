@@ -71,12 +71,12 @@ class EnabledPolicyBrowsertest
         permissions::PermissionRequestManager::DISMISS);
 
     // Block third-party cookies.
-    browser()->profile()->GetPrefs()->SetInteger(
+    browser()->GetProfile()->GetPrefs()->SetInteger(
         prefs::kCookieControlsMode,
         static_cast<int>(
             content_settings::CookieControlsMode::kBlockThirdParty));
     // Explicitly enable Related Website Sets (formerly First Party Sets).
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true);
   }
 

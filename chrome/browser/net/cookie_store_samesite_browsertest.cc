@@ -48,7 +48,7 @@ class CookieStoreSameSiteTest : public InProcessBrowserTest,
     // legacy access for all sites.
     if (!HasNonLegacySameSiteAccessSemantics()) {
       browser()
-          ->profile()
+          ->GetProfile()
           ->GetDefaultStoragePartition()
           ->GetNetworkContext()
           ->GetCookieManager(

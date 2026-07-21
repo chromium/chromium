@@ -727,7 +727,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest, SiteDataCount) {
   base::RunLoop loop;
   std::vector<network::mojom::SharedDictionaryInfoPtr> dictionaries;
   browser()
-      ->profile()
+      ->GetProfile()
       ->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->GetSharedDictionaryInfo(
@@ -853,7 +853,7 @@ class SharedDictionaryDevToolsBrowserTest
     base::test::TestFuture<const std::vector<net::SharedDictionaryUsageInfo>&>
         result;
     browser()
-        ->profile()
+        ->GetProfile()
         ->GetDefaultStoragePartition()
         ->GetNetworkContext()
         ->GetSharedDictionaryUsageInfo(result.GetCallback());

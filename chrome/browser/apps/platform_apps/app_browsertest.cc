@@ -1428,7 +1428,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, AppsIgnoreDefaultZoom) {
 
   // Set the browser default zoom to something other than the default (which is
   // 0).
-  browser()->profile()->GetZoomLevelPrefs()->SetDefaultZoomLevelPref(1);
+  browser()->GetProfile()->GetZoomLevelPrefs()->SetDefaultZoomLevelPref(1);
 
   // Launch another window. This is a simple way to guarantee that any messages
   // that would have been delivered to the app renderer and back for zoom have

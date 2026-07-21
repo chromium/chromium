@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBrowserTest, NewWebContents) {
   ax_mode = web_contents->GetAccessibilityMode();
   EXPECT_FALSE(ax_mode.has_mode(ui::AXMode::kLabelImages));
 
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityImageLabelsEnabled, true);
 
   chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
@@ -104,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBrowserTest, NewWebContents) {
   ax_mode = web_contents->GetAccessibilityMode();
   EXPECT_TRUE(ax_mode.has_mode(ui::AXMode::kLabelImages));
 
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityImageLabelsEnabled, false);
 
   chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
@@ -128,13 +128,13 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBrowserTest, ExistingWebContents) {
   ui::AXMode ax_mode = web_contents->GetAccessibilityMode();
   EXPECT_FALSE(ax_mode.has_mode(ui::AXMode::kLabelImages));
 
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityImageLabelsEnabled, true);
 
   ax_mode = web_contents->GetAccessibilityMode();
   EXPECT_TRUE(ax_mode.has_mode(ui::AXMode::kLabelImages));
 
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityImageLabelsEnabled, false);
 
   ax_mode = web_contents->GetAccessibilityMode();
@@ -168,14 +168,14 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBrowserTest,
   ui::AXMode ax_mode = web_contents->GetAccessibilityMode();
   EXPECT_FALSE(ax_mode.has_mode(ui::AXMode::kLabelImages));
 
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityImageLabelsEnabled, true);
 
   ax_mode = web_contents->GetAccessibilityMode();
   EXPECT_FALSE(ax_mode.has_mode(ui::AXMode::kLabelImages));
 
   // Reset state.
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityImageLabelsEnabled, false);
 }
 
@@ -191,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBrowserTest,
   EXPECT_FALSE(
       web_contents->GetAccessibilityMode().has_mode(ui::AXMode::kLabelImages));
 
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityImageLabelsEnabled, true);
 
   // Now the feature is on.

@@ -32,7 +32,7 @@ class ExplicitlyAllowedNetworkPortsBrowserTest : public policy::PolicyTest {
 
   network::mojom::NetworkContext* network_context() {
     return browser()
-        ->profile()
+        ->GetProfile()
         ->GetDefaultStoragePartition()
         ->GetNetworkContext();
   }

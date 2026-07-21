@@ -438,7 +438,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCountersBrowserTest,
   EXPECT_TRUE(
       content::NavigateToURL(web_contents(), PublicSecureURL(https_server())));
 
-  browser()->profile()->GetPrefs()->SetDict(
+  browser()->GetProfile()->GetPrefs()->SetDict(
       proxy_config::prefs::kProxy,
       ProxyConfigDictionary::CreateFixedServers(
           https_server().host_port_pair().ToString(), ""));
@@ -454,7 +454,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCountersBrowserTest,
   // records kAddressSpacePublicSecureContextEmbeddedLoopbackV2, which fails
   // the test expectation.
   browser()
-      ->profile()
+      ->GetProfile()
       ->GetDefaultStoragePartition()
       ->FlushNetworkInterfaceForTesting();
 

@@ -55,7 +55,7 @@ class AppPlatformMetricsBrowserTest : public InProcessBrowserTest {
                           container);
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 };
 
 IN_PROC_BROWSER_TEST_F(AppPlatformMetricsBrowserTest, SystemWebApp) {

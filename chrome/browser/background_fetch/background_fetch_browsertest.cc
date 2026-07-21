@@ -263,7 +263,7 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
     https_server_->AddDefaultHandlers(GetChromeTestDataDir());
     ASSERT_TRUE(https_server_->Start());
 
-    Profile* profile = browser()->profile();
+    Profile* profile = browser()->GetProfile();
 
     download_observer_ = std::make_unique<WaitableDownloadLoggerObserver>();
 
@@ -390,7 +390,7 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
   gfx::Size GetIconDisplaySize() {
     gfx::Size out_display_size;
     base::RunLoop run_loop;
-    browser()->profile()->GetBackgroundFetchDelegate()->GetIconDisplaySize(
+    browser()->GetProfile()->GetBackgroundFetchDelegate()->GetIconDisplaySize(
         base::BindOnce(&BackgroundFetchBrowserTest::DidGetIconDisplaySize,
                        base::Unretained(this), run_loop.QuitClosure(),
                        &out_display_size));

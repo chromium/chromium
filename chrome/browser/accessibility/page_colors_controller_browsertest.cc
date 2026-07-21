@@ -63,7 +63,7 @@ IN_PROC_BROWSER_TEST_F(PageColorsControllerBrowserTest,
 
   // Setting `kApplyPageColorsOnlyOnIncreasedContrast` to false should lead to
   // honoring the requested page colors.
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kApplyPageColorsOnlyOnIncreasedContrast, false);
   EXPECT_EQ(native_theme->forced_colors(),
             ui::ColorProviderKey::ForcedColors::kDusk);

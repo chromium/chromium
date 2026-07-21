@@ -1126,7 +1126,7 @@ IN_PROC_BROWSER_TEST_F(
           std::vector<base::FilePath>{expected_file_path}));
 
   // Initialize permission context.
-  Profile* const profile = browser()->profile();
+  Profile* const profile = browser()->GetProfile();
   TestFileSystemAccessPermissionContext permission_context(profile);
   content::SetFileSystemAccessPermissionContext(profile, &permission_context);
   FileSystemAccessPermissionRequestManager::FromWebContents(GetWebContents())
@@ -1373,7 +1373,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChromeAppTest,
 
   // Initialize permission context.
   content::WebContents* web_contents = GetFirstAppWindowWebContents();
-  Profile* const profile = browser()->profile();
+  Profile* const profile = browser()->GetProfile();
   TestFileSystemAccessPermissionContext permission_context(profile);
   content::SetFileSystemAccessPermissionContext(profile, &permission_context);
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents)

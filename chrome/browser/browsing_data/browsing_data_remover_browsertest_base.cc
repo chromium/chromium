@@ -266,7 +266,7 @@ Profile* BrowsingDataRemoverBrowserTestBase::GetProfile() {
 #if BUILDFLAG(IS_ANDROID)
   return chrome_test_utils::GetProfile(this);
 #else
-  return GetBrowser()->profile();
+  return GetBrowser()->GetProfile();
 #endif
 }
 

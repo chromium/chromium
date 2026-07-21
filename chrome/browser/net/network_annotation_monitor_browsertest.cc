@@ -61,7 +61,7 @@ class NetworkAnnotationMonitorBrowserTest
         network::SimpleURLLoader::Create(std::move(request), annotation);
     simple_loader->DownloadHeadersOnly(
         browser()
-            ->profile()
+            ->GetProfile()
             ->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess()
             .get(),

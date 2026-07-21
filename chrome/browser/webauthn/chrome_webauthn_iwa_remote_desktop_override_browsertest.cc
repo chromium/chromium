@@ -164,7 +164,7 @@ class WebAuthnIWARemoteDesktopOverrideBrowserTest :
     return ::ash::ProfileHelper::Get()->GetProfileByAccountId(
         affiliation_mixin_.account_id());
 #else
-    return browser()->profile();
+    return browser()->GetProfile();
 #endif
   }
 

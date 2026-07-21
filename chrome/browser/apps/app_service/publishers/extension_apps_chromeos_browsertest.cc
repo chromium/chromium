@@ -66,7 +66,7 @@ class ExtensionAppsChromeOsBrowserTest
     extensions::ResultCatcher catcher;
 
     // Launch app with intent.
-    Profile* const profile = browser()->profile();
+    Profile* const profile = browser()->GetProfile();
     const int32_t event_flags =
         apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
                             /*prefer_container=*/true);

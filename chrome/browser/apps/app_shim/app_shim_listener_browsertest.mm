@@ -266,7 +266,7 @@ void AppShimListenerBrowserTest::OnShimProcessConnected(
 IN_PROC_BROWSER_TEST_F(AppShimListenerBrowserTest, LaunchNormal) {
   test_client_ = std::make_unique<TestShimClient>();
   auto app_shim_info = chrome::mojom::AppShimInfo::New();
-  app_shim_info->profile_path = browser()->profile()->GetPath();
+  app_shim_info->profile_path = browser()->GetProfile()->GetPath();
   app_shim_info->app_id = "test_app";
   app_shim_info->app_url = GURL("https://example.com");
   app_shim_info->launch_type = chrome::mojom::AppShimLaunchType::kNormal;
@@ -286,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(AppShimListenerBrowserTest, LaunchNormal) {
 IN_PROC_BROWSER_TEST_F(AppShimListenerBrowserTest, LaunchRegisterOnly) {
   test_client_ = std::make_unique<TestShimClient>();
   auto app_shim_info = chrome::mojom::AppShimInfo::New();
-  app_shim_info->profile_path = browser()->profile()->GetPath();
+  app_shim_info->profile_path = browser()->GetProfile()->GetPath();
   app_shim_info->app_id = "test_app";
   app_shim_info->app_url = GURL("https://example.com");
   app_shim_info->launch_type = chrome::mojom::AppShimLaunchType::kRegisterOnly;

@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(AXMainNodeAnnotatorControllerBrowserTest,
   ax_mode = web_contents->GetAccessibilityMode();
   EXPECT_FALSE(ax_mode.has_mode(ui::AXMode::kAnnotateMainNode));
 
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityMainNodeAnnotationsEnabled, true);
 
   chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
@@ -160,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(AXMainNodeAnnotatorControllerBrowserTest,
   ax_mode = web_contents->GetAccessibilityMode();
   EXPECT_TRUE(ax_mode.has_mode(ui::AXMode::kAnnotateMainNode));
 
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityMainNodeAnnotationsEnabled, false);
 
   chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
@@ -180,13 +180,13 @@ IN_PROC_BROWSER_TEST_F(AXMainNodeAnnotatorControllerBrowserTest,
   ui::AXMode ax_mode = web_contents->GetAccessibilityMode();
   EXPECT_FALSE(ax_mode.has_mode(ui::AXMode::kAnnotateMainNode));
 
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityMainNodeAnnotationsEnabled, true);
 
   ax_mode = web_contents->GetAccessibilityMode();
   EXPECT_TRUE(ax_mode.has_mode(ui::AXMode::kAnnotateMainNode));
 
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityMainNodeAnnotationsEnabled, false);
 
   ax_mode = web_contents->GetAccessibilityMode();
@@ -202,14 +202,14 @@ IN_PROC_BROWSER_TEST_F(AXMainNodeAnnotatorControllerBrowserTest,
   ui::AXMode ax_mode = web_contents->GetAccessibilityMode();
   EXPECT_FALSE(ax_mode.has_mode(ui::AXMode::kAnnotateMainNode));
 
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityMainNodeAnnotationsEnabled, true);
 
   ax_mode = web_contents->GetAccessibilityMode();
   EXPECT_FALSE(ax_mode.has_mode(ui::AXMode::kAnnotateMainNode));
 
   // Reset state.
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityMainNodeAnnotationsEnabled, false);
 }
 
@@ -226,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(AXMainNodeAnnotatorControllerBrowserTest,
   EXPECT_FALSE(web_contents->GetAccessibilityMode().has_mode(
       ui::AXMode::kAnnotateMainNode));
 
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityMainNodeAnnotationsEnabled, true);
 
   // Now the feature is on.

@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPrefs) {
 #if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS, the local_state is shared between all users so the user-set
   // pref is stored in the profile's pref service.
-  pref_service_for_user_settings = browser()->profile()->GetPrefs();
+  pref_service_for_user_settings = browser()->GetProfile()->GetPrefs();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   pref_service_for_user_settings->SetString(prefs::kDnsOverHttpsMode,

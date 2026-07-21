@@ -68,7 +68,7 @@ class ComposeEnablingBrowserTestBase : public InProcessBrowserTest {
         browser()->GetProfile());
 
     // Turn on MSBB.
-    PrefService* prefs = browser()->profile()->GetPrefs();
+    PrefService* prefs = browser()->GetProfile()->GetPrefs();
     prefs->SetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
 
@@ -77,7 +77,7 @@ class ComposeEnablingBrowserTestBase : public InProcessBrowserTest {
         base::FeatureList::IsEnabled(compose::features::kEnableCompose));
 
     // Enable Compose via the Optimization Guide's pref.
-    browser()->profile()->GetPrefs()->SetInteger(
+    browser()->GetProfile()->GetPrefs()->SetInteger(
         optimization_guide::prefs::GetSettingEnabledPrefName(
             optimization_guide::UserVisibleFeatureKey::kCompose),
         static_cast<int>(

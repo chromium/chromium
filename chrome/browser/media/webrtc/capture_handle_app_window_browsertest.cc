@@ -321,7 +321,7 @@ class CaptureHandleWindowBrowserTest : public WebRtcTestBase {
     WebRtcTestBase::SetUpOnMainThread();
 #if BUILDFLAG(IS_CHROMEOS)
     apps::AppServiceProxy* proxy =
-        apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+        apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile());
     if (proxy) {
       apps_util::PreferredAppsListReadyWaiter(proxy->PreferredAppsList())
           .Wait();
@@ -334,7 +334,7 @@ class CaptureHandleWindowBrowserTest : public WebRtcTestBase {
     embedded_test_server()->ServeFilesFromDirectory(test_data_dir);
     ASSERT_TRUE(embedded_test_server()->Start());
     web_app::test::WaitUntilReady(
-        web_app::WebAppProvider::GetForTest(browser()->profile()));
+        web_app::WebAppProvider::GetForTest(browser()->GetProfile()));
   }
 
   void TearDownOnMainThread() override {
@@ -539,7 +539,7 @@ class CaptureHandlePwaBrowserTest : public CaptureHandleWindowBrowserTest {
 IN_PROC_BROWSER_TEST_F(CaptureHandlePwaBrowserTest,
                        ExtractsHandleFromPwaWindow) {
   GURL pwa_url = embedded_test_server()->GetURL("/title1.html");
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   webapps::AppId pwa_id = InstallStandalonePWA(profile, pwa_url);
   Browser* pwa_browser = web_app::LaunchWebAppBrowserAndWait(profile, pwa_id);
   ASSERT_TRUE(pwa_browser);
@@ -560,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(CaptureHandlePwaBrowserTest,
 IN_PROC_BROWSER_TEST_F(CaptureHandlePwaBrowserTest,
                        HandlePersistsOnSameDocumentNavigation) {
   GURL pwa_url = embedded_test_server()->GetURL("/title2.html");
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   webapps::AppId pwa_id = InstallStandalonePWA(profile, pwa_url);
   Browser* pwa_browser = web_app::LaunchWebAppBrowserAndWait(profile, pwa_id);
   ASSERT_TRUE(pwa_browser);
@@ -584,7 +584,7 @@ IN_PROC_BROWSER_TEST_F(CaptureHandlePwaBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CaptureHandlePwaBrowserTest, IgnoresTabbedPwaWindows) {
   GURL pwa_url = embedded_test_server()->GetURL("/title3.html");
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   webapps::AppId pwa_id = InstallTabbedPWA(profile, pwa_url);
   Browser* pwa_browser = web_app::LaunchWebAppBrowserAndWait(profile, pwa_id);
   ASSERT_TRUE(pwa_browser);
@@ -605,7 +605,7 @@ IN_PROC_BROWSER_TEST_F(
     CaptureHandlePwaBrowserTest,
     CrossDocumentChildPageNavigationDoesNotClearCaptureHandleConfig) {
   GURL pwa_url = embedded_test_server()->GetURL("/title1.html");
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   webapps::AppId pwa_id = InstallStandalonePWA(profile, pwa_url);
   Browser* pwa_browser = web_app::LaunchWebAppBrowserAndWait(profile, pwa_id);
   ASSERT_TRUE(pwa_browser);
@@ -635,7 +635,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(CaptureHandlePwaBrowserTest, RespectsExposeOriginFalse) {
   GURL pwa_url = embedded_test_server()->GetURL("/title1.html");
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   webapps::AppId pwa_id = InstallStandalonePWA(profile, pwa_url);
   Browser* pwa_browser = web_app::LaunchWebAppBrowserAndWait(profile, pwa_id);
   ASSERT_TRUE(pwa_browser);
@@ -659,7 +659,7 @@ IN_PROC_BROWSER_TEST_F(CaptureHandlePwaBrowserTest, RespectsExposeOriginFalse) {
 
 IN_PROC_BROWSER_TEST_F(CaptureHandlePwaBrowserTest, RespectsPermittedOrigins) {
   GURL pwa_url = embedded_test_server()->GetURL("/title1.html");
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   webapps::AppId pwa_id = InstallStandalonePWA(profile, pwa_url);
   Browser* pwa_browser = web_app::LaunchWebAppBrowserAndWait(profile, pwa_id);
   ASSERT_TRUE(pwa_browser);
@@ -680,7 +680,7 @@ IN_PROC_BROWSER_TEST_F(CaptureHandlePwaBrowserTest, RespectsPermittedOrigins) {
 IN_PROC_BROWSER_TEST_F(CaptureHandlePwaBrowserTest,
                        HandlePushesDynamicUpdatesToCapturer) {
   GURL pwa_url = embedded_test_server()->GetURL("/title1.html");
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   webapps::AppId pwa_id = InstallStandalonePWA(profile, pwa_url);
   Browser* pwa_browser = web_app::LaunchWebAppBrowserAndWait(profile, pwa_id);
   ASSERT_TRUE(pwa_browser);
@@ -709,7 +709,7 @@ IN_PROC_BROWSER_TEST_F(CaptureHandlePwaBrowserTest,
 IN_PROC_BROWSER_TEST_F(CaptureHandlePwaBrowserTest,
                        HandleClearPushedToCapturerOnPageReload) {
   GURL pwa_url = embedded_test_server()->GetURL("/title1.html");
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   webapps::AppId pwa_id = InstallStandalonePWA(profile, pwa_url);
   Browser* pwa_browser = web_app::LaunchWebAppBrowserAndWait(profile, pwa_id);
   ASSERT_TRUE(pwa_browser);
@@ -734,7 +734,7 @@ IN_PROC_BROWSER_TEST_F(CaptureHandlePwaBrowserTest,
 IN_PROC_BROWSER_TEST_F(CaptureHandlePwaBrowserTest,
                        HandleDynamicallyClearedOnNavigation) {
   GURL pwa_url = embedded_test_server()->GetURL("/title2.html");
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   webapps::AppId pwa_id = InstallStandalonePWA(profile, pwa_url);
   Browser* pwa_browser = web_app::LaunchWebAppBrowserAndWait(profile, pwa_id);
   ASSERT_TRUE(pwa_browser);

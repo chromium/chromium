@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(WebUIJSErrorReportingTest,
   auto mock_processor =
       std::make_unique<ScopedMockChromeJsErrorReportProcessor>(endpoint);
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   SessionStartupPref pref(SessionStartupPref::LAST);
   SessionStartupPref::SetStartupPref(profile, pref);
 

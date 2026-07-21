@@ -137,8 +137,8 @@ class AppBoundEncryptionWinTestBase : public InProcessBrowserTest {
   // Used by multi-stage tests to persist data between each part of the test.
   void StoreData(base::span<const uint8_t> data) {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    const auto data_path =
-        browser()->profile()->GetPath().Append(FILE_PATH_LITERAL("TestData"));
+    const auto data_path = browser()->GetProfile()->GetPath().Append(
+        FILE_PATH_LITERAL("TestData"));
     ASSERT_FALSE(base::PathExists(data_path));
     EXPECT_TRUE(base::WriteFile(data_path, data));
   }

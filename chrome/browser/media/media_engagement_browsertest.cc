@@ -834,7 +834,7 @@ class MediaEngagementSessionRestoreBrowserTest
     : public MediaEngagementBrowserTest {
  public:
   BrowserWindowInterface* QuitBrowserAndRestore() {
-    Profile* const profile = browser()->profile();
+    Profile* const profile = browser()->GetProfile();
 
     SessionStartupPref::SetStartupPref(
         profile, SessionStartupPref(SessionStartupPref::LAST));

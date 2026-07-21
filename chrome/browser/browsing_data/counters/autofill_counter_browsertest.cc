@@ -169,12 +169,12 @@ class AutofillCounterTest : public InProcessBrowserTest {
   // Other utils ---------------------------------------------------------------
 
   void SetAutofillDeletionPref(bool value) {
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         browsing_data::prefs::kDeleteFormData, value);
   }
 
   void SetDeletionPeriodPref(browsing_data::TimePeriod period) {
-    browser()->profile()->GetPrefs()->SetInteger(
+    browser()->GetProfile()->GetPrefs()->SetInteger(
         browsing_data::prefs::kDeleteTimePeriod, static_cast<int>(period));
   }
 
@@ -319,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, Entities) {
 
 // Tests that we count the correct number of credit cards.
 IN_PROC_BROWSER_TEST_F(AutofillCounterTest, CreditCards) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   browsing_data::AutofillCounter counter = GetCounter();
 
   counter.Init(profile->GetPrefs(),
@@ -362,7 +362,7 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, CreditCards) {
 
 // Tests that we count the correct number of addresses.
 IN_PROC_BROWSER_TEST_F(AutofillCounterTest, Addresses) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   browsing_data::AutofillCounter counter = GetCounter();
 
   counter.Init(profile->GetPrefs(),
@@ -419,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, ComplexResult) {
   AddAddress("Jane", "Smith", "Main Street 12346");
   AddAddress("John", "Smith", "Side Street 47");
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   browsing_data::AutofillCounter counter = GetCounter();
 
   counter.Init(profile->GetPrefs(),
@@ -472,7 +472,7 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, TimeRanges) {
       {kTime3, 1, 1, 0},
   });
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   browsing_data::AutofillCounter counter = GetCounter();
 
   counter.Init(profile->GetPrefs(),

@@ -259,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemObserverTest,
                        ErrorsAfterPermissionsAreRevoked) {
   auto file = CreateFileToBePicked();
 
-  auto* browser_profile = browser()->profile();
+  auto* browser_profile = browser()->GetProfile();
   TestFileSystemAccessPermissionContext permission_context(browser_profile);
   content::SetFileSystemAccessPermissionContext(browser_profile,
                                                 &permission_context);
@@ -340,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemObserverTest,
                        ErrorsAfterRevokeAllActiveGrants) {
   auto dir = CreateDirectoryToBePicked();
 
-  auto* browser_profile = browser()->profile();
+  auto* browser_profile = browser()->GetProfile();
   TestFileSystemAccessPermissionContext permission_context(browser_profile);
   content::SetFileSystemAccessPermissionContext(browser_profile,
                                                 &permission_context);

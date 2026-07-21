@@ -76,7 +76,7 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestDownloadDirPref) {
       new_download_dir.AppendASCII("a_zip_file.zip");
 
   // Set pref to download in new_download_dir.
-  browser()->profile()->GetPrefs()->SetFilePath(
+  browser()->GetProfile()->GetPrefs()->SetFilePath(
       prefs::kDownloadDefaultDirectory, new_download_dir);
 
   // Create a downloads observer.
@@ -112,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestImageContentSettings) {
             content::EvalJs(
                 browser()->tab_strip_model()->GetActiveWebContents(), script));
 
-  browser()->profile()->GetPrefs()->SetInteger(
+  browser()->GetProfile()->GetPrefs()->SetInteger(
       content_settings::WebsiteSettingsRegistry::GetInstance()
           ->Get(ContentSettingsType::IMAGES)
           ->default_value_pref_name(),
@@ -136,8 +136,8 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestJavascriptEnableDisable) {
       browser(), embedded_test_server()->GetURL("/javaScriptTitle.html")));
   EXPECT_EQ(u"Title from script javascript enabled",
             browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kWebKitJavascriptEnabled,
-                                               false);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
+      prefs::kWebKitJavascriptEnabled, false);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/javaScriptTitle.html")));
   EXPECT_EQ(u"This is html title",
@@ -160,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(LegacyBookmarkBarPrefsTest,
                        TestSessionRestoreShowBookmarkBar) {
   EXPECT_FALSE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       bookmarks::prefs::kShowBookmarkBar));
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       bookmarks::prefs::kShowBookmarkBar, true);
   EXPECT_TRUE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       bookmarks::prefs::kShowBookmarkBar));
@@ -184,7 +184,7 @@ class SimplifiedBookmarkBarPrefsTest : public PrefsFunctionalTest {
 
 IN_PROC_BROWSER_TEST_F(SimplifiedBookmarkBarPrefsTest,
                        TestSimplifiedBookmarkBarVisibilityState) {
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
 
   prefs->SetInteger(
       bookmarks::prefs::kBookmarkBarVisibilityState,
@@ -226,8 +226,8 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestImagesNotBlockedInIncognito) {
 
 // Verify setting homepage preference to newtabpage across restarts. Part1
 IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, PRE_TestHomepageNewTabpagePrefs) {
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kHomePageIsNewTabPage,
-                                               true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kHomePageIsNewTabPage,
+                                                  true);
 }
 
 // Verify setting homepage preference to newtabpage across restarts. Part2
@@ -240,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestHomepageNewTabpagePrefs) {
 IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, PRE_TestHomepagePrefs) {
   GURL home_page_url("http://www.google.com");
 
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   prefs->SetBoolean(prefs::kHomePageIsNewTabPage, false);
   const PrefService::Preference* pref =
       prefs->FindPreference(prefs::kHomePage);
@@ -253,14 +253,14 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, PRE_TestHomepagePrefs) {
 IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestHomepagePrefs) {
   GURL home_page_url("http://www.google.com");
 
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   EXPECT_FALSE(prefs->GetBoolean(prefs::kHomePageIsNewTabPage));
   EXPECT_EQ(home_page_url.spec(), prefs->GetString(prefs::kHomePage));
 }
 
 // Verify the security preference under privacy across restarts. Part1
 IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, PRE_TestPrivacySecurityPrefs) {
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
 
   static_assert(prefetch::NetworkPredictionOptions::kDefault !=
                     prefetch::NetworkPredictionOptions::kDisabled,
@@ -283,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, PRE_TestPrivacySecurityPrefs) {
 
 // Verify the security preference under privacy across restarts. Part2
 IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestPrivacySecurityPrefs) {
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
 
   EXPECT_EQ(prefetch::PreloadPagesState::kNoPreloading,
             prefetch::GetPreloadPagesState(*prefs));

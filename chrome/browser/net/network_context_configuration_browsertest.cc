@@ -343,14 +343,14 @@ class NetworkContextConfigurationBrowserTest
       case NetworkContextType::kSafeBrowsing:
         NOTREACHED() << "Network context has no storage partition";
       case NetworkContextType::kProfile:
-        return browser()->profile()->GetDefaultStoragePartition();
+        return browser()->GetProfile()->GetDefaultStoragePartition();
       case NetworkContextType::kIncognitoProfile:
         DCHECK(incognito_);
         return incognito_->GetProfile()->GetDefaultStoragePartition();
       case NetworkContextType::kOnDiskApp:
-        return browser()->profile()->GetStoragePartition(kOnDiskConfig);
+        return browser()->GetProfile()->GetStoragePartition(kOnDiskConfig);
       case NetworkContextType::kInMemoryApp:
-        return browser()->profile()->GetStoragePartition(kInMemoryConfig);
+        return browser()->GetProfile()->GetStoragePartition(kInMemoryConfig);
       case NetworkContextType::kOnDiskAppWithIncognitoProfile: {
         DCHECK(incognito_);
         // Note: Even though we are requesting an on-disk config, the function
@@ -458,13 +458,13 @@ class NetworkContextConfigurationBrowserTest
       case NetworkContextType::kProfile:
       case NetworkContextType::kInMemoryApp:
       case NetworkContextType::kOnDiskApp:
-        return browser()->profile()->GetPrefs();
+        return browser()->GetProfile()->GetPrefs();
       case NetworkContextType::kIncognitoProfile:
       case NetworkContextType::kOnDiskAppWithIncognitoProfile:
         // Incognito actually uses the non-incognito prefs, so this should end
         // up being the same pref store as in the KProfile case.
         return browser()
-            ->profile()
+            ->GetProfile()
             ->GetPrimaryOTRProfile(/*create_if_needed=*/true)
             ->GetPrefs();
     }
@@ -645,7 +645,7 @@ class NetworkContextConfigurationBrowserTest
       case NetworkContextType::kProfile:
       case NetworkContextType::kInMemoryApp:
       case NetworkContextType::kOnDiskApp:
-        return browser()->profile();
+        return browser()->GetProfile();
       case NetworkContextType::kIncognitoProfile:
       case NetworkContextType::kOnDiskAppWithIncognitoProfile:
         DCHECK(incognito_);
@@ -1028,7 +1028,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, PRE_DiskCache) {
   GURL test_url = embedded_test_server()->GetURL(kCacheRandomPath);
   url::Origin test_origin = url::Origin::Create(test_url);
   base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePath save_url_file_path = browser()->profile()->GetPath().Append(
+  base::FilePath save_url_file_path = browser()->GetProfile()->GetPath().Append(
       FILE_PATH_LITERAL("url_for_test.txt"));
 
   // Make a request whose response should be cached.
@@ -1082,7 +1082,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
 
   // Load URL from the above test body to disk.
   base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePath save_url_file_path = browser()->profile()->GetPath().Append(
+  base::FilePath save_url_file_path = browser()->GetProfile()->GetPath().Append(
       FILE_PATH_LITERAL("url_for_test.txt"));
   std::string file_data;
   ASSERT_TRUE(ReadFileToString(save_url_file_path, &file_data));
@@ -1241,7 +1241,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, PRE_Hsts) {
   // Write the URL with HSTS information to a file, so it can be loaded in the
   // next test. Have to use a file for this, since the server's port is random.
   base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePath save_url_file_path = browser()->profile()->GetPath().Append(
+  base::FilePath save_url_file_path = browser()->GetProfile()->GetPath().Append(
       FILE_PATH_LITERAL("url_for_test.txt"));
   std::string file_data = start_url.spec();
   ASSERT_TRUE(base::WriteFile(save_url_file_path, file_data));
@@ -1259,7 +1259,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, Hsts) {
     return;
   }
   base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePath save_url_file_path = browser()->profile()->GetPath().Append(
+  base::FilePath save_url_file_path = browser()->GetProfile()->GetPath().Append(
       FILE_PATH_LITERAL("url_for_test.txt"));
   std::string file_data;
   ASSERT_TRUE(ReadFileToString(save_url_file_path, &file_data));
@@ -1355,8 +1355,8 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
 
   // Change AcceptLanguages preferences, and check that headers are updated.
   // First, A single language.
-  browser()->profile()->GetPrefs()->SetString(language::prefs::kAcceptLanguages,
-                                              "zu");
+  browser()->GetProfile()->GetPrefs()->SetString(
+      language::prefs::kAcceptLanguages, "zu");
   FlushNetworkInterface();
   std::string accept_language2, user_agent2;
   ASSERT_TRUE(FetchHeaderEcho("accept-language", &accept_language2));
@@ -1365,8 +1365,8 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
   EXPECT_EQ(embedder_support::GetUserAgent(), user_agent2);
 
   // Second, a single language with locale.
-  browser()->profile()->GetPrefs()->SetString(language::prefs::kAcceptLanguages,
-                                              "zu-ZA");
+  browser()->GetProfile()->GetPrefs()->SetString(
+      language::prefs::kAcceptLanguages, "zu-ZA");
   FlushNetworkInterface();
   std::string accept_language3, user_agent3;
   ASSERT_TRUE(FetchHeaderEcho("accept-language", &accept_language3));
@@ -1376,8 +1376,8 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
 
   // Third, a list with multiple languages. Incognito mode should return only
   // the first language's default set of languages.
-  browser()->profile()->GetPrefs()->SetString(language::prefs::kAcceptLanguages,
-                                              "ar,am,en-GB,ru,zu");
+  browser()->GetProfile()->GetPrefs()->SetString(
+      language::prefs::kAcceptLanguages, "ar,am,en-GB,ru,zu");
   FlushNetworkInterface();
   std::string accept_language4;
   std::string user_agent4;

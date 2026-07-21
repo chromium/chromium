@@ -129,7 +129,7 @@ class NetworkQualityEstimatorPrefsBrowserTest : public InProcessBrowserTest {
 
     mojo::ScopedAllowSyncCallForTesting allow_sync_call;
     content::StoragePartition* partition =
-        browser()->profile()->GetDefaultStoragePartition();
+        browser()->GetProfile()->GetDefaultStoragePartition();
     DCHECK(partition->GetNetworkContext());
     DCHECK(content::GetNetworkService());
 
@@ -163,11 +163,11 @@ IN_PROC_BROWSER_TEST_F(NetworkQualityEstimatorPrefsBrowserTest,
   context_params->cert_verifier_params = content::GetCertVerifierParams(
       cert_verifier::mojom::CertVerifierCreationParams::New());
   context_params->file_paths = network::mojom::NetworkContextFilePaths::New();
-  const base::FilePath data_path = browser()->profile()->GetPath().Append(
+  const base::FilePath data_path = browser()->GetProfile()->GetPath().Append(
       FILE_PATH_LITERAL("Network For Testing"));
   context_params->file_paths->data_directory = data_path;
   context_params->file_paths->unsandboxed_data_path =
-      browser()->profile()->GetPath();
+      browser()->GetProfile()->GetPath();
   context_params->file_paths->http_server_properties_file_name =
       base::FilePath(FILE_PATH_LITERAL("Temp Network Persistent State"));
   context_params->file_paths->trigger_migration = true;

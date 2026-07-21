@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNetworkServiceBrowserCookieLockTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
   base::FilePath cookie_filename = browser()
-                                       ->profile()
+                                       ->GetProfile()
                                        ->GetPath()
                                        .Append(chrome::kNetworkDataDirname)
                                        .Append(chrome::kCookieFilename);
@@ -272,7 +272,7 @@ class ChromeNetworkServiceMigrationBrowserTest : public InProcessBrowserTest {
  protected:
   void VerifyCookiePresent() {
     auto* cookie_manager = browser()
-                               ->profile()
+                               ->GetProfile()
                                ->GetDefaultStoragePartition()
                                ->GetCookieManagerForBrowserProcess();
     auto cookies = GetCookies(cookie_manager);
@@ -282,12 +282,12 @@ class ChromeNetworkServiceMigrationBrowserTest : public InProcessBrowserTest {
   }
 
   base::FilePath GetOldCookieLocation() {
-    return browser()->profile()->GetPath().Append(chrome::kCookieFilename);
+    return browser()->GetProfile()->GetPath().Append(chrome::kCookieFilename);
   }
 
   base::FilePath GetNewCookieLocation() {
     return browser()
-        ->profile()
+        ->GetProfile()
         ->GetPath()
         .Append(chrome::kNetworkDataDirname)
         .Append(chrome::kCookieFilename);

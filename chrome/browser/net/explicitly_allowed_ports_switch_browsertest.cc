@@ -19,7 +19,7 @@ class ExplicitlyAllowedPortsSwitchBrowserTest : public InProcessBrowserTest {
  protected:
   network::mojom::NetworkContext* network_context() {
     return browser()
-        ->profile()
+        ->GetProfile()
         ->GetDefaultStoragePartition()
         ->GetNetworkContext();
   }

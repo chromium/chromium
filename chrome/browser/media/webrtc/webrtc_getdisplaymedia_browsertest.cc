@@ -729,13 +729,13 @@ class WebRtcAppWindowCaptureBrowserTestWithPicker
     // Windows to show up in the tabs list, and thus make it selectable.
     base::ListValue matchlist;
     matchlist.Append("*");
-    browser()->profile()->GetPrefs()->SetList(
+    browser()->GetProfile()->GetPrefs()->SetList(
         prefs::kTabCaptureAllowedByOrigins, std::move(matchlist));
   }
 
   void TearDownOnMainThread() override {
     extensions::PlatformAppBrowserTest::TearDownOnMainThread();
-    browser()->profile()->GetPrefs()->SetList(
+    browser()->GetProfile()->GetPrefs()->SetList(
         prefs::kTabCaptureAllowedByOrigins, base::ListValue());
   }
 
@@ -795,13 +795,13 @@ class WebRtcSameOriginPolicyBrowserTest
     // Restrict all origins to SameOrigin tab capture only.
     base::ListValue matchlist;
     matchlist.Append("*");
-    browser()->profile()->GetPrefs()->SetList(
+    browser()->GetProfile()->GetPrefs()->SetList(
         prefs::kSameOriginTabCaptureAllowedByOrigins, std::move(matchlist));
   }
 
   void TearDownOnMainThread() override {
     WebRtcScreenCaptureBrowserTest::TearDownOnMainThread();
-    browser()->profile()->GetPrefs()->SetList(
+    browser()->GetProfile()->GetPrefs()->SetList(
         prefs::kSameOriginTabCaptureAllowedByOrigins, base::ListValue());
   }
 };
@@ -1388,8 +1388,8 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
     base::RunLoop().RunUntilIdle();
   }
 
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kScreenCaptureAllowed,
-                                               false);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kScreenCaptureAllowed,
+                                                  false);
 
   // Click the share-this-tab-instead secondary button. This is rejected since
   // screen capture is not allowed by the above policy.

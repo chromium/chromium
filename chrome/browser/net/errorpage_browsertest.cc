@@ -1071,7 +1071,7 @@ class ErrorPageForIDNTest : public InProcessBrowserTest {
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
     // Clear AcceptLanguages to force punycode decoding.
-    browser()->profile()->GetPrefs()->SetString(
+    browser()->GetProfile()->GetPrefs()->SetString(
         language::prefs::kAcceptLanguages, std::string());
   }
 

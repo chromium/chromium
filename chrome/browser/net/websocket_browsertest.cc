@@ -187,7 +187,7 @@ class WebSocketBrowserTest : public InProcessBrowserTest {
   }
 
   void SetBlockThirdPartyCookies(bool blocked) {
-    browser()->profile()->GetPrefs()->SetInteger(
+    browser()->GetProfile()->GetPrefs()->SetInteger(
         prefs::kCookieControlsMode,
         static_cast<int>(
             blocked ? content_settings::CookieControlsMode::kBlockThirdParty
@@ -1019,7 +1019,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserHTTPSConnectToTest,
   {
     base::test::TestFuture<void> future;
     browser()
-        ->profile()
+        ->GetProfile()
         ->GetDefaultStoragePartition()
         ->GetCookieManagerForBrowserProcess()
         ->SetContentSettings(
