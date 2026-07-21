@@ -18,8 +18,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
+#include "google_apis/gaia/gaia_features.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -1005,6 +1007,32 @@ TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallSuccess_BadJson) {
       OAuth2MintTokenApiCallResult::kParseJsonFailure, 1);
   histogram_tester_.ExpectUniqueSample(kOAuth2MintTokenResponseHistogram,
                                        OAuth2Response::kOkUnexpectedFormat, 1);
+}
+
+TEST_F(OAuth2MintTokenFlowTest,
+       ProcessApiCallSuccess_UnexpectedResponseBody_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      gaia::features::kOAuth2MintTokenUnexpectedResponseBodyIsTransient);
+  CreateFlow(OAuth2MintTokenFlow::MODE_MINT_TOKEN_NO_FORCE);
+  GoogleServiceAuthError expected_error =
+      GoogleServiceAuthError::FromUnexpectedServiceResponse(
+          "Not able to parse a JSON object from a service response.");
+  EXPECT_CALL(delegate_, OnMintTokenFailure(expected_error));
+  ProcessApiCallSuccess(head_200_.get(), "foo");
+}
+
+TEST_F(OAuth2MintTokenFlowTest,
+       ProcessApiCallSuccess_UnexpectedResponseBody_FeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      gaia::features::kOAuth2MintTokenUnexpectedResponseBodyIsTransient);
+  CreateFlow(OAuth2MintTokenFlow::MODE_MINT_TOKEN_NO_FORCE);
+  GoogleServiceAuthError expected_error =
+      GoogleServiceAuthError::FromServiceUnavailable(
+          "Not able to parse a JSON object from a service response.");
+  EXPECT_CALL(delegate_, OnMintTokenFailure(expected_error));
+  ProcessApiCallSuccess(head_200_.get(), "foo");
 }
 
 TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallSuccess_NoAccessToken) {

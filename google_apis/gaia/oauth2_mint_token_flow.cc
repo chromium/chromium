@@ -29,6 +29,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "google_apis/gaia/gaia_features.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"
@@ -273,6 +274,15 @@ ParseSignatureAlgorithm(std::string_view algo_str) {
   return std::nullopt;
 }
 
+GoogleServiceAuthError CreateUnexpectedResponseBodyError(
+    const std::string& error_message) {
+  if (base::FeatureList::IsEnabled(
+          gaia::features::kOAuth2MintTokenUnexpectedResponseBodyIsTransient)) {
+    return GoogleServiceAuthError::FromServiceUnavailable(error_message);
+  }
+  return GoogleServiceAuthError::FromUnexpectedServiceResponse(error_message);
+}
+
 }  // namespace
 
 RemoteConsentResolutionData::RemoteConsentResolutionData() = default;
@@ -474,7 +484,7 @@ void OAuth2MintTokenFlow::ProcessApiCallSuccess(
   if (!dict) {
     RecordApiCallMetrics(OAuth2MintTokenApiCallResult::kParseJsonFailure,
                          OAuth2Response::kOkUnexpectedFormat);
-    ReportFailure(GoogleServiceAuthError::FromUnexpectedServiceResponse(
+    ReportFailure(CreateUnexpectedResponseBodyError(
         "Not able to parse a JSON object from a service response."));
     return;
   }
@@ -484,7 +494,7 @@ void OAuth2MintTokenFlow::ProcessApiCallSuccess(
     RecordApiCallMetrics(
         OAuth2MintTokenApiCallResult::kIssueAdviceKeyNotFoundFailure,
         OAuth2Response::kOkUnexpectedFormat);
-    ReportFailure(GoogleServiceAuthError::FromUnexpectedServiceResponse(
+    ReportFailure(CreateUnexpectedResponseBodyError(
         "Not able to find an issueAdvice in a service response."));
     return;
   }
@@ -499,7 +509,7 @@ void OAuth2MintTokenFlow::ProcessApiCallSuccess(
       RecordApiCallMetrics(
           OAuth2MintTokenApiCallResult::kParseRemoteConsentFailure,
           OAuth2Response::kOkUnexpectedFormat);
-      ReportFailure(GoogleServiceAuthError::FromUnexpectedServiceResponse(
+      ReportFailure(CreateUnexpectedResponseBodyError(
           "Not able to parse the contents of remote consent from a service "
           "response."));
     }
@@ -514,7 +524,7 @@ void OAuth2MintTokenFlow::ProcessApiCallSuccess(
   } else {
     RecordApiCallMetrics(OAuth2MintTokenApiCallResult::kParseMintTokenFailure,
                          OAuth2Response::kOkUnexpectedFormat);
-    ReportFailure(GoogleServiceAuthError::FromUnexpectedServiceResponse(
+    ReportFailure(CreateUnexpectedResponseBodyError(
         "Not able to parse the contents of access token "
         "from a service response."));
   }

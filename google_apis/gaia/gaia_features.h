@@ -23,6 +23,11 @@ BASE_DECLARE_FEATURE(kSigninChromePasskeyUnlockUrlUsesAccountIndex);
 COMPONENT_EXPORT(GOOGLE_APIS)
 BASE_DECLARE_FEATURE(kSigninChromeSyncKeysUrlUsesAccountIndex);
 
+// When enabled, IssueToken fetches return transient failure instead of a
+// permanent one when receiving an HTTP 200 response with an unexpected body.
+COMPONENT_EXPORT(GOOGLE_APIS)
+BASE_DECLARE_FEATURE(kOAuth2MintTokenUnexpectedResponseBodyIsTransient);
+
 }  // namespace gaia::features
 
 #endif  // GOOGLE_APIS_GAIA_GAIA_FEATURES_H_

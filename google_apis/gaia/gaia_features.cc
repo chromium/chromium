@@ -24,4 +24,9 @@ BASE_FEATURE(kSigninChromePasskeyUnlockUrlUsesAccountIndex,
 BASE_FEATURE(kSigninChromeSyncKeysUrlUsesAccountIndex,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, IssueToken fetches return transient failure instead of a
+// permanent one when receiving an HTTP 200 response with an unexpected body.
+BASE_FEATURE(kOAuth2MintTokenUnexpectedResponseBodyIsTransient,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace gaia::features
