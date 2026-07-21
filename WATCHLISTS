@@ -871,7 +871,7 @@
                   '|tools/metrics/histograms/metadata/bluetooth/'
     },
     'chromeos_cellular': {
-      'filepath': 'ash/webui/common/resources/cellular_setup/'\
+      'filepath': 'ash/webui/common/resources/cellular_setup/|'\
                   'chromeos/ash/services/cellular_setup/|'\
                   'chromeos/ash/components/carrier_lock/|'\
                   'chromeos/ash/components/dbus/hermes/|'\
@@ -923,7 +923,7 @@
                   'chromeos/ash/services/wifi_direct/|'\
                   'chromeos/services/network_config/|'\
                   'components/onc/|'\
-                  'extensions/browser/api/networking_private/'\
+                  'extensions/browser/api/networking_private/|'\
                   'tools/metrics/histograms/metadata/network/',
     },
     'chromeos_tast_control': {
@@ -1217,8 +1217,8 @@
                   'media/base/android/.*drm|' \
                   'media/cdm/|' \
                   'media/mojo/services/.*(cdm|drm|media_foundation)|' \
-                  'third_party/blink/renderer/modules/encryptedmedia/' \
-                  'third_party/blink/web_tests/external/wpt/encrypted-media/' \
+                  'third_party/blink/renderer/modules/encryptedmedia/|' \
+                  'third_party/blink/web_tests/external/wpt/encrypted-media/|' \
                   'third_party/widevine/cdm/'
     },
     'enterprise_data_protection': {
@@ -2316,7 +2316,7 @@
                   '|chrome/browser/ash/input_method/'\
                   '|chrome/browser/extensions/api/input_ime'\
                   '|chrome/browser/resources/chromeos/keyboard/' \
-                  'chromeos/.*(language|keyboard)'\
+                  '|chromeos/.*(language|keyboard)'\
                   '|chromeos/ime/'
     },
     'third_party_conflicts': {
@@ -2358,7 +2358,7 @@
                   'chrome/browser/ui/views/translate|'\
                   'chrome/renderer/translate|'\
                   'chrome/test/data/translate|'\
-                  'components/resources/translate_resources.grdp'\
+                  'components/resources/translate_resources.grdp|'\
                   'components/translate|'\
                   'components/translate_strings_grdp|'\
                   'ios/chrome/browser/translate|'\
