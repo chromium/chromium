@@ -59,6 +59,13 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   // Called by parent (DesktopMediaPickerImpl) when it's destroyed.
   void DetachParent();
 
+#if BUILDFLAG(IS_MAC)
+  void SetAudioCapturePermissionCheckerForTest(
+      std::unique_ptr<AudioCapturePermissionChecker> checker) {
+    audio_capture_permission_checker_ = std::move(checker);
+  }
+#endif
+
   // Called by DesktopMediaListController.
   void OnSelectionChanged();
   void AcceptSource();
@@ -199,11 +206,6 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   void OnPermissionUpdate(bool has_permission);
   void OnAudioSharingApprovedByUserUpdate();
   void OnAudioPermissionUpdate();
-  // Checks and updates the system audio permission warning banner state for the
-  // pane at the given `index`. Shows the warning if the user has approved
-  // sharing audio but system-level audio capture permission is denied.
-  // Otherwise, hides it.
-  void UpdateAudioPermissionsWarningState(int index);
   void RecordUserActionOnDeniedAudioPermissionUma(
       std::optional<content::DesktopMediaID> source) const;
 #endif
