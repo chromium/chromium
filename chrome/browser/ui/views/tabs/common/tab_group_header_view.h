@@ -67,6 +67,7 @@ class TabGroupHeaderView : public views::FlexLayoutView,
 
   TabGroupHeaderView(
       Delegate& delegate,
+      TabStripOrientation orientation,
       tabs::VerticalTabStripStateController* state_controller,
       const tab_groups::TabGroupVisualData* tab_group_visual_data);
   TabGroupHeaderView(const TabGroupHeaderView&) = delete;
@@ -74,6 +75,8 @@ class TabGroupHeaderView : public views::FlexLayoutView,
   ~TabGroupHeaderView() override;
 
   // views::View:
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
@@ -147,6 +150,7 @@ class TabGroupHeaderView : public views::FlexLayoutView,
 
   const raw_ptr<views::ImageView> collapse_icon_ = nullptr;
   const raw_ref<Delegate> delegate_;
+  const TabStripOrientation orientation_;
 
   std::unique_ptr<ExpandOnHoverLock> expand_on_hover_lock_;
   TabGroupEditorBubbleTracker editor_bubble_tracker_;

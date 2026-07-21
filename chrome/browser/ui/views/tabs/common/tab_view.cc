@@ -785,11 +785,29 @@ bool TabView::IsChildVisible(const views::View* child_view,
 
 views::ProposedLayout TabView::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
-  const int width = size_bounds.width().value_or(
-      VerticalTabStripRegionView::kUncollapsedMaxWidth);
+  int width;
+  if (collection_node_ &&
+      collection_node_->orientation() == TabStripOrientation::kHorizontal) {
+    if (pinned_) {
+      width = tab_style_->GetPinnedWidth(split_);
+    } else {
+      const int preferred_width = tab_style_->GetStandardWidth(split_);
+      const int minimum_width = active_
+                                    ? tab_style_->GetMinimumActiveWidth(split_)
+                                    : tab_style_->GetMinimumInactiveWidth();
+      width = std::clamp(size_bounds.width().value_or(preferred_width),
+                         minimum_width, preferred_width);
+    }
+  } else {
+    width = size_bounds.width().value_or(
+        VerticalTabStripRegionView::kUncollapsedMaxWidth);
+  }
   const int height =
-      GetLayoutConstant(pinned_ ? LayoutConstant::kVerticalTabPinnedHeight
-                                : LayoutConstant::kVerticalTabHeight);
+      (collection_node_ &&
+       collection_node_->orientation() == TabStripOrientation::kHorizontal)
+          ? GetLayoutConstant(LayoutConstant::kTabHeight)
+          : GetLayoutConstant(pinned_ ? LayoutConstant::kVerticalTabPinnedHeight
+                                      : LayoutConstant::kVerticalTabHeight);
   views::ProposedLayout layouts;
   layouts.host_size = gfx::Size(width, height);
 

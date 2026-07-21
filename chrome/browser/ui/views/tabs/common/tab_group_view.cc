@@ -70,6 +70,7 @@ TabGroupView::TabGroupView(TabCollectionNode* collection_node)
           *GetTabGroupFromNode(collection_node_)->visual_data()),
       group_header_(AddChildView(std::make_unique<TabGroupHeaderView>(
           *this,
+          collection_node_->orientation(),
           collection_node_->GetController()->GetStateController(),
           &tab_group_visual_data_))),
       group_line_(AddChildView(std::make_unique<views::View>())),

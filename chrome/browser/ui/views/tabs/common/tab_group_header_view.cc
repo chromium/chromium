@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/tab_group_data.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
+#include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/event_utils.h"
 #include "chrome/browser/ui/views/tabs/groups/tab_group_accessibility.h"
@@ -129,6 +130,7 @@ END_METADATA
 
 TabGroupHeaderView::TabGroupHeaderView(
     Delegate& delegate,
+    TabStripOrientation orientation,
     tabs::VerticalTabStripStateController* state_controller,
     const tab_groups::TabGroupVisualData* tab_group_visual_data)
     : HoverCardAnchorTarget(this),
@@ -137,18 +139,26 @@ TabGroupHeaderView::TabGroupHeaderView(
       group_header_label_(
           AddChildView(std::make_unique<TabGroupHeaderLabel>())),
       attention_indicator_(AddChildView(std::make_unique<views::ImageView>())),
-      editor_bubble_button_(AddChildView(std::make_unique<views::LabelButton>(
-          base::BindRepeating(&TabGroupHeaderView::ShowEditorBubble,
-                              base::Unretained(this))))),
-      collapse_icon_(AddChildView(std::make_unique<views::ImageView>())),
+      editor_bubble_button_(
+          orientation == TabStripOrientation::kVertical
+              ? AddChildView(std::make_unique<views::LabelButton>(
+                    base::BindRepeating(&TabGroupHeaderView::ShowEditorBubble,
+                                        base::Unretained(this))))
+              : nullptr),
+      collapse_icon_(orientation == TabStripOrientation::kVertical
+                         ? AddChildView(std::make_unique<views::ImageView>())
+                         : nullptr),
       delegate_(delegate),
+      orientation_(orientation),
       editor_bubble_tracker_(state_controller) {
   SetProperty(views::kElementIdentifierKey, kTabGroupHeaderElementId);
   attention_indicator_->SetProperty(views::kElementIdentifierKey,
                                     kTabGroupHeaderAttentionIndicatorElementId);
   SetNotifyEnterExitOnChild(true);
 
-  ConfigureEditorBubbleButton(editor_bubble_button_);
+  if (editor_bubble_button_) {
+    ConfigureEditorBubbleButton(editor_bubble_button_);
+  }
   editor_bubble_opened_subscription_ =
       editor_bubble_tracker_.RegisterOnBubbleOpened(base::BindRepeating(
           &TabGroupHeaderView::OnBubbleOpened, base::Unretained(this)));
@@ -179,12 +189,14 @@ TabGroupHeaderView::TabGroupHeaderView(
   // The collapse icon should always be seen.
   // Let the collapse icon grow to fill the remaining available space while
   // keeping the icon trailing aligned.
-  collapse_icon_->SetHorizontalAlignment(
-      views::ImageViewBase::Alignment::kTrailing);
-  collapse_icon_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
-                               views::MaximumFlexSizeRule::kPreferred));
+  if (collapse_icon_) {
+    collapse_icon_->SetHorizontalAlignment(
+        views::ImageViewBase::Alignment::kTrailing);
+    collapse_icon_->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                                 views::MaximumFlexSizeRule::kPreferred));
+  }
 
   sync_icon_->SetProperty(views::kMarginsKey,
                           gfx::Insets::TLBR(0, 0, 0, kSyncIconLabelPadding));
@@ -206,6 +218,47 @@ TabGroupHeaderView::TabGroupHeaderView(
 }
 
 TabGroupHeaderView::~TabGroupHeaderView() = default;
+
+gfx::Size TabGroupHeaderView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  gfx::Size size =
+      views::FlexLayoutView::CalculatePreferredSize(available_size);
+  if (orientation_ == TabStripOrientation::kVertical) {
+    return size;
+  }
+
+  // The horizontal layout's preferred size is dynamic based on the label and if
+  // the sync icons are showing.
+  int sync_icon_width_with_margin = 0;
+  if (sync_icon_ && sync_icon_->GetVisible()) {
+    const auto* margins = sync_icon_->GetProperty(views::kMarginsKey);
+    sync_icon_width_with_margin = sync_icon_->GetPreferredSize().width() +
+                                  (margins ? margins->width() : 0);
+  }
+
+  int non_label_width = 0;
+  if (sync_icon_ && sync_icon_->GetVisible()) {
+    non_label_width += sync_icon_width_with_margin;
+  }
+  if (attention_indicator_ && attention_indicator_->GetVisible()) {
+    const auto* margins = attention_indicator_->GetProperty(views::kMarginsKey);
+    non_label_width += attention_indicator_->GetPreferredSize().width() +
+                       (margins ? margins->width() : 0);
+  }
+  non_label_width += 2 * kGroupHeaderHorizontalInset;
+
+  int label_width =
+      group_header_label_ ? group_header_label_->GetPreferredSize().width() : 0;
+  const TabStyle* tab_style = TabStyle::Get();
+  const int text_max_width = (tab_style->GetStandardWidth(/*is_split*/ false) -
+                              tab_style->GetTabOverlap()) /
+                                 2 -
+                             sync_icon_width_with_margin;
+  label_width = std::min(label_width, text_max_width);
+
+  size.set_width(non_label_width + label_width);
+  return size;
+}
 
 bool TabGroupHeaderView::OnKeyPressed(const ui::KeyEvent& event) {
   if (event.key_code() == ui::VKEY_SPACE ||
@@ -485,18 +538,22 @@ void TabGroupHeaderView::OnDataChanged(
     }
 
     // Update editor bubble button.
-    UpdateEditorButtonColors(editor_bubble_button_, foreground_color);
+    if (editor_bubble_button_) {
+      UpdateEditorButtonColors(editor_bubble_button_, foreground_color);
+    }
 
     // Update collapse icon.
-    collapse_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-        tab_group_visual_data_.is_collapsed()
-            ? features::IsRoundedIconsEnabled()
-                  ? kKeyboardArrowDownIcon
-                  : kKeyboardArrowDownChromeRefreshOldIcon
-        : features::IsRoundedIconsEnabled()
-            ? kKeyboardArrowUpIcon
-            : kKeyboardArrowUpChromeRefreshOldIcon,
-        foreground_color, kIconSize));
+    if (collapse_icon_) {
+      collapse_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+          tab_group_visual_data_.is_collapsed()
+              ? features::IsRoundedIconsEnabled()
+                    ? kKeyboardArrowDownIcon
+                    : kKeyboardArrowDownChromeRefreshOldIcon
+          : features::IsRoundedIconsEnabled()
+              ? kKeyboardArrowUpIcon
+              : kKeyboardArrowUpChromeRefreshOldIcon,
+          foreground_color, kIconSize));
+    }
 
     // Update background.
     SetBackground(views::CreateRoundedRectBackground(background_color,
@@ -611,6 +668,10 @@ SkColor TabGroupHeaderView::GetForegroundColor() const {
 }
 
 void TabGroupHeaderView::UpdateEditorBubbleButtonVisibility() {
+  // The editor bubble button only exists in the vertical orientation.
+  if (!editor_bubble_button_) {
+    return;
+  }
   views::FocusManager* focus_manager = GetFocusManager();
   if (!focus_manager) {
     return;
@@ -635,6 +696,9 @@ void TabGroupHeaderView::OnBubbleClosed() {
 
 void TabGroupHeaderView::SetEditorBubbleButtonVisibilityOnHover(
     bool is_hovered) {
+  if (!editor_bubble_button_) {
+    return;
+  }
   if (editor_bubble_button_) {
     editor_bubble_button_->SetVisible(editor_bubble_tracker_.is_open() ||
                                       is_hovered);
