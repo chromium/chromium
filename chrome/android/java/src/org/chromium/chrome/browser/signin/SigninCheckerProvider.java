@@ -48,5 +48,10 @@ public final class SigninCheckerProvider {
         ResettersForTesting.register(() -> sInstanceForTesting = oldValue);
     }
 
+    @MainThread
+    public static void resetForTesting() {
+        sProfileMap.destroy();
+    }
+
     private SigninCheckerProvider() {}
 }

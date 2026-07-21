@@ -9,7 +9,9 @@ import static org.mockito.Mockito.when;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,13 +20,15 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.test.util.TestAccounts;
@@ -34,6 +38,7 @@ import org.chromium.components.signin.test.util.TestAccounts;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class SigninCheckerTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -41,15 +46,34 @@ public class SigninCheckerTest {
     @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Rule
-    public final FreshCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+    public final AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @Mock private ExternalAuthUtils mExternalAuthUtilsMock;
+
+    @Before
+    public void setUp() {
+        ThreadUtils.runOnUiThreadBlocking(SigninCheckerProvider::resetForTesting);
+    }
+
+    @After
+    public void tearDown() {
+        if (mSigninTestRule.getPrimaryAccount() != null) {
+            mSigninTestRule.forceSignOut();
+        }
+        ThreadUtils.runOnUiThreadBlocking(SigninCheckerProvider::resetForTesting);
+    }
+
+    private void initSigninChecker() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> SigninCheckerProvider.get(mActivityTestRule.getProfile(false)));
+    }
 
     @Test
     @MediumTest
     public void signinWhenChildAccountIsTheOnlyAccount() {
         mActivityTestRule.startOnBlankPage();
+        initSigninChecker();
 
         mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
 
@@ -67,6 +91,7 @@ public class SigninCheckerTest {
     @MediumTest
     public void noSigninWhenChildAccountIsTheOnlyAccountButSigninIsNotAllowed() {
         mActivityTestRule.startOnBlankPage();
+        initSigninChecker();
         UserActionTester actionTester = new UserActionTester();
         when(mExternalAuthUtilsMock.isGooglePlayServicesMissing(any())).thenReturn(true);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
@@ -93,6 +118,7 @@ public class SigninCheckerTest {
         mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
 
         mActivityTestRule.startOnBlankPage();
+        initSigninChecker();
         UserActionTester actionTester = new UserActionTester();
 
         Assert.assertEquals(
@@ -108,6 +134,7 @@ public class SigninCheckerTest {
     @MediumTest
     public void signinWhenChildAccountIsFirstAccount() {
         mActivityTestRule.startOnBlankPage();
+        initSigninChecker();
         mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
 
