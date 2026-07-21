@@ -21,6 +21,9 @@
 
 namespace glic {
 
+// TODO(crbug.com/537331304): Add test coverage for the Android bypass of the
+// kGlicHotkeyGlobalScopeEnabled preference.
+
 namespace {
 
 class InstanceIndependentHotkeyManagerBrowserTest : public GlicBrowserTest {

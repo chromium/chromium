@@ -72,8 +72,11 @@ bool InstanceIndependentHotkeyManager::AcceleratorPressed(
       // Chrome.
       PrefService* const local_state = g_browser_process->local_state();
       if (!base::FeatureList::IsEnabled(features::kGlicHotkeyLocalScope) ||
-          !local_state ||
-          local_state->GetBoolean(prefs::kGlicHotkeyGlobalScopeEnabled)) {
+          !local_state
+#if !BUILDFLAG(IS_ANDROID)
+          || local_state->GetBoolean(prefs::kGlicHotkeyGlobalScopeEnabled)
+#endif
+      ) {
         return false;
       }
       coordinator_->Toggle(GetActiveGlicEligibleBrowser(profile_),
