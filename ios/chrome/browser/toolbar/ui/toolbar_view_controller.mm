@@ -598,7 +598,6 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
       _locationBarBottomPaddingConstraint.active = YES;
     }
     [self.toolbarHeightDelegate secondaryToolbarRemovedFromKeyboard];
-    [GetFirstResponder() resignFirstResponder];
 
     _locationBarKeyboardCenterXConstraint.active = NO;
     [self updateLayoutConstraints];
