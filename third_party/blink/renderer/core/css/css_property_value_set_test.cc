@@ -159,4 +159,73 @@ TEST_F(CSSPropertyValueSetTest, SetCustomPropertyReturnValue) {
                 /*is_animation_tainted=*/false));
 }
 
+TEST_F(CSSPropertyValueSetTest, RemoveEquivalentProperties) {
+  auto* context = MakeGarbageCollected<CSSParserContext>(GetDocument());
+  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
+
+  String sheet_text = R"CSS(
+    #first {
+      color: red;
+      width: 10px;
+      --x:foo;
+    }
+    #second {
+      color: red;
+      width: 20px;
+      --x:foo;
+    }
+  )CSS";
+
+  CSSParser::ParseSheet(context, style_sheet, sheet_text,
+                        CSSDeferPropertyParsing::kNo);
+  MutableCSSPropertyValueSet& set0 = RuleAt(style_sheet, 0)->MutableProperties();
+  MutableCSSPropertyValueSet& set1 = RuleAt(style_sheet, 1)->MutableProperties();
+
+  // 'color' is equivalent in both sets and should be removed; 'width' differs
+  // and should be kept. Custom properties are kept unconditionally, so '--x'
+  // remains even though its value matches.
+  set0.RemoveEquivalentProperties(&set1);
+
+  EXPECT_EQ(2u, set0.PropertyCount());
+  EXPECT_FALSE(set0.HasProperty(CSSPropertyID::kColor));
+  EXPECT_EQ("10px", set0.GetPropertyValue(CSSPropertyID::kWidth));
+  // The custom property is preserved even though it had the same value in both
+  // sets, because PropertyMatches() cannot disambiguate custom properties.
+  EXPECT_EQ("foo", set0.GetPropertyValue(AtomicString("--x")));
+}
+
+// Removing an equivalent 'all' must drop only 'all' (and clear the HasAll
+// bit), leaving non-equivalent longhands intact.
+TEST_F(CSSPropertyValueSetTest, RemoveEquivalentPropertiesWithAll) {
+  auto* context = MakeGarbageCollected<CSSParserContext>(GetDocument());
+  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
+
+  String sheet_text = R"CSS(
+    #first {
+      all: revert;
+      width: 10px;
+    }
+    #second {
+      all: revert;
+      width: 20px;
+    }
+  )CSS";
+
+  CSSParser::ParseSheet(context, style_sheet, sheet_text,
+                        CSSDeferPropertyParsing::kNo);
+  MutableCSSPropertyValueSet& set0 = RuleAt(style_sheet, 0)->MutableProperties();
+  MutableCSSPropertyValueSet& set1 = RuleAt(style_sheet, 1)->MutableProperties();
+
+  // 'all' was equivalent and removed; 'width' differs and is kept.
+  ASSERT_TRUE(set0.HasProperty(CSSPropertyID::kAll));
+  ASSERT_TRUE(set0.HasAllProperty());
+  set0.RemoveEquivalentProperties(&set1);
+
+  EXPECT_EQ(1u, set0.PropertyCount());
+  EXPECT_FALSE(set0.HasProperty(CSSPropertyID::kAll));
+  // The HasAll bit must be cleared, not just the entry in the property vector.
+  EXPECT_FALSE(set0.HasAllProperty());
+  EXPECT_EQ("10px", set0.GetPropertyValue(CSSPropertyID::kWidth));
+}
+
 }  // namespace blink

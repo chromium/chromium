@@ -825,17 +825,27 @@ bool CSSPropertyValueSet::ShorthandPropertyMatches(
 
 void MutableCSSPropertyValueSet::RemoveEquivalentProperties(
     const CSSPropertyValueSet* style) {
-  Vector<CSSPropertyID> properties_to_remove;
-  unsigned size = property_vector_.size();
-  for (unsigned i = 0; i < size; ++i) {
-    const CSSPropertyValue& property = PropertyAt(i);
-    if (style->PropertyMatches(property.PropertyID(), property.Value())) {
-      properties_to_remove.push_back(property.PropertyID());
+  base::span<CSSPropertyValue> properties(property_vector_);
+  unsigned old_size = property_vector_.size();
+  unsigned new_index = 0;
+  for (unsigned old_index = 0; old_index < old_size; ++old_index) {
+    const CSSPropertyValue& property = properties[old_index];
+    // Custom properties are unconditionally kept: PropertyMatches() compares by
+    // CSSPropertyID, which is kVariable for every custom property, so it cannot
+    // distinguish them by name. Skipping them here keeps that latent ambiguity
+    // out of this editing-only path.
+    if (property.PropertyID() != CSSPropertyID::kVariable &&
+        style->PropertyMatches(property.PropertyID(), property.Value())) {
+      if (property.PropertyID() == CSSPropertyID::kAll) {
+        bits_.set<HasAllField>(false);
+      }
+      continue;
     }
+    properties[new_index++] = property;
   }
-  // FIXME: This should use mass removal.
-  for (CSSPropertyID id : properties_to_remove) {
-    RemoveProperty(id);
+  if (new_index != old_size) {
+    property_vector_.Shrink(new_index);
+    InvalidateHashIfComputed();
   }
 }
 
