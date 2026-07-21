@@ -26,8 +26,6 @@ import {getHtml} from './ax_annotations_section.html.js';
 const SettingsAxAnnotationsSectionBaseElement =
     WebUiListenerMixinLit(I18nMixinLit(CrLitElement));
 
-export type AxAnnotationsSectionElement = SettingsAxAnnotationsSectionElement;
-
 export class SettingsAxAnnotationsSectionElement extends
     SettingsAxAnnotationsSectionBaseElement {
   static get is() {

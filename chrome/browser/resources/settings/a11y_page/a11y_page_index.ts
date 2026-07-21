@@ -83,11 +83,6 @@ export class SettingsA11yPageIndexElement extends
     });
   }
 }
-
-// TODO(393471368): Remove alias when a11y_page_index.html.ts is checked in.
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export type A11YPageIndexElement = SettingsA11yPageIndexElement;
-
 declare global {
   interface HTMLElementTagNameMap {
     'settings-a11y-page-index': SettingsA11yPageIndexElement;

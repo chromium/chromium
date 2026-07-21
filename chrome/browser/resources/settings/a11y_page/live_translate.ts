@@ -36,8 +36,6 @@ export interface SettingsLiveTranslateElement {
   };
 }
 
-export type LiveTranslateElement = SettingsLiveTranslateElement;
-
 export class SettingsLiveTranslateElement extends
     SettingsLiveTranslateElementBase {
   static get is() {

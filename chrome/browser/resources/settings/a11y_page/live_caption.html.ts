@@ -1,10 +1,21 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {SettingsLiveCaptionElement} from './live_caption.js';
+
+export function getHtml(this: SettingsLiveCaptionElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
 ${!this.enableLiveCaptionMultiLanguage_ ? html`
   <div class="cr-row cr-row-with-template first">
     <settings-toggle-button id="liveCaptionToggleButton"
         pref-key="accessibility.captions.live_caption_enabled"
         @change="${this.onLiveCaptionEnabledChange_}"
         label="$i18n{captionsEnableLiveCaptionTitle}"
-        sub-label="${this.enableLiveCaptionSubtitle_}">
+        .subLabel="${this.enableLiveCaptionSubtitle_}">
     </settings-toggle-button>
   </div>
   <cr-collapse ?opened="${this.isLiveCaptionEnabled_}">
@@ -53,7 +64,8 @@ ${this.enableLiveCaptionMultiLanguage_ ? html`
                 id="more-${item.code}"
                 data-code="${item.code}"
                 @click="${this.onDotsClick_}"
-                aria-label="${this.computeMoreButtonAriaLabel_(item.displayName, item.code)}">
+                aria-label="${this.computeMoreButtonAriaLabel_(
+                    item.displayName, item.code)}">
             </cr-icon-button>
           </div>
         `)}
@@ -91,3 +103,6 @@ ${this.showAddLanguagesDialog_ ? html`
     `}">
 </cr-lazy-render-lit>
 </if>
+<!--_html_template_end_-->`;
+  // clang-format on
+}

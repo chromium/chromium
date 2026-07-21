@@ -253,11 +253,6 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
     return control;
   }
 }
-
-// TODO(393471368): Remove alias when a11y_page.html.ts is checked in.
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export type A11YPageElement = SettingsA11yPageElement;
-
 declare global {
   interface HTMLElementTagNameMap {
     'settings-a11y-page': SettingsA11yPageElement;

@@ -61,8 +61,6 @@ export interface SettingsLiveCaptionElement {
 }
 // </if>
 
-export type LiveCaptionElement = SettingsLiveCaptionElement;
-
 export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
   static get is() {
     return 'settings-live-caption';

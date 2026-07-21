@@ -1,7 +1,15 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
-<!-- #html_wrapper_imports_start
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {SettingsA11yPageElement} from './a11y_page.js';
 import {ToastAlertLevel} from './a11y_page.js';
-#html_wrapper_imports_end -->
+
+export function getHtml(this: SettingsA11yPageElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
     <settings-section page-title="$i18n{a11yPageTitle}">
       <div route-path="default">
 <if expr="is_chromeos">
@@ -111,3 +119,6 @@ import {ToastAlertLevel} from './a11y_page.js';
         </cr-link-row>
       </div>
     </settings-section>
+<!--_html_template_end_-->`;
+  // clang-format on
+}

@@ -52,8 +52,6 @@ build_webui("build") {
 
   # -----------------web_component_files start ---------------------------------
   web_component_files = [
-    "a11y_page/a11y_page.ts",
-    "a11y_page/a11y_page_index.ts",
     "ai_page/ai_info_card.ts",
     "ai_page/ai_logging_info_bullet.ts",
     "ai_page/ai_mode_search_page.ts",
@@ -265,8 +263,6 @@ build_webui("build") {
 
   if (!is_chromeos) {
     web_component_files += [
-      "a11y_page/live_caption.ts",
-      "a11y_page/live_translate.ts",
       "clear_browsing_data_dialog/clear_browsing_data_account_indicator.ts",
       "languages_page/add_languages_dialog.ts",
       "languages_page/languages_page.ts",
@@ -288,10 +284,6 @@ build_webui("build") {
     web_component_files += [ "languages_page/edit_dictionary_page.ts" ]
   }
 
-  if (is_linux) {
-    web_component_files += [ "a11y_page/captions_page.ts" ]
-  }
-
   if (is_mac) {
     web_component_files += [ "autofill_page/passkey_edit_dialog.ts" ]
   }
@@ -300,16 +292,16 @@ build_webui("build") {
     web_component_files += [ "autofill_page/passkeys_subpage.ts" ]
   }
 
-  if (is_win || is_mac || is_linux) {
-    web_component_files += [ "a11y_page/ax_annotations_section.ts" ]
-  }
-
   # -----------------web_component_files end ----------------------------------
 
   # -----------------ts_files start ----------------------------
 
   ts_files = [
     "a11y_page/a11y_browser_proxy.ts",
+    "a11y_page/a11y_page.html.ts",
+    "a11y_page/a11y_page.ts",
+    "a11y_page/a11y_page_index.html.ts",
+    "a11y_page/a11y_page_index.ts",
     "about_page/about_page_browser_proxy.ts",
     "about_page/about_page.html.ts",
     "about_page/about_page.ts",
@@ -403,6 +395,10 @@ build_webui("build") {
     ts_files += [ "people_page/account_manager_browser_proxy.ts" ]
   } else {
     ts_files += [
+      "a11y_page/live_caption.html.ts",
+      "a11y_page/live_caption.ts",
+      "a11y_page/live_translate.html.ts",
+      "a11y_page/live_translate.ts",
       "default_browser_page/default_browser_browser_proxy.ts",
       "default_browser_page/default_browser_page.html.ts",
       "default_browser_page/default_browser_page.ts",
@@ -420,6 +416,20 @@ build_webui("build") {
     if (is_chrome_branded) {
       ts_files += [ "system_page/on_device_ai_browser_proxy.ts" ]
     }
+  }
+
+  if (is_linux) {
+    ts_files += [
+      "a11y_page/captions_page.html.ts",
+      "a11y_page/captions_page.ts",
+    ]
+  }
+
+  if (is_win || is_mac || is_linux) {
+    ts_files += [
+      "a11y_page/ax_annotations_section.html.ts",
+      "a11y_page/ax_annotations_section.ts",
+    ]
   }
 
   if (is_win || is_mac) {

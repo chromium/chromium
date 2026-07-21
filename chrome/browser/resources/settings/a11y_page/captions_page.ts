@@ -28,8 +28,6 @@ import {getHtml} from './captions_page.html.js';
 const SettingsCaptionsPageElementBase =
     SettingsViewMixinLit(PrefServiceObserverMixinLit(CrLitElement));
 
-export type CaptionsPageElement = SettingsCaptionsPageElement;
-
 export class SettingsCaptionsPageElement extends
     SettingsCaptionsPageElementBase {
   static get is() {
