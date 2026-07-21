@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/replaced_painter.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "ui/gfx/geometry/rect.h"
@@ -114,6 +115,12 @@ class HighlightsFromPointTest : public HighlightRegistryTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class HighlightRegistryFrameTest : public RenderingTest {
+ public:
+  HighlightRegistryFrameTest()
+      : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
 };
 
 TEST_F(HighlightRegistryTest, CompareStacking) {
@@ -891,6 +898,28 @@ TEST_F(HighlightRegistryTest, TracksSlottedImage) {
 
   EXPECT_TRUE(
       registry->GetActiveHighlightsForReplacedElement(*img).Contains(name));
+}
+
+TEST_F(HighlightRegistryFrameTest, AdoptedStaticRangePaintsInCurrentDocument) {
+  SetBodyInnerHTML("<iframe></iframe><span id='span'>adopted highlight</span>");
+  SetChildFrameHTML("");
+  auto* span = GetDocument().getElementById(AtomicString("span"));
+  auto* text = To<Text>(span->firstChild());
+  auto* static_range =
+      MakeGarbageCollected<StaticRange>(text, 0u, text, text->length());
+
+  ChildDocument().adoptNode(span, ASSERT_NO_EXCEPTION);
+  ChildDocument().body()->AppendChild(span);
+  HeapVector<Member<AbstractRange>> ranges;
+  ranges.push_back(static_range);
+  auto* highlight = Highlight::Create(ranges);
+  auto* registry = HighlightRegistry::From(*ChildDocument().domWindow());
+  registry->SetForTesting(AtomicString("h"), highlight);
+  RunDocumentLifecycle();
+
+  DocumentMarkerVector markers = ChildDocument().Markers().MarkersFor(
+      *text, DocumentMarker::MarkerTypes::CustomHighlight());
+  EXPECT_FALSE(markers.empty());
 }
 
 TEST_F(HighlightsFromPointTest, HighlightsFromPoint) {

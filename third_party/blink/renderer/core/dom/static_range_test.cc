@@ -53,14 +53,14 @@ TEST_F(StaticRangeTest, SplitTextNodeRangeWithinText) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
   auto* old_text = To<Text>(GetDocument().body()->firstChild());
 
-  auto* static_range04 = MakeGarbageCollected<StaticRange>(
-      GetDocument(), old_text, 0u, old_text, 4u);
-  auto* static_range02 = MakeGarbageCollected<StaticRange>(
-      GetDocument(), old_text, 0u, old_text, 2u);
-  auto* static_range22 = MakeGarbageCollected<StaticRange>(
-      GetDocument(), old_text, 2u, old_text, 2u);
-  auto* static_range24 = MakeGarbageCollected<StaticRange>(
-      GetDocument(), old_text, 2u, old_text, 4u);
+  auto* static_range04 =
+      MakeGarbageCollected<StaticRange>(old_text, 0u, old_text, 4u);
+  auto* static_range02 =
+      MakeGarbageCollected<StaticRange>(old_text, 0u, old_text, 2u);
+  auto* static_range22 =
+      MakeGarbageCollected<StaticRange>(old_text, 2u, old_text, 2u);
+  auto* static_range24 =
+      MakeGarbageCollected<StaticRange>(old_text, 2u, old_text, 4u);
 
   Range* range04 = static_range04->toRange(ASSERT_NO_EXCEPTION);
   Range* range02 = static_range02->toRange(ASSERT_NO_EXCEPTION);
@@ -134,17 +134,17 @@ TEST_F(StaticRangeTest, SplitTextNodeRangeOutsideText) {
   auto* old_text = To<Text>(outer->childNodes()->item(2));
 
   auto* static_range_outer_outside =
-      MakeGarbageCollected<StaticRange>(GetDocument(), outer, 0u, outer, 5u);
+      MakeGarbageCollected<StaticRange>(outer, 0u, outer, 5u);
   auto* static_range_outer_inside =
-      MakeGarbageCollected<StaticRange>(GetDocument(), outer, 1u, outer, 4u);
+      MakeGarbageCollected<StaticRange>(outer, 1u, outer, 4u);
   auto* static_range_outer_surrounding_text =
-      MakeGarbageCollected<StaticRange>(GetDocument(), outer, 2u, outer, 3u);
-  auto* static_range_inner_left = MakeGarbageCollected<StaticRange>(
-      GetDocument(), inner_left, 0u, inner_left, 1u);
-  auto* static_range_inner_right = MakeGarbageCollected<StaticRange>(
-      GetDocument(), inner_right, 0u, inner_right, 1u);
+      MakeGarbageCollected<StaticRange>(outer, 2u, outer, 3u);
+  auto* static_range_inner_left =
+      MakeGarbageCollected<StaticRange>(inner_left, 0u, inner_left, 1u);
+  auto* static_range_inner_right =
+      MakeGarbageCollected<StaticRange>(inner_right, 0u, inner_right, 1u);
   auto* static_range_from_text_to_middle_of_element =
-      MakeGarbageCollected<StaticRange>(GetDocument(), old_text, 6u, outer, 3u);
+      MakeGarbageCollected<StaticRange>(old_text, 6u, outer, 3u);
 
   Range* range_outer_outside =
       static_range_outer_outside->toRange(ASSERT_NO_EXCEPTION);
@@ -239,8 +239,8 @@ TEST_F(StaticRangeTest, InvalidToRange) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
   auto* old_text = To<Text>(GetDocument().body()->firstChild());
 
-  auto* static_range04 = MakeGarbageCollected<StaticRange>(
-      GetDocument(), old_text, 0u, old_text, 4u);
+  auto* static_range04 =
+      MakeGarbageCollected<StaticRange>(old_text, 0u, old_text, 4u);
 
   // Valid StaticRange.
   static_range04->toRange(ASSERT_NO_EXCEPTION);
@@ -260,16 +260,10 @@ TEST_F(StaticRangeTest, InvalidToRange) {
 
 TEST_F(StaticRangeTest, OwnerDocumentMatchesStartContainerDocument) {
   V8TestingScope scope;
-  // The StaticRange constructor surfaced via the IDL takes a
-  // |StaticRangeInit| dictionary. Its |owner_document_| must reflect the
-  // document that the start container actually lives in, regardless of which
-  // realm or document the constructor is being invoked from. This mirrors how
-  // |Range::setStart| updates a Range's owner document when given a node from
-  // a different document, and matches the W3C StaticRange specification which
-  // does not define an owner document for StaticRange (it is a Blink internal
-  // field). Without this, cross-realm consumers such as
-  // |HighlightRegistry::ValidateHighlightMarkers| reject the range because
-  // |range->OwnerDocument()| no longer matches the document being painted.
+  // StaticRange has no specification-defined owner document. Blink derives
+  // OwnerDocument() from the current start container so cross-realm consumers
+  // such as |HighlightRegistry::ValidateHighlightMarkers| do not reject a
+  // range after its endpoints move to the document being painted.
   // See https://issues.chromium.org/issues/407812149.
   ScopedNullExecutionContext other_execution_context;
   Persistent<HTMLDocument> other_document = HTMLDocument::CreateForTest(
@@ -336,6 +330,31 @@ TEST_F(StaticRangeTest,
   EXPECT_FALSE(static_range->IsValid())
       << "A StaticRange whose endpoints are in different documents must "
          "report IsValid() == false.";
+}
+
+TEST_F(StaticRangeTest, RevalidatesAfterEndpointAdoptionAndMutation) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<span id='span'>temporary</span>");
+  auto* span = GetDocument().getElementById(AtomicString("span"));
+  auto* text = To<Text>(span->firstChild());
+  auto* static_range = MakeGarbageCollected<StaticRange>(text, 0u, text, 9u);
+  ASSERT_TRUE(static_range->IsValid());
+
+  ScopedNullExecutionContext other_execution_context;
+  Persistent<HTMLDocument> other_document = HTMLDocument::CreateForTest(
+      other_execution_context.GetExecutionContext());
+  auto* other_html = MakeGarbageCollected<HTMLHtmlElement>(*other_document);
+  other_html->AppendChild(
+      MakeGarbageCollected<HTMLBodyElement>(*other_document));
+  other_document->AppendChild(other_html);
+  other_document->adoptNode(span, ASSERT_NO_EXCEPTION);
+  other_document->body()->AppendChild(span);
+
+  EXPECT_EQ(&static_range->OwnerDocument(), other_document.Get());
+  // Prime validity after adoption, when the original offsets are still valid.
+  ASSERT_TRUE(static_range->IsValid());
+  text->setData("x");
+  EXPECT_FALSE(static_range->IsValid());
 }
 
 }  // namespace blink

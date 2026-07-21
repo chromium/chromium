@@ -15,13 +15,11 @@
 
 namespace blink {
 
-StaticRange::StaticRange(Document& document,
-                         Node* start_container,
+StaticRange::StaticRange(Node* start_container,
                          unsigned start_offset,
                          Node* end_container,
                          unsigned end_offset)
-    : owner_document_(document),
-      start_container_(start_container),
+    : start_container_(start_container),
       start_offset_(start_offset),
       end_container_(end_container),
       end_offset_(end_offset) {}
@@ -30,7 +28,7 @@ StaticRange::StaticRange(Document& document,
 StaticRange* StaticRange::Create(const EphemeralRange& range) {
   DCHECK(!range.IsNull());
   return MakeGarbageCollected<StaticRange>(
-      range.GetDocument(), range.StartPosition().ComputeContainerNode(),
+      range.StartPosition().ComputeContainerNode(),
       range.StartPosition().ComputeOffsetInContainerNode(),
       range.EndPosition().ComputeContainerNode(),
       range.EndPosition().ComputeOffsetInContainerNode());
@@ -50,24 +48,12 @@ StaticRange* StaticRange::Create(const StaticRangeInit* static_range_init,
         "Attribute node.");
   }
 
-  // Use the start container's document as the owner document so that the
-  // resulting StaticRange is associated with the document its endpoints
-  // actually live in, even when the range is constructed from a different
-  // realm (for example, when a parent document creates a StaticRange over
-  // nodes inside a same-origin iframe). The W3C StaticRange spec does not
-  // define an owner document; this is an internal field that must reflect
-  // the range's actual position in the DOM.
   return MakeGarbageCollected<StaticRange>(
-      static_range_init->startContainer()->GetDocument(),
       static_range_init->startContainer(), static_range_init->startOffset(),
       static_range_init->endContainer(), static_range_init->endOffset());
 }
 
 bool StaticRange::IsValid() const {
-  if (dom_tree_version_for_is_valid_ == owner_document_->DomTreeVersion())
-    return is_valid_;
-  dom_tree_version_for_is_valid_ = owner_document_->DomTreeVersion();
-
   // The full list of checks is:
   //  1) The start offset is between 0 and the start container’s node length
   //     (inclusive).
@@ -77,18 +63,15 @@ bool StaticRange::IsValid() const {
   //     tree.
   //  4) The position of the start boundary point is before or equal to the
   //     position of the end boundary point.
-  is_valid_ =
-      start_offset_ <= AbstractRange::LengthOfContents(start_container_) &&
-      end_offset_ <= AbstractRange::LengthOfContents(end_container_) &&
-      !HasDifferentRootContainer(start_container_, end_container_) &&
-      ComparePositionsInDomTree(start_container_, start_offset_, end_container_,
-                                end_offset_) <= 0;
-
-  return is_valid_;
+  return start_offset_ <= AbstractRange::LengthOfContents(start_container_) &&
+         end_offset_ <= AbstractRange::LengthOfContents(end_container_) &&
+         !HasDifferentRootContainer(start_container_, end_container_) &&
+         ComparePositionsInDomTree(start_container_, start_offset_,
+                                   end_container_, end_offset_) <= 0;
 }
 
 Range* StaticRange::toRange(ExceptionState& exception_state) const {
-  Range* range = Range::Create(*owner_document_.Get());
+  Range* range = Range::Create(OwnerDocument());
   // Do the offset checking.
   range->setStart(start_container_, start_offset_, exception_state);
   range->setEnd(end_container_, end_offset_, exception_state);
@@ -96,7 +79,6 @@ Range* StaticRange::toRange(ExceptionState& exception_state) const {
 }
 
 void StaticRange::Trace(Visitor* visitor) const {
-  visitor->Trace(owner_document_);
   visitor->Trace(start_container_);
   visitor->Trace(end_container_);
   ScriptWrappable::Trace(visitor);

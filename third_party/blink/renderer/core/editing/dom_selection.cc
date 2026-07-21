@@ -642,9 +642,8 @@ const StaticRangeVector DomSelection::getComposedRanges(
   // startNode, start offset is startOffset, end node is endNode, and end
   // offset is endOffset.
   ranges.push_back(MakeGarbageCollected<StaticRange>(
-      Selection().GetDocument(), start.ComputeContainerNode(),
-      start.ComputeOffsetInContainerNode(), end.ComputeContainerNode(),
-      end.ComputeOffsetInContainerNode()));
+      start.ComputeContainerNode(), start.ComputeOffsetInContainerNode(),
+      end.ComputeContainerNode(), end.ComputeOffsetInContainerNode()));
   return ranges;
 }
 

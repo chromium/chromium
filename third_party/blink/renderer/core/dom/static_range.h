@@ -24,14 +24,13 @@ class CORE_EXPORT StaticRange final : public NodeRange {
  public:
   static StaticRange* Create(const Range* range) {
     return MakeGarbageCollected<StaticRange>(
-        range->OwnerDocument(), range->startContainer(), range->startOffset(),
-        range->endContainer(), range->endOffset());
+        range->startContainer(), range->startOffset(), range->endContainer(),
+        range->endOffset());
   }
   static StaticRange* Create(const EphemeralRange&);
   static StaticRange* Create(const StaticRangeInit*, ExceptionState&);
 
-  StaticRange(Document&,
-              Node* start_container,
+  StaticRange(Node* start_container,
               unsigned start_offset,
               Node* end_container,
               unsigned end_offset);
@@ -50,18 +49,17 @@ class CORE_EXPORT StaticRange final : public NodeRange {
 
   bool IsValid() const;
   bool IsStaticRange() const override { return true; }
-  Document& OwnerDocument() const override { return *owner_document_.Get(); }
+  Document& OwnerDocument() const override {
+    return start_container_->GetDocument();
+  }
 
   void Trace(Visitor*) const override;
 
  private:
-  Member<Document> owner_document_;  // Required by |toRange()|.
   Member<Node> start_container_;
   unsigned start_offset_ = 0;
   Member<Node> end_container_;
   unsigned end_offset_ = 0;
-  mutable bool is_valid_ = false;
-  mutable uint64_t dom_tree_version_for_is_valid_ = 0;
 };
 
 using StaticRangeVector = HeapVector<Member<StaticRange>>;
