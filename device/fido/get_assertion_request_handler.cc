@@ -254,6 +254,10 @@ CtapGetAssertionRequest SpecializeRequestForAuthenticator(
       FidoTransportProtocol::kHybrid) {
     specialized_request.cross_device_fallback_url = std::nullopt;
   }
+
+  if (request.cmtg_key && !authenticator.Options().supports_cmtg_key) {
+    specialized_request.cmtg_key = false;
+  }
   return specialized_request;
 }
 

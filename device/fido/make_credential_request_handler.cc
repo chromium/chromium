@@ -1077,6 +1077,10 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
            request->cred_blob->size())) {
     request->cred_blob.reset();
   }
+
+  if (request->cmtg_key && !authenticator->Options().supports_cmtg_key) {
+    request->cmtg_key = false;
+  }
 }
 
 }  // namespace device

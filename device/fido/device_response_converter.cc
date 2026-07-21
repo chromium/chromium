@@ -488,6 +488,8 @@ std::optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
         options.large_blob_type = LargeBlobSupportType::kExtension;
       } else if (extension_str == kExtensionLargeBlobKey) {
         large_blob_key_extension_seen = true;
+      } else if (extension_str == kExtensionCmtgKey) {
+        options.supports_cmtg_key = true;
       }
       extensions.push_back(extension_str);
     }

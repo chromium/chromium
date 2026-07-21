@@ -125,6 +125,8 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorSupportedOptions {
   // If true, indicates that the authenticator supports the PRF extension. This
   // will be preferred to the hmac-secret extension if supported.
   bool supports_prf = false;
+  // If true, indicates that the authenticator supports the cmtgKey extension.
+  bool supports_cmtg_key = false;
   // max_cred_blob_length is the longest credBlob value that this authenticator
   // can store. A value of `nullopt` indicates no support for credBlob.
   std::optional<uint16_t> max_cred_blob_length;

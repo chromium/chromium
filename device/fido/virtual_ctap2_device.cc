@@ -1732,14 +1732,14 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
         registration.second->selected_cmtg_key_index = 0;
       }
       if (!mutable_state()->simulate_cmtg_key_failure) {
-        if (mutable_state()->generate_new_cmtg_key_on_next_assertion ||
+        if (registration.second->generate_cmtg_key_on_next_operation ||
             registration.second->cmtg_keys.empty()) {
           // Create a new CMTG key.
           auto cred_pub_key = registration.second->private_key->GetPublicKey();
           std::unique_ptr<PrivateKey> new_cmtg_key =
               FreshKeyForCoseAlg(cred_pub_key->algorithm);
           registration.second->cmtg_keys.emplace_back(std::move(new_cmtg_key));
-          mutable_state()->generate_new_cmtg_key_on_next_assertion = false;
+          registration.second->generate_cmtg_key_on_next_operation = false;
           registration.second->selected_cmtg_key_index =
               registration.second->cmtg_keys.size() - 1;
         }

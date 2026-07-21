@@ -36,6 +36,7 @@ VirtualAuthenticator::VirtualAuthenticator(const Options& options)
       has_prf_(options.has_prf),
       has_hmac_secret_(options.has_hmac_secret),
       has_hmac_secret_mc_(options.has_hmac_secret_mc),
+      has_cmtg_key_(options.has_cmtg_key),
       unique_id_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
       state_(base::MakeRefCounted<device::VirtualFidoDevice::State>()) {
   state_->transport = options.transport;
@@ -188,6 +189,7 @@ VirtualAuthenticator::ConstructDevice() {
         config.pin_uv_auth_token_support = true;
       }
       config.internal_uv_support = has_user_verification_;
+      config.cmtg_key_support = has_cmtg_key_;
       config.is_platform_authenticator =
           attachment_ == device::AuthenticatorAttachment::kPlatform;
       config.user_verification_succeeds = is_user_verified_;
@@ -310,6 +312,42 @@ void VirtualAuthenticator::OnLargeBlobCompressed(
                           original_size));
   }
   std::move(callback).Run(result.has_value());
+}
+
+bool VirtualAuthenticator::AddCmtgKey(
+    base::span<const uint8_t> key_handle,
+    std::unique_ptr<device::VirtualFidoDevice::PrivateKey> cmtg_key) {
+  auto registration = state_->registrations.find(key_handle);
+  if (registration == state_->registrations.end()) {
+    return false;
+  }
+  if (!cmtg_key) {
+    return false;
+  }
+  registration->second.cmtg_keys.push_back(std::move(cmtg_key));
+  return true;
+}
+
+bool VirtualAuthenticator::SetSelectedCmtgKeyIndex(
+    base::span<const uint8_t> key_handle,
+    size_t index) {
+  auto registration = state_->registrations.find(key_handle);
+  if (registration == state_->registrations.end()) {
+    return false;
+  }
+  registration->second.selected_cmtg_key_index = index;
+  return true;
+}
+
+bool VirtualAuthenticator::SetGenerateCmtgKeyOnNextOperation(
+    base::span<const uint8_t> key_handle,
+    bool generate) {
+  auto registration = state_->registrations.find(key_handle);
+  if (registration == state_->registrations.end()) {
+    return false;
+  }
+  registration->second.generate_cmtg_key_on_next_operation = generate;
+  return true;
 }
 
 }  // namespace content

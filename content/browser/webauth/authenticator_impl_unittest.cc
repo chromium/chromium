@@ -10751,7 +10751,8 @@ TEST_F(AuthenticatorImplTest, CmtgKeyEndToEnd) {
 
   // Trigger generation of a new CMTG key on next assertion.
   virtual_device_factory_->mutable_state()
-      ->generate_new_cmtg_key_on_next_assertion = true;
+      ->registrations.at(credential_id)
+      .generate_cmtg_key_on_next_operation = true;
   PublicKeyCredentialRequestOptionsPtr get_options2 =
       GetTestPublicKeyCredentialRequestOptions();
   get_options2->allow_credentials[0].id = credential_id;

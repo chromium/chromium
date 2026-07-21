@@ -74,6 +74,7 @@ class CONTENT_EXPORT VirtualAuthenticator
     bool has_hmac_secret_mc = false;
     bool default_backup_eligibility = false;
     bool default_backup_state = false;
+    bool has_cmtg_key = false;
   };
 
   using GetLargeBlobCallback =
@@ -147,6 +148,7 @@ class CONTENT_EXPORT VirtualAuthenticator
   void set_bad_up_bit(bool is_bad_bit) { state_->unset_up_bit = is_bad_bit; }
 
   bool has_resident_key() const { return has_resident_key_; }
+  bool has_cmtg_key() const { return has_cmtg_key_; }
 
   device::FidoTransportProtocol transport() const { return state_->transport; }
   const std::string& unique_id() const { return unique_id_; }
@@ -183,6 +185,21 @@ class CONTENT_EXPORT VirtualAuthenticator
                     const std::vector<uint8_t>& blob,
                     SetLargeBlobCallback callback);
 
+  // Adds a CMTG key to the credential.
+  // Returns true on success, false if the credential was not found or the key
+  // is null.
+  bool AddCmtgKey(
+      base::span<const uint8_t> key_handle,
+      std::unique_ptr<device::VirtualFidoDevice::PrivateKey> cmtg_key);
+  // Selects the CMTG key at the given index for the credential.
+  // Returns true on success, false if the credential was not found.
+  bool SetSelectedCmtgKeyIndex(base::span<const uint8_t> key_handle,
+                               size_t index);
+  // Sets whether the authenticator should generate a new CMTG key on the next
+  // operation. Returns true on success, false if the credential was not found.
+  bool SetGenerateCmtgKeyOnNextOperation(base::span<const uint8_t> key_handle,
+                                         bool generate);
+
  private:
   void OnLargeBlobUncompressed(
       GetLargeBlobCallback callback,
@@ -213,6 +230,7 @@ class CONTENT_EXPORT VirtualAuthenticator
   const bool has_prf_;
   const bool has_hmac_secret_;
   const bool has_hmac_secret_mc_;
+  const bool has_cmtg_key_;
   bool is_user_verified_ = true;
   const std::string unique_id_;
   bool is_user_present_;
