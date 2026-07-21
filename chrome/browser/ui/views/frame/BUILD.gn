@@ -65,3 +65,7 @@ source_set("frame") {
     "//ui/views",
   ]
 }
+
+source_set("app_menu_button_observer") {
+  sources = [ "app_menu_button_observer.h" ]
+}
