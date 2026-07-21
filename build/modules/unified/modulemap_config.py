@@ -14,6 +14,7 @@
 # platforms.
 
 import dataclasses
+from typing import Optional
 
 
 @dataclasses.dataclass
@@ -26,7 +27,7 @@ class Header:
   # A good signal for this is if the header is missing include guards.
   # Note: Textual headers are a formal term used by clang.
   # See https://clang.llvm.org/docs/Modules.html
-  textual: bool | None = None
+  textual: Optional[bool] = None
   # Lazy headers are not added to the modulemap unless they are included by
   # another system header.
   lazy: bool = False
@@ -37,7 +38,7 @@ class Header:
   exists: bool = True
   # The name of the module for this header. Only useful for listing as an
   # export.
-  module_name: str | None = None
+  module_name: Optional[str] = None
   # A list of module names that things that #include this header should gain
   # access to. If you specify *, then it gains access to anything in its direct
   # dependencies.

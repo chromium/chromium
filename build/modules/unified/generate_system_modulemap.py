@@ -16,7 +16,7 @@ import shutil
 import sys
 import subprocess
 import tempfile
-from typing import Any, Callable, List, Tuple
+from typing import Any, Callable, List, Optional, Tuple
 
 import modulemap_config
 
@@ -70,7 +70,7 @@ class AllowList:
     self.default = modulemap_config.Header(path='')
     self.hdrs = {hdr.path: hdr for hdr in headers if hdr.exists}
 
-  def textual(self, path: str) -> bool | None:
+  def textual(self, path: str) -> Optional[bool]:
     hdr = self.hdrs.get(path)
     if hdr is not None and hdr.textual is not None:
       return hdr.textual
@@ -81,7 +81,7 @@ class AllowList:
   def exports(self, path: str) -> list[str]:
     return self.hdrs.get(path, self.default).exports
 
-  def module_name(self, path: str) -> str | None:
+  def module_name(self, path: str) -> Optional[str]:
     return self.hdrs.get(path, self.default).module_name
 
   def includes(self) -> list[str]:
@@ -151,7 +151,7 @@ class Header:
   private: bool
   textual: bool
   requires: list[str] = dataclasses.field(default_factory=list)
-  module_name: str | None = None
+  module_name: Optional[str] = None
   exports: list[str] = dataclasses.field(default_factory=lambda: ['*'])
 
 
