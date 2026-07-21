@@ -26,11 +26,22 @@ EyeDropperViewMac::EyeDropperViewMac(content::EyeDropperListener* listener)
     if (!weak_this) {
       return;
     }
-    if (!selectedColor) {
-      listener_->ColorSelectionCanceled();
-    } else {
-      listener_->ColorSelected(
+
+    // Keep NSColorSampler alive on the main queue until AppKit has unwound
+    // from this handler. The listener call below destroys `*this` and drops
+    // the only strong reference to `color_sampler_`; releasing NSColorSampler
+    // from inside its own selection handler wedges the system sampler on
+    // macOS Tahoe. See https://crbug.com/509627745.
+    NSColorSampler* sampler = weak_this->color_sampler_;
+    dispatch_async(dispatch_get_main_queue(), ^{
+      NS_VALID_UNTIL_END_OF_SCOPE NSColorSampler* sampler_keepalive = sampler;
+    });
+
+    if (selectedColor) {
+      weak_this->listener_->ColorSelected(
           skia::CGColorRefToSkColor(selectedColor.CGColor));
+    } else {
+      weak_this->listener_->ColorSelectionCanceled();
     }
   }];
 }
