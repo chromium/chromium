@@ -788,6 +788,52 @@ bool IsVisible(const LayoutObject& object) {
   return object.StyleRef().Visibility() == EVisibility::kVisible;
 }
 
+bool HasEmptyGeometry(const mojom::blink::AIPageContentNode* content_node) {
+  if (!content_node || !content_node->content_attributes ||
+      !content_node->content_attributes->geometry) {
+    return false;
+  }
+  return content_node->content_attributes->geometry->outer_bounding_box
+      .IsEmpty();
+}
+
+// Accumulate geometry from a descendant APC node into an ancestor whose own
+// layout box is 0x0. WalkChildren calls this as descendant branches produce
+// geometry. A 0x0 descendant first accumulates geometry from its own branches,
+// then passes the combined geometry upward.
+//
+// A common example is a position:absolute or position:fixed node whose own box
+// is 0x0 but which has visible out-of-flow descendants. The ancestor unions
+// outer and visible boxes from its descendant branches. Explicit fragments are
+// copied when available; otherwise a descendant's visible box becomes one
+// fragment. Repairing the ancestor gives downstream processing usable geometry
+// for that node.
+void MergeNodeGeometryIntoAncestor(
+    const mojom::blink::AIPageContentNode& descendant,
+    mojom::blink::AIPageContentNode& ancestor) {
+  if (!descendant.content_attributes ||
+      !descendant.content_attributes->geometry ||
+      descendant.content_attributes->geometry->outer_bounding_box.IsEmpty()) {
+    return;
+  }
+
+  DCHECK(ancestor.content_attributes);
+  DCHECK(ancestor.content_attributes->geometry);
+  const auto& descendant_geometry = *descendant.content_attributes->geometry;
+  auto& ancestor_geometry = *ancestor.content_attributes->geometry;
+  ancestor_geometry.outer_bounding_box.Union(
+      descendant_geometry.outer_bounding_box);
+  ancestor_geometry.visible_bounding_box.Union(
+      descendant_geometry.visible_bounding_box);
+  if (!descendant_geometry.fragment_visible_bounding_boxes.empty()) {
+    ancestor_geometry.fragment_visible_bounding_boxes.append_range(
+        descendant_geometry.fragment_visible_bounding_boxes);
+  } else if (!descendant_geometry.visible_bounding_box.IsEmpty()) {
+    ancestor_geometry.fragment_visible_bounding_boxes.push_back(
+        descendant_geometry.visible_bounding_box);
+  }
+}
+
 bool AreChildrenBlockedByDisplayLock(const LayoutObject& object) {
   return object.ChildLayoutBlockedByDisplayLock() ||
          object.ChildPrePaintBlockedByDisplayLock();
@@ -2374,7 +2420,8 @@ void AIPageContentAgent::ContentBuilder::AddInteractiveNode(
 bool AIPageContentAgent::ContentBuilder::WalkChildren(
     const LayoutObject& object,
     mojom::blink::AIPageContentNode& content_node,
-    const RecursionData& recursion_data) {
+    const RecursionData& recursion_data,
+    mojom::blink::AIPageContentNode* ancestor_for_geometry_repair) {
   if (AreChildrenBlockedByDisplayLock(object)) {
     // APC only includes content with layout objects; display-locked subtrees
     // skip child layout/prepaint, so they are not included in the layout tree.
@@ -2443,18 +2490,42 @@ bool AIPageContentAgent::ContentBuilder::WalkChildren(
 
     if (!ShouldSkipDescendants(child_content_node, *child)) {
       if (child_content_node) {
+        // This layout object has an APC node. Walk its descendants under that
+        // node, and let them repair its geometry if it starts empty.
         child_recursion_data.stack_depth++;
+        // When repairing an ancestor's empty geometry, use only the first
+        // nonempty APC node on each descendant branch.
+        // * If this child already has geometry, leave this null so deeper nodes
+        //   do not also repair the ancestor.
+        // * Otherwise, collect geometry from its descendants into this child
+        //   before using it to repair the ancestor.
+        mojom::blink::AIPageContentNode*
+            ancestor_for_descendant_geometry_repair = nullptr;
+        if (HasEmptyGeometry(child_content_node.get())) {
+          ancestor_for_descendant_geometry_repair = child_content_node.get();
+        }
+        child_has_visible_content =
+            WalkChildren(*child, *child_content_node, child_recursion_data,
+                         ancestor_for_descendant_geometry_repair);
+      } else {
+        // This layout object is omitted from APC. Continue walking so its APC
+        // descendants can be added without this wrapper.
+        child_has_visible_content =
+            WalkChildren(*child, content_node, child_recursion_data,
+                         ancestor_for_geometry_repair);
       }
-
-      auto& node_for_child =
-          child_content_node ? *child_content_node : content_node;
-      child_has_visible_content =
-          WalkChildren(*child, node_for_child, child_recursion_data);
       has_visible_content |= child_has_visible_content;
     }
 
     const bool should_add_node_for_child =
         IsVisible(*child) || child_has_visible_content;
+    if (should_add_node_for_child && ancestor_for_geometry_repair &&
+        child_content_node) {
+      // If this node started empty, its walk has already repaired it from
+      // deeper branches.
+      MergeNodeGeometryIntoAncestor(*child_content_node,
+                                    *ancestor_for_geometry_repair);
+    }
     if (should_add_node_for_child && child_content_node) {
       content_node.children_nodes.emplace_back(std::move(child_content_node));
     }

@@ -133,10 +133,13 @@ class MODULES_EXPORT AIPageContentAgent final
              mojom::blink::AIPageContentMode::kActionableElements;
     }
     // Returns true if any descendant of `object` has a computed value of
-    // visible for `visibility`.
+    // visible for `visibility`. `ancestor_for_geometry_repair` is the nearest
+    // APC ancestor that started with an empty outer box.
     bool WalkChildren(const LayoutObject& object,
                       mojom::blink::AIPageContentNode& content_node,
-                      const RecursionData& recursion_data);
+                      const RecursionData& recursion_data,
+                      mojom::blink::AIPageContentNode*
+                          ancestor_for_geometry_repair = nullptr);
     void ProcessIframe(const LayoutIFrame& object,
                        mojom::blink::AIPageContentNode& content_node,
                        const RecursionData& recursion_data);

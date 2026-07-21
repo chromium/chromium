@@ -2611,13 +2611,9 @@ TEST_F(AIPageContentAgentTest, HiddenUntilFoundGeometry) {
        mojom::blink::AIPageContentAnnotatedRole::kContentHidden});
   EXPECT_EQ(hidden_container.children_nodes.size(), 1u);
 
-  // The hidden container continues to have an empty layout size even when
-  // display locks are forced.
   ASSERT_TRUE(hidden_container.content_attributes->geometry);
   const auto& hidden_container_geometry =
       *hidden_container.content_attributes->geometry;
-  EXPECT_TRUE(hidden_container_geometry.outer_bounding_box.IsEmpty());
-  EXPECT_TRUE(hidden_container_geometry.visible_bounding_box.IsEmpty());
 
   const auto& hidden_text_node = *hidden_container.children_nodes[0];
   CheckTextNode(hidden_text_node, "hidden text");
@@ -2628,6 +2624,14 @@ TEST_F(AIPageContentAgentTest, HiddenUntilFoundGeometry) {
                     gfx::Point(0, 0));
   EXPECT_FALSE(hidden_text_geometry.outer_bounding_box.IsEmpty());
   EXPECT_TRUE(hidden_text_geometry.visible_bounding_box.IsEmpty());
+
+  // The container's own layout size is empty. APC repairs its outer box from
+  // the hidden descendant, but does not give it visible geometry or fragments.
+  EXPECT_EQ(hidden_container_geometry.outer_bounding_box,
+            hidden_text_geometry.outer_bounding_box);
+  EXPECT_TRUE(hidden_container_geometry.visible_bounding_box.IsEmpty());
+  EXPECT_TRUE(
+      hidden_container_geometry.fragment_visible_bounding_boxes.empty());
 
   const auto& visible_text_node = *root.children_nodes[1];
   CheckTextNode(visible_text_node, "visible text");
@@ -6936,8 +6940,7 @@ TEST_F(AIPageContentAgentTest, StructuralWrapperWithoutPaintGeometry) {
   EXPECT_TRUE(wrapper_node->content_attributes->anchor_data);
   ASSERT_TRUE(wrapper_node->content_attributes->geometry);
   const auto& wrapper_geometry = *wrapper_node->content_attributes->geometry;
-  EXPECT_TRUE(wrapper_geometry.visible_bounding_box.IsEmpty());
-  EXPECT_TRUE(wrapper_geometry.outer_bounding_box.IsEmpty());
+  ASSERT_EQ(wrapper_geometry.fragment_visible_bounding_boxes.size(), 1u);
 
   auto* child_node = FindNodeBySelector("#child");
   ASSERT_TRUE(child_node);
@@ -6945,6 +6948,376 @@ TEST_F(AIPageContentAgentTest, StructuralWrapperWithoutPaintGeometry) {
   const auto& child_geometry = *child_node->content_attributes->geometry;
   EXPECT_FALSE(child_geometry.visible_bounding_box.IsEmpty());
   EXPECT_FALSE(child_geometry.outer_bounding_box.IsEmpty());
+  EXPECT_EQ(wrapper_geometry.outer_bounding_box,
+            child_geometry.outer_bounding_box);
+  EXPECT_EQ(wrapper_geometry.visible_bounding_box,
+            child_geometry.visible_bounding_box);
+  EXPECT_EQ(wrapper_geometry.fragment_visible_bounding_boxes[0],
+            child_geometry.visible_bounding_box);
+}
+
+TEST_F(AIPageContentAgentTest,
+       NonActionableZeroAreaContainerUsesChildGeometry) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+      <body style="margin: 0; font: 10px/10px Ahem;">
+        <article id="container" style="position: relative; width: 0;
+                                       height: 0;">
+          <button id="child" style="position: absolute; left: 10px; top: 20px;
+                                    width: 20px; height: 10px;">X</button>
+        </article>
+      </body>)HTML",
+      url_test_helpers::ToKURL("http://example.com"));
+
+  LoadAhem();
+  GetAIPageContentWithActionableElements();
+
+  const auto* container = FindNodeBySelector("#container");
+  const auto* child = FindNodeBySelector("#child");
+  ASSERT_TRUE(container);
+  ASSERT_TRUE(child);
+  ASSERT_TRUE(container->content_attributes->geometry);
+  ASSERT_TRUE(child->content_attributes->geometry);
+  // The article is included for its structure, not because it is actionable.
+  EXPECT_FALSE(container->content_attributes->node_interaction_info);
+
+  const auto& container_geometry = *container->content_attributes->geometry;
+  const auto& child_geometry = *child->content_attributes->geometry;
+  // Ensure equality cannot pass because both source and repaired boxes are
+  // empty.
+  EXPECT_FALSE(child_geometry.outer_bounding_box.IsEmpty());
+  EXPECT_FALSE(child_geometry.visible_bounding_box.IsEmpty());
+  EXPECT_EQ(container_geometry.outer_bounding_box,
+            child_geometry.outer_bounding_box);
+  EXPECT_EQ(container_geometry.visible_bounding_box,
+            child_geometry.visible_bounding_box);
+  EXPECT_THAT(container_geometry.fragment_visible_bounding_boxes,
+              testing::ElementsAre(child_geometry.visible_bounding_box));
+}
+
+TEST_F(AIPageContentAgentTest,
+       ZeroAreaAnchorsUseVisibleOutOfFlowChildrenAsFragments) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+      <body style="margin: 0; font: 10px/10px Ahem;">
+        <a id="float" href="#" class="zero">
+          <span id="float-child-1" class="float-child" onclick="void(0)">A</span>
+          <span id="float-child-2" class="float-child" onclick="void(0)">B</span>
+        </a>
+        <a id="absolute" href="#" class="zero">
+          <span id="absolute-child-1" class="absolute-child"
+                onclick="void(0)">C</span>
+          <span id="absolute-child-2" class="absolute-child second"
+                onclick="void(0)">D</span>
+        </a>
+        <a id="fixed" href="#" class="zero">
+          <span id="fixed-child-1" class="fixed-child"
+                onclick="void(0)">E</span>
+          <span id="fixed-child-2" class="fixed-child second"
+                onclick="void(0)">F</span>
+        </a>
+        <style>
+          .zero {
+            display: inline-block;
+            position: relative;
+            width: 0;
+            height: 0;
+          }
+          .float-child { float: left; width: 20px; height: 10px; }
+          .absolute-child {
+            position: absolute;
+            left: 0;
+            top: 20px;
+            width: 20px;
+            height: 10px;
+          }
+          .fixed-child {
+            position: fixed;
+            left: 0;
+            top: 40px;
+            width: 20px;
+            height: 10px;
+          }
+          .second { left: 30px; }
+        </style>
+      </body>)HTML",
+      url_test_helpers::ToKURL("http://example.com"));
+
+  LoadAhem();
+  GetAIPageContentWithActionableElements();
+
+  auto expect_anchor_geometry_from_children =
+      [this](const char* anchor_selector, const char* first_child_selector,
+             const char* second_child_selector) {
+        const auto* anchor_node = FindNodeBySelector(anchor_selector);
+        ASSERT_TRUE(anchor_node);
+        ASSERT_TRUE(anchor_node->content_attributes->geometry);
+        const auto& anchor_geometry =
+            *anchor_node->content_attributes->geometry;
+
+        const auto* first_child = FindNodeBySelector(first_child_selector);
+        ASSERT_TRUE(first_child);
+        ASSERT_TRUE(first_child->content_attributes->geometry);
+        const gfx::Rect first_child_box =
+            first_child->content_attributes->geometry->visible_bounding_box;
+        EXPECT_FALSE(first_child_box.IsEmpty());
+
+        const auto* second_child = FindNodeBySelector(second_child_selector);
+        ASSERT_TRUE(second_child);
+        ASSERT_TRUE(second_child->content_attributes->geometry);
+        const gfx::Rect second_child_box =
+            second_child->content_attributes->geometry->visible_bounding_box;
+        EXPECT_FALSE(second_child_box.IsEmpty());
+
+        EXPECT_THAT(
+            anchor_geometry.fragment_visible_bounding_boxes,
+            testing::UnorderedElementsAre(first_child_box, second_child_box));
+
+        gfx::Rect expected_outer_box =
+            first_child->content_attributes->geometry->outer_bounding_box;
+        expected_outer_box.Union(
+            second_child->content_attributes->geometry->outer_bounding_box);
+        EXPECT_EQ(anchor_geometry.outer_bounding_box, expected_outer_box);
+
+        gfx::Rect expected_visible_box = first_child_box;
+        expected_visible_box.Union(second_child_box);
+        EXPECT_EQ(anchor_geometry.visible_bounding_box, expected_visible_box);
+      };
+
+  expect_anchor_geometry_from_children("#float", "#float-child-1",
+                                       "#float-child-2");
+  expect_anchor_geometry_from_children("#absolute", "#absolute-child-1",
+                                       "#absolute-child-2");
+  expect_anchor_geometry_from_children("#fixed", "#fixed-child-1",
+                                       "#fixed-child-2");
+}
+
+TEST_F(AIPageContentAgentTest,
+       ZeroAreaAncestorUsesFirstNonemptyGeometryFromEachBranch) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+      <body style="margin: 0; font: 10px/10px Ahem;">
+        <a id="anchor" href="#" class="zero">
+          <span id="deep-zero-1" class="zero" onclick="void(0)">
+            <span id="deep-zero-2" class="zero" onclick="void(0)">
+              <span id="deep-leaf" class="deep-leaf"
+                    onclick="void(0)">A</span>
+            </span>
+          </span>
+          <span id="nonempty-branch" class="nonempty-branch"
+                onclick="void(0)">
+            <span id="far-leaf" class="far-leaf"
+                  onclick="void(0)">B</span>
+          </span>
+        </a>
+        <style>
+          .zero {
+            display: inline-block;
+            position: relative;
+            width: 0;
+            height: 0;
+          }
+          .deep-leaf, .far-leaf {
+            position: absolute;
+            display: block;
+            width: 10px;
+            height: 10px;
+          }
+          .deep-leaf { left: 20px; top: 10px; }
+          .nonempty-branch {
+            display: inline-block;
+            position: relative;
+            width: 5px;
+            height: 5px;
+          }
+          .far-leaf { left: 100px; top: 100px; }
+        </style>
+      </body>)HTML",
+      url_test_helpers::ToKURL("http://example.com"));
+
+  LoadAhem();
+  GetAIPageContentWithActionableElements();
+
+  const auto* anchor = FindNodeBySelector("#anchor");
+  const auto* deep_zero_1 = FindNodeBySelector("#deep-zero-1");
+  const auto* deep_zero_2 = FindNodeBySelector("#deep-zero-2");
+  const auto* deep_leaf = FindNodeBySelector("#deep-leaf");
+  const auto* nonempty_branch = FindNodeBySelector("#nonempty-branch");
+  const auto* far_leaf = FindNodeBySelector("#far-leaf");
+  ASSERT_TRUE(anchor);
+  ASSERT_TRUE(deep_zero_1);
+  ASSERT_TRUE(deep_zero_2);
+  ASSERT_TRUE(deep_leaf);
+  ASSERT_TRUE(nonempty_branch);
+  ASSERT_TRUE(far_leaf);
+  ASSERT_TRUE(anchor->content_attributes->geometry);
+  ASSERT_TRUE(deep_zero_1->content_attributes->geometry);
+  ASSERT_TRUE(deep_zero_2->content_attributes->geometry);
+  ASSERT_TRUE(deep_leaf->content_attributes->geometry);
+  ASSERT_TRUE(nonempty_branch->content_attributes->geometry);
+  ASSERT_TRUE(far_leaf->content_attributes->geometry);
+
+  const auto& anchor_geometry = *anchor->content_attributes->geometry;
+  const auto& deep_leaf_geometry = *deep_leaf->content_attributes->geometry;
+  const auto& nonempty_branch_geometry =
+      *nonempty_branch->content_attributes->geometry;
+  const auto& far_leaf_geometry = *far_leaf->content_attributes->geometry;
+
+  // Each zero-area level on the deep branch receives the same first nonempty
+  // geometry from below it.
+  EXPECT_EQ(deep_zero_2->content_attributes->geometry->visible_bounding_box,
+            deep_leaf_geometry.visible_bounding_box);
+  EXPECT_EQ(deep_zero_1->content_attributes->geometry->visible_bounding_box,
+            deep_leaf_geometry.visible_bounding_box);
+
+  // The anchor receives one contribution from each branch. The far leaf does
+  // not contribute because its branch already has nonempty container geometry.
+  EXPECT_THAT(anchor_geometry.fragment_visible_bounding_boxes,
+              testing::UnorderedElementsAre(
+                  deep_leaf_geometry.visible_bounding_box,
+                  nonempty_branch_geometry.visible_bounding_box));
+  EXPECT_THAT(
+      anchor_geometry.fragment_visible_bounding_boxes,
+      testing::Not(testing::Contains(far_leaf_geometry.visible_bounding_box)));
+}
+
+TEST_F(AIPageContentAgentTest,
+       ZeroAreaAnchorsUseGeometryThroughNonpaintingWrappers) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+      <body style="margin: 0; font: 10px/10px Ahem;">
+        <a id="collapse-anchor" href="#" class="zero">
+          <span style="visibility: collapse;">
+            <span id="collapse-child" class="collapse-child"
+                  onclick="void(0)">A</span>
+          </span>
+        </a>
+        <a id="contents-anchor" href="#" class="zero">
+          <span style="display: contents;">
+            <span id="contents-child" class="contents-child"
+                  onclick="void(0)">B</span>
+          </span>
+        </a>
+        <style>
+          .zero {
+            display: inline-block;
+            position: relative;
+            width: 0;
+            height: 0;
+          }
+          .collapse-child, .contents-child {
+            position: absolute;
+            display: block;
+            width: 20px;
+            height: 10px;
+            visibility: visible;
+          }
+          .collapse-child { left: 10px; top: 20px; }
+          .contents-child { left: 40px; top: 20px; }
+        </style>
+      </body>)HTML",
+      url_test_helpers::ToKURL("http://example.com"));
+
+  LoadAhem();
+  GetAIPageContentWithActionableElements();
+
+  auto expect_anchor_matches_child = [this](const char* anchor_selector,
+                                            const char* child_selector) {
+    const auto* anchor = FindNodeBySelector(anchor_selector);
+    const auto* child = FindNodeBySelector(child_selector);
+    ASSERT_TRUE(anchor);
+    ASSERT_TRUE(child);
+    ASSERT_TRUE(anchor->content_attributes->geometry);
+    ASSERT_TRUE(child->content_attributes->geometry);
+
+    const auto& anchor_geometry = *anchor->content_attributes->geometry;
+    const auto& child_geometry = *child->content_attributes->geometry;
+    EXPECT_EQ(anchor_geometry.outer_bounding_box,
+              child_geometry.outer_bounding_box);
+    EXPECT_EQ(anchor_geometry.visible_bounding_box,
+              child_geometry.visible_bounding_box);
+    EXPECT_THAT(anchor_geometry.fragment_visible_bounding_boxes,
+                testing::ElementsAre(child_geometry.visible_bounding_box));
+  };
+
+  expect_anchor_matches_child("#collapse-anchor", "#collapse-child");
+  expect_anchor_matches_child("#contents-anchor", "#contents-child");
+}
+
+TEST_F(AIPageContentAgentTest,
+       ZeroAreaAnchorCombinesFragmentsFromMultipleSources) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+      <body style="margin: 0; font: 10px/10px Ahem;">
+        <a id="anchor" href="#">AB CD<span id="sibling"
+            onclick="void(0)">E</span></a>
+        <style>
+          #anchor {
+            display: block;
+            position: relative;
+            width: 20px;
+            height: 0;
+          }
+          #sibling {
+            position: absolute;
+            left: 50px;
+            top: 30px;
+            width: 10px;
+            height: 10px;
+          }
+        </style>
+      </body>)HTML",
+      url_test_helpers::ToKURL("http://example.com"));
+
+  LoadAhem();
+  GetAIPageContentWithActionableElements();
+
+  Document* document = helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  ASSERT_TRUE(document);
+  Element* anchor = document->getElementById(AtomicString("anchor"));
+  ASSERT_TRUE(anchor);
+  Node* wrapping_text = anchor->firstChild();
+  ASSERT_TRUE(wrapping_text);
+  ASSERT_TRUE(wrapping_text->IsTextNode());
+
+  const auto* anchor_node = FindNodeBySelector("#anchor");
+  const auto* text_node =
+      FindNodeByDomNodeId(DOMNodeIds::IdForNode(wrapping_text));
+  const auto* sibling_node = FindNodeBySelector("#sibling");
+  ASSERT_TRUE(anchor_node);
+  ASSERT_TRUE(text_node);
+  ASSERT_TRUE(sibling_node);
+  ASSERT_TRUE(anchor_node->content_attributes->geometry);
+  ASSERT_TRUE(text_node->content_attributes->geometry);
+  ASSERT_TRUE(sibling_node->content_attributes->geometry);
+
+  const auto& anchor_geometry = *anchor_node->content_attributes->geometry;
+  const auto& text_geometry = *text_node->content_attributes->geometry;
+  const auto& sibling_geometry = *sibling_node->content_attributes->geometry;
+  ASSERT_EQ(text_geometry.fragment_visible_bounding_boxes.size(), 2u);
+  ASSERT_TRUE(sibling_geometry.fragment_visible_bounding_boxes.empty());
+
+  // `#sibling` is inside the anchor and is the wrapping text node's sibling.
+  // The empty anchor therefore combines the first nonempty geometry from both
+  // child branches.
+  Vector<gfx::Rect> expected_fragments =
+      text_geometry.fragment_visible_bounding_boxes;
+  expected_fragments.push_back(sibling_geometry.visible_bounding_box);
+  EXPECT_THAT(anchor_geometry.fragment_visible_bounding_boxes,
+              testing::UnorderedElementsAreArray(expected_fragments));
+
+  gfx::Rect expected_outer_box = text_geometry.outer_bounding_box;
+  expected_outer_box.Union(sibling_geometry.outer_bounding_box);
+  EXPECT_EQ(anchor_geometry.outer_bounding_box, expected_outer_box);
+
+  gfx::Rect expected_visible_box = text_geometry.visible_bounding_box;
+  expected_visible_box.Union(sibling_geometry.visible_bounding_box);
+  EXPECT_EQ(anchor_geometry.visible_bounding_box, expected_visible_box);
 }
 
 TEST_F(AIPageContentAgentTest, InlinePreWrapGeometry) {
