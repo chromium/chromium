@@ -9534,3 +9534,4 @@ crbug.com/531170669 [ Linux ] fast/canvas/canvas-drawImage-live-video.html [ Fai
 # DevTools 3-way change for https://crrev.c/c/8117653
 http/tests/devtools/network/warning-for-long-cookie.js [ Failure Pass ]
 
+crbug.com/510232476 [ Mac13 ] external/wpt/css/css-tables/height-distribution/percentage-sizing-of-table-cell-children-002.html [ Failure Pass ]
