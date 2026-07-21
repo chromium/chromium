@@ -49,18 +49,4 @@ std::vector<tabs::TabInterface*> GetTabsInTabGroup(
   return group_tabs;
 }
 
-void EnsureTabInGroup(tabs::TabInterface* tab,
-                      tab_groups::TabGroupId group_id) {
-  if (tab->GetGroup() == group_id) {
-    return;
-  }
-  BrowserWindowInterface* window = tab->GetBrowserWindowInterface();
-  if (!window) {
-    return;
-  }
-  if (TabListInterface* tab_list = TabListInterface::From(window)) {
-    tab_list->AddTabsToGroup(group_id, {tab->GetHandle()});
-  }
-}
-
 }  // namespace glic

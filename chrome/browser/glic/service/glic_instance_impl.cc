@@ -1587,10 +1587,6 @@ GlicInstanceImpl::EmbedderEntry& GlicInstanceImpl::BindTab(
     GetSharingManagerInternal().PinTabs({tab->GetHandle()}, pin_trigger);
   }
 
-  if (tab_group_id_.has_value()) {
-    EnsureTabInGroup(tab, tab_group_id_.value());
-  }
-
   UpdateFloatingPanelCanAttach();
 
   return new_entry;

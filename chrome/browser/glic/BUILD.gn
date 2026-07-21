@@ -787,7 +787,6 @@ source_set("browser_tests") {
     "host/new_glic_api_browsertest.cc",
     "service/glic_instance_coordinator_browsertest.cc",
     "service/glic_invoke_browsertest.cc",
-    "service/glic_tab_group_browsertest.cc",
     "service/metrics/glic_instance_coordinator_metrics_browsertest.cc",
     "suggestions/contextual_cueing_helper_browsertest.cc",
   ]
