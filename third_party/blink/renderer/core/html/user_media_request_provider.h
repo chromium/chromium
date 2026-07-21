@@ -12,7 +12,7 @@
 
 namespace blink {
 
-class HTMLUserMediaElement;
+class HTMLMediaCaptureElementBase;
 class LocalDOMWindow;
 
 class CORE_EXPORT UserMediaRequestProvider
@@ -23,7 +23,7 @@ class CORE_EXPORT UserMediaRequestProvider
   static UserMediaRequestProvider* From(LocalDOMWindow&);
 
   virtual void StartRequest(
-      HTMLUserMediaElement*,
+      HTMLMediaCaptureElementBase*,
       const Vector<mojom::blink::PermissionDescriptorPtr>&) = 0;
 
   void Trace(Visitor*) const override;

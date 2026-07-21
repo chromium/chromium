@@ -1,0 +1,11 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/PEPC/blob/main/usermedia_element.md
+interface mixin HTMLMediaCaptureElementBase {
+  readonly attribute DOMException? error;
+  attribute EventHandler onstream;
+  attribute EventHandler oncancel;
+  attribute EventHandler onerror;
+};

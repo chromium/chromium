@@ -3,20 +3,17 @@
 // found in the LICENSE file.
 
 // https://github.com/WICG/PEPC/blob/main/usermedia_element.md
-[RuntimeEnabled=UserMediaElement, Exposed=Window]
-interface HTMLUserMediaElement : HTMLElement {
-  [HTMLConstructor] constructor();
-
+[
+    Exposed=Window,
+    RuntimeEnabled=UserMediaElement,
+    HTMLConstructor
+] interface HTMLUserMediaElement : HTMLElement {
   // Legacy migration support: presence of this attribute indicates the legacy
   // behavior. When the 'type' attribute is explicitly defined, the element
   // falls back to legacy behavior, the same as the legacy <permission> element.
   // TODO(crbug.com/493632110): Deprecate `type` attribute once the adoption of
   // <usermedia> element is stable.
   [CEReactions, Reflect, RuntimeEnabled=UserMediaElementLegacy] attribute DOMString type;
-  readonly attribute DOMException? error;
-  attribute EventHandler onstream;
-  attribute EventHandler oncancel;
-  attribute EventHandler onerror;
 
   [RuntimeEnabled=UserMediaElementLegacy] static boolean isTypeSupported(DOMString type);
 
@@ -29,3 +26,4 @@ interface HTMLUserMediaElement : HTMLElement {
   [MeasureAs=CapabilityElementOnPromptDismiss, RuntimeEnabled=UserMediaElementLegacy] attribute EventHandler onpromptdismiss;
   [MeasureAs=CapabilityElementOnValidationStatusChange, RuntimeEnabled=UserMediaElementLegacy] attribute EventHandler onvalidationstatuschange;
 };
+HTMLUserMediaElement includes HTMLMediaCaptureElementBase;

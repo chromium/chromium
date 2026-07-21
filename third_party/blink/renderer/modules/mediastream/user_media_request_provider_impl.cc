@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/html/html_user_media_element.h"
+#include "third_party/blink/renderer/core/html/html_media_capture_element_base.h"
 #include "third_party/blink/renderer/modules/mediastream/html_user_media_element_media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/overconstrained_error.h"
@@ -27,7 +27,7 @@
 namespace blink {
 
 UserMediaRequestProviderCallbacks::UserMediaRequestProviderCallbacks(
-    HTMLUserMediaElement* element)
+    HTMLMediaCaptureElementBase* element)
     : element_(element) {}
 
 void UserMediaRequestProviderCallbacks::OnSuccess(
@@ -94,7 +94,7 @@ UserMediaRequestProviderImpl::UserMediaRequestProviderImpl(
     : UserMediaRequestProvider(window) {}
 
 void UserMediaRequestProviderImpl::StartRequest(
-    HTMLUserMediaElement* element,
+    HTMLMediaCaptureElementBase* element,
     const Vector<mojom::blink::PermissionDescriptorPtr>&
         permission_descriptors) {
   if (permission_descriptors.empty()) {
@@ -123,7 +123,7 @@ void UserMediaRequestProviderImpl::StartRequest(
     return;
   }
 
-  // Constraints that are set on the HTMLUserMediaElement.
+  // Constraints that are set on the media capture element.
   const HTMLMediaStreamConstraints* constraints =
       UserMediaElementConstraints::From(*element).Constraints();
 

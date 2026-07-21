@@ -11,12 +11,14 @@
 
 namespace blink {
 
+class HTMLMediaCaptureElementBase;
 class LocalDOMWindow;
 
 class MODULES_EXPORT UserMediaRequestProviderCallbacks final
     : public UserMediaRequest::Callbacks {
  public:
-  explicit UserMediaRequestProviderCallbacks(HTMLUserMediaElement* element);
+  explicit UserMediaRequestProviderCallbacks(
+      HTMLMediaCaptureElementBase* element);
 
   void OnSuccess(const MediaStreamVector& streams,
                  CaptureController* capture_controller) override;
@@ -29,7 +31,7 @@ class MODULES_EXPORT UserMediaRequestProviderCallbacks final
   void Trace(Visitor* visitor) const override;
 
  private:
-  WeakMember<HTMLUserMediaElement> element_;
+  WeakMember<HTMLMediaCaptureElementBase> element_;
 };
 
 class MODULES_EXPORT UserMediaRequestProviderImpl final
@@ -40,9 +42,10 @@ class MODULES_EXPORT UserMediaRequestProviderImpl final
 
   explicit UserMediaRequestProviderImpl(LocalDOMWindow&);
 
-  void StartRequest(HTMLUserMediaElement*,
-                    const Vector<mojom::blink::PermissionDescriptorPtr>&) override;
-  };
+  void StartRequest(
+      HTMLMediaCaptureElementBase*,
+      const Vector<mojom::blink::PermissionDescriptorPtr>&) override;
+};
 
 }  // namespace blink
 

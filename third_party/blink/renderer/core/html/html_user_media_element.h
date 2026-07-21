@@ -5,51 +5,35 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_USER_MEDIA_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_USER_MEDIA_ELEMENT_H_
 
-#include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/html/html_capability_element_base.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
+#include "third_party/blink/renderer/core/html/html_media_capture_element_base.h"
 
 namespace blink {
 
-class DOMException;
-
-class CORE_EXPORT HTMLUserMediaElement
-    : public HTMLCapabilityElementBase,
-      public Supplementable<HTMLUserMediaElement> {
+class CORE_EXPORT HTMLUserMediaElement : public HTMLMediaCaptureElementBase {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   static bool isTypeSupported(const AtomicString& type);
 
   explicit HTMLUserMediaElement(Document& document);
-  void Trace(Visitor*) const override;
 
-  DOMException* error() const;
-  void SetError(DOMException* error) { error_ = error; }
-
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(stream, kStream)
-
-  // HTML Element
   ElementType GetElementType() const final {
     return ElementType::kHTMLUserMediaElement;
   }
   bool IsHTMLUserMediaElement() const final { return true; }
 
-  void AttributeChanged(const AttributeModificationParams& params) override;
+  DOMException* error() const;
 
-  // HTMLCapabilityElementBase
+  void AttributeChanged(const AttributeModificationParams& params) override;
   void OnPermissionStatusChange(mojom::blink::PermissionName permission_name,
                                 mojom::blink::PermissionStatus status) override;
   void OnEmbeddedPermissionsDecided(
       mojom::blink::EmbeddedPermissionControlResult result) override;
-
-  Node::InsertionNotificationRequest InsertedInto(ContainerNode&) override;
-
   void DefaultEventHandler(Event& event) override;
-  mojom::blink::EmbeddedPermissionRequestDescriptorPtr
-  CreateEmbeddedPermissionRequestDescriptor() override;
   void OnActivationFailed(const String& error_message) override;
+
+  void ApplyDefaultConstraints() override;
 
   Vector<mojom::blink::PermissionDescriptorPtr> ParseType(
       const AtomicString& type);
@@ -61,23 +45,8 @@ class CORE_EXPORT HTMLUserMediaElement
   // <usermedia> element is stable.
   bool IsLegacyMode() const;
 
-  void ApplyDefaultConstraints();
-
-  void ResetMediaStreamRequestTime();
-
-  void UpdateAppearance() override;
-  void UpdateIcon(mojom::blink::PermissionName permission) override;
-
-  const Vector<mojom::blink::PermissionDescriptorPtr>&
-  GetPermissionDescriptors() const {
-    return permission_descriptors_;
-  }
-
- private:
-  void StartMediaStreamRequest();
-
-  base::TimeTicks media_stream_request_start_time_;
-  Member<DOMException> error_;
+ protected:
+  bool ShouldShowGrantedAppearance() const override;
 };
 
 // The custom type casting is required for the UserMediaElement OT because the

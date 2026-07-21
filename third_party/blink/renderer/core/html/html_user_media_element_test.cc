@@ -67,7 +67,7 @@ class MockUserMediaRequestProvider final
 
   MOCK_METHOD(void,
               StartRequest,
-              (HTMLUserMediaElement*,
+              (HTMLMediaCaptureElementBase*,
                const Vector<mojom::blink::PermissionDescriptorPtr>&),
               (override));
 

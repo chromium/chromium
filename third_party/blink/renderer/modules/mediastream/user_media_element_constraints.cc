@@ -13,7 +13,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_constraindomstringparameters_string_stringsequence.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_constraindoublerange_double.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_constrainlongrange_long.h"
-#include "third_party/blink/renderer/core/html/html_user_media_element.h"
+#include "third_party/blink/renderer/core/html/html_media_capture_element_base.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
@@ -107,10 +107,9 @@ MediaTrackConstraints* SanitizeTrackConstraints(
 }
 
 UserMediaElementConstraints& UserMediaElementConstraints::From(
-    HTMLUserMediaElement& element) {
-  UserMediaElementConstraints* supplement =
-      Supplement<HTMLUserMediaElement>::From<UserMediaElementConstraints>(
-          element);
+    HTMLMediaCaptureElementBase& element) {
+  UserMediaElementConstraints* supplement = Supplement<
+      HTMLMediaCaptureElementBase>::From<UserMediaElementConstraints>(element);
   if (!supplement) {
     supplement = MakeGarbageCollected<UserMediaElementConstraints>(element);
     ProvideTo(element, supplement);
@@ -119,16 +118,16 @@ UserMediaElementConstraints& UserMediaElementConstraints::From(
 }
 
 UserMediaElementConstraints::UserMediaElementConstraints(
-    HTMLUserMediaElement& element)
-    : Supplement<HTMLUserMediaElement>(element) {}
+    HTMLMediaCaptureElementBase& element)
+    : Supplement<HTMLMediaCaptureElementBase>(element) {}
 
 void UserMediaElementConstraints::Trace(Visitor* visitor) const {
   visitor->Trace(constraints_);
-  Supplement<HTMLUserMediaElement>::Trace(visitor);
+  Supplement<HTMLMediaCaptureElementBase>::Trace(visitor);
 }
 
 void UserMediaElementConstraints::setConstraints(
-    HTMLUserMediaElement& element,
+    HTMLMediaCaptureElementBase& element,
     const HTMLMediaStreamConstraints* constraints) {
   UserMediaElementConstraints& self = From(element);
   if (self.did_set_constraints_) {
