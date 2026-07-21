@@ -121,4 +121,8 @@ public interface ProfileBoundaryInterface {
     void addQuicHints(Set<String> origins);
 
     /* HttpCacheBoundaryInterface */ InvocationHandler getHttpCache();
+
+    void setCrossOriginIsolatedAllowList(@NonNull Set<String> originPatterns);
+
+    @NonNull Set<String> getCrossOriginIsolatedAllowList();
 }

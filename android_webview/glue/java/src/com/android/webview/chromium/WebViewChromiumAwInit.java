@@ -408,6 +408,8 @@ public class WebViewChromiumAwInit {
         CallSite.PROFILE_CLEAR_ALL_ORIGIN_MATCHED_HEADERS,
         CallSite.PROFILE_ADD_QUIC_HINTS,
         CallSite.PROFILE_GET_HTTP_CACHE_MANAGER,
+        CallSite.PROFILE_SET_CROSS_ORIGIN_ISOLATED_ALLOW_LIST,
+        CallSite.PROFILE_GET_CROSS_ORIGIN_ISOLATED_ALLOW_LIST,
         CallSite.COUNT,
     })
     public @interface CallSite {
@@ -553,8 +555,10 @@ public class WebViewChromiumAwInit {
         int PROFILE_CLEAR_ALL_ORIGIN_MATCHED_HEADERS = 140;
         int PROFILE_ADD_QUIC_HINTS = 141;
         int PROFILE_GET_HTTP_CACHE_MANAGER = 142;
+        int PROFILE_SET_CROSS_ORIGIN_ISOLATED_ALLOW_LIST = 143;
+        int PROFILE_GET_CROSS_ORIGIN_ISOLATED_ALLOW_LIST = 144;
         // Remember to update WebViewStartupCallSite in enums.xml when adding new values here.
-        int COUNT = 143;
+        int COUNT = 145;
     };
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:WebViewStartupCallSite)

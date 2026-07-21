@@ -809,6 +809,8 @@ chromium-metrics-reviews@google.com.
   <int value="201" label="HttpCache.getQuotaBytes"/>
   <int value="202" label="HttpCache.setQuotaBytes"/>
   <int value="203" label="Profile.enqueuePreconnect"/>
+  <int value="204" label="Profile.setCrossOriginIsolatedAllowList"/>
+  <int value="205" label="Profile.getCrossOriginIsolatedAllowList"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>
@@ -2985,6 +2987,8 @@ chromium-metrics-reviews@google.com.
   <int value="140" label="profileClearAllOriginMatchedHeaders"/>
   <int value="141" label="profileAddQuicHints"/>
   <int value="142" label="profileGetHttpCacheManager"/>
+  <int value="143" label="profileSetCrossOriginIsolatedAllowList"/>
+  <int value="144" label="profileGetCrossOriginIsolatedAllowList"/>
 </enum>
 
 <!-- LINT.ThenChange(//base/tracing/protos/chrome_track_event.proto:WebViewStartup) -->

@@ -147,6 +147,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.WEBVIEW_NAVIGATE_V1,
                 Features.DOWNLOAD_FAVICONS_ENABLED,
                 Features.HTTP_CACHE_MANAGER,
+                Features.CROSS_ORIGIN_ISOLATED_ALLOW_LIST + Features.DEV_SUFFIX,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The one
                 // exception is when adding a new method to an interface that extends from
@@ -585,8 +586,10 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int HTTP_CACHE_GET_QUOTA_BYTES = 201;
         int HTTP_CACHE_SET_QUOTA_BYTES = 202;
         int ENQUEUE_PRECONNECT = 203;
+        int SET_CROSS_ORIGIN_ISOLATED_ALLOW_LIST = 204;
+        int GET_CROSS_ORIGIN_ISOLATED_ALLOW_LIST = 205;
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 204;
+        int COUNT = 206;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebkitApiCall)

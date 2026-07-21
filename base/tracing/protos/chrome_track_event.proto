@@ -2374,6 +2374,8 @@ message WebViewStartup {
     PROFILE_CLEAR_ALL_ORIGIN_MATCHED_HEADERS = 140;
     PROFILE_ADD_QUIC_HINTS = 141;
     PROFILE_GET_HTTP_CACHE_MANAGER = 142;
+    PROFILE_SET_CROSS_ORIGIN_ISOLATED_ALLOW_LIST = 143;
+    PROFILE_GET_CROSS_ORIGIN_ISOLATED_ALLOW_LIST = 144;
     // Remember to update WebViewStartupCallSite in enums.xml when adding new
     // values here.
   }

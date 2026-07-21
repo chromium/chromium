@@ -550,4 +550,18 @@ public class Profile {
                 .browserContext
                 .getHttpCacheManager();
     }
+
+    @UiThread
+    public void setCrossOriginIsolatedAllowList(@NonNull Set<String> originPatterns) {
+        getInitializedState(CallSite.PROFILE_SET_CROSS_ORIGIN_ISOLATED_ALLOW_LIST)
+                .browserContext
+                .setCrossOriginIsolatedAllowList(originPatterns);
+    }
+
+    @UiThread
+    public @NonNull Set<String> getCrossOriginIsolatedAllowList() {
+        return getInitializedState(CallSite.PROFILE_GET_CROSS_ORIGIN_ISOLATED_ALLOW_LIST)
+                .browserContext
+                .getCrossOriginIsolatedAllowList();
+    }
 }

@@ -459,4 +459,25 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
                     new SupportLibHttpCache(mProfileImpl.getHttpCacheManager()));
         }
     }
+
+    @Override
+    public void setCrossOriginIsolatedAllowList(@NonNull Set<String> originPatterns) {
+        recordApiCall(ApiCall.SET_CROSS_ORIGIN_ISOLATED_ALLOW_LIST);
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.SET_CROSS_ORIGIN_ISOLATED_ALLOW_LIST")) {
+            mProfileImpl.setCrossOriginIsolatedAllowList(originPatterns);
+        }
+    }
+
+    @NonNull
+    @Override
+    public Set<String> getCrossOriginIsolatedAllowList() {
+        recordApiCall(ApiCall.GET_CROSS_ORIGIN_ISOLATED_ALLOW_LIST);
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.GET_CROSS_ORIGIN_ISOLATED_ALLOW_LIST")) {
+            return mProfileImpl.getCrossOriginIsolatedAllowList();
+        }
+    }
 }
