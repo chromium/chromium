@@ -296,47 +296,58 @@ namespace {
 std::optional<base::ByteSize> CalculateProcessMemoryFootprint(
     base::File& statm_file,
     base::File& status_file) {
+  static const int page_size_bytes = getpagesize();
+  // getpagesize() should always return > 0, but some Android devices return
+  // unexpected values from various system calls.
+  if (page_size_bytes <= 0) {
+    return std::nullopt;
+  }
+  const base::ByteSize page_size(base::as_unsigned(page_size_bytes));
+
   // Get total resident and shared sizes from statm file.
-  static size_t page_size = getpagesize();
   uint64_t resident_pages = 0;
   uint64_t shared_pages = 0;
   uint64_t vm_size_pages = 0;
-  uint64_t swap_footprint = 0;
+  uint64_t swap_footprint_kb = 0;
   constexpr uint32_t kMaxLineSize = 4096;
   char line[kMaxLineSize];
+  auto line_span = base::as_writable_byte_span(line);
 
-  std::optional<size_t> n = statm_file.ReadAtCurrentPos(
-      base::as_writable_byte_span(line).first<kMaxLineSize - 1>());
+  std::optional<size_t> n =
+      statm_file.ReadAtCurrentPos(line_span.first<kMaxLineSize - 1>());
   if (!n.has_value()) {
     return std::nullopt;
   }
-  UNSAFE_TODO(line[*n]) = '\0';
+  line_span[*n] = '\0';
 
   int num_scanned =
       UNSAFE_TODO(sscanf(line, "%" SCNu64 " %" SCNu64 " %" SCNu64,
                          &vm_size_pages, &resident_pages, &shared_pages));
   if (num_scanned != 3)
     return std::nullopt;
+  if (resident_pages < shared_pages) {
+    // Invalid: supposedly `resident_pages` = VmRss = RssAnon + RssFile +
+    // RssShmem >= RssFile + RssShmem = `shared_pages`.
+    return std::nullopt;
+  }
 
   // Get swap size from status file. The format is: VmSwap :  10 kB.
-  n = status_file.ReadAtCurrentPos(
-      base::as_writable_byte_span(line).first<kMaxLineSize - 1>());
+  n = status_file.ReadAtCurrentPos(line_span.first<kMaxLineSize - 1>());
   if (!n.has_value()) {
     return std::nullopt;
   }
-  UNSAFE_TODO(line[*n]) = '\0';
+  line_span[*n] = '\0';
 
   char* swap_line = UNSAFE_TODO(strstr(line, "VmSwap"));
   if (!swap_line)
     return std::nullopt;
-  num_scanned =
-      UNSAFE_TODO(sscanf(swap_line, "VmSwap: %" SCNu64 " kB", &swap_footprint));
+  num_scanned = UNSAFE_TODO(
+      sscanf(swap_line, "VmSwap: %" SCNu64 " kB", &swap_footprint_kb));
   if (num_scanned != 1)
     return std::nullopt;
+  const base::ByteSize swap_footprint = base::KiBU(swap_footprint_kb);
 
-  swap_footprint *= 1024;
-  return base::ByteSize((resident_pages - shared_pages) * page_size +
-                        swap_footprint);
+  return (resident_pages - shared_pages) * page_size + swap_footprint;
 }
 
 }  // namespace
