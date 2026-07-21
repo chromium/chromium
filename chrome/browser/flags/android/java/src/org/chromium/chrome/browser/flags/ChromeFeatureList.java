@@ -1482,7 +1482,7 @@ public abstract class ChromeFeatureList {
     public static final MutableFlagWithSafeDefault sAlwaysDrawCompositedToolbarHairline =
             newMutableFlagWithSafeDefault(ALWAYS_DRAW_COMPOSITED_TOOLBAR_HAIRLINE, true);
     public static final MutableFlagWithSafeDefault sAndroidActorTaskTimeout =
-            newMutableFlagWithSafeDefault(ANDROID_ACTOR_TASK_TIMEOUT, false);
+            newMutableFlagWithSafeDefault(ANDROID_ACTOR_TASK_TIMEOUT, true);
     public static final MutableFlagWithSafeDefault sAndroidContextMenuDisabledMenuItems =
             newMutableFlagWithSafeDefault(ANDROID_CONTEXT_MENU_DISABLED_MENU_ITEMS, false);
     public static final MutableFlagWithSafeDefault sAndroidContextMenuNewActions =
