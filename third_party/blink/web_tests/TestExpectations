@@ -9520,3 +9520,7 @@ crbug.com/535947496 [ Linux ] http/tests/inspector-protocol/web-transport-handsh
 
 # Gardener 2026-07-21
 crbug.com/531170669 [ Linux ] fast/canvas/canvas-drawImage-live-video.html [ Failure Pass ]
+
+# DevTools 3-way change for https://crrev.c/c/8117653
+http/tests/devtools/network/warning-for-long-cookie.js [ Failure Pass ]
+
