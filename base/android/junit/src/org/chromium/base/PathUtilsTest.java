@@ -45,6 +45,32 @@ public class PathUtilsTest {
     }
 
     @Test
+    public void testIsPathCanonical() {
+        assertTrue(PathUtils.isPathCanonical("/"));
+        assertTrue(PathUtils.isPathCanonical("/foo"));
+        assertTrue(PathUtils.isPathCanonical("/foo/bar"));
+        assertTrue(PathUtils.isPathCanonical("/foo/.../bar"));
+
+        assertFalse(PathUtils.isPathCanonical(null));
+        assertFalse(PathUtils.isPathCanonical(""));
+        assertFalse(PathUtils.isPathCanonical("foo"));
+        assertFalse(PathUtils.isPathCanonical("foo/bar"));
+        assertFalse(PathUtils.isPathCanonical("./foo"));
+        assertFalse(PathUtils.isPathCanonical("../foo"));
+        assertFalse(PathUtils.isPathCanonical("//"));
+        assertFalse(PathUtils.isPathCanonical("/."));
+        assertFalse(PathUtils.isPathCanonical("/.."));
+        assertFalse(PathUtils.isPathCanonical("/foo//bar"));
+        assertFalse(PathUtils.isPathCanonical("/foo/./bar"));
+        assertFalse(PathUtils.isPathCanonical("/foo/../bar"));
+        assertFalse(PathUtils.isPathCanonical("/foo/bar/"));
+        assertFalse(PathUtils.isPathCanonical("/foo/bar/."));
+        assertFalse(PathUtils.isPathCanonical("/foo/bar/.."));
+        assertFalse(PathUtils.isPathCanonical("/foo/b\0r"));
+        assertFalse(PathUtils.isPathCanonical("/foo/bar\0"));
+    }
+
+    @Test
     public void testIsPathUnderAppDir() {
         Context context = ApplicationProvider.getApplicationContext();
         File dataDir = context.getDataDir();
