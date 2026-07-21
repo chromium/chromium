@@ -2706,7 +2706,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.FrameIntervalDecider.ActualIntervalDefault" units="ms"
-    expires_after="2026-11-22">
+    expires_after="2027-08-02">
   <owner>boliu@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -2723,7 +2723,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.FrameIntervalDecider.ActualIntervalFor{DecidedHz}hz"
-    units="ms" expires_after="2026-08-02">
+    units="ms" expires_after="2027-08-02">
   <owner>boliu@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
