@@ -62,7 +62,6 @@ ContextualTasksToast::~ContextualTasksToast() {
 
 void ContextualTasksToast::HandleMessageAccepted() {
   // No-op for now. Clicking OK just dismisses the toast.
-  message_.reset();
 }
 
 void ContextualTasksToast::HandleMessageDismissed(
