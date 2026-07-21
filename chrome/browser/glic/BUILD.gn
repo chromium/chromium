@@ -722,6 +722,7 @@ source_set("unit_tests") {
   if (!is_android) {
     sources += [
       "common/local_hotkey_manager_unittest.cc",
+      "common/panel_focus_dependent_hotkey_manager_unittest.cc",
       "glic_metrics_provider_unittest.cc",
       "glic_metrics_unittest.cc",
       "glic_selection_observer_unittest.cc",
@@ -834,8 +835,6 @@ source_set("browser_tests") {
     sources += [
       "actor/glic_actor_policy_checker_browsertest.cc",
       "common/instance_independent_hotkey_manager_browsertest.cc",
-      "common/panel_focus_dependent_hotkey_manager_browsertest.cc",
-      "common/panel_visibility_dependent_hotkey_manager_browsertest.cc",
       "experimental_opt_in/glic_experimental_opt_in_dialog_browsertest.cc",
       "glic_browsertest.cc",
       "glic_context_menu_browsertest.cc",
@@ -859,6 +858,7 @@ source_set("browser_tests") {
       "suggestions/glic_cue_target_browsertest.cc",
       "suggestions/zero_state_suggestions_browsertest.cc",
       "widget/glic_side_panel_coordinator_browsertest.cc",
+      "widget/panel_visibility_dependent_hotkey_manager_browsertest.cc",
     ]
 
     if (!is_mac && enterprise_cloud_content_analysis) {
