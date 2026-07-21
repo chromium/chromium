@@ -1,0 +1,18 @@
+Tests Overlay domain commands when navigating an OOPIF subframe to another OOPIF.
+Navigating to first OOPIF...
+Attached to subframe.
+First highlight result: {
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+Navigating to second OOPIF...
+Navigated to second OOPIF.
+Second highlight result: {
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+

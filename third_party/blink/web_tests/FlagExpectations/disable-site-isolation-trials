@@ -65,6 +65,8 @@ http/tests/inspector-protocol/target/target-info-changed-auto-attach.js [ Skip ]
 http/tests/inspector-protocol/page/frame-detached-oopif.js [ Skip ]
 http/tests/inspector-protocol/page/addScriptToEvaluateOnNewDocument-reload.js [ Skip ]
 http/tests/inspector-protocol/page/sandbox-iframe-getResourceContent.js [ Skip ]
+http/tests/inspector-protocol/overlay/oopif-subframe-navigation.js [ Skip ]
+virtual/prefetch-cancel-unrelated-prefetch/http/tests/inspector-protocol/overlay/oopif-subframe-navigation.js [ Skip ]
 
 # Rely on OOPIF for an iframe to be a separate devtools target
 http/tests/inspector-protocol/page/frame-started-stopped-loading.js [ Skip ]

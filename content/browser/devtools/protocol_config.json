@@ -153,7 +153,7 @@
             },
             {
                 "domain": "Overlay",
-                "include": ["setInspectMode", "setPausedInDebuggerMessage"]
+                "include": ["enable", "setInspectMode", "setPausedInDebuggerMessage"]
             },
             {
                 "domain": "Page",

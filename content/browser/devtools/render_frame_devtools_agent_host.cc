@@ -430,9 +430,7 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session) {
 #if BUILDFLAG(USE_VIZ_DEBUGGER)
   session->CreateAndAddHandler<protocol::VisualDebuggerHandler>();
 #endif
-  if (is_main_frame) {
-    session->CreateAndAddHandler<protocol::OverlayHandler>();
-  }
+  session->CreateAndAddHandler<protocol::OverlayHandler>();
   session->CreateAndAddHandler<protocol::NetworkHandler>(
       GetId(),
       frame_host_ ? frame_host_->devtools_frame_token()

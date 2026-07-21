@@ -231,6 +231,8 @@ struct BrowserOriginatingSessionState {
   map<string /* scriptId */, ScriptToEvaluateOnNewDocument> scripts_to_evaluate_on_new_document;
   string script_to_evaluate_on_load_once;
   map<string /* header name */, string /* header value */> extra_request_headers;
+  bool overlay_enabled = false;
+  string paused_in_debugger_message;
   map<string /* breakpointId */, URLBreakpoint> url_breakpoints;
 };
 

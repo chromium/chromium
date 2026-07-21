@@ -503,12 +503,10 @@ InspectorOverlayAgent::InspectorOverlayAgent(
           frame_impl->GetFrame()->GetTaskRunner(TaskType::kInternalInspector),
           this,
           &InspectorOverlayAgent::OnResizeTimer),
-      disposed_(false),
       v8_session_(v8_session),
       dom_agent_(dom_agent),
       swallow_next_mouse_up_(false),
       backend_node_id_to_inspect_(0),
-      enabled_(&agent_state_, false),
       show_ad_highlights_(&agent_state_, false),
       show_debug_borders_(&agent_state_, false),
       show_fps_counter_(&agent_state_, false),
@@ -518,7 +516,6 @@ InspectorOverlayAgent::InspectorOverlayAgent(
       show_hit_test_borders_(&agent_state_, false),
       show_web_vitals_(&agent_state_, false),
       show_size_on_resize_(&agent_state_, false),
-      paused_in_debugger_message_(&agent_state_, String()),
       inspect_mode_(&agent_state_, protocol::Overlay::InspectModeEnum::None),
       inspect_mode_protocol_config_(&agent_state_, std::vector<uint8_t>()) {
   DCHECK(dom_agent);
@@ -558,8 +555,21 @@ void InspectorOverlayAgent::Trace(Visitor* visitor) const {
   InspectorBaseAgent::Trace(visitor);
 }
 
+void InspectorOverlayAgent::Init(CoreProbeSink* instrumenting_agents,
+                                 protocol::UberDispatcher* dispatcher,
+                                 InspectorSessionState* state) {
+  InspectorBaseAgent::Init(instrumenting_agents, dispatcher, state);
+  const auto* reattach_state = state->ReattachState();
+  if (reattach_state && reattach_state->browser_originating_session_state) {
+    const auto& browser_state =
+        reattach_state->browser_originating_session_state;
+    enabled_ = browser_state->overlay_enabled;
+    paused_in_debugger_message_ = browser_state->paused_in_debugger_message;
+  }
+}
+
 void InspectorOverlayAgent::Restore() {
-  if (enabled_.Get()) {
+  if (enabled_) {
     enable();
   }
   setShowAdHighlights(show_ad_highlights_.Get());
@@ -576,7 +586,6 @@ void InspectorOverlayAgent::Restore() {
 
 void InspectorOverlayAgent::Dispose() {
   InspectorBaseAgent::Dispose();
-  disposed_ = true;
 
   frame_impl_->GetFrame()->GetProbeSink()->RemoveInspectorOverlayAgent(this);
 }
@@ -585,7 +594,7 @@ protocol::Response InspectorOverlayAgent::enable() {
   if (!dom_agent_->Enabled()) {
     return protocol::Response::ServerError("DOM should be enabled first");
   }
-  enabled_.Set(true);
+  enabled_ = true;
   if (backend_node_id_to_inspect_) {
     GetFrontend()->inspectNodeRequested(
         static_cast<int>(backend_node_id_to_inspect_));
@@ -611,10 +620,10 @@ void InspectorOverlayAgent::EnsureAXContext(Document& document) {
 }
 
 protocol::Response InspectorOverlayAgent::disable() {
-  enabled_.Clear();
+  enabled_ = false;
   setShowAdHighlights(false);
   setShowViewportSizeOnResize(false);
-  paused_in_debugger_message_.Clear();
+  paused_in_debugger_message_ = String();
   inspect_mode_.Set(protocol::Overlay::InspectModeEnum::None);
   inspect_mode_protocol_config_.Set(std::vector<uint8_t>());
 
@@ -789,7 +798,7 @@ protocol::Response InspectorOverlayAgent::setShowWindowControlsOverlay(
 
 protocol::Response InspectorOverlayAgent::setPausedInDebuggerMessage(
     std::optional<String> message) {
-  paused_in_debugger_message_.Set(message.value_or(String()));
+  paused_in_debugger_message_ = message.value_or(String());
   PickTheRightTool();
   return protocol::Response::Success();
 }
@@ -1333,7 +1342,7 @@ void InspectorOverlayAgent::SetPageIsScrolling(bool is_scrolling) {
 
 WebInputEventResult InspectorOverlayAgent::HandleInputEvent(
     const WebInputEvent& input_event) {
-  if (!enabled_.Get()) {
+  if (!enabled_) {
     return WebInputEventResult::kNotHandled;
   }
 
@@ -1782,7 +1791,7 @@ void InspectorOverlayAgent::Inspect(Node* inspected_node) {
   }
 
   DOMNodeId backend_node_id = node->GetDomNodeId();
-  if (!enabled_.Get()) {
+  if (!enabled_) {
     backend_node_id_to_inspect_ = backend_node_id;
     return;
   }
@@ -1837,9 +1846,9 @@ void InspectorOverlayAgent::PickTheRightTool() {
   } else if (inspect_mode ==
              protocol::Overlay::InspectModeEnum::CaptureAreaScreenshot) {
     inspect_tool = MakeGarbageCollected<ScreenshotTool>(this, GetFrontend());
-  } else if (!paused_in_debugger_message_.Get().IsNull()) {
+  } else if (!paused_in_debugger_message_.empty()) {
     inspect_tool = MakeGarbageCollected<PausedInDebuggerTool>(
-        this, GetFrontend(), v8_session_, paused_in_debugger_message_.Get());
+        this, GetFrontend(), v8_session_, paused_in_debugger_message_);
   } else if (persistent_tool_) {
     inspect_tool = persistent_tool_;
   }
@@ -1886,7 +1895,7 @@ protocol::Response InspectorOverlayAgent::SetInspectTool(
     return protocol::Response::Success();
   }
 
-  if (!enabled_.Get()) {
+  if (!enabled_) {
     return protocol::Response::InvalidRequest(
         "Overlay must be enabled before a tool can be shown");
   }

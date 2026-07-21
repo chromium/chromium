@@ -29,6 +29,7 @@ class OverlayHandler : public DevToolsDomainHandler, public Overlay::Backend {
   void SetRenderer(int process_host_id,
                    RenderFrameHostImpl* frame_host) override;
 
+  Response Enable() override;
   Response SetInspectMode(const String& in_mode,
                           std::unique_ptr<protocol::Overlay::HighlightConfig>
                               in_highlightConfig) override;
@@ -41,7 +42,6 @@ class OverlayHandler : public DevToolsDomainHandler, public Overlay::Backend {
 
   raw_ptr<RenderFrameHostImpl> host_ = nullptr;
   std::string inspect_mode_;
-  std::string paused_message_;
 };
 
 }  // namespace protocol
