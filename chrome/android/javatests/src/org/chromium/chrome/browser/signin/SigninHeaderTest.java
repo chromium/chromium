@@ -25,6 +25,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -43,6 +44,11 @@ import java.util.concurrent.TimeoutException;
 /** Instrumentation tests for HTTP headers sent to GAIA server when user is signed in. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DoNotBatch(
+        reason =
+                "Requires setting the --gaia-url command-line flag dynamically based on the"
+                        + " ephemeral EmbeddedTestServer port, which is parsed once at native"
+                        + " process startup.")
 public class SigninHeaderTest {
     private static final String PACKAGE_NAME =
             ContextUtils.getApplicationContext().getPackageName();
