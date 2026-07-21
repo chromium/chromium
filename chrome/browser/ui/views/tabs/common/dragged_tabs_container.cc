@@ -240,6 +240,7 @@ void DraggedTabsContainer::InitializeDragStartAnimation(
   // the start of the drag, and the position they're expected to be at this
   // moment.
   const bool should_compute_x_offset = IsHorizontalDragSupported();
+  const bool should_compute_y_offset = drag_axes_ != DragAxes::kHorizontalOnly;
   for (const auto& [dragging_view, visual_data] : dragging_views_) {
     auto start_offset_from_source =
         drag_handler.GetOffsetFromSourceAtDragStart(dragging_view);
@@ -252,6 +253,9 @@ void DraggedTabsContainer::InitializeDragStartAnimation(
         *start_offset_from_source - target_offset_from_source;
     if (!should_compute_x_offset) {
       animation_offset.set_x(0);
+    }
+    if (!should_compute_y_offset) {
+      animation_offset.set_y(0);
     }
     if (animation_offset != gfx::Vector2d()) {
       animating_views_start_offsets_.insert({dragging_view, animation_offset});
@@ -311,6 +315,10 @@ void DraggedTabsContainer::BuildDragLayout(
         AddViewToDragLayout(dragging_view, dragging_view_layout->bounds,
                             is_source_view);
         break;
+      case DragLayout::kHorizontal:
+        AddViewToHorizontalDragLayout(
+            dragging_view, dragging_view_layout->bounds, is_source_view);
+        break;
       case DragLayout::kSquash:
         AddViewToSquashedDragLayout(dragging_view, dragging_view_layout->bounds,
                                     is_source_view);
@@ -334,6 +342,24 @@ void DraggedTabsContainer::AddViewToDragLayout(views::View* dragging_view,
   dragging_views_bounds_.set_height(dragging_views_bounds_.height() +
                                     bounds.height() +
                                     kDraggedViewVerticalPadding);
+
+  if (is_source_dragged_view) {
+    dragging_views_bounds_.Offset({-1 * bounds.x(), -1 * bounds.y()});
+  }
+}
+
+void DraggedTabsContainer::AddViewToHorizontalDragLayout(
+    views::View* dragging_view,
+    const gfx::Rect& view_bounds,
+    bool is_source_dragged_view) {
+  gfx::Rect bounds = view_bounds;
+  bounds.set_x(dragging_views_bounds_.width());
+  dragging_views_.insert(
+      {dragging_view, {.offset = bounds.OffsetFromOrigin()}});
+  dragged_view_observations_.AddObservation(dragging_view);
+
+  dragging_views_bounds_.set_width(dragging_views_bounds_.width() +
+                                   bounds.width());
 
   if (is_source_dragged_view) {
     dragging_views_bounds_.Offset({-1 * bounds.x(), -1 * bounds.y()});

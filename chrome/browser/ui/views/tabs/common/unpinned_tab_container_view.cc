@@ -74,13 +74,13 @@ UnpinnedTabContainerView::UnpinnedTabContainerView(
     : DraggedTabsContainer(
           static_cast<views::View&>(*this),
           collection_node,
-          collection_node->orientation() == TabStripOrientation::kHorizontal
-              ? DragAxes::kBoth
+          collection_node && collection_node->orientation() ==
+                                 TabStripOrientation::kHorizontal
+              ? DragAxes::kHorizontalOnly
               : DragAxes::kVerticalOnly,
-          collection_node->orientation() == TabStripOrientation::kHorizontal
-              // TODO(crbug.com/523327760): Update to DragLayout::kHorizontal
-              // once created.
-              ? DragLayout::kSquash
+          collection_node && collection_node->orientation() ==
+                                 TabStripOrientation::kHorizontal
+              ? DragLayout::kHorizontal
               : DragLayout::kVertical),
       collection_node_(collection_node),
       layout_manager_(*SetLayoutManager(std::make_unique<

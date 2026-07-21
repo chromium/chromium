@@ -54,10 +54,17 @@ const TabGroup* GetTabGroupFromNode(TabCollectionNode* node) {
 }  // namespace
 
 TabGroupView::TabGroupView(TabCollectionNode* collection_node)
-    : DraggedTabsContainer(static_cast<views::View&>(*this),
-                           collection_node,
-                           DragAxes::kVerticalOnly,
-                           DragLayout::kVertical),
+    : DraggedTabsContainer(
+          static_cast<views::View&>(*this),
+          collection_node,
+          collection_node && collection_node->orientation() ==
+                                 TabStripOrientation::kHorizontal
+              ? DragAxes::kHorizontalOnly
+              : DragAxes::kVerticalOnly,
+          collection_node && collection_node->orientation() ==
+                                 TabStripOrientation::kHorizontal
+              ? DragLayout::kHorizontal
+              : DragLayout::kVertical),
       collection_node_(collection_node),
       tab_group_visual_data_(
           *GetTabGroupFromNode(collection_node_)->visual_data()),

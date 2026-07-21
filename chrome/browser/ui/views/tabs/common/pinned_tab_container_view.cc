@@ -30,10 +30,17 @@ constexpr int kTabPadding = 4;
 
 PinnedTabContainerView::PinnedTabContainerView(
     TabCollectionNode* collection_node)
-    : DraggedTabsContainer(static_cast<views::View&>(*this),
-                           collection_node,
-                           DragAxes::kBoth,
-                           DragLayout::kSquash),
+    : DraggedTabsContainer(
+          static_cast<views::View&>(*this),
+          collection_node,
+          collection_node && collection_node->orientation() ==
+                                 TabStripOrientation::kHorizontal
+              ? DragAxes::kHorizontalOnly
+              : DragAxes::kBoth,
+          collection_node && collection_node->orientation() ==
+                                 TabStripOrientation::kHorizontal
+              ? DragLayout::kHorizontal
+              : DragLayout::kSquash),
       collection_node_(collection_node),
       layout_manager_(*SetLayoutManager(std::make_unique<
                                         TabCollectionAnimatingLayoutManager>(
