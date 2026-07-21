@@ -6,6 +6,12 @@ Registering credential with CMTG on an authenticator with support...
 Register status: OK
 Generated CMTG public key A: present
 Generated CMTG signature A: present
+Retrieving credentials...
+Number of credentials: 1
+Credential has cmtgKeys: true
+cmtgKeys count: 1
+activeCmtgKeyIndex: 0
+generateCmtgKeyOnNextOperation: false
 Getting assertion...
 Assertion status: OK
 Assertion key matches key A: true

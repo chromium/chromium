@@ -120,6 +120,12 @@ experimental domain WebAuthn
       # not set.
       # https://w3c.github.io/webauthn/#dom-publickeycredentialuserentity-displayname
       optional string userDisplayName
+      # The CMTG keys associated with the credential.
+      optional array of binary cmtgKeys
+      # The 0-based index of the active key in cmtgKeys.
+      optional integer activeCmtgKeyIndex
+      # If true, the authenticator will generate a new CMTG key on the next operation.
+      optional boolean generateCmtgKeyOnNextOperation
 
   # Enable the WebAuthn domain and start intercepting credential storage and
   # retrieval with a virtual authenticator.
