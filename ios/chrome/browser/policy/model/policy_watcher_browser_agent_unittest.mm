@@ -24,9 +24,11 @@
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/policy/model/policy_watcher_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider_interface.h"
+#import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -74,24 +76,19 @@ class PolicyWatcherBrowserAgentTest : public PlatformTest {
     // SceneState.
     app_state_ = [[AppState alloc] initWithStartupInformation:nil];
     profile_state_ = [[ProfileState alloc] initWithAppState:app_state_];
-    scene_state_ = [[SceneState alloc] initWithAppState:app_state_];
+    scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
     scene_state_.profileState = profile_state_;
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
-    // Set up the test browser and attach the browser agents.
-    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
+    // Create the Browser Agent under test.
+    PolicyWatcherBrowserAgent::CreateForBrowser(browser());
+  }
 
-    stub_browser_interface_provider_ =
-        [[StubBrowserProviderInterface alloc] init];
-    stub_browser_interface_provider_.mainBrowserProvider.browser =
-        browser_.get();
-    scene_state_mock_ = OCMPartialMock(scene_state_);
-    OCMStub([scene_state_mock_ browserProviderInterface])
-        .andReturn(stub_browser_interface_provider_);
-
-    // Browser Agent under test.
-    PolicyWatcherBrowserAgent::CreateForBrowser(browser_.get());
-    agent_ = PolicyWatcherBrowserAgent::FromBrowser(browser_.get());
+  void TearDown() override {
+    @autoreleasepool {
+      [scene_state_ shutdown];
+      scene_state_ = nil;
+    }
   }
 
   std::unique_ptr<PrefServiceSyncable> CreatePrefService() {
@@ -118,16 +115,20 @@ class PolicyWatcherBrowserAgentTest : public PlatformTest {
     return GetApplicationContext()->GetLocalState();
   }
 
+  Browser* browser() {
+    return scene_state_.browserProviderInterface.mainBrowserProvider.browser;
+  }
+
+  PolicyWatcherBrowserAgent* agent() {
+    return PolicyWatcherBrowserAgent::FromBrowser(browser());
+  }
+
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
   raw_ptr<TestProfileIOS> profile_;
-  std::unique_ptr<Browser> browser_;
   raw_ptr<PolicyWatcherBrowserAgent> agent_;
-  SceneState* scene_state_;
-  SceneState* scene_state_mock_;
-
-  StubBrowserProviderInterface* stub_browser_interface_provider_;
+  FakeSceneState* scene_state_;
 
   // Keep app_state_ alive as it is a weak property of the scene state.
   AppState* app_state_;
@@ -143,23 +144,18 @@ TEST_F(PolicyWatcherBrowserAgentTest, NoObservationIfNoInitialize) {
   GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
                               static_cast<int>(BrowserSigninMode::kEnabled));
 
-  // Set up the test browser and attach the browser agent under test.
-  std::unique_ptr<Browser> browser =
-      std::make_unique<TestBrowser>(profile_.get());
-  PolicyWatcherBrowserAgent::CreateForBrowser(browser.get());
-
   // Set up the mock observer handler as strict mock. Calling it will fail the
   // test.
   id mockObserver =
       OCMStrictProtocolMock(@protocol(PolicyWatcherBrowserAgentObserving));
   PolicyWatcherBrowserAgentObserverBridge bridge(mockObserver);
-  agent_->AddObserver(&bridge);
+  agent()->AddObserver(&bridge);
 
   // Action: disable browser sign-in.
   GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
                               static_cast<int>(BrowserSigninMode::kDisabled));
 
-  agent_->RemoveObserver(&bridge);
+  agent()->RemoveObserver(&bridge);
 }
 
 // Tests that the browser agent monitors the kBrowserSigninPolicy pref and
@@ -172,17 +168,17 @@ TEST_F(PolicyWatcherBrowserAgentTest, ObservesSigninAllowedByPolicy) {
   id mockObserver =
       OCMStrictProtocolMock(@protocol(PolicyWatcherBrowserAgentObserving));
   PolicyWatcherBrowserAgentObserverBridge bridge(mockObserver);
-  agent_->AddObserver(&bridge);
+  agent()->AddObserver(&bridge);
   id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
-  agent_->Initialize(mockHandler);
-  [browser_->GetCommandDispatcher()
+  agent()->Initialize(mockHandler);
+  [browser()->GetCommandDispatcher()
       startDispatchingToTarget:mockHandler
                    forProtocol:@protocol(PolicyChangeCommands)];
 
   // Setup the expectation after the Initialize to make sure that the observers
   // are notified when the pref is updated and not during Initialize().
   OCMExpect(
-      [mockObserver policyWatcherBrowserAgentNotifySignInDisabled:agent_]);
+      [mockObserver policyWatcherBrowserAgentNotifySignInDisabled:agent()]);
 
   // Action: disable browser sign-in.
   GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
@@ -191,7 +187,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, ObservesSigninAllowedByPolicy) {
   // Verify the forceSignOut command was dispatched by the browser agent.
   EXPECT_OCMOCK_VERIFY(mockObserver);
 
-  agent_->RemoveObserver(&bridge);
+  agent()->RemoveObserver(&bridge);
 }
 
 // Tests that the pref change doesn't trigger a command if the user isn't signed
@@ -204,7 +200,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, NoCommandIfNotSignedIn) {
 
   // Strict mock, will fail if a method is called.
   id mockHandler = OCMStrictProtocolMock(@protocol(PolicyChangeCommands));
-  agent_->Initialize(mockHandler);
+  agent()->Initialize(mockHandler);
 
   // Action: disable browser sign-in.
   GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
@@ -222,8 +218,8 @@ TEST_F(PolicyWatcherBrowserAgentTest, CommandIfSignedIn) {
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
   id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
-  agent_->Initialize(mockHandler);
-  [browser_->GetCommandDispatcher()
+  agent()->Initialize(mockHandler);
+  [browser()->GetCommandDispatcher()
       startDispatchingToTarget:mockHandler
                    forProtocol:@protocol(PolicyChangeCommands)];
 
@@ -258,7 +254,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, NoCommandIfNotActive) {
 
   // Strict mock, will fail if a method is called.
   id mockHandler = OCMStrictProtocolMock(@protocol(PolicyChangeCommands));
-  agent_->Initialize(mockHandler);
+  agent()->Initialize(mockHandler);
 
   // Action: disable browser sign-in.
   GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
@@ -285,20 +281,6 @@ TEST_F(PolicyWatcherBrowserAgentTest, SignOutIfPolicyChangedAtColdStart) {
   GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
                               static_cast<int>(BrowserSigninMode::kDisabled));
 
-  // Set up the test browser and attach the browser agents.
-  SceneState* scene_state = [[SceneState alloc] initWithAppState:app_state_];
-  scene_state.activationLevel = SceneActivationLevelForegroundActive;
-  std::unique_ptr<Browser> browser =
-      std::make_unique<TestBrowser>(profile_.get(), scene_state);
-  scene_state_mock_ = OCMPartialMock(scene_state);
-  OCMStub([scene_state_mock_ browserProviderInterface])
-      .andReturn(stub_browser_interface_provider_);
-
-  // Browser Agent under test.
-  PolicyWatcherBrowserAgent::CreateForBrowser(browser.get());
-  PolicyWatcherBrowserAgent* agent =
-      PolicyWatcherBrowserAgent::FromBrowser(browser.get());
-
   // The SignOut will occur when the handler is set.
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_.get());
@@ -311,8 +293,8 @@ TEST_F(PolicyWatcherBrowserAgentTest, SignOutIfPolicyChangedAtColdStart) {
   OCMExpect([mockHandler showForceSignedOutPrompt]).andDo(^(NSInvocation*) {
     run_loop_ptr->Quit();
   });
-  agent->Initialize(mockHandler);
-  [browser_->GetCommandDispatcher()
+  agent()->Initialize(mockHandler);
+  [browser()->GetCommandDispatcher()
       startDispatchingToTarget:mockHandler
                    forProtocol:@protocol(PolicyChangeCommands)];
   run_loop.Run();
@@ -347,14 +329,14 @@ TEST_F(PolicyWatcherBrowserAgentTest, UINotShownWhileSignOut) {
 
   // Strict protocol: method calls will fail until the method is stubbed.
   id mockHandler = OCMStrictProtocolMock(@protocol(PolicyChangeCommands));
-  agent_->Initialize(mockHandler);
-  [browser_->GetCommandDispatcher()
+  agent()->Initialize(mockHandler);
+  [browser()->GetCommandDispatcher()
       startDispatchingToTarget:mockHandler
                    forProtocol:@protocol(PolicyChangeCommands)];
 
   // As the SignOut callback hasn't been called yet, this shouldn't trigger a UI
   // update.
-  agent_->SignInUIDismissed();
+  agent()->SignInUIDismissed();
 
   OCMExpect([mockHandler showForceSignedOutPrompt]);
 
@@ -381,8 +363,8 @@ TEST_F(PolicyWatcherBrowserAgentTest, CommandSentWhenUIIsDismissed) {
   OCMExpect([mockHandler showForceSignedOutPrompt]).andDo(^(NSInvocation*) {
     run_loop_ptr->Quit();
   });
-  agent_->Initialize(mockHandler);
-  [browser_->GetCommandDispatcher()
+  agent()->Initialize(mockHandler);
+  [browser()->GetCommandDispatcher()
       startDispatchingToTarget:mockHandler
                    forProtocol:@protocol(PolicyChangeCommands)];
   run_loop.Run();
@@ -393,33 +375,21 @@ TEST_F(PolicyWatcherBrowserAgentTest, CommandSentWhenUIIsDismissed) {
 // Tests that the handler is called and the alert shown as expected.
 TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChanges) {
   // Make sure shown if off.
-  auto* profile_prefs = browser_->GetProfile()->GetPrefs();
+  auto* profile_prefs = profile_->GetPrefs();
   profile_prefs->SetBoolean(policy::policy_prefs::kSyncDisabledAlertShown,
                             false);
   profile_prefs->SetBoolean(syncer::prefs::internal::kSyncManaged, false);
 
-  // Browser Agent under test.
-  // Set up the test browser and attach the browser agents.
-  SceneState* scene_state = [[SceneState alloc] initWithAppState:app_state_];
-  scene_state.activationLevel = SceneActivationLevelForegroundActive;
-  std::unique_ptr<Browser> browser =
-      std::make_unique<TestBrowser>(profile_.get(), scene_state);
-
-  // Browser Agent under test.
-  PolicyWatcherBrowserAgent::CreateForBrowser(browser.get());
-  PolicyWatcherBrowserAgent* agent =
-      PolicyWatcherBrowserAgent::FromBrowser(browser.get());
-
   @autoreleasepool {
     id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
     OCMExpect([mockHandler showSyncDisabledPrompt]);
-    agent->Initialize(mockHandler);
-    [browser_->GetCommandDispatcher()
+    agent()->Initialize(mockHandler);
+    [browser()->GetCommandDispatcher()
         startDispatchingToTarget:mockHandler
                      forProtocol:@protocol(PolicyChangeCommands)];
     // Update the pref.
-    browser_->GetProfile()->GetPrefs()->SetBoolean(
-        syncer::prefs::internal::kSyncManaged, true);
+    profile_->GetPrefs()->SetBoolean(syncer::prefs::internal::kSyncManaged,
+                                     true);
 
     EXPECT_OCMOCK_VERIFY(mockHandler);
     EXPECT_TRUE(profile_prefs->GetBoolean(
@@ -428,8 +398,8 @@ TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChanges) {
     [[mockHandler reject] showSyncDisabledPrompt];
 
     // Update the pref.
-    browser_->GetProfile()->GetPrefs()->SetBoolean(
-        syncer::prefs::internal::kSyncManaged, false);
+    profile_->GetPrefs()->SetBoolean(syncer::prefs::internal::kSyncManaged,
+                                     false);
 
     EXPECT_OCMOCK_VERIFY(mockHandler);
     EXPECT_FALSE(profile_prefs->GetBoolean(
@@ -440,31 +410,16 @@ TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChanges) {
 // Tests that the handler is called and the alert shown at startup as expected.
 TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChangedAtColdStart) {
   // Make sure shown if off.
-  auto* profile_prefs = browser_->GetProfile()->GetPrefs();
+  auto* profile_prefs = profile_->GetPrefs();
   profile_prefs->SetBoolean(policy::policy_prefs::kSyncDisabledAlertShown,
                             false);
   profile_prefs->SetBoolean(syncer::prefs::internal::kSyncManaged, true);
 
-  // Browser Agent under test.
-  // Set up the test browser and attach the browser agents.
-  SceneState* scene_state = [[SceneState alloc] initWithAppState:app_state_];
-  scene_state.activationLevel = SceneActivationLevelForegroundActive;
-  std::unique_ptr<Browser> browser =
-      std::make_unique<TestBrowser>(profile_.get(), scene_state);
-  scene_state_mock_ = OCMPartialMock(scene_state);
-  OCMStub([scene_state_mock_ browserProviderInterface])
-      .andReturn(stub_browser_interface_provider_);
-
-  // Browser Agent under test.
-  PolicyWatcherBrowserAgent::CreateForBrowser(browser.get());
-  PolicyWatcherBrowserAgent* agent =
-      PolicyWatcherBrowserAgent::FromBrowser(browser.get());
-
   @autoreleasepool {
     id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
     OCMExpect([mockHandler showSyncDisabledPrompt]);
-    agent->Initialize(mockHandler);
-    [browser_->GetCommandDispatcher()
+    agent()->Initialize(mockHandler);
+    [browser()->GetCommandDispatcher()
         startDispatchingToTarget:mockHandler
                      forProtocol:@protocol(PolicyChangeCommands)];
     base::RunLoop().RunUntilIdle();
@@ -476,8 +431,8 @@ TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChangedAtColdStart) {
     [[mockHandler reject] showSyncDisabledPrompt];
 
     // Update the pref.
-    browser_->GetProfile()->GetPrefs()->SetBoolean(
-        syncer::prefs::internal::kSyncManaged, false);
+    profile_->GetPrefs()->SetBoolean(syncer::prefs::internal::kSyncManaged,
+                                     false);
 
     EXPECT_OCMOCK_VERIFY(mockHandler);
     EXPECT_FALSE(profile_prefs->GetBoolean(
@@ -489,21 +444,19 @@ TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChangedAtColdStart) {
 // as excluded from backup, and enabling the preference clears this exclusion.
 TEST_F(PolicyWatcherBrowserAgentTest, BackupPreventionChanged) {
   id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
-  agent_->Initialize(mockHandler);
+  agent()->Initialize(mockHandler);
   base::FilePath storage_dir = base::apple::GetUserLibraryPath();
 
   // Ensure that backups are allowed initially.
   ASSERT_TRUE(base::apple::ClearBackupExclusion(storage_dir));
 
   // Disallow backups.
-  browser_->GetProfile()->GetPrefs()->SetBoolean(
-      prefs::kAllowChromeDataInBackups, false);
+  profile_->GetPrefs()->SetBoolean(prefs::kAllowChromeDataInBackups, false);
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(base::apple::GetBackupExclusion(storage_dir));
 
   // Allow backups.
-  browser_->GetProfile()->GetPrefs()->SetBoolean(
-      prefs::kAllowChromeDataInBackups, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kAllowChromeDataInBackups, true);
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(base::apple::GetBackupExclusion(storage_dir));
 }
@@ -517,11 +470,10 @@ TEST_F(PolicyWatcherBrowserAgentTest, BackupDisallowedAtColdStart) {
   ASSERT_TRUE(base::apple::ClearBackupExclusion(storage_dir));
 
   // Disallow backups
-  browser_->GetProfile()->GetPrefs()->SetBoolean(
-      prefs::kAllowChromeDataInBackups, false);
+  profile_->GetPrefs()->SetBoolean(prefs::kAllowChromeDataInBackups, false);
 
   id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
-  agent_->Initialize(mockHandler);
+  agent()->Initialize(mockHandler);
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(base::apple::GetBackupExclusion(storage_dir));
 }
@@ -535,11 +487,10 @@ TEST_F(PolicyWatcherBrowserAgentTest, BackupAllowedAtColdStart) {
   ASSERT_TRUE(base::apple::SetBackupExclusion(storage_dir));
 
   // Allow backups
-  browser_->GetProfile()->GetPrefs()->SetBoolean(
-      prefs::kAllowChromeDataInBackups, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kAllowChromeDataInBackups, true);
 
   id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
-  agent_->Initialize(mockHandler);
+  agent()->Initialize(mockHandler);
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(base::apple::GetBackupExclusion(storage_dir));
 }
