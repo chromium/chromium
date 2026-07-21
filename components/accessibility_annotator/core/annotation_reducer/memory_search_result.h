@@ -53,7 +53,6 @@ enum class MemoryEntrySourceType {
   kMaxValue = kPhotos,
 };
 // LINT.ThenChange(
-//     //components/accessibility_annotator/core/annotation_reducer/util.cc:SourceTypeToMemoryEntrySourceType,
 //     //tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAtMemoryAcceptedSuggestionDataSourcesBitmask)
 
 // Source of the search result entry, including the data source type and an
