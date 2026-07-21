@@ -19,6 +19,8 @@
 #import "ios/web/public/test/fakes/fake_web_state.h"
 
 @implementation FakeSceneState {
+  // Owning pointer for the BrowserProviderInterface instance.
+  StubBrowserProviderInterface* _browserProviderInterface;
   // Owning pointer for the browser that backs the interface provider.
   std::unique_ptr<TestBrowser> _browser;
   std::unique_ptr<TestBrowser> _incognito_browser;
@@ -39,24 +41,21 @@
     DCHECK(profile);
     DCHECK(!profile->IsOffTheRecord());
     self.activationLevel = SceneActivationLevelForegroundInactive;
-    StubBrowserProviderInterface* browserProviderInterface =
-        [[StubBrowserProviderInterface alloc] init];
-    self.browserProviderInterface = browserProviderInterface;
 
     _browser = std::make_unique<TestBrowser>(profile, self);
+    std::ignore = _browser->CreateInactiveBrowser();
+    _incognito_browser =
+        std::make_unique<TestBrowser>(profile->GetOffTheRecordProfile(), self);
+
     if (commandDispatcher) {
       // Only override the command dispatcher if non-nil (since TestBrowser
       // creates a default command dispatcher in its constructor).
       _browser->SetCommandDispatcher(commandDispatcher);
     }
 
-    browserProviderInterface.mainBrowserProvider.browser = _browser.get();
-    std::ignore = _browser->CreateInactiveBrowser();
-
-    _incognito_browser =
-        std::make_unique<TestBrowser>(profile->GetOffTheRecordProfile(), self);
-    browserProviderInterface.incognitoBrowserProvider.browser =
-        _incognito_browser.get();
+    _browserProviderInterface = [[StubBrowserProviderInterface alloc]
+        initWithBrowser:_browser.get()
+        incognitBrowser:_incognito_browser.get()];
 
     _sceneSessionID = std::move(sceneSessionID);
   }
@@ -91,21 +90,23 @@
 }
 
 - (void)destroyAndRecreateOffTheRecordProfile {
-  _browserProviderInterface.incognitoBrowserProvider.browser = nullptr;
+  [_browserProviderInterface.incognitoBrowserProvider shutdown];
+  _browserProviderInterface.incognitoBrowserProvider = nil;
 
   ProfileIOS* profile = _browser->GetProfile();
 
   // Destroy the incognito Browser and Profile.
   _incognito_browser.reset();
   profile->DestroyOffTheRecordProfile();
+  CHECK(!profile->HasOffTheRecordProfile());
 
   // Recreate the incognito Browser and Profile (implicitly created when
   // accessed from the Profile after its destruction).
   _incognito_browser =
       std::make_unique<TestBrowser>(profile->GetOffTheRecordProfile(), self);
 
-  _browserProviderInterface.incognitoBrowserProvider.browser =
-      _incognito_browser.get();
+  _browserProviderInterface.incognitoBrowserProvider =
+      [[StubBrowserProvider alloc] initWithBrowser:_incognito_browser.get()];
 }
 
 - (void)appendWebStateWithURL:(const GURL&)URL {
@@ -124,6 +125,9 @@
 }
 
 - (void)shutdown {
+  [_browserProviderInterface shutdown];
+  _browserProviderInterface = nil;
+
   _incognito_browser.reset();
   _browser.reset();
   _shutdown = YES;

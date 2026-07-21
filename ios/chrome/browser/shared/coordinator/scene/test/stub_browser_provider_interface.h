@@ -20,6 +20,15 @@
 //   interfaces in any way after init.
 @interface StubBrowserProviderInterface : NSObject <BrowserProviderInterface>
 
+// Designated initializer.
+- (instancetype)initWithBrowser:(Browser*)browser
+                incognitBrowser:(Browser*)incognitoBrowser
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
+
+// Must be called before the Browser instances are destroyed.
+- (void)shutdown;
+
 // Specify concrete (stub) implementations for the interfaces, so tests can
 // set values on them.
 @property(nonatomic, weak, readwrite)

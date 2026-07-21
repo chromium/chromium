@@ -14,8 +14,17 @@ class Browser;
 // Test double for BrowserProvider implementors. All properties are writable,
 // and have nil, nullptr, or NO as default values.
 @interface StubBrowserProvider : NSObject <BrowserProvider>
+
+// Designated initializer.
+- (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
+
+// Must be called before the Browser is destroyed.
+- (void)shutdown;
+
 @property(nonatomic, readwrite) Browser* browser;
 - (UIViewController*)viewController:(BrowserProviderPassKey)key;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_COORDINATOR_SCENE_TEST_STUB_BROWSER_PROVIDER_H_

@@ -4,6 +4,10 @@
 
 source_set("test") {
   testonly = true
+  public = [
+    "fake_connection_information.h",
+    "fake_scene_state.h",
+  ]
   sources = [
     "fake_connection_information.h",
     "fake_connection_information.mm",

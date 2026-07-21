@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_SHARED_COORDINATOR_SCENE_TEST_FAKE_SCENE_STATE_H_
 
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider_interface.h"
 #import "url/gurl.h"
 
 @class CommandDispatcher;
@@ -34,10 +33,6 @@ class ProfileIOS;
 - (instancetype)initWithProfile:(ProfileIOS*)profile;
 
 - (instancetype)init NS_UNAVAILABLE;
-
-// Redeclares interface provider as readwrite.
-@property(nonatomic, strong, readwrite)
-    StubBrowserProviderInterface* browserProviderInterface;
 
 // Window for the associated scene, if any.
 // This is redeclared relative to FakeScene.window, except this is now readwrite
