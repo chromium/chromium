@@ -224,13 +224,16 @@ class CORE_EXPORT DisplayLockContext final
   void SetNeedsPrePaintSubtreeWalk(
       bool needs_effective_allowed_touch_action_update,
       bool needs_blocking_wheel_event_handler_update,
-      bool needs_soft_navigation_context_update) {
+      bool needs_soft_navigation_context_update,
+      bool needs_container_timing_context_update) {
     needs_effective_allowed_touch_action_update_ =
         needs_effective_allowed_touch_action_update;
     needs_blocking_wheel_event_handler_update_ =
         needs_blocking_wheel_event_handler_update;
     needs_soft_navigation_context_update_ =
         needs_soft_navigation_context_update;
+    needs_container_timing_context_update_ =
+        needs_container_timing_context_update;
     needs_prepaint_subtree_walk_ = true;
   }
 
@@ -517,6 +520,7 @@ class CORE_EXPORT DisplayLockContext final
   bool needs_effective_allowed_touch_action_update_ = false;
   bool needs_blocking_wheel_event_handler_update_ = false;
   bool needs_soft_navigation_context_update_ = false;
+  bool needs_container_timing_context_update_ = false;
   bool needs_prepaint_subtree_walk_ = false;
   bool needs_compositing_dependent_flag_update_ = false;
   bool needs_visual_overflow_recalc_update_ = false;

@@ -18,6 +18,8 @@
 
 namespace blink {
 
+class ContainerTimingPaintAttributionTracker;
+class Element;
 class LayoutObject;
 class LocalFrameView;
 class Node;
@@ -51,19 +53,26 @@ class CORE_EXPORT PrePaintTreeWalk final {
     PrePaintTreeWalkContextBase(const PrePaintTreeWalkContextBase&) = default;
 
    public:
-    // Reset fragmentation when entering something that shouldn't be affected by
-    // the current fragmentation context(s).
-    void ResetFragmentation() {
+    // Resets state that must not carry across a frame boundary, before walking
+    // a new frame.
+    void ResetForNewFrame() {
+      // Block fragmentation doesn't cross frame boundaries.
       current_container = {};
       absolute_positioned_container = {};
       fixed_positioned_container = {};
-    }
 
-    void ResetSoftNavigationContext() {
+      // For soft navigation.
       soft_navigation_context_changed = false;
       soft_navigation_context_container_root = nullptr;
-      soft_navigation_text_aggregation_node = nullptr;
       soft_navigation_paint_attribution_tracker = nullptr;
+
+      // For container timing.
+      container_timing_context_changed = false;
+      container_timing_context_root = nullptr;
+      container_timing_paint_attribution_tracker = nullptr;
+
+      // Both for soft navigation and container timing.
+      paint_timing_text_aggregation_node = nullptr;
     }
 
     PaintInvalidatorContext paint_invalidator_context;
@@ -91,15 +100,26 @@ class CORE_EXPORT PrePaintTreeWalk final {
     // this context gets propagated to descendants through this node.
     Node* soft_navigation_context_container_root = nullptr;
 
-    // Paint tracking aggregates text into the nearest non-anonymous, non-inline
-    // ancestor node.
-    Node* soft_navigation_text_aggregation_node = nullptr;
+    // Paint timing aggregates text into the nearest non-anonymous, non-inline
+    // ancestor node. Used by both SoftNavigation and ContainerTiming trackers.
+    Node* paint_timing_text_aggregation_node = nullptr;
 
     // The `SoftNavigationPaintAttributionTracker` associated with the current
     // document being walked. This will be null for iframes or if the
     // experimental feature is disabled.
     SoftNavigationPaintAttributionTracker*
         soft_navigation_paint_attribution_tracker = nullptr;
+
+    // Whether a descendant's container timing attribute changed, requiring a
+    // re-walk by ContainerTimingPaintAttributionTracker.
+    bool container_timing_context_changed = false;
+
+    // The nearest ancestor element with "containertiming" attribute, or null.
+    Element* container_timing_context_root = nullptr;
+
+    // The ContainerTimingPaintAttributionTracker for the current document.
+    ContainerTimingPaintAttributionTracker*
+        container_timing_paint_attribution_tracker = nullptr;
 
     // True if we're visiting the parent for the first time, i.e. when we're in
     // the first fragmentainer where the parent occurs (or if we're not
@@ -264,6 +284,9 @@ class CORE_EXPORT PrePaintTreeWalk final {
 
   void UpdateSoftNavigationContext(const LayoutObject&,
                                    PrePaintTreeWalkContext&);
+
+  void UpdateContainerTimingContext(const LayoutObject&,
+                                    PrePaintTreeWalkContext&);
 
   PaintInvalidator paint_invalidator_;
 

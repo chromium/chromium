@@ -38,6 +38,8 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_printer.h"
 #include "third_party/blink/renderer/core/paint/pre_paint_disable_side_effects_scope.h"
+#include "third_party/blink/renderer/core/paint/timing/container_timing.h"
+#include "third_party/blink/renderer/core/paint/timing/container_timing_paint_attribution_tracker.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_paint_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -64,6 +66,13 @@ GetSoftNavigationPaintAttrubutionTrackerIfEnabled(LocalFrameView& frame_view) {
     return heuristics->GetPaintAttributionTracker();
   }
   return nullptr;
+}
+
+ContainerTimingPaintAttributionTracker*
+GetContainerTimingPaintAttributionTracker(LocalFrameView& frame_view) {
+  LocalDOMWindow* window = frame_view.GetFrame().DomWindow();
+  return window ? ContainerTiming::From(*window).PaintAttributionTracker()
+                : nullptr;
 }
 
 }  // anonymous namespace
@@ -148,13 +157,14 @@ void PrePaintTreeWalk::Walk(LocalFrameView& frame_view,
   PrePaintTreeWalkContext context(parent_context,
                                   needs_tree_builder_context_update);
 
-  // Block fragmentation doesn't cross frame boundaries.
-  context.ResetFragmentation();
+  // Reset the context that should not cross frame boundaries.
+  context.ResetForNewFrame();
 
-  // Soft navigation tracking doesn't cross frame boundaries.
-  context.ResetSoftNavigationContext();
+  // Set the trackers for the new frame.
   context.soft_navigation_paint_attribution_tracker =
       GetSoftNavigationPaintAttrubutionTrackerIfEnabled(frame_view);
+  context.container_timing_paint_attribution_tracker =
+      GetContainerTimingPaintAttributionTracker(frame_view);
 
   if (context.tree_builder_context) {
     PaintPropertyTreeBuilder::SetupContextForFrame(
@@ -300,18 +310,6 @@ void PrePaintTreeWalk::UpdateSoftNavigationContext(
     context.soft_navigation_context_changed = true;
   }
 
-  // For text nodes, text paint timing is aggregated up to the element that
-  // determines the containing block of the node
-  // (https://www.w3.org/TR/paint-timing/#sec-modifications-dom). We push such
-  // candidates down while walking the tree so that the soft navigations layer
-  // can associated text nodes with the containing box without walking up.
-  //
-  // TODO(crbug.com/423670827): Consider moving this check to
-  // TextPaintTimingDetector.
-  if (auto* node = object.GetNode(); node && object.IsBox()) {
-    context.soft_navigation_text_aggregation_node = node;
-  }
-
   // This node is either a new "container root" (a node having a different
   // `SoftNavigationContext` than its parent), or will inherit the context of
   // the container root being propagated. This is determined by
@@ -325,7 +323,7 @@ void PrePaintTreeWalk::UpdateSoftNavigationContext(
     PrePaintUpdateResult result =
         context.soft_navigation_paint_attribution_tracker->UpdateOnPrePaint(
             object, context.soft_navigation_context_container_root,
-            context.soft_navigation_text_aggregation_node);
+            context.paint_timing_text_aggregation_node);
     switch (result) {
       case PrePaintUpdateResult::kPropagateCurrentNode:
         object.GetMutableForPainting().SetShouldInheritSoftNavigationContext(
@@ -343,6 +341,62 @@ void PrePaintTreeWalk::UpdateSoftNavigationContext(
     // not be reached.
     CHECK(object.GetNode());
     context.soft_navigation_context_container_root = object.GetNode();
+  }
+}
+
+void PrePaintTreeWalk::UpdateContainerTimingContext(
+    const LayoutObject& object,
+    PrePaintTreeWalk::PrePaintTreeWalkContext& context) {
+  if (!context.container_timing_paint_attribution_tracker) {
+    return;
+  }
+
+  if (object.ContainerTimingChanged()) {
+    context.container_timing_context_changed = true;
+  }
+
+  // This node is either a container timing root (has containertiming attr),
+  // a stop node (has containertiming-ignore), or inherits its ancestor root.
+  // The result is cached in ShouldInheritContainerTimingRoot so that
+  // subsequent pre-paint walks skip nodes that haven't changed.
+  if (context.container_timing_context_changed) {
+    using Result = ContainerTimingPaintAttributionTracker::PrePaintUpdateResult;
+    const Result result =
+        context.container_timing_paint_attribution_tracker->UpdateOnPrePaint(
+            object, context.container_timing_context_root,
+            context.paint_timing_text_aggregation_node);
+    switch (result) {
+      case Result::kPropagateCurrentRoot:
+        object.GetMutableForPainting().SetShouldInheritContainerTimingRoot(
+            false);
+        context.container_timing_context_root = To<Element>(object.GetNode());
+        break;
+      case Result::kStopPropagation:
+        object.GetMutableForPainting().SetShouldInheritContainerTimingRoot(
+            false);
+        context.container_timing_context_root = nullptr;
+        break;
+      case Result::kPropagateAncestorRoot:
+        object.GetMutableForPainting().SetShouldInheritContainerTimingRoot(
+            true);
+        break;
+    }
+  } else if (!object.ShouldInheritContainerTimingRoot()) {
+    // Cached result: this node is a container root or stop node.
+    // ShouldInheritContainerTimingRoot() can only be false when
+    // kPropagateCurrentRoot or kStopPropagation was returned by
+    // UpdateOnPrePaint(), which only happens for elements (not anonymous
+    // boxes, which always return kPropagateAncestorRoot). So GetNode() is
+    // guaranteed non-null here.
+    CHECK(object.GetNode());
+    auto* element = DynamicTo<Element>(object.GetNode());
+    if (element &&
+        element->FastHasAttribute(html_names::kContainertimingAttr)) {
+      context.container_timing_context_root = element;
+    } else {
+      // Stop node (containertiming-ignore without containertiming).
+      context.container_timing_context_root = nullptr;
+    }
   }
 }
 
@@ -373,7 +427,9 @@ bool PrePaintTreeWalk::ObjectRequiresPrePaint(const LayoutObject& object) {
          object.BlockingWheelEventHandlerChanged() ||
          object.DescendantBlockingWheelEventHandlerChanged() ||
          object.SoftNavigationContextChanged() ||
-         object.DescendantSoftNavigationContextChanged();
+         object.DescendantSoftNavigationContextChanged() ||
+         object.ContainerTimingChanged() ||
+         object.DescendantContainerTimingChanged();
 }
 
 bool PrePaintTreeWalk::ContextRequiresChildPrePaint(
@@ -381,7 +437,8 @@ bool PrePaintTreeWalk::ContextRequiresChildPrePaint(
   return context.paint_invalidator_context.NeedsSubtreeWalk() ||
          context.effective_allowed_touch_action_changed ||
          context.blocking_wheel_event_handler_changed ||
-         context.soft_navigation_context_changed;
+         context.soft_navigation_context_changed ||
+         context.container_timing_context_changed;
 }
 
 bool PrePaintTreeWalk::ObjectRequiresTreeBuilderContext(
@@ -676,7 +733,25 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
   UpdateEffectiveAllowedTouchAction(object, context);
   UpdateBlockingWheelEventHandler(object, context);
 
+  // For text nodes, text paint timing is aggregated up to the element that
+  // determines the containing block of the node
+  // (https://www.w3.org/TR/paint-timing/#sec-modifications-dom). We push such
+  // candidates down while walking the tree so that the soft navigations and
+  // container timing layers can associate text nodes with the containing box
+  // without walking up.
+  //
+  // TODO(crbug.com/423670827): Consider moving this check to
+  // TextPaintTimingDetector.
+  if ((context.soft_navigation_paint_attribution_tracker ||
+       context.container_timing_paint_attribution_tracker) &&
+      object.IsBox()) {
+    if (auto* node = object.GetNode()) {
+      context.paint_timing_text_aggregation_node = node;
+    }
+  }
+
   UpdateSoftNavigationContext(object, context);
+  UpdateContainerTimingContext(object, context);
 
   if (paint_invalidator_.InvalidatePaint(
           object, pre_paint_info,
@@ -1457,7 +1532,8 @@ void PrePaintTreeWalk::Walk(const LayoutObject& object,
     object.GetDisplayLockContext()->SetNeedsPrePaintSubtreeWalk(
         context.effective_allowed_touch_action_changed,
         context.blocking_wheel_event_handler_changed,
-        context.soft_navigation_context_changed);
+        context.soft_navigation_context_changed,
+        context.container_timing_context_changed);
   }
 
   if (!child_walk_blocked) {

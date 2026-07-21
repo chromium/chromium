@@ -751,6 +751,13 @@ bool DisplayLockContext::MarkAncestorsForPrePaintIfNeeded() {
         layout_object->DescendantSoftNavigationContextChanged()) {
       layout_object->MarkSoftNavigationContextChanged();
     }
+    if (RuntimeEnabledFeatures::ContainerTimingPrepaintTraversalEnabled(
+            document_->GetExecutionContext()) &&
+        (needs_container_timing_context_update_ ||
+         layout_object->ContainerTimingChanged() ||
+         layout_object->DescendantContainerTimingChanged())) {
+      layout_object->MarkContainerTimingChanged();
+    }
     return true;
   }
   return compositing_dirtied || visual_overflow_dirtied;
@@ -845,7 +852,8 @@ bool DisplayLockContext::IsElementDirtyForPrePaint() const {
            needs_prepaint_subtree_walk_ ||
            needs_effective_allowed_touch_action_update_ ||
            needs_blocking_wheel_event_handler_update_ ||
-           needs_soft_navigation_context_update_;
+           needs_soft_navigation_context_update_ ||
+           needs_container_timing_context_update_;
   }
   return false;
 }

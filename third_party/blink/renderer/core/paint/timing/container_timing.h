@@ -17,6 +17,8 @@
 
 namespace blink {
 
+class ContainerTimingPaintAttributionTracker;
+
 // ContainerTiming is responsible for aggregating the text and image element
 // timing events for a given window.
 class CORE_EXPORT ContainerTiming final
@@ -40,6 +42,10 @@ class CORE_EXPORT ContainerTiming final
   void MaybeUpdateContainerRootIdentifier(Element* element,
                                           const AtomicString& new_value);
 
+  ContainerTimingPaintAttributionTracker* PaintAttributionTracker() {
+    return paint_attribution_tracker_.Get();
+  }
+
   void EmitPerformanceEntries();
 
   void OnElementPainted(const DOMPaintTimingInfo& paint_timing_info,
@@ -49,8 +55,6 @@ class CORE_EXPORT ContainerTiming final
   void Trace(Visitor* visitor) const override;
 
  private:
-  static Element* GetContainerRoot(Element*);
-  static Element* GetParentContainerRoot(Element*);
   class Record final : public GarbageCollected<Record> {
    public:
     Record(const DOMPaintTimingInfo& paint_timing_info,
@@ -61,9 +65,7 @@ class CORE_EXPORT ContainerTiming final
     const AtomicString& identifier() const { return identifier_; }
 
     void MaybeUpdateLastNewPaintedArea(
-        ContainerTiming* container_timing,
         const DOMPaintTimingInfo& paint_timing_info,
-        Element* container_root,
         Element* element,
         const gfx::Rect& enclosing_rect);
 
@@ -84,6 +86,7 @@ class CORE_EXPORT ContainerTiming final
 
   Member<WindowPerformance> performance_;
   HeapHashMap<WeakMember<Element>, Member<Record>> container_root_records_;
+  Member<ContainerTimingPaintAttributionTracker> paint_attribution_tracker_;
 };
 
 }  // namespace blink

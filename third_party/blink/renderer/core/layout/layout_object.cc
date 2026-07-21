@@ -5074,12 +5074,14 @@ void LayoutObject::ClearPaintFlags() {
   bitfields_.SetEffectiveAllowedTouchActionChanged(false);
   bitfields_.SetBlockingWheelEventHandlerChanged(false);
   bitfields_.SetSoftNavigationContextChanged(false);
+  bitfields_.SetContainerTimingChanged(false);
 
   if (!ChildPrePaintBlockedByDisplayLock()) {
     bitfields_.SetDescendantNeedsPaintPropertyUpdate(false);
     bitfields_.SetDescendantEffectiveAllowedTouchActionChanged(false);
     bitfields_.SetDescendantBlockingWheelEventHandlerChanged(false);
     bitfields_.SetDescendantSoftNavigationContextChanged(false);
+    bitfields_.SetDescendantContainerTimingChanged(false);
     subtree_paint_property_update_reasons_ =
         static_cast<unsigned>(SubtreePaintPropertyUpdateReason::kNone);
   }
@@ -5249,6 +5251,39 @@ void LayoutObject::MarkDescendantSoftNavigationContextChanged() {
   LayoutObject* obj = this;
   while (obj && !obj->DescendantSoftNavigationContextChanged()) {
     obj->bitfields_.SetDescendantSoftNavigationContextChanged(true);
+    if (obj->ChildPrePaintBlockedByDisplayLock()) {
+      break;
+    }
+    obj = obj->Parent();
+  }
+}
+
+void LayoutObject::MarkContainerTimingChanged() {
+  NOT_DESTROYED();
+  DCHECK(RuntimeEnabledFeatures::ContainerTimingPrepaintTraversalEnabled(
+      GetDocument().GetExecutionContext()));
+  DCHECK(!GetDocument().InvalidationDisallowed());
+  bitfields_.SetContainerTimingChanged(true);
+  // If we're locked, mark our descendants as needing this change. This is used
+  // as a signal to ensure we mark the element as needing container timing
+  // recalculation when the element becomes unlocked.
+  if (ChildPrePaintBlockedByDisplayLock()) {
+    bitfields_.SetDescendantContainerTimingChanged(true);
+    return;
+  }
+  if (Parent()) {
+    Parent()->MarkDescendantContainerTimingChanged();
+  }
+}
+
+void LayoutObject::MarkDescendantContainerTimingChanged() {
+  NOT_DESTROYED();
+  DCHECK(RuntimeEnabledFeatures::ContainerTimingPrepaintTraversalEnabled(
+      GetDocument().GetExecutionContext()));
+  DCHECK(!GetDocument().InvalidationDisallowed());
+  LayoutObject* obj = this;
+  while (obj && !obj->DescendantContainerTimingChanged()) {
+    obj->bitfields_.SetDescendantContainerTimingChanged(true);
     if (obj->ChildPrePaintBlockedByDisplayLock()) {
       break;
     }
