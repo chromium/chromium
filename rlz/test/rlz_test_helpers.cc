@@ -182,6 +182,12 @@ void RlzLibTestBase::SetUp() {
   EXPECT_TRUE(rlz_lib::SetAccessPointRlz(rlz_lib::IE_HOME_PAGE, ""));
 #endif  // BUILDFLAG(IS_POSIX)
 
+#if BUILDFLAG(IS_POSIX)
+  for (int p = rlz_lib::IE_TOOLBAR; p <= rlz_lib::PARTNER; p++) {
+    rlz_lib::ClearAllProductEvents(static_cast<rlz_lib::Product>(p));
+  }
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
   statistics_provider_ =
       std::make_unique<ash::system::FakeStatisticsProvider>();

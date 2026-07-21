@@ -297,6 +297,16 @@ TEST_F(RlzLibTest, SetAccessPointRlzOnlyOnce) {
 }
 
 TEST_F(RlzLibTest, UpdateExistingAccessPointRlz) {
+  // This test writes directly to disk to simulate store state and expects the
+  // store to reload it. However, under a global branding lock (active when
+  // SupplementaryBranding is not empty), the in-memory store is reused and
+  // does not reload from disk. Additionally, the production
+  // UpdateExistingAccessPointRlz() has a DCHECK asserting no supplementary
+  // brand is active. Thus, we must skip this test when branding is active.
+  if (!rlz_lib::SupplementaryBranding::GetBrand().empty()) {
+    return;
+  }
+
   const std::string json_data = R"({
    "access_points": {
       "CA": {

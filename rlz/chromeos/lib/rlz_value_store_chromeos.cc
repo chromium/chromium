@@ -5,6 +5,7 @@
 #include "rlz/chromeos/lib/rlz_value_store_chromeos.h"
 
 #include <algorithm>
+#include <optional>
 #include <string_view>
 #include <tuple>
 
@@ -330,8 +331,10 @@ bool RlzValueStoreChromeOS::ReadProductEvents(
     if (!event)
       continue;
 
-    if (*event == "CAF" && IsStatefulEvent(product, "CAF"))
+    if (*event == "CAF" && IsStatefulEvent(product, "CAF")) {
       remove_caf = true;
+      continue;
+    }
 
     events->push_back(*event);
   }
