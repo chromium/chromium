@@ -5,27 +5,18 @@
 #ifndef CHROME_BROWSER_ACTOR_SITE_POLICY_H_
 #define CHROME_BROWSER_ACTOR_SITE_POLICY_H_
 
-#include <string>
-
 #include "base/functional/callback_forward.h"
 #include "base/functional/function_ref.h"
 #include "base/types/expected.h"
 #include "chrome/common/actor.mojom-forward.h"
-#include "components/actor/core/task_id.h"
 #include "components/actor/public/mojom/actor_types.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/origin.h"
-
-namespace tabs {
-class TabInterface;
-}
 
 class GURL;
 class Profile;
 
 namespace actor {
-
-class AggregatedJournal;
 
 // Called during initialization of the given profile, to load the blocklist.
 void InitActionBlocklist(Profile* profile);
@@ -48,42 +39,6 @@ enum class MayActOnUrlBlockReason {
 using DecisionCallback = base::OnceCallback<void(/*may_act=*/bool)>;
 using DecisionCallbackWithReason =
     base::OnceCallback<void(MayActOnUrlBlockReason reason)>;
-
-struct MayActOnUrlBlockResult {
-  std::string reason;
-  MayActOnUrlBlockReason reason_code;
-};
-
-// Provides a verdict when MayActOnTab/MayActOnUrl was not able to reach one on
-// its own.
-using NoVerdictResultCallback =
-    base::OnceCallback<void(base::expected<void, MayActOnUrlBlockResult>)>;
-
-// Callback to resolve cases where MayActOnTab/MayActOnUrl does not reach a
-// verdict on its own.
-using NoVerdictContinuation =
-    base::OnceCallback<void(const GURL& url,
-                            NoVerdictResultCallback result_callback)>;
-
-// Checks whether the actor may perform actions on the given tab based on the
-// last committed document and URL. Invokes the callback with true if it is
-// allowed.
-// If the checks performed here do not reach a verdict, the decision is
-// delegated to `resolve_no_verdict`.
-void MayActOnTab(const tabs::TabInterface& tab,
-                 AggregatedJournal& journal,
-                 TaskId task_id,
-                 NoVerdictContinuation resolve_no_verdict,
-                 DecisionCallbackWithReason callback);
-
-// Like MayActOnTab, but considers a URL on its own.
-// If the checks performed here do not reach a verdict, the decision is
-// delegated to `resolve_no_verdict`.
-void MayActOnUrl(const GURL& url,
-                 AggregatedJournal& journal,
-                 TaskId task_id,
-                 NoVerdictContinuation resolve_no_verdict,
-                 DecisionCallbackWithReason callback);
 
 // Checks if navigation to `url` should be blocked using
 // OptimizationGuideService. If the callback is invoked with `may_act` set to

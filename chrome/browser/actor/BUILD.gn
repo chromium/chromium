@@ -343,7 +343,6 @@ source_set("unit_tests") {
     "actor_task_unittest.cc",
     "actor_test_util_unittest.cc",
     "execution_engine_unittest.cc",
-    "site_policy_unittest.cc",
     "tab_observation_strategy_unittest.cc",
     "tools/attempt_form_filling_tool_request_unittest.cc",
     "tools/attempt_login_tool_request_unittest.cc",
@@ -475,7 +474,6 @@ source_set("browser_tests") {
     sources += [
       "execution_engine_browsertest.cc",
       "execution_engine_origin_gating_browsertest.cc",
-      "site_policy_browsertest.cc",
       "tab_observation_controller_browsertest.cc",
       "tools/action_tracker_for_metrics_browsertest.cc",
       "tools/attempt_form_filling_tool_browsertest.cc",

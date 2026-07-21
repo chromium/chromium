@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -56,7 +57,6 @@ class ScopedUmaHistogramTimer;
 
 namespace content {
 class NavigationHandle;
-class WebContents;
 }
 
 namespace url {
@@ -418,18 +418,6 @@ class ExecutionEngine : public ToolDelegate,
       const url::Origin& destination_origin,
       State initial_state,
       std::optional<url::Origin> initiator,
-      std::unique_ptr<origin_gating::GatingDecisionContext> context,
-      origin_gating::GatingDecision decision);
-
-  void ShouldAllowNavigationDestination(
-      const GURL& url,
-      NoVerdictResultCallback result_callback);
-  void ShouldAllowPageAction(base::WeakPtr<content::WebContents> web_contents,
-                             const GURL& url,
-                             NoVerdictResultCallback result_callback);
-  void OnShouldAllowUrlDecision(
-      NoVerdictResultCallback result_callback,
-      const GURL& url,
       std::unique_ptr<origin_gating::GatingDecisionContext> context,
       origin_gating::GatingDecision decision);
 
