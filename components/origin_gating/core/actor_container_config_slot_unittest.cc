@@ -4,8 +4,12 @@
 
 #include "components/origin_gating/core/actor_container_config_slot.h"
 
-#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include <vector>
+
+#include "base/strings/strcat.h"
+#include "base/types/optional_ref.h"
 #include "components/origin_gating/core/actor_container_config.h"
+#include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -15,23 +19,15 @@ constexpr std::string_view kOtherHost = "other.com";
 
 namespace origin_gating {
 
-using optimization_guide::proto::AgentContainerConfig;
-
-AgentContainerConfig CreateConfigAllowingNavigation(std::string_view domain) {
-  AgentContainerConfig config;
-  optimization_guide::proto::LocationRule* location =
-      config.add_location_rules();
-  CHECK(location);
-  optimization_guide::proto::Site* site =
-      location->mutable_location()->mutable_site();
-  CHECK(site);
-  site->set_protocol(optimization_guide::proto::PROTOCOL_HTTPS);
-  site->set_domain(domain);
-  location->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
-  location->mutable_metadata()->add_accessible_resources(
-      optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
-  return config;
+ActorContainerConfig CreateConfigAllowingNavigation(std::string_view domain) {
+  net::SchemefulSite site(GURL(base::StrCat({"https://", domain})));
+  return ActorContainerConfig({
+      {ActorContainerConfig::Location(site),
+       ActorContainerConfig::Rule(
+           /*navigation_sources=*/{},
+           {ActorContainerConfig::Rule::Resource::kSession},
+           {ActorContainerConfig::Rule::Capability::kAll})},
+  });
 }
 
 class ActorContainerConfigSlotTest : public testing::Test {
@@ -47,21 +43,22 @@ TEST_F(ActorContainerConfigSlotTest, InitialState) {
   EXPECT_FALSE(slot.has_value());
 }
 
-TEST_F(ActorContainerConfigSlotTest, Assign_EmptyProto) {
+TEST_F(ActorContainerConfigSlotTest, Assign_EmptyConfig) {
   ActorContainerConfigSlot slot;
-  EXPECT_TRUE(slot.Assign(AgentContainerConfig()));
+  EXPECT_TRUE(slot.Assign(ActorContainerConfig()));
   EXPECT_TRUE(slot.has_value());
   EXPECT_FALSE(slot.value().IsActuationAllowed(kExampleOrigin));
 }
 
-TEST_F(ActorContainerConfigSlotTest, Assign_NonemptyProto) {
+TEST_F(ActorContainerConfigSlotTest, Assign_NonemptyConfig) {
   ActorContainerConfigSlot slot;
   EXPECT_TRUE(slot.Assign(CreateConfigAllowingNavigation(kExampleHost)));
   EXPECT_TRUE(slot.has_value());
   EXPECT_TRUE(slot.value().IsActuationAllowed(kExampleOrigin));
 }
 
-TEST_F(ActorContainerConfigSlotTest, Assign_PresentProtoThenIgnoresSecondCall) {
+TEST_F(ActorContainerConfigSlotTest,
+       Assign_PresentConfigThenIgnoresSecondCall) {
   ActorContainerConfigSlot slot;
   EXPECT_TRUE(slot.Assign(CreateConfigAllowingNavigation(kExampleHost)));
 

@@ -21,6 +21,7 @@
 #include "base/strings/to_string.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -59,10 +60,13 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/origin_gating/core/actor_container_config.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "net/base/schemeful_site.h"
 #include "ui/base/window_open_disposition.h"
 
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
@@ -969,6 +973,110 @@ void FillInTabObservation(
 
 namespace {
 
+base::expected<std::string_view, std::string_view> ConvertProtocol(
+    optimization_guide::proto::Protocol protocol) {
+  switch (protocol) {
+    case optimization_guide::proto::Protocol::PROTOCOL_HTTPS:
+      return base::ok(url::kHttpsScheme);
+    case optimization_guide::proto::Protocol::PROTOCOL_HTTP:
+      return base::ok(url::kHttpScheme);
+    case optimization_guide::proto::Protocol::PROTOCOL_WSS:
+      return base::ok(url::kWssScheme);
+    case optimization_guide::proto::Protocol::PROTOCOL_WS:
+      return base::ok(url::kWsScheme);
+    case optimization_guide::proto::Protocol::PROTOCOL_UNKNOWN:
+    default:
+      return base::unexpected("Unknown protocol");
+  }
+}
+
+base::expected<net::SchemefulSite, std::string_view> ConvertSite(
+    const optimization_guide::proto::Site& site) {
+  if (!site.has_domain()) {
+    return base::unexpected("Site message is missing domain");
+  }
+  ASSIGN_OR_RETURN(std::string_view protocol, ConvertProtocol(site.protocol()));
+  net::SchemefulSite converted_site(GURL(
+      base::StrCat({protocol, url::kStandardSchemeSeparator, site.domain()})));
+  if (converted_site.GetURL().host() != site.domain()) {
+    return base::unexpected("SchemefulSite domain does not match the message");
+  }
+  return converted_site;
+}
+
+base::expected<url::Origin, std::string_view> ConvertOrigin(
+    const optimization_guide::proto::Origin& origin) {
+  if (!origin.has_host()) {
+    return base::unexpected("Origin message is missing host");
+  }
+  ASSIGN_OR_RETURN(std::string_view protocol,
+                   ConvertProtocol(origin.protocol()));
+  std::string port =
+      origin.has_port()
+          ? base::StrCat({":", base::NumberToString(origin.port())})
+          : "";
+  return url::Origin::Create(GURL(base::StrCat(
+      {protocol, url::kStandardSchemeSeparator, origin.host(), port})));
+}
+
+base::expected<origin_gating::ActorContainerConfig::Location, std::string_view>
+ConvertLocation(const optimization_guide::proto::Location& location) {
+  switch (location.identifier_oneof_case()) {
+    case optimization_guide::proto::Location::kWildcard:
+      return origin_gating::ActorContainerConfig::Location(
+          origin_gating::ActorContainerConfig::Wildcard());
+    case optimization_guide::proto::Location::kSite: {
+      ASSIGN_OR_RETURN(net::SchemefulSite site, ConvertSite(location.site()));
+      return origin_gating::ActorContainerConfig::Location(std::move(site));
+    }
+    case optimization_guide::proto::Location::kOrigin: {
+      ASSIGN_OR_RETURN(url::Origin origin, ConvertOrigin(location.origin()));
+      return origin_gating::ActorContainerConfig::Location(std::move(origin));
+    }
+    case optimization_guide::proto::Location::IDENTIFIER_ONEOF_NOT_SET:
+      return base::unexpected("Location missing value");
+    default:
+      return base::unexpected("Unknown location type");
+  }
+}
+
+base::expected<origin_gating::ActorContainerConfig::Rule, std::string_view>
+ConvertRule(const optimization_guide::proto::LocationRule& location_rule) {
+  std::vector<origin_gating::ActorContainerConfig::Location> navigation_sources;
+  for (const auto& nav_source : location_rule.navigation_sources()) {
+    if (!nav_source.has_source()) {
+      return base::unexpected("NavigationSource has no source location set");
+    }
+    ASSIGN_OR_RETURN(origin_gating::ActorContainerConfig::Location source,
+                     ConvertLocation(nav_source.source()));
+    navigation_sources.emplace_back(source);
+  }
+  origin_gating::ActorContainerConfig::Rule::ResourceSet resources;
+  for (const auto& resource : location_rule.metadata().accessible_resources()) {
+    switch (resource) {
+      case optimization_guide::proto::RuleMetadata::RESOURCE_SESSION:
+        resources.Put(
+            origin_gating::ActorContainerConfig::Rule::Resource::kSession);
+        break;
+      case optimization_guide::proto::RuleMetadata::RESOURCE_UNKNOWN:
+        break;
+    }
+  }
+  origin_gating::ActorContainerConfig::Rule::CapabilitySet capabilities;
+  for (const auto& capability : location_rule.metadata().capabilities()) {
+    switch (capability) {
+      case optimization_guide::proto::RuleMetadata::CAPABILITY_ALL:
+        capabilities.Put(
+            origin_gating::ActorContainerConfig::Rule::Capability::kAll);
+        break;
+      case optimization_guide::proto::RuleMetadata::CAPABILITY_UNKNOWN:
+        break;
+    }
+  }
+  return origin_gating::ActorContainerConfig::Rule(
+      std::move(navigation_sources), resources, capabilities);
+}
+
 apc::TabObservation::TabObservationResult ToTabObservationResult(
     FetchPageContextError error) {
   switch (error) {
@@ -1457,6 +1565,34 @@ CreateActorJournalFetchPageProgressListener(
     TaskId task_id) {
   return std::make_unique<ActorJournalFetchPageProgressListener>(journal, url,
                                                                  task_id);
+}
+
+origin_gating::ActorContainerConfig ConvertAgentContainerConfig(
+    const optimization_guide::proto::AgentContainerConfig& config) {
+  origin_gating::ActorContainerConfig::LocationRules location_rules;
+  for (const auto& rule_proto : config.location_rules()) {
+    base::expected<origin_gating::ActorContainerConfig::Location,
+                   std::string_view>
+        destination_result = ConvertLocation(rule_proto.location());
+    if (!destination_result.has_value()) {
+      DLOG(ERROR) << destination_result.error();
+      continue;
+    }
+    base::expected<origin_gating::ActorContainerConfig::Rule, std::string_view>
+        rule = ConvertRule(rule_proto);
+    if (!rule.has_value()) {
+      DLOG(ERROR) << rule.error();
+      continue;
+    }
+    const origin_gating::ActorContainerConfig::Location& destination =
+        destination_result.value();
+    auto [_, inserted] =
+        location_rules.insert_or_assign(destination, std::move(rule.value()));
+    if (!inserted) {
+      DLOG(ERROR) << "Duplicate rule for " << destination.ToDebugString();
+    }
+  }
+  return origin_gating::ActorContainerConfig(std::move(location_rules));
 }
 
 std::optional<mojom::ActionResultCode> MaybeGetErrorCodeForTab(

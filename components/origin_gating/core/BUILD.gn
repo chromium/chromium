@@ -22,7 +22,6 @@ source_set("core") {
 
   deps = [
     "//base",
-    "//components/optimization_guide/proto:optimization_guide_proto",
     "//net",
     "//url",
   ]
@@ -42,13 +41,9 @@ source_set("unit_tests") {
     ":core",
     "//base",
     "//base/test:test_support",
-    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//net",
     "//testing/gmock",
     "//testing/gtest",
     "//url",
   ]
-
-  if (use_fuzzing_engine) {
-    deps += [ "//third_party/fuzztest" ]
-  }
 }

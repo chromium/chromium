@@ -5,12 +5,10 @@
 #ifndef COMPONENTS_ORIGIN_GATING_CORE_ACTOR_CONTAINER_CONFIG_SLOT_H_
 #define COMPONENTS_ORIGIN_GATING_CORE_ACTOR_CONTAINER_CONFIG_SLOT_H_
 
+#include <optional>
+
 #include "base/types/optional_ref.h"
 #include "components/origin_gating/core/actor_container_config.h"
-
-namespace optimization_guide::proto {
-class AgentContainerConfig;
-}
 
 namespace origin_gating {
 
@@ -24,10 +22,10 @@ class ActorContainerConfigSlot {
   ActorContainerConfigSlot& operator=(ActorContainerConfigSlot&&) = delete;
   ~ActorContainerConfigSlot();
 
-  // Assigns the `config` to this instance, if provided. This method is a no-op
-  // except for the first time it is called.
-  // Returns true if the assignment succeeded, false otherwise.
-  bool Assign(const optimization_guide::proto::AgentContainerConfig& config);
+  // Assigns the `config` to this instance. This method is a no-op except for
+  // the first time it is called. Returns true if the assignment succeeded,
+  // false otherwise.
+  bool Assign(ActorContainerConfig config);
 
   bool has_value() const { return config_.has_value(); }
 

@@ -17,6 +17,7 @@
 #include "components/actor/core/aggregated_journal.h"
 #include "components/actor/public/mojom/actor_types.mojom-forward.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
+#include "components/origin_gating/core/actor_container_config.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
@@ -29,11 +30,15 @@ class BrowserContext;
 
 namespace optimization_guide::proto {
 class Actions;
+class AgentContainerConfig;
 }  // namespace optimization_guide::proto
 
 namespace actor {
 class ActorTask;
 class ToolRequest;
+
+origin_gating::ActorContainerConfig ConvertAgentContainerConfig(
+    const optimization_guide::proto::AgentContainerConfig& config);
 
 // Input type used for ActorKeyedService acting APIs, created from
 // BuildToolRequest functions below. Aliased for convenience.

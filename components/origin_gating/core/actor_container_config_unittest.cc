@@ -4,82 +4,42 @@
 
 #include "components/origin_gating/core/actor_container_config.h"
 
+#include <optional>
+#include <string>
+#include <vector>
+
+#include "base/containers/enum_set.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
-#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(USE_FUZZING_ENGINE)
-#include "third_party/fuzztest/src/fuzztest/fuzztest.h"  // nogncheck
-#endif
-
 namespace origin_gating {
-
-using optimization_guide::proto::AgentContainerConfig;
 
 namespace {
 
-optimization_guide::proto::LocationRule CreateWildcardLocationRule() {
-  optimization_guide::proto::LocationRule rule;
-  rule.mutable_location()->mutable_wildcard();
-  return rule;
+using Location = ActorContainerConfig::Location;
+using Rule = ActorContainerConfig::Rule;
+
+Location WildcardLocation() {
+  return Location(ActorContainerConfig::Wildcard());
 }
 
-optimization_guide::proto::LocationRule CreateSiteLocationRule(
-    std::string domain,
-    optimization_guide::proto::Protocol protocol =
-        optimization_guide::proto::Protocol::PROTOCOL_HTTPS) {
-  optimization_guide::proto::LocationRule rule;
-  optimization_guide::proto::Site* site =
-      rule.mutable_location()->mutable_site();
-  CHECK(site);
-  site->set_protocol(protocol);
-  site->set_domain(domain);
-  return rule;
+Location SiteLocation(const GURL& url) {
+  return Location(net::SchemefulSite(url));
 }
 
-optimization_guide::proto::LocationRule CreateOriginLocationRule(
-    std::string host,
-    optimization_guide::proto::Protocol protocol =
-        optimization_guide::proto::Protocol::PROTOCOL_HTTPS,
-    int port = 0) {
-  optimization_guide::proto::LocationRule rule;
-  optimization_guide::proto::Origin* origin =
-      rule.mutable_location()->mutable_origin();
-  CHECK(origin);
-  origin->set_protocol(protocol);
-  origin->set_host(host);
-  if (port > 0) {
-    origin->set_port(port);
-  }
-  return rule;
+Location OriginLocation(const GURL& url) {
+  return Location(url::Origin::Create(url));
 }
 
-optimization_guide::proto::NavigationSource CreateOriginNavigationSource(
-    std::string host,
-    optimization_guide::proto::Protocol protocol =
-        optimization_guide::proto::Protocol::PROTOCOL_HTTPS,
-    int port = 443) {
-  optimization_guide::proto::NavigationSource nav_source;
-  optimization_guide::proto::Origin* origin =
-      nav_source.mutable_source()->mutable_origin();
-  origin->set_protocol(protocol);
-  origin->set_host(host);
-  origin->set_port(port);
-  return nav_source;
-}
-
-optimization_guide::proto::NavigationSource CreateSiteNavigationSource(
-    std::string host,
-    optimization_guide::proto::Protocol protocol =
-        optimization_guide::proto::Protocol::PROTOCOL_HTTPS) {
-  optimization_guide::proto::NavigationSource nav_source;
-  nav_source.mutable_source()->mutable_site()->set_protocol(protocol);
-  nav_source.mutable_source()->mutable_site()->set_domain(host);
-  return nav_source;
+Rule CreateRule(std::vector<Location> navigation_sources = {},
+                Rule::ResourceSet resources = {},
+                Rule::CapabilitySet capabilities = {}) {
+  return Rule(std::move(navigation_sources), resources, capabilities);
 }
 
 }  // namespace
@@ -109,8 +69,8 @@ class ActorContainerConfigTest : public testing::Test {
       url::Origin::Create(GURL("wss://b.foo.com"));
 };
 
-TEST_F(ActorContainerConfigTest, EmptyProtoBlocksAll) {
-  ActorContainerConfig config((AgentContainerConfig()));
+TEST_F(ActorContainerConfigTest, EmptyConfigBlocksAll) {
+  ActorContainerConfig config;
 
   // Same-site.
   EXPECT_FALSE(config.IsActuationAllowed(kExampleOrigin));
@@ -137,9 +97,9 @@ TEST_F(ActorContainerConfigTest, EmptyProtoBlocksAll) {
 }
 
 TEST_F(ActorContainerConfigTest, NoCapabilities) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() = CreateWildcardLocationRule();
-  ActorContainerConfig config(config_proto);
+  ActorContainerConfig config({
+      {WildcardLocation(), CreateRule({}, {Rule::Resource::kSession}, {})},
+  });
 
   // Same-site.
   EXPECT_FALSE(config.IsActuationAllowed(kExampleOrigin));
@@ -166,15 +126,10 @@ TEST_F(ActorContainerConfigTest, NoCapabilities) {
 }
 
 TEST_F(ActorContainerConfigTest, Wildcard_ActuationCapabilityAll) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() = CreateWildcardLocationRule();
-  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
-  config_proto.mutable_location_rules(0)
-      ->mutable_metadata()
-      ->add_accessible_resources(
-          optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
-  ActorContainerConfig config(config_proto);
+  ActorContainerConfig config({
+      {WildcardLocation(),
+       CreateRule({}, {Rule::Resource::kSession}, {Rule::Capability::kAll})},
+  });
 
   // Same-site.
   EXPECT_TRUE(config.IsActuationAllowed(kExampleOrigin));
@@ -201,17 +156,11 @@ TEST_F(ActorContainerConfigTest, Wildcard_ActuationCapabilityAll) {
 }
 
 TEST_F(ActorContainerConfigTest, Wildcard_WithSource) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() = CreateWildcardLocationRule();
-  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
-  config_proto.mutable_location_rules(0)
-      ->mutable_metadata()
-      ->add_accessible_resources(
-          optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
-  *config_proto.mutable_location_rules(0)->add_navigation_sources() =
-      CreateOriginNavigationSource("a.example.com");
-  ActorContainerConfig config(config_proto);
+  ActorContainerConfig config({
+      {WildcardLocation(),
+       CreateRule({Location(kExampleOrigin)}, {Rule::Resource::kSession},
+                  {Rule::Capability::kAll})},
+  });
 
   // Same-site.
   EXPECT_TRUE(config.IsActuationAllowed(kExampleOrigin));
@@ -238,9 +187,10 @@ TEST_F(ActorContainerConfigTest, Wildcard_WithSource) {
 }
 
 TEST_F(ActorContainerConfigTest, Site_NoCapabilities) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() = CreateSiteLocationRule("example.com");
-  ActorContainerConfig config(config_proto);
+  ActorContainerConfig config({
+      {Location(net::SchemefulSite(kExampleOrigin)),
+       CreateRule({}, {Rule::Resource::kSession}, {})},
+  });
 
   // Same-site.
   EXPECT_FALSE(config.IsActuationAllowed(kExampleOrigin));
@@ -267,15 +217,10 @@ TEST_F(ActorContainerConfigTest, Site_NoCapabilities) {
 }
 
 TEST_F(ActorContainerConfigTest, Site_ActuationCapabilityAll) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() = CreateSiteLocationRule("example.com");
-  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
-  config_proto.mutable_location_rules(0)
-      ->mutable_metadata()
-      ->add_accessible_resources(
-          optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
-  ActorContainerConfig config(config_proto);
+  ActorContainerConfig config({
+      {Location(net::SchemefulSite(kExampleOrigin)),
+       CreateRule({}, {Rule::Resource::kSession}, {Rule::Capability::kAll})},
+  });
 
   // Same-site.
   EXPECT_TRUE(config.IsActuationAllowed(kExampleOrigin));
@@ -290,9 +235,6 @@ TEST_F(ActorContainerConfigTest, Site_ActuationCapabilityAll) {
 
   // Cross-scheme.
   EXPECT_FALSE(config.IsActuationAllowed(kExampleInsecureOrigin));
-  // First is not allowed since the rule only permits navigation to secure URLs
-  // at example.com, but second is allowed because it does not forbid navigation
-  // from insecure URLs.
   EXPECT_FALSE(
       config.IsNavigationAllowed(kExampleOrigin, kExampleInsecureOrigin));
   EXPECT_TRUE(
@@ -305,16 +247,10 @@ TEST_F(ActorContainerConfigTest, Site_ActuationCapabilityAll) {
 }
 
 TEST_F(ActorContainerConfigTest, InsecureSite_ActuationCapabilityAll) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() = CreateSiteLocationRule(
-      "example.com", optimization_guide::proto::Protocol::PROTOCOL_HTTP);
-  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
-  config_proto.mutable_location_rules(0)
-      ->mutable_metadata()
-      ->add_accessible_resources(
-          optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
-  ActorContainerConfig config(config_proto);
+  ActorContainerConfig config({
+      {Location(net::SchemefulSite(kExampleInsecureOrigin)),
+       CreateRule({}, {Rule::Resource::kSession}, {Rule::Capability::kAll})},
+  });
 
   // Same-site.
   EXPECT_FALSE(config.IsActuationAllowed(kExampleOrigin));
@@ -329,7 +265,6 @@ TEST_F(ActorContainerConfigTest, InsecureSite_ActuationCapabilityAll) {
 
   // Cross-scheme.
   EXPECT_TRUE(config.IsActuationAllowed(kExampleInsecureOrigin));
-  // Only navigation to the insecure URL is allowed.
   EXPECT_TRUE(
       config.IsNavigationAllowed(kExampleOrigin, kExampleInsecureOrigin));
   EXPECT_FALSE(
@@ -342,17 +277,11 @@ TEST_F(ActorContainerConfigTest, InsecureSite_ActuationCapabilityAll) {
 }
 
 TEST_F(ActorContainerConfigTest, Site_WithSource) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() = CreateSiteLocationRule("example.com");
-  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
-  config_proto.mutable_location_rules(0)
-      ->mutable_metadata()
-      ->add_accessible_resources(
-          optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
-  *config_proto.mutable_location_rules(0)->add_navigation_sources() =
-      CreateOriginNavigationSource("a.example.com");
-  ActorContainerConfig config(config_proto);
+  ActorContainerConfig config({
+      {Location(net::SchemefulSite(kExampleOrigin)),
+       CreateRule({Location(kExampleOrigin)}, {Rule::Resource::kSession},
+                  {Rule::Capability::kAll})},
+  });
 
   // Same-site.
   EXPECT_TRUE(config.IsActuationAllowed(kExampleOrigin));
@@ -379,10 +308,10 @@ TEST_F(ActorContainerConfigTest, Site_WithSource) {
 }
 
 TEST_F(ActorContainerConfigTest, Origin_NoCapabilities) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() =
-      CreateOriginLocationRule("a.example.com");
-  ActorContainerConfig config(config_proto);
+  ActorContainerConfig config({
+      {Location(kExampleOrigin),
+       CreateRule({}, {Rule::Resource::kSession}, {})},
+  });
 
   // Same-site.
   EXPECT_FALSE(config.IsActuationAllowed(kExampleOrigin));
@@ -409,16 +338,10 @@ TEST_F(ActorContainerConfigTest, Origin_NoCapabilities) {
 }
 
 TEST_F(ActorContainerConfigTest, Origin_ActuationCapabilityAll) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() =
-      CreateOriginLocationRule("a.example.com");
-  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
-  config_proto.mutable_location_rules(0)
-      ->mutable_metadata()
-      ->add_accessible_resources(
-          optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
-  ActorContainerConfig config(config_proto);
+  ActorContainerConfig config({
+      {Location(kExampleOrigin),
+       CreateRule({}, {Rule::Resource::kSession}, {Rule::Capability::kAll})},
+  });
 
   // Same-site.
   EXPECT_TRUE(config.IsActuationAllowed(kExampleOrigin));
@@ -445,16 +368,10 @@ TEST_F(ActorContainerConfigTest, Origin_ActuationCapabilityAll) {
 }
 
 TEST_F(ActorContainerConfigTest, InsecureOrigin_ActuationCapabilityAll) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() = CreateOriginLocationRule(
-      "a.example.com", optimization_guide::proto::Protocol::PROTOCOL_HTTP);
-  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
-  config_proto.mutable_location_rules(0)
-      ->mutable_metadata()
-      ->add_accessible_resources(
-          optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
-  ActorContainerConfig config(config_proto);
+  ActorContainerConfig config({
+      {Location(kExampleInsecureOrigin),
+       CreateRule({}, {Rule::Resource::kSession}, {Rule::Capability::kAll})},
+  });
 
   // Same-site.
   EXPECT_FALSE(config.IsActuationAllowed(kExampleOrigin));
@@ -482,17 +399,10 @@ TEST_F(ActorContainerConfigTest, InsecureOrigin_ActuationCapabilityAll) {
 
 TEST_F(ActorContainerConfigTest,
        OriginWithExplicitPort_ActuationCapabilityAll) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() = CreateOriginLocationRule(
-      "a.example.com", optimization_guide::proto::Protocol::PROTOCOL_HTTPS,
-      /*port=*/443);
-  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
-  config_proto.mutable_location_rules(0)
-      ->mutable_metadata()
-      ->add_accessible_resources(
-          optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
-  ActorContainerConfig config(config_proto);
+  ActorContainerConfig config({
+      {Location(url::Origin::Create(GURL("https://a.example.com:443"))),
+       CreateRule({}, {Rule::Resource::kSession}, {Rule::Capability::kAll})},
+  });
 
   // Same-site.
   EXPECT_TRUE(config.IsActuationAllowed(kExampleOrigin));
@@ -519,18 +429,11 @@ TEST_F(ActorContainerConfigTest,
 }
 
 TEST_F(ActorContainerConfigTest, Origin_WithSource) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() =
-      CreateOriginLocationRule("a.example.com");
-  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
-  config_proto.mutable_location_rules(0)
-      ->mutable_metadata()
-      ->add_accessible_resources(
-          optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
-  *config_proto.mutable_location_rules(0)->add_navigation_sources() =
-      CreateOriginNavigationSource("a.example.com");
-  ActorContainerConfig config(config_proto);
+  ActorContainerConfig config({
+      {Location(kExampleOrigin),
+       CreateRule({Location(kExampleOrigin)}, {Rule::Resource::kSession},
+                  {Rule::Capability::kAll})},
+  });
 
   // Same-site.
   EXPECT_TRUE(config.IsActuationAllowed(kExampleOrigin));
@@ -557,16 +460,12 @@ TEST_F(ActorContainerConfigTest, Origin_WithSource) {
 }
 
 TEST_F(ActorContainerConfigTest, WildcardAndBlockedSite) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() = CreateWildcardLocationRule();
-  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
-  config_proto.mutable_location_rules(0)
-      ->mutable_metadata()
-      ->add_accessible_resources(
-          optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
-  *config_proto.add_location_rules() = CreateSiteLocationRule("example.com");
-  ActorContainerConfig config(config_proto);
+  ActorContainerConfig config({
+      {SiteLocation(GURL("https://example.com")),
+       CreateRule({}, {Rule::Resource::kSession}, {})},
+      {WildcardLocation(),
+       CreateRule({}, {Rule::Resource::kSession}, {Rule::Capability::kAll})},
+  });
 
   // Same-site.
   EXPECT_FALSE(config.IsActuationAllowed(kExampleOrigin));
@@ -593,16 +492,11 @@ TEST_F(ActorContainerConfigTest, WildcardAndBlockedSite) {
 }
 
 TEST_F(ActorContainerConfigTest, BlockedWildcardAndAllowedSite) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() = CreateWildcardLocationRule();
-  *config_proto.add_location_rules() = CreateSiteLocationRule("example.com");
-  config_proto.mutable_location_rules(1)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
-  config_proto.mutable_location_rules(1)
-      ->mutable_metadata()
-      ->add_accessible_resources(
-          optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
-  ActorContainerConfig config(config_proto);
+  ActorContainerConfig config({
+      {WildcardLocation(), CreateRule({}, {Rule::Resource::kSession}, {})},
+      {SiteLocation(GURL("https://example.com")),
+       CreateRule({}, {Rule::Resource::kSession}, {Rule::Capability::kAll})},
+  });
 
   // Same-site.
   EXPECT_TRUE(config.IsActuationAllowed(kExampleOrigin));
@@ -629,17 +523,12 @@ TEST_F(ActorContainerConfigTest, BlockedWildcardAndAllowedSite) {
 }
 
 TEST_F(ActorContainerConfigTest, SiteAndBlockedOrigin) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() = CreateSiteLocationRule("example.com");
-  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
-  config_proto.mutable_location_rules(0)
-      ->mutable_metadata()
-      ->add_accessible_resources(
-          optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
-  *config_proto.add_location_rules() =
-      CreateOriginLocationRule("b.example.com");
-  ActorContainerConfig config(config_proto);
+  ActorContainerConfig config({
+      {SiteLocation(GURL("https://example.com")),
+       CreateRule({}, {Rule::Resource::kSession}, {Rule::Capability::kAll})},
+      {OriginLocation(GURL("https://b.example.com")),
+       CreateRule({}, {Rule::Resource::kSession}, {})},
+  });
 
   // Same-site.
   EXPECT_TRUE(config.IsActuationAllowed(kExampleOrigin));
@@ -651,6 +540,7 @@ TEST_F(ActorContainerConfigTest, SiteAndBlockedOrigin) {
                                          kExampleOrigin));
   EXPECT_FALSE(config.IsNavigationAllowed(kExampleOrigin,
                                           kExampleDifferentSubdomainOrigin));
+
   // Cross-scheme.
   EXPECT_FALSE(config.IsActuationAllowed(kExampleInsecureOrigin));
   EXPECT_FALSE(
@@ -665,17 +555,12 @@ TEST_F(ActorContainerConfigTest, SiteAndBlockedOrigin) {
 }
 
 TEST_F(ActorContainerConfigTest, BlockedSiteAndOrigin) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() = CreateSiteLocationRule("example.com");
-  *config_proto.add_location_rules() =
-      CreateOriginLocationRule("a.example.com");
-  config_proto.mutable_location_rules(1)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
-  config_proto.mutable_location_rules(1)
-      ->mutable_metadata()
-      ->add_accessible_resources(
-          optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
-  ActorContainerConfig config(config_proto);
+  ActorContainerConfig config({
+      {SiteLocation(GURL("https://example.com")),
+       CreateRule({}, {Rule::Resource::kSession}, {})},
+      {Location(kExampleOrigin),
+       CreateRule({}, {Rule::Resource::kSession}, {Rule::Capability::kAll})},
+  });
 
   // Same-site.
   EXPECT_TRUE(config.IsActuationAllowed(kExampleOrigin));
@@ -702,274 +587,50 @@ TEST_F(ActorContainerConfigTest, BlockedSiteAndOrigin) {
 }
 
 TEST_F(ActorContainerConfigTest, NoCapability) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() = CreateSiteLocationRule("example.com");
-  config_proto.mutable_location_rules(0)
-      ->mutable_metadata()
-      ->add_accessible_resources(
-          optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
-  ActorContainerConfig config(config_proto);
-
-  EXPECT_FALSE(config.IsActuationAllowed(kExampleOrigin));
-  EXPECT_FALSE(config.IsNavigationAllowed(kExampleOrigin, kExampleOrigin));
-}
-
-TEST_F(ActorContainerConfigTest, CapabilityUnknown) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() = CreateSiteLocationRule("example.com");
-  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_UNKNOWN);
-  config_proto.mutable_location_rules(0)
-      ->mutable_metadata()
-      ->add_accessible_resources(
-          optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
-  ActorContainerConfig config(config_proto);
-
-  EXPECT_FALSE(config.IsActuationAllowed(kExampleOrigin));
-  EXPECT_FALSE(config.IsNavigationAllowed(kExampleOrigin, kExampleOrigin));
-}
-
-TEST_F(ActorContainerConfigTest, MultipleCapabilityUnknown) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() = CreateSiteLocationRule("example.com");
-  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_UNKNOWN);
-  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_UNKNOWN);
-  config_proto.mutable_location_rules(0)
-      ->mutable_metadata()
-      ->add_accessible_resources(
-          optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
-  ActorContainerConfig config(config_proto);
+  ActorContainerConfig config({
+      {SiteLocation(GURL("https://example.com")),
+       CreateRule({}, {Rule::Resource::kSession}, {})},
+  });
 
   EXPECT_FALSE(config.IsActuationAllowed(kExampleOrigin));
   EXPECT_FALSE(config.IsNavigationAllowed(kExampleOrigin, kExampleOrigin));
 }
 
 TEST_F(ActorContainerConfigTest, MultipleCapabilityAll) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() = CreateSiteLocationRule("example.com");
-  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
-  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
-  config_proto.mutable_location_rules(0)
-      ->mutable_metadata()
-      ->add_accessible_resources(
-          optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
-  ActorContainerConfig config(config_proto);
-
-  EXPECT_TRUE(config.IsActuationAllowed(kExampleOrigin));
-  EXPECT_TRUE(config.IsNavigationAllowed(kExampleOrigin, kExampleOrigin));
-}
-
-TEST_F(ActorContainerConfigTest, MixedCapabilitiesUnknownAndAll) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() = CreateSiteLocationRule("example.com");
-  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_UNKNOWN);
-  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
-  config_proto.mutable_location_rules(0)
-      ->mutable_metadata()
-      ->add_accessible_resources(
-          optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
-  ActorContainerConfig config(config_proto);
+  ActorContainerConfig config({
+      {SiteLocation(GURL("https://example.com")),
+       CreateRule({}, {Rule::Resource::kSession}, {Rule::Capability::kAll})},
+  });
 
   EXPECT_TRUE(config.IsActuationAllowed(kExampleOrigin));
   EXPECT_TRUE(config.IsNavigationAllowed(kExampleOrigin, kExampleOrigin));
 }
 
 TEST_F(ActorContainerConfigTest, NoResources) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() = CreateSiteLocationRule("example.com");
-  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
-  ActorContainerConfig config(config_proto);
+  ActorContainerConfig config({
+      {SiteLocation(GURL("https://example.com")),
+       CreateRule({}, {}, {Rule::Capability::kAll})},
+  });
 
   EXPECT_FALSE(config.IsActuationAllowed(kExampleOrigin));
   EXPECT_FALSE(config.IsNavigationAllowed(kExampleOrigin, kExampleOrigin));
-}
-
-TEST_F(ActorContainerConfigTest, ResourceUnknown) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() = CreateSiteLocationRule("example.com");
-  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
-  config_proto.mutable_location_rules(0)
-      ->mutable_metadata()
-      ->add_accessible_resources(
-          optimization_guide::proto::RuleMetadata::RESOURCE_UNKNOWN);
-  ActorContainerConfig config(config_proto);
-
-  EXPECT_FALSE(config.IsActuationAllowed(kExampleOrigin));
-  EXPECT_FALSE(config.IsNavigationAllowed(kExampleOrigin, kExampleOrigin));
-}
-
-TEST_F(ActorContainerConfigTest, MultipleResourceUnknowns) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() = CreateSiteLocationRule("example.com");
-  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
-  config_proto.mutable_location_rules(0)
-      ->mutable_metadata()
-      ->add_accessible_resources(
-          optimization_guide::proto::RuleMetadata::RESOURCE_UNKNOWN);
-  config_proto.mutable_location_rules(0)
-      ->mutable_metadata()
-      ->add_accessible_resources(
-          optimization_guide::proto::RuleMetadata::RESOURCE_UNKNOWN);
-  ActorContainerConfig config(config_proto);
-
-  EXPECT_FALSE(config.IsActuationAllowed(kExampleOrigin));
-  EXPECT_FALSE(config.IsNavigationAllowed(kExampleOrigin, kExampleOrigin));
-}
-
-TEST_F(ActorContainerConfigTest, MixedResourcesUnknownAndSession) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() = CreateSiteLocationRule("example.com");
-  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
-  config_proto.mutable_location_rules(0)
-      ->mutable_metadata()
-      ->add_accessible_resources(
-          optimization_guide::proto::RuleMetadata::RESOURCE_UNKNOWN);
-  config_proto.mutable_location_rules(0)
-      ->mutable_metadata()
-      ->add_accessible_resources(
-          optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
-  ActorContainerConfig config(config_proto);
-
-  EXPECT_TRUE(config.IsActuationAllowed(kExampleOrigin));
-  EXPECT_TRUE(config.IsNavigationAllowed(kExampleOrigin, kExampleOrigin));
 }
 
 TEST_F(ActorContainerConfigTest, MultipleResourceSessions) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() = CreateSiteLocationRule("example.com");
-  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
-  config_proto.mutable_location_rules(0)
-      ->mutable_metadata()
-      ->add_accessible_resources(
-          optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
-  config_proto.mutable_location_rules(0)
-      ->mutable_metadata()
-      ->add_accessible_resources(
-          optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
-  ActorContainerConfig config(config_proto);
+  ActorContainerConfig config({
+      {SiteLocation(GURL("https://example.com")),
+       CreateRule({}, {Rule::Resource::kSession}, {Rule::Capability::kAll})},
+  });
 
   EXPECT_TRUE(config.IsActuationAllowed(kExampleOrigin));
   EXPECT_TRUE(config.IsNavigationAllowed(kExampleOrigin, kExampleOrigin));
 }
 
-TEST_F(ActorContainerConfigTest, SiteWithUnknownProtocol) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() = CreateSiteLocationRule(
-      "example.com", optimization_guide::proto::Protocol::PROTOCOL_UNKNOWN);
-  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
-  config_proto.mutable_location_rules(0)
-      ->mutable_metadata()
-      ->add_accessible_resources(
-          optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
-  ActorContainerConfig config(config_proto);
-
-  EXPECT_FALSE(config.IsActuationAllowed(kExampleOrigin));
-  EXPECT_FALSE(config.IsNavigationAllowed(kExampleOrigin, kExampleOrigin));
-}
-
-TEST_F(ActorContainerConfigTest, OriginWithUnknownProtocol) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() = CreateOriginLocationRule(
-      "a.example.com", optimization_guide::proto::Protocol::PROTOCOL_UNKNOWN);
-  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
-  config_proto.mutable_location_rules(0)
-      ->mutable_metadata()
-      ->add_accessible_resources(
-          optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
-  ActorContainerConfig config(config_proto);
-
-  EXPECT_FALSE(config.IsActuationAllowed(kExampleOrigin));
-  EXPECT_FALSE(config.IsNavigationAllowed(kExampleOrigin, kExampleOrigin));
-}
-
-TEST_F(ActorContainerConfigTest, SiteWithNoDomain) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() = CreateSiteLocationRule("example.com");
-  config_proto.mutable_location_rules(0)
-      ->mutable_location()
-      ->mutable_site()
-      ->clear_domain();
-  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
-  config_proto.mutable_location_rules(0)
-      ->mutable_metadata()
-      ->add_accessible_resources(
-          optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
-  ActorContainerConfig config(config_proto);
-
-  EXPECT_FALSE(config.IsActuationAllowed(kExampleOrigin));
-  EXPECT_FALSE(config.IsNavigationAllowed(kExampleOrigin, kExampleOrigin));
-}
-
-TEST_F(ActorContainerConfigTest, OriginWithNoHost) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() =
-      CreateOriginLocationRule("a.example.com");
-  config_proto.mutable_location_rules(0)
-      ->mutable_location()
-      ->mutable_origin()
-      ->clear_host();
-  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
-  config_proto.mutable_location_rules(0)
-      ->mutable_metadata()
-      ->add_accessible_resources(
-          optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
-  ActorContainerConfig config(config_proto);
-
-  EXPECT_FALSE(config.IsActuationAllowed(kExampleOrigin));
-  EXPECT_FALSE(config.IsNavigationAllowed(kExampleOrigin, kExampleOrigin));
-}
-
-TEST_F(ActorContainerConfigTest, EmptyLocationRule) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  config_proto.add_location_rules();
-  ActorContainerConfig config(config_proto);
-
-  EXPECT_FALSE(config.IsActuationAllowed(kExampleOrigin));
-  EXPECT_FALSE(config.IsNavigationAllowed(kExampleOrigin, kExampleOrigin));
-}
-
-TEST_F(ActorContainerConfigTest, SiteWithEmptySource) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() = CreateSiteLocationRule("example.com");
-  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
-  config_proto.mutable_location_rules(0)
-      ->mutable_metadata()
-      ->add_accessible_resources(
-          optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
-  config_proto.mutable_location_rules(0)->add_navigation_sources();
-  ActorContainerConfig config(config_proto);
-
-  EXPECT_FALSE(config.IsActuationAllowed(kExampleOrigin));
-  EXPECT_FALSE(config.IsNavigationAllowed(kExampleOrigin, kExampleOrigin));
-}
-
 TEST_F(ActorContainerConfigTest, WsOrigin) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() = CreateOriginLocationRule(
-      "a.example.com", optimization_guide::proto::Protocol::PROTOCOL_WS);
-  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
-  config_proto.mutable_location_rules(0)
-      ->mutable_metadata()
-      ->add_accessible_resources(
-          optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
-  ActorContainerConfig config(config_proto);
+  ActorContainerConfig config({
+      {Location(kWsOrigin),
+       CreateRule({}, {Rule::Resource::kSession}, {Rule::Capability::kAll})},
+  });
 
   // Should not match https://.
   EXPECT_FALSE(config.IsActuationAllowed(kExampleOrigin));
@@ -991,16 +652,10 @@ TEST_F(ActorContainerConfigTest, WsOrigin) {
 }
 
 TEST_F(ActorContainerConfigTest, WssOrigin) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() = CreateOriginLocationRule(
-      "a.example.com", optimization_guide::proto::Protocol::PROTOCOL_WSS);
-  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
-  config_proto.mutable_location_rules(0)
-      ->mutable_metadata()
-      ->add_accessible_resources(
-          optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
-  ActorContainerConfig config(config_proto);
+  ActorContainerConfig config({
+      {Location(kWssOrigin),
+       CreateRule({}, {Rule::Resource::kSession}, {Rule::Capability::kAll})},
+  });
 
   // Should not match https://.
   EXPECT_FALSE(config.IsActuationAllowed(kExampleOrigin));
@@ -1009,7 +664,7 @@ TEST_F(ActorContainerConfigTest, WssOrigin) {
   // Can only navigate https:// -> wss://.
   EXPECT_FALSE(config.IsActuationAllowed(kWsOrigin));
   EXPECT_TRUE(config.IsNavigationAllowed(kExampleOrigin, kWssOrigin));
-  EXPECT_FALSE(config.IsNavigationAllowed(kWssOrigin, kExampleOrigin));
+  EXPECT_FALSE(config.IsNavigationAllowed(kWsOrigin, kExampleOrigin));
 
   // Only navigation from ws:// -> wss:// allowed.
   EXPECT_TRUE(config.IsActuationAllowed(kWssOrigin));
@@ -1022,21 +677,16 @@ TEST_F(ActorContainerConfigTest, WssOrigin) {
 }
 
 TEST_F(ActorContainerConfigTest, ToDebugStringEmpty) {
-  ActorContainerConfig config((AgentContainerConfig()));
+  ActorContainerConfig config;
 
   EXPECT_THAT(config.ToDebugValue(), base::test::IsJson(R"({"rules": {}})"));
 }
 
 TEST_F(ActorContainerConfigTest, ToDebugStringWildcard) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() = CreateWildcardLocationRule();
-  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
-  config_proto.mutable_location_rules(0)
-      ->mutable_metadata()
-      ->add_accessible_resources(
-          optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
-  ActorContainerConfig config(config_proto);
+  ActorContainerConfig config({
+      {WildcardLocation(),
+       CreateRule({}, {Rule::Resource::kSession}, {Rule::Capability::kAll})},
+  });
 
   EXPECT_THAT(config.ToDebugValue(), base::test::IsJson(R"json({
         "rules": {
@@ -1050,17 +700,11 @@ TEST_F(ActorContainerConfigTest, ToDebugStringWildcard) {
 }
 
 TEST_F(ActorContainerConfigTest, ToDebugStringSiteWithNavigationSource) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() = CreateSiteLocationRule("example.com");
-  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
-  config_proto.mutable_location_rules(0)
-      ->mutable_metadata()
-      ->add_accessible_resources(
-          optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
-  *config_proto.mutable_location_rules(0)->add_navigation_sources() =
-      CreateOriginNavigationSource("a.example.com");
-  ActorContainerConfig config(config_proto);
+  ActorContainerConfig config({
+      {SiteLocation(GURL("https://example.com")),
+       CreateRule({OriginLocation(GURL("https://a.example.com"))},
+                  {Rule::Resource::kSession}, {Rule::Capability::kAll})},
+  });
 
   EXPECT_THAT(config.ToDebugValue(), base::test::IsJson(R"json({
         "rules": {
@@ -1074,25 +718,15 @@ TEST_F(ActorContainerConfigTest, ToDebugStringSiteWithNavigationSource) {
 }
 
 TEST_F(ActorContainerConfigTest, ToDebugStringMultipleRules) {
-  optimization_guide::proto::AgentContainerConfig config_proto;
-  *config_proto.add_location_rules() = CreateSiteLocationRule("example.com");
-  config_proto.mutable_location_rules(0)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
-  config_proto.mutable_location_rules(0)
-      ->mutable_metadata()
-      ->add_accessible_resources(
-          optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
-  *config_proto.mutable_location_rules(0)->add_navigation_sources() =
-      CreateOriginNavigationSource("a.example.com");
-
-  *config_proto.add_location_rules() = CreateSiteLocationRule("foo.com");
-  config_proto.mutable_location_rules(1)->mutable_metadata()->add_capabilities(
-      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
-  *config_proto.mutable_location_rules(1)->add_navigation_sources() =
-      CreateOriginNavigationSource("bar.example.com");
-  *config_proto.mutable_location_rules(1)->add_navigation_sources() =
-      CreateSiteNavigationSource("other.com");
-  ActorContainerConfig config(config_proto);
+  ActorContainerConfig config({
+      {SiteLocation(GURL("https://example.com")),
+       CreateRule({OriginLocation(GURL("https://a.example.com"))},
+                  {Rule::Resource::kSession}, {Rule::Capability::kAll})},
+      {SiteLocation(GURL("https://foo.com")),
+       CreateRule({OriginLocation(GURL("https://bar.example.com")),
+                   SiteLocation(GURL("https://other.com"))},
+                  {}, {Rule::Capability::kAll})},
+  });
 
   EXPECT_THAT(config.ToDebugValue(), base::test::IsJson(R"json({
         "rules": {
@@ -1110,14 +744,5 @@ TEST_F(ActorContainerConfigTest, ToDebugStringMultipleRules) {
         }
   })json"));
 }
-
-#if BUILDFLAG(USE_FUZZING_ENGINE)
-void CanParseAnyProto(
-    const optimization_guide::proto::AgentContainerConfig& config_proto) {
-  ActorContainerConfig config(config_proto);
-}
-
-FUZZ_TEST(ActorContainerConfigFuzzTest, CanParseAnyProto);
-#endif
 
 }  // namespace origin_gating
