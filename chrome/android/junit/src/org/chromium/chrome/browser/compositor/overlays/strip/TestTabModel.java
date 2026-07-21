@@ -36,6 +36,7 @@ public class TestTabModel extends EmptyTabModel {
         final int tabId = mMaxId;
         when(mockTab.getId()).thenReturn(tabId);
         when(mockTab.getTitle()).thenReturn(title);
+        when(mockTab.getParentId()).thenReturn(Tab.INVALID_TAB_ID);
         mMockTabs.add(mockTab);
     }
 

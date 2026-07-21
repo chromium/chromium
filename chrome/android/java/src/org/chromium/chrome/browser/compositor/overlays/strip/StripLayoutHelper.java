@@ -4142,7 +4142,45 @@ public class StripLayoutHelper
     public int getNextIndexAfterClose(Collection<StripLayoutTab> closingTabs) {
         // Intentionally kept separate from #getNearbyNotClosingTabIndex, to have more specific
         // javadocs for each method.
+        int parentIndex = getParentTabIndexIfValid(closingTabs);
+        if (parentIndex != TabModel.INVALID_TAB_INDEX) {
+            return parentIndex;
+        }
         return getNearbyTabIndex(getAllTabsListForAutoSelect(), closingTabs);
+    }
+
+    /**
+     * Attempts to find a valid parent tab index in the {@link TabModel} for a single closing tab.
+     * Prioritizes navigating back to the parent tab that initiated creation of the closing tab,
+     * provided the parent tab is live and not currently closing.
+     *
+     * @param closingTabs The collection of tabs being closed.
+     * @return The index of the parent tab in the {@link TabModel}, or {@link
+     *     TabModel#INVALID_TAB_INDEX} if no valid parent tab is found.
+     */
+    private int getParentTabIndexIfValid(Collection<StripLayoutTab> closingTabs) {
+        if (closingTabs.size() != 1 || mModel == null) {
+            return TabModel.INVALID_TAB_INDEX;
+        }
+
+        StripLayoutTab closingStripTab = closingTabs.iterator().next();
+        Tab closingTab = getTabById(closingStripTab.getTabId());
+        int parentId = closingTab != null ? closingTab.getParentId() : Tab.INVALID_TAB_ID;
+        if (parentId == Tab.INVALID_TAB_ID) {
+            return TabModel.INVALID_TAB_INDEX;
+        }
+
+        StripLayoutTab parentStripTab = findTabById(parentId);
+        if (parentStripTab != null
+                && isLiveTab(parentStripTab)
+                && !closingTabs.contains(parentStripTab)) {
+            Tab parentTab = getTabById(parentId);
+            if (parentTab != null && !parentTab.isClosing()) {
+                return mModel.indexOf(parentTab);
+            }
+        }
+
+        return TabModel.INVALID_TAB_INDEX;
     }
 
     /**
