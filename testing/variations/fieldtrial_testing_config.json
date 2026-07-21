@@ -6384,6 +6384,26 @@
             ]
         }
     ],
+    "ClientSideDetectionScamScore": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ClientSideDetectionScamScore",
+                        "ClientSideDetectionServerModelForScamDetectionAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClientSideDetectionSendLlamaForcedTriggerInfo": [
         {
             "platforms": [
