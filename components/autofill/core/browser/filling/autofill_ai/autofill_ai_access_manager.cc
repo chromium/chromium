@@ -13,41 +13,19 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/filling/autofill_ai/field_filling_entity_util.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/network/autofill_ai/autofill_ai_personal_context_access_manager.h"
 #include "components/autofill/core/browser/network/autofill_ai/wallet_pass_access_manager.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/device_reauth/device_authenticator.h"
-#include "components/strings/grit/components_strings.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
 namespace autofill {
-
-namespace {
-
-std::u16string GetAuthenticationMessage(const url::Origin& origin) {
-  // Android is excluded here because the system biometric prompt does not
-  // support a custom message.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_IOS)
-  // TODO(crbug.com/492978632): Evaluate if the host should be accessed based
-  // on the field origin instead of using the last committed main frame origin
-  // and what should happen when `host` is empty.
-  return l10n_util::GetStringFUTF16(IDS_AUTOFILL_AI_FILLING_REAUTH,
-                                    base::UTF8ToUTF16(origin.host()));
-#else
-  return std::u16string();
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) ||
-        // BUILDFLAG(IS_IOS)
-}
-
-}  // namespace
 
 AutofillAiAccessManager::AutofillAiAccessManager(
     BrowserAutofillManager* manager)

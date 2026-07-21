@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/filling/field_filling_util.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "url/origin.h"
 
 namespace autofill {
 
@@ -62,6 +63,10 @@ bool WillRequireServerFetch(const EntityInstance& entity,
                             const FormStructure& form,
                             const Section& section,
                             std::string_view app_locale);
+
+// Returns the authentication message shown when reauthenticating with
+// biometrics for `origin`.
+std::u16string GetAuthenticationMessage(const url::Origin& origin);
 
 }  // namespace autofill
 

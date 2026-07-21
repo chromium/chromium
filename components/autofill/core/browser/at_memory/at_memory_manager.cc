@@ -521,6 +521,27 @@ std::optional<std::u16string> GetAttributeFillValue(
   return attribute->GetCompleteInfo(app_locale);
 }
 
+// Extracts `EntryMetadata` items stored in `suggestion.children` to provide
+// contextual metadata when unmasking/fetching sensitive PII data.
+std::vector<accessibility_annotator::EntryMetadata> GetMetadataFromSuggestion(
+    const Suggestion& suggestion) {
+  std::vector<accessibility_annotator::EntryMetadata> metadata;
+  for (const Suggestion& child : suggestion.children) {
+    const auto* child_payload =
+        std::get_if<Suggestion::AtMemoryPayload>(&child.payload);
+    if (child.type != SuggestionType::kAtMemorySearchResult || !child_payload) {
+      continue;
+    }
+    std::u16string label_text =
+        !child.labels.empty() && !child.labels[0].empty()
+            ? child.labels[0][0].value
+            : std::u16string();
+    metadata.emplace_back(child_payload->memory_data_type,
+                          std::move(label_text), child_payload->value);
+  }
+  return metadata;
+}
+
 }  // namespace
 
 AtMemoryManager::AtMemoryManager(BrowserAutofillManager* manager)
@@ -1164,6 +1185,58 @@ void AtMemoryManager::FillCreditCard(
           std::move(metrics)));
 }
 
+void AtMemoryManager::FillSensitivePersonalContextData(
+    const FormGlobalId& form_id,
+    const FieldGlobalId& field_id,
+    const Suggestion& suggestion,
+    std::unique_ptr<AtMemoryMetricsRecorder> metrics) {
+  AtMemoryQueryService* query_service =
+      owner_->client().GetAtMemoryQueryService();
+
+  if (!query_service) {
+    return;
+  }
+
+  const Suggestion::AtMemoryPayload& payload =
+      suggestion.GetPayload<Suggestion::AtMemoryPayload>();
+
+  if (metrics) {
+    metrics->OnFetchPiiStarted(
+        AtMemoryMetricsRecorder::FetchPiiSource::kPersonalContext);
+  }
+
+  query_service->AuthenticateAndFetchPiiEntity(
+      owner_->client(),
+      GetAuthenticationMessage(
+          owner_->client().GetLastCommittedPrimaryMainFrameOrigin()),
+      payload.value, payload.memory_data_type,
+      GetMetadataFromSuggestion(suggestion),
+      base::BindOnce(&AtMemoryManager::OnSensitivePersonalContextDataFetched,
+                     fill_weak_ptr_factory_.GetWeakPtr(), form_id, field_id,
+                     std::move(metrics)));
+}
+
+void AtMemoryManager::OnSensitivePersonalContextDataFetched(
+    const FormGlobalId& form_id,
+    const FieldGlobalId& field_id,
+    std::unique_ptr<AtMemoryMetricsRecorder> metrics,
+    AtMemoryQueryService::SpiiRetrievalResult result) {
+  if (!result.has_value()) {
+    return;
+  }
+
+  if (metrics) {
+    metrics->OnFetchPiiCompleted();
+    metrics->MarkFilled();
+  }
+
+  owner_->FillOrPreviewField(mojom::ActionPersistence::kFill,
+                             mojom::FieldActionType::kReplaceAtMemoryTrigger,
+                             form_id, field_id, *result,
+                             FillingProduct::kAtMemory,
+                             /*field_type_used=*/std::nullopt);
+}
+
 void AtMemoryManager::FillSensitiveAutofillAiOrPersonalContextData(
     const FormGlobalId& form_id,
     const FieldGlobalId& field_id,
@@ -1178,26 +1251,12 @@ void AtMemoryManager::FillSensitiveAutofillAiOrPersonalContextData(
                       std::holds_alternative<EntityType>(*data_type)));
 
   if (payload.is_personal_context_sourced) {
-    if (metrics) {
-      metrics->OnFetchPiiStarted(
-          AtMemoryMetricsRecorder::FetchPiiSource::kPersonalContext);
-      // TODO(crbug.com/525385681): Properly record start and completion times
-      // once we actually fetch PII remotely.
-      metrics->OnFetchPiiCompleted();
-      metrics->MarkFilled();
-    }
-    // TODO(crbug.com/525386262): Authenticate before fetching and fetch using
-    // `AtMemoryQueryService`, before filling.
-    owner_->FillOrPreviewField(mojom::ActionPersistence::kFill,
-                               mojom::FieldActionType::kReplaceAtMemoryTrigger,
-                               form_id, field_id, payload.value,
-                               FillingProduct::kAtMemory,
-                               /*field_type_used=*/std::nullopt);
+    FillSensitivePersonalContextData(form_id, field_id, suggestion,
+                                     std::move(metrics));
     return;
-  }
-  if (const EntityInstance::EntityId* entity_id =
-          std::get_if<EntityInstance::EntityId>(&payload.identifier);
-      entity_id) {
+  } else if (const EntityInstance::EntityId* entity_id =
+                 std::get_if<EntityInstance::EntityId>(&payload.identifier);
+             entity_id) {
     FillSensitiveAutofillAiData(*entity_id, form_id, field_id, suggestion,
                                 *data_type, std::move(metrics));
     return;

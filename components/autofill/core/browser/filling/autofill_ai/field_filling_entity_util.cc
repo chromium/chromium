@@ -21,6 +21,7 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/autofill_ai_form_rationalization.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -44,6 +45,8 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 
@@ -350,6 +353,22 @@ bool WillRequireServerFetch(const EntityInstance& entity,
       base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses);
 
   return is_ambient_enabled || is_wallet_enabled;
+}
+
+std::u16string GetAuthenticationMessage(const url::Origin& origin) {
+  // Android is excluded here because the system biometric prompt does not
+  // support a custom message.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_IOS)
+  // TODO(crbug.com/492978632): Evaluate if the host should be accessed based
+  // on the field origin instead of using the last committed main frame origin
+  // and what should happen when `host` is empty.
+  return l10n_util::GetStringFUTF16(IDS_AUTOFILL_AI_FILLING_REAUTH,
+                                    base::UTF8ToUTF16(origin.host()));
+#else
+  return std::u16string();
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_IOS)
 }
 
 }  // namespace autofill

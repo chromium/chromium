@@ -82,8 +82,6 @@ class AtMemoryQueryService : public KeyedService {
   // `callback` is always called asynchronously. If successful, `callback` is
   // called with an unobfuscated value for `data_type`, otherwise an error
   // reason is provided.
-  // TODO(crbug.com/525385681): Use in `AtMemoryManager` before filling
-  // suggestions.
   virtual void AuthenticateAndFetchPiiEntity(
       const AutofillClient& client,
       const std::u16string& auth_message,
