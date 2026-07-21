@@ -86,6 +86,10 @@ COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(
 // Whether to open the downloaded file in a new tab instead of a Custom Tab on
 // Desktop Android.
 COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kOpenDownloadInNewTab);
+
+// Whether to enable "Save As" context menu option.
+COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(
+    kEnableDownloadSaveAsContextMenu);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Whether to defer download history loading until first use.

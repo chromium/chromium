@@ -162,6 +162,10 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // factors.
   feature_overrides.EnableFeature(download::features::kOpenDownloadInNewTab);
 
+  // Enable`save as`context menu.
+  feature_overrides.EnableFeature(
+      download::features::kEnableDownloadSaveAsContextMenu);
+
   // Enable background media capturing on desktop devices.
   // TODO(crbug.com/426461170): Remove once we enable this feature for all form
   // factors. Currently we have no conclusion whether to enable this on mobile
