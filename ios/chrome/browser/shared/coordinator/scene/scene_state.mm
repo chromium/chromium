@@ -82,10 +82,6 @@
   return self;
 }
 
-- (instancetype)initWithAppState:(AppState*)appState {
-  return [self init];
-}
-
 #pragma mark - public
 
 - (void)addObserver:(id<SceneStateObserver>)observer {

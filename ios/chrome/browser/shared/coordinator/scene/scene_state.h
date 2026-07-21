@@ -64,9 +64,6 @@ struct SceneStateOptions;
 // Designated initializer.
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
-// Deprecated initializer as the `appState` is ignored.
-- (instancetype)initWithAppState:(AppState*)appState;
-
 // The profile state for profile that owns this scene.
 @property(nonatomic, weak) ProfileState* profileState;
 
