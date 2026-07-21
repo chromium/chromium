@@ -70,10 +70,10 @@ class WebAppOriginText : public views::View,
   // content::WebContentsObserver:
   void DidFinishNavigation(content::NavigationHandle* handle) override;
 
-  void UpdateAccessibleName();
+  // May update the text based on the `new_contents`.
+  void MaybeUpdateAndShowText(const content::WebContents* new_contents);
 
-  // origin_text_ is populated by ReadyToCommitNavigation.
-  std::u16string origin_text_;
+  void UpdateAccessibleName();
 
   // Disallow animation until the parent view animates for the first time. This
   // helps respect the animation start delay in WebAppToolbarButtonContainer.

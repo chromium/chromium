@@ -46,7 +46,7 @@ WebAppOriginText::WebAppOriginText(Browser* browser) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   label_ = std::make_unique<views::Label>(
-               origin_text_, ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
+               u"", ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
                views::style::STYLE_EMPHASIZED)
                .release();
   label_->SetElideBehavior(gfx::ELIDE_HEAD);
@@ -129,13 +129,13 @@ void WebAppOriginText::StartFadeAnimation() {
 void WebAppOriginText::OnLayerAnimationEnded(
     ui::LayerAnimationSequence* sequence) {
   SetVisible(false);
-  last_completed_animation_text_for_testing_ = origin_text_;
+  last_completed_animation_text_for_testing_ = label_->GetText();
 }
 
 void WebAppOriginText::OnLayerAnimationAborted(
     ui::LayerAnimationSequence* sequence) {
   SetVisible(false);
-  last_completed_animation_text_for_testing_ = origin_text_;
+  last_completed_animation_text_for_testing_ = label_->GetText();
 }
 
 std::u16string_view WebAppOriginText::GetLabelTextForTesting() const {
@@ -149,6 +149,15 @@ void WebAppOriginText::OnTabStripModelChanged(
     const TabStripSelectionChange& selection) {
   if (selection.active_tab_changed() && !tab_strip_model->empty()) {
     Observe(selection.new_contents);
+    // Don't do anything if this is the original tab loading in. The text will
+    // be shown on navigation complete.
+    const bool is_startup = !selection.old_contents;
+    if (!is_startup) {
+      // In tabbed PWAs, the new tab might be from a different origin, in which
+      // case we don't want to accidentally show the previous tab's or the app's
+      // origin in the label. Update the text appropriately.
+      MaybeUpdateAndShowText(selection.new_contents);
+    }
   }
 }
 
@@ -156,26 +165,32 @@ void WebAppOriginText::DidFinishNavigation(content::NavigationHandle* handle) {
   if (!handle->IsInPrimaryMainFrame() || handle->IsSameDocument()) {
     return;
   }
-  content::WebContents* web_contents = handle->GetWebContents();
-  if (!web_contents) {
+  MaybeUpdateAndShowText(handle->GetWebContents());
+}
+
+void WebAppOriginText::MaybeUpdateAndShowText(
+    const content::WebContents* new_contents) {
+  if (!new_contents) {
     return;
   }
-  BrowserWindowInterface* browser =
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* const browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(new_contents);
   if (!browser) {
     return;
   }
-  web_app::AppBrowserController* app_controller =
+  const web_app::AppBrowserController* const app_controller =
       web_app::AppBrowserController::From(browser);
   if (!app_controller) {
     return;
   }
-  std::u16string new_origin_text = app_controller->GetLaunchFlashText();
-  if (new_origin_text.empty() || new_origin_text == origin_text_) {
+  const std::u16string new_origin_text = app_controller->GetLaunchFlashText();
+  if (new_origin_text.empty() || new_origin_text == label_->GetText()) {
     return;
   }
-  origin_text_ = std::move(new_origin_text);
-  label_->SetText(origin_text_);
+  // Note: this will also update the accessible name via the
+  // `UpdateAccessibleName()` callback.
+  label_->SetText(new_origin_text);
+
   // CCT UI already displays origin information so there is no need to animate
   // origin text.
   // TODO(crbug.com/40282543): Instead of DidFinishNavigation, we can use
@@ -187,6 +202,7 @@ void WebAppOriginText::DidFinishNavigation(content::NavigationHandle* handle) {
     label_->layer()->GetAnimator()->StopAnimating();
     return;
   }
+
   StartFadeAnimation();
 }
 
