@@ -12,6 +12,8 @@
 #import "ios/chrome/browser/search_engine_choice/test/search_engine_choice_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/search_engine_choice/ui/search_engine_choice_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_app_interface.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -50,6 +52,8 @@
   config.additional_args.push_back(
       "--" + std::string(switches::kForceSearchEngineChoiceScreen));
   config.features_enabled.push_back(switches::kTaiyakiAllSurfaces);
+  config.features_enabled.push_back(
+      switches::kSearchEngineChoiceScreenSnackbar);
   // Relaunches the app at each test to re-display the choice screen.
   config.relaunch_policy = ForceRelaunchByKilling;
 
@@ -92,8 +96,69 @@
                               amount:50];
 
   [SearchEngineChoiceEarlGreyUI confirmSearchEngineChoiceScreen];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      chrome_test_util::SnackbarViewMatcher()];
   [SearchEngineChoiceEarlGreyUI
       verifyDefaultSearchEngineSetting:searchEngineToSelect];
+}
+
+// Tests that tapping the snackbar displayed after confirming the Search Engine
+// Choice screen opens the Search Engine settings screen, and verifies changing
+// the search engine setting from there.
+- (void)testTaiyakiSearchEngineChoiceScreenSnackbarOpenSettings {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // The feature is not available on iPad.
+    return;
+  }
+  // Check that the choice screen is shown.
+  [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
+
+  // Select a search engine.
+  NSString* searchEngineToSelect =
+      [SearchEngineChoiceEarlGreyUI searchEngineNameWithPrepopulatedEngine:
+                                        TemplateURLPrepopulateData::yahoo_jp];
+  [SearchEngineChoiceEarlGreyUI
+      selectSearchEngineCellWithName:searchEngineToSelect
+                     scrollDirection:kGREYDirectionDown
+                              amount:50];
+
+  [SearchEngineChoiceEarlGreyUI confirmSearchEngineChoiceScreen];
+
+  // Wait for the snackbar to appear.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      chrome_test_util::SnackbarViewMatcher()];
+
+  // Tap the snackbar action button.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kSnackbarButtonAccessibilityId)]
+      performAction:grey_tap()];
+
+  // Verify that the Search Engine Settings screen is displayed.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kSearchEngineTableViewControllerId)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify that Yahoo! JAPAN is displayed in the settings.
+  [[SearchEngineChoiceEarlGreyUI
+      interactionForSettingsWithPrepopulatedSearchEngine:
+          TemplateURLPrepopulateData::yahoo_jp]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Select Google search engine in settings.
+  [[SearchEngineChoiceEarlGreyUI
+      interactionForSettingsWithPrepopulatedSearchEngine:
+          TemplateURLPrepopulateData::google] performAction:grey_tap()];
+
+  // Close Settings screen.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
+      performAction:grey_tap()];
+
+  // Open settings again and verify that Google search engine is selected.
+  NSString* googleSearchEngineName =
+      [SearchEngineChoiceEarlGreyUI searchEngineNameWithPrepopulatedEngine:
+                                        TemplateURLPrepopulateData::google];
+  [SearchEngineChoiceEarlGreyUI
+      verifyDefaultSearchEngineSetting:googleSearchEngineName];
 }
 
 @end
