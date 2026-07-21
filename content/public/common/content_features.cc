@@ -452,7 +452,7 @@ BASE_FEATURE(kFedCmLightweightMode, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kFedCmMetricsEndpoint, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables FedCM to support login request initiated by the embedder.
-BASE_FEATURE(kFedCmEmbedderInitiatedLogin, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFedCmEmbedderInitiatedLogin, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Nonce usage in Params
 BASE_FEATURE(kFedCmNonceInParams, base::FEATURE_DISABLED_BY_DEFAULT);
