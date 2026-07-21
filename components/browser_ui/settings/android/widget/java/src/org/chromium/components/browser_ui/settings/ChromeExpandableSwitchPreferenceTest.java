@@ -22,6 +22,9 @@ import android.app.Activity;
 import android.view.View;
 import android.view.ViewStub;
 
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
@@ -258,6 +261,32 @@ public class ChromeExpandableSwitchPreferenceTest {
                             Assert.assertNotNull(
                                     "Content description should not be null", contentDescription);
                             Assert.assertEquals(TITLE, contentDescription.toString());
+                        });
+    }
+
+    @Test
+    @LargeTest
+    public void testExpandedAreaAccessibility() {
+        // Expand programmatically.
+        ThreadUtils.runOnUiThreadBlocking(() -> mPreference.setExpanded(true));
+
+        // Check accessibility node info of expanded area.
+        onView(withId(R.id.expandable_switch_expanded_area))
+                .check(
+                        (view, noViewFoundException) -> {
+                            if (noViewFoundException != null) {
+                                throw noViewFoundException;
+                            }
+                            AccessibilityNodeInfoCompat info = AccessibilityNodeInfoCompat.obtain();
+                            ViewCompat.onInitializeAccessibilityNodeInfo(view, info);
+                            Assert.assertFalse(
+                                    "Expanded area should not be reported as clickable to"
+                                            + " accessibility",
+                                    info.isClickable());
+                            Assert.assertFalse(
+                                    "Expanded area should not have click action in accessibility",
+                                    info.getActionList()
+                                            .contains(AccessibilityActionCompat.ACTION_CLICK));
                         });
     }
 }

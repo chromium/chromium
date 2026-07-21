@@ -7,17 +7,23 @@ package org.chromium.components.browser_ui.settings;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.preference.PreferenceViewHolder;
 
 import com.google.android.material.materialswitch.MaterialSwitch;
@@ -40,10 +46,22 @@ public class ChromeExpandableSwitchPreference extends ChromeSwitchPreference {
         void onBindExpandedArea(View expandedArea);
     }
 
+    private static final AccessibilityDelegateCompat sExpandedAreaAccessibilityDelegate =
+            new AccessibilityDelegateCompat() {
+                @Override
+                public void onInitializeAccessibilityNodeInfo(
+                        View host, AccessibilityNodeInfoCompat info) {
+                    super.onInitializeAccessibilityNodeInfo(host, info);
+                    info.setScreenReaderFocusable(true);
+                }
+            };
+
     private boolean mExpanded;
     @LayoutRes private final int mExpandedContentLayoutResId;
     private @Nullable Drawable mDrawable;
     private @Nullable OnBindExpandedAreaListener mOnBindExpandedAreaListener;
+    private @Nullable View mExpandedArea;
+    private boolean mTouchInExpandedArea;
 
     public ChromeExpandableSwitchPreference(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -74,11 +92,21 @@ public class ChromeExpandableSwitchPreference extends ChromeSwitchPreference {
     }
 
     @Override
-    // Suppress lint warning for setOnTouchListener on expandedArea, which catches touch events
-    // to prevent preference toggling without making expandedArea clickable/focusable for TalkBack.
+    // Suppress lint warning for setOnTouchListener on itemView, which checks if touch events
+    // land inside expandedArea to prevent preference toggling when user touches expanded content.
     @SuppressLint("ClickableViewAccessibility")
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
+
+        holder.itemView.setOnTouchListener(
+                (v, event) -> {
+                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                        mTouchInExpandedArea = isTouchInView(v, mExpandedArea, event);
+                    } else if (event.getAction() == MotionEvent.ACTION_CANCEL) {
+                        mTouchInExpandedArea = false;
+                    }
+                    return false;
+                });
 
         TextView title = (TextView) holder.findViewById(android.R.id.title);
         TextView summary = (TextView) holder.findViewById(android.R.id.summary);
@@ -142,14 +170,10 @@ public class ChromeExpandableSwitchPreference extends ChromeSwitchPreference {
                 expandedArea = stub.inflate();
             }
         }
+        mExpandedArea = expandedArea;
         if (expandedArea != null) {
             expandedArea.setVisibility(mExpanded ? View.VISIBLE : View.GONE);
-            // Catch touch events on the expanded area to prevent them from propagating to the
-            // parent view. This prevents the preference from toggling when the user interacts
-            // with the expanded content. We use setOnTouchListener instead of setOnClickListener
-            // so that expandedArea does not become clickable/focusable for accessibility (TalkBack)
-            // or keyboard navigation.
-            expandedArea.setOnTouchListener((v, event) -> true);
+            ViewCompat.setAccessibilityDelegate(expandedArea, sExpandedAreaAccessibilityDelegate);
             if (!isEnabled()) {
                 ViewUtils.setEnabledRecursive(expandedArea, false);
             }
@@ -195,7 +219,23 @@ public class ChromeExpandableSwitchPreference extends ChromeSwitchPreference {
 
     @Override
     public void onClick() {
+        if (mTouchInExpandedArea) {
+            mTouchInExpandedArea = false;
+            return;
+        }
         setExpanded(!isExpanded());
+    }
+
+    private boolean isTouchInView(View root, @Nullable View view, MotionEvent event) {
+        if (view == null || view.getVisibility() != View.VISIBLE || !view.isAttachedToWindow()) {
+            return false;
+        }
+        Rect rect = new Rect();
+        view.getDrawingRect(rect);
+        if (root instanceof ViewGroup) {
+            ((ViewGroup) root).offsetDescendantRectToMyCoords(view, rect);
+        }
+        return rect.contains((int) event.getX(), (int) event.getY());
     }
 
     /**

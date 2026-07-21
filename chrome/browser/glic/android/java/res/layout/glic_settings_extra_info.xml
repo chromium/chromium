@@ -30,7 +30,6 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/glic_extra_info_row_top_margin"
-            android:screenReaderFocusable="true"
             android:text="@string/settings_ai_page_main_title" />
 
         <TextView
@@ -39,7 +38,6 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/glic_extra_info_margin"
-            android:screenReaderFocusable="true"
             android:text="@string/settings_heading_consider" />
 
         <!-- Item 1 -->
@@ -63,7 +61,6 @@ found in the LICENSE file.
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/glic_extra_info_text_margin_start"
-                android:screenReaderFocusable="true"
                 android:text="@string/settings_ai_page_main_sublabel_1" />
         </LinearLayout>
 
@@ -88,7 +85,6 @@ found in the LICENSE file.
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/glic_extra_info_text_margin_start"
-                android:screenReaderFocusable="true"
                 android:text="@string/settings_ai_page_main_sublabel_2" />
         </LinearLayout>
 
@@ -113,7 +109,6 @@ found in the LICENSE file.
                 style="@style/TextAppearance.TextMedium.Secondary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:screenReaderFocusable="true"
                 android:layout_marginStart="@dimen/glic_extra_info_text_margin_start"
                 android:text="@string/settings_ai_page_main_managed_sublabel_3" />
         </LinearLayout>

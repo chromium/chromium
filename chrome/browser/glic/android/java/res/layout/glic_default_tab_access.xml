@@ -23,7 +23,6 @@ found in the LICENSE file.
         android:layout_marginBottom="@dimen/glic_expanded_header_bottom_margin"
         android:lineHeight="@dimen/glic_expanded_content_line_height"
         android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
-        android:screenReaderFocusable="true"
         android:text="@string/settings_heading_when_on" />
 
     <!-- Row 1: Text analysis -->
@@ -46,7 +45,6 @@ found in the LICENSE file.
             android:layout_weight="1"
             android:lineHeight="@dimen/glic_expanded_content_line_height"
             android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-            android:screenReaderFocusable="true"
             android:text="@string/settings_glic_permissions_default_tab_access_when_on_1" />
     </LinearLayout>
 
@@ -70,7 +68,6 @@ found in the LICENSE file.
             android:layout_weight="1"
             android:lineHeight="@dimen/glic_expanded_content_line_height"
             android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-            android:screenReaderFocusable="true"
             android:text="@string/settings_glic_permissions_default_tab_access_when_on_2" />
     </LinearLayout>
 
@@ -83,7 +80,6 @@ found in the LICENSE file.
         android:layout_marginBottom="@dimen/glic_expanded_header_bottom_margin"
         android:lineHeight="@dimen/glic_expanded_content_line_height"
         android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
-        android:screenReaderFocusable="true"
         android:text="@string/settings_heading_consider" />
 
     <!-- Row 3: Screensaver/Auto -->
@@ -106,7 +102,6 @@ found in the LICENSE file.
             android:layout_weight="1"
             android:lineHeight="@dimen/glic_expanded_content_line_height"
             android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-            android:screenReaderFocusable="true"
             android:text="@string/settings_glic_permissions_default_tab_access_consider_1" />
     </LinearLayout>
 
