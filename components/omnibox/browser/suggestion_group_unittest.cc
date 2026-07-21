@@ -181,4 +181,35 @@ TEST(SuggestionGroupTest, AndroidHubTypedTabGroups) {
             search_group_config->second.render_type());
   ASSERT_EQ("Search the web", search_group_config->second.header_text());
 }
+
+TEST(SuggestionGroupTest, AndroidHubTyped_IncognitoAndRegularInterleaved) {
+  omnibox::ResetDefaultGroupsForTest();
+
+  using OEP = ::metrics::OmniboxEventProto;
+  AutocompleteInput input(u"test", OEP::ANDROID_HUB, TestingSchemeClassifier());
+
+  // First call in incognito mode.
+  auto incognito_groups =
+      omnibox::BuildDefaultGroupsForInput(input, /*is_incognito=*/true);
+  auto incognito_open_tabs =
+      incognito_groups.find(omnibox::GROUP_MOBILE_OPEN_TABS);
+  ASSERT_NE(incognito_open_tabs, incognito_groups.end());
+  ASSERT_EQ("", incognito_open_tabs->second.header_text());
+
+  // Subsequent call in non-incognito mode should return the regular cached map
+  // with header text and not be polluted by the prior incognito invocation.
+  auto regular_groups =
+      omnibox::BuildDefaultGroupsForInput(input, /*is_incognito=*/false);
+  auto regular_open_tabs = regular_groups.find(omnibox::GROUP_MOBILE_OPEN_TABS);
+  ASSERT_NE(regular_open_tabs, regular_groups.end());
+  ASSERT_EQ("Tabs and tab groups", regular_open_tabs->second.header_text());
+
+  // Calling incognito mode again still returns the incognito cached map.
+  auto incognito_groups_2 =
+      omnibox::BuildDefaultGroupsForInput(input, /*is_incognito=*/true);
+  auto incognito_open_tabs_2 =
+      incognito_groups_2.find(omnibox::GROUP_MOBILE_OPEN_TABS);
+  ASSERT_NE(incognito_open_tabs_2, incognito_groups_2.end());
+  ASSERT_EQ("", incognito_open_tabs_2->second.header_text());
+}
 #endif  // BUILDFLAG(IS_ANDROID)

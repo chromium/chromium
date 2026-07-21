@@ -37,7 +37,9 @@ base::LazyInstance<GroupConfigMap>::DestructorAtExit g_default_groups =
 base::LazyInstance<GroupConfigMap>::DestructorAtExit g_default_hub_zps_groups =
     LAZY_INSTANCE_INITIALIZER;
 base::LazyInstance<GroupConfigMap>::DestructorAtExit
-    g_default_hub_typed_groups = LAZY_INSTANCE_INITIALIZER;
+    g_default_hub_typed_regular_groups = LAZY_INSTANCE_INITIALIZER;
+base::LazyInstance<GroupConfigMap>::DestructorAtExit
+    g_default_hub_typed_incognito_groups = LAZY_INSTANCE_INITIALIZER;
 
 const GroupConfigMap& BuildDefaultGroups() {
   if (g_default_groups.Get().empty()) {
@@ -80,8 +82,10 @@ const GroupConfigMap& BuildDefaultHubZPSGroups() {
 }
 
 const GroupConfigMap& BuildDefaultHubTypedGroups(bool is_incognito) {
-  if (g_default_hub_typed_groups.Get().empty()) {
-    g_default_hub_typed_groups.Get() = {
+  auto& group_map = is_incognito ? g_default_hub_typed_incognito_groups.Get()
+                                 : g_default_hub_typed_regular_groups.Get();
+  if (group_map.empty()) {
+    group_map = {
         // clang-format off
                 {GROUP_MOBILE_OPEN_TABS,
 #if BUILDFLAG(IS_ANDROID)
@@ -109,7 +113,7 @@ const GroupConfigMap& BuildDefaultHubTypedGroups(bool is_incognito) {
         // clang-format on
     };
   }
-  return g_default_hub_typed_groups.Get();
+  return group_map;
 }
 
 }  // namespace
@@ -131,7 +135,8 @@ const omnibox::GroupConfigMap& BuildDefaultGroupsForInput(
 void ResetDefaultGroupsForTest() {
   g_default_groups.Get().clear();
   g_default_hub_zps_groups.Get().clear();
-  g_default_hub_typed_groups.Get().clear();
+  g_default_hub_typed_regular_groups.Get().clear();
+  g_default_hub_typed_incognito_groups.Get().clear();
 }
 
 GroupId GroupIdForNumber(int value) {
