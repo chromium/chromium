@@ -17,12 +17,13 @@
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/ash/app_mode/test/network_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/login_feedback.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/webui/ash/os_feedback_dialog/os_feedback_dialog.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -74,8 +75,9 @@ std::vector<KioskMixin::Config> OfflineLaunchSplashScreenTestConfigs() {
 }
 
 SystemWebDialogDelegate* CreateFeedbackDialog() {
-  auto login_feedback_ =
-      std::make_unique<LoginFeedback>(ProfileHelper::Get()->GetSigninProfile());
+  Profile& signin_profile = CHECK_DEREF(Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetSigninBrowserContext()));
+  auto login_feedback_ = std::make_unique<LoginFeedback>(&signin_profile);
 
   base::test::TestFuture<void> show_dialog_waiter;
   login_feedback_->Request(std::string(), show_dialog_waiter.GetCallback());
