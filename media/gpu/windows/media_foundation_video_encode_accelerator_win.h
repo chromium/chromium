@@ -269,6 +269,9 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
 
   std::unique_ptr<MediaLog> media_log_;
 
+  // Helper for accessing shared textures
+  scoped_refptr<CommandBufferHelper> command_buffer_helper_;
+
   // Bitstream buffers ready to be used to return encoded output as a FIFO.
   base::circular_deque<std::unique_ptr<BitstreamBufferRef>>
       bitstream_buffer_queue_;
@@ -377,9 +380,6 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
 
   // Preferred adapter for DXGIDeviceManager.
   const CHROME_LUID luid_;
-
-  // Helper for accessing shared textures
-  scoped_refptr<CommandBufferHelper> command_buffer_helper_;
 
   // Used for frame format conversion.
   VideoFrameConverter frame_converter_;
