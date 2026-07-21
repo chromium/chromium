@@ -320,7 +320,8 @@ String ConvertModelAvailabilityCheckResultToDebugString(
       return "The GPU is blocked.";
     case mojom::blink::ModelAvailabilityCheckResult::
         kUnavailableTooManyRecentCrashes:
-      return "The model process crashed too many times for this version.";
+      return "The model process crashed too many times for this version. Check "
+             "chrome://crashes for additional information.";
     case mojom::blink::ModelAvailabilityCheckResult::
         kUnavailableSafetyModelNotAvailable:
       return "The safety model was required but not available.";
