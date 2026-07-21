@@ -158,7 +158,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.CableV2.TunnelServerError"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-11-01">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2027-01-17">
   <owner>agl@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -368,7 +368,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.Enclave.ChangePinEventsV2"
-    enum="ChangePinEvent" expires_after="2026-11-15">
+    enum="ChangePinEvent" expires_after="2027-01-17">
   <owner>derinel@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>
@@ -528,7 +528,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.GetAssertion.Result"
-    enum="WebAuthenticationCredentialRequestResult" expires_after="2026-11-15">
+    enum="WebAuthenticationCredentialRequestResult" expires_after="2027-01-17">
   <owner>nsatragno@chromium.org</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>Records the result of a get assertion request.</summary>
@@ -654,7 +654,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.IOS.ContentAreaEvent"
-    enum="WebAuthenticationIOSContentAreaEvent" expires_after="2026-11-15">
+    enum="WebAuthenticationIOSContentAreaEvent" expires_after="2027-01-17">
   <owner>rgod@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions@google.com</owner>

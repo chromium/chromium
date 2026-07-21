@@ -1250,7 +1250,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.InstalledCount.ByUserInMultipleProfiles" units="count"
-    expires_after="2026-11-15">
+    expires_after="2027-01-17">
   <owner>mek@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -1604,7 +1604,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebApp.Isolated.KeyDistributionComponent.KeyRotationInfoSource"
-    enum="KeyDistributionComponentSource" expires_after="2026-11-15">
+    enum="KeyDistributionComponentSource" expires_after="2027-01-17">
   <owner>greengrape@google.com</owner>
   <owner>iwa-team@google.com</owner>
   <summary>
@@ -1703,7 +1703,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Isolated.KeyDistributionComponent.UpdateSource"
-    enum="IwaComponentUpdateSource" expires_after="2026-11-15">
+    enum="IwaComponentUpdateSource" expires_after="2027-01-17">
   <owner>greengrape@google.com</owner>
   <owner>iwa-team@google.com</owner>
   <summary>
@@ -2226,7 +2226,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.NavigationCapturing.FinalDisplay.Result"
-    enum="NavigationCapturingDisplayMode" expires_after="2026-11-15">
+    enum="NavigationCapturingDisplayMode" expires_after="2027-01-17">
   <owner>dibyapal@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -3008,7 +3008,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Update.ApplyPendingManifestUpdateResult"
-    enum="WebAppApplyPendingManifestUpdateResult" expires_after="2026-11-15">
+    enum="WebAppApplyPendingManifestUpdateResult" expires_after="2027-01-17">
   <owner>msiem@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -3022,7 +3022,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.Update.ManifestSilentUpdateCheckResult"
-    enum="WebAppManifestSilentUpdateCheckResult" expires_after="2026-11-15">
+    enum="WebAppManifestSilentUpdateCheckResult" expires_after="2027-01-17">
   <owner>msiem@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>

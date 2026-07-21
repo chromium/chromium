@@ -1471,7 +1471,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Win.InitError.FormatRelated"
-    enum="AudioStreamFormatRelatedInitError" expires_after="2026-11-15">
+    enum="AudioStreamFormatRelatedInitError" expires_after="2027-01-17">
   <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -1841,7 +1841,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Mac.CatapAudioInputStream.HostTimeStatus"
-    enum="CatapAudioInputStreamHostTimeStatus" expires_after="2026-11-15">
+    enum="CatapAudioInputStreamHostTimeStatus" expires_after="2027-01-17">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
@@ -2630,7 +2630,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioDuckerWin.UnduckSessionResult"
-    enum="BooleanSuccess" expires_after="2026-11-15">
+    enum="BooleanSuccess" expires_after="2027-01-17">
   <owner>steimel@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -3338,7 +3338,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.BreakoutBox.Usage" enum="BreakoutBoxUsage"
-    expires_after="2026-09-25">
+    expires_after="2027-01-17">
   <owner>guidou@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
   <summary>
@@ -5130,7 +5130,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.GetDisplayMedia.Constraints.SystemAudio"
-    enum="GetDisplayMediaIncludeExcludeConstraint" expires_after="2026-11-15">
+    enum="GetDisplayMediaIncludeExcludeConstraint" expires_after="2027-01-17">
   <owner>eladalon@chromium.org</owner>
   <owner>fbeaufort@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -5433,7 +5433,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.HLS.InitializationError" enum="HlsDemuxerStatus"
-    expires_after="2026-11-15">
+    expires_after="2027-01-17">
   <owner>tmathmeyer@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -5442,7 +5442,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.HLS.ParserError" units="sparse"
-    expires_after="2026-11-15">
+    expires_after="2027-01-17">
   <owner>tmathmeyer@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -5452,7 +5452,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.HLS.PlaybackError" enum="HlsDemuxerStatus"
-    expires_after="2026-11-15">
+    expires_after="2027-01-17">
   <owner>tmathmeyer@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -5749,7 +5749,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaDevices.GetUserMedia.Result3"
-    enum="UserMediaRequestResult" expires_after="2026-11-15">
+    enum="UserMediaRequestResult" expires_after="2027-01-17">
   <owner>toprice@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
   <owner>video-cmi-apis@google.com</owner>
@@ -5762,7 +5762,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaDevices.SaltDatabaseErrors"
-    enum="SqliteLoggedResultCode" expires_after="2026-11-15">
+    enum="SqliteLoggedResultCode" expires_after="2027-01-17">
   <owner>guidou@chromium.org</owner>
   <owner>video-cmi-apis@google.com</owner>
   <summary>
@@ -7950,7 +7950,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.Ui.GetDisplayMedia.TabSharingInfoBarInteraction"
     enum="MediaUiGetDisplayMediaTabSharingInfoBarInteraction"
-    expires_after="2026-11-15">
+    expires_after="2027-01-17">
   <owner>tovep@chromium.org</owner>
   <owner>eladalon@chromium.org</owner>
   <summary>
@@ -8729,7 +8729,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCaptureManager.DesktopCaptureImplementationAndType"
-    enum="DesktopCaptureImplementationAndType" expires_after="2026-11-15">
+    enum="DesktopCaptureImplementationAndType" expires_after="2027-01-17">
   <owner>handellm@google.com</owner>
   <owner>ccameron@chromium.org</owner>
   <summary>
@@ -9415,7 +9415,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaLauncherActivityStarted"
-    enum="MediaLauncherActivityEnabledReason" expires_after="2026-11-15">
+    enum="MediaLauncherActivityEnabledReason" expires_after="2027-01-17">
   <owner>steimel@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>

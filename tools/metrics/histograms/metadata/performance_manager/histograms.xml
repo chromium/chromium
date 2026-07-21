@@ -216,7 +216,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.DiskStats.UserDataDirFreeSpacePercent"
-    units="%" expires_after="2026-11-15">
+    units="%" expires_after="2027-01-17">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>

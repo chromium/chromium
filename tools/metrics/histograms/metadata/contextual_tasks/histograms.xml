@@ -45,7 +45,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextualTasks.AiPage.NavigationInterceptionSource"
-    enum="ContextualTasksEntrypointSource" expires_after="2026-11-15">
+    enum="ContextualTasksEntrypointSource" expires_after="2027-01-17">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>
   <summary>
@@ -194,7 +194,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextualTasks.Context.RelevantTabsCount" units="count"
-    expires_after="2026-11-15">
+    expires_after="2027-01-17">
   <owner>sophiechang@chromium.org</owner>
   <owner>abhayprakash@google.com</owner>
   <summary>
@@ -258,7 +258,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextualTasks.Context.TabExcessCount" units="count"
-    expires_after="2026-11-15">
+    expires_after="2027-01-17">
   <owner>sophiechang@chromium.org</owner>
   <owner>abhayprakash@google.com</owner>
   <summary>
@@ -270,7 +270,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextualTasks.Context.TabOverlapCount" units="count"
-    expires_after="2026-11-15">
+    expires_after="2027-01-17">
   <owner>sophiechang@chromium.org</owner>
   <owner>abhayprakash@google.com</owner>
   <summary>
@@ -282,7 +282,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextualTasks.Context.TabOverlapPercentage" units="%"
-    expires_after="2026-11-15">
+    expires_after="2027-01-17">
   <owner>sophiechang@chromium.org</owner>
   <owner>abhayprakash@google.com</owner>
   <summary>
@@ -319,7 +319,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextualTasks.InnerFrameContents.HttpResponseCode"
-    enum="HttpResponseCode" expires_after="2026-11-15">
+    enum="HttpResponseCode" expires_after="2027-01-17">
   <owner>juanmojica@google.com</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>
   <summary>
@@ -331,7 +331,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualTasks.InnerFrameContents.HttpResponseCode.ExcludeZeroStateLoads"
-    enum="HttpResponseCode" expires_after="2026-11-15">
+    enum="HttpResponseCode" expires_after="2027-01-17">
   <owner>juanmojica@google.com</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>
   <summary>
