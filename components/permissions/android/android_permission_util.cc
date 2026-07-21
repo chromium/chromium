@@ -21,6 +21,9 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/jni_zero/default_conversions.h"
 #include "ui/android/window_android.h"
+#include "url/android/gurl_android.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/permissions/android/jni_headers/AndroidPermissionRequester_jni.h"
@@ -219,20 +222,22 @@ base::AutoReset<bool> EnableSystemLocationSettingForTesting() {
 }
 
 void ResolvePermissionWithOSPrompt(content::WebContents* web_contents,
-                                   ContentSettingsType content_settings_type) {
+                                   ContentSettingsType content_settings_type,
+                                   const GURL& requesting_origin) {
   DCHECK(web_contents);
   auto* window_android = web_contents->GetNativeView()->GetWindowAndroid();
   DCHECK(window_android);
 
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PermissionUtil_handlePermissionPromptAllow(
-      env, window_android, web_contents,
+      env, window_android, web_contents, requesting_origin,
       static_cast<int>(content_settings_type));
 }
 
 namespace internal {
 
 bool ResolveNotificationsPermissionRequest(content::WebContents* web_contents,
+                                           const GURL& requesting_origin,
                                            ContentSetting setting) {
   if (!web_contents) {
     return false;
@@ -244,9 +249,12 @@ bool ResolveNotificationsPermissionRequest(content::WebContents* web_contents,
     return false;
   }
   if (permission_request_manager->IsRequestInProgress() &&
-      permission_request_manager->Requests().size() > 0 &&
+      !permission_request_manager->Requests().empty() &&
       permission_request_manager->Requests()[0]->GetContentSettingsType() ==
-          ContentSettingsType::NOTIFICATIONS) {
+          ContentSettingsType::NOTIFICATIONS &&
+      url::Origin::Create(
+          permission_request_manager->Requests()[0]->requesting_origin()) ==
+          url::Origin::Create(requesting_origin)) {
     switch (setting) {
       case CONTENT_SETTING_ALLOW:
         if (!permission_request_manager->ShouldCurrentRequestUseQuietUI()) {
@@ -286,7 +294,8 @@ bool ResolveNotificationsPermissionRequest(content::WebContents* web_contents,
   return false;
 }
 
-void DismissNotificationsPermissionRequest(content::WebContents* web_contents) {
+void DismissNotificationsPermissionRequest(content::WebContents* web_contents,
+                                           const GURL& requesting_origin) {
   if (!web_contents) {
     return;
   }
@@ -297,9 +306,12 @@ void DismissNotificationsPermissionRequest(content::WebContents* web_contents) {
     return;
   }
   if (permission_request_manager->IsRequestInProgress() &&
-      permission_request_manager->Requests().size() > 0 &&
+      !permission_request_manager->Requests().empty() &&
       permission_request_manager->Requests()[0]->GetContentSettingsType() ==
-          ContentSettingsType::NOTIFICATIONS) {
+          ContentSettingsType::NOTIFICATIONS &&
+      url::Origin::Create(
+          permission_request_manager->Requests()[0]->requesting_origin()) ==
+          url::Origin::Create(requesting_origin)) {
     permission_request_manager->Dismiss(/*prompt_options=*/std::monostate());
   }
 }
@@ -316,17 +328,20 @@ void DismissNotificationsPermissionRequest(content::WebContents* web_contents) {
 // valid.
 static void JNI_PermissionUtil_DismissNotificationsPermissionRequest(
     JNIEnv* env,
-    content::WebContents* web_contents) {
-  permissions::internal::DismissNotificationsPermissionRequest(web_contents);
+    content::WebContents* web_contents,
+    const GURL& requesting_origin) {
+  permissions::internal::DismissNotificationsPermissionRequest(
+      web_contents, requesting_origin);
 }
 
 static bool JNI_PermissionUtil_ResolveNotificationsPermissionRequest(
     JNIEnv* env,
     content::WebContents* web_contents,
+    const GURL& requesting_origin,
     int32_t content_setting) {
   ContentSetting setting = static_cast<ContentSetting>(content_setting);
   return permissions::internal::ResolveNotificationsPermissionRequest(
-      web_contents, setting);
+      web_contents, requesting_origin, setting);
 }
 // TODO(crbug.com/463333225): Clean this provisional function name up if
 // Clapper is launched or removed.

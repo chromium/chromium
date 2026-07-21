@@ -15,6 +15,7 @@
 #include "components/permissions/test/test_permissions_client.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace permissions {
 
@@ -60,14 +61,16 @@ class AndroidPermissionUtilTest : public content::RenderViewHostTestHarness {
 
 TEST_F(AndroidPermissionUtilTest, ResolvePermissionRequest_NoManager) {
   // Pass nullptr as web_contents.
-  internal::ResolveNotificationsPermissionRequest(nullptr,
-                                                  CONTENT_SETTING_ALLOW);
+  internal::ResolveNotificationsPermissionRequest(
+      nullptr, GURL(MockPermissionRequest::kDefaultOrigin),
+      CONTENT_SETTING_ALLOW);
   // Should not crash.
 }
 
 TEST_F(AndroidPermissionUtilTest, ResolvePermissionRequest_NoRequests) {
-  internal::ResolveNotificationsPermissionRequest(web_contents(),
-                                                  CONTENT_SETTING_ALLOW);
+  internal::ResolveNotificationsPermissionRequest(
+      web_contents(), GURL(MockPermissionRequest::kDefaultOrigin),
+      CONTENT_SETTING_ALLOW);
   // Should not crash.
 }
 
@@ -76,8 +79,23 @@ TEST_F(AndroidPermissionUtilTest, ResolvePermissionRequest_MismatchType) {
   AddRequest(RequestType::kGeolocation, &state);
 
   // Call with Notifications type.
-  internal::ResolveNotificationsPermissionRequest(web_contents(),
-                                                  CONTENT_SETTING_ALLOW);
+  internal::ResolveNotificationsPermissionRequest(
+      web_contents(), GURL(MockPermissionRequest::kDefaultOrigin),
+      CONTENT_SETTING_ALLOW);
+
+  // Request should still be in progress and not decided.
+  EXPECT_TRUE(manager_->IsRequestInProgress());
+  EXPECT_FALSE(state.granted);
+  EXPECT_FALSE(state.finished);
+  EXPECT_FALSE(state.cancelled);
+}
+
+TEST_F(AndroidPermissionUtilTest, ResolvePermissionRequest_MismatchOrigin) {
+  MockPermissionRequest::MockPermissionRequestState state;
+  AddRequest(RequestType::kNotifications, &state);
+
+  internal::ResolveNotificationsPermissionRequest(
+      web_contents(), GURL("https://mismatch.com"), CONTENT_SETTING_ALLOW);
 
   // Request should still be in progress and not decided.
   EXPECT_TRUE(manager_->IsRequestInProgress());
@@ -91,8 +109,9 @@ TEST_F(AndroidPermissionUtilTest, ResolvePermissionRequest_Allow) {
   MockPermissionRequest::MockPermissionRequestState state;
   AddRequest(RequestType::kNotifications, &state);
 
-  internal::ResolveNotificationsPermissionRequest(web_contents(),
-                                                  CONTENT_SETTING_ALLOW);
+  internal::ResolveNotificationsPermissionRequest(
+      web_contents(), GURL(MockPermissionRequest::kDefaultOrigin),
+      CONTENT_SETTING_ALLOW);
 
   EXPECT_TRUE(state.granted);
   EXPECT_FALSE(state.cancelled);
@@ -107,8 +126,9 @@ TEST_F(AndroidPermissionUtilTest, ResolvePermissionRequest_Block) {
   MockPermissionRequest::MockPermissionRequestState state;
   AddRequest(RequestType::kNotifications, &state);
 
-  internal::ResolveNotificationsPermissionRequest(web_contents(),
-                                                  CONTENT_SETTING_BLOCK);
+  internal::ResolveNotificationsPermissionRequest(
+      web_contents(), GURL(MockPermissionRequest::kDefaultOrigin),
+      CONTENT_SETTING_BLOCK);
 
   EXPECT_FALSE(state.granted);
   EXPECT_FALSE(state.cancelled);
@@ -123,8 +143,9 @@ TEST_F(AndroidPermissionUtilTest, ResolvePermissionRequest_Default) {
   MockPermissionRequest::MockPermissionRequestState state;
   AddRequest(RequestType::kNotifications, &state);
 
-  internal::ResolveNotificationsPermissionRequest(web_contents(),
-                                                  CONTENT_SETTING_DEFAULT);
+  internal::ResolveNotificationsPermissionRequest(
+      web_contents(), GURL(MockPermissionRequest::kDefaultOrigin),
+      CONTENT_SETTING_DEFAULT);
 
   // Default triggers Dismiss(), which calls Cancelled().
   EXPECT_TRUE(state.cancelled);
@@ -137,12 +158,14 @@ TEST_F(AndroidPermissionUtilTest, ResolvePermissionRequest_Default) {
 
 TEST_F(AndroidPermissionUtilTest, DismissPermissionRequest_NoManager) {
   // Pass nullptr as web_contents.
-  internal::DismissNotificationsPermissionRequest(nullptr);
+  internal::DismissNotificationsPermissionRequest(
+      nullptr, GURL(MockPermissionRequest::kDefaultOrigin));
   // Should not crash.
 }
 
 TEST_F(AndroidPermissionUtilTest, DismissPermissionRequest_NoRequests) {
-  internal::DismissNotificationsPermissionRequest(web_contents());
+  internal::DismissNotificationsPermissionRequest(
+      web_contents(), GURL(MockPermissionRequest::kDefaultOrigin));
   // Should not crash.
 }
 
@@ -151,7 +174,22 @@ TEST_F(AndroidPermissionUtilTest, DismissPermissionRequest_MismatchType) {
   AddRequest(RequestType::kGeolocation, &state);
 
   // Call with Notifications type.
-  internal::DismissNotificationsPermissionRequest(web_contents());
+  internal::DismissNotificationsPermissionRequest(
+      web_contents(), GURL(MockPermissionRequest::kDefaultOrigin));
+
+  // Request should still be in progress and not decided.
+  EXPECT_TRUE(manager_->IsRequestInProgress());
+  EXPECT_FALSE(state.granted);
+  EXPECT_FALSE(state.finished);
+  EXPECT_FALSE(state.cancelled);
+}
+
+TEST_F(AndroidPermissionUtilTest, DismissPermissionRequest_MismatchOrigin) {
+  MockPermissionRequest::MockPermissionRequestState state;
+  AddRequest(RequestType::kNotifications, &state);
+
+  internal::DismissNotificationsPermissionRequest(web_contents(),
+                                                  GURL("https://mismatch.com"));
 
   // Request should still be in progress and not decided.
   EXPECT_TRUE(manager_->IsRequestInProgress());
@@ -164,7 +202,8 @@ TEST_F(AndroidPermissionUtilTest, DismissPermissionRequest_Dismiss) {
   MockPermissionRequest::MockPermissionRequestState state;
   AddRequest(RequestType::kNotifications, &state);
 
-  internal::DismissNotificationsPermissionRequest(web_contents());
+  internal::DismissNotificationsPermissionRequest(
+      web_contents(), GURL(MockPermissionRequest::kDefaultOrigin));
 
   EXPECT_TRUE(state.cancelled);
   EXPECT_FALSE(state.granted);

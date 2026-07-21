@@ -16,6 +16,8 @@
 #include "components/permissions/permissions_client.h"
 #include "content/public/browser/web_contents_observer.h"
 
+class GURL;
+
 namespace content {
 class WebContents;
 }
@@ -75,7 +77,8 @@ class PermissionBlockedMessageDelegate
   void OnWebContentsFocused(
       content::RenderWidgetHost* render_widget_host) override;
 
-  virtual void ResolveWithOSPrompt(ContentSettingsType content_settings_type);
+  virtual void ResolveWithOSPrompt(ContentSettingsType content_settings_type,
+                                   const GURL& requesting_origin);
 
  private:
   friend class PermissionBlockedMessageDelegateAndroidTest;

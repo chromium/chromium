@@ -21,6 +21,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -84,7 +85,10 @@ class TestPermissionBlockedMessageDelegate
       : PermissionBlockedMessageDelegate(web_contents, std::move(delegate)) {}
   ~TestPermissionBlockedMessageDelegate() override = default;
 
-  void ResolveWithOSPrompt(ContentSettingsType content_settings_type) override {
+  void ResolveWithOSPrompt(ContentSettingsType content_settings_type,
+                           const GURL& requesting_origin) override {
+    EXPECT_EQ(requesting_origin,
+              GURL(permissions::MockPermissionRequest::kDefaultOrigin));
     // Simulate Java callback calling Accept on native.
     delegate_->Accept();
   }

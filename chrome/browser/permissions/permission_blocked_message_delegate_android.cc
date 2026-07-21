@@ -35,6 +35,7 @@
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -315,13 +316,23 @@ void PermissionBlockedMessageDelegate::HandleLoudPrimaryActionClick() {
   messages::MessageDispatcherBridge::Get()->DismissMessage(
       message_.get(), messages::DismissReason::PRIMARY_ACTION);
 
-  ResolveWithOSPrompt(GetContentSettingsType());
+  if (!delegate_->permission_prompt()) {
+    return;
+  }
+  const std::vector<base::SafeRef<permissions::PermissionRequest>>& requests =
+      delegate_->permission_prompt()->Requests();
+  if (requests.empty()) {
+    return;
+  }
+  ResolveWithOSPrompt(GetContentSettingsType(),
+                      requests[0]->requesting_origin());
 }
 
 void PermissionBlockedMessageDelegate::ResolveWithOSPrompt(
-    ContentSettingsType content_settings_type) {
-  permissions::ResolvePermissionWithOSPrompt(web_contents_,
-                                             content_settings_type);
+    ContentSettingsType content_settings_type,
+    const GURL& requesting_origin) {
+  permissions::ResolvePermissionWithOSPrompt(
+      web_contents_, content_settings_type, requesting_origin);
 }
 
 void PermissionBlockedMessageDelegate::HandleLoudDismissCallback(

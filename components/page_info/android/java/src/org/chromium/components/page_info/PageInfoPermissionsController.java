@@ -140,7 +140,7 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
         // not explicitly grant the permission via clicking the "Subscribe" button.
         if (mHasRequestedNotificationsPermission) {
             PermissionUtil.resolveNotificationsPermissionRequest(
-                    mWebContents, ContentSetting.BLOCK);
+                    mWebContents, mPageUrl, ContentSetting.BLOCK);
             // Reset the requested permission state to false, as the permission has been denied and
             // is not longer in request. This will ensure that the notification permission request
             // will not be accidentally shown again when the user navigates back to the permission
@@ -313,7 +313,7 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
     public void onPermissionsReset() {
         if (mHasRequestedNotificationsPermission) {
             PermissionUtil.resolveNotificationsPermissionRequest(
-                    mWebContents, ContentSetting.DEFAULT);
+                    mWebContents, mPageUrl, ContentSetting.DEFAULT);
             mHasRequestedNotificationsPermission = false;
         }
 
@@ -381,7 +381,7 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
 
         if (isGranted) {
             if (!PermissionUtil.resolveNotificationsPermissionRequest(
-                    mWebContents, ContentSetting.ALLOW)) {
+                    mWebContents, mPageUrl, ContentSetting.ALLOW)) {
                 // If the permission request does not exist anymore, just grant notification
                 // permission to the page.
                 WebsitePreferenceBridge.setContentSettingDefaultScope(
@@ -392,7 +392,7 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
                         ContentSetting.ALLOW);
             }
         } else {
-            PermissionUtil.dismissNotificationsPermissionRequest(mWebContents);
+            PermissionUtil.dismissNotificationsPermissionRequest(mWebContents, mPageUrl);
         }
 
         // `updateRowIfNeeded` will update the permission row in the main view of PageInfo. It will
