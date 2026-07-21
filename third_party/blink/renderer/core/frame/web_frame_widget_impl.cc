@@ -5930,8 +5930,14 @@ bool WebFrameWidgetImpl::SetResizableRequested(
 void WebFrameWidgetImpl::OnWindowShowStateChanged(
     ui::mojom::blink::WindowShowState old_state,
     ui::mojom::blink::WindowShowState new_state) {
-  if (!RuntimeEnabledFeatures::
-          DesktopPWAsAdditionalWindowingControlsEnabled()) {
+  LocalFrame* frame = local_root_ ? local_root_->GetFrame() : nullptr;
+  Document* document = frame ? frame->GetDocument() : nullptr;
+  ExecutionContext* execution_context =
+      document ? document->GetExecutionContext() : nullptr;
+
+  if (!execution_context ||
+      !RuntimeEnabledFeatures::DesktopPWAsAdditionalWindowingControlsEnabled(
+          execution_context)) {
     return;
   }
 
@@ -5960,8 +5966,14 @@ void WebFrameWidgetImpl::OnWindowShowStateChanged(
 }
 
 void WebFrameWidgetImpl::OnResizableChanged(bool new_resizable) {
-  if (!RuntimeEnabledFeatures::
-          DesktopPWAsAdditionalWindowingControlsEnabled() ||
+  LocalFrame* frame = local_root_ ? local_root_->GetFrame() : nullptr;
+  Document* document = frame ? frame->GetDocument() : nullptr;
+  ExecutionContext* execution_context =
+      document ? document->GetExecutionContext() : nullptr;
+
+  if (!execution_context ||
+      !RuntimeEnabledFeatures::DesktopPWAsAdditionalWindowingControlsEnabled(
+          execution_context) ||
       !ForMainFrame()) {
     return;
   }
