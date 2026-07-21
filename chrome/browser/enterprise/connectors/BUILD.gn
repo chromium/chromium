@@ -34,6 +34,7 @@ source_set("unit_tests") {
 
     if (is_chromeos) {
       deps += [
+        "//chrome/browser/enterprise/connectors/analysis:test_support",
         "//chromeos/ash/components/policy/device_policy:test_support",
         "//chromeos/components/mgs:test_support",
       ]

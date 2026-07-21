@@ -20,6 +20,41 @@ source_set("sdk_manager") {
   ]
 }
 
+if (is_chromeos) {
+  source_set("test_support") {
+    testonly = true
+
+    public = [
+      "mock_file_transfer_analysis_delegate.h",
+      "source_destination_test_util.h",
+    ]
+
+    sources = [
+      "mock_file_transfer_analysis_delegate.cc",
+      "source_destination_test_util.cc",
+    ]
+
+    public_deps = [
+      "//base",
+      "//chrome/browser/ash/file_manager",
+      "//chrome/browser/ash/guest_os/public",
+      "//chrome/browser/enterprise",
+      "//chrome/browser/safe_browsing",
+      "//chrome/browser/safe_browsing:test_support",
+      "//chromeos/ash/components/disks",
+      "//chromeos/ash/components/disks:test_support",
+      "//components/enterprise/common/proto:connectors_proto",
+      "//storage/browser",
+      "//testing/gmock",
+    ]
+
+    deps = [
+      "//base/test:test_support",
+      "//chrome/test:test_support",
+    ]
+  }
+}
+
 source_set("unit_tests") {
   testonly = true
 
@@ -68,15 +103,9 @@ source_set("unit_tests") {
       "source_destination_matcher_ash_unittest.cc",
     ]
     deps += [
-      "//chrome/browser/ash/file_manager",
-      "//chrome/browser/enterprise",
+      ":test_support",
       "//chrome/browser/enterprise/connectors/reporting",
       "//chrome/browser/policy:test_support",
-      "//chrome/browser/safe_browsing:test_support",
-      "//chromeos/ash/components/disks",
-      "//chromeos/ash/components/disks:test_support",
-      "//components/enterprise/common/proto:connectors_proto",
-      "//storage/browser",
       "//storage/browser:test_support",
     ]
   }
