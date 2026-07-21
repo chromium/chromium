@@ -7,11 +7,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -19,6 +21,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -819,7 +822,6 @@ TEST_F(FileSystemOperationImplTest, TestCopyInForeignFileSuccess) {
   base::FilePath src_local_disk_file_path;
   base::CreateTemporaryFile(&src_local_disk_file_path);
   constexpr std::string_view test_data = "foo";
-  constexpr int data_size = test_data.size();
   base::WriteFile(src_local_disk_file_path, test_data);
 
   FileSystemURL dest_dir(CreateDirectory("dest"));
@@ -838,11 +840,11 @@ TEST_F(FileSystemOperationImplTest, TestCopyInForeignFileSuccess) {
   EXPECT_GT(after_usage, before_usage);
 
   // Compare contents of src and copied file.
-  char buffer[100];
-  EXPECT_EQ(data_size,
-            base::ReadFile(PlatformPath("dest/file"), buffer, data_size));
-  for (int i = 0; i < data_size; ++i)
-    UNSAFE_TODO(EXPECT_EQ(test_data.at(i), buffer[i]));
+  std::array<char, 100> buffer;
+  auto read_span = base::span(buffer).first(test_data.size());
+  EXPECT_EQ(test_data.size(),
+            base::ReadFile(PlatformPath("dest/file"), read_span).value_or(0));
+  EXPECT_EQ(test_data, base::as_string_view(read_span));
 }
 
 TEST_F(FileSystemOperationImplTest, TestCopyInForeignFileFailureByQuota) {
@@ -1097,14 +1099,13 @@ TEST_F(FileSystemOperationImplTest, TestTruncate) {
   // Check that its length is now 17 and that it's all zeroes after the test
   // data.
   EXPECT_EQ(length, GetFileSize("file"));
-  char data[100];
-  EXPECT_EQ(length, base::ReadFile(platform_path, data, length));
-  for (int i = 0; i < length; ++i) {
-    if (i < static_cast<int>(test_data.size())) {
-      UNSAFE_TODO(EXPECT_EQ(test_data.at(i), data[i]));
-    } else {
-      UNSAFE_TODO(EXPECT_EQ(0, data[i]));
-    }
+  std::array<char, 100> data;
+  auto data_span = base::span(data).first(static_cast<size_t>(length));
+  EXPECT_EQ(static_cast<uint64_t>(length),
+            base::ReadFile(platform_path, data_span).value_or(0));
+  EXPECT_EQ(test_data, base::as_string_view(data_span.first(test_data.size())));
+  for (char c : data_span.subspan(test_data.size())) {
+    EXPECT_EQ(0, c);
   }
 
   // Shorten the file by truncating it.
@@ -1116,9 +1117,10 @@ TEST_F(FileSystemOperationImplTest, TestTruncate) {
 
   // Check that its length is now 3 and that it contains only bits of test data.
   EXPECT_EQ(length, GetFileSize("file"));
-  EXPECT_EQ(length, base::ReadFile(platform_path, data, length));
-  for (int i = 0; i < length; ++i)
-    UNSAFE_TODO(EXPECT_EQ(test_data.at(i), data[i]));
+  data_span = base::span(data).first(static_cast<size_t>(length));
+  EXPECT_EQ(static_cast<uint64_t>(length),
+            base::ReadFile(platform_path, data_span).value_or(0));
+  EXPECT_EQ(test_data.substr(0, length), base::as_string_view(data_span));
 
   // Truncate is not a 'read' access.  (Here expected access count is 1
   // since we made 1 read access for GetMetadata.)
