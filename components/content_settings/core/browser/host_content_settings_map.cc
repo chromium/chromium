@@ -1385,8 +1385,6 @@ void HostContentSettingsMap::DeleteNearlyExpiredSettingsAndMaybeScheduleNextRun(
 
     if (setting.metadata.expiration() <= (clock_->Now() + kEagerExpiryBuffer)) {
       expired_entries.emplace_back(setting);
-      content_settings_uma_util::RecordActiveExpiryEvent(setting.source,
-                                                         content_setting_type);
     } else {
       next_expiry = std::min(next_expiry, setting.metadata.expiration());
     }

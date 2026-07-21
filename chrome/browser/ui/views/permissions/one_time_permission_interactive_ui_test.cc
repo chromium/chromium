@@ -645,9 +645,6 @@ INSTANTIATE_TEST_SUITE_P(All,
 IN_PROC_BROWSER_TEST_P(OneTimePermissionExpiryEnforcementUmaInteractiveUiTest,
                        TestExpiryEnforcement) {
   base::HistogramTester histograms;
-  const std::string kActiveExpiryHistogram =
-      "ContentSettings.ActiveExpiry.OneTimePermissionProvider."
-      "ContentSettingsType";
 
   bool active_expiry_is_active = GetParam();
   ASSERT_NO_FATAL_FAILURE(Initialize(INITIALIZATION_DEFAULT, GetWebrtcGurl()));
@@ -692,23 +689,6 @@ IN_PROC_BROWSER_TEST_P(OneTimePermissionExpiryEnforcementUmaInteractiveUiTest,
   GetUserMediaAndExpectGrantedPermission(
       permissions::PermissionRequestManager::ACCEPT_ONCE,
       active_expiry_is_active);
-
-  // Check UMA records for expiry events (only recorded if active expiry is
-  // enabled)
-  histograms.ExpectTotalCount(kActiveExpiryHistogram,
-                              active_expiry_is_active ? 2 : 0);
-  histograms.ExpectBucketCount(
-      kActiveExpiryHistogram,
-      static_cast<base::HistogramBase::Sample32>(
-          content_settings_uma_util::ContentSettingTypeToHistogramValue(
-              ContentSettingsType::MEDIASTREAM_MIC)),
-      active_expiry_is_active ? 1 : 0);
-  histograms.ExpectBucketCount(
-      kActiveExpiryHistogram,
-      static_cast<base::HistogramBase::Sample32>(
-          content_settings_uma_util::ContentSettingTypeToHistogramValue(
-              ContentSettingsType::MEDIASTREAM_CAMERA)),
-      active_expiry_is_active ? 1 : 0);
 
   // Check UMA records for grant events (if expiry is disabled, there's only one
   // grant event)
