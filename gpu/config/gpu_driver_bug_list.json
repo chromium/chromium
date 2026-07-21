@@ -3780,6 +3780,18 @@
       "features": [
         "reattach_fbo_depth_stencil_on_reallocation"
       ]
+    },
+    {
+      "id": 483,
+      "cr_bugs": [528131939],
+      "description": "Reset texture base level before calling glCompressedTexSubImage2D for ASTC textures to work around PowerVR driver bug.",
+      "os": {
+        "type": "android"
+      },
+      "gl_vendor": "Imagination.*",
+      "features": [
+        "reset_base_level_for_astc_sub_image"
+      ]
     }
   ]
 }
