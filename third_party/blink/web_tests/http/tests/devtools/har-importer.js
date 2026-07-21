@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import {ApplicationTestRunner} from 'application_test_runner';
+import * as TextUtils from 'devtools/core/text_utils/text_utils.js';
 import * as HAR from 'devtools/models/har/har.js';
-import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
 import {NetworkTestRunner} from 'network_test_runner';
 import {TestRunner} from 'test_runner';
 

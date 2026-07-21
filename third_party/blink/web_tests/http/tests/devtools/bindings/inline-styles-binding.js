@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TestRunner} from 'test_runner';
 import {BindingsTestRunner} from 'bindings_test_runner';
-
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as TextUtils from 'devtools/core/text_utils/text_utils.js';
 import * as Bindings from 'devtools/models/bindings/bindings.js';
-import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
 import * as Workspace from 'devtools/models/workspace/workspace.js';
+import {TestRunner} from 'test_runner';
 
 (async function() {
   TestRunner.addResult(`Editing inline styles should play nice with inline scripts.\n`);

@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TestRunner} from 'test_runner';
 import {BindingsTestRunner} from 'bindings_test_runner';
-import {SourcesTestRunner} from 'sources_test_runner';
-
-import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
+import * as TextUtils from 'devtools/core/text_utils/text_utils.js';
 import * as BindingsModule from 'devtools/models/bindings/bindings.js';
+import {SourcesTestRunner} from 'sources_test_runner';
+import {TestRunner} from 'test_runner';
 
 (async function() {
   TestRunner.addResult(
