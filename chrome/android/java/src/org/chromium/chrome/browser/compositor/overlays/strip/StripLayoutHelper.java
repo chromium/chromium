@@ -808,7 +808,7 @@ public class StripLayoutHelper
         // Set tab search button background resource.
         mTabSearchButtonWidth =
                 ChromeFeatureList.sTabSearchForDesktop.isEnabled()
-                        ? BUTTON_BACKGROUND_SIZE_DP
+                        ? BUTTON_TOUCH_TARGET_SIZE_DP
                         : 0.f;
         mTabSearchButton = createTabSearchButton(context, incognito, res);
 
@@ -1028,7 +1028,7 @@ public class StripLayoutHelper
         return mTabSearchButton;
     }
 
-    float getTabSearchButtonWidthForTesting() {
+    float getTabSearchButtonWidth() {
         return mTabSearchButtonWidth;
     }
 

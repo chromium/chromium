@@ -643,6 +643,15 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_SEARCH_FOR_DESKTOP)
+    public void testGetFadeTransitionThresholdDp_TabSearchEnabled() {
+        when(mStandardTabModel.getCount()).thenReturn(0);
+        // Base (236) + Tab Search Button (48) = 284
+        int expectedThresholdDp = 284;
+        assertEquals(expectedThresholdDp, mStripLayoutHelperManager.getFadeTransitionThresholdDp());
+    }
+
+    @Test
     public void testGetVirtualViews() {
         List<VirtualView> views = new ArrayList<>();
         mStripLayoutHelperManager.getVirtualViews(views);

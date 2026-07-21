@@ -1728,9 +1728,9 @@ public class StripLayoutHelperTest {
         assertNotNull("Tab Search button should be initialized", button);
         assertTrue("Tab Search button should be visible", button.isVisible());
         assertEquals(
-                "Tab Search button width should be 32dp",
-                32.f,
-                mStripLayoutHelper.getTabSearchButtonWidthForTesting(),
+                "Tab Search button width should be 48dp",
+                48.f,
+                mStripLayoutHelper.getTabSearchButtonWidth(),
                 EPSILON);
     }
 
@@ -1748,7 +1748,7 @@ public class StripLayoutHelperTest {
         assertEquals(
                 "Tab Search button width should be 0dp",
                 0.f,
-                mStripLayoutHelper.getTabSearchButtonWidthForTesting(),
+                mStripLayoutHelper.getTabSearchButtonWidth(),
                 EPSILON);
     }
 
