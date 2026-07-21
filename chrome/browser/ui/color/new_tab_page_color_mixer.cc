@@ -242,7 +242,9 @@ void AddGeneratedThemeComprehensiveColors(ui::ColorMixer& mixer) {
   mixer[kColorNewTabPageText] = SelectBasedOnDarkInput(
       element_background_color, gfx::kGoogleGrey200, gfx::kGoogleGrey900);
   // Styling for Doodle Share Button.
-  mixer[kColorNewTabPageDoodleShareButtonBackground] = element_background_color;
+  mixer[kColorNewTabPageDoodleShareButtonBackground] =
+      SelectBasedOnWhiteInput({kColorNewTabPageBackground}, gfx::kGoogleGrey100,
+                              element_background_color);
   mixer[kColorNewTabPageDoodleShareButtonIcon] = primary_foreground_color;
 
   // Action chips colors.
@@ -594,7 +596,7 @@ void AddWebThemeNewTabPageColors(ui::ColorMixer& mixer, bool dark_mode) {
       ui::SetAlpha(kColorNewTabPageBackgroundOverride,
                    /* 90% opacity */ 0.9 * SK_AlphaOPAQUE);
   mixer[kColorNewTabPageDoodleShareButtonBackground] = {
-      kColorNewTabPageBackgroundOverride};
+      dark_mode ? gfx::kGoogleGrey800 : gfx::kGoogleGrey100};
   mixer[kColorNewTabPageDoodleShareButtonIcon] = {primary_foreground_color};
 
   // Tab group colors.

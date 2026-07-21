@@ -90,7 +90,7 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabPageModuleIconBackground] = {ui::kColorSysNeutralContainer};
   // Styling for Doodle Share Button.
   mixer[kColorNewTabPageDoodleShareButtonBackground] = {
-      ui::kColorSysNeutralContainer};
+      ui::kColorSysBaseContainer};
   mixer[kColorNewTabPageDoodleShareButtonIcon] = {ui::kColorSysOnSurface};
 
   mixer[kColorNewTabPageModuleItemBackground] = {
