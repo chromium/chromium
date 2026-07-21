@@ -329,6 +329,9 @@ payload will be immediately followed by an `array<uint32>`, and the
 array is encoded like [any other array](#arrays). It is not considered part of
 the payload. Interface IDs are 32-bit integers.
 
+If a message type optionally contains associated remotes/receivers, the array
+is only present in messages that actually do contain at least one.
+
 Associated remotes and receivers are otherwise encoded identically to their
 non-associated equivalents. Since they index into a different array, their
 indices are independent of the ones used by remote/receivers/raw handles.
