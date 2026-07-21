@@ -7,6 +7,7 @@ package org.chromium.ui.base;
 import android.content.ClipData;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.SparseArray;
@@ -569,11 +570,17 @@ public class ViewAndroidDelegate {
     private void requestUnbufferedDispatch(MotionEvent event) {
         ViewGroup container = getContainerViewGroup();
         if (container != null) {
-            for (int i = 0; i < event.getPointerCount(); i++) {
-                // This is a workaround for crbug.com/1064161.
-                // TODO(smaier) remove this if LG fixes the stylus bug.
-                if (event.getToolType(i) == MotionEvent.TOOL_TYPE_STYLUS) {
-                    return;
+            // This is a workaround for crbug.com/1064161.
+            // It's difficult to tell exactly which devices, and on which builds of Android, had
+            // this bug. So, we are restricting down to only the exact class of devices we know we
+            // saw this problem on.
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R
+                    && ("lge".equalsIgnoreCase(Build.MANUFACTURER)
+                            || "lg".equalsIgnoreCase(Build.MANUFACTURER))) {
+                for (int i = 0; i < event.getPointerCount(); i++) {
+                    if (event.getToolType(i) == MotionEvent.TOOL_TYPE_STYLUS) {
+                        return;
+                    }
                 }
             }
             container.requestUnbufferedDispatch(event);
