@@ -6,10 +6,13 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/i18n/icubridge/date_time_formatter.h"
+#include "base/i18n/icubridge/icu_bridge.h"
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_writer.h"
 #include "base/notimplemented.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/client_certificates/certificate_provisioning_service_factory.h"
@@ -77,9 +80,18 @@ std::string ConvertPolicyLevelToString(DTCPolicyLevel level) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_ANDROID)
 std::string GetStringFromTimestamp(base::Time timestamp) {
-  return (timestamp == base::Time()) ? std::string()
-                                     : base::UnlocalizedTimeFormatWithPattern(
-                                           timestamp, "yyyy-LL-dd HH:mm zzz");
+  using base::i18n::DateTimeFormatterOptions;
+  using base::i18n::GetKnownLanguageTag;
+  using base::i18n::IcuBridge;
+  using base::i18n::datetime_options::YMDT;
+
+  return (timestamp == base::Time())
+             ? std::string()
+             : base::UTF16ToUTF8(
+                   IcuBridge::GetInstance().date_time_formatter().Format(
+                       timestamp, GetKnownLanguageTag("en-US"),
+                       YMDT::Short().with_time_precision(
+                           DateTimeFormatterOptions::TimePrecision::kMinute)));
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_ANDROID)

@@ -5,11 +5,14 @@
 #include "components/enterprise/connectors/core/connectors_internals_utils.h"
 
 #include "base/base64url.h"
+#include "base/i18n/icubridge/date_time_formatter.h"
+#include "base/i18n/icubridge/icu_bridge.h"
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/enterprise/browser/reporting/report_request.h"
 #include "components/enterprise/browser/reporting/report_util.h"
 #include "components/enterprise/buildflags/buildflags.h"
@@ -85,13 +88,19 @@ connectors_internals::mojom::CertificateMetadataPtr ConvertCertificate(
     return nullptr;
   }
 
+  using base::i18n::GetKnownLanguageTag;
+  using base::i18n::IcuBridge;
+  using base::i18n::datetime_options::YMD;
+
   return connectors_internals::mojom::CertificateMetadata::New(
       base::HexEncodeLower(certificate->serial_number()),
       base::HexEncodeLower(certificate->CalculateChainFingerprint256()),
-      base::UnlocalizedTimeFormatWithPattern(certificate->valid_start(),
-                                             "MMM d, yyyy"),
-      base::UnlocalizedTimeFormatWithPattern(certificate->valid_expiry(),
-                                             "MMM d, yyyy"),
+      base::UTF16ToUTF8(IcuBridge::GetInstance().date_time_formatter().Format(
+          certificate->valid_start(), GetKnownLanguageTag("en-US"),
+          YMD::Medium())),
+      base::UTF16ToUTF8(IcuBridge::GetInstance().date_time_formatter().Format(
+          certificate->valid_expiry(), GetKnownLanguageTag("en-US"),
+          YMD::Medium())),
       certificate->subject().GetDisplayName(),
       certificate->issuer().GetDisplayName());
 }
