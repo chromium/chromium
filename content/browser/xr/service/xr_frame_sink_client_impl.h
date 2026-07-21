@@ -64,6 +64,9 @@ class XrFrameSinkClientImpl : public device::XrFrameSinkClient,
 
   viz::FrameSinkId root_frame_sink_id_;
   bool initialized_ = false;
+  // The FrameSinkId for the DOM Overlay that is currently registered as a child
+  // of the root FrameSinkId.
+  viz::FrameSinkId registered_dom_frame_sink_id_;
 
   std::optional<viz::SurfaceId> dom_surface_id_;
   base::Lock dom_surface_lock_;

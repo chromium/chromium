@@ -53,8 +53,14 @@ void XrFrameSinkClientImpl::SurfaceDestroyed() {
 
   // Since this code can be run during destruction, it's theoretically possible,
   // though unlikely, that the FrameSinkManager no longer exists.
-  if (frame_sink_manager)
+  if (frame_sink_manager) {
+    if (registered_dom_frame_sink_id_.is_valid()) {
+      frame_sink_manager->UnregisterFrameSinkHierarchy(
+          root_frame_sink_id_, registered_dom_frame_sink_id_);
+      registered_dom_frame_sink_id_ = viz::FrameSinkId();
+    }
     frame_sink_manager->InvalidateFrameSinkId(root_frame_sink_id_, this, {});
+  }
 
   // Reset the initialized state and the root FrameSinkId to an invalid value.
   initialized_ = false;
@@ -141,8 +147,11 @@ void XrFrameSinkClientImpl::ConfigureDOMOverlay() {
 #endif
 
   if (dom_surface_id_ && dom_surface_id_->is_valid()) {
-    GetHostFrameSinkManager()->RegisterFrameSinkHierarchy(
-        root_frame_sink_id_, dom_surface_id_->frame_sink_id());
+    const viz::FrameSinkId dom_frame_sink_id = dom_surface_id_->frame_sink_id();
+    if (GetHostFrameSinkManager()->RegisterFrameSinkHierarchy(
+            root_frame_sink_id_, dom_frame_sink_id)) {
+      registered_dom_frame_sink_id_ = dom_frame_sink_id;
+    }
   }
 }
 
