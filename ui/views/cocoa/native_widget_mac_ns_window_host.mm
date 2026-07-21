@@ -1068,10 +1068,6 @@ ui::TextInputClient* NativeWidgetMacNSWindowHost::GetTextInputClient() {
   return text_input_host_->GetTextInputClient();
 }
 
-bool NativeWidgetMacNSWindowHost::MustPostTaskToRunModalSheetAnimation() const {
-  return false;
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // NativeWidgetMacNSWindowHost, remote_cocoa::ApplicationHost::Observer:
 void NativeWidgetMacNSWindowHost::OnApplicationHostDestroying(

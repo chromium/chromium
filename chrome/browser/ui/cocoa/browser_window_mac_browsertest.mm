@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/test/run_until.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -189,7 +190,8 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowMacTest, DisableCommandsWhenSheetAttached) {
       BookmarkEditor::SHOW_TREE, base::DoNothing());
   editor->Show(browser()->GetWindow()->GetNativeWindow());
   auto* editor_raw = editor.release();
-  ASSERT_TRUE([AppController.sharedController keyWindowIsModal]);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return [AppController.sharedController keyWindowIsModal]; }));
 
   // These commands should be disabled when the sheet is attached.
   EXPECT_FALSE([window validateUserInterfaceItem:bookmark_all_tabs_item]);
@@ -198,7 +200,8 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowMacTest, DisableCommandsWhenSheetAttached) {
 
   // Close the sheet dialog.
   editor_raw->GetWidget()->CloseNow();
-  ASSERT_FALSE([AppController.sharedController keyWindowIsModal]);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return ![AppController.sharedController keyWindowIsModal]; }));
 
   // These commands should be enabled again when the sheet is removed.
   EXPECT_TRUE([window validateUserInterfaceItem:bookmark_all_tabs_item]);

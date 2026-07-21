@@ -28,6 +28,7 @@
 
 #if defined(TOOLKIT_VIEWS)
 #include "base/strings/strcat.h"
+#include "base/test/run_until.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -119,6 +120,13 @@ bool TestBrowserDialog::VerifyUi() {
   }
 
   views::Widget* dialog_widget = *(added.begin());
+  if (ShouldWaitForDialogBeforeVerify()) {
+    if (!base::test::RunUntil([&]() { return dialog_widget->IsVisible(); })) {
+      LOG(ERROR) << "VerifyUi(): Widget failed to become visible.";
+      return false;
+    }
+  }
+
   dialog_widget->SetBlockCloseForTesting(true);
   // Deactivate before taking screenshot. Deactivated dialog pixel outputs
   // is more predictable than activated dialog.
@@ -198,6 +206,10 @@ void TestBrowserDialog::DismissUi() {
 bool TestBrowserDialog::AlwaysCloseAsynchronously() {
   // TODO(tapted): Iterate over close methods for greater test coverage.
   return false;
+}
+
+bool TestBrowserDialog::ShouldWaitForDialogBeforeVerify() {
+  return BUILDFLAG(IS_MAC);
 }
 
 std::string TestBrowserDialog::GetNonDialogName() {

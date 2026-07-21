@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/relaunch_notification/relaunch_notification_controller_platform_impl_desktop.h"
 
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -49,13 +50,18 @@ IN_PROC_BROWSER_TEST_F(
   impl.NotifyRelaunchRequired(deadline,
                               /*is_notification_style_ap_required=*/false,
                               base::OnceCallback<base::Time()>());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return impl.GetWidgetForTesting() != nullptr; }));
   views::test::WidgetDestroyedWaiter fourth_destroyed_waiter(
       impl.GetWidgetForTesting());
   impl.CloseRelaunchNotification();
   fourth_destroyed_waiter.Wait();
+
   impl.NotifyRelaunchRequired(deadline,
                               /*is_notification_style_ap_required=*/false,
                               base::OnceCallback<base::Time()>());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return impl.GetWidgetForTesting() != nullptr; }));
   views::test::WidgetDestroyedWaiter fifth_destroyed_waiter(
       impl.GetWidgetForTesting());
   impl.CloseRelaunchNotification();
@@ -65,6 +71,8 @@ IN_PROC_BROWSER_TEST_F(
   impl.NotifyRelaunchRequired(deadline,
                               /*is_notification_style_ap_required=*/true,
                               base::OnceCallback<base::Time()>());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return impl.GetWidgetForTesting() != nullptr; }));
   views::test::WidgetDestroyedWaiter sixth_destroyed_waiter(
       impl.GetWidgetForTesting());
   impl.CloseRelaunchNotification();

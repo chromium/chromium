@@ -330,7 +330,6 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
                  gfx::Point* baseline_point) override;
   remote_cocoa::DragDropClient* GetDragDropClient() override;
   ui::TextInputClient* GetTextInputClient() override;
-  bool MustPostTaskToRunModalSheetAnimation() const override;
 
   // remote_cocoa::ApplicationHost::Observer:
   void OnApplicationHostDestroying(

@@ -96,7 +96,6 @@ class NativeWidgetBridgeOwner : public NativeWidgetNSWindowHostHelper {
     // Text input doesn't work across mojo yet.
     return nullptr;
   }
-  bool MustPostTaskToRunModalSheetAnimation() const override { return true; }
 
   mojo::AssociatedRemote<mojom::NativeWidgetNSWindowHost> host_remote_;
   mojo::AssociatedRemote<mojom::TextInputHost> text_input_host_remote_;

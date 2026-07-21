@@ -1648,14 +1648,7 @@ void NativeWidgetNSWindowBridge::FullscreenControllerTransitionComplete(
   UpdateWindowDisplay();
 
   // Add any children that were skipped during the fullscreen transition.
-  // A weak pointer is needed because OrderChildren() can synchronously run a
-  // modal sheet animation (ShowAsModalSheet), entering a nested run-loop during
-  // which this bridge may be destroyed.
-  base::WeakPtr<NativeWidgetNSWindowBridge> weak_ptr = factory_.GetWeakPtr();
   OrderChildren();
-  if (!weak_ptr) {
-    return;
-  }
 
   host_->OnWindowFullscreenTransitionComplete(is_fullscreen);
   if (is_fullscreen && immersive_mode_controller_) {
@@ -2228,42 +2221,47 @@ void NativeWidgetNSWindowBridge::ShowAsModalSheet() {
     return;
   }
 
-  auto begin_sheet_closure = base::BindOnce(^{
-    [parent_window beginSheet:window_
-            completionHandler:^(NSModalResponse return_code) {
-              // This class, NativeWidgetNSWindowBridge, clears the window's
-              // delegate as an indication of its death, in which case this
-              // completion handler will no-op. This is necessary to handle
-              // AppKit invoking this selector via a posted task. See
-              // https://crbug.com/851376.
-              NSWindow* window = weak_window;
-              if (!window.delegate) {
-                return;
-              }
-              // Make sure to mark ourselves as not wanting to be visible.
-              // Otherwise if during the orderOut call our parent becomes the
-              // key window, it would try to show us as a new modal sheet.
-              wants_to_be_visible_ = false;
-              [window orderOut:nil];
-              // Notify that the sheet window is closing.
-              OnWindowWillClose();
-            }];
-  });
-
-  if (host_helper_->MustPostTaskToRunModalSheetAnimation()) {
-    // This function is called via mojo when using remote cocoa. Inside the
-    // nested run loop, we will wait for a message providing the correctly-sized
-    // frame for the new sheet. This message will not be processed until we
-    // return from handling this message, because it will coming on the same
-    // pipe. Avoid the resulting hang by posting a task to show the modal
-    // sheet (which will be executed on a fresh stack, which will not block
-    // the message).
-    // https://crbug.com/1234509
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(begin_sheet_closure));
-  } else {
-    std::move(begin_sheet_closure).Run();
-  }
+  base::WeakPtr<NativeWidgetNSWindowBridge> weak_this = factory_.GetWeakPtr();
+  // AppKit's sheet presentation animation runs a nested run loop. We post
+  // this task to run the animation asynchronously for two reasons:
+  // 1. For remote cocoa (out-of-process), it prevents a deadlock by allowing
+  //    the sizing message to be processed before entering the nested run loop.
+  // 2. For in-process windows, it prevents Use-After-Free (UAF) bugs and
+  //    undefined behavior when returning from the nested run loop if the
+  //    window was closed during presentation, causing its bridge (this) to be
+  //    destroyed.
+  // https://crbug.com/40781530, https://crbug.com/517040438,
+  // https://crbug.com/518006007
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(^{
+        NativeWidgetNSWindowBridge* bridge = weak_this.get();
+        if (!bridge || !bridge->wants_to_be_visible_) {
+          return;
+        }
+        [parent_window beginSheet:bridge->ns_window()
+                completionHandler:^(NSModalResponse return_code) {
+                  // This class, NativeWidgetNSWindowBridge, clears the window's
+                  // delegate as an indication of its death, in which case this
+                  // completion handler will no-op. This is necessary to handle
+                  // AppKit invoking this selector via a posted task. See
+                  // https://crbug.com/41393772
+                  NSWindow* window = weak_window;
+                  if (!window.delegate) {
+                    return;
+                  }
+                  // Make sure to mark ourselves as not wanting to be visible.
+                  // Otherwise if during the orderOut call our parent becomes
+                  // the key window, it would try to show us as a new modal
+                  // sheet.
+                  if (weak_this) {
+                    weak_this->wants_to_be_visible_ = false;
+                  }
+                  [window orderOut:nil];
+                  if (weak_this) {
+                    weak_this->OnWindowWillClose();
+                  }
+                }];
+      }));
 }
 
 }  // namespace remote_cocoa

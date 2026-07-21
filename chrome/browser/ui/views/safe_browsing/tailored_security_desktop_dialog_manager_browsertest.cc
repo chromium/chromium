@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -21,6 +22,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
@@ -106,7 +108,9 @@ class TailoredSecurityDesktopDialogManagerTest
         safe_browsing::kTailoredSecurityNoticeDialog);
     dialog_manager_->ShowEnabledDialogForBrowser(browser, base::DoNothing());
 
-    return waiter.WaitIfNeededAndGet();
+    views::Widget* widget = waiter.WaitIfNeededAndGet();
+    EXPECT_TRUE(base::test::RunUntil([&]() { return widget->IsVisible(); }));
+    return widget;
   }
 
   views::Widget* ShowTailoredSecurityDisabledDialog(Browser* browser) {
@@ -115,7 +119,9 @@ class TailoredSecurityDesktopDialogManagerTest
         safe_browsing::kTailoredSecurityNoticeDialog);
     dialog_manager_->ShowDisabledDialogForBrowser(browser, base::DoNothing());
 
-    return waiter.WaitIfNeededAndGet();
+    views::Widget* widget = waiter.WaitIfNeededAndGet();
+    EXPECT_TRUE(base::test::RunUntil([&]() { return widget->IsVisible(); }));
+    return widget;
   }
 
  private:
@@ -308,8 +314,9 @@ IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogManagerTest,
 IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogManagerTest,
                        OpeningANewEnableDialogWillCloseAnyOpenDisableDialogs) {
   auto* disabled_dialog = ShowTailoredSecurityDisabledDialog(browser());
+  views::test::WidgetDestroyedWaiter destroyed_waiter(disabled_dialog);
   auto* enabled_dialog = ShowTailoredSecurityEnabledDialog(browser());
-  EXPECT_TRUE(disabled_dialog->IsClosed());
+  destroyed_waiter.Wait();
   EXPECT_FALSE(enabled_dialog->IsClosed());
 }
 
@@ -336,8 +343,9 @@ IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogManagerTest,
 IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogManagerTest,
                        OpeningANewDisableDialogWillCloseAnyOpenEnableDialogs) {
   auto* enabled_dialog = ShowTailoredSecurityEnabledDialog(browser());
+  views::test::WidgetDestroyedWaiter destroyed_waiter(enabled_dialog);
   auto* disabled_dialog = ShowTailoredSecurityDisabledDialog(browser());
-  EXPECT_TRUE(enabled_dialog->IsClosed());
+  destroyed_waiter.Wait();
   EXPECT_FALSE(disabled_dialog->IsClosed());
 }
 
