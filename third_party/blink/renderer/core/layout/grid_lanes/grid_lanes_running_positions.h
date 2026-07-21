@@ -172,17 +172,22 @@ class CORE_EXPORT GridLanesRunningPositions {
   // than `auto_placement_stacking_axis_offset`, set `grid_lanes_item` to have
   // the updated span location, adjust the track opening as needed (either
   // erasing it or reducing the size), and return the running position at which
-  // the item will be placed. This method is only used when dense-packing is
-  // set. In the case where a multi-span item is densely-packed across the open
-  // ending of a track after the current running position, the running position
-  // of that track will be updated in this method. For an example, see the
-  // comment for `AccumulateTrackOpeningsToAccommodateItem`.
+  // the item will be placed. `item_index` is the index of the item's fragment
+  // in the container builder, and is used in the creation a stacking axis
+  // alignment candidate above any new track openings created. This method is
+  // only used when dense-packing is set. In the case where a multi-span item is
+  // densely-packed across the open ending of a track after the current running
+  // position, the running position of that track will be updated in this
+  // method. For an example, see the comment for
+  // `AccumulateTrackOpeningsToAccommodateItem`.
   LayoutUnit GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
       wtf_size_t start_offset,
       const LayoutUnit item_stacking_axis_contribution,
       const LayoutUnit auto_placement_stacking_axis_offset,
       const GridLayoutTrackCollection& track_collection,
-      GridItemData& grid_lanes_item);
+      GridItemData& grid_lanes_item,
+      wtf_size_t item_index = kNotFound,
+      GridLayoutSubtree* layout_subtree = nullptr);
 
   // If the span of `grid_lanes_item` is indefinite this method will find and
   // set the span where the item should be placed. Then, this method will return

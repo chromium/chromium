@@ -427,7 +427,9 @@ GridLanesRunningPositions::GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
     const LayoutUnit item_stacking_axis_contribution,
     const LayoutUnit auto_placement_stacking_axis_offset,
     const GridLayoutTrackCollection& track_collection,
-    GridItemData& grid_lanes_item) {
+    GridItemData& grid_lanes_item,
+    wtf_size_t item_index,
+    GridLayoutSubtree* layout_subtree) {
   DCHECK(is_dense_packing_);
 
   const auto grid_axis_direction = track_collection.Direction();
@@ -548,9 +550,16 @@ GridLanesRunningPositions::GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
         // opening above the item.
         if (current_track_opening.start_position <
             highest_eligible_track_opening_result.start_position) {
-          const TrackOpening new_opening_above_item(
+          TrackOpening new_opening_above_item(
               current_track_opening.start_position,
               highest_eligible_track_opening_result.start_position);
+          // The new upper opening inherits the previous `alignment_candidate`,
+          // since the item that was above the original opening is still above
+          // this newly split upper portion.
+          if (is_stacking_axis_alignment_set_) {
+            new_opening_above_item.alignment_candidate =
+                current_track_opening.alignment_candidate;
+          }
           track_collection_openings_[current_track_index].insert(
               track_opening_index, new_opening_above_item);
           ++track_opening_index;
@@ -558,9 +567,20 @@ GridLanesRunningPositions::GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
 
         // We'll want to adjust the size of the track opening to
         // account for the space the item now occupies.
-        track_collection_openings_[current_track_index][track_opening_index]
-            .start_position = current_track_opening.start_position +
-                              item_stacking_axis_contribution;
+        TrackOpening& lower_opening =
+            track_collection_openings_[current_track_index]
+                                      [track_opening_index];
+        lower_opening.start_position = current_track_opening.start_position +
+                                       item_stacking_axis_contribution;
+
+        // The just-placed dense item is now directly above the lower opening,
+        // so it becomes the `alignment_candidate` for that opening. Without
+        // this, the previous item's alignment candidate would incorrectly claim
+        // the space below the dense item as its own alignment space.
+        if (is_stacking_axis_alignment_set_) {
+          lower_opening.alignment_candidate =
+              AlignmentCandidate{&grid_lanes_item, item_index, layout_subtree};
+        }
       }
     }
 

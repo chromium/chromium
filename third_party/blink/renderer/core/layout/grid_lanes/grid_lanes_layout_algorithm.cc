@@ -895,7 +895,9 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
               /*item_stacking_axis_contribution=*/
               fragment_stacking_axis_contribution,
               /*auto_placement_stacking_axis_offset=*/
-              start_offset_in_stacking_axis, track_collection, grid_lanes_item);
+              start_offset_in_stacking_axis, track_collection, grid_lanes_item,
+              /*item_index=*/container_builder_.Children().size(),
+              child_layout_subtree);
 
       // If we have a valid offset for the item in the stacking axis, it means
       // we found an earlier track opening for the item.
