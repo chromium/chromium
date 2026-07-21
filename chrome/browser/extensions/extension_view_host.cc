@@ -68,11 +68,8 @@ void ExtensionViewHost::LoadInitialURL() {
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Popups and side panels may spawn modal dialogs (e.g. the directory upload
-  // confirmation for <input webkitdirectory>), which need positioning
-  // information.
-  if (extension_host_type() == mojom::ViewType::kExtensionPopup ||
-      extension_host_type() == mojom::ViewType::kExtensionSidePanel) {
+  // Popups may spawn modal dialogs, which need positioning information.
+  if (extension_host_type() == mojom::ViewType::kExtensionPopup) {
     web_modal_handler_ = std::make_unique<ExtensionViewHostWebModalHandler>(
         host_contents(), view_->GetNativeView());
   }
@@ -163,13 +160,6 @@ void ExtensionViewHost::RunFileChooser(
   // element to click on, so this code only exists for extensions with a view.
   FileSelectHelper::RunFileChooser(render_frame_host, std::move(listener),
                                    params);
-}
-
-void ExtensionViewHost::EnumerateDirectory(
-    content::WebContents* web_contents,
-    scoped_refptr<content::FileSelectListener> listener,
-    const base::FilePath& path) {
-  FileSelectHelper::EnumerateDirectory(web_contents, std::move(listener), path);
 }
 
 std::unique_ptr<content::EyeDropper> ExtensionViewHost::OpenEyeDropper(
