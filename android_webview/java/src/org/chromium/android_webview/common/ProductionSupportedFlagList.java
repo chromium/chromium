@@ -1422,6 +1422,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "ConversionMeasurement",
                 "Controls whether the Attribution Reporting API stub is enabled."),
+        Flag.baseFeature(
+                PaymentFeatureList.PAYMENT_HANDLER_DIALOG_USE_INITIATOR_IN_URL_LOAD,
+                "When enabled, the merchant site is set as the initiator for the web payment"
+                        + " handler modal dialog popup."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
