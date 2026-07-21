@@ -788,6 +788,9 @@ void DesktopMediaPickerDialogView::ConfigureUIForNewPane(int index) {
     category.pane->SetAudioSharingApprovedByUser(category.audio_checked);
     if (IsAudioSelectionFeatureEnabled()) {
       category.controller->OnAudioShareToggled(category.audio_checked);
+#if BUILDFLAG(IS_MAC)
+      UpdateAudioPermissionsWarningState(index);
+#endif
     }
   }
 #if BUILDFLAG(IS_MAC)
@@ -1413,46 +1416,42 @@ void DesktopMediaPickerDialogView::OnPermissionUpdate(bool has_permission) {
 
 
 void DesktopMediaPickerDialogView::OnAudioSharingApprovedByUserUpdate() {
-  const int index = GetSelectedTabIndex();
+  UpdateAudioPermissionsWarningState(GetSelectedTabIndex());
+}
+
+void DesktopMediaPickerDialogView::UpdateAudioPermissionsWarningState(
+    int index) {
   CHECK_GE(index, 0);
   CHECK_LT(static_cast<size_t>(index), categories_.size());
-  if (!categories_[index].pane) {
+
+  DisplaySurfaceCategory& category = categories_[index];
+  if (!category.pane || !audio_capture_permission_checker_ ||
+      (category.type != DesktopMediaList::Type::kScreen &&
+       category.type != DesktopMediaList::Type::kWindow)) {
     return;
   }
 
-  if (categories_[index].pane->IsAudioSharingApprovedByUser()) {
+  if (category.pane->IsAudioSharingApprovedByUser()) {
     switch (audio_capture_permission_checker_->GetState()) {
       case AudioCapturePermissionChecker::State::kUnknown:
         audio_capture_permission_checker_->RunCheck();
         break;
       case AudioCapturePermissionChecker::State::kDenied:
-        categories_[index].pane->SetAudioWarningVisible(true);
+        category.pane->SetAudioWarningVisible(true);
         break;
       case AudioCapturePermissionChecker::State::kGranted:
       case AudioCapturePermissionChecker::State::kChecking:
-        // Do nothing.
+        category.pane->SetAudioWarningVisible(false);
         break;
     }
   } else {
-    categories_[index].pane->SetAudioWarningVisible(false);
+    category.pane->SetAudioWarningVisible(false);
   }
 }
 
 void DesktopMediaPickerDialogView::OnAudioPermissionUpdate() {
-  if (audio_capture_permission_checker_->GetState() !=
-      AudioCapturePermissionChecker::State::kDenied) {
-    return;
-  }
-
-  for (auto& category : categories_) {
-    if (!category.pane || (category.type != DesktopMediaList::Type::kScreen &&
-                           category.type != DesktopMediaList::Type::kWindow)) {
-      continue;
-    }
-
-    if (category.pane->IsAudioSharingApprovedByUser()) {
-      category.pane->SetAudioWarningVisible(true);
-    }
+  for (size_t i = 0; i < categories_.size(); ++i) {
+    UpdateAudioPermissionsWarningState(i);
   }
 }
 

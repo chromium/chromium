@@ -7,6 +7,7 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/run_loop.h"
 #include "base/sync_socket.h"
+#include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
 #include "content/public/test/browser_task_environment.h"
 #include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
@@ -122,6 +123,7 @@ class AudioCapturePermissionCheckerMacTest : public testing::Test {
   ~AudioCapturePermissionCheckerMacTest() override = default;
 
   void SetUp() override {
+    system_permission_settings::SetIsScreenCaptureAllowedForTesting(true);
     factory_ = std::make_unique<TestStreamFactory>();
     checker_ =
         std::make_unique<AudioCapturePermissionCheckerMac>(base::BindRepeating(
@@ -156,6 +158,16 @@ class AudioCapturePermissionCheckerMacTest : public testing::Test {
 TEST_F(AudioCapturePermissionCheckerMacTest, InitialState) {
   EXPECT_EQ(checker_->GetState(),
             AudioCapturePermissionChecker::State::kUnknown);
+}
+
+TEST_F(AudioCapturePermissionCheckerMacTest,
+       InitialStateDeniedIfScreenCaptureDenied) {
+  system_permission_settings::SetIsScreenCaptureAllowedForTesting(false);
+  auto checker =
+      std::make_unique<AudioCapturePermissionCheckerMac>(base::BindRepeating(
+          &AudioCapturePermissionCheckerMacTest::OnPermissionResult,
+          base::Unretained(this)));
+  EXPECT_EQ(checker->GetState(), AudioCapturePermissionChecker::State::kDenied);
 }
 
 TEST_F(AudioCapturePermissionCheckerMacTest, CheckingState) {

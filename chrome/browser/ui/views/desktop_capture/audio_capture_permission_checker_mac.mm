@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "media/audio/audio_device_description.h"
@@ -29,7 +30,16 @@ AudioCapturePermissionCheckerMac::MaybeCreate(base::RepeatingClosure callback) {
 
 AudioCapturePermissionCheckerMac::AudioCapturePermissionCheckerMac(
     base::RepeatingClosure callback)
-    : callback_(std::move(callback)) {}
+    : callback_(std::move(callback)) {
+  // Capturing system audio on macOS requires the application to have
+  // system-level Screen recording permission. If screen recording is already
+  // denied, system audio capture will fail, so we can immediately initialize
+  // the state to denied.
+  if (system_media_permissions::CheckSystemScreenCapturePermission() ==
+      system_permission_settings::SystemPermission::kDenied) {
+    audio_permission_state_ = State::kDenied;
+  }
+}
 
 AudioCapturePermissionCheckerMac::~AudioCapturePermissionCheckerMac() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
