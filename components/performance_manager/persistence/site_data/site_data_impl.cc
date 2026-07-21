@@ -24,9 +24,7 @@ namespace {
 constexpr float kSampleWeightFactor = 0.5;
 
 base::TimeDelta GetTimeDeltaSinceEpoch() {
-  static const base::TimeTicks ticks_at_unix_epoch =
-      base::TimeTicks::Now() - (base::Time::Now() - base::Time::UnixEpoch());
-  return base::TimeTicks::Now() - ticks_at_unix_epoch;
+  return base::Time::Now() - base::Time::UnixEpoch();
 }
 
 // Returns all the SiteDataFeatureProto elements contained in a
