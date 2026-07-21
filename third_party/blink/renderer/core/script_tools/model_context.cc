@@ -1030,6 +1030,16 @@ ScriptPromise<IDLNullable<IDLString>> ModelContext::executeTool(
                                            kPermissionPolicyNotEnabledError));
   }
 
+  scoped_refptr<SecurityOrigin> expected_target_origin =
+      SecurityOrigin::CreateFromString(tool->origin());
+  if (expected_target_origin->IsOpaque()) {
+    return ScriptPromise<IDLNullable<IDLString>>::RejectWithDOMException(
+        script_state, MakeGarbageCollected<DOMException>(
+                          DOMExceptionCode::kDataError,
+                          "Cannot execute tools that live in a document with "
+                          "an opaque origin."));
+  }
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<IDLString>>>(
           script_state);
@@ -1079,8 +1089,7 @@ ScriptPromise<IDLNullable<IDLString>> ModelContext::executeTool(
   base::UnguessableToken invocation_id = base::UnguessableToken::Create();
 
   model_context_host_remote_->ExecuteRemoteScriptTool(
-      invocation_id, frame_token,
-      SecurityOrigin::CreateFromString(tool->origin()), tool->name(),
+      invocation_id, frame_token, expected_target_origin, tool->name(),
       input_arguments,
       blink::BindOnce(&ModelContext::OnExecuteScriptToolCompleted,
                       WrapWeakPersistent(this), WrapPersistent(resolver),

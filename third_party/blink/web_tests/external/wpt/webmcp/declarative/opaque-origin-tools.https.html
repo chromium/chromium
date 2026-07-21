@@ -1,35 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>WebMCP Opaque Origin Tool</title>
+<title>WebMCP Opaque Origin Declarative Tool</title>
 <link rel="author" href="mailto:dom@chromium.org">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="../resources/helpers.js"></script>
 </head>
 <body>
+
+<form toolname="opaque_tool" tooldescription="Opaque tool description">
+  <input type="text" name="param1">
+</form>
+
 <script>
 promise_test(async t => {
   // Assert that our CSP header took effect.
   assert_equals(self.origin, 'null');
 
-  await document.modelContext.registerTool({
-    name: 'opaque_tool',
-    description: 'Opaque tool description',
-    execute: async () => 'success'
-  });
-
-  // The tool should be available, but its execution is rejected because opaque
-  // origins lose their same-origin identity during string serialization ("null").
-  const tools = await document.modelContext.getTools();
-  const tool = tools.find(t => t.name === 'opaque_tool');
+  // Wait for the tool to register (happens synchronously upon parsing, but
+  // getTools is async)
+  const tool = await waitForTool('opaque_tool');
+  assert_true(!!tool, "Tool should be successfully registered from an opaque origin");
 
   await promise_rejects_dom(
     t,
     'DataError',
-    document.modelContext.executeTool(tool, '{}'),
+    document.modelContext.executeTool(tool, '{"param1":"value"}'),
     'executeTool() must reject with DataError in opaque origin documents'
   );
-}, 'An opaque origin document can register but not execute its own tools');
+}, 'An opaque origin document can register but not execute its own declarative tools');
 
 promise_test(async t => {
   const tools = await document.modelContext.getTools();
