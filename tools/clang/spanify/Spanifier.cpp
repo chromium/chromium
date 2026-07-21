@@ -3275,7 +3275,8 @@ void RewriteFunctionParamAndReturnType(const MatchFinder::MatchResult& result) {
   // Connect to the overridden methods.
   if (const clang::CXXMethodDecl* method_decl =
           clang::dyn_cast<clang::CXXMethodDecl>(fct_decl)) {
-    for (auto* overridden_method_decl : method_decl->overridden_methods()) {
+    for (auto* overridden_method_decl :
+         method_decl->getCanonicalDecl()->overridden_methods()) {
       const std::string& overridden_method_key =
           NodeKey(overridden_method_decl, source_manager, parm_or_return_id);
       if (GetProject()->IsExcludedFromProject(*overridden_method_decl) ||
