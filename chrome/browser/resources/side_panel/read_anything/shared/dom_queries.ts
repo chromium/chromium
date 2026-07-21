@@ -85,13 +85,14 @@ export function getRectIndexAtY(
 //    indexes) on triple-clicks.
 // 2. Boundary Shifting: Selection endpoints sitting on text node edges (offset
 //    0 for end-points or offset textContent.length for start-points) are
-//    shifted backward or forward into adjacent text nodes. This maintains
+//    shifted backward or forward into the closest valid text nodes (skipping
+//    unmapped layout spacers or whitespace-only nodes). This maintains
 //    contiguity and prevents highlight "leaking" across non-distilled visual
 //    boundaries (like Wikipedia infoboxes, compositions, or sidebars) in the
 //    main page frame.
 export function getNearestTextBoundaryPoint(
-    node: Node, offset: number, container: Node,
-    isStart: boolean): {node: Node, offset: number} {
+    node: Node, offset: number, container: Node, isStart: boolean,
+    isValidTarget?: (node: Node) => boolean): {node: Node, offset: number} {
   // If the node is already a leaf Text node and the offset lies strictly
   // inside the text, no normalization is needed.
   if (node.nodeType === Node.TEXT_NODE) {
@@ -124,15 +125,19 @@ export function getNearestTextBoundaryPoint(
 
   // Shift End Boundary Backward:
   // If the end of the selection is at the very start of a text node (offset
-  // 0), shift it backward to the end of the previous text node. This
-  // maintains contiguous selection highlighting in the main pane and avoids
-  // visual "leaks" past block elements (like Wikipedia infoboxes or
+  // 0), shift it backward to the end of the nearest preceding valid text node.
+  // This maintains contiguous selection highlighting in the main pane and
+  // avoids visual "leaks" past block elements (like Wikipedia infoboxes or
   // composition dividers).
   if (!isStart && targetNode.nodeType === Node.TEXT_NODE &&
       targetOffset === 0) {
     const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
     walker.currentNode = targetNode;
-    const prevText = walker.previousNode();
+    let prevText = walker.previousNode();
+    while (prevText && isValidTarget && !isValidTarget(prevText)) {
+      prevText = walker.previousNode();
+    }
+
     if (prevText) {
       targetNode = prevText;
       targetOffset = prevText.textContent?.length ?? 0;
@@ -141,14 +146,18 @@ export function getNearestTextBoundaryPoint(
 
   // Shift Start Boundary Forward:
   // If the start of the selection is at the very end of a text node (offset
-  // equals length), shift it forward to the start of the next text node. This
-  // also ensures selection contiguity across block element boundaries in the
-  // main pane.
+  // equals length), shift it forward to the start of the nearest succeeding
+  // valid text node. This also ensures selection contiguity across block
+  // element boundaries in the main pane.
   if (isStart && targetNode.nodeType === Node.TEXT_NODE &&
       targetOffset === (targetNode.textContent?.length ?? 0)) {
     const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
     walker.currentNode = targetNode;
-    const nextText = walker.nextNode();
+    let nextText = walker.nextNode();
+    while (nextText && isValidTarget && !isValidTarget(nextText)) {
+      nextText = walker.nextNode();
+    }
+
     if (nextText) {
       targetNode = nextText;
       targetOffset = 0;

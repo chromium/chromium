@@ -161,9 +161,11 @@ export class SelectionController {
     // nodes within the article container, adjusting for the direction of
     // selection to prevent index shifting errors.
     const normalizedAnchor = getNearestTextBoundaryPoint(
-        selection.anchorNode, selection.anchorOffset, container, !isBackward);
+        selection.anchorNode, selection.anchorOffset, container, !isBackward,
+        node => this.isValidSelectionTarget_(node));
     const normalizedFocus = getNearestTextBoundaryPoint(
-        selection.focusNode, selection.focusOffset, container, isBackward);
+        selection.focusNode, selection.focusOffset, container, isBackward,
+        node => this.isValidSelectionTarget_(node));
     const {anchorNodeId, anchorOffset, focusNodeId, focusOffset} =
         this.getSelectionIds_(
             normalizedAnchor.node, normalizedAnchor.offset,
@@ -457,6 +459,11 @@ export class SelectionController {
     }
 
     return null;
+  }
+
+  // Returns true if the node maps to a valid AX ID in the NodeStore.
+  private isValidSelectionTarget_(node: Node): boolean {
+    return this.nodeStore_.getAxId(node) !== undefined;
   }
 
   static getInstance(): SelectionController {

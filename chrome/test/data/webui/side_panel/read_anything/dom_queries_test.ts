@@ -321,5 +321,51 @@ suite('DomQueries', () => {
           assertEquals(child2Text, result.node);
           assertEquals(5, result.offset);
         });
+
+    test(
+        'shifts start boundary forward skipping unmapped and whitespace nodes',
+        () => {
+          const root = document.createElement('div');
+          const child1 = document.createTextNode('hello');
+          const spacer1 = document.createTextNode('   \n');
+          const spacer2 = document.createTextNode(' ');
+          const child2 = document.createTextNode('world');
+          root.appendChild(child1);
+          root.appendChild(spacer1);
+          root.appendChild(spacer2);
+          root.appendChild(child2);
+          document.body.appendChild(root);
+
+          const mappedNodes = new Set<Node>([child1, child2]);
+          const isValidTarget = (node: Node) => mappedNodes.has(node);
+
+          const result = getNearestTextBoundaryPoint(
+              child1, 5, root, /*isStart=*/ true, isValidTarget);
+          assertEquals(child2, result.node);
+          assertEquals(0, result.offset);
+        });
+
+    test(
+        'shifts end boundary backward skipping unmapped and whitespace nodes',
+        () => {
+          const root = document.createElement('div');
+          const child1 = document.createTextNode('hello');
+          const spacer1 = document.createTextNode('\n  ');
+          const spacer2 = document.createTextNode(' ');
+          const child2 = document.createTextNode('world');
+          root.appendChild(child1);
+          root.appendChild(spacer1);
+          root.appendChild(spacer2);
+          root.appendChild(child2);
+          document.body.appendChild(root);
+
+          const mappedNodes = new Set<Node>([child1, child2]);
+          const isValidTarget = (node: Node) => mappedNodes.has(node);
+
+          const result = getNearestTextBoundaryPoint(
+              child2, 0, root, /*isStart=*/ false, isValidTarget);
+          assertEquals(child1, result.node);
+          assertEquals(5, result.offset);
+        });
   });
 });
