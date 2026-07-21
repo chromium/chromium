@@ -10,7 +10,6 @@ export function getHtml(this: DummyTestElement) {
 <div class="container" ?disabled="${this.disabled}">
   <h1>${this.title}</h1>
   <span>Test with bad indent and expr</span>
-</div>
-`;
+</div>`;
   // clang-format on
 }

@@ -49,6 +49,39 @@ export const PROP_PREFIX = 'lit-prop';
 export const FORMAT_OFF_PREFIX = 'lit-template-format-off';
 
 /**
+ * Returns the formatting depth for a tag name's own indentation. "if" elements
+ * are left-aligned, so their indent depth is 0.
+ * @param {string} tagName The tag name string.
+ * @param {number} currentDepth The normal depth at this point in the tree.
+ * @return {number}
+ */
+export function getDepthForTagName(tagName, currentDepth) {
+  return tagName === 'if' ? 0 : currentDepth;
+}
+
+/**
+ * Returns the formatting depth for a node's own indentation.
+ * @param {Object} node The AST node.
+ * @param {number} currentDepth The normal depth at this point in the tree.
+ * @return {number}
+ */
+export function getDepthForNode(node, currentDepth) {
+  return getDepthForTagName(node.nodeName, currentDepth);
+}
+
+/**
+ * Returns the next depth to pass when recursing into children of a node.
+ * "if" elements are not considered part of the HTML structural tree, so they do
+ * not increment depth.
+ * @param {Object} node The AST node.
+ * @param {number} currentDepth The normal depth at this point in the tree.
+ * @return {number}
+ */
+export function getChildDepthForNode(node, currentDepth) {
+  return node.nodeName === 'if' ? currentDepth : currentDepth + 1;
+}
+
+/**
  * Returns a newline string followed by the specified number of spaces.
  * @param {number} indent The number of spaces to indent.
  * @return {string}

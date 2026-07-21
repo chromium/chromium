@@ -4,7 +4,7 @@
 
 import assert from 'node:assert';
 
-import {EXPR_PREFIX, FORMAT_OFF_PREFIX, getIndentationPrefix, INDENT_SIZE, LINE_LENGTH_LIMIT, PROP_PREFIX, RESTRICTED_TAGS, VOID_ELEMENTS, WRAPPED_LINE_INDENT_SIZE} from './html_utils.js';
+import {EXPR_PREFIX, FORMAT_OFF_PREFIX, getChildDepthForNode, getDepthForNode, getDepthForTagName, getIndentationPrefix, INDENT_SIZE, LINE_LENGTH_LIMIT, PROP_PREFIX, RESTRICTED_TAGS, VOID_ELEMENTS, WRAPPED_LINE_INDENT_SIZE} from './html_utils.js';
 
 const PREFIX_REGEX = /^[?.]/;
 
@@ -110,8 +110,8 @@ function analyzeChildNodes(node, placeholderMap) {
 function formatAttributes(
     tagName, attrs, depth, placeholderMap, childLen, sourceCodeLocation,
     sortAttributes = false) {
-  const elementIndentStr = ' '.repeat((depth - 1) * INDENT_SIZE);
-
+  const elementIndentStr =
+      ' '.repeat(getDepthForTagName(tagName, depth - 1) * INDENT_SIZE);
   const resolvedAttrs = attrs.map(attr => {
     let rawText = ` ${attr.name}="${attr.value}"`;
     // parse5 records a value of "" for boolean attributes. Don't inject
@@ -255,9 +255,10 @@ export function serializeNode(node, depth, placeholderMap, sortAttributes) {
     return startTag;
   }
 
+  const nextDepth = getChildDepthForNode(node, depth);
   const childrenHtml = node.childNodes ?
       node.childNodes
-          .map(c => serializeNode(c, depth + 1, placeholderMap, sortAttributes))
+          .map(c => serializeNode(c, nextDepth, placeholderMap, sortAttributes))
           .join('') :
       '';
 
@@ -267,7 +268,8 @@ export function serializeNode(node, depth, placeholderMap, sortAttributes) {
       placeholderMap.get(closingPlaceholder).code :
       `</${tagName}>`;
 
-  const elementIndent = depth > 0 ? (depth - 1) * INDENT_SIZE : 0;
+  const elementIndent =
+      depth > 0 ? getDepthForNode(node, depth - 1) * INDENT_SIZE : 0;
   const fullLength =
       elementIndent + startTag.length + childrenHtml.length + endTag.length;
 
@@ -282,7 +284,8 @@ export function serializeNode(node, depth, placeholderMap, sortAttributes) {
     // Since the full tag doesn't fit on one line, put children on new line
     // and indent if they're not already on one.
     if (!childrenHtml.startsWith('\n') && childrenHtml.trim() !== '') {
-      const childIndent = getIndentationPrefix(elementIndent + INDENT_SIZE);
+      const childIndentSize = nextDepth > 0 ? (nextDepth - 1) * INDENT_SIZE : 0;
+      const childIndent = getIndentationPrefix(childIndentSize);
       return `${startTag}${childIndent}${childrenHtml.trim()}${endTagIndent}${
           endTag}`;
     }

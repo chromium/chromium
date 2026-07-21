@@ -14,7 +14,6 @@ export function getHtml(this: DummyTestElement) {
         @close="${this.onClose_}"
         class="a-very-long-custom-class-name">
   </dummy-dialog>`}">
-</dummy-render>
-`;
+</dummy-render>`;
   // clang-format on
 }

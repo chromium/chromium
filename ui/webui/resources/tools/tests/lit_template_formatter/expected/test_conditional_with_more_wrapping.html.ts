@@ -14,7 +14,6 @@ ${this.some.condition ? html`
     </a>
   </div>
 ` : html``}
-<!--_html_template_end_-->
-`;
+<!--_html_template_end_-->`;
   // clang-format on
 }

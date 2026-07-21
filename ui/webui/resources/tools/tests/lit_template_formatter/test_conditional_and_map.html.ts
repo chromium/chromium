@@ -19,7 +19,6 @@ export function getHtml(this: DummyTestElement) {
       </select>
     </div>
   ` : ''}
-</div>
-`;
+</div>`;
   // clang-format on
 }

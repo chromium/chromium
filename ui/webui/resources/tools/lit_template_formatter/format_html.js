@@ -6,7 +6,7 @@ import assert from 'node:assert';
 
 import {parseFragment} from '../../../../../third_party/node/node_modules/parse5/lib/index.js';
 
-import {EXPR_PREFIX, FALSE_TEMPLATE_PREFIX, FORMAT_OFF_PREFIX, getIndentationPrefix, INDENT_SIZE, PROP_PREFIX, RESTRICTED_TAGS, TEMPLATE_PREFIX, VOID_ELEMENTS} from './html_utils.js';
+import {EXPR_PREFIX, FALSE_TEMPLATE_PREFIX, FORMAT_OFF_PREFIX, getChildDepthForNode, getDepthForNode, getIndentationPrefix, INDENT_SIZE, PROP_PREFIX, RESTRICTED_TAGS, TEMPLATE_PREFIX, VOID_ELEMENTS} from './html_utils.js';
 
 /**
  * Adds the correct newline and indentation before a child node.
@@ -118,8 +118,10 @@ function format(node, depth, placeholderMap) {
           // parent's indentation (for the closing tag). If it has a subsequent
           // sibling, this will be overwritten later by ensureNewlineAndIndent.
           if (/\n\s*$/.test(child.value)) {
+            const trailingIndent =
+                getDepthForNode(node, depth - 1) * INDENT_SIZE;
             child.value = child.value.replace(
-                /\n\s*$/, getIndentationPrefix((depth - 1) * INDENT_SIZE));
+                /\n\s*$/, getIndentationPrefix(trailingIndent));
           }
         }
       }
@@ -154,7 +156,8 @@ function format(node, depth, placeholderMap) {
           const attrName = placeholderMap.has(attr.name) ?
               placeholderMap.get(attr.name).code :
               attr.name;
-          recordMetadata(placeholderMap, match, depth, attrName);
+          recordMetadata(
+              placeholderMap, match, getDepthForNode(child, depth), attrName);
         }
       }
     }
@@ -162,12 +165,13 @@ function format(node, depth, placeholderMap) {
     // Skip newline if it's a false branch placeholder
     if (!tagName || !tagName.startsWith(FALSE_TEMPLATE_PREFIX)) {
       if (isFirstElement || shouldInsertNewline(node, child)) {
-        ensureNewlineAndIndent(newChildren, depth);
+        ensureNewlineAndIndent(newChildren, getDepthForNode(child, depth));
       }
       isFirstElement = false;
     }
 
-    format(child, depth + 1, placeholderMap);
+    const nextDepth = getChildDepthForNode(child, depth);
+    format(child, nextDepth, placeholderMap);
     newChildren.push(child);
   }
 
@@ -176,9 +180,10 @@ function format(node, depth, placeholderMap) {
   // fragment.
   if (node.nodeName !== '#document-fragment' &&
       newChildren.some(c => !c.nodeName.startsWith('#'))) {
+    const closeIndent = getDepthForNode(node, depth - 1) * INDENT_SIZE;
     newChildren.push({
       nodeName: '#text',
-      value: getIndentationPrefix((depth - 1) * INDENT_SIZE),
+      value: getIndentationPrefix(closeIndent),
     });
   }
 

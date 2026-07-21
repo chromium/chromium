@@ -5,11 +5,16 @@
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 export function getHtml(this: DummyTestElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div class="wrapper">
-  <span>Name: </span><span>${this.name}</span>
+  <div class="inner">
+  <if expr="is_chromeos">
+    <div class="cros"></div>
+  </if>
+  </div>
 </div>
+<if expr="is_win">
+  <span>Windows Only</span>
+</if>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

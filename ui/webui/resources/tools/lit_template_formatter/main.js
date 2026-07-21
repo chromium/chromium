@@ -97,7 +97,7 @@ async function formatFile(filePath, sortAttributes, quiet = false) {
       parts.length === 2,
       'Placeholder not found or found multiple times after formatting');
 
-  const finalContent = parts[0] + formattedHtml + '\n' + parts[1];
+  const finalContent = parts[0] + formattedHtml + parts[1];
 
   // Clean up temp file if it exists
   await unlink(tempFilePath);
