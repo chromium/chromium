@@ -45,7 +45,8 @@ public class TabStateAttributesRegistry extends TabWebContentsUserData {
 
     /** Returns {@link TabStateAttributes} for a {@link Tab} associated with the key class. */
     public static @Nullable TabStateAttributes getAttributesFor(
-            Tab tab, Class<? extends TabStateAttributes.StoreKey> key) {
+            @Nullable Tab tab, Class<? extends TabStateAttributes.StoreKey> key) {
+        if (tab == null || tab.isDestroyed()) return null;
         UserDataHost host = tab.getUserDataHost();
         TabStateAttributesRegistry registry = host.getUserData(TabStateAttributesRegistry.class);
         if (registry == null) return null;
