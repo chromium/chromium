@@ -960,7 +960,6 @@ public class TabGridDialogMediator
     private void setupToolbarEditText() {
         mKeyboardVisibilityListener =
                 isShowing -> {
-                    mModel.set(TabGridDialogProperties.TITLE_CURSOR_VISIBILITY, isShowing);
                     if (!isShowing) {
                         mModel.set(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED, false);
                         saveCurrentGroupModifiedTitle();
@@ -984,6 +983,7 @@ public class TabGridDialogMediator
                     mIsUpdatingTitle = hasFocus;
                     mModel.set(TabGridDialogProperties.IS_KEYBOARD_VISIBLE, hasFocus);
                     mModel.set(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED, hasFocus);
+                    mModel.set(TabGridDialogProperties.TITLE_CURSOR_VISIBILITY, hasFocus);
                 };
         mModel.set(TabGridDialogProperties.TITLE_TEXT_ON_FOCUS_LISTENER, onFocusChangeListener);
     }

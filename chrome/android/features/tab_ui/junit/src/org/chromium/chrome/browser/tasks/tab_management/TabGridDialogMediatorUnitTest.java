@@ -515,24 +515,7 @@ public class TabGridDialogMediatorUnitTest {
         listener.onFocusChange(mTitleTextView, true);
 
         assertThat(mMediator.getIsUpdatingTitleForTesting(), equalTo(true));
-    }
-
-    @Test
-    public void onKeyBoardVisibilityChanged_updateTextAndKeyboard() {
-        KeyboardVisibilityDelegate.KeyboardVisibilityListener listener =
-                mMediator.getKeyboardVisibilityListenerForTesting();
-        mModel.set(TabGridDialogProperties.TITLE_CURSOR_VISIBILITY, false);
-        mModel.set(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED, false);
-
-        listener.keyboardVisibilityChanged(true);
         assertThat(mModel.get(TabGridDialogProperties.TITLE_CURSOR_VISIBILITY), equalTo(true));
-        assertThat(mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED), equalTo(false));
-        assertThat(mModel.get(TabGridDialogProperties.IS_KEYBOARD_VISIBLE), equalTo(false));
-
-        listener.keyboardVisibilityChanged(false);
-        assertThat(mModel.get(TabGridDialogProperties.TITLE_CURSOR_VISIBILITY), equalTo(false));
-        assertThat(mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED), equalTo(false));
-        assertThat(mModel.get(TabGridDialogProperties.IS_KEYBOARD_VISIBLE), equalTo(false));
     }
 
     @Test
