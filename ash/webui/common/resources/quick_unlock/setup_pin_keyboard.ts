@@ -540,7 +540,6 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
       }
       this.localAuthFactorsComplexity_ = newValue;
     } catch (e) {
-      console.error('Error calling fetchLocalAuthFactorsComplexity_:', e);
       this.localAuthFactorsComplexity_ = LocalAuthFactorsComplexity.kUnset;
       switch (e) {
         case ConfigureResult.kInvalidTokenError:
