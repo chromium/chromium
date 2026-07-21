@@ -4,6 +4,9 @@
 
 #include "cc/mojom/render_frame_metadata_mojom_traits.h"
 
+#include <string_view>
+
+#include "base/debug/crash_logging.h"
 #include "build/build_config.h"
 #include "services/viz/public/cpp/compositing/selection_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/tracked_element_rects_mojom_traits.h"
@@ -13,6 +16,16 @@
 #include "ui/gfx/mojom/selection_bound_mojom_traits.h"
 
 namespace mojo {
+
+namespace {
+
+void SetFailedCheckCrashKey(std::string_view check_name) {
+  static auto* const crash_key = base::debug::AllocateCrashKeyString(
+      "rfm_failed_check", base::debug::CrashKeySize::Size32);
+  base::debug::SetCrashKeyString(crash_key, check_name);
+}
+
+}  // namespace
 
 // static
 bool StructTraits<cc::mojom::DelegatedInkBrowserMetadataDataView,
@@ -48,19 +61,50 @@ bool StructTraits<
   out->root_overflow_y_hidden = data.root_overflow_y_hidden();
   out->has_transparent_background = data.has_transparent_background();
 #endif
-  return data.ReadRootScrollOffset(&out->root_scroll_offset) &&
-         data.ReadSelection(&out->selection) &&
-         data.ReadDelegatedInkMetadata(&out->delegated_ink_metadata) &&
+  if (!data.ReadRootScrollOffset(&out->root_scroll_offset)) {
+    SetFailedCheckCrashKey("root_scroll_offset");
+    return false;
+  }
+  if (!data.ReadSelection(&out->selection)) {
+    SetFailedCheckCrashKey("selection");
+    return false;
+  }
+  if (!data.ReadDelegatedInkMetadata(&out->delegated_ink_metadata)) {
+    SetFailedCheckCrashKey("delegated_ink_metadata");
+    return false;
+  }
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-         data.ReadScrollableViewportSize(&out->scrollable_viewport_size) &&
-         data.ReadRootLayerSize(&out->root_layer_size) &&
+  if (!data.ReadScrollableViewportSize(&out->scrollable_viewport_size)) {
+    SetFailedCheckCrashKey("scrollable_viewport_size");
+    return false;
+  }
+  if (!data.ReadRootLayerSize(&out->root_layer_size)) {
+    SetFailedCheckCrashKey("root_layer_size");
+    return false;
+  }
 #endif
-         data.ReadTrackedElementRects(&out->tracked_element_rects) &&
-         data.ReadViewportSizeInPixels(&out->viewport_size_in_pixels) &&
-         data.ReadLocalSurfaceId(&out->local_surface_id) &&
-         data.ReadNewVerticalScrollDirection(
-             &out->new_vertical_scroll_direction) &&
-         data.ReadRootBackgroundColor(&out->root_background_color);
+  if (!data.ReadTrackedElementRects(&out->tracked_element_rects)) {
+    SetFailedCheckCrashKey("tracked_element_rects");
+    return false;
+  }
+  if (!data.ReadViewportSizeInPixels(&out->viewport_size_in_pixels)) {
+    SetFailedCheckCrashKey("viewport_size_in_pixels");
+    return false;
+  }
+  if (!data.ReadLocalSurfaceId(&out->local_surface_id)) {
+    SetFailedCheckCrashKey("local_surface_id");
+    return false;
+  }
+  if (!data.ReadNewVerticalScrollDirection(
+          &out->new_vertical_scroll_direction)) {
+    SetFailedCheckCrashKey("new_vertical_scroll_direction");
+    return false;
+  }
+  if (!data.ReadRootBackgroundColor(&out->root_background_color)) {
+    SetFailedCheckCrashKey("root_background_color");
+    return false;
+  }
+  return true;
 }
 
 }  // namespace mojo
