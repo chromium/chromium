@@ -80,6 +80,7 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       {"phraseHighlightTitle", IDS_READING_MODE_PHRASE_HIGHLIGHT_LABEL},
       {"sentenceHighlightTitle", IDS_READING_MODE_SENTENCE_HIGHLIGHT_LABEL},
       {"noHighlightTitle", IDS_READING_MODE_OFF_HIGHLIGHT_LABEL},
+      {"turnLineFocusOffTitle", IDS_READING_MODE_TURN_LINE_FOCUS_OFF_LABEL},
       {"lineFocusWindowHeading", IDS_READING_MODE_LINE_FOCUS_WINDOW_HEADING},
       {"lineFocusStyleHeading", IDS_READING_MODE_LINE_FOCUS_STYLE_HEADING},
       {"lineFocusOneLineTitle", IDS_READING_MODE_LINE_FOCUS_SMALL_FOCUS_LABEL},

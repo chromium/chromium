@@ -309,6 +309,48 @@ suite('AppContent', () => {
             'none', app.style.getPropertyValue('--line-focus-display'));
       });
 
+  test('onContentStateChange line focus showing if has content', async () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+    emitEvent(
+        app, ToolbarEvent.LINE_FOCUS_STYLE,
+        {detail: {data: LineFocusStyle.UNDERLINE}});
+    await microtasksFinished();
+
+    contentController.setState(ContentType.HAS_CONTENT);
+    await microtasksFinished();
+
+    assertTrue(app.$.toolbar.isLineFocusShowing);
+  });
+
+  test(
+      'onContentStateChange line focus not showing if off but has content',
+      async () => {
+        chrome.readingMode.isLineFocusEnabled = true;
+        emitEvent(
+            app, ToolbarEvent.LINE_FOCUS_STYLE,
+            {detail: {data: LineFocusStyle.OFF}});
+        await microtasksFinished();
+
+        contentController.setState(ContentType.HAS_CONTENT);
+        await microtasksFinished();
+
+        assertFalse(app.$.toolbar.isLineFocusShowing);
+      });
+
+  test(
+      'onContentStateChange line focus not showing if no content', async () => {
+        chrome.readingMode.isLineFocusEnabled = true;
+        emitEvent(
+            app, ToolbarEvent.LINE_FOCUS_STYLE,
+            {detail: {data: LineFocusStyle.UNDERLINE}});
+        await microtasksFinished();
+
+        contentController.setState(ContentType.NO_CONTENT);
+        await microtasksFinished();
+
+        assertFalse(app.$.toolbar.isLineFocusShowing);
+      });
+
   test('showLoading shows spinner', async () => {
     const spinner = 'throbber';
 
@@ -317,6 +359,32 @@ suite('AppContent', () => {
 
     assertStringContains(emptyState.darkImagePath, spinner);
     assertStringContains(emptyState.imagePath, spinner);
+  });
+
+  test('showLoading marks line focus showing if enabled', async () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+    emitEvent(
+        app, ToolbarEvent.LINE_FOCUS_STYLE,
+        {detail: {data: LineFocusStyle.UNDERLINE}});
+    await microtasksFinished();
+
+    app.showLoading();
+    await microtasksFinished();
+
+    assertTrue(app.$.toolbar.isLineFocusShowing);
+  });
+
+  test('showLoading does not mark line focus showing if disabled', async () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+    emitEvent(
+        app, ToolbarEvent.LINE_FOCUS_STYLE,
+        {detail: {data: LineFocusStyle.OFF}});
+    await microtasksFinished();
+
+    app.showLoading();
+    await microtasksFinished();
+
+    assertFalse(app.$.toolbar.isLineFocusShowing);
   });
 
   test(

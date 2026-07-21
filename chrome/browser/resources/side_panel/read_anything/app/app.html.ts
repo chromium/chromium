@@ -35,6 +35,7 @@ export function getHtml(this: AppElement) {
         .isImmersiveMode="${this.isImmersiveMode()}"
         .lineFocusStyle="${this.lineFocusStyle_}"
         .lineFocusMovement="${this.lineFocusMovement_}"
+        .isLineFocusShowing="${this.computeIsLineFocusShowing_()}"
         @select-voice="${this.onSelectVoice_}"
         @voice-language-toggle="${this.onVoiceLanguageToggle_}"
         @preview-voice="${this.onPreviewVoice_}"

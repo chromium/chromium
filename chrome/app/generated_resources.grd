@@ -9917,6 +9917,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_LINE_FOCUS_LABEL" desc="Accessibility label for the line focus menu item in reading mode.">
         Line focus
       </message>
+      <message name="IDS_READING_MODE_TURN_LINE_FOCUS_OFF_LABEL" desc="Text for the toolbar button in reading mode that turns off line focus. Displays only when line focus is on.">
+        Turn off focus
+      </message>
       <message name="IDS_READING_MODE_SIDE_PANEL_LABEL" desc="Accessibility label for the Side panel option in view menu for reading mode.">
         Side panel
       </message>

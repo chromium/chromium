@@ -65,6 +65,14 @@ export function getHtml(this: ReadAnythingToolbarElement) {
         </cr-button>
       ` : ''}
     </span>
+    ${this.isLineFocusShowing ? html`
+    <cr-button class="toolbar-button" id="line-focus-off"
+      tabindex="-1"
+      @click="${this.onLineFocusOffClick_}">
+      ${this.i18n('turnLineFocusOffTitle')}
+    </cr-button>
+    ` : ''}
+
   ${!this.isImmersiveEnabled_ ? html`
     <cr-button class="toolbar-button" id="rate"
           tabindex="${this.getRateTabIndex_()}"

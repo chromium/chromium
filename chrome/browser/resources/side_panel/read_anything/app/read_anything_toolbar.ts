@@ -36,8 +36,8 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {DEFAULT_SETTINGS, SettingsOption, ToolbarEvent} from '../content/read_anything_types.js';
-import type {LineFocusMovement, LineFocusStyle, SettingsPrefs} from '../content/read_anything_types.js';
+import type {LineFocusMovement, SettingsPrefs} from '../content/read_anything_types.js';
+import {DEFAULT_SETTINGS, LineFocusStyle, SettingsOption, ToolbarEvent} from '../content/read_anything_types.js';
 import type {AppearanceMenuElement} from '../menus/appearance_menu.js';
 import type {ColorMenuElement} from '../menus/color_menu.js';
 import type {FontMenuElement} from '../menus/font_menu.js';
@@ -173,6 +173,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       isImmersiveMode: {type: Boolean},
       isReadAnythingPinned: {type: Boolean},
       isImmersiveEnabled_: {type: Boolean},
+      isLineFocusShowing: {type: Boolean},
       lineFocusStyle: {type: Object},
       lineFocusMovement: {type: Number},
       webuiRoundedIconsEnabled_: {type: Boolean},
@@ -201,6 +202,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   accessor selectedVoice: SpeechSynthesisVoice|null = null;
   accessor pageLanguage: string = '';
   accessor isImmersiveMode: boolean = false;
+  accessor isLineFocusShowing: boolean = false;
   accessor lineFocusStyle: LineFocusStyle|null = null;
   accessor lineFocusMovement: LineFocusMovement|null = null;
   protected accessor hideSpinner_: boolean = true;
@@ -800,6 +802,10 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
           chrome.readingMode.pauseButtonStopSource);
     }
     this.fire(ToolbarEvent.PLAY_PAUSE);
+  }
+
+  protected onLineFocusOffClick_() {
+    this.fire(ToolbarEvent.LINE_FOCUS_STYLE, {data: LineFocusStyle.OFF});
   }
 
   protected onToolbarKeydown_(e: KeyboardEvent) {

@@ -849,6 +849,13 @@ export class AppElement extends AppElementBase implements SpeechListener,
         !this.willDrawAgainSoon_;
   }
 
+  protected computeIsLineFocusShowing_(): boolean {
+    return chrome.readingMode.isLineFocusEnabled &&
+        this.lineFocusController_.isEnabled() &&
+        (this.contentState_.type === ContentType.HAS_CONTENT ||
+         this.contentState_.type === ContentType.LOADING);
+  }
+
   protected onKeyDown_(e: KeyboardEvent) {
     if (isPlayPauseShortcut(e)) {
       e.stopPropagation();
