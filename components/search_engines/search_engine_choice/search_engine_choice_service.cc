@@ -688,6 +688,11 @@ SearchEngineChoiceService::GetDynamicChoiceScreenConditions(
       return SearchEngineChoiceScreenConditions::
           kHasRemovedPrepopulatedSearchEngine;
     case ChoiceStatus::kCurrentCannotBeHighlighted:
+#if BUILDFLAG(IS_IOS)
+      if (switches::IsSearchEngineChoiceScreenSnackbarEnabled()) {
+        return SearchEngineChoiceScreenConditions::kEligible;
+      }
+#endif
       return SearchEngineChoiceScreenConditions::
           kHasNonHighlightablePrepopulatedSearchEngine;
     case ChoiceStatus::kCurrentIsNotPrepopulated:

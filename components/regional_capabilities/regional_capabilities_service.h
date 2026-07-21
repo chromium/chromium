@@ -160,6 +160,12 @@ class RegionalCapabilitiesService : public KeyedService {
   std::optional<ChoiceScreenDesign> GetChoiceScreenDesign();
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_IOS)
+  // Returns `true` if a snackbar should be shown after presenting the search
+  // engine choice screen for existing users.
+  bool ShouldShowChoiceConfirmationSnackbar();
+#endif  // BUILDFLAG(IS_IOS)
+
   const std::optional<ChoiceScreenEligibilityConfig>&
   GetChoiceScreenEligibilityConfig();
 

@@ -11,6 +11,9 @@ specific_include_rules = {
   "profile_controller.mm": [
     "+components/desktop_to_mobile_promos/features.h",
   ],
+  "search_engine_choice_profile_agent\\.mm": [
+    "+components/regional_capabilities",
+  ],
   "synced_set_up_profile_agent.mm": [
     "+components/sync_device_info",
     "+components/sync_preferences",

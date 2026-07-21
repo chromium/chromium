@@ -1028,12 +1028,6 @@ BASE_DECLARE_FEATURE(kAppBarHideInFullscreen);
 // Returns true if the App Bar should be completely hidden when in fullscreen.
 bool IsAppBarHiddenInFullscreen();
 
-// Feature flag for SearchEngineChoiceScreenSnackbar.
-BASE_DECLARE_FEATURE(kSearchEngineChoiceScreenSnackbar);
-
-// Returns true if SearchEngineChoiceScreenSnackbar is enabled.
-bool IsSearchEngineChoiceScreenSnackbarEnabled();
-
 // Enables the DefaultBottomOmniboxOnIOS feature.
 BASE_DECLARE_FEATURE(kDefaultBottomOmniboxOnIOS);
 

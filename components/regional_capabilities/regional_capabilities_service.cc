@@ -538,6 +538,17 @@ RegionalCapabilitiesService::GetChoiceScreenDesign() {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_IOS)
+bool RegionalCapabilitiesService::ShouldShowChoiceConfirmationSnackbar() {
+  if (!switches::IsSearchEngineChoiceScreenSnackbarEnabled()) {
+    return false;
+  }
+  const auto& eligibility_config = GetChoiceScreenEligibilityConfig();
+  return eligibility_config.has_value() &&
+         eligibility_config->highlight_current_default;
+}
+#endif  // BUILDFLAG(IS_IOS)
+
 const std::optional<ChoiceScreenEligibilityConfig>&
 RegionalCapabilitiesService::GetChoiceScreenEligibilityConfig() {
   return GetActiveProgramSettings().choice_screen_eligibility_config;

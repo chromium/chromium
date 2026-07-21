@@ -44,6 +44,14 @@ inline constexpr char kEeaListCountryOverride[] = "EEA_ALL";
 // surfaces. When disabled, Taiyaki is only enabled on the FRE.
 COMPONENT_EXPORT(REGIONAL_CAPABILITIES_SWITCHES)
 BASE_DECLARE_FEATURE(kTaiyakiAllSurfaces);
+
+// Feature flag for SearchEngineChoiceScreenSnackbar.
+COMPONENT_EXPORT(REGIONAL_CAPABILITIES_SWITCHES)
+BASE_DECLARE_FEATURE(kSearchEngineChoiceScreenSnackbar);
+
+// Returns true if SearchEngineChoiceScreenSnackbar is enabled.
+COMPONENT_EXPORT(REGIONAL_CAPABILITIES_SWITCHES)
+bool IsSearchEngineChoiceScreenSnackbarEnabled();
 #endif  // BUILDFLAG(IS_IOS)
 
 // Updates profile country preference stored in preferences
