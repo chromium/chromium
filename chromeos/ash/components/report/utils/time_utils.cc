@@ -7,10 +7,10 @@
 #include <memory>
 #include <string_view>
 
-#include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/policy/weekly_time/time_utils.h"
@@ -148,18 +148,23 @@ bool IsFirstActiveUnderNDaysAgo(base::Time active_ts,
 }
 
 std::string FormatTimestampToMidnightGMTString(base::Time ts) {
-  return base::UnlocalizedTimeFormatWithPattern(ts, "yyyy-MM-dd 00:00:00.000 z",
-                                                icu::TimeZone::getGMT());
+  base::Time::Exploded exploded;
+  ts.UTCExplode(&exploded);
+  return base::StringPrintf("%04d-%02d-%02d 00:00:00.000 GMT", exploded.year,
+                            exploded.month, exploded.day_of_month);
 }
 
 std::string TimeToYYYYMMDDString(base::Time ts) {
-  return base::UnlocalizedTimeFormatWithPattern(ts, "yyyyMMdd",
-                                                icu::TimeZone::getGMT());
+  base::Time::Exploded exploded;
+  ts.UTCExplode(&exploded);
+  return base::StringPrintf("%04d%02d%02d", exploded.year, exploded.month,
+                            exploded.day_of_month);
 }
 
 std::string TimeToYYYYMMString(base::Time ts) {
-  return base::UnlocalizedTimeFormatWithPattern(ts, "yyyyMM",
-                                                icu::TimeZone::getGMT());
+  base::Time::Exploded exploded;
+  ts.UTCExplode(&exploded);
+  return base::StringPrintf("%04d%02d", exploded.year, exploded.month);
 }
 
 // The ActivateDate is formatted: YYYY-WW and is generated based on UTC date

@@ -6,7 +6,7 @@
 
 #include "ash/projector/projector_metrics.h"
 #include "base/files/safe_base_name.h"
-#include "base/i18n/time_formatting.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 
 namespace ash {
@@ -15,8 +15,11 @@ namespace {
 
 // Only call this function on projector session starts.
 std::string GenerateScreencastName() {
-  return base::UnlocalizedTimeFormatWithPattern(
-      base::Time::Now(), "'Screencast 'y-MM-dd HH.mm.ss");
+  base::Time::Exploded exploded;
+  base::Time::Now().LocalExplode(&exploded);
+  return base::StringPrintf(
+      "Screencast %04d-%02d-%02d %02d.%02d.%02d", exploded.year, exploded.month,
+      exploded.day_of_month, exploded.hour, exploded.minute, exploded.second);
 }
 
 }  // namespace

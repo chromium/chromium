@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_ASH_ARC_TRACING_TEST_OVERVIEW_TRACING_TEST_BASE_H_
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/files/file_path.h"
 #include "base/time/time.h"
@@ -67,6 +69,7 @@ class OverviewTracingTestBase : public ChromeAshTestBase {
   std::unique_ptr<exo::WMHelper> wm_helper_;
   base::FilePath download_path_;
   std::unique_ptr<icu::TimeZone> saved_tz_;
+  std::optional<std::string> saved_system_tz_;
 };
 
 }  // namespace arc

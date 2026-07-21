@@ -170,6 +170,9 @@ class ASH_EXPORT CaptureModeTestApi {
 
   CaptureModeBehavior* GetBehavior(BehaviorType behavior_type);
 
+  base::FilePath BuildPathNoExtension(std::string_view base_name,
+                                      base::Time timestamp) const;
+
  private:
   // Sets the capture mode type to a video capture if |for_video| is true, or
   // image capture otherwise.

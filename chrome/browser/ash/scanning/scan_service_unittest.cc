@@ -18,7 +18,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/i18n/time_formatting.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
@@ -110,7 +109,11 @@ lorgnette::ScannerCapabilities CreateEpsonScannerCapabilities() {
 }
 
 std::string GetTimestamp(const base::Time& scan_time) {
-  return base::UnlocalizedTimeFormatWithPattern(scan_time, "yyMMdd-HHmmss");
+  base::Time::Exploded exploded;
+  scan_time.LocalExplode(&exploded);
+  return base::StringPrintf("%02d%02d%02d-%02d%02d%02d", exploded.year % 100,
+                            exploded.month, exploded.day_of_month,
+                            exploded.hour, exploded.minute, exploded.second);
 }
 
 // Returns single FilePath to mimic saved PDF format scan.

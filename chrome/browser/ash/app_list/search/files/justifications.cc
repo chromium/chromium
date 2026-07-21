@@ -6,6 +6,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/i18n/icubridge/date_time_formatter.h"
+#include "base/i18n/icubridge/icu_bridge.h"
 #include "base/i18n/time_formatting.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -36,7 +38,8 @@ std::u16string GetTimeString(const base::Time& timestamp) {
     return base::TimeFormatTimeOfDay(timestamp);
   }
 
-  return base::LocalizedTimeFormatWithPattern(timestamp, "MMMd");
+  return base::i18n::IcuBridge::GetInstance().date_time_formatter().Format(
+      timestamp, base::i18n::datetime_options::MD::Medium());
 }
 
 std::optional<std::u16string> GetEditStringFromTime(const base::Time& time) {

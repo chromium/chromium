@@ -13,7 +13,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/i18n/time_formatting.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -91,8 +90,11 @@ DebugOverlayHandler::DebugOverlayHandler() {
   add_resolution_to_filename_ =
       command_line->HasSwitch(::switches::kHostWindowBounds);
 
-  screenshot_dir_ = base_dir.Append(base::UnlocalizedTimeFormatWithPattern(
-      base::Time::Now(), "y-MM-dd - HH.mm.ss"));
+  base::Time::Exploded exploded;
+  base::Time::Now().LocalExplode(&exploded);
+  screenshot_dir_ = base_dir.Append(base::StringPrintf(
+      "%04d-%02d-%02d - %02d.%02d.%02d", exploded.year, exploded.month,
+      exploded.day_of_month, exploded.hour, exploded.minute, exploded.second));
 }
 
 DebugOverlayHandler::~DebugOverlayHandler() = default;

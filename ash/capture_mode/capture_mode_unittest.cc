@@ -7728,6 +7728,37 @@ TEST_P(CaptureModeHistogramTest, CaptureModeSwitchToDefaultReasonMetric) {
       CaptureModeSwitchToDefaultReason::kUserSelectedFromSettingsMenu, 1);
 }
 
+TEST_P(CaptureModeTest, FilenameFormatWithTwoSpaces) {
+  auto* controller = CaptureModeController::Get();
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  CaptureModeTestApi test_api;
+
+  // Let's construct a fixed timestamp: 2026-07-17 14:30:05
+  base::Time::Exploded exploded;
+  exploded.year = 2026;
+  exploded.month = 7;
+  exploded.day_of_month = 17;
+  exploded.hour = 14;
+  exploded.minute = 30;
+  exploded.second = 5;
+  exploded.millisecond = 0;
+  base::Time timestamp;
+  ASSERT_TRUE(base::Time::FromLocalExploded(exploded, &timestamp));
+
+  // Test 1: 24-hour format
+  test_delegate->set_uses_24_hour_format(true);
+  base::FilePath path_24 =
+      test_api.BuildPathNoExtension("Screenshot", timestamp);
+  EXPECT_EQ(path_24.BaseName().value(), "Screenshot 2026-07-17 14.30.05");
+
+  // Test 2: 12-hour format
+  test_delegate->set_uses_24_hour_format(false);
+  base::FilePath path_12 =
+      test_api.BuildPathNoExtension("Screenshot", timestamp);
+  EXPECT_EQ(path_12.BaseName().value(), "Screenshot 2026-07-17 2.30.05 PM");
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     CaptureModeHistogramTest,

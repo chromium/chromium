@@ -10,7 +10,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/i18n/time_formatting.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -144,15 +143,19 @@ void CrostiniExportImport::ImportContainer(guest_os::GuestId container_id,
 }
 
 base::FilePath CrostiniExportImport::GetDefaultBackupPath() const {
+  base::Time::Exploded exploded;
+  base::Time::Now().LocalExplode(&exploded);
   return file_manager::util::GetMyFilesFolderForProfile(profile_).Append(
-      base::UnlocalizedTimeFormatWithPattern(
-          base::Time::Now(), "'chromeos-linux-'yyyy-MM-dd'.tini'"));
+      base::StringPrintf("chromeos-linux-%04d-%02d-%02d.tini", exploded.year,
+                         exploded.month, exploded.day_of_month));
 }
 
 base::FilePath CrostiniExportImport::GetDefaultImageBackupPath() const {
+  base::Time::Exploded exploded;
+  base::Time::Now().LocalExplode(&exploded);
   return file_manager::util::GetMyFilesFolderForProfile(profile_).Append(
-      base::UnlocalizedTimeFormatWithPattern(
-          base::Time::Now(), "'chromeos-linux-'yyyy-MM-dd'.img.zst'"));
+      base::StringPrintf("chromeos-linux-%04d-%02d-%02d.img.zst", exploded.year,
+                         exploded.month, exploded.day_of_month));
 }
 
 void CrostiniExportImport::OpenFileDialog(content::WebContents* web_contents) {

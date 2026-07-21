@@ -255,4 +255,10 @@ CaptureModeBehavior* CaptureModeTestApi::GetBehavior(
   return controller_->GetBehavior(behavior_type);
 }
 
+base::FilePath CaptureModeTestApi::BuildPathNoExtension(
+    std::string_view base_name,
+    base::Time timestamp) const {
+  return controller_->BuildPathNoExtension(base_name, timestamp);
+}
+
 }  // namespace ash

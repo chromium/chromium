@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/i18n/time_formatting.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/base/ash/interactive/network/shill_service_util.h"
@@ -67,6 +67,11 @@ class PasspointUiInteractiveUiTest : public InteractiveAshTest {
 
 IN_PROC_BROWSER_TEST_F(PasspointUiInteractiveUiTest,
                        PasspointSubscriptionSubpageUi) {
+  base::Time::Exploded exploded;
+  kPasspointExpirationDate.LocalExplode(&exploded);
+  std::string expiration_date_str = base::StringPrintf(
+      "%d/%d/%d", exploded.month, exploded.day_of_month, exploded.year);
+
   ui::ElementContext context =
       LaunchSystemWebApp(SystemWebAppType::SETTINGS, kOSSettingsId);
 
@@ -83,8 +88,7 @@ IN_PROC_BROWSER_TEST_F(PasspointUiInteractiveUiTest,
 
       WaitForElementTextContains(
           kOSSettingsId, settings::wifi::PasspointSubpageExpirationDate(),
-          base::UnlocalizedTimeFormatWithPattern(kPasspointExpirationDate,
-                                                 "M/d/yyyy")),
+          expiration_date_str),
 
       Log("Checking for provider name"),
 

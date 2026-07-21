@@ -4,6 +4,7 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -59,7 +60,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/i18n/time_formatting.h"
 #include "base/location.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
@@ -2499,11 +2499,27 @@ base::FilePath CaptureModeController::BuildImagePathForDisplay(
 base::FilePath CaptureModeController::BuildPathNoExtension(
     std::string_view base_name,
     base::Time timestamp) const {
-  return GetCurrentCaptureFolder().path.AppendASCII(base::StrCat(
-      {base_name, base::UnlocalizedTimeFormatWithPattern(timestamp, " y-MM-dd"),
-       base::UnlocalizedTimeFormatWithPattern(
-           timestamp,
-           delegate_->Uses24HourFormat() ? " HH.mm.ss" : " h.mm.ss a")}));
+  base::Time::Exploded exploded;
+  timestamp.LocalExplode(&exploded);
+
+  std::string time_str;
+  if (delegate_->Uses24HourFormat()) {
+    time_str = base::StringPrintf(
+        "%04d-%02d-%02d %02d.%02d.%02d", exploded.year, exploded.month,
+        exploded.day_of_month, exploded.hour, exploded.minute, exploded.second);
+  } else {
+    int hour = exploded.hour % 12;
+    if (hour == 0) {
+      hour = 12;
+    }
+    const char* am_pm = exploded.hour >= 12 ? "PM" : "AM";
+    time_str = base::StringPrintf(
+        "%04d-%02d-%02d %d.%02d.%02d %s", exploded.year, exploded.month,
+        exploded.day_of_month, hour, exploded.minute, exploded.second, am_pm);
+  }
+
+  return GetCurrentCaptureFolder().path.AppendASCII(
+      base::StrCat({base_name, " ", time_str}));
 }
 
 base::FilePath CaptureModeController::GetFallbackFilePathFromFile(

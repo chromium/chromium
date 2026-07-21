@@ -103,6 +103,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   void OpenScreenCaptureItem(const base::FilePath& file_path) override;
   void OpenScreenshotInImageEditor(const base::FilePath& file_path) override;
   bool Uses24HourFormat() const override;
+  void set_uses_24_hour_format(bool value) { uses_24_hour_format_ = value; }
   void CheckCaptureModeInitRestrictionByDlp(
       bool shutting_down,
       OnCaptureModeDlpRestrictionChecked callback) override;
@@ -178,6 +179,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   bool is_allowed_by_dlp_ = true;
   bool is_allowed_by_policy_ = true;
   bool is_search_allowed_by_policy_ = true;
+  bool uses_24_hour_format_ = false;
   bool should_save_after_dlp_check_ = true;
   bool is_camera_disabled_by_policy_ = false;
   bool is_audio_capture_disabled_by_policy_ = false;

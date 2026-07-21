@@ -9,7 +9,6 @@
 #include "ash/ash_export.h"
 #include "base/environment.h"
 #include "base/functional/callback_helpers.h"
-#include "base/i18n/time_formatting.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
@@ -200,8 +199,12 @@ std::unique_ptr<google_apis::calendar::EventList> CreateMockEventList(
 
 ASH_EXPORT bool IsTheSameMonth(const base::Time date_a,
                                const base::Time date_b) {
-  return base::UnlocalizedTimeFormatWithPattern(date_a, "MM YYYY") ==
-         base::UnlocalizedTimeFormatWithPattern(date_b, "MM YYYY");
+  base::Time::Exploded exploded_a;
+  date_a.UTCExplode(&exploded_a);
+  base::Time::Exploded exploded_b;
+  date_b.UTCExplode(&exploded_b);
+  return exploded_a.year == exploded_b.year &&
+         exploded_a.month == exploded_b.month;
 }
 
 base::Time GetTimeFromString(const char* start_time) {

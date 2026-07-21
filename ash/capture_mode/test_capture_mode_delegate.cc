@@ -101,7 +101,7 @@ void TestCaptureModeDelegate::OpenScreenshotInImageEditor(
     const base::FilePath& file_path) {}
 
 bool TestCaptureModeDelegate::Uses24HourFormat() const {
-  return false;
+  return uses_24_hour_format_;
 }
 
 void TestCaptureModeDelegate::CheckCaptureModeInitRestrictionByDlp(

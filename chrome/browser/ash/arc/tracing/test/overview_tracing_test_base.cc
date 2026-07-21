@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ash/arc/tracing/test/overview_tracing_test_base.h"
 
+#include <stdlib.h>
+#include <time.h>
+
 #include "ash/constants/ash_switches.h"
 #include "base/test/test_file_util.h"
 #include "chrome/browser/ash/arc/tracing/test/overview_tracing_test_handler.h"
@@ -35,16 +38,30 @@ void OverviewTracingTestBase::SetUp() {
       ash::switches::kEnableArcVm);
 
   saved_tz_.reset(icu::TimeZone::createDefault());
+  const char* system_tz = getenv("TZ");
+  if (system_tz) {
+    saved_system_tz_ = system_tz;
+  } else {
+    saved_system_tz_.reset();
+  }
 }
 
 // static
 void OverviewTracingTestBase::SetTimeZone(const char* name) {
   std::unique_ptr<icu::TimeZone> tz{icu::TimeZone::createTimeZone(name)};
   icu::TimeZone::setDefault(*tz);
+  setenv("TZ", name, 1);
+  tzset();
 }
 
 void OverviewTracingTestBase::TearDown() {
   icu::TimeZone::setDefault(*saved_tz_);
+  if (saved_system_tz_) {
+    setenv("TZ", saved_system_tz_->c_str(), 1);
+  } else {
+    unsetenv("TZ");
+  }
+  tzset();
 
   wm_helper_.reset();
 
