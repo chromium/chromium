@@ -745,6 +745,7 @@ public class ScreenCaptureTest {
         // The release callback would normally signal to acquire a new frame, but everything
         // is already closed. This should be able to run without crashing.
         releaseCb0.run();
+        assertEquals(0, handler.getAcquiredImageCountForTesting());
     }
 
     @Test
@@ -986,5 +987,38 @@ public class ScreenCaptureTest {
                         anyLong(), any(), anyLong(), any(), anyInt(), anyInt(), any(), anyInt(),
                         anyInt(), any(), anyInt(), anyInt(), anyInt(), anyInt(), anyInt(),
                         anyInt());
+    }
+
+    @Test
+    public void testStartCaptureFailsIfWebContentsDestroyed() {
+        final ActivityResult activityResult = new ActivityResult(Activity.RESULT_OK, new Intent());
+        ScreenCapture.onPick(mWebContents, activityResult);
+        ScreenCapture.onForegroundServiceRunning(true);
+
+        // Simulate WebContents destroyed before UI thread block runs.
+        when(mWebContents.isDestroyed()).thenReturn(true);
+
+        assertFalse(mScreenCapture.startCapture());
+        assertTrue(mImageHandlerStates.isEmpty());
+    }
+
+    @Test
+    public void testStartCaptureFailsIfDestroyedConcurrently() {
+        final ActivityResult activityResult = new ActivityResult(Activity.RESULT_OK, new Intent());
+        ScreenCapture.onPick(mWebContents, activityResult);
+        ScreenCapture.onForegroundServiceRunning(true);
+
+        // Simulate destroy() called concurrently (sets native pointer to 0) during UI block.
+        // We trigger it when WebContentsObserver registers itself (calls addObserver).
+        doAnswer(
+                        invocation -> {
+                            mScreenCapture.destroy();
+                            return null;
+                        })
+                .when(mWebContents)
+                .addObserver(any());
+
+        assertFalse(mScreenCapture.startCapture());
+        assertTrue(mImageHandlerStates.isEmpty());
     }
 }

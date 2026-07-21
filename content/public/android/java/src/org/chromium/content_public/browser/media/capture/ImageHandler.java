@@ -13,10 +13,10 @@ import android.media.ImageReader;
 import android.os.Handler;
 import android.view.Surface;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * ImageHandler manages the lifetime of Images from an ImageReader. It communicates new Images and
@@ -162,7 +162,9 @@ class ImageHandler implements ImageReader.OnImageAvailableListener {
         // already have been closed since the ImageReader is closed, but it's safe to call
         // close again here.
         image.close();
-        mAcquiredImageCount--;
+        if (mAcquiredImageCount > 0) {
+            mAcquiredImageCount--;
+        }
 
         if (mClosing) {
             if (mAcquiredImageCount == 0) closeNow();

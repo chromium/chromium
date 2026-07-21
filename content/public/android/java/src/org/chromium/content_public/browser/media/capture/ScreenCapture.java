@@ -42,6 +42,8 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
+// TODO(crbug.com/535810801): Refactor ScreenCapture to handle thread concurrency more
+// cleanly (e.g. by delegating state management to a thread-safe inner class).
 /** See comments on `DesktopCapturerAndroid`. */
 @NullMarked
 @JNINamespace("content")
@@ -173,13 +175,11 @@ public class ScreenCapture implements ImageHandler.Delegate {
     /**
      * Gets the `Context` for the `Activity` the given `WebContents` is associated with.
      *
-     * <p>This can be called on either the UI thread or the desktop capture thread. If called on the
-     * desktop capture thread, callers must only read values from the Context and not perform any
-     * modifications. Reads may theoretically return stale values, so callers on the desktop capture
-     * thread must be ok with receiving potentially old values.
+     * <p>Must be called on the UI thread.
      */
     private static @Nullable Context maybeGetContext(@Nullable WebContents webContents) {
-        if (webContents == null) return null;
+        ThreadUtils.assertOnUiThread();
+        if (webContents == null || webContents.isDestroyed()) return null;
         final WindowAndroid window = webContents.getTopLevelNativeWindow();
         if (window == null) return null;
         return window.getContext().get();
@@ -190,6 +190,22 @@ public class ScreenCapture implements ImageHandler.Delegate {
         return new ScreenCapture(nativeDesktopCapturerAndroid);
     }
 
+    /**
+     * Starts the screen capture session.
+     *
+     * <p>This method is called from native C++ code via JNI and runs on the <b>Desktop Capture
+     * Thread</b> (background thread).
+     *
+     * <p>It blocks the capture thread waiting for the foreground service to start. Once running, it
+     * executes a blocking call on the <b>UI Thread</b> to safely resolve the Activity context from
+     * the WebContents, register lifecycle observers, and return a thread-safe context snapshot to
+     * the capture thread.
+     *
+     * <p>The rest of the initialization (retrieving the MediaProjection service and allocating the
+     * VirtualDisplay) is completed on the capture thread.
+     *
+     * @return true if the capture session was started successfully, false otherwise.
+     */
     @RequiresApi(Build.VERSION_CODES.R)
     @CalledByNative
     boolean startCapture() {
@@ -202,17 +218,25 @@ public class ScreenCapture implements ImageHandler.Delegate {
         // We need to wait for the foreground service to start before trying to use the
         // MediaProjection API. It's okay to block here since we are on the desktop capturer thread.
         sLatch.block();
+        if (mNativeDesktopCapturerAndroid == 0) return false;
 
-        mWebContents = pickState.mWebContents;
-        mContext = maybeGetContext(mWebContents);
-        if (mContext == null) return false;
-
-        // `WebContentsObserver` modifies `WebContents` by adding an observer, and that observer
-        // list is not thread safe to use. So, we do this on the UI thread. We also run this
-        // as blocking so we know that we are observing before creating the listener - this
-        // guarantees that we won't miss any updates.
-        ThreadUtils.runOnUiThreadBlocking(
+        final WebContents webContents = pickState.mWebContents;
+        // Store a local reference to context. This avoids issues such as context becoming null
+        // if destroy() is called concurrently. This is safe because the reference is only used
+        // on the capture thread.
+        final var resolvedContextRef = new AtomicReference<Context>();
+        if (!ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    if (mNativeDesktopCapturerAndroid == 0) {
+                        return false;
+                    }
+                    Context context = maybeGetContext(webContents);
+                    if (context == null) {
+                        return false;
+                    }
+                    mWebContents = webContents;
+                    mContext = context;
+                    resolvedContextRef.set(context);
                     mWebContentsObserver =
                             new WebContentsObserver(mWebContents) {
                                 @Override
@@ -221,22 +245,37 @@ public class ScreenCapture implements ImageHandler.Delegate {
                                     updateContext();
                                 }
                             };
+                    if (mNativeDesktopCapturerAndroid == 0) {
+                        return false;
+                    }
                     registerComponentCallbacks();
-                });
+                    return true;
+                })) {
+            return false;
+        }
+        if (mNativeDesktopCapturerAndroid == 0) return false;
 
+        Context localContext = resolvedContextRef.get();
         final var manager =
                 (MediaProjectionManager)
-                        mContext.getSystemService(Context.MEDIA_PROJECTION_SERVICE);
-        if (manager == null) return false;
+                        localContext.getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+        if (manager == null) {
+            cleanupJavaResources();
+            return false;
+        }
 
         mMediaProjection =
                 manager.getMediaProjection(
                         activityResult.getResultCode(), activityResult.getData());
-        if (mMediaProjection == null) return false;
+        if (mMediaProjection == null) {
+            cleanupJavaResources();
+            return false;
+        }
 
         mMediaProjection.registerCallback(new MediaProjectionCallback(), mHandler);
 
-        final var windowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+        final var windowManager =
+                (WindowManager) localContext.getSystemService(Context.WINDOW_SERVICE);
         final var windowMetrics = windowManager.getMaximumWindowMetrics();
         final Rect bounds = windowMetrics.getBounds();
 
@@ -244,8 +283,15 @@ public class ScreenCapture implements ImageHandler.Delegate {
                 new CaptureState(
                         bounds.width(),
                         bounds.height(),
-                        mContext.getResources().getConfiguration().densityDpi,
+                        localContext.getResources().getConfiguration().densityDpi,
                         PixelFormat.RGBA_8888));
+
+        // If capture already destroyed, then ensure we clean-up.
+        if (mNativeDesktopCapturerAndroid == 0) {
+            cleanupOSResources();
+            cleanupJavaResources();
+            return false;
+        }
 
         return true;
     }
@@ -253,19 +299,15 @@ public class ScreenCapture implements ImageHandler.Delegate {
     @CalledByNative
     void destroy() {
         mNativeDesktopCapturerAndroid = 0;
+        cleanupOSResources();
+        cleanupJavaResources();
+    }
 
-        // No need to block here since `updateContext` and `onConfigurationChanged` will early exit
-        // since `mNativeDesktopCapturerAndroid` is now 0.
-        ThreadUtils.runOnUiThread(
-                () -> {
-                    unregisterComponentCallbacks();
-                    mContext = null;
-                    if (mWebContentsObserver != null) {
-                        mWebContentsObserver.observe(null);
-                        mWebContentsObserver = null;
-                    }
-                });
-
+    private void cleanupOSResources() {
+        if (mVirtualDisplay != null) {
+            mVirtualDisplay.release();
+            mVirtualDisplay = null;
+        }
         if (mMediaProjection != null) {
             mMediaProjection.stop();
             mMediaProjection = null;
@@ -280,11 +322,19 @@ public class ScreenCapture implements ImageHandler.Delegate {
         }
         assert mImageHandlerQueue.isEmpty();
         mImageHandlerQueue.clear();
+    }
 
-        if (mVirtualDisplay != null) {
-            mVirtualDisplay.release();
-            mVirtualDisplay = null;
-        }
+    private void cleanupJavaResources() {
+        ThreadUtils.runOnUiThread(
+                () -> {
+                    unregisterComponentCallbacks();
+                    mContext = null;
+                    mWebContents = null;
+                    if (mWebContentsObserver != null) {
+                        mWebContentsObserver.observe(null);
+                        mWebContentsObserver = null;
+                    }
+                });
     }
 
     private void updateContext() {
