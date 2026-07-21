@@ -59,7 +59,17 @@
 </form>
 <script>
   promise_test(async t => {
-    const tool = await waitForTool('test');
+    let expected_schema_obj = {
+      type: "object",
+      properties: {
+        "valid-param-string": {
+          type: "string"
+        }
+      },
+      required: []
+    };
+    const tool = await waitForFormToolSchemaToMatch(JSON.stringify(expected_schema_obj));
+
     let schema = JSON.parse(tool.inputSchema);
     let properties = schema['properties'];
     assert_equals(typeof properties, 'object');

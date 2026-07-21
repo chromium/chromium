@@ -9431,7 +9431,7 @@ crbug.com/527385398 external/wpt/web-extensions/browser.idle.extension.html [ Fa
 crbug.com/527385398 external/wpt/web-extensions/browser.storage.extension.html [ Failure ]
 
 # WebMCP: Flaky WPT tests.
-crbug.com/521896358 external/wpt/webmcp/declarative/getTools-declarative-schema.https.html [ Failure Pass Timeout ]
+
 crbug.com/521896358 external/wpt/webmcp/imperative/document-domain-enabled.https.html [ Failure Pass ]
 
 # Gardener 2026-06-01
@@ -9506,9 +9506,6 @@ crbug.com/532703006 virtual/composite-clip-path-animation/external/wpt/css/css-m
 
 # Partially fixed by CL 8076718 (`is_outermost_main_frame` plumbing to Network Service)
 crbug.com/533331915 external/wpt/top-level-storage-access-api/requestStorageAccessFor.sub.https.window.html [ Crash Failure Pass ]
-
-# Gardener 2026-07-13
-crbug.com/534101060 [ Linux ] wpt_internal/webmcp/custom-element-invalid-schema.https.html [ Failure Pass ]
 
 # Gardener 2026-07-14
 crbug.com/485657219 external/wpt/fetch/fetch-later/quota/max-payload.https.window.html [ Failure Pass ]
