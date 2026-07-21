@@ -37,6 +37,7 @@ Web apps use specific identifiers to track installations and partition data.
 ## Deep Dives (Android-specific)
 
 *   [Registration and Permission Delegation](docs/android_registration_and_permissions.md)
+*   [TWA Launch Parameters Handling](docs/android_twa_launch_params.md)
 *   [Android Testing Guide](docs/android_testing_guide.md)
 
 ## Documentation Guidelines

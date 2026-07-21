@@ -801,6 +801,7 @@ if (is_android) {
       "//chrome/browser/profiles:misc",
       "//chrome/browser/profiles:profiles_extra_parts_impl",
       "//chrome/browser/push_messaging:impl",
+      "//chrome/browser/renderer_host",
       "//chrome/browser/resource_coordinator",
       "//chrome/browser/safe_browsing",
       "//chrome/browser/search_engines",
@@ -1001,4 +1002,19 @@ if (is_android) {
       }
     }
   }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "webapps/twa_launch_queue_tab_helper_unittest.cc" ]
+  deps = [
+    ":android",
+    "//chrome/browser:chrome_content_browser_client",
+    "//chrome/browser/renderer_host",
+    "//chrome/test:test_support",
+    "//components/webapps/browser",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//url",
+  ]
 }

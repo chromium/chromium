@@ -13,12 +13,14 @@ import android.text.TextUtils;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.customtabs.CustomTabAuthUrlHeuristics;
 import org.chromium.chrome.browser.customtabs.CustomTabObserver;
+import org.chromium.chrome.browser.renderer_host.ChromeNavigationUiData;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -67,6 +69,7 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
 
         CustomTabAuthUrlHeuristics.setFirstCctPageLoadForMetrics(tab);
 
+        Long twaLaunchToken = null;
         if (intentDataProvider.isTrustedWebActivity()) {
             WebContents webContents = tab.getWebContents();
             assumeNonNull(webContents);
@@ -76,15 +79,19 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
                             mCurrentPageVerifier,
                             mNavigationController,
                             webContents,
-                            mActivity);
-            launchHandler.handleInitialIntent(intentDataProvider);
+                            mActivity,
+                            mTabProvider);
+            twaLaunchToken = launchHandler.handleInitialIntent(intentDataProvider);
         }
 
         if (initialTabCreationMode == TabCreationMode.HIDDEN) {
-            handleInitialLoadForHiddenTab(intentDataProvider);
+            handleInitialLoadForHiddenTab(intentDataProvider, twaLaunchToken);
         } else {
             assumeNonNull(intentDataProvider.getUrlToLoad());
             LoadUrlParams params = new LoadUrlParams(intentDataProvider.getUrlToLoad());
+            if (twaLaunchToken != null) {
+                ChromeNavigationUiData.getOrCreate(params).setTwaLaunchToken(twaLaunchToken);
+            }
             mNavigationController.navigate(params, assumeNonNull(intentDataProvider.getIntent()));
         }
 
@@ -93,7 +100,7 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
 
     // The hidden tab case needs a bit of special treatment.
     private void handleInitialLoadForHiddenTab(
-            BrowserServicesIntentDataProvider intentDataProvider) {
+            BrowserServicesIntentDataProvider intentDataProvider, @Nullable Long twaLaunchToken) {
         Tab tab = mTabProvider.getTab();
         if (tab == null) {
             throw new IllegalStateException("handleInitialIntent called before Tab created");
@@ -114,6 +121,9 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
         if (useSpeculation) return;
 
         LoadUrlParams params = new LoadUrlParams(url);
+        if (twaLaunchToken != null) {
+            ChromeNavigationUiData.getOrCreate(params).setTwaLaunchToken(twaLaunchToken);
+        }
 
         // The following block is a hack that deals with urls preloaded with
         // the wrong fragment. Does an extra pageload and replaces history.
@@ -153,7 +163,8 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
                             mCurrentPageVerifier,
                             mNavigationController,
                             webContents,
-                            mActivity);
+                            mActivity,
+                            mTabProvider);
             launchHandler.handleNewIntent(intentDataProvider);
         } else {
             loadUrl(intentDataProvider);

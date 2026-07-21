@@ -26,9 +26,14 @@ namespace webapps {
 
 class LaunchParams;
 
-// LaunchQueueDelegate represents a platform-specific behaviour
-// of the LaunchQueue class.
-// TwaLaunchQueueDelegate is the implementation for TWAs.
+// TwaLaunchQueueDelegate implements platform-specific behavior for the
+// cross-platform LaunchQueue on Android TWAs.
+//
+// Its primary responsibilities are:
+// - Verifying if a launch is in-scope for a given URL (by matching the
+//   destination URL against the verified TWA scope passed from Java).
+// - Providing path info for files being launched.
+// - Delegating launch parameters validation (delegated to Java).
 class TwaLaunchQueueDelegate : public webapps::LaunchQueueDelegate {
  public:
   TwaLaunchQueueDelegate() = default;

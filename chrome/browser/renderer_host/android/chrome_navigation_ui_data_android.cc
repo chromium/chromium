@@ -14,9 +14,11 @@
 
 static int64_t JNI_ChromeNavigationUiData_Create(
     JNIEnv* env,
-    std::optional<int64_t> bookmark_id) {
+    std::optional<int64_t> bookmark_id,
+    std::optional<int64_t> twa_launch_token) {
   ChromeNavigationUIData* ui_data = new ChromeNavigationUIData();
   ui_data->set_bookmark_id(bookmark_id);
+  ui_data->set_twa_launch_token(twa_launch_token);
   return reinterpret_cast<intptr_t>(
       static_cast<content::NavigationUIData*>(ui_data));
 }

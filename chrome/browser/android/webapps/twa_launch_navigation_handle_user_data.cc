@@ -14,22 +14,14 @@ namespace webapps {
 TwaLaunchNavigationHandleUserData::~TwaLaunchNavigationHandleUserData() =
     default;
 
-// static
-void TwaLaunchNavigationHandleUserData::EnqueueNonNavigating(
-    content::WebContents* web_contents,
-    LaunchParams launch_params) {
-  CHECK(web_contents);
-  TwaLaunchQueueTabHelper* tab_helper =
-      TwaLaunchQueueTabHelper::GetOrCreateForWebContents(web_contents);
-  CHECK(tab_helper);
-  launch_params.set_started_new_navigation(false);
-  tab_helper->EnsureLaunchQueue().Enqueue(std::move(launch_params));
-}
-
 TwaLaunchNavigationHandleUserData::TwaLaunchNavigationHandleUserData(
     content::NavigationHandle& navigation_handle,
-    LaunchParams launch_params)
-    : launch_params_(std::move(launch_params)) {}
+    int64_t launch_token,
+    LaunchParams launch_params,
+    DigitalAssetLinksVerificationStatus status)
+    : launch_token_(launch_token),
+      launch_params_(std::move(launch_params)),
+      status_(status) {}
 
 NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(TwaLaunchNavigationHandleUserData);
 

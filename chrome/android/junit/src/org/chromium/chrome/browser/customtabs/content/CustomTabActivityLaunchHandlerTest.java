@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.customtabs.content;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -17,6 +19,7 @@ import static org.robolectric.Shadows.shadowOf;
 import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityContentTestEnvironment.INITIAL_URL;
 import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityContentTestEnvironment.OTHER_URL;
 
+import android.net.Uri;
 import android.os.Looper;
 
 import org.junit.Before;
@@ -29,6 +32,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
 import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.browserservices.trustedwebactivityui.TwaIntentHandlingStrategy;
@@ -81,6 +85,7 @@ public class CustomTabActivityLaunchHandlerTest {
 
     private void doTestLaunchHandler(
             int expectedNotifyQueueTimes, CustomTabIntentDataProvider dataProvider) {
+        clearInvocations(mWebAppLaunchHandlerJniMock, mNavigationController);
 
         if (Objects.equals(dataProvider.getUrlToLoad(), INITIAL_URL)) {
             mIntentHandler = env.createIntentHandler(mNavigationController);
@@ -91,8 +96,32 @@ public class CustomTabActivityLaunchHandlerTest {
         shadowOf(Looper.getMainLooper()).idle();
         verify(mNavigationController, times(1)).navigate(any(), any());
 
-        verify(mWebAppLaunchHandlerJniMock, times(expectedNotifyQueueTimes))
-                .notifyLaunchQueue(any(), anyBoolean(), any(), any(), any(), any());
+        String url = dataProvider.getUrlToLoad();
+        String expectedScope = ShortcutHelper.getScopeFromUrl(url);
+        if (expectedScope == null) {
+            expectedScope = Uri.parse(url).buildUpon().path("").clearQuery().build().toString();
+        }
+
+        if (expectedNotifyQueueTimes > 0) {
+            verify(mWebAppLaunchHandlerJniMock, times(expectedNotifyQueueTimes))
+                    .prepareForLaunch(
+                            any(),
+                            anyLong(),
+                            eq(url),
+                            eq("test.package.name"),
+                            any(),
+                            any(),
+                            eq(expectedScope),
+                            anyBoolean());
+            verify(mWebAppLaunchHandlerJniMock, times(expectedNotifyQueueTimes))
+                    .onLaunchVerified(any(), anyLong(), eq(true));
+        } else {
+            verify(mWebAppLaunchHandlerJniMock, times(0))
+                    .prepareForLaunch(
+                            any(), anyLong(), any(), any(), any(), any(), any(), anyBoolean());
+            verify(mWebAppLaunchHandlerJniMock, times(0))
+                    .onLaunchVerified(any(), anyLong(), anyBoolean());
+        }
     }
 
     private CustomTabIntentDataProvider createIntentDataProvider() {
@@ -100,6 +129,8 @@ public class CustomTabActivityLaunchHandlerTest {
         when(dataProvider.getSession()).thenReturn(env.session);
         when(dataProvider.getUrlToLoad()).thenReturn(OTHER_URL);
         when(dataProvider.getClientPackageName()).thenReturn("test.package.name");
+        when(dataProvider.getActivityType()).thenReturn(ActivityType.TRUSTED_WEB_ACTIVITY);
+        when(dataProvider.getIntent()).thenReturn(env.mIntent);
         return dataProvider;
     }
 
@@ -149,6 +180,9 @@ public class CustomTabActivityLaunchHandlerTest {
 
         verify(mNavigationController, times(0)).navigate(any(), any());
         verify(mWebAppLaunchHandlerJniMock, times(0))
-                .notifyLaunchQueue(any(), anyBoolean(), any(), any(), any(), any());
+                .prepareForLaunch(
+                        any(), anyLong(), any(), any(), any(), any(), any(), anyBoolean());
+        verify(mWebAppLaunchHandlerJniMock, times(0))
+                .onLaunchVerified(any(), anyLong(), anyBoolean());
     }
 }

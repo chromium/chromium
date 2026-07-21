@@ -13,18 +13,30 @@
 #include "chrome/android/chrome_jni_headers/WebAppLaunchHandler_jni.h"
 
 namespace webapps {
-static void JNI_WebAppLaunchHandler_NotifyLaunchQueue(
+static void JNI_WebAppLaunchHandler_PrepareForLaunch(
     JNIEnv* env,
     content::WebContents* web_contents,
-    bool start_new_navigation,
+    int64_t launch_token,
     const std::string& start_url,
     const std::string& package_name,
     const std::vector<std::string>& file_uris,
-    const std::vector<bool>& can_write) {
+    const std::vector<bool>& can_write,
+    const std::string& scope_url,
+    bool has_speculative_navigation) {
+  // Validate URLs at the JNI boundary. If they are invalid (e.g. from a
+  // malformed external intent), we ignore the launch gracefully rather than
+  // crashing downstream via CHECKs.
+  GURL target_gurl(start_url);
+  GURL scope_gurl(scope_url);
+  if (!target_gurl.is_valid() || !scope_gurl.is_valid()) {
+    return;
+  }
+
   webapps::LaunchParams launch_params;
-  launch_params.set_started_new_navigation(start_new_navigation);
+  launch_params.set_started_new_navigation(true);
   launch_params.set_app_id(package_name);
-  launch_params.set_target_url(GURL(start_url));
+  launch_params.set_target_url(target_gurl);
+  launch_params.set_scope(scope_gurl);
   std::vector<base::FilePath> paths;
   paths.reserve(file_uris.size());
   for (const auto& file_uri : file_uris) {
@@ -34,12 +46,52 @@ static void JNI_WebAppLaunchHandler_NotifyLaunchQueue(
 
   auto* helper =
       TwaLaunchQueueTabHelper::GetOrCreateForWebContents(web_contents);
-  if (start_new_navigation) {
-    helper->SetPendingLaunchParams(std::move(launch_params));
-  } else {
-    TwaLaunchNavigationHandleUserData::EnqueueNonNavigating(
-        web_contents, std::move(launch_params));
+  helper->PrepareForLaunch(launch_token, std::move(launch_params),
+                           has_speculative_navigation);
+}
+
+static void JNI_WebAppLaunchHandler_OnLaunchVerified(
+    JNIEnv* env,
+    content::WebContents* web_contents,
+    int64_t launch_token,
+    bool success) {
+  auto* helper =
+      TwaLaunchQueueTabHelper::GetOrCreateForWebContents(web_contents);
+  helper->OnLaunchVerified(launch_token, success);
+}
+
+static void JNI_WebAppLaunchHandler_EnqueueNonNavigating(
+    JNIEnv* env,
+    content::WebContents* web_contents,
+    const std::string& start_url,
+    const std::string& package_name,
+    const std::vector<std::string>& file_uris,
+    const std::vector<bool>& can_write,
+    const std::string& scope_url) {
+  // Validate URLs at the JNI boundary. If they are invalid (e.g. from a
+  // malformed external intent), we ignore the launch gracefully rather than
+  // crashing downstream via CHECKs.
+  GURL target_gurl(start_url);
+  GURL scope_gurl(scope_url);
+  if (!target_gurl.is_valid() || !scope_gurl.is_valid()) {
+    return;
   }
+
+  webapps::LaunchParams launch_params;
+  launch_params.set_started_new_navigation(false);
+  launch_params.set_app_id(package_name);
+  launch_params.set_target_url(target_gurl);
+  launch_params.set_scope(scope_gurl);
+  std::vector<base::FilePath> paths;
+  paths.reserve(file_uris.size());
+  for (const auto& file_uri : file_uris) {
+    paths.push_back(base::FilePath(file_uri));
+  }
+  launch_params.set_paths_with_permissions(std::move(paths), can_write);
+
+  auto* helper =
+      TwaLaunchQueueTabHelper::GetOrCreateForWebContents(web_contents);
+  helper->EnqueueNonNavigating(std::move(launch_params));
 }
 
 }  // namespace webapps

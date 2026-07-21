@@ -495,6 +495,14 @@ There are two paths that enable drawing into the cutout area:
   - With the feature disabled, standalone webapps keep the legacy behavior of
     drawing edge-to-edge on creation regardless of `viewport-fit`.
 
+### TWA Launch Parameters
+
+For file intents (sharing files with a TWA), the launch parameters must be
+securely matched and delivered to the web page. This involves a complex C++
+state machine triggered from Java. For a deep dive into this mechanism and the
+security protections against cross-origin leaks, see
+[TWA Launch Parameters Handling](android_twa_launch_params.md).
+
 ______________________________________________________________________
 
 ## Common Systems

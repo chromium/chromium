@@ -34,6 +34,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
@@ -42,10 +43,10 @@ import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.content.WebAppLaunchHandlerHistogram.ClientModeAction;
 import org.chromium.chrome.browser.customtabs.content.WebAppLaunchHandlerHistogram.FailureReasonAction;
 import org.chromium.chrome.browser.customtabs.content.WebAppLaunchHandlerHistogram.FileHandlingAction;
+import org.chromium.chrome.browser.renderer_host.ChromeNavigationUiData;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.WebContentsObserver;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,7 +59,7 @@ import java.util.Locale;
  */
 @NullMarked
 @JNINamespace("webapps")
-public class WebAppLaunchHandler extends WebContentsObserver {
+public class WebAppLaunchHandler {
     private static final String TAG = "WebAppLaunchHandler";
     private static final @ClientMode int DEFAULT_CLIENT_MODE = NAVIGATE_EXISTING;
     private final WebContents mWebContents;
@@ -66,12 +67,9 @@ public class WebAppLaunchHandler extends WebContentsObserver {
     private final Verifier mVerifier;
     private final CurrentPageVerifier mCurrentPageVerifier;
     private final Activity mActivity;
+    private final CustomTabActivityTabProvider mTabProvider;
 
-    // Tracks the WebContents top-level frame loading state to resolve a race condition between URL
-    // verification and navigation completion. LaunchParams are stashed if verification finishes
-    // before the page has loaded. They are dispatched to the JS LaunchQueue once loading is
-    // complete.
-    private boolean mIsPageLoading;
+    private static long sNextLaunchToken;
 
     /**
      * Retrieves the ClientMode enum value from a given AndroidX enum. Defaults to
@@ -105,10 +103,16 @@ public class WebAppLaunchHandler extends WebContentsObserver {
             CurrentPageVerifier currentPageVerifier,
             CustomTabActivityNavigationController navigationController,
             WebContents webContents,
-            Activity activity) {
+            Activity activity,
+            CustomTabActivityTabProvider tabProvider) {
 
         return new WebAppLaunchHandler(
-                verifier, currentPageVerifier, navigationController, webContents, activity);
+                verifier,
+                currentPageVerifier,
+                navigationController,
+                webContents,
+                activity,
+                tabProvider);
     }
 
     private WebAppLaunchHandler(
@@ -116,12 +120,14 @@ public class WebAppLaunchHandler extends WebContentsObserver {
             CurrentPageVerifier currentPageVerifier,
             CustomTabActivityNavigationController navigationController,
             WebContents webContents,
-            Activity activity) {
+            Activity activity,
+            CustomTabActivityTabProvider tabProvider) {
         mWebContents = webContents;
         mNavigationController = navigationController;
         mVerifier = verifier;
         mCurrentPageVerifier = currentPageVerifier;
         mActivity = activity;
+        mTabProvider = tabProvider;
     }
 
     private boolean isValidFileHandlingData(FileHandlingData fileHandlingData) {
@@ -202,40 +208,53 @@ public class WebAppLaunchHandler extends WebContentsObserver {
     }
 
     /**
-     * Handles an intent that triggers a TWA creation. It doesn't trigger a url loading because in
-     * the case of initial intent it has been triggered earlier. Passes launch params to a launch
-     * queue. Always uses startNewNavigation = true because opening new custom tab is always url
-     * loading. In case if the target url provided in the intentDataProvider is out of scope of the
-     * TWA a launch queue will not be notified.
+     * Handles an intent that triggers a TWA creation (cold start). It doesn't trigger a url loading
+     * because the initial navigation is initiated elsewhere in CCT startup. Generates a token to
+     * correlate this launch with C++ navigation events.
      *
-     * @param intentDataProvider Provides incoming intent with Custom Tabs specific customization
-     *     data.
+     * <p>Detects if this launch reused a speculative navigation (started via mayLaunchUrl) and
+     * passes this status to C++.
+     *
+     * @param intentDataProvider Provides incoming intent data.
+     * @return The launch token if a navigation correlation is needed, or null if the launch was
+     *     invalid or did not require navigation.
      */
-    public void handleInitialIntent(BrowserServicesIntentDataProvider intentDataProvider) {
+    public @Nullable Long handleInitialIntent(
+            BrowserServicesIntentDataProvider intentDataProvider) {
         WebAppLaunchHandlerHistogram.logClientMode(ClientModeAction.INITIAL_INTENT);
 
         FileHandlingData filteredData = filterFileHandlingData(intentDataProvider);
+        String urlToLoad = assertNonNull(intentDataProvider.getUrlToLoad());
         WebAppLaunchParams launchParams =
                 getLaunchParams(
                         /* newNavigationStarted= */ true,
-                        assertNonNull(intentDataProvider.getUrlToLoad()),
+                        urlToLoad,
                         assertNonNull(intentDataProvider.getClientPackageName()),
                         filteredData,
                         intentDataProvider.getSession());
 
-        maybeNotifyLaunchQueue(launchParams);
+        boolean isHidden = mTabProvider.getInitialTabCreationMode() == TabCreationMode.HIDDEN;
+        boolean hasSpeculativeNavigation = false;
+        if (isHidden) {
+            String speculatedUrl = mTabProvider.getSpeculatedUrl();
+            hasSpeculativeNavigation = TextUtils.equals(speculatedUrl, urlToLoad);
+        }
+
+        return maybeNotifyLaunchQueue(launchParams, hasSpeculativeNavigation);
     }
 
     /**
-     * Handles an intent that comes after a TWA creation. It triggers a url loading in case of
-     * navigate-existing mode. It opens a new TWA in a new task in a case of navigate-new mode. It
-     * Passes launch params to a launch queue. In case if the target url provided in the
-     * intentDataProvider is out of scope of the TWA a launch queue will not be notified. If
-     * currently open page is out of scope of the TWA and it's not going to be reloaded a launch
-     * queue will not be notified as well.
+     * Handles an intent that comes after TWA creation (warm start, reusing existing tab).
      *
-     * @param intentDataProvider Provides incoming intent with Custom Tabs specific customization
-     *     data.
+     * <p>Triggers a navigation in the existing tab if the client mode is NAVIGATE_EXISTING, or if
+     * it is FOCUS_EXISTING but the current page is out of scope (fallback to navigate-existing
+     * behavior). Otherwise, delivers the parameters directly to the current page without
+     * navigating.
+     *
+     * <p>Detects if there is a speculative navigation in progress in the existing tab (via
+     * mayLaunchUrl) and passes this status to C++.
+     *
+     * @param intentDataProvider Provides incoming intent data.
      */
     public void handleNewIntent(BrowserServicesIntentDataProvider intentDataProvider) {
         @ClientMode int clientModeFromIntent = intentDataProvider.getLaunchHandlerClientMode();
@@ -249,19 +268,27 @@ public class WebAppLaunchHandler extends WebContentsObserver {
         FileHandlingData filteredData = filterFileHandlingData(intentDataProvider);
 
         CurrentPageVerifier.VerificationState state = mCurrentPageVerifier.getState();
+        // If the current page is not fully verified (including if verification is still PENDING),
+        // we fallback to starting a new navigation. We choose not to wait for PENDING verification
+        // here to keep intent delivery simple and avoid stashing intents. Since the page is
+        // already loaded, verification should usually be complete and cached; if it is still
+        // pending, navigating is the safer fallback.
         if (clientMode == NAVIGATE_NEW
                 || state == null
                 || state.status != CurrentPageVerifier.VerificationStatus.SUCCESS) {
             launchNewIntent(urlToLoad, packageName, filteredData);
         } else {
-            boolean startNavigation =
-                    clientMode == NAVIGATE_EXISTING && !TextUtils.isEmpty(urlToLoad);
+            String currentUrl = mWebContents.getLastCommittedUrl().getSpec();
+            String scopeUrl = getScopeUrl(urlToLoad);
+            boolean isInScope = UrlUtilities.isUrlWithinScope(currentUrl, scopeUrl);
 
-            if (startNavigation) {
-                LoadUrlParams params = new LoadUrlParams(urlToLoad);
-                mNavigationController.navigate(
-                        params, assumeNonNull(intentDataProvider.getIntent()));
-            }
+            // Note: This models the default behavior for Android, which is to default to
+            // navigate-existing rather than navigate-new when launching an app with a url.
+            // This behavior might change in the future.
+            boolean startNavigation =
+                    (clientMode == NAVIGATE_EXISTING
+                                    || (clientMode == FOCUS_EXISTING && !isInScope))
+                            && !TextUtils.isEmpty(urlToLoad);
 
             assert packageName != null;
             WebAppLaunchParams launchParams =
@@ -272,7 +299,18 @@ public class WebAppLaunchHandler extends WebContentsObserver {
                             filteredData,
                             intentDataProvider.getSession());
 
-            maybeNotifyLaunchQueue(launchParams);
+            String speculatedUrl = mTabProvider.getSpeculatedUrl();
+            boolean hasSpeculativeNavigation = TextUtils.equals(speculatedUrl, urlToLoad);
+            Long token = maybeNotifyLaunchQueue(launchParams, hasSpeculativeNavigation);
+
+            if (startNavigation) {
+                LoadUrlParams params = new LoadUrlParams(urlToLoad);
+                if (token != null) {
+                    ChromeNavigationUiData.getOrCreate(params).setTwaLaunchToken(token);
+                }
+                mNavigationController.navigate(
+                        params, assumeNonNull(intentDataProvider.getIntent()));
+            }
         }
     }
 
@@ -332,42 +370,54 @@ public class WebAppLaunchHandler extends WebContentsObserver {
         }
     }
 
-    private void maybeNotifyLaunchQueue(WebAppLaunchParams launchParams) {
+    private @Nullable Long maybeNotifyLaunchQueue(
+            WebAppLaunchParams launchParams, boolean hasSpeculativeNavigation) {
+        String scopeUrl = getScopeUrl(launchParams.targetUrl);
 
         if (!launchParams.newNavigationStarted) {
-            // Check if the URL of the current page is in the web app scope.
-            // Launch params should not be sent to a not verified origin.
             CurrentPageVerifier.VerificationState state = mCurrentPageVerifier.getState();
             if (state == null || state.status != CurrentPageVerifier.VerificationStatus.SUCCESS) {
                 WebAppLaunchHandlerHistogram.logFailureReason(
                         FailureReasonAction.CURRENT_PAGE_VERIFICATION_FAILED);
                 Log.w(TAG, "Current page verification has been failed.");
-                return;
+                return null;
             }
 
+            // We cannot guarantee that another navigation won't occur between this
+            // Java-side verification check and the actual delivery in C++. As a
+            // safeguard, C++ will perform a final scope check against the last
+            // committed URL before enqueuing.
             WebAppLaunchHandlerJni.get()
-                    .notifyLaunchQueue(
+                    .enqueueNonNavigating(
                             mWebContents,
-                            false,
                             launchParams.targetUrl,
                             launchParams.packageName,
                             launchParams.fileUris,
-                            launchParams.canWrite);
-            return;
+                            launchParams.canWrite,
+                            scopeUrl);
+            return null;
         }
 
-        observe(mWebContents);
+        long token = ++sNextLaunchToken;
+        WebAppLaunchHandlerJni.get()
+                .prepareForLaunch(
+                        mWebContents,
+                        token,
+                        launchParams.targetUrl,
+                        launchParams.packageName,
+                        launchParams.fileUris,
+                        launchParams.canWrite,
+                        scopeUrl,
+                        hasSpeculativeNavigation);
+
         mVerifier
                 .verify(launchParams.targetUrl)
                 .then(
                         (verified) -> {
-                            observe(null);
-
                             if (!verified) {
                                 WebAppLaunchHandlerHistogram.logFailureReason(
                                         FailureReasonAction.TARGET_URL_VERIFICATION_FAILED);
                                 Log.w(TAG, "Target url verification has been failed.");
-                                return;
                             }
 
                             if (mWebContents == null || mWebContents.isDestroyed()) {
@@ -376,24 +426,9 @@ public class WebAppLaunchHandler extends WebContentsObserver {
                             }
 
                             WebAppLaunchHandlerJni.get()
-                                    .notifyLaunchQueue(
-                                            mWebContents,
-                                            mIsPageLoading,
-                                            launchParams.targetUrl,
-                                            launchParams.packageName,
-                                            launchParams.fileUris,
-                                            launchParams.canWrite);
+                                    .onLaunchVerified(mWebContents, token, verified);
                         });
-    }
-
-    @Override
-    public void didStartNavigationInPrimaryMainFrame(NavigationHandle navigationHandle) {
-        mIsPageLoading = true;
-    }
-
-    @Override
-    public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigationHandle) {
-        mIsPageLoading = false;
+        return token;
     }
 
     /**
@@ -474,18 +509,48 @@ public class WebAppLaunchHandler extends WebContentsObserver {
         return false;
     }
 
+    private String getScopeUrl(String url) {
+        String scopeUrl = ShortcutHelper.getScopeFromUrl(url);
+        if (TextUtils.isEmpty(scopeUrl)) {
+            scopeUrl =
+                    Uri.parse(url)
+                            .buildUpon()
+                            .path("")
+                            .clearQuery()
+                            .fragment(null)
+                            .build()
+                            .toString();
+        }
+        return scopeUrl;
+    }
+
     /**
      * Takes the WebContents object of the tab that is being launched and notifies the launch queue
      * with this object and associated launch parameters.
      */
     @NativeMethods
     public interface Natives {
-        void notifyLaunchQueue(
+        void prepareForLaunch(
                 @JniType("content::WebContents*") WebContents webContents,
-                @JniType("bool") boolean startNewNavigation,
+                long launchToken,
                 @JniType("std::string") String startUrl,
                 @JniType("std::string") String packageName,
                 @JniType("std::vector<std::string>") String[] fileUris,
-                @JniType("std::vector<bool>") boolean[] canWrite);
+                @JniType("std::vector<bool>") boolean[] canWrite,
+                @JniType("std::string") String scopeUrl,
+                boolean hasSpeculativeNavigation);
+
+        void onLaunchVerified(
+                @JniType("content::WebContents*") WebContents webContents,
+                long launchToken,
+                boolean success);
+
+        void enqueueNonNavigating(
+                @JniType("content::WebContents*") WebContents webContents,
+                @JniType("std::string") String startUrl,
+                @JniType("std::string") String packageName,
+                @JniType("std::vector<std::string>") String[] fileUris,
+                @JniType("std::vector<bool>") boolean[] canWrite,
+                @JniType("std::string") String scopeUrl);
     }
 }

@@ -17,6 +17,7 @@ import java.util.function.LongSupplier;
 @NullMarked
 public class ChromeNavigationUiData implements LongSupplier {
     private @Nullable Long mBookmarkId;
+    private @Nullable Long mTwaLaunchToken;
 
     private ChromeNavigationUiData() {}
 
@@ -41,13 +42,21 @@ public class ChromeNavigationUiData implements LongSupplier {
         return this;
     }
 
+    /** Set the TWA launch token on this navigation. */
+    public ChromeNavigationUiData setTwaLaunchToken(long twaLaunchToken) {
+        mTwaLaunchToken = twaLaunchToken;
+        return this;
+    }
+
     @Override
     public long getAsLong() {
-        return ChromeNavigationUiDataJni.get().create(mBookmarkId);
+        return ChromeNavigationUiDataJni.get().create(mBookmarkId, mTwaLaunchToken);
     }
 
     @NativeMethods
     interface Natives {
-        long create(@JniType("std::optional<int64_t>") @Nullable Long bookmarkId);
+        long create(
+                @JniType("std::optional<int64_t>") @Nullable Long bookmarkId,
+                @JniType("std::optional<int64_t>") @Nullable Long twaLaunchToken);
     }
 }

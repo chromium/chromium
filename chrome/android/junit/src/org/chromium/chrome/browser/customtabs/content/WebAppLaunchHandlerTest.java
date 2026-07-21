@@ -10,8 +10,10 @@ import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -25,6 +27,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Looper;
+import android.text.TextUtils;
 
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.trusted.FileHandlingData;
@@ -44,6 +47,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
@@ -79,6 +83,7 @@ public class WebAppLaunchHandlerTest {
     @Mock WebAppLaunchHandler.Natives mWebAppLaunchHandlerJniMock;
     @Mock CustomTabsConnection mCustomTabsConnectionMock;
     @Mock SessionHolder<CustomTabsSessionToken> mSessionMock;
+    @Mock CustomTabActivityTabProvider mTabProviderMock;
 
     @Before
     public void setUp() {
@@ -93,6 +98,9 @@ public class WebAppLaunchHandlerTest {
 
         when(mCustomTabsConnectionMock.getClientUidForSession(eq(mSessionMock))).thenReturn(12345);
         when(mCustomTabsConnectionMock.getClientPidForSession(eq(mSessionMock))).thenReturn(67890);
+        when(mWebContentsMock.getLastCommittedUrl()).thenReturn(JUnitTestGURLs.INITIAL_URL);
+        when(mTabProviderMock.getInitialTabCreationMode()).thenReturn(TabCreationMode.DEFAULT);
+        when(mTabProviderMock.getSpeculatedUrl()).thenReturn(null);
     }
 
     @Test
@@ -115,17 +123,13 @@ public class WebAppLaunchHandlerTest {
     }
 
     private WebAppLaunchHandler createWebAppLaunchHandler() {
-        WebAppLaunchHandler handler =
-                WebAppLaunchHandler.create(
-                        mVerifierMock,
-                        mCurrentPageVerifierMock,
-                        mNavigationControllerMock,
-                        mWebContentsMock,
-                        mActivityMock);
-
-        handler.didStartNavigationInPrimaryMainFrame(null);
-
-        return handler;
+        return WebAppLaunchHandler.create(
+                mVerifierMock,
+                mCurrentPageVerifierMock,
+                mNavigationControllerMock,
+                mWebContentsMock,
+                mActivityMock,
+                mTabProviderMock);
     }
 
     private CustomTabIntentDataProvider createIntentDataProvider(
@@ -144,6 +148,45 @@ public class WebAppLaunchHandlerTest {
             String url,
             boolean expectedLoadUrl,
             boolean expectedNotifyQueue) {
+        doTestHandleIntent(
+                clientMode,
+                url,
+                expectedLoadUrl,
+                expectedNotifyQueue,
+                true,
+                /* hasSpeculativeNavigation= */ false);
+    }
+
+    private void doTestHandleIntent(
+            @LaunchHandlerClientMode.ClientMode int clientMode,
+            String url,
+            boolean expectedLoadUrl,
+            boolean expectedNotifyQueue,
+            boolean expectedVerificationSuccess) {
+        doTestHandleIntent(
+                clientMode,
+                url,
+                expectedLoadUrl,
+                expectedNotifyQueue,
+                expectedVerificationSuccess,
+                /* hasSpeculativeNavigation= */ false);
+    }
+
+    private void doTestHandleIntent(
+            @LaunchHandlerClientMode.ClientMode int clientMode,
+            String url,
+            boolean expectedLoadUrl,
+            boolean expectedNotifyQueue,
+            boolean expectedVerificationSuccess,
+            boolean hasSpeculativeNavigation) {
+        clearInvocations(mWebAppLaunchHandlerJniMock, mNavigationControllerMock);
+        if (hasSpeculativeNavigation) {
+            when(mTabProviderMock.getInitialTabCreationMode()).thenReturn(TabCreationMode.HIDDEN);
+            when(mTabProviderMock.getSpeculatedUrl()).thenReturn(url);
+        } else {
+            when(mTabProviderMock.getInitialTabCreationMode()).thenReturn(TabCreationMode.DEFAULT);
+            when(mTabProviderMock.getSpeculatedUrl()).thenReturn(null);
+        }
         WebAppLaunchHandler launchHandler = createWebAppLaunchHandler();
 
         CustomTabIntentDataProvider dataProvider = createIntentDataProvider(clientMode, url);
@@ -156,9 +199,6 @@ public class WebAppLaunchHandlerTest {
 
         shadowOf(Looper.getMainLooper()).idle();
 
-        // We never need to start navigation on initial intent in launch handler logic because it
-        // has been already stated. We just need to notify launch queue. So expectedLoadUrl is
-        // always false for INITIAL_URL
         if (expectedLoadUrl) {
             verify(mNavigationControllerMock, times(1))
                     .navigate(argThat(params -> url.equals(params.getUrl())), any());
@@ -166,26 +206,45 @@ public class WebAppLaunchHandlerTest {
             verifyNoInteractions(mNavigationControllerMock);
         }
 
-        if (expectedNotifyQueue) {
-            boolean expectedWaitNavigation = Objects.equals(url, INITIAL_URL) || expectedLoadUrl;
-            verify(mWebAppLaunchHandlerJniMock, times(1))
-                    .notifyLaunchQueue(
-                            any(),
-                            eq(expectedWaitNavigation),
-                            eq(url),
-                            eq(TEST_PACKAGE_NAME),
-                            eq(mExpectedFileList),
-                            eq(mExpectedCanWriteList));
-        } else {
-            verify(mWebAppLaunchHandlerJniMock, times(0))
-                    .notifyLaunchQueue(any(), anyBoolean(), eq(url), any(), any(), any());
+        String expectedScope = ShortcutHelper.getScopeFromUrl(url);
+        if (TextUtils.isEmpty(expectedScope)) {
+            expectedScope = Uri.parse(url).buildUpon().path("").clearQuery().build().toString();
         }
 
-        boolean expectedStartNewActivity =
-                clientMode == LaunchHandlerClientMode.NAVIGATE_NEW
-                        && !Objects.equals(url, INITIAL_URL);
-        if (!expectedStartNewActivity) {
-            verify(mActivityMock, never()).startActivity(any());
+        if (expectedNotifyQueue) {
+            boolean expectedWaitNavigation = Objects.equals(url, INITIAL_URL) || expectedLoadUrl;
+            if (expectedWaitNavigation) {
+                verify(mWebAppLaunchHandlerJniMock, times(1))
+                        .prepareForLaunch(
+                                any(),
+                                anyLong(),
+                                eq(url),
+                                eq(TEST_PACKAGE_NAME),
+                                eq(mExpectedFileList),
+                                eq(mExpectedCanWriteList),
+                                eq(expectedScope),
+                                eq(hasSpeculativeNavigation));
+                verify(mWebAppLaunchHandlerJniMock, times(1))
+                        .onLaunchVerified(any(), anyLong(), eq(expectedVerificationSuccess));
+                verify(mWebAppLaunchHandlerJniMock, never())
+                        .enqueueNonNavigating(any(), any(), any(), any(), any(), any());
+            } else {
+                verify(mWebAppLaunchHandlerJniMock, times(1))
+                        .enqueueNonNavigating(
+                                any(),
+                                eq(url),
+                                eq(TEST_PACKAGE_NAME),
+                                eq(mExpectedFileList),
+                                eq(mExpectedCanWriteList),
+                                eq(expectedScope));
+                verify(mWebAppLaunchHandlerJniMock, never())
+                        .prepareForLaunch(
+                                any(), anyLong(), any(), any(), any(), any(), any(), anyBoolean());
+                verify(mWebAppLaunchHandlerJniMock, never())
+                        .onLaunchVerified(any(), anyLong(), anyBoolean());
+            }
+        } else {
+            verifyNoInteractions(mWebAppLaunchHandlerJniMock);
         }
     }
 
@@ -213,7 +272,7 @@ public class WebAppLaunchHandlerTest {
         doTestHandleIntent(
                 LaunchHandlerClientMode.FOCUS_EXISTING,
                 OTHER_URL,
-                /* expectedLoadUrl= */ false,
+                /* expectedLoadUrl= */ true,
                 /* expectedNotifyQueue= */ true);
     }
 
@@ -267,12 +326,14 @@ public class WebAppLaunchHandlerTest {
                 LaunchHandlerClientMode.AUTO,
                 INITIAL_URL,
                 /* expectedLoadUrl= */ false,
-                /* expectedNotifyQueue= */ false);
+                /* expectedNotifyQueue= */ true,
+                /* expectedVerificationSuccess= */ false);
         doTestHandleIntent(
                 LaunchHandlerClientMode.AUTO,
                 OTHER_URL,
                 /* expectedLoadUrl= */ true,
-                /* expectedNotifyQueue= */ false);
+                /* expectedNotifyQueue= */ true,
+                /* expectedVerificationSuccess= */ false);
     }
 
     @Test
@@ -396,6 +457,7 @@ public class WebAppLaunchHandlerTest {
     }
 
     void doTestNavigateNewInitialIntent(Integer clientMode) {
+        clearInvocations(mWebAppLaunchHandlerJniMock, mNavigationControllerMock);
         CustomTabIntentDataProvider dataProvider =
                 createIntentDataProvider(clientMode, INITIAL_URL);
         WebAppLaunchHandler launchHandler = createWebAppLaunchHandler();
@@ -404,11 +466,37 @@ public class WebAppLaunchHandlerTest {
 
         verifyNoInteractions(mActivityMock);
         verifyNoInteractions(mNavigationControllerMock);
+
+        String expectedScope = ShortcutHelper.getScopeFromUrl(INITIAL_URL);
+        if (TextUtils.isEmpty(expectedScope)) {
+            expectedScope =
+                    Uri.parse(INITIAL_URL).buildUpon().path("").clearQuery().build().toString();
+        }
         verify(mWebAppLaunchHandlerJniMock, times(1))
-                .notifyLaunchQueue(any(), anyBoolean(), any(), any(), any(), any());
+                .prepareForLaunch(
+                        any(),
+                        anyLong(),
+                        eq(INITIAL_URL),
+                        any(),
+                        any(),
+                        eq(mExpectedCanWriteList),
+                        eq(expectedScope),
+                        eq(false));
+        verify(mWebAppLaunchHandlerJniMock, times(1)).onLaunchVerified(any(), anyLong(), eq(true));
     }
 
     void doTestNavigateNewNewIntent(Integer clientMode, int expectedStartActivityTimes) {
+        doTestNavigateNewNewIntent(clientMode, expectedStartActivityTimes, false);
+    }
+
+    void doTestNavigateNewNewIntent(
+            Integer clientMode, int expectedStartActivityTimes, boolean hasSpeculativeNavigation) {
+        clearInvocations(mWebAppLaunchHandlerJniMock, mNavigationControllerMock);
+        if (hasSpeculativeNavigation) {
+            when(mTabProviderMock.getSpeculatedUrl()).thenReturn(OTHER_URL);
+        } else {
+            when(mTabProviderMock.getSpeculatedUrl()).thenReturn(null);
+        }
 
         CustomTabIntentDataProvider dataProvider = createIntentDataProvider(clientMode, OTHER_URL);
         WebAppLaunchHandler launchHandler = createWebAppLaunchHandler();
@@ -439,10 +527,37 @@ public class WebAppLaunchHandlerTest {
 
         final int expectedOtherTimes = expectedStartActivityTimes == 0 ? 1 : 0;
         verify(mNavigationControllerMock, times(expectedOtherTimes)).navigate(any(), any());
-        verify(mWebAppLaunchHandlerJniMock, times(expectedOtherTimes))
-                .notifyLaunchQueue(any(), anyBoolean(), eq(OTHER_URL), any(), any(), any());
-        verify(mWebAppLaunchHandlerJniMock, times(1))
-                .notifyLaunchQueue(any(), anyBoolean(), eq(INITIAL_URL), any(), any(), any());
+        String expectedScopeOther = ShortcutHelper.getScopeFromUrl(OTHER_URL);
+        if (TextUtils.isEmpty(expectedScopeOther)) {
+            expectedScopeOther =
+                    Uri.parse(OTHER_URL).buildUpon().path("").clearQuery().build().toString();
+        }
+
+        if (expectedOtherTimes == 1) {
+            verify(mWebAppLaunchHandlerJniMock, times(1))
+                    .prepareForLaunch(
+                            any(),
+                            anyLong(),
+                            eq(OTHER_URL),
+                            any(),
+                            any(),
+                            eq(mExpectedCanWriteList),
+                            eq(expectedScopeOther),
+                            eq(hasSpeculativeNavigation));
+            verify(mWebAppLaunchHandlerJniMock, times(1))
+                    .onLaunchVerified(any(), anyLong(), eq(true));
+        } else {
+            verify(mWebAppLaunchHandlerJniMock, never())
+                    .prepareForLaunch(
+                            any(),
+                            anyLong(),
+                            eq(OTHER_URL),
+                            any(),
+                            any(),
+                            any(),
+                            any(),
+                            anyBoolean());
+        }
     }
 
     @Test
@@ -464,6 +579,15 @@ public class WebAppLaunchHandlerTest {
         doTestNavigateNewInitialIntent(LaunchHandlerClientMode.NAVIGATE_EXISTING);
         doTestNavigateNewNewIntent(
                 LaunchHandlerClientMode.NAVIGATE_EXISTING, /* expectedStartActivityTimes= */ 0);
+    }
+
+    @Test
+    public void navigateNewSpeculativeNewIntent() {
+        doTestNavigateNewInitialIntent(LaunchHandlerClientMode.NAVIGATE_EXISTING);
+        doTestNavigateNewNewIntent(
+                LaunchHandlerClientMode.NAVIGATE_EXISTING,
+                /* expectedStartActivityTimes= */ 0,
+                /* hasSpeculativeNavigation= */ true);
     }
 
     @Test
@@ -577,25 +701,40 @@ public class WebAppLaunchHandlerTest {
                         eq(TEST_PACKAGE_NAME), eq(mFileHandlingData.uris.get(0)), anyInt());
     }
 
-    /*
-     * A verification of a target url is asynchronous. So it's possible the url loading finishes
-     * before verification. If so we need to send a launchParams to launchQueue with the filed
-     * startNewNavigation = false. Otherwise the page will not get it because launchQueue will
-     * wait until navigation is finished, page reloading for example.
-     */
     @Test
-    public void navigationFinishedBeforeVerification() {
+    public void jniPrepareCalledBeforeVerification() {
+        Promise<Boolean> promise = new Promise<>();
+        when(mVerifierMock.verify(any())).thenReturn(promise);
+
         WebAppLaunchHandler launchHandler = createWebAppLaunchHandler();
-
-        launchHandler.didFinishNavigationInPrimaryMainFrame(null);
-
         CustomTabIntentDataProvider dataProvider =
                 createIntentDataProvider(LaunchHandlerClientMode.FOCUS_EXISTING, INITIAL_URL);
         launchHandler.handleInitialIntent(dataProvider);
         shadowOf(Looper.getMainLooper()).idle();
 
+        String expectedScope = ShortcutHelper.getScopeFromUrl(INITIAL_URL);
+        if (TextUtils.isEmpty(expectedScope)) {
+            expectedScope =
+                    Uri.parse(INITIAL_URL).buildUpon().path("").clearQuery().build().toString();
+        }
+
         verify(mWebAppLaunchHandlerJniMock, times(1))
-                .notifyLaunchQueue(any(), eq(false), eq(INITIAL_URL), any(), any(), any());
+                .prepareForLaunch(
+                        any(),
+                        anyLong(),
+                        eq(INITIAL_URL),
+                        any(),
+                        any(),
+                        eq(mExpectedCanWriteList),
+                        eq(expectedScope),
+                        eq(false));
+        verify(mWebAppLaunchHandlerJniMock, never())
+                .onLaunchVerified(any(), anyLong(), anyBoolean());
+
+        promise.fulfill(true);
+        shadowOf(Looper.getMainLooper()).idle();
+
+        verify(mWebAppLaunchHandlerJniMock, times(1)).onLaunchVerified(any(), anyLong(), eq(true));
     }
 
     @Test

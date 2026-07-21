@@ -6325,6 +6325,7 @@ test("unit_tests") {
       "//chrome/browser/android",
       "//chrome/browser/android:delta_file_proto",
       "//chrome/browser/android:profile_token",
+      "//chrome/browser/android:unit_tests",
       "//chrome/browser/android:usage_stats_proto",
       "//chrome/browser/android/extensions:unit_tests",
       "//chrome/browser/android/httpclient:unittests",

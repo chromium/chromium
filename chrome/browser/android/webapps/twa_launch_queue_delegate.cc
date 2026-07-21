@@ -5,10 +5,31 @@
 #include "chrome/browser/android/webapps/twa_launch_queue_delegate.h"
 
 #include "base/files/file_path.h"
+#include "base/not_fatal_until.h"
+#include "base/strings/string_util.h"
 #include "components/webapps/browser/launch_queue/launch_params.h"
 #include "content/public/browser/file_system_access_permission_context.h"
+#include "url/origin.h"
 
 namespace webapps {
+
+namespace {
+
+bool IsUrlInScope(const GURL& url, const GURL& scope) {
+  if (!url.is_valid() || !scope.is_valid()) {
+    return false;
+  }
+  if (!url::Origin::Create(scope).IsSameOriginWith(url::Origin::Create(url))) {
+    return false;
+  }
+  if (!scope.has_path() || scope.GetPath() == "/") {
+    return true;
+  }
+  return base::StartsWith(url.GetPath(), scope.GetPath(),
+                          base::CompareCase::SENSITIVE);
+}
+
+}  // namespace
 
 bool TwaLaunchQueueDelegate::IsValidLaunchParams(
     const webapps::LaunchParams& launch_params) const {
@@ -19,8 +40,8 @@ bool TwaLaunchQueueDelegate::IsValidLaunchParams(
 bool TwaLaunchQueueDelegate::IsInScope(
     const webapps::LaunchParams& launch_params,
     const GURL& current_url) const {
-  // TODO(tkachenkoo): implement scope verification for TWA
-  return true;
+  CHECK(launch_params.scope().is_valid(), base::NotFatalUntil::M156);
+  return IsUrlInScope(current_url, launch_params.scope());
 }
 
 content::PathInfo TwaLaunchQueueDelegate::GetPathInfo(

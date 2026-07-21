@@ -68,6 +68,9 @@ class LaunchParams {
   }
   void clear_dir() { dir_.clear(); }
 
+  const GURL& scope() const { return scope_; }
+  void set_scope(GURL scope) { scope_ = std::move(scope); }
+
  private:
   // Whether this launch triggered a navigation that needs to be awaited before
   // sending the launch params to the document.
@@ -80,6 +83,10 @@ class LaunchParams {
   // enqueue in a different URL, we still report the original launch target URL
   // in the launch params.
   GURL target_url_;
+
+  // The scope of the web app being launched, used for scope validation on
+  // Android.
+  GURL scope_;
 
   // The directory to launch with (may be empty).
   base::FilePath dir_;

@@ -83,6 +83,15 @@ class ChromeNavigationUIData : public content::NavigationUIData {
   std::optional<int64_t> bookmark_id() { return bookmark_id_; }
   void set_bookmark_id(std::optional<int64_t> id) { bookmark_id_ = id; }
 
+#if BUILDFLAG(IS_ANDROID)
+  // The token identifying the TWA launch associated with this navigation,
+  // used to match JNI launches with C++ navigations.
+  std::optional<int64_t> twa_launch_token() const { return twa_launch_token_; }
+  void set_twa_launch_token(std::optional<int64_t> token) {
+    twa_launch_token_ = token;
+  }
+#endif
+
   actor::TaskId actor_task_id() { return actor_task_id_; }
 
   bool navigation_initiated_from_sync() {
@@ -122,6 +131,12 @@ class ChromeNavigationUIData : public content::NavigationUIData {
 
   // Id of the bookmark which started this navigation.
   std::optional<int64_t> bookmark_id_;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Unique token generated in Java to identify a TWA launch associated with
+  // this navigation.
+  std::optional<int64_t> twa_launch_token_;
+#endif
 
   // True if the navigation was initiated in response to a sync message. This is
   // used in tab group sync to identify the sync initiated navigations and
