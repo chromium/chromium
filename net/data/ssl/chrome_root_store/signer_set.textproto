@@ -1,19 +1,42 @@
-# proto-file: googleclient/chrome/security/pki_metadata/chrome_root_store/signer_set.proto
-# proto-message: chrome_root_store.SignerSet
+# proto-file: googleclient/chrome/security/mtcs/proto/signer_set.proto
+# proto-message: SignerSet
+
+# When allocating new crs_root_id values, always start from the value in
+# google3/googleclient/chrome/security/pki_metadata/chrome_root_store/data/NEXT_UNUSED_CRS_ROOT_ID.txt,
+# and update it with the new "next unused value".
+# Do not change existing IDs and do not reuse old IDs.
 
 timestamp: {
-  seconds: 1778137200  # 2026-05-07T00:00:00Z
+  seconds: 1784581805  # 2026-07-20T21:10:05Z
 }
-version: "1.0.0"
+version: "2.0.2"
 compatibility_version: 1
+
+# Cloudflare experiment operator. See go/mtcsdd
+# These values are from https://bootstrap-mtca.cloudflareresearch.com/logs/shard3/metadata
+# TODO: b/510439532 - Remove this once the Cloudflare experiment is complete.
 operators: {
   name: "Cloudflare"
   email: "mtc@cloudflare.test"
 }
 
+operators: {
+  name: "mtcs.dev Test CA Operator"
+  email: "mtc-ca@mtcs.dev"
+}
+
+operators: {
+  name: "mtcs.dev Test Mirror Operator"
+  email: "mtc-mirror@mtcs.dev"
+}
+
+# Cloudflare experiment log. See go/mtcsdd
+# These values are from https://bootstrap-mtca.cloudflareresearch.com/logs/shard3/metadata
+# TODO: b/510439532 - Remove this once the Cloudflare experiment is complete.
 issuers: {
   friendly_name: "cloudflare_experiment_shard3"
   base_id: "44363.48.8"
+  crs_root_id: 107
   key_sha256: "40328aac349197c2daccd7b8ca66b17f3e44d2d5fa66acc7d0a8c2924802fbfa"
   base_url: "https://bootstrap-mtca-shard3.cloudflareresearch.com"
   type: SIGNER_TYPE_ISSUER
@@ -27,4 +50,60 @@ issuers: {
       seconds: 1778137200  # 2026-05-07T00:00:00Z
     }
   }
+  operator_history: {
+    name: "Cloudflare"
+    operator_start: {
+      seconds: 1778137200  # 2026-05-07T00:00:00Z
+    }
+  }
+}
+
+issuers: {
+  friendly_name: "mtcs.dev Test CA 1"
+  base_id: "11129.11.99.1"
+  state_history: {
+    state: STATE_USABLE
+    state_start: {
+      seconds: 1783375200  # 2026-07-06T22:00:00Z
+    }
+  }
+  operator_history: {
+    name: "mtcs.dev Test CA Operator"
+    operator_start: {
+      seconds: 1783375200  # 2026-07-06T22:00:00Z
+    }
+  }
+  base_url: "https://ca1.test.mtcs.dev"
+  type: SIGNER_TYPE_ISSUER
+  realm: REALM_UNTRUSTED_VALIDATION_ONLY
+  max_cert_lifetime: {
+    seconds: 604800  # 7 days
+  }
+  key_sha256: "2bd288b3912f358a79a5adeaf96b5df984edcf02e01b21613efd0f1864cfc72d"
+  min_log_number: 1
+  signature_algorithm: SIGNATURE_ALGORITHM_ML_DSA44
+}
+
+mirrors: {
+  friendly_name: "mtcs.dev Test Mirror 1"
+  base_id: "11129.11.99.2"
+  state_history: {
+    state: STATE_USABLE
+    state_start: {
+      seconds: 1783375200  # 2026-07-06T22:00:00Z
+    }
+  }
+  # Uses a different operator than the CA so that test CA certs will pass the
+  # policy checks.
+  operator_history: {
+    name: "mtcs.dev Test Mirror Operator"
+    operator_start: {
+      seconds: 1783375200  # 2026-07-06T22:00:00Z
+    }
+  }
+  base_url: "https://mirror1.test.mtcs.dev"
+  type: SIGNER_TYPE_MIRROR
+  realm: REALM_UNTRUSTED_VALIDATION_ONLY
+  key_sha256: "1759c44658f93293d4ab65b99b03b5fd07b2b03f04c5ed7d2c3ed5c81e58b220"
+  signature_algorithm: SIGNATURE_ALGORITHM_ML_DSA44
 }
