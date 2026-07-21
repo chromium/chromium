@@ -21,6 +21,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/net/ash_dns_over_https_config_source.h"
 #include "chrome/browser/ash/net/dns_over_https/templates_uri_resolver_impl.h"
+#include "chrome/browser/ash/policy/core/device_attributes.h"
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/browser/net/secure_dns_util.h"
 #include "chrome/browser/net/stub_resolver_config_reader.h"
@@ -99,19 +100,23 @@ void MigrateDnsOverHttpsPrefs(PrefService* from_local_state,
 }  // namespace
 namespace ash {
 
-SecureDnsManager::SecureDnsManager(PrefService* local_state,
-                                   user_manager::User& user,
-                                   bool is_profile_managed)
+SecureDnsManager::SecureDnsManager(
+    PrefService* local_state,
+    std::unique_ptr<policy::DeviceAttributes> device_attributes,
+    user_manager::User& user,
+    bool is_profile_managed)
     : local_state_(local_state),
       user_(user),
       is_profile_managed_(is_profile_managed) {
+  CHECK(device_attributes);
   auto* profile_prefs = user.GetProfilePrefs();
   if (!is_profile_managed) {
     CHECK(profile_prefs) << "Profile prefs cannot be empty for unmanaged users";
     MigrateDnsOverHttpsPrefs(local_state, profile_prefs);
   }
   doh_templates_uri_resolver_ =
-      std::make_unique<dns_over_https::TemplatesUriResolverImpl>();
+      std::make_unique<dns_over_https::TemplatesUriResolverImpl>(
+          std::move(device_attributes));
 
   LoadProviders();
 

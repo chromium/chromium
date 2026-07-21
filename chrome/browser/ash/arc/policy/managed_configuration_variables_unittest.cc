@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -236,8 +237,8 @@ class ManagedConfigurationVariablesBase {
 
   const Profile* profile() { return profile_; }
 
-  policy::FakeDeviceAttributes* device_attributes() {
-    return fake_device_attributes_.get();
+  policy::FakeDeviceAttributes& device_attributes() {
+    return CHECK_DEREF(fake_device_attributes_.get());
   }
 
  private:
@@ -305,21 +306,21 @@ TEST_F(ManagedConfigurationVariablesTest, VariableChains) {
   EXPECT_EQ(*dict.FindString(kKey), kTestDeviceAnnotatedLocation);
 
   // Clear location and expect chain resolves to asset ID.
-  device_attributes()->SetFakeDeviceAnnotatedLocation("");
+  device_attributes().SetFakeDeviceAnnotatedLocation("");
   dict.Set(kKey, kChain);
   RecursivelyReplaceManagedConfigurationVariables(profile(),
                                                   device_attributes(), dict);
   EXPECT_EQ(*dict.FindString(kKey), kTestDeviceAssetId);
 
   // Clear asset ID and expect chain resolves to directory ID.
-  device_attributes()->SetFakeDeviceAssetId("");
+  device_attributes().SetFakeDeviceAssetId("");
   dict.Set(kKey, kChain);
   RecursivelyReplaceManagedConfigurationVariables(profile(),
                                                   device_attributes(), dict);
   EXPECT_EQ(*dict.FindString(kKey), kTestDeviceDirectoryId);
 
   // Clear directory ID and expect chain resolves to the empty string.
-  device_attributes()->SetFakeDirectoryApiId("");
+  device_attributes().SetFakeDirectoryApiId("");
   dict.Set(kKey, kChain);
   RecursivelyReplaceManagedConfigurationVariables(profile(),
                                                   device_attributes(), dict);
@@ -351,7 +352,7 @@ TEST_F(ManagedConfigurationVariablesTest, IgnoresInvalidVariables) {
   dict.Set(kInvalidKey3, kInvalidChain3);
 
   // Clear location, valid chain should resolve to asset ID.
-  device_attributes()->SetFakeDeviceAnnotatedLocation("");
+  device_attributes().SetFakeDeviceAnnotatedLocation("");
   RecursivelyReplaceManagedConfigurationVariables(profile(),
                                                   device_attributes(), dict);
   // Expect the valid chain was replaced.
@@ -373,7 +374,7 @@ TEST_F(ManagedConfigurationVariablesTest, RespectsSpecialCharacters) {
   // Setup a fake asset ID using special characters.
   constexpr char kSpecialCharacters[] =
       "`~!@#$%^&*(),_-+={[}}|\\\\:,;\"'<,>.?/{}\",";
-  device_attributes()->SetFakeDeviceAssetId(kSpecialCharacters);
+  device_attributes().SetFakeDeviceAssetId(kSpecialCharacters);
   RecursivelyReplaceManagedConfigurationVariables(profile(),
                                                   device_attributes(), dict);
   // Expect special characters were replaced correctly.
@@ -393,8 +394,8 @@ TEST_F(ManagedConfigurationVariablesTest,
   dict.Set(kKey2, kVariable2);
 
   // Setup fake asset ID and location that are also valid variables.
-  device_attributes()->SetFakeDeviceAssetId(kVariable2);
-  device_attributes()->SetFakeDeviceAnnotatedLocation(kVariable1);
+  device_attributes().SetFakeDeviceAssetId(kVariable2);
+  device_attributes().SetFakeDeviceAnnotatedLocation(kVariable1);
   RecursivelyReplaceManagedConfigurationVariables(profile(),
                                                   device_attributes(), dict);
   // Expect variables are replaced only once without an infinite loop.
@@ -410,7 +411,7 @@ TEST_F(ManagedConfigurationVariablesTest, ReplacesVariablesInLists) {
       kKey1,
       base::ListValue().Append(base::DictValue().Set(kKey2, kVariable1)));
 
-  device_attributes()->SetFakeDeviceAssetId(kTestDeviceAssetId);
+  device_attributes().SetFakeDeviceAssetId(kTestDeviceAssetId);
 
   RecursivelyReplaceManagedConfigurationVariables(profile(),
                                                   device_attributes(), dict);

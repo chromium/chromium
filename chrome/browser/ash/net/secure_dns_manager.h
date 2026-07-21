@@ -22,6 +22,10 @@
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/secure_dns_mode.h"
 
+namespace policy {
+class DeviceAttributes;
+}  // namespace policy
+
 namespace user_manager {
 class User;
 }  // namespace user_manager
@@ -57,7 +61,9 @@ class SecureDnsManager : public NetworkStateHandlerObserver {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // `device_attributes` must not be null.
   SecureDnsManager(PrefService* local_state,
+                   std::unique_ptr<policy::DeviceAttributes> device_attributes,
                    user_manager::User& user,
                    bool is_profile_managed);
   SecureDnsManager(const SecureDnsManager&) = delete;

@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/ash/arc/policy/managed_configuration_variables.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/policy/core/device_attributes_impl.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/platform_keys/extension_key_permissions_service.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
@@ -285,8 +286,10 @@ void AddChoosePrivateKeyRuleToPolicy(
 
 // Finds managed configurations of applications in |arc_policy| and replace
 // string values that refer to template variables.
-void ReplaceManagedConfigurationVariables(const Profile* profile,
-                                          base::DictValue* arc_policy) {
+void ReplaceManagedConfigurationVariables(
+    const Profile* profile,
+    const policy::DeviceAttributes& device_attributes,
+    base::DictValue* arc_policy) {
   // Replace template variables in application managed configuration.
   base::ListValue* applications =
       arc_policy->FindList(policy_util::kArcPolicyKeyApplications);
@@ -295,7 +298,8 @@ void ReplaceManagedConfigurationVariables(const Profile* profile,
       base::DictValue* config =
           entry.GetDict().FindDict(ArcPolicyBridge::kManagedConfiguration);
       if (config) {
-        RecursivelyReplaceManagedConfigurationVariables(profile, *config);
+        RecursivelyReplaceManagedConfigurationVariables(
+            profile, device_attributes, *config);
       }
     }
   }
@@ -465,7 +469,8 @@ base::DictValue GetFilteredDictPolicies(
     const std::string& guid,
     bool is_affiliated,
     const CertStoreService* cert_store_service,
-    const Profile* profile) {
+    const Profile* profile,
+    const policy::DeviceAttributes& device_attributes) {
   const policy::PolicyNamespace policy_namespace(policy::POLICY_DOMAIN_CHROME,
                                                  std::string());
   const policy::PolicyMap& policy_map =
@@ -480,20 +485,24 @@ base::DictValue GetFilteredDictPolicies(
   AddChoosePrivateKeyRuleToPolicy(policy_service, cert_store_service,
                                   &filtered_policies);
 
-  ReplaceManagedConfigurationVariables(profile, &filtered_policies);
+  ReplaceManagedConfigurationVariables(profile, device_attributes,
+                                       &filtered_policies);
 
   OverrideArcPolicies(filtered_policies, policy_map, guid, is_affiliated,
                       profile);
   return filtered_policies;
 }
 
-std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
-                                    const std::string& guid,
-                                    bool is_affiliated,
-                                    const CertStoreService* cert_store_service,
-                                    const Profile* profile) {
-  base::DictValue filtered_policies = GetFilteredDictPolicies(
-      policy_service, guid, is_affiliated, cert_store_service, profile);
+std::string GetFilteredJSONPolicies(
+    policy::PolicyService* const policy_service,
+    const std::string& guid,
+    bool is_affiliated,
+    const CertStoreService* cert_store_service,
+    const Profile* profile,
+    const policy::DeviceAttributes& device_attributes) {
+  base::DictValue filtered_policies =
+      GetFilteredDictPolicies(policy_service, guid, is_affiliated,
+                              cert_store_service, profile, device_attributes);
 
   std::string policy_json;
   JSONStringValueSerializer serializer(&policy_json);
@@ -567,15 +576,22 @@ base::WeakPtr<ArcPolicyBridge> ArcPolicyBridge::GetWeakPtr() {
 
 ArcPolicyBridge::ArcPolicyBridge(content::BrowserContext* context,
                                  ArcBridgeService* bridge_service)
-    : ArcPolicyBridge(context, bridge_service, nullptr /* policy_service */) {}
+    : ArcPolicyBridge(context,
+                      bridge_service,
+                      /*policy_service=*/nullptr,
+                      std::make_unique<policy::DeviceAttributesImpl>()) {}
 
-ArcPolicyBridge::ArcPolicyBridge(content::BrowserContext* context,
-                                 ArcBridgeService* bridge_service,
-                                 policy::PolicyService* policy_service)
+ArcPolicyBridge::ArcPolicyBridge(
+    content::BrowserContext* context,
+    ArcBridgeService* bridge_service,
+    policy::PolicyService* policy_service,
+    std::unique_ptr<policy::DeviceAttributes> device_attributes)
     : context_(context),
       arc_bridge_service_(bridge_service),
       policy_service_(policy_service),
-      instance_guid_(base::Uuid::GenerateRandomV4().AsLowercaseString()) {
+      instance_guid_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
+      device_attributes_(std::move(device_attributes)) {
+  CHECK(device_attributes_);
   VLOG(2) << "ArcPolicyBridge::ArcPolicyBridge";
   arc_bridge_service_->policy()->SetHost(this);
   arc_bridge_service_->policy()->AddObserver(this);
@@ -762,7 +778,7 @@ std::string ArcPolicyBridge::GetCurrentJSONPolicies() const {
 
   return GetFilteredJSONPolicies(policy_service_, instance_guid_,
                                  user->IsAffiliated(), cert_store_service,
-                                 profile);
+                                 profile, *device_attributes_);
 }
 
 void ArcPolicyBridge::OnReportComplianceParse(

@@ -254,8 +254,6 @@ class TemplatesUriResolverImplTest : public testing::Test {
     fake_user_manager_.Reset(
         std::make_unique<user_manager::FakeUserManager>(&local_state_));
 
-    doh_template_uri_resolver_ = std::make_unique<TemplatesUriResolverImpl>();
-
     // Set up fake device attributes.
     std::unique_ptr<policy::FakeDeviceAttributes> device_attributes =
         std::make_unique<policy::FakeDeviceAttributes>();
@@ -265,12 +263,12 @@ class TemplatesUriResolverImplTest : public testing::Test {
         kTestDeviceAnnotatedLocation);
     device_attributes->SetFakeDeviceSerialNumber(kTestSerialNumber);
 
+    doh_template_uri_resolver_ = std::make_unique<TemplatesUriResolverImpl>(
+        std::move(device_attributes));
+
     network_handler_test_helper_ =
         std::make_unique<ash::NetworkHandlerTestHelper>();
     network_handler_test_helper_->AddDefaultProfiles();
-
-    doh_template_uri_resolver_->SetDeviceAttributesForTesting(
-        std::move(device_attributes));
   }
 
   void TearDown() override {

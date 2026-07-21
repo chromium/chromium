@@ -16,9 +16,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_attributes.h"
-#include "chrome/browser/ash/policy/core/device_attributes_impl.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -64,19 +62,6 @@ std::string SignedInUserEmail(const Profile* profile) {
   return info.email;
 }
 
-std::string DeviceDirectoryId(policy::DeviceAttributes* device_attributes) {
-  return device_attributes->GetDirectoryApiID();
-}
-
-std::string DeviceAssetId(policy::DeviceAttributes* device_attributes) {
-  return device_attributes->GetDeviceAssetID();
-}
-
-std::string DeviceAnnotatedLocation(
-    policy::DeviceAttributes* device_attributes) {
-  return device_attributes->GetDeviceAnnotatedLocation();
-}
-
 std::string DeviceSerialNumber() {
   return std::string(
       ash::system::StatisticsProvider::GetInstance()->GetMachineID().value_or(
@@ -94,10 +79,14 @@ bool IsAffiliatedUser(const Profile* profile) {
   return user && user->IsAffiliated();
 }
 
-// Build a |VariableResolver| from all known variables.
+// Builds a `VariableResolver` from all known variables.
+// `attributes` must not be null and must outlive the returned
+// `VariableResolver`.
 const VariableResolver BuildVariableResolver(
     const Profile* profile,
-    policy::DeviceAttributes* attributes) {
+    const policy::DeviceAttributes* attributes) {
+  CHECK(attributes);
+
   // Use |empty_string_getter| for device attributes if user is not affiliated.
   const bool is_affiliated = IsAffiliatedUser(profile);
   const auto empty_string_getter =
@@ -118,30 +107,28 @@ const VariableResolver BuildVariableResolver(
                                return EmailDomain(SignedInUserEmail(profile));
                              },
                              profile)},
-      {kDeviceDirectoryId, is_affiliated
-                               ? base::BindRepeating(
-                                     [](policy::DeviceAttributes* attributes) {
-                                       return DeviceDirectoryId(attributes);
-                                     },
-                                     attributes)
-                               : empty_string_getter},
+      {kDeviceDirectoryId,
+       is_affiliated
+           // The safety of Unretained is upheld by the caller.
+           ? base::BindRepeating(&policy::DeviceAttributes::GetDirectoryApiID,
+                                 base::Unretained(attributes))
+           : empty_string_getter},
       {kDeviceSerialNumber, is_affiliated
                                 ? base::BindRepeating(&DeviceSerialNumber)
                                 : empty_string_getter},
-      {kDeviceAssetId, is_affiliated
-                           ? base::BindRepeating(
-                                 [](policy::DeviceAttributes* attributes) {
-                                   return DeviceAssetId(attributes);
-                                 },
-                                 attributes)
-                           : empty_string_getter},
+      {kDeviceAssetId,
+       is_affiliated
+           // The safety of Unretained is upheld by the caller.
+           ? base::BindRepeating(&policy::DeviceAttributes::GetDeviceAssetID,
+                                 base::Unretained(attributes))
+           : empty_string_getter},
       {kDeviceAnnotatedLocation,
-       is_affiliated ? base::BindRepeating(
-                           [](policy::DeviceAttributes* attributes) {
-                             return DeviceAnnotatedLocation(attributes);
-                           },
-                           attributes)
-                     : empty_string_getter},
+       is_affiliated
+           // The safety of Unretained is upheld by the caller.
+           ? base::BindRepeating(
+                 &policy::DeviceAttributes::GetDeviceAnnotatedLocation,
+                 base::Unretained(attributes))
+           : empty_string_getter},
   };
 }
 
@@ -286,18 +273,10 @@ const char kDeviceAnnotatedLocation[] = "DEVICE_ANNOTATED_LOCATION";
 
 void RecursivelyReplaceManagedConfigurationVariables(
     const Profile* profile,
-    base::DictValue& managedConfiguration) {
-  policy::DeviceAttributesImpl device_attributes;
-  RecursivelyReplaceManagedConfigurationVariables(profile, &device_attributes,
-                                                  managedConfiguration);
-}
-
-void RecursivelyReplaceManagedConfigurationVariables(
-    const Profile* profile,
-    policy::DeviceAttributes* device_attributes,
+    const policy::DeviceAttributes& device_attributes,
     base::DictValue& managedConfiguration) {
   const VariableResolver resolver =
-      BuildVariableResolver(profile, device_attributes);
+      BuildVariableResolver(profile, &device_attributes);
   ReplaceVariables(resolver, managedConfiguration);
 }
 

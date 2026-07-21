@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "chrome/browser/ash/net/dns_over_https/templates_uri_resolver.h"
+#include "chrome/browser/ash/policy/core/device_attributes_fake.h"
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/browser/net/stub_resolver_config_reader.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -230,7 +231,8 @@ class SecureDnsManagerTest : public testing::Test {
         stub_resolver_config_reader_.get());
 
     secure_dns_manager_ = std::make_unique<SecureDnsManager>(
-        local_state(), *user_, /*is_profile_managed=*/true);
+        local_state(), std::make_unique<policy::FakeDeviceAttributes>(), *user_,
+        /*is_profile_managed=*/true);
     secure_dns_manager_observer_ =
         std::make_unique<SecureDnsManagerObserver>(secure_dns_manager_.get());
   }
@@ -689,7 +691,8 @@ TEST_F(SecureDnsManagerTest, LocalStateToProfilePrefMigration) {
 
   {
     auto consumer_secure_dns_manager = std::make_unique<SecureDnsManager>(
-        local_state(), user(), /*is_profile_managed=*/false);
+        local_state(), std::make_unique<policy::FakeDeviceAttributes>(), user(),
+        /*is_profile_managed=*/false);
     // Verify that the user-set local state prefs are copied to profile prefs
     // for unmanaged users.
     EXPECT_EQ(profile_prefs()->GetString(ash::chrome_prefs::kDnsOverHttpsMode),
@@ -704,7 +707,8 @@ TEST_F(SecureDnsManagerTest, LocalStateToProfilePrefMigration) {
 
   {
     auto consumer_secure_dns_manager = std::make_unique<SecureDnsManager>(
-        local_state(), user(), /*is_profile_managed=*/true);
+        local_state(), std::make_unique<policy::FakeDeviceAttributes>(), user(),
+        /*is_profile_managed=*/true);
     // Verify that the user-set local state prefs are not copied to profile
     // prefs for managed users. SecureDnsConfig::kModeAutomatic is the default
     // value for secure DoH mode.
@@ -722,7 +726,8 @@ TEST_F(SecureDnsManagerTest, LocalStateToProfilePrefMigration) {
 
   {
     auto consumer_secure_dns_manager = std::make_unique<SecureDnsManager>(
-        local_state(), user(), /*is_profile_managed=*/false);
+        local_state(), std::make_unique<policy::FakeDeviceAttributes>(), user(),
+        /*is_profile_managed=*/false);
     // When the profile prefs already have DoH prefs configured, verify that the
     // pref migration will not override them.
     EXPECT_EQ(profile_prefs()->GetString(ash::chrome_prefs::kDnsOverHttpsMode),
@@ -742,7 +747,8 @@ TEST_F(SecureDnsManagerTest, ObserverForUnmanagedUsers) {
                      base::Value(kGoogleDns));
 
   auto consumer_secure_dns_manager = std::make_unique<SecureDnsManager>(
-      local_state(), user(), /*is_profile_managed=*/false);
+      local_state(), std::make_unique<policy::FakeDeviceAttributes>(), user(),
+      /*is_profile_managed=*/false);
   auto consumer_observer = std::make_unique<SecureDnsManagerObserver>(
       consumer_secure_dns_manager.get());
 

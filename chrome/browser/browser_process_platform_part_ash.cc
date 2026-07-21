@@ -28,6 +28,7 @@
 #include "chrome/browser/ash/net/secure_dns_manager.h"
 #include "chrome/browser/ash/net/system_proxy_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/core/device_attributes_impl.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings_holder.h"
 #include "chrome/browser/ash/system/automatic_reboot_manager.h"
@@ -328,7 +329,8 @@ void BrowserProcessPlatformPart::InitializePrimaryProfileServices(
   auto* user = user_manager::UserManager::Get()->FindUserAndModify(CHECK_DEREF(
       ash::AnnotatedAccountId::Get(primary_profile->GetOriginalProfile())));
   secure_dns_manager_ = std::make_unique<ash::SecureDnsManager>(
-      g_browser_process->local_state(), CHECK_DEREF(user),
+      g_browser_process->local_state(),
+      std::make_unique<policy::DeviceAttributesImpl>(), CHECK_DEREF(user),
       primary_profile->GetProfilePolicyConnector()->IsManaged());
 
   if (ash::features::IsAutoSignOutEnabled() &&

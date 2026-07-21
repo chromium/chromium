@@ -35,6 +35,7 @@ class BrowserContext;
 }  // namespace content
 
 namespace policy {
+class DeviceAttributes;
 class PolicyMap;
 }  // namespace policy
 
@@ -102,9 +103,12 @@ class ArcPolicyBridge : public KeyedService,
 
   ArcPolicyBridge(content::BrowserContext* context,
                   ArcBridgeService* bridge_service);
+
+  // `device_attributes` must be non-null.
   ArcPolicyBridge(content::BrowserContext* context,
                   ArcBridgeService* bridge_service,
-                  policy::PolicyService* policy_service);
+                  policy::PolicyService* policy_service,
+                  std::unique_ptr<policy::DeviceAttributes> device_attributes);
 
   ArcPolicyBridge(const ArcPolicyBridge&) = delete;
   ArcPolicyBridge& operator=(const ArcPolicyBridge&) = delete;
@@ -196,6 +200,8 @@ class ArcPolicyBridge : public KeyedService,
   std::string arc_policy_compliance_report_;
   // Saved ARC DPC version.
   std::string arc_dpc_version_;
+
+  const std::unique_ptr<policy::DeviceAttributes> device_attributes_;
 
   // Must be the last member.
   base::WeakPtrFactory<ArcPolicyBridge> weak_ptr_factory_{this};

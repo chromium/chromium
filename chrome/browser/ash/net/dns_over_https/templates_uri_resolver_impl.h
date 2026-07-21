@@ -15,7 +15,6 @@
 
 namespace policy {
 class DeviceAttributes;
-class FakeDeviceAttributes;
 }  // namespace policy
 
 class PrefService;
@@ -39,7 +38,9 @@ class TemplatesUriResolverImpl : public TemplatesUriResolver {
   // Each identifier occurrence will be replaced by hash(salt + value). This
   // class is Chrome OS only and on other platforms only kDnsOverHttpsTemplates
   // can be set.
-  TemplatesUriResolverImpl();
+  // `device_attributes` must not be null.
+  explicit TemplatesUriResolverImpl(
+      std::unique_ptr<policy::DeviceAttributes> device_attributes);
   TemplatesUriResolverImpl(const TemplatesUriResolverImpl&) = delete;
   TemplatesUriResolverImpl& operator=(const TemplatesUriResolverImpl&) = delete;
   ~TemplatesUriResolverImpl() override;
@@ -59,9 +60,6 @@ class TemplatesUriResolverImpl : public TemplatesUriResolver {
   // be replaced by "${<variable_value>}" for display purposes instead of being
   // hashed.
   std::string GetDisplayTemplates() override;
-
-  void SetDeviceAttributesForTesting(
-      std::unique_ptr<policy::FakeDeviceAttributes> attributes);
 
   // Indicates if `uri_templates` contains the template URI placeholder for the
   // device IP addresses, as defined by the policy

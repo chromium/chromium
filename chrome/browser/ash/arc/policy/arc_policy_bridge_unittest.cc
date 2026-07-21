@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/policy/core/device_attributes_fake.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/common/chrome_switches.h"
@@ -261,7 +262,8 @@ class ArcPolicyBridgeTestBase {
 
     // TODO(hidehiko): Use Singleton instance tied to BrowserContext.
     policy_bridge_ = std::make_unique<ArcPolicyBridge>(
-        profile_, bridge_service_.get(), &policy_service_);
+        profile_, bridge_service_.get(), &policy_service_,
+        std::make_unique<policy::FakeDeviceAttributes>());
     policy_bridge_->OverrideIsManagedForTesting(true);
     policy_bridge_->AddObserver(&observer_);
     instance_guid_ = policy_bridge_->GetInstanceGuidForTesting();
