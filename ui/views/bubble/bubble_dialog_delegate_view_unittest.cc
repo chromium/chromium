@@ -1679,4 +1679,45 @@ TEST_F(BubbleUmaLoggerTest, DoNotLogMetricNotFromAllowedClasses) {
   histogram.ExpectTotalCount("Bubble.Label.Metric1", 0);
 }
 
+namespace {
+
+class SizeToContentsOnDestroyingObserver : public WidgetObserver {
+ public:
+  explicit SizeToContentsOnDestroyingObserver(BubbleDialogDelegate* delegate)
+      : delegate_(delegate) {}
+  ~SizeToContentsOnDestroyingObserver() override = default;
+
+  SizeToContentsOnDestroyingObserver(
+      const SizeToContentsOnDestroyingObserver&) = delete;
+  SizeToContentsOnDestroyingObserver& operator=(
+      const SizeToContentsOnDestroyingObserver&) = delete;
+
+  void OnWidgetDestroying(Widget* widget) override {
+    delegate_->SizeToContents();
+    delegate_ = nullptr;
+  }
+
+ private:
+  raw_ptr<BubbleDialogDelegate> delegate_;
+};
+
+}  // namespace
+
+TEST_F(BubbleDialogDelegateViewTest, SizeToContentsDuringDestruction) {
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  TestBubbleDialogDelegateView* bubble_delegate =
+      new TestBubbleDialogDelegateView(anchor_widget->GetContentsView());
+
+  Widget* bubble_widget =
+      BubbleDialogDelegateView::CreateBubble(bubble_delegate);
+  bubble_widget->Show();
+
+  SizeToContentsOnDestroyingObserver observer(bubble_delegate);
+  bubble_widget->AddObserver(&observer);
+
+  // This will trigger OnWidgetDestroying synchronously.
+  bubble_widget->CloseNow();
+}
+
 }  // namespace views

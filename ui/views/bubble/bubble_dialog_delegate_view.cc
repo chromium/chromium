@@ -1222,7 +1222,9 @@ void BubbleDialogDelegate::SetUseAnchorWindowBounds(bool use_anchor_bounds) {
 }
 
 void BubbleDialogDelegate::SizeToContents() {
-  GetWidget()->SetBounds(GetDesiredWidgetBounds());
+  if (GetWidget() && !GetWidget()->IsClosed()) {
+    GetWidget()->SetBounds(GetDesiredWidgetBounds());
+  }
 }
 
 std::u16string BubbleDialogDelegate::GetSubtitle() const {

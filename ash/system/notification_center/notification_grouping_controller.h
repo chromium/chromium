@@ -36,6 +36,8 @@ class ASH_EXPORT NotificationGroupingController
       const NotificationGroupingController& other) = delete;
   ~NotificationGroupingController() override;
 
+  static void ResetGroupIdMapForTesting();
+
   // MessageCenterObserver:
   void OnNotificationAdded(const std::string& notification_id) override;
   void OnNotificationDisplayed(

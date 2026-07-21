@@ -111,6 +111,11 @@ class GroupedNotificationList {
     }
   }
 
+  void ClearForTesting() {
+    child_parent_map_.clear();
+    notifications_in_parent_map_.clear();
+  }
+
  private:
   // Map for looking up the parent `notification_id` for any given notification
   // id.
@@ -600,6 +605,11 @@ void NotificationGroupingController::ReparentNotificationIfNecessary(
     grouped_notification_list_->AddGroupedNotification(
         notification->id(), parent_notification->id());
   }
+}
+
+// static
+void NotificationGroupingController::ResetGroupIdMapForTesting() {
+  GetGroupedNotificationListInstance().ClearForTesting();  // IN-TEST
 }
 
 }  // namespace ash

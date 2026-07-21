@@ -15,6 +15,7 @@
 #include "ash/system/notification_center/message_center_constants.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
 #include "ash/system/notification_center/stacked_notification_bar.h"
+#include "ash/system/notification_center/views/ash_notification_view.h"
 #include "ash/system/notification_center/views/notification_list_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_model.h"
@@ -22,6 +23,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_service.h"
 #include "ui/compositor/layer.h"
@@ -31,6 +33,7 @@
 #include "ui/message_center/views/message_view.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/test/views_test_utils.h"
+#include "ui/views/test/widget_test.h"
 #include "url/gurl.h"
 
 using message_center::MessageCenter;
@@ -541,6 +544,51 @@ TEST_P(NotificationCenterViewTest, NotificationPartialSwipe) {
   // The notification view should be offset forwards from it's start position to
   // make space for the settings button at the end of a swipe.
   EXPECT_LT(x_start, view->GetBoundsInScreen().x());
+}
+
+TEST_P(NotificationCenterViewTest,
+       CloseWidgetDuringGroupNotificationRemovalAnimation) {
+  // Setup phase: disable animations to establish group.
+  gfx::ScopedAnimationDurationScaleMode zero_duration(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  // Create a group of notifications.
+  std::string id1 =
+      test_api()->AddNotificationWithSourceUrl("https://example.com");
+  std::string id2 =
+      test_api()->AddNotificationWithSourceUrl("https://example.com");
+
+  // Let the "single to group" animation complete immediately.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !test_api()->NotificationIdToParentNotificationId(id1).empty();
+  }));
+
+  test_api()->ToggleBubble();
+
+  std::string parent_id = test_api()->NotificationIdToParentNotificationId(id1);
+
+  auto* parent_view = static_cast<AshNotificationView*>(
+      test_api()->GetNotificationViewForId(parent_id));
+  ASSERT_TRUE(parent_view);
+
+  // Enable animations for the removal phase.
+  gfx::ScopedAnimationDurationScaleMode normal_duration(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  // Remove the child notification to trigger animation.
+  test_api()->RemoveNotification(id1);
+
+  // Close the bubble widget asynchronously.
+  auto* widget = test_api()->GetWidget();
+  ASSERT_TRUE(widget);
+  views::test::WidgetDestroyedWaiter waiter(widget);
+  widget->Close();
+
+  // Force the list view animation to complete.
+  test_api()->CompleteNotificationListAnimation();
+
+  // Wait for widget to be destroyed.
+  waiter.Wait();
 }
 
 }  // namespace ash
