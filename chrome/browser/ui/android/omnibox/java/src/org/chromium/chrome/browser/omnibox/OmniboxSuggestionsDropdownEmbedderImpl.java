@@ -146,16 +146,10 @@ class OmniboxSuggestionsDropdownEmbedderImpl
     }
 
     @Override
-    public boolean isWideWindow() {
+    public boolean isTablet() {
         if (mForcePhoneStyleOmnibox) return false;
         return mWindowWidthDp >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP
                 && DeviceFormFactor.isWindowOnTablet(mWindowAndroid);
-    }
-
-    @Override
-    public boolean isPhoneStyleWindow() {
-        return !isWideWindow()
-                && mFuseboxLayoutModeSupplier.get() != FuseboxLayoutMode.SUGGESTIONS_POPOVER;
     }
 
     @Override
@@ -279,21 +273,16 @@ class OmniboxSuggestionsDropdownEmbedderImpl
             top = mPositionArray[1] + mAnchorView.getMeasuredHeight() - contentView.getPaddingTop();
         }
 
-        if (isPhoneStyleWindow()) {
-            // Case 1: Phones or phone-sized windows on tablets. Full bleed width with no padding or
-            // positioning adjustments.
-            left = 0;
-            width = mAnchorView.getMeasuredWidth();
-        } else {
+        if (isTablet()) {
             int sideSpacing;
             if (mFuseboxLayoutModeSupplier.get() == FuseboxLayoutMode.SUGGESTIONS_POPOVER) {
-                // Case 2: Popover layout. The suggestions list starts directly at the top of the
-                // anchor view (or shifted by the popover inset if expanded/compact).
-                ViewUtils.getRelativeLayoutPosition(contentView, mAnchorView, mPositionArray);
+                // Case 1: Popover layout. The suggestions list starts directly at the top of the
+                // alignment view (or shifted by the popover inset if expanded/compact).
+                ViewUtils.getRelativeLayoutPosition(contentView, mAlignmentView, mPositionArray);
                 top = mPositionArray[1] - contentView.getPaddingTop();
                 sideSpacing = 0;
             } else if (mFuseboxStateSupplier.get() == FuseboxState.DISABLED) {
-                // Case 3: No fusebox on tablet. Width equal to alignment view and left equivalent
+                // Case 2: No fusebox on tablet. Width equal to alignment view and left equivalent
                 // to left of alignment view. Top minus a small overlap.
                 top -=
                         mContext.getResources()
@@ -301,7 +290,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
                                         R.dimen.omnibox_suggestion_list_toolbar_overlap);
                 sideSpacing = OmniboxResourceProvider.getDropdownSideSpacing(mContext);
             } else {
-                // Case 4: Fusebox on tablet. The width of the dropdown should match the alignment
+                // Case 3: Fusebox on tablet. The width of the dropdown should match the alignment
                 // view's width exactly (0 side spacing), and its top should be exactly below the
                 //  bottom of the alignment view.
                 ViewUtils.getRelativeLayoutPosition(contentView, mAlignmentView, mPositionArray);
@@ -321,12 +310,11 @@ class OmniboxSuggestionsDropdownEmbedderImpl
             } else {
                 left = mPositionArray[0] - sideSpacing;
             }
-            // Ensures full-width dropdown on narrow windows with popover suggestions.
-            if (mFuseboxLayoutModeSupplier.get() == FuseboxLayoutMode.SUGGESTIONS_POPOVER
-                    && !isWideWindow()) {
-                left = mAnchorView.getLeft();
-                width = mAnchorView.getWidth();
-            }
+        } else {
+            // Case 4: Phones or phone-sized windows on tablets. Full bleed width with no padding or
+            // positioning adjustments.
+            left = 0;
+            width = mAnchorView.getMeasuredWidth();
         }
 
         int keyboardHeight = mKeyboardHeightSupplier.get();

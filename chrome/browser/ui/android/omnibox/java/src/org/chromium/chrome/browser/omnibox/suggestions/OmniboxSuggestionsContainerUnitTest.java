@@ -9,9 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.intThat;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -20,10 +17,10 @@ import android.view.MotionEvent;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
-import android.widget.FrameLayout.LayoutParams;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.LayoutParams;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
@@ -61,13 +58,8 @@ public class OmniboxSuggestionsContainerUnitTest {
     private final OmniboxSuggestionsDropdownEmbedder mEmbedder =
             new OmniboxSuggestionsDropdownEmbedder() {
                 @Override
-                public boolean isWideWindow() {
+                public boolean isTablet() {
                     return mIsTablet;
-                }
-
-                @Override
-                public boolean isPhoneStyleWindow() {
-                    return !mIsTablet;
                 }
 
                 @Override
@@ -132,12 +124,6 @@ public class OmniboxSuggestionsContainerUnitTest {
         // Replace the view created via inflation with a mock.
         when(mDropdown.getId()).thenReturn(R.id.omnibox_suggestions_dropdown);
         when(mDropdown.getRecycledViewPool()).thenReturn(mRecycledViewPool);
-        when(mDropdown.getLayoutParams())
-                .thenReturn(
-                        new LayoutParams(
-                                ViewGroup.LayoutParams.MATCH_PARENT,
-                                ViewGroup.LayoutParams.WRAP_CONTENT));
-        mContainer.addView(mDropdown);
     }
 
     @Test
@@ -321,22 +307,6 @@ public class OmniboxSuggestionsContainerUnitTest {
     @Test
     public void testPerformClick_returnsFalse() {
         assertFalse(mContainer.performClick());
-    }
-
-    @Test
-    public void testOnMeasure_shouldWrapDropdownHeight() {
-        mContainer.setEmbedder(mEmbedder);
-        mContainer.onOmniboxSessionStateChange(true);
-
-        mOmniboxAlignment = new OmniboxAlignment(0, 80, 600, 400, 10, 10, 0, 0);
-        mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
-
-        layoutDropdown(600, 800);
-
-        verify(mDropdown)
-                .measure(
-                        anyInt(),
-                        intThat(argument -> MeasureSpec.getMode(argument) == MeasureSpec.AT_MOST));
     }
 
     @Test
