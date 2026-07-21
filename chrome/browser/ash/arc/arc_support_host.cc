@@ -22,7 +22,6 @@
 #include "base/strings/string_view_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -658,8 +657,10 @@ bool ArcSupportHost::Initialize() {
                     l10n_util::GetStringUTF16(IDS_ARC_POPUP_HELP_LOADING));
 
   loadtime_data.Set(kArcManaged, is_arc_managed_);
-  loadtime_data.Set("isOwnerProfile",
-                    ash::ProfileHelper::IsOwnerProfile(profile_));
+  loadtime_data.Set(
+      "isOwnerProfile",
+      user_manager::UserManager::Get()->IsOwnerUser(
+          ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_)));
 
   const std::string& country_code = base::CountryCodeForCurrentTimezone();
   loadtime_data.Set("countryCode", country_code);

@@ -68,7 +68,6 @@ static_library("arc") {
     "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/platform_keys/key_permissions",
-    "//chrome/browser/ash/profiles",
     "//chrome/browser/chromeos/arc",
     "//chrome/browser/consent_auditor",
     "//chrome/browser/notifications",
