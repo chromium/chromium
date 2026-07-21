@@ -759,11 +759,17 @@ void BrowserFrameViewChromeOS::OnImmersiveFullscreenEntered() {
   ResetWindowControls();
   auto* container = GetBrowserView()->top_container();
   container->AddChildViewAt(caption_button_container_.get(), 0);
+  if (profile_indicator_icon_) {
+    container->AddChildView(profile_indicator_icon_.get());
+  }
 }
 
 void BrowserFrameViewChromeOS::OnImmersiveFullscreenExited() {
   ResetWindowControls();
   AddChildViewAt(caption_button_container_.get(), 0);
+  if (profile_indicator_icon_) {
+    AddChildView(profile_indicator_icon_.get());
+  }
 
   OnImmersiveRevealEnded();
 }
@@ -991,11 +997,24 @@ bool BrowserFrameViewChromeOS::GetShowProfileIndicatorIcon() const {
 
 void BrowserFrameViewChromeOS::UpdateProfileIcons() {
   View* root_view = browser_widget()->GetRootView();
+
+  // `profile_indicator_icon_` is parented to browser's top container in
+  // immersive-view.
+  auto profile_icon_parent = [this]() -> views::View* {
+    auto* immersive_controller =
+        ImmersiveModeController::From(GetBrowserView()->browser());
+    if (immersive_controller && immersive_controller->IsEnabled()) {
+      return GetBrowserView()->top_container();
+    }
+
+    return this;
+  };
+
   if (GetShowProfileIndicatorIcon()) {
     bool needs_layout = !profile_indicator_icon_;
     if (!profile_indicator_icon_) {
-      profile_indicator_icon_ =
-          AddChildView(std::make_unique<ProfileIndicatorIcon>());
+      profile_indicator_icon_ = profile_icon_parent()->AddChildView(
+          std::make_unique<ProfileIndicatorIcon>());
     }
 
     gfx::Image image(
@@ -1021,7 +1040,8 @@ void BrowserFrameViewChromeOS::UpdateProfileIcons() {
       root_view->DeprecatedLayoutImmediately();
     }
   } else if (profile_indicator_icon_) {
-    RemoveChildViewT(std::exchange(profile_indicator_icon_, nullptr));
+    profile_icon_parent()->RemoveChildViewT(
+        std::exchange(profile_indicator_icon_, nullptr));
 
     frame_header_->SetLeftHeaderView(window_icon_);
     if (window_icon_) {
@@ -1086,7 +1106,7 @@ void BrowserFrameViewChromeOS::MaybeAddAppIconToLayoutParams(
 }
 
 void BrowserFrameViewChromeOS::LayoutProfileIndicator() {
-  DCHECK(profile_indicator_icon_);
+  CHECK(profile_indicator_icon_);
   const int frame_height =
       GetBrowserView()->ShouldDrawVerticalTabStrip() &&
               GetBrowserView()->toolbar()
@@ -1095,8 +1115,8 @@ void BrowserFrameViewChromeOS::LayoutProfileIndicator() {
                 GetClientFrameElementInfo().tabstrip_preferred_height;
 
   if (frame_height == 0) {
-    // In fullscreen, the height can be zero so hide the profile indicator.
-    profile_indicator_icon_->SetVisible(false);
+    // When transitioning into immersive-fullscreen, frame height is zero for
+    // initial layout passes.
     return;
   }
   profile_indicator_icon_->SetPosition(
