@@ -95,6 +95,18 @@ BASE_FEATURE(
     kCronetMigrateSessionsEarlyV2EnableRetryOnAlternateNetworkBeforeHandshake,
     base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCronetInitialDelayForBrokenAlternativeService,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(
+    int,
+    kCronetInitialDelayForBrokenAlternativeServiceSeconds,
+    &kCronetInitialDelayForBrokenAlternativeService,
+    "delay_seconds",
+    // This is currently the default value when quic option is not
+    // specified as per
+    // https://source.chromium.org/chromium/chromium/src/+/main:net/http/broken_alternative_services.cc;l=85;drc=75bb8fdc83f77fdf506208bacd1a1c48e16e8c35.
+    300);
+
 namespace {
 
 // Name of disk cache directory.
@@ -449,6 +461,24 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
   stale_dns_options.use_stale_on_name_not_resolved = false;
   stale_dns_options.max_expired_time = base::Milliseconds(0);
 
+  // This is done outside the experimental options loop so that the feature flag
+  // can be applied even if the "QUIC" experimental options are not explicitly
+  // specified.
+  if (base::FeatureList::IsEnabled(
+          kCronetInitialDelayForBrokenAlternativeService)) {
+    quic_params->initial_delay_for_broken_alternative_service = base::Seconds(
+        kCronetInitialDelayForBrokenAlternativeServiceSeconds.Get());
+  } else {
+    const base::Value* quic_value =
+        experimental_options.Find(kQuicFieldTrialName);
+    if (quic_value && quic_value->is_dict()) {
+      quic_params->initial_delay_for_broken_alternative_service =
+          map(quic_value->GetDict().FindInt(
+                  kInitialDelayForBrokenAlternativeServiceSeconds),
+              base::Seconds<int>);
+    }
+  }
+
   const std::string* host_resolver_rules_string;
 
   for (auto iter = experimental_options.begin();
@@ -594,10 +624,6 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
       quic_params->retry_without_alt_svc_on_quic_errors =
           quic_args.FindBool(kRetryWithoutAltSvcOnQuicErrors)
               .value_or(quic_params->retry_without_alt_svc_on_quic_errors);
-
-      quic_params->initial_delay_for_broken_alternative_service = map(
-          quic_args.FindInt(kInitialDelayForBrokenAlternativeServiceSeconds),
-          base::Seconds<int>);
 
       quic_params->exponential_backoff_on_initial_delay =
           quic_args.FindBool(kExponentialBackoffOnInitialDelay);
