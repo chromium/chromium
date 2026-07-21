@@ -1228,7 +1228,7 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
         vertical_tab_strip_animation.top_offset > 0);
 
     float transition_button_opacity = 1.0f;
-    if (toolbar_height > 0) {
+    if (toolbar_height > 0 && caption_button_width > 0) {
       if (!will_wrap_at_destination &&
           (vertical_tab_strip_animation.current_motion ==
                TabStripAnimations::kExpand ||
