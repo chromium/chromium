@@ -10,17 +10,16 @@
 
 namespace webnn::ort {
 
-ExternalWeightsManager::ExternalWeightsManager() {
+ExternalWeightsManager::ExternalWeightsManager() : OrtAllocator{} {
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
   CHECK_STATUS(ort_api->CreateCpuMemoryInfo(
       OrtDeviceAllocator, OrtMemTypeDefault,
       ScopedOrtMemoryInfo::Receiver(cpu_memory_info_).get()));
 
   OrtAllocator::version = ORT_API_VERSION;
-  // `Info`, `Free`, `Alloc` and `Reserve` are function pointers. `Alloc` and
-  // `Reserve` should never be called in the context of
-  // `ExternalWeightsManager`. ORT will only call `Info` and `Free` to get the
-  // memory info and free the external weights, respectively.
+  // ORT calls `Info` for the memory info and `Free` to free the external
+  // weights. `Alloc` should never be called in the context of
+  // `ExternalWeightsManager`.
   OrtAllocator::Info =
       [](const OrtAllocator* this_allocator) -> const OrtMemoryInfo* {
     return static_cast<const ExternalWeightsManager*>(this_allocator)
@@ -32,10 +31,6 @@ ExternalWeightsManager::ExternalWeightsManager() {
   OrtAllocator::Alloc = [](OrtAllocator* /*this_allocator*/,
                            size_t /*size*/) -> void* {
     NOTREACHED() << "[WebNN] OrtAllocator::Alloc() should never be called.";
-  };
-  OrtAllocator::Reserve = [](OrtAllocator* /*this_allocator*/,
-                             size_t /*size*/) -> void* {
-    NOTREACHED() << "[WebNN] OrtAllocator::Reserve() should never be called.";
   };
 }
 
