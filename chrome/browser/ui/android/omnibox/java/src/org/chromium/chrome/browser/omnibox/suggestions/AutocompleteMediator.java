@@ -1377,12 +1377,10 @@ class AutocompleteMediator
     }
 
     private @RoundSides int calculateRoundSides() {
-        if (getFuseboxLayoutMode() != FuseboxLayoutMode.SUGGESTIONS_POPOVER) {
-            return RoundSides.TOP_AND_BOTTOM;
+        if (getFuseboxLayoutMode() == FuseboxLayoutMode.SUGGESTIONS_POPOVER) {
+            return RoundSides.NONE;
         }
-        // Expanded will have buttons below suggestions, and should not get bottom rounding.
-        @FuseboxState int fuseboxState = mFuseboxCoordinator.getFuseboxStateSupplier().get();
-        return fuseboxState == FuseboxState.EXPANDED ? RoundSides.NONE : RoundSides.BOTTOM_ONLY;
+        return RoundSides.TOP_AND_BOTTOM;
     }
 
     /**

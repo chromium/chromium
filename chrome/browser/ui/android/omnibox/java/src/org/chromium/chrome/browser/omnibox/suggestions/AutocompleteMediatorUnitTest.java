@@ -2041,18 +2041,19 @@ public class AutocompleteMediatorUnitTest {
     @Test
     @SmallTest
     public void roundSidesPropagatedToModels_popoverLayoutModeTransitions() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
         mFuseboxStateSupplier.set(FuseboxState.COMPACT);
         mMediator.beginInput(createEmptySession());
         mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), true);
 
-        verifySuggestionModelsRoundSides(RoundSides.BOTTOM_ONLY);
+        verifySuggestionModelsRoundSides(RoundSides.NONE);
 
         mFuseboxStateSupplier.set(FuseboxState.EXPANDED);
         verifySuggestionModelsRoundSides(RoundSides.NONE);
 
         mFuseboxStateSupplier.set(FuseboxState.COMPACT);
-        verifySuggestionModelsRoundSides(RoundSides.BOTTOM_ONLY);
+        verifySuggestionModelsRoundSides(RoundSides.NONE);
     }
 
     @Test

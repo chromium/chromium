@@ -101,6 +101,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     private @BrandedColorScheme int mBrandedColorScheme = BrandedColorScheme.APP_DEFAULT;
     private boolean mShowStandbyRing;
     private boolean mIsHovered;
+    private boolean mIsGlifActive;
 
     /** Constructor used to inflate from XML. */
     public LocationBarTablet(Context context, AttributeSet attrs) {
@@ -530,11 +531,12 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
 
     @Override
     public void onSpecializedFuseboxModeActivated(boolean isSpecializedRequestType) {
+        mIsGlifActive = isSpecializedRequestType;
+        updateForeground();
         if (isSpecializedRequestType) {
-            mFocusedPopupDrawable.setDrawableByLayerId(R.id.glif_border_layer, mGlifBorderDrawable);
             mGlifBorderDrawable.start();
         } else {
-            mFocusedPopupDrawable.setDrawableByLayerId(R.id.glif_border_layer, null);
+            mGlifBorderDrawable.reset();
         }
     }
 
@@ -550,8 +552,6 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
             mOuterRect.setColor(
                     OmniboxResourceProvider.getStandardSuggestionBackgroundColor(
                             getContext(), mBrandedColorScheme));
-            mFocusedPopupDrawable.setLayerInsetRelative(
-                    mFocusedPopupDrawable.findIndexByLayerId(R.id.glif_border_layer), 0, 0, 0, 0);
             mGlifBorderDrawable.setCornerRadius(mOmniboxSuggestionDropdownRoundCornerRadius);
         }
     }
@@ -581,6 +581,8 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     private void updateForeground() {
         if (mShowStandbyRing) {
             setForeground(mInsetStandbyBorder);
+        } else if (mIsGlifActive) {
+            setForeground(mGlifBorderDrawable);
         } else if (mIsHovered
                 && (mLayoutMode != FuseboxLayoutMode.SUGGESTIONS_POPOVER
                         || !mUrlCoordinator.hasFocus())) {
@@ -604,8 +606,10 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
                         || isPopover)) {
             parentParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
             int expansionPx =
-                    resources.getDimensionPixelSize(
-                            R.dimen.location_bar_tablet_fusebox_popup_inset);
+                    isPopover
+                            ? 0
+                            : resources.getDimensionPixelSize(
+                                    R.dimen.location_bar_tablet_fusebox_popup_inset);
             parentParams.topMargin = isPopover ? 0 : -expansionPx;
             setMarginsForWindowWidth(parentParams, expansionPx);
             parentParams.gravity = Gravity.TOP;
@@ -635,10 +639,11 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
             super.setOutlineProvider(mOutlineProvider);
             ViewUtils.setAncestorsShouldClipToPadding(this, true, View.NO_ID);
             ViewUtils.setAncestorsShouldClipChildren(this, true, View.NO_ID);
-            // Put the focused background back into its starting state before swapping it out;
+            // Put the focused foreground back into its starting state before swapping it out;
             // without this, it may still display the GLIF animation when we refocus.
             mGlifBorderDrawable.reset();
-            mFocusedPopupDrawable.setDrawableByLayerId(R.id.glif_border_layer, null);
+            mIsGlifActive = false;
+            updateForeground();
             // Reset our background to reflect non-zero suggestion count, which is the typical
             // state. Not setting this risks visual glitches when returning to the fusebox.
             setBackground(mUnfocusedDrawable);
@@ -757,12 +762,6 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
                 });
         mFocusedPopupDrawable.setLayerInsetRelative(
                 1,
-                mLocationBarTabletFuseboxPopupInset,
-                mLocationBarTabletFuseboxPopupInset,
-                mLocationBarTabletFuseboxPopupInset,
-                bottomInset);
-        mFocusedPopupDrawable.setLayerInsetRelative(
-                mFocusedPopupDrawable.findIndexByLayerId(R.id.glif_border_layer),
                 mLocationBarTabletFuseboxPopupInset,
                 mLocationBarTabletFuseboxPopupInset,
                 mLocationBarTabletFuseboxPopupInset,

@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.util.motion.MotionEventTestUtils;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
@@ -232,9 +233,13 @@ public class LocationBarTabletUnitTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    @EnableFeatures({
+        OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT,
+        OmniboxFeatureList.ANDROID_DESKTOP_AIM_GATE
+    })
     @Config(qualifiers = "w800dp-xhdpi")
     public void testFuseboxStateChange_popoverLayoutMode() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         mLocationBarTablet.onFuseboxStateChanged(FuseboxState.EXPANDED);
         mLocationBarTablet.setFuseboxLayoutMode(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
         mLocationBarTablet.setReparentedToPopover(true);
@@ -262,16 +267,9 @@ public class LocationBarTabletUnitTest {
                         MotionEvent.TOOL_TYPE_MOUSE));
         assertNull(mLocationBarTablet.getForeground());
 
-        LayerDrawable background = (LayerDrawable) mLocationBarTablet.getBackground();
-        int glifLayerIndex = background.findIndexByLayerId(R.id.glif_border_layer);
-        assertEquals(0, background.getLayerInsetBottom(glifLayerIndex));
-        assertEquals(0, background.getLayerInsetTop(glifLayerIndex));
-        assertEquals(0, background.getLayerInsetLeft(glifLayerIndex));
-        assertEquals(0, background.getLayerInsetRight(glifLayerIndex));
-
         mLocationBarTablet.onSpecializedFuseboxModeActivated(true);
         GlifStrokeDrawable glifStrokeDrawable =
-                (GlifStrokeDrawable) background.getDrawable(glifLayerIndex);
+                (GlifStrokeDrawable) mLocationBarTablet.getForeground();
         float radius =
                 mLocationBarTablet
                         .getResources()
@@ -281,6 +279,8 @@ public class LocationBarTabletUnitTest {
         LinearLayout.LayoutParams layoutParams =
                 (LinearLayout.LayoutParams) mHolderView.getLayoutParams();
         assertEquals(0, layoutParams.topMargin);
+        assertEquals(0, mLocationBarTablet.getPaddingLeft());
+        assertEquals(0, mLocationBarTablet.getPaddingRight());
         assertEquals(
                 mLocationBarTablet
                         .getResources()
@@ -318,10 +318,8 @@ public class LocationBarTabletUnitTest {
                 mLocationBarTablet
                         .getResources()
                         .getDimensionPixelSize(R.dimen.location_bar_tablet_fusebox_popup_inset);
-        int glifLayerIndex = background.findIndexByLayerId(R.id.glif_border_layer);
         assertEquals(cornerRadius, outerRect.getCornerRadius(), MathUtils.EPSILON);
         assertEquals(inset, background.getLayerInsetBottom(1));
-        assertEquals(inset, background.getLayerInsetBottom(glifLayerIndex));
         assertEquals(inset, mLocationBarTablet.getPaddingBottom());
 
         mLocationBarTablet.onFuseboxStateChanged(FuseboxState.DISABLED);
@@ -331,7 +329,6 @@ public class LocationBarTabletUnitTest {
                 outerRect.getCornerRadii(),
                 MathUtils.EPSILON);
         assertEquals(0, background.getLayerInsetBottom(1));
-        assertEquals(0, background.getLayerInsetBottom(glifLayerIndex));
         assertEquals(0, mLocationBarTablet.getPaddingBottom());
     }
 
@@ -363,10 +360,8 @@ public class LocationBarTabletUnitTest {
                 mLocationBarTablet
                         .getResources()
                         .getDimensionPixelSize(R.dimen.location_bar_tablet_fusebox_popup_inset);
-        int glifLayerIndex = background.findIndexByLayerId(R.id.glif_border_layer);
         assertEquals(cornerRadius, outerRect.getCornerRadius(), MathUtils.EPSILON);
         assertEquals(inset, background.getLayerInsetBottom(1));
-        assertEquals(inset, background.getLayerInsetBottom(glifLayerIndex));
         assertEquals(inset, mLocationBarTablet.getPaddingBottom());
     }
 
