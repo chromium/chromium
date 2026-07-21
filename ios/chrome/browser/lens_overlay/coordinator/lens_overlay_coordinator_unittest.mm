@@ -19,8 +19,10 @@
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_consent_view_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_focus/omnibox_focus_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/state/lens_overlay_state_notifier.h"
+#import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -106,18 +108,16 @@ class LensOverlayCoordinatorTest : public PlatformTest {
     AuthenticationService* authentication_service =
         AuthenticationServiceFactory::GetForProfile(profile_);
 
-    SceneState* mock_scene_state = OCMClassMock([SceneState class]);
+    profile_state_ = [[ProfileState alloc] initWithAppState:nil];
+    profile_state_.profile = profile_.get();
+    scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
     UIWindow* window = [[UIWindow alloc]
         initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
     window.frame = CGRectMake(0, 0, 320, 520);
-    OCMStub([mock_scene_state window]).andReturn(window);
-    profile_state_ = [[ProfileState alloc] initWithAppState:nil];
-    profile_state_.profile = profile_.get();
-    OCMStub([mock_scene_state profileState]).andReturn(profile_state_);
-    lens_overlay_state_ = [[LensOverlayStateNotifier alloc] init];
-    OCMStub([mock_scene_state lensOverlayStateNotifier])
-        .andReturn(lens_overlay_state_);
-    browser_ = std::make_unique<TestBrowser>(profile_, mock_scene_state);
+    scene_state_.window = window;
+    scene_state_.profileState = profile_state_;
+    Browser* browser =
+        scene_state_.browserProviderInterface.mainBrowserProvider.browser;
     dispatcher_ = [[CommandDispatcher alloc] init];
 
     profile_->GetPrefs()->SetInteger(
@@ -127,52 +127,52 @@ class LensOverlayCoordinatorTest : public PlatformTest {
 
     base_view_controller_ = [[UIViewController alloc] init];
 
-    OmniboxFocusBrowserAgent::CreateForBrowser(browser_.get());
+    OmniboxFocusBrowserAgent::CreateForBrowser(browser);
     // FullscreenController depends on ToolbarsSizeBrowserAgent, so the agent
     // must be created first. Please maintain this order.
-    ToolbarsSizeBrowserAgent::CreateForBrowser(browser_.get());
-    FullscreenController::CreateForBrowser(browser_.get());
-    FullscreenBrowserAgent::CreateForBrowser(browser_.get());
+    ToolbarsSizeBrowserAgent::CreateForBrowser(browser);
+    FullscreenController::CreateForBrowser(browser);
+    FullscreenBrowserAgent::CreateForBrowser(browser);
 
     // LensOverlayCoordinator
     coordinator_ = [[LensOverlayCoordinator alloc]
         initWithBaseViewController:base_view_controller_
-                           browser:browser_.get()];
+                           browser:browser];
 
     [dispatcher_ startDispatchingToTarget:coordinator_
                               forProtocol:@protocol(LensOverlayCommands)];
 
     lens_commands_handler_ = OCMProtocolMock(@protocol(LensCommands));
-    [browser_->GetCommandDispatcher()
+    [browser->GetCommandDispatcher()
         startDispatchingToTarget:lens_commands_handler_
                      forProtocol:@protocol(LensCommands)];
 
     application_handler_ = OCMProtocolMock(@protocol(SceneCommands));
-    [browser_->GetCommandDispatcher()
+    [browser->GetCommandDispatcher()
         startDispatchingToTarget:application_handler_
                      forProtocol:@protocol(SceneCommands)];
 
     browser_coordinator_commands_handler_ =
         OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
 
-    [browser_->GetCommandDispatcher()
+    [browser->GetCommandDispatcher()
         startDispatchingToTarget:browser_coordinator_commands_handler_
                      forProtocol:@protocol(BrowserCoordinatorCommands)];
 
     toolbar_commands_handler_ = OCMProtocolMock(@protocol(ToolbarCommands));
 
-    [browser_->GetCommandDispatcher()
+    [browser->GetCommandDispatcher()
         startDispatchingToTarget:toolbar_commands_handler_
                      forProtocol:@protocol(ToolbarCommands)];
 
     gemini_handler_ = OCMProtocolMock(@protocol(GeminiCommands));
 
-    [browser_->GetCommandDispatcher()
+    [browser->GetCommandDispatcher()
         startDispatchingToTarget:gemini_handler_
                      forProtocol:@protocol(GeminiCommands)];
 
     fullscreen_handler_ = OCMProtocolMock(@protocol(FullscreenCommands));
-    [browser_->GetCommandDispatcher()
+    [browser->GetCommandDispatcher()
         startDispatchingToTarget:fullscreen_handler_
                      forProtocol:@protocol(FullscreenCommands)];
 
@@ -198,12 +198,12 @@ class LensOverlayCoordinatorTest : public PlatformTest {
     [scoped_window_.Get() addSubview:delegate_.view];
 
     // Mark the only web state as active.
-    browser_.get()->GetWebStateList()->InsertWebState(std::move(web_state));
-    browser_.get()->GetWebStateList()->ActivateWebStateAt(0);
+    browser->GetWebStateList()->InsertWebState(std::move(web_state));
+    browser->GetWebStateList()->ActivateWebStateAt(0);
 
     // Increment the fullscreen disabled counter.
     FullscreenController* fullscreen_controller =
-        FullscreenController::FromBrowser(browser_.get());
+        FullscreenController::FromBrowser(browser);
     fullscreen_controller->IncrementDisabledCounter();
 
     // Log in with a fake identity.
@@ -229,8 +229,6 @@ class LensOverlayCoordinatorTest : public PlatformTest {
     }));
   }
 
-  ~LensOverlayCoordinatorTest() override { profile_state_.profile = nullptr; }
-
   void TearDown() override {
     [delegate_.view removeFromSuperview];
 
@@ -249,6 +247,11 @@ class LensOverlayCoordinatorTest : public PlatformTest {
 
     [coordinator_ stop];
 
+    tab_helper_ = nullptr;
+    [scene_state_ shutdown];
+    profile_state_ = nil;
+    scene_state_ = nil;
+
     PlatformTest::TearDown();
   }
 
@@ -264,8 +267,7 @@ class LensOverlayCoordinatorTest : public PlatformTest {
   LensOverlayCoordinator* coordinator_;
   raw_ptr<TestProfileIOS> profile_;
   ProfileState* profile_state_;
-  LensOverlayStateNotifier* lens_overlay_state_;
-  std::unique_ptr<TestBrowser> browser_;
+  FakeSceneState* scene_state_;
   UIViewController* base_view_controller_;
   base::test::ScopedFeatureList feature_list_;
   ScopedKeyWindow scoped_window_;
