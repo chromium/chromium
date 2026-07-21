@@ -191,7 +191,7 @@ class SkiaFontMapper {
 
     // Try pdf->blink mappings, which does its own substitution.
     std::optional<blink::WebFontDescription> desc =
-        PdfFontToBlinkFontMapping(weight, italic, charset, pitch, face);
+        PdfFontToBlinkFontMapping(weight, italic, pitch, face);
     if (desc) {
       typeface = manager_->matchFamilyStyle(desc->family.Utf8().c_str(), style);
       if (typeface) {

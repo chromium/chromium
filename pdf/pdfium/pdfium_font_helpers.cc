@@ -77,7 +77,6 @@ blink::WebFontDescription::Weight WeightToBlinkWeight(int weight) {
 std::optional<blink::WebFontDescription> PdfFontToBlinkFontMapping(
     int weight,
     int italic,
-    int charset,
     int pitch_family,
     std::string_view face) {
   // Pretend the system does not have the Symbol font to force a fallback to

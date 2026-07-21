@@ -214,7 +214,7 @@ void* MapFont(FPDF_SYSFONTINFO*,
   }
 
   std::optional<blink::WebFontDescription> desc =
-      PdfFontToBlinkFontMapping(weight, italic, charset, pitch_family, face);
+      PdfFontToBlinkFontMapping(weight, italic, pitch_family, face);
   if (!desc.has_value()) {
     return nullptr;
   }

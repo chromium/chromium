@@ -18,7 +18,6 @@ namespace chrome_pdf {
 std::optional<blink::WebFontDescription> PdfFontToBlinkFontMapping(
     int weight,
     int italic,
-    int charset,
     int pitch_family,
     std::string_view face);
 
