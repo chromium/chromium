@@ -1811,6 +1811,7 @@ KleeneValue MediaQueryEvaluator::EvalStyleFeature(
 
     StyleResolverState state(*document, *container);
     state.CreateNewClonedStyle(container->ComputedStyleRef());
+    state.UpdateLineHeight();
     const auto* context = MakeGarbageCollected<CSSParserContext>(*document);
 
     const CSSValue* reference = StyleCascade::CoerceIntoNumericValue(

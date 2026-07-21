@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] After increasing container font-size for lh1
-  assert_equals: color of div.test.lh1 expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
-[FAIL] After increasing container line-height
-  assert_equals: color of div.test.lh1 expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
-[FAIL] After changing container font-family to TallLineHeight
-  assert_equals: color of div.test.lh1 expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
-Harness: the test ran to completion.
-

@@ -1359,6 +1359,36 @@ TEST_F(StyleResolverTest, ComputedValueRootElement) {
   EXPECT_EQ("42px", computed_value->CssText());
 }
 
+TEST_F(StyleResolverTest, ComputedValueFontSizeRelative) {
+  Element* target = GetDocument().documentElement();
+  ASSERT_TRUE(target);
+  target->SetInlineStyleProperty(CSSPropertyID::kFontSize, "30px");
+  UpdateAllLifecyclePhasesForTest();
+  CSSPropertyID property_id = CSSPropertyID::kWidth;
+  const CSSValue* parsed_value = css_test_helpers::ParseLonghand(
+      GetDocument(), GetCSSPropertyWidth(), "2em");
+  ASSERT_TRUE(parsed_value);
+  const CSSValue* computed_value = StyleResolver::ComputeValue(
+      target, CSSPropertyName(property_id), *parsed_value);
+  ASSERT_TRUE(computed_value);
+  EXPECT_EQ("60px", computed_value->CssText());
+}
+
+TEST_F(StyleResolverTest, ComputedValueLineHeight) {
+  Element* target = GetDocument().documentElement();
+  ASSERT_TRUE(target);
+  target->SetInlineStyleProperty(CSSPropertyID::kLineHeight, "50px");
+  UpdateAllLifecyclePhasesForTest();
+  CSSPropertyID property_id = CSSPropertyID::kWidth;
+  const CSSValue* parsed_value = css_test_helpers::ParseLonghand(
+      GetDocument(), GetCSSPropertyWidth(), "2lh");
+  ASSERT_TRUE(parsed_value);
+  const CSSValue* computed_value = StyleResolver::ComputeValue(
+      target, CSSPropertyName(property_id), *parsed_value);
+  ASSERT_TRUE(computed_value);
+  EXPECT_EQ("100px", computed_value->CssText());
+}
+
 namespace {
 
 const CSSValue* ParseCustomProperty(Document& document,
