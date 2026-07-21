@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.actor;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -293,5 +294,93 @@ public class ActorForegroundServiceManagerTest {
         verify(mNotificationService)
                 .updateNotificationForTask(
                         eq(taskId), eq(ActorTaskState.ACTING), anyBoolean(), eq(true));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_ACTOR_TASK_TIMEOUT)
+    public void testRunningTaskTimeout_TriggersWarningPause_ThenStopsOnTerminalTimeout()
+            throws Exception {
+        int taskId = 1;
+        CallbackHelper stopCallback = new CallbackHelper();
+        mManager.setStopCallbackForTesting(stopCallback::notifyCalled);
+
+        doAnswer(
+                        invocation -> {
+                            mManager.onTaskStateChanged(taskId, ActorTaskState.PAUSED_BY_ACTOR);
+                            return null;
+                        })
+                .when(mTask)
+                .pause();
+
+        doAnswer(
+                        invocation -> {
+                            mManager.onTaskStateChanged(taskId, ActorTaskState.FAILED);
+                            return null;
+                        })
+                .when(mKeyedService)
+                .stopTask(eq(taskId), anyInt());
+
+        mManager.onTaskStateChanged(taskId, ActorTaskState.ACTING);
+        ShadowLooper.idleMainLooper();
+
+        // Advance time by running timeout budget.
+        ShadowLooper.idleMainLooper(
+                ActorTaskTimeoutParameters.getRunningTimeoutMs(), TimeUnit.MILLISECONDS);
+
+        verify(mTask).pause();
+        verify(mNotificationService, atLeastOnce())
+                .updateNotificationForTask(
+                        eq(taskId), eq(ActorTaskState.PAUSED_BY_ACTOR), anyBoolean(), eq(true));
+
+        when(mTask.isCompleted()).thenReturn(true);
+        when(mKeyedService.getActiveTasksCount()).thenReturn(0);
+
+        // Advance time by terminal warning grace period without user resumption.
+        ShadowLooper.idleMainLooper(
+                ActorTaskTimeoutParameters.getWarningTimeoutMs(), TimeUnit.MILLISECONDS);
+
+        verify(mKeyedService).stopTask(taskId, StoppedReason.TIMEOUT);
+
+        ShadowLooper.idleMainLooper();
+        assertEquals(1, stopCallback.getCallCount());
+        assertFalse(
+                "Service should be unbound after terminal timeout.",
+                mManager.isServiceBoundForTesting());
+        verify(mServiceController)
+                .stopActorForegroundService(ServiceCompat.STOP_FOREGROUND_REMOVE);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_ACTOR_TASK_TIMEOUT)
+    public void testPausedTaskTimeout_TriggersWarning_ResumedByUser_WarningDisappears() {
+        int taskId = 1;
+
+        mManager.onTaskStateChanged(taskId, ActorTaskState.PAUSED_BY_USER);
+        ShadowLooper.idleMainLooper();
+
+        // Advance time by paused timeout budget.
+        ShadowLooper.idleMainLooper(
+                ActorTaskTimeoutParameters.getPausedTimeoutMs(), TimeUnit.MILLISECONDS);
+
+        verify(mNotificationService, atLeastOnce())
+                .updateNotificationForTask(
+                        eq(taskId), eq(ActorTaskState.PAUSED_BY_USER), anyBoolean(), eq(true));
+
+        clearInvocations(mNotificationService);
+        clearInvocations(mKeyedService);
+
+        // Simulate user resuming task from Chrome UI.
+        mManager.onTaskStateChanged(taskId, ActorTaskState.ACTING);
+        ShadowLooper.idleMainLooper();
+
+        verify(mNotificationService, atLeastOnce())
+                .updateNotificationForTask(
+                        eq(taskId), eq(ActorTaskState.ACTING), anyBoolean(), eq(false));
+
+        // Advance time by terminal warning grace period.
+        ShadowLooper.idleMainLooper(
+                ActorTaskTimeoutParameters.getWarningTimeoutMs(), TimeUnit.MILLISECONDS);
+
+        verify(mKeyedService, never()).stopTask(eq(taskId), anyInt());
     }
 }
