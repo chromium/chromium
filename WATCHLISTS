@@ -145,6 +145,15 @@
                   '|/lint-suppressions.xml' \
                   '|third_party/android_build_tools/lint'
     },
+    'android_magic_stack': {
+      'filepath': 'chrome/browser/magic_stack/'
+    },
+    'android_ntp': {
+      'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/ntp/'
+    },
+    'android_ntp_customization': {
+      'filepath': 'chrome/browser/ntp_customization/'
+    },
     'android_omnibox': {
       'filepath': 'chrome/browser/ui/android/omnibox/',
     },
@@ -176,10 +185,6 @@
     },
     'android_tab': {
       'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/Tab'
-    },
-    'android_toolbar': {
-      'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/toolbar/' \
-                  '|chrome/browser/ui/android/toolbar/'
     },
     'android_toolbar_deps': {
       'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/toolbar/DEPS'
@@ -2608,6 +2613,9 @@
     'android_infra': ['agrieve+watch@chromium.org'],
     'android_item_chooser_dialogs': [],
     'android_lint': ['wnwen+watch@chromium.org'],
+    'android_magic_stack': ['hanxi+watch@chromium.org'],
+    'android_ntp': ['hanxi+watch@chromium.org'],
+    'android_ntp_customization': ['hanxi+watch@chromium.org'],
     'android_omnibox': ['ender+watch@chromium.org'],
     'android_search_widget': ['yusufo+watch@chromium.org'],
     'android_side_panel': ['adelm@google.com',
@@ -2621,7 +2629,6 @@
     'android_studio': ['wnwen+watch@chromium.org',
                        'nyquist+watch@chromium.org'],
     'android_tab': ['dtrainor+watch@chromium.org'],
-    'android_toolbar': ['hanxi+watch@chromium.org'],
     'android_toolbar_deps': ['jinsukkim+watch@chromium.org'],
     'android_ui_actions': ['polardz+watch@google.com',
                            'ckitagawa+watch@chromium.org'],
@@ -3384,7 +3391,6 @@
                                  'wychen+watch@chromium.org',
                                  'yusufo+watch@chromium.org',
                                  'gogerald+watch@chromium.org',
-                                 'hanxi+watch@chromium.org',
                                  'mattsimmons+watch@chromium.org',
                                  'davidjm+watch@chromium.org'],
     'tbmv2_metrics': ['speed-metrics-reviews@chromium.org',
