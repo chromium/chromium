@@ -32,6 +32,7 @@ FilterNavigationMetadata CreateFilterNavigationMetadata(
     NavigationHandle* handle) {
   FilterNavigationMetadata metadata;
   metadata.navigation_id = handle->GetNavigationId();
+  metadata.ukm_source_id = handle->GetNextPageUkmSourceId();
   metadata.navigation_start_time = handle->NavigationStart();
   metadata.navigation_finish_time =
       handle->GetNavigationHandleTiming().navigation_did_commit_time;

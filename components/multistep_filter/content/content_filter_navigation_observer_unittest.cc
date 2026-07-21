@@ -20,6 +20,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "net/base/net_errors.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
@@ -98,17 +99,20 @@ class NavigationTimeCapturer : public content::WebContentsObserver {
       finish_time_ =
           handle->GetNavigationHandleTiming().navigation_did_commit_time;
       navigation_id_ = handle->GetNavigationId();
+      ukm_source_id_ = handle->GetNextPageUkmSourceId();
     }
   }
 
   base::TimeTicks start_time() const { return start_time_; }
   base::TimeTicks finish_time() const { return finish_time_; }
   int64_t navigation_id() const { return navigation_id_; }
+  ukm::SourceId ukm_source_id() const { return ukm_source_id_; }
 
  private:
   base::TimeTicks start_time_;
   base::TimeTicks finish_time_;
   int64_t navigation_id_ = 0;
+  ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
 };
 
 UrlFilterSuggestion CreateSuggestion(std::string task_type) {
@@ -198,6 +202,7 @@ TEST_F(ContentFilterNavigationObserverTest, HttpsNavigation) {
   navigation->Commit();
 
   EXPECT_EQ(captured_metadata.navigation_id, time_capturer.navigation_id());
+  EXPECT_EQ(captured_metadata.ukm_source_id, time_capturer.ukm_source_id());
   EXPECT_EQ(captured_metadata.navigation_start_time,
             time_capturer.start_time());
   EXPECT_EQ(captured_metadata.navigation_finish_time,

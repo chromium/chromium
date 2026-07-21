@@ -277,6 +277,7 @@ void MultistepFilterMetricsTracker::OnNavigationFinished(
   CHECK(!metadata.navigation_finish_time.is_null());
   current_navigation_ = NavigationSession();
   current_navigation_.navigation_finish_time = metadata.navigation_finish_time;
+  current_navigation_.ukm_source_id = metadata.ukm_source_id;
 
   // If a new navigation finished while we were still waiting for extraction
   // of a previously applied suggestion, that application session is considered
@@ -343,6 +344,7 @@ void MultistepFilterMetricsTracker::OnSuggestionShown(
       .retention_snapshot = retention_snapshot,
       .triggering_navigation_finish_time =
           current_navigation_.navigation_finish_time,
+      .ukm_source_id = current_navigation_.ukm_source_id,
   };
   LogSuggestionUiShown(*current_ui_session_);
 }

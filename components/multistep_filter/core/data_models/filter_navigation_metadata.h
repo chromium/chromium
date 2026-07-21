@@ -9,6 +9,7 @@
 
 #include "base/time/time.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
 
 namespace multistep_filter {
@@ -53,6 +54,8 @@ struct FilterNavigationMetadata {
   // True if the navigation was initiated by the user typing in the omnibox
   // (address bar) or clicking a bookmark.
   bool is_navigation_from_omnibox_or_bookmarks = false;
+  // The UKM source ID of the navigation.
+  ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
 };
 
 }  // namespace multistep_filter

@@ -9,5 +9,6 @@ specific_include_rules = {
   ".*_unittest\\.cc": [
     "+content/public/test",
     "+components/unified_consent",
+    "+services/metrics/public/cpp",
   ],
 }

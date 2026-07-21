@@ -13,6 +13,7 @@
 #include "components/multistep_filter/core/data_models/suggestion_user_decision.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 #include "components/multistep_filter/core/prefs/retention_state_snapshot.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace multistep_filter {
 
@@ -27,6 +28,7 @@ class MultistepFilterMetricsTracker {
     // updated for all navigations. Use
     // SuggestionUiSession::triggering_navigation_finish_time instead.
     base::TimeTicks navigation_finish_time;
+    ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
   };
 
   // Tracks the UI lifecycle of a multistep filter suggestion.
@@ -49,6 +51,7 @@ class MultistepFilterMetricsTracker {
     // Time when the navigation finishes that triggered the suggestion (i.e.
     // the navigation preceding the suggestion).
     base::TimeTicks triggering_navigation_finish_time;
+    ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
   };
 
   // Tracks the lifecycle of a suggestion application.

@@ -13,7 +13,10 @@ source_set("data_models") {
     "url_filter_suggestion.cc",
     "url_filter_suggestion.h",
   ]
-  public_deps = [ "//url" ]
+  public_deps = [
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//url",
+  ]
   deps = [ "//base" ]
 }
 

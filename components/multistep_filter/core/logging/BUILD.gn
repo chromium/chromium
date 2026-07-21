@@ -22,6 +22,8 @@ source_set("logging") {
     "//components/multistep_filter/core:features",
     "//components/multistep_filter/core:util",
     "//components/multistep_filter/core/prefs",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
   ]
 }
 
