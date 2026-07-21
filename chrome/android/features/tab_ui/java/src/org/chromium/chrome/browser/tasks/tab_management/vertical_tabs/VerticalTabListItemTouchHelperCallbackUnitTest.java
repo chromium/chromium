@@ -797,6 +797,14 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
     @Test
     @SmallTest
     public void testOnChildDraw_DragsGroupChildren() {
+        when(mRecyclerView.getPaddingTop()).thenReturn(0);
+        when(mRecyclerView.getPaddingBottom()).thenReturn(0);
+        when(mRecyclerView.getPaddingLeft()).thenReturn(0);
+        when(mRecyclerView.getHeight()).thenReturn(1000);
+        when(mItemView.getTop()).thenReturn(100);
+        when(mItemView.getBottom()).thenReturn(200);
+        when(mItemView.getLeft()).thenReturn(0);
+
         when(mViewHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB_GROUP);
         mPropertyModel.set(TabProperties.TAB_ID, 1);
         Token groupId = new Token(1L, 2L);
@@ -836,8 +844,15 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
     @Test
     @SmallTest
     public void testClearView_RestoresChildren() {
-        Token groupId = new Token(1L, 2L);
+        when(mRecyclerView.getPaddingTop()).thenReturn(0);
+        when(mRecyclerView.getPaddingBottom()).thenReturn(0);
+        when(mRecyclerView.getPaddingLeft()).thenReturn(0);
+        when(mRecyclerView.getHeight()).thenReturn(1000);
+        when(mItemView.getTop()).thenReturn(100);
+        when(mItemView.getBottom()).thenReturn(200);
+        when(mItemView.getLeft()).thenReturn(0);
 
+        Token groupId = new Token(1L, 2L);
         // Setup a child view to simulate a drag in progress.
         SimpleRecyclerViewAdapter.ViewHolder childVH1 =
                 createChildViewHolder(mChildView, 2, groupId);
@@ -1236,6 +1251,150 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
                 true);
         verify(mOnDragOutListener, Mockito.times(2))
                 .onDragOut(Mockito.any(), Mockito.anyFloat(), Mockito.anyFloat());
+    }
+
+    @Test
+    @SmallTest
+    public void testOnChildDraw_ClampsVerticalDisplacement() {
+        when(mRecyclerView.getPaddingTop()).thenReturn(10);
+        when(mRecyclerView.getPaddingBottom()).thenReturn(20);
+        when(mRecyclerView.getPaddingLeft()).thenReturn(8);
+        when(mRecyclerView.getHeight()).thenReturn(500);
+
+        when(mItemView.getTop()).thenReturn(100);
+        when(mItemView.getBottom()).thenReturn(180);
+        when(mItemView.getLeft()).thenReturn(16);
+
+        // topLimitDy = 10 - 100 = -90.
+        // bottomLimitDy = 500 - 20 - 180 = 300.
+
+        // 1. Drag too far up (dY = -150). Should clamp to topLimitDy (-90).
+        mCallback.onChildDraw(
+                mCanvas,
+                mRecyclerView,
+                mViewHolder,
+                0f,
+                -150f,
+                ItemTouchHelper.ACTION_STATE_DRAG,
+                true);
+        assertEquals(-90f, mPropertyModel.get(TabProperties.DRAGGING_Y), 0.01f);
+        verify(mItemView).setTranslationY(-90f);
+
+        Mockito.clearInvocations(mItemView);
+
+        // 2. Drag too far down (dY = 400). Should clamp to bottomLimitDy (300).
+        mCallback.onChildDraw(
+                mCanvas,
+                mRecyclerView,
+                mViewHolder,
+                0f,
+                400f,
+                ItemTouchHelper.ACTION_STATE_DRAG,
+                true);
+        assertEquals(300f, mPropertyModel.get(TabProperties.DRAGGING_Y), 0.01f);
+        verify(mItemView).setTranslationY(300f);
+
+        Mockito.clearInvocations(mItemView);
+
+        // 3. Drag within bounds (dY = 50). Should not clamp.
+        mCallback.onChildDraw(
+                mCanvas,
+                mRecyclerView,
+                mViewHolder,
+                0f,
+                50f,
+                ItemTouchHelper.ACTION_STATE_DRAG,
+                true);
+        assertEquals(50f, mPropertyModel.get(TabProperties.DRAGGING_Y), 0.01f);
+        verify(mItemView).setTranslationY(50f);
+    }
+
+    @Test
+    @SmallTest
+    public void testOnChildDraw_ClampsHorizontalDisplacement_PinnedTab() {
+        // Set the tab as pinned.
+        mPropertyModel.set(TabProperties.IS_PINNED, true);
+
+        when(mRecyclerView.getPaddingLeft()).thenReturn(8);
+        when(mRecyclerView.getPaddingRight()).thenReturn(12);
+        when(mRecyclerView.getWidth()).thenReturn(200);
+
+        when(mItemView.getLeft()).thenReturn(16);
+        when(mItemView.getRight()).thenReturn(150);
+        // leftLimitDx = 8 - 16 = -8.
+        // rightLimitDx = 200 - 12 - 150 = 38.
+
+        // 1. Drag too far left (dX = -15). Should clamp to leftLimitDx (-8).
+        mCallback.onChildDraw(
+                mCanvas,
+                mRecyclerView,
+                mViewHolder,
+                -15f,
+                0f,
+                ItemTouchHelper.ACTION_STATE_DRAG,
+                true);
+        verify(mItemView).setTranslationX(-8f);
+
+        Mockito.clearInvocations(mItemView);
+
+        // 2. Drag too far right (dX = 60). Should clamp to rightLimitDx (38).
+        mCallback.onChildDraw(
+                mCanvas,
+                mRecyclerView,
+                mViewHolder,
+                60f,
+                0f,
+                ItemTouchHelper.ACTION_STATE_DRAG,
+                true);
+        verify(mItemView).setTranslationX(38f);
+
+        Mockito.clearInvocations(mItemView);
+
+        // 3. Drag within bounds (dX = 20). Should not clamp.
+        mCallback.onChildDraw(
+                mCanvas,
+                mRecyclerView,
+                mViewHolder,
+                20f,
+                0f,
+                ItemTouchHelper.ACTION_STATE_DRAG,
+                true);
+        verify(mItemView).setTranslationX(20f);
+    }
+
+    @Test
+    @SmallTest
+    public void testOnChildDraw_LocksHorizontalDisplacement_RegularTab() {
+        // Regular tab should always lock translationX to 0f, regardless of dX.
+        mPropertyModel.set(TabProperties.IS_PINNED, false);
+
+        when(mRecyclerView.getPaddingLeft()).thenReturn(8);
+        when(mItemView.getLeft()).thenReturn(16);
+        // leftLimitDx = 8 - 16 = -8.
+
+        // 1. Drag left (dX = -15). Should be locked to 0f.
+        mCallback.onChildDraw(
+                mCanvas,
+                mRecyclerView,
+                mViewHolder,
+                -15f,
+                0f,
+                ItemTouchHelper.ACTION_STATE_DRAG,
+                true);
+        verify(mItemView).setTranslationX(0f);
+
+        Mockito.clearInvocations(mItemView);
+
+        // 2. Drag right (dX = 30). Should also be locked to 0f.
+        mCallback.onChildDraw(
+                mCanvas,
+                mRecyclerView,
+                mViewHolder,
+                30f,
+                0f,
+                ItemTouchHelper.ACTION_STATE_DRAG,
+                true);
+        verify(mItemView).setTranslationX(0f);
     }
 
     // ============================================================================================
