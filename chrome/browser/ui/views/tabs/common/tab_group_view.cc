@@ -141,8 +141,9 @@ std::unique_ptr<views::Widget> TabGroupView::ShowGroupEditorBubble(
   // When the tab strip is collapsed, anchor to the group header, otherwise
   // anchor to the editor bubble button.
   views::View* anchor_view =
-      GetTabStripCollapseState() !=
-              tabs::VerticalTabStripCollapseState::kExpanded
+      (GetTabStripCollapseState() !=
+           tabs::VerticalTabStripCollapseState::kExpanded ||
+       !group_header_->editor_bubble_button())
           ? views::AsViewClass<views::View>(group_header_)
           : views::AsViewClass<views::View>(
                 group_header_->editor_bubble_button());
