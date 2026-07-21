@@ -72,6 +72,7 @@
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/back_to_opener/back_to_opener_controller.h"
 #include "chrome/browser/ui/tabs/inactive_window_mouse_event_controller.h"
+#include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_page_action_controller.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
@@ -629,6 +630,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     back_to_opener_controller_ =
         std::make_unique<back_to_opener::BackToOpenerController>(tab);
   }
+
+  page_context_eligibility_helper_ =
+      GetUserDataFactory().CreateInstance<tabs::PageContextEligibilityHelper>(
+          tab, tab);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(enterprise_reporting::kSaasUsageReporting)) {

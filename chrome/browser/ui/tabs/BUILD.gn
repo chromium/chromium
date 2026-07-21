@@ -351,6 +351,7 @@ if (!is_android) {
       "features.h",
       "hover_tab_selector.h",
       "new_tab_grouping_user_data.h",
+      "page_context_eligibility_helper.h",
       "pinned_tab_codec.h",
       "pinned_tab_service.h",
       "pinned_tab_service_factory.h",
@@ -417,6 +418,7 @@ if (!is_android) {
     sources = [
       "contents_observing_tab_feature.cc",
       "hover_tab_selector.cc",
+      "page_context_eligibility_helper.cc",
       "pinned_tab_codec.cc",
       "pinned_tab_service.cc",
       "pinned_tab_service_factory.cc",
@@ -753,6 +755,7 @@ if (!is_android) {
     testonly = true
     sources = [
       "inactive_window_mouse_event_controller_unittest.cc",
+      "page_context_eligibility_helper_unittest.cc",
       "split_view_iph_controller_unittest.cc",
       "tab_collection_storage_unittest.cc",
       "tab_collection_unittest.cc",

@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
@@ -44,8 +45,8 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/feature_engagement/public/tracker.h"
-#include "components/optimization_guide/content/browser/page_context_eligibility_observer.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility_observer.h"
 #include "components/prefs/pref_service.h"
 #include "components/shared_highlighting/core/common/disabled_sites.h"
 #include "components/shared_highlighting/core/common/fragment_directives_utils.h"
@@ -239,7 +240,18 @@ GlicSelectionObserver::GlicSelectionObserver(content::WebContents* web_contents)
     }
   }
 
-  CreatePageContextEligibilityAPI(std::move(account));
+  auto* tab_interface = tabs::TabInterface::MaybeGetFromContents(web_contents);
+  if (tab_interface) {
+    auto* helper = tabs::PageContextEligibilityHelper::From(tab_interface);
+    if (helper) {
+      page_context_eligibility_subscription_ =
+          helper->RegisterEligibilityChangeCallback(base::BindRepeating(
+              &GlicSelectionObserver::OnPageContextEligibilityChanged,
+              weak_ptr_factory_.GetWeakPtr()));
+    }
+  } else {
+    CreatePageContextEligibilityAPI(std::move(account));
+  }
 
   web_contents->ForEachRenderFrameHost(
       [this](content::RenderFrameHost* render_frame_host) {
@@ -910,8 +922,7 @@ void GlicSelectionObserver::SendAdditionalContextToPanel(
   }
 
   // If the page is not eligible, do not send the additional context.
-  if (page_context_tracker_ && !selected_text.empty() &&
-      !page_context_tracker_->IsPageContextEligible()) {
+  if (IsPageContextEligible() == false && !selected_text.empty()) {
     return;
   }
 
@@ -922,10 +933,32 @@ void GlicSelectionObserver::SendAdditionalContextToPanel(
   }
 }
 
-void GlicSelectionObserver::OnPageContextEligibilityChanged(bool is_eligible) {
-  // If the page becomes ineligible and we've already sent selection context,
-  // we should clear it.
-  if (!is_eligible && has_sent_selection_context_) {
+std::optional<bool> GlicSelectionObserver::IsPageContextEligible() const {
+  auto* tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  if (tab_interface) {
+    auto* helper = tabs::PageContextEligibilityHelper::From(tab_interface);
+    if (helper) {
+      return helper->IsPageContextEligible();
+    }
+  }
+  if (page_context_tracker_) {
+    auto status = page_context_tracker_->IsPageContextEligible();
+    if (status == optimization_guide::PageContextEligibilityStatus::kUnknown) {
+      return std::nullopt;
+    }
+    return status ==
+           optimization_guide::PageContextEligibilityStatus::kEligible;
+  }
+  return std::nullopt;
+}
+
+void GlicSelectionObserver::OnPageContextEligibilityChanged(
+    std::optional<bool> is_eligible) {
+  // If the page context transitions into a liminal state (nullopt) or becomes
+  // ineligible (false), and we've already sent selection context, we should
+  // clear it.
+  if (is_eligible != true && has_sent_selection_context_) {
     auto* tab_interface =
         tabs::TabInterface::MaybeGetFromContents(web_contents());
     if (tab_interface) {
@@ -935,13 +968,13 @@ void GlicSelectionObserver::OnPageContextEligibilityChanged(bool is_eligible) {
   }
 }
 
-void GlicSelectionObserver::CreatePageContextEligibilityAPI(std::string account) {
+void GlicSelectionObserver::CreatePageContextEligibilityAPI(
+    std::string account) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(&optimization_guide::PageContextEligibility::Get),
-      base::BindOnce(
-          &GlicSelectionObserver::OnPageContextEligibilityAPILoaded,
-          weak_ptr_factory_.GetWeakPtr(), std::move(account)));
+      base::BindOnce(&GlicSelectionObserver::OnPageContextEligibilityAPILoaded,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(account)));
 }
 
 void GlicSelectionObserver::OnPageContextEligibilityAPILoaded(
@@ -954,7 +987,11 @@ void GlicSelectionObserver::OnPageContextEligibilityAPILoaded(
       optimization_guide::PageContextEligibilityObserver::Create(
           web_contents(), std::move(account),
           base::BindRepeating(
-              &GlicSelectionObserver::OnPageContextEligibilityChanged,
+              [](base::WeakPtr<GlicSelectionObserver> observer, bool eligible) {
+                if (observer) {
+                  observer->OnPageContextEligibilityChanged(eligible);
+                }
+              },
               weak_ptr_factory_.GetWeakPtr()));
 }
 

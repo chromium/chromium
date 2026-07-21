@@ -13,11 +13,23 @@
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility_api.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content_metadata.mojom.h"
 
 namespace optimization_guide {
+
+enum class PageContextEligibilityStatus {
+  // Initial state. Persists while the eligibility API is loading
+  // asynchronously.
+  kUnknown,
+  // The page context is eligible.
+  kEligible,
+  // The page context is not eligible.
+  kNotEligible,
+};
+
 class PageContentMetadataObserver;
 class PageContextEligibility;
 
@@ -35,13 +47,12 @@ class PageContextEligibilityObserver : public content::WebContentsObserver {
   ~PageContextEligibilityObserver() override;
 
   // Returns whether the current page context is eligible.
-  bool IsPageContextEligible() const;
+  PageContextEligibilityStatus IsPageContextEligible() const;
 
  private:
   PageContextEligibilityObserver(content::WebContents* web_contents,
                                  std::string account,
-                                 base::RepeatingCallback<void(bool)> callback,
-                                 const PageContextEligibility* api_holder);
+                                 base::RepeatingCallback<void(bool)> callback);
 
   bool ComputePageContextEligibility();
 
@@ -60,17 +71,24 @@ class PageContextEligibilityObserver : public content::WebContentsObserver {
 
   void UpdateObserver();
 
+  void StartApiLoading();
+  void OnApiLoaded(const PageContextEligibility* api);
+
   const std::string account_;
   base::RepeatingCallback<void(bool)> callback_;
 
-  raw_ptr<const PageContextEligibility> api_holder_;
+  raw_ptr<const PageContextEligibility> api_holder_ = nullptr;
+  bool is_api_loaded_ = false;
 
   std::unique_ptr<PageContentMetadataObserver> meta_tags_observer_;
   std::vector<std::string> observed_meta_tag_names_;
   std::vector<FrameMetadata> current_metadata_;
   bool is_permanently_ineligible_ = false;
 
-  std::optional<bool> last_eligibility_;
+  PageContextEligibilityStatus last_eligibility_ =
+      PageContextEligibilityStatus::kUnknown;
+
+  base::WeakPtrFactory<PageContextEligibilityObserver> weak_ptr_factory_{this};
 };
 
 }  // namespace optimization_guide
