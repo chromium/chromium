@@ -5,5 +5,10 @@
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("proto") {
-  sources = [ "tab_context_container_access_token.proto" ]
+  sources = [
+    "ephemeral_key_service.proto",
+    "tab_context_container_access_token.proto",
+  ]
+  deps = [ "//components/sync/protocol" ]
+  import_dirs = [ "//" ]
 }

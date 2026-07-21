@@ -32,13 +32,16 @@ std::string BuildContainerAccessToken(
 
   const std::string container_key_bytes =
       container_key_set.ToProto().SerializeAsString();
-  const std::vector<uint8_t> encrypted_container_key =
+  const std::optional<sync_pb::EncryptedData> encrypted_container_key =
       result.ephemeral_key->Encrypt(base::as_byte_span(container_key_bytes));
+  if (!encrypted_container_key) {
+    return std::string();
+  }
 
   TabContextContainerAccessToken token_proto;
   token_proto.set_server_token(std::move(result.server_token));
-  token_proto.set_encrypted_container_key(encrypted_container_key.data(),
-                                          encrypted_container_key.size());
+  token_proto.set_encrypted_container_key(
+      encrypted_container_key->SerializeAsString());
 
   return token_proto.SerializeAsString();
 }
@@ -58,7 +61,9 @@ TabContextSyncServiceImpl::TabContextSyncServiceImpl(
           std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
               syncer::ENCRYPTED_TAB_CONTEXT_ITEM,
               dump_stack))),
-      ephemeral_key_fetcher_(std::move(ephemeral_key_fetcher)) {}
+      ephemeral_key_fetcher_(std::move(ephemeral_key_fetcher)) {
+  CHECK(ephemeral_key_fetcher_);
+}
 
 TabContextSyncServiceImpl::~TabContextSyncServiceImpl() = default;
 
@@ -91,8 +96,7 @@ bool TabContextSyncServiceImpl::UploadPageContext(
 void TabContextSyncServiceImpl::GetContainerAccessToken(
     const ContainerId& container_id,
     base::OnceCallback<void(std::optional<std::string>)> cb) {
-  if (!ephemeral_key_fetcher_ ||
-      !container_bridge_->GetEncryptionKeyForContainer(container_id)) {
+  if (!container_bridge_->GetEncryptionKeyForContainer(container_id)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(cb), std::nullopt));
     return;

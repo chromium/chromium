@@ -6,6 +6,10 @@ static_library("sync_tab_context") {
   sources = [
     "container_id.h",
     "ephemeral_key_fetcher.h",
+    "http_rpc_based_ephemeral_key_fetcher.cc",
+    "http_rpc_based_ephemeral_key_fetcher.h",
+    "http_rpc_constants.cc",
+    "http_rpc_constants.h",
     "tab_context_container_sync_bridge.cc",
     "tab_context_container_sync_bridge.h",
     "tab_context_data_type_controller.cc",
@@ -22,6 +26,7 @@ static_library("sync_tab_context") {
     "//base",
     "//components/keyed_service/core",
     "//components/sync_tab_context/proto",
+    "//url",
   ]
 
   deps = [
@@ -30,6 +35,9 @@ static_library("sync_tab_context") {
     "//components/sync/model/crypto",
     "//components/sync/protocol",
     "//components/sync/service",
+    "//google_apis",
+    "//net",
+    "//services/network/public/cpp",
   ]
 }
 
@@ -37,6 +45,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "http_rpc_based_ephemeral_key_fetcher_unittest.cc",
     "tab_context_container_sync_bridge_unittest.cc",
     "tab_context_data_type_controller_unittest.cc",
     "tab_context_item_sync_bridge_unittest.cc",
@@ -48,10 +57,14 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",
     "//components/sync/model",
     "//components/sync/protocol",
     "//components/sync/service",
+    "//net",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
   ]

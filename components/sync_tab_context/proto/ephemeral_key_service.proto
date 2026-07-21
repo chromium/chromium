@@ -1,0 +1,21 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync_tab_context.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_tab_context;
+
+import "components/sync/protocol/agile_encryption_keys.proto";
+
+message GenerateEphemeralKeyRequest {}
+
+message GenerateEphemeralKeyResponse {
+  optional sync_pb.AgileSymmetricKeySet agile_symmetric_key_set = 1;
+  optional bytes server_token = 2;
+}

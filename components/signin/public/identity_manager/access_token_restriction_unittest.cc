@@ -70,6 +70,10 @@ TEST(AccessTokenRestrictionTest, PrivilegedOAuth2Consumer) {
 
 TEST(AccessTokenRestrictionTest, ConsumerAllowlistedForScope) {
   EXPECT_TRUE(signin::IsConsumerAllowlistedForScope(
+      signin::OAuthConsumerId::kTabContextContainersService,
+      GaiaConstants::kChromeSyncOAuth2Scope));
+
+  EXPECT_TRUE(signin::IsConsumerAllowlistedForScope(
       signin::OAuthConsumerId::kSyncDeviceStatisticsMetrics,
       GaiaConstants::kChromeSyncOAuth2Scope));
 

@@ -3,4 +3,13 @@ include_rules = [
   "+components/keyed_service/core",
   "+components/signin",
   "+components/sync",
+  "+google_apis",
+  "+net",
+  "+services/network/public/cpp",
 ]
+
+specific_include_rules = {
+  ".*unittest\\.cc": [
+    "+services/network/test",
+  ],
+}

@@ -408,6 +408,7 @@ after discussions on the right group.
       <annotation id="doodle_impression_android"/>
       <annotation id="read_aloud_generate_text"/>
       <annotation id="read_aloud_synthesize"/>
+      <annotation id="tab_context_ephemeral_key_fetch"/>
     </sender>
   </group>
   <group name="Admin Features">
