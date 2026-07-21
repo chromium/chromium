@@ -47,11 +47,13 @@
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/icons/extension_icon_set.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/manifest_handlers/description_info.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/manifest_handlers/manifest_url_handlers.h"
 #include "extensions/common/manifest_handlers/offline_enabled_info.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "extensions/common/manifest_handlers/replacement_apps.h"
+#include "extensions/common/manifest_handlers/version_name_info.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/permission_message.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -134,10 +136,8 @@ management::ExtensionInfo CreateExtensionInfo(
   info.enabled = registry->enabled_extensions().Contains(info.id);
   info.offline_enabled = OfflineEnabledInfo::IsOfflineEnabled(&extension);
   info.version = extension.VersionString();
-  if (!extension.version_name().empty()) {
-    info.version_name = extension.version_name();
-  }
-  info.description = extension.description();
+  info.version_name = VersionNameInfo::GetVersionName(extension);
+  info.description = DescriptionInfo::GetDescription(extension);
   info.options_url = OptionsPageInfo::GetOptionsPage(&extension).spec();
   info.homepage_url = ManifestURL::GetHomepageURL(&extension).spec();
   info.may_disable =

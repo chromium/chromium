@@ -53,6 +53,7 @@
 #include "extensions/browser/ui_util.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_urls.h"
+#include "extensions/common/manifest_handlers/description_info.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "extensions/common/switches.h"
 #include "ui/base/window_open_disposition_utils.h"
@@ -142,7 +143,7 @@ AppPtr ExtensionAppsBase::CreateAppImpl(const extensions::Extension* extension,
                                        ? InstallSource::kSystem
                                        : InstallSource::kChromeWebStore);
   app->short_name = extension->short_name();
-  app->description = extension->description();
+  app->description = extensions::DescriptionInfo::GetDescription(*extension);
   app->version = extension->GetVersionForDisplay();
   app->installer_package_id =
       apps::PackageId(apps::PackageType::kChromeApp, extension->id());

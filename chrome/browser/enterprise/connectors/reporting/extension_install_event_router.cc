@@ -19,6 +19,7 @@
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_factory.h"
+#include "extensions/common/manifest_handlers/description_info.h"
 
 using ::chrome::cros::reporting::proto::BrowserExtensionInstallEvent;
 
@@ -84,7 +85,8 @@ void ExtensionInstallEventRouter::ReportExtensionInstallEvent(
   auto* extension_event = event.mutable_browser_extension_install_event();
   extension_event->set_id(extension->id());
   extension_event->set_name(extension->name());
-  extension_event->set_description(extension->description());
+  extension_event->set_description(
+      extensions::DescriptionInfo::GetDescription(*extension));
   extension_event->set_extension_action_type(extension_action);
   extension_event->set_extension_version(extension->GetVersionForDisplay());
   extension_event->set_extension_source(GetExtensionSource(extension));
@@ -109,7 +111,8 @@ void ExtensionInstallEventRouter::ReportExtensionInstallEvent(
   base::DictValue event;
   event.Set(kKeyId, extension->id());
   event.Set(kKeyName, extension->name());
-  event.Set(kKeyDescription, extension->description());
+  event.Set(kKeyDescription,
+            extensions::DescriptionInfo::GetDescription(*extension));
   event.Set(kKeyExtensionAction, extension_action);
   event.Set(kKeyVersion, extension->GetVersionForDisplay());
 

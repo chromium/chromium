@@ -22,6 +22,7 @@
 #include "extensions/browser/launch_util.h"
 #include "extensions/browser/path_util.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/manifest_handlers/description_info.h"
 #include "extensions/common/manifest_handlers/manifest_url_handlers.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -132,9 +133,10 @@ void AppInfoSummaryPanel::AddDescriptionAndLinksControl(
           ChromeLayoutProvider::Get()->GetDistanceMetric(
               DISTANCE_RELATED_CONTROL_VERTICAL_SMALL)));
 
-  if (!app_->description().empty()) {
+  if (!extensions::DescriptionInfo::GetDescription(*app_).empty()) {
     constexpr size_t kMaxLength = 400;
-    std::u16string text = base::UTF8ToUTF16(app_->description());
+    std::u16string text =
+        base::UTF8ToUTF16(extensions::DescriptionInfo::GetDescription(*app_));
     if (text.length() > kMaxLength) {
       text = text.substr(0, kMaxLength - 5);
       text += u" ... ";

@@ -23,6 +23,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/manifest_handlers/description_info.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
@@ -43,7 +44,8 @@ void PopulateExtensionInfo(
   extension_info->set_id(extension_id);
   extension_info->set_version(extension.version().GetString());
   extension_info->set_name(extension.name());
-  extension_info->set_description(extension.description());
+  extension_info->set_description(
+      extensions::DescriptionInfo::GetDescription(extension));
 
   typedef ClientIncidentReport_ExtensionData_ExtensionInfo Info;
   if (extension_registry.enabled_extensions().Contains(extension_id))

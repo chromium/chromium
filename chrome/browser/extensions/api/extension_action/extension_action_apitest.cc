@@ -43,6 +43,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/manifest_handlers/description_info.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -498,7 +499,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, TitleLocalization) {
   ASSERT_TRUE(action);
 
   EXPECT_EQ(base::WideToUTF8(L"Hreggvi\u00F0ur: l10n action"),
-            extension->description());
+            DescriptionInfo::GetDescription(*extension));
   EXPECT_EQ(base::WideToUTF8(L"Hreggvi\u00F0ur is my name"), extension->name());
   content::WebContents* web_contents = GetActiveWebContents();
   int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();

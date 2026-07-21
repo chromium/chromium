@@ -27,6 +27,7 @@
 #include "extensions/browser/launch_util.h"
 #include "extensions/browser/pending_extension_manager.h"
 #include "extensions/common/extension_set.h"
+#include "extensions/common/manifest_handlers/description_info.h"
 
 using extensions::AppSorting;
 using extensions::ExtensionPrefs;
@@ -84,7 +85,8 @@ void LoadApp(content::BrowserContext* context,
   if (extension) {
     app_state->launch_web_url =
         extensions::AppLaunchInfo::GetLaunchWebURL(extension);
-    app_state->description = extension->description();
+    app_state->description =
+        extensions::DescriptionInfo::GetDescription(*extension);
     app_state->name = extension->name();
   }
 }

@@ -13,6 +13,7 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
+#include "extensions/common/manifest_handlers/description_info.h"
 #include "extensions/common/manifest_handlers/externally_connectable.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -359,7 +360,7 @@ TEST(ExtensionBuilderTest, SetManifestAndMergeManifest) {
           .Build();
   EXPECT_EQ("some name", extension->name());
   EXPECT_EQ(2, extension->manifest_version());
-  EXPECT_EQ("some description", extension->description());
+  EXPECT_EQ("some description", DescriptionInfo::GetDescription(*extension));
   EXPECT_EQ("0.1", extension->version().GetString());
 }
 

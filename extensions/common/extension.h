@@ -283,7 +283,6 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   const HashedExtensionId& hashed_id() const;
   const ExtensionGuid& guid() const;
   const base::Version& version() const { return version_; }
-  const std::string& version_name() const;
   std::string VersionString() const;
   std::string DifferentialFingerprint() const;
   std::string GetVersionForDisplay() const;

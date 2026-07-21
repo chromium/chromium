@@ -62,6 +62,7 @@
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/common/manifest_handlers/description_info.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/manifest_handlers/manifest_url_handlers.h"
 #include "extensions/common/manifest_handlers/offline_enabled_info.h"
@@ -641,7 +642,7 @@ void ExtensionInfoGenerator::FillExtensionInfo(const Extension& extension,
     }
   }
 
-  info.description = extension.description();
+  info.description = DescriptionInfo::GetDescription(extension);
 
   // Disable reasons.
   DisableReasonSet disable_reasons =

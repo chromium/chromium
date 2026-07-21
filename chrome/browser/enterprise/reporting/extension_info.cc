@@ -12,6 +12,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/manifest_handlers/description_info.h"
 #include "extensions/common/manifest_handlers/manifest_url_handlers.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -98,7 +99,8 @@ void AddExtensions(const extensions::ExtensionSet& extensions,
     extension_info->set_id(extension->id());
     extension_info->set_version(extension->VersionString());
     extension_info->set_name(extension->name());
-    extension_info->set_description(extension->description());
+    extension_info->set_description(
+        extensions::DescriptionInfo::GetDescription(*extension));
     extension_info->set_app_type(
         ConvertExtensionTypeToProto(extension->GetType()));
     extension_info->set_homepage_url(

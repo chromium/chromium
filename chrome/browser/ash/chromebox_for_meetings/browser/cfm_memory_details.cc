@@ -16,6 +16,7 @@
 #include "extensions/browser/process_map.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_set.h"
+#include "extensions/common/manifest_handlers/description_info.h"
 
 namespace ash::cfm {
 
@@ -141,7 +142,8 @@ void CfmMemoryDetails::CollectExtensionsInformation() {
                 ->GetEnabledExtensionByProcessID(host->GetID())) {
       proc_mem_info->extension_info.push_back(mojom::ExtensionData::New(
           extension->name(), extension->GetVersionForDisplay(), extension->id(),
-          extension->hashed_id().value(), extension->description()));
+          extension->hashed_id().value(),
+          extensions::DescriptionInfo::GetDescription(*extension)));
     }
   }
 #endif

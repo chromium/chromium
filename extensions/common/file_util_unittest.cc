@@ -31,6 +31,7 @@
 #include "extensions/common/extension_paths.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/manifest_handlers/description_info.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -304,7 +305,8 @@ TEST_F(FileUtilTest, LoadExtensionWithValidLocales) {
   scoped_refptr<Extension> extension(file_util::LoadExtension(
       install_dir, ManifestLocation::kUnpacked, Extension::NO_FLAGS, &error));
   ASSERT_TRUE(extension.get() != nullptr);
-  EXPECT_EQ("The first extension that I made.", extension->description());
+  EXPECT_EQ("The first extension that I made.",
+            DescriptionInfo::GetDescription(*extension));
 }
 
 TEST_F(FileUtilTest, LoadExtensionWithGzippedLocalesAllowed) {
@@ -316,7 +318,8 @@ TEST_F(FileUtilTest, LoadExtensionWithGzippedLocalesAllowed) {
   scoped_refptr<Extension> extension(file_util::LoadExtension(
       install_dir, ManifestLocation::kComponent, Extension::NO_FLAGS, &error));
   ASSERT_TRUE(extension.get() != nullptr);
-  EXPECT_EQ("The first extension that I made.", extension->description());
+  EXPECT_EQ("The first extension that I made.",
+            DescriptionInfo::GetDescription(*extension));
   ASSERT_TRUE(error.empty());
 }
 

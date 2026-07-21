@@ -7,6 +7,7 @@
 #include "base/values.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/manifest_handlers/description_info.h"
 #include "extensions/common/manifest_handlers/kiosk_mode_info.h"
 #include "extensions/common/manifest_handlers/manifest_url_handlers.h"
 #include "extensions/common/manifest_handlers/offline_enabled_info.h"
@@ -45,7 +46,7 @@ void GetExtensionBasicInfo(const Extension* extension,
   info->Set(kOfflineEnabledKey,
             OfflineEnabledInfo::IsOfflineEnabled(extension));
   info->Set(kInfoVersionKey, extension->GetVersionForDisplay());
-  info->Set(kDescriptionKey, extension->description());
+  info->Set(kDescriptionKey, DescriptionInfo::GetDescription(*extension));
   info->Set(kOptionsUrlKey,
             OptionsPageInfo::GetOptionsPage(extension).possibly_invalid_spec());
   info->Set(kHomepageUrlKey,

@@ -148,6 +148,7 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
+#include "extensions/common/manifest_handlers/description_info.h"
 #include "extensions/common/manifest_handlers/manifest_url_handlers.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/common/permissions/permission_set.h"
@@ -1013,7 +1014,7 @@ TEST_F(ExtensionServiceTest, LoadAllExtensionsFromDirectorySuccess) {
   EXPECT_EQ(std::string(kGood0), loaded_extensions()[0]->id());
   EXPECT_EQ(std::string("My extension 1"), loaded_extensions()[0]->name());
   EXPECT_EQ(std::string("The first extension that I made."),
-            loaded_extensions()[0]->description());
+            DescriptionInfo::GetDescription(*loaded_extensions()[0]));
   EXPECT_EQ(ManifestLocation::kInternal, loaded_extensions()[0]->location());
   EXPECT_TRUE(
       registry()->enabled_extensions().GetByID(loaded_extensions()[0]->id()));
@@ -1076,7 +1077,8 @@ TEST_F(ExtensionServiceTest, LoadAllExtensionsFromDirectorySuccess) {
 
   EXPECT_EQ(std::string(kGood1), loaded_extensions()[1]->id());
   EXPECT_EQ(std::string("My extension 2"), loaded_extensions()[1]->name());
-  EXPECT_EQ(std::string(), loaded_extensions()[1]->description());
+  EXPECT_EQ(std::string(),
+            DescriptionInfo::GetDescription(*loaded_extensions()[1]));
   EXPECT_EQ(loaded_extensions()[1]->GetResourceURL("background.html"),
             BackgroundInfo::GetBackgroundURL(loaded_extensions()[1].get()));
   EXPECT_TRUE(
@@ -1087,7 +1089,8 @@ TEST_F(ExtensionServiceTest, LoadAllExtensionsFromDirectorySuccess) {
   int index = expected_num_extensions - 1;
   EXPECT_EQ(std::string(kGood2), loaded_extensions()[index]->id());
   EXPECT_EQ(std::string("My extension 3"), loaded_extensions()[index]->name());
-  EXPECT_EQ(std::string(), loaded_extensions()[index]->description());
+  EXPECT_EQ(std::string(),
+            DescriptionInfo::GetDescription(*loaded_extensions()[index]));
   EXPECT_TRUE(
       ContentScriptsInfo::GetContentScripts(loaded_extensions()[index].get())
           .empty());
@@ -2531,7 +2534,7 @@ TEST_F(ExtensionServiceTest, LoadLocalizedTheme) {
   EXPECT_EQ(1u, registry()->enabled_extensions().size());
   const Extension* theme = registry()->enabled_extensions().begin()->get();
   EXPECT_EQ("name", theme->name());
-  EXPECT_EQ("description", theme->description());
+  EXPECT_EQ("description", DescriptionInfo::GetDescription(*theme));
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -2784,7 +2787,7 @@ TEST_F(ExtensionServiceTest, InstallLocalizedTheme) {
   EXPECT_EQ(0u, GetErrors().size());
   EXPECT_EQ(1u, registry()->enabled_extensions().size());
   EXPECT_EQ("name", theme->name());
-  EXPECT_EQ("description", theme->description());
+  EXPECT_EQ("description", DescriptionInfo::GetDescription(*theme));
 }
 
 TEST_F(ExtensionServiceTest, InstallApps) {
