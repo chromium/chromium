@@ -979,6 +979,7 @@ source_set("unit_tests") {
     sources += [
       "android/client_side_detection_intelligent_scan_delegate_android_unittest.cc",
       "android/password_reuse_controller_android_unittest.cc",
+      "download_protection/rate_limiting_key_manager_unittest.cc",
       "safe_browsing_pref_change_handler_android_unittest.cc",
       "tailored_security/chrome_tailored_security_service_android_unittest.cc",
       "tailored_security/consented_message_android_unittest.cc",
@@ -987,6 +988,9 @@ source_set("unit_tests") {
     deps += [
       "//chrome/browser/ui/android/tab_model:test_support",
       "//components/messages/android:test_support",
+      "//components/safe_browsing/android:real_time_url_checks_allowlist",
+      "//components/safe_browsing/android:safe_browsing_api_handler",
+      "//components/safe_browsing/android:safe_browsing_api_handler_util",
     ]
   }
   if (enterprise_cloud_content_analysis || is_android) {
