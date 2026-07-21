@@ -23,7 +23,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_data_type.h"
-#include "components/accessibility_annotator/core/annotation_reducer/memory_data_type_util.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
 #include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
 #include "components/autofill/core/browser/at_memory/at_memory_metrics_recorder.h"
@@ -46,6 +45,7 @@
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/at_memory/at_memory_query_service.h"
+#include "components/autofill/core/browser/integrators/at_memory/memory_data_type_util.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/common/aliases.h"
@@ -327,8 +327,7 @@ std::u16string MaybeObfuscateValue(const std::u16string& value,
   if (value.empty()) {
     return value;
   }
-  if (is_personal_context_sourced &&
-      accessibility_annotator::IsSpiiMemoryDataType(type)) {
+  if (is_personal_context_sourced && IsSpiiMemoryDataType(type)) {
     return GetObfuscatedValue(value, kVisibleSuffixLength);
   }
   return value;

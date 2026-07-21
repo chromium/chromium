@@ -12,8 +12,6 @@ source_set("annotation_reducer") {
     "ingested_content_annotation_utils.cc",
     "ingested_content_annotation_utils.h",
     "memory_data_type.h",
-    "memory_data_type_util.cc",
-    "memory_data_type_util.h",
     "memory_search_result.cc",
     "memory_search_result.h",
   ]
@@ -35,7 +33,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "ingested_content_annotation_utils_unittest.cc",
-    "memory_data_type_util_unittest.cc",
     "memory_search_result_unittest.cc",
   ]
 

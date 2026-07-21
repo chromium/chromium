@@ -2,16 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/accessibility_annotator/core/annotation_reducer/memory_data_type_util.h"
+#include "components/autofill/core/browser/integrators/at_memory/memory_data_type_util.h"
 
 #include <vector>
 
 #include "components/personal_context/proto/features/common_data.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace accessibility_annotator {
+namespace autofill {
 
 namespace {
+
+using ::accessibility_annotator::EntryMetadata;
+using ::accessibility_annotator::MemoryDataType;
 
 // Tests that `ToPersonalContextEntity` correctly converts individual memory
 // entry attributes and metadata into the corresponding fields of the personal
@@ -94,4 +97,4 @@ TEST(MemoryDataTypeUtilTest, ToPersonalContextEntity) {
 
 }  // namespace
 
-}  // namespace accessibility_annotator
+}  // namespace autofill
