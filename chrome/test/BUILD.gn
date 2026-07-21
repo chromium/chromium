@@ -211,7 +211,7 @@ static_library("test_support") {
     "//chrome/browser/origin_trials",
     "//chrome/browser/renderer_context_menu:test_support",
     "//chrome/test/base:testing_browser_process",
-    "//chrome/test/base:testing_profile",
+    "//chrome/test/base:testing_profile_impl",
   ]
 
   sources = [
