@@ -61,7 +61,7 @@ to thoroughly review.
 1. Create new release branch
 
    Request creation of a new release branch via a
-   [Git Admin Request](https://issues.chromium.org/issues/new?component=1456263&template=1923295)
+   [Git Admin Request](https://issues.chromium.org/issues/new?component=2194686&template=2359397)
    with a message along the lines of: "Please create branch
    `chromium-version-3.50.0` in the `chromium/deps/sqlite` repo based on commit
    `refs/tags/upstream/version-3.50.0`." See

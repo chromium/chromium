@@ -81,7 +81,7 @@ one Gerrit account** you can link them yourself:
 5. Repeat 1-4 on https://chrome-internal-review.googlesource.com, but use your
    @google.com email to login, and @chromium.org in "Register new email" dialog.
 
-If you encounter any errors, [file a ticket](https://issues.chromium.org/issues/new?component=1456263&template=1923295).
+If you encounter any errors, [file a ticket](https://issues.chromium.org/issues/new?component=2194686&template=2359397).
 
 **If you have two Gerrit accounts** you need an admin to link them. File a
 ticket using go/fix-chrome-git
@@ -103,7 +103,7 @@ If you have linked accounts, and want to unlink them:
   do the same (probably deleting @chromium, and then signing in with your
   @google account).
 
-If you encounter any errors, [file a ticket](https://issues.chromium.org/issues/new?component=1456263&template=1923295).
+If you encounter any errors, [file a ticket](https://issues.chromium.org/issues/new?component=2194686&template=2359397).
 
 ## Common issues
 
