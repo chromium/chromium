@@ -823,7 +823,7 @@
     More about relevant data sent to Google
   </message>
   <message name="IDS_AUTOFILL_AT_MEMORY_NO_CONNECTION" desc="Message shown when @memory search fails to connect to the server." translateable="false">
-    No server connection
+    Couldn't connect
   </message>
   <message name="IDS_AUTOFILL_AT_MEMORY_GENERIC_ERROR" desc="Message shown when @memory search fails due to a generic or internal error." translateable="false">
     Something went wrong
