@@ -19,6 +19,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "components/no_state_prefetch/renderer/no_state_prefetch_helper.h"
 #include "components/optimization_guide/content/renderer/page_text_agent.h"
@@ -29,6 +30,7 @@
 #include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_util.h"
 #include "components/variations/variations_switches.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_frame.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -585,3 +587,42 @@ TEST_F(ChromeRenderFrameObserverTest, LoadTimesAndCsiValues) {
       &result));
   EXPECT_EQ(1, result);
 }
+
+TEST_F(ChromeRenderFrameObserverTest, DynamicTranslateAgentCreation) {
+  // Enable Top Chrome WebUI lazy-translate behavior.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({features::kInitialWebUI}, {});
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kTopChromeWebUI);
+
+  // Remove the duplicate associated interface binders registered by the default
+  // observer to avoid DCHECK failures.
+  render_frame()->GetAssociatedInterfaceRegistry()->RemoveInterface(
+      "optimization_guide.mojom.PageTextService");
+  render_frame()->GetAssociatedInterfaceRegistry()->RemoveInterface(
+      "chrome.mojom.ChromeRenderFrame");
+  render_frame()->GetAssociatedInterfaceRegistry()->RemoveInterface(
+      "safe_browsing.mojom.PhishingDetector");
+  render_frame()->GetAssociatedInterfaceRegistry()->RemoveInterface(
+      "safe_browsing.mojom.PhishingImageEmbedderDetector");
+
+  // Construct our own observer. Because skip_translate is now true,
+  // translate_agent_ should start as nullptr.
+  ChromeRenderFrameObserver observer(render_frame(), nullptr);
+  EXPECT_EQ(observer.translate_agent_, nullptr);
+
+  // Navigate to a normal WebUI page. translate_agent_ should remain nullptr.
+  LoadHTMLWithUrlOverride("<html><body>WebUI</body></html>",
+                          "chrome://settings/");
+  EXPECT_EQ(observer.translate_agent_, nullptr);
+
+  // Navigate to the Reading Mode side panel. translate_agent_ should be
+  // created.
+  std::string read_anything_url =
+      base::StrCat({"chrome-untrusted://",
+                    chrome::kChromeUIUntrustedReadAnythingSidePanelHost, "/"});
+  LoadHTMLWithUrlOverride("<html><body>Reading Mode</body></html>",
+                          read_anything_url.c_str());
+  EXPECT_NE(observer.translate_agent_, nullptr);
+}
+

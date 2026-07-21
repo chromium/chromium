@@ -84,6 +84,8 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
 
  private:
   friend class ChromeRenderFrameObserverTest;
+  FRIEND_TEST_ALL_PREFIXES(ChromeRenderFrameObserverTest,
+                           DynamicTranslateAgentCreation);
 
   // RenderFrameObserver implementation.
   void OnInterfaceRequestForFrame(

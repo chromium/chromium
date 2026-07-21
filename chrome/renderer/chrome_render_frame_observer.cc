@@ -189,6 +189,17 @@ void UpdateLoadedOriginCrashKeys() {
   }
 }
 
+bool ShouldForceTranslateAgentCreation(const GURL& url) {
+#if !BUILDFLAG(IS_ANDROID)
+  // The Reading Mode side panel is a Top Chrome WebUI, but it exceptionally
+  // requires a TranslateAgent to support PDF translation.
+  return url.SchemeIs("chrome-untrusted") &&
+         url.host() == chrome::kChromeUIUntrustedReadAnythingSidePanelHost;
+#else
+  return false;
+#endif
+}
+
 }  // namespace
 
 ChromeRenderFrameObserver::ChromeRenderFrameObserver(
@@ -253,6 +264,16 @@ void ChromeRenderFrameObserver::ReadyToCommitNavigation(
   // event (including tab reload).
   if (render_frame()->IsMainFrame() && web_cache_impl_)
     web_cache_impl_->ExecutePendingClearCache();
+
+  // Dynamically instantiate TranslateAgent on-the-fly if this WebUI
+  // exceptionally requires it.
+  if (!translate_agent_ && render_frame()->IsMainFrame() && document_loader) {
+    GURL url = GURL(document_loader->GetUrl());
+    if (ShouldForceTranslateAgentCreation(url)) {
+      translate_agent_ = new translate::TranslateAgent(
+          render_frame(), ISOLATED_WORLD_ID_TRANSLATE);
+    }
+  }
 
   // Let translate_agent do any preparatory work before the new document loads.
   if (translate_agent_) {
